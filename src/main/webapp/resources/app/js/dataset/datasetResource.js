@@ -42,6 +42,11 @@ define([], function() {
         headers: {
            'Accept': 'application/json; charset=UTF-8'
         }
+      },
+      'getFeatured': {
+        url: '/users/:userUid/datasets/featured',
+        method: 'get',
+        isArray: true
       }
     });
   };

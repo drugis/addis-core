@@ -4,19 +4,19 @@ package org.drugis.addis.problems.service.model;
  * Created by daan on 3/26/14.
  */
 public class RatePerformanceParameters extends PerformanceParameters {
-  private Long alpha;
-  private Long beta;
+  private Integer alpha;
+  private Integer beta;
 
-  public RatePerformanceParameters(Long alpha, Long beta) {
+  public RatePerformanceParameters(Integer alpha, Integer beta) {
     this.alpha = alpha;
     this.beta = beta;
   }
 
-  public Long getAlpha() {
+  public Integer getAlpha() {
     return this.alpha;
   }
 
-  public Long getBeta() {
+  public Integer getBeta() {
     return this.beta;
   }
 

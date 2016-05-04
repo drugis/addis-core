@@ -1,20 +1,24 @@
 package org.drugis.addis.analyses.controller;
 
-import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.drugis.addis.analyses.*;
 import org.drugis.addis.analyses.repository.AnalysisRepository;
+import org.drugis.addis.analyses.repository.MetaBenefitRiskAnalysisRepository;
 import org.drugis.addis.analyses.repository.NetworkMetaAnalysisRepository;
 import org.drugis.addis.analyses.repository.SingleStudyBenefitRiskAnalysisRepository;
 import org.drugis.addis.analyses.service.AnalysisService;
+import org.drugis.addis.analyses.service.MetaBenefitRiskAnalysisService;
 import org.drugis.addis.base.AbstractAddisCoreController;
 import org.drugis.addis.exception.MethodNotAllowedException;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
+import org.drugis.addis.interventions.service.impl.InvalidTypeForDoseCheckException;
 import org.drugis.addis.projects.service.ProjectService;
 import org.drugis.addis.scenarios.Scenario;
 import org.drugis.addis.scenarios.repository.ScenarioRepository;
 import org.drugis.addis.security.Account;
 import org.drugis.addis.security.repository.AccountRepository;
+import org.drugis.addis.trialverse.model.trialdata.TrialDataStudy;
+import org.drugis.addis.trialverse.service.impl.ReadValueException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -24,8 +28,11 @@ import org.springframework.web.bind.annotation.*;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.net.URISyntaxException;
 import java.security.Principal;
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -44,6 +51,8 @@ public class AnalysisController extends AbstractAddisCoreController {
   @Inject
   NetworkMetaAnalysisRepository networkMetaAnalysisRepository;
   @Inject
+  MetaBenefitRiskAnalysisRepository metaBenefitRiskAnalysisRepository;
+  @Inject
   AccountRepository accountRepository;
   @Inject
   AnalysisService analysisService;
@@ -51,6 +60,22 @@ public class AnalysisController extends AbstractAddisCoreController {
   private ScenarioRepository scenarioRepository;
   @Inject
   private ProjectService projectService;
+  @Inject
+  private MetaBenefitRiskAnalysisService metaBenefitRiskAnalysisService;
+
+  @RequestMapping(value = "/projects/{projectId}/analyses", method = RequestMethod.GET, params = {"outcomeIds"})
+  @ResponseBody
+  public NetworkMetaAnalysis[] queryNetworkMetaAnalysisByOutcomes(Principal currentUser, @PathVariable Integer projectId, @RequestParam(name = "outcomeIds", required=false) List<Integer> outcomeIds) throws MethodNotAllowedException, ResourceDoesNotExistException {
+    Account user = accountRepository.findAccountByUsername(currentUser.getName());
+    if (user != null) {
+      Collection<NetworkMetaAnalysis> networkMetaAnalyses = networkMetaAnalysisRepository.queryByOutcomes(projectId, outcomeIds);
+      NetworkMetaAnalysis[] networkMetaAnalysesArray = new NetworkMetaAnalysis[networkMetaAnalyses.size()];
+      return networkMetaAnalyses.toArray(networkMetaAnalysesArray);
+    } else {
+      throw new MethodNotAllowedException();
+    }
+  }
+
 
   @RequestMapping(value = "/projects/{projectId}/analyses", method = RequestMethod.GET)
   @ResponseBody
@@ -79,7 +104,7 @@ public class AnalysisController extends AbstractAddisCoreController {
 
   @RequestMapping(value = "/projects/{projectId}/analyses", method = RequestMethod.POST)
   @ResponseBody
-  public AbstractAnalysis create(HttpServletRequest request, HttpServletResponse response, Principal currentUser, @RequestBody AnalysisCommand analysisCommand) throws MethodNotAllowedException, ResourceDoesNotExistException {
+  public AbstractAnalysis create(HttpServletRequest request, HttpServletResponse response, Principal currentUser, @RequestBody AnalysisCommand analysisCommand) throws MethodNotAllowedException, ResourceDoesNotExistException, SQLException {
     Account user = accountRepository.findAccountByUsername(currentUser.getName());
     if (user != null) {
       AbstractAnalysis analysis;
@@ -89,6 +114,9 @@ public class AnalysisController extends AbstractAddisCoreController {
           break;
         case AnalysisType.NETWORK_META_ANALYSIS_LABEL:
           analysis = analysisService.createNetworkMetaAnalysis(user, analysisCommand);
+          break;
+        case AnalysisType.META_BENEFIT_RISK_ANALYSIS_LABEL:
+          analysis = metaBenefitRiskAnalysisRepository.create(user, analysisCommand);
           break;
         default:
           throw new RuntimeException("unknown analysis type.");
@@ -107,13 +135,13 @@ public class AnalysisController extends AbstractAddisCoreController {
                               @PathVariable Integer analysisId,
                               @RequestParam(required=false) Integer modelId) throws MethodNotAllowedException, ResourceDoesNotExistException {
     projectService.checkOwnership(projectId, currentUser);
-    analysisRepository.setPrimaryModel(analysisId, modelId);
+    networkMetaAnalysisRepository.setPrimaryModel(analysisId, modelId);
     response.setStatus(HttpStatus.SC_OK);
   }
 
   @RequestMapping(value = "/projects/{projectId}/analyses/{analysisId}", method = RequestMethod.POST)
   @ResponseBody
-  public AbstractAnalysis update(Principal currentUser, @RequestBody AbstractAnalysis analysis) throws MethodNotAllowedException, ResourceDoesNotExistException, SQLException {
+  public AbstractAnalysis update(Principal currentUser, @PathVariable Integer projectId, @RequestBody AbstractAnalysis analysis) throws MethodNotAllowedException, ResourceDoesNotExistException, SQLException, IOException, URISyntaxException, ReadValueException, InvalidTypeForDoseCheckException {
     Account user = accountRepository.findAccountByUsername(currentUser.getName());
     if (user != null) {
       if (analysis instanceof SingleStudyBenefitRiskAnalysis) {
@@ -121,6 +149,8 @@ public class AnalysisController extends AbstractAddisCoreController {
         return updateSingleStudyBenefitRiskAnalysis(user, singleStudyBenefitRiskAnalysis);
       } else if (analysis instanceof NetworkMetaAnalysis) {
         return analysisService.updateNetworkMetaAnalysis(user, (NetworkMetaAnalysis) analysis);
+      } else if (analysis instanceof MetaBenefitRiskAnalysis) {
+        return metaBenefitRiskAnalysisService.update(user, projectId, (MetaBenefitRiskAnalysis) analysis);
       }
       throw new ResourceDoesNotExistException();
     } else {
@@ -128,7 +158,13 @@ public class AnalysisController extends AbstractAddisCoreController {
     }
   }
 
-  public SingleStudyBenefitRiskAnalysis updateSingleStudyBenefitRiskAnalysis(Account user, SingleStudyBenefitRiskAnalysis analysis) throws MethodNotAllowedException, ResourceDoesNotExistException {
+  @RequestMapping(value = "/projects/{projectId}/analyses/{analysisId}/evidenceTable", method = RequestMethod.GET)
+  @ResponseBody
+  public List<TrialDataStudy> getEvidenceTable(@PathVariable Integer projectId, @PathVariable Integer analysisId) throws ResourceDoesNotExistException, ReadValueException, URISyntaxException {
+    return analysisService.buildEvidenceTable(projectId, analysisId);
+  }
+
+  private SingleStudyBenefitRiskAnalysis updateSingleStudyBenefitRiskAnalysis(Account user, SingleStudyBenefitRiskAnalysis analysis) throws MethodNotAllowedException, ResourceDoesNotExistException {
     SingleStudyBenefitRiskAnalysis oldAnalysis = (SingleStudyBenefitRiskAnalysis) analysisRepository.get(analysis.getId());
     if (oldAnalysis.getProblem() != null) {
       throw new MethodNotAllowedException();

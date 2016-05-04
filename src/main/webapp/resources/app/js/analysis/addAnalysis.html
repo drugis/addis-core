@@ -1,0 +1,34 @@
+<form id="add-analysis-form" novalidate ng-submit="addAnalysis(newAnalysis)">
+  <h3>Add a new analysis</h3>
+
+  <div class="row">
+    <div class="large-10 columns">
+      <label>Title
+        <input id="analysis-title-input" type="text" ng-model="newAnalysis.title" ng-change="checkForDuplicateAnalysisName(newAnalysis.title)">
+        <div class="alert" ng-show="duplicateAnalysisName.isDuplicate">Duplicate name.</div>
+      </label>
+    </div>
+  </div>
+  <div class="row">
+    <div class="large-10 columns">
+      <label>Type
+        <select id="analysis-type-select" ng-init="newAnalysis.type=analysisTypes[0].label" ng-model="newAnalysis.type"
+          ng-options="type.label as type.label for type in analysisTypes"></select>
+      </label>
+    </div>
+  </div>
+  <div class="row">
+    <ul class="button-group">
+      <li>
+        <button class="button small secondary" type="button" ng-click="cancel()">Cancel</button>
+      </li>
+      <li>
+        <button id="add-analysis-btn" class="button small success" ng-disabled="!newAnalysis.title || !newAnalysis.type || duplicateAnalysisName.isDuplicate" type="submit">Add analysis
+        </button>
+
+      </li>
+    </ul>
+  </div>
+  <a class="close-reveal-modal" ng-click="cancel()">&#215;</a>
+
+</form>

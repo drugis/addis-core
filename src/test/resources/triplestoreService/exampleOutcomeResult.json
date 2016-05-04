@@ -1,15 +1,16 @@
 {
   "results": {
-    "bindings": [{
-      "outcome": {
-        "type": "uri",
-        "value": "http://trials.drugis.org/namespace/1/endpoint/fdszgs-adsfd-1"
-      },
-      "label": {
-        "type": "literal",
-        "value": "DBP 24-hour mean"
-      }
-    }, {
+    "bindings": [
+      {
+        "outcome": {
+          "type": "uri",
+          "value": "http://trials.drugis.org/namespace/1/endpoint/fdszgs-adsfd-1"
+        },
+        "label": {
+          "type": "literal",
+          "value": "DBP 24-hour mean"
+        },
+      }, {
       "outcome": {
         "type": "uri",
         "value": "http://trials.drugis.org/namespace/1/adverseEvent/fdszgs-fgfgdh-2"

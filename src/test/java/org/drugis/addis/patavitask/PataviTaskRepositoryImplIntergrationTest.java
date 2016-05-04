@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.Assert.*;
 
@@ -68,5 +69,11 @@ public class PataviTaskRepositoryImplIntergrationTest {
   @Test(expected = UnexpectedNumberOfResultsException.class)
   public void testGetResultWhenThereAreNone() throws IOException, UnexpectedNumberOfResultsException {
     pataviTaskRepository.getResult(2);
+  }
+
+  @Test
+  public void testGetResults() throws IOException, UnexpectedNumberOfResultsException, SQLException {
+    Map<Integer, JsonNode> results = pataviTaskRepository.getResults(Arrays.asList(1, 3));
+    assertEquals(2, results.size());
   }
 }

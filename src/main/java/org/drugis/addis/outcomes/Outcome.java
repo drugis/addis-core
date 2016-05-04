@@ -1,14 +1,19 @@
 package org.drugis.addis.outcomes;
 
-import org.drugis.addis.trialverse.model.SemanticOutcome;
+import org.drugis.addis.trialverse.model.SemanticVariable;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import java.io.Serializable;
+import java.net.URI;
 
 /**
  * Created by daan on 2/20/14.
  */
 @Entity
-public class Outcome {
+public class Outcome implements Serializable{
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,16 +27,16 @@ public class Outcome {
   public Outcome() {
   }
 
-  public Outcome(Integer id, Integer project, String name, String motivation, SemanticOutcome semanticOutcome) {
+  public Outcome(Integer id, Integer project, String name, String motivation, SemanticVariable semanticOutcome) {
     this.id = id;
     this.project = project;
     this.name = name;
     this.motivation = motivation;
     this.semanticOutcomeLabel = semanticOutcome.getLabel();
-    this.semanticOutcomeUri = semanticOutcome.getUri();
+    this.semanticOutcomeUri = semanticOutcome.getUri().toString();
   }
 
-  public Outcome(Integer project, String name, String motivation, SemanticOutcome semanticOutcome) {
+  public Outcome(Integer project, String name, String motivation, SemanticVariable semanticOutcome) {
     this(null, project, name, motivation, semanticOutcome);
   }
 
@@ -56,8 +61,8 @@ public class Outcome {
     return semanticOutcomeLabel;
   }
 
-  public String getSemanticOutcomeUri() {
-    return semanticOutcomeUri;
+  public URI getSemanticOutcomeUri() {
+    return URI.create(semanticOutcomeUri);
   }
 
   @Override

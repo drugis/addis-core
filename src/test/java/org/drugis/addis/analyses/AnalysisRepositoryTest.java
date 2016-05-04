@@ -38,6 +38,7 @@ public class AnalysisRepositoryTest {
     AbstractAnalysis analysis = analysisRepository.get(analysisId);
     SingleStudyBenefitRiskAnalysis castAnalysis = (SingleStudyBenefitRiskAnalysis) analysis;
     SingleStudyBenefitRiskAnalysis singleStudyBenefitRiskAnalysis = em.find(SingleStudyBenefitRiskAnalysis.class, analysisId);
+    assertEquals(2, singleStudyBenefitRiskAnalysis.getSelectedOutcomes().size());
     assertEquals(singleStudyBenefitRiskAnalysis, castAnalysis);
   }
 
@@ -48,6 +49,17 @@ public class AnalysisRepositoryTest {
     NetworkMetaAnalysis castAnalysis = (NetworkMetaAnalysis) analysis;
     NetworkMetaAnalysis networkMetaAnalysis = em.find(NetworkMetaAnalysis.class, analysisId);
     assertEquals(networkMetaAnalysis, castAnalysis);
+  }
+
+  @Test
+  public void testGetMetaBenefitRiskAnalysis() throws ResourceDoesNotExistException {
+    Integer analysisId = -10;
+    AbstractAnalysis analysis = analysisRepository.get(analysisId);
+    MetaBenefitRiskAnalysis castAnalysis = (MetaBenefitRiskAnalysis) analysis;
+    MetaBenefitRiskAnalysis metaBenefitRiskAnalysis = em.find(MetaBenefitRiskAnalysis.class, analysisId);
+    metaBenefitRiskAnalysis = em.find(MetaBenefitRiskAnalysis.class, metaBenefitRiskAnalysis.getId());
+    assertEquals(1, metaBenefitRiskAnalysis.getInterventionInclusions().size());
+    assertEquals(metaBenefitRiskAnalysis, castAnalysis);
   }
 
   @Test
@@ -68,7 +80,7 @@ public class AnalysisRepositoryTest {
   public void testQuery() {
     Integer projectId = 1;
     List<AbstractAnalysis> analyses = analysisRepository.query(projectId);
-    assertEquals(5, analyses.size());
+    assertEquals(6, analyses.size());
     SingleStudyBenefitRiskAnalysis analysis = new SingleStudyBenefitRiskAnalysis(-1, 1, "analysis 1", Collections.EMPTY_LIST, Collections.EMPTY_LIST);
     assertTrue(analyses.contains(analysis));
   }

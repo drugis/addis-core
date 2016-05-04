@@ -1,9 +1,9 @@
 package org.drugis.addis.models.service;
 
 import org.drugis.addis.exception.ResourceDoesNotExistException;
+import org.drugis.addis.interventions.service.impl.InvalidTypeForDoseCheckException;
 import org.drugis.addis.models.Model;
-import org.drugis.addis.models.exceptions.InvalidHeterogeneityTypeException;
-import org.drugis.addis.models.exceptions.InvalidModelTypeException;
+import org.drugis.addis.models.exceptions.InvalidModelException;
 import org.drugis.addis.models.repository.ModelRepository;
 import org.drugis.addis.patavitask.PataviTask;
 import org.drugis.addis.patavitask.PataviTaskUriHolder;
@@ -14,6 +14,7 @@ import org.drugis.addis.patavitask.service.impl.PataviTaskServiceImpl;
 import org.drugis.addis.problems.model.NetworkMetaAnalysisProblem;
 import org.drugis.addis.problems.service.ProblemService;
 import org.drugis.addis.trialverse.service.TriplestoreService;
+import org.drugis.addis.trialverse.service.impl.ReadValueException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -27,6 +28,8 @@ import java.sql.SQLException;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
+
+;
 
 public class PataviTaskServiceTest {
   @Mock
@@ -58,7 +61,7 @@ public class PataviTaskServiceTest {
   }
 
   @Test
-  public void testFindTaskWhenThereIsNoTask() throws ResourceDoesNotExistException, IOException, SQLException, InvalidModelTypeException, InvalidHeterogeneityTypeException, URISyntaxException {
+  public void testFindTaskWhenThereIsNoTask() throws ResourceDoesNotExistException, IOException, SQLException, InvalidModelException, URISyntaxException, ReadValueException, InvalidTypeForDoseCheckException {
     Integer modelId = -2;
     String problem = "Yo";
     Integer projectId = -6;
@@ -71,10 +74,8 @@ public class PataviTaskServiceTest {
     String likelihood = Model.LIKELIHOOD_BINOM;
     String link = Model.LINK_LOG;
 
-    Model model = new Model.ModelBuilder()
+    Model model = new Model.ModelBuilder(analysisId, modelTitle)
             .id(modelId)
-            .analysisId(analysisId)
-            .title(modelTitle)
             .linearModel(linearModel)
             .modelType(Model.NETWORK_MODEL_TYPE)
             .burnInIterations(burnInIterations)
@@ -99,7 +100,7 @@ public class PataviTaskServiceTest {
   }
 
   @Test
-  public void testFindTaskWhenThereAlreadyIsATask() throws ResourceDoesNotExistException, IOException, SQLException, InvalidModelTypeException, InvalidHeterogeneityTypeException, URISyntaxException {
+  public void testFindTaskWhenThereAlreadyIsATask() throws ResourceDoesNotExistException, IOException, SQLException, InvalidModelException, URISyntaxException, ReadValueException, InvalidTypeForDoseCheckException {
     Integer modelId = -2;
     Integer projectId = -6;
     Integer analysisId = -7;
@@ -112,11 +113,9 @@ public class PataviTaskServiceTest {
     String likelihood = Model.LIKELIHOOD_BINOM;
     String link = Model.LINK_LOG;
 
-    Model model = new Model.ModelBuilder()
+    Model model = new Model.ModelBuilder(analysisId, modelTitle)
             .id(modelId)
             .taskId(-7)
-            .analysisId(analysisId)
-            .title(modelTitle)
             .linearModel(linearModel)
             .modelType(modelType)
             .burnInIterations(burnInIterations)
@@ -133,7 +132,7 @@ public class PataviTaskServiceTest {
   }
 
   @Test(expected = ResourceDoesNotExistException.class)
-  public void testFindTaskForInvalidModel() throws ResourceDoesNotExistException, IOException, SQLException, InvalidModelTypeException, URISyntaxException {
+  public void testFindTaskForInvalidModel() throws ResourceDoesNotExistException, IOException, SQLException, InvalidModelException, URISyntaxException, ReadValueException, InvalidTypeForDoseCheckException {
     Integer projectId = -6;
     Integer analysisId = -7;
     Integer invalidModelId = -2;

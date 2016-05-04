@@ -7,4 +7,5 @@ package org.drugis.addis.analyses;
 public class AnalysisType {
   public static final String SINGLE_STUDY_BENEFIT_RISK_LABEL = "Single-study Benefit-Risk";
   public static final String NETWORK_META_ANALYSIS_LABEL = "Network meta-analysis";
+  public static final String META_BENEFIT_RISK_ANALYSIS_LABEL = "Benefit-risk analysis based on meta-analyses";
 }

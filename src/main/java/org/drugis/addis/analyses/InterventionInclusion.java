@@ -3,38 +3,63 @@ package org.drugis.addis.analyses;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
+import java.io.Serializable;
 
 /**
  * Created by connor on 18-6-14.
  */
 @Entity
+@IdClass(InterventionInclusion.PK.class)
 public class InterventionInclusion {
+
+  static class PK implements Serializable {
+    protected Integer analysisId;
+    protected Integer interventionId;
+
+    public PK() {
+    }
+
+    public PK(Integer analysisId, Integer interventionId) {
+      this.analysisId = analysisId;
+      this.interventionId = interventionId;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+      if (this == o) return true;
+      if (o == null || getClass() != o.getClass()) return false;
+
+      PK pk = (PK) o;
+
+      if (!analysisId.equals(pk.analysisId)) return false;
+      return interventionId.equals(pk.interventionId);
+
+    }
+
+    @Override
+    public int hashCode() {
+      int result = analysisId.hashCode();
+      result = 31 * result + interventionId.hashCode();
+      return result;
+    }
+  }
+
   @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  @JsonIgnore
-  private Integer id;
+  private Integer analysisId;
 
-  @ManyToOne(optional = false)
-  @JoinColumn(name = "analysisId")
-  @JsonIgnore
-  private NetworkMetaAnalysis analysis;
-
+  @Id
   private Integer interventionId;
 
   public InterventionInclusion() {
   }
 
-  public InterventionInclusion(NetworkMetaAnalysis analysis, Integer interventionId) {
-    this.analysis = analysis;
+  public InterventionInclusion(Integer analysisId, Integer interventionId) {
+    this.analysisId = analysisId;
     this.interventionId = interventionId;
   }
 
-  public Integer getId() {
-    return id;
-  }
-
-  public NetworkMetaAnalysis getAnalysis() {
-    return analysis;
+  public Integer getAnalysisId() {
+    return analysisId;
   }
 
   public Integer getInterventionId() {
@@ -44,26 +69,19 @@ public class InterventionInclusion {
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
-    if (!(o instanceof InterventionInclusion)) return false;
+    if (o == null || getClass() != o.getClass()) return false;
 
     InterventionInclusion that = (InterventionInclusion) o;
 
-    if (!analysis.equals(that.analysis)) return false;
-    if (id != null ? !id.equals(that.id) : that.id != null) return false;
-    if (!interventionId.equals(that.interventionId)) return false;
+    if (!analysisId.equals(that.analysisId)) return false;
+    return interventionId.equals(that.interventionId);
 
-    return true;
   }
 
   @Override
   public int hashCode() {
-    int result = id != null ? id.hashCode() : 0;
-    result = 31 * result + analysis.hashCode();
+    int result = analysisId.hashCode();
     result = 31 * result + interventionId.hashCode();
     return result;
-  }
-
-  public void setAnalysis(NetworkMetaAnalysis analysis) {
-    this.analysis = analysis;
   }
 }

@@ -16,6 +16,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import javax.transaction.Transactional;
+import java.net.URI;
 import java.util.*;
 
 import static org.junit.Assert.*;
@@ -43,8 +44,8 @@ public class NetworkMetaAnalysisRepositoryTest {
     assertNotNull(analysis);
     NetworkMetaAnalysis expectedAnalysis = em.find(NetworkMetaAnalysis.class, analysis.getId());
     assertEquals(expectedAnalysis, analysis);
-    assertEquals(2, analysis.getIncludedInterventions().size());
-    assertEquals(2, expectedAnalysis.getIncludedInterventions().size());
+    assertEquals(2, analysis.getInterventionInclusions().size());
+    assertEquals(2, expectedAnalysis.getInterventionInclusions().size());
   }
 
   @Test
@@ -55,6 +56,25 @@ public class NetworkMetaAnalysisRepositoryTest {
     NetworkMetaAnalysis expectedAnalysis = em.find(NetworkMetaAnalysis.class, analysisId);
     assertTrue(result.contains(expectedAnalysis));
     assertEquals(2, result.size());
+  }
+
+  @Test
+  public void testQueryByOutcomes() {
+    Integer projectId = 1;
+    Integer analysisId = -6;
+    List<Integer> outcomeIds= Arrays.asList(1);
+    Collection<NetworkMetaAnalysis> result = networkMetaAnalysisRepository.queryByOutcomes(projectId, outcomeIds);
+    NetworkMetaAnalysis expectedAnalysis = em.find(NetworkMetaAnalysis.class, analysisId);
+    assertTrue(result.contains(expectedAnalysis));
+    assertEquals(2, result.size());
+    assertEquals((Integer) 1, new ArrayList<>(result).get(0).getOutcome().getId());
+  }
+
+  @Test
+  public void testQueryByOutcomesEmptyList() {
+    Integer projectId = 1;
+    Collection<NetworkMetaAnalysis> result = networkMetaAnalysisRepository.queryByOutcomes(projectId, Collections.emptyList());
+    assertEquals(0, result.size());
   }
 
   @Test
@@ -73,39 +93,28 @@ public class NetworkMetaAnalysisRepositoryTest {
   @Test
   public void testUpdateExcludedArmsAndInterventions() throws ResourceDoesNotExistException, MethodNotAllowedException {
     Integer analysisId = -6;
-    Integer projectId = 1;
-    Outcome outcome = em.find(Outcome.class, 1);
     NetworkMetaAnalysis analysis = em.find(NetworkMetaAnalysis.class, analysisId);
 
-    //new NetworkMetaAnalysis(analysisId, projectId, "new name", new ArrayList<ArmExclusion>(), new ArrayList<InterventionInclusion>(), outcome);
-    ArmExclusion newArmExclusion1 = new ArmExclusion(analysis, "-601L");
-    ArmExclusion newArmExclusion2 = new ArmExclusion(analysis, "-602L");
-    analysis.getExcludedArms().clear();
-    analysis.getExcludedArms().add(newArmExclusion1);
-    analysis.getExcludedArms().add(newArmExclusion2);
+    ArmExclusion newArmExclusion1 = new ArmExclusion(analysis.getId(), URI.create("-601L"));
+    ArmExclusion newArmExclusion2 = new ArmExclusion(analysis.getId(), URI.create("-602L"));
+    analysis.updateArmExclusions(new HashSet<>(Arrays.asList(newArmExclusion1, newArmExclusion2)));
+    int interventionId = -5;
+    InterventionInclusion newInterventionInclusion = new InterventionInclusion(analysis.getId(), interventionId);
 
-    int interventionId = 2;
-    InterventionInclusion newInterventionInclusion = new InterventionInclusion(analysis, interventionId);
-
-    analysis.getIncludedInterventions().clear();
-    analysis.getIncludedInterventions().add(newInterventionInclusion);
+    analysis.updateIncludedInterventions(new HashSet<>(Collections.singletonList(newInterventionInclusion)));
 
     NetworkMetaAnalysis updatedAnalysis = networkMetaAnalysisRepository.update(analysis);
     assertEquals(2, updatedAnalysis.getExcludedArms().size());
 
-    TypedQuery<ArmExclusion> query = em.createQuery("from ArmExclusion ae where ae.analysis.id = :analysisId", ArmExclusion.class);
+    TypedQuery<ArmExclusion> query = em.createQuery("from ArmExclusion ae where ae.analysisId = :analysisId", ArmExclusion.class);
     query.setParameter("analysisId", analysisId);
     List<ArmExclusion> resultList = query.getResultList();
 
-    TypedQuery<InterventionInclusion> query2 = em.createQuery("from InterventionInclusion ii where ii.analysis.id = :analysisId", InterventionInclusion.class);
-    query2.setParameter("analysisId", analysisId);
-    List<InterventionInclusion> resultList2 = query2.getResultList();
-
     assertEquals(2, resultList.size());
-    assertEquals(new Integer(1), updatedAnalysis.getExcludedArms().get(0).getId());
-    assertEquals(new Integer(2), updatedAnalysis.getExcludedArms().get(1).getId());
-    assertEquals(new Integer(1), updatedAnalysis.getIncludedInterventions().get(0).getId());
-    assertEquals(new Integer(interventionId), updatedAnalysis.getIncludedInterventions().get(0).getInterventionId());
+    assertEquals(new Integer(1), updatedAnalysis.getExcludedArms().get(1).getId());
+    assertEquals(new Integer(2), updatedAnalysis.getExcludedArms().get(0).getId());
+    assertEquals(new Integer(-5), updatedAnalysis.getInterventionInclusions().get(0).getInterventionId());
+    assertEquals(new Integer(interventionId), updatedAnalysis.getInterventionInclusions().get(0).getInterventionId());
   }
 
   @Test

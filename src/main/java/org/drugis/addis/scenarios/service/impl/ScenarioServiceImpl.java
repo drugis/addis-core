@@ -1,6 +1,6 @@
 package org.drugis.addis.scenarios.service.impl;
 
-import org.drugis.addis.analyses.SingleStudyBenefitRiskAnalysis;
+import org.drugis.addis.analyses.AbstractAnalysis;
 import org.drugis.addis.analyses.repository.AnalysisRepository;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.scenarios.Scenario;
@@ -20,7 +20,7 @@ public class ScenarioServiceImpl implements ScenarioService {
 
   @Override
   public void checkCoordinates(Integer projectId, Integer analysisId, Scenario scenario) throws ResourceDoesNotExistException {
-    SingleStudyBenefitRiskAnalysis analysis = (SingleStudyBenefitRiskAnalysis) analysisRepository.get(analysisId);
+    AbstractAnalysis analysis = analysisRepository.get(analysisId);
 
     if (!analysis.getProjectId().equals(projectId) || !analysisId.equals(scenario.getWorkspace())) {
       throw new ResourceDoesNotExistException();

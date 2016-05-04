@@ -4,7 +4,7 @@
     <groupId>org.drugis</groupId>
     <artifactId>addis-core</artifactId>
     <packaging>war</packaging>
-    <version>0.3.2</version>
+    <version>0.4.1.2</version>
     <name>ADDIS Core</name>
     <properties>
         <org.springframework.social-version>1.1.3.RELEASE</org.springframework.social-version>
@@ -36,7 +36,7 @@
         <dependency>
             <groupId>commons-collections</groupId>
             <artifactId>commons-collections</artifactId>
-            <version>3.2.1</version>
+            <version>3.2.2</version>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
@@ -429,7 +429,7 @@
                     <skipKarma>false</skipKarma>
                     <skipTests>false</skipTests>
                     <karmaFailureIgnore>false</karmaFailureIgnore>
-                    <reporters>dots,junit,coverage</reporters>
+                    <reporters>dots,junit</reporters>
                 </configuration>
             </plugin>
         </plugins>

@@ -32,7 +32,7 @@
       {
         "graph": {
           "type": "uri",
-          "value": "http://trials.drugis.org/graphs/1d999bbf-c2c1-4cb1-838f-e6b16bfaa3f0"
+          "value": "http://trials.drugis.org/graphs/1d999bbf-c2c1-4cb1-838f-e6b16bfaa3fr"
         },
         "value": {
           "datatype": "http://www.w3.org/2001/XMLSchema#duration",

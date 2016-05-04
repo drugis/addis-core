@@ -4,11 +4,14 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import net.minidev.json.JSONObject;
 import net.minidev.json.JSONValue;
 import org.apache.commons.lang3.tuple.Pair;
-import org.drugis.addis.models.exceptions.InvalidHeterogeneityTypeException;
-import org.drugis.addis.models.exceptions.InvalidModelTypeException;
+import org.drugis.addis.models.exceptions.InvalidModelException;
 import org.drugis.addis.util.JSONObjectConverter;
 
 import javax.persistence.*;
+import java.util.Arrays;
+import java.util.List;
+
+;
 
 /**
  * Created by daan on 22-5-14.
@@ -31,6 +34,8 @@ public class Model {
   public final static String LINK_LOGIT = "logit";
   public final static String LINK_LOG = "log";
   public final static String LINK_CLOGLOG = "cloglog";
+
+  public final static List<String> LINK_OPTIONS = Arrays.asList(LINK_IDENTITY, LINK_LOGIT, LINK_LOG, LINK_CLOGLOG);
 
   public final static String STD_DEV_HETEROGENEITY_PRIOR_TYPE = "standard-deviation";
   public final static String VARIANCE_HETEROGENEITY_PRIOR_TYPE = "variance";
@@ -60,7 +65,7 @@ public class Model {
   public Model() {
   }
 
-  private Model(ModelBuilder builder) throws InvalidModelTypeException, InvalidHeterogeneityTypeException {
+  private Model(ModelBuilder builder) throws InvalidModelException {
     this.id = builder.id;
     this.taskId = builder.taskId;
     this.analysisId = builder.analysisId;
@@ -71,6 +76,10 @@ public class Model {
     this.thinningFactor = builder.thinningFactor;
     this.likelihood = builder.likelihood;
     this.link = builder.link;
+
+    if(!LINK_OPTIONS.contains(this.link)){
+      throw new InvalidModelException(this.link + " is not a valid link type");
+    }
     this.outcomeScale = builder.outcomeScale;
     this.regressor = builder.regressor;
     this.sensitivity = builder.sensitivity;
@@ -81,7 +90,7 @@ public class Model {
     } else if (Model.NETWORK_MODEL_TYPE.equals(builder.modelType) || Model.REGRESSION_MODEL_TYPE.equals(builder.modelType)) {
       this.modelType = String.format("{'type': '%s'}", builder.modelType);
     } else {
-      throw new InvalidModelTypeException("not a valid model type");
+      throw new InvalidModelException("not a valid model type");
     }
     if (builder.heterogeneityPriorType == null) {
       this.heterogeneityPrior = null;
@@ -92,7 +101,7 @@ public class Model {
     } else if (Model.PRECISION_HETEROGENEITY_PRIOR_TYPE.equals(builder.heterogeneityPriorType)) {
       this.heterogeneityPrior = String.format("{'type': '%s', values: {'rate': %s, 'shape': %s} }", builder.heterogeneityPriorType, builder.rate, builder.shape);
     } else {
-      throw new InvalidHeterogeneityTypeException("not a valid heterogeneity prior type");
+      throw new InvalidModelException("not a valid heterogeneity prior type");
     }
 
   }
@@ -330,6 +339,11 @@ public class Model {
     private JSONObject regressor;
     private JSONObject sensitivity;
 
+    public ModelBuilder(Integer analysisId, String title) {
+      this.analysisId = analysisId;
+      this.title = title;
+    }
+
     public ModelBuilder taskId(Integer taskId) {
       this.taskId = taskId;
       return this;
@@ -337,16 +351,6 @@ public class Model {
 
     public ModelBuilder id(Integer id) {
       this.id = id;
-      return this;
-    }
-
-    public ModelBuilder analysisId(Integer analysisId) {
-      this.analysisId = analysisId;
-      return this;
-    }
-
-    public ModelBuilder title(String title) {
-      this.title = title;
       return this;
     }
 
@@ -445,7 +449,7 @@ public class Model {
       return this;
     }
 
-    public Model build() throws InvalidModelTypeException, InvalidHeterogeneityTypeException {
+    public Model build() throws InvalidModelException {
       return new Model(this);
     }
 

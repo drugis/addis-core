@@ -24,6 +24,7 @@ define(
     'user/user',
     'dataset/dataset',
     'project/project',
+    'analysis/analysis',
     'util/util',
     'study/study',
     'graph/graph',
@@ -91,6 +92,7 @@ define(
       'mm.foundation.tabs',
       'help-directive',
       'addis.project',
+      'addis.analysis',
       'addis.controllers',
       'addis.directives',
       'addis.resources',
@@ -152,6 +154,9 @@ define(
     }, {
       label: 'Single-study Benefit-Risk',
       stateName: 'singleStudyBenefitRisk'
+    }, {
+      label: 'Benefit-risk analysis based on meta-analyses',
+      stateName: 'MetaBenefitRiskCreationStep-1'
     }]);
     app.constant('mcdaRootPath', 'app/js/bower_components/mcda-web/app/');
     app.constant('gemtcRootPath', 'app/js/bower_components/gemtc-web/app/');
@@ -243,7 +248,22 @@ define(
           .state('project', {
             url: '/users/:userUid/projects/:projectId',
             templateUrl: baseTemplatePath + 'project.html',
-            controller: 'SingleProjectController'
+            controller: 'SingleProjectController',
+            resolve: {
+              activeTab: function(){
+                return 'details';
+              }
+            }
+          })
+          .state('projectReport', {
+            url: '/users/:userUid/projects/:projectId/report',
+            templateUrl: baseTemplatePath + 'project.html',
+            controller: 'SingleProjectController',
+            resolve: {
+              activeTab: function(){
+                return 'report';
+              }
+            }
           })
           .state('namespace-study', {
             url: '/study/:studyUid',
@@ -290,6 +310,7 @@ define(
             },
             abstract: true
           })
+          // Network meta-analysis states
           .state('networkMetaAnalysis', {
             parent: 'networkMetaAnalysisContainer',
             url: '',
@@ -309,16 +330,16 @@ define(
               }
             }
           })
+          .state('nmaModelContainer', {
+            templateUrl: baseTemplatePath + 'networkMetaAnalysisModelContainerView.html',
+            controller: 'NetworkMetaAnalysisModelContainerController',
+            abstract: true,
+          })
           .state('createModel', {
             parent: 'nmaModelContainer',
             url: '/users/:userUid/projects/:projectId/nma/:analysisId/models/createModel',
             templateUrl: gemtcWebBaseTemplatePath + 'js/models/createModel.html',
             controller: 'CreateModelController'
-          })
-          .state('nmaModelContainer', {
-            templateUrl: baseTemplatePath + 'networkMetaAnalysisModelContainerView.html',
-            controller: 'NetworkMetaAnalysisModelContainerController',
-            abstract: true,
           })
           .state('model', {
             url: '/users/:userUid/projects/:projectId/nma/:analysisId/models/:modelId',
@@ -365,9 +386,27 @@ define(
 
             }
           })
-
-        // trialverse states
-        .state('dataset', {
+          // meta-benefit-risk states
+          .state('MetaBenefitRiskCreationStep-1', {
+            url: '/metabr/:analysisId/step-1',
+            templateUrl: 'app/js/analysis/metabrStep-1.html',
+            controller: 'MetaBenefitRiskStep1Controller',
+            parent: 'project'
+          })
+          .state('MetaBenefitRiskCreationStep-2', {
+            url: '/metabr/:analysisId/step-2',
+            templateUrl: 'app/js/analysis/metabrStep-2.html',
+            controller: 'MetaBenefitRiskStep2Controller',
+            parent: 'project'
+          })
+          .state('metaBenefitRisk', {
+            url: '/metabr/:analysisId',
+            templateUrl: 'app/js/analysis/metabr.html',
+            controller: 'MetaBenefitRiskController',
+            parent: 'project'
+          })
+          // trialverse states
+          .state('dataset', {
             url: '/users/:userUid/datasets/:datasetUUID',
             templateUrl: 'app/js/dataset/dataset.html',
             controller: 'DatasetController'
@@ -401,9 +440,25 @@ define(
             url: '/studies/:studyGraphUuid',
             templateUrl: 'app/js/study/view/study.html',
             controller: 'StudyController'
+          })
+          // mcda states
+          .state('benefitRisk', {
+            abstract: true,
+            controller: 'BenefitRiskController',
+            url:'/users/:userUid/projects/:projectId/benefitRisk/:analysisId',
+            templateUrl: 'app/js/analysis/benefitRiskContainer.html',
+            resolve: {
+              currentAnalysis: ['$stateParams', 'AnalysisResource', function($stateParams, AnalysisResource) {
+                return AnalysisResource.get($stateParams).$promise;
+              }],
+              currentProject: ['$stateParams', 'ProjectResource', function($stateParams, ProjectResource) {
+                return ProjectResource.get($stateParams).$promise;
+              }]
+            }
           });
 
-        MCDARouteProvider.buildRoutes($stateProvider, 'singleStudyBenefitRisk', mcdaBaseTemplatePath);
+        MCDARouteProvider.buildRoutes($stateProvider, 'benefitRisk', mcdaBaseTemplatePath);
+
       }
     ]);
     app.constant('CONCEPT_GRAPH_UUID', 'concepts');

@@ -2,6 +2,7 @@ package org.drugis.addis.covariates;
 
 import org.drugis.addis.config.JpaRepositoryTestConfig;
 import org.drugis.addis.trialverse.model.emun.CovariateOption;
+import org.drugis.addis.trialverse.model.emun.CovariateOptionType;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
@@ -37,7 +38,7 @@ public class CovariateRepositoryTest {
 
   @Test
   public void createForProjectTest() {
-    covariateRepository.createForProject(3, CovariateOption.ALLOCATION_RANDOMIZED.toString(), "add name", null);
+    covariateRepository.createForProject(3, CovariateOption.ALLOCATION_RANDOMIZED.toString(), "add name", null, CovariateOptionType.STUDY_CHARACTERISTIC);
     Collection<Covariate> covariates = covariateRepository.findByProject(3);
     assertEquals(covariates.size(), 1);
     assertEquals(covariates.iterator().next().getName(), "add name");

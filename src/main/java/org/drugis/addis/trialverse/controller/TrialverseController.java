@@ -7,8 +7,10 @@ import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.security.repository.AccountRepository;
 import org.drugis.addis.trialverse.model.*;
 import org.drugis.addis.trialverse.model.emun.StudyDataSection;
+import org.drugis.addis.trialverse.model.mapping.VersionedUuidAndOwner;
 import org.drugis.addis.trialverse.service.MappingService;
 import org.drugis.addis.trialverse.service.TriplestoreService;
+import org.drugis.addis.trialverse.service.impl.ReadValueException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -20,7 +22,6 @@ import javax.servlet.http.HttpServletRequest;
 import java.net.URISyntaxException;
 import java.security.Principal;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -61,13 +62,13 @@ public class TrialverseController {
 
   @RequestMapping(value = "/{namespaceUid}/outcomes", method = RequestMethod.GET)
   @ResponseBody
-  public Collection<SemanticOutcome> queryOutcomes(@PathVariable String namespaceUid, @RequestParam String version) throws ResourceDoesNotExistException, URISyntaxException {
+  public Collection<SemanticVariable> queryOutcomes(@PathVariable String namespaceUid, @RequestParam String version) throws ResourceDoesNotExistException, URISyntaxException, ReadValueException {
     return triplestoreService.getOutcomes(mappingService.getVersionedUuid(namespaceUid), version);
   }
 
   @RequestMapping(value = "/{namespaceUid}/interventions", method = RequestMethod.GET)
   @ResponseBody
-  public Collection<SemanticIntervention> queryInterventions(Principal currentUser, @PathVariable String namespaceUid, @RequestParam String version) throws ResourceDoesNotExistException, URISyntaxException {
+  public Collection<SemanticInterventionUriAndName> queryInterventions(Principal currentUser, @PathVariable String namespaceUid, @RequestParam String version) throws ResourceDoesNotExistException, URISyntaxException {
     return triplestoreService.getInterventions(mappingService.getVersionedUuid(namespaceUid), version);
   }
 
@@ -117,19 +118,6 @@ public class TrialverseController {
   @ResponseBody
   public List<StudyData> getStudyEndpointsData(@PathVariable String namespaceUid, @PathVariable String studyUid) throws ResourceDoesNotExistException, URISyntaxException {
     return triplestoreService.getStudyData(mappingService.getVersionedUuid(namespaceUid), studyUid, StudyDataSection.ENDPOINTS);
-  }
-
-  @RequestMapping(value = "/{namespaceUid}/trialData", method = RequestMethod.GET)
-  @ResponseBody
-  public TrialData getTrialData(@PathVariable String namespaceUid,@RequestParam String version, @RequestParam String outcomeUri,
-                                @RequestParam(required = false) List<String> interventionUris, @RequestParam(required = false) List<String> covariateKeys) throws URISyntaxException {
-    if (interventionUris == null) {
-      interventionUris = Collections.emptyList();
-    }
-    if (covariateKeys == null) {
-      covariateKeys = Collections.emptyList();
-    }
-    return new TrialData(triplestoreService.getTrialData(mappingService.getVersionedUuid(namespaceUid), version, outcomeUri, interventionUris, covariateKeys));
   }
 
   @ResponseStatus(HttpStatus.NOT_FOUND)

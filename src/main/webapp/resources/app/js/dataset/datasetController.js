@@ -1,15 +1,17 @@
 'use strict';
 define(['lodash'],
   function(_) {
-    var dependencies = ['$scope', '$q', '$window', '$location', '$stateParams', '$modal', '$filter', 'DatasetVersionedResource', 'StudiesWithDetailsService',
-     'HistoryResource', 'ConceptService', 'VersionedGraphResource', 'DatasetResource', 'GraphResource'
+    var dependencies = ['$scope', '$window', '$location', '$stateParams', '$state', '$modal', '$filter', 'DatasetVersionedResource', 'StudiesWithDetailsService',
+      'HistoryResource', 'ConceptService', 'VersionedGraphResource', 'DatasetResource', 'GraphResource'
     ];
-    var DatasetController = function($scope, $q, $window, $location, $stateParams, $modal, $filter, DatasetVersionedResource, StudiesWithDetailsService,
-       HistoryResource, ConceptService, VersionedGraphResource, DatasetResource, GraphResource) {
+    var DatasetController = function($scope, $window, $location, $stateParams, $state, $modal, $filter, DatasetVersionedResource, StudiesWithDetailsService,
+      HistoryResource, ConceptService, VersionedGraphResource, DatasetResource, GraphResource) {
+
+      $scope.createProjectDialog = createProjectDialog;
 
       // no version so this must be head view
       $scope.isHeadView = !$stateParams.versionUuid;
-      if(!$scope.isHeadView) {
+      if (!$scope.isHeadView) {
         $scope.versionUuid = $stateParams.versionUuid;
       }
 
@@ -56,7 +58,7 @@ define(['lodash'],
         resource.getForJson($stateParams).$promise.then(function(response) {
           $scope.dataset = {
             datasetUri: $scope.datasetUUID,
-            label: response['http://purl.org/dc/terms/title'],
+            title: response['http://purl.org/dc/terms/title'],
             comment: response['http://purl.org/dc/terms/description'],
             creator: response['http://purl.org/dc/terms/creator']
           };
@@ -71,10 +73,6 @@ define(['lodash'],
       }
 
       HistoryResource.query($stateParams).$promise.then(function(historyItems) {
-
-        function segmentAfterLastSlash(str) {
-          return str.substr(str.lastIndexOf('/') + 1);
-        }
 
         if ($scope.isHeadView) {
           $scope.currentRevision = historyItems[historyItems.length - 1];
@@ -124,6 +122,30 @@ define(['lodash'],
           }
         });
       };
+
+      function createProjectDialog() {
+        $modal.open({
+          templateUrl: 'app/js/project/createProjectModal.html',
+          controller: 'CreateProjectModalController',
+          resolve: {
+            callback: function() {
+              return function(newProject) {
+                $state.go('project', {
+                  projectId: newProject.id
+                });
+              };
+            },
+            dataset: function() {
+              return {
+                title: $scope.dataset.title,
+                description: $scope.dataset.comment,
+                headVersion: $scope.currentRevision.uri,
+                datasetUri: $scope.dataset.datasetUri
+              };
+            }
+          }
+        });
+      }
 
       $scope.loadStudiesWithDetail();
 

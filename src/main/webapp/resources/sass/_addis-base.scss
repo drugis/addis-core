@@ -19,10 +19,18 @@
   }
 }
 
+.panel.raised {
+  box-shadow: 0 1px 4px 0 rgba(0,0,0,0.14);
+}
 
 
 .top-bar li.name h1.topbar-text a  {
   display: inline;
+}
+
+.featured-dataset-comment {
+  height: 8rem;
+  overflow-y: hidden;
 }
 
 // tabs borders
@@ -160,6 +168,11 @@ tr.clickable td {
   color: $primary-color;
 }
 //////////////////////// end study results //
+
+/////////////////////// MetaBenefitRisk /////////////////
+.outcome-analyses {
+  margin-left: 2rem;
+}
 
 /////////////////////// begin mapping tables //////////////////
 

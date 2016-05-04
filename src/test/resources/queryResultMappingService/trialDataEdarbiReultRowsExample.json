@@ -1,0 +1,2237 @@
+[
+  {
+    "studyName": {
+      "type": "literal",
+      "value": "TAK491-019 \/ NCT00696436"
+    },
+    "maxDoseValue": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#double",
+      "type": "typed-literal",
+      "value": "4.000000e+01"
+    },
+    "outcomeInstanceLabel": {
+      "type": "literal",
+      "value": "DBP mean trough (clinic, sitting)"
+    },
+    "outcomeTypeUri": {
+      "type": "uri",
+      "value": "ttp://trials.drugis.org/concepts/type"
+    },
+    "outcomeTypeUid": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/ontology#Endpoint"
+    },
+    "minDoseUnitLabel": {
+      "type": "literal",
+      "value": "milligram"
+    },
+    "minDoseUnitMultiplier": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#double",
+      "type": "typed-literal",
+      "value": "1.000000e-03"
+    },
+    "sampleSize": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#integer",
+      "type": "typed-literal",
+      "value": "269"
+    },
+    "armLabel": {
+      "type": "literal",
+      "value": "Azilsartan Medoxomil 40 mg QD"
+    },
+    "graph": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/graphs\/5753073a-f153-45a2-bcf9-17bb9f52120c"
+    },
+    "minDoseUnitConcept": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/concepts\/a57c4db5-f4dc-4f4e-93c2-12f02f97ed7b"
+    },
+    "drug": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/concepts\/26bc78a4-a395-4d74-bf95-eaa1ff582a56"
+    },
+    "interventionLabel": {
+      "type": "literal",
+      "value": "Azilsartan"
+    },
+    "maxDoseUnitMultiplier": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#double",
+      "type": "typed-literal",
+      "value": "1.000000e-03"
+    },
+    "treatmentType": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/ontology#TitratedDoseDrugTreatment"
+    },
+    "drugInstance": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/instances\/13c604a2-78ae-48a0-9425-6b5007fddc26"
+    },
+    "maxDoseDosingPeriodicity": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#duration",
+      "type": "typed-literal",
+      "value": "P1D"
+    },
+    "minDoseDosingPeriodicity": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#duration",
+      "type": "typed-literal",
+      "value": "P1D"
+    },
+    "outcomeInstance": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/instances\/06370759-dd15-4f5d-8991-22c9cb2a0441"
+    },
+    "mean": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#double",
+      "type": "typed-literal",
+      "value": "-6.970000e+00"
+    },
+    "maxDoseUnitLabel": {
+      "type": "literal",
+      "value": "milligram"
+    },
+    "stdDev": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#double",
+      "type": "typed-literal",
+      "value": "9.053473e+00"
+    },
+    "maxDoseUnitConcept": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/concepts\/a57c4db5-f4dc-4f4e-93c2-12f02f97ed7b"
+    },
+    "minDoseValue": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#double",
+      "type": "typed-literal",
+      "value": "2.000000e+01"
+    },
+    "arm": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/instances\/9cc45ed0-21c2-4a43-9757-462329e1d1e8"
+    }
+  },
+  {
+    "studyName": {
+      "type": "literal",
+      "value": "TAK491-019 \/ NCT00696436"
+    },
+    "outcomeInstanceLabel": {
+      "type": "literal",
+      "value": "DBP mean trough (clinic, sitting)"
+    },
+    "fixedDoseUnitMultiplier": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#double",
+      "type": "typed-literal",
+      "value": "1.000000e-03"
+    },
+    "outcomeTypeUri": {
+      "type": "uri",
+      "value": "ttp://trials.drugis.org/concepts/type"
+    },
+    "outcomeTypeUid": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/ontology#Endpoint"
+    },
+    "fixedDoseValue": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#double",
+      "type": "typed-literal",
+      "value": "0.000000e+00"
+    },
+    "sampleSize": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#integer",
+      "type": "typed-literal",
+      "value": "148"
+    },
+    "armLabel": {
+      "type": "literal",
+      "value": "Placebo QD"
+    },
+    "graph": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/graphs\/5753073a-f153-45a2-bcf9-17bb9f52120c"
+    },
+    "drug": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/concepts\/bc20642b-1ec5-4663-b12b-3b0ad5ae31eb"
+    },
+    "interventionLabel": {
+      "type": "literal",
+      "value": "Placebo"
+    },
+    "fixedDoseUnitConcept": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/concepts\/a57c4db5-f4dc-4f4e-93c2-12f02f97ed7b"
+    },
+    "treatmentType": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/ontology#FixedDoseDrugTreatment"
+    },
+    "drugInstance": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/instances\/dbe90579-adba-4ab3-8bb4-7a98f92f4d3b"
+    },
+    "outcomeInstance": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/instances\/06370759-dd15-4f5d-8991-22c9cb2a0441"
+    },
+    "mean": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#double",
+      "type": "typed-literal",
+      "value": "-7.600000e-01"
+    },
+    "stdDev": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#double",
+      "type": "typed-literal",
+      "value": "9.051151e+00"
+    },
+    "arm": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/instances\/0680aaf3-ed7a-4426-b64a-c2601362303f"
+    },
+    "fixedDoseUnitLabel": {
+      "type": "literal",
+      "value": "milligram"
+    },
+    "fixedDoseDosingPeriodicity": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#duration",
+      "type": "typed-literal",
+      "value": "P1D"
+    }
+  },
+  {
+    "studyName": {
+      "type": "literal",
+      "value": "TAK491-019 \/ NCT00696436"
+    },
+    "maxDoseValue": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#double",
+      "type": "typed-literal",
+      "value": "8.000000e+01"
+    },
+    "outcomeInstanceLabel": {
+      "type": "literal",
+      "value": "DBP mean trough (clinic, sitting)"
+    },
+    "outcomeTypeUri": {
+      "type": "uri",
+      "value": "ttp://trials.drugis.org/concepts/type"
+    },
+    "outcomeTypeUid": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/ontology#Endpoint"
+    },
+    "minDoseUnitLabel": {
+      "type": "literal",
+      "value": "milligram"
+    },
+    "minDoseUnitMultiplier": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#double",
+      "type": "typed-literal",
+      "value": "1.000000e-03"
+    },
+    "sampleSize": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#integer",
+      "type": "typed-literal",
+      "value": "270"
+    },
+    "armLabel": {
+      "type": "literal",
+      "value": "Azilsartan Medoxomil 80 mg QD"
+    },
+    "graph": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/graphs\/5753073a-f153-45a2-bcf9-17bb9f52120c"
+    },
+    "minDoseUnitConcept": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/concepts\/a57c4db5-f4dc-4f4e-93c2-12f02f97ed7b"
+    },
+    "drug": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/concepts\/26bc78a4-a395-4d74-bf95-eaa1ff582a56"
+    },
+    "interventionLabel": {
+      "type": "literal",
+      "value": "Azilsartan"
+    },
+    "maxDoseUnitMultiplier": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#double",
+      "type": "typed-literal",
+      "value": "1.000000e-03"
+    },
+    "treatmentType": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/ontology#TitratedDoseDrugTreatment"
+    },
+    "drugInstance": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/instances\/13c604a2-78ae-48a0-9425-6b5007fddc26"
+    },
+    "maxDoseDosingPeriodicity": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#duration",
+      "type": "typed-literal",
+      "value": "P1D"
+    },
+    "minDoseDosingPeriodicity": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#duration",
+      "type": "typed-literal",
+      "value": "P1D"
+    },
+    "outcomeInstance": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/instances\/06370759-dd15-4f5d-8991-22c9cb2a0441"
+    },
+    "mean": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#double",
+      "type": "typed-literal",
+      "value": "-8.270000e+00"
+    },
+    "maxDoseUnitLabel": {
+      "type": "literal",
+      "value": "milligram"
+    },
+    "stdDev": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#double",
+      "type": "typed-literal",
+      "value": "9.053854e+00"
+    },
+    "maxDoseUnitConcept": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/concepts\/a57c4db5-f4dc-4f4e-93c2-12f02f97ed7b"
+    },
+    "minDoseValue": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#double",
+      "type": "typed-literal",
+      "value": "4.000000e+01"
+    },
+    "arm": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/instances\/8bb75017-68e2-4361-b602-42f95741947c"
+    }
+  },
+  {
+    "studyName": {
+      "type": "literal",
+      "value": "TAK491-019 \/ NCT00696436"
+    },
+    "maxDoseValue": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#double",
+      "type": "typed-literal",
+      "value": "4.000000e+01"
+    },
+    "outcomeInstanceLabel": {
+      "type": "literal",
+      "value": "DBP mean trough (clinic, sitting)"
+    },
+    "outcomeTypeUri": {
+      "type": "uri",
+      "value": "ttp://trials.drugis.org/concepts/type"
+    },
+    "outcomeTypeUid": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/ontology#Endpoint"
+    },
+    "minDoseUnitLabel": {
+      "type": "literal",
+      "value": "milligram"
+    },
+    "minDoseUnitMultiplier": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#double",
+      "type": "typed-literal",
+      "value": "1.000000e-03"
+    },
+    "sampleSize": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#integer",
+      "type": "typed-literal",
+      "value": "283"
+    },
+    "armLabel": {
+      "type": "literal",
+      "value": "Olmesartan 40 mg QD"
+    },
+    "graph": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/graphs\/5753073a-f153-45a2-bcf9-17bb9f52120c"
+    },
+    "minDoseUnitConcept": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/concepts\/a57c4db5-f4dc-4f4e-93c2-12f02f97ed7b"
+    },
+    "drug": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/concepts\/7cce382d-62ca-4545-b355-3dac55bcf5f1"
+    },
+    "interventionLabel": {
+      "type": "literal",
+      "value": "Olmesartan"
+    },
+    "maxDoseUnitMultiplier": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#double",
+      "type": "typed-literal",
+      "value": "1.000000e-03"
+    },
+    "treatmentType": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/ontology#TitratedDoseDrugTreatment"
+    },
+    "drugInstance": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/instances\/8b64dbca-6834-44c1-8c1c-7da62f2384e9"
+    },
+    "maxDoseDosingPeriodicity": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#duration",
+      "type": "typed-literal",
+      "value": "P1D"
+    },
+    "minDoseDosingPeriodicity": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#duration",
+      "type": "typed-literal",
+      "value": "P1D"
+    },
+    "outcomeInstance": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/instances\/06370759-dd15-4f5d-8991-22c9cb2a0441"
+    },
+    "mean": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#double",
+      "type": "typed-literal",
+      "value": "-6.100000e+00"
+    },
+    "maxDoseUnitLabel": {
+      "type": "literal",
+      "value": "milligram"
+    },
+    "stdDev": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#double",
+      "type": "typed-literal",
+      "value": "9.050561e+00"
+    },
+    "maxDoseUnitConcept": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/concepts\/a57c4db5-f4dc-4f4e-93c2-12f02f97ed7b"
+    },
+    "minDoseValue": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#double",
+      "type": "typed-literal",
+      "value": "2.000000e+01"
+    },
+    "arm": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/instances\/c33f42d7-a610-452a-afd8-25bd7322fa4d"
+    }
+  },
+  {
+    "studyName": {
+      "type": "literal",
+      "value": "TAK491-019 \/ NCT00696436"
+    },
+    "maxDoseValue": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#double",
+      "type": "typed-literal",
+      "value": "3.200000e+02"
+    },
+    "outcomeInstanceLabel": {
+      "type": "literal",
+      "value": "DBP mean trough (clinic, sitting)"
+    },
+    "outcomeTypeUri": {
+      "type": "uri",
+      "value": "ttp://trials.drugis.org/concepts/type"
+    },
+    "outcomeTypeUid": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/ontology#Endpoint"
+    },
+    "minDoseUnitLabel": {
+      "type": "literal",
+      "value": "milligram"
+    },
+    "minDoseUnitMultiplier": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#double",
+      "type": "typed-literal",
+      "value": "1.000000e-03"
+    },
+    "sampleSize": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#integer",
+      "type": "typed-literal",
+      "value": "271"
+    },
+    "armLabel": {
+      "type": "literal",
+      "value": "Valsartan 320 mg QD"
+    },
+    "graph": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/graphs\/5753073a-f153-45a2-bcf9-17bb9f52120c"
+    },
+    "minDoseUnitConcept": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/concepts\/a57c4db5-f4dc-4f4e-93c2-12f02f97ed7b"
+    },
+    "drug": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/concepts\/1c2861b3-3e44-406b-a9c6-a566ae074461"
+    },
+    "interventionLabel": {
+      "type": "literal",
+      "value": "Valsartan"
+    },
+    "maxDoseUnitMultiplier": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#double",
+      "type": "typed-literal",
+      "value": "1.000000e-03"
+    },
+    "treatmentType": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/ontology#TitratedDoseDrugTreatment"
+    },
+    "drugInstance": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/instances\/97ad79a6-920e-41a9-8db3-6b4cd222a0f0"
+    },
+    "maxDoseDosingPeriodicity": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#duration",
+      "type": "typed-literal",
+      "value": "P1D"
+    },
+    "minDoseDosingPeriodicity": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#duration",
+      "type": "typed-literal",
+      "value": "P1D"
+    },
+    "outcomeInstance": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/instances\/06370759-dd15-4f5d-8991-22c9cb2a0441"
+    },
+    "mean": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#double",
+      "type": "typed-literal",
+      "value": "-5.110000e+00"
+    },
+    "maxDoseUnitLabel": {
+      "type": "literal",
+      "value": "milligram"
+    },
+    "stdDev": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#double",
+      "type": "typed-literal",
+      "value": "9.054143e+00"
+    },
+    "maxDoseUnitConcept": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/concepts\/a57c4db5-f4dc-4f4e-93c2-12f02f97ed7b"
+    },
+    "minDoseValue": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#double",
+      "type": "typed-literal",
+      "value": "1.600000e+02"
+    },
+    "arm": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/instances\/23e55d1c-6dd1-40f8-a63b-937619712e58"
+    }
+  },
+  {
+    "studyName": {
+      "type": "literal",
+      "value": "TAK491-301 \/ NCT00846365"
+    },
+    "maxDoseValue": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#double",
+      "type": "typed-literal",
+      "value": "4.000000e+01"
+    },
+    "outcomeInstanceLabel": {
+      "type": "literal",
+      "value": "DBP mean trough (clinic, sitting)"
+    },
+    "outcomeTypeUri": {
+      "type": "uri",
+      "value": "ttp://trials.drugis.org/concepts/type"
+    },
+    "outcomeTypeUid": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/ontology#Endpoint"
+    },
+    "minDoseUnitLabel": {
+      "type": "literal",
+      "value": "milligram"
+    },
+    "minDoseUnitMultiplier": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#double",
+      "type": "typed-literal",
+      "value": "1.000000e-03"
+    },
+    "sampleSize": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#integer",
+      "type": "typed-literal",
+      "value": "363"
+    },
+    "armLabel": {
+      "type": "literal",
+      "value": "Azilsartan Medoxomil 20-40mg plus Chlorthalidone 12.5-25 mg QD"
+    },
+    "graph": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/graphs\/be96c93f-a8b2-49b0-841a-da93fea7a94e"
+    },
+    "minDoseUnitConcept": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/concepts\/a57c4db5-f4dc-4f4e-93c2-12f02f97ed7b"
+    },
+    "drug": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/concepts\/26bc78a4-a395-4d74-bf95-eaa1ff582a56"
+    },
+    "interventionLabel": {
+      "type": "literal",
+      "value": "Azilsartan"
+    },
+    "maxDoseUnitMultiplier": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#double",
+      "type": "typed-literal",
+      "value": "1.000000e-03"
+    },
+    "treatmentType": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/ontology#TitratedDoseDrugTreatment"
+    },
+    "drugInstance": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/instances\/c347a902-fd9f-413e-ae72-9dc63acbf5ac"
+    },
+    "maxDoseDosingPeriodicity": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#duration",
+      "type": "typed-literal",
+      "value": "P1D"
+    },
+    "minDoseDosingPeriodicity": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#duration",
+      "type": "typed-literal",
+      "value": "P1D"
+    },
+    "outcomeInstance": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/instances\/9edbeaba-6f74-4ac0-aa32-1293d523ecd7"
+    },
+    "mean": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#double",
+      "type": "typed-literal",
+      "value": "-1.610000e+01"
+    },
+    "maxDoseUnitLabel": {
+      "type": "literal",
+      "value": "milligram"
+    },
+    "stdDev": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#double",
+      "type": "typed-literal",
+      "value": "4.700000e-01"
+    },
+    "maxDoseUnitConcept": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/concepts\/a57c4db5-f4dc-4f4e-93c2-12f02f97ed7b"
+    },
+    "minDoseValue": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#double",
+      "type": "typed-literal",
+      "value": "2.000000e+01"
+    },
+    "arm": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/instances\/7a88e1e4-5ae5-4e3f-a43e-9259f17932a8"
+    }
+  },
+  {
+    "studyName": {
+      "type": "literal",
+      "value": "TAK491-301 \/ NCT00846365"
+    },
+    "maxDoseValue": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#double",
+      "type": "typed-literal",
+      "value": "2.500000e+01"
+    },
+    "outcomeInstanceLabel": {
+      "type": "literal",
+      "value": "DBP mean trough (clinic, sitting)"
+    },
+    "outcomeTypeUri": {
+      "type": "uri",
+      "value": "ttp://trials.drugis.org/concepts/type"
+    },
+    "outcomeTypeUid": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/ontology#Endpoint"
+    },
+    "minDoseUnitLabel": {
+      "type": "literal",
+      "value": "milligram"
+    },
+    "minDoseUnitMultiplier": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#double",
+      "type": "typed-literal",
+      "value": "1.000000e-03"
+    },
+    "sampleSize": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#integer",
+      "type": "typed-literal",
+      "value": "363"
+    },
+    "armLabel": {
+      "type": "literal",
+      "value": "Azilsartan Medoxomil 20-40mg plus Chlorthalidone 12.5-25 mg QD"
+    },
+    "graph": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/graphs\/be96c93f-a8b2-49b0-841a-da93fea7a94e"
+    },
+    "minDoseUnitConcept": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/concepts\/a57c4db5-f4dc-4f4e-93c2-12f02f97ed7b"
+    },
+    "drug": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/concepts\/d152d8c0-7898-470a-85bd-6ec8b14609c8"
+    },
+    "interventionLabel": {
+      "type": "literal",
+      "value": "Chlortalidone"
+    },
+    "maxDoseUnitMultiplier": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#double",
+      "type": "typed-literal",
+      "value": "1.000000e-03"
+    },
+    "treatmentType": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/ontology#TitratedDoseDrugTreatment"
+    },
+    "drugInstance": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/instances\/84d8f164-c0eb-4aca-8757-ddbd82f826c7"
+    },
+    "maxDoseDosingPeriodicity": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#duration",
+      "type": "typed-literal",
+      "value": "P1D"
+    },
+    "minDoseDosingPeriodicity": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#duration",
+      "type": "typed-literal",
+      "value": "P1D"
+    },
+    "outcomeInstance": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/instances\/9edbeaba-6f74-4ac0-aa32-1293d523ecd7"
+    },
+    "mean": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#double",
+      "type": "typed-literal",
+      "value": "-1.610000e+01"
+    },
+    "maxDoseUnitLabel": {
+      "type": "literal",
+      "value": "milligram"
+    },
+    "stdDev": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#double",
+      "type": "typed-literal",
+      "value": "4.700000e-01"
+    },
+    "maxDoseUnitConcept": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/concepts\/a57c4db5-f4dc-4f4e-93c2-12f02f97ed7b"
+    },
+    "minDoseValue": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#double",
+      "type": "typed-literal",
+      "value": "1.250000e+01"
+    },
+    "arm": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/instances\/7a88e1e4-5ae5-4e3f-a43e-9259f17932a8"
+    }
+  },
+  {
+    "studyName": {
+      "type": "literal",
+      "value": "TAK491-301 \/ NCT00846365"
+    },
+    "maxDoseValue": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#double",
+      "type": "typed-literal",
+      "value": "4.000000e+01"
+    },
+    "outcomeInstanceLabel": {
+      "type": "literal",
+      "value": "DBP mean trough (clinic, sitting)"
+    },
+    "outcomeTypeUri": {
+      "type": "uri",
+      "value": "ttp://trials.drugis.org/concepts/type"
+    },
+    "outcomeTypeUid": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/ontology#Endpoint"
+    },
+    "minDoseUnitLabel": {
+      "type": "literal",
+      "value": "milligram"
+    },
+    "minDoseUnitMultiplier": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#double",
+      "type": "typed-literal",
+      "value": "1.000000e-03"
+    },
+    "sampleSize": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#integer",
+      "type": "typed-literal",
+      "value": "353"
+    },
+    "armLabel": {
+      "type": "literal",
+      "value": "Olmesartan medoxomil 20-40mg\/hydrochlorothiazide 12.5-25mg QD"
+    },
+    "graph": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/graphs\/be96c93f-a8b2-49b0-841a-da93fea7a94e"
+    },
+    "minDoseUnitConcept": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/concepts\/a57c4db5-f4dc-4f4e-93c2-12f02f97ed7b"
+    },
+    "drug": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/concepts\/7cce382d-62ca-4545-b355-3dac55bcf5f1"
+    },
+    "interventionLabel": {
+      "type": "literal",
+      "value": "Olmesartan"
+    },
+    "maxDoseUnitMultiplier": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#double",
+      "type": "typed-literal",
+      "value": "1.000000e-03"
+    },
+    "treatmentType": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/ontology#TitratedDoseDrugTreatment"
+    },
+    "drugInstance": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/instances\/0dcfa676-d45b-4333-b55a-61700c47d71d"
+    },
+    "maxDoseDosingPeriodicity": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#duration",
+      "type": "typed-literal",
+      "value": "P1D"
+    },
+    "minDoseDosingPeriodicity": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#duration",
+      "type": "typed-literal",
+      "value": "P1D"
+    },
+    "outcomeInstance": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/instances\/9edbeaba-6f74-4ac0-aa32-1293d523ecd7"
+    },
+    "mean": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#double",
+      "type": "typed-literal",
+      "value": "-1.280000e+01"
+    },
+    "maxDoseUnitLabel": {
+      "type": "literal",
+      "value": "milligram"
+    },
+    "stdDev": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#double",
+      "type": "typed-literal",
+      "value": "4.800000e-01"
+    },
+    "maxDoseUnitConcept": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/concepts\/a57c4db5-f4dc-4f4e-93c2-12f02f97ed7b"
+    },
+    "minDoseValue": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#double",
+      "type": "typed-literal",
+      "value": "2.000000e+01"
+    },
+    "arm": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/instances\/44ca0994-f89e-4484-93cc-bef03b85edf2"
+    }
+  },
+  {
+    "studyName": {
+      "type": "literal",
+      "value": "TAK491-301 \/ NCT00846365"
+    },
+    "maxDoseValue": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#double",
+      "type": "typed-literal",
+      "value": "2.500000e+01"
+    },
+    "outcomeInstanceLabel": {
+      "type": "literal",
+      "value": "DBP mean trough (clinic, sitting)"
+    },
+    "outcomeTypeUri": {
+      "type": "uri",
+      "value": "ttp://trials.drugis.org/concepts/type"
+    },
+    "outcomeTypeUid": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/ontology#Endpoint"
+    },
+    "minDoseUnitLabel": {
+      "type": "literal",
+      "value": "milligram"
+    },
+    "minDoseUnitMultiplier": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#double",
+      "type": "typed-literal",
+      "value": "1.000000e-03"
+    },
+    "sampleSize": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#integer",
+      "type": "typed-literal",
+      "value": "353"
+    },
+    "armLabel": {
+      "type": "literal",
+      "value": "Olmesartan medoxomil 20-40mg\/hydrochlorothiazide 12.5-25mg QD"
+    },
+    "graph": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/graphs\/be96c93f-a8b2-49b0-841a-da93fea7a94e"
+    },
+    "minDoseUnitConcept": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/concepts\/a57c4db5-f4dc-4f4e-93c2-12f02f97ed7b"
+    },
+    "drug": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/concepts\/bf71210d-9925-4430-80d7-7358fe6482ea"
+    },
+    "interventionLabel": {
+      "type": "literal",
+      "value": "Hydrochlorothiazide"
+    },
+    "maxDoseUnitMultiplier": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#double",
+      "type": "typed-literal",
+      "value": "1.000000e-03"
+    },
+    "treatmentType": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/ontology#TitratedDoseDrugTreatment"
+    },
+    "drugInstance": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/instances\/0062d0ba-415d-46e6-9d1d-a3793e830609"
+    },
+    "maxDoseDosingPeriodicity": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#duration",
+      "type": "typed-literal",
+      "value": "P1D"
+    },
+    "minDoseDosingPeriodicity": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#duration",
+      "type": "typed-literal",
+      "value": "P1D"
+    },
+    "outcomeInstance": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/instances\/9edbeaba-6f74-4ac0-aa32-1293d523ecd7"
+    },
+    "mean": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#double",
+      "type": "typed-literal",
+      "value": "-1.280000e+01"
+    },
+    "maxDoseUnitLabel": {
+      "type": "literal",
+      "value": "milligram"
+    },
+    "stdDev": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#double",
+      "type": "typed-literal",
+      "value": "4.800000e-01"
+    },
+    "maxDoseUnitConcept": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/concepts\/a57c4db5-f4dc-4f4e-93c2-12f02f97ed7b"
+    },
+    "minDoseValue": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#double",
+      "type": "typed-literal",
+      "value": "1.250000e+01"
+    },
+    "arm": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/instances\/44ca0994-f89e-4484-93cc-bef03b85edf2"
+    }
+  },
+  {
+    "studyName": {
+      "type": "literal",
+      "value": "TAK491-301 \/ NCT00846365"
+    },
+    "maxDoseValue": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#double",
+      "type": "typed-literal",
+      "value": "2.500000e+01"
+    },
+    "outcomeInstanceLabel": {
+      "type": "literal",
+      "value": "DBP mean trough (clinic, sitting)"
+    },
+    "outcomeTypeUri": {
+      "type": "uri",
+      "value": "ttp://trials.drugis.org/concepts/type"
+    },
+    "outcomeTypeUid": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/ontology#Endpoint"
+    },
+    "minDoseUnitLabel": {
+      "type": "literal",
+      "value": "milligram"
+    },
+    "minDoseUnitMultiplier": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#double",
+      "type": "typed-literal",
+      "value": "1.000000e-03"
+    },
+    "sampleSize": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#integer",
+      "type": "typed-literal",
+      "value": "350"
+    },
+    "armLabel": {
+      "type": "literal",
+      "value": "Azilsartan Medoxomil 40-80mg plus Chlorthalidone 12.5-25 mg QD"
+    },
+    "graph": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/graphs\/be96c93f-a8b2-49b0-841a-da93fea7a94e"
+    },
+    "minDoseUnitConcept": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/concepts\/a57c4db5-f4dc-4f4e-93c2-12f02f97ed7b"
+    },
+    "drug": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/concepts\/d152d8c0-7898-470a-85bd-6ec8b14609c8"
+    },
+    "interventionLabel": {
+      "type": "literal",
+      "value": "Chlortalidone"
+    },
+    "maxDoseUnitMultiplier": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#double",
+      "type": "typed-literal",
+      "value": "1.000000e-03"
+    },
+    "treatmentType": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/ontology#TitratedDoseDrugTreatment"
+    },
+    "drugInstance": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/instances\/84d8f164-c0eb-4aca-8757-ddbd82f826c7"
+    },
+    "maxDoseDosingPeriodicity": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#duration",
+      "type": "typed-literal",
+      "value": "P1D"
+    },
+    "minDoseDosingPeriodicity": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#duration",
+      "type": "typed-literal",
+      "value": "P1D"
+    },
+    "outcomeInstance": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/instances\/9edbeaba-6f74-4ac0-aa32-1293d523ecd7"
+    },
+    "mean": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#double",
+      "type": "typed-literal",
+      "value": "-1.650000e+01"
+    },
+    "maxDoseUnitLabel": {
+      "type": "literal",
+      "value": "milligram"
+    },
+    "stdDev": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#double",
+      "type": "typed-literal",
+      "value": "4.800000e-01"
+    },
+    "maxDoseUnitConcept": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/concepts\/a57c4db5-f4dc-4f4e-93c2-12f02f97ed7b"
+    },
+    "minDoseValue": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#double",
+      "type": "typed-literal",
+      "value": "1.250000e+01"
+    },
+    "arm": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/instances\/cdecc16d-2f9f-44ec-b3b3-b7d9ea6f0e49"
+    }
+  },
+  {
+    "studyName": {
+      "type": "literal",
+      "value": "TAK491-301 \/ NCT00846365"
+    },
+    "maxDoseValue": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#double",
+      "type": "typed-literal",
+      "value": "8.000000e+01"
+    },
+    "outcomeInstanceLabel": {
+      "type": "literal",
+      "value": "DBP mean trough (clinic, sitting)"
+    },
+    "outcomeTypeUri": {
+      "type": "uri",
+      "value": "ttp://trials.drugis.org/concepts/type"
+    },
+    "outcomeTypeUid": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/ontology#Endpoint"
+    },
+    "minDoseUnitLabel": {
+      "type": "literal",
+      "value": "milligram"
+    },
+    "minDoseUnitMultiplier": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#double",
+      "type": "typed-literal",
+      "value": "1.000000e-03"
+    },
+    "sampleSize": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#integer",
+      "type": "typed-literal",
+      "value": "350"
+    },
+    "armLabel": {
+      "type": "literal",
+      "value": "Azilsartan Medoxomil 40-80mg plus Chlorthalidone 12.5-25 mg QD"
+    },
+    "graph": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/graphs\/be96c93f-a8b2-49b0-841a-da93fea7a94e"
+    },
+    "minDoseUnitConcept": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/concepts\/a57c4db5-f4dc-4f4e-93c2-12f02f97ed7b"
+    },
+    "drug": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/concepts\/26bc78a4-a395-4d74-bf95-eaa1ff582a56"
+    },
+    "interventionLabel": {
+      "type": "literal",
+      "value": "Azilsartan"
+    },
+    "maxDoseUnitMultiplier": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#double",
+      "type": "typed-literal",
+      "value": "1.000000e-03"
+    },
+    "treatmentType": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/ontology#TitratedDoseDrugTreatment"
+    },
+    "drugInstance": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/instances\/c347a902-fd9f-413e-ae72-9dc63acbf5ac"
+    },
+    "maxDoseDosingPeriodicity": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#duration",
+      "type": "typed-literal",
+      "value": "P1D"
+    },
+    "minDoseDosingPeriodicity": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#duration",
+      "type": "typed-literal",
+      "value": "P1D"
+    },
+    "outcomeInstance": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/instances\/9edbeaba-6f74-4ac0-aa32-1293d523ecd7"
+    },
+    "mean": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#double",
+      "type": "typed-literal",
+      "value": "-1.650000e+01"
+    },
+    "maxDoseUnitLabel": {
+      "type": "literal",
+      "value": "milligram"
+    },
+    "stdDev": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#double",
+      "type": "typed-literal",
+      "value": "4.800000e-01"
+    },
+    "maxDoseUnitConcept": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/concepts\/a57c4db5-f4dc-4f4e-93c2-12f02f97ed7b"
+    },
+    "minDoseValue": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#double",
+      "type": "typed-literal",
+      "value": "4.000000e+01"
+    },
+    "arm": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/instances\/cdecc16d-2f9f-44ec-b3b3-b7d9ea6f0e49"
+    }
+  },
+  {
+    "studyName": {
+      "type": "literal",
+      "value": "TAK491-008 \/ NCT00696241"
+    },
+    "outcomeInstanceLabel": {
+      "type": "literal",
+      "value": "DBP mean trough (clinic, sitting)"
+    },
+    "fixedDoseUnitMultiplier": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#double",
+      "type": "typed-literal",
+      "value": "1.000000e-03"
+    },
+    "outcomeTypeUri": {
+      "type": "uri",
+      "value": "ttp://trials.drugis.org/concepts/type"
+    },
+    "outcomeTypeUid": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/ontology#Endpoint"
+    },
+    "fixedDoseValue": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#double",
+      "type": "typed-literal",
+      "value": "4.000000e+01"
+    },
+    "sampleSize": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#integer",
+      "type": "typed-literal",
+      "value": "280"
+    },
+    "armLabel": {
+      "type": "literal",
+      "value": "Olmesartan 40 mg QD"
+    },
+    "graph": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/graphs\/294b3fa9-ba49-4c16-a551-afba9b5856a3"
+    },
+    "drug": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/concepts\/7cce382d-62ca-4545-b355-3dac55bcf5f1"
+    },
+    "interventionLabel": {
+      "type": "literal",
+      "value": "Olmesartan"
+    },
+    "fixedDoseUnitConcept": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/concepts\/a57c4db5-f4dc-4f4e-93c2-12f02f97ed7b"
+    },
+    "treatmentType": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/ontology#FixedDoseDrugTreatment"
+    },
+    "drugInstance": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/instances\/06448758-f591-4d86-8e2f-af71ab9ea8b5"
+    },
+    "outcomeInstance": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/instances\/7342e3df-609c-4546-a66f-a05ba5dbf652"
+    },
+    "mean": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#double",
+      "type": "typed-literal",
+      "value": "-6.910000e+00"
+    },
+    "stdDev": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#double",
+      "type": "typed-literal",
+      "value": "8.851863e+00"
+    },
+    "arm": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/instances\/730d9b6d-0535-48bd-be9c-4c7f75466677"
+    },
+    "fixedDoseUnitLabel": {
+      "type": "literal",
+      "value": "milligram"
+    },
+    "fixedDoseDosingPeriodicity": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#duration",
+      "type": "typed-literal",
+      "value": "P1D"
+    }
+  },
+  {
+    "studyName": {
+      "type": "literal",
+      "value": "TAK491-008 \/ NCT00696241"
+    },
+    "outcomeInstanceLabel": {
+      "type": "literal",
+      "value": "DBP mean trough (clinic, sitting)"
+    },
+    "fixedDoseUnitMultiplier": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#double",
+      "type": "typed-literal",
+      "value": "1.000000e-03"
+    },
+    "outcomeTypeUri": {
+      "type": "uri",
+      "value": "ttp://trials.drugis.org/concepts/type"
+    },
+    "outcomeTypeUid": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/ontology#Endpoint"
+    },
+    "fixedDoseValue": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#double",
+      "type": "typed-literal",
+      "value": "0.000000e+00"
+    },
+    "sampleSize": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#integer",
+      "type": "typed-literal",
+      "value": "140"
+    },
+    "armLabel": {
+      "type": "literal",
+      "value": "Placebo QD"
+    },
+    "graph": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/graphs\/294b3fa9-ba49-4c16-a551-afba9b5856a3"
+    },
+    "drug": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/concepts\/bc20642b-1ec5-4663-b12b-3b0ad5ae31eb"
+    },
+    "interventionLabel": {
+      "type": "literal",
+      "value": "Placebo"
+    },
+    "fixedDoseUnitConcept": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/concepts\/a57c4db5-f4dc-4f4e-93c2-12f02f97ed7b"
+    },
+    "treatmentType": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/ontology#FixedDoseDrugTreatment"
+    },
+    "drugInstance": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/instances\/4110412c-066e-4f21-af8e-40a1397eae23"
+    },
+    "outcomeInstance": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/instances\/7342e3df-609c-4546-a66f-a05ba5dbf652"
+    },
+    "mean": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#double",
+      "type": "typed-literal",
+      "value": "2.100000e-01"
+    },
+    "stdDev": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#double",
+      "type": "typed-literal",
+      "value": "8.862288e+00"
+    },
+    "arm": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/instances\/f0564838-d9c6-402f-bfce-43a82b18c916"
+    },
+    "fixedDoseUnitLabel": {
+      "type": "literal",
+      "value": "milligram"
+    },
+    "fixedDoseDosingPeriodicity": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#duration",
+      "type": "typed-literal",
+      "value": "P1D"
+    }
+  },
+  {
+    "studyName": {
+      "type": "literal",
+      "value": "TAK491-008 \/ NCT00696241"
+    },
+    "outcomeInstanceLabel": {
+      "type": "literal",
+      "value": "DBP mean trough (clinic, sitting)"
+    },
+    "fixedDoseUnitMultiplier": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#double",
+      "type": "typed-literal",
+      "value": "1.000000e-03"
+    },
+    "outcomeTypeUri": {
+      "type": "uri",
+      "value": "ttp://trials.drugis.org/concepts/type"
+    },
+    "outcomeTypeUid": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/ontology#Endpoint"
+    },
+    "fixedDoseValue": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#double",
+      "type": "typed-literal",
+      "value": "4.000000e+01"
+    },
+    "sampleSize": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#integer",
+      "type": "typed-literal",
+      "value": "276"
+    },
+    "armLabel": {
+      "type": "literal",
+      "value": "Azilsartan Medoxomil 40 mg QD"
+    },
+    "graph": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/graphs\/294b3fa9-ba49-4c16-a551-afba9b5856a3"
+    },
+    "drug": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/concepts\/26bc78a4-a395-4d74-bf95-eaa1ff582a56"
+    },
+    "interventionLabel": {
+      "type": "literal",
+      "value": "Azilsartan"
+    },
+    "fixedDoseUnitConcept": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/concepts\/a57c4db5-f4dc-4f4e-93c2-12f02f97ed7b"
+    },
+    "treatmentType": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/ontology#FixedDoseDrugTreatment"
+    },
+    "drugInstance": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/instances\/24ad6186-4a24-40e0-ad9d-792969d523aa"
+    },
+    "outcomeInstance": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/instances\/7342e3df-609c-4546-a66f-a05ba5dbf652"
+    },
+    "mean": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#double",
+      "type": "typed-literal",
+      "value": "-6.860000e+00"
+    },
+    "stdDev": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#double",
+      "type": "typed-literal",
+      "value": "8.854861e+00"
+    },
+    "arm": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/instances\/7266424a-1e00-4e24-b808-12be2c775c0b"
+    },
+    "fixedDoseUnitLabel": {
+      "type": "literal",
+      "value": "milligram"
+    },
+    "fixedDoseDosingPeriodicity": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#duration",
+      "type": "typed-literal",
+      "value": "P1D"
+    }
+  },
+  {
+    "studyName": {
+      "type": "literal",
+      "value": "TAK491-008 \/ NCT00696241"
+    },
+    "outcomeInstanceLabel": {
+      "type": "literal",
+      "value": "DBP mean trough (clinic, sitting)"
+    },
+    "fixedDoseUnitMultiplier": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#double",
+      "type": "typed-literal",
+      "value": "1.000000e-03"
+    },
+    "outcomeTypeUri": {
+      "type": "uri",
+      "value": "ttp://trials.drugis.org/concepts/type"
+    },
+    "outcomeTypeUid": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/ontology#Endpoint"
+    },
+    "fixedDoseValue": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#double",
+      "type": "typed-literal",
+      "value": "8.000000e+01"
+    },
+    "sampleSize": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#integer",
+      "type": "typed-literal",
+      "value": "279"
+    },
+    "armLabel": {
+      "type": "literal",
+      "value": "Azilsartan Medoxomil 80 mg QD"
+    },
+    "graph": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/graphs\/294b3fa9-ba49-4c16-a551-afba9b5856a3"
+    },
+    "drug": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/concepts\/26bc78a4-a395-4d74-bf95-eaa1ff582a56"
+    },
+    "interventionLabel": {
+      "type": "literal",
+      "value": "Azilsartan"
+    },
+    "fixedDoseUnitConcept": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/concepts\/a57c4db5-f4dc-4f4e-93c2-12f02f97ed7b"
+    },
+    "treatmentType": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/ontology#FixedDoseDrugTreatment"
+    },
+    "drugInstance": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/instances\/24ad6186-4a24-40e0-ad9d-792969d523aa"
+    },
+    "outcomeInstance": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/instances\/7342e3df-609c-4546-a66f-a05ba5dbf652"
+    },
+    "mean": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#double",
+      "type": "typed-literal",
+      "value": "-8.420000e+00"
+    },
+    "stdDev": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#double",
+      "type": "typed-literal",
+      "value": "8.852745e+00"
+    },
+    "arm": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/instances\/2649c23a-9c58-4d18-8668-b8ffd093daa0"
+    },
+    "fixedDoseUnitLabel": {
+      "type": "literal",
+      "value": "milligram"
+    },
+    "fixedDoseDosingPeriodicity": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#duration",
+      "type": "typed-literal",
+      "value": "P1D"
+    }
+  },
+  {
+    "studyName": {
+      "type": "literal",
+      "value": "TAK491-008 \/ NCT00696241"
+    },
+    "outcomeInstanceLabel": {
+      "type": "literal",
+      "value": "DBP mean trough (clinic, sitting)"
+    },
+    "fixedDoseUnitMultiplier": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#double",
+      "type": "typed-literal",
+      "value": "1.000000e-03"
+    },
+    "outcomeTypeUri": {
+      "type": "uri",
+      "value": "ttp://trials.drugis.org/concepts/type"
+    },
+    "outcomeTypeUid": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/ontology#Endpoint"
+    },
+    "fixedDoseValue": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#double",
+      "type": "typed-literal",
+      "value": "2.000000e+01"
+    },
+    "sampleSize": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#integer",
+      "type": "typed-literal",
+      "value": "274"
+    },
+    "armLabel": {
+      "type": "literal",
+      "value": "Azilsartan Medoxomil 20 mg QD"
+    },
+    "graph": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/graphs\/294b3fa9-ba49-4c16-a551-afba9b5856a3"
+    },
+    "drug": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/concepts\/26bc78a4-a395-4d74-bf95-eaa1ff582a56"
+    },
+    "interventionLabel": {
+      "type": "literal",
+      "value": "Azilsartan"
+    },
+    "fixedDoseUnitConcept": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/concepts\/a57c4db5-f4dc-4f4e-93c2-12f02f97ed7b"
+    },
+    "treatmentType": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/ontology#FixedDoseDrugTreatment"
+    },
+    "drugInstance": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/instances\/24ad6186-4a24-40e0-ad9d-792969d523aa"
+    },
+    "outcomeInstance": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/instances\/7342e3df-609c-4546-a66f-a05ba5dbf652"
+    },
+    "mean": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#double",
+      "type": "typed-literal",
+      "value": "-6.820000e+00"
+    },
+    "stdDev": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#double",
+      "type": "typed-literal",
+      "value": "8.855826e+00"
+    },
+    "arm": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/instances\/110702c6-8cb6-4c23-89f2-358dd0564d91"
+    },
+    "fixedDoseUnitLabel": {
+      "type": "literal",
+      "value": "milligram"
+    },
+    "fixedDoseDosingPeriodicity": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#duration",
+      "type": "typed-literal",
+      "value": "P1D"
+    }
+  },
+  {
+    "studyName": {
+      "type": "literal",
+      "value": "TAK491-020 \/ NCT00760214"
+    },
+    "maxDoseValue": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#double",
+      "type": "typed-literal",
+      "value": "4.000000e+01"
+    },
+    "outcomeInstanceLabel": {
+      "type": "literal",
+      "value": "DBP mean trough (clinic, sitting)"
+    },
+    "outcomeTypeUri": {
+      "type": "uri",
+      "value": "ttp://trials.drugis.org/concepts/type"
+    },
+    "outcomeTypeUid": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/ontology#Endpoint"
+    },
+    "minDoseUnitLabel": {
+      "type": "literal",
+      "value": "milligram"
+    },
+    "minDoseUnitMultiplier": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#double",
+      "type": "typed-literal",
+      "value": "1.000000e-03"
+    },
+    "sampleSize": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#integer",
+      "type": "typed-literal",
+      "value": "291"
+    },
+    "armLabel": {
+      "type": "literal",
+      "value": "Azilsartan Medoxomil 40 mg QD"
+    },
+    "graph": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/graphs\/c600d0ee-9d64-4395-ad06-f4b4843b20f6"
+    },
+    "minDoseUnitConcept": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/concepts\/a57c4db5-f4dc-4f4e-93c2-12f02f97ed7b"
+    },
+    "drug": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/concepts\/26bc78a4-a395-4d74-bf95-eaa1ff582a56"
+    },
+    "interventionLabel": {
+      "type": "literal",
+      "value": "Azilsartan"
+    },
+    "maxDoseUnitMultiplier": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#double",
+      "type": "typed-literal",
+      "value": "1.000000e-03"
+    },
+    "treatmentType": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/ontology#TitratedDoseDrugTreatment"
+    },
+    "drugInstance": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/instances\/50838676-daba-4ab1-b91c-843863e15f8e"
+    },
+    "maxDoseDosingPeriodicity": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#duration",
+      "type": "typed-literal",
+      "value": "P1D"
+    },
+    "minDoseDosingPeriodicity": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#duration",
+      "type": "typed-literal",
+      "value": "P1D"
+    },
+    "outcomeInstance": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/instances\/4f46f426-d5f9-4f4f-a71c-673894e31230"
+    },
+    "mean": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#double",
+      "type": "typed-literal",
+      "value": "-1.018000e+01"
+    },
+    "maxDoseUnitLabel": {
+      "type": "literal",
+      "value": "milligram"
+    },
+    "stdDev": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#double",
+      "type": "typed-literal",
+      "value": "9.433473e+00"
+    },
+    "maxDoseUnitConcept": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/concepts\/a57c4db5-f4dc-4f4e-93c2-12f02f97ed7b"
+    },
+    "minDoseValue": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#double",
+      "type": "typed-literal",
+      "value": "2.000000e+01"
+    },
+    "arm": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/instances\/a495c0f7-b132-4cb0-9012-e45e520d42c0"
+    }
+  },
+  {
+    "studyName": {
+      "type": "literal",
+      "value": "TAK491-020 \/ NCT00760214"
+    },
+    "maxDoseValue": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#double",
+      "type": "typed-literal",
+      "value": "1.000000e+01"
+    },
+    "outcomeInstanceLabel": {
+      "type": "literal",
+      "value": "DBP mean trough (clinic, sitting)"
+    },
+    "outcomeTypeUri": {
+      "type": "uri",
+      "value": "ttp://trials.drugis.org/concepts/type"
+    },
+    "outcomeTypeUid": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/ontology#Endpoint"
+    },
+    "minDoseUnitLabel": {
+      "type": "literal",
+      "value": "milligram"
+    },
+    "minDoseUnitMultiplier": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#double",
+      "type": "typed-literal",
+      "value": "1.000000e-03"
+    },
+    "sampleSize": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#integer",
+      "type": "typed-literal",
+      "value": "290"
+    },
+    "armLabel": {
+      "type": "literal",
+      "value": "Ramipril 10 mg QD"
+    },
+    "graph": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/graphs\/c600d0ee-9d64-4395-ad06-f4b4843b20f6"
+    },
+    "minDoseUnitConcept": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/concepts\/a57c4db5-f4dc-4f4e-93c2-12f02f97ed7b"
+    },
+    "drug": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/concepts\/66489bc0-d6d8-4cf3-babd-e452bfa8b00b"
+    },
+    "interventionLabel": {
+      "type": "literal",
+      "value": "Ramipril"
+    },
+    "maxDoseUnitMultiplier": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#double",
+      "type": "typed-literal",
+      "value": "1.000000e-03"
+    },
+    "treatmentType": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/ontology#TitratedDoseDrugTreatment"
+    },
+    "drugInstance": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/instances\/c8156c11-d622-43d1-b3a0-5a4a1975e905"
+    },
+    "maxDoseDosingPeriodicity": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#duration",
+      "type": "typed-literal",
+      "value": "P1D"
+    },
+    "minDoseDosingPeriodicity": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#duration",
+      "type": "typed-literal",
+      "value": "P1D"
+    },
+    "outcomeInstance": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/instances\/4f46f426-d5f9-4f4f-a71c-673894e31230"
+    },
+    "mean": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#double",
+      "type": "typed-literal",
+      "value": "-4.870000e+00"
+    },
+    "maxDoseUnitLabel": {
+      "type": "literal",
+      "value": "milligram"
+    },
+    "stdDev": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#double",
+      "type": "typed-literal",
+      "value": "9.451309e+00"
+    },
+    "maxDoseUnitConcept": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/concepts\/a57c4db5-f4dc-4f4e-93c2-12f02f97ed7b"
+    },
+    "minDoseValue": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#double",
+      "type": "typed-literal",
+      "value": "2.500000e+00"
+    },
+    "arm": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/instances\/97af2067-37a9-48f6-b5a8-daccf8c38519"
+    }
+  },
+  {
+    "studyName": {
+      "type": "literal",
+      "value": "TAK491-020 \/ NCT00760214"
+    },
+    "maxDoseValue": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#double",
+      "type": "typed-literal",
+      "value": "8.000000e+01"
+    },
+    "outcomeInstanceLabel": {
+      "type": "literal",
+      "value": "DBP mean trough (clinic, sitting)"
+    },
+    "outcomeTypeUri": {
+      "type": "uri",
+      "value": "ttp://trials.drugis.org/concepts/type"
+    },
+    "outcomeTypeUid": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/ontology#Endpoint"
+    },
+    "minDoseUnitLabel": {
+      "type": "literal",
+      "value": "milligram"
+    },
+    "minDoseUnitMultiplier": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#double",
+      "type": "typed-literal",
+      "value": "1.000000e-03"
+    },
+    "sampleSize": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#integer",
+      "type": "typed-literal",
+      "value": "289"
+    },
+    "armLabel": {
+      "type": "literal",
+      "value": "Azilsartan Medoxomil 80 mg QD"
+    },
+    "graph": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/graphs\/c600d0ee-9d64-4395-ad06-f4b4843b20f6"
+    },
+    "minDoseUnitConcept": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/concepts\/a57c4db5-f4dc-4f4e-93c2-12f02f97ed7b"
+    },
+    "drug": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/concepts\/26bc78a4-a395-4d74-bf95-eaa1ff582a56"
+    },
+    "interventionLabel": {
+      "type": "literal",
+      "value": "Azilsartan"
+    },
+    "maxDoseUnitMultiplier": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#double",
+      "type": "typed-literal",
+      "value": "1.000000e-03"
+    },
+    "treatmentType": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/ontology#TitratedDoseDrugTreatment"
+    },
+    "drugInstance": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/instances\/50838676-daba-4ab1-b91c-843863e15f8e"
+    },
+    "maxDoseDosingPeriodicity": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#duration",
+      "type": "typed-literal",
+      "value": "P1D"
+    },
+    "minDoseDosingPeriodicity": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#duration",
+      "type": "typed-literal",
+      "value": "P1D"
+    },
+    "outcomeInstance": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/instances\/4f46f426-d5f9-4f4f-a71c-673894e31230"
+    },
+    "mean": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#double",
+      "type": "typed-literal",
+      "value": "-1.054000e+01"
+    },
+    "maxDoseUnitLabel": {
+      "type": "literal",
+      "value": "milligram"
+    },
+    "stdDev": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#double",
+      "type": "typed-literal",
+      "value": "9.452000e+00"
+    },
+    "maxDoseUnitConcept": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/concepts\/a57c4db5-f4dc-4f4e-93c2-12f02f97ed7b"
+    },
+    "minDoseValue": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#double",
+      "type": "typed-literal",
+      "value": "2.000000e+01"
+    },
+    "arm": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/instances\/836503ed-21ad-4658-bcca-15fb09933942"
+    }
+  },
+  {
+    "studyName": {
+      "type": "literal",
+      "value": "TAK491-011 \/ NCT00591253"
+    },
+    "outcomeInstanceLabel": {
+      "type": "literal",
+      "value": "DBP mean trough (clinic, sitting)"
+    },
+    "fixedDoseUnitMultiplier": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#double",
+      "type": "typed-literal",
+      "value": "1.000000e-03"
+    },
+    "outcomeTypeUri": {
+      "type": "uri",
+      "value": "ttp://trials.drugis.org/concepts/type"
+    },
+    "outcomeTypeUid": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/ontology#Endpoint"
+    },
+    "fixedDoseValue": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#double",
+      "type": "typed-literal",
+      "value": "0.000000e+00"
+    },
+    "sampleSize": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#integer",
+      "type": "typed-literal",
+      "value": "133"
+    },
+    "armLabel": {
+      "type": "literal",
+      "value": "Placebo QD"
+    },
+    "graph": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/graphs\/9d99d004-4ba4-4152-b6b5-b11ebb8a9cab"
+    },
+    "drug": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/concepts\/bc20642b-1ec5-4663-b12b-3b0ad5ae31eb"
+    },
+    "interventionLabel": {
+      "type": "literal",
+      "value": "Placebo"
+    },
+    "fixedDoseUnitConcept": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/concepts\/a57c4db5-f4dc-4f4e-93c2-12f02f97ed7b"
+    },
+    "treatmentType": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/ontology#FixedDoseDrugTreatment"
+    },
+    "drugInstance": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/instances\/12733eae-907c-4930-b197-faf16c0baf92"
+    },
+    "outcomeInstance": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/instances\/b8e6c19a-138e-4199-b950-5a8eea2eb5de"
+    },
+    "mean": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#double",
+      "type": "typed-literal",
+      "value": "-2.360000e+00"
+    },
+    "stdDev": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#double",
+      "type": "typed-literal",
+      "value": "8.730150e+00"
+    },
+    "arm": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/instances\/1aff3873-4e90-4387-883a-2b1bc43c2545"
+    },
+    "fixedDoseUnitLabel": {
+      "type": "literal",
+      "value": "milligram"
+    },
+    "fixedDoseDosingPeriodicity": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#duration",
+      "type": "typed-literal",
+      "value": "P1D"
+    }
+  },
+  {
+    "studyName": {
+      "type": "literal",
+      "value": "TAK491-011 \/ NCT00591253"
+    },
+    "outcomeInstanceLabel": {
+      "type": "literal",
+      "value": "DBP mean trough (clinic, sitting)"
+    },
+    "fixedDoseUnitMultiplier": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#double",
+      "type": "typed-literal",
+      "value": "1.000000e-03"
+    },
+    "outcomeTypeUri": {
+      "type": "uri",
+      "value": "ttp://trials.drugis.org/concepts/type"
+    },
+    "outcomeTypeUid": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/ontology#Endpoint"
+    },
+    "fixedDoseValue": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#double",
+      "type": "typed-literal",
+      "value": "4.000000e+01"
+    },
+    "sampleSize": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#integer",
+      "type": "typed-literal",
+      "value": "134"
+    },
+    "armLabel": {
+      "type": "literal",
+      "value": "Azilsartan Medoxomil 40 mg QD"
+    },
+    "graph": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/graphs\/9d99d004-4ba4-4152-b6b5-b11ebb8a9cab"
+    },
+    "drug": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/concepts\/26bc78a4-a395-4d74-bf95-eaa1ff582a56"
+    },
+    "interventionLabel": {
+      "type": "literal",
+      "value": "Azilsartan"
+    },
+    "fixedDoseUnitConcept": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/concepts\/a57c4db5-f4dc-4f4e-93c2-12f02f97ed7b"
+    },
+    "treatmentType": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/ontology#FixedDoseDrugTreatment"
+    },
+    "drugInstance": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/instances\/4442a6df-3422-44fe-a789-e9a6d8821885"
+    },
+    "outcomeInstance": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/instances\/b8e6c19a-138e-4199-b950-5a8eea2eb5de"
+    },
+    "mean": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#double",
+      "type": "typed-literal",
+      "value": "-5.480000e+00"
+    },
+    "stdDev": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#double",
+      "type": "typed-literal",
+      "value": "8.739757e+00"
+    },
+    "arm": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/instances\/7ad6d3f7-75b8-4ad8-b973-fe12c762fa4e"
+    },
+    "fixedDoseUnitLabel": {
+      "type": "literal",
+      "value": "milligram"
+    },
+    "fixedDoseDosingPeriodicity": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#duration",
+      "type": "typed-literal",
+      "value": "P1D"
+    }
+  },
+  {
+    "studyName": {
+      "type": "literal",
+      "value": "TAK491-011 \/ NCT00591253"
+    },
+    "outcomeInstanceLabel": {
+      "type": "literal",
+      "value": "DBP mean trough (clinic, sitting)"
+    },
+    "fixedDoseUnitMultiplier": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#double",
+      "type": "typed-literal",
+      "value": "1.000000e-03"
+    },
+    "outcomeTypeUri": {
+      "type": "uri",
+      "value": "ttp://trials.drugis.org/concepts/type"
+    },
+    "outcomeTypeUid": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/ontology#Endpoint"
+    },
+    "fixedDoseValue": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#double",
+      "type": "typed-literal",
+      "value": "8.000000e+01"
+    },
+    "sampleSize": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#integer",
+      "type": "typed-literal",
+      "value": "130"
+    },
+    "armLabel": {
+      "type": "literal",
+      "value": "Azilsartan Medoxomil 80 mg QD"
+    },
+    "graph": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/graphs\/9d99d004-4ba4-4152-b6b5-b11ebb8a9cab"
+    },
+    "drug": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/concepts\/26bc78a4-a395-4d74-bf95-eaa1ff582a56"
+    },
+    "interventionLabel": {
+      "type": "literal",
+      "value": "Azilsartan"
+    },
+    "fixedDoseUnitConcept": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/concepts\/a57c4db5-f4dc-4f4e-93c2-12f02f97ed7b"
+    },
+    "treatmentType": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/ontology#FixedDoseDrugTreatment"
+    },
+    "drugInstance": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/instances\/4442a6df-3422-44fe-a789-e9a6d8821885"
+    },
+    "outcomeInstance": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/instances\/b8e6c19a-138e-4199-b950-5a8eea2eb5de"
+    },
+    "mean": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#double",
+      "type": "typed-literal",
+      "value": "-5.320000e+00"
+    },
+    "stdDev": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#double",
+      "type": "typed-literal",
+      "value": "8.733744e+00"
+    },
+    "arm": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/instances\/378e4245-a9fb-47d9-94e2-1acc80712865"
+    },
+    "fixedDoseUnitLabel": {
+      "type": "literal",
+      "value": "milligram"
+    },
+    "fixedDoseDosingPeriodicity": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#duration",
+      "type": "typed-literal",
+      "value": "P1D"
+    }
+  }
+]

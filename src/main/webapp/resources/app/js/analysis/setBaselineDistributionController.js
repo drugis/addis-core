@@ -1,0 +1,38 @@
+'use strict';
+define(['lodash'], function(_) {
+  var dependencies = ['$scope', '$modalInstance', 'AnalysisService',
+    'outcomeWithAnalysis', 'interventionInclusions', 'setBaselineDistribution', 'alternatives'
+  ];
+  var SetBaselineDistributionController = function($scope,
+    $modalInstance, AnalysisService, outcomeWithAnalysis, interventionInclusions,
+    setBaselineDistribution, alternatives) {
+
+    $scope.outcomeWithAnalysis = outcomeWithAnalysis;
+    $scope.alternatives = _.filter(alternatives, function(alternative){
+      return _.find(interventionInclusions, function(interventionInclusion){
+        return interventionInclusion.interventionId === alternative.id;
+      });
+    });
+
+    $scope.baselineDistribution = {
+      selectedAlternative: $scope.alternatives[0]
+    };
+    $scope.baselineDistribution.scale = AnalysisService.LIKELIHOOD_LINK_SETTINGS.find(function(setting) {
+      return setting.likelihood === outcomeWithAnalysis.selectedModel.likelihood &&
+        setting.link === outcomeWithAnalysis.selectedModel.link;
+    }).absoluteScale;
+
+    $scope.setBaselineDistribution = function(baselineDistribution) {
+      baselineDistribution.name = baselineDistribution.selectedAlternative.name;
+      baselineDistribution.type = 'dnorm';
+      delete baselineDistribution.selectedAlternative;
+      setBaselineDistribution(baselineDistribution);
+      $modalInstance.close();
+    };
+
+    $scope.cancel = function() {
+      $modalInstance.dismiss('cancel');
+    };
+  };
+  return dependencies.concat(SetBaselineDistributionController);
+});

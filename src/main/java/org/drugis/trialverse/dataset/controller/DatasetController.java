@@ -6,6 +6,7 @@ import org.apache.jena.rdf.model.Model;
 import org.apache.jena.riot.RDFLanguages;
 import org.drugis.addis.security.Account;
 import org.drugis.addis.security.repository.AccountRepository;
+import org.drugis.addis.util.WebConstants;
 import org.drugis.trialverse.dataset.controller.command.DatasetCommand;
 import org.drugis.trialverse.dataset.exception.CreateDatasetException;
 import org.drugis.trialverse.dataset.exception.RevisionNotFoundException;
@@ -13,12 +14,12 @@ import org.drugis.trialverse.dataset.model.Dataset;
 import org.drugis.trialverse.dataset.model.VersionNode;
 import org.drugis.trialverse.dataset.repository.DatasetReadRepository;
 import org.drugis.trialverse.dataset.repository.DatasetWriteRepository;
+import org.drugis.trialverse.dataset.repository.FeaturedDatasetRepository;
 import org.drugis.trialverse.dataset.repository.VersionMappingRepository;
 import org.drugis.trialverse.dataset.service.DatasetService;
 import org.drugis.trialverse.dataset.service.HistoryService;
 import org.drugis.trialverse.security.TrialversePrincipal;
 import org.drugis.trialverse.util.Namespaces;
-import org.drugis.addis.util.WebConstants;
 import org.drugis.trialverse.util.controller.AbstractTrialverseController;
 import org.drugis.trialverse.util.service.TrialverseIOUtilsService;
 import org.slf4j.Logger;
@@ -64,6 +65,9 @@ public class DatasetController extends AbstractTrialverseController {
 
   @Inject
   private DatasetService datasetService;
+
+  @Inject
+  private FeaturedDatasetRepository featuredDatasetRepository;
 
   @Inject
   private HttpClient httpClient;
@@ -126,6 +130,13 @@ public class DatasetController extends AbstractTrialverseController {
   public void getDatasetAsJson(HttpServletResponse httpServletResponse, @PathVariable String datasetUUID) throws IOException, URISyntaxException {
     logger.trace("retrieving head dataset");
     getVersionedDatasetAsJson(httpServletResponse, datasetUUID, null);
+  }
+
+  @RequestMapping(value = "/featured", method = RequestMethod.GET, headers = WebConstants.ACCEPT_JSON_HEADER)
+  @ResponseBody
+  public List<Dataset> queryFeaturedDatasetsAsJson(HttpServletResponse httpServletResponse) throws IOException, URISyntaxException {
+    logger.trace("retrieving featured datasets");
+    return datasetService.findFeatured();
   }
 
   @RequestMapping(value = "/{datasetUuid}/query", method = RequestMethod.GET)

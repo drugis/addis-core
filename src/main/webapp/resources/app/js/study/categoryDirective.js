@@ -18,7 +18,6 @@ define([], function() {
         scope.isSingleItem = !!attributes.isSingleItem;
 
         scope.reloadItems = function() {
-          console.log('CategoryDirective.reloadItems');
           if (refreshStudyDesignLister) {
             // stop listning while loading
             refreshStudyDesignLister();

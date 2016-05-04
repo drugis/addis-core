@@ -4,14 +4,14 @@ package org.drugis.addis.problems.model;
  * Created by daan on 21-5-14.
  */
 public class RateNetworkMetaAnalysisProblemEntry extends AbstractNetworkMetaAnalysisProblemEntry {
-  private Long responders;
+  private Integer responders;
 
-  public RateNetworkMetaAnalysisProblemEntry(String study, Integer treatment, Long samplesize, Long responders) {
+  public RateNetworkMetaAnalysisProblemEntry(String study, Integer treatment, Integer samplesize, Integer responders) {
     super(study, treatment, samplesize);
     this.responders = responders;
   }
 
-  public Long getResponders() {
+  public Integer getResponders() {
     return responders;
   }
 

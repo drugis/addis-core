@@ -13,5 +13,4 @@ public interface AnalysisRepository {
 
   List<AbstractAnalysis> query(Integer projectId);
 
-  void setPrimaryModel(Integer analysisId, Integer modelId);
 }

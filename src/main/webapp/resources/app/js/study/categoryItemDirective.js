@@ -18,7 +18,9 @@ define(['angular'], function(angular) {
 
         var service = $injector.get(scope.settings.service);
 
-        scope.isEditingAllowed = scope.isEditingAllowed && !scope.item.disableEditing;
+        scope.$watch('item', function() {
+          scope.isEditingAllowed = scope.isEditingAllowed && !scope.item.disableEditing;
+        }, true);
 
         function onEdit() {
           scope.$emit('updateStudyDesign');

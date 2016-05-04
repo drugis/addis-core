@@ -34,11 +34,26 @@ define(['lodash'], function(_) {
       return backEndGroup;
     }
 
+    function addStudyPopulationIfMissing(study) {
+      if (!study.has_included_population || study.has_included_population.length < 1) {
+        study.has_included_population = [{
+          '@id': 'http://trials.drugis.org/instances/' + UUIDService.generate(),
+          '@type': 'ontology:StudyPopulation'
+        }];
+      }
+      return study;
+    }
+
     function queryItems() {
       return StudyService.getStudy().then(function(study) {
-        var groups = study.has_group ? study.has_group : [];
-        var studyPopulation = study.has_included_population ? study.has_included_population : [];
-        return groups.concat(studyPopulation).map(toFrontEnd);
+        // study might be old and not have groups and studypopulation
+        // https://trello.com/c/owLPPtoX/1578-trialverse-support-for-non-arm-groups-3
+        var studyWithPopulation = addStudyPopulationIfMissing(study);
+        var groups = [];
+        if(studyWithPopulation.has_group) {
+          groups = studyWithPopulation.has_group;
+        }
+        return groups.concat(studyWithPopulation.has_included_population).map(toFrontEnd);
       });
     }
 

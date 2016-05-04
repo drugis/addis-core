@@ -15,6 +15,7 @@ import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -35,6 +36,11 @@ public class OutcomeRepositoryImpl implements OutcomeRepository {
   }
 
   @Override
+  public Outcome get(Integer outcomeId) throws ResourceDoesNotExistException {
+    return em.find(Outcome.class, outcomeId);
+  }
+
+  @Override
   public Outcome get(Integer projectId, Integer outcomeId) throws ResourceDoesNotExistException {
     TypedQuery<Outcome> query = em.createQuery("FROM Outcome o WHERE o.id = :outcomeId AND o.project = :projectId", Outcome.class);
     query.setParameter("outcomeId", outcomeId);
@@ -44,6 +50,17 @@ public class OutcomeRepositoryImpl implements OutcomeRepository {
     } catch (NoResultException e) {
       throw new ResourceDoesNotExistException();
     }
+  }
+
+  @Override
+  public List<Outcome> get(Integer projectId, List<Integer> outcomeIds) {
+    if(outcomeIds.isEmpty()){
+      return Collections.emptyList();
+    }
+    TypedQuery<Outcome> query = em.createQuery("FROM Outcome o WHERE o.project = :projectId AND o.id IN :outcomeIds", Outcome.class);
+    query.setParameter("projectId", projectId);
+    query.setParameter("outcomeIds", outcomeIds);
+    return query.getResultList();
   }
 
   @Override

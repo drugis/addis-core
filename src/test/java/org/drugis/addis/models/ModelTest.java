@@ -1,12 +1,13 @@
 package org.drugis.addis.models;
 
 import org.apache.commons.lang3.tuple.Pair;
-import org.drugis.addis.models.exceptions.InvalidHeterogeneityTypeException;
-import org.drugis.addis.models.exceptions.InvalidModelTypeException;
+import org.drugis.addis.models.exceptions.InvalidModelException;
 import org.junit.Before;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
+
+;
 
 /**
  * Created by connor on 7/3/15.
@@ -29,52 +30,46 @@ public class ModelTest {
   private Double shape = 3.3;
 
   @Before
-  public void setup() throws InvalidModelTypeException, InvalidHeterogeneityTypeException {
-    networkModel = new Model.ModelBuilder()
-            .analysisId(analysisId)
-            .title(title)
+  public void setup() throws InvalidModelException  {
+    networkModel = new Model.ModelBuilder(analysisId, title)
+            .link(Model.LINK_IDENTITY)
             .linearModel(Model.LINEAR_MODEL_FIXED)
             .modelType(Model.NETWORK_MODEL_TYPE)
             .build();
-    stdDevHeterogeneityPriorNetworkModel = new Model.ModelBuilder()
-            .analysisId(analysisId)
-            .title(title)
+    stdDevHeterogeneityPriorNetworkModel = new Model.ModelBuilder(analysisId, title)
             .linearModel(Model.LINEAR_MODEL_FIXED)
+            .link(Model.LINK_IDENTITY)
             .modelType(Model.NETWORK_MODEL_TYPE)
             .heterogeneityPriorType(Model.STD_DEV_HETEROGENEITY_PRIOR_TYPE)
             .lower(lower)
             .upper(upper)
             .build();
-    varianceHeterogeneityPriorNetworkModel = new Model.ModelBuilder()
-            .analysisId(analysisId)
-            .title(title)
+    varianceHeterogeneityPriorNetworkModel = new Model.ModelBuilder(analysisId, title)
             .linearModel(Model.LINEAR_MODEL_FIXED)
             .modelType(Model.NETWORK_MODEL_TYPE)
+            .link(Model.LINK_IDENTITY)
             .heterogeneityPriorType(Model.VARIANCE_HETEROGENEITY_PRIOR_TYPE)
             .mean(mean)
             .stdDev(stdDev)
             .build();
-    precisionHeterogeneityPriorNetworkModel = new Model.ModelBuilder()
-            .analysisId(analysisId)
-            .title(title)
+    precisionHeterogeneityPriorNetworkModel = new Model.ModelBuilder(analysisId, title)
             .linearModel(Model.LINEAR_MODEL_FIXED)
             .modelType(Model.NETWORK_MODEL_TYPE)
+            .link(Model.LINK_IDENTITY)
             .heterogeneityPriorType(Model.PRECISION_HETEROGENEITY_PRIOR_TYPE)
             .rate(rate)
             .shape(shape)
             .build();
-    pairwiseModel = new Model.ModelBuilder()
-            .analysisId(analysisId)
-            .title(title)
+    pairwiseModel = new Model.ModelBuilder(analysisId, title)
             .linearModel(Model.LINEAR_MODEL_FIXED)
             .modelType(Model.PAIRWISE_MODEL_TYPE)
+            .link(Model.LINK_IDENTITY)
             .from(new Model.DetailNode(-1, "treatment1"))
             .to(new Model.DetailNode(-2, "treatment2"))
             .build();
-    nodeSplitModel = new Model.ModelBuilder()
-            .analysisId(analysisId)
-            .title(title)
+    nodeSplitModel = new Model.ModelBuilder(analysisId, title)
             .linearModel(Model.LINEAR_MODEL_FIXED)
+            .link(Model.LINK_IDENTITY)
             .modelType(Model.NODE_SPLITTING_MODEL_TYPE)
             .from(new Model.DetailNode(-1, "treatment1"))
             .to(new Model.DetailNode(-2, "treatment2"))

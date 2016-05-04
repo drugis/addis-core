@@ -10,8 +10,7 @@ import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.models.Model;
 import org.drugis.addis.models.controller.command.CreateModelCommand;
 import org.drugis.addis.models.controller.command.UpdateModelCommand;
-import org.drugis.addis.models.exceptions.InvalidHeterogeneityTypeException;
-import org.drugis.addis.models.exceptions.InvalidModelTypeException;
+import org.drugis.addis.models.exceptions.InvalidModelException;
 import org.drugis.addis.models.repository.ModelRepository;
 import org.drugis.addis.models.service.ModelService;
 import org.drugis.addis.patavitask.repository.PataviTaskRepository;
@@ -27,6 +26,8 @@ import java.io.IOException;
 import java.security.Principal;
 import java.sql.SQLException;
 import java.util.List;
+
+;
 
 /**
  * Created by daan on 22-5-14.
@@ -53,7 +54,7 @@ public class ModelController extends AbstractAddisCoreController {
   @RequestMapping(value = "/projects/{projectId}/analyses/{analysisId}/models", method = RequestMethod.POST)
   @ResponseBody
   public Model create(HttpServletResponse response, Principal principal, @PathVariable Integer projectId,
-                      @PathVariable Integer analysisId, @RequestBody CreateModelCommand createModelCommand) throws ResourceDoesNotExistException, MethodNotAllowedException, JsonProcessingException, InvalidModelTypeException, InvalidHeterogeneityTypeException {
+                      @PathVariable Integer analysisId, @RequestBody CreateModelCommand createModelCommand) throws ResourceDoesNotExistException, MethodNotAllowedException, JsonProcessingException, InvalidModelException {
     projectService.checkOwnership(projectId, principal);
     analysisService.checkCoordinates(projectId, analysisId);
     Model createdModel = modelService.createModel(analysisId, createModelCommand);
@@ -74,9 +75,15 @@ public class ModelController extends AbstractAddisCoreController {
     return modelService.query(analysisId);
   }
 
+  @RequestMapping(value = "/projects/{projectId}/consistencyModels", method = RequestMethod.GET)
+  @ResponseBody
+  public List<Model> consistencyModels(@PathVariable Integer projectId) throws SQLException {
+    return modelService.queryConsistencyModels(projectId);
+  }
+
   @RequestMapping(value = "/projects/{projectId}/analyses/{analysisId}/models/{modelId}", method = RequestMethod.POST)
   @ResponseBody
-  public void update(Principal principal, @RequestBody UpdateModelCommand updateModelCommand) throws MethodNotAllowedException, ResourceDoesNotExistException, InvalidModelTypeException {
+  public void update(Principal principal, @RequestBody UpdateModelCommand updateModelCommand) throws MethodNotAllowedException, ResourceDoesNotExistException, InvalidModelException {
     modelService.checkOwnership(updateModelCommand.getId(), principal);
     modelService.increaseRunLength(updateModelCommand);
   }

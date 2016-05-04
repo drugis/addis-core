@@ -1,0 +1,23 @@
+PREFIX ontology: <http://trials.drugis.org/ontology#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX graph: <http://trials.drugis.org/graphs/>
+
+PREFIX entity: <http://trials.drugis.org/entities/> 
+
+SELECT DISTINCT ?populationCharacteristic ?label WHERE {
+  GRAPH graph:concepts {
+    ?populationCharacteristic
+      a ontology:Variable ;
+      rdfs:label ?label .
+  } .
+  GRAPH ?graph {
+    ?studyUri ontology:has_outcome ?studyOutcome .
+    ?studyOutcome
+      a ontology:PopulationCharacteristic ;
+      ontology:of_variable [
+        owl:sameAs ?populationCharacteristic
+      ] .
+  }
+}

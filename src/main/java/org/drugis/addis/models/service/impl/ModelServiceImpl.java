@@ -6,8 +6,7 @@ import org.drugis.addis.exception.MethodNotAllowedException;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.models.Model;
 import org.drugis.addis.models.controller.command.*;
-import org.drugis.addis.models.exceptions.InvalidHeterogeneityTypeException;
-import org.drugis.addis.models.exceptions.InvalidModelTypeException;
+import org.drugis.addis.models.exceptions.InvalidModelException;
 import org.drugis.addis.models.repository.ModelRepository;
 import org.drugis.addis.models.service.ModelService;
 import org.drugis.addis.patavitask.repository.PataviTaskRepository;
@@ -18,6 +17,7 @@ import javax.inject.Inject;
 import java.security.Principal;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Created by daan on 22-5-14.
@@ -38,13 +38,11 @@ public class ModelServiceImpl implements ModelService {
 
   @Override
 
-  public Model createModel(Integer analysisId, CreateModelCommand command) throws ResourceDoesNotExistException, InvalidModelTypeException, InvalidHeterogeneityTypeException {
+  public Model createModel(Integer analysisId, CreateModelCommand command) throws ResourceDoesNotExistException, InvalidModelException {
     ModelTypeCommand modelTypeCommand = command.getModelType();
     HeterogeneityPriorCommand heterogeneityPrior = command.getHeterogeneityPrior();
     String heterogeneityPriorType = determineHeterogeneityPriorType(heterogeneityPrior);
-    Model.ModelBuilder builder = new Model.ModelBuilder()
-            .analysisId(analysisId)
-            .title(command.getTitle())
+    Model.ModelBuilder builder = new Model.ModelBuilder(analysisId, command.getTitle())
             .linearModel(command.getLinearModel())
             .modelType(modelTypeCommand.getType())
             .heterogeneityPriorType(heterogeneityPriorType)
@@ -118,7 +116,7 @@ public class ModelServiceImpl implements ModelService {
   }
 
   @Override
-  public void increaseRunLength(UpdateModelCommand updateModelCommand) throws MethodNotAllowedException, InvalidModelTypeException {
+  public void increaseRunLength(UpdateModelCommand updateModelCommand) throws MethodNotAllowedException, InvalidModelException {
     Model oldModel = modelRepository.get(updateModelCommand.getId());
 
     // check that increase is not a decrease
@@ -131,6 +129,15 @@ public class ModelServiceImpl implements ModelService {
     oldModel.setTaskId(null);
 
     modelRepository.persist(oldModel);
+  }
 
+  @Override
+  public List<Model> queryConsistencyModels(Integer projectId) throws SQLException {
+    return modelRepository
+            .findNetworkModelsByProject(projectId)
+            .stream()
+              .filter(m -> m.getModelType().getType().equals(Model.NETWORK_MODEL_TYPE) ||
+                        m.getModelType().getType().equals(Model.PAIRWISE_MODEL_TYPE))
+              .collect(Collectors.toList());
   }
 }

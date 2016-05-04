@@ -5,7 +5,8 @@
             <div ng-show="!analysis.outcome">
                 <p>No outcome selected.</p>
             </div>
-            <network-plot network="networkGraph.network" ng-show="analysis.outcome"></network-plot>
+              <div ng-show="hasTreatmentOverlap" style="margin-top: 2rem; margin-bottom: 2rem;"><em>Can not show graph due to ambiguous interventions</em></div>
+              <network-plot ng-show="!hasTreatmentOverlap" network="networkGraph.network" ng-show="analysis.outcome"></network-plot>
         </div>
     </div>
     <div class="row">

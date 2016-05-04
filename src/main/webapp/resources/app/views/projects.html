@@ -1,6 +1,6 @@
 <div ui-view>
   <div class="row">
-    <div class="columns large-8">
+    <div id="project-list" class="columns large-8">
       <div ng-if="!loadedProjects">
         <i class="fa fa-spinner fa-spin fa-3x"></i>
         <p>Loading projects...</p>
@@ -12,7 +12,7 @@
         <div class="row">
           <div class="columns large-6">
             <h5>
-              <a ui-sref="project({userUid: user.id, projectId: project.id})">
+              <a ui-sref="projectReport({userUid: user.id, projectId: project.id})">
                 <span title="project name">{{project.name}}</span>
               </a>
             </h5>

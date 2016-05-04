@@ -9,7 +9,7 @@ public enum StudyAllocationEnum {
 
   private String label;
 
-  private StudyAllocationEnum(String label) {
+  StudyAllocationEnum(String label) {
     this.label = label;
   }
 

@@ -6,7 +6,7 @@ PREFIX graph: <http://trials.drugis.org/graphs/>
 
 PREFIX entity: <http://trials.drugis.org/entities/> 
 
-SELECT DISTINCT ?outcome ?label WHERE {
+SELECT DISTINCT ?outcome ?label ?type WHERE {
   GRAPH graph:concepts {
     ?outcome
       a ontology:Variable ;
@@ -15,6 +15,7 @@ SELECT DISTINCT ?outcome ?label WHERE {
   GRAPH ?graph {
     ?studyUri ontology:has_outcome ?studyOutcome .
     ?studyOutcome ontology:of_variable [
+      a ?type ;
       owl:sameAs ?outcome
     ] .
     { ?studyOutcome a ontology:Endpoint }

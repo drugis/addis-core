@@ -2,21 +2,18 @@ package org.drugis.addis.analyses;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.drugis.addis.TestUtils;
-import org.drugis.addis.analyses.repository.AnalysisRepository;
-import org.drugis.addis.analyses.repository.CriteriaRepository;
-import org.drugis.addis.analyses.repository.NetworkMetaAnalysisRepository;
-import org.drugis.addis.analyses.repository.SingleStudyBenefitRiskAnalysisRepository;
+import org.drugis.addis.analyses.repository.*;
 import org.drugis.addis.analyses.service.AnalysisService;
 import org.drugis.addis.config.TestConfig;
-import org.drugis.addis.interventions.Intervention;
+import org.drugis.addis.interventions.model.SimpleIntervention;
 import org.drugis.addis.outcomes.Outcome;
 import org.drugis.addis.projects.service.ProjectService;
 import org.drugis.addis.scenarios.Scenario;
 import org.drugis.addis.scenarios.repository.ScenarioRepository;
 import org.drugis.addis.security.Account;
 import org.drugis.addis.security.repository.AccountRepository;
-import org.drugis.addis.trialverse.model.SemanticIntervention;
-import org.drugis.addis.trialverse.model.SemanticOutcome;
+import org.drugis.addis.trialverse.model.SemanticInterventionUriAndName;
+import org.drugis.addis.trialverse.model.SemanticVariable;
 import org.drugis.addis.util.WebConstants;
 import org.hamcrest.Matchers;
 import org.junit.After;
@@ -33,6 +30,7 @@ import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.util.NestedServletException;
 
 import javax.inject.Inject;
+import java.net.URI;
 import java.security.Principal;
 import java.util.Arrays;
 import java.util.Collections;
@@ -70,15 +68,19 @@ public class AnalysisControllerTest {
   @Inject
   private NetworkMetaAnalysisRepository networkMetaAnalysisRepository;
   @Inject
+  private MetaBenefitRiskAnalysisRepository metaBenefitRiskAnalysisRepository;
+  @Inject
   private WebApplicationContext webApplicationContext;
   @Inject
   private ProjectService projectService;
-  
+
   private Principal user;
 
   private Account john = new Account(1, "a", "john", "lennon", null),
           paul = new Account(2, "a", "paul", "mc cartney", null),
           gert = new Account(3, "gert", "Gert", "van Valkenhoef", "gert@test.com");
+
+  private URI uri = URI.create("uri");
 
 
   @Before
@@ -117,6 +119,32 @@ public class AnalysisControllerTest {
   }
 
   @Test
+  public void testQueryNetworkMetaAnalysisByOutcomes() throws Exception {
+    Outcome outcome = new Outcome(1, 1, "name", "motivation", new SemanticVariable(uri, "label"));
+    NetworkMetaAnalysis networkMetaAnalysis = new NetworkMetaAnalysis(1, 1, "name", outcome);
+    Integer projectId = 1;
+    List<Integer> outcomeIds = Arrays.asList(1);
+    List<NetworkMetaAnalysis> analyses = Arrays.asList(networkMetaAnalysis);
+    when(networkMetaAnalysisRepository.queryByOutcomes(projectId, outcomeIds)).thenReturn(analyses);
+
+    ResultActions result = mockMvc
+            .perform(
+                    get("/projects/{projectId}/analyses", projectId)
+                            .param("outcomeIds", "1")
+                            .principal(user)
+            );
+    result
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()))
+            .andExpect(jsonPath("$", hasSize(1)))
+            .andExpect(jsonPath("$[0].analysisType", Matchers.equalTo(AnalysisType.NETWORK_META_ANALYSIS_LABEL)));
+
+    verify(accountRepository).findAccountByUsername("gert");
+    verify(networkMetaAnalysisRepository).queryByOutcomes(projectId, outcomeIds);
+
+  }
+
+  @Test
   public void testUnauthorisedAccessFails() throws Exception {
     when(accountRepository.findAccountByUsername("gert")).thenReturn(null);
     mockMvc.perform(get("/projects/1/analyses").principal(user))
@@ -136,6 +164,20 @@ public class AnalysisControllerTest {
             .andExpect(jsonPath("$.id", notNullValue()));
     verify(accountRepository).findAccountByUsername("gert");
     verify(analysisService).createSingleStudyBenefitRiskAnalysis(gert, analysisCommand);
+  }
+
+  @Test
+  public void testCreateMetaBenefitRiskAnalysis() throws Exception {
+    MetaBenefitRiskAnalysis analysis = new MetaBenefitRiskAnalysis(1, 1, "title", Collections.emptySet());
+    AnalysisCommand analysisCommand = new AnalysisCommand(1, "name", AnalysisType.META_BENEFIT_RISK_ANALYSIS_LABEL);
+    when(metaBenefitRiskAnalysisRepository.create(gert, analysisCommand)).thenReturn(analysis);
+    String body = TestUtils.createJson(analysisCommand);
+    mockMvc.perform(post("/projects/1/analyses").content(body).principal(user).contentType(WebConstants.getApplicationJsonUtf8Value()))
+            .andExpect(status().isCreated())
+            .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()))
+            .andExpect(jsonPath("$.id", notNullValue()));
+    verify(accountRepository).findAccountByUsername("gert");
+    verify(metaBenefitRiskAnalysisRepository).create(gert, analysisCommand);
   }
 
   @Test
@@ -213,15 +255,17 @@ public class AnalysisControllerTest {
     Integer projectId = 1;
     Integer analysisId = 1;
     List<Outcome> selectedOutcomes = Arrays.asList(
-            new Outcome(1, projectId, "name", "motivation", new SemanticOutcome("uri", "label")),
-            new Outcome(2, projectId, "name", "motivation", new SemanticOutcome("uri", "label")),
-            new Outcome(3, projectId, "name", "motivation", new SemanticOutcome("uri", "label"))
+            new Outcome(1, projectId, "name", "motivation", new SemanticVariable(uri, "label")),
+            new Outcome(2, projectId, "name", "motivation", new SemanticVariable(uri, "label")),
+            new Outcome(3, projectId, "name", "motivation", new SemanticVariable(uri, "label"))
     );
-    List<Intervention> selectedInterventions = Arrays.asList(
-            new Intervention(1, projectId, "name", "motivation", new SemanticIntervention("uri", "label")),
-            new Intervention(2, projectId, "name", "motivation", new SemanticIntervention("uri", "label"))
+    SimpleIntervention intervention1 = new SimpleIntervention(1, projectId, "name", "motivation", new SemanticInterventionUriAndName(URI.create("uri"), "label"));
+    SimpleIntervention intervention2 = new SimpleIntervention(2, projectId, "name", "motivation", new SemanticInterventionUriAndName(URI.create("uri"), "label"));
+    List<InterventionInclusion> interventionInclusions = Arrays.asList(
+            new InterventionInclusion(analysisId, intervention1.getId()),
+            new InterventionInclusion(analysisId, intervention2.getId())
     );
-    SingleStudyBenefitRiskAnalysis oldAnalysis = new SingleStudyBenefitRiskAnalysis(1, projectId, "name", selectedOutcomes, selectedInterventions);
+    SingleStudyBenefitRiskAnalysis oldAnalysis = new SingleStudyBenefitRiskAnalysis(1, projectId, "name", selectedOutcomes, interventionInclusions);
     ObjectMapper objectMapper = new ObjectMapper();
     SingleStudyBenefitRiskAnalysis newAnalysis = objectMapper.convertValue(objectMapper.readTree(exampleUpdateSingleStudyBenefitRiskRequestWithoutProblem()), SingleStudyBenefitRiskAnalysis.class);
     when(analysisRepository.get(analysisId)).thenReturn(oldAnalysis);
@@ -233,7 +277,7 @@ public class AnalysisControllerTest {
             .andExpect(status().isOk())
             .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()))
             .andExpect(jsonPath("$.selectedOutcomes", hasSize(3)))
-            .andExpect(jsonPath("$.selectedInterventions", hasSize(2)));
+            .andExpect(jsonPath("$.interventionInclusions", hasSize(2)));
     verify(analysisRepository).get(analysisId);
     verify(accountRepository).findAccountByUsername("gert");
     verify(singleStudyBenefitRiskAnalysisRepository).update(gert, newAnalysis);
@@ -305,7 +349,7 @@ public class AnalysisControllerTest {
     Integer projectId = 101;
     Integer outcomeId = 444;
     NetworkMetaAnalysis oldAnalysis = new NetworkMetaAnalysis(analysisId, projectId, "analysis name");
-    Outcome outcome = new Outcome(outcomeId, projectId, "outcome name", "motivation", new SemanticOutcome("uir", "label"));
+    Outcome outcome = new Outcome(outcomeId, projectId, "outcome name", "motivation", new SemanticVariable(uri, "label"));
     NetworkMetaAnalysis newAnalysis = new NetworkMetaAnalysis(oldAnalysis.getId(), oldAnalysis.getProjectId(), oldAnalysis.getTitle(), outcome);
     when(analysisRepository.get(analysisId)).thenReturn(oldAnalysis);
     when(analysisService.updateNetworkMetaAnalysis(gert, newAnalysis)).thenReturn(newAnalysis);
@@ -324,8 +368,8 @@ public class AnalysisControllerTest {
     Integer analysisId = 333;
     Integer projectId = 101;
     Integer outcomeId = 444;
-    Outcome outcome = new Outcome(outcomeId, projectId, "outcome name", "motivation", new SemanticOutcome("uir", "label"));
-    List<ArmExclusion> excludedArms = Arrays.asList(new ArmExclusion(null, "-1L"), new ArmExclusion(null, "-2L"));
+    Outcome outcome = new Outcome(outcomeId, projectId, "outcome name", "motivation", new SemanticVariable(uri, "label"));
+    List<ArmExclusion> excludedArms = Arrays.asList(new ArmExclusion(analysisId, URI.create("-1L")), new ArmExclusion(analysisId, URI.create("-2L")));
     NetworkMetaAnalysis newAnalysis = new NetworkMetaAnalysis(analysisId, projectId, "name", excludedArms, Collections.emptyList(), Collections.emptyList(), outcome);
 
     String jsonCommand = TestUtils.createJson(newAnalysis);
@@ -343,9 +387,9 @@ public class AnalysisControllerTest {
     Integer analysisId = 333;
     Integer projectId = 101;
     Integer outcomeId = 444;
-    Outcome outcome = new Outcome(outcomeId, projectId, "outcome name", "motivation", new SemanticOutcome("uir", "label"));
+    Outcome outcome = new Outcome(outcomeId, projectId, "outcome name", "motivation", new SemanticVariable(uri, "label"));
     NetworkMetaAnalysis analysis = new NetworkMetaAnalysis(1, 1, "adsf");
-    List<InterventionInclusion> includedInterventions = Arrays.asList(new InterventionInclusion(analysis, -1), new InterventionInclusion(analysis, -2));
+    List<InterventionInclusion> includedInterventions = Arrays.asList(new InterventionInclusion(analysis.getId(), -1), new InterventionInclusion(analysis.getId(), -2));
     NetworkMetaAnalysis newAnalysis = new NetworkMetaAnalysis(analysisId, projectId, "name", Collections.emptyList(), includedInterventions, Collections.emptyList(), outcome);
 
     String jsonCommand = TestUtils.createJson(newAnalysis);
@@ -363,9 +407,8 @@ public class AnalysisControllerTest {
     Integer analysisId = 333;
     Integer projectId = 101;
     Integer outcomeId = 444;
-    Outcome outcome = new Outcome(outcomeId, projectId, "outcome name", "motivation", new SemanticOutcome("uir", "label"));
-    NetworkMetaAnalysis analysis = new NetworkMetaAnalysis(1, 1, "adsf");
-    List<CovariateInclusion> covariateInclusions = Arrays.asList(new CovariateInclusion(analysis, -1), new CovariateInclusion(analysis, -2));
+    Outcome outcome = new Outcome(outcomeId, projectId, "outcome name", "motivation", new SemanticVariable(uri, "label"));
+    List<CovariateInclusion> covariateInclusions = Arrays.asList(new CovariateInclusion(analysisId, -1), new CovariateInclusion(analysisId, -2));
     NetworkMetaAnalysis newAnalysis = new NetworkMetaAnalysis(analysisId, projectId, "name", Collections.emptyList(), Collections.emptyList(), covariateInclusions, outcome);
 
     String jsonCommand = TestUtils.createJson(newAnalysis);
@@ -384,11 +427,11 @@ public class AnalysisControllerTest {
     Integer analysisId = 4;
     String modelId = "5";
     mockMvc.perform((post("/projects/{projectId}/analyses/{analysisId}/setPrimaryModel", projectId, analysisId)
-      .param("modelId", modelId))
-      .principal(user))
-      .andExpect(status().isOk());
+            .param("modelId", modelId))
+            .principal(user))
+            .andExpect(status().isOk());
     verify(projectService).checkOwnership(projectId, user);
-    verify(analysisRepository).setPrimaryModel(analysisId, Integer.parseInt(modelId));
+    verify(networkMetaAnalysisRepository).setPrimaryModel(analysisId, Integer.parseInt(modelId));
   }
 
 
@@ -400,7 +443,7 @@ public class AnalysisControllerTest {
             .principal(user))
             .andExpect(status().isOk());
     verify(projectService).checkOwnership(projectId, user);
-    verify(analysisRepository).setPrimaryModel(analysisId, null);
+    verify(networkMetaAnalysisRepository).setPrimaryModel(analysisId, null);
   }
 
 

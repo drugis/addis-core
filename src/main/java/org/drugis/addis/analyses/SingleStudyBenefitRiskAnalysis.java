@@ -2,68 +2,57 @@ package org.drugis.addis.analyses;
 
 import com.fasterxml.jackson.annotation.JsonRawValue;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import org.drugis.addis.interventions.Intervention;
 import org.drugis.addis.outcomes.Outcome;
 import org.drugis.addis.util.ObjectToStringDeserializer;
+import org.drugis.trialverse.util.Utils;
 
 import javax.persistence.*;
-import java.util.Collections;
-import java.util.List;
+import java.net.URI;
+import java.util.*;
 
 /**
  * Created by connor on 3/11/14.
  */
 @Entity
+@PrimaryKeyJoinColumn(name = "id", referencedColumnName = "id")
 public class SingleStudyBenefitRiskAnalysis extends AbstractAnalysis {
-
-  @Id
-  @SequenceGenerator(name = "analysis_sequence", sequenceName = "shared_analysis_id_seq", allocationSize = 1)
-  @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "analysis_sequence")
-  private Integer id;
-  private Integer projectId;
-  private String title;
 
   @JsonRawValue
   private String problem;
 
-  private String studyGraphUid;
+  private String studyGraphUri;
 
   @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
   @JoinTable(name = "singleStudyBenefitRiskAnalysis_Outcome",
           joinColumns = {@JoinColumn(name = "analysisId", referencedColumnName = "id")},
           inverseJoinColumns = {@JoinColumn(name = "outcomeId", referencedColumnName = "id")})
-  private List<Outcome> selectedOutcomes;
-
-  @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-  @JoinTable(name = "singleStudyBenefitRiskAnalysis_Intervention",
-          joinColumns = {@JoinColumn(name = "analysisId", referencedColumnName = "id")},
-          inverseJoinColumns = {@JoinColumn(name = "interventionId", referencedColumnName = "id")})
-  private List<Intervention> selectedInterventions;
+  private Set<Outcome> selectedOutcomes = new HashSet<>();
 
   public SingleStudyBenefitRiskAnalysis() {
   }
 
-  public SingleStudyBenefitRiskAnalysis(Integer id, Integer projectId, String title, List<Outcome> selectedOutcomes, List<Intervention> selectedInterventions, String problem) {
+  public SingleStudyBenefitRiskAnalysis(Integer id, Integer projectId, String title, List<Outcome> selectedOutcomes, List<InterventionInclusion> interventionInclusions, String problem) {
     this.id = id;
     this.projectId = projectId;
     this.title = title;
-    this.selectedOutcomes = selectedOutcomes == null ? this.selectedOutcomes : selectedOutcomes;
-    this.selectedInterventions = selectedInterventions == null ? this.selectedInterventions : selectedInterventions;
+    this.selectedOutcomes = selectedOutcomes == null ? this.selectedOutcomes : new HashSet<>(selectedOutcomes);
+    this.interventionInclusions = interventionInclusions == null ? this.interventionInclusions : new HashSet<>(interventionInclusions);
     this.problem = problem;
   }
 
-  public SingleStudyBenefitRiskAnalysis(Integer id, Integer projectId, String title, List<Outcome> selectedOutcomes, List<Intervention> selectedInterventions) {
-    this(id, projectId, title, selectedOutcomes, selectedInterventions, null);
+  public SingleStudyBenefitRiskAnalysis(Integer id, Integer projectId, String title, List<Outcome> selectedOutcomes, List<InterventionInclusion> interventionInclusions) {
+    this(id, projectId, title, selectedOutcomes, interventionInclusions, null);
   }
 
-  public SingleStudyBenefitRiskAnalysis(Integer projectId, String title, List<Outcome> selectedOutcomes, List<Intervention> selectedInterventions) {
-    this(null, projectId, title, selectedOutcomes, selectedInterventions, null);
+  public SingleStudyBenefitRiskAnalysis(Integer projectId, String title, List<Outcome> selectedOutcomes, List<InterventionInclusion> interventionInclusions) {
+    this(null, projectId, title, selectedOutcomes, interventionInclusions, null);
   }
 
-  public SingleStudyBenefitRiskAnalysis(Integer projectId, String title, List<Outcome> selectedOutcomes, List<Intervention> selectedInterventions, String problem) {
-    this(null, projectId, title, selectedOutcomes, selectedInterventions, problem);
+  public SingleStudyBenefitRiskAnalysis(Integer projectId, String title, List<Outcome> selectedOutcomes, List<InterventionInclusion> interventionInclusions, String problem) {
+    this(null, projectId, title, selectedOutcomes, interventionInclusions, problem);
   }
 
+  @Override
   public Integer getId() {
     return id;
   }
@@ -77,20 +66,20 @@ public class SingleStudyBenefitRiskAnalysis extends AbstractAnalysis {
     return title;
   }
 
-  public String getStudyGraphUid() {
-    return studyGraphUid;
+  public URI getStudyGraphUri() {
+    return studyGraphUri == null ? null : URI.create(studyGraphUri);
   }
 
-  public void setStudyGraphUid(String studyGraphUid) {
-    this.studyGraphUid = studyGraphUid;
+  public void setStudyGraphUri(URI studyGraphUri) {
+    this.studyGraphUri = studyGraphUri == null ? null : studyGraphUri.toString();
   }
 
   public List<Outcome> getSelectedOutcomes() {
-    return selectedOutcomes == null ? Collections.EMPTY_LIST : Collections.unmodifiableList(selectedOutcomes);
+    return selectedOutcomes == null ? Collections.EMPTY_LIST : Collections.unmodifiableList(new ArrayList<>(selectedOutcomes));
   }
 
-  public List<Intervention> getSelectedInterventions() {
-    return selectedInterventions == null ? Collections.EMPTY_LIST : Collections.unmodifiableList(selectedInterventions);
+  public void updateSelectedOutcomes(List<Outcome> newOutcomes){
+    Utils.updateSet(this.selectedOutcomes, new HashSet<>(newOutcomes));
   }
 
   @JsonRawValue
@@ -108,29 +97,19 @@ public class SingleStudyBenefitRiskAnalysis extends AbstractAnalysis {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
 
-    SingleStudyBenefitRiskAnalysis analysis = (SingleStudyBenefitRiskAnalysis) o;
+    SingleStudyBenefitRiskAnalysis that = (SingleStudyBenefitRiskAnalysis) o;
 
-    if (id != null ? !id.equals(analysis.id) : analysis.id != null) return false;
-    if (!title.equals(analysis.title)) return false;
-    if (problem != null ? !problem.equals(analysis.problem) : analysis.problem != null) return false;
-    if (!projectId.equals(analysis.projectId)) return false;
-    if (!selectedInterventions.equals(analysis.selectedInterventions)) return false;
-    if (!selectedOutcomes.equals(analysis.selectedOutcomes)) return false;
-    if (studyGraphUid != null ? !studyGraphUid.equals(analysis.studyGraphUid) : analysis.studyGraphUid != null) return false;
+    if (problem != null ? !problem.equals(that.problem) : that.problem != null) return false;
+    if (studyGraphUri != null ? !studyGraphUri.equals(that.studyGraphUri) : that.studyGraphUri != null) return false;
+    return selectedOutcomes.equals(that.selectedOutcomes);
 
-    return true;
   }
 
   @Override
   public int hashCode() {
-    int result = id != null ? id.hashCode() : 0;
-    result = 31 * result + projectId.hashCode();
-    result = 31 * result + title.hashCode();
-    result = 31 * result + (problem != null ? problem.hashCode() : 0);
-    result = 31 * result + (studyGraphUid != null ? studyGraphUid.hashCode() : 0);
+    int result = problem != null ? problem.hashCode() : 0;
+    result = 31 * result + (studyGraphUri != null ? studyGraphUri.hashCode() : 0);
     result = 31 * result + selectedOutcomes.hashCode();
-    result = 31 * result + selectedInterventions.hashCode();
     return result;
   }
-
 }

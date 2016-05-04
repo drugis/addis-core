@@ -1,5 +1,5 @@
 'use strict';
-define([], function() {
+define(['lodash'], function(_) {
   var dependencies = ['$stateParams', '$q', 'ArmService', 'EpochService', 'ActivityService', 'StudyDesignService'];
 
   var StudyDesignDirective = function($stateParams, $q, ArmService, EpochService, ActivityService, StudyDesignService) {
@@ -40,11 +40,11 @@ define([], function() {
           $q.all([armsPromise, epochsPromise, activitiesPromise]).then(function() {
 
             StudyDesignService.queryItems().then(function(coordinates) {
-              var activityMap = _.indexBy(scope.activities, 'activityUri');
-              var studyDesign = _.object(_.pluck(scope.epochs, 'uri'));
+              var activityMap = _.keyBy(scope.activities, 'activityUri');
+              var studyDesign = _.fromPairs(_.map(scope.epochs, 'uri'));
 
               _.each(scope.epochs, function(epoch) {
-                studyDesign[epoch.uri] = _.object(_.pluck(scope.arms, 'armURI'));
+                studyDesign[epoch.uri] = _.fromPairs(_.map(scope.arms, 'armURI'));
               });
 
               _.each(coordinates, function(coordinate) {

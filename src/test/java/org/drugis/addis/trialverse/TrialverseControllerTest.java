@@ -8,8 +8,10 @@ import org.drugis.addis.security.Account;
 import org.drugis.addis.security.repository.AccountRepository;
 import org.drugis.addis.trialverse.model.*;
 import org.drugis.addis.trialverse.model.emun.StudyDataSection;
+import org.drugis.addis.trialverse.model.mapping.VersionedUuidAndOwner;
 import org.drugis.addis.trialverse.service.MappingService;
 import org.drugis.addis.trialverse.service.TriplestoreService;
+import org.drugis.addis.trialverse.service.impl.ReadValueException;
 import org.drugis.addis.util.WebConstants;
 import org.joda.time.DateTime;
 import org.junit.After;
@@ -25,6 +27,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import javax.inject.Inject;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.security.Principal;
 import java.util.Arrays;
@@ -132,15 +135,15 @@ public class TrialverseControllerTest {
  }
 
   @Test
-  public void testQuerySemanticOutcomes() throws Exception {
+  public void testQuerySemanticOutcomes() throws Exception, ReadValueException {
     String versionUid = "current";
-    SemanticOutcome testOutCome = new SemanticOutcome("http://test/com", "test label");
+    SemanticVariable testOutCome = new SemanticVariable(URI.create("http://test/com"), "test label");
     when(triplestoreService.getOutcomes(versionedUuid, versionUid)).thenReturn(Collections.singletonList(testOutCome));
 
     mockMvc.perform(get("/namespaces/" + namespaceUid + "/outcomes").param("version", versionUid))
             .andExpect(status().isOk())
             .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()))
-            .andExpect(jsonPath("$[0].uri", is(testOutCome.getUri())));
+            .andExpect(jsonPath("$[0].uri", is(testOutCome.getUri().toString())));
 
     verify(triplestoreService).getOutcomes(versionedUuid, versionUid);
     verify(mappingService).getVersionedUuid(namespaceUid);
@@ -149,13 +152,13 @@ public class TrialverseControllerTest {
   @Test
   public void testQuerySemanticInterventions() throws Exception {
     String versionUid = "current";
-    SemanticIntervention testIntervention = new SemanticIntervention("http://test/com", "test label");
+    SemanticInterventionUriAndName testIntervention = new SemanticInterventionUriAndName(URI.create("http://test/com"), "test label");
     when(triplestoreService.getInterventions(versionedUuid, versionUid)).thenReturn(Collections.singletonList(testIntervention));
 
     mockMvc.perform(get("/namespaces/" + namespaceUid + "/interventions").param("version", versionUid))
             .andExpect(status().isOk())
             .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()))
-            .andExpect(jsonPath("$[0].uri", is(testIntervention.getUri())));
+            .andExpect(jsonPath("$[0].uri", is(testIntervention.getUri().toString())));
     verify(triplestoreService).getInterventions(versionedUuid, versionUid);
     verify(mappingService).getVersionedUuid(namespaceUid);
   }
@@ -174,38 +177,6 @@ public class TrialverseControllerTest {
             .andExpect(jsonPath("$[0].title", is(study.getTitle())));
 
     verify(triplestoreService).queryStudies(versionedUuid, versionUid);
-    verify(mappingService).getVersionedUuid(namespaceUid);
-  }
-
-  @Test
-  public void testGetTrialDataWithOutcomeAndInterventionsInQuery() throws Exception {
-    List<TrialDataStudy> trialDataStudies = Collections.singletonList(new TrialDataStudy("abc", "study name", Collections.emptyList(), Collections.emptyList()));
-    List<String> interventionUris = Arrays.asList("uri1", "uri2");
-    String outcomeUri = "http://someoutcomethisis/12345/abc";
-    String versionUid = "current";
-    when(triplestoreService.getTrialData(versionedUuid, versionUid, outcomeUri, interventionUris, Collections.emptyList())).thenReturn(trialDataStudies);
-
-    mockMvc.perform(get("/namespaces/" + namespaceUid + "/trialData?interventionUris=uri1&interventionUris=uri2&outcomeUri=" + outcomeUri).principal(user).param("version", versionUid))
-            .andExpect(status().isOk())
-            .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()))
-            .andExpect(jsonPath("$", notNullValue()));
-
-    verify(triplestoreService).getTrialData(versionedUuid, versionUid, outcomeUri, interventionUris, Collections.emptyList());
-    verify(mappingService).getVersionedUuid(namespaceUid);
-  }
-
-  @Test
-  public void testGetTrialDataWithOutcomeAndNoInterventionsInQuery() throws Exception {
-    List<TrialDataStudy> trialDataStudies = Collections.singletonList(new TrialDataStudy("abc", "study name", Collections.emptyList(), Collections.emptyList()));
-    String outcomeUri = "http://someoutcomethisis/12345/abc";
-    String versionUid = "current";
-    when(triplestoreService.getTrialData(versionedUuid, versionUid, outcomeUri, Collections.emptyList(), Collections.emptyList())).thenReturn(trialDataStudies);
-
-    mockMvc.perform(get("/namespaces/"+namespaceUid+"/trialData?outcomeUri=" + outcomeUri).param("version", versionUid))
-            .andExpect(status().isOk())
-            .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()))
-            .andExpect(jsonPath("$", notNullValue()));
-    verify(triplestoreService).getTrialData(versionedUuid, versionUid, outcomeUri, Collections.emptyList(), Collections.emptyList());
     verify(mappingService).getVersionedUuid(namespaceUid);
   }
 

@@ -20,7 +20,7 @@ import static org.junit.Assert.assertNull;
 public class CovariateOptionEnumTest {
 
   @Test
-  public void AllocationRondomizedTest() throws IOException {
+  public void AllocationRandomizedTest() throws IOException {
 
     CovariateOption covariate = CovariateOption.ALLOCATION_RANDOMIZED;
 

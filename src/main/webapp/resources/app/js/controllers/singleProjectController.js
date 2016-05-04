@@ -1,6 +1,6 @@
 'use strict';
-define(['lodash'], function(_) {
-  var dependencies = ['$scope', '$q', '$state', '$stateParams', '$window', '$modal',
+define(['lodash', 'angular'], function(_, angular) {
+  var dependencies = ['$scope', '$q', '$state', '$stateParams', '$window', '$location', '$modal',
     'ProjectResource',
     'TrialverseResource',
     'TrialverseStudyResource',
@@ -12,11 +12,14 @@ define(['lodash'], function(_) {
     'CovariateResource',
     'AnalysisResource',
     'ANALYSIS_TYPES',
-    '$modal'
+    'InterventionService',
+    'activeTab'
   ];
-  var SingleProjectController = function($scope, $q, $state, $stateParams, $window, $modal, ProjectResource, TrialverseResource,
+  var SingleProjectController = function($scope, $q, $state, $stateParams, $window, $location, $modal, ProjectResource, TrialverseResource,
     TrialverseStudyResource, SemanticOutcomeResource, OutcomeResource, SemanticInterventionResource, InterventionResource,
-    CovariateOptionsResource, CovariateResource, AnalysisResource, ANALYSIS_TYPES) {
+    CovariateOptionsResource, CovariateResource, AnalysisResource, ANALYSIS_TYPES, InterventionService, activeTab) {
+
+    $scope.activeTab = activeTab;
 
     $scope.analysesLoaded = false;
     $scope.covariatesLoaded = true;
@@ -32,7 +35,6 @@ define(['lodash'], function(_) {
     $scope.duplicateInterventionName = {
       isDuplicate: false
     };
-    $scope.analysisTypes = ANALYSIS_TYPES;
     $scope.userId = $stateParams.userUid;
 
     $scope.project = ProjectResource.get($stateParams);
@@ -63,8 +65,13 @@ define(['lodash'], function(_) {
         projectId: $scope.project.id
       });
 
-      $scope.interventions = InterventionResource.query({
+      InterventionResource.query({
         projectId: $scope.project.id
+      }).$promise.then(function(interventions) {
+        $scope.interventions = interventions.map(function(intervention) {
+          intervention.definitionLabel = InterventionService.generateDescriptionLabel(intervention);
+          return intervention;
+        });
       });
 
       loadCovariates();
@@ -81,11 +88,12 @@ define(['lodash'], function(_) {
           $scope.analysesLoaded = true;
         });
       });
+
     });
 
     function loadCovariates() {
       // we need to get the options in order to display the definition label, as only the definition key is stored on the covariate
-      $q.all([CovariateOptionsResource.query().$promise,
+      $q.all([CovariateOptionsResource.getProjectCovariates($stateParams).$promise,
         CovariateResource.query({
           projectId: $scope.project.id
         }).$promise
@@ -97,6 +105,31 @@ define(['lodash'], function(_) {
         });
       });
     }
+
+    $scope.goToAnalysis = function(analysis) {
+      var analysisType = angular.copy(_.find(ANALYSIS_TYPES, function(type) {
+        return type.label === analysis.analysisType;
+      }));
+
+      //todo if analysis is gemtc type and has a problem go to models view
+      if (analysisType.label === 'Benefit-risk analysis based on meta-analyses' && analysis.finalized) {
+        analysisType.stateName = 'metaBenefitRisk';
+      }
+
+      $state.go(analysisType.stateName, {
+        userUid: $scope.userId,
+        projectId: $scope.project.id,
+        analysisId: analysis.id
+      });
+    };
+
+    $scope.openAddAnalysisDialog = function() {
+      $modal.open({
+        templateUrl: './app/js/analysis/addAnalysis.html',
+        scope: $scope,
+        controller: 'AddAnalysisController'
+      });
+    };
 
     $scope.openCreateOutcomeDialog = function() {
       $modal.open({
@@ -121,6 +154,7 @@ define(['lodash'], function(_) {
         resolve: {
           callback: function() {
             return function(newIntervention) {
+              newIntervention.definitionLabel = InterventionService.generateDescriptionLabel(newIntervention);
               $scope.interventions.push(newIntervention);
             };
           }
@@ -144,35 +178,18 @@ define(['lodash'], function(_) {
       });
     };
 
-    $scope.addAnalysis = function(newAnalysis) {
-      newAnalysis.projectId = $scope.project.id;
-      AnalysisResource
-        .save(newAnalysis)
-        .$promise.then(function(savedAnalysis) {
-          $scope.goToAnalysis(savedAnalysis.id, savedAnalysis.analysisType);
-        });
-    };
-
-    $scope.goToAnalysis = function(analysisId, analysisTypeLabel) {
-      var analysisType = _.find(ANALYSIS_TYPES, function(type) {
-        return type.label === analysisTypeLabel;
-      });
-      //todo if analysis is gemtc type and has a problem go to models view
-      $state.go(analysisType.stateName, {
-        userUid: $scope.userId,
-        projectId: $scope.project.id,
-        analysisId: analysisId
-      });
-    };
-
-    function findDuplicateName(list, name) {
-      return _.find(list, function(item) {
-        return item.name === name;
-      });
-    }
-
-    $scope.checkForDuplicateInterventionName = function(name) {
-      $scope.duplicateInterventionName.isDuplicate = findDuplicateName($scope.interventions, name);
+    $scope.setActiveTab = function(tab) {
+      if (tab === $scope.activeTab) {
+        return;
+      }
+      $scope.activeTab = tab;
+      var path = $location.path();
+      if (tab === 'report') {
+        $location.path(path + '/report');
+      } else{
+        var newPath = path.substring(0, path.length - '/report'.length);
+        $location.path( newPath);
+      }
     };
 
   };

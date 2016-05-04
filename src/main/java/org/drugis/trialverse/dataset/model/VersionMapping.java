@@ -1,6 +1,7 @@
 package org.drugis.trialverse.dataset.model;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.net.URI;
 import java.net.URISyntaxException;
 
@@ -9,7 +10,7 @@ import java.net.URISyntaxException;
  */
 @Entity
 @Table
-public class VersionMapping {
+public class VersionMapping implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -18,6 +19,9 @@ public class VersionMapping {
     private String versionedDatasetUrl;
     private String ownerUuid;
     private String trialverseDatasetUrl;
+
+    public VersionMapping() {
+    }
 
     public VersionMapping(Integer id, String versionedDatasetUrl, String ownerUuid, String trialverseDatasetUrl) {
         this.id = id;

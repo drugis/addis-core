@@ -1,32 +1,31 @@
 package org.drugis.addis.analyses;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.drugis.addis.outcomes.Outcome;
+import org.drugis.trialverse.util.Utils;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
+import java.io.Serializable;
+import java.util.*;
 
 /**
  * Created by connor on 6-5-14.
  */
 @Entity
-public class NetworkMetaAnalysis extends AbstractAnalysis {
-  @Id
-  @SequenceGenerator(name = "analysis_sequence", sequenceName = "shared_analysis_id_seq", allocationSize = 1)
-  @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "analysis_sequence")
-  private Integer id;
-  private Integer projectId;
-  private String title;
+@JsonIgnoreProperties(ignoreUnknown = true)
+@PrimaryKeyJoinColumn(name = "id", referencedColumnName = "id")
+public class NetworkMetaAnalysis extends AbstractAnalysis implements Serializable {
   private Integer primaryModel;
 
-  @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "analysis", orphanRemoval = true)
-  private List<ArmExclusion> excludedArms = new ArrayList<>();
+  @JsonProperty("excludedArms")
+  @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "analysisId", orphanRemoval = true)
+  private Set<ArmExclusion> excludedArms = new HashSet<>();
 
-  @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "analysis", orphanRemoval = true)
-  private List<InterventionInclusion> includedInterventions = new ArrayList<>();
-
-  @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "analysis", orphanRemoval = true)
-  private List<CovariateInclusion> includedCovariates = new ArrayList<>();
+  @JsonProperty("includedCovariates")
+  @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "analysisId", orphanRemoval = true)
+  private Set<CovariateInclusion> includedCovariates = new HashSet<>();
 
   @ManyToOne(targetEntity = Outcome.class)
   @JoinColumn(name = "outcomeId")
@@ -51,21 +50,25 @@ public class NetworkMetaAnalysis extends AbstractAnalysis {
     this(id, projectId, title, null);
   }
 
-  public NetworkMetaAnalysis(Integer id, Integer projectId, String title, List<ArmExclusion> excludedArms,
-                             List<InterventionInclusion> includedInterventions, List<CovariateInclusion> includedCovariates, Outcome outcome) {
+  public NetworkMetaAnalysis(Integer id, Integer projectId, String title,
+                             List<ArmExclusion> excludedArms,
+                             List<InterventionInclusion> interventionInclusions,
+                             List<CovariateInclusion> includedCovariates, Outcome outcome) {
     this.id = id;
     this.projectId = projectId;
     this.title = title;
-    this.excludedArms = excludedArms == null ? new ArrayList<>() : excludedArms;
-    this.includedInterventions = includedInterventions == null ? new ArrayList<>() : includedInterventions;
-    this.includedCovariates = includedCovariates == null ? new ArrayList<>() : includedCovariates;
+    this.excludedArms = excludedArms == null ? new HashSet<>() : new HashSet<>(excludedArms);
+    this.interventionInclusions = interventionInclusions == null ? new HashSet<>() : new HashSet<>(interventionInclusions);
+    this.includedCovariates = includedCovariates == null ? new HashSet<>() : new HashSet<>(includedCovariates);
     this.outcome = outcome;
   }
 
+  @Override
   public Integer getId() {
     return id;
   }
 
+  @Override
   public Integer getProjectId() {
     return projectId;
   }
@@ -74,16 +77,14 @@ public class NetworkMetaAnalysis extends AbstractAnalysis {
     return title;
   }
 
+  @JsonIgnore
   public List<ArmExclusion> getExcludedArms() {
-    return excludedArms;
+    return Collections.unmodifiableList(new ArrayList<>(excludedArms));
   }
 
-  public List<InterventionInclusion> getIncludedInterventions() {
-    return includedInterventions;
-  }
-
+  @JsonIgnore
   public List<CovariateInclusion> getCovariateInclusions() {
-    return includedCovariates;
+    return Collections.unmodifiableList(new ArrayList<>(includedCovariates));
   }
 
   public Outcome getOutcome() {
@@ -98,28 +99,41 @@ public class NetworkMetaAnalysis extends AbstractAnalysis {
     this.primaryModel = primaryModel;
   }
 
+  public void updateArmExclusions(Set<ArmExclusion> excludedArms){
+    Utils.updateSet(this.excludedArms, excludedArms);
+  }
+
+  public void updateIncludedCovariates(Set<CovariateInclusion> includedCovariates){
+    Utils.updateSet(this.includedCovariates, includedCovariates);
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
+    if (!(o instanceof NetworkMetaAnalysis)) return false;
 
     NetworkMetaAnalysis that = (NetworkMetaAnalysis) o;
 
-    if (!id.equals(that.id)) return false;
+    if (id != null ? !id.equals(that.id) : that.id != null) return false;
     if (!projectId.equals(that.projectId)) return false;
     if (!title.equals(that.title)) return false;
-    if (primaryModel != null ? !primaryModel.equals(that.primaryModel) : that.primaryModel != null)
-      return false;
+    if (primaryModel != null ? !primaryModel.equals(that.primaryModel) : that.primaryModel != null) return false;
+    if (!excludedArms.equals(that.excludedArms)) return false;
+    if (!interventionInclusions.equals(that.interventionInclusions)) return false;
+    if (!includedCovariates.equals(that.includedCovariates)) return false;
     return outcome != null ? outcome.equals(that.outcome) : that.outcome == null;
 
   }
 
   @Override
   public int hashCode() {
-    int result = id.hashCode();
+    int result = id != null ? id.hashCode() : 0;
     result = 31 * result + projectId.hashCode();
     result = 31 * result + title.hashCode();
     result = 31 * result + (primaryModel != null ? primaryModel.hashCode() : 0);
+    result = 31 * result + excludedArms.hashCode();
+    result = 31 * result + interventionInclusions.hashCode();
+    result = 31 * result + includedCovariates.hashCode();
     result = 31 * result + (outcome != null ? outcome.hashCode() : 0);
     return result;
   }

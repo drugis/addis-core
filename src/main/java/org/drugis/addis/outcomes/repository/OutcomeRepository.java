@@ -7,6 +7,7 @@ import org.drugis.addis.outcomes.OutcomeCommand;
 import org.drugis.addis.security.Account;
 
 import java.util.Collection;
+import java.util.List;
 
 /**
  * Created by daan on 3/7/14.
@@ -14,7 +15,11 @@ import java.util.Collection;
 public interface OutcomeRepository {
   Collection<Outcome> query(Integer projectId);
 
+  Outcome get(Integer outcomeId) throws ResourceDoesNotExistException;
+
   Outcome get(Integer projectId, Integer outcomeId) throws ResourceDoesNotExistException;
 
   Outcome create(Account user, OutcomeCommand outcomeCommand) throws MethodNotAllowedException, ResourceDoesNotExistException;
+
+  List<Outcome> get(Integer projectId, List<Integer> outcomeIds);
 }

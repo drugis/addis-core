@@ -16,6 +16,8 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;
 import java.sql.SQLException;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static org.junit.Assert.*;
@@ -43,9 +45,7 @@ public class JpaModelRepositoryTest {
     String link = Model.LINK_LOG;
     JSONObject regressor = new JSONObject();
     regressor.put("a", "b");
-    Model toPersist = new Model.ModelBuilder()
-            .analysisId(analysisId)
-            .title(modelTitle)
+    Model toPersist = new Model.ModelBuilder(analysisId, modelTitle)
             .linearModel(linearModel)
             .modelType(Model.NETWORK_MODEL_TYPE)
             .burnInIterations(burnInIterations)
@@ -136,9 +136,40 @@ public class JpaModelRepositoryTest {
     assertNotNull(result);
   }
 
+  @Test
+  public void testGetByModelIds() {
+    List<Integer> modelIds = Arrays.asList(1, 2);
+    List<Model> result = modelRepository.get(modelIds);
+    assertNotNull(result);
+    assertEquals(2, result.size());
+  }
+
+  @Test
+  public void testGetByModelIdsWithEmptyList() {
+    List<Integer> modelIds = Collections.emptyList();
+    List<Model> result = modelRepository.get(modelIds);
+    assertTrue(result.isEmpty());
+  }
+
   @Test(expected = DataAccessException.class)
   public void testGetNonExistentModel() throws SQLException {
     Integer modelId = -999;
     modelRepository.get(modelId);
+  }
+
+  @Test
+  public void testFindByProject() throws Exception {
+    Integer projectId = 1;
+    List<Model> models = modelRepository.findNetworkModelsByProject(projectId);
+    assertEquals(2, models.size());
+  }
+
+  @Test
+  public void testFindNetworkModelsByProject() throws SQLException {
+    Integer projectId = 2;
+    List<Model> networkModelsByProject = modelRepository.findNetworkModelsByProject(projectId);
+    assertEquals(2, networkModelsByProject.size());
+    assertTrue(networkModelsByProject.get(0).isHasResult());
+    assertFalse(networkModelsByProject.get(1).isHasResult());
   }
 }

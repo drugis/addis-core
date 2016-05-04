@@ -1,32 +1,118 @@
 <form id="add-analysis-form" novalidate ng-submit="addIntervention(newIntervention)">
   <h3>Add a new intervention</h3>
-  <div class="row">
-    <div class="large-10 columns">
-      <label>Semantic intervention
-        <select ng-model="newIntervention.semanticIntervention" ng-options="semanticIntervention as semanticIntervention.label for semanticIntervention in semanticInterventions | orderBy:'label'"
-        ng-change="newIntervention.name = newIntervention.semanticIntervention.label; checkForDuplicateInterventionName(newIntervention.name)"></select>
-      </label>
-    </div>
-  </div>
-  <div class="row">
-    <div class="large-10 columns">
-      <label>Name
-        <input type="text" ng-model="newIntervention.name" ng-change="checkForDuplicateInterventionName(newIntervention.name)">
-      </label>
-    </div>
-  </div>
-  <div class="row">
-    <div class="large-10 columns">
-      <label>Motivation
-        <textarea rows="4" ng-model="newIntervention.motivation"></textarea>
-      </label>
-    </div>
-  </div>
-  <div class="row">
-    <button class="button small success" ng-disabled="!newIntervention.name || !newIntervention.semanticIntervention || duplicateInterventionName.isDuplicate"
-    type="submit">Add intervention
-    </button>
-    <div class="alert" ng-show="duplicateInterventionName.isDuplicate">Duplicate name.</div>
-  </div>
+
+  <!-- Simple -->
+  <tabset>
+    <tab id="add-simple-intervention-tab" heading="Simple intervention" ng-click="selectTab('simple')" active="activeTab === 'simple'">
+      <div class="row">
+        <div class="large-10 columns">
+          <label>Semantic intervention
+            <select id="simple-intervention-select" ng-model="newIntervention.semanticIntervention"
+              ng-options="semanticIntervention as semanticIntervention.label for semanticIntervention in semanticInterventions | orderBy:'label'"
+              ng-change="newIntervention.name = newIntervention.semanticIntervention.label; checkForDuplicateInterventionName(newIntervention.name)"></select>
+          </label>
+        </div>
+      </div>
+      <div class="row">
+        <div class="large-10 columns">
+          <label>Name
+            <input id="intervention-name-input" type="text" ng-model="newIntervention.name" ng-change="checkForDuplicateInterventionName(newIntervention.name)">
+          </label>
+        </div>
+      </div>
+      <div class="row">
+        <div class="large-10 columns">
+          <label>Motivation
+            <textarea id="intervention-desc-txt" rows="4" ng-model="newIntervention.motivation"></textarea>
+          </label>
+        </div>
+      </div>
+      <div class="row">
+      <div class="large-12 columns">
+          <button id="add-intervention-sumbit-btn" class="button small success" ng-disabled="!newIntervention.name || !newIntervention.semanticIntervention || duplicateInterventionName.isDuplicate"
+            type="submit">Add intervention
+          </button>
+          <div class="alert" ng-show="duplicateInterventionName.isDuplicate">Duplicate name.</div>
+        </div>
+      </div>
+    </tab>
+
+
+    <!-- Dose-restricted -->
+    <tab id="add-dose-restricted-intervention-tab" heading="Dose-restricted drug" ng-click="selectTab('dose-restricted')" active="activeTab === 'dose-restricted'">
+      <div class="row">
+        <div class="large-10 columns">
+          <label>Semantic intervention
+            <select id="dose-restricted-intervention-select" ng-model="newIntervention.semanticIntervention"
+              ng-options="semanticIntervention as semanticIntervention.label for semanticIntervention in semanticInterventions | orderBy:'label'"
+              ng-change="newIntervention.name = newIntervention.semanticIntervention.label; checkForDuplicateInterventionName(newIntervention.name)"></select>
+          </label>
+        </div>
+      </div>
+      <div class="row">
+        <div class="large-10 columns">
+          <label>Name
+            <input id="intervention-name-input" type="text" ng-model="newIntervention.name" ng-change="checkForDuplicateInterventionName(newIntervention.name)">
+          </label>
+        </div>
+      </div>
+      <div class="row">
+        <div class="large-10 columns">
+          <label>Motivation
+            <textarea id="intervention-desc-txt" rows="4" ng-model="newIntervention.motivation"></textarea>
+          </label>
+        </div>
+      </div>
+      <div class="row">
+        <div class="large-12 columns">
+          <label class="form-item-header">Dose type</label>
+            <input id="add-intervention-fixed-dose-type-radio" type="radio" value="fixed" ng-model="newIntervention.doseType" id="fixed-dose-type-radio"
+                   ng-change="cleanUpBounds()">
+            <label for="fixed-dose-type-radio">Fixed only</label>
+            <input type="radio" value="titrated" ng-model="newIntervention.doseType" id="titrated-dose-type-radio"
+                   ng-change="cleanUpBounds()">
+            <label for="titrated-dose-type-radio">Titrated only</label>
+            <input type="radio" value="both" ng-model="newIntervention.doseType" id="both-dose-type-radio"
+                   ng-change="cleanUpBounds()">
+            <label for="both-dose-type-radio">Both</label>
+            <div class="indent-one" ng-if="newIntervention.doseType === 'fixed'">
+              <constraint id="fixed-constraint" model="newIntervention.fixedDoseConstraint"
+                dataset-uuid="{{project.namespaceUid}}" />
+            </div>
+            <div class="indent-one" ng-if="newIntervention.doseType === 'titrated'">
+              <span>Min dose
+                <constraint ng-if="newIntervention.doseType === 'titrated'" model="newIntervention.titratedDoseMinConstraint"
+                  dataset-uuid="{{project.namespaceUid}}" />
+              </span>
+              <span>Max dose
+                <constraint ng-if="newIntervention.doseType === 'titrated'"
+                            model="newIntervention.titratedDoseMaxConstraint" dataset-uuid="{{project.namespaceUid}}" />
+              </span>
+            </div>
+            <div class="indent-one" ng-if="newIntervention.doseType === 'both'">
+              Min dose
+              <constraint ng-if="newIntervention.doseType === 'both'"
+                          model="newIntervention.bothDoseTypesMinConstraint" dataset-uuid="{{project.namespaceUid}}"/>
+              Max dose
+              <constraint ng-if="newIntervention.doseType === 'both'"
+                          model="newIntervention.bothDoseTypesMaxConstraint" dataset-uuid="{{project.namespaceUid}}"/>
+            </div>
+
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="large-12 columns">
+          <button id="add-intervention-sumbit-btn" class="button small success"
+                  ng-disabled="!newIntervention.name || !newIntervention.semanticIntervention || duplicateInterventionName.isDuplicate || hasIncorrectConstraints"
+                  type="submit">Add intervention
+          </button>
+          <div class="alert" ng-show="duplicateInterventionName.isDuplicate">Duplicate name.</div>
+          <div class="alert" ng-show="hasIncorrectConstraints">Missing constraint or constraint value.</div>
+        </div>
+      </div>
+    </tab>
+  </tabset>
+
   <a class="close-reveal-modal" ng-click="cancel()">&#215;</a>
 </form>

@@ -1,8 +1,17 @@
 'use strict';
-define(['angular', 'angular-resource'], function (angular, angularResource) {
+define([], function() {
   var dependencies = ['$resource'];
-  var CovariateOptionsResource = function ($resource) {
-    return $resource('/covariate-options');
+  var CovariateOptionsResource = function($resource) {
+    return $resource('/covariate-options', {}, {
+      getProjectCovariates: {
+        method: 'GET',
+        url: '/projects/:projectId/covariate-options',
+        params: {
+          projectId: '@projecId'
+        },
+        isArray: true
+      }
+    });
   };
   return dependencies.concat(CovariateOptionsResource);
 });

@@ -5,7 +5,7 @@ import org.drugis.addis.exception.MethodNotAllowedException;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.outcomes.repository.OutcomeRepository;
 import org.drugis.addis.security.Account;
-import org.drugis.addis.trialverse.model.SemanticOutcome;
+import org.drugis.addis.trialverse.model.SemanticVariable;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
@@ -16,7 +16,10 @@ import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;
+import java.net.URI;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -54,8 +57,14 @@ public class OutcomeRepositoryTest {
   }
 
   @Test
+  public void testGetByProjectAndIds() throws ResourceDoesNotExistException {
+    List<Outcome> outcome = outcomeRepository.get(1, Arrays.asList(1, 2));
+    assertEquals(2, outcome.size());
+  }
+
+  @Test
   public void testCreateOutcome() throws Exception {
-    OutcomeCommand outcomeCommand = new OutcomeCommand(1, "newName 1", "newMotivation", new SemanticOutcome("http://semantic.com", "labelnew"));
+    OutcomeCommand outcomeCommand = new OutcomeCommand(1, "newName 1", "newMotivation", new SemanticVariable(URI.create("http://semantic.com"), "labelnew"));
     Account user = em.find(Account.class, 1);
     Outcome result = outcomeRepository.create(user, outcomeCommand);
     assertTrue(outcomeRepository.query(1).contains(result));
@@ -65,7 +74,7 @@ public class OutcomeRepositoryTest {
   @Test(expected = MethodNotAllowedException.class)
   public void testCannotCreateOutcomeInNotOwnedProject() throws Exception {
     Account account = em.find(Account.class, 2);
-    OutcomeCommand outcomeCommand = new OutcomeCommand(1, "newName 2", "newMotivation", new SemanticOutcome("http://semantic.com", "labelnew"));
+    OutcomeCommand outcomeCommand = new OutcomeCommand(1, "newName 2", "newMotivation", new SemanticVariable(URI.create("http://semantic.com"), "labelnew"));
     outcomeRepository.create(account, outcomeCommand);
   }
 
@@ -73,14 +82,14 @@ public class OutcomeRepositoryTest {
   @Test(expected = ResourceDoesNotExistException.class)
   public void testCannotCreateOutcomeInNonexistentProject() throws Exception {
     Account account = em.find(Account.class, 2);
-    OutcomeCommand outcomeCommand = new OutcomeCommand(13221, "newName 3", "newMotivation", new SemanticOutcome("http://semantic.com", "labelnew"));
+    OutcomeCommand outcomeCommand = new OutcomeCommand(13221, "newName 3", "newMotivation", new SemanticVariable(URI.create("http://semantic.com"), "labelnew"));
     outcomeRepository.create(account, outcomeCommand);
   }
 
   @Test(expected = InvalidDataAccessApiUsageException.class)
   public void testCannotCreateOutcomeWithDuplicateName() throws ResourceDoesNotExistException, MethodNotAllowedException {
     Account account = em.find(Account.class, 1);
-    OutcomeCommand outcomeCommand = new OutcomeCommand(1, "outcome 1", "newMotivation", new SemanticOutcome("http://semantic.com", "labelnew"));
+    OutcomeCommand outcomeCommand = new OutcomeCommand(1, "outcome 1", "newMotivation", new SemanticVariable(URI.create("http://semantic.com"), "labelnew"));
     outcomeRepository.create(account, outcomeCommand);
   }
 

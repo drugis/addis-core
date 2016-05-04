@@ -44,7 +44,7 @@ import java.util.Properties;
 
 @Configuration
 @ComponentScan(excludeFilters = {@Filter(Configuration.class)}, basePackages = {
-        "org.drugis.addis", "org.drugis.trialverse"})
+        "org.drugis.addis", "org.drugis.trialverse"}, lazyInit = true)
 @EnableTransactionManagement
 @EnableJpaRepositories(basePackages = {"org.drugis.addis.projects",
         "org.drugis.addis.security",
@@ -53,7 +53,7 @@ import java.util.Properties;
         "org.drugis.addis.scenarios",
         "org.drugis.addis.models",
         "org.drugis.addis.remarks",
-        "org.drugis.trialverse.security"
+        "org.drugis.trialverse",
 })
 public class MainConfig {
 
@@ -139,7 +139,8 @@ public class MainConfig {
             "org.drugis.addis.scenarios",
             "org.drugis.addis.models",
             "org.drugis.addis.covariates",
-            "org.drugis.addis.remarks");
+            "org.drugis.addis.remarks",
+            "org.drugis.trialverse");
     em.setDataSource(dataSource());
     em.setPersistenceUnitName("addisCore");
     em.setLoadTimeWeaver(new InstrumentationLoadTimeWeaver());
