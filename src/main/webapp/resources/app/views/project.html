@@ -84,7 +84,7 @@
                 <nma-report-view user="user" project="project" analysis="analysis" interventions="interventions"></nma-report-view>
               </div>
 
-              <div ng-if="analysis.analysisType === 'Single-study Benefit-Risk'">
+              <div ng-if="analysis.analysisType === 'Single-study Benefit-Risk' || analysis.analysisType === 'Benefit-risk analysis based on meta-analyses'">
                 <ssbr-report-view user="user" project="project" analysis="analysis" interventions="interventions"></ssbr-report-view>
               </div>
             </div>

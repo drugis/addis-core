@@ -1,9 +1,18 @@
 <div>
-  <a ui-sref="singleStudyBenefitRisk({userUid: user.id, projectId: project.id, analysisId: analysis.id})">View details</a>
+  <a ng-if="analysis.analysisType === 'Single-study Benefit-Risk'" ui-sref="singleStudyBenefitRisk({userUid: user.id, projectId: project.id, analysisId: analysis.id})">View details</a>
+  <a ng-if="analysis.analysisType === 'Benefit-risk analysis based on meta-analyses'" ui-sref="metaBenefitRisk({userUid: user.id, projectId: project.id, analysisId: analysis.id})">View details</a>
 
-  <div>
+  <div ng-if="analysis.analysisType === 'Single-study Benefit-Risk'">
     <strong>Data source:</strong> <a ui-sref="namespace-study({userUid: user.id, projectId: project.id, studyUid: dataSource.uid})">{{dataSource.name}}</a>
   </div>
+  <div ng-if="analysis.analysisType === 'Benefit-risk analysis based on meta-analyses'">
+    <ul>
+      <li ng-repeat="outcomeInclusion in analysis.mbrOutcomeInclusions">
+      {{outcomes[outcomeInclusion.outcomeId].name}}
+      </li>
+    </ul>
+  </div>
+
   <!-- Data source if ssbr / sources if metabr-->
 
   <table>
@@ -16,7 +25,7 @@
       </tr>
     </thead>
     <tbody class="main">
-      <tr ng-repeat="criterion in problem.criteria">
+      <tr ng-repeat="(criterionKey, criterion) in problem.criteria">
         <td>
           {{criterion.title}}
         </td>
@@ -30,10 +39,10 @@
         <td>{{criterion.unitOfMeasurement}}</td>
         <td class="text-center" ng-repeat="(alternativeKey, alternative) in problem.alternatives"
           name="col{{$index}}" id="col{{$index}}">
-          {{scales[criterion.criterionUri][alternativeKey]['50%'] | number}}
+          {{scales[criterionKey][alternativeKey]['50%'] | number}}
           <br>
           <div class="uncertain" ng-show="!isExact(criterion.key, alternativeKey)">
-            {{scales[criterion.criterionUri][alternativeKey]['2.5%'] | number}}, {{scales[criterion.criterionUri][alternativeKey]['97.5%']
+            {{scales[criterionKey][alternativeKey]['2.5%'] | number}}, {{scales[criterionKey][alternativeKey]['97.5%']
             | number}}
           </div>
         </td>

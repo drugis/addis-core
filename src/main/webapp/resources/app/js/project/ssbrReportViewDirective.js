@@ -1,7 +1,9 @@
 'use strict';
 define([], function() {
-  var dependencies = ['ProblemResource', 'WorkspaceService', 'ProjectStudiesResource', 'ScenarioResource', 'MCDAResultsService'];
-  var SsbrReportViewDirective = function(ProblemResource, WorkspaceService, ProjectStudiesResource, ScenarioResource, MCDAResultsService) {
+  var dependencies = ['ProblemResource', 'WorkspaceService', 'ProjectStudiesResource',
+    'OutcomeResource', 'ScenarioResource', 'MCDAResultsService'];
+  var SsbrReportViewDirective = function(ProblemResource, WorkspaceService, ProjectStudiesResource,
+    OutcomeResource, ScenarioResource, MCDAResultsService) {
     return {
       restrict: 'E',
       templateUrl: 'app/js/project/ssbrReportView.html',
@@ -28,6 +30,12 @@ define([], function() {
             scope.scales = scales;
           });
           return problem;
+        });
+
+        OutcomeResource.query({
+          projectId: scope.project.id
+        }).$promise.then(function(outcomes) {
+          scope.outcomes = _.keyBy(outcomes, 'id');
         });
 
         if (scope.analysis.analysisType === 'Single-study Benefit-Risk') {
