@@ -183,7 +183,7 @@
   (let [entity-name (vtd/attr (vtd/first-child xml) :name)
         entity-type (vtd/tag (vtd/first-child xml))
         entity-uri ((entity-uris (keyword entity-type)) entity-name)
-        entity-xml (vtd/at xml (str "//addis-data/" entity-type "s/*[@name='" entity-name "']"))
+        entity-xml (vtd/at xml (str "//addis-data/" entity-type "s/*[normalize-space(@name)='" entity-name "']"))
         mms (map #(measurement-moment-uris (when-taken-key %)) (vtd/search xml "./whenTaken"))]
     (-> 
       (trig/spo instance-uri
