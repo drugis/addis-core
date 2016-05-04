@@ -1,51 +1,59 @@
 <div>
   <a ui-sref="singleStudyBenefitRisk({userUid: user.id, projectId: project.id, analysisId: analysis.id})">View details</a>
-  <!-- view details link -->
+
+  <div>
+    <strong>Data source:</strong> <a ui-sref="namespace-study({userUid: user.id, projectId: project.id, studyUid: dataSource.uid})">{{dataSource.name}}</a>
+  </div>
   <!-- Data source if ssbr / sources if metabr-->
-<table>
-  <thead>
-    <tr>
-      <th>Criterion</th>
-      <th>Description</th>
-      <th>Units</th>
-      <th class="text-center" ng-repeat="(alternativeKey, alternative) in problem.alternatives">{{alternative.title}}{{problem.valueTree.children.children[0].criteria}}</th>
-    </tr>
-  </thead>
-  <tbody class="main">
-    <tr ng-repeat="criterion in problem.criteria">
-      <td>
-        {{criterion.title}}
-      </td>
-      <td>
-        <div class="td-container">
-          <div class="td-content">{{criterion.description}}</div>
-          <div class="td-spacer">{{criterion.description}}</div>
-          <span>&nbsp;</span>
-        </div>
-      </td>
-      <td>{{criterion.unitOfMeasurement}}</td>
-      <td class="text-center" ng-repeat="(alternativeKey, alternative) in problem.alternatives" name="col{{$index}}" id="col{{$index}}">
-        {{scales[criterion.criterionUri][alternativeKey]['50%'] | number}}
-        <br>
-        <div class="uncertain" ng-show="!isExact(criterion.key, alternativeKey)">
-          {{scales[criterion.criterionUri][alternativeKey]['2.5%'] | number}},
-          {{scales[criterion.criterionUri][alternativeKey]['97.5%'] | number}}
-        </div>
-      </td>
-    </tr>
-  </tbody>
-</table>
-<div ng-repeat="scenario in scenarios">
-  <strong>Scenario: </strong>{{::scenario.title}}
-  <br>
-  <strong>Trade-offs:</strong>
-  <trade-offs problem="scenario.state.problem" preferences="scenario.state.prefs"></trade-offs>
-  <rank-acceptability-plot
-          data="scenario.state.results.ranks.data"
-          problem="scenario.state.problem"
-    ></rank-acceptability-plot>
-</div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Criterion</th>
+        <th>Description</th>
+        <th>Units</th>
+        <th class="text-center" ng-repeat="(alternativeKey, alternative) in problem.alternatives">{{alternative.title}}{{problem.valueTree.children.children[0].criteria}}</th>
+      </tr>
+    </thead>
+    <tbody class="main">
+      <tr ng-repeat="criterion in problem.criteria">
+        <td>
+          {{criterion.title}}
+        </td>
+        <td>
+          <div class="td-container">
+            <div class="td-content">{{criterion.description}}</div>
+            <div class="td-spacer">{{criterion.description}}</div>
+            <span>&nbsp;</span>
+          </div>
+        </td>
+        <td>{{criterion.unitOfMeasurement}}</td>
+        <td class="text-center" ng-repeat="(alternativeKey, alternative) in problem.alternatives"
+          name="col{{$index}}" id="col{{$index}}">
+          {{scales[criterion.criterionUri][alternativeKey]['50%'] | number}}
+          <br>
+          <div class="uncertain" ng-show="!isExact(criterion.key, alternativeKey)">
+            {{scales[criterion.criterionUri][alternativeKey]['2.5%'] | number}}, {{scales[criterion.criterionUri][alternativeKey]['97.5%']
+            | number}}
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <div ng-repeat="scenario in scenarios">
+    <div>
+      <h3>Scenario: {{::scenario.title}}</h3>
+    </div>
+    <div>
+      <strong>Trade-offs:</strong>
+      <trade-offs problem="scenario.state.problem" preferences="scenario.state.prefs"></trade-offs>
+    </div>
+    <div ng-if="scenario.state.results">
+      <strong>Rank acceptability plot:</strong>
+      <rank-acceptability-plot data="scenario.state.results.ranks.data" problem="scenario.state.problem"></rank-acceptability-plot>
+    </div>
+  </div>
   <!-- Scenarios list -->
-    <!-- per scenario: trade-offs -->
-    <!-- per scenario: rank acceptance plot -->
+  <!-- per scenario: trade-offs -->
+  <!-- per scenario: rank acceptance plot -->
 </div>

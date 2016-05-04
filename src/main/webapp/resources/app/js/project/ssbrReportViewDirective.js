@@ -1,7 +1,7 @@
 'use strict';
 define([], function() {
-  var dependencies = ['ProblemResource', 'WorkspaceService', 'ScenarioResource', 'MCDAResultsService'];
-  var SsbrReportViewDirective = function(ProblemResource, WorkspaceService, ScenarioResource, MCDAResultsService) {
+  var dependencies = ['ProblemResource', 'WorkspaceService', 'ProjectStudiesResource', 'ScenarioResource', 'MCDAResultsService'];
+  var SsbrReportViewDirective = function(ProblemResource, WorkspaceService, ProjectStudiesResource, ScenarioResource, MCDAResultsService) {
     return {
       restrict: 'E',
       templateUrl: 'app/js/project/ssbrReportView.html',
@@ -12,6 +12,13 @@ define([], function() {
         interventions: '='
       },
       link: function(scope) {
+
+        function hasMissingPvfs(criteria) {
+          return _.find(criteria, function(criterion){
+            return !criterion.pvf;
+          });
+        }
+
         scope.problem = ProblemResource.get({
           analysisId: scope.analysis.id,
           projectId: scope.project.id
@@ -23,12 +30,26 @@ define([], function() {
           return problem;
         });
 
+        if (scope.analysis.analysisType === 'Single-study Benefit-Risk') {
+          ProjectStudiesResource.query({
+            projectId: scope.project.id
+          }).$promise.then(function(studies) {
+            scope.dataSource = _.find(studies, function(study) {
+              return study.studyUri === scope.analysis.studyGraphUri;
+            });
+            var uri = scope.dataSource.studyUri;
+            scope.dataSource.uid = uri.slice(uri.lastIndexOf('/') + 1, uri.length);
+          });
+        }
+
         scope.scenarios = ScenarioResource.query({
           analysisId: scope.analysis.id,
           projectId: scope.project.id
         }).$promise.then(function(scenarios) {
           scope.scenarios = scenarios.map(function(scenario) {
-            scenario.state = MCDAResultsService.getResults(scope, scenario.state);
+            if (!hasMissingPvfs(scenario.state.problem.criteria)) {
+              scenario.state = MCDAResultsService.getResults(scope, scenario.state);
+            }
             return scenario;
           });
         });
