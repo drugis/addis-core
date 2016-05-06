@@ -389,7 +389,7 @@ public class ModelServiceTest {
     oldModel.setInferenceIterations(updateModelCommand.getInferenceIterations());
     oldModel.setThinningFactor(updateModelCommand.getThinningFactor());
     verify(modelRepository).persist(oldModel);
-    verify(pataviTaskRepository).delete(oldModel.getTaskId());
+    verify(pataviTaskRepository).delete(oldModel.getTaskUrl());
   }
 
   @Test(expected = MethodNotAllowedException.class)

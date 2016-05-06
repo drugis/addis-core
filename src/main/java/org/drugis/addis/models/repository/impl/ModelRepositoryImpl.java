@@ -35,7 +35,7 @@ public class ModelRepositoryImpl implements ModelRepository {
 
 
   private Model setHasRunStatus(Model model, PataviTask pataviTask) {
-      if (model.getTaskId() != null) {
+      if (model.getTaskUrl() != null) {
         if (pataviTask != null && pataviTask.isHasResult()) {
           model.setHasResult();
         }
@@ -53,8 +53,8 @@ public class ModelRepositoryImpl implements ModelRepository {
   @Override
   public Model find(Integer modelId) {
     Model model = em.find(Model.class, modelId);
-    if (model != null && model.getTaskId() != null) {
-      PataviTask pataviTask = pataviTaskRepository.get(model.getTaskId());
+    if (model != null && model.getTaskUrl() != null) {
+      PataviTask pataviTask = pataviTaskRepository.get(model.getTaskUrl());
       return setHasRunStatus(model, pataviTask);
     }
 
@@ -100,14 +100,14 @@ public class ModelRepositoryImpl implements ModelRepository {
   }
 
   private List<Model> addTasksToModels(List<Model> models) throws SQLException {
-    List<Integer> taskIds = models.stream().map(Model::getTaskId).collect(Collectors.toList());
+    List<String> taskIds = models.stream().map(Model::getTaskUrl).collect(Collectors.toList());
     List<PataviTask> pataviTasks = pataviTaskRepository.findByIds(taskIds);
 
     Map<Integer, PataviTask> taskMap = pataviTasks.stream()
             .collect(Collectors.toMap(PataviTask::getId, Function.identity()));
 
     return models.stream()
-            .map(model -> setHasRunStatus(model, taskMap.get(model.getTaskId())))
+            .map(model -> setHasRunStatus(model, taskMap.get(model.getTaskUrl())))
             .collect(Collectors.toList());
   }
 }

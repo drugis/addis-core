@@ -46,7 +46,7 @@ public class PataviTaskServiceImpl implements PataviTaskService {
       throw new ResourceDoesNotExistException("Could not find model" + modelId);
     }
 
-    Integer pataviTaskId = model.getTaskId();
+    String pataviTaskId = model.getTaskUrl();
     if(pataviTaskId == null) {
       NetworkMetaAnalysisProblem problem = (NetworkMetaAnalysisProblem) problemService.getProblem(projectId, analysisId);
 
@@ -63,7 +63,7 @@ public class PataviTaskServiceImpl implements PataviTaskService {
       }
 
       pataviTaskId = pataviTask.getId();
-      model.setTaskId(pataviTaskId);
+      model.setTaskUrl(pataviTaskId);
     }
 
     logger.debug("PATAVI_URI_BASE: " + PATAVI_URI_BASE);

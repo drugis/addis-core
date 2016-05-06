@@ -8,6 +8,7 @@ import org.drugis.addis.models.exceptions.InvalidModelException;
 import org.drugis.addis.util.JSONObjectConverter;
 
 import javax.persistence.*;
+import java.net.URI;
 import java.util.Arrays;
 import java.util.List;
 
@@ -45,7 +46,7 @@ public class Model {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Integer id;
-  private Integer taskId;
+  private String taskUrl;
   private Integer analysisId;
   private String title;
   private String linearModel;
@@ -67,7 +68,7 @@ public class Model {
 
   private Model(ModelBuilder builder) throws InvalidModelException {
     this.id = builder.id;
-    this.taskId = builder.taskId;
+    this.taskUrl = builder.taskUri;
     this.analysisId = builder.analysisId;
     this.title = builder.title;
     this.linearModel = builder.linearModel;
@@ -114,12 +115,12 @@ public class Model {
     return analysisId;
   }
 
-  public Integer getTaskId() {
-    return taskId;
+  public String getTaskUrl() {
+    return taskUrl;
   }
 
-  public void setTaskId(Integer taskId) {
-    this.taskId = taskId;
+  public void setTaskUrl(String taskUrl) {
+    this.taskUrl = taskUrl;
   }
 
   public String getTitle() {
@@ -251,7 +252,7 @@ public class Model {
 
     if (hasResult != model.hasResult) return false;
     if (id != null ? !id.equals(model.id) : model.id != null) return false;
-    if (taskId != null ? !taskId.equals(model.taskId) : model.taskId != null) return false;
+    if (taskUrl != null ? !taskUrl.equals(model.taskUrl) : model.taskUrl != null) return false;
     if (!analysisId.equals(model.analysisId)) return false;
     if (!title.equals(model.title)) return false;
     if (linearModel != null ? !linearModel.equals(model.linearModel) : model.linearModel != null) return false;
@@ -276,7 +277,7 @@ public class Model {
   public int hashCode() {
     int result = (hasResult ? 1 : 0);
     result = 31 * result + (id != null ? id.hashCode() : 0);
-    result = 31 * result + (taskId != null ? taskId.hashCode() : 0);
+    result = 31 * result + (taskUrl != null ? taskUrl.hashCode() : 0);
     result = 31 * result + analysisId.hashCode();
     result = 31 * result + title.hashCode();
     result = 31 * result + (linearModel != null ? linearModel.hashCode() : 0);
@@ -315,7 +316,7 @@ public class Model {
   }
 
   public static class ModelBuilder {
-    private Integer taskId = null;
+    private URI taskUri = null;
     private Integer id;
     private Integer analysisId;
     private String title;
@@ -344,8 +345,8 @@ public class Model {
       this.title = title;
     }
 
-    public ModelBuilder taskId(Integer taskId) {
-      this.taskId = taskId;
+    public ModelBuilder taskUri(URI taskUri) {
+      this.taskUri = taskUri;
       return this;
     }
 

@@ -47,7 +47,7 @@ public class PataviTaskRepositoryImplIntergrationTest {
 
   @Test
   public void testFindByIds() throws SQLException {
-    List<Integer> ids = Arrays.asList(1, 2);
+    List<String> ids = Arrays.asList(1, 2);
     List<PataviTask> tasks = pataviTaskRepository.findByIds(ids);
     assertTrue(tasks.get(0).isHasResult());
     assertFalse(tasks.get(1).isHasResult());

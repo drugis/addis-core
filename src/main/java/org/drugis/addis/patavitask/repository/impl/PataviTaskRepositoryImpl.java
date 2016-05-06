@@ -55,7 +55,7 @@ public class PataviTaskRepositoryImpl implements PataviTaskRepository {
   };
 
   @Override
-  public PataviTask get(Integer id) {
+  public PataviTask get(String id) {
     return jdbcTemplate.queryForObject(SELECTOR_PART + " FROM patavitask where id = ?", new Object[]{id}, rowMapper);
   }
 
@@ -97,13 +97,13 @@ public class PataviTaskRepositoryImpl implements PataviTaskRepository {
     mapSqlParameterSource.addValue("method", GEMTC_METHOD);
 
     final Number key = simpleJdbcInsert.executeAndReturnKey(mapSqlParameterSource);
-    final Integer taskId = key.intValue();
-    logger.debug("created new patavi-task with taskId = " + taskId);
+    final String taskId = key.intValue();
+    logger.debug("created new patavi-task with taskUri = " + taskId);
     return new PataviTask(taskId, GEMTC_METHOD, jsonProblem.toString());
   }
 
   @Override
-  public List<PataviTask> findByIds(List<Integer> taskIds) throws SQLException {
+  public List<PataviTask> findByIds(List<String> taskIds) throws SQLException {
 
     // Use different query for live psql db as psql does accept a set as part of the in clause
     boolean isHsqlDrive = dataSource instanceof EmbeddedDatabase;
@@ -130,12 +130,12 @@ public class PataviTaskRepositoryImpl implements PataviTaskRepository {
   }
 
   @Override
-  public void delete(Integer id) {
+  public void delete(String id) {
     jdbcTemplate.update("DELETE FROM patavitask WHERE id = ?", id);
   }
 
   @Override
-  public JsonNode getResult(Integer taskId) throws IOException, UnexpectedNumberOfResultsException {
+  public JsonNode getResult(String taskId) throws IOException, UnexpectedNumberOfResultsException {
     String result = jdbcTemplate.queryForObject("SELECT result FROM patavitask where id = " + taskId, String.class);
     if (result == null) {
       throw new UnexpectedNumberOfResultsException("expected was 1 but got zero results");
@@ -145,7 +145,7 @@ public class PataviTaskRepositoryImpl implements PataviTaskRepository {
   }
 
   @Override
-  public Map<Integer, JsonNode> getResults(List<Integer> taskIds) throws SQLException, IOException {
+  public Map<Integer, JsonNode> getResults(List<String> taskIds) throws SQLException, IOException {
     // Use different query for live psql db as psql does accept a set as part of the in clause
     boolean isHsqlDrive = dataSource instanceof EmbeddedDatabase;
     String query;

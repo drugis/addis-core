@@ -92,9 +92,9 @@ public class ModelController extends AbstractAddisCoreController {
   @ResponseBody
   public JsonNode getResult(HttpServletResponse response, @PathVariable Integer modelId) throws MethodNotAllowedException, ResourceDoesNotExistException, IOException {
     Model model = modelRepository.get(modelId);
-    if (model.getTaskId() != null) {
+    if (model.getTaskUrl() != null) {
       try {
-        return pataviTaskRepository.getResult(model.getTaskId());
+        return pataviTaskRepository.getResult(model.getTaskUrl());
       } catch (UnexpectedNumberOfResultsException e) {
         response.setStatus(HttpServletResponse.SC_NOT_FOUND);
         return null;

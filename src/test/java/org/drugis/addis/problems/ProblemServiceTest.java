@@ -404,13 +404,13 @@ public class ProblemServiceTest {
     Model model1 = new Model.ModelBuilder(analysisId, "model 1")
             .id(71)
             .modelType(Model.NETWORK_MODEL_TYPE)
-            .taskId(pataviTask1.getId())
+            .taskUri(pataviTask1.getId())
             .link(Model.LINK_IDENTITY)
             .build();
     Model model2 = new Model.ModelBuilder(analysisId, "model 2")
             .id(72)
             .modelType(Model.NETWORK_MODEL_TYPE)
-            .taskId(pataviTask2.getId())
+            .taskUri(pataviTask2.getId())
             .link(Model.LINK_CLOGLOG)
             .build();
     List<Model> models = Arrays.asList(model1, model2);
@@ -465,7 +465,7 @@ public class ProblemServiceTest {
             "  }\n" +
             "}\n";
 
-    Map<Integer, JsonNode> results = new HashMap<>();
+    Map<String, JsonNode> results = new HashMap<>();
     JsonNode task1Results = om.readTree(results1);
     JsonNode task2Results = om.readTree(results1);
     results.put(pataviTask1.getId(), task1Results);
@@ -477,7 +477,7 @@ public class ProblemServiceTest {
     when(modelRepository.get(modelIds)).thenReturn(models);
     when(outcomeRepository.get(projectId, outcomeIds)).thenReturn(outcomes);
     when(analysisRepository.get(analysisId)).thenReturn(analysis);
-    List<Integer> taskIds = Arrays.asList(model1.getTaskId(), model2.getTaskId());
+    List<String> taskIds = Arrays.asList(model1.getTaskUrl(), model2.getTaskUrl());
     when(pataviTaskRepository.findByIds(taskIds)).thenReturn(pataviTasks);
     when(pataviTaskRepository.getResults(taskIds)).thenReturn(results);
     when(interventionRepository.query(projectId)).thenReturn(interventions);

@@ -1,5 +1,16 @@
 package org.drugis.addis.models.service;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.config.Registry;
+import org.apache.http.config.RegistryBuilder;
+import org.apache.http.conn.HttpClientConnectionManager;
+import org.apache.http.conn.socket.ConnectionSocketFactory;
+import org.apache.http.conn.ssl.*;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.impl.conn.BasicHttpClientConnectionManager;
+import org.apache.http.ssl.SSLContexts;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.interventions.service.impl.InvalidTypeForDoseCheckException;
 import org.drugis.addis.models.Model;
@@ -21,10 +32,15 @@ import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
+import javax.net.ssl.SSLContext;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.security.*;
+import java.security.cert.CertificateException;
 import java.sql.SQLException;
 
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
@@ -115,7 +131,7 @@ public class PataviTaskServiceTest {
 
     Model model = new Model.ModelBuilder(analysisId, modelTitle)
             .id(modelId)
-            .taskId(-7)
+            .taskUri(-7)
             .linearModel(linearModel)
             .modelType(modelType)
             .burnInIterations(burnInIterations)
@@ -142,6 +158,40 @@ public class PataviTaskServiceTest {
     }finally {
       verify(modelRepository).find(invalidModelId);
     }
+  }
+
+  @Test
+  public void testConnect() throws KeyStoreException, IOException, CertificateException, NoSuchAlgorithmException, UnrecoverableKeyException, KeyManagementException {
+    System.setProperty("javax.net.ssl.trustStore", "/home/daan/certs/drugis-ca.jks");
+
+    // read in the keystore from the filesystem, this should contain a single keypair
+    KeyStore clientKeyStore = KeyStore.getInstance("JKS");
+    String pwd = "develop";
+    clientKeyStore.load(new FileInputStream("/home/daan/certs/addis-daan.jks"),  pwd.toCharArray());
+
+    SSLContext sslContext = SSLContexts
+            .custom()
+            .loadKeyMaterial(clientKeyStore, pwd.toCharArray())
+            .build();
+    SSLConnectionSocketFactory confac = new SSLConnectionSocketFactory(sslContext, SSLConnectionSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
+
+    HttpClientBuilder httpClientBuilder = HttpClientBuilder.create();
+
+    Registry<ConnectionSocketFactory> registry = RegistryBuilder.<ConnectionSocketFactory>create()
+            .register("https", confac)
+            .build();
+    HttpClientConnectionManager ccm = new BasicHttpClientConnectionManager(registry);
+
+    httpClientBuilder.setConnectionManager(ccm);
+
+    CloseableHttpClient client = httpClientBuilder.build();
+
+    // create the method to execute
+    HttpGet m = new HttpGet("https://basil.spice.drugis.org:3000");
+
+    // execute the method
+    HttpResponse response = client.execute(m);
+    assertNotNull(response);
   }
 
 

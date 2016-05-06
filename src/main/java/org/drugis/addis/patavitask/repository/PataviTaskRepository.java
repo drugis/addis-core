@@ -16,15 +16,15 @@ import java.util.Map;
 
 public interface PataviTaskRepository {
 
-  PataviTask get(Integer id);
+  PataviTask get(String id);
 
   PataviTask createPataviTask(NetworkMetaAnalysisProblem problem, Model model) throws IOException, SQLException;
 
-  List<PataviTask> findByIds(List<Integer> taskIds) throws SQLException;
+  List<PataviTask> findByIds(List<String> taskIds) throws SQLException;
 
-  void delete(Integer id);
+  void delete(String id);
 
-  JsonNode getResult(Integer taskId) throws IOException, UnexpectedNumberOfResultsException;
+  JsonNode getResult(String taskId) throws IOException, UnexpectedNumberOfResultsException;
 
-  Map<Integer, JsonNode> getResults(List<Integer> taskIds) throws SQLException, IOException;
+  Map<Integer, JsonNode> getResults(List<String> taskIds) throws SQLException, IOException;
 }

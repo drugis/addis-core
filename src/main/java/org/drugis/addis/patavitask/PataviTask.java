@@ -5,7 +5,7 @@ package org.drugis.addis.patavitask;
  */
 public class PataviTask {
 
-  private Integer id;
+  private String id;
 
   private String method;
 
@@ -16,14 +16,14 @@ public class PataviTask {
   public PataviTask() {
   }
 
-  public PataviTask(Integer id, String method, String problem, boolean hasResult) {
+  public PataviTask(String id, String method, String problem, boolean hasResult) {
     this.id = id;
     this.method = method;
     this.problem = problem;
     this.hasResult = hasResult;
   }
 
-  public PataviTask(Integer id, String method, String problem) {
+  public PataviTask(String id, String method, String problem) {
     this.id = id;
     this.method = method;
     this.problem = problem;
@@ -34,7 +34,7 @@ public class PataviTask {
     this.problem = problem;
   }
 
-  public Integer getId() {
+  public String getId() {
     return id;
   }
 

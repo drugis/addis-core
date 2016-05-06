@@ -474,19 +474,19 @@ public class ModelControllerTest {
 
   @Test
   public void testGetResult() throws Exception {
-    Integer taskId = 2;
-    Model model = modelBuilder.taskId(taskId).build();
+    String taskId = 2;
+    Model model = modelBuilder.taskUri(taskId).build();
     Integer modelID = 1;
     JsonNode jsonNode = new ObjectMapper().readTree("{}");
     when(modelRepository.get(modelID)).thenReturn(model);
-    when(pataviTaskRepository.getResult(model.getTaskId())).thenReturn(jsonNode);
+    when(pataviTaskRepository.getResult(model.getTaskUrl())).thenReturn(jsonNode);
     ResultActions resultActions = mockMvc.perform(get("/projects/45/analyses/55/models/1/result").principal(user));
     resultActions
             .andExpect(status().isOk())
             .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()))
             .andExpect(jsonPath("$", notNullValue()));
     verify(modelRepository).get(model.getId());
-    verify(pataviTaskRepository).getResult(model.getTaskId());
+    verify(pataviTaskRepository).getResult(model.getTaskUrl());
   }
 
   @Test

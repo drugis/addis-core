@@ -125,8 +125,8 @@ public class ModelServiceImpl implements ModelService {
     oldModel.setBurnInIterations(updateModelCommand.getBurnInIterations());
     oldModel.setInferenceIterations(updateModelCommand.getInferenceIterations());
     oldModel.setThinningFactor(updateModelCommand.getThinningFactor());
-    pataviTaskRepository.delete(oldModel.getTaskId());
-    oldModel.setTaskId(null);
+    pataviTaskRepository.delete(oldModel.getTaskUrl());
+    oldModel.setTaskUrl(null);
 
     modelRepository.persist(oldModel);
   }
