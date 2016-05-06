@@ -142,7 +142,7 @@
 (defn lit
   "Generate an RDF literal of the given value."
   ([value]
-   [:lit value])
+   [:lit (if (nil? value) "" value)])
   ([value data-type]
    [:lit value data-type]))
 
