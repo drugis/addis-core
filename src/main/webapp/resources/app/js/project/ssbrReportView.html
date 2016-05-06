@@ -6,15 +6,21 @@
     <strong>Data source:</strong> <a ui-sref="namespace-study({userUid: user.id, projectId: project.id, studyUid: dataSource.uid})">{{dataSource.name}}</a>
   </div>
   <div ng-if="analysis.analysisType === 'Benefit-risk analysis based on meta-analyses'">
+    <strong>Data sources:</strong>
     <ul>
       <li ng-repeat="outcomeInclusion in analysis.mbrOutcomeInclusions">
-      {{outcomes[outcomeInclusion.outcomeId].name}}
+        {{outcomes[outcomeInclusion.outcomeId].name}}:
+        <a ui-sref="networkMetaAnalysis({userUid: user.id, projectId: project.id, analysisId: outcomeInclusion.networkMetaAnalysisId})">
+          {{analyses[outcomeInclusion.networkMetaAnalysisId].title}}
+        </a> &mdash;
+        <a ui-sref="model({userUid: user.id, projectId: project.id, analysisId: outcomeInclusion.networkMetaAnalysisId, modelId: outcomeInclusion.modelId})" >
+          {{models[outcomeInclusion.modelId].title}}
+        </a>
       </li>
     </ul>
   </div>
 
-  <!-- Data source if ssbr / sources if metabr-->
-
+  <Strong>Effects table:</Strong>
   <table>
     <thead>
       <tr>

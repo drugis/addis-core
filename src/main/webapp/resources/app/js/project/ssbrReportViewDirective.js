@@ -1,9 +1,10 @@
 'use strict';
-define([], function() {
+define(['lodash'], function(_) {
   var dependencies = ['ProblemResource', 'WorkspaceService', 'ProjectStudiesResource',
-    'OutcomeResource', 'ScenarioResource', 'MCDAResultsService'];
+    'OutcomeResource', 'AnalysisResource', 'ModelResource', 'ScenarioResource', 'MCDAResultsService'
+  ];
   var SsbrReportViewDirective = function(ProblemResource, WorkspaceService, ProjectStudiesResource,
-    OutcomeResource, ScenarioResource, MCDAResultsService) {
+    OutcomeResource, AnalysisResource, ModelResource, ScenarioResource, MCDAResultsService) {
     return {
       restrict: 'E',
       templateUrl: 'app/js/project/ssbrReportView.html',
@@ -16,7 +17,7 @@ define([], function() {
       link: function(scope) {
 
         function hasMissingPvfs(criteria) {
-          return _.find(criteria, function(criterion){
+          return _.find(criteria, function(criterion) {
             return !criterion.pvf;
           });
         }
@@ -37,6 +38,22 @@ define([], function() {
         }).$promise.then(function(outcomes) {
           scope.outcomes = _.keyBy(outcomes, 'id');
         });
+
+        AnalysisResource.query({
+          projectId: scope.project.id
+        }).$promise.then(function(analyses) {
+          scope.analyses = _.keyBy(analyses, 'id');
+          scope.models = {};
+          analyses.forEach(function(analysis) {
+            ModelResource.query({
+              projectId: scope.project.id,
+              analysisId: analysis.id
+            }).$promise.then(function(models){
+              scope.models = _.extend(scope.models, _.keyBy(models, 'id'));
+            });
+          });
+        });
+
 
         if (scope.analysis.analysisType === 'Single-study Benefit-Risk') {
           ProjectStudiesResource.query({
