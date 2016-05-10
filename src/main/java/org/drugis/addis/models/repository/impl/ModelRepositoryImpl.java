@@ -13,6 +13,7 @@ import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
+import java.net.URI;
 import java.sql.SQLException;
 import java.util.Collections;
 import java.util.List;
@@ -103,7 +104,7 @@ public class ModelRepositoryImpl implements ModelRepository {
     List<String> taskIds = models.stream().map(Model::getTaskUrl).collect(Collectors.toList());
     List<PataviTask> pataviTasks = pataviTaskRepository.findByIds(taskIds);
 
-    Map<Integer, PataviTask> taskMap = pataviTasks.stream()
+    Map<URI, PataviTask> taskMap = pataviTasks.stream()
             .collect(Collectors.toMap(PataviTask::getId, Function.identity()));
 
     return models.stream()

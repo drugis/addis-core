@@ -121,8 +121,9 @@ public class ProblemServiceImpl implements ProblemService {
     List<Outcome> outcomes = outcomeRepository.get(project.getId(), outcomeIds);
     final Map<String, Outcome> outcomesByName = outcomes.stream().collect(Collectors.toMap(Outcome::getName, Function.identity()));
     final Map<Integer, Outcome> outcomesById = outcomes.stream().collect(Collectors.toMap(Outcome::getId, Function.identity()));
-    final Map<Integer, PataviTask> pataviTaskMap = pataviTaskRepository.findByIds(models.stream().map(Model::getTaskUrl).collect(Collectors.toList()))
-            .stream().collect(Collectors.toMap(PataviTask::getId, Function.identity()));
+    final Map<URI, PataviTask> pataviTaskMap = pataviTaskRepository.findByIds(models.stream().map(Model::getTaskUrl).collect(Collectors.toList()))
+            .stream()
+            .collect(Collectors.toMap(PataviTask::getId, Function.identity()));
     final Map<Integer, PataviTask> tasksByModelId = models.stream().collect(Collectors.toMap(Model::getId, m -> pataviTaskMap.get(m.getTaskUrl())));
     ArrayList<String> taskIds = new ArrayList<String>(pataviTaskMap.keySet());
     final Map<Integer, JsonNode> resultsByTaskId = pataviTaskRepository.getResults(taskIds);
@@ -150,7 +151,7 @@ public class ProblemServiceImpl implements ProblemService {
     for (MbrOutcomeInclusion outcomeInclusion : inclusionsWithBaseline) {
 
       Baseline baseline = objectMapper.readValue(outcomeInclusion.getBaseline(), Baseline.class);
-      String taskId = tasksByModelId.get(outcomeInclusion.getModelId()).getId();
+      URI taskId = tasksByModelId.get(outcomeInclusion.getModelId()).getId();
       JsonNode taskResults = resultsByTaskId.get(taskId);
 
       Map<Integer, MultiVariateDistribution> distributionByInterventionId = objectMapper

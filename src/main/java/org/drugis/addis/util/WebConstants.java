@@ -49,18 +49,24 @@ public class WebConstants {
   public static final String ACCEPT_JSON_HEADER = "Accept=" + APPLICATION_JSON_UTF8_VALUE;
 
   public static final String VERSION_UUID = "versionUuid";
-  private static final String TRIPLESTORE_BASE_URI = loadSystemEnvTripleStoreBaseURI();
+  private static final String TRIPLESTORE_BASE_URI = loadSystemEnv("TRIPLESTORE_BASE_URI");
   private static final String TRIPLESTORE_DATA_URI = TRIPLESTORE_BASE_URI + "/current";
 
-  private static String loadSystemEnvTripleStoreBaseURI() {
-    String tripleStoreBaseURI = System.getenv("TRIPLESTORE_BASE_URI");
-    if (tripleStoreBaseURI == null || tripleStoreBaseURI.isEmpty()) {
+  public static final String PATAVI_URI = loadSystemEnv("PATAVI_URI");
+
+  private static String loadSystemEnv(String varName) {
+    String envValue = System.getenv(varName);
+    if (envValue == null || envValue.isEmpty()) {
       LoggerFactory
               .getLogger(WebConstants.class)
-              .error("Cannot start server, no TRIPLESTORE_BASE_URI environment variable found");
+              .error("Cannot start server, no " + varName + " environment variable found");
       System.exit(-1);
     }
-    return tripleStoreBaseURI;
+    return envValue;
+  }
+
+  public String getPataviUri() {
+    return PATAVI_URI;
   }
 
   public String getTriplestoreBaseUri() {

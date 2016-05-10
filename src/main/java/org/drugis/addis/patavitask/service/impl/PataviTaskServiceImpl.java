@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
 import java.io.IOException;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.sql.SQLException;
 
@@ -46,8 +47,8 @@ public class PataviTaskServiceImpl implements PataviTaskService {
       throw new ResourceDoesNotExistException("Could not find model" + modelId);
     }
 
-    String pataviTaskId = model.getTaskUrl();
-    if(pataviTaskId == null) {
+    URI pataviTaskUrl = model.getTaskUrl();
+    if(pataviTaskUrl == null) {
       NetworkMetaAnalysisProblem problem = (NetworkMetaAnalysisProblem) problemService.getProblem(projectId, analysisId);
 
       PataviTask pataviTask = null;
@@ -62,11 +63,10 @@ public class PataviTaskServiceImpl implements PataviTaskService {
         throw new InvalidModelException("Invalid model type");
       }
 
-      pataviTaskId = pataviTask.getId();
-      model.setTaskUrl(pataviTaskId);
+      pataviTaskUrl = pataviTask.getId();
+      model.setTaskUrl(pataviTaskUrl);
     }
 
-    logger.debug("PATAVI_URI_BASE: " + PATAVI_URI_BASE);
-    return new PataviTaskUriHolder(PATAVI_URI_BASE + pataviTaskId);
+    return new PataviTaskUriHolder(pataviTaskUrl);
   }
 }

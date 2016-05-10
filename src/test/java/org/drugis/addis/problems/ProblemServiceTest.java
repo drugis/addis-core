@@ -465,7 +465,7 @@ public class ProblemServiceTest {
             "  }\n" +
             "}\n";
 
-    Map<String, JsonNode> results = new HashMap<>();
+    Map<URI, JsonNode> results = new HashMap<>();
     JsonNode task1Results = om.readTree(results1);
     JsonNode task2Results = om.readTree(results1);
     results.put(pataviTask1.getId(), task1Results);

@@ -6,6 +6,12 @@ import org.drugis.addis.patavitask.PataviTask;
 import org.drugis.addis.problems.model.NetworkMetaAnalysisProblem;
 
 import java.io.IOException;
+import java.net.URI;
+import java.security.KeyManagementException;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.UnrecoverableKeyException;
+import java.security.cert.CertificateException;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
@@ -16,15 +22,13 @@ import java.util.Map;
 
 public interface PataviTaskRepository {
 
-  PataviTask get(String id);
+  URI createPataviTask(NetworkMetaAnalysisProblem problem, Model model) throws IOException, SQLException, UnrecoverableKeyException, CertificateException, NoSuchAlgorithmException, KeyStoreException, KeyManagementException;
 
-  PataviTask createPataviTask(NetworkMetaAnalysisProblem problem, Model model) throws IOException, SQLException;
+  List<PataviTask> findByIds(List<URI> taskUris) throws SQLException;
 
-  List<PataviTask> findByIds(List<String> taskIds) throws SQLException;
+  JsonNode getResult(URI taskId) throws IOException, UnexpectedNumberOfResultsException;
 
-  void delete(String id);
+  Map<Integer, JsonNode> getResults(List<URI> taskUris) throws SQLException, IOException;
 
-  JsonNode getResult(String taskId) throws IOException, UnexpectedNumberOfResultsException;
-
-  Map<Integer, JsonNode> getResults(List<String> taskIds) throws SQLException, IOException;
+  void delete(URI taskUrl);
 }

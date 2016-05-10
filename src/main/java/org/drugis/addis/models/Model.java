@@ -68,7 +68,7 @@ public class Model {
 
   private Model(ModelBuilder builder) throws InvalidModelException {
     this.id = builder.id;
-    this.taskUrl = builder.taskUri;
+    this.taskUrl = builder.taskUri.toString();
     this.analysisId = builder.analysisId;
     this.title = builder.title;
     this.linearModel = builder.linearModel;
@@ -115,8 +115,8 @@ public class Model {
     return analysisId;
   }
 
-  public String getTaskUrl() {
-    return taskUrl;
+  public URI getTaskUrl() {
+    return URI.create(taskUrl);
   }
 
   public void setTaskUrl(String taskUrl) {

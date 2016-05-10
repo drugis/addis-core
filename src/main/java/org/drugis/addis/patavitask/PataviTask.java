@@ -1,11 +1,13 @@
 package org.drugis.addis.patavitask;
 
+import java.net.URI;
+
 /**
  * Created by connor on 26-6-14.
  */
 public class PataviTask {
 
-  private String id;
+  private URI id;
 
   private String method;
 
@@ -16,14 +18,14 @@ public class PataviTask {
   public PataviTask() {
   }
 
-  public PataviTask(String id, String method, String problem, boolean hasResult) {
+  public PataviTask(URI id, String method, String problem, boolean hasResult) {
     this.id = id;
     this.method = method;
     this.problem = problem;
     this.hasResult = hasResult;
   }
 
-  public PataviTask(String id, String method, String problem) {
+  public PataviTask(URI id, String method, String problem) {
     this.id = id;
     this.method = method;
     this.problem = problem;
@@ -34,7 +36,7 @@ public class PataviTask {
     this.problem = problem;
   }
 
-  public String getId() {
+  public URI getId() {
     return id;
   }
 
