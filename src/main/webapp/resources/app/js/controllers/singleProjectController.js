@@ -84,8 +84,15 @@ define(['lodash', 'angular'], function(_, angular) {
       $scope.studies.$promise.then(function() {
         $scope.analyses = AnalysisResource.query({
           projectId: $scope.project.id
-        }, function() {
+        }, function(analyses) {
           $scope.analysesLoaded = true;
+          $scope.analyses = _.sortBy(analyses, function(analysis) {
+            if (analysis.analysisType === 'Network meta-analysis') {
+              return 0;
+            } else {
+              return 1;
+            }
+          });
         });
       });
 
@@ -186,9 +193,9 @@ define(['lodash', 'angular'], function(_, angular) {
       var path = $location.path();
       if (tab === 'report') {
         $location.path(path + '/report');
-      } else{
+      } else {
         var newPath = path.substring(0, path.length - '/report'.length);
-        $location.path( newPath);
+        $location.path(newPath);
       }
     };
 
