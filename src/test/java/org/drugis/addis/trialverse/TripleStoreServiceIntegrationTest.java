@@ -10,6 +10,7 @@ import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
 
 import javax.inject.Inject;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.util.*;
@@ -89,4 +90,7 @@ public class TripleStoreServiceIntegrationTest {
     assertEquals(2, results.size());
     assertTrue("check that the result contains a titrated dose", results.toString().contains("Titrated"));
   }
+
+
+
 }

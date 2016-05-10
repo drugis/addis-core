@@ -32,130 +32,196 @@
     </div>
   </div>
 
-  <!-- Analyses -->
-  <div class="row">
-    <div class="columns large-6 ">
-      <h2>Analyses</h2>
-      <button id="show-create-analysis-modal-btn" ng-show="editMode.allowEditing" ng-disabled="!loading.loaded" class="small"
-      ng-click="openAddAnalysisDialog()"><i class="fa fa-plus"></i> Add Analysis
-      </button>
-
-      <div ng-show="!analysesLoaded">
-        <i class="fa fa-spinner fa-spin fa-3x"></i>
-
-        <p>Loading analyses...</p>
-      </div>
-      <div ng-show="analysesLoaded">
-        <table>
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Analysis type</th>
-              <th>Data source</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr class="clickable on-hover" ng-repeat="analysis in analyses" ng-click="goToAnalysis(analysis)"
-            ng-switch="analysis.analysisType">
-              <td>{{analysis.title}}</td>
-              <td>{{analysis.analysisType}}</td>
-              <td ng-switch-when="Single-study Benefit-Risk">{{(studies | filter:{studyUid: analysis.studyGraphUid}:true)[0].name}}
-              </td>
-              <td ng-switch-when="Network meta-analysis"></td>
-              <td ng-switch-when="Benefit-risk analysis based on meta-analyses"></td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-    <hr>
-  </div>
-
-
-  <div class="row">
-    <!-- Outcomes -->
-    <div class="columns large-12">
-      <h3 class="subheader">Outcomes</h3>
-      <button id="show-create-outcome-modal-btn" ng-show="editMode.allowEditing" ng-disabled="!loading.loaded" class="small"
-      ng-click="openCreateOutcomeDialog()"><i class="fa fa-plus"></i> Add outcome
-      </button>
-      <table>
-        <thead>
-          <tr>
-            <th class="large-3">Name</th>
-            <th class="large-3">Definition</th>
-            <th class="large-6 end">Motivation</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr ng-repeat="outcome in outcomes">
-            <td>{{::outcome.name}}</td>
-            <td>{{::outcome.semanticOutcomeLabel}}</td>
-            <td>{{::outcome.motivation}}</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
-
-  <div class="row">
-    <!-- Interventions -->
-    <div class="columns large-12">
-      <h3 class="subheader">Interventions</h3>
-      <button id="show-create-intervention-modal-btn" ng-show="editMode.allowEditing" ng-disabled="!loading.loaded" class="small "
-      ng-click="openCreateInterventionDialog()"><i class="fa fa-plus"></i> Add intervention
-      </button>
-      <table>
-        <thead>
-          <tr>
-            <th class="large-2">Name</th>
-             <th class="large-5">Motivation</th>
-            <th class="large-5">Definition</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr ng-repeat="intervention in interventions">
-            <td>{{::intervention.name}}</td>
-            <td>{{::intervention.motivation}}</td>
-            <td>{{::intervention.semanticInterventionLabel}}{{::intervention.definitionLabel}}</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
-
-  <!-- Covariates -->
   <div class="row">
     <div class="columns large-12">
+      <tabset>
+        <tab heading="Report" active="activeTab === 'report'" ng-click="setActiveTab('report')">
+          <!-- project description -->
+          <div class="row">
+            <div class="columns large-12">
+              <p>
+                <em ng-show="!project.description">No project description</em>
+                {{project.description}}
+              </p>
+            </div>
+          </div>
 
-      <h3 class="subheader">Covariates</h3>
-      <button ng-show="editMode.allowEditing" ng-disabled="!loading.loaded" class="small"
-      ng-click="addCovariate()"><i class="fa fa-plus"></i> Add Covariate
-      </button>
+          <!-- interventions -->
+          <div class="row">
+            <div class="columns large-12">
+              <h3 class="subheader">Interventions</h3>
+              <ul>
+                <li ng-show="interventions.length === 0 ">no interventions defined</li>
+                <li ng-repeat="intervention in interventions | orderBy:'name'">
+                  <strong>{{intervention.name}}<span ng-if="intervention.motivation.length">:</span> </strong>{{intervention.motivation}}
+                </li>
+              </ul>
+            </div>
+          </div>
 
-      <div ng-show="!covariatesLoaded">
-        <i class="fa fa-spinner fa-spin fa-3x"></i>
+          <!-- outcomes -->
+          <div class="row">
+            <div class="columns large-12">
+              <h3 class="subheader">Outcomes</h3>
+              <ul>
+                <li ng-show="outcomes.length === 0 ">no outcomes defined</li>
+                <li ng-repeat="outcome in outcomes | orderBy:'name'">
+                  <strong>{{outcome.name}}<span ng-if="outcome.motivation.length">:</span> </strong>{{outcome.motivation}}
+                </li>
+              </ul>
+            </div>
+          </div>
 
-        <p>Loading covariates... </p>
-      </div>
+          <!-- analyses -->
+          <div class="row" ng-repeat="analysis in analyses">
+            <div class="columns large-12">
+              <h2>Analysis: {{::analysis.title}}</h2>
+              <p ng-show="!analysis.description">
+                <em>no description</em>
+              </p>
+              <p>{{::analysis.description}}</p>
+              <div ng-if="analysis.analysisType === 'Network meta-analysis'">
+                <nma-report-view user="user" project="project" analysis="analysis" interventions="interventions"></nma-report-view>
+              </div>
 
-      <em ng-show="covariatesLoaded && covariates.length === 0">No covariates have been defined</em>
-      <table ng-show="covariatesLoaded && covariates.length > 0">
-        <thead>
-          <tr>
-            <th class="large-3">Name</th>
-            <th class="large-3">Definition</th>
-            <th class="large-6 end">Motivation</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr ng-repeat="covariate in covariates">
-            <td>{{::covariate.name}}</td>
-            <td>{{::covariate.definitionLabel}}</td>
-            <td>{{::covariate.motivation}}</td>
-          </tr>
-        </tbody>
-      </table>
+              <div ng-if="analysis.analysisType === 'Single-study Benefit-Risk' || analysis.analysisType === 'Benefit-risk analysis based on meta-analyses'">
+                <ssbr-report-view user="user" project="project" analysis="analysis" interventions="interventions"></ssbr-report-view>
+              </div>
+            </div>
+          </div>
+        </tab>
+        <tab heading="Details" active="activeTab === 'details'" ng-click="setActiveTab('details')">
+          <!-- Analyses -->
+          <div class="row">
+            <div class="columns large-6 ">
+              <h2>Analyses</h2>
+              <button id="show-create-analysis-modal-btn" ng-show="editMode.allowEditing" ng-disabled="!loading.loaded"
+                class="small" ng-click="openAddAnalysisDialog()"><i class="fa fa-plus"></i> Add Analysis
+              </button>
+
+              <div ng-show="!analysesLoaded">
+                <i class="fa fa-spinner fa-spin fa-3x"></i>
+
+                <p>Loading analyses...</p>
+              </div>
+              <div ng-show="analysesLoaded">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Analysis type</th>
+                      <th>Data source</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr class="clickable on-hover" ng-repeat="analysis in analyses" ng-click="goToAnalysis(analysis)"
+                      ng-switch="analysis.analysisType">
+                      <td>{{analysis.title}}</td>
+                      <td>{{analysis.analysisType}}</td>
+                      <td ng-switch-when="Single-study Benefit-Risk">{{(studies | filter:{studyUid: analysis.studyGraphUid}:true)[0].name}}
+                      </td>
+                      <td ng-switch-when="Network meta-analysis"></td>
+                      <td ng-switch-when="Benefit-risk analysis based on meta-analyses"></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            <hr>
+          </div>
+
+
+          <div class="row">
+            <!-- Outcomes -->
+            <div class="columns large-12">
+              <h3 class="subheader">Outcomes</h3>
+              <button id="show-create-outcome-modal-btn" ng-show="editMode.allowEditing" ng-disabled="!loading.loaded"
+                class="small" ng-click="openCreateOutcomeDialog()"><i class="fa fa-plus"></i> Add outcome
+              </button>
+              <table>
+                <thead>
+                  <tr>
+                    <th class="large-3">Name</th>
+                    <th class="large-3">Definition</th>
+                    <th class="large-6 end">Motivation</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr ng-repeat="outcome in outcomes">
+                    <td>{{::outcome.name}}</td>
+                    <td>{{::outcome.semanticOutcomeLabel}}</td>
+                    <td>{{::outcome.motivation}}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="row">
+            <!-- Interventions -->
+            <div class="columns large-12">
+              <h3 class="subheader">Interventions</h3>
+              <button id="show-create-intervention-modal-btn" ng-show="editMode.allowEditing" ng-disabled="!loading.loaded"
+                class="small " ng-click="openCreateInterventionDialog()"><i class="fa fa-plus"></i> Add intervention
+              </button>
+              <table>
+                <thead>
+                  <tr>
+                    <th class="large-2">Name</th>
+                    <th class="large-5">Motivation</th>
+                    <th class="large-5">Definition</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr ng-repeat="intervention in interventions">
+                    <td>{{::intervention.name}}</td>
+                    <td>{{::intervention.motivation}}</td>
+                    <td>{{::intervention.semanticInterventionLabel}}{{::intervention.definitionLabel}}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Covariates -->
+          <div class="row">
+            <div class="columns large-12">
+
+              <h3 class="subheader">Covariates</h3>
+              <button ng-show="editMode.allowEditing" ng-disabled="!loading.loaded" class="small"
+                ng-click="addCovariate()"><i class="fa fa-plus"></i> Add Covariate
+              </button>
+
+              <div ng-show="!covariatesLoaded">
+                <i class="fa fa-spinner fa-spin fa-3x"></i>
+
+                <p>Loading covariates... </p>
+              </div>
+
+              <em ng-show="covariatesLoaded && covariates.length === 0">No covariates have been defined</em>
+              <table ng-show="covariatesLoaded && covariates.length > 0">
+                <thead>
+                  <tr>
+                    <th class="large-3">Name</th>
+                    <th class="large-3">Definition</th>
+                    <th class="large-6 end">Motivation</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr ng-repeat="covariate in covariates">
+                    <td>{{::covariate.name}}</td>
+                    <td>{{::covariate.definitionLabel}}</td>
+                    <td>{{::covariate.motivation}}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </tab>
+      </tabset>
     </div>
   </div>
+
+</div>
+
 </div>

@@ -50,7 +50,7 @@ define(
     'gemtc-web/constants',
     'gemtc-web/services',
     'gemtc-web/directives',
-    'mcda/controllers',
+    'mcda/services/effectsTableService',
     'mcda/controllers',
     'mcda/directives',
     'mcda/services/workspaceResource',
@@ -59,6 +59,7 @@ define(
     'mcda/services/workspaceService',
     'mcda/services/routeFactory',
     'mcda/services/pataviService',
+    'mcda/services/resultsService',
     'mcda/services/hashCodeService',
     'mcda/services/partialValueFunction',
     'mcda/services/scaleRangeService',
@@ -67,6 +68,7 @@ define(
   ],
   function(angular, require, $, Config, errorInterceptor, _) {
     var mcdaDependencies = [
+      'elicit.effectsTableService',
       'elicit.errorHandling',
       'elicit.scaleRangeService',
       'elicit.workspaceResource',
@@ -76,6 +78,7 @@ define(
       'elicit.controllers',
       'elicit.pvfService',
       'elicit.pataviService',
+      'elicit.resultsService',
       'elicit.util',
       'elicit.routeFactory',
       'mm.foundation',
@@ -248,7 +251,22 @@ define(
           .state('project', {
             url: '/users/:userUid/projects/:projectId',
             templateUrl: baseTemplatePath + 'project.html',
-            controller: 'SingleProjectController'
+            controller: 'SingleProjectController',
+            resolve: {
+              activeTab: function(){
+                return 'details';
+              }
+            }
+          })
+          .state('projectReport', {
+            url: '/users/:userUid/projects/:projectId/report',
+            templateUrl: baseTemplatePath + 'project.html',
+            controller: 'SingleProjectController',
+            resolve: {
+              activeTab: function(){
+                return 'report';
+              }
+            }
           })
           .state('namespace-study', {
             url: '/study/:studyUid',

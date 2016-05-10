@@ -1,6 +1,6 @@
 'use strict';
 define(['lodash', 'angular'], function(_, angular) {
-  var dependencies = ['$scope', '$q', '$state', '$stateParams', '$window', '$modal',
+  var dependencies = ['$scope', '$q', '$state', '$stateParams', '$window', '$location', '$modal',
     'ProjectResource',
     'TrialverseResource',
     'TrialverseStudyResource',
@@ -12,11 +12,14 @@ define(['lodash', 'angular'], function(_, angular) {
     'CovariateResource',
     'AnalysisResource',
     'ANALYSIS_TYPES',
-    'InterventionService'
+    'InterventionService',
+    'activeTab'
   ];
-  var SingleProjectController = function($scope, $q, $state, $stateParams, $window, $modal, ProjectResource, TrialverseResource,
+  var SingleProjectController = function($scope, $q, $state, $stateParams, $window, $location, $modal, ProjectResource, TrialverseResource,
     TrialverseStudyResource, SemanticOutcomeResource, OutcomeResource, SemanticInterventionResource, InterventionResource,
-    CovariateOptionsResource, CovariateResource, AnalysisResource, ANALYSIS_TYPES, InterventionService) {
+    CovariateOptionsResource, CovariateResource, AnalysisResource, ANALYSIS_TYPES, InterventionService, activeTab) {
+
+    $scope.activeTab = activeTab;
 
     $scope.analysesLoaded = false;
     $scope.covariatesLoaded = true;
@@ -85,6 +88,7 @@ define(['lodash', 'angular'], function(_, angular) {
           $scope.analysesLoaded = true;
         });
       });
+
     });
 
     function loadCovariates() {
@@ -172,6 +176,20 @@ define(['lodash', 'angular'], function(_, angular) {
           }
         }
       });
+    };
+
+    $scope.setActiveTab = function(tab) {
+      if (tab === $scope.activeTab) {
+        return;
+      }
+      $scope.activeTab = tab;
+      var path = $location.path();
+      if (tab === 'report') {
+        $location.path(path + '/report');
+      } else{
+        var newPath = path.substring(0, path.length - '/report'.length);
+        $location.path( newPath);
+      }
     };
 
   };

@@ -1,4 +1,8 @@
 #!/usr/bin/env bash
+
+# Config must define SERVER, APIKEY, USER
+. config.sh
+
 function extractLocation {
   str=$(grep "Location: " | sed 's/Location: //')
   if [ -z "$str" ]; then
@@ -9,9 +13,6 @@ function extractLocation {
 }
 
 INPUT=$1
-SERVER=$2
-APIKEY=https://trialverse.org/apikeys/1
-USER=gert@gertvv.nl
 MESSAGE=`echo -n "Create dataset" | base64`
 
 curl -s -D 00-headers -X POST -H "X-EventSource-Creator: $APIKEY" -H "X-EventSource-Title: $MESSAGE" $SERVER/datasets > 00-body
