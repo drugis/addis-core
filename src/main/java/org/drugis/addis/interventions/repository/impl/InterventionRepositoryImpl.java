@@ -52,7 +52,7 @@ public class InterventionRepositoryImpl implements org.drugis.addis.intervention
     if (project == null) {
       throw new ResourceDoesNotExistException();
     }
-    if (project.getOwner().getId() != user.getId()) {
+    if (project.getOwner().getId().intValue() != user.getId().intValue()) {
       throw new MethodNotAllowedException();
     }
     TypedQuery<Intervention> query = em.createQuery("FROM Intervention i WHERE i.name = :interventionName AND i.project = :projectId", Intervention.class);
