@@ -1,7 +1,6 @@
 package org.drugis.addis.analyses.repository;
 
 import org.drugis.addis.analyses.*;
-import org.drugis.addis.analyses.service.AnalysisService;
 import org.drugis.addis.config.JpaRepositoryTestConfig;
 import org.drugis.addis.exception.MethodNotAllowedException;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
@@ -31,9 +30,6 @@ import static org.junit.Assert.*;
 @Transactional
 @ContextConfiguration(classes = {JpaRepositoryTestConfig.class})
 public class MetaBenefitRiskAnalysisRepositoryTest {
-
-  @Inject
-  AnalysisService analysisService;
 
   @Inject
   MetaBenefitRiskAnalysisRepository metaBenefitRiskAnalysisRepository;

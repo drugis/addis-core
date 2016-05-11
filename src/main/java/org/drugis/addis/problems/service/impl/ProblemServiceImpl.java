@@ -24,6 +24,7 @@ import org.drugis.addis.outcomes.Outcome;
 import org.drugis.addis.outcomes.repository.OutcomeRepository;
 import org.drugis.addis.patavitask.PataviTask;
 import org.drugis.addis.patavitask.repository.PataviTaskRepository;
+import org.drugis.addis.patavitask.repository.UnexpectedNumberOfResultsException;
 import org.drugis.addis.problems.model.*;
 import org.drugis.addis.problems.service.ProblemService;
 import org.drugis.addis.problems.service.model.AbstractMeasurementEntry;
@@ -113,7 +114,7 @@ public class ProblemServiceImpl implements ProblemService {
     throw new RuntimeException("unknown analysis type");
   }
 
-  private MetaBenefitRiskProblem getMetaBenefitRiskAnalysisProblem(Project project, MetaBenefitRiskAnalysis analysis) throws SQLException, IOException {
+  private MetaBenefitRiskProblem getMetaBenefitRiskAnalysisProblem(Project project, MetaBenefitRiskAnalysis analysis) throws SQLException, IOException, UnexpectedNumberOfResultsException, URISyntaxException {
     final List<Integer> networkModelIds = getInclusionIdsWithBaseline(analysis.getMbrOutcomeInclusions(), MbrOutcomeInclusion::getModelId);
     final List<Integer> outcomeIds = getInclusionIdsWithBaseline(analysis.getMbrOutcomeInclusions(), MbrOutcomeInclusion::getOutcomeId);
     final List<Model> models = modelRepository.get(networkModelIds);
@@ -121,12 +122,12 @@ public class ProblemServiceImpl implements ProblemService {
     List<Outcome> outcomes = outcomeRepository.get(project.getId(), outcomeIds);
     final Map<String, Outcome> outcomesByName = outcomes.stream().collect(Collectors.toMap(Outcome::getName, Function.identity()));
     final Map<Integer, Outcome> outcomesById = outcomes.stream().collect(Collectors.toMap(Outcome::getId, Function.identity()));
-    final Map<URI, PataviTask> pataviTaskMap = pataviTaskRepository.findByIds(models.stream().map(Model::getTaskUrl).collect(Collectors.toList()))
+    List<URI> taskUris = models.stream().map(Model::getTaskUrl).collect(Collectors.toList());
+    final Map<URI, PataviTask> pataviTaskMap = pataviTaskRepository.findByIds(taskUris)
             .stream()
             .collect(Collectors.toMap(PataviTask::getId, Function.identity()));
     final Map<Integer, PataviTask> tasksByModelId = models.stream().collect(Collectors.toMap(Model::getId, m -> pataviTaskMap.get(m.getTaskUrl())));
-    ArrayList<String> taskIds = new ArrayList<String>(pataviTaskMap.keySet());
-    final Map<Integer, JsonNode> resultsByTaskId = pataviTaskRepository.getResults(taskIds);
+    final Map<URI, JsonNode> resultsByTaskId = pataviTaskRepository.getResults(taskUris);
     final List<MbrOutcomeInclusion> inclusionsWithBaseline = analysis.getMbrOutcomeInclusions().stream().filter(moi -> moi.getBaseline() != null).collect(Collectors.toList());
     final List<InterventionInclusion> inclusions = analysis.getInterventionInclusions();
     final List<AbstractIntervention> interventions = interventionRepository.query(analysis.getProjectId());

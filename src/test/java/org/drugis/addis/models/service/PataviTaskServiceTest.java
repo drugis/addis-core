@@ -6,7 +6,7 @@ import org.apache.http.config.Registry;
 import org.apache.http.config.RegistryBuilder;
 import org.apache.http.conn.HttpClientConnectionManager;
 import org.apache.http.conn.socket.ConnectionSocketFactory;
-import org.apache.http.conn.ssl.*;
+import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.conn.BasicHttpClientConnectionManager;
@@ -35,13 +35,13 @@ import org.mockito.Mock;
 import javax.net.ssl.SSLContext;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.security.*;
 import java.security.cert.CertificateException;
 import java.sql.SQLException;
 
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
 
@@ -77,7 +77,7 @@ public class PataviTaskServiceTest {
   }
 
   @Test
-  public void testFindTaskWhenThereIsNoTask() throws ResourceDoesNotExistException, IOException, SQLException, InvalidModelException, URISyntaxException, ReadValueException, InvalidTypeForDoseCheckException {
+  public void testFindTaskWhenThereIsNoTask() throws ResourceDoesNotExistException, IOException, SQLException, InvalidModelException, URISyntaxException, ReadValueException, InvalidTypeForDoseCheckException, UnrecoverableKeyException, CertificateException, NoSuchAlgorithmException, KeyStoreException, KeyManagementException {
     Integer modelId = -2;
     String problem = "Yo";
     Integer projectId = -6;
@@ -105,18 +105,19 @@ public class PataviTaskServiceTest {
     when(networkMetaAnalysisProblem.toString()).thenReturn(problem);
     when(problemService.getProblem(projectId, analysisId)).thenReturn(networkMetaAnalysisProblem);
     when(modelRepository.find(modelId)).thenReturn(model);
-    when(pataviTaskRepository.createPataviTask(networkMetaAnalysisProblem, model)).thenReturn(pataviTask);
+    URI createdURI = URI.create("new.task.com");
+    when(pataviTaskRepository.createPataviTask(networkMetaAnalysisProblem.buildProblemWithModelSettings(model))).thenReturn(createdURI);
 
     PataviTaskUriHolder result = pataviTaskService.getPataviTaskUriHolder(projectId, analysisId, modelId);
 
-    assertTrue(!result.getUri().isEmpty());
+    assertNotNull(result.getUri());
     verify(modelRepository).find(modelId);
     verify(problemService).getProblem(projectId, analysisId);
-    verify(pataviTaskRepository).createPataviTask(networkMetaAnalysisProblem, model);
+    verify(pataviTaskRepository).createPataviTask(networkMetaAnalysisProblem.buildProblemWithModelSettings(model));
   }
 
   @Test
-  public void testFindTaskWhenThereAlreadyIsATask() throws ResourceDoesNotExistException, IOException, SQLException, InvalidModelException, URISyntaxException, ReadValueException, InvalidTypeForDoseCheckException {
+  public void testFindTaskWhenThereAlreadyIsATask() throws ResourceDoesNotExistException, IOException, SQLException, InvalidModelException, URISyntaxException, ReadValueException, InvalidTypeForDoseCheckException, UnrecoverableKeyException, CertificateException, NoSuchAlgorithmException, KeyStoreException, KeyManagementException {
     Integer modelId = -2;
     Integer projectId = -6;
     Integer analysisId = -7;
@@ -131,7 +132,7 @@ public class PataviTaskServiceTest {
 
     Model model = new Model.ModelBuilder(analysisId, modelTitle)
             .id(modelId)
-            .taskUri(-7)
+            .taskUri(URI.create("-7"))
             .linearModel(linearModel)
             .modelType(modelType)
             .burnInIterations(burnInIterations)
@@ -143,12 +144,12 @@ public class PataviTaskServiceTest {
     when(modelRepository.find(modelId)).thenReturn(model);
 
     PataviTaskUriHolder result = pataviTaskService.getPataviTaskUriHolder(projectId, analysisId, modelId);
-    assertTrue(!result.getUri().isEmpty());
+    assertNotNull(result.getUri());
     verify(modelRepository).find(modelId);
   }
 
   @Test(expected = ResourceDoesNotExistException.class)
-  public void testFindTaskForInvalidModel() throws ResourceDoesNotExistException, IOException, SQLException, InvalidModelException, URISyntaxException, ReadValueException, InvalidTypeForDoseCheckException {
+  public void testFindTaskForInvalidModel() throws ResourceDoesNotExistException, IOException, SQLException, InvalidModelException, URISyntaxException, ReadValueException, InvalidTypeForDoseCheckException, UnrecoverableKeyException, CertificateException, NoSuchAlgorithmException, KeyStoreException, KeyManagementException {
     Integer projectId = -6;
     Integer analysisId = -7;
     Integer invalidModelId = -2;

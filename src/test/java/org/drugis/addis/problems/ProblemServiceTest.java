@@ -397,8 +397,8 @@ public class ProblemServiceTest {
     SimpleIntervention intervention4 = new SimpleIntervention(14, projectId, "foo", "", new SemanticInterventionUriAndName(URI.create("uri4"), "fooS"));
     List<AbstractIntervention> interventions = Arrays.asList(intervention1, intervention2, intervention3, intervention4);
 
-    PataviTask pataviTask1 = new PataviTask(41, "gemtc", "problem");
-    PataviTask pataviTask2 = new PataviTask(42, "gemtc", "problem");
+    PataviTask pataviTask1 = new PataviTask(URI.create("41"), "gemtc", "problem");
+    PataviTask pataviTask2 = new PataviTask(URI.create("42"), "gemtc", "problem");
     List<PataviTask> pataviTasks = Arrays.asList(pataviTask1, pataviTask2);
 
     Model model1 = new Model.ModelBuilder(analysisId, "model 1")
@@ -477,7 +477,7 @@ public class ProblemServiceTest {
     when(modelRepository.get(modelIds)).thenReturn(models);
     when(outcomeRepository.get(projectId, outcomeIds)).thenReturn(outcomes);
     when(analysisRepository.get(analysisId)).thenReturn(analysis);
-    List<String> taskIds = Arrays.asList(model1.getTaskUrl(), model2.getTaskUrl());
+    List<URI> taskIds = Arrays.asList(model1.getTaskUrl(), model2.getTaskUrl());
     when(pataviTaskRepository.findByIds(taskIds)).thenReturn(pataviTasks);
     when(pataviTaskRepository.getResults(taskIds)).thenReturn(results);
     when(interventionRepository.query(projectId)).thenReturn(interventions);

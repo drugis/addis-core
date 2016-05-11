@@ -5,7 +5,6 @@ import org.drugis.addis.interventions.service.impl.InvalidTypeForDoseCheckExcept
 import org.drugis.addis.models.Model;
 import org.drugis.addis.models.exceptions.InvalidModelException;
 import org.drugis.addis.models.repository.ModelRepository;
-import org.drugis.addis.patavitask.PataviTask;
 import org.drugis.addis.patavitask.PataviTaskUriHolder;
 import org.drugis.addis.patavitask.repository.PataviTaskRepository;
 import org.drugis.addis.patavitask.service.PataviTaskService;
@@ -21,6 +20,11 @@ import javax.inject.Inject;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.security.KeyManagementException;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.UnrecoverableKeyException;
+import java.security.cert.CertificateException;
 import java.sql.SQLException;
 
 /**
@@ -40,7 +44,7 @@ public class PataviTaskServiceImpl implements PataviTaskService {
   ProblemService problemService;
 
   @Override
-  public PataviTaskUriHolder getPataviTaskUriHolder(Integer projectId, Integer analysisId, Integer modelId) throws ResourceDoesNotExistException, IOException, SQLException, InvalidModelException, URISyntaxException, ReadValueException, InvalidTypeForDoseCheckException {
+  public PataviTaskUriHolder getPataviTaskUriHolder(Integer projectId, Integer analysisId, Integer modelId) throws ResourceDoesNotExistException, IOException, SQLException, InvalidModelException, URISyntaxException, ReadValueException, InvalidTypeForDoseCheckException, UnrecoverableKeyException, CertificateException, NoSuchAlgorithmException, KeyStoreException, KeyManagementException {
     logger.trace("PataviTaskServiceImpl.getPataviTaskUriHolder, projectId = " + projectId + " analysisId = " + analysisId + "modelId = " + modelId);
     Model model = modelRepository.find(modelId);
     if(model == null) {
@@ -50,20 +54,16 @@ public class PataviTaskServiceImpl implements PataviTaskService {
     URI pataviTaskUrl = model.getTaskUrl();
     if(pataviTaskUrl == null) {
       NetworkMetaAnalysisProblem problem = (NetworkMetaAnalysisProblem) problemService.getProblem(projectId, analysisId);
-
-      PataviTask pataviTask = null;
       if(Model.PAIRWISE_MODEL_TYPE.equals(model.getModelTypeTypeAsString())) {
         PairwiseNetworkProblem  pairwiseProblem = new PairwiseNetworkProblem(problem, model.getPairwiseDetails());
-        pataviTask = pataviTaskRepository.createPataviTask(pairwiseProblem, model);
+        pataviTaskUrl = pataviTaskRepository.createPataviTask(pairwiseProblem.buildProblemWithModelSettings(model));
       } else if (Model.NETWORK_MODEL_TYPE.equals(model.getModelTypeTypeAsString())
               || Model.NODE_SPLITTING_MODEL_TYPE.equals(model.getModelTypeTypeAsString())
               || Model.REGRESSION_MODEL_TYPE.equals(model.getModelTypeTypeAsString())) {
-        pataviTask = pataviTaskRepository.createPataviTask(problem, model);
+        pataviTaskUrl = pataviTaskRepository.createPataviTask(problem.buildProblemWithModelSettings(model));
       } else {
         throw new InvalidModelException("Invalid model type");
       }
-
-      pataviTaskUrl = pataviTask.getId();
       model.setTaskUrl(pataviTaskUrl);
     }
 

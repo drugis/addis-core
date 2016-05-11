@@ -30,6 +30,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import javax.inject.Inject;
+import java.net.URI;
 import java.security.Principal;
 import java.util.Collections;
 import java.util.List;
@@ -474,7 +475,7 @@ public class ModelControllerTest {
 
   @Test
   public void testGetResult() throws Exception {
-    String taskId = 2;
+    URI taskId = URI.create("2");
     Model model = modelBuilder.taskUri(taskId).build();
     Integer modelID = 1;
     JsonNode jsonNode = new ObjectMapper().readTree("{}");

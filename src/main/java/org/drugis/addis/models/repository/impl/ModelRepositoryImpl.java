@@ -3,7 +3,6 @@ package org.drugis.addis.models.repository.impl;
 import org.drugis.addis.models.Model;
 import org.drugis.addis.models.exceptions.InvalidModelException;
 import org.drugis.addis.models.repository.ModelRepository;
-import org.drugis.addis.patavitask.PataviTask;
 import org.drugis.addis.patavitask.repository.PataviTaskRepository;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.orm.ObjectRetrievalFailureException;
@@ -18,7 +17,6 @@ import java.sql.SQLException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -35,9 +33,9 @@ public class ModelRepositoryImpl implements ModelRepository {
   PataviTaskRepository pataviTaskRepository;
 
 
-  private Model setHasRunStatus(Model model, PataviTask pataviTask) {
+  private Model setHasRunStatus(Model model, Boolean isTaskRun) {
       if (model.getTaskUrl() != null) {
-        if (pataviTask != null && pataviTask.isHasResult()) {
+        if (isTaskRun) {
           model.setHasResult();
         }
       }
@@ -55,8 +53,8 @@ public class ModelRepositoryImpl implements ModelRepository {
   public Model find(Integer modelId) {
     Model model = em.find(Model.class, modelId);
     if (model != null && model.getTaskUrl() != null) {
-      PataviTask pataviTask = pataviTaskRepository.get(model.getTaskUrl());
-      return setHasRunStatus(model, pataviTask);
+      Boolean isTaskRun = pataviTaskRepository.isTaskRun(model.getTaskUrl());
+      return setHasRunStatus(model, isTaskRun);
     }
 
     return model;
@@ -101,14 +99,13 @@ public class ModelRepositoryImpl implements ModelRepository {
   }
 
   private List<Model> addTasksToModels(List<Model> models) throws SQLException {
-    List<String> taskIds = models.stream().map(Model::getTaskUrl).collect(Collectors.toList());
-    List<PataviTask> pataviTasks = pataviTaskRepository.findByIds(taskIds);
-
-    Map<URI, PataviTask> taskMap = pataviTasks.stream()
-            .collect(Collectors.toMap(PataviTask::getId, Function.identity()));
+    List<URI> taskIds = models.stream().map(Model::getTaskUrl).collect(Collectors.toList());
+    Map<URI, Boolean> taskRunStatusMap = pataviTaskRepository.getRunStatus(taskIds);
 
     return models.stream()
-            .map(model -> setHasRunStatus(model, taskMap.get(model.getTaskUrl())))
+            .map(model ->
+                    setHasRunStatus(model, taskRunStatusMap.get(model.getTaskUrl())
+                    ))
             .collect(Collectors.toList());
   }
 }

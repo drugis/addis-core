@@ -108,9 +108,9 @@ public class ModelServiceImpl implements ModelService {
     projectService.checkOwnership(analysis.getProjectId(), principal);
   }
 
-  private void checkIncrease(Model persistendModel, UpdateModelCommand updateModelCommand) throws MethodNotAllowedException {
-    if(persistendModel.getBurnInIterations() > updateModelCommand.getBurnInIterations() ||
-            persistendModel.getInferenceIterations() > updateModelCommand.getInferenceIterations()) {
+  private void checkIncrease(Model persistentModel, UpdateModelCommand updateModelCommand) throws MethodNotAllowedException {
+    if (persistentModel.getBurnInIterations() > updateModelCommand.getBurnInIterations() ||
+            persistentModel.getInferenceIterations() > updateModelCommand.getInferenceIterations()) {
       throw new MethodNotAllowedException();
     }
   }

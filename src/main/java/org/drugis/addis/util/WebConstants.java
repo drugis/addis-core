@@ -1,5 +1,6 @@
 package org.drugis.addis.util;
 
+import org.apache.http.client.utils.URIBuilder;
 import org.apache.jena.riot.WebContent;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
@@ -7,6 +8,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.charset.Charset;
 
 /**
@@ -52,9 +54,10 @@ public class WebConstants {
   private static final String TRIPLESTORE_BASE_URI = loadSystemEnv("TRIPLESTORE_BASE_URI");
   private static final String TRIPLESTORE_DATA_URI = TRIPLESTORE_BASE_URI + "/current";
 
-  public static final String PATAVI_URI = loadSystemEnv("PATAVI_URI");
+  private static final String PATAVI_URI = loadSystemEnv("PATAVI_URI");
+  public static final String PATAVI_RESULTS_PATH = "/results";
 
-  private static String loadSystemEnv(String varName) {
+  public static String loadSystemEnv(String varName) {
     String envValue = System.getenv(varName);
     if (envValue == null || envValue.isEmpty()) {
       LoggerFactory
@@ -67,6 +70,18 @@ public class WebConstants {
 
   public String getPataviUri() {
     return PATAVI_URI;
+  }
+
+  public URI getPataviGemtcUri() {
+    try {
+      URIBuilder builder = new URIBuilder(PATAVI_URI);
+      builder.setPath("/task");
+      builder.addParameter("service", "gemtc");
+      return builder.build();
+    } catch (URISyntaxException e) {
+      e.printStackTrace();
+    }
+    return null;
   }
 
   public String getTriplestoreBaseUri() {
