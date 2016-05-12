@@ -1,6 +1,7 @@
 package org.drugis.addis.analyses.repository;
 
 import org.drugis.addis.analyses.*;
+import org.drugis.addis.analyses.service.AnalysisService;
 import org.drugis.addis.config.JpaRepositoryTestConfig;
 import org.drugis.addis.exception.MethodNotAllowedException;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
@@ -15,13 +16,13 @@ import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;
+import java.io.IOException;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
 
 import static org.junit.Assert.*;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.when;
 
 /**
  * Created by daan on 25-2-16.
@@ -33,6 +34,9 @@ public class MetaBenefitRiskAnalysisRepositoryTest {
 
   @Inject
   MetaBenefitRiskAnalysisRepository metaBenefitRiskAnalysisRepository;
+
+  @Inject
+  AnalysisService analysisService;
 
   @PersistenceContext(unitName = "addisCore")
   EntityManager em;
@@ -48,16 +52,19 @@ public class MetaBenefitRiskAnalysisRepositoryTest {
   }
 
   @Test
-  public void testCreate() throws ResourceDoesNotExistException, MethodNotAllowedException, SQLException {
+  public void testCreate() throws ResourceDoesNotExistException, MethodNotAllowedException, SQLException, IOException {
     int projectId = 1;
     int accountId = 1;
     AnalysisCommand analysisCommand = new AnalysisCommand(projectId, "new analysis", AnalysisType.META_BENEFIT_RISK_ANALYSIS_LABEL);
     Account user = em.find(Account.class, accountId);
+    when(analysisService.buildInitialOutcomeInclusions(any(), any())).thenReturn(Collections.emptyList());
+
     MetaBenefitRiskAnalysis metaBenefitRiskAnalysis = metaBenefitRiskAnalysisRepository.create(user, analysisCommand);
+
     assertNotNull(metaBenefitRiskAnalysis);
     assertNotNull(metaBenefitRiskAnalysis.getId());
     assertEquals(2, metaBenefitRiskAnalysis.getInterventionInclusions().size());
-    assertEquals(1, metaBenefitRiskAnalysis.getMbrOutcomeInclusions().size());
+    assertEquals(0, metaBenefitRiskAnalysis.getMbrOutcomeInclusions().size());
   }
 
   @Test

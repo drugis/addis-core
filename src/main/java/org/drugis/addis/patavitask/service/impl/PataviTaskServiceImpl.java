@@ -4,9 +4,10 @@ import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.interventions.service.impl.InvalidTypeForDoseCheckException;
 import org.drugis.addis.models.Model;
 import org.drugis.addis.models.exceptions.InvalidModelException;
-import org.drugis.addis.models.repository.ModelRepository;
+import org.drugis.addis.models.service.ModelService;
 import org.drugis.addis.patavitask.PataviTaskUriHolder;
 import org.drugis.addis.patavitask.repository.PataviTaskRepository;
+import org.drugis.addis.patavitask.repository.UnexpectedNumberOfResultsException;
 import org.drugis.addis.patavitask.service.PataviTaskService;
 import org.drugis.addis.problems.model.NetworkMetaAnalysisProblem;
 import org.drugis.addis.problems.model.PairwiseNetworkProblem;
@@ -35,7 +36,7 @@ public class PataviTaskServiceImpl implements PataviTaskService {
   public final static String PATAVI_URI_BASE = System.getenv("PATAVI_URI");
   final static Logger logger = LoggerFactory.getLogger(PataviTaskServiceImpl.class);
   @Inject
-  ModelRepository modelRepository;
+  ModelService modelService;
 
   @Inject
   PataviTaskRepository pataviTaskRepository;
@@ -44,9 +45,9 @@ public class PataviTaskServiceImpl implements PataviTaskService {
   ProblemService problemService;
 
   @Override
-  public PataviTaskUriHolder getPataviTaskUriHolder(Integer projectId, Integer analysisId, Integer modelId) throws ResourceDoesNotExistException, IOException, SQLException, InvalidModelException, URISyntaxException, ReadValueException, InvalidTypeForDoseCheckException, UnrecoverableKeyException, CertificateException, NoSuchAlgorithmException, KeyStoreException, KeyManagementException {
+  public PataviTaskUriHolder getPataviTaskUriHolder(Integer projectId, Integer analysisId, Integer modelId) throws ResourceDoesNotExistException, IOException, SQLException, InvalidModelException, URISyntaxException, ReadValueException, InvalidTypeForDoseCheckException, UnrecoverableKeyException, CertificateException, NoSuchAlgorithmException, KeyStoreException, KeyManagementException, UnexpectedNumberOfResultsException {
     logger.trace("PataviTaskServiceImpl.getPataviTaskUriHolder, projectId = " + projectId + " analysisId = " + analysisId + "modelId = " + modelId);
-    Model model = modelRepository.find(modelId);
+    Model model = modelService.find(modelId);
     if(model == null) {
       throw new ResourceDoesNotExistException("Could not find model" + modelId);
     }

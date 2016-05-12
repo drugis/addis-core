@@ -18,7 +18,7 @@ import java.util.Map;
 
 public interface PataviTaskRepository {
 
-  List<PataviTask> findByIds(List<URI> taskUris) throws SQLException;
+  List<PataviTask> findByIds(List<URI> taskUris) throws SQLException, IOException;
 
   JsonNode getResult(URI taskId) throws IOException, UnexpectedNumberOfResultsException, URISyntaxException;
 
@@ -26,11 +26,7 @@ public interface PataviTaskRepository {
 
   HttpResponse delete(URI taskUrl) throws IOException;
 
-  Boolean isTaskRun(URI taskUrl);
-
   PataviTask getTask(URI taskUrl) throws IOException;
-
-  Map<URI, Boolean> getRunStatus(List<URI> taskUris);
 
   URI createPataviTask(JSONObject jsonObject);
 }

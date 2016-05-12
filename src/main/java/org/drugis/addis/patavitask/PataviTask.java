@@ -32,10 +32,10 @@ public class PataviTask {
     this.id = jsonNode.get("id").asText();
     this.service = jsonNode.get("service").asText();
     this.status = jsonNode.get("status").asText();
-    this.self = URI.create(jsonNode.get("_link").get("self").get("href").asText());
-    this.updates = URI.create(jsonNode.get("_link").get("updates").get("href").asText());
-    if (jsonNode.get("_link").get("results") != null) {
-      this.results = URI.create(jsonNode.get("_link").get("results").get("href").asText());
+    this.self = URI.create(jsonNode.get("_links").get("self").get("href").asText());
+    this.updates = URI.create(jsonNode.get("_links").get("updates").get("href").asText());
+    if (jsonNode.get("_links").get("results") != null) {
+      this.results = URI.create(jsonNode.get("_links").get("results").get("href").asText());
     }
   }
 

@@ -19,7 +19,7 @@ import org.drugis.addis.interventions.repository.InterventionRepository;
 import org.drugis.addis.interventions.service.InterventionService;
 import org.drugis.addis.interventions.service.impl.InvalidTypeForDoseCheckException;
 import org.drugis.addis.models.Model;
-import org.drugis.addis.models.repository.ModelRepository;
+import org.drugis.addis.models.service.ModelService;
 import org.drugis.addis.outcomes.Outcome;
 import org.drugis.addis.outcomes.repository.OutcomeRepository;
 import org.drugis.addis.patavitask.PataviTask;
@@ -84,7 +84,7 @@ public class ProblemServiceImpl implements ProblemService {
   private MappingService mappingService;
 
   @Inject
-  private ModelRepository modelRepository;
+  private ModelService modelService;
 
   @Inject
   private OutcomeRepository outcomeRepository;
@@ -101,7 +101,7 @@ public class ProblemServiceImpl implements ProblemService {
   private ObjectMapper objectMapper = new ObjectMapper();
 
   @Override
-  public AbstractProblem getProblem(Integer projectId, Integer analysisId) throws ResourceDoesNotExistException, URISyntaxException, SQLException, IOException, ReadValueException, InvalidTypeForDoseCheckException {
+  public AbstractProblem getProblem(Integer projectId, Integer analysisId) throws ResourceDoesNotExistException, URISyntaxException, SQLException, IOException, ReadValueException, InvalidTypeForDoseCheckException, UnexpectedNumberOfResultsException {
     Project project = projectRepository.get(projectId);
     AbstractAnalysis analysis = analysisRepository.get(analysisId);
     if (analysis instanceof SingleStudyBenefitRiskAnalysis) {
@@ -117,16 +117,20 @@ public class ProblemServiceImpl implements ProblemService {
   private MetaBenefitRiskProblem getMetaBenefitRiskAnalysisProblem(Project project, MetaBenefitRiskAnalysis analysis) throws SQLException, IOException, UnexpectedNumberOfResultsException, URISyntaxException {
     final List<Integer> networkModelIds = getInclusionIdsWithBaseline(analysis.getMbrOutcomeInclusions(), MbrOutcomeInclusion::getModelId);
     final List<Integer> outcomeIds = getInclusionIdsWithBaseline(analysis.getMbrOutcomeInclusions(), MbrOutcomeInclusion::getOutcomeId);
-    final List<Model> models = modelRepository.get(networkModelIds);
+    final List<Model> models = modelService.get(networkModelIds);
     final Map<Integer, Model> modelMap = models.stream().collect(Collectors.toMap(Model::getId, Function.identity()));
     List<Outcome> outcomes = outcomeRepository.get(project.getId(), outcomeIds);
     final Map<String, Outcome> outcomesByName = outcomes.stream().collect(Collectors.toMap(Outcome::getName, Function.identity()));
     final Map<Integer, Outcome> outcomesById = outcomes.stream().collect(Collectors.toMap(Outcome::getId, Function.identity()));
-    List<URI> taskUris = models.stream().map(Model::getTaskUrl).collect(Collectors.toList());
+    List<URI> taskUris = models.stream().map(Model::getTaskUrl)
+            .filter(taskUri -> taskUri != null)
+            .collect(Collectors.toList());
     final Map<URI, PataviTask> pataviTaskMap = pataviTaskRepository.findByIds(taskUris)
             .stream()
-            .collect(Collectors.toMap(PataviTask::getId, Function.identity()));
-    final Map<Integer, PataviTask> tasksByModelId = models.stream().collect(Collectors.toMap(Model::getId, m -> pataviTaskMap.get(m.getTaskUrl())));
+            .collect(Collectors.toMap(PataviTask::getSelf, Function.identity()));
+    final Map<Integer, PataviTask> tasksByModelId = models.stream()
+            .filter(model -> model.getTaskUrl() != null)
+            .collect(Collectors.toMap(Model::getId, m -> pataviTaskMap.get(m.getTaskUrl())));
     final Map<URI, JsonNode> resultsByTaskId = pataviTaskRepository.getResults(taskUris);
     final List<MbrOutcomeInclusion> inclusionsWithBaseline = analysis.getMbrOutcomeInclusions().stream().filter(moi -> moi.getBaseline() != null).collect(Collectors.toList());
     final List<InterventionInclusion> inclusions = analysis.getInterventionInclusions();
@@ -152,7 +156,7 @@ public class ProblemServiceImpl implements ProblemService {
     for (MbrOutcomeInclusion outcomeInclusion : inclusionsWithBaseline) {
 
       Baseline baseline = objectMapper.readValue(outcomeInclusion.getBaseline(), Baseline.class);
-      URI taskId = tasksByModelId.get(outcomeInclusion.getModelId()).getId();
+      URI taskId = tasksByModelId.get(outcomeInclusion.getModelId()).getSelf();
       JsonNode taskResults = resultsByTaskId.get(taskId);
 
       Map<Integer, MultiVariateDistribution> distributionByInterventionId = objectMapper
@@ -184,7 +188,6 @@ public class ProblemServiceImpl implements ProblemService {
 
       // place baseline at the front of the list
       rowNames.sort((rn1, rn2) -> rn1.equals(baseline.getName()) ? -1 : 0);
-
 
       final List<String> colNames = rowNames;
 

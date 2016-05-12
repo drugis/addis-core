@@ -122,7 +122,7 @@ public class Model {
   }
 
   public void setTaskUrl(URI taskUrl) {
-    this.taskUrl = taskUrl.toString();
+    this.taskUrl = taskUrl != null ? taskUrl.toString() : null;
   }
 
   public String getTitle() {

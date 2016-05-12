@@ -35,5 +35,13 @@ public class TestUtils {
     return "";
   }
 
-
+  public static String buildPataviTaskJson(String id) {
+    return "{ \"id\": \"" +
+            id +
+            "\", \"service\": \"slow\", \"status\": \"done\", \"_links\": { \"self\": { \"href\": \"https://patavi.drugis.org/task/" +
+            id +
+            "\" }, \"results\": { \"href\": \"https://patavi.drugis.org/task/" +
+            id +
+            "/results\" }, \"updates\": { \"href\": \"wss://patavi.drugis.org/task/" + id + "/updates\" } } }";
+  }
 }

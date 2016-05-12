@@ -30,6 +30,8 @@ Set up the environment:
 
 ```
 export TRUST_STORE_PATH=/path/to/trust/store
+export KEYSTORE_PATH=/path/to/key/store
+export KEYSTORE_PASSWORD="develop"
 export TRIPLESTORE_BASE_URI=http://localhost:3030
 export PATAVI_URI=http://localhost:3000
 

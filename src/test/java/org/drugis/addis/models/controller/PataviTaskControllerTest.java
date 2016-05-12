@@ -68,7 +68,7 @@ public class PataviTaskControllerTest {
     when(pataviTaskService.getPataviTaskUriHolder(projectId, analysisId, modelId)).thenReturn(pataviTaskUriHolder);
     mockMvc.perform(get("/projects/45/analyses/55/models/37/task").principal(user))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.uri", equalTo(uri)))
+            .andExpect(jsonPath("$.uri", equalTo(uri.toString())))
     ;
     verify(pataviTaskService).getPataviTaskUriHolder(projectId, analysisId, modelId);
   }

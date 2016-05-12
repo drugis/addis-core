@@ -20,9 +20,10 @@ import org.apache.http.config.Registry;
 import org.apache.http.config.RegistryBuilder;
 import org.apache.http.conn.HttpClientConnectionManager;
 import org.apache.http.conn.socket.ConnectionSocketFactory;
+import org.apache.http.conn.socket.PlainConnectionSocketFactory;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.impl.conn.BasicHttpClientConnectionManager;
+import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.ssl.SSLContexts;
 import org.drugis.addis.util.WebConstants;
 import org.drugis.trialverse.util.JenaGraphMessageConverter;
@@ -75,11 +76,11 @@ public class MainConfig {
   private final static String KEYSTORE_PASSWORD = WebConstants.loadSystemEnv("KEYSTORE_PASSWORD");
 
   public MainConfig() {
-    String trustStoreLocation = System.getProperty("javax.net.ssl.trustStore");
-    if (trustStoreLocation == null) {
-      logger.error("Missing trust store location java property (set using 'javax.net.ssl.trustStore')");
-      System.exit(-1);
-    }
+//    String trustStoreLocation = System.getProperty("javax.net.ssl.trustStore");
+//    if (trustStoreLocation == null) {
+//      logger.error("Missing trust store location java property (set using 'javax.net.ssl.trustStore')");
+//      System.exit(-1);
+//    }
   }
 
   @Bean
@@ -104,8 +105,9 @@ public class MainConfig {
 
     Registry<ConnectionSocketFactory> registry = RegistryBuilder.<ConnectionSocketFactory>create()
             .register("https", connectionSocketFactory)
+            .register("http", new PlainConnectionSocketFactory())
             .build();
-    HttpClientConnectionManager clientConnectionManager = new BasicHttpClientConnectionManager(registry);
+    HttpClientConnectionManager clientConnectionManager = new PoolingHttpClientConnectionManager(registry);
 
     return httpClientBuilder
             .setConnectionManager(clientConnectionManager)

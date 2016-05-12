@@ -23,7 +23,7 @@ import javax.inject.Inject;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -34,15 +34,14 @@ import java.util.stream.Collectors;
  */
 @Repository
 public class PataviTaskRepositoryImpl implements PataviTaskRepository {
-  public final static String GEMTC_METHOD = "gemtc";
-  final static Logger logger = LoggerFactory.getLogger(PataviTaskRepositoryImpl.class);
+  private final static Logger logger = LoggerFactory.getLogger(PataviTaskRepositoryImpl.class);
   private ObjectMapper objectMapper = new ObjectMapper();
 
   @Inject
-  WebConstants webConstants;
+  private WebConstants webConstants;
 
   @Inject
-  HttpClient httpClient;
+  private HttpClient httpClient;
 
   @Override
   public URI createPataviTask(JSONObject jsonProblem) {
@@ -97,16 +96,12 @@ public class PataviTaskRepositoryImpl implements PataviTaskRepository {
   }
 
   @Override
-  public Map<URI, Boolean> getRunStatus(List<URI> taskUris) {
-    return null;
-  }
-
-  @Override
-  public List<PataviTask> findByIds(List<URI> taskUris) throws SQLException {
-//    taskUris.stream().collect(Collectors.toMap(Function.identity(), uri -> {
-////      sslRequest()
-//    }));
-    return null;
+  public List<PataviTask> findByIds(List<URI> taskUris) throws IOException {
+    List<PataviTask> result = new ArrayList<>(taskUris.size());
+    for (URI taskUri : taskUris) {
+      result.add(getTask(taskUri));
+    }
+    return result;
   }
 
 }
