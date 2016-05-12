@@ -29,7 +29,6 @@ sudo -u postgres psql -c "CREATE DATABASE patavitask ENCODING 'utf-8' OWNER pata
 Set up the environment:
 
 ```
-export TRUST_STORE_PATH=/path/to/trust/store
 export KEYSTORE_PATH=/path/to/key/store
 export KEYSTORE_PASSWORD="develop"
 export TRIPLESTORE_BASE_URI=http://localhost:3030
@@ -54,7 +53,7 @@ export ADDIS_CORE_OAUTH_GOOGLE_KEY=201346854981-3pcdhh96orc3lcdr8k4i1u58pvepjme4
 Run the Tomcat server:
 
 ```
-mvn tomcat7:run -Djavax.net.ssl.trustStore=$TRUST_STORE_PATH
+mvn tomcat7:run -Djavax.net.ssl.trustStore=/path/to/trust/store
 ```
 
 To run integration tests:

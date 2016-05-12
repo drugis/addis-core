@@ -73,15 +73,15 @@ import java.util.Properties;
 public class MainConfig {
 
   private final static Logger logger = LoggerFactory.getLogger(MainConfig.class);
-  private final static String KEYSTORE_LOCATION = WebConstants.loadSystemEnv("KEYSTORE_LOCATION");
+  private final static String KEYSTORE_PATH = WebConstants.loadSystemEnv("KEYSTORE_PATH");
   private final static String KEYSTORE_PASSWORD = WebConstants.loadSystemEnv("KEYSTORE_PASSWORD");
 
   public MainConfig() {
-//    String trustStoreLocation = System.getProperty("javax.net.ssl.trustStore");
-//    if (trustStoreLocation == null) {
-//      logger.error("Missing trust store location java property (set using 'javax.net.ssl.trustStore')");
-//      System.exit(-1);
-//    }
+    String trustStoreLocation = System.getProperty("javax.net.ssl.trustStore");
+    if (trustStoreLocation == null) {
+      logger.error("Missing trust store location java property (set using 'javax.net.ssl.trustStore')");
+      System.exit(-1);
+    }
   }
 
   @Bean
@@ -94,7 +94,7 @@ public class MainConfig {
   @Bean
   public HttpClient httpClient() throws KeyStoreException, IOException, CertificateException, NoSuchAlgorithmException, UnrecoverableKeyException, KeyManagementException {
     KeyStore keyStore = KeyStore.getInstance("JKS");
-    keyStore.load(new FileInputStream(KEYSTORE_LOCATION), KEYSTORE_PASSWORD.toCharArray());
+    keyStore.load(new FileInputStream(KEYSTORE_PATH), KEYSTORE_PASSWORD.toCharArray());
 
     SSLContext sslContext = SSLContexts
             .custom()
