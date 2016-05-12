@@ -522,3 +522,18 @@ DROP TABLE SingleStudyBenefitRiskAnalysis_Intervention;
 --changeset reidd:52
 ALTER TABLE SingleStudyBenefitRiskAnalysis ALTER COLUMN studyGraphUid RENAME TO studyGraphUri;
 --rollback ALTER TABLE SingleStudyBenefitRiskAnalysis ALTER COLUMN studyGraphUri RENAME TO studyGraphUid;
+
+--changeset reidd:53
+-- updates data, irrelevant for test
+
+--changeset reidd:54
+-- updates data, irrelevant for test
+
+--changeset reidd:55
+-- updates data, irrelevant for test
+
+--changeset reidd:56
+ALTER TABLE model DROP COLUMN taskId;
+ALTER TABLE model ADD COLUMN taskUrl VARCHAR;
+--rollback ALTER TABLE model ADD COLUMN taskId int;
+--rollback ALTER TABLE model DROP COLUMN taskUrl;

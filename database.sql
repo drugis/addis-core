@@ -654,3 +654,10 @@ UPDATE singlestudybenefitriskanalysis SET studyGraphUri=CONCAT('http://trials.dr
 --changeset reidd:55
 UPDATE outcome SET semanticOutcomeUri=CONCAT('http://trials.drugis.org/concepts/', semanticOutcomeUri) WHERE LEFT(semanticOutcomeUri, 4) <> 'http';
 --rollback UPDATE outcome SET semanticOutcomeUri=RIGHT(semanticOutcomeUri, 36) WHERE LEFT(semanticOutcomeUri, 4) = 'http';
+
+--changeset reidd:56
+ALTER TABLE model DROP COLUMN taskId;
+ALTER TABLE model ADD COLUMN taskUrl VARCHAR;
+--rollback ALTER TABLE model ADD COLUMN taskId int;
+--rollback ALTER TABLE model DROP COLUMN taskUrl;
+

@@ -1,53 +1,70 @@
 package org.drugis.addis.patavitask;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import java.io.IOException;
+import java.net.URI;
+
 /**
  * Created by connor on 26-6-14.
  */
 public class PataviTask {
 
-  private Integer id;
+  private String id;
 
-  private String method;
+  private String service;
 
-  private String problem;
+  private String status;
 
-  private boolean hasResult = false;
+  private URI self;
+
+  private URI results;
+
+  private URI updates;
 
   public PataviTask() {
   }
 
-  public PataviTask(Integer id, String method, String problem, boolean hasResult) {
-    this.id = id;
-    this.method = method;
-    this.problem = problem;
-    this.hasResult = hasResult;
+  public PataviTask(String pataviResponse) throws IOException {
+    ObjectMapper objectMapper = new ObjectMapper();
+    JsonNode jsonNode = objectMapper.readTree(pataviResponse);
+    this.id = jsonNode.get("id").asText();
+    this.service = jsonNode.get("service").asText();
+    this.status = jsonNode.get("status").asText();
+    this.self = URI.create(jsonNode.get("_links").get("self").get("href").asText());
+    this.updates = URI.create(jsonNode.get("_links").get("updates").get("href").asText());
+    if (jsonNode.get("_links").get("results") != null) {
+      this.results = URI.create(jsonNode.get("_links").get("results").get("href").asText());
+    }
   }
 
-  public PataviTask(Integer id, String method, String problem) {
-    this.id = id;
-    this.method = method;
-    this.problem = problem;
-  }
-
-  public PataviTask(String method, String problem) {
-    this.method = method;
-    this.problem = problem;
-  }
-
-  public Integer getId() {
+  public String getId() {
     return id;
   }
 
-  public String getMethod() {
-    return method;
+  public String getService() {
+    return service;
   }
 
-  public String getProblem() {
-    return problem;
+  public String getStatus() {
+    return status;
   }
 
-  public boolean isHasResult() {
-    return hasResult;
+  public URI getSelf() {
+    return self;
+  }
+
+  public URI getResults() {
+    return results;
+  }
+
+  public URI getUpdates() {
+    return updates;
+  }
+
+  public Boolean hasResults() {
+    return this.results != null;
   }
 
   @Override
@@ -57,19 +74,23 @@ public class PataviTask {
 
     PataviTask that = (PataviTask) o;
 
-    if (hasResult != that.hasResult) return false;
-    if (id != null ? !id.equals(that.id) : that.id != null) return false;
-    if (!method.equals(that.method)) return false;
-    return problem.equals(that.problem);
+    if (!id.equals(that.id)) return false;
+    if (!service.equals(that.service)) return false;
+    if (!status.equals(that.status)) return false;
+    if (!self.equals(that.self)) return false;
+    if (results != null ? !results.equals(that.results) : that.results != null) return false;
+    return updates.equals(that.updates);
 
   }
 
   @Override
   public int hashCode() {
-    int result = id != null ? id.hashCode() : 0;
-    result = 31 * result + method.hashCode();
-    result = 31 * result + problem.hashCode();
-    result = 31 * result + (hasResult ? 1 : 0);
+    int result = id.hashCode();
+    result = 31 * result + service.hashCode();
+    result = 31 * result + status.hashCode();
+    result = 31 * result + self.hashCode();
+    result = 31 * result + (results != null ? results.hashCode() : 0);
+    result = 31 * result + updates.hashCode();
     return result;
   }
 }

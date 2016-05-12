@@ -72,8 +72,8 @@ INSERT INTO public.NetworkMetaAnalysis(id) VALUES (-7);
 INSERT INTO public.model(id, analysisId, title, linearModel, modelType, heterogeneityPrior, burnInIterations, inferenceIterations, thinningFactor, likelihood, link) VALUES (1, -5, 'model title', 'fixed', '{"type": "network"}', '{"type": "automatic"}', 5000, 20000, 10, 'binom', 'logit');
 INSERT INTO public.model(id, analysisId, title, linearModel, modelType, heterogeneityPrior, burnInIterations, inferenceIterations, thinningFactor, likelihood, link, outcomeScale) VALUES (2, -5, 'model title', 'fixed', '{"type": "pairwise", "details": {"to": {id: -1, "name" : "study1"}, "from": {"id": -2, "name": "study2"}}}', '{"type": "variance", "values": {"mean": 2.3, "stdDev": 0.3} }', 5000, 20000, 10,  'binom', 'logit', 2.2);
 
-INSERT INTO public.model(id, analysisId, taskId, title, linearModel, modelType, burnInIterations, inferenceIterations, thinningFactor, likelihood, link) VALUES (3, -7, 1, 'model title', 'fixed', '{"type": "network"}', 50, 20, 1, 'binom', 'logit');
-INSERT INTO public.model(id, analysisId, taskId, title, linearModel, modelType, burnInIterations, inferenceIterations, thinningFactor, likelihood, link) VALUES (4, -7, 2, 'model title', 'fixed', '{"type": "network"}', 50, 20, 1, 'binom', 'logit');
+INSERT INTO public.model(id, analysisId, taskUrl, title, linearModel, modelType, burnInIterations, inferenceIterations, thinningFactor, likelihood, link) VALUES (3, -7, 'http://patavi-test.drugis.org/1', 'model title', 'fixed', '{"type": "network"}', 50, 20, 1, 'binom', 'logit');
+INSERT INTO public.model(id, analysisId, taskUrl, title, linearModel, modelType, burnInIterations, inferenceIterations, thinningFactor, likelihood, link) VALUES (4, -7, 'http://patavi-test.drugis.org/2', 'model title', 'fixed', '{"type": "network"}', 50, 20, 1, 'binom', 'logit');
 
 UPDATE public.NetworkMetaAnalysis SET primaryModel = 1 WHERE id = -7;
 
