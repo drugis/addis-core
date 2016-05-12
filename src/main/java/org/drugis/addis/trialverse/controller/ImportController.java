@@ -1,8 +1,9 @@
 package org.drugis.addis.trialverse.controller;
 
-import net.minidev.json.JSONObject;
+import com.fasterxml.jackson.databind.JsonNode;
 import org.drugis.addis.base.AbstractAddisCoreController;
 import org.drugis.addis.trialverse.service.ClinicalTrialsImportService;
+import org.drugis.addis.trialverse.service.impl.ClinicalTrialsImportError;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -28,9 +29,9 @@ public class ImportController extends AbstractAddisCoreController {
 
   @RequestMapping(value = "/{ntcId}", method = RequestMethod.GET)
   @ResponseBody
-  public JSONObject fetchInfo(HttpServletResponse response, @PathVariable String ntcId)  {
+  public JsonNode fetchInfo(HttpServletResponse response, @PathVariable String ntcId) throws ClinicalTrialsImportError {
     logger.debug("fetch study info from clinicalTrials Importer for NTCID: " + ntcId);
-    JSONObject info =  clinicalTrialsImportService.fetchInfo(ntcId);
+    JsonNode info =  clinicalTrialsImportService.fetchInfo(ntcId);
     if(info == null){
       logger.debug("no study found though importer for NTCID " + ntcId);
       response.setStatus(HttpServletResponse.SC_NOT_FOUND);

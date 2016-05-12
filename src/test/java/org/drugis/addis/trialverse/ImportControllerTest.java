@@ -1,8 +1,11 @@
 package org.drugis.addis.trialverse;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import net.minidev.json.JSONObject;
 import org.drugis.addis.trialverse.controller.ImportController;
 import org.drugis.addis.trialverse.service.ClinicalTrialsImportService;
+import org.drugis.addis.trialverse.service.impl.ClinicalTrialsImportError;
 import org.drugis.addis.util.WebConstants;
 import org.junit.After;
 import org.junit.Before;
@@ -31,6 +34,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class ImportControllerTest {
 
   private MockMvc mockMvc;
+  private ObjectMapper objectMapper = new ObjectMapper();
 
   @Mock
   ClinicalTrialsImportService clinicalTrialsImportService = mock(ClinicalTrialsImportService.class);
@@ -51,13 +55,11 @@ public class ImportControllerTest {
     verifyNoMoreInteractions(clinicalTrialsImportService);
   }
 
-
   @Test
-  public void testFetchInfo() throws Exception {
+  public void testFetchInfo() throws Exception, ClinicalTrialsImportError {
     String ntcId = "ntc0123";
-    HashMap<String, String> hashMap = new HashMap<>();
-    hashMap.put("foo", "bar");
-    JSONObject resultObject = new JSONObject(hashMap);
+
+    JsonNode resultObject = objectMapper.readTree("{\"foo\": \"bar\"}");
     when(clinicalTrialsImportService.fetchInfo(ntcId)).thenReturn(resultObject);
     mockMvc.perform(get("/import/" + ntcId ))
             .andExpect(status().isOk())
@@ -67,7 +69,7 @@ public class ImportControllerTest {
   }
 
   @Test
-  public void testFetchInfoNotFound() throws Exception {
+  public void testFetchInfoNotFound() throws Exception, ClinicalTrialsImportError {
     String ntcId = "ntc0123";
     HashMap<String, String> hashMap = new HashMap<>();
     hashMap.put("foo", "bar");
