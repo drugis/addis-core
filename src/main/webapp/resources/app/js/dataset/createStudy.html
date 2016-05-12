@@ -1,30 +1,62 @@
 <form novalidate ng-submit="createStudy(study)">
-    <div class="row">
+  <tabset>
+    <tab heading="Empty Study">
+      <div class="row">
         <div class="large-9 columns">
-            <h3>Create a new study</h3>
+          <h3>Create a new study</h3>
         </div>
-    </div>
-    <div class="row">
+      </div>
+      <div class="row">
         <div class="large-9 columns">
-            <label>Short Name (e.g. Hansen 2005)
-                <input autofocus type="text" ng-model="study.label">
-            </label>
-            <label class="alert" ng-show="!isUniqueShortName(study.label)">Short name must be unique</label>
+          <label>Short Name (e.g. Hansen 2005)
+            <input autofocus type="text" ng-model="study.label">
+          </label>
+          <label class="alert" ng-show="!isUniqueShortName(study.label)">Short name must be unique</label>
         </div>
-    </div>
-    <div class="row">
+      </div>
+      <div class="row">
         <div class="large-9 columns">
-            <label>Title
-                <textarea rows="8" ng-model="study.comment"></textarea>
-            </label>
+          <label>Title
+            <textarea rows="8" ng-model="study.comment"></textarea>
+          </label>
         </div>
-    </div>
-    <div class="row">
+      </div>
+      <div class="row">
         <div class="large-9 columns">
-            <button class="success" type="submit" ng-disabled="!study.comment || !isUniqueShortName(study.label) || isCreatingStudy">
-                Create
-            </button>
+          <button class="success" type="submit" ng-disabled="!study.comment || !isUniqueShortName(study.label) || isCreatingStudy">
+            Create
+          </button>
         </div>
-    </div>
+      </div>
+    </tab>
+    <tab heading="ClinicalTrials.gov">
+      <div class="row">
+        <div class="large-9 columns">
+          <h3>Import study</h3>
+        </div>
+      </div>
+      <div class="row">
+        <div class="large-9 columns">
+          <div class="row collapse">
+            <label>NCT ID</label>
+            <div class="small-9 columns">
+              <input autofocus type="text" ng-model="studyImport.nctId">
+            </div>
+            <div class="small-3 columns">
+              <button type="button" class="postfix">find</button>
+            </div>
+          </div>
+          <label class="" ng-show="import.basicInfo">{{studyImport.basicInfo}}</label>
+          <label class="alert" ng-show="import.error">{{studyImport.error}}</label>
+        </div>
+      </div>
+      <div class="row">
+        <div class="large-9 columns">
+          <button class="success" type="submit" ng-disabled="!study.comment || !isUniqueShortName(study.label) || isCreatingStudy">
+            Import
+          </button>
+        </div>
+      </div>
+    </tab>
     <a class="close-reveal-modal" ng-click="cancel()">&#215;</a>
 </form>

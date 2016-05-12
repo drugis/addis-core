@@ -1,12 +1,12 @@
 'use strict';
-define([], function() {
+define(['lodash'], function(_) {
   var dependencies = ['$scope', '$stateParams', '$modalInstance',
     'successCallback',
     'UUIDService', 'StudyService'
   ];
 
   var CreateStudyController = function($scope, $stateParams, $modalInstance,
-    successCallback, UUIDService, StudyService) {
+    successCallback, StudyService, ImportStudyResource) {
 
     $scope.isCreatingStudy = false;
 
@@ -29,9 +29,17 @@ define([], function() {
       });
     };
 
+    $scope.fetchImportInfo = function(studyImport) {
+      ImportStudyResource.get({ntcId: studyImport.ntcId}).$promise.then(function(basicInfo){
+        $scope.studyImport.basicInfo = basicInfo;
+      });
+    };
+
     $scope.cancel = function() {
       $modalInstance.dismiss('cancel');
     };
+
+
   };
   return dependencies.concat(CreateStudyController);
 });

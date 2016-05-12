@@ -14,6 +14,7 @@ import org.drugis.addis.projects.service.ProjectService;
 import org.drugis.addis.remarks.repository.RemarksRepository;
 import org.drugis.addis.scenarios.repository.ScenarioRepository;
 import org.drugis.addis.security.repository.AccountRepository;
+import org.drugis.addis.trialverse.service.ClinicalTrialsImportService;
 import org.drugis.addis.trialverse.service.MappingService;
 import org.drugis.addis.trialverse.service.TriplestoreService;
 import org.drugis.trialverse.dataset.repository.VersionMappingRepository;
@@ -38,7 +39,7 @@ import static org.mockito.Mockito.mock;
         "org.drugis.addis.scenarios.controller",
         "org.drugis.addis.scenarios.service",
         "org.drugis.addis.models.controller",
-        "org.drugis.addis.models.service"
+        "org.drugis.addis.models.service",
 })
 public class TestConfig {
   @Bean
@@ -142,5 +143,7 @@ public class TestConfig {
     return  mock(CovariateRepository.class);
   }
 
+  @Bean
+  public ClinicalTrialsImportService mockClinicalTrialsImportService() {return mock(ClinicalTrialsImportService.class);}
 }
 
