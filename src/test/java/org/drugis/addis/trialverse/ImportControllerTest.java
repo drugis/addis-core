@@ -57,26 +57,26 @@ public class ImportControllerTest {
 
   @Test
   public void testFetchInfo() throws Exception, ClinicalTrialsImportError {
-    String ntcId = "ntc0123";
+    String nctId = "nct0123";
 
     JsonNode resultObject = objectMapper.readTree("{\"foo\": \"bar\"}");
-    when(clinicalTrialsImportService.fetchInfo(ntcId)).thenReturn(resultObject);
-    mockMvc.perform(get("/import/" + ntcId ))
+    when(clinicalTrialsImportService.fetchInfo(nctId)).thenReturn(resultObject);
+    mockMvc.perform(get("/import/" + nctId ))
             .andExpect(status().isOk())
             .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()))
             .andExpect(jsonPath("$.foo", is("bar")));
-    verify(clinicalTrialsImportService).fetchInfo(ntcId);
+    verify(clinicalTrialsImportService).fetchInfo(nctId);
   }
 
   @Test
   public void testFetchInfoNotFound() throws Exception, ClinicalTrialsImportError {
-    String ntcId = "ntc0123";
+    String nctId = "nct0123";
     HashMap<String, String> hashMap = new HashMap<>();
     hashMap.put("foo", "bar");
     JSONObject resultObject = new JSONObject(hashMap);
-    when(clinicalTrialsImportService.fetchInfo(ntcId)).thenReturn(null);
-    mockMvc.perform(get("/import/" + ntcId ))
+    when(clinicalTrialsImportService.fetchInfo(nctId)).thenReturn(null);
+    mockMvc.perform(get("/import/" + nctId ))
             .andExpect(status().isNotFound());
-    verify(clinicalTrialsImportService).fetchInfo(ntcId);
+    verify(clinicalTrialsImportService).fetchInfo(nctId);
   }
 }

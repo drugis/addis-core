@@ -7,5 +7,5 @@ import org.drugis.addis.trialverse.service.impl.ClinicalTrialsImportError;
  * Created by connor on 12-5-16.
  */
 public interface ClinicalTrialsImportService {
-   JsonNode fetchInfo(String ntcId) throws ClinicalTrialsImportError;
+   JsonNode fetchInfo(String nctId) throws ClinicalTrialsImportError;
 }

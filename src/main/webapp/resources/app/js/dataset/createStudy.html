@@ -1,6 +1,6 @@
-<form novalidate ng-submit="createStudy(study)">
-  <tabset>
-    <tab heading="Empty Study">
+<tabset>
+  <tab heading="Empty Study">
+    <form novalidate ng-submit="createStudy(study)">
       <div class="row">
         <div class="large-9 columns">
           <h3>Create a new study</h3>
@@ -28,8 +28,10 @@
           </button>
         </div>
       </div>
-    </tab>
-    <tab heading="ClinicalTrials.gov">
+    </form>
+  </tab>
+  <tab heading="ClinicalTrials.gov">
+    <form novalidate ng-submit="import(studyImport)">
       <div class="row">
         <div class="large-9 columns">
           <h3>Import study</h3>
@@ -37,26 +39,83 @@
       </div>
       <div class="row">
         <div class="large-9 columns">
-          <div class="row collapse">
-            <label>NCT ID</label>
-            <div class="small-9 columns">
-              <input autofocus type="text" ng-model="studyImport.nctId">
-            </div>
-            <div class="small-3 columns">
-              <button type="button" class="postfix">find</button>
-            </div>
-          </div>
-          <label class="" ng-show="import.basicInfo">{{studyImport.basicInfo}}</label>
-          <label class="alert" ng-show="import.error">{{studyImport.error}}</label>
+          <label>NCT ID</label>
+          <input autofocus type="text"
+          ng-model="studyImport.nctId"
+          ng-model-options="{ debounce: 500 }"
+          ng-change="getInfo(studyImport)" >
         </div>
       </div>
       <div class="row">
         <div class="large-9 columns">
-          <button class="success" type="submit" ng-disabled="!study.comment || !isUniqueShortName(study.label) || isCreatingStudy">
+          <label class="alert" ng-show="studyImport.error">No study found for {{studyImport.nctId}}</label>
+          <label class="alert" ng-show="studyImport.nctId && !isValidNct(studyImport.nctId)">invalid NCT id, the id should start with 'NCT'</label>
+          <div ng-show="studyImport.basicInfo" class="panel">
+            <table class="layout-table">
+              <tr ng-show=studyImport.basicInfo.title>
+                <td class="large-6 text-right">
+                  <strong>Title</strong>
+                </td>
+                <td>
+                  {{::studyImport.basicInfo.title}}
+                </td>
+              </tr>
+              <tr ng-show=studyImport.basicInfo.sponsor>
+                <td class="large-6 text-right">
+                  <strong>Sponsor</strong>
+                </td>
+                <td>
+                  {{::studyImport.basicInfo.sponsor}}
+                </td>
+              </tr>
+              <tr ng-show=studyImport.basicInfo.updated_at>
+                <td class="large-6 text-right">
+                  <strong>Updated at</strong>
+                </td>
+                <td>
+                  {{::studyImport.basicInfo.updated_at}}
+                </td>
+              </tr>
+              <tr ng-show=studyImport.basicInfo.created_at>
+                <td class="large-6 text-right">
+                  <strong>Created at</strong>
+                </td>
+                <td>
+                  {{::studyImport.basicInfo.created_at}}
+                </td>
+              </tr>
+              <tr ng-show=studyImport.basicInfo.aliases.length>
+                <td class="large-6 text-right">
+                  <strong>aliases</strong>
+                </td>
+                <td>
+                  <tr ng-repeat="alias in aliases">
+                    <td>
+                      {{::alias}}
+                    </td>
+                  </tr>
+                </td>
+              </tr>
+              <tr ng-show=studyImport.basicInfo._links>
+                <td class="large-6 text-right">
+                  <strong>link</strong>
+                </td>
+                <td>
+                  <a ng-href="{{studyImport.basicInfo._links.source.href}}" target="_blank">{{::studyImport.basicInfo._links.source.title}} <i class="fa fa-external-link" aria-hidden="true"></i></a>
+                </td>
+              </tr>
+            </table>
+          </div>
+        </div>
+      </div>
+      <div class="row" style="margin-top: 1rem;">
+        <div class="large-9 columns">
+          <button class="success" type="submit" ng-disabled="!studyImport.nctId || !isValidNct(studyImport.nctId) || !studyImport.basicInfo || !studyImport.basicInfo._links">
             Import
           </button>
         </div>
       </div>
-    </tab>
-    <a class="close-reveal-modal" ng-click="cancel()">&#215;</a>
-</form>
+    </form>
+  </tab>
+</tabset>
+<a class="close-reveal-modal" ng-click="cancel()">&#215;</a>

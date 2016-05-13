@@ -2,6 +2,7 @@ package org.drugis.addis.trialverse.service.impl;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
@@ -31,20 +32,36 @@ public class ClinicalTrialsImportServiceImpl implements ClinicalTrialsImportServ
   HttpClient httpClient;
 
   @Override
-  public JsonNode fetchInfo(String ntcId) throws ClinicalTrialsImportError {
-    HttpGet httpGet = new HttpGet(importerServiceLocation + "/" + ntcId);
+  public JsonNode fetchInfo(String nctId) throws ClinicalTrialsImportError {
+    HttpGet httpGet = new HttpGet(importerServiceLocation + "/" + nctId);
+    HttpEntity entity = null;
     try {
       HttpResponse response = httpClient.execute(httpGet);
       int responceStatusCode = response.getStatusLine().getStatusCode();
+      entity = response.getEntity();
       if(responceStatusCode == HttpStatus.SC_NOT_FOUND){
-        logger.trace("import study not found for ntcId: " + ntcId);
-        return null;
-      } else if(responceStatusCode == HttpStatus.SC_OK) {
-        return objectMapper.readTree(EntityUtils.toString(response.getEntity()));
+        logger.trace("import study not found for nctId: " + nctId);
+        EntityUtils.consume(entity);
+          return null;
       } else {
-        throw new ClinicalTrialsImportError("could fetch study information, resured status code = " + responceStatusCode);
+        if (responceStatusCode == HttpStatus.SC_OK) {
+          entity = response.getEntity();
+          String responseAsString = EntityUtils.toString(entity);
+          EntityUtils.consume(entity);
+          return objectMapper.readTree(responseAsString);
+        } else {
+          EntityUtils.consume(entity);
+          throw new ClinicalTrialsImportError("could fetch study information, resured status code = " + responceStatusCode);
+        }
       }
-    } catch (IOException e) {
+    } catch (Exception e) {
+      if(entity != null) {
+        try {
+          EntityUtils.consume(entity);
+        } catch (IOException e1) {
+          logger.error("could not close connection");
+        }
+      }
       throw new ClinicalTrialsImportError("could fetch study information, " + e.toString());
     }
   }

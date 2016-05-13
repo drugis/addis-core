@@ -27,13 +27,13 @@ public class ImportController extends AbstractAddisCoreController {
   @Inject
   private ClinicalTrialsImportService clinicalTrialsImportService;
 
-  @RequestMapping(value = "/{ntcId}", method = RequestMethod.GET)
+  @RequestMapping(value = "/{nctId}", method = RequestMethod.GET)
   @ResponseBody
-  public JsonNode fetchInfo(HttpServletResponse response, @PathVariable String ntcId) throws ClinicalTrialsImportError {
-    logger.debug("fetch study info from clinicalTrials Importer for NTCID: " + ntcId);
-    JsonNode info =  clinicalTrialsImportService.fetchInfo(ntcId);
+  public JsonNode fetchInfo(HttpServletResponse response, @PathVariable String nctId) throws ClinicalTrialsImportError {
+    logger.debug("fetch study info from clinicalTrials Importer for NTCID: " + nctId);
+    JsonNode info =  clinicalTrialsImportService.fetchInfo(nctId);
     if(info == null){
-      logger.debug("no study found though importer for NTCID " + ntcId);
+      logger.debug("no study found though importer for NTCID " + nctId);
       response.setStatus(HttpServletResponse.SC_NOT_FOUND);
     }
     return info;
