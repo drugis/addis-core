@@ -2,14 +2,16 @@ package org.drugis.addis.trialverse.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.http.HttpStatus;
-import org.apache.http.ProtocolVersion;
+import org.apache.http.*;
 import org.apache.http.client.HttpClient;
-import org.apache.http.entity.BasicHttpEntity;
+import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.message.BasicHttpResponse;
 import org.apache.http.message.BasicStatusLine;
 import org.drugis.addis.trialverse.service.impl.ClinicalTrialsImportError;
 import org.drugis.addis.trialverse.service.impl.ClinicalTrialsImportServiceImpl;
+import org.drugis.trialverse.graph.exception.UpdateGraphException;
+import org.drugis.trialverse.graph.repository.GraphWriteRepository;
+import org.drugis.trialverse.util.Namespaces;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
@@ -18,6 +20,8 @@ import org.mockito.Mock;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
@@ -33,9 +37,14 @@ public class ClinicalTrialsImportServiceTest {
 
   private ObjectMapper objectMapper = new ObjectMapper();
 
-  @Mock HttpClient httpClient = mock(HttpClient.class);
+  @Mock
+  HttpClient httpClient = mock(HttpClient.class);
 
-  @InjectMocks ClinicalTrialsImportService clinicalTrialsImportService;
+  @Mock
+  GraphWriteRepository graphWriteRepository = mock(GraphWriteRepository.class);
+
+  @InjectMocks
+  ClinicalTrialsImportService clinicalTrialsImportService;
 
   @Before
   public void setUp() {
@@ -48,13 +57,12 @@ public class ClinicalTrialsImportServiceTest {
     String ntcID = "ntcId";
     String jsonObjectString = "{\"foo\": \"bar\"}";
     JsonNode mockResultFromService = objectMapper.readTree(jsonObjectString);
-    BasicHttpResponse response = new BasicHttpResponse(
-            new BasicStatusLine(new ProtocolVersion("p", 1, 1), HttpStatus.SC_OK, "reason")
-    );
-    BasicHttpEntity entity = new BasicHttpEntity();
+    CloseableHttpResponse response = mock(CloseableHttpResponse.class);
+    HttpEntity entity = mock(HttpEntity.class);
     InputStream inputStream = new ByteArrayInputStream(jsonObjectString.getBytes());
-    entity.setContent(inputStream);
-    response.setEntity(entity);
+    when(response.getStatusLine()).thenReturn(new BasicStatusLine(HttpVersion.HTTP_1_1, HttpStatus.SC_OK, "FINE!"));
+    when(entity.getContent()).thenReturn(inputStream);
+    when(response.getEntity()).thenReturn(entity);
     when(httpClient.execute(any())).thenReturn(response);
 
     JsonNode result = clinicalTrialsImportService.fetchInfo(ntcID);
@@ -83,5 +91,27 @@ public class ClinicalTrialsImportServiceTest {
     when(httpClient.execute(any())).thenReturn(response);
 
     clinicalTrialsImportService.fetchInfo(ntcID);
+  }
+
+  @Test
+  public void testImportStudy() throws ClinicalTrialsImportError, URISyntaxException, IOException, UpdateGraphException {
+    String commitTitle = "title";
+    String commitDesc = "desc";
+    String datasetUuid = "dataset";
+    String graphUuid = "graph";
+    URI studyUrl = URI.create("uri");
+    String jsonObjectString = "{\"foo\": \"bar\"}";
+    CloseableHttpResponse response = mock(CloseableHttpResponse.class);
+    HttpEntity entity = mock(HttpEntity.class);
+    InputStream inputStream = new ByteArrayInputStream(jsonObjectString.getBytes());
+    when(response.getStatusLine()).thenReturn(new BasicStatusLine(HttpVersion.HTTP_1_1, HttpStatus.SC_OK, "FINE!"));
+    when(entity.getContent()).thenReturn(inputStream);
+    when(response.getEntity()).thenReturn(entity);
+    when(httpClient.execute(any())).thenReturn(response);
+    Header mockHeader = mock(Header.class);
+    when(graphWriteRepository.updateGraph(new URI(Namespaces.DATASET_NAMESPACE + datasetUuid),graphUuid, inputStream, commitTitle, commitDesc)).thenReturn(mockHeader);
+
+    Header result = clinicalTrialsImportService.importStudy(commitTitle, commitDesc, datasetUuid, graphUuid, studyUrl);
+    assertEquals(mockHeader, result);
   }
 }
