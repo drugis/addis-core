@@ -46,9 +46,7 @@
         },
         WS_URI: "${pataviMcdaWsUri}",
         workspaceName: 'analyses',
-        workspacesRepositoryUrl : "/projects/:projectId/analyses/:analysisId",
-        _csrf_token : "${_csrf.token}",
-        _csrf_header : "${_csrf.headerName}"
+        workspacesRepositoryUrl : "/projects/:projectId/analyses/:analysisId"
       };
 
       function signout(){

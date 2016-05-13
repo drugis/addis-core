@@ -35,6 +35,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.authentication.Http403ForbiddenEntryPoint;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.social.UserIdSource;
 import org.springframework.social.security.AuthenticationNameUserIdSource;
@@ -87,6 +88,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .stream()
             .map(AntPathRequestMatcher::new)
             .collect(Collectors.toList());
+    CookieCsrfTokenRepository csrfTokenRepository = new CookieCsrfTokenRepository();
+    csrfTokenRepository.setCookieHttpOnly(false);
     http
       .formLogin()
         .loginPage("/signin")
@@ -107,7 +110,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         new SpringSocialConfigurer()
           .postLoginUrl("/")
           .alwaysUsePostLoginUrl(true))
-      .and().csrf().requireCsrfProtectionMatcher(request ->
+            .and().csrf()
+            .csrfTokenRepository(csrfTokenRepository)
+            .requireCsrfProtectionMatcher(request ->
         !(requestMatchers.stream().anyMatch(matcher -> matcher.matches(request))
           || Optional.fromNullable(request.getHeader("X-Auth-Application-Key")).isPresent()))
       .and().setSharedObject(ApplicationContext.class, context);
