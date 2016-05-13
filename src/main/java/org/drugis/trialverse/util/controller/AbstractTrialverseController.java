@@ -1,5 +1,6 @@
 package org.drugis.trialverse.util.controller;
 
+import org.drugis.trialverse.dataset.exception.CreateDatasetException;
 import org.drugis.trialverse.dataset.exception.RevisionNotFoundException;
 import org.drugis.trialverse.exception.*;
 import org.drugis.trialverse.graph.exception.ReadGraphException;
@@ -79,5 +80,13 @@ public class AbstractTrialverseController {
     logger.error("Exception: ", e);
     return new ErrorResponse(500, "Internal server error");
   }
-
+  
+  @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+  @ExceptionHandler(CreateDatasetException.class)
+  @ResponseBody
+  public ErrorResponse handleCreateDatasetException(HttpServletRequest request, Exception e) {
+    logger.error("Error creating dataset \n{}", request.getQueryString());
+    logger.error("Exception: ", e);
+    return new ErrorResponse(500, "Internal server error");
+  }
 }

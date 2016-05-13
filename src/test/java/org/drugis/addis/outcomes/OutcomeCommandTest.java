@@ -1,3 +1,5 @@
+package org.drugis.addis.outcomes;
+
 import org.apache.commons.lang.StringUtils;
 import org.drugis.addis.outcomes.OutcomeCommand;
 import org.drugis.addis.trialverse.model.SemanticVariable;

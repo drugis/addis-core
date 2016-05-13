@@ -23,6 +23,7 @@ public class WebConstants {
   public static final String APPLICATION_SPARQL_RESULTS_JSON = "application/sparql-results+json";
   public static final String JSON_LD = "application/ld+json";
   public static final String TURTLE = "text/turtle";
+  public static final String TRIG = "text/trig";
 
   public static final String API_KEY_PREFIX = "https://trialverse.org/apikeys/";
   public static final String VERSION_PATH = "versions/";

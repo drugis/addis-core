@@ -1,5 +1,6 @@
 package org.drugis.trialverse.dataset.controller;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpException;
 import org.apache.http.client.HttpClient;
 import org.apache.jena.rdf.model.Model;
@@ -10,6 +11,7 @@ import org.drugis.addis.util.WebConstants;
 import org.drugis.trialverse.dataset.controller.command.DatasetCommand;
 import org.drugis.trialverse.dataset.exception.CreateDatasetException;
 import org.drugis.trialverse.dataset.exception.RevisionNotFoundException;
+import org.drugis.trialverse.dataset.factory.JenaFactory;
 import org.drugis.trialverse.dataset.model.Dataset;
 import org.drugis.trialverse.dataset.model.VersionNode;
 import org.drugis.trialverse.dataset.repository.DatasetReadRepository;
@@ -29,6 +31,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import javax.inject.Inject;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.net.URI;
@@ -87,10 +90,32 @@ public class DatasetController extends AbstractTrialverseController {
       response.setHeader("Location", datasetUri.toString());
     } else {
       logger.error("attempted to created database for user that is not the login-user ");
-      response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+      response.setStatus(HttpStatus.FORBIDDEN.value());
     }
   }
-
+  
+  @RequestMapping(value = "/{datasetUUID}", method = RequestMethod.POST, consumes = WebConstants.TRIG)
+  @ResponseBody
+  public void createDatasetWithContent(
+		  HttpServletRequest request, HttpServletResponse response,
+		  Principal currentUser, @PathVariable Integer userId,
+		  @PathVariable String datasetUUID,
+          @RequestParam(WebConstants.COMMIT_TITLE_PARAM) String commitTitle,
+          @RequestParam(value = WebConstants.COMMIT_DESCRIPTION_PARAM, required = false) String commitDescription)
+      throws URISyntaxException, CreateDatasetException, HttpException, IOException {
+    logger.trace("createDatasetWithContent");
+    TrialversePrincipal trialversePrincipal = new TrialversePrincipal(currentUser);
+    Account user = accountRepository.findAccountByUsername(trialversePrincipal.getUserName());
+    if (user != null && userId.equals(user.getId())) {
+      URI datasetUri = datasetWriteRepository.createOrUpdateDatasetWithContent(request.getInputStream(), WebConstants.TRIG, JenaFactory.DATASET + datasetUUID, trialversePrincipal, commitTitle, commitDescription);
+      response.setStatus(HttpServletResponse.SC_CREATED);
+      response.setHeader("Location", datasetUri.toString());
+    } else {
+      logger.error("attempted to created database for user that is not the login-user ");
+      response.setStatus(HttpStatus.FORBIDDEN.value());
+    }
+  }
+  
   @RequestMapping(method = RequestMethod.GET, headers = WebConstants.ACCEPT_TURTLE_HEADER)
   @ResponseBody
   public void queryDatasetsGraphsByUser(HttpServletResponse httpServletResponse,

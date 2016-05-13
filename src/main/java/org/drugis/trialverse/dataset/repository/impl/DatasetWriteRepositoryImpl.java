@@ -2,7 +2,11 @@ package org.drugis.trialverse.dataset.repository.impl;
 
 
 import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.http.HttpException;
+import org.apache.http.client.HttpClient;
 import org.apache.http.protocol.HTTP;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
@@ -20,15 +24,25 @@ import org.drugis.trialverse.security.TrialversePrincipal;
 import org.drugis.addis.util.WebConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.stereotype.Repository;
+import org.springframework.web.client.HttpMessageConverterExtractor;
+import org.springframework.web.client.RequestCallback;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponents;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.inject.Inject;
+
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.StringWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -59,28 +73,58 @@ public class DatasetWriteRepositoryImpl implements DatasetWriteRepository {
   private AccountRepository accountRepository;
 
   private final static Logger logger = LoggerFactory.getLogger(DatasetWriteRepositoryImpl.class);
-
+  private static final String DUMP_ENDPOINT = "/dump";
+  
   @Override
   public URI createDataset(String title, String description, TrialversePrincipal owner) throws URISyntaxException, CreateDatasetException {
-    HttpHeaders httpHeaders = new HttpHeaders();
-    Account account = accountRepository.findAccountByUsername(owner.getUserName());
-    if(owner.hasApiKey()) {
-      httpHeaders.add(WebConstants.EVENT_SOURCE_CREATOR_HEADER,
-              "https://trialverse.org/apikeys/" + owner.getApiKey().getId());
-    } else {
-      httpHeaders.add(WebConstants.EVENT_SOURCE_CREATOR_HEADER, "mailto:" + account.getEmail());
-    }
-    httpHeaders.add(WebConstants.EVENT_SOURCE_TITLE_HEADER, Base64.encodeBase64String(INITIAL_COMMIT_MESSAGE.getBytes()));
-    httpHeaders.add(HTTP.CONTENT_TYPE, RDFLanguages.TURTLE.getContentType().getContentType());
     String datasetUri = jenaFactory.createDatasetURI();
     Model baseDatasetModel = buildDatasetBaseModel(title, description, datasetUri);
     String triples = modelToString(baseDatasetModel);
-    HttpEntity<String> requestEntity = new HttpEntity<>(triples, httpHeaders);
+    return createDataset(owner, datasetUri, triples);
+  }
+
+  @Override
+  public URI createOrUpdateDatasetWithContent(final InputStream content, String contentType, String trialverseUri, TrialversePrincipal owner, String commitTitle, String commitDescription)
+      throws URISyntaxException, CreateDatasetException {
+    // find the dataset if it exists, otherwise create a new one
+    URI datasetUri = new URI(trialverseUri);
+    VersionMapping versionMapping = null;
+    try {
+    	versionMapping = versionMappingRepository.getVersionMappingByDatasetUrl(datasetUri);
+    } catch (EmptyResultDataAccessException e) {
+      datasetUri = createDataset(owner, trialverseUri, ""); // initialize empty
+      versionMapping = versionMappingRepository.getVersionMappingByDatasetUrl(datasetUri);    	
+    }
+
+    // upload the content to the dump endpoint
+    UriComponents uriComponents = UriComponentsBuilder.fromHttpUrl(versionMapping.getVersionedDatasetUrl())
+        .path(DUMP_ENDPOINT)
+        .build();
+    HttpHeaders headers = createEventSourcingHeaders(owner, commitTitle, contentType);
+    final RequestCallback requestCallback = new RequestCallback() {
+      @Override
+     public void doWithRequest(final ClientHttpRequest request) throws IOException {
+        request.getHeaders().putAll(headers);
+        IOUtils.copy(content, request.getBody());
+      }
+    };
+    final HttpMessageConverterExtractor<String> responseExtractor =
+        new HttpMessageConverterExtractor<String>(String.class, restTemplate.getMessageConverters());
+    String execute = restTemplate.execute(uriComponents.toUri(), HttpMethod.PUT, requestCallback, responseExtractor);
+    System.err.println(execute);
+    
+    return datasetUri;
+  }
+  
+  private URI createDataset(TrialversePrincipal owner, String datasetUri, String defaultGraphContent) throws URISyntaxException, CreateDatasetException {
+    HttpHeaders httpHeaders = createEventSourcingHeaders(owner, INITIAL_COMMIT_MESSAGE, RDFLanguages.TURTLE.getContentType().getContentType());
+    HttpEntity<String> requestEntity = new HttpEntity<>(defaultGraphContent, httpHeaders);
+    Account account = accountRepository.findAccountByUsername(owner.getUserName());
 
     try {
       ResponseEntity<String> response = restTemplate.postForEntity(webConstants.getTriplestoreBaseUri() + PATH, requestEntity, String.class);
       if (!HttpStatus.CREATED.equals(response.getStatusCode())) {
-        logger.error("error , could not create dataset, tripleStore responce = " + response.getStatusCode().getReasonPhrase());
+        logger.error("error , could not create dataset, tripleStore response = " + response.getStatusCode().getReasonPhrase());
         throw new CreateDatasetException();
       }
       URI location = response.getHeaders().getLocation();
@@ -91,6 +135,20 @@ public class DatasetWriteRepositoryImpl implements DatasetWriteRepository {
       throw new CreateDatasetException();
     }
     return new URI(datasetUri);
+  }
+
+  private HttpHeaders createEventSourcingHeaders(TrialversePrincipal owner, String commitTitle, String contentType) {
+    HttpHeaders httpHeaders = new HttpHeaders();
+    Account account = accountRepository.findAccountByUsername(owner.getUserName());
+    if(owner.hasApiKey()) {
+      httpHeaders.add(WebConstants.EVENT_SOURCE_CREATOR_HEADER,
+              "https://trialverse.org/apikeys/" + owner.getApiKey().getId());
+    } else {
+      httpHeaders.add(WebConstants.EVENT_SOURCE_CREATOR_HEADER, "mailto:" + account.getEmail());
+    }
+    httpHeaders.add(WebConstants.EVENT_SOURCE_TITLE_HEADER, Base64.encodeBase64String(commitTitle.getBytes()));
+    httpHeaders.add(HTTP.CONTENT_TYPE, contentType);
+    return httpHeaders;
   }
 
   private String modelToString(Model model) {
@@ -111,6 +169,7 @@ public class DatasetWriteRepositoryImpl implements DatasetWriteRepository {
 
     return model;
   }
+
 
 
 }
