@@ -1,0 +1,74 @@
+<div>
+  <a ng-if="analysis.analysisType === 'Single-study Benefit-Risk'" ui-sref="singleStudyBenefitRisk({userUid: user.id, projectId: project.id, analysisId: analysis.id})">View details</a>
+  <a ng-if="analysis.analysisType === 'Benefit-risk analysis based on meta-analyses'" ui-sref="metaBenefitRisk({userUid: user.id, projectId: project.id, analysisId: analysis.id})">View details</a>
+
+  <div ng-if="analysis.analysisType === 'Single-study Benefit-Risk'">
+    <strong>Data source:</strong> <a ui-sref="namespace-study({userUid: user.id, projectId: project.id, studyUid: dataSource.uid})">{{dataSource.name}}</a>
+  </div>
+  <div ng-if="analysis.analysisType === 'Benefit-risk analysis based on meta-analyses'">
+    <strong>Data sources:</strong>
+    <ul>
+      <li ng-repeat="outcomeInclusion in analysis.mbrOutcomeInclusions">
+        {{outcomes[outcomeInclusion.outcomeId].name}}:
+        <a ui-sref="networkMetaAnalysis({userUid: user.id, projectId: project.id, analysisId: outcomeInclusion.networkMetaAnalysisId})">
+          {{analyses[outcomeInclusion.networkMetaAnalysisId].title}}
+        </a> &mdash;
+        <a ui-sref="model({userUid: user.id, projectId: project.id, analysisId: outcomeInclusion.networkMetaAnalysisId, modelId: outcomeInclusion.modelId})" >
+          {{models[outcomeInclusion.modelId].title}}
+        </a>
+      </li>
+    </ul>
+  </div>
+
+  <Strong>Effects table:</Strong>
+  <table>
+    <thead>
+      <tr>
+        <th>Criterion</th>
+        <th>Description</th>
+        <th>Units</th>
+        <th class="text-center" ng-repeat="(alternativeKey, alternative) in problem.alternatives">{{alternative.title}}{{problem.valueTree.children.children[0].criteria}}</th>
+      </tr>
+    </thead>
+    <tbody class="main">
+      <tr ng-repeat="(criterionKey, criterion) in problem.criteria">
+        <td>
+          {{criterion.title}}
+        </td>
+        <td>
+          <div class="td-container">
+            <div class="td-content">{{criterion.description}}</div>
+            <div class="td-spacer">{{criterion.description}}</div>
+            <span>&nbsp;</span>
+          </div>
+        </td>
+        <td>{{criterion.unitOfMeasurement}}</td>
+        <td class="text-center" ng-repeat="(alternativeKey, alternative) in problem.alternatives"
+          name="col{{$index}}" id="col{{$index}}">
+          {{scales[criterionKey][alternativeKey]['50%'] | number}}
+          <br>
+          <div class="uncertain" ng-show="!isExact(criterion.key, alternativeKey)">
+            {{scales[criterionKey][alternativeKey]['2.5%'] | number}}, {{scales[criterionKey][alternativeKey]['97.5%']
+            | number}}
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <div ng-repeat="scenario in scenarios">
+    <div>
+      <h3>Scenario: {{::scenario.title}}</h3>
+    </div>
+    <div>
+      <strong>Trade-offs:</strong>
+      <trade-offs problem="scenario.state.problem" preferences="scenario.state.prefs"></trade-offs>
+    </div>
+    <div ng-if="scenario.state.results">
+      <strong>Rank acceptability plot:</strong>
+      <rank-acceptability-plot data="scenario.state.results.ranks.data" problem="scenario.state.problem"></rank-acceptability-plot>
+    </div>
+  </div>
+  <!-- Scenarios list -->
+  <!-- per scenario: trade-offs -->
+  <!-- per scenario: rank acceptance plot -->
+</div>
