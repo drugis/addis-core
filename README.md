@@ -26,6 +26,19 @@ sudo -u postgres psql -c "CREATE DATABASE patavitask ENCODING 'utf-8' OWNER pata
 
 ```
 
+Set up the keystore:
+
+Ensure that you have a JKS truststore in which both your own certificates and those of Geotrust and StartCom are trusted.
+To import Geotrust and SartCom certificates:
+
+```
+keytool -importcert -file /etc/ssl/certs/GeoTrust_Global_CA.pem -alias geotrustCA -keystore <jks location>
+keytool -importcert -file /etc/ssl/certs/StartCom_Certification_Authority.pem -alias startcomCA -keystore <jks location>
+```
+
+/etc/ssl/certs/GeoTrust_Global_CA.pem
+/etc/ssl/certs/StartCom_Certification_Authority.pem
+
 Set up the environment:
 
 ```
