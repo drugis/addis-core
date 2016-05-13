@@ -173,10 +173,10 @@ public class ModelServiceImpl implements ModelService {
   }
 
   private List<Model> addRunStatusToModels(List<Model> models) throws SQLException, IOException {
-    List<URI> taskIds = models.stream()
+    List<URI> taskUrls = models.stream()
             .filter(model -> model.getTaskUrl() != null)
             .map(Model::getTaskUrl).collect(Collectors.toList());
-    Map<URI, PataviTask> tasksByUri = pataviTaskRepository.findByIds(taskIds)
+    Map<URI, PataviTask> tasksByUri = pataviTaskRepository.findByUrls(taskUrls)
             .stream()
             .collect(Collectors.toMap(PataviTask::getSelf, Function.identity()));
 

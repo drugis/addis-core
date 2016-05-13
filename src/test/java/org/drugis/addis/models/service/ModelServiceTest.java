@@ -306,7 +306,7 @@ public class ModelServiceTest {
     PataviTask pataviTask = new PataviTask(TestUtils.buildPataviTaskJson("id1"));
     List<PataviTask> tasksByUri = Collections.singletonList(pataviTask);
     when(modelRepository.findByAnalysis(analysisId)).thenReturn(models);
-    when(pataviTaskRepository.findByIds(Collections.singletonList(model.getTaskUrl()))).thenReturn(tasksByUri);
+    when(pataviTaskRepository.findByUrls(Collections.singletonList(model.getTaskUrl()))).thenReturn(tasksByUri);
 
     List<Model> resultList = modelService.query(analysisId);
 
@@ -481,7 +481,7 @@ public class ModelServiceTest {
     List<Model> models = Arrays.asList(modelWithTask, modelWithoutTask);
     when(modelRepository.get(modelIds)).thenReturn(models);
     List<PataviTask> pataviTask = Collections.singletonList(new PataviTask(TestUtils.buildPataviTaskJson("taskId1")));
-    when(pataviTaskRepository.findByIds(Collections.singletonList(taskUri))).thenReturn(pataviTask);
+    when(pataviTaskRepository.findByUrls(Collections.singletonList(taskUri))).thenReturn(pataviTask);
 
     List<Model> resultModels = modelService.get(modelIds);
     assertEquals(2, resultModels.size());

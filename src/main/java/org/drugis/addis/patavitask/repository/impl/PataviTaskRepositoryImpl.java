@@ -96,7 +96,7 @@ public class PataviTaskRepositoryImpl implements PataviTaskRepository {
   }
 
   @Override
-  public List<PataviTask> findByIds(List<URI> taskUris) throws IOException {
+  public List<PataviTask> findByUrls(List<URI> taskUris) throws IOException {
     List<PataviTask> result = new ArrayList<>(taskUris.size());
     for (URI taskUri : taskUris) {
       result.add(getTask(taskUri));

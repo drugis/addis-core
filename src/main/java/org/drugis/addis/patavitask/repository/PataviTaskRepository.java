@@ -18,9 +18,9 @@ import java.util.Map;
 
 public interface PataviTaskRepository {
 
-  List<PataviTask> findByIds(List<URI> taskUris) throws SQLException, IOException;
+  List<PataviTask> findByUrls(List<URI> taskUris) throws SQLException, IOException;
 
-  JsonNode getResult(URI taskId) throws IOException, UnexpectedNumberOfResultsException, URISyntaxException;
+  JsonNode getResult(URI taskUrl) throws IOException, UnexpectedNumberOfResultsException, URISyntaxException;
 
   Map<URI, JsonNode> getResults(List<URI> taskUris) throws SQLException, IOException, UnexpectedNumberOfResultsException, URISyntaxException;
 

@@ -481,7 +481,7 @@ public class ProblemServiceTest {
     when(outcomeRepository.get(projectId, outcomeIds)).thenReturn(outcomes);
     when(analysisRepository.get(analysisId)).thenReturn(analysis);
     List<URI> taskIds = Arrays.asList(model1.getTaskUrl(), model2.getTaskUrl());
-    when(pataviTaskRepository.findByIds(taskIds)).thenReturn(pataviTasks);
+    when(pataviTaskRepository.findByUrls(taskIds)).thenReturn(pataviTasks);
     when(pataviTaskRepository.getResults(taskIds)).thenReturn(results);
     when(interventionRepository.query(projectId)).thenReturn(interventions);
 
@@ -491,7 +491,7 @@ public class ProblemServiceTest {
     verify(modelService).get(modelIds);
     verify(outcomeRepository).get(projectId, outcomeIds);
     verify(analysisRepository).get(analysisId);
-    verify(pataviTaskRepository).findByIds(taskIds);
+    verify(pataviTaskRepository).findByUrls(taskIds);
     verify(pataviTaskRepository).getResults(taskIds);
     verify(interventionRepository).query(projectId);
 
