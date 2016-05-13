@@ -11,6 +11,7 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.message.BasicHeader;
+import org.apache.http.util.EntityUtils;
 import org.drugis.addis.patavitask.PataviTask;
 import org.drugis.addis.patavitask.repository.PataviTaskRepository;
 import org.drugis.addis.util.WebConstants;
@@ -63,12 +64,11 @@ public class PataviTaskRepositoryImpl implements PataviTaskRepository {
 
   @Override
   public JsonNode getResult(URI taskUri) throws URISyntaxException, IOException {
-    URI resultsUri = new URIBuilder(taskUri)
-            .setPath(WebConstants.PATAVI_RESULTS_PATH)
+    URI resultsUri = new URIBuilder(taskUri + WebConstants.PATAVI_RESULTS_PATH)
             .build();
     HttpGet getRequest = new HttpGet(resultsUri);
     HttpResponse response = httpClient.execute(getRequest);
-    return objectMapper.readTree(response.getEntity().getContent().toString());
+    return objectMapper.readTree(EntityUtils.toString(response.getEntity())).get("results");
   }
 
   @Override
@@ -92,7 +92,7 @@ public class PataviTaskRepositoryImpl implements PataviTaskRepository {
   @Override
   public PataviTask getTask(URI taskUrl) throws IOException {
     HttpResponse response = httpClient.execute(new HttpGet(taskUrl));
-    return new PataviTask(response.getEntity().getContent().toString());
+    return new PataviTask(EntityUtils.toString(response.getEntity()));
   }
 
   @Override

@@ -11,10 +11,6 @@ import java.net.URI;
  */
 public class PataviTask {
 
-  private String id;
-
-  private String service;
-
   private String status;
 
   private URI self;
@@ -29,22 +25,12 @@ public class PataviTask {
   public PataviTask(String pataviResponse) throws IOException {
     ObjectMapper objectMapper = new ObjectMapper();
     JsonNode jsonNode = objectMapper.readTree(pataviResponse);
-    this.id = jsonNode.get("id").asText();
-    this.service = jsonNode.get("service").asText();
     this.status = jsonNode.get("status").asText();
     this.self = URI.create(jsonNode.get("_links").get("self").get("href").asText());
     this.updates = URI.create(jsonNode.get("_links").get("updates").get("href").asText());
     if (jsonNode.get("_links").get("results") != null) {
       this.results = URI.create(jsonNode.get("_links").get("results").get("href").asText());
     }
-  }
-
-  public String getId() {
-    return id;
-  }
-
-  public String getService() {
-    return service;
   }
 
   public String getStatus() {
@@ -74,8 +60,6 @@ public class PataviTask {
 
     PataviTask that = (PataviTask) o;
 
-    if (!id.equals(that.id)) return false;
-    if (!service.equals(that.service)) return false;
     if (!status.equals(that.status)) return false;
     if (!self.equals(that.self)) return false;
     if (results != null ? !results.equals(that.results) : that.results != null) return false;
@@ -85,9 +69,7 @@ public class PataviTask {
 
   @Override
   public int hashCode() {
-    int result = id.hashCode();
-    result = 31 * result + service.hashCode();
-    result = 31 * result + status.hashCode();
+    int result = status.hashCode();
     result = 31 * result + self.hashCode();
     result = 31 * result + (results != null ? results.hashCode() : 0);
     result = 31 * result + updates.hashCode();

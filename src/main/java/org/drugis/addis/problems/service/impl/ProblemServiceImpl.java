@@ -159,8 +159,8 @@ public class ProblemServiceImpl implements ProblemService {
       URI taskId = tasksByModelId.get(outcomeInclusion.getModelId()).getSelf();
       JsonNode taskResults = resultsByTaskId.get(taskId);
 
-      Map<Integer, MultiVariateDistribution> distributionByInterventionId = objectMapper
-              .readValue(taskResults.get("multivariateSummary").toString(), new TypeReference<Map<Integer, MultiVariateDistribution>>() {
+      Map<Integer, MultiVariateDistribution> distributionByInterventionId = objectMapper.readValue(
+              taskResults.get("multivariateSummary").toString(), new TypeReference<Map<Integer, MultiVariateDistribution>>() {
               });
 
       AbstractIntervention baselineIntervention = includedInterventionsByName.get(baseline.getName());
