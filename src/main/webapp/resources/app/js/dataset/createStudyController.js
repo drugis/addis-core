@@ -1,11 +1,11 @@
 'use strict';
 define(['lodash'], function(_) {
   var dependencies = ['$scope', '$stateParams', '$modalInstance',
-    'successCallback', 'StudyService', 'ImportStudyResource'
+    'successCallback', 'StudyService', 'ImportStudyResource', 'ImportStudyInfoResource'
   ];
 
   var CreateStudyController = function($scope, $stateParams, $modalInstance,
-    successCallback, StudyService, ImportStudyResource) {
+    successCallback, StudyService, ImportStudyResource, ImportStudyInfoResource) {
 
     $scope.isCreatingStudy = false;
     $scope.studyImport = {};
@@ -19,9 +19,7 @@ define(['lodash'], function(_) {
 
     $scope.createStudy = function(study) {
       $scope.isCreatingStudy = true;
-
       var newStudyVersionPromise = StudyService.createEmptyStudy(study, $stateParams.userUid, $stateParams.datasetUUID);
-
       newStudyVersionPromise.then(function(newVersion) {
         successCallback(newVersion);
         $scope.isCreatingStudy = false;
@@ -53,7 +51,19 @@ define(['lodash'], function(_) {
     };
 
     $scope.import = function(studyImport) {
-      alert("todo do import");
+      ImportStudyInfoResource.import({
+        userUid: $stateParams.userUid,
+        datasetUUID:  $stateParams.datasetUUID,
+        graphUuid: // gen it
+        encodedStudyUrl: // get it from importStudy,
+        commitTitle: // pass fixed commit to do with import
+        commitDescription: // pass null
+      }).$promise.then(function(newVersion){
+        alert('go to new localtion');
+        successCallback(newVersion);
+        $scope.isCreatingStudy = false;
+        $modalInstance.close();
+      });
     };
 
     $scope.cancel = function() {

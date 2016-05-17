@@ -73,9 +73,9 @@ public class ClinicalTrialsImportServiceTest {
   @Test
   public void fetchInfoNotFound() throws ClinicalTrialsImportError, IOException {
     String ntcID = "ntcId";
-    BasicHttpResponse response = new BasicHttpResponse(
-            new BasicStatusLine(new ProtocolVersion("p", 1, 1), HttpStatus.SC_NOT_FOUND, "reason")
-    );
+
+    CloseableHttpResponse response = mock(CloseableHttpResponse.class);
+    when(response.getStatusLine()).thenReturn(new BasicStatusLine(HttpVersion.HTTP_1_1, HttpStatus.SC_NOT_FOUND, "FINE!"));
     when(httpClient.execute(any())).thenReturn(response);
 
     JsonNode result = clinicalTrialsImportService.fetchInfo(ntcID);
