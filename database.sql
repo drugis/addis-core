@@ -654,3 +654,7 @@ UPDATE singlestudybenefitriskanalysis SET studyGraphUri=CONCAT('http://trials.dr
 --changeset reidd:55
 UPDATE outcome SET semanticOutcomeUri=CONCAT('http://trials.drugis.org/concepts/', semanticOutcomeUri) WHERE LEFT(semanticOutcomeUri, 4) <> 'http';
 --rollback UPDATE outcome SET semanticOutcomeUri=RIGHT(semanticOutcomeUri, 36) WHERE LEFT(semanticOutcomeUri, 4) = 'http';
+
+--changeset reidd:56
+UPDATE covariate SET definitionkey = CONCAT('http://trials.drugis.org/concepts/', RIGHT(definitionkey, 36)) WHERE type = 'POPULATION_CHARACTERISTIC' AND LEFT(definitionkey, 4) = 'http';
+--rollback UPDATE covariate SET definitionkey = RIGHT(definitionkey, 36) WHERE type = 'POPULATION_CHARACTERISTIC';
