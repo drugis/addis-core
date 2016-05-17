@@ -69,11 +69,17 @@ public class ClinicalTrialsImportServiceImpl implements ClinicalTrialsImportServ
   public Header importStudy(String commitTitle,
                             String commitDescription,
                             String datasetUuid,
-                            String graphUuid, URI importUrl) throws ClinicalTrialsImportError {
-    HttpGet httpGet = new HttpGet(importUrl);
+                            String graphUuid,
+                            String importStudyRef) throws ClinicalTrialsImportError {
+    HttpGet httpGet = new HttpGet(importerServiceLocation + "/" + importStudyRef + "/rdf");
     try (CloseableHttpResponse response =  (CloseableHttpResponse) httpClient.execute(httpGet)){
-      InputStream content = response.getEntity().getContent();
-      return graphWriteRepository.updateGraph(new URI(Namespaces.DATASET_NAMESPACE + datasetUuid), graphUuid, content, commitTitle, commitDescription);
+      int responceStatusCode = response.getStatusLine().getStatusCode();
+      if (responceStatusCode == HttpStatus.SC_OK) {
+        InputStream content = response.getEntity().getContent();
+        return graphWriteRepository.updateGraph(new URI(Namespaces.DATASET_NAMESPACE + datasetUuid), graphUuid, content, commitTitle, commitDescription);
+      } else {
+        throw new ClinicalTrialsImportError("could not import study, errorCode: " + responceStatusCode + " reason:" + response.getStatusLine().getReasonPhrase());
+      }
     } catch (IOException e) {
       throw new ClinicalTrialsImportError("could get study data, " + e.toString());
     } catch (UpdateGraphException e) {

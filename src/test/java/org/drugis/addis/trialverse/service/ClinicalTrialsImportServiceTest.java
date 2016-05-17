@@ -99,7 +99,7 @@ public class ClinicalTrialsImportServiceTest {
     String commitDesc = "desc";
     String datasetUuid = "dataset";
     String graphUuid = "graph";
-    URI studyUrl = URI.create("uri");
+    String studyRef = "123435ABC";
     String jsonObjectString = "{\"foo\": \"bar\"}";
     CloseableHttpResponse response = mock(CloseableHttpResponse.class);
     HttpEntity entity = mock(HttpEntity.class);
@@ -111,7 +111,7 @@ public class ClinicalTrialsImportServiceTest {
     Header mockHeader = mock(Header.class);
     when(graphWriteRepository.updateGraph(new URI(Namespaces.DATASET_NAMESPACE + datasetUuid),graphUuid, inputStream, commitTitle, commitDesc)).thenReturn(mockHeader);
 
-    Header result = clinicalTrialsImportService.importStudy(commitTitle, commitDesc, datasetUuid, graphUuid, studyUrl);
+    Header result = clinicalTrialsImportService.importStudy(commitTitle, commitDesc, datasetUuid, graphUuid, studyRef);
     assertEquals(mockHeader, result);
   }
 }

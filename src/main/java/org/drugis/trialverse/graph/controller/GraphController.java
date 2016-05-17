@@ -33,7 +33,6 @@ import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URLDecoder;
 import java.security.Principal;
 
 /**
@@ -124,18 +123,19 @@ public class GraphController extends AbstractTrialverseController {
     }
   }
 
-  @RequestMapping(value = "/graphs/{graphUuid}/import/{encodedStudyUrl}",
-          method = RequestMethod.PUT)
+  @RequestMapping(value = "/graphs/{graphUuid}/import/{importStudyRef}",
+          method = RequestMethod.POST)
   public void importStudy(HttpServletResponse trialverseResponse, Principal currentUser,
+                           @PathVariable String datasetUuid,
+                           @PathVariable String graphUuid,
+                           @PathVariable String importStudyRef,
                            @RequestParam(WebConstants.COMMIT_TITLE_PARAM) String commitTitle,
-                           @RequestParam(value = WebConstants.COMMIT_DESCRIPTION_PARAM, required = false) String commitDescription,
-                           @PathVariable String datasetUuid, @PathVariable String graphUuid,@PathVariable URI encodedStudyUrl)
+                           @RequestParam(value = WebConstants.COMMIT_DESCRIPTION_PARAM, required = false) String commitDescription)
           throws MethodNotAllowedException, ClinicalTrialsImportError, URISyntaxException, UnsupportedEncodingException {
     logger.trace("import graph");
     URI trialverseDatasetUri = new URI(Namespaces.DATASET_NAMESPACE + datasetUuid);
-    URI studyURL = URI.create(URLDecoder.decode(encodedStudyUrl.toString(), "UTF-8"));
     if (datasetReadRepository.isOwner(trialverseDatasetUri, currentUser)) {
-      Header versionHeader = clinicalTrialsImportService.importStudy(commitTitle, commitDescription, datasetUuid, graphUuid, studyURL);
+      Header versionHeader = clinicalTrialsImportService.importStudy(commitTitle, commitDescription, datasetUuid, graphUuid, importStudyRef);
       trialverseResponse.setHeader(WebConstants.X_EVENT_SOURCE_VERSION, versionHeader.getValue());
       trialverseResponse.setStatus(HttpStatus.OK.value());
     } else {

@@ -1,11 +1,12 @@
 'use strict';
 define(['lodash'], function(_) {
   var dependencies = ['$scope', '$stateParams', '$modalInstance',
-    'successCallback', 'StudyService', 'ImportStudyResource', 'ImportStudyInfoResource'
+    'successCallback', 'StudyService', 'ImportStudyResource',
+    'ImportStudyInfoResource', 'UUIDService'
   ];
 
   var CreateStudyController = function($scope, $stateParams, $modalInstance,
-    successCallback, StudyService, ImportStudyResource, ImportStudyInfoResource) {
+    successCallback, StudyService, ImportStudyResource, ImportStudyInfoResource, UUIDService) {
 
     $scope.isCreatingStudy = false;
     $scope.studyImport = {};
@@ -33,36 +34,40 @@ define(['lodash'], function(_) {
     };
 
     $scope.getInfo = function(studyImport) {
-      delete studyImport.error;
+      studyImport.error = undefined;
       if ($scope.isValidNct(studyImport.nctId)) {
-        delete $scope.studyImport.basicInfo;
+        $scope.studyImport.basicInfo = {};
         $scope.studyImport.loading = true;
-        ImportStudyResource.get({
+        ImportStudyInfoResource.get({
           nctId: studyImport.nctId
         }).$promise.then(function(basicInfo) {
           $scope.studyImport.basicInfo = basicInfo;
         }, function(reason) {
-          delete $scope.studyImport.basicInfo;
+          $scope.studyImport.basicInfo = [];
           studyImport.error = reason;
-        }, function(){
+        }, function() {
           $scope.studyImport.loading = false;
         });
       }
     };
 
     $scope.import = function(studyImport) {
-      ImportStudyInfoResource.import({
+      var uuid = UUIDService.generate();
+      var importStudyRef = studyImport.basicInfo.id;
+      ImportStudyResource.import({
         userUid: $stateParams.userUid,
-        datasetUUID:  $stateParams.datasetUUID,
-        graphUuid: // gen it
-        encodedStudyUrl: // get it from importStudy,
-        commitTitle: // pass fixed commit to do with import
-        commitDescription: // pass null
-      }).$promise.then(function(newVersion){
-        alert('go to new localtion');
+        datasetUUID: $stateParams.datasetUUID,
+        graphUuid: uuid,
+        importStudyRef: importStudyRef,
+        commitTitle: 'Create study though import'
+      }, function(value, responseHeaders) {
+        var newVersion = responseHeaders('X-EventSource-Version');
+        newVersion = newVersion.split('/')[4];
         successCallback(newVersion);
         $scope.isCreatingStudy = false;
         $modalInstance.close();
+      }, function(error) {
+        console.error('error' + error);
       });
     };
 

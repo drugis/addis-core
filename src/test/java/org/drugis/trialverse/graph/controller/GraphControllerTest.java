@@ -32,13 +32,11 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.net.URI;
-import java.net.URLEncoder;
 import java.security.Principal;
 
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @Configuration
@@ -202,26 +200,24 @@ public class GraphControllerTest {
     String datasetUUID = "datasetUUID";
     URI datasetUri = new URI(Namespaces.DATASET_NAMESPACE + datasetUUID);
     String graphUUID = "graphUUID";
-    URI studyUrl = URI.create("http://foobar");
-    String encodedStudyUrl = URLEncoder.encode(studyUrl.toString(), "UTF-8");
+    String studyRef = "123ABC";
     String title = "test title header";
     when(datasetReadRepository.isOwner(datasetUri, user)).thenReturn(true);
     String versionValue = "http://myVersion";
     Header mockHeader = mock(Header.class);
     when(mockHeader.getValue()).thenReturn(versionValue);
 
-    when(clinicalTrialsImportService.importStudy(title, null, datasetUUID, graphUUID, studyUrl)).thenReturn(mockHeader);
-
+    when(clinicalTrialsImportService.importStudy(title, null, datasetUUID, graphUUID, studyRef)).thenReturn(mockHeader);
 
     mockMvc.perform(
-            put("/users/" + userHash + "/datasets/" + datasetUUID + "/graphs/" + graphUUID + "/import/" + encodedStudyUrl)
+            post("/users/" + userHash + "/datasets/" + datasetUUID + "/graphs/" + graphUUID + "/import/" + studyRef)
                     .param(WebConstants.COMMIT_TITLE_PARAM, title)
                     .principal(user))
             .andExpect(status().isOk())
             .andExpect(header().string(WebConstants.X_EVENT_SOURCE_VERSION, versionValue));
 
     verify(datasetReadRepository).isOwner(datasetUri, user);
-    verify(clinicalTrialsImportService).importStudy(title, null, datasetUUID, graphUUID, studyUrl);
+    verify(clinicalTrialsImportService).importStudy(title, null, datasetUUID, graphUUID, studyRef);
   }
 
   @Test

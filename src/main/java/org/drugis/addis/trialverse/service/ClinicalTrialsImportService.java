@@ -4,8 +4,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import org.apache.http.Header;
 import org.drugis.addis.trialverse.service.impl.ClinicalTrialsImportError;
 
-import java.net.URI;
-
 /**
  * Created by connor on 12-5-16.
  */
@@ -14,5 +12,5 @@ public interface ClinicalTrialsImportService {
    Header importStudy(String commitTitle,
                       String commitDescription,
                       String datasetUuid,
-                      String graphUuid, URI importUrl) throws ClinicalTrialsImportError;
+                      String graphUuid, String importStudyRef) throws ClinicalTrialsImportError;
 }

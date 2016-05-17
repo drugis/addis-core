@@ -53,55 +53,55 @@
           <div ng-show="studyImport.basicInfo" class="panel">
             <table class="layout-table">
               <tr ng-show=studyImport.basicInfo.title>
-                <td class="large-6 text-right">
+                <td class="large-3 text-right">
                   <strong>Title</strong>
                 </td>
-                <td>
-                  {{::studyImport.basicInfo.title}}
+                <td class="large-9">
+                  {{studyImport.basicInfo.title}}
                 </td>
               </tr>
               <tr ng-show=studyImport.basicInfo.sponsor>
-                <td class="large-6 text-right">
+                <td class="large-3 text-right">
                   <strong>Sponsor</strong>
                 </td>
-                <td>
-                  {{::studyImport.basicInfo.sponsor}}
+                <td class="large-9">
+                  {{studyImport.basicInfo.sponsor}}
                 </td>
               </tr>
               <tr ng-show=studyImport.basicInfo.updated_at>
-                <td class="large-6 text-right">
+                <td class="large-3 text-right">
                   <strong>Updated at</strong>
                 </td>
-                <td>
-                  {{::studyImport.basicInfo.updated_at}}
+                <td class="large-9">
+                  {{studyImport.basicInfo.updated_at}}
                 </td>
               </tr>
               <tr ng-show=studyImport.basicInfo.created_at>
-                <td class="large-6 text-right">
+                <td class="large-3 text-right">
                   <strong>Created at</strong>
                 </td>
-                <td>
-                  {{::studyImport.basicInfo.created_at}}
+                <td class="large-9">
+                  {{studyImport.basicInfo.created_at}}
                 </td>
               </tr>
               <tr ng-show=studyImport.basicInfo.aliases.length>
-                <td class="large-6 text-right">
+                <td class="large-3 text-right">
                   <strong>aliases</strong>
                 </td>
-                <td>
+                <td class="large-9">
                   <tr ng-repeat="alias in aliases">
                     <td>
-                      {{::alias}}
+                      {{alias}}
                     </td>
                   </tr>
                 </td>
               </tr>
               <tr ng-show=studyImport.basicInfo._links>
-                <td class="large-6 text-right">
+                <td class="large-3 text-right">
                   <strong>link</strong>
                 </td>
-                <td>
-                  <a ng-href="{{studyImport.basicInfo._links.source.href}}" target="_blank">{{::studyImport.basicInfo._links.source.title}} <i class="fa fa-external-link" aria-hidden="true"></i></a>
+                <td class="large-9">
+                  <a ng-href="{{studyImport.basicInfo._links.source.href}}" target="_blank">{{studyImport.basicInfo._links.source.title}} <i class="fa fa-external-link" aria-hidden="true"></i></a>
                 </td>
               </tr>
             </table>
