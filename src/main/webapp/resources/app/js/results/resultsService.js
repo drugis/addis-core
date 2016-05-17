@@ -65,19 +65,19 @@ define(['angular', 'lodash'], function(angular, _) {
         outcomeUri: backEndItem.of_outcome,
       };
 
-      if (backEndItem.sample_size) {
+      if (backEndItem.sample_size !== undefined) {
         accum.push(createValueItem(baseItem, backEndItem, 'sample_size'));
       }
 
-      if (backEndItem.count) {
+      if (backEndItem.count !== undefined) {
         accum.push(createValueItem(baseItem, backEndItem, 'count'));
       }
 
-      if (backEndItem.standard_deviation) {
+      if (backEndItem.standard_deviation !== undefined) {
         accum.push(createValueItem(baseItem, backEndItem, 'standard_deviation'));
       }
 
-      if (backEndItem.mean) {
+      if (backEndItem.mean !== undefined) {
         accum.push(createValueItem(baseItem, backEndItem, 'mean'));
       }
 

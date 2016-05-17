@@ -58,14 +58,18 @@ public class QueryResultMappingServiceImpl implements QueryResultMappingService 
     Double mean = null;
     Double stdDev = null;
     Integer rate = null;
-    Boolean isContinuous = row.containsKey("mean");
-    if (isContinuous) {
-      mean =readValue(row, "mean");
+    Integer sampleSize = null;
+
+    if (row.containsKey("mean")) {
+      mean = readValue(row, "mean");
       stdDev = readValue(row, "stdDev");
-    } else {
+    }
+    if (row.containsKey("count")){
       rate = readValue(row, "count");
     }
-    Integer sampleSize = readValue(row, "sampleSize");
+    if (row.containsKey("sampleSize")){
+      sampleSize = readValue(row, "sampleSize");
+    }
 
     URI variableUri = readValue(row, "outcomeInstance");
     URI variableConceptUri = readValue(row, "outcomeTypeUri");
