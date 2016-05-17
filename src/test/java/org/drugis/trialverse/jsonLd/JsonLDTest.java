@@ -1,5 +1,7 @@
 package org.drugis.trialverse.jsonLd;
 
+import org.apache.jena.graph.GraphUtil;
+import org.apache.jena.graph.compose.Delta;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.riot.Lang;
@@ -15,6 +17,7 @@ import java.io.*;
 
 import static org.drugis.trialverse.util.Utils.loadResource;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 /**
  * Created by daan on 18-9-15.
@@ -70,7 +73,18 @@ public class JsonLDTest {
     Model model2a = ModelFactory.createDefaultModel();
     model2a.read(new StringReader(turtleStringModel2), "http://example.com", RDFLanguages.strLangTurtle);
 
-    assertTrue(model1a.isIsomorphicWith(model2a));
+
+
+    if (!model1a.isIsomorphicWith(model2a)) {
+      Delta d = new Delta(model1a.getGraph());
+      d.clear();
+      GraphUtil.addInto(d, model2a.getGraph());
+      System.err.println("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+      RDFDataMgr.write(System.err, d.getAdditions(), Lang.TURTLE);
+      System.err.println("-------------------------------------------------------------------------------------");
+      RDFDataMgr.write(System.err, d.getDeletions(), Lang.TURTLE);
+      fail("!!!!!!!!!!!!!!!!!!!!!! RDF not equal");
+    }
 
 
   }
