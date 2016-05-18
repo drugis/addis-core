@@ -2,7 +2,6 @@ package org.drugis.addis.trialverse;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import net.minidev.json.JSONObject;
 import org.drugis.addis.trialverse.controller.ImportController;
 import org.drugis.addis.trialverse.service.ClinicalTrialsImportService;
 import org.drugis.addis.trialverse.service.impl.ClinicalTrialsImportError;
@@ -14,11 +13,11 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 import java.net.URISyntaxException;
-import java.util.HashMap;
 
 import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.*;
@@ -71,12 +70,10 @@ public class ImportControllerTest {
   @Test
   public void testFetchInfoNotFound() throws Exception, ClinicalTrialsImportError {
     String nctId = "nct0123";
-    HashMap<String, String> hashMap = new HashMap<>();
-    hashMap.put("foo", "bar");
-    JSONObject resultObject = new JSONObject(hashMap);
     when(clinicalTrialsImportService.fetchInfo(nctId)).thenReturn(null);
-    mockMvc.perform(get("/import/" + nctId ))
-            .andExpect(status().isNotFound());
+    ResultActions resultActions = mockMvc.perform(get("/import/" + nctId))
+            .andExpect(status().isOk());
+    resultActions.andExpect(content().string(""));
     verify(clinicalTrialsImportService).fetchInfo(nctId);
   }
 }
