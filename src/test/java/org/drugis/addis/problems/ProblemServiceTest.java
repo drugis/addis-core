@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.jena.ext.com.google.common.collect.ImmutableSet;
+import org.drugis.addis.TestUtils;
 import org.drugis.addis.analyses.*;
 import org.drugis.addis.analyses.repository.AnalysisRepository;
 import org.drugis.addis.analyses.repository.SingleStudyBenefitRiskAnalysisRepository;
@@ -17,11 +18,12 @@ import org.drugis.addis.interventions.repository.InterventionRepository;
 import org.drugis.addis.interventions.service.impl.InvalidTypeForDoseCheckException;
 import org.drugis.addis.models.Model;
 import org.drugis.addis.models.exceptions.InvalidModelException;
-import org.drugis.addis.models.repository.ModelRepository;
+import org.drugis.addis.models.service.ModelService;
 import org.drugis.addis.outcomes.Outcome;
 import org.drugis.addis.outcomes.repository.OutcomeRepository;
 import org.drugis.addis.patavitask.PataviTask;
 import org.drugis.addis.patavitask.repository.PataviTaskRepository;
+import org.drugis.addis.patavitask.repository.UnexpectedNumberOfResultsException;
 import org.drugis.addis.problems.model.*;
 import org.drugis.addis.problems.service.ProblemService;
 import org.drugis.addis.problems.service.impl.PerformanceTableBuilder;
@@ -82,7 +84,7 @@ public class ProblemServiceTest {
   InterventionRepository interventionRepository;
 
   @Mock
-  ModelRepository modelRepository;
+  ModelService modelService;
 
   @Mock
   OutcomeRepository outcomeRepository;
@@ -145,11 +147,11 @@ public class ProblemServiceTest {
   @After
   public void cleanUp() throws URISyntaxException {
     verifyNoMoreInteractions(analysisRepository, projectRepository, singleStudyBenefitRiskAnalysisRepository,
-            interventionRepository, trialverseService, triplestoreService, mappingService, modelRepository);
+            interventionRepository, trialverseService, triplestoreService, mappingService, modelService);
   }
 
   @Test
-  public void testGetSingleStudyBenefitRiskProblem() throws ResourceDoesNotExistException, URISyntaxException, SQLException, IOException, ReadValueException, InvalidTypeForDoseCheckException {
+  public void testGetSingleStudyBenefitRiskProblem() throws ResourceDoesNotExistException, URISyntaxException, SQLException, IOException, ReadValueException, InvalidTypeForDoseCheckException, UnexpectedNumberOfResultsException {
     URI secondOutcomeUri = URI.create("http://secondSemantic");
     SemanticVariable secondSemanticOutcome = new SemanticVariable(secondOutcomeUri, "second semantic outcome");
     Outcome secondOutcome = new Outcome(-303, projectId, "second outcome", "very", secondSemanticOutcome);
@@ -268,7 +270,7 @@ public class ProblemServiceTest {
   }
 
   @Test
-  public void testGetNmaProblem() throws URISyntaxException, SQLException, IOException, ReadValueException, ResourceDoesNotExistException, InvalidTypeForDoseCheckException {
+  public void testGetNmaProblem() throws URISyntaxException, SQLException, IOException, ReadValueException, ResourceDoesNotExistException, InvalidTypeForDoseCheckException, UnexpectedNumberOfResultsException {
 
     // analysis
     NetworkMetaAnalysis networkMetaAnalysis = new NetworkMetaAnalysis(analysisId, project.getId(), "nma title", outcome);
@@ -282,7 +284,7 @@ public class ProblemServiceTest {
 
     // covariates
     Integer includedCovariateId = -1;
-    Integer excludedCovariateId= -2;
+    Integer excludedCovariateId = -2;
     String includedCovariateDefinitionKey = CovariateOption.ALLOCATION_RANDOMIZED.toString();
     Covariate includedCovariate = new Covariate(includedCovariateId, project.getId(), "isRandomised", "mot",
             includedCovariateDefinitionKey, CovariateOptionType.STUDY_CHARACTERISTIC);
@@ -376,7 +378,7 @@ public class ProblemServiceTest {
   }
 
   @Test
-  public void testGetMetaBRProblem() throws ResourceDoesNotExistException, SQLException, IOException, URISyntaxException, InvalidModelException, ReadValueException, InvalidTypeForDoseCheckException {
+  public void testGetMetaBRProblem() throws ResourceDoesNotExistException, SQLException, IOException, URISyntaxException, InvalidModelException, ReadValueException, InvalidTypeForDoseCheckException, UnexpectedNumberOfResultsException {
 
     String version = "version 1";
     Integer projectId = 1;
@@ -397,20 +399,20 @@ public class ProblemServiceTest {
     SimpleIntervention intervention4 = new SimpleIntervention(14, projectId, "foo", "", new SemanticInterventionUriAndName(URI.create("uri4"), "fooS"));
     List<AbstractIntervention> interventions = Arrays.asList(intervention1, intervention2, intervention3, intervention4);
 
-    PataviTask pataviTask1 = new PataviTask(41, "gemtc", "problem");
-    PataviTask pataviTask2 = new PataviTask(42, "gemtc", "problem");
+    PataviTask pataviTask1 = new PataviTask(TestUtils.buildPataviTaskJson("taskId1"));
+    PataviTask pataviTask2 = new PataviTask(TestUtils.buildPataviTaskJson("taskId2"));
     List<PataviTask> pataviTasks = Arrays.asList(pataviTask1, pataviTask2);
 
     Model model1 = new Model.ModelBuilder(analysisId, "model 1")
             .id(71)
             .modelType(Model.NETWORK_MODEL_TYPE)
-            .taskId(pataviTask1.getId())
+            .taskUri(pataviTask1.getSelf())
             .link(Model.LINK_IDENTITY)
             .build();
     Model model2 = new Model.ModelBuilder(analysisId, "model 2")
             .id(72)
             .modelType(Model.NETWORK_MODEL_TYPE)
-            .taskId(pataviTask2.getId())
+            .taskUri(pataviTask2.getSelf())
             .link(Model.LINK_CLOGLOG)
             .build();
     List<Model> models = Arrays.asList(model1, model2);
@@ -429,12 +431,13 @@ public class ProblemServiceTest {
             "\"sigma\": 6,\n" +
             "\"name\": \"fluox\"\n" +
             "}";
-    String baseline2JsonString ="{\n" +
+    String baseline2JsonString = "{\n" +
             "\"scale\": \"log odds\",\n" +
             "\"mu\": 4,\n" +
             "\"sigma\": 6,\n" +
             "\"name\": \"fluox\"\n" +
-            "}";;
+            "}";
+    ;
 
     MbrOutcomeInclusion inclusion1 = new MbrOutcomeInclusion(analysisId, outcome1.getId(), nma1Id, model1.getId());
     inclusion1.setBaseline(baseline1JsonString);
@@ -465,30 +468,30 @@ public class ProblemServiceTest {
             "  }\n" +
             "}\n";
 
-    Map<Integer, JsonNode> results = new HashMap<>();
+    Map<URI, JsonNode> results = new HashMap<>();
     JsonNode task1Results = om.readTree(results1);
     JsonNode task2Results = om.readTree(results1);
-    results.put(pataviTask1.getId(), task1Results);
-    results.put(pataviTask2.getId(), task2Results);
+    results.put(pataviTask1.getSelf(), task1Results);
+    results.put(pataviTask2.getSelf(), task2Results);
 
     List<Integer> modelIds = Arrays.asList(model2.getId(), model1.getId());
     List<Integer> outcomeIds = Arrays.asList(outcome2.getId(), outcome1.getId());
     when(projectRepository.get(projectId)).thenReturn(project);
-    when(modelRepository.get(modelIds)).thenReturn(models);
+    when(modelService.get(modelIds)).thenReturn(models);
     when(outcomeRepository.get(projectId, outcomeIds)).thenReturn(outcomes);
     when(analysisRepository.get(analysisId)).thenReturn(analysis);
-    List<Integer> taskIds = Arrays.asList(model1.getTaskId(), model2.getTaskId());
-    when(pataviTaskRepository.findByIds(taskIds)).thenReturn(pataviTasks);
+    List<URI> taskIds = Arrays.asList(model1.getTaskUrl(), model2.getTaskUrl());
+    when(pataviTaskRepository.findByUrls(taskIds)).thenReturn(pataviTasks);
     when(pataviTaskRepository.getResults(taskIds)).thenReturn(results);
     when(interventionRepository.query(projectId)).thenReturn(interventions);
 
     MetaBenefitRiskProblem problem = (MetaBenefitRiskProblem) problemService.getProblem(projectId, analysisId);
 
     verify(projectRepository).get(projectId);
-    verify(modelRepository).get(modelIds);
+    verify(modelService).get(modelIds);
     verify(outcomeRepository).get(projectId, outcomeIds);
     verify(analysisRepository).get(analysisId);
-    verify(pataviTaskRepository).findByIds(taskIds);
+    verify(pataviTaskRepository).findByUrls(taskIds);
     verify(pataviTaskRepository).getResults(taskIds);
     verify(interventionRepository).query(projectId);
 
@@ -498,9 +501,9 @@ public class ProblemServiceTest {
     assertEquals("relative-cloglog-normal", problem.getPerformanceTable().get(0).getPerformance().getType());
     assertEquals("relative-normal", problem.getPerformanceTable().get(1).getPerformance().getType());
     List<List<Double>> expectedDataHeadache = Arrays.asList(Arrays.asList(0.0, 0.0, 0.0), Arrays.asList(0.0, 74.346, 1.9648), Arrays.asList(0.0, 1.9648, 74.837));
-    assertEquals(expectedDataHeadache ,problem.getPerformanceTable().get(0).getPerformance().getParameters().getRelative().getCov().getData());
+    assertEquals(expectedDataHeadache, problem.getPerformanceTable().get(0).getPerformance().getParameters().getRelative().getCov().getData());
     List<List<Double>> expectedDataHam = Arrays.asList(Arrays.asList(0.0, 0.0, 0.0), Arrays.asList(0.0, 74.346, 1.9648), Arrays.asList(0.0, 1.9648, 74.837));
-    assertEquals(expectedDataHam ,problem.getPerformanceTable().get(1).getPerformance().getParameters().getRelative().getCov().getData());
+    assertEquals(expectedDataHam, problem.getPerformanceTable().get(1).getPerformance().getParameters().getRelative().getCov().getData());
   }
 
 }

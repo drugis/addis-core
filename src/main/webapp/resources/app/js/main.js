@@ -23,7 +23,8 @@ require.config({
     'ngSanitize': 'bower_components/angular-sanitize/angular-sanitize.min',
     'nvd3': 'bower_components/nvd3/build/nv.d3.min',
     'underscore': 'bower_components/underscore/underscore-min',
-    'help-popup': 'bower_components/help-popup/help-directive'
+    'help-popup': 'bower_components/help-popup/help-directive',
+    'angular-patavi-client': 'bower_components/angular-patavi-client/patavi'
   },
   baseUrl: 'app/js',
   shim: {

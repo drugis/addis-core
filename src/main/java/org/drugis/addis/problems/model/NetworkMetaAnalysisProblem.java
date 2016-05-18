@@ -1,6 +1,10 @@
 package org.drugis.addis.problems.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.drugis.addis.models.Model;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,6 +41,33 @@ public class NetworkMetaAnalysisProblem extends AbstractProblem {
 
   public Map<String, Map<String, Double>> getStudyLevelCovariates() {
     return studyLevelCovariates;
+  }
+
+  public JSONObject buildProblemWithModelSettings(Model model) throws JsonProcessingException {
+    ObjectMapper objectMapper = new ObjectMapper();
+    String problemString = objectMapper.writeValueAsString(this);
+    JSONObject jsonProblem = new JSONObject(problemString);
+    jsonProblem.put("linearModel", model.getLinearModel());
+    jsonProblem.put("modelType", new JSONObject(objectMapper.writeValueAsString(model.getModelType())));
+    jsonProblem.put("burnInIterations", model.getBurnInIterations());
+    jsonProblem.put("inferenceIterations", model.getInferenceIterations());
+    jsonProblem.put("thinningFactor", model.getThinningFactor());
+    jsonProblem.put("likelihood", model.getLikelihood());
+    jsonProblem.put("link", model.getLink());
+    jsonProblem.put("regressor", model.getRegressor());
+
+    if (model.getHeterogeneityPrior() != null) {
+      jsonProblem.put("heterogeneityPrior", new JSONObject(objectMapper.writeValueAsString(model.getHeterogeneityPrior())));
+    }
+
+    if (model.getSensitivity() != null) {
+      jsonProblem.put("sensitivity", model.getSensitivity());
+    }
+
+    if (model.getOutcomeScale() != null) {
+      jsonProblem.put("outcomeScale", model.getOutcomeScale());
+    }
+    return jsonProblem;
   }
 
   @Override

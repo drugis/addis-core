@@ -20,6 +20,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import java.net.URI;
 import java.security.Principal;
 
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -59,7 +60,7 @@ public class PataviTaskControllerTest {
 
   @Test
   public void testGet() throws Exception, InvalidModelException, ReadValueException, InvalidTypeForDoseCheckException {
-    String uri = "www.nogonahappen.com";
+    URI uri = URI.create("www.nogonahappen.com");
     PataviTaskUriHolder pataviTaskUriHolder = new PataviTaskUriHolder(uri);
     int projectId = 45;
     int analysisId = 55;
@@ -67,7 +68,7 @@ public class PataviTaskControllerTest {
     when(pataviTaskService.getPataviTaskUriHolder(projectId, analysisId, modelId)).thenReturn(pataviTaskUriHolder);
     mockMvc.perform(get("/projects/45/analyses/55/models/37/task").principal(user))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.uri", equalTo(uri)))
+            .andExpect(jsonPath("$.uri", equalTo(uri.toString())))
     ;
     verify(pataviTaskService).getPataviTaskUriHolder(projectId, analysisId, modelId);
   }

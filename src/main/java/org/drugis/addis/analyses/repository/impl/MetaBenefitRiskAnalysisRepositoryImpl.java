@@ -21,6 +21,7 @@ import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.HashSet;
@@ -61,7 +62,7 @@ public class MetaBenefitRiskAnalysisRepositoryImpl implements MetaBenefitRiskAna
   }
 
   @Override
-  public MetaBenefitRiskAnalysis create(Account user, AnalysisCommand analysisCommand) throws ResourceDoesNotExistException, MethodNotAllowedException, SQLException {
+  public MetaBenefitRiskAnalysis create(Account user, AnalysisCommand analysisCommand) throws ResourceDoesNotExistException, MethodNotAllowedException, SQLException, IOException {
     projectService.checkProjectExistsAndModifiable(user, analysisCommand.getProjectId());
     MetaBenefitRiskAnalysis metaBenefitRiskAnalysis = new MetaBenefitRiskAnalysis(analysisCommand.getProjectId(), analysisCommand.getTitle());
 

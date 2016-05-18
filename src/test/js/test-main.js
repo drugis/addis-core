@@ -35,7 +35,8 @@ require.config({
     'angularanimate': 'bower_components/angular-animate/angular-animate',
     'ngSanitize': 'bower_components/angular-sanitize/angular-sanitize',
     'lodash': 'bower_components/lodash/dist/lodash.min',
-    'help-popup': 'bower_components/help-popup/help-directive'
+    'help-popup': 'bower_components/help-popup/help-directive',
+    'angular-patavi-client': 'bower_components/angular-patavi-client/patavi'
   },
   baseUrl: '/base/src/main/webapp/resources/app/js',
   shim: {

@@ -13,6 +13,7 @@ define(
     'angularanimate',
     'angular-md5',
     'ngSanitize',
+    'angular-patavi-client',
     'controllers',
     'directives',
     'filters',
@@ -104,7 +105,8 @@ define(
       'addis.interceptors',
       'addis.directives',
       'addis.covariates',
-      'addis.interventions'
+      'addis.interventions',
+      'patavi'
     ];
     var gemtcWebDependencies = [
       'gemtc.controllers',
@@ -166,11 +168,6 @@ define(
 
     app.run(['$rootScope', '$window', '$http', 'HelpPopupService',
       function($rootScope, $window, $http, HelpPopupService) {
-        var csrfToken = $window.config._csrf_token;
-        var csrfHeader = $window.config._csrf_header;
-
-        $http.defaults.headers.common[csrfHeader] = csrfToken;
-
         $rootScope.$safeApply = function($scope, fn) {
           var phase = $scope.$root.$$phase;
           if (phase === '$apply' || phase === '$digest') {
