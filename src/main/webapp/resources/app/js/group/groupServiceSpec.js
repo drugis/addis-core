@@ -4,8 +4,14 @@ define(['angular', 'angular-mocks'], function() {
 
     var rootScope, q, httpBackend;
     var studyService = jasmine.createSpyObj('StudyService', ['getStudy', 'save']);
-    var groupService;
+    var groupService, armService;
     var studyDefer;
+
+    beforeEach(function() {
+      module('trialverse.arm', function($provide) {
+        $provide.value('StudyService', studyService);
+      });
+    });
 
     beforeEach(function() {
       module('trialverse.group', function($provide) {
@@ -13,7 +19,7 @@ define(['angular', 'angular-mocks'], function() {
       });
     });
 
-    beforeEach(inject(function($q, $rootScope, $httpBackend, GroupService) {
+    beforeEach(inject(function($q, $rootScope, $httpBackend, GroupService, ArmService) {
       q = $q;
       httpBackend = $httpBackend;
       rootScope = $rootScope;
@@ -22,6 +28,7 @@ define(['angular', 'angular-mocks'], function() {
       var getStudyPromise = studyDefer.promise;
       studyService.getStudy.and.returnValue(getStudyPromise);
       groupService = GroupService;
+      armService = ArmService;
     }));
 
     describe('for a study without included population', function() {
@@ -31,7 +38,8 @@ define(['angular', 'angular-mocks'], function() {
             '@id': 'http://trials.drugis.org/instances/1c3c67ba-4c0c-46e3-846c-5e9d72c5ed80',
             '@type': 'ontology:Group',
             'label': 'group label'
-          }]
+          }],
+          has_arm: []
         };
         studyDefer.resolve(studyJsonObject);
 
@@ -97,6 +105,29 @@ define(['angular', 'angular-mocks'], function() {
         it('should edit the group', function() {
           expect(editResult.length).toBe(2);
           expect(editResult[0].label).toBe(editedGroup.label);
+        });
+      });
+
+      describe('reclassifyAsArm', function() {
+        var editResult, armsResult;
+
+        beforeEach(function(done) {
+          groupService.queryItems().then(function(result) {
+            groupService.reclassifyAsArm(result[0]).then(function() {
+              q.all([groupService.queryItems(), armService.queryItems()]).then(function(groupsAndArms) {
+                editResult = groupsAndArms[0];
+                armsResult = groupsAndArms[1];
+                done();
+              });
+            });
+          });
+          rootScope.$digest();
+        });
+
+        it('should reclassify the group as a arm', function() {
+          expect(editResult.length).toBe(1); // includes overall population
+          expect(armsResult.length).toBe(1);
+          expect(armsResult[0].label).toBe('group label');
         });
       });
 

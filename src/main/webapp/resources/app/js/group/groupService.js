@@ -86,6 +86,20 @@ define(['lodash'], function(_) {
       });
     }
 
+    function reclassifyAsArm(repairItem) {
+      return StudyService.getStudy().then(function(study) {
+        var groupRemoved = _.remove(study.has_group, function(group) {
+          return group['@id'] === repairItem.groupUri;
+        })[0];
+
+        groupRemoved['@type'] = 'ontology:Arm';
+
+        study.has_arm.push(groupRemoved);
+
+        return StudyService.save(study);
+      });
+    }
+
     function deleteItem(removeGroup) {
       return StudyService.getStudy().then(function(study) {
         _.remove(study.has_group, function(group) {
@@ -99,6 +113,7 @@ define(['lodash'], function(_) {
       queryItems: queryItems,
       addItem: addItem,
       editItem: editItem,
+      reclassifyAsArm: reclassifyAsArm,
       deleteItem: deleteItem,
     };
   };

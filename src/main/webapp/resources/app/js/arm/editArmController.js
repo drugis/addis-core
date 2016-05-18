@@ -16,6 +16,16 @@ define([],
         });
       };
 
+      $scope.repairItem = function () {
+        itemService.reclassifyAsGroup(item).then(function() {
+          callback();
+          $modalInstance.close();
+        },
+        function() {
+          $modalInstance.dismiss('cancel');
+        });
+      };
+
       $scope.cancel = function() {
         $modalInstance.dismiss('cancel');
       };
