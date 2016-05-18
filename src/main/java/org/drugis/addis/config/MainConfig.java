@@ -67,6 +67,7 @@ import java.util.Properties;
         "org.drugis.addis.scenarios",
         "org.drugis.addis.models",
         "org.drugis.addis.remarks",
+        "org.drugis.addis.trialverse",
         "org.drugis.trialverse",
 })
 public class MainConfig {

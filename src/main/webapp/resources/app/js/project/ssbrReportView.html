@@ -4,6 +4,7 @@
 
   <div ng-if="analysis.analysisType === 'Single-study Benefit-Risk'">
     <strong>Data source:</strong> <a ui-sref="namespace-study({userUid: user.id, projectId: project.id, studyUid: dataSource.uid})">{{dataSource.name}}</a>
+    <em ng-if="!analysis.studyGraphUri">No study has been selected</em>
   </div>
   <div ng-if="analysis.analysisType === 'Benefit-risk analysis based on meta-analyses'">
     <strong>Data sources:</strong>
