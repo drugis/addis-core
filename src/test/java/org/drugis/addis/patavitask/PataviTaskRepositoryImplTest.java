@@ -1,10 +1,9 @@
 package org.drugis.addis.patavitask;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.ProtocolVersion;
+import org.apache.http.Header;
 import org.apache.http.client.HttpClient;
-import org.apache.http.message.BasicHttpResponse;
-import org.apache.http.message.BasicStatusLine;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.message.BasicHeader;
 import org.drugis.addis.patavitask.repository.PataviTaskRepository;
 import org.drugis.addis.patavitask.repository.impl.PataviTaskRepositoryImpl;
 import org.drugis.addis.util.WebConstants;
@@ -18,6 +17,7 @@ import java.net.URI;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
@@ -41,11 +41,13 @@ public class PataviTaskRepositoryImplTest {
 
   @Test
   public void testCreateTask() throws Exception {
-    HttpResponse creationResponse = new BasicHttpResponse(new BasicStatusLine(new ProtocolVersion("HTTP", 1, 1), 201, "reason"));
     String createdLocation = "testLocation";
-    creationResponse.addHeader("Location", createdLocation);
 
-    when(httpClient.execute(any())).thenReturn(creationResponse);
+    CloseableHttpResponse mockResponse = mock(CloseableHttpResponse.class);
+    Header locationHeader = new BasicHeader("Location", "testLocation");
+    when(mockResponse.getHeaders("Location")).thenReturn(new Header[]{locationHeader});
+
+    when(httpClient.execute(any())).thenReturn(mockResponse);
     JSONObject problem = new JSONObject();
 
     URI createdUri = pataviTaskRepository.createPataviTask(problem);

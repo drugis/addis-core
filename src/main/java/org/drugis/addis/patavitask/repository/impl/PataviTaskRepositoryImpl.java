@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
@@ -52,8 +53,7 @@ public class PataviTaskRepositoryImpl implements PataviTaskRepository {
     postRequest.addHeader(new BasicHeader("Content-type", WebConstants.APPLICATION_JSON_UTF8_VALUE));
     HttpEntity postBody = new ByteArrayEntity(jsonProblem.toString().getBytes());
     postRequest.setEntity(postBody);
-    try {
-      HttpResponse httpResponse = httpClient.execute(postRequest);
+    try (CloseableHttpResponse httpResponse = (CloseableHttpResponse) httpClient.execute(postRequest)) {
       URI newTaskUri = URI.create(httpResponse.getHeaders("Location")[0].getValue());
       logger.debug("created new patavi-task with taskUri = " + newTaskUri.toString());
       return newTaskUri;
@@ -67,8 +67,11 @@ public class PataviTaskRepositoryImpl implements PataviTaskRepository {
     URI resultsUri = new URIBuilder(taskUri + WebConstants.PATAVI_RESULTS_PATH)
             .build();
     HttpGet getRequest = new HttpGet(resultsUri);
-    HttpResponse response = httpClient.execute(getRequest);
-    return objectMapper.readTree(EntityUtils.toString(response.getEntity())).get("results");
+    try (CloseableHttpResponse httpResponse = (CloseableHttpResponse) httpClient.execute(getRequest)) {
+      return objectMapper.readTree(EntityUtils.toString(httpResponse.getEntity())).get("results");
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    }
   }
 
   @Override
@@ -85,14 +88,21 @@ public class PataviTaskRepositoryImpl implements PataviTaskRepository {
   }
 
   @Override
-  public HttpResponse delete(URI taskUrl) throws IOException {
-    return httpClient.execute(new HttpDelete(taskUrl));
+  public HttpResponse delete(URI taskUrl) {
+    try (CloseableHttpResponse httpResponse = (CloseableHttpResponse) httpClient.execute(new HttpDelete(taskUrl))) {
+      return httpResponse;
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    }
   }
 
   @Override
-  public PataviTask getTask(URI taskUrl) throws IOException {
-    HttpResponse response = httpClient.execute(new HttpGet(taskUrl));
-    return new PataviTask(EntityUtils.toString(response.getEntity()));
+  public PataviTask getTask(URI taskUrl) {
+    try (CloseableHttpResponse response = (CloseableHttpResponse) httpClient.execute(new HttpGet(taskUrl))) {
+      return new PataviTask(EntityUtils.toString(response.getEntity()));
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    }
   }
 
   @Override
