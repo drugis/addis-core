@@ -78,8 +78,7 @@ public class MainConfig {
   public MainConfig() {
     String trustStoreLocation = System.getProperty("javax.net.ssl.trustStore");
     if (trustStoreLocation == null) {
-      logger.error("Missing trust store location java property (set using 'javax.net.ssl.trustStore')");
-      System.exit(-1);
+      logger.warn("Missing trust store location java property (set using 'javax.net.ssl.trustStore')");
     }
   }
 
