@@ -42,9 +42,11 @@ define(['lodash'], function(_) {
           nctId: studyImport.nctId
         }).$promise.then(function(basicInfo) {
           $scope.studyImport.basicInfo = basicInfo;
+          $scope.studyImport.loading = false;
         }, function(reason) {
           $scope.studyImport.basicInfo = [];
           studyImport.error = reason;
+          studyImport.loading = false;
         }, function() {
           $scope.studyImport.loading = false;
         });
@@ -61,13 +63,15 @@ define(['lodash'], function(_) {
         importStudyRef: importStudyRef,
         commitTitle: 'Create study though import'
       }, function(value, responseHeaders) {
-        var newVersion = responseHeaders('X-EventSource-Version');
-        newVersion = newVersion.split('/')[4];
-        successCallback(newVersion);
+        var newVersionUri = responseHeaders('X-EventSource-Version');
+        var newVersionUuid = UUIDService.getUuidFromNamespaceUrl(newVersionUri);
+        successCallback(newVersionUuid);
         $scope.isCreatingStudy = false;
         $modalInstance.close();
       }, function(error) {
         console.error('error' + error);
+        $scope.isCreatingStudy = false;
+        $modalInstance.close();
       });
     };
 

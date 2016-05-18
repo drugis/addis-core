@@ -41,6 +41,7 @@
         <div class="large-9 columns">
           <label>NCT ID</label>
           <input autofocus type="text"
+          ng-disabled="studyImport.loading"
           ng-model="studyImport.nctId"
           ng-model-options="{ debounce: 500 }"
           ng-change="getInfo(studyImport)" >
@@ -48,9 +49,10 @@
       </div>
       <div class="row">
         <div class="large-9 columns">
+          <div class="animate-show" ng-show="studyImport.loading"><i class="fa fa-spinner fa-spin"></i> loading</div>
           <label class="alert" ng-show="studyImport.error">No study found for {{studyImport.nctId}}</label>
           <label class="alert" ng-show="studyImport.nctId && !isValidNct(studyImport.nctId)">invalid NCT id, the id should start with 'NCT'</label>
-          <div ng-show="studyImport.basicInfo" class="panel">
+          <div ng-show="studyImport.basicInfo.id && !studyImport.loading" class="panel animate-show">
             <table class="layout-table">
               <tr ng-show=studyImport.basicInfo.title>
                 <td class="large-3 text-right">
