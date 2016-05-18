@@ -9,6 +9,7 @@ define(['lodash'], function(_) {
     successCallback, StudyService, ImportStudyResource, ImportStudyInfoResource, UUIDService) {
 
     $scope.isCreatingStudy = false;
+    $scope.importing = false;
     $scope.studyImport = {};
 
     $scope.isUniqueShortName = function(shortName) {
@@ -35,18 +36,22 @@ define(['lodash'], function(_) {
 
     $scope.getInfo = function(studyImport) {
       studyImport.error = undefined;
+      studyImport.notFound = false;
       if ($scope.isValidNct(studyImport.nctId)) {
         $scope.studyImport.basicInfo = {};
         $scope.studyImport.loading = true;
         ImportStudyInfoResource.get({
           nctId: studyImport.nctId
         }).$promise.then(function(basicInfo) {
-          $scope.studyImport.basicInfo = basicInfo;
           $scope.studyImport.loading = false;
+          if (!basicInfo.id) {
+            studyImport.notFound = true;
+          } else {
+            $scope.studyImport.basicInfo = basicInfo;
+          }
         }, function(reason) {
-          $scope.studyImport.basicInfo = [];
-          studyImport.error = reason;
-          studyImport.loading = false;
+          console.error('error', reason);
+          $modalInstance.close();
         }, function() {
           $scope.studyImport.loading = false;
         });
@@ -54,6 +59,7 @@ define(['lodash'], function(_) {
     };
 
     $scope.import = function(studyImport) {
+      $scope.isCreatingStudy = true;
       var uuid = UUIDService.generate();
       var importStudyRef = studyImport.basicInfo.id;
       ImportStudyResource.import({
@@ -61,7 +67,7 @@ define(['lodash'], function(_) {
         datasetUUID: $stateParams.datasetUUID,
         graphUuid: uuid,
         importStudyRef: importStudyRef,
-        commitTitle: 'Create study though import'
+        commitTitle: 'Create study through import'
       }, function(value, responseHeaders) {
         var newVersionUri = responseHeaders('X-EventSource-Version');
         var newVersionUuid = UUIDService.getUuidFromNamespaceUrl(newVersionUri);
@@ -69,7 +75,7 @@ define(['lodash'], function(_) {
         $scope.isCreatingStudy = false;
         $modalInstance.close();
       }, function(error) {
-        console.error('error' + error);
+        console.error('error', error);
         $scope.isCreatingStudy = false;
         $modalInstance.close();
       });

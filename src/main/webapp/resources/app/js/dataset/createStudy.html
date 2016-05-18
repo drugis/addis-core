@@ -40,81 +40,90 @@
       <div class="row">
         <div class="large-9 columns">
           <label>NCT ID</label>
-          <input autofocus type="text"
-          ng-disabled="studyImport.loading"
-          ng-model="studyImport.nctId"
-          ng-model-options="{ debounce: 500 }"
-          ng-change="getInfo(studyImport)" >
+          <input autofocus type="text" ng-disabled="studyImport.loading" ng-model="studyImport.nctId"
+            ng-model-options="{ debounce: 800 }" ng-change="getInfo(studyImport)">
         </div>
       </div>
       <div class="row">
         <div class="large-9 columns">
-          <div class="animate-show" ng-show="studyImport.loading"><i class="fa fa-spinner fa-spin"></i> loading</div>
-          <label class="alert" ng-show="studyImport.error">No study found for {{studyImport.nctId}}</label>
+          <style>
+            .local-hide.ng-hide {
+              transition: 0.33s linear all;
+              opacity: 0;
+            }
+          </style>
+          <div ng-show="studyImport.loading"><i class="fa fa-spinner fa-spin"></i> loading</div>
+          <label class="alert" ng-show="studyImport.notFound">No study found for {{studyImport.nctId}}</label>
           <label class="alert" ng-show="studyImport.nctId && !isValidNct(studyImport.nctId)">invalid NCT id, the id should start with 'NCT'</label>
-          <div ng-show="studyImport.basicInfo.id && !studyImport.loading" class="panel animate-show">
-            <table class="layout-table">
-              <tr ng-show=studyImport.basicInfo.title>
-                <td class="large-3 text-right">
-                  <strong>Title</strong>
-                </td>
-                <td class="large-9">
-                  {{studyImport.basicInfo.title}}
-                </td>
-              </tr>
-              <tr ng-show=studyImport.basicInfo.sponsor>
-                <td class="large-3 text-right">
-                  <strong>Sponsor</strong>
-                </td>
-                <td class="large-9">
-                  {{studyImport.basicInfo.sponsor}}
-                </td>
-              </tr>
-              <tr ng-show=studyImport.basicInfo.updated_at>
-                <td class="large-3 text-right">
-                  <strong>Updated at</strong>
-                </td>
-                <td class="large-9">
-                  {{studyImport.basicInfo.updated_at}}
-                </td>
-              </tr>
-              <tr ng-show=studyImport.basicInfo.created_at>
-                <td class="large-3 text-right">
-                  <strong>Created at</strong>
-                </td>
-                <td class="large-9">
-                  {{studyImport.basicInfo.created_at}}
-                </td>
-              </tr>
-              <tr ng-show=studyImport.basicInfo.aliases.length>
-                <td class="large-3 text-right">
-                  <strong>aliases</strong>
-                </td>
-                <td class="large-9">
-                  <tr ng-repeat="alias in aliases">
-                    <td>
-                      {{alias}}
-                    </td>
-                  </tr>
-                </td>
-              </tr>
-              <tr ng-show=studyImport.basicInfo._links>
-                <td class="large-3 text-right">
-                  <strong>link</strong>
-                </td>
-                <td class="large-9">
-                  <a ng-href="{{studyImport.basicInfo._links.source.href}}" target="_blank">{{studyImport.basicInfo._links.source.title}} <i class="fa fa-external-link" aria-hidden="true"></i></a>
-                </td>
-              </tr>
-            </table>
-          </div>
+
+          <table ng-show="studyImport.basicInfo.id && !studyImport.loading" class="local-hide layout-table"
+            style="width: 100%;">
+            <tr ng-show=studyImport.basicInfo.id>
+              <td class="large-3 text-right">
+                <strong>id</strong>
+              </td>
+              <td class="large-9">
+                {{studyImport.basicInfo.id}}
+              </td>
+            </tr>
+            <tr ng-show=studyImport.basicInfo.title>
+              <td class="large-3 text-right">
+                <strong>title</strong>
+              </td>
+              <td class="large-9">
+                {{studyImport.basicInfo.title}}
+              </td>
+            </tr>
+            <tr ng-show=studyImport.basicInfo.sponsor>
+              <td class="large-3 text-right">
+                <strong>sponsor</strong>
+              </td>
+              <td class="large-9">
+                {{studyImport.basicInfo.sponsor}}
+              </td>
+            </tr>
+            <tr ng-show=studyImport.basicInfo.aliases.length>
+              <td class="large-3 text-right">
+                <strong>aliases</strong>
+              </td>
+              <td class="large-9">
+                <span ng-repeat="alias in studyImport.basicInfo.aliases">{{alias}}{{$last ? '' : ', '}}
+                  <span>
+              </td>
+            </tr>
+            <tr ng-show=studyImport.basicInfo.updated_at>
+              <td class="large-3 text-right">
+                <strong>updated at</strong>
+              </td>
+              <td class="large-9">
+                {{studyImport.basicInfo.updated_at}}
+              </td>
+            </tr>
+            <tr ng-show=studyImport.basicInfo.created_at>
+              <td class="large-3 text-right">
+                <strong>created at</strong>
+              </td>
+              <td class="large-9">
+                {{studyImport.basicInfo.created_at}}
+              </td>
+            </tr>
+            <tr ng-show=studyImport.basicInfo._links>
+              <td class="large-3 text-right">
+                <strong>link</strong>
+              </td>
+              <td class="large-9">
+                <a ng-href="{{studyImport.basicInfo._links.source.href}}" target="_blank">{{studyImport.basicInfo._links.source.title}} <i class="fa fa-external-link" aria-hidden="true"></i></a>
+              </td>
+            </tr>
+          </table>
         </div>
       </div>
       <div class="row" style="margin-top: 1rem;">
         <div class="large-9 columns">
-          <button class="success" type="submit" ng-disabled="!studyImport.nctId || !isValidNct(studyImport.nctId) || !studyImport.basicInfo || !studyImport.basicInfo._links">
+          <button class="success" type="submit" ng-disabled="isCreatingStudy || !studyImport.nctId || !isValidNct(studyImport.nctId) || !studyImport.basicInfo || !studyImport.basicInfo._links">
             Import
           </button>
+          <span ng-show="isCreatingStudy"><i class="fa fa-spinner fa-spin"></i> importing study</span>
         </div>
       </div>
     </form>
