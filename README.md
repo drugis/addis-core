@@ -61,6 +61,7 @@ export ADDIS_CORE_DB_USERNAME=addiscore
 export ADDIS_CORE_DB_PASSWORD=develop
 export ADDIS_CORE_OAUTH_GOOGLE_SECRET=HU_-JxoYUvMbvk4vVRMhHibI
 export ADDIS_CORE_OAUTH_GOOGLE_KEY=201346854981-3pcdhh96orc3lcdr8k4i1u58pvepjme4.apps.googleusercontent.com
+export CLINICALTRIALS_IMPORTER_URL=[importservicelocation]
 ```
 
 Run the Tomcat server:

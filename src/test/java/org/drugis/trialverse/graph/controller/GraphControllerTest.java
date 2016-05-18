@@ -5,6 +5,8 @@ import org.apache.http.message.BasicHeader;
 import org.apache.jena.riot.RDFLanguages;
 import org.drugis.addis.security.Account;
 import org.drugis.addis.security.repository.AccountRepository;
+import org.drugis.addis.trialverse.service.ClinicalTrialsImportService;
+import org.drugis.addis.trialverse.service.impl.ClinicalTrialsImportError;
 import org.drugis.addis.util.WebConstants;
 import org.drugis.trialverse.dataset.model.VersionMapping;
 import org.drugis.trialverse.dataset.repository.DatasetReadRepository;
@@ -34,8 +36,7 @@ import java.security.Principal;
 
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @Configuration
@@ -67,6 +68,9 @@ public class GraphControllerTest {
 
   @Mock
   private VersionMappingRepository versionMappingRepository;
+
+  @Mock
+  private ClinicalTrialsImportService clinicalTrialsImportService;
 
   @InjectMocks
   private GraphController graphController;
@@ -188,6 +192,32 @@ public class GraphControllerTest {
 
     verify(datasetReadRepository).isOwner(datasetUri, user);
     verifyZeroInteractions(graphWriteRepository);
+  }
+
+  @Test
+  public void testImportStudy() throws Exception, ClinicalTrialsImportError {
+
+    String datasetUUID = "datasetUUID";
+    URI datasetUri = new URI(Namespaces.DATASET_NAMESPACE + datasetUUID);
+    String graphUUID = "graphUUID";
+    String studyRef = "123ABC";
+    String title = "test title header";
+    when(datasetReadRepository.isOwner(datasetUri, user)).thenReturn(true);
+    String versionValue = "http://myVersion";
+    Header mockHeader = mock(Header.class);
+    when(mockHeader.getValue()).thenReturn(versionValue);
+
+    when(clinicalTrialsImportService.importStudy(title, null, datasetUUID, graphUUID, studyRef)).thenReturn(mockHeader);
+
+    mockMvc.perform(
+            post("/users/" + userHash + "/datasets/" + datasetUUID + "/graphs/" + graphUUID + "/import/" + studyRef)
+                    .param(WebConstants.COMMIT_TITLE_PARAM, title)
+                    .principal(user))
+            .andExpect(status().isOk())
+            .andExpect(header().string(WebConstants.X_EVENT_SOURCE_VERSION, versionValue));
+
+    verify(datasetReadRepository).isOwner(datasetUri, user);
+    verify(clinicalTrialsImportService).importStudy(title, null, datasetUUID, graphUUID, studyRef);
   }
 
   @Test

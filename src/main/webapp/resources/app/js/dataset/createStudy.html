@@ -1,30 +1,123 @@
-<form novalidate ng-submit="createStudy(study)">
-    <div class="row">
+<tabset>
+  <tab heading="Empty Study">
+    <form novalidate ng-submit="createStudy(study)">
+      <div class="row">
         <div class="large-9 columns">
-            <h3>Create a new study</h3>
+          <h3>Create a new study</h3>
         </div>
-    </div>
-    <div class="row">
+      </div>
+      <div class="row">
         <div class="large-9 columns">
-            <label>Short Name (e.g. Hansen 2005)
-                <input autofocus type="text" ng-model="study.label">
-            </label>
-            <label class="alert" ng-show="!isUniqueShortName(study.label)">Short name must be unique</label>
+          <label>Short Name (e.g. Hansen 2005)
+            <input autofocus type="text" ng-model="study.label">
+          </label>
+          <label class="alert" ng-show="!isUniqueShortName(study.label)">Short name must be unique</label>
         </div>
-    </div>
-    <div class="row">
+      </div>
+      <div class="row">
         <div class="large-9 columns">
-            <label>Title
-                <textarea rows="8" ng-model="study.comment"></textarea>
-            </label>
+          <label>Title
+            <textarea rows="8" ng-model="study.comment"></textarea>
+          </label>
         </div>
-    </div>
-    <div class="row">
+      </div>
+      <div class="row">
         <div class="large-9 columns">
-            <button class="success" type="submit" ng-disabled="!study.comment || !isUniqueShortName(study.label) || isCreatingStudy">
-                Create
-            </button>
+          <button class="success" type="submit" ng-disabled="!study.comment || !isUniqueShortName(study.label) || isCreatingStudy">
+            Create
+          </button>
         </div>
-    </div>
-    <a class="close-reveal-modal" ng-click="cancel()">&#215;</a>
-</form>
+      </div>
+    </form>
+  </tab>
+  <tab heading="ClinicalTrials.gov">
+    <form novalidate ng-submit="import(studyImport)">
+      <div class="row">
+        <div class="large-9 columns">
+          <h3>Import study</h3>
+        </div>
+      </div>
+      <div class="row">
+        <div class="large-9 columns">
+          <label>NCT ID</label>
+          <input autofocus type="text"
+          ng-disabled="studyImport.loading"
+          ng-model="studyImport.nctId"
+          ng-model-options="{ debounce: 500 }"
+          ng-change="getInfo(studyImport)" >
+        </div>
+      </div>
+      <div class="row">
+        <div class="large-9 columns">
+          <div class="animate-show" ng-show="studyImport.loading"><i class="fa fa-spinner fa-spin"></i> loading</div>
+          <label class="alert" ng-show="studyImport.error">No study found for {{studyImport.nctId}}</label>
+          <label class="alert" ng-show="studyImport.nctId && !isValidNct(studyImport.nctId)">invalid NCT id, the id should start with 'NCT'</label>
+          <div ng-show="studyImport.basicInfo.id && !studyImport.loading" class="panel animate-show">
+            <table class="layout-table">
+              <tr ng-show=studyImport.basicInfo.title>
+                <td class="large-3 text-right">
+                  <strong>Title</strong>
+                </td>
+                <td class="large-9">
+                  {{studyImport.basicInfo.title}}
+                </td>
+              </tr>
+              <tr ng-show=studyImport.basicInfo.sponsor>
+                <td class="large-3 text-right">
+                  <strong>Sponsor</strong>
+                </td>
+                <td class="large-9">
+                  {{studyImport.basicInfo.sponsor}}
+                </td>
+              </tr>
+              <tr ng-show=studyImport.basicInfo.updated_at>
+                <td class="large-3 text-right">
+                  <strong>Updated at</strong>
+                </td>
+                <td class="large-9">
+                  {{studyImport.basicInfo.updated_at}}
+                </td>
+              </tr>
+              <tr ng-show=studyImport.basicInfo.created_at>
+                <td class="large-3 text-right">
+                  <strong>Created at</strong>
+                </td>
+                <td class="large-9">
+                  {{studyImport.basicInfo.created_at}}
+                </td>
+              </tr>
+              <tr ng-show=studyImport.basicInfo.aliases.length>
+                <td class="large-3 text-right">
+                  <strong>aliases</strong>
+                </td>
+                <td class="large-9">
+                  <tr ng-repeat="alias in aliases">
+                    <td>
+                      {{alias}}
+                    </td>
+                  </tr>
+                </td>
+              </tr>
+              <tr ng-show=studyImport.basicInfo._links>
+                <td class="large-3 text-right">
+                  <strong>link</strong>
+                </td>
+                <td class="large-9">
+                  <a ng-href="{{studyImport.basicInfo._links.source.href}}" target="_blank">{{studyImport.basicInfo._links.source.title}} <i class="fa fa-external-link" aria-hidden="true"></i></a>
+                </td>
+              </tr>
+            </table>
+          </div>
+        </div>
+      </div>
+      <div class="row" style="margin-top: 1rem;">
+        <div class="large-9 columns">
+          <button class="success" type="submit" ng-disabled="!studyImport.nctId || !isValidNct(studyImport.nctId) || !studyImport.basicInfo || !studyImport.basicInfo._links">
+            Import
+          </button>
+        </div>
+      </div>
+    </form>
+  </tab>
+</tabset>
+<a class="close-reveal-modal" ng-click="cancel()">&#215;</a>
