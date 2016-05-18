@@ -8,7 +8,8 @@ define([], function() {
       scope: {
         studyUuid: '=',
         settings: '=',
-        isEditingAllowed: '='
+        isEditingAllowed: '=',
+        isRepairable: '='
       },
       link: function(scope, element, attributes) {
 

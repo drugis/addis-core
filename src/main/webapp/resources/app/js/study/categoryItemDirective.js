@@ -12,7 +12,8 @@ define(['angular'], function(angular) {
         settings: '=',
         studyUuid: '=',
         isEditingAllowed: '=',
-        isSingleItem: '='
+        isSingleItem: '=',
+        isRepairable: '='
       },
       link: function(scope) {
 
@@ -41,6 +42,28 @@ define(['angular'], function(angular) {
               },
               actionType: function() {
                 return 'Edit';
+              },
+              item: function() {
+                return angular.copy(scope.item);
+              }
+            }
+          });
+        };
+
+        scope.repairItem = function() {
+          $modal.open({
+            scope: scope,
+            templateUrl: scope.settings.repairItemTemplateUrl,
+            controller: scope.settings.repairItemController,
+            resolve: {
+              callback: function () {
+                return onEdit;
+              },
+              itemService: function() {
+                return service;
+              },
+              actionType: function() {
+                return 'Repair';
               },
               item: function() {
                 return angular.copy(scope.item);

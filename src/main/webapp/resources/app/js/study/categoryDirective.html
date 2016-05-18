@@ -7,9 +7,16 @@
     <div ng-if="items">
         <div class="panel clearfix" ng-repeat="item in items | orderBy:'pos'">
 
-            <category-item-directive itemIndex="{{$index}}" item="item" study-uuid="studyUuid" reload-items="reloadItems"
-             settings="settings" is-editing-allowed="isEditingAllowed" 
-             is-single-item="isSingleItem"></category-item-directive>
+            <category-item-directive
+            itemIndex="{{$index}}"
+            item="item"
+            study-uuid="studyUuid"
+            reload-items="reloadItems"
+            settings="settings"
+            is-editing-allowed="isEditingAllowed"
+            is-single-item="isSingleItem"
+            is-repairable="isRepairable"
+            ></category-item-directive>
         </div>
     </div>
 

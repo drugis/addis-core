@@ -1,0 +1,20 @@
+<form novalidate ng-submit="repairItem()">
+  <div class="row">
+    <div class="large-9 columns">
+      <h3>Reclassify {{item.label}}</h3>
+    </div>
+  </div>
+  <div class="row">
+    <div class="large-9 columns">
+      <p><h4>Reclassify this group as a "arm"</h4>
+        <em>All measurement data will be kept</em>
+      </p>
+    </div>
+  </div>
+  <div class="row">
+    <div class="large-9 columns">
+      <button class="success" type="submit">Reclassify</button>
+    </div>
+  </div>
+  <a class="close-reveal-modal" ng-click="cancel()">&#215;</a>
+</form>

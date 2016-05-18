@@ -54,6 +54,8 @@ define([],
           addItemTemplateUrl: 'app/js/arm/addArm.html',
           editItemTemplateUrl: 'app/js/arm/editArm.html',
           editItemController: 'EditArmController',
+          repairItemTemplateUrl: 'app/js/arm/repairArm.html',
+          repairItemController: 'EditArmController'
         },
         groups: {
           service: 'GroupService',
@@ -66,6 +68,8 @@ define([],
           addItemTemplateUrl: 'app/js/group/addGroup.html',
           editItemTemplateUrl: 'app/js/group/editGroup.html',
           editItemController: 'EditGroupController',
+          repairItemTemplateUrl: 'app/js/group/repairGroup.html',
+          repairItemController: 'EditGroupController'
         },
         populationCharacteristics: {
           service: 'PopulationCharacteristicService',
