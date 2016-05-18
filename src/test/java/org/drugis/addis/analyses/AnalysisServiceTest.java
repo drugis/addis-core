@@ -15,7 +15,7 @@ import org.drugis.addis.interventions.service.InterventionService;
 import org.drugis.addis.interventions.service.impl.InvalidTypeForDoseCheckException;
 import org.drugis.addis.models.Model;
 import org.drugis.addis.models.exceptions.InvalidModelException;
-import org.drugis.addis.models.repository.ModelRepository;
+import org.drugis.addis.models.service.ModelService;
 import org.drugis.addis.outcomes.Outcome;
 import org.drugis.addis.outcomes.repository.OutcomeRepository;
 import org.drugis.addis.projects.Project;
@@ -33,6 +33,7 @@ import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.sql.SQLException;
@@ -56,7 +57,7 @@ public class AnalysisServiceTest {
   ProjectRepository projectRepository;
 
   @Mock
-  ModelRepository modelRepository;
+  ModelService modelService;
 
   @Mock
   OutcomeRepository outcomeRepository;
@@ -124,7 +125,7 @@ public class AnalysisServiceTest {
   }
 
   @Test(expected = ResourceDoesNotExistException.class)
-  public void testUpdateWrongProjectFails() throws ResourceDoesNotExistException, MethodNotAllowedException, SQLException {
+  public void testUpdateWrongProjectFails() throws ResourceDoesNotExistException, MethodNotAllowedException, SQLException, IOException {
     Integer analysisId = -6;
     Account user = mock(Account.class);
     Integer wrongProject = 2;
@@ -132,7 +133,7 @@ public class AnalysisServiceTest {
     NetworkMetaAnalysis analysis = new NetworkMetaAnalysis(analysisId, wrongProject, "new name", outcome);
     NetworkMetaAnalysis oldAnalysis = mock(NetworkMetaAnalysis.class);
 
-    when(modelRepository.findByAnalysis(analysis.getId())).thenReturn(new ArrayList<Model>());
+    when(modelService.findByAnalysis(analysis.getId())).thenReturn(new ArrayList<Model>());
     when(oldAnalysis.getProjectId()).thenReturn(projectId);
     when(analysisRepository.get(analysisId)).thenReturn(oldAnalysis);
 
@@ -140,7 +141,7 @@ public class AnalysisServiceTest {
   }
 
   @Test(expected = MethodNotAllowedException.class)
-  public void testUpdateLockedAnalysisFails() throws ResourceDoesNotExistException, MethodNotAllowedException, InvalidModelException, SQLException  {
+  public void testUpdateLockedAnalysisFails() throws ResourceDoesNotExistException, MethodNotAllowedException, InvalidModelException, SQLException, IOException {
     Integer analysisId = -6;
     Account user = mock(Account.class);
     Integer projectId = 1;
@@ -160,14 +161,14 @@ public class AnalysisServiceTest {
             .build();
     List<Model> models = Collections.singletonList(model);
     when(analysisRepository.get(analysisId)).thenReturn(analysis);
-    when(modelRepository.findByAnalysis(analysis.getId())).thenReturn(models);
-    when(modelRepository.find(modelId)).thenReturn(null);
+    when(modelService.findByAnalysis(analysis.getId())).thenReturn(models);
+    when(modelService.find(modelId)).thenReturn(null);
 
     analysisService.updateNetworkMetaAnalysis(user, analysis);
   }
 
   @Test(expected = ResourceDoesNotExistException.class)
-  public void testUpdateWithOutcomeInWrongProjectFails() throws ResourceDoesNotExistException, MethodNotAllowedException, SQLException {
+  public void testUpdateWithOutcomeInWrongProjectFails() throws ResourceDoesNotExistException, MethodNotAllowedException, SQLException, IOException {
     Account user = mock(Account.class);
     Outcome outcome = mock(Outcome.class);
     when(outcome.getProject()).thenReturn(projectId + 1);
@@ -179,7 +180,7 @@ public class AnalysisServiceTest {
   }
 
   @Test
-  public void testBuildInitialOutcomeInclusionsCheckNmaNoOutcome() throws SQLException {
+  public void testBuildInitialOutcomeInclusionsCheckNmaNoOutcome() throws SQLException, IOException {
     Integer projectId = 1;
     Integer metabenefitRiskAnalysisId = 1;
     Integer outcomeId = 1;
@@ -195,7 +196,7 @@ public class AnalysisServiceTest {
   }
 
   @Test
-  public void testBuildInitialOutcomeInclusionsWithoutPrimary() throws InvalidModelException, SQLException {
+  public void testBuildInitialOutcomeInclusionsWithoutPrimary() throws InvalidModelException, SQLException, IOException {
     Integer projectId = 1;
     Integer metabenefitRiskAnalysisId = 1;
     Integer outcomeId = 1;
@@ -213,7 +214,7 @@ public class AnalysisServiceTest {
 
     when(networkMetaAnalysisRepository.queryByOutcomes(projectId, Arrays.asList(1))).thenReturn(analyses);
     when(outcomeRepository.query(projectId)).thenReturn(outcomes);
-    when(modelRepository.findNetworkModelsByProject(projectId)).thenReturn(models);
+    when(modelService.findNetworkModelsByProject(projectId)).thenReturn(models);
 
     List<MbrOutcomeInclusion> result = analysisService.buildInitialOutcomeInclusions(projectId, metabenefitRiskAnalysisId);
 
@@ -221,7 +222,7 @@ public class AnalysisServiceTest {
   }
 
   @Test
-  public void testBuildInitialOutcomeInclusionsWithPrimary() throws InvalidModelException , SQLException {
+  public void testBuildInitialOutcomeInclusionsWithPrimary() throws InvalidModelException, SQLException, IOException {
     Integer projectId = 1;
     Integer metabenefitRiskAnalysisId = 1;
     Integer outcomeId = 1;
@@ -240,7 +241,7 @@ public class AnalysisServiceTest {
 
     when(networkMetaAnalysisRepository.queryByOutcomes(projectId, Arrays.asList(1))).thenReturn(analyses);
     when(outcomeRepository.query(projectId)).thenReturn(outcomes);
-    when(modelRepository.findNetworkModelsByProject(projectId)).thenReturn(models);
+    when(modelService.findNetworkModelsByProject(projectId)).thenReturn(models);
 
     List<MbrOutcomeInclusion> result = analysisService.buildInitialOutcomeInclusions(projectId, metabenefitRiskAnalysisId);
 

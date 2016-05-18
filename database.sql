@@ -658,3 +658,9 @@ UPDATE outcome SET semanticOutcomeUri=CONCAT('http://trials.drugis.org/concepts/
 --changeset reidd:56
 UPDATE covariate SET definitionkey = CONCAT('http://trials.drugis.org/concepts/', RIGHT(definitionkey, 36)) WHERE type = 'POPULATION_CHARACTERISTIC' AND LEFT(definitionkey, 4) = 'http';
 --rollback UPDATE covariate SET definitionkey = RIGHT(definitionkey, 36) WHERE type = 'POPULATION_CHARACTERISTIC';
+
+--changeset reidd:57
+ALTER TABLE model DROP COLUMN taskId;
+ALTER TABLE model ADD COLUMN taskUrl VARCHAR;
+--rollback ALTER TABLE model ADD COLUMN taskId int;
+--rollback ALTER TABLE model DROP COLUMN taskUrl;

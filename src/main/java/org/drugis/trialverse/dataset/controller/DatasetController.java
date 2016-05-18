@@ -1,7 +1,6 @@
 package org.drugis.trialverse.dataset.controller;
 
 import org.apache.http.HttpException;
-import org.apache.http.client.HttpClient;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.riot.RDFLanguages;
 import org.drugis.addis.security.Account;
@@ -68,9 +67,6 @@ public class DatasetController extends AbstractTrialverseController {
 
   @Inject
   private FeaturedDatasetRepository featuredDatasetRepository;
-
-  @Inject
-  private HttpClient httpClient;
 
   @RequestMapping(method = RequestMethod.POST)
   @ResponseBody
