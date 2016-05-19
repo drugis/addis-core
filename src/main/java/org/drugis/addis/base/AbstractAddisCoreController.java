@@ -51,12 +51,4 @@ public class AbstractAddisCoreController {
     logger.error("Bad request.\n{}", request.getQueryString());
     return new ErrorResponse(400, "Bad request");
   }
-
-  @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-  @ExceptionHandler(AbstractAddisException.class)
-  @ResponseBody
-  public ErrorResponse handleAddisException(HttpServletRequest request) {
-    logger.error("Internal Server Error.\n{}", request.getQueryString());
-    return new ErrorResponse(500, "Internal Server Error");
-  }
 }

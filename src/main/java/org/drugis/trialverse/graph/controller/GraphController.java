@@ -2,6 +2,7 @@ package org.drugis.trialverse.graph.controller;
 
 import org.apache.http.Header;
 import org.apache.jena.riot.RDFLanguages;
+import org.drugis.addis.base.AbstractAddisCoreController;
 import org.drugis.addis.security.repository.AccountRepository;
 import org.drugis.addis.trialverse.service.ClinicalTrialsImportService;
 import org.drugis.addis.trialverse.service.impl.ClinicalTrialsImportError;
@@ -17,7 +18,6 @@ import org.drugis.trialverse.graph.repository.GraphReadRepository;
 import org.drugis.trialverse.graph.repository.GraphWriteRepository;
 import org.drugis.trialverse.graph.service.GraphService;
 import org.drugis.trialverse.util.Namespaces;
-import org.drugis.trialverse.util.controller.AbstractTrialverseController;
 import org.drugis.trialverse.util.service.TrialverseIOUtilsService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,7 +40,7 @@ import java.security.Principal;
  */
 @Controller
 @RequestMapping(value = "/users/{userUid}/datasets/{datasetUuid}")
-public class GraphController extends AbstractTrialverseController {
+public class GraphController extends AbstractAddisCoreController {
 
   @Inject
   private GraphService graphService;

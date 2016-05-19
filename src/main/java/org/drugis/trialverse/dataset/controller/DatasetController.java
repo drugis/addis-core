@@ -3,6 +3,7 @@ package org.drugis.trialverse.dataset.controller;
 import org.apache.http.HttpException;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.riot.RDFLanguages;
+import org.drugis.addis.base.AbstractAddisCoreController;
 import org.drugis.addis.security.Account;
 import org.drugis.addis.security.repository.AccountRepository;
 import org.drugis.addis.util.WebConstants;
@@ -19,7 +20,6 @@ import org.drugis.trialverse.dataset.service.DatasetService;
 import org.drugis.trialverse.dataset.service.HistoryService;
 import org.drugis.trialverse.security.TrialversePrincipal;
 import org.drugis.trialverse.util.Namespaces;
-import org.drugis.trialverse.util.controller.AbstractTrialverseController;
 import org.drugis.trialverse.util.service.TrialverseIOUtilsService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,7 +40,7 @@ import java.util.List;
  */
 @Controller
 @RequestMapping(value = "/users/{userId}/datasets")
-public class DatasetController extends AbstractTrialverseController {
+public class DatasetController extends AbstractAddisCoreController {
 
   private final static Logger logger = LoggerFactory.getLogger(DatasetController.class);
 
