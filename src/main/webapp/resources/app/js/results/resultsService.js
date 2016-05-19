@@ -88,6 +88,10 @@ define(['angular', 'lodash'], function(angular, _) {
       return isResult(item) && variableUri === item.of_outcome;
     }
 
+    function isResultForArm(armUri, item) {
+      return isResult(item) && armUri === item.of_group;
+    }
+
     function isStudyNode(node) {
       return node['@type'] === 'ontology:Study';
     }
@@ -151,16 +155,25 @@ define(['angular', 'lodash'], function(angular, _) {
       });
     }
 
-    function queryResults(variableUri) {
+    function _queyResults(uri, typeFunction) {
       return StudyService.getJsonGraph().then(function(graph) {
-        var resultJsonItems = graph.filter(isResultForVariable.bind(this, variableUri));
+        var resultJsonItems = graph.filter(typeFunction.bind(this, uri));
         return resultJsonItems.reduce(toFrontend, []);
       });
+    }
+
+    function queryResults(variableUri) {
+      return _queyResults(variableUri, isResultForVariable);
+    }
+
+    function queryResultsByGroup(armUri) {
+      return _queyResults(armUri, isResultForArm);
     }
 
     return {
       updateResultValue: updateResultValue,
       queryResults: queryResults,
+      queryResultsByGroup: queryResultsByGroup,
       cleanupMeasurements: cleanupMeasurements
     };
   };

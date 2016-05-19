@@ -9,6 +9,7 @@ define(function (require) {
     .controller('CreateArmController', require('arm/createArmController'))
 
     //services
+    .factory('ResultsService', require('results/resultsService'))
     .factory('ArmService', require('arm/armService'))
     ;
 });
