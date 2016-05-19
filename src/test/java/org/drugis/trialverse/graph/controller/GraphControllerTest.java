@@ -27,6 +27,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import org.springframework.web.util.NestedServletException;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.ByteArrayInputStream;
@@ -174,7 +175,7 @@ public class GraphControllerTest {
     verify(trialverseIOUtilsService).writeContentToServletResponse(any(byte[].class), any(HttpServletResponse.class));
   }
 
-  @Test
+  @Test(expected = NestedServletException.class)
   public void testCreateGraphUserIsNotDatasetOwner() throws Exception {
     String jsonContent = Utils.loadResource(this.getClass(), "/mockStudy.json");
     String datasetUUID = "datasetUUID";
@@ -298,7 +299,7 @@ public class GraphControllerTest {
   }
 
 
-  @Test
+  @Test(expected = NestedServletException.class)
   public void testUpdateGraphUserNotDatasetOwner() throws Exception {
     String jsonContent = Utils.loadResource(this.getClass(), "/mockStudy.json");
     String datasetUUID = "datasetUUID";
