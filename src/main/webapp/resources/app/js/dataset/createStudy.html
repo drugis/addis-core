@@ -66,6 +66,15 @@
                 {{studyImport.basicInfo.id}}
               </td>
             </tr>
+            <tr ng-show=studyImport.basicInfo.aliases.length>
+              <td class="large-3 text-right">
+                <strong>aliases</strong>
+              </td>
+              <td class="large-9">
+                <span ng-repeat="alias in studyImport.basicInfo.aliases">{{alias}}{{$last ? '' : ', '}}
+                  <span>
+              </td>
+            </tr>
             <tr ng-show=studyImport.basicInfo.title>
               <td class="large-3 text-right">
                 <strong>title</strong>
@@ -82,13 +91,12 @@
                 {{studyImport.basicInfo.sponsor}}
               </td>
             </tr>
-            <tr ng-show=studyImport.basicInfo.aliases.length>
+            <tr ng-show=studyImport.basicInfo.created_at>
               <td class="large-3 text-right">
-                <strong>aliases</strong>
+                <strong>created at</strong>
               </td>
               <td class="large-9">
-                <span ng-repeat="alias in studyImport.basicInfo.aliases">{{alias}}{{$last ? '' : ', '}}
-                  <span>
+                {{studyImport.basicInfo.created_at}}
               </td>
             </tr>
             <tr ng-show=studyImport.basicInfo.updated_at>
@@ -97,14 +105,6 @@
               </td>
               <td class="large-9">
                 {{studyImport.basicInfo.updated_at}}
-              </td>
-            </tr>
-            <tr ng-show=studyImport.basicInfo.created_at>
-              <td class="large-3 text-right">
-                <strong>created at</strong>
-              </td>
-              <td class="large-9">
-                {{studyImport.basicInfo.created_at}}
               </td>
             </tr>
             <tr ng-show=studyImport.basicInfo._links>
