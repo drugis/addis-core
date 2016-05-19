@@ -67,7 +67,8 @@ define(['lodash'], function(_) {
         datasetUUID: $stateParams.datasetUUID,
         graphUuid: uuid,
         importStudyRef: importStudyRef,
-        commitTitle: 'Create study through import'
+        commitTitle: 'Import ' + importStudyRef + ' from ClinicalTrials.gov',
+        commitDescription: studyImport.basicInfo.title
       }, function(value, responseHeaders) {
         var newVersionUri = responseHeaders('X-EventSource-Version');
         var newVersionUuid = UUIDService.getUuidFromNamespaceUrl(newVersionUri);
