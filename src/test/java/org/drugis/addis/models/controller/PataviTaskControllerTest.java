@@ -7,6 +7,8 @@ import org.drugis.addis.patavitask.PataviTaskUriHolder;
 import org.drugis.addis.patavitask.controller.PataviTaskController;
 import org.drugis.addis.patavitask.service.PataviTaskService;
 import org.drugis.addis.trialverse.service.impl.ReadValueException;
+import org.drugis.addis.util.WebConstants;
+import org.json.JSONObject;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -22,10 +24,14 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.net.URI;
 import java.security.Principal;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -59,17 +65,32 @@ public class PataviTaskControllerTest {
   }
 
   @Test
-  public void testGet() throws Exception, InvalidModelException, ReadValueException, InvalidTypeForDoseCheckException {
+  public void testGetTaskForModel() throws Exception, InvalidModelException, ReadValueException, InvalidTypeForDoseCheckException {
     URI uri = URI.create("www.nogonahappen.com");
     PataviTaskUriHolder pataviTaskUriHolder = new PataviTaskUriHolder(uri);
     int projectId = 45;
     int analysisId = 55;
     int modelId = 37;
-    when(pataviTaskService.getPataviTaskUriHolder(projectId, analysisId, modelId)).thenReturn(pataviTaskUriHolder);
+    when(pataviTaskService.getGemtcPataviTaskUriHolder(projectId, analysisId, modelId)).thenReturn(pataviTaskUriHolder);
     mockMvc.perform(get("/projects/45/analyses/55/models/37/task").principal(user))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.uri", equalTo(uri.toString())))
     ;
-    verify(pataviTaskService).getPataviTaskUriHolder(projectId, analysisId, modelId);
+    verify(pataviTaskService).getGemtcPataviTaskUriHolder(projectId, analysisId, modelId);
   }
+
+  @Test
+  public void testPostMcdaTask() throws Exception {
+    URI uri = URI.create("something");
+    PataviTaskUriHolder uriHolder = new PataviTaskUriHolder(uri);
+    JSONObject problem = new JSONObject("{\"prop\": 3}");
+    when(pataviTaskService.getMcdaPataviTaskUriHolder(any())).thenReturn(uriHolder);
+    mockMvc.perform(post("/patavi")
+              .principal(user).content(problem.toString())
+              .contentType(WebConstants.getApplicationJsonUtf8()))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.uri", equalTo(uri.toString())));
+    verify(pataviTaskService).getMcdaPataviTaskUriHolder(any());
+  }
+
 }

@@ -13,6 +13,8 @@ import org.drugis.addis.problems.model.NetworkMetaAnalysisProblem;
 import org.drugis.addis.problems.service.ProblemService;
 import org.drugis.addis.trialverse.service.TriplestoreService;
 import org.drugis.addis.trialverse.service.impl.ReadValueException;
+import org.drugis.addis.util.WebConstants;
+import org.json.JSONObject;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -29,6 +31,7 @@ import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateException;
 import java.sql.SQLException;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
@@ -47,6 +50,9 @@ public class PataviTaskServiceTest {
 
   @Mock
   private PataviTaskRepository pataviTaskRepository;
+
+  @Mock
+  private WebConstants webConstants;
 
   @InjectMocks
   private PataviTaskService pataviTaskService;
@@ -71,6 +77,7 @@ public class PataviTaskServiceTest {
     Integer projectId = -6;
     Integer analysisId = -7;
     String modelTitle = "modelTitle";
+    URI pataviGemtcUri = URI.create("patavi");
 
     Model model = new Model.ModelBuilder(analysisId, modelTitle)
             .modelType(Model.NETWORK_MODEL_TYPE)
@@ -80,15 +87,16 @@ public class PataviTaskServiceTest {
     when(networkMetaAnalysisProblem.toString()).thenReturn(problem);
     when(problemService.getProblem(projectId, analysisId)).thenReturn(networkMetaAnalysisProblem);
     when(modelService.find(modelId)).thenReturn(model);
+    when(webConstants.getPataviGemtcUri()).thenReturn(pataviGemtcUri);
     URI createdURI = URI.create("new.task.com");
-    when(pataviTaskRepository.createPataviTask(networkMetaAnalysisProblem.buildProblemWithModelSettings(model))).thenReturn(createdURI);
+    when(pataviTaskRepository.createPataviTask(pataviGemtcUri, networkMetaAnalysisProblem.buildProblemWithModelSettings(model))).thenReturn(createdURI);
 
-    PataviTaskUriHolder result = pataviTaskService.getPataviTaskUriHolder(projectId, analysisId, modelId);
+    PataviTaskUriHolder result = pataviTaskService.getGemtcPataviTaskUriHolder(projectId, analysisId, modelId);
 
     assertNotNull(result.getUri());
     verify(modelService).find(modelId);
     verify(problemService).getProblem(projectId, analysisId);
-    verify(pataviTaskRepository).createPataviTask(networkMetaAnalysisProblem.buildProblemWithModelSettings(model));
+    verify(pataviTaskRepository).createPataviTask(pataviGemtcUri, networkMetaAnalysisProblem.buildProblemWithModelSettings(model));
   }
 
   @Test
@@ -117,7 +125,7 @@ public class PataviTaskServiceTest {
             .build();
     when(modelService.find(modelId)).thenReturn(model);
 
-    PataviTaskUriHolder result = pataviTaskService.getPataviTaskUriHolder(projectId, analysisId, modelId);
+    PataviTaskUriHolder result = pataviTaskService.getGemtcPataviTaskUriHolder(projectId, analysisId, modelId);
     assertNotNull(result.getUri());
     verify(modelService).find(modelId);
   }
@@ -128,10 +136,26 @@ public class PataviTaskServiceTest {
     Integer analysisId = -7;
     Integer invalidModelId = -2;
     when(modelService.find(invalidModelId)).thenReturn(null);
-    try{
-      pataviTaskService.getPataviTaskUriHolder(projectId, analysisId, invalidModelId);
-    }finally {
+    try {
+      pataviTaskService.getGemtcPataviTaskUriHolder(projectId, analysisId, invalidModelId);
+    } finally {
       verify(modelService).find(invalidModelId);
     }
   }
+
+  @Test
+  public void testGetMcdaTask() {
+    URI mcdaPataviUri = URI.create("problem");
+    URI createdUri = URI.create("created");
+    JSONObject problem = new JSONObject();
+
+    when(pataviTaskRepository.createPataviTask(mcdaPataviUri, problem)).thenReturn(createdUri);
+    when(webConstants.getPataviMcdaUri()).thenReturn(mcdaPataviUri);
+
+    PataviTaskUriHolder mcdaPataviTaskUriHolder = pataviTaskService.getMcdaPataviTaskUriHolder(problem);
+
+    assertEquals(createdUri, mcdaPataviTaskUriHolder.getUri());
+    verify(pataviTaskRepository).createPataviTask(mcdaPataviUri, problem);
+  }
+
 }

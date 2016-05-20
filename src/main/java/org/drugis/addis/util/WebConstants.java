@@ -72,6 +72,18 @@ public class WebConstants {
     return PATAVI_URI;
   }
 
+  public URI getPataviMcdaUri() {
+    try {
+      URIBuilder builder = new URIBuilder(PATAVI_URI);
+      builder.setPath("/task");
+      builder.addParameter("service", "smaa_v2");
+      builder.addParameter("ttl", "PT5M");
+      return builder.build();
+    } catch (URISyntaxException e) {
+      throw new RuntimeException("could not create mcda patavi uri");
+    }
+  }
+
   public URI getPataviGemtcUri() {
     try {
       URIBuilder builder = new URIBuilder(PATAVI_URI);
@@ -79,9 +91,8 @@ public class WebConstants {
       builder.addParameter("service", "gemtc");
       return builder.build();
     } catch (URISyntaxException e) {
-      e.printStackTrace();
+      throw new RuntimeException("could not create gemtc patavi uri");
     }
-    return null;
   }
 
   public String getTriplestoreBaseUri() {

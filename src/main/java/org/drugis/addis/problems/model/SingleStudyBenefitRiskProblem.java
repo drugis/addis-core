@@ -15,8 +15,8 @@ import java.util.Map;
 @JsonDeserialize(using = ObjectToStringDeserializer.class)
 public class SingleStudyBenefitRiskProblem extends AbstractProblem {
   private String title;
-  private Map<Integer, AlternativeEntry> alternatives;
   private Map<URI, CriterionEntry> criteria;
+  private Map<Integer, AlternativeEntry> alternatives;
   private List<AbstractMeasurementEntry> performanceTable;
 
   public SingleStudyBenefitRiskProblem(String title, Map<Integer, AlternativeEntry> alternatives, Map<URI, CriterionEntry> criteria, List<AbstractMeasurementEntry> performanceTable) {
