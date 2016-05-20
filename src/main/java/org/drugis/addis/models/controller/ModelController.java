@@ -74,7 +74,7 @@ public class ModelController extends AbstractAddisCoreController {
 
   @RequestMapping(value = "/projects/{projectId}/consistencyModels", method = RequestMethod.GET)
   @ResponseBody
-  public List<Model> consistencyModels(@PathVariable Integer projectId) throws SQLException {
+  public List<Model> consistencyModels(@PathVariable Integer projectId) throws SQLException, IOException {
     return modelService.queryConsistencyModels(projectId);
   }
 

@@ -30,9 +30,6 @@ public class ModelRepositoryImpl implements ModelRepository {
   @Inject
   PataviTaskRepository pataviTaskRepository;
 
-
-
-
   @Override
   public Model persist(Model model) throws InvalidModelException {
     em.persist(model);

@@ -1,6 +1,7 @@
 <div>
   <a ng-if="analysis.analysisType === 'Single-study Benefit-Risk'" ui-sref="singleStudyBenefitRisk({userUid: user.id, projectId: project.id, analysisId: analysis.id})">View details</a>
-  <a ng-if="analysis.analysisType === 'Benefit-risk analysis based on meta-analyses'" ui-sref="metaBenefitRisk({userUid: user.id, projectId: project.id, analysisId: analysis.id})">View details</a>
+  <a ng-if="analysis.analysisType === 'Benefit-risk analysis based on meta-analyses' && analysis.finalized" ui-sref="metaBenefitRisk({userUid: user.id, projectId: project.id, analysisId: analysis.id})">View details</a>
+  <a ng-if="analysis.analysisType === 'Benefit-risk analysis based on meta-analyses' && !analysis.finalized" ui-sref="MetaBenefitRiskCreationStep-1({userUid: user.id, projectId: project.id, analysisId: analysis.id})">View details</a>
 
   <div ng-if="analysis.analysisType === 'Single-study Benefit-Risk'">
     <strong>Data source:</strong> <a ui-sref="namespace-study({userUid: user.id, projectId: project.id, studyUid: dataSource.uid})">{{dataSource.name}}</a>

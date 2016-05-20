@@ -26,7 +26,7 @@ public interface ModelService {
 
   void increaseRunLength(UpdateModelCommand updateModelCommand) throws MethodNotAllowedException, InvalidModelException, IOException;
 
-  List<Model> queryConsistencyModels(Integer projectId) throws SQLException;
+  List<Model> queryConsistencyModels(Integer projectId) throws SQLException, IOException;
 
   List<Model> findByAnalysis(Integer analysisId) throws SQLException, IOException;
 

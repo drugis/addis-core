@@ -138,13 +138,14 @@ public class ModelServiceImpl implements ModelService {
   }
 
   @Override
-  public List<Model> queryConsistencyModels(Integer projectId) throws SQLException {
-    return modelRepository
+  public List<Model> queryConsistencyModels(Integer projectId) throws SQLException, IOException {
+    List<Model> consistencyModels = modelRepository
             .findNetworkModelsByProject(projectId)
             .stream()
             .filter(m -> m.getModelType().getType().equals(Model.NETWORK_MODEL_TYPE) ||
                     m.getModelType().getType().equals(Model.PAIRWISE_MODEL_TYPE))
             .collect(Collectors.toList());
+    return addRunStatusToModels(consistencyModels);
   }
 
   @Override
