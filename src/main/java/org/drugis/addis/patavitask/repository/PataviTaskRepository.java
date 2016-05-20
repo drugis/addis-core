@@ -1,9 +1,9 @@
 package org.drugis.addis.patavitask.repository;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import org.json.JSONObject;
 import org.apache.http.HttpResponse;
 import org.drugis.addis.patavitask.PataviTask;
-import org.json.JSONObject;
 
 import java.io.IOException;
 import java.net.URI;
@@ -28,5 +28,5 @@ public interface PataviTaskRepository {
 
   PataviTask getTask(URI taskUrl) throws IOException;
 
-  URI createPataviTask(JSONObject jsonObject);
+  URI createPataviTask(URI pataviUri, JSONObject jsonObject);
 }

@@ -50,7 +50,7 @@ public class PataviTaskRepositoryImplTest {
     when(httpClient.execute(any())).thenReturn(mockResponse);
     JSONObject problem = new JSONObject();
 
-    URI createdUri = pataviTaskRepository.createPataviTask(problem);
+    URI createdUri = pataviTaskRepository.createPataviTask(URI.create("foo"), problem);
 
     assertEquals(createdLocation, createdUri.toString());
   }

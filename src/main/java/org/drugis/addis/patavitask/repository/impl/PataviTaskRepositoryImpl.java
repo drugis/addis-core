@@ -14,6 +14,7 @@ import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.util.EntityUtils;
 import org.drugis.addis.patavitask.PataviTask;
+import org.drugis.addis.patavitask.PataviTaskUriHolder;
 import org.drugis.addis.patavitask.repository.PataviTaskRepository;
 import org.drugis.addis.util.WebConstants;
 import org.json.JSONObject;
@@ -46,10 +47,10 @@ public class PataviTaskRepositoryImpl implements PataviTaskRepository {
   private HttpClient httpClient;
 
   @Override
-  public URI createPataviTask(JSONObject jsonProblem) {
+  public URI createPataviTask(URI pataviUri, JSONObject jsonProblem) {
     logger.trace("PataviTaskRepositoryImpl.createPataviTask");
 
-    HttpPost postRequest = new HttpPost(webConstants.getPataviGemtcUri());
+    HttpPost postRequest = new HttpPost(pataviUri);
     postRequest.addHeader(new BasicHeader("Content-type", WebConstants.APPLICATION_JSON_UTF8_VALUE));
     HttpEntity postBody = new ByteArrayEntity(jsonProblem.toString().getBytes());
     postRequest.setEntity(postBody);
@@ -61,7 +62,6 @@ public class PataviTaskRepositoryImpl implements PataviTaskRepository {
       throw new RuntimeException("Error creating patavi task: " + e.toString());
     }
   }
-
   @Override
   public JsonNode getResult(URI taskUri) throws URISyntaxException, IOException {
     URI resultsUri = new URIBuilder(taskUri + WebConstants.PATAVI_RESULTS_PATH)
