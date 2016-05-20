@@ -25,7 +25,7 @@ define(['lodash'], function(_) {
         if(scope.analysis.problem) {
           scope.problem = scope.analysis.problem;
           scope.problem.valueTree = WorkspaceService.buildValueTree(scope.analysis.problem);
-          WorkspaceService.getObservedScales(scope.problem).then(function(scales) {
+          WorkspaceService.getObservedScales(scope, scope.problem).then(function(scales) {
             scope.scales = scales;
           });
         }
