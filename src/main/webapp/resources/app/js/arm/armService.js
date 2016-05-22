@@ -1,7 +1,7 @@
 'use strict';
 define(['lodash'], function(_) {
-  var dependencies = ['$q', 'StudyService', 'UUIDService', 'ResultsService'];
-  var ArmService = function($q, StudyService, UUIDService, ResultsService) {
+  var dependencies = ['$q', 'StudyService', 'UUIDService', 'AbstractGroupService'];
+  var ArmService = function($q, StudyService, UUIDService, AbstractGroupService) {
 
     function toFrontEnd(backEndArm) {
       var frontEndArm = {
@@ -79,76 +79,11 @@ define(['lodash'], function(_) {
     }
 
     function merge(source, target) {
-      // fetch results data
-      var sourceResultsPromise = ResultsService.queryResultsByGroup(source.armURI);
-      var targetResultsPromise = ResultsService.queryResultsByGroup(target.armURI);
-
-      return $q.all([sourceResultsPromise, targetResultsPromise]).then(function(results) {
-        var overlappingResults = findOverlappingResults(results[0], results[1]);
-        var nonOverlappingResults = findNonOverlappingResults(results[0], results[1]);
-
-        return StudyService.getJsonGraph().then(function(graph) {
-          // remove the overlapping results
-          _.forEach(overlappingResults, function(overlappingResult) {
-            _.remove(graph, function(node) {
-              return overlappingResult.instance === node['@id'];
-            });
-          });
-
-          // move non overlapping results
-          _.forEach(nonOverlappingResults, function(nonOverlappingResult) {
-            // remove the overlapping results
-            var resultNode = _.find(graph, function(node) {
-              return nonOverlappingResult.instance === node['@id'];
-            });
-            resultNode.of_group = target.armURI || target.groupUri;
-          });
-
-          // store the merged results
-          return StudyService.saveJsonGraph(graph).then(function() {
-            // remove the merged arm
-            return deleteItem(source);
-          });
-        });
-      });
-    }
-
-    function isOverlappingGroupMeasurement(a, b) {
-      return a.momentUri === b.momentUri &&
-        a.outcomeUri === b.outcomeUri;
-    }
-
-    function findOverlappingResults(sourceResults, targetResults) {
-      return _.reduce(sourceResults, function(accum, sourceResult) {
-        var targetResult = _.find(targetResults, function(targetResult) {
-          return isOverlappingGroupMeasurement(sourceResult, targetResult);
-        });
-        if (targetResult) {
-          accum.push(sourceResult);
-        }
-        return accum;
-      }, []);
-    }
-
-    function findNonOverlappingResults(sourceResults, targetResults) {
-      return _.reduce(sourceResults, function(accum, sourceResult) {
-        var targetResult = _.find(targetResults, function(targetResult) {
-          return isOverlappingGroupMeasurement(sourceResult, targetResult);
-        });
-        if (!targetResult) {
-          accum.push(sourceResult);
-        }
-        return accum;
-      }, []);
+      return AbstractGroupService.merge(source, target);
     }
 
     function hasOverlap(source, target) {
-      var sourceResultsPromise = ResultsService.queryResultsByGroup(source.armURI);
-      var targetResultsPromise = ResultsService.queryResultsByGroup(target.armURI);
-
-      return $q.all([sourceResultsPromise, targetResultsPromise]).then(function(results) {
-        return findOverlappingResults(results[0], results[1]).length > 0;
-      });
+      return AbstractGroupService.hasOverlap(source, target);
     }
 
     function deleteItem(removeArm) {
