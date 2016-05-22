@@ -1,6 +1,6 @@
 'use strict';
 define(['angular', 'angular-mocks'], function() {
-  fdescribe('the abstract group service', function() {
+  xdescribe('the abstract group service', function() {
 
     var rootScope, q;
     var resultsService = jasmine.createSpyObj('ResultsService', ['queryResultsByGroup']);
@@ -27,6 +27,10 @@ define(['angular', 'angular-mocks'], function() {
       studyGetJsonGraphDefer = $q.defer();
       var studyGetJsonGraphPromise = studyGetJsonGraphDefer.promise;
       studyService.getJsonGraph.and.returnValue(studyGetJsonGraphPromise);
+
+      // studyGetJsonGraphDefer = $q.defer();
+      // var studyGetJsonGraphPromise = studyGetJsonGraphDefer.promise;
+      // studyService.getJsonGraph.and.returnValue(studyGetJsonGraphPromise);
 
       abstractGroupService = AbstractGroupService;
     }));
