@@ -1,7 +1,7 @@
 'use strict';
 define(['lodash'], function(_) {
-  var dependencies = ['StudyService', 'UUIDService'];
-  var GroupService = function(StudyService, UUIDService) {
+  var dependencies = ['$q', 'StudyService', 'UUIDService', 'AbstractGroupService'];
+  var GroupService = function($q, StudyService, UUIDService, AbstractGroupService) {
 
     function toFrontEnd(backEndGroup) {
       var frontEndGroup = {
@@ -100,6 +100,14 @@ define(['lodash'], function(_) {
       });
     }
 
+    function merge(source, target) {
+      return AbstractGroupService.merge(source, target);
+    }
+
+    function hasOverlap(source, target) {
+      return AbstractGroupService.hasOverlap(source, target);
+    }
+
     function deleteItem(removeGroup) {
       return StudyService.getStudy().then(function(study) {
         _.remove(study.has_group, function(group) {
@@ -114,6 +122,8 @@ define(['lodash'], function(_) {
       addItem: addItem,
       editItem: editItem,
       reclassifyAsArm: reclassifyAsArm,
+      merge: merge,
+      hasOverlap: hasOverlap,
       deleteItem: deleteItem,
     };
   };
