@@ -1,13 +1,14 @@
 'use strict';
 define(['angular', 'angular-mocks'], function() {
-  xdescribe('the abstract group service', function() {
+  fdescribe('the abstract group service', function() {
 
     var rootScope, q;
     var resultsService = jasmine.createSpyObj('ResultsService', ['queryResultsByGroup']);
-    var studyService = jasmine.createSpyObj('StudyService', ['getJsonGraph', 'saveJsonGraph']);
+    var studyService = jasmine.createSpyObj('StudyService', ['getJsonGraph', 'saveJsonGraph', 'getStudy', 'save']);
     var abstractGroupService;
     var byGroupResults;
-    var resultsDefer, studyGetJsonGraphDefer;
+    var resultsDefer, studyGetJsonGraphDefer, studySaveJsonGraphDefer,
+      getStudyDefer, saveStudyDefer;
 
     beforeEach(function() {
       module('trialverse.util', function($provide) {
@@ -28,9 +29,17 @@ define(['angular', 'angular-mocks'], function() {
       var studyGetJsonGraphPromise = studyGetJsonGraphDefer.promise;
       studyService.getJsonGraph.and.returnValue(studyGetJsonGraphPromise);
 
-      // studyGetJsonGraphDefer = $q.defer();
-      // var studyGetJsonGraphPromise = studyGetJsonGraphDefer.promise;
-      // studyService.getJsonGraph.and.returnValue(studyGetJsonGraphPromise);
+      studySaveJsonGraphDefer = $q.defer();
+      var studySaveJsonGraphPromise = studySaveJsonGraphDefer.promise;
+      studyService.saveJsonGraph.and.returnValue(studySaveJsonGraphPromise);
+
+      getStudyDefer = $q.defer();
+      var getStudyPromise = getStudyDefer.promise;
+      studyService.getStudy.and.returnValue(getStudyPromise);
+
+      saveStudyDefer = $q.defer();
+      var saveStudyPromise = saveStudyDefer.promise;
+      studyService.save.and.returnValue(saveStudyPromise);
 
       abstractGroupService = AbstractGroupService;
     }));
@@ -70,16 +79,29 @@ define(['angular', 'angular-mocks'], function() {
         groupUri: 'groupTargetUri'
       };
 
+      var getStudyResult = {
+        has_group: [{
+          '@id': 'groupTargetUri',
+          '@type': 'ontology:Group',
+          'label': 'group label'
+        }]
+      };
+
       beforeEach(function(done) {
         resultsDefer.resolve(byGroupResults);
         studyGetJsonGraphDefer.resolve(studyJsonObject);
+        studySaveJsonGraphDefer.resolve();
+        getStudyDefer.resolve(getStudyResult);
+        saveStudyDefer.resolve();
         abstractGroupService.merge(groupSource, groupTarget).then(done);
         rootScope.$digest();
       });
 
       it('should have merged', function() {
-        expect(resultsService.queryResults).toHaveBeenCalledWith('groupSourceUri');
-        expect(resultsService.queryResults).toHaveBeenCalledWith('groupTargetUri');
+        expect(resultsService.queryResultsByGroup).toHaveBeenCalledWith('groupSourceUri');
+        expect(resultsService.queryResultsByGroup).toHaveBeenCalledWith('groupTargetUri');
+        expect(studyService.getJsonGraph).toHaveBeenCalled();
+        expect(studyService.saveJsonGraph).toHaveBeenCalledWith();
       });
     });
 
