@@ -133,6 +133,7 @@ define(['lodash'], function(_) {
       createInputRows: createInputRows,
       createHeaders: createHeaders,
       isValidValue: isValidValue,
+      createInputColumns: createInputColumns,
       CONTINUOUS_TYPE: CONTINUOUS_TYPE,
       DICHOTOMOUS_TYPE: DICHOTOMOUS_TYPE
     };

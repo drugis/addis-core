@@ -1,6 +1,6 @@
 'use strict';
-define([],
-  function() {
+define(['lodash'],
+  function(_) {
     var dependencies = ['$scope', '$stateParams', '$window', '$filter',
       'VersionedGraphResource', 'GraphResource', '$location', '$anchorScroll',
       '$modal', 'StudyService', 'ResultsService', 'StudyDesignService', 'DatasetResource'
@@ -21,8 +21,6 @@ define([],
 
       // onload
       StudyService.reset();
-
-
 
       $scope.categorySettings = {
         studyInformation: {

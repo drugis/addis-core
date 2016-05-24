@@ -65,6 +65,10 @@ define(['angular', 'lodash'], function(angular, _) {
         outcomeUri: backEndItem.of_outcome,
       };
 
+      if (isNonConformantMeansurement(backEndItem)) {
+        baseItem.comment = backEndItem.comment;
+      }
+
       if (backEndItem.sample_size !== undefined) {
         accum.push(createValueItem(baseItem, backEndItem, 'sample_size'));
       }
@@ -88,6 +92,10 @@ define(['angular', 'lodash'], function(angular, _) {
       return isResult(item) && variableUri === item.of_outcome;
     }
 
+    function isResultForNonConformantMeasurement(variableUri, item) {
+      return isNonConformantMeansurementResult(item) && variableUri === item.of_outcome;
+    }
+
     function isResultForArm(armUri, item) {
       return isResult(item) && armUri === item.of_group;
     }
@@ -100,8 +108,16 @@ define(['angular', 'lodash'], function(angular, _) {
       return node.of_outcome && node.of_group && node.of_moment;
     }
 
+    function isNonConformantMeansurementResult(node) {
+      return node.comment && node.of_outcome && node.of_group && !node.of_moment;
+    }
+
     function isMoment(node) {
       return node['@type'] === 'ontology:MeasurementMoment';
+    }
+
+    function isNonConformantMeansurement(backEndItem) {
+      return !backEndItem.of_moment && backEndItem.comment;
     }
 
     function cleanupMeasurements() {
@@ -155,7 +171,24 @@ define(['angular', 'lodash'], function(angular, _) {
       });
     }
 
-    function _queyResults(uri, typeFunction) {
+    function setToMeasurement(measurementMomentUri, measurementInstanceUris) {
+      var unMoved = angular.copy(measurementInstanceUris);
+      return StudyService.getJsonGraph().then(function(graph) {
+
+        _.find(graph, function(node) {
+          if (_.contains(unMoved, node['@id'])) {
+            node.of_moment = measurementMomentUri;
+            delete node.comment;
+            _.remove(unMoved, node['@id']);
+          }
+          return unMoved.length === 0;
+        });
+
+        return StudyService.saveJsonGraph(graph);
+      });
+    }
+
+    function _queryResults(uri, typeFunction) {
       return StudyService.getJsonGraph().then(function(graph) {
         var resultJsonItems = graph.filter(typeFunction.bind(this, uri));
         return resultJsonItems.reduce(toFrontend, []);
@@ -163,18 +196,24 @@ define(['angular', 'lodash'], function(angular, _) {
     }
 
     function queryResults(variableUri) {
-      return _queyResults(variableUri, isResultForVariable);
+      return _queryResults(variableUri, isResultForVariable);
     }
 
     function queryResultsByGroup(armUri) {
-      return _queyResults(armUri, isResultForArm);
+      return _queryResults(armUri, isResultForArm);
+    }
+
+    function queryNonConformantMeasurements(variableUri) {
+      return _queryResults(variableUri, isResultForNonConformantMeasurement);
     }
 
     return {
       updateResultValue: updateResultValue,
       queryResults: queryResults,
       queryResultsByGroup: queryResultsByGroup,
-      cleanupMeasurements: cleanupMeasurements
+      queryNonConformantMeasurements: queryNonConformantMeasurements,
+      cleanupMeasurements: cleanupMeasurements,
+      setToMeasurement: setToMeasurement
     };
   };
   return dependencies.concat(ResultsService);

@@ -17,11 +17,11 @@ define([], function() {
             column.isInValidValue = false;
             ResultsService.updateResultValue(row, column).then(function(result){
               row.uri = result;
-            })
+            });
           } else {
             column.isInValidValue = true;
           }
-        }
+        };
 
       }
     };
