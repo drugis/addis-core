@@ -1,13 +1,14 @@
 'use strict';
 define(['angular', 'angular-mocks'], function() {
-  xdescribe('the abstract group service', function() {
+  describe('the abstract group service', function() {
 
     var rootScope, q;
     var resultsService = jasmine.createSpyObj('ResultsService', ['queryResultsByGroup']);
-    var studyService = jasmine.createSpyObj('StudyService', ['getJsonGraph', 'saveJsonGraph']);
+    var studyService = jasmine.createSpyObj('StudyService', ['getJsonGraph', 'saveJsonGraph', 'getStudy', 'save']);
     var abstractGroupService;
-    var byGroupResults;
-    var resultsDefer, studyGetJsonGraphDefer;
+    var byGroupSourceResults;
+    var sourceResultsDefer, targetResultsDefer, studyGetJsonGraphDefer, studySaveJsonGraphDefer,
+      getStudyDefer, saveStudyDefer;
 
     beforeEach(function() {
       module('trialverse.util', function($provide) {
@@ -20,48 +21,103 @@ define(['angular', 'angular-mocks'], function() {
       q = $q;
       rootScope = $rootScope;
 
-      resultsDefer = $q.defer();
-      var resultsPromise = resultsDefer.promise;
-      resultsService.queryResultsByGroup.and.returnValue(resultsPromise);
+      sourceResultsDefer = $q.defer();
+      var sourceResultsPromise = sourceResultsDefer.promise;
+      targetResultsDefer = $q.defer();
+      var targetResultsPromise = targetResultsDefer.promise;
+      resultsService.queryResultsByGroup.and.returnValues(sourceResultsPromise, targetResultsPromise);
 
       studyGetJsonGraphDefer = $q.defer();
       var studyGetJsonGraphPromise = studyGetJsonGraphDefer.promise;
       studyService.getJsonGraph.and.returnValue(studyGetJsonGraphPromise);
 
-      // studyGetJsonGraphDefer = $q.defer();
-      // var studyGetJsonGraphPromise = studyGetJsonGraphDefer.promise;
-      // studyService.getJsonGraph.and.returnValue(studyGetJsonGraphPromise);
+      studySaveJsonGraphDefer = $q.defer();
+      var studySaveJsonGraphPromise = studySaveJsonGraphDefer.promise;
+      studyService.saveJsonGraph.and.returnValue(studySaveJsonGraphPromise);
+
+      getStudyDefer = $q.defer();
+      var getStudyPromise = getStudyDefer.promise;
+      studyService.getStudy.and.returnValue(getStudyPromise);
+
+      saveStudyDefer = $q.defer();
+      var saveStudyPromise = saveStudyDefer.promise;
+      studyService.save.and.returnValue(saveStudyPromise);
 
       abstractGroupService = AbstractGroupService;
     }));
 
 
     describe('merge', function() {
-      byGroupResults = [{
-        '@id': 'http://trials.drugis.org/instances/result2',
-        'standard_deviation': 2,
-        'mean': 5,
-        'of_group': 'http://trials.drugis.org/instances/arm2',
-        'of_moment': 'http://trials.drugis.org/instances/moment1',
-        'of_outcome': 'http://trials.drugis.org/instances/outcome1',
-        'sample_size': 33
+      byGroupSourceResults = [{
+        groupUri: 'groupUri1',
+        instance: 'resultInstance1',
+        momentUri: 'momentUri1',
+        outcomeUri: 'outcomeUri1',
+        result_property: 'sample_size',
+        value: 12
       }, {
-        '@id': 'http://trials.drugis.org/instances/result3',
-        'count': 3,
-        'of_group': 'http://trials.drugis.org/instances/arm2',
-        'of_moment': 'http://trials.drugis.org/instances/moment1',
-        'of_outcome': 'http://trials.drugis.org/instances/outcome2',
-        'sample_size': 33
+        groupUri: 'groupUri1',
+        instance: 'resultInstance2',
+        momentUri: 'momentUri1',
+        outcomeUri: 'outcomeUri1',
+        result_property: 'count',
+        value: 20
+      },{
+        groupUri: 'groupUri1',
+        instance: 'resultInstance3',
+        momentUri: 'momentUri2',
+        outcomeUri: 'outcomeUri1',
+        result_property: 'sample_size',
+        value: 12
+      }, {
+        groupUri: 'groupUri1',
+        instance: 'resultInstance4',
+        momentUri: 'momentUri2',
+        outcomeUri: 'outcomeUri1',
+        result_property: 'count',
+        value: 20
+      }
+    ];
+
+      var byGroupTargetResults = [{
+        groupUri: 'groupUri1',
+        instance: 'resultInstance1',
+        momentUri: 'momentUri1',
+        outcomeUri: 'outcomeUri1',
+        result_property: 'sample_size',
+        value: 12
+      }, {
+        groupUri: 'groupUri1',
+        instance: 'resultInstance2',
+        momentUri: 'momentUri1',
+        outcomeUri: 'outcomeUri1',
+        result_property: 'count',
+        value: 20
       }];
 
-      var studyJsonObject = {
-        has_group: [{
-          '@id': 'groupTargetUri',
-          '@type': 'ontology:Group',
-          'label': 'group label'
-        }],
-        has_arm: []
-      };
+      var studyJsonObject = [{
+        '@id': 'resultInstance1',
+        'of_group' : 'oldGroup'
+      }, {
+        '@id': 'resultInstance2',
+        'of_group' : 'oldGroup'
+      },{
+        '@id': 'resultInstance3',
+        'of_group' : 'oldGroup'
+      },{
+        '@id': 'resultInstance4',
+        'of_group' : 'oldGroup'
+      }];
+
+      var expectedStudyObjectAfterMerge = [
+        {
+          '@id': 'resultInstance3',
+          'of_group' : 'groupTargetUri'
+        },{
+          '@id': 'resultInstance4',
+          'of_group' : 'groupTargetUri'
+        }
+      ];
 
       var groupSource = {
         groupUri: 'groupSourceUri'
@@ -70,29 +126,114 @@ define(['angular', 'angular-mocks'], function() {
         groupUri: 'groupTargetUri'
       };
 
+      var getStudyResult = {
+        has_group: [{
+          '@id': 'groupSourceUri',
+          '@type': 'ontology:Group',
+          'label': 'group label'
+        }]
+      };
+
+      var expectedSaveAfterDelete = {
+        has_group: []
+      };
+
       beforeEach(function(done) {
-        resultsDefer.resolve(byGroupResults);
+        sourceResultsDefer.resolve(byGroupSourceResults);
+        targetResultsDefer.resolve(byGroupTargetResults);
         studyGetJsonGraphDefer.resolve(studyJsonObject);
+        studySaveJsonGraphDefer.resolve();
+        getStudyDefer.resolve(getStudyResult);
+        saveStudyDefer.resolve();
         abstractGroupService.merge(groupSource, groupTarget).then(done);
         rootScope.$digest();
       });
 
-      it('should have merged', function() {
-        expect(resultsService.queryResults).toHaveBeenCalledWith('groupSourceUri');
-        expect(resultsService.queryResults).toHaveBeenCalledWith('groupTargetUri');
+      it('should have remove the double results, move the non double resutls and delete the merge source', function() {
+        expect(resultsService.queryResultsByGroup).toHaveBeenCalledWith('groupSourceUri');
+        expect(resultsService.queryResultsByGroup).toHaveBeenCalledWith('groupTargetUri');
+        expect(studyService.getJsonGraph).toHaveBeenCalled();
+        expect(studyService.saveJsonGraph).toHaveBeenCalledWith(expectedStudyObjectAfterMerge);
+        expect(studyService.save).toHaveBeenCalledWith(expectedSaveAfterDelete);
       });
     });
 
-    // describe('delete group', function() {
-    //   beforeEach(function(done) {
-    //     groupService.deleteItem(result[1]).then(done);
-    //     rootScope.$digest();
-    //   });
-    //
-    //   it('should delete the group', function(done) {
-    //     done();
-    //   });
-    // });
+    describe('hasOverlap', function() {
+      byGroupSourceResults = [{
+        groupUri: 'groupUri1',
+        instance: 'resultInstance1',
+        momentUri: 'momentUri1',
+        outcomeUri: 'outcomeUri1',
+        result_property: 'sample_size',
+        value: 12
+      }, {
+        groupUri: 'groupUri1',
+        instance: 'resultInstance2',
+        momentUri: 'momentUri1',
+        outcomeUri: 'outcomeUri1',
+        result_property: 'count',
+        value: 20
+      },{
+        groupUri: 'groupUri1',
+        instance: 'resultInstance3',
+        momentUri: 'momentUri2',
+        outcomeUri: 'outcomeUri1',
+        result_property: 'sample_size',
+        value: 12
+      }, {
+        groupUri: 'groupUri1',
+        instance: 'resultInstance4',
+        momentUri: 'momentUri2',
+        outcomeUri: 'outcomeUri1',
+        result_property: 'count',
+        value: 20
+      }
+    ];
+
+      var byGroupTargetResults = [{
+        groupUri: 'groupUri1',
+        instance: 'resultInstance1',
+        momentUri: 'momentUri1',
+        outcomeUri: 'outcomeUri1',
+        result_property: 'sample_size',
+        value: 12
+      }, {
+        groupUri: 'groupUri1',
+        instance: 'resultInstance2',
+        momentUri: 'momentUri1',
+        outcomeUri: 'outcomeUri1',
+        result_property: 'count',
+        value: 20
+      }];
+
+      var groupSource = {
+        groupUri: 'groupSourceUri'
+      };
+      var groupTarget = {
+        groupUri: 'groupTargetUri'
+      };
+
+
+
+      var hasOverlap;
+
+      beforeEach(function(done) {
+        sourceResultsDefer.resolve(byGroupSourceResults);
+        targetResultsDefer.resolve(byGroupTargetResults);
+
+        abstractGroupService.hasOverlap(groupSource, groupTarget).then(function(res){
+          hasOverlap = res;
+          done();
+        });
+        rootScope.$digest();
+      });
+
+      it('should return true when when there is overlap', function() {
+        expect(resultsService.queryResultsByGroup).toHaveBeenCalledWith('groupSourceUri');
+        expect(resultsService.queryResultsByGroup).toHaveBeenCalledWith('groupTargetUri');
+        expect(hasOverlap).toBe(true);
+      });
+    });
 
   });
 });
