@@ -1,0 +1,35 @@
+<div ng-if="inputRows.length">
+  <h5>Non-conformant measurements for {{variable.label}}</h5>
+  <em class="warning">Warning, non-conformantmeasurements will not be used during analysis</em>
+  <table style="width: 100%;">
+    <tr>
+      <th>Label</th>
+      <th>Arm/Group</th>
+      <th ng-repeat="inputHeader in inputHeaders">{{inputHeader}}</th>
+    </tr>
+    <tr ng-repeat="inputRow in inputRows">
+      <td class="y-head" rowspan="{{inputRow.numberOfGroups}}" ng-if="$index % inputRow.numberOfGroups === 0"
+        style="text-align: left;">
+
+        <div class="large-12 columns">
+          <div>{{::inputRow.label}}</div>
+          <div class="row collapse">
+            <label>Select measurementMoment</label>
+            <div class="small-9 columns">
+              <select style="display: inline;" ng-options="moment.label for moment in variable.measuredAtMoments"
+                ng-model="selectedMoment" ng-change="updateIsExistingMeasurement(selectedMoment, inputRow.measurementInstanceList)"> </select>
+            </div>
+            <div class="small-3 columns">
+              <button class="postfix" type="button" ng-disabled="!selectedMoment || selectedMoment.isExistingMeasurement" ng-click="setToMoment(selectedMoment, inputRow.measurementInstanceList)">Confirm</button>
+            </div>
+          </div>
+          <em class="warning" ng-show="selectedMoment && selectedMoment.isExistingMeasurement">Measurement has already been set</em>
+        </div>
+      </td>
+      <td class="y-head">{{::inputRow.group.label}}</td>
+      <td class="input-cell" ng-repeat="inputColumn in inputRow.inputColumns">
+        <div style="text-align: center;">{{::inputColumn.value}}</div>
+      </td>
+    </tr>
+  </table>
+</div>

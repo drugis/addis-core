@@ -171,20 +171,36 @@ define(['angular', 'lodash'], function(angular, _) {
       });
     }
 
-    function setToMeasurement(measurementMomentUri, measurementInstanceUris) {
-      var unMoved = angular.copy(measurementInstanceUris);
+    function setToMeasurementMoment(measurementMomentUri, measurementInstanceList) {
       return StudyService.getJsonGraph().then(function(graph) {
 
-        _.find(graph, function(node) {
-          if (_.contains(unMoved, node['@id'])) {
+        _.each(graph, function(node) {
+          if (measurementInstanceList.indexOf(node['@id']) > -1) {
             node.of_moment = measurementMomentUri;
             delete node.comment;
-            _.remove(unMoved, node['@id']);
           }
-          return unMoved.length === 0;
         });
 
         return StudyService.saveJsonGraph(graph);
+      });
+    }
+
+    function isExistingMeasurement(measurementMomentUri, measurementInstanceList) {
+      var nonConformantMeasurementInstance = measurementInstanceList[0];
+      return StudyService.getJsonGraph().then(function(graph) {
+
+        var nonConformantMeasurement = _.find(graph, function(node) {
+          return node['@id'] === nonConformantMeasurementInstance;
+        });
+
+        return _.find(graph, function(node) {
+          return node.of_group &&
+            node.of_outcome &&
+            node.of_moment &&
+            nonConformantMeasurement.of_group === node.of_group &&
+            nonConformantMeasurement.of_outcome === node.of_outcome;
+
+        });
       });
     }
 
@@ -213,7 +229,8 @@ define(['angular', 'lodash'], function(angular, _) {
       queryResultsByGroup: queryResultsByGroup,
       queryNonConformantMeasurements: queryNonConformantMeasurements,
       cleanupMeasurements: cleanupMeasurements,
-      setToMeasurement: setToMeasurement
+      setToMeasurementMoment: setToMeasurementMoment,
+      isExistingMeasurement: isExistingMeasurement
     };
   };
   return dependencies.concat(ResultsService);
