@@ -472,7 +472,6 @@ define(['angular-mocks'], function(angularMocks) {
       var study = {
         '@id': 'http://trials.drugis.org/studies/s1',
         '@type': 'ontology:Study',
-        has_epochs: [],
         label: 'study 1',
         comment: 'my study',
         has_outcome: [outcome1, outcome2],

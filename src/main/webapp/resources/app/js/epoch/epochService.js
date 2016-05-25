@@ -57,6 +57,10 @@ define(['lodash'], function(_) {
           if (item.isPrimaryEpoch) {
             study.has_primary_epoch = newEpoch['@id'];
           }
+          
+          if(!study.has_epochs) {
+            study.has_epochs = [];
+          }
 
           study.has_epochs.push(newEpoch);
           return StudyService.save(study);
