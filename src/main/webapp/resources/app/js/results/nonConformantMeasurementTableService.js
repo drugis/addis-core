@@ -18,12 +18,10 @@ define(['lodash'], function(_) {
     }
 
     function createInputRows(variable, arms, groups, resultValuesObjects) {
-      var nonConformantLabelListObject = _.reduce(resultValuesObjects, function(accum, resultValueObject) {
+      var nonConformantLabelToMeasurementMap = _.reduce(resultValuesObjects, function(accum, resultValueObject) {
         accum[resultValueObject.comment] = {};
         return accum;
       }, {});
-
-      var labelList = Object.keys(nonConformantLabelListObject);
 
       var resultsByGroup = _.reduce(resultValuesObjects, function(accum, resVal) {
         var groupResult = accum[resVal.armUri] || [];
@@ -31,25 +29,25 @@ define(['lodash'], function(_) {
         return accum;
       }, {});
 
-      _.forEach(labelList, function(label) {
+      _.forEach(Object.keys(nonConformantLabelToMeasurementMap), function(label) {
         _.forEach(arms, function(arm) {
-          nonConformantLabelListObject[label][arm.armURI] = arm;
-          nonConformantLabelListObject[label][arm.armURI].results = _.filter(resultsByGroup[arm.armURI], function(resultValueObject) {
+          nonConformantLabelToMeasurementMap[label][arm.armURI] = arm;
+          nonConformantLabelToMeasurementMap[label][arm.armURI].results = _.filter(resultsByGroup[arm.armURI], function(resultValueObject) {
             return (resultValueObject.comment === label);
           });
 
         });
 
         _.forEach(groups, function(group) {
-          nonConformantLabelListObject[label][group.groupUri] = group;
-          nonConformantLabelListObject[label][group.groupUri].results = _.filter(resultsByGroup[group.groupUri], function(resultValueObject) {
+          nonConformantLabelToMeasurementMap[label][group.groupUri] = group;
+          nonConformantLabelToMeasurementMap[label][group.groupUri].results = _.filter(resultsByGroup[group.groupUri], function(resultValueObject) {
             return (resultValueObject.comment === label);
           });
 
         });
       });
 
-      return _.reduce(nonConformantLabelListObject, function(accum, item, label) {
+      return _.reduce(nonConformantLabelToMeasurementMap, function(accum, item, label) {
         var itemsWithResult = _.filter(item, function(groupEntry) {
           return groupEntry.results.length > 0;
         });
