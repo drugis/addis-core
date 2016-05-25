@@ -456,6 +456,14 @@ define(['angular-mocks'], function(angularMocks) {
         'count': 3
       };
 
+      var resultNonConformant = {
+        '@id': 'http://trials.drugis.org/instances/resultNonConformant',
+        'of_group': arm2['@id'],
+        'of_outcome': outcome2['@id'],
+        'count': 3,
+        'comment': 'comment'
+      };
+
       var result3 = {
         '@id': 'http://trials.drugis.org/instances/result1',
         'of_group': 'non existent arm id',
@@ -480,7 +488,7 @@ define(['angular-mocks'], function(angularMocks) {
         'count': 6
       };
 
-      var resultsToLeave = [result1, result2];
+      var resultsToLeave = [result1, result2, resultNonConformant];
       var resultsToBeCleaned = [result3, result4, result5];
 
 
