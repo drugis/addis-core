@@ -1,20 +1,47 @@
-<form novalidate ng-submit="repairItem()">
-  <div class="row">
-    <div class="large-9 columns">
-      <h3>Reclassify {{item.label}}</h3>
-    </div>
+<div class="row">
+  <div class="large-9 columns">
+    <h3>Repair {{item.label}}</h3>
   </div>
+</div>
+<form novalidate ng-submit="reclassifyAsGroup()">
   <div class="row">
     <div class="large-9 columns">
-      <p><h4>Reclassify this arm as a "group"</h4>
+      <hr>
+      <p>
+        <h4>Reclassify this arm as a "group"</h4>
         <em>All measurement data will be kept</em>
       </p>
+      <button class="button small" type="submit">Reclassify</button>
     </div>
   </div>
+</form>
+<form novalidate ng-submit="merge(mergeTarget)">
   <div class="row">
     <div class="large-9 columns">
-      <button class="success" type="submit">Reclassify</button>
+      <hr>
+      <p>
+        <h4>Merge this arm into other arm</h4>
+        <em>All measurements will be transferd to the target arm</em>
+      </p>
+      <div class="row">
+        <div class="large-6 columns">
+          <label>Target arm
+            <select ng-model="mergeTarget" ng-options="arm.label for arm in otherArms" ng-change="updateMergeWarning(mergeTarget)"></select>
+          </label>
+        </div>
+      </div>
+      <div class="row">
+        <div class="large-10 columns">
+          <div style="padding-bottom: 1rem;" class="warning" ng-show="showMergeWarning">Warning ! The selected target arm contains overlapping measurements, these
+            will take precedence over the source arm measurmements.</div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="large-6 columns">
+          <button class="button small" ng-disabled="!mergeTarget" type="submit">Merge</button>
+        </div>
+      </div>
     </div>
   </div>
-  <a class="close-reveal-modal" ng-click="cancel()">&#215;</a>
 </form>
+<a class="close-reveal-modal" ng-click="cancel()">&#215;</a>

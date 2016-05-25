@@ -85,6 +85,67 @@ define(['angular-mocks'], function(angularMocks) {
 
     });
 
+    describe('query results by group', function() {
+
+      var graphJsonObject = [{
+        '@id': 'http://trials.drugis.org/instances/result1',
+        'count': 24,
+        'of_group': 'http://trials.drugis.org/instances/arm1',
+        'of_moment': 'http://trials.drugis.org/instances/moment1',
+        'of_outcome': 'http://trials.drugis.org/instances/outcome1',
+        'sample_size': 70
+      }, {
+        '@id': 'http://trials.drugis.org/instances/result2',
+        'standard_deviation': 2,
+        'mean': 5,
+        'of_group': 'http://trials.drugis.org/instances/arm2',
+        'of_moment': 'http://trials.drugis.org/instances/moment1',
+        'of_outcome': 'http://trials.drugis.org/instances/outcome1',
+        'sample_size': 33
+      }, {
+        '@id': 'http://trials.drugis.org/instances/result3',
+        'count': 3,
+        'of_group': 'http://trials.drugis.org/instances/arm2',
+        'of_moment': 'http://trials.drugis.org/instances/moment1',
+        'of_outcome': 'http://trials.drugis.org/instances/outcome2',
+        'sample_size': 33
+      }];
+
+      var groupUri = 'http://trials.drugis.org/instances/arm2';
+
+      beforeEach(function() {
+        var graphDefer = q.defer();
+        var getGraphPromise = graphDefer.promise;
+        graphDefer.resolve(graphJsonObject);
+        studyService.getJsonGraph.and.returnValue(getGraphPromise);
+      });
+
+      it('should return the results for a given group', function(done) {
+        resultsService.queryResultsByGroup(groupUri).then(function(actualResults) {
+          expect(actualResults.length).toEqual(5);
+          expect(actualResults[0].instance).toEqual('http://trials.drugis.org/instances/result2');
+          expect(actualResults[0].armUri).toEqual('http://trials.drugis.org/instances/arm2');
+          expect(actualResults[0].momentUri).toEqual('http://trials.drugis.org/instances/moment1');
+          expect(actualResults[0].outcomeUri).toEqual('http://trials.drugis.org/instances/outcome1');
+          expect(actualResults[0].result_property).toEqual('sample_size');
+          expect(actualResults[0].value).toEqual(33);
+
+          expect(actualResults[1].instance).toEqual('http://trials.drugis.org/instances/result2');
+          expect(actualResults[1].armUri).toEqual('http://trials.drugis.org/instances/arm2');
+          expect(actualResults[1].momentUri).toEqual('http://trials.drugis.org/instances/moment1');
+          expect(actualResults[1].outcomeUri).toEqual('http://trials.drugis.org/instances/outcome1');
+          expect(actualResults[1].result_property).toEqual('standard_deviation');
+          expect(actualResults[1].value).toEqual(2);
+
+          expect(actualResults[4].value).toEqual(3);
+          done();
+        });
+        // fire in the hole !
+        rootScope.$digest();
+      });
+
+    });
+
 
     describe('updateResultValue', function() {
       describe('when there is not yet data in the graph', function() {
