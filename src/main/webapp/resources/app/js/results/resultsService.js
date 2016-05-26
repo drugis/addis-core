@@ -162,8 +162,6 @@ define(['angular', 'lodash'], function(angular, _) {
         var filteredGraph = _.filter(graph, function(node) {
           if (isResult(node)) {
             return (hasArmMap[node.of_group] || hasGroupMap[node.of_group]) && momentMap[node.of_moment] && hasOutcomeMap[node.of_outcome];
-          } else if(isNonConformantMeansurement(node)){
-            return true;
           } else {
             return true;
           }

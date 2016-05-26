@@ -1,5 +1,5 @@
 'use strict';
-define(['angular', 'angular-mocks'], function(angular, angularMocks) {
+define(['angular-mocks'], function(angularMocks) {
   describe('the outcome service', function() {
 
     var rootScope, q,
@@ -21,7 +21,7 @@ define(['angular', 'angular-mocks'], function(angular, angularMocks) {
     });
     beforeEach(module('trialverse.outcome'));
 
-    beforeEach(inject(function($q, $rootScope, OutcomeService) {
+    beforeEach(angularMocks.inject(function($q, $rootScope, OutcomeService) {
       q = $q;
       rootScope = $rootScope;
       outcomeService = OutcomeService;
@@ -112,7 +112,7 @@ describe('query outcomes that a not measured', function() {
             'ontology:mean',
             'ontology:sample_size'
           ],
-          
+
           'of_variable': [{
             '@id': 'http://fuseki-test.drugis.org:3030/.well-known/genid/0000014fdfac194dac11005900000003',
             '@type': 'ontology:Variable',
@@ -147,7 +147,6 @@ describe('query outcomes that a not measured', function() {
     });
 
     describe('add outcome of type', function() {
-      var queryPromise;
       var outcomeUri = 'http://trials.drugis.org/instances/newUuid';
       var moment = 'http://mm/uri';
 
@@ -238,7 +237,6 @@ describe('query outcomes that a not measured', function() {
 
       var moment1 = 'http://instance/moment1';
       var moment2 = 'http://instance/moment2';
-      var outcomeUri = 'http://trials.drugis.org/instances/popchar1';
       var measuredAtMoment1 = {
         uri: moment1
       };
@@ -263,6 +261,7 @@ describe('query outcomes that a not measured', function() {
       it('should have changed the outcomes', function(done) {
         outcomeService.queryItems().then(function(queryResult) {
           expect(queryResult.length).toEqual(2);
+          expect(queryResult[0].uri).toEqual(newPopulationChar.uri);
           expect(queryResult[0].label).toEqual(newPopulationChar.label);
           expect(queryResult[0].measurementType).toEqual('ontology:dichotomous');
           expect(queryResult[0].measuredAtMoments.length).toBe(2);
