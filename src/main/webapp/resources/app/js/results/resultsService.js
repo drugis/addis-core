@@ -194,9 +194,8 @@ define(['angular', 'lodash'], function(angular, _) {
         });
 
         return !!_.find(graph, function(node) {
-          return node.of_group &&
-            node.of_outcome &&
-            node.of_moment &&
+          return isResult(node) &&
+            node.of_moment === measurementMomentUri &&
             nonConformantMeasurement.of_group === node.of_group &&
             nonConformantMeasurement.of_outcome === node.of_outcome;
         });

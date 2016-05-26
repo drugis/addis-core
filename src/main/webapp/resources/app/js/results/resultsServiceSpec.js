@@ -540,7 +540,7 @@ define(['angular-mocks'], function(angularMocks) {
       }, {
         '@id': 'http://trials.drugis.org/instances/result1',
         'of_group': 'http://trials.drugis.org/instances/arm1',
-        'of_moment': 'http://trials.drugis.org/instances/moment1',
+        'of_moment': 'mommentInstanceUri',
         'of_outcome': 'http://trials.drugis.org/instances/outcome1',
       }];
 
@@ -579,6 +579,11 @@ define(['angular-mocks'], function(angularMocks) {
         'of_group': 'http://trials.drugis.org/instances/arm2',
         'of_moment': 'http://trials.drugis.org/instances/moment1',
         'of_outcome': 'http://trials.drugis.org/instances/outcome2',
+      },{
+        '@id': 'http://trials.drugis.org/instances/result1',
+        'of_group': 'http://trials.drugis.org/instances/arm1',
+        'of_moment': 'otherMoment',
+        'of_outcome': 'http://trials.drugis.org/instances/outcome1',
       }];
 
       var measurementMomentUri = 'mommentInstanceUri';
