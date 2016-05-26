@@ -58,13 +58,7 @@ define(['angular', 'angular-mocks'], function() {
           },
           group: {
             'label': 'arm 1',
-            'armURI': 'http://arms/arm1',
-            results: [{
-              'comment': 'comment3',
-              'uri': 'uri 3',
-              'armUri': 'http://arms/arm1',
-              'instance': 'instance1'
-            }]
+            'armURI': 'http://arms/arm1'
           },
           label: 'comment1',
           numberOfGroups: 1,

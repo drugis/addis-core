@@ -3,14 +3,14 @@ define(['lodash'], function(_) {
   var dependencies = ['ResultsTableService'];
   var NonConformantMeasurementTableService = function(ResultsTableService) {
 
-    function createRow(variable, group, numberOfGroups, label, rowValueObjects, measurementInstanceList) {
+    function createRow(variable, groupAndResults, numberOfGroups, label, measurementInstanceList) {
 
       var row = {
         variable: variable,
-        group: group,
+        group: groupAndResults.group,
         label: label,
         numberOfGroups: numberOfGroups,
-        inputColumns: ResultsTableService.createInputColumns(variable, rowValueObjects),
+        inputColumns: ResultsTableService.createInputColumns(variable, groupAndResults.results),
         measurementInstanceList: measurementInstanceList
       };
 
@@ -31,34 +31,41 @@ define(['lodash'], function(_) {
 
       _.forEach(Object.keys(nonConformantLabelToMeasurementMap), function(label) {
         _.forEach(arms, function(arm) {
-          nonConformantLabelToMeasurementMap[label][arm.armURI] = arm;
-          nonConformantLabelToMeasurementMap[label][arm.armURI].results = _.filter(resultsByGroup[arm.armURI], function(resultValueObject) {
-            return (resultValueObject.comment === label);
+          var results = _.filter(resultsByGroup[arm.armURI], function(resultValueObject) {
+            return resultValueObject.comment === label;
           });
+          nonConformantLabelToMeasurementMap[label][arm.armURI] = {
+            group: arm,
+            results: results
+          };
 
         });
 
         _.forEach(groups, function(group) {
-          nonConformantLabelToMeasurementMap[label][group.groupUri] = group;
-          nonConformantLabelToMeasurementMap[label][group.groupUri].results = _.filter(resultsByGroup[group.groupUri], function(resultValueObject) {
-            return (resultValueObject.comment === label);
+
+          var results = _.filter(resultsByGroup[group.groupUri], function(resultValueObject) {
+            return resultValueObject.comment === label;
           });
+          nonConformantLabelToMeasurementMap[label][group.groupUri] = {
+            group: group,
+            results: results
+          };
 
         });
       });
 
       return _.reduce(nonConformantLabelToMeasurementMap, function(accum, item, label) {
-        var itemsWithResult = _.filter(item, function(groupEntry) {
+        var groupAndNonEmptyResults = _.filter(item, function(groupEntry) {
           return groupEntry.results.length > 0;
         });
-        var spanCount = itemsWithResult.length;
-        var measurementInstanceList = _.reduce(itemsWithResult, function(accum, groupEntry) {
+        var spanCount = groupAndNonEmptyResults.length;
+        var measurementInstanceList = _.reduce(groupAndNonEmptyResults, function(accum, groupEntry) {
           accum.push(groupEntry.results[0].instance);
           return accum;
         }, []);
 
-        _.forEach(itemsWithResult, function(itemGroup) {
-          accum = accum.concat(createRow(variable, itemGroup, spanCount, label, itemGroup.results, measurementInstanceList));
+        _.forEach(groupAndNonEmptyResults, function(groupAndResults) {
+          accum = accum.concat(createRow(variable, groupAndResults, spanCount, label, measurementInstanceList));
         });
 
         return accum;
