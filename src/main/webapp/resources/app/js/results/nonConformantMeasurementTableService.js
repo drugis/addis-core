@@ -17,7 +17,7 @@ define(['lodash'], function(_) {
       return row;
     }
 
-    function createInputRows(variable, arms, groups, resultValuesObjects) {
+    function mapResultsByLabelAndGroup(arms, groups, resultValuesObjects) {
       var nonConformantLabelToMeasurementMap = _.reduce(resultValuesObjects, function(accum, resultValueObject) {
         accum[resultValueObject.comment] = {};
         return accum;
@@ -53,7 +53,10 @@ define(['lodash'], function(_) {
 
         });
       });
+      return nonConformantLabelToMeasurementMap;
+    }
 
+    function createInputRows(variable, nonConformantLabelToMeasurementMap) {
       return _.reduce(nonConformantLabelToMeasurementMap, function(accum, item, label) {
         var groupAndNonEmptyResults = _.filter(item, function(groupEntry) {
           return groupEntry.results.length > 0;
@@ -74,6 +77,7 @@ define(['lodash'], function(_) {
     }
 
     return {
+      mapResultsByLabelAndGroup: mapResultsByLabelAndGroup,
       createInputRows: createInputRows,
     };
   };

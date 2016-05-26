@@ -1,7 +1,7 @@
 'use strict';
 define(['angular', 'lodash'], function(angular, _) {
-  var dependencies = ['StudyService', 'UUIDService'];
-  var ResultsService = function(StudyService, UUIDService) {
+  var dependencies = ['StudyService', 'UUIDService', 'OutcomeService'];
+  var ResultsService = function(StudyService, UUIDService, OutcomeService) {
 
     function updateResultValue(row, inputColumn) {
       return StudyService.getJsonGraph().then(function(graph) {
@@ -202,6 +202,31 @@ define(['angular', 'lodash'], function(angular, _) {
       });
     }
 
+    function moveToNewOutcome(variableType, newOutcomeName, baseOutcome, nonConformantMeasurementUrisToMove) {
+
+      var newUri = 'http://trials.drugis.org/instances/' + UUIDService.generate();
+      var newOutcome = angular.copy(baseOutcome);
+      newOutcome.uri = newUri;
+      newOutcome.label = newOutcomeName;
+      newOutcome.measuredAtMoments = [];
+      var backEndOutcome = OutcomeService.toBackEnd(newOutcome, 'ontology:' + variableType);
+      var measurementsById = _.keyBy(nonConformantMeasurementUrisToMove, _.identity);
+
+      return StudyService.getJsonGraph().then(function(graph) {
+        var study = _.find(graph, isStudyNode);
+        study.has_outcome.push(backEndOutcome);
+
+        graph = _.map(graph, function(node) {
+          var nodeId = node['@id'];
+          if (measurementsById[nodeId]) {
+            node.of_outcome = newUri;
+          }
+          return node;
+        });
+        return StudyService.saveJsonGraph(graph);
+      });
+    }
+
     function _queryResults(uri, typeFunction) {
       return StudyService.getJsonGraph().then(function(graph) {
         var resultJsonItems = graph.filter(typeFunction.bind(this, uri));
@@ -228,7 +253,8 @@ define(['angular', 'lodash'], function(angular, _) {
       queryNonConformantMeasurements: queryNonConformantMeasurements,
       cleanupMeasurements: cleanupMeasurements,
       setToMeasurementMoment: setToMeasurementMoment,
-      isExistingMeasurement: isExistingMeasurement
+      isExistingMeasurement: isExistingMeasurement,
+      moveToNewOutcome: moveToNewOutcome
     };
   };
   return dependencies.concat(ResultsService);

@@ -45,8 +45,6 @@ define(['lodash'],
         };
       }
 
-
-
       function measurementTypeToBackEnd(measurementType) {
         if (measurementType === 'ontology:continuous') {
           return [
@@ -109,7 +107,8 @@ define(['lodash'],
         queryItems: queryItems,
         addItem: addItem,
         deleteItem: deleteItem,
-        editItem: editItem
+        editItem: editItem,
+        toBackEnd: toBackEnd
       };
     };
     return dependencies.concat(OutcomeServiceService);

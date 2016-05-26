@@ -24,7 +24,7 @@ define([], function() {
             refreshStudyDesignLister();
           }
 
-          service.queryItems($stateParams.studyUUID).then(function(queryResult) {
+          service.queryItems().then(function(queryResult) {
             scope.items = queryResult;
 
             refreshStudyDesignLister = scope.$on('refreshStudyDesign', function() {

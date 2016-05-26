@@ -9,6 +9,9 @@ define(function (require) {
     .factory('ResultsService', require('results/resultsService'))
     .factory('NonConformantMeasurementTableService', require('results/nonConformantMeasurementTableService'))
 
+    // controllers
+    .controller('SplitOutcomeController', require('results/splitOutcomeController'))
+
     //directives
     .directive('resultsTable', require('results/resultsTableDirective'))
     .directive('resultsTableList', require('results/resultsTableListDirective'))
