@@ -1,7 +1,7 @@
 #!/bin/bash
 
-NEWPREFIX=$1
-OLDPREFIX=$2
+OLDPREFIX=$1
+NEWPREFIX=$2
 
 if [[ -z "$OLDPREFIX" || -z "$NEWPREFIX" ]]; then
 	echo "Usage: ./changePrefix.sh <old-prefix> <new-prefix>"
