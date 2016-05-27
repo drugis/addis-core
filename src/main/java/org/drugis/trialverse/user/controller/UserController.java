@@ -1,9 +1,9 @@
 package org.drugis.trialverse.user.controller;
 
 import org.apache.http.client.HttpClient;
+import org.drugis.addis.base.AbstractAddisCoreController;
 import org.drugis.addis.security.Account;
 import org.drugis.addis.security.repository.AccountRepository;
-import org.drugis.trialverse.util.controller.AbstractTrialverseController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -20,7 +20,7 @@ import java.util.List;
  */
 @Controller
 @RequestMapping(value = "/users")
-public class UserController extends AbstractTrialverseController {
+public class UserController extends AbstractAddisCoreController {
 
   @Inject
   private AccountRepository accountRepository;

@@ -9,14 +9,20 @@ import org.drugis.addis.models.controller.command.*;
 import org.drugis.addis.models.exceptions.InvalidModelException;
 import org.drugis.addis.models.repository.ModelRepository;
 import org.drugis.addis.models.service.ModelService;
+import org.drugis.addis.patavitask.PataviTask;
 import org.drugis.addis.patavitask.repository.PataviTaskRepository;
 import org.drugis.addis.projects.service.ProjectService;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
+import java.io.IOException;
+import java.net.URI;
 import java.security.Principal;
 import java.sql.SQLException;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -96,27 +102,27 @@ public class ModelServiceImpl implements ModelService {
   }
 
   @Override
-  public List<Model> query(Integer analysisId) throws SQLException {
-    return modelRepository.findByAnalysis(analysisId);
+  public List<Model> query(Integer analysisId) throws SQLException, IOException {
+    return addRunStatusToModels(modelRepository.findByAnalysis(analysisId));
   }
 
   @Override
-  public void checkOwnership(Integer modelId, Principal principal) throws ResourceDoesNotExistException, MethodNotAllowedException {
+  public void checkOwnership(Integer modelId, Principal principal) throws ResourceDoesNotExistException, MethodNotAllowedException, IOException {
     Model model = modelRepository.get(modelId);
     AbstractAnalysis analysis = analysisRepository.get(model.getAnalysisId());
 
     projectService.checkOwnership(analysis.getProjectId(), principal);
   }
 
-  private void checkIncrease(Model persistendModel, UpdateModelCommand updateModelCommand) throws MethodNotAllowedException {
-    if(persistendModel.getBurnInIterations() > updateModelCommand.getBurnInIterations() ||
-            persistendModel.getInferenceIterations() > updateModelCommand.getInferenceIterations()) {
+  private void checkIncrease(Model persistentModel, UpdateModelCommand updateModelCommand) throws MethodNotAllowedException {
+    if (persistentModel.getBurnInIterations() > updateModelCommand.getBurnInIterations() ||
+            persistentModel.getInferenceIterations() > updateModelCommand.getInferenceIterations()) {
       throw new MethodNotAllowedException();
     }
   }
 
   @Override
-  public void increaseRunLength(UpdateModelCommand updateModelCommand) throws MethodNotAllowedException, InvalidModelException {
+  public void increaseRunLength(UpdateModelCommand updateModelCommand) throws MethodNotAllowedException, InvalidModelException, IOException {
     Model oldModel = modelRepository.get(updateModelCommand.getId());
 
     // check that increase is not a decrease
@@ -125,19 +131,75 @@ public class ModelServiceImpl implements ModelService {
     oldModel.setBurnInIterations(updateModelCommand.getBurnInIterations());
     oldModel.setInferenceIterations(updateModelCommand.getInferenceIterations());
     oldModel.setThinningFactor(updateModelCommand.getThinningFactor());
-    pataviTaskRepository.delete(oldModel.getTaskId());
-    oldModel.setTaskId(null);
+    pataviTaskRepository.delete(oldModel.getTaskUrl());
+    oldModel.setTaskUrl(null);
 
     modelRepository.persist(oldModel);
   }
 
   @Override
-  public List<Model> queryConsistencyModels(Integer projectId) throws SQLException {
-    return modelRepository
+  public List<Model> queryConsistencyModels(Integer projectId) throws SQLException, IOException {
+    List<Model> consistencyModels = modelRepository
             .findNetworkModelsByProject(projectId)
             .stream()
-              .filter(m -> m.getModelType().getType().equals(Model.NETWORK_MODEL_TYPE) ||
-                        m.getModelType().getType().equals(Model.PAIRWISE_MODEL_TYPE))
-              .collect(Collectors.toList());
+            .filter(m -> m.getModelType().getType().equals(Model.NETWORK_MODEL_TYPE) ||
+                    m.getModelType().getType().equals(Model.PAIRWISE_MODEL_TYPE))
+            .collect(Collectors.toList());
+    return addRunStatusToModels(consistencyModels);
+  }
+
+  @Override
+  public List<Model> findByAnalysis(Integer analysisId) throws SQLException, IOException {
+    return addRunStatusToModels(modelRepository.findByAnalysis(analysisId));
+  }
+
+  @Override
+  public List<Model> findNetworkModelsByProject(Integer projectId) throws SQLException, IOException {
+    return addRunStatusToModels(modelRepository.findNetworkModelsByProject(projectId));
+  }
+
+  @Override
+  public List<Model> get(List<Integer> modelIds) throws SQLException, IOException {
+    return addRunStatusToModels(modelRepository.get(modelIds));
+  }
+
+  @Override
+  public Model find(Integer modelId) throws IOException, SQLException {
+    return addRunStatusToModels(Collections.singletonList(modelRepository.find(modelId))).get(0);
+  }
+
+  @Override
+  public Model get(Integer modelId) throws IOException, SQLException {
+    return addRunStatusToModels(Collections.singletonList(modelRepository.get(modelId))).get(0);
+  }
+
+  private List<Model> addRunStatusToModels(List<Model> models) throws SQLException, IOException {
+    List<URI> taskUrls = models.stream()
+            .filter(model -> model.getTaskUrl() != null)
+            .map(Model::getTaskUrl).collect(Collectors.toList());
+    Map<URI, PataviTask> tasksByUri = pataviTaskRepository.findByUrls(taskUrls)
+            .stream()
+            .collect(Collectors.toMap(PataviTask::getSelf, Function.identity()));
+
+    return models.stream()
+            .map(model -> {
+              URI taskUrl = model.getTaskUrl();
+              if (taskUrl != null) {
+                PataviTask pataviTask = tasksByUri.get(taskUrl);
+                boolean isTaskRun = pataviTask.getResults() != null;
+                return setHasRunStatus(model, isTaskRun);
+              }
+              return model;
+            })
+            .collect(Collectors.toList());
+  }
+
+  private Model setHasRunStatus(Model model, Boolean isTaskRun) {
+    if (model.getTaskUrl() != null) {
+      if (isTaskRun) {
+        model.setHasResult();
+      }
+    }
+    return model;
   }
 }

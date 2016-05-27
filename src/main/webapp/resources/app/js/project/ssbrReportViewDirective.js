@@ -22,16 +22,13 @@ define(['lodash'], function(_) {
           });
         }
 
-        scope.problem = ProblemResource.get({
-          analysisId: scope.analysis.id,
-          projectId: scope.project.id
-        }, function(problem) {
-          problem.valueTree = WorkspaceService.buildValueTree(scope.problem);
-          WorkspaceService.getObservedScales(scope.problem).then(function(scales) {
+        if(scope.analysis.problem) {
+          scope.problem = scope.analysis.problem;
+          scope.problem.valueTree = WorkspaceService.buildValueTree(scope.analysis.problem);
+          WorkspaceService.getObservedScales(scope, scope.problem).then(function(scales) {
             scope.scales = scales;
           });
-          return problem;
-        });
+        }
 
         OutcomeResource.query({
           projectId: scope.project.id
@@ -55,7 +52,7 @@ define(['lodash'], function(_) {
         });
 
 
-        if (scope.analysis.analysisType === 'Single-study Benefit-Risk') {
+        if (scope.analysis.analysisType === 'Single-study Benefit-Risk' && scope.analysis.studyGraphUri) {
           ProjectStudiesResource.query({
             projectId: scope.project.id
           }).$promise.then(function(studies) {

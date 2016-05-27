@@ -1,6 +1,7 @@
 package org.drugis.addis.models.service;
 
 import net.minidev.json.JSONObject;
+import org.drugis.addis.TestUtils;
 import org.drugis.addis.analyses.AbstractAnalysis;
 import org.drugis.addis.analyses.repository.AnalysisRepository;
 import org.drugis.addis.exception.MethodNotAllowedException;
@@ -10,6 +11,7 @@ import org.drugis.addis.models.controller.command.*;
 import org.drugis.addis.models.exceptions.InvalidModelException;
 import org.drugis.addis.models.repository.ModelRepository;
 import org.drugis.addis.models.service.impl.ModelServiceImpl;
+import org.drugis.addis.patavitask.PataviTask;
 import org.drugis.addis.patavitask.repository.PataviTaskRepository;
 import org.drugis.addis.projects.service.ProjectService;
 import org.junit.Before;
@@ -19,6 +21,8 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
+import java.io.IOException;
+import java.net.URI;
 import java.security.Principal;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -294,11 +298,18 @@ public class ModelServiceTest {
   @Test
   public void testQueryModelIsPresent() throws Exception {
     Integer analysisId = -1;
-    Model model = modelBuilder.build();
+    Model model = modelBuilder
+            .taskUri(URI.create("https://patavi.drugis.org/task/id1"))
+            .build();
 
     List<Model> models = Collections.singletonList(model);
+    PataviTask pataviTask = new PataviTask(TestUtils.buildPataviTaskJson("id1"));
+    List<PataviTask> tasksByUri = Collections.singletonList(pataviTask);
     when(modelRepository.findByAnalysis(analysisId)).thenReturn(models);
+    when(pataviTaskRepository.findByUrls(Collections.singletonList(model.getTaskUrl()))).thenReturn(tasksByUri);
+
     List<Model> resultList = modelService.query(analysisId);
+
     assertEquals(1, resultList.size());
     assertEquals(models.get(0), resultList.get(0));
   }
@@ -313,7 +324,7 @@ public class ModelServiceTest {
   }
 
   @Test
-  public void testCheckOwnership() throws ResourceDoesNotExistException, MethodNotAllowedException, InvalidModelException {
+  public void testCheckOwnership() throws ResourceDoesNotExistException, MethodNotAllowedException, InvalidModelException, IOException {
     Integer modelId = 1;
     Integer analysisId = 2;
     Integer projectId = 3;
@@ -334,7 +345,7 @@ public class ModelServiceTest {
   }
 
   @Test(expected = MethodNotAllowedException.class)
-  public void testCheckOwnershipOnNonOwnedModel() throws ResourceDoesNotExistException, MethodNotAllowedException, InvalidModelException {
+  public void testCheckOwnershipOnNonOwnedModel() throws ResourceDoesNotExistException, MethodNotAllowedException, InvalidModelException, IOException {
     Integer modelId = 1;
     Integer analysisId = 2;
     Integer projectId = 3;
@@ -356,7 +367,7 @@ public class ModelServiceTest {
   }
 
   @Test
-  public void testyIncreaseRunLength() throws InvalidModelException, MethodNotAllowedException  {
+  public void testyIncreaseRunLength() throws InvalidModelException, MethodNotAllowedException, IOException {
     Integer modelId = 1;
     String modelTitle = "new title";
     ModelTypeCommand modelTypeCommand = new ModelTypeCommand("network", null);
@@ -389,11 +400,11 @@ public class ModelServiceTest {
     oldModel.setInferenceIterations(updateModelCommand.getInferenceIterations());
     oldModel.setThinningFactor(updateModelCommand.getThinningFactor());
     verify(modelRepository).persist(oldModel);
-    verify(pataviTaskRepository).delete(oldModel.getTaskId());
+    verify(pataviTaskRepository).delete(oldModel.getTaskUrl());
   }
 
   @Test(expected = MethodNotAllowedException.class)
-  public void testyIncreaseRunLengthWithInvalidSettings() throws InvalidModelException, MethodNotAllowedException  {
+  public void testyIncreaseRunLengthWithInvalidSettings() throws InvalidModelException, MethodNotAllowedException, IOException {
     Integer modelId = 1;
     String modelTitle = "new title";
     ModelTypeCommand modelTypeCommand = new ModelTypeCommand("network", null);
@@ -437,14 +448,22 @@ public class ModelServiceTest {
   }
 
   @Test
-  public void testQueryConsistencyModels() throws InvalidModelException , SQLException {
+  public void testQueryConsistencyModels() throws InvalidModelException, SQLException, IOException {
     Integer projectId = 1;
     Integer analysisId = 3;
     String modelTitle = "title";
     Model networkTypeModel = new Model.ModelBuilder(analysisId, modelTitle).link(Model.LINK_IDENTITY).modelType(Model.NETWORK_MODEL_TYPE).build();
-    Model pairwiseTypeModel = new Model.ModelBuilder(analysisId, modelTitle).link(Model.LINK_IDENTITY).modelType(Model.PAIRWISE_MODEL_TYPE).from(new Model.DetailNode(1, "from")).to(new Model.DetailNode(2, "to")).build();
-    Model otherTypeModel = new Model.ModelBuilder(analysisId, modelTitle).link(Model.LINK_IDENTITY).modelType(Model.NODE_SPLITTING_MODEL_TYPE).from(new Model.DetailNode(1, "from")).to(new Model.DetailNode(2, "to")).build();
+    URI taskUri = URI.create("https://patavi.drugis.org/task/taskId1");
+    Model pairwiseTypeModel = new Model.ModelBuilder(analysisId, modelTitle).link(Model.LINK_IDENTITY)
+            .modelType(Model.PAIRWISE_MODEL_TYPE).from(new Model.DetailNode(1, "from")).to(new Model.DetailNode(2, "to"))
+            .taskUri(taskUri)
+            .build();
+    Model otherTypeModel = new Model.ModelBuilder(analysisId, modelTitle).link(Model.LINK_IDENTITY).modelType(Model.NODE_SPLITTING_MODEL_TYPE)
+            .from(new Model.DetailNode(1, "from")).to(new Model.DetailNode(2, "to"))
+            .build();
     List<Model> projectModels = Arrays.asList(networkTypeModel, pairwiseTypeModel, otherTypeModel);
+    List<PataviTask> pataviTask = Collections.singletonList(new PataviTask(TestUtils.buildPataviTaskJson("taskId1")));
+    when(pataviTaskRepository.findByUrls(Collections.singletonList(taskUri))).thenReturn(pataviTask);
     when(modelRepository.findNetworkModelsByProject(projectId)).thenReturn(projectModels);
 
     List<Model> result = modelService.queryConsistencyModels(projectId);
@@ -452,6 +471,30 @@ public class ModelServiceTest {
     assertTrue(result.contains(pairwiseTypeModel));
     assertTrue(result.contains(networkTypeModel));
     assertFalse(result.contains(otherTypeModel));
+  }
+
+  @Test
+  public void testGetModels() throws IOException, SQLException, InvalidModelException {
+    Integer modelId1 = -1;
+    Integer modelId2 = -2;
+    List<Integer> modelIds = Arrays.asList(modelId1, modelId2);
+    Integer analysisId1 = -10;
+    URI taskUri = URI.create("https://patavi.drugis.org/task/taskId1");
+    Model modelWithTask = new Model.ModelBuilder(analysisId1, "model 1")
+            .link(Model.LINK_IDENTITY)
+            .modelType(Model.NETWORK_MODEL_TYPE)
+            .taskUri(taskUri)
+            .build();
+    Model modelWithoutTask = new Model.ModelBuilder(analysisId1, "model 2").link(Model.LINK_IDENTITY).modelType(Model.NETWORK_MODEL_TYPE).build();
+    List<Model> models = Arrays.asList(modelWithTask, modelWithoutTask);
+    when(modelRepository.get(modelIds)).thenReturn(models);
+    List<PataviTask> pataviTask = Collections.singletonList(new PataviTask(TestUtils.buildPataviTaskJson("taskId1")));
+    when(pataviTaskRepository.findByUrls(Collections.singletonList(taskUri))).thenReturn(pataviTask);
+
+    List<Model> resultModels = modelService.get(modelIds);
+    assertEquals(2, resultModels.size());
+    assertTrue(resultModels.get(0).isHasResult());
+    assertFalse(resultModels.get(1).isHasResult());
   }
 
 }

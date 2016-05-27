@@ -2,7 +2,10 @@ package org.drugis.trialverse.graph.controller;
 
 import org.apache.http.Header;
 import org.apache.jena.riot.RDFLanguages;
+import org.drugis.addis.base.AbstractAddisCoreController;
 import org.drugis.addis.security.repository.AccountRepository;
+import org.drugis.addis.trialverse.service.ClinicalTrialsImportService;
+import org.drugis.addis.trialverse.service.impl.ClinicalTrialsImportError;
 import org.drugis.addis.util.WebConstants;
 import org.drugis.trialverse.dataset.exception.RevisionNotFoundException;
 import org.drugis.trialverse.dataset.model.VersionMapping;
@@ -15,7 +18,6 @@ import org.drugis.trialverse.graph.repository.GraphReadRepository;
 import org.drugis.trialverse.graph.repository.GraphWriteRepository;
 import org.drugis.trialverse.graph.service.GraphService;
 import org.drugis.trialverse.util.Namespaces;
-import org.drugis.trialverse.util.controller.AbstractTrialverseController;
 import org.drugis.trialverse.util.service.TrialverseIOUtilsService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,6 +30,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.security.Principal;
@@ -37,7 +40,7 @@ import java.security.Principal;
  */
 @Controller
 @RequestMapping(value = "/users/{userUid}/datasets/{datasetUuid}")
-public class GraphController extends AbstractTrialverseController {
+public class GraphController extends AbstractAddisCoreController {
 
   @Inject
   private GraphService graphService;
@@ -59,6 +62,9 @@ public class GraphController extends AbstractTrialverseController {
 
   @Inject
   private VersionMappingRepository versionMappingRepository;
+
+  @Inject
+  private ClinicalTrialsImportService clinicalTrialsImportService;
 
 
 
@@ -112,6 +118,26 @@ public class GraphController extends AbstractTrialverseController {
     if (datasetReadRepository.isOwner(trialverseDatasetUri, currentUser)) {
       InputStream turtleStream = graphService.jsonGraphInputStreamToTurtleInputStream(request.getInputStream());
       createGraph(trialverseResponse, commitTitle, commitDescription, datasetUuid, graphUuid, turtleStream);
+    } else {
+      throw new MethodNotAllowedException();
+    }
+  }
+
+  @RequestMapping(value = "/graphs/{graphUuid}/import/{importStudyRef}",
+          method = RequestMethod.POST)
+  public void importStudy(HttpServletResponse trialverseResponse, Principal currentUser,
+                           @PathVariable String datasetUuid,
+                           @PathVariable String graphUuid,
+                           @PathVariable String importStudyRef,
+                           @RequestParam(WebConstants.COMMIT_TITLE_PARAM) String commitTitle,
+                           @RequestParam(value = WebConstants.COMMIT_DESCRIPTION_PARAM, required = false) String commitDescription)
+          throws MethodNotAllowedException, ClinicalTrialsImportError, URISyntaxException, UnsupportedEncodingException {
+    logger.trace("import graph");
+    URI trialverseDatasetUri = new URI(Namespaces.DATASET_NAMESPACE + datasetUuid);
+    if (datasetReadRepository.isOwner(trialverseDatasetUri, currentUser)) {
+      Header versionHeader = clinicalTrialsImportService.importStudy(commitTitle, commitDescription, datasetUuid, graphUuid, importStudyRef);
+      trialverseResponse.setHeader(WebConstants.X_EVENT_SOURCE_VERSION, versionHeader.getValue());
+      trialverseResponse.setStatus(HttpStatus.OK.value());
     } else {
       throw new MethodNotAllowedException();
     }

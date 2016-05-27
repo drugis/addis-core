@@ -1,10 +1,10 @@
 'use strict';
 define(['lodash'], function(_) {
-  var dependencies = ['$q', 'EvidenceTableResource', 'NetworkMetaAnalysisService',
+  var dependencies = ['$http', '$q', 'EvidenceTableResource', 'NetworkMetaAnalysisService',
     'ModelResource', 'AnalysisService', 'PataviTaskIdResource', 'PataviService',
     'ProblemResource'
   ];
-  var nmaReportViewDirective = function($q, EvidenceTableResource,
+  var nmaReportViewDirective = function($http, $q, EvidenceTableResource,
     NetworkMetaAnalysisService, ModelResource, AnalysisService,
     PataviTaskIdResource, PataviService, ProblemResource) {
     return {
@@ -18,9 +18,9 @@ define(['lodash'], function(_) {
       },
       link: function(scope) {
         EvidenceTableResource.query({
-          projectId: scope.project.id,
-          analysisId: scope.analysis.id
-        })
+            projectId: scope.project.id,
+            analysisId: scope.analysis.id
+          })
           .$promise.then(function(trialverseData) {
             scope.interventions = NetworkMetaAnalysisService.addInclusionsToInterventions(scope.interventions, scope.analysis.interventionInclusions);
             var includedInterventions = NetworkMetaAnalysisService.getIncludedInterventions(scope.interventions);
@@ -63,20 +63,14 @@ define(['lodash'], function(_) {
 
         scope.primaryModelPromise.then(function(model) {
 
-          if (!model.taskId) {
+          if (!model.taskUrl) {
             return;
           }
 
-          PataviTaskIdResource.get({
-            projectId: scope.project.id,
-            analysisId: scope.analysis.id,
-            modelId: model.id
-          })
-            .$promise
-            .then(PataviService.run)
+          PataviService.listen(model.taskUrl.replace(/^https/, 'wss') + '/updates')
             .then(function(result) {
-                scope.result = result.results;
-                resultsDefer.resolve(result)
+                scope.result = result;
+                resultsDefer.resolve(result);
               },
               function(pataviError) {
                 console.error('an error has occurred, error: ' + JSON.stringify(pataviError));

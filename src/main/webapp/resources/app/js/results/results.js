@@ -7,10 +7,15 @@ define(function (require) {
     //services
     .factory('ResultsTableService', require('results/resultsTableService'))
     .factory('ResultsService', require('results/resultsService'))
+    .factory('NonConformantMeasurementTableService', require('results/nonConformantMeasurementTableService'))
+
+    // controllers
+    .controller('SplitOutcomeController', require('results/splitOutcomeController'))
 
     //directives
     .directive('resultsTable', require('results/resultsTableDirective'))
     .directive('resultsTableList', require('results/resultsTableListDirective'))
     .directive('resultInputDirective', require('results/resultInputDirective'))
+    .directive('nonConformantMeasurementTable', require('results/nonConformantMeasurementTableDirective'))
     ;
 });

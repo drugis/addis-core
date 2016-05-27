@@ -1,6 +1,6 @@
 'use strict';
-define([],
-  function() {
+define(['lodash'],
+  function(_) {
     var dependencies = ['$q', 'StudyService', 'UUIDService', 'MeasurementMomentService'];
     var OutcomeServiceService = function($q, StudyService, UUIDService, MeasurementMomentService) {
 
@@ -25,7 +25,7 @@ define([],
         } else {
           if (item.is_measured_at) {
             frontEndItem.measuredAtMoments = [findMeasurementForUri(measurementMoments, item.is_measured_at)];
-          } 
+          }
         }
         return frontEndItem;
       }
@@ -33,6 +33,7 @@ define([],
       function toBackEnd(item, type) {
         return {
           '@type': type,
+          '@id': item.uri,
           is_measured_at: item.measuredAtMoments.length === 1 ? item.measuredAtMoments[0].uri : _.map(item.measuredAtMoments, 'uri'),
           label: item.label,
           of_variable: [{
@@ -44,19 +45,17 @@ define([],
         };
       }
 
-
-
       function measurementTypeToBackEnd(measurementType) {
         if (measurementType === 'ontology:continuous') {
           return [
-            "http://trials.drugis.org/ontology#standard_deviation",
-            "http://trials.drugis.org/ontology#mean",
-            "http://trials.drugis.org/ontology#sample_size"
+            'http://trials.drugis.org/ontology#standard_deviation',
+            'http://trials.drugis.org/ontology#mean',
+            'http://trials.drugis.org/ontology#sample_size'
           ];
         } else if (measurementType === 'ontology:dichotomous') {
           return [
-            "http://trials.drugis.org/ontology#sample_size",
-            "http://trials.drugis.org/ontology#count"
+            'http://trials.drugis.org/ontology#sample_size',
+            'http://trials.drugis.org/ontology#count'
           ];
         }
       }
@@ -108,7 +107,8 @@ define([],
         queryItems: queryItems,
         addItem: addItem,
         deleteItem: deleteItem,
-        editItem: editItem
+        editItem: editItem,
+        toBackEnd: toBackEnd
       };
     };
     return dependencies.concat(OutcomeServiceService);

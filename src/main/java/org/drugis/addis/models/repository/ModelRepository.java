@@ -3,6 +3,7 @@ package org.drugis.addis.models.repository;
 import org.drugis.addis.models.Model;
 import org.drugis.addis.models.exceptions.InvalidModelException;
 
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -13,9 +14,9 @@ public interface ModelRepository {
 
   Model persist(Model model) throws InvalidModelException;
 
-  Model find(Integer modelId);
+  Model find(Integer modelId) throws IOException;
 
-  Model get(Integer modelId);
+  Model get(Integer modelId) throws IOException;
 
   List<Model> get(List<Integer> modelIds);
 

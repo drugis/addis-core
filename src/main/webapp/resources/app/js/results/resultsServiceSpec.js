@@ -85,6 +85,67 @@ define(['angular-mocks'], function(angularMocks) {
 
     });
 
+    describe('query results by group', function() {
+
+      var graphJsonObject = [{
+        '@id': 'http://trials.drugis.org/instances/result1',
+        'count': 24,
+        'of_group': 'http://trials.drugis.org/instances/arm1',
+        'of_moment': 'http://trials.drugis.org/instances/moment1',
+        'of_outcome': 'http://trials.drugis.org/instances/outcome1',
+        'sample_size': 70
+      }, {
+        '@id': 'http://trials.drugis.org/instances/result2',
+        'standard_deviation': 2,
+        'mean': 5,
+        'of_group': 'http://trials.drugis.org/instances/arm2',
+        'of_moment': 'http://trials.drugis.org/instances/moment1',
+        'of_outcome': 'http://trials.drugis.org/instances/outcome1',
+        'sample_size': 33
+      }, {
+        '@id': 'http://trials.drugis.org/instances/result3',
+        'count': 3,
+        'of_group': 'http://trials.drugis.org/instances/arm2',
+        'of_moment': 'http://trials.drugis.org/instances/moment1',
+        'of_outcome': 'http://trials.drugis.org/instances/outcome2',
+        'sample_size': 33
+      }];
+
+      var groupUri = 'http://trials.drugis.org/instances/arm2';
+
+      beforeEach(function() {
+        var graphDefer = q.defer();
+        var getGraphPromise = graphDefer.promise;
+        graphDefer.resolve(graphJsonObject);
+        studyService.getJsonGraph.and.returnValue(getGraphPromise);
+      });
+
+      it('should return the results for a given group', function(done) {
+        resultsService.queryResultsByGroup(groupUri).then(function(actualResults) {
+          expect(actualResults.length).toEqual(5);
+          expect(actualResults[0].instance).toEqual('http://trials.drugis.org/instances/result2');
+          expect(actualResults[0].armUri).toEqual('http://trials.drugis.org/instances/arm2');
+          expect(actualResults[0].momentUri).toEqual('http://trials.drugis.org/instances/moment1');
+          expect(actualResults[0].outcomeUri).toEqual('http://trials.drugis.org/instances/outcome1');
+          expect(actualResults[0].result_property).toEqual('sample_size');
+          expect(actualResults[0].value).toEqual(33);
+
+          expect(actualResults[1].instance).toEqual('http://trials.drugis.org/instances/result2');
+          expect(actualResults[1].armUri).toEqual('http://trials.drugis.org/instances/arm2');
+          expect(actualResults[1].momentUri).toEqual('http://trials.drugis.org/instances/moment1');
+          expect(actualResults[1].outcomeUri).toEqual('http://trials.drugis.org/instances/outcome1');
+          expect(actualResults[1].result_property).toEqual('standard_deviation');
+          expect(actualResults[1].value).toEqual(2);
+
+          expect(actualResults[4].value).toEqual(3);
+          done();
+        });
+        // fire in the hole !
+        rootScope.$digest();
+      });
+
+    });
+
 
     describe('updateResultValue', function() {
       describe('when there is not yet data in the graph', function() {
@@ -126,6 +187,8 @@ define(['angular-mocks'], function(angularMocks) {
             expect(result).toBeTruthy();
             expect(result).toEqual(expextedGraph[0]['@id']);
             expect(studyService.saveJsonGraph).toHaveBeenCalledWith(expextedGraph);
+            studyService.saveJsonGraph.calls.reset();
+            studyService.getJsonGraph.calls.reset();
             done();
           });
           // fire in the hole !
@@ -186,6 +249,8 @@ define(['angular-mocks'], function(angularMocks) {
             expect(result).toEqual(expextedGraph[0]['@id']);
             expect(result).toEqual(row.uri);
             expect(studyService.saveJsonGraph).toHaveBeenCalledWith(expextedGraph);
+            studyService.saveJsonGraph.calls.reset();
+            studyService.getJsonGraph.calls.reset();
             done();
           });
           // fire in the hole !
@@ -228,6 +293,8 @@ define(['angular-mocks'], function(angularMocks) {
 
             expect(result).toBeFalsy();
             expect(studyService.saveJsonGraph).not.toHaveBeenCalled();
+            studyService.saveJsonGraph.calls.reset();
+            studyService.getJsonGraph.calls.reset();
             done();
           });
           // fire in the hole !
@@ -285,60 +352,8 @@ define(['angular-mocks'], function(angularMocks) {
             }];
             expect(result).toBeTruthy();
             expect(studyService.saveJsonGraph).toHaveBeenCalledWith(expextedGraph);
-            done();
-          });
-          // fire in the hole !
-          rootScope.$digest();
-        });
-      });
-
-      describe('if the new value is null', function() {
-
-        var row = {
-          variable: {
-            uri: 'http://trials.drugis.org/instances/outcome1'
-          },
-          arm: {
-            armURI: 'http://trials.drugis.org/instances/arm1'
-          },
-          measurementMoment: {
-            uri: 'http://trials.drugis.org/instances/moment1'
-          },
-          uri: 'http://trials.drugis.org/instances/result1'
-        };
-
-        var inputColumn = {
-          value: null,
-          valueName: 'sample_size'
-        };
-
-        var graphJsonObject = [{
-          '@id': 'http://trials.drugis.org/instances/result1',
-          'of_group': 'http://trials.drugis.org/instances/arm1',
-          'of_moment': 'http://trials.drugis.org/instances/moment1',
-          'of_outcome': 'http://trials.drugis.org/instances/outcome1',
-          'sample_size': 70
-        }];
-
-        beforeEach(function() {
-          var graphDefer = q.defer();
-          var getGraphPromise = graphDefer.promise;
-          graphDefer.resolve(graphJsonObject);
-          studyService.getJsonGraph.and.returnValue(getGraphPromise);
-        });
-
-        it('should delete the value from the graph', function(done) {
-
-          resultsService.updateResultValue(row, inputColumn).then(function(result) {
-            var expextedGraph = [{
-              '@id': 'http://trials.drugis.org/instances/result1',
-              'count': 24,
-              'of_group': 'http://trials.drugis.org/instances/arm1',
-              'of_moment': 'http://trials.drugis.org/instances/moment1',
-              'of_outcome': 'http://trials.drugis.org/instances/outcome1',
-            }];
-            expect(result).toBeFalsy();
-            expect(studyService.saveJsonGraph).toHaveBeenCalledWith(expextedGraph);
+            studyService.saveJsonGraph.calls.reset();
+            studyService.getJsonGraph.calls.reset();
             done();
           });
           // fire in the hole !
@@ -441,6 +456,14 @@ define(['angular-mocks'], function(angularMocks) {
         'count': 3
       };
 
+      var resultNonConformant = {
+        '@id': 'http://trials.drugis.org/instances/resultNonConformant',
+        'of_group': arm2['@id'],
+        'of_outcome': outcome2['@id'],
+        'count': 3,
+        'comment': 'comment'
+      };
+
       var result3 = {
         '@id': 'http://trials.drugis.org/instances/result1',
         'of_group': 'non existent arm id',
@@ -465,14 +488,13 @@ define(['angular-mocks'], function(angularMocks) {
         'count': 6
       };
 
-      var resultsToLeave = [result1, result2];
+      var resultsToLeave = [result1, result2, resultNonConformant];
       var resultsToBeCleaned = [result3, result4, result5];
 
 
       var study = {
         '@id': 'http://trials.drugis.org/studies/s1',
         '@type': 'ontology:Study',
-        has_epochs: [],
         label: 'study 1',
         comment: 'my study',
         has_outcome: [outcome1, outcome2],
@@ -500,10 +522,145 @@ define(['angular-mocks'], function(angularMocks) {
       it('should clean the graph', function(done) {
         resultsService.cleanupMeasurements(queryOutcome).then(function() {
           expect(studyService.saveJsonGraph).toHaveBeenCalledWith(expextedGraph);
+          studyService.saveJsonGraph.calls.reset();
           done();
         });
         // fire in the hole !
         rootScope.$digest();
+      });
+
+    });
+
+    describe('isExistingMeasurement', function() {
+
+      var graphJsonObject = [{
+        '@id': 'nonConfInstance1',
+        'of_group': 'http://trials.drugis.org/instances/arm1',
+        'of_outcome': 'http://trials.drugis.org/instances/outcome1',
+      }, {
+        '@id': 'http://trials.drugis.org/instances/result1',
+        'of_group': 'http://trials.drugis.org/instances/arm1',
+        'of_moment': 'mommentInstanceUri',
+        'of_outcome': 'http://trials.drugis.org/instances/outcome1',
+      }];
+
+      var measurementMomentUri = 'mommentInstanceUri';
+      var measurementInstanceList = ['nonConfInstance1', 'nonConfInstance2'];
+
+      var isExistingMeasurement;
+
+      beforeEach(function(done) {
+        var graphDefer = q.defer();
+        var getGraphPromise = graphDefer.promise;
+        graphDefer.resolve(graphJsonObject);
+        studyService.getJsonGraph.and.returnValue(getGraphPromise);
+        resultsService.isExistingMeasurement(measurementMomentUri, measurementInstanceList)
+          .then(function(result) {
+            isExistingMeasurement = result;
+            done();
+          });
+        rootScope.$digest();
+      });
+
+      it('should return true when the nonConformantMeasurement already exists', function() {
+        expect(isExistingMeasurement).toBe(true);
+      });
+
+    });
+
+    describe('isExistingMeasurement', function() {
+
+      var graphJsonObject = [{
+        '@id': 'nonConfInstance1',
+        'of_group': 'http://trials.drugis.org/instances/arm1',
+        'of_outcome': 'http://trials.drugis.org/instances/outcome1',
+      }, {
+        '@id': 'http://trials.drugis.org/instances/result1',
+        'of_group': 'http://trials.drugis.org/instances/arm2',
+        'of_moment': 'http://trials.drugis.org/instances/moment1',
+        'of_outcome': 'http://trials.drugis.org/instances/outcome2',
+      },{
+        '@id': 'http://trials.drugis.org/instances/result1',
+        'of_group': 'http://trials.drugis.org/instances/arm1',
+        'of_moment': 'otherMoment',
+        'of_outcome': 'http://trials.drugis.org/instances/outcome1',
+      }];
+
+      var measurementMomentUri = 'mommentInstanceUri';
+      var measurementInstanceList = ['nonConfInstance1', 'nonConfInstance2'];
+
+      var isExistingMeasurement;
+
+      beforeEach(function(done) {
+        var graphDefer = q.defer();
+        var getGraphPromise = graphDefer.promise;
+        graphDefer.resolve(graphJsonObject);
+        studyService.getJsonGraph.and.returnValue(getGraphPromise);
+        resultsService.isExistingMeasurement(measurementMomentUri, measurementInstanceList)
+          .then(function(result) {
+            isExistingMeasurement = result;
+            done();
+          });
+        rootScope.$digest();
+      });
+
+      it('should return false when the nonConformantMeasurement does not already exists', function() {
+        expect(isExistingMeasurement).toBe(false);
+      });
+
+    });
+
+    describe('setToMeasurementMoment', function() {
+
+      var graphJsonObject = [{
+        '@id': 'nonConfInstance1',
+        'of_group': 'http://trials.drugis.org/instances/arm1',
+        'of_outcome': 'http://trials.drugis.org/instances/outcome1',
+        'comment': 'comment'
+      }, {
+        '@id': 'otherNode',
+        'of_group': 'http://trials.drugis.org/instances/arm2',
+        'of_outcome': 'http://trials.drugis.org/instances/outcome2'
+      }, {
+        '@id': 'nonConfInstance2',
+        'of_group': 'http://trials.drugis.org/instances/arm2',
+        'of_outcome': 'http://trials.drugis.org/instances/outcome2',
+        'comment': 'comment'
+      }];
+
+      var expectedSaveGraph = [{
+        '@id': 'nonConfInstance1',
+        'of_group': 'http://trials.drugis.org/instances/arm1',
+        'of_moment': 'mommentInstanceUri',
+        'of_outcome': 'http://trials.drugis.org/instances/outcome1',
+      }, {
+        '@id': 'otherNode',
+        'of_group': 'http://trials.drugis.org/instances/arm2',
+        'of_outcome': 'http://trials.drugis.org/instances/outcome2',
+      }, {
+        '@id': 'nonConfInstance2',
+        'of_group': 'http://trials.drugis.org/instances/arm2',
+        'of_moment': 'mommentInstanceUri',
+        'of_outcome': 'http://trials.drugis.org/instances/outcome2',
+      }];
+
+      var measurementMomentUri = 'mommentInstanceUri';
+      var measurementInstanceList = ['nonConfInstance1', 'nonConfInstance2'];
+
+      beforeEach(function(done) {
+        var graphDefer = q.defer();
+        var getGraphPromise = graphDefer.promise;
+        graphDefer.resolve(graphJsonObject);
+        studyService.getJsonGraph.and.returnValue(getGraphPromise);
+        resultsService
+          .setToMeasurementMoment(measurementMomentUri, measurementInstanceList)
+          .then(done);
+        rootScope.$digest();
+      });
+
+      it('should setToMeasurementMoment', function() {
+        expect(studyService.saveJsonGraph).toHaveBeenCalledWith(expectedSaveGraph);
+        studyService.saveJsonGraph.calls.reset();
       });
 
     });

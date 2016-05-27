@@ -3,11 +3,11 @@ define(['lodash'], function(_) {
   var dependencies = ['$scope', '$q', '$stateParams', '$state', '$modal',
     'AnalysisResource', 'InterventionResource', 'OutcomeResource',
     'MetaBenefitRiskService', 'ModelResource', 'ProblemResource',
-    'MCDAPataviService', 'ScenarioResource', 'DEFAULT_VIEW'
+    'ScalesService', 'ScenarioResource', 'DEFAULT_VIEW'
   ];
   var MetBenefitRiskStep2Controller = function($scope, $q, $stateParams, $state, $modal,
     AnalysisResource, InterventionResource, OutcomeResource, MetaBenefitRiskService,
-    ModelResource, ProblemResource, MCDAPataviService, ScenarioResource, DEFAULT_VIEW) {
+    ModelResource, ProblemResource, ScalesService, ScenarioResource, DEFAULT_VIEW) {
 
     $scope.goToStep1 = goToStep1;
     $scope.openDistributionModal = openDistributionModal;
@@ -151,18 +151,16 @@ define(['lodash'], function(_) {
 
     function resetScales() {
       ProblemResource.get($stateParams).$promise.then(function(problem) {
-        MCDAPataviService.run(_.extend(problem, {
-          method: 'scales'
-        })).then(function(result) {
-          //    console.log('MCDAPataviService.run succes');
+        ScalesService.getObservedScales($scope, problem).then(function(result) {
+          //    console.log('PataviService.run succes');
           //    console.log('result = ' + JSON.stringify(result));
           var includedAlternatives = _.filter($scope.alternatives, function(alternative){
             return alternative.isIncluded;
           });
           $scope.outcomesWithAnalyses = MetaBenefitRiskService.addScales($scope.outcomesWithAnalyses,
-            includedAlternatives, result.results);
+            includedAlternatives, result);
         }, function() {
-          console.log('MCDAPataviService.run error');
+          console.log('PataviService.run error');
         });
       });
     }

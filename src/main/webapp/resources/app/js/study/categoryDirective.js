@@ -8,7 +8,8 @@ define([], function() {
       scope: {
         studyUuid: '=',
         settings: '=',
-        isEditingAllowed: '='
+        isEditingAllowed: '=',
+        isRepairable: '='
       },
       link: function(scope, element, attributes) {
 
@@ -23,7 +24,7 @@ define([], function() {
             refreshStudyDesignLister();
           }
 
-          service.queryItems($stateParams.studyUUID).then(function(queryResult) {
+          service.queryItems().then(function(queryResult) {
             scope.items = queryResult;
 
             refreshStudyDesignLister = scope.$on('refreshStudyDesign', function() {
