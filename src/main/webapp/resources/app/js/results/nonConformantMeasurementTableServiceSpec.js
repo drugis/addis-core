@@ -13,25 +13,16 @@ define(['angular', 'angular-mocks'], function() {
       nonConformantMeasurementTableService = NonConformantMeasurementTableService;
     }));
 
-    describe('createInputRows', function() {
-      var resultRows, variable, arms, resultValuesObjects, expectedRow;
-
-      beforeEach(function() {
-
-        variable = {
-          measuredAtMoments: [{
-            uri: 'uri 1'
-          }, {
-            uri: 'uri 3'
-          }]
-        };
-
-        arms = [{
+    describe('mapResultsByLabelAndGroup', function() {
+      it('should map results by label and group', function() {
+        var arms = [{
           label: 'arm 1',
           armURI: 'http://arms/arm1'
         }];
 
-        resultValuesObjects = [{
+        var groups = [];
+
+        var resultValuesObjects = [{
           comment: 'comment1',
           uri: 'uri 1',
           armUri: 'http://arms/arm1',
@@ -48,14 +39,82 @@ define(['angular', 'angular-mocks'], function() {
           instance: 'instance1'
         }];
 
-        expectedRow = {
-          variable: {
-            measuredAtMoments: [{
-              'uri': 'uri 1'
-            }, {
-              'uri': 'uri 3'
-            }]
+        var expectedResult = {
+          comment1: {
+            'http://arms/arm1': {
+              group: arms[0],
+              results: [resultValuesObjects[0]]
+            }
           },
+          comment2: {
+            'http://arms/arm1': {
+              group: arms[0],
+              results: [resultValuesObjects[1]]
+            }
+          },
+          comment3: {
+            'http://arms/arm1': {
+              group: arms[0],
+              results: [resultValuesObjects[2]]
+            }
+          }
+        };
+
+        var result = nonConformantMeasurementTableService.mapResultsByLabelAndGroup(arms, groups, resultValuesObjects);
+
+        expect(result).toEqual(expectedResult);
+      });
+    });
+
+    describe('createInputRows', function() {
+      var resultRows, expectedRow;
+
+      beforeEach(function() {
+        var arm ={
+          label: 'arm 1',
+          armURI: 'http://arms/arm1'
+        };
+        var resultsByLabelAndGroup = {
+          comment1: {
+            'http://arms/arm1': {
+              group: arm,
+              results: [{
+                comment: 'comment1',
+                uri: 'uri 1',
+                armUri: 'http://arms/arm1',
+                instance: 'instance1'
+              }]
+            }
+          },
+          comment2: {
+            'http://arms/arm1': {
+              group: arm,
+              results: [{
+                comment: 'comment2',
+                uri: 'uri 2',
+                armUri: 'http://arms/arm1',
+                instance: 'instance1'
+              }]
+            }
+          },
+          comment3: {
+            'http://arms/arm1': {
+              group: arm,
+              results: [{
+                comment: 'comment3',
+                uri: 'uri 3',
+                armUri: 'http://arms/arm1',
+                instance: 'instance1'
+              }]
+            }
+          }
+        };
+
+        var variable = {
+          label: 'foo'
+        };
+        expectedRow = {
+          variable: variable,
           group: {
             'label': 'arm 1',
             'armURI': 'http://arms/arm1'
@@ -66,7 +125,7 @@ define(['angular', 'angular-mocks'], function() {
           measurementInstanceList: ['instance1']
         };
 
-        resultRows = nonConformantMeasurementTableService.createInputRows(variable, arms, [], resultValuesObjects);
+        resultRows = nonConformantMeasurementTableService.createInputRows(variable, resultsByLabelAndGroup);
       });
 
       it('should build te non-conformant table rows', function() {
