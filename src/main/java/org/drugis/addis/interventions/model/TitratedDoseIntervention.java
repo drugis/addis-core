@@ -7,8 +7,8 @@ import java.net.URI;
  * Created by daan on 5-4-16.
  */
 @Entity
-@PrimaryKeyJoinColumn(name = "titratedInterventionId", referencedColumnName = "id")
-public class TitratedDoseIntervention extends AbstractIntervention {
+@PrimaryKeyJoinColumn(name = "titratedInterventionId", referencedColumnName = "singleInterventionId")
+public class TitratedDoseIntervention extends SingleIntervention {
   @Embedded
   @AttributeOverrides( {
           @AttributeOverride(name="lowerBound.type" , column = @Column(name="minLowerBoundType") ),

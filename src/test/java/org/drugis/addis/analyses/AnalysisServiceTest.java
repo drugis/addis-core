@@ -10,6 +10,7 @@ import org.drugis.addis.exception.MethodNotAllowedException;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.interventions.model.AbstractIntervention;
 import org.drugis.addis.interventions.model.SimpleIntervention;
+import org.drugis.addis.interventions.model.SingleIntervention;
 import org.drugis.addis.interventions.repository.InterventionRepository;
 import org.drugis.addis.interventions.service.InterventionService;
 import org.drugis.addis.interventions.service.impl.InvalidTypeForDoseCheckException;
@@ -265,8 +266,9 @@ public class AnalysisServiceTest {
     Project project = new Project(projectId, owner, "proj", "desc", namespaceUid, version);
     when(projectRepository.get(projectId)).thenReturn(project);
     when(analysisRepository.get(analysisId)).thenReturn(networkMetaAnalysis);
-    AbstractIntervention includedIntervention = new SimpleIntervention(includedInterventionId, projectId, "includedIntervention", "", new SemanticInterventionUriAndName(URI.create("semUri1"), "intervention 1"));
-    AbstractIntervention notIncludedIntervention = new SimpleIntervention(sirNotAppearingInThisFilmId, projectId, "notIncludedIntervention", "", new SemanticInterventionUriAndName(URI.create("semUri2"), "intervention 2"));
+    //todo WHAT ABOUT Combined interventions
+    SingleIntervention includedIntervention = new SimpleIntervention(includedInterventionId, projectId, "includedIntervention", "", new SemanticInterventionUriAndName(URI.create("semUri1"), "intervention 1"));
+    SingleIntervention notIncludedIntervention = new SimpleIntervention(sirNotAppearingInThisFilmId, projectId, "notIncludedIntervention", "", new SemanticInterventionUriAndName(URI.create("semUri2"), "intervention 2"));
     List<AbstractIntervention> interventions = Arrays.asList(includedIntervention, notIncludedIntervention);
     List<Covariate> covariates = Collections.emptyList();
     when(interventionRepository.query(projectId)).thenReturn(interventions);

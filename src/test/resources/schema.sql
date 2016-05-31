@@ -537,3 +537,39 @@ ALTER TABLE model DROP COLUMN taskId;
 ALTER TABLE model ADD COLUMN taskUrl VARCHAR;
 --rollback ALTER TABLE model ADD COLUMN taskId int;
 --rollback ALTER TABLE model DROP COLUMN taskUrl;
+
+--changeset stroombergc:57
+CREATE TABLE SingleIntervention (
+   singleInterventionId INT NOT NULL,
+   semanticInterventionLabel VARCHAR NOT NULL,
+   semanticInterventionUri VARCHAR NOT NULL,
+   PRIMARY KEY(singleInterventionId),
+   FOREIGN KEY(singleInterventionId) REFERENCES AbstractIntervention(id)
+);
+
+INSERT INTO SingleIntervention (singleInterventionId, semanticInterventionLabel, semanticInterventionUri) SELECT id, semanticInterventionLabel, semanticInterventionUri FROM AbstractIntervention;
+
+ALTER TABLE AbstractIntervention DROP COLUMN semanticInterventionLabel;
+ALTER TABLE AbstractIntervention DROP COLUMN semanticInterventionUri;
+
+CREATE TABLE CombinationIntervention (
+   combinationInterventionId INT NOT NULL,
+   PRIMARY KEY(combinationInterventionId),
+   FOREIGN KEY(combinationInterventionId) REFERENCES AbstractIntervention(id)
+);
+
+CREATE TABLE CombinationIntervention_Intervention (
+   combinationInterventionId INT NOT NULL,
+   interventionId INT NOT NULL,
+   PRIMARY KEY(combinationInterventionId, interventionId),
+   FOREIGN KEY(combinationInterventionId) REFERENCES CombinationIntervention(combinationInterventionId),
+   FOREIGN KEY(interventionId) REFERENCES SingleIntervention(singleInterventionId)
+);
+--rollback DROP TABLE CombinationIntervention_Intervention;
+--rollback DROP TABLE CombinationIntervention;
+--rollback ALTER TABLE AbstractIntervention ADD COLUMN semanticInterventionLabel;
+--rollback ALTER TABLE AbstractIntervention ADD COLUMN semanticInterventionUri;
+--rollback INSERT INTO AbstractIntervention (semanticInterventionLabel, semanticInterventionUri) SELECT semanticInterventionLabel, semanticInterventionUri FROM SingleIntervention;
+--rollback DROP TABLE SingleIntervention;
+
+

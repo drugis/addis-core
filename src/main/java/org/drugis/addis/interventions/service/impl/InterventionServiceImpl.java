@@ -1,5 +1,6 @@
 package org.drugis.addis.interventions.service.impl;
 
+import org.apache.commons.lang.NotImplementedException;
 import org.drugis.addis.interventions.model.*;
 import org.drugis.addis.interventions.service.InterventionService;
 import org.drugis.addis.trialverse.model.trialdata.AbstractSemanticIntervention;
@@ -16,22 +17,30 @@ public class InterventionServiceImpl implements InterventionService {
   @Override
   public boolean isMatched(AbstractIntervention intervention, AbstractSemanticIntervention semanticIntervention) throws InvalidTypeForDoseCheckException {
 
-    if(intervention instanceof SimpleIntervention) {
-      return checkSimple(intervention, semanticIntervention);
+    if(intervention instanceof SingleIntervention) {
+      SingleIntervention singleIntervention = (SingleIntervention) intervention;
+
+      if(intervention instanceof SimpleIntervention) {
+        return checkSimple(singleIntervention, semanticIntervention);
+      }
+
+      if(intervention instanceof FixedDoseIntervention) {
+
+        return !(!checkType(intervention, semanticIntervention) || !checkSimple(singleIntervention, semanticIntervention) || !doseCheck(intervention, semanticIntervention));
+      }
+
+      if(intervention instanceof TitratedDoseIntervention || intervention instanceof BothDoseTypesIntervention) {
+        return !(!checkType(intervention, semanticIntervention) || !checkSimple(singleIntervention, semanticIntervention) || !doseCheck(intervention, semanticIntervention));
+      }
     }
 
-    if(intervention instanceof FixedDoseIntervention) {
-
-      return !(!checkType(intervention, semanticIntervention) || !checkSimple(intervention, semanticIntervention) || !doseCheck(intervention, semanticIntervention));
-    }
-
-    if(intervention instanceof TitratedDoseIntervention || intervention instanceof BothDoseTypesIntervention) {
-      return !(!checkType(intervention, semanticIntervention) || !checkSimple(intervention, semanticIntervention) || !doseCheck(intervention, semanticIntervention));
+    if(intervention instanceof CombinationIntervention) {
+      throw new NotImplementedException("!!!!!!!!!!!!!!!!!!!!!!! TODO implement isMAtched for combined intervention !!!!!!!!!!!!!!!!!!!!!!!");
     }
     return false;
   }
 
-  private boolean checkSimple(AbstractIntervention intervention, AbstractSemanticIntervention semanticIntervention) {
+  private boolean checkSimple(SingleIntervention intervention, AbstractSemanticIntervention semanticIntervention) {
     return intervention.getSemanticInterventionUri().equals(semanticIntervention.getDrugConcept());
   }
 

@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 import javax.persistence.*;
-import java.net.URI;
 
 /**
  * Created by daan on 5-4-16.
@@ -24,19 +23,15 @@ public abstract class AbstractIntervention {
   private Integer project;
   private String name;
   private String motivation;
-  private String semanticInterventionUri;
-  private String semanticInterventionLabel;
 
   public AbstractIntervention() {
   }
 
-  public AbstractIntervention(Integer id, Integer project, String name, String motivation, URI semanticInterventionUri, String semanticInterventionLabel) {
+  public AbstractIntervention(Integer id, Integer project, String name, String motivation) {
     this.id = id;
     this.project = project;
     this.name = name;
     this.motivation = motivation;
-    this.semanticInterventionUri = semanticInterventionUri.toString();
-    this.semanticInterventionLabel = semanticInterventionLabel;
   }
 
   public Integer getId() {
@@ -55,14 +50,6 @@ public abstract class AbstractIntervention {
     return motivation;
   }
 
-  public String getSemanticInterventionLabel() {
-    return semanticInterventionLabel;
-  }
-
-  public URI getSemanticInterventionUri() {
-    return URI.create(semanticInterventionUri);
-  }
-
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
@@ -70,23 +57,19 @@ public abstract class AbstractIntervention {
 
     AbstractIntervention that = (AbstractIntervention) o;
 
-    if (!id.equals(that.id)) return false;
+    if (id != null ? !id.equals(that.id) : that.id != null) return false;
     if (!project.equals(that.project)) return false;
     if (!name.equals(that.name)) return false;
-    if (motivation != null ? !motivation.equals(that.motivation) : that.motivation != null) return false;
-    if (!semanticInterventionUri.equals(that.semanticInterventionUri)) return false;
-    return semanticInterventionLabel.equals(that.semanticInterventionLabel);
+    return motivation != null ? motivation.equals(that.motivation) : that.motivation == null;
 
   }
 
   @Override
   public int hashCode() {
-    int result = id.hashCode();
+    int result = id != null ? id.hashCode() : 0;
     result = 31 * result + project.hashCode();
     result = 31 * result + name.hashCode();
     result = 31 * result + (motivation != null ? motivation.hashCode() : 0);
-    result = 31 * result + semanticInterventionUri.hashCode();
-    result = 31 * result + semanticInterventionLabel.hashCode();
     return result;
   }
 }

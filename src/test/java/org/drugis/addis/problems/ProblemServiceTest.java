@@ -14,6 +14,7 @@ import org.drugis.addis.covariates.CovariateRepository;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.interventions.model.AbstractIntervention;
 import org.drugis.addis.interventions.model.SimpleIntervention;
+import org.drugis.addis.interventions.model.SingleIntervention;
 import org.drugis.addis.interventions.repository.InterventionRepository;
 import org.drugis.addis.interventions.service.impl.InvalidTypeForDoseCheckException;
 import org.drugis.addis.models.Model;
@@ -121,17 +122,17 @@ public class ProblemServiceTest {
   private final URI fluoxConceptUri = URI.create("fluoxConceptUri");
   private final SemanticInterventionUriAndName fluoxConcept = new SemanticInterventionUriAndName(fluoxConceptUri, "fluox concept");
   private final Integer fluoxInterventionId = 401;
-  private final AbstractIntervention fluoxIntervention = new SimpleIntervention(fluoxInterventionId, project.getId(),
+  private final SingleIntervention fluoxIntervention = new SimpleIntervention(fluoxInterventionId, project.getId(),
           "fluoxetine", "moti", fluoxConcept.getUri(), fluoxConcept.getLabel());
   private final URI paroxConceptUri = URI.create("paroxConceptUri");
   private final SemanticInterventionUriAndName paroxConcept = new SemanticInterventionUriAndName(paroxConceptUri, "parox concept");
   private final Integer paroxInterventionId = 402;
-  private final AbstractIntervention paroxIntervention = new SimpleIntervention(paroxInterventionId, project.getId(),
+  private final SingleIntervention paroxIntervention = new SimpleIntervention(paroxInterventionId, project.getId(),
           "paroxetine", "moti", paroxConcept.getUri(), paroxConcept.getLabel());
   private final URI sertraConceptUri = URI.create("sertraConceptUri");
   private final SemanticInterventionUriAndName sertraConcept = new SemanticInterventionUriAndName(sertraConceptUri, "sertra concept");
   private final Integer sertraInterventionId = 403;
-  private final AbstractIntervention sertraIntervention = new SimpleIntervention(sertraInterventionId, project.getId(),
+  private final SingleIntervention sertraIntervention = new SimpleIntervention(sertraInterventionId, project.getId(),
           "sertraline", "moti", sertraConcept.getUri(), sertraConcept.getLabel());
   private final List<AbstractIntervention> allProjectInterventions = Arrays.asList(fluoxIntervention, paroxIntervention, sertraIntervention);
 

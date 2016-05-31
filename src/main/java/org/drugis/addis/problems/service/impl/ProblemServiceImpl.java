@@ -15,6 +15,7 @@ import org.drugis.addis.covariates.Covariate;
 import org.drugis.addis.covariates.CovariateRepository;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.interventions.model.AbstractIntervention;
+import org.drugis.addis.interventions.model.SingleIntervention;
 import org.drugis.addis.interventions.repository.InterventionRepository;
 import org.drugis.addis.interventions.service.InterventionService;
 import org.drugis.addis.interventions.service.impl.InvalidTypeForDoseCheckException;
@@ -379,7 +380,13 @@ public class ProblemServiceImpl implements ProblemService {
     final Set<URI> outcomeUris = analysis.getSelectedOutcomes()
             .stream().map(Outcome::getSemanticOutcomeUri).collect(Collectors.toSet());
     final List<AbstractIntervention> interventions = interventionRepository.query(project.getId());
-    final Map<Integer, AbstractIntervention> interventionMap = interventions
+    // todo WHAT ABOUT COMBINED INTERVENTIONS
+    List<SingleIntervention> singleInterventions = interventions.stream()
+            .filter(ai -> ai instanceof SingleIntervention)
+            .map(ai -> (SingleIntervention) ai)
+            .collect(Collectors.toList());
+
+    final Map<Integer, SingleIntervention> interventionMap = singleInterventions
             .stream().collect(Collectors.toMap(AbstractIntervention::getId, Function.identity()));
     final Map<URI, Outcome> outcomesByUriMap = analysis.getSelectedOutcomes()
             .stream().collect(Collectors.toMap(Outcome::getSemanticOutcomeUri, Function.identity()));

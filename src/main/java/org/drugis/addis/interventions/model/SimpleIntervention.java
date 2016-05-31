@@ -11,8 +11,8 @@ import java.net.URI;
  * Created by daan on 3/6/14.
  */
 @Entity
-@PrimaryKeyJoinColumn(name = "simpleInterventionId", referencedColumnName = "id")
-public class SimpleIntervention extends AbstractIntervention implements Serializable {
+@PrimaryKeyJoinColumn(name = "simpleInterventionId", referencedColumnName = "singleInterventionId")
+public class SimpleIntervention extends SingleIntervention implements Serializable {
 
   public SimpleIntervention() {
   }

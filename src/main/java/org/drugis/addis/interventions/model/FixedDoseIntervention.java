@@ -8,8 +8,8 @@ import java.net.URI;
  * Created by daan on 5-4-16.
  */
 @Entity
-@PrimaryKeyJoinColumn(name = "fixedInterventionId", referencedColumnName = "id")
-public class FixedDoseIntervention extends AbstractIntervention implements Serializable {
+@PrimaryKeyJoinColumn(name = "fixedInterventionId", referencedColumnName = "singleInterventionId")
+public class FixedDoseIntervention extends SingleIntervention implements Serializable {
   @Embedded
   @AttributeOverrides( {
           @AttributeOverride(name="lowerBound.type" , column = @Column(name="lowerBoundType") ),

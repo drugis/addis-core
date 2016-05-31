@@ -664,3 +664,52 @@ ALTER TABLE model DROP COLUMN taskId;
 ALTER TABLE model ADD COLUMN taskUrl VARCHAR;
 --rollback ALTER TABLE model ADD COLUMN taskId int;
 --rollback ALTER TABLE model DROP COLUMN taskUrl;
+
+--changeset stroombergc:58
+CREATE TABLE SingleIntervention (
+   singleInterventionId INT NOT NULL,
+   semanticInterventionLabel VARCHAR NOT NULL,
+   semanticInterventionUri VARCHAR NOT NULL,
+   PRIMARY KEY(singleInterventionId),
+   FOREIGN KEY(singleInterventionId) REFERENCES AbstractIntervention(id)
+);
+
+INSERT INTO SingleIntervention (singleInterventionId, semanticInterventionLabel, semanticInterventionUri) SELECT ai.id, ai.semanticInterventionLabel, ai.semanticInterventionUri FROM AbstractIntervention AS ai;
+
+ALTER TABLE AbstractIntervention DROP COLUMN semanticInterventionLabel;
+ALTER TABLE AbstractIntervention DROP COLUMN semanticInterventionUri;
+
+CREATE TABLE CombinationIntervention (
+   combinationInterventionId INT NOT NULL,
+   PRIMARY KEY(combinationInterventionId),
+   FOREIGN KEY(combinationInterventionId) REFERENCES AbstractIntervention(id)
+);
+
+CREATE TABLE CombinationIntervention_Intervention (
+   combinationInterventionId INT NOT NULL,
+   interventionId INT NOT NULL,
+   PRIMARY KEY(combinationInterventionId, interventionId),
+   FOREIGN KEY(combinationInterventionId) REFERENCES CombinationIntervention(combinationInterventionId),
+   FOREIGN KEY(interventionId) REFERENCES SingleIntervention(singleInterventionId)
+);
+
+ALTER TABLE SingleIntervention DROP CONSTRAINT IF EXISTS singleIntervention_singleInterventionid_fkey ;
+ALTER TABLE SingleIntervention ADD CONSTRAINT singleIntervention_singleInterventionid_fkey FOREIGN KEY (SingleInterventionId) REFERENCES AbstractIntervention(id) ON DELETE CASCADE;
+
+ALTER TABLE SimpleIntervention DROP CONSTRAINT IF EXISTS simpleintervention_simpleinterventionid_fkey ;
+ALTER TABLE SimpleIntervention ADD CONSTRAINT simpleintervention_simpleinterventionid_fkey FOREIGN KEY (simpleInterventionId) REFERENCES SingleIntervention(singleInterventionId) ON DELETE CASCADE;
+
+ALTER TABLE FixedDoseIntervention DROP CONSTRAINT IF EXISTS fixedintervention_fixedinterventionid_fkey ;
+ALTER TABLE FixedDoseIntervention ADD CONSTRAINT fixedintervention_fixedinterventionid_fkey FOREIGN KEY (fixedInterventionId) REFERENCES SingleIntervention(singleInterventionId) ON DELETE CASCADE;
+
+ALTER TABLE TitratedDoseIntervention DROP CONSTRAINT IF EXISTS titratedintervention_titratedinterventionid_fkey ;
+ALTER TABLE TitratedDoseIntervention ADD CONSTRAINT titratedintervention_titratedinterventionid_fkey FOREIGN KEY (titratedInterventionId) REFERENCES SingleIntervention(singleInterventionId) ON DELETE CASCADE;
+
+ALTER TABLE BothDoseTypesIntervention DROP CONSTRAINT IF EXISTS bothtypesintervention_bothtypesinterventionid_fkey ;
+ALTER TABLE BothDoseTypesIntervention ADD CONSTRAINT bothtypesintervention_bothtypesinterventionid_fkey FOREIGN KEY (bothTypesInterventionId) REFERENCES SingleIntervention(singleInterventionId) ON DELETE CASCADE;
+--rollback DROP TABLE CombinationIntervention_Intervention;
+--rollback DROP TABLE CombinationIntervention;
+--rollback ALTER TABLE AbstractIntervention ADD COLUMN semanticInterventionLabel VARCHAR NOT NULL;
+--rollback ALTER TABLE AbstractIntervention ADD COLUMN semanticInterventionUri VARCHAR NOT NULL;
+--rollback INSERT INTO AbstractIntervention (semanticInterventionLabel, semanticInterventionUri) SELECT semanticInterventionLabel, semanticInterventionUri FROM SingleIntervention;
+--rollback DROP TABLE SingleIntervention;
