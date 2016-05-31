@@ -1,4 +1,4 @@
-package org.drugis.addis.interventions.model;
+package org.drugis.addis.interventions.model.command;
 
 import java.net.URI;
 

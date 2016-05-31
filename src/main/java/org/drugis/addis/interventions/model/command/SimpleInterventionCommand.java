@@ -1,5 +1,6 @@
-package org.drugis.addis.interventions.model;
+package org.drugis.addis.interventions.model.command;
 
+import org.drugis.addis.interventions.model.SimpleIntervention;
 import org.drugis.addis.trialverse.model.SemanticInterventionUriAndName;
 
 import java.net.URI;

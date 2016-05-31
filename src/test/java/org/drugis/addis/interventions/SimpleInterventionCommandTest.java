@@ -3,8 +3,8 @@
  */
 
 import org.apache.commons.lang.StringUtils;
-import org.drugis.addis.interventions.model.AbstractInterventionCommand;
-import org.drugis.addis.interventions.model.SimpleInterventionCommand;
+import org.drugis.addis.interventions.model.command.AbstractInterventionCommand;
+import org.drugis.addis.interventions.model.command.SimpleInterventionCommand;
 import org.junit.Test;
 
 import static junit.framework.TestCase.assertEquals;

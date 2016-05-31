@@ -1,7 +1,9 @@
-package org.drugis.addis.interventions.model;
+package org.drugis.addis.interventions.model.command;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import org.drugis.addis.interventions.model.AbstractIntervention;
+import org.drugis.addis.interventions.model.InvalidConstraintException;
 
 /**
  * Created by connor on 3/6/14.
