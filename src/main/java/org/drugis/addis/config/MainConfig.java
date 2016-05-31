@@ -15,6 +15,20 @@
  */
 package org.drugis.addis.config;
 
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.security.KeyManagementException;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.UnrecoverableKeyException;
+import java.security.cert.CertificateException;
+import java.util.Properties;
+
+import javax.net.ssl.SSLContext;
+import javax.persistence.EntityManagerFactory;
+import javax.sql.DataSource;
+
 import org.apache.http.client.HttpClient;
 import org.apache.http.config.Registry;
 import org.apache.http.config.RegistryBuilder;
@@ -46,15 +60,6 @@ import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.client.RestTemplate;
-
-import javax.net.ssl.SSLContext;
-import javax.persistence.EntityManagerFactory;
-import javax.sql.DataSource;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.security.*;
-import java.security.cert.CertificateException;
-import java.util.Properties;
 
 @Configuration
 @ComponentScan(excludeFilters = {@Filter(Configuration.class)}, basePackages = {
@@ -99,9 +104,7 @@ public class MainConfig {
             .custom()
             .loadKeyMaterial(keyStore, KEYSTORE_PASSWORD.toCharArray())
             .build();
-    SSLConnectionSocketFactory connectionSocketFactory = new SSLConnectionSocketFactory(sslContext, SSLConnectionSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
-
-    HttpClientBuilder httpClientBuilder = HttpClientBuilder.create();
+    SSLConnectionSocketFactory connectionSocketFactory = new SSLConnectionSocketFactory(sslContext);
 
     Registry<ConnectionSocketFactory> registry = RegistryBuilder.<ConnectionSocketFactory>create()
             .register("https", connectionSocketFactory)
@@ -109,6 +112,7 @@ public class MainConfig {
             .build();
     HttpClientConnectionManager clientConnectionManager = new PoolingHttpClientConnectionManager(registry);
 
+    HttpClientBuilder httpClientBuilder = HttpClientBuilder.create();
     return httpClientBuilder
             .setConnectionManager(clientConnectionManager)
             .setMaxConnTotal(20)
