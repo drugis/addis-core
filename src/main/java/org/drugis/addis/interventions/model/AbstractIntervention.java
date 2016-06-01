@@ -1,18 +1,12 @@
 package org.drugis.addis.interventions.model;
 
-import com.fasterxml.jackson.annotation.JsonSubTypes;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import org.drugis.addis.interventions.controller.viewAdapter.AbstractInterventionViewAdapter;
 
 import javax.persistence.*;
 
 /**
  * Created by daan on 5-4-16.
  */
-@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
-@JsonSubTypes({@JsonSubTypes.Type(value = SimpleIntervention.class, name = "simple"),
-        @JsonSubTypes.Type(value = FixedDoseIntervention.class, name = "fixed"),
-        @JsonSubTypes.Type(value = TitratedDoseIntervention.class, name = "titrated"),
-        @JsonSubTypes.Type(value = BothDoseTypesIntervention.class, name = "both")})
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
 public abstract class AbstractIntervention {
@@ -49,6 +43,8 @@ public abstract class AbstractIntervention {
   public String getMotivation() {
     return motivation;
   }
+
+  public abstract AbstractInterventionViewAdapter toViewAdapter();
 
   @Override
   public boolean equals(Object o) {

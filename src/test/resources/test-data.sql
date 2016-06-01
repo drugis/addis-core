@@ -47,6 +47,7 @@ VALUES (-5,
 'AT_MOST',  'mg', 'P1D', 3.5, 'concept');
 
 INSERT INTO public.combinationIntervention (combinationInterventionId) VALUES(-6);
+INSERT INTO public.InterventionCombination (combinationInterventionId,singleInterventionId ) VALUES (-6, -5);
 
 INSERT INTO public.AbstractAnalysis(id, projectId, title) VALUES (-1, 1, 'analysis 1');
 INSERT INTO public.AbstractAnalysis(id, projectId, title) VALUES (-2, 1, 'analysis 3');

@@ -1,5 +1,8 @@
 package org.drugis.addis.interventions.model;
 
+import org.drugis.addis.interventions.controller.viewAdapter.AbstractInterventionViewAdapter;
+import org.drugis.addis.interventions.controller.viewAdapter.BothDoseTypesInterventionViewAdapter;
+
 import javax.persistence.*;
 import java.net.URI;
 
@@ -40,6 +43,11 @@ public class BothDoseTypesIntervention extends SingleIntervention {
   private DoseConstraint maxConstraint;
 
   public BothDoseTypesIntervention() {
+  }
+
+  @Override
+  public AbstractInterventionViewAdapter toViewAdapter() {
+    return new BothDoseTypesInterventionViewAdapter(this);
   }
 
   public BothDoseTypesIntervention(DoseConstraint minConstraint, DoseConstraint maxConstraint) {

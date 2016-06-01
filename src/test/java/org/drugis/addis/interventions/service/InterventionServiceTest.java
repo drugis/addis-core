@@ -1,8 +1,8 @@
 package org.drugis.addis.interventions.service;
 
+import org.drugis.addis.interventions.controller.command.LowerBoundCommand;
+import org.drugis.addis.interventions.controller.command.UpperBoundCommand;
 import org.drugis.addis.interventions.model.*;
-import org.drugis.addis.interventions.model.command.LowerBoundCommand;
-import org.drugis.addis.interventions.model.command.UpperBoundCommand;
 import org.drugis.addis.interventions.service.impl.InterventionServiceImpl;
 import org.drugis.addis.interventions.service.impl.InvalidTypeForDoseCheckException;
 import org.drugis.addis.trialverse.model.trialdata.*;

@@ -1,7 +1,7 @@
 package org.drugis.addis.interventions.model;
 
-import org.drugis.addis.interventions.model.command.LowerBoundCommand;
-import org.drugis.addis.interventions.model.command.UpperBoundCommand;
+import org.drugis.addis.interventions.controller.command.LowerBoundCommand;
+import org.drugis.addis.interventions.controller.command.UpperBoundCommand;
 
 import javax.persistence.Embeddable;
 import javax.persistence.Embedded;

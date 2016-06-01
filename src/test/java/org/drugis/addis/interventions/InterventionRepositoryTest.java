@@ -3,8 +3,8 @@ package org.drugis.addis.interventions;
 import org.drugis.addis.config.JpaRepositoryTestConfig;
 import org.drugis.addis.exception.MethodNotAllowedException;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
+import org.drugis.addis.interventions.controller.command.*;
 import org.drugis.addis.interventions.model.*;
-import org.drugis.addis.interventions.model.command.*;
 import org.drugis.addis.interventions.repository.InterventionRepository;
 import org.drugis.addis.security.Account;
 import org.junit.Test;
@@ -118,17 +118,17 @@ public class InterventionRepositoryTest {
   @Test
   public void createCombinedInterventionTest() throws ResourceDoesNotExistException {
     Integer projectId = 1;
-    SimpleIntervention simpleIntervention = (SimpleIntervention) em.find(AbstractIntervention.class, -1);
-    TitratedDoseIntervention titratedDoseIntervention = (TitratedDoseIntervention) em.find(AbstractIntervention.class, -5);
-    Set<AbstractIntervention> combination = new HashSet<>();
-    combination.add(simpleIntervention);
-    combination.add(titratedDoseIntervention);
+
+    Set<Integer> combination = new HashSet<>();
+    combination.add( -1);
+    combination.add(-5);
     CombinationIntervention combinationIntervention = new CombinationIntervention(null, projectId, "intervention name", "motivation", combination);
     em.persist(combinationIntervention);
 
+
     CombinationIntervention result = em.find(CombinationIntervention.class, combinationIntervention.getId());
     assertEquals(combinationIntervention, result);
-    assertEquals(combination, result.getInterventions());
+    assertEquals(2, result.getSingleInterventionIds().size());
   }
 
 

@@ -1,5 +1,7 @@
 package org.drugis.addis.interventions.model;
 
+import org.drugis.addis.interventions.controller.viewAdapter.AbstractInterventionViewAdapter;
+import org.drugis.addis.interventions.controller.viewAdapter.SimpleInterventionViewAdapter;
 import org.drugis.addis.trialverse.model.SemanticInterventionUriAndName;
 
 import javax.persistence.Entity;
@@ -21,6 +23,11 @@ public class SimpleIntervention extends SingleIntervention implements Serializab
     super(id, project, name, motivation, semanticInterventionUri, semanticInterventionLabel);
   }
 
+  @Override
+  public AbstractInterventionViewAdapter toViewAdapter() {
+    return new SimpleInterventionViewAdapter(this);
+  }
+
   public SimpleIntervention(Integer projectId, String name, String motivation, SemanticInterventionUriAndName semanticInterventionUriAndName) {
     this(null, projectId, name, motivation, semanticInterventionUriAndName.getUri(), semanticInterventionUriAndName.getLabel());
   }
@@ -28,4 +35,6 @@ public class SimpleIntervention extends SingleIntervention implements Serializab
   public SimpleIntervention(Integer id, Integer projectId, String name, String motivation, SemanticInterventionUriAndName semanticInterventionUriAndName) {
     this(id, projectId, name, motivation, semanticInterventionUriAndName.getUri(), semanticInterventionUriAndName.getLabel());
   }
+
+
 }

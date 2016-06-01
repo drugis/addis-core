@@ -42,6 +42,18 @@ define(['angular', 'angular-mocks'], function() {
       }
     };
 
+    var interventions = [{
+      id: 1,
+      name: 'placebo'
+    }, {
+      id: 2,
+      name: 'sertraline'
+    }];
+
+    var combinationIntervention = {
+      type: 'combination',
+      singleInterventionIds: [1,2]
+    };
     beforeEach(module('addis.interventions'));
 
     beforeEach(inject(function(InterventionService) {
@@ -61,6 +73,7 @@ define(['angular', 'angular-mocks'], function() {
         expect(interventionService.generateDescriptionLabel(fixedIntervention)).toEqual(': fixed dose; dose >= 1.2 unit/day AND >= 1.2 unit/day');
         expect(interventionService.generateDescriptionLabel(titratedIntervention)).toEqual(': titrated dose; min dose >= 1.2 unit/day AND >= 1.2 unit/day; max dose >= 1.2 unit/day AND >= 1.2 unit/day');
         expect(interventionService.generateDescriptionLabel(bothIntervention)).toEqual(': min dose >= 1.2 unit/day AND >= 1.2 unit/day; max dose >= 1.2 unit/day AND >= 1.2 unit/day');
+        expect(interventionService.generateDescriptionLabel(combinationIntervention, interventions)).toEqual('placebo + sertraline');
       });
     });
   });

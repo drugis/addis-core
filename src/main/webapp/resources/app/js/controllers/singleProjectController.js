@@ -69,7 +69,7 @@ define(['lodash', 'angular'], function(_, angular) {
         projectId: $scope.project.id
       }).$promise.then(function(interventions) {
         $scope.interventions = interventions.map(function(intervention) {
-          intervention.definitionLabel = InterventionService.generateDescriptionLabel(intervention);
+          intervention.definitionLabel = InterventionService.generateDescriptionLabel(intervention, interventions);
           return intervention;
         });
       });

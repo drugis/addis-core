@@ -558,14 +558,14 @@ CREATE TABLE CombinationIntervention (
    FOREIGN KEY(combinationInterventionId) REFERENCES AbstractIntervention(id)
 );
 
-CREATE TABLE CombinationIntervention_Intervention (
+CREATE TABLE InterventionCombination (
    combinationInterventionId INT NOT NULL,
-   interventionId INT NOT NULL,
-   PRIMARY KEY(combinationInterventionId, interventionId),
+   singleInterventionId INT NOT NULL,
+   PRIMARY KEY(combinationInterventionId, singleInterventionId),
    FOREIGN KEY(combinationInterventionId) REFERENCES CombinationIntervention(combinationInterventionId),
-   FOREIGN KEY(interventionId) REFERENCES SingleIntervention(singleInterventionId)
+   FOREIGN KEY(singleInterventionId) REFERENCES SingleIntervention(singleInterventionId)
 );
---rollback DROP TABLE CombinationIntervention_Intervention;
+--rollback DROP TABLE InterventionCombination;
 --rollback DROP TABLE CombinationIntervention;
 --rollback ALTER TABLE AbstractIntervention ADD COLUMN semanticInterventionLabel;
 --rollback ALTER TABLE AbstractIntervention ADD COLUMN semanticInterventionUri;

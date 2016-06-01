@@ -2,6 +2,7 @@ package org.drugis.addis.interventions.model;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import org.drugis.addis.interventions.controller.viewAdapter.AbstractInterventionViewAdapter;
 
 import javax.persistence.Entity;
 import javax.persistence.Inheritance;
@@ -42,6 +43,9 @@ public abstract class SingleIntervention extends AbstractIntervention {
   public String getSemanticInterventionLabel() {
     return semanticInterventionLabel;
   }
+
+  @Override
+  public abstract AbstractInterventionViewAdapter toViewAdapter();
 
   @Override
   public boolean equals(Object o) {

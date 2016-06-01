@@ -1,5 +1,8 @@
 package org.drugis.addis.interventions.model;
 
+import org.drugis.addis.interventions.controller.viewAdapter.AbstractInterventionViewAdapter;
+import org.drugis.addis.interventions.controller.viewAdapter.CombinationInterventionViewAdapter;
+
 import javax.persistence.*;
 import java.util.Collections;
 import java.util.HashSet;
@@ -12,23 +15,30 @@ import java.util.Set;
 @PrimaryKeyJoinColumn(name = "combinationInterventionId", referencedColumnName = "id")
 public class CombinationIntervention extends AbstractIntervention {
 
-  @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-  @JoinTable(name = "CombinationIntervention_Intervention",
-          joinColumns = {@JoinColumn(name = "combinationInterventionId", referencedColumnName = "combinationInterventionId")},
-          inverseJoinColumns = {@JoinColumn(name = "interventionId", referencedColumnName = "id")})
-  private Set<AbstractIntervention> interventions = new HashSet<>();
+  @ElementCollection
+  @CollectionTable(
+          name="InterventionCombination",
+          joinColumns=@JoinColumn(name="combinationInterventionId")
+  )
+  @Column(name="singleInterventionId")
+  private Set<Integer> singleInterventionIds = new HashSet<>();
 
   public CombinationIntervention() {
     super();
   }
 
-  public CombinationIntervention(Integer id, Integer project, String name, String motivation, Set<AbstractIntervention> interventions) {
+  public CombinationIntervention(Integer id, Integer project, String name, String motivation, Set<Integer> singleInterventionIds) {
     super(id, project, name, motivation);
-    this.interventions = interventions;
+    this.singleInterventionIds = singleInterventionIds;
   }
 
-  public Set<AbstractIntervention> getInterventions() {
-    return Collections.unmodifiableSet(interventions);
+  public Set<Integer> getSingleInterventionIds() {
+    return Collections.unmodifiableSet(singleInterventionIds);
+  }
+
+  @Override
+  public AbstractInterventionViewAdapter toViewAdapter() {
+    return new CombinationInterventionViewAdapter(this);
   }
 
   @Override
@@ -39,14 +49,14 @@ public class CombinationIntervention extends AbstractIntervention {
 
     CombinationIntervention that = (CombinationIntervention) o;
 
-    return interventions.equals(that.interventions);
+    return singleInterventionIds.equals(that.singleInterventionIds);
 
   }
 
   @Override
   public int hashCode() {
     int result = super.hashCode();
-    result = 31 * result + interventions.hashCode();
+    result = 31 * result + singleInterventionIds.hashCode();
     return result;
   }
 }

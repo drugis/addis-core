@@ -685,12 +685,12 @@ CREATE TABLE CombinationIntervention (
    FOREIGN KEY(combinationInterventionId) REFERENCES AbstractIntervention(id)
 );
 
-CREATE TABLE CombinationIntervention_Intervention (
+CREATE TABLE InterventionCombination (
    combinationInterventionId INT NOT NULL,
-   interventionId INT NOT NULL,
-   PRIMARY KEY(combinationInterventionId, interventionId),
+   singleInterventionId INT NOT NULL,
+   PRIMARY KEY(combinationInterventionId, singleInterventionId),
    FOREIGN KEY(combinationInterventionId) REFERENCES CombinationIntervention(combinationInterventionId),
-   FOREIGN KEY(interventionId) REFERENCES SingleIntervention(singleInterventionId)
+   FOREIGN KEY(singleInterventionId) REFERENCES SingleIntervention(singleInterventionId)
 );
 
 ALTER TABLE SingleIntervention DROP CONSTRAINT IF EXISTS singleIntervention_singleInterventionid_fkey ;
@@ -707,7 +707,7 @@ ALTER TABLE TitratedDoseIntervention ADD CONSTRAINT titratedintervention_titrate
 
 ALTER TABLE BothDoseTypesIntervention DROP CONSTRAINT IF EXISTS bothtypesintervention_bothtypesinterventionid_fkey ;
 ALTER TABLE BothDoseTypesIntervention ADD CONSTRAINT bothtypesintervention_bothtypesinterventionid_fkey FOREIGN KEY (bothTypesInterventionId) REFERENCES SingleIntervention(singleInterventionId) ON DELETE CASCADE;
---rollback DROP TABLE CombinationIntervention_Intervention;
+
 --rollback DROP TABLE CombinationIntervention;
 --rollback ALTER TABLE AbstractIntervention ADD COLUMN semanticInterventionLabel VARCHAR NOT NULL;
 --rollback ALTER TABLE AbstractIntervention ADD COLUMN semanticInterventionUri VARCHAR NOT NULL;

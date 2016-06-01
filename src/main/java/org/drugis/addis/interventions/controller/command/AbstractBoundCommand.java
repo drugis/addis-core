@@ -1,4 +1,4 @@
-package org.drugis.addis.interventions.model.command;
+package org.drugis.addis.interventions.controller.command;
 
 import java.net.URI;
 
@@ -6,10 +6,10 @@ import java.net.URI;
  * Created by connor on 13-4-16.
  */
 public abstract class AbstractBoundCommand {
-  String unitName;
-  String unitPeriod;
-  URI unitConcept;
-  Double value;
+  private String unitName;
+  private String unitPeriod;
+  private URI unitConcept;
+  private Double value;
 
   public AbstractBoundCommand() {}
 

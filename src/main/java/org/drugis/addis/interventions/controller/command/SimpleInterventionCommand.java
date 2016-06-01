@@ -1,4 +1,4 @@
-package org.drugis.addis.interventions.model.command;
+package org.drugis.addis.interventions.controller.command;
 
 import org.drugis.addis.interventions.model.SimpleIntervention;
 import org.drugis.addis.trialverse.model.SemanticInterventionUriAndName;

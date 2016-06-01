@@ -1,5 +1,8 @@
 package org.drugis.addis.interventions.model;
 
+import org.drugis.addis.interventions.controller.viewAdapter.AbstractInterventionViewAdapter;
+import org.drugis.addis.interventions.controller.viewAdapter.FixedInterventionViewAdapter;
+
 import javax.persistence.*;
 import java.io.Serializable;
 import java.net.URI;
@@ -41,6 +44,11 @@ public class FixedDoseIntervention extends SingleIntervention implements Seriali
   public FixedDoseIntervention(Integer project, String name, String motivation, URI semanticInterventionUri, String semanticInterventionLabel,
                                DoseConstraint constraint) {
     this(null, project, name, motivation, semanticInterventionUri, semanticInterventionLabel, constraint);
+  }
+
+  @Override
+  public AbstractInterventionViewAdapter toViewAdapter() {
+    return new FixedInterventionViewAdapter(this);
   }
 
   @Override

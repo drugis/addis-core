@@ -3,9 +3,10 @@ package org.drugis.addis.interventions.controller;
 import org.drugis.addis.base.AbstractAddisCoreController;
 import org.drugis.addis.exception.MethodNotAllowedException;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
+import org.drugis.addis.interventions.controller.command.AbstractInterventionCommand;
+import org.drugis.addis.interventions.controller.viewAdapter.AbstractInterventionViewAdapter;
 import org.drugis.addis.interventions.model.AbstractIntervention;
 import org.drugis.addis.interventions.model.InvalidConstraintException;
-import org.drugis.addis.interventions.model.command.AbstractInterventionCommand;
 import org.drugis.addis.interventions.repository.InterventionRepository;
 import org.drugis.addis.security.Account;
 import org.drugis.addis.security.repository.AccountRepository;
@@ -18,6 +19,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.security.Principal;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Created by daan on 3/5/14.
@@ -34,10 +36,12 @@ public class InterventionController extends AbstractAddisCoreController {
 
   @RequestMapping(value = "/projects/{projectId}/interventions", method = RequestMethod.GET)
   @ResponseBody
-  public List<AbstractIntervention> query(Principal currentUser, @PathVariable Integer projectId) throws MethodNotAllowedException, ResourceDoesNotExistException {
+  public List<AbstractInterventionViewAdapter> query(Principal currentUser, @PathVariable Integer projectId) throws MethodNotAllowedException, ResourceDoesNotExistException {
     Account user = accountRepository.findAccountByUsername(currentUser.getName());
     if (user != null) {
-      return interventionRepository.query(projectId);
+      List<AbstractIntervention> interventions = interventionRepository.query(projectId);
+      List<AbstractInterventionViewAdapter> viewAdapters = interventions.stream().map(AbstractIntervention::toViewAdapter).collect(Collectors.toList());
+      return viewAdapters;
     } else {
       throw new MethodNotAllowedException();
     }
@@ -45,10 +49,11 @@ public class InterventionController extends AbstractAddisCoreController {
 
   @RequestMapping(value = "/projects/{projectId}/interventions/{interventionId}", method = RequestMethod.GET)
   @ResponseBody
-  public AbstractIntervention get(Principal currentUser, @PathVariable Integer projectId, @PathVariable Integer interventionId) throws MethodNotAllowedException, ResourceDoesNotExistException {
+  public AbstractInterventionViewAdapter get(Principal currentUser, @PathVariable Integer projectId, @PathVariable Integer interventionId) throws MethodNotAllowedException, ResourceDoesNotExistException {
     Account user = accountRepository.findAccountByUsername(currentUser.getName());
     if (user != null) {
-      return interventionRepository.get(projectId, interventionId);
+      AbstractIntervention intervention = interventionRepository.get(projectId, interventionId);
+      return intervention.toViewAdapter();
     } else {
       throw new MethodNotAllowedException();
     }
@@ -56,14 +61,14 @@ public class InterventionController extends AbstractAddisCoreController {
 
   @RequestMapping(value = "/projects/{projectId}/interventions", method = RequestMethod.POST)
   @ResponseBody
-  public AbstractIntervention create(HttpServletRequest request, HttpServletResponse response, Principal currentUser, @PathVariable Integer projectId,
+  public AbstractInterventionViewAdapter create(HttpServletRequest request, HttpServletResponse response, Principal currentUser, @PathVariable Integer projectId,
                                      @RequestBody AbstractInterventionCommand interventionCommand) throws MethodNotAllowedException, ResourceDoesNotExistException, InvalidConstraintException {
     Account user = accountRepository.findAccountByUsername(currentUser.getName());
     if (user != null) {
       AbstractIntervention intervention = interventionRepository.create(user, interventionCommand);
       response.setStatus(HttpServletResponse.SC_CREATED);
       response.setHeader("Location", request.getRequestURL() + "/");
-      return intervention;
+      return intervention.toViewAdapter();
     } else {
       throw new MethodNotAllowedException();
     }
