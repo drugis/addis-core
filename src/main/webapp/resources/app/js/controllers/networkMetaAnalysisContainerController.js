@@ -16,6 +16,7 @@ define(['lodash'], function(_) {
     $scope.project = currentProject;
     $scope.networkGraph = {};
     $scope.trialData = {};
+    $scope.treatmentOverlapMap = {};
     $scope.loading = {
       loaded: false
     };
