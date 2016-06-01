@@ -41,14 +41,14 @@ public class QueryResultMappingServiceTest {
   @Test
   public void testMapResultRowToTrialDataStudy() throws ParseException, ReadValueException, URISyntaxException {
     JSONArray bindings = (JSONArray) JSONValue.parseWithException(resultRows);
-    Map<URI, TrialDataStudy> trialDataMap = queryResultMappingService.mapResultRowToTrialDataStudy(bindings);
+    Map<URI, TrialDataStudy> trialDataMap = queryResultMappingService.mapResultRowsToTrialDataStudy(bindings);
     assertEquals(5, trialDataMap.size());
 
     URI studyWithFixedInterventionUri = new URI("http://trials.drugis.org/graphs/294b3fa9-ba49-4c16-a551-afba9b5856a3");
     TrialDataStudy trialDataStudy = trialDataMap.get(studyWithFixedInterventionUri);
     List<TrialDataArm> trialDataArms = trialDataStudy.getTrialDataArms();
 
-    AbstractSemanticIntervention intervention = trialDataArms.get(0).getSemanticIntervention();
+    AbstractSemanticIntervention intervention = trialDataArms.get(0).getSemanticInterventions().get(0);
     assertTrue(intervention instanceof FixedSemanticIntervention);
     FixedSemanticIntervention fixedSemanticIntervention = (FixedSemanticIntervention) intervention;
     Dose fixedDose = fixedSemanticIntervention.getDose();
@@ -62,7 +62,7 @@ public class QueryResultMappingServiceTest {
     URI studyWithTitratedInterventionUri = new URI("http://trials.drugis.org/graphs/c600d0ee-9d64-4395-ad06-f4b4843b20f6");
     trialDataStudy = trialDataMap.get(studyWithTitratedInterventionUri);
 
-    intervention= trialDataStudy.getTrialDataArms().get(0).getSemanticIntervention();
+    intervention= trialDataStudy.getTrialDataArms().get(0).getSemanticInterventions().get(0);
     assertTrue(intervention instanceof TitratedSemanticIntervention);
     TitratedSemanticIntervention titratedSemanticIntervention = (TitratedSemanticIntervention) intervention;
     Dose minDose = titratedSemanticIntervention.getMinDose();

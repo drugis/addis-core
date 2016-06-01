@@ -298,7 +298,7 @@ public class ProblemServiceImpl implements ProblemService {
         entries.addAll(filteredArms.stream()
                 .map(trialDataArm -> buildEntry(trialDataStudy.getName(),
                         trialDataArm.getMatchedProjectInterventionIds().iterator().next(), // safe because we filter unmatched arms
-                        trialDataArm.getMeasurements().get(0)))  // nma has exactly one measurement
+                        trialDataArm.getMeasurements().iterator().next()))  // nma has exactly one measurement
                 .collect(Collectors.toList()));
       }
     }
@@ -410,7 +410,7 @@ public class ProblemServiceImpl implements ProblemService {
     Map<URI, CriterionEntry> criteria = new HashMap<>();
     Set<Pair<Measurement, Integer>> measurementDrugInstancePairs = new HashSet<>();
     for (TrialDataArm arm : trialDataStudy.getTrialDataArms()) {
-      List<Measurement> measurements = arm.getMeasurements();
+      Set<Measurement> measurements = arm.getMeasurements();
       Set<AbstractIntervention> matchingIncludedInterventions = triplestoreService.findMatchingIncludedInterventions(includedInterventions, arm);
       if (matchingIncludedInterventions.size() == 1) {
         Integer matchedProjectInterventionId = matchingIncludedInterventions.iterator().next().getId();

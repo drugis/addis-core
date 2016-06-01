@@ -71,14 +71,10 @@ public class ProjectServiceImpl implements ProjectService {
   @Override
   public List<TrialDataStudy> queryMatchedStudies(Integer projectId) throws ResourceDoesNotExistException, ReadValueException, URISyntaxException {
     Project project = projectRepository.get(projectId);
-    //todo WHAT ABOUT COMBINED INTERVENTIONS
     List<AbstractIntervention> interventions = interventionRepository.query(projectId);
-    List<SingleIntervention> singleInterventions = interventions.stream()
+    Set<URI> singleInterventionUris = interventions.stream()
             .filter(ai -> ai instanceof SingleIntervention)
             .map(ai -> (SingleIntervention) ai)
-            .collect(Collectors.toList());
-    Set<URI> interventionUris = singleInterventions
-            .stream()
             .map(SingleIntervention::getSemanticInterventionUri)
             .collect(Collectors.toSet());
 
@@ -86,7 +82,7 @@ public class ProjectServiceImpl implements ProjectService {
             .stream()
             .map(Outcome::getSemanticOutcomeUri)
             .collect(Collectors.toSet());
-    List<TrialDataStudy> studies = triplestoreService.getAllTrialData(mappingService.getVersionedUuid(project.getNamespaceUid()), project.getDatasetVersion(), outcomeUris, interventionUris);
+    List<TrialDataStudy> studies = triplestoreService.getAllTrialData(mappingService.getVersionedUuid(project.getNamespaceUid()), project.getDatasetVersion(), outcomeUris, singleInterventionUris);
     studies = triplestoreService.addMatchingInformation(interventions, studies);
     return studies;
   }

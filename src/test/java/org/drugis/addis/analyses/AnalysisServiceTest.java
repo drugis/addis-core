@@ -284,9 +284,11 @@ public class AnalysisServiceTest {
     Dose maxDose1 = new Dose(1.0, "P1D", URI.create("unitConceptUri"), "milligram", 0.001);
     AbstractSemanticIntervention arm1Intervention = new TitratedSemanticIntervention(drugInstance1, drugConcept1, minDose1, maxDose1);
     AbstractSemanticIntervention arm2Intervention = new SimpleSemanticIntervention(drugInstance2, drugConcept2);
-    TrialDataArm arm1 = new TrialDataArm(URI.create("foo/armuri1"), "armname1", drugInstance1, arm1Intervention);
+    TrialDataArm arm1 = new TrialDataArm(URI.create("foo/armuri1"), "armname1", drugInstance1);
+    arm1.addSemanticIntervention(arm1Intervention);
     arm1.setMatchedProjectInterventionIds(new HashSet<>(Collections.singletonList(includedIntervention.getId())));
-    TrialDataArm arm2 = new TrialDataArm(URI.create("foo/armuri2"), "armname2", drugInstance2, arm2Intervention);
+    TrialDataArm arm2 = new TrialDataArm(URI.create("foo/armuri2"), "armname2", drugInstance2);
+    arm2.addSemanticIntervention(arm2Intervention);
     List<TrialDataArm> study1Arms = Arrays.asList(arm1, arm2);
     TrialDataStudy study1 = new TrialDataStudy(URI.create("studyUri"), "name", study1Arms);
     List<TrialDataStudy> trialData = Collections.singletonList(study1);

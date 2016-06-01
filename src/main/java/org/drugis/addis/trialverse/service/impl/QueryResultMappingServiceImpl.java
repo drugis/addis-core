@@ -24,7 +24,7 @@ public class QueryResultMappingServiceImpl implements QueryResultMappingService 
   public final static String TITRATED_INTERVENTION_TYPE = "http://trials.drugis.org/ontology#TitratedDoseDrugTreatment";
 
   @Override
-  public Map<URI, TrialDataStudy> mapResultRowToTrialDataStudy(JSONArray bindings) throws ReadValueException {
+  public Map<URI, TrialDataStudy> mapResultRowsToTrialDataStudy(JSONArray bindings) throws ReadValueException {
     Map<URI, TrialDataStudy> trialDataStudies = new HashMap<>();
     Map<URI, TrialDataArm> armCache = new HashMap<>();
     for (Object binding : bindings) {
@@ -44,11 +44,15 @@ public class QueryResultMappingServiceImpl implements QueryResultMappingService 
       TrialDataArm trialDataArm = armCache.get(armUri);
       if( trialDataArm == null) {
         String armLabel = readValue(row, "armLabel");
-        trialDataArm = new TrialDataArm(armUri, armLabel, drugInstance, abstractSemanticIntervention);
+        trialDataArm = new TrialDataArm(armUri, armLabel, drugInstance);
         armCache.put(armUri, trialDataArm);
         trialDataStudy.getTrialDataArms().add(trialDataArm);
       }
+
       Measurement measurement = readMeasurement(row, studyUri, armUri);
+      if(!trialDataArm.getMeasurements().contains(measurement)) {
+        trialDataArm.addSemanticIntervention(abstractSemanticIntervention);
+      }
       trialDataArm.addMeasurement(measurement);
     }
     return trialDataStudies;

@@ -13,6 +13,6 @@ import java.util.Map;
  * Created by connor on 8-4-16.
  */
 public interface QueryResultMappingService {
-  Map<URI, TrialDataStudy> mapResultRowToTrialDataStudy(JSONArray bindings) throws ReadValueException;
+  Map<URI, TrialDataStudy> mapResultRowsToTrialDataStudy(JSONArray bindings) throws ReadValueException;
   CovariateStudyValue mapResultToCovariateStudyValue(JSONObject row) throws ReadValueException;
 }
