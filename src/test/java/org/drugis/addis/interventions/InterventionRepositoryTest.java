@@ -49,22 +49,22 @@ public class InterventionRepositoryTest {
   @Test
   public void testGet() throws ResourceDoesNotExistException {
     int interventionId = -1;
-    AbstractIntervention intervention = interventionRepository.get(1, interventionId);
+    AbstractIntervention intervention = interventionRepository.get(1);
     assertEquals(em.find(AbstractIntervention.class, interventionId), intervention);
     assert(intervention instanceof SimpleIntervention);
 
     interventionId = -4;
-    intervention = interventionRepository.get(2, interventionId);
+    intervention = interventionRepository.get(2);
     assertEquals(em.find(AbstractIntervention.class, interventionId), intervention);
     assert(intervention instanceof FixedDoseIntervention);
 
     interventionId = -5;
-    intervention = interventionRepository.get(2, interventionId);
+    intervention = interventionRepository.get(2);
     assertEquals(em.find(AbstractIntervention.class, interventionId), intervention);
     assert(intervention instanceof TitratedDoseIntervention);
 
     interventionId = -6;
-    intervention = interventionRepository.get(2, interventionId);
+    intervention = interventionRepository.get(2);
     assertEquals(em.find(AbstractIntervention.class, interventionId), intervention);
     assert(intervention instanceof CombinationIntervention);
   }
@@ -135,7 +135,7 @@ public class InterventionRepositoryTest {
 
   @Test(expected = ResourceDoesNotExistException.class)
   public void testGetFromWrongProjectFails() throws ResourceDoesNotExistException {
-    interventionRepository.get(2, -1);
+    interventionRepository.get(2);
   }
 
   @Test

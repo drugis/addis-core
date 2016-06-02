@@ -2,14 +2,13 @@ package org.drugis.addis.trialverse.service.impl;
 
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
+import org.apache.commons.lang3.tuple.Pair;
 import org.drugis.addis.trialverse.model.trialdata.*;
 import org.drugis.addis.trialverse.service.QueryResultMappingService;
 import org.springframework.stereotype.Service;
 
 import java.net.URI;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 import static org.drugis.addis.trialverse.TrialverseUtilService.readValue;
 
@@ -27,6 +26,9 @@ public class QueryResultMappingServiceImpl implements QueryResultMappingService 
   public Map<URI, TrialDataStudy> mapResultRowsToTrialDataStudy(JSONArray bindings) throws ReadValueException {
     Map<URI, TrialDataStudy> trialDataStudies = new HashMap<>();
     Map<URI, TrialDataArm> armCache = new HashMap<>();
+
+    Set<Pair<URI, URI>> seenArmTreatmentCombinations = new HashSet<>();
+
     for (Object binding : bindings) {
       JSONObject row = (JSONObject) binding;
       URI studyUri = readValue(row, "graph");
@@ -50,7 +52,9 @@ public class QueryResultMappingServiceImpl implements QueryResultMappingService 
       }
 
       Measurement measurement = readMeasurement(row, studyUri, armUri);
-      if(!trialDataArm.getMeasurements().contains(measurement)) {
+      Pair<URI, URI> armPlusTreatment = Pair.of(armUri, readValue(row, "treatmentNode"));
+      if (!seenArmTreatmentCombinations.contains(armPlusTreatment)) {
+        seenArmTreatmentCombinations.add(armPlusTreatment);
         trialDataArm.addSemanticIntervention(abstractSemanticIntervention);
       }
       trialDataArm.addMeasurement(measurement);

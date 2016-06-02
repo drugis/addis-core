@@ -1,17 +1,28 @@
 package org.drugis.addis.interventions.service;
 
+import com.google.common.collect.ImmutableSet;
+import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.interventions.controller.command.LowerBoundCommand;
 import org.drugis.addis.interventions.controller.command.UpperBoundCommand;
 import org.drugis.addis.interventions.model.*;
+import org.drugis.addis.interventions.repository.InterventionRepository;
 import org.drugis.addis.interventions.service.impl.InterventionServiceImpl;
 import org.drugis.addis.interventions.service.impl.InvalidTypeForDoseCheckException;
 import org.drugis.addis.trialverse.model.trialdata.*;
+import org.junit.Before;
 import org.junit.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 
 import java.net.URI;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 import static junit.framework.TestCase.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.when;
+import static org.mockito.MockitoAnnotations.initMocks;
 
 /**
  * Created by connor on 12-4-16.
@@ -19,7 +30,12 @@ import static org.junit.Assert.assertTrue;
 public class InterventionServiceTest {
 
   private final URI drugInstanceUri = URI.create("drugInstanceUri");
-  private InterventionService interventionService = new InterventionServiceImpl();
+
+  @Mock
+  private InterventionRepository interventionRepository;
+
+  @InjectMocks
+  private InterventionService interventionService;
 
   private Integer interventionId = 2;
   private Integer projectId = 1;
@@ -28,26 +44,29 @@ public class InterventionServiceTest {
   private String unitLabel = "unitLabel";
   private Double unitMultiplier = 2d;
   private URI drugConceptUri = URI.create("drugConceptUri");
+  private URI drugConceptUri2 = URI.create("drugConceptUri2");
+
+  @Before
+  public void setUp() {
+    interventionService = new InterventionServiceImpl();
+    initMocks(this);
+  }
 
   @Test
   public void isMatchedSimpleIntervention() throws Exception, InvalidTypeForDoseCheckException {
     AbstractIntervention intervention = new SimpleIntervention(interventionId, projectId, "intervention name", "moti", drugConceptUri, "sem label");
     AbstractSemanticIntervention semanticIntervention = new SimpleSemanticIntervention(drugInstanceUri, drugConceptUri);
-    TrialDataArm trialdataArm = new TrialDataArm(URI.create("uri"), "arm name", URI.create("instance"));
-    trialdataArm.addSemanticIntervention(semanticIntervention);
 
-    assertTrue(interventionService.isMatched(intervention, trialdataArm.getSemanticInterventions().get(0)));
+    assertTrue(interventionService.isMatched(intervention, Collections.singletonList(semanticIntervention)));
   }
 
   @Test
   public void isUNMatchedSimpleIntervention() throws Exception, InvalidTypeForDoseCheckException {
     AbstractSemanticIntervention semanticIntervention = new SimpleSemanticIntervention(drugInstanceUri, drugConceptUri);
-    TrialDataArm trialdataArm = new TrialDataArm(URI.create("uri"), "arm name", URI.create("instance"));
-    trialdataArm.addSemanticIntervention(semanticIntervention);
     URI otherdrugConceptUri = URI.create("otherDrugConceptUri");
     AbstractIntervention intervention = new SimpleIntervention(interventionId, projectId, "intervention name", "moti", otherdrugConceptUri, "sem label");
 
-    assertFalse(interventionService.isMatched(intervention, trialdataArm.getSemanticInterventions().get(0)));
+    assertFalse(interventionService.isMatched(intervention, Collections.singletonList(semanticIntervention)));
   }
 
   @Test
@@ -59,12 +78,11 @@ public class InterventionServiceTest {
     UpperBoundCommand upperBound = new UpperBoundCommand(UpperBoundType.AT_MOST, doseValue + 1, unitLabel, dosePeriod, unitConcept);
     DoseConstraint doseConstraint = new DoseConstraint(lowerBound, upperBound);
     AbstractIntervention intervention = new FixedDoseIntervention(interventionId, projectId, "intervention name", "moti", drugConceptUri, "sem label", doseConstraint);
+
     Dose fixedMatchingDose = new Dose(doseValue, dosePeriod, unitConcept, unitLabel, unitMultiplier);
     AbstractSemanticIntervention semanticIntervention = new FixedSemanticIntervention(drugInstanceUri, drugConceptUri, fixedMatchingDose);
-    TrialDataArm trialdataArm = new TrialDataArm(URI.create("uri"), "arm name", URI.create("instance"));
-    trialdataArm.addSemanticIntervention(semanticIntervention);
 
-    assertTrue(interventionService.isMatched(intervention, trialdataArm.getSemanticInterventions().get(0)));
+    assertTrue(interventionService.isMatched(intervention, Collections.singletonList(semanticIntervention)));
   }
 
   @Test
@@ -78,9 +96,8 @@ public class InterventionServiceTest {
     AbstractIntervention intervention = new FixedDoseIntervention(interventionId, projectId, "intervention name", "moti", drugConceptUri, "sem label", doseConstraint);
     Dose fixedMatchingDose = new Dose(doseValue, dosePeriod, unitConcept, unitLabel, unitMultiplier);
     AbstractSemanticIntervention semanticIntervention = new FixedSemanticIntervention(drugInstanceUri, drugConceptUri, fixedMatchingDose);
-    TrialDataArm trialdataArm = new TrialDataArm(URI.create("uri"), "arm name", URI.create("instance"));
-    trialdataArm.addSemanticIntervention(semanticIntervention);
-    assertFalse(interventionService.isMatched(intervention, trialdataArm.getSemanticInterventions().get(0)));
+
+    assertFalse(interventionService.isMatched(intervention, Collections.singletonList(semanticIntervention)));
   }
 
   @Test
@@ -93,13 +110,12 @@ public class InterventionServiceTest {
     DoseConstraint minConstraint = new DoseConstraint(lowerBound, upperBound);
     DoseConstraint maxConstraint = null;
     AbstractIntervention intervention = new TitratedDoseIntervention(interventionId, projectId, "intervention name", "moti", drugConceptUri, "sem label", minConstraint, maxConstraint);
+
     Dose minDose = new Dose(doseValue, dosePeriod, unitConcept, unitLabel, unitMultiplier);
     Dose maxDose = new Dose(doseValue, dosePeriod, unitConcept, unitLabel, unitMultiplier);
     AbstractSemanticIntervention semanticIntervention = new TitratedSemanticIntervention(drugInstanceUri, drugConceptUri, minDose, maxDose);
-    TrialDataArm trialdataArm = new TrialDataArm(URI.create("uri"), "arm name", URI.create("instance"));
-    trialdataArm.addSemanticIntervention(semanticIntervention);
 
-    assertTrue(interventionService.isMatched(intervention, trialdataArm.getSemanticInterventions().get(0)));
+    assertTrue(interventionService.isMatched(intervention, Collections.singletonList(semanticIntervention)));
   }
 
   @Test
@@ -115,9 +131,8 @@ public class InterventionServiceTest {
     Dose minDose = new Dose(doseValue, dosePeriod, unitConcept, unitLabel, unitMultiplier);
     Dose maxDose = new Dose(doseValue, dosePeriod, unitConcept, unitLabel, unitMultiplier);
     AbstractSemanticIntervention semanticIntervention = new TitratedSemanticIntervention(drugInstanceUri, drugConceptUri, minDose, maxDose);
-    TrialDataArm trialdataArm = new TrialDataArm(URI.create("uri"), "arm name", URI.create("instance"));
-    trialdataArm.addSemanticIntervention(semanticIntervention);
-    assertFalse(interventionService.isMatched(intervention, trialdataArm.getSemanticInterventions().get(0)));
+
+    assertFalse(interventionService.isMatched(intervention, Collections.singletonList(semanticIntervention)));
   }
 
   @Test
@@ -133,9 +148,8 @@ public class InterventionServiceTest {
     Dose minDose = new Dose(doseValue, dosePeriod, unitConcept, unitLabel, unitMultiplier);
     Dose maxDose = new Dose(doseValue, dosePeriod, unitConcept, unitLabel, unitMultiplier);
     AbstractSemanticIntervention semanticIntervention = new TitratedSemanticIntervention(drugInstanceUri, drugConceptUri, minDose, maxDose);
-    TrialDataArm trialdataArm = new TrialDataArm(URI.create("uri"), "arm name", URI.create("instance"));
-    trialdataArm.addSemanticIntervention(semanticIntervention);
-    assertTrue(interventionService.isMatched(intervention, trialdataArm.getSemanticInterventions().get(0)));
+
+    assertTrue(interventionService.isMatched(intervention, Collections.singletonList(semanticIntervention)));
   }
 
   @Test
@@ -151,15 +165,12 @@ public class InterventionServiceTest {
     Dose minDose = new Dose(doseValue, dosePeriod, unitConcept, unitLabel, unitMultiplier);
     Dose maxDose = new Dose(doseValue, dosePeriod, unitConcept, unitLabel, unitMultiplier);
     AbstractSemanticIntervention semanticIntervention = new TitratedSemanticIntervention(drugInstanceUri, drugConceptUri, minDose, maxDose);
-    TrialDataArm trialdataArm = new TrialDataArm(URI.create("uri"), "arm name", URI.create("instance"));
-    trialdataArm.addSemanticIntervention(semanticIntervention);
 
-    assertFalse(interventionService.isMatched(intervention, trialdataArm.getSemanticInterventions().get(0)));
+    assertFalse(interventionService.isMatched(intervention, Collections.singletonList(semanticIntervention)));
   }
 
   @Test
-
-  public void testSpuriousFixedBothMatch() throws InvalidTypeForDoseCheckException, InvalidConstraintException {
+  public void testSpuriousFixedBothMatch() throws InvalidTypeForDoseCheckException, InvalidConstraintException, ResourceDoesNotExistException {
     URI gramConcept = URI.create("http://gram");
     Dose dose = new Dose(80d, "P1D", gramConcept, "mg", 1000d);
     AbstractSemanticIntervention fixedSemantic = new FixedSemanticIntervention(drugInstanceUri, drugConceptUri, dose);
@@ -170,8 +181,70 @@ public class InterventionServiceTest {
     AbstractIntervention intervention = new BothDoseTypesIntervention(interventionId, projectId, "name", "motive", drugConceptUri, "intervention sem",
             minConstraint,
             maxConstraint);
-    assertFalse(interventionService.isMatched(intervention, fixedSemantic));
-
+    assertFalse(interventionService.isMatched(intervention, Collections.singletonList(fixedSemantic)));
   }
 
+  @Test
+  public void isMatchedCombinationIntervention() throws ResourceDoesNotExistException, InvalidTypeForDoseCheckException, InvalidConstraintException {
+    Integer fixedInterventionId = 1;
+    Integer titratedInterventionId = 2;
+    Double doseValue = 123d;
+    String dosePeriod = "P1D";
+
+    LowerBoundCommand lowerBound = new LowerBoundCommand(LowerBoundType.AT_LEAST, doseValue - 1, unitLabel, dosePeriod, unitConcept);
+    UpperBoundCommand upperBound = new UpperBoundCommand(UpperBoundType.AT_MOST, doseValue + 1, unitLabel, dosePeriod, unitConcept);
+    DoseConstraint doseConstraint = new DoseConstraint(lowerBound, upperBound);
+    AbstractIntervention fixedIntervention = new FixedDoseIntervention(interventionId, projectId, "intervention name", "moti", drugConceptUri, "sem label", doseConstraint);
+
+    DoseConstraint minConstraint = new DoseConstraint(lowerBound, upperBound);
+    DoseConstraint maxConstraint = null;
+    AbstractIntervention titratedIntervention = new TitratedDoseIntervention(interventionId, projectId, "intervention name", "moti", drugConceptUri2, "sem label", minConstraint, maxConstraint);
+
+    when(interventionRepository.get(fixedInterventionId)).thenReturn(fixedIntervention);
+    when(interventionRepository.get(titratedInterventionId)).thenReturn(titratedIntervention);
+
+    AbstractIntervention intervention = new CombinationIntervention(null, null, "combi", null, ImmutableSet.of(fixedInterventionId, titratedInterventionId));
+    Dose fixedMatchingDose = new Dose(doseValue, dosePeriod, unitConcept, unitLabel, unitMultiplier);
+    AbstractSemanticIntervention fixedSemanticIntervention = new FixedSemanticIntervention(drugInstanceUri, drugConceptUri, fixedMatchingDose);
+
+    Dose minDose = new Dose(doseValue, dosePeriod, unitConcept, unitLabel, unitMultiplier);
+    Dose maxDose = new Dose(doseValue, dosePeriod, unitConcept, unitLabel, unitMultiplier);
+    AbstractSemanticIntervention titratedSemanticIntervention = new TitratedSemanticIntervention(drugInstanceUri, drugConceptUri2, minDose, maxDose);
+
+    List<AbstractSemanticIntervention> semanticInterventions = Arrays.asList(fixedSemanticIntervention, titratedSemanticIntervention);
+
+    assertTrue(interventionService.isMatched(intervention, semanticInterventions));
+  }
+
+  @Test
+  public void isUnmatchedCombinationIntervention() throws ResourceDoesNotExistException, InvalidTypeForDoseCheckException, InvalidConstraintException {
+    Integer fixedInterventionId = 1;
+    Integer titratedInterventionId = 2;
+    Double doseValue = 123d;
+    String dosePeriod = "P1D";
+
+    LowerBoundCommand lowerBound = new LowerBoundCommand(LowerBoundType.AT_LEAST, doseValue - 1, unitLabel, dosePeriod, unitConcept);
+    UpperBoundCommand upperBound = new UpperBoundCommand(UpperBoundType.AT_MOST, doseValue + 1, unitLabel, dosePeriod, unitConcept);
+    DoseConstraint doseConstraint = new DoseConstraint(lowerBound, upperBound);
+    AbstractIntervention fixedIntervention = new FixedDoseIntervention(interventionId, projectId, "intervention name", "moti", drugConceptUri, "sem label", doseConstraint);
+
+    DoseConstraint minConstraint = new DoseConstraint(lowerBound, upperBound);
+    DoseConstraint maxConstraint = null;
+    AbstractIntervention titratedIntervention = new TitratedDoseIntervention(interventionId, projectId, "intervention name", "moti", drugConceptUri2, "sem label", minConstraint, maxConstraint);
+
+    when(interventionRepository.get(fixedInterventionId)).thenReturn(fixedIntervention);
+    when(interventionRepository.get(titratedInterventionId)).thenReturn(titratedIntervention);
+
+    AbstractIntervention intervention = new CombinationIntervention(null, null, "combi", null, ImmutableSet.of(fixedInterventionId, titratedInterventionId));
+    Dose fixedMatchingDose = new Dose(doseValue, dosePeriod, unitConcept, unitLabel, unitMultiplier);
+    AbstractSemanticIntervention fixedSemanticIntervention = new FixedSemanticIntervention(drugInstanceUri, drugConceptUri, fixedMatchingDose);
+
+    Dose minDose = new Dose(doseValue, dosePeriod, unitConcept, unitLabel, unitMultiplier);
+    Dose maxDose = new Dose(doseValue, dosePeriod, unitConcept, unitLabel, unitMultiplier);
+    AbstractSemanticIntervention titratedSemanticIntervention = new TitratedSemanticIntervention(drugInstanceUri, drugConceptUri, minDose, maxDose);
+
+    List<AbstractSemanticIntervention> semanticInterventions = Arrays.asList(fixedSemanticIntervention, titratedSemanticIntervention);
+
+    assertFalse(interventionService.isMatched(intervention, semanticInterventions));
+  }
 }

@@ -52,7 +52,10 @@ public class InterventionController extends AbstractAddisCoreController {
   public AbstractInterventionViewAdapter get(Principal currentUser, @PathVariable Integer projectId, @PathVariable Integer interventionId) throws MethodNotAllowedException, ResourceDoesNotExistException {
     Account user = accountRepository.findAccountByUsername(currentUser.getName());
     if (user != null) {
-      AbstractIntervention intervention = interventionRepository.get(projectId, interventionId);
+      AbstractIntervention intervention = interventionRepository.get(interventionId);
+      if (!intervention.getProject().equals(projectId)) {
+        throw new ResourceDoesNotExistException();
+      }
       return intervention.toViewAdapter();
     } else {
       throw new MethodNotAllowedException();

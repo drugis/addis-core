@@ -31,6 +31,7 @@ public class QueryResultMappingServiceTest {
   private String resultRows = TestUtils.loadResource(this.getClass(), "/queryResultMappingService/trialDataEdarbiReultRowsExample.json");
   private String covariateRow = TestUtils.loadResource(this.getClass(), "/queryResultMappingService/covariatePopCharValueRow.json");
   private String singleStudyRow = TestUtils.loadResource(this.getClass(), "/queryResultMappingService/singleStudyResultRow.json");
+  private String combinationTreatmentRows = TestUtils.loadResource(this.getClass(), "/queryResultMappingService/trialDataEdarbiCombined.json");
 
   @Before
   public void setUp() {
@@ -62,7 +63,7 @@ public class QueryResultMappingServiceTest {
     URI studyWithTitratedInterventionUri = new URI("http://trials.drugis.org/graphs/c600d0ee-9d64-4395-ad06-f4b4843b20f6");
     trialDataStudy = trialDataMap.get(studyWithTitratedInterventionUri);
 
-    intervention= trialDataStudy.getTrialDataArms().get(0).getSemanticInterventions().get(0);
+    intervention = trialDataStudy.getTrialDataArms().get(0).getSemanticInterventions().get(0);
     assertTrue(intervention instanceof TitratedSemanticIntervention);
     TitratedSemanticIntervention titratedSemanticIntervention = (TitratedSemanticIntervention) intervention;
     Dose minDose = titratedSemanticIntervention.getMinDose();
@@ -78,8 +79,18 @@ public class QueryResultMappingServiceTest {
   }
 
   @Test
+  public void testCombinationTreatment() throws ParseException, ReadValueException {
+    JSONArray bindings = (JSONArray) JSONValue.parseWithException(combinationTreatmentRows);
+    Map<URI, TrialDataStudy> trialDataMap = queryResultMappingService.mapResultRowsToTrialDataStudy(bindings);
+
+    final TrialDataStudy combiTreatmentStudy = trialDataMap.get(URI.create("http://trials.drugis.org/graphs/f1d76e55-b04d-4d34-82bd-0e7dd0a8cad0"));
+
+    assertEquals(2, combiTreatmentStudy.getTrialDataArms().get(0).getSemanticInterventions().size());
+  }
+
+  @Test
   public void testMapResultToCovariateStudyValue() throws ParseException, ReadValueException {
-    JSONObject row  = (JSONObject) JSONValue.parseWithException(covariateRow);
+    JSONObject row = (JSONObject) JSONValue.parseWithException(covariateRow);
     CovariateStudyValue covariateStudyValue = queryResultMappingService.mapResultToCovariateStudyValue(row);
     assertNotNull(covariateStudyValue);
     assertEquals("uuid", covariateStudyValue.getCovariateKey());
@@ -87,4 +98,4 @@ public class QueryResultMappingServiceTest {
     assertEquals(40d, covariateStudyValue.getValue(), 0.000000001);
   }
 
- }
+}

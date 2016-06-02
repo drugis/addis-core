@@ -13,7 +13,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import java.util.List;
@@ -43,15 +42,8 @@ public class InterventionRepositoryImpl implements InterventionRepository {
   }
 
   @Override
-  public AbstractIntervention get(Integer projectId, Integer interventionId) throws ResourceDoesNotExistException {
-    TypedQuery<AbstractIntervention> query = em.createQuery("FROM AbstractIntervention WHERE id = :interventionId AND project = :projectId", AbstractIntervention.class);
-    query.setParameter("interventionId", interventionId);
-    query.setParameter("projectId", projectId);
-    try {
-      return query.getSingleResult();
-    } catch (NoResultException e) {
-      throw new ResourceDoesNotExistException();
-    }
+  public AbstractIntervention get(Integer interventionId) throws ResourceDoesNotExistException {
+    return em.find(AbstractIntervention.class, interventionId);
   }
 
   @Override

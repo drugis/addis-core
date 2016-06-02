@@ -16,6 +16,7 @@ SELECT DISTINCT
 ?drug
 ?interventionLabel
 ?drugInstance
+?treatmentNode
 ?outcomeTypeUri
 ?outcomeInstance
 ?outcomeTypeUid

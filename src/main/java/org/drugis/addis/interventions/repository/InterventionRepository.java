@@ -18,7 +18,7 @@ public interface InterventionRepository {
 
   List<SingleIntervention> querySingleInterventions(Integer projectId);
 
-  AbstractIntervention get(Integer projectId, Integer interventionId) throws ResourceDoesNotExistException;
+  AbstractIntervention get(Integer interventionId) throws ResourceDoesNotExistException;
 
   AbstractIntervention create(Account user, AbstractInterventionCommand interventionCommand) throws MethodNotAllowedException, ResourceDoesNotExistException, InvalidConstraintException;
 }

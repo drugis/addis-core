@@ -134,13 +134,13 @@ public class InterventionControllerTest {
   public void testGetIntervention() throws Exception {
     SimpleIntervention intervention = new SimpleIntervention(1, 1, "name", "motivation", new SemanticInterventionUriAndName(URI.create("http://semantic.com"), "labelnew"));
     Integer projectId = 1;
-    when(interventionRepository.get(projectId, intervention.getId())).thenReturn(intervention);
+    when(interventionRepository.get(projectId)).thenReturn(intervention);
     mockMvc.perform(get("/projects/1/interventions/1").principal(user))
             .andExpect(status().isOk())
             .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()))
             .andExpect(jsonPath("$.id", is(intervention.getId())));
     verify(accountRepository).findAccountByUsername("gert");
-    verify(interventionRepository).get(projectId, intervention.getId());
+    verify(interventionRepository).get(projectId);
   }
 
   @Test
