@@ -16,6 +16,7 @@ import org.drugis.addis.interventions.model.AbstractIntervention;
 import org.drugis.addis.interventions.model.SimpleIntervention;
 import org.drugis.addis.interventions.model.SingleIntervention;
 import org.drugis.addis.interventions.repository.InterventionRepository;
+import org.drugis.addis.interventions.service.InterventionService;
 import org.drugis.addis.interventions.service.impl.InvalidTypeForDoseCheckException;
 import org.drugis.addis.models.Model;
 import org.drugis.addis.models.exceptions.InvalidModelException;
@@ -85,6 +86,9 @@ public class ProblemServiceTest {
   InterventionRepository interventionRepository;
 
   @Mock
+  InterventionService interventionService;
+
+  @Mock
   ModelService modelService;
 
   @Mock
@@ -143,6 +147,7 @@ public class ProblemServiceTest {
     when(mappingService.getVersionedUuid(namespaceUid)).thenReturn(versionedUuid);
     when(projectRepository.get(projectId)).thenReturn(project);
     when(interventionRepository.query(project.getId())).thenReturn(allProjectInterventions);
+    when(interventionService.resolveCombinations(anyList())).thenReturn(Collections.emptyList());
   }
 
   @After

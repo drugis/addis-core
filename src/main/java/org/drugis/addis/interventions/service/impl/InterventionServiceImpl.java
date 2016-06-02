@@ -23,6 +23,14 @@ public class InterventionServiceImpl implements InterventionService {
   @Inject
   InterventionRepository interventionRepository;
 
+  public List<SingleIntervention> resolveCombinations(List<CombinationIntervention> combinationInterventions) throws ResourceDoesNotExistException {
+    List<SingleIntervention> singleInterventions = new ArrayList<>();
+    for(CombinationIntervention combinationIntervention: combinationInterventions){
+      singleInterventions.addAll(resolveCombinations(combinationIntervention));
+    }
+    return singleInterventions;
+  }
+
   @Override
   public boolean isMatched(final AbstractIntervention intervention, final List<AbstractSemanticIntervention> semanticInterventions) throws InvalidTypeForDoseCheckException, ResourceDoesNotExistException {
 
@@ -196,5 +204,12 @@ public class InterventionServiceImpl implements InterventionService {
     return validLowerBound && validUpperBound;
   }
 
+  private List<SingleIntervention> resolveCombinations(CombinationIntervention combinationIntervention) throws ResourceDoesNotExistException {
+    List<SingleIntervention> singleInterventions = new ArrayList<>();
+    for(Integer singleInterventionId: combinationIntervention.getSingleInterventionIds()){
+      singleInterventions.add((SingleIntervention) interventionRepository.get(singleInterventionId));
+    }
+    return singleInterventions;
+  }
 
 }

@@ -15,6 +15,7 @@ import org.drugis.addis.covariates.Covariate;
 import org.drugis.addis.covariates.CovariateRepository;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.interventions.model.AbstractIntervention;
+import org.drugis.addis.interventions.model.CombinationIntervention;
 import org.drugis.addis.interventions.model.SingleIntervention;
 import org.drugis.addis.interventions.repository.InterventionRepository;
 import org.drugis.addis.interventions.service.InterventionService;
@@ -380,21 +381,26 @@ public class ProblemServiceImpl implements ProblemService {
     final Set<URI> outcomeUris = analysis.getSelectedOutcomes()
             .stream().map(Outcome::getSemanticOutcomeUri).collect(Collectors.toSet());
     final List<AbstractIntervention> interventions = interventionRepository.query(project.getId());
-    // todo WHAT ABOUT COMBINED INTERVENTIONS
+
     List<SingleIntervention> singleInterventions = interventions.stream()
             .filter(ai -> ai instanceof SingleIntervention)
             .map(ai -> (SingleIntervention) ai)
             .collect(Collectors.toList());
+    List<CombinationIntervention> combinationInterventions = interventions.stream()
+            .filter(ai -> ai instanceof CombinationIntervention)
+            .map(ai -> (CombinationIntervention) ai)
+            .collect(Collectors.toList());
+    singleInterventions.addAll(interventionService.resolveCombinations(combinationInterventions));
 
     final Map<Integer, SingleIntervention> interventionMap = singleInterventions
-            .stream().collect(Collectors.toMap(AbstractIntervention::getId, Function.identity()));
-    final Map<URI, Outcome> outcomesByUriMap = analysis.getSelectedOutcomes()
-            .stream().collect(Collectors.toMap(Outcome::getSemanticOutcomeUri, Function.identity()));
-
+            .stream().collect(Collectors.toMap(SingleIntervention::getId, Function.identity()));
     final Set<URI> alternativeUris = analysis.getInterventionInclusions()
             .stream().map(intervention -> interventionMap.get(intervention.getInterventionId()).getSemanticInterventionUri())
             .collect(Collectors.toSet());
-    final Set<Integer> interventionIds = analysis.getInterventionInclusions().stream().map(InterventionInclusion::getInterventionId).collect(Collectors.toSet());
+
+    final Map<URI, Outcome> outcomesByUriMap = analysis.getSelectedOutcomes()
+            .stream().collect(Collectors.toMap(Outcome::getSemanticOutcomeUri, Function.identity()));
+
 
     final Map<String, AbstractIntervention> alternativeToInterventionMap = interventions.stream()
             .collect(Collectors.toMap(ai -> ai.getId().toString(), Function.identity()));

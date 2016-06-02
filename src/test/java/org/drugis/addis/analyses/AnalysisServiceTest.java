@@ -1,5 +1,6 @@
 package org.drugis.addis.analyses;
 
+import org.apache.jena.ext.com.google.common.collect.ImmutableSet;
 import org.drugis.addis.analyses.repository.AnalysisRepository;
 import org.drugis.addis.analyses.repository.NetworkMetaAnalysisRepository;
 import org.drugis.addis.analyses.service.AnalysisService;
@@ -9,6 +10,7 @@ import org.drugis.addis.covariates.CovariateRepository;
 import org.drugis.addis.exception.MethodNotAllowedException;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.interventions.model.AbstractIntervention;
+import org.drugis.addis.interventions.model.CombinationIntervention;
 import org.drugis.addis.interventions.model.SimpleIntervention;
 import org.drugis.addis.interventions.model.SingleIntervention;
 import org.drugis.addis.interventions.repository.InterventionRepository;
@@ -254,6 +256,7 @@ public class AnalysisServiceTest {
 
     List<ArmExclusion> excludedArms = Collections.emptyList();
     int includedInterventionId = 101;
+    int includedCombinedInterventionId = 103;
     int sirNotAppearingInThisFilmId = 102;
     InterventionInclusion interventionInclusion1 = new InterventionInclusion(analysisId, includedInterventionId);
     List<InterventionInclusion> includedInterventions = Collections.singletonList(interventionInclusion1);
@@ -266,10 +269,10 @@ public class AnalysisServiceTest {
     Project project = new Project(projectId, owner, "proj", "desc", namespaceUid, version);
     when(projectRepository.get(projectId)).thenReturn(project);
     when(analysisRepository.get(analysisId)).thenReturn(networkMetaAnalysis);
-    //todo WHAT ABOUT Combined interventions
     SingleIntervention includedIntervention = new SimpleIntervention(includedInterventionId, projectId, "includedIntervention", "", new SemanticInterventionUriAndName(URI.create("semUri1"), "intervention 1"));
+    CombinationIntervention includedCombinedIntervention = new CombinationIntervention(includedCombinedInterventionId, projectId, "includedCombinedINtervention", "", ImmutableSet.of(includedCombinedInterventionId));
     SingleIntervention notIncludedIntervention = new SimpleIntervention(sirNotAppearingInThisFilmId, projectId, "notIncludedIntervention", "", new SemanticInterventionUriAndName(URI.create("semUri2"), "intervention 2"));
-    List<AbstractIntervention> interventions = Arrays.asList(includedIntervention, notIncludedIntervention);
+    List<AbstractIntervention> interventions = Arrays.asList(includedIntervention, notIncludedIntervention, includedCombinedIntervention);
     List<Covariate> covariates = Collections.emptyList();
     when(interventionRepository.query(projectId)).thenReturn(interventions);
     when(covariateRepository.findByProject(projectId)).thenReturn(covariates);

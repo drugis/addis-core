@@ -11,6 +11,7 @@ import org.drugis.addis.covariates.CovariateRepository;
 import org.drugis.addis.exception.MethodNotAllowedException;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.interventions.model.AbstractIntervention;
+import org.drugis.addis.interventions.model.CombinationIntervention;
 import org.drugis.addis.interventions.model.SingleIntervention;
 import org.drugis.addis.interventions.repository.InterventionRepository;
 import org.drugis.addis.interventions.service.InterventionService;
@@ -209,11 +210,20 @@ public class AnalysisServiceImpl implements AnalysisService {
     Project project = projectRepository.get(projectId);
     AbstractAnalysis analysis = analysisRepository.get(analysisId);
     List<AbstractIntervention> includedInterventions = getIncludedInterventions(analysis);
+
     List<SingleIntervention> singleInterventions = includedInterventions.stream()
             .filter(ai -> ai instanceof SingleIntervention)
             .map(ai -> (SingleIntervention) ai)
             .collect(Collectors.toList());
-    //todo WHAT ABOUT combinedInterventions
+
+    List<CombinationIntervention> combinationInterventions = includedInterventions.stream()
+            .filter(ai -> ai instanceof CombinationIntervention)
+            .map(ai -> (CombinationIntervention) ai)
+            .collect(Collectors.toList());
+
+    singleInterventions.addAll(interventionService.resolveCombinations(combinationInterventions));
+
+
     Set<URI> includedInterventionUris = singleInterventions.stream()
             .map(SingleIntervention::getSemanticInterventionUri)
             .collect(Collectors.toSet());
