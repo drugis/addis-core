@@ -28,9 +28,7 @@ public class QueryResultMappingServiceTest {
   @InjectMocks
   QueryResultMappingService queryResultMappingService;
 
-  private String resultRows = TestUtils.loadResource(this.getClass(), "/queryResultMappingService/trialDataEdarbiReultRowsExample.json");
   private String covariateRow = TestUtils.loadResource(this.getClass(), "/queryResultMappingService/covariatePopCharValueRow.json");
-  private String singleStudyRow = TestUtils.loadResource(this.getClass(), "/queryResultMappingService/singleStudyResultRow.json");
   private String combinationTreatmentRows = TestUtils.loadResource(this.getClass(), "/queryResultMappingService/trialDataEdarbiCombined.json");
 
   @Before
@@ -41,11 +39,11 @@ public class QueryResultMappingServiceTest {
 
   @Test
   public void testMapResultRowToTrialDataStudy() throws ParseException, ReadValueException, URISyntaxException {
-    JSONArray bindings = (JSONArray) JSONValue.parseWithException(resultRows);
+    JSONArray bindings = (JSONArray) JSONValue.parseWithException(combinationTreatmentRows);
     Map<URI, TrialDataStudy> trialDataMap = queryResultMappingService.mapResultRowsToTrialDataStudy(bindings);
     assertEquals(5, trialDataMap.size());
 
-    URI studyWithFixedInterventionUri = new URI("http://trials.drugis.org/graphs/294b3fa9-ba49-4c16-a551-afba9b5856a3");
+    URI studyWithFixedInterventionUri = new URI("http://trials.drugis.org/graphs/34adef58-434f-40c8-89a3-d93fad6dbd94");
     TrialDataStudy trialDataStudy = trialDataMap.get(studyWithFixedInterventionUri);
     List<TrialDataArm> trialDataArms = trialDataStudy.getTrialDataArms();
 
@@ -54,13 +52,13 @@ public class QueryResultMappingServiceTest {
     FixedSemanticIntervention fixedSemanticIntervention = (FixedSemanticIntervention) intervention;
     Dose fixedDose = fixedSemanticIntervention.getDose();
     assertEquals("P1D", fixedDose.getPeriodicity());
-    assertEquals(new URI("http://trials.drugis.org/concepts/a57c4db5-f4dc-4f4e-93c2-12f02f97ed7b"), fixedDose.getUnitConceptUri());
+    assertEquals(new URI("http://trials.drugis.org/concepts/dfdd3707-fef5-4f06-b582-85c7de7a101d"), fixedDose.getUnitConceptUri());
     assertEquals("milligram", fixedDose.getUnitLabel());
     assertEquals((Double) 0.001d, fixedDose.getUnitMultiplier());
     assertEquals((Double) 40.0d, fixedDose.getValue());
 
 
-    URI studyWithTitratedInterventionUri = new URI("http://trials.drugis.org/graphs/c600d0ee-9d64-4395-ad06-f4b4843b20f6");
+    URI studyWithTitratedInterventionUri = new URI("http://trials.drugis.org/graphs/27d109cc-3557-4223-97ef-b2cfea99c964");
     trialDataStudy = trialDataMap.get(studyWithTitratedInterventionUri);
 
     intervention = trialDataStudy.getTrialDataArms().get(0).getSemanticInterventions().get(0);
@@ -75,7 +73,7 @@ public class QueryResultMappingServiceTest {
     assertEquals("P1D", maxDose.getPeriodicity());
     assertEquals("milligram", maxDose.getUnitLabel());
     assertEquals((Double) 0.001d, maxDose.getUnitMultiplier());
-    assertEquals((Double) 40.0d, maxDose.getValue());
+    assertEquals((Double) 80.0d, maxDose.getValue());
   }
 
   @Test

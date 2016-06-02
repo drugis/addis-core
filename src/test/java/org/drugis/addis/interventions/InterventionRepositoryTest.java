@@ -49,22 +49,22 @@ public class InterventionRepositoryTest {
   @Test
   public void testGet() throws ResourceDoesNotExistException {
     int interventionId = -1;
-    AbstractIntervention intervention = interventionRepository.get(1);
+    AbstractIntervention intervention = interventionRepository.get(interventionId);
     assertEquals(em.find(AbstractIntervention.class, interventionId), intervention);
     assert(intervention instanceof SimpleIntervention);
 
     interventionId = -4;
-    intervention = interventionRepository.get(2);
+    intervention = interventionRepository.get(interventionId);
     assertEquals(em.find(AbstractIntervention.class, interventionId), intervention);
     assert(intervention instanceof FixedDoseIntervention);
 
     interventionId = -5;
-    intervention = interventionRepository.get(2);
+    intervention = interventionRepository.get(interventionId);
     assertEquals(em.find(AbstractIntervention.class, interventionId), intervention);
     assert(intervention instanceof TitratedDoseIntervention);
 
     interventionId = -6;
-    intervention = interventionRepository.get(2);
+    intervention = interventionRepository.get(interventionId);
     assertEquals(em.find(AbstractIntervention.class, interventionId), intervention);
     assert(intervention instanceof CombinationIntervention);
   }
@@ -131,12 +131,6 @@ public class InterventionRepositoryTest {
     assertEquals(2, result.getSingleInterventionIds().size());
   }
 
-
-
-  @Test(expected = ResourceDoesNotExistException.class)
-  public void testGetFromWrongProjectFails() throws ResourceDoesNotExistException {
-    interventionRepository.get(2);
-  }
 
   @Test
   public void testCreateSimpleIntervention() throws Exception, InvalidConstraintException {
