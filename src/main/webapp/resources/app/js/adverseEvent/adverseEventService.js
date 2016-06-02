@@ -13,7 +13,7 @@ define([],
       }
 
       function addItem(item) {
-        return OutcomeService.addItem(item, adverseEventType)
+        return OutcomeService.addItem(item, adverseEventType);
       }
 
       function deleteItem(item) {

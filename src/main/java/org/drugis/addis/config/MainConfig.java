@@ -15,8 +15,31 @@
  */
 package org.drugis.addis.config;
 
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.security.KeyManagementException;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.UnrecoverableKeyException;
+import java.security.cert.CertificateException;
+import java.util.Properties;
+
+import javax.net.ssl.SSLContext;
+import javax.persistence.EntityManagerFactory;
+import javax.sql.DataSource;
+
 import org.apache.http.client.HttpClient;
+import org.apache.http.config.Registry;
+import org.apache.http.config.RegistryBuilder;
+import org.apache.http.conn.HttpClientConnectionManager;
+import org.apache.http.conn.socket.ConnectionSocketFactory;
+import org.apache.http.conn.socket.PlainConnectionSocketFactory;
+import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
+import org.apache.http.ssl.SSLContexts;
+import org.drugis.addis.util.WebConstants;
 import org.drugis.trialverse.util.JenaGraphMessageConverter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,10 +61,6 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.client.RestTemplate;
 
-import javax.persistence.EntityManagerFactory;
-import javax.sql.DataSource;
-import java.util.Properties;
-
 @Configuration
 @ComponentScan(excludeFilters = {@Filter(Configuration.class)}, basePackages = {
         "org.drugis.addis", "org.drugis.trialverse"}, lazyInit = true)
@@ -53,24 +72,49 @@ import java.util.Properties;
         "org.drugis.addis.scenarios",
         "org.drugis.addis.models",
         "org.drugis.addis.remarks",
+        "org.drugis.addis.trialverse",
         "org.drugis.trialverse",
 })
 public class MainConfig {
 
   private final static Logger logger = LoggerFactory.getLogger(MainConfig.class);
+  private final static String KEYSTORE_PATH = WebConstants.loadSystemEnv("KEYSTORE_PATH");
+  private final static String KEYSTORE_PASSWORD = WebConstants.loadSystemEnv("KEYSTORE_PASSWORD");
+
+  public MainConfig() {
+    String trustStoreLocation = System.getProperty("javax.net.ssl.trustStore");
+    if (trustStoreLocation == null) {
+      logger.warn("Missing trust store location java property (set using 'javax.net.ssl.trustStore')");
+    }
+  }
 
   @Bean
-  public RestTemplate restTemplate() {
+  public RestTemplate restTemplate() throws CertificateException, UnrecoverableKeyException, NoSuchAlgorithmException, KeyStoreException, KeyManagementException, IOException {
     RestTemplate restTemplate = new RestTemplate(new HttpComponentsClientHttpRequestFactory(httpClient()));
     restTemplate.getMessageConverters().add(new JenaGraphMessageConverter());
     return restTemplate;
   }
 
   @Bean
-  public HttpClient httpClient() {
-    logger.info("httpClient created");
-    return HttpClientBuilder
-            .create()
+  public HttpClient httpClient() throws KeyStoreException, IOException, CertificateException, NoSuchAlgorithmException, UnrecoverableKeyException, KeyManagementException {
+    KeyStore keyStore = KeyStore.getInstance("JKS");
+    keyStore.load(new FileInputStream(KEYSTORE_PATH), KEYSTORE_PASSWORD.toCharArray());
+
+    SSLContext sslContext = SSLContexts
+            .custom()
+            .loadKeyMaterial(keyStore, KEYSTORE_PASSWORD.toCharArray())
+            .build();
+    SSLConnectionSocketFactory connectionSocketFactory = new SSLConnectionSocketFactory(sslContext);
+
+    Registry<ConnectionSocketFactory> registry = RegistryBuilder.<ConnectionSocketFactory>create()
+            .register("https", connectionSocketFactory)
+            .register("http", new PlainConnectionSocketFactory())
+            .build();
+    HttpClientConnectionManager clientConnectionManager = new PoolingHttpClientConnectionManager(registry);
+
+    HttpClientBuilder httpClientBuilder = HttpClientBuilder.create();
+    return httpClientBuilder
+            .setConnectionManager(clientConnectionManager)
             .setMaxConnTotal(20)
             .setMaxConnPerRoute(2)
             .build();

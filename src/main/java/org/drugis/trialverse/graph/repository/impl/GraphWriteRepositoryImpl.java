@@ -3,6 +3,7 @@ package org.drugis.trialverse.graph.repository.impl;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.Header;
+import org.apache.http.HttpEntity;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPut;
@@ -10,19 +11,17 @@ import org.apache.http.entity.InputStreamEntity;
 import org.apache.http.util.EntityUtils;
 import org.apache.jena.riot.RDFLanguages;
 import org.drugis.addis.security.Account;
+import org.drugis.addis.security.AuthenticationService;
 import org.drugis.addis.security.repository.AccountRepository;
+import org.drugis.addis.util.WebConstants;
 import org.drugis.trialverse.dataset.model.VersionMapping;
 import org.drugis.trialverse.dataset.repository.VersionMappingRepository;
 import org.drugis.trialverse.graph.exception.UpdateGraphException;
 import org.drugis.trialverse.graph.repository.GraphWriteRepository;
-import org.drugis.addis.security.AuthenticationService;
 import org.drugis.trialverse.graph.service.GraphService;
 import org.drugis.trialverse.security.TrialversePrincipal;
-import org.drugis.trialverse.util.Namespaces;
-import org.drugis.addis.util.WebConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.apache.http.HttpEntity;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -55,8 +54,7 @@ public class GraphWriteRepositoryImpl implements GraphWriteRepository {
   @Inject
   private GraphService graphService;
 
-  public static final String DATA_ENDPOINT = "/data";
-
+  private static final String DATA_ENDPOINT = "/data";
   private final static Logger logger = LoggerFactory.getLogger(GraphWriteRepositoryImpl.class);
 
   @Override

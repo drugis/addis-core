@@ -1,19 +1,21 @@
 package org.drugis.addis.patavitask;
 
+import java.net.URI;
+
 /**
  * Created by connor on 26-6-14.
  */
 public class PataviTaskUriHolder {
-  private String uri;
+  private URI uri;
 
   public PataviTaskUriHolder() {
   }
 
-  public PataviTaskUriHolder(String uri) {
+  public PataviTaskUriHolder(URI uri) {
     this.uri = uri;
   }
 
-  public String getUri() {
+  public URI getUri() {
     return uri;
   }
 

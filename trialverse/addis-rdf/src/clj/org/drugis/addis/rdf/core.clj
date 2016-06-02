@@ -332,6 +332,14 @@
               [(trig/iri :ontology "time_offset")
                (trig/lit (fix-duration (:howLong mm)) (trig/iri :xsd "duration"))])))
 
+(defn- optional-double
+  [subj pred value]
+  (if value (trig/spo subj [pred (trig/lit (Double. value))]) subj))
+
+(defn- optional-int
+  [subj pred value]
+  (if value (trig/spo subj [pred (trig/lit (Integer. value))]) subj))
+
 (defn study-measurement-rdf
   [xml subj study-outcomes arm-uris pop-uri mm-uris]
   (let [som-id (vtd/attr (vtd/at xml "./studyOutcomeMeasure") :id)
@@ -348,16 +356,16 @@
         rate (vtd/at xml "./rateMeasurement")
         catg (vtd/at xml "./categoricalMeasurement")]
     (cond
-      cont (trig/spo measurement 
-                     [(trig/iri :ontology "mean") (trig/lit (Double. (vtd/attr cont :mean)))]
-                     [(trig/iri :ontology "standard_deviation") (trig/lit (Double. (vtd/attr cont :stdDev)))]
-                     [(trig/iri :ontology "sample_size") (trig/lit (Integer. (vtd/attr cont :sampleSize)))])
-      rate (trig/spo measurement 
-                     [(trig/iri :ontology "count") (trig/lit (Integer. (vtd/attr rate :rate)))]
-                     [(trig/iri :ontology "sample_size") (trig/lit (Integer. (vtd/attr rate :sampleSize)))])
+      cont (-> measurement
+               (optional-double (trig/iri :ontology "mean") (vtd/attr cont :mean))
+               (optional-double (trig/iri :ontology "standard_deviation") (vtd/attr cont :stdDev))
+               (optional-int (trig/iri :ontology "sample_size") (vtd/attr cont :sampleSize)))
+      rate (-> measurement
+               (optional-int (trig/iri :ontology "count") (vtd/attr cont :rate))
+               (optional-int (trig/iri :ontology "sample_size") (vtd/attr cont :sampleSize)))
       catg (reduce (fn [subj cat] (trig/spo subj [(trig/iri :ontology "category_count")
-                                                  (trig/_po [(trig/iri :ontology "category") (trig/lit (vtd/attr cat :name))]
-                                                            [(trig/iri :ontology "count") (trig/lit (Integer. (vtd/attr cat :rate)))])]))
+                                                  (-> (trig/_po [(trig/iri :ontology "category") (trig/lit (vtd/attr cat :name))])
+                                                      (optional-int (trig/iri :ontology "count") (vtd/attr cat :rate)))]))
                    measurement (vtd/search catg "./category"))
      :else measurement)
 ))

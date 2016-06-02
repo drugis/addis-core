@@ -4,7 +4,13 @@ define(['angular', 'angular-mocks'], function() {
 
     var rootScope, q, httpBackend;
     var studyService = jasmine.createSpyObj('StudyService', ['getStudy', 'save']);
-    var armService;
+    var armService, groupService;
+
+    beforeEach(function() {
+      module('trialverse.group', function($provide) {
+        $provide.value('StudyService', studyService);
+      });
+    });
 
     beforeEach(function() {
       module('trialverse.arm', function($provide) {
@@ -12,7 +18,7 @@ define(['angular', 'angular-mocks'], function() {
       });
     });
 
-    beforeEach(inject(function($q, $rootScope, $httpBackend, ArmService) {
+    beforeEach(inject(function($q, $rootScope, $httpBackend, ArmService, GroupService) {
       q = $q;
       httpBackend = $httpBackend;
       rootScope = $rootScope;
@@ -22,14 +28,15 @@ define(['angular', 'angular-mocks'], function() {
           '@id': 'http://trials.drugis.org/instances/1c3c67ba-4c0c-46e3-846c-5e9d72c5ed80',
           '@type': 'ontology:Arm',
           'label': 'arm label'
-        }]
+        }],
+        has_group: []
       };
       var studyDefer = $q.defer();
       var getStudyPromise = studyDefer.promise;
       studyDefer.resolve(studyJsonObject);
       studyService.getStudy.and.returnValue(getStudyPromise);
       armService = ArmService;
-
+      groupService = GroupService;
       rootScope.$digest();
     }));
 
@@ -92,6 +99,30 @@ define(['angular', 'angular-mocks'], function() {
       it('should edit the arm', function() {
         expect(editResult.length).toBe(1);
         expect(editResult[0].label).toBe(editedArm.label);
+      });
+    });
+
+    describe('reclassifyAsGroup', function() {
+      var editResult, groupsResult;
+
+      beforeEach(function(done) {
+        armService.queryItems().then(function(result) {
+          armService.reclassifyAsGroup(result[0]).then(function() {
+            q.all([armService.queryItems(), groupService.queryItems()]).then(function(armsAndGroups) {
+              editResult = armsAndGroups[0];
+              groupsResult = armsAndGroups[1];
+              done();
+            });
+          });
+        });
+        rootScope.$digest();
+      });
+
+      it('should reclassify the arm as a group', function() {
+        expect(editResult.length).toBe(0);
+        expect(groupsResult.length).toBe(2); // includes overall population
+        var newGroupIndex = groupsResult[0].label === 'Overall population' ? 1 : 0;
+        expect(groupsResult[newGroupIndex].label).toBe('arm label');
       });
     });
 

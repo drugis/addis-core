@@ -19,11 +19,12 @@ import org.drugis.addis.interventions.repository.InterventionRepository;
 import org.drugis.addis.interventions.service.InterventionService;
 import org.drugis.addis.interventions.service.impl.InvalidTypeForDoseCheckException;
 import org.drugis.addis.models.Model;
-import org.drugis.addis.models.repository.ModelRepository;
+import org.drugis.addis.models.service.ModelService;
 import org.drugis.addis.outcomes.Outcome;
 import org.drugis.addis.outcomes.repository.OutcomeRepository;
 import org.drugis.addis.patavitask.PataviTask;
 import org.drugis.addis.patavitask.repository.PataviTaskRepository;
+import org.drugis.addis.patavitask.repository.UnexpectedNumberOfResultsException;
 import org.drugis.addis.problems.model.*;
 import org.drugis.addis.problems.service.ProblemService;
 import org.drugis.addis.problems.service.model.AbstractMeasurementEntry;
@@ -83,7 +84,7 @@ public class ProblemServiceImpl implements ProblemService {
   private MappingService mappingService;
 
   @Inject
-  private ModelRepository modelRepository;
+  private ModelService modelService;
 
   @Inject
   private OutcomeRepository outcomeRepository;
@@ -100,7 +101,7 @@ public class ProblemServiceImpl implements ProblemService {
   private ObjectMapper objectMapper = new ObjectMapper();
 
   @Override
-  public AbstractProblem getProblem(Integer projectId, Integer analysisId) throws ResourceDoesNotExistException, URISyntaxException, SQLException, IOException, ReadValueException, InvalidTypeForDoseCheckException {
+  public AbstractProblem getProblem(Integer projectId, Integer analysisId) throws ResourceDoesNotExistException, URISyntaxException, SQLException, IOException, ReadValueException, InvalidTypeForDoseCheckException, UnexpectedNumberOfResultsException {
     Project project = projectRepository.get(projectId);
     AbstractAnalysis analysis = analysisRepository.get(analysisId);
     if (analysis instanceof SingleStudyBenefitRiskAnalysis) {
@@ -113,20 +114,31 @@ public class ProblemServiceImpl implements ProblemService {
     throw new RuntimeException("unknown analysis type");
   }
 
-  private MetaBenefitRiskProblem getMetaBenefitRiskAnalysisProblem(Project project, MetaBenefitRiskAnalysis analysis) throws SQLException, IOException {
+  private MetaBenefitRiskProblem getMetaBenefitRiskAnalysisProblem(Project project, MetaBenefitRiskAnalysis analysis) throws SQLException, IOException, UnexpectedNumberOfResultsException, URISyntaxException {
     final List<Integer> networkModelIds = getInclusionIdsWithBaseline(analysis.getMbrOutcomeInclusions(), MbrOutcomeInclusion::getModelId);
     final List<Integer> outcomeIds = getInclusionIdsWithBaseline(analysis.getMbrOutcomeInclusions(), MbrOutcomeInclusion::getOutcomeId);
-    final List<Model> models = modelRepository.get(networkModelIds);
+    final List<Model> models = modelService.get(networkModelIds);
     final Map<Integer, Model> modelMap = models.stream().collect(Collectors.toMap(Model::getId, Function.identity()));
     List<Outcome> outcomes = outcomeRepository.get(project.getId(), outcomeIds);
     final Map<String, Outcome> outcomesByName = outcomes.stream().collect(Collectors.toMap(Outcome::getName, Function.identity()));
     final Map<Integer, Outcome> outcomesById = outcomes.stream().collect(Collectors.toMap(Outcome::getId, Function.identity()));
-    final Map<Integer, PataviTask> pataviTaskMap = pataviTaskRepository.findByIds(models.stream().map(Model::getTaskId).collect(Collectors.toList()))
-            .stream().collect(Collectors.toMap(PataviTask::getId, Function.identity()));
-    final Map<Integer, PataviTask> tasksByModelId = models.stream().collect(Collectors.toMap(Model::getId, m -> pataviTaskMap.get(m.getTaskId())));
-    ArrayList<Integer> taskIds = new ArrayList<>(pataviTaskMap.keySet());
-    final Map<Integer, JsonNode> resultsByTaskId = pataviTaskRepository.getResults(taskIds);
-    final List<MbrOutcomeInclusion> inclusionsWithBaseline = analysis.getMbrOutcomeInclusions().stream().filter(moi -> moi.getBaseline() != null).collect(Collectors.toList());
+    List<URI> taskUris = models.stream().map(Model::getTaskUrl)
+            .filter(taskUri -> taskUri != null)
+            .collect(Collectors.toList());
+    final Map<URI, PataviTask> pataviTaskMap = pataviTaskRepository.findByUrls(taskUris)
+            .stream()
+            .collect(Collectors.toMap(PataviTask::getSelf, Function.identity()));
+    final Map<Integer, PataviTask> tasksByModelId = models.stream()
+            .filter(model -> model.getTaskUrl() != null)
+            .collect(Collectors.toMap(Model::getId, m -> pataviTaskMap.get(m.getTaskUrl())));
+    final Map<URI, JsonNode> resultsByTaskUrl = pataviTaskRepository.getResults(taskUris);
+    final List<MbrOutcomeInclusion> inclusionsWithBaselineAndModelResults = analysis.getMbrOutcomeInclusions().stream()
+            .filter(moi -> moi.getBaseline() != null)
+            .filter(moi -> {
+              URI taskUrl = modelMap.get(moi.getModelId()).getTaskUrl();
+              return taskUrl != null && resultsByTaskUrl.get(taskUrl) != null;
+            })
+            .collect(Collectors.toList());
     final List<InterventionInclusion> inclusions = analysis.getInterventionInclusions();
     final List<AbstractIntervention> interventions = interventionRepository.query(analysis.getProjectId());
     final Map<Integer, AbstractIntervention> interventionMap = interventions.stream()
@@ -138,7 +150,7 @@ public class ProblemServiceImpl implements ProblemService {
 
     Map<String, CriterionEntry> criteriaWithBaseline = outcomesByName.values()
             .stream()
-            .filter(o -> inclusionsWithBaseline.stream().filter(moi -> moi.getOutcomeId().equals(o.getId())).findFirst().isPresent())
+            .filter(o -> inclusionsWithBaselineAndModelResults.stream().filter(moi -> moi.getOutcomeId().equals(o.getId())).findFirst().isPresent())
             .collect(Collectors.toMap(Outcome::getName, o -> new CriterionEntry(o.getSemanticOutcomeUri(), o.getName())));
     Map<String, AlternativeEntry> alternatives = includedAlternatives
             .stream()
@@ -147,14 +159,14 @@ public class ProblemServiceImpl implements ProblemService {
     final Map<String, AbstractIntervention> includedInterventionsByName = includedAlternatives.stream().collect(Collectors.toMap(AbstractIntervention::getName, Function.identity()));
 
     List<MetaBenefitRiskProblem.PerformanceTableEntry> performanceTable = new ArrayList<>(outcomesByName.size());
-    for (MbrOutcomeInclusion outcomeInclusion : inclusionsWithBaseline) {
+    for (MbrOutcomeInclusion outcomeInclusion : inclusionsWithBaselineAndModelResults) {
 
       Baseline baseline = objectMapper.readValue(outcomeInclusion.getBaseline(), Baseline.class);
-      Integer taskId = tasksByModelId.get(outcomeInclusion.getModelId()).getId();
-      JsonNode taskResults = resultsByTaskId.get(taskId);
+      URI taskUrl = tasksByModelId.get(outcomeInclusion.getModelId()).getSelf();
+      JsonNode taskResults = resultsByTaskUrl.get(taskUrl);
 
-      Map<Integer, MultiVariateDistribution> distributionByInterventionId = objectMapper
-              .readValue(taskResults.get("multivariateSummary").toString(), new TypeReference<Map<Integer, MultiVariateDistribution>>() {
+      Map<Integer, MultiVariateDistribution> distributionByInterventionId = objectMapper.readValue(
+              taskResults.get("multivariateSummary").toString(), new TypeReference<Map<Integer, MultiVariateDistribution>>() {
               });
 
       AbstractIntervention baselineIntervention = includedInterventionsByName.get(baseline.getName());
@@ -182,7 +194,6 @@ public class ProblemServiceImpl implements ProblemService {
 
       // place baseline at the front of the list
       rowNames.sort((rn1, rn2) -> rn1.equals(baseline.getName()) ? -1 : 0);
-
 
       final List<String> colNames = rowNames;
 

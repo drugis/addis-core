@@ -14,7 +14,7 @@ import org.drugis.addis.interventions.model.AbstractIntervention;
 import org.drugis.addis.interventions.repository.InterventionRepository;
 import org.drugis.addis.interventions.service.InterventionService;
 import org.drugis.addis.models.Model;
-import org.drugis.addis.models.repository.ModelRepository;
+import org.drugis.addis.models.service.ModelService;
 import org.drugis.addis.outcomes.Outcome;
 import org.drugis.addis.outcomes.repository.OutcomeRepository;
 import org.drugis.addis.projects.Project;
@@ -29,6 +29,7 @@ import org.drugis.addis.trialverse.service.impl.ReadValueException;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.sql.SQLException;
@@ -54,7 +55,7 @@ public class AnalysisServiceImpl implements AnalysisService {
   ProjectService projectService;
 
   @Inject
-  ModelRepository modelRepository;
+  ModelService modelService;
 
   @Inject
   OutcomeRepository outcomeRepository;
@@ -86,11 +87,11 @@ public class AnalysisServiceImpl implements AnalysisService {
   }
 
   @Override
-  public NetworkMetaAnalysis updateNetworkMetaAnalysis(Account user, NetworkMetaAnalysis analysis) throws ResourceDoesNotExistException, MethodNotAllowedException, SQLException {
+  public NetworkMetaAnalysis updateNetworkMetaAnalysis(Account user, NetworkMetaAnalysis analysis) throws ResourceDoesNotExistException, MethodNotAllowedException, SQLException, IOException {
     projectService.checkProjectExistsAndModifiable(user, analysis.getProjectId());
     checkProjectIdChange(analysis);
 
-    if (!modelRepository.findByAnalysis(analysis.getId()).isEmpty()) {
+    if (!modelService.findByAnalysis(analysis.getId()).isEmpty()) {
       // can not update locked exception
       throw new MethodNotAllowedException();
     }
@@ -104,13 +105,13 @@ public class AnalysisServiceImpl implements AnalysisService {
   }
 
   @Override
-  public List<MbrOutcomeInclusion> buildInitialOutcomeInclusions(Integer projectId, Integer metabenefitRiskAnalysisId) throws SQLException {
+  public List<MbrOutcomeInclusion> buildInitialOutcomeInclusions(Integer projectId, Integer metabenefitRiskAnalysisId) throws SQLException, IOException {
     Collection<Outcome> outcomes = outcomeRepository.query(projectId);
     List<Integer> outcomeIds = outcomes.stream()
             .map(Outcome::getId)
             .collect(Collectors.toList());
     List<NetworkMetaAnalysis> networkMetaAnalyses = networkMetaAnalysisRepository.queryByOutcomes(projectId, outcomeIds);
-    List<Model> models = modelRepository.findNetworkModelsByProject(projectId);
+    List<Model> models = modelService.findNetworkModelsByProject(projectId);
     return outcomes.stream()
             .filter(o -> findValidNetworkMetaAnalysis(networkMetaAnalyses, models, o).isPresent())
             .map(o -> {

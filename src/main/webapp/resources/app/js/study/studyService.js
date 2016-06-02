@@ -235,7 +235,6 @@ define(['lodash'], function(_) {
           has_group: [],
           has_included_population: createIncludedPopulation(),
           has_eligibility_criteria: [],
-          has_epochs: [],
           has_indication: [],
           has_objective: [],
           has_outcome: [],

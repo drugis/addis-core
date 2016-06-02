@@ -108,7 +108,7 @@
                       ng-switch="analysis.analysisType">
                       <td>{{analysis.title}}</td>
                       <td>{{analysis.analysisType}}</td>
-                      <td ng-switch-when="Single-study Benefit-Risk">{{(studies | filter:{studyUid: analysis.studyGraphUid}:true)[0].name}}
+                      <td ng-switch-when="Single-study Benefit-Risk">{{findStudyLabel(analysis)}}
                       </td>
                       <td ng-switch-when="Network meta-analysis"></td>
                       <td ng-switch-when="Benefit-risk analysis based on meta-analyses"></td>

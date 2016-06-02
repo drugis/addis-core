@@ -1,6 +1,6 @@
 'use strict';
-define([],
-  function() {
+define(['lodash'],
+  function(_) {
     var dependencies = ['$scope', '$stateParams', '$window', '$filter',
       'VersionedGraphResource', 'GraphResource', '$location', '$anchorScroll',
       '$modal', 'StudyService', 'ResultsService', 'StudyDesignService', 'DatasetResource'
@@ -21,8 +21,6 @@ define([],
 
       // onload
       StudyService.reset();
-
-
 
       $scope.categorySettings = {
         studyInformation: {
@@ -54,6 +52,8 @@ define([],
           addItemTemplateUrl: 'app/js/arm/addArm.html',
           editItemTemplateUrl: 'app/js/arm/editArm.html',
           editItemController: 'EditArmController',
+          repairItemTemplateUrl: 'app/js/arm/repairArm.html',
+          repairItemController: 'EditArmController'
         },
         groups: {
           service: 'GroupService',
@@ -66,6 +66,8 @@ define([],
           addItemTemplateUrl: 'app/js/group/addGroup.html',
           editItemTemplateUrl: 'app/js/group/editGroup.html',
           editItemController: 'EditGroupController',
+          repairItemTemplateUrl: 'app/js/group/repairGroup.html',
+          repairItemController: 'EditGroupController'
         },
         populationCharacteristics: {
           service: 'PopulationCharacteristicService',

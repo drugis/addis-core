@@ -1,5 +1,6 @@
 package org.drugis.addis.util;
 
+import org.apache.http.client.utils.URIBuilder;
 import org.apache.jena.riot.WebContent;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
@@ -7,6 +8,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.charset.Charset;
 
 /**
@@ -50,18 +52,48 @@ public class WebConstants {
   public static final String ACCEPT_JSON_HEADER = "Accept=" + APPLICATION_JSON_UTF8_VALUE;
 
   public static final String VERSION_UUID = "versionUuid";
-  private static final String TRIPLESTORE_BASE_URI = loadSystemEnvTripleStoreBaseURI();
+  private static final String TRIPLESTORE_BASE_URI = loadSystemEnv("TRIPLESTORE_BASE_URI");
   private static final String TRIPLESTORE_DATA_URI = TRIPLESTORE_BASE_URI + "/current";
 
-  private static String loadSystemEnvTripleStoreBaseURI() {
-    String tripleStoreBaseURI = System.getenv("TRIPLESTORE_BASE_URI");
-    if (tripleStoreBaseURI == null || tripleStoreBaseURI.isEmpty()) {
+  private static final String PATAVI_URI = loadSystemEnv("PATAVI_URI");
+  public static final String PATAVI_RESULTS_PATH = "/results";
+
+  public static String loadSystemEnv(String varName) {
+    String envValue = System.getenv(varName);
+    if (envValue == null || envValue.isEmpty()) {
       LoggerFactory
               .getLogger(WebConstants.class)
-              .error("Cannot start server, no TRIPLESTORE_BASE_URI environment variable found");
+              .error("Cannot start server, no " + varName + " environment variable found");
       System.exit(-1);
     }
-    return tripleStoreBaseURI;
+    return envValue;
+  }
+
+  public String getPataviUri() {
+    return PATAVI_URI;
+  }
+
+  public URI getPataviMcdaUri() {
+    try {
+      URIBuilder builder = new URIBuilder(PATAVI_URI);
+      builder.setPath("/task");
+      builder.addParameter("service", "smaa_v2");
+      builder.addParameter("ttl", "PT5M");
+      return builder.build();
+    } catch (URISyntaxException e) {
+      throw new RuntimeException("could not create mcda patavi uri");
+    }
+  }
+
+  public URI getPataviGemtcUri() {
+    try {
+      URIBuilder builder = new URIBuilder(PATAVI_URI);
+      builder.setPath("/task");
+      builder.addParameter("service", "gemtc");
+      return builder.build();
+    } catch (URISyntaxException e) {
+      throw new RuntimeException("could not create gemtc patavi uri");
+    }
   }
 
   public String getTriplestoreBaseUri() {

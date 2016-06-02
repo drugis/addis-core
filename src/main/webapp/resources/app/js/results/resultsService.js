@@ -1,7 +1,7 @@
 'use strict';
 define(['angular', 'lodash'], function(angular, _) {
-  var dependencies = ['StudyService', 'UUIDService'];
-  var ResultsService = function(StudyService, UUIDService) {
+  var dependencies = ['StudyService', 'UUIDService', 'OutcomeService'];
+  var ResultsService = function(StudyService, UUIDService, OutcomeService) {
 
     function updateResultValue(row, inputColumn) {
       return StudyService.getJsonGraph().then(function(graph) {
@@ -65,6 +65,10 @@ define(['angular', 'lodash'], function(angular, _) {
         outcomeUri: backEndItem.of_outcome,
       };
 
+      if (isNonConformantMeansurement(backEndItem)) {
+        baseItem.comment = backEndItem.comment;
+      }
+
       if (backEndItem.sample_size !== undefined) {
         accum.push(createValueItem(baseItem, backEndItem, 'sample_size'));
       }
@@ -88,6 +92,14 @@ define(['angular', 'lodash'], function(angular, _) {
       return isResult(item) && variableUri === item.of_outcome;
     }
 
+    function isResultForNonConformantMeasurement(variableUri, item) {
+      return isNonConformantMeansurementResult(item) && variableUri === item.of_outcome;
+    }
+
+    function isResultForArm(armUri, item) {
+      return isResult(item) && armUri === item.of_group;
+    }
+
     function isStudyNode(node) {
       return node['@type'] === 'ontology:Study';
     }
@@ -96,8 +108,16 @@ define(['angular', 'lodash'], function(angular, _) {
       return node.of_outcome && node.of_group && node.of_moment;
     }
 
+    function isNonConformantMeansurementResult(node) {
+      return node.comment && node.of_outcome && node.of_group && !node.of_moment;
+    }
+
     function isMoment(node) {
       return node['@type'] === 'ontology:MeasurementMoment';
+    }
+
+    function isNonConformantMeansurement(backEndItem) {
+      return !backEndItem.of_moment && backEndItem.comment;
     }
 
     function cleanupMeasurements() {
@@ -151,17 +171,90 @@ define(['angular', 'lodash'], function(angular, _) {
       });
     }
 
-    function queryResults(variableUri) {
+    function setToMeasurementMoment(measurementMomentUri, measurementInstanceList) {
       return StudyService.getJsonGraph().then(function(graph) {
-        var resultJsonItems = graph.filter(isResultForVariable.bind(this, variableUri));
+
+        _.each(graph, function(node) {
+          if (measurementInstanceList.indexOf(node['@id']) > -1) {
+            node.of_moment = measurementMomentUri;
+            delete node.comment;
+          }
+        });
+
+        return StudyService.saveJsonGraph(graph);
+      });
+    }
+
+    function isExistingMeasurement(measurementMomentUri, measurementInstanceList) {
+      var nonConformantMeasurementInstance = measurementInstanceList[0];
+      return StudyService.getJsonGraph().then(function(graph) {
+
+        var nonConformantMeasurement = _.find(graph, function(node) {
+          return node['@id'] === nonConformantMeasurementInstance;
+        });
+
+        return !!_.find(graph, function(node) {
+          return isResult(node) &&
+            node.of_moment === measurementMomentUri &&
+            nonConformantMeasurement.of_group === node.of_group &&
+            nonConformantMeasurement.of_outcome === node.of_outcome;
+        });
+      });
+    }
+
+    function moveToNewOutcome(variableType, newOutcomeName, baseOutcome, nonConformantMeasurementUrisToMove) {
+
+      var newUri = 'http://trials.drugis.org/instances/' + UUIDService.generate();
+      var newOutcome = angular.copy(baseOutcome);
+      newOutcome.uri = newUri;
+      newOutcome.label = newOutcomeName;
+      newOutcome.measuredAtMoments = [];
+      var backEndOutcome = OutcomeService.toBackEnd(newOutcome, 'ontology:' + variableType);
+      var measurementsById = _.keyBy(nonConformantMeasurementUrisToMove, _.identity);
+
+      return StudyService.getJsonGraph().then(function(graph) {
+        var study = _.find(graph, isStudyNode);
+        study.has_outcome.push(backEndOutcome);
+
+        graph = _.map(graph, function(node) {
+          var nodeId = node['@id'];
+          if (measurementsById[nodeId]) {
+            node.of_outcome = newUri;
+          }
+          return node;
+        });
+        return StudyService.saveJsonGraph(graph);
+      });
+    }
+
+    function _queryResults(uri, typeFunction) {
+      return StudyService.getJsonGraph().then(function(graph) {
+        var resultJsonItems = graph.filter(typeFunction.bind(this, uri));
         return resultJsonItems.reduce(toFrontend, []);
       });
+    }
+
+    function queryResults(variableUri) {
+      return _queryResults(variableUri, isResultForVariable);
+    }
+
+    function queryResultsByGroup(armUri) {
+      return _queryResults(armUri, isResultForArm);
+    }
+
+    function queryNonConformantMeasurements(variableUri) {
+      return _queryResults(variableUri, isResultForNonConformantMeasurement);
     }
 
     return {
       updateResultValue: updateResultValue,
       queryResults: queryResults,
-      cleanupMeasurements: cleanupMeasurements
+      queryResultsByGroup: queryResultsByGroup,
+      queryNonConformantMeasurements: queryNonConformantMeasurements,
+      cleanupMeasurements: cleanupMeasurements,
+      setToMeasurementMoment: setToMeasurementMoment,
+      isExistingMeasurement: isExistingMeasurement,
+      moveToNewOutcome: moveToNewOutcome
     };
   };
   return dependencies.concat(ResultsService);

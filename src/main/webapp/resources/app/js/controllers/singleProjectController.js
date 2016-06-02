@@ -113,6 +113,15 @@ define(['lodash', 'angular'], function(_, angular) {
       });
     }
 
+    $scope.findStudyLabel = function(analysis) {
+      var study = _.find($scope.studies, function(study) {
+        return 'http://trials.drugis.org/graphs/' + study.studyGraphUid === analysis.studyGraphUri;
+      });
+      if (study) {
+        return study.name;
+      }
+    };
+
     $scope.goToAnalysis = function(analysis) {
       var analysisType = angular.copy(_.find(ANALYSIS_TYPES, function(type) {
         return type.label === analysis.analysisType;
