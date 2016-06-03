@@ -139,10 +139,10 @@
         <div class="large-10 columns">
           <em ng-if="singleInterventions.length < 1">No interventions have been defined</em>
           <em ng-if="singleInterventions.length === 1" class="warning">At least two interventions are needed to create a combination intervention</em>
-          <label>Interventions
+          <label>Interventions</label>
             <label ng-repeat="intervention in singleInterventions">
-              <input type="checkbox" ng-model="newIntervention.singleInterventionIds[intervention.id]"></input> {{intervention.name}}</label>
-          </label>
+              <input type="checkbox" ng-model="newIntervention.singleInterventionIds[intervention.id]"></input> {{intervention.name}}
+            </label>
         </div>
       </div>
       <div class="row">
