@@ -443,7 +443,6 @@ define(['angular', 'angular-mocks', 'services'], function() {
             studyUri: 'http://trials.drugis.org/graphs/favaUuid',
             studyUid: 'favaUuid',
             studyRowSpan: 3,
-            drugConceptUid: 'http://trials.drugis.org/concepts/parox-concept',
             arm: 'Paroxetine',
             trialverseUid: 'http://trials.drugis.org/instances/fava-parox-arm',
             included: true,
@@ -469,7 +468,6 @@ define(['angular', 'angular-mocks', 'services'], function() {
             studyUri: 'http://trials.drugis.org/graphs/favaUuid',
             studyUid: 'favaUuid',
             studyRowSpan: 3,
-            drugConceptUid: 'http://trials.drugis.org/concepts/sertra-concept',
             arm: 'Sertraline',
             trialverseUid: 'http://trials.drugis.org/instances/fava-sertra-arm',
             included: true,
@@ -494,7 +492,6 @@ define(['angular', 'angular-mocks', 'services'], function() {
             studyUri: 'http://trials.drugis.org/graphs/favaUuid',
             studyUid: 'favaUuid',
             studyRowSpan: 3,
-            drugConceptUid: 'http://trials.drugis.org/concepts/fluox-concept',
             arm: 'Fluoxetine',
             trialverseUid: 'http://trials.drugis.org/instances/fava-arm-1-uri',
             included: true,
@@ -774,19 +771,22 @@ define(['angular', 'angular-mocks', 'services'], function() {
             uri: 10,
             semanticIntervention: {
               drugConcept: 'uri1'
-            }
+            },
+            matchedProjectInterventionIds: [-3]
           }, {
             drugInstance: 2,
             uri: 11,
             semanticIntervention: {
               drugConcept: 'uri2'
-            }
+            },
+            matchedProjectInterventionIds: [-3]
           }, {
             drugInstance: 2,
             uri: 12,
             semanticIntervention: {
               drugConcept: 'uri2'
-            }
+            },
+            matchedProjectInterventionIds: [-4]
           }]
         };
 
@@ -800,6 +800,7 @@ define(['angular', 'angular-mocks', 'services'], function() {
           }]
         };
         var intervention = {
+          id: -3,
           semanticInterventionUri: 'uri1'
         };
 

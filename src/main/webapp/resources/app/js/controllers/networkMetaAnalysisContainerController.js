@@ -121,7 +121,7 @@ define(['lodash'], function(_) {
     $scope.changeInterventionInclusion = function(intervention) {
       $scope.analysis.interventionInclusions = NetworkMetaAnalysisService.buildInterventionInclusions($scope.interventions, $scope.analysis);
       if ($scope.trialverseData && !intervention.isIncluded) {
-        $scope.analysis.excludedArms = NetworkMetaAnalysisService.cleanUpExcludedArms(intervention, $scope.analysis, $scope.trialverseData);
+        $scope.analysis.excludedArms = NetworkMetaAnalysisService.cleanUpExcludedArms(intervention, $scope.analysis, $scope.trialverseData, $scope.interventions);
       }
       $scope.analysis.$save(function() {
         $scope.reloadModel();

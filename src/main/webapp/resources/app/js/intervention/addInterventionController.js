@@ -195,7 +195,9 @@ define(['lodash', 'angular'], function(_, angular) {
       } else if (selectedTab === 'simple') {
         $scope.newIntervention.type = 'simple';
         delete $scope.correctConstraints;
-        deregisterConstraintWatch();
+        if (deregisterConstraintWatch) {
+          deregisterConstraintWatch();
+        }
       } else if (selectedTab === 'combination') {
         $scope.newIntervention.type = 'combination';
         $scope.newIntervention.singleInterventionIds = {};
