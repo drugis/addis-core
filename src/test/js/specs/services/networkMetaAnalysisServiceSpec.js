@@ -687,34 +687,40 @@ define(['angular', 'angular-mocks', 'services'], function() {
 
     });
 
-    describe('doesModelHaveAmbiguousArms', function() {
+    fdescribe('doesModelHaveAmbiguousArms', function() {
       beforeEach(module('addis.services'));
 
       it('should return true if there are ambiguous arms for the model', inject(function(NetworkMetaAnalysisService) {
         var interventions = [{
-          id: 1,
-          semanticInterventionUri: 'uri1',
-          isIncluded: true
+          interventionId: 1,
+          semanticInterventionUri: 'uri1'
         }, {
-          id: 3,
-          semanticInterventionUri: 'uri1',
-          isIncluded: true
+          interventionId: 2,
+          semanticInterventionUri: 'uri2'
+        }, {
+          interventionId: 3,
+          semanticInterventionUri: 'uri3'
         }];
         var trialverseData = [{
           trialDataArms: [{
             drugInstance: 1,
             drugConceptUid: 'uri1',
-            matchedProjectInterventionIds: [1, 3]
-          }, {
-            drugInstance: 1,
+            matchedProjectInterventionIds: [1,2,3]
+          },{
+            drugInstance: 2,
             drugConceptUid: 'uri1',
-            matchedProjectInterventionIds: [2]
+            matchedProjectInterventionIds: [1,2,3]
+          }, {
+            drugInstance: 3,
+            drugConceptUid: 'uri1',
+            matchedProjectInterventionIds: [1, 2, 3]
           }]
         }];
         var analysis = {
-          excludedArms: []
+          excludedArms: [],
+          interventionInclusions: interventions
         };
-        expect(NetworkMetaAnalysisService.doesModelHaveAmbiguousArms(trialverseData, interventions, analysis)).toBeTruthy();
+        expect(NetworkMetaAnalysisService.doesModelHaveAmbiguousArms(trialverseData, analysis)).toBeTruthy();
       }));
 
     });
