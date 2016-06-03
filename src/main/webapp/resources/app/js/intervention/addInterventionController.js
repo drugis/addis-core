@@ -23,7 +23,7 @@ define(['lodash', 'angular'], function(_, angular) {
     $scope.activeTab = 'simple';
 
     $scope.singleInterventions = _.reject($scope.interventions, {
-      'type': 'combined'
+      'type': 'combination'
     });
 
     function flattenTypes(newIntervention) {
@@ -73,8 +73,8 @@ define(['lodash', 'angular'], function(_, angular) {
     function addCombinedIntervention(newIntervention) {
       $scope.isAddingIntervention = true;
       var createCommand = angular.copy(newIntervention);
-      createCommand.singleInterventionIds = _.reduce(createCommand.singleInterventionIds, function(accum, isIncluded, interventionId){
-        if(isIncluded){
+      createCommand.singleInterventionIds = _.reduce(createCommand.singleInterventionIds, function(accum, isIncluded, interventionId) {
+        if (isIncluded) {
           accum.push(parseInt(interventionId));
         }
         return accum;

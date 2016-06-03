@@ -170,7 +170,7 @@ define(['lodash', 'angular'], function(_, angular) {
         resolve: {
           callback: function() {
             return function(newIntervention) {
-              newIntervention.definitionLabel = InterventionService.generateDescriptionLabel(newIntervention);
+              newIntervention.definitionLabel = InterventionService.generateDescriptionLabel(newIntervention, $scope.interventions);
               $scope.interventions.push(newIntervention);
             };
           }
