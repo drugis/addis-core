@@ -1,12 +1,12 @@
 package org.drugis.trialverse.dataset.repository;
 
 import org.drugis.addis.security.Account;
+import org.drugis.addis.security.ApiKey;
 import org.drugis.addis.security.repository.AccountRepository;
+import org.drugis.addis.util.WebConstants;
 import org.drugis.trialverse.dataset.factory.JenaFactory;
 import org.drugis.trialverse.dataset.repository.impl.DatasetWriteRepositoryImpl;
-import org.drugis.addis.security.ApiKey;
 import org.drugis.trialverse.security.TrialversePrincipal;
-import org.drugis.addis.util.WebConstants;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -83,7 +83,7 @@ public class DatasetWriteRepositoryTest {
 
     assertTrue(result.toString().startsWith(DATASET_URI + "/someMockUuid"));
     verify(webConstants).getTriplestoreBaseUri();
-    verify(accountRepository).findAccountByUsername(owner.getUserName());
+    verify(accountRepository, times(2)).findAccountByUsername(owner.getUserName());
   }
 
   @Test
@@ -104,6 +104,6 @@ public class DatasetWriteRepositoryTest {
 
     assertTrue(result.toString().startsWith(DATASET_URI + "/someMockUuid"));
     verify(webConstants).getTriplestoreBaseUri();
-    verify(accountRepository).findAccountByUsername(owner.getUserName());
+    verify(accountRepository, times(2)).findAccountByUsername(owner.getUserName());
   }
 }

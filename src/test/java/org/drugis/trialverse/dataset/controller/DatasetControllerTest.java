@@ -11,6 +11,7 @@ import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.riot.RDFLanguages;
 import org.drugis.addis.security.Account;
 import org.drugis.addis.security.repository.AccountRepository;
+import org.drugis.addis.util.WebConstants;
 import org.drugis.trialverse.dataset.controller.command.DatasetCommand;
 import org.drugis.trialverse.dataset.model.Dataset;
 import org.drugis.trialverse.dataset.repository.DatasetReadRepository;
@@ -21,7 +22,6 @@ import org.drugis.trialverse.graph.service.GraphService;
 import org.drugis.trialverse.security.TrialversePrincipal;
 import org.drugis.trialverse.util.Namespaces;
 import org.drugis.trialverse.util.Utils;
-import org.drugis.addis.util.WebConstants;
 import org.drugis.trialverse.util.service.TrialverseIOUtilsService;
 import org.junit.After;
 import org.junit.Before;
@@ -135,7 +135,7 @@ public class DatasetControllerTest {
                             .content(jsonContent)
                             .contentType(webConstants.getApplicationJsonUtf8())
             )
-            .andExpect(status().isInternalServerError());
+            .andExpect(status().isForbidden());
 
     verify(accountRepository).findAccountByUsername(john.getUsername());
     verifyNoMoreInteractions(datasetWriteRepository);
