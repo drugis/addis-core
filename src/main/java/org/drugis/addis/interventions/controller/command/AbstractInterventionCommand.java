@@ -1,16 +1,19 @@
-package org.drugis.addis.interventions.model;
+package org.drugis.addis.interventions.controller.command;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import org.drugis.addis.interventions.model.AbstractIntervention;
+import org.drugis.addis.interventions.model.InvalidConstraintException;
 
 /**
  * Created by connor on 3/6/14.
  */
-@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "doseType")
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
 @JsonSubTypes({@JsonSubTypes.Type(value = SimpleInterventionCommand.class, name = "simple"),
         @JsonSubTypes.Type(value = FixedInterventionCommand.class, name = "fixed"),
         @JsonSubTypes.Type(value = TitratedInterventionCommand.class, name = "titrated"),
-        @JsonSubTypes.Type(value = BothDoseTypesInterventionCommand.class, name = "both")})
+        @JsonSubTypes.Type(value = BothDoseTypesInterventionCommand.class, name = "both"),
+        @JsonSubTypes.Type(value = CombinationInterventionCommand.class, name = "combination")})
 public abstract class AbstractInterventionCommand {
   private Integer projectId;
   private String name;

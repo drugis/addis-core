@@ -1,4 +1,4 @@
-package org.drugis.addis.interventions.model;
+package org.drugis.addis.interventions.controller.command;
 
 /**
  * Created by daan on 1-4-16.

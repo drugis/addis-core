@@ -91,7 +91,7 @@ define(['lodash'],
       $scope.loadStudiesWithDetail = function() {
         StudiesWithDetailsService.get($stateParams.userUid, $stateParams.datasetUUID, $stateParams.versionUuid)
           .then(function(result) {
-            $scope.studiesWithDetail = result;
+            $scope.studiesWithDetail = result instanceof Array ? result : [] ;
           });
       };
 

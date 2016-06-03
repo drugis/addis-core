@@ -28,9 +28,8 @@ public class QueryResultMappingServiceTest {
   @InjectMocks
   QueryResultMappingService queryResultMappingService;
 
-  private String resultRows = TestUtils.loadResource(this.getClass(), "/queryResultMappingService/trialDataEdarbiReultRowsExample.json");
   private String covariateRow = TestUtils.loadResource(this.getClass(), "/queryResultMappingService/covariatePopCharValueRow.json");
-  private String singleStudyRow = TestUtils.loadResource(this.getClass(), "/queryResultMappingService/singleStudyResultRow.json");
+  private String combinationTreatmentRows = TestUtils.loadResource(this.getClass(), "/queryResultMappingService/trialDataEdarbiCombined.json");
 
   @Before
   public void setUp() {
@@ -40,29 +39,29 @@ public class QueryResultMappingServiceTest {
 
   @Test
   public void testMapResultRowToTrialDataStudy() throws ParseException, ReadValueException, URISyntaxException {
-    JSONArray bindings = (JSONArray) JSONValue.parseWithException(resultRows);
-    Map<URI, TrialDataStudy> trialDataMap = queryResultMappingService.mapResultRowToTrialDataStudy(bindings);
+    JSONArray bindings = (JSONArray) JSONValue.parseWithException(combinationTreatmentRows);
+    Map<URI, TrialDataStudy> trialDataMap = queryResultMappingService.mapResultRowsToTrialDataStudy(bindings);
     assertEquals(5, trialDataMap.size());
 
-    URI studyWithFixedInterventionUri = new URI("http://trials.drugis.org/graphs/294b3fa9-ba49-4c16-a551-afba9b5856a3");
+    URI studyWithFixedInterventionUri = new URI("http://trials.drugis.org/graphs/34adef58-434f-40c8-89a3-d93fad6dbd94");
     TrialDataStudy trialDataStudy = trialDataMap.get(studyWithFixedInterventionUri);
     List<TrialDataArm> trialDataArms = trialDataStudy.getTrialDataArms();
 
-    AbstractSemanticIntervention intervention = trialDataArms.get(0).getSemanticIntervention();
+    AbstractSemanticIntervention intervention = trialDataArms.get(0).getSemanticInterventions().get(0);
     assertTrue(intervention instanceof FixedSemanticIntervention);
     FixedSemanticIntervention fixedSemanticIntervention = (FixedSemanticIntervention) intervention;
     Dose fixedDose = fixedSemanticIntervention.getDose();
     assertEquals("P1D", fixedDose.getPeriodicity());
-    assertEquals(new URI("http://trials.drugis.org/concepts/a57c4db5-f4dc-4f4e-93c2-12f02f97ed7b"), fixedDose.getUnitConceptUri());
+    assertEquals(new URI("http://trials.drugis.org/concepts/dfdd3707-fef5-4f06-b582-85c7de7a101d"), fixedDose.getUnitConceptUri());
     assertEquals("milligram", fixedDose.getUnitLabel());
     assertEquals((Double) 0.001d, fixedDose.getUnitMultiplier());
     assertEquals((Double) 40.0d, fixedDose.getValue());
 
 
-    URI studyWithTitratedInterventionUri = new URI("http://trials.drugis.org/graphs/c600d0ee-9d64-4395-ad06-f4b4843b20f6");
+    URI studyWithTitratedInterventionUri = new URI("http://trials.drugis.org/graphs/27d109cc-3557-4223-97ef-b2cfea99c964");
     trialDataStudy = trialDataMap.get(studyWithTitratedInterventionUri);
 
-    intervention= trialDataStudy.getTrialDataArms().get(0).getSemanticIntervention();
+    intervention = trialDataStudy.getTrialDataArms().get(0).getSemanticInterventions().get(0);
     assertTrue(intervention instanceof TitratedSemanticIntervention);
     TitratedSemanticIntervention titratedSemanticIntervention = (TitratedSemanticIntervention) intervention;
     Dose minDose = titratedSemanticIntervention.getMinDose();
@@ -74,12 +73,22 @@ public class QueryResultMappingServiceTest {
     assertEquals("P1D", maxDose.getPeriodicity());
     assertEquals("milligram", maxDose.getUnitLabel());
     assertEquals((Double) 0.001d, maxDose.getUnitMultiplier());
-    assertEquals((Double) 40.0d, maxDose.getValue());
+    assertEquals((Double) 80.0d, maxDose.getValue());
+  }
+
+  @Test
+  public void testCombinationTreatment() throws ParseException, ReadValueException {
+    JSONArray bindings = (JSONArray) JSONValue.parseWithException(combinationTreatmentRows);
+    Map<URI, TrialDataStudy> trialDataMap = queryResultMappingService.mapResultRowsToTrialDataStudy(bindings);
+
+    final TrialDataStudy combiTreatmentStudy = trialDataMap.get(URI.create("http://trials.drugis.org/graphs/f1d76e55-b04d-4d34-82bd-0e7dd0a8cad0"));
+
+    assertEquals(2, combiTreatmentStudy.getTrialDataArms().get(0).getSemanticInterventions().size());
   }
 
   @Test
   public void testMapResultToCovariateStudyValue() throws ParseException, ReadValueException {
-    JSONObject row  = (JSONObject) JSONValue.parseWithException(covariateRow);
+    JSONObject row = (JSONObject) JSONValue.parseWithException(covariateRow);
     CovariateStudyValue covariateStudyValue = queryResultMappingService.mapResultToCovariateStudyValue(row);
     assertNotNull(covariateStudyValue);
     assertEquals("uuid", covariateStudyValue.getCovariateKey());
@@ -87,4 +96,4 @@ public class QueryResultMappingServiceTest {
     assertEquals(40d, covariateStudyValue.getValue(), 0.000000001);
   }
 
- }
+}

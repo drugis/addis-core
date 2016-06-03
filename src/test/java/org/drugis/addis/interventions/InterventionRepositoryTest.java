@@ -3,6 +3,7 @@ package org.drugis.addis.interventions;
 import org.drugis.addis.config.JpaRepositoryTestConfig;
 import org.drugis.addis.exception.MethodNotAllowedException;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
+import org.drugis.addis.interventions.controller.command.*;
 import org.drugis.addis.interventions.model.*;
 import org.drugis.addis.interventions.repository.InterventionRepository;
 import org.drugis.addis.security.Account;
@@ -18,6 +19,8 @@ import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;
 import java.net.URI;
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -40,25 +43,30 @@ public class InterventionRepositoryTest {
     Collection<AbstractIntervention> interventions = interventionRepository.query(1);
     assertEquals(2, interventions.size());
     interventions = interventionRepository.query(2);
-    assertEquals(3, interventions.size());
+    assertEquals(4, interventions.size());
   }
 
   @Test
   public void testGet() throws ResourceDoesNotExistException {
     int interventionId = -1;
-    AbstractIntervention intervention = interventionRepository.get(1, interventionId);
+    AbstractIntervention intervention = interventionRepository.get(interventionId);
     assertEquals(em.find(AbstractIntervention.class, interventionId), intervention);
     assert(intervention instanceof SimpleIntervention);
 
     interventionId = -4;
-    intervention = interventionRepository.get(2, interventionId);
+    intervention = interventionRepository.get(interventionId);
     assertEquals(em.find(AbstractIntervention.class, interventionId), intervention);
     assert(intervention instanceof FixedDoseIntervention);
 
     interventionId = -5;
-    intervention = interventionRepository.get(2, interventionId);
+    intervention = interventionRepository.get(interventionId);
     assertEquals(em.find(AbstractIntervention.class, interventionId), intervention);
     assert(intervention instanceof TitratedDoseIntervention);
+
+    interventionId = -6;
+    intervention = interventionRepository.get(interventionId);
+    assertEquals(em.find(AbstractIntervention.class, interventionId), intervention);
+    assert(intervention instanceof CombinationIntervention);
   }
 
   @Test
@@ -107,10 +115,22 @@ public class InterventionRepositoryTest {
     assertEquals(t, result);
   }
 
-  @Test(expected = ResourceDoesNotExistException.class)
-  public void testGetFromWrongProjectFails() throws ResourceDoesNotExistException {
-    interventionRepository.get(2, -1);
+  @Test
+  public void createCombinedInterventionTest() throws ResourceDoesNotExistException {
+    Integer projectId = 1;
+
+    Set<Integer> combination = new HashSet<>();
+    combination.add( -1);
+    combination.add(-5);
+    CombinationIntervention combinationIntervention = new CombinationIntervention(null, projectId, "intervention name", "motivation", combination);
+    em.persist(combinationIntervention);
+
+
+    CombinationIntervention result = em.find(CombinationIntervention.class, combinationIntervention.getId());
+    assertEquals(combinationIntervention, result);
+    assertEquals(2, result.getSingleInterventionIds().size());
   }
+
 
   @Test
   public void testCreateSimpleIntervention() throws Exception, InvalidConstraintException {

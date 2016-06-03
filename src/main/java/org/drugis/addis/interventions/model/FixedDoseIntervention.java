@@ -1,5 +1,8 @@
 package org.drugis.addis.interventions.model;
 
+import org.drugis.addis.interventions.controller.viewAdapter.AbstractInterventionViewAdapter;
+import org.drugis.addis.interventions.controller.viewAdapter.FixedInterventionViewAdapter;
+
 import javax.persistence.*;
 import java.io.Serializable;
 import java.net.URI;
@@ -8,8 +11,8 @@ import java.net.URI;
  * Created by daan on 5-4-16.
  */
 @Entity
-@PrimaryKeyJoinColumn(name = "fixedInterventionId", referencedColumnName = "id")
-public class FixedDoseIntervention extends AbstractIntervention implements Serializable {
+@PrimaryKeyJoinColumn(name = "fixedInterventionId", referencedColumnName = "singleInterventionId")
+public class FixedDoseIntervention extends SingleIntervention implements Serializable {
   @Embedded
   @AttributeOverrides( {
           @AttributeOverride(name="lowerBound.type" , column = @Column(name="lowerBoundType") ),
@@ -41,6 +44,11 @@ public class FixedDoseIntervention extends AbstractIntervention implements Seria
   public FixedDoseIntervention(Integer project, String name, String motivation, URI semanticInterventionUri, String semanticInterventionLabel,
                                DoseConstraint constraint) {
     this(null, project, name, motivation, semanticInterventionUri, semanticInterventionLabel, constraint);
+  }
+
+  @Override
+  public AbstractInterventionViewAdapter toViewAdapter() {
+    return new FixedInterventionViewAdapter(this);
   }
 
   @Override

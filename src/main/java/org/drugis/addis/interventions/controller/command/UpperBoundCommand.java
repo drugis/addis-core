@@ -1,23 +1,25 @@
-package org.drugis.addis.interventions.model;
+package org.drugis.addis.interventions.controller.command;
+
+import org.drugis.addis.interventions.model.UpperBoundType;
 
 import java.net.URI;
 
 /**
- * Created by daan on 1-4-16.
+ * Created by daan on 5-4-16.
  */
-public class LowerBoundCommand extends AbstractBoundCommand {
-  private LowerBoundType type;
+public class UpperBoundCommand extends AbstractBoundCommand {
+  private UpperBoundType type;
 
-  public LowerBoundCommand() {
+  public UpperBoundCommand() {
     super();
   }
 
-  public LowerBoundCommand(LowerBoundType type, Double value, String unitName, String unitPeriod, URI unitConcept) {
+  public UpperBoundCommand(UpperBoundType type, Double value, String unitName, String unitPeriod, URI unitConcept) {
     super(value, unitName, unitPeriod, unitConcept);
     this.type = type;
   }
 
-  public LowerBoundType getType() {
+  public UpperBoundType getType() {
     return type;
   }
 
@@ -27,7 +29,7 @@ public class LowerBoundCommand extends AbstractBoundCommand {
     if (o == null || getClass() != o.getClass()) return false;
     if (!super.equals(o)) return false;
 
-    LowerBoundCommand that = (LowerBoundCommand) o;
+    UpperBoundCommand that = (UpperBoundCommand) o;
 
     return type == that.type;
 

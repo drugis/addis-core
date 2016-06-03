@@ -16,6 +16,7 @@ SELECT DISTINCT
 ?drug
 ?interventionLabel
 ?drugInstance
+?treatmentNode
 ?outcomeTypeUri
 ?outcomeInstance
 ?outcomeTypeUid
@@ -143,8 +144,7 @@ WHERE {
              ontology:has_drug_treatment [
                ontology:treatment_has_drug ?drugInstance
              ] .
-      } GROUP BY ?study ?arm
-          HAVING (COUNT(?drugInstance) < 2)
+      }
     }
   }
 }

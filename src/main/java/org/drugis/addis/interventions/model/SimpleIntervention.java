@@ -1,5 +1,7 @@
 package org.drugis.addis.interventions.model;
 
+import org.drugis.addis.interventions.controller.viewAdapter.AbstractInterventionViewAdapter;
+import org.drugis.addis.interventions.controller.viewAdapter.SimpleInterventionViewAdapter;
 import org.drugis.addis.trialverse.model.SemanticInterventionUriAndName;
 
 import javax.persistence.Entity;
@@ -11,14 +13,19 @@ import java.net.URI;
  * Created by daan on 3/6/14.
  */
 @Entity
-@PrimaryKeyJoinColumn(name = "simpleInterventionId", referencedColumnName = "id")
-public class SimpleIntervention extends AbstractIntervention implements Serializable {
+@PrimaryKeyJoinColumn(name = "simpleInterventionId", referencedColumnName = "singleInterventionId")
+public class SimpleIntervention extends SingleIntervention implements Serializable {
 
   public SimpleIntervention() {
   }
 
   public SimpleIntervention(Integer id, Integer project, String name, String motivation, URI semanticInterventionUri, String semanticInterventionLabel) {
     super(id, project, name, motivation, semanticInterventionUri, semanticInterventionLabel);
+  }
+
+  @Override
+  public AbstractInterventionViewAdapter toViewAdapter() {
+    return new SimpleInterventionViewAdapter(this);
   }
 
   public SimpleIntervention(Integer projectId, String name, String motivation, SemanticInterventionUriAndName semanticInterventionUriAndName) {
@@ -28,4 +35,6 @@ public class SimpleIntervention extends AbstractIntervention implements Serializ
   public SimpleIntervention(Integer id, Integer projectId, String name, String motivation, SemanticInterventionUriAndName semanticInterventionUriAndName) {
     this(id, projectId, name, motivation, semanticInterventionUriAndName.getUri(), semanticInterventionUriAndName.getLabel());
   }
+
+
 }

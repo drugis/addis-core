@@ -443,7 +443,6 @@ define(['angular', 'angular-mocks', 'services'], function() {
             studyUri: 'http://trials.drugis.org/graphs/favaUuid',
             studyUid: 'favaUuid',
             studyRowSpan: 3,
-            drugConceptUid: 'http://trials.drugis.org/concepts/parox-concept',
             arm: 'Paroxetine',
             trialverseUid: 'http://trials.drugis.org/instances/fava-parox-arm',
             included: true,
@@ -469,7 +468,6 @@ define(['angular', 'angular-mocks', 'services'], function() {
             studyUri: 'http://trials.drugis.org/graphs/favaUuid',
             studyUid: 'favaUuid',
             studyRowSpan: 3,
-            drugConceptUid: 'http://trials.drugis.org/concepts/sertra-concept',
             arm: 'Sertraline',
             trialverseUid: 'http://trials.drugis.org/instances/fava-sertra-arm',
             included: true,
@@ -494,7 +492,6 @@ define(['angular', 'angular-mocks', 'services'], function() {
             studyUri: 'http://trials.drugis.org/graphs/favaUuid',
             studyUid: 'favaUuid',
             studyRowSpan: 3,
-            drugConceptUid: 'http://trials.drugis.org/concepts/fluox-concept',
             arm: 'Fluoxetine',
             trialverseUid: 'http://trials.drugis.org/instances/fava-arm-1-uri',
             included: true,
@@ -695,29 +692,35 @@ define(['angular', 'angular-mocks', 'services'], function() {
 
       it('should return true if there are ambiguous arms for the model', inject(function(NetworkMetaAnalysisService) {
         var interventions = [{
-          id: 1,
-          semanticInterventionUri: 'uri1',
-          isIncluded: true
+          interventionId: 1,
+          semanticInterventionUri: 'uri1'
         }, {
-          id: 3,
-          semanticInterventionUri: 'uri1',
-          isIncluded: true
+          interventionId: 2,
+          semanticInterventionUri: 'uri2'
+        }, {
+          interventionId: 3,
+          semanticInterventionUri: 'uri3'
         }];
         var trialverseData = [{
           trialDataArms: [{
             drugInstance: 1,
             drugConceptUid: 'uri1',
-            matchedProjectInterventionIds: [1, 3]
+            matchedProjectInterventionIds: [1, 2, 3]
           }, {
-            drugInstance: 1,
+            drugInstance: 2,
             drugConceptUid: 'uri1',
-            matchedProjectInterventionIds: [2]
+            matchedProjectInterventionIds: [1, 2, 3]
+          }, {
+            drugInstance: 3,
+            drugConceptUid: 'uri1',
+            matchedProjectInterventionIds: [1, 2, 3]
           }]
         }];
         var analysis = {
-          excludedArms: []
+          excludedArms: [],
+          interventionInclusions: interventions
         };
-        expect(NetworkMetaAnalysisService.doesModelHaveAmbiguousArms(trialverseData, interventions, analysis)).toBeTruthy();
+        expect(NetworkMetaAnalysisService.doesModelHaveAmbiguousArms(trialverseData, analysis)).toBeTruthy();
       }));
 
     });
@@ -774,19 +777,22 @@ define(['angular', 'angular-mocks', 'services'], function() {
             uri: 10,
             semanticIntervention: {
               drugConcept: 'uri1'
-            }
+            },
+            matchedProjectInterventionIds: [-3]
           }, {
             drugInstance: 2,
             uri: 11,
             semanticIntervention: {
               drugConcept: 'uri2'
-            }
+            },
+            matchedProjectInterventionIds: [-3]
           }, {
             drugInstance: 2,
             uri: 12,
             semanticIntervention: {
               drugConcept: 'uri2'
-            }
+            },
+            matchedProjectInterventionIds: [-4]
           }]
         };
 
@@ -800,6 +806,7 @@ define(['angular', 'angular-mocks', 'services'], function() {
           }]
         };
         var intervention = {
+          id: -3,
           semanticInterventionUri: 'uri1'
         };
 

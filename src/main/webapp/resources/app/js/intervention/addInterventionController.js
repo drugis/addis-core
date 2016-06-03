@@ -10,15 +10,21 @@ define(['lodash', 'angular'], function(_, angular) {
     $scope.addIntervention = addIntervention;
     $scope.selectTab = selectTab;
     $scope.cleanUpBounds = cleanUpBounds;
+    $scope.addCombinedIntervention = addCombinedIntervention;
 
     $scope.newIntervention = {
-      doseType: 'simple'
+      type: 'simple',
+      projectId: $scope.project.id
     };
     $scope.duplicateInterventionName = {
       isDuplicate: false
     };
     $scope.isAddingIntervention = false;
     $scope.activeTab = 'simple';
+
+    $scope.singleInterventions = _.reject($scope.interventions, {
+      'type': 'combination'
+    });
 
     function flattenTypes(newIntervention) {
       newIntervention.fixedDoseConstraint = flattenType(newIntervention.fixedDoseConstraint);
@@ -50,9 +56,7 @@ define(['lodash', 'angular'], function(_, angular) {
       return constraint;
     }
 
-    function addIntervention(newIntervention) {
-      $scope.isAddingIntervention = true;
-      var createCommand = buildCreateInterventionCommand(newIntervention);
+    function persistIntervention(createCommand) {
       InterventionResource.save(createCommand, function(intervention) {
         $modalInstance.close();
         callback(intervention);
@@ -60,28 +64,41 @@ define(['lodash', 'angular'], function(_, angular) {
       });
     }
 
+    function addIntervention(newIntervention) {
+      $scope.isAddingIntervention = true;
+      var createCommand = buildCreateInterventionCommand(newIntervention);
+      persistIntervention(createCommand);
+    }
+
+    function addCombinedIntervention(newIntervention) {
+      $scope.isAddingIntervention = true;
+      var createCommand = angular.copy(newIntervention);
+      createCommand.singleInterventionIds = _.reduce(createCommand.singleInterventionIds, function(accum, isIncluded, interventionId) {
+        if (isIncluded) {
+          accum.push(parseInt(interventionId));
+        }
+        return accum;
+      }, []);
+      persistIntervention(createCommand);
+    }
+
     function buildCreateInterventionCommand(newIntervention) {
       var createInterventionCommand = angular.copy(newIntervention);
-
-      createInterventionCommand.projectId = $scope.project.id;
       createInterventionCommand.semanticInterventionLabel = newIntervention.semanticIntervention.label;
       createInterventionCommand.semanticInterventionUuid = newIntervention.semanticIntervention.uri;
       delete createInterventionCommand.semanticIntervention;
-
       createInterventionCommand = flattenTypes(createInterventionCommand); // go from object with label to value only
-
       createInterventionCommand = cleanUpConstaints(createInterventionCommand);
-
       return createInterventionCommand;
     }
 
     /*
-    ** remove constraints from the command if no bounds are set
-    */
+     ** remove constraints from the command if no bounds are set
+     */
     function cleanUpConstaints(createInterventionCommand) {
       var cleanedCommand = angular.copy(createInterventionCommand);
 
-      if (createInterventionCommand.doseType === 'both') {
+      if (createInterventionCommand.type === 'both') {
         if (!createInterventionCommand.bothDoseTypesMinConstraint.lowerBound &&
           !createInterventionCommand.bothDoseTypesMinConstraint.upperBound) {
           delete cleanedCommand.bothDoseTypesMinConstraint;
@@ -90,7 +107,7 @@ define(['lodash', 'angular'], function(_, angular) {
           !createInterventionCommand.bothDoseTypesMaxConstraint.upperBound) {
           delete cleanedCommand.bothDoseTypesMaxConstraint;
         }
-      } else if (createInterventionCommand.doseType === 'titrated') {
+      } else if (createInterventionCommand.type === 'titrated') {
         if (!createInterventionCommand.titratedDoseMinConstraint.lowerBound &&
           !createInterventionCommand.titratedDoseMinConstraint.upperBound) {
           delete cleanedCommand.titratedDoseMinConstraint;
@@ -115,16 +132,16 @@ define(['lodash', 'angular'], function(_, angular) {
     }
 
     function cleanUpBounds() {
-      if ($scope.newIntervention.doseType === 'fixed') {
+      if ($scope.newIntervention.type === 'fixed') {
         delete $scope.newIntervention.titratedDoseMinConstraint;
         delete $scope.newIntervention.titratedDoseMaxConstraint;
         delete $scope.newIntervention.bothDoseTypesMinConstraint;
         delete $scope.newIntervention.bothDoseTypesMaxConstraint;
-      } else if ($scope.newIntervention.doseType === 'titrated') {
+      } else if ($scope.newIntervention.type === 'titrated') {
         delete $scope.newIntervention.fixedDoseConstraint;
         delete $scope.newIntervention.bothDoseTypesMinConstraint;
         delete $scope.newIntervention.bothDoseTypesMaxConstraint;
-      } else if ($scope.newIntervention.doseType === 'both') {
+      } else if ($scope.newIntervention.type === 'both') {
         delete $scope.newIntervention.fixedDoseConstraint;
         delete $scope.newIntervention.titratedDoseMinConstraint;
         delete $scope.newIntervention.titratedDoseMaxConstraint;
@@ -164,16 +181,34 @@ define(['lodash', 'angular'], function(_, angular) {
     }
 
     function selectTab(selectedTab) {
-      $scope.newIntervention = {};
+      $scope.newIntervention = {
+        projectId: $scope.project.id
+      };
       $scope.activeTab = selectedTab;
-      if (selectedTab === 'dose-restricted') {
-        deregisterConstraintWatch = $scope.$watch('newIntervention', checkConstraints, true);
-      } else {
-        $scope.newIntervention.doseType = 'simple';
-        delete $scope.correctConstraints;
+      delete $scope.correctConstraints;
+      if (deregisterConstraintWatch) {
         deregisterConstraintWatch();
       }
+
+      if (selectedTab === 'dose-restricted') {
+        deregisterConstraintWatch = $scope.$watch('newIntervention', checkConstraints, true);
+      } else if (selectedTab === 'simple') {
+        $scope.newIntervention.type = 'simple';
+        delete $scope.correctConstraints;
+        if (deregisterConstraintWatch) {
+          deregisterConstraintWatch();
+        }
+      } else if (selectedTab === 'combination') {
+        $scope.newIntervention.type = 'combination';
+        $scope.newIntervention.singleInterventionIds = {};
+      }
     }
+
+    $scope.numberOfSelectedInterventions = function() {
+      return _.filter($scope.newIntervention.singleInterventionIds).length;
+    };
+
+
 
   };
   return dependencies.concat(AddInterventionController);

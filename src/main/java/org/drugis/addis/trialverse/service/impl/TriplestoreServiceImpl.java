@@ -542,7 +542,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
     ResponseEntity<String> response = queryTripleStoreVersion(namespaceUid, query, version);
     JSONArray bindings = JsonPath.read(response.getBody(), "$.results.bindings");
 
-    Map<URI, TrialDataStudy> trialDataStudies = queryResultMappingService.mapResultRowToTrialDataStudy(bindings);
+    Map<URI, TrialDataStudy> trialDataStudies = queryResultMappingService.mapResultRowsToTrialDataStudy(bindings);
 
     List<CovariateOption> covariateOptions = Arrays.asList(CovariateOption.values());
     // transform covariate keys to object
@@ -584,8 +584,10 @@ public class TriplestoreServiceImpl implements TriplestoreService {
   public Set<AbstractIntervention> findMatchingIncludedInterventions(List<AbstractIntervention> includedInterventions, TrialDataArm arm) {
     return includedInterventions.stream().filter(i -> {
       try {
-        return interventionService.isMatched(i, arm.getSemanticIntervention());
+        return interventionService.isMatched(i, arm.getSemanticInterventions());
       } catch (InvalidTypeForDoseCheckException e) {
+        e.printStackTrace();
+      } catch (ResourceDoesNotExistException e) {
         e.printStackTrace();
       }
       return false;

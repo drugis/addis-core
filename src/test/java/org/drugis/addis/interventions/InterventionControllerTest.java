@@ -1,8 +1,11 @@
 package org.drugis.addis.interventions;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.Sets;
 import org.drugis.addis.TestUtils;
 import org.drugis.addis.config.TestConfig;
+import org.drugis.addis.interventions.controller.command.*;
+import org.drugis.addis.interventions.controller.viewAdapter.AbstractInterventionViewAdapter;
 import org.drugis.addis.interventions.model.*;
 import org.drugis.addis.interventions.repository.InterventionRepository;
 import org.drugis.addis.security.Account;
@@ -26,7 +29,9 @@ import javax.inject.Inject;
 import java.net.URI;
 import java.security.Principal;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.notNullValue;
@@ -76,10 +81,11 @@ public class InterventionControllerTest {
   }
 
   @Test
-  public void testQueryInterventions() throws Exception, InvalidConstraintException {
+  public void testQueryInterventions() throws Exception {
 
     DoseConstraint constraint = new DoseConstraint(new LowerBoundCommand(LowerBoundType.AT_LEAST, 2d, "mili", "P1D", URI.create("unitConcept")), null);
     FixedDoseIntervention intervention = new FixedDoseIntervention(1, "name", "motivation", URI.create("http://semantic.com"), "labelnew", constraint);
+    AbstractInterventionViewAdapter abstractInterventionViewAdapter = intervention.toViewAdapter();
     Integer projectId = 1;
     List<AbstractIntervention> interventions = Collections.singletonList(intervention);
     when(interventionRepository.query(projectId)).thenReturn(interventions);
@@ -97,6 +103,26 @@ public class InterventionControllerTest {
   }
 
   @Test
+  public void testQueryCombinationInterventions() throws Exception {
+
+    Integer projectId = 1;
+    CombinationIntervention intervention = new CombinationIntervention(1,projectId, "name", "motivation", Sets.newHashSet(1));
+
+    List<AbstractIntervention> interventions = Collections.singletonList(intervention);
+    when(interventionRepository.query(projectId)).thenReturn(interventions);
+
+    ResultActions result = mockMvc.perform(get("/projects/1/interventions").principal(user));
+    result
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()))
+            .andExpect(jsonPath("$", hasSize(1)))
+            .andExpect(jsonPath("$[0].id", is(intervention.getId())));
+
+    verify(interventionRepository).query(projectId);
+    verify(accountRepository).findAccountByUsername("gert");
+  }
+
+  @Test
   public void testUnauthorisedAccessFails() throws Exception {
     when(accountRepository.findAccountByUsername("gert")).thenReturn(null);
     mockMvc.perform(get("/projects/1/interventions").principal(user))
@@ -108,17 +134,17 @@ public class InterventionControllerTest {
   public void testGetIntervention() throws Exception {
     SimpleIntervention intervention = new SimpleIntervention(1, 1, "name", "motivation", new SemanticInterventionUriAndName(URI.create("http://semantic.com"), "labelnew"));
     Integer projectId = 1;
-    when(interventionRepository.get(projectId, intervention.getId())).thenReturn(intervention);
+    when(interventionRepository.get(projectId)).thenReturn(intervention);
     mockMvc.perform(get("/projects/1/interventions/1").principal(user))
             .andExpect(status().isOk())
             .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()))
             .andExpect(jsonPath("$.id", is(intervention.getId())));
     verify(accountRepository).findAccountByUsername("gert");
-    verify(interventionRepository).get(projectId, intervention.getId());
+    verify(interventionRepository).get(projectId);
   }
 
   @Test
-  public void testCreateIntervention() throws Exception, InvalidConstraintException {
+  public void testCreateIntervention() throws Exception {
     SimpleIntervention intervention = new SimpleIntervention(1, 1, "name", "motivation", new SemanticInterventionUriAndName(URI.create("http://semantic.com"), "labelnew"));
     AbstractInterventionCommand interventionCommand = new SimpleInterventionCommand(1, "name", "motivation", "http://semantic.com", "labelnew");
     when(interventionRepository.create(gert, interventionCommand)).thenReturn(intervention);
@@ -133,7 +159,7 @@ public class InterventionControllerTest {
 
 
   @Test
-  public void testCreateFixedBoundIntervention() throws Exception, InvalidConstraintException {
+  public void testCreateFixedBoundIntervention() throws Exception {
     SimpleIntervention intervention = new SimpleIntervention(1, 1, "name", "motivation", new SemanticInterventionUriAndName(URI.create("http://semantic.com"), "labelnew"));
     LowerBoundType lowerType = LowerBoundType.AT_LEAST;
     UpperBoundType upperType = UpperBoundType.AT_MOST;
@@ -155,9 +181,26 @@ public class InterventionControllerTest {
   }
 
   @Test
-  public void testCreateTitratedDoseIntervention() throws Exception, InvalidConstraintException {
+  public void createCombinationIntervention() throws Exception {
+    Set<Integer> interventions = new HashSet<>();
+    interventions.add(1);
+    CombinationIntervention combinationIntervention = new CombinationIntervention(1, 1, "name", "motivation", interventions);
+    Set<Integer> interventionsIds = Sets.newHashSet(1);
+    AbstractInterventionCommand combinationInterventionCommand = new CombinationInterventionCommand(1, "name", "motivation", "http://semantic.com", "labelnew", interventionsIds);
+    when(interventionRepository.create(gert, combinationInterventionCommand)).thenReturn(combinationIntervention);
+    String body = TestUtils.createJson(combinationInterventionCommand);
+    mockMvc.perform(post("/projects/1/interventions").content(body).principal(user).contentType(WebConstants.getApplicationJsonUtf8Value()))
+            .andExpect(status().isCreated())
+            .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()))
+            .andExpect(jsonPath("$.id", notNullValue()));
+    verify(accountRepository).findAccountByUsername(gert.getUsername());
+    verify(interventionRepository).create(gert, combinationInterventionCommand);
+  }
+
+  @Test
+  public void testCreateTitratedDoseIntervention() throws Exception {
     String body = "{\n" +
-            "  \"doseType\": \"titrated\",\n" +
+            "  \"type\": \"titrated\",\n" +
             "  \"titratedDoseMinConstraint\": {\n" +
             "    \"lowerBound\": {\n" +
             "      \"type\": \"AT_LEAST\",\n" +
@@ -193,9 +236,9 @@ public class InterventionControllerTest {
     verify(interventionRepository).create(gert, doseRestrictedInterventionCommand);
   }
   @Test
-  public void testCreateBothDoseIntervention() throws Exception, InvalidConstraintException {
+  public void testCreateBothDoseIntervention() throws Exception {
     String body = "{\n" +
-            "  \"doseType\": \"both\",\n" +
+            "  \"type\": \"both\",\n" +
             "  \"bothDoseTypesMinConstraint\": {\n" +
             "    \"lowerBound\": {\n" +
             "      \"type\": \"AT_LEAST\",\n" +

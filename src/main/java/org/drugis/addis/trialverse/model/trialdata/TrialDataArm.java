@@ -13,19 +13,18 @@ public class TrialDataArm {
   private URI uri;
   private String name;
   private URI drugInstance;
-  private List<Measurement> measurements = new ArrayList<>();
-  private AbstractSemanticIntervention semanticIntervention;
+  private Set<Measurement> measurements = new HashSet<>();
+  private List<AbstractSemanticIntervention> semanticInterventions = new ArrayList<>();
 
   private Set<Integer> matchedProjectInterventionIds = new HashSet<>();
 
   public TrialDataArm() {
   }
 
-  public TrialDataArm(URI uri, String name, URI drugInstance, AbstractSemanticIntervention semanticIntervention) {
+  public TrialDataArm(URI uri, String name, URI drugInstance) {
     this.uri = uri;
     this.name = name;
     this.drugInstance = drugInstance;
-    this.semanticIntervention = semanticIntervention;
   }
 
   public URI getUri() {
@@ -40,7 +39,7 @@ public class TrialDataArm {
     return drugInstance;
   }
 
-  public List<Measurement> getMeasurements() {
+  public Set<Measurement> getMeasurements() {
     return measurements;
   }
 
@@ -48,8 +47,12 @@ public class TrialDataArm {
     this.measurements.add(measurement);
   }
 
-  public AbstractSemanticIntervention getSemanticIntervention() {
-    return semanticIntervention;
+  public void addSemanticIntervention(AbstractSemanticIntervention abstractSemanticIntervention) {
+    this.semanticInterventions.add(abstractSemanticIntervention);
+  }
+
+  public List<AbstractSemanticIntervention> getSemanticInterventions() {
+    return semanticInterventions;
   }
 
   public Set<Integer> getMatchedProjectInterventionIds() {
@@ -71,7 +74,7 @@ public class TrialDataArm {
     if (!name.equals(arm.name)) return false;
     if (!drugInstance.equals(arm.drugInstance)) return false;
     if (!measurements.equals(arm.measurements)) return false;
-    if (!semanticIntervention.equals(arm.semanticIntervention)) return false;
+    if (!semanticInterventions.equals(arm.semanticInterventions)) return false;
     return matchedProjectInterventionIds.equals(arm.matchedProjectInterventionIds);
 
   }
@@ -82,7 +85,7 @@ public class TrialDataArm {
     result = 31 * result + name.hashCode();
     result = 31 * result + drugInstance.hashCode();
     result = 31 * result + measurements.hashCode();
-    result = 31 * result + semanticIntervention.hashCode();
+    result = 31 * result + semanticInterventions.hashCode();
     result = 31 * result + matchedProjectInterventionIds.hashCode();
     return result;
   }

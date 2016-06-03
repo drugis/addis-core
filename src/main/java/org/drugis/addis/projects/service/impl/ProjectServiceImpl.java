@@ -3,6 +3,7 @@ package org.drugis.addis.projects.service.impl;
 import org.drugis.addis.exception.MethodNotAllowedException;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.interventions.model.AbstractIntervention;
+import org.drugis.addis.interventions.model.SingleIntervention;
 import org.drugis.addis.interventions.repository.InterventionRepository;
 import org.drugis.addis.outcomes.Outcome;
 import org.drugis.addis.outcomes.repository.OutcomeRepository;
@@ -70,18 +71,18 @@ public class ProjectServiceImpl implements ProjectService {
   @Override
   public List<TrialDataStudy> queryMatchedStudies(Integer projectId) throws ResourceDoesNotExistException, ReadValueException, URISyntaxException {
     Project project = projectRepository.get(projectId);
-
     List<AbstractIntervention> interventions = interventionRepository.query(projectId);
-    Set<URI> interventionUris = interventions
-            .stream()
-            .map(AbstractIntervention::getSemanticInterventionUri)
+    Set<URI> singleInterventionUris = interventions.stream()
+            .filter(ai -> ai instanceof SingleIntervention)
+            .map(ai -> (SingleIntervention) ai)
+            .map(SingleIntervention::getSemanticInterventionUri)
             .collect(Collectors.toSet());
 
     Set<URI> outcomeUris = outcomeRepository.query(projectId)
             .stream()
             .map(Outcome::getSemanticOutcomeUri)
             .collect(Collectors.toSet());
-    List<TrialDataStudy> studies = triplestoreService.getAllTrialData(mappingService.getVersionedUuid(project.getNamespaceUid()), project.getDatasetVersion(), outcomeUris, interventionUris);
+    List<TrialDataStudy> studies = triplestoreService.getAllTrialData(mappingService.getVersionedUuid(project.getNamespaceUid()), project.getDatasetVersion(), outcomeUris, singleInterventionUris);
     studies = triplestoreService.addMatchingInformation(interventions, studies);
     return studies;
   }

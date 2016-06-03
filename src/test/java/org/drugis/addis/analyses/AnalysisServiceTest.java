@@ -1,5 +1,6 @@
 package org.drugis.addis.analyses;
 
+import org.apache.jena.ext.com.google.common.collect.ImmutableSet;
 import org.drugis.addis.analyses.repository.AnalysisRepository;
 import org.drugis.addis.analyses.repository.NetworkMetaAnalysisRepository;
 import org.drugis.addis.analyses.service.AnalysisService;
@@ -9,7 +10,9 @@ import org.drugis.addis.covariates.CovariateRepository;
 import org.drugis.addis.exception.MethodNotAllowedException;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.interventions.model.AbstractIntervention;
+import org.drugis.addis.interventions.model.CombinationIntervention;
 import org.drugis.addis.interventions.model.SimpleIntervention;
+import org.drugis.addis.interventions.model.SingleIntervention;
 import org.drugis.addis.interventions.repository.InterventionRepository;
 import org.drugis.addis.interventions.service.InterventionService;
 import org.drugis.addis.interventions.service.impl.InvalidTypeForDoseCheckException;
@@ -253,6 +256,7 @@ public class AnalysisServiceTest {
 
     List<ArmExclusion> excludedArms = Collections.emptyList();
     int includedInterventionId = 101;
+    int includedCombinedInterventionId = 103;
     int sirNotAppearingInThisFilmId = 102;
     InterventionInclusion interventionInclusion1 = new InterventionInclusion(analysisId, includedInterventionId);
     List<InterventionInclusion> includedInterventions = Collections.singletonList(interventionInclusion1);
@@ -265,9 +269,10 @@ public class AnalysisServiceTest {
     Project project = new Project(projectId, owner, "proj", "desc", namespaceUid, version);
     when(projectRepository.get(projectId)).thenReturn(project);
     when(analysisRepository.get(analysisId)).thenReturn(networkMetaAnalysis);
-    AbstractIntervention includedIntervention = new SimpleIntervention(includedInterventionId, projectId, "includedIntervention", "", new SemanticInterventionUriAndName(URI.create("semUri1"), "intervention 1"));
-    AbstractIntervention notIncludedIntervention = new SimpleIntervention(sirNotAppearingInThisFilmId, projectId, "notIncludedIntervention", "", new SemanticInterventionUriAndName(URI.create("semUri2"), "intervention 2"));
-    List<AbstractIntervention> interventions = Arrays.asList(includedIntervention, notIncludedIntervention);
+    SingleIntervention includedIntervention = new SimpleIntervention(includedInterventionId, projectId, "includedIntervention", "", new SemanticInterventionUriAndName(URI.create("semUri1"), "intervention 1"));
+    CombinationIntervention includedCombinedIntervention = new CombinationIntervention(includedCombinedInterventionId, projectId, "includedCombinedINtervention", "", ImmutableSet.of(includedCombinedInterventionId));
+    SingleIntervention notIncludedIntervention = new SimpleIntervention(sirNotAppearingInThisFilmId, projectId, "notIncludedIntervention", "", new SemanticInterventionUriAndName(URI.create("semUri2"), "intervention 2"));
+    List<AbstractIntervention> interventions = Arrays.asList(includedIntervention, notIncludedIntervention, includedCombinedIntervention);
     List<Covariate> covariates = Collections.emptyList();
     when(interventionRepository.query(projectId)).thenReturn(interventions);
     when(covariateRepository.findByProject(projectId)).thenReturn(covariates);
@@ -282,9 +287,11 @@ public class AnalysisServiceTest {
     Dose maxDose1 = new Dose(1.0, "P1D", URI.create("unitConceptUri"), "milligram", 0.001);
     AbstractSemanticIntervention arm1Intervention = new TitratedSemanticIntervention(drugInstance1, drugConcept1, minDose1, maxDose1);
     AbstractSemanticIntervention arm2Intervention = new SimpleSemanticIntervention(drugInstance2, drugConcept2);
-    TrialDataArm arm1 = new TrialDataArm(URI.create("foo/armuri1"), "armname1", drugInstance1, arm1Intervention);
+    TrialDataArm arm1 = new TrialDataArm(URI.create("foo/armuri1"), "armname1", drugInstance1);
+    arm1.addSemanticIntervention(arm1Intervention);
     arm1.setMatchedProjectInterventionIds(new HashSet<>(Collections.singletonList(includedIntervention.getId())));
-    TrialDataArm arm2 = new TrialDataArm(URI.create("foo/armuri2"), "armname2", drugInstance2, arm2Intervention);
+    TrialDataArm arm2 = new TrialDataArm(URI.create("foo/armuri2"), "armname2", drugInstance2);
+    arm2.addSemanticIntervention(arm2Intervention);
     List<TrialDataArm> study1Arms = Arrays.asList(arm1, arm2);
     TrialDataStudy study1 = new TrialDataStudy(URI.create("studyUri"), "name", study1Arms);
     List<TrialDataStudy> trialData = Collections.singletonList(study1);

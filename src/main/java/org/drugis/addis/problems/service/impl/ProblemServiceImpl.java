@@ -15,6 +15,8 @@ import org.drugis.addis.covariates.Covariate;
 import org.drugis.addis.covariates.CovariateRepository;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.interventions.model.AbstractIntervention;
+import org.drugis.addis.interventions.model.CombinationIntervention;
+import org.drugis.addis.interventions.model.SingleIntervention;
 import org.drugis.addis.interventions.repository.InterventionRepository;
 import org.drugis.addis.interventions.service.InterventionService;
 import org.drugis.addis.interventions.service.impl.InvalidTypeForDoseCheckException;
@@ -297,7 +299,7 @@ public class ProblemServiceImpl implements ProblemService {
         entries.addAll(filteredArms.stream()
                 .map(trialDataArm -> buildEntry(trialDataStudy.getName(),
                         trialDataArm.getMatchedProjectInterventionIds().iterator().next(), // safe because we filter unmatched arms
-                        trialDataArm.getMeasurements().get(0)))  // nma has exactly one measurement
+                        trialDataArm.getMeasurements().iterator().next()))  // nma has exactly one measurement
                 .collect(Collectors.toList()));
       }
     }
@@ -379,15 +381,44 @@ public class ProblemServiceImpl implements ProblemService {
     final Set<URI> outcomeUris = analysis.getSelectedOutcomes()
             .stream().map(Outcome::getSemanticOutcomeUri).collect(Collectors.toSet());
     final List<AbstractIntervention> interventions = interventionRepository.query(project.getId());
-    final Map<Integer, AbstractIntervention> interventionMap = interventions
-            .stream().collect(Collectors.toMap(AbstractIntervention::getId, Function.identity()));
+    final Map<Integer, AbstractIntervention> unresolvedInterventionsMap = interventions.stream().collect(Collectors.toMap(AbstractIntervention::getId, Function.identity()));
+
+    List<SingleIntervention> singleInterventions = interventions.stream()
+            .filter(ai -> ai instanceof SingleIntervention)
+            .map(ai -> (SingleIntervention) ai)
+            .collect(Collectors.toList());
+    List<CombinationIntervention> combinationInterventions = interventions.stream()
+            .filter(ai -> ai instanceof CombinationIntervention)
+            .map(ai -> (CombinationIntervention) ai)
+            .collect(Collectors.toList());
+
+    Set<SingleIntervention> resolvedInterventions = new HashSet<>();
+    resolvedInterventions.addAll(singleInterventions);
+    resolvedInterventions.addAll(interventionService.resolveCombinations(combinationInterventions));
+
+    final Map<Integer, SingleIntervention> resolvedInterventionMap = resolvedInterventions
+            .stream().collect(Collectors.toMap(SingleIntervention::getId, Function.identity()));
+
+    List<InterventionInclusion> interventionInclusions = analysis.getInterventionInclusions();
+    List<AbstractIntervention> abstractIncludedInterventions = interventionInclusions.stream().map(ii -> unresolvedInterventionsMap.get(ii.getInterventionId())).collect(Collectors.toList());
+
+    List<SingleIntervention> singleIncludedInterventions = abstractIncludedInterventions.stream()
+            .filter(ai -> ai instanceof SingleIntervention)
+            .map(ai -> (SingleIntervention) ai)
+            .collect(Collectors.toList());
+    List<CombinationIntervention> combinationIncludedInterventions = abstractIncludedInterventions.stream()
+            .filter(ai -> ai instanceof CombinationIntervention)
+            .map(ai -> (CombinationIntervention) ai)
+            .collect(Collectors.toList());
+    Set<SingleIntervention> resolvedIncludedInterventions = new HashSet<>();
+    resolvedIncludedInterventions.addAll(singleIncludedInterventions);
+    resolvedIncludedInterventions.addAll(interventionService.resolveCombinations(combinationIncludedInterventions));
+
+    final Set<URI> alternativeUris = resolvedIncludedInterventions.stream().map(rii -> resolvedInterventionMap.get(rii.getId()).getSemanticInterventionUri())
+            .collect(Collectors.toSet());
+
     final Map<URI, Outcome> outcomesByUriMap = analysis.getSelectedOutcomes()
             .stream().collect(Collectors.toMap(Outcome::getSemanticOutcomeUri, Function.identity()));
-
-    final Set<URI> alternativeUris = analysis.getInterventionInclusions()
-            .stream().map(intervention -> interventionMap.get(intervention.getInterventionId()).getSemanticInterventionUri())
-            .collect(Collectors.toSet());
-    final Set<Integer> interventionIds = analysis.getInterventionInclusions().stream().map(InterventionInclusion::getInterventionId).collect(Collectors.toSet());
 
     final Map<String, AbstractIntervention> alternativeToInterventionMap = interventions.stream()
             .collect(Collectors.toMap(ai -> ai.getId().toString(), Function.identity()));
@@ -403,7 +434,7 @@ public class ProblemServiceImpl implements ProblemService {
     Map<URI, CriterionEntry> criteria = new HashMap<>();
     Set<Pair<Measurement, Integer>> measurementDrugInstancePairs = new HashSet<>();
     for (TrialDataArm arm : trialDataStudy.getTrialDataArms()) {
-      List<Measurement> measurements = arm.getMeasurements();
+      Set<Measurement> measurements = arm.getMeasurements();
       Set<AbstractIntervention> matchingIncludedInterventions = triplestoreService.findMatchingIncludedInterventions(includedInterventions, arm);
       if (matchingIncludedInterventions.size() == 1) {
         Integer matchedProjectInterventionId = matchingIncludedInterventions.iterator().next().getId();

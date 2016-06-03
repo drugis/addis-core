@@ -1,8 +1,8 @@
 package org.drugis.addis.analyses;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.IdClass;
 import java.io.Serializable;
 
 /**

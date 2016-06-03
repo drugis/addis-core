@@ -106,7 +106,7 @@ define(['angular-mocks'], function(angularMocks) {
       it('should get the studies with detail and place them on the scope', function() {
         studiesWithDetailsGetDeferred.resolve(mockStudiesWithDetail);
         scope.$digest();
-        expect(scope.studiesWithDetail).toBe(mockStudiesWithDetail);
+        expect(scope.studiesWithDetail).toEqual([]);
       });
 
       it('should place the table options on the scope', function() {

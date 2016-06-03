@@ -1,6 +1,8 @@
 package org.drugis.addis.interventions.service.impl;
 
+import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.interventions.model.*;
+import org.drugis.addis.interventions.repository.InterventionRepository;
 import org.drugis.addis.interventions.service.InterventionService;
 import org.drugis.addis.trialverse.model.trialdata.AbstractSemanticIntervention;
 import org.drugis.addis.trialverse.model.trialdata.Dose;
@@ -8,30 +10,90 @@ import org.drugis.addis.trialverse.model.trialdata.FixedSemanticIntervention;
 import org.drugis.addis.trialverse.model.trialdata.TitratedSemanticIntervention;
 import org.springframework.stereotype.Service;
 
+import javax.inject.Inject;
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created by connor on 12-4-16.
  */
 @Service
 public class InterventionServiceImpl implements InterventionService {
+
+  @Inject
+  InterventionRepository interventionRepository;
+
+  public List<SingleIntervention> resolveCombinations(List<CombinationIntervention> combinationInterventions) throws ResourceDoesNotExistException {
+    List<SingleIntervention> singleInterventions = new ArrayList<>();
+    for(CombinationIntervention combinationIntervention: combinationInterventions){
+      singleInterventions.addAll(resolveCombinations(combinationIntervention));
+    }
+    return singleInterventions;
+  }
+
   @Override
-  public boolean isMatched(AbstractIntervention intervention, AbstractSemanticIntervention semanticIntervention) throws InvalidTypeForDoseCheckException {
+  public boolean isMatched(final AbstractIntervention intervention, final List<AbstractSemanticIntervention> semanticInterventions) throws InvalidTypeForDoseCheckException, ResourceDoesNotExistException {
 
-    if(intervention instanceof SimpleIntervention) {
-      return checkSimple(intervention, semanticIntervention);
+    if(intervention instanceof SingleIntervention) {
+      if (semanticInterventions.size() > 1) {
+        return false;
+      }
+      AbstractSemanticIntervention semanticIntervention = semanticInterventions.get(0);
+      SingleIntervention singleIntervention = (SingleIntervention) intervention;
+
+      return isSingleInterventionMatched(singleIntervention, semanticIntervention);
     }
 
-    if(intervention instanceof FixedDoseIntervention) {
-
-      return !(!checkType(intervention, semanticIntervention) || !checkSimple(intervention, semanticIntervention) || !doseCheck(intervention, semanticIntervention));
-    }
-
-    if(intervention instanceof TitratedDoseIntervention || intervention instanceof BothDoseTypesIntervention) {
-      return !(!checkType(intervention, semanticIntervention) || !checkSimple(intervention, semanticIntervention) || !doseCheck(intervention, semanticIntervention));
+    if (intervention instanceof CombinationIntervention) {
+      CombinationIntervention combinationIntervention = (CombinationIntervention) intervention;
+      if (semanticInterventions.size() != combinationIntervention.getSingleInterventionIds().size()) {
+        return false;
+      }
+      Boolean allMatched = true;
+      List<SingleIntervention> singleInterventions = new ArrayList<>();
+      for (Integer interventionId : combinationIntervention.getSingleInterventionIds()) {
+        singleInterventions.add((SingleIntervention) interventionRepository.get(interventionId));
+      }
+      // find matching semantic intervention for each addis intervention
+      // if found remove from sem. interventions
+      // if not found return false
+      // return true if list empty
+      ArrayList<AbstractSemanticIntervention> semanticInterventionsToMatch = new ArrayList<>(semanticInterventions);
+      for (SingleIntervention singleIntervention : singleInterventions) {
+        Boolean found = false;
+        for (AbstractSemanticIntervention semanticIntervention : semanticInterventionsToMatch) {
+          if (isSingleInterventionMatched(singleIntervention, semanticIntervention)) {
+            found = true;
+            semanticInterventionsToMatch.remove(semanticIntervention);
+            break;
+          }
+        }
+        if (!found) {
+          return false;
+        }
+      }
+      return semanticInterventionsToMatch.size() == 0; // all semantic interventions matched
     }
     return false;
   }
 
-  private boolean checkSimple(AbstractIntervention intervention, AbstractSemanticIntervention semanticIntervention) {
+  private Boolean isSingleInterventionMatched(SingleIntervention singleIntervention, AbstractSemanticIntervention semanticIntervention) throws InvalidTypeForDoseCheckException {
+    if (singleIntervention instanceof SimpleIntervention) {
+      return checkSimple(singleIntervention, semanticIntervention);
+    }
+
+    if (singleIntervention instanceof FixedDoseIntervention) {
+
+      return !(!checkType(singleIntervention, semanticIntervention) || !checkSimple(singleIntervention, semanticIntervention) || !doseCheck(singleIntervention, semanticIntervention));
+    }
+
+    if (singleIntervention instanceof TitratedDoseIntervention || singleIntervention instanceof BothDoseTypesIntervention) {
+      return !(!checkType(singleIntervention, semanticIntervention) || !checkSimple(singleIntervention, semanticIntervention) || !doseCheck(singleIntervention, semanticIntervention));
+    }
+    return false;
+  }
+
+  private boolean checkSimple(SingleIntervention intervention, AbstractSemanticIntervention semanticIntervention) {
     return intervention.getSemanticInterventionUri().equals(semanticIntervention.getDrugConcept());
   }
 
@@ -142,5 +204,12 @@ public class InterventionServiceImpl implements InterventionService {
     return validLowerBound && validUpperBound;
   }
 
+  private List<SingleIntervention> resolveCombinations(CombinationIntervention combinationIntervention) throws ResourceDoesNotExistException {
+    List<SingleIntervention> singleInterventions = new ArrayList<>();
+    for(Integer singleInterventionId: combinationIntervention.getSingleInterventionIds()){
+      singleInterventions.add((SingleIntervention) interventionRepository.get(singleInterventionId));
+    }
+    return singleInterventions;
+  }
 
 }

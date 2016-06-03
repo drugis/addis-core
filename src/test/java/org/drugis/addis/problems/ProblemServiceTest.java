@@ -14,7 +14,9 @@ import org.drugis.addis.covariates.CovariateRepository;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.interventions.model.AbstractIntervention;
 import org.drugis.addis.interventions.model.SimpleIntervention;
+import org.drugis.addis.interventions.model.SingleIntervention;
 import org.drugis.addis.interventions.repository.InterventionRepository;
+import org.drugis.addis.interventions.service.InterventionService;
 import org.drugis.addis.interventions.service.impl.InvalidTypeForDoseCheckException;
 import org.drugis.addis.models.Model;
 import org.drugis.addis.models.exceptions.InvalidModelException;
@@ -84,6 +86,9 @@ public class ProblemServiceTest {
   InterventionRepository interventionRepository;
 
   @Mock
+  InterventionService interventionService;
+
+  @Mock
   ModelService modelService;
 
   @Mock
@@ -121,17 +126,17 @@ public class ProblemServiceTest {
   private final URI fluoxConceptUri = URI.create("fluoxConceptUri");
   private final SemanticInterventionUriAndName fluoxConcept = new SemanticInterventionUriAndName(fluoxConceptUri, "fluox concept");
   private final Integer fluoxInterventionId = 401;
-  private final AbstractIntervention fluoxIntervention = new SimpleIntervention(fluoxInterventionId, project.getId(),
+  private final SingleIntervention fluoxIntervention = new SimpleIntervention(fluoxInterventionId, project.getId(),
           "fluoxetine", "moti", fluoxConcept.getUri(), fluoxConcept.getLabel());
   private final URI paroxConceptUri = URI.create("paroxConceptUri");
   private final SemanticInterventionUriAndName paroxConcept = new SemanticInterventionUriAndName(paroxConceptUri, "parox concept");
   private final Integer paroxInterventionId = 402;
-  private final AbstractIntervention paroxIntervention = new SimpleIntervention(paroxInterventionId, project.getId(),
+  private final SingleIntervention paroxIntervention = new SimpleIntervention(paroxInterventionId, project.getId(),
           "paroxetine", "moti", paroxConcept.getUri(), paroxConcept.getLabel());
   private final URI sertraConceptUri = URI.create("sertraConceptUri");
   private final SemanticInterventionUriAndName sertraConcept = new SemanticInterventionUriAndName(sertraConceptUri, "sertra concept");
   private final Integer sertraInterventionId = 403;
-  private final AbstractIntervention sertraIntervention = new SimpleIntervention(sertraInterventionId, project.getId(),
+  private final SingleIntervention sertraIntervention = new SimpleIntervention(sertraInterventionId, project.getId(),
           "sertraline", "moti", sertraConcept.getUri(), sertraConcept.getLabel());
   private final List<AbstractIntervention> allProjectInterventions = Arrays.asList(fluoxIntervention, paroxIntervention, sertraIntervention);
 
@@ -142,6 +147,7 @@ public class ProblemServiceTest {
     when(mappingService.getVersionedUuid(namespaceUid)).thenReturn(versionedUuid);
     when(projectRepository.get(projectId)).thenReturn(project);
     when(interventionRepository.query(project.getId())).thenReturn(allProjectInterventions);
+    when(interventionService.resolveCombinations(anyList())).thenReturn(Collections.emptyList());
   }
 
   @After
@@ -176,10 +182,10 @@ public class ProblemServiceTest {
             daanEtAlFluoxSampleSize, daanEtAlFluoxRate, null, null);
     AbstractSemanticIntervention simpleSemanticFluoxIntervention = new SimpleSemanticIntervention(daanEtAlFluoxInstance, fluoxConceptUri);
 
-    TrialDataArm daanEtAlFluoxArm = new TrialDataArm(daanEtAlFluoxArmUri, "daanEtAlFluoxArm", daanEtAlFluoxInstance,
-            simpleSemanticFluoxIntervention);
+    TrialDataArm daanEtAlFluoxArm = new TrialDataArm(daanEtAlFluoxArmUri, "daanEtAlFluoxArm", daanEtAlFluoxInstance);
     daanEtAlFluoxArm.addMeasurement(daanEtAlFluoxMeasurement1);
     daanEtAlFluoxArm.addMeasurement(daanEtAlFluoxMeasurement2);
+    daanEtAlFluoxArm.addSemanticIntervention(simpleSemanticFluoxIntervention);
 
     URI daanEtAlSertraInstance = URI.create("daanEtAlSertraInstance");
     URI daanEtAlSertraArmUri = URI.create("daanEtAlSertraArm");
@@ -191,10 +197,10 @@ public class ProblemServiceTest {
             daanEtAlSertraSampleSize, daanEtAlSertraRate, null, null);
     AbstractSemanticIntervention simpleSemanticSertraIntervention = new SimpleSemanticIntervention(daanEtAlSertraInstance, sertraConceptUri);
 
-    TrialDataArm daanEtAlSertraArm = new TrialDataArm(daanEtAlSertraArmUri, "daanEtAlSertraArm", daanEtAlSertraInstance,
-            simpleSemanticSertraIntervention);
+    TrialDataArm daanEtAlSertraArm = new TrialDataArm(daanEtAlSertraArmUri, "daanEtAlSertraArm", daanEtAlSertraInstance);
     daanEtAlSertraArm.addMeasurement(daanEtAlSertraMeasurement1);
     daanEtAlSertraArm.addMeasurement(daanEtAlSertraMeasurement2);
+    daanEtAlSertraArm.addSemanticIntervention(simpleSemanticSertraIntervention);
 
     URI daanEtAlParoxInstance = URI.create("daanEtAlParoxInstance");
     URI daanEtAlParoxArmUri = URI.create("daanEtAlParoxArm");
@@ -206,10 +212,10 @@ public class ProblemServiceTest {
             daanEtAlParoxSampleSize, daanEtAlParoxRate, null, null);
     AbstractSemanticIntervention simpleSemanticParoxIntervention = new SimpleSemanticIntervention(daanEtAlParoxInstance, paroxConceptUri);
 
-    TrialDataArm unmatchedDaanEtAlParoxArm = new TrialDataArm(daanEtAlParoxArmUri, "daanEtAlParoxArm", daanEtAlParoxInstance,
-            simpleSemanticParoxIntervention);
+    TrialDataArm unmatchedDaanEtAlParoxArm = new TrialDataArm(daanEtAlParoxArmUri, "daanEtAlParoxArm", daanEtAlParoxInstance);
     unmatchedDaanEtAlParoxArm.addMeasurement(daanEtAlParoxMeasurement1);
     unmatchedDaanEtAlParoxArm.addMeasurement(daanEtAlParoxMeasurement2);
+    unmatchedDaanEtAlParoxArm.addSemanticIntervention(simpleSemanticParoxIntervention);
 
     // add matching result to arms
     daanEtAlFluoxArm.setMatchedProjectInterventionIds(Collections.singleton(fluoxIntervention.getId()));
@@ -307,9 +313,9 @@ public class ProblemServiceTest {
             daanEtAlFluoxSampleSize, daanEtAlFluoxRate, null, null);
     AbstractSemanticIntervention simpleSemanticFluoxIntervention = new SimpleSemanticIntervention(daanEtAlFluoxInstance, fluoxConceptUri);
 
-    TrialDataArm daanEtAlFluoxArm = new TrialDataArm(daanEtAlFluoxArmUri, "daanEtAlFluoxArm", daanEtAlFluoxInstance,
-            simpleSemanticFluoxIntervention);
+    TrialDataArm daanEtAlFluoxArm = new TrialDataArm(daanEtAlFluoxArmUri, "daanEtAlFluoxArm", daanEtAlFluoxInstance);
     daanEtAlFluoxArm.addMeasurement(daanEtAlFluoxMeasurement);
+    daanEtAlFluoxArm.addSemanticIntervention(simpleSemanticFluoxIntervention);
 
     URI daanEtAlSertraInstance = URI.create("daanEtAlSertraInstance");
     URI daanEtAlSertraArmUri = URI.create("daanEtAlSertraArm");
@@ -319,16 +325,16 @@ public class ProblemServiceTest {
             daanEtAlSertraSampleSize, daanEtAlSertraRate, null, null);
     AbstractSemanticIntervention simpleSemanticSertraIntervention = new SimpleSemanticIntervention(daanEtAlSertraInstance, sertraConceptUri);
 
-    TrialDataArm daanEtAlSertraArm = new TrialDataArm(daanEtAlSertraArmUri, "daanEtAlSertraArm", daanEtAlSertraInstance,
-            simpleSemanticSertraIntervention);
+    TrialDataArm daanEtAlSertraArm = new TrialDataArm(daanEtAlSertraArmUri, "daanEtAlSertraArm", daanEtAlSertraInstance);
     daanEtAlSertraArm.addMeasurement(daanEtAlSertraMeasurement);
+    daanEtAlFluoxArm.addSemanticIntervention(simpleSemanticSertraIntervention);
 
     URI daanEtAlExcludedArmUri = URI.create("excludeme");
     Measurement daanEtAlExcludedMeasurement = new Measurement(daanEtAlUri, variableUri, variableConceptUri, daanEtAlExcludedArmUri,
             daanEtAlSertraSampleSize, daanEtAlSertraRate, null, null);
-    TrialDataArm excludedArm = new TrialDataArm(daanEtAlSertraArmUri, "excludedArm", daanEtAlSertraInstance,
-            simpleSemanticSertraIntervention);
+    TrialDataArm excludedArm = new TrialDataArm(daanEtAlSertraArmUri, "excludedArm", daanEtAlSertraInstance);
     excludedArm.addMeasurement(daanEtAlExcludedMeasurement);
+    excludedArm.addSemanticIntervention(simpleSemanticSertraIntervention);
 
     // exclude arms
     Set<ArmExclusion> excludedArms = new HashSet<>(Collections.singletonList(new ArmExclusion(networkMetaAnalysis.getId(), daanEtAlExcludedArmUri)));

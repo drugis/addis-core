@@ -1,5 +1,8 @@
-package org.drugis.addis.interventions.model;
+package org.drugis.addis.interventions.controller.command;
 
+import org.drugis.addis.interventions.model.DoseConstraint;
+import org.drugis.addis.interventions.model.FixedDoseIntervention;
+import org.drugis.addis.interventions.model.InvalidConstraintException;
 import org.drugis.trialverse.util.Namespaces;
 
 import java.net.URI;

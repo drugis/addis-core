@@ -53,9 +53,9 @@ define(['lodash', 'moment'], function(_, moment) {
       return label;
     }
 
-    function generateDescriptionLabel(intervention) {
+    function generateDescriptionLabel(intervention, interventions) {
       var label = '';
-      if (intervention.type !== 'simple') {
+      if (intervention.type === 'fixed' || intervention.type === 'titrated' || intervention.type === 'both') {
         label += ': ';
         label += intervention.type === 'both' ? '' : intervention.type + ' dose; ';
         if (intervention.type === 'fixed') {
@@ -74,6 +74,13 @@ define(['lodash', 'moment'], function(_, moment) {
             label += addBoundsToLabel(intervention.maxConstraint.lowerBound, intervention.maxConstraint.upperBound);
           }
         }
+      } else if (intervention.type === 'combination') {
+        var interventionsById = _.keyBy(interventions, 'id');
+        label = intervention.singleInterventionIds
+          .map(function(interventionId) {
+            return interventionsById[interventionId].name;
+          })
+          .join(' + ');
       }
       return label;
     }

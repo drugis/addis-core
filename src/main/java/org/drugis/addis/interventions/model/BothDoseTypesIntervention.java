@@ -1,5 +1,8 @@
 package org.drugis.addis.interventions.model;
 
+import org.drugis.addis.interventions.controller.viewAdapter.AbstractInterventionViewAdapter;
+import org.drugis.addis.interventions.controller.viewAdapter.BothDoseTypesInterventionViewAdapter;
+
 import javax.persistence.*;
 import java.net.URI;
 
@@ -7,8 +10,8 @@ import java.net.URI;
  * Created by daan on 5-4-16.
  */
 @Entity
-@PrimaryKeyJoinColumn(name = "bothTypesInterventionId", referencedColumnName = "id")
-public class BothDoseTypesIntervention extends AbstractIntervention {
+@PrimaryKeyJoinColumn(name = "bothTypesInterventionId", referencedColumnName = "singleInterventionId")
+public class BothDoseTypesIntervention extends SingleIntervention {
   @Embedded
   @AttributeOverrides( {
           @AttributeOverride(name="lowerBound.type" , column = @Column(name="minLowerBoundType") ),
@@ -40,6 +43,11 @@ public class BothDoseTypesIntervention extends AbstractIntervention {
   private DoseConstraint maxConstraint;
 
   public BothDoseTypesIntervention() {
+  }
+
+  @Override
+  public AbstractInterventionViewAdapter toViewAdapter() {
+    return new BothDoseTypesInterventionViewAdapter(this);
   }
 
   public BothDoseTypesIntervention(DoseConstraint minConstraint, DoseConstraint maxConstraint) {

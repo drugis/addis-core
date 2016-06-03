@@ -1,5 +1,8 @@
 package org.drugis.addis.interventions.model;
 
+import org.drugis.addis.interventions.controller.viewAdapter.AbstractInterventionViewAdapter;
+import org.drugis.addis.interventions.controller.viewAdapter.TitratedInterventionViewAdapter;
+
 import javax.persistence.*;
 import java.net.URI;
 
@@ -7,8 +10,8 @@ import java.net.URI;
  * Created by daan on 5-4-16.
  */
 @Entity
-@PrimaryKeyJoinColumn(name = "titratedInterventionId", referencedColumnName = "id")
-public class TitratedDoseIntervention extends AbstractIntervention {
+@PrimaryKeyJoinColumn(name = "titratedInterventionId", referencedColumnName = "singleInterventionId")
+public class TitratedDoseIntervention extends SingleIntervention {
   @Embedded
   @AttributeOverrides( {
           @AttributeOverride(name="lowerBound.type" , column = @Column(name="minLowerBoundType") ),
@@ -40,6 +43,11 @@ public class TitratedDoseIntervention extends AbstractIntervention {
   private DoseConstraint maxConstraint;
 
   public TitratedDoseIntervention() {
+  }
+
+  @Override
+  public AbstractInterventionViewAdapter toViewAdapter() {
+    return new TitratedInterventionViewAdapter(this);
   }
 
   public TitratedDoseIntervention(Integer id, Integer project, String name, String motivation, URI semanticInterventionUri, String semanticInterventionLabel, DoseConstraint minConstraint, DoseConstraint maxConstraint) throws InvalidConstraintException {

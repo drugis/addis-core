@@ -63,7 +63,7 @@ public class AccountRepositoryImpl implements AccountRepository {
               rowMapper, email);
 
     } catch (EmptyResultDataAccessException e) {
-      throw new EmptyResultDataAccessException("Unknown dataset creator email: " + email, 1);
+      throw new EmptyResultDataAccessException("findAccountByEmail: Unknown dataset creator email: " + email, 1);
     }
   }
 
