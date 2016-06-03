@@ -332,6 +332,14 @@
               [(trig/iri :ontology "time_offset")
                (trig/lit (fix-duration (:howLong mm)) (trig/iri :xsd "duration"))])))
 
+(defn- optional-double
+  [subj pred value]
+  (if value (trig/spo subj [pred (trig/lit (Double. value))]) subj))
+
+(defn- optional-int
+  [subj pred value]
+  (if value (trig/spo subj [pred (trig/lit (Integer. value))]) subj))
+
 (defn study-measurement-rdf
   [xml subj study-outcomes arm-uris pop-uri mm-uris]
   (let [som-id (vtd/attr (vtd/at xml "./studyOutcomeMeasure") :id)
@@ -348,16 +356,16 @@
         rate (vtd/at xml "./rateMeasurement")
         catg (vtd/at xml "./categoricalMeasurement")]
     (cond
-      cont (trig/spo measurement 
-                     [(trig/iri :ontology "mean") (trig/lit (Double. (vtd/attr cont :mean)))]
-                     [(trig/iri :ontology "standard_deviation") (trig/lit (Double. (vtd/attr cont :stdDev)))]
-                     [(trig/iri :ontology "sample_size") (trig/lit (Integer. (vtd/attr cont :sampleSize)))])
-      rate (trig/spo measurement 
-                     [(trig/iri :ontology "count") (trig/lit (Integer. (vtd/attr rate :rate)))]
-                     [(trig/iri :ontology "sample_size") (trig/lit (Integer. (vtd/attr rate :sampleSize)))])
+      cont (-> measurement
+               (optional-double (trig/iri :ontology "mean") (vtd/attr cont :mean))
+               (optional-double (trig/iri :ontology "standard_deviation") (vtd/attr cont :stdDev))
+               (optional-int (trig/iri :ontology "sample_size") (vtd/attr cont :sampleSize)))
+      rate (-> measurement
+               (optional-int (trig/iri :ontology "count") (vtd/attr cont :rate))
+               (optional-int (trig/iri :ontology "sample_size") (vtd/attr cont :sampleSize)))
       catg (reduce (fn [subj cat] (trig/spo subj [(trig/iri :ontology "category_count")
-                                                  (trig/_po [(trig/iri :ontology "category") (trig/lit (vtd/attr cat :name))]
-                                                            [(trig/iri :ontology "count") (trig/lit (Integer. (vtd/attr cat :rate)))])]))
+                                                  (-> (trig/_po [(trig/iri :ontology "category") (trig/lit (vtd/attr cat :name))])
+                                                      (optional-int (trig/iri :ontology "count") (vtd/attr cat :rate)))]))
                    measurement (vtd/search catg "./category"))
      :else measurement)
 ))
@@ -460,9 +468,8 @@
     (trig/spo subj [(trig/iri :dc "source") (trig/iri uri)])
     subj))
 
-(defn rdfimport [label description source-doc-uri xml]
-  (let [dataset-id (uuid)
-        prefixes {:rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+(defn rdfimport [dataset-uri label description source-doc-uri xml]
+  (let [prefixes {:rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#"
                   :rdfs "http://www.w3.org/2000/01/rdf-schema#"
                   :xsd "http://www.w3.org/2001/XMLSchema#"
                   :owl "http://www.w3.org/2002/07/owl#"
@@ -490,7 +497,7 @@
                      :populationCharacteristic populationCharacteristic-uri-map
                      :unit unit-uri-map}
         [studies-uri-map studies-graphs] (import-studies xml "/addis-data/studies/study" entity-uris)
-        dataset-rdf [(-> (trig/iri :dataset dataset-id)
+        dataset-rdf [(-> dataset-uri
                          (trig/spo [(trig/iri :rdf "type") (trig/iri :ontology "Dataset")]
                                    [(trig/iri :rdfs "label") label]
                                    [(trig/iri :dcterms "title") label]
@@ -525,12 +532,12 @@
     (let
         [data (vtd/navigator (slurp (as-file (options :file))))
          rdf (as-file (:rdf options))]
-        (spit rdf (rdfimport (:name options) (:title options) (:source options) data))
+        (spit rdf (rdfimport (trig/iri :dataset (uuid)) (:name options) (:title options) (:source options) data))
       )))
 
 (defn reify-converter
   []
   (reify AddisToRdf
     (convert
-      [this xml name title]
-      (rdfimport name title nil (vtd/navigator xml)))))
+      [this xml dataset-uri name title]
+      (rdfimport (trig/iri dataset-uri) name title nil (vtd/navigator xml)))))
