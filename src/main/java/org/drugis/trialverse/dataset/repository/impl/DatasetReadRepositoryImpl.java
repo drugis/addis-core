@@ -153,6 +153,9 @@ public class DatasetReadRepositoryImpl implements DatasetReadRepository {
     ResponseEntity<Graph> responseEntity = restTemplate.exchange(uri, HttpMethod.GET, requestEntity, Graph.class);
     final String version  = responseEntity.getHeaders().get(WebConstants.X_EVENT_SOURCE_VERSION).get(0);
     Graph datasetGraph = responseEntity.getBody();
+    if (datasetGraph == null) { // can happen if the default graph is empty
+      datasetGraph = GraphFactory.createGraphMem();
+    }
     datasetGraph.getPrefixMapping().setNsPrefix("es", HTTP_DRUGIS_ORG_EVENT_SOURCING_ES);
     datasetGraph.add(new Triple(NodeFactory.createURI(mapping.getTrialverseDatasetUrl()), headProperty, NodeFactory.createURI(version)));
     datasetGraph.add(new Triple(NodeFactory.createURI(mapping.getTrialverseDatasetUrl()), RDF.Nodes.type, CLASS_VOID_DATASET));

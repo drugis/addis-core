@@ -68,7 +68,7 @@ public class DatasetServiceImpl implements DatasetService {
     Statement descriptionTriple = model.getProperty(model.getResource(trialverseDatasetUrl), JenaProperties.DESCRIPTION_PROPERTY);
     Statement headVersionTriple = model.getProperty(model.getResource(trialverseDatasetUrl), JenaProperties.headVersionProperty);
     String description = descriptionTriple != null ? descriptionTriple.getObject().toString() : null;
-    String title = titleTriple.getObject().toString();
+    String title = titleTriple != null ? titleTriple.getObject().toString() : null;
     String headVersion = headVersionTriple.getObject().toString();
     return new Dataset(trialverseDatasetUrl, user, title, description, headVersion);
   }

@@ -1,3 +1,5 @@
+package org.drugis.addis.interventions;
+
 /**
  * Created by daan on 3/12/14.
  */

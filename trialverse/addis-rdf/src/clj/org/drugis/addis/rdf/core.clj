@@ -468,9 +468,8 @@
     (trig/spo subj [(trig/iri :dc "source") (trig/iri uri)])
     subj))
 
-(defn rdfimport [label description source-doc-uri xml]
-  (let [dataset-id (uuid)
-        prefixes {:rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+(defn rdfimport [dataset-uri label description source-doc-uri xml]
+  (let [prefixes {:rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#"
                   :rdfs "http://www.w3.org/2000/01/rdf-schema#"
                   :xsd "http://www.w3.org/2001/XMLSchema#"
                   :owl "http://www.w3.org/2002/07/owl#"
@@ -498,7 +497,7 @@
                      :populationCharacteristic populationCharacteristic-uri-map
                      :unit unit-uri-map}
         [studies-uri-map studies-graphs] (import-studies xml "/addis-data/studies/study" entity-uris)
-        dataset-rdf [(-> (trig/iri :dataset dataset-id)
+        dataset-rdf [(-> dataset-uri
                          (trig/spo [(trig/iri :rdf "type") (trig/iri :ontology "Dataset")]
                                    [(trig/iri :rdfs "label") label]
                                    [(trig/iri :dcterms "title") label]
@@ -533,12 +532,12 @@
     (let
         [data (vtd/navigator (slurp (as-file (options :file))))
          rdf (as-file (:rdf options))]
-        (spit rdf (rdfimport (:name options) (:title options) (:source options) data))
+        (spit rdf (rdfimport (trig/iri :dataset (uuid)) (:name options) (:title options) (:source options) data))
       )))
 
 (defn reify-converter
   []
   (reify AddisToRdf
     (convert
-      [this xml name title]
-      (rdfimport name title nil (vtd/navigator xml)))))
+      [this xml dataset-uri name title]
+      (rdfimport (trig/iri dataset-uri) name title nil (vtd/navigator xml)))))
