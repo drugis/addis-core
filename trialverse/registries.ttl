@@ -49,7 +49,7 @@ reg:RPCEC a ont:StudyRegistry ;
   ont:entry_url_format "http://apps.who.int/trialsearch/Trial2.aspx?TrialID=%25s" ;
   ont:id_pattern "RPCEC[0-9]{8}" .
 
-reg:EU-CTR a ont:StudyRegistry ;
+reg:EUCTR a ont:StudyRegistry ;
   rdfs:label "EU Clinical Trials Register" ;
   foaf:homepage <https://www.clinicaltrialsregister.eu/> ;
   ont:entry_url_format "http://apps.who.int/trialsearch/Trial2.aspx?TrialID=%25s" ;
