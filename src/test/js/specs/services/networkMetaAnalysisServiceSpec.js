@@ -687,7 +687,7 @@ define(['angular', 'angular-mocks', 'services'], function() {
 
     });
 
-    fdescribe('doesModelHaveAmbiguousArms', function() {
+    describe('doesModelHaveAmbiguousArms', function() {
       beforeEach(module('addis.services'));
 
       it('should return true if there are ambiguous arms for the model', inject(function(NetworkMetaAnalysisService) {
@@ -705,11 +705,11 @@ define(['angular', 'angular-mocks', 'services'], function() {
           trialDataArms: [{
             drugInstance: 1,
             drugConceptUid: 'uri1',
-            matchedProjectInterventionIds: [1,2,3]
-          },{
+            matchedProjectInterventionIds: [1, 2, 3]
+          }, {
             drugInstance: 2,
             drugConceptUid: 'uri1',
-            matchedProjectInterventionIds: [1,2,3]
+            matchedProjectInterventionIds: [1, 2, 3]
           }, {
             drugInstance: 3,
             drugConceptUid: 'uri1',
