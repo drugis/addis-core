@@ -31,9 +31,11 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.ClientHttpRequest;
+import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.client.HttpMessageConverterExtractor;
 import org.springframework.web.client.RequestCallback;
+import org.springframework.web.client.ResponseExtractor;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponents;
@@ -108,10 +110,22 @@ public class DatasetWriteRepositoryImpl implements DatasetWriteRepository {
         IOUtils.copy(content, request.getBody());
       }
     };
-    final HttpMessageConverterExtractor<String> responseExtractor =
-        new HttpMessageConverterExtractor<String>(String.class, restTemplate.getMessageConverters());
-    String execute = restTemplate.execute(uriComponents.toUri(), HttpMethod.PUT, requestCallback, responseExtractor);
-    System.err.println(execute);
+    final ResponseExtractor<HttpStatus> statusExtractor = new ResponseExtractor<HttpStatus>() {
+			@Override
+			public HttpStatus extractData(ClientHttpResponse response) throws IOException {
+				return response.getStatusCode();
+			}
+		};
+    try {
+    	HttpStatus status = restTemplate.execute(uriComponents.toUri(), HttpMethod.PUT, requestCallback, statusExtractor);
+	    if (!HttpStatus.CREATED.equals(status) && !HttpStatus.OK.equals(status)) {
+	    	logger.error("Got response status " + status.toString() + " expected 200 OK or 201 CREATED");
+	    	throw new CreateDatasetException();
+	    }
+    } catch (RestClientException e) {
+    	logger.error(e.toString());
+    	throw new CreateDatasetException();
+    }
     
     return datasetUri;
   }
