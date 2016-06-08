@@ -80,6 +80,8 @@ define(['lodash'],
           addItemTemplateUrl: 'app/js/populationCharacteristic/addPopulationCharacteristic.html',
           editItemTemplateUrl: 'app/js/populationCharacteristic/editPopulationCharacteristic.html',
           editItemController: 'EditPopulationCharacteristicController',
+          repairItemTemplateUrl: 'app/js/outcome/repairOutcome.html',
+          repairItemController: 'EditOutcomeController'
         },
         endpoints: {
           service: 'EndpointService',
@@ -92,6 +94,8 @@ define(['lodash'],
           addItemTemplateUrl: 'app/js/endpoint/addEndpoint.html',
           editItemTemplateUrl: 'app/js/endpoint/editEndpoint.html',
           editItemController: 'EditEndpointController',
+          repairItemTemplateUrl: 'app/js/outcome/repairOutcome.html',
+          repairItemController: 'EditOutcomeController'
         },
         adverseEvents: {
           service: 'AdverseEventService',
@@ -104,6 +108,8 @@ define(['lodash'],
           addItemTemplateUrl: 'app/js/adverseEvent/addAdverseEvent.html',
           editItemTemplateUrl: 'app/js/adverseEvent/editAdverseEvent.html',
           editItemController: 'EditAdverseEventController',
+          repairItemTemplateUrl: 'app/js/outcome/repairOutcome.html',
+          repairItemController: 'EditOutcomeController'
         },
         epochs: {
           service: 'EpochService',

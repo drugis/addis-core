@@ -1,7 +1,7 @@
 'use strict';
 define(['angular', 'lodash'], function(angular, _) {
-  var dependencies = ['StudyService', 'UUIDService', 'OutcomeService'];
-  var ResultsService = function(StudyService, UUIDService, OutcomeService) {
+  var dependencies = ['StudyService', 'UUIDService'];
+  var ResultsService = function(StudyService, UUIDService) {
 
     function updateResultValue(row, inputColumn) {
       return StudyService.getJsonGraph().then(function(graph) {
@@ -98,6 +98,10 @@ define(['angular', 'lodash'], function(angular, _) {
 
     function isResultForArm(armUri, item) {
       return isResult(item) && armUri === item.of_group;
+    }
+
+    function isResultForOutcome(outcomeUri, item) {
+      return isResult(item) && outcomeUri === item.of_outcome;
     }
 
     function isStudyNode(node) {
@@ -202,31 +206,6 @@ define(['angular', 'lodash'], function(angular, _) {
       });
     }
 
-    function moveToNewOutcome(variableType, newOutcomeName, baseOutcome, nonConformantMeasurementUrisToMove) {
-
-      var newUri = 'http://trials.drugis.org/instances/' + UUIDService.generate();
-      var newOutcome = angular.copy(baseOutcome);
-      newOutcome.uri = newUri;
-      newOutcome.label = newOutcomeName;
-      newOutcome.measuredAtMoments = [];
-      var backEndOutcome = OutcomeService.toBackEnd(newOutcome, 'ontology:' + variableType);
-      var measurementsById = _.keyBy(nonConformantMeasurementUrisToMove, _.identity);
-
-      return StudyService.getJsonGraph().then(function(graph) {
-        var study = _.find(graph, isStudyNode);
-        study.has_outcome.push(backEndOutcome);
-
-        graph = _.map(graph, function(node) {
-          var nodeId = node['@id'];
-          if (measurementsById[nodeId]) {
-            node.of_outcome = newUri;
-          }
-          return node;
-        });
-        return StudyService.saveJsonGraph(graph);
-      });
-    }
-
     function _queryResults(uri, typeFunction) {
       return StudyService.getJsonGraph().then(function(graph) {
         var resultJsonItems = graph.filter(typeFunction.bind(this, uri));
@@ -242,6 +221,10 @@ define(['angular', 'lodash'], function(angular, _) {
       return _queryResults(armUri, isResultForArm);
     }
 
+    function queryResultsByOutcome(outcomeUri) {
+      return _queryResults(outcomeUri, isResultForOutcome);
+    }
+
     function queryNonConformantMeasurements(variableUri) {
       return _queryResults(variableUri, isResultForNonConformantMeasurement);
     }
@@ -250,11 +233,12 @@ define(['angular', 'lodash'], function(angular, _) {
       updateResultValue: updateResultValue,
       queryResults: queryResults,
       queryResultsByGroup: queryResultsByGroup,
+      queryResultsByOutcome: queryResultsByOutcome,
       queryNonConformantMeasurements: queryNonConformantMeasurements,
       cleanupMeasurements: cleanupMeasurements,
       setToMeasurementMoment: setToMeasurementMoment,
       isExistingMeasurement: isExistingMeasurement,
-      moveToNewOutcome: moveToNewOutcome
+      isStudyNode: isStudyNode
     };
   };
   return dependencies.concat(ResultsService);

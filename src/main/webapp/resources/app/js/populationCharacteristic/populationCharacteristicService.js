@@ -4,16 +4,16 @@ define([],
     var dependencies = ['$q', 'OutcomeService'];
     var PopulationCharacteristicService = function($q, OutcomeService) {
 
-      var populationCharacteristicType = 'ontology:PopulationCharacteristic';
+      var TYPE = 'ontology:PopulationCharacteristic';
 
       function queryItems() {
         return OutcomeService.queryItems(function(node) {
-          return node['@type'] === populationCharacteristicType;
+          return node['@type'] === TYPE;
         });
       }
 
       function addItem(item) {
-        return OutcomeService.addItem(item, populationCharacteristicType);
+        return OutcomeService.addItem(item, TYPE);
       }
 
       function deleteItem(item) {
@@ -21,14 +21,15 @@ define([],
       }
 
       function editItem(item) {
-        return OutcomeService.editItem(item, populationCharacteristicType);
+        return OutcomeService.editItem(item, TYPE);
       }
 
       return {
         queryItems: queryItems,
         addItem: addItem,
         deleteItem: deleteItem,
-        editItem: editItem
+        editItem: editItem,
+        TYPE: TYPE
       };
     };
     return dependencies.concat(PopulationCharacteristicService);

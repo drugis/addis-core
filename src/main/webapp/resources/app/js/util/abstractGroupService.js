@@ -22,7 +22,6 @@ define(['lodash'], function(_) {
 
           // move non overlapping results
           _.forEach(nonOverlappingResults, function(nonOverlappingResult) {
-            // remove the overlapping results
             var resultNode = _.find(graph, function(node) {
               return nonOverlappingResult.instance === node['@id'];
             });

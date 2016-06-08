@@ -1,8 +1,13 @@
 'use strict';
-define(['lodash'],
-  function(_) {
-    var dependencies = ['$q', 'StudyService', 'UUIDService', 'MeasurementMomentService'];
-    var OutcomeServiceService = function($q, StudyService, UUIDService, MeasurementMomentService) {
+define(['angular', 'lodash'],
+  function(angular, _) {
+    var dependencies = ['$q', 'StudyService', 'UUIDService', 'MeasurementMomentService', 'ResultsService', 'RepairService'];
+    var OutcomeServiceService = function($q, StudyService, UUIDService, MeasurementMomentService, ResultsService, RepairService) {
+
+      function isOverlappingResultFunction(a, b) {
+        return a.armUri === b.armUri &&
+          a.momentUri === b.momentUri;
+      }
 
       function findMeasurementForUri(measurementMoments, measurementMomentUri) {
         return _.find(measurementMoments, function(moment) {
@@ -102,13 +107,109 @@ define(['lodash'],
         });
       }
 
+      function moveToNewOutcome(variableType, newOutcomeName, baseOutcome, nonConformantMeasurementUrisToMove) {
+
+        var newUri = 'http://trials.drugis.org/instances/' + UUIDService.generate();
+        var newOutcome = angular.copy(baseOutcome);
+        newOutcome.uri = newUri;
+        newOutcome.label = newOutcomeName;
+        newOutcome.measuredAtMoments = [];
+        var backEndOutcome = toBackEnd(newOutcome, 'ontology:' + variableType);
+        var measurementsById = _.keyBy(nonConformantMeasurementUrisToMove, _.identity);
+
+        return StudyService.getJsonGraph().then(function(graph) {
+          var study = _.find(graph, ResultsService.isStudyNode);
+          study.has_outcome.push(backEndOutcome);
+
+          graph = _.map(graph, function(node) {
+            var nodeId = node['@id'];
+            if (measurementsById[nodeId]) {
+              node.of_outcome = newUri;
+            }
+            return node;
+          });
+          return StudyService.saveJsonGraph(graph);
+        });
+      }
+
+      function hasOverlap(source, target) {
+        var sourceResultsPromise = ResultsService.queryResultsByOutcome(source.uri);
+        var targetResultsPromise = ResultsService.queryResultsByOutcome(target.uri);
+
+
+
+        return $q.all([sourceResultsPromise, targetResultsPromise]).then(function(results) {
+          return RepairService.findOverlappingResults(results[0], results[1], isOverlappingResultFunction).length > 0;
+        });
+      }
+
+      /*
+       ** Moves the measurementMoments that are on the source but not on the target to the target
+       ** and then updated the graph
+       */
+      function mergeMeasurementMoments(source, target, type) {
+        var newMoments = _.reduce(source.measuredAtMoments, function(accum, sourceMeasurementMoment) {
+          var isMeassuredByTarget = _.find(target.measuredAtMoments, function(targetMeasurementMoment) {
+            return targetMeasurementMoment.uri === sourceMeasurementMoment.uri;
+          });
+
+          if (!isMeassuredByTarget) {
+            accum.push(sourceMeasurementMoment);
+          }
+          return accum;
+        }, []);
+
+        target.measuredAtMoments = _.compact([].concat(target.measuredAtMoments).concat(newMoments));
+        return editItem(target, type);
+      }
+
+      function merge(source, target, type) {
+
+        // fetch results data
+        var sourceResultsPromise = ResultsService.queryResultsByOutcome(source.uri);
+        var targetResultsPromise = ResultsService.queryResultsByOutcome(target.uri);
+
+        return $q.all([sourceResultsPromise, targetResultsPromise]).then(function(results) {
+          var overlappingResults = RepairService.findOverlappingResults(results[0], results[1], isOverlappingResultFunction);
+          var nonOverlappingResults = RepairService.findNonOverlappingResults(results[0], results[1], isOverlappingResultFunction);
+
+          return StudyService.getJsonGraph().then(function(graph) {
+            // remove the overlapping results
+            _.forEach(overlappingResults, function(overlappingResult) {
+              _.remove(graph, function(node) {
+                return overlappingResult.instance === node['@id'];
+              });
+            });
+
+            // move non overlapping results
+            _.forEach(nonOverlappingResults, function(nonOverlappingResult) {
+              var resultNode = _.find(graph, function(node) {
+                return nonOverlappingResult.instance === node['@id'];
+              });
+              resultNode.of_outcome = target.uri;
+            });
+
+            // store the merged results
+            return StudyService.saveJsonGraph(graph).then(function() {
+              // remove the merged outcome
+              return deleteItem(source).then(function() {
+                return mergeMeasurementMoments(source, target, type);
+              });
+            });
+          });
+        });
+      }
+
 
       return {
         queryItems: queryItems,
         addItem: addItem,
         deleteItem: deleteItem,
         editItem: editItem,
-        toBackEnd: toBackEnd
+        toBackEnd: toBackEnd,
+        moveToNewOutcome: moveToNewOutcome,
+        hasOverlap: hasOverlap,
+        merge: merge
       };
     };
     return dependencies.concat(OutcomeServiceService);

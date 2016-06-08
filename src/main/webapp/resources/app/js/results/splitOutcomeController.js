@@ -1,8 +1,8 @@
 'use strict';
 define(['lodash'],
   function(_) {
-    var dependencies = ['$scope', '$state', '$modalInstance', 'ResultsService', 'variableType', 'outcome', 'nonConformantMeasurementsMap', 'callback'];
-    var SplitOutcomeController = function($scope, $state, $modalInstance, ResultsService, variableType, outcome, nonConformantMeasurementsMap, callback) {
+    var dependencies = ['$scope', '$state', '$modalInstance', 'OutcomeService', 'variableType', 'outcome', 'nonConformantMeasurementsMap', 'callback'];
+    var SplitOutcomeController = function($scope, $state, $modalInstance, OutcomeService, variableType, outcome, nonConformantMeasurementsMap, callback) {
 
       $scope.outcome = outcome;
       $scope.nonConformantMeasurementsMap = nonConformantMeasurementsMap;
@@ -22,7 +22,7 @@ define(['lodash'],
           }, []);
           return uris.concat(urisForRow);
         }, []);
-        ResultsService.moveToNewOutcome(variableType, targetName, $scope.outcome, urisTomove).then(function() {
+        OutcomeService.moveToNewOutcome(variableType, targetName, $scope.outcome, urisTomove).then(function() {
           callback();
           $modalInstance.close();
         });
