@@ -18,6 +18,7 @@ define(['lodash'],
       $scope.openCopyDialog = openCopyDialog;
       $scope.study = {};
       $scope.resetStudy = resetStudy;
+      $scope.showEditStudyModal = showEditStudyModal;
 
       // onload
       StudyService.reset();
@@ -171,6 +172,24 @@ define(['lodash'],
           typeUri: 'ontology:Variable'
         }
       };
+
+      function showEditStudyModal() {
+        $modal.open({
+          templateUrl: 'app/js/study/editStudy.html',
+          controller: 'EditStudyController',
+          resolve: {
+            study: function(){
+              return $scope.study;
+            },
+            successCallback: function() {
+              return function(title, description) {
+                $scope.study.label = title;
+                $scope.study.comment = description;
+              };
+            }
+          }
+        });
+      }
 
       function openCopyDialog() {
         $modal.open({
