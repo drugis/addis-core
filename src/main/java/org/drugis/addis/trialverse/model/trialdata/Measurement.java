@@ -70,7 +70,7 @@ public class Measurement {
     if (!variableUri.equals(that.variableUri)) return false;
     if (!variableConceptUri.equals(that.variableConceptUri)) return false;
     if (!armUri.equals(that.armUri)) return false;
-    if (!sampleSize.equals(that.sampleSize)) return false;
+    if (sampleSize != null ? !sampleSize.equals(that.sampleSize) : that.sampleSize != null) return false;
     if (rate != null ? !rate.equals(that.rate) : that.rate != null) return false;
     if (stdDev != null ? !stdDev.equals(that.stdDev) : that.stdDev != null) return false;
     return mean != null ? mean.equals(that.mean) : that.mean == null;
@@ -83,7 +83,7 @@ public class Measurement {
     result = 31 * result + variableUri.hashCode();
     result = 31 * result + variableConceptUri.hashCode();
     result = 31 * result + armUri.hashCode();
-    result = 31 * result + sampleSize.hashCode();
+    result = 31 * result + (sampleSize != null ? sampleSize.hashCode() : 0);
     result = 31 * result + (rate != null ? rate.hashCode() : 0);
     result = 31 * result + (stdDev != null ? stdDev.hashCode() : 0);
     result = 31 * result + (mean != null ? mean.hashCode() : 0);
