@@ -1,7 +1,7 @@
 'use strict';
 define(['lodash'], function(_) {
-  var dependencies = ['$q', 'StudyService', 'ResultsService'];
-  var RepairService = function($q, StudyService, ResultsService) {
+  var dependencies = ['$q', 'StudyService'];
+  var RepairService = function($q, StudyService) {
 
     function findOverlappingResults(sourceResults, targetResults, isOverlappingFunction) {
       return _.reduce(sourceResults, function(accum, sourceResult) {
