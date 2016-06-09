@@ -5,6 +5,7 @@ define(['angular', 'angular-mocks'], function() {
     var rootScope, q;
     var resultsService = jasmine.createSpyObj('ResultsService', ['queryResultsByGroup']);
     var studyService = jasmine.createSpyObj('StudyService', ['getJsonGraph', 'saveJsonGraph', 'getStudy', 'save']);
+    var repairService = jasmine.createSpyObj('RepairService', ['findOverlappingResults', 'findNonOverlappingResults']);
     var abstractGroupService;
     var byGroupSourceResults;
     var sourceResultsDefer, targetResultsDefer, studyGetJsonGraphDefer, studySaveJsonGraphDefer,
@@ -13,6 +14,7 @@ define(['angular', 'angular-mocks'], function() {
     beforeEach(function() {
       module('trialverse.util', function($provide) {
         $provide.value('ResultsService', resultsService);
+        $provide.value('RepairService', repairService);
         $provide.value('StudyService', studyService);
       });
     });
@@ -43,6 +45,8 @@ define(['angular', 'angular-mocks'], function() {
       var saveStudyPromise = saveStudyDefer.promise;
       studyService.save.and.returnValue(saveStudyPromise);
 
+
+
       abstractGroupService = AbstractGroupService;
     }));
 
@@ -62,7 +66,7 @@ define(['angular', 'angular-mocks'], function() {
         outcomeUri: 'outcomeUri1',
         result_property: 'count',
         value: 20
-      },{
+      }, {
         groupUri: 'groupUri1',
         instance: 'resultInstance3',
         momentUri: 'momentUri2',
@@ -76,8 +80,10 @@ define(['angular', 'angular-mocks'], function() {
         outcomeUri: 'outcomeUri1',
         result_property: 'count',
         value: 20
-      }
-    ];
+      }];
+
+      repairService.findOverlappingResults.and.returnValue([byGroupSourceResults[0], byGroupSourceResults[1]]);
+      repairService.findNonOverlappingResults.and.returnValue([byGroupSourceResults[2], byGroupSourceResults[3]]);
 
       var byGroupTargetResults = [{
         groupUri: 'groupUri1',
@@ -97,27 +103,25 @@ define(['angular', 'angular-mocks'], function() {
 
       var studyJsonObject = [{
         '@id': 'resultInstance1',
-        'of_group' : 'oldGroup'
+        'of_group': 'oldGroup'
       }, {
         '@id': 'resultInstance2',
-        'of_group' : 'oldGroup'
-      },{
+        'of_group': 'oldGroup'
+      }, {
         '@id': 'resultInstance3',
-        'of_group' : 'oldGroup'
-      },{
+        'of_group': 'oldGroup'
+      }, {
         '@id': 'resultInstance4',
-        'of_group' : 'oldGroup'
+        'of_group': 'oldGroup'
       }];
 
-      var expectedStudyObjectAfterMerge = [
-        {
-          '@id': 'resultInstance3',
-          'of_group' : 'groupTargetUri'
-        },{
-          '@id': 'resultInstance4',
-          'of_group' : 'groupTargetUri'
-        }
-      ];
+      var expectedStudyObjectAfterMerge = [{
+        '@id': 'resultInstance3',
+        'of_group': 'groupTargetUri'
+      }, {
+        '@id': 'resultInstance4',
+        'of_group': 'groupTargetUri'
+      }];
 
       var groupSource = {
         groupUri: 'groupSourceUri'
@@ -152,6 +156,8 @@ define(['angular', 'angular-mocks'], function() {
       it('should have remove the double results, move the non double resutls and delete the merge source', function() {
         expect(resultsService.queryResultsByGroup).toHaveBeenCalledWith('groupSourceUri');
         expect(resultsService.queryResultsByGroup).toHaveBeenCalledWith('groupTargetUri');
+        expect(repairService.findOverlappingResults).toHaveBeenCalledWith(byGroupSourceResults, byGroupTargetResults, jasmine.any(Function));
+        expect(repairService.findNonOverlappingResults).toHaveBeenCalledWith(byGroupSourceResults, byGroupTargetResults, jasmine.any(Function));
         expect(studyService.getJsonGraph).toHaveBeenCalled();
         expect(studyService.saveJsonGraph).toHaveBeenCalledWith(expectedStudyObjectAfterMerge);
         expect(studyService.save).toHaveBeenCalledWith(expectedSaveAfterDelete);
@@ -173,7 +179,7 @@ define(['angular', 'angular-mocks'], function() {
         outcomeUri: 'outcomeUri1',
         result_property: 'count',
         value: 20
-      },{
+      }, {
         groupUri: 'groupUri1',
         instance: 'resultInstance3',
         momentUri: 'momentUri2',
@@ -187,8 +193,7 @@ define(['angular', 'angular-mocks'], function() {
         outcomeUri: 'outcomeUri1',
         result_property: 'count',
         value: 20
-      }
-    ];
+      }];
 
       var byGroupTargetResults = [{
         groupUri: 'groupUri1',
@@ -213,15 +218,13 @@ define(['angular', 'angular-mocks'], function() {
         groupUri: 'groupTargetUri'
       };
 
-
-
       var hasOverlap;
 
       beforeEach(function(done) {
         sourceResultsDefer.resolve(byGroupSourceResults);
         targetResultsDefer.resolve(byGroupTargetResults);
 
-        abstractGroupService.hasOverlap(groupSource, groupTarget).then(function(res){
+        abstractGroupService.hasOverlap(groupSource, groupTarget).then(function(res) {
           hasOverlap = res;
           done();
         });

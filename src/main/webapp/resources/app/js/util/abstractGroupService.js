@@ -1,7 +1,7 @@
 'use strict';
 define(['lodash'], function(_) {
-  var dependencies = ['$q', 'StudyService', 'ResultsService'];
-  var AbstractGroupService = function($q, StudyService, ResultsService) {
+  var dependencies = ['$q', 'StudyService', 'ResultsService', 'RepairService'];
+  var AbstractGroupService = function($q, StudyService, ResultsService, RepairService) {
 
     function merge(source, target) {
       // fetch results data
@@ -9,8 +9,8 @@ define(['lodash'], function(_) {
       var targetResultsPromise = ResultsService.queryResultsByGroup(target.armURI || target.groupUri);
 
       return $q.all([sourceResultsPromise, targetResultsPromise]).then(function(results) {
-        var overlappingResults = findOverlappingResults(results[0], results[1]);
-        var nonOverlappingResults = findNonOverlappingResults(results[0], results[1]);
+        var overlappingResults = RepairService.findOverlappingResults(results[0], results[1], isOverlappingGroupMeasurement);
+        var nonOverlappingResults = RepairService.findNonOverlappingResults(results[0], results[1], isOverlappingGroupMeasurement);
 
         return StudyService.getJsonGraph().then(function(graph) {
           // remove the overlapping results
@@ -42,36 +42,12 @@ define(['lodash'], function(_) {
         a.outcomeUri === b.outcomeUri;
     }
 
-    function findOverlappingResults(sourceResults, targetResults) {
-      return _.reduce(sourceResults, function(accum, sourceResult) {
-        var targetResult = _.find(targetResults, function(targetResult) {
-          return isOverlappingGroupMeasurement(sourceResult, targetResult);
-        });
-        if (targetResult) {
-          accum.push(sourceResult);
-        }
-        return accum;
-      }, []);
-    }
-
-    function findNonOverlappingResults(sourceResults, targetResults) {
-      return _.reduce(sourceResults, function(accum, sourceResult) {
-        var targetResult = _.find(targetResults, function(targetResult) {
-          return isOverlappingGroupMeasurement(sourceResult, targetResult);
-        });
-        if (!targetResult) {
-          accum.push(sourceResult);
-        }
-        return accum;
-      }, []);
-    }
-
     function hasOverlap(source, target) {
       var sourceResultsPromise = ResultsService.queryResultsByGroup(source.armURI || source.groupUri);
       var targetResultsPromise = ResultsService.queryResultsByGroup(target.armURI || target.groupUri);
 
       return $q.all([sourceResultsPromise, targetResultsPromise]).then(function(results) {
-        return findOverlappingResults(results[0], results[1]).length > 0;
+        return RepairService.findOverlappingResults(results[0], results[1], isOverlappingGroupMeasurement).length > 0;
       });
     }
 
