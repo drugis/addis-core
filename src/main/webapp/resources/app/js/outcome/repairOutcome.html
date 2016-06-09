@@ -20,9 +20,16 @@
       </div>
       <div class="row">
         <div class="large-10 columns">
+          <div style="padding-bottom: 1rem;" class="warning" ng-show="showDifferentTypeWarning">
+            Warning ! The selected target is of a different measurement type than the source.<br /> Measurements
+             that don't fit the target's type will be lost.</div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="large-10 columns">
           <div style="padding-bottom: 1rem;" class="warning" ng-show="showMergeWarning">
             Warning ! The selected target {{settings.itemName}} contains overlapping measurements, these
-            will take precedence over the source {{settings.itemName}} measurmements.</div>
+            will take precedence over the source {{settings.itemName}} measurements.</div>
         </div>
       </div>
       <div class="row">

@@ -23,6 +23,7 @@ define(['lodash'],
       };
 
       $scope.updateMergeWarning = function(targetOutcome) {
+        $scope.showDifferentTypeWarning = OutcomeService.hasDifferentType(item, targetOutcome);
         OutcomeService.hasOverlap(item, targetOutcome).then(function(result) {
           $scope.showMergeWarning = result;
         });

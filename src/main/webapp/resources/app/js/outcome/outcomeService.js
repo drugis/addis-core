@@ -136,11 +136,13 @@ define(['angular', 'lodash'],
         var sourceResultsPromise = ResultsService.queryResultsByOutcome(source.uri);
         var targetResultsPromise = ResultsService.queryResultsByOutcome(target.uri);
 
-
-
         return $q.all([sourceResultsPromise, targetResultsPromise]).then(function(results) {
           return RepairService.findOverlappingResults(results[0], results[1], isOverlappingResultFunction).length > 0;
         });
+      }
+
+      function hasDifferentType(source, target) {
+        return source.measurementType !== target.measurementType;
       }
 
       /*
@@ -209,6 +211,7 @@ define(['angular', 'lodash'],
         toBackEnd: toBackEnd,
         moveToNewOutcome: moveToNewOutcome,
         hasOverlap: hasOverlap,
+        hasDifferentType: hasDifferentType,
         merge: merge
       };
     };
