@@ -4,35 +4,16 @@ define(['lodash'], function(_) {
   var AbstractGroupService = function($q, StudyService, ResultsService, RepairService) {
 
     function merge(source, target) {
-      // fetch results data
-      var sourceResultsPromise = ResultsService.queryResultsByGroup(source.armURI || source.groupUri);
-      var targetResultsPromise = ResultsService.queryResultsByGroup(target.armURI || target.groupUri);
-
+      var sourceUri = source.armURI || source.groupUri;
+      var targetUri = target.armURI || target.groupUri;
+      var mergeProperty = 'of_group';
+      var sourceResultsPromise = ResultsService.queryResultsByGroup(sourceUri);
+      var targetResultsPromise = ResultsService.queryResultsByGroup(targetUri);
       return $q.all([sourceResultsPromise, targetResultsPromise]).then(function(results) {
-        var overlappingResults = RepairService.findOverlappingResults(results[0], results[1], isOverlappingGroupMeasurement);
-        var nonOverlappingResults = RepairService.findNonOverlappingResults(results[0], results[1], isOverlappingGroupMeasurement);
-
-        return StudyService.getJsonGraph().then(function(graph) {
-          // remove the overlapping results
-          _.forEach(overlappingResults, function(overlappingResult) {
-            _.remove(graph, function(node) {
-              return overlappingResult.instance === node['@id'];
-            });
-          });
-
-          // move non overlapping results
-          _.forEach(nonOverlappingResults, function(nonOverlappingResult) {
-            var resultNode = _.find(graph, function(node) {
-              return nonOverlappingResult.instance === node['@id'];
-            });
-            resultNode.of_group = target.armURI || target.groupUri;
-          });
-
-          // store the merged results
-          return StudyService.saveJsonGraph(graph).then(function() {
-            // remove the merged arm
-            return deleteItem(source);
-          });
+        var sourceResults = results[0];
+        var targetResults = results[1];
+        return RepairService.mergeResults(targetUri, sourceResults, targetResults, isOverlappingGroupMeasurement, mergeProperty).then(function() {
+          return deleteItem(source);
         });
       });
     }
@@ -53,7 +34,7 @@ define(['lodash'], function(_) {
 
     function deleteItem(removeGroup) {
       var subType, uriKey;
-      if(removeGroup.armURI) {
+      if (removeGroup.armURI) {
         subType = 'has_arm';
         uriKey = 'armURI';
       } else {

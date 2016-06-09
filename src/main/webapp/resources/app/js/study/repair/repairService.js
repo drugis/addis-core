@@ -1,7 +1,7 @@
 'use strict';
 define(['lodash'], function(_) {
-  var dependencies = [];
-  var RepairService = function() {
+  var dependencies = ['$q', 'StudyService', 'ResultsService'];
+  var RepairService = function($q, StudyService, ResultsService) {
 
     function findOverlappingResults(sourceResults, targetResults, isOverlappingFunction) {
       return _.reduce(sourceResults, function(accum, sourceResult) {
@@ -27,9 +27,36 @@ define(['lodash'], function(_) {
       }, []);
     }
 
+    function mergeResults(targetUri, sourceResults, targetResults, overlapFunction, mergeProperty) {
+
+      var overlappingResults = findOverlappingResults(sourceResults, targetResults, overlapFunction);
+      var nonOverlappingResults = findNonOverlappingResults(sourceResults, targetResults, overlapFunction);
+
+      return StudyService.getJsonGraph().then(function(graph) {
+        // remove the overlapping results
+        _.forEach(overlappingResults, function(overlappingResult) {
+          _.remove(graph, function(node) {
+            return overlappingResult.instance === node['@id'];
+          });
+        });
+
+        // move non overlapping results
+        _.forEach(nonOverlappingResults, function(nonOverlappingResult) {
+          var resultNode = _.find(graph, function(node) {
+            return nonOverlappingResult.instance === node['@id'];
+          });
+          resultNode[mergeProperty] = targetUri;
+        });
+
+        // store the merged results
+        return StudyService.saveJsonGraph(graph);
+      });
+    }
+
     return {
       findOverlappingResults: findOverlappingResults,
-      findNonOverlappingResults: findNonOverlappingResults
+      findNonOverlappingResults: findNonOverlappingResults,
+      mergeResults: mergeResults
     };
   };
 

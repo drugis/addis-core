@@ -166,37 +166,17 @@ define(['angular', 'lodash'],
       }
 
       function merge(source, target, type) {
-
-        // fetch results data
-        var sourceResultsPromise = ResultsService.queryResultsByOutcome(source.uri);
-        var targetResultsPromise = ResultsService.queryResultsByOutcome(target.uri);
-
+        var sourceUri = source.uri;
+        var targetUri = target.uri;
+        var mergeProperty = 'of_outcome';
+        var sourceResultsPromise = ResultsService.queryResultsByOutcome(sourceUri);
+        var targetResultsPromise = ResultsService.queryResultsByOutcome(targetUri);
         return $q.all([sourceResultsPromise, targetResultsPromise]).then(function(results) {
-          var overlappingResults = RepairService.findOverlappingResults(results[0], results[1], isOverlappingResultFunction);
-          var nonOverlappingResults = RepairService.findNonOverlappingResults(results[0], results[1], isOverlappingResultFunction);
-
-          return StudyService.getJsonGraph().then(function(graph) {
-            // remove the overlapping results
-            _.forEach(overlappingResults, function(overlappingResult) {
-              _.remove(graph, function(node) {
-                return overlappingResult.instance === node['@id'];
-              });
-            });
-
-            // move non overlapping results
-            _.forEach(nonOverlappingResults, function(nonOverlappingResult) {
-              var resultNode = _.find(graph, function(node) {
-                return nonOverlappingResult.instance === node['@id'];
-              });
-              resultNode.of_outcome = target.uri;
-            });
-
-            // store the merged results
-            return StudyService.saveJsonGraph(graph).then(function() {
-              // remove the merged outcome
-              return deleteItem(source).then(function() {
-                return mergeMeasurementMoments(source, target, type);
-              });
+          var sourceResults = results[0];
+          var targetResults = results[1];
+          return RepairService.mergeResults(targetUri, sourceResults, targetResults, isOverlappingResultFunction, mergeProperty).then(function() {
+            return deleteItem(source).then(function() {
+              return mergeMeasurementMoments(source, target, type);
             });
           });
         });
