@@ -178,6 +178,27 @@ define(['lodash', 'angular'], function(_, angular) {
       });
     };
 
+    $scope.openEditInterventionDialog = function(intervention) {
+      $modal.open({
+        templateUrl: './app/js/intervention/editIntervention.html',
+        controller: 'EditInterventionController',
+        resolve: {
+          intervention: function() {
+            return intervention;
+          },
+          interventions: function() {
+            return $scope.interventions;
+          },
+          successCallback: function() {
+            return function(name, motivation) {
+              intervention.name = name;
+              intervention.motivation = motivation;
+            };
+          }
+        }
+      });
+    };
+
     $scope.addCovariate = function() {
       $modal.open({
         templateUrl: './app/js/covariates/addCovariate.html',

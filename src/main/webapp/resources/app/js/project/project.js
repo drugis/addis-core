@@ -9,5 +9,7 @@ define(function (require) {
     //directives
     .directive('nmaReportView', require('project/nmaReportViewDirective'))
     .directive('ssbrReportView', require('project/ssbrReportViewDirective'))
+
+    .service('ProjectService', require('project/projectService'))
     ;
 });

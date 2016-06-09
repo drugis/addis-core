@@ -1,0 +1,28 @@
+<form novalidate ng-submit="saveIntervention()">
+  <div class="row">
+    <div class="large-9 columns">
+      <h3>Edit Intervention</h3>
+    </div>
+  </div>
+  <div class="row">
+    <div class="large-9 columns">
+      <label>Name
+        <input autofocus type="text" ng-model="intervention.name" ng-change="checkForDuplicateInterventionName(intervention.name)">
+      </label>
+    </div>
+  </div>
+  <div class="row">
+    <div class="large-9 columns">
+      <label>Motivation
+        <textarea rows="8" ng-model="intervention.motivation"></textarea>
+      </label>
+    </div>
+  </div>
+  <div class="row">
+    <div class="large-9 columns">
+      <button class="success" type="submit" ng-disabled="!intervention.name || isDuplicateName || isSaving">Edit</button>
+      <div class="alert" ng-show="isDuplicateName">Duplicate name.</div>
+    </div>
+  </div>
+  <a class="close-reveal-modal" ng-click="cancel()">&#215;</a>
+</form>

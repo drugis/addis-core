@@ -4,6 +4,7 @@ import org.drugis.addis.base.AbstractAddisCoreController;
 import org.drugis.addis.exception.MethodNotAllowedException;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.interventions.controller.command.AbstractInterventionCommand;
+import org.drugis.addis.interventions.controller.command.EditInterventionCommand;
 import org.drugis.addis.interventions.controller.viewAdapter.AbstractInterventionViewAdapter;
 import org.drugis.addis.interventions.model.AbstractIntervention;
 import org.drugis.addis.interventions.model.InvalidConstraintException;
@@ -59,6 +60,14 @@ public class InterventionController extends AbstractAddisCoreController {
       return intervention.toViewAdapter();
     } else {
       throw new MethodNotAllowedException();
+    }
+  }
+
+  @RequestMapping(value = "/projects/{projectId}/interventions/{interventionId}", method = RequestMethod.POST)
+  public void edit(Principal currentUser, @PathVariable Integer projectId, @PathVariable Integer interventionId, @RequestBody EditInterventionCommand command) {
+    Account user = accountRepository.findAccountByUsername(currentUser.getName());
+    if (user != null) {
+
     }
   }
 
