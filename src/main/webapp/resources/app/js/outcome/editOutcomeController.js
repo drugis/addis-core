@@ -13,6 +13,7 @@ define(['lodash'],
       $scope.showMergeWarning = false;
 
       $scope.merge = function(targetOutcome) {
+        $scope.isMerging = true;
         OutcomeService.merge(item, targetOutcome, $injector.get($scope.settings.service).TYPE).then(function() {
             callback();
             $modalInstance.close();
