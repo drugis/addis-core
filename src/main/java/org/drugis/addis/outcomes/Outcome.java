@@ -57,6 +57,14 @@ public class Outcome implements Serializable{
     return motivation;
   }
 
+  public void setName(String name) {
+    this.name = name;
+  }
+
+  public void setMotivation(String motivation) {
+    this.motivation = motivation;
+  }
+
   public String getSemanticOutcomeLabel() {
     return semanticOutcomeLabel;
   }

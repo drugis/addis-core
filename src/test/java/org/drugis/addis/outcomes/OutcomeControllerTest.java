@@ -2,7 +2,9 @@ package org.drugis.addis.outcomes;
 
 import org.drugis.addis.TestUtils;
 import org.drugis.addis.config.TestConfig;
+import org.drugis.addis.outcomes.controller.command.EditOutcomeCommand;
 import org.drugis.addis.outcomes.repository.OutcomeRepository;
+import org.drugis.addis.outcomes.service.OutcomeService;
 import org.drugis.addis.security.Account;
 import org.drugis.addis.security.repository.AccountRepository;
 import org.drugis.addis.trialverse.model.SemanticVariable;
@@ -49,6 +51,9 @@ public class OutcomeControllerTest {
   @Inject
   private OutcomeRepository outcomeRepository;
 
+  @Inject
+  private OutcomeService outcomeService;
+
   @Autowired
   private WebApplicationContext webApplicationContext;
 
@@ -64,6 +69,7 @@ public class OutcomeControllerTest {
     mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
     user = mock(Principal.class);
     when(user.getName()).thenReturn("gert");
+    when(accountRepository.getAccount(user)).thenReturn(gert);
     when(accountRepository.findAccountByUsername("gert")).thenReturn(gert);
   }
 
@@ -136,6 +142,21 @@ public class OutcomeControllerTest {
       .andExpect(jsonPath("$.id", notNullValue()));
     verify(accountRepository).findAccountByUsername("gert");
     verify(outcomeRepository).create(gert, outcomeCommand);
+  }
+
+  @Test
+  public void updateNameAndDescription() throws Exception {
+    EditOutcomeCommand editOutcomeCommand = new EditOutcomeCommand("new name", "new motivation");
+    Integer outcomeId = 1;
+    Integer projectId = 2;
+    Outcome outcome = new Outcome(outcomeId, projectId, editOutcomeCommand.getName(), editOutcomeCommand.getMotivation(), new SemanticVariable(URI.create("uri"), "label"));
+    when(outcomeService.updateNameAndMotivation(projectId, outcomeId, editOutcomeCommand.getName(), editOutcomeCommand.getMotivation())).thenReturn(outcome);
+    String body = TestUtils.createJson(editOutcomeCommand);
+    mockMvc.perform(post("/projects/2/outcomes/1").content(body).principal(user).contentType(WebConstants.getApplicationJsonUtf8Value()))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()));
+    verify(accountRepository).getAccount(user);
+    verify(outcomeService).updateNameAndMotivation(projectId, outcomeId, editOutcomeCommand.getName(), editOutcomeCommand.getMotivation());
   }
 
 }

@@ -69,6 +69,29 @@ public class InterventionRepositoryTest {
   }
 
   @Test
+  public void testGetByProject() throws ResourceDoesNotExistException {
+    int interventionId = -1;
+    AbstractIntervention intervention = interventionRepository.get(1, interventionId);
+    assertEquals(em.find(AbstractIntervention.class, interventionId), intervention);
+    assert(intervention instanceof SimpleIntervention);
+
+    interventionId = -4;
+    intervention = interventionRepository.get(2, interventionId);
+    assertEquals(em.find(AbstractIntervention.class, interventionId), intervention);
+    assert(intervention instanceof FixedDoseIntervention);
+
+    interventionId = -5;
+    intervention = interventionRepository.get(2, interventionId);
+    assertEquals(em.find(AbstractIntervention.class, interventionId), intervention);
+    assert(intervention instanceof TitratedDoseIntervention);
+
+    interventionId = -6;
+    intervention = interventionRepository.get(2, interventionId);
+    assertEquals(em.find(AbstractIntervention.class, interventionId), intervention);
+    assert(intervention instanceof CombinationIntervention);
+  }
+
+  @Test
   public void fixedDoseIntervention() throws InvalidConstraintException {
     DoseConstraint constraint = new DoseConstraint(
             new LowerBoundCommand(LowerBoundType.AT_LEAST, 1d, "unit" , "P1d", URI.create("uriConcept")),

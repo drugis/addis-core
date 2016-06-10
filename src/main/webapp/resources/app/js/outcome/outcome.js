@@ -19,6 +19,5 @@ define(function (require) {
     .factory('OutcomeService', require('outcome/outcomeService'))
 
     //filter
-
     ;
 });

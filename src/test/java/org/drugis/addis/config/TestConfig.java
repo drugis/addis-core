@@ -7,6 +7,7 @@ import org.drugis.addis.interventions.repository.InterventionRepository;
 import org.drugis.addis.interventions.service.InterventionService;
 import org.drugis.addis.models.repository.ModelRepository;
 import org.drugis.addis.outcomes.repository.OutcomeRepository;
+import org.drugis.addis.outcomes.service.OutcomeService;
 import org.drugis.addis.patavitask.repository.PataviTaskRepository;
 import org.drugis.addis.problems.service.ProblemService;
 import org.drugis.addis.projects.repository.ProjectRepository;
@@ -63,6 +64,11 @@ public class TestConfig {
   @Bean
   public OutcomeRepository outcomeRepository() {
     return mock(OutcomeRepository.class);
+  }
+
+  @Bean
+  public OutcomeService outcomeService() {
+    return mock(OutcomeService.class);
   }
 
   @Bean

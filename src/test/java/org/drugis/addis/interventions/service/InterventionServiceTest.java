@@ -254,9 +254,9 @@ public class InterventionServiceTest {
     String name = "name";
     String motivation = "motivation";
     AbstractIntervention oldIntervention = new SimpleIntervention(interventionId, 123, "oldName", "oldMotivation", URI.create("uri"), "uriLabel");
-    when(interventionRepository.get(interventionId)).thenReturn(oldIntervention);
+    when(interventionRepository.get(projectId, interventionId)).thenReturn(oldIntervention);
     when(interventionRepository.isExistingInterventionName(interventionId, "name")).thenReturn(false);
-    AbstractIntervention abstractIntervention = interventionService.updateNameAndMotivation(interventionId, name, motivation);
+    AbstractIntervention abstractIntervention = interventionService.updateNameAndMotivation(projectId, interventionId, name, motivation);
     assertEquals(interventionId, abstractIntervention.getId());
     assertEquals(name, abstractIntervention.getName());
     assertEquals(motivation, abstractIntervention.getMotivation());
@@ -267,6 +267,15 @@ public class InterventionServiceTest {
     String name = "name";
     String motivation = "motivation";
     when(interventionRepository.isExistingInterventionName(interventionId, "name")).thenReturn(true);
-    interventionService.updateNameAndMotivation(interventionId, name, motivation);
+    interventionService.updateNameAndMotivation(projectId, interventionId, name, motivation);
+  }
+
+  @Test(expected = Exception.class)
+  public void editNameAndMotivationOtherProject() throws Exception {
+    String name = "name";
+    String motivation = "motivation";
+    when(interventionRepository.isExistingInterventionName(interventionId, "name")).thenReturn(false);
+    when(interventionRepository.get(projectId, interventionId)).thenReturn(null);
+    interventionService.updateNameAndMotivation(projectId, interventionId, name, motivation);
   }
 }

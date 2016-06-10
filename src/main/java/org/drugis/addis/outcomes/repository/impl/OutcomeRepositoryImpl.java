@@ -57,6 +57,21 @@ public class OutcomeRepositoryImpl implements OutcomeRepository {
   }
 
   @Override
+  public Boolean isExistingOutcomeName(Integer outcomeId, String name) {
+    TypedQuery<Outcome> query = em.createQuery("FROM Outcome o " +
+            "WHERE o.id != :outcomeId " +
+            "AND o.name LIKE :name " +
+            "AND o.project = (" +
+            " SELECT o2.project " +
+            " FROM Outcome o2 " +
+            " WHERE o2.id = :outcomeId" +
+            ")", Outcome.class);
+    query.setParameter("outcomeId", outcomeId);
+    query.setParameter("name", name);
+    return !query.getResultList().isEmpty();
+  }
+
+  @Override
   public List<Outcome> get(Integer projectId, List<Integer> outcomeIds) {
     if(outcomeIds.isEmpty()){
       return Collections.emptyList();

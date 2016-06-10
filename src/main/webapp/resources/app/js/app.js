@@ -34,6 +34,7 @@ define(
     'group/group',
     'outcome/outcome',
     'intervention/intervention',
+    'outcome/addisOutcomes',
     'populationCharacteristic/populationCharacteristic',
     'endpoint/endpoint',
     'adverseEvent/adverseEvent',
@@ -106,6 +107,7 @@ define(
       'addis.directives',
       'addis.covariates',
       'addis.interventions',
+      'addis.outcomes',
       'patavi'
     ];
     var gemtcWebDependencies = [

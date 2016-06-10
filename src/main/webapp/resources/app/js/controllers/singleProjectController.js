@@ -178,6 +178,27 @@ define(['lodash', 'angular'], function(_, angular) {
       });
     };
 
+    $scope.openEditOutcomeDialog = function(outcome) {
+      $modal.open({
+        templateUrl: './app/js/outcome/editOutcome.html',
+        controller: 'EditAddisOutcomeController',
+        resolve: {
+          outcome: function() {
+            return outcome;
+          },
+          outcomes: function() {
+            return $scope.outcomes;
+          },
+          successCallback: function() {
+            return function(name, motivation) {
+              outcome.name = name;
+              outcome.motivation = motivation;
+            };
+          }
+        }
+      });
+    };
+
     $scope.openEditInterventionDialog = function(intervention) {
       $modal.open({
         templateUrl: './app/js/intervention/editIntervention.html',

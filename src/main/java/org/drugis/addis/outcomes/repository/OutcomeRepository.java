@@ -22,4 +22,6 @@ public interface OutcomeRepository {
   Outcome create(Account user, OutcomeCommand outcomeCommand) throws MethodNotAllowedException, ResourceDoesNotExistException;
 
   List<Outcome> get(Integer projectId, List<Integer> outcomeIds);
+
+  Boolean isExistingOutcomeName(Integer outcomeId, String name);
 }

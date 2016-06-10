@@ -10,6 +10,7 @@ import org.drugis.addis.interventions.model.AbstractIntervention;
 import org.drugis.addis.interventions.model.InvalidConstraintException;
 import org.drugis.addis.interventions.repository.InterventionRepository;
 import org.drugis.addis.interventions.service.InterventionService;
+import org.drugis.addis.projects.service.ProjectService;
 import org.drugis.addis.security.Account;
 import org.drugis.addis.security.repository.AccountRepository;
 import org.springframework.stereotype.Controller;
@@ -36,6 +37,8 @@ public class InterventionController extends AbstractAddisCoreController {
   private InterventionRepository interventionRepository;
   @Inject
   private InterventionService interventionService;
+  @Inject
+  private ProjectService projectService;
 
 
   @RequestMapping(value = "/projects/{projectId}/interventions", method = RequestMethod.GET)
@@ -68,13 +71,11 @@ public class InterventionController extends AbstractAddisCoreController {
 
   @RequestMapping(value = "/projects/{projectId}/interventions/{interventionId}", method = RequestMethod.POST)
   @ResponseBody
-  public AbstractInterventionViewAdapter edit(Principal currentUser, @PathVariable Integer interventionId, @RequestBody EditInterventionCommand command) throws Exception {
-    Account user = accountRepository.findAccountByUsername(currentUser.getName());
-    if (user != null) {
-      AbstractIntervention updatedIntervention = interventionService.updateNameAndMotivation(interventionId, command.getName(), command.getMotivation());
-      return updatedIntervention.toViewAdapter();
-    }
-    throw new MethodNotAllowedException();
+  public AbstractInterventionViewAdapter edit(Principal currentUser, @PathVariable Integer projectId, @PathVariable Integer interventionId, @RequestBody EditInterventionCommand command) throws Exception {
+    Account user = accountRepository.getAccount(currentUser);
+    projectService.checkProjectExistsAndModifiable(user, projectId);
+    AbstractIntervention updatedIntervention = interventionService.updateNameAndMotivation(projectId, interventionId, command.getName(), command.getMotivation());
+    return updatedIntervention.toViewAdapter();
   }
 
   @RequestMapping(value = "/projects/{projectId}/interventions", method = RequestMethod.POST)

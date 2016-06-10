@@ -76,6 +76,7 @@ public class InterventionControllerTest {
     user = mock(Principal.class);
     when(user.getName()).thenReturn("gert");
     when(accountRepository.findAccountByUsername("gert")).thenReturn(gert);
+    when(accountRepository.getAccount(user)).thenReturn(gert);
   }
 
   @After
@@ -152,15 +153,15 @@ public class InterventionControllerTest {
     Integer intervetionId = 2;
     EditInterventionCommand editCommand = new EditInterventionCommand("new name", "new motivation");
     AbstractIntervention updatedIntervention = new SimpleIntervention(intervetionId, projectId, editCommand.getName(), editCommand.getMotivation(), URI.create("uri"), "semlabel");
-    when(interventionService.updateNameAndMotivation(intervetionId, editCommand.getName(), editCommand.getMotivation())).thenReturn(updatedIntervention);
+    when(interventionService.updateNameAndMotivation(projectId, intervetionId, editCommand.getName(), editCommand.getMotivation())).thenReturn(updatedIntervention);
     String body = TestUtils.createJson(editCommand);
 
     mockMvc.perform(post("/projects/1/interventions/2").content(body).principal(user).contentType(WebConstants.getApplicationJsonUtf8Value()))
             .andExpect(status().isOk())
             .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()));
 
-    verify(accountRepository).findAccountByUsername("gert");
-    verify(interventionService).updateNameAndMotivation(intervetionId, editCommand.getName(), editCommand.getMotivation());
+    verify(accountRepository).getAccount(user);
+    verify(interventionService).updateNameAndMotivation(projectId, intervetionId, editCommand.getName(), editCommand.getMotivation());
   }
 
   @Test

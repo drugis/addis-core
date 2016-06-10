@@ -144,10 +144,10 @@
                 </thead>
                 <tbody>
                   <tr ng-repeat="outcome in outcomes">
-                    <td>{{::outcome.name}}</td>
-                    <td>{{::outcome.motivation}}</td>
+                    <td>{{outcome.name}}</td>
+                    <td>{{outcome.motivation}}</td>
                     <td>{{::outcome.semanticOutcomeLabel}}</td>
-                    <td><a><i class="fa fa-edit fa-2x"></i></a></td>
+                    <td><a ng-click="openEditOutcomeDialog(outcome)"><i class="fa fa-edit fa-2x"></i></a></td>
                   </tr>
                 </tbody>
               </table>

@@ -15,20 +15,6 @@
  */
 package org.drugis.addis.config;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.security.KeyManagementException;
-import java.security.KeyStore;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
-import java.security.UnrecoverableKeyException;
-import java.security.cert.CertificateException;
-import java.util.Properties;
-
-import javax.net.ssl.SSLContext;
-import javax.persistence.EntityManagerFactory;
-import javax.sql.DataSource;
-
 import org.apache.http.client.HttpClient;
 import org.apache.http.config.Registry;
 import org.apache.http.config.RegistryBuilder;
@@ -61,6 +47,15 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.client.RestTemplate;
 
+import javax.net.ssl.SSLContext;
+import javax.persistence.EntityManagerFactory;
+import javax.sql.DataSource;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.security.*;
+import java.security.cert.CertificateException;
+import java.util.Properties;
+
 @Configuration
 @ComponentScan(excludeFilters = {@Filter(Configuration.class)}, basePackages = {
         "org.drugis.addis", "org.drugis.trialverse"}, lazyInit = true)
@@ -69,6 +64,7 @@ import org.springframework.web.client.RestTemplate;
         "org.drugis.addis.security",
         "org.drugis.addis.covariates",
         "org.drugis.addis.interventions",
+        "org.drugis.addis.outcomes",
         "org.drugis.addis.scenarios",
         "org.drugis.addis.models",
         "org.drugis.addis.remarks",
