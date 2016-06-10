@@ -65,7 +65,7 @@ define(['angular', 'lodash'], function(angular, _) {
         outcomeUri: backEndItem.of_outcome,
       };
 
-      if (isNonConformantMeansurement(backEndItem)) {
+      if (isNonConformantMeasurementResult(backEndItem)) {
         baseItem.comment = backEndItem.comment;
       }
 
@@ -93,7 +93,7 @@ define(['angular', 'lodash'], function(angular, _) {
     }
 
     function isResultForNonConformantMeasurement(variableUri, item) {
-      return isNonConformantMeansurementResult(item) && variableUri === item.of_outcome;
+      return isNonConformantMeasurementResult(item) && variableUri === item.of_outcome;
     }
 
     function isResultForArm(armUri, item) {
@@ -112,16 +112,12 @@ define(['angular', 'lodash'], function(angular, _) {
       return node.of_outcome && node.of_group && node.of_moment;
     }
 
-    function isNonConformantMeansurementResult(node) {
+    function isNonConformantMeasurementResult(node) {
       return node.comment && node.of_outcome && node.of_group && !node.of_moment;
     }
 
     function isMoment(node) {
       return node['@type'] === 'ontology:MeasurementMoment';
-    }
-
-    function isNonConformantMeansurement(backEndItem) {
-      return !backEndItem.of_moment && backEndItem.comment;
     }
 
     function cleanupMeasurements() {
@@ -225,8 +221,8 @@ define(['angular', 'lodash'], function(angular, _) {
       return _queryResults(outcomeUri, isResultForOutcome);
     }
 
-    function queryNonConformantMeasurements(variableUri) {
-      return _queryResults(variableUri, isResultForNonConformantMeasurement);
+    function queryNonConformantMeasurements(outcomeUri) {
+      return _queryResults(outcomeUri, isResultForNonConformantMeasurement);
     }
 
     return {

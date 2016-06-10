@@ -9,6 +9,11 @@ define(['angular', 'lodash'],
           a.momentUri === b.momentUri;
       }
 
+      function isOverlappingNonConformantResultFunction(a, b) {
+        return a.armUri === b.armUri &&
+          a.comment === b.comment;
+      }
+
       function findMeasurementForUri(measurementMoments, measurementMomentUri) {
         return _.find(measurementMoments, function(moment) {
           return measurementMomentUri === moment.uri;
@@ -135,9 +140,12 @@ define(['angular', 'lodash'],
       function hasOverlap(source, target) {
         var sourceResultsPromise = ResultsService.queryResultsByOutcome(source.uri);
         var targetResultsPromise = ResultsService.queryResultsByOutcome(target.uri);
+        var sourceNonConformantResultsPromise = ResultsService.queryNonConformantMeasurements(source.uri);
+        var targetNonConformantResultsPromise = ResultsService.queryNonConformantMeasurements(target.uri);
 
-        return $q.all([sourceResultsPromise, targetResultsPromise]).then(function(results) {
-          return RepairService.findOverlappingResults(results[0], results[1], isOverlappingResultFunction).length > 0;
+        return $q.all([sourceResultsPromise, targetResultsPromise, sourceNonConformantResultsPromise, targetNonConformantResultsPromise]).then(function(results) {
+          return RepairService.findOverlappingResults(results[0], results[1], isOverlappingResultFunction).length > 0 ||
+            RepairService.findOverlappingResults(results[2], results[3], isOverlappingNonConformantResultFunction).length > 0;
         });
       }
 
@@ -171,12 +179,18 @@ define(['angular', 'lodash'],
         var mergeProperty = 'of_outcome';
         var sourceResultsPromise = ResultsService.queryResultsByOutcome(sourceUri);
         var targetResultsPromise = ResultsService.queryResultsByOutcome(targetUri);
-        return $q.all([sourceResultsPromise, targetResultsPromise]).then(function(results) {
+        var sourceNonConformantResultsPromise = ResultsService.queryNonConformantMeasurements(sourceUri);
+        var targetNonConformantResultsPromise = ResultsService.queryNonConformantMeasurements(targetUri);
+        return $q.all([sourceResultsPromise, targetResultsPromise, sourceNonConformantResultsPromise, targetNonConformantResultsPromise]).then(function(results) {
           var sourceResults = results[0];
           var targetResults = results[1];
+          var sourceNonConformantResults = results[2];
+          var targetNonConformantResults = results[3];
           return RepairService.mergeResults(targetUri, sourceResults, targetResults, isOverlappingResultFunction, mergeProperty).then(function() {
-            return deleteItem(source).then(function() {
-              return mergeMeasurementMoments(source, target, type);
+            return RepairService.mergeResults(targetUri, sourceNonConformantResults, targetNonConformantResults, isOverlappingNonConformantResultFunction, mergeProperty).then(function() {
+              return deleteItem(source).then(function() {
+                return mergeMeasurementMoments(source, target, type);
+              });
             });
           });
         });
