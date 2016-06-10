@@ -53,6 +53,10 @@ define(['angular-mocks'], function(angularMocks) {
       studyServiceMock.save.and.returnValue(saveStudyPromise);
     }));
 
+    afterEach(function(){
+      studyServiceMock.save.calls.reset();
+    });
+
     describe('query outcomes of specific type', function() {
       var jsonStudy = {
         has_outcome: [{
@@ -190,6 +194,7 @@ define(['angular-mocks'], function(angularMocks) {
         });
 
         outcomeService.addItem(newPopulationChar, 'ontology:OutcomeType').then(done);
+        saveStudyDefer.resolve();
         rootScope.$digest();
       });
 
@@ -275,6 +280,7 @@ define(['angular-mocks'], function(angularMocks) {
         getStudyDefer.resolve(jsonStudy);
         measurementMomentsDefer.resolve({});
         outcomeService.editItem(newPopulationChar).then(done);
+        saveStudyDefer.resolve();
         rootScope.$digest();
       });
 
@@ -336,6 +342,7 @@ define(['angular-mocks'], function(angularMocks) {
         getStudyDefer.resolve(jsonStudy);
         measurementMomentsDefer.resolve({});
         outcomeService.deleteItem(newPopulationChar).then(done);
+        saveStudyDefer.resolve();
         rootScope.$digest();
       });
 
