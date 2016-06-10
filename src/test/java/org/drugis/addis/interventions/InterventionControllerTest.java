@@ -8,6 +8,7 @@ import org.drugis.addis.interventions.controller.command.*;
 import org.drugis.addis.interventions.controller.viewAdapter.AbstractInterventionViewAdapter;
 import org.drugis.addis.interventions.model.*;
 import org.drugis.addis.interventions.repository.InterventionRepository;
+import org.drugis.addis.interventions.service.InterventionService;
 import org.drugis.addis.security.Account;
 import org.drugis.addis.security.repository.AccountRepository;
 import org.drugis.addis.trialverse.model.SemanticInterventionUriAndName;
@@ -57,6 +58,9 @@ public class InterventionControllerTest {
   @Inject
   private InterventionRepository interventionRepository;
 
+  @Inject
+  private InterventionService interventionService;
+
   @Autowired
   private WebApplicationContext webApplicationContext;
 
@@ -67,8 +71,7 @@ public class InterventionControllerTest {
 
   @Before
   public void setUp() {
-    reset(accountRepository);
-    reset(interventionRepository);
+    reset(accountRepository, interventionRepository, interventionService);
     mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
     user = mock(Principal.class);
     when(user.getName()).thenReturn("gert");
@@ -77,7 +80,7 @@ public class InterventionControllerTest {
 
   @After
   public void tearDown() {
-    verifyNoMoreInteractions(accountRepository, interventionRepository);
+    verifyNoMoreInteractions(accountRepository, interventionRepository, interventionService);
   }
 
   @Test
@@ -141,6 +144,23 @@ public class InterventionControllerTest {
             .andExpect(jsonPath("$.id", is(intervention.getId())));
     verify(accountRepository).findAccountByUsername("gert");
     verify(interventionRepository).get(projectId);
+  }
+
+  @Test
+  public void updateNameAndDescription() throws Exception {
+    Integer projectId = 1;
+    Integer intervetionId = 2;
+    EditInterventionCommand editCommand = new EditInterventionCommand("new name", "new motivation");
+    AbstractIntervention updatedIntervention = new SimpleIntervention(intervetionId, projectId, editCommand.getName(), editCommand.getMotivation(), URI.create("uri"), "semlabel");
+    when(interventionService.updateNameAndMotivation(intervetionId, editCommand.getName(), editCommand.getMotivation())).thenReturn(updatedIntervention);
+    String body = TestUtils.createJson(editCommand);
+
+    mockMvc.perform(post("/projects/1/interventions/2").content(body).principal(user).contentType(WebConstants.getApplicationJsonUtf8Value()))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()));
+
+    verify(accountRepository).findAccountByUsername("gert");
+    verify(interventionService).updateNameAndMotivation(intervetionId, editCommand.getName(), editCommand.getMotivation());
   }
 
   @Test

@@ -9,6 +9,7 @@ import org.drugis.addis.interventions.controller.viewAdapter.AbstractInterventio
 import org.drugis.addis.interventions.model.AbstractIntervention;
 import org.drugis.addis.interventions.model.InvalidConstraintException;
 import org.drugis.addis.interventions.repository.InterventionRepository;
+import org.drugis.addis.interventions.service.InterventionService;
 import org.drugis.addis.security.Account;
 import org.drugis.addis.security.repository.AccountRepository;
 import org.springframework.stereotype.Controller;
@@ -33,6 +34,8 @@ public class InterventionController extends AbstractAddisCoreController {
   private AccountRepository accountRepository;
   @Inject
   private InterventionRepository interventionRepository;
+  @Inject
+  private InterventionService interventionService;
 
 
   @RequestMapping(value = "/projects/{projectId}/interventions", method = RequestMethod.GET)
@@ -64,11 +67,14 @@ public class InterventionController extends AbstractAddisCoreController {
   }
 
   @RequestMapping(value = "/projects/{projectId}/interventions/{interventionId}", method = RequestMethod.POST)
-  public void edit(Principal currentUser, @PathVariable Integer projectId, @PathVariable Integer interventionId, @RequestBody EditInterventionCommand command) {
+  @ResponseBody
+  public AbstractInterventionViewAdapter edit(Principal currentUser, @PathVariable Integer interventionId, @RequestBody EditInterventionCommand command) throws MethodNotAllowedException, ResourceDoesNotExistException {
     Account user = accountRepository.findAccountByUsername(currentUser.getName());
     if (user != null) {
-
+      AbstractIntervention updatedIntervention = interventionService.updateNameAndMotivation(interventionId, command.getName(), command.getMotivation());
+      return updatedIntervention.toViewAdapter();
     }
+    throw new MethodNotAllowedException();
   }
 
   @RequestMapping(value = "/projects/{projectId}/interventions", method = RequestMethod.POST)

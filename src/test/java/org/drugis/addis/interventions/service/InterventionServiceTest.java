@@ -20,6 +20,7 @@ import java.util.Collections;
 import java.util.List;
 
 import static junit.framework.TestCase.assertFalse;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
@@ -246,5 +247,17 @@ public class InterventionServiceTest {
     List<AbstractSemanticIntervention> semanticInterventions = Arrays.asList(fixedSemanticIntervention, titratedSemanticIntervention);
 
     assertFalse(interventionService.isMatched(intervention, semanticInterventions));
+  }
+
+  @Test
+  public void editNameAndMotivation() throws ResourceDoesNotExistException {
+    String name = "name";
+    String motivation = "motivation";
+    AbstractIntervention oldIntervention = new SimpleIntervention(interventionId, 123, "oldName", "oldMotivation", URI.create("uri"), "uriLabel");
+    when(interventionRepository.get(interventionId)).thenReturn(oldIntervention);
+    AbstractIntervention abstractIntervention = interventionService.updateNameAndMotivation(interventionId, name, motivation);
+    assertEquals(interventionId, abstractIntervention.getId());
+    assertEquals(name, abstractIntervention.getName());
+    assertEquals(motivation, abstractIntervention.getMotivation());
   }
 }

@@ -172,8 +172,8 @@
                 </thead>
                 <tbody>
                   <tr ng-repeat="intervention in interventions">
-                    <td>{{::intervention.name}}</td>
-                    <td>{{::intervention.motivation}}</td>
+                    <td>{{intervention.name}}</td>
+                    <td>{{intervention.motivation}}</td>
                     <td>{{::intervention.semanticInterventionLabel}}{{::intervention.definitionLabel}}</td>
                     <td><a ng-click="openEditInterventionDialog(intervention)"><i class="fa fa-edit fa-2x"></i></a></td>
                   </tr>

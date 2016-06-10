@@ -28,6 +28,14 @@ public abstract class AbstractIntervention {
     this.motivation = motivation;
   }
 
+  public void setName(String name) {
+    this.name = name;
+  }
+
+  public void setMotivation(String motivation) {
+    this.motivation = motivation;
+  }
+
   public Integer getId() {
     return id;
   }

@@ -8,12 +8,13 @@ define(['angular'],
       $scope.saveIntervention = function() {
         $scope.isSaving = true;
         var editCommand = {
-          projectId: $scope.intervention.project,
-          interventionId: $scope.intervention.id,
           name: $scope.intervention.name,
           motivation: $scope.intervention.motivation
         };
-        InterventionResource.save(editCommand, function(){
+        InterventionResource.save({
+          projectId: $scope.intervention.project,
+          interventionId: $scope.intervention.id,
+        }, editCommand, function() {
           $modalInstance.close();
           successCallback($scope.intervention.name, $scope.intervention.motivation);
         });

@@ -23,6 +23,14 @@ public class InterventionServiceImpl implements InterventionService {
   @Inject
   InterventionRepository interventionRepository;
 
+  @Override
+  public AbstractIntervention updateNameAndMotivation(Integer interventionId, String name, String motivation) throws ResourceDoesNotExistException {
+    AbstractIntervention abstractIntervention = interventionRepository.get(interventionId);
+    abstractIntervention.setName(name);
+    abstractIntervention.setMotivation(motivation);
+    return abstractIntervention;
+  }
+
   public List<SingleIntervention> resolveCombinations(List<CombinationIntervention> combinationInterventions) throws ResourceDoesNotExistException {
     List<SingleIntervention> singleInterventions = new ArrayList<>();
     for(CombinationIntervention combinationIntervention: combinationInterventions){
