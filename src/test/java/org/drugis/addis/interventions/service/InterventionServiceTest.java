@@ -250,14 +250,23 @@ public class InterventionServiceTest {
   }
 
   @Test
-  public void editNameAndMotivation() throws ResourceDoesNotExistException {
+  public void editNameAndMotivation() throws Exception {
     String name = "name";
     String motivation = "motivation";
     AbstractIntervention oldIntervention = new SimpleIntervention(interventionId, 123, "oldName", "oldMotivation", URI.create("uri"), "uriLabel");
     when(interventionRepository.get(interventionId)).thenReturn(oldIntervention);
+    when(interventionRepository.isExistingInterventionName(interventionId, "name")).thenReturn(false);
     AbstractIntervention abstractIntervention = interventionService.updateNameAndMotivation(interventionId, name, motivation);
     assertEquals(interventionId, abstractIntervention.getId());
     assertEquals(name, abstractIntervention.getName());
     assertEquals(motivation, abstractIntervention.getMotivation());
+  }
+
+  @Test(expected = Exception.class)
+  public void editNameAndMotivationCheckDuplicateName() throws Exception {
+    String name = "name";
+    String motivation = "motivation";
+    when(interventionRepository.isExistingInterventionName(interventionId, "name")).thenReturn(true);
+    interventionService.updateNameAndMotivation(interventionId, name, motivation);
   }
 }

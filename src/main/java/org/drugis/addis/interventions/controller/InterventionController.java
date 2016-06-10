@@ -68,7 +68,7 @@ public class InterventionController extends AbstractAddisCoreController {
 
   @RequestMapping(value = "/projects/{projectId}/interventions/{interventionId}", method = RequestMethod.POST)
   @ResponseBody
-  public AbstractInterventionViewAdapter edit(Principal currentUser, @PathVariable Integer interventionId, @RequestBody EditInterventionCommand command) throws MethodNotAllowedException, ResourceDoesNotExistException {
+  public AbstractInterventionViewAdapter edit(Principal currentUser, @PathVariable Integer interventionId, @RequestBody EditInterventionCommand command) throws Exception {
     Account user = accountRepository.findAccountByUsername(currentUser.getName());
     if (user != null) {
       AbstractIntervention updatedIntervention = interventionService.updateNameAndMotivation(interventionId, command.getName(), command.getMotivation());

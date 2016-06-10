@@ -21,4 +21,6 @@ public interface InterventionRepository {
   AbstractIntervention get(Integer interventionId) throws ResourceDoesNotExistException;
 
   AbstractIntervention create(Account user, AbstractInterventionCommand interventionCommand) throws MethodNotAllowedException, ResourceDoesNotExistException, InvalidConstraintException;
+
+  boolean isExistingInterventionName(Integer interventionId, String name);
 }

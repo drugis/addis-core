@@ -66,4 +66,19 @@ public class InterventionRepositoryImpl implements InterventionRepository {
     em.persist(newIntervention);
     return newIntervention;
   }
+
+  @Override
+  public boolean isExistingInterventionName(Integer interventionId, String name) {
+    TypedQuery<AbstractIntervention> query = em.createQuery("FROM AbstractIntervention ai " +
+            "WHERE ai.id != :interventionId " +
+            "AND ai.name LIKE :name " +
+            "AND ai.project = (" +
+            " SELECT ai2.project " +
+            " FROM AbstractIntervention ai2 " +
+            " WHERE ai2.id = :interventionId" +
+            ")", AbstractIntervention.class);
+    query.setParameter("interventionId", interventionId);
+    query.setParameter("name", name);
+    return !query.getResultList().isEmpty();
+  }
 }

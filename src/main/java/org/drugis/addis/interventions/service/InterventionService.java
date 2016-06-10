@@ -15,5 +15,5 @@ import java.util.List;
 public interface InterventionService {
   List<SingleIntervention> resolveCombinations(List<CombinationIntervention> combinationInterventions) throws ResourceDoesNotExistException;
   boolean isMatched(AbstractIntervention intervention, List<AbstractSemanticIntervention> semanticIntervention) throws InvalidTypeForDoseCheckException, ResourceDoesNotExistException;
-  AbstractIntervention updateNameAndMotivation(Integer interventionId, String name, String motivation) throws ResourceDoesNotExistException;
+  AbstractIntervention updateNameAndMotivation(Integer interventionId, String name, String motivation) throws Exception;
 }

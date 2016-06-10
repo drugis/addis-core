@@ -24,7 +24,10 @@ public class InterventionServiceImpl implements InterventionService {
   InterventionRepository interventionRepository;
 
   @Override
-  public AbstractIntervention updateNameAndMotivation(Integer interventionId, String name, String motivation) throws ResourceDoesNotExistException {
+  public AbstractIntervention updateNameAndMotivation(Integer interventionId, String name, String motivation) throws Exception {
+    if(interventionRepository.isExistingInterventionName(interventionId, name)){
+      throw new Exception("Can not update intervention, intervention name must be unique");
+    }
     AbstractIntervention abstractIntervention = interventionRepository.get(interventionId);
     abstractIntervention.setName(name);
     abstractIntervention.setMotivation(motivation);

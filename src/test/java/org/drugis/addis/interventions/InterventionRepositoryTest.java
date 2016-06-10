@@ -22,8 +22,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  * Created by daan on 3/7/14.
@@ -175,5 +174,21 @@ public class InterventionRepositoryTest {
     interventionRepository.create(user, interventionCommand);
   }
 
+  @Test
+  public void isExistingNameWhenUseTheSameName() {
+    boolean result = interventionRepository.isExistingInterventionName(-2, "intervention 2");
+    assertFalse(result);
+  }
 
+  @Test
+  public void isExistingNameWhenUseTheAExistingName() {
+    boolean result = interventionRepository.isExistingInterventionName(-2, "intervention 1");
+    assertTrue(result);
+  }
+
+  @Test
+  public void isExistingNameWhenUseTheANewName() {
+    boolean result = interventionRepository.isExistingInterventionName(-2, "new name");
+    assertFalse(result);
+  }
 }
