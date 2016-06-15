@@ -663,6 +663,8 @@ public class TriplestoreServiceImpl implements TriplestoreService {
 
   private ResponseEntity<String> queryTripleStoreVersion(String namespaceUid, String query, String versionUri) {
     logger.debug("Triplestore uri = " + TRIPLESTORE_BASE_URI);
+    logger.debug("namespaceUid = " + namespaceUid);
+    logger.debug("versionUri = " + versionUri);
     logger.debug("sparql query = " + query);
 
     UriComponents uriComponents = UriComponentsBuilder.fromHttpUrl(TRIPLESTORE_BASE_URI)

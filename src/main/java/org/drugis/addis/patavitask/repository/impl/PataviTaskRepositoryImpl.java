@@ -55,8 +55,10 @@ public class PataviTaskRepositoryImpl implements PataviTaskRepository {
     HttpEntity postBody = new ByteArrayEntity(jsonProblem.toString().getBytes());
     postRequest.setEntity(postBody);
     try (CloseableHttpResponse httpResponse = (CloseableHttpResponse) httpClient.execute(postRequest)) {
-      URI newTaskUri = URI.create(httpResponse.getHeaders("Location")[0].getValue());
+      String location = httpResponse.getHeaders("Location")[0].getValue();
+      URI newTaskUri = URI.create(location);
       logger.debug("created new patavi-task with taskUri = " + newTaskUri.toString());
+      EntityUtils.consume(httpResponse.getEntity());
       return newTaskUri;
     } catch (Exception e) {
       throw new RuntimeException("Error creating patavi task: " + e.toString());
@@ -68,7 +70,9 @@ public class PataviTaskRepositoryImpl implements PataviTaskRepository {
             .build();
     HttpGet getRequest = new HttpGet(resultsUri);
     try (CloseableHttpResponse httpResponse = (CloseableHttpResponse) httpClient.execute(getRequest)) {
-      return objectMapper.readTree(EntityUtils.toString(httpResponse.getEntity())).get("results");
+      String content = EntityUtils.toString(httpResponse.getEntity());
+      EntityUtils.consume(httpResponse.getEntity());
+      return objectMapper.readTree(content).get("results");
     } catch (Exception e) {
       throw new RuntimeException(e);
     }
@@ -97,21 +101,20 @@ public class PataviTaskRepositoryImpl implements PataviTaskRepository {
   }
 
   @Override
-  public PataviTask getTask(URI taskUrl) {
+  public List<PataviTask> findByUrls(List<URI> taskUris) throws IOException {
+    return taskUris.stream().filter(taskUri -> taskUri != null).map(this::getTask).collect(Collectors.toList());
+  }
+
+  private PataviTask getTask(URI taskUrl) {
+    assert(taskUrl != null);
+    logger.trace("getTask for taskURl" + taskUrl.toString());
     try (CloseableHttpResponse response = (CloseableHttpResponse) httpClient.execute(new HttpGet(taskUrl))) {
-      return new PataviTask(EntityUtils.toString(response.getEntity()));
+      String pataviResponse = EntityUtils.toString(response.getEntity());
+      EntityUtils.consume(response.getEntity());
+      return new PataviTask(pataviResponse);
     } catch (Exception e) {
       throw new RuntimeException(e);
     }
-  }
-
-  @Override
-  public List<PataviTask> findByUrls(List<URI> taskUris) throws IOException {
-    List<PataviTask> result = new ArrayList<>(taskUris.size());
-    for (URI taskUri : taskUris) {
-      result.add(getTask(taskUri));
-    }
-    return result;
   }
 
 }

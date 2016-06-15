@@ -26,7 +26,5 @@ public interface PataviTaskRepository {
 
   HttpResponse delete(URI taskUrl) throws IOException;
 
-  PataviTask getTask(URI taskUrl) throws IOException;
-
   URI createPataviTask(URI pataviUri, JSONObject jsonObject);
 }
