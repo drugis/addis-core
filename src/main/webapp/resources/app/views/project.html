@@ -139,7 +139,7 @@
                     <th class="large-3">Name</th>
                     <th class="large-6 end">Motivation</th>
                     <th class="large-3">Definition</th>
-                    <th></th>
+                    <th ng-if="editMode.allowEditing"></th>
                   </tr>
                 </thead>
                 <tbody>
@@ -147,7 +147,7 @@
                     <td>{{outcome.name}}</td>
                     <td>{{outcome.motivation}}</td>
                     <td>{{::outcome.semanticOutcomeLabel}}</td>
-                    <td><a ng-click="openEditOutcomeDialog(outcome)"><i class="fa fa-edit fa-2x"></i></a></td>
+                    <td ng-if="editMode.allowEditing"><a ng-click="openEditOutcomeDialog(outcome)"><i class="fa fa-edit fa-2x"></i></a></td>
                   </tr>
                 </tbody>
               </table>
@@ -167,7 +167,7 @@
                     <th class="large-2">Name</th>
                     <th class="large-5">Motivation</th>
                     <th class="large-5">Definition</th>
-                    <th></th>
+                    <th ng-if="editMode.allowEditing"></th>
                   </tr>
                 </thead>
                 <tbody>
@@ -175,7 +175,7 @@
                     <td>{{intervention.name}}</td>
                     <td>{{intervention.motivation}}</td>
                     <td>{{::intervention.semanticInterventionLabel}}{{::intervention.definitionLabel}}</td>
-                    <td><a ng-click="openEditInterventionDialog(intervention)"><i class="fa fa-edit fa-2x"></i></a></td>
+                    <td ng-if="editMode.allowEditing"><a ng-click="openEditInterventionDialog(intervention)"><i class="fa fa-edit fa-2x"></i></a></td>
                   </tr>
                 </tbody>
               </table>
