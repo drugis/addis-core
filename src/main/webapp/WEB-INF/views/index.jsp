@@ -24,6 +24,8 @@
   </head>
 
   <body class="f-topbar-fixed">
+
+    <error-reporting></error-reporting>
     <session-expired-directive></session-expired-directive>
 
     <div ui-view></div>

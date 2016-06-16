@@ -4,12 +4,14 @@ require.config({
   paths: {
     'angular': 'bower_components/angular/angular',
     'angular-md5': 'bower_components/angular-md5/angular-md5',
+    'angular-patavi-client': 'bower_components/angular-patavi-client/patavi',
     'angular-resource': 'bower_components/angular-resource/angular-resource',
     'angular-ui-router': 'bower_components/angular-ui-router/release/angular-ui-router',
     'angular-select': 'bower_components/angular-ui-select/dist/select.min',
     'angularanimate': 'bower_components/angular-animate/angular-animate.min',
     'd3': 'bower_components/d3/d3.min',
     'domReady': 'bower_components/requirejs-domready/domReady',
+    'error-reporting': 'bower_components/error-reporting/errorReportingDirective',
     'foundation': 'bower_components/foundation/js/foundation.min',
     'gemtc-web': 'bower_components/gemtc-web/app/js',
     'jQuery': 'bower_components/jquery/dist/jquery.min',
@@ -24,7 +26,6 @@ require.config({
     'nvd3': 'bower_components/nvd3/build/nv.d3.min',
     'underscore': 'bower_components/underscore/underscore-min',
     'help-popup': 'bower_components/help-popup/help-directive',
-    'angular-patavi-client': 'bower_components/angular-patavi-client/patavi'
   },
   baseUrl: 'app/js',
   shim: {
@@ -49,7 +50,10 @@ require.config({
       deps: ['angular']
     },
     'help-popup': {
-          deps: ['angular']
+      deps: ['angular']
+    },
+    'error-reporting': {
+      deps: ['angular']
     },
     'angular-resource': {
       deps: ['angular'],
