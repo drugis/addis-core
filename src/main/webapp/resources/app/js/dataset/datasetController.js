@@ -82,7 +82,13 @@ define(['lodash'],
           $scope.currentRevision = _.find(historyItems, function(item) {
             return item.uri.lastIndexOf($stateParams.versionUuid) > 0;
           });
-          $scope.currentRevision.isHead = $scope.currentRevision.historyOrder === 0;
+          if($scope.currentRevision.historyOrder === 0) {
+            $scope.currentRevision.isHead = true;
+            // turns out its the head verion now we have the version information
+            $scope.isHeadView = true;
+          }else {
+            $scope.currentRevision.isHead = false;
+          }
         }
 
         $scope.isEditingAllowed = isEditingAllowed();
