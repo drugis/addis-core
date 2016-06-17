@@ -8,19 +8,23 @@ public class Measurement {
   private URI variableUri;
   private URI variableConceptUri;
   private URI armUri;
+  private URI measurementTypeURI;
   private Integer sampleSize;
   private Integer rate;
   private Double stdDev;
   private Double mean;
 
+
+
   public Measurement() {
   }
 
-  public Measurement(URI studyUid, URI variableUri, URI variableConceptUri, URI armUri, Integer sampleSize, Integer rate, Double stdDev, Double mean) {
+  public Measurement(URI studyUid, URI variableUri, URI variableConceptUri, URI armUri, URI measurementTypeURI,Integer sampleSize, Integer rate, Double stdDev, Double mean) {
     this.studyUid = studyUid;
     this.variableUri = variableUri;
     this.variableConceptUri = variableConceptUri;
     this.armUri = armUri;
+    this.measurementTypeURI = measurementTypeURI;
     this.sampleSize = sampleSize;
     this.rate = rate;
     this.stdDev = stdDev;
@@ -41,6 +45,10 @@ public class Measurement {
 
   public URI getArmUri() {
     return armUri;
+  }
+
+  public URI getMeasurementTypeURI() {
+    return measurementTypeURI;
   }
 
   public Integer getSampleSize() {
@@ -70,6 +78,7 @@ public class Measurement {
     if (!variableUri.equals(that.variableUri)) return false;
     if (!variableConceptUri.equals(that.variableConceptUri)) return false;
     if (!armUri.equals(that.armUri)) return false;
+    if (!measurementTypeURI.equals(that.getMeasurementTypeURI())) return false;
     if (sampleSize != null ? !sampleSize.equals(that.sampleSize) : that.sampleSize != null) return false;
     if (rate != null ? !rate.equals(that.rate) : that.rate != null) return false;
     if (stdDev != null ? !stdDev.equals(that.stdDev) : that.stdDev != null) return false;
@@ -83,6 +92,7 @@ public class Measurement {
     result = 31 * result + variableUri.hashCode();
     result = 31 * result + variableConceptUri.hashCode();
     result = 31 * result + armUri.hashCode();
+    result = 31 * result + measurementTypeURI.hashCode();
     result = 31 * result + (sampleSize != null ? sampleSize.hashCode() : 0);
     result = 31 * result + (rate != null ? rate.hashCode() : 0);
     result = 31 * result + (stdDev != null ? stdDev.hashCode() : 0);

@@ -81,6 +81,10 @@
       "type": "uri",
       "value": "http:\/\/trials.drugis.org\/instances\/7f68f06a-2683-476a-b9bc-6f470abd49ad"
     },
+    "measurementType": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/ontology#dichotomous"
+    },
     "fixedDoseUnitLabel": {
       "type": "literal",
       "value": "milligram"
@@ -173,6 +177,10 @@
       "type": "uri",
       "value": "http:\/\/trials.drugis.org\/instances\/82ef04cc-36dc-4caf-ac62-a4fa1c3ac610"
     },
+    "measurementType": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/ontology#dichotomous"
+    },
     "fixedDoseUnitLabel": {
       "type": "literal",
       "value": "milligram"
@@ -264,6 +272,10 @@
     "arm": {
       "type": "uri",
       "value": "http:\/\/trials.drugis.org\/instances\/87c8f342-834b-4b26-ab69-0e68e81f4589"
+    },
+    "measurementType": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/ontology#dichotomous"
     },
     "fixedDoseUnitLabel": {
       "type": "literal",
@@ -365,6 +377,10 @@
       "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#duration",
       "type": "typed-literal",
       "value": "P1D"
+    },
+    "measurementType": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/ontology#dichotomous"
     }
   },
   {
@@ -457,6 +473,10 @@
       "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#duration",
       "type": "typed-literal",
       "value": "P1D"
+    },
+    "measurementType": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/ontology#dichotomous"
     }
   },
   {
@@ -572,6 +592,10 @@
       "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#double",
       "type": "typed-literal",
       "value": "1.572913e+01"
+    },
+    "measurementType": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/ontology#dichotomous"
     }
   },
   {
@@ -687,6 +711,10 @@
       "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#double",
       "type": "typed-literal",
       "value": "1.572128e+01"
+    },
+    "measurementType": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/ontology#dichotomous"
     }
   },
   {
@@ -802,6 +830,10 @@
       "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#double",
       "type": "typed-literal",
       "value": "1.572511e+01"
+    },
+    "measurementType": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/ontology#dichotomous"
     }
   },
   {
@@ -917,6 +949,10 @@
       "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#double",
       "type": "typed-literal",
       "value": "1.572877e+01"
+    },
+    "measurementType": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/ontology#dichotomous"
     }
   },
   {
@@ -1009,6 +1045,10 @@
       "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#duration",
       "type": "typed-literal",
       "value": "P1D"
+    },
+    "measurementType": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/ontology#dichotomous"
     }
   },
   {
@@ -1101,6 +1141,10 @@
       "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#duration",
       "type": "typed-literal",
       "value": "P1D"
+    },
+    "measurementType": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/ontology#dichotomous"
     }
   },
   {
@@ -1193,6 +1237,10 @@
       "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#duration",
       "type": "typed-literal",
       "value": "P1D"
+    },
+    "measurementType": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/ontology#dichotomous"
     }
   },
   {
@@ -1285,6 +1333,10 @@
       "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#duration",
       "type": "typed-literal",
       "value": "P1D"
+    },
+    "measurementType": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/ontology#dichotomous"
     }
   },
   {
@@ -1400,6 +1452,10 @@
       "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#double",
       "type": "typed-literal",
       "value": "8.300000e-01"
+    },
+    "measurementType": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/ontology#dichotomous"
     }
   },
   {
@@ -1515,6 +1571,10 @@
       "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#double",
       "type": "typed-literal",
       "value": "8.300000e-01"
+    },
+    "measurementType": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/ontology#dichotomous"
     }
   },
   {
@@ -1630,6 +1690,10 @@
       "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#double",
       "type": "typed-literal",
       "value": "8.400000e-01"
+    },
+    "measurementType": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/ontology#dichotomous"
     }
   },
   {
@@ -1745,6 +1809,10 @@
       "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#double",
       "type": "typed-literal",
       "value": "8.400000e-01"
+    },
+    "measurementType": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/ontology#dichotomous"
     }
   },
   {
@@ -1860,6 +1928,10 @@
       "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#double",
       "type": "typed-literal",
       "value": "8.500000e-01"
+    },
+    "measurementType": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/ontology#dichotomous"
     }
   },
   {
@@ -1975,6 +2047,10 @@
       "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#double",
       "type": "typed-literal",
       "value": "8.500000e-01"
+    },
+    "measurementType": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/ontology#dichotomous"
     }
   },
   {
@@ -2090,6 +2166,10 @@
       "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#double",
       "type": "typed-literal",
       "value": "1.613300e+01"
+    },
+    "measurementType": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/ontology#dichotomous"
     }
   },
   {
@@ -2205,6 +2285,10 @@
       "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#double",
       "type": "typed-literal",
       "value": "1.614386e+01"
+    },
+    "measurementType": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/ontology#dichotomous"
     }
   },
   {
@@ -2320,6 +2404,10 @@
       "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#double",
       "type": "typed-literal",
       "value": "1.613755e+01"
+    },
+    "measurementType": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/ontology#dichotomous"
     }
   }
 ]

@@ -1,8 +1,12 @@
 'use strict';
 define(['lodash', 'angular'], function(_, angular) {
-  var dependencies = ['AnalysisService'];
+  var dependencies = ['$filter', 'AnalysisService'];
 
-  var NetworkMetaAnalysisService = function(AnalysisService) {
+  var NetworkMetaAnalysisService = function($filter, AnalysisService) {
+
+    var CONTINUOUS_TYPE = 'http://trials.drugis.org/ontology#continuous';
+    var DICHOTOMOUS_TYPE = 'http://trials.drugis.org/ontology#dichotomous';
+    var CATEGORICAL_TYPE = 'http://trials.drugis.org/ontology#categorical';
 
     function sortTableByStudyAndIntervention(table) {
       // sort table by studies and interventions
@@ -136,10 +140,15 @@ define(['lodash', 'angular'], function(_, angular) {
           }
 
           var outcomeMeasurement = getOutcomeMeasurement(analysis, trialDataArm);
-          row.rate = outcomeMeasurement.rate;
-          row.mu = outcomeMeasurement.mean;
-          row.sigma = outcomeMeasurement.stdDev;
-          row.sampleSize = outcomeMeasurement.sampleSize;
+          row.measurementType  = getRowMeasurementType(outcomeMeasurement);
+          row.rate = toTableLabel(outcomeMeasurement, 'rate');
+          row.mu = toTableLabel(outcomeMeasurement, 'mean');
+          var sigma = toTableLabel(outcomeMeasurement, 'stdDev');
+          if(sigma !== 'NA') {
+            sigma = $filter('number')(sigma, 3);
+          }
+          row.sigma = sigma ;
+          row.sampleSize = toTableLabel(outcomeMeasurement, 'sampleSize');
           studyRows.push(row);
         });
         studyRows = studyRows.map(function(studyRow) {
@@ -152,6 +161,40 @@ define(['lodash', 'angular'], function(_, angular) {
 
       });
       return rows;
+    }
+
+    function getRowMeasurementType(measurement) {
+      var type = measurement.measurementTypeURI;
+      return type.slice(type.lastIndexOf('#')+1); // strip of http://blabla/ontology#
+    }
+
+    function toTableLabel(measurement, field) {
+      var value = measurement[field];
+      var type = measurement.measurementTypeURI;
+      var isMissing = isMissingValue(value, field, type);
+      return isMissing ? 'NA' : value;
+    }
+
+    function isMissingValue(value, field, type) {
+      if(value !== null && value !== undefined){
+        // has some value ( might be '0', therefore it cant be missing
+        return false;
+      }
+      if(type === CONTINUOUS_TYPE) {
+        if(field === 'mean' || field === 'stdDev' || field === 'sampleSize'){
+          return true;
+        }
+      }
+      if(type === DICHOTOMOUS_TYPE) {
+        if(field === 'rate' || field === 'sampleSize'){
+          return true;
+        }
+      }
+      if(type === CATEGORICAL_TYPE) {
+        //todo
+        return false;
+      }
+      return false;
     }
 
     function countMatchedInterventions(study) {
@@ -315,12 +358,6 @@ define(['lodash', 'angular'], function(_, angular) {
       }, []);
     }
 
-    function isArmIncluded(analysis, trialDataArm) {
-      return !_.find(analysis.excludedArms, function(exclusion) {
-        return exclusion.trialverseUid === trialDataArm.uri;
-      });
-    }
-
     function doesModelHaveAmbiguousArms(trialDataStudies, analysis) {
       return _.find(trialDataStudies, function(study) {
         return _.find(analysis.interventionInclusions, function(inclusion) {
@@ -376,7 +413,7 @@ define(['lodash', 'angular'], function(_, angular) {
     }
 
 
-    function cleanUpExcludedArms(excludedIntervention, analysis, trialDataStudies, interventions) {
+    function cleanUpExcludedArms(excludedIntervention, analysis, trialDataStudies) {
       return _.reject(analysis.excludedArms, function(armExclusion) {
         return _.find(trialDataStudies, function(study) {
           var armsMatchingExcludedIntervention = _.find(study.trialDataArms, function(arm) {

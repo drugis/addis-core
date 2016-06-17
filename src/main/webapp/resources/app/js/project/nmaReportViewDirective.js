@@ -33,11 +33,6 @@ define(['lodash'], function(_) {
           analysisId: scope.analysis.id
         }).$promise;
 
-        scope.problem = ProblemResource.get({
-          analysisId: scope.analysis.id,
-          projectId: scope.project.id
-        });
-
         var primaryModelDefer = $q.defer();
         scope.primaryModelPromise = primaryModelDefer.promise;
 
@@ -45,6 +40,15 @@ define(['lodash'], function(_) {
         scope.resultsPromise = resultsDefer.promise;
 
         modelsPromise.then(function(models) {
+
+          // only load problem is a model has been creaded, else is may not be possible to create a vaid model
+          if (models.length) {
+            scope.problem = ProblemResource.get({
+              analysisId: scope.analysis.id,
+              projectId: scope.project.id
+            });
+          }
+
           scope.primaryModel = _.find(models, function(model) {
             return model.id === scope.analysis.primaryModel;
           });

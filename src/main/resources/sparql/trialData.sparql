@@ -20,6 +20,7 @@ SELECT DISTINCT
 ?outcomeTypeUri
 ?outcomeInstance
 ?outcomeTypeUid
+?measurementType
 ?outcomeInstanceLabel
 ?arm
 ?armLabel
@@ -54,7 +55,8 @@ WHERE {
       a ?outcomeTypeUid ;
       rdfs:label ?outcomeInstanceLabel ;
       ontology:of_variable [
-        owl:sameAs ?outcomeTypeUri
+        owl:sameAs ?outcomeTypeUri ;
+        ontology:measurementType ?measurementType
       ] .
     $interventionUnionString .
   }

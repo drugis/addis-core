@@ -1,5 +1,7 @@
 define(['angular', 'angular-mocks', 'services'], function() {
 
+  var CONTINUOUS_TYPE = 'http://trials.drugis.org/ontology#continuous';
+
   var exampleStudies = [{
     'studyUri': 'http://trials.drugis.org/graphs/favaUuid',
     'name': 'Fava et al, 2002',
@@ -8,6 +10,7 @@ define(['angular', 'angular-mocks', 'services'], function() {
       'name': 'Paroxetine',
       'drugInstance': 'http://trials.drugis.org/instances/parox-instance',
       'measurements': [{
+        'measurementTypeURI': CONTINUOUS_TYPE,
         'studyUid': 'http://trials.drugis.org/graphs/favaUuid',
         'variableUri': 'http://trials.drugis.org/instances/hamd-instance',
         'variableConceptUri': 'variableConceptUri',
@@ -27,6 +30,7 @@ define(['angular', 'angular-mocks', 'services'], function() {
       'name': 'Sertraline',
       'drugInstance': 'http://trials.drugis.org/instances/sertra-instance',
       'measurements': [{
+        'measurementTypeURI': CONTINUOUS_TYPE,
         'studyUid': 'http://trials.drugis.org/graphs/favaUuid',
         'variableUri': 'http://trials.drugis.org/instances/hamd-instance',
         'variableConceptUri': 'variableConceptUri',
@@ -46,6 +50,7 @@ define(['angular', 'angular-mocks', 'services'], function() {
       'name': 'Fluoxetine',
       'drugInstance': 'http://trials.drugis.org/instances/fluoxInstance',
       'measurements': [{
+        'measurementTypeURI': CONTINUOUS_TYPE,
         'studyUid': 'http://trials.drugis.org/graphs/favaUuid',
         'variableUri': 'http://trials.drugis.org/instances/hamd-instance',
         'variableConceptUri': 'variableConceptUri',
@@ -79,6 +84,7 @@ define(['angular', 'angular-mocks', 'services'], function() {
       'name': 'Azilsartan Medoxomil 40 mg QD',
       'drugInstance': '98',
       'measurements': [{
+        'measurementTypeURI': CONTINUOUS_TYPE,
         'mean': -14.47,
         'armUri': '144',
         'variableUri': 698,
@@ -98,6 +104,7 @@ define(['angular', 'angular-mocks', 'services'], function() {
       'study': '44',
       'drugInstance': '98',
       'measurements': [{
+        'measurementTypeURI': CONTINUOUS_TYPE,
         'mean': -17.58,
         'armUri': '145',
         'variableUri': '698',
@@ -115,6 +122,7 @@ define(['angular', 'angular-mocks', 'services'], function() {
       'name': 'Olmesartan 40 mg QD',
       'drugInstance': '99',
       'measurements': [{
+        'measurementTypeURI': CONTINUOUS_TYPE,
         'mean': -14.87,
         'armUri': '146',
         'variableUri': '698',
@@ -134,6 +142,7 @@ define(['angular', 'angular-mocks', 'services'], function() {
       'name': 'Placebo QD',
       'drugInstance': '100',
       'measurements': [{
+        'measurementTypeURI': CONTINUOUS_TYPE,
         'mean': -2.06,
         'armUri': '147',
         'variabletUri': '698',
@@ -151,6 +160,7 @@ define(['angular', 'angular-mocks', 'services'], function() {
       'name': 'Azilsartan Medoxomil 20 mg QD',
       'drugInstance': '98',
       'measurements': [{
+        'measurementTypeURI': CONTINUOUS_TYPE,
         'mean': -14.28,
         'armUri': '143',
         'variableUri': 698,
@@ -172,6 +182,7 @@ define(['angular', 'angular-mocks', 'services'], function() {
       'name': 'Azilsartan Medoxomil 40 mg QD',
       'drugInstance': '101',
       'measurements': [{
+        'measurementTypeURI': CONTINUOUS_TYPE,
         'mean': -9.51,
         'armUri': '149',
         'variableUri': '731',
@@ -190,6 +201,7 @@ define(['angular', 'angular-mocks', 'services'], function() {
       'name': 'Azilsartan Medoxomil 80 mg QD',
       'drugInstance': '101',
       'measurements': [{
+        'measurementTypeURI': CONTINUOUS_TYPE,
         'mean': -9.58,
         'armUri': '150',
         'variableUri': '731',
@@ -208,6 +220,7 @@ define(['angular', 'angular-mocks', 'services'], function() {
       'name': 'Placebo QD',
       'drugInstance': '102',
       'measurements': [{
+        'measurementTypeURI': CONTINUOUS_TYPE,
         'mean': -3.04,
         'armUri': 151,
         'variableUri': 731,
@@ -229,6 +242,7 @@ define(['angular', 'angular-mocks', 'services'], function() {
       'name': 'Olmesartan 40 mg QD',
       'drugInstance': '105',
       'measurements': [{
+        'measurementTypeURI': CONTINUOUS_TYPE,
         'mean': -13.2,
         'armUri': '156',
         'variableUri': '758',
@@ -246,6 +260,7 @@ define(['angular', 'angular-mocks', 'services'], function() {
       'name': 'Valsartan 320 mg QD',
       'drugInstance': '104',
       'measurements': [{
+        'measurementTypeURI': CONTINUOUS_TYPE,
         'mean': -11.31,
         'armUri': '155',
         'variableUri': '758',
@@ -263,6 +278,7 @@ define(['angular', 'angular-mocks', 'services'], function() {
       'name': 'Placebo QD',
       'drugInstance': '106',
       'measurements': [{
+        'measurementTypeURI': CONTINUOUS_TYPE,
         'mean': -1.83,
         'armUri': '157',
         'variableUri': '758',
@@ -280,6 +296,7 @@ define(['angular', 'angular-mocks', 'services'], function() {
       'name': 'Azilsartan Medoxomil 80 mg QD',
       'drugInstance': '103',
       'measurements': [{
+        'measurementTypeURI': CONTINUOUS_TYPE,
         'realValue': -16.74,
         'armUri': 154,
         'variableUri': 758,
@@ -296,6 +313,7 @@ define(['angular', 'angular-mocks', 'services'], function() {
       'name': 'Azilsartan Medoxomil 40 mg QD',
       'drugInstance': '103',
       'measurements': [{
+        'measurementTypeURI': CONTINUOUS_TYPE,
         'mean': -16.38,
         'armUri': '153',
         'variableUri': '758',
@@ -448,9 +466,10 @@ define(['angular', 'angular-mocks', 'services'], function() {
             included: true,
             intervention: 'intervention 2',
             interventionId: 2,
+            measurementType: 'continuous',
             rate: 64,
-            mu: null,
-            sigma: null,
+            mu: 'NA',
+            sigma: 'NA',
             sampleSize: 96,
             numberOfMatchedInterventions: 3,
             numberOfIncludedInterventions: 3,
@@ -473,9 +492,10 @@ define(['angular', 'angular-mocks', 'services'], function() {
             included: true,
             intervention: 'intervention 3',
             interventionId: 3,
+            measurementType: 'continuous',
             rate: 70,
-            mu: null,
-            sigma: null,
+            mu: 'NA',
+            sigma: 'NA',
             sampleSize: 96,
             numberOfMatchedInterventions: 3,
             numberOfIncludedInterventions: 3,
@@ -498,9 +518,10 @@ define(['angular', 'angular-mocks', 'services'], function() {
             intervention: 'intervention 1',
             interventionId: 1,
             interventionRowSpan: 1,
+            measurementType: 'continuous',
             rate: 57,
-            mu: null,
-            sigma: null,
+            mu: 'NA',
+            sigma: 'NA',
             sampleSize: 92,
             firstInterventionRow: true,
             firstStudyRow: true,

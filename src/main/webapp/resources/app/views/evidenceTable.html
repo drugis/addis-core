@@ -10,10 +10,10 @@
                 </th>
                 <th rowspan="2">Interventions</th>
                 <th rowspan="2">Arms</th>
-                <th rowspan="2" ng-show="trialData[0].rate !== null">Subjects with outcome</th>
-                <th rowspan="2" ng-show="trialData[0].mu !== null">&mu;</th>
-                <th rowspan="2" ng-show="trialData[0].sigma !== null">&sigma;</th>
-                <th rowspan="2" ng-show="trialData[0].sampleSize !== null">N</th>
+                <th rowspan="2" ng-show="trialData[0].measurementType === 'dichotomous'">Subjects with outcome</th>
+                <th rowspan="2" ng-show="trialData[0].measurementType === 'continuous'">&mu;</th>
+                <th rowspan="2" ng-show="trialData[0].measurementType === 'continuous'">&sigma;</th>
+                <th rowspan="2" >N</th>
             </tr>
             <tr>
                 <th ng-repeat="covariate in trialData[0].covariatesColumns">{{covariate.headerTitle}}</th>
@@ -57,19 +57,17 @@
                                   ng-model="dataRow.included" ng-change="changeArmExclusion(dataRow)">
                         {{dataRow.arm}}</label>
                 </td>
-                <td ng-show="dataRow.rate !== null" ng-class="{undefined:dataRow.intervention === 'unmatched'}"
+                <td ng-show="dataRow.measurementType === 'dichotomous'" ng-class="{undefined:dataRow.intervention === 'unmatched'}"
                     class="text-center">
                     {{dataRow.rate}}
                 </td>
-                <td ng-show="trialData[0].mu !== null" class="large-2"
+                <td ng-show="dataRow.measurementType === 'continuous'" class="large-2"
                     ng-class="{undefined:dataRow.intervention === 'unmatched'}" class="text-center">{{dataRow.mu}}
                 </td>
-                <td ng-show="trialData[0].sigma !== null" class="large-2"
-                    ng-class="{undefined:dataRow.intervention === 'unmatched'}" class="text-center">{{dataRow.sigma |
-                    number: 3}}
+                <td ng-show="dataRow.measurementType === 'continuous'" class="large-2"
+                    ng-class="{undefined:dataRow.intervention === 'unmatched'}" class="text-center">{{dataRow.sigma}}
                 </td>
-                <td ng-show="trialData[0].sampleSize !== null"
-                    ng-class="{undefined:dataRow.intervention === 'unmatched'}" class="text-center">
+                <td ng-class="{undefined:dataRow.intervention === 'unmatched'}" class="text-center">
                     {{dataRow.sampleSize}}
                 </td>
             </tr>
