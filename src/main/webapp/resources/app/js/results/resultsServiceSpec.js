@@ -488,8 +488,8 @@ define(['angular-mocks'], function(angularMocks) {
         'count': 6
       };
 
-      var resultsToLeave = [result1, result2, resultNonConformant];
-      var resultsToBeCleaned = [result3, result4, result5];
+      var resultsToLeave = [result1, resultNonConformant];
+      var resultsToBeCleaned = [result2, result3, result4, result5];
 
 
       var study = {

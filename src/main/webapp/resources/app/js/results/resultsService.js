@@ -126,8 +126,9 @@ define(['angular', 'lodash'], function(angular, _) {
         var study;
         var hasArmMap = {};
         var hasGroupMap = {};
-        var momentMap = {};
+        var isMomentMap = {};
         var hasOutcomeMap = {};
+        var isMeasurementOnOutcome = {};
 
         _.each(graph, function(node) {
           if (isStudyNode(node)) {
@@ -135,7 +136,7 @@ define(['angular', 'lodash'], function(angular, _) {
           }
 
           if (isMoment(node)) {
-            momentMap[node['@id']] = true;
+            isMomentMap[node['@id']] = true;
           }
         });
 
@@ -158,10 +159,28 @@ define(['angular', 'lodash'], function(angular, _) {
           return accum;
         }, hasOutcomeMap);
 
+        // add al measurements that are selected on at least one outcome to the isMeasurementOnOutcome map
+        isMeasurementOnOutcome =_.reduce(study.has_outcome, function(accum, outcome){
+          var measuredAtList;
+          if (!Array.isArray(outcome.is_measured_at)) {
+            measuredAtList = [outcome.is_measured_at];
+          } else {
+            measuredAtList = outcome.is_measured_at || [];
+          }
+          isMeasurementOnOutcome = _.reduce(measuredAtList, function(accum, measurementMomentUri) {
+            accum[measurementMomentUri] = true;
+            return accum;
+          }, isMeasurementOnOutcome);
+          return accum;
+        }, isMeasurementOnOutcome);
+
         // now its time for cleaning
         var filteredGraph = _.filter(graph, function(node) {
           if (isResult(node)) {
-            return (hasArmMap[node.of_group] || hasGroupMap[node.of_group]) && momentMap[node.of_moment] && hasOutcomeMap[node.of_outcome];
+            return (hasArmMap[node.of_group] || hasGroupMap[node.of_group]) &&
+              isMomentMap[node.of_moment] &&
+              hasOutcomeMap[node.of_outcome] &&
+              isMeasurementOnOutcome[node.of_moment];
           } else {
             return true;
           }
