@@ -152,15 +152,13 @@ define(['lodash'], function(_) {
     function resetScales() {
       ProblemResource.get($stateParams).$promise.then(function(problem) {
         ScalesService.getObservedScales($scope, problem).then(function(result) {
-          //    console.log('PataviService.run succes');
-          //    console.log('result = ' + JSON.stringify(result));
           var includedAlternatives = _.filter($scope.alternatives, function(alternative){
             return alternative.isIncluded;
           });
           $scope.outcomesWithAnalyses = MetaBenefitRiskService.addScales($scope.outcomesWithAnalyses,
             includedAlternatives, result);
         }, function() {
-          console.log('PataviService.run error');
+          console.log('ScalesService.getObservedScales error');
         });
       });
     }

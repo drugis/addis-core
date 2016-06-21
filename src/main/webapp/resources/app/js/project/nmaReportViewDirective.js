@@ -71,7 +71,7 @@ define(['lodash'], function(_) {
             return;
           }
 
-          PataviService.listen(model.taskUrl.replace(/^https/, 'wss') + '/updates')
+          PataviService.listen(model.taskUrl)
             .then(function(result) {
                 scope.result = result;
                 resultsDefer.resolve(result);
