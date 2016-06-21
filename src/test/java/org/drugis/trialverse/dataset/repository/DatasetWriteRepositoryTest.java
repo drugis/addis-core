@@ -4,9 +4,12 @@ import org.drugis.addis.security.Account;
 import org.drugis.addis.security.ApiKey;
 import org.drugis.addis.security.repository.AccountRepository;
 import org.drugis.addis.util.WebConstants;
+import org.drugis.trialverse.dataset.exception.EditDatasetException;
 import org.drugis.trialverse.dataset.factory.JenaFactory;
+import org.drugis.trialverse.dataset.model.VersionMapping;
 import org.drugis.trialverse.dataset.repository.impl.DatasetWriteRepositoryImpl;
 import org.drugis.trialverse.security.TrialversePrincipal;
+import org.drugis.trialverse.util.Namespaces;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -20,8 +23,10 @@ import org.springframework.security.web.authentication.preauth.PreAuthenticatedA
 import org.springframework.web.client.RestTemplate;
 
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.security.Principal;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.*;
 
@@ -47,12 +52,15 @@ public class DatasetWriteRepositoryTest {
   @InjectMocks
   DatasetWriteRepository datasetWriteRepository;
 
+  private ApiKey apiKey = mock(ApiKey.class);
+  Account account = new Account("username", "john", "doe", "foo@bar.com");
+  Principal principalMock = new PreAuthenticatedAuthenticationToken(account, apiKey);
+  TrialversePrincipal owner = new TrialversePrincipal(principalMock);
 
 
   @Before
   public void setUp() {
     datasetWriteRepository = new DatasetWriteRepositoryImpl();
-
     MockitoAnnotations.initMocks(this);
 
     when(webConstants.getTriplestoreBaseUri()).thenReturn(DATASET_URI);
@@ -67,10 +75,6 @@ public class DatasetWriteRepositoryTest {
 
   @Test
   public void testCreateDataset() throws Exception {
-    ApiKey apiKey = mock(ApiKey.class);
-    Account account = new Account("username", "john", "doe", "foo@bar.com");
-    Principal principalMock = new PreAuthenticatedAuthenticationToken(account, apiKey);
-    TrialversePrincipal owner = new TrialversePrincipal(principalMock);
     String title = "my-title";
     String description = "description";
     HttpHeaders httpHeaders = new HttpHeaders();
@@ -88,10 +92,6 @@ public class DatasetWriteRepositoryTest {
 
   @Test
   public void testCreateDatasetWithNullDescription() throws Exception {
-    Account account = new Account("username", "john", "doe", "foo@bar.com");
-    ApiKey apiKey = mock(ApiKey.class);
-    Principal principalMock = new PreAuthenticatedAuthenticationToken(account, apiKey);
-    TrialversePrincipal owner = new TrialversePrincipal(principalMock);
     String title = "my-title";
     String description = null;
     HttpHeaders httpHeaders = new HttpHeaders();
@@ -106,4 +106,27 @@ public class DatasetWriteRepositoryTest {
     verify(webConstants).getTriplestoreBaseUri();
     verify(accountRepository, times(2)).findAccountByUsername(owner.getUserName());
   }
+
+  @Test
+  public void testEditDataset() throws URISyntaxException, EditDatasetException {
+    String datasetUuid = "datasetUuid";
+    String datasetUri = Namespaces.DATASET_NAMESPACE + datasetUuid;
+    String newTitle = "new title";
+
+    HttpHeaders headers = new HttpHeaders();
+    headers.add(WebConstants.X_EVENT_SOURCE_VERSION, "newVersion");
+    ResponseEntity responseEntity = new ResponseEntity(headers, HttpStatus.OK);
+
+    VersionMapping mapping = new VersionMapping("versionedUrl", account.getEmail(), datasetUri);
+
+    when(versionMappingRepository.getVersionMappingByDatasetUrl(URI.create(datasetUri))).thenReturn(mapping);
+    when(restTemplate.postForEntity(anyString(), anyObject(), any(Class.class))).thenReturn(responseEntity);
+
+    String newVersion = datasetWriteRepository.editDataset(owner, datasetUuid, newTitle, null);
+
+    assertEquals("newVersion", newVersion);
+    verify(accountRepository).findAccountByUsername(owner.getUserName());
+  }
+
+
 }

@@ -4,12 +4,14 @@ import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpException;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.riot.RDFLanguages;
+import org.apache.jena.riot.WebContent;
 import org.drugis.addis.base.AbstractAddisCoreController;
 import org.drugis.addis.security.Account;
 import org.drugis.addis.security.repository.AccountRepository;
 import org.drugis.addis.util.WebConstants;
 import org.drugis.trialverse.dataset.controller.command.DatasetCommand;
 import org.drugis.trialverse.dataset.exception.CreateDatasetException;
+import org.drugis.trialverse.dataset.exception.EditDatasetException;
 import org.drugis.trialverse.dataset.exception.RevisionNotFoundException;
 import org.drugis.trialverse.dataset.factory.JenaFactory;
 import org.drugis.trialverse.dataset.model.Dataset;
@@ -89,7 +91,21 @@ public class DatasetController extends AbstractAddisCoreController {
       response.setStatus(HttpStatus.FORBIDDEN.value());
     }
   }
-  
+  @RequestMapping(path="/{datasetUuid}", method = RequestMethod.POST, consumes = WebContent.contentTypeJSON)
+  public void editDataset(HttpServletResponse response, Principal currentUser,
+                          @RequestBody DatasetCommand datasetCommand, @PathVariable Integer userId,
+                          @PathVariable String datasetUuid) throws URISyntaxException, EditDatasetException {
+    TrialversePrincipal trialversePrincipal = new TrialversePrincipal(currentUser);
+    Account user = accountRepository.findAccountByUsername(trialversePrincipal.getUserName());
+    if (user != null && userId.equals(user.getId())) {
+      String newVersion = datasetWriteRepository.editDataset(trialversePrincipal, datasetUuid, datasetCommand.getTitle(), datasetCommand.getDescription());
+      response.setHeader(WebConstants.X_EVENT_SOURCE_VERSION, newVersion);
+    } else {
+      logger.error("attempted to edit dataset for user that is not the login-user ");
+      response.setStatus(HttpStatus.FORBIDDEN.value());
+    }
+  }
+
   @RequestMapping(value = "/{datasetUUID}", method = RequestMethod.POST, consumes = WebConstants.TRIG)
   @ResponseBody
   public void createDatasetWithContent(
@@ -107,7 +123,7 @@ public class DatasetController extends AbstractAddisCoreController {
       response.setStatus(HttpServletResponse.SC_CREATED);
       response.setHeader("Location", datasetUri.toString());
     } else {
-      logger.error("attempted to created database for user that is not the login-user ");
+      logger.error("attempted to created dataset for user that is not the login-user ");
       response.setStatus(HttpStatus.FORBIDDEN.value());
     }
   }

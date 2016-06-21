@@ -4,8 +4,8 @@ import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-import org.apache.http.HttpException;
 import org.drugis.trialverse.dataset.exception.CreateDatasetException;
+import org.drugis.trialverse.dataset.exception.EditDatasetException;
 import org.drugis.trialverse.security.TrialversePrincipal;
 
 /**
@@ -14,4 +14,5 @@ import org.drugis.trialverse.security.TrialversePrincipal;
 public interface DatasetWriteRepository {
   URI createDataset(String title, String description, TrialversePrincipal owner) throws URISyntaxException, CreateDatasetException;
   URI createOrUpdateDatasetWithContent(InputStream content, String contentType, String trialverseUri, TrialversePrincipal owner, String commitTitle, String commitDescription) throws URISyntaxException, CreateDatasetException;
+  String editDataset(TrialversePrincipal owner, String datasetUuid, String title, String description) throws URISyntaxException, EditDatasetException;
 }

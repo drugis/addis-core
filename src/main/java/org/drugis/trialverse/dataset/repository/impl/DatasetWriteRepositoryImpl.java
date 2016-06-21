@@ -2,19 +2,19 @@ package org.drugis.trialverse.dataset.repository.impl;
 
 
 import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.http.HttpException;
-import org.apache.http.client.HttpClient;
 import org.apache.http.protocol.HTTP;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.riot.RDFLanguages;
+import org.apache.jena.riot.WebContent;
 import org.apache.jena.vocabulary.DCTerms;
 import org.drugis.addis.security.Account;
 import org.drugis.addis.security.repository.AccountRepository;
+import org.drugis.addis.trialverse.service.TriplestoreService;
+import org.drugis.trialverse.dataset.exception.EditDatasetException;
 import org.drugis.trialverse.dataset.factory.JenaFactory;
 import org.drugis.trialverse.dataset.model.VersionMapping;
 import org.drugis.trialverse.dataset.repository.DatasetWriteRepository;
@@ -22,6 +22,7 @@ import org.drugis.trialverse.dataset.repository.VersionMappingRepository;
 import org.drugis.trialverse.dataset.exception.CreateDatasetException;
 import org.drugis.trialverse.security.TrialversePrincipal;
 import org.drugis.addis.util.WebConstants;
+import org.drugis.trialverse.util.Namespaces;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -33,7 +34,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.stereotype.Repository;
-import org.springframework.web.client.HttpMessageConverterExtractor;
 import org.springframework.web.client.RequestCallback;
 import org.springframework.web.client.ResponseExtractor;
 import org.springframework.web.client.RestClientException;
@@ -58,6 +58,9 @@ public class DatasetWriteRepositoryImpl implements DatasetWriteRepository {
 
   public static final String PATH = "/datasets";
   public static final String INITIAL_COMMIT_MESSAGE = "Dataset created through Trialverse";
+  public static final String EDIT_TITLE_MESSAGE = "Edited title.";
+  final static String EDIT_DATASET = TriplestoreService.loadResource("sparql/editDataset.sparql");
+  final static String INSERT_DESCRIPTION = TriplestoreService.loadResource("sparql/insertDescription.sparql");
 
   @Inject
   private WebConstants webConstants;
@@ -129,7 +132,29 @@ public class DatasetWriteRepositoryImpl implements DatasetWriteRepository {
     
     return datasetUri;
   }
-  
+
+  @Override
+  public String editDataset(TrialversePrincipal owner, String datasetUuid, String title, String description) throws URISyntaxException, EditDatasetException {
+    URI datasetUri = URI.create(Namespaces.DATASET_NAMESPACE + datasetUuid);
+    VersionMapping mapping = versionMappingRepository.getVersionMappingByDatasetUrl(datasetUri);
+
+    String editDatasetQuery = EDIT_DATASET.replace("$newTitle", title)
+            .replace("$datasetUri", datasetUri.toString());
+    if(description != null) {
+      editDatasetQuery = editDatasetQuery.concat(INSERT_DESCRIPTION.replace("$newDescription", description).replace("$datasetUri", datasetUri.toString()));
+    }
+    String updateUri = mapping.getVersionedDatasetUri().toString() + "/update";
+    HttpHeaders httpHeaders = createEventSourcingHeaders(owner, EDIT_TITLE_MESSAGE, WebContent.contentTypeSPARQLUpdate);
+
+    HttpEntity<?> requestEntity = new HttpEntity<>(editDatasetQuery, httpHeaders);
+    ResponseEntity<String> response = restTemplate.postForEntity(updateUri, requestEntity, String.class);
+    if(!HttpStatus.OK.equals(response.getStatusCode())) {
+      logger.error("Error updating dataset, triplestore response = " + response.getStatusCode().getReasonPhrase());
+      throw new EditDatasetException();
+    }
+    return response.getHeaders().get(WebConstants.X_EVENT_SOURCE_VERSION).get(0);
+  }
+
   private URI createDataset(TrialversePrincipal owner, String datasetUri, String defaultGraphContent) throws URISyntaxException, CreateDatasetException {
     HttpHeaders httpHeaders = createEventSourcingHeaders(owner, INITIAL_COMMIT_MESSAGE, RDFLanguages.TURTLE.getContentType().getContentType());
     HttpEntity<String> requestEntity = new HttpEntity<>(defaultGraphContent, httpHeaders);
