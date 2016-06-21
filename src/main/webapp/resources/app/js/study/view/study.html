@@ -22,8 +22,7 @@
     <li ng-if="versionUuid"><a ui-sref="versionedDataset({userUid: userUid, datasetUUID: datasetUUID, versionUuid: versionUuid})">Studies</a></li>
     <li ng-if="!versionUuid"><a ui-sref="versionedDataset({userUid: userUid, datasetUUID: datasetUUID})">{{dataset.title}}</a></li>
     <li ng-if="!versionUuid"><a ui-sref="versionedDataset({userUid: userUid, datasetUUID: datasetUUID})">Studies</a></li>
-    <li <a class="current active">{{study.label}}</a>
-    </li>
+    <li><a class="current active">{{study.label}}</a></li>
   </ul>
   <div class="row nav-bar-spacer">
     <div ng-hide="navSettings.isHidden" class="columns large-2 medium-3 show-for-medium-up"
