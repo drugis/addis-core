@@ -124,10 +124,10 @@ define(['angular', 'lodash'], function(angular, _) {
       return StudyService.getJsonGraph().then(function(graph) {
         // first get all the info we need
         var study;
-        var hasArmMap = {};
-        var hasGroupMap = {};
+        var hasArmMap;
+        var hasGroupMap;
         var isMomentMap = {};
-        var hasOutcomeMap = {};
+        var hasOutcomeMap;
         var isMeasurementOnOutcome = {};
 
         _.each(graph, function(node) {
@@ -140,37 +140,36 @@ define(['angular', 'lodash'], function(angular, _) {
           }
         });
 
-        study.has_arm.reduce(function(accum, item) {
+        hasArmMap = study.has_arm.reduce(function(accum, item) {
           accum[item['@id']] = true;
           return accum;
-        }, hasArmMap);
+        }, {});
 
-        study.has_group.reduce(function(accum, item) {
+        hasGroupMap = study.has_group.reduce(function(accum, item) {
           accum[item['@id']] = true;
           return accum;
-        }, hasGroupMap);
+        }, {});
 
         if (study.has_included_population) {
           hasGroupMap[study.has_included_population[0]['@id']] = true;
         }
 
-        study.has_outcome.reduce(function(accum, item) {
+        hasOutcomeMap = study.has_outcome.reduce(function(accum, item) {
           accum[item['@id']] = true;
           return accum;
-        }, hasOutcomeMap);
+        }, {});
 
         // add al measurements that are selected on at least one outcome to the isMeasurementOnOutcome map
-        isMeasurementOnOutcome =_.reduce(study.has_outcome, function(accum, outcome){
+        isMeasurementOnOutcome = _.reduce(study.has_outcome, function(accum, outcome) {
           var measuredAtList;
           if (!Array.isArray(outcome.is_measured_at)) {
             measuredAtList = [outcome.is_measured_at];
           } else {
             measuredAtList = outcome.is_measured_at || [];
           }
-          isMeasurementOnOutcome = _.reduce(measuredAtList, function(accum, measurementMomentUri) {
-            accum[measurementMomentUri] = true;
-            return accum;
-          }, isMeasurementOnOutcome);
+          _.forEach(measuredAtList, function(measurementMomentUri) {
+            isMeasurementOnOutcome[measurementMomentUri] = true;
+          });
           return accum;
         }, isMeasurementOnOutcome);
 
