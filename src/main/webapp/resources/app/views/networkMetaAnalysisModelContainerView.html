@@ -7,9 +7,4 @@
     <li><a ui-sref="networkMetaAnalysis({userUid: userId, projectId: project.id, analysisId: analysis.id})">{{analysis.title}}</a></li>
     <li ng-show="model.title" class="current active">{{model.title}}</li>
 </ul>
- <div ng-if="error" class="row" ng-cloak>
-    <div class="columns">
-        <app-alert type="alert" close="error.close()" error="error"></span></app-alert>
-    </div>
-</div>
 <div ui-view></div>
