@@ -12,6 +12,7 @@ define(['lodash'], function(_) {
     $scope.hasModel = true;
     $scope.tableHasAmbiguousArm = false;
     $scope.hasLessThanTwoInterventions = false;
+    $scope.containsMissingValue = false;
     $scope.analysis = currentAnalysis;
     $scope.project = currentProject;
     $scope.networkGraph = {};
@@ -113,6 +114,7 @@ define(['lodash'], function(_) {
           $scope.tableHasAmbiguousArm = NetworkMetaAnalysisService.doesModelHaveAmbiguousArms(trialverseData, $scope.analysis);
           $scope.hasLessThanTwoInterventions = includedInterventions.length < 2;
           $scope.hasTreatmentOverlap = hasTreatmentOverlap();
+          $scope.containsMissingValue = NetworkMetaAnalysisService.containsMissingValue(trialverseData, $scope.analysis);
           $scope.isModelCreationBlocked = checkCanNotCreateModel();
           $scope.loading.loaded = true;
         });
@@ -181,6 +183,7 @@ define(['lodash'], function(_) {
         $scope.isNetworkDisconnected ||
         $scope.hasLessThanTwoInterventions ||
         $scope.hasTreatmentOverlap ||
+        $scope.containsMissingValue ||
         !$scope.hasIncludedStudies();
     }
     $scope.isModelCreationBlocked = checkCanNotCreateModel();

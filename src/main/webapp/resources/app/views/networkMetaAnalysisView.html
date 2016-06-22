@@ -53,6 +53,7 @@
                 </span>
                 <span class="alert animate-show" ng-show="loading.loaded && hasLessThanTwoInterventions">A least two interventions are needed to perform the analysis.</span>
                 <span id="intervention-overlap-warning" class="alert animate-show" ng-show="loading.loaded && hasTreatmentOverlap">Overlapping interventions detected: please exclude interventions to fix this.</span>
+                <span class="alert animate-show" ng-show="loading.loaded && containsMissingValue">The evidence table contains missing values</span>
             </div>
         </div>
     </div>

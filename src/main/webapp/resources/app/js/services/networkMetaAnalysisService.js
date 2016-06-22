@@ -140,14 +140,14 @@ define(['lodash', 'angular'], function(_, angular) {
           }
 
           var outcomeMeasurement = getOutcomeMeasurement(analysis, trialDataArm);
-          row.measurementType  = getRowMeasurementType(outcomeMeasurement);
+          row.measurementType = getRowMeasurementType(outcomeMeasurement);
           row.rate = toTableLabel(outcomeMeasurement, 'rate');
           row.mu = toTableLabel(outcomeMeasurement, 'mean');
           var sigma = toTableLabel(outcomeMeasurement, 'stdDev');
-          if(sigma !== 'NA') {
+          if (sigma !== 'NA') {
             sigma = $filter('number')(sigma, 3);
           }
-          row.sigma = sigma ;
+          row.sigma = sigma;
           row.sampleSize = toTableLabel(outcomeMeasurement, 'sampleSize');
           studyRows.push(row);
         });
@@ -165,7 +165,7 @@ define(['lodash', 'angular'], function(_, angular) {
 
     function getRowMeasurementType(measurement) {
       var type = measurement.measurementTypeURI;
-      return type.slice(type.lastIndexOf('#')+1); // strip of http://blabla/ontology#
+      return type.slice(type.lastIndexOf('#') + 1); // strip of http://blabla/ontology#
     }
 
     function toTableLabel(measurement, field) {
@@ -176,25 +176,48 @@ define(['lodash', 'angular'], function(_, angular) {
     }
 
     function isMissingValue(value, field, type) {
-      if(value !== null && value !== undefined){
+      if (value !== null && value !== undefined) {
         // has some value ( might be '0', therefore it cant be missing
         return false;
       }
-      if(type === CONTINUOUS_TYPE) {
-        if(field === 'mean' || field === 'stdDev' || field === 'sampleSize'){
+      if (type === CONTINUOUS_TYPE) {
+        if (field === 'mean' || field === 'stdDev' || field === 'sampleSize') {
           return true;
         }
       }
-      if(type === DICHOTOMOUS_TYPE) {
-        if(field === 'rate' || field === 'sampleSize'){
+      if (type === DICHOTOMOUS_TYPE) {
+        if (field === 'rate' || field === 'sampleSize') {
           return true;
         }
       }
-      if(type === CATEGORICAL_TYPE) {
+      if (type === CATEGORICAL_TYPE) {
         //todo
         return false;
       }
       return false;
+    }
+
+    function containsMissingValue(trialDataStudies, analysis) {
+      // setup maps
+      var excludedArmsByUri = buildExcludedArmsMap(analysis.excludedArms);
+
+      // look for single missingValue
+      return _.find(trialDataStudies, function(trialDataStudy) {
+        return _.find(trialDataStudy.trialDataArms, function(trialDataArm) {
+          if (excludedArmsByUri[trialDataArm.uri]) {
+            return false; //excluded arm, therefore missing values don't count
+          }
+          if (trialDataArm.matchedProjectInterventionIds.length < 1) {
+            return false; //no matched interventions, therefore missing values don't count
+          }
+          var measurement = getOutcomeMeasurement(analysis, trialDataArm);
+          var measurementType = measurement.measurementTypeURI;
+          return isMissingValue(measurement['mean'], 'mean', measurementType) ||
+            isMissingValue(measurement['stdDev'], 'stdDev', measurementType) ||
+            isMissingValue(measurement['rate'], 'rate', measurementType) ||
+            isMissingValue(measurement['sampleSize'], 'sampleSize', measurementType);
+        });
+      });
     }
 
     function countMatchedInterventions(study) {
@@ -494,7 +517,8 @@ define(['lodash', 'angular'], function(_, angular) {
       cleanUpExcludedArms: cleanUpExcludedArms,
       changeCovariateInclusion: changeCovariateInclusion,
       buildOverlappingTreatmentMap: buildOverlappingTreatmentMap,
-      getIncludedInterventions: getIncludedInterventions
+      getIncludedInterventions: getIncludedInterventions,
+      containsMissingValue: containsMissingValue
     };
   };
   return dependencies.concat(NetworkMetaAnalysisService);

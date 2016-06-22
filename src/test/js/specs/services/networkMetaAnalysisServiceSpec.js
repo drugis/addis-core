@@ -898,5 +898,57 @@ define(['angular', 'angular-mocks', 'services'], function() {
       }));
     });
 
+    describe('containsMissingValue', function() {
+      beforeEach(module('addis.services'));
+
+      it('should find the first missing value, if there is one in the evidenceTable',
+        inject(function(NetworkMetaAnalysisService) {
+          var outcome = {
+            semanticOutcomeUri: 'semanticOutcomeUri'
+          };
+
+          var arm1 = {
+            trialverseUid: 'trialverseUid'
+          };
+
+          var arms = [arm1];
+
+          var analysis = {
+            outcome: outcome,
+            excludedArms: [arm1]
+          };
+
+          var trialDataArm1 = { // excluded due to arm exclusion
+            uri: arm1.trialverseUid
+          }
+
+          var trialDataArm2 = { // excluded due to no matching interventions
+            uri: 'trialverseUid2',
+            matchedProjectInterventionIds: []
+          }
+
+          var trialDataArm3 = { // excluded due to no matching interventions
+            uri: 'trialverseUid3',
+            matchedProjectInterventionIds: [1],
+            measurements: [{
+              variableConceptUri: outcome.semanticOutcomeUri,
+              measurementTypeURI: 'http://trials.drugis.org/ontology#continuous',
+              mean: 1.1,
+              stdDev: 0.5,
+              sampleSize: null // it's missing !
+            }]
+          }
+
+          trialDataStudies = [{
+            trialDataArms: [trialDataArm1, trialDataArm2, trialDataArm3]
+          }];
+
+          var result = NetworkMetaAnalysisService.containsMissingValue(trialDataStudies, analysis);
+          expect(result).toBeTruthy();
+        }));
+
+
+    });
+
   });
 });

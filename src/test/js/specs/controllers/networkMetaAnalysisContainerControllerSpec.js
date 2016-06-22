@@ -97,7 +97,8 @@ define(['angular', 'angular-mocks', 'controllers'], function() {
       networkMetaAnalysisService = jasmine.createSpyObj('NetworkMetaAnalysisService', ['transformTrialDataToTableRows',
         'transformTrialDataToNetwork', 'isNetworkDisconnected', 'addInclusionsToInterventions', 'changeArmExclusion',
         'buildInterventionInclusions', 'doesInterventionHaveAmbiguousArms', 'doesModelHaveAmbiguousArms', 'cleanUpExcludedArms',
-        'addInclusionsToCovariates', 'changeCovariateInclusion', 'buildOverlappingTreatmentMap', 'getIncludedInterventions'
+        'addInclusionsToCovariates', 'changeCovariateInclusion', 'buildOverlappingTreatmentMap', 'getIncludedInterventions',
+        'containsMissingValue'
       ]);
       var mockNetwork = {
         interventions: []
