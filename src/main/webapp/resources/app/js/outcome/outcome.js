@@ -11,11 +11,13 @@ define(function (require) {
     dependencies)
     // controllers
     .controller('AddOutcomeController', require('outcome/addOutcomeController'))
+    .controller('EditOutcomeController', require('outcome/editOutcomeController'))
+
 
     //services
+    .factory('RepairService', require('study/repair/repairService'))
     .factory('OutcomeService', require('outcome/outcomeService'))
 
     //filter
-
     ;
 });

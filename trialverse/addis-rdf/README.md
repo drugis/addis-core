@@ -76,7 +76,7 @@ trig depression.trig | sed 's/ <[^>]*> .$/ ./' | rdfcat -t - >depression.rdf
 
 ## Bugs
 
-Many things are not yet imported; many more are untested; unit tests are non-existent.
+Many things are not yet imported; many more are untested; unitName tests are non-existent.
 
 ## License
 

@@ -1,27 +1,42 @@
 package org.drugis.addis.analyses.service.impl;
 
+import org.apache.commons.lang.NotImplementedException;
 import org.drugis.addis.analyses.*;
 import org.drugis.addis.analyses.repository.AnalysisRepository;
 import org.drugis.addis.analyses.repository.NetworkMetaAnalysisRepository;
 import org.drugis.addis.analyses.repository.SingleStudyBenefitRiskAnalysisRepository;
 import org.drugis.addis.analyses.service.AnalysisService;
+import org.drugis.addis.covariates.Covariate;
+import org.drugis.addis.covariates.CovariateRepository;
 import org.drugis.addis.exception.MethodNotAllowedException;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
-import org.drugis.addis.interventions.Intervention;
+import org.drugis.addis.interventions.model.AbstractIntervention;
+import org.drugis.addis.interventions.model.CombinationIntervention;
+import org.drugis.addis.interventions.model.SingleIntervention;
+import org.drugis.addis.interventions.repository.InterventionRepository;
+import org.drugis.addis.interventions.service.InterventionService;
 import org.drugis.addis.models.Model;
-import org.drugis.addis.models.repository.ModelRepository;
+import org.drugis.addis.models.service.ModelService;
 import org.drugis.addis.outcomes.Outcome;
 import org.drugis.addis.outcomes.repository.OutcomeRepository;
+import org.drugis.addis.projects.Project;
+import org.drugis.addis.projects.repository.ProjectRepository;
 import org.drugis.addis.projects.service.ProjectService;
 import org.drugis.addis.security.Account;
+import org.drugis.addis.trialverse.model.trialdata.AbstractSemanticIntervention;
+import org.drugis.addis.trialverse.model.trialdata.TrialDataStudy;
+import org.drugis.addis.trialverse.service.MappingService;
+import org.drugis.addis.trialverse.service.TriplestoreService;
+import org.drugis.addis.trialverse.service.impl.ReadValueException;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.sql.SQLException;
 import java.util.*;
 import java.util.stream.Collectors;
-
-import static org.apache.commons.collections.CollectionUtils.isNotEmpty;
 
 /**
  * Created by daan on 22-5-14.
@@ -42,10 +57,28 @@ public class AnalysisServiceImpl implements AnalysisService {
   ProjectService projectService;
 
   @Inject
-  ModelRepository modelRepository;
+  ModelService modelService;
 
   @Inject
   OutcomeRepository outcomeRepository;
+
+  @Inject
+  InterventionRepository interventionRepository;
+
+  @Inject
+  TriplestoreService triplestoreService;
+
+  @Inject
+  ProjectRepository projectRepository;
+
+  @Inject
+  MappingService mappingService;
+
+  @Inject
+  private CovariateRepository covariateRepository;
+
+  @Inject
+  private InterventionService interventionService;
 
   @Override
   public void checkCoordinates(Integer projectId, Integer analysisId) throws ResourceDoesNotExistException {
@@ -56,11 +89,11 @@ public class AnalysisServiceImpl implements AnalysisService {
   }
 
   @Override
-  public NetworkMetaAnalysis updateNetworkMetaAnalysis(Account user, NetworkMetaAnalysis analysis) throws ResourceDoesNotExistException, MethodNotAllowedException, SQLException {
+  public NetworkMetaAnalysis updateNetworkMetaAnalysis(Account user, NetworkMetaAnalysis analysis) throws ResourceDoesNotExistException, MethodNotAllowedException, SQLException, IOException {
     projectService.checkProjectExistsAndModifiable(user, analysis.getProjectId());
     checkProjectIdChange(analysis);
 
-    if (!modelRepository.findByAnalysis(analysis.getId()).isEmpty()) {
+    if (!modelService.findByAnalysis(analysis.getId()).isEmpty()) {
       // can not update locked exception
       throw new MethodNotAllowedException();
     }
@@ -70,53 +103,17 @@ public class AnalysisServiceImpl implements AnalysisService {
       throw new ResourceDoesNotExistException();
     }
 
-    for (ArmExclusion armExclusion : analysis.getExcludedArms()) {
-      armExclusion.setAnalysis(analysis);
-    }
-
-    for (InterventionInclusion interventionInclusion : analysis.getIncludedInterventions()) {
-      interventionInclusion.setAnalysis(analysis);
-    }
-
-    for (CovariateInclusion covariateInclusion : analysis.getCovariateInclusions()) {
-      covariateInclusion.setAnalysis(analysis);
-    }
-
     return networkMetaAnalysisRepository.update(analysis);
   }
 
   @Override
-  public void checkMetaBenefitRiskAnalysis(Account user, MetaBenefitRiskAnalysis analysis) throws ResourceDoesNotExistException, MethodNotAllowedException {
-    projectService.checkProjectExistsAndModifiable(user, analysis.getProjectId());
-    checkProjectIdChange(analysis);
-    if (isNotEmpty(analysis.getIncludedAlternatives())) {
-      // do not allow selection of interventions that are not in the project
-      for (Intervention intervention : analysis.getIncludedAlternatives()) {
-        if (!intervention.getProject().equals(analysis.getProjectId())) {
-          throw new ResourceDoesNotExistException();
-        }
-      }
-    }
-    if (isNotEmpty(analysis.getMbrOutcomeInclusions())) {
-      // do not allow selection of outcomes that are not in the project
-      for (MbrOutcomeInclusion mbrOutcomeInclusion : analysis.getMbrOutcomeInclusions()) {
-        Integer outcomeId = mbrOutcomeInclusion.getOutcomeId();
-        Outcome outcome = outcomeRepository.get(outcomeId);
-        if (!outcome.getProject().equals(analysis.getProjectId())) {
-          throw new ResourceDoesNotExistException();
-        }
-      }
-    }
-  }
-
-  @Override
-  public List<MbrOutcomeInclusion> buildInitialOutcomeInclusions(Integer projectId, Integer metabenefitRiskAnalysisId) throws SQLException {
+  public List<MbrOutcomeInclusion> buildInitialOutcomeInclusions(Integer projectId, Integer metabenefitRiskAnalysisId) throws SQLException, IOException {
     Collection<Outcome> outcomes = outcomeRepository.query(projectId);
     List<Integer> outcomeIds = outcomes.stream()
             .map(Outcome::getId)
             .collect(Collectors.toList());
     List<NetworkMetaAnalysis> networkMetaAnalyses = networkMetaAnalysisRepository.queryByOutcomes(projectId, outcomeIds);
-    List<Model> models = modelRepository.findNetworkModelsByProject(projectId);
+    List<Model> models = modelService.findNetworkModelsByProject(projectId);
     return outcomes.stream()
             .filter(o -> findValidNetworkMetaAnalysis(networkMetaAnalyses, models, o).isPresent())
             .map(o -> {
@@ -174,7 +171,8 @@ public class AnalysisServiceImpl implements AnalysisService {
     return singleStudyBenefitRiskAnalysisRepository.create(analysisCommand);
   }
 
-  private void checkProjectIdChange(AbstractAnalysis analysis) throws ResourceDoesNotExistException, MethodNotAllowedException {
+  @Override
+  public void checkProjectIdChange(AbstractAnalysis analysis) throws ResourceDoesNotExistException, MethodNotAllowedException {
     // do not allow changing of project ID
     AbstractAnalysis oldAnalysis = analysisRepository.get(analysis.getId());
     if (!oldAnalysis.getProjectId().equals(analysis.getProjectId())) {
@@ -182,5 +180,89 @@ public class AnalysisServiceImpl implements AnalysisService {
     }
   }
 
+  @Override
+  public Map<URI, TrialDataStudy> matchInterventions(Map<URI, TrialDataStudy> studyData, List<AbstractSemanticIntervention> interventions) {
+    return null;
+  }
+
+  @Override
+  public List<AbstractIntervention> getIncludedInterventions(AbstractAnalysis analysis) throws ResourceDoesNotExistException {
+    List<Integer> interventionInclusionsIds = analysis.getInterventionInclusions().stream()
+            .map(InterventionInclusion::getInterventionId)
+            .collect(Collectors.toList());
+    return interventionRepository.query(analysis.getProjectId()).stream()
+              .filter(i -> interventionInclusionsIds.contains(i.getId()))
+              .collect(Collectors.toList());
+  }
+
+  private List<Covariate> getIncludedCovariates(NetworkMetaAnalysis analysis) throws ResourceDoesNotExistException {
+    List<Integer> includedCovariates = analysis.getCovariateInclusions().stream()
+            .map(CovariateInclusion::getCovariateId)
+            .collect(Collectors.toList());
+    return covariateRepository.findByProject(analysis.getProjectId()).stream()
+            .filter(i -> includedCovariates.contains(i.getId()))
+            .collect(Collectors.toList());
+  }
+
+  @Override
+  public List<TrialDataStudy> buildEvidenceTable(Integer projectId, Integer analysisId) throws ResourceDoesNotExistException, ReadValueException, URISyntaxException {
+
+    Project project = projectRepository.get(projectId);
+    AbstractAnalysis analysis = analysisRepository.get(analysisId);
+    List<AbstractIntervention> includedInterventions = getIncludedInterventions(analysis);
+
+    List<SingleIntervention> singleInterventions = includedInterventions.stream()
+            .filter(ai -> ai instanceof SingleIntervention)
+            .map(ai -> (SingleIntervention) ai)
+            .collect(Collectors.toList());
+
+    List<CombinationIntervention> combinationInterventions = includedInterventions.stream()
+            .filter(ai -> ai instanceof CombinationIntervention)
+            .map(ai -> (CombinationIntervention) ai)
+            .collect(Collectors.toList());
+
+    singleInterventions.addAll(interventionService.resolveCombinations(combinationInterventions));
+
+
+    Set<URI> includedInterventionUris = singleInterventions.stream()
+            .map(SingleIntervention::getSemanticInterventionUri)
+            .collect(Collectors.toSet());
+
+    List<TrialDataStudy> trialData = Collections.emptyList();
+
+    String namespaceUid = mappingService.getVersionedUuid(project.getNamespaceUid());
+    String datasetVersion = project.getDatasetVersion();
+    if(analysis instanceof NetworkMetaAnalysis) {
+      NetworkMetaAnalysis networkMetaAnalysis = (NetworkMetaAnalysis) analysis;
+      if(networkMetaAnalysis.getOutcome() == null) {
+        // no outcome set, therefore no need to build a evidence table
+        return trialData;
+      }
+
+      Set<String>  includedCovariates = getIncludedCovariates(networkMetaAnalysis).stream()
+              .map(Covariate::getDefinitionKey)
+              .collect(Collectors.toSet());
+
+      trialData = triplestoreService.getNetworkData(namespaceUid, datasetVersion,
+              networkMetaAnalysis.getOutcome().getSemanticOutcomeUri(), includedInterventionUris, includedCovariates);
+
+
+    } else if(analysis instanceof SingleStudyBenefitRiskAnalysis) {
+      SingleStudyBenefitRiskAnalysis singleStudyBenefitRiskAnalysis = (SingleStudyBenefitRiskAnalysis) analysis;
+
+      Set<URI> outcomeUris = singleStudyBenefitRiskAnalysis.getSelectedOutcomes().stream().map(Outcome::getSemanticOutcomeUri).collect(Collectors.toSet());
+
+      trialData = triplestoreService.getSingleStudyData(namespaceUid,
+              singleStudyBenefitRiskAnalysis.getStudyGraphUri(), datasetVersion, outcomeUris, includedInterventionUris);
+
+    } else {
+      throw new NotImplementedException("not yet implemented for other analysis types");
+    }
+
+    // add matching data;
+    trialData = triplestoreService.addMatchingInformation(includedInterventions, trialData);
+
+    return trialData;
+  }
 
 }

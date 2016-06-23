@@ -11,11 +11,15 @@ import org.drugis.addis.analyses.service.MetaBenefitRiskAnalysisService;
 import org.drugis.addis.base.AbstractAddisCoreController;
 import org.drugis.addis.exception.MethodNotAllowedException;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
+import org.drugis.addis.interventions.service.impl.InvalidTypeForDoseCheckException;
+import org.drugis.addis.patavitask.repository.UnexpectedNumberOfResultsException;
 import org.drugis.addis.projects.service.ProjectService;
 import org.drugis.addis.scenarios.Scenario;
 import org.drugis.addis.scenarios.repository.ScenarioRepository;
 import org.drugis.addis.security.Account;
 import org.drugis.addis.security.repository.AccountRepository;
+import org.drugis.addis.trialverse.model.trialdata.TrialDataStudy;
+import org.drugis.addis.trialverse.service.impl.ReadValueException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -101,7 +105,7 @@ public class AnalysisController extends AbstractAddisCoreController {
 
   @RequestMapping(value = "/projects/{projectId}/analyses", method = RequestMethod.POST)
   @ResponseBody
-  public AbstractAnalysis create(HttpServletRequest request, HttpServletResponse response, Principal currentUser, @RequestBody AnalysisCommand analysisCommand) throws MethodNotAllowedException, ResourceDoesNotExistException, SQLException {
+  public AbstractAnalysis create(HttpServletRequest request, HttpServletResponse response, Principal currentUser, @RequestBody AnalysisCommand analysisCommand) throws MethodNotAllowedException, ResourceDoesNotExistException, SQLException, IOException {
     Account user = accountRepository.findAccountByUsername(currentUser.getName());
     if (user != null) {
       AbstractAnalysis analysis;
@@ -132,13 +136,13 @@ public class AnalysisController extends AbstractAddisCoreController {
                               @PathVariable Integer analysisId,
                               @RequestParam(required=false) Integer modelId) throws MethodNotAllowedException, ResourceDoesNotExistException {
     projectService.checkOwnership(projectId, currentUser);
-    analysisRepository.setPrimaryModel(analysisId, modelId);
+    networkMetaAnalysisRepository.setPrimaryModel(analysisId, modelId);
     response.setStatus(HttpStatus.SC_OK);
   }
 
   @RequestMapping(value = "/projects/{projectId}/analyses/{analysisId}", method = RequestMethod.POST)
   @ResponseBody
-  public AbstractAnalysis update(Principal currentUser, @PathVariable Integer projectId, @RequestBody AbstractAnalysis analysis) throws MethodNotAllowedException, ResourceDoesNotExistException, SQLException, IOException, URISyntaxException {
+  public AbstractAnalysis update(Principal currentUser, @PathVariable Integer projectId, @RequestBody AbstractAnalysis analysis) throws MethodNotAllowedException, ResourceDoesNotExistException, SQLException, IOException, URISyntaxException, ReadValueException, InvalidTypeForDoseCheckException, UnexpectedNumberOfResultsException {
     Account user = accountRepository.findAccountByUsername(currentUser.getName());
     if (user != null) {
       if (analysis instanceof SingleStudyBenefitRiskAnalysis) {
@@ -155,7 +159,13 @@ public class AnalysisController extends AbstractAddisCoreController {
     }
   }
 
-  public SingleStudyBenefitRiskAnalysis updateSingleStudyBenefitRiskAnalysis(Account user, SingleStudyBenefitRiskAnalysis analysis) throws MethodNotAllowedException, ResourceDoesNotExistException {
+  @RequestMapping(value = "/projects/{projectId}/analyses/{analysisId}/evidenceTable", method = RequestMethod.GET)
+  @ResponseBody
+  public List<TrialDataStudy> getEvidenceTable(@PathVariable Integer projectId, @PathVariable Integer analysisId) throws ResourceDoesNotExistException, ReadValueException, URISyntaxException {
+    return analysisService.buildEvidenceTable(projectId, analysisId);
+  }
+
+  private SingleStudyBenefitRiskAnalysis updateSingleStudyBenefitRiskAnalysis(Account user, SingleStudyBenefitRiskAnalysis analysis) throws MethodNotAllowedException, ResourceDoesNotExistException {
     SingleStudyBenefitRiskAnalysis oldAnalysis = (SingleStudyBenefitRiskAnalysis) analysisRepository.get(analysis.getId());
     if (oldAnalysis.getProblem() != null) {
       throw new MethodNotAllowedException();

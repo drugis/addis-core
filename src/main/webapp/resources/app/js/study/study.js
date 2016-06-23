@@ -16,6 +16,7 @@ define(function (require) {
     // controllers
     .controller('StudyController', require('study/studyController'))
     .controller('CopyStudyController', require('study/copyStudyController'))
+    .controller('EditStudyController', require('study/editStudyController'))
 
     //services
     .factory('StudyService', require('study/studyService'))

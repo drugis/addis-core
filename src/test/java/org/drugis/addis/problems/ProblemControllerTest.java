@@ -2,9 +2,11 @@ package org.drugis.addis.problems;
 
 import net.minidev.json.JSONObject;
 import org.drugis.addis.config.TestConfig;
+import org.drugis.addis.interventions.service.impl.InvalidTypeForDoseCheckException;
 import org.drugis.addis.problems.model.*;
 import org.drugis.addis.problems.service.ProblemService;
 import org.drugis.addis.problems.service.model.*;
+import org.drugis.addis.trialverse.service.impl.ReadValueException;
 import org.drugis.addis.util.WebConstants;
 import org.junit.Before;
 import org.junit.Test;
@@ -17,6 +19,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import javax.inject.Inject;
+import java.net.URI;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -51,17 +54,17 @@ public class ProblemControllerTest {
   }
 
   @Test
-  public void testGetSingleStudybenefitRiskProblem() throws Exception {
-    RatePerformance ratePerformance = new RatePerformance(new RatePerformanceParameters(10L, 50L));
-    String alternativeUri1 = "Alt uri 1";
-    String alternativeUri2 = "Alt uri 2";
-    String criterionUri1 = "Crit uri 1";
-    String criterionUri2 = "Crit uri 2";
-    AbstractMeasurementEntry rateMeasurementEntry = new RateMeasurementEntry(alternativeUri1, criterionUri1, ratePerformance);
+  public void testGetSingleStudybenefitRiskProblem() throws Exception, ReadValueException, InvalidTypeForDoseCheckException {
+    RatePerformance ratePerformance = new RatePerformance(new RatePerformanceParameters(10, 50));
+    Integer alternative1 = 1;
+    Integer alternative2 = 2;
+    URI criterionUri1 = URI.create("Crituri1");
+    URI criterionUri2 = URI.create("Crituri2");
+    AbstractMeasurementEntry rateMeasurementEntry = new RateMeasurementEntry(alternative1, criterionUri1, ratePerformance);
     ContinuousPerformance continuousPerformance = new ContinuousPerformance(new ContinuousPerformanceParameters(7.5, 2.1));
-    AbstractMeasurementEntry continuousMeasurementEntry = new ContinuousMeasurementEntry(alternativeUri2, criterionUri2, continuousPerformance);
+    AbstractMeasurementEntry continuousMeasurementEntry = new ContinuousMeasurementEntry(alternative2, criterionUri2, continuousPerformance);
     List<AbstractMeasurementEntry> performanceTable = Arrays.asList(rateMeasurementEntry, continuousMeasurementEntry);
-    SingleStudyBenefitRiskProblem problem = new SingleStudyBenefitRiskProblem("testProblem", new HashMap<String, AlternativeEntry>(), new HashMap<String, CriterionEntry>(), performanceTable);
+    SingleStudyBenefitRiskProblem problem = new SingleStudyBenefitRiskProblem("testProblem", new HashMap<>(), new HashMap<>(), performanceTable);
     Integer projectId = 1;
     Integer analysisId = 1;
     when(problemService.getProblem(projectId, analysisId)).thenReturn(problem);
@@ -77,11 +80,11 @@ public class ProblemControllerTest {
   }
 
   @Test
-  public void testGetNetworkMetaAnalysisProblem() throws Exception {
+  public void testGetNetworkMetaAnalysisProblem() throws Exception, ReadValueException, InvalidTypeForDoseCheckException {
     int treatmentId1 = 1;
     int treatmentId2 = 2;
-    AbstractNetworkMetaAnalysisProblemEntry entry1 = new RateNetworkMetaAnalysisProblemEntry("study", treatmentId1, 10L, 5L);
-    AbstractNetworkMetaAnalysisProblemEntry entry2 = new RateNetworkMetaAnalysisProblemEntry("study", treatmentId2, 20L, 7L);
+    AbstractNetworkMetaAnalysisProblemEntry entry1 = new RateNetworkMetaAnalysisProblemEntry("study", treatmentId1, 10, 5);
+    AbstractNetworkMetaAnalysisProblemEntry entry2 = new RateNetworkMetaAnalysisProblemEntry("study", treatmentId2, 20, 7);
     List<AbstractNetworkMetaAnalysisProblemEntry> entries = Arrays.asList(entry1, entry2);
     List<TreatmentEntry> treatments = Arrays.asList(new TreatmentEntry(treatmentId1, "treatment 1 name"), new TreatmentEntry(treatmentId2, "treatment 2 name"));
     Map<String, Map<String, Double>> studyCovariates = new HashMap<>();
@@ -102,11 +105,11 @@ public class ProblemControllerTest {
   }
 
   @Test
-  public void testGetNetworkMetaAnalysisNoCovariates() throws Exception {
+  public void testGetNetworkMetaAnalysisNoCovariates() throws Exception, ReadValueException, InvalidTypeForDoseCheckException {
     int treatmentId1 = 1;
     int treatmentId2 = 2;
-    AbstractNetworkMetaAnalysisProblemEntry entry1 = new RateNetworkMetaAnalysisProblemEntry("study", treatmentId1, 10L, 5L);
-    AbstractNetworkMetaAnalysisProblemEntry entry2 = new RateNetworkMetaAnalysisProblemEntry("study", treatmentId2, 20L, 7L);
+    AbstractNetworkMetaAnalysisProblemEntry entry1 = new RateNetworkMetaAnalysisProblemEntry("study", treatmentId1, 10, 5);
+    AbstractNetworkMetaAnalysisProblemEntry entry2 = new RateNetworkMetaAnalysisProblemEntry("study", treatmentId2, 20, 7);
     List<AbstractNetworkMetaAnalysisProblemEntry> entries = Arrays.asList(entry1, entry2);
     List<TreatmentEntry> treatments = Arrays.asList(new TreatmentEntry(treatmentId1, "treatment 1 name"), new TreatmentEntry(treatmentId2, "treatment 2 name"));
 

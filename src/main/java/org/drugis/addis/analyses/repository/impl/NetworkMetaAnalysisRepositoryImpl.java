@@ -6,7 +6,7 @@ import org.drugis.addis.analyses.NetworkMetaAnalysis;
 import org.drugis.addis.analyses.repository.NetworkMetaAnalysisRepository;
 import org.drugis.addis.exception.MethodNotAllowedException;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
-import org.drugis.addis.interventions.Intervention;
+import org.drugis.addis.interventions.model.AbstractIntervention;
 import org.drugis.addis.interventions.repository.InterventionRepository;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
@@ -15,9 +15,7 @@ import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by connor on 6-5-14.
@@ -36,11 +34,12 @@ public class NetworkMetaAnalysisRepositoryImpl implements NetworkMetaAnalysisRep
     NetworkMetaAnalysis networkMetaAnalysis = new NetworkMetaAnalysis(analysisCommand.getProjectId(), analysisCommand.getTitle());
     em.persist(networkMetaAnalysis);
 
-    List<Intervention> interventions = interventionRepository.query(networkMetaAnalysis.getProjectId());
-    for (Intervention intervention : interventions) {
-      InterventionInclusion newInterventionInclusion = new InterventionInclusion(networkMetaAnalysis, intervention.getId());
-      networkMetaAnalysis.getIncludedInterventions().add(newInterventionInclusion);
+    Collection<AbstractIntervention> interventions = interventionRepository.query(analysisCommand.getProjectId());
+    Set<InterventionInclusion> interventionInclusions = new HashSet<>(interventions.size());
+    for (AbstractIntervention intervention : interventions) {
+      interventionInclusions.add(new InterventionInclusion(networkMetaAnalysis.getId(), intervention.getId()));
     }
+    networkMetaAnalysis.updateIncludedInterventions(interventionInclusions);
     return update(networkMetaAnalysis);
   }
 

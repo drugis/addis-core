@@ -7,6 +7,7 @@ define(function (require) {
     .controller('DatasetController', require('dataset/datasetController'))
     .controller('CreateStudyController', require('dataset/createStudyController'))
     .controller('DatasetHistoryController', require('dataset/datasetHistoryController'))
+    .controller('EditDatasetController', require('dataset/editDatasetController'))
 
     //services
     .factory('StudiesWithDetailsService', require('dataset/studiesWithDetailsService'))
@@ -16,6 +17,8 @@ define(function (require) {
     .factory('DatasetResource', require('dataset/datasetResource'))
     .factory('HistoryResource', require('dataset/historyResource'))
     .factory('GraphResource', require('graph/graphResource'))
+    .factory('ImportStudyInfoResource', require('dataset/importStudyInfoResource'))
+    .factory('ImportStudyResource', require('dataset/importStudyResource'))
 
     //directives
     .directive('historyItem', require('dataset/historyItemDirective'))

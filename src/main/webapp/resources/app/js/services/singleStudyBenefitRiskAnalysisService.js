@@ -1,7 +1,7 @@
 'use strict';
 define(['lodash'], function(_) {
-  var dependencies = ['$location', '$stateParams', '$q', 'ProblemResource', 'ScenarioResource'];
-  var SingleStudyBenefitRiskAnalysisService = function($location, $stateParams, $q, ProblemResource, ScenarioResource) {
+  var dependencies = ['$stateParams', 'ProblemResource', 'ScenarioResource'];
+  var SingleStudyBenefitRiskAnalysisService = function($stateParams, ProblemResource, ScenarioResource) {
 
     var getDefaultScenario = function() {
       return ScenarioResource
@@ -74,27 +74,54 @@ define(['lodash'], function(_) {
       }
     };
 
-    function isSameOutcome(studyOutcomeUri, selectedOutcome) {
-      var lastIndexOfSlash = studyOutcomeUri.lastIndexOf('/');
-      var idPart = studyOutcomeUri.substring(lastIndexOfSlash + 1);
-      return selectedOutcome.semanticOutcomeUri === idPart;
+    function isSameIntervention(studyInterventionUri, selectedIntervention) {
+      return selectedIntervention.semanticInterventionUri === studyInterventionUri;
     }
 
-    function isSameIntervention(studyInterventionUri, selectedIntervention) {
-      var lastIndexOfSlash = studyInterventionUri.lastIndexOf('/');
-      var idPart = studyInterventionUri.substring(lastIndexOfSlash + 1);
-      return selectedIntervention.semanticInterventionUri === idPart;
+    function noArmMatchingOutcome(selectedOutcome, trialDataArms) {
+      return !_.find(trialDataArms, function(arm) {
+        return _.find(arm.measurements, function(measurement) {
+          return measurement.variableConceptUri === selectedOutcome.semanticOutcomeUri;
+        });
+      });
+    }
+
+    function findMissingOutcomes(selectedOutcomes, trialDataArms) {
+      return _.filter(selectedOutcomes, function(selectedOutcome) {
+        return noArmMatchingOutcome(selectedOutcome, trialDataArms);
+      });
+    }
+
+    function noArmMatchingIntervention(intervention, trialDataArms) {
+      return !_.find(trialDataArms, function(arm) {
+        return arm.matchedProjectInterventionIds.indexOf(intervention.id) > -1;
+      });
+    }
+
+    function findMissingInterventions(selectedInterventions, trialDataArms) {
+      return _.filter(selectedInterventions, function(selectedIntervention) {
+        return noArmMatchingIntervention(selectedIntervention, trialDataArms);
+      });
     }
 
     var addMissingOutcomesToStudies = function(studies, selectedOutcomes) {
-      return _.each(studies, function(study) {
-        study.missingOutcomes = findMissing(selectedOutcomes, study.outcomeUids, isSameOutcome);
+      return studies.map(function(study) {
+        study.missingOutcomes = findMissingOutcomes(selectedOutcomes, study.trialDataArms);
+        return study;
       });
     };
 
     var addMissingInterventionsToStudies = function(studies, selectedInterventions) {
-      return _.each(studies, function(study) {
-        study.missingInterventions = findMissing(selectedInterventions, study.interventionUids, isSameIntervention);
+      return studies.map(function(study) {
+        study.missingInterventions = findMissingInterventions(selectedInterventions, study.trialDataArms);
+        return study;
+      });
+    };
+
+    var addOverlappingInterventionsToStudies = function(studies, selectedInterventions) {
+      return _.map(studies, function(study) {
+        study.overlappingInterventions = findOverlappingIntervention(selectedInterventions, study);
+        return study;
       });
     };
 
@@ -104,8 +131,22 @@ define(['lodash'], function(_) {
       });
     };
 
-    function findMatchingIntervention(selectedInterventions, treatmentArm) {
-      return _.find(selectedInterventions, function(selectedIntervention) {
+    function findOverlappingIntervention(selectedInterventions, study) {
+      return _.reduce(study.trialDataArms, function(accum, arm) {
+        if (arm.matchedProjectInterventionIds.length > 1) {
+          var matching = _.filter(selectedInterventions, function(intervention) {
+            return arm.matchedProjectInterventionIds.indexOf(intervention.id) > -1;
+          });
+          if (matching.length > 1) {
+            accum = accum.concat(matching);
+          }
+        }
+        return accum;
+      }, []);
+    }
+
+    function findAllMatchingInterventions(selectedInterventions, treatmentArm) {
+      return _.filter(selectedInterventions, function(selectedIntervention) {
         return _.find(treatmentArm.interventionUids, function(interventionUid) {
           return isSameIntervention(interventionUid, selectedIntervention);
         });
@@ -115,7 +156,7 @@ define(['lodash'], function(_) {
     var addHasMatchedMixedTreatmentArm = function(studies, selectedInterventions) {
       _.each(studies, function(study) {
         study.hasMatchedMixedTreatmentArm = _.some(study.treatmentArms, function(treatmentArm) {
-          return treatmentArm.interventionUids.length > 1 && findMatchingIntervention(selectedInterventions, treatmentArm);
+          return treatmentArm.interventionUids.length > 1 && findAllMatchingInterventions(selectedInterventions, treatmentArm).length > 0;
         });
       });
     };
@@ -127,6 +168,7 @@ define(['lodash'], function(_) {
       concatWithNoDuplicates: concatWithNoDuplicates,
       addMissingOutcomesToStudies: addMissingOutcomesToStudies,
       addMissingInterventionsToStudies: addMissingInterventionsToStudies,
+      addOverlappingInterventionsToStudies: addOverlappingInterventionsToStudies,
       addHasMatchedMixedTreatmentArm: addHasMatchedMixedTreatmentArm,
       isValidStudyOption: isValidStudyOption,
       recalculateGroup: recalculateGroup

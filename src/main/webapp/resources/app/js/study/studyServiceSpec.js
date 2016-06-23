@@ -208,7 +208,6 @@ define(['angular', 'angular-mocks'],
         var graphPlusContext = {
           '@graph': [{
             '@type': 'ontology:Study',
-            has_epochs: [],
             has_included_population: []
           }]
         };
@@ -225,7 +224,6 @@ define(['angular', 'angular-mocks'],
           studyService.getJsonGraph().then(function(res) {
             expect(res).toEqual([{
               '@type': 'ontology:Study',
-              has_epochs: [],
               has_included_population: []
             }]);
             done();

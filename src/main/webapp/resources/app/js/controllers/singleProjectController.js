@@ -1,6 +1,6 @@
 'use strict';
 define(['lodash', 'angular'], function(_, angular) {
-  var dependencies = ['$scope', '$q', '$state', '$stateParams', '$window', '$modal',
+  var dependencies = ['$scope', '$q', '$state', '$stateParams', '$window', '$location', '$modal',
     'ProjectResource',
     'TrialverseResource',
     'TrialverseStudyResource',
@@ -11,11 +11,15 @@ define(['lodash', 'angular'], function(_, angular) {
     'CovariateOptionsResource',
     'CovariateResource',
     'AnalysisResource',
-    'ANALYSIS_TYPES'
+    'ANALYSIS_TYPES',
+    'InterventionService',
+    'activeTab'
   ];
-  var SingleProjectController = function($scope, $q, $state, $stateParams, $window, $modal, ProjectResource, TrialverseResource,
+  var SingleProjectController = function($scope, $q, $state, $stateParams, $window, $location, $modal, ProjectResource, TrialverseResource,
     TrialverseStudyResource, SemanticOutcomeResource, OutcomeResource, SemanticInterventionResource, InterventionResource,
-    CovariateOptionsResource, CovariateResource, AnalysisResource, ANALYSIS_TYPES) {
+    CovariateOptionsResource, CovariateResource, AnalysisResource, ANALYSIS_TYPES, InterventionService, activeTab) {
+
+    $scope.activeTab = activeTab;
 
     $scope.analysesLoaded = false;
     $scope.covariatesLoaded = true;
@@ -61,8 +65,13 @@ define(['lodash', 'angular'], function(_, angular) {
         projectId: $scope.project.id
       });
 
-      $scope.interventions = InterventionResource.query({
+      InterventionResource.query({
         projectId: $scope.project.id
+      }).$promise.then(function(interventions) {
+        $scope.interventions = interventions.map(function(intervention) {
+          intervention.definitionLabel = InterventionService.generateDescriptionLabel(intervention, interventions);
+          return intervention;
+        });
       });
 
       loadCovariates();
@@ -75,10 +84,18 @@ define(['lodash', 'angular'], function(_, angular) {
       $scope.studies.$promise.then(function() {
         $scope.analyses = AnalysisResource.query({
           projectId: $scope.project.id
-        }, function() {
+        }, function(analyses) {
           $scope.analysesLoaded = true;
+          $scope.analyses = _.sortBy(analyses, function(analysis) {
+            if (analysis.analysisType === 'Network meta-analysis') {
+              return 0;
+            } else {
+              return 1;
+            }
+          });
         });
       });
+
     });
 
     function loadCovariates() {
@@ -96,13 +113,22 @@ define(['lodash', 'angular'], function(_, angular) {
       });
     }
 
+    $scope.findStudyLabel = function(analysis) {
+      var study = _.find($scope.studies, function(study) {
+        return 'http://trials.drugis.org/graphs/' + study.studyGraphUid === analysis.studyGraphUri;
+      });
+      if (study) {
+        return study.name;
+      }
+    };
+
     $scope.goToAnalysis = function(analysis) {
       var analysisType = angular.copy(_.find(ANALYSIS_TYPES, function(type) {
         return type.label === analysis.analysisType;
       }));
 
       //todo if analysis is gemtc type and has a problem go to models view
-      if(analysisType.label === 'Benefit-risk analysis based on meta-analyses' && analysis.finalized) {
+      if (analysisType.label === 'Benefit-risk analysis based on meta-analyses' && analysis.finalized) {
         analysisType.stateName = 'metaBenefitRisk';
       }
 
@@ -144,7 +170,50 @@ define(['lodash', 'angular'], function(_, angular) {
         resolve: {
           callback: function() {
             return function(newIntervention) {
+              newIntervention.definitionLabel = InterventionService.generateDescriptionLabel(newIntervention, $scope.interventions);
               $scope.interventions.push(newIntervention);
+            };
+          }
+        }
+      });
+    };
+
+    $scope.openEditOutcomeDialog = function(outcome) {
+      $modal.open({
+        templateUrl: './app/js/outcome/editOutcome.html',
+        controller: 'EditAddisOutcomeController',
+        resolve: {
+          outcome: function() {
+            return outcome;
+          },
+          outcomes: function() {
+            return $scope.outcomes;
+          },
+          successCallback: function() {
+            return function(name, motivation) {
+              outcome.name = name;
+              outcome.motivation = motivation;
+            };
+          }
+        }
+      });
+    };
+
+    $scope.openEditInterventionDialog = function(intervention) {
+      $modal.open({
+        templateUrl: './app/js/intervention/editIntervention.html',
+        controller: 'EditInterventionController',
+        resolve: {
+          intervention: function() {
+            return intervention;
+          },
+          interventions: function() {
+            return $scope.interventions;
+          },
+          successCallback: function() {
+            return function(name, motivation) {
+              intervention.name = name;
+              intervention.motivation = motivation;
             };
           }
         }
@@ -165,6 +234,20 @@ define(['lodash', 'angular'], function(_, angular) {
           }
         }
       });
+    };
+
+    $scope.setActiveTab = function(tab) {
+      if (tab === $scope.activeTab) {
+        return;
+      }
+      $scope.activeTab = tab;
+      var path = $location.path();
+      if (tab === 'report') {
+        $location.path(path + '/report');
+      } else {
+        var newPath = path.substring(0, path.length - '/report'.length);
+        $location.path(newPath);
+      }
     };
 
   };

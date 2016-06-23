@@ -10,10 +10,10 @@
                 </th>
                 <th rowspan="2">Interventions</th>
                 <th rowspan="2">Arms</th>
-                <th rowspan="2" ng-show="trialData[0].rate !== null">Subjects with outcome</th>
-                <th rowspan="2" ng-show="trialData[0].mu !== null">&mu;</th>
-                <th rowspan="2" ng-show="trialData[0].sigma !== null">&sigma;</th>
-                <th rowspan="2" ng-show="trialData[0].sampleSize !== null">N</th>
+                <th rowspan="2" ng-show="trialData[0].measurementType === 'dichotomous'">Subjects with outcome</th>
+                <th rowspan="2" ng-show="trialData[0].measurementType === 'continuous'">&mu;</th>
+                <th rowspan="2" ng-show="trialData[0].measurementType === 'continuous'">&sigma;</th>
+                <th rowspan="2" >N</th>
             </tr>
             <tr>
                 <th ng-repeat="covariate in trialData[0].covariatesColumns">{{covariate.headerTitle}}</th>
@@ -29,8 +29,8 @@
             <tr ng-repeat="dataRow in trialData" ng-class="{topborder: dataRow.firstStudyRow}">
                 <td ng-show="dataRow.firstStudyRow" rowspan="{{dataRow.studyRowSpan}}">
                     <a ui-sref="namespace-study({userUid: userId, projectId: project.id, studyUid: dataRow.studyUid})">{{dataRow.study}}</a>
-                    <div class="info" ng-show="lessThanTwoInterventionArms(dataRow)">Fewer than two included
-                        interventions. This study will be excluded.
+                    <div class="info" ng-show="dataRow.numberOfMatchedInterventions < 2 || dataRow.numberOfIncludedInterventions < 2">Excluded; Fewer than two included
+                        interventions.
                     </div>
                 </td>
                 <td ng-repeat="covariate in dataRow.covariatesColumns" ng-show="dataRow.firstStudyRow"
@@ -41,10 +41,15 @@
                     ng-class="{undefined:dataRow.intervention === 'unmatched'}"
                     rowspan="{{dataRow.interventionRowSpan}}">
                     {{dataRow.intervention}}
-                    <div ng-show="dataRow.intervention !== 'unmatched' && doesInterventionHaveAmbiguousArms(dataRow.drugConceptUid, dataRow.studyUid)"
+                    <div ng-show="dataRow.intervention !== 'unmatched' && doesInterventionHaveAmbiguousArms(dataRow.interventionId, dataRow.studyUri  )"
                          class="alert-message">
                         Ambiguous arms, please choose a single arm for inclusion
                     </div>
+                    <div ng-show="!lessThanTwoInterventionArms(dataRow) && dataRow.overlappingInterventionWarning"
+                         class="alert-message">
+                        Ambiguous: {{dataRow.overlappingInterventionWarning}}
+                    </div>
+
                 </td>
                 <td>
                     <label><input type="checkbox"
@@ -52,19 +57,17 @@
                                   ng-model="dataRow.included" ng-change="changeArmExclusion(dataRow)">
                         {{dataRow.arm}}</label>
                 </td>
-                <td ng-show="dataRow.rate !== null" ng-class="{undefined:dataRow.intervention === 'unmatched'}"
+                <td ng-show="dataRow.measurementType === 'dichotomous'" ng-class="{undefined:dataRow.intervention === 'unmatched'}"
                     class="text-center">
                     {{dataRow.rate}}
                 </td>
-                <td ng-show="trialData[0].mu !== null" class="large-2"
+                <td ng-show="dataRow.measurementType === 'continuous'" class="large-2"
                     ng-class="{undefined:dataRow.intervention === 'unmatched'}" class="text-center">{{dataRow.mu}}
                 </td>
-                <td ng-show="trialData[0].sigma !== null" class="large-2"
-                    ng-class="{undefined:dataRow.intervention === 'unmatched'}" class="text-center">{{dataRow.sigma |
-                    number: 3}}
+                <td ng-show="dataRow.measurementType === 'continuous'" class="large-2"
+                    ng-class="{undefined:dataRow.intervention === 'unmatched'}" class="text-center">{{dataRow.sigma}}
                 </td>
-                <td ng-show="trialData[0].sampleSize !== null"
-                    ng-class="{undefined:dataRow.intervention === 'unmatched'}" class="text-center">
+                <td ng-class="{undefined:dataRow.intervention === 'unmatched'}" class="text-center">
                     {{dataRow.sampleSize}}
                 </td>
             </tr>

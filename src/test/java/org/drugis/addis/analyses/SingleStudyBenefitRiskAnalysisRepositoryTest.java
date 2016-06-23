@@ -5,7 +5,6 @@ import org.drugis.addis.analyses.repository.SingleStudyBenefitRiskAnalysisReposi
 import org.drugis.addis.config.JpaRepositoryTestConfig;
 import org.drugis.addis.exception.MethodNotAllowedException;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
-import org.drugis.addis.interventions.Intervention;
 import org.drugis.addis.outcomes.Outcome;
 import org.drugis.addis.security.Account;
 import org.junit.Test;
@@ -63,7 +62,7 @@ public class SingleStudyBenefitRiskAnalysisRepositoryTest {
     Integer analysisId = -1;
     Account user = em.find(Account.class, 1);
     Integer projectId = 1;
-    SingleStudyBenefitRiskAnalysis analysis = new SingleStudyBenefitRiskAnalysis(analysisId, projectId, "new name", Collections.EMPTY_LIST, Collections.EMPTY_LIST);
+    SingleStudyBenefitRiskAnalysis analysis = new SingleStudyBenefitRiskAnalysis(analysisId, projectId, "analysis 1", Collections.EMPTY_LIST, Collections.EMPTY_LIST);
     SingleStudyBenefitRiskAnalysis updatedAnalysis = singleStudyBenefitRiskAnalysisRepository.update(user, analysis);
     assertEquals(analysis.getProjectId(), updatedAnalysis.getProjectId());
     assertEquals(analysis.getTitle(), updatedAnalysis.getTitle());
@@ -76,10 +75,12 @@ public class SingleStudyBenefitRiskAnalysisRepositoryTest {
     Account user = em.find(Account.class, 1);
     Integer projectId = 1;
     Integer outcomeId = 1;
-    Integer interventionId = 1;
+    Integer interventionId = -1;
     List<Outcome> selectedOutcomes = Arrays.asList(em.find(Outcome.class, outcomeId));
-    List<Intervention> selectedInterventions = Arrays.asList(em.find(Intervention.class, interventionId));
-    SingleStudyBenefitRiskAnalysis analysis = new SingleStudyBenefitRiskAnalysis(analysisId, projectId, "new name", selectedOutcomes, selectedInterventions);
+    InterventionInclusion interventionInclusion = new InterventionInclusion(analysisId, interventionId);
+    em.persist(interventionInclusion);
+    List<InterventionInclusion> interventionInclusions = Arrays.asList(interventionInclusion);
+    SingleStudyBenefitRiskAnalysis analysis = new SingleStudyBenefitRiskAnalysis(analysisId, projectId, "analysis 1", selectedOutcomes, interventionInclusions);
     SingleStudyBenefitRiskAnalysis updatedAnalysis = singleStudyBenefitRiskAnalysisRepository.update(user, analysis);
     SingleStudyBenefitRiskAnalysis result = em.find(SingleStudyBenefitRiskAnalysis.class, analysisId);
     assertEquals(analysis.getProjectId(), updatedAnalysis.getProjectId());
@@ -93,13 +94,16 @@ public class SingleStudyBenefitRiskAnalysisRepositoryTest {
     Integer analysisId = -1;
     Account user = em.find(Account.class, 1);
     Integer projectId = 1;
-    Integer interventionId = 1;
-    List<Intervention> selectedInterventions = Arrays.asList(em.find(Intervention.class, interventionId));
-    SingleStudyBenefitRiskAnalysis analysis = new SingleStudyBenefitRiskAnalysis(analysisId, projectId, "new name", Collections.EMPTY_LIST, selectedInterventions);
-    SingleStudyBenefitRiskAnalysis updatedAnalysis = singleStudyBenefitRiskAnalysisRepository.update(user, analysis);
+    Integer interventionId = -1;
+    InterventionInclusion inc = new InterventionInclusion(analysisId, interventionId);
+    em.persist(inc);
+    List<InterventionInclusion> interventionInclusions = Arrays.asList(inc);
+    SingleStudyBenefitRiskAnalysis analysis = new SingleStudyBenefitRiskAnalysis(analysisId, projectId, "new name", Collections.emptyList(),
+            interventionInclusions);
+    em.merge(analysis);
     SingleStudyBenefitRiskAnalysis result = em.find(SingleStudyBenefitRiskAnalysis.class, analysisId);
-    assertEquals(analysis.getSelectedInterventions(), updatedAnalysis.getSelectedInterventions());
-    assertEquals(updatedAnalysis, result);
+    assertEquals(analysis.getInterventionInclusions(), analysis.getInterventionInclusions());
+    assertEquals(analysis, result);
   }
 
   @Test
@@ -145,9 +149,11 @@ public class SingleStudyBenefitRiskAnalysisRepositoryTest {
   @Test(expected = ResourceDoesNotExistException.class)
   public void testUpdateAnalysisWithNonProjectIntervention() throws ResourceDoesNotExistException, MethodNotAllowedException {
     Account user = em.find(Account.class, 2);
+    int analysisId = -3;
     int projectId = 2;
-    Intervention intervention2 = em.find(Intervention.class, 2);
-    SingleStudyBenefitRiskAnalysis analysis = new SingleStudyBenefitRiskAnalysis(-3, projectId, "new name", Collections.EMPTY_LIST, Arrays.asList(intervention2));
+    int interventionId = -2;
+    List<InterventionInclusion> interventionInclusions = Arrays.asList(new InterventionInclusion(analysisId, interventionId));
+    SingleStudyBenefitRiskAnalysis analysis = new SingleStudyBenefitRiskAnalysis(analysisId, projectId, "new name", Collections.EMPTY_LIST, interventionInclusions);
     singleStudyBenefitRiskAnalysisRepository.update(user, analysis);
   }
 

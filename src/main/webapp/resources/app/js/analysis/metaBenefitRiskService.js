@@ -93,23 +93,23 @@ define([], function() {
       });
     }
 
-    function findMissingAlternatives(includedAlternatives, owa) {
-      return includedAlternatives.filter(function(alternative) {
+    function findMissingAlternatives(interventionInclusions, owa) {
+      return interventionInclusions.filter(function(alternative) {
         var modelType = owa.selectedModel.modelType;
         if (modelType.type === 'pairwise') {
           return alternative.id !== modelType.details.from.id &&
             alternative.id !== modelType.details.to.id;
         } else {
-          return !owa.selectedAnalysis.includedInterventions.find(function(includedIntervention) {
+          return !owa.selectedAnalysis.interventionInclusions.find(function(includedIntervention) {
             return alternative.id === includedIntervention.interventionId;
           });
         }
       });
     }
 
-    function addScales(owas, includedAlternatives, scaleResults) {
+    function addScales(owas, interventionInclusions , scaleResults) {
       return owas.map(function(owa) {
-        owa.scales = includedAlternatives.reduce(function(accum, includedAlternative) {
+        owa.scales = interventionInclusions.reduce(function(accum, includedAlternative) {
           if (scaleResults[owa.outcome.name]) {
             accum[includedAlternative.name] = scaleResults[owa.outcome.name][includedAlternative.name];
           }

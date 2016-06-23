@@ -193,6 +193,39 @@ define(['angular-mocks'], function(angularMocks) {
         rootScope.$digest();
 
       });
+
+      it('should work if there were no epochs', function(done) {
+       var getStudyPromise = studyDefer.promise;
+        var studyJsonObject = {
+        };
+        studyDefer.resolve(studyJsonObject);
+        studyService.getStudy.and.returnValue(getStudyPromise);
+        var itemToAdd = {
+          label: 'new epoch label',
+          comment: 'new epoch comment',
+          isPrimaryEpoch: true,
+          duration: 'P13D',
+        };
+
+        var expectedEpoch = {
+          uri: 'http://trials.drugis.org/instances/newUuid',
+          duration: 'P13D',
+          label: itemToAdd.label,
+          comment: 'new epoch comment',
+          pos: 0,
+          isPrimary: true
+        };
+
+        epochService.addItem(itemToAdd).then(function() {
+          epochService.queryItems().then(function(result) {
+            expect(result.length).toEqual(1);
+            expect(result[0]).toEqual(expectedEpoch);
+            done();
+          });
+        });
+
+        rootScope.$digest();
+      });
     });
 
 

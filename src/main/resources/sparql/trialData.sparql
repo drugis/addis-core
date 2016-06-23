@@ -1,6 +1,8 @@
 PREFIX ontology: <http://trials.drugis.org/ontology#>
 PREFIX dataset: <http://trials.drugis.org/datasets/>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX qudt: <http://qudt.org/schema/qudt#>
 PREFIX owl: <http://www.w3.org/2002/07/owl#>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#> 
 PREFIX entity: <http://trials.drugis.org/entities/>
@@ -14,8 +16,11 @@ SELECT DISTINCT
 ?drug
 ?interventionLabel
 ?drugInstance
+?treatmentNode
+?outcomeTypeUri
 ?outcomeInstance
 ?outcomeTypeUid
+?measurementType
 ?outcomeInstanceLabel
 ?arm
 ?armLabel
@@ -23,18 +28,39 @@ SELECT DISTINCT
 ?stdDev
 ?count
 ?sampleSize
+?fixedDoseValue
+?fixedDoseDosingPeriodicity
+?fixedDoseUnitConcept
+?fixedDoseUnitLabel
+?fixedDoseUnitMultiplier
+?maxDoseValue
+?maxDoseDosingPeriodicity
+?maxDoseUnitConcept
+?maxDoseUnitLabel
+?maxDoseUnitMultiplier
+?minDoseValue
+?minDoseDosingPeriodicity
+?minDoseUnitConcept
+?minDoseUnitLabel
+?minDoseUnitMultiplier
+(COALESCE(?treatmentTypeOptional, "http://trials.drugis.org/ontology#SimpleDrugTreatment") AS ?treatmentType)
 WHERE {
-  GRAPH ?graph {
+  BIND ($graphSelector AS ?graph) .
+  GRAPH $graphSelector {
     ?study rdfs:label ?studyName .
     ?study ontology:has_outcome ?outcomeInstance .
-    ?outcomeInstance ontology:of_variable [
-      owl:sameAs concept:$outcomeUid
-    ] .
-    ?outcomeInstance a ?outcomeTypeUid .
-    ?outcomeInstance rdfs:label ?outcomeInstanceLabel .
-    $interventionUnion .
+    $outcomeUnionString .
+    ?outcomeInstance
+      rdfs:label ?outcomeInstanceLabel ;
+      a ?outcomeTypeUid ;
+      rdfs:label ?outcomeInstanceLabel ;
+      ontology:of_variable [
+        owl:sameAs ?outcomeTypeUri ;
+        ontology:measurementType ?measurementType
+      ] .
+    $interventionUnionString .
   }
-  GRAPH ?graph {
+  GRAPH $graphSelector {
     ?drugInstance owl:sameAs ?drug .
     ?drugInstance rdfs:label ?interventionLabel .
     ?study ontology:has_arm ?arm .
@@ -44,9 +70,8 @@ WHERE {
         ontology:applied_to_arm ?arm ;
         ontology:applied_in_epoch ?epoch
       ] ;
-      ontology:has_drug_treatment [
-        ontology:treatment_has_drug ?drugInstance
-      ] .
+      ontology:has_drug_treatment ?treatmentNode .
+    ?treatmentNode ontology:treatment_has_drug ?drugInstance .
 
     ?epoch rdfs:label ?epochLabel .
     ?arm rdfs:label ?armLabel .
@@ -73,6 +98,43 @@ WHERE {
         ontology:count ?count ;
         ontology:sample_size ?sampleSize .
     } .
+    OPTIONAL {
+        ?treatmentNode
+          a ontology:FixedDoseDrugTreatment ;
+          a ?treatmentTypeOptional ;
+          ontology:treatment_dose [
+            rdf:value ?fixedDoseValue ;
+            ontology:dosingPeriodicity ?fixedDoseDosingPeriodicity ;
+            ontology:unit ?fixedDoseUnit
+          ] .
+          ?fixedDoseUnit
+            a ?fixedDoseUnitConcept ;
+            rdfs:label ?fixedDoseUnitLabel ;
+            qudt:conversionMultiplier ?fixedDoseUnitMultiplier .
+    } .
+    OPTIONAL {
+        ?treatmentNode
+          a ontology:TitratedDoseDrugTreatment ;
+          a ?treatmentTypeOptional ;
+          ontology:treatment_max_dose [
+            rdf:value ?maxDoseValue ;
+            ontology:dosingPeriodicity ?maxDoseDosingPeriodicity ;
+            ontology:unit ?maxDoseUnit
+          ] ;
+          ontology:treatment_min_dose [
+                      rdf:value ?minDoseValue ;
+                      ontology:dosingPeriodicity ?minDoseDosingPeriodicity ;
+                      ontology:unit ?minDoseUnit
+           ] .
+          ?maxDoseUnit
+            a ?maxDoseUnitConcept ;
+            rdfs:label ?maxDoseUnitLabel ;
+            qudt:conversionMultiplier ?maxDoseUnitMultiplier .
+          ?minDoseUnit
+            a ?minDoseUnitConcept ;
+            rdfs:label ?minDoseUnitLabel ;
+            qudt:conversionMultiplier ?minDoseUnitMultiplier .
+    } .
     {
       SELECT ?study ?arm
       WHERE {
@@ -84,8 +146,7 @@ WHERE {
              ontology:has_drug_treatment [
                ontology:treatment_has_drug ?drugInstance
              ] .
-      } GROUP BY ?study ?arm
-          HAVING (COUNT(?drugInstance) < 2)
+      }
     }
   }
 }

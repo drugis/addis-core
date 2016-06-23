@@ -2,7 +2,7 @@ package org.drugis.addis.trialverse.service.impl;
 
 import org.drugis.addis.security.Account;
 import org.drugis.addis.security.repository.AccountRepository;
-import org.drugis.addis.trialverse.model.VersionedUuidAndOwner;
+import org.drugis.addis.trialverse.model.mapping.VersionedUuidAndOwner;
 import org.drugis.addis.trialverse.service.MappingService;
 import org.drugis.trialverse.dataset.model.VersionMapping;
 import org.drugis.trialverse.dataset.repository.VersionMappingRepository;

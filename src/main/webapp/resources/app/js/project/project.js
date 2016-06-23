@@ -6,5 +6,10 @@ define(function (require) {
   return angular.module('addis.project', ['ngResource'])
     // controllers
     .controller('CreateProjectModalController', require('project/createProjectModalController'))
+    //directives
+    .directive('nmaReportView', require('project/nmaReportViewDirective'))
+    .directive('ssbrReportView', require('project/ssbrReportViewDirective'))
+
+    .service('ProjectService', require('project/projectService'))
     ;
 });

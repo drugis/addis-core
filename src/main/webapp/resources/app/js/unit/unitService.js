@@ -1,8 +1,8 @@
 'use strict';
-define([],
-  function() {
-    var dependencies = ['$q', 'StudyService'];
-    var UnitService = function($q, StudyService) {
+define(['lodash'],
+  function(_) {
+    var dependencies = ['StudyService'];
+    var UnitService = function(StudyService) {
 
         function nodeToFrontEnd(node) {
           return {
@@ -11,7 +11,7 @@ define([],
           };
         }
 
-      function queryItems(studyUuid) {
+      function queryItems() {
         return StudyService.getJsonGraph().then(function(graph) {
           var nodes = _.filter(graph['@graph'], function(node) {
             return node['@type'] === 'ontology:Unit';

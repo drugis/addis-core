@@ -1,14 +1,11 @@
 package org.drugis.addis.analyses.repository;
 
-import org.drugis.addis.analyses.AnalysisCommand;
-import org.drugis.addis.analyses.AnalysisType;
-import org.drugis.addis.analyses.MbrOutcomeInclusion;
-import org.drugis.addis.analyses.MetaBenefitRiskAnalysis;
+import org.drugis.addis.analyses.*;
 import org.drugis.addis.analyses.service.AnalysisService;
 import org.drugis.addis.config.JpaRepositoryTestConfig;
 import org.drugis.addis.exception.MethodNotAllowedException;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
-import org.drugis.addis.interventions.Intervention;
+import org.drugis.addis.interventions.model.SimpleIntervention;
 import org.drugis.addis.security.Account;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -19,12 +16,13 @@ import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;
+import java.io.IOException;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 import static org.junit.Assert.*;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.when;
 
 /**
  * Created by daan on 25-2-16.
@@ -35,14 +33,13 @@ import static org.junit.Assert.*;
 public class MetaBenefitRiskAnalysisRepositoryTest {
 
   @Inject
-  AnalysisService analysisService;
+  MetaBenefitRiskAnalysisRepository metaBenefitRiskAnalysisRepository;
 
   @Inject
-  MetaBenefitRiskAnalysisRepository metaBenefitRiskAnalysisRepository;
+  AnalysisService analysisService;
 
   @PersistenceContext(unitName = "addisCore")
   EntityManager em;
-
 
   @Test
   public void testQuery() {
@@ -55,37 +52,41 @@ public class MetaBenefitRiskAnalysisRepositoryTest {
   }
 
   @Test
-  public void testCreate() throws ResourceDoesNotExistException, MethodNotAllowedException, SQLException {
+  public void testCreate() throws ResourceDoesNotExistException, MethodNotAllowedException, SQLException, IOException {
     int projectId = 1;
     int accountId = 1;
     AnalysisCommand analysisCommand = new AnalysisCommand(projectId, "new analysis", AnalysisType.META_BENEFIT_RISK_ANALYSIS_LABEL);
     Account user = em.find(Account.class, accountId);
+    when(analysisService.buildInitialOutcomeInclusions(any(), any())).thenReturn(Collections.emptyList());
+
     MetaBenefitRiskAnalysis metaBenefitRiskAnalysis = metaBenefitRiskAnalysisRepository.create(user, analysisCommand);
+
     assertNotNull(metaBenefitRiskAnalysis);
     assertNotNull(metaBenefitRiskAnalysis.getId());
-    assertEquals(2, metaBenefitRiskAnalysis.getIncludedAlternatives().size());
-    assertEquals(1, metaBenefitRiskAnalysis.getMbrOutcomeInclusions().size());
+    assertEquals(2, metaBenefitRiskAnalysis.getInterventionInclusions().size());
+    assertEquals(0, metaBenefitRiskAnalysis.getMbrOutcomeInclusions().size());
   }
 
   @Test
   public void testUpdate() throws ResourceDoesNotExistException, MethodNotAllowedException {
     int accountId = 1;
     int analysisId = -10;
-    int interventionId = 2;
+    int interventionId = -2;
     int outcomeId = 2;
-    int modelId  = 1;
+    int modelId = 1;
 
     Account user = em.find(Account.class, accountId);
     MetaBenefitRiskAnalysis analysis = em.find(MetaBenefitRiskAnalysis.class, analysisId);
-    Intervention interventionToInclude = em.find(Intervention.class, interventionId);
-    List<Intervention> interventions = new ArrayList<>(analysis.getIncludedAlternatives());
-    interventions.add(interventionToInclude);
-    analysis.setIncludedAlternatives(interventions);
+    SimpleIntervention interventionToInclude = em.find(SimpleIntervention.class, interventionId);
+    InterventionInclusion interventionInclusion = new InterventionInclusion(analysisId, interventionToInclude.getId());
+    List<InterventionInclusion> interventions = new ArrayList<>(analysis.getInterventionInclusions());
+    interventions.add(interventionInclusion);
+    analysis.updateIncludedInterventions(new HashSet<>(interventions));
     List<MbrOutcomeInclusion> mbrOutcomeInclusions = new ArrayList<>(analysis.getMbrOutcomeInclusions());
     mbrOutcomeInclusions.add(new MbrOutcomeInclusion(analysis.getId(), outcomeId, 1, modelId));
-    analysis.setIncludedAlternatives(interventions);
+    analysis.updateIncludedInterventions(new HashSet<>(interventions));
     metaBenefitRiskAnalysisRepository.update(user, analysis);
-    assertEquals(2, analysis.getIncludedAlternatives().size());
+    assertEquals(2, analysis.getInterventionInclusions().size());
   }
 
   @Test
@@ -104,6 +105,20 @@ public class MetaBenefitRiskAnalysisRepositoryTest {
     MetaBenefitRiskAnalysis updated = metaBenefitRiskAnalysisRepository.update(user, analysis);
     assertEquals(1, updated.getMbrOutcomeInclusions().size());
     assertEquals(baseline, updated.getMbrOutcomeInclusions().get(0).getBaseline());
+  }
+
+  @Test
+  public void testRemoveAnalysis() {
+    int analysisId = -10;
+
+    MetaBenefitRiskAnalysis analysis = em.find(MetaBenefitRiskAnalysis.class, analysisId);
+
+    em.remove(analysis);
+    em.flush();
+
+    SimpleIntervention intervention = em.find(SimpleIntervention.class, -1);
+    em.flush();
+    assertNotNull(intervention);
   }
 
 }

@@ -3,7 +3,7 @@
   <div class="row">
     <div class="large-10 columns">
       <label>Semantic outcome
-        <select ng-model="newOutcome.semanticOutcome" ng-options="semanticOutcome as semanticOutcome.label for semanticOutcome in semanticOutcomes | orderBy:'label'"
+        <select id="outcome-select" ng-model="newOutcome.semanticOutcome" ng-options="semanticOutcome as semanticOutcome.label for semanticOutcome in semanticOutcomes | orderBy:'label'"
         ng-change="newOutcome.name = newOutcome.semanticOutcome.label; checkForDuplicateOutcomeName(newOutcome.name)"></select>
       </label>
     </div>
@@ -11,19 +11,19 @@
   <div class="row">
     <div class="large-10 columns">
       <label>Name
-        <input type="text" ng-model="newOutcome.name" ng-change="checkForDuplicateOutcomeName(newOutcome.name)">
+        <input id="outcome-name-input" type="text" ng-model="newOutcome.name" ng-change="checkForDuplicateOutcomeName(newOutcome.name)">
       </label>
     </div>
   </div>
   <div class="row">
     <div class="large-10 columns">
       <label>Motivation
-        <textarea rows="4" ng-model="newOutcome.motivation"></textarea>
+        <textarea id="outcome-desc-txt" rows="4" ng-model="newOutcome.motivation"></textarea>
       </label>
     </div>
   </div>
   <div class="row">
-    <button class="button small success" ng-disabled="!newOutcome.name || !newOutcome.semanticOutcome || duplicateOutcomeName.isDuplicate"
+    <button id="add-outcome-sumbit-btn" class="button small success" ng-disabled="!newOutcome.name || !newOutcome.semanticOutcome || duplicateOutcomeName.isDuplicate"
     type="submit">Add outcome
     </button>
     <div class="alert" ng-show="duplicateOutcomeName.isDuplicate">Duplicate name.</div>

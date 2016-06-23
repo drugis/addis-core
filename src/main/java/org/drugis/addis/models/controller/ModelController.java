@@ -11,7 +11,6 @@ import org.drugis.addis.models.Model;
 import org.drugis.addis.models.controller.command.CreateModelCommand;
 import org.drugis.addis.models.controller.command.UpdateModelCommand;
 import org.drugis.addis.models.exceptions.InvalidModelException;
-import org.drugis.addis.models.repository.ModelRepository;
 import org.drugis.addis.models.service.ModelService;
 import org.drugis.addis.patavitask.repository.PataviTaskRepository;
 import org.drugis.addis.patavitask.repository.UnexpectedNumberOfResultsException;
@@ -23,6 +22,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.security.Principal;
 import java.sql.SQLException;
 import java.util.List;
@@ -46,9 +46,6 @@ public class ModelController extends AbstractAddisCoreController {
   ModelService modelService;
 
   @Inject
-  ModelRepository modelRepository;
-
-  @Inject
   PataviTaskRepository pataviTaskRepository;
 
   @RequestMapping(value = "/projects/{projectId}/analyses/{analysisId}/models", method = RequestMethod.POST)
@@ -65,36 +62,36 @@ public class ModelController extends AbstractAddisCoreController {
 
   @RequestMapping(value = "/projects/{projectId}/analyses/{analysisId}/models/{modelId}", method = RequestMethod.GET)
   @ResponseBody
-  public Model get(@PathVariable Integer modelId) throws MethodNotAllowedException, ResourceDoesNotExistException {
-    return modelRepository.get(modelId);
+  public Model get(@PathVariable Integer modelId) throws MethodNotAllowedException, ResourceDoesNotExistException, IOException, SQLException {
+    return modelService.get(modelId);
   }
 
   @RequestMapping(value = "/projects/{projectId}/analyses/{analysisId}/models", method = RequestMethod.GET)
   @ResponseBody
-  public List<Model> query(@PathVariable Integer analysisId) throws SQLException {
+  public List<Model> query(@PathVariable Integer analysisId) throws SQLException, IOException {
     return modelService.query(analysisId);
   }
 
   @RequestMapping(value = "/projects/{projectId}/consistencyModels", method = RequestMethod.GET)
   @ResponseBody
-  public List<Model> consistencyModels(@PathVariable Integer projectId) throws SQLException {
+  public List<Model> consistencyModels(@PathVariable Integer projectId) throws SQLException, IOException {
     return modelService.queryConsistencyModels(projectId);
   }
 
   @RequestMapping(value = "/projects/{projectId}/analyses/{analysisId}/models/{modelId}", method = RequestMethod.POST)
   @ResponseBody
-  public void update(Principal principal, @RequestBody UpdateModelCommand updateModelCommand) throws MethodNotAllowedException, ResourceDoesNotExistException, InvalidModelException {
+  public void update(Principal principal, @RequestBody UpdateModelCommand updateModelCommand) throws MethodNotAllowedException, ResourceDoesNotExistException, InvalidModelException, IOException {
     modelService.checkOwnership(updateModelCommand.getId(), principal);
     modelService.increaseRunLength(updateModelCommand);
   }
 
   @RequestMapping(value = "/projects/{projectId}/analyses/{analysisId}/models/{modelId}/result", method = RequestMethod.GET)
   @ResponseBody
-  public JsonNode getResult(HttpServletResponse response, @PathVariable Integer modelId) throws MethodNotAllowedException, ResourceDoesNotExistException, IOException {
-    Model model = modelRepository.get(modelId);
-    if (model.getTaskId() != null) {
+  public JsonNode getResult(HttpServletResponse response, @PathVariable Integer modelId) throws MethodNotAllowedException, ResourceDoesNotExistException, IOException, URISyntaxException, SQLException {
+    Model model = modelService.get(modelId);
+    if (model.getTaskUrl() != null) {
       try {
-        return pataviTaskRepository.getResult(model.getTaskId());
+        return pataviTaskRepository.getResult(model.getTaskUrl());
       } catch (UnexpectedNumberOfResultsException e) {
         response.setStatus(HttpServletResponse.SC_NOT_FOUND);
         return null;

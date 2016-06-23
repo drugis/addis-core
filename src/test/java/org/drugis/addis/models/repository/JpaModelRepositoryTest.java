@@ -15,6 +15,7 @@ import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collections;
@@ -71,7 +72,7 @@ public class JpaModelRepositoryTest {
   }
 
   @Test
-  public void testFind() {
+  public void testFind() throws IOException {
     Integer analysisId = -5;
     Integer modelId = 1;
     Model result = modelRepository.find(modelId);
@@ -80,7 +81,7 @@ public class JpaModelRepositoryTest {
   }
 
   @Test
-  public void getPairwiseTypeModel() {
+  public void getPairwiseTypeModel() throws IOException {
     Integer analysisId = -5;
     Integer modelId = 2;
     Double mean = 2.3;
@@ -122,15 +123,15 @@ public class JpaModelRepositoryTest {
   public void testFindByAnalysisWithTask() throws SQLException {
     Integer analysisId = -7;
     NetworkMetaAnalysis nmaTaskTest = em.find(NetworkMetaAnalysis.class, analysisId);
+
     List<Model> models = modelRepository.findByAnalysis(nmaTaskTest.getId());
+
     assertNotNull(models);
     assertEquals(2, models.size());
-    assertTrue(models.get(0).isHasResult());
-    assertFalse(models.get(1).isHasResult());
   }
 
   @Test
-  public void testGet() throws SQLException {
+  public void testGet() throws SQLException, IOException {
     Integer modelId = 1;
     Model result = modelRepository.get(modelId);
     assertNotNull(result);
@@ -152,7 +153,7 @@ public class JpaModelRepositoryTest {
   }
 
   @Test(expected = DataAccessException.class)
-  public void testGetNonExistentModel() throws SQLException {
+  public void testGetNonExistentModel() throws SQLException, IOException {
     Integer modelId = -999;
     modelRepository.get(modelId);
   }
@@ -169,7 +170,5 @@ public class JpaModelRepositoryTest {
     Integer projectId = 2;
     List<Model> networkModelsByProject = modelRepository.findNetworkModelsByProject(projectId);
     assertEquals(2, networkModelsByProject.size());
-    assertTrue(networkModelsByProject.get(0).isHasResult());
-    assertFalse(networkModelsByProject.get(1).isHasResult());
   }
 }

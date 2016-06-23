@@ -1,11 +1,18 @@
-(defproject addis-rdf "0.1.0-SNAPSHOT"
-  :description "FIXME: write description"
-  :url "http://example.com/FIXME"
+(defproject org.drugis.addis/rdfexport "1.0.0"
+  :description "Convert ADDIS 1.x XML to ADDIS 2 RDF"
+  :url "https://drugis.org/"
+  :min-lein-version "2.0.0"
   :dependencies [[org.clojure/clojure "1.5.1"]
                  [riveted "0.0.9"]
                  [org.clojure/tools.cli "0.3.1"]]
-  :plugins [[codox "0.8.9"]]
-  :codox {:defaults {:doc/format :markdown}}
-  :main ^:skip-aot org.drugis.addis.rdf.core
+  :source-paths ["src/clj"]
+  :java-source-paths ["src/java"]
   :target-path "target/%s"
-  :profiles {:uberjar {:aot :all}})
+  :plugins [[org.apache.maven.wagon/wagon-ssh-external "2.6"]]
+  :repositories [["drugis" { :url "scp://drugis.org/srv/mvn/" :username "maven" :sign-releases false } ]]
+  :profiles {:uberjar {:aot :all}}
+  :license GPL-3)
+
+(cemerick.pomegranate.aether/register-wagon-factory!
+  "scp" #(let [c (resolve 'org.apache.maven.wagon.providers.ssh.external.ScpExternalWagon)]
+           (clojure.lang.Reflector/invokeConstructor c (into-array []))))

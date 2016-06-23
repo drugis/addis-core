@@ -24,12 +24,17 @@ public class Covariate {
   public Covariate() {
   }
 
-  public Covariate(Integer project, String name, String motivation, String definitionKey, CovariateOptionType type) {
+  public Covariate(Integer id, Integer project, String name, String motivation, String definitionKey, CovariateOptionType type) {
+    this.id = id;
     this.project = project;
     this.name = name;
     this.motivation = motivation;
     this.definitionKey = definitionKey;
     this.type = type;
+  }
+
+  public Covariate(Integer project, String name, String motivation, String definitionKey, CovariateOptionType type) {
+    this(null, project, name, motivation, definitionKey, type);
   }
 
   public Integer getId() {

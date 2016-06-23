@@ -9,7 +9,6 @@ import org.drugis.addis.base.AbstractAddisCoreController;
 import org.drugis.addis.config.TestConfig;
 import org.drugis.addis.models.Model;
 import org.drugis.addis.models.controller.command.*;
-import org.drugis.addis.models.repository.ModelRepository;
 import org.drugis.addis.models.service.ModelService;
 import org.drugis.addis.patavitask.repository.PataviTaskRepository;
 import org.drugis.addis.projects.service.ProjectService;
@@ -30,6 +29,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import javax.inject.Inject;
+import java.net.URI;
 import java.security.Principal;
 import java.util.Collections;
 import java.util.List;
@@ -56,9 +56,6 @@ public class ModelControllerTest {
 
   @Mock
   private ModelService modelService;
-
-  @Mock
-  private ModelRepository modelRepository;
 
   @Mock
   private PataviTaskRepository pataviTaskRepository;
@@ -399,7 +396,7 @@ public class ModelControllerTest {
   public void testGet() throws Exception {
     Integer analysisId = 55;
     Model model = modelBuilder.build();
-    when(modelRepository.get(model.getId())).thenReturn(model);
+    when(modelService.get(model.getId())).thenReturn(model);
 
     mockMvc.perform(get("/projects/45/analyses/55/models/1").principal(user))
             .andExpect(status().isOk())
@@ -407,7 +404,7 @@ public class ModelControllerTest {
             .andExpect(jsonPath("$.id", is(model.getId())))
             .andExpect(jsonPath("$.analysisId", is(analysisId)));
 
-    verify(modelRepository).get(model.getId());
+    verify(modelService).get(model.getId());
   }
 
   @Test
@@ -474,30 +471,30 @@ public class ModelControllerTest {
 
   @Test
   public void testGetResult() throws Exception {
-    Integer taskId = 2;
-    Model model = modelBuilder.taskId(taskId).build();
+    URI taskId = URI.create("2");
+    Model model = modelBuilder.taskUri(taskId).build();
     Integer modelID = 1;
     JsonNode jsonNode = new ObjectMapper().readTree("{}");
-    when(modelRepository.get(modelID)).thenReturn(model);
-    when(pataviTaskRepository.getResult(model.getTaskId())).thenReturn(jsonNode);
+    when(modelService.get(modelID)).thenReturn(model);
+    when(pataviTaskRepository.getResult(model.getTaskUrl())).thenReturn(jsonNode);
     ResultActions resultActions = mockMvc.perform(get("/projects/45/analyses/55/models/1/result").principal(user));
     resultActions
             .andExpect(status().isOk())
             .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()))
             .andExpect(jsonPath("$", notNullValue()));
-    verify(modelRepository).get(model.getId());
-    verify(pataviTaskRepository).getResult(model.getTaskId());
+    verify(modelService).get(model.getId());
+    verify(pataviTaskRepository).getResult(model.getTaskUrl());
   }
 
   @Test
   public void testGetResultNoTaskId() throws Exception {
     Model model = modelBuilder.build();
     Integer modelID = 1;
-    when(modelRepository.get(modelID)).thenReturn(model);
+    when(modelService.get(modelID)).thenReturn(model);
     ResultActions resultActions = mockMvc.perform(get("/projects/45/analyses/55/models/1/result").principal(user));
     resultActions
             .andExpect(status().isNotFound());
-    verify(modelRepository).get(model.getId());
+    verify(modelService).get(model.getId());
   }
 
   @Test

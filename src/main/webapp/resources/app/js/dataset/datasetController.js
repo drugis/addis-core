@@ -8,12 +8,54 @@ define(['lodash'],
       HistoryResource, ConceptService, VersionedGraphResource, DatasetResource, GraphResource) {
 
       $scope.createProjectDialog = createProjectDialog;
-
+      $scope.showEditDatasetModal = showEditDatasetModal;
+      $scope.userUid = $stateParams.userUid;
+      $scope.datasetUUID = $stateParams.datasetUUID;
       // no version so this must be head view
       $scope.isHeadView = !$stateParams.versionUuid;
       if (!$scope.isHeadView) {
         $scope.versionUuid = $stateParams.versionUuid;
       }
+
+
+      $scope.stripFrontFilter = $filter('stripFrontFilter');
+      $scope.isEditingAllowed = false;
+      loadStudiesWithDetail();
+      $scope.datasetConcepts = loadConcepts();
+
+
+      if ($scope.isHeadView) {
+        getJson(DatasetResource);
+      } else {
+        getJson(DatasetVersionedResource);
+      }
+
+      loadHistory();
+
+      function loadHistory() {
+        HistoryResource.query($stateParams).$promise.then(function(historyItems) {
+          if ($scope.isHeadView) {
+            $scope.currentRevision = historyItems[historyItems.length - 1];
+            $scope.currentRevision.isHead = true;
+          } else {
+            // sort to know iF curentRevission is head
+            $scope.currentRevision = _.find(historyItems, function(item) {
+              return item.uri.lastIndexOf($stateParams.versionUuid) > 0;
+            });
+            if ($scope.currentRevision.historyOrder === 0) {
+              $scope.currentRevision.isHead = true;
+              // turns out its the head verion now we have the version information
+              $scope.isHeadView = true;
+            } else {
+              $scope.currentRevision.isHead = false;
+            }
+          }
+
+          $scope.isEditingAllowed = isEditingAllowed();
+        });
+      }
+
+
 
       function isEditAllowedOnVersion() {
         return $scope.currentRevision && $scope.currentRevision.isHead;
@@ -24,7 +66,7 @@ define(['lodash'],
           isEditAllowedOnVersion());
       }
 
-      $scope.loadConcepts = function() {
+      function loadConcepts() {
         // load the concepts data from the backend
         var getConceptsFromBackendDefer;
         if ($scope.versionUuid) {
@@ -45,14 +87,7 @@ define(['lodash'],
         // place loaded data into fontend cache and return a promise
         ConceptService.loadJson(getConceptsFromBackendDefer.$promise);
         return getConceptsFromBackendDefer.$promise;
-      };
-
-      $scope.userUid = $stateParams.userUid;
-      $scope.datasetUUID = $stateParams.datasetUUID;
-
-      $scope.stripFrontFilter = $filter('stripFrontFilter');
-      $scope.isEditingAllowed = false;
-      $scope.datasetConcepts = $scope.loadConcepts();
+      }
 
       function getJson(resource) {
         resource.getForJson($stateParams).$promise.then(function(response) {
@@ -66,34 +101,12 @@ define(['lodash'],
         });
       }
 
-      if ($scope.isHeadView) {
-        getJson(DatasetResource);
-      } else {
-        getJson(DatasetVersionedResource);
-      }
-
-      HistoryResource.query($stateParams).$promise.then(function(historyItems) {
-
-        if ($scope.isHeadView) {
-          $scope.currentRevision = historyItems[historyItems.length - 1];
-          $scope.currentRevision.isHead = true;
-        } else {
-          // sort to know iF curentRevission is head
-          $scope.currentRevision = _.find(historyItems, function(item) {
-            return item.uri.lastIndexOf($stateParams.versionUuid) > 0;
-          });
-          $scope.currentRevision.isHead = $scope.currentRevision.historyOrder === 0;
-        }
-
-        $scope.isEditingAllowed = isEditingAllowed();
-      });
-
-      $scope.loadStudiesWithDetail = function() {
+      function loadStudiesWithDetail() {
         StudiesWithDetailsService.get($stateParams.userUid, $stateParams.datasetUUID, $stateParams.versionUuid)
           .then(function(result) {
-            $scope.studiesWithDetail = result;
+            $scope.studiesWithDetail = result instanceof Array ? result : [];
           });
-      };
+      }
 
       $scope.showTableOptions = function() {
         $modal.open({
@@ -147,7 +160,27 @@ define(['lodash'],
         });
       }
 
-      $scope.loadStudiesWithDetail();
+      function showEditDatasetModal() {
+        $modal.open({
+          templateUrl: 'app/js/dataset/editDataset.html',
+          controller: 'EditDatasetController',
+          resolve: {
+            dataset: function() {
+              return $scope.dataset;
+            },
+            userUid: function() {
+              return $scope.userUid;
+            },
+            callback: function() {
+              return function(newTitle, newDescription) {
+                $scope.dataset.title = newTitle;
+                $scope.dataset.comment = newDescription;
+                loadHistory();
+              };
+            }
+          }
+        });
+      }
 
       $scope.tableOptions = {
         columns: [{

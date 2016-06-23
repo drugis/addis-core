@@ -2,22 +2,30 @@ package org.drugis.addis.problems;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import org.apache.commons.lang3.tuple.Pair;
+import org.apache.jena.ext.com.google.common.collect.ImmutableSet;
+import org.drugis.addis.TestUtils;
 import org.drugis.addis.analyses.*;
 import org.drugis.addis.analyses.repository.AnalysisRepository;
 import org.drugis.addis.analyses.repository.SingleStudyBenefitRiskAnalysisRepository;
+import org.drugis.addis.analyses.service.AnalysisService;
 import org.drugis.addis.covariates.Covariate;
 import org.drugis.addis.covariates.CovariateRepository;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
-import org.drugis.addis.interventions.Intervention;
+import org.drugis.addis.interventions.model.AbstractIntervention;
+import org.drugis.addis.interventions.model.SimpleIntervention;
+import org.drugis.addis.interventions.model.SingleIntervention;
 import org.drugis.addis.interventions.repository.InterventionRepository;
+import org.drugis.addis.interventions.service.InterventionService;
+import org.drugis.addis.interventions.service.impl.InvalidTypeForDoseCheckException;
 import org.drugis.addis.models.Model;
 import org.drugis.addis.models.exceptions.InvalidModelException;
-import org.drugis.addis.models.repository.ModelRepository;
+import org.drugis.addis.models.service.ModelService;
 import org.drugis.addis.outcomes.Outcome;
 import org.drugis.addis.outcomes.repository.OutcomeRepository;
 import org.drugis.addis.patavitask.PataviTask;
 import org.drugis.addis.patavitask.repository.PataviTaskRepository;
+import org.drugis.addis.patavitask.repository.UnexpectedNumberOfResultsException;
 import org.drugis.addis.problems.model.*;
 import org.drugis.addis.problems.service.ProblemService;
 import org.drugis.addis.problems.service.impl.PerformanceTableBuilder;
@@ -26,22 +34,25 @@ import org.drugis.addis.problems.service.model.AbstractMeasurementEntry;
 import org.drugis.addis.problems.service.model.ContinuousMeasurementEntry;
 import org.drugis.addis.projects.Project;
 import org.drugis.addis.projects.repository.ProjectRepository;
-import org.drugis.addis.trialverse.model.SemanticIntervention;
+import org.drugis.addis.security.Account;
+import org.drugis.addis.trialverse.model.SemanticInterventionUriAndName;
 import org.drugis.addis.trialverse.model.SemanticVariable;
 import org.drugis.addis.trialverse.model.emun.CovariateOption;
+import org.drugis.addis.trialverse.model.emun.CovariateOptionType;
+import org.drugis.addis.trialverse.model.trialdata.*;
 import org.drugis.addis.trialverse.service.MappingService;
 import org.drugis.addis.trialverse.service.TrialverseService;
 import org.drugis.addis.trialverse.service.TriplestoreService;
-import org.drugis.addis.trialverse.service.impl.TriplestoreServiceImpl;
+import org.drugis.addis.trialverse.service.impl.ReadValueException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import java.io.IOException;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.sql.SQLException;
 import java.util.*;
@@ -75,7 +86,10 @@ public class ProblemServiceTest {
   InterventionRepository interventionRepository;
 
   @Mock
-  ModelRepository modelRepository;
+  InterventionService interventionService;
+
+  @Mock
+  ModelService modelService;
 
   @Mock
   OutcomeRepository outcomeRepository;
@@ -88,317 +102,291 @@ public class ProblemServiceTest {
 
   @Mock
   TrialverseService trialverseService;
-  @InjectMocks
-  ProblemService problemService;
+
   @Mock
   private TriplestoreService triplestoreService;
-  private String namespaceUid = "UID 1";
-  private String versionedUuid = "versionedUuid";
+
+  @Mock
+  AnalysisService analysisService;
+
+  @InjectMocks
+  ProblemService problemService;
+
+  private final static URI DICHOTOMOUS_TYPR_URI = URI.create("http://trials.drugis.org/ontology#dichotomous");
+
+  private final String namespaceUid = "UID 1";
+  private final String versionedUuid = "versionedUuid";
+  private final Integer projectId = 101;
+  private final Integer analysisId = 202;
+  private final String projectDatasetUid = "projectDatasetUid";
+  private final String projectDatasetVersion = "projectDatasetVersion";
+  private final Account owner = mock(Account.class);
+  private final Project project = new Project(projectId, owner, "project name", "desc", projectDatasetUid, projectDatasetVersion);
+  ;
+  private final SemanticVariable semanticOutcome = new SemanticVariable(URI.create("semanticOutcomeUri"), "semanticOutcomeLabel");
+  private final Outcome outcome = new Outcome(303, project.getId(), "outcome name", "moti", semanticOutcome);
+  private final URI fluoxConceptUri = URI.create("fluoxConceptUri");
+  private final SemanticInterventionUriAndName fluoxConcept = new SemanticInterventionUriAndName(fluoxConceptUri, "fluox concept");
+  private final Integer fluoxInterventionId = 401;
+  private final SingleIntervention fluoxIntervention = new SimpleIntervention(fluoxInterventionId, project.getId(),
+          "fluoxetine", "moti", fluoxConcept.getUri(), fluoxConcept.getLabel());
+  private final URI paroxConceptUri = URI.create("paroxConceptUri");
+  private final SemanticInterventionUriAndName paroxConcept = new SemanticInterventionUriAndName(paroxConceptUri, "parox concept");
+  private final Integer paroxInterventionId = 402;
+  private final SingleIntervention paroxIntervention = new SimpleIntervention(paroxInterventionId, project.getId(),
+          "paroxetine", "moti", paroxConcept.getUri(), paroxConcept.getLabel());
+  private final URI sertraConceptUri = URI.create("sertraConceptUri");
+  private final SemanticInterventionUriAndName sertraConcept = new SemanticInterventionUriAndName(sertraConceptUri, "sertra concept");
+  private final Integer sertraInterventionId = 403;
+  private final SingleIntervention sertraIntervention = new SimpleIntervention(sertraInterventionId, project.getId(),
+          "sertraline", "moti", sertraConcept.getUri(), sertraConcept.getLabel());
+  private final List<AbstractIntervention> allProjectInterventions = Arrays.asList(fluoxIntervention, paroxIntervention, sertraIntervention);
 
   @Before
-  public void setUp() throws URISyntaxException {
+  public void setUp() throws URISyntaxException, ResourceDoesNotExistException {
     problemService = new ProblemServiceImpl();
     MockitoAnnotations.initMocks(this);
-    versionedUuid = "versionedUuid";
     when(mappingService.getVersionedUuid(namespaceUid)).thenReturn(versionedUuid);
+    when(projectRepository.get(projectId)).thenReturn(project);
+    when(interventionRepository.query(project.getId())).thenReturn(allProjectInterventions);
+    when(interventionService.resolveCombinations(anyList())).thenReturn(Collections.emptyList());
   }
 
   @After
   public void cleanUp() throws URISyntaxException {
     verifyNoMoreInteractions(analysisRepository, projectRepository, singleStudyBenefitRiskAnalysisRepository,
-            interventionRepository, trialverseService, triplestoreService, mappingService, modelRepository);
+            interventionRepository, trialverseService, triplestoreService, mappingService, modelService);
   }
 
   @Test
-  public void testGetSingleStudyBenefitRiskProblem() throws ResourceDoesNotExistException, URISyntaxException, SQLException, IOException {
-    int projectId = 1;
-    String projectVersion = "projectVersion";
-    Project project = mock(Project.class);
-    when(project.getNamespaceUid()).thenReturn(namespaceUid);
-    when(project.getDatasetVersion()).thenReturn(projectVersion);
-    when(projectRepository.get(projectId)).thenReturn(project);
+  public void testGetSingleStudyBenefitRiskProblem() throws ResourceDoesNotExistException, URISyntaxException, SQLException, IOException, ReadValueException, InvalidTypeForDoseCheckException, UnexpectedNumberOfResultsException {
+    URI secondOutcomeUri = URI.create("http://secondSemantic");
+    SemanticVariable secondSemanticOutcome = new SemanticVariable(secondOutcomeUri, "second semantic outcome");
+    Outcome secondOutcome = new Outcome(-303, projectId, "second outcome", "very", secondSemanticOutcome);
+    List<Outcome> outcomes = Arrays.asList(outcome, secondOutcome);
+    //include interventions: fluox and sertra
+    InterventionInclusion fluoxInclusion = new InterventionInclusion(analysisId, fluoxIntervention.getId());
+    InterventionInclusion sertraInclusion = new InterventionInclusion(analysisId, sertraIntervention.getId());
+    List<InterventionInclusion> interventionInclusions = Arrays.asList(fluoxInclusion, sertraInclusion);
+    SingleStudyBenefitRiskAnalysis singleStudyAnalysis = new SingleStudyBenefitRiskAnalysis(analysisId, projectId, "single study analysis", outcomes, interventionInclusions);
+    when(analysisRepository.get(analysisId)).thenReturn(singleStudyAnalysis);
 
-    int analysisId = 2;
-    String studyUid = "3g0yg-g945gh";
-    String criterionUri1 = "c1";
-    String variableName1 = "vn1";
-    String alternativeUri1 = "a1";
-    String armName1 = "an1";
+    URI daanEtAlUri = URI.create("DaanEtAlUri");
+    URI daanEtAlFluoxInstance = URI.create("daanEtAlFluoxInstance");
+    URI daanEtAlFluoxArmUri = URI.create("daanEtAlFluoxArm");
+    int daanEtAlFluoxSampleSize = 20;
+    int daanEtAlFluoxRate = 30;
+    URI variableUri = outcome.getSemanticOutcomeUri();
+    URI variableConceptUri = outcome.getSemanticOutcomeUri();
+    Measurement daanEtAlFluoxMeasurement1 = new Measurement(daanEtAlUri, variableUri, variableConceptUri, daanEtAlFluoxArmUri,
+            DICHOTOMOUS_TYPR_URI, daanEtAlFluoxSampleSize, daanEtAlFluoxRate, null, null);
+    Measurement daanEtAlFluoxMeasurement2 = new Measurement(daanEtAlUri, secondOutcomeUri, variableConceptUri, daanEtAlFluoxArmUri,
+            DICHOTOMOUS_TYPR_URI, daanEtAlFluoxSampleSize, daanEtAlFluoxRate, null, null);
+    AbstractSemanticIntervention simpleSemanticFluoxIntervention = new SimpleSemanticIntervention(daanEtAlFluoxInstance, fluoxConceptUri);
 
-    String criterionUri2 = "c2";
-    String variableName2 = "vn2";
-    String alternativeUri2 = "a2";
-    String armName2 = "an2";
+    TrialDataArm daanEtAlFluoxArm = new TrialDataArm(daanEtAlFluoxArmUri, "daanEtAlFluoxArm", daanEtAlFluoxInstance);
+    daanEtAlFluoxArm.addMeasurement(daanEtAlFluoxMeasurement1);
+    daanEtAlFluoxArm.addMeasurement(daanEtAlFluoxMeasurement2);
+    daanEtAlFluoxArm.addSemanticIntervention(simpleSemanticFluoxIntervention);
 
-    SingleStudyBenefitRiskAnalysis analysis = mock(SingleStudyBenefitRiskAnalysis.class);
-    when(analysisRepository.get(analysisId)).thenReturn(analysis);
-    when(analysis.getTitle()).thenReturn("analysisName");
+    URI daanEtAlSertraInstance = URI.create("daanEtAlSertraInstance");
+    URI daanEtAlSertraArmUri = URI.create("daanEtAlSertraArm");
+    int daanEtAlSertraSampleSize = 40;
+    int daanEtAlSertraRate = 5;
+    Measurement daanEtAlSertraMeasurement1 = new Measurement(daanEtAlUri, variableUri, variableConceptUri, daanEtAlSertraArmUri,
+            DICHOTOMOUS_TYPR_URI, daanEtAlSertraSampleSize, daanEtAlSertraRate, null, null);
+    Measurement daanEtAlSertraMeasurement2 = new Measurement(daanEtAlUri, secondOutcomeUri, variableConceptUri, daanEtAlSertraArmUri,
+            DICHOTOMOUS_TYPR_URI, daanEtAlSertraSampleSize, daanEtAlSertraRate, null, null);
+    AbstractSemanticIntervention simpleSemanticSertraIntervention = new SimpleSemanticIntervention(daanEtAlSertraInstance, sertraConceptUri);
 
-    Outcome outcome1 = mock(Outcome.class);
-    Outcome outcome2 = mock(Outcome.class);
-    when(outcome1.getSemanticOutcomeUri()).thenReturn(criterionUri1);
-    when(outcome2.getSemanticOutcomeUri()).thenReturn(criterionUri2);
-    List<Outcome> outcomes = Arrays.asList(outcome1, outcome2);
-    when(analysis.getSelectedOutcomes()).thenReturn(outcomes);
+    TrialDataArm daanEtAlSertraArm = new TrialDataArm(daanEtAlSertraArmUri, "daanEtAlSertraArm", daanEtAlSertraInstance);
+    daanEtAlSertraArm.addMeasurement(daanEtAlSertraMeasurement1);
+    daanEtAlSertraArm.addMeasurement(daanEtAlSertraMeasurement2);
+    daanEtAlSertraArm.addSemanticIntervention(simpleSemanticSertraIntervention);
 
-    Intervention intervention1 = mock(Intervention.class);
-    Intervention intervention2 = mock(Intervention.class);
-    when(intervention1.getSemanticInterventionUri()).thenReturn(alternativeUri1);
-    when(intervention2.getSemanticInterventionUri()).thenReturn(alternativeUri2);
-    List<Intervention> interventions = Arrays.asList(intervention1, intervention2);
-    when(analysis.getSelectedInterventions()).thenReturn(interventions);
+    URI daanEtAlParoxInstance = URI.create("daanEtAlParoxInstance");
+    URI daanEtAlParoxArmUri = URI.create("daanEtAlParoxArm");
+    int daanEtAlParoxSampleSize = 40;
+    int daanEtAlParoxRate = 5;
+    Measurement daanEtAlParoxMeasurement1 = new Measurement(daanEtAlUri, variableUri, variableConceptUri, daanEtAlParoxArmUri,
+            DICHOTOMOUS_TYPR_URI, daanEtAlParoxSampleSize, daanEtAlParoxRate, null, null);
+    Measurement daanEtAlParoxMeasurement2 = new Measurement(daanEtAlUri, secondOutcomeUri, variableConceptUri, daanEtAlParoxArmUri,
+            DICHOTOMOUS_TYPR_URI, daanEtAlParoxSampleSize, daanEtAlParoxRate, null, null);
+    AbstractSemanticIntervention simpleSemanticParoxIntervention = new SimpleSemanticIntervention(daanEtAlParoxInstance, paroxConceptUri);
 
-    when(analysis.getStudyGraphUid()).thenReturn(studyUid);
-    List<String> outcomeUids = Arrays.asList(criterionUri1, criterionUri2);
-    List<String> interventionUids = Arrays.asList(alternativeUri1, alternativeUri2);
+    TrialDataArm unmatchedDaanEtAlParoxArm = new TrialDataArm(daanEtAlParoxArmUri, "daanEtAlParoxArm", daanEtAlParoxInstance);
+    unmatchedDaanEtAlParoxArm.addMeasurement(daanEtAlParoxMeasurement1);
+    unmatchedDaanEtAlParoxArm.addMeasurement(daanEtAlParoxMeasurement2);
+    unmatchedDaanEtAlParoxArm.addSemanticIntervention(simpleSemanticParoxIntervention);
 
-    Long rate = 42L;
-    Long sampleSize1 = 111L;
+    // add matching result to arms
+    daanEtAlFluoxArm.setMatchedProjectInterventionIds(Collections.singleton(fluoxIntervention.getId()));
+    daanEtAlSertraArm.setMatchedProjectInterventionIds(Collections.singleton(sertraIntervention.getId()));
+    List<TrialDataArm> daanEtAlArms = Arrays.asList(daanEtAlFluoxArm, daanEtAlSertraArm, unmatchedDaanEtAlParoxArm);
+    TrialDataStudy daanEtAl = new TrialDataStudy(daanEtAlUri, "Daan et al", daanEtAlArms);
 
-    Long sampleSize2 = 222L;
-    Double mu = 7.56;
-    Double stdDev = 0.2;
-    TriplestoreServiceImpl.SingleStudyBenefitRiskMeasurementRow row1 = new TriplestoreServiceImpl.SingleStudyBenefitRiskMeasurementRow(criterionUri1, variableName1, alternativeUri1, armName1, mu, stdDev, null, sampleSize1);
-    TriplestoreServiceImpl.SingleStudyBenefitRiskMeasurementRow row2 = new TriplestoreServiceImpl.SingleStudyBenefitRiskMeasurementRow(criterionUri2, variableName2, alternativeUri2, armName2, null, null, rate, sampleSize2);
-    TriplestoreServiceImpl.SingleStudyBenefitRiskMeasurementRow row3 = new TriplestoreServiceImpl.SingleStudyBenefitRiskMeasurementRow(criterionUri1, variableName1, alternativeUri2, armName2, mu, stdDev, null, sampleSize1);
-    TriplestoreServiceImpl.SingleStudyBenefitRiskMeasurementRow row4 = new TriplestoreServiceImpl.SingleStudyBenefitRiskMeasurementRow(criterionUri2, variableName2, alternativeUri1, armName1, null, null, rate, sampleSize2);
+    // actually set study in analysis
+    singleStudyAnalysis.setStudyGraphUri(daanEtAlUri);
 
-    List<TriplestoreServiceImpl.SingleStudyBenefitRiskMeasurementRow> measurementRows = Arrays.asList(row1, row2, row3, row4);
+    List<TrialDataStudy> studyResult = Collections.singletonList(daanEtAl);
+    Set<URI> outcomeUris = new HashSet<>(Arrays.asList(outcome.getSemanticOutcomeUri(), secondOutcome.getSemanticOutcomeUri()));
+    Set<URI> interventionUris = new HashSet<>(Arrays.asList(fluoxIntervention.getSemanticInterventionUri(), sertraIntervention.getSemanticInterventionUri()));
 
-    when(triplestoreService.getSingleStudyMeasurements(anyString(), anyString(), anyString(), anyList(), anyList())).thenReturn(measurementRows);
+    when(triplestoreService.getSingleStudyData(versionedUuid, daanEtAl.getStudyUri(), project.getDatasetVersion(), outcomeUris, interventionUris)).thenReturn(studyResult);
 
     AbstractMeasurementEntry measurementEntry = mock(ContinuousMeasurementEntry.class);
-    List<AbstractMeasurementEntry> performanceTable = Arrays.asList(measurementEntry);
-    when(performanceTablebuilder.build(measurementRows)).thenReturn(performanceTable);
+    List<AbstractMeasurementEntry> performanceTable = Collections.singletonList(measurementEntry);
+
+    List<AbstractIntervention> includedInterventions = Arrays.asList(fluoxIntervention, sertraIntervention);
+    when(analysisService.getIncludedInterventions(singleStudyAnalysis)).thenReturn(includedInterventions);
+    when(triplestoreService.findMatchingIncludedInterventions(includedInterventions, daanEtAlFluoxArm)).thenReturn(ImmutableSet.of(fluoxIntervention));
+    when(triplestoreService.findMatchingIncludedInterventions(includedInterventions, daanEtAlSertraArm)).thenReturn(ImmutableSet.of(sertraIntervention));
+    when(triplestoreService.findMatchingIncludedInterventions(includedInterventions, unmatchedDaanEtAlParoxArm)).thenReturn(Collections.emptySet());
+
+    when(performanceTablebuilder.build(any())).thenReturn(performanceTable);
+    when(mappingService.getVersionedUuid(project.getNamespaceUid())).thenReturn(versionedUuid);
 
     // execute
     SingleStudyBenefitRiskProblem actualProblem = (SingleStudyBenefitRiskProblem) problemService.getProblem(projectId, analysisId);
 
     verify(projectRepository).get(projectId);
     verify(analysisRepository).get(analysisId);
-    verify(triplestoreService).getSingleStudyMeasurements(versionedUuid, studyUid, projectVersion, outcomeUids, interventionUids);
-    verify(performanceTablebuilder).build(measurementRows);
-    verify(mappingService).getVersionedUuid(namespaceUid);
+    verify(triplestoreService).getSingleStudyData(versionedUuid, daanEtAl.getStudyUri(), project.getDatasetVersion(), outcomeUris, interventionUris);
+    verify(triplestoreService).findMatchingIncludedInterventions(includedInterventions, daanEtAlFluoxArm);
+    verify(triplestoreService).findMatchingIncludedInterventions(includedInterventions, daanEtAlSertraArm);
+    verify(triplestoreService).findMatchingIncludedInterventions(includedInterventions, unmatchedDaanEtAlParoxArm);
+    verify(performanceTablebuilder).build(any());
+    verify(mappingService).getVersionedUuid(project.getNamespaceUid());
+    verify(interventionRepository).query(project.getId());
+
+    Pair<Measurement, Integer> pair1 = Pair.of(daanEtAlFluoxMeasurement1, daanEtAlFluoxArm.getMatchedProjectInterventionIds().iterator().next());
+    Pair<Measurement, Integer> pair2 = Pair.of(daanEtAlFluoxMeasurement2, daanEtAlFluoxArm.getMatchedProjectInterventionIds().iterator().next());
+    Pair<Measurement, Integer> pair3 = Pair.of(daanEtAlSertraMeasurement1, daanEtAlSertraArm.getMatchedProjectInterventionIds().iterator().next());
+    Pair<Measurement, Integer> pair4 = Pair.of(daanEtAlSertraMeasurement2, daanEtAlSertraArm.getMatchedProjectInterventionIds().iterator().next());
+    Set<Pair<Measurement, Integer>> instancePairs = ImmutableSet.of(pair1, pair2, pair3, pair4);
+    verify(performanceTablebuilder).build(instancePairs);
 
     assertNotNull(actualProblem);
     assertNotNull(actualProblem.getTitle());
-    assertEquals(analysis.getTitle(), actualProblem.getTitle());
+    assertEquals(singleStudyAnalysis.getTitle(), actualProblem.getTitle());
     assertNotNull(actualProblem.getAlternatives());
     assertNotNull(actualProblem.getCriteria());
 
-    Map<String, CriterionEntry> actualCriteria = actualProblem.getCriteria();
-    assertTrue(actualCriteria.keySet().contains(criterionUri1));
+    Map<URI, CriterionEntry> actualCriteria = actualProblem.getCriteria();
+    assertTrue(actualCriteria.keySet().contains(variableUri));
+    assertTrue(actualCriteria.keySet().contains(secondOutcomeUri));
   }
 
   @Test
-  public void testGetNetworkMetaAnalysisProblem() throws ResourceDoesNotExistException, URISyntaxException, SQLException, IOException {
-    String version = "version 1";
-    Integer projectId = 2;
-    Integer analysisId = 3;
+  public void testGetNmaProblem() throws URISyntaxException, SQLException, IOException, ReadValueException, ResourceDoesNotExistException, InvalidTypeForDoseCheckException, UnexpectedNumberOfResultsException {
 
-    List<TrialDataStudy> trialDataStudies = createMockTrialData();
+    // analysis
+    NetworkMetaAnalysis networkMetaAnalysis = new NetworkMetaAnalysis(analysisId, project.getId(), "nma title", outcome);
+    when(analysisRepository.get(networkMetaAnalysis.getId())).thenReturn(networkMetaAnalysis);
 
-    String outcomeUri = "outcomeUri";
-    Outcome outcome = new Outcome(1213, projectId, "outcome", "moti", new SemanticVariable(outcomeUri, "label3"));
-    List<ArmExclusion> armExclusions = new ArrayList<>();
-    List<InterventionInclusion> interventionInclusions = new ArrayList<>();
-    List<CovariateInclusion> covariateInclusions = new ArrayList<>();
-    NetworkMetaAnalysis analysis = new NetworkMetaAnalysis(analysisId, projectId, "analysis", armExclusions, interventionInclusions, covariateInclusions, outcome);
+    //include interventions: fluox and sertra
+    InterventionInclusion fluoxInclusion = new InterventionInclusion(networkMetaAnalysis.getId(), fluoxIntervention.getId());
+    InterventionInclusion sertraInclusion = new InterventionInclusion(networkMetaAnalysis.getId(), sertraIntervention.getId());
+    HashSet<InterventionInclusion> interventionInclusions = new HashSet<>(Arrays.asList(fluoxInclusion, sertraInclusion));
+    networkMetaAnalysis.updateIncludedInterventions(interventionInclusions);
 
-    analysis.getExcludedArms().add(new ArmExclusion(analysis, "888L")); // trialDataArm with armId4
+    // covariates
+    Integer includedCovariateId = -1;
+    Integer excludedCovariateId = -2;
+    String includedCovariateDefinitionKey = CovariateOption.ALLOCATION_RANDOMIZED.toString();
+    Covariate includedCovariate = new Covariate(includedCovariateId, project.getId(), "isRandomised", "mot",
+            includedCovariateDefinitionKey, CovariateOptionType.STUDY_CHARACTERISTIC);
+    Covariate notIncludedCovariate = new Covariate(excludedCovariateId, project.getId(), "age", "mot", "ageUri", CovariateOptionType.POPULATION_CHARACTERISTIC);
+    Collection<Covariate> allProjectCovariates = Arrays.asList(includedCovariate, notIncludedCovariate);
+    when(covariateRepository.findByProject(project.getId())).thenReturn(allProjectCovariates);
 
-    Project project = mock(Project.class);
-    when(project.getDatasetVersion()).thenReturn(version);
+    Set<CovariateInclusion> covariateInclusions = new HashSet<>(Collections.singletonList(new CovariateInclusion(networkMetaAnalysis.getId(), includedCovariateId)));
+    networkMetaAnalysis.updateIncludedCovariates(covariateInclusions);
 
-    Covariate covariate1 = Mockito.spy(new Covariate(projectId, "cov1", "covmov1", CovariateOption.ALLOCATION_RANDOMIZED.toString(), null));
-    Covariate covariate2 = Mockito.spy(new Covariate(projectId, "cov2", "covmov2", CovariateOption.MULTI_CENTER_STUDY.toString(), null));
-    when(covariate1.getId()).thenReturn(1);
-    when(covariate2.getId()).thenReturn(2);
-    Collection<Covariate> covariates = Arrays.asList(covariate1, covariate2);
+    // trial data DaanetAl study
+    URI daanEtAlUri = URI.create("DaanEtAlUri");
+    URI daanEtAlFluoxInstance = URI.create("daanEtAlFluoxInstance");
+    URI daanEtAlFluoxArmUri = URI.create("daanEtAlFluoxArm");
+    int daanEtAlFluoxSampleSize = 20;
+    int daanEtAlFluoxRate = 30;
+    URI variableUri = outcome.getSemanticOutcomeUri();
+    URI variableConceptUri = outcome.getSemanticOutcomeUri();
+    Measurement daanEtAlFluoxMeasurement = new Measurement(daanEtAlUri, variableUri, variableConceptUri, daanEtAlFluoxArmUri,
+            DICHOTOMOUS_TYPR_URI, daanEtAlFluoxSampleSize, daanEtAlFluoxRate, null, null);
+    AbstractSemanticIntervention simpleSemanticFluoxIntervention = new SimpleSemanticIntervention(daanEtAlFluoxInstance, fluoxConceptUri);
 
-    SemanticIntervention semanticIntervention1 = new SemanticIntervention("uri1", "label");
-    SemanticIntervention semanticIntervention2 = new SemanticIntervention("uri2", "label2");
-    SemanticIntervention semanticIntervention3 = new SemanticIntervention("uri3", "label3");
-    int interventionId1 = 1;
-    Intervention intervention1 = new Intervention(interventionId1, projectId, "int1", "moti", semanticIntervention1);
-    Intervention intervention2 = new Intervention(2, projectId, "int2", "moti", semanticIntervention2);
-    Intervention intervention3 = new Intervention(3, projectId, "int3", "moti", semanticIntervention3);
-    List<Intervention> interventions = Arrays.asList(intervention1, intervention2, intervention3);
+    TrialDataArm daanEtAlFluoxArm = new TrialDataArm(daanEtAlFluoxArmUri, "daanEtAlFluoxArm", daanEtAlFluoxInstance);
+    daanEtAlFluoxArm.addMeasurement(daanEtAlFluoxMeasurement);
+    daanEtAlFluoxArm.addSemanticIntervention(simpleSemanticFluoxIntervention);
 
-    InterventionInclusion interventionInclusion1 = new InterventionInclusion(analysis, intervention1.getId());
-    InterventionInclusion interventionInclusion2 = new InterventionInclusion(analysis, intervention2.getId());
-    InterventionInclusion interventionInclusion3 = new InterventionInclusion(analysis, intervention3.getId());
-    analysis.getIncludedInterventions().addAll(Arrays.asList(interventionInclusion1, interventionInclusion2, interventionInclusion3));
+    URI daanEtAlSertraInstance = URI.create("daanEtAlSertraInstance");
+    URI daanEtAlSertraArmUri = URI.create("daanEtAlSertraArm");
+    int daanEtAlSertraSampleSize = 40;
+    int daanEtAlSertraRate = 5;
+    Measurement daanEtAlSertraMeasurement = new Measurement(daanEtAlUri, variableUri, variableConceptUri, daanEtAlSertraArmUri,
+            DICHOTOMOUS_TYPR_URI, daanEtAlSertraSampleSize, daanEtAlSertraRate, null, null);
+    AbstractSemanticIntervention simpleSemanticSertraIntervention = new SimpleSemanticIntervention(daanEtAlSertraInstance, sertraConceptUri);
 
-    ObjectMapper mapper = new ObjectMapper();
+    TrialDataArm daanEtAlSertraArm = new TrialDataArm(daanEtAlSertraArmUri, "daanEtAlSertraArm", daanEtAlSertraInstance);
+    daanEtAlSertraArm.addMeasurement(daanEtAlSertraMeasurement);
+    daanEtAlFluoxArm.addSemanticIntervention(simpleSemanticSertraIntervention);
 
-    List<ObjectNode> trialDataNode = new ArrayList<>();
-    for (TrialDataStudy trialDataStudy : trialDataStudies) {
-      trialDataNode.add(mapper.convertValue(trialDataStudy, ObjectNode.class));
-    }
-    when(project.getId()).thenReturn(projectId);
-    when(project.getNamespaceUid()).thenReturn(namespaceUid);
-    when(projectRepository.get(projectId)).thenReturn(project);
-    when(analysisRepository.get(analysisId)).thenReturn(analysis);
-    when(interventionRepository.query(projectId)).thenReturn(interventions);
-    when(covariateRepository.findByProject(projectId)).thenReturn(covariates);
-    when(trialverseService.getTrialData(versionedUuid, version, outcomeUri, Arrays.asList("uri1", "uri2", "uri3"), Collections.EMPTY_LIST)).thenReturn(trialDataNode);
+    URI daanEtAlExcludedArmUri = URI.create("excludeme");
+    Measurement daanEtAlExcludedMeasurement = new Measurement(daanEtAlUri, variableUri, variableConceptUri, daanEtAlExcludedArmUri,
+            DICHOTOMOUS_TYPR_URI, daanEtAlSertraSampleSize, daanEtAlSertraRate, null, null);
+    TrialDataArm excludedArm = new TrialDataArm(daanEtAlSertraArmUri, "excludedArm", daanEtAlSertraInstance);
+    excludedArm.addMeasurement(daanEtAlExcludedMeasurement);
+    excludedArm.addSemanticIntervention(simpleSemanticSertraIntervention);
 
-    NetworkMetaAnalysisProblem problem = (NetworkMetaAnalysisProblem) problemService.getProblem(projectId, analysisId);
+    // exclude arms
+    Set<ArmExclusion> excludedArms = new HashSet<>(Collections.singletonList(new ArmExclusion(networkMetaAnalysis.getId(), daanEtAlExcludedArmUri)));
+    networkMetaAnalysis.updateArmExclusions(excludedArms);
 
-    verify(projectRepository).get(projectId);
-    verify(analysisRepository).get(analysisId);
-    verify(interventionRepository).query(projectId);
-    verify(trialverseService).getTrialData(versionedUuid, version, outcomeUri, Arrays.asList("uri1", "uri2", "uri3"), Collections.EMPTY_LIST);
-    verify(mappingService).getVersionedUuid(namespaceUid);
+    // add matching result to arms
+    daanEtAlFluoxArm.setMatchedProjectInterventionIds(new HashSet<>(Collections.singletonList(fluoxIntervention.getId())));
+    daanEtAlSertraArm.setMatchedProjectInterventionIds(new HashSet<>(Collections.singletonList(sertraIntervention.getId())));
+    List<TrialDataArm> daanEtAlArms = Arrays.asList(daanEtAlFluoxArm, daanEtAlSertraArm, excludedArm);
+    TrialDataStudy daanEtAl = new TrialDataStudy(daanEtAlUri, "Daan et al", daanEtAlArms);
+    Double randomisedValue = 30d;
+    daanEtAl.addCovariateValue(new CovariateStudyValue(daanEtAlUri, includedCovariate.getDefinitionKey(), randomisedValue));
+    List<TrialDataStudy> trialDataStudies = Collections.singletonList(daanEtAl);
+    when(analysisService.buildEvidenceTable(project.getId(), networkMetaAnalysis.getId())).thenReturn(trialDataStudies);
+
+    final AbstractProblem problem = problemService.getProblem(project.getId(), networkMetaAnalysis.getId());
 
     assertNotNull(problem);
-    assertEquals(3, problem.getEntries().size());
-    ContinuousNetworkMetaAnalysisProblemEntry entry = new ContinuousNetworkMetaAnalysisProblemEntry("study1", interventionId1, 768784L, Math.PI, Math.E);
-    assertTrue(problem.getEntries().contains(entry));
+    assertTrue(problem instanceof NetworkMetaAnalysisProblem);
+    NetworkMetaAnalysisProblem networkProblem = (NetworkMetaAnalysisProblem) problem;
+    assertEquals(interventionInclusions.size(), networkProblem.getTreatments().size());
+
+    List<AbstractNetworkMetaAnalysisProblemEntry> entries = networkProblem.getEntries();
+    assertNotNull(entries);
+    assertEquals(2, entries.size());
+    RateNetworkMetaAnalysisProblemEntry fluoxEntry = (RateNetworkMetaAnalysisProblemEntry) entries.get(0);
+    assertEquals(fluoxIntervention.getId(), fluoxEntry.getTreatment());
+    RateNetworkMetaAnalysisProblemEntry sertraEntry = (RateNetworkMetaAnalysisProblemEntry) entries.get(1);
+    assertEquals(sertraIntervention.getId(), sertraEntry.getTreatment());
+
+    TreatmentEntry fluoxTreatmentEntry = new TreatmentEntry(fluoxIntervention.getId(), fluoxIntervention.getName());
+    TreatmentEntry sertraTreatmentEntry = new TreatmentEntry(sertraIntervention.getId(), sertraIntervention.getName());
+    List<TreatmentEntry> expectedTreatments = Arrays.asList(fluoxTreatmentEntry, sertraTreatmentEntry);
+    assertEquals(expectedTreatments, networkProblem.getTreatments());
+
+    Map<String, Map<String, Double>> studyLevelCovariates = networkProblem.getStudyLevelCovariates();
+    assertEquals(covariateInclusions.size(), studyLevelCovariates.size());
+    assertEquals(daanEtAl.getName(), studyLevelCovariates.keySet().toArray()[0]);
+    Map<String, Double> covariateEntry = (Map<String, Double>) studyLevelCovariates.values().toArray()[0];
+    assertEquals(includedCovariate.getName(), covariateEntry.keySet().toArray()[0]);
+
+
+    verify(projectRepository).get(project.getId());
+    verify(analysisRepository).get(networkMetaAnalysis.getId());
+    verify(interventionRepository).query(project.getId());
+    verify(covariateRepository).findByProject(project.getId());
   }
 
   @Test
-  public void testGetNetworkAnalysisProblemWithInterventionInclusions() throws ResourceDoesNotExistException, URISyntaxException, SQLException, IOException {
-    String version = "version 1";
-    Integer projectId = 2;
-    Integer analysisId = 3;
-
-    String outcomeUri = "outcomeUri";
-    Outcome outcome = new Outcome(1213, projectId, "outcome", "moti", new SemanticVariable(outcomeUri, "label3"));
-    List<ArmExclusion> armExclusions = new ArrayList<>();
-    List<InterventionInclusion> interventionInclusions = new ArrayList<>();
-    List<CovariateInclusion> covariateInclusions = new ArrayList<>();
-
-    NetworkMetaAnalysis analysis = new NetworkMetaAnalysis(analysisId, projectId, "analysis", armExclusions, interventionInclusions, covariateInclusions, outcome);
-
-    SemanticIntervention semanticIntervention1 = new SemanticIntervention("uri1", "label");
-    SemanticIntervention semanticIntervention2 = new SemanticIntervention("uri2", "label2");
-    SemanticIntervention semanticIntervention3 = new SemanticIntervention("uri3", "label3");
-    Intervention intervention1 = new Intervention(1, projectId, "int1", "moti", semanticIntervention1);
-    Intervention intervention2 = new Intervention(2, projectId, "int2", "moti", semanticIntervention2);
-    Intervention intervention3 = new Intervention(3, projectId, "int3", "moti", semanticIntervention3);
-    List<Intervention> interventions = Arrays.asList(intervention1, intervention2, intervention3);
-
-    Project project = mock(Project.class);
-    when(project.getId()).thenReturn(projectId);
-    when(project.getNamespaceUid()).thenReturn(namespaceUid);
-    when(project.getDatasetVersion()).thenReturn(version);
-
-    InterventionInclusion interventionInclusion1 = new InterventionInclusion(analysis, intervention1.getId());
-    InterventionInclusion interventionInclusion2 = new InterventionInclusion(analysis, intervention3.getId());
-    analysis.getIncludedInterventions().addAll(Arrays.asList(interventionInclusion1, interventionInclusion2));
-
-    Covariate covariate1 = Mockito.spy(new Covariate(projectId, "cov1", "covmov1", CovariateOption.ALLOCATION_RANDOMIZED.toString(), null));
-    Covariate covariate2 = Mockito.spy(new Covariate(projectId, "cov2", "covmov2", CovariateOption.MULTI_CENTER_STUDY.toString(), null));
-    when(covariate1.getId()).thenReturn(1);
-    when(covariate2.getId()).thenReturn(2);
-    Collection<Covariate> covariates = Arrays.asList(covariate1, covariate2);
-
-    List<TrialDataStudy> trialDataStudies = createMockTrialData();
-    TrialDataStudy firstTrialDataStudy = trialDataStudies.get(0);
-    List<TrialDataIntervention> trialDataInterventions = firstTrialDataStudy.getTrialDataInterventions();
-    // remove excluded intervention from trialdata as well (HACKY)
-    trialDataInterventions.set(1, new TrialDataIntervention("-666L", "iamnothere", "-666L"));
-
-    ObjectMapper mapper = new ObjectMapper();
-    List<ObjectNode> trialDataNode = new ArrayList<>();
-    for (TrialDataStudy trialDataStudy : trialDataStudies) {
-      trialDataNode.add(mapper.convertValue(trialDataStudy, ObjectNode.class));
-    }
-    when(projectRepository.get(projectId)).thenReturn(project);
-    when(analysisRepository.get(analysisId)).thenReturn(analysis);
-    when(interventionRepository.query(projectId)).thenReturn(interventions);
-    when(covariateRepository.findByProject(projectId)).thenReturn(covariates);
-    when(trialverseService.getTrialData(versionedUuid, version, outcomeUri, Arrays.asList("uri1", "uri3"), Collections.EMPTY_LIST)).thenReturn(trialDataNode);
-
-    NetworkMetaAnalysisProblem problem = (NetworkMetaAnalysisProblem) problemService.getProblem(projectId, analysisId);
-
-    verify(projectRepository).get(projectId);
-    verify(analysisRepository).get(analysisId);
-    verify(interventionRepository).query(projectId);
-    verify(trialverseService).getTrialData(versionedUuid, version, outcomeUri, Arrays.asList("uri1", "uri3"), Collections.EMPTY_LIST);
-    verify(mappingService).getVersionedUuid(namespaceUid);
-
-    assertEquals(2, problem.getEntries().size());
-  }
-
-  @Test
-  public void testGetNetworkAnalysisProblemWithCovaraites() throws ResourceDoesNotExistException, URISyntaxException, SQLException, IOException {
-    String version = "version 1";
-    Integer projectId = 2;
-    Integer analysisId = 3;
-
-    String outcomeUri = "outcomeUri";
-    Outcome outcome = new Outcome(1213, projectId, "outcome", "moti", new SemanticVariable(outcomeUri, "label3"));
-    List<ArmExclusion> armExclusions = new ArrayList<>();
-    List<InterventionInclusion> interventionInclusions = new ArrayList<>();
-    List<CovariateInclusion> covariateInclusions = new ArrayList<>();
-
-    NetworkMetaAnalysis analysis = new NetworkMetaAnalysis(analysisId, projectId, "analysis", armExclusions, interventionInclusions, covariateInclusions, outcome);
-
-    SemanticIntervention semanticIntervention1 = new SemanticIntervention("uri1", "label");
-    SemanticIntervention semanticIntervention2 = new SemanticIntervention("uri2", "label2");
-    SemanticIntervention semanticIntervention3 = new SemanticIntervention("uri3", "label3");
-    Intervention intervention1 = new Intervention(1, projectId, "int1", "moti", semanticIntervention1);
-    Intervention intervention2 = new Intervention(2, projectId, "int2", "moti", semanticIntervention2);
-    Intervention intervention3 = new Intervention(3, projectId, "int3", "moti", semanticIntervention3);
-    List<Intervention> interventions = Arrays.asList(intervention1, intervention2, intervention3);
-
-    Covariate covariate1 = Mockito.spy(new Covariate(projectId, "cov1", "covmov1", CovariateOption.ALLOCATION_RANDOMIZED.toString(), null));
-    Covariate covariate2 = Mockito.spy(new Covariate(projectId, "cov2", "covmov2", CovariateOption.MULTI_CENTER_STUDY.toString(), null));
-    when(covariate1.getId()).thenReturn(1);
-    when(covariate2.getId()).thenReturn(2);
-    Collection<Covariate> covariates = Arrays.asList(covariate1, covariate2);
-
-    Project project = mock(Project.class);
-    when(project.getId()).thenReturn(projectId);
-    when(project.getNamespaceUid()).thenReturn(namespaceUid);
-    when(project.getDatasetVersion()).thenReturn(version);
-
-    CovariateInclusion covariateInclusion1 = Mockito.spy(new CovariateInclusion(analysis, covariate1.getId()));
-    CovariateInclusion covariateInclusion2 = Mockito.spy(new CovariateInclusion(analysis, covariate2.getId()));
-    when(covariateInclusion1.getId()).thenReturn(101);
-    when(covariateInclusion2.getId()).thenReturn(202);
-    analysis.getCovariateInclusions().addAll(Arrays.asList(covariateInclusion1, covariateInclusion2));
-
-    InterventionInclusion interventionInclusion1 = new InterventionInclusion(analysis, intervention1.getId());
-    InterventionInclusion interventionInclusion2 = new InterventionInclusion(analysis, intervention3.getId());
-    analysis.getIncludedInterventions().addAll(Arrays.asList(interventionInclusion1, interventionInclusion2));
-
-    List<TrialDataStudy> trialDataStudies = createMockTrialData();
-    TrialDataStudy firstTrialDataStudy = trialDataStudies.get(0);
-    List<TrialDataIntervention> trialDataInterventions = firstTrialDataStudy.getTrialDataInterventions();
-    // remove excluded intervention from trialdata as well (HACKY)
-    trialDataInterventions.set(1, new TrialDataIntervention("-666L", "iamnothere", "-666L"));
-
-    ObjectMapper mapper = new ObjectMapper();
-    List<ObjectNode> trialDataNode = new ArrayList<>();
-    for (TrialDataStudy trialDataStudy : trialDataStudies) {
-      trialDataNode.add(mapper.convertValue(trialDataStudy, ObjectNode.class));
-    }
-    when(projectRepository.get(projectId)).thenReturn(project);
-    when(analysisRepository.get(analysisId)).thenReturn(analysis);
-    when(covariateRepository.findByProject(projectId)).thenReturn(covariates);
-    when(interventionRepository.query(projectId)).thenReturn(interventions);
-    List<String> includedCovariateKeys = Arrays.asList(covariate1.getDefinitionKey(), covariate2.getDefinitionKey());
-    when(trialverseService.getTrialData(versionedUuid, version, outcomeUri, Arrays.asList("uri1", "uri3"), includedCovariateKeys)).thenReturn(trialDataNode);
-
-    NetworkMetaAnalysisProblem problem = (NetworkMetaAnalysisProblem) problemService.getProblem(projectId, analysisId);
-
-    verify(projectRepository).get(projectId);
-    verify(analysisRepository).get(analysisId);
-    verify(interventionRepository).query(projectId);
-    verify(trialverseService).getTrialData(versionedUuid, version, outcomeUri, Arrays.asList("uri1", "uri3"), includedCovariateKeys);
-    verify(mappingService).getVersionedUuid(namespaceUid);
-
-    assertEquals(2, problem.getEntries().size());
-    assertEquals(2, problem.getStudyLevelCovariates().size());
-    assertTrue(problem.getStudyLevelCovariates().get("study1").keySet().contains("cov1"));
-  }
-
-  @Test
-  public void testGetMetaBRProblem() throws ResourceDoesNotExistException, SQLException, IOException, URISyntaxException, InvalidModelException {
+  public void testGetMetaBRProblem() throws ResourceDoesNotExistException, SQLException, IOException, URISyntaxException, InvalidModelException, ReadValueException, InvalidTypeForDoseCheckException, UnexpectedNumberOfResultsException {
 
     String version = "version 1";
     Integer projectId = 1;
@@ -410,34 +398,35 @@ public class ProblemServiceTest {
     when(project.getNamespaceUid()).thenReturn(namespaceUid);
     when(project.getDatasetVersion()).thenReturn(version);
 
-    Set<Intervention> includedAlternatives = new HashSet<>(3);
-    Intervention intervention1 = new Intervention(11, projectId, "fluox", "", new SemanticIntervention("uri1", "fluoxS"));
-    Intervention intervention2 = new Intervention(12, projectId, "parox", "", new SemanticIntervention("uri2", "paroxS"));
-    Intervention intervention3 = new Intervention(13, projectId, "sertr", "", new SemanticIntervention("uri3", "sertrS"));
-    includedAlternatives.addAll(Arrays.asList(intervention1, intervention2, intervention3));
-    Intervention intervention4 = new Intervention(14, projectId, "foo", "", new SemanticIntervention("uri4", "fooS"));
-    List<Intervention> interventions = Arrays.asList(intervention1, intervention2, intervention3, intervention4);
+    Set<InterventionInclusion> includedAlternatives = new HashSet<>(3);
+    SimpleIntervention intervention1 = new SimpleIntervention(11, projectId, "fluox", "", new SemanticInterventionUriAndName(URI.create("uri1"), "fluoxS"));
+    SimpleIntervention intervention2 = new SimpleIntervention(12, projectId, "parox", "", new SemanticInterventionUriAndName(URI.create("uri2"), "paroxS"));
+    SimpleIntervention intervention3 = new SimpleIntervention(13, projectId, "sertr", "", new SemanticInterventionUriAndName(URI.create("uri3"), "sertrS"));
+    includedAlternatives.addAll(Arrays.asList(new InterventionInclusion(analysisId, 11), new InterventionInclusion(analysisId, 12), new InterventionInclusion(analysisId, 13)));
 
-    PataviTask pataviTask1 = new PataviTask(41, "gemtc", "problem");
-    PataviTask pataviTask2 = new PataviTask(42, "gemtc", "problem");
+    SimpleIntervention intervention4 = new SimpleIntervention(14, projectId, "foo", "", new SemanticInterventionUriAndName(URI.create("uri4"), "fooS"));
+    List<AbstractIntervention> interventions = Arrays.asList(intervention1, intervention2, intervention3, intervention4);
+
+    PataviTask pataviTask1 = new PataviTask(TestUtils.buildPataviTaskJson("taskId1"));
+    PataviTask pataviTask2 = new PataviTask(TestUtils.buildPataviTaskJson("taskId2"));
     List<PataviTask> pataviTasks = Arrays.asList(pataviTask1, pataviTask2);
 
     Model model1 = new Model.ModelBuilder(analysisId, "model 1")
             .id(71)
             .modelType(Model.NETWORK_MODEL_TYPE)
-            .taskId(pataviTask1.getId())
+            .taskUri(pataviTask1.getSelf())
             .link(Model.LINK_IDENTITY)
             .build();
     Model model2 = new Model.ModelBuilder(analysisId, "model 2")
             .id(72)
             .modelType(Model.NETWORK_MODEL_TYPE)
-            .taskId(pataviTask2.getId())
+            .taskUri(pataviTask2.getSelf())
             .link(Model.LINK_CLOGLOG)
             .build();
     List<Model> models = Arrays.asList(model1, model2);
 
-    Outcome outcome1 = new Outcome(21, projectId, "ham", "", new SemanticVariable("outUri1", "hamS"));
-    Outcome outcome2 = new Outcome(22, projectId, "headache", "", new SemanticVariable("outUri2", "headacheS"));
+    Outcome outcome1 = new Outcome(21, projectId, "ham", "", new SemanticVariable(URI.create("outUri1"), "hamS"));
+    Outcome outcome2 = new Outcome(22, projectId, "headache", "", new SemanticVariable(URI.create("outUri2"), "headacheS"));
     List<Outcome> outcomes = Arrays.asList(outcome1, outcome2);
 
 
@@ -450,12 +439,13 @@ public class ProblemServiceTest {
             "\"sigma\": 6,\n" +
             "\"name\": \"fluox\"\n" +
             "}";
-    String baseline2JsonString ="{\n" +
+    String baseline2JsonString = "{\n" +
             "\"scale\": \"log odds\",\n" +
             "\"mu\": 4,\n" +
             "\"sigma\": 6,\n" +
             "\"name\": \"fluox\"\n" +
-            "}";;
+            "}";
+    ;
 
     MbrOutcomeInclusion inclusion1 = new MbrOutcomeInclusion(analysisId, outcome1.getId(), nma1Id, model1.getId());
     inclusion1.setBaseline(baseline1JsonString);
@@ -486,30 +476,30 @@ public class ProblemServiceTest {
             "  }\n" +
             "}\n";
 
-    Map<Integer, JsonNode> results = new HashMap<>();
+    Map<URI, JsonNode> results = new HashMap<>();
     JsonNode task1Results = om.readTree(results1);
     JsonNode task2Results = om.readTree(results1);
-    results.put(pataviTask1.getId(), task1Results);
-    results.put(pataviTask2.getId(), task2Results);
+    results.put(pataviTask1.getSelf(), task1Results);
+    results.put(pataviTask2.getSelf(), task2Results);
 
     List<Integer> modelIds = Arrays.asList(model2.getId(), model1.getId());
     List<Integer> outcomeIds = Arrays.asList(outcome2.getId(), outcome1.getId());
     when(projectRepository.get(projectId)).thenReturn(project);
-    when(modelRepository.get(modelIds)).thenReturn(models);
+    when(modelService.get(modelIds)).thenReturn(models);
     when(outcomeRepository.get(projectId, outcomeIds)).thenReturn(outcomes);
     when(analysisRepository.get(analysisId)).thenReturn(analysis);
-    List<Integer> taskIds = Arrays.asList(model1.getTaskId(), model2.getTaskId());
-    when(pataviTaskRepository.findByIds(taskIds)).thenReturn(pataviTasks);
+    List<URI> taskIds = Arrays.asList(model1.getTaskUrl(), model2.getTaskUrl());
+    when(pataviTaskRepository.findByUrls(taskIds)).thenReturn(pataviTasks);
     when(pataviTaskRepository.getResults(taskIds)).thenReturn(results);
     when(interventionRepository.query(projectId)).thenReturn(interventions);
 
     MetaBenefitRiskProblem problem = (MetaBenefitRiskProblem) problemService.getProblem(projectId, analysisId);
 
     verify(projectRepository).get(projectId);
-    verify(modelRepository).get(modelIds);
+    verify(modelService).get(modelIds);
     verify(outcomeRepository).get(projectId, outcomeIds);
     verify(analysisRepository).get(analysisId);
-    verify(pataviTaskRepository).findByIds(taskIds);
+    verify(pataviTaskRepository).findByUrls(taskIds);
     verify(pataviTaskRepository).getResults(taskIds);
     verify(interventionRepository).query(projectId);
 
@@ -519,62 +509,9 @@ public class ProblemServiceTest {
     assertEquals("relative-cloglog-normal", problem.getPerformanceTable().get(0).getPerformance().getType());
     assertEquals("relative-normal", problem.getPerformanceTable().get(1).getPerformance().getType());
     List<List<Double>> expectedDataHeadache = Arrays.asList(Arrays.asList(0.0, 0.0, 0.0), Arrays.asList(0.0, 74.346, 1.9648), Arrays.asList(0.0, 1.9648, 74.837));
-    assertEquals(expectedDataHeadache ,problem.getPerformanceTable().get(0).getPerformance().getParameters().getRelative().getCov().getData());
+    assertEquals(expectedDataHeadache, problem.getPerformanceTable().get(0).getPerformance().getParameters().getRelative().getCov().getData());
     List<List<Double>> expectedDataHam = Arrays.asList(Arrays.asList(0.0, 0.0, 0.0), Arrays.asList(0.0, 74.346, 1.9648), Arrays.asList(0.0, 1.9648, 74.837));
-    assertEquals(expectedDataHam ,problem.getPerformanceTable().get(1).getPerformance().getParameters().getRelative().getCov().getData());
-  }
-
-
-  private List<TrialDataStudy> createMockTrialData() {
-    String studyId1 = "101L";
-    String studyId2 = "202L";
-    String drugId1 = "420L";
-    String drugId2 = "430L";
-    String drugId3 = "440L";
-    String drugId4 = "550L";
-    String armId1 = "555L";
-    String armId2 = "666L";
-    String armId3 = "777L";
-    String armId4 = "888L";
-    String armId5 = "999L";
-
-    String drugUid1 = "uri1";
-    String drugUid2 = "uri2";
-    String drugUid3 = "uri3";
-    TrialDataIntervention trialDataIntervention1 = new TrialDataIntervention(drugId1, drugUid1, studyId1);
-    TrialDataIntervention trialDataIntervention2 = new TrialDataIntervention(drugId2, drugUid2, studyId1);
-    TrialDataIntervention trialDataIntervention3 = new TrialDataIntervention(drugId3, drugUid3, studyId1);
-
-    TrialDataIntervention trialDataIntervention4 = new TrialDataIntervention(drugId4, "uri3", studyId2);
-
-    List<TrialDataIntervention> trialdataInterventions1 = Arrays.asList(trialDataIntervention1, trialDataIntervention2, trialDataIntervention3);
-    List<TrialDataIntervention> trialdataInterventions2 = Arrays.asList(trialDataIntervention4);
-
-    Measurement measurement1 = new Measurement(studyId1, "333L", armId1, 768784L, null, Math.E, Math.PI);
-
-    Measurement measurement2 = new Measurement(studyId1, "333L", armId3, -1L, -1L, null, null);
-    Measurement measurement3 = new Measurement(studyId1, "333L", armId4, -1L, -1L, null, null);
-    Measurement measurement4 = new Measurement(studyId1, "333L", armId5, -1L, -1L, null, null);
-    Measurement measurement5 = new Measurement(studyId1, "333L", armId2, -1L, -1L, null, null);
-
-    TrialDataArm trialDataArm1 = new TrialDataArm(armId1, "name1", studyId1, drugId1, drugUid1, measurement1);
-    TrialDataArm trialDataArm2 = new TrialDataArm(armId2, "arm aa", studyId1, drugId2, drugUid2, measurement2);
-    TrialDataArm trialDataArm3 = new TrialDataArm(armId3, "aaa", studyId1, drugId2, drugUid2, measurement3);
-    TrialDataArm trialDataArm4 = new TrialDataArm(armId4, "qqqq", studyId1, drugId3, drugUid3, measurement4);
-    TrialDataArm trialDataArm5 = new TrialDataArm(armId5, "yyyy", studyId2, drugId4, drugUid2, measurement5);
-
-    List<TrialDataArm> trialDataArms1 = Arrays.asList(trialDataArm1, trialDataArm2, trialDataArm3, trialDataArm4);
-    List<TrialDataArm> trialDataArms2 = Arrays.asList(trialDataArm5);
-    TrialDataStudy trialDataStudy1 = new TrialDataStudy("1L", "study1", trialdataInterventions1, trialDataArms1);
-    TrialDataStudy trialDataStudy2 = new TrialDataStudy("2L", "study2", trialdataInterventions2, trialDataArms2);
-
-    trialDataStudy1.addCovariateValue(new CovariateStudyValue(studyId1, CovariateOption.ALLOCATION_RANDOMIZED.toString().toString(), 1D));
-    trialDataStudy1.addCovariateValue(new CovariateStudyValue(studyId1, CovariateOption.MULTI_CENTER_STUDY.toString().toString(), 2D));
-
-    trialDataStudy2.addCovariateValue(new CovariateStudyValue(studyId2, CovariateOption.ALLOCATION_RANDOMIZED.toString().toString(), null));
-    trialDataStudy2.addCovariateValue(new CovariateStudyValue(studyId2, CovariateOption.MULTI_CENTER_STUDY.toString().toString(), null));
-
-    return Arrays.asList(trialDataStudy1, trialDataStudy2);
+    assertEquals(expectedDataHam, problem.getPerformanceTable().get(1).getPerformance().getParameters().getRelative().getCov().getData());
   }
 
 }

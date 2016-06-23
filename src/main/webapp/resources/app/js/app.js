@@ -4,7 +4,6 @@ define(
     'require',
     'jQuery',
     'mcda/config',
-    'gemtc-web/util/errorInterceptor',
     'lodash',
     'mmfoundation',
     'foundation',
@@ -13,6 +12,8 @@ define(
     'angularanimate',
     'angular-md5',
     'ngSanitize',
+    'angular-patavi-client',
+    'error-reporting',
     'controllers',
     'directives',
     'filters',
@@ -33,6 +34,7 @@ define(
     'group/group',
     'outcome/outcome',
     'intervention/intervention',
+    'outcome/addisOutcomes',
     'populationCharacteristic/populationCharacteristic',
     'endpoint/endpoint',
     'adverseEvent/adverseEvent',
@@ -50,32 +52,33 @@ define(
     'gemtc-web/constants',
     'gemtc-web/services',
     'gemtc-web/directives',
-    'mcda/controllers',
+    'mcda/services/effectsTableService',
     'mcda/controllers',
     'mcda/directives',
     'mcda/services/workspaceResource',
     'mcda/services/taskDependencies',
-    'mcda/services/errorHandling',
     'mcda/services/workspaceService',
+    'mcda/services/scalesService',
     'mcda/services/routeFactory',
-    'mcda/services/pataviService',
+    'mcda/services/resultsService',
     'mcda/services/hashCodeService',
     'mcda/services/partialValueFunction',
     'mcda/services/scaleRangeService',
     'mcda/services/util',
     'covariates/covariates'
   ],
-  function(angular, require, $, Config, errorInterceptor, _) {
+  function(angular, require, $, Config, _) {
     var mcdaDependencies = [
-      'elicit.errorHandling',
+      'elicit.effectsTableService',
       'elicit.scaleRangeService',
       'elicit.workspaceResource',
       'elicit.workspaceService',
+      'elicit.scalesService',
       'elicit.taskDependencies',
       'elicit.directives',
       'elicit.controllers',
       'elicit.pvfService',
-      'elicit.pataviService',
+      'elicit.resultsService',
       'elicit.util',
       'elicit.routeFactory',
       'mm.foundation',
@@ -101,7 +104,10 @@ define(
       'addis.interceptors',
       'addis.directives',
       'addis.covariates',
-      'addis.interventions'
+      'addis.interventions',
+      'addis.outcomes',
+      'patavi',
+  'errorReporting'
     ];
     var gemtcWebDependencies = [
       'gemtc.controllers',
@@ -143,9 +149,6 @@ define(
 
     var app = angular.module('addis', dependencies.concat(mcdaDependencies, gemtcWebDependencies, trialverseDependencies));
 
-    // DRY; already implemented in gemtc
-    app.factory('errorInterceptor', errorInterceptor);
-
     app.constant('Tasks', Config.tasks);
     app.constant('DEFAULT_VIEW', 'overview');
     app.constant('ANALYSIS_TYPES', [{
@@ -163,11 +166,6 @@ define(
 
     app.run(['$rootScope', '$window', '$http', 'HelpPopupService',
       function($rootScope, $window, $http, HelpPopupService) {
-        var csrfToken = $window.config._csrf_token;
-        var csrfHeader = $window.config._csrf_header;
-
-        $http.defaults.headers.common[csrfHeader] = csrfToken;
-
         $rootScope.$safeApply = function($scope, fn) {
           var phase = $scope.$root.$$phase;
           if (phase === '$apply' || phase === '$digest') {
@@ -176,16 +174,6 @@ define(
             this.$apply(fn);
           }
         };
-
-        $rootScope.$on('error', function(e, message) {
-          $rootScope.$safeApply($rootScope, function() {
-            $rootScope.error = _.extend(message, {
-              close: function() {
-                delete $rootScope.error;
-              }
-            });
-          });
-        });
 
         HelpPopupService.loadLexicon($http.get('app/js/bower_components/gemtc-web/app/lexicon.json'));
 
@@ -202,7 +190,6 @@ define(
         var mcdaBaseTemplatePath = 'app/js/bower_components/mcda-web/app/views/';
         var gemtcWebBaseTemplatePath = 'app/js/bower_components/gemtc-web/app/';
 
-        $httpProvider.interceptors.push('errorInterceptor');
         $httpProvider.interceptors.push('SessionExpiredInterceptor');
 
         // Default route
@@ -248,7 +235,22 @@ define(
           .state('project', {
             url: '/users/:userUid/projects/:projectId',
             templateUrl: baseTemplatePath + 'project.html',
-            controller: 'SingleProjectController'
+            controller: 'SingleProjectController',
+            resolve: {
+              activeTab: function() {
+                return 'details';
+              }
+            }
+          })
+          .state('projectReport', {
+            url: '/users/:userUid/projects/:projectId/report',
+            templateUrl: baseTemplatePath + 'project.html',
+            controller: 'SingleProjectController',
+            resolve: {
+              activeTab: function() {
+                return 'report';
+              }
+            }
           })
           .state('namespace-study', {
             url: '/study/:studyUid',
@@ -295,26 +297,26 @@ define(
             },
             abstract: true
           })
-          // Network meta-analysis states
-          .state('networkMetaAnalysis', {
-            parent: 'networkMetaAnalysisContainer',
-            url: '',
-            views: {
-              'networkMetaAnalysis': {
-                templateUrl: baseTemplatePath + 'networkMetaAnalysisView.html'
-              },
-              'models': {
-                templateUrl: gemtcWebBaseTemplatePath + '/js/models/models.html',
-                controller: 'ModelsController'
-              },
-              'network': {
-                templateUrl: baseTemplatePath + 'network.html'
-              },
-              'evidenceTable': {
-                templateUrl: baseTemplatePath + 'evidenceTable.html'
-              }
+        // Network meta-analysis states
+        .state('networkMetaAnalysis', {
+          parent: 'networkMetaAnalysisContainer',
+          url: '',
+          views: {
+            'networkMetaAnalysis': {
+              templateUrl: baseTemplatePath + 'networkMetaAnalysisView.html'
+            },
+            'models': {
+              templateUrl: gemtcWebBaseTemplatePath + '/js/models/models.html',
+              controller: 'ModelsController'
+            },
+            'network': {
+              templateUrl: baseTemplatePath + 'network.html'
+            },
+            'evidenceTable': {
+              templateUrl: baseTemplatePath + 'evidenceTable.html'
             }
-          })
+          }
+        })
           .state('nmaModelContainer', {
             templateUrl: baseTemplatePath + 'networkMetaAnalysisModelContainerView.html',
             controller: 'NetworkMetaAnalysisModelContainerController',
@@ -371,13 +373,13 @@ define(
 
             }
           })
-          // meta-benefit-risk states
-          .state('MetaBenefitRiskCreationStep-1', {
-            url: '/metabr/:analysisId/step-1',
-            templateUrl: 'app/js/analysis/metabrStep-1.html',
-            controller: 'MetaBenefitRiskStep1Controller',
-            parent: 'project'
-          })
+        // meta-benefit-risk states
+        .state('MetaBenefitRiskCreationStep-1', {
+          url: '/metabr/:analysisId/step-1',
+          templateUrl: 'app/js/analysis/metabrStep-1.html',
+          controller: 'MetaBenefitRiskStep1Controller',
+          parent: 'project'
+        })
           .state('MetaBenefitRiskCreationStep-2', {
             url: '/metabr/:analysisId/step-2',
             templateUrl: 'app/js/analysis/metabrStep-2.html',
@@ -390,12 +392,12 @@ define(
             controller: 'MetaBenefitRiskController',
             parent: 'project'
           })
-          // trialverse states
-          .state('dataset', {
-            url: '/users/:userUid/datasets/:datasetUUID',
-            templateUrl: 'app/js/dataset/dataset.html',
-            controller: 'DatasetController'
-          })
+        // trialverse states
+        .state('dataset', {
+          url: '/users/:userUid/datasets/:datasetUUID',
+          templateUrl: 'app/js/dataset/dataset.html',
+          controller: 'DatasetController'
+        })
           .state('versionedDataset', {
             url: '/users/:userUid/datasets/:datasetUUID/versions/:versionUuid',
             templateUrl: 'app/js/dataset/dataset.html',
@@ -426,21 +428,25 @@ define(
             templateUrl: 'app/js/study/view/study.html',
             controller: 'StudyController'
           })
-          // mcda states
-          .state('benefitRisk', {
-            abstract: true,
-            controller: 'BenefitRiskController',
-            url:'/users/:userUid/projects/:projectId/benefitRisk/:analysisId',
-            templateUrl: 'app/js/analysis/benefitRiskContainer.html',
-            resolve: {
-              currentAnalysis: ['$stateParams', 'AnalysisResource', function($stateParams, AnalysisResource) {
+        // mcda states
+        .state('benefitRisk', {
+          abstract: true,
+          controller: 'BenefitRiskController',
+          url: '/users/:userUid/projects/:projectId/benefitRisk/:analysisId',
+          templateUrl: 'app/js/analysis/benefitRiskContainer.html',
+          resolve: {
+            currentAnalysis: ['$stateParams', 'AnalysisResource',
+              function($stateParams, AnalysisResource) {
                 return AnalysisResource.get($stateParams).$promise;
-              }],
-              currentProject: ['$stateParams', 'ProjectResource', function($stateParams, ProjectResource) {
+              }
+            ],
+            currentProject: ['$stateParams', 'ProjectResource',
+              function($stateParams, ProjectResource) {
                 return ProjectResource.get($stateParams).$promise;
-              }]
-            }
-          });
+              }
+            ]
+          }
+        });
 
         MCDARouteProvider.buildRoutes($stateProvider, 'benefitRisk', mcdaBaseTemplatePath);
 

@@ -1,29 +1,31 @@
 package org.drugis.addis.problems.model;
 
+import java.net.URI;
+
 public class Arm {
-  String uid;
+  URI uri;
   String drugUid;
   String name;
 
   public Arm() {
   }
 
-  public Arm(String uid, String drugUid, String name) {
-    this.uid = uid;
+  public Arm(URI uri, String drugUid, String name) {
+    this.uri = uri;
     this.drugUid = drugUid;
     this.name = name;
   }
 
-  public String getUid() {
-    return uid;
-  }
-
-  public String getName() {
-    return name;
+  public URI getUri() {
+    return uri;
   }
 
   public String getDrugUid() {
     return drugUid;
+  }
+
+  public String getName() {
+    return name;
   }
 
   @Override
@@ -33,16 +35,15 @@ public class Arm {
 
     Arm arm = (Arm) o;
 
+    if (!uri.equals(arm.uri)) return false;
     if (!drugUid.equals(arm.drugUid)) return false;
-    if (!uid.equals(arm.uid)) return false;
-    if (!name.equals(arm.name)) return false;
+    return name.equals(arm.name);
 
-    return true;
   }
 
   @Override
   public int hashCode() {
-    int result = uid.hashCode();
+    int result = uri.hashCode();
     result = 31 * result + drugUid.hashCode();
     result = 31 * result + name.hashCode();
     return result;

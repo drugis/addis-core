@@ -2,15 +2,29 @@ package org.drugis.addis.projects.service.impl;
 
 import org.drugis.addis.exception.MethodNotAllowedException;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
+import org.drugis.addis.interventions.model.AbstractIntervention;
+import org.drugis.addis.interventions.model.SingleIntervention;
+import org.drugis.addis.interventions.repository.InterventionRepository;
+import org.drugis.addis.outcomes.Outcome;
+import org.drugis.addis.outcomes.repository.OutcomeRepository;
 import org.drugis.addis.projects.Project;
 import org.drugis.addis.projects.repository.ProjectRepository;
 import org.drugis.addis.projects.service.ProjectService;
 import org.drugis.addis.security.Account;
 import org.drugis.addis.security.repository.AccountRepository;
+import org.drugis.addis.trialverse.model.trialdata.TrialDataStudy;
+import org.drugis.addis.trialverse.service.MappingService;
+import org.drugis.addis.trialverse.service.TriplestoreService;
+import org.drugis.addis.trialverse.service.impl.ReadValueException;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.security.Principal;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Created by connor on 16-4-14.
@@ -23,6 +37,18 @@ public class ProjectServiceImpl implements ProjectService {
 
   @Inject
   ProjectRepository projectRepository;
+
+  @Inject
+  TriplestoreService triplestoreService;
+
+  @Inject
+  OutcomeRepository outcomeRepository;
+
+  @Inject
+  InterventionRepository interventionRepository;
+
+  @Inject
+  MappingService mappingService;
 
   @Override
   public void checkOwnership(Integer projectId, Principal principal) throws MethodNotAllowedException, ResourceDoesNotExistException {
@@ -40,5 +66,24 @@ public class ProjectServiceImpl implements ProjectService {
     if (!project.getOwner().getId().equals(user.getId())) {
       throw new MethodNotAllowedException();
     }
+  }
+
+  @Override
+  public List<TrialDataStudy> queryMatchedStudies(Integer projectId) throws ResourceDoesNotExistException, ReadValueException, URISyntaxException {
+    Project project = projectRepository.get(projectId);
+    List<AbstractIntervention> interventions = interventionRepository.query(projectId);
+    Set<URI> singleInterventionUris = interventions.stream()
+            .filter(ai -> ai instanceof SingleIntervention)
+            .map(ai -> (SingleIntervention) ai)
+            .map(SingleIntervention::getSemanticInterventionUri)
+            .collect(Collectors.toSet());
+
+    Set<URI> outcomeUris = outcomeRepository.query(projectId)
+            .stream()
+            .map(Outcome::getSemanticOutcomeUri)
+            .collect(Collectors.toSet());
+    List<TrialDataStudy> studies = triplestoreService.getAllTrialData(mappingService.getVersionedUuid(project.getNamespaceUid()), project.getDatasetVersion(), outcomeUris, singleInterventionUris);
+    studies = triplestoreService.addMatchingInformation(interventions, studies);
+    return studies;
   }
 }

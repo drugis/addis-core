@@ -1,15 +1,19 @@
 package org.drugis.trialverse.dataset.controller;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpException;
-import org.apache.http.client.HttpClient;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.riot.RDFLanguages;
+import org.apache.jena.riot.WebContent;
+import org.drugis.addis.base.AbstractAddisCoreController;
 import org.drugis.addis.security.Account;
 import org.drugis.addis.security.repository.AccountRepository;
 import org.drugis.addis.util.WebConstants;
 import org.drugis.trialverse.dataset.controller.command.DatasetCommand;
 import org.drugis.trialverse.dataset.exception.CreateDatasetException;
+import org.drugis.trialverse.dataset.exception.EditDatasetException;
 import org.drugis.trialverse.dataset.exception.RevisionNotFoundException;
+import org.drugis.trialverse.dataset.factory.JenaFactory;
 import org.drugis.trialverse.dataset.model.Dataset;
 import org.drugis.trialverse.dataset.model.VersionNode;
 import org.drugis.trialverse.dataset.repository.DatasetReadRepository;
@@ -20,7 +24,6 @@ import org.drugis.trialverse.dataset.service.DatasetService;
 import org.drugis.trialverse.dataset.service.HistoryService;
 import org.drugis.trialverse.security.TrialversePrincipal;
 import org.drugis.trialverse.util.Namespaces;
-import org.drugis.trialverse.util.controller.AbstractTrialverseController;
 import org.drugis.trialverse.util.service.TrialverseIOUtilsService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,6 +32,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import javax.inject.Inject;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.net.URI;
@@ -41,7 +45,7 @@ import java.util.List;
  */
 @Controller
 @RequestMapping(value = "/users/{userId}/datasets")
-public class DatasetController extends AbstractTrialverseController {
+public class DatasetController extends AbstractAddisCoreController {
 
   private final static Logger logger = LoggerFactory.getLogger(DatasetController.class);
 
@@ -69,9 +73,6 @@ public class DatasetController extends AbstractTrialverseController {
   @Inject
   private FeaturedDatasetRepository featuredDatasetRepository;
 
-  @Inject
-  private HttpClient httpClient;
-
   @RequestMapping(method = RequestMethod.POST)
   @ResponseBody
   public void createDataset(HttpServletResponse response, Principal currentUser,
@@ -87,10 +88,46 @@ public class DatasetController extends AbstractTrialverseController {
       response.setHeader("Location", datasetUri.toString());
     } else {
       logger.error("attempted to created database for user that is not the login-user ");
-      response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+      response.setStatus(HttpStatus.FORBIDDEN.value());
+    }
+  }
+  @RequestMapping(path="/{datasetUuid}", method = RequestMethod.POST, consumes = WebContent.contentTypeJSON)
+  public void editDataset(HttpServletResponse response, Principal currentUser,
+                          @RequestBody DatasetCommand datasetCommand, @PathVariable Integer userId,
+                          @PathVariable String datasetUuid) throws URISyntaxException, EditDatasetException {
+    TrialversePrincipal trialversePrincipal = new TrialversePrincipal(currentUser);
+    Account user = accountRepository.findAccountByUsername(trialversePrincipal.getUserName());
+    if (user != null && userId.equals(user.getId())) {
+      String newVersion = datasetWriteRepository.editDataset(trialversePrincipal, datasetUuid, datasetCommand.getTitle(), datasetCommand.getDescription());
+      response.setHeader(WebConstants.X_EVENT_SOURCE_VERSION, newVersion);
+    } else {
+      logger.error("attempted to edit dataset for user that is not the login-user ");
+      response.setStatus(HttpStatus.FORBIDDEN.value());
     }
   }
 
+  @RequestMapping(value = "/{datasetUUID}", method = RequestMethod.POST, consumes = WebConstants.TRIG)
+  @ResponseBody
+  public void createDatasetWithContent(
+		  HttpServletRequest request, HttpServletResponse response,
+		  Principal currentUser, @PathVariable Integer userId,
+		  @PathVariable String datasetUUID,
+          @RequestParam(WebConstants.COMMIT_TITLE_PARAM) String commitTitle,
+          @RequestParam(value = WebConstants.COMMIT_DESCRIPTION_PARAM, required = false) String commitDescription)
+      throws URISyntaxException, CreateDatasetException, HttpException, IOException {
+    logger.trace("createDatasetWithContent");
+    TrialversePrincipal trialversePrincipal = new TrialversePrincipal(currentUser);
+    Account user = accountRepository.findAccountByUsername(trialversePrincipal.getUserName());
+    if (user != null && userId.equals(user.getId())) {
+      URI datasetUri = datasetWriteRepository.createOrUpdateDatasetWithContent(request.getInputStream(), WebConstants.TRIG, JenaFactory.DATASET + datasetUUID, trialversePrincipal, commitTitle, commitDescription);
+      response.setStatus(HttpServletResponse.SC_CREATED);
+      response.setHeader("Location", datasetUri.toString());
+    } else {
+      logger.error("attempted to created dataset for user that is not the login-user ");
+      response.setStatus(HttpStatus.FORBIDDEN.value());
+    }
+  }
+  
   @RequestMapping(method = RequestMethod.GET, headers = WebConstants.ACCEPT_TURTLE_HEADER)
   @ResponseBody
   public void queryDatasetsGraphsByUser(HttpServletResponse httpServletResponse,

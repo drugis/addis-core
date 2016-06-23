@@ -4,7 +4,7 @@
   "title": "Analysis name",
   "problem": null,
   "analysisType": "Single-study Benefit-Risk",
-  "studyGraphUid": "studyGraphUid",
+  "studyGraphUri": "studyGraphUri",
   "selectedOutcomes": [{
     "id": 6,
     "project": 1,
@@ -27,19 +27,11 @@
     "semanticOutcomeLabel": "Non-SAE",
     "semanticOutcomeUri": "http://trials.drugis.org/namespace/2/adverseEvent/5f771b78f6308e4f100a6d6e239d28e2"
   }],
-  "selectedInterventions": [{
-    "id": 8,
-    "project": 1,
-    "name": "Edarbi",
-    "motivation": "more motivations",
-    "semanticInterventionLabel": "Azilsartan",
-    "semanticInterventionUri": "http://trials.drugis.org/namespace/2/drug/87fec8a8071915a2e17eddeb1faf8daa"
+  "interventionInclusions": [{
+    "interventionId": 8,
+    "analysisId": 1
   }, {
-    "id": 9,
-    "project": 1,
-    "name": "Placebo",
-    "motivation": "even more motivations",
-    "semanticInterventionLabel": "Placebo",
-    "semanticInterventionUri": "http://trials.drugis.org/namespace/2/drug/6f8ce038bc50a5372fcaf86e4b300bb6"
+    "interventionId": 9,
+    "analysisId": 1
   }]
 }

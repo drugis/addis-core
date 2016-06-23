@@ -1,8 +1,8 @@
 package org.drugis.trialverse.search.controller;
 
+import org.drugis.addis.base.AbstractAddisCoreController;
 import org.drugis.trialverse.search.model.SearchResult;
 import org.drugis.trialverse.search.service.SearchService;
-import org.drugis.trialverse.util.controller.AbstractTrialverseController;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -19,7 +19,7 @@ import java.util.List;
  */
 @Controller
 @RequestMapping
-public class SearchController extends AbstractTrialverseController {
+public class SearchController extends AbstractAddisCoreController {
 
   @Inject
   SearchService searchService;

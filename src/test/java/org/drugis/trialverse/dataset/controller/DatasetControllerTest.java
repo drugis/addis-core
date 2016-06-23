@@ -9,8 +9,10 @@ import org.apache.http.message.BasicStatusLine;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.riot.RDFLanguages;
+import org.apache.jena.riot.WebContent;
 import org.drugis.addis.security.Account;
 import org.drugis.addis.security.repository.AccountRepository;
+import org.drugis.addis.util.WebConstants;
 import org.drugis.trialverse.dataset.controller.command.DatasetCommand;
 import org.drugis.trialverse.dataset.model.Dataset;
 import org.drugis.trialverse.dataset.repository.DatasetReadRepository;
@@ -21,7 +23,6 @@ import org.drugis.trialverse.graph.service.GraphService;
 import org.drugis.trialverse.security.TrialversePrincipal;
 import org.drugis.trialverse.util.Namespaces;
 import org.drugis.trialverse.util.Utils;
-import org.drugis.addis.util.WebConstants;
 import org.drugis.trialverse.util.service.TrialverseIOUtilsService;
 import org.junit.After;
 import org.junit.Before;
@@ -135,7 +136,7 @@ public class DatasetControllerTest {
                             .content(jsonContent)
                             .contentType(webConstants.getApplicationJsonUtf8())
             )
-            .andExpect(status().isInternalServerError());
+            .andExpect(status().isForbidden());
 
     verify(accountRepository).findAccountByUsername(john.getUsername());
     verifyNoMoreInteractions(datasetWriteRepository);
@@ -290,7 +291,7 @@ public class DatasetControllerTest {
 
     String responseStr = "whatevs";
     when(datasetReadRepository.executeQuery(query, trialverseDatasetUri, null, acceptValue)).thenReturn(responseStr.getBytes());
-    mockMvc.perform((get("/users/user-name-hash/datasets/" + uuid + "/query"))
+    mockMvc.perform(get("/users/user-name-hash/datasets/" + uuid + "/query")
             .param("query", query)
             .header("Accept", acceptValue)
             .principal(user))
@@ -311,7 +312,7 @@ public class DatasetControllerTest {
     String acceptValue = "c/d";
     String responseStr = "foo";
     when(datasetReadRepository.executeQuery(query, trialverseDatasetUri, version, acceptValue)).thenReturn(responseStr.getBytes());
-    mockMvc.perform((get("/users/user-name-hash/datasets/" + uuid + "/versions/" + version + "/query"))
+    mockMvc.perform(get("/users/user-name-hash/datasets/" + uuid + "/versions/" + version + "/query")
             .param("query", query)
             .header("Accept", acceptValue)
             .principal(user))
@@ -320,6 +321,25 @@ public class DatasetControllerTest {
 
     verify(datasetReadRepository).executeQuery(query, trialverseDatasetUri, version, acceptValue);
     verify(trialverseIOUtilsService).writeContentToServletResponse(any(byte[].class), Matchers.any(HttpServletResponse.class));
-
   }
+
+  @Test
+  public void testEditDataset() throws Exception {
+    String newTitle = "new title";
+    String newDescription = "new desc";
+    DatasetCommand datasetCommand = new DatasetCommand(newTitle, newDescription);
+    String jsonContent = Utils.createJson(datasetCommand);
+    String datasetUuid = "datasetUuid";
+    String newVersion = "newVersion";
+    when(accountRepository.findAccountByUsername(john.getUsername())).thenReturn(john);
+    when(datasetWriteRepository.editDataset(principal, datasetUuid, newTitle, newDescription)).thenReturn(newVersion);
+    mockMvc.perform(post("/users/1/datasets/" + datasetUuid)
+              .contentType(WebContent.contentTypeJSON)
+              .content(jsonContent).principal(user))
+            .andExpect(status().isOk())
+            .andExpect(header().string(WebConstants.X_EVENT_SOURCE_VERSION, newVersion));
+    verify(accountRepository).findAccountByUsername(john.getUsername());
+    verify(datasetWriteRepository).editDataset(principal, datasetUuid, newTitle, newDescription);
+  }
+
 }

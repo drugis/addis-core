@@ -15,12 +15,6 @@
       Step 2
     </li>
   </ul>
-  <div ng-if="error" class="row" ng-cloak>
-    <div class="columns">
-      <app-alert type="alert" close="error.close()" error="error"></span>
-    </app-alert>
-  </div>
-</div>
 <div>
   <div class="project-header row">
     <div class="columns large-12">
@@ -56,13 +50,13 @@
       <thead>
         <tr>
           <td></td>
-          <td ng-repeat="alternative in analysis.includedAlternatives">{{alternative.name}}</td>
+          <td ng-repeat="alternative in alternatives | filter:!isIncluded">{{alternative.name}}</td>
         </tr>
       </thead>
       <tbody>
         <tr ng-repeat="owa in outcomesWithAnalyses">
           <td class="table-head">{{owa.outcome.name}}</td>
-          <td ng-repeat="alternative in analysis.includedAlternatives">
+          <td ng-repeat="alternative in alternatives  | filter:!isIncluded">
             <span ng-if="owa.scales[alternative.name]">
              {{owa.scales[alternative.name]['50%']}}
             ({{owa.scales[alternative.name]['2.5%']}},

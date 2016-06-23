@@ -5,7 +5,7 @@
     </div>
     <div class="large-4 medium-6 end columns">
         <label>Per</label>
-        <select ng-model="durationScratch.periodType" placeholder="select unit"
+        <select ng-model="durationScratch.periodType" placeholder="select unitName"
                 ng-options="periodTypeOption.label for periodTypeOption in periodTypeOptions track by periodTypeOption.code"
                 ng-change="durationString = generateDurationString(durationScratch)"></select>
     </div>

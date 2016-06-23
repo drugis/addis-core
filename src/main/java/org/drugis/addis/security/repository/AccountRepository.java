@@ -16,9 +16,9 @@
 package org.drugis.addis.security.repository;
 
 import org.drugis.addis.security.Account;
-import org.drugis.addis.security.UsernameAlreadyInUseException;
 import org.drugis.trialverse.security.TooManyAccountsException;
 
+import java.security.Principal;
 import java.util.List;
 
 public interface AccountRepository {
@@ -26,6 +26,8 @@ public interface AccountRepository {
 	void createAccount(Account account);
 
 	Account findAccountByUsername(String username);
+
+	Account getAccount(Principal principal);
 
 	Account findAccountById(int id);
 

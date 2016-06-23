@@ -272,7 +272,7 @@ define(['angular-mocks'], function(angularMocks) {
     });
     describe('findMissingAlternatives for a pairwise analysis', function() {
       it('should return a list of alternatives that are included in the analysis but not in the model', function() {
-        var includedAlternatives = [{
+        var interventionInclusions = [{
           id: 1
         }, {
           id: 2
@@ -281,7 +281,7 @@ define(['angular-mocks'], function(angularMocks) {
         }, {
           id: 4
         }];
-        var expectedResult = includedAlternatives.slice(2);
+        var expectedResult = interventionInclusions.slice(2);
         var owa = {
           selectedModel: {
             modelType: {
@@ -297,13 +297,13 @@ define(['angular-mocks'], function(angularMocks) {
             }
           }
         };
-        var result = metaBenefitRiskService.findMissingAlternatives(includedAlternatives, owa);
+        var result = metaBenefitRiskService.findMissingAlternatives(interventionInclusions, owa);
         expect(result).toEqual(expectedResult);
       });
     });
     describe('findMissingAlternatives for a network meta-analysis', function() {
       it('should return a list of alternatives that are included in the analysis but not in the model', function() {
-        var includedAlternatives = [{
+        var interventionInclusions = [{
           id: 1
         }, {
           id: 2
@@ -312,7 +312,7 @@ define(['angular-mocks'], function(angularMocks) {
         }, {
           id: 4
         }];
-        var expectedResult = includedAlternatives.slice(2);
+        var expectedResult = interventionInclusions.slice(2);
         var owa = {
           selectedModel: {
             modelType: {
@@ -320,14 +320,14 @@ define(['angular-mocks'], function(angularMocks) {
             }
           },
           selectedAnalysis: {
-            includedInterventions: [{
+            interventionInclusions: [{
               interventionId: 1
             }, {
               interventionId: 2
             }]
           }
         };
-        var result = metaBenefitRiskService.findMissingAlternatives(includedAlternatives, owa);
+        var result = metaBenefitRiskService.findMissingAlternatives(interventionInclusions, owa);
         expect(result).toEqual(expectedResult);
       });
     });

@@ -2,6 +2,7 @@ package org.drugis.addis.config;
 
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.drugis.addis.analyses.service.AnalysisService;
 import org.drugis.addis.security.SimpleSocialUsersDetailService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -27,7 +28,6 @@ import javax.sql.DataSource;
 import java.util.Properties;
 
 import static org.mockito.Mockito.mock;
-
 
 
 @Configuration
@@ -165,12 +165,18 @@ public class JpaRepositoryTestConfig {
     return mock(UserDetailsService.class);
   }
 
+  @Bean
+  public AnalysisService analysisService() {
+    return mock(AnalysisService.class);
+  }
+
   Properties additionalProperties() {
     return new Properties() {
       {
-        setProperty("hibernate.hbm2ddl.auto", "update");
+        setProperty("hibernate.hbm2ddl.auto", "validate");
         setProperty("hibernate.dialect", "org.hibernate.dialect.HSQLDialect");
         setProperty("hibernate.current_session_context_class", "thread");
+        setProperty("hibernate.validator.apply_to_ddl", "false");
       }
     };
   }

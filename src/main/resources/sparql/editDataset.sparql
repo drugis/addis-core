@@ -1,0 +1,16 @@
+PREFIX dataset: <http://trials.drugis.org/datasets/>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+
+DELETE {
+  ?dataset dcterms:title ?title
+} INSERT {
+  ?dataset dcterms:title "$newTitle"
+} WHERE {
+  ?dataset dcterms:title ?title
+};
+
+DELETE {
+  ?dataset dcterms:description ?description
+} WHERE {
+  ?dataset dcterms:description ?description
+};

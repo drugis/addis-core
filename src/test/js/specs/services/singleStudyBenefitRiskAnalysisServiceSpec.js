@@ -2,8 +2,7 @@ define(['angular', 'angular-mocks', 'services'], function() {
   describe('The singleStudyBenefitRisk Analysis service', function() {
 
     var mockProblemResource,
-      mockScenarioResource,
-      location;
+      mockScenarioResource;
 
     describe('getProblem', function() {
 
@@ -14,17 +13,15 @@ define(['angular', 'angular-mocks', 'services'], function() {
 
         mockProblemResource = jasmine.createSpyObj('ProblemResource', ['get']);
         mockScenarioResource = jasmine.createSpyObj('ScenarioResource', ['query']);
-        mockLocation = jasmine.createSpyObj('$location', ['url']);
 
         module('addis', function($provide) {
           $provide.value('ProblemResource', mockProblemResource);
           $provide.value('ScenarioResource', mockScenarioResource);
-          $provide.value('$location', mockLocation);
         });
       });
 
       it('should return a problemResoure',
-        inject(function($rootScope, $q, $location, SingleStudyBenefitRiskAnalysisService) {
+        inject(function(SingleStudyBenefitRiskAnalysisService) {
           var mockProblem = {
             $promise: 'promise'
           };
@@ -43,13 +40,13 @@ define(['angular', 'angular-mocks', 'services'], function() {
 
         mockProblemResource = jasmine.createSpyObj('ProblemResource', ['get']);
         mockScenarioResource = jasmine.createSpyObj('ScenarioResource', ['query']);
-        mockLocation = jasmine.createSpyObj('$location', ['url']);
         var mockHelpPopupService = jasmine.createSpyObj('HelpPopupService', ['loadLexicon']);
         var mockHttp = {
           get: function() {},
-          defaults : {
-          headers: {
-            common: {}}
+          defaults: {
+            headers: {
+              common: {}
+            }
           }
         };
 
@@ -57,14 +54,13 @@ define(['angular', 'angular-mocks', 'services'], function() {
         module('addis', function($provide) {
           $provide.value('ProblemResource', mockProblemResource);
           $provide.value('ScenarioResource', mockScenarioResource);
-          $provide.value('$location', mockLocation);
           $provide.value('HelpPopupService', mockHelpPopupService);
           $provide.value('$http', mockHttp);
         });
       });
 
       it('should return the default scenario when getDefaultScenario is called',
-        inject(function($rootScope, $q, $location, SingleStudyBenefitRiskAnalysisService) {
+        inject(function($rootScope, $q, SingleStudyBenefitRiskAnalysisService) {
           var defaultScenario,
             scenariosDeferred = $q.defer(),
             scenarios = [{
@@ -88,24 +84,24 @@ define(['angular', 'angular-mocks', 'services'], function() {
 
     });
 
-    describe("validateAnalysis", function() {
+    describe('validateAnalysis', function() {
       beforeEach(function() {
-        stateParams = jasmine.createSpyObj('stateParams', ['foo']);
+        var stateParams = jasmine.createSpyObj('stateParams', ['foo']);
         module('addis', function($provide) {
           $provide.value('$stateParams', stateParams);
         });
       });
     });
 
-    describe("validateProblem", function() {
+    describe('validateProblem', function() {
       beforeEach(function() {
-        stateParams = jasmine.createSpyObj('stateParams', ['foo']);
+        var stateParams = jasmine.createSpyObj('stateParams', ['foo']);
         module('addis', function($provide) {
           $provide.value('$stateParams', stateParams);
         });
       });
 
-      it("should reject problems that do not have performance data for each combination of criterion and alternative",
+      it('should reject problems that do not have performance data for each combination of criterion and alternative',
         inject(function(SingleStudyBenefitRiskAnalysisService) {
           var analysis = {
             selectedOutcomes: [{
@@ -148,10 +144,10 @@ define(['angular', 'angular-mocks', 'services'], function() {
         }));
     });
 
-    describe("concatWithNoDuplicates", function() {
+    describe('concatWithNoDuplicates', function() {
 
       beforeEach(function() {
-        stateParams = jasmine.createSpyObj('stateParams', ['foo']);
+        var stateParams = jasmine.createSpyObj('stateParams', ['foo']);
         module('addis', function($provide) {
           $provide.value('$stateParams', stateParams);
         });
@@ -159,7 +155,7 @@ define(['angular', 'angular-mocks', 'services'], function() {
       beforeEach(module('addis.services'));
 
       it('should add the source objects to the target if not already on target',
-        inject(function($rootScope, $q, $location, SingleStudyBenefitRiskAnalysisService) {
+        inject(function(SingleStudyBenefitRiskAnalysisService) {
 
           var source = [{
             name: 'bob'
@@ -196,7 +192,7 @@ define(['angular', 'angular-mocks', 'services'], function() {
 
     describe('addHasMatchedMixedTreatmentArm', function() {
       beforeEach(function() {
-        stateParams = jasmine.createSpyObj('stateParams', ['foo']);
+        var stateParams = jasmine.createSpyObj('stateParams', ['foo']);
         module('addis', function($provide) {
           $provide.value('$stateParams', stateParams);
         });
@@ -235,6 +231,39 @@ define(['angular', 'angular-mocks', 'services'], function() {
           expect(studies[0].hasMatchedMixedTreatmentArm).toBeTruthy();
           expect(studies[1].hasMatchedMixedTreatmentArm).toBeFalsy();
         }));
+    });
+
+    describe('addOverlappingInterventionsToStudies', function() {
+      beforeEach(function() {
+        var stateParams = jasmine.createSpyObj('stateParams', ['foo']);
+        module('addis', function($provide) {
+          $provide.value('$stateParams', stateParams);
+        });
+      });
+      beforeEach(module('addis.services'));
+      it('should add a list of overlapping interventions to the studies', inject(function(SingleStudyBenefitRiskAnalysisService) {
+        var trialDataArm = {
+          matchedProjectInterventionIds: [1, 2]
+        };
+
+        var studies = [{
+          trialDataArms: [trialDataArm]
+        }];
+
+        var selectedInterventions = [{
+          id: 1
+        }, {
+          id: 2
+        }];
+
+        var result = SingleStudyBenefitRiskAnalysisService.addOverlappingInterventionsToStudies(studies, selectedInterventions);
+
+        expect(result).toEqual([{
+          trialDataArms: [trialDataArm],
+          overlappingInterventions: selectedInterventions
+        }]);
+
+      }));
     });
 
   });

@@ -1,35 +1,37 @@
 package org.drugis.addis.problems.model;
 
+import java.net.URI;
+
 /**
  * Created by connor on 25-3-14.
  */
 public class Variable {
 
-  private String uid;
+  private URI uri;
   private String study;
   private String name;
   private String description;
   private String unitDescription;
   private Boolean isPrimary;
   private MeasurementType measurementType;
-  private String variableType;
+  private URI variableConceptUri;
 
   public Variable() {
   }
 
-  public Variable(String Uid, String studyUid, String name, String description, String unitDescription, Boolean isPrimary, MeasurementType measurementType, String variableType) {
-    this.uid = Uid;
+  public Variable(URI uri, String studyUid, String name, String description, String unitDescription, Boolean isPrimary, MeasurementType measurementType, URI variableConceptUri) {
+    this.uri = uri;
     this.study = studyUid;
     this.name = name;
     this.description = description;
     this.unitDescription = unitDescription;
     this.isPrimary = isPrimary;
     this.measurementType = measurementType;
-    this.variableType = variableType;
+    this.variableConceptUri = variableConceptUri;
   }
 
-  public String getUid() {
-    return uid;
+  public URI getUri() {
+    return uri;
   }
 
   public String getStudy() {
@@ -56,8 +58,8 @@ public class Variable {
     return measurementType;
   }
 
-  public String getVariableType() {
-    return variableType;
+  public URI getVariableConceptUri() {
+    return variableConceptUri;
   }
 
   @Override
@@ -68,28 +70,28 @@ public class Variable {
     Variable variable = (Variable) o;
 
     if (description != null ? !description.equals(variable.description) : variable.description != null) return false;
-    if (!uid.equals(variable.uid)) return false;
+    if (!uri.equals(variable.uri)) return false;
     if (!isPrimary.equals(variable.isPrimary)) return false;
     if (measurementType != variable.measurementType) return false;
     if (!name.equals(variable.name)) return false;
     if (!study.equals(variable.study)) return false;
     if (unitDescription != null ? !unitDescription.equals(variable.unitDescription) : variable.unitDescription != null)
       return false;
-    if (!variableType.equals(variable.variableType)) return false;
+    if (!variableConceptUri.equals(variable.variableConceptUri)) return false;
 
     return true;
   }
 
   @Override
   public int hashCode() {
-    int result = uid.hashCode();
+    int result = uri.hashCode();
     result = 31 * result + study.hashCode();
     result = 31 * result + name.hashCode();
     result = 31 * result + (description != null ? description.hashCode() : 0);
     result = 31 * result + (unitDescription != null ? unitDescription.hashCode() : 0);
     result = 31 * result + isPrimary.hashCode();
     result = 31 * result + measurementType.hashCode();
-    result = 31 * result + variableType.hashCode();
+    result = 31 * result + variableConceptUri.hashCode();
     return result;
   }
 }

@@ -5,7 +5,10 @@ import org.drugis.addis.exception.MethodNotAllowedException;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.outcomes.Outcome;
 import org.drugis.addis.outcomes.OutcomeCommand;
+import org.drugis.addis.outcomes.controller.command.EditOutcomeCommand;
 import org.drugis.addis.outcomes.repository.OutcomeRepository;
+import org.drugis.addis.outcomes.service.OutcomeService;
+import org.drugis.addis.projects.service.ProjectService;
 import org.drugis.addis.security.Account;
 import org.drugis.addis.security.repository.AccountRepository;
 import org.drugis.addis.util.WebConstants;
@@ -30,6 +33,10 @@ public class OutcomeController extends AbstractAddisCoreController {
   private AccountRepository accountRepository;
   @Inject
   private OutcomeRepository outcomeRepository;
+  @Inject
+  private OutcomeService outcomeService;
+  @Inject
+  private ProjectService projectService;
 
 
   @RequestMapping(value = "/projects/{projectId}/outcomes", method = RequestMethod.GET)
@@ -66,6 +73,14 @@ public class OutcomeController extends AbstractAddisCoreController {
     } else {
       throw new MethodNotAllowedException();
     }
+  }
+
+  @RequestMapping(value = "/projects/{projectId}/outcomes/{outcomeId}", method = RequestMethod.POST)
+  @ResponseBody
+  public Outcome edit(Principal currentUser, @PathVariable Integer outcomeId,  @PathVariable Integer projectId, @RequestBody EditOutcomeCommand command) throws Exception {
+    Account user = accountRepository.getAccount(currentUser);
+    projectService.checkProjectExistsAndModifiable(user, projectId);
+    return outcomeService.updateNameAndMotivation(projectId, outcomeId, command.getName(), command.getMotivation());
   }
 
 }

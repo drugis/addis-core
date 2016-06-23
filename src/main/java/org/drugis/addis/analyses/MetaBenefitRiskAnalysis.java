@@ -2,7 +2,6 @@ package org.drugis.addis.analyses;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonRawValue;
-import org.drugis.addis.interventions.Intervention;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -13,27 +12,14 @@ import java.util.*;
  */
 @Entity
 @JsonIgnoreProperties(ignoreUnknown = true)
+@PrimaryKeyJoinColumn(name = "id", referencedColumnName = "id")
 public class MetaBenefitRiskAnalysis extends AbstractAnalysis implements Serializable {
-  @Id
-  @SequenceGenerator(name = "analysis_sequence", sequenceName = "shared_analysis_id_seq", allocationSize = 1)
-  @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "analysis_sequence")
-  private Integer id;
-
-  private Integer projectId;
-
-  private String title;
-
   private boolean finalized = false;
 
   @JsonRawValue
   private String problem;
 
-  @OneToMany(fetch = FetchType.EAGER, orphanRemoval = true)
-  @JoinTable(name = "MetaBenefitRiskAnalysis_Alternative",
-          joinColumns = {@JoinColumn(name = "analysisId", referencedColumnName = "id")},
-          inverseJoinColumns = {@JoinColumn(name = "alternativeId", referencedColumnName = "id")})
-  private Set<Intervention> includedAlternatives = new HashSet<>();
-  @OneToMany(fetch = FetchType.EAGER, mappedBy = "metaBenefitRiskAnalysisId", cascade = CascadeType.ALL, orphanRemoval = true)
+  @OneToMany(fetch = FetchType.EAGER, mappedBy = "metaBenefitRiskAnalysisId", cascade = CascadeType.ALL)
   private Set<MbrOutcomeInclusion> mbrOutcomeInclusions = new HashSet<>();
 
   public MetaBenefitRiskAnalysis() {
@@ -50,11 +36,11 @@ public class MetaBenefitRiskAnalysis extends AbstractAnalysis implements Seriali
     this.title = title;
   }
 
-  public MetaBenefitRiskAnalysis(Integer id, Integer projectId, String title, Set<Intervention> includedAlternatives) {
+  public MetaBenefitRiskAnalysis(Integer id, Integer projectId, String title, Set<InterventionInclusion> interventionInclusions) {
     this.id = id;
     this.projectId = projectId;
     this.title = title;
-    this.includedAlternatives = includedAlternatives;
+    this.interventionInclusions = interventionInclusions;
   }
 
   @Override
@@ -65,10 +51,6 @@ public class MetaBenefitRiskAnalysis extends AbstractAnalysis implements Seriali
   @Override
   public Integer getId() {
     return id;
-  }
-
-  public List<Intervention> getIncludedAlternatives() {
-    return Collections.unmodifiableList(new ArrayList<>(includedAlternatives));
   }
 
   public List<MbrOutcomeInclusion> getMbrOutcomeInclusions() {
@@ -95,10 +77,6 @@ public class MetaBenefitRiskAnalysis extends AbstractAnalysis implements Seriali
     this.problem = problem;
   }
 
-  public void setIncludedAlternatives(List<Intervention> interventions) {
-    this.includedAlternatives = new HashSet<>(interventions);
-  }
-
   public void setMbrOutcomeInclusions(List<MbrOutcomeInclusion> mbrOutcomeInclusions) {
     this.mbrOutcomeInclusions = new HashSet<>(mbrOutcomeInclusions);
   }
@@ -114,7 +92,7 @@ public class MetaBenefitRiskAnalysis extends AbstractAnalysis implements Seriali
     if (id != null ? !id.equals(that.id) : that.id != null) return false;
     if (!projectId.equals(that.projectId)) return false;
     if (!title.equals(that.title)) return false;
-    if (!includedAlternatives.equals(that.includedAlternatives)) return false;
+    if (!interventionInclusions.equals(that.interventionInclusions)) return false;
     return mbrOutcomeInclusions.equals(that.mbrOutcomeInclusions);
 
   }
@@ -124,7 +102,7 @@ public class MetaBenefitRiskAnalysis extends AbstractAnalysis implements Seriali
     int result = id != null ? id.hashCode() : 0;
     result = 31 * result + projectId.hashCode();
     result = 31 * result + title.hashCode();
-    result = 31 * result + includedAlternatives.hashCode();
+    result = 31 * result + interventionInclusions.hashCode();
     result = 31 * result + mbrOutcomeInclusions.hashCode();
     result = 31 * result + (finalized ? 1 : 0);
     return result;

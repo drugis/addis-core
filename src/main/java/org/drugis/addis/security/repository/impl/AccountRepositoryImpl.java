@@ -26,6 +26,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Inject;
+import java.security.Principal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
@@ -56,6 +57,18 @@ public class AccountRepositoryImpl implements AccountRepository {
             rowMapper, username);
   }
 
+  @Override
+  public Account getAccount(Principal principal) {
+    try {
+      return jdbcTemplate.queryForObject(
+              "select id, username, firstName, lastName, email from Account where username = ?",
+              rowMapper, principal.getName());
+
+    } catch (EmptyResultDataAccessException e) {
+      throw new EmptyResultDataAccessException("getAccount: Unknown account for principal with name:: " + principal.getName(), 1);
+    }
+  }
+
   public Account findAccountByEmail(String email) {
     try {
       return jdbcTemplate.queryForObject(
@@ -63,7 +76,7 @@ public class AccountRepositoryImpl implements AccountRepository {
               rowMapper, email);
 
     } catch (EmptyResultDataAccessException e) {
-      throw new EmptyResultDataAccessException("Unknown dataset creator email: " + email, 1);
+      throw new EmptyResultDataAccessException("findAccountByEmail: Unknown dataset creator email: " + email, 1);
     }
   }
 

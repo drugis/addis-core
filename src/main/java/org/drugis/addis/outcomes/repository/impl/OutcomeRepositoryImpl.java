@@ -1,6 +1,5 @@
 package org.drugis.addis.outcomes.repository.impl;
 
-import org.drugis.addis.base.AbstractAddisCoreController;
 import org.drugis.addis.exception.MethodNotAllowedException;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.outcomes.Outcome;
@@ -55,6 +54,21 @@ public class OutcomeRepositoryImpl implements OutcomeRepository {
     } catch (NoResultException e) {
       throw new ResourceDoesNotExistException();
     }
+  }
+
+  @Override
+  public Boolean isExistingOutcomeName(Integer outcomeId, String name) {
+    TypedQuery<Outcome> query = em.createQuery("FROM Outcome o " +
+            "WHERE o.id != :outcomeId " +
+            "AND o.name LIKE :name " +
+            "AND o.project = (" +
+            " SELECT o2.project " +
+            " FROM Outcome o2 " +
+            " WHERE o2.id = :outcomeId" +
+            ")", Outcome.class);
+    query.setParameter("outcomeId", outcomeId);
+    query.setParameter("name", name);
+    return !query.getResultList().isEmpty();
   }
 
   @Override

@@ -1,17 +1,21 @@
 'use strict';
-define([], function() {
+define(['lodash'], function(_) {
   var dependencies = ['$scope', '$modalInstance', 'AnalysisService',
-    'outcomeWithAnalysis', 'includedAlternatives', 'setBaselineDistribution'
+    'outcomeWithAnalysis', 'interventionInclusions', 'setBaselineDistribution', 'alternatives'
   ];
   var SetBaselineDistributionController = function($scope,
-    $modalInstance, AnalysisService, outcomeWithAnalysis, includedAlternatives,
-    setBaselineDistribution) {
+    $modalInstance, AnalysisService, outcomeWithAnalysis, interventionInclusions,
+    setBaselineDistribution, alternatives) {
 
     $scope.outcomeWithAnalysis = outcomeWithAnalysis;
-    $scope.includedAlternatives = includedAlternatives;
+    $scope.alternatives = _.filter(alternatives, function(alternative){
+      return _.find(interventionInclusions, function(interventionInclusion){
+        return interventionInclusion.interventionId === alternative.id;
+      });
+    });
 
     $scope.baselineDistribution = {
-      selectedAlternative: includedAlternatives[0]
+      selectedAlternative: $scope.alternatives[0]
     };
     $scope.baselineDistribution.scale = AnalysisService.LIKELIHOOD_LINK_SETTINGS.find(function(setting) {
       return setting.likelihood === outcomeWithAnalysis.selectedModel.likelihood &&

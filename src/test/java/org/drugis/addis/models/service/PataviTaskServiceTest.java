@@ -1,18 +1,20 @@
 package org.drugis.addis.models.service;
 
 import org.drugis.addis.exception.ResourceDoesNotExistException;
+import org.drugis.addis.interventions.service.impl.InvalidTypeForDoseCheckException;
 import org.drugis.addis.models.Model;
 import org.drugis.addis.models.exceptions.InvalidModelException;
-import org.drugis.addis.models.repository.ModelRepository;
-import org.drugis.addis.patavitask.PataviTask;
 import org.drugis.addis.patavitask.PataviTaskUriHolder;
 import org.drugis.addis.patavitask.repository.PataviTaskRepository;
-import org.drugis.addis.patavitask.repository.impl.PataviTaskRepositoryImpl;
+import org.drugis.addis.patavitask.repository.UnexpectedNumberOfResultsException;
 import org.drugis.addis.patavitask.service.PataviTaskService;
 import org.drugis.addis.patavitask.service.impl.PataviTaskServiceImpl;
 import org.drugis.addis.problems.model.NetworkMetaAnalysisProblem;
 import org.drugis.addis.problems.service.ProblemService;
 import org.drugis.addis.trialverse.service.TriplestoreService;
+import org.drugis.addis.trialverse.service.impl.ReadValueException;
+import org.drugis.addis.util.WebConstants;
+import org.json.JSONObject;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -20,10 +22,17 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
 import java.io.IOException;
+import java.net.URI;
 import java.net.URISyntaxException;
+import java.security.KeyManagementException;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.UnrecoverableKeyException;
+import java.security.cert.CertificateException;
 import java.sql.SQLException;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
 
@@ -37,10 +46,13 @@ public class PataviTaskServiceTest {
   private ProblemService problemService;
 
   @Mock
-  private ModelRepository modelRepository;
+  private ModelService modelService;
 
   @Mock
   private PataviTaskRepository pataviTaskRepository;
+
+  @Mock
+  private WebConstants webConstants;
 
   @InjectMocks
   private PataviTaskService pataviTaskService;
@@ -50,18 +62,46 @@ public class PataviTaskServiceTest {
   public void setUp() throws ResourceDoesNotExistException {
     pataviTaskService = new PataviTaskServiceImpl();
     initMocks(this);
-    reset(modelRepository, pataviTaskRepository, problemService);
+    reset(modelService, pataviTaskRepository, problemService);
   }
 
   @After
   public void cleanUp() {
-    verifyNoMoreInteractions(modelRepository, pataviTaskRepository);
+    verifyNoMoreInteractions(modelService, pataviTaskRepository);
   }
 
   @Test
-  public void testFindTaskWhenThereIsNoTask() throws ResourceDoesNotExistException, IOException, SQLException, InvalidModelException, URISyntaxException {
+  public void testFindTaskWhenThereIsNoTask() throws ResourceDoesNotExistException, IOException, SQLException, InvalidModelException, URISyntaxException, ReadValueException, InvalidTypeForDoseCheckException, UnrecoverableKeyException, CertificateException, NoSuchAlgorithmException, KeyStoreException, KeyManagementException, UnexpectedNumberOfResultsException {
     Integer modelId = -2;
     String problem = "Yo";
+    Integer projectId = -6;
+    Integer analysisId = -7;
+    String modelTitle = "modelTitle";
+    URI pataviGemtcUri = URI.create("patavi");
+
+    Model model = new Model.ModelBuilder(analysisId, modelTitle)
+            .modelType(Model.NETWORK_MODEL_TYPE)
+            .link(Model.LINK_LOG)
+            .build();
+    NetworkMetaAnalysisProblem networkMetaAnalysisProblem = mock(NetworkMetaAnalysisProblem.class);
+    when(networkMetaAnalysisProblem.toString()).thenReturn(problem);
+    when(problemService.getProblem(projectId, analysisId)).thenReturn(networkMetaAnalysisProblem);
+    when(modelService.find(modelId)).thenReturn(model);
+    when(webConstants.getPataviGemtcUri()).thenReturn(pataviGemtcUri);
+    URI createdURI = URI.create("new.task.com");
+    when(pataviTaskRepository.createPataviTask(pataviGemtcUri, networkMetaAnalysisProblem.buildProblemWithModelSettings(model))).thenReturn(createdURI);
+
+    PataviTaskUriHolder result = pataviTaskService.getGemtcPataviTaskUriHolder(projectId, analysisId, modelId);
+
+    assertNotNull(result.getUri());
+    verify(modelService).find(modelId);
+    verify(problemService).getProblem(projectId, analysisId);
+    verify(pataviTaskRepository).createPataviTask(pataviGemtcUri, networkMetaAnalysisProblem.buildProblemWithModelSettings(model));
+  }
+
+  @Test
+  public void testFindTaskWhenThereAlreadyIsATask() throws ResourceDoesNotExistException, IOException, SQLException, InvalidModelException, URISyntaxException, ReadValueException, InvalidTypeForDoseCheckException, UnrecoverableKeyException, CertificateException, NoSuchAlgorithmException, KeyStoreException, KeyManagementException, UnexpectedNumberOfResultsException {
+    Integer modelId = -2;
     Integer projectId = -6;
     Integer analysisId = -7;
     String modelTitle = "modelTitle";
@@ -74,6 +114,7 @@ public class PataviTaskServiceTest {
 
     Model model = new Model.ModelBuilder(analysisId, modelTitle)
             .id(modelId)
+            .taskUri(URI.create("-7"))
             .linearModel(linearModel)
             .modelType(Model.NETWORK_MODEL_TYPE)
             .burnInIterations(burnInIterations)
@@ -82,65 +123,39 @@ public class PataviTaskServiceTest {
             .likelihood(likelihood)
             .link(link)
             .build();
-    NetworkMetaAnalysisProblem networkMetaAnalysisProblem = mock(NetworkMetaAnalysisProblem.class);
-    PataviTask pataviTask = new PataviTask(PataviTaskRepositoryImpl.GEMTC_METHOD, problem);
-    when(networkMetaAnalysisProblem.toString()).thenReturn(problem);
-    when(problemService.getProblem(projectId, analysisId)).thenReturn(networkMetaAnalysisProblem);
-    when(modelRepository.find(modelId)).thenReturn(model);
-    when(pataviTaskRepository.createPataviTask(networkMetaAnalysisProblem, model)).thenReturn(pataviTask);
+    when(modelService.find(modelId)).thenReturn(model);
 
-    PataviTaskUriHolder result = pataviTaskService.getPataviTaskUriHolder(projectId, analysisId, modelId);
-
-    assertTrue(!result.getUri().isEmpty());
-    verify(modelRepository).find(modelId);
-    verify(problemService).getProblem(projectId, analysisId);
-    verify(pataviTaskRepository).createPataviTask(networkMetaAnalysisProblem, model);
-  }
-
-  @Test
-  public void testFindTaskWhenThereAlreadyIsATask() throws ResourceDoesNotExistException, IOException, SQLException, InvalidModelException, URISyntaxException {
-    Integer modelId = -2;
-    Integer projectId = -6;
-    Integer analysisId = -7;
-    String modelTitle = "modelTitle";
-    String linearModel = Model.LINEAR_MODEL_FIXED;
-    String modelType = Model.NETWORK_MODEL_TYPE;
-    Integer burnInIterations = 5000;
-    Integer inferenceIterations = 20000;
-    Integer thinningFactor = 10;
-    String likelihood = Model.LIKELIHOOD_BINOM;
-    String link = Model.LINK_LOG;
-
-    Model model = new Model.ModelBuilder(analysisId, modelTitle)
-            .id(modelId)
-            .taskId(-7)
-            .linearModel(linearModel)
-            .modelType(modelType)
-            .burnInIterations(burnInIterations)
-            .inferenceIterations(inferenceIterations)
-            .thinningFactor(thinningFactor)
-            .likelihood(likelihood)
-            .link(link)
-            .build();
-    when(modelRepository.find(modelId)).thenReturn(model);
-
-    PataviTaskUriHolder result = pataviTaskService.getPataviTaskUriHolder(projectId, analysisId, modelId);
-    assertTrue(!result.getUri().isEmpty());
-    verify(modelRepository).find(modelId);
+    PataviTaskUriHolder result = pataviTaskService.getGemtcPataviTaskUriHolder(projectId, analysisId, modelId);
+    assertNotNull(result.getUri());
+    verify(modelService).find(modelId);
   }
 
   @Test(expected = ResourceDoesNotExistException.class)
-  public void testFindTaskForInvalidModel() throws ResourceDoesNotExistException, IOException, SQLException, InvalidModelException, URISyntaxException {
+  public void testFindTaskForInvalidModel() throws ResourceDoesNotExistException, IOException, SQLException, InvalidModelException, URISyntaxException, ReadValueException, InvalidTypeForDoseCheckException, UnrecoverableKeyException, CertificateException, NoSuchAlgorithmException, KeyStoreException, KeyManagementException, UnexpectedNumberOfResultsException {
     Integer projectId = -6;
     Integer analysisId = -7;
     Integer invalidModelId = -2;
-    when(modelRepository.find(invalidModelId)).thenReturn(null);
-    try{
-      pataviTaskService.getPataviTaskUriHolder(projectId, analysisId, invalidModelId);
-    }finally {
-      verify(modelRepository).find(invalidModelId);
+    when(modelService.find(invalidModelId)).thenReturn(null);
+    try {
+      pataviTaskService.getGemtcPataviTaskUriHolder(projectId, analysisId, invalidModelId);
+    } finally {
+      verify(modelService).find(invalidModelId);
     }
   }
 
+  @Test
+  public void testGetMcdaTask() {
+    URI mcdaPataviUri = URI.create("problem");
+    URI createdUri = URI.create("created");
+    JSONObject problem = new JSONObject();
+
+    when(pataviTaskRepository.createPataviTask(mcdaPataviUri, problem)).thenReturn(createdUri);
+    when(webConstants.getPataviMcdaUri()).thenReturn(mcdaPataviUri);
+
+    PataviTaskUriHolder mcdaPataviTaskUriHolder = pataviTaskService.getMcdaPataviTaskUriHolder(problem);
+
+    assertEquals(createdUri, mcdaPataviTaskUriHolder.getUri());
+    verify(pataviTaskRepository).createPataviTask(mcdaPataviUri, problem);
+  }
 
 }

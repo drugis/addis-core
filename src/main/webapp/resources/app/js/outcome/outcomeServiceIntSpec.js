@@ -1,13 +1,20 @@
 'use strict';
-define(['angular', 'angular-mocks'], function(angular, angularMocks) {
+define(['angular-mocks'], function(angularMocks) {
   describe('the outcome service', function() {
-
     var rootScope, q,
       uUIDServiceMock,
-      measurementMomentServiceMock = jasmine.createSpyObj('MeasurementMomentService', ['queryItems']),
       outcomeService,
+      measurementMomentServiceMock = jasmine.createSpyObj('MeasurementMomentService', ['queryItems']),
       studyServiceMock = jasmine.createSpyObj('StudyService', ['getStudy', 'getJsonGraph', 'save']),
-      studyDefer,
+      resultsServiceMock = jasmine.createSpyObj('ResultsService', ['queryResultsByOutcome', 'queryNonConformantMeasurements']),
+      repairServiceMock = jasmine.createSpyObj('RepairService', ['mergeResults']),
+      sourceResultsDefer,
+      targetResultsDefer,
+      sourceNonConformantResultsDefer,
+      targetNonConformantResultsDefer,
+      mergeResultsDefer,
+      getStudyDefer,
+      saveStudyDefer,
       measurementMomentsDefer;
 
     beforeEach(function() {
@@ -17,20 +24,38 @@ define(['angular', 'angular-mocks'], function(angular, angularMocks) {
         $provide.value('UUIDService', uUIDServiceMock);
         $provide.value('MeasurementMomentService', measurementMomentServiceMock);
         $provide.value('StudyService', studyServiceMock);
+        $provide.value('RepairService', repairServiceMock);
+        $provide.value('ResultsService', resultsServiceMock);
       });
     });
     beforeEach(module('trialverse.outcome'));
 
-    beforeEach(inject(function($q, $rootScope, OutcomeService) {
+    beforeEach(angularMocks.inject(function($q, $rootScope, OutcomeService) {
       q = $q;
       rootScope = $rootScope;
       outcomeService = OutcomeService;
 
-      studyDefer = q.defer();
-      studyServiceMock.getStudy.and.returnValue(studyDefer.promise);
+      getStudyDefer = q.defer();
+      studyServiceMock.getStudy.and.returnValue(getStudyDefer.promise);
       measurementMomentsDefer = q.defer();
       measurementMomentServiceMock.queryItems.and.returnValue(measurementMomentsDefer.promise);
+      sourceResultsDefer = q.defer();
+      targetResultsDefer = q.defer();
+      sourceNonConformantResultsDefer = q.defer();
+      targetNonConformantResultsDefer = q.defer();
+      resultsServiceMock.queryResultsByOutcome.and.returnValues(sourceResultsDefer.promise, targetResultsDefer.promise);
+      resultsServiceMock.queryNonConformantMeasurements.and.returnValues(sourceNonConformantResultsDefer.promise, targetNonConformantResultsDefer.promise);
+      mergeResultsDefer = q.defer();
+      repairServiceMock.mergeResults.and.returnValue(mergeResultsDefer.promise);
+
+      saveStudyDefer = $q.defer();
+      var saveStudyPromise = saveStudyDefer.promise;
+      studyServiceMock.save.and.returnValue(saveStudyPromise);
     }));
+
+    afterEach(function(){
+      studyServiceMock.save.calls.reset();
+    });
 
     describe('query outcomes of specific type', function() {
       var jsonStudy = {
@@ -82,7 +107,7 @@ define(['angular', 'angular-mocks'], function(angular, angularMocks) {
       }];
 
       beforeEach(function() {
-        studyDefer.resolve(jsonStudy);
+        getStudyDefer.resolve(jsonStudy);
         measurementMomentsDefer.resolve(measurementMoments);
       });
 
@@ -101,8 +126,7 @@ define(['angular', 'angular-mocks'], function(angular, angularMocks) {
       });
     });
 
-
-describe('query outcomes that a not measured', function() {
+    describe('query outcomes that are not measured', function() {
       var jsonStudy = {
         has_outcome: [{
           '@id': 'http://trials.drugis.org/instances/popchar1',
@@ -112,7 +136,7 @@ describe('query outcomes that a not measured', function() {
             'ontology:mean',
             'ontology:sample_size'
           ],
-          
+
           'of_variable': [{
             '@id': 'http://fuseki-test.drugis.org:3030/.well-known/genid/0000014fdfac194dac11005900000003',
             '@type': 'ontology:Variable',
@@ -129,7 +153,7 @@ describe('query outcomes that a not measured', function() {
       };
 
       beforeEach(function() {
-        studyDefer.resolve(jsonStudy);
+        getStudyDefer.resolve(jsonStudy);
         measurementMomentsDefer.resolve([]);
       });
 
@@ -147,7 +171,6 @@ describe('query outcomes that a not measured', function() {
     });
 
     describe('add outcome of type', function() {
-      var queryPromise;
       var outcomeUri = 'http://trials.drugis.org/instances/newUuid';
       var moment = 'http://mm/uri';
 
@@ -166,11 +189,12 @@ describe('query outcomes that a not measured', function() {
         measurementMomentsDefer.resolve([{
           itemUri: moment
         }]);
-        studyDefer.resolve({
+        getStudyDefer.resolve({
           has_outcome: []
         });
 
         outcomeService.addItem(newPopulationChar, 'ontology:OutcomeType').then(done);
+        saveStudyDefer.resolve();
         rootScope.$digest();
       });
 
@@ -238,7 +262,6 @@ describe('query outcomes that a not measured', function() {
 
       var moment1 = 'http://instance/moment1';
       var moment2 = 'http://instance/moment2';
-      var outcomeUri = 'http://trials.drugis.org/instances/popchar1';
       var measuredAtMoment1 = {
         uri: moment1
       };
@@ -254,15 +277,17 @@ describe('query outcomes that a not measured', function() {
       };
 
       beforeEach(function(done) {
-        studyDefer.resolve(jsonStudy);
+        getStudyDefer.resolve(jsonStudy);
         measurementMomentsDefer.resolve({});
         outcomeService.editItem(newPopulationChar).then(done);
+        saveStudyDefer.resolve();
         rootScope.$digest();
       });
 
       it('should have changed the outcomes', function(done) {
         outcomeService.queryItems().then(function(queryResult) {
           expect(queryResult.length).toEqual(2);
+          expect(queryResult[0].uri).toEqual(newPopulationChar.uri);
           expect(queryResult[0].label).toEqual(newPopulationChar.label);
           expect(queryResult[0].measurementType).toEqual('ontology:dichotomous');
           expect(queryResult[0].measuredAtMoments.length).toBe(2);
@@ -314,9 +339,10 @@ describe('query outcomes that a not measured', function() {
       };
 
       beforeEach(function(done) {
-        studyDefer.resolve(jsonStudy);
+        getStudyDefer.resolve(jsonStudy);
         measurementMomentsDefer.resolve({});
         outcomeService.deleteItem(newPopulationChar).then(done);
+        saveStudyDefer.resolve();
         rootScope.$digest();
       });
 
@@ -329,6 +355,81 @@ describe('query outcomes that a not measured', function() {
       });
     });
 
+    describe('merge', function() {
+      var source = {
+        uri: 'sourceUri',
+        measuredAtMoments: [{
+          uri: 'sourceMoment1Uri'
+        }]
+      };
+      var target = {
+        uri: 'targetUri',
+        measuredAtMoments: [{
+          uri: 'targetMoment1Uri'
+        }]
+      };
+      var sourceResults = [{
+        id: -1
+      }];
+      var targetResults = [{
+        id: -10
+      }];
+      var sourceNonConformantResults = [{
+        id: -100
+      }];
+      var targetNonConformantResults = [{
+        id: -1000
+      }];
+      var study = {
+        has_outcome: [{
+          '@id': 'sourceUri'
+        }, {
+          '@id': 'targetUri'
+        }]
+      };
+      var expectedSaveAfterMergeMeasurementMoments = {
+        has_outcome: [{
+          '@type': 'ontology:ItsAType',
+          '@id': 'targetUri',
+          is_measured_at: ['targetMoment1Uri', 'sourceMoment1Uri'],
+          label: undefined,
+          of_variable: [{
+            '@type': 'ontology:Variable',
+            measurementType: undefined,
+            label: undefined
+          }],
+          has_result_property: undefined
+        }]
+      };
 
+      beforeEach(function(done) {
+        sourceResultsDefer.resolve(sourceResults);
+        targetResultsDefer.resolve(targetResults);
+        sourceNonConformantResultsDefer.resolve(sourceNonConformantResults);
+        targetNonConformantResultsDefer.resolve(targetNonConformantResults);
+        mergeResultsDefer.resolve([]);
+        getStudyDefer.resolve(study);
+        saveStudyDefer.resolve();
+
+        // to test
+        outcomeService.merge(source, target, 'ontology:ItsAType').then(done);
+
+        rootScope.$digest();
+      });
+
+      it('should merge the outcome results (both conformant and nonconformant)', function() {
+        expect(resultsServiceMock.queryResultsByOutcome).toHaveBeenCalledWith(source.uri);
+        expect(resultsServiceMock.queryResultsByOutcome).toHaveBeenCalledWith(target.uri);
+        expect(resultsServiceMock.queryResultsByOutcome.calls.count()).toBe(2);
+        expect(resultsServiceMock.queryNonConformantMeasurements).toHaveBeenCalledWith(source.uri);
+        expect(resultsServiceMock.queryNonConformantMeasurements).toHaveBeenCalledWith(target.uri);
+        expect(resultsServiceMock.queryNonConformantMeasurements.calls.count()).toBe(2);
+        expect(repairServiceMock.mergeResults).toHaveBeenCalledWith(target.uri, sourceResults, targetResults, jasmine.any(Function), 'of_outcome');
+        expect(repairServiceMock.mergeResults).toHaveBeenCalledWith(target.uri, sourceNonConformantResults, targetNonConformantResults, jasmine.any(Function), 'of_outcome');
+        expect(repairServiceMock.mergeResults.calls.count()).toBe(2);
+        expect(studyServiceMock.getStudy).toHaveBeenCalled();
+        expect(studyServiceMock.save.calls.argsFor(1)).toEqual([expectedSaveAfterMergeMeasurementMoments]);
+      });
+    });
   });
 });

@@ -24,6 +24,8 @@
   </head>
 
   <body class="f-topbar-fixed">
+
+    <error-reporting></error-reporting>
     <session-expired-directive></session-expired-directive>
 
     <div ui-view></div>
@@ -46,9 +48,7 @@
         },
         WS_URI: "${pataviMcdaWsUri}",
         workspaceName: 'analyses',
-        workspacesRepositoryUrl : "/projects/:projectId/analyses/:analysisId",
-        _csrf_token : "${_csrf.token}",
-        _csrf_header : "${_csrf.headerName}"
+        workspacesRepositoryUrl : "/projects/:projectId/analyses/:analysisId"
       };
 
       function signout(){

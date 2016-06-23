@@ -1,6 +1,6 @@
 'use strict';
-define([],
-  function() {
+define(['lodash'],
+  function(_) {
     var dependencies = ['$scope', '$stateParams', '$window', '$filter',
       'VersionedGraphResource', 'GraphResource', '$location', '$anchorScroll',
       '$modal', 'StudyService', 'ResultsService', 'StudyDesignService', 'DatasetResource'
@@ -18,11 +18,10 @@ define([],
       $scope.openCopyDialog = openCopyDialog;
       $scope.study = {};
       $scope.resetStudy = resetStudy;
+      $scope.showEditStudyModal = showEditStudyModal;
 
       // onload
       StudyService.reset();
-
-
 
       $scope.categorySettings = {
         studyInformation: {
@@ -54,6 +53,8 @@ define([],
           addItemTemplateUrl: 'app/js/arm/addArm.html',
           editItemTemplateUrl: 'app/js/arm/editArm.html',
           editItemController: 'EditArmController',
+          repairItemTemplateUrl: 'app/js/arm/repairArm.html',
+          repairItemController: 'EditArmController'
         },
         groups: {
           service: 'GroupService',
@@ -66,6 +67,8 @@ define([],
           addItemTemplateUrl: 'app/js/group/addGroup.html',
           editItemTemplateUrl: 'app/js/group/editGroup.html',
           editItemController: 'EditGroupController',
+          repairItemTemplateUrl: 'app/js/group/repairGroup.html',
+          repairItemController: 'EditGroupController'
         },
         populationCharacteristics: {
           service: 'PopulationCharacteristicService',
@@ -78,6 +81,8 @@ define([],
           addItemTemplateUrl: 'app/js/populationCharacteristic/addPopulationCharacteristic.html',
           editItemTemplateUrl: 'app/js/populationCharacteristic/editPopulationCharacteristic.html',
           editItemController: 'EditPopulationCharacteristicController',
+          repairItemTemplateUrl: 'app/js/outcome/repairOutcome.html',
+          repairItemController: 'EditOutcomeController'
         },
         endpoints: {
           service: 'EndpointService',
@@ -90,6 +95,8 @@ define([],
           addItemTemplateUrl: 'app/js/endpoint/addEndpoint.html',
           editItemTemplateUrl: 'app/js/endpoint/editEndpoint.html',
           editItemController: 'EditEndpointController',
+          repairItemTemplateUrl: 'app/js/outcome/repairOutcome.html',
+          repairItemController: 'EditOutcomeController'
         },
         adverseEvents: {
           service: 'AdverseEventService',
@@ -102,6 +109,8 @@ define([],
           addItemTemplateUrl: 'app/js/adverseEvent/addAdverseEvent.html',
           editItemTemplateUrl: 'app/js/adverseEvent/editAdverseEvent.html',
           editItemController: 'EditAdverseEventController',
+          repairItemTemplateUrl: 'app/js/outcome/repairOutcome.html',
+          repairItemController: 'EditOutcomeController'
         },
         epochs: {
           service: 'EpochService',
@@ -163,6 +172,24 @@ define([],
           typeUri: 'ontology:Variable'
         }
       };
+
+      function showEditStudyModal() {
+        $modal.open({
+          templateUrl: 'app/js/study/editStudy.html',
+          controller: 'EditStudyController',
+          resolve: {
+            study: function(){
+              return $scope.study;
+            },
+            successCallback: function() {
+              return function(title, description) {
+                $scope.study.label = title;
+                $scope.study.comment = description;
+              };
+            }
+          }
+        });
+      }
 
       function openCopyDialog() {
         $modal.open({
