@@ -8,7 +8,7 @@ if [[ -z "$OLDPREFIX" || -z "$NEWPREFIX" ]]; then
 	exit 1
 fi
 
-cat changePrefix.sparql.tpl | replace "OLDPREFIX" "$OLDPREFIX" "NEWPREFIX" "$NEWPREFIX" > changePrefix.sparql
-cat changePrefix.sql.tpl | replace "OLDPREFIX" "$OLDPREFIX" "NEWPREFIX" "$NEWPREFIX" > changePrefix.sql
+cat changePrefix.sparql.tpl | sed "s|OLDPREFIX|$OLDPREFIX|g" | sed "s|NEWPREFIX|$NEWPREFIX|g" > changePrefix.sparql
+cat changePrefix.sql.tpl | sed "s|OLDPREFIX|$OLDPREFIX|g" | sed "s|NEWPREFIX|$NEWPREFIX|g" > changePrefix.sql
 
 echo -e "Now run\n  tdbupdate --loc=DB --update=changePrefix.sparql\nand\n  psql -U addiscore -f changePrefix.sql"
