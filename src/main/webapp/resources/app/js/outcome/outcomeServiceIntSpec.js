@@ -287,10 +287,10 @@ define(['angular-mocks'], function(angularMocks) {
       it('should have changed the outcomes', function(done) {
         outcomeService.queryItems().then(function(queryResult) {
           expect(queryResult.length).toEqual(2);
-          expect(queryResult[0].uri).toEqual(newPopulationChar.uri);
-          expect(queryResult[0].label).toEqual(newPopulationChar.label);
-          expect(queryResult[0].measurementType).toEqual('ontology:dichotomous');
-          expect(queryResult[0].measuredAtMoments.length).toBe(2);
+          expect(queryResult[1].uri).toEqual(newPopulationChar.uri);
+          expect(queryResult[1].label).toEqual(newPopulationChar.label);
+          expect(queryResult[1].measurementType).toEqual('ontology:dichotomous');
+          expect(queryResult[1].measuredAtMoments.length).toBe(2);
           done();
         });
       });

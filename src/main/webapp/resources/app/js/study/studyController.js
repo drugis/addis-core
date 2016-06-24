@@ -1,6 +1,6 @@
 'use strict';
-define(['lodash'],
-  function(_) {
+define(['angular', 'lodash'],
+  function(angular, _) {
     var dependencies = ['$scope', '$stateParams', '$window', '$filter',
       'VersionedGraphResource', 'GraphResource', '$location', '$anchorScroll',
       '$modal', 'StudyService', 'ResultsService', 'StudyDesignService', 'DatasetResource'

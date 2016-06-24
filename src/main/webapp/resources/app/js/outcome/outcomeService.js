@@ -70,11 +70,21 @@ define(['angular', 'lodash'],
         }
       }
 
+      function sortByLabel(a, b) {
+        if (a.label.toLowerCase() < b.label.toLowerCase()) {
+          return -1;
+        }
+        if (a.label.toLowerCase() > b.label.toLowerCase()) {
+          return 1;
+        }
+        return 0;
+      }
+
       function queryItems(typeCheckFunction) {
         return MeasurementMomentService.queryItems().then(function(measurementMoments) {
           return StudyService.getStudy().then(function(study) {
             var outcomes = _.filter(study.has_outcome, typeCheckFunction);
-            return _.map(outcomes, _.partial(toFrontEnd, measurementMoments));
+            return _.map(outcomes, _.partial(toFrontEnd, measurementMoments)).sort(sortByLabel);
           });
         });
       }

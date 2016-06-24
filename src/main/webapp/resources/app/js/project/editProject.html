@@ -1,0 +1,28 @@
+<form novalidate ng-submit="editProject()">
+    <div class="row">
+        <div class="large-9 columns">
+            <h3>Edit project</h3>
+        </div>
+    </div>
+    <div class="row">
+        <div class="large-9 columns">
+            <label>Name
+                <input autofocus type="text" ng-model="project.name">
+            </label>
+            <div ng-show="isNameTaken(project.name)" class="alert"><em>Duplicate project name</em></div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="large-9 columns">
+            <label>Description
+                <textarea rows="8" ng-model="project.description"></textarea>
+            </label>
+        </div>
+    </div>
+    <div class="row">
+        <div class="large-9 columns">
+            <button class="success" type="submit" ng-disabled="!project.name || isNameTaken(project.name) || isEditing">Edit</button>
+        </div>
+    </div>
+    <a class="close-reveal-modal" ng-click="cancel()">&#215;</a>
+</form>
