@@ -100,12 +100,6 @@ define(['lodash'], function(_) {
       delete linkedData['@context'][propertyName]['@type'];
     }
 
-    function inlineList(subject, propertyName) {
-      subject[propertyName] = _.map(subject[propertyName]['@list'], findAndRemoveFromGraph);
-      linkedData['@context'][propertyName]['@container'] = '@list';
-      delete linkedData['@context'][propertyName]['@type'];
-    }
-
     function inlineObjectsForSubjectsWithProperty(subjectList, propertyName) {
       var subjectsWithProperty = _.filter(subjectList, function(subjectWithTriples) {
         return subjectWithTriples[propertyName];
