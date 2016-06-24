@@ -18,4 +18,8 @@ public interface ProjectRepository {
   Collection<Project> queryByOwnerId(Integer ownerId);
 
   Project create(Account user, ProjectCommand command);
+
+  Boolean isExistingProjectName(Integer projectId, String name);
+
+  Project updateNameAndDescription(Integer projectId, String name, String description) throws ResourceDoesNotExistException;
 }

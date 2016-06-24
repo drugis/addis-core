@@ -88,7 +88,7 @@ define(['angular-mocks', 'angular'], function(angularMocks, angular) {
         };
 
       beforeEach(inject(function($controller, $rootScope) {
-        projectResource = jasmine.createSpyObj('ProjectResource', ['get']);
+        projectResource = jasmine.createSpyObj('ProjectResource', ['get', 'query']);
 
         projectResource.get.and.returnValue(mockProject);
         scope = $rootScope;
@@ -169,7 +169,7 @@ define(['angular-mocks', 'angular'], function(angularMocks, angular) {
 
         mockSemanticOutcomes = ['a', 'b', 'c'];
         mockSemanticInterventions = ['e', 'f', 'g'];
-        projectResource = jasmine.createSpyObj('projectResource', ['get', 'save']);
+        projectResource = jasmine.createSpyObj('projectResource', ['get', 'save', 'query']);
         projectResource.get.and.returnValue(mockProject);
         trialverseResource = jasmine.createSpyObj('trialverseResource', ['get']);
         trialverseResource.get.and.returnValue(mockTrialverse);

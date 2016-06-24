@@ -13,8 +13,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import javax.transaction.Transactional;
 import java.util.Collection;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 
 /**
  * Created by daan on 2/11/14.
@@ -61,6 +60,13 @@ public class ProjectsRepositoryTest {
     assertEquals(new Integer(1), result.getId());
     assertEquals("testname 1", result.getName());
     assertEquals("testdescription 1", result.getDescription());
+  }
+
+  @Test
+  public void isExistingProjectName() {
+    assertTrue(projectRepository.isExistingProjectName(3, "testname 1")); // duplicate name for owner
+    assertFalse(projectRepository.isExistingProjectName(3, "updated")); // non duplicate name for owner
+    assertFalse(projectRepository.isExistingProjectName(2, "testname 1")); // duplicate name for non owner
   }
 
 }

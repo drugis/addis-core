@@ -51,4 +51,29 @@ public class ProjectRepositoryImpl implements ProjectRepository {
     return project;
   }
 
+  @Override
+  public Boolean isExistingProjectName(Integer projectId, String name) {
+    TypedQuery<Project> query = em.createQuery("FROM Project p " +
+            "WHERE p.id != :projectId " +
+            "AND p.name LIKE :name " +
+            "AND p.owner = (" +
+            " SELECT p2.owner " +
+            " FROM Project p2 " +
+            " WHERE p2.id = :projectId" +
+            ")", Project.class);
+    query.setParameter("projectId", projectId);
+    query.setParameter("name", name);
+    return !query.getResultList().isEmpty();
+  }
+
+  @Override
+  public Project updateNameAndDescription(Integer projectId, String name, String description) throws ResourceDoesNotExistException {
+    Project project = em.find(Project.class, projectId);
+    if (project == null) {
+      throw new ResourceDoesNotExistException();
+    }
+    project.setName(name);
+    project.setDescription(description);
+    return project;
+  }
 }

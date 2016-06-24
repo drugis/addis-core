@@ -37,6 +37,7 @@ define(['lodash', 'angular'], function(_, angular) {
     };
     $scope.userId = $stateParams.userUid;
 
+    $scope.projects = ProjectResource.query();
     $scope.project = ProjectResource.get($stateParams);
     $scope.project.$promise.then(function() {
 
@@ -136,6 +137,34 @@ define(['lodash', 'angular'], function(_, angular) {
         userUid: $scope.userId,
         projectId: $scope.project.id,
         analysisId: analysis.id
+      });
+    };
+
+    $scope.openEditProjectDialog = function() {
+      $modal.open({
+        templateUrl: './app/js/project/editProject.html',
+        controller: 'EditProjectController',
+        resolve: {
+          project: function() {
+            return $scope.project;
+          },
+          otherProjectNames: function() {
+            return $scope.projects.$promise.then(function(projects){
+              return _.reduce(projects, function(accum, project){
+                  if($scope.project.id !== project.id) {
+                    accum.push(project.name);
+                  }
+                  return accum;
+              },[]);
+            });
+          },
+          callback: function() {
+            return function(name, description) {
+              $scope.project.name = name;
+              $scope.project.description = description;
+            };
+          }
+        }
       });
     };
 

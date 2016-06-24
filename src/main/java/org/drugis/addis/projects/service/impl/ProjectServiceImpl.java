@@ -86,4 +86,12 @@ public class ProjectServiceImpl implements ProjectService {
     studies = triplestoreService.addMatchingInformation(interventions, studies);
     return studies;
   }
+
+  @Override
+  public Project updateProject(Integer projectId, String name, String description) throws UpdateProjectException, ResourceDoesNotExistException {
+    if(projectRepository.isExistingProjectName(projectId, name)){
+     throw new UpdateProjectException("Can not update project; duplicate project name");
+    }
+    return projectRepository.updateNameAndDescription(projectId, name, description);
+  }
 }

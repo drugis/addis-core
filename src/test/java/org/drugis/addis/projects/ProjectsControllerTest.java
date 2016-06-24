@@ -4,6 +4,7 @@ import org.apache.commons.lang.StringUtils;
 import org.drugis.addis.TestUtils;
 import org.drugis.addis.config.TestConfig;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
+import org.drugis.addis.projects.controller.EditProjectCommand;
 import org.drugis.addis.projects.controller.ProjectController;
 import org.drugis.addis.projects.repository.ProjectRepository;
 import org.drugis.addis.projects.service.ProjectService;
@@ -186,7 +187,19 @@ public class ProjectsControllerTest {
             .andExpect(jsonPath("$.name", is("testname")));
     verify(accountRepository).findAccountByUsername(gert.getUsername());
     verify(projectRepository).create(gert, projectCommand);
+  }
 
+  @Test
+  public void updateTitleAndDescription() throws Exception {
+    EditProjectCommand command = new EditProjectCommand("updateName", "updateDescription");
+    Project project = new Project(1, gert, "updateName", "updateDescription", "uid1", "version 1");
+    String jsonContent = TestUtils.createJson(command);
+    when(projectService.updateProject(project.getId(), command.getName(), command.getDescription())).thenReturn(project);
+    mockMvc.perform(post("/projects/1").principal(user).content(jsonContent).contentType(WebConstants.getApplicationJsonUtf8Value()))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()));
+    verify(projectService).checkOwnership(project.getId(), user);
+    verify(projectService).updateProject(project.getId(), command.getName(), command.getDescription());
   }
 
 }

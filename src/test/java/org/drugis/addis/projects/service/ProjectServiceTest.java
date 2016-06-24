@@ -5,6 +5,7 @@ import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.projects.Project;
 import org.drugis.addis.projects.repository.ProjectRepository;
 import org.drugis.addis.projects.service.impl.ProjectServiceImpl;
+import org.drugis.addis.projects.service.impl.UpdateProjectException;
 import org.drugis.addis.security.Account;
 import org.drugis.addis.security.repository.AccountRepository;
 import org.junit.Before;
@@ -14,8 +15,8 @@ import org.mockito.Mock;
 
 import java.security.Principal;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 /**
@@ -66,4 +67,26 @@ public class ProjectServiceTest {
     projectService.checkOwnership(projectId, principal);
   }
 
+  @Test
+  public void update() throws ResourceDoesNotExistException, UpdateProjectException {
+    Integer projectId = 1;
+    String name = "name";
+    String description = "description";
+    when(projectRepository.isExistingProjectName(projectId, name)).thenReturn(Boolean.FALSE);
+    when(projectRepository.updateNameAndDescription(projectId, name, description)).thenReturn(mockProject);
+    Project project = projectService.updateProject(projectId, name, description);
+    assertEquals(mockProject, project);
+    verify(projectRepository).isExistingProjectName(projectId, name);
+    verify(projectRepository).updateNameAndDescription(projectId, name, description);
+  }
+
+  @Test(expected = UpdateProjectException.class)
+  public void updateDuplicateName() throws ResourceDoesNotExistException, UpdateProjectException {
+    Integer projectId = 1;
+    String name = "name";
+    String description = "description";
+    when(projectRepository.isExistingProjectName(projectId, name)).thenReturn(Boolean.TRUE);
+    projectService.updateProject(projectId, name, description);
+
+  }
 }

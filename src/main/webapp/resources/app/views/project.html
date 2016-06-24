@@ -9,18 +9,19 @@
   <div class="project-header row">
     <div class="columns large-12">
       <div>
-        <h1 class="inline-header" title="Project title">{{::project.name}}</h1>
+        <h1 class="inline-header" title="Project title">{{project.name}}
+          <a ng-if="editMode.allowEditing" title="Edit title and description"
+            ng-click="openEditProjectDialog()"><i class="fa fa-edit"></i></a></h1>
       </div>
       <div>
-        <!-- /users/:userUid/datasets/:datasetUUID/versions/:versionUuid -->
-        <h3>Source dataset:</h3>
-        <a ui-sref="versionedDataset({userUid: trialverse.ownerId, datasetUUID: project.namespaceUid, version: project.datasetVersion.split('/versions/')[1]
+        <h5>Source dataset: <a ui-sref="versionedDataset({userUid: trialverse.ownerId, datasetUUID: project.namespaceUid, version: project.datasetVersion.split('/versions/')[1]
       })">
-        {{::trialverse.name}}</a>
+        {{::trialverse.name}}</a></h5>
+
       </div>
       <div class="row" ng-show="project.description">
         <div class="columns large-12 small-12">
-          <p class="project-description" title="Project description">{{::project.description}}</p>
+          <p class="subheader" title="Project description">{{project.description}}</p>
         </div>
       </div>
     </div>
