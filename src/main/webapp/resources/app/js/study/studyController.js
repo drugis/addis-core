@@ -254,7 +254,7 @@ define(['angular', 'lodash'],
               label: study.label,
               comment: study.comment,
             };
-            if(study.has_publication.length === 1) {
+            if(study.has_publication && study.has_publication.length === 1) {
               $scope.study.nctId = study.has_publication[0].registration_id;
               $scope.study.nctUri = study.has_publication[0].uri;
             }
