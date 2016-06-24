@@ -27,7 +27,7 @@ define(['util/transformJsonLd', 'util/transformConceptJsonLd'], function(transfo
             'Accept': 'application/ld+json'
           },
           transformResponse: function(data) {
-            return transformStudyJsonLd(JSON.parse(data))
+            return transformStudyJsonLd(JSON.parse(data));
           }
         },
         'getConceptJson': {
