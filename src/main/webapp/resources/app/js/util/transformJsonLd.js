@@ -356,7 +356,13 @@ define(['lodash'], function(_) {
         '@id': 'http://qudt.org/schema/qudt#conversionMultiplier',
         '@type': 'http://www.w3.org/2001/XMLSchema#double'
       },
-      'ontology': 'http://trials.drugis.org/ontology#'
+      'ontology': 'http://trials.drugis.org/ontology#',
+      'registry': {
+        '@id': 'http://trials.drugis.org/ontology#registry',
+        '@type': '@id'
+      },
+      'registration_id': 'http://trials.drugis.org/ontology#registration_id',
+      'uri': 'http://purl.org/ontology/bibo/uri'
     };
 
     return linkedData;
