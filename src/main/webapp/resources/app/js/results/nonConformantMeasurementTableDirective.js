@@ -15,7 +15,7 @@ define([], function() {
       },
       link: function(scope) {
 
-        scope.nonConformantMeasurementsPromise = ResultsService.queryNonConformantMeasurements(scope.variable.uri);
+        scope.nonConformantMeasurementsPromise = ResultsService.queryNonConformantMeasurementsByOutcomeUri(scope.variable.uri);
 
         $q.all([scope.arms, scope.measurementMoments, scope.groups, scope.nonConformantMeasurementsPromise]).then(function(result) {
           scope.nonConformantMeasurements = result[3];

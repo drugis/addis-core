@@ -150,8 +150,8 @@ define(['angular', 'lodash'],
       function hasOverlap(source, target) {
         var sourceResultsPromise = ResultsService.queryResultsByOutcome(source.uri);
         var targetResultsPromise = ResultsService.queryResultsByOutcome(target.uri);
-        var sourceNonConformantResultsPromise = ResultsService.queryNonConformantMeasurements(source.uri);
-        var targetNonConformantResultsPromise = ResultsService.queryNonConformantMeasurements(target.uri);
+        var sourceNonConformantResultsPromise = ResultsService.queryNonConformantMeasurementsByOutcomeUri(source.uri);
+        var targetNonConformantResultsPromise = ResultsService.queryNonConformantMeasurementsByOutcomeUri(target.uri);
 
         return $q.all([sourceResultsPromise, targetResultsPromise, sourceNonConformantResultsPromise, targetNonConformantResultsPromise]).then(function(results) {
           return RepairService.findOverlappingResults(results[0], results[1], isOverlappingResultFunction).length > 0 ||
@@ -189,8 +189,8 @@ define(['angular', 'lodash'],
         var mergeProperty = 'of_outcome';
         var sourceResultsPromise = ResultsService.queryResultsByOutcome(sourceUri);
         var targetResultsPromise = ResultsService.queryResultsByOutcome(targetUri);
-        var sourceNonConformantResultsPromise = ResultsService.queryNonConformantMeasurements(sourceUri);
-        var targetNonConformantResultsPromise = ResultsService.queryNonConformantMeasurements(targetUri);
+        var sourceNonConformantResultsPromise = ResultsService.queryNonConformantMeasurementsByOutcomeUri(sourceUri);
+        var targetNonConformantResultsPromise = ResultsService.queryNonConformantMeasurementsByOutcomeUri(targetUri);
         return $q.all([sourceResultsPromise, targetResultsPromise, sourceNonConformantResultsPromise, targetNonConformantResultsPromise]).then(function(results) {
           var sourceResults = results[0];
           var targetResults = results[1];

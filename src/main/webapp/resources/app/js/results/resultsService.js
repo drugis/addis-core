@@ -92,8 +92,12 @@ define(['angular', 'lodash'], function(angular, _) {
       return isResult(item) && variableUri === item.of_outcome;
     }
 
-    function isResultForNonConformantMeasurement(variableUri, item) {
+    function isResultForNonConformantMeasurementOfOutcome(variableUri, item) {
       return isNonConformantMeasurementResult(item) && variableUri === item.of_outcome;
+    }
+
+    function isResultForNonConformantMeasurementOfGroup(groupUri, item) {
+      return isNonConformantMeasurementResult(item) && groupUri === item.of_group;
     }
 
     function isResultForArm(armUri, item) {
@@ -239,8 +243,12 @@ define(['angular', 'lodash'], function(angular, _) {
       return _queryResults(outcomeUri, isResultForOutcome);
     }
 
-    function queryNonConformantMeasurements(outcomeUri) {
-      return _queryResults(outcomeUri, isResultForNonConformantMeasurement);
+    function queryNonConformantMeasurementsByOutcomeUri(outcomeUri) {
+      return _queryResults(outcomeUri, isResultForNonConformantMeasurementOfOutcome);
+    }
+
+    function queryNonConformantMeasurementsByGroupUri(groupUri) {
+      return _queryResults(groupUri, isResultForNonConformantMeasurementOfGroup);
     }
 
     return {
@@ -248,7 +256,8 @@ define(['angular', 'lodash'], function(angular, _) {
       queryResults: queryResults,
       queryResultsByGroup: queryResultsByGroup,
       queryResultsByOutcome: queryResultsByOutcome,
-      queryNonConformantMeasurements: queryNonConformantMeasurements,
+      queryNonConformantMeasurementsByOutcomeUri: queryNonConformantMeasurementsByOutcomeUri,
+      queryNonConformantMeasurementsByGroupUri: queryNonConformantMeasurementsByGroupUri,
       cleanupMeasurements: cleanupMeasurements,
       setToMeasurementMoment: setToMeasurementMoment,
       isExistingMeasurement: isExistingMeasurement,

@@ -6,7 +6,7 @@ define(['angular-mocks'], function(angularMocks) {
       outcomeService,
       measurementMomentServiceMock = jasmine.createSpyObj('MeasurementMomentService', ['queryItems']),
       studyServiceMock = jasmine.createSpyObj('StudyService', ['getStudy', 'getJsonGraph', 'save']),
-      resultsServiceMock = jasmine.createSpyObj('ResultsService', ['queryResultsByOutcome', 'queryNonConformantMeasurements']),
+      resultsServiceMock = jasmine.createSpyObj('ResultsService', ['queryResultsByOutcome', 'queryNonConformantMeasurementsByOutcomeUri']),
       repairServiceMock = jasmine.createSpyObj('RepairService', ['mergeResults']),
       sourceResultsDefer,
       targetResultsDefer,
@@ -44,7 +44,7 @@ define(['angular-mocks'], function(angularMocks) {
       sourceNonConformantResultsDefer = q.defer();
       targetNonConformantResultsDefer = q.defer();
       resultsServiceMock.queryResultsByOutcome.and.returnValues(sourceResultsDefer.promise, targetResultsDefer.promise);
-      resultsServiceMock.queryNonConformantMeasurements.and.returnValues(sourceNonConformantResultsDefer.promise, targetNonConformantResultsDefer.promise);
+      resultsServiceMock.queryNonConformantMeasurementsByOutcomeUri.and.returnValues(sourceNonConformantResultsDefer.promise, targetNonConformantResultsDefer.promise);
       mergeResultsDefer = q.defer();
       repairServiceMock.mergeResults.and.returnValue(mergeResultsDefer.promise);
 
@@ -421,9 +421,9 @@ define(['angular-mocks'], function(angularMocks) {
         expect(resultsServiceMock.queryResultsByOutcome).toHaveBeenCalledWith(source.uri);
         expect(resultsServiceMock.queryResultsByOutcome).toHaveBeenCalledWith(target.uri);
         expect(resultsServiceMock.queryResultsByOutcome.calls.count()).toBe(2);
-        expect(resultsServiceMock.queryNonConformantMeasurements).toHaveBeenCalledWith(source.uri);
-        expect(resultsServiceMock.queryNonConformantMeasurements).toHaveBeenCalledWith(target.uri);
-        expect(resultsServiceMock.queryNonConformantMeasurements.calls.count()).toBe(2);
+        expect(resultsServiceMock.queryNonConformantMeasurementsByOutcomeUri).toHaveBeenCalledWith(source.uri);
+        expect(resultsServiceMock.queryNonConformantMeasurementsByOutcomeUri).toHaveBeenCalledWith(target.uri);
+        expect(resultsServiceMock.queryNonConformantMeasurementsByOutcomeUri.calls.count()).toBe(2);
         expect(repairServiceMock.mergeResults).toHaveBeenCalledWith(target.uri, sourceResults, targetResults, jasmine.any(Function), 'of_outcome');
         expect(repairServiceMock.mergeResults).toHaveBeenCalledWith(target.uri, sourceNonConformantResults, targetNonConformantResults, jasmine.any(Function), 'of_outcome');
         expect(repairServiceMock.mergeResults.calls.count()).toBe(2);

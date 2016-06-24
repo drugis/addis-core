@@ -3,13 +3,13 @@ define(['angular', 'angular-mocks'], function() {
   describe('the abstract group service', function() {
 
     var rootScope, q;
-    var resultsService = jasmine.createSpyObj('ResultsService', ['queryResultsByGroup']);
+    var resultsService = jasmine.createSpyObj('ResultsService', ['queryResultsByGroup', 'queryNonConformantMeasurementsByGroupUri']);
     var studyService = jasmine.createSpyObj('StudyService', ['getStudy', 'save']);
     var repairService = jasmine.createSpyObj('RepairService', ['findOverlappingResults', 'findNonOverlappingResults', 'mergeResults']);
     var abstractGroupService;
     var byGroupSourceResults;
-    var sourceResultsDefer, targetResultsDefer,
-      getStudyDefer, saveStudyDefer, mergeResultsDefer;
+    var sourceResultsDefer, targetResultsDefer, sourceNonConformantResultsDefer,
+      targetNonConformantResultsDefer, getStudyDefer, saveStudyDefer, mergeResultsDefer;
 
     beforeEach(function() {
       module('trialverse.util', function($provide) {
@@ -28,6 +28,12 @@ define(['angular', 'angular-mocks'], function() {
       targetResultsDefer = $q.defer();
       var targetResultsPromise = targetResultsDefer.promise;
       resultsService.queryResultsByGroup.and.returnValues(sourceResultsPromise, targetResultsPromise);
+
+      sourceNonConformantResultsDefer = $q.defer();
+      var sourceNonConformantResultsPromise = sourceNonConformantResultsDefer.promise;
+      targetNonConformantResultsDefer = $q.defer();
+      var targetNonConformantResultsPromise = targetNonConformantResultsDefer.promise;
+      resultsService.queryNonConformantMeasurementsByGroupUri.and.returnValues(sourceNonConformantResultsPromise, targetNonConformantResultsPromise);
 
       getStudyDefer = $q.defer();
       var getStudyPromise = getStudyDefer.promise;
@@ -114,6 +120,8 @@ define(['angular', 'angular-mocks'], function() {
       beforeEach(function(done) {
         sourceResultsDefer.resolve(byGroupSourceResults);
         targetResultsDefer.resolve(byGroupTargetResults);
+        sourceNonConformantResultsDefer.resolve([]);
+        targetNonConformantResultsDefer.resolve([]);
         mergeResultsDefer.resolve();
         getStudyDefer.resolve(getStudyResult);
         saveStudyDefer.resolve();
@@ -189,6 +197,8 @@ define(['angular', 'angular-mocks'], function() {
       beforeEach(function(done) {
         sourceResultsDefer.resolve(byGroupSourceResults);
         targetResultsDefer.resolve(byGroupTargetResults);
+        sourceNonConformantResultsDefer.resolve([]);
+        targetNonConformantResultsDefer.resolve([]);
         repairService.findOverlappingResults.and.returnValue([{}]);
 
         abstractGroupService.hasOverlap(groupSource, groupTarget).then(function(res) {
