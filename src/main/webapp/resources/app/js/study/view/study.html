@@ -60,11 +60,11 @@
       </ul>
     </div>
     <div class="columns large-10 medium-9 small-12 nav-bar-spacer " ng-class="{'large-12 medium-12': navSettings.isHidden}">
-      <div class="row">
+      <div class="row" style="margin-bottom: 1rem;">
         <div class="columns large-10">
-          <h1>{{study.label}}</h1>
-          <h3>{{study.comment}}
-          </h3>
+          <h3>{{study.label}}</h3>
+          <p class="subheader">{{study.comment}}</p>
+          <div ng-if="study.nctId"><a ng-href="{{study.nctUri}}" target="_blank">{{::study.nctId}}</a></div>
         </div>
         <div class="columns large-2">
           <h1 ng-if="isEditingAllowed" title="Edit title and description"><a class="right" ng-click="showEditStudyModal()"><i class="fa fa-edit"></i></a></h1>
