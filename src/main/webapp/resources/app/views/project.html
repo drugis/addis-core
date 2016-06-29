@@ -34,7 +34,7 @@
           <!-- interventions -->
           <div class="row">
             <div class="columns large-12">
-              <h3 class="subheader">Interventions</h3>
+              <h3 class="subheader">Interventions<inline-help help-key="addis-intervention"></inline-help></h3>
               <ul>
                 <li ng-show="interventions.length === 0 ">no interventions defined</li>
                 <li ng-repeat="intervention in interventions | orderBy:'name'">
@@ -49,7 +49,7 @@
           <!-- outcomes -->
           <div class="row">
             <div class="columns large-12">
-              <h3 class="subheader">Outcomes</h3>
+              <h3 class="subheader">Outcomes<inline-help help-key="addis-outcome"></inline-help></h3>
               <ul>
                 <li ng-show="outcomes.length === 0 ">no outcomes defined</li>
                 <li ng-repeat="outcome in outcomes | orderBy:'name'">
@@ -64,7 +64,7 @@
           <!-- analyses -->
           <div class="row" ng-repeat="analysis in analyses">
             <div class="columns large-12">
-              <h2>Analysis: {{::analysis.title}}</h2>
+              <h2>Analysis: {{::analysis.title}}<inline-help help-key="addis-analysis"></inline-help></h2>
               <p ng-show="!analysis.description">
                 <em>no description</em>
               </p>
@@ -83,7 +83,7 @@
           <!-- Analyses -->
           <div class="row section">
             <div class="columns large-6 ">
-              <h2>Analyses</h2>
+              <h2>Analyses<inline-help help-key="addis-analysis"></inline-help></h2>
               <button id="show-create-analysis-modal-btn" ng-show="editMode.allowEditing" ng-disabled="!loading.loaded"
                 class="small" ng-click="openAddAnalysisDialog()"><i class="fa fa-plus"></i> Add Analysis
               </button>
@@ -124,7 +124,7 @@
           <div class="row section">
             <!-- Outcomes -->
             <div class="columns large-12">
-              <h3 class="subheader">Outcomes</h3>
+              <h3 class="subheader">Outcomes<inline-help help-key="addis-outcome"></inline-help></h3>
               <button id="show-create-outcome-modal-btn" ng-show="editMode.allowEditing" ng-disabled="!loading.loaded"
                 class="small" ng-click="openCreateOutcomeDialog()"><i class="fa fa-plus"></i> Add outcome
               </button>
@@ -152,7 +152,7 @@
           <div class="row section">
             <!-- Interventions -->
             <div class="columns large-12">
-              <h3 class="subheader">Interventions</h3>
+              <h3 class="subheader">Interventions<inline-help help-key="addis-intervention"></inline-help></h3>
               <button id="show-create-intervention-modal-btn" ng-show="editMode.allowEditing" ng-disabled="!loading.loaded"
                 class="small " ng-click="openCreateInterventionDialog()"><i class="fa fa-plus"></i> Add intervention
               </button>
@@ -181,7 +181,7 @@
           <div class="row section">
             <div class="columns large-12">
 
-              <h3 class="subheader">Covariates</h3>
+              <h3 class="subheader">Covariates<inline-help help-key="addis-covariate"></inline-help></h3>
               <button ng-show="editMode.allowEditing" ng-disabled="!loading.loaded" class="small"
                 ng-click="addCovariate()"><i class="fa fa-plus"></i> Add Covariate
               </button>

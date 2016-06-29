@@ -176,7 +176,7 @@ define(
         };
 
         HelpPopupService.loadLexicon($http.get('app/js/bower_components/gemtc-web/app/lexicon.json'));
-
+        HelpPopupService.loadLexicon($http.get('addis-lexicon.json'));
       }
     ]);
 

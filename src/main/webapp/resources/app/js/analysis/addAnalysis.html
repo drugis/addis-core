@@ -1,5 +1,10 @@
 <form id="add-analysis-form" novalidate ng-submit="addAnalysis(newAnalysis)">
-  <h3>Add a new analysis</h3>
+
+  <div class="row">
+    <div class="large-10 columns">
+      <h3>Add a new analysis</h3>
+    </div>
+  </div>
 
   <div class="row">
     <div class="large-10 columns">
@@ -11,23 +16,40 @@
   </div>
   <div class="row">
     <div class="large-10 columns">
-      <label>Type
-        <select id="analysis-type-select" ng-init="newAnalysis.type=analysisTypes[0].label" ng-model="newAnalysis.type"
-          ng-options="type.label as type.label for type in analysisTypes"></select>
-      </label>
+      <label>Analysis type</label>
+        <div class="row ">
+          <div class="columns large-6 stacked-radio">
+            <input id="analysis-type-meta-analysis" type="radio" value="Network meta-analysis" ng-model="newAnalysis.type" >
+            <label for="analysis-type-meta-analysis" class="ng-binding">Network meta-analysis</label>
+          </div>
+        </div>
+        <div class="row">
+          <div class="columns large-6 stacked-radio">
+            <input id="analysis-type-single-study-benefit-Risk" type="radio" value="Single-study Benefit-Risk" ng-model="newAnalysis.type" >
+            <label for="analysis-type-single-study-benefit-Risk">Single-study Benefit-Risk<inline-help help-key="benefit-risk-analysis"></inline-help></label>
+          </div>
+        </div>
+        <div class="row">
+          <div class="columns large-6 stacked-radio">
+            <input id="analysis-type-meta-benefit-risk" type="radio" value="Benefit-risk analysis based on meta-analyses" ng-model="newAnalysis.type" >
+            <label for="analysis-type-meta-benefit-risk">Benefit-risk analysis based on meta-analyses<inline-help help-key="benefit-risk-analysis"></inline-help></label>
+          </div>
+        </div>
     </div>
   </div>
-  <div class="row">
-    <ul class="button-group">
-      <li>
-        <button class="button small secondary" type="button" ng-click="cancel()">Cancel</button>
-      </li>
-      <li>
-        <button id="add-analysis-btn" class="button small success" ng-disabled="!newAnalysis.title || !newAnalysis.type || duplicateAnalysisName.isDuplicate" type="submit">Add analysis
-        </button>
 
-      </li>
-    </ul>
+  <div class="row" style="margin-top: 1rem;">
+    <div class="columns large-6">
+        <ul class="button-group">
+          <li>
+            <button class="button small secondary" type="button" ng-click="cancel()">Cancel</button>
+          </li>
+          <li>
+            <button id="add-analysis-btn" class="button small success" ng-disabled="!newAnalysis.title || !newAnalysis.type || duplicateAnalysisName.isDuplicate" type="submit">Add analysis
+            </button>
+          </li>
+        </ul>
+      </div>
   </div>
   <a class="close-reveal-modal" ng-click="cancel()">&#215;</a>
 

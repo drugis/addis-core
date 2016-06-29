@@ -1,0 +1,37 @@
+{
+  "project": {
+    "title": "Project",
+    "text": "A project is a collection of analyses performed on a specific version of a single dataset. Typically, it aims to answer a specific question or a number of related questions using the dataset.",
+    "link": "/manual.html#project"
+  },
+  "addis-analysis": {
+    "title": "Analysis",
+    "text": "Analyses can be performed based on the project dataset, for example a network meta-analysis on one of the outcomes of interest. An analysis can consist of multiple models, for example a primary comparative analysis and several models to investigate heterogeneity and inconsistency. Currently, an analysis can be an evidence synthesis (e.g. meta-analysis) or a benefit-risk analysis.",
+    "link": "/manual.html#analyses"
+  },
+  "evidence-synthesis": {
+    "title": "Evidence synthesis",
+    "text": "Evidence synthesis is the statistical combination of estimates from multiple primary studies into an overall pooled estimate. Evidence synthesis techniques include pair-wise meta-analysis, network meta-analysis, and meta-regression.",
+    "link": "/manual.html#evidence-synthesis"
+  },
+  "benefit-risk-analysis": {
+    "title": "Benefit-risk analysis",
+    "text": "A benefit-risk analysis is a formal way to assess trade-offs between the favorable and unfavorable effects of treatments. There is a clear separation between objective measurements of treatment effects and subjective value judgments.",
+    "link": "/manual.html#benefit-risk-analysis"
+  },
+  "addis-intervention": {
+    "title": "Intervention",
+    "text": "An intervention defines one of the alternative treatments of interest for the project, based on concepts defined in the dataset. Definitions can be simple (e.g. \"drug A\"), or more complex (e.g. \"drug A, dose between 10 and 20 mg/day\").",
+    "link": "/manual.html#intervention"
+  },
+  "addis-outcome": {
+    "title": "Outcome",
+    "text": "An outcome defines a variable of interest for the project, based on concepts defined in the dataset. Project outcomes are different from dataset outcomes; for example, what was considered an adverse event in primary studies may well be an outcome of interest in your meta-analysis.",
+    "link": "/manual.html#outcome"
+  },
+  "addis-covariate": {
+    "title": "Covariate",
+    "text": "A covariate is a study-level variable that may affect the relative treatment effects observed in primary studies. For example, whether the study was randomized or the disease severity at baseline could be covariates. Currently, a covariate can be defined either as one of the studies' design characteristics, or as a baseline characteristic describing the studies' populations.",
+    "link": "/manual.html#covariate"
+  }
+}
