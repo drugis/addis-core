@@ -2,7 +2,8 @@
   <navbar-directive>
   </navbar-directive>
   <div class="row nav-bar-spacer" style="margin-bottom: 2rem;">
-    <div class="columns large-centered large-8 medium-10 small-12">
+    <div class="columns  large-8 medium-10 small-12">
+      <h2>Search</h2>
       <form ng-submit="search(searchTerm)">
         <div class="row collapse">
           <div class="small-10 columns">
@@ -16,10 +17,10 @@
     </div>
   </div>
   <div class="row" ng-show="searchResults">
-    <div class="columns large-centered large-10 medium-12 small-12">
-      <h1>Results</h1>
+    <div class="columns large-8 medium-10 small-12">
+      <h3>Results</h3>
       <ul class="no-bullet">
-        <li ng-repeat="searchResult in searchResults" style="padding: 1rem">
+        <li ng-repeat="searchResult in searchResults" style="padding-top: 1rem; padding-bottom: 1rem">
           <search-result result="searchResult"></search-result>
         </li>
         <li ng-show="!searchResults.length">No studies found for {{lastSearchTerm}}</li>
