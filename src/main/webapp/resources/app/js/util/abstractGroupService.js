@@ -9,8 +9,8 @@ define(['lodash'], function(_) {
       var mergeProperty = 'of_group';
       var sourceResultsPromise = ResultsService.queryResultsByGroup(sourceUri);
       var targetResultsPromise = ResultsService.queryResultsByGroup(targetUri);
-      var sourceNonConformantResultsPromise = ResultsService.queryNonConformantMeasurementsByGroupUri(source.uri);
-      var targetNonConformantResultsPromise = ResultsService.queryNonConformantMeasurementsByGroupUri(target.uri);
+      var sourceNonConformantResultsPromise = ResultsService.queryNonConformantMeasurementsByGroupUri(sourceUri);
+      var targetNonConformantResultsPromise = ResultsService.queryNonConformantMeasurementsByGroupUri(targetUri);
       return $q.all([sourceResultsPromise, targetResultsPromise, sourceNonConformantResultsPromise, targetNonConformantResultsPromise]).then(function(results) {
         var sourceResults = results[0];
         var targetResults = results[1];
@@ -39,8 +39,8 @@ define(['lodash'], function(_) {
       var targetUri = target.armURI || target.groupUri;
       var sourceResultsPromise = ResultsService.queryResultsByGroup(sourceUri);
       var targetResultsPromise = ResultsService.queryResultsByGroup(targetUri);
-      var sourceNonConformantResultsPromise = ResultsService.queryNonConformantMeasurementsByGroupUri(source.uri);
-      var targetNonConformantResultsPromise = ResultsService.queryNonConformantMeasurementsByGroupUri(target.uri);
+      var sourceNonConformantResultsPromise = ResultsService.queryNonConformantMeasurementsByGroupUri(sourceUri);
+      var targetNonConformantResultsPromise = ResultsService.queryNonConformantMeasurementsByGroupUri(targetUri);
 
       return $q.all([sourceResultsPromise, targetResultsPromise, sourceNonConformantResultsPromise, targetNonConformantResultsPromise]).then(function(results) {
         return RepairService.findOverlappingResults(results[0], results[1], isOverlappingGroupMeasurement).length > 0 ||
