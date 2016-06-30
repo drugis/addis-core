@@ -107,7 +107,7 @@ define(
       'addis.interventions',
       'addis.outcomes',
       'patavi',
-  'errorReporting'
+      'errorReporting'
     ];
     var gemtcWebDependencies = [
       'gemtc.controllers',
@@ -177,6 +177,10 @@ define(
 
         HelpPopupService.loadLexicon($http.get('app/js/bower_components/gemtc-web/app/lexicon.json'));
         HelpPopupService.loadLexicon($http.get('addis-lexicon.json'));
+
+        $rootScope.$on("$stateChangeSuccess", function(event, currentState, previousState) {
+          $window.scrollTo(0, 0);
+        });
       }
     ]);
 

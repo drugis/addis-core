@@ -1,7 +1,7 @@
 <div ui-view>
   <navbar-directive>
   </navbar-directive>
-  <ul class="breadcrumbs">
+  <ul class="breadcrumbs fixed">
     <li><a ui-sref="datasets({userUid: user.id})">{{::user.firstName}} {{::user.lastName}}</a></li>
     <li><a ui-sref="datasets({userUid: user.id})">Datasets</a></li>
     <li class="current active">{{::dataset.title}}</li>

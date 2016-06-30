@@ -1,5 +1,5 @@
 
-<ul ng-show="showBreadcrumbs" class="breadcrumbs">
+<ul ng-show="showBreadcrumbs" class="breadcrumbs fixed">
     <li><a href="#/projects">Projects</a></li>
     <li ng-repeat="crumb in breadcrumbs" ng-class="{'current active':$last}">
         <a ui-sref="{{crumb.state}}">{{crumb.title}}</a>
