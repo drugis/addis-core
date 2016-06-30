@@ -31,6 +31,22 @@
     <div class="columns large-12">
       <tabset>
         <tab heading="Report" active="activeTab === 'report'" ng-click="setActiveTab('report')">
+         
+          <!-- outcomes -->
+          <div class="row">
+            <div class="columns large-12">
+              <h3 class="subheader">Outcomes<inline-help help-key="addis-outcome"></inline-help></h3>
+              <ul>
+                <li ng-show="outcomes.length === 0 ">no outcomes defined</li>
+                <li ng-repeat="outcome in outcomes | orderBy:'name'">
+                  <strong>{{outcome.name}}
+                    <span ng-if="outcome.motivation.length">:</span>
+                  </strong>{{outcome.motivation}}
+                </li>
+              </ul>
+            </div>
+          </div>
+
           <!-- interventions -->
           <div class="row">
             <div class="columns large-12">
@@ -46,16 +62,16 @@
             </div>
           </div>
 
-          <!-- outcomes -->
+          <!-- covariates -->
           <div class="row">
             <div class="columns large-12">
-              <h3 class="subheader">Outcomes<inline-help help-key="addis-outcome"></inline-help></h3>
+              <h3 class="subheader">Covariates<inline-help help-key="covariate"></inline-help></h3>
               <ul>
-                <li ng-show="outcomes.length === 0 ">no outcomes defined</li>
-                <li ng-repeat="outcome in outcomes | orderBy:'name'">
-                  <strong>{{outcome.name}}
-                    <span ng-if="outcome.motivation.length">:</span>
-                  </strong>{{outcome.motivation}}
+                <li ng-show="covariates.length === 0 ">no covariates defined</li>
+                <li ng-repeat="covariate in covariates | orderBy:'name'">
+                  <strong>{{covariate.name}}
+                    <span ng-if="covariate.motivation.length">:</span>
+                  </strong>{{covariate.motivation}}
                 </li>
               </ul>
             </div>
