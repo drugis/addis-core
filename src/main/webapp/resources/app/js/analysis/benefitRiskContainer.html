@@ -10,7 +10,7 @@
     <li ng-if="workspace.analysisType === 'Benefit-risk analysis based on meta-analyses'">
       <a ui-sref="metaBenefitRisk({userUid: user.id, projectId: project.id, analysisId: workspace.id})">{{workspace.title}}</a>
     </li>
-    <li class="current active">MCDA</li>
+    <li class="current active">{{workspace.title}}</li>
   </ul>
   <div ui-view>
   </div>
