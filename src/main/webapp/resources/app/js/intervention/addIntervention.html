@@ -10,14 +10,14 @@
           <label>Semantic intervention
             <select id="simple-intervention-select" ng-model="newIntervention.semanticIntervention"
               ng-options="semanticIntervention as semanticIntervention.label for semanticIntervention in semanticInterventions | orderBy:'label'"
-              ng-change="newIntervention.name = newIntervention.semanticIntervention.label; checkForDuplicateInterventionName(newIntervention.name)"></select>
+              ng-change="newIntervention.name = newIntervention.semanticIntervention.label; checkForDuplicateInterventionName(newIntervention)"></select>
           </label>
         </div>
       </div>
       <div class="row">
         <div class="large-10 columns">
           <label>Name
-            <input id="intervention-name-input" type="text" ng-model="newIntervention.name" ng-change="checkForDuplicateInterventionName(newIntervention.name)">
+            <input id="intervention-name-input" type="text" ng-model="newIntervention.name" ng-change="checkForDuplicateInterventionName(newIntervention)">
           </label>
         </div>
       </div>
@@ -50,14 +50,14 @@
           <label>Semantic intervention
             <select id="dose-restricted-intervention-select" ng-model="newIntervention.semanticIntervention"
               ng-options="semanticIntervention as semanticIntervention.label for semanticIntervention in semanticInterventions | orderBy:'label'"
-              ng-change="newIntervention.name = newIntervention.semanticIntervention.label; checkForDuplicateInterventionName(newIntervention.name)"></select>
+              ng-change="newIntervention.name = newIntervention.semanticIntervention.label; checkForDuplicateInterventionName(newIntervention)"></select>
           </label>
         </div>
       </div>
       <div class="row">
         <div class="large-10 columns">
           <label>Name
-            <input id="intervention-name-input" type="text" ng-model="newIntervention.name" ng-change="checkForDuplicateInterventionName(newIntervention.name)">
+            <input id="intervention-name-input" type="text" ng-model="newIntervention.name" ng-change="checkForDuplicateInterventionName(newIntervention)">
           </label>
         </div>
       </div>
@@ -124,7 +124,7 @@
       <div class="row">
         <div class="large-10 columns">
           <label>Name
-            <input id="intervention-name-input" type="text" ng-model="newIntervention.name" ng-change="checkForDuplicateInterventionName(newIntervention.name)">
+            <input id="intervention-name-input" type="text" ng-model="newIntervention.name" ng-change="checkForDuplicateInterventionName(newIntervention)">
           </label>
         </div>
       </div>

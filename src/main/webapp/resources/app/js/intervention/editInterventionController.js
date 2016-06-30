@@ -20,8 +20,8 @@ define(['angular'],
         });
       };
 
-      $scope.checkForDuplicateInterventionName = function(name) {
-        $scope.isDuplicateName = ProjectService.checkforDuplicateName(interventions, name);
+      $scope.checkForDuplicateInterventionName = function(intervention) {
+        $scope.isDuplicateName = ProjectService.checkforDuplicateName(interventions, intervention);
       };
 
       $scope.cancel = function() {

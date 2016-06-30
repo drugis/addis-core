@@ -1,7 +1,7 @@
 'use strict';
 define(['lodash', 'angular'], function(_, angular) {
   var dependencies = ['$scope', '$modalInstance', 'callback', 'InterventionResource', 'ProjectService'];
-  var AddInterventionController = function($scope, $modalInstance, callback, InterventionResource,  ProjectService) {
+  var AddInterventionController = function($scope, $modalInstance, callback, InterventionResource, ProjectService) {
 
     var deregisterConstraintWatch;
 
@@ -121,8 +121,8 @@ define(['lodash', 'angular'], function(_, angular) {
       return cleanedCommand;
     }
 
-    function checkForDuplicateInterventionName(name) {
-      return ProjectService.checkforDuplicateName(name, $scope.interventions);
+    function checkForDuplicateInterventionName(intervention) {
+      return ProjectService.checkforDuplicateName($scope.interventions, interventions);
     }
 
     function cancel() {
