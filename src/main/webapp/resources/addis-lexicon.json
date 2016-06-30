@@ -1,23 +1,18 @@
 {
-  "project": {
-    "title": "Project",
-    "text": "A project is a collection of analyses performed on a specific version of a single dataset. Typically, it aims to answer a specific question or a number of related questions using the dataset.",
-    "link": "/manual.html#project"
+  "activity": {
+    "title": "Activity",
+    "text": "An activity describes what happened to a specific arm of the study during a specific time period. For example, during the \"treatment phase\", the \"aspirin arm\" might receive \"20 mg/day of aspirin\". In addition to interventions, activities include things such as placebo wash-out and randomization.",
+    "link": "/manual.html#activity"
   },
   "addis-analysis": {
     "title": "Analysis",
     "text": "Analyses can be performed based on the project dataset, for example a network meta-analysis on one of the outcomes of interest. An analysis can consist of multiple models, for example a primary comparative analysis and several models to investigate heterogeneity and inconsistency. Currently, an analysis can be an evidence synthesis (e.g. meta-analysis) or a benefit-risk analysis.",
     "link": "/manual.html#analyses"
   },
-  "evidence-synthesis": {
-    "title": "Evidence synthesis",
-    "text": "Evidence synthesis is the statistical combination of estimates from multiple primary studies into an overall pooled estimate. Evidence synthesis techniques include pair-wise meta-analysis, network meta-analysis, and meta-regression.",
-    "link": "/manual.html#evidence-synthesis"
-  },
-  "benefit-risk-analysis": {
-    "title": "Benefit-risk analysis",
-    "text": "A benefit-risk analysis is a formal way to assess trade-offs between the favorable and unfavorable effects of treatments. There is a clear separation between objective measurements of treatment effects and subjective value judgments.",
-    "link": "/manual.html#benefit-risk-analysis"
+  "addis-covariate": {
+    "title": "Covariate",
+    "text": "A covariate is a study-level variable that may affect the relative treatment effects observed in primary studies. For example, whether the study was randomized or the disease severity at baseline could be covariates. Currently, a covariate can be defined either as one of the studies' design characteristics, or as a baseline characteristic describing the studies' populations.",
+    "link": "/manual.html#covariate"
   },
   "addis-intervention": {
     "title": "Intervention",
@@ -29,9 +24,119 @@
     "text": "An outcome defines a variable of interest for the project, based on concepts defined in the dataset. Project outcomes are different from dataset outcomes; for example, what was considered an adverse event in primary studies may well be an outcome of interest in your meta-analysis.",
     "link": "/manual.html#outcome"
   },
-  "addis-covariate": {
-    "title": "Covariate",
-    "text": "A covariate is a study-level variable that may affect the relative treatment effects observed in primary studies. For example, whether the study was randomized or the disease severity at baseline could be covariates. Currently, a covariate can be defined either as one of the studies' design characteristics, or as a baseline characteristic describing the studies' populations.",
-    "link": "/manual.html#covariate"
+  "adverse-event": {
+    "title": "Adverse event",
+    "text": "An adverse event is an unintended event observed during the study, which may or may not have been caused by the study interventions.",
+    "link": "/manual.html#adverse-event"
+  },
+  "arm": {
+    "title": "Arm",
+    "text": "In randomized studies participants are randomized into groups called \"arms\", each of which receives a different intervention. We loosely use this term to also refer to the groups being compared in a comparative cohort study.",
+    "link": "/manual.html#arm"
+  },
+  "baseline-characteristic": {
+    "title": "Baseline characteristic",
+    "text": "A baseline characteristic is a variable that is typically measured at the start of the study to describe the enrolled population and/or to assess whether randomization led to adequate balance between the arms of the study. There may be overlap between baseline characteristics and outcomes; when the same variable is measured at baseline and at other times, we recommend encoding it as an outcome.",
+    "link": "/manual.html#baseline-characteristic"
+  },
+  "benefit-risk-analysis": {
+    "title": "Benefit-risk analysis",
+    "text": "A benefit-risk analysis is a formal way to assess trade-offs between the favorable and unfavorable effects of treatments. There is a clear separation between objective measurements of treatment effects and subjective value judgments.",
+    "link": "/manual.html#benefit-risk-analysis"
+  },
+  "commit": {
+    "title": "Commit",
+    "text": "ADDIS tracks all versions of a dataset in the dataset history. After you make changes to a study extraction or the concepts, you \"commit\" to these changes, making them final. When doing so, you provide a short title and optionally a longer description, which serve to document in the dataset history what kind of changes were made and why.",
+    "link": "/manual.html#commit"
+  },
+  "concept": {
+    "title": "Concept",
+    "text": "ADDIS tracks all versions of a dataset in the dataset history. After you make changes to a study extraction or the concepts, you \"commit\" to these changes, making them final. When doing so, you provide a short title and optionally a longer description, which serve to document in the dataset history what kind of changes were made and why.",
+    "link": "/manual.html#concept"
+  },
+  "concept-mapping": {
+    "title": "Concept mapping",
+    "text": "A concept mapping harmonizes a term used at the study level (e.g. \"50% or greater improvement on HAM-D\"), to a concept defined at the dataset level (e.g. \"HAM-D response\"). Concept mappings enable greater flexibility in re-using study extractions made by others, or for a previous project.",
+    "link": "/manual.html#concept-mapping"
+  },
+  "condition": {
+    "title": "(Health) condition",
+    "text": "The disease or health state being studied.",
+    "link": "/manual.html#condition"
+  },
+  "dataset": {
+    "title": "Dataset",
+    "text": "A dataset is a collection of studies that are somehow related, e.g. studies identified by a systematic literature review.",
+    "link": "/manual.html#dataset"
+  },
+  "dataset-history": {
+    "title": "Dataset history",
+    "text": "The full history of a dataset, including all dataset versions in between (and including) its initial creation and the very latest update. Individual versions can be viewed to see how a dataset has changed over time.",
+    "link": "/manual.html#dataset-history"
+  },
+  "dataset-version": {
+    "title": "Dataset version",
+    "text": "Whenever changes are made to a dataset and are committed (saved), this creates a new version of the dataset. All previous versions of a dataset are kept in the dataset history.",
+    "link": "/manual.html#dataset-version"
+  },
+  "eligibility-criteria": {
+    "title": "Eligibility criteria",
+    "text": "The criteria based on which participants were included into, or excluded from, the study.",
+    "link": "/manual.html#eligibility-criteria"
+  },
+  "evidence-synthesis": {
+    "title": "Evidence synthesis",
+    "text": "Evidence synthesis is the statistical combination of estimates from multiple primary studies into an overall pooled estimate. Evidence synthesis techniques include pair-wise meta-analysis, network meta-analysis, and meta-regression.",
+    "link": "/manual.html#evidence-synthesis"
+  },
+  "featured-dataset": {
+    "title": "Featured dataset",
+    "text": "Featured datasets are well structured datasets that serve as examples of some of ADDIS' features. They are highlighted on the home page, and are a good place to start trying out the software. If you think your dataset deserves to be featured on the home page, feel free to [contact us](https://drugis.org/contact).",
+    "link": "/manual.html#featured-dataset"
+  },
+  "measurement": {
+    "title": "Measurement",
+    "text": "A measurement captures the outcome for the participants of each treatment group in the study. Measurements are described at the group (aggregate) level, for example the mean outcome observed in the group or the count of participants for whom an event occurred.",
+    "link": "/manual.html#measurement"
+  },
+  "measurement-moment": {
+    "title": "Measurement moment",
+    "text": "A measurement moment corresponds to the time when measurements were taken. Measurement moments are relative to certain anchor time points within the study, e.g. the start or the end of the treatment phase.",
+    "link": "/manual.html#measurement-moment"
+  },
+  "other-group": {
+    "title": "Other group",
+    "text": "Any group within the study that is not an arm. This includes the total study population, and may also refer to sub-groups such as all males in the study or all elderly patients in the control arm.",
+    "link": "/manual.html#other-group"
+  },
+  "project": {
+    "title": "Project",
+    "text": "A project is a collection of analyses performed on a specific version of a single dataset. Typically, it aims to answer a specific question or a number of related questions using the dataset.",
+    "link": "/manual.html#project"
+  },
+  "recruitment-information": {
+    "title": "Recruitment information",
+    "text": "A description of how participants were enrolled in the study, including the health condition of interest and the eligibility (inclusion and exclusion) criteria.",
+    "link": "/manual.html#recruitment-information"
+  },
+  "study": {
+    "title": "Study",
+    "text": "A study extraction is a detailed description of a comparative study, typically a randomized controlled trial or a comparative cohort design.",
+    "link": "/manual.html#study"
+  },
+  "study-design": {
+    "title": "Study design",
+    "text": "The study design table captures which activities were applied to each arm during each of the time periods of the study.",
+    "link": "/manual.html#study-design"
+  },
+  "study-information": {
+    "title": "Study information",
+    "text": "Study information contains basic descriptives of the study. Some are structured, such as randomization and blinding, while others are free text.",
+    "link": "/manual.html#study-information"
+  },
+  "time-period": {
+    "title": "Time period",
+    "text": "A period or phase of the study during which a certain activity (or group of activities) took place. For example, a drug study might consist of a placebo run-in period, a treatment period, and a follow-up period.",
+    "link": "/manual.html#time-period"
   }
 }

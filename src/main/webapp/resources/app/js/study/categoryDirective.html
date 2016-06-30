@@ -1,5 +1,5 @@
 <div id="{{settings.anchorId}}" class="study-item">
-    <h3>{{settings.header}}<a> <i class="fa fa-info-circle fa-fw"></i></a></h3>
+    <h3>{{settings.header}}<inline-help ng-if="settings.helpId" help-key="{{settings.helpId}}"></inline-help></h3>
 
     <div ng-if="items.length === 0">
         <p class="panel">{{settings.categoryEmptyMessage}}</p>

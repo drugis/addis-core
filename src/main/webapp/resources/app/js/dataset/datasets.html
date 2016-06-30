@@ -2,7 +2,7 @@
 <featured-datasets user-uid=userUid create-project-dialog="createProjectDialog(dataset)"></featured-datasets>
   <div class="row">
     <div class="columns large-8">
-      <h2>Datasets</h2>
+      <h2>Datasets<inline-help help-key="dataset"></inline-help></h2>
       <button ng-show="loginUser.id === userUid" tabindex="0" class="button " ng-click="createDatasetDialog()"><i class="fa fa-plus"></i> Add new dataset</button>
       <div ng-if="!datasetsLoaded" class="row">
         <div class="column center large-12">
