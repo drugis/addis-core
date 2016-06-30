@@ -155,7 +155,7 @@ define(
       label: 'Network meta-analysis',
       stateName: 'networkMetaAnalysis'
     }, {
-      label: 'Single-study Benefit-Risk',
+      label: 'Benefit-risk analysis based on a single study',
       stateName: 'singleStudyBenefitRisk'
     }, {
       label: 'Benefit-risk analysis based on meta-analyses',

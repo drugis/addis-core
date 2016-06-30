@@ -52,7 +52,7 @@ define(['lodash'], function(_) {
         });
 
 
-        if (scope.analysis.analysisType === 'Single-study Benefit-Risk' && scope.analysis.studyGraphUri) {
+        if (scope.analysis.analysisType === 'Benefit-risk analysis based on a single study' && scope.analysis.studyGraphUri) {
           ProjectStudiesResource.query({
             projectId: scope.project.id
           }).$promise.then(function(studies) {

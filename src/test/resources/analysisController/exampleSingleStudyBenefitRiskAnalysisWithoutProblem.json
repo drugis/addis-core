@@ -3,7 +3,7 @@
   "projectId": 1,
   "title": "Analysis name",
   "problem": null,
-  "analysisType": "Single-study Benefit-Risk",
+  "analysisType": "Benefit-risk analysis based on a single study",
   "studyGraphUri": "studyGraphUri",
   "selectedOutcomes": [{
     "id": 6,
