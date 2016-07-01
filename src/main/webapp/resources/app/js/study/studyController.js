@@ -11,7 +11,7 @@ define(['angular', 'lodash'],
 
       $scope.userUid = $stateParams.userUid;
       $scope.datasetUUID = $stateParams.datasetUUID;
-      if($stateParams.versionUuid) {
+      if ($stateParams.versionUuid) {
         $scope.versionUuid = $stateParams.versionUuid;
       }
       $scope.studyGraphUuid = $stateParams.studyGraphUuid;
@@ -121,6 +121,7 @@ define(['angular', 'lodash'],
         epochs: {
           service: 'EpochService',
           anchorId: 'epochs',
+          helpId: 'time-period',
           header: 'Epochs',
           addItemController: 'AddEpochController',
           categoryEmptyMessage: 'No epochs defined.',
@@ -186,7 +187,7 @@ define(['angular', 'lodash'],
           templateUrl: 'app/js/study/editStudy.html',
           controller: 'EditStudyController',
           resolve: {
-            study: function(){
+            study: function() {
               return $scope.study;
             },
             successCallback: function() {
@@ -262,7 +263,7 @@ define(['angular', 'lodash'],
               label: study.label,
               comment: study.comment,
             };
-            if(study.has_publication && study.has_publication.length === 1) {
+            if (study.has_publication && study.has_publication.length === 1) {
               $scope.study.nctId = study.has_publication[0].registration_id;
               $scope.study.nctUri = study.has_publication[0].uri;
             }
