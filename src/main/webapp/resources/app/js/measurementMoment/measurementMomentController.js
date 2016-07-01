@@ -12,6 +12,8 @@ define([],
     var MeasurementMomentController = function($scope, $modalInstance, callback, actionType,
       MeasurementMomentService, EpochService, DurationService) {
 
+      $scope.isEditing = false;
+
       var epochsPromise = EpochService.queryItems().then(function(queryResult) {
         $scope.epochs = _.sortBy(queryResult, 'pos');
         $scope.itemScratch.epoch = _.find($scope.epochs, function(epoch) {
@@ -20,6 +22,7 @@ define([],
       });
 
       $scope.addItem = function() {
+        $scope.isEditing = true;
         MeasurementMomentService.addItem($scope.itemScratch)
           .then(function() {
               callback();
@@ -32,6 +35,7 @@ define([],
       };
 
       $scope.editItem = function() {
+        $scope.isEditing = true;
         MeasurementMomentService.editItem($scope.itemScratch)
           .then(function() {
               callback();

@@ -41,7 +41,7 @@
   <div class="row">
     <div class="large-9 columns">
       <button class="success" type="submit"
-              ng-disabled="(!itemScratch.label || !isValidDuration(itemScratch.duration))">Edit
+              ng-disabled="(!itemScratch.label || !isValidDuration(itemScratch.duration)) || isEditing">Edit
       </button>
     </div>
   </div>

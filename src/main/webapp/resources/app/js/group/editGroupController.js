@@ -4,6 +4,7 @@ define(['lodash'],
     var dependencies = ['$scope', '$state', '$modalInstance', 'itemService', 'callback', 'item'];
     var EditGroupController = function($scope, $state, $modalInstance, itemService, callback, item) {
 
+      $scope.isEditing = false;
       $scope.item = item;
       itemService.queryItems().then(function(groups) {
         $scope.otherGroups = _.filter(groups, function(group) {
@@ -12,27 +13,30 @@ define(['lodash'],
       });
       $scope.showMergeWarning = false;
 
-      $scope.editItem = function () {
+      $scope.editItem = function() {
+        $scope.isEditing = true;
         itemService.editItem(item).then(function() {
-          callback();
-          $modalInstance.close();
-        },
-        function() {
-          $modalInstance.dismiss('cancel');
-        });
+            callback();
+            $modalInstance.close();
+          },
+          function() {
+            $modalInstance.dismiss('cancel');
+          });
       };
 
-      $scope.reclassifyAsArm = function () {
+      $scope.reclassifyAsArm = function() {
+        $scope.isEditing = true;
         itemService.reclassifyAsArm(item).then(function() {
-          callback();
-          $modalInstance.close();
-        },
-        function() {
-          $modalInstance.dismiss('cancel');
-        });
+            callback();
+            $modalInstance.close();
+          },
+          function() {
+            $modalInstance.dismiss('cancel');
+          });
       };
 
       $scope.merge = function(targetGroup) {
+        $scope.isEditing = true;
         itemService.merge(item, targetGroup).then(function() {
             callback();
             $modalInstance.close();

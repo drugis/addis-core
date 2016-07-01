@@ -8,6 +8,8 @@ define([],
     var EditEpochController = function($scope, $state, $modalInstance,
       itemService, callback, DurationService, item) {
 
+      $scope.isEditing = false;
+
       var itemScratch = item;
       itemScratch.isPrimary = itemScratch.isPrimary === true;
 
@@ -18,7 +20,7 @@ define([],
       $scope.isValidDuration = DurationService.isValidDuration;
 
       $scope.changeToDuration = function() {
-        if($scope.itemScratch.duration === 'PT0S') {
+        if ($scope.itemScratch.duration === 'PT0S') {
           $scope.itemScratch.duration = 'P1W';
         }
       };
@@ -28,6 +30,7 @@ define([],
       }
 
       $scope.editItem = function() {
+        $scope.isEditing = true;
         itemService.editItem($scope.itemScratch).then(function() {
             callback();
             $modalInstance.close();

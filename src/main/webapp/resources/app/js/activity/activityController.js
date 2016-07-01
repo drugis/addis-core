@@ -12,11 +12,12 @@ define([],
     ];
     var ActivityController = function($scope, $modalInstance, callback, actionType, ActivityService, DrugService, UnitService) {
 
+      $scope.isEditing = false;
       $scope.actionType = actionType;
       $scope.activityTypeOptions = _.values(ActivityService.ACTIVITY_TYPE_OPTIONS);
 
       $scope.treatmentDirective = {
-        isVisible : false
+        isVisible: false
       };
 
       $scope.addDrugClicked = function() {
@@ -29,6 +30,7 @@ define([],
       }
 
       $scope.addItem = function() {
+        $scope.isEditing = true;
         ActivityService.addItem($scope.itemScratch)
           .then(function() {
               callback();
@@ -41,6 +43,7 @@ define([],
       };
 
       $scope.editItem = function() {
+        $scope.isEditing = true;
         ActivityService.editItem($scope.itemScratch)
           .then(function() {
               callback();
@@ -70,20 +73,20 @@ define([],
 
       $scope.$watch(function() {
         return angular.element('.scrollable-wrapper').parent().parent().height();
-      }, function(oldValue, newValue){
-          //console.log('recalculate , old = ' + oldValue, ' new = ' + newValue);
-          $scope.showScrolbarIfNessesary();
+      }, function(oldValue, newValue) {
+        //console.log('recalculate , old = ' + oldValue, ' new = ' + newValue);
+        $scope.showScrolbarIfNessesary();
       });
 
       $scope.showScrolbarIfNessesary = function() {
         var offsetString = angular.element('.reveal-modal').css('top');
-        var offset = parseInt(offsetString , 10); // remove px part
+        var offset = parseInt(offsetString, 10); // remove px part
         var viewPortHeight = angular.element('html').height();
         var scrollableWrapperElement = angular.element('.scrollable-wrapper');
         var wrapperHeight = scrollableWrapperElement.parent().parent().height();
         var maxWrapperHeight = viewPortHeight - offset;
 
-        if(wrapperHeight > maxWrapperHeight) {
+        if (wrapperHeight > maxWrapperHeight) {
           scrollableWrapperElement.css('max-height', viewPortHeight - offset);
         } else {
           scrollableWrapperElement.css('max-height', viewPortHeight + offset);

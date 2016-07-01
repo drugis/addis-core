@@ -4,17 +4,19 @@ define([],
     var dependencies = ['$scope', '$state', '$modalInstance', 'itemService', 'MeasurementMomentService', 'callback', 'item'];
     var EditItemController = function($scope, $state, $modalInstance, itemService, MeasurementMomentService, callback, item) {
 
+      $scope.isEditing = false;
       $scope.item = item;
       $scope.measurementMoments = MeasurementMomentService.queryItems();
 
-      $scope.editItem = function () {
+      $scope.editItem = function() {
+        $scope.isEditing = true;
         itemService.editItem($scope.item).then(function() {
-          callback();
-          $modalInstance.close();
-        },
-        function() {
-          $modalInstance.dismiss('cancel');
-        });
+            callback();
+            $modalInstance.close();
+          },
+          function() {
+            $modalInstance.dismiss('cancel');
+          });
       };
 
       $scope.cancel = function() {

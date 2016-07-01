@@ -50,7 +50,7 @@
 
   <div class="row modal-bottom-button-bar">
     <div class="large-12 columns">
-      <button class="success" type="submit" ng-disabled="!itemScratch.label || !itemScratch.activityType || isAddTreatmentMode || treatmentDirective.isVisible ">{{actionType}}</button>
+      <button class="success" type="submit" ng-disabled="!itemScratch.label || !itemScratch.activityType || isAddTreatmentMode || treatmentDirective.isVisible || isEditing">{{actionType}}</button>
     </div>
   </div>
   <a class="close-reveal-modal" ng-click="cancel()">×</a>

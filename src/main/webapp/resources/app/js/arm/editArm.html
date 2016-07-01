@@ -20,7 +20,7 @@
   </div>
   <div class="row">
     <div class="large-9 columns">
-      <button class="success" type="submit" ng-disabled="!item.label">Edit</button>
+      <button class="success" type="submit" ng-disabled="!item.label || isEditing">Edit</button>
     </div>
   </div>
   <a class="close-reveal-modal" ng-click="cancel()">&#215;</a>

@@ -4,6 +4,7 @@ define(['lodash'],
     var dependencies = ['$scope', '$state', '$modalInstance', 'itemService', 'callback', 'item', '$injector', 'OutcomeService'];
     var EditOutcomeController = function($scope, $state, $modalInstance, itemService, callback, item, $injector, OutcomeService) {
 
+      $scope.isEditing = false;
       $scope.item = item;
       $injector.get($scope.settings.service).queryItems().then(function(outcomes) {
         $scope.otherOutcomes = _.filter(outcomes, function(outcome) {
@@ -13,7 +14,7 @@ define(['lodash'],
       $scope.showMergeWarning = false;
 
       $scope.merge = function(targetOutcome) {
-        $scope.isMerging = true;
+        $scope.isEditing = true;
         OutcomeService.merge(item, targetOutcome, $injector.get($scope.settings.service).TYPE).then(function() {
             callback();
             $modalInstance.close();

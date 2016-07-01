@@ -4,6 +4,7 @@ define(['lodash'],
     var dependencies = ['$scope', '$state', '$modalInstance', 'itemService', 'callback', 'item'];
     var EditArmController = function($scope, $state, $modalInstance, itemService, callback, item) {
 
+      $scope.isEditing = false;
       $scope.item = item;
       itemService.queryItems().then(function(arms) {
         $scope.otherArms = _.filter(arms, function(arm) {
@@ -13,6 +14,7 @@ define(['lodash'],
       $scope.showMergeWarning = false;
 
       $scope.editItem = function() {
+        $scope.isEditing = true;
         itemService.editItem(item).then(function() {
             callback();
             $modalInstance.close();
@@ -23,6 +25,7 @@ define(['lodash'],
       };
 
       $scope.reclassifyAsGroup = function() {
+        $scope.isEditing = true;
         itemService.reclassifyAsGroup(item).then(function() {
             callback();
             $modalInstance.close();
@@ -33,6 +36,7 @@ define(['lodash'],
       };
 
       $scope.merge = function(targetArm) {
+        $scope.isEditing = true;
         itemService.merge(item, targetArm).then(function() {
             callback();
             $modalInstance.close();
