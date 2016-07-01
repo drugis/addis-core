@@ -1,7 +1,7 @@
 'use strict';
 define(['angular'], function() {
-  var dependencies = ['$location', '$anchorScroll', '$modal'];
-  var sessionExpiredDirective = function($location, $anchorScroll, $modal) {
+  var dependencies = ['$rootScope','$location', '$anchorScroll', '$modal'];
+  var sessionExpiredDirective = function($rootScope, $location, $anchorScroll, $modal) {
     return {
       restrict: 'E',
       link: function(scope) {

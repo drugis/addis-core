@@ -6,6 +6,7 @@ define(['angular'], function() {
       responseError: function(response) {
         if(response.status === 403) {
           $rootScope.$broadcast('sessionExpired');
+          return $q.resolve(response);
         }
         return $q.reject(response);
       }

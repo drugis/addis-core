@@ -26,7 +26,7 @@
   <body class="f-topbar-fixed">
 
     <error-reporting></error-reporting>
-    <session-expired-directive></session-expired-directive>
+    <session-expired></session-expired>
 
     <div ui-view></div>
     <script>
