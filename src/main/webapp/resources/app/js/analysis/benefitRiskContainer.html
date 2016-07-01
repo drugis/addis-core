@@ -4,12 +4,6 @@
     <li><a ui-sref="datasets({userUid: user.id})">{{user.firstName}} {{user.lastName}}</a></li>
     <li><a ui-sref="projects({userUid: user.id})">Projects</a></li>
     <li><a ui-sref="project({userUid: user.id, projectId: project.id})">{{project.name}}</a></li>
-    <li ng-if="workspace.analysisType === 'singlestudy'">
-      <a ui-sref="singleStudyBenefitRisk({userUid: user.id, projectId: project.id, analysisId: workspace.id})">{{workspace.title}}</a>
-    </li>
-    <li ng-if="workspace.analysisType === 'Benefit-risk analysis based on meta-analyses'">
-      <a ui-sref="metaBenefitRisk({userUid: user.id, projectId: project.id, analysisId: workspace.id})">{{workspace.title}}</a>
-    </li>
     <li class="current active">{{workspace.title}}</li>
   </ul>
   <div ui-view>
