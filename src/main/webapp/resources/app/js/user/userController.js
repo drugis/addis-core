@@ -12,14 +12,20 @@ define(['lodash'],
       $scope.userUid = Number($stateParams.userUid);
       $scope.loginUser = $window.config.user;
 
-      if(!$scope.activetab) {
+      if (!$scope.activetab) {
         $scope.activetab = $state.current.name;
       }
+
+      $scope.$on("$stateChangeSuccess", function(event, currentState) {
+        $scope.activetab = currentState.name;
+      });
 
       $scope.selectTab = function(tab) {
         if ($state.current.name !== tab) {
           $scope.activetab = tab;
-          $state.go(tab, {userUid: $stateParams.userUid});
+          $state.go(tab, {
+            userUid: $stateParams.userUid
+          });
         }
       };
 
