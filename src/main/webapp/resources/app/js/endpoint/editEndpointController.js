@@ -9,7 +9,7 @@ define([],
       $scope.measurementMoments = MeasurementMomentService.queryItems();
 
       $scope.editItem = function() {
-        $scope.isEditing = true;
+        $scope.isEditing = false;
         itemService.editItem($scope.item).then(function() {
             callback();
             $modalInstance.close();
