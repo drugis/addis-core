@@ -139,9 +139,9 @@ define(['lodash'], function(_) {
     inlineObjects(study, 'has_objective');
     inlineObjects(study, 'has_publication');
     inlineObjects(study, 'has_eligibility_criteria');
-    if (study.has_epochs) {
-      inlineListLinkedListType(study, 'has_epochs');
-    }
+//    if (study.has_epochs) {
+//      inlineListLinkedListType(study, 'has_epochs');
+//    }
 
     linkedData['@context'] = {
       'standard_deviation': {
@@ -238,7 +238,7 @@ define(['lodash'], function(_) {
       },
       'has_epochs': {
         '@id': 'http://trials.drugis.org/ontology#has_epochs',
-        '@container': '@list'
+        '@type': '@id'
       },
       'has_eligibility_criteria': {
         '@id': 'http://trials.drugis.org/ontology#has_eligibility_criteria',
@@ -249,12 +249,13 @@ define(['lodash'], function(_) {
         '@type': 'http://www.w3.org/2001/XMLSchema#integer'
       },
       'rest': {
-        '@id': 'http://www.w3.org/1999/02/22-rdf-syntax-ns#rest',
-        '@type': '@id'
+        '@id': 'http://www.w3.org/1999/02/22-rdf-syntax-ns#rest'
+      },
+      'nil': {
+        '@id': 'http://www.w3.org/1999/02/22-rdf-syntax-ns#nil'
       },
       'first': {
-        '@id': 'http://www.w3.org/1999/02/22-rdf-syntax-ns#first',
-        '@type': '@id'
+        '@id': 'http://www.w3.org/1999/02/22-rdf-syntax-ns#first'
       },
       'of_variable': {
         '@id': 'http://trials.drugis.org/ontology#of_variable',

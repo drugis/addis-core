@@ -1,6 +1,6 @@
 'use strict';
 define(['lodash', 'util/transformJsonLd'], function(_, transformJsonLd) {
-  describe('transformJsonLd', function() {
+  fdescribe('transformJsonLd', function() {
 
     var context = {
       'standard_deviation': {
@@ -114,6 +114,9 @@ define(['lodash', 'util/transformJsonLd'], function(_, transformJsonLd) {
       'first': {
         '@id': 'http://www.w3.org/1999/02/22-rdf-syntax-ns#first',
         '@type': '@id'
+      },
+      'nil': {
+        '@id': 'http://www.w3.org/1999/02/22-rdf-syntax-ns#nil'
       },
       'of_variable': {
         '@id': 'http://trials.drugis.org/ontology#of_variable',

@@ -7,7 +7,6 @@ import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.riot.Lang;
 import org.apache.jena.riot.RDFDataMgr;
 import org.apache.jena.riot.RDFLanguages;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import javax.script.ScriptEngine;
@@ -39,9 +38,36 @@ public class JsonLDTest {
     assertTrue(model.isIsomorphicWith(model2));
   }
 
-  @Ignore
+//  @Ignore
   @Test
-  public void testJsonLDFromJenaEs() throws IOException, ScriptException {
+  public void testTurtleRoundtrip() throws IOException, ScriptException {
+    String exampleJsonLd = loadResource(this.getClass(), "/minimalList.json");
+
+    Model model = ModelFactory.createDefaultModel();
+    model.read(new StringReader(exampleJsonLd), "http://example.com", RDFLanguages.strLangJSONLD);
+
+    ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+    RDFDataMgr.write(outputStream, model, Lang.TURTLE) ;
+    String turtleStringModel = outputStream.toString();
+
+    Model model1a = ModelFactory.createDefaultModel();
+    model1a.read(new StringReader(turtleStringModel), "http://example.com", RDFLanguages.strLangTurtle);
+
+    if (!model.isIsomorphicWith(model1a)) {
+      Delta d = new Delta(model.getGraph());
+      d.clear();
+      GraphUtil.addInto(d, model1a.getGraph());
+      System.err.println("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+      RDFDataMgr.write(System.err, d.getAdditions(), Lang.TURTLE);
+      System.err.println("-------------------------------------------------------------------------------------");
+      RDFDataMgr.write(System.err, d.getDeletions(), Lang.TURTLE);
+      fail("!!!!!!!!!!!!!!!!!!!!!! RDF not equal");
+    }
+
+  }
+
+  @Test
+  public void testTransformIsomorphy() throws IOException, ScriptException {
     String exampleJsonLd = loadResource(this.getClass(), "/jenaEsExampleJsonLd.json");
     String underscoreLoc = "src/main/webapp/resources/app/js/bower_components/lodash/lodash.js";
     String transformScriptLoc = "src/main/webapp/resources/app/js/util/transformJsonLd.js";
@@ -58,27 +84,13 @@ public class JsonLDTest {
     engine.eval("var outputJson = JSON.stringify(improveJsonLd(JSON.parse(inputJson)), null, 2)");
     String betterJsonLd = (String) engine.get("outputJson");
 
-    ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-    RDFDataMgr.write(outputStream, model, Lang.TURTLE) ;
-    String turtleStringModel = outputStream.toString();
-
-    Model model1a = ModelFactory.createDefaultModel();
-    model1a.read(new StringReader(turtleStringModel), "http://example.com", RDFLanguages.strLangTurtle);
-
     Model model2 = ModelFactory.createDefaultModel();
     model2.read(new StringReader(betterJsonLd), "http://example.com", RDFLanguages.strLangJSONLD);
-    ByteArrayOutputStream outputStream2 = new ByteArrayOutputStream();
-    RDFDataMgr.write(outputStream2, model2, Lang.TURTLE) ;
-    String turtleStringModel2 = outputStream2.toString();
-    Model model2a = ModelFactory.createDefaultModel();
-    model2a.read(new StringReader(turtleStringModel2), "http://example.com", RDFLanguages.strLangTurtle);
 
-
-
-    if (!model1a.isIsomorphicWith(model2a)) {
-      Delta d = new Delta(model1a.getGraph());
+    if (!model.isIsomorphicWith(model2)) {
+      Delta d = new Delta(model.getGraph());
       d.clear();
-      GraphUtil.addInto(d, model2a.getGraph());
+      GraphUtil.addInto(d, model2.getGraph());
       System.err.println("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
       RDFDataMgr.write(System.err, d.getAdditions(), Lang.TURTLE);
       System.err.println("-------------------------------------------------------------------------------------");
@@ -86,8 +98,8 @@ public class JsonLDTest {
       fail("!!!!!!!!!!!!!!!!!!!!!! RDF not equal");
     }
 
-
   }
+
 
 
 

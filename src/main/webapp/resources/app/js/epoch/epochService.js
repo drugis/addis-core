@@ -43,8 +43,9 @@ define(['lodash'], function(_) {
 
       function addItem(item) {
         return StudyService.getStudy().then(function(study) {
+          var newId = INSTANCE_PREFIX + UUIDService.generate();
           var newEpoch = {
-            '@id': INSTANCE_PREFIX + UUIDService.generate(),
+            '@id': newId,
             '@type': 'ontology:Epoch',
             label: item.label,
             duration: item.duration
@@ -55,11 +56,18 @@ define(['lodash'], function(_) {
           }
 
           if (item.isPrimaryEpoch) {
-            study.has_primary_epoch = newEpoch['@id'];
+            study.has_primary_epoch = newId;
           }
           
           if(!study.has_epochs) {
-            study.has_epochs = [];
+            study.has_epochs = {
+              'first': newId,
+              'rest': {
+                '@id': 'nil'
+              }
+            };
+          } else {
+
           }
 
           study.has_epochs.push(newEpoch);

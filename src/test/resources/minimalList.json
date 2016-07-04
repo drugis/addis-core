@@ -1,0 +1,18 @@
+{
+  "@graph": [
+    {"@id": "http://example.com#subject",
+      "http://example.com#listProperty": "http://fuseki-test.drugis.org:3030/.well-known/genid/0000014fdfac1c4aac11005900000015"
+    },
+    {
+      "@id": "http://fuseki-test.drugis.org:3030/.well-known/genid/0000014fdfac1c4aac11005900000015",
+      "http://www.w3.org/1999/02/22-rdf-syntax-ns#first": "Male",
+      "http://www.w3.org/1999/02/22-rdf-syntax-ns#rest": {
+        "@id": "http://fuseki-test.drugis.org:3030/.well-known/genid/0000014fdfac1c4aac110059000000ee",
+        "http://www.w3.org/1999/02/22-rdf-syntax-ns#first": "Female",
+        "http://www.w3.org/1999/02/22-rdf-syntax-ns#rest": {
+          "@id": "http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"
+        }
+      }
+    }
+  ]
+}
