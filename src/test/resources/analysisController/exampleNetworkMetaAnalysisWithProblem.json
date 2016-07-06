@@ -23,7 +23,7 @@
      "responders": 10,
      "samplesize": 40
    }],
-  "analysisType": "Network meta-analysis",
+  "analysisType": "Evidence synthesis",
   "outcome": {
     "id": 6,
     "project": 1,

@@ -85,7 +85,7 @@
                 <em>no description</em>
               </p>
               <p>{{::analysis.description}}</p>
-              <div ng-if="analysis.analysisType === 'Network meta-analysis'">
+              <div ng-if="analysis.analysisType === 'Evidence synthesis'">
                 <nma-report-view user="user" project="project" analysis="analysis" interventions="interventions"></nma-report-view>
               </div>
 
@@ -127,7 +127,7 @@
                       <td>{{analysis.analysisType}}</td>
                       <td ng-switch-when="Benefit-risk analysis based on a single study">{{findStudyLabel(analysis)}}
                       </td>
-                      <td ng-switch-when="Network meta-analysis"></td>
+                      <td ng-switch-when="Evidence synthesis"></td>
                       <td ng-switch-when="Benefit-risk analysis based on meta-analyses"></td>
                     </tr>
                   </tbody>

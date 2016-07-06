@@ -137,7 +137,7 @@ public class AnalysisControllerTest {
             .andExpect(status().isOk())
             .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()))
             .andExpect(jsonPath("$", hasSize(1)))
-            .andExpect(jsonPath("$[0].analysisType", Matchers.equalTo(AnalysisType.NETWORK_META_ANALYSIS_LABEL)));
+            .andExpect(jsonPath("$[0].analysisType", Matchers.equalTo(AnalysisType.EVIDENCE_SYNTHESIS)));
 
     verify(accountRepository).findAccountByUsername("gert");
     verify(networkMetaAnalysisRepository).queryByOutcomes(projectId, outcomeIds);
@@ -183,7 +183,7 @@ public class AnalysisControllerTest {
   @Test
   public void testCreateNetworkMetaAnalysis() throws Exception {
     NetworkMetaAnalysis analysis = new NetworkMetaAnalysis(1, 1, "name");
-    AnalysisCommand analysisCommand = new AnalysisCommand(1, "name", AnalysisType.NETWORK_META_ANALYSIS_LABEL);
+    AnalysisCommand analysisCommand = new AnalysisCommand(1, "name", AnalysisType.EVIDENCE_SYNTHESIS);
     when(analysisService.createNetworkMetaAnalysis(gert, analysisCommand)).thenReturn(analysis);
     String body = TestUtils.createJson(analysisCommand);
     mockMvc.perform(post("/projects/1/analyses").content(body).principal(user).contentType(WebConstants.getApplicationJsonUtf8Value()))
@@ -229,7 +229,7 @@ public class AnalysisControllerTest {
     result.andExpect(status().isOk())
             .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()))
             .andExpect(jsonPath("$.id", is(analysis.getId())))
-            .andExpect(jsonPath("$.analysisType", is(AnalysisType.NETWORK_META_ANALYSIS_LABEL)))
+            .andExpect(jsonPath("$.analysisType", is(AnalysisType.EVIDENCE_SYNTHESIS)))
             .andExpect(jsonPath("$.excludedArms", hasSize(0)));
     verify(accountRepository).findAccountByUsername("gert");
     verify(analysisRepository).get(analysis.getId());

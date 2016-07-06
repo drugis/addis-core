@@ -14,7 +14,7 @@ import java.util.*;
  */
 @JsonTypeInfo(use = com.fasterxml.jackson.annotation.JsonTypeInfo.Id.NAME, include = As.PROPERTY, property = "analysisType")
 @JsonSubTypes({@Type(value = SingleStudyBenefitRiskAnalysis.class, name = AnalysisType.SINGLE_STUDY_BENEFIT_RISK_LABEL),
-        @Type(value = NetworkMetaAnalysis.class, name = AnalysisType.NETWORK_META_ANALYSIS_LABEL),
+        @Type(value = NetworkMetaAnalysis.class, name = AnalysisType.EVIDENCE_SYNTHESIS),
         @Type(value = MetaBenefitRiskAnalysis.class, name = AnalysisType.META_BENEFIT_RISK_ANALYSIS_LABEL)})
 @Inheritance(strategy = InheritanceType.JOINED)
 @Entity

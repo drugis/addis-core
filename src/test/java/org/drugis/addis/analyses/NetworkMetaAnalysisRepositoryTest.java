@@ -39,7 +39,7 @@ public class NetworkMetaAnalysisRepositoryTest {
   @Test
   public void testCreate() throws ResourceDoesNotExistException, MethodNotAllowedException {
     int projectId = 1;
-    AnalysisCommand analysisCommand = new AnalysisCommand(projectId, "newName", AnalysisType.NETWORK_META_ANALYSIS_LABEL);
+    AnalysisCommand analysisCommand = new AnalysisCommand(projectId, "newName", AnalysisType.EVIDENCE_SYNTHESIS);
     NetworkMetaAnalysis analysis = networkMetaAnalysisRepository.create(analysisCommand);
     assertNotNull(analysis);
     NetworkMetaAnalysis expectedAnalysis = em.find(NetworkMetaAnalysis.class, analysis.getId());

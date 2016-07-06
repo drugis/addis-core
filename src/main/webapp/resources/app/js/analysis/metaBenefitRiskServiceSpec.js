@@ -301,7 +301,7 @@ define(['angular-mocks'], function(angularMocks) {
         expect(result).toEqual(expectedResult);
       });
     });
-    describe('findMissingAlternatives for a network meta-analysis', function() {
+    describe('findMissingAlternatives for evidence synthesis', function() {
       it('should return a list of alternatives that are included in the analysis but not in the model', function() {
         var interventionInclusions = [{
           id: 1

@@ -113,7 +113,7 @@ public class AnalysisController extends AbstractAddisCoreController {
         case AnalysisType.SINGLE_STUDY_BENEFIT_RISK_LABEL:
           analysis = analysisService.createSingleStudyBenefitRiskAnalysis(user, analysisCommand);
           break;
-        case AnalysisType.NETWORK_META_ANALYSIS_LABEL:
+        case AnalysisType.EVIDENCE_SYNTHESIS:
           analysis = analysisService.createNetworkMetaAnalysis(user, analysisCommand);
           break;
         case AnalysisType.META_BENEFIT_RISK_ANALYSIS_LABEL:

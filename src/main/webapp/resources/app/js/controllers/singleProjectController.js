@@ -88,7 +88,7 @@ define(['lodash', 'angular'], function(_, angular) {
         }, function(analyses) {
           $scope.analysesLoaded = true;
           $scope.analyses = _.sortBy(analyses, function(analysis) {
-            if (analysis.analysisType === 'Network meta-analysis') {
+            if (analysis.analysisType === 'Evidence synthesis') {
               return 0;
             } else {
               return 1;

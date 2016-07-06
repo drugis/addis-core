@@ -99,7 +99,7 @@ define(['lodash'], function(_) {
         function modelTypeString(type) {
           var typeString;
           if (type === 'network') {
-            typeString = 'network meta-analysis';
+            typeString = 'evidence synthesis';
           } else if (type === 'pair-wise') {
             typeString = 'pair-wise meta-analysis';
           } else if (type === 'node-split') {

@@ -147,7 +147,7 @@ define(
     app.constant('Tasks', Config.tasks);
     app.constant('DEFAULT_VIEW', 'overview');
     app.constant('ANALYSIS_TYPES', [{
-      label: 'Network meta-analysis',
+      label: 'Evidence synthesis',
       stateName: 'networkMetaAnalysis'
     }, {
       label: 'Benefit-risk analysis based on a single study',
@@ -296,7 +296,7 @@ define(
             },
             abstract: true
           })
-        // Network meta-analysis states
+        // Evidence synthesis states
         .state('networkMetaAnalysis', {
           parent: 'networkMetaAnalysisContainer',
           url: '',
