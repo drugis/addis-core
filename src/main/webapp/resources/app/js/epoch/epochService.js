@@ -1,7 +1,7 @@
 'use strict';
 define(['lodash'], function(_) {
-    var dependencies = ['$q', 'StudyService', 'UUIDService'];
-    var EpochService = function($q, StudyService, UUIDService) {
+    var dependencies = ['$q', 'StudyService', 'UUIDService', 'RdfListService'];
+    var EpochService = function($q, StudyService, UUIDService, RdfListService) {
 
       var INSTANCE_PREFIX = 'http://trials.drugis.org/instances/';
 
@@ -34,8 +34,11 @@ define(['lodash'], function(_) {
       }
 
       function queryItems() {
-        return StudyService.getStudy().then(function(study) {
-          return _.map(study.has_epochs, tofrontEnd)
+        return StudyService.getJsonGraph().then(function(graph) {
+          var study = _.find(graph, function(node) {
+            return node['@type'] === 'ontology:Study';
+          });
+          return RdfListService.flattenList(study.has_epochs, graph)
             .map(addPosition)
             .map(addIsPrimary.bind(this, study.has_primary_epoch));
         });

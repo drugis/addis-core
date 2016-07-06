@@ -38,7 +38,40 @@ define(['lodash'], function(_) {
       }
     }
 
+    function flattenList(rootNodeUri, graph) {
+      var currentNode = findNode(rootNodeUri, graph);
+      var result = [];
+
+      var dataItem;
+      if (!currentNode.first['@id']) {
+        dataItem = findNode(currentNode.first, graph);
+      } else {
+        dataItem = findNode(currentNode.first['@id'], graph);
+      }
+      dataItem.blankNodeUri = rootNodeUri;
+      result.push(dataItem);
+
+      var atEnd = false;
+      while (!atEnd) {
+        if (currentNode.rest['@list']) { // last item
+          result.push(findNode(listBlankNode.rest['@list'][0], graph)); // TODO: check how to ensure non-anonymous blank here
+          atEnd = true;
+        } else {
+          currentNode = findNode(currentNode.rest, graph);
+          if (!currentNode.first['@id']) {
+            dataItem = findNode(currentNode.first, graph);
+          } else {
+            dataItem = findNode(currentNode.first['@id'], graph);
+          }
+          dataItem.blankNodeUri = currentNode.rest;
+          result.push(dataItem);
+        }
+      }
+      return result;
+    }
+
     return {
+      flattenList: flattenList,
       addItem: addItem
     };
   };
