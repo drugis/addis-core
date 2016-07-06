@@ -20,16 +20,21 @@ define(['lodash'], function(_) {
       return list;
     }
 
-    function findTailNode(list) {
+    function findNode(id, graph) {
+      return _.find(graph, function(node) {
+        return node['@id'] === id;
+      });
+    }
+
+    function findTailNode(list, graph) {
       if (list === {}) {
         return null;
       } else {
-        var checkingNode = list.rest
-        while (checkingNode['@id' !== 'nil']) {
-          checkingNode = 
+        var checkingNode = findNode(list.rest['@id'], graph);
+        while (checkingNode['@id'] !== 'nil') {
+          checkingNode = findNode(checkingNode.rest['@id']);
         }
-      } else {
-        return findTailNode(list.rest);
+        return checkingNode;
       }
     }
 

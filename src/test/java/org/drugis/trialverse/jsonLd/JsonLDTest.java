@@ -7,6 +7,7 @@ import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.riot.Lang;
 import org.apache.jena.riot.RDFDataMgr;
 import org.apache.jena.riot.RDFLanguages;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import javax.script.ScriptEngine;
@@ -38,7 +39,7 @@ public class JsonLDTest {
     assertTrue(model.isIsomorphicWith(model2));
   }
 
-//  @Ignore
+  @Ignore
   @Test
   public void testTurtleRoundtrip() throws IOException, ScriptException {
     String exampleJsonLd = loadResource(this.getClass(), "/minimalList.json");

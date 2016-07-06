@@ -62,44 +62,6 @@ define(['lodash'], function(_) {
       subject[propertyName] = _.map(arr, findAndRemoveFromGraph);
     }
 
-    function inlineListLinkedListType(subject, propertyName) {
-      var list = [];
-      var listBlankNodeId = subject[propertyName];
-
-      if (!listBlankNodeId['@list']) {
-        var listBlankNode = findAndRemoveFromGraph(listBlankNodeId);
-
-        if (!listBlankNode.first['@id']) {
-          list.push(findAndRemoveFromGraph(listBlankNode.first));
-        } else {
-          list.push(findAndRemoveFromGraph(listBlankNode.first['@id']));
-        }
-
-        var atEnd = false;
-        while (!atEnd) {
-          if (listBlankNode.rest['@list']) { // last item
-            list.push(findAndRemoveFromGraph(listBlankNode.rest['@list'][0]));
-            atEnd = true;
-          } else {
-            listBlankNode = findAndRemoveFromGraph(listBlankNode.rest);
-
-            if (!listBlankNode.first['@id']) {
-              list.push(findAndRemoveFromGraph(listBlankNode.first));
-            } else {
-              list.push(findAndRemoveFromGraph(listBlankNode.first['@id']));
-            }
-
-          }
-        }
-      } else if (listBlankNodeId['@list'].length === 1) {
-        list.push(findAndRemoveFromGraph(listBlankNodeId['@list'][0]));
-      }
-
-      subject[propertyName] = list;
-      linkedData['@context'][propertyName]['@container'] = '@list';
-      delete linkedData['@context'][propertyName]['@type'];
-    }
-
     function inlineObjectsForSubjectsWithProperty(subjectList, propertyName) {
       var subjectsWithProperty = _.filter(subjectList, function(subjectWithTriples) {
         return subjectWithTriples[propertyName];
@@ -139,9 +101,6 @@ define(['lodash'], function(_) {
     inlineObjects(study, 'has_objective');
     inlineObjects(study, 'has_publication');
     inlineObjects(study, 'has_eligibility_criteria');
-//    if (study.has_epochs) {
-//      inlineListLinkedListType(study, 'has_epochs');
-//    }
 
     linkedData['@context'] = {
       'standard_deviation': {
