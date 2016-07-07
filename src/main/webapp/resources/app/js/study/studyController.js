@@ -1,11 +1,11 @@
 'use strict';
 define(['angular', 'lodash'],
   function(angular, _) {
-    var dependencies = ['$scope', '$stateParams', '$window', '$filter',
+    var dependencies = ['$scope', '$state', '$stateParams', '$window', '$filter',
       'VersionedGraphResource', 'GraphResource', '$location', '$anchorScroll',
       '$modal', 'StudyService', 'ResultsService', 'StudyDesignService', 'DatasetResource'
     ];
-    var StudyController = function($scope, $stateParams, $window, $filter,
+    var StudyController = function($scope, $state, $stateParams, $window, $filter,
       VersionedGraphResource, GraphResource, $location, $anchorScroll,
       $modal, StudyService, ResultsService, StudyDesignService, DatasetResource) {
 
@@ -290,6 +290,32 @@ define(['angular', 'lodash'],
         });
         StudyDesignService.cleanupCoordinates($stateParams.studyUUID).then(function() {
           $scope.$broadcast('refreshStudyDesign');
+        });
+      });
+
+
+      var deRegisterStateChangeStart = $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
+        if (!StudyService.isStudyModified()) {
+          return;
+        }
+        event.preventDefault();
+        $modal.open({
+          templateUrl: 'app/js/study/unsavedChanges/unsavedWarningModal.html',
+          controller: 'UnsavedChangesWarningModalController',
+          windowClass: 'small',
+          resolve: {
+            doNavigate: function() {
+              return function() {
+                deRegisterStateChangeStart();
+                $state.go(toState.name, toParams);
+              };
+            },
+            stayHere: function() {
+              return function() {
+                return;
+              }
+            }
+          }
         });
       });
 

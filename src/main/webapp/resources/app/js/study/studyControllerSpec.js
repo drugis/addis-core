@@ -17,7 +17,8 @@ define(['angular-mocks'], function(angularMocks) {
       locationMock = jasmine.createSpyObj('location', ['hash']),
       modalMock = jasmine.createSpyObj('modal', ['open']),
       studyService = jasmine.createSpyObj('StudyService', ['reset', 'loadJson', 'getStudy',
-      'studySaved', 'isStudyModified' ]),
+        'studySaved', 'isStudyModified'
+      ]),
       resultsServiceMock = jasmine.createSpyObj('ResultsService', ['cleanupMeasurements']),
       studyDesignServiceMock = jasmine.createSpyObj('StudyDesignService', ['cleanupCoordinates']),
       graphResource = jasmine.createSpyObj('GraphResource', ['getJson']),
@@ -67,6 +68,7 @@ define(['angular-mocks'], function(angularMocks) {
 
         $controller('StudyController', {
           $scope: scope,
+          $state: {},
           $stateParams: mockStateParams,
           VersionedGraphResource: versionedGraphResource,
           GraphResource: graphResource,
@@ -96,10 +98,14 @@ define(['angular-mocks'], function(angularMocks) {
       });
 
       it('should use the loaded data to fill the view and alert the subviews', function() {
-        jsonResultDefer.resolve({bla: 'bla'});
+        jsonResultDefer.resolve({
+          bla: 'bla'
+        });
         scope.$digest();
         expect(studyService.getStudy).toHaveBeenCalled();
-        getStudyResult.resolve({study: 'studyjson'});
+        getStudyResult.resolve({
+          study: 'studyjson'
+        });
         scope.$digest();
         expect(studyService.studySaved).toHaveBeenCalled();
         expect(scope.$broadcast).toHaveBeenCalledWith('refreshStudyDesign');
