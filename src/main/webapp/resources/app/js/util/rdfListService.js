@@ -11,6 +11,10 @@ define(['lodash'], function(_) {
         }
       };
 
+      if(!list) {
+        list = [];
+      }
+
       var tailNode = findTailNode(list, graph);
       if (!tailNode) {
         list = newListNode;
@@ -27,7 +31,7 @@ define(['lodash'], function(_) {
     }
 
     function findTailNode(list, graph) {
-      if (list === {}) {
+      if (list === []) {
         return null;
       } else {
         var checkingNode = findNode(list.rest['@id'], graph);

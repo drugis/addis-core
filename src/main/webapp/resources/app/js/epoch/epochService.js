@@ -35,9 +35,7 @@ define(['lodash'], function(_) {
 
       function queryItems() {
         return StudyService.getJsonGraph().then(function(graph) {
-          var study = _.find(graph, function(node) {
-            return node['@type'] === 'ontology:Study';
-          });
+          var study = StudyService.findStudyNode(graph);
           return RdfListService.flattenList(study.has_epochs, graph)
             .map(addPosition)
             .map(addIsPrimary.bind(this, study.has_primary_epoch));
@@ -45,7 +43,8 @@ define(['lodash'], function(_) {
       }
 
       function addItem(item) {
-        return StudyService.getStudy().then(function(study) {
+        return StudyService.getJsonGraph().then(function(graph) {
+          var study = StudyService.findStudyNode(graph);
           var newId = INSTANCE_PREFIX + UUIDService.generate();
           var newEpoch = {
             '@id': newId,
@@ -61,20 +60,11 @@ define(['lodash'], function(_) {
           if (item.isPrimaryEpoch) {
             study.has_primary_epoch = newId;
           }
-          
-          if(!study.has_epochs) {
-            study.has_epochs = {
-              'first': newId,
-              'rest': {
-                '@id': 'nil'
-              }
-            };
-          } else {
 
-          }
+          graph = RdfListService.addItem(newEpoch, study.has_epochs, graph);
 
           study.has_epochs.push(newEpoch);
-          return StudyService.save(study);
+          return StudyService.saveJsonGraph(graph);
         });
       }
 

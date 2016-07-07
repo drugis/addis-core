@@ -71,6 +71,44 @@ define(['lodash'], function(_) {
       });
     }
 
+    function buildListItem(listNode) {
+      if (!listNode['@list']) { // list with multiple elements
+        var node = findAndRemoveFromGraph(listNode.first);
+        node.blankNodeId = listNode['@id'];
+        return node;
+      } else { // list with one element
+        return findAndRemoveFromGraph(listNode['@list']);
+      }
+    }
+
+    function inlineLinkedList(study, propertyName) {
+      var list = [];
+      if(!study[propertyName]) {
+        return {};
+      }
+
+      var listNode = study[propertyName];
+
+      list.push(buildListItem(listNode));
+
+      var atEnd = false;
+      while (!atEnd) {
+        listNode = findAndRemoveFromGraph(listNode.rest);
+        var listItem = buildListItem(listNode);
+        list.push(listItem);
+        atEnd = listItem['@list'];
+      }
+
+      return list.reverse().reduce(function(accum, node) {
+        return {
+          '@id': node.blankNodeId,
+          '@first': node,
+          '@rest': accum === {} ? 'nil' : accum
+        };
+      });
+
+    }
+
     inlineObjectsForSubjectsWithProperty(linkedData['@graph'], 'has_activity_application');
     inlineObjectsForSubjectsWithProperty(linkedData['@graph'], 'of_variable');
     inlineObjectsForSubjectsWithProperty(linkedData['@graph'], 'category_count');
@@ -101,6 +139,7 @@ define(['lodash'], function(_) {
     inlineObjects(study, 'has_objective');
     inlineObjects(study, 'has_publication');
     inlineObjects(study, 'has_eligibility_criteria');
+    inlineLinkedList(study, 'has_epochs');
 
     linkedData['@context'] = {
       'standard_deviation': {

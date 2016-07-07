@@ -101,7 +101,7 @@ define(['lodash'], function(_) {
       },
       'has_epochs': {
         '@id': 'http://trials.drugis.org/ontology#has_epochs',
-        '@container': '@list'
+        'type': '@id'
       },
       'has_eligibility_criteria': {
         '@id': 'http://trials.drugis.org/ontology#has_eligibility_criteria',
@@ -337,7 +337,8 @@ define(['lodash'], function(_) {
       getJsonGraph: getJsonGraph,
       saveJsonGraph: saveJsonGraph,
       getStudy: getStudy,
-      save: save
+      save: save,
+      findStudyNode: findStudyNode
     };
   };
 
