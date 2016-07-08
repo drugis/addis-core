@@ -29,27 +29,18 @@
     <session-expired></session-expired>
 
     <div ui-view></div>
-    <script>
 
+    <script>
+     window.config = {};
       if(window.location.host.indexOf("test") > -1) {
         document.body.className += " test";
         document.title = "test-" + document.title;
       }
 
       window.mcdaBasePath = 'app/js/bower_components/mcda-web/';
-      window.config = {
-        user : {
-          id : ${account.id},
-          name : "${account.firstName}",
-          firstName : "${account.firstName}",
-          lastName : "${account.lastName}",
-          userEmail: "${userEmail}",
-          userNameHash: "${userNameHash}"
-        },
-        WS_URI: "${pataviMcdaWsUri}",
-        workspaceName: 'analyses',
-        workspacesRepositoryUrl : "/projects/:projectId/analyses/:analysisId"
-      };
+      window.config.WS_URI = "${pataviMcdaWsUri}";
+      window.config.workspaceName = 'analyses';
+      window.config.workspacesRepositoryUrl = "/projects/:projectId/analyses/:analysisId";
 
       function signout(){
         var signoutForm = document.getElementById('signout_form');
@@ -59,6 +50,20 @@
         }
       }
     </script>
+        <c:if test="${account != null}">
+           <script>
+
+            window.config.user = {
+              id : ${account.id},
+              name : "${account.firstName}",
+              firstName : "${account.firstName}",
+              lastName : "${account.lastName}",
+              userEmail: "${userEmail}",
+              userNameHash: "${userNameHash}"
+            }
+           </script>
+        </c:if>
+
     <div class="push"></div>
 
   </body>

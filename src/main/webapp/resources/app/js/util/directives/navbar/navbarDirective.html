@@ -3,7 +3,8 @@
       <ul class="title-area">
         <li class="name">
           <h1>
-            <a id="logo" ui-sref="datasets({userUid: loginUserInfo.id})">addis.drugis.org</a>
+            <a ng-if="!isAnonimous" id="logo" ui-sref="datasets({userUid: loginUserInfo.id})">addis.drugis.org</a>
+            <a ng-if="isAnonimous" id="logo" ui-sref="home">addis.drugis.org</a>
           </h1>
         </li>
       </ul>
@@ -19,7 +20,7 @@
               Manual
             </a>
           </li>
-          <li ng-show="!isOwnUserPage" class="has-dropdown not-click">
+          <li ng-if="!isAnonimous && !isOwnUserPage" class="has-dropdown not-click">
             <a href="#">
               <img class="user-image" ng-src="{{loginUserInfo.imageUrl}}">
               <span ng-show="!navSettings.isHidden">{{loginUserInfo.name}}</span>
@@ -30,8 +31,11 @@
               </li>
             </ul>
           </li>
-          <li ng-show="isOwnUserPage">
+          <li ng-if="!isAnonimous && isOwnUserPage">
                 <a href="signin?logout">Sign out</a>
+          </li>
+          <li ng-if="isAnonimous">
+                <a href="/auth/google?scope=openid+email+profile">Sign in</a>
           </li>
         </ul>
       </section>

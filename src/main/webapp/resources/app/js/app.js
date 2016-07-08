@@ -63,7 +63,8 @@ define(
     'mcda/services/partialValueFunction',
     'mcda/services/scaleRangeService',
     'mcda/services/util',
-    'covariates/covariates'
+    'covariates/covariates',
+    'home/home'
   ],
   function(angular, require, $, Config, _) {
     var mcdaDependencies = [
@@ -92,6 +93,7 @@ define(
       'mm.foundation.typeahead',
       'mm.foundation.tabs',
       'help-directive',
+      'addis.home',
       'addis.project',
       'addis.analysis',
       'addis.controllers',
@@ -196,12 +198,15 @@ define(
         $urlRouterProvider.otherwise(function($injector) {
           var $window = $injector.get('$window');
           var $state = $injector.get('$state');
-          $state.go('datasets', {
-            userUid: $window.config.user.id
-          });
+          $state.go('home');
         });
 
         $stateProvider
+          .state('home', {
+            url: '/',
+            templateUrl: 'app/js/home/home.html',
+            controller: 'HomeController',
+          })
           .state('user', {
             abstract: true,
             url: '/users/:userUid',

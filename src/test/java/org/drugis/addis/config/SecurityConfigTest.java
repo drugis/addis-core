@@ -54,12 +54,6 @@ public class SecurityConfigTest {
   }
 
   @Test
-  public void testForbiddenOnSecurePathWithNoApiKey() throws Exception {
-            mockMvc.perform(get("/anything"))
-                    .andExpect(status().isForbidden());
-  }
-
-  @Test
   public void testInsecurePath() throws Exception {
     mockMvc.perform(get("/"))
             .andExpect(status().isNotFound());

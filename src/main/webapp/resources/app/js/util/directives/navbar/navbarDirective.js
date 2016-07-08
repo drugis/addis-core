@@ -7,16 +7,24 @@ define([], function() {
       templateUrl: 'app/js/util/directives/navbar/navbarDirective.html',
       transclude: true,
       link: function(scope) {
-        scope.loginUserInfo = {
-          imageUrl: 'https://secure.gravatar.com/avatar/' + md5.createHash($window.config.user.userEmail) + '?s=43&d=mm',
-          name: $window.config.user.firstName + ' ' + $window.config.user.lastName,
-          userNameHash: $window.config.user.userNameHash,
-          id: $window.config.user.id
-        };
-        scope.isOwnUserPage = $state.current.name === 'user' &&
-         $window.config.user.id === $stateParams.userUid;
 
-        scope.user = UserResource.get($stateParams);
+        scope.isAnonimous = true;
+
+        if ($window.config.user) {
+          scope.isAnonimous = false;
+          scope.loginUserInfo = {
+            imageUrl: 'https://secure.gravatar.com/avatar/' + md5.createHash($window.config.user.userEmail) + '?s=43&d=mm',
+            name: $window.config.user.firstName + ' ' + $window.config.user.lastName,
+            userNameHash: $window.config.user.userNameHash,
+            id: $window.config.user.id
+          };
+          scope.isOwnUserPage = $state.current.name === 'user' &&
+            $window.config.user.id === $stateParams.userUid;
+        }
+
+        if ($stateParams.userUid) {
+          scope.user = UserResource.get($stateParams);
+        }
       }
     };
   };
