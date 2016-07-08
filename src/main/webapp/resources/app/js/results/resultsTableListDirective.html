@@ -1,7 +1,6 @@
 <div ng-if="showResults" class="study-item">
   <h3>{{variableName}} results</h3>
   <div ng-repeat="variable in variables">
-    <h5>{{variable.label}}</h5>
     <results-table
       ng-if="variable.measuredAtMoments.length > 0"
       variable="variable"

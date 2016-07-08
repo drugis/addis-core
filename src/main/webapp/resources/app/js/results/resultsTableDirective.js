@@ -15,12 +15,26 @@ define([], function() {
       },
       link: function(scope) {
 
-        scope.results = ResultsService.queryResults(scope.variable.uri);
+        scope.isExpanded = false;
 
-        $q.all([scope.arms, scope.measurementMoments, scope.groups, scope.results]).then(function() {
-          scope.inputRows = ResultsTableService.createInputRows(scope.variable, scope.arms, scope.groups, scope.measurementMoments, scope.results.$$state.value);
-          scope.inputHeaders = ResultsTableService.createHeaders(scope.variable.measurementType);
-        });
+        scope.show = function() {
+
+          scope.results = ResultsService.queryResults(scope.variable.uri);
+
+          $q.all([scope.arms, scope.measurementMoments, scope.groups, scope.results]).then(function() {
+            scope.inputRows = ResultsTableService.createInputRows(scope.variable, scope.arms, scope.groups, scope.measurementMoments, scope.results.$$state.value);
+            scope.inputHeaders = ResultsTableService.createHeaders(scope.variable.measurementType);
+            scope.isExpanded = true;
+          });
+        };
+
+        scope.hide = function() {
+          scope.isExpanded = false;
+        };
+
+        scope.toggle = function() {
+          scope.isExpanded ? scope.hide() : scope.show();
+        }
 
       }
     };
