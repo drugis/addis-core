@@ -1,7 +1,8 @@
 'use strict';
-define(['lodash'], function(_) {
+define(['angular', 'lodash'], function(angular, _) {
   var dependencies = [];
   var RdfListService = function() {
+    var rdfListNil = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#nil';
 
     function addItem(list, item, graph) {
       var newListNode = {
@@ -11,7 +12,7 @@ define(['lodash'], function(_) {
         }
       };
 
-      if(!list) {
+      if (!list) {
         list = [];
       }
 
@@ -42,40 +43,52 @@ define(['lodash'], function(_) {
       }
     }
 
-    function flattenList(rootNodeUri, graph) {
-      var currentNode = findNode(rootNodeUri, graph);
-      var result = [];
-
-      var dataItem;
-      if (!currentNode.first['@id']) {
-        dataItem = findNode(currentNode.first, graph);
-      } else {
-        dataItem = findNode(currentNode.first['@id'], graph);
+    function buildListItem(listNode, graph) {
+      if (!listNode['@list']) { // list with multiple elements
+        var node = findNode(listNode.first['@id'], graph);
+        node.blankNodeId = listNode['@id'];
+        return node;
+      } else { // list with one element
+        return findNode(listNode['@list'][0], graph);
       }
-      dataItem.blankNodeUri = rootNodeUri;
-      result.push(dataItem);
+    }
 
-      var atEnd = false;
-      while (!atEnd) {
-        if (currentNode.rest['@list']) { // last item
-          result.push(findNode(listBlankNode.rest['@list'][0], graph)); // TODO: check how to ensure non-anonymous blank here
-          atEnd = true;
-        } else {
-          currentNode = findNode(currentNode.rest, graph);
-          if (!currentNode.first['@id']) {
-            dataItem = findNode(currentNode.first, graph);
-          } else {
-            dataItem = findNode(currentNode.first['@id'], graph);
-          }
-          dataItem.blankNodeUri = currentNode.rest;
-          result.push(dataItem);
+    function flattenList(rootNode) {
+      var list = [];
+
+      var currentNode = rootNode;
+
+      while (true) {
+        var node = angular.copy(currentNode.first);
+        if (currentNode['@id']) {
+          node.blankNodeId = currentNode['@id'];
         }
+        list.push(node);
+        if (currentNode.rest === rdfListNil) {
+          return list;
+        }
+        currentNode = currentNode.rest;
       }
-      return result;
+    }
+
+    function unFlattenList(list) {
+      return list.reverse().reduce(function(accum, listItem) {
+        accum.first = listItem;
+        if (listItem.blankNodeId, idx) {
+          accum['@id'] = listItem.blankNodeId;
+          delete accum.first.blankNodeId;
+        }
+        if (idx === list.size - 1) {
+          accum.rest = rdfListNil;
+        } else {
+
+        }
+      }, {});
     }
 
     return {
       flattenList: flattenList,
+      unFlattenList: unFlattenList,
       addItem: addItem
     };
   };
