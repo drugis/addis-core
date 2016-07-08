@@ -21,7 +21,22 @@ define([], function() {
           scope.nonConformantMeasurements = result[3];
           scope.nonConformantMeasurementsMap = NonConformantMeasurementTableService.mapResultsByLabelAndGroup(scope.arms, scope.groups, scope.nonConformantMeasurements);
           scope.inputRows = NonConformantMeasurementTableService.createInputRows(scope.variable, scope.nonConformantMeasurementsMap);
+        });
+
+        scope.isExpanded = false;
+
+        scope.hide = function() {
+          scope.isExpanded = false;
+        };
+
+        scope.toggle = function() {
+          scope.isExpanded ? scope.hide() : scope.show();
+        }
+
+        scope.show = function() {
+
           scope.inputHeaders = ResultsTableService.createHeaders(scope.variable.measurementType);
+          scope.isExpanded = true;
 
           scope.setToMoment = function(moment, measurementInstanceList) {
             ResultsService.setToMeasurementMoment(moment.uri, measurementInstanceList).then(function() {
@@ -42,7 +57,7 @@ define([], function() {
               controller: 'SplitOutcomeController',
               resolve: {
                 callback: function() {
-                  return function(){
+                  return function() {
                     scope.$emit('updateStudyDesign');
                   };
                 },
@@ -59,9 +74,8 @@ define([], function() {
             });
           };
 
-        });
 
-
+        }
 
       }
     };
