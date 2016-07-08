@@ -73,40 +73,47 @@ define(['lodash'], function(_) {
 
     function buildListItem(listNode) {
       if (!listNode['@list']) { // list with multiple elements
-        var node = findAndRemoveFromGraph(listNode.first);
-        node.blankNodeId = listNode['@id'];
+        var node = findAndRemoveFromGraph(listNode.first['@id']);
         return node;
       } else { // list with one element
-        return findAndRemoveFromGraph(listNode['@list']);
+        return findAndRemoveFromGraph(listNode['@list'][0]);
       }
     }
 
     function inlineLinkedList(study, propertyName) {
-      var list = [];
-      if(!study[propertyName]) {
+      var rdfListNil = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#nil';
+      if (!study[propertyName]) {
         return {};
       }
 
-      var listNode = study[propertyName];
+      var head = {};
+      var tail = head;
 
-      list.push(buildListItem(listNode));
+      var listBlankNode = study[propertyName];
 
-      var atEnd = false;
-      while (!atEnd) {
-        listNode = findAndRemoveFromGraph(listNode.rest);
-        var listItem = buildListItem(listNode);
-        list.push(listItem);
-        atEnd = listItem['@list'];
+      while (true) {
+        if (listBlankNode['@list']) { // FIXME: make safe for > 1 item @lists (which we don't currently get)
+          tail.first = findAndRemoveFromGraph(listBlankNode['@list'][0]);
+          tail.rest = {
+            '@id': rdfListNil
+          };
+          return head;
+        } else if (listBlankNode['@id'] === rdfListNil) {
+          tail['@id'] = rdfListNil;
+          return head;
+        } else {
+          listBlankNode = findAndRemoveFromGraph(listBlankNode);
+          tail['@id'] = listBlankNode['@id'];
+          if (listBlankNode.first['@id']) {
+            tail.first = findAndRemoveFromGraph(listBlankNode.first['@id']);
+          } else {
+            tail.first = listBlankNode.first;
+          }
+          listBlankNode = listBlankNode.rest;
+          tail.rest = {};
+          tail = tail.rest;
+        }
       }
-
-      return list.reverse().reduce(function(accum, node) {
-        return {
-          '@id': node.blankNodeId,
-          '@first': node,
-          '@rest': accum === {} ? 'nil' : accum
-        };
-      });
-
     }
 
     inlineObjectsForSubjectsWithProperty(linkedData['@graph'], 'has_activity_application');
@@ -139,7 +146,7 @@ define(['lodash'], function(_) {
     inlineObjects(study, 'has_objective');
     inlineObjects(study, 'has_publication');
     inlineObjects(study, 'has_eligibility_criteria');
-    inlineLinkedList(study, 'has_epochs');
+    study.has_epochs = inlineLinkedList(study, 'has_epochs');
 
     linkedData['@context'] = {
       'standard_deviation': {

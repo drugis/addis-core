@@ -47,12 +47,9 @@
       "@id" : "http://trials.drugis.org/instances/62bc14d7-4fbc-4973-8119-ffaca0bb18e4"
     },
     "rest" : {
-      "first" : {
-        "@id": "http://trials.drugis.org/instances/2e545e50-b1f6-4a2a-813a-ab972cef804c"
-      },
-      "rest": {
-        "@id": "http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"
-      }
+      "@list": [
+        "http://trials.drugis.org/instances/2e545e50-b1f6-4a2a-813a-ab972cef804c"
+      ]
     }
   }, {
     "@id" : "http://fuseki-test.drugis.org:3030/.well-known/genid/0000014fdfac1c49ac1100590000000a",
@@ -124,9 +121,7 @@
     "first" : {
       "@id" : "http://trials.drugis.org/instances/a02fdb05-4986-4f58-b20f-973572813c8d"
     },
-    "rest" : {
-      "@id": "http://fuseki-test.drugis.org:3030/.well-known/genid/0000014fdfac1c49ac11005900000009"
-    }
+    "rest": "http://fuseki-test.drugis.org:3030/.well-known/genid/0000014fdfac1c49ac11005900000009"
   }, {
     "@id" : "http://fuseki-test.drugis.org:3030/.well-known/genid/0000014fdfac1c4aac1100590000000d",
     "category" : "Male",
@@ -173,7 +168,7 @@
     "@id" : "http://fuseki-test.drugis.org:3030/.well-known/genid/0000014fdfac1c4aac11005900000015",
     "first" : "Male",
     "rest" : {
-        "@id" : "http://fuseki-test.drugis.org:3030/.well-known/genid/0000014fdfac1c4aac110059000000ee",
+      "@id": "http://fuseki-test.drugis.org:3030/.well-known/genid/0000014fdfac1c4aac110059000000ee",
         "first" : "Female",
         "rest" : {
           "@id": "http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"
