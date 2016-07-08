@@ -345,6 +345,9 @@ define(['angular', 'lodash'],
           resolve: {
             callback: function() {
               return function(newVersion) {
+                if (deRegisterStateChangeStart) {
+                  deRegisterStateChangeStart();
+                }
                 $location.path('/users/' + $stateParams.userUid + '/datasets/' + $stateParams.datasetUUID + '/versions/' + newVersion + '/studies/' + $stateParams.studyGraphUuid);
               };
             },
