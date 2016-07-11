@@ -55,7 +55,9 @@ define(['angular', 'lodash'], function(angular, _) {
 
     function flattenList(rootNode) {
       var list = [];
-
+      if (_.isEmpty(rootNode)) {
+        return list;
+      }
       var currentNode = rootNode;
 
       while (true) {
@@ -73,16 +75,16 @@ define(['angular', 'lodash'], function(angular, _) {
 
     function unFlattenList(list) {
       return list.reverse().reduce(function(accum, listItem) {
-        accum.first = listItem;
-        if (listItem.blankNodeId, idx) {
-          accum['@id'] = listItem.blankNodeId;
-          delete accum.first.blankNodeId;
+        var newList = {
+          first: listItem,
+          rest: _.isEmpty(accum) ? rdfListNil : accum
+        };
+        if (listItem.blankNodeId) {
+          newList['@id'] = listItem.blankNodeId;
+          delete newList.first.blankNodeId;
         }
-        if (idx === list.size - 1) {
-          accum.rest = rdfListNil;
-        } else {
 
-        }
+        return newList;
       }, {});
     }
 

@@ -241,6 +241,7 @@ define(['lodash', 'util/transformJsonLd'], function(_, transformJsonLd) {
         'comment': 'my study',
         'has_outcome': [],
         'has_arm': [],
+        'has_epochs': {},
         'has_group': [],
         'has_included_population': [],
         'has_activity': [],
