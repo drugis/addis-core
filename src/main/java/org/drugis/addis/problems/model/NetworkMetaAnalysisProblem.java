@@ -7,6 +7,7 @@ import org.drugis.addis.models.Model;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -41,6 +42,10 @@ public class NetworkMetaAnalysisProblem extends AbstractProblem {
 
   public Map<String, Map<String, Double>> getStudyLevelCovariates() {
     return studyLevelCovariates;
+  }
+
+  public void setEntries(List<AbstractNetworkMetaAnalysisProblemEntry> entries) {
+    this.entries = entries == null ? Collections.emptyList() : entries;
   }
 
   public JSONObject buildProblemWithModelSettings(Model model) throws JsonProcessingException {
@@ -90,4 +95,5 @@ public class NetworkMetaAnalysisProblem extends AbstractProblem {
     result = 31 * result + studyLevelCovariates.hashCode();
     return result;
   }
+
 }

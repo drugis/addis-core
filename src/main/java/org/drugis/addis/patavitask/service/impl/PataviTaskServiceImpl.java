@@ -1,5 +1,6 @@
 package org.drugis.addis.patavitask.service.impl;
 
+import org.drugis.addis.problems.model.AbstractNetworkMetaAnalysisProblemEntry;
 import org.json.JSONObject;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.interventions.service.impl.InvalidTypeForDoseCheckException;
@@ -29,6 +30,9 @@ import java.security.NoSuchAlgorithmException;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateException;
 import java.sql.SQLException;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * Created by connor on 26-6-14.
@@ -60,15 +64,28 @@ public class PataviTaskServiceImpl implements PataviTaskService {
     URI pataviTaskUrl = model.getTaskUrl();
     if(pataviTaskUrl == null) {
       NetworkMetaAnalysisProblem problem = (NetworkMetaAnalysisProblem) problemService.getProblem(projectId, analysisId);
+
+      if(model.getSensitivity().get("omittedStudy") != null) {
+        String study = (String) model.getSensitivity().get("omittedStudy");
+        List<AbstractNetworkMetaAnalysisProblemEntry> entriesWithoutOmittedStudy = problem.getEntries().stream().filter(e -> !Objects.equals(e.getStudy(), study)).collect(Collectors.toList());
+        problem.setEntries(entriesWithoutOmittedStudy);
+      }
+
       if(Model.PAIRWISE_MODEL_TYPE.equals(model.getModelTypeTypeAsString())) {
+
         PairwiseNetworkProblem  pairwiseProblem = new PairwiseNetworkProblem(problem, model.getPairwiseDetails());
         pataviTaskUrl = pataviTaskRepository.createPataviTask(webConstants.getPataviGemtcUri(), pairwiseProblem.buildProblemWithModelSettings(model));
+
       } else if (Model.NETWORK_MODEL_TYPE.equals(model.getModelTypeTypeAsString())
+
               || Model.NODE_SPLITTING_MODEL_TYPE.equals(model.getModelTypeTypeAsString())
               || Model.REGRESSION_MODEL_TYPE.equals(model.getModelTypeTypeAsString())) {
         pataviTaskUrl = pataviTaskRepository.createPataviTask(webConstants.getPataviGemtcUri(), problem.buildProblemWithModelSettings(model));
+
       } else {
+
         throw new InvalidModelException("Invalid model type");
+
       }
       model.setTaskUrl(pataviTaskUrl);
     }
