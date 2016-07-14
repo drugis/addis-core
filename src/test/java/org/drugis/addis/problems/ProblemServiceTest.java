@@ -2,6 +2,7 @@ package org.drugis.addis.problems;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import net.minidev.json.JSONObject;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.jena.ext.com.google.common.collect.ImmutableSet;
 import org.drugis.addis.TestUtils;
@@ -512,6 +513,50 @@ public class ProblemServiceTest {
     assertEquals(expectedDataHeadache, problem.getPerformanceTable().get(0).getPerformance().getParameters().getRelative().getCov().getData());
     List<List<Double>> expectedDataHam = Arrays.asList(Arrays.asList(0.0, 0.0, 0.0), Arrays.asList(0.0, 74.346, 1.9648), Arrays.asList(0.0, 1.9648, 74.837));
     assertEquals(expectedDataHam, problem.getPerformanceTable().get(1).getPerformance().getParameters().getRelative().getCov().getData());
+  }
+
+  @Test
+  public void applyModelSettingsSensitivity() throws InvalidModelException {
+    String studyToOmit = "studyToOmit";
+    String studyToLeace = "studyToLeave";
+    AbstractNetworkMetaAnalysisProblemEntry toOmit1 = new RateNetworkMetaAnalysisProblemEntry(studyToOmit, 1, 1, 1);
+    AbstractNetworkMetaAnalysisProblemEntry toOmit2 = new RateNetworkMetaAnalysisProblemEntry(studyToOmit, 2, 2, 2);
+    AbstractNetworkMetaAnalysisProblemEntry toLeave = new RateNetworkMetaAnalysisProblemEntry(studyToLeace, 3, 3, 3);
+    List<AbstractNetworkMetaAnalysisProblemEntry> entries = Arrays.asList(toOmit1, toOmit2, toLeave);
+    List<TreatmentEntry> treatments = Collections.emptyList();
+    Map<String, Map<String, Double>> covariates = Collections.emptyMap();
+    NetworkMetaAnalysisProblem problem = new NetworkMetaAnalysisProblem(entries, treatments, covariates);
+    JSONObject sensitivity = new JSONObject();
+    sensitivity.put("omittedStudy", studyToOmit);
+    Model model = new Model.ModelBuilder(1, "model")
+            .link(Model.LINK_IDENTITY)
+            .modelType(Model.NETWORK_MODEL_TYPE)
+            .sensitivity(sensitivity)
+            .build();
+    NetworkMetaAnalysisProblem result = problemService.applyModelSettings(problem, model);
+    assertEquals(1, result.getEntries().size());
+    assertFalse(result.getEntries().contains(toOmit1));
+    assertFalse(result.getEntries().contains(toOmit2));
+    assertTrue(result.getEntries().contains(toLeave));
+  }
+
+  @Test
+  public void applyModelSettingsNoSensitivity() throws InvalidModelException {
+    String studyToOmit = "studyToOmit";
+    AbstractNetworkMetaAnalysisProblemEntry entry1 = new RateNetworkMetaAnalysisProblemEntry(studyToOmit, 1, 1, 1);
+    AbstractNetworkMetaAnalysisProblemEntry entry2 = new RateNetworkMetaAnalysisProblemEntry(studyToOmit, 2, 2, 2);
+    List<AbstractNetworkMetaAnalysisProblemEntry> entries = Arrays.asList(entry1, entry2);
+    List<TreatmentEntry> treatments = Collections.emptyList();
+    Map<String, Map<String, Double>> covariates = Collections.emptyMap();
+    NetworkMetaAnalysisProblem problem = new NetworkMetaAnalysisProblem(entries, treatments, covariates);
+    JSONObject sensitivity = new JSONObject();
+    sensitivity.put("omittedStudy", studyToOmit);
+    Model model = new Model.ModelBuilder(1, "model")
+            .link(Model.LINK_IDENTITY)
+            .modelType(Model.NETWORK_MODEL_TYPE)
+            .build();
+    NetworkMetaAnalysisProblem result = problemService.applyModelSettings(problem, model);
+    assertEquals(entries, result.getEntries());
   }
 
 }

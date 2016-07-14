@@ -1,7 +1,5 @@
 package org.drugis.addis.patavitask.service.impl;
 
-import org.drugis.addis.problems.model.AbstractNetworkMetaAnalysisProblemEntry;
-import org.json.JSONObject;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.interventions.service.impl.InvalidTypeForDoseCheckException;
 import org.drugis.addis.models.Model;
@@ -16,6 +14,7 @@ import org.drugis.addis.problems.model.PairwiseNetworkProblem;
 import org.drugis.addis.problems.service.ProblemService;
 import org.drugis.addis.trialverse.service.impl.ReadValueException;
 import org.drugis.addis.util.WebConstants;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -30,9 +29,6 @@ import java.security.NoSuchAlgorithmException;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateException;
 import java.sql.SQLException;
-import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
 
 /**
  * Created by connor on 26-6-14.
@@ -65,27 +61,20 @@ public class PataviTaskServiceImpl implements PataviTaskService {
     if(pataviTaskUrl == null) {
       NetworkMetaAnalysisProblem problem = (NetworkMetaAnalysisProblem) problemService.getProblem(projectId, analysisId);
 
-      if(model.getSensitivity().get("omittedStudy") != null) {
-        String study = (String) model.getSensitivity().get("omittedStudy");
-        List<AbstractNetworkMetaAnalysisProblemEntry> entriesWithoutOmittedStudy = problem.getEntries().stream().filter(e -> !Objects.equals(e.getStudy(), study)).collect(Collectors.toList());
-        problem.setEntries(entriesWithoutOmittedStudy);
-      }
+      NetworkMetaAnalysisProblem problemWithModelApplied = problemService.applyModelSettings(problem, model);
 
       if(Model.PAIRWISE_MODEL_TYPE.equals(model.getModelTypeTypeAsString())) {
 
-        PairwiseNetworkProblem  pairwiseProblem = new PairwiseNetworkProblem(problem, model.getPairwiseDetails());
+        PairwiseNetworkProblem  pairwiseProblem = new PairwiseNetworkProblem(problemWithModelApplied, model.getPairwiseDetails());
         pataviTaskUrl = pataviTaskRepository.createPataviTask(webConstants.getPataviGemtcUri(), pairwiseProblem.buildProblemWithModelSettings(model));
 
       } else if (Model.NETWORK_MODEL_TYPE.equals(model.getModelTypeTypeAsString())
-
               || Model.NODE_SPLITTING_MODEL_TYPE.equals(model.getModelTypeTypeAsString())
               || Model.REGRESSION_MODEL_TYPE.equals(model.getModelTypeTypeAsString())) {
-        pataviTaskUrl = pataviTaskRepository.createPataviTask(webConstants.getPataviGemtcUri(), problem.buildProblemWithModelSettings(model));
+        pataviTaskUrl = pataviTaskRepository.createPataviTask(webConstants.getPataviGemtcUri(), problemWithModelApplied.buildProblemWithModelSettings(model));
 
       } else {
-
         throw new InvalidModelException("Invalid model type");
-
       }
       model.setTaskUrl(pataviTaskUrl);
     }

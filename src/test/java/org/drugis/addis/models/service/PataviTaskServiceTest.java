@@ -90,12 +90,13 @@ public class PataviTaskServiceTest {
     when(webConstants.getPataviGemtcUri()).thenReturn(pataviGemtcUri);
     URI createdURI = URI.create("new.task.com");
     when(pataviTaskRepository.createPataviTask(pataviGemtcUri, networkMetaAnalysisProblem.buildProblemWithModelSettings(model))).thenReturn(createdURI);
-
+    when(problemService.applyModelSettings(networkMetaAnalysisProblem, model)).thenReturn(networkMetaAnalysisProblem);
     PataviTaskUriHolder result = pataviTaskService.getGemtcPataviTaskUriHolder(projectId, analysisId, modelId);
 
     assertNotNull(result.getUri());
     verify(modelService).find(modelId);
     verify(problemService).getProblem(projectId, analysisId);
+    verify(problemService).applyModelSettings(networkMetaAnalysisProblem, model);
     verify(pataviTaskRepository).createPataviTask(pataviGemtcUri, networkMetaAnalysisProblem.buildProblemWithModelSettings(model));
   }
 

@@ -259,6 +259,17 @@ public class ProblemServiceImpl implements ProblemService {
     return new MetaBenefitRiskProblem(criteriaWithBaseline, alternatives, performanceTable);
   }
 
+  @Override
+  public NetworkMetaAnalysisProblem applyModelSettings(NetworkMetaAnalysisProblem problem, Model model) {
+    List<AbstractNetworkMetaAnalysisProblemEntry> entries = problem.getEntries();
+    if(model.getSensitivity() != null && model.getSensitivity().get("omittedStudy") != null) {
+      String study = (String) model.getSensitivity().get("omittedStudy");
+      List<AbstractNetworkMetaAnalysisProblemEntry> entriesWithoutOmittedStudy = problem.getEntries().stream().filter(e -> !Objects.equals(e.getStudy(), study)).collect(Collectors.toList());
+      entries = entriesWithoutOmittedStudy;
+    }
+    return new NetworkMetaAnalysisProblem(entries, problem.getTreatments(), problem.getStudyLevelCovariates());
+  }
+
   private String getD(Map<String, AbstractIntervention> includedInterventionsByName, String base, String otherIntervention) {
     return "d." + includedInterventionsByName.get(base).getId() + '.' + includedInterventionsByName.get(otherIntervention).getId();
   }
