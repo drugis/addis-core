@@ -327,6 +327,19 @@ define(
             templateUrl: gemtcWebBaseTemplatePath + 'js/models/createModel.html',
             controller: 'CreateModelController'
           })
+          .state('refineModel', {
+            parent: 'nmaModelContainer',
+            url: '/users/:userUid/projects/:projectId/nma/:analysisId/models/:modelId/refineModel',
+            templateUrl: gemtcWebBaseTemplatePath + 'js/models/createModel.html',
+            controller: 'CreateModelController',
+            resolve: {
+              model: ['$stateParams', 'RefineModelService',
+                function($stateParams, RefineModelService) {
+                  return RefineModelService.getRefinedModel($stateParams);
+                }
+              ]
+            }
+          })
           .state('model', {
             url: '/users/:userUid/projects/:projectId/nma/:analysisId/models/:modelId',
             parent: 'nmaModelContainer',
