@@ -315,43 +315,6 @@ define(['lodash', 'angular'], function(_, angular) {
       return tableRows;
     }
 
-    function isNetworkDisconnected(network) {
-      var toVisit = [network.interventions[0]];
-      var visited = [];
-
-      function findEdgesConnectedToNode(node) {
-        return _.filter(network.edges, function(edge) {
-          return edge.from.name === node.name || edge.to.name === node.name;
-        });
-      }
-
-      function addUnvisitedNodesToToVisitList(edge) {
-        if (!_.find(visited, ['name', edge.to.name])) {
-          toVisit.push(edge.to);
-        } else if (!_.find(visited, ['name', edge.from.name])) {
-          toVisit.push(edge.from);
-        }
-      }
-
-      function areNodeSetsEqual(setA, setB) {
-        var namesA = _.map(setA, 'name');
-        var namesB = _.map(setB, 'name');
-        return !_.difference(namesA, namesB).length;
-      }
-
-      if (!network.interventions.length) {
-        return true;
-      }
-
-      while (toVisit.length) {
-        var node = toVisit.pop();
-        visited.push(node);
-        var connectedEdges = findEdgesConnectedToNode(node);
-        _.each(connectedEdges, addUnvisitedNodesToToVisitList);
-      }
-      return !areNodeSetsEqual(network.interventions, visited);
-    }
-
     function changeArmExclusion(dataRow, analysis) {
       if (dataRow.included) {
         for (var i = 0; i < analysis.excludedArms.length; ++i) {
@@ -507,7 +470,6 @@ define(['lodash', 'angular'], function(_, angular) {
     return {
       transformTrialDataToNetwork: transformTrialDataToNetwork,
       transformTrialDataToTableRows: transformTrialDataToTableRows,
-      isNetworkDisconnected: isNetworkDisconnected,
       addInclusionsToInterventions: addInclusionsToInterventions,
       addInclusionsToCovariates: addInclusionsToCovariates,
       changeArmExclusion: changeArmExclusion,

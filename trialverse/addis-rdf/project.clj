@@ -1,4 +1,4 @@
-(defproject org.drugis.addis/rdfexport "1.0.0"
+(defproject org.drugis.addis/rdfexport "1.0.1"
   :description "Convert ADDIS 1.x XML to ADDIS 2 RDF"
   :url "https://drugis.org/"
   :min-lein-version "2.0.0"
@@ -7,6 +7,7 @@
                  [org.clojure/tools.cli "0.3.1"]]
   :source-paths ["src/clj"]
   :java-source-paths ["src/java"]
+  :javac-options ["-target" "1.7" "-source" "1.7"]
   :target-path "target/%s"
   :plugins [[org.apache.maven.wagon/wagon-ssh-external "2.6"]]
   :repositories [["drugis" { :url "scp://drugis.org/srv/mvn/" :username "maven" :sign-releases false } ]]

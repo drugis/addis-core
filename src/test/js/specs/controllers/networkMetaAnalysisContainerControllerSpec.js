@@ -9,6 +9,7 @@ define(['angular', 'angular-mocks', 'controllers'], function() {
       covariateDeferred,
       outcomesDeferred,
       interventionResource,
+      analysisService,
       networkMetaAnalysisService,
       covariates = [{
         id: 1
@@ -94,6 +95,7 @@ define(['angular', 'angular-mocks', 'controllers'], function() {
       interventionResource.query.and.returnValue(mockInterventions);
       EvidenceTableResource = jasmine.createSpyObj('EvidenceTableResource', ['query', 'get']);
       EvidenceTableResource.query.and.returnValue(mockTrialData);
+      analysisService = jasmine.createSpyObj('AnalysisService', ['isNetworkDisconnected']);
       networkMetaAnalysisService = jasmine.createSpyObj('NetworkMetaAnalysisService', ['transformTrialDataToTableRows',
         'transformTrialDataToNetwork', 'isNetworkDisconnected', 'addInclusionsToInterventions', 'changeArmExclusion',
         'buildInterventionInclusions', 'doesInterventionHaveAmbiguousArms', 'doesModelHaveAmbiguousArms', 'cleanUpExcludedArms',
@@ -136,6 +138,7 @@ define(['angular', 'angular-mocks', 'controllers'], function() {
         CovariateResource: covariateResource,
         EvidenceTableResource: EvidenceTableResource,
         NetworkMetaAnalysisService: networkMetaAnalysisService,
+        AnalysisService: analysisService,
         ModelResource: modelResource
       });
     }));
@@ -178,7 +181,7 @@ define(['angular', 'angular-mocks', 'controllers'], function() {
           trialverseTrialDataDeferred.resolve();
           scope.$apply();
           expect(networkMetaAnalysisService.transformTrialDataToTableRows).toHaveBeenCalled();
-          expect(networkMetaAnalysisService.isNetworkDisconnected).toHaveBeenCalled();
+          expect(analysisService.isNetworkDisconnected).toHaveBeenCalled();
           expect(networkMetaAnalysisService.transformTrialDataToNetwork).toHaveBeenCalled();
         });
       });

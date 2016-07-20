@@ -1,6 +1,6 @@
 {
   "name": "addis-core",
-  "version": "0.5.0.0",
+  "version": "0.5.1",
   "homepage": "https://github.com/drugis/addis-core",
   "authors": [],
   "license": "GPL3",
@@ -54,6 +54,8 @@
     "lodash": "~4.2.0",
     "angular-resource": "~1.5.0",
     "angular": "~1.5.0",
-    "angular-animate": "^1.5.0"
+    "angular-animate": "^1.5.0",
+    "error-reporting": "1.1",
+    "angular-patavi-client": "master"
   }
 }

@@ -12,7 +12,7 @@ Make sure you've run `make` in the src/main/webapp/resources directory first to 
 
 Make sure you have the bower components needed by running `bower update` from the root of the repository
 
-Running with PostgreSQL
+Running
 -----------------------
 
 Set up the database:
@@ -26,23 +26,23 @@ sudo -u postgres psql -c "CREATE DATABASE patavitask ENCODING 'utf-8' OWNER pata
 
 ```
 
-Set up the keystore:
+In addition to this, you will need an instance of [Patavi](https://github.com/drugis/patavi) and [Jena-ES](https://github.com/drugis/jena-es) running. It is assumed here that Patavi is running on port 3000 and Jena-ES on port 3030.
 
-Ensure that you have a JKS truststore in which both your own certificates and those of Geotrust and StartCom are trusted.
-To import Geotrust and SartCom certificates:
+To authenticate with Patavi, you need a client certificate signed by the Certificate Authority (CA) trusted by Patavi, in a JKS keystore.
+
+If Patavi presents a certificate signed by your own CA, you need to trust that CA. To do this, generate a JKS truststore. This needs to contain the certificate of your own CA and (for OAuth) Google's CA (GeoTrust). The drugis.org domains are signed by StartCom. In that case, the trust store should contain:
 
 ```
 keytool -importcert -file /etc/ssl/certs/GeoTrust_Global_CA.pem -alias geotrustCA -keystore <jks location>
 keytool -importcert -file /etc/ssl/certs/StartCom_Certification_Authority.pem -alias startcomCA -keystore <jks location>
 ```
 
-/etc/ssl/certs/GeoTrust_Global_CA.pem
-/etc/ssl/certs/StartCom_Certification_Authority.pem
+However, in most Java distributions these CAs are trusted by default, so you do not need to generate and configure the trust store in that case.
 
 Set up the environment:
 
 ```
-export KEYSTORE_PATH=/path/to/key/store
+export KEYSTORE_PATH=/path/to/keyStore
 export KEYSTORE_PASSWORD="develop"
 export TRIPLESTORE_BASE_URI=http://localhost:3030
 export PATAVI_URI=http://localhost:3000
@@ -74,3 +74,22 @@ To run integration tests:
 ```
 mvn test -Dtest=*IT
 ```
+
+Backup and restore
+------------------
+
+To back up the ADDIS data:
+
+ - stop the ADDIS application
+ - stop the Jena-ES server
+ - (if necessary) remove the `tdb.lock` file in the Jena-ES `DB` directory (it may remain after shutdown due to a bug)
+ - `pg_dump` the contents of the ADDIS database
+ - `tdbdump --loc=DB > backup.n4` the contents of the Jena-ES database
+
+To restore the ADDIS data:
+
+ - (if necessary) clear the SQL and Jena-ES databases
+ - `\i backup.sql` in the `psql` client
+ - `tdbloader --loc=DB backup.n4`
+
+If not restoring to the same environment, use the `util/changePrefix.sh` script to change the triple store location.

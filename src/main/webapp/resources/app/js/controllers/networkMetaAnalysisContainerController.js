@@ -1,11 +1,11 @@
 'use strict';
 define(['lodash'], function(_) {
   var dependencies = ['$scope', '$q', '$state', '$window', '$stateParams', 'currentAnalysis', 'currentProject', 'OutcomeResource',
-    'InterventionResource', 'CovariateResource', 'ModelResource', 'NetworkMetaAnalysisService', 'EvidenceTableResource'
+    'InterventionResource', 'CovariateResource', 'ModelResource', 'NetworkMetaAnalysisService','AnalysisService', 'EvidenceTableResource'
   ];
 
   var NetworkMetaAnalysisContainerController = function($scope, $q, $state, $window, $stateParams, currentAnalysis, currentProject,
-    OutcomeResource, InterventionResource, CovariateResource, ModelResource, NetworkMetaAnalysisService, EvidenceTableResource) {
+    OutcomeResource, InterventionResource, CovariateResource, ModelResource, NetworkMetaAnalysisService, AnalysisService, EvidenceTableResource) {
 
     $scope.isAnalysisLocked = true;
     $scope.isNetworkDisconnected = true;
@@ -155,24 +155,10 @@ define(['lodash'], function(_) {
       });
     }
 
-    function addIncludedInterventionUri(memo, intervention) {
-      if (intervention.isIncluded) {
-        memo.push(intervention.semanticInterventionUri);
-      }
-      return memo;
-    }
-
-    function addIncludedCovariateDefinitionKey(accum, covariate) {
-      if (covariate.isIncluded) {
-        accum.push(covariate.definitionKey);
-      }
-      return accum;
-    }
-
     function updateNetwork() {
       var includedInterventions = NetworkMetaAnalysisService.getIncludedInterventions($scope.interventions);
       $scope.networkGraph.network = NetworkMetaAnalysisService.transformTrialDataToNetwork($scope.trialverseData, includedInterventions, $scope.analysis);
-      $scope.isNetworkDisconnected = NetworkMetaAnalysisService.isNetworkDisconnected($scope.networkGraph.network);
+      $scope.isNetworkDisconnected = AnalysisService.isNetworkDisconnected($scope.networkGraph.network);
     }
 
 

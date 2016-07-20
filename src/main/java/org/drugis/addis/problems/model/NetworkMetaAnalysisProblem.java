@@ -90,4 +90,5 @@ public class NetworkMetaAnalysisProblem extends AbstractProblem {
     result = 31 * result + studyLevelCovariates.hashCode();
     return result;
   }
+
 }
