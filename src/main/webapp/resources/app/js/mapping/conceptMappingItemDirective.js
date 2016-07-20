@@ -1,5 +1,5 @@
 'use strict';
-define([], function() {
+define(['lodash'], function(_) {
   var dependencies = ['MappingService'];
   var ConceptMappingItemDirective = function(MappingService) {
     return {
@@ -19,7 +19,7 @@ define([], function() {
         scope.removeMapping = function() {
           MappingService.removeMapping(scope.studyConcept, scope.selectedDatasetConcept);
           scope.selectedDatasetConcept = undefined;
-        }
+        };
 
         scope.datasetConcepts.then(function(concepts) {
           scope.filteredConcepts = _.filter(concepts['@graph'], function(datasetConcept) {

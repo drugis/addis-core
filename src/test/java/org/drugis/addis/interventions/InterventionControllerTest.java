@@ -5,7 +5,6 @@ import com.google.common.collect.Sets;
 import org.drugis.addis.TestUtils;
 import org.drugis.addis.config.TestConfig;
 import org.drugis.addis.interventions.controller.command.*;
-import org.drugis.addis.interventions.controller.viewAdapter.AbstractInterventionViewAdapter;
 import org.drugis.addis.interventions.model.*;
 import org.drugis.addis.interventions.repository.InterventionRepository;
 import org.drugis.addis.interventions.service.InterventionService;
@@ -89,12 +88,11 @@ public class InterventionControllerTest {
 
     DoseConstraint constraint = new DoseConstraint(new LowerBoundCommand(LowerBoundType.AT_LEAST, 2d, "mili", "P1D", URI.create("unitConcept")), null);
     FixedDoseIntervention intervention = new FixedDoseIntervention(1, "name", "motivation", URI.create("http://semantic.com"), "labelnew", constraint);
-    AbstractInterventionViewAdapter abstractInterventionViewAdapter = intervention.toViewAdapter();
     Integer projectId = 1;
     List<AbstractIntervention> interventions = Collections.singletonList(intervention);
     when(interventionRepository.query(projectId)).thenReturn(interventions);
 
-    ResultActions result = mockMvc.perform(get("/projects/1/interventions").principal(user));
+    ResultActions result = mockMvc.perform(get("/projects/1/interventions"));
     result
             .andExpect(status().isOk())
             .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()))
@@ -103,7 +101,6 @@ public class InterventionControllerTest {
             .andExpect(jsonPath("$[0].constraint.lowerBound.value", is(2d)));
 
     verify(interventionRepository).query(projectId);
-    verify(accountRepository).findAccountByUsername("gert");
   }
 
   @Test
@@ -115,7 +112,7 @@ public class InterventionControllerTest {
     List<AbstractIntervention> interventions = Collections.singletonList(intervention);
     when(interventionRepository.query(projectId)).thenReturn(interventions);
 
-    ResultActions result = mockMvc.perform(get("/projects/1/interventions").principal(user));
+    ResultActions result = mockMvc.perform(get("/projects/1/interventions"));
     result
             .andExpect(status().isOk())
             .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()))
@@ -123,15 +120,7 @@ public class InterventionControllerTest {
             .andExpect(jsonPath("$[0].id", is(intervention.getId())));
 
     verify(interventionRepository).query(projectId);
-    verify(accountRepository).findAccountByUsername("gert");
-  }
 
-  @Test
-  public void testUnauthorisedAccessFails() throws Exception {
-    when(accountRepository.findAccountByUsername("gert")).thenReturn(null);
-    mockMvc.perform(get("/projects/1/interventions").principal(user))
-            .andExpect(status().isForbidden());
-    verify(accountRepository).findAccountByUsername("gert");
   }
 
   @Test
@@ -139,11 +128,10 @@ public class InterventionControllerTest {
     SimpleIntervention intervention = new SimpleIntervention(1, 1, "name", "motivation", new SemanticInterventionUriAndName(URI.create("http://semantic.com"), "labelnew"));
     Integer projectId = 1;
     when(interventionRepository.get(projectId)).thenReturn(intervention);
-    mockMvc.perform(get("/projects/1/interventions/1").principal(user))
+    mockMvc.perform(get("/projects/1/interventions/1"))
             .andExpect(status().isOk())
             .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()))
             .andExpect(jsonPath("$.id", is(intervention.getId())));
-    verify(accountRepository).findAccountByUsername("gert");
     verify(interventionRepository).get(projectId);
   }
 

@@ -65,7 +65,7 @@ public class ProjectController extends AbstractAddisCoreController {
 
   @RequestMapping(value = "/projects/{projectId}/studies", method = RequestMethod.GET)
   @ResponseBody
-  public List<TrialDataStudy> queryStudies(Principal currentUser, @PathVariable Integer projectId) throws URISyntaxException, ResourceDoesNotExistException, ReadValueException {
+  public List<TrialDataStudy> queryStudies(@PathVariable Integer projectId) throws URISyntaxException, ResourceDoesNotExistException, ReadValueException {
     return projectService.queryMatchedStudies(projectId);
   }
 

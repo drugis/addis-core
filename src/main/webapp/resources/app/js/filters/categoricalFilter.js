@@ -1,5 +1,5 @@
 'use strict';
-define(['moment'], function(moment) {
+define(['lodash'], function(_) {
   var dependencies = [];
   var CategoricalFilter = function() {
     return function(values) {

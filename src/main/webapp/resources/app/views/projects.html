@@ -41,7 +41,7 @@
           <a ui-sref="projects({userUid: otherUser.id})">
             <img class="user-image" ng-src="https://secure.gravatar.com/avatar/{{::otherUser.md5}}?s=43&d=mm"> {{::otherUser.firstName}} {{::otherUser.lastName}}
           </a>
-          <span ng-show="loginUser.id === otherUser.id">
+          <span ng-show="loginUser && (loginUser.id === otherUser.id)">
             (this is you)</span>
         </li>
       </ul>

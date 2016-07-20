@@ -10,6 +10,7 @@ define(['angular', 'angular-mocks', 'controllers'], function() {
       outcomesDeferred,
       interventionResource,
       analysisService,
+      userService,
       networkMetaAnalysisService,
       covariates = [{
         id: 1
@@ -89,6 +90,7 @@ define(['angular', 'angular-mocks', 'controllers'], function() {
       scope = $rootScope;
       scope.analysis = mockAnalysis;
       scope.project = mockProject;
+      userService = jasmine.createSpyObj('UserService', ['hasLogedInUser']);
       outcomeResource = jasmine.createSpyObj('OutcomeResource', ['query']);
       outcomeResource.query.and.returnValue(mockOutcomes);
       interventionResource = jasmine.createSpyObj('InterventionResource', ['query']);
@@ -139,7 +141,8 @@ define(['angular', 'angular-mocks', 'controllers'], function() {
         EvidenceTableResource: EvidenceTableResource,
         NetworkMetaAnalysisService: networkMetaAnalysisService,
         AnalysisService: analysisService,
-        ModelResource: modelResource
+        ModelResource: modelResource,
+        UserService: userService
       });
     }));
     describe('when first initialised', function() {

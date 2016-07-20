@@ -31,7 +31,7 @@ define([], function() {
 
         scope.toggle = function() {
           scope.isExpanded ? scope.hide() : scope.show();
-        }
+        };
 
         scope.show = function() {
 
@@ -75,7 +75,7 @@ define([], function() {
           };
 
 
-        }
+        };
 
       }
     };

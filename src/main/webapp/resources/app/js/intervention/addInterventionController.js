@@ -123,7 +123,7 @@ define(['lodash', 'angular'], function(_, angular) {
 
     function checkForDuplicateInterventionName(intervention) {
       $scope.duplicateInterventionName.isDuplicate = ProjectService.checkforDuplicateName($scope.interventions, intervention);
-      return $scope.duplicateInterventionName.isDuplicate
+      return $scope.duplicateInterventionName.isDuplicate;
     }
 
     function cancel() {

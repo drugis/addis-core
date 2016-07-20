@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.*;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import java.net.URISyntaxException;
-import java.security.Principal;
 import java.util.Collection;
 import java.util.List;
 
@@ -68,13 +67,13 @@ public class TrialverseController {
 
   @RequestMapping(value = "/{namespaceUid}/interventions", method = RequestMethod.GET)
   @ResponseBody
-  public Collection<SemanticInterventionUriAndName> queryInterventions(Principal currentUser, @PathVariable String namespaceUid, @RequestParam String version) throws ResourceDoesNotExistException, URISyntaxException {
+  public Collection<SemanticInterventionUriAndName> queryInterventions(@PathVariable String namespaceUid, @RequestParam String version) throws ResourceDoesNotExistException, URISyntaxException {
     return triplestoreService.getInterventions(mappingService.getVersionedUuid(namespaceUid), version);
   }
 
   @RequestMapping(value = "/{namespaceUid}/studies", method = RequestMethod.GET)
   @ResponseBody
-  public Collection<Study> queryStudies(Principal currentUser, @PathVariable String namespaceUid, @RequestParam String version) throws URISyntaxException {
+  public Collection<Study> queryStudies(@PathVariable String namespaceUid, @RequestParam String version) throws URISyntaxException {
     return triplestoreService.queryStudies(mappingService.getVersionedUuid(namespaceUid), version);
   }
 

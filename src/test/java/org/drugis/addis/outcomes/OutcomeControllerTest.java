@@ -85,22 +85,13 @@ public class OutcomeControllerTest {
     List<Outcome> outcomes = Arrays.asList(outcome);
     when(outcomeRepository.query(projectId)).thenReturn(outcomes);
 
-    mockMvc.perform(get("/projects/1/outcomes").principal(user))
+    mockMvc.perform(get("/projects/1/outcomes"))
       .andExpect(status().isOk())
       .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()))
       .andExpect(jsonPath("$", hasSize(1)))
       .andExpect(jsonPath("$[0].id", is(outcome.getId())));
 
     verify(outcomeRepository).query(projectId);
-    verify(accountRepository).findAccountByUsername("gert");
-  }
-
-  @Test
-  public void testUnauthorisedAccessFails() throws Exception {
-    when(accountRepository.findAccountByUsername("gert")).thenReturn(null);
-    mockMvc.perform(get("/projects/1/outcomes").principal(user))
-            .andExpect(status().isForbidden());
-    verify(accountRepository).findAccountByUsername("gert");
   }
 
   @Test
@@ -108,11 +99,10 @@ public class OutcomeControllerTest {
     Outcome outcome = new Outcome(1, 1, "name", "motivation", new SemanticVariable(URI.create("http://semantic.com"), "labelnew"));
     Integer projectId = 1;
     when(outcomeRepository.get(projectId, outcome.getId())).thenReturn(outcome);
-    mockMvc.perform(get("/projects/1/outcomes/1").principal(user))
+    mockMvc.perform(get("/projects/1/outcomes/1"))
       .andExpect(status().isOk())
       .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()))
       .andExpect(jsonPath("$.id", is(outcome.getId())));
-    verify(accountRepository).findAccountByUsername("gert");
     verify(outcomeRepository).get(projectId, outcome.getId());
   }
 

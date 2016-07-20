@@ -1,6 +1,6 @@
 'use strict';
 define(['lodash', 'angular'], function(_, angular) {
-  var dependencies = ['$scope', '$q', '$state', '$stateParams', '$window', '$location', '$modal',
+  var dependencies = ['$scope', '$q', '$state', '$stateParams', '$location', '$modal',
     'ProjectResource',
     'TrialverseResource',
     'TrialverseStudyResource',
@@ -13,11 +13,12 @@ define(['lodash', 'angular'], function(_, angular) {
     'AnalysisResource',
     'ANALYSIS_TYPES',
     'InterventionService',
-    'activeTab'
+    'activeTab',
+    'UserService'
   ];
-  var SingleProjectController = function($scope, $q, $state, $stateParams, $window, $location, $modal, ProjectResource, TrialverseResource,
+  var SingleProjectController = function($scope, $q, $state, $stateParams, $location, $modal, ProjectResource, TrialverseResource,
     TrialverseStudyResource, SemanticOutcomeResource, OutcomeResource, SemanticInterventionResource, InterventionResource,
-    CovariateOptionsResource, CovariateResource, AnalysisResource, ANALYSIS_TYPES, InterventionService, activeTab) {
+    CovariateOptionsResource, CovariateResource, AnalysisResource, ANALYSIS_TYPES, InterventionService, activeTab, UserService) {
 
     $scope.activeTab = activeTab;
 
@@ -43,7 +44,7 @@ define(['lodash', 'angular'], function(_, angular) {
 
       $scope.loading.loaded = true;
 
-      if ($window.config.user.id === $scope.project.owner.id) {
+      if (UserService.isLoginUserId($scope.project.owner.id)) {
         $scope.editMode.allowEditing = true;
       }
 
@@ -149,13 +150,13 @@ define(['lodash', 'angular'], function(_, angular) {
             return $scope.project;
           },
           otherProjectNames: function() {
-            return $scope.projects.$promise.then(function(projects){
-              return _.reduce(projects, function(accum, project){
-                  if($scope.project.id !== project.id) {
-                    accum.push(project.name);
-                  }
-                  return accum;
-              },[]);
+            return $scope.projects.$promise.then(function(projects) {
+              return _.reduce(projects, function(accum, project) {
+                if ($scope.project.id !== project.id) {
+                  accum.push(project.name);
+                }
+                return accum;
+              }, []);
             });
           },
           callback: function() {

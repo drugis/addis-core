@@ -6,12 +6,8 @@ define(['lodash', 'angular', 'angular-mocks', 'controllers'], function(_) {
     var mockStateParams = {
       userUid: userId
     };
+    var userService;
     var state = jasmine.createSpyObj('state', ['go']);
-    var mockWindow = {
-      config: {
-        user: 'user'
-      }
-    };
     var outcomeResource = jasmine.createSpyObj('outcomeResource', ['query']);
     var interventionResource = jasmine.createSpyObj('InterventionResource', ['query']);
     var analysisResource = jasmine.createSpyObj('AnalysisResource', ['save']);
@@ -57,6 +53,8 @@ define(['lodash', 'angular', 'angular-mocks', 'controllers'], function(_) {
       q = $q;
       scope = $rootScope;
       scope.$parent = {};
+
+      userService = jasmine.createSpyObj('UserService', ['isLoginUserId']);
 
       // set the mock state params
       mockStateParams.projectId = 1;
@@ -105,7 +103,6 @@ define(['lodash', 'angular', 'angular-mocks', 'controllers'], function(_) {
         $scope: scope,
         $stateParams: mockStateParams,
         $state: state,
-        $window: mockWindow,
         'currentAnalysis': mockAnalysis,
         'currentProject': mockProject,
         'OutcomeResource': outcomeResource,
@@ -114,7 +111,8 @@ define(['lodash', 'angular', 'angular-mocks', 'controllers'], function(_) {
         'SingleStudyBenefitRiskAnalysisService': singleStudyBenefitRiskAnalysisService,
         'DEFAULT_VIEW': 'DEFAULT_VIEW',
         'AnalysisResource': analysisResource,
-        'ProjectStudiesResource': projectStudiesResource
+        'ProjectStudiesResource': projectStudiesResource,
+        UserService: userService
       });
     }));
 

@@ -5,6 +5,7 @@ define(['angular-mocks', 'angular'], function(angularMocks, angular) {
       covariateOptionsResource = jasmine.createSpyObj('CovariateOptionsResource', ['query', 'getProjectCovariates']),
       covariateResource = jasmine.createSpyObj('CovariateResource', ['query']),
       interventionService = jasmine.createSpyObj('InterventionService', ['generateDescriptionLabel']),
+      userService,
       covariateOptions = [{
         key: 'COV_OPTION_KEY',
         label: 'covariate option label'
@@ -39,6 +40,8 @@ define(['angular-mocks', 'angular'], function(angularMocks, angular) {
     beforeEach(inject(function(_$q_) {
       $q = _$q_;
 
+      userService = jasmine.createSpyObj('UserService', ['isLoginUserId']);
+
       covariateOptionsDeferred = $q.defer();
       covariateOptions.$promise = covariateOptionsDeferred.promise;
       covariateOptionsDeferred.resolve(covariateOptions);
@@ -72,7 +75,8 @@ define(['angular-mocks', 'angular'], function(angularMocks, angular) {
         ANALYSIS_TYPES: {},
         $modal: {},
         InterventionService: interventionService,
-        activeTab: 'report'
+        activeTab: 'report',
+        UserService: userService
       };
     });
 
@@ -287,6 +291,7 @@ define(['angular-mocks', 'angular'], function(angularMocks, angular) {
       });
 
       it('isOwnProject should be true if the project is owned by the logged-in user', function() {
+        userService.isLoginUserId.and.returnValue(true);
         projectDeferred.resolve();
         scope.$apply();
         expect(scope.editMode.allowEditing).toBeTruthy();

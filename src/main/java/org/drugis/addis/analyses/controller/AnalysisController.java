@@ -66,40 +66,25 @@ public class AnalysisController extends AbstractAddisCoreController {
 
   @RequestMapping(value = "/projects/{projectId}/analyses", method = RequestMethod.GET, params = {"outcomeIds"})
   @ResponseBody
-  public NetworkMetaAnalysis[] queryNetworkMetaAnalysisByOutcomes(Principal currentUser, @PathVariable Integer projectId, @RequestParam(name = "outcomeIds", required=false) List<Integer> outcomeIds) throws MethodNotAllowedException, ResourceDoesNotExistException {
-    Account user = accountRepository.findAccountByUsername(currentUser.getName());
-    if (user != null) {
+  public NetworkMetaAnalysis[] queryNetworkMetaAnalysisByOutcomes(@PathVariable Integer projectId, @RequestParam(name = "outcomeIds", required=false) List<Integer> outcomeIds) throws MethodNotAllowedException, ResourceDoesNotExistException {
       Collection<NetworkMetaAnalysis> networkMetaAnalyses = networkMetaAnalysisRepository.queryByOutcomes(projectId, outcomeIds);
       NetworkMetaAnalysis[] networkMetaAnalysesArray = new NetworkMetaAnalysis[networkMetaAnalyses.size()];
       return networkMetaAnalyses.toArray(networkMetaAnalysesArray);
-    } else {
-      throw new MethodNotAllowedException();
-    }
   }
 
 
   @RequestMapping(value = "/projects/{projectId}/analyses", method = RequestMethod.GET)
   @ResponseBody
-  public AbstractAnalysis[] query(Principal currentUser, @PathVariable Integer projectId) throws MethodNotAllowedException, ResourceDoesNotExistException {
-    Account user = accountRepository.findAccountByUsername(currentUser.getName());
-    if (user != null) {
+  public AbstractAnalysis[] query(@PathVariable Integer projectId) throws MethodNotAllowedException, ResourceDoesNotExistException {
       List<AbstractAnalysis> abstractAnalysisList = analysisRepository.query(projectId);
       AbstractAnalysis[] abstractAnalysesArray = new AbstractAnalysis[abstractAnalysisList.size()];
       return abstractAnalysisList.toArray(abstractAnalysesArray);
-    } else {
-      throw new MethodNotAllowedException();
-    }
   }
 
   @RequestMapping(value = "/projects/{projectId}/analyses/{analysisId}", method = RequestMethod.GET)
   @ResponseBody
-  public AbstractAnalysis get(Principal currentUser, @PathVariable Integer analysisId) throws MethodNotAllowedException, ResourceDoesNotExistException {
-    Account user = accountRepository.findAccountByUsername(currentUser.getName());
-    if (user != null) {
+  public AbstractAnalysis get(@PathVariable Integer analysisId) throws MethodNotAllowedException, ResourceDoesNotExistException {
       return analysisRepository.get(analysisId);
-    } else {
-      throw new MethodNotAllowedException();
-    }
   }
 
 

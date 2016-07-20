@@ -10,6 +10,7 @@ define(['angular-mocks'], function(angularMocks) {
       versionedGraphResource = jasmine.createSpyObj('VersionedGraphResource', ['get', 'getConceptJson']),
       datasetResource = jasmine.createSpyObj('DatasetResource', ['getForJson']),
       datasetVersionedResource = jasmine.createSpyObj('DatasetVersionedResource', ['getForJson']),
+      userService = jasmine.createSpyObj('UserService', ['isLoginUserEmail']),
       datasetDeferred,
       queryHistoryDeferred,
       studiesWithDetailsGetDeferred,
@@ -29,6 +30,7 @@ define(['angular-mocks'], function(angularMocks) {
       };
 
     beforeEach(angularMocks.module('trialverse.dataset'));
+    beforeEach(angularMocks.module('trialverse.user'));
 
     beforeEach(angularMocks.inject(function($rootScope, $q, $controller, $httpBackend) {
       scope = $rootScope;
@@ -57,17 +59,8 @@ define(['angular-mocks'], function(angularMocks) {
 
       mockModal.open.calls.reset();
 
-      var windowMock = {
-        config: {
-          user: {
-            userEmail: 'foo@bar.google'
-          }
-        }
-      };
-
       $controller('DatasetController', {
         $scope: scope,
-        $window: windowMock,
         $stateParams: stateParams,
         $state: state,
         $modal: mockModal,
@@ -76,7 +69,8 @@ define(['angular-mocks'], function(angularMocks) {
         StudiesWithDetailsService: studiesWithDetailsService,
         HistoryResource: historyResource,
         ConceptService: conceptService,
-        VersionedGraphResource: versionedGraphResource
+        VersionedGraphResource: versionedGraphResource,
+        UserService: userService
       });
 
     }));

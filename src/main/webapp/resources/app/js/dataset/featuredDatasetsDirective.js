@@ -30,20 +30,6 @@ define([], function() {
           scope.isVisible = !scope.isVisible;
         };
 
-        /*
-        // idea for dynamic description height
-        */
-        // scope.$watch('dataset.comment', function(){
-        //   var commentElement = element.find('.featured-dataset-comment')[0];
-        //   if (commentElement.offsetHeight < commentElement.scrollHeight ||
-        //     commentElement.offsetWidth < commentElement.scrollWidth) {
-        //     console.log('your element have overflow');
-        //     $(commentElement).append('...');
-        //
-        //   } else {
-        //     console.log('your element doesn\'t have overflow');
-        //   }
-        // });
       }
     };
   };

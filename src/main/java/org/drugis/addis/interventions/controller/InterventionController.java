@@ -43,30 +43,20 @@ public class InterventionController extends AbstractAddisCoreController {
 
   @RequestMapping(value = "/projects/{projectId}/interventions", method = RequestMethod.GET)
   @ResponseBody
-  public List<AbstractInterventionViewAdapter> query(Principal currentUser, @PathVariable Integer projectId) throws MethodNotAllowedException, ResourceDoesNotExistException {
-    Account user = accountRepository.findAccountByUsername(currentUser.getName());
-    if (user != null) {
+  public List<AbstractInterventionViewAdapter> query(@PathVariable Integer projectId) throws MethodNotAllowedException, ResourceDoesNotExistException {
       List<AbstractIntervention> interventions = interventionRepository.query(projectId);
       List<AbstractInterventionViewAdapter> viewAdapters = interventions.stream().map(AbstractIntervention::toViewAdapter).collect(Collectors.toList());
       return viewAdapters;
-    } else {
-      throw new MethodNotAllowedException();
-    }
   }
 
   @RequestMapping(value = "/projects/{projectId}/interventions/{interventionId}", method = RequestMethod.GET)
   @ResponseBody
-  public AbstractInterventionViewAdapter get(Principal currentUser, @PathVariable Integer projectId, @PathVariable Integer interventionId) throws MethodNotAllowedException, ResourceDoesNotExistException {
-    Account user = accountRepository.findAccountByUsername(currentUser.getName());
-    if (user != null) {
+  public AbstractInterventionViewAdapter get(@PathVariable Integer projectId, @PathVariable Integer interventionId) throws MethodNotAllowedException, ResourceDoesNotExistException {
       AbstractIntervention intervention = interventionRepository.get(interventionId);
       if (!intervention.getProject().equals(projectId)) {
         throw new ResourceDoesNotExistException();
       }
       return intervention.toViewAdapter();
-    } else {
-      throw new MethodNotAllowedException();
-    }
   }
 
   @RequestMapping(value = "/projects/{projectId}/interventions/{interventionId}", method = RequestMethod.POST)

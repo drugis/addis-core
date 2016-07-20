@@ -2,10 +2,10 @@
 define(['lodash'],
   function(_) {
     var dependencies = ['$scope', '$window', '$location', '$stateParams', '$state', '$modal', '$filter', 'DatasetVersionedResource', 'StudiesWithDetailsService',
-      'HistoryResource', 'ConceptService', 'VersionedGraphResource', 'DatasetResource', 'GraphResource'
+      'HistoryResource', 'ConceptService', 'VersionedGraphResource', 'DatasetResource', 'GraphResource', 'UserService'
     ];
     var DatasetController = function($scope, $window, $location, $stateParams, $state, $modal, $filter, DatasetVersionedResource, StudiesWithDetailsService,
-      HistoryResource, ConceptService, VersionedGraphResource, DatasetResource, GraphResource) {
+      HistoryResource, ConceptService, VersionedGraphResource, DatasetResource, GraphResource, UserService) {
 
       $scope.createProjectDialog = createProjectDialog;
       $scope.showEditDatasetModal = showEditDatasetModal;
@@ -55,15 +55,12 @@ define(['lodash'],
         });
       }
 
-
-
       function isEditAllowedOnVersion() {
         return $scope.currentRevision && $scope.currentRevision.isHead;
       }
 
       function isEditingAllowed() {
-        return !!($scope.dataset && $scope.dataset.creator === $window.config.user.userEmail &&
-          isEditAllowedOnVersion());
+        return !!($scope.dataset && UserService.isLoginUserEmail($scope.dataset.creator) && isEditAllowedOnVersion());
       }
 
       function loadConcepts() {

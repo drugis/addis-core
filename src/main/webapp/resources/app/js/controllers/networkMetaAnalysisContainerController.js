@@ -1,11 +1,11 @@
 'use strict';
 define(['lodash'], function(_) {
-  var dependencies = ['$scope', '$q', '$state', '$window', '$stateParams', 'currentAnalysis', 'currentProject', 'OutcomeResource',
-    'InterventionResource', 'CovariateResource', 'ModelResource', 'NetworkMetaAnalysisService','AnalysisService', 'EvidenceTableResource'
+  var dependencies = ['$scope', '$q', '$state', '$stateParams', 'currentAnalysis', 'currentProject', 'OutcomeResource',
+    'InterventionResource', 'CovariateResource', 'ModelResource', 'NetworkMetaAnalysisService', 'AnalysisService', 'EvidenceTableResource', 'UserService'
   ];
 
-  var NetworkMetaAnalysisContainerController = function($scope, $q, $state, $window, $stateParams, currentAnalysis, currentProject,
-    OutcomeResource, InterventionResource, CovariateResource, ModelResource, NetworkMetaAnalysisService, AnalysisService, EvidenceTableResource) {
+  var NetworkMetaAnalysisContainerController = function($scope, $q, $state, $stateParams, currentAnalysis, currentProject,
+    OutcomeResource, InterventionResource, CovariateResource, ModelResource, NetworkMetaAnalysisService, AnalysisService, EvidenceTableResource, UserService) {
 
     $scope.isAnalysisLocked = true;
     $scope.isNetworkDisconnected = true;
@@ -21,9 +21,22 @@ define(['lodash'], function(_) {
     $scope.loading = {
       loaded: false
     };
+
+    var isUserOwner = false;
+
     // make available for create model permission check in models.html (which is in gemtc subproject)
     $scope.userId = Number($stateParams.userUid);
-    $scope.loginUserId = $window.config.user.id;
+
+    if (UserService.hasLogedInUser()) {
+      $scope.loginUserId = (UserService.getLoginUser()).id;
+      isUserOwner = UserService.isLoginUserId($scope.project.owner.id);
+    }
+
+    $scope.editMode = {
+      isUserOwner: isUserOwner,
+      disableEditing: !isUserOwner
+    };
+
 
     $scope.models = ModelResource.query({
       projectId: $stateParams.projectId,
@@ -82,11 +95,6 @@ define(['lodash'], function(_) {
         return !$scope.lessThanTwoInterventionArms(dataRow);
       });
     };
-
-    $scope.editMode = {
-      isUserOwner: $window.config.user.id === $scope.project.owner.id
-    };
-    $scope.editMode.disableEditing = !$scope.editMode.isUserOwner;
 
     $scope.doesInterventionHaveAmbiguousArms = function(drugId, studyUid) {
       return NetworkMetaAnalysisService.doesInterventionHaveAmbiguousArms(drugId, studyUid, $scope.trialverseData, $scope.analysis);

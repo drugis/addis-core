@@ -34,7 +34,7 @@ define([], function() {
 
         scope.toggle = function() {
           scope.isExpanded ? scope.hide() : scope.show();
-        }
+        };
 
       }
     };

@@ -1,22 +1,25 @@
 'use strict';
 define(['lodash'],
   function(_) {
-    var dependencies = ['$scope', '$filter', '$window',
+    var dependencies = ['$scope', '$filter', 'UserService',
       '$stateParams', '$state', 'UserResource', 'md5'
     ];
 
-    var UserController = function($scope, $filter, $window,
+    var UserController = function($scope, $filter, UserService,
       $stateParams, $state, UserResource, md5) {
       $scope.stripFrontFilter = $filter('stripFrontFilter');
       $scope.otherUsers = [];
       $scope.userUid = Number($stateParams.userUid);
-      $scope.loginUser = $window.config.user;
+
+      if (UserService.hasLogedInUser()) {
+        $scope.loginUser = UserService.getLoginUser;
+      }
 
       if (!$scope.activetab) {
         $scope.activetab = $state.current.name;
       }
 
-      $scope.$on("$stateChangeSuccess", function(event, currentState) {
+      $scope.$on('$stateChangeSuccess', function(event, currentState) {
         $scope.activetab = currentState.name;
       });
 

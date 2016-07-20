@@ -41,24 +41,14 @@ public class OutcomeController extends AbstractAddisCoreController {
 
   @RequestMapping(value = "/projects/{projectId}/outcomes", method = RequestMethod.GET)
   @ResponseBody
-  public Collection<Outcome> query(Principal currentUser, @PathVariable Integer projectId) throws MethodNotAllowedException, ResourceDoesNotExistException {
-    Account user = accountRepository.findAccountByUsername(currentUser.getName());
-    if (user != null) {
+  public Collection<Outcome> query(@PathVariable Integer projectId) throws MethodNotAllowedException, ResourceDoesNotExistException {
       return outcomeRepository.query(projectId);
-    } else {
-      throw new MethodNotAllowedException();
-    }
   }
 
   @RequestMapping(value = "/projects/{projectId}/outcomes/{outcomeId}", method = RequestMethod.GET)
   @ResponseBody
-  public Outcome get(Principal currentUser, @PathVariable Integer projectId, @PathVariable Integer outcomeId) throws MethodNotAllowedException, ResourceDoesNotExistException {
-    Account user = accountRepository.findAccountByUsername(currentUser.getName());
-    if (user != null) {
-      return outcomeRepository.get(projectId, outcomeId);
-    } else {
-      throw new MethodNotAllowedException();
-    }
+  public Outcome get(@PathVariable Integer projectId, @PathVariable Integer outcomeId) throws MethodNotAllowedException, ResourceDoesNotExistException {
+    return outcomeRepository.get(projectId, outcomeId);
   }
 
   @RequestMapping(value = "/projects/{projectId}/outcomes", method = RequestMethod.POST, produces = WebConstants.APPLICATION_JSON_UTF8_VALUE)

@@ -27,7 +27,7 @@ define([],
 
       $scope.changeToInstantaneous = function() {
         $scope.itemScratch.duration = 'PT0S';
-      }
+      };
 
       $scope.editItem = function() {
         $scope.isEditing = true;

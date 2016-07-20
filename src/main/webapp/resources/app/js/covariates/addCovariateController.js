@@ -1,6 +1,6 @@
 'use strict';
 define([], function() {
-  var dependencies = ['$scope', '$stateParams', 'CovariateResource', 'CovariateOptionsResource','$modalInstance', 'callback'];
+  var dependencies = ['$scope', '$stateParams', 'CovariateResource', 'CovariateOptionsResource', '$modalInstance', 'callback'];
   var AddCovariateController = function($scope, $stateParams, CovariateResource, CovariateOptionsResource, $modalInstance, callback) {
 
     $scope.covariatesOptions = CovariateOptionsResource.getProjectCovariates($stateParams);
@@ -13,8 +13,8 @@ define([], function() {
       covariate.covariateDefinitionKey = covariate.definition.key;
       covariate.type = covariate.definition.typeKey;
       delete covariate.definition;
-      covariate.projectId = $scope.project.id
-      CovariateResource.save(covariate, function(result, headers) {
+      covariate.projectId = $scope.project.id;
+      CovariateResource.save(covariate, function() {
         callback();
         $modalInstance.close();
         $scope.isAddingCovariate = false;
@@ -27,7 +27,7 @@ define([], function() {
 
     $scope.alReadyAdded = function(covariate) {
       return selectedOptionsKeys.indexOf(covariate.definition.key) >= 0;
-    }
+    };
 
 
   };

@@ -1,16 +1,14 @@
 'use strict';
-define([],
-  function() {
+define(['lodash', 'angular'],
+  function(_, angular) {
     var dependencies = [
       '$scope',
       '$modalInstance',
       'callback',
       'actionType',
-      'ActivityService',
-      'DrugService',
-      'UnitService'
+      'ActivityService'
     ];
-    var ActivityController = function($scope, $modalInstance, callback, actionType, ActivityService, DrugService, UnitService) {
+    var ActivityController = function($scope, $modalInstance, callback, actionType, ActivityService) {
 
       $scope.isEditing = false;
       $scope.actionType = actionType;
@@ -22,12 +20,12 @@ define([],
 
       $scope.addDrugClicked = function() {
         $scope.treatmentDirective.isVisible = true;
-      }
+      };
 
       $scope.treatmentAdded = function(treatment) {
         $scope.itemScratch.treatments.push(treatment);
         $scope.treatmentDirective.isVisible = false;
-      }
+      };
 
       $scope.addItem = function() {
         $scope.isEditing = true;
@@ -57,7 +55,7 @@ define([],
 
       $scope.cancel = function() {
         $modalInstance.dismiss('cancel');
-      }
+      };
 
       if ($scope.actionType === 'Add') {
         $scope.itemScratch = {};
@@ -73,8 +71,7 @@ define([],
 
       $scope.$watch(function() {
         return angular.element('.scrollable-wrapper').parent().parent().height();
-      }, function(oldValue, newValue) {
-        //console.log('recalculate , old = ' + oldValue, ' new = ' + newValue);
+      }, function() {
         $scope.showScrolbarIfNessesary();
       });
 
@@ -91,7 +88,7 @@ define([],
         } else {
           scrollableWrapperElement.css('max-height', viewPortHeight + offset);
         }
-      }
+      };
 
     };
     return dependencies.concat(ActivityController);

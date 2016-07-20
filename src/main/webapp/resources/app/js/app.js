@@ -194,11 +194,17 @@ define(
         $httpProvider.interceptors.push('SessionExpiredInterceptor');
 
         // Default route
-        //  $urlRouterProvider.otherwise('/users/:userUid/projects');
         $urlRouterProvider.otherwise(function($injector) {
           var $window = $injector.get('$window');
           var $state = $injector.get('$state');
-          $state.go('home');
+          if($window.config && $window.config.user) {
+             $state.go('datasets', {
+                userUid: $window.config.user.id
+              });
+          }else {
+             $state.go('home');
+          }
+
         });
 
         $stateProvider

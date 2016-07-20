@@ -30,7 +30,7 @@ define([],
 
       $scope.resetConcepts = function() {
         $scope.$parent.loadConcepts().then(reloadConceptsFromScratch);
-      }
+      };
 
       $scope.areConceptsModified = function() {
         return ConceptService.areConceptsModified();

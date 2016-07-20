@@ -46,7 +46,7 @@ define([],
 
       $scope.changeToInstantaneous = function() {
         $scope.item.duration = 'PT0S';
-      }
+      };
     };
     return dependencies.concat(addEpochController);
   });

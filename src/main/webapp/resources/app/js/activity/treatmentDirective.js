@@ -1,5 +1,5 @@
 'use strict';
-define([], function() {
+define(['angular'], function(angular) {
   var dependencies = ['$stateParams', 'DrugService', 'UnitService', 'UUIDService'];
   var INSTANCE_PREFIX = 'http://trials.drugis.org/instances/';
 
@@ -13,11 +13,11 @@ define([], function() {
         scope.treatment.dosingPeriodicity = 'P1D';
         scope.treatment.treatmentDoseType = 'ontology:FixedDoseDrugTreatment';
 
-        DrugService.queryItems($stateParams.studyUUID).then(function(result){
+        DrugService.queryItems($stateParams.studyUUID).then(function(result) {
           scope.drugs = result;
         });
 
-        UnitService.queryItems($stateParams.studyUUID).then(function(result){
+        UnitService.queryItems($stateParams.studyUUID).then(function(result) {
           scope.doseUnits = result;
         });
 
@@ -39,15 +39,14 @@ define([], function() {
 
         function isCompleteTypeaheadValue(obj) {
           // the typeahead input can either be a string (if new value) or an object (if one is picked from existing options)
-          return (typeof obj === 'string' && obj.length > 0)
-            || (obj && obj.label)
+          return (typeof obj === 'string' && obj.length > 0) || (obj && obj.label);
         }
 
         scope.isValidTreatment = function() {
           var baseValid = isCompleteTypeaheadValue(scope.treatment.drug) &&
             isCompleteTypeaheadValue(scope.treatment.doseUnit) && scope.treatment.dosingPeriodicity &&
             scope.treatment.dosingPeriodicity !== 'PnullD';
-          if(scope.treatment.treatmentDoseType === 'ontology:FixedDoseDrugTreatment') {
+          if (scope.treatment.treatmentDoseType === 'ontology:FixedDoseDrugTreatment') {
             return baseValid && isDefinedNumber(scope.treatment.fixedValue);
           } else if (scope.treatment.treatmentDoseType === 'ontology:TitratedDoseDrugTreatment') {
             return baseValid && isDefinedNumber(scope.treatment.minValue) && isDefinedNumber(scope.treatment.maxValue);
@@ -59,11 +58,11 @@ define([], function() {
         scope.addTreatment = function(treatment) {
           var newTreatment = angular.copy(treatment);
 
-          if(!scope.itemScratch.treatments) {
+          if (!scope.itemScratch.treatments) {
             scope.itemScratch.treatments = [];
           }
 
-          if(angular.isString(newTreatment.drug)) {
+          if (angular.isString(newTreatment.drug)) {
             newTreatment.drug = {
               uri: INSTANCE_PREFIX + UUIDService.generate(),
               label: treatment.drug
@@ -71,7 +70,7 @@ define([], function() {
             scope.drugs.push(newTreatment.drug);
           }
 
-          if(angular.isString(newTreatment.doseUnit)) {
+          if (angular.isString(newTreatment.doseUnit)) {
             newTreatment.doseUnit = {
               uri: INSTANCE_PREFIX + UUIDService.generate(),
               label: newTreatment.doseUnit

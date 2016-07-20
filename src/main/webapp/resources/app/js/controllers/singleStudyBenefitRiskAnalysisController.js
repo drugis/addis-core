@@ -1,15 +1,15 @@
 'use strict';
 define(['angular', 'lodash'], function(angular, _) {
-  var dependencies = ['$scope', '$stateParams', '$state', '$window',
+  var dependencies = ['$scope', '$stateParams', '$state',
     'currentAnalysis', 'currentProject',
     'OutcomeResource', 'InterventionResource',
     'SingleStudyBenefitRiskAnalysisService', 'DEFAULT_VIEW', 'AnalysisResource',
-    'ProjectStudiesResource'
+    'ProjectStudiesResource', 'UserService'
   ];
   var SingleStudyBenefitRiskAnalysisController = function($scope, $stateParams,
-    $state, $window, currentAnalysis, currentProject, OutcomeResource,
+    $state, currentAnalysis, currentProject, OutcomeResource,
     InterventionResource, SingleStudyBenefitRiskAnalysisService,
-    DEFAULT_VIEW, AnalysisResource, ProjectStudiesResource) {
+    DEFAULT_VIEW, AnalysisResource, ProjectStudiesResource, UserService) {
 
     var deregisterOutcomeWatch, deregisterInterventionWatch;
     $scope.$parent.loading = {
@@ -18,8 +18,10 @@ define(['angular', 'lodash'], function(angular, _) {
     $scope.studyModel = {
       selectedStudy: {}
     };
+
+    var isUserOwner = UserService.isLoginUserId(currentProject.owner.id);
     $scope.editMode = {
-      isUserOwner: $window.config.user.id === currentProject.owner.id,
+      isUserOwner: isUserOwner
     };
     $scope.userId = $stateParams.userUid;
     $scope.isProblemDefined = !!currentAnalysis.problem;

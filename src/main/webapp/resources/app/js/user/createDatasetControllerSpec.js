@@ -59,7 +59,7 @@ define(['angular', 'angular-mocks'], function() {
         it('should call the callback', function() {
           expect(mockcallback).toHaveBeenCalled();
         });
-      })
+      });
     });
 
     it('should place cancel on the scope', function() {
@@ -70,7 +70,7 @@ define(['angular', 'angular-mocks'], function() {
       it('should close the modalInstance', function() {
         scope.cancel();
         expect(mockModalInstance.close).toHaveBeenCalled();
-      })
-    })
+      });
+    });
   });
 });

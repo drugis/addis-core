@@ -1,6 +1,6 @@
 'use strict';
-define([],
-  function() {
+define(['lodash'],
+  function(_) {
     var dependencies = ['$q', 'StudyService'];
     var DrugService = function($q, StudyService) {
 

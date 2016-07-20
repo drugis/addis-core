@@ -27,12 +27,12 @@
             </a>
             <ul class="dropdown">
               <li>
-                <a href="signin?logout">Sign out</a>
+                <a href="signout">Sign out</a>
               </li>
             </ul>
           </li>
           <li ng-if="!isAnonimous && isOwnUserPage">
-                <a href="signin?logout">Sign out</a>
+                <a href="signout">Sign out</a>
           </li>
           <li ng-if="isAnonimous">
                 <a href="/auth/google?scope=openid+email+profile">Sign in</a>

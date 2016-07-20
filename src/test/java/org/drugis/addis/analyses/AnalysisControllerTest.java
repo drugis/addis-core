@@ -107,7 +107,7 @@ public class AnalysisControllerTest {
     List<AbstractAnalysis> analyses = Arrays.asList(singleStudyBenefitRiskAnalysis, networkMetaAnalysis);
     when(analysisRepository.query(projectId)).thenReturn(analyses);
 
-    ResultActions result = mockMvc.perform(get("/projects/1/analyses").principal(user));
+    ResultActions result = mockMvc.perform(get("/projects/1/analyses"));
     result
             .andExpect(status().isOk())
             .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()))
@@ -115,7 +115,6 @@ public class AnalysisControllerTest {
             .andExpect(jsonPath("$[0].analysisType", Matchers.notNullValue()));
 
     verify(analysisRepository).query(projectId);
-    verify(accountRepository).findAccountByUsername("gert");
   }
 
   @Test
@@ -131,7 +130,6 @@ public class AnalysisControllerTest {
             .perform(
                     get("/projects/{projectId}/analyses", projectId)
                             .param("outcomeIds", "1")
-                            .principal(user)
             );
     result
             .andExpect(status().isOk())
@@ -139,17 +137,8 @@ public class AnalysisControllerTest {
             .andExpect(jsonPath("$", hasSize(1)))
             .andExpect(jsonPath("$[0].analysisType", Matchers.equalTo(AnalysisType.EVIDENCE_SYNTHESIS)));
 
-    verify(accountRepository).findAccountByUsername("gert");
     verify(networkMetaAnalysisRepository).queryByOutcomes(projectId, outcomeIds);
 
-  }
-
-  @Test
-  public void testUnauthorisedAccessFails() throws Exception {
-    when(accountRepository.findAccountByUsername("gert")).thenReturn(null);
-    mockMvc.perform(get("/projects/1/analyses").principal(user))
-            .andExpect(status().isForbidden());
-    verify(accountRepository).findAccountByUsername("gert");
   }
 
   @Test
@@ -210,12 +199,11 @@ public class AnalysisControllerTest {
   public void testGetSSBRAnalysis() throws Exception {
     SingleStudyBenefitRiskAnalysis analysis = new SingleStudyBenefitRiskAnalysis(1, 1, "name", Collections.emptyList(), Collections.emptyList());
     when(analysisRepository.get(analysis.getId())).thenReturn(analysis);
-    mockMvc.perform(get("/projects/1/analyses/1").principal(user))
+    mockMvc.perform(get("/projects/1/analyses/1"))
             .andExpect(status().isOk())
             .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()))
             .andExpect(jsonPath("$.id", is(analysis.getId())))
             .andExpect(jsonPath("$.analysisType", is(AnalysisType.SINGLE_STUDY_BENEFIT_RISK_LABEL)));
-    verify(accountRepository).findAccountByUsername("gert");
     verify(analysisRepository).get(analysis.getId());
   }
 
@@ -231,7 +219,6 @@ public class AnalysisControllerTest {
             .andExpect(jsonPath("$.id", is(analysis.getId())))
             .andExpect(jsonPath("$.analysisType", is(AnalysisType.EVIDENCE_SYNTHESIS)))
             .andExpect(jsonPath("$.excludedArms", hasSize(0)));
-    verify(accountRepository).findAccountByUsername("gert");
     verify(analysisRepository).get(analysis.getId());
   }
 
@@ -241,12 +228,11 @@ public class AnalysisControllerTest {
     SingleStudyBenefitRiskAnalysis analysis = new SingleStudyBenefitRiskAnalysis(1, 1, "name", Collections.emptyList(), Collections.emptyList(), problem);
     Integer projectId = 1;
     when(analysisRepository.get(analysis.getId())).thenReturn(analysis);
-    mockMvc.perform(get("/projects/1/analyses/1").principal(user))
+    mockMvc.perform(get("/projects/1/analyses/1"))
             .andExpect(status().isOk())
             .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()))
             .andExpect(jsonPath("$.id", is(analysis.getId())))
             .andExpect(jsonPath("$.problem.key", is("value")));
-    verify(accountRepository).findAccountByUsername("gert");
     verify(analysisRepository).get(analysis.getId());
   }
 

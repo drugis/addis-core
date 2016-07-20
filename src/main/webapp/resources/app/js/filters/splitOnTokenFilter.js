@@ -1,9 +1,9 @@
 'use strict';
-define([], function() {
+define(['lodash'], function(_) {
   var dependencies = [];
   var SplitOnTokenFilter = function() {
     return function(inputString, splitToken) {
-      if(!inputString) {
+      if (!inputString) {
         return inputString;
       }
       // spit by token, comma is used as default split token
