@@ -3,9 +3,12 @@ define(['angular-mocks'], function(angularMocks) {
   describe('the epoch service', function() {
 
     var rootScope, q, epochService,
-      studyService = jasmine.createSpyObj('StudyService', ['getStudy', 'save']);
-    var studyDefer;
+      studyService = jasmine.createSpyObj('StudyService', ['getJsonGraph', 'saveJsonGraph', 'findStudyNode']),
+      rdfListService = jasmine.createSpyObj('RdfListService', ['flattenList', 'unflattenList']);
+    var studyGraphDefer;
     var studyJsonObject;
+    var studyJsonGraphObject;
+    var flattenResult = [];
 
     beforeEach(module('trialverse.epoch'));
 
@@ -17,6 +20,7 @@ define(['angular-mocks'], function(angularMocks) {
       });
       module('trialverse.study', function($provide) {
         $provide.value('StudyService', studyService);
+        $provide.value('RdfListService', rdfListService);
       });
     });
 
@@ -25,8 +29,8 @@ define(['angular-mocks'], function(angularMocks) {
       q = $q;
       rootScope = $rootScope;
       epochService = EpochService;
-      studyDefer = $q.defer();
-      var getStudyPromise = studyDefer.promise;
+      studyGraphDefer = $q.defer();
+      var getJsonGraphPromise = studyGraphDefer.promise;
 
       studyJsonObject = {
         'has_epochs': [{
@@ -47,8 +51,13 @@ define(['angular-mocks'], function(angularMocks) {
         'has_primary_epoch': 'http://trials.drugis.org/instances/ddd'
       };
 
-      studyService.getStudy.and.returnValue(getStudyPromise);
+      studyJsonGraphObject = {
+        '@graph': [studyJsonObject]
+      };
 
+      studyService.findStudyNode.and.returnValue(studyJsonObject);
+      studyService.getJsonGraph.and.returnValue(getJsonGraphPromise);
+      rdfListService.flattenList.and.returnValue(flattenResult);
     }));
 
 
@@ -74,8 +83,9 @@ define(['angular-mocks'], function(angularMocks) {
         isPrimary: false
       }];
 
-      it('should query the epochs', function(done) {
-        studyDefer.resolve(studyJsonObject);
+      fit('should query the epochs', function(done) {
+        flattenResult = expected;
+        studyGraphDefer.resolve(studyJsonGraphObject);
         epochService.queryItems().then(function(result) {
           expect(result).toEqual(expected);
           done();
@@ -109,8 +119,8 @@ define(['angular-mocks'], function(angularMocks) {
       }];
 
       it('should query the epochs', function(done) {
-        var getStudyPromise = studyDefer.promise;
-        var studyJsonObject = {
+        var getJsonGraphPromise = studyGraphDefer.promise;
+        studyJsonObject = {
           'has_epochs': [{
             '@id': 'http://trials.drugis.org/instances/aaa',
             '@type': 'ontology:Epoch',
@@ -128,8 +138,12 @@ define(['angular-mocks'], function(angularMocks) {
           }],
           'has_primary_epoch': 'http://trials.drugis.org/instances/ddd'
         };
-        studyDefer.resolve(studyJsonObject);
-        studyService.getStudy.and.returnValue(getStudyPromise);
+        rdfListService.flattenList.and.returnValue(studyJsonObject.has_epochs);
+        studyJsonGraphObject = {
+          '@graph': [studyJsonObject]
+        };
+        studyGraphDefer.resolve(studyJsonGraphObject);
+        studyService.getJsonGraph.and.returnValue(getJsonGraphPromise);
         epochService.queryItems().then(function(result) {
           expect(result).toEqual(expected);
           done();
@@ -143,7 +157,7 @@ define(['angular-mocks'], function(angularMocks) {
     describe('addEpoch', function() {
 
       it('should add the epoch with comment and set primary and add it to the list', function(done) {
-        var getStudyPromise = studyDefer.promise;
+        var getJsonGraphPromise = studyGraphDefer.promise;
         var epochList = [{
           '@id': 'http://trials.drugis.org/instances/aaa',
           '@type': 'ontology:Epoch',
@@ -163,8 +177,8 @@ define(['angular-mocks'], function(angularMocks) {
           'has_epochs': epochList,
           'has_primary_epoch': 'http://trials.drugis.org/instances/ddd'
         };
-        studyDefer.resolve(studyJsonObject);
-        studyService.getStudy.and.returnValue(getStudyPromise);
+        studyGraphDefer.resolve(studyJsonObject);
+        studyService.getJsonGraph.and.returnValue(getJsonGraphPromise);
         var itemToAdd = {
           label: 'new epoch label',
           comment: 'new epoch comment',
@@ -195,11 +209,10 @@ define(['angular-mocks'], function(angularMocks) {
       });
 
       it('should work if there were no epochs', function(done) {
-       var getStudyPromise = studyDefer.promise;
-        var studyJsonObject = {
-        };
-        studyDefer.resolve(studyJsonObject);
-        studyService.getStudy.and.returnValue(getStudyPromise);
+        var getJsonGraphPromise = studyGraphDefer.promise;
+        var studyJsonObject = {};
+        studyGraphDefer.resolve(studyJsonObject);
+        studyService.getJsonGraph.and.returnValue(getJsonGraphPromise);
         var itemToAdd = {
           label: 'new epoch label',
           comment: 'new epoch comment',
@@ -231,7 +244,7 @@ define(['angular-mocks'], function(angularMocks) {
 
     describe('editEpoch', function() {
       it('should edit to remove the comment and unset primary', function(done) {
-        var getStudyPromise = studyDefer.promise;
+        var getJsonGraphPromise = studyGraphDefer.promise;
         var epochList = [{
           '@id': 'http://trials.drugis.org/instances/aaa',
           '@type': 'ontology:Epoch',
@@ -251,8 +264,8 @@ define(['angular-mocks'], function(angularMocks) {
           'has_epochs': epochList,
           'has_primary_epoch': 'http://trials.drugis.org/instances/ddd'
         };
-        studyDefer.resolve(studyJsonObject);
-        studyService.getStudy.and.returnValue(getStudyPromise);
+        studyGraphDefer.resolve(studyJsonObject);
+        studyService.getJsonGraph.and.returnValue(getJsonGraphPromise);
 
         var newItem = {
           uri: 'http://trials.drugis.org/instances/ddd',
@@ -286,7 +299,7 @@ define(['angular-mocks'], function(angularMocks) {
 
     describe('editEpoch', function() {
       it('should edit label and leave primary alone', function(done) {
-        var getStudyPromise = studyDefer.promise;
+        var getJsonGraphPromise = studyGraphDefer.promise;
         var epochList = [{
           '@id': 'http://trials.drugis.org/instances/aaa',
           '@type': 'ontology:Epoch',
@@ -306,8 +319,8 @@ define(['angular-mocks'], function(angularMocks) {
           'has_epochs': epochList,
           'has_primary_epoch': 'http://trials.drugis.org/instances/ddd'
         };
-        studyDefer.resolve(studyJsonObject);
-        studyService.getStudy.and.returnValue(getStudyPromise);
+        studyGraphDefer.resolve(studyJsonObject);
+        studyService.getJsonGraph.and.returnValue(getJsonGraphPromise);
 
         var newItem = {
           uri: 'http://trials.drugis.org/instances/ccc',
@@ -343,7 +356,7 @@ define(['angular-mocks'], function(angularMocks) {
 
     describe('deleteEpoch', function() {
       it('remove the epoch from the list and remove the primary', function(done) {
-        var getStudyPromise = studyDefer.promise;
+        var getJsonGraphPromise = studyGraphDefer.promise;
         var epochList = [{
           '@id': 'http://trials.drugis.org/instances/aaa',
           '@type': 'ontology:Epoch',
@@ -363,8 +376,8 @@ define(['angular-mocks'], function(angularMocks) {
           'has_epochs': epochList,
           'has_primary_epoch': 'http://trials.drugis.org/instances/ddd'
         };
-        studyDefer.resolve(studyJsonObject);
-        studyService.getStudy.and.returnValue(getStudyPromise);
+        studyGraphDefer.resolve(studyJsonObject);
+        studyService.getJsonGraph.and.returnValue(getJsonGraphPromise);
 
         var itemToRemove = {
           uri: 'http://trials.drugis.org/instances/ddd',
@@ -393,7 +406,7 @@ define(['angular-mocks'], function(angularMocks) {
 
     describe('deleteEpoch', function() {
       it('remove the epoch from the list leave primary alone', function(done) {
-        var getStudyPromise = studyDefer.promise;
+        var getJsonGraphPromise = studyGraphDefer.promise;
         var epochList = [{
           '@id': 'http://trials.drugis.org/instances/aaa',
           '@type': 'ontology:Epoch',
@@ -413,8 +426,8 @@ define(['angular-mocks'], function(angularMocks) {
           'has_epochs': epochList,
           'has_primary_epoch': 'http://trials.drugis.org/instances/ddd'
         };
-        studyDefer.resolve(studyJsonObject);
-        studyService.getStudy.and.returnValue(getStudyPromise);
+        studyGraphDefer.resolve(studyJsonObject);
+        studyService.getJsonGraph.and.returnValue(getJsonGraphPromise);
 
         var itemToRemove = {
           uri: 'http://trials.drugis.org/instances/aaa',

@@ -43,16 +43,6 @@ define(['angular', 'lodash'], function(angular, _) {
       }
     }
 
-    function buildListItem(listNode, graph) {
-      if (!listNode['@list']) { // list with multiple elements
-        var node = findNode(listNode.first['@id'], graph);
-        node.blankNodeId = listNode['@id'];
-        return node;
-      } else { // list with one element
-        return findNode(listNode['@list'][0], graph);
-      }
-    }
-
     function flattenList(rootNode) {
       var list = [];
       if (_.isEmpty(rootNode)) {
@@ -66,7 +56,7 @@ define(['angular', 'lodash'], function(angular, _) {
           node.blankNodeId = currentNode['@id'];
         }
         list.push(node);
-        if (currentNode.rest === rdfListNil) {
+        if (currentNode.rest === rdfListNil || currentNode.rest['@id'] === rdfListNil) {
           return list;
         }
         currentNode = currentNode.rest;

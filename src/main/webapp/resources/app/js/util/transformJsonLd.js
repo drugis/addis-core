@@ -98,7 +98,7 @@ define(['lodash'], function(_) {
             '@id': rdfListNil
           };
           return head;
-        } else if (listBlankNode['@id'] === rdfListNil) {
+        } else if (listBlankNode['@id'] === rdfListNil || listBlankNode === rdfListNil) {
           tail['@id'] = rdfListNil;
           return head;
         } else {
@@ -106,6 +106,8 @@ define(['lodash'], function(_) {
           tail['@id'] = listBlankNode['@id'];
           if (listBlankNode.first['@id']) {
             tail.first = findAndRemoveFromGraph(listBlankNode.first['@id']);
+          } else if (_.isString(listBlankNode.first)) {
+            tail.first = findAndRemoveFromGraph(listBlankNode.first);
           } else {
             tail.first = listBlankNode.first;
           }

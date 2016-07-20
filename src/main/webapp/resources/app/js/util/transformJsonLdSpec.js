@@ -1,6 +1,6 @@
 'use strict';
 define(['lodash', 'util/transformJsonLd'], function(_, transformJsonLd) {
-  fdescribe('transformJsonLd', function() {
+  describe('transformJsonLd', function() {
 
     var context = {
       'standard_deviation': {

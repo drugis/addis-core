@@ -282,9 +282,13 @@ define(['lodash'], function(_) {
     }
 
     function findStudyNode(graph) {
-      return _.find(graph['@graph'], function(graphNode) {
+      return _.find(graph, function(graphNode) {
         return graphNode['@type'] === 'ontology:Study';
       });
+    }
+
+    function findStudyGraphNode(graph) {
+      return findStudyNode(graph['@graph']);
     }
 
     function loadJson(jsonPromise) {
@@ -313,7 +317,7 @@ define(['lodash'], function(_) {
 
     function getStudy() {
       return studyJsonPromise.then(function(graph) {
-        return findStudyNode(graph);
+        return findStudyGraphNode(graph);
       });
     }
 
