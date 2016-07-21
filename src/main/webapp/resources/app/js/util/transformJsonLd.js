@@ -93,6 +93,9 @@ define(['lodash'], function(_) {
 
       while (true) {
         if (listBlankNode['@list']) { // FIXME: make safe for > 1 item @lists (which we don't currently get)
+          if(listBlankNode['@list'].length === 0) {
+            return head;
+          }
           tail.first = findAndRemoveFromGraph(listBlankNode['@list'][0]);
           tail.rest = {
             '@id': rdfListNil

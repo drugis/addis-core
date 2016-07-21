@@ -1,6 +1,6 @@
 'use strict';
-define(['lodash', 'util/transformJsonLd'], function(_, transformJsonLd) {
-  describe('transformJsonLd', function() {
+define(['angular', 'lodash', 'util/transformJsonLd'], function(angular, _, transformJsonLd) {
+  fdescribe('transformJsonLd', function() {
 
     var context = {
       'standard_deviation': {
@@ -1244,6 +1244,13 @@ define(['lodash', 'util/transformJsonLd'], function(_, transformJsonLd) {
       '@context': context
     };
 
+    function findStudy(graph) {
+      return _.find(graph, function(node) {
+        return node['@type'] === 'ontology:Study' ||
+          node['@type'] === 'http://trials.drugis.org/ontology#Study';
+      });
+    }
+
     it('should transform an empty study', function() {
       var transformed = transformJsonLd(emptyStudy);
       expect(transformed['@graph']).toEqual(emptyTransformed['@graph']);
@@ -1251,11 +1258,24 @@ define(['lodash', 'util/transformJsonLd'], function(_, transformJsonLd) {
     });
 
     it('should transform a study with a list', function() {
-      var result = transformJsonLd(studyWithList);
-      var study = _.find(result['@graph'], function(node) {
-        return node['@type'] === 'ontology:Study';
-      });
+      var toTransform = angular.copy(studyWithList);
+      var result = transformJsonLd(toTransform);
+      var study = findStudy(result['@graph']);
       expect(study.has_epochs).not.toBeNull();
+    });
+
+    it('should work if the list is just an @list with nil', function() {
+      var toTransform = angular.copy(studyWithList);
+      var study = findStudy(toTransform['@graph']);
+      toTransform['@graph'] = _.reject(toTransform['@graph'], function(node) {
+        return node['@id'] === study.has_epochs;
+      });
+      study.has_epochs = {
+        '@list': []
+      };
+      var result = transformJsonLd(toTransform);
+      study = findStudy(result['@graph']);
+      expect(study.has_epochs).toEqual({});
     });
 
   });
