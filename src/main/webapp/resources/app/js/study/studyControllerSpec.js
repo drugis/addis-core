@@ -23,6 +23,7 @@ define(['angular-mocks'], function(angularMocks) {
       studyDesignServiceMock = jasmine.createSpyObj('StudyDesignService', ['cleanupCoordinates']),
       graphResource = jasmine.createSpyObj('GraphResource', ['getJson']),
       versionedGraphResource = jasmine.createSpyObj('VersionedGraphResource', ['getJson']),
+      userService = jasmine.createSpyObj('UserService', ['hasLogedInUser']),
       queryStudyDataDeferred,
       queryArmDataDeferred,
       getGraphDeferred,
@@ -32,6 +33,7 @@ define(['angular-mocks'], function(angularMocks) {
 
 
     beforeEach(module('trialverse.study'));
+    beforeEach(module('trialverse.user'));
 
     beforeEach(angularMocks.inject(function($rootScope, $q) {
 
@@ -82,6 +84,7 @@ define(['angular-mocks'], function(angularMocks) {
           StudyService: studyService,
           ResultsService: resultsServiceMock,
           StudyDesignService: studyDesignServiceMock,
+          UserService: userService
         });
       }));
 

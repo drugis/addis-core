@@ -1,11 +1,13 @@
 'use strict';
 define([], function() {
-  var dependencies = ['$scope', '$modal', '$filter', '$stateParams', '$state', 'DatasetResource'];
+  var dependencies = ['$scope', '$modal', '$filter', '$stateParams', '$state', 'DatasetResource', 'UserService'];
 
-  var DatasetsController = function($scope, $modal, $filter, $stateParams, $state, DatasetResource) {
+  var DatasetsController = function($scope, $modal, $filter, $stateParams, $state, DatasetResource, UserService) {
     $scope.stripFrontFilter = $filter('stripFrontFilter');
     $scope.datasetsLoaded = false;
     $scope.reloadDatasets = reloadDatasets;
+
+    $scope.showCreateProjectButton = UserService.hasLogedInUser();
 
     reloadDatasets();
 

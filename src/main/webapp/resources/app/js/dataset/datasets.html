@@ -19,7 +19,7 @@
                 <h5><a ui-sref="dataset({userUid: userUid, datasetUUID: stripFrontFilter(dataset.uri, 'http://trials.drugis.org/datasets/')})">{{dataset.title}}</a></h5>
               </div>
               <div class="columns large-6 end">
-                <button style="margin-bottom: 1rem;" class="right button small radius" ng-click="createProjectDialog(dataset)">create project</button>
+                <button ng-if="showCreateProjectButton" style="margin-bottom: 1rem;" class="right button small radius" ng-click="createProjectDialog(dataset)">create project</button>
               </div>
             </div>
             <div class="row">

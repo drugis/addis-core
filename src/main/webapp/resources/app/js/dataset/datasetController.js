@@ -17,6 +17,7 @@ define(['lodash'],
         $scope.versionUuid = $stateParams.versionUuid;
       }
 
+      $scope.hasLogedInUser = UserService.hasLogedInUser();
 
       $scope.stripFrontFilter = $filter('stripFrontFilter');
       $scope.isEditingAllowed = false;

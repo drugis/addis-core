@@ -1,7 +1,7 @@
 'use strict';
 define([], function() {
-  var depencencies = ['DatasetResource', '$filter'];
-  var FeaturedDatasetsDirective = function(DatasetResource, $filter) {
+  var depencencies = ['DatasetResource', '$filter', 'UserService'];
+  var FeaturedDatasetsDirective = function(DatasetResource, $filter, UserService) {
     return {
       restrict: 'E',
       templateUrl: 'app/js/dataset/featuredDatasetsDirective.html',
@@ -12,6 +12,7 @@ define([], function() {
       link: function(scope) {
         scope.stripFrontFilter = $filter('stripFrontFilter');
         scope.isVisible = true;
+        scope.showCreateProjectButton = UserService.hasLogedInUser();
         scope.featuredDatasets = [];
         scope.$watch('featuredDatasets', function(newSet, oldSet) {
           if (oldSet !== newSet) {

@@ -3,11 +3,13 @@ define(['angular', 'lodash'],
   function(angular, _) {
     var dependencies = ['$scope', '$state', '$stateParams', '$window', '$filter',
       'VersionedGraphResource', 'GraphResource', '$location', '$anchorScroll',
-      '$modal', 'StudyService', 'ResultsService', 'StudyDesignService', 'DatasetResource'
+      '$modal', 'StudyService', 'ResultsService', 'StudyDesignService', 'DatasetResource',
+      'UserService'
     ];
     var StudyController = function($scope, $state, $stateParams, $window, $filter,
       VersionedGraphResource, GraphResource, $location, $anchorScroll,
-      $modal, StudyService, ResultsService, StudyDesignService, DatasetResource) {
+      $modal, StudyService, ResultsService, StudyDesignService, DatasetResource,
+      UserService) {
 
       $scope.userUid = $stateParams.userUid;
       $scope.datasetUUID = $stateParams.datasetUUID;
@@ -15,6 +17,7 @@ define(['angular', 'lodash'],
         $scope.versionUuid = $stateParams.versionUuid;
       }
       $scope.studyGraphUuid = $stateParams.studyGraphUuid;
+      $scope.hasLogedInUser = UserService.hasLogedInUser();
       $scope.openCopyDialog = openCopyDialog;
       $scope.study = {};
       $scope.resetStudy = resetStudy;

@@ -10,7 +10,7 @@ define(['angular-mocks'], function(angularMocks) {
       versionedGraphResource = jasmine.createSpyObj('VersionedGraphResource', ['get', 'getConceptJson']),
       datasetResource = jasmine.createSpyObj('DatasetResource', ['getForJson']),
       datasetVersionedResource = jasmine.createSpyObj('DatasetVersionedResource', ['getForJson']),
-      userService = jasmine.createSpyObj('UserService', ['isLoginUserEmail']),
+      userService = jasmine.createSpyObj('UserService', ['isLoginUserEmail', 'hasLogedInUser']),
       datasetDeferred,
       queryHistoryDeferred,
       studiesWithDetailsGetDeferred,
@@ -143,7 +143,8 @@ define(['angular-mocks'], function(angularMocks) {
           StudiesWithDetailsService: studiesWithDetailsService,
           HistoryResource: historyResource,
           ConceptService: conceptService,
-          VersionedGraphResource: versionedGraphResource
+          VersionedGraphResource: versionedGraphResource,
+          UserService: userService
         });
       }));
       it('should get the datasetusing the non versioned resource ', function() {

@@ -8,7 +8,7 @@
   </ul>
   <div class="row nav-bar-spacer">
     <div class="column large-12">
-      <button ng-show="isHeadView" class="right" type="button" ng-click="createProjectDialog()">Create project</button>
+      <button ng-show="hasLogedInUser && isHeadView" class="right" type="button" ng-click="createProjectDialog()">Create project</button>
       <h1>{{dataset.title}} <a ng-if="isEditingAllowed" title="Edit title and description" ng-click="showEditDatasetModal()"><i class="fa fa-edit"></i></a></h1>
       <p>{{dataset.comment}} <a ng-if="isEditingAllowed && dataset.comment" title="Edit title and description" ng-click="showEditDatasetModal()"><i class="fa fa-edit"></i></a></p>
       <div class="row nav-bar-spacer">
