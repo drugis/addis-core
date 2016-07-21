@@ -25,7 +25,7 @@
   }, {
     "@id" : "http://fuseki-test.drugis.org:3030/.well-known/genid/0000014fdfac1c49ac11005900000004",
     "category" : "Male",
-    "http://trials.drugis.org/ontology#count" : "14"
+    "http://trials.drugis.org/ontology#count" : 14
   }, {
     "@id" : "http://fuseki-test.drugis.org:3030/.well-known/genid/0000014fdfac1c49ac11005900000005",
     "applied_in_epoch" : "http://trials.drugis.org/instances/a02fdb05-4986-4f58-b20f-973572813c8d",
@@ -40,14 +40,16 @@
   }, {
     "@id" : "http://fuseki-test.drugis.org:3030/.well-known/genid/0000014fdfac1c49ac11005900000008",
     "category" : "Male",
-    "http://trials.drugis.org/ontology#count" : "22"
+    "http://trials.drugis.org/ontology#count" : 22
   }, {
     "@id" : "http://fuseki-test.drugis.org:3030/.well-known/genid/0000014fdfac1c49ac11005900000009",
     "first" : {
       "@id" : "http://trials.drugis.org/instances/62bc14d7-4fbc-4973-8119-ffaca0bb18e4"
     },
     "rest" : {
-      "@list" : [ "http://trials.drugis.org/instances/2e545e50-b1f6-4a2a-813a-ab972cef804c" ]
+      "@list": [
+        "http://trials.drugis.org/instances/2e545e50-b1f6-4a2a-813a-ab972cef804c"
+      ]
     }
   }, {
     "@id" : "http://fuseki-test.drugis.org:3030/.well-known/genid/0000014fdfac1c49ac1100590000000a",
@@ -105,7 +107,7 @@
   }, {
     "@id" : "http://fuseki-test.drugis.org:3030/.well-known/genid/0000014fdfac1c4aac11005900000008",
     "category" : "Female",
-    "http://trials.drugis.org/ontology#count" : "44"
+    "http://trials.drugis.org/ontology#count" : 44
   }, {
     "@id" : "http://fuseki-test.drugis.org:3030/.well-known/genid/0000014fdfac1c4aac11005900000009",
     "dosingPeriodicity" : "P1D",
@@ -119,11 +121,11 @@
     "first" : {
       "@id" : "http://trials.drugis.org/instances/a02fdb05-4986-4f58-b20f-973572813c8d"
     },
-    "rest" : "http://fuseki-test.drugis.org:3030/.well-known/genid/0000014fdfac1c49ac11005900000009"
+    "rest": "http://fuseki-test.drugis.org:3030/.well-known/genid/0000014fdfac1c49ac11005900000009"
   }, {
     "@id" : "http://fuseki-test.drugis.org:3030/.well-known/genid/0000014fdfac1c4aac1100590000000d",
     "category" : "Male",
-    "http://trials.drugis.org/ontology#count" : "26"
+    "http://trials.drugis.org/ontology#count" : 26
   }, {
     "@id" : "http://fuseki-test.drugis.org:3030/.well-known/genid/0000014fdfac1c4aac1100590000000e",
     "@type" : "http://trials.drugis.org/ontology#Variable",
@@ -152,7 +154,7 @@
   }, {
     "@id" : "http://fuseki-test.drugis.org:3030/.well-known/genid/0000014fdfac1c4aac11005900000012",
     "category" : "Female",
-    "http://trials.drugis.org/ontology#count" : "48"
+    "http://trials.drugis.org/ontology#count" : 48
   }, {
     "@id" : "http://fuseki-test.drugis.org:3030/.well-known/genid/0000014fdfac1c4aac11005900000013",
     "applied_in_epoch" : "http://trials.drugis.org/instances/a02fdb05-4986-4f58-b20f-973572813c8d",
@@ -165,8 +167,12 @@
   }, {
     "@id" : "http://fuseki-test.drugis.org:3030/.well-known/genid/0000014fdfac1c4aac11005900000015",
     "first" : "Male",
-    "http://www.w3.org/1999/02/22-rdf-syntax-ns#rest" : {
-      "@list" : [ "Female" ]
+    "rest" : {
+      "@id": "http://fuseki-test.drugis.org:3030/.well-known/genid/0000014fdfac1c4aac110059000000ee",
+        "first" : "Female",
+        "rest" : {
+          "@id": "http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"
+      }
     }
   }, {
     "@id" : "http://fuseki-test.drugis.org:3030/.well-known/genid/0000014fdfac1c4aac11005900000016",
@@ -192,7 +198,7 @@
   }, {
     "@id" : "http://fuseki-test.drugis.org:3030/.well-known/genid/0000014fdfac1c4aac11005900000019",
     "category" : "Female",
-    "http://trials.drugis.org/ontology#count" : "19"
+    "http://trials.drugis.org/ontology#count" : 19
   }, {
     "@id" : "http://fuseki-test.drugis.org:3030/.well-known/genid/0000014fdfac1c4aac1100590000001a",
     "@type" : "http://trials.drugis.org/ontology#Variable",

@@ -62,44 +62,6 @@ define(['lodash'], function(_) {
       subject[propertyName] = _.map(arr, findAndRemoveFromGraph);
     }
 
-    function inlineListLinkedListType(subject, propertyName) {
-      var list = [];
-      var listBlankNodeId = subject[propertyName];
-
-      if (!listBlankNodeId['@list']) {
-        var listBlankNode = findAndRemoveFromGraph(listBlankNodeId);
-
-        if (!listBlankNode.first['@id']) {
-          list.push(findAndRemoveFromGraph(listBlankNode.first));
-        } else {
-          list.push(findAndRemoveFromGraph(listBlankNode.first['@id']));
-        }
-
-        var atEnd = false;
-        while (!atEnd) {
-          if (listBlankNode.rest['@list']) { // last item
-            list.push(findAndRemoveFromGraph(listBlankNode.rest['@list'][0]));
-            atEnd = true;
-          } else {
-            listBlankNode = findAndRemoveFromGraph(listBlankNode.rest);
-
-            if (!listBlankNode.first['@id']) {
-              list.push(findAndRemoveFromGraph(listBlankNode.first));
-            } else {
-              list.push(findAndRemoveFromGraph(listBlankNode.first['@id']));
-            }
-
-          }
-        }
-      } else if (listBlankNodeId['@list'].length === 1) {
-        list.push(findAndRemoveFromGraph(listBlankNodeId['@list'][0]));
-      }
-
-      subject[propertyName] = list;
-      linkedData['@context'][propertyName]['@container'] = '@list';
-      delete linkedData['@context'][propertyName]['@type'];
-    }
-
     function inlineObjectsForSubjectsWithProperty(subjectList, propertyName) {
       var subjectsWithProperty = _.filter(subjectList, function(subjectWithTriples) {
         return subjectWithTriples[propertyName];
@@ -107,6 +69,53 @@ define(['lodash'], function(_) {
       _.forEach(subjectsWithProperty, function(subject) {
         inlineObjects(subject, propertyName);
       });
+    }
+
+    function buildListItem(listNode) {
+      if (!listNode['@list']) { // list with multiple elements
+        var node = findAndRemoveFromGraph(listNode.first['@id']);
+        return node;
+      } else { // list with one element
+        return findAndRemoveFromGraph(listNode['@list'][0]);
+      }
+    }
+
+    function inlineLinkedList(study, propertyName) {
+      var rdfListNil = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#nil';
+      if (!study[propertyName]) {
+        return {};
+      }
+
+      var head = {};
+      var tail = head;
+
+      var listBlankNode = study[propertyName];
+
+      while (true) {
+        if (listBlankNode['@list']) { // FIXME: make safe for > 1 item @lists (which we don't currently get)
+          tail.first = findAndRemoveFromGraph(listBlankNode['@list'][0]);
+          tail.rest = {
+            '@id': rdfListNil
+          };
+          return head;
+        } else if (listBlankNode['@id'] === rdfListNil || listBlankNode === rdfListNil) {
+          tail['@id'] = rdfListNil;
+          return head;
+        } else {
+          listBlankNode = findAndRemoveFromGraph(listBlankNode);
+          tail['@id'] = listBlankNode['@id'];
+          if (listBlankNode.first['@id']) {
+            tail.first = findAndRemoveFromGraph(listBlankNode.first['@id']);
+          } else if (_.isString(listBlankNode.first)) {
+            tail.first = findAndRemoveFromGraph(listBlankNode.first);
+          } else {
+            tail.first = listBlankNode.first;
+          }
+          listBlankNode = listBlankNode.rest;
+          tail.rest = {};
+          tail = tail.rest;
+        }
+      }
     }
 
     inlineObjectsForSubjectsWithProperty(linkedData['@graph'], 'has_activity_application');
@@ -139,9 +148,7 @@ define(['lodash'], function(_) {
     inlineObjects(study, 'has_objective');
     inlineObjects(study, 'has_publication');
     inlineObjects(study, 'has_eligibility_criteria');
-    if (study.has_epochs) {
-      inlineListLinkedListType(study, 'has_epochs');
-    }
+    study.has_epochs = inlineLinkedList(study, 'has_epochs');
 
     linkedData['@context'] = {
       'standard_deviation': {
@@ -238,7 +245,7 @@ define(['lodash'], function(_) {
       },
       'has_epochs': {
         '@id': 'http://trials.drugis.org/ontology#has_epochs',
-        '@container': '@list'
+        '@type': '@id'
       },
       'has_eligibility_criteria': {
         '@id': 'http://trials.drugis.org/ontology#has_eligibility_criteria',
@@ -249,12 +256,13 @@ define(['lodash'], function(_) {
         '@type': 'http://www.w3.org/2001/XMLSchema#integer'
       },
       'rest': {
-        '@id': 'http://www.w3.org/1999/02/22-rdf-syntax-ns#rest',
-        '@type': '@id'
+        '@id': 'http://www.w3.org/1999/02/22-rdf-syntax-ns#rest'
+      },
+      'nil': {
+        '@id': 'http://www.w3.org/1999/02/22-rdf-syntax-ns#nil'
       },
       'first': {
-        '@id': 'http://www.w3.org/1999/02/22-rdf-syntax-ns#first',
-        '@type': '@id'
+        '@id': 'http://www.w3.org/1999/02/22-rdf-syntax-ns#first'
       },
       'of_variable': {
         '@id': 'http://trials.drugis.org/ontology#of_variable',

@@ -97,7 +97,7 @@ define(['lodash', 'util/transformJsonLd'], function(_, transformJsonLd) {
       },
       'has_epochs': {
         '@id': 'http://trials.drugis.org/ontology#has_epochs',
-        '@container': '@list'
+        '@type': '@id'
       },
       'has_eligibility_criteria': {
         '@id': 'http://trials.drugis.org/ontology#has_eligibility_criteria',
@@ -108,12 +108,13 @@ define(['lodash', 'util/transformJsonLd'], function(_, transformJsonLd) {
         '@type': 'http://www.w3.org/2001/XMLSchema#integer'
       },
       'rest': {
-        '@id': 'http://www.w3.org/1999/02/22-rdf-syntax-ns#rest',
-        '@type': '@id'
+        '@id': 'http://www.w3.org/1999/02/22-rdf-syntax-ns#rest'
+      },
+      'nil': {
+        '@id': 'http://www.w3.org/1999/02/22-rdf-syntax-ns#nil'
       },
       'first': {
-        '@id': 'http://www.w3.org/1999/02/22-rdf-syntax-ns#first',
-        '@type': '@id'
+        '@id': 'http://www.w3.org/1999/02/22-rdf-syntax-ns#first'
       },
       'of_variable': {
         '@id': 'http://trials.drugis.org/ontology#of_variable',
@@ -227,9 +228,6 @@ define(['lodash', 'util/transformJsonLd'], function(_, transformJsonLd) {
     var emptyStudy = {
       '@id': 'http://trials.drugis.org/studies/695855bd-5782-4c67-a270-eb4459c3a4f6',
       '@type': 'http://trials.drugis.org/ontology#Study',
-      'http://trials.drugis.org/ontology#has_epochs': {
-        '@list': []
-      },
       'label': 'study 1',
       'comment': 'my study',
       '@context': context
@@ -239,11 +237,11 @@ define(['lodash', 'util/transformJsonLd'], function(_, transformJsonLd) {
       '@graph': [{
         '@id': 'http://trials.drugis.org/studies/695855bd-5782-4c67-a270-eb4459c3a4f6',
         '@type': 'ontology:Study',
-        'has_epochs': [],
         'label': 'study 1',
         'comment': 'my study',
         'has_outcome': [],
         'has_arm': [],
+        'has_epochs': {},
         'has_group': [],
         'has_included_population': [],
         'has_activity': [],
@@ -1257,7 +1255,7 @@ define(['lodash', 'util/transformJsonLd'], function(_, transformJsonLd) {
       var study = _.find(result['@graph'], function(node) {
         return node['@type'] === 'ontology:Study';
       });
-      expect(study.has_epochs.length).toEqual(3);
+      expect(study.has_epochs).not.toBeNull();
     });
 
   });

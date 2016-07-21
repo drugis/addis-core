@@ -101,7 +101,7 @@ define(['lodash'], function(_) {
       },
       'has_epochs': {
         '@id': 'http://trials.drugis.org/ontology#has_epochs',
-        '@container': '@list'
+        'type': '@id'
       },
       'has_eligibility_criteria': {
         '@id': 'http://trials.drugis.org/ontology#has_eligibility_criteria',
@@ -282,9 +282,13 @@ define(['lodash'], function(_) {
     }
 
     function findStudyNode(graph) {
-      return _.find(graph['@graph'], function(graphNode) {
+      return _.find(graph, function(graphNode) {
         return graphNode['@type'] === 'ontology:Study';
       });
+    }
+
+    function findStudyGraphNode(graph) {
+      return findStudyNode(graph['@graph']);
     }
 
     function loadJson(jsonPromise) {
@@ -313,7 +317,7 @@ define(['lodash'], function(_) {
 
     function getStudy() {
       return studyJsonPromise.then(function(graph) {
-        return findStudyNode(graph);
+        return findStudyGraphNode(graph);
       });
     }
 
@@ -337,7 +341,8 @@ define(['lodash'], function(_) {
       getJsonGraph: getJsonGraph,
       saveJsonGraph: saveJsonGraph,
       getStudy: getStudy,
-      save: save
+      save: save,
+      findStudyNode: findStudyNode
     };
   };
 

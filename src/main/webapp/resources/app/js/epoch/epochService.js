@@ -1,7 +1,7 @@
 'use strict';
 define(['lodash'], function(_) {
-    var dependencies = ['$q', 'StudyService', 'UUIDService'];
-    var EpochService = function($q, StudyService, UUIDService) {
+    var dependencies = ['$q', 'StudyService', 'UUIDService', 'RdfListService'];
+    var EpochService = function($q, StudyService, UUIDService, RdfListService) {
 
       var INSTANCE_PREFIX = 'http://trials.drugis.org/instances/';
 
@@ -34,17 +34,21 @@ define(['lodash'], function(_) {
       }
 
       function queryItems() {
-        return StudyService.getStudy().then(function(study) {
-          return _.map(study.has_epochs, tofrontEnd)
+        return StudyService.getJsonGraph().then(function(graph) {
+          var study = StudyService.findStudyNode(graph);
+          return RdfListService.flattenList(study.has_epochs)
+            .map(tofrontEnd)
             .map(addPosition)
             .map(addIsPrimary.bind(this, study.has_primary_epoch));
         });
       }
 
       function addItem(item) {
-        return StudyService.getStudy().then(function(study) {
+        return StudyService.getJsonGraph().then(function(graph) {
+          var study = StudyService.findStudyNode(graph);
+          var newId = INSTANCE_PREFIX + UUIDService.generate();
           var newEpoch = {
-            '@id': INSTANCE_PREFIX + UUIDService.generate(),
+            '@id': newId,
             '@type': 'ontology:Epoch',
             label: item.label,
             duration: item.duration
@@ -55,46 +59,51 @@ define(['lodash'], function(_) {
           }
 
           if (item.isPrimaryEpoch) {
-            study.has_primary_epoch = newEpoch['@id'];
-          }
-          
-          if(!study.has_epochs) {
-            study.has_epochs = [];
+            study.has_primary_epoch = newId;
           }
 
-          study.has_epochs.push(newEpoch);
-          return StudyService.save(study);
+          var epochs = RdfListService.flattenList(study.has_epochs);
+          epochs.push(newEpoch);
+          study.has_epochs = RdfListService.unFlattenList(epochs);
+          return StudyService.saveJsonGraph(graph);
         });
       }
 
       function deleteItem(item) {
-        return StudyService.getStudy().then(function(study) {
+        return StudyService.getJsonGraph().then(function(graph) {
+          var study = StudyService.findStudyNode(graph);
 
           if (study.has_primary_epoch === item.uri) {
             study.has_primary_epoch = undefined;
           }
 
-          _.remove(study.has_epochs, function(epoch) {
+          var epochs = RdfListService.flattenList(study.has_epochs);
+
+          epochs = _.reject(epochs, function(epoch) {
             return epoch['@id'] === item.uri;
           });
 
-          return StudyService.save(study);
+          study.has_epochs = RdfListService.unFlattenList(epochs);
+
+          return StudyService.saveJsonGraph(graph);
         });
       }
 
       function editItem(newItem) {
-        return StudyService.getStudy().then(function(study) {
-          var editEpochIndex = _.findIndex(study.has_epochs, function(epoch) {
+        return StudyService.getJsonGraph().then(function(graph) {
+          var study = StudyService.findStudyNode(graph);
+          var epochs = RdfListService.flattenList(study.has_epochs);
+          var editEpochIndex = _.findIndex(epochs, function(epoch) {
             return newItem.uri === epoch['@id'];
           });
 
-          study.has_epochs[editEpochIndex].label = newItem.label;
-          study.has_epochs[editEpochIndex].duration = newItem.duration;
+          epochs[editEpochIndex].label = newItem.label;
+          epochs[editEpochIndex].duration = newItem.duration;
 
           if (newItem.comment) {
-            study.has_epochs[editEpochIndex].comment = newItem.comment;
+            epochs[editEpochIndex].comment = newItem.comment;
           } else {
-            delete study.has_epochs[editEpochIndex].comment;
+            delete epochs[editEpochIndex].comment;
           }
 
           if (study.has_primary_epoch === newItem.uri) {
@@ -104,8 +113,9 @@ define(['lodash'], function(_) {
           if (newItem.isPrimary) {
             study.has_primary_epoch = newItem.uri;
           }
+          study.has_epochs = RdfListService.unFlattenList(epochs);
 
-          return StudyService.save(study);
+          return StudyService.saveJsonGraph(graph);
         });
       }
 
