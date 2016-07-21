@@ -6,7 +6,6 @@ define([], function() {
       restrict: 'E',
       templateUrl: 'app/js/dataset/featuredDatasetsDirective.html',
       scope: {
-        userUid: '=',
         createProjectDialog: '&'
       },
       link: function(scope) {
@@ -21,9 +20,7 @@ define([], function() {
           }
         });
 
-        DatasetResource.getFeatured({
-          userUid: scope.userUid
-        }).$promise.then(function(response) {
+        DatasetResource.getFeatured().$promise.then(function(response) {
           scope.featuredDatasets = response;
         });
 

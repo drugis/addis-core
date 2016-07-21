@@ -1,6 +1,5 @@
 package org.drugis.trialverse.dataset.controller;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpException;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.riot.RDFLanguages;
@@ -167,13 +166,6 @@ public class DatasetController extends AbstractAddisCoreController {
   public void getDatasetAsJson(HttpServletResponse httpServletResponse, @PathVariable String datasetUUID) throws IOException, URISyntaxException {
     logger.trace("retrieving head dataset");
     getVersionedDatasetAsJson(httpServletResponse, datasetUUID, null);
-  }
-
-  @RequestMapping(value = "/featured", method = RequestMethod.GET, headers = WebConstants.ACCEPT_JSON_HEADER)
-  @ResponseBody
-  public List<Dataset> queryFeaturedDatasetsAsJson(HttpServletResponse httpServletResponse) throws IOException, URISyntaxException {
-    logger.trace("retrieving featured datasets");
-    return datasetService.findFeatured();
   }
 
   @RequestMapping(value = "/{datasetUuid}/query", method = RequestMethod.GET)

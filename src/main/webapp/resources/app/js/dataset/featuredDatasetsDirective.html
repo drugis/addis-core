@@ -20,11 +20,11 @@
           </p>
           <ul class="button-group">
             <li>
-              <a ui-sref="dataset({userUid: userUid, datasetUUID: stripFrontFilter(featuredDataset.uri, 'http://trials.drugis.org/datasets/')})"
+              <a ui-sref="dataset({userUid: featuredDataset.creator.id, datasetUUID: stripFrontFilter(featuredDataset.uri, 'http://trials.drugis.org/datasets/')})"
                 class="button">View Dataset</a>
             </li>
             <li>
-              <button type="button" ng-click="createProjectDialog({dataset: featuredDataset})"
+              <button ng-if="showCreateProjectButton" type="button" ng-click="createProjectDialog({dataset: featuredDataset})"
                 class="button">Create project</button>
             </li>
           </ul>

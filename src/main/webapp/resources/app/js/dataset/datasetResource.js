@@ -40,11 +40,11 @@ define([], function() {
       'getForJson': {
         method: 'get',
         headers: {
-           'Accept': 'application/json; charset=UTF-8'
+          'Accept': 'application/json; charset=UTF-8'
         }
       },
       'getFeatured': {
-        url: '/users/:userUid/datasets/featured',
+        url: '/featured',
         method: 'get',
         isArray: true
       }
