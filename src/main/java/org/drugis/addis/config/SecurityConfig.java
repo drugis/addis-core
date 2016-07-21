@@ -63,11 +63,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
   @Override
   protected void configure(AuthenticationManagerBuilder auth) throws Exception {
     auth.jdbcAuthentication()
-      .dataSource(dataSource)
-      .usersByUsernameQuery("SELECT username, password, TRUE FROM Account WHERE username = ?")
-      .authoritiesByUsernameQuery("SELECT Account.username, COALESCE(AccountRoles.role, 'ROLE_USER') FROM Account" +
-        " LEFT OUTER JOIN AccountRoles ON Account.id = AccountRoles.accountId WHERE Account.username = ?")
-      .passwordEncoder(passwordEncoder());
+            .dataSource(dataSource)
+            .usersByUsernameQuery("SELECT username, password, TRUE FROM Account WHERE username = ?")
+            .authoritiesByUsernameQuery("SELECT Account.username, COALESCE(AccountRoles.role, 'ROLE_USER') FROM Account" +
+                    " LEFT OUTER JOIN AccountRoles ON Account.id = AccountRoles.accountId WHERE Account.username = ?")
+            .passwordEncoder(passwordEncoder());
     auth.authenticationProvider(tokenAuthenticationProvider());
 
   }
@@ -75,8 +75,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
   @Override
   public void configure(WebSecurity web) throws Exception {
     web
-      .ignoring()
-      .antMatchers("/resources/**");
+            .ignoring()
+            .antMatchers("/resources/**");
   }
 
   @Override
@@ -92,31 +92,30 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     CookieCsrfTokenRepository csrfTokenRepository = new CookieCsrfTokenRepository();
     csrfTokenRepository.setCookieHttpOnly(false);
     http
-      .formLogin()
-        .loginPage("/signin")
-        .loginProcessingUrl("/signin/authenticate")
-        .failureUrl("/signin?param.error=bad_credentials")
-        .defaultSuccessUrl("/")
-      .and().authorizeRequests()
+            .formLogin()
+            .loginPage("/signin")
+            .loginProcessingUrl("/signin/authenticate")
+            .failureUrl("/signin?param.error=bad_credentials")
+            .and().authorizeRequests()
             .antMatchers(whitelist).permitAll()
             .antMatchers(HttpMethod.GET, "/**").permitAll()
             .antMatchers(HttpMethod.POST, "/**").authenticated()
             .antMatchers(HttpMethod.PUT, "/**").authenticated()
             .antMatchers(HttpMethod.DELETE, "/**").authenticated()
-      .and().rememberMe()
-      .and().exceptionHandling()
-        .authenticationEntryPoint(new Http403ForbiddenEntryPoint())
-      .and().apply(
+            .and().rememberMe()
+            .and().exceptionHandling()
+            .authenticationEntryPoint(new Http403ForbiddenEntryPoint())
+            .and().apply(
             new SpringSocialConfigurer()
-          .postLoginUrl("/")
-          .alwaysUsePostLoginUrl(true))
+                    .alwaysUsePostLoginUrl(false)
+    )
             .and().csrf()
             .csrfTokenRepository(csrfTokenRepository)
             .requireCsrfProtectionMatcher(request ->
-        !(requestMatchers.stream().anyMatch(matcher -> matcher.matches(request))
-                || Optional.fromNullable(request.getHeader("X-Auth-Application-Key")).isPresent()
-                || HttpMethod.GET.toString().equals(request.getMethod())))
-      .and().setSharedObject(ApplicationContext.class, context);
+                    !(requestMatchers.stream().anyMatch(matcher -> matcher.matches(request))
+                            || Optional.fromNullable(request.getHeader("X-Auth-Application-Key")).isPresent()
+                            || HttpMethod.GET.toString().equals(request.getMethod())))
+            .and().setSharedObject(ApplicationContext.class, context);
 
     http.addFilterBefore(new AuthenticationFilter(authenticationManager()), BasicAuthenticationFilter.class);
 
@@ -146,5 +145,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
   public AuthenticationEntryPoint unauthorizedEntryPoint() {
     return (request, response, authException) -> response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
   }
+
 
 }

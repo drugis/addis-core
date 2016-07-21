@@ -7,6 +7,7 @@ define(
     'lodash',
     'mmfoundation',
     'foundation',
+    'angular-cookies',
     'angular-ui-router',
     'angular-select',
     'angularanimate',
@@ -88,6 +89,7 @@ define(
       'ngSanitize',
       'ui.select',
       'angular-md5',
+      'ngCookies',
       'mm.foundation.tpls',
       'mm.foundation.modal',
       'mm.foundation.typeahead',
@@ -161,8 +163,8 @@ define(
     app.constant('mcdaRootPath', 'app/js/bower_components/mcda-web/app/');
     app.constant('gemtcRootPath', 'app/js/bower_components/gemtc-web/app/');
 
-    app.run(['$rootScope', '$window', '$http', 'HelpPopupService',
-      function($rootScope, $window, $http, HelpPopupService) {
+    app.run(['$rootScope', '$window', '$http', '$location', '$cookies', 'HelpPopupService',
+      function($rootScope, $window, $http, $location, $cookies, HelpPopupService) {
         $rootScope.$safeApply = function($scope, fn) {
           var phase = $scope.$root.$$phase;
           if (phase === '$apply' || phase === '$digest') {
@@ -175,7 +177,12 @@ define(
         HelpPopupService.loadLexicon($http.get('app/js/bower_components/gemtc-web/app/lexicon.json'));
         HelpPopupService.loadLexicon($http.get('addis-lexicon.json'));
 
-        $rootScope.$on("$stateChangeSuccess", function(event, currentState, previousState) {
+        $rootScope.$on('$stateChangeSuccess', function(event, toState, toParams, fromState, fromParams) {
+          if (toState.name === 'datasets' && fromState.name === '' && $cookies.get('returnToPage')) {
+            var redirectUrl = $cookies.get('returnToPage');
+            $cookies.remove('returnToPage');
+            $location.path(redirectUrl);
+          }
           $window.scrollTo(0, 0);
         });
       }
@@ -197,12 +204,12 @@ define(
         $urlRouterProvider.otherwise(function($injector) {
           var $window = $injector.get('$window');
           var $state = $injector.get('$state');
-          if($window.config && $window.config.user) {
-             $state.go('datasets', {
-                userUid: $window.config.user.id
-              });
-          }else {
-             $state.go('home');
+          if ($window.config && $window.config.user) {
+            $state.go('datasets', {
+              userUid: $window.config.user.id
+            });
+          } else {
+            $state.go('home');
           }
 
         });

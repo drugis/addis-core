@@ -3,10 +3,11 @@
 require.config({
   paths: {
     'angular': 'bower_components/angular/angular',
-    'angular-md5': 'bower_components/angular-md5/angular-md5',
+    'angular-cookies': 'bower_components/angular-cookies/angular-cookies.min',
+    'angular-md5': 'bower_components/angular-md5/angular-md5.min',
     'angular-patavi-client': 'bower_components/angular-patavi-client/patavi',
-    'angular-resource': 'bower_components/angular-resource/angular-resource',
-    'angular-ui-router': 'bower_components/angular-ui-router/release/angular-ui-router',
+    'angular-resource': 'bower_components/angular-resource/angular-resource.min',
+    'angular-ui-router': 'bower_components/angular-ui-router/release/angular-ui-router.min',
     'angular-select': 'bower_components/angular-ui-select/dist/select.min',
     'angularanimate': 'bower_components/angular-animate/angular-animate.min',
     'd3': 'bower_components/d3/d3.min',
@@ -38,6 +39,10 @@ require.config({
     'angular': {
       deps: ['jQuery'],
       exports: 'angular'
+    },
+    'angular-cookies': {
+      deps: ['angular'],
+      exports: 'angular-cookies'
     },
     'angular-md5': {
       deps: ['angular'],

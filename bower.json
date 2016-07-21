@@ -42,7 +42,8 @@
     "help-popup": "https://github.com/drugis/help-popup.git#0.0.1",
     "KaTeX": "katex#~0.5.1",
     "scrollup": "~2.4.1",
-    "install": "^1.0.4"
+    "install": "^1.0.4",
+    "angular-cookies": "^1.5.7"
   },
   "resolutions": {
     "d3": "3.5.6",

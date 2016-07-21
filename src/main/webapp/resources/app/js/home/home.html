@@ -26,16 +26,10 @@
 
       	<p class="text-center">Addis is designed to help policy makers and researchers judge the balance of favorable and unfavorable effects of medicines. Select any of the users below to view datasets or projects created by these users. To create your own analysis or dataset please sigin using a google account.</p>
 
-      	
-
         <form id="SignInForm" action="auth/google" method="GET">
 	        <input type="hidden" name="scope" value="openid email profile" />
-	   
-				
 				     <button style="display: block; margin: 0 auto;" class="button text-center" type="submit" tabindex="1" href=>Sign In with Google</button>
-		    
 	            <p class="text-center text-small" style="margin-top: 1rem">Right now, you need a Google account to sign in. The information we retrieve from Google is only used to ensure that you continue to have access to the projects you create.</p>
-	          </div>
         </form>
 
         <form id="hiddenSignInForm" action="<c:url value='/signin/authenticate'/>" tabindex="1000" method="POST" style="display: none;">
@@ -44,29 +38,32 @@
           <input type='password' name='password'>
           <input name="submit" type="submit">
         </form>
+        <hr />
+      </div>
+    </div>
+
+    <div class="row" style="margin-top: 2rem">
+      <div class="columns large-centered large-10">
+        <featured-datasets create-project-dialog="createProjectDialog(dataset)"></featured-datasets>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="columns large-centered large-10">
+          <h2 class="text-center">Addis users</h2>
+          <ul class="no-bullet">
+            <li ng-cloak class="ng-cloak" ng-show="!users.length">
+              <em>There are no users active in Addis</em>
+            </li>
+            <li ng-repeat="user in users | orderBy:'firstName'" style="margin-bottom: 1rem;">
+              <a ui-sref="datasets({userUid: user.id})">
+                <img class="user-image" ng-src="https://secure.gravatar.com/avatar/{{::user.md5}}?s=43&d=mm"> {{::user.firstName}} {{::user.lastName}}
+              </a>
+            </li>
+          </ul>
       </div>
     </div>
   </section>
 
-<div class="row" style="margin-top: 2rem">
-  <div class="columns large-centered large-10">
-    <featured-datasets create-project-dialog="createProjectDialog(dataset)"></featured-datasets>
-  </div>
-</div>
 
-<div class="row">
-  <div class="columns large-centered large-10">
-      <h1 class="text-center">Addis users</h1>
-      <ul class="no-bullet">
-        <li ng-cloak class="ng-cloak" ng-show="!users.length">
-          <em>There are no users active in Addis</em>
-        </li>
-        <li ng-repeat="user in users | orderBy:'firstName'" style="margin-bottom: 1rem;">
-          <a ui-sref="datasets({userUid: user.id})">
-            <img class="user-image" ng-src="https://secure.gravatar.com/avatar/{{::user.md5}}?s=43&d=mm"> {{::user.firstName}} {{::user.lastName}}
-          </a>
-        </li>
-      </ul>
-  </div>
-</div>
 	

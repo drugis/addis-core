@@ -35,7 +35,7 @@
                 <a href="signout">Sign out</a>
           </li>
           <li ng-if="isAnonimous">
-                <a href="/auth/google?scope=openid+email+profile">Sign in</a>
+                <a href="/auth/google?scope=openid+email+profile" ng-click="signin()">Sign in</a>
           </li>
         </ul>
       </section>
