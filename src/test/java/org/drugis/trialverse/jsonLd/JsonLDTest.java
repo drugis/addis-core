@@ -2,7 +2,6 @@ package org.drugis.trialverse.jsonLd;
 
 import org.apache.jena.graph.GraphUtil;
 import org.apache.jena.graph.compose.Delta;
-import org.apache.jena.query.DatasetFactory;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.riot.Lang;
@@ -87,7 +86,7 @@ public class JsonLDTest {
   @Test
   public void testTransformIsomorphy() throws IOException, ScriptException {
     String exampleJsonLd = loadResource(this.getClass(), "/jenaEsExampleJsonLd.json");
-    String underscoreLoc = "src/main/webapp/resources/app/js/bower_components/lodash/lodash.js";
+    String underscoreLoc = "src/test/java/org/drugis/trialverse/jsonLd/scripts/lodash-4.2.1.js";
     String transformScriptLoc = "src/main/webapp/resources/app/js/util/transformJsonLd.js";
 
     Model model = ModelFactory.createDefaultModel();
