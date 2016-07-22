@@ -16,6 +16,7 @@ require.config({
     'jQuery': 'bower_components/jquery/dist/jquery.min',
     'underscore': 'bower_components/underscore/underscore',
     'angular': 'bower_components/angular/angular',
+    'angular-cookies': 'bower_components/angular-cookies/angular-cookies.min',
     'angular-resource': 'bower_components/angular-resource/angular-resource',
     'angular-ui-router': 'bower_components/angular-ui-router/release/angular-ui-router',
     'angular-select': 'bower_components/angular-ui-select/dist/select.min',
@@ -53,6 +54,10 @@ require.config({
     'angular': {
       deps: ['jQuery'],
       exports: 'angular'
+    },
+    'angular-cookies': {
+      deps: ['angular'],
+      exports: 'angular-cookies'
     },
     'angular-select': {
       deps: ['angular', 'jQuery'],
