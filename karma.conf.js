@@ -13,6 +13,7 @@ module.exports = function(config) {
       'karma-chrome-launcher',
       'karma-junit-reporter',
       'karma-jasmine',
+      'karma-phantomjs-launcher'
       'karma-requirejs'
     ],
 
