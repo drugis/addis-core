@@ -433,7 +433,7 @@
                                     <url>jdbc:postgresql://${env.ADDIS_CORE_DB_HOST}/${env.ADDIS_CORE_DB}</url>
                                     <username>${env.ADDIS_CORE_DB_USERNAME}</username>
                                     <password>${env.ADDIS_CORE_DB_PASSWORD}</password>
-                                    <promptOnNonLocalDatabase>true</promptOnNonLocalDatabase>
+                                    <promptOnNonLocalDatabase>false</promptOnNonLocalDatabase>
                                 </configuration>
                                 <goals>
                                     <goal>update</goal>
