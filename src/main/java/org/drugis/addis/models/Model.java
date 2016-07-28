@@ -6,10 +6,12 @@ import net.minidev.json.JSONValue;
 import org.apache.commons.lang3.tuple.Pair;
 import org.drugis.addis.models.exceptions.InvalidModelException;
 import org.drugis.addis.util.JSONObjectConverter;
+import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
 import java.net.URI;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 ;
@@ -63,6 +65,11 @@ public class Model {
   @Convert(converter = JSONObjectConverter.class)
   private JSONObject sensitivity;
 
+  private Boolean archived;
+  @Column(name = "archived_on")
+  @Type(type="date")
+  private Date archivedOn;
+
   public Model() {
   }
 
@@ -106,6 +113,8 @@ public class Model {
     } else {
       throw new InvalidModelException("not a valid heterogeneity prior type");
     }
+
+    this.archived = false;
 
   }
 
@@ -183,6 +192,22 @@ public class Model {
 
   public void setHasResult() {
     this.hasResult = true;
+  }
+
+  public Boolean getArchived() {
+    return archived;
+  }
+
+  public Date getArchivedOn() {
+    return archivedOn;
+  }
+
+  public void setArchived(Boolean archived) {
+    this.archived = archived;
+  }
+
+  public void setArchivedOn(Date archivedOn) {
+    this.archivedOn = archivedOn;
   }
 
   @JsonIgnore

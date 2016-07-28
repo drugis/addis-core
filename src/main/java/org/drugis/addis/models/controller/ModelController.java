@@ -11,6 +11,7 @@ import org.drugis.addis.models.Model;
 import org.drugis.addis.models.controller.command.CreateModelCommand;
 import org.drugis.addis.models.controller.command.UpdateModelCommand;
 import org.drugis.addis.models.exceptions.InvalidModelException;
+import org.drugis.addis.models.repository.ModelRepository;
 import org.drugis.addis.models.service.ModelService;
 import org.drugis.addis.patavitask.repository.PataviTaskRepository;
 import org.drugis.addis.patavitask.repository.UnexpectedNumberOfResultsException;
@@ -48,6 +49,9 @@ public class ModelController extends AbstractAddisCoreController {
   @Inject
   PataviTaskRepository pataviTaskRepository;
 
+  @Inject
+  ModelRepository modelRepository;
+
   @RequestMapping(value = "/projects/{projectId}/analyses/{analysisId}/models", method = RequestMethod.POST)
   @ResponseBody
   public Model create(HttpServletResponse response, Principal principal, @PathVariable Integer projectId,
@@ -83,6 +87,13 @@ public class ModelController extends AbstractAddisCoreController {
   public void update(Principal principal, @RequestBody UpdateModelCommand updateModelCommand) throws MethodNotAllowedException, ResourceDoesNotExistException, InvalidModelException, IOException {
     modelService.checkOwnership(updateModelCommand.getId(), principal);
     modelService.increaseRunLength(updateModelCommand);
+  }
+
+  @RequestMapping(value = "/projects/{projectId}/analyses/{analysisId}/models/{modelId}/attributes", method = RequestMethod.POST)
+  @ResponseBody
+  public void setAttributes(Principal principal, @PathVariable Integer modelId, @RequestBody ModelAttributesCommand modelAttributesCommand) throws MethodNotAllowedException, ResourceDoesNotExistException, InvalidModelException, IOException {
+    modelService.checkOwnership(modelId, principal);
+    modelRepository.setArchived(modelId, modelAttributesCommand.getArchived());
   }
 
   @RequestMapping(value = "/projects/{projectId}/analyses/{analysisId}/models/{modelId}/result", method = RequestMethod.GET)

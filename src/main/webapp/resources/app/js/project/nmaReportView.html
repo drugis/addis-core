@@ -36,6 +36,7 @@
   <h3>Secondary models</h3>
   <ul>
     <li ng-show="otherModels.length < 1"><em>none</em></li>
-    <li ng-repeat="model in otherModels | orderBy:'title'"><a ui-sref="model({userUid: user.id, projectId: project.id, analysisId: analysis.id, modelId: model.id})">{{model.title}}</a></li>
+    <li ng-show="showNoOtherUnarchived"><em>all secondary models have been archived</em></li>
+    <li ng-repeat="model in otherModels | orderBy:'title' | filter:{archived:false}"><a ui-sref="model({userUid: user.id, projectId: project.id, analysisId: analysis.id, modelId: model.id})">{{model.title}}</a></li>
   </ul>
 </div>

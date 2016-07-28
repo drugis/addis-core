@@ -15,6 +15,7 @@ import javax.persistence.TypedQuery;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -73,5 +74,12 @@ public class ModelRepositoryImpl implements ModelRepository {
     TypedQuery<Model> query = em.createQuery("SELECT m FROM Model m, NetworkMetaAnalysis a WHERE m.analysisId = a.id AND a.projectId = :projectId", Model.class);
     query.setParameter("projectId", projectId);
     return query.getResultList();
+  }
+
+  @Override
+  public void setArchived(Integer modelId, Boolean archived) {
+    Model model = em.find(Model.class, modelId);
+    model.setArchived(archived);
+    model.setArchivedOn( archived ? new Date(): null);
   }
 }

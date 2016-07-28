@@ -171,4 +171,24 @@ public class JpaModelRepositoryTest {
     List<Model> networkModelsByProject = modelRepository.findNetworkModelsByProject(projectId);
     assertEquals(2, networkModelsByProject.size());
   }
+
+  @Test
+  public void setArchived() throws IOException {
+    Integer modelsId = 1;
+    Boolean archived = true;
+    modelRepository.setArchived(modelsId, archived);
+    Model model = modelRepository.get(modelsId);
+    assertTrue(model.getArchived());
+    assertNotNull(model.getArchivedOn());
+  }
+
+  @Test
+  public void setArchiveToFalse() throws IOException {
+    Integer modelsId = 1;
+    Boolean archived = false;
+    modelRepository.setArchived(modelsId, archived);
+    Model model = modelRepository.get(modelsId);
+    assertFalse(model.getArchived());
+    assertNull(model.getArchivedOn());
+  }
 }

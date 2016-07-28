@@ -713,3 +713,9 @@ ALTER TABLE BothDoseTypesIntervention ADD CONSTRAINT bothtypesintervention_botht
 --rollback ALTER TABLE AbstractIntervention ADD COLUMN semanticInterventionUri VARCHAR NOT NULL;
 --rollback INSERT INTO AbstractIntervention (semanticInterventionLabel, semanticInterventionUri) SELECT semanticInterventionLabel, semanticInterventionUri FROM SingleIntervention;
 --rollback DROP TABLE SingleIntervention;
+
+--changeset stroombergc:59
+ALTER TABLE model ADD COLUMN archived boolean NOT NULL DEFAULT FALSE ;
+ALTER TABLE model ADD COLUMN archived_on date;
+--rollback ALTER TABLE model DROP COLUMN archived_on;
+--rollback ALTER TABLE model DROP COLUMN archived;

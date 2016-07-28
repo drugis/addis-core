@@ -17,7 +17,7 @@
     <label>Primary model</label>
     <div ng-hide="!models.length" class="row collapse">
       <div class="small-9 columns">
-        <select ng-model="primaryModel" ng-options="model.title for model in models"></select>
+        <select ng-model="primaryModel" ng-options="model.title for model in models | orderBy:title | filter:{archived: false}"></select>
       </div>
       <div class="small-3 columns">
         <button ng-disabled="!primaryModel" ng-click="primaryModel = null" class=" alert postfix"

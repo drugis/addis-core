@@ -57,6 +57,10 @@ define(['lodash'], function(_) {
             return model.id !== scope.analysis.primaryModel;
           });
 
+          scope.showNoOtherUnarchived = _.reduce(scope.otherModels, function(accum, model) {
+            return model.archived ? ++accum : accum;
+           }, 0) > 0;
+
           if (scope.primaryModel) {
             primaryModelDefer.resolve(scope.primaryModel);
           } else {

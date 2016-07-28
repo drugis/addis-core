@@ -9,6 +9,7 @@ import org.drugis.addis.base.AbstractAddisCoreController;
 import org.drugis.addis.config.TestConfig;
 import org.drugis.addis.models.Model;
 import org.drugis.addis.models.controller.command.*;
+import org.drugis.addis.models.repository.ModelRepository;
 import org.drugis.addis.models.service.ModelService;
 import org.drugis.addis.patavitask.repository.PataviTaskRepository;
 import org.drugis.addis.projects.service.ProjectService;
@@ -56,6 +57,9 @@ public class ModelControllerTest {
 
   @Mock
   private ModelService modelService;
+
+  @Mock
+  private ModelRepository modelRepository;
 
   @Mock
   private PataviTaskRepository pataviTaskRepository;
@@ -467,6 +471,18 @@ public class ModelControllerTest {
 
     verify(modelService).checkOwnership(modelId, user);
     verify(modelService).increaseRunLength(updateModelCommand);
+  }
+
+  @Test
+  public void setAttibutes() throws Exception {
+    String postBodyStr = TestUtils.createJson(new ModelAttributesCommand(true));
+    mockMvc.perform(post("/projects/45/analyses/55/models/1/attributes")
+            .content(postBodyStr)
+            .principal(user)
+            .contentType(WebConstants.getApplicationJsonUtf8Value()))
+            .andExpect(status().isOk());
+    verify(modelService).checkOwnership(1, user);
+    verify(modelRepository).setArchived(1, true);
   }
 
   @Test
