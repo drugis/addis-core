@@ -719,3 +719,20 @@ ALTER TABLE model ADD COLUMN archived boolean NOT NULL DEFAULT FALSE ;
 ALTER TABLE model ADD COLUMN archived_on date;
 --rollback ALTER TABLE model DROP COLUMN archived_on;
 --rollback ALTER TABLE model DROP COLUMN archived;
+
+--changeset reidd:60
+CREATE TABLE funnelPlot (
+  id SERIAL NOT NULL,
+  modelId INT NOT NULL REFERENCES model(id),
+  PRIMARY KEY(id)
+);
+
+CREATE TABLE funnelPlotComparison(
+  plotId INT NOT NULL REFERENCES funnelplot(id),
+  t1 INT NOT NULL,
+  t2 INT NOT NULL,
+  biasDirection INT NOT NULL,
+  PRIMARY KEY(plotId, t1, t2)
+);
+--rollback DROP TABLE funnelPlotComparison CASCADE;
+--rollback DROP TABLE funnelPlot CASCADE;

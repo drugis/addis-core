@@ -7,10 +7,13 @@ import org.drugis.addis.analyses.service.AnalysisService;
 import org.drugis.addis.base.AbstractAddisCoreController;
 import org.drugis.addis.exception.MethodNotAllowedException;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
+import org.drugis.addis.models.FunnelPlot;
 import org.drugis.addis.models.Model;
+import org.drugis.addis.models.controller.command.CreateFunnelPlotCommand;
 import org.drugis.addis.models.controller.command.CreateModelCommand;
 import org.drugis.addis.models.controller.command.UpdateModelCommand;
 import org.drugis.addis.models.exceptions.InvalidModelException;
+import org.drugis.addis.models.repository.FunnelPlotRepository;
 import org.drugis.addis.models.repository.ModelRepository;
 import org.drugis.addis.models.service.ModelService;
 import org.drugis.addis.patavitask.repository.PataviTaskRepository;
@@ -51,6 +54,9 @@ public class ModelController extends AbstractAddisCoreController {
 
   @Inject
   ModelRepository modelRepository;
+
+  @Inject
+  FunnelPlotRepository funnelPlotRepository;
 
   @RequestMapping(value = "/projects/{projectId}/analyses/{analysisId}/models", method = RequestMethod.POST)
   @ResponseBody
@@ -94,6 +100,20 @@ public class ModelController extends AbstractAddisCoreController {
   public void setAttributes(Principal principal, @PathVariable Integer modelId, @RequestBody ModelAttributesCommand modelAttributesCommand) throws MethodNotAllowedException, ResourceDoesNotExistException, InvalidModelException, IOException {
     modelService.checkOwnership(modelId, principal);
     modelRepository.setArchived(modelId, modelAttributesCommand.getArchived());
+  }
+
+  @RequestMapping(value = "/projects/{projectId}/analyses/{analysisId}/models/{modelId}/funnelPlots", method = RequestMethod.POST)
+  public void createFunnelPlot(HttpServletResponse response, Principal principal,
+                               @PathVariable Integer projectId, @PathVariable Integer modelId, @PathVariable Integer analysisId, @RequestBody CreateFunnelPlotCommand createFunnelPlotCommand) throws ResourceDoesNotExistException, MethodNotAllowedException {
+    projectService.checkOwnership(projectId, principal);
+    analysisService.checkCoordinates(projectId, analysisId);
+    funnelPlotRepository.create(createFunnelPlotCommand);
+  }
+
+  @RequestMapping(value = "/projects/{projectId}/analyses/{analysisId}/models/{modelId}/funnelPlots", method = RequestMethod.GET)
+  @ResponseBody
+  public List<FunnelPlot> queryFunnelPlots(@PathVariable Integer modelId) {
+    return funnelPlotRepository.query(modelId);
   }
 
   @RequestMapping(value = "/projects/{projectId}/analyses/{analysisId}/models/{modelId}/result", method = RequestMethod.GET)

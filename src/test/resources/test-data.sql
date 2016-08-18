@@ -114,3 +114,7 @@ INSERT INTO public.VersionMapping (id, versionedDatasetUrl, ownerUuid, trialvers
 INSERT INTO public.FeaturedDataset(dataseturl) VALUES('http://trials.drugis.org/datasets/e2ab9670-d3c7-402c-81ad-60abbb46ca4c');
 INSERT INTO public.FeaturedDataset(dataseturl) VALUES('http://trials.drugis.org/datasets/dbdf84e9-8bdb-4233-9bf6-c553cd023638');
 
+INSERT INTO public.funnelplot(id, modelId) VALUES (-1, 1);
+
+INSERT INTO public.funnelPlotComparison(plotId, t1, t2, biasDirection) VALUES (-1, 2, 3, 1);
+INSERT INTO public.funnelPlotComparison(plotId, t1, t2, biasDirection) VALUES (-1, 3, 4, 2);
