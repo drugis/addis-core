@@ -17,7 +17,7 @@ define(['lodash'], function(_) {
     $scope.baselineDistribution = {
       selectedAlternative: $scope.alternatives[0]
     };
-    $scope.baselineDistribution.scale = AnalysisService.LIKELIHOOD_LINK_SETTINGS.find(function(setting) {
+    $scope.baselineDistribution.scale = _.find(AnalysisService.LIKELIHOOD_LINK_SETTINGS, function(setting) {
       return setting.likelihood === outcomeWithAnalysis.selectedModel.likelihood &&
         setting.link === outcomeWithAnalysis.selectedModel.link;
     }).absoluteScale;

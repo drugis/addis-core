@@ -20,7 +20,7 @@ define([], function() {
             selectedAnalysis = outcomeAnalysis;
             isInclusionSet = true;
 
-            selectedModel = models.find(function(model) {
+            selectedModel = _.find(models, function(model) {
               return model.id === outcomeInclusion.modelId;
             });
           }
@@ -82,13 +82,13 @@ define([], function() {
     }
 
     function isModelWithMissingAlternatives(outcomesWithAnalyses) {
-      return outcomesWithAnalyses.find(function(owa) {
+      return _.find(outcomesWithAnalyses, function(owa) {
         return owa.outcome.isIncluded && owa.selectedModel.missingAlternatives.length;
       });
     }
 
     function isModelWithoutResults(outcomesWithAnalyses) {
-      return outcomesWithAnalyses.find(function(owa) {
+      return _.find(outcomesWithAnalyses, function(owa) {
         return owa.outcome.isIncluded && !owa.selectedModel.hasResult;
       });
     }
@@ -100,7 +100,7 @@ define([], function() {
           return alternative.id !== modelType.details.from.id &&
             alternative.id !== modelType.details.to.id;
         } else {
-          return !owa.selectedAnalysis.interventionInclusions.find(function(includedIntervention) {
+          return !_.find(owa.selectedAnalysis.interventionInclusions, function(includedIntervention) {
             return alternative.id === includedIntervention.interventionId;
           });
         }

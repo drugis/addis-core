@@ -42,7 +42,7 @@ define(['lodash'], function(_) {
       });
 
       $scope.alternatives = alternatives.map(function(alternative) {
-        var isAlternativeInInclusions = analysis.interventionInclusions.find(function(includedAlternative) {
+        var isAlternativeInInclusions = _.find(analysis.interventionInclusions, function(includedAlternative) {
           return includedAlternative.id === alternative.id;
         });
         if (isAlternativeInInclusions) {
@@ -53,7 +53,7 @@ define(['lodash'], function(_) {
       setIncludedAlternatives();
 
       $scope.outcomes = outcomes.map(function(outcome) {
-        var isOutcomeInInclusions = analysis.mbrOutcomeInclusions.find(function(mbrOutcomeInclusion) {
+        var isOutcomeInInclusions = _.find(analysis.mbrOutcomeInclusions, function(mbrOutcomeInclusion) {
           return mbrOutcomeInclusion.outcomeId === outcome.id;
         });
         if (isOutcomeInInclusions) {
