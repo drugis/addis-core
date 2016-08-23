@@ -7,8 +7,12 @@ import org.drugis.addis.TestUtils;
 import org.drugis.addis.analyses.service.AnalysisService;
 import org.drugis.addis.base.AbstractAddisCoreController;
 import org.drugis.addis.config.TestConfig;
+import org.drugis.addis.models.BiasDirection;
+import org.drugis.addis.models.FunnelPlot;
+import org.drugis.addis.models.FunnelPlotComparison;
 import org.drugis.addis.models.Model;
 import org.drugis.addis.models.controller.command.*;
+import org.drugis.addis.models.repository.FunnelPlotRepository;
 import org.drugis.addis.models.repository.ModelRepository;
 import org.drugis.addis.models.service.ModelService;
 import org.drugis.addis.patavitask.repository.PataviTaskRepository;
@@ -26,16 +30,19 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import javax.inject.Inject;
 import java.net.URI;
 import java.security.Principal;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
 import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.core.Is.is;
 import static org.mockito.Mockito.*;
@@ -60,6 +67,9 @@ public class ModelControllerTest {
 
   @Mock
   private ModelRepository modelRepository;
+
+  @Mock
+  private FunnelPlotRepository funnelPlotRepository;
 
   @Mock
   private PataviTaskRepository pataviTaskRepository;
@@ -474,7 +484,7 @@ public class ModelControllerTest {
   }
 
   @Test
-  public void setAttibutes() throws Exception {
+  public void setAttributes() throws Exception {
     String postBodyStr = TestUtils.createJson(new ModelAttributesCommand(true));
     mockMvc.perform(post("/projects/45/analyses/55/models/1/attributes")
             .content(postBodyStr)
@@ -522,6 +532,42 @@ public class ModelControllerTest {
             .andExpect(status().isOk())
             .andExpect(jsonPath("$", empty()));
     verify(modelService).queryConsistencyModels(projectId);
+  }
+
+  @Test
+  public void testCreateFunnelPlot() throws Exception {
+    List<CreateFunnelPlotComparisonCommand> includedComparisons = Collections.emptyList();
+    Integer modelId = 3;
+    CreateFunnelPlotCommand createFunnelPlotCommand = new CreateFunnelPlotCommand(modelId, includedComparisons);
+    String postBodyStr = TestUtils.createJson(createFunnelPlotCommand);
+    MockHttpServletRequestBuilder post = post("/projects/1/analyses/2/models/3/funnelPlots")
+            .content(postBodyStr)
+            .principal(user)
+            .contentType(WebConstants.getApplicationJsonUtf8Value());
+    mockMvc.perform(post).andExpect(status().isCreated());
+    verify(analysisService).checkCoordinates(1, 2);
+    verify(projectService).checkOwnership(1, user);
+    verify(funnelPlotRepository).create(createFunnelPlotCommand);
+  }
+
+  @Test
+  public void testQueryFunnelPlots() throws Exception {
+    Integer modelId = 3;
+
+    FunnelPlotComparison comparison1 = new FunnelPlotComparison(1, 2, 3, BiasDirection.T_1);
+    FunnelPlotComparison comparison2 = new FunnelPlotComparison(1, 3, 4, BiasDirection.T_2);
+    List<FunnelPlotComparison> includedComparisons = Arrays.asList(comparison1, comparison2);
+    FunnelPlot funnelPlot = new FunnelPlot(1, 1, includedComparisons);
+
+    when(funnelPlotRepository.query(modelId)).thenReturn(Collections.singletonList(funnelPlot));
+
+    mockMvc.perform(get("/projects/1/analyses/2/models/3/funnelPlots").principal(user))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()))
+            .andExpect(jsonPath("$", notNullValue()))
+            .andExpect(jsonPath("$[0].id", equalTo(funnelPlot.getId())));
+
+    verify(funnelPlotRepository).query(modelId);
   }
 
 }

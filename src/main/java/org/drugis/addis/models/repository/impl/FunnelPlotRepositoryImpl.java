@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.TypedQuery;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -41,6 +42,8 @@ public class FunnelPlotRepositoryImpl implements FunnelPlotRepository {
 
   @Override
   public List<FunnelPlot> query(Integer modelId) {
-    return null;
+    TypedQuery<FunnelPlot> query = em.createQuery("FROM FunnelPlot WHERE modelId = :modelId", FunnelPlot.class);
+    query.setParameter("modelId", modelId);
+    return query.getResultList();
   }
 }

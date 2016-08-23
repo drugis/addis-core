@@ -5,6 +5,7 @@ import org.drugis.addis.analyses.service.AnalysisService;
 import org.drugis.addis.covariates.CovariateRepository;
 import org.drugis.addis.interventions.repository.InterventionRepository;
 import org.drugis.addis.interventions.service.InterventionService;
+import org.drugis.addis.models.repository.FunnelPlotRepository;
 import org.drugis.addis.models.repository.ModelRepository;
 import org.drugis.addis.outcomes.repository.OutcomeRepository;
 import org.drugis.addis.outcomes.service.OutcomeService;
@@ -119,6 +120,11 @@ public class TestConfig {
   @Bean
   public ModelRepository mockModelRepository() {
     return mock(ModelRepository.class);
+  }
+
+  @Bean
+  public FunnelPlotRepository mockFunnelPlotRepository() {
+    return mock(FunnelPlotRepository.class);
   }
 
   @Bean

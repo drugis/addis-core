@@ -3,6 +3,7 @@ package org.drugis.addis.models.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.apache.http.HttpHeaders;
+import org.apache.http.HttpStatus;
 import org.drugis.addis.analyses.service.AnalysisService;
 import org.drugis.addis.base.AbstractAddisCoreController;
 import org.drugis.addis.exception.MethodNotAllowedException;
@@ -108,6 +109,7 @@ public class ModelController extends AbstractAddisCoreController {
     projectService.checkOwnership(projectId, principal);
     analysisService.checkCoordinates(projectId, analysisId);
     funnelPlotRepository.create(createFunnelPlotCommand);
+    response.setStatus(HttpStatus.SC_CREATED);
   }
 
   @RequestMapping(value = "/projects/{projectId}/analyses/{analysisId}/models/{modelId}/funnelPlots", method = RequestMethod.GET)

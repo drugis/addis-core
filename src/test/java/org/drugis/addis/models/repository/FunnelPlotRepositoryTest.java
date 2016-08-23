@@ -15,6 +15,7 @@ import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -47,6 +48,20 @@ public class FunnelPlotRepositoryTest {
     assertEquals(modelId, createdPlot.getModelId());
     assertEquals(1, createdPlot.getIncludedComparisons().size());
     assertEquals(expectedComparison, createdPlot.getIncludedComparisons().get(0));
+  }
+
+  @Test
+  public void testQuery() {
+    Integer modelId = 1;
+
+    List<FunnelPlot> result = funnelPlotRepository.query(modelId);
+
+    assertEquals(1, result.size());
+    FunnelPlotComparison comparison1 = new FunnelPlotComparison(-1, 2, 3, BiasDirection.T_1);
+    FunnelPlotComparison comparison2 = new FunnelPlotComparison(-1, 3, 4, BiasDirection.T_2);
+    List<FunnelPlotComparison> expectedComparisons = Arrays.asList(comparison1, comparison2);
+    FunnelPlot expectedFunnelPlot = new FunnelPlot(-1, 1, expectedComparisons);
+    assertEquals(expectedFunnelPlot, result.get(0));
   }
 
 }

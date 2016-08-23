@@ -1,6 +1,7 @@
 package org.drugis.addis.models;
 
 import javax.persistence.Entity;
+import javax.persistence.Enumerated;
 import javax.persistence.Id;
 import javax.persistence.IdClass;
 import java.io.Serializable;
@@ -18,6 +19,7 @@ public class FunnelPlotComparison {
   @Id
   private Integer t2;
 
+  @Enumerated
   private BiasDirection biasDirection;
 
   public FunnelPlotComparison() {

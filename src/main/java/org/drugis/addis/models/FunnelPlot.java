@@ -19,11 +19,16 @@ public class FunnelPlot {
   @OneToMany(fetch = FetchType.EAGER, mappedBy = "plotId", cascade = CascadeType.ALL)
   private List<FunnelPlotComparison> includedComparisons = new ArrayList<>();
 
-  public FunnelPlot() {
-  }
+  public FunnelPlot() {}
 
   public FunnelPlot(Integer modelId) {
     this.modelId = modelId;
+  }
+
+  public FunnelPlot(Integer id, Integer modelId, List<FunnelPlotComparison> includedComparisons) {
+    this.id = id;
+    this.modelId = modelId;
+    this.includedComparisons = includedComparisons;
   }
 
   public Integer getId() {
