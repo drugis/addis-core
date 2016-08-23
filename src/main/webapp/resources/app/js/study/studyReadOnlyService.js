@@ -34,7 +34,7 @@ define(['lodash'], function(_) {
             row.timeOffsetDuration = moment.timeOffsetDuration;
 
             row.studyDataValues = studyGroups.map(function(group) {
-              var groupValue = moment.studyDataValues.find(function(value) {
+              var groupValue = _.find(moment.studyDataValues, function(value) {
                 return value.instanceUid === group.groupUri;
               });
               if (groupValue === undefined) {

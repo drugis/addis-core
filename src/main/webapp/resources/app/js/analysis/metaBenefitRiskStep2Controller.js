@@ -45,7 +45,7 @@ define(['lodash'], function(_) {
       });
 
       $scope.alternatives = alternatives.map(function(alternative) {
-        var isAlternativeInInclusions = analysis.interventionInclusions.find(function(includedIntervention) {
+        var isAlternativeInInclusions = _.find(analysis.interventionInclusions, function(includedIntervention) {
           return includedIntervention.interventionId === alternative.id;
         });
         if (isAlternativeInInclusions) {
@@ -55,7 +55,7 @@ define(['lodash'], function(_) {
       });
 
       $scope.outcomes = outcomes.map(function(outcome) {
-        var isOutcomeInInclusions = analysis.mbrOutcomeInclusions.find(function(mbrOutcomeInclusion) {
+        var isOutcomeInInclusions = _.find(analysis.mbrOutcomeInclusions, function(mbrOutcomeInclusion) {
           return mbrOutcomeInclusion.outcomeId === outcome.id;
         });
         if (isOutcomeInInclusions) {
@@ -101,7 +101,7 @@ define(['lodash'], function(_) {
           return owa.outcome.isIncluded;
         })
         .map(function(owa) {
-          owa.baselineDistribution = $scope.analysis.mbrOutcomeInclusions.find(function(inclusion) {
+          owa.baselineDistribution = _.find($scope.analysis.mbrOutcomeInclusions, function(inclusion) {
             return inclusion.outcomeId === owa.outcome.id;
           }).baseline;
           return owa;

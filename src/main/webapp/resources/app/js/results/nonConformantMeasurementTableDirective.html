@@ -4,7 +4,10 @@
     <tr>
       <th colspan="6">
         <div class="right">
-          <a ng-click="repairNonConformantMeasurements()" title="repair"> <i class="fa fa-wrench fa-2x fa-fw"></i> </a>
+          <a 
+          ng-show="isEditingAllowed"
+          ng-click="repairNonConformantMeasurements()"
+          title="repair"> <i class="fa fa-wrench fa-2x fa-fw"></i> </a>
         </div>
         <h5>Non-conformant measurements for {{variable.label}}</h5>
         <em class="warning">Warning, non-conformant measurements will not be used during analysis</em>
@@ -21,7 +24,7 @@
 
         <div class="large-12 columns">
           <div>{{::inputRow.label}}</div>
-          <div class="row collapse">
+          <div class="row collapse" ng-show="isEditingAllowed">
             <label>Select measurement moment</label>
             <div class="small-9 columns">
               <select style="display: inline;" ng-options="moment.label for moment in variable.measuredAtMoments"
