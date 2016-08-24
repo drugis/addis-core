@@ -112,7 +112,7 @@
                 <em ng-show="analysesLoaded && analyses.length === 0">No analyses have been defined</em>
               </div>
               <div ng-show="analysesLoaded && analyses.length > 0">
-                <table>
+                <table style="width: 100%;">
                   <thead>
                     <tr>
                       <th>Name</th>
@@ -144,21 +144,24 @@
               <button id="show-create-outcome-modal-btn" ng-show="editMode.allowEditing" ng-disabled="!loading.loaded"
                 class="small" ng-click="openCreateOutcomeDialog()"><i class="fa fa-plus"></i> Add outcome
               </button>
-              <table>
+              <table style="width: 100%;">
                 <thead>
                   <tr>
-                    <th class="large-3">Name</th>
-                    <th class="large-6 end">Motivation</th>
-                    <th class="large-3">Definition</th>
+                    <th>Name</th>
+                    <th>Outcome direction</th>
+                    <th>Motivation</th>
+                    <th>Definition</th>
                     <th ng-if="editMode.allowEditing"></th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr ng-repeat="outcome in outcomes">
                     <td>{{outcome.name}}</td>
+                    <td style="text-align: center;" ng-if="outcome.direction == 1">Higher is better</td>
+                    <td style="text-align: center;" ng-if="outcome.direction == -1">Lower is better</td>
                     <td>{{outcome.motivation}}</td>
                     <td>{{::outcome.semanticOutcomeLabel}}</td>
-                    <td ng-if="editMode.allowEditing"><a ng-click="openEditOutcomeDialog(outcome)"><i class="fa fa-edit fa-2x"></i></a></td>
+                    <td style="text-align: center;" ng-if="editMode.allowEditing"><a ng-click="openEditOutcomeDialog(outcome)"><i class="fa fa-edit fa-2x"></i></a></td>
                   </tr>
                 </tbody>
               </table>
@@ -186,7 +189,7 @@
                     <td>{{intervention.name}}</td>
                     <td>{{intervention.motivation}}</td>
                     <td>{{::intervention.semanticInterventionLabel}}{{::intervention.definitionLabel}}</td>
-                    <td ng-if="editMode.allowEditing"><a ng-click="openEditInterventionDialog(intervention)"><i class="fa fa-edit fa-2x"></i></a></td>
+                    <td  style="text-align: center;" ng-if="editMode.allowEditing"><a ng-click="openEditInterventionDialog(intervention)"><i class="fa fa-edit fa-2x"></i></a></td>
                   </tr>
                 </tbody>
               </table>

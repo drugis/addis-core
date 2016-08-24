@@ -43,7 +43,7 @@ public class NetworkMetaAnalysisProblem extends AbstractProblem {
     return studyLevelCovariates;
   }
 
-  public JSONObject buildProblemWithModelSettings(Model model) throws JsonProcessingException {
+  public JSONObject buildProblemWithModelSettings(Model model, Integer preferredDirection) throws JsonProcessingException {
     ObjectMapper objectMapper = new ObjectMapper();
     String problemString = objectMapper.writeValueAsString(this);
     JSONObject jsonProblem = new JSONObject(problemString);
@@ -55,6 +55,7 @@ public class NetworkMetaAnalysisProblem extends AbstractProblem {
     jsonProblem.put("likelihood", model.getLikelihood());
     jsonProblem.put("link", model.getLink());
     jsonProblem.put("regressor", model.getRegressor());
+    jsonProblem.put("preferredDirection", preferredDirection);
 
     if (model.getHeterogeneityPrior() != null) {
       jsonProblem.put("heterogeneityPrior", new JSONObject(objectMapper.writeValueAsString(model.getHeterogeneityPrior())));

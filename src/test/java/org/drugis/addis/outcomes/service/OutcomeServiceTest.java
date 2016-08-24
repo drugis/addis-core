@@ -40,7 +40,8 @@ public class OutcomeServiceTest {
   public void editNameAndMotivation() throws Exception {
     String name = "name";
     String motivation = "motivation";
-    Outcome oldIntervention = new Outcome(outcomeId, projectId, "oldName", "oldMotivation", new SemanticVariable(URI.create("uri"), "uriLabel"));
+    Integer direction = 1;
+    Outcome oldIntervention = new Outcome(outcomeId, projectId, "oldName", direction, "oldMotivation", new SemanticVariable(URI.create("uri"), "uriLabel"));
     when(outcomeRepository.get(projectId, outcomeId)).thenReturn(oldIntervention);
     when(outcomeRepository.isExistingOutcomeName(outcomeId, "name")).thenReturn(false);
     Outcome abstractIntervention = outcomeService.updateNameAndMotivation(projectId, outcomeId, name, motivation);

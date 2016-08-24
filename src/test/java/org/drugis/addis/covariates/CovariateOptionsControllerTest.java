@@ -85,8 +85,9 @@ public class CovariateOptionsControllerTest {
     Project project = new Project(null, null, null, "uuid", version);
     SemanticVariable semPopChar = new SemanticVariable(URI.create("uri1"), "label1");
     SemanticVariable semNonPopCharVar = new SemanticVariable(URI.create("uri2"), "label2");
-    Outcome popChar = new Outcome(projectId, "name1", "", semPopChar);
-    Outcome otherTypeOutcome = new Outcome(projectId, "name2", "", semNonPopCharVar);
+    Integer direction = 1;
+    Outcome popChar = new Outcome(projectId, "name1", direction, "", semPopChar);
+    Outcome otherTypeOutcome = new Outcome(projectId, "name2", direction, "", semNonPopCharVar);
 
     List<SemanticVariable> semanticOutcomes = Collections.singletonList(semPopChar);
     Collection<Outcome> outcomes = Arrays.asList(popChar, otherTypeOutcome);

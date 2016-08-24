@@ -53,10 +53,13 @@ public class OutcomeController extends AbstractAddisCoreController {
 
   @RequestMapping(value = "/projects/{projectId}/outcomes", method = RequestMethod.POST, produces = WebConstants.APPLICATION_JSON_UTF8_VALUE)
   @ResponseBody
-  public Outcome create(HttpServletRequest request, HttpServletResponse response, Principal currentUser, @PathVariable Integer projectId, @RequestBody OutcomeCommand outcomeCommand) throws MethodNotAllowedException, ResourceDoesNotExistException {
+  public Outcome create(HttpServletRequest request, HttpServletResponse response, Principal currentUser,
+                        @PathVariable Integer projectId, @RequestBody OutcomeCommand outcomeCommand)
+          throws Exception {
     Account user = accountRepository.findAccountByUsername(currentUser.getName());
     if (user != null) {
-      Outcome outcome = outcomeRepository.create(user, outcomeCommand);
+      Outcome outcome = outcomeRepository.create(user, outcomeCommand.getProjectId(), outcomeCommand.getName(),
+              outcomeCommand.getDirection(), outcomeCommand.getMotivation(), outcomeCommand.getSemanticOutcome());
       response.setStatus(HttpServletResponse.SC_CREATED);
       response.setHeader("Location", request.getRequestURL() + "/");
       return outcome;
