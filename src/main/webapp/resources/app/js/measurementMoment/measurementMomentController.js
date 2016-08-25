@@ -46,6 +46,17 @@ define(['lodash', 'angular'], function(_, angular) {
           });
     };
 
+    $scope.merge = function(targetMeasurementMoment) {
+      $scope.isEditing = true;
+      MeasurementMomentService.merge($scope.item, targetMeasurementMoment).then(function() {
+          callback();
+          $modalInstance.close();
+        },
+        function() {
+          $modalInstance.dismiss('cancel');
+        });
+    }
+
     $scope.actionType = actionType;
 
     if (actionType === 'Add') {
@@ -61,7 +72,21 @@ define(['lodash', 'angular'], function(_, angular) {
       $scope.hasOffset = $scope.itemScratch.offset === 'PT0S' ? 'false' : 'true';
 
       $scope.commit = $scope.editItem;
+
+      MeasurementMomentService.queryItems().then(function(measurementMoments) {
+        $scope.otherMeasurementMoments = _.filter(measurementMoments, function(measurementMoment) {
+          return measurementMoment.uri !== $scope.itemScratch.uri;
+        });
+      });
+      $scope.showMergeWarning = false;
+
     }
+
+    $scope.updateMergeWarning = function(targetMeasurementMoment) {
+      MeasurementMomentService.hasOverlap($scope.item, targetMeasurementMoment).then(function(result) {
+        $scope.showMergeWarning = result;
+      });
+    };
 
     $scope.isValidDuration = function(duration) {
       return DurationService.isValidDuration(duration);

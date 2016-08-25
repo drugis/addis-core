@@ -6,6 +6,9 @@ define(['angular-mocks'], function(angularMocks) {
     var studyService = jasmine.createSpyObj('StudyService', ['getJsonGraph', 'saveJsonGraph']);
     var epochServiceStub = jasmine.createSpyObj('EpochService', ['queryItems']);
     var uuidServiceMock = jasmine.createSpyObj('UUIDService', ['generate']);
+    var resultsServiceMock = jasmine.createSpyObj('ResultsService', ['queryResultsByMeasurementMoment']);
+    var repairServiceMock = jasmine.createSpyObj('RepairService', ['findOverlappingResults', 'mergeResults']);
+    var sourceResultsDefer, targetResultsDefer, mergeResultsDefer;
     var measurementMomentService;
 
 
@@ -14,6 +17,8 @@ define(['angular-mocks'], function(angularMocks) {
         $provide.value('StudyService', studyService);
         $provide.value('EpochService', epochServiceStub);
         $provide.value('UUIDService', uuidServiceMock);
+        $provide.value('ResultsService', resultsServiceMock);
+        $provide.value('RepairService', repairServiceMock);
       });
     });
 
@@ -44,6 +49,12 @@ define(['angular-mocks'], function(angularMocks) {
       }];
       queryEpochsDeferred.resolve(mockEpochs);
       epochServiceStub.queryItems.and.returnValue(queryEpochsDeferred.promise);
+
+      sourceResultsDefer = q.defer();
+      targetResultsDefer = q.defer();
+      resultsServiceMock.queryResultsByMeasurementMoment.and.returnValues(sourceResultsDefer.promise, targetResultsDefer.promise);
+      mergeResultsDefer = q.defer();
+      repairServiceMock.mergeResults.and.returnValue(mergeResultsDefer.promise);
 
       rootScope.$digest();
     }));
@@ -282,13 +293,15 @@ define(['angular-mocks'], function(angularMocks) {
         };
 
         var graphJsonObject = [{
-          '@id': 'http://trials.drugis.org/instances/moment1',
-          '@type': 'ontology:MeasurementMoment',
-          'relative_to_anchor': 'ontology:anchorEpochStart',
-          'relative_to_epoch': 'http://trials.drugis.org/instances/bbb',
-          'time_offset': 'PT0S',
-          'label': 'At start of epoch 1'
-        }, studyNode];
+            '@id': 'http://trials.drugis.org/instances/moment1',
+            '@type': 'ontology:MeasurementMoment',
+            'relative_to_anchor': 'ontology:anchorEpochStart',
+            'relative_to_epoch': 'http://trials.drugis.org/instances/bbb',
+            'time_offset': 'PT0S',
+            'label': 'At start of epoch 1'
+          },
+          studyNode
+        ];
         var graphDefer = q.defer();
         var getGraphPromise = graphDefer.promise;
         graphDefer.resolve(graphJsonObject);
@@ -324,5 +337,98 @@ define(['angular-mocks'], function(angularMocks) {
         rootScope.$digest();
       });
     });
+
+    describe('merge', function() {
+      var source = {
+        uri: 'sourceUri'
+      };
+      var target = {
+        uri: 'targetUri'
+      };
+      var sourceResults = [{
+        id: -1
+      }];
+      var targetResults = [{
+        id: -10
+      }];
+      var expectedSave = [{
+        '@type': 'ontology:Study',
+        has_outcome: []
+      }];
+
+      beforeEach(function(done) {
+        var graphJsonObject = [{
+          '@type': 'ontology:Study',
+          has_outcome: []
+        }, {
+          '@id': 'sourceUri',
+          '@type': 'ontology:MeasurementMoment'
+        }];
+        var graphDefer = q.defer();
+        var getGraphPromise = graphDefer.promise;
+        graphDefer.resolve(graphJsonObject);
+        studyService.getJsonGraph.and.returnValue(getGraphPromise);
+
+        sourceResultsDefer.resolve(sourceResults);
+        targetResultsDefer.resolve(targetResults);
+        mergeResultsDefer.resolve();
+
+        // to test
+        measurementMomentService.merge(source, target).then(done);
+
+        rootScope.$digest();
+      });
+
+      it('should merge the results conected to the measurementMoments', function() {
+        expect(resultsServiceMock.queryResultsByMeasurementMoment).toHaveBeenCalledWith(source.uri);
+        expect(resultsServiceMock.queryResultsByMeasurementMoment).toHaveBeenCalledWith(target.uri);
+        expect(resultsServiceMock.queryResultsByMeasurementMoment.calls.count()).toBe(2);
+        expect(repairServiceMock.mergeResults).toHaveBeenCalledWith(target.uri, sourceResults, targetResults,
+          jasmine.any(Function), 'of_moment');
+        expect(repairServiceMock.mergeResults.calls.count()).toBe(1);
+        expect(studyService.saveJsonGraph.calls.argsFor(1)).toEqual([expectedSave]);
+
+      });
+      afterEach(function() {
+        resultsServiceMock.queryResultsByMeasurementMoment.calls.reset();
+      });
+    });
+
+    describe('hasOverlap', function() {
+      var source = {
+        uri: 'sourceUri'
+      };
+      var target = {
+        uri: 'targetUri'
+      };
+      var sourceResults = [{
+        id: -1
+      }];
+      var targetResults = [{
+        id: -10
+      }];
+      beforeEach(function(done) {
+        sourceResultsDefer.resolve(sourceResults);
+        targetResultsDefer.resolve(targetResults);
+
+        var overlapDefer = q.defer();
+        var promise = overlapDefer.promise;
+        repairServiceMock.findOverlappingResults.and.returnValue(promise);
+        overlapDefer.resolve([1, 2, 3]);
+
+        // to test
+        measurementMomentService.hasOverlap(source, target).then(done);
+
+        rootScope.$digest();
+      });
+      it('should fetch the result and call the overlap function', function() {
+        expect(resultsServiceMock.queryResultsByMeasurementMoment).toHaveBeenCalledWith(source.uri);
+        expect(resultsServiceMock.queryResultsByMeasurementMoment).toHaveBeenCalledWith(target.uri);
+        expect(resultsServiceMock.queryResultsByMeasurementMoment.calls.count()).toBe(2);
+        expect(repairServiceMock.findOverlappingResults).toHaveBeenCalledWith(sourceResults, targetResults,
+          jasmine.any(Function));
+      });
+    });
+
   });
 });

@@ -1,8 +1,8 @@
 'use strict';
 define(['lodash'],
   function(_) {
-    var dependencies = ['$q', '$filter', 'StudyService', 'UUIDService', 'EpochService', 'DurationService'];
-    var MeasurementMomentService = function($q, $filter, StudyService, UUIDService, EpochService, DurationService) {
+    var dependencies = ['$q', '$filter', 'StudyService', 'UUIDService', 'EpochService', 'DurationService', 'ResultsService', 'RepairService'];
+    var MeasurementMomentService = function($q, $filter, StudyService, UUIDService, EpochService, DurationService, ResultsService, RepairService) {
 
       function toFrontend(backendItem) {
         var frontendItem = {
@@ -157,9 +157,9 @@ define(['lodash'],
           return node['@type'] === 'ontology:Study';
         });
         study.has_outcome = _.map(study.has_outcome, function(outcome) {
-          if(outcome.is_measured_at) {
+          if (outcome.is_measured_at) {
             // single is_measured_at is a string, not an array of strings for whatever reason.
-            if(Array.isArray(outcome.is_measured_at)) {
+            if (Array.isArray(outcome.is_measured_at)) {
               outcome.is_measured_at = _.filter(outcome.is_measured_at, function(measurementUri) {
                 return measurementUri !== momentUri;
               });
@@ -167,7 +167,7 @@ define(['lodash'],
                 outcome.is_measured_at = outcome.is_measured_at[0];
               }
             } else {
-              if(outcome.is_measured_at === momentUri) {
+              if (outcome.is_measured_at === momentUri) {
                 delete outcome.is_measured_at;
               }
             }
@@ -199,12 +199,42 @@ define(['lodash'],
         return offsetStr + ' ' + anchorStr + ' of ' + measurementMoment.epoch.label;
       }
 
+      function isOverlappingResultFunction(a, b) {
+        return a.armUri === b.armUri &&
+          a.outcomeUri === b.outcomeUri;
+      }
+
+      function hasOverlap(source, target) {
+        var sourceResultsPromise = ResultsService.queryResultsByMeasurementMoment(source.uri);
+        var targetResultsPromise = ResultsService.queryResultsByMeasurementMoment(target.uri);
+
+        return $q.all([sourceResultsPromise, targetResultsPromise]).then(function(results) {
+          return RepairService.findOverlappingResults(results[0], results[1], isOverlappingResultFunction).length > 0;
+        });
+      }
+
+      function merge(source, target) {
+        var mergeProperty = 'of_moment';
+        var sourceResultsPromise = ResultsService.queryResultsByMeasurementMoment(source.uri);
+        var targetResultsPromise = ResultsService.queryResultsByMeasurementMoment(target.uri);
+
+        return $q.all([sourceResultsPromise, targetResultsPromise]).then(function(results) {
+          var sourceResults = results[0];
+          var targetResults = results[1];
+          return RepairService.mergeResults(target.uri, sourceResults, targetResults, isOverlappingResultFunction, mergeProperty).then(function() {
+            return deleteItem(source);
+          });
+        });
+      }
+
       return {
         queryItems: queryItems,
         addItem: addItem,
         editItem: editItem,
         deleteItem: deleteItem,
-        generateLabel: generateLabel
+        generateLabel: generateLabel,
+        hasOverlap: hasOverlap,
+        merge: merge
       };
     };
     return dependencies.concat(MeasurementMomentService);

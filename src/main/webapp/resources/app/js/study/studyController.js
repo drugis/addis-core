@@ -146,6 +146,8 @@ define(['angular', 'lodash'],
           addItemTemplateUrl: 'app/js/measurementMoment/editMeasurementMoment.html',
           editItemTemplateUrl: 'app/js/measurementMoment/editMeasurementMoment.html',
           editItemController: 'MeasurementMomentController',
+          repairItemTemplateUrl: 'app/js/measurementMoment/repairMeasurementMoment.html',
+          repairItemController: 'MeasurementMomentController'
         },
         activities: {
           service: 'ActivityService',
