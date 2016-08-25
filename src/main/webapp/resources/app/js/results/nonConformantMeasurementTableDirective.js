@@ -11,7 +11,8 @@ define([], function() {
         variable: '=',
         arms: '=',
         groups: '=',
-        measurementMoments: '='
+        measurementMoments: '=',
+        isEditingAllowed: '='
       },
       link: function(scope) {
 
