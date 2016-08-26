@@ -3,12 +3,12 @@ define(['angular-mocks'], function(angularMocks) {
   describe('the measurement moment service', function() {
 
     var rootScope, q;
-    var studyService = jasmine.createSpyObj('StudyService', ['getJsonGraph', 'saveJsonGraph']);
+    var studyService = jasmine.createSpyObj('StudyService', ['getJsonGraph', 'saveJsonGraph', 'getStudy', 'save']);
     var epochServiceStub = jasmine.createSpyObj('EpochService', ['queryItems']);
     var uuidServiceMock = jasmine.createSpyObj('UUIDService', ['generate']);
     var resultsServiceMock = jasmine.createSpyObj('ResultsService', ['queryResultsByMeasurementMoment']);
     var repairServiceMock = jasmine.createSpyObj('RepairService', ['findOverlappingResults', 'mergeResults']);
-    var sourceResultsDefer, targetResultsDefer, mergeResultsDefer;
+    var sourceResultsDefer, targetResultsDefer, mergeResultsDefer, getStudyDefer, saveStudyDefer;
     var measurementMomentService;
 
 
@@ -24,13 +24,11 @@ define(['angular-mocks'], function(angularMocks) {
 
     beforeEach(module('trialverse.util'));
 
-    beforeEach(angularMocks.inject(function($q, $rootScope, MeasurementMomentService, StudyService) {
+    beforeEach(angularMocks.inject(function($q, $rootScope, MeasurementMomentService) {
       q = $q;
       rootScope = $rootScope;
       measurementMomentService = MeasurementMomentService;
       uuidServiceMock.generate.and.returnValue('generatedUUID');
-
-      studyService = StudyService;
 
       // mock stub services
       var queryEpochsDeferred = $q.defer();
@@ -49,6 +47,12 @@ define(['angular-mocks'], function(angularMocks) {
       }];
       queryEpochsDeferred.resolve(mockEpochs);
       epochServiceStub.queryItems.and.returnValue(queryEpochsDeferred.promise);
+
+      getStudyDefer = q.defer();
+      studyService.getStudy.and.returnValue(getStudyDefer.promise);
+
+      saveStudyDefer = q.defer();
+      studyService.save.and.returnValue(saveStudyDefer.promise);
 
       sourceResultsDefer = q.defer();
       targetResultsDefer = q.defer();
@@ -355,7 +359,22 @@ define(['angular-mocks'], function(angularMocks) {
         '@type': 'ontology:Study',
         has_outcome: []
       }];
-
+      var outcome1 = {
+        is_measured_at: source.uri
+      };
+      var outcome2 = {
+        is_measured_at: ['1234567', source.uri, target.uri]
+      };
+      var study = {
+        has_outcome: [outcome1, outcome2]
+      };
+      var expectedStudyAfterMeasuredAtUpdate = {
+        has_outcome: [{
+          is_measured_at: 'targetUri'
+        }, {
+          is_measured_at: ['1234567', 'targetUri']
+        }]
+      };
       beforeEach(function(done) {
         var graphJsonObject = [{
           '@type': 'ontology:Study',
@@ -369,6 +388,8 @@ define(['angular-mocks'], function(angularMocks) {
         graphDefer.resolve(graphJsonObject);
         studyService.getJsonGraph.and.returnValue(getGraphPromise);
 
+        getStudyDefer.resolve(study);
+        saveStudyDefer.resolve();
         sourceResultsDefer.resolve(sourceResults);
         targetResultsDefer.resolve(targetResults);
         mergeResultsDefer.resolve();
@@ -380,6 +401,7 @@ define(['angular-mocks'], function(angularMocks) {
       });
 
       it('should merge the results conected to the measurementMoments', function() {
+        expect(studyService.save).toHaveBeenCalledWith(expectedStudyAfterMeasuredAtUpdate);
         expect(resultsServiceMock.queryResultsByMeasurementMoment).toHaveBeenCalledWith(source.uri);
         expect(resultsServiceMock.queryResultsByMeasurementMoment).toHaveBeenCalledWith(target.uri);
         expect(resultsServiceMock.queryResultsByMeasurementMoment.calls.count()).toBe(2);
@@ -415,7 +437,6 @@ define(['angular-mocks'], function(angularMocks) {
         var promise = overlapDefer.promise;
         repairServiceMock.findOverlappingResults.and.returnValue(promise);
         overlapDefer.resolve([1, 2, 3]);
-
         // to test
         measurementMomentService.hasOverlap(source, target).then(done);
 

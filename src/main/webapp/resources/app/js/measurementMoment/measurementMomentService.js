@@ -213,16 +213,49 @@ define(['lodash'],
         });
       }
 
-      function merge(source, target) {
-        var mergeProperty = 'of_moment';
-        var sourceResultsPromise = ResultsService.queryResultsByMeasurementMoment(source.uri);
-        var targetResultsPromise = ResultsService.queryResultsByMeasurementMoment(target.uri);
+      // Update the measuredAt list for each outcome,
+      // replace source mm with target and remove duplicate if target was already part of measuredAt list
+      function _updateMeasuredAt(source, target) {
 
-        return $q.all([sourceResultsPromise, targetResultsPromise]).then(function(results) {
-          var sourceResults = results[0];
-          var targetResults = results[1];
-          return RepairService.mergeResults(target.uri, sourceResults, targetResults, isOverlappingResultFunction, mergeProperty).then(function() {
-            return deleteItem(source);
+        return StudyService.getStudy().then(function(study) {
+          var outcomes = study.has_outcome;
+
+          var updatedOutcomes = outcomes.map(function(outcome) {
+            if (Array.isArray(outcome.is_measured_at)) {
+              outcome.is_measured_at = _.map(outcome.is_measured_at, function(measuredAt) {
+                if (measuredAt === source.uri) {
+                  measuredAt = target.uri;
+                }
+                return measuredAt;
+              });
+              // remove duplicates created by merge 
+              outcome.is_measured_at = _.uniq(outcome.is_measured_at);
+            } else {
+              if (outcome.is_measured_at && outcome.is_measured_at === source.uri) {
+                outcome.is_measured_at = target.uri;
+              }
+            }
+            return outcome;
+          });
+
+          study.has_outcome = updatedOutcomes;
+          return StudyService.save(study);
+        });
+
+      }
+
+      function merge(source, target) {
+        return _updateMeasuredAt(source, target).then(function() {
+          var mergeProperty = 'of_moment';
+          var sourceResultsPromise = ResultsService.queryResultsByMeasurementMoment(source.uri);
+          var targetResultsPromise = ResultsService.queryResultsByMeasurementMoment(target.uri);
+
+          return $q.all([sourceResultsPromise, targetResultsPromise]).then(function(results) {
+            var sourceResults = results[0];
+            var targetResults = results[1];
+            return RepairService.mergeResults(target.uri, sourceResults, targetResults, isOverlappingResultFunction, mergeProperty).then(function() {
+              return deleteItem(source);
+            });
           });
         });
       }
