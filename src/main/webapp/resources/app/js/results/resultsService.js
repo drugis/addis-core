@@ -3,6 +3,158 @@ define(['angular', 'lodash'], function(angular, _) {
   var dependencies = ['StudyService', 'UUIDService'];
   var ResultsService = function(StudyService, UUIDService) {
 
+    var INTEGER_TYPE = '<http://www.w3.org/2001/XMLSchema#integer>';
+    var DOUBLE_TYPE = '<http://www.w3.org/2001/XMLSchema#double>';
+
+    var VARIABLE_TYPES = ['sample_size',
+      'mean',
+      'median',
+      'geometric_mean',
+      'log_mean',
+      'least_squares_mean',
+      'quantile_0.05',
+      'quantile_0.95',
+      'quantile_0.025',
+      'quantile_0.975',
+      'min',
+      'max',
+      'geometric_coefficient_of_variation',
+      'first_quartile',
+      'third_quartile',
+      'standard_deviation',
+      'standard_error',
+      'count',
+      'percentage',
+      'proportion',
+    ];
+
+    var VARIABLE_TYPE_DETAILS = {
+      'sample_size': {
+        type: 'sample_size',
+        label: 'sample size',
+        uri: 'http://trials.drugis.org/ontology#sample_size',
+        dataType: INTEGER_TYPE
+      },
+      'mean': {
+        type: 'mean',
+        label: 'mean',
+        uri: 'http://trials.drugis.org/ontology#mean',
+        dataType: DOUBLE_TYPE
+      },
+      'median': {
+        type: 'median',
+        label: 'median',
+        uri: 'http://trials.drugis.org/ontology#median',
+        dataType: DOUBLE_TYPE
+      },
+      'geometric_mean': {
+        type: 'geometric_mean',
+        label: 'geometric mean',
+        uri: 'http://trials.drugis.org/ontology#geometric_mean',
+        dataType: DOUBLE_TYPE
+      },
+      'log_mean': {
+        type: 'geometric_mean',
+        label: 'geometric mean',
+        uri: 'http://trials.drugis.org/ontology#geometric_mean',
+        dataType: DOUBLE_TYPE
+      },
+      'least_squares_mean': {
+        type: 'least_squares_mean',
+        label: 'least squares mean',
+        uri: 'http://trials.drugis.org/ontology#least_squares_mean',
+        dataType: DOUBLE_TYPE
+      },
+      'quantile_0.05': {
+        type: 'quantile_0.05',
+        label: 'quantile 0.05',
+        uri: 'http://trials.drugis.org/ontology#quantile_0.05',
+        dataType: DOUBLE_TYPE
+      },
+      'quantile_0.95': {
+        type: 'quantile_0.95',
+        label: 'quantile 0.95',
+        uri: 'http://trials.drugis.org/ontology#quantile_0.95',
+        dataType: DOUBLE_TYPE
+      },
+      'quantile_0.025': {
+        type: 'quantile_0.025',
+        label: 'quantile 0.025',
+        uri: 'http://trials.drugis.org/ontology#quantile_0.025',
+        dataType: DOUBLE_TYPE
+      },
+      'quantile_0.975': {
+        type: 'quantile_0.975',
+        label: 'quantile 0.975',
+        uri: 'http://trials.drugis.org/ontology#quantile_0.975',
+        dataType: DOUBLE_TYPE
+      },
+      'min': {
+        type: 'min',
+        label: 'min',
+        uri: 'http://trials.drugis.org/ontology#min',
+        dataType: DOUBLE_TYPE
+      },
+      'max': {
+        type: 'max',
+        label: 'max',
+        uri: 'http://trials.drugis.org/ontology#max',
+        dataType: DOUBLE_TYPE
+      },
+      'geometric_coefficient_of_variation': {
+        type: 'geometric_coefficient_of_variation',
+        label: 'geometric coefficient of variation',
+        uri: 'http://trials.drugis.org/ontology#geometric_coefficient_of_variation',
+        dataType: DOUBLE_TYPE
+      },
+      'first_quartile': {
+        type: 'first_quartile',
+        label: 'first quartile',
+        uri: 'http://trials.drugis.org/ontology#first_quartile',
+        dataType: DOUBLE_TYPE
+      },
+      'third_quartile': {
+        type: 'third_quartile',
+        label: 'third quartile',
+        uri: 'http://trials.drugis.org/ontology#third_quartile',
+        dataType: DOUBLE_TYPE
+      },
+      'standard_deviation': {
+        type: 'standard_deviation',
+        label: 'standard deviation',
+        uri: 'http://trials.drugis.org/ontology#standard_deviation',
+        dataType: DOUBLE_TYPE
+      },
+      'standard_error': {
+        type: 'standard_error',
+        label: 'standard error',
+        uri: 'http://trials.drugis.org/ontology#standard_error',
+        dataType: DOUBLE_TYPE
+      },
+      'count': {
+        type: 'count',
+        label: 'count',
+        uri: 'http://trials.drugis.org/ontology#count',
+        dataType: INTEGER_TYPE
+      },
+      'percentage': {
+        type: 'percentage',
+        label: 'percentage',
+        uri: 'http://trials.drugis.org/ontology#percentage',
+        dataType: DOUBLE_TYPE
+      },
+      'proportion': {
+        type: 'proportion',
+        label: 'proportion',
+        uri: 'http://trials.drugis.org/ontology#proportion',
+        dataType: DOUBLE_TYPE
+      },
+    };
+
+    function getVariableDetails(variableTypeUri) {
+      return _.find(VARIABLE_TYPE_DETAILS, ['uri', variableTypeUri]);
+    }
+
     function updateResultValue(row, inputColumn) {
       return StudyService.getJsonGraph().then(function(graph) {
         if (!row.uri) {
@@ -69,21 +221,11 @@ define(['angular', 'lodash'], function(angular, _) {
         baseItem.comment = backEndItem.comment;
       }
 
-      if (backEndItem.sample_size !== undefined) {
-        accum.push(createValueItem(baseItem, backEndItem, 'sample_size'));
-      }
-
-      if (backEndItem.count !== undefined) {
-        accum.push(createValueItem(baseItem, backEndItem, 'count'));
-      }
-
-      if (backEndItem.standard_deviation !== undefined) {
-        accum.push(createValueItem(baseItem, backEndItem, 'standard_deviation'));
-      }
-
-      if (backEndItem.mean !== undefined) {
-        accum.push(createValueItem(baseItem, backEndItem, 'mean'));
-      }
+      _.each(VARIABLE_TYPES, function(variable_type) {
+        if (backEndItem[variable_type] !== undefined) {
+          accum.push(createValueItem(baseItem, backEndItem, variable_type));
+        }
+      });
 
       return accum;
     }
@@ -270,7 +412,10 @@ define(['angular', 'lodash'], function(angular, _) {
       cleanupMeasurements: cleanupMeasurements,
       setToMeasurementMoment: setToMeasurementMoment,
       isExistingMeasurement: isExistingMeasurement,
-      isStudyNode: isStudyNode
+      isStudyNode: isStudyNode,
+      getVariableDetails: getVariableDetails,
+      INTEGER_TYPE: INTEGER_TYPE,
+      DOUBLE_TYPE: DOUBLE_TYPE
     };
   };
   return dependencies.concat(ResultsService);
