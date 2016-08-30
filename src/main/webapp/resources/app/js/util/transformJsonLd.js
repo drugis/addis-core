@@ -73,7 +73,7 @@ define(['lodash'], function(_) {
 
     function inlineLinkedList(study, propertyName) {
       var rdfListNil = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#nil';
-      if (!study[propertyName]) {
+      if (!study[propertyName] || study[propertyName] === rdfListNil) {
         return {
           '@id': rdfListNil
         };
@@ -87,7 +87,7 @@ define(['lodash'], function(_) {
       while (true) {
         if (listBlankNode['@list']) { // FIXME: make safe for > 1 item @lists (which we don't currently get)
           if (listBlankNode['@list'].length === 0) {
-            return head;
+            return listBlankNode;
           }
           tail.first = findAndRemoveFromGraph(listBlankNode['@list'][0]);
           tail.rest = {
@@ -144,7 +144,7 @@ define(['lodash'], function(_) {
     inlineObjects(study, 'has_objective');
     inlineObjects(study, 'has_publication');
     inlineObjects(study, 'has_eligibility_criteria');
-    // study.has_epochs = inlineLinkedList(study, 'has_epochs');
+    study.has_epochs = inlineLinkedList(study, 'has_epochs');
 
     linkedData['@context'] = {
       'median': {

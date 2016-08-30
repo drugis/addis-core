@@ -294,7 +294,6 @@ define(['angular', 'lodash', 'util/transformJsonLd'], function(angular, _, trans
       '@type': 'http://trials.drugis.org/ontology#Study',
       'label': 'study 1',
       'comment': 'my study',
-      'has_epochs': {},
       '@context': context
     };
 
