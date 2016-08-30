@@ -23,7 +23,7 @@ define([], function() {
 
           $q.all([scope.arms, scope.measurementMoments, scope.groups, scope.results]).then(function() {
             scope.inputRows = ResultsTableService.createInputRows(scope.variable, scope.arms, scope.groups, scope.measurementMoments, scope.results.$$state.value);
-            scope.inputHeaders = ResultsTableService.createHeaders(scope.variable.measurementType);
+            scope.inputHeaders = ResultsTableService.createHeaders(scope.variable.resultProperties);
             scope.isExpanded = true;
           });
         };

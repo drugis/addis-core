@@ -76,7 +76,7 @@ define(['angular-mocks'], function(angularMocks) {
           expect(actualResults[1].result_property).toEqual('count');
           expect(actualResults[1].value).toEqual(24);
 
-          expect(actualResults[4].value).toEqual(5);
+          expect(actualResults[4].value).toEqual(2);
           done();
         });
         // fire in the hole !
@@ -134,8 +134,8 @@ define(['angular-mocks'], function(angularMocks) {
           expect(actualResults[1].armUri).toEqual('http://trials.drugis.org/instances/arm2');
           expect(actualResults[1].momentUri).toEqual('http://trials.drugis.org/instances/moment1');
           expect(actualResults[1].outcomeUri).toEqual('http://trials.drugis.org/instances/outcome1');
-          expect(actualResults[1].result_property).toEqual('standard_deviation');
-          expect(actualResults[1].value).toEqual(2);
+          expect(actualResults[1].result_property).toEqual('mean');
+          expect(actualResults[1].value).toEqual(5);
 
           expect(actualResults[4].value).toEqual(3);
           done();
@@ -174,6 +174,7 @@ define(['angular-mocks'], function(angularMocks) {
           var inputColumn = {
             valueName: 'count',
             value: 123,
+            resultProperty: 'http://trials.drugis.org/ontology#count',
           };
 
           resultsService.updateResultValue(row, inputColumn).then(function(result) {
@@ -233,7 +234,8 @@ define(['angular-mocks'], function(angularMocks) {
 
           var inputColumn = {
             value: 789,
-            valueName: 'sample_size'
+            valueName: 'sample_size',
+            resultProperty: 'http://trials.drugis.org/ontology#sample_size'
           };
 
           resultsService.updateResultValue(row, inputColumn).then(function(result) {
@@ -321,7 +323,8 @@ define(['angular-mocks'], function(angularMocks) {
 
         var inputColumn = {
           value: null,
-          valueName: 'sample_size'
+          valueName: 'sample_size',
+          resultProperty: 'http://trials.drugis.org/ontology#sample_size'
         };
 
         var graphJsonObject = [{
@@ -579,7 +582,7 @@ define(['angular-mocks'], function(angularMocks) {
         'of_group': 'http://trials.drugis.org/instances/arm2',
         'of_moment': 'http://trials.drugis.org/instances/moment1',
         'of_outcome': 'http://trials.drugis.org/instances/outcome2',
-      },{
+      }, {
         '@id': 'http://trials.drugis.org/instances/result1',
         'of_group': 'http://trials.drugis.org/instances/arm1',
         'of_moment': 'otherMoment',
