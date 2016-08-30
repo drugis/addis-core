@@ -11,7 +11,7 @@ define(['lodash'],
       $scope.otherUsers = [];
       $scope.userUid = Number($stateParams.userUid);
 
-      if (UserService.hasLogedInUser()) {
+      if (UserService.hasLoggedInUser()) {
         $scope.loginUser = UserService.getLoginUser;
       }
 

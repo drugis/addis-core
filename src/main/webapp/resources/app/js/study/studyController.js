@@ -17,7 +17,7 @@ define(['angular', 'lodash'],
         $scope.versionUuid = $stateParams.versionUuid;
       }
       $scope.studyGraphUuid = $stateParams.studyGraphUuid;
-      $scope.hasLogedInUser = UserService.hasLogedInUser();
+      $scope.hasLoggedInUser = UserService.hasLoggedInUser();
       $scope.openCopyDialog = openCopyDialog;
       $scope.study = {};
       $scope.resetStudy = resetStudy;

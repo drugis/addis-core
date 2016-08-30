@@ -23,7 +23,7 @@ define(['angular-mocks'], function(angularMocks) {
       studyDesignServiceMock = jasmine.createSpyObj('StudyDesignService', ['cleanupCoordinates']),
       graphResource = jasmine.createSpyObj('GraphResource', ['getJson']),
       versionedGraphResource = jasmine.createSpyObj('VersionedGraphResource', ['getJson']),
-      userService = jasmine.createSpyObj('UserService', ['hasLogedInUser']),
+      userService = jasmine.createSpyObj('UserService', ['hasLoggedInUser']),
       queryStudyDataDeferred,
       queryArmDataDeferred,
       getGraphDeferred,

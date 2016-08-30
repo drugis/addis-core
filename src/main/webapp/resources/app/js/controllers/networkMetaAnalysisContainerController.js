@@ -27,7 +27,7 @@ define(['lodash'], function(_) {
     // make available for create model permission check in models.html (which is in gemtc subproject)
     $scope.userId = Number($stateParams.userUid);
 
-    if (UserService.hasLogedInUser()) {
+    if (UserService.hasLoggedInUser()) {
       $scope.loginUserId = (UserService.getLoginUser()).id;
       isUserOwner = UserService.isLoginUserId($scope.project.owner.id);
     }

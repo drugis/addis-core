@@ -10,7 +10,7 @@ define([], function() {
 
         scope.isAnonymous = true;
 
-        if (UserService.hasLogedInUser()) {
+        if (UserService.hasLoggedInUser()) {
           scope.isAnonymous = false;
           var loggedInUser = UserService.getLoginUser();
           scope.loginUserInfo = {

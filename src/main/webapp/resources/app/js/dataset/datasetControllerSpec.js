@@ -10,7 +10,7 @@ define(['angular-mocks'], function(angularMocks) {
       versionedGraphResource = jasmine.createSpyObj('VersionedGraphResource', ['get', 'getConceptJson']),
       datasetResource = jasmine.createSpyObj('DatasetResource', ['getForJson']),
       datasetVersionedResource = jasmine.createSpyObj('DatasetVersionedResource', ['getForJson']),
-      userService = jasmine.createSpyObj('UserService', ['isLoginUserEmail', 'hasLogedInUser']),
+      userService = jasmine.createSpyObj('UserService', ['isLoginUserEmail', 'hasLoggedInUser']),
       datasetDeferred,
       queryHistoryDeferred,
       studiesWithDetailsGetDeferred,

@@ -11,7 +11,7 @@ define([], function() {
       link: function(scope) {
         scope.stripFrontFilter = $filter('stripFrontFilter');
         scope.isVisible = true;
-        scope.showCreateProjectButton = UserService.hasLogedInUser();
+        scope.showCreateProjectButton = UserService.hasLoggedInUser();
         scope.featuredDatasets = [];
         scope.$watch('featuredDatasets', function(newSet, oldSet) {
           if (oldSet !== newSet) {

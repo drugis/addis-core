@@ -4,7 +4,7 @@ define([],
     var dependencies = ['$window'];
     var UserService = function($window) {
 
-      function hasLogedInUser() {
+      function hasLoggedInUser() {
         return !!($window.config && $window.config.user);
       }
 
@@ -13,15 +13,15 @@ define([],
       }
 
       function isLoginUserId(id) {
-        return hasLogedInUser() && $window.config.user.id === id;
+        return hasLoggedInUser() && $window.config.user.id === id;
       }
 
       function isLoginUserEmail(email) {
-        return hasLogedInUser() && $window.config.user.userEmail === email;
+        return hasLoggedInUser() && $window.config.user.userEmail === email;
       }
 
       return {
-        hasLogedInUser: hasLogedInUser,
+        hasLoggedInUser: hasLoggedInUser,
         getLoginUser: getLoginUser,
         isLoginUserId: isLoginUserId,
         isLoginUserEmail: isLoginUserEmail
