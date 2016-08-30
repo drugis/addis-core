@@ -3,6 +3,70 @@ define(['angular', 'lodash', 'util/transformJsonLd'], function(angular, _, trans
   describe('transformJsonLd', function() {
 
     var context = {
+      'median': {
+        '@id': 'http://trials.drugis.org/ontology#median',
+        '@type': 'http://www.w3.org/2001/XMLSchema#double'
+      },
+      'geometric_mean': {
+        '@id': 'http://trials.drugis.org/ontology#geometric_mean',
+        '@type': 'http://www.w3.org/2001/XMLSchema#double'
+      },
+      'log_mean': {
+        '@id': 'http://trials.drugis.org/ontology#log_mean',
+        '@type': 'http://www.w3.org/2001/XMLSchema#double'
+      },
+      'least_squares_mean': {
+        '@id': 'http://trials.drugis.org/ontology#least_squares_mean',
+        '@type': 'http://www.w3.org/2001/XMLSchema#double'
+      },
+      'quantile_0.05': {
+        '@id': 'http://trials.drugis.org/ontology#quantile_0.05',
+        '@type': 'http://www.w3.org/2001/XMLSchema#double'
+      },
+      'quantile_0.95': {
+        '@id': 'http://trials.drugis.org/ontology#quantile_0.95',
+        '@type': 'http://www.w3.org/2001/XMLSchema#double'
+      },
+      'quantile_0.025': {
+        '@id': 'http://trials.drugis.org/ontology#quantile_0.025',
+        '@type': 'http://www.w3.org/2001/XMLSchema#double'
+      },
+      'quantile_0.975': {
+        '@id': 'http://trials.drugis.org/ontology#quantile_0.975',
+        '@type': 'http://www.w3.org/2001/XMLSchema#double'
+      },
+      'min': {
+        '@id': 'http://trials.drugis.org/ontology#min',
+        '@type': 'http://www.w3.org/2001/XMLSchema#double'
+      },
+      'max': {
+        '@id': 'http://trials.drugis.org/ontology#max',
+        '@type': 'http://www.w3.org/2001/XMLSchema#double'
+      },
+      'geometric_coefficient_of_variation': {
+        '@id': 'http://trials.drugis.org/ontology#geometric_coefficient_of_variation',
+        '@type': 'http://www.w3.org/2001/XMLSchema#double'
+      },
+      'first_quartile': {
+        '@id': 'http://trials.drugis.org/ontology#first_quartile',
+        '@type': 'http://www.w3.org/2001/XMLSchema#double'
+      },
+      'third_quartile': {
+        '@id': 'http://trials.drugis.org/ontology#third_quartile',
+        '@type': 'http://www.w3.org/2001/XMLSchema#double'
+      },
+      'standard_error': {
+        '@id': 'http://trials.drugis.org/ontology#standard_error',
+        '@type': 'http://www.w3.org/2001/XMLSchema#double'
+      },
+      'percentage': {
+        '@id': 'http://trials.drugis.org/ontology#percentage',
+        '@type': 'http://www.w3.org/2001/XMLSchema#double'
+      },
+      'proportion': {
+        '@id': 'http://trials.drugis.org/ontology#proportion',
+        '@type': 'http://www.w3.org/2001/XMLSchema#double'
+      },
       'standard_deviation': {
         '@id': 'http://trials.drugis.org/ontology#standard_deviation',
         '@type': 'http://www.w3.org/2001/XMLSchema#double'
@@ -1277,7 +1341,9 @@ define(['angular', 'lodash', 'util/transformJsonLd'], function(angular, _, trans
       };
       var result = transformJsonLd(toTransform);
       study = findStudy(result['@graph']);
-      expect(study.has_epochs).toEqual({});
+      expect(study.has_epochs).toEqual({
+        '@list': []
+      });
     });
 
   });

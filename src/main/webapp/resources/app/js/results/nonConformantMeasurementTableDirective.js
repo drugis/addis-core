@@ -36,7 +36,7 @@ define([], function() {
 
         scope.show = function() {
 
-          scope.inputHeaders = ResultsTableService.createHeaders(scope.variable.measurementType);
+          scope.inputHeaders = ResultsTableService.createHeaders(scope.variable.resultProperties);
           scope.isExpanded = true;
 
           scope.setToMoment = function(moment, measurementInstanceList) {

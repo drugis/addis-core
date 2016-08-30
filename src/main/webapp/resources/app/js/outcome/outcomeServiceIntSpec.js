@@ -53,7 +53,7 @@ define(['angular-mocks'], function(angularMocks) {
       studyServiceMock.save.and.returnValue(saveStudyPromise);
     }));
 
-    afterEach(function(){
+    afterEach(function() {
       studyServiceMock.save.calls.reset();
     });
 
@@ -182,7 +182,8 @@ define(['angular-mocks'], function(angularMocks) {
         uri: outcomeUri,
         label: 'label',
         measurementType: 'ontology:dichotomous',
-        measuredAtMoments: [measuredAtMoment]
+        measuredAtMoments: [measuredAtMoment],
+        resultProperties: ['http://trials.drugis.org/ontology#sample_size', 'http://trials.drugis.org/ontology#count']
       };
 
       beforeEach(function(done) {

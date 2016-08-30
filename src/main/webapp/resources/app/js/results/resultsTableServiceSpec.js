@@ -26,12 +26,19 @@ define(['angular', 'angular-mocks'], function() {
 
     describe('buildHeaders', function() {
       it('should return a list containting "Mean, ± sd and N " when the type is continuous', function() {
-        var testType = resultsTableService.CONTINUOUS_TYPE;
-        expect(resultsTableService.createHeaders(testType)).toEqual(['Mean', '± sd', 'N']);
+        var testType = [
+          'http://trials.drugis.org/ontology#mean',
+          'http://trials.drugis.org/ontology#standard_deviation',
+          'http://trials.drugis.org/ontology#sample_size'
+        ];
+        expect(resultsTableService.createHeaders(testType)).toEqual(['mean', 'standard deviation', 'N']);
       });
       it('should return a list containting "Count and N" when the type is dichotomous', function() {
-        var testType = resultsTableService.DICHOTOMOUS_TYPE;
-        expect(resultsTableService.createHeaders(testType)).toEqual(['Count', 'N']);
+        var testType = [
+          'http://trials.drugis.org/ontology#count',
+          'http://trials.drugis.org/ontology#sample_size'
+        ];
+        expect(resultsTableService.createHeaders(testType)).toEqual(['count', 'N']);
       });
     });
 
@@ -45,7 +52,12 @@ define(['angular', 'angular-mocks'], function() {
           }, {
             uri: 'uri 3'
           }],
-          measurementType: {}
+          measurementType: {},
+          resultProperties: [
+            'http://trials.drugis.org/ontology#mean',
+            'http://trials.drugis.org/ontology#standard_deviation',
+            'http://trials.drugis.org/ontology#sample_size'
+          ]
         };
         arms = [{
           label: 'arm 1',
@@ -109,10 +121,10 @@ define(['angular', 'angular-mocks'], function() {
           expect(resultRows[0].inputColumns[0].dataType).toEqual(DOUBLE_TYPE);
           expect(resultRows[0].inputColumns[0].value).toEqual(2);
           expect(resultRows[0].inputColumns[0].isInValidValue).toEqual(false);
-          expect(resultRows[0].inputColumns[1].valueName).toEqual('standard_deviation');
+          expect(resultRows[0].inputColumns[1].valueName).toEqual('standard deviation');
           expect(resultRows[0].inputColumns[1].dataType).toEqual(DOUBLE_TYPE);
           expect(resultRows[0].inputColumns[0].isInValidValue).toEqual(false);
-          expect(resultRows[0].inputColumns[2].valueName).toEqual('sample_size');
+          expect(resultRows[0].inputColumns[2].valueName).toEqual('N');
           expect(resultRows[0].inputColumns[2].dataType).toEqual(INTEGER_TYPE);
           expect(resultRows[0].inputColumns[0].isInValidValue).toEqual(false);
         });
@@ -128,6 +140,10 @@ define(['angular', 'angular-mocks'], function() {
             value: '66'
           }];
           variable.measurementType = resultsTableService.DICHOTOMOUS_TYPE;
+          variable.resultProperties = [
+            'http://trials.drugis.org/ontology#count',
+            'http://trials.drugis.org/ontology#sample_size'
+          ];
           resultRows = resultsTableService.createInputRows(variable, arms, [], measurementMoments, results);
         });
 
@@ -138,7 +154,7 @@ define(['angular', 'angular-mocks'], function() {
           expect(resultRows[0].inputColumns[0].dataType).toEqual(INTEGER_TYPE);
           expect(resultRows[0].inputColumns[0].isInValidValue).toEqual(false);
           expect(resultRows[0].inputColumns[0].value).toEqual(66);
-          expect(resultRows[0].inputColumns[1].valueName).toEqual('sample_size');
+          expect(resultRows[0].inputColumns[1].valueName).toEqual('N');
           expect(resultRows[0].inputColumns[1].dataType).toEqual(INTEGER_TYPE);
           expect(resultRows[0].inputColumns[1].isInValidValue).toEqual(false);
         });

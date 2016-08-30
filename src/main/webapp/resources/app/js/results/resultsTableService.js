@@ -1,18 +1,10 @@
 'use strict';
 define(['lodash'], function(_) {
-  var dependencies = [];
-  var ResultsTableService = function() {
+  var dependencies = ['ResultsService'];
+  var ResultsTableService = function(ResultsService) {
 
     var CONTINUOUS_TYPE = 'ontology:continuous';
     var DICHOTOMOUS_TYPE = 'ontology:dichotomous';
-
-    var INTEGER_TYPE = '<http://www.w3.org/2001/XMLSchema#integer>';
-    var DOUBLE_TYPE = '<http://www.w3.org/2001/XMLSchema#double>';
-
-    var MEAN_TYPE = 'mean';
-    var STANDARD_DEVIATION_TYPE = 'standard_deviation';
-    var SAMPLE_SIZE_TYPE = 'sample_size';
-    var COUNT_TYPE = 'count';
 
     function findResultValueByType(resultValueObjects, type) {
       var resultValueObjectFound = _.find(resultValueObjects, function(resultValueObject) {
@@ -25,44 +17,22 @@ define(['lodash'], function(_) {
     }
 
     function createInputColumns(variable, rowValueObjects) {
-      if (variable.measurementType === CONTINUOUS_TYPE) {
-        return [{
-          valueName: 'mean',
-          value: findResultValueByType(rowValueObjects, MEAN_TYPE),
-          dataType: DOUBLE_TYPE,
+      return variable.resultProperties.map(function(type) {
+        var details = ResultsService.getVariableDetails(type);
+        return {
+          resultProperty: type,
+          valueName: details.label,
+          value: findResultValueByType(rowValueObjects, details.type),
+          dataType: details.dataType,
           isInValidValue: false
-        }, {
-          valueName: 'standard_deviation',
-          value: findResultValueByType(rowValueObjects, STANDARD_DEVIATION_TYPE),
-          dataType: DOUBLE_TYPE,
-          isInValidValue: false
-        }, {
-          valueName: 'sample_size',
-          value: findResultValueByType(rowValueObjects, SAMPLE_SIZE_TYPE),
-          dataType: INTEGER_TYPE,
-          isInValidValue: false
-        }];
-      } else if (variable.measurementType === DICHOTOMOUS_TYPE) {
-        return [{
-          valueName: 'count',
-          value: findResultValueByType(rowValueObjects, COUNT_TYPE),
-          dataType: INTEGER_TYPE,
-          isInValidValue: false
-        }, {
-          valueName: 'sample_size',
-          value: findResultValueByType(rowValueObjects, SAMPLE_SIZE_TYPE),
-          dataType: INTEGER_TYPE,
-          isInValidValue: false
-        }];
-      }
+        };
+      });
     }
 
-    function createHeaders(measurementType) {
-      if (measurementType === CONTINUOUS_TYPE) {
-        return ['Mean', '± sd', 'N'];
-      } else if (measurementType === DICHOTOMOUS_TYPE) {
-        return ['Count', 'N'];
-      }
+    function createHeaders(resultProperties) {
+      return resultProperties.map(function(type) {
+        return ResultsService.getVariableDetails(type).label;
+      });
     }
 
     function createRow(variable, group, numberOfGroups, measurementMoment, rowValueObjects) {
@@ -112,9 +82,9 @@ define(['lodash'], function(_) {
         return false;
       }
       if (inputColumn.value) {
-        if (inputColumn.dataType === INTEGER_TYPE) {
+        if (inputColumn.dataType === ResultsService.INTEGER_TYPE) {
           return Number.isInteger(inputColumn.value);
-        } else if (inputColumn.dataType === DOUBLE_TYPE) {
+        } else if (inputColumn.dataType === ResultsService.DOUBLE_TYPE) {
           return !isNaN(filterFloat(inputColumn.value));
         }
       } else {

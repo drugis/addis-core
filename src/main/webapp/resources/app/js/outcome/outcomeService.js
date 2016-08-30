@@ -25,6 +25,7 @@ define(['angular', 'lodash'],
           uri: item['@id'],
           label: item.label,
           measurementType: item.of_variable[0].measurementType,
+          resultProperties: item.has_result_property,
           measuredAtMoments: [],
           conceptMapping: item.of_variable[0].sameAs
         };
@@ -51,23 +52,8 @@ define(['angular', 'lodash'],
             'measurementType': item.measurementType,
             'label': item.label
           }],
-          has_result_property: measurementTypeToBackEnd(item.measurementType)
+          has_result_property: item.resultProperties
         };
-      }
-
-      function measurementTypeToBackEnd(measurementType) {
-        if (measurementType === 'ontology:continuous') {
-          return [
-            'http://trials.drugis.org/ontology#standard_deviation',
-            'http://trials.drugis.org/ontology#mean',
-            'http://trials.drugis.org/ontology#sample_size'
-          ];
-        } else if (measurementType === 'ontology:dichotomous') {
-          return [
-            'http://trials.drugis.org/ontology#sample_size',
-            'http://trials.drugis.org/ontology#count'
-          ];
-        }
       }
 
       function sortByLabel(a, b) {
