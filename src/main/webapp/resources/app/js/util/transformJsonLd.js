@@ -71,19 +71,12 @@ define(['lodash'], function(_) {
       });
     }
 
-    function buildListItem(listNode) {
-      if (!listNode['@list']) { // list with multiple elements
-        var node = findAndRemoveFromGraph(listNode.first['@id']);
-        return node;
-      } else { // list with one element
-        return findAndRemoveFromGraph(listNode['@list'][0]);
-      }
-    }
-
     function inlineLinkedList(study, propertyName) {
       var rdfListNil = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#nil';
       if (!study[propertyName]) {
-        return {};
+        return {
+          '@id': rdfListNil
+        };
       }
 
       var head = {};

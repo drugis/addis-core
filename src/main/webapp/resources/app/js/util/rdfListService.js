@@ -45,7 +45,7 @@ define(['angular', 'lodash'], function(angular, _) {
 
     function flattenList(rootNode) {
       var list = [];
-      if (_.isEmpty(rootNode)) {
+      if (_.isEmpty(rootNode) || rootNode['@id'] === rdfListNil) {
         return list;
       }
       var currentNode = rootNode;
