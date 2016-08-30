@@ -156,6 +156,7 @@ define(['angular', 'lodash'], function(angular, _) {
     }
 
     function updateResultValue(row, inputColumn) {
+      var inputColumnVariableDetails = getVariableDetails(inputColumn.resultProperty);
       return StudyService.getJsonGraph().then(function(graph) {
         if (!row.uri) {
           if (inputColumn.value) {
@@ -166,7 +167,7 @@ define(['angular', 'lodash'], function(angular, _) {
               of_moment: row.measurementMoment.uri,
               of_outcome: row.variable.uri
             };
-            addItem[inputColumn.valueName] = inputColumn.value;
+            addItem[inputColumnVariableDetails.type] = inputColumn.value;
             StudyService.saveJsonGraph(graph.concat(addItem));
 
             return addItem['@id'];
@@ -180,9 +181,9 @@ define(['angular', 'lodash'], function(angular, _) {
           })[0];
 
           if (inputColumn.value === null) {
-            delete editItem[inputColumn.valueName];
+            delete editItem[inputColumnVariableDetails.type];
           } else {
-            editItem[inputColumn.valueName] = inputColumn.value;
+            editItem[inputColumnVariableDetails.type] = inputColumn.value;
           }
 
           if (!isEmptyResult(editItem)) {
@@ -198,7 +199,9 @@ define(['angular', 'lodash'], function(angular, _) {
     }
 
     function isEmptyResult(item) {
-      return !item.sample_size && !item.count && !item.standard_deviation && !item.mean;
+      return !_.some(VARIABLE_TYPES, function(type) {
+        return item[type];
+      });
     }
 
     function createValueItem(baseItem, backEndItem, type) {

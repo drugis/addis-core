@@ -174,6 +174,7 @@ define(['angular-mocks'], function(angularMocks) {
           var inputColumn = {
             valueName: 'count',
             value: 123,
+            resultProperty: 'http://trials.drugis.org/ontology#count',
           };
 
           resultsService.updateResultValue(row, inputColumn).then(function(result) {
@@ -233,7 +234,8 @@ define(['angular-mocks'], function(angularMocks) {
 
           var inputColumn = {
             value: 789,
-            valueName: 'sample_size'
+            valueName: 'sample_size',
+            resultProperty: 'http://trials.drugis.org/ontology#sample_size'
           };
 
           resultsService.updateResultValue(row, inputColumn).then(function(result) {
@@ -321,7 +323,8 @@ define(['angular-mocks'], function(angularMocks) {
 
         var inputColumn = {
           value: null,
-          valueName: 'sample_size'
+          valueName: 'sample_size',
+          resultProperty: 'http://trials.drugis.org/ontology#sample_size'
         };
 
         var graphJsonObject = [{
