@@ -15,13 +15,13 @@ define(['angular-mocks'], function(angularMocks) {
 
 
     describe('hasLoggedInUser', function() {
-      it('should return false if no user in LogedIn', function() {
+      it('should return false if no user in LoggedIn', function() {
         mockWindow.config.user = {
           id: 1
         };
         expect(userService.hasLoggedInUser()).toBe(true);
       });
-      it('should return false if no user in LogedIn', function() {
+      it('should return false if no user in LoggedIn', function() {
         mockWindow.configs = {};
         expect(userService.hasLoggedInUser()).toBe(false);
       });

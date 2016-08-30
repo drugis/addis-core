@@ -90,7 +90,7 @@ define(['angular', 'angular-mocks', 'controllers'], function() {
       scope = $rootScope;
       scope.analysis = mockAnalysis;
       scope.project = mockProject;
-      userService = jasmine.createSpyObj('UserService', ['hasLogedInUser']);
+      userService = jasmine.createSpyObj('UserService', ['hasLoggedInUser']);
       outcomeResource = jasmine.createSpyObj('OutcomeResource', ['query']);
       outcomeResource.query.and.returnValue(mockOutcomes);
       interventionResource = jasmine.createSpyObj('InterventionResource', ['query']);

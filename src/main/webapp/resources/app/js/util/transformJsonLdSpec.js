@@ -1342,7 +1342,7 @@ define(['angular', 'lodash', 'util/transformJsonLd'], function(angular, _, trans
       var result = transformJsonLd(toTransform);
       study = findStudy(result['@graph']);
       expect(study.has_epochs).toEqual({
-        '@list': []
+        '@id': 'http://www.w3.org/1999/02/22-rdf-syntax-ns#nil'
       });
     });
 
