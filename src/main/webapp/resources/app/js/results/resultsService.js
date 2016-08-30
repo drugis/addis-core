@@ -108,6 +108,10 @@ define(['angular', 'lodash'], function(angular, _) {
       return isResult(item) && outcomeUri === item.of_outcome;
     }
 
+    function isResultForMeasurementMoment(measurementMomentUri, item) {
+      return isResult(item) && measurementMomentUri === item.of_moment;
+    }
+
     function isStudyNode(node) {
       return node['@type'] === 'ontology:Study';
     }
@@ -243,6 +247,10 @@ define(['angular', 'lodash'], function(angular, _) {
       return _queryResults(outcomeUri, isResultForOutcome);
     }
 
+    function queryResultsByMeasurementMoment(measurementMomentUri) {
+      return _queryResults(measurementMomentUri, isResultForMeasurementMoment);
+    }
+
     function queryNonConformantMeasurementsByOutcomeUri(outcomeUri) {
       return _queryResults(outcomeUri, isResultForNonConformantMeasurementOfOutcome);
     }
@@ -256,6 +264,7 @@ define(['angular', 'lodash'], function(angular, _) {
       queryResults: queryResults,
       queryResultsByGroup: queryResultsByGroup,
       queryResultsByOutcome: queryResultsByOutcome,
+      queryResultsByMeasurementMoment: queryResultsByMeasurementMoment,
       queryNonConformantMeasurementsByOutcomeUri: queryNonConformantMeasurementsByOutcomeUri,
       queryNonConformantMeasurementsByGroupUri: queryNonConformantMeasurementsByGroupUri,
       cleanupMeasurements: cleanupMeasurements,

@@ -97,6 +97,7 @@
     "id": 6,
     "project": 1,
     "name": "Blood pressure change",
+    "direction": 1,
     "motivation": "none",
     "semanticOutcomeLabel": "SBP mean trough (clinic, sitting)",
     "semanticOutcomeUri": "http://trials.drugis.org/namespace/2/endpoint/e2611534a509251f2e1c87a0cc151cdb"
@@ -104,6 +105,7 @@
     "id": 7,
     "project": 1,
     "name": "Serious AE",
+    "direction": 1,
     "motivation": "motivation",
     "semanticOutcomeLabel": "SAE",
     "semanticOutcomeUri": "http://trials.drugis.org/namespace/2/adverseEvent/2c1b99355c6f052ed4a9d904f28c24c7"
@@ -111,6 +113,7 @@
     "id": 8,
     "project": 1,
     "name": "Non-serious AE",
+    "direction": 1,
     "motivation": "motivation",
     "semanticOutcomeLabel": "Non-SAE",
     "semanticOutcomeUri": "http://trials.drugis.org/namespace/2/adverseEvent/5f771b78f6308e4f100a6d6e239d28e2"

@@ -596,3 +596,7 @@ CREATE TABLE funnelPlotComparison(
 );
 --rollback DROP TABLE funnelPlotComparison CASCADE;
 --rollback DROP TABLE funnelPlot CASCA
+
+--changeset stroombergc:60
+ALTER TABLE Outcome ADD COLUMN direction INT NOT NULL DEFAULT 1;
+--rollback ALTER TABLE Outcome DROP COLUMN direction;

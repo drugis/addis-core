@@ -150,7 +150,6 @@ define(['angular', 'angular-mocks', 'controllers'], function() {
         expect(outcomeResource.query).toHaveBeenCalledWith({
           projectId: mockProject.id
         });
-        expect(scope.outcomes).toEqual(mockOutcomes);
       });
       it('should set the parent\'s isNetworkDisconnected to true', function() {
         expect(scope.isNetworkDisconnected).toBeTruthy();

@@ -119,7 +119,8 @@ public class AnalysisControllerTest {
 
   @Test
   public void testQueryNetworkMetaAnalysisByOutcomes() throws Exception {
-    Outcome outcome = new Outcome(1, 1, "name", "motivation", new SemanticVariable(uri, "label"));
+    Integer direction = 1;
+    Outcome outcome = new Outcome(1, 1, "name", direction,"motivation", new SemanticVariable(uri, "label"));
     NetworkMetaAnalysis networkMetaAnalysis = new NetworkMetaAnalysis(1, 1, "name", outcome);
     Integer projectId = 1;
     List<Integer> outcomeIds = Arrays.asList(1);
@@ -240,10 +241,11 @@ public class AnalysisControllerTest {
   public void testUpdateAnalysisWithoutProblem() throws Exception {
     Integer projectId = 1;
     Integer analysisId = 1;
+    Integer direction = 1;
     List<Outcome> selectedOutcomes = Arrays.asList(
-            new Outcome(1, projectId, "name", "motivation", new SemanticVariable(uri, "label")),
-            new Outcome(2, projectId, "name", "motivation", new SemanticVariable(uri, "label")),
-            new Outcome(3, projectId, "name", "motivation", new SemanticVariable(uri, "label"))
+            new Outcome(1, projectId, "name", direction, "motivation", new SemanticVariable(uri, "label")),
+            new Outcome(2, projectId, "name", direction, "motivation", new SemanticVariable(uri, "label")),
+            new Outcome(3, projectId, "name", direction, "motivation", new SemanticVariable(uri, "label"))
     );
     SimpleIntervention intervention1 = new SimpleIntervention(1, projectId, "name", "motivation", new SemanticInterventionUriAndName(URI.create("uri"), "label"));
     SimpleIntervention intervention2 = new SimpleIntervention(2, projectId, "name", "motivation", new SemanticInterventionUriAndName(URI.create("uri"), "label"));
@@ -334,8 +336,9 @@ public class AnalysisControllerTest {
     Integer analysisId = 333;
     Integer projectId = 101;
     Integer outcomeId = 444;
+    Integer direction = 1;
     NetworkMetaAnalysis oldAnalysis = new NetworkMetaAnalysis(analysisId, projectId, "analysis name");
-    Outcome outcome = new Outcome(outcomeId, projectId, "outcome name", "motivation", new SemanticVariable(uri, "label"));
+    Outcome outcome = new Outcome(outcomeId, projectId, "outcome name", direction,"motivation", new SemanticVariable(uri, "label"));
     NetworkMetaAnalysis newAnalysis = new NetworkMetaAnalysis(oldAnalysis.getId(), oldAnalysis.getProjectId(), oldAnalysis.getTitle(), outcome);
     when(analysisRepository.get(analysisId)).thenReturn(oldAnalysis);
     when(analysisService.updateNetworkMetaAnalysis(gert, newAnalysis)).thenReturn(newAnalysis);
@@ -354,7 +357,8 @@ public class AnalysisControllerTest {
     Integer analysisId = 333;
     Integer projectId = 101;
     Integer outcomeId = 444;
-    Outcome outcome = new Outcome(outcomeId, projectId, "outcome name", "motivation", new SemanticVariable(uri, "label"));
+    Integer direction = 1;
+    Outcome outcome = new Outcome(outcomeId, projectId, "outcome name", direction, "motivation", new SemanticVariable(uri, "label"));
     List<ArmExclusion> excludedArms = Arrays.asList(new ArmExclusion(analysisId, URI.create("-1L")), new ArmExclusion(analysisId, URI.create("-2L")));
     NetworkMetaAnalysis newAnalysis = new NetworkMetaAnalysis(analysisId, projectId, "name", excludedArms, Collections.emptyList(), Collections.emptyList(), outcome);
 
@@ -373,7 +377,8 @@ public class AnalysisControllerTest {
     Integer analysisId = 333;
     Integer projectId = 101;
     Integer outcomeId = 444;
-    Outcome outcome = new Outcome(outcomeId, projectId, "outcome name", "motivation", new SemanticVariable(uri, "label"));
+    Integer direction = 1;
+    Outcome outcome = new Outcome(outcomeId, projectId, "outcome name", direction, "motivation", new SemanticVariable(uri, "label"));
     NetworkMetaAnalysis analysis = new NetworkMetaAnalysis(1, 1, "adsf");
     List<InterventionInclusion> includedInterventions = Arrays.asList(new InterventionInclusion(analysis.getId(), -1), new InterventionInclusion(analysis.getId(), -2));
     NetworkMetaAnalysis newAnalysis = new NetworkMetaAnalysis(analysisId, projectId, "name", Collections.emptyList(), includedInterventions, Collections.emptyList(), outcome);
@@ -393,7 +398,8 @@ public class AnalysisControllerTest {
     Integer analysisId = 333;
     Integer projectId = 101;
     Integer outcomeId = 444;
-    Outcome outcome = new Outcome(outcomeId, projectId, "outcome name", "motivation", new SemanticVariable(uri, "label"));
+    Integer direction = 1;
+    Outcome outcome = new Outcome(outcomeId, projectId, "outcome name", direction, "motivation", new SemanticVariable(uri, "label"));
     List<CovariateInclusion> covariateInclusions = Arrays.asList(new CovariateInclusion(analysisId, -1), new CovariateInclusion(analysisId, -2));
     NetworkMetaAnalysis newAnalysis = new NetworkMetaAnalysis(analysisId, projectId, "name", Collections.emptyList(), Collections.emptyList(), covariateInclusions, outcome);
 

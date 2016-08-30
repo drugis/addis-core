@@ -241,7 +241,9 @@ define(['angular', 'lodash', 'util/transformJsonLd'], function(angular, _, trans
         'comment': 'my study',
         'has_outcome': [],
         'has_arm': [],
-        'has_epochs': {},
+        'has_epochs': {
+          '@id': 'http://www.w3.org/1999/02/22-rdf-syntax-ns#nil'
+        },
         'has_group': [],
         'has_included_population': [],
         'has_activity': [],

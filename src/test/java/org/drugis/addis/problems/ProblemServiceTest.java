@@ -125,7 +125,8 @@ public class ProblemServiceTest {
   private final Project project = new Project(projectId, owner, "project name", "desc", projectDatasetUid, projectDatasetVersion);
   ;
   private final SemanticVariable semanticOutcome = new SemanticVariable(URI.create("semanticOutcomeUri"), "semanticOutcomeLabel");
-  private final Outcome outcome = new Outcome(303, project.getId(), "outcome name", "moti", semanticOutcome);
+  private Integer direction = 1;
+  private final Outcome outcome = new Outcome(303, project.getId(), "outcome name", direction, "moti", semanticOutcome);
   private final URI fluoxConceptUri = URI.create("fluoxConceptUri");
   private final SemanticInterventionUriAndName fluoxConcept = new SemanticInterventionUriAndName(fluoxConceptUri, "fluox concept");
   private final Integer fluoxInterventionId = 401;
@@ -142,6 +143,9 @@ public class ProblemServiceTest {
   private final SingleIntervention sertraIntervention = new SimpleIntervention(sertraInterventionId, project.getId(),
           "sertraline", "moti", sertraConcept.getUri(), sertraConcept.getLabel());
   private final List<AbstractIntervention> allProjectInterventions = Arrays.asList(fluoxIntervention, paroxIntervention, sertraIntervention);
+
+  public ProblemServiceTest() throws Exception {
+  }
 
   @Before
   public void setUp() throws URISyntaxException, ResourceDoesNotExistException {
@@ -160,10 +164,10 @@ public class ProblemServiceTest {
   }
 
   @Test
-  public void testGetSingleStudyBenefitRiskProblem() throws ResourceDoesNotExistException, URISyntaxException, SQLException, IOException, ReadValueException, InvalidTypeForDoseCheckException, UnexpectedNumberOfResultsException {
+  public void testGetSingleStudyBenefitRiskProblem() throws Exception, ReadValueException, InvalidTypeForDoseCheckException {
     URI secondOutcomeUri = URI.create("http://secondSemantic");
     SemanticVariable secondSemanticOutcome = new SemanticVariable(secondOutcomeUri, "second semantic outcome");
-    Outcome secondOutcome = new Outcome(-303, projectId, "second outcome", "very", secondSemanticOutcome);
+    Outcome secondOutcome = new Outcome(-303, projectId, "second outcome", direction, "very", secondSemanticOutcome);
     List<Outcome> outcomes = Arrays.asList(outcome, secondOutcome);
     //include interventions: fluox and sertra
     InterventionInclusion fluoxInclusion = new InterventionInclusion(analysisId, fluoxIntervention.getId());
@@ -387,7 +391,7 @@ public class ProblemServiceTest {
   }
 
   @Test
-  public void testGetMetaBRProblem() throws ResourceDoesNotExistException, SQLException, IOException, URISyntaxException, InvalidModelException, ReadValueException, InvalidTypeForDoseCheckException, UnexpectedNumberOfResultsException {
+  public void testGetMetaBRProblem() throws Exception, ReadValueException, InvalidTypeForDoseCheckException {
 
     String version = "version 1";
     Integer projectId = 1;
@@ -426,8 +430,8 @@ public class ProblemServiceTest {
             .build();
     List<Model> models = Arrays.asList(model1, model2);
 
-    Outcome outcome1 = new Outcome(21, projectId, "ham", "", new SemanticVariable(URI.create("outUri1"), "hamS"));
-    Outcome outcome2 = new Outcome(22, projectId, "headache", "", new SemanticVariable(URI.create("outUri2"), "headacheS"));
+    Outcome outcome1 = new Outcome(21, projectId, "ham", direction,"", new SemanticVariable(URI.create("outUri1"), "hamS"));
+    Outcome outcome2 = new Outcome(22, projectId, "headache", direction,"", new SemanticVariable(URI.create("outUri2"), "headacheS"));
     List<Outcome> outcomes = Arrays.asList(outcome1, outcome2);
 
 

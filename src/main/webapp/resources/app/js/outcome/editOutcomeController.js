@@ -6,7 +6,9 @@ define(['lodash'],
 
       $scope.isEditing = false;
       $scope.item = item;
-      $injector.get($scope.settings.service).queryItems().then(function(outcomes) {
+      var ItemService = $injector.get($scope.settings.service);
+
+      ItemService.queryItems().then(function(outcomes) {
         $scope.otherOutcomes = _.filter(outcomes, function(outcome) {
           return outcome.uri !== $scope.item.uri;
         });
@@ -15,7 +17,7 @@ define(['lodash'],
 
       $scope.merge = function(targetOutcome) {
         $scope.isEditing = true;
-        OutcomeService.merge(item, targetOutcome, $injector.get($scope.settings.service).TYPE).then(function() {
+        OutcomeService.merge(item, targetOutcome, ItemService.get($scope.settings.service).TYPE).then(function() {
             callback();
             $modalInstance.close();
           },

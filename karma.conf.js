@@ -8,7 +8,7 @@ module.exports = function(config) {
     basePath: '',
 
     // plugins to load
-    plugins : [
+    plugins: [
       'karma-firefox-launcher',
       'karma-chrome-launcher',
       'karma-junit-reporter',
@@ -24,9 +24,13 @@ module.exports = function(config) {
 
     // list of files / patterns to load in the browser
     files: [
-      'src/test/js/test-main.js',
-      {pattern: 'src/main/webapp/resources/app/js/**/*.js', included: false},
-      {pattern: 'src/test/**/*.js', included: false}
+      'src/test/js/test-main.js', {
+        pattern: 'src/main/webapp/resources/app/js/**/*.js',
+        included: false
+      }, {
+        pattern: 'src/test/**/*.js',
+        included: false
+      }
     ],
 
     // list of files to exclude
@@ -37,13 +41,13 @@ module.exports = function(config) {
     ],
 
     preprocessors: {
-     // 'src/main/webapp/resources/app/js/*.js': 'coverage',
+      // 'src/main/webapp/resources/app/js/*.js': 'coverage',
     },
 
     // test results reporter to use
     // possible values: 'dots', 'progress', 'junit', 'growl', 'coverage'
     reporters: ['progress', 'junit'],
-    junitReporter :{
+    junitReporter: {
       outputFile: 'src/test/karma-test-results.xml',
       outputDir: 'src/test'
     },
@@ -78,6 +82,6 @@ module.exports = function(config) {
 
     // Continuous Integration mode
     // if true, it capture browsers, run tests and exit
-    singleRun: true
+    singleRun: false
   });
 };

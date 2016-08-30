@@ -38,7 +38,6 @@ import org.mockito.Mock;
 
 import java.io.IOException;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.sql.SQLException;
 import java.util.*;
 
@@ -183,7 +182,7 @@ public class AnalysisServiceTest {
   }
 
   @Test
-  public void testBuildInitialOutcomeInclusionsCheckNmaNoOutcome() throws SQLException, IOException {
+  public void testBuildInitialOutcomeInclusionsCheckNmaNoOutcome() throws Exception {
     Integer projectId = 1;
     Integer metabenefitRiskAnalysisId = 1;
     Integer outcomeId = 1;
@@ -199,7 +198,7 @@ public class AnalysisServiceTest {
   }
 
   @Test
-  public void testBuildInitialOutcomeInclusionsWithoutPrimary() throws InvalidModelException, SQLException, IOException {
+  public void testBuildInitialOutcomeInclusionsWithoutPrimary() throws Exception {
     Integer projectId = 1;
     Integer metabenefitRiskAnalysisId = 1;
     Integer outcomeId = 1;
@@ -225,7 +224,7 @@ public class AnalysisServiceTest {
   }
 
   @Test
-  public void testBuildInitialOutcomeInclusionsWithPrimary() throws InvalidModelException, SQLException, IOException {
+  public void testBuildInitialOutcomeInclusionsWithPrimary() throws Exception {
     Integer projectId = 1;
     Integer metabenefitRiskAnalysisId = 1;
     Integer outcomeId = 1;
@@ -252,7 +251,7 @@ public class AnalysisServiceTest {
   }
 
   @Test
-  public void buildEvidenceTableTest() throws ResourceDoesNotExistException, ReadValueException, InvalidTypeForDoseCheckException, URISyntaxException {
+  public void buildEvidenceTableTest() throws Exception, ReadValueException, InvalidTypeForDoseCheckException {
 
     List<ArmExclusion> excludedArms = Collections.emptyList();
     int includedInterventionId = 101;

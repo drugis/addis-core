@@ -7,6 +7,7 @@ define([], function() {
     $scope.datasetsLoaded = false;
     $scope.reloadDatasets = reloadDatasets;
 
+    $scope.loginUser = UserService.getLoginUser();
     $scope.showCreateProjectButton = UserService.hasLogedInUser();
 
     reloadDatasets();

@@ -96,7 +96,7 @@ public class OutcomeControllerTest {
 
   @Test
   public void testGetOutcome() throws Exception {
-    Outcome outcome = new Outcome(1, 1, "name", "motivation", new SemanticVariable(URI.create("http://semantic.com"), "labelnew"));
+    Outcome outcome = new Outcome(1, 1, "name", 1, "motivation", new SemanticVariable(URI.create("http://semantic.com"), "labelnew"));
     Integer projectId = 1;
     when(outcomeRepository.get(projectId, outcome.getId())).thenReturn(outcome);
     mockMvc.perform(get("/projects/1/outcomes/1"))
@@ -108,30 +108,32 @@ public class OutcomeControllerTest {
 
   @Test
   public void testCreateOutcome() throws Exception {
-    Outcome outcome = new Outcome(1, 1, "name", "motivation", new SemanticVariable(URI.create("http://semantic.com"), "labelnew"));
-    OutcomeCommand outcomeCommand = new OutcomeCommand(1, "name", "motivation", new SemanticVariable(URI.create("http://semantic.com"), "labelnew"));
-    when(outcomeRepository.create(gert, outcomeCommand)).thenReturn(outcome);
+    SemanticVariable semanticOutcome = new SemanticVariable(URI.create("http://semantic.com"), "labelnew");
+    Outcome outcome = new Outcome(1, 1, "name", 1, "motivation", semanticOutcome);
+    OutcomeCommand outcomeCommand = new OutcomeCommand(1, "name", 1, "motivation", semanticOutcome);
+    when(outcomeRepository.create(gert, 1, "name", 1, "motivation", semanticOutcome)).thenReturn(outcome);
     String body = TestUtils.createJson(outcomeCommand);
     mockMvc.perform(post("/projects/1/outcomes").content(body).principal(user).contentType(WebConstants.getApplicationJsonUtf8Value()))
       .andExpect(status().isCreated())
       .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()))
       .andExpect(jsonPath("$.id", notNullValue()));
     verify(accountRepository).findAccountByUsername("gert");
-    verify(outcomeRepository).create(gert, outcomeCommand);
+    verify(outcomeRepository).create(gert, 1, "name", 1,"motivation", semanticOutcome);
   }
 
   @Test
   public void testHandleBlankMotivation() throws Exception {
-    OutcomeCommand outcomeCommand = new OutcomeCommand(1, "name", null, new SemanticVariable(URI.create("http://semantic.com"), "labelnew"));
-    Outcome outcome = new Outcome(1, 1, "name", "", new SemanticVariable(URI.create("http://semantic.com"), "labelnew"));
-    when(outcomeRepository.create(gert, outcomeCommand)).thenReturn(outcome);
-    String body = "{\"name\":\"name\",\"semanticOutcome\":{\"uri\":\"http://semantic.com\",\"label\":\"labelnew\"},\"projectId\":1}";
+    SemanticVariable semanticOutcome = new SemanticVariable(URI.create("http://semantic.com"), "labelnew");
+    Outcome outcome = new Outcome(1, 1, "name", "", semanticOutcome);
+    when(outcomeRepository.create(gert, 1, "name", 1, "", semanticOutcome)).thenReturn(outcome);
+    OutcomeCommand outcomeCommand = new OutcomeCommand(1, "name", 1, "", semanticOutcome);
+    String body = TestUtils.createJson(outcomeCommand);
     mockMvc.perform(post("/projects/1/outcomes").content(body).principal(user).contentType(WebConstants.getApplicationJsonUtf8Value()))
       .andExpect(status().isCreated())
       .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()))
       .andExpect(jsonPath("$.id", notNullValue()));
     verify(accountRepository).findAccountByUsername("gert");
-    verify(outcomeRepository).create(gert, outcomeCommand);
+    verify(outcomeRepository).create(gert, 1, "name", 1, "", semanticOutcome);
   }
 
   @Test

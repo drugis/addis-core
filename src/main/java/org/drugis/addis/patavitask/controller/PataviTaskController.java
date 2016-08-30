@@ -1,10 +1,7 @@
 package org.drugis.addis.patavitask.controller;
 
-import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.interventions.service.impl.InvalidTypeForDoseCheckException;
-import org.drugis.addis.models.exceptions.InvalidModelException;
 import org.drugis.addis.patavitask.PataviTaskUriHolder;
-import org.drugis.addis.patavitask.repository.UnexpectedNumberOfResultsException;
 import org.drugis.addis.patavitask.service.PataviTaskService;
 import org.drugis.addis.trialverse.service.impl.ReadValueException;
 import org.json.JSONObject;
@@ -14,14 +11,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.security.KeyManagementException;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
-import java.security.UnrecoverableKeyException;
-import java.security.cert.CertificateException;
-import java.sql.SQLException;
 import java.util.LinkedHashMap;
 
 /**
@@ -36,7 +25,7 @@ public class PataviTaskController {
 
   @RequestMapping(value = "/projects/{projectId}/analyses/{analysisId}/models/{modelId}/task", method = RequestMethod.GET)
   @ResponseBody
-  public PataviTaskUriHolder get(@PathVariable Integer projectId, @PathVariable Integer analysisId, @PathVariable Integer modelId) throws ResourceDoesNotExistException, IOException, SQLException, InvalidModelException, URISyntaxException, ReadValueException, InvalidTypeForDoseCheckException, UnrecoverableKeyException, CertificateException, NoSuchAlgorithmException, KeyStoreException, KeyManagementException, UnexpectedNumberOfResultsException {
+  public PataviTaskUriHolder get(@PathVariable Integer projectId, @PathVariable Integer analysisId, @PathVariable Integer modelId) throws Exception, ReadValueException, InvalidTypeForDoseCheckException {
     return pataviTaskService.getGemtcPataviTaskUriHolder(projectId, analysisId, modelId);
   }
 

@@ -6,7 +6,9 @@ define(['lodash'], function(_) {
     $scope.cancel = cancel;
     $scope.addOutcome = addOutcome;
 
-    $scope.newOutcome = {};
+    $scope.newOutcome = {
+      direction: 1
+    };
     $scope.duplicateOutcomeName = {
       isDuplicate: false
     };

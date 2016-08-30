@@ -42,8 +42,19 @@ define(['lodash'], function(_) {
       analysisId: $stateParams.analysisId
     });
 
-    $scope.outcomes = OutcomeResource.query({
+    var outcomesPromise = OutcomeResource.query({
       projectId: $stateParams.projectId
+    }).$promise;
+
+    outcomesPromise.then(function(outcomes) {
+      $scope.outcomes = _.map(outcomes, function(outcome) {
+        if (outcome.direction === 1) {
+          outcome.name = outcome.name + ' (higher is better)';
+        } else {
+          outcome.name = outcome.name + ' (lower is better)';
+        }
+        return outcome;
+      });
     });
 
     $scope.interventions = InterventionResource.query({
@@ -58,7 +69,7 @@ define(['lodash'], function(_) {
       $scope.analysis.$promise,
       $scope.project.$promise,
       $scope.models.$promise,
-      $scope.outcomes.$promise,
+      outcomesPromise,
       $scope.interventions.$promise,
       $scope.covariates.$promise
     ])

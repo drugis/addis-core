@@ -3,10 +3,10 @@ package org.drugis.addis.outcomes.repository.impl;
 import org.drugis.addis.exception.MethodNotAllowedException;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.outcomes.Outcome;
-import org.drugis.addis.outcomes.OutcomeCommand;
 import org.drugis.addis.outcomes.repository.OutcomeRepository;
 import org.drugis.addis.projects.Project;
 import org.drugis.addis.security.Account;
+import org.drugis.addis.trialverse.model.SemanticVariable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -83,9 +83,9 @@ public class OutcomeRepositoryImpl implements OutcomeRepository {
   }
 
   @Override
-  public Outcome create(Account user, OutcomeCommand outcomeCommand) throws MethodNotAllowedException, ResourceDoesNotExistException {
+  public Outcome create(Account user, Integer projectId, String name, Integer direction, String motivation, SemanticVariable semanticVariable) throws Exception {
     logger.trace("create outcome");
-    Outcome newOutcome = new Outcome(outcomeCommand.getProjectId(), outcomeCommand.getName(), outcomeCommand.getMotivation(), outcomeCommand.getSemanticOutcome());
+    Outcome newOutcome = new Outcome(projectId, name, direction, motivation, semanticVariable);
     Project project = em.find(Project.class, newOutcome.getProject());
     if (project == null) {
       throw new ResourceDoesNotExistException();
@@ -95,11 +95,11 @@ public class OutcomeRepositoryImpl implements OutcomeRepository {
       throw new MethodNotAllowedException();
     }
     TypedQuery<Outcome> query = em.createQuery("FROM Outcome o WHERE o.name = :outcomeName AND o.project = :projectId", Outcome.class);
-    query.setParameter("outcomeName", outcomeCommand.getName());
-    query.setParameter("projectId", outcomeCommand.getProjectId());
+    query.setParameter("outcomeName", name);
+    query.setParameter("projectId", projectId);
     List<Outcome> results = query.getResultList();
     if (results.size() > 0) {
-      throw new IllegalArgumentException("Duplicate outcome name " + outcomeCommand.getName());
+      throw new Exception("Duplicate outcome name " + name);
     }
     em.persist(newOutcome);
     return newOutcome;
