@@ -31,7 +31,7 @@ define(['angular', 'lodash'], function(angular, _) {
     var VARIABLE_TYPE_DETAILS = {
       'sample_size': {
         type: 'sample_size',
-        label: 'sample size',
+        label: 'N',
         uri: 'http://trials.drugis.org/ontology#sample_size',
         dataType: INTEGER_TYPE
       },
@@ -54,9 +54,9 @@ define(['angular', 'lodash'], function(angular, _) {
         dataType: DOUBLE_TYPE
       },
       'log_mean': {
-        type: 'geometric_mean',
-        label: 'geometric mean',
-        uri: 'http://trials.drugis.org/ontology#geometric_mean',
+        type: 'log_mean',
+        label: 'log mean',
+        uri: 'http://trials.drugis.org/ontology#log_mean',
         dataType: DOUBLE_TYPE
       },
       'least_squares_mean': {
@@ -67,25 +67,25 @@ define(['angular', 'lodash'], function(angular, _) {
       },
       'quantile_0.05': {
         type: 'quantile_0.05',
-        label: 'quantile 0.05',
+        label: '5% quantile',
         uri: 'http://trials.drugis.org/ontology#quantile_0.05',
         dataType: DOUBLE_TYPE
       },
       'quantile_0.95': {
         type: 'quantile_0.95',
-        label: 'quantile 0.95',
+        label: '95% quantile',
         uri: 'http://trials.drugis.org/ontology#quantile_0.95',
         dataType: DOUBLE_TYPE
       },
       'quantile_0.025': {
         type: 'quantile_0.025',
-        label: 'quantile 0.025',
+        label: '2.5% quantile',
         uri: 'http://trials.drugis.org/ontology#quantile_0.025',
         dataType: DOUBLE_TYPE
       },
       'quantile_0.975': {
         type: 'quantile_0.975',
-        label: 'quantile 0.975',
+        label: '97.5% quantile',
         uri: 'http://trials.drugis.org/ontology#quantile_0.975',
         dataType: DOUBLE_TYPE
       },
