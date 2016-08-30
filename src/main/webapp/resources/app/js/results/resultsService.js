@@ -224,9 +224,9 @@ define(['angular', 'lodash'], function(angular, _) {
         baseItem.comment = backEndItem.comment;
       }
 
-      _.each(VARIABLE_TYPES, function(variable_type) {
-        if (backEndItem[variable_type] !== undefined) {
-          accum.push(createValueItem(baseItem, backEndItem, variable_type));
+      _.each(VARIABLE_TYPES, function(variableType) {
+        if (backEndItem[variableType] !== undefined) {
+          accum.push(createValueItem(baseItem, backEndItem, variableType));
         }
       });
 
