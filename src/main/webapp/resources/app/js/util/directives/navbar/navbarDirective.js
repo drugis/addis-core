@@ -8,18 +8,18 @@ define([], function() {
       transclude: true,
       link: function(scope) {
 
-        scope.isAnonimous = true;
+        scope.isAnonymous = true;
 
         if (UserService.hasLogedInUser()) {
-          scope.isAnonimous = false;
-          var logedInUser = UserService.getLoginUser();
+          scope.isAnonymous = false;
+          var loggedInUser = UserService.getLoginUser();
           scope.loginUserInfo = {
-            imageUrl: 'https://secure.gravatar.com/avatar/' + md5.createHash(logedInUser.userEmail) + '?s=43&d=mm',
-            name: logedInUser.firstName + ' ' + logedInUser.lastName,
-            userNameHash: logedInUser.userNameHash,
-            id: logedInUser.id
+            imageUrl: 'https://secure.gravatar.com/avatar/' + md5.createHash(loggedInUser.userEmail) + '?s=43&d=mm',
+            name: loggedInUser.firstName + ' ' + loggedInUser.lastName,
+            userNameHash: loggedInUser.userNameHash,
+            id: loggedInUser.id
           };
-          scope.isOwnUserPage = $state.current.name === 'user' && logedInUser.id === $stateParams.userUid;
+          scope.isOwnUserPage = $state.current.name === 'user' && loggedInUser.id === $stateParams.userUid;
         }
 
         if ($stateParams.userUid) {

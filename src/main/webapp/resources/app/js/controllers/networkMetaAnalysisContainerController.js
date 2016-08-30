@@ -37,7 +37,6 @@ define(['lodash'], function(_) {
       disableEditing: !isUserOwner
     };
 
-
     $scope.models = ModelResource.query({
       projectId: $stateParams.projectId,
       analysisId: $stateParams.analysisId
