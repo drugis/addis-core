@@ -104,7 +104,7 @@ define(['lodash'], function(_) {
           tail['@id'] = rdfListNil;
           return head;
         } else {
-          listBlankNode = findAndRemoveFromGraph(listBlankNode);
+          listBlankNode = listBlankNode['@id'] ? findAndRemoveFromGraph(listBlankNode['@id']) : findAndRemoveFromGraph(listBlankNode);
           tail['@id'] = listBlankNode['@id'];
           if (listBlankNode.first['@id']) {
             tail.first = findAndRemoveFromGraph(listBlankNode.first['@id']);

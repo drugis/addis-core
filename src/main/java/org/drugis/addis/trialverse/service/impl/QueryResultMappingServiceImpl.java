@@ -70,6 +70,8 @@ public class QueryResultMappingServiceImpl implements QueryResultMappingService 
 
     if (row.containsKey("mean")) {
       mean = readValue(row, "mean");
+    }
+    if(row.containsKey("stdDev")) {
       stdDev = readValue(row, "stdDev");
     }
     if (row.containsKey("count")){
