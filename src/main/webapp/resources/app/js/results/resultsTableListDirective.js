@@ -12,16 +12,16 @@ define(['lodash'], function(_) {
         isEditingAllowed: '='
       },
       link: function(scope) {
-        var refreshListener;
+        var deregisterRefreshListener;
         var variableService = $injector.get(scope.variableType + 'Service');
         var variablesPromise, armsPromise, groupsPromise, measurementMomentsPromise;
         scope.showResults = false;
 
         function reloadResultTables() {
 
-          if(refreshListener) {
+          if(deregisterRefreshListener) {
             // stop listening while loading to prevent race conditions
-            refreshListener();
+            deregisterRefreshListener();
           }
 
           armsPromise = ArmService.queryItems($stateParams.studyUUID).then(function(result) {
@@ -52,7 +52,7 @@ define(['lodash'], function(_) {
 
           $q.all([armsPromise, groupsPromise, measurementMomentsPromise, variablesPromise]).then(function() {
             // register listnener as the loading is now done
-            refreshListener = scope.$on('refreshResults', function() {
+            deregisterRefreshListener = scope.$on('refreshResults', function() {
               reloadResultTables();
             });
           });

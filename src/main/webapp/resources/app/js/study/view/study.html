@@ -80,7 +80,8 @@
         </div>
       </div>
       <study-category study-uuid="studyUuid" settings="categorySettings['studyInformation']"
-        is-editing-allowed="isEditingAllowed" is-single-item="true"></study-category>
+        is-editing-allowed="isEditingAllowed"
+        is-single-item="true"></study-category>
       <study-category study-uuid="studyUuid" settings="categorySettings['populationInformation']"
         is-editing-allowed="isEditingAllowed" is-single-item="true"></study-category>
       <study-category study-uuid="studyUuid" settings="categorySettings['arms']" is-editing-allowed="isEditingAllowed"
@@ -93,13 +94,13 @@
       <study-design is-editing-allowed="isEditingAllowed"></study-design>
       <study-category study-uuid="studyUuid" settings="categorySettings['measurementMoments']"
         is-repairable="true" is-editing-allowed="isEditingAllowed"></study-category>
-      <study-category study-uuid="studyUuid" settings="categorySettings['populationCharacteristics']"
-        is-editing-allowed="isEditingAllowed" is-repairable="true"></study-category>
-      <study-category study-uuid="studyUuid" settings="categorySettings['endpoints']" is-editing-allowed="isEditingAllowed"
-        is-repairable="true"></study-category>
-      <study-category study-uuid="studyUuid" settings="categorySettings['adverseEvents']"
-        is-editing-allowed="isEditingAllowed" is-repairable="true"></study-category>
-      <h3 id="results" class="study-main-category-header">Results</h3>
+      <variable-category study-uuid="studyUuid" settings="categorySettings['populationCharacteristics']"
+        is-editing-allowed="isEditingAllowed" is-repairable="true"></variable-category>
+      <variable-category study-uuid="studyUuid" settings="categorySettings['endpoints']" is-editing-allowed="isEditingAllowed"
+        is-repairable="true"></variable-category>
+      <variable-category study-uuid="studyUuid" settings="categorySettings['adverseEvents']"
+        is-editing-allowed="isEditingAllowed" is-repairable="true"></variable-category>
+<!--       <h3 id="results" class="study-main-category-header">Results</h3>
       <div class="row">
         <div class="columns large-12">
           <hr>
@@ -110,7 +111,7 @@
       <results-table-list is-editing-allowed="isEditingAllowed" id="endpointsResults" variable-type="'Endpoint'"
         variable-name="'Endpoints'"></results-table-list>
       <results-table-list is-editing-allowed="isEditingAllowed" id="adverseEventsResults"
-        variable-type="'AdverseEvent'" variable-name="'Adverse events'"></results-table-list>
+        variable-type="'AdverseEvent'" variable-name="'Adverse events'"></results-table-list> -->
       <h3 id="concept-mapping" class="study-main-category-header">Concept mappings<inline-help help-key="concept-mapping"></inline-help></h3>
       <div class="row">
         <div class="columns large-12">

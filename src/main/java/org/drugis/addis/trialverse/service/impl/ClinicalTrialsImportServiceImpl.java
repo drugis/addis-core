@@ -45,23 +45,23 @@ public class ClinicalTrialsImportServiceImpl implements ClinicalTrialsImportServ
   public JsonNode fetchInfo(String nctId) throws ClinicalTrialsImportError {
     HttpGet httpGet = new HttpGet(importerServiceLocation + "/" + nctId);
     try (CloseableHttpResponse response =  (CloseableHttpResponse) httpClient.execute(httpGet)){
-      int responceStatusCode = response.getStatusLine().getStatusCode();
+      int responseStatusCode = response.getStatusLine().getStatusCode();
       HttpEntity entity = response.getEntity();
-      if(responceStatusCode == HttpStatus.SC_NOT_FOUND){
+      if(responseStatusCode == HttpStatus.SC_NOT_FOUND){
         logger.trace("import study not found for nctId: " + nctId);
         EntityUtils.consume(entity);
           return null;
-      } else if (responceStatusCode == HttpStatus.SC_OK) {
+      } else if (responseStatusCode == HttpStatus.SC_OK) {
         entity = response.getEntity();
         String responseAsString = EntityUtils.toString(entity);
         EntityUtils.consume(entity);
         return objectMapper.readTree(responseAsString);
       } else {
         EntityUtils.consume(entity);
-        throw new ClinicalTrialsImportError("could fetch study information, resured status code = " + responceStatusCode);
+        throw new ClinicalTrialsImportError("could not fetch study information, status code = " + responseStatusCode);
       }
     } catch (Exception e) {
-      throw new ClinicalTrialsImportError("could fetch study information, " + e.toString());
+      throw new ClinicalTrialsImportError("could not fetch study information, " + e.toString());
     }
   }
 

@@ -13,7 +13,10 @@ define(['angular'], function(angular) {
         studyUuid: '=',
         isEditingAllowed: '=',
         isSingleItem: '=',
-        isRepairable: '='
+        isRepairable: '=',
+        arms: '=',
+        groups: '=',
+        measurementMoments: '='
       },
       link: function(scope) {
 

@@ -31,7 +31,11 @@ define([], function() {
         };
 
         scope.toggle = function() {
-          scope.isExpanded ? scope.hide() : scope.show();
+          if (scope.isExpanded) {
+            scope.hide();
+          } else {
+            scope.show();
+          };
         };
 
         scope.show = function() {

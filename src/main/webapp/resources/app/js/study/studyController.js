@@ -277,7 +277,6 @@ define(['angular', 'lodash'],
             StudyService.studySaved();
           });
         });
-
       }
 
       function resetStudy() {
@@ -299,7 +298,7 @@ define(['angular', 'lodash'],
       });
 
 
-      var deRegisterStateChangeStart = $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
+      var deRegisterStateChangeStart = $scope.$on('$stateChangeStart', function(event, toState, toParams) {
         if (!StudyService.isStudyModified()) {
           return;
         }
@@ -318,7 +317,7 @@ define(['angular', 'lodash'],
             stayHere: function() {
               return function() {
                 return;
-              }
+              };
             }
           }
         });

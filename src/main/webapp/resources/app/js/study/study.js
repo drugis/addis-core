@@ -22,13 +22,15 @@ define(function(require) {
 
   //services
   .factory('StudyService', require('study/studyService'))
-    .factory('StudyReadOnlyService', require('study/studyReadOnlyService'))
+  .factory('StudyReadOnlyService', require('study/studyReadOnlyService'))
 
   //resources
   .factory('CopyStudyResource', require('study/copyStudyResource'))
-    .factory('DatasetResource', require('dataset/datasetResource'))
+  .factory('DatasetResource', require('dataset/datasetResource'))
 
   //directives
   .directive('studyCategory', require('study/categoryDirective'))
-    .directive('categoryItemDirective', require('study/categoryItemDirective'));
+  .directive('categoryItemDirective', require('study/categoryItemDirective'))
+  .directive('variableCategory', require('study/variableCategoryDirective'))
+    ;
 });
