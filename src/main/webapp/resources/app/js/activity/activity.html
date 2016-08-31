@@ -1,23 +1,23 @@
+<h4>{{::item.label}}</h4>
+
 <ul class="no-bullet">
     <li>
-        <span><strong>Activity: </strong></span>
-        <span>{{::item.label}}</span>
-    </li>
-    <li>
-        <span><strong>Activity type: </strong></span>
-        <span>{{::item.activityType.label}}</span>
+        <span>Activity type: </span>
+        <span><strong>{{::item.activityType.label}}</strong></span>
     </li>
     <li ng-show="item.activityType.uri === 'ontology:TreatmentActivity'">
-        <span><strong>Treatments: </strong></span>
+        <br>
+        <span>Treatments: </span>
         <ul>
             <li ng-repeat="treatment in item.treatments">
-                <span ng-show="treatment.treatmentDoseType === 'ontology:FixedDoseDrugTreatment'">{{::treatment.drug.label}}, {{::treatment.fixedValue | exponentialFilter}} {{::treatment.doseUnit.label}} per {{::treatment.dosingPeriodicity | durationFilter }}</span>
-                <span ng-show="treatment.treatmentDoseType === 'ontology:TitratedDoseDrugTreatment'">{{::treatment.drug.label}}, {{::treatment.minValue | exponentialFilter}}-{{::treatment.maxValue | exponentialFilter}} {{::treatment.doseUnit.label}} per {{::treatment.dosingPeriodicity | durationFilter }}</span>
+                <span ng-show="treatment.treatmentDoseType === 'ontology:FixedDoseDrugTreatment'"><strong>{{::treatment.drug.label}}, {{::treatment.fixedValue | exponentialFilter}} {{::treatment.doseUnit.label}} per {{::treatment.dosingPeriodicity | durationFilter }}</strong></span>
+                <span ng-show="treatment.treatmentDoseType === 'ontology:TitratedDoseDrugTreatment'"><strong>{{::treatment.drug.label}}, {{::treatment.minValue | exponentialFilter}}-{{::treatment.maxValue | exponentialFilter}} {{::treatment.doseUnit.label}} per {{::treatment.dosingPeriodicity | durationFilter }}</strong></span>
             </li>
         </ul>
     </li>
     <li ng-show="::item.activityDescription">
-        <span><strong>Description: </strong></span>
+        <br>
+        <span>Description: </span>
     </li>
     <li ng-show="::item.activityDescription">
         <span style="white-space: pre-wrap;">{{::item.activityDescription}}</span>

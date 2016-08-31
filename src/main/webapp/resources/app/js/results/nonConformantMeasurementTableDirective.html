@@ -1,10 +1,10 @@
 <div ng-if="inputRows.length">
-  <button type="button" class="button secondary expand" ng-click="toggle()">Non-conformant measurements for {{variable.label}} <i ng-class="isExpanded ? 'fa-compress' : 'fa-expand'" class="fa right" aria-hidden="true"></i></button>
+  <button type="button" class="button" ng-click="toggle()">{{isExpanded ? 'Hide' : 'Show'}} non-conformant measurements</button>
   <table style="width: 100%;" ng-if="isExpanded">
     <tr>
       <th colspan="6">
         <div class="right">
-          <a 
+          <a
           ng-show="isEditingAllowed"
           ng-click="repairNonConformantMeasurements()"
           title="repair"> <i class="fa fa-wrench fa-2x fa-fw"></i> </a>
