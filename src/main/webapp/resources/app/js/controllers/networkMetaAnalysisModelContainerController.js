@@ -12,16 +12,19 @@ define([], function() {
 
     var isUserOwner = false;
 
-    if (UserService.hasLoggedInUser()) {
-      $scope.loginUserId = (UserService.getLoginUser()).id;
-      isUserOwner = UserService.isLoginUserId($scope.project.owner.id);
-    }
+    $scope.project.$promise.then(function() {
+      if (UserService.hasLoggedInUser()) {
+        $scope.loginUserId = (UserService.getLoginUser()).id;
+        isUserOwner = UserService.isLoginUserId($scope.project.owner.id);
+      }
 
-    $scope.editMode = {
-      isUserOwner: isUserOwner,
-      disableEditing: !isUserOwner
-    };
+      $scope.editMode = {
+        isUserOwner: isUserOwner,
+        disableEditing: !isUserOwner
+      };
+    });
   };
 
   return dependencies.concat(NetworkMetaAnalysisModelContainerController);
 });
+
