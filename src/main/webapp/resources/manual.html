@@ -15,6 +15,7 @@
     <script src="app/js/bower_components/KaTeX/dist/katex.min.js"></script>
     <script src="app/js/bower_components/KaTeX/dist/contrib/auto-render.min.js"></script>
     <script src="app/js/bower_components/jquery/dist/jquery.min.js"></script>
+    <script src="app/js/bower_components/toc/dist/toc.bower.min.js"></script>
     <script src="app/js/bower_components/scrollup/dist/jquery.scrollUp.min.js"></script>
     <style type="text/css">
         #scrollUp {
@@ -32,6 +33,14 @@
         .figure img {
           padding: 5px;
           border: 1px solid gray;
+        }
+
+        #toc .toc-h3 {
+              padding-left: 10px;
+        }
+
+        #toc .toc-h4 {
+              padding-left: 20px;
         }
     </style>
 </head>
@@ -77,9 +86,9 @@
 <section class="content">
 
     <div class="row">
-        <div class="columns large-3">
+        <div class="columns large-3" id="toc">
+<!--
             <ul class="side-nav">
-
                 <li class="heading"><a href="#your-account" style="padding-left: 0">Your account</a></li>
 
                 <li class="heading"><a href="#dataset-management" style="padding-left: 0">Dataset management</a></li>
@@ -103,6 +112,7 @@
 
                 <li class="subheading"><a href="#benefit-risk-analysis" style="padding-left : 0.2rem; color: #444">Benefit-risk analysis</a></li>
             </ul>
+-->
         </div>
         <div class="columns large-8 medium-12 end">
 
@@ -254,6 +264,7 @@ Evaluating the quality of evidence from a network meta-analysis: <a href="http:/
       $(function () {
         $.scrollUp();
       });
+      $("#toc").toc({ 'selectors': 'h2,h3,h4' });
     });
     </script>
 </body>
