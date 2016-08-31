@@ -384,7 +384,7 @@ define(['angular', 'lodash'],
 
       function calculateNavSettings() {
         var windowHeight = $window.innerHeight;
-        $scope.navSettings.isCompact = windowHeight < 1199;
+        $scope.navSettings.isCompact = windowHeight < 1022;
         $scope.navSettings.isHidden = windowHeight < 799;
       }
 
