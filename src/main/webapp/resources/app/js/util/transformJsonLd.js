@@ -91,7 +91,11 @@ define(['lodash'], function(_) {
               '@id': rdfListNil
             };
           }
-          tail.first = findAndRemoveFromGraph(listBlankNode['@list'][0]);
+          if (listBlankNode['@list'][0]['@id']) {
+            tail.first = findAndRemoveFromGraph(listBlankNode['@list'][0]['@id']);
+          } else {
+            tail.first = findAndRemoveFromGraph(listBlankNode['@list'][0]);
+          }
           tail.rest = {
             '@id': rdfListNil
           };
