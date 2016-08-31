@@ -387,7 +387,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
                 .sampleDuration(sampleDuration)
                 .build();
         moment.getStudyDataValues().add(studyDataArmValue);
-      } else if (jsonObject.containsKey("mean")) {
+      } else if (jsonObject.containsKey("mean") || jsonObject.containsKey("std")) {
         studyDataArmValue = new ContinuousStudyDataValue.ContinuousStudyDataValueBuilder(armInstanceUid, label, isArm)
                 .mean(jsonObject.containsKey("mean") ? tryParseDouble((String) jsonObject.get("mean")) : null)
                 .std(jsonObject.containsKey("std") ? tryParseDouble((String) jsonObject.get("std")) : null)

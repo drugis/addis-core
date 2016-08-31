@@ -69,14 +69,16 @@ SELECT DISTINCT
         BIND (FALSE AS ?isArm) .
      }
      OPTIONAL {
-          ?measurementJoinInstance ontology:sample_size ?sampleSize .
+         ?measurementJoinInstance ontology:sample_size ?sampleSize .
      }
      OPTIONAL {
          ?measurementJoinInstance ontology:count ?count .
      }
      OPTIONAL {
-         ?measurementJoinInstance ontology:mean ?mean ;
-         ontology:standard_deviation ?std .
+         ?measurementJoinInstance ontology:mean ?mean .
+     }
+     OPTIONAL {
+         ?measurementJoinInstance ontology:standard_deviation ?std .
      }
      OPTIONAL {
         ?measurementJoinInstance ontology:category_count ?node .

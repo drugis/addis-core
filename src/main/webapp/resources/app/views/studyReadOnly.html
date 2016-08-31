@@ -203,7 +203,7 @@
               </td>
               <td ng-repeat="dataValue in row.studyDataValues">
                 <span ng-show="dataValue.mean">{{dataValue.mean}}</span>
-                <span ng-show="dataValue.mean">&plusmn; {{dataValue.std}}</span>
+                <span ng-show="dataValue.std">&plusmn; {{dataValue.std}}</span>
                 <span ng-show="dataValue.count || (dataValue.count === 0)">{{dataValue.count}}</span>
                 <span ng-show="dataValue.sampleSize && dataValue.count || (dataValue.count === 0)">
                   / {{dataValue.sampleSize}}</span>
