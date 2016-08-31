@@ -17,6 +17,9 @@ define(['lodash'], function(_) {
     }
 
     function createInputColumns(variable, rowValueObjects) {
+      if(!variable.resultProperties) {
+        return [];
+      }
       return variable.resultProperties.map(function(type) {
         var details = ResultsService.getVariableDetails(type);
         return {
@@ -30,6 +33,9 @@ define(['lodash'], function(_) {
     }
 
     function createHeaders(resultProperties) {
+      if(!resultProperties) {
+        return [];
+      }
       return resultProperties.map(function(type) {
         return ResultsService.getVariableDetails(type).label;
       });
