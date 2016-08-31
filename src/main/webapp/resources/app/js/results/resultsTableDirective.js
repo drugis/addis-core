@@ -14,18 +14,26 @@ define([], function() {
         isEditingAllowed: '='
       },
       link: function(scope) {
+        function reloadResults() {
+          if (scope.isExpanded) {
+            scope.results = ResultsService.queryResults(scope.variable.uri);
+
+            $q.all([scope.arms, scope.measurementMoments, scope.groups, scope.results]).then(function() {
+              scope.inputRows = ResultsTableService.createInputRows(scope.variable, scope.arms, scope.groups, scope.measurementMoments, scope.results.$$state.value);
+              scope.inputHeaders = ResultsTableService.createHeaders(scope.variable.resultProperties);
+            });
+          }
+        }
+
+        scope.$on('refreshResultsTable', function() {
+          reloadResults();
+        });
 
         scope.isExpanded = false;
 
         scope.show = function() {
-
-          scope.results = ResultsService.queryResults(scope.variable.uri);
-
-          $q.all([scope.arms, scope.measurementMoments, scope.groups, scope.results]).then(function() {
-            scope.inputRows = ResultsTableService.createInputRows(scope.variable, scope.arms, scope.groups, scope.measurementMoments, scope.results.$$state.value);
-            scope.inputHeaders = ResultsTableService.createHeaders(scope.variable.resultProperties);
-            scope.isExpanded = true;
-          });
+          scope.isExpanded = true;
+          reloadResults();
         };
 
         scope.hide = function() {

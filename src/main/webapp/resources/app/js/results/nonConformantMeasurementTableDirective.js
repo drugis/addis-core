@@ -15,38 +15,37 @@ define([], function() {
         isEditingAllowed: '='
       },
       link: function(scope) {
-
-        scope.nonConformantMeasurementsPromise = ResultsService.queryNonConformantMeasurementsByOutcomeUri(scope.variable.uri);
-
-        $q.all([scope.arms, scope.measurementMoments, scope.groups, scope.nonConformantMeasurementsPromise]).then(function(result) {
-          scope.nonConformantMeasurements = result[3];
-          scope.nonConformantMeasurementsMap = NonConformantMeasurementTableService.mapResultsByLabelAndGroup(scope.arms, scope.groups, scope.nonConformantMeasurements);
-          scope.inputRows = NonConformantMeasurementTableService.createInputRows(scope.variable, scope.nonConformantMeasurementsMap);
-        });
-
         scope.isExpanded = false;
 
-        scope.hide = function() {
-          scope.isExpanded = false;
-        };
-
+        reloadData();
         scope.toggle = function() {
           if (scope.isExpanded) {
-            scope.hide();
+            scope.isExpanded = false;
           } else {
-            scope.show();
-          };
+            reloadData();
+            scope.isExpanded = true;
+          }
         };
 
-        scope.show = function() {
+        scope.$on('refreshResultsTable', function() {
+          console.log('caught refreshResultsTable in nonConformantMeasurements');
+          reloadData();
+        });
+
+        function reloadData() {
+          scope.nonConformantMeasurementsPromise = ResultsService.queryNonConformantMeasurementsByOutcomeUri(scope.variable.uri);
+
+          $q.all([scope.arms, scope.measurementMoments, scope.groups, scope.nonConformantMeasurementsPromise]).then(function(result) {
+            scope.nonConformantMeasurements = result[3];
+            scope.nonConformantMeasurementsMap = NonConformantMeasurementTableService.mapResultsByLabelAndGroup(scope.arms, scope.groups, scope.nonConformantMeasurements);
+            scope.inputRows = NonConformantMeasurementTableService.createInputRows(scope.variable, scope.nonConformantMeasurementsMap);
+          });
 
           scope.inputHeaders = ResultsTableService.createHeaders(scope.variable.resultProperties);
-          scope.isExpanded = true;
 
           scope.setToMoment = function(moment, measurementInstanceList) {
             ResultsService.setToMeasurementMoment(moment.uri, measurementInstanceList).then(function() {
               scope.$emit('refreshResults');
-              return;
             });
           };
 
@@ -78,9 +77,9 @@ define([], function() {
               }
             });
           };
+        }
 
 
-        };
 
       }
     };

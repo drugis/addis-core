@@ -42,7 +42,6 @@ define(['lodash'], function(_) {
         scope.showResults = false;
 
         function reloadResultTables() {
-
           if(deregisterRefreshListener) {
             // stop listening while loading to prevent race conditions
             deregisterRefreshListener();
@@ -75,6 +74,7 @@ define(['lodash'], function(_) {
           });
 
           $q.all([armsPromise, groupsPromise, measurementMomentsPromise, variablesPromise]).then(function() {
+            scope.$broadcast('refreshResultsTable');
             // register listnener as the loading is now done
             deregisterRefreshListener = scope.$on('refreshResults', function() {
               reloadResultTables();
