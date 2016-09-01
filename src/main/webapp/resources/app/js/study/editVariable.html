@@ -23,10 +23,11 @@
     </div>
   </div>
 
-  <div class="row">
+  <div class="row" >
     <div class="large-9 columns">
-      <label>Result properties</label>
-      <subset-select target="item.resultProperties" source="resultProperties" comparisonProperty="'type'"></subset-select>
+      <label>Result properties <button class="small" ng-click="changeResultProperties=true">Change</button></label>
+      <span ng-show="!changeResultProperties" ng-repeat="resultProperty in resultProperties">{{resultProperty.label}}{{$last ? '' : ', '}}</span>
+      <subset-select ng-show="changeResultProperties" target="item.resultProperties" source="resultProperties" equals="equals"></subset-select>
     </div>
   </div>
 

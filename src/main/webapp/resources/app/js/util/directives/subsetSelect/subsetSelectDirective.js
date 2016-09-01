@@ -9,7 +9,7 @@ define([], function() {
       scope: {
         target: '=',
         source: '=',
-        comparisonProperty: '='
+        equals: '='
       },
       link: function(scope) {
         scope.isSelected = [];
@@ -21,11 +21,11 @@ define([], function() {
 
         function initSelections(source) {
           scope.source = source;
-          scope.isSelected = SubsetSelectService.createSelectionList(source, scope.target, scope.comparisonProperty);
+          scope.isSelected = SubsetSelectService.createSelectionList(source, scope.target, scope.equals);
         }
 
         scope.updateSelection = function(isSelected, item) {
-          scope.target = SubsetSelectService.addOrRemoveItem(isSelected, item, scope.target);
+          scope.target = SubsetSelectService.addOrRemoveItem(isSelected, item, scope.target, scope.equals);
         };
 
       }

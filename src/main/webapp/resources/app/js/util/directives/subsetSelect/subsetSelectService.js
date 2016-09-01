@@ -3,20 +3,20 @@ define(['lodash'], function(_) {
   var dependencies = [];
 
   var SubsetSelectService = function() {
-    function addOrRemoveItem(isSelected, item, items, comparisonProperty) {
+    function addOrRemoveItem(isSelected, item, items, equals) {
       if (!isSelected) {
        return _.filter(items, function(listItem){
-          return listItem[comparisonProperty] !== item[comparisonProperty];
+          return equals(listItem, item);
        });
       } else {
         return items.concat(item);
       }
     }
 
-    function createSelectionList(source, target, comparisonProperty) {
+    function createSelectionList(source, target, equals) {
       return _.map(source, function(sourceItem) {
         return !!_.find(target, function(targetItem) {
-          return targetItem[comparisonProperty] === sourceItem[comparisonProperty];
+          return equals(targetItem, sourceItem);
         });
       });
     }
