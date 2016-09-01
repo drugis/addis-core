@@ -417,6 +417,7 @@ define(['angular', 'lodash'], function(angular, _) {
       isExistingMeasurement: isExistingMeasurement,
       isStudyNode: isStudyNode,
       getVariableDetails: getVariableDetails,
+      VARIABLE_TYPE_DETAILS: VARIABLE_TYPE_DETAILS,
       INTEGER_TYPE: INTEGER_TYPE,
       DOUBLE_TYPE: DOUBLE_TYPE
     };

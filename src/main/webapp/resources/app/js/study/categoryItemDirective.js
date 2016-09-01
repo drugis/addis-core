@@ -40,6 +40,9 @@ define(['angular'], function(angular) {
               callback: function () {
                 return onEdit;
               },
+              itemType: function() {
+                return scope.settings.itemName;
+              },
               itemService: function() {
                 return service;
               },

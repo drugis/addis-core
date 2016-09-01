@@ -8,14 +8,21 @@ define([], function() {
       templateUrl: 'app/js/util/directives/subsetSelect/subsetSelectDirective.html',
       scope: {
         target: '=',
-        source: '='
+        source: '=',
+        comparisonProperty: '='
       },
       link: function(scope) {
         scope.isSelected = [];
-        scope.source.then(function(source) {
+        if(scope.source.then) {
+          scope.source.then(initSelections);
+        } else {
+          initSelections(scope.source);
+        }
+
+        function initSelections(source) {
           scope.source = source;
-          scope.isSelected = SubsetSelectService.createSelectionList(source, scope.target);
-        });
+          scope.isSelected = SubsetSelectService.createSelectionList(source, scope.target, scope.comparisonProperty);
+        }
 
         scope.updateSelection = function(isSelected, item) {
           scope.target = SubsetSelectService.addOrRemoveItem(isSelected, item, scope.target);

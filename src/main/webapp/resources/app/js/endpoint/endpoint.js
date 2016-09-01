@@ -6,7 +6,6 @@ define(function (require) {
   return angular.module('trialverse.endpoint', ['ngResource', 'trialverse.util', 'trialverse.outcome'])
     // controllers
      .controller('AddEndpointController', require('endpoint/addEndpointController'))
-     .controller('EditEndpointController', require('endpoint/editEndpointController'))
 
     // //services
      .factory('EndpointService', require('endpoint/endpointService'))

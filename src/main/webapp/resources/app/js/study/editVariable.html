@@ -1,7 +1,7 @@
 <form novalidate ng-submit="editItem()">
   <div class="row">
     <div class="large-9 columns">
-      <h3>Edit population characteristic</h3>
+      <h3>Edit {{itemType}}</h3>
     </div>
   </div>
   <div class="row">
@@ -25,9 +25,18 @@
 
   <div class="row">
     <div class="large-9 columns">
-      <subset-select target="item.measuredAtMoments" source="measurementMoments"></subset-select>
+      <label>Result properties</label>
+      <subset-select target="item.resultProperties" source="resultProperties" comparisonProperty="'type'"></subset-select>
     </div>
   </div>
+
+  <div class="row">
+    <div class="large-9 columns">
+      <label>Measurement moments</label>
+      <subset-select target="item.measuredAtMoments" source="measurementMoments" comparison-property="'uri'"></subset-select>
+    </div>
+  </div>
+
 
   <div class="row">
     <div class="large-9 columns">

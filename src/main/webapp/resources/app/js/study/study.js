@@ -18,6 +18,7 @@ define(function(require) {
     .controller('StudyController', require('study/studyController'))
     .controller('CopyStudyController', require('study/copyStudyController'))
     .controller('EditStudyController', require('study/editStudyController'))
+    .controller('EditVariableController', require('study/editVariableController'))
     .controller('UnsavedChangesWarningModalController', require('study/unsavedChanges/unsavedChangesWarningModalController'))
 
   //services
