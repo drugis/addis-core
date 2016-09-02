@@ -17,6 +17,7 @@ define([], function() {
         var ItemService = $injector.get(scope.itemServiceName);
 
         scope.commitChanges = function(commitTitle, commitDescription) {
+          scope.isCommitting = true;
           ItemService.getGraphAndContext().then(function(graph) {
             GraphResource.putJson({
               userUid: scope.userUid,
