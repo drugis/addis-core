@@ -28,6 +28,11 @@ define([], function() {
           scope.target = SubsetSelectService.addOrRemoveItem(isSelected, item, scope.target, scope.equals);
         };
 
+        scope.$watch('target', function(oldValue, newValue) {
+          if(!oldValue || !newValue) { return; }
+          scope.isSelected = SubsetSelectService.createSelectionList(scope.source, scope.target, scope.equals);
+        });
+
       }
     };
   };

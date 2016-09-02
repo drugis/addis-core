@@ -27,10 +27,7 @@ define([], function() {
           }
         };
 
-        scope.$on('refreshResultsTable', function() {
-          console.log('caught refreshResultsTable in nonConformantMeasurements');
-          reloadData();
-        });
+        scope.$on('refreshResultsTable', reloadData);
 
         function reloadData() {
           scope.nonConformantMeasurementsPromise = ResultsService.queryNonConformantMeasurementsByOutcomeUri(scope.variable.uri);

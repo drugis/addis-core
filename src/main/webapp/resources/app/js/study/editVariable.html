@@ -28,7 +28,7 @@
       <label>Included result properties:</label>
       <span ng-show="!changeResultProperties" ng-repeat="resultProperty in item.selectedResultProperties"><strong>{{resultProperty.label}}{{$last ? '' : ', '}}</strong></span>
       <subset-select ng-show="changeResultProperties" target="item.selectedResultProperties" source="resultProperties" equals="resultPropertyEquals"></subset-select><br>
-      <button class="small" type="button" ng-click="changeResultProperties=!changeResultProperties">{{changeResultProperties ? 'Hide options' : 'Change'}}</button>
+      <button class="small" type="button" ng-click="changeResultProperties=!changeResultProperties">{{changeResultProperties ? 'Hide result properties' : 'Change'}}</button>
     </div>
   </div>
 

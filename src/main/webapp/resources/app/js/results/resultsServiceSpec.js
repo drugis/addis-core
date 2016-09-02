@@ -665,7 +665,23 @@ define(['angular-mocks'], function(angularMocks) {
         expect(studyService.saveJsonGraph).toHaveBeenCalledWith(expectedSaveGraph);
         studyService.saveJsonGraph.calls.reset();
       });
+    });
 
+    describe('getDefaultResultProperties', function() {
+      it('should return the correct default resultproperties for dichotomous and continuous variables', function() {
+        var continuousProperties = [
+          resultsService.VARIABLE_TYPE_DETAILS.sample_size,
+          resultsService.VARIABLE_TYPE_DETAILS.mean,
+          resultsService.VARIABLE_TYPE_DETAILS.standard_deviation
+        ];
+        var dichotomousProperties = [
+          resultsService.VARIABLE_TYPE_DETAILS.sample_size,
+          resultsService.VARIABLE_TYPE_DETAILS.count
+        ];
+
+        expect(resultsService.getDefaultResultProperties('ontology:dichotomous')).toEqual(dichotomousProperties);
+        expect(resultsService.getDefaultResultProperties('ontology:continuous')).toEqual(continuousProperties);
+      });
     });
 
   });

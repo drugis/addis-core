@@ -101,6 +101,9 @@ define(['lodash'], function(_) {
               },
               actionType: function() {
                 return 'Add';
+              },
+              settings: function() {
+                return scope.settings;
               }
             }
           });

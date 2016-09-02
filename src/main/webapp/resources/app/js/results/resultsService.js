@@ -373,6 +373,23 @@ define(['angular', 'lodash'], function(angular, _) {
       });
     }
 
+    function getDefaultResultProperties(measurementType) {
+      if (measurementType === 'ontology:continuous') {
+        return [
+          VARIABLE_TYPE_DETAILS.sample_size,
+          VARIABLE_TYPE_DETAILS.mean,
+          VARIABLE_TYPE_DETAILS.standard_deviation
+        ];
+      } else if (measurementType === 'ontology:dichotomous') {
+        return [
+          VARIABLE_TYPE_DETAILS.sample_size,
+          VARIABLE_TYPE_DETAILS.count
+        ];
+      } else {
+        console.error('unknown measurement type ' + measurementType);
+      }
+    }
+
     function _queryResults(uri, typeFunction) {
       return StudyService.getJsonGraph().then(function(graph) {
         var resultJsonItems = graph.filter(typeFunction.bind(this, uri));
@@ -417,9 +434,10 @@ define(['angular', 'lodash'], function(angular, _) {
       isExistingMeasurement: isExistingMeasurement,
       isStudyNode: isStudyNode,
       getVariableDetails: getVariableDetails,
+      getDefaultResultProperties: getDefaultResultProperties,
       VARIABLE_TYPE_DETAILS: VARIABLE_TYPE_DETAILS,
       INTEGER_TYPE: INTEGER_TYPE,
-      DOUBLE_TYPE: DOUBLE_TYPE
+      DOUBLE_TYPE: DOUBLE_TYPE,
     };
   };
   return dependencies.concat(ResultsService);

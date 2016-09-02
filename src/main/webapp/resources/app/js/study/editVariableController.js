@@ -29,20 +29,7 @@ define(['lodash'], function(_) {
     };
 
     function resetResultProperties() {
-      if (item.measurementType === 'ontology:continuous') {
-        item.selectedResultProperties = [
-          ResultsService.VARIABLE_TYPE_DETAILS.sample_size,
-          ResultsService.VARIABLE_TYPE_DETAILS.mean,
-          ResultsService.VARIABLE_TYPE_DETAILS.standard_deviation
-        ];
-      } else if (item.measurementType === 'ontology:dichotomous') {
-        item.selectedResultProperties = [
-          ResultsService.VARIABLE_TYPE_DETAILS.sample_size,
-          ResultsService.VARIABLE_TYPE_DETAILS.count
-        ];
-      } else {
-        console.error('unknown measurement type ' + item.measurementType);
-      }
+      item.selectedResultProperties = ResultsService.getDefaultResultProperties($scope.item.measurementType);
     }
 
     function editItem() {
