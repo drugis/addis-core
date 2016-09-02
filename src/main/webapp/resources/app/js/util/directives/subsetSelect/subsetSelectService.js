@@ -6,7 +6,7 @@ define(['lodash'], function(_) {
     function addOrRemoveItem(isSelected, item, items, equals) {
       if (!isSelected) {
        return _.filter(items, function(listItem){
-          return equals(listItem, item);
+          return !equals(listItem, item);
        });
       } else {
         return items.concat(item);

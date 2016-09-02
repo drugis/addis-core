@@ -2,6 +2,9 @@
 define(['angular', 'angular-mocks'], function() {
   describe('the duration service', function() {
     var subsetSelectService;
+    var equals = function(item1, item2) {
+      return item1.uri === item2.uri;
+    }
 
     beforeEach(module('trialverse.util'));
 
@@ -24,12 +27,12 @@ define(['angular', 'angular-mocks'], function() {
         ];
       describe('when newValue is truthy', function() {
         it('should add newValue to the list of selected items', function() {
-          expect(subsetSelectService.addOrRemoveItem(true, item3, items, 'uri')).toEqual(items.concat(item3));
+          expect(subsetSelectService.addOrRemoveItem(true, item3, items, equals)).toEqual(items.concat(item3));
         });
       });
       describe('when newValue is falsy', function() {
         it('should remove oldValue from the list of selected items', function() {
-          expect(subsetSelectService.addOrRemoveItem(false, item2, items, 'uri')).toEqual([item1]);
+          expect(subsetSelectService.addOrRemoveItem(false, item2, items, equals)).toEqual([item1]);
         });
       });
     });
@@ -37,7 +40,7 @@ define(['angular', 'angular-mocks'], function() {
     describe('createSelectionList', function() {
       describe('for an empty target', function() {
         it('should return an all-false list', function() {
-          expect(subsetSelectService.createSelectionList(['item 1', 'item 2'], [], 'uri')).toEqual([false, false]);
+          expect(subsetSelectService.createSelectionList(['item 1', 'item 2'], [], equals)).toEqual([false, false]);
         });
       });
       describe('for a non-empty target list', function() {
@@ -49,7 +52,9 @@ define(['angular', 'angular-mocks'], function() {
           }, {
             uri: 'item 3'
           }];
-          expect(subsetSelectService.createSelectionList(source, [{uri: 'item 2'}], 'uri')).toEqual([false, true, false]);
+          expect(subsetSelectService.createSelectionList(source, [{
+            uri: 'item 2'
+          }], equals)).toEqual([false, true, false]);
         });
       });
     });

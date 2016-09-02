@@ -12,12 +12,21 @@ define(['lodash'], function(_) {
     $scope.item = item;
     $scope.itemType = itemType;
     $scope.measurementMoments = MeasurementMomentService.queryItems();
-    $scope.resultProperties = _.map(ResultsService.VARIABLE_TYPE_DETAILS, function(variableTypeDetail) {
-      return variableTypeDetail;
+    $scope.resultProperties = _.map(ResultsService.VARIABLE_TYPE_DETAILS, _.identity);
+    item.selectedResultProperties = _.filter($scope.resultProperties, function(resultProperty){
+      return _.includes(item.resultProperties, resultProperty.uri);
     });
+    $scope.resultPropertyEquals = function(moment1, moment2) {
+      return moment1.uri === moment2.uri;
+    };
+    $scope.measurementMomentEquals = function(moment1, moment2) {
+      return moment1.uri === moment2.uri;
+    };
 
     $scope.editItem = function() {
       $scope.isEditing = false;
+      item.resultProperties = _.map(item.selectedResultProperties, 'uri');
+      delete item.selectedResultProperties;
       itemService.editItem($scope.item).then(function() {
           callback();
           $modalInstance.close();
