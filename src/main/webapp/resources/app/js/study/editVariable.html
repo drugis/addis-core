@@ -15,10 +15,10 @@
     <div class="large-12 columns">
       <label>Measurement type</label>
       <input ng-model="item.measurementType" type="radio" name="measurementType" value="ontology:dichotomous"
-        id="rateOption">
+        id="rateOption" ng-change="resetResultProperties()">
       <label for="rateOption">rate</label>
       <input ng-model="item.measurementType" type="radio" name="measurementType" value="ontology:continuous"
-        id="continuousOption">
+        id="continuousOption" ng-change="resetResultProperties()">
       <label for="continuousOption">continuous</label>
     </div>
   </div>
