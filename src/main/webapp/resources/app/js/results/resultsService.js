@@ -33,121 +33,157 @@ define(['angular', 'lodash'], function(angular, _) {
         type: 'sample_size',
         label: 'N',
         uri: 'http://trials.drugis.org/ontology#sample_size',
-        dataType: INTEGER_TYPE
+        dataType: INTEGER_TYPE,
+        variableType: 'all'
       },
       'mean': {
         type: 'mean',
         label: 'mean',
         uri: 'http://trials.drugis.org/ontology#mean',
-        dataType: DOUBLE_TYPE
+        dataType: DOUBLE_TYPE,
+        variableType: 'continuous',
+        category: 'Central tendency'
       },
       'median': {
         type: 'median',
         label: 'median',
         uri: 'http://trials.drugis.org/ontology#median',
-        dataType: DOUBLE_TYPE
+        dataType: DOUBLE_TYPE,
+        variableType: 'continuous',
+        category: 'Central tendency'
       },
       'geometric_mean': {
         type: 'geometric_mean',
         label: 'geometric mean',
         uri: 'http://trials.drugis.org/ontology#geometric_mean',
-        dataType: DOUBLE_TYPE
+        dataType: DOUBLE_TYPE,
+        variableType: 'continuous',
+        category: 'Central tendency'
       },
       'log_mean': {
         type: 'log_mean',
         label: 'log mean',
         uri: 'http://trials.drugis.org/ontology#log_mean',
-        dataType: DOUBLE_TYPE
+        dataType: DOUBLE_TYPE,
+        variableType: 'continuous',
+        category: 'Central tendency'
       },
       'least_squares_mean': {
         type: 'least_squares_mean',
         label: 'least squares mean',
         uri: 'http://trials.drugis.org/ontology#least_squares_mean',
-        dataType: DOUBLE_TYPE
+        dataType: DOUBLE_TYPE,
+        variableType: 'continuous',
+        category: 'Central tendency'
       },
       'quantile_0.05': {
         type: 'quantile_0.05',
         label: '5% quantile',
         uri: 'http://trials.drugis.org/ontology#quantile_0.05',
-        dataType: DOUBLE_TYPE
+        dataType: DOUBLE_TYPE,
+        variableType: 'continuous',
+        category: 'Quantiles'
       },
       'quantile_0.95': {
         type: 'quantile_0.95',
         label: '95% quantile',
         uri: 'http://trials.drugis.org/ontology#quantile_0.95',
-        dataType: DOUBLE_TYPE
+        dataType: DOUBLE_TYPE,
+        variableType: 'continuous',
+        category: 'Quantiles'
       },
       'quantile_0.025': {
         type: 'quantile_0.025',
         label: '2.5% quantile',
         uri: 'http://trials.drugis.org/ontology#quantile_0.025',
-        dataType: DOUBLE_TYPE
+        dataType: DOUBLE_TYPE,
+        variableType: 'continuous',
+        category: 'Quantiles'
       },
       'quantile_0.975': {
         type: 'quantile_0.975',
         label: '97.5% quantile',
         uri: 'http://trials.drugis.org/ontology#quantile_0.975',
-        dataType: DOUBLE_TYPE
+        dataType: DOUBLE_TYPE,
+        variableType: 'continuous',
+        category: 'Quantiles'
       },
       'min': {
         type: 'min',
         label: 'min',
         uri: 'http://trials.drugis.org/ontology#min',
-        dataType: DOUBLE_TYPE
+        dataType: DOUBLE_TYPE,
+        variableType: 'continuous',
+        category: 'Dispersion'
       },
       'max': {
         type: 'max',
         label: 'max',
         uri: 'http://trials.drugis.org/ontology#max',
-        dataType: DOUBLE_TYPE
+        dataType: DOUBLE_TYPE,
+        variableType: 'continuous',
+        category: 'Dispersion'
       },
       'geometric_coefficient_of_variation': {
         type: 'geometric_coefficient_of_variation',
         label: 'geometric coefficient of variation',
         uri: 'http://trials.drugis.org/ontology#geometric_coefficient_of_variation',
-        dataType: DOUBLE_TYPE
+        dataType: DOUBLE_TYPE,
+        variableType: 'continuous',
+        category: 'Dispersion'
       },
       'first_quartile': {
         type: 'first_quartile',
         label: 'first quartile',
         uri: 'http://trials.drugis.org/ontology#first_quartile',
-        dataType: DOUBLE_TYPE
+        dataType: DOUBLE_TYPE,
+        variableType: 'continuous',
+        category: 'Quantiles'
       },
       'third_quartile': {
         type: 'third_quartile',
         label: 'third quartile',
         uri: 'http://trials.drugis.org/ontology#third_quartile',
-        dataType: DOUBLE_TYPE
+        dataType: DOUBLE_TYPE,
+        variableType: 'continuous',
+        category: 'Quantiles'
       },
       'standard_deviation': {
         type: 'standard_deviation',
         label: 'standard deviation',
         uri: 'http://trials.drugis.org/ontology#standard_deviation',
-        dataType: DOUBLE_TYPE
+        dataType: DOUBLE_TYPE,
+        variableType: 'continuous',
+        category: 'Dispersion'
       },
       'standard_error': {
         type: 'standard_error',
         label: 'standard error',
         uri: 'http://trials.drugis.org/ontology#standard_error',
-        dataType: DOUBLE_TYPE
+        dataType: DOUBLE_TYPE,
+        variableType: 'continuous',
+        category: 'Dispersion'
       },
       'count': {
         type: 'count',
         label: 'count',
         uri: 'http://trials.drugis.org/ontology#count',
-        dataType: INTEGER_TYPE
+        dataType: INTEGER_TYPE,
+        variableType: 'dichotomous'
       },
       'percentage': {
         type: 'percentage',
         label: 'percentage',
         uri: 'http://trials.drugis.org/ontology#percentage',
-        dataType: DOUBLE_TYPE
+        dataType: DOUBLE_TYPE,
+        variableType: 'dichotomous'
       },
       'proportion': {
         type: 'proportion',
         label: 'proportion',
         uri: 'http://trials.drugis.org/ontology#proportion',
-        dataType: DOUBLE_TYPE
+        dataType: DOUBLE_TYPE,
+        variableType: 'dichotomous'
       },
     };
 
@@ -312,7 +348,7 @@ define(['angular', 'lodash'], function(angular, _) {
           return accum;
         }, {});
 
-        // add al measurements that are selected on at least one outcome to the isMeasurementOnOutcome map
+        // add all measurements that are selected on at least one outcome to the isMeasurementOnOutcome map
         isMeasurementOnOutcome = _.reduce(study.has_outcome, function(accum, outcome) {
           var measuredAtList;
           if (!Array.isArray(outcome.is_measured_at)) {
