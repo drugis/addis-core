@@ -39,6 +39,7 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter {
 
   public void addResourceHandlers(ResourceHandlerRegistry registry) {
     registry.addResourceHandler("/app/**").addResourceLocations("/resources/app/");
+    registry.addResourceHandler("/img/**").addResourceLocations("/resources/img/");
     registry.addResourceHandler("/trialverse/**").addResourceLocations("/resources/trialverse/");
     registry.addResourceHandler("/manual.html").addResourceLocations("/resources/manual.html");
     registry.addResourceHandler("/addis-lexicon.json").addResourceLocations("/resources/addis-lexicon.json");
