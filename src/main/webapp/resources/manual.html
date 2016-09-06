@@ -35,12 +35,40 @@
           border: 1px solid gray;
         }
 
-        #toc .toc-h3 {
-              padding-left: 10px;
+        #toc ul {
+          list-style-type: none;
+          margin-top: -20px;
+          padding: 2rem 1rem;
+          background-color: #f4f4f4;
         }
 
-        #toc .toc-h4 {
-              padding-left: 20px;
+        #toc li {
+          font-size: 0.875rem;
+        }
+
+        #toc li a {
+          display: block;
+          margin: 0;
+          padding: 0.4375rem 0.875rem;
+        }
+
+        #toc li a:hover, #toc li a:focus {
+          background: rgba(0, 0, 0, 0.025);
+          color: #7056c6;
+        }
+
+        #toc .toc-h2 {
+          text-transform: uppercase;
+          color: #008CBA;
+          font-weight: bold;
+        }
+
+        #toc .toc-h3 a {
+              padding-left: 1.225rem;
+        }
+
+        #toc .toc-h4 a {
+              padding-left: 1.675rem;
         }
     </style>
 </head>
@@ -87,32 +115,6 @@
 
     <div class="row">
         <div class="columns large-3" id="toc">
-<!--
-            <ul class="side-nav">
-                <li class="heading"><a href="#your-account" style="padding-left: 0">Your account</a></li>
-
-                <li class="heading"><a href="#dataset-management" style="padding-left: 0">Dataset management</a></li>
-
-                <li><a href="#version-history">Version history</a></li>
-                <li><a href="#study-oriented-versus-analysis-oriented">Study-oriented versus analysis-oriented</a></li>
-                <li><a href="#creating-a-study">Creating a study</a></li>
-                <li><a href="#study-input">Study input</a></li>
-                <li><a href="#study-repair">Study repair</a></li>
-                <li><a href="#harmonization">Harmonization</a></li>
-                <li><a href="#checklist-getting-to-analysis-ready">Checklist: getting to analysis ready</a></li>
-
-                <li class="heading"><a href="#analysis-projects" style="padding-left: 0">Analysis projects</a></li>
-
-                <li><a href="#creating-a-project">Creating a project</a></li>
-                <li><a href="#defining-concepts">Defining concepts</a></li>
-                <li><a href="#project-report">Project report</a></li>
-
-                <li class="heading"><a href="#dataset-management" style="padding-left : 0;">Evidence synthesis</a></li>
-                <div id="gemtc-shared-toc"></div>
-
-                <li class="subheading"><a href="#benefit-risk-analysis" style="padding-left : 0.2rem; color: #444">Benefit-risk analysis</a></li>
-            </ul>
--->
         </div>
         <div class="columns large-8 medium-12 end">
 
@@ -255,7 +257,16 @@ Evaluating the quality of evidence from a network meta-analysis: <a href="http:/
     <script>
     $("#gemtc-shared-toc").load("app/js/bower_components/gemtc-web/app/manual/shared-toc.html");
     $("#gemtc-shared-content").load("app/js/bower_components/gemtc-web/app/manual/shared.html", function() {
-        $('img', this).each(function() {
+      $('h4', this).replaceWith(function() {
+        return '<h5 id="' + $(this).attr('id') + '">' + $(this).text() + '</h5>';
+      });
+      $('h3', this).replaceWith(function() {
+        return '<h4 id="' + $(this).attr('id') + '">' + $(this).text() + '</h4>';
+      });
+      $('h2', this).replaceWith(function() {
+        return '<h3 id="' + $(this).attr('id') + '">' + $(this).text() + '</h3>';
+      });
+      $('img', this).each(function() {
         $img = $(this);
         $img.attr('src', 'app/js/bower_components/gemtc-web/app/' + $img.attr('src'));
       });
