@@ -1,0 +1,46 @@
+<form novalidate ng-submit="addItem()">
+  <div class="row">
+    <div class="large-9 columns">
+      <h3>Add a new {{settings.itemName}}</h3>
+    </div>
+  </div>
+  <div class="row">
+    <div class="large-9 columns">
+      <label>Name
+        <input autofocus type="text" ng-model="item.label">
+      </label>
+    </div>
+  </div>
+  <div class="row">
+    <div class="large-9 columns">
+      <label>Measurement type</label>
+      <input ng-model="item.measurementType" type="radio" name="measurementType" ng-change="resetResultProperties()"
+             value="ontology:dichotomous" id="rateOption"><label for="rateOption">count</label>
+      <input ng-model="item.measurementType" type="radio" name="measurementType" ng-change="resetResultProperties()"
+             value="ontology:continuous" id="continuousOption"><label
+        for="continuousOption">continuous</label>
+    </div>
+  </div>
+
+  <div class="row" >
+    <div class="large-9 columns">
+      <label>Included result properties:</label>
+      <span ng-show="!changeResultProperties" ng-repeat="resultProperty in item.selectedResultProperties"><strong>{{resultProperty.label}}{{$last ? '' : ', '}}</strong></span>
+      <result-properties ng-show="changeResultProperties" variable="item"></result-properties><br>
+      <button class="small" type="button" ng-click="changeResultProperties=!changeResultProperties">{{changeResultProperties ? 'Hide result properties' : 'Change'}}</button>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="large-9 columns">
+      <subset-select target="item.measuredAtMoments" source="measurementMoments" equals="measurementMomentEquals"></subset-select>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="large-9 columns">
+      <button class="success" type="submit" ng-disabled="!item.label || !item.measurementType">Add</button>
+    </div>
+  </div>
+  <a class="close-reveal-modal" ng-click="cancel()">&#215;</a>
+</form>

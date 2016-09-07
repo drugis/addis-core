@@ -34,14 +34,15 @@ define(['angular', 'lodash'], function(angular, _) {
         label: 'N',
         uri: 'http://trials.drugis.org/ontology#sample_size',
         dataType: INTEGER_TYPE,
-        variableType: 'all'
+        variableType: 'all',
+        category: 'Sample size'
       },
       'mean': {
         type: 'mean',
         label: 'mean',
         uri: 'http://trials.drugis.org/ontology#mean',
         dataType: DOUBLE_TYPE,
-        variableType: 'continuous',
+        variableType: 'ontology:continuous',
         category: 'Central tendency'
       },
       'median': {
@@ -49,7 +50,7 @@ define(['angular', 'lodash'], function(angular, _) {
         label: 'median',
         uri: 'http://trials.drugis.org/ontology#median',
         dataType: DOUBLE_TYPE,
-        variableType: 'continuous',
+        variableType: 'ontology:continuous',
         category: 'Central tendency'
       },
       'geometric_mean': {
@@ -57,7 +58,7 @@ define(['angular', 'lodash'], function(angular, _) {
         label: 'geometric mean',
         uri: 'http://trials.drugis.org/ontology#geometric_mean',
         dataType: DOUBLE_TYPE,
-        variableType: 'continuous',
+        variableType: 'ontology:continuous',
         category: 'Central tendency'
       },
       'log_mean': {
@@ -65,7 +66,7 @@ define(['angular', 'lodash'], function(angular, _) {
         label: 'log mean',
         uri: 'http://trials.drugis.org/ontology#log_mean',
         dataType: DOUBLE_TYPE,
-        variableType: 'continuous',
+        variableType: 'ontology:continuous',
         category: 'Central tendency'
       },
       'least_squares_mean': {
@@ -73,7 +74,7 @@ define(['angular', 'lodash'], function(angular, _) {
         label: 'least squares mean',
         uri: 'http://trials.drugis.org/ontology#least_squares_mean',
         dataType: DOUBLE_TYPE,
-        variableType: 'continuous',
+        variableType: 'ontology:continuous',
         category: 'Central tendency'
       },
       'quantile_0.05': {
@@ -81,7 +82,7 @@ define(['angular', 'lodash'], function(angular, _) {
         label: '5% quantile',
         uri: 'http://trials.drugis.org/ontology#quantile_0.05',
         dataType: DOUBLE_TYPE,
-        variableType: 'continuous',
+        variableType: 'ontology:continuous',
         category: 'Quantiles'
       },
       'quantile_0.95': {
@@ -89,7 +90,7 @@ define(['angular', 'lodash'], function(angular, _) {
         label: '95% quantile',
         uri: 'http://trials.drugis.org/ontology#quantile_0.95',
         dataType: DOUBLE_TYPE,
-        variableType: 'continuous',
+        variableType: 'ontology:continuous',
         category: 'Quantiles'
       },
       'quantile_0.025': {
@@ -97,7 +98,7 @@ define(['angular', 'lodash'], function(angular, _) {
         label: '2.5% quantile',
         uri: 'http://trials.drugis.org/ontology#quantile_0.025',
         dataType: DOUBLE_TYPE,
-        variableType: 'continuous',
+        variableType: 'ontology:continuous',
         category: 'Quantiles'
       },
       'quantile_0.975': {
@@ -105,7 +106,7 @@ define(['angular', 'lodash'], function(angular, _) {
         label: '97.5% quantile',
         uri: 'http://trials.drugis.org/ontology#quantile_0.975',
         dataType: DOUBLE_TYPE,
-        variableType: 'continuous',
+        variableType: 'ontology:continuous',
         category: 'Quantiles'
       },
       'min': {
@@ -113,7 +114,7 @@ define(['angular', 'lodash'], function(angular, _) {
         label: 'min',
         uri: 'http://trials.drugis.org/ontology#min',
         dataType: DOUBLE_TYPE,
-        variableType: 'continuous',
+        variableType: 'ontology:continuous',
         category: 'Dispersion'
       },
       'max': {
@@ -121,7 +122,7 @@ define(['angular', 'lodash'], function(angular, _) {
         label: 'max',
         uri: 'http://trials.drugis.org/ontology#max',
         dataType: DOUBLE_TYPE,
-        variableType: 'continuous',
+        variableType: 'ontology:continuous',
         category: 'Dispersion'
       },
       'geometric_coefficient_of_variation': {
@@ -129,7 +130,7 @@ define(['angular', 'lodash'], function(angular, _) {
         label: 'geometric coefficient of variation',
         uri: 'http://trials.drugis.org/ontology#geometric_coefficient_of_variation',
         dataType: DOUBLE_TYPE,
-        variableType: 'continuous',
+        variableType: 'ontology:continuous',
         category: 'Dispersion'
       },
       'first_quartile': {
@@ -137,7 +138,7 @@ define(['angular', 'lodash'], function(angular, _) {
         label: 'first quartile',
         uri: 'http://trials.drugis.org/ontology#first_quartile',
         dataType: DOUBLE_TYPE,
-        variableType: 'continuous',
+        variableType: 'ontology:continuous',
         category: 'Quantiles'
       },
       'third_quartile': {
@@ -145,7 +146,7 @@ define(['angular', 'lodash'], function(angular, _) {
         label: 'third quartile',
         uri: 'http://trials.drugis.org/ontology#third_quartile',
         dataType: DOUBLE_TYPE,
-        variableType: 'continuous',
+        variableType: 'ontology:continuous',
         category: 'Quantiles'
       },
       'standard_deviation': {
@@ -153,7 +154,7 @@ define(['angular', 'lodash'], function(angular, _) {
         label: 'standard deviation',
         uri: 'http://trials.drugis.org/ontology#standard_deviation',
         dataType: DOUBLE_TYPE,
-        variableType: 'continuous',
+        variableType: 'ontology:continuous',
         category: 'Dispersion'
       },
       'standard_error': {
@@ -161,7 +162,7 @@ define(['angular', 'lodash'], function(angular, _) {
         label: 'standard error',
         uri: 'http://trials.drugis.org/ontology#standard_error',
         dataType: DOUBLE_TYPE,
-        variableType: 'continuous',
+        variableType: 'ontology:continuous',
         category: 'Dispersion'
       },
       'count': {
@@ -169,21 +170,21 @@ define(['angular', 'lodash'], function(angular, _) {
         label: 'count',
         uri: 'http://trials.drugis.org/ontology#count',
         dataType: INTEGER_TYPE,
-        variableType: 'dichotomous'
+        variableType: 'ontology:dichotomous'
       },
       'percentage': {
         type: 'percentage',
         label: 'percentage',
         uri: 'http://trials.drugis.org/ontology#percentage',
         dataType: DOUBLE_TYPE,
-        variableType: 'dichotomous'
+        variableType: 'ontology:dichotomous'
       },
       'proportion': {
         type: 'proportion',
         label: 'proportion',
         uri: 'http://trials.drugis.org/ontology#proportion',
         dataType: DOUBLE_TYPE,
-        variableType: 'dichotomous'
+        variableType: 'ontology:dichotomous'
       },
     };
 

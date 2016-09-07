@@ -6,6 +6,7 @@ define(function(require) {
   return angular.module('trialverse.study', ['ngResource',
       'trialverse.util',
       'trialverse.arm',
+      'trialverse.variable',
       'trialverse.populationCharacteristic',
       'trialverse.endpoint',
       'trialverse.adverseEvent',
@@ -18,8 +19,6 @@ define(function(require) {
     .controller('StudyController', require('study/studyController'))
     .controller('CopyStudyController', require('study/copyStudyController'))
     .controller('EditStudyController', require('study/editStudyController'))
-    .controller('AddVariableController', require('study/addVariableController'))
-    .controller('EditVariableController', require('study/editVariableController'))
     .controller('UnsavedChangesWarningModalController', require('study/unsavedChanges/unsavedChangesWarningModalController'))
 
   //services

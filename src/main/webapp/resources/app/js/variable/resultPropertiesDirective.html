@@ -1,0 +1,27 @@
+<div>
+  <ul class="inline-list" ng-if="variable.measurementType === 'ontology:continuous'" >
+    <li ng-repeat="(categoryLabel, category) in categories">
+      {{categoryLabel}}
+      <ul class="no-bullet">
+        <li ng-repeat="property in category.properties">
+          <label>
+            <input
+              type="checkbox"
+              ng-model="property.isSelected"
+              ng-change="updateSelection()"> {{property.label}}</input>
+          </label>
+        </li>
+      </ul>
+    </li>
+  </ul>
+  <ul ng-if="variable.measurementType === 'ontology:dichotomous'"  class="no-bullet">
+    <li ng-repeat="property in properties">
+      <label>
+        <input
+          type="checkbox"
+          ng-model="property.isSelected"
+          ng-change="updateSelection()"> {{property.label}}</input>
+      </label>
+    </li>
+  </ul>
+</div>
