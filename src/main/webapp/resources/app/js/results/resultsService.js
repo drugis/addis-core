@@ -317,7 +317,7 @@ define(['angular', 'lodash'], function(angular, _) {
         var hasArmMap;
         var hasGroupMap;
         var isMomentMap = {};
-        var hasOutcomeMap;
+        var outcomeMap;
         var isMeasurementOnOutcome = {};
 
         _.each(graph, function(node) {
@@ -344,10 +344,7 @@ define(['angular', 'lodash'], function(angular, _) {
           hasGroupMap[study.has_included_population[0]['@id']] = true;
         }
 
-        hasOutcomeMap = study.has_outcome.reduce(function(accum, item) {
-          accum[item['@id']] = true;
-          return accum;
-        }, {});
+        outcomeMap = _.keyBy(study.has_outcome, '@id');
 
         // add all measurements that are selected on at least one outcome to the isMeasurementOnOutcome map
         isMeasurementOnOutcome = _.reduce(study.has_outcome, function(accum, outcome) {
@@ -363,17 +360,37 @@ define(['angular', 'lodash'], function(angular, _) {
           return accum;
         }, isMeasurementOnOutcome);
 
+        // remove properties that are no longer measured by the outcome
+        var filteredGraph = _.map(graph, function(node) {
+            if (isResult(node) && outcomeMap[node.of_outcome]) {
+              var resultProperties = _.keys(_.pick(node, VARIABLE_TYPES));
+              resultProperties = _.map(resultProperties, function(resultProperty) {
+                return VARIABLE_TYPE_DETAILS[resultProperty];
+              });
+              var missingProperties = _.filter(resultProperties, function(resultProperty) {
+                return !_.includes(outcomeMap[node.of_outcome].has_result_property, resultProperty.uri);
+              });
+              return _.omit(node, _.map(missingProperties, 'type'));
+            } else {
+              return node;
+            }
+          });
+
+
         // now its time for cleaning
-        var filteredGraph = _.filter(graph, function(node) {
+        filteredGraph = _.filter(filteredGraph, function(node) {
           if (isResult(node)) {
             return (hasArmMap[node.of_group] || hasGroupMap[node.of_group]) &&
               isMomentMap[node.of_moment] &&
-              hasOutcomeMap[node.of_outcome] &&
-              isMeasurementOnOutcome[node.of_moment];
+              outcomeMap[node.of_outcome] &&
+              isMeasurementOnOutcome[node.of_moment] &&
+              _.keys(_.pick(node, VARIABLE_TYPES)).length > 0
+              ;
           } else {
             return true;
           }
         });
+
 
         return StudyService.saveJsonGraph(filteredGraph);
       });

@@ -82,7 +82,6 @@ define(['angular-mocks'], function(angularMocks) {
         // fire in the hole !
         rootScope.$digest();
       });
-
     });
 
     describe('query results by group', function() {
@@ -143,7 +142,6 @@ define(['angular-mocks'], function(angularMocks) {
         // fire in the hole !
         rootScope.$digest();
       });
-
     });
 
 
@@ -196,7 +194,6 @@ define(['angular-mocks'], function(angularMocks) {
           rootScope.$digest();
 
         });
-
       });
 
 
@@ -384,9 +381,9 @@ define(['angular-mocks'], function(angularMocks) {
         '@id': 'http://trials.drugis.org/instances/out1',
         '@type': 'ontology:OutcomeType',
         'has_result_property': [
-          'ontology:standard_deviation',
-          'ontology:mean',
-          'ontology:sample_size'
+          'http://trials.drugis.org/ontology#standard_deviation',
+          'http://trials.drugis.org/ontology#mean',
+          'http://trials.drugis.org/ontology#sample_size'
         ],
         'is_measured_at': 'http://trials.drugis.org/instances/mm1',
         'of_variable': [{
@@ -407,8 +404,8 @@ define(['angular-mocks'], function(angularMocks) {
         '@id': 'http://trials.drugis.org/instances/out2',
         '@type': 'ontology:OutcomeType',
         'has_result_property': [
-          'ontology:count',
-          'ontology:sample_size'
+          'http://trials.drugis.org/ontology#count',
+          'http://trials.drugis.org/ontology#sample_size'
         ],
         'is_measured_at': 'http://trials.drugis.org/instances/mm1',
         'of_variable': [{
@@ -491,8 +488,16 @@ define(['angular-mocks'], function(angularMocks) {
         'count': 6
       };
 
+      var result6 = {
+        '@id': 'http://trials.drugis.org/instances/result1',
+        'of_group': arm2['@id'],
+        'of_moment': measurementMoment1['@id'],
+        'of_outcome': outcome1['@id'],
+        'standard_error': 6
+      }
+
       var resultsToLeave = [result1, resultNonConformant];
-      var resultsToBeCleaned = [result2, result3, result4, result5];
+      var resultsToBeCleaned = [result2, result3, result4, result5, result6];
 
 
       var study = {
