@@ -27,7 +27,7 @@
   "adverse-event": {
     "title": "Adverse event",
     "text": "An adverse event is an unintended event observed during the study, which may or may not have been caused by the study interventions.",
-    "link": "/manual.html#adverse-event"
+    "link": "/manual.html#study-input"
   },
   "arm": {
     "title": "Arm",
@@ -37,7 +37,7 @@
   "baseline-characteristic": {
     "title": "Baseline characteristic",
     "text": "A baseline characteristic is a variable that is typically measured at the start of the study to describe the enrolled population and/or to assess whether randomization led to adequate balance between the arms of the study. There may be overlap between baseline characteristics and outcomes; when the same variable is measured at baseline and at other times, we recommend encoding it as an outcome.",
-    "link": "/manual.html#baseline-characteristic"
+    "link": "/manual.html#study-input"
   },
   "benefit-risk-analysis": {
     "title": "Benefit-risk analysis",
@@ -51,7 +51,7 @@
   },
   "concept": {
     "title": "Concept",
-    "text": "ADDIS tracks all versions of a dataset in the dataset history. After you make changes to a study extraction or the concepts, you \"commit\" to these changes, making them final. When doing so, you provide a short title and optionally a longer description, which serve to document in the dataset history what kind of changes were made and why.",
+    "text": "Concepts at the dataset level allow the harmonisation of study-level data for cross-study analysis. For example, the study-level concept \"50% or greater improvement on HAM-D\" could be mapped to a concept defined at the dataset level (e.g. \"HAM-D response\")",
     "link": "/manual.html#concept"
   },
   "concept-mapping": {
@@ -78,6 +78,11 @@
     "title": "Dataset version",
     "text": "Whenever changes are made to a dataset and are committed (saved), this creates a new version of the dataset. All previous versions of a dataset are kept in the dataset history.",
     "link": "/manual.html#dataset-version"
+  },
+  "drug": {
+    "title": "Drug",
+    "text": "A drug is any substance or treatment that is given to a population in a study",
+    "link": "/manual.html#study-input"
   },
   "eligibility-criteria": {
     "title": "Eligibility criteria",
@@ -109,15 +114,15 @@
     "text": "Any group within the study that is not an arm. This includes the total study population, and may also refer to sub-groups such as all males in the study or all elderly patients in the control arm.",
     "link": "/manual.html#other-group"
   },
+  "population-information": {
+    "title": "Population information",
+    "text": "A description of how participants were enrolled in the study, including the health condition of interest and the eligibility (inclusion and exclusion) criteria.",
+    "link": "/manual.html#study-input"
+  },
   "project": {
     "title": "Project",
     "text": "A project is a collection of analyses performed on a specific version of a single dataset. Typically, it aims to answer a specific question or a number of related questions using the dataset.",
     "link": "/manual.html#project"
-  },
-  "recruitment-information": {
-    "title": "Recruitment information",
-    "text": "A description of how participants were enrolled in the study, including the health condition of interest and the eligibility (inclusion and exclusion) criteria.",
-    "link": "/manual.html#recruitment-information"
   },
   "study": {
     "title": "Study",
@@ -132,11 +137,21 @@
   "study-information": {
     "title": "Study information",
     "text": "Study information contains basic descriptives of the study. Some are structured, such as randomization and blinding, while others are free text.",
-    "link": "/manual.html#study-information"
+    "link": "/manual.html#study-input"
   },
   "time-period": {
     "title": "Time period",
     "text": "A period or phase of the study during which a certain activity (or group of activities) took place. For example, a drug study might consist of a placebo run-in period, a treatment period, and a follow-up period.",
     "link": "/manual.html#time-period"
+  },
+  "trialverse-outcome": {
+    "title": "Outcome",
+    "text": "An outcome is an expected event observed during the study that was decided to be of interest beforehand.",
+    "link": "/manual.html#study-input"
+  },
+  "variable": {
+    "title": "Variable",
+    "text": "A variable is an event or change that is measured in a population during a study, either a baseline characteristic (e.g. \"age\"), an outcome (e.g. \"mood improvement\"), or an adverse event (e.g. \"nausea\").",
+    "link": "/manual.html#study-input"
   }
 }

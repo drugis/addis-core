@@ -56,6 +56,8 @@
     "lodash": "~4.2.0",
     "angular-resource": "~1.5.0",
     "angular": "~1.5.0",
-    "angular-animate": "^1.5.0"
+    "angular-animate": "^1.5.0",
+    "angular-patavi-client": "2.0.0",
+    "error-reporting": "1.1"
   }
 }

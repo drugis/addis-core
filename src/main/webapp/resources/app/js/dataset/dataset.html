@@ -17,7 +17,7 @@
         </div>
       </div>
         <a ng-if="versionUuid" ui-sref="versionedDataset.concepts({userUid: user.id, datasetUUID: stripFrontFilter(dataset.datasetUri, 'http://trials.drugis.org/datasets/'), versionUuid: versionUuid})">Go to concepts</a>
-        <a ng-if="!versionUuid" ui-sref="dataset.concepts({userUid: user.id, datasetUUID: stripFrontFilter(dataset.datasetUri, 'http://trials.drugis.org/datasets/')})">Go to concepts</a>
+        <a ng-if="!versionUuid" ui-sref="dataset.concepts({userUid: user.id, datasetUUID: stripFrontFilter(dataset.datasetUri, 'http://trials.drugis.org/datasets/')})">Go to concepts</a><inline-help help-key="concept"></inline-help>
       <hr>
     </div>
   </div>

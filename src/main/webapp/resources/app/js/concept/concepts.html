@@ -25,11 +25,11 @@
     <h1>Concepts<inline-help help-key="concept"></inline-help></h1>
     <version-info></version-info>
     <button ng-show="isEditingAllowed" class="small" ng-click="openAddConceptDialog()"><i class="fa fa-plus"></i>  Add Concept</button>
-    <h3>Drugs</h3>
+    <h3>Drugs<inline-help help-key="drug"></inline-help></h3>
     <ul id="drugs">
       <li ng-repeat="concept in concepts | filter:'ontology:Drug' | orderBy:'label'">{{concept.label}}</li>
     </ul>
-    <h3>Variables</h3>
+    <h3>Variables<inline-help help-key="variable"></inline-help></h3>
     <ul id="variables">
       <li ng-repeat="concept in concepts | filter:'ontology:Variable'  | orderBy:'label'">{{concept.label}}</li>
     </ul>

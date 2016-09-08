@@ -41,6 +41,7 @@ define(['angular', 'lodash'],
           service: 'PopulationInformationService',
           anchorId: 'population-information',
           header: 'Population Information',
+          helpId: 'population-information',
           itemName: 'Population Information',
           itemTemplateUrl: 'app/js/populationInformation/populationInformation.html',
           editItemTemplateUrl: 'app/js/populationInformation/editPopulationInformation.html',
@@ -76,15 +77,15 @@ define(['angular', 'lodash'],
           repairItemTemplateUrl: 'app/js/group/repairGroup.html',
           repairItemController: 'EditGroupController'
         },
-        populationCharacteristics: {
+        baselineCharacteristics: {
           service: 'PopulationCharacteristicService',
-          anchorId: 'populationCharacteristics',
+          anchorId: 'baselineCharacteristics',
           helpId: 'baseline-characteristic',
-          header: 'Population characteristics',
+          header: 'Baseline characteristics',
           addItemTemplateUrl: 'app/js/variable/addVariable.html',
           addItemController: 'AddVariableController',
-          categoryEmptyMessage: 'No population characteristics defined.',
-          itemName: 'population characteristic',
+          categoryEmptyMessage: 'No baseline characteristics defined.',
+          itemName: 'baseline characteristic',
           itemTemplateUrl: 'app/js/variable/variable.html',
           editItemTemplateUrl: 'app/js/variable/editVariable.html',
           editItemController: 'EditVariableController',
@@ -94,7 +95,7 @@ define(['angular', 'lodash'],
         outcomes: {
           service: 'EndpointService',
           anchorId: 'outcomes',
-          helpId: 'outcome',
+          helpId: 'trialverse-outcome',
           header: 'Outcomes',
           categoryEmptyMessage: 'No outcomes defined.',
           itemName: 'outcome',
@@ -167,21 +168,25 @@ define(['angular', 'lodash'],
       $scope.conceptSettings = {
         drugs: {
           label: 'Drugs',
+          helpKey: 'drug',
           serviceName: 'DrugService',
           typeUri: 'ontology:Drug'
         },
-        populationCharacteristics: {
-          label: 'Population characteristics',
+        baselineCharacteristics: {
+          label: 'Baseline characteristics',
+          helpKey: 'baseline-characteristic',
           serviceName: 'PopulationCharacteristicService',
           typeUri: 'ontology:Variable'
         },
         outcomes: {
           label: 'Outcomes',
+          helpKey: 'trialverse-outcome',
           serviceName: 'EndpointService',
           typeUri: 'ontology:Variable'
         },
         adverseEvents: {
           label: 'Adverse events',
+          helpKey: 'adverse-event',
           serviceName: 'AdverseEventService',
           typeUri: 'ontology:Variable'
         }
