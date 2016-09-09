@@ -155,6 +155,7 @@ define(['lodash'], function(_) {
       if (typeof outcome.has_result_property === 'string') {
         outcome.has_result_property = [outcome.has_result_property];
       }
+      return outcome;
     });
 
     linkedData['@context'] = {
