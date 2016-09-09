@@ -41,7 +41,7 @@ public class AuthenticationFilter extends GenericFilterBean {
     HttpServletRequest httpRequest = asHttp(request);
     HttpServletResponse httpResponse = asHttp(response);
 
-    Optional<String> applicationKey = Optional.fromNullable(httpRequest.getHeader(WebConstants.X_AUTH_APPLICATION_KEY);
+    Optional<String> applicationKey = Optional.fromNullable(httpRequest.getHeader(WebConstants.X_AUTH_APPLICATION_KEY));
 
     try {
       if (applicationKey.isPresent()) {
