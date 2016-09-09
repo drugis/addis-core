@@ -151,6 +151,11 @@ define(['lodash'], function(_) {
     inlineObjects(study, 'has_publication');
     inlineObjects(study, 'has_eligibility_criteria');
     study.has_epochs = inlineLinkedList(study, 'has_epochs');
+    study.has_outcome = _.map(study.has_outcome, function(outcome) {
+      if (typeof outcome.has_result_property === 'string') {
+        outcome.has_result_property = [outcome.has_result_property];
+      }
+    });
 
     linkedData['@context'] = {
       'median': {

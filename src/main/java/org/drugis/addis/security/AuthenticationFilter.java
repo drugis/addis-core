@@ -1,6 +1,7 @@
 package org.drugis.addis.security;
 
 import org.apache.jena.ext.com.google.common.base.Optional;
+import org.drugis.addis.util.WebConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.access.AccessDeniedException;
@@ -40,7 +41,7 @@ public class AuthenticationFilter extends GenericFilterBean {
     HttpServletRequest httpRequest = asHttp(request);
     HttpServletResponse httpResponse = asHttp(response);
 
-    Optional<String> applicationKey = Optional.fromNullable(httpRequest.getHeader("X-Auth-Application-Key"));
+    Optional<String> applicationKey = Optional.fromNullable(httpRequest.getHeader(WebConstants.X_AUTH_APPLICATION_KEY);
 
     try {
       if (applicationKey.isPresent()) {

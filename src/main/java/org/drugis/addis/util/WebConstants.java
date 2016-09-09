@@ -57,6 +57,7 @@ public class WebConstants {
 
   private static final String PATAVI_URI = loadSystemEnv("PATAVI_URI");
   public static final String PATAVI_RESULTS_PATH = "/results";
+  public static final String X_AUTH_APPLICATION_KEY = "X-Auth-Application-Key";
 
   public static String loadSystemEnv(String varName) {
     String envValue = System.getenv(varName);

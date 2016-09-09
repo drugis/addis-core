@@ -24,6 +24,7 @@ define(['angular', 'lodash'], function(angular, _) {
       'standard_deviation',
       'standard_error',
       'count',
+      'event_count',
       'percentage',
       'proportion',
     ];
@@ -164,6 +165,13 @@ define(['angular', 'lodash'], function(angular, _) {
         dataType: DOUBLE_TYPE,
         variableType: 'ontology:continuous',
         category: 'Dispersion'
+      },
+      'event_count': {
+        type: 'event_count',
+        label: 'event count',
+        uri: 'http://trials.drugis.org/ontology#event_count',
+        dataType: INTEGER_TYPE,
+        variableType: 'ontology:dichotomous'
       },
       'count': {
         type: 'count',
