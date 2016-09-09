@@ -146,7 +146,7 @@
   },
   "trialverse-outcome": {
     "title": "Outcome",
-    "text": "An outcome is an expected event observed during the study that was decided to be of interest beforehand.",
+    "text": "An outcome is a pre-specified quantity of interest in the study. It is intended to be compared between arms after the study interventions have been administered.",
     "link": "/manual.html#study-input"
   },
   "variable": {
