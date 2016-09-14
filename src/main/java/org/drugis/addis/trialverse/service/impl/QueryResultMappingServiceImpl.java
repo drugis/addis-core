@@ -91,7 +91,7 @@ public class QueryResultMappingServiceImpl implements QueryResultMappingService 
   public CovariateStudyValue mapResultToCovariateStudyValue(JSONObject row) throws ReadValueException {
     URI studyUri = readValue(row, "graph");
     String populationCharacteristicCovariateKey = readValue(row, "populationCharacteristicCovariateKey");
-    Double value = readValue(row, "value");
+    Double value = row.containsKey("value") ? readValue(row, "value") : null;
     return new CovariateStudyValue(studyUri, populationCharacteristicCovariateKey, value);
   }
 

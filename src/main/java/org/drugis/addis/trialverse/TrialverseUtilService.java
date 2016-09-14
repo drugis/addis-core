@@ -27,6 +27,9 @@ public class TrialverseUtilService {
   }
 
   public static <T> T readValue(JSONObject row, String name) throws ReadValueException {
+    if (!row.containsKey(name)) {
+      return null;
+    }
     String type  = JsonPath.read(row, "$." + name + ".type");
     if(LITERAL.equals(type)) {
       return JsonPath.read(row, "$." + name + ".value");

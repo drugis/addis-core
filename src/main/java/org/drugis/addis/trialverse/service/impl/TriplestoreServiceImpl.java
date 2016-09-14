@@ -636,8 +636,12 @@ public class TriplestoreServiceImpl implements TriplestoreService {
       String valueAsString = JsonPath.<String>read(row, "$.value.value");
       if (JsonPath.<String>read(row, "$.value.datatype").equals(DATATYPE_DURATION)) {
         Period period = Period.parse(valueAsString);
-        Integer periodAsDays = period.toStandardDays().getDays();
-        value = periodAsDays.doubleValue();
+        if(period.getMonths() > 0) {
+          value = period.getMonths() * 30.0;
+        } else {
+          Integer periodAsDays = period.toStandardDays().getDays();
+          value = periodAsDays.doubleValue();
+        }
       } else {
         value = Double.parseDouble(valueAsString);
       }
