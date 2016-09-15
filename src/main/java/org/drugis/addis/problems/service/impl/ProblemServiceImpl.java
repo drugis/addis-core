@@ -315,6 +315,12 @@ public class ProblemServiceImpl implements ProblemService {
       }
     }
 
+    List<TrialDataStudy> studiesWithEntries = trialDataStudies.stream()
+            .filter(s ->
+              entries.stream().filter(e -> e.getStudy().equals(s.getName())).findFirst().isPresent()
+            )
+            .collect(Collectors.toList());
+
     // add covariate values to problem
     Map<String, Map<String, Double>> studyLevelCovariates = null;
     if (includedCovariateKeys.size() > 0) {
@@ -322,7 +328,7 @@ public class ProblemServiceImpl implements ProblemService {
       Map<String, Covariate> covariatesByKey = projectCovariates
               .stream()
               .collect(Collectors.toMap(Covariate::getDefinitionKey, Function.identity()));
-      for (TrialDataStudy trialDataStudy : trialDataStudies) {
+      for (TrialDataStudy trialDataStudy : studiesWithEntries) {
         Map<String, Double> covariateNodes = new HashMap<>();
         for (CovariateStudyValue covariateStudyValue : trialDataStudy.getCovariateValues()) {
           Covariate covariate = covariatesByKey.get(covariateStudyValue.getCovariateKey());
