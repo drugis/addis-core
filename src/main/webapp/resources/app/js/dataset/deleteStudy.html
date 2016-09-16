@@ -1,0 +1,15 @@
+<form novalidate ng-submit="deleteStudy()">
+  <div class="row">
+    <div class="large-12 columns">
+      <h3 class="warning">This will delete study {{::study.title}}</h3>
+      <p>Are you sure?</p>
+    </div>
+  </div>
+  <div class="row">
+    <div class="large-9 columns" >
+      <button class="success" type="submit">Yes</button>
+      <button type="button" ng-click="cancel()">No</button>
+    </div>
+  </div>
+  <a class="close-reveal-modal" ng-click="cancel()">&#215;</a>
+</form>

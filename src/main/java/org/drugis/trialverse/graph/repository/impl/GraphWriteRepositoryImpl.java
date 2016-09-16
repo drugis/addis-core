@@ -6,7 +6,9 @@ import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpPut;
+import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.entity.InputStreamEntity;
 import org.apache.http.util.EntityUtils;
 import org.apache.jena.riot.RDFLanguages;
@@ -16,6 +18,7 @@ import org.drugis.addis.security.repository.AccountRepository;
 import org.drugis.addis.util.WebConstants;
 import org.drugis.trialverse.dataset.model.VersionMapping;
 import org.drugis.trialverse.dataset.repository.VersionMappingRepository;
+import org.drugis.trialverse.graph.exception.DeleteGraphException;
 import org.drugis.trialverse.graph.exception.UpdateGraphException;
 import org.drugis.trialverse.graph.repository.GraphWriteRepository;
 import org.drugis.trialverse.graph.service.GraphService;
@@ -66,18 +69,11 @@ public class GraphWriteRepositoryImpl implements GraphWriteRepository {
             .queryParam("graph", graphService.buildGraphUri(graphUuid))
             .build();
 
-    HttpPut putRequest = new HttpPut(uriComponents.toUri());
+    HttpRequestBase putRequest = new HttpPut(uriComponents.toUri());
     putRequest.setHeader(org.apache.http.HttpHeaders.CONTENT_TYPE, RDFLanguages.TURTLE.getContentType().getContentType());
     putRequest.setHeader(WebConstants.EVENT_SOURCE_TITLE_HEADER, Base64.encodeBase64String(commitTitle.getBytes()));
 
-    TrialversePrincipal owner = authenticationService.getAuthentication();
-    Account user = accountRepository.findAccountByUsername(owner.getUserName());
-
-    if(owner.hasApiKey()) {
-      putRequest.setHeader(WebConstants.EVENT_SOURCE_CREATOR_HEADER, "https://trialverse.org/apikeys/" + owner.getApiKey().getId());
-    } else {
-      putRequest.setHeader(WebConstants.EVENT_SOURCE_CREATOR_HEADER, "mailto:" + user.getEmail());
-    }
+    putRequest = addCreatorToRequest(putRequest);
 
     if(StringUtils.isNotEmpty(commitDescription)) {
       putRequest.setHeader(WebConstants.EVENT_SOURCE_DESCRIPTION_HEADER, Base64.encodeBase64String(commitDescription.getBytes()));
@@ -85,7 +81,7 @@ public class GraphWriteRepositoryImpl implements GraphWriteRepository {
 
     HttpEntity putBody = new InputStreamEntity(graph);
 
-    putRequest.setEntity(putBody);
+    ((HttpPut)putRequest).setEntity(putBody);
     logger.debug("execute updateGraph");
 
     Header versionHeader;
@@ -97,5 +93,42 @@ public class GraphWriteRepositoryImpl implements GraphWriteRepository {
       logger.debug("error updating graph {}", e);
       throw new UpdateGraphException();
     }
+  }
+
+  @Override
+  public Header deleteGraph(URI datasetUri, String graphUuid) throws DeleteGraphException {
+    VersionMapping versionMapping = versionMappingRepository.getVersionMappingByDatasetUrl(datasetUri);
+
+    UriComponents uriComponents = UriComponentsBuilder.fromHttpUrl(versionMapping.getVersionedDatasetUrl())
+        .path(DATA_ENDPOINT)
+        .queryParam("graph", graphService.buildGraphUri(graphUuid))
+        .build();
+
+    HttpRequestBase deleteRequest = new HttpDelete(uriComponents.toUri());
+
+    deleteRequest = addCreatorToRequest(deleteRequest);
+
+    Header versionHeader;
+    try(CloseableHttpResponse response =  (CloseableHttpResponse) httpClient.execute(deleteRequest)) {
+      versionHeader = response.getFirstHeader(WebConstants.X_EVENT_SOURCE_VERSION);
+      EntityUtils.consume(response.getEntity());
+      return versionHeader;
+    }  catch(Exception e) {
+      logger.debug("error deleting graph {}", e);
+      throw new DeleteGraphException();
+    }
+
+  }
+
+  private HttpRequestBase addCreatorToRequest(HttpRequestBase deleteRequest) {
+    TrialversePrincipal owner = authenticationService.getAuthentication();
+    Account user = accountRepository.findAccountByUsername(owner.getUserName());
+
+    if(owner.hasApiKey()) {
+      deleteRequest.setHeader(WebConstants.EVENT_SOURCE_CREATOR_HEADER, "https://trialverse.org/apikeys/" + owner.getApiKey().getId());
+    } else {
+      deleteRequest.setHeader(WebConstants.EVENT_SOURCE_CREATOR_HEADER, "mailto:" + user.getEmail());
+    }
+    return deleteRequest;
   }
 }

@@ -10,7 +10,7 @@ public class VersionNode {
   private String versionTitle;
   private String creator;
   private Integer userId;
-  private int historyOrder;
+  private Integer historyOrder;
   private String applicationName;
   private Merge merge;
   private Date versionDate;
@@ -19,7 +19,7 @@ public class VersionNode {
   public VersionNode() {
   }
 
-  public VersionNode(String uri, String versionTitle, Date versionDate, String description, String creator, int userId, int historyOrder, String applicationName) {
+  public VersionNode(String uri, String versionTitle, Date versionDate, String description, String creator, Integer userId, Integer historyOrder, String applicationName) {
     this.uri = uri;
     this.versionTitle = versionTitle;
     this.versionDate = versionDate;
@@ -50,7 +50,7 @@ public class VersionNode {
     return creator;
   }
 
-  public int getHistoryOrder() {
+  public Integer getHistoryOrder() {
     return historyOrder;
   }
 
@@ -77,29 +77,29 @@ public class VersionNode {
 
     VersionNode that = (VersionNode) o;
 
-    if (historyOrder != that.historyOrder) return false;
-    if (!uri.equals(that.uri)) return false;
-    if (!versionTitle.equals(that.versionTitle)) return false;
-    if (!creator.equals(that.creator)) return false;
-    if (!userId.equals(that.userId)) return false;
+    if (uri != null ? !uri.equals(that.uri) : that.uri != null) return false;
+    if (versionTitle != null ? !versionTitle.equals(that.versionTitle) : that.versionTitle != null) return false;
+    if (creator != null ? !creator.equals(that.creator) : that.creator != null) return false;
+    if (userId != null ? !userId.equals(that.userId) : that.userId != null) return false;
+    if (historyOrder != null ? !historyOrder.equals(that.historyOrder) : that.historyOrder != null) return false;
     if (applicationName != null ? !applicationName.equals(that.applicationName) : that.applicationName != null)
       return false;
     if (merge != null ? !merge.equals(that.merge) : that.merge != null) return false;
-    if (!versionDate.equals(that.versionDate)) return false;
-    return !(description != null ? !description.equals(that.description) : that.description != null);
+    if (versionDate != null ? !versionDate.equals(that.versionDate) : that.versionDate != null) return false;
+    return description != null ? description.equals(that.description) : that.description == null;
 
   }
 
   @Override
   public int hashCode() {
-    int result = uri.hashCode();
-    result = 31 * result + versionTitle.hashCode();
-    result = 31 * result + creator.hashCode();
-    result = 31 * result + userId.hashCode();
-    result = 31 * result + historyOrder;
+    int result = uri != null ? uri.hashCode() : 0;
+    result = 31 * result + (versionTitle != null ? versionTitle.hashCode() : 0);
+    result = 31 * result + (creator != null ? creator.hashCode() : 0);
+    result = 31 * result + (userId != null ? userId.hashCode() : 0);
+    result = 31 * result + (historyOrder != null ? historyOrder.hashCode() : 0);
     result = 31 * result + (applicationName != null ? applicationName.hashCode() : 0);
     result = 31 * result + (merge != null ? merge.hashCode() : 0);
-    result = 31 * result + versionDate.hashCode();
+    result = 31 * result + (versionDate != null ? versionDate.hashCode() : 0);
     result = 31 * result + (description != null ? description.hashCode() : 0);
     return result;
   }

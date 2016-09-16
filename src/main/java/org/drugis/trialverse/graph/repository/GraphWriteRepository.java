@@ -1,6 +1,7 @@
 package org.drugis.trialverse.graph.repository;
 
 import org.apache.http.Header;
+import org.drugis.trialverse.graph.exception.DeleteGraphException;
 import org.drugis.trialverse.graph.exception.UpdateGraphException;
 
 import javax.servlet.http.HttpServletRequest;
@@ -14,4 +15,6 @@ import java.net.URI;
 public interface GraphWriteRepository {
 
   Header updateGraph(URI datasetUri, String graphUuid, InputStream graph, String commitTitle, String commitDescription) throws IOException, UpdateGraphException;
+
+  Header deleteGraph(URI datasetUri, String graphUuid) throws DeleteGraphException;
 }

@@ -128,13 +128,17 @@ public class HistoryServiceImpl implements HistoryService {
     String creator = creatorProp == null ? "unknown creator" : creatorProp.toString();
     ApiKey apiKey = null;
     Account account;
-    if (creator.startsWith(WebConstants.API_KEY_PREFIX)) {
-      apiKey = apiKeyRepository.get(Integer.valueOf(creator.substring(WebConstants.API_KEY_PREFIX.length())));
-      account = accountRepository.findAccountById(apiKey.getAccountId());
+    if (creator.equals("unknown creator")) {
+      account = null;
     } else {
-      account = accountRepository.findAccountByEmail(creator.substring("mailto:".length()));
+      if (creator.startsWith(WebConstants.API_KEY_PREFIX)) {
+        apiKey = apiKeyRepository.get(Integer.valueOf(creator.substring(WebConstants.API_KEY_PREFIX.length())));
+        account = accountRepository.findAccountById(apiKey.getAccountId());
+      } else {
+        account = accountRepository.findAccountByEmail(creator.substring("mailto:".length()));
+      }
+      creator = account.getFirstName() + " " + account.getLastName();
     }
-    creator = account.getFirstName() + " " + account.getLastName();
     Statement descriptionStatement = current.getProperty(JenaProperties.DESCRIPTION_PROPERTY);
     Statement dateProp = current.getProperty(JenaProperties.DATE_PROPERTY);
     return new VersionNodeBuilder()
@@ -144,7 +148,7 @@ public class HistoryServiceImpl implements HistoryService {
             .setDescription(descriptionStatement == null ? null : descriptionStatement.getObject().toString())
             .setHistoryOrder(historyOrder)
             .setCreator(creator)
-            .setUserId(account.getId())
+            .setUserId(account == null ? null : account.getId())
             .setApplicationName(apiKey == null ? null : apiKey.getApplicationName())
             .build();
   }
