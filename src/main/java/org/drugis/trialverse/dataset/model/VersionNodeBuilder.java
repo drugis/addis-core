@@ -8,9 +8,9 @@ public class VersionNodeBuilder {
   private Date versionDate;
   private String description;
   private String creator;
-  private int historyOrder;
+  private Integer historyOrder;
   private String applicationName;
-  private int userId;
+  private Integer userId;
 
   public VersionNodeBuilder setUri(String uri) {
     this.uri = uri;
@@ -51,7 +51,7 @@ public class VersionNodeBuilder {
     return new VersionNode(uri, versionTitle, versionDate, description, creator, userId, historyOrder, applicationName);
   }
 
-  public VersionNodeBuilder setUserId(int userId) {
+  public VersionNodeBuilder setUserId(Integer userId) {
     this.userId = userId;
     return this;
   }

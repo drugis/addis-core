@@ -11,6 +11,7 @@ import org.drugis.addis.util.WebConstants;
 import org.drugis.trialverse.dataset.model.VersionMapping;
 import org.drugis.trialverse.dataset.repository.DatasetReadRepository;
 import org.drugis.trialverse.dataset.repository.VersionMappingRepository;
+import org.drugis.trialverse.graph.exception.DeleteGraphException;
 import org.drugis.trialverse.graph.repository.GraphReadRepository;
 import org.drugis.trialverse.graph.repository.GraphWriteRepository;
 import org.drugis.trialverse.graph.service.GraphService;
@@ -315,5 +316,26 @@ public class GraphControllerTest {
                     .principal(user)).andExpect(status().isForbidden());
 
     verify(datasetReadRepository).isOwner(datasetUrl, user);
+  }
+
+  @Test
+  public void testDeleteGraph() throws Exception, DeleteGraphException {
+    String datasetUUID = "datasetUuid";
+    String graphUUID = "graphUuid";
+    URI datasetUrl = new URI(Namespaces.DATASET_NAMESPACE + datasetUUID);
+    Header newVersionHeader = new BasicHeader(WebConstants.X_EVENT_SOURCE_VERSION, "newVersion");
+
+    when(datasetReadRepository.isOwner(datasetUrl, user)).thenReturn(true);
+    when(graphWriteRepository.deleteGraph(datasetUrl, graphUUID)).thenReturn(newVersionHeader);
+
+    mockMvc.perform(
+        delete("/users/" + userHash + "/datasets/" + datasetUUID + "/graphs/" + graphUUID)
+        .principal(user)
+
+    ).andExpect(status().isOk())
+    .andExpect(header().string(WebConstants.X_EVENT_SOURCE_VERSION, "newVersion"));
+
+    verify(datasetReadRepository).isOwner(datasetUrl, user);
+    verify(graphWriteRepository).deleteGraph(datasetUrl, graphUUID);
   }
 }
