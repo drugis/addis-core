@@ -107,6 +107,7 @@ public class GraphWriteRepositoryImpl implements GraphWriteRepository {
     HttpRequestBase deleteRequest = new HttpDelete(uriComponents.toUri());
 
     deleteRequest = addCreatorToRequest(deleteRequest);
+    deleteRequest.setHeader(WebConstants.EVENT_SOURCE_TITLE_HEADER, Base64.encodeBase64String("Deleted graph.".getBytes()));
 
     Header versionHeader;
     try(CloseableHttpResponse response =  (CloseableHttpResponse) httpClient.execute(deleteRequest)) {
