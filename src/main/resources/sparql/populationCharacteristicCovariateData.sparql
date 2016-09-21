@@ -24,7 +24,7 @@ SELECT DISTINCT ?graph ?value ?populationCharacteristicCovariateKey WHERE {
       ?popcharInstance
         a ontology:PopulationCharacteristic ;
         ontology:of_variable [
-          owl:sameAs <concept:$populationCharacteristicUuid>
+          owl:sameAs concept:$populationCharacteristicUuid
         ] .
 
       ?zeroMoment
@@ -32,14 +32,15 @@ SELECT DISTINCT ?graph ?value ?populationCharacteristicCovariateKey WHERE {
         ontology:relative_to_anchor ontology:anchorEpochStart ;
         ontology:time_offset "PT0S"^^xsd:duration .
 
-       {
+      {
         ?measurementInstance
           ontology:of_outcome ?popcharInstance ;
           ontology:of_group ?overallGroup ;
           ontology:of_moment ?zeroMoment ;
           ontology:mean ?value .
       }
-      UNION {
+      UNION
+      {
         ?measurementInstance
           ontology:of_outcome ?popcharInstance ;
           ontology:of_group ?overallGroup ;

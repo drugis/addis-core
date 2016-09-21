@@ -138,7 +138,7 @@ public class OutcomeControllerTest {
 
   @Test
   public void updateNameAndDescription() throws Exception {
-    EditOutcomeCommand editOutcomeCommand = new EditOutcomeCommand("new name", "new motivation");
+    EditOutcomeCommand editOutcomeCommand = new EditOutcomeCommand("new name", "new motivation", -1);
     Integer outcomeId = 1;
     Integer projectId = 2;
     Outcome outcome = new Outcome(outcomeId, projectId, editOutcomeCommand.getName(), editOutcomeCommand.getMotivation(), new SemanticVariable(URI.create("uri"), "label"));
