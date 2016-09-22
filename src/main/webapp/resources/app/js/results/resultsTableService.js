@@ -36,6 +36,9 @@ define(['lodash'], function(_) {
       if(!resultProperties) {
         return [];
       }
+      if(!resultProperties.map) {
+        return [ResultsService.getVariableDetails(resultProperties).label];
+      }
       return resultProperties.map(function(type) {
         return ResultsService.getVariableDetails(type).label;
       });

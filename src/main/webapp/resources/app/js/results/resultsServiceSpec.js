@@ -144,7 +144,6 @@ define(['angular-mocks'], function(angularMocks) {
       });
     });
 
-
     describe('updateResultValue', function() {
       describe('when there is not yet data in the graph', function() {
 
@@ -536,7 +535,6 @@ define(['angular-mocks'], function(angularMocks) {
         // fire in the hole !
         rootScope.$digest();
       });
-
     });
 
     describe('isExistingMeasurement', function() {
@@ -573,7 +571,6 @@ define(['angular-mocks'], function(angularMocks) {
       it('should return true when the nonConformantMeasurement already exists', function() {
         expect(isExistingMeasurement).toBe(true);
       });
-
     });
 
     describe('isExistingMeasurement', function() {
@@ -615,11 +612,9 @@ define(['angular-mocks'], function(angularMocks) {
       it('should return false when the nonConformantMeasurement does not already exists', function() {
         expect(isExistingMeasurement).toBe(false);
       });
-
     });
 
     describe('setToMeasurementMoment', function() {
-
       var graphJsonObject = [{
         '@id': 'nonConfInstance1',
         'of_group': 'http://trials.drugis.org/instances/arm1',
@@ -686,6 +681,12 @@ define(['angular-mocks'], function(angularMocks) {
 
         expect(resultsService.getDefaultResultProperties('ontology:dichotomous')).toEqual(dichotomousProperties);
         expect(resultsService.getDefaultResultProperties('ontology:continuous')).toEqual(continuousProperties);
+      });
+    });
+
+    describe('getVariableDetails', function() {
+      it('should also work for shortened urls', function() {
+        expect(resultsService.getVariableDetails('ontology:sample_size')).toBeDefined();
       });
     });
 

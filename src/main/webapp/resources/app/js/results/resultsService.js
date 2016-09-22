@@ -24,6 +24,7 @@ define(['angular', 'lodash'], function(angular, _) {
       'standard_deviation',
       'standard_error',
       'count',
+      'event_count',
       'percentage',
       'proportion',
     ];
@@ -172,6 +173,13 @@ define(['angular', 'lodash'], function(angular, _) {
         dataType: INTEGER_TYPE,
         variableType: 'ontology:dichotomous'
       },
+      'event_count': {
+        type: 'event_count',
+        label: 'event count',
+        uri: 'http://trials.drugis.org/ontology#event_count',
+        dataType: INTEGER_TYPE,
+        variableType: 'ontology:dichotomous'
+      },
       'percentage': {
         type: 'percentage',
         label: 'percentage',
@@ -189,7 +197,11 @@ define(['angular', 'lodash'], function(angular, _) {
     };
 
     function getVariableDetails(variableTypeUri) {
-      return _.find(VARIABLE_TYPE_DETAILS, ['uri', variableTypeUri]);
+      var normalisedUri = variableTypeUri;
+      if (!_.startsWith(variableTypeUri, 'http://trials.drugis.org/ontology#')) {
+        normalisedUri = _.replace(normalisedUri, 'ontology:', 'http://trials.drugis.org/ontology#');
+      }
+      return _.find(VARIABLE_TYPE_DETAILS, ['uri', normalisedUri]);
     }
 
     function updateResultValue(row, inputColumn) {
@@ -362,19 +374,19 @@ define(['angular', 'lodash'], function(angular, _) {
 
         // remove properties that are no longer measured by the outcome
         var filteredGraph = _.map(graph, function(node) {
-            if (isResult(node) && outcomeMap[node.of_outcome]) {
-              var resultProperties = _.keys(_.pick(node, VARIABLE_TYPES));
-              resultProperties = _.map(resultProperties, function(resultProperty) {
-                return VARIABLE_TYPE_DETAILS[resultProperty];
-              });
-              var missingProperties = _.filter(resultProperties, function(resultProperty) {
-                return !_.includes(outcomeMap[node.of_outcome].has_result_property, resultProperty.uri);
-              });
-              return _.omit(node, _.map(missingProperties, 'type'));
-            } else {
-              return node;
-            }
-          });
+          if (isResult(node) && outcomeMap[node.of_outcome]) {
+            var resultProperties = _.keys(_.pick(node, VARIABLE_TYPES));
+            resultProperties = _.map(resultProperties, function(resultProperty) {
+              return VARIABLE_TYPE_DETAILS[resultProperty];
+            });
+            var missingProperties = _.filter(resultProperties, function(resultProperty) {
+              return !_.includes(outcomeMap[node.of_outcome].has_result_property, resultProperty.uri);
+            });
+            return _.omit(node, _.map(missingProperties, 'type'));
+          } else {
+            return node;
+          }
+        });
 
 
         // now its time for cleaning
@@ -384,8 +396,7 @@ define(['angular', 'lodash'], function(angular, _) {
               isMomentMap[node.of_moment] &&
               outcomeMap[node.of_outcome] &&
               isMeasurementOnOutcome[node.of_moment] &&
-              _.keys(_.pick(node, VARIABLE_TYPES)).length > 0
-              ;
+              _.keys(_.pick(node, VARIABLE_TYPES)).length > 0;
           } else {
             return true;
           }
