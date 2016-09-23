@@ -31,203 +31,208 @@
     <div class="columns large-12">
       <tabset>
         <tab heading="Report" active="activeTab === 'report'" ng-click="setActiveTab('report')">
+          <div ng-if="activeTab === 'report'">
          
-          <!-- outcomes -->
-          <div class="row">
-            <div class="columns large-12">
-              <h3 class="subheader">Outcomes<inline-help help-key="addis-outcome"></inline-help></h3>
-              <ul>
-                <li ng-show="outcomes.length === 0 ">no outcomes defined</li>
-                <li ng-repeat="outcome in outcomes | orderBy:'name'">
-                  <strong>{{outcome.name}}
-                    <span ng-if="outcome.motivation.length">:</span>
-                  </strong>{{outcome.motivation}}
-                </li>
-              </ul>
-            </div>
-          </div>
-
-          <!-- interventions -->
-          <div class="row">
-            <div class="columns large-12">
-              <h3 class="subheader">Interventions<inline-help help-key="addis-intervention"></inline-help></h3>
-              <ul>
-                <li ng-show="interventions.length === 0 ">no interventions defined</li>
-                <li ng-repeat="intervention in interventions | orderBy:'name'">
-                  <strong>{{intervention.name}}
-                    <span ng-if="intervention.motivation.length">:</span>
-                  </strong>{{intervention.motivation}}
-                </li>
-              </ul>
-            </div>
-          </div>
-
-          <!-- covariates -->
-          <div class="row">
-            <div class="columns large-12">
-              <h3 class="subheader">Covariates<inline-help help-key="covariate"></inline-help></h3>
-              <ul>
-                <li ng-show="covariates.length === 0 ">no covariates defined</li>
-                <li ng-repeat="covariate in covariates | orderBy:'name'">
-                  <strong>{{covariate.name}}
-                    <span ng-if="covariate.motivation.length">:</span>
-                  </strong>{{covariate.motivation}}
-                </li>
-              </ul>
-            </div>
-          </div>
-
-          <!-- analyses -->
-          <div class="row" ng-repeat="analysis in analyses">
-            <div class="columns large-12">
-              <h2>Analysis: {{::analysis.title}}<inline-help help-key="addis-analysis"></inline-help></h2>
-              <p ng-show="!analysis.description">
-                <em>no description</em>
-              </p>
-              <p>{{::analysis.description}}</p>
-              <div ng-if="analysis.analysisType === 'Evidence synthesis'">
-                <nma-report-view user="user" project="project" analysis="analysis" interventions="interventions"></nma-report-view>
+            <!-- outcomes -->
+            <div class="row">
+              <div class="columns large-12">
+                <h3 class="subheader">Outcomes<inline-help help-key="addis-outcome"></inline-help></h3>
+                <ul>
+                  <li ng-show="outcomes.length === 0 ">no outcomes defined</li>
+                  <li ng-repeat="outcome in outcomes | orderBy:'name'">
+                    <strong>{{outcome.name}}
+                      <span ng-if="outcome.motivation.length">:</span>
+                    </strong>{{outcome.motivation}}
+                  </li>
+                </ul>
               </div>
+            </div>
 
-              <div ng-if="analysis.analysisType === 'Benefit-risk analysis based on a single study' || analysis.analysisType === 'Benefit-risk analysis based on meta-analyses'">
-                <ssbr-report-view user="user" project="project" analysis="analysis" interventions="interventions"></ssbr-report-view>
+            <!-- interventions -->
+            <div class="row">
+              <div class="columns large-12">
+                <h3 class="subheader">Interventions<inline-help help-key="addis-intervention"></inline-help></h3>
+                <ul>
+                  <li ng-show="interventions.length === 0 ">no interventions defined</li>
+                  <li ng-repeat="intervention in interventions | orderBy:'name'">
+                    <strong>{{intervention.name}}
+                      <span ng-if="intervention.motivation.length">:</span>
+                    </strong>{{intervention.motivation}}
+                  </li>
+                </ul>
+              </div>
+            </div>
+
+            <!-- covariates -->
+            <div class="row">
+              <div class="columns large-12">
+                <h3 class="subheader">Covariates<inline-help help-key="covariate"></inline-help></h3>
+                <ul>
+                  <li ng-show="covariates.length === 0 ">no covariates defined</li>
+                  <li ng-repeat="covariate in covariates | orderBy:'name'">
+                    <strong>{{covariate.name}}
+                      <span ng-if="covariate.motivation.length">:</span>
+                    </strong>{{covariate.motivation}}
+                  </li>
+                </ul>
+              </div>
+            </div>
+
+            <!-- analyses -->
+            <div class="row" ng-repeat="analysis in analyses">
+              <div class="columns large-12">
+                <h2>Analysis: {{::analysis.title}}<inline-help help-key="addis-analysis"></inline-help></h2>
+                <p ng-show="!analysis.description">
+                  <em>no description</em>
+                </p>
+                <p>{{::analysis.description}}</p>
+                <div ng-if="analysis.analysisType === 'Evidence synthesis'">
+                  <nma-report-view user="user" project="project" analysis="analysis" interventions="interventions"></nma-report-view>
+                </div>
+
+                <div ng-if="analysis.analysisType === 'Benefit-risk analysis based on a single study' || analysis.analysisType === 'Benefit-risk analysis based on meta-analyses'">
+                  <ssbr-report-view user="user" project="project" analysis="analysis" interventions="interventions"></ssbr-report-view>
+                </div>
               </div>
             </div>
           </div>
         </tab>
-        <tab heading="Details" active="activeTab === 'details'" ng-click="setActiveTab('details')">
-          <!-- Analyses -->
-          <div class="row section">
-            <div class="columns large-6 ">
-              <h2>Analyses<inline-help help-key="addis-analysis"></inline-help></h2>
-              <button id="show-create-analysis-modal-btn" ng-show="editMode.allowEditing" ng-disabled="!loading.loaded"
-                class="small" ng-click="openAddAnalysisDialog()"><i class="fa fa-plus"></i> Add Analysis
-              </button>
 
-              <div ng-show="!analysesLoaded">
-                <i class="fa fa-spinner fa-spin fa-3x"></i>
-                <p>Loading analyses...</p>
+        <tab heading="Details" active="activeTab === 'details'" ng-click="setActiveTab('details')">
+          <div ng-if="activeTab === 'details'">
+            <!-- Analyses -->
+            <div class="row section">
+              <div class="columns large-6 ">
+                <h2>Analyses<inline-help help-key="addis-analysis"></inline-help></h2>
+                <button id="show-create-analysis-modal-btn" ng-show="editMode.allowEditing" ng-disabled="!loading.loaded"
+                  class="small" ng-click="openAddAnalysisDialog()"><i class="fa fa-plus"></i> Add Analysis
+                </button>
+
+                <div ng-show="!analysesLoaded">
+                  <i class="fa fa-spinner fa-spin fa-3x"></i>
+                  <p>Loading analyses...</p>
+                </div>
+                <div>
+                  <em ng-show="analysesLoaded && analyses.length === 0">No analyses have been defined</em>
+                </div>
+                <div ng-show="analysesLoaded && analyses.length > 0">
+                  <table style="width: 100%;">
+                    <thead>
+                      <tr>
+                        <th>Name</th>
+                        <th>Analysis type</th>
+                        <th>Data source</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr class="clickable on-hover" ng-repeat="analysis in analyses" ng-click="goToAnalysis(analysis)"
+                        ng-switch="analysis.analysisType">
+                        <td>{{analysis.title}}</td>
+                        <td>{{analysis.analysisType}}</td>
+                        <td ng-switch-when="Benefit-risk analysis based on a single study">{{findStudyLabel(analysis)}}
+                        </td>
+                        <td ng-switch-when="Evidence synthesis"></td>
+                        <td ng-switch-when="Benefit-risk analysis based on meta-analyses"></td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
               </div>
-              <div>
-                <em ng-show="analysesLoaded && analyses.length === 0">No analyses have been defined</em>
-              </div>
-              <div ng-show="analysesLoaded && analyses.length > 0">
+            </div>
+
+
+            <div class="row section">
+              <!-- Outcomes -->
+              <div class="columns large-12">
+                <h3 class="subheader">Outcomes<inline-help help-key="addis-outcome"></inline-help></h3>
+                <button id="show-create-outcome-modal-btn" ng-show="editMode.allowEditing" ng-disabled="!loading.loaded"
+                  class="small" ng-click="openCreateOutcomeDialog()"><i class="fa fa-plus"></i> Add outcome
+                </button>
                 <table style="width: 100%;">
                   <thead>
                     <tr>
                       <th>Name</th>
-                      <th>Analysis type</th>
-                      <th>Data source</th>
+                      <th>Outcome direction</th>
+                      <th>Motivation</th>
+                      <th>Definition</th>
+                      <th ng-if="editMode.allowEditing"></th>
                     </tr>
                   </thead>
                   <tbody>
-                    <tr class="clickable on-hover" ng-repeat="analysis in analyses" ng-click="goToAnalysis(analysis)"
-                      ng-switch="analysis.analysisType">
-                      <td>{{analysis.title}}</td>
-                      <td>{{analysis.analysisType}}</td>
-                      <td ng-switch-when="Benefit-risk analysis based on a single study">{{findStudyLabel(analysis)}}
-                      </td>
-                      <td ng-switch-when="Evidence synthesis"></td>
-                      <td ng-switch-when="Benefit-risk analysis based on meta-analyses"></td>
+                    <tr ng-repeat="outcome in outcomes">
+                      <td>{{outcome.name}}</td>
+                      <td style="text-align: center;" ng-if="outcome.direction == 1">Higher is better</td>
+                      <td style="text-align: center;" ng-if="outcome.direction == -1">Lower is better</td>
+                      <td>{{outcome.motivation}}</td>
+                      <td>{{::outcome.semanticOutcomeLabel}}</td>
+                      <td style="text-align: center;" ng-if="editMode.allowEditing"><a ng-click="openEditOutcomeDialog(outcome)"><i class="fa fa-edit fa-2x"></i></a></td>
                     </tr>
                   </tbody>
                 </table>
               </div>
             </div>
-          </div>
 
-
-          <div class="row section">
-            <!-- Outcomes -->
-            <div class="columns large-12">
-              <h3 class="subheader">Outcomes<inline-help help-key="addis-outcome"></inline-help></h3>
-              <button id="show-create-outcome-modal-btn" ng-show="editMode.allowEditing" ng-disabled="!loading.loaded"
-                class="small" ng-click="openCreateOutcomeDialog()"><i class="fa fa-plus"></i> Add outcome
-              </button>
-              <table style="width: 100%;">
-                <thead>
-                  <tr>
-                    <th>Name</th>
-                    <th>Outcome direction</th>
-                    <th>Motivation</th>
-                    <th>Definition</th>
-                    <th ng-if="editMode.allowEditing"></th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr ng-repeat="outcome in outcomes">
-                    <td>{{outcome.name}}</td>
-                    <td style="text-align: center;" ng-if="outcome.direction == 1">Higher is better</td>
-                    <td style="text-align: center;" ng-if="outcome.direction == -1">Lower is better</td>
-                    <td>{{outcome.motivation}}</td>
-                    <td>{{::outcome.semanticOutcomeLabel}}</td>
-                    <td style="text-align: center;" ng-if="editMode.allowEditing"><a ng-click="openEditOutcomeDialog(outcome)"><i class="fa fa-edit fa-2x"></i></a></td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-
-          <div class="row section">
-            <!-- Interventions -->
-            <div class="columns large-12">
-              <h3 class="subheader">Interventions<inline-help help-key="addis-intervention"></inline-help></h3>
-              <button id="show-create-intervention-modal-btn" ng-show="editMode.allowEditing" ng-disabled="!loading.loaded"
-                class="small " ng-click="openCreateInterventionDialog()"><i class="fa fa-plus"></i> Add intervention
-              </button>
-              <table>
-                <thead>
-                  <tr>
-                    <th class="large-2">Name</th>
-                    <th class="large-5">Motivation</th>
-                    <th class="large-5">Definition</th>
-                    <th ng-if="editMode.allowEditing"></th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr ng-repeat="intervention in interventions">
-                    <td>{{intervention.name}}</td>
-                    <td>{{intervention.motivation}}</td>
-                    <td>{{::intervention.semanticInterventionLabel}}{{::intervention.definitionLabel}}</td>
-                    <td  style="text-align: center;" ng-if="editMode.allowEditing"><a ng-click="openEditInterventionDialog(intervention)"><i class="fa fa-edit fa-2x"></i></a></td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-
-          <!-- Covariates -->
-          <div class="row section">
-            <div class="columns large-12">
-
-              <h3 class="subheader">Covariates<inline-help help-key="addis-covariate"></inline-help></h3>
-              <button ng-show="editMode.allowEditing" ng-disabled="!loading.loaded" class="small"
-                ng-click="addCovariate()"><i class="fa fa-plus"></i> Add Covariate
-              </button>
-
-              <div ng-show="!covariatesLoaded">
-                <i class="fa fa-spinner fa-spin fa-3x"></i>
-
-                <p>Loading covariates... </p>
+            <div class="row section">
+              <!-- Interventions -->
+              <div class="columns large-12">
+                <h3 class="subheader">Interventions<inline-help help-key="addis-intervention"></inline-help></h3>
+                <button id="show-create-intervention-modal-btn" ng-show="editMode.allowEditing" ng-disabled="!loading.loaded"
+                  class="small " ng-click="openCreateInterventionDialog()"><i class="fa fa-plus"></i> Add intervention
+                </button>
+                <table>
+                  <thead>
+                    <tr>
+                      <th class="large-2">Name</th>
+                      <th class="large-5">Motivation</th>
+                      <th class="large-5">Definition</th>
+                      <th ng-if="editMode.allowEditing"></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr ng-repeat="intervention in interventions">
+                      <td>{{intervention.name}}</td>
+                      <td>{{intervention.motivation}}</td>
+                      <td>{{::intervention.semanticInterventionLabel}}{{::intervention.definitionLabel}}</td>
+                      <td  style="text-align: center;" ng-if="editMode.allowEditing"><a ng-click="openEditInterventionDialog(intervention)"><i class="fa fa-edit fa-2x"></i></a></td>
+                    </tr>
+                  </tbody>
+                </table>
               </div>
+            </div>
 
-              <em ng-show="covariatesLoaded && covariates.length === 0">No covariates have been defined</em>
-              <table ng-show="covariatesLoaded && covariates.length > 0">
-                <thead>
-                  <tr>
-                    <th class="large-3">Name</th>
-                    <th class="large-6 end">Motivation</th>
-                    <th class="large-3">Definition</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr ng-repeat="covariate in covariates">
-                    <td>{{::covariate.name}}</td>
-                    <td>{{::covariate.motivation}}</td>
-                    <td>{{::covariate.definitionLabel}}</td>
-                  </tr>
-                </tbody>
-              </table>
+            <!-- Covariates -->
+            <div class="row section">
+              <div class="columns large-12">
+
+                <h3 class="subheader">Covariates<inline-help help-key="addis-covariate"></inline-help></h3>
+                <button ng-show="editMode.allowEditing" ng-disabled="!loading.loaded" class="small"
+                  ng-click="addCovariate()"><i class="fa fa-plus"></i> Add Covariate
+                </button>
+
+                <div ng-show="!covariatesLoaded">
+                  <i class="fa fa-spinner fa-spin fa-3x"></i>
+
+                  <p>Loading covariates... </p>
+                </div>
+
+                <em ng-show="covariatesLoaded && covariates.length === 0">No covariates have been defined</em>
+                <table ng-show="covariatesLoaded && covariates.length > 0">
+                  <thead>
+                    <tr>
+                      <th class="large-3">Name</th>
+                      <th class="large-6 end">Motivation</th>
+                      <th class="large-3">Definition</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr ng-repeat="covariate in covariates">
+                      <td>{{::covariate.name}}</td>
+                      <td>{{::covariate.motivation}}</td>
+                      <td>{{::covariate.definitionLabel}}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
         </tab>

@@ -22,6 +22,7 @@ import org.drugis.addis.trialverse.model.trialdata.TrialDataStudy;
 import org.drugis.addis.trialverse.service.QueryResultMappingService;
 import org.drugis.addis.trialverse.service.TriplestoreService;
 import org.drugis.addis.util.WebConstants;
+import org.drugis.trialverse.util.Namespaces;
 import org.joda.time.DateTime;
 import org.joda.time.Period;
 import org.joda.time.format.DateTimeFormat;
@@ -551,6 +552,9 @@ public class TriplestoreServiceImpl implements TriplestoreService {
             .map(CovariateOption::fromKey).collect(Collectors.toList());
     List<String> populationCharacteristicCovariateKeys = covariateKeys.stream()
             .filter(isStudyLevelCovariate(covariateOptions).negate())
+            .map(key -> key.startsWith(Namespaces.CONCEPT_NAMESPACE) ?
+                    key.substring(Namespaces.CONCEPT_NAMESPACE.length()) :
+                    key)
             .collect(Collectors.toList());
 
 
@@ -636,8 +640,12 @@ public class TriplestoreServiceImpl implements TriplestoreService {
       String valueAsString = JsonPath.<String>read(row, "$.value.value");
       if (JsonPath.<String>read(row, "$.value.datatype").equals(DATATYPE_DURATION)) {
         Period period = Period.parse(valueAsString);
-        Integer periodAsDays = period.toStandardDays().getDays();
-        value = periodAsDays.doubleValue();
+        if(period.getMonths() > 0) {
+          value = period.getMonths() * 30.0;
+        } else {
+          Integer periodAsDays = period.toStandardDays().getDays();
+          value = periodAsDays.doubleValue();
+        }
       } else {
         value = Double.parseDouble(valueAsString);
       }

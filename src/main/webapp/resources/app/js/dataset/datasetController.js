@@ -9,6 +9,7 @@ define(['lodash'],
 
       $scope.createProjectDialog = createProjectDialog;
       $scope.showEditDatasetModal = showEditDatasetModal;
+      $scope.showDeleteStudyDialog = showDeleteStudyDialog;
       $scope.userUid = $stateParams.userUid;
       $scope.datasetUUID = $stateParams.datasetUUID;
       // no version so this must be head view
@@ -133,6 +134,26 @@ define(['lodash'],
           }
         });
       };
+
+      function showDeleteStudyDialog(study) {
+        $modal.open({
+          templateUrl: 'app/js/dataset/deleteStudy.html',
+          scope: $scope,
+          controller: 'DeleteStudyController',
+          windowClass: 'small',
+          resolve: {
+            successCallback: function() {
+              return function(newVersion) {
+                $location.path('/users/' + $stateParams.userUid + '/datasets/' +
+                  $stateParams.datasetUUID + '/versions/' + newVersion);
+              };
+            },
+            study: function() {
+              return study;
+            }
+          }
+        });
+      }
 
       function createProjectDialog() {
         $modal.open({

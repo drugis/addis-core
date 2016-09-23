@@ -22,7 +22,7 @@
                         {{intervention.name}}
                         </label>
                         <div class="alert animate-show" ng-if="loading.loaded && isOverlappingIntervention(intervention)">
-                          <em>Overlaps: 
+                          <em>Overlaps:
                             <span ng-repeat="overlap in treatmentOverlapMap[intervention.id]">
                             {{overlap.name}} {{$last ? '' : ', '}}
                             </span></em>
@@ -40,6 +40,9 @@
                                       ng-disabled="editMode.disableEditing || hasModel"
                                       ng-change="changeCovariateInclusion(covariate)">
                             {{covariate.name}}</label>
+                    </div>
+                    <div class="alert animate-show" ng-show="loading.loaded && hasInsufficientCovariateValues">
+                      <em>Covariates should have more than one different value.</em>
                     </div>
                 </div>
             </div>

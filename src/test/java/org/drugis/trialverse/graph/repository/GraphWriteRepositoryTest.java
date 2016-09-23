@@ -4,6 +4,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.http.*;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.message.BasicStatusLine;
@@ -12,6 +13,7 @@ import org.drugis.addis.security.repository.AccountRepository;
 import org.drugis.trialverse.dataset.factory.HttpClientFactory;
 import org.drugis.trialverse.dataset.model.VersionMapping;
 import org.drugis.trialverse.dataset.repository.VersionMappingRepository;
+import org.drugis.trialverse.graph.exception.DeleteGraphException;
 import org.drugis.trialverse.graph.exception.UpdateGraphException;
 import org.drugis.trialverse.graph.repository.impl.GraphWriteRepositoryImpl;
 import org.drugis.addis.security.ApiKey;
@@ -147,6 +149,23 @@ public class GraphWriteRepositoryTest {
     assertEquals(versionHeader, resultHeader);
 
     verify(httpClient).execute(any(HttpPut.class));
+    verify(versionMappingRepository).getVersionMappingByDatasetUrl(datasetUrl);
+  }
+
+  @Test
+  public void testDeleteGraph() throws DeleteGraphException, IOException, URISyntaxException {
+    String datasetUuid = "datasetuuid";
+    String graphUuid = "graphUuid";
+    HttpServletRequest mockHttpServletRequest = mock(HttpServletRequest.class);
+    URI datasetUrl = new URI(Namespaces.DATASET_NAMESPACE + datasetUuid);
+    String versionStoreDatasetUri = "http://versionStoreDatasetUri";
+    VersionMapping versionMapping = new VersionMapping(1, versionStoreDatasetUri, "userName", datasetUrl.toString());
+    when(versionMappingRepository.getVersionMappingByDatasetUrl(datasetUrl)).thenReturn(versionMapping);
+
+    Header resultHeader = graphWriteRepository.deleteGraph(datasetUrl, graphUuid);
+
+    assertEquals(versionHeader, resultHeader);
+    verify(httpClient).execute(any(HttpDelete.class));
     verify(versionMappingRepository).getVersionMappingByDatasetUrl(datasetUrl);
   }
 

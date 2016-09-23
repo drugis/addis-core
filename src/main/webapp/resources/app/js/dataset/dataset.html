@@ -38,6 +38,7 @@
       <table ng-if="studiesWithDetail[0].label">
         <thead>
           <tr>
+            <th ng-if="isEditingAllowed" class="text-center"></th>
             <th class="sortable" ng-click="tableOptions.orderByField = 'label'; tableOptions.reverseSortOrder=!tableOptions.reverseSortOrder">
               Name
               <i ng-if="tableOptions.reverseSortOrder &&  tableOptions.orderByField === 'label'"
@@ -57,9 +58,10 @@
         </thead>
         <tbody>
           <tr ng-if="!studiesWithDetail">
-            <td colspan="20">No studies in dataset</td>
+            <td colspan="21">No studies in dataset</td>
           </tr>
           <tr ng-repeat="studyWithDetails in studiesWithDetail | orderBy:tableOptions.orderByField:tableOptions.reverseSortOrder ">
+            <td ng-if="isEditingAllowed"><a ng-click="showDeleteStudyDialog(studyWithDetails)"><i class="fa fa-trash-o" style="color: red;"></i></a></td>
             <td style="vertical-align: top;">
 
               <a ng-if="!isHeadView" ui-sref="versionedDataset.study({userUid: user.id, datasetUUID: stripFrontFilter(dataset.datasetUri, 'http://trials.drugis.org/datasets/'),

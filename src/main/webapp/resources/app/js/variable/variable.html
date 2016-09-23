@@ -6,7 +6,7 @@
     <span>
       Measurement type:
     </span>
-    <span><strong>{{::item.measurementType | ontologyFilter}}</span> </strong>
+    <span><strong>{{::item.measurementType === 'ontology:continuous' ? 'continuous' : 'count'}}</span> </strong>
   </li>
   <li ng-if="item.measuredAtMoments.length > 0">
     <span>

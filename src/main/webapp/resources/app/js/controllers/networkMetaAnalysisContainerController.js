@@ -1,11 +1,13 @@
 'use strict';
 define(['lodash'], function(_) {
   var dependencies = ['$scope', '$q', '$state', '$stateParams', 'currentAnalysis', 'currentProject', 'OutcomeResource',
-    'InterventionResource', 'CovariateResource', 'ModelResource', 'NetworkMetaAnalysisService', 'AnalysisService', 'EvidenceTableResource', 'UserService'
+    'InterventionResource', 'CovariateResource', 'ModelResource', 'NetworkMetaAnalysisService', 'AnalysisService',
+    'EvidenceTableResource', 'UserService'
   ];
 
   var NetworkMetaAnalysisContainerController = function($scope, $q, $state, $stateParams, currentAnalysis, currentProject,
-    OutcomeResource, InterventionResource, CovariateResource, ModelResource, NetworkMetaAnalysisService, AnalysisService, EvidenceTableResource, UserService) {
+    OutcomeResource, InterventionResource, CovariateResource, ModelResource, NetworkMetaAnalysisService, AnalysisService,
+    EvidenceTableResource, UserService) {
 
     $scope.isAnalysisLocked = true;
     $scope.isNetworkDisconnected = true;
@@ -130,6 +132,7 @@ define(['lodash'], function(_) {
           $scope.treatmentOverlapMap = NetworkMetaAnalysisService.buildOverlappingTreatmentMap($scope.interventions, trialverseData);
           $scope.trialData = NetworkMetaAnalysisService.transformTrialDataToTableRows(trialverseData, includedInterventions, $scope.analysis, $scope.covariates, $scope.treatmentOverlapMap);
           $scope.tableHasAmbiguousArm = NetworkMetaAnalysisService.doesModelHaveAmbiguousArms(trialverseData, $scope.analysis);
+          $scope.hasInsufficientCovariateValues = NetworkMetaAnalysisService.doesModelHaveInsufficientCovariateValues($scope.trialData);
           $scope.hasLessThanTwoInterventions = includedInterventions.length < 2;
           $scope.hasTreatmentOverlap = hasTreatmentOverlap();
           $scope.containsMissingValue = NetworkMetaAnalysisService.containsMissingValue(trialverseData, $scope.analysis);
@@ -188,6 +191,7 @@ define(['lodash'], function(_) {
         $scope.hasLessThanTwoInterventions ||
         $scope.hasTreatmentOverlap ||
         $scope.containsMissingValue ||
+        $scope.hasInsufficientCovariateValues ||
         !$scope.hasIncludedStudies();
     }
     $scope.isModelCreationBlocked = checkCanNotCreateModel();

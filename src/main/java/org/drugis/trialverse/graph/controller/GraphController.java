@@ -12,6 +12,7 @@ import org.drugis.trialverse.dataset.model.VersionMapping;
 import org.drugis.trialverse.dataset.repository.DatasetReadRepository;
 import org.drugis.trialverse.dataset.repository.VersionMappingRepository;
 import org.drugis.trialverse.exception.MethodNotAllowedException;
+import org.drugis.trialverse.graph.exception.DeleteGraphException;
 import org.drugis.trialverse.graph.exception.ReadGraphException;
 import org.drugis.trialverse.graph.exception.UpdateGraphException;
 import org.drugis.trialverse.graph.repository.GraphReadRepository;
@@ -67,13 +68,12 @@ public class GraphController extends AbstractAddisCoreController {
   private ClinicalTrialsImportService clinicalTrialsImportService;
 
 
-
   Logger logger = LoggerFactory.getLogger(getClass());
 
   @RequestMapping(value = "/versions/{versionUuid}/graphs/{graphUuid}", method = RequestMethod.GET, produces = WebConstants.TURTLE)
   @ResponseBody
   public void getGraphTurtle(HttpServletResponse httpServletResponse, @PathVariable String datasetUuid,
-                       @PathVariable String versionUuid, @PathVariable String graphUuid) throws URISyntaxException, IOException, ReadGraphException {
+                             @PathVariable String versionUuid, @PathVariable String graphUuid) throws URISyntaxException, IOException, ReadGraphException {
     logger.trace("get graph");
     VersionMapping versionMapping = versionMappingRepository.getVersionMappingByDatasetUrl(new URI(Namespaces.DATASET_NAMESPACE + datasetUuid));
     byte[] responseContent = graphReadRepository.getGraph(versionMapping.getVersionedDatasetUrl(), versionUuid, graphUuid, WebConstants.TURTLE);
@@ -85,7 +85,7 @@ public class GraphController extends AbstractAddisCoreController {
   @RequestMapping(value = "/versions/{versionUuid}/graphs/{graphUuid}", method = RequestMethod.GET, produces = WebConstants.JSON_LD)
   @ResponseBody
   public void getGraphJsonLD(HttpServletResponse httpServletResponse, @PathVariable String datasetUuid,
-                       @PathVariable String versionUuid, @PathVariable String graphUuid) throws URISyntaxException, IOException, ReadGraphException {
+                             @PathVariable String versionUuid, @PathVariable String graphUuid) throws URISyntaxException, IOException, ReadGraphException {
     logger.trace("get version graph");
     VersionMapping versionMapping = versionMappingRepository.getVersionMappingByDatasetUrl(new URI(Namespaces.DATASET_NAMESPACE + datasetUuid));
     byte[] responseContent = graphReadRepository.getGraph(versionMapping.getVersionedDatasetUrl(), versionUuid, graphUuid, WebConstants.JSON_LD);
@@ -105,14 +105,26 @@ public class GraphController extends AbstractAddisCoreController {
     trialverseIOUtilsService.writeContentToServletResponse(responseContent, httpServletResponse);
   }
 
+  @RequestMapping(value = "/graphs/{graphUuid}", method = RequestMethod.DELETE)
+  public void deleteGraph(HttpServletResponse httpServletResponse, Principal currentUser,
+                          @PathVariable String datasetUuid,
+                          @PathVariable String graphUuid) throws URISyntaxException, DeleteGraphException {
+    URI trialverseDatasetUri = new URI(Namespaces.DATASET_NAMESPACE + datasetUuid);
+    if (datasetReadRepository.isOwner(trialverseDatasetUri, currentUser)) {
+      Header versionHeader = graphWriteRepository.deleteGraph(trialverseDatasetUri, graphUuid);
+      httpServletResponse.setHeader(WebConstants.X_EVENT_SOURCE_VERSION, versionHeader.getValue());
+      httpServletResponse.setStatus(HttpStatus.OK.value());
+    }
+  }
+
 
   @RequestMapping(value = "/graphs/{graphUuid}",
-          method = RequestMethod.PUT, consumes = WebConstants.JSON_LD)
+      method = RequestMethod.PUT, consumes = WebConstants.JSON_LD)
   public void setJsonGraph(HttpServletRequest request, HttpServletResponse trialverseResponse, Principal currentUser,
                            @RequestParam(WebConstants.COMMIT_TITLE_PARAM) String commitTitle,
                            @RequestParam(value = WebConstants.COMMIT_DESCRIPTION_PARAM, required = false) String commitDescription,
                            @PathVariable String datasetUuid, @PathVariable String graphUuid)
-          throws IOException, MethodNotAllowedException, URISyntaxException, UpdateGraphException {
+      throws IOException, MethodNotAllowedException, URISyntaxException, UpdateGraphException {
     logger.trace("set graph");
     URI trialverseDatasetUri = new URI(Namespaces.DATASET_NAMESPACE + datasetUuid);
     if (datasetReadRepository.isOwner(trialverseDatasetUri, currentUser)) {
@@ -124,14 +136,14 @@ public class GraphController extends AbstractAddisCoreController {
   }
 
   @RequestMapping(value = "/graphs/{graphUuid}/import/{importStudyRef}",
-          method = RequestMethod.POST)
+      method = RequestMethod.POST)
   public void importStudy(HttpServletResponse trialverseResponse, Principal currentUser,
-                           @PathVariable String datasetUuid,
-                           @PathVariable String graphUuid,
-                           @PathVariable String importStudyRef,
-                           @RequestParam(WebConstants.COMMIT_TITLE_PARAM) String commitTitle,
-                           @RequestParam(value = WebConstants.COMMIT_DESCRIPTION_PARAM, required = false) String commitDescription)
-          throws MethodNotAllowedException, ClinicalTrialsImportError, URISyntaxException, UnsupportedEncodingException {
+                          @PathVariable String datasetUuid,
+                          @PathVariable String graphUuid,
+                          @PathVariable String importStudyRef,
+                          @RequestParam(WebConstants.COMMIT_TITLE_PARAM) String commitTitle,
+                          @RequestParam(value = WebConstants.COMMIT_DESCRIPTION_PARAM, required = false) String commitDescription)
+      throws MethodNotAllowedException, ClinicalTrialsImportError, URISyntaxException, UnsupportedEncodingException {
     logger.trace("import graph");
     URI trialverseDatasetUri = new URI(Namespaces.DATASET_NAMESPACE + datasetUuid);
     if (datasetReadRepository.isOwner(trialverseDatasetUri, currentUser)) {
@@ -158,7 +170,7 @@ public class GraphController extends AbstractAddisCoreController {
                              @RequestParam(WebConstants.COMMIT_TITLE_PARAM) String commitTitle,
                              @RequestParam(value = WebConstants.COMMIT_DESCRIPTION_PARAM, required = false) String commitDescription,
                              @PathVariable String datasetUuid, @PathVariable String graphUuid)
-          throws IOException, MethodNotAllowedException, URISyntaxException, UpdateGraphException {
+      throws IOException, MethodNotAllowedException, URISyntaxException, UpdateGraphException {
     logger.trace("set graph");
     URI trialverseDatasetUri = new URI(Namespaces.DATASET_NAMESPACE + datasetUuid);
     if (datasetReadRepository.isOwner(trialverseDatasetUri, currentUser)) {
@@ -173,7 +185,7 @@ public class GraphController extends AbstractAddisCoreController {
   public void copyGraph(HttpServletRequest request, HttpServletResponse trialverseResponse, Principal currentUser,
                         @RequestParam(WebConstants.COPY_OF_QUERY_PARAM) String copyOfUri,
                         @PathVariable String datasetUuid, @PathVariable String graphUuid)
-          throws IOException, MethodNotAllowedException, URISyntaxException, UpdateGraphException, RevisionNotFoundException {
+      throws IOException, MethodNotAllowedException, URISyntaxException, UpdateGraphException, RevisionNotFoundException {
     logger.trace("copy graph");
     URI trialverseDatasetUri = new URI(Namespaces.DATASET_NAMESPACE + datasetUuid);
     if (datasetReadRepository.isOwner(trialverseDatasetUri, currentUser)) {
