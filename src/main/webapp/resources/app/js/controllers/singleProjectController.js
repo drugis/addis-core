@@ -220,9 +220,10 @@ define(['lodash', 'angular'], function(_, angular) {
             return $scope.outcomes;
           },
           successCallback: function() {
-            return function(name, motivation) {
+            return function(name, motivation, direction) {
               outcome.name = name;
               outcome.motivation = motivation;
+              outcome.direction = direction;
             };
           }
         }

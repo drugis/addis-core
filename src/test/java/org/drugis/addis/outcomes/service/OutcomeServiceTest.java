@@ -44,7 +44,7 @@ public class OutcomeServiceTest {
     Outcome oldIntervention = new Outcome(outcomeId, projectId, "oldName", direction, "oldMotivation", new SemanticVariable(URI.create("uri"), "uriLabel"));
     when(outcomeRepository.get(projectId, outcomeId)).thenReturn(oldIntervention);
     when(outcomeRepository.isExistingOutcomeName(outcomeId, "name")).thenReturn(false);
-    Outcome abstractIntervention = outcomeService.updateNameAndMotivation(projectId, outcomeId, name, motivation);
+    Outcome abstractIntervention = outcomeService.updateOutcome(projectId, outcomeId, name, motivation);
     assertEquals(outcomeId, abstractIntervention.getId());
     assertEquals(name, abstractIntervention.getName());
     assertEquals(motivation, abstractIntervention.getMotivation());
@@ -55,7 +55,7 @@ public class OutcomeServiceTest {
     String name = "name";
     String motivation = "motivation";
     when(outcomeRepository.isExistingOutcomeName(outcomeId, "name")).thenReturn(true);
-    outcomeService.updateNameAndMotivation(projectId, outcomeId, name, motivation);
+    outcomeService.updateOutcome(projectId, outcomeId, name, motivation);
   }
 
   @Test(expected = Exception.class)
@@ -64,7 +64,7 @@ public class OutcomeServiceTest {
     String motivation = "motivation";
     when(outcomeRepository.isExistingOutcomeName(outcomeId, "name")).thenReturn(false);
     when(outcomeRepository.get(projectId, outcomeId)).thenReturn(null);
-    outcomeService.updateNameAndMotivation(projectId, outcomeId, name, motivation);
+    outcomeService.updateOutcome(projectId, outcomeId, name, motivation);
   }
 
 

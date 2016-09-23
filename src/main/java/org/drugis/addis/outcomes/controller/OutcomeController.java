@@ -73,7 +73,7 @@ public class OutcomeController extends AbstractAddisCoreController {
   public Outcome edit(Principal currentUser, @PathVariable Integer outcomeId,  @PathVariable Integer projectId, @RequestBody EditOutcomeCommand command) throws Exception {
     Account user = accountRepository.getAccount(currentUser);
     projectService.checkProjectExistsAndModifiable(user, projectId);
-    return outcomeService.updateNameAndMotivation(projectId, outcomeId, command.getName(), command.getMotivation());
+    return outcomeService.updateOutcome(projectId, outcomeId, command.getName(), command.getMotivation(), command.getDirection());
   }
 
 }

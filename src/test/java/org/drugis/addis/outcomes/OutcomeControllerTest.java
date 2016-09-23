@@ -142,13 +142,13 @@ public class OutcomeControllerTest {
     Integer outcomeId = 1;
     Integer projectId = 2;
     Outcome outcome = new Outcome(outcomeId, projectId, editOutcomeCommand.getName(), editOutcomeCommand.getMotivation(), new SemanticVariable(URI.create("uri"), "label"));
-    when(outcomeService.updateNameAndMotivation(projectId, outcomeId, editOutcomeCommand.getName(), editOutcomeCommand.getMotivation())).thenReturn(outcome);
+    when(outcomeService.updateOutcome(projectId, outcomeId, editOutcomeCommand.getName(), editOutcomeCommand.getMotivation())).thenReturn(outcome);
     String body = TestUtils.createJson(editOutcomeCommand);
     mockMvc.perform(post("/projects/2/outcomes/1").content(body).principal(user).contentType(WebConstants.getApplicationJsonUtf8Value()))
             .andExpect(status().isOk())
             .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()));
     verify(accountRepository).getAccount(user);
-    verify(outcomeService).updateNameAndMotivation(projectId, outcomeId, editOutcomeCommand.getName(), editOutcomeCommand.getMotivation());
+    verify(outcomeService).updateOutcome(projectId, outcomeId, editOutcomeCommand.getName(), editOutcomeCommand.getMotivation());
   }
 
 }

@@ -85,6 +85,12 @@ public class Outcome implements Serializable{
     this.motivation = motivation;
   }
 
+  public void setDirection(Integer direction) throws Exception {
+    if(direction.intValue() != HIGHER_IS_BETTER && direction.intValue() != LOWER_IS_BETTER) {
+      throw new Exception("invalid direction value, must be 1 either or -1");
+    }
+    this.direction = direction;
+  }
   public String getSemanticOutcomeLabel() {
     return semanticOutcomeLabel;
   }
@@ -122,4 +128,5 @@ public class Outcome implements Serializable{
     result = 31 * result + (semanticOutcomeUri != null ? semanticOutcomeUri.hashCode() : 0);
     return result;
   }
+
 }

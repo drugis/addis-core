@@ -9,14 +9,15 @@ define(['angular'],
         $scope.isSaving = true;
         var editCommand = {
           name: $scope.outcome.name,
-          motivation: $scope.outcome.motivation
+          motivation: $scope.outcome.motivation,
+          direction: $scope.outcome.direction
         };
         OutcomeResource.save({
           projectId: $scope.outcome.project,
           outcomeId: $scope.outcome.id,
         }, editCommand, function() {
           $modalInstance.close();
-          successCallback($scope.outcome.name, $scope.outcome.motivation);
+          successCallback($scope.outcome.name, $scope.outcome.motivation, $scope.outcome.direction);
         });
       };
 

@@ -6,5 +6,5 @@ import org.drugis.addis.outcomes.Outcome;
  * Created by connor on 10-6-16.
  */
 public interface OutcomeService {
-  Outcome updateNameAndMotivation(Integer projectId, Integer outcomeId, String name, String motivation) throws Exception;
+  Outcome updateOutcome(Integer projectId, Integer outcomeId, String name, String motivation, Integer direction) throws Exception;
 }

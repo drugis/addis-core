@@ -17,13 +17,15 @@ public class OutcomeServiceImpl implements OutcomeService {
   OutcomeRepository outcomeRepository;
 
   @Override
-  public Outcome updateNameAndMotivation(Integer projectId, Integer outcomeId, String name, String motivation) throws Exception {
+  public Outcome updateOutcome(Integer projectId, Integer outcomeId, String name, String motivation, Integer direction) throws Exception {
     if(outcomeRepository.isExistingOutcomeName(outcomeId, name)){
       throw new Exception("Can not update outcome, outcome name must be unique");
     }
     Outcome outcome = outcomeRepository.get(projectId, outcomeId);
     outcome.setName(name);
     outcome.setMotivation(motivation);
+
+    outcome.setDirection(direction);
     return outcome;
   }
 }
