@@ -180,13 +180,6 @@ define(['angular', 'lodash'], function(angular, _) {
         dataType: INTEGER_TYPE,
         variableType: 'ontology:dichotomous'
       },
-      'event_count': {
-        type: 'event_count',
-        label: 'event count',
-        uri: 'http://trials.drugis.org/ontology#event_count',
-        dataType: INTEGER_TYPE,
-        variableType: 'ontology:dichotomous'
-      },
       'percentage': {
         type: 'percentage',
         label: 'percentage',

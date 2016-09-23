@@ -17,7 +17,7 @@ define(['lodash'],
 
       $scope.merge = function(targetOutcome) {
         $scope.isEditing = true;
-        OutcomeService.merge(item, targetOutcome, ItemService.get($scope.settings.service).TYPE).then(function() {
+        OutcomeService.merge(item, targetOutcome, ItemService.TYPE).then(function() {
             callback();
             $modalInstance.close();
           },

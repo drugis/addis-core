@@ -184,8 +184,10 @@ define(['lodash', 'angular'], function(_, angular) {
         controller: 'AddOutcomeController',
         resolve: {
           callback: function() {
-            return function(newOutcome) {
-              $scope.outcomes.push(newOutcome);
+            return function() {
+              $scope.outcomes = OutcomeResource.query({
+                projectId: $scope.project.id
+              });
             };
           }
         }
@@ -220,10 +222,10 @@ define(['lodash', 'angular'], function(_, angular) {
             return $scope.outcomes;
           },
           successCallback: function() {
-            return function(name, motivation, direction) {
-              outcome.name = name;
-              outcome.motivation = motivation;
-              outcome.direction = direction;
+            return function() {
+              $scope.outcomes = OutcomeResource.query({
+                projectId: $scope.project.id
+              });
             };
           }
         }

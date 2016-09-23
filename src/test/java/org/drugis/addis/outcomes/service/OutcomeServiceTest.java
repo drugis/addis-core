@@ -37,14 +37,14 @@ public class OutcomeServiceTest {
     }
 
   @Test
-  public void editNameAndMotivation() throws Exception {
+  public void editOutcome() throws Exception {
     String name = "name";
     String motivation = "motivation";
     Integer direction = 1;
     Outcome oldIntervention = new Outcome(outcomeId, projectId, "oldName", direction, "oldMotivation", new SemanticVariable(URI.create("uri"), "uriLabel"));
     when(outcomeRepository.get(projectId, outcomeId)).thenReturn(oldIntervention);
     when(outcomeRepository.isExistingOutcomeName(outcomeId, "name")).thenReturn(false);
-    Outcome abstractIntervention = outcomeService.updateOutcome(projectId, outcomeId, name, motivation);
+    Outcome abstractIntervention = outcomeService.updateOutcome(projectId, outcomeId, name, motivation, direction);
     assertEquals(outcomeId, abstractIntervention.getId());
     assertEquals(name, abstractIntervention.getName());
     assertEquals(motivation, abstractIntervention.getMotivation());
@@ -54,17 +54,19 @@ public class OutcomeServiceTest {
   public void editNameAndMotivationCheckDuplicateName() throws Exception {
     String name = "name";
     String motivation = "motivation";
+    Integer direction = 1;
     when(outcomeRepository.isExistingOutcomeName(outcomeId, "name")).thenReturn(true);
-    outcomeService.updateOutcome(projectId, outcomeId, name, motivation);
+    outcomeService.updateOutcome(projectId, outcomeId, name, motivation, direction);
   }
 
   @Test(expected = Exception.class)
   public void editNameAndMotivationOtherProject() throws Exception {
     String name = "name";
     String motivation = "motivation";
+    Integer direction = 1;
     when(outcomeRepository.isExistingOutcomeName(outcomeId, "name")).thenReturn(false);
     when(outcomeRepository.get(projectId, outcomeId)).thenReturn(null);
-    outcomeService.updateOutcome(projectId, outcomeId, name, motivation);
+    outcomeService.updateOutcome(projectId, outcomeId, name, motivation, direction);
   }
 
 
