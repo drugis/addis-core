@@ -843,8 +843,6 @@ define(['angular', 'angular-mocks', 'services'], function() {
             trialverseUid: 'trialverseUid'
           };
 
-          var arms = [arm1];
-
           var analysis = {
             outcome: outcome,
             excludedArms: [arm1]
@@ -852,12 +850,12 @@ define(['angular', 'angular-mocks', 'services'], function() {
 
           var trialDataArm1 = { // excluded due to arm exclusion
             uri: arm1.trialverseUid
-          }
+          };
 
           var trialDataArm2 = { // excluded due to no matching interventions
             uri: 'trialverseUid2',
             matchedProjectInterventionIds: []
-          }
+          };
 
           var trialDataArm3 = { // excluded due to no matching interventions
             uri: 'trialverseUid3',
@@ -869,17 +867,37 @@ define(['angular', 'angular-mocks', 'services'], function() {
               stdDev: 0.5,
               sampleSize: null // it's missing !
             }]
-          }
+          };
 
-          trialDataStudies = [{
+          var trialDataStudies = [{
             trialDataArms: [trialDataArm1, trialDataArm2, trialDataArm3]
           }];
 
           var result = NetworkMetaAnalysisService.containsMissingValue(trialDataStudies, analysis);
           expect(result).toBeTruthy();
         }));
+    });
 
+    describe('doesModelHaveInsufficientCovariateValues', function() {
+      beforeEach(module('addis.services'));
+      it('should find covariates with only one level', inject(function(NetworkMetaAnalysisService) {
+        var goodTrialData = [{
+          covariatesColumns: [{
+            headerTitle: 'cov 1',
+            data: 1
+          }]
+        }, {
+          covariatesColumns: [{
+            headerTitle: 'cov 1',
+            data: 2
+          }]
+        }];
+        var badtrialData = angular.copy(goodTrialData);
+        badtrialData[1].covariatesColumns[0].data = 1;
 
+        expect(NetworkMetaAnalysisService.doesModelHaveInsufficientCovariateValues(goodTrialData)).toBeFalsy();
+        expect(NetworkMetaAnalysisService.doesModelHaveInsufficientCovariateValues(badtrialData)).toBeTruthy();
+      }));
     });
 
   });

@@ -5,6 +5,7 @@ import net.minidev.json.JSONObject;
 import org.apache.commons.lang3.tuple.Pair;
 import org.drugis.addis.trialverse.model.trialdata.*;
 import org.drugis.addis.trialverse.service.QueryResultMappingService;
+import org.drugis.trialverse.util.Namespaces;
 import org.springframework.stereotype.Service;
 
 import java.net.URI;
@@ -90,7 +91,7 @@ public class QueryResultMappingServiceImpl implements QueryResultMappingService 
   @Override
   public CovariateStudyValue mapResultToCovariateStudyValue(JSONObject row) throws ReadValueException {
     URI studyUri = readValue(row, "graph");
-    String populationCharacteristicCovariateKey = readValue(row, "populationCharacteristicCovariateKey");
+    String populationCharacteristicCovariateKey = Namespaces.CONCEPT_NAMESPACE + readValue(row, "populationCharacteristicCovariateKey");
     Double value = row.containsKey("value") ? readValue(row, "value") : null;
     return new CovariateStudyValue(studyUri, populationCharacteristicCovariateKey, value);
   }

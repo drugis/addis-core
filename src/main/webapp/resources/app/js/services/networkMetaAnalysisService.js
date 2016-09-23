@@ -467,6 +467,22 @@ define(['lodash', 'angular'], function(_, angular) {
       });
     }
 
+    function doesModelHaveInsufficientCovariateValues(trialData) {
+      var covariateValues = _.reduce(trialData, function(accum, trialDatum) {
+        _.forEach(trialDatum.covariatesColumns, function(covariateColumn) {
+          if(!accum[covariateColumn.headerTitle]) {
+            accum[covariateColumn.headerTitle] = [];
+          }
+          accum[covariateColumn.headerTitle] = _.uniq(accum[covariateColumn.headerTitle].concat(covariateColumn.data));
+        });
+
+        return accum;
+      }, {});
+      return _.find(covariateValues, function(values) {
+        return _.uniq(values).length <= 1;
+      });
+    }
+
     return {
       transformTrialDataToNetwork: transformTrialDataToNetwork,
       transformTrialDataToTableRows: transformTrialDataToTableRows,
@@ -480,7 +496,8 @@ define(['lodash', 'angular'], function(_, angular) {
       changeCovariateInclusion: changeCovariateInclusion,
       buildOverlappingTreatmentMap: buildOverlappingTreatmentMap,
       getIncludedInterventions: getIncludedInterventions,
-      containsMissingValue: containsMissingValue
+      containsMissingValue: containsMissingValue,
+      doesModelHaveInsufficientCovariateValues: doesModelHaveInsufficientCovariateValues
     };
   };
   return dependencies.concat(NetworkMetaAnalysisService);

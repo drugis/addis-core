@@ -22,6 +22,7 @@ import org.drugis.addis.trialverse.model.trialdata.TrialDataStudy;
 import org.drugis.addis.trialverse.service.QueryResultMappingService;
 import org.drugis.addis.trialverse.service.TriplestoreService;
 import org.drugis.addis.util.WebConstants;
+import org.drugis.trialverse.util.Namespaces;
 import org.joda.time.DateTime;
 import org.joda.time.Period;
 import org.joda.time.format.DateTimeFormat;
@@ -551,6 +552,9 @@ public class TriplestoreServiceImpl implements TriplestoreService {
             .map(CovariateOption::fromKey).collect(Collectors.toList());
     List<String> populationCharacteristicCovariateKeys = covariateKeys.stream()
             .filter(isStudyLevelCovariate(covariateOptions).negate())
+            .map(key -> key.startsWith(Namespaces.CONCEPT_NAMESPACE) ?
+                    key.substring(Namespaces.CONCEPT_NAMESPACE.length()) :
+                    key)
             .collect(Collectors.toList());
 
 
