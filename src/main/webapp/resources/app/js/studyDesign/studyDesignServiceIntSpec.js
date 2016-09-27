@@ -6,6 +6,7 @@ define(['angular-mocks', 'angular'], function(angularMocks, angular) {
 
     var rootScope, q, httpBackend;
     var studyService = jasmine.createSpyObj('StudyService', ['getStudy', 'save']);
+    var epochService = jasmine.createSpyObj('EpochService', ['queryItems']);
 
     var studyDesignService;
 
@@ -115,6 +116,7 @@ define(['angular-mocks', 'angular'], function(angularMocks, angular) {
 
     beforeEach(angularMocks.module('trialverse.studyDesign', function($provide) {
       $provide.value('StudyService', studyService);
+      $provide.value('EpochService', epochService);
     }));
 
     beforeEach(angularMocks.inject(function($q, $rootScope, $httpBackend, StudyDesignService) {
@@ -239,11 +241,18 @@ define(['angular-mocks', 'angular'], function(angularMocks, angular) {
           'duration': 'P14D',
           'label': 'Washout'
         }];
+        var epochs = [{
+          uri: 'http://trials.drugis.org/instances/a02fdb05-4986-4f58-b20f-973572813c8d'
+        }];
 
         var studyDefer = q.defer();
         var getStudyPromise = studyDefer.promise;
         studyDefer.resolve(studyJsonObject);
         studyService.getStudy.and.returnValue(getStudyPromise);
+        var epochsDefer = q.defer();
+        var queryEpochsPromise = epochsDefer.promise;
+        epochsDefer.resolve(epochs);
+        epochService.queryItems.and.returnValue(queryEpochsPromise);
         done();
       });
 
