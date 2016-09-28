@@ -208,7 +208,7 @@ define(['angular', 'lodash'], function(angular, _) {
       var inputColumnVariableDetails = getVariableDetails(inputColumn.resultProperty);
       return StudyService.getJsonGraph().then(function(graph) {
         if (!row.uri) {
-          if (inputColumn.value) {
+          if (inputColumn.value !== null && inputColumn.value !== undefined) {
             // create branch
             var addItem = {
               '@id': 'http://trials.drugis.org/instances/' + UUIDService.generate(),

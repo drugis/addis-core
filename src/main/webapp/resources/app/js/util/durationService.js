@@ -1,5 +1,5 @@
 'use strict';
-define([], function() {
+define(['lodash'], function(_) {
   var dependencies = [];
   var DurationService = function() {
 
@@ -79,7 +79,7 @@ define([], function() {
         durationString = 'PT0S';
       }
       if(!isValidDuration(durationString)) {
-        throw "not a valid duration string";
+        throw 'not a valid duration string';
       }
       if (durationString === 'PT0S') {
         return 0;
