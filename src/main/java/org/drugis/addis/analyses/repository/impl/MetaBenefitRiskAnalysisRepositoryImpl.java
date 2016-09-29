@@ -1,5 +1,8 @@
 package org.drugis.addis.analyses.repository.impl;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.Sets;
 import org.drugis.addis.analyses.AnalysisCommand;
 import org.drugis.addis.analyses.InterventionInclusion;
 import org.drugis.addis.analyses.MbrOutcomeInclusion;
@@ -70,11 +73,11 @@ public class MetaBenefitRiskAnalysisRepositoryImpl implements MetaBenefitRiskAna
     em.flush();
 
     final Integer metaKey = metaBenefitRiskAnalysis.getId();
-    assert(metaKey != null);
+    assert (metaKey != null);
 
     Collection<AbstractIntervention> interventions = interventionRepository.query(metaBenefitRiskAnalysis.getProjectId());
     List<InterventionInclusion> interventionInclusions = interventions.stream().map(i -> new InterventionInclusion(metaKey, i.getId())).collect(Collectors.toList());
-    interventionInclusions.stream().forEach(ii -> em.persist(ii));
+    interventionInclusions.forEach(ii -> em.persist(ii));
     metaBenefitRiskAnalysis.updateIncludedInterventions(new HashSet<>(interventionInclusions));
 
     em.flush();
@@ -88,6 +91,28 @@ public class MetaBenefitRiskAnalysisRepositoryImpl implements MetaBenefitRiskAna
   @Override
   public MetaBenefitRiskAnalysis update(Account user, MetaBenefitRiskAnalysis analysis) throws ResourceDoesNotExistException, MethodNotAllowedException {
     metaBenefitRiskAnalysisService.checkMetaBenefitRiskAnalysis(user, analysis);
+    MetaBenefitRiskAnalysis oldAnalysis = em.find(MetaBenefitRiskAnalysis.class, analysis.getId());
+    if (analysis.getInterventionInclusions().size() < oldAnalysis.getInterventionInclusions().size()) {
+      Sets.SetView<InterventionInclusion> difference = Sets.difference(new HashSet<>(oldAnalysis.getInterventionInclusions()), new HashSet<>(analysis.getInterventionInclusions()));
+      Integer removedInterventionId = difference.iterator().next().getInterventionId();
+      ObjectMapper om = new ObjectMapper();
+      List<MbrOutcomeInclusion> cleanedInclusions = analysis.getMbrOutcomeInclusions().stream().map(moi -> {
+        if (moi.getBaseline() != null) {
+          try {
+            JsonNode baseline = om.readTree(moi.getBaseline());
+            String baselineInterventionName = baseline.get("name").asText();
+            AbstractIntervention intervention = interventionRepository.getByProjectIdAndName(analysis.getProjectId(), baselineInterventionName);
+            if (intervention.getId().equals(removedInterventionId)) {
+              moi.setBaseline(null);
+            }
+          } catch (IOException e) {
+            throw new RuntimeException("Attempt to read baseline " + moi.getBaseline());
+          }
+        }
+        return moi;
+      }).collect(Collectors.toList());
+      analysis.setMbrOutcomeInclusions(cleanedInclusions);
+    }
     return em.merge(analysis);
   }
 

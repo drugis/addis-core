@@ -72,7 +72,7 @@ public class PataviTaskRepositoryImpl implements PataviTaskRepository {
     try (CloseableHttpResponse httpResponse = (CloseableHttpResponse) httpClient.execute(getRequest)) {
       String content = EntityUtils.toString(httpResponse.getEntity());
       EntityUtils.consume(httpResponse.getEntity());
-      return objectMapper.readTree(content).get("results");
+      return objectMapper.readTree(content);
     } catch (Exception e) {
       throw new RuntimeException(e);
     }
