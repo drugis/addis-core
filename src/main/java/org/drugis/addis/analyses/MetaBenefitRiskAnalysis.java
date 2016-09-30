@@ -78,7 +78,8 @@ public class MetaBenefitRiskAnalysis extends AbstractAnalysis implements Seriali
   }
 
   public void setMbrOutcomeInclusions(List<MbrOutcomeInclusion> mbrOutcomeInclusions) {
-    this.mbrOutcomeInclusions = new HashSet<>(mbrOutcomeInclusions);
+    this.mbrOutcomeInclusions.clear();
+    this.mbrOutcomeInclusions.addAll(mbrOutcomeInclusions);
   }
 
   @Override
