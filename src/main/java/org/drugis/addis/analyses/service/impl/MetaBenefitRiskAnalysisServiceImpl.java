@@ -1,6 +1,8 @@
 package org.drugis.addis.analyses.service.impl;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.Sets;
 import org.drugis.addis.analyses.InterventionInclusion;
 import org.drugis.addis.analyses.MbrOutcomeInclusion;
 import org.drugis.addis.analyses.MetaBenefitRiskAnalysis;
@@ -29,6 +31,7 @@ import javax.inject.Inject;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.sql.SQLException;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -110,5 +113,30 @@ public class MetaBenefitRiskAnalysisServiceImpl implements MetaBenefitRiskAnalys
         }
       }
     }
+  }
+
+  @Override
+  public List<MbrOutcomeInclusion> cleanInclusions(MetaBenefitRiskAnalysis analysis, MetaBenefitRiskAnalysis oldAnalysis) {
+    if (analysis.getInterventionInclusions().size() < oldAnalysis.getInterventionInclusions().size()) {
+      Sets.SetView<InterventionInclusion> difference = Sets.difference(new HashSet<>(oldAnalysis.getInterventionInclusions()), new HashSet<>(analysis.getInterventionInclusions()));
+      Integer removedInterventionId = difference.iterator().next().getInterventionId();
+      ObjectMapper om = new ObjectMapper();
+      return analysis.getMbrOutcomeInclusions().stream().map(moi -> {
+        if (moi.getBaseline() != null) {
+          try {
+            JsonNode baseline = om.readTree(moi.getBaseline());
+            String baselineInterventionName = baseline.get("name").asText();
+            AbstractIntervention intervention = interventionRepository.getByProjectIdAndName(analysis.getProjectId(), baselineInterventionName);
+            if (intervention.getId().equals(removedInterventionId)) {
+              moi.setBaseline(null);
+            }
+          } catch (IOException e) {
+            throw new RuntimeException("Attempt to read baseline " + moi.getBaseline());
+          }
+        }
+        return moi;
+      }).collect(Collectors.toList());
+    }
+    return analysis.getMbrOutcomeInclusions();
   }
 }

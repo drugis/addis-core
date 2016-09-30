@@ -1,5 +1,6 @@
 package org.drugis.addis.analyses.service;
 
+import org.drugis.addis.analyses.MbrOutcomeInclusion;
 import org.drugis.addis.analyses.MetaBenefitRiskAnalysis;
 import org.drugis.addis.exception.MethodNotAllowedException;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
@@ -11,6 +12,7 @@ import org.drugis.addis.trialverse.service.impl.ReadValueException;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.sql.SQLException;
+import java.util.List;
 
 /**
  * Created by connor on 9-3-16.
@@ -20,4 +22,5 @@ public interface MetaBenefitRiskAnalysisService {
 
   void checkMetaBenefitRiskAnalysis(Account user, MetaBenefitRiskAnalysis analysis) throws ResourceDoesNotExistException, MethodNotAllowedException;
 
+  List<MbrOutcomeInclusion> cleanInclusions(MetaBenefitRiskAnalysis analysis, MetaBenefitRiskAnalysis oldAnalysis);
 }

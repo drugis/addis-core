@@ -92,27 +92,7 @@ public class MetaBenefitRiskAnalysisRepositoryImpl implements MetaBenefitRiskAna
   public MetaBenefitRiskAnalysis update(Account user, MetaBenefitRiskAnalysis analysis) throws ResourceDoesNotExistException, MethodNotAllowedException {
     metaBenefitRiskAnalysisService.checkMetaBenefitRiskAnalysis(user, analysis);
     MetaBenefitRiskAnalysis oldAnalysis = em.find(MetaBenefitRiskAnalysis.class, analysis.getId());
-    if (analysis.getInterventionInclusions().size() < oldAnalysis.getInterventionInclusions().size()) {
-      Sets.SetView<InterventionInclusion> difference = Sets.difference(new HashSet<>(oldAnalysis.getInterventionInclusions()), new HashSet<>(analysis.getInterventionInclusions()));
-      Integer removedInterventionId = difference.iterator().next().getInterventionId();
-      ObjectMapper om = new ObjectMapper();
-      List<MbrOutcomeInclusion> cleanedInclusions = analysis.getMbrOutcomeInclusions().stream().map(moi -> {
-        if (moi.getBaseline() != null) {
-          try {
-            JsonNode baseline = om.readTree(moi.getBaseline());
-            String baselineInterventionName = baseline.get("name").asText();
-            AbstractIntervention intervention = interventionRepository.getByProjectIdAndName(analysis.getProjectId(), baselineInterventionName);
-            if (intervention.getId().equals(removedInterventionId)) {
-              moi.setBaseline(null);
-            }
-          } catch (IOException e) {
-            throw new RuntimeException("Attempt to read baseline " + moi.getBaseline());
-          }
-        }
-        return moi;
-      }).collect(Collectors.toList());
-      analysis.setMbrOutcomeInclusions(cleanedInclusions);
-    }
+    analysis.setMbrOutcomeInclusions(metaBenefitRiskAnalysisService.cleanInclusions(analysis, oldAnalysis));
     return em.merge(analysis);
   }
 

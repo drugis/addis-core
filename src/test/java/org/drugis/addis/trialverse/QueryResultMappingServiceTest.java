@@ -91,7 +91,7 @@ public class QueryResultMappingServiceTest {
     JSONObject row = (JSONObject) JSONValue.parseWithException(covariateRow);
     CovariateStudyValue covariateStudyValue = queryResultMappingService.mapResultToCovariateStudyValue(row);
     assertNotNull(covariateStudyValue);
-    assertEquals("uuid", covariateStudyValue.getCovariateKey());
+    assertEquals("http://trials.drugis.org/concepts/uuid", covariateStudyValue.getCovariateKey());
     assertEquals(URI.create("http://its/a/uri"), covariateStudyValue.getStudyUri());
     assertEquals(40d, covariateStudyValue.getValue(), 0.000000001);
   }
