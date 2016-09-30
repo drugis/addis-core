@@ -93,20 +93,7 @@ public class MetaBenefitRiskAnalysisRepositoryImpl implements MetaBenefitRiskAna
     metaBenefitRiskAnalysisService.checkMetaBenefitRiskAnalysis(user, analysis);
     MetaBenefitRiskAnalysis oldAnalysis = em.find(MetaBenefitRiskAnalysis.class, analysis.getId());
     analysis.setMbrOutcomeInclusions(metaBenefitRiskAnalysisService.cleanInclusions(analysis, oldAnalysis));
-    removeUnlinkedInclusions(analysis);
     return em.merge(analysis);
-  }
-
-  private void removeUnlinkedInclusions(MetaBenefitRiskAnalysis analysis) {
-    TypedQuery<MbrOutcomeInclusion> query = em.createQuery("FROM MbrOutcomeInclusion WHERE metaBenefitRiskAnalysisId = :analysisId", MbrOutcomeInclusion.class);
-    query.setParameter("analysisId", analysis.getId());
-    List<MbrOutcomeInclusion> resultList = query.getResultList();
-    resultList.stream()
-        .filter(moi -> !analysis.getMbrOutcomeInclusions().contains(moi))
-        .forEach(moi -> {
-          MbrOutcomeInclusion mbrOutcomeInclusion = em.find(MbrOutcomeInclusion.class, new MbrOutcomeInclusion.MbrOutcomeInclusionPK(moi.getMetaBenefitRiskAnalysisId(), moi.getOutcomeId(), moi.getNetworkMetaAnalysisId(), moi.getModelId()));
-          em.remove(mbrOutcomeInclusion);
-        });
   }
 
   @Override
