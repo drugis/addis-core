@@ -80,7 +80,7 @@ public class AnalysisRepositoryTest {
   public void testQuery() {
     Integer projectId = 1;
     List<AbstractAnalysis> analyses = analysisRepository.query(projectId);
-    assertEquals(6, analyses.size());
+    assertEquals(7, analyses.size());
     SingleStudyBenefitRiskAnalysis analysis = new SingleStudyBenefitRiskAnalysis(-1, 1, "analysis 1", Collections.EMPTY_LIST, Collections.EMPTY_LIST);
     assertTrue(analyses.contains(analysis));
   }

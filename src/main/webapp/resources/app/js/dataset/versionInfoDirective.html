@@ -13,8 +13,9 @@
         <span ng-show="currentRevision.historyOrder === 0">
                 <span><i class="fa fa-check"></i> This is the current version</span> (<a style="text-decoration: underline;" ui-sref="datasetHistory({userUid: userUid, datasetUUID: stripFrontFilter(dataset.datasetUri, 'http://trials.drugis.org/datasets/')})">View History</a>)
         </span>
-        <a style="text-decoration: underline;" ng-show="currentRevision.historyOrder !== 0" ui-sref="datasetHistory({userUid: userUid, datasetUUID: stripFrontFilter(dataset.datasetUri, 'http://trials.drugis.org/datasets/')})">View History</a>
-        <div>
+        <span ng-show="currentRevision.historyOrder !== 0">
+                <span><i class="fa fa-exclamation-triangle"></i> This is <em>not</em> the latest version</span> (<a style="text-decoration: underline;" ui-sref="datasetHistory({userUid: userUid, datasetUUID: stripFrontFilter(dataset.datasetUri, 'http://trials.drugis.org/datasets/')})">View History</a>)
+        </span>
           <ng-transclude></ng-transclude>
         </div>
     </div>

@@ -151,15 +151,17 @@ define(['lodash'], function(_) {
 
     function resetScales() {
       ProblemResource.get($stateParams).$promise.then(function(problem) {
-        ScalesService.getObservedScales($scope, problem).then(function(result) {
-          var includedAlternatives = _.filter($scope.alternatives, function(alternative){
-            return alternative.isIncluded;
+        if (problem.performanceTable.length > 0) {
+          ScalesService.getObservedScales($scope, problem).then(function(result) {
+            var includedAlternatives = _.filter($scope.alternatives, function(alternative) {
+              return alternative.isIncluded;
+            });
+            $scope.outcomesWithAnalyses = MetaBenefitRiskService.addScales($scope.outcomesWithAnalyses,
+              includedAlternatives, result);
+          }, function() {
+            console.log('ScalesService.getObservedScales error');
           });
-          $scope.outcomesWithAnalyses = MetaBenefitRiskService.addScales($scope.outcomesWithAnalyses,
-            includedAlternatives, result);
-        }, function() {
-          console.log('ScalesService.getObservedScales error');
-        });
+        }
       });
     }
 

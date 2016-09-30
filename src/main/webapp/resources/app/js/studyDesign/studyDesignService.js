@@ -1,7 +1,7 @@
 'use strict';
 define(['lodash'], function(_) {
-    var dependencies = ['$q', 'StudyService', 'SparqlResource', 'UUIDService'];
-    var StudyDesignService = function($q, StudyService, SparqlResource, UUIDService) {
+    var dependencies = ['$q', 'StudyService', 'SparqlResource', 'UUIDService', 'EpochService'];
+    var StudyDesignService = function($q, StudyService, SparqlResource, UUIDService, EpochService) {
 
       function createCoordinate(activityUri, activityApplication) {
         return {
@@ -11,16 +11,12 @@ define(['lodash'], function(_) {
         };
       }
 
-      function flattenActivity(acumulator, activity) {
+      function flattenActivity(acc, activity) {
         if (activity.has_activity_application) {
-          return acumulator
-            .concat(
-              activity
-              .has_activity_application
-              .map(createCoordinate.bind(this, activity['@id']))
-            );
+          var applications = _.map(activity.has_activity_application, _.partial(createCoordinate, activity['@id']));
+          return acc.concat(applications);
         } else {
-          return acumulator;
+          return acc;
         }
       }
 
@@ -61,14 +57,17 @@ define(['lodash'], function(_) {
       }
 
       function cleanupCoordinates() {
-        return StudyService.getStudy().then(function(study) {
+        var StudyPromise = StudyService.getStudy();
+        var epochsPromise = EpochService.queryItems();
+        return $q.all([StudyPromise, epochsPromise]).then(function(result) {
+          var study = result[0];
+          var epochUris =_.map(result[1], 'uri');
           var arms = _.map(study.has_arm, '@id');
-          var epochs = _.map(study.has_epochs, '@id');
 
           _.each(study.has_activity, function(activity) {
             _.remove(activity.has_activity_application, function(application) {
               return !_.includes(arms, application.applied_to_arm) ||
-                !_.includes(epochs, application.applied_in_epoch);
+                !_.includes(epochUris, application.applied_in_epoch);
             });
           });
 

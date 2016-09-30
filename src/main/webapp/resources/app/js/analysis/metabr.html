@@ -51,7 +51,10 @@
           <tr ng-repeat="outcomeWithAnalyses in outcomesWithAnalyses">
             <td>{{outcomeWithAnalyses.outcome.name}}</td>
             <td>{{outcomeWithAnalyses.selectedAnalysis.title}}</td>
-            <td>{{outcomeWithAnalyses.selectedModel.title}}</td>
+            <td>
+              {{outcomeWithAnalyses.selectedModel.title}}
+              <button class="small success" ng-if="!outcomeWithAnalyses.selectedModel.hasResult" ng-click="goToModel(outcomeWithAnalyses.selectedModel)">Run model</button>
+            </td>
           </tr>
         </tbody>
       </table>

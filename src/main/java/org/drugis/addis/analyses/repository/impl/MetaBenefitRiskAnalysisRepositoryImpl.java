@@ -1,5 +1,8 @@
 package org.drugis.addis.analyses.repository.impl;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.Sets;
 import org.drugis.addis.analyses.AnalysisCommand;
 import org.drugis.addis.analyses.InterventionInclusion;
 import org.drugis.addis.analyses.MbrOutcomeInclusion;
@@ -70,11 +73,11 @@ public class MetaBenefitRiskAnalysisRepositoryImpl implements MetaBenefitRiskAna
     em.flush();
 
     final Integer metaKey = metaBenefitRiskAnalysis.getId();
-    assert(metaKey != null);
+    assert (metaKey != null);
 
     Collection<AbstractIntervention> interventions = interventionRepository.query(metaBenefitRiskAnalysis.getProjectId());
     List<InterventionInclusion> interventionInclusions = interventions.stream().map(i -> new InterventionInclusion(metaKey, i.getId())).collect(Collectors.toList());
-    interventionInclusions.stream().forEach(ii -> em.persist(ii));
+    interventionInclusions.forEach(ii -> em.persist(ii));
     metaBenefitRiskAnalysis.updateIncludedInterventions(new HashSet<>(interventionInclusions));
 
     em.flush();
@@ -88,6 +91,8 @@ public class MetaBenefitRiskAnalysisRepositoryImpl implements MetaBenefitRiskAna
   @Override
   public MetaBenefitRiskAnalysis update(Account user, MetaBenefitRiskAnalysis analysis) throws ResourceDoesNotExistException, MethodNotAllowedException {
     metaBenefitRiskAnalysisService.checkMetaBenefitRiskAnalysis(user, analysis);
+    MetaBenefitRiskAnalysis oldAnalysis = em.find(MetaBenefitRiskAnalysis.class, analysis.getId());
+    analysis.setMbrOutcomeInclusions(metaBenefitRiskAnalysisService.cleanInclusions(analysis, oldAnalysis));
     return em.merge(analysis);
   }
 

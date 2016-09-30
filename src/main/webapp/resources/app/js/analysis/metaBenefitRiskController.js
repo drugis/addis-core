@@ -11,6 +11,7 @@ define(['lodash'], function(_) {
     $scope.outcomes = OutcomeResource.query($stateParams);
     $scope.models = ModelResource.getConsistencyModels($stateParams);
     $scope.goToDefaultScenario = goToDefaultScenario;
+    $scope.goToModel = goToModel;
 
     var promises = [$scope.analysis.$promise, $scope.alternatives.$promise, $scope.outcomes.$promise, $scope.models.$promise];
 
@@ -37,7 +38,7 @@ define(['lodash'], function(_) {
             return owa;
           });
 
-          $scope.outcomesWithAnalyses = buildOutcomesWithAnalyses(analysis, outcomes, networkMetaAnalyses, models);
+        $scope.outcomesWithAnalyses = buildOutcomesWithAnalyses(analysis, outcomes, networkMetaAnalyses, models);
 
       });
 
@@ -99,6 +100,15 @@ define(['lodash'], function(_) {
             id: scenarios[0].id
           });
         });
+    }
+
+    function goToModel(model) {
+      $state.go('model', {
+        userUid: $scope.userId,
+        projectId: $stateParams.projectId,
+        analysisId: model.analysisId,
+        modelId: model.id
+      });
     }
 
   };
