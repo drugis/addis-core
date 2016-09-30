@@ -429,12 +429,14 @@ public class ProblemServiceTest {
             .id(71)
             .modelType(Model.NETWORK_MODEL_TYPE)
             .taskUri(pataviTask1.getSelf())
+            .likelihood(Model.LIKELIHOOD_BINOM)
             .link(Model.LINK_IDENTITY)
             .build();
     Model model2 = new Model.ModelBuilder(analysisId, "model 2")
             .id(72)
             .modelType(Model.NETWORK_MODEL_TYPE)
             .taskUri(pataviTask2.getSelf())
+            .likelihood(Model.LIKELIHOOD_BINOM)
             .link(Model.LINK_CLOGLOG)
             .build();
     List<Model> models = Arrays.asList(model1, model2);

@@ -150,10 +150,18 @@ public class ProblemServiceImpl implements ProblemService {
             .map(i -> interventionMap.get(i.getInterventionId()))
             .collect(Collectors.toList());
 
-    Map<String, CriterionEntry> criteriaWithBaseline = outcomesByName.values()
-            .stream()
-            .filter(o -> inclusionsWithBaselineAndModelResults.stream().filter(moi -> moi.getOutcomeId().equals(o.getId())).findFirst().isPresent())
-            .collect(Collectors.toMap(Outcome::getName, o -> new CriterionEntry(o.getSemanticOutcomeUri(), o.getName())));
+    Map<String, CriterionEntry> criteriaWithBaseline = new HashMap<>();
+    outcomesByName.values().forEach(o -> {
+      MbrOutcomeInclusion outcomeInclusion = inclusionsWithBaselineAndModelResults.stream().filter(moi -> moi.getOutcomeId().equals(o.getId())).findFirst().get();
+      if (outcomeInclusion != null) {
+        Model m = modelMap.get(outcomeInclusion.getModelId());
+        if (m.getLikelihood().equals("binom")) {
+          criteriaWithBaseline.put(o.getName(), new CriterionEntry(o.getSemanticOutcomeUri(), o.getName(), Arrays.asList(0d, 1d), null, "proportion"));
+        } else {
+          criteriaWithBaseline.put(o.getName(), new CriterionEntry(o.getSemanticOutcomeUri(), o.getName()));
+        }
+      }
+    });
     Map<String, AlternativeEntry> alternatives = includedAlternatives
             .stream()
             .collect(Collectors.toMap(AbstractIntervention::getName, i -> new AlternativeEntry(i.getId(), i.getName())));
@@ -475,15 +483,18 @@ public class ProblemServiceImpl implements ProblemService {
 
   private CriterionEntry createCriterionEntry(Measurement measurement, Outcome outcome) throws EnumConstantNotPresentException {
     List<Double> scale;
+    String unitOfMeasurement;
     if (measurement.getRate() != null) { // rate measurement
       scale = Arrays.asList(0.0, 1.0);
+      unitOfMeasurement = "probability";
     } else if (measurement.getMean() != null) { // continuous measurement
       scale = Arrays.asList(null, null);
+      unitOfMeasurement = null;
     } else {
       throw new RuntimeException("Invalid measurement");
     }
     // NB: partialvaluefunctions to be filled in by MCDA component, left null here
-    return new CriterionEntry(measurement.getVariableUri(), outcome.getName(), scale, null);
+    return new CriterionEntry(measurement.getVariableUri(), outcome.getName(), scale, null, unitOfMeasurement);
   }
 
 
