@@ -55,6 +55,7 @@ INSERT INTO public.AbstractAnalysis(id, projectId, title) VALUES (-3, 1, 'analys
 INSERT INTO public.AbstractAnalysis(id, projectId, title) VALUES (-4, 2, 'analysis 4');
 INSERT INTO public.AbstractAnalysis(id, projectId, title) VALUES (-5, 1, 'nma');
 INSERT INTO public.AbstractAnalysis(id, projectId, title) VALUES (-6, 1, 'nma 2');
+INSERT INTO public.AbstractAnalysis(id, projectId, title) VALUES (-8, 1, 'nma 3');
 INSERT INTO public.AbstractAnalysis(id, projectId, title) VALUES (-7, 2, 'nma task test');
 INSERT INTO public.AbstractAnalysis(id, projectId, title) VALUES (-10, 1, 'metabr 1');
 
@@ -77,6 +78,7 @@ INSERT INTO public.interventioninclusion (analysisId, interventionId) VALUES (-4
 
 INSERT INTO public.NetworkMetaAnalysis(id, outcomeId) VALUES (-5, 1);
 INSERT INTO public.NetworkMetaAnalysis(id, outcomeId) VALUES (-6, 1);
+INSERT INTO public.NetworkMetaAnalysis(id, outcomeId) VALUES (-8, 1);
 INSERT INTO public.NetworkMetaAnalysis(id) VALUES (-7);
 
 INSERT INTO public.model(id, analysisId, title, linearModel, modelType, heterogeneityPrior, burnInIterations, inferenceIterations, thinningFactor, likelihood, link) VALUES (1, -5, 'model title', 'fixed', '{"type": "network"}', '{"type": "automatic"}', 5000, 20000, 10, 'binom', 'logit');

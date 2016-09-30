@@ -1,5 +1,6 @@
 package org.drugis.addis.analyses.repository;
 
+import com.google.common.collect.Sets;
 import org.drugis.addis.analyses.*;
 import org.drugis.addis.analyses.service.AnalysisService;
 import org.drugis.addis.config.JpaRepositoryTestConfig;
@@ -15,6 +16,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
+import javax.persistence.TypedQuery;
 import javax.transaction.Transactional;
 import java.io.IOException;
 import java.sql.SQLException;
@@ -74,6 +77,7 @@ public class MetaBenefitRiskAnalysisRepositoryTest {
     int interventionId = -2;
     int outcomeId = 2;
     int modelId = 1;
+    Integer nmaId = -6;
 
     Account user = em.find(Account.class, accountId);
     MetaBenefitRiskAnalysis analysis = em.find(MetaBenefitRiskAnalysis.class, analysisId);
@@ -83,10 +87,36 @@ public class MetaBenefitRiskAnalysisRepositoryTest {
     interventions.add(interventionInclusion);
     analysis.updateIncludedInterventions(new HashSet<>(interventions));
     List<MbrOutcomeInclusion> mbrOutcomeInclusions = new ArrayList<>(analysis.getMbrOutcomeInclusions());
-    mbrOutcomeInclusions.add(new MbrOutcomeInclusion(analysis.getId(), outcomeId, 1, modelId));
+    mbrOutcomeInclusions.add(new MbrOutcomeInclusion(analysis.getId(), outcomeId, nmaId, modelId));
     analysis.updateIncludedInterventions(new HashSet<>(interventions));
+    analysis.setMbrOutcomeInclusions(mbrOutcomeInclusions);
     metaBenefitRiskAnalysisRepository.update(user, analysis);
-    assertEquals(2, analysis.getInterventionInclusions().size());
+    MetaBenefitRiskAnalysis updatedAnalysis = em.find(MetaBenefitRiskAnalysis.class, analysisId);
+    assertEquals(2, updatedAnalysis.getInterventionInclusions().size());
+    assertEquals(2, updatedAnalysis.getMbrOutcomeInclusions().size());
+  }
+
+  @Test
+  public void testUpdateRemovesMBROutcomeInclusions() throws ResourceDoesNotExistException, MethodNotAllowedException {
+    int accountId = 1;
+    int analysisId = -10;
+    int outcomeId = 2;
+    int modelId = 1;
+
+    Account user = em.find(Account.class, accountId);
+    MetaBenefitRiskAnalysis analysis = em.find(MetaBenefitRiskAnalysis.class, analysisId);
+    MbrOutcomeInclusion newInclusion1 = new MbrOutcomeInclusion(analysis.getId(), outcomeId, -6, modelId);
+    MbrOutcomeInclusion newInclusion2 = new MbrOutcomeInclusion(analysis.getId(), outcomeId, -8, modelId);
+    List<MbrOutcomeInclusion> mbrOutcomeInclusions = Arrays.asList(newInclusion1, newInclusion2);
+    analysis.setMbrOutcomeInclusions(mbrOutcomeInclusions);
+    metaBenefitRiskAnalysisRepository.update(user, analysis);
+    MetaBenefitRiskAnalysis updatedAnalysis = em.find(MetaBenefitRiskAnalysis.class, analysisId);
+    assertEquals(Sets.newHashSet(Arrays.asList(newInclusion1, newInclusion2)), Sets.newHashSet(updatedAnalysis.getMbrOutcomeInclusions()));
+
+    TypedQuery<MbrOutcomeInclusion> query = em.createQuery("FROM MbrOutcomeInclusion WHERE metaBenefitRiskAnalysisId = :analysisId", MbrOutcomeInclusion.class);
+    query.setParameter("analysisId", analysisId);
+    List<MbrOutcomeInclusion> resultList = query.getResultList();
+    assertEquals(2, resultList.size());
   }
 
   @Test
