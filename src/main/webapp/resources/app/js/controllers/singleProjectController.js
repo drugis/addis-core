@@ -201,9 +201,10 @@ define(['lodash', 'angular'], function(_, angular) {
         controller: 'AddInterventionController',
         resolve: {
           callback: function() {
-            return function(newIntervention) {
-              newIntervention.definitionLabel = InterventionService.generateDescriptionLabel(newIntervention, $scope.interventions);
-              $scope.interventions.push(newIntervention);
+            return function() {
+              $scope.interventions = InterventionResource.query({
+                projectId: $scope.projectId
+              });
             };
           }
         }
@@ -244,9 +245,10 @@ define(['lodash', 'angular'], function(_, angular) {
             return $scope.interventions;
           },
           successCallback: function() {
-            return function(name, motivation) {
-              intervention.name = name;
-              intervention.motivation = motivation;
+            return function() {
+              $scope.interventions = InterventionResource.query({
+                projectId: $scope.projectId
+              });
             };
           }
         }
