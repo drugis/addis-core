@@ -152,9 +152,9 @@ public class ProblemServiceImpl implements ProblemService {
 
     Map<String, CriterionEntry> criteriaWithBaseline = new HashMap<>();
     outcomesByName.values().forEach(o -> {
-      MbrOutcomeInclusion outcomeInclusion = inclusionsWithBaselineAndModelResults.stream().filter(moi -> moi.getOutcomeId().equals(o.getId())).findFirst().get();
-      if (outcomeInclusion != null) {
-        Model m = modelMap.get(outcomeInclusion.getModelId());
+      Optional<MbrOutcomeInclusion> outcomeInclusion = inclusionsWithBaselineAndModelResults.stream().filter(moi -> moi.getOutcomeId().equals(o.getId())).findFirst();
+      if (outcomeInclusion.isPresent()) {
+        Model m = modelMap.get(outcomeInclusion.get().getModelId());
         if (m.getLikelihood().equals("binom")) {
           criteriaWithBaseline.put(o.getName(), new CriterionEntry(o.getSemanticOutcomeUri(), o.getName(), Arrays.asList(0d, 1d), null, "proportion"));
         } else {
