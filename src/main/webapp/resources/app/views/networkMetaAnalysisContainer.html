@@ -12,25 +12,6 @@
     <h3 class="subheader inline-header" title="Analysis type">/ {{analysis.analysisType}}</h3>
   </div>
 </div>
-<div class=" row ">
-  <div class="columns large-5 medium-6 end">
-    <label>Primary model</label>
-    <div ng-hide="!models.length" class="row collapse">
-      <div class="small-9 columns">
-        <select ng-show="editMode.isUserOwner" ng-model="primaryModel" ng-options="model.title for model in models | orderBy:title | filter:{archived: false}"></select>
-        <div ng-show="!editMode.isUserOwner && primaryModel">{{primaryModel.title}}</div>
-        <div ng-show="!editMode.isUserOwner && !primaryModel"><em>No primary model set</em></div>
-      </div>
-      <div class="small-3 columns">
-        <button ng-disabled="!primaryModel" ng-click="primaryModel = null" class=" alert postfix"
-          ng-show="editMode.isUserOwner && !model.isPrimary">Unset</button>
-      </div>
-    </div>
-    <div ng-show="!models.length">
-      <em>No models have been created</em>
-    </div>
-  </div>
-</div>
 <hr>
 <div class="row">
   <div class="columns large-6">
