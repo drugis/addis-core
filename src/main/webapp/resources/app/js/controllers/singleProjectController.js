@@ -203,7 +203,7 @@ define(['lodash', 'angular'], function(_, angular) {
           callback: function() {
             return function() {
               $scope.interventions = InterventionResource.query({
-                projectId: $scope.projectId
+                projectId: $scope.project.id
               });
             };
           }
