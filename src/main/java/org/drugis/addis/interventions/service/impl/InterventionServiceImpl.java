@@ -11,8 +11,8 @@ import org.drugis.addis.trialverse.model.trialdata.TitratedSemanticIntervention;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Created by connor on 12-4-16.
@@ -38,6 +38,28 @@ public class InterventionServiceImpl implements InterventionService {
     List<SingleIntervention> singleInterventions = new ArrayList<>();
     for(CombinationIntervention combinationIntervention: combinationInterventions){
       singleInterventions.addAll(resolveCombinations(combinationIntervention));
+    }
+    return singleInterventions;
+  }
+
+  @Override
+  public Set<SingleIntervention> resolveInterventionSets(List<InterventionSet> interventionSets) throws ResourceDoesNotExistException {
+    Set<SingleIntervention> singleInterventions = new HashSet<>();
+    for(InterventionSet interventionSet: interventionSets){
+      singleInterventions.addAll(resolveInterventionSet(interventionSet));
+    }
+    return singleInterventions;
+  }
+
+  private Set<? extends SingleIntervention> resolveInterventionSet(InterventionSet interventionSet) throws ResourceDoesNotExistException {
+    Set<SingleIntervention> singleInterventions = new HashSet<>();
+    for(Integer interventionId: interventionSet.getInterventionIds()){
+      AbstractIntervention abstractIntervention = interventionRepository.get(interventionId);
+      if(abstractIntervention instanceof SingleIntervention) {
+        singleInterventions.add((SingleIntervention) abstractIntervention);
+      } else if(abstractIntervention instanceof CombinationIntervention) {
+        singleInterventions.addAll(resolveCombinations((CombinationIntervention) abstractIntervention));
+      }
     }
     return singleInterventions;
   }
@@ -84,6 +106,22 @@ public class InterventionServiceImpl implements InterventionService {
         }
       }
       return semanticInterventionsToMatch.size() == 0; // all semantic interventions matched
+    }
+
+    if(intervention instanceof InterventionSet) {
+      InterventionSet interventionSet = (InterventionSet) intervention;
+
+      List<AbstractIntervention> interventions = new ArrayList<>();
+      for(Integer interventionId: interventionSet.getInterventionIds()) {
+        interventions.add(interventionRepository.get(interventionId));
+      }
+
+      for(AbstractIntervention interventionToMatch: interventions) {
+        if(isMatched(interventionToMatch, semanticInterventions)) {
+          return true;
+        }
+      }
+      return false;
     }
     return false;
   }

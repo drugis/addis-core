@@ -29,11 +29,11 @@ INSERT INTO public.simpleIntervention (simpleInterventionId) VALUES (-2);
 INSERT INTO public.simpleIntervention (simpleInterventionId) VALUES (-3);
 
 INSERT INTO public.fixedDoseIntervention (fixedInterventionId,
-lowerBoundType, lowerBoundValue, lowerBoundUnitName, lowerBoundUnitPeriod,
-upperBoundType, upperBoundValue, upperBoundUnitName, upperBoundUnitPeriod)
+lowerBoundType, lowerBoundValue, lowerBoundUnitName, lowerBoundUnitPeriod, lowerBoundUnitConcept,
+upperBoundType, upperBoundValue, upperBoundUnitName, upperBoundUnitPeriod, upperBoundUnitConcept)
 VALUES (-4,
-'AT_LEAST', 3.0, 'mg', 'P1D',
-'AT_MOST', 2.5, 'mg', 'P1D');
+'AT_LEAST', 3.0, 'mg', 'P1D', 'concept',
+'AT_MOST', 2.5, 'mg', 'P1D', 'concept');
 
 INSERT INTO public.titratedDoseIntervention (titratedInterventionId,
 minLowerBoundType, minLowerBoundUnitName, minLowerBoundUnitPeriod, minLowerBoundValue, minLowerboundunitconcept,

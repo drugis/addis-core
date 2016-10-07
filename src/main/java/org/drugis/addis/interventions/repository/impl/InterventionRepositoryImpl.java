@@ -1,5 +1,6 @@
 package org.drugis.addis.interventions.repository.impl;
 
+import com.google.common.collect.Sets;
 import org.drugis.addis.exception.MethodNotAllowedException;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.interventions.controller.command.AbstractInterventionCommand;
@@ -16,6 +17,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by daan on 3/7/14.
@@ -28,10 +30,10 @@ public class InterventionRepositoryImpl implements InterventionRepository {
   EntityManager em;
 
   @Override
-  public List<AbstractIntervention> query(Integer projectId) {
+  public Set<AbstractIntervention> query(Integer projectId) {
     TypedQuery<AbstractIntervention> query = em.createQuery("FROM AbstractIntervention where project = :projectId", AbstractIntervention.class);
     query.setParameter("projectId", projectId);
-    return query.getResultList();
+    return Sets.newHashSet(query.getResultList());
   }
 
   @Override

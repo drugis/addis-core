@@ -5,6 +5,7 @@ import net.minidev.json.parser.ParseException;
 import org.apache.commons.io.IOUtils;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.interventions.model.AbstractIntervention;
+import org.drugis.addis.interventions.model.SingleIntervention;
 import org.drugis.addis.trialverse.model.*;
 import org.drugis.addis.trialverse.model.emun.CovariateOption;
 import org.drugis.addis.trialverse.model.emun.StudyDataSection;
@@ -66,7 +67,7 @@ public interface TriplestoreService {
 
   List<StudyData> getStudyData(String namespaceUid, String studyUid, StudyDataSection studyDataSection);
 
-  Set<AbstractIntervention> findMatchingIncludedInterventions(List<AbstractIntervention> includedInterventions, TrialDataArm arm);
+  Set<AbstractIntervention> findMatchingIncludedInterventions(Set<AbstractIntervention> includedInterventions, TrialDataArm arm);
 
   List<CovariateStudyValue> getStudyLevelCovariateValues(String namespaceUid, String version, List<CovariateOption> covariates) throws ReadValueException;
 
@@ -74,5 +75,5 @@ public interface TriplestoreService {
 
   List<TrialDataStudy> getAllTrialData(String namespaceUid, String datasetVersion, Set<URI> outcomeUris, Set<URI> interventionUris) throws ReadValueException;
 
-  List<TrialDataStudy> addMatchingInformation(List<AbstractIntervention> includedInterventions, List<TrialDataStudy> trialData);
+  List<TrialDataStudy> addMatchingInformation(Set<AbstractIntervention> includedInterventions, List<TrialDataStudy> trialData);
 }

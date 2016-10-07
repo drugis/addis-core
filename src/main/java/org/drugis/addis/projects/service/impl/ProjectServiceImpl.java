@@ -71,7 +71,7 @@ public class ProjectServiceImpl implements ProjectService {
   @Override
   public List<TrialDataStudy> queryMatchedStudies(Integer projectId) throws ResourceDoesNotExistException, ReadValueException, URISyntaxException {
     Project project = projectRepository.get(projectId);
-    List<AbstractIntervention> interventions = interventionRepository.query(projectId);
+    Set<AbstractIntervention> interventions = interventionRepository.query(projectId);
     Set<URI> singleInterventionUris = interventions.stream()
             .filter(ai -> ai instanceof SingleIntervention)
             .map(ai -> (SingleIntervention) ai)

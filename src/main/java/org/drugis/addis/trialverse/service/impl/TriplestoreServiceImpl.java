@@ -10,6 +10,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.drugis.addis.covariates.CovariateRepository;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.interventions.model.AbstractIntervention;
+import org.drugis.addis.interventions.model.SingleIntervention;
 import org.drugis.addis.interventions.repository.InterventionRepository;
 import org.drugis.addis.interventions.service.InterventionService;
 import org.drugis.addis.interventions.service.impl.InvalidTypeForDoseCheckException;
@@ -585,7 +586,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
 
 
   @Override
-  public Set<AbstractIntervention> findMatchingIncludedInterventions(List<AbstractIntervention> includedInterventions, TrialDataArm arm) {
+  public Set<AbstractIntervention> findMatchingIncludedInterventions(Set<AbstractIntervention> includedInterventions, TrialDataArm arm) {
     return includedInterventions.stream().filter(i -> {
       try {
         return interventionService.isMatched(i, arm.getSemanticInterventions());
@@ -600,7 +601,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
 
 
   @Override
-  public List<TrialDataStudy> addMatchingInformation(List<AbstractIntervention> includedInterventions, List<TrialDataStudy> trialData) {
+  public List<TrialDataStudy> addMatchingInformation(Set<AbstractIntervention> includedInterventions, List<TrialDataStudy> trialData) {
     for (TrialDataStudy study : trialData) {
       for (TrialDataArm arm : study.getTrialDataArms()) {
         Set<AbstractIntervention> matchingInterventions = findMatchingIncludedInterventions(includedInterventions, arm);

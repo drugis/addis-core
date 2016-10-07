@@ -9,12 +9,13 @@ import org.drugis.addis.interventions.model.SingleIntervention;
 import org.drugis.addis.security.Account;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by daan on 3/7/14.
  */
 public interface InterventionRepository {
-  List<AbstractIntervention> query(Integer projectId);
+  Set<AbstractIntervention> query(Integer projectId);
 
   List<SingleIntervention> querySingleInterventions(Integer projectId);
 
