@@ -38,7 +38,7 @@ define([], function() {
             scope.inputRows = NonConformantMeasurementTableService.createInputRows(scope.variable, scope.nonConformantMeasurementsMap);
           });
 
-          scope.inputHeaders = ResultsTableService.createHeaders(scope.variable.resultProperties);
+          scope.inputHeaders = ResultsTableService.createHeaders(scope.variable);
 
           scope.setToMoment = function(moment, measurementInstanceList) {
             ResultsService.setToMeasurementMoment(moment.uri, measurementInstanceList).then(function() {

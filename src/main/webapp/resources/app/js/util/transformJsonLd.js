@@ -71,9 +71,9 @@ define(['lodash'], function(_) {
       });
     }
 
-    function inlineLinkedList(study, propertyName) {
+    function inlineLinkedList(rootId) {
       var rdfListNil = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#nil';
-      if (!study[propertyName] || study[propertyName] === rdfListNil) {
+      if (!rootId || rootId === rdfListNil) {
         return {
           '@id': rdfListNil
         };
@@ -82,7 +82,7 @@ define(['lodash'], function(_) {
       var head = {};
       var tail = head;
 
-      var listBlankNode = study[propertyName];
+      var listBlankNode = rootId;
 
       while (true) {
         if (listBlankNode['@list']) { // FIXME: make safe for > 1 item @lists (which we don't currently get)
@@ -120,6 +120,15 @@ define(['lodash'], function(_) {
       }
     }
 
+    function inlineCategoryLists(outcomes) {
+      return _.map(outcomes, function(node) {
+        if(node.of_variable[0].measurementType === 'ontology:categorical') {
+          node.of_variable[0].categoryList = inlineLinkedList(node.of_variable[0].categoryList);
+        }
+        return node;
+      });
+    }
+
     inlineObjectsForSubjectsWithProperty(linkedData['@graph'], 'has_activity_application');
     inlineObjectsForSubjectsWithProperty(linkedData['@graph'], 'of_variable');
     inlineObjectsForSubjectsWithProperty(linkedData['@graph'], 'category_count');
@@ -150,13 +159,17 @@ define(['lodash'], function(_) {
     inlineObjects(study, 'has_objective');
     inlineObjects(study, 'has_publication');
     inlineObjects(study, 'has_eligibility_criteria');
-    study.has_epochs = inlineLinkedList(study, 'has_epochs');
+    study.has_epochs = inlineLinkedList(study.has_epochs);
+
     study.has_outcome = _.map(study.has_outcome, function(outcome) {
       if (typeof outcome.has_result_property === 'string') {
         outcome.has_result_property = [outcome.has_result_property];
       }
       return outcome;
     });
+
+    study.has_outcome = inlineCategoryLists(study.has_outcome, linkedData['@graph']);
+
 
     linkedData['@context'] = {
       'median': {
