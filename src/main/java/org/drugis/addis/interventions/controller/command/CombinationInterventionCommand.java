@@ -27,7 +27,7 @@ public class CombinationInterventionCommand extends AbstractInterventionCommand 
 
   @Override
   public CombinationIntervention toIntervention() throws InvalidConstraintException {
-    return new CombinationIntervention(null, this.getProjectId(), this.getName(), this.getMotivation(), singleInterventionIds);
+    return new CombinationIntervention(null, this.getProjectId(), this.getName(), this.getMotivation(), this.getSingleInterventionIds());
   }
 
   @Override

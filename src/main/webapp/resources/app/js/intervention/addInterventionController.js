@@ -11,6 +11,7 @@ define(['lodash', 'angular'], function(_, angular) {
     $scope.selectTab = selectTab;
     $scope.cleanUpBounds = cleanUpBounds;
     $scope.addCombinedIntervention = addCombinedIntervention;
+    $scope.addInterventionClass = addInterventionClass;
 
     $scope.newIntervention = {
       type: 'simple',
@@ -24,6 +25,10 @@ define(['lodash', 'angular'], function(_, angular) {
 
     $scope.singleInterventions = _.reject($scope.interventions, {
       'type': 'combination'
+    });
+
+    $scope.nonClassInterventions = _.reject($scope.interventions, {
+      'type': 'class'
     });
 
     function flattenTypes(newIntervention) {
@@ -74,6 +79,18 @@ define(['lodash', 'angular'], function(_, angular) {
       $scope.isAddingIntervention = true;
       var createCommand = angular.copy(newIntervention);
       createCommand.singleInterventionIds = _.reduce(createCommand.singleInterventionIds, function(accum, isIncluded, interventionId) {
+        if (isIncluded) {
+          accum.push(parseInt(interventionId));
+        }
+        return accum;
+      }, []);
+      persistIntervention(createCommand);
+    }
+
+    function addInterventionClass(newIntervention) {
+      $scope.isAddingIntervention = true;
+      var createCommand = angular.copy(newIntervention);
+      createCommand.interventionIds = _.reduce(createCommand.interventionIds, function(accum, isIncluded, interventionId) {
         if (isIncluded) {
           accum.push(parseInt(interventionId));
         }
@@ -200,6 +217,9 @@ define(['lodash', 'angular'], function(_, angular) {
       } else if (selectedTab === 'combination') {
         $scope.newIntervention.type = 'combination';
         $scope.newIntervention.singleInterventionIds = {};
+      } else if (selectedTab === 'class') {
+        $scope.newIntervention.type = 'class';
+        $scope.newIntervention.interventionIds = {};
       }
     }
 

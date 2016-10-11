@@ -13,7 +13,8 @@ import org.drugis.addis.interventions.model.InvalidConstraintException;
         @JsonSubTypes.Type(value = FixedInterventionCommand.class, name = "fixed"),
         @JsonSubTypes.Type(value = TitratedInterventionCommand.class, name = "titrated"),
         @JsonSubTypes.Type(value = BothDoseTypesInterventionCommand.class, name = "both"),
-        @JsonSubTypes.Type(value = CombinationInterventionCommand.class, name = "combination")})
+        @JsonSubTypes.Type(value = CombinationInterventionCommand.class, name = "combination"),
+        @JsonSubTypes.Type(value = InterventionSetCommand.class, name = "class")})
 public abstract class AbstractInterventionCommand {
   private Integer projectId;
   private String name;
