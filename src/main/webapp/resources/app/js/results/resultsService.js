@@ -5,6 +5,7 @@ define(['angular', 'lodash'], function(angular, _) {
 
     var INTEGER_TYPE = '<http://www.w3.org/2001/XMLSchema#integer>';
     var DOUBLE_TYPE = '<http://www.w3.org/2001/XMLSchema#double>';
+    var ONTOLOGY_BASE = 'http://trials.drugis.org/ontology#';
 
     var VARIABLE_TYPES = ['sample_size',
       'mean',
@@ -198,8 +199,8 @@ define(['angular', 'lodash'], function(angular, _) {
 
     function getVariableDetails(variableTypeUri) {
       var normalisedUri = variableTypeUri;
-      if (!_.startsWith(variableTypeUri, 'http://trials.drugis.org/ontology#')) {
-        normalisedUri = _.replace(normalisedUri, 'ontology:', 'http://trials.drugis.org/ontology#');
+      if (!_.startsWith(variableTypeUri, ONTOLOGY_BASE)) {
+        normalisedUri = _.replace(normalisedUri, 'ontology:', ONTOLOGY_BASE);
       }
       return _.find(VARIABLE_TYPE_DETAILS, ['uri', normalisedUri]);
     }
@@ -229,27 +230,38 @@ define(['angular', 'lodash'], function(angular, _) {
             return row.uri === node['@id'];
           })[0];
 
-          if (inputColumn.value === null) {
-            delete editItem[inputColumnVariableDetails.type];
+          if (inputColumn.isCategory) {
+            var countItem = _.find(editItem.category_count, function(countItem) {
+              return countItem.category === inputColumn.resultProperty;
+            });
+            countItem.count = inputColumn.value === null ? undefined : inputColumn.value;
           } else {
-            editItem[inputColumnVariableDetails.type] = inputColumn.value;
+            editItem[inputColumnVariableDetails.type] = inputColumn.value === null ? undefined : inputColumn.value;
           }
-
-          if (!isEmptyResult(editItem)) {
-            graph.push(editItem);
-          } else {
-            row.uri = undefined;
-          }
-
-          StudyService.saveJsonGraph(graph);
-          return row.uri;
         }
+
+        if (!inputColumn.isCategory && !isEmptyResult(editItem)) {
+          graph.push(editItem);
+        } else if (inputColumn.isCategory && !isEmptyCategoricalResult(editItem)) {
+          graph.push(editItem);
+        } else {
+          row.uri = undefined;
+        }
+
+        StudyService.saveJsonGraph(graph);
+        return row.uri;
+      });
+    }
+
+    function isEmptyCategoricalResult(item) {
+      return !_.some(item.category_count, function(categoryItem) {
+        return categoryItem.count !== undefined;
       });
     }
 
     function isEmptyResult(item) {
       return !_.some(VARIABLE_TYPES, function(type) {
-        return item[type];
+        return item[type] !== undefined;
       });
     }
 
@@ -257,6 +269,14 @@ define(['angular', 'lodash'], function(angular, _) {
       var valueItem = angular.copy(baseItem);
       valueItem.result_property = type;
       valueItem.value = backEndItem[type];
+      return valueItem;
+    }
+
+    function createCategoryItem(baseItem, backEndItem, categoryItem) {
+      var valueItem = angular.copy(baseItem);
+      valueItem.isCategorical = true;
+      valueItem.result_property = categoryItem.category;
+      valueItem.value = categoryItem.count;
       return valueItem;
     }
 
@@ -278,6 +298,12 @@ define(['angular', 'lodash'], function(angular, _) {
           accum.push(createValueItem(baseItem, backEndItem, variableType));
         }
       });
+
+      if (backEndItem.category_count) {
+        _.each(backEndItem.category_count, function(categoryCount) {
+          accum.push(createCategoryItem(baseItem, backEndItem, categoryCount));
+        });
+      }
 
       return accum;
     }

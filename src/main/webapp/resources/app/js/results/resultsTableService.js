@@ -26,8 +26,9 @@ define(['lodash'], function(_) {
             return {
               resultProperty: category,
               valueName: category,
-              value: 0,
+              value: findResultValueByType(rowValueObjects, category),
               dataType: ResultsService.INTEGER_TYPE,
+              isCategory: true,
               isInValidValue: false
             };
           });
