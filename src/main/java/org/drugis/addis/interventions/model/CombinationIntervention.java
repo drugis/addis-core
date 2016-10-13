@@ -21,19 +21,19 @@ public class CombinationIntervention extends AbstractIntervention {
           joinColumns=@JoinColumn(name="combinationInterventionId")
   )
   @Column(name="singleInterventionId")
-  private Set<Integer> singleInterventionIds = new HashSet<>();
+  private Set<Integer> interventionIds = new HashSet<>();
 
   public CombinationIntervention() {
     super();
   }
 
-  public CombinationIntervention(Integer id, Integer project, String name, String motivation, Set<Integer> singleInterventionIds) {
+  public CombinationIntervention(Integer id, Integer project, String name, String motivation, Set<Integer> interventionIds) {
     super(id, project, name, motivation);
-    this.singleInterventionIds = singleInterventionIds;
+    this.interventionIds = interventionIds;
   }
 
-  public Set<Integer> getSingleInterventionIds() {
-    return Collections.unmodifiableSet(singleInterventionIds);
+  public Set<Integer> getInterventionIds() {
+    return Collections.unmodifiableSet(interventionIds);
   }
 
   @Override
@@ -49,14 +49,14 @@ public class CombinationIntervention extends AbstractIntervention {
 
     CombinationIntervention that = (CombinationIntervention) o;
 
-    return singleInterventionIds.equals(that.singleInterventionIds);
+    return interventionIds.equals(that.interventionIds);
 
   }
 
   @Override
   public int hashCode() {
     int result = super.hashCode();
-    result = 31 * result + singleInterventionIds.hashCode();
+    result = 31 * result + interventionIds.hashCode();
     return result;
   }
 }

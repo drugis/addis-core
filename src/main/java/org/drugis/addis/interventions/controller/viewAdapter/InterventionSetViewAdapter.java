@@ -17,6 +17,10 @@ public class InterventionSetViewAdapter extends AbstractInterventionViewAdapter 
     interventionIds = interventionSet.getInterventionIds();
   }
 
+  public Set<Integer> getInterventionIds() {
+    return interventionIds;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;

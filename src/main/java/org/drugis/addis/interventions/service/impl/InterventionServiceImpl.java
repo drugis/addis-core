@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * Created by connor on 12-4-16.
@@ -79,12 +78,12 @@ public class InterventionServiceImpl implements InterventionService {
 
     if (intervention instanceof CombinationIntervention) {
       CombinationIntervention combinationIntervention = (CombinationIntervention) intervention;
-      if (semanticInterventions.size() != combinationIntervention.getSingleInterventionIds().size()) {
+      if (semanticInterventions.size() != combinationIntervention.getInterventionIds().size()) {
         return false;
       }
       Boolean allMatched = true;
       List<SingleIntervention> singleInterventions = new ArrayList<>();
-      for (Integer interventionId : combinationIntervention.getSingleInterventionIds()) {
+      for (Integer interventionId : combinationIntervention.getInterventionIds()) {
         singleInterventions.add((SingleIntervention) interventionRepository.get(interventionId));
       }
       // find matching semantic intervention for each addis intervention
@@ -255,7 +254,7 @@ public class InterventionServiceImpl implements InterventionService {
 
   private List<SingleIntervention> resolveCombinations(CombinationIntervention combinationIntervention) throws ResourceDoesNotExistException {
     List<SingleIntervention> singleInterventions = new ArrayList<>();
-    for(Integer singleInterventionId: combinationIntervention.getSingleInterventionIds()){
+    for(Integer singleInterventionId: combinationIntervention.getInterventionIds()){
       singleInterventions.add((SingleIntervention) interventionRepository.get(singleInterventionId));
     }
     return singleInterventions;
