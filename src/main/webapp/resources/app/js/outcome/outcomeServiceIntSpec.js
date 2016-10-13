@@ -1,11 +1,11 @@
 'use strict';
 define(['angular-mocks'], function(angularMocks) {
-  describe('the outcome service', function() {
+  fdescribe('the outcome service', function() {
     var rootScope, q,
       uUIDServiceMock,
       outcomeService,
       measurementMomentServiceMock = jasmine.createSpyObj('MeasurementMomentService', ['queryItems']),
-      studyServiceMock = jasmine.createSpyObj('StudyService', ['getStudy', 'getJsonGraph', 'save']),
+      studyServiceMock = jasmine.createSpyObj('StudyService', ['getStudy', 'getJsonGraph', 'findStudyNode', 'save']),
       resultsServiceMock = jasmine.createSpyObj('ResultsService', ['queryResultsByOutcome', 'queryNonConformantMeasurementsByOutcomeUri']),
       repairServiceMock = jasmine.createSpyObj('RepairService', ['mergeResults']),
       sourceResultsDefer,
@@ -14,6 +14,7 @@ define(['angular-mocks'], function(angularMocks) {
       targetNonConformantResultsDefer,
       mergeResultsDefer,
       getStudyDefer,
+      getStudyGraphDefer,
       saveStudyDefer,
       measurementMomentsDefer;
 
@@ -37,6 +38,8 @@ define(['angular-mocks'], function(angularMocks) {
 
       getStudyDefer = q.defer();
       studyServiceMock.getStudy.and.returnValue(getStudyDefer.promise);
+      getStudyGraphDefer = q.defer();
+      studyServiceMock.getJsonGraph.and.returnValue(getStudyGraphDefer.promise);
       measurementMomentsDefer = q.defer();
       measurementMomentServiceMock.queryItems.and.returnValue(measurementMomentsDefer.promise);
       sourceResultsDefer = q.defer();
@@ -99,6 +102,7 @@ define(['angular-mocks'], function(angularMocks) {
           'label': 'is stupid'
         }]
       };
+      var jsonStudyGraph = [jsonStudy];
 
       var measurementMoments = [{
         uri: 'http://instance/moment1'
@@ -107,8 +111,9 @@ define(['angular-mocks'], function(angularMocks) {
       }];
 
       beforeEach(function() {
-        getStudyDefer.resolve(jsonStudy);
+        getStudyGraphDefer.resolve(jsonStudyGraph);
         measurementMomentsDefer.resolve(measurementMoments);
+        studyServiceMock.findStudyNode.and.returnValue(jsonStudy);
       });
 
       it('should query the characteristics', function(done) {
@@ -153,7 +158,8 @@ define(['angular-mocks'], function(angularMocks) {
       };
 
       beforeEach(function() {
-        getStudyDefer.resolve(jsonStudy);
+        getStudyGraphDefer.resolve([jsonStudy]);
+        studyServiceMock.findStudyNode.and.returnValue(jsonStudy);
         measurementMomentsDefer.resolve([]);
       });
 
@@ -190,10 +196,11 @@ define(['angular-mocks'], function(angularMocks) {
         measurementMomentsDefer.resolve([{
           itemUri: moment
         }]);
-        getStudyDefer.resolve({
+        var jsonStudy = {
           has_outcome: []
-        });
-
+        };
+        getStudyDefer.resolve(jsonStudy);
+        getStudyGraphDefer.resolve([jsonStudy]);
         outcomeService.addItem(newPopulationChar, 'ontology:OutcomeType').then(done);
         saveStudyDefer.resolve();
         rootScope.$digest();
@@ -279,6 +286,7 @@ define(['angular-mocks'], function(angularMocks) {
 
       beforeEach(function(done) {
         getStudyDefer.resolve(jsonStudy);
+        getStudyGraphDefer.resolve([jsonStudy]);
         measurementMomentsDefer.resolve({});
         outcomeService.editItem(newPopulationChar).then(done);
         saveStudyDefer.resolve();
@@ -341,6 +349,7 @@ define(['angular-mocks'], function(angularMocks) {
 
       beforeEach(function(done) {
         getStudyDefer.resolve(jsonStudy);
+        getStudyGraphDefer.resolve([jsonStudy]);
         measurementMomentsDefer.resolve({});
         outcomeService.deleteItem(newPopulationChar).then(done);
         saveStudyDefer.resolve();
@@ -410,6 +419,7 @@ define(['angular-mocks'], function(angularMocks) {
         targetNonConformantResultsDefer.resolve(targetNonConformantResults);
         mergeResultsDefer.resolve([]);
         getStudyDefer.resolve(study);
+        getStudyGraphDefer.resolve([study]);
         saveStudyDefer.resolve();
 
         // to test
