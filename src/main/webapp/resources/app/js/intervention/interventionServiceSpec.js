@@ -1,6 +1,6 @@
 'use strict';
 define(['angular', 'angular-mocks'], function() {
-  describe('unit service', function() {
+  describe('intervention service', function() {
 
     var interventionService;
     var bound = {
@@ -52,8 +52,14 @@ define(['angular', 'angular-mocks'], function() {
 
     var combinationIntervention = {
       type: 'combination',
-      singleInterventionIds: [1,2]
+      interventionIds: [1,2]
     };
+
+    var interventionSet = {
+      type: 'class',
+      interventionIds: [1,2]
+    }
+
     beforeEach(module('addis.interventions'));
 
     beforeEach(inject(function(InterventionService) {
@@ -74,6 +80,7 @@ define(['angular', 'angular-mocks'], function() {
         expect(interventionService.generateDescriptionLabel(titratedIntervention)).toEqual(': titrated dose; min dose >= 1.2 unit/day AND >= 1.2 unit/day; max dose >= 1.2 unit/day AND >= 1.2 unit/day');
         expect(interventionService.generateDescriptionLabel(bothIntervention)).toEqual(': min dose >= 1.2 unit/day AND >= 1.2 unit/day; max dose >= 1.2 unit/day AND >= 1.2 unit/day');
         expect(interventionService.generateDescriptionLabel(combinationIntervention, interventions)).toEqual('placebo + sertraline');
+        expect(interventionService.generateDescriptionLabel(interventionSet, interventions)).toEqual('placebo OR sertraline');
       });
     });
   });
