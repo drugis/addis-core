@@ -58,6 +58,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.sql.SQLException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
@@ -124,7 +125,7 @@ public class ProblemServiceTest {
   private final String projectDatasetVersion = "projectDatasetVersion";
   private final Account owner = mock(Account.class);
   private final Project project = new Project(projectId, owner, "project name", "desc", projectDatasetUid, projectDatasetVersion);
-  ;
+
   private final SemanticVariable semanticOutcome = new SemanticVariable(URI.create("semanticOutcomeUri"), "semanticOutcomeLabel");
   private Integer direction = 1;
   private final Outcome outcome = new Outcome(303, project.getId(), "outcome name", direction, "moti", semanticOutcome);
@@ -245,7 +246,9 @@ public class ProblemServiceTest {
 
     Set<AbstractIntervention> includedInterventions = Sets.newHashSet(fluoxIntervention, sertraIntervention);
     Set<SingleIntervention> singleInterventions = Sets.newHashSet(fluoxIntervention, sertraIntervention);
+    when(analysisService.getIncludedInterventions(singleStudyAnalysis)).thenReturn(includedInterventions);
     when(analysisService.getSingleInterventions(allProjectInterventions)).thenReturn(singleInterventions);
+    when(analysisService.getSingleInterventions(includedInterventions)).thenReturn(singleInterventions);
     when(triplestoreService.findMatchingIncludedInterventions(includedInterventions, daanEtAlFluoxArm)).thenReturn(ImmutableSet.of(fluoxIntervention));
     when(triplestoreService.findMatchingIncludedInterventions(includedInterventions, daanEtAlSertraArm)).thenReturn(ImmutableSet.of(sertraIntervention));
     when(triplestoreService.findMatchingIncludedInterventions(includedInterventions, unmatchedDaanEtAlParoxArm)).thenReturn(Collections.emptySet());
@@ -314,9 +317,9 @@ public class ProblemServiceTest {
     TrialDataStudy daanEtAl = createStudyMock(networkMetaAnalysis, includedCovariate, URI.create("DaanEtAlUri"), "DaanEtal");
     TrialDataStudy pietEtAl = createStudyMock(networkMetaAnalysis, includedCovariate, URI.create("PietEtAlUri"), "PietEtal");
     List<ArmExclusion> excludedArms = new ArrayList<>(networkMetaAnalysis.getExcludedArms());
-    for(TrialDataArm arm: pietEtAl.getTrialDataArms()) {
-      excludedArms.add(new ArmExclusion(networkMetaAnalysis.getId(), arm.getUri()));
-    }
+    excludedArms.addAll(pietEtAl.getTrialDataArms().stream()
+        .map(arm -> new ArmExclusion(networkMetaAnalysis.getId(), arm.getUri()))
+        .collect(Collectors.toList()));
     networkMetaAnalysis.updateArmExclusions(new HashSet<>(excludedArms));
     List<TrialDataStudy> trialDataStudies = Arrays.asList(daanEtAl, pietEtAl);
     when(analysisService.buildEvidenceTable(project.getId(), networkMetaAnalysis.getId())).thenReturn(trialDataStudies);
@@ -338,8 +341,8 @@ public class ProblemServiceTest {
 
     TreatmentEntry fluoxTreatmentEntry = new TreatmentEntry(fluoxIntervention.getId(), fluoxIntervention.getName());
     TreatmentEntry sertraTreatmentEntry = new TreatmentEntry(sertraIntervention.getId(), sertraIntervention.getName());
-    List<TreatmentEntry> expectedTreatments = Arrays.asList(fluoxTreatmentEntry, sertraTreatmentEntry);
-    assertEquals(expectedTreatments, networkProblem.getTreatments());
+    Set<TreatmentEntry> expectedTreatments = Sets.newHashSet(fluoxTreatmentEntry, sertraTreatmentEntry);
+    assertEquals(expectedTreatments, Sets.newHashSet(networkProblem.getTreatments()));
 
     Map<String, Map<String, Double>> studyLevelCovariates = networkProblem.getStudyLevelCovariates();
     assertEquals(covariateInclusions.size(), studyLevelCovariates.size());
@@ -463,7 +466,6 @@ public class ProblemServiceTest {
             "\"sigma\": 6,\n" +
             "\"name\": \"fluox\"\n" +
             "}";
-    ;
 
     MbrOutcomeInclusion inclusion1 = new MbrOutcomeInclusion(analysisId, outcome1.getId(), nma1Id, model1.getId());
     inclusion1.setBaseline(baseline1JsonString);
@@ -571,9 +573,10 @@ public class ProblemServiceTest {
     Model model = new Model.ModelBuilder(1, "model")
             .link(Model.LINK_IDENTITY)
             .modelType(Model.NETWORK_MODEL_TYPE)
+            .sensitivity(sensitivity)
             .build();
     NetworkMetaAnalysisProblem result = problemService.applyModelSettings(problem, model);
-    assertEquals(entries, result.getEntries());
+    assertEquals(Collections.emptyList(), result.getEntries());
   }
 
 }

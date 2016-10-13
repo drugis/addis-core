@@ -141,7 +141,7 @@
           <em ng-if="singleInterventions.length === 1" class="warning">At least two interventions are needed to create a combination intervention</em>
           <label>Interventions</label>
             <label ng-repeat="intervention in singleInterventions">
-              <input type="checkbox" ng-model="newIntervention.singleInterventionIds[intervention.id]"></input> {{intervention.name}}
+              <input type="checkbox" ng-model="newIntervention.interventionIds[intervention.id]"></input> {{intervention.name}}
             </label>
         </div>
       </div>

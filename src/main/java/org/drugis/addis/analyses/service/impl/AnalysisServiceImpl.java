@@ -207,7 +207,6 @@ public class AnalysisServiceImpl implements AnalysisService {
 
   @Override
   public List<TrialDataStudy> buildEvidenceTable(Integer projectId, Integer analysisId) throws ResourceDoesNotExistException, ReadValueException, URISyntaxException {
-
     Project project = projectRepository.get(projectId);
     AbstractAnalysis analysis = analysisRepository.get(analysisId);
     Set<AbstractIntervention> includedInterventions = getIncludedInterventions(analysis);

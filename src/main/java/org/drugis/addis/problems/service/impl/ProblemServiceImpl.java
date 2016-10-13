@@ -238,7 +238,6 @@ public class ProblemServiceImpl implements ProblemService {
         data.add(row);
       }
 
-
       for (String rowName : rowNames) {
         rowNames
             .stream()
@@ -295,11 +294,11 @@ public class ProblemServiceImpl implements ProblemService {
   }
 
   private NetworkMetaAnalysisProblem getNetworkMetaAnalysisProblem(Project project, NetworkMetaAnalysis analysis) throws URISyntaxException, ReadValueException, ResourceDoesNotExistException {
-    Set<AbstractIntervention> interventions = interventionRepository.query(project.getId());
+    Set<AbstractIntervention> includedInterventions = interventionRepository.query(project.getId());
 
-    interventions = filterExcludedInterventions(interventions, analysis.getInterventionInclusions());
+    includedInterventions = filterExcludedInterventions(includedInterventions, analysis.getInterventionInclusions());
 
-    List<TreatmentEntry> treatments = interventions.stream()
+    List<TreatmentEntry> treatments = includedInterventions.stream()
         .map(intervention -> new TreatmentEntry(intervention.getId(), intervention.getName()))
         .collect(Collectors.toList());
 
@@ -425,7 +424,8 @@ public class ProblemServiceImpl implements ProblemService {
 
     Set<SingleIntervention> singleIncludedInterventions = analysisService.getSingleInterventions(abstractIncludedInterventions);
 
-    final Set<URI> alternativeUris = singleIncludedInterventions.stream().map(rii -> resolvedInterventionMap.get(rii.getId()).getSemanticInterventionUri())
+    final Set<URI> alternativeUris = singleIncludedInterventions.stream()
+        .map(rii -> resolvedInterventionMap.get(rii.getId()).getSemanticInterventionUri())
         .collect(Collectors.toSet());
 
     final Map<URI, Outcome> outcomesByUriMap = analysis.getSelectedOutcomes()

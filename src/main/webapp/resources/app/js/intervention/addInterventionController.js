@@ -12,6 +12,7 @@ define(['lodash', 'angular'], function(_, angular) {
     $scope.cleanUpBounds = cleanUpBounds;
     $scope.addCombinedIntervention = addCombinedIntervention;
     $scope.addInterventionClass = addInterventionClass;
+    $scope.numberOfSelectedInterventions = numberOfSelectedInterventions;
 
     $scope.newIntervention = {
       type: 'simple',
@@ -78,7 +79,7 @@ define(['lodash', 'angular'], function(_, angular) {
     function addCombinedIntervention(newIntervention) {
       $scope.isAddingIntervention = true;
       var createCommand = angular.copy(newIntervention);
-      createCommand.singleInterventionIds = _.reduce(createCommand.singleInterventionIds, function(accum, isIncluded, interventionId) {
+      createCommand.interventionIds = _.reduce(createCommand.interventionIds, function(accum, isIncluded, interventionId) {
         if (isIncluded) {
           accum.push(parseInt(interventionId));
         }
@@ -216,18 +217,16 @@ define(['lodash', 'angular'], function(_, angular) {
         }
       } else if (selectedTab === 'combination') {
         $scope.newIntervention.type = 'combination';
-        $scope.newIntervention.singleInterventionIds = {};
+        $scope.newIntervention.interventionIds = {};
       } else if (selectedTab === 'class') {
         $scope.newIntervention.type = 'class';
         $scope.newIntervention.interventionIds = {};
       }
     }
 
-    $scope.numberOfSelectedInterventions = function() {
-      return _.filter($scope.newIntervention.singleInterventionIds).length;
-    };
-
-
+    function numberOfSelectedInterventions() {
+      return _.filter($scope.newIntervention.interventionIds).length;
+    }
 
   };
   return dependencies.concat(AddInterventionController);
