@@ -10,15 +10,15 @@ import java.util.Set;
  */
 public class CombinationInterventionViewAdapter extends AbstractInterventionViewAdapter {
 
-  private Set<Integer> singleInterventionIds = new HashSet<>();
+  private Set<Integer> interventionIds = new HashSet<>();
 
   public CombinationInterventionViewAdapter(CombinationIntervention intervention) {
     super(intervention);
-    singleInterventionIds = new HashSet<>(intervention.getSingleInterventionIds());
+    interventionIds = new HashSet<>(intervention.getInterventionIds());
   }
 
-  public Set<Integer> getSingleInterventionIds() {
-    return singleInterventionIds;
+  public Set<Integer> getInterventionIds() {
+    return interventionIds;
   }
 
   @Override
@@ -29,14 +29,14 @@ public class CombinationInterventionViewAdapter extends AbstractInterventionView
 
     CombinationInterventionViewAdapter that = (CombinationInterventionViewAdapter) o;
 
-    return singleInterventionIds.equals(that.singleInterventionIds);
+    return interventionIds.equals(that.interventionIds);
 
   }
 
   @Override
   public int hashCode() {
     int result = super.hashCode();
-    result = 31 * result + singleInterventionIds.hashCode();
+    result = 31 * result + interventionIds.hashCode();
     return result;
   }
 }

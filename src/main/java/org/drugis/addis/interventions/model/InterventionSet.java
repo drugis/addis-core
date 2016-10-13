@@ -34,10 +34,28 @@ public class InterventionSet extends AbstractIntervention {
   public Set<Integer> getInterventionIds() {
     return Collections.unmodifiableSet(this.interventionIds);
   }
+
   @Override
   public AbstractInterventionViewAdapter toViewAdapter() {
     return new InterventionSetViewAdapter(this);
   }
 
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    if (!super.equals(o)) return false;
 
+    InterventionSet that = (InterventionSet) o;
+
+    return interventionIds.equals(that.interventionIds);
+
+  }
+
+  @Override
+  public int hashCode() {
+    int result = super.hashCode();
+    result = 31 * result + interventionIds.hashCode();
+    return result;
+  }
 }
