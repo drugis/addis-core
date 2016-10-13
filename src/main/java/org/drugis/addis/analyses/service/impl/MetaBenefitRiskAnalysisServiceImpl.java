@@ -34,6 +34,7 @@ import java.sql.SQLException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -91,7 +92,7 @@ public class MetaBenefitRiskAnalysisServiceImpl implements MetaBenefitRiskAnalys
     projectService.checkProjectExistsAndModifiable(user, analysis.getProjectId());
     analysisService.checkProjectIdChange(analysis);
 
-    List<AbstractIntervention> interventions = interventionRepository.query(analysis.getProjectId());
+    Set<AbstractIntervention> interventions = interventionRepository.query(analysis.getProjectId());
     Map<Integer, AbstractIntervention> interventionMap = interventions.stream()
             .collect(Collectors.toMap(AbstractIntervention::getId, Function.identity()));
 

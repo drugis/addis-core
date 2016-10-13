@@ -1,5 +1,6 @@
 package org.drugis.addis.analyses;
 
+import com.google.common.collect.Sets;
 import org.apache.jena.ext.com.google.common.collect.ImmutableSet;
 import org.drugis.addis.analyses.repository.AnalysisRepository;
 import org.drugis.addis.analyses.repository.NetworkMetaAnalysisRepository;
@@ -269,9 +270,9 @@ public class AnalysisServiceTest {
     when(projectRepository.get(projectId)).thenReturn(project);
     when(analysisRepository.get(analysisId)).thenReturn(networkMetaAnalysis);
     SingleIntervention includedIntervention = new SimpleIntervention(includedInterventionId, projectId, "includedIntervention", "", new SemanticInterventionUriAndName(URI.create("semUri1"), "intervention 1"));
-    CombinationIntervention includedCombinedIntervention = new CombinationIntervention(includedCombinedInterventionId, projectId, "includedCombinedINtervention", "", ImmutableSet.of(includedCombinedInterventionId));
+    AbstractIntervention includedCombinedIntervention = new CombinationIntervention(includedCombinedInterventionId, projectId, "includedCombinedINtervention", "", ImmutableSet.of(includedCombinedInterventionId));
     SingleIntervention notIncludedIntervention = new SimpleIntervention(sirNotAppearingInThisFilmId, projectId, "notIncludedIntervention", "", new SemanticInterventionUriAndName(URI.create("semUri2"), "intervention 2"));
-    List<AbstractIntervention> interventions = Arrays.asList(includedIntervention, notIncludedIntervention, includedCombinedIntervention);
+    Set<AbstractIntervention> interventions = Sets.newHashSet(includedIntervention, notIncludedIntervention, includedCombinedIntervention);
     List<Covariate> covariates = Collections.emptyList();
     when(interventionRepository.query(projectId)).thenReturn(interventions);
     when(covariateRepository.findByProject(projectId)).thenReturn(covariates);
@@ -294,7 +295,9 @@ public class AnalysisServiceTest {
     List<TrialDataArm> study1Arms = Arrays.asList(arm1, arm2);
     TrialDataStudy study1 = new TrialDataStudy(URI.create("studyUri"), "name", study1Arms);
     List<TrialDataStudy> trialData = Collections.singletonList(study1);
-    when(triplestoreService.addMatchingInformation(Collections.singletonList(includedIntervention), trialData)).thenReturn(trialData);
+    Set<AbstractIntervention> inclSet = new HashSet<>();
+    inclSet.add(includedIntervention);
+    when(triplestoreService.addMatchingInformation(inclSet, trialData)).thenReturn(trialData);
     when(triplestoreService.getNetworkData(project.getNamespaceUid(), project.getDatasetVersion(), outcome.getSemanticOutcomeUri(), includedInterventionUids, includedCovariateUids))
             .thenReturn(trialData);
     when(mappingService.getVersionedUuid(project.getNamespaceUid())).thenReturn(project.getNamespaceUid());

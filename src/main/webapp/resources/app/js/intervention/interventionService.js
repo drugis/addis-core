@@ -53,6 +53,15 @@ define(['lodash', 'moment'], function(_, moment) {
       return label;
     }
 
+    function makeMultiTreatmentLabel(intervention, interventions, joinStr) {
+      var interventionsById = _.keyBy(interventions, 'id');
+      return intervention.interventionIds
+        .map(function(interventionId) {
+          return interventionsById[interventionId].name;
+        })
+        .join(joinStr);
+    }
+
     function generateDescriptionLabel(intervention, interventions) {
       var label = '';
       if (intervention.type === 'fixed' || intervention.type === 'titrated' || intervention.type === 'both') {
@@ -75,12 +84,9 @@ define(['lodash', 'moment'], function(_, moment) {
           }
         }
       } else if (intervention.type === 'combination') {
-        var interventionsById = _.keyBy(interventions, 'id');
-        label = intervention.singleInterventionIds
-          .map(function(interventionId) {
-            return interventionsById[interventionId].name;
-          })
-          .join(' + ');
+        label = makeMultiTreatmentLabel(intervention, interventions, ' + ');
+      } else if (intervention.type === 'class') {
+        label = makeMultiTreatmentLabel(intervention, interventions, ' OR ');
       }
       return label;
     }

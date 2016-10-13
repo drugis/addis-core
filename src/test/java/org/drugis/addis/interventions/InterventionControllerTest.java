@@ -89,7 +89,7 @@ public class InterventionControllerTest {
     DoseConstraint constraint = new DoseConstraint(new LowerBoundCommand(LowerBoundType.AT_LEAST, 2d, "mili", "P1D", URI.create("unitConcept")), null);
     FixedDoseIntervention intervention = new FixedDoseIntervention(1, "name", "motivation", URI.create("http://semantic.com"), "labelnew", constraint);
     Integer projectId = 1;
-    List<AbstractIntervention> interventions = Collections.singletonList(intervention);
+    Set<AbstractIntervention> interventions = Sets.newHashSet(intervention);
     when(interventionRepository.query(projectId)).thenReturn(interventions);
 
     ResultActions result = mockMvc.perform(get("/projects/1/interventions"));
@@ -109,7 +109,7 @@ public class InterventionControllerTest {
     Integer projectId = 1;
     CombinationIntervention intervention = new CombinationIntervention(1,projectId, "name", "motivation", Sets.newHashSet(1));
 
-    List<AbstractIntervention> interventions = Collections.singletonList(intervention);
+    Set<AbstractIntervention> interventions = Sets.newHashSet(intervention);
     when(interventionRepository.query(projectId)).thenReturn(interventions);
 
     ResultActions result = mockMvc.perform(get("/projects/1/interventions"));

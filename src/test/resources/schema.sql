@@ -600,3 +600,18 @@ CREATE TABLE funnelPlotComparison(
 --changeset stroombergc:60
 ALTER TABLE Outcome ADD COLUMN direction INT NOT NULL DEFAULT 1;
 --rollback ALTER TABLE Outcome DROP COLUMN direction;
+
+--changeset reidd:62
+CREATE TABLE InterventionSet (
+   interventionSetId INT NOT NULL,
+   PRIMARY KEY(interventionSetId),
+   FOREIGN KEY(interventionSetId) REFERENCES AbstractIntervention(id)
+);
+
+CREATE TABLE InterventionSetItem (
+   interventionSetId INT NOT NULL,
+   interventionId INT NOT NULL,
+   PRIMARY KEY(interventionSetId, interventionId),
+   FOREIGN KEY(interventionSetId) REFERENCES InterventionSet(interventionSetId),
+   FOREIGN KEY(interventionId) REFERENCES AbstractIntervention(id)
+);

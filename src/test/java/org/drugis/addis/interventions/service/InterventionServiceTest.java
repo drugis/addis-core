@@ -180,8 +180,8 @@ public class InterventionServiceTest {
     DoseConstraint minConstraint = null;
     DoseConstraint maxConstraint = new DoseConstraint(overTwenty, atMostEighty);
     AbstractIntervention intervention = new BothDoseTypesIntervention(interventionId, projectId, "name", "motive", drugConceptUri, "intervention sem",
-            minConstraint,
-            maxConstraint);
+        minConstraint,
+        maxConstraint);
     assertFalse(interventionService.isMatched(intervention, Collections.singletonList(fixedSemantic)));
   }
 
@@ -247,6 +247,42 @@ public class InterventionServiceTest {
     List<AbstractSemanticIntervention> semanticInterventions = Arrays.asList(fixedSemanticIntervention, titratedSemanticIntervention);
 
     assertFalse(interventionService.isMatched(intervention, semanticInterventions));
+  }
+
+  @Test
+  public void isMatchedInterventionSet() throws InvalidConstraintException, ResourceDoesNotExistException, InvalidTypeForDoseCheckException {
+    Integer fixedInterventionId = 1;
+    Integer titratedInterventionId = 2;
+    Integer combinationInterventionId = 3;
+    Double doseValue = 123d;
+    String dosePeriod = "P1D";
+
+    LowerBoundCommand lowerBound = new LowerBoundCommand(LowerBoundType.AT_LEAST, doseValue - 1, unitLabel, dosePeriod, unitConcept);
+    UpperBoundCommand upperBound = new UpperBoundCommand(UpperBoundType.AT_MOST, doseValue + 1, unitLabel, dosePeriod, unitConcept);
+    DoseConstraint doseConstraint = new DoseConstraint(lowerBound, upperBound);
+    AbstractIntervention fixedIntervention = new FixedDoseIntervention(interventionId, projectId, "intervention name", "moti", drugConceptUri, "sem label", doseConstraint);
+
+    DoseConstraint minConstraint = new DoseConstraint(lowerBound, upperBound);
+    DoseConstraint maxConstraint = null;
+    AbstractIntervention titratedIntervention = new TitratedDoseIntervention(interventionId, projectId, "intervention name", "moti", drugConceptUri2, "sem label", minConstraint, maxConstraint);
+
+    AbstractIntervention combinationIntervention = new CombinationIntervention(combinationInterventionId, null, "combi", null, ImmutableSet.of(fixedInterventionId, titratedInterventionId));
+
+    when(interventionRepository.get(fixedInterventionId)).thenReturn(fixedIntervention);
+    when(interventionRepository.get(titratedInterventionId)).thenReturn(titratedIntervention);
+    when(interventionRepository.get(combinationInterventionId)).thenReturn(combinationIntervention);
+
+    AbstractIntervention intervention = new InterventionSet(null, null, "combi", null, ImmutableSet.of(combinationInterventionId, titratedInterventionId));
+    Dose fixedMatchingDose = new Dose(doseValue, dosePeriod, unitConcept, unitLabel, unitMultiplier);
+    AbstractSemanticIntervention fixedSemanticIntervention = new FixedSemanticIntervention(drugInstanceUri, drugConceptUri, fixedMatchingDose);
+
+    Dose minDose = new Dose(doseValue, dosePeriod, unitConcept, unitLabel, unitMultiplier);
+    Dose maxDose = new Dose(doseValue, dosePeriod, unitConcept, unitLabel, unitMultiplier);
+    AbstractSemanticIntervention titratedSemanticIntervention = new TitratedSemanticIntervention(drugInstanceUri, drugConceptUri2, minDose, maxDose);
+
+    List<AbstractSemanticIntervention> semanticInterventions = Arrays.asList(fixedSemanticIntervention, titratedSemanticIntervention);
+
+    assertTrue(interventionService.isMatched(intervention, semanticInterventions));
   }
 
   @Test

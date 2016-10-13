@@ -12,6 +12,7 @@ import org.drugis.addis.exception.MethodNotAllowedException;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.interventions.model.AbstractIntervention;
 import org.drugis.addis.interventions.model.CombinationIntervention;
+import org.drugis.addis.interventions.model.InterventionSet;
 import org.drugis.addis.interventions.model.SingleIntervention;
 import org.drugis.addis.interventions.repository.InterventionRepository;
 import org.drugis.addis.interventions.service.InterventionService;
@@ -186,13 +187,13 @@ public class AnalysisServiceImpl implements AnalysisService {
   }
 
   @Override
-  public List<AbstractIntervention> getIncludedInterventions(AbstractAnalysis analysis) throws ResourceDoesNotExistException {
+  public Set<AbstractIntervention> getIncludedInterventions(AbstractAnalysis analysis) throws ResourceDoesNotExistException {
     List<Integer> interventionInclusionsIds = analysis.getInterventionInclusions().stream()
             .map(InterventionInclusion::getInterventionId)
             .collect(Collectors.toList());
     return interventionRepository.query(analysis.getProjectId()).stream()
               .filter(i -> interventionInclusionsIds.contains(i.getId()))
-              .collect(Collectors.toList());
+              .collect(Collectors.toSet());
   }
 
   private List<Covariate> getIncludedCovariates(NetworkMetaAnalysis analysis) throws ResourceDoesNotExistException {
@@ -206,23 +207,11 @@ public class AnalysisServiceImpl implements AnalysisService {
 
   @Override
   public List<TrialDataStudy> buildEvidenceTable(Integer projectId, Integer analysisId) throws ResourceDoesNotExistException, ReadValueException, URISyntaxException {
-
     Project project = projectRepository.get(projectId);
     AbstractAnalysis analysis = analysisRepository.get(analysisId);
-    List<AbstractIntervention> includedInterventions = getIncludedInterventions(analysis);
+    Set<AbstractIntervention> includedInterventions = getIncludedInterventions(analysis);
 
-    List<SingleIntervention> singleInterventions = includedInterventions.stream()
-            .filter(ai -> ai instanceof SingleIntervention)
-            .map(ai -> (SingleIntervention) ai)
-            .collect(Collectors.toList());
-
-    List<CombinationIntervention> combinationInterventions = includedInterventions.stream()
-            .filter(ai -> ai instanceof CombinationIntervention)
-            .map(ai -> (CombinationIntervention) ai)
-            .collect(Collectors.toList());
-
-    singleInterventions.addAll(interventionService.resolveCombinations(combinationInterventions));
-
+    Set<SingleIntervention> singleInterventions = getSingleInterventions(includedInterventions);
 
     Set<URI> includedInterventionUris = singleInterventions.stream()
             .map(SingleIntervention::getSemanticInterventionUri)
@@ -263,6 +252,28 @@ public class AnalysisServiceImpl implements AnalysisService {
     trialData = triplestoreService.addMatchingInformation(includedInterventions, trialData);
 
     return trialData;
+  }
+
+  @Override
+  public Set<SingleIntervention> getSingleInterventions(Set<AbstractIntervention> includedInterventions) throws ResourceDoesNotExistException {
+    Set<SingleIntervention> singleInterventions = includedInterventions.stream()
+            .filter(ai -> ai instanceof SingleIntervention)
+            .map(ai -> (SingleIntervention) ai)
+            .collect(Collectors.toSet());
+
+    List<CombinationIntervention> combinationInterventions = includedInterventions.stream()
+            .filter(ai -> ai instanceof CombinationIntervention)
+            .map(ai -> (CombinationIntervention) ai)
+            .collect(Collectors.toList());
+
+    List<InterventionSet> interventionSets = includedInterventions.stream()
+        .filter(ai -> ai instanceof InterventionSet)
+        .map(ai -> (InterventionSet) ai)
+        .collect(Collectors.toList());
+
+    singleInterventions.addAll(interventionService.resolveCombinations(combinationInterventions));
+    singleInterventions.addAll(interventionService.resolveInterventionSets(interventionSets));
+    return singleInterventions;
   }
 
 }

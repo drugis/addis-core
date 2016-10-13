@@ -8,11 +8,11 @@ import java.util.Set;
 /**
  * Created by connor on 1-6-16.
  */
-public class CombinationInterventionViewAdapter extends AbstractInterventionViewAdapter{
+public class CombinationInterventionViewAdapter extends AbstractInterventionViewAdapter {
 
   private Set<Integer> singleInterventionIds = new HashSet<>();
 
-  public CombinationInterventionViewAdapter(CombinationIntervention intervention){
+  public CombinationInterventionViewAdapter(CombinationIntervention intervention) {
     super(intervention);
     singleInterventionIds = new HashSet<>(intervention.getSingleInterventionIds());
   }

@@ -141,7 +141,7 @@
           <em ng-if="singleInterventions.length === 1" class="warning">At least two interventions are needed to create a combination intervention</em>
           <label>Interventions</label>
             <label ng-repeat="intervention in singleInterventions">
-              <input type="checkbox" ng-model="newIntervention.singleInterventionIds[intervention.id]"></input> {{intervention.name}}
+              <input type="checkbox" ng-model="newIntervention.interventionIds[intervention.id]"></input> {{intervention.name}}
             </label>
         </div>
       </div>
@@ -156,7 +156,45 @@
       </div>
     </form>
   </tab>
-</tabset>
+
+  <tab id="add-combination-intervention-tab" heading="Intervention class" ng-click="selectTab('class')"
+    active="activeTab === 'class'">
+    <form id="add-analysis-form" novalidate ng-submit="isAddingIntervention = true; addInterventionClass(newIntervention);">
+      <div class="row">
+        <div class="large-10 columns">
+          <label>Name
+            <input id="intervention-name-input" type="text" ng-model="newIntervention.name" ng-change="checkForDuplicateInterventionName(newIntervention)">
+          </label>
+        </div>
+      </div>
+      <div class="row">
+        <div class="large-10 columns">
+          <label>Motivation
+            <textarea id="intervention-desc-txt" rows="4" ng-model="newIntervention.motivation"></textarea>
+          </label>
+        </div>
+      </div>
+      <div class="row">
+        <div class="large-10 columns">
+          <em ng-if="nonClassInterventions.length < 1">No interventions have been defined</em>
+          <em ng-if="nonClassInterventions.length === 1" class="warning">At least two interventions are needed to create an intervention class</em>
+          <label>Interventions</label>
+            <label ng-repeat="intervention in nonClassInterventions">
+              <input type="checkbox" ng-model="newIntervention.interventionIds[intervention.id]"></input> {{intervention.name}}
+            </label>
+        </div>
+      </div>
+      <div class="row">
+        <div class="large-12 columns">
+          <button id="add-intervention-sumbit-btn" class="button small success" ng-disabled="!newIntervention.name
+          || duplicateInterventionName.isDuplicate || numberOfSelectedInterventions() < 2 || isAddingIntervention"
+            type="submit">Add intervention
+          </button>
+          <div class="alert" ng-show="duplicateInterventionName.isDuplicate">Duplicate name.</div>
+        </div>
+      </div>
+    </form>
+  </tab></tabset>
 
 <a class="close-reveal-modal" ng-click="cancel()">&#215;</a>
 </form>
