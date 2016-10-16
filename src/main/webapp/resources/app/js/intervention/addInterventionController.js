@@ -24,8 +24,8 @@ define(['lodash', 'angular'], function(_, angular) {
     $scope.isAddingIntervention = false;
     $scope.activeTab = 'simple';
 
-    $scope.singleInterventions = _.reject($scope.interventions, {
-      'type': 'combination'
+    $scope.singleInterventions = _.reject($scope.interventions, function(intervention) {
+      return intervention.type === 'combination' || intervention.type === 'class';
     });
 
     $scope.nonClassInterventions = _.reject($scope.interventions, {
