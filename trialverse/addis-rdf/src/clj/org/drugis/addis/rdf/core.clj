@@ -509,7 +509,9 @@
         [drug-uri-map drugs-rdf] (import-entities xml "/addis-data/drugs/drug" drug-rdf)
         [endpoint-uri-map endpoints-rdf] (import-entities xml "/addis-data/endpoints/endpoint" variable-rdf)
         [adverseEvent-uri-map adverseEvents-rdf] (import-entities xml "/addis-data/adverseEvents/adverseEvent" variable-rdf)
-        [populationCharacteristic-uri-map populationCharacteristics-rdf] (import-entities xml "/addis-data/populationCharacteristics/populationCharacteristic" variable-rdf)
+        [populationCharacteristic-uri-map populationCharacteristics-info] (import-entities xml "/addis-data/populationCharacteristics/populationCharacteristic" variable-info)
+        populationCharacteristics-rdf (map second populationCharacteristics-info)
+        categories-rdf (reduce #(concat %1 (:rdfs (first %2))) [] populationCharacteristics-info)
         entity-uris {:indication indication-uri-map
                      :drug drug-uri-map
                      :endpoint endpoint-uri-map
@@ -525,15 +527,16 @@
                                    [(trig/iri :dcterms "description") description])
                          (spo-each (trig/iri :ontology "contains_study") (vals studies-uri-map))
                          (dataset-source-doc source-doc-uri))]
-	concepts-graph (trig/graph (trig/iri :graph "concepts")
-			(concat 
-			 units-rdf
-			 indications-rdf
-			 drugs-rdf
-			 endpoints-rdf
-			 adverseEvents-rdf
-			 populationCharacteristics-rdf))
-	default-graph (trig/graph (trig/default-graph) dataset-rdf)]
+        concepts-graph (trig/graph (trig/iri :graph "concepts")
+                                   (concat
+                                     units-rdf
+                                     indications-rdf
+                                     drugs-rdf
+                                     endpoints-rdf
+                                     adverseEvents-rdf
+                                     populationCharacteristics-rdf
+                                     categories-rdf))
+        default-graph (trig/graph (trig/default-graph) dataset-rdf)]
     (trig/write-trig prefixes (concat [default-graph concepts-graph] studies-graphs))))
 
 (defn -main
