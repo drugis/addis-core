@@ -27,7 +27,7 @@
     "fastclick": "~0.6.11",
     "font-awesome": "~4.3.0",
     "foundation": "~5.5.3",
-    "gemtc-web": "https://github.com/drugis/gemtc-web.git#0.5.0",
+    "gemtc-web": "https://github.com/drugis/gemtc-web.git#0.5.1",
     "help-popup": "https://github.com/drugis/help-popup.git#0.1.0",
     "jasmine": "~2.0.0",
     "jquery": "~2.1.3",
