@@ -45,30 +45,41 @@
          [(trig/iri :rdf "type") (trig/iri :ontology "Indication")]
          [(trig/iri :rdfs "label") (trig/lit (vtd/attr xml :name))])))
 
-(defn variable-categories [m-type subj]
+(defn category-mapping [subj name category-uris]
+  (if
+    (nil? category-uris)
+    subj
+    (trig/spo subj [(trig/iri :owl "sameAs") (category-uris name)])))
+
+
+(defn variable-categories [m-type subj uri hl-category-uris]
   (let [category-names (map vtd/text (vtd/search m-type "./category"))
         category-uris (into {} (map (fn [%] [% (trig/iri :instance (uuid))]) category-names))
-        category-rdfs (map #(trig/spo (second %)
+        category-rdfs (map #(trig/spo (category-mapping (second %) (first %) hl-category-uris)
                                       [(trig/iri :rdfs "label") (trig/lit (first %))]
                                       [(trig/iri :rdf "type") (trig/iri :ontology "Category")]) category-uris)]
     [{:uris category-uris :rdfs category-rdfs}
      (trig/spo subj [(trig/iri :ontology "categoryList")
-                     (trig/coll (vals category-uris))])]))
+                     (trig/coll (vals category-uris))])
+     uri]))
 
-(defn variable-info [xml uri]
-  (let [m-type-map { "rate" "dichotomous"
+(defn variable-info
+  ([xml uri]
+   (variable-info xml uri nil))
+  ([xml uri category-uris]
+   (let [m-type-map { "rate" "dichotomous"
                      "continuous" "continuous"
                      "categorical" "categorical" }
-        m-type (vtd/first-child xml)
-        subj (trig/spo uri 
-                       [(trig/iri :rdf "type") (trig/iri :ontology "Variable")]
-                       [(trig/iri :rdfs "label") (trig/lit (vtd/attr xml :name))]
-                       [(trig/iri :rdfs "comment") (trig/lit (vtd/attr xml :description))]
-                       [(trig/iri :ontology "measurementType") (trig/iri :ontology (m-type-map (vtd/tag m-type)))])]
-    (case (vtd/tag m-type)
-      "rate" [nil subj]
-      "continuous" [nil (trig/spo subj [(trig/iri :rdfs "comment") (trig/lit (vtd/attr m-type :unitOfMeasurement))])]
-      "categorical" (variable-categories m-type subj))))
+         m-type (vtd/first-child xml)
+         subj (trig/spo uri 
+                        [(trig/iri :rdf "type") (trig/iri :ontology "Variable")]
+                        [(trig/iri :rdfs "label") (trig/lit (vtd/attr xml :name))]
+                        [(trig/iri :rdfs "comment") (trig/lit (vtd/attr xml :description))]
+                        [(trig/iri :ontology "measurementType") (trig/iri :ontology (m-type-map (vtd/tag m-type)))])]
+     (case (vtd/tag m-type)
+       "rate" [nil subj uri]
+       "continuous" [nil (trig/spo subj [(trig/iri :rdfs "comment") (trig/lit (vtd/attr m-type :unitOfMeasurement))]) uri]
+       "categorical" (variable-categories m-type subj uri category-uris)))))
 
 (defn variable-rdf [xml uri]
   (second (variable-info xml uri)))
@@ -201,7 +212,7 @@
         entity-uri ((entity-uris (keyword entity-type)) entity-name)
         entity-xml (vtd/at xml (str "//addis-data/" entity-type "s/*[normalize-space(@name)='" entity-name "']"))
         mms (map #(measurement-moment-uris (when-taken-key %)) (vtd/search xml "./whenTaken"))
-        [categories var-rdf] (variable-info entity-xml (trig/_po [(trig/iri :owl "sameAs") entity-uri]))]
+        [categories var-rdf _] (variable-info entity-xml (trig/_po [(trig/iri :owl "sameAs") entity-uri]) ((:category entity-uris) entity-uri))]
     [categories
      (-> 
        (trig/spo instance-uri
@@ -512,12 +523,14 @@
         [populationCharacteristic-uri-map populationCharacteristics-info] (import-entities xml "/addis-data/populationCharacteristics/populationCharacteristic" variable-info)
         populationCharacteristics-rdf (map second populationCharacteristics-info)
         categories-rdf (reduce #(concat %1 (:rdfs (first %2))) [] populationCharacteristics-info)
+        category-uri-map (into {} (map (fn [info] [(nth info 2) (:uris (first info))]) populationCharacteristics-info))
         entity-uris {:indication indication-uri-map
                      :drug drug-uri-map
                      :endpoint endpoint-uri-map
                      :adverseEvent adverseEvent-uri-map
                      :populationCharacteristic populationCharacteristic-uri-map
-                     :unit unit-uri-map}
+                     :unit unit-uri-map
+                     :category category-uri-map}
         [studies-uri-map studies-graphs] (import-studies xml "/addis-data/studies/study" entity-uris)
         dataset-rdf [(-> dataset-uri
                          (trig/spo [(trig/iri :rdf "type") (trig/iri :ontology "Dataset")]
