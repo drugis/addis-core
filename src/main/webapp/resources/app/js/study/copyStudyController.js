@@ -7,6 +7,7 @@ define([],
       $scope.datasets = datasets;
 
       $scope.copyStudy = function(targetDataset) {
+        $scope.isCopying = true;
         $scope.targetDatasetUuid = targetDataset.uri.split('/')[targetDataset.uri.split('/').length - 1];
         $scope.targetGraphUuid = UUIDService.generate();
         $scope.userUuid = userUuid;
@@ -16,7 +17,7 @@ define([],
           targetGraphUuid: $scope.targetGraphUuid,
           copyOf: UUIDService.buildGraphUri(datasetUuid, versionUuid, graphUuid)
         };
-        CopyStudyResource.copy(copyMessage, function(newVersion, responseHeaders) {
+        CopyStudyResource.copy(copyMessage, function(__, responseHeaders) {
             var newVersion = responseHeaders('X-EventSource-Version');
             newVersion = newVersion.split('/')[4];
             $scope.newVersionUuid = newVersion;
