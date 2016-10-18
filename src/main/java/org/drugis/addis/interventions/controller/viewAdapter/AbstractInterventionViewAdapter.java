@@ -12,7 +12,8 @@ import org.drugis.addis.interventions.model.AbstractIntervention;
         @JsonSubTypes.Type(value = FixedInterventionViewAdapter.class, name = "fixed"),
         @JsonSubTypes.Type(value = TitratedInterventionViewAdapter.class, name = "titrated"),
         @JsonSubTypes.Type(value = BothDoseTypesInterventionViewAdapter.class, name = "both"),
-        @JsonSubTypes.Type(value = CombinationInterventionViewAdapter.class, name = "combination")})
+        @JsonSubTypes.Type(value = CombinationInterventionViewAdapter.class, name = "combination"),
+        @JsonSubTypes.Type(value = InterventionSetViewAdapter.class, name="class")})
 public abstract class AbstractInterventionViewAdapter {
 
   private Integer id;

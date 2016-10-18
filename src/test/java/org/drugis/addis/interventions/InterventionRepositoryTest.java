@@ -150,7 +150,7 @@ public class InterventionRepositoryTest {
 
     CombinationIntervention result = em.find(CombinationIntervention.class, combinationIntervention.getId());
     assertEquals(combinationIntervention, result);
-    assertEquals(2, result.getSingleInterventionIds().size());
+    assertEquals(2, result.getInterventionIds().size());
   }
 
 

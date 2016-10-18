@@ -22,6 +22,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.security.Principal;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -44,7 +45,7 @@ public class InterventionController extends AbstractAddisCoreController {
   @RequestMapping(value = "/projects/{projectId}/interventions", method = RequestMethod.GET)
   @ResponseBody
   public List<AbstractInterventionViewAdapter> query(@PathVariable Integer projectId) throws MethodNotAllowedException, ResourceDoesNotExistException {
-      List<AbstractIntervention> interventions = interventionRepository.query(projectId);
+      Set<AbstractIntervention> interventions = interventionRepository.query(projectId);
       List<AbstractInterventionViewAdapter> viewAdapters = interventions.stream().map(AbstractIntervention::toViewAdapter).collect(Collectors.toList());
       return viewAdapters;
   }

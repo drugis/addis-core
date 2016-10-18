@@ -11,8 +11,7 @@ import org.drugis.addis.trialverse.model.trialdata.TitratedSemanticIntervention;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by connor on 12-4-16.
@@ -43,6 +42,28 @@ public class InterventionServiceImpl implements InterventionService {
   }
 
   @Override
+  public Set<SingleIntervention> resolveInterventionSets(List<InterventionSet> interventionSets) throws ResourceDoesNotExistException {
+    Set<SingleIntervention> singleInterventions = new HashSet<>();
+    for(InterventionSet interventionSet: interventionSets){
+      singleInterventions.addAll(resolveInterventionSet(interventionSet));
+    }
+    return singleInterventions;
+  }
+
+  private Set<? extends SingleIntervention> resolveInterventionSet(InterventionSet interventionSet) throws ResourceDoesNotExistException {
+    Set<SingleIntervention> singleInterventions = new HashSet<>();
+    for(Integer interventionId: interventionSet.getInterventionIds()){
+      AbstractIntervention abstractIntervention = interventionRepository.get(interventionId);
+      if(abstractIntervention instanceof SingleIntervention) {
+        singleInterventions.add((SingleIntervention) abstractIntervention);
+      } else if(abstractIntervention instanceof CombinationIntervention) {
+        singleInterventions.addAll(resolveCombinations((CombinationIntervention) abstractIntervention));
+      }
+    }
+    return singleInterventions;
+  }
+
+  @Override
   public boolean isMatched(final AbstractIntervention intervention, final List<AbstractSemanticIntervention> semanticInterventions) throws InvalidTypeForDoseCheckException, ResourceDoesNotExistException {
 
     if(intervention instanceof SingleIntervention) {
@@ -57,12 +78,12 @@ public class InterventionServiceImpl implements InterventionService {
 
     if (intervention instanceof CombinationIntervention) {
       CombinationIntervention combinationIntervention = (CombinationIntervention) intervention;
-      if (semanticInterventions.size() != combinationIntervention.getSingleInterventionIds().size()) {
+      if (semanticInterventions.size() != combinationIntervention.getInterventionIds().size()) {
         return false;
       }
       Boolean allMatched = true;
       List<SingleIntervention> singleInterventions = new ArrayList<>();
-      for (Integer interventionId : combinationIntervention.getSingleInterventionIds()) {
+      for (Integer interventionId : combinationIntervention.getInterventionIds()) {
         singleInterventions.add((SingleIntervention) interventionRepository.get(interventionId));
       }
       // find matching semantic intervention for each addis intervention
@@ -84,6 +105,22 @@ public class InterventionServiceImpl implements InterventionService {
         }
       }
       return semanticInterventionsToMatch.size() == 0; // all semantic interventions matched
+    }
+
+    if(intervention instanceof InterventionSet) {
+      InterventionSet interventionSet = (InterventionSet) intervention;
+
+      List<AbstractIntervention> interventions = new ArrayList<>();
+      for(Integer interventionId: interventionSet.getInterventionIds()) {
+        interventions.add(interventionRepository.get(interventionId));
+      }
+
+      for(AbstractIntervention interventionToMatch: interventions) {
+        if(isMatched(interventionToMatch, semanticInterventions)) {
+          return true;
+        }
+      }
+      return false;
     }
     return false;
   }
@@ -217,7 +254,7 @@ public class InterventionServiceImpl implements InterventionService {
 
   private List<SingleIntervention> resolveCombinations(CombinationIntervention combinationIntervention) throws ResourceDoesNotExistException {
     List<SingleIntervention> singleInterventions = new ArrayList<>();
-    for(Integer singleInterventionId: combinationIntervention.getSingleInterventionIds()){
+    for(Integer singleInterventionId: combinationIntervention.getInterventionIds()){
       singleInterventions.add((SingleIntervention) interventionRepository.get(singleInterventionId));
     }
     return singleInterventions;

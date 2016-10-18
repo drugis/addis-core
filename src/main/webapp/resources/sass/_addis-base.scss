@@ -12,11 +12,16 @@
 
 .row.user-header {
   margin-top: 2rem;
-  margin-bottom: 2rem;
+  margin-bottom: 1rem;
   .user-image-large {
     height: 4rem;
     border-radius: 3rem;
   }
+}
+
+.no-padding-left-right {
+  padding-left: 0px;
+  padding-right: 0px;
 }
 
 .panel.raised {

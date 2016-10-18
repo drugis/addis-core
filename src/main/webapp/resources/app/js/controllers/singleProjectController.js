@@ -69,12 +69,7 @@ define(['lodash', 'angular'], function(_, angular) {
 
       InterventionResource.query({
         projectId: $scope.project.id
-      }).$promise.then(function(interventions) {
-        $scope.interventions = interventions.map(function(intervention) {
-          intervention.definitionLabel = InterventionService.generateDescriptionLabel(intervention, interventions);
-          return intervention;
-        });
-      });
+      }).$promise.then(generateInterventionDescriptions);
 
       loadCovariates();
 
@@ -99,6 +94,13 @@ define(['lodash', 'angular'], function(_, angular) {
       });
 
     });
+
+    function generateInterventionDescriptions(interventions) {
+      $scope.interventions = interventions.map(function(intervention) {
+        intervention.definitionLabel = InterventionService.generateDescriptionLabel(intervention, interventions);
+        return intervention;
+      });
+    }
 
     function loadCovariates() {
       // we need to get the options in order to display the definition label, as only the definition key is stored on the covariate
@@ -201,9 +203,10 @@ define(['lodash', 'angular'], function(_, angular) {
         controller: 'AddInterventionController',
         resolve: {
           callback: function() {
-            return function(newIntervention) {
-              newIntervention.definitionLabel = InterventionService.generateDescriptionLabel(newIntervention, $scope.interventions);
-              $scope.interventions.push(newIntervention);
+            return function() {
+              $scope.interventions = InterventionResource.query({
+                projectId: $scope.project.id
+              }).$promise.then(generateInterventionDescriptions);
             };
           }
         }
@@ -244,9 +247,10 @@ define(['lodash', 'angular'], function(_, angular) {
             return $scope.interventions;
           },
           successCallback: function() {
-            return function(name, motivation) {
-              intervention.name = name;
-              intervention.motivation = motivation;
+            return function() {
+              $scope.interventions = InterventionResource.query({
+                projectId: $scope.projectId
+              }).$promise.then(generateInterventionDescriptions);
             };
           }
         }

@@ -4,6 +4,7 @@ import org.drugis.addis.analyses.*;
 import org.drugis.addis.exception.MethodNotAllowedException;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.interventions.model.AbstractIntervention;
+import org.drugis.addis.interventions.model.SingleIntervention;
 import org.drugis.addis.security.Account;
 import org.drugis.addis.trialverse.model.trialdata.AbstractSemanticIntervention;
 import org.drugis.addis.trialverse.model.trialdata.TrialDataStudy;
@@ -15,6 +16,7 @@ import java.net.URISyntaxException;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Created by daan on 22-5-14.
@@ -36,5 +38,7 @@ public interface AnalysisService {
 
   List<TrialDataStudy> buildEvidenceTable(Integer projectId, Integer analysisId) throws ResourceDoesNotExistException, ReadValueException, URISyntaxException;
 
-  List<AbstractIntervention> getIncludedInterventions(AbstractAnalysis analysis) throws ResourceDoesNotExistException;
+  Set<AbstractIntervention> getIncludedInterventions(AbstractAnalysis analysis) throws ResourceDoesNotExistException;
+
+  Set<SingleIntervention> getSingleInterventions(Set<AbstractIntervention> includedInterventions) throws ResourceDoesNotExistException;
 }

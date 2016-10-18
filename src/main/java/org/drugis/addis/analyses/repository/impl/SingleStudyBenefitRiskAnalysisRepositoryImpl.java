@@ -17,10 +17,7 @@ import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -69,7 +66,7 @@ public class SingleStudyBenefitRiskAnalysisRepositoryImpl implements org.drugis.
       }
     }
 
-    List<AbstractIntervention> interventions = interventionRepository.query(analysis.getProjectId());
+    Set<AbstractIntervention> interventions = interventionRepository.query(analysis.getProjectId());
     Map<Integer, AbstractIntervention> interventionMap = interventions
             .stream().collect(Collectors.toMap(AbstractIntervention::getId, Function.identity()));
     if (isNotEmpty(analysis.getInterventionInclusions())) {

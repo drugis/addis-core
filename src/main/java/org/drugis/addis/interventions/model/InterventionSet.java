@@ -1,7 +1,7 @@
 package org.drugis.addis.interventions.model;
 
 import org.drugis.addis.interventions.controller.viewAdapter.AbstractInterventionViewAdapter;
-import org.drugis.addis.interventions.controller.viewAdapter.CombinationInterventionViewAdapter;
+import org.drugis.addis.interventions.controller.viewAdapter.InterventionSetViewAdapter;
 
 import javax.persistence.*;
 import java.util.Collections;
@@ -9,36 +9,35 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * Created by connor on 31-5-16.
+ * Created by Daan on 06/10/2016.
  */
 @Entity
-@PrimaryKeyJoinColumn(name = "combinationInterventionId", referencedColumnName = "id")
-public class CombinationIntervention extends AbstractIntervention {
-
+@PrimaryKeyJoinColumn(name = "interventionSetId", referencedColumnName = "id")
+public class InterventionSet extends AbstractIntervention {
   @ElementCollection
   @CollectionTable(
-          name="InterventionCombination",
-          joinColumns=@JoinColumn(name="combinationInterventionId")
+      name="InterventionSetItem",
+      joinColumns=@JoinColumn(name="interventionSetId")
   )
-  @Column(name="singleInterventionId")
+  @Column(name="interventionId")
   private Set<Integer> interventionIds = new HashSet<>();
 
-  public CombinationIntervention() {
+  public InterventionSet() {
     super();
   }
 
-  public CombinationIntervention(Integer id, Integer project, String name, String motivation, Set<Integer> interventionIds) {
+  public InterventionSet(Integer id, Integer project, String name, String motivation, Set<Integer> interventionIds) {
     super(id, project, name, motivation);
     this.interventionIds = interventionIds;
   }
 
   public Set<Integer> getInterventionIds() {
-    return Collections.unmodifiableSet(interventionIds);
+    return Collections.unmodifiableSet(this.interventionIds);
   }
 
   @Override
   public AbstractInterventionViewAdapter toViewAdapter() {
-    return new CombinationInterventionViewAdapter(this);
+    return new InterventionSetViewAdapter(this);
   }
 
   @Override
@@ -47,7 +46,7 @@ public class CombinationIntervention extends AbstractIntervention {
     if (o == null || getClass() != o.getClass()) return false;
     if (!super.equals(o)) return false;
 
-    CombinationIntervention that = (CombinationIntervention) o;
+    InterventionSet that = (InterventionSet) o;
 
     return interventionIds.equals(that.interventionIds);
 

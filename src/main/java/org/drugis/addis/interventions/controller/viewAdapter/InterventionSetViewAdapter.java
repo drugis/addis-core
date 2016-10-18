@@ -1,20 +1,20 @@
 package org.drugis.addis.interventions.controller.viewAdapter;
 
-import org.drugis.addis.interventions.model.CombinationIntervention;
+import org.drugis.addis.interventions.model.InterventionSet;
 
 import java.util.HashSet;
 import java.util.Set;
 
 /**
- * Created by connor on 1-6-16.
+ * Created by Daan on 06/10/2016.
  */
-public class CombinationInterventionViewAdapter extends AbstractInterventionViewAdapter {
+public class InterventionSetViewAdapter extends AbstractInterventionViewAdapter {
 
   private Set<Integer> interventionIds = new HashSet<>();
 
-  public CombinationInterventionViewAdapter(CombinationIntervention intervention) {
-    super(intervention);
-    interventionIds = new HashSet<>(intervention.getInterventionIds());
+  public InterventionSetViewAdapter(InterventionSet interventionSet) {
+    super(interventionSet);
+    interventionIds = interventionSet.getInterventionIds();
   }
 
   public Set<Integer> getInterventionIds() {
@@ -27,7 +27,7 @@ public class CombinationInterventionViewAdapter extends AbstractInterventionView
     if (o == null || getClass() != o.getClass()) return false;
     if (!super.equals(o)) return false;
 
-    CombinationInterventionViewAdapter that = (CombinationInterventionViewAdapter) o;
+    InterventionSetViewAdapter that = (InterventionSetViewAdapter) o;
 
     return interventionIds.equals(that.interventionIds);
 

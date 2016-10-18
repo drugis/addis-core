@@ -11,23 +11,23 @@ import java.util.Set;
  */
 public class CombinationInterventionCommand extends AbstractInterventionCommand {
 
-  private Set<Integer> singleInterventionIds = new HashSet<>();
+  private Set<Integer> interventionIds = new HashSet<>();
 
   public CombinationInterventionCommand() {
   }
 
-  public CombinationInterventionCommand(Integer projectId, String name, String motivation, String semanticInterventionLabel, String semanticInterventionUuid, Set<Integer> singleInterventionIds) {
+  public CombinationInterventionCommand(Integer projectId, String name, String motivation, String semanticInterventionLabel, String semanticInterventionUuid, Set<Integer> interventionIds) {
     super(projectId, name, motivation, semanticInterventionLabel, semanticInterventionUuid);
-    this.singleInterventionIds = singleInterventionIds;
+    this.interventionIds = interventionIds;
   }
 
-  public Set<Integer> getSingleInterventionIds() {
-    return singleInterventionIds;
+  public Set<Integer> getInterventionIds() {
+    return interventionIds;
   }
 
   @Override
   public CombinationIntervention toIntervention() throws InvalidConstraintException {
-    return new CombinationIntervention(null, this.getProjectId(), this.getName(), this.getMotivation(), singleInterventionIds);
+    return new CombinationIntervention(null, this.getProjectId(), this.getName(), this.getMotivation(), this.getInterventionIds());
   }
 
   @Override
@@ -38,14 +38,14 @@ public class CombinationInterventionCommand extends AbstractInterventionCommand 
 
     CombinationInterventionCommand that = (CombinationInterventionCommand) o;
 
-    return singleInterventionIds.equals(that.singleInterventionIds);
+    return interventionIds.equals(that.interventionIds);
 
   }
 
   @Override
   public int hashCode() {
     int result = super.hashCode();
-    result = 31 * result + singleInterventionIds.hashCode();
+    result = 31 * result + interventionIds.hashCode();
     return result;
   }
 }
