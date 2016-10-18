@@ -53,8 +53,9 @@
 
 
 (defn variable-categories [m-type subj uri hl-category-uris]
-  (let [category-names (map vtd/text (vtd/search m-type "./category"))
-        category-uris (into {} (map (fn [%] [% (trig/iri :instance (uuid))]) category-names))
+  (let [level (if hl-category-uris :instance :entity)
+        category-names (map vtd/text (vtd/search m-type "./category"))
+        category-uris (into {} (map (fn [%] [% (trig/iri level (uuid))]) category-names))
         category-rdfs (map #(trig/spo (category-mapping (second %) (first %) hl-category-uris)
                                       [(trig/iri :rdfs "label") (trig/lit (first %))]
                                       [(trig/iri :rdf "type") (trig/iri :ontology "Category")]) category-uris)]
