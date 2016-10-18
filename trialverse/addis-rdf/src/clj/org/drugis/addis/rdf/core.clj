@@ -210,7 +210,7 @@
   (let [entity-name (vtd/attr (vtd/first-child xml) :name)
         entity-type (vtd/tag (vtd/first-child xml))
         entity-uri ((entity-uris (keyword entity-type)) entity-name)
-        entity-xml (vtd/at xml (str "//addis-data/" entity-type "s/*[normalize-space(@name)='" entity-name "']"))
+        entity-xml (vtd/at xml (str "//addis-data/" entity-type "s/*[normalize-space(@name)=\"" entity-name "\"]"))
         mms (map #(measurement-moment-uris (when-taken-key %)) (vtd/search xml "./whenTaken"))
         [categories var-rdf _] (variable-info entity-xml (trig/_po [(trig/iri :owl "sameAs") entity-uri]) ((:category entity-uris) entity-uri))]
     [categories
@@ -389,8 +389,8 @@
                (optional-double (trig/iri :ontology "standard_deviation") (vtd/attr cont :stdDev))
                (optional-int (trig/iri :ontology "sample_size") (vtd/attr cont :sampleSize)))
       rate (-> measurement
-               (optional-int (trig/iri :ontology "count") (vtd/attr cont :rate))
-               (optional-int (trig/iri :ontology "sample_size") (vtd/attr cont :sampleSize)))
+               (optional-int (trig/iri :ontology "count") (vtd/attr rate :rate))
+               (optional-int (trig/iri :ontology "sample_size") (vtd/attr rate :sampleSize)))
       catg (reduce (fn [subj cat] (trig/spo subj [(trig/iri :ontology "category_count")
                                                   (-> (trig/_po [(trig/iri :ontology "category") ((category-uris som-uri) (vtd/attr cat :name))])
                                                       (optional-int (trig/iri :ontology "count") (vtd/attr cat :rate)))]))
