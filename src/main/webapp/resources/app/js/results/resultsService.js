@@ -244,7 +244,9 @@ define(['angular', 'lodash'], function(angular, _) {
             });
             if (countItem) {
               if (inputColumn.value === null) {
-                delete countItem.count;
+                editItem.category_count = _.reject(editItem.category_count, function(count) {
+                  return count.category === inputColumn.resultProperty;
+                });
               } else {
                 countItem.count = inputColumn.value;
               }

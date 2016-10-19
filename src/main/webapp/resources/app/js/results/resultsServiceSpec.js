@@ -397,6 +397,35 @@ define(['angular-mocks'], function(angularMocks) {
           });
           rootScope.$digest();
         });
+        it('if the new value is null and there was an existing value for the category, its category count should be removed', function(done) {
+           var inputColumn = {
+            isCategory: true,
+            valueName: 'Female',
+            value: null,
+            resultProperty: 'Female',
+          };
+          var row = {
+            variable: {
+              uri: 'http://trials.drugis.org/instances/outcome1'
+            },
+            arm: {
+              armURI: 'http://trials.drugis.org/instances/arm1'
+            },
+            measurementMoment: {
+              uri: 'http://trials.drugis.org/instances/moment1'
+            },
+            uri: 'http://trials.drugis.org/instances/result1'
+          };
+          resultsService.updateResultValue(row, inputColumn).then(function(result) {
+            var expextedGraph = [];
+            expect(result).toBeFalsy();
+            expect(studyService.saveJsonGraph).toHaveBeenCalledWith(expextedGraph);
+            studyService.saveJsonGraph.calls.reset();
+            studyService.getJsonGraph.calls.reset();
+            done();
+          });
+          rootScope.$digest();
+        });
       });
 
       describe('if the new value is a null value and there is not already a value there', function() {
