@@ -24,21 +24,34 @@ define(['angular', 'angular-mocks'], function() {
       resultsTableService = ResultsTableService;
     }));
 
-    describe('buildHeaders', function() {
+    describe('createHeaders', function() {
       it('should return a list containting "Mean, ± sd and N " when the type is continuous', function() {
-        var testType = [
-          'http://trials.drugis.org/ontology#mean',
-          'http://trials.drugis.org/ontology#standard_deviation',
-          'http://trials.drugis.org/ontology#sample_size'
-        ];
+        var testType = {
+          resultProperties: [
+            'http://trials.drugis.org/ontology#mean',
+            'http://trials.drugis.org/ontology#standard_deviation',
+            'http://trials.drugis.org/ontology#sample_size'
+          ]
+        };
         expect(resultsTableService.createHeaders(testType)).toEqual(['mean', 'standard deviation', 'N']);
       });
       it('should return a list containting "Count and N" when the type is dichotomous', function() {
-        var testType = [
-          'http://trials.drugis.org/ontology#count',
-          'http://trials.drugis.org/ontology#sample_size'
-        ];
+        var testType = {
+          resultProperties: [
+            'http://trials.drugis.org/ontology#count',
+            'http://trials.drugis.org/ontology#sample_size'
+          ]
+        };
         expect(resultsTableService.createHeaders(testType)).toEqual(['count', 'N']);
+      });
+      it('should return a list of the categories for a categorical variable', function() {
+        var testType = {
+          categoryList: [
+            'Male',
+            'Female'
+          ]
+        };
+        expect(resultsTableService.createHeaders(testType)).toEqual(['Male', 'Female']);
       });
     });
 

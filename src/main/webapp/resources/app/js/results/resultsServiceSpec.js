@@ -191,13 +191,53 @@ define(['angular-mocks'], function(angularMocks) {
           });
           // fire in the hole !
           rootScope.$digest();
+        });
 
+        it('should add the value to the graph (categorical)', function(done) {
+
+          var row = {
+            variable: {
+              uri: 'http://trials.drugis.org/instances/outcome1'
+            },
+            group: {
+              armURI: 'http://trials.drugis.org/instances/arm1'
+            },
+            measurementMoment: {
+              uri: 'http://trials.drugis.org/instances/moment1'
+            }
+          };
+
+          var inputColumn = {
+            isCategory: true,
+            valueName: 'Male',
+            value: 123,
+            resultProperty: 'Male',
+          };
+
+          resultsService.updateResultValue(row, inputColumn).then(function(result) {
+            var expextedGraph = [{
+              '@id': 'http://trials.drugis.org/instances/newUuid',
+              'category_count': [{
+                category: 'Male',
+                count: 123
+              }],
+              'of_group': 'http://trials.drugis.org/instances/arm1',
+              'of_moment': 'http://trials.drugis.org/instances/moment1',
+              'of_outcome': 'http://trials.drugis.org/instances/outcome1',
+            }];
+            expect(result).toBeTruthy();
+            expect(result).toEqual(expextedGraph[0]['@id']);
+            expect(studyService.saveJsonGraph).toHaveBeenCalledWith(expextedGraph);
+            studyService.saveJsonGraph.calls.reset();
+            studyService.getJsonGraph.calls.reset();
+            done();
+          });
+          // fire in the hole !
+          rootScope.$digest();
         });
       });
 
-
-      describe('if the new value is a value', function() {
-
+      describe('if there already is data in the graph, and the new value is a value', function() {
         var graphJsonObject = [{
           '@id': 'http://trials.drugis.org/instances/result1',
           'count': 24,
@@ -254,10 +294,112 @@ define(['angular-mocks'], function(angularMocks) {
           // fire in the hole !
           rootScope.$digest();
         });
-
       });
 
-      describe('if the new value is a null value', function() {
+      describe('if there already is categorical data in the graph, and the new value is a value', function() {
+        beforeEach(function() {
+          var graphJsonObject = [{
+            '@id': 'http://trials.drugis.org/instances/result1',
+            category_count: [{
+              '@id': 'http://trials.drugis.org/blanknodes/1',
+              category: 'Female',
+              count: 24
+            }],
+            'of_group': 'http://trials.drugis.org/instances/arm1',
+            'of_moment': 'http://trials.drugis.org/instances/moment1',
+            'of_outcome': 'http://trials.drugis.org/instances/outcome1'
+          }];
+
+          var graphDefer = q.defer();
+          var getGraphPromise = graphDefer.promise;
+          graphDefer.resolve(graphJsonObject);
+          studyService.getJsonGraph.and.returnValue(getGraphPromise);
+        });
+
+        it('if the new value is of a new category the category_count should be expanded with the new category', function(done) {
+          var inputColumn = {
+            isCategory: true,
+            valueName: 'Male',
+            value: 123,
+            resultProperty: 'Male',
+          };
+          var row = {
+            variable: {
+              uri: 'http://trials.drugis.org/instances/outcome1'
+            },
+            arm: {
+              armURI: 'http://trials.drugis.org/instances/arm1'
+            },
+            measurementMoment: {
+              uri: 'http://trials.drugis.org/instances/moment1'
+            },
+            uri: 'http://trials.drugis.org/instances/result1'
+          };
+          resultsService.updateResultValue(row, inputColumn).then(function(result) {
+            var expextedGraph = [{
+              '@id': 'http://trials.drugis.org/instances/result1',
+              category_count: [{
+                '@id': 'http://trials.drugis.org/blanknodes/1',
+                category: 'Female',
+                count: 24
+              }, {
+                category: 'Male',
+                count: 123
+              }],
+              of_group: 'http://trials.drugis.org/instances/arm1',
+              of_moment: 'http://trials.drugis.org/instances/moment1',
+              of_outcome: 'http://trials.drugis.org/instances/outcome1'
+            }];
+            expect(result).toBeTruthy();
+            expect(studyService.saveJsonGraph).toHaveBeenCalledWith(expextedGraph);
+            studyService.saveJsonGraph.calls.reset();
+            studyService.getJsonGraph.calls.reset();
+            done();
+          });
+          rootScope.$digest();
+        });
+        it('if the new value is of an existing category the category_count value should be updated', function(done) {
+          var inputColumn = {
+            isCategory: true,
+            valueName: 'Female',
+            value: 123,
+            resultProperty: 'Female',
+          };
+          var row = {
+            variable: {
+              uri: 'http://trials.drugis.org/instances/outcome1'
+            },
+            arm: {
+              armURI: 'http://trials.drugis.org/instances/arm1'
+            },
+            measurementMoment: {
+              uri: 'http://trials.drugis.org/instances/moment1'
+            },
+            uri: 'http://trials.drugis.org/instances/result1'
+          };
+          resultsService.updateResultValue(row, inputColumn).then(function(result) {
+            var expextedGraph = [{
+              '@id': 'http://trials.drugis.org/instances/result1',
+              category_count: [{
+                '@id': 'http://trials.drugis.org/blanknodes/1',
+                category: 'Female',
+                count: 123
+              }],
+              of_group: 'http://trials.drugis.org/instances/arm1',
+              of_moment: 'http://trials.drugis.org/instances/moment1',
+              of_outcome: 'http://trials.drugis.org/instances/outcome1'
+            }];
+            expect(result).toBeTruthy();
+            expect(studyService.saveJsonGraph).toHaveBeenCalledWith(expextedGraph);
+            studyService.saveJsonGraph.calls.reset();
+            studyService.getJsonGraph.calls.reset();
+            done();
+          });
+          rootScope.$digest();
+        });
+      });
+
+      describe('if the new value is a null value and there is not already a value there', function() {
 
         var graphJsonObject = [];
 
@@ -268,7 +410,7 @@ define(['angular-mocks'], function(angularMocks) {
           studyService.getJsonGraph.and.returnValue(getGraphPromise);
         });
 
-        it('should save the value to the graph', function(done) {
+        it('should not save the value to the graph', function(done) {
           var row = {
             variable: {
               uri: 'http://trials.drugis.org/instances/outcome1'
@@ -288,7 +430,6 @@ define(['angular-mocks'], function(angularMocks) {
 
           studyService.saveJsonGraph.calls.reset();
           resultsService.updateResultValue(row, inputColumn).then(function(result) {
-
             expect(result).toBeFalsy();
             expect(studyService.saveJsonGraph).not.toHaveBeenCalled();
             studyService.saveJsonGraph.calls.reset();
@@ -298,11 +439,9 @@ define(['angular-mocks'], function(angularMocks) {
           // fire in the hole !
           rootScope.$digest();
         });
-
       });
 
-
-      describe('if the new value is null', function() {
+      describe('if the new value is null and there is already a value there', function() {
 
         var row = {
           variable: {
@@ -339,7 +478,7 @@ define(['angular-mocks'], function(angularMocks) {
           studyService.getJsonGraph.and.returnValue(getGraphPromise);
         });
 
-        it('should delete the value from the graph', function(done) {
+        it('should delete the old value from the graph', function(done) {
 
           resultsService.updateResultValue(row, inputColumn).then(function(result) {
             var expextedGraph = [{

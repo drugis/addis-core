@@ -1,6 +1,6 @@
 'use strict';
 define(['angular-mocks'], function(angularMocks) {
-  fdescribe('the outcome service', function() {
+  describe('the outcome service', function() {
     var rootScope, q,
       uUIDServiceMock,
       outcomeService,
@@ -201,6 +201,7 @@ define(['angular-mocks'], function(angularMocks) {
         };
         getStudyDefer.resolve(jsonStudy);
         getStudyGraphDefer.resolve([jsonStudy]);
+        studyServiceMock.findStudyNode.and.returnValue(jsonStudy);
         outcomeService.addItem(newPopulationChar, 'ontology:OutcomeType').then(done);
         saveStudyDefer.resolve();
         rootScope.$digest();
@@ -232,6 +233,9 @@ define(['angular-mocks'], function(angularMocks) {
     });
 
     describe('edit outcome', function() {
+
+      var moment1 = 'http://instance/moment1';
+      var moment2 = 'http://instance/moment2';
       var jsonStudy = {
         has_outcome: [{
           '@id': 'http://trials.drugis.org/instances/popchar1',
@@ -241,7 +245,7 @@ define(['angular-mocks'], function(angularMocks) {
             'ontology:mean',
             'ontology:sample_size'
           ],
-          'is_measured_at': 'http://instance/moment1',
+          'is_measured_at': moment1,
           'of_variable': [{
             '@id': 'http://fuseki-test.drugis.org:3030/.well-known/genid/0000014fdfac194dac11005900000003',
             '@type': 'ontology:Variable',
@@ -251,13 +255,13 @@ define(['angular-mocks'], function(angularMocks) {
           'comment': '',
           'label': 'Age'
         }, {
-          '@id': 'http://trials.drugis.org/instances/9bb96077-a8e0-4da1-bee2-011db8b7e560',
+          '@id': 'http://trials.drugis.org/instances/var2',
           '@type': 'ontology:OutcomeType',
           'has_result_property': [
             'ontology:sample_size',
             'ontology:count'
           ],
-          'is_measured_at': ['http://instance/moment1', 'http://instance/moment2'],
+          'is_measured_at': [moment1, moment2],
           'of_variable': [{
             '@id': 'http://fuseki-test.drugis.org:3030/.well-known/genid/0000014fdfac194eac1100590000000b',
             '@type': 'ontology:Variable',
@@ -268,8 +272,6 @@ define(['angular-mocks'], function(angularMocks) {
         }]
       };
 
-      var moment1 = 'http://instance/moment1';
-      var moment2 = 'http://instance/moment2';
       var measuredAtMoment1 = {
         uri: moment1
       };
@@ -287,6 +289,7 @@ define(['angular-mocks'], function(angularMocks) {
       beforeEach(function(done) {
         getStudyDefer.resolve(jsonStudy);
         getStudyGraphDefer.resolve([jsonStudy]);
+        studyServiceMock.findStudyNode.and.returnValue(jsonStudy);
         measurementMomentsDefer.resolve({});
         outcomeService.editItem(newPopulationChar).then(done);
         saveStudyDefer.resolve();
@@ -350,6 +353,7 @@ define(['angular-mocks'], function(angularMocks) {
       beforeEach(function(done) {
         getStudyDefer.resolve(jsonStudy);
         getStudyGraphDefer.resolve([jsonStudy]);
+        studyServiceMock.findStudyNode.and.returnValue(jsonStudy);
         measurementMomentsDefer.resolve({});
         outcomeService.deleteItem(newPopulationChar).then(done);
         saveStudyDefer.resolve();

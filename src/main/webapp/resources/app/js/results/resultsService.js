@@ -217,10 +217,18 @@ define(['angular', 'lodash'], function(angular, _) {
               of_moment: row.measurementMoment.uri,
               of_outcome: row.variable.uri
             };
-            addItem[inputColumnVariableDetails.type] = inputColumn.value;
-            StudyService.saveJsonGraph(graph.concat(addItem));
-
-            return addItem['@id'];
+            if (inputColumn.isCategory) {
+              addItem.category_count = [{
+                count: inputColumn.value,
+                category: inputColumn.resultProperty
+              }];
+              StudyService.saveJsonGraph(graph.concat(addItem));
+              return addItem['@id'];
+            } else {
+              addItem[inputColumnVariableDetails.type] = inputColumn.value;
+              StudyService.saveJsonGraph(graph.concat(addItem));
+              return addItem['@id'];
+            }
           } else {
             return undefined;
           }
@@ -234,20 +242,35 @@ define(['angular', 'lodash'], function(angular, _) {
             var countItem = _.find(editItem.category_count, function(countItem) {
               return countItem.category === inputColumn.resultProperty;
             });
-            countItem.count = inputColumn.value === null ? undefined : inputColumn.value;
+            if (countItem) {
+              if (inputColumn.value === null) {
+                delete countItem.count;
+              } else {
+                countItem.count = inputColumn.value;
+              }
+            } else {
+              countItem = {
+                count: inputColumn.value,
+                category: inputColumn.resultProperty
+              };
+              editItem.category_count.push(countItem);
+            }
           } else {
-            editItem[inputColumnVariableDetails.type] = inputColumn.value === null ? undefined : inputColumn.value;
+            if (inputColumn.value === null) {
+              delete editItem[inputColumnVariableDetails.type];
+            } else {
+              editItem[inputColumnVariableDetails.type] = inputColumn.value;
+            }
+          }
+
+          if (!inputColumn.isCategory && !isEmptyResult(editItem)) {
+            graph.push(editItem);
+          } else if (inputColumn.isCategory && !isEmptyCategoricalResult(editItem)) {
+            graph.push(editItem);
+          } else {
+            row.uri = undefined;
           }
         }
-
-        if (!inputColumn.isCategory && !isEmptyResult(editItem)) {
-          graph.push(editItem);
-        } else if (inputColumn.isCategory && !isEmptyCategoricalResult(editItem)) {
-          graph.push(editItem);
-        } else {
-          row.uri = undefined;
-        }
-
         StudyService.saveJsonGraph(graph);
         return row.uri;
       });
