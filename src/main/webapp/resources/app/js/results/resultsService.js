@@ -533,6 +533,8 @@ define(['angular', 'lodash'], function(angular, _) {
           VARIABLE_TYPE_DETAILS.sample_size,
           VARIABLE_TYPE_DETAILS.count
         ];
+      } else if (measurementType === 'ontology:isCategorical') {
+        return [];
       } else {
         console.error('unknown measurement type ' + measurementType);
       }
