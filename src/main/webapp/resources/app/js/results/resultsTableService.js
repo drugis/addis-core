@@ -17,21 +17,42 @@ define(['lodash'], function(_) {
       }
     }
 
+    function findCategoricalResult(resultValueObjects, category) {
+      var resultValueObjectFound = _.find(resultValueObjects, function(resultValueObject) {
+        return resultValueObject.result_property.category === category['@id'];
+      });
+      if (resultValueObjectFound) {
+        return Number(resultValueObjectFound.value);
+      }
+    }
+
     function createInputColumns(variable, rowValueObjects) {
       if (!variable.resultProperties) {
-        if (!variable.categoryList) {
-          return [];
-        } else {
+        if (variable.categoryList) {
           return variable.categoryList.map(function(category) {
+            var resultProperty;
+            var value;
+            var valueName;
+            if (category.label) { // new format
+              resultProperty = null;
+              valueName = category.label;
+              value = findCategoricalResult(rowValueObjects, category);
+            } else { // old format
+              resultProperty = category;
+              valueName = category;
+              value = findResultValueByType(rowValueObjects, category);
+            }
             return {
               resultProperty: category,
               valueName: category,
-              value: findResultValueByType(rowValueObjects, category),
+              value: value,
               dataType: ResultsService.INTEGER_TYPE,
               isCategory: true,
               isInValidValue: false
             };
           });
+        } else {
+          return [];
         }
       }
       return variable.resultProperties.map(function(type) {
@@ -51,7 +72,11 @@ define(['lodash'], function(_) {
         if (!variable.categoryList) {
           return [];
         } else {
-          return variable.categoryList;
+          if (variable.categoryList[0] && variable.categoryList[0].label) {
+            return _.map(variable.categoryList, 'label');
+          } else {
+            return variable.categoryList;
+          }
         }
       }
       if (!variable.resultProperties.map) {

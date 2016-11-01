@@ -18,7 +18,20 @@
              value="ontology:dichotomous" id="rateOption"><label for="rateOption">count</label>
       <input ng-model="item.measurementType" type="radio" name="measurementType" ng-change="resetResultProperties()"
              value="ontology:continuous" id="continuousOption"><label
-        for="continuousOption">continuous</label>
+        for="continuousOption">continuous</label> 
+      <input ng-model="item.measurementType" type="radio" name="measurementType" ng-change="resetResultProperties()"
+             value="ontology:categorical" id="categoricalOption"><label
+        for="categoricalOption">categorical</label>
+    </div>
+  </div>
+  <div class="row" ng-if="item.measurementType === 'ontology:categorical'">
+    <div class="large-9 columns">
+      <label>Categories</label>
+      <ul class="no-bullet" ng-if="item.categories.length">
+        <li ng-repeat="category in item.categories">{{category}}</li>
+      </ul>
+      <span ng-if="!item.categories.length"></span>
+      <input ng-model="newCategory"><button class="small" type="button" ng-click="addCategory()">Add category</button>
     </div>
   </div>
 

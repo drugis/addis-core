@@ -205,30 +205,20 @@ define(['angular', 'lodash'], function(angular, _) {
       return _.find(VARIABLE_TYPE_DETAILS, ['uri', normalisedUri]);
     }
 
-    function updateResultValue(row, inputColumn) {
+    function updateValue(row, inputColumn) {
       var inputColumnVariableDetails = getVariableDetails(inputColumn.resultProperty);
       return StudyService.getJsonGraph().then(function(graph) {
-        if (!row.uri) {
+        if (!row.uri) { // create branch
           if (inputColumn.value !== null && inputColumn.value !== undefined) {
-            // create branch
             var addItem = {
               '@id': 'http://trials.drugis.org/instances/' + UUIDService.generate(),
               of_group: row.group.armURI || row.group.groupUri,
               of_moment: row.measurementMoment.uri,
               of_outcome: row.variable.uri
             };
-            if (inputColumn.isCategory) {
-              addItem.category_count = [{
-                count: inputColumn.value,
-                category: inputColumn.resultProperty
-              }];
-              StudyService.saveJsonGraph(graph.concat(addItem));
-              return addItem['@id'];
-            } else {
-              addItem[inputColumnVariableDetails.type] = inputColumn.value;
-              StudyService.saveJsonGraph(graph.concat(addItem));
-              return addItem['@id'];
-            }
+            addItem[inputColumnVariableDetails.type] = inputColumn.value;
+            StudyService.saveJsonGraph(graph.concat(addItem));
+            return addItem['@id'];
           } else {
             return undefined;
           }
@@ -238,44 +228,86 @@ define(['angular', 'lodash'], function(angular, _) {
             return row.uri === node['@id'];
           })[0];
 
-          if (inputColumn.isCategory) {
-            var countItem = _.find(editItem.category_count, function(countItem) {
-              return countItem.category === inputColumn.resultProperty;
-            });
-            if (countItem) {
-              if (inputColumn.value === null) {
-                editItem.category_count = _.reject(editItem.category_count, function(count) {
-                  return count.category === inputColumn.resultProperty;
-                });
-              } else {
-                countItem.count = inputColumn.value;
-              }
-            } else {
-              countItem = {
-                count: inputColumn.value,
-                category: inputColumn.resultProperty
-              };
-              editItem.category_count.push(countItem);
-            }
+          if (inputColumn.value === null) {
+            delete editItem[inputColumnVariableDetails.type];
           } else {
-            if (inputColumn.value === null) {
-              delete editItem[inputColumnVariableDetails.type];
-            } else {
-              editItem[inputColumnVariableDetails.type] = inputColumn.value;
-            }
+            editItem[inputColumnVariableDetails.type] = inputColumn.value;
           }
 
-          if (!inputColumn.isCategory && !isEmptyResult(editItem)) {
-            graph.push(editItem);
-          } else if (inputColumn.isCategory && !isEmptyCategoricalResult(editItem)) {
+          if (!isEmptyResult(editItem)) {
             graph.push(editItem);
           } else {
-            row.uri = undefined;
+            delete row.uri;
           }
         }
         StudyService.saveJsonGraph(graph);
         return row.uri;
       });
+    }
+
+    function updateCategoricalValue(row, inputColumn) {
+      return StudyService.getJsonGraph().then(function(graph) {
+        if (!row.uri) {
+          if (inputColumn.value !== null && inputColumn.value !== undefined) {
+            // create branch
+            var addItem = {
+              '@id': 'http://trials.drugis.org/instances/' + UUIDService.generate(),
+              of_group: row.group.armURI || row.group.groupUri,
+              of_moment: row.measurementMoment.uri,
+              of_outcome: row.variable.uri,
+              category_count: [{
+                count: inputColumn.value,
+                category: inputColumn.resultProperty['@id']
+              }]
+            };
+            StudyService.saveJsonGraph(graph.concat(addItem));
+            return addItem['@id'];
+          } else {
+            return undefined;
+          }
+        } else {
+          // update branch
+          var editItem = _.remove(graph, function(node) {
+            return row.uri === node['@id'];
+          })[0];
+
+          var countItem = _.find(editItem.category_count, function(countItem) {
+            return countItem.category === inputColumn.resultProperty['@id'];
+          });
+          if (countItem) {
+            if (inputColumn.value === null) {
+              editItem.category_count = _.reject(editItem.category_count, function(count) {
+                return count.category === inputColumn.resultProperty;
+              });
+            } else {
+              countItem.count = inputColumn.value;
+            }
+          } else {
+            countItem = {
+              count: inputColumn.value,
+              category: inputColumn.resultProperty['@id']
+            };
+            editItem.category_count.push(countItem);
+          }
+
+          if (!isEmptyCategoricalResult(editItem)) {
+            graph.push(editItem);
+          } else {
+            delete row.uri;
+          }
+        }
+        StudyService.saveJsonGraph(graph);
+        return row.uri;
+      });
+    }
+
+    function updateResultValue(row, inputColumn) {
+      if (!inputColumn.isCategory) {
+        return updateValue(row, inputColumn);
+      } else {
+        return updateCategoricalValue(row, inputColumn);
+      }
+
     }
 
     function isEmptyCategoricalResult(item) {
@@ -300,7 +332,7 @@ define(['angular', 'lodash'], function(angular, _) {
     function createCategoryItem(baseItem, backEndItem, categoryItem) {
       var valueItem = angular.copy(baseItem);
       valueItem.isCategorical = true;
-      valueItem.result_property = categoryItem.category;
+      valueItem.result_property = categoryItem.category && categoryItem.category.label ? categoryItem.label : categoryItem;
       valueItem.value = categoryItem.count;
       return valueItem;
     }

@@ -56,7 +56,7 @@ define(['angular', 'lodash'],
       }
 
       function toBackEnd(item, type) {
-        return {
+        var newItem = {
           '@type': type,
           '@id': item.uri,
           is_measured_at: item.measuredAtMoments.length === 1 ? item.measuredAtMoments[0].uri : _.map(item.measuredAtMoments, 'uri'),
@@ -68,6 +68,10 @@ define(['angular', 'lodash'],
           }],
           has_result_property: item.resultProperties
         };
+        if(item.measurementType === 'ontology:categorical') {
+          // FIXME: add categories
+        }
+        return newItem;
       }
 
       function sortByLabel(a, b) {

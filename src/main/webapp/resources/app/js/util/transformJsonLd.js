@@ -122,7 +122,7 @@ define(['lodash'], function(_) {
 
     function inlineCategoryLists(outcomes) {
       return _.map(outcomes, function(node) {
-        if(node.of_variable[0].measurementType === 'ontology:categorical') {
+        if (node.of_variable[0].measurementType === 'ontology:categorical') {
           node.of_variable[0].categoryList = inlineLinkedList(node.of_variable[0].categoryList);
         }
         return node;
@@ -170,6 +170,31 @@ define(['lodash'], function(_) {
 
     study.has_outcome = inlineCategoryLists(study.has_outcome, linkedData['@graph']);
 
+    var oldStyleCategories = _.filter(linkedData['@graph'], function(node) {
+      return _.isString(node.category) && !_.startsWith(node.category, 'http://trials.drugis.org/instances/');
+    });
+
+    function generateUUID() {
+      var pattern = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx';
+      return pattern.replace(/[xy]/g, function(c) {
+        /*jslint bitwise: true */
+        var r = Math.random() * 16 | 0;
+        var v = c === 'x' ? r : (r & 0x3 | 0x8);
+        return v.toString(16);
+      });
+    }
+
+    if (oldStyleCategories.length) {
+      var INSTANCE_BASE = 'http://trials.drugis.org/instances/';
+      var ONTOLOGY_BASE = 'http://trials.drugis.org/ontology#';
+      _.forEach(oldStyleCategories, function(oldCategory) {
+        var newInstance = { // FIXME: only generate once per discrete category
+          '@id': INSTANCE_BASE + generateUUID(),
+          '@type': ONTOLOGY_BASE + 'Category';
+          label: oldCategory.category;
+        }
+      });
+    }
 
     linkedData['@context'] = {
       'median': {

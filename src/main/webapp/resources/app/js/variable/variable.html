@@ -17,7 +17,7 @@
       Categories:
     </span>
     <ul>
-      <li ng-repeat="category in item.categoryList">{{::category}}</li>
+      <li ng-repeat="category in item.categoryList">{{::category.label ? category.label : category}}</li>
     </ul>
   </li>
   <li ng-if="item.measuredAtMoments.length > 0">

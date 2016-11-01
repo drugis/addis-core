@@ -16,13 +16,20 @@ define(['lodash'], function(_) {
     };
     $scope.addItem = addItem;
     $scope.resetResultProperties = resetResultProperties;
+    $scope.addCategory = addCategory;
     $scope.measurementMomentEquals = function(moment1, moment2) {
       return moment1.uri === moment2.uri;
     };
+
     resetResultProperties();
 
     function resetResultProperties() {
       $scope.item.selectedResultProperties = ResultsService.getDefaultResultProperties($scope.item.measurementType);
+      if($scope.item.measurementType === 'ontology:categorical') {
+        $scope.item.categories = [];
+      } else {
+        delete $scope.item.categories;
+      }
     }
 
     function addItem() {
@@ -36,6 +43,11 @@ define(['lodash'], function(_) {
             console.error('failed to create ' + settings.itemName);
             $modalInstance.dismiss('cancel');
           });
+    }
+
+    function addCategory() {
+      $scope.item.categories.push($scope.newCategory);
+      $scope.newCategory = undfined;
     }
 
   };
