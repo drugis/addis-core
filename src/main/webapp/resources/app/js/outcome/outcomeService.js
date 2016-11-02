@@ -4,6 +4,8 @@ define(['angular', 'lodash'],
     var dependencies = ['$q', 'StudyService', 'UUIDService', 'MeasurementMomentService', 'ResultsService', 'RepairService', 'RdfListService'];
     var OutcomeServiceService = function($q, StudyService, UUIDService, MeasurementMomentService, ResultsService, RepairService, RdfListService) {
 
+      var INSTANCE_BASE = 'http://trials.drugis.org/instances/';
+
       function isOverlappingResultFunction(a, b) {
         return a.armUri === b.armUri &&
           a.momentUri === b.momentUri;
@@ -55,6 +57,18 @@ define(['angular', 'lodash'],
         return frontEndItem;
       }
 
+      function makeCategoryIfNeeded(category) {
+        if (_.isString(category)) {
+          return {
+            '@id': INSTANCE_BASE + UUIDService.generate(),
+            '@type': 'http://trials.drugis.org/ontology#Category',
+            label: category
+          };
+        } else {
+          return category;
+        }
+      }
+
       function toBackEnd(item, type) {
         var newItem = {
           '@type': type,
@@ -68,8 +82,8 @@ define(['angular', 'lodash'],
           }],
           has_result_property: item.resultProperties
         };
-        if(item.measurementType === 'ontology:categorical') {
-          // FIXME: add categories
+        if (item.measurementType === 'ontology:categorical') {
+          newItem.of_variable[0].categoryList = RdfListService.unFlattenList(_.map(item.categoryList, makeCategoryIfNeeded));
         }
         return newItem;
       }
@@ -97,7 +111,7 @@ define(['angular', 'lodash'],
       function addItem(item, type) {
         return StudyService.getStudy().then(function(study) {
           var newItem = toBackEnd(item, type);
-          newItem['@id'] = 'http://trials.drugis.org/instances/' + UUIDService.generate();
+          newItem['@id'] = INSTANCE_BASE + UUIDService.generate();
 
           study.has_outcome.push(newItem);
           return StudyService.save(study);
@@ -221,7 +235,8 @@ define(['angular', 'lodash'],
         moveToNewOutcome: moveToNewOutcome,
         hasOverlap: hasOverlap,
         hasDifferentType: hasDifferentType,
-        merge: merge
+        merge: merge,
+        makeCategoryIfNeeded: makeCategoryIfNeeded
       };
     };
     return dependencies.concat(OutcomeServiceService);

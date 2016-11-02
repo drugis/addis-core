@@ -1,7 +1,7 @@
 'use strict';
 define(['angular', 'lodash'], function(angular, _) {
-  var dependencies = ['StudyService', 'UUIDService'];
-  var ResultsService = function(StudyService, UUIDService) {
+  var dependencies = ['StudyService', 'RdfListService', 'UUIDService'];
+  var ResultsService = function(StudyService, RdfListService, UUIDService) {
 
     var INTEGER_TYPE = '<http://www.w3.org/2001/XMLSchema#integer>';
     var DOUBLE_TYPE = '<http://www.w3.org/2001/XMLSchema#double>';
@@ -277,7 +277,7 @@ define(['angular', 'lodash'], function(angular, _) {
           if (countItem) {
             if (inputColumn.value === null) {
               editItem.category_count = _.reject(editItem.category_count, function(count) {
-                return count.category === inputColumn.resultProperty;
+                return count.category === inputColumn.resultProperty['@id'];
               });
             } else {
               countItem.count = inputColumn.value;
@@ -405,6 +405,17 @@ define(['angular', 'lodash'], function(angular, _) {
       return node['@type'] === 'ontology:MeasurementMoment';
     }
 
+    function hasValues(node) {
+      if (!node.category_count) {
+        return _.keys(_.pick(node, VARIABLE_TYPES)).length > 0;
+      } else {
+        return node.category_count.length && _.find(node.category_count, function(countNode) {
+          return countNode.count !== null && countNode.count !== undefined;
+        });
+      }
+    }
+
+
     function cleanupMeasurements() {
       return StudyService.getJsonGraph().then(function(graph) {
         // first get all the info we need
@@ -458,28 +469,38 @@ define(['angular', 'lodash'], function(angular, _) {
         // remove properties that are no longer measured by the outcome
         var filteredGraph = _.map(graph, function(node) {
           if (isResult(node) && outcomeMap[node.of_outcome]) {
-            var resultProperties = _.keys(_.pick(node, VARIABLE_TYPES));
-            resultProperties = _.map(resultProperties, function(resultProperty) {
-              return VARIABLE_TYPE_DETAILS[resultProperty];
-            });
-            var missingProperties = _.filter(resultProperties, function(resultProperty) {
-              return !_.includes(outcomeMap[node.of_outcome].has_result_property, resultProperty.uri);
-            });
-            return _.omit(node, _.map(missingProperties, 'type'));
+            if (node.category_count) {
+              var categoryIds = _.reduce(study.has_outcome, function(accum, outcome) {
+                var categories = RdfListService.flattenList(outcome.of_variable[0].categoryList);
+                return accum.concat(_.map(categories, '@id'));
+              }, []);
+              node.category_count = _.filter(node.category_count, function(countObject) {
+                return _.includes(categoryIds,countObject.category);
+              });
+            } else {
+              var resultProperties = _.keys(_.pick(node, VARIABLE_TYPES));
+              resultProperties = _.map(resultProperties, function(resultProperty) {
+                return VARIABLE_TYPE_DETAILS[resultProperty];
+              });
+              var missingProperties = _.filter(resultProperties, function(resultProperty) {
+                return !_.includes(outcomeMap[node.of_outcome].has_result_property, resultProperty.uri);
+              });
+              return _.omit(node, _.map(missingProperties, 'type'));
+            }
+            return node;
           } else {
             return node;
           }
         });
 
-
-        // now its time for cleaning
+        // now it's time for cleaning
         filteredGraph = _.filter(filteredGraph, function(node) {
           if (isResult(node)) {
             return (hasArmMap[node.of_group] || hasGroupMap[node.of_group]) &&
               isMomentMap[node.of_moment] &&
               outcomeMap[node.of_outcome] &&
               isMeasurementOnOutcome[node.of_moment] &&
-              _.keys(_.pick(node, VARIABLE_TYPES)).length > 0;
+              hasValues(node);
           } else {
             return true;
           }
@@ -533,7 +554,7 @@ define(['angular', 'lodash'], function(angular, _) {
           VARIABLE_TYPE_DETAILS.sample_size,
           VARIABLE_TYPE_DETAILS.count
         ];
-      } else if (measurementType === 'ontology:isCategorical') {
+      } else if (measurementType === 'ontology:categorical') {
         return [];
       } else {
         console.error('unknown measurement type ' + measurementType);
