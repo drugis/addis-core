@@ -248,7 +248,7 @@ define(['lodash', 'angular'], function(_, angular) {
           successCallback: function() {
             return function() {
               $scope.interventions = InterventionResource.query({
-                projectId: $scope.projectId
+                projectId: $scope.project.id
               }).$promise.then(generateInterventionDescriptions);
             };
           }
