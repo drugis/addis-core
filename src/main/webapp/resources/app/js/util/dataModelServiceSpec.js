@@ -20,8 +20,8 @@ define(['angular', 'angular-mocks', 'util/util'], function() {
           var oldStyleGraph = {
             '@graph': [{
               '@id': 'http://catListBlankNode',
-              'http://www.w3.org/1999/02/22-rdf-syntax-ns#first': 'Male',
-              'http://www.w3.org/1999/02/22-rdf-syntax-ns#rest': {
+              'first': 'Male',
+              'rest': {
                 '@list': ['Female']
               }
             }, {
@@ -52,8 +52,8 @@ define(['angular', 'angular-mocks', 'util/util'], function() {
           var expectedGraph = {
             '@graph': [{
               '@id': 'http://catListBlankNode',
-              'http://www.w3.org/1999/02/22-rdf-syntax-ns#first': 'http://trials.drugis.org/instances/newUuid1',
-              'http://www.w3.org/1999/02/22-rdf-syntax-ns#rest': {
+              'first': 'http://trials.drugis.org/instances/newUuid1',
+              'rest': {
                 '@list': ['http://trials.drugis.org/instances/newUuid2']
               }
             }, {

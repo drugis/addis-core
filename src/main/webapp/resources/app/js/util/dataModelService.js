@@ -40,13 +40,13 @@ define(['angular', 'lodash'], function(angular, _) {
         });
         _.forEach(categoryLists, function(categoryList) {
           var currentNode = categoryList;
-          while(currentNode && currentNode[RDF_FIRST]) {
-            currentNode[RDF_FIRST] = categoriesByName[currentNode[RDF_FIRST]]['@id'];
-            if(currentNode[RDF_REST]['@list']) {
-              currentNode[RDF_REST]['@list'][0] = categoriesByName[currentNode[RDF_REST]['@list'][0]]['@id'];
+          while(currentNode && currentNode.first) {
+            currentNode.first = categoriesByName[currentNode.first]['@id'];
+            if(currentNode.rest['@list']) {
+              currentNode.rest['@list'][0] = categoriesByName[currentNode.rest['@list'][0]]['@id'];
             }
             currentNode = _.find(graph, function(node){
-              return node['@id'] === currentNode[RDF_REST];
+              return node['@id'] === currentNode.rest['@id'];
             });
           }
         });

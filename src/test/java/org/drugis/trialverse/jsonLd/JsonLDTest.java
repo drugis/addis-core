@@ -87,6 +87,7 @@ public class JsonLDTest {
   public void testTransformIsomorphy() throws IOException, ScriptException {
     String exampleJsonLd = loadResource(this.getClass(), "/jenaEsExampleJsonLd.json");
     String underscoreLoc = "src/test/java/org/drugis/trialverse/jsonLd/scripts/lodash-4.2.1.js";
+    String contextLoc = "src/main/webapp/resources/app/js/util/context.js";
     String transformScriptLoc = "src/main/webapp/resources/app/js/util/transformJsonLd.js";
 
     Model model = ModelFactory.createDefaultModel();
@@ -96,7 +97,9 @@ public class JsonLDTest {
     ScriptEngine engine = factory.getEngineByName("JavaScript");
     engine.put("inputJson", exampleJsonLd);
     engine.eval(new FileReader(underscoreLoc));
-    engine.eval("var improveJsonLd; function define(deps, def) { improveJsonLd = def(_); }"); // stub requireJS
+    engine.eval("var context; function define(deps, def) { context = def(); }"); // stub requireJS
+    engine.eval(new FileReader(contextLoc));
+    engine.eval("var improveJsonLd; function define(deps, def) { improveJsonLd = def(_, context); }"); // stub requireJS
     engine.eval(new FileReader(transformScriptLoc));
     engine.eval("var outputJson = JSON.stringify(improveJsonLd(JSON.parse(inputJson)), null, 2)");
     String betterJsonLd = (String) engine.get("outputJson");
