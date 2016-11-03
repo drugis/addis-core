@@ -1,4 +1,4 @@
-<form novalidate">
+<form novalidate>
   <div class="row">
     <div class="large-9 columns">
       <h3>Edit {{itemType}}</h3>
@@ -26,22 +26,50 @@
     </div>
   </div>
 
- <div class="row" ng-if="item.measurementType === 'ontology:categorical'">
+  <div class="row" ng-if="item.measurementType==='ontology:categorical'">
     <div class="large-9 columns">
       <label>Categories</label>
-      <ul class="no-bullet" ng-if="item.categoryList.length">
-        <li ng-repeat="category in item.categoryList"><a><i class="fa fa-trash-o" style="color: red;" ng-click="deleteCategory(category)"></i></a> {{category.label}}</li>
-      </ul>
+      <div class="row" ng-repeat="category in item.categoryList">
+        <div class="small-2 large-1 columns" <a><i class="fa fa-trash-o" style="color: red;" ng-click="deleteCategory(category)"></i></a>
+          <a><i class="fa fa-edit" ng-click="showEditInput(category)"></i></a>
+        </div>
+        <div class="small-10 large-11 columns">
+          <span ng-show="!isEditingCategory[category['@id']]">{{category.label}}</span>
+          <div class="row" ng-show="isEditingCategory[category['@id']]">
+            <div ng-show="isEditingCategory[category['@id']]" class="large-12 columns">
+              <div class="row collapse">
+                <div class="small-10 columns">
+                  <input type="text" ng-model="category.label" ng-keypress="$event.keyCode === 13 ? isEditingCategory[category['@id']] = false : null">
+                </div>
+                <div class="small-2 columns">
+                  <button class="button postfix" ng-click="isEditingCategory[category['@id']] = false">Done</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
       <span ng-if="!item.categoryList.length">(no categories defined yet)</span>
-      <input ng-model="newCategory.categoryLabel" ng-keypress="addCategoryEnterKey($event, newCategory)">
-      <button class="small" ng-disabled="cannotAddCategory(newCategory)" type="button"
-        ng-click="addCategory(newCategory)">Add category</button>
+      <div class="row">
+        <div class="large-12 columns">
+          <div class="row collapse">
+            <div class="small-8 columns">
+              <input ng-model="newCategory.categoryLabel" ng-keypress="addCategoryEnterKey($event,
+  newCategory)">
+            </div>
+            <div class="small-4 columns">
+              <button class="postfix" ng-disabled="cannotAddCategory(newCategory)" type="button"
+                ng-click="addCategory(newCategory)">Add category</button>
+            </div>
+          </div>
+        </div>
+      </div>
       <span class="alert" ng-if="isDuplicateCategory(newCategory)">Duplicate category name</span>
     </div>
   </div>
 
 
-  <div class="row" ng-if="item.measurementType !== 'ontology:categorical'">
+  <div class="row" ng-if="item.measurementType !=='ontology:categorical'">
     <div class="large-9 columns">
       <label>Included result properties:</label>
       <span ng-show="!changeResultProperties" ng-repeat="resultProperty in item.selectedResultProperties">
@@ -56,14 +84,16 @@
   <div class="row">
     <div class="large-9 columns">
       <label>Measurement moments</label>
-      <subset-select target="item.measuredAtMoments" source="measurementMoments" equals="measurementMomentEquals"></subset-select>
+      <subset-select target="item.measuredAtMoments" source="measurementMoments
+ " equals="measurementMomentEquals"></subset-select>
     </div>
   </div>
 
 
   <div class="row">
     <div class="large-9 columns">
-      <button class="success" type="button" ng-disabled="!item.label || !item.measurementType || isEditing" ng-click="editItem()">Edit
+      <button class="success" type="button" ng-disabled="!item.label || !item.measurementType
+  || isEditingItem" ng-click="editItem()">Edit
       </button>
     </div>
   </div>

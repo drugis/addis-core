@@ -8,7 +8,7 @@ define(['lodash'], function(_) {
     OutcomeService, itemService, MeasurementMomentService,
     ResultsService, callback, item, itemType) {
 
-    $scope.isEditing = false;
+    $scope.isEditingItem = false;
     $scope.item = item;
     $scope.itemType = itemType;
     $scope.measurementMoments = MeasurementMomentService.queryItems();
@@ -16,6 +16,8 @@ define(['lodash'], function(_) {
     $scope.deleteCategory = deleteCategory;
     $scope.addCategory = addCategory;
     $scope.addCategoryEnterKey = addCategoryEnterKey;
+    $scope.showEditInput = showEditInput;
+    $scope.isEditingCategory = {};
 
     item.selectedResultProperties = _.filter($scope.resultProperties, function(resultProperty) {
       return _.includes(item.resultProperties, resultProperty.uri);
@@ -41,7 +43,7 @@ define(['lodash'], function(_) {
     }
 
     function editItem() {
-      $scope.isEditing = false;
+      $scope.isEditingItem = true;
       item.resultProperties = _.map(item.selectedResultProperties, 'uri');
       delete item.selectedResultProperties;
       itemService.editItem($scope.item).then(function() {
@@ -83,6 +85,9 @@ define(['lodash'], function(_) {
       }
     }
 
+    function showEditInput(category) {
+      $scope.isEditingCategory[category['@id']] = true;
+    }
 
   };
   return dependencies.concat(EditItemController);
