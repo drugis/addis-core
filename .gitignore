@@ -5,4 +5,17 @@ src/main/webapp/resources/app/js/bower_components/
 src/test/karma-test-results.xml
 4e4e6bf
 .sass-cache
+.project
+.settings/
+node_modules/
+rollingCoolness.log
+src/test/PhantomJS_2.1.1_(Linux_0.0.0)/
+ssl/
+trialverse/addis-rdf/00-body
+trialverse/addis-rdf/00-headers
+trialverse/addis-rdf/01-headers
+trialverse/addis-rdf/config.sh
+trialverse/addis-rdf/depression.trig
+deploy.sh
+src/test/Firefox_49.0.0_(Ubuntu_0.0.0)/
 
