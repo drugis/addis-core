@@ -92,7 +92,6 @@ define(['lodash', 'angular'], function(_, angular) {
           });
         });
       });
-
     });
 
     function generateInterventionDescriptions(interventions) {

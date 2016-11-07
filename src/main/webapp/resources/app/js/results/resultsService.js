@@ -1,10 +1,11 @@
 'use strict';
 define(['angular', 'lodash'], function(angular, _) {
-  var dependencies = ['StudyService', 'UUIDService'];
-  var ResultsService = function(StudyService, UUIDService) {
+  var dependencies = ['StudyService', 'RdfListService', 'UUIDService'];
+  var ResultsService = function(StudyService, RdfListService, UUIDService) {
 
     var INTEGER_TYPE = '<http://www.w3.org/2001/XMLSchema#integer>';
     var DOUBLE_TYPE = '<http://www.w3.org/2001/XMLSchema#double>';
+    var ONTOLOGY_BASE = 'http://trials.drugis.org/ontology#';
 
     var VARIABLE_TYPES = ['sample_size',
       'mean',
@@ -198,18 +199,17 @@ define(['angular', 'lodash'], function(angular, _) {
 
     function getVariableDetails(variableTypeUri) {
       var normalisedUri = variableTypeUri;
-      if (!_.startsWith(variableTypeUri, 'http://trials.drugis.org/ontology#')) {
-        normalisedUri = _.replace(normalisedUri, 'ontology:', 'http://trials.drugis.org/ontology#');
+      if (!_.startsWith(variableTypeUri, ONTOLOGY_BASE)) {
+        normalisedUri = _.replace(normalisedUri, 'ontology:', ONTOLOGY_BASE);
       }
       return _.find(VARIABLE_TYPE_DETAILS, ['uri', normalisedUri]);
     }
 
-    function updateResultValue(row, inputColumn) {
+    function updateValue(row, inputColumn) {
       var inputColumnVariableDetails = getVariableDetails(inputColumn.resultProperty);
       return StudyService.getJsonGraph().then(function(graph) {
-        if (!row.uri) {
+        if (!row.uri) { // create branch
           if (inputColumn.value !== null && inputColumn.value !== undefined) {
-            // create branch
             var addItem = {
               '@id': 'http://trials.drugis.org/instances/' + UUIDService.generate(),
               of_group: row.group.armURI || row.group.groupUri,
@@ -218,7 +218,6 @@ define(['angular', 'lodash'], function(angular, _) {
             };
             addItem[inputColumnVariableDetails.type] = inputColumn.value;
             StudyService.saveJsonGraph(graph.concat(addItem));
-
             return addItem['@id'];
           } else {
             return undefined;
@@ -238,18 +237,88 @@ define(['angular', 'lodash'], function(angular, _) {
           if (!isEmptyResult(editItem)) {
             graph.push(editItem);
           } else {
-            row.uri = undefined;
+            delete row.uri;
+          }
+        }
+        StudyService.saveJsonGraph(graph);
+        return row.uri;
+      });
+    }
+
+    function updateCategoricalValue(row, inputColumn) {
+      return StudyService.getJsonGraph().then(function(graph) {
+        if (!row.uri) {
+          if (inputColumn.value !== null && inputColumn.value !== undefined) {
+            // create branch
+            var addItem = {
+              '@id': 'http://trials.drugis.org/instances/' + UUIDService.generate(),
+              of_group: row.group.armURI || row.group.groupUri,
+              of_moment: row.measurementMoment.uri,
+              of_outcome: row.variable.uri,
+              category_count: [{
+                count: inputColumn.value,
+                category: inputColumn.resultProperty['@id']
+              }]
+            };
+            StudyService.saveJsonGraph(graph.concat(addItem));
+            return addItem['@id'];
+          } else {
+            return undefined;
+          }
+        } else {
+          // update branch
+          var editItem = _.remove(graph, function(node) {
+            return row.uri === node['@id'];
+          })[0];
+
+          var countItem = _.find(editItem.category_count, function(countItem) {
+            return countItem.category === inputColumn.resultProperty['@id'];
+          });
+          if (countItem) {
+            if (inputColumn.value === null) {
+              editItem.category_count = _.reject(editItem.category_count, function(count) {
+                return count.category === inputColumn.resultProperty['@id'];
+              });
+            } else {
+              countItem.count = inputColumn.value;
+            }
+          } else {
+            countItem = {
+              count: inputColumn.value,
+              category: inputColumn.resultProperty['@id']
+            };
+            editItem.category_count.push(countItem);
           }
 
-          StudyService.saveJsonGraph(graph);
-          return row.uri;
+          if (!isEmptyCategoricalResult(editItem)) {
+            graph.push(editItem);
+          } else {
+            delete row.uri;
+          }
         }
+        StudyService.saveJsonGraph(graph);
+        return row.uri;
+      });
+    }
+
+    function updateResultValue(row, inputColumn) {
+      if (!inputColumn.isCategory) {
+        return updateValue(row, inputColumn);
+      } else {
+        return updateCategoricalValue(row, inputColumn);
+      }
+
+    }
+
+    function isEmptyCategoricalResult(item) {
+      return !_.some(item.category_count, function(categoryItem) {
+        return categoryItem.count !== undefined;
       });
     }
 
     function isEmptyResult(item) {
       return !_.some(VARIABLE_TYPES, function(type) {
-        return item[type];
+        return item[type] !== undefined;
       });
     }
 
@@ -257,6 +326,14 @@ define(['angular', 'lodash'], function(angular, _) {
       var valueItem = angular.copy(baseItem);
       valueItem.result_property = type;
       valueItem.value = backEndItem[type];
+      return valueItem;
+    }
+
+    function createCategoryItem(baseItem, backEndItem, categoryItem) {
+      var valueItem = angular.copy(baseItem);
+      valueItem.isCategorical = true;
+      valueItem.result_property = categoryItem.category && categoryItem.category.label ? categoryItem.label : categoryItem;
+      valueItem.value = categoryItem.count;
       return valueItem;
     }
 
@@ -278,6 +355,12 @@ define(['angular', 'lodash'], function(angular, _) {
           accum.push(createValueItem(baseItem, backEndItem, variableType));
         }
       });
+
+      if (backEndItem.category_count) {
+        _.each(backEndItem.category_count, function(categoryCount) {
+          accum.push(createCategoryItem(baseItem, backEndItem, categoryCount));
+        });
+      }
 
       return accum;
     }
@@ -321,6 +404,17 @@ define(['angular', 'lodash'], function(angular, _) {
     function isMoment(node) {
       return node['@type'] === 'ontology:MeasurementMoment';
     }
+
+    function hasValues(node) {
+      if (!node.category_count) {
+        return _.keys(_.pick(node, VARIABLE_TYPES)).length > 0;
+      } else {
+        return node.category_count.length && _.find(node.category_count, function(countNode) {
+          return countNode.count !== null && countNode.count !== undefined;
+        });
+      }
+    }
+
 
     function cleanupMeasurements() {
       return StudyService.getJsonGraph().then(function(graph) {
@@ -375,28 +469,38 @@ define(['angular', 'lodash'], function(angular, _) {
         // remove properties that are no longer measured by the outcome
         var filteredGraph = _.map(graph, function(node) {
           if (isResult(node) && outcomeMap[node.of_outcome]) {
-            var resultProperties = _.keys(_.pick(node, VARIABLE_TYPES));
-            resultProperties = _.map(resultProperties, function(resultProperty) {
-              return VARIABLE_TYPE_DETAILS[resultProperty];
-            });
-            var missingProperties = _.filter(resultProperties, function(resultProperty) {
-              return !_.includes(outcomeMap[node.of_outcome].has_result_property, resultProperty.uri);
-            });
-            return _.omit(node, _.map(missingProperties, 'type'));
+            if (node.category_count) {
+              var categoryIds = _.reduce(study.has_outcome, function(accum, outcome) {
+                var categories = RdfListService.flattenList(outcome.of_variable[0].categoryList);
+                return accum.concat(_.map(categories, '@id'));
+              }, []);
+              node.category_count = _.filter(node.category_count, function(countObject) {
+                return _.includes(categoryIds,countObject.category);
+              });
+            } else {
+              var resultProperties = _.keys(_.pick(node, VARIABLE_TYPES));
+              resultProperties = _.map(resultProperties, function(resultProperty) {
+                return VARIABLE_TYPE_DETAILS[resultProperty];
+              });
+              var missingProperties = _.filter(resultProperties, function(resultProperty) {
+                return !_.includes(outcomeMap[node.of_outcome].has_result_property, resultProperty.uri);
+              });
+              return _.omit(node, _.map(missingProperties, 'type'));
+            }
+            return node;
           } else {
             return node;
           }
         });
 
-
-        // now its time for cleaning
+        // now it's time for cleaning
         filteredGraph = _.filter(filteredGraph, function(node) {
           if (isResult(node)) {
             return (hasArmMap[node.of_group] || hasGroupMap[node.of_group]) &&
               isMomentMap[node.of_moment] &&
               outcomeMap[node.of_outcome] &&
               isMeasurementOnOutcome[node.of_moment] &&
-              _.keys(_.pick(node, VARIABLE_TYPES)).length > 0;
+              hasValues(node);
           } else {
             return true;
           }
@@ -450,6 +554,8 @@ define(['angular', 'lodash'], function(angular, _) {
           VARIABLE_TYPE_DETAILS.sample_size,
           VARIABLE_TYPE_DETAILS.count
         ];
+      } else if (measurementType === 'ontology:categorical') {
+        return [];
       } else {
         console.error('unknown measurement type ' + measurementType);
       }

@@ -1,8 +1,10 @@
 'use strict';
 define(['angular', 'lodash'],
   function(angular, _) {
-    var dependencies = ['$q', 'StudyService', 'UUIDService', 'MeasurementMomentService', 'ResultsService', 'RepairService'];
-    var OutcomeServiceService = function($q, StudyService, UUIDService, MeasurementMomentService, ResultsService, RepairService) {
+    var dependencies = ['$q', 'StudyService', 'UUIDService', 'MeasurementMomentService', 'ResultsService', 'RepairService', 'RdfListService'];
+    var OutcomeServiceService = function($q, StudyService, UUIDService, MeasurementMomentService, ResultsService, RepairService, RdfListService) {
+
+      var INSTANCE_BASE = 'http://trials.drugis.org/instances/';
 
       function isOverlappingResultFunction(a, b) {
         return a.armUri === b.armUri &&
@@ -20,15 +22,29 @@ define(['angular', 'lodash'],
         });
       }
 
-      function toFrontEnd(measurementMoments, item) {
+      function toFrontEnd(measurementMoments, graph, item) {
         var frontEndItem = {
           uri: item['@id'],
           label: item.label,
           measurementType: item.of_variable[0].measurementType,
-          resultProperties: item.has_result_property,
           measuredAtMoments: [],
           conceptMapping: item.of_variable[0].sameAs
         };
+
+        if (frontEndItem.measurementType === 'ontology:categorical') {
+          if (item.of_variable[0].categoryList.first) {
+            frontEndItem.categoryList = RdfListService.flattenList(item.of_variable[0].categoryList);
+          } else { // legacy import with messed-up categoryList
+            var referringMeasurement = _.find(graph, function(node) {
+              return node.of_outcome === item['@id'];
+            });
+            if (referringMeasurement) {
+              frontEndItem.categoryList = _.map(referringMeasurement.category_count, 'category');
+            }
+          }
+        } else {
+          frontEndItem.resultProperties = item.has_result_property;
+        }
 
         // if only one measurement moment is selected, it's a string, not an array
         if (Array.isArray(item.is_measured_at)) {
@@ -41,8 +57,20 @@ define(['angular', 'lodash'],
         return frontEndItem;
       }
 
+      function makeCategoryIfNeeded(category) {
+        if (_.isString(category)) {
+          return {
+            '@id': INSTANCE_BASE + UUIDService.generate(),
+            '@type': 'http://trials.drugis.org/ontology#Category',
+            label: category
+          };
+        } else {
+          return category;
+        }
+      }
+
       function toBackEnd(item, type) {
-        return {
+        var newItem = {
           '@type': type,
           '@id': item.uri,
           is_measured_at: item.measuredAtMoments.length === 1 ? item.measuredAtMoments[0].uri : _.map(item.measuredAtMoments, 'uri'),
@@ -54,6 +82,10 @@ define(['angular', 'lodash'],
           }],
           has_result_property: item.resultProperties
         };
+        if (item.measurementType === 'ontology:categorical') {
+          newItem.of_variable[0].categoryList = RdfListService.unFlattenList(_.map(item.categoryList, makeCategoryIfNeeded));
+        }
+        return newItem;
       }
 
       function sortByLabel(a, b) {
@@ -68,9 +100,10 @@ define(['angular', 'lodash'],
 
       function queryItems(typeCheckFunction) {
         return MeasurementMomentService.queryItems().then(function(measurementMoments) {
-          return StudyService.getStudy().then(function(study) {
+          return StudyService.getJsonGraph().then(function(graph) {
+            var study = StudyService.findStudyNode(graph);
             var outcomes = _.filter(study.has_outcome, typeCheckFunction);
-            return _.map(outcomes, _.partial(toFrontEnd, measurementMoments)).sort(sortByLabel);
+            return _.map(outcomes, _.partial(toFrontEnd, measurementMoments, graph)).sort(sortByLabel);
           });
         });
       }
@@ -78,7 +111,7 @@ define(['angular', 'lodash'],
       function addItem(item, type) {
         return StudyService.getStudy().then(function(study) {
           var newItem = toBackEnd(item, type);
-          newItem['@id'] = 'http://trials.drugis.org/instances/' + UUIDService.generate();
+          newItem['@id'] = INSTANCE_BASE + UUIDService.generate();
 
           study.has_outcome.push(newItem);
           return StudyService.save(study);
@@ -202,7 +235,8 @@ define(['angular', 'lodash'],
         moveToNewOutcome: moveToNewOutcome,
         hasOverlap: hasOverlap,
         hasDifferentType: hasDifferentType,
-        merge: merge
+        merge: merge,
+        makeCategoryIfNeeded: makeCategoryIfNeeded
       };
     };
     return dependencies.concat(OutcomeServiceService);

@@ -5,6 +5,7 @@ define(['lodash'], function(_) {
 
     var CONTINUOUS_TYPE = 'ontology:continuous';
     var DICHOTOMOUS_TYPE = 'ontology:dichotomous';
+    var CATEGORICAL_TYPE = 'ontology:categorical';
 
     function findResultValueByType(resultValueObjects, type) {
       var resultValueObjectFound = _.find(resultValueObjects, function(resultValueObject) {
@@ -16,9 +17,43 @@ define(['lodash'], function(_) {
       }
     }
 
+    function findCategoricalResult(resultValueObjects, category) {
+      var resultValueObjectFound = _.find(resultValueObjects, function(resultValueObject) {
+        return resultValueObject.result_property.category === category['@id'];
+      });
+      if (resultValueObjectFound) {
+        return Number(resultValueObjectFound.value);
+      }
+    }
+
     function createInputColumns(variable, rowValueObjects) {
-      if(!variable.resultProperties) {
-        return [];
+      if (!variable.resultProperties) {
+        if (variable.categoryList) {
+          return variable.categoryList.map(function(category) {
+            var resultProperty;
+            var value;
+            var valueName;
+            if (category.label) { // new format
+              resultProperty = null;
+              valueName = category.label;
+              value = findCategoricalResult(rowValueObjects, category);
+            } else { // old format
+              resultProperty = category;
+              valueName = category;
+              value = findResultValueByType(rowValueObjects, category);
+            }
+            return {
+              resultProperty: category,
+              valueName: category,
+              value: value,
+              dataType: ResultsService.INTEGER_TYPE,
+              isCategory: true,
+              isInValidValue: false
+            };
+          });
+        } else {
+          return [];
+        }
       }
       return variable.resultProperties.map(function(type) {
         var details = ResultsService.getVariableDetails(type);
@@ -32,14 +67,22 @@ define(['lodash'], function(_) {
       });
     }
 
-    function createHeaders(resultProperties) {
-      if(!resultProperties) {
-        return [];
+    function createHeaders(variable) {
+      if (!variable.resultProperties) {
+        if (!variable.categoryList) {
+          return [];
+        } else {
+          if (variable.categoryList[0] && variable.categoryList[0].label) {
+            return _.map(variable.categoryList, 'label');
+          } else {
+            return variable.categoryList;
+          }
+        }
       }
-      if(!resultProperties.map) {
-        return [ResultsService.getVariableDetails(resultProperties).label];
+      if (!variable.resultProperties.map) {
+        return [ResultsService.getVariableDetails(variable.resultProperties).label];
       }
-      return resultProperties.map(function(type) {
+      return variable.resultProperties.map(function(type) {
         return ResultsService.getVariableDetails(type).label;
       });
     }
@@ -114,7 +157,8 @@ define(['lodash'], function(_) {
       isValidValue: isValidValue,
       createInputColumns: createInputColumns,
       CONTINUOUS_TYPE: CONTINUOUS_TYPE,
-      DICHOTOMOUS_TYPE: DICHOTOMOUS_TYPE
+      DICHOTOMOUS_TYPE: DICHOTOMOUS_TYPE,
+      CATEGORICAL_TYPE: CATEGORICAL_TYPE
     };
   };
   return dependencies.concat(ResultsTableService);

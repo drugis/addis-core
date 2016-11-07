@@ -13,7 +13,7 @@
   </div>
   <div class="row">
     <div class="large-9 columns" ng-if="!copyComplete">
-      <button class="success" type="submit">Copy</button>
+      <button class="success"  ng-disabled="isCopying" type="submit">Copy</button>
     </div>
     <div class="large-9 columns" ng-if="copyComplete">
       <button ng-click="cancel()">Close</button> <a ng-click="cancel()" style="margin-left:1rem; text-decoration: underline;" ui-sref="versionedDataset.study({userUid: userUuid, datasetUUID: targetDatasetUuid, versionUuid: newVersionUuid, studyGraphUuid: targetGraphUuid})">Go to new copy</a>

@@ -6,14 +6,26 @@
     <span>
       Measurement type:
     </span>
-    <span><strong>{{::item.measurementType === 'ontology:continuous' ? 'continuous' : 'count'}}</span> </strong>
+    <span>
+      <strong ng-if="::item.measurementType === 'ontology:continuous'">continuous</strong>
+      <strong ng-if="::item.measurementType === 'ontology:dichotomous'">count</strong>
+      <strong ng-if="::item.measurementType === 'ontology:categorical'">categorical</strong>
+    </span>
+  </li>
+  <li ng-if="::item.measurementType === 'ontology:categorical'">
+    <span>
+      Categories:
+    </span>
+    <ul>
+      <li ng-repeat="category in item.categoryList">{{::category.label ? category.label : category}}</li>
+    </ul>
   </li>
   <li ng-if="item.measuredAtMoments.length > 0">
     <span>
       Measured at:
     </span>
-    <ul ng-repeat="measuredAt in item.measuredAtMoments">
-      <li><strong>{{::measuredAt.label}}</strong></li>
+    <ul>
+      <li ng-repeat="measuredAt in item.measuredAtMoments"><strong>{{::measuredAt.label}}</strong></li>
     </ul>
   </li>
 </ul>

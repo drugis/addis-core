@@ -1,4 +1,4 @@
-(defproject org.drugis.addis/rdfexport "1.0.1"
+(defproject org.drugis.addis/rdfexport "1.1.2"
   :description "Convert ADDIS 1.x XML to ADDIS 2 RDF"
   :url "https://drugis.org/"
   :min-lein-version "2.0.0"

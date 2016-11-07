@@ -1,8 +1,8 @@
 'use strict';
 define(['util/transformJsonLd', 'util/transformConceptJsonLd'], function(transformStudyJsonLd, transformConceptJsonLd) {
 
-  var dependencies = ['$resource'];
-  var GraphResource = function($resource) {
+  var dependencies = ['$resource', 'DataModelService'];
+  var GraphResource = function($resource, DataModelService) {
 
     return $resource(
       '/users/:userUid/datasets/:datasetUUID/graphs/:graphUuid', {
@@ -21,7 +21,7 @@ define(['util/transformJsonLd', 'util/transformConceptJsonLd'], function(transfo
             'Accept': 'application/ld+json'
           },
           transformResponse: function(data) {
-            return transformStudyJsonLd(JSON.parse(data));
+            return transformStudyJsonLd(DataModelService.updateCategories(JSON.parse(data)));
           }
         },
         'getConceptJson': {

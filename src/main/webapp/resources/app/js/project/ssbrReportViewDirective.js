@@ -1,10 +1,10 @@
 'use strict';
 define(['lodash'], function(_) {
   var dependencies = ['ProblemResource', 'WorkspaceService', 'ProjectStudiesResource',
-    'OutcomeResource', 'AnalysisResource', 'ModelResource', 'ScenarioResource', 'MCDAResultsService'
+    'OutcomeResource', 'AnalysisResource', 'ModelResource', 'ScenarioResource', 'MCDAResultsService', 'TaskDependencies'
   ];
   var SsbrReportViewDirective = function(ProblemResource, WorkspaceService, ProjectStudiesResource,
-    OutcomeResource, AnalysisResource, ModelResource, ScenarioResource, MCDAResultsService) {
+    OutcomeResource, AnalysisResource, ModelResource, ScenarioResource, MCDAResultsService, TaskDependencies) {
     return {
       restrict: 'E',
       templateUrl: 'app/js/project/ssbrReportView.html',
@@ -69,7 +69,7 @@ define(['lodash'], function(_) {
           projectId: scope.project.id
         }).$promise.then(function(scenarios) {
           scope.scenarios = scenarios.map(function(scenario) {
-            if (!hasMissingPvfs(scenario.state.problem.criteria)) {
+            if (TaskDependencies.isAccessible({ requires: ['scale-range', 'partial-value-function']}, scenario.state).accessible) {
               scenario.state = MCDAResultsService.getResults(scope, scenario.state);
             }
             return scenario;

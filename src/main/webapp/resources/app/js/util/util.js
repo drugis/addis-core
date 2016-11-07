@@ -11,6 +11,7 @@ define(function(require) {
     .factory('SanitizeService', require('util/sanitizeService'))
     .factory('AbstractGroupService', require('util/abstractGroupService'))
     .factory('RdfListService', require('util/rdfListService'))
+    .factory('DataModelService', require('util/dataModelService'))
 
   // resources
   .factory('SparqlResource', require('util/sparqlResource'))

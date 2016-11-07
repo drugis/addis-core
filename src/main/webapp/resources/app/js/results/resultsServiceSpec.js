@@ -3,14 +3,14 @@ define(['angular-mocks'], function(angularMocks) {
   describe('the resultsService service', function() {
 
     var rootScope, q;
-    var studyService = jasmine.createSpyObj('StudyService', ['getJsonGraph', 'saveJsonGraph']);
+    var studyServiceMock = jasmine.createSpyObj('StudyServiceMock', ['getJsonGraph', 'saveJsonGraph']);
     var uuidServiceMock = jasmine.createSpyObj('UUIDService', ['generate']);
     uuidServiceMock.generate.and.returnValue('newUuid');
     var resultsService;
 
     beforeEach(function() {
       module('trialverse.results', function($provide) {
-        $provide.value('StudyService', studyService);
+        $provide.value('StudyService', studyServiceMock);
         $provide.value('UUIDService', uuidServiceMock);
       });
     });
@@ -56,7 +56,7 @@ define(['angular-mocks'], function(angularMocks) {
         var graphDefer = q.defer();
         var getGraphPromise = graphDefer.promise;
         graphDefer.resolve(graphJsonObject);
-        studyService.getJsonGraph.and.returnValue(getGraphPromise);
+        studyServiceMock.getJsonGraph.and.returnValue(getGraphPromise);
       });
 
       it('should return the results for a given variable', function(done) {
@@ -116,7 +116,7 @@ define(['angular-mocks'], function(angularMocks) {
         var graphDefer = q.defer();
         var getGraphPromise = graphDefer.promise;
         graphDefer.resolve(graphJsonObject);
-        studyService.getJsonGraph.and.returnValue(getGraphPromise);
+        studyServiceMock.getJsonGraph.and.returnValue(getGraphPromise);
       });
 
       it('should return the results for a given group', function(done) {
@@ -151,7 +151,7 @@ define(['angular-mocks'], function(angularMocks) {
           var graphDefer = q.defer();
           var getGraphPromise = graphDefer.promise;
           graphDefer.resolve([]);
-          studyService.getJsonGraph.and.returnValue(getGraphPromise);
+          studyServiceMock.getJsonGraph.and.returnValue(getGraphPromise);
         });
 
         it('should add the value to the graph', function(done) {
@@ -184,20 +184,65 @@ define(['angular-mocks'], function(angularMocks) {
             }];
             expect(result).toBeTruthy();
             expect(result).toEqual(expextedGraph[0]['@id']);
-            expect(studyService.saveJsonGraph).toHaveBeenCalledWith(expextedGraph);
-            studyService.saveJsonGraph.calls.reset();
-            studyService.getJsonGraph.calls.reset();
+            expect(studyServiceMock.saveJsonGraph).toHaveBeenCalledWith(expextedGraph);
+            studyServiceMock.saveJsonGraph.calls.reset();
+            studyServiceMock.getJsonGraph.calls.reset();
             done();
           });
           // fire in the hole !
           rootScope.$digest();
+        });
 
+        it('should add the value to the graph (categorical)', function(done) {
+
+          var row = {
+            variable: {
+              uri: 'http://trials.drugis.org/instances/outcome1'
+            },
+            group: {
+              armURI: 'http://trials.drugis.org/instances/arm1'
+            },
+            measurementMoment: {
+              uri: 'http://trials.drugis.org/instances/moment1'
+            }
+          };
+
+          var maleCategory = {
+            '@id': 'http://trials.drugis.org/maleCatId',
+            label: 'Male'
+          };
+
+          var inputColumn = {
+            isCategory: true,
+            valueName: 'Male',
+            value: 123,
+            resultProperty: maleCategory,
+          };
+
+          resultsService.updateResultValue(row, inputColumn).then(function(result) {
+            var expextedGraph = [{
+              '@id': 'http://trials.drugis.org/instances/newUuid',
+              'category_count': [{
+                category: maleCategory['@id'],
+                count: 123
+              }],
+              'of_group': 'http://trials.drugis.org/instances/arm1',
+              'of_moment': 'http://trials.drugis.org/instances/moment1',
+              'of_outcome': 'http://trials.drugis.org/instances/outcome1',
+            }];
+            expect(result).toBeTruthy();
+            expect(result).toEqual(expextedGraph[0]['@id']);
+            expect(studyServiceMock.saveJsonGraph).toHaveBeenCalledWith(expextedGraph);
+            studyServiceMock.saveJsonGraph.calls.reset();
+            studyServiceMock.getJsonGraph.calls.reset();
+            done();
+          });
+          // fire in the hole !
+          rootScope.$digest();
         });
       });
 
-
-      describe('if the new value is a value', function() {
-
+      describe('if there already is data in the graph, and the new value is a value', function() {
         var graphJsonObject = [{
           '@id': 'http://trials.drugis.org/instances/result1',
           'count': 24,
@@ -211,7 +256,7 @@ define(['angular-mocks'], function(angularMocks) {
           var graphDefer = q.defer();
           var getGraphPromise = graphDefer.promise;
           graphDefer.resolve(graphJsonObject);
-          studyService.getJsonGraph.and.returnValue(getGraphPromise);
+          studyServiceMock.getJsonGraph.and.returnValue(getGraphPromise);
         });
 
         it('should save the value to the graph', function(done) {
@@ -246,18 +291,159 @@ define(['angular-mocks'], function(angularMocks) {
             expect(result).toBeTruthy();
             expect(result).toEqual(expextedGraph[0]['@id']);
             expect(result).toEqual(row.uri);
-            expect(studyService.saveJsonGraph).toHaveBeenCalledWith(expextedGraph);
-            studyService.saveJsonGraph.calls.reset();
-            studyService.getJsonGraph.calls.reset();
+            expect(studyServiceMock.saveJsonGraph).toHaveBeenCalledWith(expextedGraph);
+            studyServiceMock.saveJsonGraph.calls.reset();
+            studyServiceMock.getJsonGraph.calls.reset();
             done();
           });
           // fire in the hole !
           rootScope.$digest();
         });
-
       });
 
-      describe('if the new value is a null value', function() {
+      describe('if there already is categorical data in the graph, and the new value is a value', function() {
+        var femaleCategory = {
+          '@id': 'http://trials.drugis.org/femaleCatId',
+          label: 'Female'
+        };
+        beforeEach(function() {
+
+          var graphJsonObject = [{
+            '@id': 'http://trials.drugis.org/instances/result1',
+            category_count: [{
+              '@id': 'http://trials.drugis.org/blanknodes/1',
+              category: femaleCategory['@id'],
+              count: 24
+            }],
+            'of_group': 'http://trials.drugis.org/instances/arm1',
+            'of_moment': 'http://trials.drugis.org/instances/moment1',
+            'of_outcome': 'http://trials.drugis.org/instances/outcome1'
+          }];
+
+          var graphDefer = q.defer();
+          var getGraphPromise = graphDefer.promise;
+          graphDefer.resolve(graphJsonObject);
+          studyServiceMock.getJsonGraph.and.returnValue(getGraphPromise);
+        });
+
+        it('if the new value is of a new category the category_count should be expanded with the new category', function(done) {
+          var maleCategory = {
+            '@id': 'http://trials.drugis.org/maleCatId',
+            label: 'Male'
+          };
+          var inputColumn = {
+            isCategory: true,
+            valueName: 'Male',
+            value: 123,
+            resultProperty: maleCategory,
+          };
+          var row = {
+            variable: {
+              uri: 'http://trials.drugis.org/instances/outcome1'
+            },
+            arm: {
+              armURI: 'http://trials.drugis.org/instances/arm1'
+            },
+            measurementMoment: {
+              uri: 'http://trials.drugis.org/instances/moment1'
+            },
+            uri: 'http://trials.drugis.org/instances/result1'
+          };
+          resultsService.updateResultValue(row, inputColumn).then(function(result) {
+            var expextedGraph = [{
+              '@id': 'http://trials.drugis.org/instances/result1',
+              category_count: [{
+                '@id': 'http://trials.drugis.org/blanknodes/1',
+                category: femaleCategory['@id'],
+                count: 24
+              }, {
+                category: maleCategory['@id'],
+                count: 123
+              }],
+              of_group: 'http://trials.drugis.org/instances/arm1',
+              of_moment: 'http://trials.drugis.org/instances/moment1',
+              of_outcome: 'http://trials.drugis.org/instances/outcome1'
+            }];
+            expect(result).toBeTruthy();
+            expect(studyServiceMock.saveJsonGraph).toHaveBeenCalledWith(expextedGraph);
+            studyServiceMock.saveJsonGraph.calls.reset();
+            studyServiceMock.getJsonGraph.calls.reset();
+            done();
+          });
+          rootScope.$digest();
+        });
+        it('if the new value is of an existing category the category_count value should be updated', function(done) {
+
+          var inputColumn = {
+            isCategory: true,
+            valueName: 'Female',
+            value: 123,
+            resultProperty: femaleCategory,
+          };
+          var row = {
+            variable: {
+              uri: 'http://trials.drugis.org/instances/outcome1'
+            },
+            arm: {
+              armURI: 'http://trials.drugis.org/instances/arm1'
+            },
+            measurementMoment: {
+              uri: 'http://trials.drugis.org/instances/moment1'
+            },
+            uri: 'http://trials.drugis.org/instances/result1'
+          };
+          resultsService.updateResultValue(row, inputColumn).then(function(result) {
+            var expextedGraph = [{
+              '@id': 'http://trials.drugis.org/instances/result1',
+              category_count: [{
+                '@id': 'http://trials.drugis.org/blanknodes/1',
+                category: femaleCategory['@id'],
+                count: 123
+              }],
+              of_group: 'http://trials.drugis.org/instances/arm1',
+              of_moment: 'http://trials.drugis.org/instances/moment1',
+              of_outcome: 'http://trials.drugis.org/instances/outcome1'
+            }];
+            expect(result).toBeTruthy();
+            expect(studyServiceMock.saveJsonGraph).toHaveBeenCalledWith(expextedGraph);
+            studyServiceMock.saveJsonGraph.calls.reset();
+            studyServiceMock.getJsonGraph.calls.reset();
+            done();
+          });
+          rootScope.$digest();
+        });
+        it('if the new value is null and there was an existing value for the category, its category count should be removed', function(done) {
+          var inputColumn = {
+            isCategory: true,
+            valueName: 'Female',
+            value: null,
+            resultProperty: femaleCategory,
+          };
+          var row = {
+            variable: {
+              uri: 'http://trials.drugis.org/instances/outcome1'
+            },
+            arm: {
+              armURI: 'http://trials.drugis.org/instances/arm1'
+            },
+            measurementMoment: {
+              uri: 'http://trials.drugis.org/instances/moment1'
+            },
+            uri: 'http://trials.drugis.org/instances/result1'
+          };
+          resultsService.updateResultValue(row, inputColumn).then(function(result) {
+            var expextedGraph = [];
+            expect(result).toBeFalsy();
+            expect(studyServiceMock.saveJsonGraph).toHaveBeenCalledWith(expextedGraph);
+            studyServiceMock.saveJsonGraph.calls.reset();
+            studyServiceMock.getJsonGraph.calls.reset();
+            done();
+          });
+          rootScope.$digest();
+        });
+      });
+
+      describe('if the new value is a null value and there is not already a value there', function() {
 
         var graphJsonObject = [];
 
@@ -265,10 +451,10 @@ define(['angular-mocks'], function(angularMocks) {
           var graphDefer = q.defer();
           var getGraphPromise = graphDefer.promise;
           graphDefer.resolve(graphJsonObject);
-          studyService.getJsonGraph.and.returnValue(getGraphPromise);
+          studyServiceMock.getJsonGraph.and.returnValue(getGraphPromise);
         });
 
-        it('should save the value to the graph', function(done) {
+        it('should not save the value to the graph', function(done) {
           var row = {
             variable: {
               uri: 'http://trials.drugis.org/instances/outcome1'
@@ -286,23 +472,20 @@ define(['angular-mocks'], function(angularMocks) {
             valueName: 'sample_size'
           };
 
-          studyService.saveJsonGraph.calls.reset();
+          studyServiceMock.saveJsonGraph.calls.reset();
           resultsService.updateResultValue(row, inputColumn).then(function(result) {
-
             expect(result).toBeFalsy();
-            expect(studyService.saveJsonGraph).not.toHaveBeenCalled();
-            studyService.saveJsonGraph.calls.reset();
-            studyService.getJsonGraph.calls.reset();
+            expect(studyServiceMock.saveJsonGraph).not.toHaveBeenCalled();
+            studyServiceMock.saveJsonGraph.calls.reset();
+            studyServiceMock.getJsonGraph.calls.reset();
             done();
           });
           // fire in the hole !
           rootScope.$digest();
         });
-
       });
 
-
-      describe('if the new value is null', function() {
+      describe('if the new value is null and there is already a value there', function() {
 
         var row = {
           variable: {
@@ -336,10 +519,10 @@ define(['angular-mocks'], function(angularMocks) {
           var graphDefer = q.defer();
           var getGraphPromise = graphDefer.promise;
           graphDefer.resolve(graphJsonObject);
-          studyService.getJsonGraph.and.returnValue(getGraphPromise);
+          studyServiceMock.getJsonGraph.and.returnValue(getGraphPromise);
         });
 
-        it('should delete the value from the graph', function(done) {
+        it('should delete the old value from the graph', function(done) {
 
           resultsService.updateResultValue(row, inputColumn).then(function(result) {
             var expextedGraph = [{
@@ -350,9 +533,9 @@ define(['angular-mocks'], function(angularMocks) {
               'of_outcome': 'http://trials.drugis.org/instances/outcome1',
             }];
             expect(result).toBeTruthy();
-            expect(studyService.saveJsonGraph).toHaveBeenCalledWith(expextedGraph);
-            studyService.saveJsonGraph.calls.reset();
-            studyService.getJsonGraph.calls.reset();
+            expect(studyServiceMock.saveJsonGraph).toHaveBeenCalledWith(expextedGraph);
+            studyServiceMock.saveJsonGraph.calls.reset();
+            studyServiceMock.getJsonGraph.calls.reset();
             done();
           });
           // fire in the hole !
@@ -361,8 +544,7 @@ define(['angular-mocks'], function(angularMocks) {
       });
     }); // end describe updateResultValue
 
-
-    describe('cleanupMeasurements', function() {
+    describe('cleanupMeasurements for noncategoricals', function() {
 
       var arm1 = {
         '@id': 'http://trials.drugis.org/instances/a1',
@@ -493,7 +675,7 @@ define(['angular-mocks'], function(angularMocks) {
         'of_moment': measurementMoment1['@id'],
         'of_outcome': outcome1['@id'],
         'standard_error': 6
-      }
+      };
 
       var resultsToLeave = [result1, resultNonConformant];
       var resultsToBeCleaned = [result2, result3, result4, result5, result6];
@@ -517,19 +699,17 @@ define(['angular-mocks'], function(angularMocks) {
       var graphJsonObject = [study, measurementMoment1, measurementMoment2].concat(resultsToLeave).concat(resultsToBeCleaned);
       var expextedGraph = [study, measurementMoment1, measurementMoment2].concat(resultsToLeave);
 
-      var queryOutcome = 'http://trials.drugis.org/instances/outcome1';
-
       beforeEach(function() {
         var graphDefer = q.defer();
         var getGraphPromise = graphDefer.promise;
         graphDefer.resolve(graphJsonObject);
-        studyService.getJsonGraph.and.returnValue(getGraphPromise);
+        studyServiceMock.getJsonGraph.and.returnValue(getGraphPromise);
       });
 
       it('should clean the graph', function(done) {
-        resultsService.cleanupMeasurements(queryOutcome).then(function() {
-          expect(studyService.saveJsonGraph).toHaveBeenCalledWith(expextedGraph);
-          studyService.saveJsonGraph.calls.reset();
+        resultsService.cleanupMeasurements().then(function() {
+          expect(studyServiceMock.saveJsonGraph).toHaveBeenCalledWith(expextedGraph);
+          studyServiceMock.saveJsonGraph.calls.reset();
           done();
         });
         // fire in the hole !
@@ -537,6 +717,194 @@ define(['angular-mocks'], function(angularMocks) {
       });
     });
 
+    describe('cleanupMeasurements for categoricals', function() {
+
+      var arm1 = {
+        '@id': 'http://trials.drugis.org/instances/a1',
+        '@type': 'ontology:Arm',
+        'label': 'arm label'
+      };
+
+      var arm2 = {
+        '@id': 'http://trials.drugis.org/instances/a2',
+        '@type': 'ontology:Arm',
+        'label': 'arm label'
+      };
+
+      var category1 = {
+        '@id': 'http://trials.drugis.org/instances/cat1',
+        type: 'ontology:Category',
+        label: 'Young'
+      };
+      var categoryNode1 = {
+        first: category1,
+        rest: {
+          '@id': 'http://www.w3.org/1999/02/22-rdf-syntax-ns#nil'
+        }
+      };
+
+      var outcome1 = {
+        '@id': 'http://trials.drugis.org/instances/out1',
+        '@type': 'ontology:OutcomeType',
+        'is_measured_at': ['http://trials.drugis.org/instances/mm1','http://trials.drugis.org/instances/mm2'],
+        'of_variable': [{
+          '@id': 'http://fuseki-test.drugis.org:3030/.well-known/genid/var1',
+          '@type': 'ontology:Variable',
+          'measurementType': 'ontology:categorical',
+          categoryList: categoryNode1,
+          'label': 'Age'
+        }],
+        'comment': '',
+        'label': 'Age'
+      };
+
+      var measurementMoment1 = {
+        '@id': 'http://trials.drugis.org/instances/mm1',
+        '@type': 'ontology:MeasurementMoment',
+        'relative_to_anchor': 'ontology:anchorEpochStart',
+        'relative_to_epoch': 'http://trials.drugis.org/instances/e1',
+        'time_offset': 'PT0S',
+        'label': 'At start of epoch 1'
+      };
+
+      var measurementMoment2 = {
+        '@id': 'http://trials.drugis.org/instances/mm2',
+        '@type': 'ontology:MeasurementMoment',
+        'relative_to_anchor': 'ontology:anchorEpochStart',
+        'relative_to_epoch': 'http://trials.drugis.org/instances/e2',
+        'time_offset': 'PT0S',
+        'label': 'At start of epoch 1'
+      };
+
+      var result1 = {
+        '@id': 'http://trials.drugis.org/instances/result1',
+        'of_group': arm1['@id'],
+        'of_moment': measurementMoment1['@id'],
+        'of_outcome': outcome1['@id'],
+        category_count: [{
+          category: category1['@id'],
+          count: 1
+        }, {
+          category: 'http://nonexistentcategory.com/yo',
+          count: 2
+        }]
+      };
+      var result2 = {
+        '@id': 'http://trials.drugis.org/instances/result2',
+        'of_group': arm1['@id'],
+        'of_moment': measurementMoment2['@id'],
+        'of_outcome': outcome1['@id'],
+        category_count: [{
+          category: category1['@id'],
+          count: 3
+        }, {
+          category: 'http://nonexistentcategory.com/yo',
+          count: 4
+        }]
+      };
+      var result3 = {
+        '@id': 'http://trials.drugis.org/instances/result3',
+        'of_group': arm2['@id'],
+        'of_moment': measurementMoment1['@id'],
+        'of_outcome': outcome1['@id'],
+        category_count: [{
+          category: category1['@id'],
+          count: 4
+        }, {
+          category: 'http://nonexistentcategory.com/yo',
+          count: 5
+        }]
+      };
+      var result4 = {
+        '@id': 'http://trials.drugis.org/instances/result4',
+        'of_group': arm2['@id'],
+        'of_moment': measurementMoment2['@id'],
+        'of_outcome': outcome1['@id'],
+        category_count: [{
+          category: category1['@id'],
+          count: 7
+        }, {
+          category: 'http://nonexistentcategory.com/yo',
+          count: 8
+        }]
+      };
+
+      var cleanedResult1 = {
+        '@id': 'http://trials.drugis.org/instances/result1',
+        'of_group': arm1['@id'],
+        'of_moment': measurementMoment1['@id'],
+        'of_outcome': outcome1['@id'],
+        category_count: [{
+          category: category1['@id'],
+          count: 1
+        }]
+      };
+      var cleanedResult2 = {
+        '@id': 'http://trials.drugis.org/instances/result2',
+        'of_group': arm1['@id'],
+        'of_moment': measurementMoment2['@id'],
+        'of_outcome': outcome1['@id'],
+        category_count: [{
+          category: category1['@id'],
+          count: 3
+        }]
+      };
+      var cleanedResult3 = {
+        '@id': 'http://trials.drugis.org/instances/result3',
+        'of_group': arm2['@id'],
+        'of_moment': measurementMoment1['@id'],
+        'of_outcome': outcome1['@id'],
+        category_count: [{
+          category: category1['@id'],
+          count: 4
+        }]
+      };
+      var cleanedResult4 = {
+        '@id': 'http://trials.drugis.org/instances/result4',
+        'of_group': arm2['@id'],
+        'of_moment': measurementMoment2['@id'],
+        'of_outcome': outcome1['@id'],
+        category_count: [{
+          category: category1['@id'],
+          count: 7
+        }]
+      };
+
+      var study = {
+        '@id': 'http://trials.drugis.org/studies/s1',
+        '@type': 'ontology:Study',
+        label: 'study 1',
+        comment: 'my study',
+        has_outcome: [outcome1],
+        has_arm: [arm1, arm2],
+        has_group: [],
+        has_activity: [],
+        has_indication: [],
+        has_objective: [],
+        has_publication: [],
+        has_eligibility_criteria: []
+      };
+
+      var graphJsonObject = [study, measurementMoment1, measurementMoment2, result1, result2, result3, result4];
+      var expextedGraph = [study, measurementMoment1, measurementMoment2, cleanedResult1, cleanedResult2, cleanedResult3, cleanedResult4];
+
+      beforeEach(function() {
+        var graphDefer = q.defer();
+        var getGraphPromise = graphDefer.promise;
+        graphDefer.resolve(graphJsonObject);
+        studyServiceMock.getJsonGraph.and.returnValue(getGraphPromise);
+      });
+
+      it('should clean the graph', function(done) {
+        resultsService.cleanupMeasurements().then(function() {
+          expect(studyServiceMock.saveJsonGraph).toHaveBeenCalledWith(expextedGraph);
+          studyServiceMock.saveJsonGraph.calls.reset();
+          done();
+        });
+        // fire in the hole !
+        rootScope.$digest();
+      });
+    });
     describe('isExistingMeasurement', function() {
 
       var graphJsonObject = [{
@@ -559,7 +927,7 @@ define(['angular-mocks'], function(angularMocks) {
         var graphDefer = q.defer();
         var getGraphPromise = graphDefer.promise;
         graphDefer.resolve(graphJsonObject);
-        studyService.getJsonGraph.and.returnValue(getGraphPromise);
+        studyServiceMock.getJsonGraph.and.returnValue(getGraphPromise);
         resultsService.isExistingMeasurement(measurementMomentUri, measurementInstanceList)
           .then(function(result) {
             isExistingMeasurement = result;
@@ -600,7 +968,7 @@ define(['angular-mocks'], function(angularMocks) {
         var graphDefer = q.defer();
         var getGraphPromise = graphDefer.promise;
         graphDefer.resolve(graphJsonObject);
-        studyService.getJsonGraph.and.returnValue(getGraphPromise);
+        studyServiceMock.getJsonGraph.and.returnValue(getGraphPromise);
         resultsService.isExistingMeasurement(measurementMomentUri, measurementInstanceList)
           .then(function(result) {
             isExistingMeasurement = result;
@@ -654,7 +1022,7 @@ define(['angular-mocks'], function(angularMocks) {
         var graphDefer = q.defer();
         var getGraphPromise = graphDefer.promise;
         graphDefer.resolve(graphJsonObject);
-        studyService.getJsonGraph.and.returnValue(getGraphPromise);
+        studyServiceMock.getJsonGraph.and.returnValue(getGraphPromise);
         resultsService
           .setToMeasurementMoment(measurementMomentUri, measurementInstanceList)
           .then(done);
@@ -662,8 +1030,8 @@ define(['angular-mocks'], function(angularMocks) {
       });
 
       it('should setToMeasurementMoment', function() {
-        expect(studyService.saveJsonGraph).toHaveBeenCalledWith(expectedSaveGraph);
-        studyService.saveJsonGraph.calls.reset();
+        expect(studyServiceMock.saveJsonGraph).toHaveBeenCalledWith(expectedSaveGraph);
+        studyServiceMock.saveJsonGraph.calls.reset();
       });
     });
 

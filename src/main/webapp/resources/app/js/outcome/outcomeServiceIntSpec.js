@@ -5,7 +5,7 @@ define(['angular-mocks'], function(angularMocks) {
       uUIDServiceMock,
       outcomeService,
       measurementMomentServiceMock = jasmine.createSpyObj('MeasurementMomentService', ['queryItems']),
-      studyServiceMock = jasmine.createSpyObj('StudyService', ['getStudy', 'getJsonGraph', 'save']),
+      studyServiceMock = jasmine.createSpyObj('StudyService', ['getStudy', 'getJsonGraph', 'findStudyNode', 'save']),
       resultsServiceMock = jasmine.createSpyObj('ResultsService', ['queryResultsByOutcome', 'queryNonConformantMeasurementsByOutcomeUri']),
       repairServiceMock = jasmine.createSpyObj('RepairService', ['mergeResults']),
       sourceResultsDefer,
@@ -14,6 +14,7 @@ define(['angular-mocks'], function(angularMocks) {
       targetNonConformantResultsDefer,
       mergeResultsDefer,
       getStudyDefer,
+      getStudyGraphDefer,
       saveStudyDefer,
       measurementMomentsDefer;
 
@@ -37,6 +38,8 @@ define(['angular-mocks'], function(angularMocks) {
 
       getStudyDefer = q.defer();
       studyServiceMock.getStudy.and.returnValue(getStudyDefer.promise);
+      getStudyGraphDefer = q.defer();
+      studyServiceMock.getJsonGraph.and.returnValue(getStudyGraphDefer.promise);
       measurementMomentsDefer = q.defer();
       measurementMomentServiceMock.queryItems.and.returnValue(measurementMomentsDefer.promise);
       sourceResultsDefer = q.defer();
@@ -99,6 +102,7 @@ define(['angular-mocks'], function(angularMocks) {
           'label': 'is stupid'
         }]
       };
+      var jsonStudyGraph = [jsonStudy];
 
       var measurementMoments = [{
         uri: 'http://instance/moment1'
@@ -107,8 +111,9 @@ define(['angular-mocks'], function(angularMocks) {
       }];
 
       beforeEach(function() {
-        getStudyDefer.resolve(jsonStudy);
+        getStudyGraphDefer.resolve(jsonStudyGraph);
         measurementMomentsDefer.resolve(measurementMoments);
+        studyServiceMock.findStudyNode.and.returnValue(jsonStudy);
       });
 
       it('should query the characteristics', function(done) {
@@ -153,7 +158,8 @@ define(['angular-mocks'], function(angularMocks) {
       };
 
       beforeEach(function() {
-        getStudyDefer.resolve(jsonStudy);
+        getStudyGraphDefer.resolve([jsonStudy]);
+        studyServiceMock.findStudyNode.and.returnValue(jsonStudy);
         measurementMomentsDefer.resolve([]);
       });
 
@@ -190,10 +196,12 @@ define(['angular-mocks'], function(angularMocks) {
         measurementMomentsDefer.resolve([{
           itemUri: moment
         }]);
-        getStudyDefer.resolve({
+        var jsonStudy = {
           has_outcome: []
-        });
-
+        };
+        getStudyDefer.resolve(jsonStudy);
+        getStudyGraphDefer.resolve([jsonStudy]);
+        studyServiceMock.findStudyNode.and.returnValue(jsonStudy);
         outcomeService.addItem(newPopulationChar, 'ontology:OutcomeType').then(done);
         saveStudyDefer.resolve();
         rootScope.$digest();
@@ -225,6 +233,9 @@ define(['angular-mocks'], function(angularMocks) {
     });
 
     describe('edit outcome', function() {
+
+      var moment1 = 'http://instance/moment1';
+      var moment2 = 'http://instance/moment2';
       var jsonStudy = {
         has_outcome: [{
           '@id': 'http://trials.drugis.org/instances/popchar1',
@@ -234,7 +245,7 @@ define(['angular-mocks'], function(angularMocks) {
             'ontology:mean',
             'ontology:sample_size'
           ],
-          'is_measured_at': 'http://instance/moment1',
+          'is_measured_at': moment1,
           'of_variable': [{
             '@id': 'http://fuseki-test.drugis.org:3030/.well-known/genid/0000014fdfac194dac11005900000003',
             '@type': 'ontology:Variable',
@@ -244,13 +255,13 @@ define(['angular-mocks'], function(angularMocks) {
           'comment': '',
           'label': 'Age'
         }, {
-          '@id': 'http://trials.drugis.org/instances/9bb96077-a8e0-4da1-bee2-011db8b7e560',
+          '@id': 'http://trials.drugis.org/instances/var2',
           '@type': 'ontology:OutcomeType',
           'has_result_property': [
             'ontology:sample_size',
             'ontology:count'
           ],
-          'is_measured_at': ['http://instance/moment1', 'http://instance/moment2'],
+          'is_measured_at': [moment1, moment2],
           'of_variable': [{
             '@id': 'http://fuseki-test.drugis.org:3030/.well-known/genid/0000014fdfac194eac1100590000000b',
             '@type': 'ontology:Variable',
@@ -261,8 +272,6 @@ define(['angular-mocks'], function(angularMocks) {
         }]
       };
 
-      var moment1 = 'http://instance/moment1';
-      var moment2 = 'http://instance/moment2';
       var measuredAtMoment1 = {
         uri: moment1
       };
@@ -279,6 +288,8 @@ define(['angular-mocks'], function(angularMocks) {
 
       beforeEach(function(done) {
         getStudyDefer.resolve(jsonStudy);
+        getStudyGraphDefer.resolve([jsonStudy]);
+        studyServiceMock.findStudyNode.and.returnValue(jsonStudy);
         measurementMomentsDefer.resolve({});
         outcomeService.editItem(newPopulationChar).then(done);
         saveStudyDefer.resolve();
@@ -341,6 +352,8 @@ define(['angular-mocks'], function(angularMocks) {
 
       beforeEach(function(done) {
         getStudyDefer.resolve(jsonStudy);
+        getStudyGraphDefer.resolve([jsonStudy]);
+        studyServiceMock.findStudyNode.and.returnValue(jsonStudy);
         measurementMomentsDefer.resolve({});
         outcomeService.deleteItem(newPopulationChar).then(done);
         saveStudyDefer.resolve();
@@ -410,6 +423,7 @@ define(['angular-mocks'], function(angularMocks) {
         targetNonConformantResultsDefer.resolve(targetNonConformantResults);
         mergeResultsDefer.resolve([]);
         getStudyDefer.resolve(study);
+        getStudyGraphDefer.resolve([study]);
         saveStudyDefer.resolve();
 
         // to test
@@ -430,6 +444,27 @@ define(['angular-mocks'], function(angularMocks) {
         expect(repairServiceMock.mergeResults.calls.count()).toBe(2);
         expect(studyServiceMock.getStudy).toHaveBeenCalled();
         expect(studyServiceMock.save.calls.argsFor(1)).toEqual([expectedSaveAfterMergeMeasurementMoments]);
+      });
+    });
+
+    describe('make category if needed', function() {
+      it('if it is a string, make a new object', function() {
+        var category = 'test category';
+        var expected = {
+          '@id': 'http://trials.drugis.org/instances/newUuid',
+          '@type': 'http://trials.drugis.org/ontology#Category',
+          label: category
+        };
+        expect(outcomeService.makeCategoryIfNeeded(category)).toEqual(expected);
+      });
+      it('if it is already an object', function(){
+        var category =   {
+          '@id': 'http://trials.drugis.org/instances/newUuid',
+          '@type': 'http://trials.drugis.org/ontology#Category',
+          label: category
+        };
+        var expected = category;
+        expect(outcomeService.makeCategoryIfNeeded(category)).toBe(expected);
       });
     });
   });

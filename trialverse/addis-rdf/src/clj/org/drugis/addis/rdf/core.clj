@@ -6,6 +6,8 @@
             [org.drugis.addis.rdf.trig :as trig])
   (:import [org.drugis.addis.rdf AddisToRdf]))
 
+(defn println* [x] (.println *err* x) x)
+
 (defn spo-each [subj pred obj*]
   (reduce (fn [subj obj] (trig/spo subj [pred obj])) subj obj*))
 
@@ -43,20 +45,45 @@
          [(trig/iri :rdf "type") (trig/iri :ontology "Indication")]
          [(trig/iri :rdfs "label") (trig/lit (vtd/attr xml :name))])))
 
-(defn variable-rdf [xml uri]
-  (let [m-type-map { "rate" "dichotomous"
+(defn category-mapping [subj name category-uris]
+  (if
+    (nil? category-uris)
+    subj
+    (trig/spo subj [(trig/iri :owl "sameAs") (category-uris name)])))
+
+
+(defn variable-categories [m-type subj uri hl-category-uris]
+  (let [level (if hl-category-uris :instance :entity)
+        category-names (map vtd/text (vtd/search m-type "./category"))
+        category-uris (into {} (map (fn [%] [% (trig/iri level (uuid))]) category-names))
+        category-rdfs (map #(trig/spo (category-mapping (second %) (first %) hl-category-uris)
+                                      [(trig/iri :rdfs "label") (trig/lit (first %))]
+                                      [(trig/iri :rdf "type") (trig/iri :ontology "Category")]) category-uris)]
+    [{:uris category-uris :rdfs category-rdfs}
+     (trig/spo subj [(trig/iri :ontology "categoryList")
+                     (trig/coll (vals category-uris))])
+     uri]))
+
+(defn variable-info
+  ([xml uri]
+   (variable-info xml uri nil))
+  ([xml uri category-uris]
+   (let [m-type-map { "rate" "dichotomous"
                      "continuous" "continuous"
                      "categorical" "categorical" }
-        m-type (vtd/first-child xml)
-        subj (trig/spo uri 
-                       [(trig/iri :rdf "type") (trig/iri :ontology "Variable")]
-                       [(trig/iri :rdfs "label") (trig/lit (vtd/attr xml :name))]
-                       [(trig/iri :rdfs "comment") (trig/lit (vtd/attr xml :description))]
-                       [(trig/iri :ontology "measurementType") (trig/iri :ontology (m-type-map (vtd/tag m-type)))])]
-    (case (vtd/tag m-type)
-      "rate" subj
-      "continuous" (trig/spo subj [(trig/iri :rdfs "comment") (trig/lit (vtd/attr m-type :unitOfMeasurement))])
-      "categorical" (trig/spo subj [(trig/iri :ontology "categoryList") (trig/coll (map #(trig/lit (vtd/text %)) (vtd/search m-type "./category")))]))))
+         m-type (vtd/first-child xml)
+         subj (trig/spo uri 
+                        [(trig/iri :rdf "type") (trig/iri :ontology "Variable")]
+                        [(trig/iri :rdfs "label") (trig/lit (vtd/attr xml :name))]
+                        [(trig/iri :rdfs "comment") (trig/lit (vtd/attr xml :description))]
+                        [(trig/iri :ontology "measurementType") (trig/iri :ontology (m-type-map (vtd/tag m-type)))])]
+     (case (vtd/tag m-type)
+       "rate" [nil subj uri]
+       "continuous" [nil (trig/spo subj [(trig/iri :rdfs "comment") (trig/lit (vtd/attr m-type :unitOfMeasurement))]) uri]
+       "categorical" (variable-categories m-type subj uri category-uris)))))
+
+(defn variable-rdf [xml uri]
+  (second (variable-info xml uri)))
 
 (defn import-entity [xml rdf-fn]
   (let [uri (trig/iri :entity (uuid))]
@@ -180,20 +207,22 @@
          (subs s 1))
     s))
 
-(defn study-outcome-rdf [xml instance-uri entity-uris measurement-moment-uris]
+(defn study-outcome-info [xml instance-uri entity-uris measurement-moment-uris]
   (let [entity-name (vtd/attr (vtd/first-child xml) :name)
         entity-type (vtd/tag (vtd/first-child xml))
         entity-uri ((entity-uris (keyword entity-type)) entity-name)
-        entity-xml (vtd/at xml (str "//addis-data/" entity-type "s/*[normalize-space(@name)='" entity-name "']"))
-        mms (map #(measurement-moment-uris (when-taken-key %)) (vtd/search xml "./whenTaken"))]
-    (-> 
-      (trig/spo instance-uri
-                [(trig/iri :rdf "type") (trig/iri :ontology (capitalize entity-type))]
-                [(trig/iri :rdfs "label") entity-name]
-                [(trig/iri :rdfs "comment") (trig/lit (vtd/attr entity-xml :description))]
-                [(trig/iri :ontology "of_variable") (variable-rdf entity-xml (trig/_po [(trig/iri :owl "sameAs") entity-uri]))])
-      (spo-each (trig/iri :ontology "has_result_property") (result-properties entity-xml))
-      (spo-each (trig/iri :ontology "is_measured_at") mms))))
+        entity-xml (vtd/at xml (str "//addis-data/" entity-type "s/*[normalize-space(@name)=\"" entity-name "\"]"))
+        mms (map #(measurement-moment-uris (when-taken-key %)) (vtd/search xml "./whenTaken"))
+        [categories var-rdf _] (variable-info entity-xml (trig/_po [(trig/iri :owl "sameAs") entity-uri]) ((:category entity-uris) entity-uri))]
+    [categories
+     (-> 
+       (trig/spo instance-uri
+                 [(trig/iri :rdf "type") (trig/iri :ontology (capitalize entity-type))]
+                 [(trig/iri :rdfs "label") entity-name]
+                 [(trig/iri :rdfs "comment") (trig/lit (vtd/attr entity-xml :description))]
+                 [(trig/iri :ontology "of_variable") var-rdf])
+       (spo-each (trig/iri :ontology "has_result_property") (result-properties entity-xml))
+       (spo-each (trig/iri :ontology "is_measured_at") mms))]))
 
 (defn study-drug-rdf [xml instance-uri entity-uris]
   (trig/spo instance-uri
@@ -341,7 +370,7 @@
   (if value (trig/spo subj [pred (trig/lit (Integer. value))]) subj))
 
 (defn study-measurement-rdf
-  [xml subj study-outcomes arm-uris pop-uri mm-uris]
+  [xml subj study-outcomes arm-uris pop-uri mm-uris category-uris]
   (let [som-id (vtd/attr (vtd/at xml "./studyOutcomeMeasure") :id)
         som-uri (:uri (study-outcomes som-id))
         arm-name (vtd/attr (vtd/at xml "./arm") :name)
@@ -361,10 +390,10 @@
                (optional-double (trig/iri :ontology "standard_deviation") (vtd/attr cont :stdDev))
                (optional-int (trig/iri :ontology "sample_size") (vtd/attr cont :sampleSize)))
       rate (-> measurement
-               (optional-int (trig/iri :ontology "count") (vtd/attr cont :rate))
-               (optional-int (trig/iri :ontology "sample_size") (vtd/attr cont :sampleSize)))
+               (optional-int (trig/iri :ontology "count") (vtd/attr rate :rate))
+               (optional-int (trig/iri :ontology "sample_size") (vtd/attr rate :sampleSize)))
       catg (reduce (fn [subj cat] (trig/spo subj [(trig/iri :ontology "category_count")
-                                                  (-> (trig/_po [(trig/iri :ontology "category") (trig/lit (vtd/attr cat :name))])
+                                                  (-> (trig/_po [(trig/iri :ontology "category") ((category-uris som-uri) (vtd/attr cat :name))])
                                                       (optional-int (trig/iri :ontology "count") (vtd/attr cat :rate)))]))
                    measurement (vtd/search catg "./category"))
      :else measurement)
@@ -383,8 +412,6 @@
   [arm-xml]
   (let [size (vtd/attr arm-xml :size)]
     (if size (Integer. size) nil)))
-
-(defn println* [x] (println x) x)
 
 (defn instances-by-key
   ([xmls key-fn] (instances-by-key xmls key-fn (fn [_] (trig/iri :instance (uuid)))))
@@ -417,7 +444,11 @@
                       dose-unit-key)
         study-activities (instances-by-key
                            (vtd/search xml "./activities/studyActivity")
-                           #(vtd/attr % :name))]
+                           #(vtd/attr % :name))
+        study-outcome-data (into {} (map (fn [%] [(:uri %) (study-outcome-info (:xml %) (:uri %) entity-uris (map-vals :uri measurement-moments))]) (vals study-outcomes)))
+        study-outcome-rdf (map second (vals study-outcome-data))
+        categories-rdf (reduce #(concat %1 (:rdfs (first %2))) [] (vals study-outcome-data))
+        category-uris (map-vals #(:uris (first %)) study-outcome-data)]
     (concat
       [(-> uri
            (trig/spo [(trig/iri :rdf "type") (trig/iri :ontology "Study")]
@@ -444,12 +475,13 @@
       (map #(study-arm-rdf (:xml %) (:uri %)) (vals arms))
       (map #(study-epoch-rdf (:xml %) (:uri %)) (vals epochs))
       (filter (comp not nil?) (map #(participant-flow-rdf (trig/iri :instance (uuid)) (:uri %) (:uri (epochs primary-epoch)) (arm-size (:xml %))) (vals arms)))
-      (map #(study-outcome-rdf (:xml %) (:uri %) entity-uris (map-vals :uri measurement-moments)) (vals study-outcomes))
+      study-outcome-rdf
+      categories-rdf
       (map #(study-drug-rdf (:xml %) (:uri %) entity-uris) (vals study-drugs))
       (map #(study-unit-rdf (:xml %) (:uri %) entity-uris) (vals study-units))
       (map #(study-activity-rdf (:xml %) (:uri %) entity-uris (map-vals :uri arms) (map-vals :uri epochs) (map-vals :uri study-drugs) (map-vals :uri study-units)) (vals study-activities))
       (map #(study-measurement-moment-rdf (:xml %) (:uri %) (map-vals :uri epochs)) (vals measurement-moments))
-      (map #(study-measurement-rdf % (trig/iri :instance (uuid)) study-outcomes (map-vals :uri arms) population-uri (map-vals :uri measurement-moments)) (vtd/search xml "./measurements/measurement")))))
+      (map #(study-measurement-rdf % (trig/iri :instance (uuid)) study-outcomes (map-vals :uri arms) population-uri (map-vals :uri measurement-moments) category-uris) (vtd/search xml "./measurements/measurement")))))
 
 
 (defn import-study [xml entity-uris]
@@ -489,13 +521,17 @@
         [drug-uri-map drugs-rdf] (import-entities xml "/addis-data/drugs/drug" drug-rdf)
         [endpoint-uri-map endpoints-rdf] (import-entities xml "/addis-data/endpoints/endpoint" variable-rdf)
         [adverseEvent-uri-map adverseEvents-rdf] (import-entities xml "/addis-data/adverseEvents/adverseEvent" variable-rdf)
-        [populationCharacteristic-uri-map populationCharacteristics-rdf] (import-entities xml "/addis-data/populationCharacteristics/populationCharacteristic" variable-rdf)
+        [populationCharacteristic-uri-map populationCharacteristics-info] (import-entities xml "/addis-data/populationCharacteristics/populationCharacteristic" variable-info)
+        populationCharacteristics-rdf (map second populationCharacteristics-info)
+        categories-rdf (reduce #(concat %1 (:rdfs (first %2))) [] populationCharacteristics-info)
+        category-uri-map (into {} (map (fn [info] [(nth info 2) (:uris (first info))]) populationCharacteristics-info))
         entity-uris {:indication indication-uri-map
                      :drug drug-uri-map
                      :endpoint endpoint-uri-map
                      :adverseEvent adverseEvent-uri-map
                      :populationCharacteristic populationCharacteristic-uri-map
-                     :unit unit-uri-map}
+                     :unit unit-uri-map
+                     :category category-uri-map}
         [studies-uri-map studies-graphs] (import-studies xml "/addis-data/studies/study" entity-uris)
         dataset-rdf [(-> dataset-uri
                          (trig/spo [(trig/iri :rdf "type") (trig/iri :ontology "Dataset")]
@@ -505,15 +541,16 @@
                                    [(trig/iri :dcterms "description") description])
                          (spo-each (trig/iri :ontology "contains_study") (vals studies-uri-map))
                          (dataset-source-doc source-doc-uri))]
-	concepts-graph (trig/graph (trig/iri :graph "concepts")
-			(concat 
-			 units-rdf
-			 indications-rdf
-			 drugs-rdf
-			 endpoints-rdf
-			 adverseEvents-rdf
-			 populationCharacteristics-rdf))
-	default-graph (trig/graph (trig/default-graph) dataset-rdf)]
+        concepts-graph (trig/graph (trig/iri :graph "concepts")
+                                   (concat
+                                     units-rdf
+                                     indications-rdf
+                                     drugs-rdf
+                                     endpoints-rdf
+                                     adverseEvents-rdf
+                                     populationCharacteristics-rdf
+                                     categories-rdf))
+        default-graph (trig/graph (trig/default-graph) dataset-rdf)]
     (trig/write-trig prefixes (concat [default-graph concepts-graph] studies-graphs))))
 
 (defn -main
