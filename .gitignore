@@ -16,4 +16,6 @@ trialverse/addis-rdf/00-headers
 trialverse/addis-rdf/01-headers
 trialverse/addis-rdf/config.sh
 trialverse/addis-rdf/depression.trig
+deploy.sh
+src/test/Firefox_49.0.0_(Ubuntu_0.0.0)/
 

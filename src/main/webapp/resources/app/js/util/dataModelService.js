@@ -39,7 +39,12 @@ define(['angular', 'lodash'], function(angular, _) {
           return _.includes(categoryListIds, node['@id']);
         });
         _.forEach(categoryLists, function(categoryList) {
-          var currentNode = categoryList;
+          var currentNode = categoryList;          
+          if(currentNode['first']){
+            currentNode[RDF_FIRST]=currentNode['first'];
+            delete currentNode['first'];
+          }
+
           while(currentNode && currentNode[RDF_FIRST]) {
             currentNode[RDF_FIRST] = categoriesByName[currentNode[RDF_FIRST]]['@id'];
             if(currentNode[RDF_REST]['@list']) {
