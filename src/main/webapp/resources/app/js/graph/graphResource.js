@@ -21,7 +21,10 @@ define(['util/transformJsonLd', 'util/transformConceptJsonLd'], function(transfo
             'Accept': 'application/ld+json'
           },
           transformResponse: function(data) {
-            return transformStudyJsonLd(DataModelService.updateCategories(JSON.parse(data)));
+            var graphData = JSON.parse(data);
+            graphData = DateModelService.normalizeFirstAndRest(graphData);
+            graphData = DataModelService.updateCategories(graphData);
+            return transformStudyJsonLd(graphData);
           }
         },
         'getConceptJson': {

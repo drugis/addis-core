@@ -95,85 +95,43 @@ define(['angular', 'angular-mocks', 'util/util'], function() {
 
         });
       });
-      describe('mixed uses of first http://www.w3.org/1999/02/22-rdf-syntax-ns#first', function() {
-        it('should create new instance nodes and change all labels to refer to those instances', function() {
-          var oldStyleGraph = {
-            '@graph': [{
-              '@id': 'http://catListBlankNode',
-              'first': 'Male',
-              'http://www.w3.org/1999/02/22-rdf-syntax-ns#rest': {
-                '@list': ['Female']
-              }
-            }, {
-              '@id': 'http://countBlankNode',
-              'category': 'Male',
-              'http://trials.drugis.org/ontology#count': 100
-            }, {
-              '@id': 'http://countBlankNode',
-              'category': 'Female',
-              'http://trials.drugis.org/ontology#count': 90
-            }, {
-              '@id': 'http://variableBlankNode',
-              '@type': 'http://trials.drugis.org/ontology#Variable',
-              'categoryList': 'http://catListBlankNode',
-              'measurementType': 'http://trials.drugis.org/ontology#categorical',
-              'comment': '',
-              'label': 'Sex',
-              'sameAs': 'http://trials.drugis.org/concepts/7af6e330-0a60-4d01-bfe8-63905965fafa'
-            }, {
-              '@id': 'http://measurementNode',
-              'category_count': ['http://countBlankNode'],
-              'of_group': 'groupUri',
-              'of_moment': 'momentUri',
-              'of_outcome': 'outcomeUri'
-            }]
-          };
+    });
 
-          var expectedGraph = {
-            '@graph': [{
-              '@id': 'http://catListBlankNode',
-              'http://www.w3.org/1999/02/22-rdf-syntax-ns#first': 'http://trials.drugis.org/instances/newUuid1',
-              'http://www.w3.org/1999/02/22-rdf-syntax-ns#rest': {
-                '@list': ['http://trials.drugis.org/instances/newUuid2']
-              }
-            }, {
-              '@id': 'http://countBlankNode',
-              'category': 'http://trials.drugis.org/instances/newUuid1',
-              'http://trials.drugis.org/ontology#count': 100
-            }, {
-              '@id': 'http://countBlankNode',
-              'category': 'http://trials.drugis.org/instances/newUuid2',
-              'http://trials.drugis.org/ontology#count': 90
-            }, {
-              '@id': 'http://variableBlankNode',
-              '@type': 'http://trials.drugis.org/ontology#Variable',
-              'categoryList': 'http://catListBlankNode',
-              'measurementType': 'http://trials.drugis.org/ontology#categorical',
-              'comment': '',
-              'label': 'Sex',
-              'sameAs': 'http://trials.drugis.org/concepts/7af6e330-0a60-4d01-bfe8-63905965fafa'
-            }, {
-              '@id': 'http://measurementNode',
-              'category_count': ['http://countBlankNode'],
-              'of_group': 'groupUri',
-              'of_moment': 'momentUri',
-              'of_outcome': 'outcomeUri'
-            }, {
-              '@id': 'http://trials.drugis.org/instances/newUuid1',
-              '@type': 'http://trials.drugis.org/ontology#Category',
-              'label': 'Male'
-            }, {
-              '@id': 'http://trials.drugis.org/instances/newUuid2',
-              '@type': 'http://trials.drugis.org/ontology#Category',
-              'label': 'Female'
-            }]
-          };
+    describe('normalizeFirstAndRest', function() {
+      it('should change all first and rest properties into RDF_FIRST and RDF_REST', function() {
+        var oldStyleGraph = {
+          '@graph': [{
+            '@id': 'http://blankNode1',
+            'first': 'http://trials.drugis.org/instances/newUuid1',
+            'rest': {
+              '@list': ['http://trials.drugis.org/instances/newUuid2']
+            }
+          }, {
+            '@id': 'http://blankNode2',
+            'http://www.w3.org/1999/02/22-rdf-syntax-ns#first': 'http://trials.drugis.org/instances/newUuid1',
+            'http://www.w3.org/1999/02/22-rdf-syntax-ns#rest': {
+              '@list': ['http://trials.drugis.org/instances/newUuid2']
+            }
+          }]
+        };
+        var expectedGraph = {
+          '@graph': [{
+            '@id': 'http://blankNode1',
+            'http://www.w3.org/1999/02/22-rdf-syntax-ns#first': 'http://trials.drugis.org/instances/newUuid1',
+            'http://www.w3.org/1999/02/22-rdf-syntax-ns#rest': {
+              '@list': ['http://trials.drugis.org/instances/newUuid2']
+            }
+          }, {
+            '@id': 'http://blankNode2',
+            'http://www.w3.org/1999/02/22-rdf-syntax-ns#first': 'http://trials.drugis.org/instances/newUuid1',
+            'http://www.w3.org/1999/02/22-rdf-syntax-ns#rest': {
+              '@list': ['http://trials.drugis.org/instances/newUuid2']
+            }
+          }]
+        };
 
-          uuidServiceMock.generate.and.returnValues('newUuid1', 'newUuid2');
+        expect(dataModelService.normalizeFirstAndRest(oldStyleGraph)).toEqual(expectedGraph);
 
-          expect(dataModelService.updateCategories(oldStyleGraph)).toEqual(expectedGraph);
-
-        });
       });
     });
   });

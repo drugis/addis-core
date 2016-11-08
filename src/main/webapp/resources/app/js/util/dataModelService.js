@@ -39,20 +39,17 @@ define(['angular', 'lodash'], function(angular, _) {
           return _.includes(categoryListIds, node['@id']);
         });
         _.forEach(categoryLists, function(categoryList) {
+          var currentNode = categoryList;
+          var firstProp = currentNode.first ? 'first' : RDF_FIRST;
+          var restProp = currentNode.first ? 'rest' : RDF_REST;
 
-          var currentNode = categoryList;          
-          if(currentNode['first']){
-            currentNode[RDF_FIRST]=currentNode['first'];
-            delete currentNode['first'];
-          }
-
-          while(currentNode && currentNode[RDF_FIRST]) {
-            currentNode[RDF_FIRST] = categoriesByName[currentNode[RDF_FIRST]]['@id'];
-            if(currentNode[RDF_REST]['@list']) {
-              currentNode[RDF_REST]['@list'][0] = categoriesByName[currentNode[RDF_REST]['@list'][0]]['@id'];
+          while (currentNode && currentNode[firstProp]) {
+            currentNode[firstProp] = categoriesByName[currentNode[firstProp]]['@id'];
+            if (currentNode[restProp]['@list']) {
+              currentNode[restProp]['@list'][0] = categoriesByName[currentNode[restProp]['@list'][0]]['@id'];
             }
-            currentNode = _.find(graph, function(node){
-              return node['@id'] === currentNode.rest['@id'];
+            currentNode = _.find(graph, function(node) {
+              return node['@id'] === currentNode[restProp]['@id'];
             });
           }
         });
@@ -60,8 +57,24 @@ define(['angular', 'lodash'], function(angular, _) {
       return data;
     }
 
+    function normalizeFirstAndRest(data) {
+      data['@graph'] = _.map(data['@graph'], function(node) {
+        if (node.first) {
+          node[RDF_FIRST] = node.first;
+          delete node.first;
+        }
+        if (node.rest) {
+          node[RDF_REST] = node.rest;
+          delete node.rest;
+        }
+        return node;
+      });
+      return data;
+    }
+
     return {
-      updateCategories: updateCategories
+      updateCategories: updateCategories,
+      normalizeFirstAndRest: normalizeFirstAndRest
     };
   };
   return dependencies.concat(DataModelService);
