@@ -102,14 +102,14 @@ define(['angular', 'angular-mocks', 'util/util'], function() {
         var oldStyleGraph = {
           '@graph': [{
             '@id': 'http://blankNode1',
-            'first': 'http://trials.drugis.org/instances/newUuid1',
-            'rest': {
+            'http://www.w3.org/1999/02/22-rdf-syntax-ns#first': 'http://trials.drugis.org/instances/newUuid1',
+            'http://www.w3.org/1999/02/22-rdf-syntax-ns#rest': {
               '@list': ['http://trials.drugis.org/instances/newUuid2']
             }
           }, {
             '@id': 'http://blankNode2',
-            'http://www.w3.org/1999/02/22-rdf-syntax-ns#first': 'http://trials.drugis.org/instances/newUuid1',
-            'http://www.w3.org/1999/02/22-rdf-syntax-ns#rest': {
+            'first': 'http://trials.drugis.org/instances/newUuid1',
+            'rest': {
               '@list': ['http://trials.drugis.org/instances/newUuid2']
             }
           }]
@@ -117,21 +117,19 @@ define(['angular', 'angular-mocks', 'util/util'], function() {
         var expectedGraph = {
           '@graph': [{
             '@id': 'http://blankNode1',
-            'http://www.w3.org/1999/02/22-rdf-syntax-ns#first': 'http://trials.drugis.org/instances/newUuid1',
-            'http://www.w3.org/1999/02/22-rdf-syntax-ns#rest': {
+            'first': 'http://trials.drugis.org/instances/newUuid1',
+            'rest': {
               '@list': ['http://trials.drugis.org/instances/newUuid2']
             }
           }, {
             '@id': 'http://blankNode2',
-            'http://www.w3.org/1999/02/22-rdf-syntax-ns#first': 'http://trials.drugis.org/instances/newUuid1',
-            'http://www.w3.org/1999/02/22-rdf-syntax-ns#rest': {
+            'first': 'http://trials.drugis.org/instances/newUuid1',
+            'rest': {
               '@list': ['http://trials.drugis.org/instances/newUuid2']
             }
           }]
         };
-
         expect(dataModelService.normalizeFirstAndRest(oldStyleGraph)).toEqual(expectedGraph);
-
       });
     });
   });

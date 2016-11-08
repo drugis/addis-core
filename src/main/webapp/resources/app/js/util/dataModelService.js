@@ -59,13 +59,13 @@ define(['angular', 'lodash'], function(angular, _) {
 
     function normalizeFirstAndRest(data) {
       data['@graph'] = _.map(data['@graph'], function(node) {
-        if (node.first) {
-          node[RDF_FIRST] = node.first;
-          delete node.first;
+        if (node[RDF_FIRST]) {
+          node.first = node[RDF_FIRST];
+          delete node[RDF_FIRST];
         }
-        if (node.rest) {
-          node[RDF_REST] = node.rest;
-          delete node.rest;
+        if (node[RDF_REST]) {
+          node.rest = node[RDF_REST];
+          delete node[RDF_REST];
         }
         return node;
       });
