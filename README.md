@@ -8,9 +8,10 @@ Make sure the SASS and Bower submodules are present:
     git submodule init
     git submodule update
 
-Make sure you've run `make` in the src/main/webapp/resources directory first to generate the CSS.
-
 Make sure you have the bower components needed by running `bower update` from the root of the repository
+
+Run 'compass compile' from the root of the repository. 
+
 
 Running
 -----------------------
