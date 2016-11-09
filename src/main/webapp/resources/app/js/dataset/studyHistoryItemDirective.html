@@ -1,7 +1,6 @@
 <div class="panel clearfix">
   <h5>Created by <span ng-if="item.applicationName">{{item.applicationName}} on behalf of </span>{{item.creator}} <span>({{item.versionDate | date:'medium'}})</span></h5>
-  <p ng-if="!isStudyItem"><a ui-sref="versionedDataset({userUid: userUid, datasetUUID: datasetUUID, versionUuid: versionUuid})">{{item.versionTitle}}</a></p>
-  <p ng-if="isStudyItem"><a ui-sref="versionedDataset.study({userUid: userUid, datasetUUID: datasetUUID, versionUuid: versionUuid, studyGraphUuid: studyGraphUuid})">{{item.versionTitle}}</a></p>
+  <p><a ui-sref="versionedDataset.study({userUid: userUid, datasetUUID: datasetUUID, versionUuid: versionUuid, studyGraphUuid: studyGraphUuid})">{{item.versionTitle}}</a></p>
   <p style="white-space: pre-wrap;">{{item.description}}</p>
   <div ng-show="item.merge">
     Study copied to this dataset. Source: <a ui-sref="versionedDataset.study({userUid: sourceUserUuid, datasetUUID: sourceDatasetUuid, versionUuid: sourceVersionUuid, studyGraphUuid: sourceGraphUuid})">{{item.merge.title}}</a>

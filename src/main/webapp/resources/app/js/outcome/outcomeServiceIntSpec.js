@@ -446,26 +446,5 @@ define(['angular-mocks'], function(angularMocks) {
         expect(studyServiceMock.save.calls.argsFor(1)).toEqual([expectedSaveAfterMergeMeasurementMoments]);
       });
     });
-
-    describe('make category if needed', function() {
-      it('if it is a string, make a new object', function() {
-        var category = 'test category';
-        var expected = {
-          '@id': 'http://trials.drugis.org/instances/newUuid',
-          '@type': 'http://trials.drugis.org/ontology#Category',
-          label: category
-        };
-        expect(outcomeService.makeCategoryIfNeeded(category)).toEqual(expected);
-      });
-      it('if it is already an object', function(){
-        var category =   {
-          '@id': 'http://trials.drugis.org/instances/newUuid',
-          '@type': 'http://trials.drugis.org/ontology#Category',
-          label: category
-        };
-        var expected = category;
-        expect(outcomeService.makeCategoryIfNeeded(category)).toBe(expected);
-      });
-    });
   });
 });

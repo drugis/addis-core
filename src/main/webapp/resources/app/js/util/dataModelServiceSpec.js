@@ -20,26 +20,33 @@ define(['angular', 'angular-mocks', 'util/util'], function() {
           var oldStyleGraph = {
             '@graph': [{
               '@id': 'http://catListBlankNode',
-              'http://www.w3.org/1999/02/22-rdf-syntax-ns#first': 'Male',
-              'http://www.w3.org/1999/02/22-rdf-syntax-ns#rest': {
-                '@list': ['Female']
+              'first': 'Male',
+              'rest': 'listBlankNode2'
+            }, {
+              '@id': 'listBlankNode2',
+              'first': 'Female',
+              'rest': {
+                '@list': ['Other']
               }
             }, {
-              '@id': 'http://countBlankNode',
+              '@id': 'http://countBlankNode1',
               'category': 'Male',
               'http://trials.drugis.org/ontology#count': 100
             }, {
-              '@id': 'http://countBlankNode',
+              '@id': 'http://countBlankNode2',
               'category': 'Female',
               'http://trials.drugis.org/ontology#count': 90
+            }, {
+              '@id': 'http://countBlankNode3',
+              'category': 'Other',
+              'http://trials.drugis.org/ontology#count': 80
             }, {
               '@id': 'http://variableBlankNode',
               '@type': 'http://trials.drugis.org/ontology#Variable',
               'categoryList': 'http://catListBlankNode',
               'measurementType': 'http://trials.drugis.org/ontology#categorical',
               'comment': '',
-              'label': 'Sex',
-              'sameAs': 'http://trials.drugis.org/concepts/7af6e330-0a60-4d01-bfe8-63905965fafa'
+              'label': 'Sex'
             }, {
               '@id': 'http://measurementNode',
               'category_count': ['http://countBlankNode'],
@@ -52,26 +59,33 @@ define(['angular', 'angular-mocks', 'util/util'], function() {
           var expectedGraph = {
             '@graph': [{
               '@id': 'http://catListBlankNode',
-              'http://www.w3.org/1999/02/22-rdf-syntax-ns#first': 'http://trials.drugis.org/instances/newUuid1',
-              'http://www.w3.org/1999/02/22-rdf-syntax-ns#rest': {
-                '@list': ['http://trials.drugis.org/instances/newUuid2']
+              'first': 'http://trials.drugis.org/instances/newUuid1',
+              'rest': 'listBlankNode2'
+            }, {
+              '@id': 'listBlankNode2',
+              'first': 'http://trials.drugis.org/instances/newUuid2',
+              'rest': {
+                '@list': ['http://trials.drugis.org/instances/newUuid3']
               }
             }, {
-              '@id': 'http://countBlankNode',
+              '@id': 'http://countBlankNode1',
               'category': 'http://trials.drugis.org/instances/newUuid1',
               'http://trials.drugis.org/ontology#count': 100
             }, {
-              '@id': 'http://countBlankNode',
+              '@id': 'http://countBlankNode2',
               'category': 'http://trials.drugis.org/instances/newUuid2',
               'http://trials.drugis.org/ontology#count': 90
+            }, {
+              '@id': 'http://countBlankNode3',
+              'category': 'http://trials.drugis.org/instances/newUuid3',
+              'http://trials.drugis.org/ontology#count': 80
             }, {
               '@id': 'http://variableBlankNode',
               '@type': 'http://trials.drugis.org/ontology#Variable',
               'categoryList': 'http://catListBlankNode',
               'measurementType': 'http://trials.drugis.org/ontology#categorical',
               'comment': '',
-              'label': 'Sex',
-              'sameAs': 'http://trials.drugis.org/concepts/7af6e330-0a60-4d01-bfe8-63905965fafa'
+              'label': 'Sex'
             }, {
               '@id': 'http://measurementNode',
               'category_count': ['http://countBlankNode'],
@@ -86,14 +100,54 @@ define(['angular', 'angular-mocks', 'util/util'], function() {
               '@id': 'http://trials.drugis.org/instances/newUuid2',
               '@type': 'http://trials.drugis.org/ontology#Category',
               'label': 'Female'
+            }, {
+              '@id': 'http://trials.drugis.org/instances/newUuid3',
+              '@type': 'http://trials.drugis.org/ontology#Category',
+              'label': 'Other'
             }]
           };
 
-          uuidServiceMock.generate.and.returnValues('newUuid1', 'newUuid2');
+          uuidServiceMock.generate.and.returnValues('newUuid1', 'newUuid2', 'newUuid3');
 
           expect(dataModelService.updateCategories(oldStyleGraph)).toEqual(expectedGraph);
 
         });
+      });
+    });
+
+    describe('normalizeFirstAndRest', function() {
+      it('should change all first and rest properties into RDF_FIRST and RDF_REST', function() {
+        var oldStyleGraph = {
+          '@graph': [{
+            '@id': 'http://blankNode1',
+            'http://www.w3.org/1999/02/22-rdf-syntax-ns#first': 'http://trials.drugis.org/instances/newUuid1',
+            'http://www.w3.org/1999/02/22-rdf-syntax-ns#rest': {
+              '@list': ['http://trials.drugis.org/instances/newUuid2']
+            }
+          }, {
+            '@id': 'http://blankNode2',
+            'first': 'http://trials.drugis.org/instances/newUuid1',
+            'rest': {
+              '@list': ['http://trials.drugis.org/instances/newUuid2']
+            }
+          }]
+        };
+        var expectedGraph = {
+          '@graph': [{
+            '@id': 'http://blankNode1',
+            'first': 'http://trials.drugis.org/instances/newUuid1',
+            'rest': {
+              '@list': ['http://trials.drugis.org/instances/newUuid2']
+            }
+          }, {
+            '@id': 'http://blankNode2',
+            'first': 'http://trials.drugis.org/instances/newUuid1',
+            'rest': {
+              '@list': ['http://trials.drugis.org/instances/newUuid2']
+            }
+          }]
+        };
+        expect(dataModelService.normalizeFirstAndRest(oldStyleGraph)).toEqual(expectedGraph);
       });
     });
   });

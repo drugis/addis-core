@@ -32,6 +32,10 @@
                     <div class="info" ng-show="dataRow.numberOfMatchedInterventions < 2 || dataRow.numberOfIncludedInterventions < 2">Excluded; Fewer than two included
                         interventions.
                     </div>
+                    <div ng-show="dataRow.numberOfIncludedInterventions > 1 && isMissingByStudyMap[dataRow.studyUri]"
+                         class="alert-message">
+                        Study has missing values.
+                    </div>
                 </td>
                 <td ng-repeat="covariate in dataRow.covariatesColumns" ng-show="dataRow.firstStudyRow"
                     rowspan="{{dataRow.studyRowSpan}}" class="text-center">

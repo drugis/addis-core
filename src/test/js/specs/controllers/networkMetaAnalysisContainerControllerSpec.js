@@ -102,7 +102,7 @@ define(['angular', 'angular-mocks', 'controllers'], function() {
         'transformTrialDataToNetwork', 'isNetworkDisconnected', 'addInclusionsToInterventions', 'changeArmExclusion',
         'buildInterventionInclusions', 'doesInterventionHaveAmbiguousArms', 'doesModelHaveAmbiguousArms', 'cleanUpExcludedArms',
         'addInclusionsToCovariates', 'changeCovariateInclusion', 'buildOverlappingTreatmentMap', 'getIncludedInterventions',
-        'containsMissingValue', 'doesModelHaveInsufficientCovariateValues'
+        'buildMissingValueByStudyMap', 'doesModelHaveInsufficientCovariateValues'
       ]);
       var mockNetwork = {
         interventions: []

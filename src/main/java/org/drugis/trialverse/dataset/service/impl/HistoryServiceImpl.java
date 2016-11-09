@@ -1,5 +1,6 @@
 package org.drugis.trialverse.dataset.service.impl;
 
+import com.google.common.collect.Sets;
 import com.jayway.jsonpath.JsonPath;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.IOUtils;
@@ -9,10 +10,7 @@ import org.apache.jena.ext.com.google.common.collect.Lists;
 import org.apache.jena.query.*;
 import org.apache.jena.rdf.model.*;
 import org.drugis.trialverse.dataset.exception.RevisionNotFoundException;
-import org.drugis.trialverse.dataset.model.Merge;
-import org.drugis.trialverse.dataset.model.VersionMapping;
-import org.drugis.trialverse.dataset.model.VersionNode;
-import org.drugis.trialverse.dataset.model.VersionNodeBuilder;
+import org.drugis.trialverse.dataset.model.*;
 import org.drugis.trialverse.dataset.repository.DatasetReadRepository;
 import org.drugis.trialverse.dataset.repository.VersionMappingRepository;
 import org.drugis.trialverse.dataset.service.HistoryService;
@@ -38,6 +36,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Created by daan on 2-9-15.
@@ -65,6 +64,11 @@ public class HistoryServiceImpl implements HistoryService {
 
   @Override
   public List<VersionNode> createHistory(URI trialverseDatasetUri) throws URISyntaxException, IOException, RevisionNotFoundException {
+    return createHistory(trialverseDatasetUri, null);
+  }
+
+  //@Override
+  public List<VersionNode> createHistory(URI trialverseDatasetUri, URI trialverseGraphUri) throws URISyntaxException, IOException, RevisionNotFoundException {
     VersionMapping versionMapping = versionMappingRepository.getVersionMappingByDatasetUrl(trialverseDatasetUri);
     Model historyModel = datasetReadRepository.getHistory(versionMapping.getVersionedDatasetUri());
 
@@ -84,16 +88,20 @@ public class HistoryServiceImpl implements HistoryService {
     }
 
     // sort the versions
-    List<VersionNode> sortedVersions = createSortedVersionList(versionMap, headVersion);
+    List<AdvancedVersionNode> sortedVersions = createSortedVersionList(versionMap, headVersion);
 
     Set<RDFNode> seenRevisions = new HashSet<>();
-    for (VersionNode version : sortedVersions) {
-      StmtIterator graphRevisionBlankNodes = historyModel.listStatements(historyModel.getResource(version.getUri()), JenaProperties.graphRevisionProperty, (RDFNode) null);
+    for (AdvancedVersionNode version : sortedVersions) {
+      StmtIterator graphRevisionBlankNodes = historyModel.listStatements(historyModel.getResource(version.getUri()),
+              JenaProperties.graphRevisionProperty, (RDFNode) null);
 
       while (graphRevisionBlankNodes.hasNext()) {
         Resource graphRevisionBlankNode = graphRevisionBlankNodes.nextStatement().getObject().asResource();
         StmtIterator revisionItr = historyModel.listStatements(graphRevisionBlankNode, JenaProperties.revisionProperty, (RDFNode) null);
         Resource revisionSubject = revisionItr.next().getObject().asResource();
+        StmtIterator graphItr = historyModel.listStatements(graphRevisionBlankNode, JenaProperties.graphProperty, (RDFNode) null);
+        Resource graphSubject = graphItr.next().getObject().asResource();
+        version.addGraphRevisionPair(URI.create(graphSubject.toString()), URI.create(revisionSubject.toString()));
         StmtIterator stmtIterator1 = historyModel.listStatements(revisionSubject, JenaProperties.mergedRevisionProperty, (RDFNode) null);
         if (stmtIterator1.hasNext()) { // it's a merge revision
           Statement mergedRevision = stmtIterator1.next();
@@ -107,14 +115,34 @@ public class HistoryServiceImpl implements HistoryService {
         }
       }
     }
-    return sortedVersions;
+    if (trialverseGraphUri != null) {
+      Map<String, Set<Pair<URI, URI>>> changesByUri = new HashMap<>();
+
+      AdvancedVersionNode previousNode = null;
+      for (AdvancedVersionNode currentNode : sortedVersions) {
+        if (previousNode == null) {
+          changesByUri.put(currentNode.getUri(), currentNode.getGraphRevisions());
+        } else {
+          changesByUri.put(currentNode.getUri(), Sets.symmetricDifference(changesByUri.get(previousNode.getUri()), currentNode.getGraphRevisions()));
+        }
+        previousNode = currentNode;
+      }
+      sortedVersions = sortedVersions.stream()
+              .filter(version ->
+                      changesByUri.get(version.getUri()).stream()
+                              .anyMatch(graphRevisionPair -> graphRevisionPair.getLeft().equals(trialverseGraphUri)))
+              .collect(Collectors.toList());
+    }
+    return sortedVersions.stream()
+            .map(AdvancedVersionNode::simplify)
+            .collect(Collectors.toList());
   }
 
-  private List<VersionNode> createSortedVersionList(Map<String, Resource> versionMap, Resource headVersion) {
-    List<VersionNode> sortedVersions = new ArrayList<>();
+  private List<AdvancedVersionNode> createSortedVersionList(Map<String, Resource> versionMap, Resource headVersion) throws URISyntaxException {
+    List<AdvancedVersionNode> sortedVersions = new ArrayList<>();
     Resource current = headVersion;
     for (int historyOrder = 0; historyOrder < versionMap.size(); ++historyOrder) {
-      sortedVersions.add(buildNewVersionNode(current, historyOrder));
+      sortedVersions.add(buildAdvancedNewVersionNode(current, historyOrder));
       Resource next = current.getPropertyResourceValue(JenaProperties.previousProperty);
       current = next;
     }
@@ -122,7 +150,7 @@ public class HistoryServiceImpl implements HistoryService {
     return sortedVersions;
   }
 
-  private VersionNode buildNewVersionNode(Resource current, int historyOrder) {
+  private AdvancedVersionNode buildAdvancedNewVersionNode(Resource current, int historyOrder) throws URISyntaxException {
     Statement title = current.getProperty(JenaProperties.TITLE_PROPERTY);
     Resource creatorProp = current.getPropertyResourceValue(JenaProperties.creatorProperty);
     String creator = creatorProp == null ? "unknown creator" : creatorProp.toString();
@@ -141,7 +169,7 @@ public class HistoryServiceImpl implements HistoryService {
     }
     Statement descriptionStatement = current.getProperty(JenaProperties.DESCRIPTION_PROPERTY);
     Statement dateProp = current.getProperty(JenaProperties.DATE_PROPERTY);
-    return new VersionNodeBuilder()
+    return new AdvancedVersionNodeBuilder()
             .setUri(current.getURI())
             .setVersionTitle(title == null ? "" : title.getObject().toString())
             .setVersionDate(((XSDDateTime) dateProp.getObject().asLiteral().getValue()).asCalendar().getTime())

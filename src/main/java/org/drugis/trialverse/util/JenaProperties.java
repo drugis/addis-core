@@ -39,6 +39,7 @@ public class JenaProperties {
   public static final Property mergedRevisionProperty = defaultModel.getProperty(esPrefix, MERGED_REVISION);
   public static final Property graphRevisionProperty = defaultModel.getProperty(esPrefix, GRAPH_REVISION);
   public static final Property revisionProperty = defaultModel.getProperty(esPrefix, REVISION);
+  public static final Property graphProperty = defaultModel.getProperty(esPrefix, GRAPH);
   public static final Property datasetProperty = defaultModel.getProperty(esPrefix, DATASET);
 
 }
