@@ -30,13 +30,13 @@ define(['lodash'], function(_) {
     };
 
     $scope.isValidNct = function(nctId) {
-      var inLowerCase = nctId.toLowerCase();
-      return new RegExp('^' + 'nct+').test(inLowerCase);
+      return new RegExp('^' + 'NCT+').test(nctId);
     };
 
     $scope.getInfo = function(studyImport) {
       studyImport.error = undefined;
       studyImport.notFound = false;
+      studyImport.nctId = studyImport.nctId.toUpperCase();
       if ($scope.isValidNct(studyImport.nctId)) {
         $scope.studyImport.basicInfo = {};
         $scope.studyImport.loading = true;
