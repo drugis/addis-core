@@ -22,7 +22,7 @@ define(['util/transformJsonLd', 'util/transformConceptJsonLd'], function(transfo
           },
           transformResponse: function(data) {
             var graphData = JSON.parse(data);
-            graphData = DateModelService.normalizeFirstAndRest(graphData);
+            graphData = DataModelService.normalizeFirstAndRest(graphData);
             graphData = DataModelService.updateCategories(graphData);
             return transformStudyJsonLd(graphData);
           }

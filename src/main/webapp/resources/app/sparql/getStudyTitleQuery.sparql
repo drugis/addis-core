@@ -1,0 +1,14 @@
+PREFIX ontology: <http://trials.drugis.org/ontology#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+SELECT
+  ?label 
+WHERE {
+  GRAPH <http://trials.drugis.org/graphs/$studyUuid$> {
+    ?studyUri
+      rdfs:label ?label ;
+      a ontology:Study .
+  }
+
+
+}

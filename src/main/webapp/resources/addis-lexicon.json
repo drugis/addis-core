@@ -71,8 +71,8 @@
   },
   "dataset-history": {
     "title": "Dataset history",
-    "text": "The full history of a dataset, including all dataset versions in between (and including) its initial creation and the very latest update. Individual versions can be viewed to see how a dataset has changed over time.",
-    "link": "/manual.html#dataset-history"
+    "text": "The full history of a dataset, including all dataset versions in between (and including) its initial creation and the very latest update. Individual versions can be viewed to see how a study has changed over time.",
+    "link": "/manual.html#version-history"
   },
   "dataset-version": {
     "title": "Dataset version",
@@ -133,6 +133,11 @@
     "title": "Study design",
     "text": "The study design table captures which activities were applied to each arm during each of the time periods of the study.",
     "link": "/manual.html#study-design"
+  },
+  "study-history": {
+    "title": "Study history",
+    "text": "The full history of a study, including all dataset versions in between (and including) its initial creation and the very latest update. Individual versions can be viewed to see how a study has changed over time.",
+    "link": "/manual.html#version-history"
   },
   "study-information": {
     "title": "Study information",

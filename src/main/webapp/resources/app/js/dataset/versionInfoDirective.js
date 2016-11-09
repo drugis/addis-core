@@ -1,7 +1,7 @@
 'use strict';
 define([], function() {
-  var depencencies = ['$stateParams'];
-  var VersionInfoDirective = function($stateParams) {
+  var depencencies = [];
+  var VersionInfoDirective = function() {
     return {
       restrict: 'E',
       transclude: true,
