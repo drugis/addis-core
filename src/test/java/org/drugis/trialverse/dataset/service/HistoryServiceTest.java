@@ -27,6 +27,7 @@ import java.net.URISyntaxException;
 import java.util.Date;
 import java.util.List;
 
+import static junit.framework.TestCase.assertNull;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
@@ -58,39 +59,53 @@ public class HistoryServiceTest {
 
   @InjectMocks
   private HistoryService historyService;
+  private final URI trialverseDatasetUri = URI.create("http://anyUri");
+  private final URI trialverseGraphUri = URI.create("http://trials.drugis.org/graphs/totallyCoolGraph");
+  private final String versionedDatasetUri = "http://anyVersionedUri";
+  private final VersionMapping mapping = new VersionMapping(versionedDatasetUri, null, trialverseDatasetUri.toString());
+  private final InputStream historyStream = new ClassPathResource("mockHistory.ttl").getInputStream();
+  private final Model historyModel = ModelFactory.createDefaultModel();
+  private final Integer apiKeyId = 1;
+  private final ApiKey apiKey = mock(ApiKey.class);
+  private final String email = "flutadres@gmail.com";
+  private final Account account = new Account("userName", "firstName", "lastName", email);
+
+  public HistoryServiceTest() throws IOException {
+  }
 
   @Before
-  public void setUp() {
+  public void setUp() throws URISyntaxException, IOException {
     historyService = new HistoryServiceImpl();
     initMocks(this);
+    historyModel.read(historyStream, null, "TTL");
+    when(versionMappingRepository.getVersionMappingByDatasetUrl(trialverseDatasetUri)).thenReturn(mapping);
+    when(datasetReadRepository.getHistory(mapping.getVersionedDatasetUri())).thenReturn(historyModel);
+    when(apiKeyRepository.get(apiKeyId)).thenReturn(apiKey);
+    when(accountRepository.findAccountByEmail(email)).thenReturn(account);
   }
 
   @Test
   public void testCreateHistory() throws RevisionNotFoundException, IOException, URISyntaxException {
-    URI trialverseDatasetUri = URI.create("http://anyUri");
-    String versionedDatasetUri = "http://anyVersionedUri";
-    VersionMapping mapping = new VersionMapping(versionedDatasetUri, null, trialverseDatasetUri.toString());
-    InputStream historyStream = new ClassPathResource("mockHistory.ttl").getInputStream();
-    Model historyModel = ModelFactory.createDefaultModel();
-    historyModel.read(historyStream, null, "TTL");
 
-    when(versionMappingRepository.getVersionMappingByDatasetUrl(trialverseDatasetUri)).thenReturn(mapping);
-    when(datasetReadRepository.getHistory(mapping.getVersionedDatasetUri())).thenReturn(historyModel);
-    Integer apiKeyId = 1;
-    ApiKey apiKey = mock(ApiKey.class);
-    when(apiKeyRepository.get(apiKeyId)).thenReturn(apiKey);
-    String email = "osmosisch@gmail.com";
-    Account account = new Account("userName", "firstName", "lastName", email);
-    when(accountRepository.findAccountByEmail(email)).thenReturn(account);
     List<VersionNode> history = historyService.createHistory(trialverseDatasetUri);
 
-    assertTrue(history.size() > 0);
-    VersionNode versionNode = history.get(2);
-    assertEquals("http://testhost/versions/e53caa0d-c0df-46db-977e-37f48fecb042", versionNode.getUri());
-    assertEquals("Added an arm", versionNode.getVersionTitle());
-    assertEquals("because I could", versionNode.getDescription());
-    assertEquals(null, history.get(1).getDescription());
-    assertEquals(new Date(1440672031000L), history.get(1).getVersionDate());
+    assertEquals(5, history.size());
+    VersionNode versionNode = history.get(4);
+    assertEquals("http://localhost:8080/versions/headVersion", versionNode.getUri());
+    assertEquals("add arm to group 2", versionNode.getVersionTitle());
+    assertNull(versionNode.getDescription());
+    assertEquals(new Date(1478613838000L), history.get(1).getVersionDate());
+
+  }
+
+  @Test
+  public void testCreateFilteredHistory() throws RevisionNotFoundException, IOException, URISyntaxException {
+
+    List<VersionNode> history = historyService.createHistory(trialverseDatasetUri, trialverseGraphUri);
+
+    assertEquals(2, history.size());
+    VersionNode initialCreationVersion = history.get(0);
+    assertEquals("Initial study creation: graph 1", initialCreationVersion.getVersionTitle());
   }
 
 }

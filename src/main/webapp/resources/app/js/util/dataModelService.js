@@ -40,16 +40,14 @@ define(['angular', 'lodash'], function(angular, _) {
         });
         _.forEach(categoryLists, function(categoryList) {
           var currentNode = categoryList;
-          var firstProp = currentNode.first ? 'first' : RDF_FIRST;
-          var restProp = currentNode.first ? 'rest' : RDF_REST;
 
-          while (currentNode && currentNode[firstProp]) {
-            currentNode[firstProp] = categoriesByName[currentNode[firstProp]]['@id'];
-            if (currentNode[restProp]['@list']) {
-              currentNode[restProp]['@list'][0] = categoriesByName[currentNode[restProp]['@list'][0]]['@id'];
+          while (currentNode && currentNode.first) {
+            currentNode.first = categoriesByName[currentNode.first]['@id'];
+            if (currentNode.rest['@list']) {
+              currentNode.rest['@list'][0] = categoriesByName[currentNode.rest['@list'][0]]['@id'];
             }
             currentNode = _.find(graph, function(node) {
-              return node['@id'] === currentNode[restProp]['@id'];
+              return node['@id'] === currentNode.rest;
             });
           }
         });

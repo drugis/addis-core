@@ -830,35 +830,35 @@ define(['angular', 'angular-mocks', 'services'], function() {
       }));
     });
 
-    describe('containsMissingValue', function() {
+    describe('buildMissingValueByStudyMap', function() {
       beforeEach(module('addis.services'));
 
-      it('should find the first missing value, if there is one in the evidenceTable',
+      it('should build a map indexed by study uri where studies with missing values are truthy',
         inject(function(NetworkMetaAnalysisService) {
           var outcome = {
             semanticOutcomeUri: 'semanticOutcomeUri'
           };
 
-          var arm1 = {
-            trialverseUid: 'trialverseUid'
+          var study1Arm1 = {
+            trialverseUid: 'trialverseUid1'
           };
 
-          var analysis = {
+          var study1Arm2 = {
+            trialverseUid: 'trialverseUid2'
+          };
+
+          var analysis1 = {
             outcome: outcome,
-            excludedArms: [arm1]
+            excludedArms: [study1Arm1, study1Arm2]
           };
 
           var trialDataArm1 = { // excluded due to arm exclusion
-            uri: arm1.trialverseUid
-          };
-
-          var trialDataArm2 = { // excluded due to no matching interventions
-            uri: 'trialverseUid2',
+            uri: study1Arm1.trialverseUid,
             matchedProjectInterventionIds: []
           };
 
-          var trialDataArm3 = { // excluded due to no matching interventions
-            uri: 'trialverseUid3',
+          var trialDataArm2 = { // excluded due to no matching interventions
+            uri: study1Arm2.trialverseUid,
             matchedProjectInterventionIds: [1],
             measurements: [{
               variableConceptUri: outcome.semanticOutcomeUri,
@@ -869,14 +869,66 @@ define(['angular', 'angular-mocks', 'services'], function() {
             }]
           };
 
-          var trialDataStudies = [{
-            trialDataArms: [trialDataArm1, trialDataArm2, trialDataArm3]
-          }];
+          var trialDataArm3 = { // excluded due to no matching interventions
+            uri: 'trialverseUid3',
+            matchedProjectInterventionIds: [2],
+            measurements: [{
+              variableConceptUri: outcome.semanticOutcomeUri,
+              measurementTypeURI: 'http://trials.drugis.org/ontology#continuous',
+              mean: 1.1,
+              stdDev: 0.5,
+              sampleSize: null // it's missing !
+            }]
+          };
+          var trialDataArm4 = { // excluded due to arm exclusion
+            uri: 'study2arm1',
+            matchedProjectInterventionIds: []
+          };
 
-          var result = NetworkMetaAnalysisService.containsMissingValue(trialDataStudies, analysis);
-          expect(result).toBeTruthy();
+          var trialDataArm5 = { // excluded due to no matching interventions
+            uri: 'study2arm2',
+            matchedProjectInterventionIds: [1],
+            measurements: [{
+              variableConceptUri: outcome.semanticOutcomeUri,
+              measurementTypeURI: 'http://trials.drugis.org/ontology#continuous',
+              mean: 1.1,
+              stdDev: 0.5,
+              sampleSize: null // it's missing !
+            }]
+          };
+
+          var trialDataArm6 = { // excluded due to no matching interventions
+            uri: 'study2arm3',
+            matchedProjectInterventionIds: [2],
+            measurements: [{
+              variableConceptUri: outcome.semanticOutcomeUri,
+              measurementTypeURI: 'http://trials.drugis.org/ontology#continuous',
+              mean: 1.1,
+              stdDev: 0.5,
+              sampleSize: null // it's missing !
+            }]
+          };
+
+          var study1 = {
+            studyUri: 'study1uri',
+            trialDataArms: [trialDataArm1, trialDataArm2, trialDataArm3]
+          };
+
+          var study2 = {
+            studyUri: 'study2uri',
+            trialDataArms: [trialDataArm4, trialDataArm5, trialDataArm6]
+          };
+
+          var trialDataStudies = [study1, study2];
+
+          var result = NetworkMetaAnalysisService.buildMissingValueByStudyMap(trialDataStudies, analysis1);
+
+          expect(result[study1.studyUri]).toBeFalsy();
+          expect(result[study2.studyUri]).toBeTruthy();
         }));
     });
+
+
 
     describe('doesModelHaveInsufficientCovariateValues', function() {
       beforeEach(module('addis.services'));

@@ -177,9 +177,10 @@ define(['lodash', 'angular'], function(_, angular) {
 
     function isMissingValue(value, field, type) {
       if (value !== null && value !== undefined) {
-        // has some value ( might be '0', therefore it cant be missing
+        // has some value, therefore it can't be missing
         return false;
       }
+      // FIXME: flexible fields && categoricals
       if (type === CONTINUOUS_TYPE) {
         if (field === 'mean' || field === 'stdDev' || field === 'sampleSize') {
           return true;
@@ -191,19 +192,23 @@ define(['lodash', 'angular'], function(_, angular) {
         }
       }
       if (type === CATEGORICAL_TYPE) {
-        //todo
         return false;
       }
       return false;
     }
 
-    function containsMissingValue(trialDataStudies, analysis) {
+    function buildMissingValueByStudyMap(trialDataStudies, analysis) {
       // setup maps
       var excludedArmsByUri = buildExcludedArmsMap(analysis.excludedArms);
 
       // look for single missingValue
-      return _.find(trialDataStudies, function(trialDataStudy) {
-        return _.find(trialDataStudy.trialDataArms, function(trialDataArm) {
+      return _.reduce(trialDataStudies, function(accum, trialDataStudy) {
+        var nMatchedInterventions = countMatchedInterventions(trialDataStudy, excludedArmsByUri);
+        if (nMatchedInterventions < 2) { // if there's not enough matched interventions we don't care
+          accum[trialDataStudy.studyUri] = false;
+          return accum;
+        }
+        accum[trialDataStudy.studyUri] = _.find(trialDataStudy.trialDataArms, function(trialDataArm) {
           if (excludedArmsByUri[trialDataArm.uri]) {
             return false; //excluded arm, therefore missing values don't count
           }
@@ -212,25 +217,30 @@ define(['lodash', 'angular'], function(_, angular) {
           }
           var measurement = getOutcomeMeasurement(analysis, trialDataArm);
           var measurementType = measurement.measurementTypeURI;
-          return isMissingValue(measurement['mean'], 'mean', measurementType) ||
-            isMissingValue(measurement['stdDev'], 'stdDev', measurementType) ||
-            isMissingValue(measurement['rate'], 'rate', measurementType) ||
-            isMissingValue(measurement['sampleSize'], 'sampleSize', measurementType);
+          return isMissingValue(measurement.mean, 'mean', measurementType) ||
+            isMissingValue(measurement.stdDev, 'stdDev', measurementType) ||
+            isMissingValue(measurement.rate, 'rate', measurementType) ||
+            isMissingValue(measurement.sampleSize, 'sampleSize', measurementType);
         });
-      });
+        return accum;
+      }, {});
     }
 
-    function countMatchedInterventions(study) {
+    function countMatchedInterventions(study, excludedArmsByUri) {
       var numberOfMatchedInterventions = 0;
       angular.forEach(study.trialDataArms, function(trialDataArm) {
-        numberOfMatchedInterventions = numberOfMatchedInterventions + trialDataArm.matchedProjectInterventionIds.length;
+        if (!excludedArmsByUri[trialDataArm.uri]) {
+          numberOfMatchedInterventions += trialDataArm.matchedProjectInterventionIds.length;
+        }
       });
       return numberOfMatchedInterventions;
     }
 
-    function filterStudiesHavingLessThanTwoMatchedInterventions(trialData) {
+    function getValidStudies(trialData, analysis) {
+      var excludedArmsByUri = buildExcludedArmsMap(analysis.excludedArms);
+
       return _.filter(trialData, function(study) {
-        return countMatchedInterventions(study) > 1;
+        return countMatchedInterventions(study, excludedArmsByUri) > 1;
       });
     }
 
@@ -293,7 +303,7 @@ define(['lodash', 'angular'], function(_, angular) {
         edges: AnalysisService.generateEdges(interventions)
       };
       var validTrialData = filterExcludedArms(trialDataStudies, analysis.excludedArms);
-      validTrialData = filterStudiesHavingLessThanTwoMatchedInterventions(validTrialData);
+      validTrialData = getValidStudies(validTrialData, analysis);
 
       network.interventions = _.map(interventions, function(intervention) {
         return {
@@ -470,7 +480,7 @@ define(['lodash', 'angular'], function(_, angular) {
     function doesModelHaveInsufficientCovariateValues(trialData) {
       var covariateValues = _.reduce(trialData, function(accum, trialDatum) {
         _.forEach(trialDatum.covariatesColumns, function(covariateColumn) {
-          if(!accum[covariateColumn.headerTitle]) {
+          if (!accum[covariateColumn.headerTitle]) {
             accum[covariateColumn.headerTitle] = [];
           }
           accum[covariateColumn.headerTitle] = _.uniq(accum[covariateColumn.headerTitle].concat(covariateColumn.data));
@@ -496,8 +506,8 @@ define(['lodash', 'angular'], function(_, angular) {
       changeCovariateInclusion: changeCovariateInclusion,
       buildOverlappingTreatmentMap: buildOverlappingTreatmentMap,
       getIncludedInterventions: getIncludedInterventions,
-      containsMissingValue: containsMissingValue,
-      doesModelHaveInsufficientCovariateValues: doesModelHaveInsufficientCovariateValues
+      doesModelHaveInsufficientCovariateValues: doesModelHaveInsufficientCovariateValues,
+      buildMissingValueByStudyMap: buildMissingValueByStudyMap
     };
   };
   return dependencies.concat(NetworkMetaAnalysisService);

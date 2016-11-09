@@ -4,10 +4,9 @@ define([], function() {
   var HistoryItemDirective = function($stateParams) {
     return {
       restrict: 'E',
-      templateUrl: 'app/js/dataset/historyItemDirective.html',
+      templateUrl: 'app/js/dataset/studyHistoryItemDirective.html',
       scope: {
-        item: '=',
-        isStudyItem: '='
+        item: '='
       },
       link: function(scope) {
         function segmentAfterLastSlash(str) {
@@ -17,10 +16,8 @@ define([], function() {
         scope.userUid = $stateParams.userUid;
         scope.versionUuid = segmentAfterLastSlash(uri);
         scope.datasetUUID = $stateParams.datasetUUID;
-        if (scope.isStudyItem) {
-          scope.studyGraphUuid = $stateParams.studyGraphUuid;
-        }
-        if (scope.item.merge) {
+        scope.studyGraphUuid = $stateParams.studyGraphUuidD;
+        if(scope.item.merge) {
           var sourceUserUuid = scope.item.merge.sourceUserUuid;
           var sourceDatasetUri = scope.item.merge.sourceDatasetUri;
           var sourceVersionUri = scope.item.merge.version;

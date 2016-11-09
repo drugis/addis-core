@@ -62,7 +62,7 @@ public class GraphServiceTest {
   @Mock
   WebConstants webConstants;
 
-  String testHost = "http://testhost";
+  String testHost = "http://localhost:8080";
 
   @Before
   public void setUp() {
@@ -77,9 +77,9 @@ public class GraphServiceTest {
     URI targetDatasetUri = new URI("http://target.dataset");
     URI targetGraphUri = new URI("http://target.graph.uri");
     String sourceDatasetUuid = "sourceDatasetUuid";
-    URI sourceGraphUri = new URI(testHost + "/datasets/" + sourceDatasetUuid + "/versions/e53caa0d-c0df-46db-977e-37f48fecb042/graphs/0ef5c6e8-a5fb-4ac0-953b-d1a75fdf9312");
+    URI sourceGraphUri = new URI(testHost + "/datasets/" + sourceDatasetUuid + "/versions/headVersion/graphs/totallyCoolGraph");
     URI sourceDatasetUri = new URI(Namespaces.DATASET_NAMESPACE + sourceDatasetUuid);
-    URI revisionUri = new URI("http://testhost/revisions/e37ee2a8-14c7-4b22-87c6-fe43ac0273fe");
+    URI revisionUri = new URI(testHost + "/revisions/headRevisionOfTotallyCoolGraph");
 
     Model historyModel = ModelFactory.createDefaultModel();
     InputStream historyStream = new ClassPathResource("mockHistory.ttl").getInputStream();
@@ -126,7 +126,7 @@ public class GraphServiceTest {
   public void testExtractVersionUri() {
     URI uri = URI.create("https://www.trialverse123.org/datasets/333-av-3222/versions/434-334/graphs/44334");
     URI versionUri = graphService.extractVersionUri(uri);
-    assertEquals("http://testhost/versions/" + "434-334", versionUri.toString());
+    assertEquals(testHost + "/versions/" + "434-334", versionUri.toString());
   }
 
   @Test
