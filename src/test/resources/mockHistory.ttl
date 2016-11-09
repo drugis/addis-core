@@ -6,12 +6,12 @@
         es:assertions  <http://localhost:8080/assert/310e20dc-25cc-40fd-b4fb-314a373951b0> ;
         es:previous    <http://localhost:8080/revisions/ce5d92e2-56dd-4019-8613-09beae235e56> .
 
-<http://localhost:8080/revisions/4da61dac-5c46-491c-a5af-1a2c6b4bea20>
+<http://localhost:8080/revisions/headRevisionOfTotallyCoolGraph>
         a              es:Revision ;
-        es:assertions  <http://localhost:8080/assert/4da61dac-5c46-491c-a5af-1a2c6b4bea20> ;
+        es:assertions  <http://localhost:8080/assert/headRevisionOfTotallyCoolGraph> ;
         es:previous    <http://localhost:8080/revisions/6fbadf2b-b08c-4d0d-8f4c-30d4532d7c09> .
 
-<http://localhost:8080/versions/add03287-b912-4240-9c89-08a85ffa50df>
+<http://localhost:8080/versions/headVersion>
         a                          es:DatasetVersion ;
         es:dataset                 <http://localhost:8080/datasets/9b85fa5a-f73d-4821-a94c-fcc628873c14> ;
         es:default_graph_revision  [ es:revision  <http://localhost:8080/revisions/c5d736ec-2fd0-48d5-9ebc-e97baf3bd8ce> ] ;
@@ -19,7 +19,7 @@
                                      es:revision  <http://localhost:8080/revisions/310e20dc-25cc-40fd-b4fb-314a373951b0>
                                    ] ;
         es:graph_revision          [ es:graph     <http://trials.drugis.org/graphs/totallyCoolGraph> ;
-                                     es:revision  <http://localhost:8080/revisions/4da61dac-5c46-491c-a5af-1a2c6b4bea20>
+                                     es:revision  <http://localhost:8080/revisions/headRevisionOfTotallyCoolGraph>
                                    ] ;
         es:previous                <http://localhost:8080/versions/3dac4b9f-f32d-408d-8aea-32861baa5364> ;
         <http://purl.org/dc/terms/creator>
@@ -37,7 +37,7 @@
                                      es:revision  <http://localhost:8080/revisions/ce5d92e2-56dd-4019-8613-09beae235e56>
                                    ] ;
         es:graph_revision          [ es:graph     <http://trials.drugis.org/graphs/totallyCoolGraph> ;
-                                     es:revision  <http://localhost:8080/revisions/4da61dac-5c46-491c-a5af-1a2c6b4bea20>
+                                     es:revision  <http://localhost:8080/revisions/headRevisionOfTotallyCoolGraph>
                                    ] ;
         es:previous                <http://localhost:8080/versions/c374e234-0aa2-4b54-8dce-b0a332e80f0d> ;
         <http://purl.org/dc/terms/creator>
@@ -61,7 +61,7 @@
 
 <http://localhost:8080/datasets/9b85fa5a-f73d-4821-a94c-fcc628873c14>
         a        es:Dataset ;
-        es:head  <http://localhost:8080/versions/add03287-b912-4240-9c89-08a85ffa50df> ;
+        es:head  <http://localhost:8080/versions/headVersion> ;
         <http://purl.org/dc/terms/creator>
                 <mailto:flutadres@gmail.com> ;
         <http://purl.org/dc/terms/date>

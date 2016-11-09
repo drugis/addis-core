@@ -91,7 +91,7 @@ public class HistoryServiceTest {
 
     assertEquals(5, history.size());
     VersionNode versionNode = history.get(4);
-    assertEquals("http://localhost:8080/versions/add03287-b912-4240-9c89-08a85ffa50df", versionNode.getUri());
+    assertEquals("http://localhost:8080/versions/headVersion", versionNode.getUri());
     assertEquals("add arm to group 2", versionNode.getVersionTitle());
     assertNull(versionNode.getDescription());
     assertEquals(new Date(1478613838000L), history.get(1).getVersionDate());
