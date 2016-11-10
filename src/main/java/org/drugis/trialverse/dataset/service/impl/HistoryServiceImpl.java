@@ -9,18 +9,18 @@ import org.apache.jena.datatypes.xsd.XSDDateTime;
 import org.apache.jena.ext.com.google.common.collect.Lists;
 import org.apache.jena.query.*;
 import org.apache.jena.rdf.model.*;
+import org.drugis.addis.security.Account;
+import org.drugis.addis.security.ApiKey;
+import org.drugis.addis.security.repository.AccountRepository;
+import org.drugis.addis.security.repository.ApiKeyRepository;
+import org.drugis.addis.util.WebConstants;
 import org.drugis.trialverse.dataset.exception.RevisionNotFoundException;
 import org.drugis.trialverse.dataset.model.*;
 import org.drugis.trialverse.dataset.repository.DatasetReadRepository;
 import org.drugis.trialverse.dataset.repository.VersionMappingRepository;
 import org.drugis.trialverse.dataset.service.HistoryService;
 import org.drugis.trialverse.graph.repository.GraphReadRepository;
-import org.drugis.addis.security.Account;
-import org.drugis.addis.security.ApiKey;
-import org.drugis.addis.security.repository.AccountRepository;
-import org.drugis.addis.security.repository.ApiKeyRepository;
 import org.drugis.trialverse.util.JenaProperties;
-import org.drugis.addis.util.WebConstants;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -123,7 +123,7 @@ public class HistoryServiceImpl implements HistoryService {
         if (previousNode == null) {
           changesByUri.put(currentNode.getUri(), currentNode.getGraphRevisions());
         } else {
-          changesByUri.put(currentNode.getUri(), Sets.symmetricDifference(changesByUri.get(previousNode.getUri()), currentNode.getGraphRevisions()));
+          changesByUri.put(currentNode.getUri(), Sets.difference(currentNode.getGraphRevisions(), previousNode.getGraphRevisions()));
         }
         previousNode = currentNode;
       }
