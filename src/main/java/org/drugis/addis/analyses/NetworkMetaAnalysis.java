@@ -27,6 +27,10 @@ public class NetworkMetaAnalysis extends AbstractAnalysis implements Serializabl
   @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "analysisId", orphanRemoval = true)
   private Set<CovariateInclusion> includedCovariates = new HashSet<>();
 
+  @JsonProperty("includedMeasurementMoments")
+  @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "analysisId", orphanRemoval = true)
+  private Set<MeasurementMomentInclusion> includedMeasurementMoments = new HashSet<>();
+
   @ManyToOne(targetEntity = Outcome.class)
   @JoinColumn(name = "outcomeId")
   private Outcome outcome;
@@ -87,6 +91,11 @@ public class NetworkMetaAnalysis extends AbstractAnalysis implements Serializabl
     return Collections.unmodifiableList(new ArrayList<>(includedCovariates));
   }
 
+  @JsonIgnore
+  public Set<MeasurementMomentInclusion> getIncludedMeasurementMoments() {
+    return Collections.unmodifiableSet(includedMeasurementMoments);
+  }
+
   public Outcome getOutcome() {
     return outcome;
   }
@@ -105,6 +114,10 @@ public class NetworkMetaAnalysis extends AbstractAnalysis implements Serializabl
 
   public void updateIncludedCovariates(Set<CovariateInclusion> includedCovariates){
     Utils.updateSet(this.includedCovariates, includedCovariates);
+  }
+
+  public void updateIncludedMeasurementMoments(Set<MeasurementMomentInclusion> newInclusions) {
+    Utils.updateSet(this.includedMeasurementMoments, newInclusions);
   }
 
   @Override

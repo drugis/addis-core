@@ -37,6 +37,10 @@ public class QueryResultMappingServiceImpl implements QueryResultMappingService 
       if (trialDataStudy == null) {
         String studyName = readValue(row, "studyName");
         trialDataStudy = new TrialDataStudy(studyUri, studyName, new ArrayList<>());
+        URI defaultMeasurementMoment = readValue(row, "defaultMeasurementMoment");
+        if (defaultMeasurementMoment != null) {
+          trialDataStudy.setDefaultMeasurementMoment(defaultMeasurementMoment);
+        }
         trialDataStudies.put(studyUri, trialDataStudy);
       }
 
@@ -58,7 +62,8 @@ public class QueryResultMappingServiceImpl implements QueryResultMappingService 
         seenArmTreatmentCombinations.add(armPlusTreatment);
         trialDataArm.addSemanticIntervention(abstractSemanticIntervention);
       }
-      trialDataArm.addMeasurement(measurement);
+      URI measurementMoment = readValue(row, "measurementMoment");
+      trialDataArm.addMeasurement(measurementMoment, measurement);
     }
     return trialDataStudies;
   }

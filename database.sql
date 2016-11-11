@@ -755,3 +755,14 @@ CREATE TABLE InterventionSetItem (
    FOREIGN KEY(interventionSetId) REFERENCES InterventionSet(interventionSetId),
    FOREIGN KEY(interventionId) REFERENCES AbstractIntervention(id)
 );
+--rollback DROP TABLE interventionSet;
+--rollback DROP TABLE InterventionSetItem
+
+--changeset reidd:63
+CREATE TABLE MeasurementMomentInclusion (
+  id INT NOT NULL,
+  analysisId INT NOT NULL,
+  study BYTEA,
+  measurementMoment BYTEA
+);
+--rollback DROP TABLE MeasurementMomentInclusion

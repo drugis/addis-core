@@ -13,6 +13,7 @@ public class TrialDataStudy {
 
   private List<TrialDataArm> trialDataArms = new ArrayList<>();
   private List<CovariateStudyValue> covariateValues = new ArrayList<>();
+  private URI defaultMeasurementMoment;
 
   public TrialDataStudy() {
   }
@@ -46,6 +47,14 @@ public class TrialDataStudy {
     return covariateValues;
   }
 
+  public URI getDefaultMeasurementMoment() {
+    return defaultMeasurementMoment;
+  }
+
+  public void setDefaultMeasurementMoment(URI defaultMeasurementMoment) {
+    this.defaultMeasurementMoment = defaultMeasurementMoment;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
@@ -56,7 +65,8 @@ public class TrialDataStudy {
     if (!studyUri.equals(that.studyUri)) return false;
     if (!name.equals(that.name)) return false;
     if (!trialDataArms.equals(that.trialDataArms)) return false;
-    return covariateValues.equals(that.covariateValues);
+    if (!covariateValues.equals(that.covariateValues)) return false;
+    return defaultMeasurementMoment != null ? defaultMeasurementMoment.equals(that.defaultMeasurementMoment) : that.defaultMeasurementMoment == null;
 
   }
 
@@ -66,6 +76,7 @@ public class TrialDataStudy {
     result = 31 * result + name.hashCode();
     result = 31 * result + trialDataArms.hashCode();
     result = 31 * result + covariateValues.hashCode();
+    result = 31 * result + (defaultMeasurementMoment != null ? defaultMeasurementMoment.hashCode() : 0);
     return result;
   }
 }

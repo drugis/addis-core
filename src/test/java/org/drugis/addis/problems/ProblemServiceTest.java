@@ -178,6 +178,7 @@ public class ProblemServiceTest {
     SingleStudyBenefitRiskAnalysis singleStudyAnalysis = new SingleStudyBenefitRiskAnalysis(analysisId, projectId, "single study analysis", outcomes, interventionInclusions);
     when(analysisRepository.get(analysisId)).thenReturn(singleStudyAnalysis);
 
+    URI defaultMeasurementMoment = URI.create("defaultMeasurementMoment");
     URI daanEtAlUri = URI.create("DaanEtAlUri");
     URI daanEtAlFluoxInstance = URI.create("daanEtAlFluoxInstance");
     URI daanEtAlFluoxArmUri = URI.create("daanEtAlFluoxArm");
@@ -192,8 +193,8 @@ public class ProblemServiceTest {
     AbstractSemanticIntervention simpleSemanticFluoxIntervention = new SimpleSemanticIntervention(daanEtAlFluoxInstance, fluoxConceptUri);
 
     TrialDataArm daanEtAlFluoxArm = new TrialDataArm(daanEtAlFluoxArmUri, "daanEtAlFluoxArm", daanEtAlFluoxInstance);
-    daanEtAlFluoxArm.addMeasurement(daanEtAlFluoxMeasurement1);
-    daanEtAlFluoxArm.addMeasurement(daanEtAlFluoxMeasurement2);
+    daanEtAlFluoxArm.addMeasurement(defaultMeasurementMoment, daanEtAlFluoxMeasurement1);
+    daanEtAlFluoxArm.addMeasurement(defaultMeasurementMoment, daanEtAlFluoxMeasurement2);
     daanEtAlFluoxArm.addSemanticIntervention(simpleSemanticFluoxIntervention);
 
     URI daanEtAlSertraInstance = URI.create("daanEtAlSertraInstance");
@@ -207,8 +208,8 @@ public class ProblemServiceTest {
     AbstractSemanticIntervention simpleSemanticSertraIntervention = new SimpleSemanticIntervention(daanEtAlSertraInstance, sertraConceptUri);
 
     TrialDataArm daanEtAlSertraArm = new TrialDataArm(daanEtAlSertraArmUri, "daanEtAlSertraArm", daanEtAlSertraInstance);
-    daanEtAlSertraArm.addMeasurement(daanEtAlSertraMeasurement1);
-    daanEtAlSertraArm.addMeasurement(daanEtAlSertraMeasurement2);
+    daanEtAlSertraArm.addMeasurement(defaultMeasurementMoment, daanEtAlSertraMeasurement1);
+    daanEtAlSertraArm.addMeasurement(defaultMeasurementMoment, daanEtAlSertraMeasurement2);
     daanEtAlSertraArm.addSemanticIntervention(simpleSemanticSertraIntervention);
 
     URI daanEtAlParoxInstance = URI.create("daanEtAlParoxInstance");
@@ -222,8 +223,8 @@ public class ProblemServiceTest {
     AbstractSemanticIntervention simpleSemanticParoxIntervention = new SimpleSemanticIntervention(daanEtAlParoxInstance, paroxConceptUri);
 
     TrialDataArm unmatchedDaanEtAlParoxArm = new TrialDataArm(daanEtAlParoxArmUri, "daanEtAlParoxArm", daanEtAlParoxInstance);
-    unmatchedDaanEtAlParoxArm.addMeasurement(daanEtAlParoxMeasurement1);
-    unmatchedDaanEtAlParoxArm.addMeasurement(daanEtAlParoxMeasurement2);
+    unmatchedDaanEtAlParoxArm.addMeasurement(defaultMeasurementMoment, daanEtAlParoxMeasurement1);
+    unmatchedDaanEtAlParoxArm.addMeasurement(defaultMeasurementMoment, daanEtAlParoxMeasurement2);
     unmatchedDaanEtAlParoxArm.addSemanticIntervention(simpleSemanticParoxIntervention);
 
     // add matching result to arms
@@ -231,6 +232,7 @@ public class ProblemServiceTest {
     daanEtAlSertraArm.setMatchedProjectInterventionIds(Collections.singleton(sertraIntervention.getId()));
     List<TrialDataArm> daanEtAlArms = Arrays.asList(daanEtAlFluoxArm, daanEtAlSertraArm, unmatchedDaanEtAlParoxArm);
     TrialDataStudy daanEtAl = new TrialDataStudy(daanEtAlUri, "Daan et al", daanEtAlArms);
+    daanEtAl.setDefaultMeasurementMoment(defaultMeasurementMoment);
 
     // actually set study in analysis
     singleStudyAnalysis.setStudyGraphUri(daanEtAlUri);
@@ -314,14 +316,17 @@ public class ProblemServiceTest {
     networkMetaAnalysis.updateIncludedCovariates(covariateInclusions);
 
     // add study with excluded arms to check whether it's excluded from covariate entries
+    URI nonDefaultMMUri = URI.create("nonDefaultMeasurementMomentUri");
     TrialDataStudy daanEtAl = createStudyMock(networkMetaAnalysis, includedCovariate, URI.create("DaanEtAlUri"), "DaanEtal");
+    TrialDataStudy nonDefaultMM = createStudyMock(networkMetaAnalysis, includedCovariate, URI.create("nonDefaultMMUri"), "nonDefaultMM", nonDefaultMMUri);
     TrialDataStudy pietEtAl = createStudyMock(networkMetaAnalysis, includedCovariate, URI.create("PietEtAlUri"), "PietEtal");
     List<ArmExclusion> excludedArms = new ArrayList<>(networkMetaAnalysis.getExcludedArms());
     excludedArms.addAll(pietEtAl.getTrialDataArms().stream()
-        .map(arm -> new ArmExclusion(networkMetaAnalysis.getId(), arm.getUri()))
-        .collect(Collectors.toList()));
+            .map(arm -> new ArmExclusion(networkMetaAnalysis.getId(), arm.getUri()))
+            .collect(Collectors.toList()));
     networkMetaAnalysis.updateArmExclusions(new HashSet<>(excludedArms));
-    List<TrialDataStudy> trialDataStudies = Arrays.asList(daanEtAl, pietEtAl);
+    List<TrialDataStudy> trialDataStudies = Arrays.asList(daanEtAl, pietEtAl, nonDefaultMM);
+    networkMetaAnalysis.updateIncludedMeasurementMoments(Sets.newHashSet(new MeasurementMomentInclusion(analysisId, nonDefaultMM.getStudyUri(), nonDefaultMMUri)));
     when(analysisService.buildEvidenceTable(project.getId(), networkMetaAnalysis.getId())).thenReturn(trialDataStudies);
 
     final AbstractProblem problem = problemService.getProblem(project.getId(), networkMetaAnalysis.getId());
@@ -333,7 +338,7 @@ public class ProblemServiceTest {
 
     List<AbstractNetworkMetaAnalysisProblemEntry> entries = networkProblem.getEntries();
     assertNotNull(entries);
-    assertEquals(2, entries.size());
+    assertEquals(4, entries.size());
     RateNetworkMetaAnalysisProblemEntry fluoxEntry = (RateNetworkMetaAnalysisProblemEntry) entries.get(0);
     assertEquals(fluoxIntervention.getId(), fluoxEntry.getTreatment());
     RateNetworkMetaAnalysisProblemEntry sertraEntry = (RateNetworkMetaAnalysisProblemEntry) entries.get(1);
@@ -345,7 +350,7 @@ public class ProblemServiceTest {
     assertEquals(expectedTreatments, Sets.newHashSet(networkProblem.getTreatments()));
 
     Map<String, Map<String, Double>> studyLevelCovariates = networkProblem.getStudyLevelCovariates();
-    assertEquals(covariateInclusions.size(), studyLevelCovariates.size());
+    assertEquals(covariateInclusions.size() * 2 /* 2 studies */, studyLevelCovariates.size());
     assertEquals(daanEtAl.getName(), studyLevelCovariates.keySet().toArray()[0]);
     Map<String, Double> covariateEntry = (Map<String, Double>) studyLevelCovariates.values().toArray()[0];
     assertEquals(includedCovariate.getName(), covariateEntry.keySet().toArray()[0]);
@@ -353,22 +358,28 @@ public class ProblemServiceTest {
     verify(projectRepository).get(project.getId());
     verify(analysisRepository).get(networkMetaAnalysis.getId());
     verify(interventionRepository).query(project.getId());
-    verify(covariateRepository).findByProject(project.getId());
+    verify(covariateRepository, times(2)).findByProject(project.getId());
   }
 
   private TrialDataStudy createStudyMock(NetworkMetaAnalysis networkMetaAnalysis, Covariate includedCovariate, URI uri, String title) {
+    return createStudyMock(networkMetaAnalysis, includedCovariate, uri, title, null);
+  }
+
+  private TrialDataStudy createStudyMock(NetworkMetaAnalysis networkMetaAnalysis, Covariate includedCovariate, URI uri, String title, URI nonDefaultMeasurementMoment) {
+    URI measurementMoment = (nonDefaultMeasurementMoment == null) ? URI.create("defaultMeasurementMoment") : nonDefaultMeasurementMoment;
+    URI variableUri = outcome.getSemanticOutcomeUri();
+    URI variableConceptUri = outcome.getSemanticOutcomeUri();
+
     URI daanEtAlFluoxInstance = URI.create(title + "FluoxInstance");
     URI daanEtAlFluoxArmUri = URI.create(title + "FluoxArm");
     int daanEtAlFluoxSampleSize = 20;
     int daanEtAlFluoxRate = 30;
-    URI variableUri = outcome.getSemanticOutcomeUri();
-    URI variableConceptUri = outcome.getSemanticOutcomeUri();
-    Measurement daanEtAlFluoxMeasurement = new Measurement(uri, variableUri, variableConceptUri, daanEtAlFluoxArmUri,
+    Measurement defaultDaanEtAlFluoxMeasurement = new Measurement(uri, variableUri, variableConceptUri, daanEtAlFluoxArmUri,
             DICHOTOMOUS_TYPE_URI, daanEtAlFluoxSampleSize, daanEtAlFluoxRate, null, null);
     AbstractSemanticIntervention simpleSemanticFluoxIntervention = new SimpleSemanticIntervention(daanEtAlFluoxInstance, fluoxConceptUri);
 
     TrialDataArm daanEtAlFluoxArm = new TrialDataArm(daanEtAlFluoxArmUri, "daanEtAlFluoxArm", daanEtAlFluoxInstance);
-    daanEtAlFluoxArm.addMeasurement(daanEtAlFluoxMeasurement);
+    daanEtAlFluoxArm.addMeasurement(measurementMoment, defaultDaanEtAlFluoxMeasurement);
     daanEtAlFluoxArm.addSemanticIntervention(simpleSemanticFluoxIntervention);
 
     URI daanEtAlSertraInstance = URI.create(title + "SertraInstance");
@@ -380,14 +391,14 @@ public class ProblemServiceTest {
     AbstractSemanticIntervention simpleSemanticSertraIntervention = new SimpleSemanticIntervention(daanEtAlSertraInstance, sertraConceptUri);
 
     TrialDataArm daanEtAlSertraArm = new TrialDataArm(daanEtAlSertraArmUri, title + "SertraArm", daanEtAlSertraInstance);
-    daanEtAlSertraArm.addMeasurement(daanEtAlSertraMeasurement);
+    daanEtAlSertraArm.addMeasurement(measurementMoment, daanEtAlSertraMeasurement);
     daanEtAlFluoxArm.addSemanticIntervention(simpleSemanticSertraIntervention);
 
     URI daanEtAlExcludedArmUri = URI.create(title + "excludeme");
     Measurement daanEtAlExcludedMeasurement = new Measurement(uri, variableUri, variableConceptUri, daanEtAlExcludedArmUri,
             DICHOTOMOUS_TYPE_URI, daanEtAlSertraSampleSize, daanEtAlSertraRate, null, null);
     TrialDataArm excludedArm = new TrialDataArm(daanEtAlSertraArmUri, title + "excludedArm", daanEtAlSertraInstance);
-    excludedArm.addMeasurement(daanEtAlExcludedMeasurement);
+    excludedArm.addMeasurement(measurementMoment, daanEtAlExcludedMeasurement);
     excludedArm.addSemanticIntervention(simpleSemanticSertraIntervention);
 
     // exclude arms
@@ -401,6 +412,7 @@ public class ProblemServiceTest {
     TrialDataStudy daanEtAl = new TrialDataStudy(uri, title, daanEtAlArms);
     Double randomisedValue = 30d;
     daanEtAl.addCovariateValue(new CovariateStudyValue(uri, includedCovariate.getDefinitionKey(), randomisedValue));
+    daanEtAl.setDefaultMeasurementMoment(measurementMoment);
     return daanEtAl;
   }
 
@@ -446,8 +458,8 @@ public class ProblemServiceTest {
             .build();
     List<Model> models = Arrays.asList(model1, model2);
 
-    Outcome outcome1 = new Outcome(21, projectId, "ham", direction,"", new SemanticVariable(URI.create("outUri1"), "hamS"));
-    Outcome outcome2 = new Outcome(22, projectId, "headache", direction,"", new SemanticVariable(URI.create("outUri2"), "headacheS"));
+    Outcome outcome1 = new Outcome(21, projectId, "ham", direction, "", new SemanticVariable(URI.create("outUri1"), "hamS"));
+    Outcome outcome2 = new Outcome(22, projectId, "headache", direction, "", new SemanticVariable(URI.create("outUri2"), "headacheS"));
     List<Outcome> outcomes = Arrays.asList(outcome1, outcome2);
 
 

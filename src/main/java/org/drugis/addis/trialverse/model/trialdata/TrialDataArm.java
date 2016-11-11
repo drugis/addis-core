@@ -1,10 +1,7 @@
 package org.drugis.addis.trialverse.model.trialdata;
 
 import java.net.URI;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Created by connor on 9-5-14.
@@ -13,7 +10,7 @@ public class TrialDataArm {
   private URI uri;
   private String name;
   private URI drugInstance;
-  private Set<Measurement> measurements = new HashSet<>();
+  private Map<URI, Set<Measurement>> measurements = new HashMap<>();
   private List<AbstractSemanticIntervention> semanticInterventions = new ArrayList<>();
 
   private Set<Integer> matchedProjectInterventionIds = new HashSet<>();
@@ -39,12 +36,19 @@ public class TrialDataArm {
     return drugInstance;
   }
 
-  public Set<Measurement> getMeasurements() {
+  public Map<URI, Set<Measurement>> getMeasurements() {
     return measurements;
   }
 
-  public void addMeasurement(Measurement measurement) {
-    this.measurements.add(measurement);
+  public Set<Measurement> getMeasurementsForMoment(URI measurementMomentUri) {
+    return measurements.get(measurementMomentUri);
+  }
+
+  public void addMeasurement(URI measurementMomentUri, Measurement measurement) {
+    if(measurements.get(measurementMomentUri) == null){
+      this.measurements.put(measurementMomentUri,new HashSet<>());
+    }
+    this.measurements.get(measurementMomentUri).add(measurement);
   }
 
   public void addSemanticIntervention(AbstractSemanticIntervention abstractSemanticIntervention) {
