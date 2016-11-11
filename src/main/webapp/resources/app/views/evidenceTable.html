@@ -39,7 +39,7 @@
 
 
           <td ng-show="dataRow.firstStudyRow" rowspan="{{dataRow.studyRowSpan}}">
-            <select ng-options="measurementMoment.name for measurementMoment in dataRow.measurementMoments" ng-model="mm">
+            <select ng-options="measurementMoment.label for measurementMoment in dataRow.measurementMoments" ng-model="mm">
             </select>
           </td>
 

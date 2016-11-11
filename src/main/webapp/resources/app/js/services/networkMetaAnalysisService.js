@@ -73,8 +73,8 @@ define(['lodash', 'angular'], function(_, angular) {
       }, {});
     }
 
-    function getOutcomeMeasurement(analysis, trialDataArm) {
-      return _.find(trialDataArm.measurements, function(measurement) {
+    function getOutcomeMeasurement(analysis, trialDataStudy, trialDataArm) {
+      return _.find(trialDataArm.measurements[trialDataStudy.defaultMeasurementMoment], function(measurement) {
         return analysis.outcome.semanticOutcomeUri === measurement.variableConceptUri;
       });
     }
@@ -91,14 +91,15 @@ define(['lodash', 'angular'], function(_, angular) {
         var numberOfIncludedInterventions = 0;
         var studyRows = [];
 
-        angular.forEach(study.trialDataArms, function(trialDataArm) {
+        _.forEach(study.trialDataArms, function(trialDataArm) {
           var row = {};
+          row.measurementMoments = study.measurementMoments;
           row.covariatesColumns = [];
           row.study = study.name;
           row.studyUri = study.studyUri;
           row.studyUid = row.studyUri.slice(row.studyUri.lastIndexOf('/') + 1);
           row.studyRowSpan = study.trialDataArms.length;
-          angular.forEach(covariates, function(covariate) {
+          _.forEach(covariates, function(covariate) {
             if (covariate.isIncluded) {
               var covariateValue = _.find(study.covariateValues, function(covariateValue) {
                 return covariateValue.covariateKey === covariate.definitionKey;
@@ -139,7 +140,7 @@ define(['lodash', 'angular'], function(_, angular) {
             row.overlappingInterventionWarning = _.map(overlappingTreatments, 'name').join(', ');
           }
 
-          var outcomeMeasurement = getOutcomeMeasurement(analysis, trialDataArm);
+          var outcomeMeasurement = getOutcomeMeasurement(analysis, study, trialDataArm);
           row.measurementType = getRowMeasurementType(outcomeMeasurement);
           row.rate = toTableLabel(outcomeMeasurement, 'rate');
           row.mu = toTableLabel(outcomeMeasurement, 'mean');
@@ -215,7 +216,7 @@ define(['lodash', 'angular'], function(_, angular) {
           if (trialDataArm.matchedProjectInterventionIds.length < 1) {
             return false; //no matched interventions, therefore missing values don't count
           }
-          var measurement = getOutcomeMeasurement(analysis, trialDataArm);
+          var measurement = getOutcomeMeasurement(analysis, trialDataStudy, trialDataArm);
           var measurementType = measurement.measurementTypeURI;
           return isMissingValue(measurement.mean, 'mean', measurementType) ||
             isMissingValue(measurement.stdDev, 'stdDev', measurementType) ||
@@ -264,7 +265,7 @@ define(['lodash', 'angular'], function(_, angular) {
           });
 
           if (matchedIntervention) {
-            var outcomeMeasurement = getOutcomeMeasurement(analysis, trialDataArm);
+            var outcomeMeasurement = getOutcomeMeasurement(analysis, trialDataStudy, trialDataArm);
             sum += outcomeMeasurement.sampleSize;
           }
         });

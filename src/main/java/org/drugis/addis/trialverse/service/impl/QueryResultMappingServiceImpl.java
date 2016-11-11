@@ -3,6 +3,7 @@ package org.drugis.addis.trialverse.service.impl;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import org.apache.commons.lang3.tuple.Pair;
+import org.drugis.addis.trialverse.model.MeasurementMoment;
 import org.drugis.addis.trialverse.model.trialdata.*;
 import org.drugis.addis.trialverse.service.QueryResultMappingService;
 import org.drugis.trialverse.util.Namespaces;
@@ -43,6 +44,7 @@ public class QueryResultMappingServiceImpl implements QueryResultMappingService 
         }
         trialDataStudies.put(studyUri, trialDataStudy);
       }
+      trialDataStudy.addMeasurementMoment(new MeasurementMoment(readValue(row, "measurementMoment"), readValue(row, "measurementMomentLabel")));
 
       URI drugInstance = readValue(row, "drugInstance");
       AbstractSemanticIntervention abstractSemanticIntervention = readSemanticIntervention(row, drugInstance);

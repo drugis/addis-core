@@ -1,8 +1,13 @@
 package org.drugis.addis.trialverse.model.trialdata;
 
+import com.google.common.collect.ImmutableSet;
+import org.drugis.addis.trialverse.model.MeasurementMoment;
+
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by connor on 15-5-14.
@@ -14,7 +19,7 @@ public class TrialDataStudy {
   private List<TrialDataArm> trialDataArms = new ArrayList<>();
   private List<CovariateStudyValue> covariateValues = new ArrayList<>();
   private URI defaultMeasurementMoment;
-
+  private Set<MeasurementMoment> measurementMoments = new HashSet<>();
   public TrialDataStudy() {
   }
 
@@ -49,6 +54,14 @@ public class TrialDataStudy {
 
   public URI getDefaultMeasurementMoment() {
     return defaultMeasurementMoment;
+  }
+
+  public Set<MeasurementMoment> getMeasurementMoments() {
+    return ImmutableSet.copyOf(this.measurementMoments);
+  }
+
+  public void addMeasurementMoment(MeasurementMoment measurementMoment) {
+    this.measurementMoments.add(measurementMoment);
   }
 
   public void setDefaultMeasurementMoment(URI defaultMeasurementMoment) {

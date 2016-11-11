@@ -5,21 +5,24 @@ define(['angular', 'angular-mocks', 'services'], function() {
   var exampleStudies = [{
     'studyUri': 'http://trials.drugis.org/graphs/favaUuid',
     'name': 'Fava et al, 2002',
+    'defaultMeasurementMoment': 'defaultMMUri',
     'trialDataArms': [{
       'uri': 'http://trials.drugis.org/instances/fava-parox-arm',
       'name': 'Paroxetine',
       'drugInstance': 'http://trials.drugis.org/instances/parox-instance',
-      'measurements': [{
-        'measurementTypeURI': CONTINUOUS_TYPE,
-        'studyUid': 'http://trials.drugis.org/graphs/favaUuid',
-        'variableUri': 'http://trials.drugis.org/instances/hamd-instance',
-        'variableConceptUri': 'variableConceptUri',
-        'armUri': 'http://trials.drugis.org/instances/fava-parox-arm',
-        'sampleSize': 96,
-        'rate': 64,
-        'stdDev': null,
-        'mean': null
-      }],
+      'measurements': {
+        defaultMMUri: [{
+          'measurementTypeURI': CONTINUOUS_TYPE,
+          'studyUid': 'http://trials.drugis.org/graphs/favaUuid',
+          'variableUri': 'http://trials.drugis.org/instances/hamd-instance',
+          'variableConceptUri': 'variableConceptUri',
+          'armUri': 'http://trials.drugis.org/instances/fava-parox-arm',
+          'sampleSize': 96,
+          'rate': 64,
+          'stdDev': null,
+          'mean': null
+        }]
+      },
       'semanticIntervention': {
         'drugInstance': 'http://trials.drugis.org/instances/parox-instance',
         'drugConcept': 'http://trials.drugis.org/concepts/parox-concept'
@@ -29,17 +32,19 @@ define(['angular', 'angular-mocks', 'services'], function() {
       'uri': 'http://trials.drugis.org/instances/fava-sertra-arm',
       'name': 'Sertraline',
       'drugInstance': 'http://trials.drugis.org/instances/sertra-instance',
-      'measurements': [{
-        'measurementTypeURI': CONTINUOUS_TYPE,
-        'studyUid': 'http://trials.drugis.org/graphs/favaUuid',
-        'variableUri': 'http://trials.drugis.org/instances/hamd-instance',
-        'variableConceptUri': 'variableConceptUri',
-        'armUri': 'http://trials.drugis.org/instances/fava-sertra-arm',
-        'sampleSize': 96,
-        'rate': 70,
-        'stdDev': null,
-        'mean': null
-      }],
+      'measurements': {
+        defaultMMUri: [{
+          'measurementTypeURI': CONTINUOUS_TYPE,
+          'studyUid': 'http://trials.drugis.org/graphs/favaUuid',
+          'variableUri': 'http://trials.drugis.org/instances/hamd-instance',
+          'variableConceptUri': 'variableConceptUri',
+          'armUri': 'http://trials.drugis.org/instances/fava-sertra-arm',
+          'sampleSize': 96,
+          'rate': 70,
+          'stdDev': null,
+          'mean': null
+        }]
+      },
       'semanticIntervention': {
         'drugInstance': 'http://trials.drugis.org/instances/sertra-instance',
         'drugConcept': 'http://trials.drugis.org/concepts/sertra-concept'
@@ -49,17 +54,19 @@ define(['angular', 'angular-mocks', 'services'], function() {
       'uri': 'http://trials.drugis.org/instances/fava-arm-1-uri',
       'name': 'Fluoxetine',
       'drugInstance': 'http://trials.drugis.org/instances/fluoxInstance',
-      'measurements': [{
-        'measurementTypeURI': CONTINUOUS_TYPE,
-        'studyUid': 'http://trials.drugis.org/graphs/favaUuid',
-        'variableUri': 'http://trials.drugis.org/instances/hamd-instance',
-        'variableConceptUri': 'variableConceptUri',
-        'armUri': 'http://trials.drugis.org/instances/fava-arm-1-uri',
-        'sampleSize': 92,
-        'rate': 57,
-        'stdDev': null,
-        'mean': null
-      }],
+      'measurements': {
+        defaultMMUri: [{
+          'measurementTypeURI': CONTINUOUS_TYPE,
+          'studyUid': 'http://trials.drugis.org/graphs/favaUuid',
+          'variableUri': 'http://trials.drugis.org/instances/hamd-instance',
+          'variableConceptUri': 'variableConceptUri',
+          'armUri': 'http://trials.drugis.org/instances/fava-arm-1-uri',
+          'sampleSize': 92,
+          'rate': 57,
+          'stdDev': null,
+          'mean': null
+        }]
+      },
       'semanticIntervention': {
         'drugInstance': 'http://trials.drugis.org/instances/fluoxInstance',
         'drugConcept': 'http://trials.drugis.org/concepts/fluox-concept'
@@ -75,6 +82,7 @@ define(['angular', 'angular-mocks', 'services'], function() {
   var exampleNetworkStudies = [{
     'studyUri': '44',
     'name': 'TAK491-008 / NCT00696241',
+    defaultMeasurementMoment: 'defaultMMUri',
     'covariateValues': [{
       'covariateKey': 'COVARIATE_KEY',
       value: 123
@@ -83,16 +91,18 @@ define(['angular', 'angular-mocks', 'services'], function() {
       'uri': '144',
       'name': 'Azilsartan Medoxomil 40 mg QD',
       'drugInstance': '98',
-      'measurements': [{
-        'measurementTypeURI': CONTINUOUS_TYPE,
-        'mean': -14.47,
-        'armUri': '144',
-        'variableUri': 698,
-        'variableConceptUri': 'variableConceptUri1',
-        'measurementAttribute': 'mean',
-        'sampleSize': 276,
-        'stdDev': 15.815811834996014
-      }],
+      'measurements': {
+        defaultMMUri: [{
+          'measurementTypeURI': CONTINUOUS_TYPE,
+          'mean': -14.47,
+          'armUri': '144',
+          'variableUri': 698,
+          'variableConceptUri': 'variableConceptUri1',
+          'measurementAttribute': 'mean',
+          'sampleSize': 276,
+          'stdDev': 15.815811834996014
+        }]
+      },
       semanticIntervention: {
         drugInstance: '98',
         drugConcept: 'http://trials.drugis.org/concepts/azi-concept'
@@ -103,15 +113,17 @@ define(['angular', 'angular-mocks', 'services'], function() {
       'name': 'Azilsartan Medoxomil 80 mg QD',
       'study': '44',
       'drugInstance': '98',
-      'measurements': [{
-        'measurementTypeURI': CONTINUOUS_TYPE,
-        'mean': -17.58,
-        'armUri': '145',
-        'variableUri': '698',
-        'variableConceptUri': 'variableConceptUri1',
-        'sampleSize': 279,
-        'stdDev': 15.818018554800092
-      }],
+      'measurements': {
+        defaultMMUri: [{
+          'measurementTypeURI': CONTINUOUS_TYPE,
+          'mean': -17.58,
+          'armUri': '145',
+          'variableUri': '698',
+          'variableConceptUri': 'variableConceptUri1',
+          'sampleSize': 279,
+          'stdDev': 15.818018554800092
+        }]
+      },
       semanticIntervention: {
         drugInstance: '98',
         drugConcept: 'http://trials.drugis.org/concepts/azi-concept'
@@ -121,15 +133,17 @@ define(['angular', 'angular-mocks', 'services'], function() {
       'uri': '146',
       'name': 'Olmesartan 40 mg QD',
       'drugInstance': '99',
-      'measurements': [{
-        'measurementTypeURI': CONTINUOUS_TYPE,
-        'mean': -14.87,
-        'armUri': '146',
-        'variableUri': '698',
-        'variableConceptUri': 'variableConceptUri1',
-        'sampleSize': 280,
-        'stdDev': 15.812874501494028
-      }],
+      'measurements': {
+        defaultMMUri: [{
+          'measurementTypeURI': CONTINUOUS_TYPE,
+          'mean': -14.87,
+          'armUri': '146',
+          'variableUri': '698',
+          'variableConceptUri': 'variableConceptUri1',
+          'sampleSize': 280,
+          'stdDev': 15.812874501494028
+        }]
+      },
       semanticIntervention: {
         drugInstance: '98',
         drugConcept: 'http://trials.drugis.org/concepts/olme-concept'
@@ -141,15 +155,17 @@ define(['angular', 'angular-mocks', 'services'], function() {
       'uri': '147',
       'name': 'Placebo QD',
       'drugInstance': '100',
-      'measurements': [{
-        'measurementTypeURI': CONTINUOUS_TYPE,
-        'mean': -2.06,
-        'armUri': '147',
-        'variabletUri': '698',
-        'variableConceptUri': 'variableConceptUri1',
-        'sampleSize': 140,
-        'stdDev': 15.819597340008373
-      }],
+      'measurements': {
+        defaultMMUri: [{
+          'measurementTypeURI': CONTINUOUS_TYPE,
+          'mean': -2.06,
+          'armUri': '147',
+          'variabletUri': '698',
+          'variableConceptUri': 'variableConceptUri1',
+          'sampleSize': 140,
+          'stdDev': 15.819597340008373
+        }]
+      },
       semanticIntervention: {
         drugInstance: '98',
         drugConcept: 'http://trials.drugis.org/concepts/placebo-concept'
@@ -159,15 +175,17 @@ define(['angular', 'angular-mocks', 'services'], function() {
       'uri': 143,
       'name': 'Azilsartan Medoxomil 20 mg QD',
       'drugInstance': '98',
-      'measurements': [{
-        'measurementTypeURI': CONTINUOUS_TYPE,
-        'mean': -14.28,
-        'armUri': '143',
-        'variableUri': 698,
-        'variableConceptUri': 'variableConceptUri1',
-        'sampleSize': 274,
-        'stdDev': 15.824615761527987
-      }],
+      'measurements': {
+        defaultMMUri: [{
+          'measurementTypeURI': CONTINUOUS_TYPE,
+          'mean': -14.28,
+          'armUri': '143',
+          'variableUri': 698,
+          'variableConceptUri': 'variableConceptUri1',
+          'sampleSize': 274,
+          'stdDev': 15.824615761527987
+        }]
+      },
       semanticIntervention: {
         drugInstance: '98',
         drugConcept: 'http://trials.drugis.org/concepts/azi-concept'
@@ -177,20 +195,23 @@ define(['angular', 'angular-mocks', 'services'], function() {
   }, {
     'studyUri': '45',
     'name': 'TAK491-011 / NCT00591253',
+    'defaultMeasurementMoment': 'defaultMMUri',
     'trialDataArms': [{
       'uri': '149',
       'name': 'Azilsartan Medoxomil 40 mg QD',
       'drugInstance': '101',
-      'measurements': [{
-        'measurementTypeURI': CONTINUOUS_TYPE,
-        'mean': -9.51,
-        'armUri': '149',
-        'variableUri': '731',
-        'variableConceptUri': 'variableConceptUri1',
-        'measurementAttribute': 'mean',
-        'sampleSize': 134,
-        'stdDev': 15.395863080711
-      }],
+      'measurements': {
+        defaultMMUri: [{
+          'measurementTypeURI': CONTINUOUS_TYPE,
+          'mean': -9.51,
+          'armUri': '149',
+          'variableUri': '731',
+          'variableConceptUri': 'variableConceptUri1',
+          'measurementAttribute': 'mean',
+          'sampleSize': 134,
+          'stdDev': 15.395863080711
+        }]
+      },
       semanticIntervention: {
         drugInstance: '98',
         drugConcept: 'http://trials.drugis.org/concepts/azi-concept'
@@ -200,16 +221,18 @@ define(['angular', 'angular-mocks', 'services'], function() {
       'uri': '150',
       'name': 'Azilsartan Medoxomil 80 mg QD',
       'drugInstance': '101',
-      'measurements': [{
-        'measurementTypeURI': CONTINUOUS_TYPE,
-        'mean': -9.58,
-        'armUri': '150',
-        'variableUri': '731',
-        'variableConceptUri': 'variableConceptUri1',
-        'measurementAttribute': 'mean',
-        'sampleSize': 130,
-        'stdDev': 15.403769993089353
-      }],
+      'measurements': {
+        defaultMMUri: [{
+          'measurementTypeURI': CONTINUOUS_TYPE,
+          'mean': -9.58,
+          'armUri': '150',
+          'variableUri': '731',
+          'variableConceptUri': 'variableConceptUri1',
+          'measurementAttribute': 'mean',
+          'sampleSize': 130,
+          'stdDev': 15.403769993089353
+        }]
+      },
       semanticIntervention: {
         drugInstance: '98',
         drugConcept: 'http://trials.drugis.org/concepts/azi-concept'
@@ -219,15 +242,17 @@ define(['angular', 'angular-mocks', 'services'], function() {
       'uri': '151',
       'name': 'Placebo QD',
       'drugInstance': '102',
-      'measurements': [{
-        'measurementTypeURI': CONTINUOUS_TYPE,
-        'mean': -3.04,
-        'armUri': 151,
-        'variableUri': 731,
-        'variableConceptUri': 'variableConceptUri1',
-        'sampleSize': 271,
-        'stdDev': 15.37290593869617
-      }],
+      'measurements': {
+        defaultMMUri: [{
+          'measurementTypeURI': CONTINUOUS_TYPE,
+          'mean': -3.04,
+          'armUri': 151,
+          'variableUri': 731,
+          'variableConceptUri': 'variableConceptUri1',
+          'sampleSize': 271,
+          'stdDev': 15.37290593869617
+        }]
+      },
       semanticIntervention: {
         drugInstance: '98',
         drugConcept: 'http://trials.drugis.org/concepts/placebo-concept'
@@ -237,19 +262,22 @@ define(['angular', 'angular-mocks', 'services'], function() {
   }, {
     'studyUri': '46',
     'name': 'TAK491-019 / NCT00696436',
+    'defaultMeasurementMoment': 'defaultMMUri',
     'trialDataArms': [{
       'uri': '156',
       'name': 'Olmesartan 40 mg QD',
       'drugInstance': '105',
-      'measurements': [{
-        'measurementTypeURI': CONTINUOUS_TYPE,
-        'mean': -13.2,
-        'armUri': '156',
-        'variableUri': '758',
-        'variableConceptUri': 'variableConceptUri1',
-        'sampleSize': 283,
-        'stdDev': 15.729134591578775
-      }],
+      'measurements': {
+        defaultMMUri: [{
+          'measurementTypeURI': CONTINUOUS_TYPE,
+          'mean': -13.2,
+          'armUri': '156',
+          'variableUri': '758',
+          'variableConceptUri': 'variableConceptUri1',
+          'sampleSize': 283,
+          'stdDev': 15.729134591578775
+        }]
+      },
       semanticIntervention: {
         drugInstance: '98',
         drugConcept: 'http://trials.drugis.org/concepts/olme-concept'
@@ -259,15 +287,17 @@ define(['angular', 'angular-mocks', 'services'], function() {
       'uri': 155,
       'name': 'Valsartan 320 mg QD',
       'drugInstance': '104',
-      'measurements': [{
-        'measurementTypeURI': CONTINUOUS_TYPE,
-        'mean': -11.31,
-        'armUri': '155',
-        'variableUri': '758',
-        'variableConceptUri': 'variableConceptUri1',
-        'sampleSize': 271,
-        'stdDev': 15.721284139662384
-      }],
+      'measurements': {
+        defaultMMUri: [{
+          'measurementTypeURI': CONTINUOUS_TYPE,
+          'mean': -11.31,
+          'armUri': '155',
+          'variableUri': '758',
+          'variableConceptUri': 'variableConceptUri1',
+          'sampleSize': 271,
+          'stdDev': 15.721284139662384
+        }]
+      },
       semanticIntervention: {
         drugInstance: '98',
         drugConcept: 'http://trials.drugis.org/concepts/valsa-concept'
@@ -277,15 +307,17 @@ define(['angular', 'angular-mocks', 'services'], function() {
       'uri': 157,
       'name': 'Placebo QD',
       'drugInstance': '106',
-      'measurements': [{
-        'measurementTypeURI': CONTINUOUS_TYPE,
-        'mean': -1.83,
-        'armUri': '157',
-        'variableUri': '758',
-        'variableConceptUri': 'variableConceptUri1',
-        'sampleSize': 148,
-        'stdDev': 15.730023903351194
-      }],
+      'measurements': {
+        defaultMMUri: [{
+          'measurementTypeURI': CONTINUOUS_TYPE,
+          'mean': -1.83,
+          'armUri': '157',
+          'variableUri': '758',
+          'variableConceptUri': 'variableConceptUri1',
+          'sampleSize': 148,
+          'stdDev': 15.730023903351194
+        }]
+      },
       semanticIntervention: {
         drugInstance: '98',
         drugConcept: 'http://trials.drugis.org/concepts/placebo-concept'
@@ -295,14 +327,16 @@ define(['angular', 'angular-mocks', 'services'], function() {
       'uri': 154,
       'name': 'Azilsartan Medoxomil 80 mg QD',
       'drugInstance': '103',
-      'measurements': [{
-        'measurementTypeURI': CONTINUOUS_TYPE,
-        'realValue': -16.74,
-        'armUri': 154,
-        'variableUri': 758,
-        'variableConceptUri': 'variableConceptUri1',
-        'stdDev': 15.725114625973317
-      }],
+      'measurements': {
+        defaultMMUri: [{
+          'measurementTypeURI': CONTINUOUS_TYPE,
+          'realValue': -16.74,
+          'armUri': 154,
+          'variableUri': 758,
+          'variableConceptUri': 'variableConceptUri1',
+          'stdDev': 15.725114625973317
+        }]
+      },
       semanticIntervention: {
         drugInstance: '98',
         drugConcept: 'http://trials.drugis.org/concepts/azi-concept'
@@ -312,15 +346,17 @@ define(['angular', 'angular-mocks', 'services'], function() {
       'uri': '153',
       'name': 'Azilsartan Medoxomil 40 mg QD',
       'drugInstance': '103',
-      'measurements': [{
-        'measurementTypeURI': CONTINUOUS_TYPE,
-        'mean': -16.38,
-        'armUri': '153',
-        'variableUri': '758',
-        'variableConceptUri': 'variableConceptUri1',
-        'sampleSize': 269,
-        'stdDev': 15.728769468715601
-      }],
+      'measurements': {
+        defaultMMUri: [{
+          'measurementTypeURI': CONTINUOUS_TYPE,
+          'mean': -16.38,
+          'armUri': '153',
+          'variableUri': '758',
+          'variableConceptUri': 'variableConceptUri1',
+          'sampleSize': 269,
+          'stdDev': 15.728769468715601
+        }]
+      },
       semanticIntervention: {
         drugInstance: '98',
         drugConcept: 'http://trials.drugis.org/concepts/azi-concept'
@@ -860,25 +896,29 @@ define(['angular', 'angular-mocks', 'services'], function() {
           var trialDataArm2 = { // excluded due to no matching interventions
             uri: study1Arm2.trialverseUid,
             matchedProjectInterventionIds: [1],
-            measurements: [{
-              variableConceptUri: outcome.semanticOutcomeUri,
-              measurementTypeURI: 'http://trials.drugis.org/ontology#continuous',
-              mean: 1.1,
-              stdDev: 0.5,
-              sampleSize: null // it's missing !
-            }]
+            measurements: {
+              defaultMMUri: [{
+                variableConceptUri: outcome.semanticOutcomeUri,
+                measurementTypeURI: 'http://trials.drugis.org/ontology#continuous',
+                mean: 1.1,
+                stdDev: 0.5,
+                sampleSize: null // it's missing !
+              }]
+            }
           };
 
           var trialDataArm3 = { // excluded due to no matching interventions
             uri: 'trialverseUid3',
             matchedProjectInterventionIds: [2],
-            measurements: [{
-              variableConceptUri: outcome.semanticOutcomeUri,
-              measurementTypeURI: 'http://trials.drugis.org/ontology#continuous',
-              mean: 1.1,
-              stdDev: 0.5,
-              sampleSize: null // it's missing !
-            }]
+            measurements: {
+              defaultMMUri: [{
+                variableConceptUri: outcome.semanticOutcomeUri,
+                measurementTypeURI: 'http://trials.drugis.org/ontology#continuous',
+                mean: 1.1,
+                stdDev: 0.5,
+                sampleSize: null // it's missing !
+              }]
+            }
           };
           var trialDataArm4 = { // excluded due to arm exclusion
             uri: 'study2arm1',
@@ -888,34 +928,40 @@ define(['angular', 'angular-mocks', 'services'], function() {
           var trialDataArm5 = { // excluded due to no matching interventions
             uri: 'study2arm2',
             matchedProjectInterventionIds: [1],
-            measurements: [{
-              variableConceptUri: outcome.semanticOutcomeUri,
-              measurementTypeURI: 'http://trials.drugis.org/ontology#continuous',
-              mean: 1.1,
-              stdDev: 0.5,
-              sampleSize: null // it's missing !
-            }]
+            measurements: {
+              defaultMMUri: [{
+                variableConceptUri: outcome.semanticOutcomeUri,
+                measurementTypeURI: 'http://trials.drugis.org/ontology#continuous',
+                mean: 1.1,
+                stdDev: 0.5,
+                sampleSize: null // it's missing !
+              }]
+            }
           };
 
           var trialDataArm6 = { // excluded due to no matching interventions
             uri: 'study2arm3',
             matchedProjectInterventionIds: [2],
-            measurements: [{
-              variableConceptUri: outcome.semanticOutcomeUri,
-              measurementTypeURI: 'http://trials.drugis.org/ontology#continuous',
-              mean: 1.1,
-              stdDev: 0.5,
-              sampleSize: null // it's missing !
-            }]
+            measurements: {
+              defaultMMUri: [{
+                variableConceptUri: outcome.semanticOutcomeUri,
+                measurementTypeURI: 'http://trials.drugis.org/ontology#continuous',
+                mean: 1.1,
+                stdDev: 0.5,
+                sampleSize: null // it's missing !
+              }]
+            }
           };
 
           var study1 = {
             studyUri: 'study1uri',
+            defaultMeasurementMoment: 'defaultMMUri',
             trialDataArms: [trialDataArm1, trialDataArm2, trialDataArm3]
           };
 
           var study2 = {
             studyUri: 'study2uri',
+            defaultMeasurementMoment: 'defaultMMUri',
             trialDataArms: [trialDataArm4, trialDataArm5, trialDataArm6]
           };
 

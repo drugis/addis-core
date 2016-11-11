@@ -21,7 +21,6 @@ SELECT DISTINCT
 ?outcomeTypeUri
 ?outcomeInstance
 ?outcomeTypeUid
-?measurementType
 ?outcomeInstanceLabel
 ?arm
 ?armLabel
@@ -39,7 +38,9 @@ SELECT DISTINCT
 ?maxDoseUnitConcept
 ?maxDoseUnitLabel
 ?maxDoseUnitMultiplier
+?measurementType
 ?measurementMoment
+?measurementMomentLabel
 ?minDoseValue
 ?minDoseDosingPeriodicity
 ?minDoseUnitConcept
@@ -82,6 +83,8 @@ WHERE {
       ontology:relative_to_epoch ?primaryEpoch ;
       ontology:relative_to_anchor ontology:anchorEpochEnd ;
       ontology:time_offset "PT0S"^^xsd:duration .
+
+    ?measurementMoment rdfs:label ?measurementMomentLabel .
 
     ?measurement
       ontology:of_moment ?measurementMoment ;
