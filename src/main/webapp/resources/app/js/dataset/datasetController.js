@@ -260,7 +260,7 @@ define(['lodash'],
           visible: false,
         }],
         reverseSortOrder: false,
-        orderByField: 'name'
+        orderByField: 'label'
       };
     };
     return dependencies.concat(DatasetController);

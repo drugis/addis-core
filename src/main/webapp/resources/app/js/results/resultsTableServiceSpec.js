@@ -73,14 +73,17 @@ define(['angular', 'angular-mocks'], function() {
           ]
         };
         arms = [{
-          label: 'arm 1',
+          label: 'xyz arm 1',
           armURI: 'http://arms/arm1'
         }, {
-          label: 'arm 2',
-          armURI: 'http://arms/arm2'
+          label: 'Overall population' ,
+          groupUri: 'http://groups/overall'
         }, {
-          label: 'arm 3',
+          label: 'arm 3 20 mg',
           armURI: 'http://arms/arm3'
+        }, {
+          label: 'aab arm 2',
+          armURI: 'http://arms/arm2'
         }];
         measurementMoments = [{
           uri: 'uri 1',
@@ -92,26 +95,36 @@ define(['angular', 'angular-mocks'], function() {
 
         resultRows = resultsTableService.createInputRows(variable, arms, [], measurementMoments);
       });
-
+      it('overal population should be last, always',function(){
+        expect(resultRows[6].group.label).toEqual(arms[1].label);
+      });
       it('should set the number of arms', function() {
-        expect(resultRows[0].numberOfGroups).toEqual(3);
+        expect(resultRows[0].numberOfGroups).toEqual(4);
       });
       it('should return one row for each combination of arm and measurement moment at which the variable is measured', function() {
-        expect(resultRows.length).toEqual(6);
+        expect(resultRows.length).toEqual(8);
+      });
+      it('should apply some sort of sane sorting to the arms', function() {
+        expect(resultRows[0].group.label).toEqual(arms[3].label);
+        expect(resultRows[1].group.label).toEqual(arms[3].label);
+        expect(resultRows[2].group.label).toEqual(arms[2].label);
+        expect(resultRows[3].group.label).toEqual(arms[2].label);
+        expect(resultRows[4].group.label).toEqual(arms[0].label);
+        expect(resultRows[5].group.label).toEqual(arms[0].label);
       });
       it('should place the appropriate measurement moment and arm on each row', function() {
         expect(resultRows[0].measurementMoment).toEqual(measurementMoments[0]);
-        expect(resultRows[0].group).toEqual(arms[0]);
-        expect(resultRows[1].measurementMoment).toEqual(measurementMoments[0]);
-        expect(resultRows[1].group).toEqual(arms[1]);
+        expect(resultRows[0].group).toEqual(arms[3]);
+        expect(resultRows[1].measurementMoment).toEqual(measurementMoments[2]);
+        expect(resultRows[1].group).toEqual(arms[3]);
         expect(resultRows[2].measurementMoment).toEqual(measurementMoments[0]);
         expect(resultRows[2].group).toEqual(arms[2]);
         expect(resultRows[3].measurementMoment).toEqual(measurementMoments[2]);
-        expect(resultRows[3].group).toEqual(arms[0]);
-        expect(resultRows[4].measurementMoment).toEqual(measurementMoments[2]);
-        expect(resultRows[4].group).toEqual(arms[1]);
+        expect(resultRows[3].group).toEqual(arms[2]);
+        expect(resultRows[4].measurementMoment).toEqual(measurementMoments[0]);
+        expect(resultRows[4].group).toEqual(arms[0]);
         expect(resultRows[5].measurementMoment).toEqual(measurementMoments[2]);
-        expect(resultRows[5].group).toEqual(arms[2]);
+        expect(resultRows[5].group).toEqual(arms[0]);
       });
 
       describe('for a continuous type', function() {
@@ -128,18 +141,18 @@ define(['angular', 'angular-mocks'], function() {
         });
 
         it('should create input columns', function() {
-          expect(resultRows[0].inputColumns).toBeDefined();
-          expect(resultRows[0].inputColumns.length).toBe(3);
-          expect(resultRows[0].inputColumns[0].valueName).toEqual('mean');
-          expect(resultRows[0].inputColumns[0].dataType).toEqual(DOUBLE_TYPE);
-          expect(resultRows[0].inputColumns[0].value).toEqual(2);
-          expect(resultRows[0].inputColumns[0].isInValidValue).toEqual(false);
-          expect(resultRows[0].inputColumns[1].valueName).toEqual('standard deviation');
-          expect(resultRows[0].inputColumns[1].dataType).toEqual(DOUBLE_TYPE);
-          expect(resultRows[0].inputColumns[0].isInValidValue).toEqual(false);
-          expect(resultRows[0].inputColumns[2].valueName).toEqual('N');
-          expect(resultRows[0].inputColumns[2].dataType).toEqual(INTEGER_TYPE);
-          expect(resultRows[0].inputColumns[0].isInValidValue).toEqual(false);
+          expect(resultRows[4].inputColumns).toBeDefined();
+          expect(resultRows[4].inputColumns.length).toBe(3);
+          expect(resultRows[4].inputColumns[0].valueName).toEqual('mean');
+          expect(resultRows[4].inputColumns[0].dataType).toEqual(DOUBLE_TYPE);
+          expect(resultRows[4].inputColumns[0].value).toEqual(2);
+          expect(resultRows[4].inputColumns[0].isInValidValue).toEqual(false);
+          expect(resultRows[4].inputColumns[1].valueName).toEqual('standard deviation');
+          expect(resultRows[4].inputColumns[1].dataType).toEqual(DOUBLE_TYPE);
+          expect(resultRows[4].inputColumns[0].isInValidValue).toEqual(false);
+          expect(resultRows[4].inputColumns[2].valueName).toEqual('N');
+          expect(resultRows[4].inputColumns[2].dataType).toEqual(INTEGER_TYPE);
+          expect(resultRows[4].inputColumns[0].isInValidValue).toEqual(false);
         });
       });
 
@@ -161,15 +174,15 @@ define(['angular', 'angular-mocks'], function() {
         });
 
         it('should create input columns', function() {
-          expect(resultRows[0].inputColumns).toBeDefined();
-          expect(resultRows[0].inputColumns.length).toBe(2);
-          expect(resultRows[0].inputColumns[0].valueName).toEqual('count');
-          expect(resultRows[0].inputColumns[0].dataType).toEqual(INTEGER_TYPE);
-          expect(resultRows[0].inputColumns[0].isInValidValue).toEqual(false);
-          expect(resultRows[0].inputColumns[0].value).toEqual(66);
-          expect(resultRows[0].inputColumns[1].valueName).toEqual('N');
-          expect(resultRows[0].inputColumns[1].dataType).toEqual(INTEGER_TYPE);
-          expect(resultRows[0].inputColumns[1].isInValidValue).toEqual(false);
+          expect(resultRows[4].inputColumns).toBeDefined();
+          expect(resultRows[4].inputColumns.length).toBe(2);
+          expect(resultRows[4].inputColumns[0].valueName).toEqual('count');
+          expect(resultRows[4].inputColumns[0].dataType).toEqual(INTEGER_TYPE);
+          expect(resultRows[4].inputColumns[0].isInValidValue).toEqual(false);
+          expect(resultRows[4].inputColumns[0].value).toEqual(66);
+          expect(resultRows[4].inputColumns[1].valueName).toEqual('N');
+          expect(resultRows[4].inputColumns[1].dataType).toEqual(INTEGER_TYPE);
+          expect(resultRows[4].inputColumns[1].isInValidValue).toEqual(false);
         });
       });
 
