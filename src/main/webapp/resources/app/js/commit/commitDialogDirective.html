@@ -8,7 +8,9 @@
       <label>Description
         <textarea ng-model="commitDescription"></textarea>
       </label>
-      <button type="submit" class="success" ng-click="commitChanges(commitTitle, commitDescription)" ng-disabled="isCommiting || !commitTitle">Commit changes</button>
+      <button type="submit" class="success" ng-click="commitChanges(commitTitle, commitDescription)"
+              ng-disabled="isCommitting || !commitTitle">Commit changes
+      </button>
       <button type="button" class="secondary" ng-click="commitCancelled()">Cancel</button>
     </form>
   </div>

@@ -2,6 +2,10 @@ package org.drugis.trialverse.dataset.service;
 
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
+import org.drugis.addis.security.Account;
+import org.drugis.addis.security.ApiKey;
+import org.drugis.addis.security.repository.AccountRepository;
+import org.drugis.addis.security.repository.ApiKeyRepository;
 import org.drugis.trialverse.dataset.exception.RevisionNotFoundException;
 import org.drugis.trialverse.dataset.model.VersionMapping;
 import org.drugis.trialverse.dataset.model.VersionNode;
@@ -9,10 +13,6 @@ import org.drugis.trialverse.dataset.repository.DatasetReadRepository;
 import org.drugis.trialverse.dataset.repository.VersionMappingRepository;
 import org.drugis.trialverse.dataset.service.impl.HistoryServiceImpl;
 import org.drugis.trialverse.graph.repository.GraphReadRepository;
-import org.drugis.addis.security.Account;
-import org.drugis.addis.security.ApiKey;
-import org.drugis.addis.security.repository.AccountRepository;
-import org.drugis.addis.security.repository.ApiKeyRepository;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
@@ -29,7 +29,6 @@ import java.util.List;
 
 import static junit.framework.TestCase.assertNull;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
@@ -60,7 +59,8 @@ public class HistoryServiceTest {
   @InjectMocks
   private HistoryService historyService;
   private final URI trialverseDatasetUri = URI.create("http://anyUri");
-  private final URI trialverseGraphUri = URI.create("http://trials.drugis.org/graphs/totallyCoolGraph");
+  private final URI coolGraphUri = URI.create("http://trials.drugis.org/graphs/totallyCoolGraph");
+  private final URI uncoolGraphUri = URI.create("http://trials.drugis.org/graphs/uncoolGraph");
   private final String versionedDatasetUri = "http://anyVersionedUri";
   private final VersionMapping mapping = new VersionMapping(versionedDatasetUri, null, trialverseDatasetUri.toString());
   private final InputStream historyStream = new ClassPathResource("mockHistory.ttl").getInputStream();
@@ -89,10 +89,10 @@ public class HistoryServiceTest {
 
     List<VersionNode> history = historyService.createHistory(trialverseDatasetUri);
 
-    assertEquals(5, history.size());
-    VersionNode versionNode = history.get(4);
+    assertEquals(4, history.size());
+    VersionNode versionNode = history.get(3);
     assertEquals("http://localhost:8080/versions/headVersion", versionNode.getUri());
-    assertEquals("add arm to group 2", versionNode.getVersionTitle());
+    assertEquals("Edit both graphs somehow", versionNode.getVersionTitle());
     assertNull(versionNode.getDescription());
     assertEquals(new Date(1478613838000L), history.get(1).getVersionDate());
 
@@ -101,11 +101,17 @@ public class HistoryServiceTest {
   @Test
   public void testCreateFilteredHistory() throws RevisionNotFoundException, IOException, URISyntaxException {
 
-    List<VersionNode> history = historyService.createHistory(trialverseDatasetUri, trialverseGraphUri);
+    List<VersionNode> coolHistory = historyService.createHistory(trialverseDatasetUri, coolGraphUri);
 
-    assertEquals(2, history.size());
-    VersionNode initialCreationVersion = history.get(0);
-    assertEquals("Initial study creation: graph 1", initialCreationVersion.getVersionTitle());
+    assertEquals(3, coolHistory.size());
+    VersionNode coolCreationVersion = coolHistory.get(0);
+    assertEquals("Create both graphs", coolCreationVersion.getVersionTitle());
+
+    List<VersionNode> uncoolHistory = historyService.createHistory(trialverseDatasetUri, uncoolGraphUri);
+    assertEquals(1, uncoolHistory.size());
+    VersionNode uncoolCreationVersion = uncoolHistory.get(0);
+    assertEquals("Create both graphs", uncoolCreationVersion.getVersionTitle());
+
   }
 
 }

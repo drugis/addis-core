@@ -116,8 +116,6 @@ public class GraphController extends AbstractAddisCoreController {
   public List<VersionNode> getGraphHistory(HttpServletResponse httpServletResponse,
                                            @PathVariable String datasetUuid,
                                            @PathVariable String graphUuid) throws URISyntaxException, IOException, RevisionNotFoundException {
-    logger.trace("something something");
-
     URI trialverseDatasetUri = new URI(Namespaces.DATASET_NAMESPACE + datasetUuid);
     URI trialverseGraphUri = new URI(Namespaces.GRAPH_NAMESPACE + graphUuid);
 

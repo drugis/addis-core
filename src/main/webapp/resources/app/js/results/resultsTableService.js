@@ -130,7 +130,19 @@ define(['lodash'], function(_) {
           rows = rows.concat(createRow(variable, group, arms.length + groups.length, measurementMoment, rowValueObjects));
         });
       });
-      return rows;
+
+      return rows.sort(function(row1, row2) {
+        if(row1.measurementMoment.label.localeCompare(row2.measurementMoment.label) !== 0) {
+          return row1.measurementMoment.label.localeCompare(row2.measurementMoment.label);
+        }
+        if(row1.group.label === 'Overall population') {
+          return 1;
+        }
+        if(row2.group.label === 'Overall population') {
+          return -1;
+        }
+        return row1.group.label.localeCompare(row2.group.label);
+      });
     }
 
     function isValidValue(inputColumn) {
