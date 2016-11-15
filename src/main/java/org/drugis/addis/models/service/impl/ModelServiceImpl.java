@@ -186,20 +186,11 @@ public class ModelServiceImpl implements ModelService {
               URI taskUrl = model.getTaskUrl();
               if (taskUrl != null) {
                 PataviTask pataviTask = tasksByUri.get(taskUrl);
-                boolean isTaskRun = pataviTask.getResults() != null;
-                return setHasRunStatus(model, isTaskRun);
+                model.setRunStatus(pataviTask.getStatus());
+                return model;
               }
               return model;
             })
             .collect(Collectors.toList());
-  }
-
-  private Model setHasRunStatus(Model model, Boolean isTaskRun) {
-    if (model.getTaskUrl() != null) {
-      if (isTaskRun) {
-        model.setHasResult();
-      }
-    }
-    return model;
   }
 }

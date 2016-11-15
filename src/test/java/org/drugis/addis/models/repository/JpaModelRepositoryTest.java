@@ -110,8 +110,7 @@ public class JpaModelRepositoryTest {
     assertNotNull(models);
     assertEquals(2, models.size());
     assertEquals(networkMetaAnalysisWithModel.getId(), models.get(0).getAnalysisId());
-    assertFalse(models.get(0).isHasResult());
-    assertFalse(models.get(1).isHasResult());
+    assertNull(models.get(1).getRunStatus());
 
     Integer analysisIdWithoutModel = -6;
     NetworkMetaAnalysis networkMetaAnalysisWithWithOutModel = em.find(NetworkMetaAnalysis.class, analysisIdWithoutModel);
