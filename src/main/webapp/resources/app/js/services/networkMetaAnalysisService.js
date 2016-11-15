@@ -99,6 +99,7 @@ define(['lodash', 'angular'], function(_, angular) {
           row.studyUri = study.studyUri;
           row.studyUid = row.studyUri.slice(row.studyUri.lastIndexOf('/') + 1);
           row.studyRowSpan = study.trialDataArms.length;
+          row.defaultMeasurementMoment = study.defaultMeasurementMoment;
           _.forEach(covariates, function(covariate) {
             if (covariate.isIncluded) {
               var covariateValue = _.find(study.covariateValues, function(covariateValue) {
@@ -326,23 +327,6 @@ define(['lodash', 'angular'], function(_, angular) {
       return tableRows;
     }
 
-    function changeArmExclusion(dataRow, analysis) {
-      if (dataRow.included) {
-        for (var i = 0; i < analysis.excludedArms.length; ++i) {
-          if (analysis.excludedArms[i].trialverseUid === dataRow.trialverseUid) {
-            analysis.excludedArms.splice(i, 1);
-            break;
-          }
-        }
-      } else {
-        analysis.excludedArms.push({
-          analysisId: analysis.id,
-          trialverseUid: dataRow.trialverseUid
-        });
-      }
-      return analysis;
-    }
-
     function buildInterventionInclusions(interventions, analysis) {
       return _.reduce(interventions, function(accumulator, intervention) {
         if (intervention.isIncluded) {
@@ -407,6 +391,17 @@ define(['lodash', 'angular'], function(_, angular) {
         covariate.isIncluded = inclusionMap[covariate.id];
         return covariate;
       });
+    }    
+
+    function addInclusionsToMeasurementMoments(measurementMoments, inclusions) {
+      var inclusionMap = _.fromPairs(_.map(inclusions, function(inclusion) {
+        return [inclusion.measurementMomentId, true];
+      }));
+
+      return measurementMoments.map(function(measurementMoment) {
+        measurementMoment.isIncluded = inclusionMap[measurementMoment.id];
+        return measurementMoment;
+      });
     }
 
 
@@ -420,22 +415,6 @@ define(['lodash', 'angular'], function(_, angular) {
           return armsMatchingExcludedIntervention;
         });
       });
-    }
-
-    function changeCovariateInclusion(covariate, analysis) {
-      var includedCovariates = analysis.includedCovariates;
-      var updatedList = angular.copy(includedCovariates);
-      if (covariate.isIncluded) {
-        updatedList.push({
-          analysisId: analysis.id,
-          covariateId: covariate.id
-        });
-      } else {
-        _.remove(updatedList, function(includedCovariate) {
-          return includedCovariate.covariateId === covariate.id;
-        });
-      }
-      return updatedList;
     }
 
     function addOverlaps(overlappingTreatmentsMap, interventionIds) {
@@ -494,11 +473,60 @@ define(['lodash', 'angular'], function(_, angular) {
       });
     }
 
+    function changeCovariateInclusion(covariate, analysis) {
+      var includedCovariates = analysis.includedCovariates;
+      var updatedList = angular.copy(includedCovariates);
+      if (covariate.isIncluded) {
+        updatedList.push({
+          analysisId: analysis.id,
+          covariateId: covariate.id
+        });
+      } else {
+        _.remove(updatedList, function(includedCovariate) {
+          return includedCovariate.covariateId === covariate.id;
+        });
+      }
+      return updatedList;
+    }
+
+    function changeArmExclusion(dataRow, analysis) {
+      if (dataRow.included) {
+        for (var i = 0; i < analysis.excludedArms.length; ++i) {
+          if (analysis.excludedArms[i].trialverseUid === dataRow.trialverseUid) {
+            analysis.excludedArms.splice(i, 1);
+            break;
+          }
+        }
+      } else {
+        analysis.excludedArms.push({
+          analysisId: analysis.id,
+          trialverseUid: dataRow.trialverseUid
+        });
+      }
+      return analysis;
+    }
+
+    function changeMeasurementMoment(dataRow, measurementMoment) {
+      if (dataRow.isIncluded) {
+        if (measurementMoment.label === dataRow.defaultMeasurementMoment.label) {
+          return;
+        } else {
+          // change values in row 
+          return;
+        }
+      }
+
+
+
+
+    }
+
     return {
       transformTrialDataToNetwork: transformTrialDataToNetwork,
       transformTrialDataToTableRows: transformTrialDataToTableRows,
       addInclusionsToInterventions: addInclusionsToInterventions,
       addInclusionsToCovariates: addInclusionsToCovariates,
+      addInclusionsToMeasurementMoments :addInclusionsToMeasurementMoments,
       changeArmExclusion: changeArmExclusion,
       buildInterventionInclusions: buildInterventionInclusions,
       doesInterventionHaveAmbiguousArms: doesInterventionHaveAmbiguousArms,
@@ -508,7 +536,8 @@ define(['lodash', 'angular'], function(_, angular) {
       buildOverlappingTreatmentMap: buildOverlappingTreatmentMap,
       getIncludedInterventions: getIncludedInterventions,
       doesModelHaveInsufficientCovariateValues: doesModelHaveInsufficientCovariateValues,
-      buildMissingValueByStudyMap: buildMissingValueByStudyMap
+      buildMissingValueByStudyMap: buildMissingValueByStudyMap,
+      changeMeasurementMoment: changeMeasurementMoment
     };
   };
   return dependencies.concat(NetworkMetaAnalysisService);

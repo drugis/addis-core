@@ -37,12 +37,14 @@
             </div>
           </td>
 
-
           <td ng-show="dataRow.firstStudyRow" rowspan="{{dataRow.studyRowSpan}}">
-            <select ng-options="measurementMoment.label for measurementMoment in dataRow.measurementMoments" ng-model="mm">
+            <select ng-options="measurementMoment.label for measurementMoment in dataRow.measurementMoments"
+              ng-disabled="editMode.disableEditing|| dataRow.intervention === 'unmatched'"
+              ng-model="measurementMoment" ng-init="dataRow.defaultMeasurementMoment.label" ng-change="changeMeasurementMoment(dataRow, measurementMoment)">
             </select>
+            <tt>option = {{measurementMoment}}</tt>
+            <br/>
           </td>
-
 
           <td ng-repeat="covariate in dataRow.covariatesColumns" ng-show="dataRow.firstStudyRow"
             rowspan="{{dataRow.studyRowSpan}}" class="text-center">
@@ -59,14 +61,15 @@
               class="alert-message">
               Ambiguous: {{dataRow.overlappingInterventionWarning}}
             </div>
-
           </td>
+
           <td>
             <label>
               <input type="checkbox" ng-disabled="editMode.disableEditing || dataRow.intervention === 'unmatched' || hasModel"
                 ng-model="dataRow.included" ng-change="changeArmExclusion(dataRow)"> {{dataRow.arm}}
             </label>
           </td>
+
           <td ng-show="dataRow.measurementType === 'dichotomous'" ng-class="{undefined:dataRow.intervention === 'unmatched'}"
             class="text-center">
             {{dataRow.rate}}

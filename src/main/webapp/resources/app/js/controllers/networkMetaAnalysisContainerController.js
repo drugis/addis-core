@@ -66,19 +66,25 @@ define(['lodash'], function(_) {
     $scope.covariates = CovariateResource.query({
       projectId: $stateParams.projectId
     });
+    $scope.measurementMoments = MeasurementMomentsResource.query({
+      projectId: $stateParams.projectId
+    })
+
 
     $q.all([
-      $scope.analysis.$promise,
-      $scope.project.$promise,
-      $scope.models.$promise,
-      outcomesPromise,
-      $scope.interventions.$promise,
-      $scope.covariates.$promise
-    ])
+        $scope.analysis.$promise,
+        $scope.project.$promise,
+        $scope.models.$promise,
+        outcomesPromise,
+        $scope.interventions.$promise,
+        $scope.covariates.$promise,
+        $scope.measurementMoments.$promise
+      ])
       .then(function() {
         $scope.hasModel = $scope.models.length > 0;
         $scope.interventions = NetworkMetaAnalysisService.addInclusionsToInterventions($scope.interventions, $scope.analysis.interventionInclusions);
         $scope.covariates = NetworkMetaAnalysisService.addInclusionsToCovariates($scope.covariates, $scope.analysis.includedCovariates);
+        $scope.measurementMoments = NetworkMetaAnalysisService.addInclusionsToMeasurementMoments($scope.measurementMoments, $scope.analysis.includedMeasurementMoments);
         if (!$scope.analysis.outcome && $scope.outcomes.length > 0) {
           // set first outcome as default outcome
           $scope.analysis.outcome = $scope.outcomes[0];
@@ -213,6 +219,13 @@ define(['lodash'], function(_) {
         $scope.reloadModel();
       });
     };
+
+    $scope.changeMeasurementMoment = function(dataRow, analysis, measurementMoment) {
+      // $scope.analysis.measurementMoments = NetworkMetaAnalysisService.changeMeasurementMoment(dataRow,$scope.analysis,measurementMoment);
+      //      $scope.analysis.$save(function() {
+      //        $scope.reloadModel();
+      //     });
+    }
   };
 
   return dependencies.concat(NetworkMetaAnalysisContainerController);
