@@ -78,10 +78,13 @@ define(['angular', 'lodash'],
           of_variable: [{
             '@type': 'ontology:Variable',
             'measurementType': item.measurementType,
-            'label': item.label
+            'label': item.label,
           }],
           has_result_property: item.resultProperties
         };
+        if(item.conceptMapping) {
+          newItem.of_variable[0].sameAs = item.conceptMapping;
+        }
         if (item.measurementType === 'ontology:categorical') {
           newItem.of_variable[0].categoryList = RdfListService.unFlattenList(_.map(item.categoryList, makeCategoryIfNeeded));
         }
