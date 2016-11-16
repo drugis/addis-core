@@ -4,6 +4,14 @@
       "type": "literal",
       "value": "TAK491-008 \/ NCT00696241"
     },
+    "measurementMoment": {
+      "type": "uri",
+      "value": "http:\/\/defaultMMUri"
+    },
+    "measurementMomentLabel": {
+      "type": "literal",
+      "value": "default moment"
+    },
     "treatmentNode": {
       "type": "uri",
       "value": "http:\/\/localhost:8080\/.well-known\/genid\/00000152f5083d435358413a0000000c"
@@ -99,6 +107,14 @@
     "studyName": {
       "type": "literal",
       "value": "TAK491-008 \/ NCT00696241"
+    },
+    "measurementMoment": {
+      "type": "uri",
+      "value": "http:\/\/defaultMMUri"
+    },
+    "measurementMomentLabel": {
+      "type": "literal",
+      "value": "default moment"
     },
     "treatmentNode": {
       "type": "uri",
@@ -196,6 +212,14 @@
       "type": "literal",
       "value": "TAK491-008 \/ NCT00696241"
     },
+    "measurementMoment": {
+      "type": "uri",
+      "value": "http:\/\/defaultMMUri"
+    },
+    "measurementMomentLabel": {
+      "type": "literal",
+      "value": "default moment"
+    },
     "treatmentNode": {
       "type": "uri",
       "value": "http:\/\/localhost:8080\/.well-known\/genid\/00000152f5083d455358413a00000016"
@@ -291,6 +315,14 @@
     "studyName": {
       "type": "literal",
       "value": "TAK491-008 \/ NCT00696241"
+    },
+    "measurementMoment": {
+      "type": "uri",
+      "value": "http:\/\/defaultMMUri"
+    },
+    "measurementMomentLabel": {
+      "type": "literal",
+      "value": "default moment"
     },
     "treatmentNode": {
       "type": "uri",
@@ -388,6 +420,14 @@
       "type": "literal",
       "value": "TAK491-008 \/ NCT00696241"
     },
+    "measurementMoment": {
+      "type": "uri",
+      "value": "http:\/\/defaultMMUri"
+    },
+    "measurementMomentLabel": {
+      "type": "literal",
+      "value": "default moment"
+    },
     "treatmentNode": {
       "type": "uri",
       "value": "http:\/\/localhost:8080\/.well-known\/genid\/00000152f5083d445358413a00000027"
@@ -483,6 +523,14 @@
     "studyName": {
       "type": "literal",
       "value": "TAK491-019 \/ NCT00696436"
+    },
+    "measurementMoment": {
+      "type": "uri",
+      "value": "http:\/\/defaultMMUri"
+    },
+    "measurementMomentLabel": {
+      "type": "literal",
+      "value": "default moment"
     },
     "outcomeInstanceLabel": {
       "type": "literal",
@@ -603,6 +651,14 @@
       "type": "literal",
       "value": "TAK491-019 \/ NCT00696436"
     },
+    "measurementMoment": {
+      "type": "uri",
+      "value": "http:\/\/defaultMMUri"
+    },
+    "measurementMomentLabel": {
+      "type": "literal",
+      "value": "default moment"
+    },
     "outcomeInstanceLabel": {
       "type": "literal",
       "value": "SBP mean trough (clinic, sitting)"
@@ -721,6 +777,14 @@
     "studyName": {
       "type": "literal",
       "value": "TAK491-019 \/ NCT00696436"
+    },
+    "measurementMoment": {
+      "type": "uri",
+      "value": "http:\/\/defaultMMUri"
+    },
+    "measurementMomentLabel": {
+      "type": "literal",
+      "value": "default moment"
     },
     "outcomeInstanceLabel": {
       "type": "literal",
@@ -841,6 +905,14 @@
       "type": "literal",
       "value": "TAK491-019 \/ NCT00696436"
     },
+    "measurementMoment": {
+      "type": "uri",
+      "value": "http:\/\/defaultMMUri"
+    },
+    "measurementMomentLabel": {
+      "type": "literal",
+      "value": "default moment"
+    },
     "outcomeInstanceLabel": {
       "type": "literal",
       "value": "SBP mean trough (clinic, sitting)"
@@ -960,6 +1032,14 @@
       "type": "literal",
       "value": "TAK491-019 \/ NCT00696436"
     },
+    "measurementMoment": {
+      "type": "uri",
+      "value": "http:\/\/defaultMMUri"
+    },
+    "measurementMomentLabel": {
+      "type": "literal",
+      "value": "default moment"
+    },
     "treatmentNode": {
       "type": "uri",
       "value": "http:\/\/localhost:8080\/.well-known\/genid\/00000152f5083e255358413a0000000e"
@@ -1055,6 +1135,14 @@
     "studyName": {
       "type": "literal",
       "value": "TAK491-011 \/ NCT00591253"
+    },
+    "measurementMoment": {
+      "type": "uri",
+      "value": "http:\/\/defaultMMUri"
+    },
+    "measurementMomentLabel": {
+      "type": "literal",
+      "value": "default moment"
     },
     "treatmentNode": {
       "type": "uri",
@@ -1152,6 +1240,14 @@
       "type": "literal",
       "value": "TAK491-011 \/ NCT00591253"
     },
+    "measurementMoment": {
+      "type": "uri",
+      "value": "http:\/\/defaultMMUri"
+    },
+    "measurementMomentLabel": {
+      "type": "literal",
+      "value": "default moment"
+    },
     "treatmentNode": {
       "type": "uri",
       "value": "http:\/\/localhost:8080\/.well-known\/genid\/00000152f5083e6f5358413a00000004"
@@ -1248,6 +1344,14 @@
       "type": "literal",
       "value": "TAK491-011 \/ NCT00591253"
     },
+    "measurementMoment": {
+      "type": "uri",
+      "value": "http:\/\/defaultMMUri"
+    },
+    "measurementMomentLabel": {
+      "type": "literal",
+      "value": "default moment"
+    },
     "treatmentNode": {
       "type": "uri",
       "value": "http:\/\/localhost:8080\/.well-known\/genid\/00000152f5083e715358413a0000000f"
@@ -1343,6 +1447,14 @@
     "studyName": {
       "type": "literal",
       "value": "TAK491-301 \/ NCT00846365"
+    },
+    "measurementMoment": {
+      "type": "uri",
+      "value": "http:\/\/defaultMMUri"
+    },
+    "measurementMomentLabel": {
+      "type": "literal",
+      "value": "default moment"
     },
     "outcomeInstanceLabel": {
       "type": "literal",
@@ -1463,6 +1575,14 @@
       "type": "literal",
       "value": "TAK491-301 \/ NCT00846365"
     },
+    "measurementMoment": {
+      "type": "uri",
+      "value": "http:\/\/defaultMMUri"
+    },
+    "measurementMomentLabel": {
+      "type": "literal",
+      "value": "default moment"
+    },
     "outcomeInstanceLabel": {
       "type": "literal",
       "value": "SBP mean trough (clinic, sitting)"
@@ -1581,6 +1701,14 @@
     "studyName": {
       "type": "literal",
       "value": "TAK491-301 \/ NCT00846365"
+    },
+    "measurementMoment": {
+      "type": "uri",
+      "value": "http:\/\/defaultMMUri"
+    },
+    "measurementMomentLabel": {
+      "type": "literal",
+      "value": "default moment"
     },
     "outcomeInstanceLabel": {
       "type": "literal",
@@ -1701,6 +1829,14 @@
       "type": "literal",
       "value": "TAK491-301 \/ NCT00846365"
     },
+    "measurementMoment": {
+      "type": "uri",
+      "value": "http:\/\/defaultMMUri"
+    },
+    "measurementMomentLabel": {
+      "type": "literal",
+      "value": "default moment"
+    },
     "outcomeInstanceLabel": {
       "type": "literal",
       "value": "SBP mean trough (clinic, sitting)"
@@ -1819,6 +1955,14 @@
     "studyName": {
       "type": "literal",
       "value": "TAK491-301 \/ NCT00846365"
+    },
+    "measurementMoment": {
+      "type": "uri",
+      "value": "http:\/\/defaultMMUri"
+    },
+    "measurementMomentLabel": {
+      "type": "literal",
+      "value": "default moment"
     },
     "outcomeInstanceLabel": {
       "type": "literal",
@@ -1939,6 +2083,14 @@
       "type": "literal",
       "value": "TAK491-301 \/ NCT00846365"
     },
+    "measurementMoment": {
+      "type": "uri",
+      "value": "http:\/\/defaultMMUri"
+    },
+    "measurementMomentLabel": {
+      "type": "literal",
+      "value": "default moment"
+    },
     "outcomeInstanceLabel": {
       "type": "literal",
       "value": "SBP mean trough (clinic, sitting)"
@@ -2057,6 +2209,14 @@
     "studyName": {
       "type": "literal",
       "value": "TAK491-020 \/ NCT00760214"
+    },
+    "measurementMoment": {
+      "type": "uri",
+      "value": "http:\/\/defaultMMUri"
+    },
+    "measurementMomentLabel": {
+      "type": "literal",
+      "value": "default moment"
     },
     "outcomeInstanceLabel": {
       "type": "literal",
@@ -2177,6 +2337,14 @@
       "type": "literal",
       "value": "TAK491-020 \/ NCT00760214"
     },
+    "measurementMoment": {
+      "type": "uri",
+      "value": "http:\/\/defaultMMUri"
+    },
+    "measurementMomentLabel": {
+      "type": "literal",
+      "value": "default moment"
+    },
     "outcomeInstanceLabel": {
       "type": "literal",
       "value": "SBP mean trough (clinic, sitting)"
@@ -2295,6 +2463,14 @@
     "studyName": {
       "type": "literal",
       "value": "TAK491-020 \/ NCT00760214"
+    },
+    "measurementMoment": {
+      "type": "uri",
+      "value": "http:\/\/defaultMMUri"
+    },
+    "measurementMomentLabel": {
+      "type": "literal",
+      "value": "default moment"
     },
     "outcomeInstanceLabel": {
       "type": "literal",
