@@ -24,7 +24,8 @@ define(['lodash'], function(_) {
           .$promise.then(function(trialverseData) {
             scope.interventions = NetworkMetaAnalysisService.addInclusionsToInterventions(scope.interventions, scope.analysis.interventionInclusions);
             var includedInterventions = NetworkMetaAnalysisService.getIncludedInterventions(scope.interventions);
-            scope.network = NetworkMetaAnalysisService.transformTrialDataToNetwork(trialverseData, includedInterventions, scope.analysis);
+            var momentSelections = NetworkMetaAnalysisService.buildMomentSelections(trialverseData, scope.analysis);
+            scope.network = NetworkMetaAnalysisService.transformTrialDataToNetwork(trialverseData, includedInterventions, scope.analysis, momentSelections);
           });
 
 
