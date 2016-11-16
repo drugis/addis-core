@@ -102,15 +102,17 @@ CREATE TABLE SingleStudyBenefitRiskAnalysis (id INT DEFAULT nextval('shared_anal
   PRIMARY KEY (id),
   FOREIGN KEY(projectId) REFERENCES Project(id));
 
-CREATE TABLE NetworkMetaAnalysis (id INT DEFAULT nextval('shared_analysis_id_seq') NOT NULL,
-          projectId INT,
-          name VARCHAR NOT NULL,
-          studyId INT,
-          outcomeId INT,
-          problem VARCHAR NULL,
+CREATE TABLE NetworkMetaAnalysis (
+    id INT DEFAULT nextval('shared_analysis_id_seq') NOT NULL,
+    projectId INT,
+    name VARCHAR NOT NULL,
+    studyId INT,
+    outcomeId INT,
+    problem VARCHAR NULL,
     PRIMARY KEY (id),
     FOREIGN KEY(projectId) REFERENCES Project(id),
-    FOREIGN KEY(outcomeId) REFERENCES Outcome(id));
+    FOREIGN KEY(outcomeId) REFERENCES Outcome(id)
+);
 
 DROP TABLE Analysis CASCADE;
 
@@ -760,9 +762,11 @@ CREATE TABLE InterventionSetItem (
 
 --changeset reidd:63
 CREATE TABLE MeasurementMomentInclusion (
-  id INT NOT NULL,
+  id SERIAL NOT NULL,
   analysisId INT NOT NULL,
   study BYTEA,
-  measurementMoment BYTEA
+  measurementMoment BYTEA,
+  PRIMARY KEY(id),
+  FOREIGN KEY(analysisId) REFERENCES NetworkMetaAnalysis(id)
 );
 --rollback DROP TABLE MeasurementMomentInclusion

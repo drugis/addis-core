@@ -1,4 +1,4 @@
-define(['angular', 'angular-mocks', 'services'], function() {
+define(['angular', 'angular-mocks', 'services'], function(angular) {
 
   var CONTINUOUS_TYPE = 'http://trials.drugis.org/ontology#continuous';
 
@@ -6,6 +6,9 @@ define(['angular', 'angular-mocks', 'services'], function() {
     'studyUri': 'http://trials.drugis.org/graphs/favaUuid',
     'name': 'Fava et al, 2002',
     'defaultMeasurementMoment': 'defaultMMUri',
+    'measurementMoments': [{
+      uri: 'defaultMMUri'
+    }],
     'trialDataArms': [{
       'uri': 'http://trials.drugis.org/instances/fava-parox-arm',
       'name': 'Paroxetine',
@@ -449,8 +452,19 @@ define(['angular', 'angular-mocks', 'services'], function() {
             semanticOutcomeUri: 'variableConceptUri1'
           }
         };
+        var momentSelections = {};
 
-        var network = NetworkMetaAnalysisService.transformTrialDataToNetwork(trialVerseStudyData, networkInterventions, analysis);
+        momentSelections[trialVerseStudyData[0].studyUri] = {
+          uri: 'defaultMMUri'
+        };
+        momentSelections[trialVerseStudyData[1].studyUri] = {
+          uri: 'defaultMMUri'
+        };
+        momentSelections[trialVerseStudyData[2].studyUri] = {
+          uri: 'defaultMMUri'
+        };
+
+        var network = NetworkMetaAnalysisService.transformTrialDataToNetwork(trialVerseStudyData, networkInterventions, analysis, momentSelections);
 
         expect(network).toEqual(expectedNetwork);
       }));
@@ -502,11 +516,16 @@ define(['angular', 'angular-mocks', 'services'], function() {
             included: true,
             intervention: 'intervention 2',
             interventionId: 2,
-            measurementType: 'continuous',
-            rate: 64,
-            mu: 'NA',
-            sigma: 'NA',
-            sampleSize: 96,
+            measurements: {
+              defaultMMUri: {
+                type: 'continuous',
+                rate: 64,
+                mu: 'NA',
+                sigma: 'NA',
+                sampleSize: 96
+              }
+            },
+            measurementMoments: trialVerseStudyData[0].measurementMoments,
             numberOfMatchedInterventions: 3,
             numberOfIncludedInterventions: 3,
             firstInterventionRow: true,
@@ -528,11 +547,16 @@ define(['angular', 'angular-mocks', 'services'], function() {
             included: true,
             intervention: 'intervention 3',
             interventionId: 3,
-            measurementType: 'continuous',
-            rate: 70,
-            mu: 'NA',
-            sigma: 'NA',
-            sampleSize: 96,
+            measurements: {
+              defaultMMUri: {
+                type: 'continuous',
+                rate: 70,
+                mu: 'NA',
+                sigma: 'NA',
+                sampleSize: 96
+              }
+            },
+            measurementMoments: trialVerseStudyData[0].measurementMoments,
             numberOfMatchedInterventions: 3,
             numberOfIncludedInterventions: 3,
             firstInterventionRow: true,
@@ -554,13 +578,18 @@ define(['angular', 'angular-mocks', 'services'], function() {
             intervention: 'intervention 1',
             interventionId: 1,
             interventionRowSpan: 1,
-            measurementType: 'continuous',
-            rate: 57,
-            mu: 'NA',
-            sigma: 'NA',
-            sampleSize: 92,
+            measurements: {
+              defaultMMUri: {
+                type: 'continuous',
+                rate: 57,
+                mu: 'NA',
+                sigma: 'NA',
+                sampleSize: 92
+              }
+            },
             firstInterventionRow: true,
             firstStudyRow: true,
+            measurementMoments: trialVerseStudyData[0].measurementMoments,
             numberOfMatchedInterventions: 3,
             numberOfIncludedInterventions: 3,
           });
@@ -756,6 +785,44 @@ define(['angular', 'angular-mocks', 'services'], function() {
       }));
     });
 
+    describe('buildMomentSelections', function() {
+      beforeEach(module('addis.services'));
+
+      it('should create a map where for each study the default moment is selected except in cases where there is a selection on the analysis', inject(function(NetworkMetaAnalysisService) {
+        var study1 = {
+          studyUri: 'studyUri1',
+          defaultMeasurementMoment: 'defaultMoment1',
+          measurementMoments: [{
+            uri: 'defaultMoment1'
+          }, {
+            uri: 'customMoment1'
+          }]
+        };
+        var study2 = {
+          studyUri: 'studyUri2',
+          defaultMeasurementMoment: 'defaultMoment2',
+          measurementMoments: [{
+            uri: 'defaultMoment2'
+          }, {
+            uri: 'customMoment2'
+          }]
+        };
+        var trialData = [study1, study2];
+        var analysis = {
+          includedMeasurementMoments: [{
+            study: 'studyUri2',
+            measurementMoment: 'customMoment2'
+          }]
+        };
+        var expectedResult = {
+          studyUri1: study1.measurementMoments[0],
+          studyUri2: study2.measurementMoments[1]
+        };
+        var result = NetworkMetaAnalysisService.buildMomentSelections(trialData, analysis);
+        expect(result).toEqual(expectedResult);
+      }));
+    });
+
     describe('cleanUpExcludedArms', function() {
       beforeEach(module('addis.services'));
 
@@ -890,12 +957,14 @@ define(['angular', 'angular-mocks', 'services'], function() {
 
           var trialDataArm1 = { // excluded due to arm exclusion
             uri: study1Arm1.trialverseUid,
+            studyUri: 'study1uri',
             matchedProjectInterventionIds: []
           };
 
           var trialDataArm2 = { // excluded due to no matching interventions
             uri: study1Arm2.trialverseUid,
             matchedProjectInterventionIds: [1],
+            studyUri: 'study1uri',
             measurements: {
               defaultMMUri: [{
                 variableConceptUri: outcome.semanticOutcomeUri,
@@ -910,6 +979,7 @@ define(['angular', 'angular-mocks', 'services'], function() {
           var trialDataArm3 = { // excluded due to no matching interventions
             uri: 'trialverseUid3',
             matchedProjectInterventionIds: [2],
+            studyUri: 'study1uri',
             measurements: {
               defaultMMUri: [{
                 variableConceptUri: outcome.semanticOutcomeUri,
@@ -922,11 +992,13 @@ define(['angular', 'angular-mocks', 'services'], function() {
           };
           var trialDataArm4 = { // excluded due to arm exclusion
             uri: 'study2arm1',
+            studyUri: 'study2uri',
             matchedProjectInterventionIds: []
           };
 
           var trialDataArm5 = { // excluded due to no matching interventions
             uri: 'study2arm2',
+            studyUri: 'study2uri',
             matchedProjectInterventionIds: [1],
             measurements: {
               defaultMMUri: [{
@@ -942,6 +1014,7 @@ define(['angular', 'angular-mocks', 'services'], function() {
           var trialDataArm6 = { // excluded due to no matching interventions
             uri: 'study2arm3',
             matchedProjectInterventionIds: [2],
+            studyUri: 'study2uri',
             measurements: {
               defaultMMUri: [{
                 variableConceptUri: outcome.semanticOutcomeUri,
@@ -965,16 +1038,24 @@ define(['angular', 'angular-mocks', 'services'], function() {
             trialDataArms: [trialDataArm4, trialDataArm5, trialDataArm6]
           };
 
+          var momentSelections = {
+            study1uri: {
+              uri: 'defaultMMUri'
+            },
+            study2uri: {
+              uri: 'defaultMMUri'
+            }
+          };
+
           var trialDataStudies = [study1, study2];
 
-          var result = NetworkMetaAnalysisService.buildMissingValueByStudyMap(trialDataStudies, analysis1);
+
+          var result = NetworkMetaAnalysisService.buildMissingValueByStudyMap(trialDataStudies, analysis1, momentSelections);
 
           expect(result[study1.studyUri]).toBeFalsy();
           expect(result[study2.studyUri]).toBeTruthy();
         }));
     });
-
-
 
     describe('doesModelHaveInsufficientCovariateValues', function() {
       beforeEach(module('addis.services'));
