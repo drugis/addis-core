@@ -98,18 +98,28 @@ define(['angular', 'angular-mocks', 'controllers'], function() {
       EvidenceTableResource = jasmine.createSpyObj('EvidenceTableResource', ['query', 'get']);
       EvidenceTableResource.query.and.returnValue(mockTrialData);
       analysisService = jasmine.createSpyObj('AnalysisService', ['isNetworkDisconnected']);
-      networkMetaAnalysisService = jasmine.createSpyObj('NetworkMetaAnalysisService', ['transformTrialDataToTableRows',
-        'transformTrialDataToNetwork', 'isNetworkDisconnected', 'addInclusionsToInterventions', 'changeArmExclusion',
-        'buildInterventionInclusions', 'doesInterventionHaveAmbiguousArms', 'doesModelHaveAmbiguousArms', 'cleanUpExcludedArms',
-        'addInclusionsToCovariates', 'changeCovariateInclusion', 'buildOverlappingTreatmentMap', 'getIncludedInterventions',
-        'buildMissingValueByStudyMap', 'doesModelHaveInsufficientCovariateValues'
+      networkMetaAnalysisService = jasmine.createSpyObj('NetworkMetaAnalysisService', [
+        'addInclusionsToCovariates',
+        'addInclusionsToInterventions',
+        'buildInterventionInclusions',
+        'buildMissingValueByStudyMap',
+        'buildMomentSelections',
+        'buildOverlappingTreatmentMap',
+        'changeArmExclusion',
+        'changeCovariateInclusion',
+        'cleanUpExcludedArms',
+        'doesInterventionHaveAmbiguousArms',
+        'doesModelHaveAmbiguousArms',
+        'doesModelHaveInsufficientCovariateValues',
+        'getIncludedInterventions',
+        'transformTrialDataToNetwork',
+        'transformTrialDataToTableRows'
       ]);
       var mockNetwork = {
         interventions: []
       };
       networkMetaAnalysisService.transformTrialDataToNetwork.and.returnValue(mockNetwork);
       networkMetaAnalysisService.transformTrialDataToTableRows.and.returnValue([]);
-      networkMetaAnalysisService.isNetworkDisconnected.and.returnValue(true);
       networkMetaAnalysisService.changeArmExclusion.and.returnValue({
         $save: function() {}
       });

@@ -66,9 +66,9 @@ define(['lodash'], function(_) {
     $scope.covariates = CovariateResource.query({
       projectId: $stateParams.projectId
     });
-    $scope.measurementMoments = MeasurementMomentsResource.query({
-      projectId: $stateParams.projectId
-    })
+    // $scope.measurementMoments = MeasurementMomentsResource.query({
+    //   projectId: $stateParams.projectId
+    // })
 
 
     $q.all([
@@ -78,13 +78,11 @@ define(['lodash'], function(_) {
         outcomesPromise,
         $scope.interventions.$promise,
         $scope.covariates.$promise,
-        $scope.measurementMoments.$promise
       ])
       .then(function() {
         $scope.hasModel = $scope.models.length > 0;
         $scope.interventions = NetworkMetaAnalysisService.addInclusionsToInterventions($scope.interventions, $scope.analysis.interventionInclusions);
         $scope.covariates = NetworkMetaAnalysisService.addInclusionsToCovariates($scope.covariates, $scope.analysis.includedCovariates);
-        $scope.measurementMoments = NetworkMetaAnalysisService.addInclusionsToMeasurementMoments($scope.measurementMoments, $scope.analysis.includedMeasurementMoments);
         if (!$scope.analysis.outcome && $scope.outcomes.length > 0) {
           // set first outcome as default outcome
           $scope.analysis.outcome = $scope.outcomes[0];
@@ -133,15 +131,16 @@ define(['lodash'], function(_) {
         .$promise
         .then(function(trialverseData) {
           $scope.trialverseData = trialverseData;
-          updateNetwork();
+          $scope.momentSelections = NetworkMetaAnalysisService.buildMomentSelections(trialverseData, $scope.analysis);
           var includedInterventions = NetworkMetaAnalysisService.getIncludedInterventions($scope.interventions);
+          updateNetwork();
           $scope.treatmentOverlapMap = NetworkMetaAnalysisService.buildOverlappingTreatmentMap($scope.interventions, trialverseData);
           $scope.trialData = NetworkMetaAnalysisService.transformTrialDataToTableRows(trialverseData, includedInterventions, $scope.analysis, $scope.covariates, $scope.treatmentOverlapMap);
           $scope.tableHasAmbiguousArm = NetworkMetaAnalysisService.doesModelHaveAmbiguousArms(trialverseData, $scope.analysis);
           $scope.hasInsufficientCovariateValues = NetworkMetaAnalysisService.doesModelHaveInsufficientCovariateValues($scope.trialData);
           $scope.hasLessThanTwoInterventions = includedInterventions.length < 2;
           $scope.hasTreatmentOverlap = hasTreatmentOverlap();
-          $scope.isMissingByStudyMap = NetworkMetaAnalysisService.buildMissingValueByStudyMap(trialverseData, $scope.analysis);
+          $scope.isMissingByStudyMap = NetworkMetaAnalysisService.buildMissingValueByStudyMap($scope.trialData, $scope.analysis);
           $scope.containsMissingValue = _.find($scope.isMissingByStudyMap);
           $scope.isModelCreationBlocked = checkCanNotCreateModel();
           $scope.loading.loaded = true;
@@ -185,7 +184,7 @@ define(['lodash'], function(_) {
 
     function updateNetwork() {
       var includedInterventions = NetworkMetaAnalysisService.getIncludedInterventions($scope.interventions);
-      $scope.networkGraph.network = NetworkMetaAnalysisService.transformTrialDataToNetwork($scope.trialverseData, includedInterventions, $scope.analysis);
+      $scope.networkGraph.network = NetworkMetaAnalysisService.transformTrialDataToNetwork($scope.trialverseData, includedInterventions, $scope.analysis, $scope.momentSelections);
       $scope.isNetworkDisconnected = AnalysisService.isNetworkDisconnected($scope.networkGraph.network);
     }
 
@@ -220,12 +219,10 @@ define(['lodash'], function(_) {
       });
     };
 
-    $scope.changeMeasurementMoment = function(dataRow, analysis, measurementMoment) {
-      // $scope.analysis.measurementMoments = NetworkMetaAnalysisService.changeMeasurementMoment(dataRow,$scope.analysis,measurementMoment);
-      //      $scope.analysis.$save(function() {
-      //        $scope.reloadModel();
-      //     });
+    $scope.changeMeasurementMoment = function(dataRow) {
+      
     }
+
   };
 
   return dependencies.concat(NetworkMetaAnalysisContainerController);

@@ -10,9 +10,9 @@
           </th>
           <th rowspan="2">Interventions</th>
           <th rowspan="2">Arms</th>
-          <th rowspan="2" ng-show="trialData[0].measurementType === 'dichotomous'">Subjects with outcome</th>
-          <th rowspan="2" ng-show="trialData[0].measurementType === 'continuous'">&mu;</th>
-          <th rowspan="2" ng-show="trialData[0].measurementType === 'continuous'">&sigma;</th>
+          <th rowspan="2" ng-show="trialData[0].measurements[momentSelections[trialData[0].studyUri].uri].type === 'dichotomous'">Subjects with outcome</th>
+          <th rowspan="2" ng-show="trialData[0].measurements[momentSelections[trialData[0].studyUri].uri].type === 'continuous'">&mu;</th>
+          <th rowspan="2" ng-show="trialData[0].measurements[momentSelections[trialData[0].studyUri].uri].type === 'continuous'">&sigma;</th>
           <th rowspan="2">N</th>
         </tr>
         <tr>
@@ -39,11 +39,9 @@
 
           <td ng-show="dataRow.firstStudyRow" rowspan="{{dataRow.studyRowSpan}}">
             <select ng-options="measurementMoment.label for measurementMoment in dataRow.measurementMoments"
-              ng-disabled="editMode.disableEditing|| dataRow.intervention === 'unmatched'"
-              ng-model="measurementMoment" ng-init="dataRow.defaultMeasurementMoment.label" ng-change="changeMeasurementMoment(dataRow, measurementMoment)">
+              ng-disabled="editMode.disableEditing"
+              ng-model="momentSelections[dataRow.studyUri]" ng-change="changeMeasurementMoment(dataRow)">
             </select>
-            <tt>option = {{measurementMoment}}</tt>
-            <br/>
           </td>
 
           <td ng-repeat="covariate in dataRow.covariatesColumns" ng-show="dataRow.firstStudyRow"
@@ -70,18 +68,18 @@
             </label>
           </td>
 
-          <td ng-show="dataRow.measurementType === 'dichotomous'" ng-class="{undefined:dataRow.intervention === 'unmatched'}"
+          <td ng-show="dataRow.measurements[momentSelections[dataRow.studyUri].uri].type === 'dichotomous'" ng-class="{undefined:dataRow.intervention === 'unmatched'}"
             class="text-center">
-            {{dataRow.rate}}
+            {{dataRow.measurements[momentSelections[dataRow.studyUri].uri].rate}}
           </td>
-          <td ng-show="dataRow.measurementType === 'continuous'" class="large-2" ng-class="{undefined:dataRow.intervention === 'unmatched'}"
-            class="text-center">{{dataRow.mu}}
+          <td ng-show="dataRow.measurements[momentSelections[dataRow.studyUri].uri].type === 'continuous'" class="large-2" ng-class="{undefined:dataRow.intervention === 'unmatched'}"
+            class="text-center">{{dataRow.measurements[momentSelections[dataRow.studyUri].uri].mu}}
           </td>
-          <td ng-show="dataRow.measurementType === 'continuous'" class="large-2" ng-class="{undefined:dataRow.intervention === 'unmatched'}"
-            class="text-center">{{dataRow.sigma}}
+          <td ng-show="dataRow.measurements[momentSelections[dataRow.studyUri].uri].type === 'continuous'" class="large-2" ng-class="{undefined:dataRow.intervention === 'unmatched'}"
+            class="text-center">{{dataRow.measurements[momentSelections[dataRow.studyUri].uri].sigma}}
           </td>
           <td ng-class="{undefined:dataRow.intervention === 'unmatched'}" class="text-center">
-            {{dataRow.sampleSize}}
+            {{dataRow.measurements[momentSelections[dataRow.studyUri].uri].sampleSize}}
           </td>
         </tr>
       </tbody>
