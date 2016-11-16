@@ -22,7 +22,11 @@ define(['lodash'], function(_) {
         return resultValueObject.result_property.category === category['@id'];
       });
       if (resultValueObjectFound) {
-        return Number(resultValueObjectFound.value);
+        if (resultValueObjectFound.value === undefined) {
+          return undefined;
+        } else {
+          return Number(resultValueObjectFound.value);
+        }
       }
     }
 
