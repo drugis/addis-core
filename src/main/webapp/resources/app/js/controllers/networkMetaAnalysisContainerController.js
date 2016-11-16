@@ -219,9 +219,23 @@ define(['lodash'], function(_) {
       });
     };
 
-    $scope.changeMeasurementMoment = function(dataRow) {
+    $scope.changeMeasurementMoment = function(newMeasurementMoment, dataRow) {
+      // always remove old inclusion for this study
+      $scope.analysis.includedMeasurementMoments  = _.reject($scope.analysis.includedMeasurementMoments, ['study', dataRow.studyUri]);
+
+      if (!newMeasurementMoment.isDefault) {
+        var newInclusion = {
+          analysisId: $scope.analysis.id,
+          study: dataRow.studyUri,
+          measurementMoment: newMeasurementMoment.uri
+        };
+        $scope.analysis.includedMeasurementMoments.push(newInclusion);
+      }
       
-    }
+      $scope.analysis.$save(function() {
+        $scope.reloadModel();
+      });
+    };
 
   };
 

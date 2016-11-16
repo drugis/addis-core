@@ -40,7 +40,7 @@
           <td ng-show="dataRow.firstStudyRow" rowspan="{{dataRow.studyRowSpan}}">
             <select ng-options="measurementMoment.label for measurementMoment in dataRow.measurementMoments"
               ng-disabled="editMode.disableEditing"
-              ng-model="momentSelections[dataRow.studyUri]" ng-change="changeMeasurementMoment(dataRow)">
+              ng-model="momentSelections[dataRow.studyUri]" ng-change="changeMeasurementMoment(momentSelections[dataRow.studyUri], dataRow)">
             </select>
           </td>
 

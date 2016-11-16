@@ -516,6 +516,7 @@ define(['lodash', 'angular'], function(_, angular) {
         var selectedMM = _.find(study.measurementMoments, function(measurementMoment) {
           return measurementMoment.uri === selectedMMUri;
         });
+        selectedMM.isDefault = selected ? false : true;
         accum[study.studyUri] = selectedMM;
         return accum;
       }, {});

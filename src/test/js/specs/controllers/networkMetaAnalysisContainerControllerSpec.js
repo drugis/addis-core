@@ -20,11 +20,13 @@ define(['angular', 'angular-mocks', 'controllers'], function() {
       covariateResource = jasmine.createSpyObj('CovariateResource', ['query']),
       trialverseTrialDataDeferred,
       mockAnalysis = {
+        id: 101,
         $save: function() {},
         outcome: {
           id: 2,
           semanticOutcomeUri: 'semanticOutcomeUri'
-        }
+        },
+        includedMeasurementMoments: []
       },
       projectDeferred,
       mockWindow = {
@@ -230,6 +232,32 @@ define(['angular', 'angular-mocks', 'controllers'], function() {
         it('should call the doesInterventionHaveAmbiguousArms function on the NetworkMetaAnalysisService', function() {
           expect(networkMetaAnalysisService.doesInterventionHaveAmbiguousArms).toHaveBeenCalled();
         });
+      });
+      describe('and the changeMeasurementMoment function is called', function() {
+        var newMoment = {
+          uri: 'mmUri',
+          isDefault: false
+        };
+        var dataRow = {
+          studyUri: 'studyUri'
+        };
+        beforeEach(function() {
+          mockAnalysis.includedMeasurementMoments = [{
+            analysisId: mockAnalysis.id,
+            study: dataRow.studyUri,
+            measurementMoment: 'oldMeasurementMoment'
+          }];
+          scope.changeMeasurementMoment(newMoment, dataRow);
+        });
+        it('clean up old inclusions for the study and make a new one for non-default measurement moment', function() {
+          expect(scope.analysis.$save).toHaveBeenCalled();
+          expect(mockAnalysis.includedMeasurementMoments).toEqual([{
+            analysisId: mockAnalysis.id,
+            study: dataRow.studyUri,
+            measurementMoment: newMoment.uri
+          }]);
+        });
+
       });
     });
   });
