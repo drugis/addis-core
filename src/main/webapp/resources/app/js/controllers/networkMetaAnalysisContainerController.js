@@ -140,7 +140,7 @@ define(['lodash'], function(_) {
           $scope.hasInsufficientCovariateValues = NetworkMetaAnalysisService.doesModelHaveInsufficientCovariateValues($scope.trialData);
           $scope.hasLessThanTwoInterventions = includedInterventions.length < 2;
           $scope.hasTreatmentOverlap = hasTreatmentOverlap();
-          $scope.isMissingByStudyMap = NetworkMetaAnalysisService.buildMissingValueByStudyMap($scope.trialData, $scope.analysis);
+          $scope.isMissingByStudyMap = NetworkMetaAnalysisService.buildMissingValueByStudyMap(trialverseData, $scope.analysis, $scope.momentSelections);
           $scope.containsMissingValue = _.find($scope.isMissingByStudyMap);
           $scope.isModelCreationBlocked = checkCanNotCreateModel();
           $scope.loading.loaded = true;
@@ -231,7 +231,7 @@ define(['lodash'], function(_) {
         };
         $scope.analysis.includedMeasurementMoments.push(newInclusion);
       }
-      
+
       $scope.analysis.$save(function() {
         $scope.reloadModel();
       });
