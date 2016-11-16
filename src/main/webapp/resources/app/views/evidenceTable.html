@@ -5,7 +5,7 @@
       <thead>
         <tr>
           <th rowspan="2">Studies</th>
-          <th rowspan="2">Measurement Moments</th>
+          <th rowspan="2">Measurement Moment</th>
           <th ng-show="trialData[0].covariatesColumns.length > 0" colspan="{{trialData[0].covariatesColumns.length}}">Covariates
           </th>
           <th rowspan="2">Interventions</th>
@@ -38,10 +38,10 @@
           </td>
 
           <td ng-show="dataRow.firstStudyRow" rowspan="{{dataRow.studyRowSpan}}">
-            <select ng-options="measurementMoment.label for measurementMoment in dataRow.measurementMoments"
-              ng-disabled="editMode.disableEditing"
+            <select ng-if="!editMode.disableEditing" ng-options="measurementMoment.label for measurementMoment in dataRow.measurementMoments"
               ng-model="momentSelections[dataRow.studyUri]" ng-change="changeMeasurementMoment(momentSelections[dataRow.studyUri], dataRow)">
             </select>
+            <span ng-if="editMode.disableEditing">{{momentSelections[dataRow.studyUri].label}}</span>
           </td>
 
           <td ng-repeat="covariate in dataRow.covariatesColumns" ng-show="dataRow.firstStudyRow"
