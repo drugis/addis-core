@@ -135,8 +135,8 @@ public class AnalysisServiceImpl implements AnalysisService {
   private Integer selectModelId(NetworkMetaAnalysis networkMetaAnalysis, List<Model> consistencyModels) {
 
     List<Model> analysisModels = new ArrayList<>();
-    for(Model model  : consistencyModels) {
-      if(model.getAnalysisId().equals(networkMetaAnalysis.getId())) {
+    for (Model model : consistencyModels) {
+      if (model.getAnalysisId().equals(networkMetaAnalysis.getId())) {
         analysisModels.add(model);
       }
     }
@@ -192,8 +192,8 @@ public class AnalysisServiceImpl implements AnalysisService {
             .map(InterventionInclusion::getInterventionId)
             .collect(Collectors.toList());
     return interventionRepository.query(analysis.getProjectId()).stream()
-              .filter(i -> interventionInclusionsIds.contains(i.getId()))
-              .collect(Collectors.toSet());
+            .filter(i -> interventionInclusionsIds.contains(i.getId()))
+            .collect(Collectors.toSet());
   }
 
   private List<Covariate> getIncludedCovariates(NetworkMetaAnalysis analysis) throws ResourceDoesNotExistException {
@@ -221,22 +221,21 @@ public class AnalysisServiceImpl implements AnalysisService {
 
     String namespaceUid = mappingService.getVersionedUuid(project.getNamespaceUid());
     String datasetVersion = project.getDatasetVersion();
-    if(analysis instanceof NetworkMetaAnalysis) {
+    if (analysis instanceof NetworkMetaAnalysis) {
       NetworkMetaAnalysis networkMetaAnalysis = (NetworkMetaAnalysis) analysis;
-      if(networkMetaAnalysis.getOutcome() == null) {
+      if (networkMetaAnalysis.getOutcome() == null) {
         // no outcome set, therefore no need to build a evidence table
         return trialData;
       }
 
-      Set<String>  includedCovariates = getIncludedCovariates(networkMetaAnalysis).stream()
+      Set<String> includedCovariates = getIncludedCovariates(networkMetaAnalysis).stream()
               .map(Covariate::getDefinitionKey)
               .collect(Collectors.toSet());
 
       trialData = triplestoreService.getNetworkData(namespaceUid, datasetVersion,
               networkMetaAnalysis.getOutcome().getSemanticOutcomeUri(), includedInterventionUris, includedCovariates);
 
-
-    } else if(analysis instanceof SingleStudyBenefitRiskAnalysis) {
+    } else if (analysis instanceof SingleStudyBenefitRiskAnalysis) {
       SingleStudyBenefitRiskAnalysis singleStudyBenefitRiskAnalysis = (SingleStudyBenefitRiskAnalysis) analysis;
 
       Set<URI> outcomeUris = singleStudyBenefitRiskAnalysis.getSelectedOutcomes().stream().map(Outcome::getSemanticOutcomeUri).collect(Collectors.toSet());
@@ -267,9 +266,9 @@ public class AnalysisServiceImpl implements AnalysisService {
             .collect(Collectors.toList());
 
     List<InterventionSet> interventionSets = includedInterventions.stream()
-        .filter(ai -> ai instanceof InterventionSet)
-        .map(ai -> (InterventionSet) ai)
-        .collect(Collectors.toList());
+            .filter(ai -> ai instanceof InterventionSet)
+            .map(ai -> (InterventionSet) ai)
+            .collect(Collectors.toList());
 
     singleInterventions.addAll(interventionService.resolveCombinations(combinationInterventions));
     singleInterventions.addAll(interventionService.resolveInterventionSets(interventionSets));

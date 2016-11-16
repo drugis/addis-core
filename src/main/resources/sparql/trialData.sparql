@@ -15,12 +15,12 @@ SELECT DISTINCT
 ?studyName
 ?drug
 ?interventionLabel
+?defaultMeasurementMoment
 ?drugInstance
 ?treatmentNode
 ?outcomeTypeUri
 ?outcomeInstance
 ?outcomeTypeUid
-?measurementType
 ?outcomeInstanceLabel
 ?arm
 ?armLabel
@@ -38,6 +38,9 @@ SELECT DISTINCT
 ?maxDoseUnitConcept
 ?maxDoseUnitLabel
 ?maxDoseUnitMultiplier
+?measurementType
+?measurementMoment
+?measurementMomentLabel
 ?minDoseValue
 ?minDoseDosingPeriodicity
 ?minDoseUnitConcept
@@ -64,7 +67,7 @@ WHERE {
     ?drugInstance owl:sameAs ?drug .
     ?drugInstance rdfs:label ?interventionLabel .
     ?study ontology:has_arm ?arm .
-    ?study ontology:has_primary_epoch ?epoch .
+    ?study ontology:has_primary_epoch ?primaryEpoch .
     ?activity a ontology:TreatmentActivity ;
       ontology:has_activity_application [
         ontology:applied_to_arm ?arm ;
@@ -76,10 +79,12 @@ WHERE {
     ?epoch rdfs:label ?epochLabel .
     ?arm rdfs:label ?armLabel .
 
-    ?measurementMoment
-      ontology:relative_to_epoch ?epoch ;
+    ?defaultMeasurementMoment
+      ontology:relative_to_epoch ?primaryEpoch ;
       ontology:relative_to_anchor ontology:anchorEpochEnd ;
       ontology:time_offset "PT0S"^^xsd:duration .
+
+    ?measurementMoment rdfs:label ?measurementMomentLabel .
 
     ?measurement
       ontology:of_moment ?measurementMoment ;

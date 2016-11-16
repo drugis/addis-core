@@ -66,15 +66,19 @@ define(['lodash'], function(_) {
     $scope.covariates = CovariateResource.query({
       projectId: $stateParams.projectId
     });
+    // $scope.measurementMoments = MeasurementMomentsResource.query({
+    //   projectId: $stateParams.projectId
+    // })
+
 
     $q.all([
-      $scope.analysis.$promise,
-      $scope.project.$promise,
-      $scope.models.$promise,
-      outcomesPromise,
-      $scope.interventions.$promise,
-      $scope.covariates.$promise
-    ])
+        $scope.analysis.$promise,
+        $scope.project.$promise,
+        $scope.models.$promise,
+        outcomesPromise,
+        $scope.interventions.$promise,
+        $scope.covariates.$promise,
+      ])
       .then(function() {
         $scope.hasModel = $scope.models.length > 0;
         $scope.interventions = NetworkMetaAnalysisService.addInclusionsToInterventions($scope.interventions, $scope.analysis.interventionInclusions);
@@ -127,15 +131,16 @@ define(['lodash'], function(_) {
         .$promise
         .then(function(trialverseData) {
           $scope.trialverseData = trialverseData;
-          updateNetwork();
+          $scope.momentSelections = NetworkMetaAnalysisService.buildMomentSelections(trialverseData, $scope.analysis);
           var includedInterventions = NetworkMetaAnalysisService.getIncludedInterventions($scope.interventions);
+          updateNetwork();
           $scope.treatmentOverlapMap = NetworkMetaAnalysisService.buildOverlappingTreatmentMap($scope.interventions, trialverseData);
           $scope.trialData = NetworkMetaAnalysisService.transformTrialDataToTableRows(trialverseData, includedInterventions, $scope.analysis, $scope.covariates, $scope.treatmentOverlapMap);
           $scope.tableHasAmbiguousArm = NetworkMetaAnalysisService.doesModelHaveAmbiguousArms(trialverseData, $scope.analysis);
           $scope.hasInsufficientCovariateValues = NetworkMetaAnalysisService.doesModelHaveInsufficientCovariateValues($scope.trialData);
           $scope.hasLessThanTwoInterventions = includedInterventions.length < 2;
           $scope.hasTreatmentOverlap = hasTreatmentOverlap();
-          $scope.isMissingByStudyMap = NetworkMetaAnalysisService.buildMissingValueByStudyMap(trialverseData, $scope.analysis);
+          $scope.isMissingByStudyMap = NetworkMetaAnalysisService.buildMissingValueByStudyMap(trialverseData, $scope.analysis, $scope.momentSelections);
           $scope.containsMissingValue = _.find($scope.isMissingByStudyMap);
           $scope.isModelCreationBlocked = checkCanNotCreateModel();
           $scope.loading.loaded = true;
@@ -179,7 +184,7 @@ define(['lodash'], function(_) {
 
     function updateNetwork() {
       var includedInterventions = NetworkMetaAnalysisService.getIncludedInterventions($scope.interventions);
-      $scope.networkGraph.network = NetworkMetaAnalysisService.transformTrialDataToNetwork($scope.trialverseData, includedInterventions, $scope.analysis);
+      $scope.networkGraph.network = NetworkMetaAnalysisService.transformTrialDataToNetwork($scope.trialverseData, includedInterventions, $scope.analysis, $scope.momentSelections);
       $scope.isNetworkDisconnected = AnalysisService.isNetworkDisconnected($scope.networkGraph.network);
     }
 
@@ -213,6 +218,25 @@ define(['lodash'], function(_) {
         $scope.reloadModel();
       });
     };
+
+    $scope.changeMeasurementMoment = function(newMeasurementMoment, dataRow) {
+      // always remove old inclusion for this study
+      $scope.analysis.includedMeasurementMoments  = _.reject($scope.analysis.includedMeasurementMoments, ['study', dataRow.studyUri]);
+
+      if (!newMeasurementMoment.isDefault) {
+        var newInclusion = {
+          analysisId: $scope.analysis.id,
+          study: dataRow.studyUri,
+          measurementMoment: newMeasurementMoment.uri
+        };
+        $scope.analysis.includedMeasurementMoments.push(newInclusion);
+      }
+
+      $scope.analysis.$save(function() {
+        $scope.reloadModel();
+      });
+    };
+
   };
 
   return dependencies.concat(NetworkMetaAnalysisContainerController);

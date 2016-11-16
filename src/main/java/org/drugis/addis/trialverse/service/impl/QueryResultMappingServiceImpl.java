@@ -3,6 +3,7 @@ package org.drugis.addis.trialverse.service.impl;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import org.apache.commons.lang3.tuple.Pair;
+import org.drugis.addis.trialverse.model.MeasurementMoment;
 import org.drugis.addis.trialverse.model.trialdata.*;
 import org.drugis.addis.trialverse.service.QueryResultMappingService;
 import org.drugis.trialverse.util.Namespaces;
@@ -37,8 +38,13 @@ public class QueryResultMappingServiceImpl implements QueryResultMappingService 
       if (trialDataStudy == null) {
         String studyName = readValue(row, "studyName");
         trialDataStudy = new TrialDataStudy(studyUri, studyName, new ArrayList<>());
+        URI defaultMeasurementMoment = readValue(row, "defaultMeasurementMoment");
+        if (defaultMeasurementMoment != null) {
+          trialDataStudy.setDefaultMeasurementMoment(defaultMeasurementMoment);
+        }
         trialDataStudies.put(studyUri, trialDataStudy);
       }
+      trialDataStudy.addMeasurementMoment(new MeasurementMoment(readValue(row, "measurementMoment"), readValue(row, "measurementMomentLabel")));
 
       URI drugInstance = readValue(row, "drugInstance");
       AbstractSemanticIntervention abstractSemanticIntervention = readSemanticIntervention(row, drugInstance);
@@ -58,7 +64,8 @@ public class QueryResultMappingServiceImpl implements QueryResultMappingService 
         seenArmTreatmentCombinations.add(armPlusTreatment);
         trialDataArm.addSemanticIntervention(abstractSemanticIntervention);
       }
-      trialDataArm.addMeasurement(measurement);
+      URI measurementMoment = readValue(row, "measurementMoment");
+      trialDataArm.addMeasurement(measurementMoment, measurement);
     }
     return trialDataStudies;
   }
