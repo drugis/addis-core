@@ -25,9 +25,13 @@ define(['angular', 'angular-mocks'], function() {
 
       var studyJsonObject = {
         has_arm: [{
-          '@id': 'http://trials.drugis.org/instances/1c3c67ba-4c0c-46e3-846c-5e9d72c5ed80',
+          '@id': 'http://trials.drugis.org/instances/someInstance',
           '@type': 'ontology:Arm',
-          'label': 'arm label'
+          'label': 'xyz arm label'
+        }, {
+          '@id': 'http://trials.drugis.org/instances/otherInstance',
+          '@type': 'ontology:Arm',
+          'label': 'abc arm label'
         }],
         has_group: []
       };
@@ -44,8 +48,8 @@ define(['angular', 'angular-mocks'], function() {
 
       it('should query the arms', function(done) {
         armService.queryItems().then(function(result) {
-          expect(result.length).toBe(1);
-          expect(result[0].label).toEqual('arm label');
+          expect(result.length).toBe(2);
+          expect(result[0].label).toEqual('abc arm label');
           done();
         });
         rootScope.$digest();
@@ -69,8 +73,8 @@ define(['angular', 'angular-mocks'], function() {
       });
 
       it('should add the arm to the graph', function() {
-        expect(armsResult.length).toBe(2);
-        expect(armsResult[0].label).toEqual('arm label');
+        expect(armsResult.length).toBe(3);
+        expect(armsResult[0].label).toEqual('abc arm label');
         expect(armsResult[1].label).toEqual(newArm.label);
       });
     });
@@ -97,7 +101,7 @@ define(['angular', 'angular-mocks'], function() {
       });
 
       it('should edit the arm', function() {
-        expect(editResult.length).toBe(1);
+        expect(editResult.length).toBe(2);
         expect(editResult[0].label).toBe(editedArm.label);
       });
     });
@@ -119,10 +123,10 @@ define(['angular', 'angular-mocks'], function() {
       });
 
       it('should reclassify the arm as a group', function() {
-        expect(editResult.length).toBe(0);
+        expect(editResult.length).toBe(1);
         expect(groupsResult.length).toBe(2); // includes overall population
         var newGroupIndex = groupsResult[0].label === 'Overall population' ? 1 : 0;
-        expect(groupsResult[newGroupIndex].label).toBe('arm label');
+        expect(groupsResult[newGroupIndex].label).toBe('abc arm label');
       });
     });
 
@@ -150,8 +154,8 @@ define(['angular', 'angular-mocks'], function() {
 
       it('should delete the arm', function(done) {
         armService.queryItems().then(function(result) {
-          expect(result.length).toBe(2);
-          expect(result[0].label).toBe('arm label');
+          expect(result.length).toBe(3);
+          expect(result[0].label).toBe('abc arm label');
           expect(result[1].label).toBe('arm 3 label');
           done();
         });

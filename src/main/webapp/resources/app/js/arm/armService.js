@@ -31,7 +31,7 @@ define(['lodash'], function(_) {
 
     function queryItems() {
       return StudyService.getStudy().then(function(study) {
-        return study.has_arm.map(toFrontEnd);
+        return _.sortBy(study.has_arm.map(toFrontEnd), 'label');
       });
     }
 

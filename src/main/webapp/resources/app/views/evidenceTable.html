@@ -38,10 +38,10 @@
           </td>
 
           <td ng-show="dataRow.firstStudyRow" rowspan="{{dataRow.studyRowSpan}}">
-            <select ng-if="!editMode.disableEditing" ng-options="measurementMoment.label for measurementMoment in dataRow.measurementMoments"
+            <select ng-if="!editMode.disableEditing && !hasModel" ng-options="measurementMoment.label for measurementMoment in dataRow.measurementMoments"
               ng-model="momentSelections[dataRow.studyUri]" ng-change="changeMeasurementMoment(momentSelections[dataRow.studyUri], dataRow)">
             </select>
-            <span ng-if="editMode.disableEditing">{{momentSelections[dataRow.studyUri].label}}</span>
+            <span ng-if="editMode.disableEditing || hasModel">{{momentSelections[dataRow.studyUri].label}}</span>
           </td>
 
           <td ng-repeat="covariate in dataRow.covariatesColumns" ng-show="dataRow.firstStudyRow"
