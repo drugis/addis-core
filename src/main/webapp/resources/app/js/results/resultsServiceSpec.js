@@ -746,7 +746,7 @@ define(['angular-mocks'], function(angularMocks) {
       var outcome1 = {
         '@id': 'http://trials.drugis.org/instances/out1',
         '@type': 'ontology:OutcomeType',
-        'is_measured_at': ['http://trials.drugis.org/instances/mm1','http://trials.drugis.org/instances/mm2'],
+        'is_measured_at': ['http://trials.drugis.org/instances/mm1', 'http://trials.drugis.org/instances/mm2'],
         'of_variable': [{
           '@id': 'http://fuseki-test.drugis.org:3030/.well-known/genid/var1',
           '@type': 'ontology:Variable',
@@ -1058,5 +1058,79 @@ define(['angular-mocks'], function(angularMocks) {
       });
     });
 
+    describe('moveMeasurementMoment', function() {
+      describe('if the target is another moment', function() {
+        var fromUri = 'moment1InstanceUri';
+        var toUri = 'moment2InstanceUri';
+        var variableUri = 'variable1Uri';
+        var graphJsonObject = [{
+          id: 'sourceMeasurement',
+          of_outcome: variableUri,
+          of_moment: fromUri
+        }, {
+          id: 'someMeasurement',
+          of_outcome: variableUri,
+          of_moment: toUri
+        }];
+
+        var expectedSaveGraph = [{
+          id: 'sourceMeasurement',
+          of_outcome: variableUri,
+          of_moment: toUri
+        }];
+
+        beforeEach(function(done) {
+          var graphDefer = q.defer();
+          var getGraphPromise = graphDefer.promise;
+          graphDefer.resolve(graphJsonObject);
+          studyServiceMock.getJsonGraph.and.returnValue(getGraphPromise);
+          resultsService
+            .moveMeasurementMoment(fromUri, toUri, variableUri)
+            .then(done);
+          rootScope.$digest();
+        });
+        afterEach(function() {
+          studyServiceMock.saveJsonGraph.calls.reset();
+        });
+        it('should move the values from the source, overwriting anything that was already there', function() {
+          expect(studyServiceMock.saveJsonGraph).toHaveBeenCalledWith(expectedSaveGraph);
+        });
+      });
+    });
+
+    describe('if the target is not a moment', function() {
+      var fromUri = 'moment1InstanceUri';
+      var toUri;
+      var rowLabel = 'unassigned moment';
+      var variableUri = 'variable1Uri';
+      var graphJsonObject = [{
+        id: 'sourceMeasurement',
+        of_outcome: variableUri,
+        of_moment: fromUri
+      }];
+
+      var expectedSaveGraph = [{
+        id: 'sourceMeasurement',
+        of_outcome: variableUri,
+        comment: rowLabel
+      }];
+
+      beforeEach(function(done) {
+        var graphDefer = q.defer();
+        var getGraphPromise = graphDefer.promise;
+        graphDefer.resolve(graphJsonObject);
+        studyServiceMock.getJsonGraph.and.returnValue(getGraphPromise);
+        resultsService
+          .moveMeasurementMoment(fromUri, toUri, variableUri, rowLabel)
+          .then(done);
+        rootScope.$digest();
+      });
+      afterEach(function() {
+        studyServiceMock.saveJsonGraph.calls.reset();
+      });
+      it('should move the values from the source, overwriting anything that was already there', function() {
+        expect(studyServiceMock.saveJsonGraph).toHaveBeenCalledWith(expectedSaveGraph);
+      });
+    });
   });
 });

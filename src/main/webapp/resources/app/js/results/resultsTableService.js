@@ -132,13 +132,13 @@ define(['lodash'], function(_) {
       });
 
       return rows.sort(function(row1, row2) {
-        if(row1.measurementMoment.label.localeCompare(row2.measurementMoment.label) !== 0) {
+        if (row1.measurementMoment.label.localeCompare(row2.measurementMoment.label) !== 0) {
           return row1.measurementMoment.label.localeCompare(row2.measurementMoment.label);
         }
-        if(row1.group.label === 'Overall population') {
+        if (row1.group.label === 'Overall population') {
           return 1;
         }
-        if(row2.group.label === 'Overall population') {
+        if (row2.group.label === 'Overall population') {
           return -1;
         }
         return row1.group.label.localeCompare(row2.group.label);
@@ -167,11 +167,35 @@ define(['lodash'], function(_) {
       return NaN;
     }
 
+    function buildMeasurementMomentOptions(measurementMoments) {
+      return _.reduce(measurementMoments, function(accum, measurementMoment) {
+        var options = _.reject(measurementMoments, ['uri', measurementMoment.uri])
+          .sort(function(mm1, mm2) {
+            return mm1.label.localeCompare(mm2.label);
+          })
+          .concat({
+            label: 'Unassign'
+          });
+        accum[measurementMoment.uri] = options;
+        return accum;
+      }, {});
+    }
+
+    function findOverlappingMeasurements(targetMMUri, inputRows) {
+      return _.find(inputRows, function(inputRow) {
+        return targetMMUri === inputRow.measurementMoment.uri && _.find(inputRow.inputColumns, function(inputColumn) {
+          return inputColumn.value !== undefined;
+        });
+      });
+    }
+
     return {
       createInputRows: createInputRows,
       createHeaders: createHeaders,
       isValidValue: isValidValue,
       createInputColumns: createInputColumns,
+      buildMeasurementMomentOptions: buildMeasurementMomentOptions,
+      findOverlappingMeasurements: findOverlappingMeasurements,
       CONTINUOUS_TYPE: CONTINUOUS_TYPE,
       DICHOTOMOUS_TYPE: DICHOTOMOUS_TYPE,
       CATEGORICAL_TYPE: CATEGORICAL_TYPE
