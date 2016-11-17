@@ -6,10 +6,18 @@
     <th ng-repeat="inputHeader in inputHeaders">{{inputHeader}}</th>
   </tr>
   <tr ng-repeat="inputRow in inputRows">
-    <td class="y-head" rowspan="{{inputRow.numberOfGroups}}" ng-if="$index % inputRow.numberOfGroups === 0" style="vertical-align:baseline">{{inputRow.measurementMoment.label}}</td>
+    <td class="y-head" rowspan="{{inputRow.numberOfGroups}}" ng-if="$index % inputRow.numberOfGroups === 0" style="vertical-align:baseline">
+      <span ng-if="!isEditingMM">{{inputRow.measurementMoment.label}}</span>
+      <div ng-if="isEditingMM" >
+        <select ng-options="mm.label for mm in measurementMomentOptions[inputRow.measurementMoment.uri]" ng-model="measurementMomentSelections[inputRow.measurementMoment.uri]"></select>
+        <button type="button" ng-click="editMeasurementMoment(inputRow.measurementMoment.uri)">Done</button>
+      </div>
+      <a ng-click="isEditingMM = true" ng-hide="isEditingMM"><i class="fa fa-edit"></i></a>
+    </td>
     <td class="y-head">{{inputRow.group.label}}</td>
     <td class="input-cell" ng-repeat="inputColumn in inputRow.inputColumns">
-      <result-input-directive is-editing-allowed="isEditingAllowed" row="inputRow" column="inputColumn" />
+      <result-input-directive is-editing-allowed="isEditingAllowed" row="inputRow" column="inputColumn"
+      />
     </td>
   </tr>
 </table>

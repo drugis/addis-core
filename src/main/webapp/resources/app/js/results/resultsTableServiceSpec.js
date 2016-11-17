@@ -188,7 +188,6 @@ define(['angular', 'angular-mocks'], function() {
           expect(resultRows[2].inputColumns[1].isInValidValue).toEqual(false);
         });
       });
-
     });
 
     describe('isValidValue', function() {
@@ -239,6 +238,35 @@ define(['angular', 'angular-mocks'], function() {
         expect(resultsTableService.isValidValue(column1)).toBe(false);
         expect(resultsTableService.isValidValue(column2)).toBe(false);
         expect(resultsTableService.isValidValue(column3)).toBe(false);
+      });
+    });
+
+    describe('buildMeasurementMomentOptions', function() {
+      it('should make a mm -> options map with each mm except itself as values, plus always an "unassign" option', function() {
+        var mm1 = {
+          label: 'xyz measurement moment',
+          uri: 'http://trials.org/instances/1'
+        };
+        var mm2 = {
+          label: 'def measurement moment',
+          uri: 'http://trials.org/instances/2'
+        };
+        var mm3 = {
+          label: 'abc measurement moment 1',
+          uri: 'http://trials.org/instances/3'
+        };
+        var measurementMoments = [mm1, mm2, mm3];
+        var unassign = {
+          label: 'Unassign'
+        };
+        var expectedResult = {};
+        expectedResult[mm1.uri] = [mm3, mm2, unassign];
+        expectedResult[mm2.uri] = [mm3, mm1, unassign];
+        expectedResult[mm3.uri] = [mm2, mm1, unassign];
+
+        var result = resultsTableService.buildMeasurementMomentOptions(measurementMoments);
+
+        expect(result).toEqual(expectedResult);
       });
     });
   });

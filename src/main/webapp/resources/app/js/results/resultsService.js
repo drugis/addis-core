@@ -307,7 +307,6 @@ define(['angular', 'lodash'], function(angular, _) {
       } else {
         return updateCategoricalValue(row, inputColumn);
       }
-
     }
 
     function isEmptyCategoricalResult(item) {
@@ -513,14 +512,12 @@ define(['angular', 'lodash'], function(angular, _) {
 
     function setToMeasurementMoment(measurementMomentUri, measurementInstanceList) {
       return StudyService.getJsonGraph().then(function(graph) {
-
         _.each(graph, function(node) {
-          if (measurementInstanceList.indexOf(node['@id']) > -1) {
+          if (_.includes(measurementInstanceList, node['@id'])) {
             node.of_moment = measurementMomentUri;
             delete node.comment;
           }
         });
-
         return StudyService.saveJsonGraph(graph);
       });
     }
