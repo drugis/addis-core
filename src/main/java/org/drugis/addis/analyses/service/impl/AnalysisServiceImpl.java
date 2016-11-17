@@ -37,6 +37,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.sql.SQLException;
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -250,6 +251,13 @@ public class AnalysisServiceImpl implements AnalysisService {
     // add matching data;
     trialData = triplestoreService.addMatchingInformation(includedInterventions, trialData);
 
+    // filter studies that don't have any matched interventions on any arms
+    trialData = trialData.stream().filter(trialDataStudy -> {
+      Integer nMatchedInterventions = trialDataStudy.getTrialDataArms().stream()
+              .mapToInt(a -> a.getMatchedProjectInterventionIds().size())
+              .sum();
+      return nMatchedInterventions > 1;
+    }).collect(Collectors.toList());
     return trialData;
   }
 

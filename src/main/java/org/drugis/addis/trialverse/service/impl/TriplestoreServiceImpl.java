@@ -558,7 +558,6 @@ public class TriplestoreServiceImpl implements TriplestoreService {
                     key)
             .collect(Collectors.toList());
 
-
     // fetch the study-level values for each study
     List<CovariateStudyValue> covariateValues = getStudyLevelCovariateValues(namespaceUid, version, studyLevelCovariates);
 
