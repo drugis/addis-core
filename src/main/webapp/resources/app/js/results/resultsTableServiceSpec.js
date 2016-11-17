@@ -76,7 +76,7 @@ define(['angular', 'angular-mocks'], function() {
           label: 'xyz arm 1',
           armURI: 'http://arms/arm1'
         }, {
-          label: 'Overall population' ,
+          label: 'Overall population',
           groupUri: 'http://groups/overall'
         }, {
           label: 'arm 3 20 mg',
@@ -98,7 +98,7 @@ define(['angular', 'angular-mocks'], function() {
 
         resultRows = resultsTableService.createInputRows(variable, arms, [], measurementMoments);
       });
-      it('overal population should be last, always',function(){
+      it('overal population should be last, always', function() {
         expect(resultRows[3].group.label).toEqual(arms[1].label);
       });
       it('should set the number of arms', function() {
@@ -269,5 +269,53 @@ define(['angular', 'angular-mocks'], function() {
         expect(result).toEqual(expectedResult);
       });
     });
+
+    describe('findOverlappingMeasurements', function() {
+      it('should find where there is already data at a certain measurement moment', function() {
+        var targetMMUri = 'targetMMUri';
+        var mm1 = {
+          uri: 'measurementMoment1Uri'
+        };
+        var mm2 = {
+          uri: targetMMUri
+        };
+        var inputRows = [{
+          measurementMoment: mm1,
+          inputColumns: [{
+            value: 3
+          }]
+        }, {
+          measurementMoment: mm2,
+          inputColumns: [{
+            value: 3
+          }]
+        }];
+        var result = resultsTableService.findOverlappingMeasurements(targetMMUri, inputRows);
+        expect(result).toBeTruthy();
+      });
+    });
+    it('should return false if there is no data at a certain measurement moment', function() {
+      var targetMMUri = 'targetMMUri';
+      var mm1 = {
+        uri: 'measurementMoment1Uri'
+      };
+      var targetMM = {
+        uri: targetMMUri
+      };
+      var inputRows = [{
+        measurementMoment: mm1,
+        inputColumns: [{
+          value: 3
+        }]
+      }, {
+        measurementMoment: targetMM,
+        inputColumns: [{
+          value: undefined
+        }]
+      }];
+      var result = resultsTableService.findOverlappingMeasurements(targetMMUri, inputRows);
+      expect(result).toBeFalsy();
+    });
+
   });
 });

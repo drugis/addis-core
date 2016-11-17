@@ -181,12 +181,21 @@ define(['lodash'], function(_) {
       }, {});
     }
 
+    function findOverlappingMeasurements(targetMMUri, inputRows) {
+      return _.find(inputRows, function(inputRow) {
+        return targetMMUri === inputRow.measurementMoment.uri && _.find(inputRow.inputColumns, function(inputColumn) {
+          return inputColumn.value !== undefined;
+        });
+      });
+    }
+
     return {
       createInputRows: createInputRows,
       createHeaders: createHeaders,
       isValidValue: isValidValue,
       createInputColumns: createInputColumns,
       buildMeasurementMomentOptions: buildMeasurementMomentOptions,
+      findOverlappingMeasurements: findOverlappingMeasurements,
       CONTINUOUS_TYPE: CONTINUOUS_TYPE,
       DICHOTOMOUS_TYPE: DICHOTOMOUS_TYPE,
       CATEGORICAL_TYPE: CATEGORICAL_TYPE

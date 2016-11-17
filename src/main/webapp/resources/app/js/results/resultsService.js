@@ -474,7 +474,7 @@ define(['angular', 'lodash'], function(angular, _) {
                 return accum.concat(_.map(categories, '@id'));
               }, []);
               node.category_count = _.filter(node.category_count, function(countObject) {
-                return _.includes(categoryIds,countObject.category);
+                return _.includes(categoryIds, countObject.category);
               });
             } else {
               var resultProperties = _.keys(_.pick(node, VARIABLE_TYPES));
@@ -520,6 +520,35 @@ define(['angular', 'lodash'], function(angular, _) {
         });
         return StudyService.saveJsonGraph(graph);
       });
+    }
+
+    function moveMeasurementMoment(fromUri, toUri, variableUri, rowLabel) {
+      return StudyService.getJsonGraph().then(function(graph) {
+        var updatedGraph;
+        if (!toUri) {
+          updatedGraph = _.map(graph, function(node) {
+            if (node.of_moment === fromUri && node.of_outcome === variableUri) {
+              delete node.of_moment;
+              node.comment = rowLabel;
+            }
+            return node;
+          });
+        } else {
+          // first delete all old measurements at target coordinates
+          var filteredGraph = _.reject(graph, function(node) {
+            return node.of_moment === toUri && node.of_outcome === variableUri;
+          });
+          updatedGraph = _.map(filteredGraph, function(node) {
+            if (node.of_moment === fromUri && node.of_outcome === variableUri) {
+              node.of_moment = toUri;
+            }
+            return node;
+          })
+        }
+        return StudyService.saveJsonGraph(updatedGraph);
+
+      });
+
     }
 
     function isExistingMeasurement(measurementMomentUri, measurementInstanceList) {
@@ -599,6 +628,7 @@ define(['angular', 'lodash'], function(angular, _) {
       queryNonConformantMeasurementsByGroupUri: queryNonConformantMeasurementsByGroupUri,
       cleanupMeasurements: cleanupMeasurements,
       setToMeasurementMoment: setToMeasurementMoment,
+      moveMeasurementMoment: moveMeasurementMoment,
       isExistingMeasurement: isExistingMeasurement,
       isStudyNode: isStudyNode,
       getVariableDetails: getVariableDetails,

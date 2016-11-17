@@ -6,13 +6,31 @@
     <th ng-repeat="inputHeader in inputHeaders">{{inputHeader}}</th>
   </tr>
   <tr ng-repeat="inputRow in inputRows">
-    <td class="y-head" rowspan="{{inputRow.numberOfGroups}}" ng-if="$index % inputRow.numberOfGroups === 0" style="vertical-align:baseline">
-      <span ng-if="!isEditingMM">{{inputRow.measurementMoment.label}}</span>
-      <div ng-if="isEditingMM" >
-        <select ng-options="mm.label for mm in measurementMomentOptions[inputRow.measurementMoment.uri]" ng-model="measurementMomentSelections[inputRow.measurementMoment.uri]"></select>
-        <button type="button" ng-click="editMeasurementMoment(inputRow.measurementMoment.uri)">Done</button>
+    <td class="y-head" rowspan="{{inputRow.numberOfGroups}}" ng-if="$index % inputRow.numberOfGroups === 0"
+      style="vertical-align:baseline">
+      <span ng-if="!isEditingMM[inputRow.measurementMoment.uri]">{{inputRow.measurementMoment.label}}</span>
+      <div class="row collapse" ng-if="isEditingMM[inputRow.measurementMoment.uri]">
+        <div class="small-6 columns">
+          <select ng-options="mm.label for mm in measurementMomentOptions[inputRow.measurementMoment.uri]"
+            ng-model="measurementMomentSelections[inputRow.measurementMoment.uri]"
+            ng-change="checkMeasurementOverlap(inputRow.measurementMoment.uri)"></select>
+        </div>
+        <div class="small-3 columns">
+          <button type="button" class="postfix" ng-click="editMeasurementMoment(inputRow.measurementMoment.uri, inputRow.rowLabel)">Done</button>
+        </div>
+        <div class="small-3 columns">
+          <button type="button" class="postfix alert" ng-click="isEditingMM[inputRow.measurementMoment.uri] = false">Cancel</button>
+        </div>
       </div>
-      <a ng-click="isEditingMM = true" ng-hide="isEditingMM"><i class="fa fa-edit"></i></a>
+      <div class="row" ng-if="isEditingMM[inputRow.measurementMoment.uri] && measurementMomentSelections[inputRow.measurementMoment.uri].label === 'Unassign'">
+        <div class="columns small-12">
+          <label>Non-conformant row label</label>
+          <input type="text" ng-model="inputRow.rowLabel">
+        </div>
+      </div>
+      <a ng-click="showEditMeasurementMoment(inputRow.measurementMoment.uri)" ng-hide="isEditingMM[inputRow.measurementMoment.uri] || !isEditingAllowed"><i class="fa fa-edit"></i></a>
+      <span ng-show="isEditingMM[inputRow.measurementMoment.uri] && overlapMap[inputRow.measurementMoment.uri]"
+        class="alert">Already data at this measurement moment.</span>
     </td>
     <td class="y-head">{{inputRow.group.label}}</td>
     <td class="input-cell" ng-repeat="inputColumn in inputRow.inputColumns">
