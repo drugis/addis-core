@@ -256,7 +256,7 @@ public class AnalysisServiceImpl implements AnalysisService {
       Integer nMatchedInterventions = trialDataStudy.getTrialDataArms().stream()
               .mapToInt(a -> a.getMatchedProjectInterventionIds().size())
               .sum();
-      return nMatchedInterventions > 1;
+      return nMatchedInterventions > 0;
     }).collect(Collectors.toList());
     return trialData;
   }
