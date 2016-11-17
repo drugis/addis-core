@@ -181,6 +181,9 @@ define(['lodash', 'angular'], function(_, angular) {
     }
 
     function toTableLabel(measurement, field) {
+      if(!measurement) {
+        return 'NA';
+      }
       var value = measurement[field];
       var type = measurement.measurementTypeURI;
       var isMissing = isMissingValue(value, field, type);
