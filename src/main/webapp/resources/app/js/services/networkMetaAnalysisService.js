@@ -176,6 +176,9 @@ define(['lodash', 'angular'], function(_, angular) {
     }
 
     function getRowMeasurementType(measurement) {
+      if(!measurement) {
+        return 'unknown';
+      }
       var type = measurement.measurementTypeURI;
       return type.slice(type.lastIndexOf('#') + 1); // strip of http://blabla/ontology#
     }
