@@ -51,7 +51,7 @@ define(['lodash'], function(_) {
         var studyWithPopulation = addStudyPopulationIfMissing(study);
         var groups = [];
         if(studyWithPopulation.has_group) {
-          groups = studyWithPopulation.has_group;
+          groups = _.sortBy(studyWithPopulation.has_group, 'label');
         }
         return groups.concat(studyWithPopulation.has_included_population).map(toFrontEnd);
       });

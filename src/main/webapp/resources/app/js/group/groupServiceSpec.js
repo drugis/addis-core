@@ -144,7 +144,7 @@ define(['angular', 'angular-mocks'], function() {
           groupService.addItem(group2).then(function() {
             groupService.addItem(group3).then(function() {
               groupService.queryItems().then(function(result) {
-                groupService.deleteItem(result[1]).then(done);
+                groupService.deleteItem(result[0]).then(done);
               });
             });
           });
@@ -156,8 +156,8 @@ define(['angular', 'angular-mocks'], function() {
         it('should delete the group', function(done) {
           groupService.queryItems().then(function(result) {
             expect(result.length).toBe(3);
-            expect(result[0].label).toBe('group label');
-            expect(result[1].label).toBe('group 3 label');
+            expect(result[0].label).toBe('group 3 label');
+            expect(result[1].label).toBe('group label');
             done();
           });
         });
