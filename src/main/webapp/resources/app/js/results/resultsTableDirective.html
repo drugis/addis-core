@@ -16,7 +16,7 @@
             ng-change="checkMeasurementOverlap(inputRow.measurementMoment.uri)"></select>
         </div>
         <div class="small-3 columns">
-          <button type="button" class="postfix" ng-click="editMeasurementMoment(inputRow.measurementMoment.uri, inputRow.rowLabel)">Done</button>
+          <button type="button" class="postfix" ng-click="editMeasurementMoment(inputRow.measurementMoment.uri, inputRow.rowLabel)" ng-disabled="measurementMomentSelections[inputRow.measurementMoment.uri].label === 'Unassign' && !inputRow.rowLabel.trim()">Done</button>
         </div>
         <div class="small-3 columns">
           <button type="button" class="postfix alert" ng-click="isEditingMM[inputRow.measurementMoment.uri] = false">Cancel</button>
