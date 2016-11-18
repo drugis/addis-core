@@ -17,6 +17,8 @@ import java.net.URI;
 import java.util.List;
 import java.util.Set;
 
+import static org.drugis.addis.problems.service.ProblemService.CONTINUOUS_TYPE_URI;
+import static org.drugis.addis.problems.service.ProblemService.DICHOTOMOUS_TYPE_URI;
 import static org.junit.Assert.assertEquals;
 
 /**
@@ -32,8 +34,6 @@ public class PerformanceTableBuilderTest {
   private Arm arm1 = new Arm(URI.create("1L"), "10L", armName1);
   private Arm arm2 = new Arm(URI.create("2L"), "11L", armName2);
 
-  private Integer alternativeUri1 =1;
-  private Integer alternativeUri2 =2;
   private URI criterionUri1 = URI.create("critUri1");
   private URI criterionUri2 = URI.create("critUri2");
 
@@ -43,10 +43,13 @@ public class PerformanceTableBuilderTest {
   private Variable variable1 = new Variable(URI.create("101L"), "1L", variableName1, "desc", null, false, MeasurementType.RATE, URI.create("varConcept1"));
   private Variable variable2 = new Variable(URI.create("102L"), "1L", variableName2, "desc", null, false, MeasurementType.CONTINUOUS, URI.create("varConcept2"));
 
-  private final static URI DICHOTOMOUS_TYPR_URI = URI.create("http://trials.drugis.org/ontology#dichotomous");
 
-  private Measurement measurement1 = new Measurement(URI.create("1L"), variable1.getUri(), variable1.getVariableConceptUri(), arm1.getUri(), DICHOTOMOUS_TYPR_URI, 111, 42, null, null);
-  private Measurement measurement2 = new Measurement(URI.create("1L"), variable2.getUri(), variable2.getVariableConceptUri(), arm1.getUri(), DICHOTOMOUS_TYPR_URI, 222, null, 0.2, 7.56);
+  private Measurement dichotomousMeasurement = new Measurement(URI.create("1L"), variable1.getUri(), variable1.getVariableConceptUri(),
+          arm1.getUri(), DICHOTOMOUS_TYPE_URI, 111, 42, null, null, null);
+  private Measurement continuousMeasurementStdDev = new Measurement(URI.create("1L"), variable2.getUri(), variable2.getVariableConceptUri(),
+          arm1.getUri(), CONTINUOUS_TYPE_URI, 222, null, 0.2, null, 7.56);
+  private Measurement continuousMeasurementStdErr = new Measurement(URI.create("1L"), variable2.getUri(), variable2.getVariableConceptUri(),
+          arm1.getUri(), CONTINUOUS_TYPE_URI, 333, null, null, 0.3, 7.56);
 
   @Before
   public void setUp() throws Exception {
@@ -54,29 +57,40 @@ public class PerformanceTableBuilderTest {
     MockitoAnnotations.initMocks(this);
   }
 
+  @SuppressWarnings("unchecked")
   @Test
   public void testBuild() throws Exception {
 
-    Integer rate = measurement1.getRate();
-    Integer sampleSize1 = measurement2.getSampleSize();
-    Integer alpha = rate + 1;
-    Integer beta = sampleSize1 + 1;
+    Integer rate = dichotomousMeasurement.getRate();
+    Integer sampleSize1 = continuousMeasurementStdDev.getSampleSize();
+    Integer sampleSize3 = continuousMeasurementStdErr.getSampleSize();
 
-    Integer sampleSize2 = measurement1.getSampleSize();
-    Double mu = measurement2.getMean();
-    Double stdDev = measurement2.getStdDev();
+    Integer sampleSize2 = dichotomousMeasurement.getSampleSize();
+    Double mu = continuousMeasurementStdDev.getMean();
+    Double stdDev = continuousMeasurementStdDev.getStdDev();
+    Double stdErr = continuousMeasurementStdErr.getStdErr();
 
     URI studyUri = URI.create("itsastudio");
-    Pair<Measurement, Integer> row1 = Pair.of(new Measurement(studyUri, criterionUri1, measurement1.getVariableConceptUri(), arm1.getUri(), DICHOTOMOUS_TYPR_URI, sampleSize1, null, stdDev, mu), alternativeUri1);
-    Pair<Measurement, Integer> row2 = Pair.of(new Measurement(studyUri, criterionUri2, measurement2.getVariableConceptUri(), arm2.getUri(), DICHOTOMOUS_TYPR_URI, sampleSize2, rate, null, null), alternativeUri2);
-    Pair<Measurement, Integer> row3 = Pair.of(new Measurement(studyUri, criterionUri1, measurement1.getVariableConceptUri(), arm2.getUri(), DICHOTOMOUS_TYPR_URI, sampleSize1, null, stdDev, mu), alternativeUri2);
-    Pair<Measurement, Integer> row4 = Pair.of(new Measurement(studyUri, criterionUri2, measurement2.getVariableConceptUri(), arm1.getUri(), DICHOTOMOUS_TYPR_URI, sampleSize2, rate, null, null), alternativeUri1);
+    Integer alternativeUri1 = 1;
+    Pair<Measurement, Integer> row1 = Pair.of(new Measurement(studyUri, criterionUri1, dichotomousMeasurement.getVariableConceptUri(),
+            arm1.getUri(), CONTINUOUS_TYPE_URI, sampleSize1, null, stdDev, null, mu), alternativeUri1);
+    Integer alternativeUri2 = 2;
+    Pair<Measurement, Integer> row2 = Pair.of(new Measurement(studyUri, criterionUri2, continuousMeasurementStdDev.getVariableConceptUri(),
+            arm2.getUri(), DICHOTOMOUS_TYPE_URI, sampleSize2, rate, null, null, null), alternativeUri2);
+    Pair<Measurement, Integer> row3 = Pair.of(new Measurement(studyUri, criterionUri1, dichotomousMeasurement.getVariableConceptUri(),
+            arm2.getUri(), CONTINUOUS_TYPE_URI, sampleSize1, null, stdDev, null, mu), alternativeUri2);
+    Pair<Measurement, Integer> row4 = Pair.of(new Measurement(studyUri, criterionUri2, continuousMeasurementStdDev.getVariableConceptUri(),
+            arm1.getUri(), DICHOTOMOUS_TYPE_URI, sampleSize2, rate, null, null, null), alternativeUri1);
+    Pair<Measurement, Integer> row5 = Pair.of(new Measurement(studyUri, criterionUri1, continuousMeasurementStdErr.getVariableConceptUri(),
+            arm1.getUri(), CONTINUOUS_TYPE_URI, sampleSize3, null, null, stdErr, null), alternativeUri1);
+    Pair<Measurement, Integer> row6 = Pair.of(new Measurement(studyUri, criterionUri2, continuousMeasurementStdErr.getVariableConceptUri(),
+            arm1.getUri(), CONTINUOUS_TYPE_URI, sampleSize3, null, null, stdErr, null), alternativeUri2);
 
     // EXECUTE
-    Set<Pair<Measurement, Integer>> measurementPairs = ImmutableSet.of(row1, row2, row3, row4);
+    Set<Pair<Measurement, Integer>> measurementPairs = ImmutableSet.of(row1, row2, row3, row4, row5, row6);
     List<AbstractMeasurementEntry> performanceTable = builder.build(measurementPairs);
 
-    assertEquals(4, performanceTable.size());
+    assertEquals(6, performanceTable.size());
 
     ContinuousMeasurementEntry continuousMeasurementEntry = (ContinuousMeasurementEntry) performanceTable.get(0);
     assertEquals(alternativeUri1.toString(), continuousMeasurementEntry.getAlternative());
@@ -88,20 +102,25 @@ public class PerformanceTableBuilderTest {
     assertEquals(criterionUri2, rateMeasurementEntry.getCriterionUri());
     assertEquals(RatePerformance.DBETA, rateMeasurementEntry.getPerformance().getType());
 
-    Integer expectedAlpha = measurement1.getRate() + 1;
-    Integer expectedBeta = measurement1.getSampleSize() - measurement1.getRate() + 1;
+    Integer expectedAlpha = dichotomousMeasurement.getRate() + 1;
+    Integer expectedBeta = dichotomousMeasurement.getSampleSize() - dichotomousMeasurement.getRate() + 1;
     assertEquals(expectedAlpha, rateMeasurementEntry.getPerformance().getParameters().getAlpha());
     assertEquals(expectedBeta, rateMeasurementEntry.getPerformance().getParameters().getBeta());
     assertEquals(RatePerformance.DBETA, rateMeasurementEntry.getPerformance().getType());
 
-    Double expectedMu = measurement2.getMean();
-    Integer expectedSampleSize = measurement2.getSampleSize();
-    Double expectedSigma = measurement2.getStdDev() / Math.sqrt(expectedSampleSize);
+    Double expectedMu = continuousMeasurementStdDev.getMean();
+    Integer expectedSampleSize = continuousMeasurementStdDev.getSampleSize();
+    Double expectedSigma = continuousMeasurementStdDev.getStdDev() / Math.sqrt(expectedSampleSize);
 
     ContinuousPerformanceParameters parameters = continuousMeasurementEntry.getPerformance().getParameters();
     assertEquals(expectedMu, parameters.getMu());
     assertEquals(expectedSigma, parameters.getSigma());
     assertEquals(ContinuousPerformance.DNORM, continuousMeasurementEntry.getPerformance().getType());
+
+    ContinuousMeasurementEntry stdErrBasedEntry = (ContinuousMeasurementEntry) performanceTable.get(4);
+    assertEquals(ContinuousPerformance.DNORM, stdErrBasedEntry.getPerformance().getType());
+    assertEquals(continuousMeasurementStdErr.getStdErr(), stdErrBasedEntry.getPerformance().getParameters().getSigma());
+
   }
 
 }

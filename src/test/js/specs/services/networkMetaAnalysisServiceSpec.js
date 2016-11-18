@@ -522,7 +522,8 @@ define(['angular', 'angular-mocks', 'services'], function(angular) {
                 rate: 64,
                 mu: 'NA',
                 sigma: 'NA',
-                sampleSize: 96
+                sampleSize: 96,
+                stdErr: 'NA'
               }
             },
             measurementMoments: trialVerseStudyData[0].measurementMoments,
@@ -553,7 +554,8 @@ define(['angular', 'angular-mocks', 'services'], function(angular) {
                 rate: 70,
                 mu: 'NA',
                 sigma: 'NA',
-                sampleSize: 96
+                sampleSize: 96,
+                stdErr: 'NA'
               }
             },
             measurementMoments: trialVerseStudyData[0].measurementMoments,
@@ -584,7 +586,8 @@ define(['angular', 'angular-mocks', 'services'], function(angular) {
                 rate: 57,
                 mu: 'NA',
                 sigma: 'NA',
-                sampleSize: 92
+                sampleSize: 92,
+                stdErr: 'NA'
               }
             },
             firstInterventionRow: true,
@@ -952,16 +955,16 @@ define(['angular', 'angular-mocks', 'services'], function(angular) {
 
           var analysis1 = {
             outcome: outcome,
-            excludedArms: [study1Arm1, study1Arm2]
+            excludedArms: [study1Arm2]
           };
 
-          var trialDataArm1 = { // excluded due to arm exclusion
+          var trialDataArm1 = { // excluded due to no matching interventions
             uri: study1Arm1.trialverseUid,
             studyUri: 'study1uri',
             matchedProjectInterventionIds: []
           };
 
-          var trialDataArm2 = { // excluded due to no matching interventions
+          var trialDataArm2 = { // excluded due to arm exclusion
             uri: study1Arm2.trialverseUid,
             matchedProjectInterventionIds: [1],
             studyUri: 'study1uri',
@@ -971,7 +974,8 @@ define(['angular', 'angular-mocks', 'services'], function(angular) {
                 measurementTypeURI: 'http://trials.drugis.org/ontology#continuous',
                 mean: 1.1,
                 stdDev: 0.5,
-                sampleSize: null // it's missing !
+                sampleSize: null, // it's missing !
+                stdErr: 4
               }]
             }
           };
@@ -986,17 +990,19 @@ define(['angular', 'angular-mocks', 'services'], function(angular) {
                 measurementTypeURI: 'http://trials.drugis.org/ontology#continuous',
                 mean: 1.1,
                 stdDev: 0.5,
-                sampleSize: null // it's missing !
+                sampleSize: null, // it's missing !  
+                stdErr: 4
+
               }]
             }
           };
-          var trialDataArm4 = { // excluded due to arm exclusion
-            uri: 'study2arm1',
+
+          var trialDataArm4 = { // excluded due to no matching interventions
             studyUri: 'study2uri',
             matchedProjectInterventionIds: []
           };
 
-          var trialDataArm5 = { // excluded due to no matching interventions
+          var trialDataArm5 = {
             uri: 'study2arm2',
             studyUri: 'study2uri',
             matchedProjectInterventionIds: [1],
@@ -1006,12 +1012,14 @@ define(['angular', 'angular-mocks', 'services'], function(angular) {
                 measurementTypeURI: 'http://trials.drugis.org/ontology#continuous',
                 mean: 1.1,
                 stdDev: 0.5,
-                sampleSize: null // it's missing !
+                sampleSize: null, // it's missing !
+                stdErr: 4
+
               }]
             }
           };
 
-          var trialDataArm6 = { // excluded due to no matching interventions
+          var trialDataArm6 = {
             uri: 'study2arm3',
             matchedProjectInterventionIds: [2],
             studyUri: 'study2uri',
@@ -1021,7 +1029,8 @@ define(['angular', 'angular-mocks', 'services'], function(angular) {
                 measurementTypeURI: 'http://trials.drugis.org/ontology#continuous',
                 mean: 1.1,
                 stdDev: 0.5,
-                sampleSize: null // it's missing !
+                sampleSize: null, // it's missing !
+                stdErr: null
               }]
             }
           };
@@ -1078,6 +1087,70 @@ define(['angular', 'angular-mocks', 'services'], function(angular) {
         expect(NetworkMetaAnalysisService.doesModelHaveInsufficientCovariateValues(badtrialData)).toBeTruthy();
       }));
     });
+    describe('checkStdErrShow', function() {
+      beforeEach(module('addis.services'));
 
+      it('should be truthy if there is a datarow with stderr present and one of sigma or samplesize missing', inject(function(NetworkMetaAnalysisService) {
+        var dataRows = [{
+          measurements: [{
+            sigma: 0.3,
+            sampleSize: 0.4,
+            stdErr: 'NA'
+          }, {
+            sigma: 0.3,
+            sampleSize: 'NA',
+            stdErr: 4
+          }]
+        }];
+        expect(NetworkMetaAnalysisService.checkStdErrShow(dataRows)).toBeTruthy();
+      }));
+
+      it('should be falsy if there is no datarow with stderr present and one of sigma or samplesize missing', inject(function(NetworkMetaAnalysisService) {
+        var dataRows = [{
+          measurements: [{
+            sigma: 0.3,
+            sampleSize: 0.4,
+            stdErr: 'NA'
+          }, {
+            sigma: 0.3,
+            sampleSize: 31,
+            stdErr: 4
+          }]
+        }];
+        expect(NetworkMetaAnalysisService.checkStdErrShow(dataRows)).toBeFalsy();
+
+      }));
+    });
+    describe('checkSigmaNShow', function() {
+      beforeEach(module('addis.services'));
+      it('should return truthy if there is at least one row with data for either sigma or N', inject(function(NetworkMetaAnalysisService) {
+        var dataRows = [{
+          measurements: [{
+            sigma: 'NA',
+            sampleSize: 'NA',
+            stdErr: 1.3
+          }, {
+            sigma: 'NA',
+            sampleSize: 31,
+            stdErr: 4
+          }]
+        }];
+        expect(NetworkMetaAnalysisService.checkSigmaNShow(dataRows)).toBeTruthy();
+      }));
+      it('should return falsy if there is no row with data for either sigma or N', inject(function(NetworkMetaAnalysisService) {
+        var dataRows = [{
+          measurements: [{
+            sigma: 'NA',
+            sampleSize: 'NA',
+            stdErr: 1.3
+          }, {
+            sigma: 'NA',
+            sampleSize: 'NA',
+            stdErr: 4
+          }]
+        }];
+        expect(NetworkMetaAnalysisService.checkSigmaNShow(dataRows)).toBeFalsy();
+      }));
+    });
   });
 });

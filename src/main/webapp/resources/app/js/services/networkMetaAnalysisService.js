@@ -152,23 +152,41 @@ define(['lodash', 'angular'], function(_, angular) {
         });
 
         dataRows = dataRows.concat(studyRows);
-
       });
       return dataRows;
+    }
+
+    function checkStdErrShow(dataRows) {
+      return _.find(dataRows, function(dataRow) {
+        //if I find a data row which contains stdErr but misses either stdDev or N
+        return _.find(dataRow.measurements, function(measurement) {
+          return (measurement.sigma === 'NA' || measurement.sampleSize === 'NA') && measurement.stdErr !== 'NA';
+        });
+      });
+    }
+
+    function checkSigmaNShow(dataRows) {
+      return _.find(dataRows, function(dataRow) {
+        //if I find either no sigma or no N I don't need either to show
+        return _.find(dataRow.measurements, function(measurement) {
+          return measurement.sigma !== 'NA' || measurement.sampleSize !== 'NA';
+        });
+      });
     }
 
     function measurementsByMM(analysis, trialDataArm, measurementMoments) {
       return _.reduce(measurementMoments, function(accum, measurementMoment) {
         var outcomeMeasurement = getOutcomeMeasurement(analysis, trialDataArm, measurementMoment);
         var sigma = toTableLabel(outcomeMeasurement, 'stdDev');
-         if (sigma !== 'NA') {
-            sigma = $filter('number')(sigma, 3);
-          }
+        if (sigma !== 'NA') {
+          sigma = $filter('number')(sigma, 3);
+        }
         accum[measurementMoment.uri] = {
-          rate:  toTableLabel(outcomeMeasurement, 'rate'),
+          rate: toTableLabel(outcomeMeasurement, 'rate'),
           mu: toTableLabel(outcomeMeasurement, 'mean'),
           sigma: sigma,
           sampleSize: toTableLabel(outcomeMeasurement, 'sampleSize'),
+          stdErr: toTableLabel(outcomeMeasurement, 'stdErr'),
           type: getRowMeasurementType(outcomeMeasurement)
         };
         return accum;
@@ -176,7 +194,7 @@ define(['lodash', 'angular'], function(_, angular) {
     }
 
     function getRowMeasurementType(measurement) {
-      if(!measurement) {
+      if (!measurement) {
         return 'unknown';
       }
       var type = measurement.measurementTypeURI;
@@ -184,7 +202,7 @@ define(['lodash', 'angular'], function(_, angular) {
     }
 
     function toTableLabel(measurement, field) {
-      if(!measurement) {
+      if (!measurement) {
         return 'NA';
       }
       var value = measurement[field];
@@ -200,7 +218,7 @@ define(['lodash', 'angular'], function(_, angular) {
       }
       // FIXME: flexible fields && categoricals
       if (type === CONTINUOUS_TYPE) {
-        if (field === 'mean' || field === 'stdDev' || field === 'sampleSize') {
+        if (field === 'mean' || field === 'stdDev' || field === 'sampleSize' || field === 'stdErr') {
           return true;
         }
       }
@@ -236,10 +254,16 @@ define(['lodash', 'angular'], function(_, angular) {
           }
           var measurement = getOutcomeMeasurement(analysis, trialDataArm, selectedMM);
           var measurementType = measurement.measurementTypeURI;
-          return isMissingValue(measurement.mean, 'mean', measurementType) ||
-            isMissingValue(measurement.stdDev, 'stdDev', measurementType) ||
-            isMissingValue(measurement.rate, 'rate', measurementType) ||
-            isMissingValue(measurement.sampleSize, 'sampleSize', measurementType);
+
+          var isMeanMissing = isMissingValue(measurement.mean, 'mean', measurementType);
+          var isStdDevMissing = isMissingValue(measurement.stdDev, 'stdDev', measurementType);
+          var isSampleSizeMissing = isMissingValue(measurement.sampleSize, 'sampleSize', measurementType);
+          var isStdErrMissing = isMissingValue(measurement.stdErr, 'stdErr', measurementType);
+          var isRateMissing = isMissingValue(measurement.rate, 'rate', measurementType);
+
+          return isMeanMissing || isRateMissing ||
+            (isStdDevMissing && isStdErrMissing) ||
+            (isSampleSizeMissing && isStdErrMissing);
         });
         return accum;
       }, {});
@@ -518,7 +542,7 @@ define(['lodash', 'angular'], function(_, angular) {
           return selectedMM.study === study.studyUri;
         });
         var selectedMMUri = selected ? selected.measurementMoment : study.defaultMeasurementMoment;
-        
+
         var selectedMM = _.find(study.measurementMoments, function(measurementMoment) {
           return measurementMoment.uri === selectedMMUri;
         });
@@ -537,6 +561,8 @@ define(['lodash', 'angular'], function(_, angular) {
       buildOverlappingTreatmentMap: buildOverlappingTreatmentMap,
       changeArmExclusion: changeArmExclusion,
       changeCovariateInclusion: changeCovariateInclusion,
+      checkSigmaNShow: checkSigmaNShow,
+      checkStdErrShow: checkStdErrShow,
       cleanUpExcludedArms: cleanUpExcludedArms,
       doesInterventionHaveAmbiguousArms: doesInterventionHaveAmbiguousArms,
       doesModelHaveAmbiguousArms: doesModelHaveAmbiguousArms,

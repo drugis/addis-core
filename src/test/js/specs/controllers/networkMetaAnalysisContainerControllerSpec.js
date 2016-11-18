@@ -109,6 +109,8 @@ define(['angular', 'angular-mocks', 'controllers'], function() {
         'buildOverlappingTreatmentMap',
         'changeArmExclusion',
         'changeCovariateInclusion',
+        'checkSigmaNShow',
+        'checkStdErrShow',
         'cleanUpExcludedArms',
         'doesInterventionHaveAmbiguousArms',
         'doesModelHaveAmbiguousArms',

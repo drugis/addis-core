@@ -24,6 +24,7 @@ define(['lodash'], function(_) {
       loaded: false
     };
 
+
     var isUserOwner = false;
 
     // make available for create model permission check in models.html (which is in gemtc subproject)
@@ -66,10 +67,6 @@ define(['lodash'], function(_) {
     $scope.covariates = CovariateResource.query({
       projectId: $stateParams.projectId
     });
-    // $scope.measurementMoments = MeasurementMomentsResource.query({
-    //   projectId: $stateParams.projectId
-    // })
-
 
     $q.all([
         $scope.analysis.$promise,
@@ -143,6 +140,8 @@ define(['lodash'], function(_) {
           $scope.isMissingByStudyMap = NetworkMetaAnalysisService.buildMissingValueByStudyMap(trialverseData, $scope.analysis, $scope.momentSelections);
           $scope.containsMissingValue = _.find($scope.isMissingByStudyMap);
           $scope.isModelCreationBlocked = checkCanNotCreateModel();
+          $scope.showStdErr = NetworkMetaAnalysisService.checkStdErrShow($scope.trialData);
+          $scope.showSigmaN = NetworkMetaAnalysisService.checkSigmaNShow($scope.trialData);
           $scope.loading.loaded = true;
         });
     };
@@ -221,7 +220,7 @@ define(['lodash'], function(_) {
 
     $scope.changeMeasurementMoment = function(newMeasurementMoment, dataRow) {
       // always remove old inclusion for this study
-      $scope.analysis.includedMeasurementMoments  = _.reject($scope.analysis.includedMeasurementMoments, ['study', dataRow.studyUri]);
+      $scope.analysis.includedMeasurementMoments = _.reject($scope.analysis.includedMeasurementMoments, ['study', dataRow.studyUri]);
 
       if (!newMeasurementMoment.isDefault) {
         var newInclusion = {

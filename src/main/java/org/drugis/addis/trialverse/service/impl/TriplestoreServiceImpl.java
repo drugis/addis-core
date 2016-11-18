@@ -586,12 +586,10 @@ public class TriplestoreServiceImpl implements TriplestoreService {
 
   @Override
   public Set<AbstractIntervention> findMatchingIncludedInterventions(Set<AbstractIntervention> includedInterventions, TrialDataArm arm) {
-    return includedInterventions.stream().filter(i -> {
+    return includedInterventions.stream().filter(intervention -> {
       try {
-        return interventionService.isMatched(i, arm.getSemanticInterventions());
-      } catch (InvalidTypeForDoseCheckException e) {
-        e.printStackTrace();
-      } catch (ResourceDoesNotExistException e) {
+        return interventionService.isMatched(intervention, arm.getSemanticInterventions());
+      } catch (InvalidTypeForDoseCheckException | ResourceDoesNotExistException e) {
         e.printStackTrace();
       }
       return false;

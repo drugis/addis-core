@@ -9,6 +9,7 @@ import org.drugis.addis.problems.model.NetworkMetaAnalysisProblem;
 import org.drugis.addis.trialverse.service.impl.ReadValueException;
 
 import java.io.IOException;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.sql.SQLException;
 
@@ -17,6 +18,9 @@ import java.sql.SQLException;
  */
 
 public interface ProblemService {
+  URI DICHOTOMOUS_TYPE_URI = URI.create("http://trials.drugis.org/ontology#dichotomous");
+  URI CONTINUOUS_TYPE_URI = URI.create("http://trials.drugis.org/ontology#continuous");
+
   AbstractProblem getProblem(Integer projectId, Integer analysisId) throws ResourceDoesNotExistException, URISyntaxException, SQLException, IOException, ReadValueException, InvalidTypeForDoseCheckException, UnexpectedNumberOfResultsException;
   NetworkMetaAnalysisProblem applyModelSettings(NetworkMetaAnalysisProblem problem, Model model);
 }

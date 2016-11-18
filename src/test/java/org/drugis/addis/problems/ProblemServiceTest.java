@@ -60,6 +60,8 @@ import java.sql.SQLException;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static org.drugis.addis.problems.service.ProblemService.CONTINUOUS_TYPE_URI;
+import static org.drugis.addis.problems.service.ProblemService.DICHOTOMOUS_TYPE_URI;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
@@ -114,8 +116,6 @@ public class ProblemServiceTest {
 
   @InjectMocks
   ProblemService problemService;
-
-  private final static URI DICHOTOMOUS_TYPE_URI = URI.create("http://trials.drugis.org/ontology#dichotomous");
 
   private final String namespaceUid = "UID 1";
   private final String versionedUuid = "versionedUuid";
@@ -187,9 +187,9 @@ public class ProblemServiceTest {
     URI variableUri = outcome.getSemanticOutcomeUri();
     URI variableConceptUri = outcome.getSemanticOutcomeUri();
     Measurement daanEtAlFluoxMeasurement1 = new Measurement(daanEtAlUri, variableUri, variableConceptUri, daanEtAlFluoxArmUri,
-            DICHOTOMOUS_TYPE_URI, daanEtAlFluoxSampleSize, daanEtAlFluoxRate, null, null);
+            DICHOTOMOUS_TYPE_URI, daanEtAlFluoxSampleSize, daanEtAlFluoxRate, null, null, null);
     Measurement daanEtAlFluoxMeasurement2 = new Measurement(daanEtAlUri, secondOutcomeUri, variableConceptUri, daanEtAlFluoxArmUri,
-            DICHOTOMOUS_TYPE_URI, daanEtAlFluoxSampleSize, daanEtAlFluoxRate, null, null);
+            DICHOTOMOUS_TYPE_URI, daanEtAlFluoxSampleSize, daanEtAlFluoxRate, null, null, null);
     AbstractSemanticIntervention simpleSemanticFluoxIntervention = new SimpleSemanticIntervention(daanEtAlFluoxInstance, fluoxConceptUri);
 
     TrialDataArm daanEtAlFluoxArm = new TrialDataArm(daanEtAlFluoxArmUri, "daanEtAlFluoxArm", daanEtAlFluoxInstance);
@@ -202,9 +202,9 @@ public class ProblemServiceTest {
     int daanEtAlSertraSampleSize = 40;
     int daanEtAlSertraRate = 5;
     Measurement daanEtAlSertraMeasurement1 = new Measurement(daanEtAlUri, variableUri, variableConceptUri, daanEtAlSertraArmUri,
-            DICHOTOMOUS_TYPE_URI, daanEtAlSertraSampleSize, daanEtAlSertraRate, null, null);
+            DICHOTOMOUS_TYPE_URI, daanEtAlSertraSampleSize, daanEtAlSertraRate, null, null, null);
     Measurement daanEtAlSertraMeasurement2 = new Measurement(daanEtAlUri, secondOutcomeUri, variableConceptUri, daanEtAlSertraArmUri,
-            DICHOTOMOUS_TYPE_URI, daanEtAlSertraSampleSize, daanEtAlSertraRate, null, null);
+            DICHOTOMOUS_TYPE_URI, daanEtAlSertraSampleSize, daanEtAlSertraRate, null, null, null);
     AbstractSemanticIntervention simpleSemanticSertraIntervention = new SimpleSemanticIntervention(daanEtAlSertraInstance, sertraConceptUri);
 
     TrialDataArm daanEtAlSertraArm = new TrialDataArm(daanEtAlSertraArmUri, "daanEtAlSertraArm", daanEtAlSertraInstance);
@@ -217,9 +217,9 @@ public class ProblemServiceTest {
     int daanEtAlParoxSampleSize = 40;
     int daanEtAlParoxRate = 5;
     Measurement daanEtAlParoxMeasurement1 = new Measurement(daanEtAlUri, variableUri, variableConceptUri, daanEtAlParoxArmUri,
-            DICHOTOMOUS_TYPE_URI, daanEtAlParoxSampleSize, daanEtAlParoxRate, null, null);
+            DICHOTOMOUS_TYPE_URI, daanEtAlParoxSampleSize, daanEtAlParoxRate, null, null, null);
     Measurement daanEtAlParoxMeasurement2 = new Measurement(daanEtAlUri, secondOutcomeUri, variableConceptUri, daanEtAlParoxArmUri,
-            DICHOTOMOUS_TYPE_URI, daanEtAlParoxSampleSize, daanEtAlParoxRate, null, null);
+            DICHOTOMOUS_TYPE_URI, daanEtAlParoxSampleSize, daanEtAlParoxRate, null, null, null);
     AbstractSemanticIntervention simpleSemanticParoxIntervention = new SimpleSemanticIntervention(daanEtAlParoxInstance, paroxConceptUri);
 
     TrialDataArm unmatchedDaanEtAlParoxArm = new TrialDataArm(daanEtAlParoxArmUri, "daanEtAlParoxArm", daanEtAlParoxInstance);
@@ -258,8 +258,9 @@ public class ProblemServiceTest {
     when(performanceTablebuilder.build(any())).thenReturn(performanceTable);
     when(mappingService.getVersionedUuid(project.getNamespaceUid())).thenReturn(versionedUuid);
 
-    // execute
+    // --------------- execute ---------------- //
     SingleStudyBenefitRiskProblem actualProblem = (SingleStudyBenefitRiskProblem) problemService.getProblem(projectId, analysisId);
+    // --------------- execute ---------------- //
 
     verify(projectRepository).get(projectId);
     verify(analysisRepository).get(analysisId);
@@ -290,7 +291,7 @@ public class ProblemServiceTest {
   }
 
   @Test
-  public void testGetNmaProblem() throws URISyntaxException, SQLException, IOException, ReadValueException, ResourceDoesNotExistException, InvalidTypeForDoseCheckException, UnexpectedNumberOfResultsException {
+  public void testGetNmaProblemDichotomous() throws URISyntaxException, SQLException, IOException, ReadValueException, ResourceDoesNotExistException, InvalidTypeForDoseCheckException, UnexpectedNumberOfResultsException {
 
     // analysis
     NetworkMetaAnalysis networkMetaAnalysis = new NetworkMetaAnalysis(analysisId, project.getId(), "nma title", outcome);
@@ -329,7 +330,11 @@ public class ProblemServiceTest {
     networkMetaAnalysis.updateIncludedMeasurementMoments(Sets.newHashSet(new MeasurementMomentInclusion(analysisId, nonDefaultMM.getStudyUri(), nonDefaultMMUri)));
     when(analysisService.buildEvidenceTable(project.getId(), networkMetaAnalysis.getId())).thenReturn(trialDataStudies);
 
+
+    // --------------- execute ---------------- //
     final AbstractProblem problem = problemService.getProblem(project.getId(), networkMetaAnalysis.getId());
+    // --------------- execute ---------------- //
+
 
     assertNotNull(problem);
     assertTrue(problem instanceof NetworkMetaAnalysisProblem);
@@ -361,6 +366,83 @@ public class ProblemServiceTest {
     verify(covariateRepository, times(2)).findByProject(project.getId());
   }
 
+  @Test
+  public void testGetNmaProblemContinuous() throws URISyntaxException, SQLException, IOException, ReadValueException, ResourceDoesNotExistException, InvalidTypeForDoseCheckException, UnexpectedNumberOfResultsException {
+
+    // analysis
+    NetworkMetaAnalysis networkMetaAnalysis = new NetworkMetaAnalysis(analysisId, project.getId(), "nma title", outcome);
+    when(analysisRepository.get(networkMetaAnalysis.getId())).thenReturn(networkMetaAnalysis);
+
+    //include interventions: fluox and sertra
+    InterventionInclusion fluoxInclusion = new InterventionInclusion(networkMetaAnalysis.getId(), fluoxIntervention.getId());
+    InterventionInclusion sertraInclusion = new InterventionInclusion(networkMetaAnalysis.getId(), sertraIntervention.getId());
+    HashSet<InterventionInclusion> interventionInclusions = new HashSet<>(Arrays.asList(fluoxInclusion, sertraInclusion));
+    networkMetaAnalysis.updateIncludedInterventions(interventionInclusions);
+
+    TrialDataStudy daanEtAl = createStudyMock(networkMetaAnalysis, null, URI.create("DaanEtAlUri"), "DaanEtal");
+    TrialDataStudy pietEtAl = createStudyMock(networkMetaAnalysis, null, URI.create("PietEtAlUri"), "PietEtAl");
+
+    setContinuousMeasurements(daanEtAl);
+    setContinuousMeasurements(pietEtAl);
+
+    List<TrialDataStudy> trialDataStudies = Arrays.asList(daanEtAl, pietEtAl);
+    when(analysisService.buildEvidenceTable(project.getId(), networkMetaAnalysis.getId())).thenReturn(trialDataStudies);
+
+    // --------------- execute ---------------- //
+    final AbstractProblem problem = problemService.getProblem(project.getId(), networkMetaAnalysis.getId());
+    // --------------- execute ---------------- //
+
+
+    assertNotNull(problem);
+    assertTrue(problem instanceof NetworkMetaAnalysisProblem);
+    NetworkMetaAnalysisProblem networkProblem = (NetworkMetaAnalysisProblem) problem;
+    assertEquals(interventionInclusions.size(), networkProblem.getTreatments().size());
+
+    List<AbstractNetworkMetaAnalysisProblemEntry> entries = networkProblem.getEntries();
+    assertNotNull(entries);
+    assertEquals(4, entries.size());
+    ContinuousStdErrEntry fluoxEntry = (ContinuousStdErrEntry) entries.get(0);
+    assertEquals(fluoxIntervention.getId(), fluoxEntry.getTreatment());
+    ContinuousStdErrEntry sertraEntry = (ContinuousStdErrEntry) entries.get(1);
+    assertEquals(sertraIntervention.getId(), sertraEntry.getTreatment());
+
+    TreatmentEntry fluoxTreatmentEntry = new TreatmentEntry(fluoxIntervention.getId(), fluoxIntervention.getName());
+    TreatmentEntry sertraTreatmentEntry = new TreatmentEntry(sertraIntervention.getId(), sertraIntervention.getName());
+    Set<TreatmentEntry> expectedTreatments = Sets.newHashSet(fluoxTreatmentEntry, sertraTreatmentEntry);
+    assertEquals(expectedTreatments, Sets.newHashSet(networkProblem.getTreatments()));
+
+    verify(projectRepository).get(project.getId());
+    verify(analysisRepository).get(networkMetaAnalysis.getId());
+    verify(interventionRepository).query(project.getId());
+    verify(covariateRepository).findByProject(project.getId());
+  }
+
+  private void setContinuousMeasurements(TrialDataStudy study) {
+    URI defaultMeasurementMomentUri = URI.create("defaultMeasurementMoment");
+    String title = study.getName();
+    URI uri = study.getStudyUri();
+    URI variableUri = outcome.getSemanticOutcomeUri();
+    URI variableConceptUri = outcome.getSemanticOutcomeUri();
+    URI daanEtAlFluoxArmUri = URI.create(title + "FluoxArm");
+    Integer daanEtAlFluoxSampleSize = 9001;
+    Double daanEtAlFluoxStdErr = 0.4;
+    Measurement defaultDaanEtAlFluoxMeasurement = new Measurement(uri, variableUri, variableConceptUri, daanEtAlFluoxArmUri,
+            CONTINUOUS_TYPE_URI, daanEtAlFluoxSampleSize, null, null, daanEtAlFluoxStdErr, null);
+    URI daanEtAlSertraArmUri = URI.create(title + "SertraArm");
+    Integer daanEtAlSertraSampleSize = 42;
+    Double daanEtAlSertraMean = 0.43;
+    Double daanEtAlSertraStdDev = 0.33;
+
+    Measurement daanEtAlSertraMeasurement = new Measurement(uri, variableUri, variableConceptUri, daanEtAlSertraArmUri,
+            CONTINUOUS_TYPE_URI, daanEtAlSertraSampleSize, null, daanEtAlSertraStdDev, null, daanEtAlSertraMean);
+
+    study.getTrialDataArms().forEach(arm -> arm.getMeasurements().clear());
+    TrialDataArm fluoxArm = study.getTrialDataArms().get(0);
+    fluoxArm.addMeasurement(defaultMeasurementMomentUri, defaultDaanEtAlFluoxMeasurement);
+    TrialDataArm sertraArm = study.getTrialDataArms().get(1);
+    sertraArm.addMeasurement(defaultMeasurementMomentUri, daanEtAlSertraMeasurement);
+  }
+
   private TrialDataStudy createStudyMock(NetworkMetaAnalysis networkMetaAnalysis, Covariate includedCovariate, URI uri, String title) {
     return createStudyMock(networkMetaAnalysis, includedCovariate, uri, title, null);
   }
@@ -375,7 +457,7 @@ public class ProblemServiceTest {
     int daanEtAlFluoxSampleSize = 20;
     int daanEtAlFluoxRate = 30;
     Measurement defaultDaanEtAlFluoxMeasurement = new Measurement(uri, variableUri, variableConceptUri, daanEtAlFluoxArmUri,
-            DICHOTOMOUS_TYPE_URI, daanEtAlFluoxSampleSize, daanEtAlFluoxRate, null, null);
+            DICHOTOMOUS_TYPE_URI, daanEtAlFluoxSampleSize, daanEtAlFluoxRate, null, null, null);
     AbstractSemanticIntervention simpleSemanticFluoxIntervention = new SimpleSemanticIntervention(daanEtAlFluoxInstance, fluoxConceptUri);
 
     TrialDataArm daanEtAlFluoxArm = new TrialDataArm(daanEtAlFluoxArmUri, "daanEtAlFluoxArm", daanEtAlFluoxInstance);
@@ -387,7 +469,7 @@ public class ProblemServiceTest {
     int daanEtAlSertraSampleSize = 40;
     int daanEtAlSertraRate = 5;
     Measurement daanEtAlSertraMeasurement = new Measurement(uri, variableUri, variableConceptUri, daanEtAlSertraArmUri,
-            DICHOTOMOUS_TYPE_URI, daanEtAlSertraSampleSize, daanEtAlSertraRate, null, null);
+            DICHOTOMOUS_TYPE_URI, daanEtAlSertraSampleSize, daanEtAlSertraRate, null, null, null);
     AbstractSemanticIntervention simpleSemanticSertraIntervention = new SimpleSemanticIntervention(daanEtAlSertraInstance, sertraConceptUri);
 
     TrialDataArm daanEtAlSertraArm = new TrialDataArm(daanEtAlSertraArmUri, title + "SertraArm", daanEtAlSertraInstance);
@@ -396,7 +478,7 @@ public class ProblemServiceTest {
 
     URI daanEtAlExcludedArmUri = URI.create(title + "excludeme");
     Measurement daanEtAlExcludedMeasurement = new Measurement(uri, variableUri, variableConceptUri, daanEtAlExcludedArmUri,
-            DICHOTOMOUS_TYPE_URI, daanEtAlSertraSampleSize, daanEtAlSertraRate, null, null);
+            DICHOTOMOUS_TYPE_URI, daanEtAlSertraSampleSize, daanEtAlSertraRate, null, null, null);
     TrialDataArm excludedArm = new TrialDataArm(daanEtAlSertraArmUri, title + "excludedArm", daanEtAlSertraInstance);
     excludedArm.addMeasurement(measurementMoment, daanEtAlExcludedMeasurement);
     excludedArm.addSemanticIntervention(simpleSemanticSertraIntervention);
@@ -411,7 +493,9 @@ public class ProblemServiceTest {
     List<TrialDataArm> daanEtAlArms = Arrays.asList(daanEtAlFluoxArm, daanEtAlSertraArm, excludedArm);
     TrialDataStudy daanEtAl = new TrialDataStudy(uri, title, daanEtAlArms);
     Double randomisedValue = 30d;
-    daanEtAl.addCovariateValue(new CovariateStudyValue(uri, includedCovariate.getDefinitionKey(), randomisedValue));
+    if(includedCovariate != null) {
+      daanEtAl.addCovariateValue(new CovariateStudyValue(uri, includedCovariate.getDefinitionKey(), randomisedValue));
+    }
     daanEtAl.setDefaultMeasurementMoment(measurementMoment);
     return daanEtAl;
   }

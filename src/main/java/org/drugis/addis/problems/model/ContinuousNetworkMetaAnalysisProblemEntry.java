@@ -8,11 +8,17 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class ContinuousNetworkMetaAnalysisProblemEntry extends AbstractNetworkMetaAnalysisProblemEntry {
   private Double mean;
   private Double stdDev;
+  private Integer sampleSize;
 
-  public ContinuousNetworkMetaAnalysisProblemEntry(String study, Integer treatment, Integer samplesize, Double mean, Double stdDev) {
-    super(study, treatment, samplesize);
+  public ContinuousNetworkMetaAnalysisProblemEntry(String study, Integer treatment, Integer sampleSize, Double mean, Double stdDev) {
+    super(study, treatment);
     this.mean = mean;
     this.stdDev = stdDev;
+    this.sampleSize = sampleSize;
+  }
+
+  public Integer getSampleSize() {
+    return sampleSize;
   }
 
   public Double getMean() {
@@ -32,17 +38,18 @@ public class ContinuousNetworkMetaAnalysisProblemEntry extends AbstractNetworkMe
 
     ContinuousNetworkMetaAnalysisProblemEntry that = (ContinuousNetworkMetaAnalysisProblemEntry) o;
 
-    if (!mean.equals(that.mean)) return false;
-    if (!stdDev.equals(that.stdDev)) return false;
+    if (mean != null ? !mean.equals(that.mean) : that.mean != null) return false;
+    if (stdDev != null ? !stdDev.equals(that.stdDev) : that.stdDev != null) return false;
+    return sampleSize != null ? sampleSize.equals(that.sampleSize) : that.sampleSize == null;
 
-    return true;
   }
 
   @Override
   public int hashCode() {
     int result = super.hashCode();
-    result = 31 * result + mean.hashCode();
-    result = 31 * result + stdDev.hashCode();
+    result = 31 * result + (mean != null ? mean.hashCode() : 0);
+    result = 31 * result + (stdDev != null ? stdDev.hashCode() : 0);
+    result = 31 * result + (sampleSize != null ? sampleSize.hashCode() : 0);
     return result;
   }
 }

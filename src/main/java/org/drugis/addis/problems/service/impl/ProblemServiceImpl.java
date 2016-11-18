@@ -336,10 +336,24 @@ public class ProblemServiceImpl implements ProblemService {
       }
     }
 
+    // if there's an entry with missing standard deviation or samplesize, move everything to standard error
+    Boolean isStdErrEntry = entries.stream().filter(entry -> entry instanceof ContinuousStdErrEntry).findFirst().isPresent();
+    if (isStdErrEntry) {
+      entries = entries.stream().map(entry -> {
+        if (entry instanceof ContinuousStdErrEntry) {
+          return entry;
+        }
+        ContinuousNetworkMetaAnalysisProblemEntry tmpEntry = (ContinuousNetworkMetaAnalysisProblemEntry) entry;
+        Double stdErr = tmpEntry.getStdDev() / Math.sqrt(tmpEntry.getSampleSize());
+        return new ContinuousStdErrEntry(tmpEntry.getStudy(), tmpEntry.getTreatment(), tmpEntry.getMean(), stdErr);
+      }).collect(Collectors.toList());
+    }
+
+    // remove studies without entries from final list
+    Map<String, Boolean> studyHasEntries = new HashMap<>();
+    entries.forEach(entry -> studyHasEntries.put(entry.getStudy(), true));
     List<TrialDataStudy> studiesWithEntries = trialDataStudies.stream()
-            .filter(s ->
-                    entries.stream().filter(e -> e.getStudy().equals(s.getName())).findFirst().isPresent()
-            )
+            .filter(study -> studyHasEntries.get(study.getName()) != null)
             .collect(Collectors.toList());
 
     // add covariate values to problem
@@ -392,11 +406,16 @@ public class ProblemServiceImpl implements ProblemService {
 
   private AbstractNetworkMetaAnalysisProblemEntry buildEntry(String studyName, Integer treatmentId, Measurement measurement) {
     Integer sampleSize = measurement.getSampleSize();
-    if (measurement.getMean() != null) {
+    if (measurement.getMeasurementTypeURI().equals(CONTINUOUS_TYPE_URI)) {
       Double mu = measurement.getMean();
       Double sigma = measurement.getStdDev();
-      return new ContinuousNetworkMetaAnalysisProblemEntry(studyName, treatmentId, sampleSize, mu, sigma);
-    } else if (measurement.getRate() != null) {
+      Double stdErr = measurement.getStdErr();
+      if (sigma != null && sampleSize != null) {
+        return new ContinuousNetworkMetaAnalysisProblemEntry(studyName, treatmentId, sampleSize, mu, sigma);
+      } else {
+        return new ContinuousStdErrEntry(studyName, treatmentId, mu, stdErr);
+      }
+    } else if (measurement.getMeasurementTypeURI().equals(DICHOTOMOUS_TYPE_URI)) {
       Integer rate = measurement.getRate();
       return new RateNetworkMetaAnalysisProblemEntry(studyName, treatmentId, sampleSize, rate);
     }
