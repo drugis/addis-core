@@ -168,6 +168,7 @@ define(['lodash'], function(_) {
     }
 
     function buildMeasurementMomentOptions(measurementMoments) {
+      //Builds the list of options per measurement moment, used when changing the mm of data to unassigned or another mm
       return _.reduce(measurementMoments, function(accum, measurementMoment) {
         var options = _.reject(measurementMoments, ['uri', measurementMoment.uri])
           .sort(function(mm1, mm2) {
