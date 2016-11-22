@@ -64,6 +64,7 @@ define(['lodash'], function(_) {
       projectId: $stateParams.projectId
     });
 
+
     $scope.covariates = CovariateResource.query({
       projectId: $stateParams.projectId
     });
@@ -78,6 +79,9 @@ define(['lodash'], function(_) {
       ])
       .then(function() {
         $scope.hasModel = $scope.models.length > 0;
+        $scope.interventions = _.orderBy($scope.interventions, function(intervention) {
+          return intervention.name.toLowerCase();
+        });
         $scope.interventions = NetworkMetaAnalysisService.addInclusionsToInterventions($scope.interventions, $scope.analysis.interventionInclusions);
         $scope.covariates = NetworkMetaAnalysisService.addInclusionsToCovariates($scope.covariates, $scope.analysis.includedCovariates);
         if (!$scope.analysis.outcome && $scope.outcomes.length > 0) {

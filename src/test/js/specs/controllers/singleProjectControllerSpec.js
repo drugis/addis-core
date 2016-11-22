@@ -146,10 +146,13 @@ define(['angular-mocks', 'angular'], function(angularMocks, angular) {
         mockOutcome,
         outcomeDeferred,
         mockInterventions = [{
+          name: 'a',
           val: 4
         }, {
+          name: 'b',
           val: 5
         }, {
+          name: 'c',
           val: 6
         }],
         mockIntervention,
