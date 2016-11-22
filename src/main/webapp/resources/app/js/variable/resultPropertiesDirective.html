@@ -9,6 +9,7 @@
               type="checkbox"
               ng-model="property.isSelected"
               ng-change="updateSelection()"> {{property.label}}</input>
+              <inline-help help-key='{{property.lexiconKey}}'></inline-help>
           </label>
         </li>
       </ul>
@@ -21,6 +22,7 @@
           type="checkbox"
           ng-model="property.isSelected"
           ng-change="updateSelection()"> {{property.label}}</input>
+          <inline-help help-key='{{property.lexiconKey}}'></inline-help>
       </label>
     </li>
   </ul>

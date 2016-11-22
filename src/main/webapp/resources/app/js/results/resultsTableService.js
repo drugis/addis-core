@@ -76,18 +76,24 @@ define(['lodash'], function(_) {
         if (!variable.categoryList) {
           return [];
         } else {
+          //Categorical measurement
           if (variable.categoryList[0] && variable.categoryList[0].label) {
-            return _.map(variable.categoryList, 'label');
+            return _.map(variable.categoryList, function(list){
+              return {'label':list.label};
+            });
           } else {
             return variable.categoryList;
           }
         }
       }
       if (!variable.resultProperties.map) {
-        return [ResultsService.getVariableDetails(variable.resultProperties).label];
+        // there is only one resultproperty
+        return [{'label':ResultsService.getVariableDetails(variable.resultProperties).label,
+         'lexiconKey':ResultsService.getVariableDetails(variable.resultProperties).lexiconKey}];
       }
       return variable.resultProperties.map(function(type) {
-        return ResultsService.getVariableDetails(type).label;
+        return {'label':ResultsService.getVariableDetails(type).label,
+         'lexiconKey':ResultsService.getVariableDetails(type).lexiconKey};
       });
     }
 

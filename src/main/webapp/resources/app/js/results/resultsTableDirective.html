@@ -3,7 +3,7 @@
   <tr>
     <th>Measurement moment</th>
     <th>Arm/Group</th>
-    <th ng-repeat="inputHeader in inputHeaders">{{inputHeader}}</th>
+    <th ng-repeat="inputHeader in inputHeaders">{{inputHeader.label}}<inline-help ng-if="inputHeader.lexiconKey" help-key="{{inputHeader.lexiconKey}}"></inline-help></th>
   </tr>
   <tr ng-repeat="inputRow in inputRows">
     <td class="y-head" rowspan="{{inputRow.numberOfGroups}}" ng-if="$index % inputRow.numberOfGroups === 0"

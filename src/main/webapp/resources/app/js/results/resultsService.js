@@ -37,7 +37,8 @@ define(['angular', 'lodash'], function(angular, _) {
         uri: 'http://trials.drugis.org/ontology#sample_size',
         dataType: INTEGER_TYPE,
         variableType: 'all',
-        category: 'Sample size'
+        category: 'Sample size',
+        lexiconKey: 'sample-size'
       },
       'mean': {
         type: 'mean',
@@ -45,7 +46,8 @@ define(['angular', 'lodash'], function(angular, _) {
         uri: 'http://trials.drugis.org/ontology#mean',
         dataType: DOUBLE_TYPE,
         variableType: 'ontology:continuous',
-        category: 'Central tendency'
+        category: 'Central tendency',
+        lexiconKey: 'mean'
       },
       'median': {
         type: 'median',
@@ -53,7 +55,8 @@ define(['angular', 'lodash'], function(angular, _) {
         uri: 'http://trials.drugis.org/ontology#median',
         dataType: DOUBLE_TYPE,
         variableType: 'ontology:continuous',
-        category: 'Central tendency'
+        category: 'Central tendency',
+        lexiconKey: 'median'
       },
       'geometric_mean': {
         type: 'geometric_mean',
@@ -61,7 +64,8 @@ define(['angular', 'lodash'], function(angular, _) {
         uri: 'http://trials.drugis.org/ontology#geometric_mean',
         dataType: DOUBLE_TYPE,
         variableType: 'ontology:continuous',
-        category: 'Central tendency'
+        category: 'Central tendency',
+        lexiconKey: 'geometric-mean'
       },
       'log_mean': {
         type: 'log_mean',
@@ -69,7 +73,8 @@ define(['angular', 'lodash'], function(angular, _) {
         uri: 'http://trials.drugis.org/ontology#log_mean',
         dataType: DOUBLE_TYPE,
         variableType: 'ontology:continuous',
-        category: 'Central tendency'
+        category: 'Central tendency',
+        lexiconKey: 'log-mean'
       },
       'least_squares_mean': {
         type: 'least_squares_mean',
@@ -77,7 +82,8 @@ define(['angular', 'lodash'], function(angular, _) {
         uri: 'http://trials.drugis.org/ontology#least_squares_mean',
         dataType: DOUBLE_TYPE,
         variableType: 'ontology:continuous',
-        category: 'Central tendency'
+        category: 'Central tendency',
+        lexiconKey: 'least-squares-mean'
       },
       'quantile_0.05': {
         type: 'quantile_0.05',
@@ -85,7 +91,8 @@ define(['angular', 'lodash'], function(angular, _) {
         uri: 'http://trials.drugis.org/ontology#quantile_0.05',
         dataType: DOUBLE_TYPE,
         variableType: 'ontology:continuous',
-        category: 'Quantiles'
+        category: 'Quantiles',
+        lexiconKey: 'quantile-0.05'
       },
       'quantile_0.95': {
         type: 'quantile_0.95',
@@ -93,7 +100,8 @@ define(['angular', 'lodash'], function(angular, _) {
         uri: 'http://trials.drugis.org/ontology#quantile_0.95',
         dataType: DOUBLE_TYPE,
         variableType: 'ontology:continuous',
-        category: 'Quantiles'
+        category: 'Quantiles',
+        lexiconKey: 'quantile-0.95'
       },
       'quantile_0.025': {
         type: 'quantile_0.025',
@@ -101,7 +109,8 @@ define(['angular', 'lodash'], function(angular, _) {
         uri: 'http://trials.drugis.org/ontology#quantile_0.025',
         dataType: DOUBLE_TYPE,
         variableType: 'ontology:continuous',
-        category: 'Quantiles'
+        category: 'Quantiles',
+        lexiconKey: 'quantile-0.025'
       },
       'quantile_0.975': {
         type: 'quantile_0.975',
@@ -109,7 +118,8 @@ define(['angular', 'lodash'], function(angular, _) {
         uri: 'http://trials.drugis.org/ontology#quantile_0.975',
         dataType: DOUBLE_TYPE,
         variableType: 'ontology:continuous',
-        category: 'Quantiles'
+        category: 'Quantiles',
+        lexiconKey: 'quantile-0.975'
       },
       'min': {
         type: 'min',
@@ -117,7 +127,8 @@ define(['angular', 'lodash'], function(angular, _) {
         uri: 'http://trials.drugis.org/ontology#min',
         dataType: DOUBLE_TYPE,
         variableType: 'ontology:continuous',
-        category: 'Dispersion'
+        category: 'Dispersion',
+        lexiconKey: 'min'
       },
       'max': {
         type: 'max',
@@ -125,7 +136,8 @@ define(['angular', 'lodash'], function(angular, _) {
         uri: 'http://trials.drugis.org/ontology#max',
         dataType: DOUBLE_TYPE,
         variableType: 'ontology:continuous',
-        category: 'Dispersion'
+        category: 'Dispersion',
+        lexiconKey: 'max'
       },
       'geometric_coefficient_of_variation': {
         type: 'geometric_coefficient_of_variation',
@@ -133,7 +145,8 @@ define(['angular', 'lodash'], function(angular, _) {
         uri: 'http://trials.drugis.org/ontology#geometric_coefficient_of_variation',
         dataType: DOUBLE_TYPE,
         variableType: 'ontology:continuous',
-        category: 'Dispersion'
+        category: 'Dispersion',
+        lexiconKey: 'geometric-coefficient-of-variation'
       },
       'first_quartile': {
         type: 'first_quartile',
@@ -141,7 +154,8 @@ define(['angular', 'lodash'], function(angular, _) {
         uri: 'http://trials.drugis.org/ontology#first_quartile',
         dataType: DOUBLE_TYPE,
         variableType: 'ontology:continuous',
-        category: 'Quantiles'
+        category: 'Quantiles',
+        lexiconKey: 'first-quartile'
       },
       'third_quartile': {
         type: 'third_quartile',
@@ -149,7 +163,8 @@ define(['angular', 'lodash'], function(angular, _) {
         uri: 'http://trials.drugis.org/ontology#third_quartile',
         dataType: DOUBLE_TYPE,
         variableType: 'ontology:continuous',
-        category: 'Quantiles'
+        category: 'Quantiles',
+        lexiconKey: 'third-quartile'
       },
       'standard_deviation': {
         type: 'standard_deviation',
@@ -157,7 +172,8 @@ define(['angular', 'lodash'], function(angular, _) {
         uri: 'http://trials.drugis.org/ontology#standard_deviation',
         dataType: DOUBLE_TYPE,
         variableType: 'ontology:continuous',
-        category: 'Dispersion'
+        category: 'Dispersion',
+        lexiconKey: 'standard-deviation'
       },
       'standard_error': {
         type: 'standard_error',
@@ -165,35 +181,40 @@ define(['angular', 'lodash'], function(angular, _) {
         uri: 'http://trials.drugis.org/ontology#standard_error',
         dataType: DOUBLE_TYPE,
         variableType: 'ontology:continuous',
-        category: 'Dispersion'
+        category: 'Dispersion',
+        lexiconKey: 'standard-error'
       },
       'event_count': {
         type: 'event_count',
         label: 'event count',
         uri: 'http://trials.drugis.org/ontology#event_count',
         dataType: INTEGER_TYPE,
-        variableType: 'ontology:dichotomous'
+        variableType: 'ontology:dichotomous',
+        lexiconKey: 'event-count'
       },
       'count': {
         type: 'count',
         label: 'count',
         uri: 'http://trials.drugis.org/ontology#count',
         dataType: INTEGER_TYPE,
-        variableType: 'ontology:dichotomous'
+        variableType: 'ontology:dichotomous',
+        lexiconKey: 'count'
       },
       'percentage': {
         type: 'percentage',
         label: 'percentage',
         uri: 'http://trials.drugis.org/ontology#percentage',
         dataType: DOUBLE_TYPE,
-        variableType: 'ontology:dichotomous'
+        variableType: 'ontology:dichotomous',
+        lexiconKey: 'percentage'
       },
       'proportion': {
         type: 'proportion',
         label: 'proportion',
         uri: 'http://trials.drugis.org/ontology#proportion',
         dataType: DOUBLE_TYPE,
-        variableType: 'ontology:dichotomous'
+        variableType: 'ontology:dichotomous',
+        lexiconKey: 'proportion'
       },
     };
 

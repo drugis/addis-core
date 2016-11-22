@@ -158,5 +158,132 @@
     "title": "Variable",
     "text": "A variable is an event or change that is measured in a population during a study, either a baseline characteristic (e.g. \"age\"), an outcome (e.g. \"mood improvement\"), or an adverse event (e.g. \"nausea\").",
     "link": "/manual.html#study-input"
+  },
+
+  "sample-size": {
+    "title": "N",
+    "text": "The sample size, N. For dichotomous outcomes, this encodes the number of subjects at risk. For continuous outcomes, it is the number of subjects for which the outcome is measured (or intended to be measured).",
+    "analysisReady": true,
+    "link": "/manual.html#study-input"
+  },
+  "mean": {
+    "title": "mean",
+    "text": "The mean (average) value measured in the given group.",
+    "analysisReady": true,
+    "link": "/manual.html#study-input"
+  },
+  "median": {
+    "title": "median",
+    "text": "The median (middle-most) value measured in the given group.",
+    "analysisReady": false,
+    "link": "/manual.html#study-input"
+  },
+  "geometric-mean": {
+    "title": "geometric mean",
+    "text": "The geometric mean is appropriate when the log of the observations are normally distributed.",
+    "analysisReady": false,
+    "link": "/manual.html#study-input"
+  },
+  "log-mean": {
+    "title": "log mean",
+    "text": "The logarithmic mean.",
+    "analysisReady": false,
+    "link": "/manual.html#study-input"
+  },
+  "least-squares-mean": {
+    "title": "least squares mean",
+    "text": "A point estimate obtained through least squares estimation (i.e. fitting a stastistical model).",
+    "analysisReady": false,
+    "link": "/manual.html#study-input"
+  },
+  "quantile-0.05": {
+    "title": "5% quantile",
+    "text": "The 5% quantile, or the lower end of a 90% confidence interval.",
+    "analysisReady": false,
+    "link": "/manual.html#study-input"
+  },
+  "quantile-0.95": {
+    "title": "95% quantile",
+    "text": "The 95% quantile, or the upper end of a 90% confidence interval.",
+    "analysisReady": false,
+    "link": "/manual.html#study-input"
+  },
+  "quantile-0.025": {
+    "title": "2.5% quantile",
+    "text": "The 2.5% quantile, or the lower end of a 95% confidence interval.",
+    "analysisReady": false,
+    "link": "/manual.html#study-input"
+  },
+  "quantile-0.975": {
+    "title": "0.975% quantile",
+    "text": "The 97.5% quantile, or the upper end of a 95% confidence interval.",
+    "analysisReady": false,
+    "link": "/manual.html#study-input"
+  },
+  "min": {
+    "title": "min",
+    "text": "The lowest value measured in the given group.",
+    "analysisReady": false,
+    "link": "/manual.html#study-input"
+  },
+  "max": {
+    "title": "max",
+    "text": "The highest value measured in the given group.",
+    "analysisReady": false,
+    "link": "/manual.html#study-input"
+  },
+  "geometric-coefficient-of-variation": {
+    "title": "geometric coefficient of variation",
+    "text": "Measure of dispersion appropriate when the log of the observations are normally distributed.",
+    "analysisReady": false,
+    "link": "/manual.html#study-input"
+  },
+  "first-quartile": {
+    "title": "First quartile",
+    "text": "The 25% quantile, or the lower end of the inter-quartile range.",
+    "analysisReady": false,
+    "link": "/manual.html#study-input"
+  },
+  "third-quartile": {
+    "title": "Third quartile",
+    "text": "The 75% quantile, or the upper end of the inter-quartile range.",
+    "analysisReady": false,
+    "link": "/manual.html#study-input"
+  },
+  "standard-deviation": {
+    "title": "standard deviation",
+    "text": "The standard deviation measured the amount of variation in the given sample. It is the square root of the average of the squared deviations from the mean.",
+    "analysisReady": true,
+    "link": "/manual.html#study-input"
+  },
+  "standard-error": {
+    "title": "standard error",
+    "text": "The standard error of the mean describes the residual uncertainty around the mean. It is the standard deviation divided by the square root of the sample size.",
+    "analysisReady": true,
+    "link": "/manual.html#study-input"
+  },
+  "event-count": {
+    "title": "Number of events",
+    "text": "The total number of events observed for the given group. May exceed the number of subjects at risk, if subjects experience more than one event.",
+    "analysisReady": false,
+    "link": "/manual.html#study-input"
+  },
+  "count": {
+    "title": "Subjects with event",
+    "text": "The total number of subjects that experienced the event of interest. May be an adverse event or a dichotomous outcome.",
+    "analysisReady": true,
+    "link": "/manual.html#study-input"
+  },
+  "percentage": {
+    "title": "Percentage with event",
+    "text": "The total number of subjects that experienced the event of interest, expressed as a percentage of the number at risk (sample size). 'Subjects with event' is preferred to 'Percentage with event' when available.",
+    "analysisReady": false,
+    "link": "/manual.html#study-input"
+  },
+  "proportion": {
+    "title": "Proportion with event",
+    "text": "The total number of subjects that experienced the event of interest, expressed as a proportion of the number at risk (sample size). 'Subjects with event' is preferred to 'Proportion with event' when available.",
+    "analysisReady": false,
+    "link": "/manual.html#study-input"
   }
 }
