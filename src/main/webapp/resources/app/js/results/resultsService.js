@@ -38,7 +38,8 @@ define(['angular', 'lodash'], function(angular, _) {
         dataType: INTEGER_TYPE,
         variableType: 'all',
         category: 'Sample size',
-        lexiconKey: 'sample-size'
+        lexiconKey: 'sample-size',
+        analysisReady: true
       },
       'mean': {
         type: 'mean',
@@ -47,7 +48,8 @@ define(['angular', 'lodash'], function(angular, _) {
         dataType: DOUBLE_TYPE,
         variableType: 'ontology:continuous',
         category: 'Central tendency',
-        lexiconKey: 'mean'
+        lexiconKey: 'mean',
+        analysisReady: true
       },
       'median': {
         type: 'median',
@@ -56,7 +58,8 @@ define(['angular', 'lodash'], function(angular, _) {
         dataType: DOUBLE_TYPE,
         variableType: 'ontology:continuous',
         category: 'Central tendency',
-        lexiconKey: 'median'
+        lexiconKey: 'median',
+        analysisReady: false
       },
       'geometric_mean': {
         type: 'geometric_mean',
@@ -65,7 +68,8 @@ define(['angular', 'lodash'], function(angular, _) {
         dataType: DOUBLE_TYPE,
         variableType: 'ontology:continuous',
         category: 'Central tendency',
-        lexiconKey: 'geometric-mean'
+        lexiconKey: 'geometric-mean',
+        analysisReady: false
       },
       'log_mean': {
         type: 'log_mean',
@@ -74,7 +78,8 @@ define(['angular', 'lodash'], function(angular, _) {
         dataType: DOUBLE_TYPE,
         variableType: 'ontology:continuous',
         category: 'Central tendency',
-        lexiconKey: 'log-mean'
+        lexiconKey: 'log-mean',
+        analysisReady: false
       },
       'least_squares_mean': {
         type: 'least_squares_mean',
@@ -83,7 +88,8 @@ define(['angular', 'lodash'], function(angular, _) {
         dataType: DOUBLE_TYPE,
         variableType: 'ontology:continuous',
         category: 'Central tendency',
-        lexiconKey: 'least-squares-mean'
+        lexiconKey: 'least-squares-mean',
+        analysisReady: false
       },
       'quantile_0.05': {
         type: 'quantile_0.05',
@@ -92,7 +98,8 @@ define(['angular', 'lodash'], function(angular, _) {
         dataType: DOUBLE_TYPE,
         variableType: 'ontology:continuous',
         category: 'Quantiles',
-        lexiconKey: 'quantile-0.05'
+        lexiconKey: 'quantile-0.05',
+        analysisReady: false
       },
       'quantile_0.95': {
         type: 'quantile_0.95',
@@ -101,7 +108,8 @@ define(['angular', 'lodash'], function(angular, _) {
         dataType: DOUBLE_TYPE,
         variableType: 'ontology:continuous',
         category: 'Quantiles',
-        lexiconKey: 'quantile-0.95'
+        lexiconKey: 'quantile-0.95',
+        analysisReady: false
       },
       'quantile_0.025': {
         type: 'quantile_0.025',
@@ -110,7 +118,8 @@ define(['angular', 'lodash'], function(angular, _) {
         dataType: DOUBLE_TYPE,
         variableType: 'ontology:continuous',
         category: 'Quantiles',
-        lexiconKey: 'quantile-0.025'
+        lexiconKey: 'quantile-0.025',
+        analysisReady: false
       },
       'quantile_0.975': {
         type: 'quantile_0.975',
@@ -119,7 +128,8 @@ define(['angular', 'lodash'], function(angular, _) {
         dataType: DOUBLE_TYPE,
         variableType: 'ontology:continuous',
         category: 'Quantiles',
-        lexiconKey: 'quantile-0.975'
+        lexiconKey: 'quantile-0.975',
+        analysisReady: false
       },
       'min': {
         type: 'min',
@@ -128,7 +138,8 @@ define(['angular', 'lodash'], function(angular, _) {
         dataType: DOUBLE_TYPE,
         variableType: 'ontology:continuous',
         category: 'Dispersion',
-        lexiconKey: 'min'
+        lexiconKey: 'min',
+        analysisReady: false
       },
       'max': {
         type: 'max',
@@ -137,7 +148,8 @@ define(['angular', 'lodash'], function(angular, _) {
         dataType: DOUBLE_TYPE,
         variableType: 'ontology:continuous',
         category: 'Dispersion',
-        lexiconKey: 'max'
+        lexiconKey: 'max',
+        analysisReady: false
       },
       'geometric_coefficient_of_variation': {
         type: 'geometric_coefficient_of_variation',
@@ -146,7 +158,8 @@ define(['angular', 'lodash'], function(angular, _) {
         dataType: DOUBLE_TYPE,
         variableType: 'ontology:continuous',
         category: 'Dispersion',
-        lexiconKey: 'geometric-coefficient-of-variation'
+        lexiconKey: 'geometric-coefficient-of-variation',
+        analysisReady: false
       },
       'first_quartile': {
         type: 'first_quartile',
@@ -155,7 +168,8 @@ define(['angular', 'lodash'], function(angular, _) {
         dataType: DOUBLE_TYPE,
         variableType: 'ontology:continuous',
         category: 'Quantiles',
-        lexiconKey: 'first-quartile'
+        lexiconKey: 'first-quartile',
+        analysisReady: false
       },
       'third_quartile': {
         type: 'third_quartile',
@@ -164,7 +178,8 @@ define(['angular', 'lodash'], function(angular, _) {
         dataType: DOUBLE_TYPE,
         variableType: 'ontology:continuous',
         category: 'Quantiles',
-        lexiconKey: 'third-quartile'
+        lexiconKey: 'third-quartile',
+        analysisReady: false
       },
       'standard_deviation': {
         type: 'standard_deviation',
@@ -173,7 +188,8 @@ define(['angular', 'lodash'], function(angular, _) {
         dataType: DOUBLE_TYPE,
         variableType: 'ontology:continuous',
         category: 'Dispersion',
-        lexiconKey: 'standard-deviation'
+        lexiconKey: 'standard-deviation',
+        analysisReady: true
       },
       'standard_error': {
         type: 'standard_error',
@@ -182,7 +198,8 @@ define(['angular', 'lodash'], function(angular, _) {
         dataType: DOUBLE_TYPE,
         variableType: 'ontology:continuous',
         category: 'Dispersion',
-        lexiconKey: 'standard-error'
+        lexiconKey: 'standard-error',
+        analysisReady: true
       },
       'event_count': {
         type: 'event_count',
@@ -190,7 +207,8 @@ define(['angular', 'lodash'], function(angular, _) {
         uri: 'http://trials.drugis.org/ontology#event_count',
         dataType: INTEGER_TYPE,
         variableType: 'ontology:dichotomous',
-        lexiconKey: 'event-count'
+        lexiconKey: 'event-count',
+        analysisReady: false
       },
       'count': {
         type: 'count',
@@ -198,7 +216,8 @@ define(['angular', 'lodash'], function(angular, _) {
         uri: 'http://trials.drugis.org/ontology#count',
         dataType: INTEGER_TYPE,
         variableType: 'ontology:dichotomous',
-        lexiconKey: 'count'
+        lexiconKey: 'count',
+        analysisReady: true
       },
       'percentage': {
         type: 'percentage',
@@ -206,7 +225,8 @@ define(['angular', 'lodash'], function(angular, _) {
         uri: 'http://trials.drugis.org/ontology#percentage',
         dataType: DOUBLE_TYPE,
         variableType: 'ontology:dichotomous',
-        lexiconKey: 'percentage'
+        lexiconKey: 'percentage',
+        analysisReady: false
       },
       'proportion': {
         type: 'proportion',
@@ -214,7 +234,8 @@ define(['angular', 'lodash'], function(angular, _) {
         uri: 'http://trials.drugis.org/ontology#proportion',
         dataType: DOUBLE_TYPE,
         variableType: 'ontology:dichotomous',
-        lexiconKey: 'proportion'
+        lexiconKey: 'proportion',
+        analysisReady: false
       },
     };
 

@@ -1,29 +1,31 @@
 <div>
-  <ul class="inline-list" ng-if="variable.measurementType === 'ontology:continuous'" >
+  <ul class="inline-list" ng-if="variable.measurementType === 'ontology:continuous'">
     <li ng-repeat="(categoryLabel, category) in categories">
       {{categoryLabel}}
       <ul class="no-bullet">
         <li ng-repeat="property in category.properties">
           <label>
-            <input
-              type="checkbox"
-              ng-model="property.isSelected"
-              ng-change="updateSelection()"> {{property.label}}</input>
-              <inline-help help-key='{{property.lexiconKey}}'></inline-help>
+            <input type="checkbox" 
+            ng-model="property.isSelected" 
+            ng-change="updateSelection()"> {{property.label}}</input>
+            <span style="color: red" ng-show="{{!property.analysisReady}}">*</span>
+            <inline-help help-key="{{property.lexiconKey}}" "></inline-help>
           </label>
         </li>
       </ul>
     </li>
   </ul>
-  <ul ng-if="variable.measurementType === 'ontology:dichotomous'"  class="no-bullet">
-    <li ng-repeat="property in properties">
+  <ul ng-if="variable.measurementType==='ontology:dichotomous' "  class="no-bullet ">
+    <li ng-repeat="property in properties ">
       <label>
         <input
           type="checkbox"
-          ng-model="property.isSelected"
-          ng-change="updateSelection()"> {{property.label}}</input>
+          ng-model="property.isSelected "
+          ng-change="updateSelection() "> {{property.label}}</input>
+          <span style="color: red " ng-show="{{!property.analysisReady}} ">*</span>
           <inline-help help-key='{{property.lexiconKey}}'></inline-help>
       </label>
     </li>
   </ul>
+  <div style="color: red " ng-if="hasNotAnalysedProperty ">*These measurements are currently not supported for analysis.
 </div>

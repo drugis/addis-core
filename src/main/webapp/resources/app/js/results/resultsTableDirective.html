@@ -3,7 +3,9 @@
   <tr>
     <th>Measurement moment</th>
     <th>Arm/Group</th>
-    <th ng-repeat="inputHeader in inputHeaders">{{inputHeader.label}}<inline-help ng-if="inputHeader.lexiconKey" help-key="{{inputHeader.lexiconKey}}"></inline-help></th>
+    <th ng-repeat="inputHeader in inputHeaders">{{inputHeader.label}}<span style="color: red" ng-show="inputHeader.lexiconKey && !inputHeader.analysisReady">*</span>
+      <inline-help ng-if="inputHeader.lexiconKey" help-key="{{inputHeader.lexiconKey}}"></inline-help>
+    </th>
   </tr>
   <tr ng-repeat="inputRow in inputRows">
     <td class="y-head" rowspan="{{inputRow.numberOfGroups}}" ng-if="$index % inputRow.numberOfGroups === 0"
@@ -16,7 +18,8 @@
             ng-change="checkMeasurementOverlap()"></select>
         </div>
         <div class="small-3 columns">
-          <button type="button" class="postfix" ng-click="editMeasurementMoment(inputRow.measurementMoment.uri, inputRow.rowLabel)" ng-disabled="measurementMomentSelections[inputRow.measurementMoment.uri].label === 'Unassign' && !inputRow.rowLabel.trim()">Done</button>
+          <button type="button" class="postfix" ng-click="editMeasurementMoment(inputRow.measurementMoment.uri, inputRow.rowLabel)"
+            ng-disabled="measurementMomentSelections[inputRow.measurementMoment.uri].label === 'Unassign' && !inputRow.rowLabel.trim()">Done</button>
         </div>
         <div class="small-3 columns">
           <button type="button" class="postfix alert" ng-click="isEditingMM[inputRow.measurementMoment.uri] = false">Cancel</button>
@@ -39,3 +42,4 @@
     </td>
   </tr>
 </table>
+  <div style="color: red" ng-if="hasNotAnalysedProperty">*These measurements are currently not supported for analysis.</div>

@@ -78,8 +78,10 @@ define(['lodash'], function(_) {
         } else {
           //Categorical measurement
           if (variable.categoryList[0] && variable.categoryList[0].label) {
-            return _.map(variable.categoryList, function(list){
-              return {'label':list.label};
+            return _.map(variable.categoryList, function(list) {
+              return {
+                'label': list.label
+              };
             });
           } else {
             return variable.categoryList;
@@ -88,12 +90,18 @@ define(['lodash'], function(_) {
       }
       if (!variable.resultProperties.map) {
         // there is only one resultproperty
-        return [{'label':ResultsService.getVariableDetails(variable.resultProperties).label,
-         'lexiconKey':ResultsService.getVariableDetails(variable.resultProperties).lexiconKey}];
+        return [{
+          'label': ResultsService.getVariableDetails(variable.resultProperties).label,
+          'lexiconKey': ResultsService.getVariableDetails(variable.resultProperties).lexiconKey,
+          'analysisReady': ResultsService.getVariableDetails(variable.resultProperties).analysisReady
+        }];
       }
       return variable.resultProperties.map(function(type) {
-        return {'label':ResultsService.getVariableDetails(type).label,
-         'lexiconKey':ResultsService.getVariableDetails(type).lexiconKey};
+        return {
+          'label': ResultsService.getVariableDetails(type).label,
+          'lexiconKey': ResultsService.getVariableDetails(type).lexiconKey,
+          'analysisReady': ResultsService.getVariableDetails(type).analysisReady
+        };
       });
     }
 

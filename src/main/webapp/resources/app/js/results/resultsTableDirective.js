@@ -36,6 +36,9 @@ define(['lodash'], function(_) {
                 accum[measurementMoment.uri] = false;
                 return accum;
               }, {});
+              scope.hasNotAnalysedProperty = _.find(scope.inputHeaders, function(header){
+                return header.lexiconKey && !header.analysisReady; // only check if not categorical
+              });
             });
           }
         }
@@ -83,7 +86,6 @@ define(['lodash'], function(_) {
         scope.showEditMeasurementMoment = function(measurementMomentUri) {
           scope.isEditingMM[measurementMomentUri] = true;
         };
-
       }
     };
   };

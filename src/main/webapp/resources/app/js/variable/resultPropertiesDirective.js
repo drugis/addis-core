@@ -14,6 +14,10 @@ define(['lodash'], function(_) {
         if (scope.variable.measurementType === 'ontology:continuous') {
           scope.categories = buildCategories();
         }
+        
+        scope.hasNotAnalysedProperty = _.find(scope.properties, function(property) {
+          return !property.analysisReady;
+        });
 
         function buildProperties() {
           var variableTypeDetails = _.keyBy(_.filter(ResultsService.VARIABLE_TYPE_DETAILS, function(varType) {
