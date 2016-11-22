@@ -25,7 +25,7 @@ define(['angular', 'angular-mocks'], function() {
     }));
 
     describe('createHeaders', function() {
-      it('should return a list containting "Mean, ± sd and N " when the type is continuous', function() {
+      it('should return a list containting objects which contain "Mean, ± sd and N " labels, their respective lexicon key and wether they are implemented for use during analysis when the type is continuous', function() {
         var testType = {
           resultProperties: [
             'http://trials.drugis.org/ontology#mean',
@@ -33,16 +33,40 @@ define(['angular', 'angular-mocks'], function() {
             'http://trials.drugis.org/ontology#sample_size'
           ]
         };
-        expect(resultsTableService.createHeaders(testType)).toEqual(['mean', 'standard deviation', 'N']);
+        var expectedResult = [{
+          label: 'mean',
+          lexiconKey: 'mean',
+          analysisReady: true
+        }, {
+          label: 'standard deviation',
+          lexiconKey: 'standard-deviation',
+          analysisReady: true
+        }, {
+          label: 'N',
+          lexiconKey: 'sample-size',
+          analysisReady: true
+        }];
+        expect(resultsTableService.createHeaders(testType)).toEqual(expectedResult);
       });
-      it('should return a list containting "Count and N" when the type is dichotomous', function() {
+      it('should return a list containting objects which contain "Count and N" labels, their respective lexicon key and wether they are implemented for use during analysiswhen the type is dichotomous', function() {
         var testType = {
           resultProperties: [
             'http://trials.drugis.org/ontology#count',
             'http://trials.drugis.org/ontology#sample_size'
           ]
         };
-        expect(resultsTableService.createHeaders(testType)).toEqual(['count', 'N']);
+        var expectedResult = [{
+          label: 'count',
+          lexiconKey: 'count',
+          analysisReady: true
+        }, {
+          label: 'N',
+          lexiconKey: 'sample-size',
+          analysisReady: true
+        }];
+
+
+        expect(resultsTableService.createHeaders(testType)).toEqual(expectedResult);
       });
       it('should return a list of the categories for a categorical variable', function() {
         var testType = {
