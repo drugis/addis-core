@@ -18,7 +18,7 @@ define(['angular', 'lodash'], function(angular, _) {
     function updateCategories(data) {
       var graph = data['@graph'];
       var newCategoryInstances = [];
-      var categoriesByName = {};
+      var oldCategoriesByName = {};
 
       var categoryListIds = _.map(_.filter(graph, function(node) {
         return node.categoryList;
@@ -34,25 +34,25 @@ define(['angular', 'lodash'], function(angular, _) {
           if (!_.startsWith(currentNode.first, INSTANCE_BASE)) {
             var newCategory = makeCategoryInstance(currentNode.first);
             newCategoryInstances.push(newCategory);
-            categoriesByName[currentNode.first] = newCategory;
+            oldCategoriesByName[currentNode.first] = newCategory;
             currentNode.first = newCategory['@id'];
 
             if (currentNode.rest['@list']) {
               var newRestCategory = makeCategoryInstance(currentNode.rest['@list'][0]);
               newCategoryInstances.push(newRestCategory);
-              categoriesByName[currentNode.rest['@list'][0]] = newRestCategory;
+              oldCategoriesByName[currentNode.rest['@list'][0]] = newRestCategory;
               currentNode.rest['@list'][0] = newRestCategory['@id'];
             }
-            currentNode = _.find(graph, ['@id', currentNode.rest]);
           }
+          currentNode = _.find(graph, ['@id', currentNode.rest]);
         }
       });
 
       data['@graph'] = graph = graph.concat(newCategoryInstances);
 
       graph = _.map(graph, function(node) {
-        if (node.category) {
-          node.category = categoriesByName[node.category]['@id'];
+        if (node.category && oldCategoriesByName[node.category]) {
+          node.category = oldCategoriesByName[node.category]['@id'];
         }
         return node;
       });
