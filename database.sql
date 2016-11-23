@@ -770,3 +770,13 @@ CREATE TABLE MeasurementMomentInclusion (
   FOREIGN KEY(analysisId) REFERENCES NetworkMetaAnalysis(id)
 );
 --rollback DROP TABLE MeasurementMomentInclusion
+
+--changeset reidd:64
+CREATE TABLE customReport (
+  id SERIAL NOT NULL,
+  projectId INT NOT NULL,
+  text TEXT NOT NULL,
+  PRIMARY KEY(id),
+  FOREIGN KEY(projectId) REFERENCES Project(id) ON DELETE CASCADE
+);
+--rollback DROP TABLE customReport

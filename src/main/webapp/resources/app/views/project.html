@@ -32,10 +32,9 @@
       <tabset>
         <tab heading="Report" active="activeTab === 'report'" ng-click="setActiveTab('report')">
           <div ng-if="activeTab === 'report'">
-         
-            <!-- outcomes -->
             <div class="row">
-              <div class="columns large-12">
+              <!-- outcomes -->
+              <div class="columns large-9">
                 <h3 class="subheader">Outcomes<inline-help help-key="addis-outcome"></inline-help></h3>
                 <ul>
                   <li ng-show="outcomes.length === 0 ">no outcomes defined</li>
@@ -45,6 +44,9 @@
                     </strong>{{outcome.motivation}}
                   </li>
                 </ul>
+              </div>
+              <div class="columns large-3">
+                <button class="right" ng-click="goToEditView()">Customize</button>
               </div>
             </div>
 
