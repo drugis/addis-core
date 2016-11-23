@@ -18,13 +18,13 @@ define(['lodash'], function(_) {
           if (scope.isExpanded) {
             scope.results = ResultsService.queryResults(scope.variable.uri);
 
-            $q.all([scope.arms, scope.measurementMoments, scope.groups, scope.results]).then(function() {
+            return $q.all([scope.arms, scope.measurementMoments, scope.groups, scope.results]).then(function() {
               scope.inputRows = ResultsTableService.createInputRows(scope.variable, scope.arms, scope.groups,
                 scope.measurementMoments, scope.results.$$state.value);
               scope.inputHeaders = ResultsTableService.createHeaders(scope.variable);
               scope.measurementMomentOptions = ResultsTableService.buildMeasurementMomentOptions(scope.variable.measuredAtMoments);
               scope.measurementMomentSelections = _.reduce(scope.inputRows, function(accum, inputRow) {
-                // for every inputRow, take the uri of its measurementMoment. Then get for this measurementMoment the first in its list of 
+                // for every inputRow, take the uri of its measurementMoment. Then get for this measurementMoment the first in its list of
                 // options avaiable when changing the measurementMoment of this row to another measurementMoment. Then store this option
                 // based on the uri of the measurement moment
                 var measurementMomentUri = inputRow.measurementMoment.uri;
@@ -36,7 +36,7 @@ define(['lodash'], function(_) {
                 accum[measurementMoment.uri] = false;
                 return accum;
               }, {});
-              scope.hasNotAnalysedProperty = _.find(scope.inputHeaders, function(header){
+              scope.hasNotAnalysedProperty = _.find(scope.inputHeaders, function(header) {
                 return header.lexiconKey && !header.analysisReady; // only check if not categorical
               });
             });
@@ -84,7 +84,9 @@ define(['lodash'], function(_) {
         };
 
         scope.showEditMeasurementMoment = function(measurementMomentUri) {
-          scope.isEditingMM[measurementMomentUri] = true;
+          reloadResults().then(function() {
+            scope.isEditingMM[measurementMomentUri] = true;
+          });
         };
       }
     };

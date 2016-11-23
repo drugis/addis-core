@@ -99,6 +99,9 @@ define(['lodash', 'angular'], function(_, angular) {
         intervention.definitionLabel = InterventionService.generateDescriptionLabel(intervention, interventions);
         return intervention;
       });
+      $scope.interventions = _.orderBy($scope.interventions, function(intervention) {
+        return intervention.name.toLowerCase();
+      });
     }
 
     function loadCovariates() {
