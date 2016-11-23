@@ -10,7 +10,7 @@
           </th>
           <th rowspan="2">Interventions</th>
           <th rowspan="2">Arms</th>
-          <th rowspan="2" ng-show="trialData[0].measurements[momentSelections[trialData[0].studyUri].uri].type === 'dichotomous'">Subjects with outcome <inline-help help-key="count"></inline-help></th>
+          <th rowspan="2" ng-show="trialData[0].measurements[momentSelections[trialData[0].studyUri].uri].type === 'dichotomous'">subjects with outcome <inline-help help-key="count"></inline-help></th>
 
           <th rowspan="2" ng-show="trialData[0].measurements[momentSelections[trialData[0].studyUri].uri].type === 'continuous'">&mu;
           <inline-help help-key="mean"></inline-help></th>
@@ -19,7 +19,7 @@
           <inline-help help-key="standard-deviation"></inline-help></th>
 
           <th rowspan="2" style="min-width:6em" ng-show="showSigmaN">N<inline-help help-key="sample-size"></inline-help></th>
-          <th rowspan="2" ng-show="showStdErr">Std Err<inline-help help-key="standard-error"></inline-help></th>
+          <th rowspan="2" ng-show="showStdErr">standard error<inline-help help-key="standard-error"></inline-help></th>
 
         </tr>
         <tr>

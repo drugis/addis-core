@@ -115,32 +115,32 @@
     "link": "/manual.html#study-input"
   },
   "geometric-coefficient-of-variation": {
-    "title": "geometric coefficient of variation",
+    "title": "Geometric coefficient of variation",
     "text": "Measure of dispersion appropriate when the log of the observations are normally distributed.",
     "link": "/manual.html#study-input"
   },
   "geometric-mean": {
-    "title": "geometric mean",
+    "title": "Geometric mean",
     "text": "The geometric mean is appropriate when the log of the observations are normally distributed.",
     "link": "/manual.html#study-input"
   },
   "least-squares-mean": {
-    "title": "least squares mean",
+    "title": "Least squares mean",
     "text": "A point estimate obtained through least squares estimation (i.e. fitting a stastistical model).",
     "link": "/manual.html#study-input"
   },
   "log-mean": {
-    "title": "log mean",
+    "title": "Log mean",
     "text": "The logarithmic mean.",
     "link": "/manual.html#study-input"
   },
   "max": {
-    "title": "max",
+    "title": "Max",
     "text": "The highest value measured in the given group.",
     "link": "/manual.html#study-input"
   },
   "mean": {
-    "title": "mean",
+    "title": "Mean",
     "text": "The mean (average) value measured in the given group.",
     "link": "/manual.html#study-input"
   },
@@ -155,12 +155,12 @@
     "link": "/manual.html#measurement-moment"
   },
   "median": {
-    "title": "median",
+    "title": "Median",
     "text": "The median (middle-most) value measured in the given group.",
     "link": "/manual.html#study-input"
   },
   "min": {
-    "title": "min",
+    "title": "Min",
     "text": "The lowest value measured in the given group.",
     "link": "/manual.html#study-input"
   },
@@ -190,22 +190,22 @@
     "link": "/manual.html#study-input"
   },
   "quantile-0.025": {
-    "title": "2.5% quantile",
+    "title": "2.5% Quantile",
     "text": "The 2.5% quantile, or the lower end of a 95% confidence interval.",
     "link": "/manual.html#study-input"
   },
   "quantile-0.05": {
-    "title": "5% quantile",
+    "title": "5% Quantile",
     "text": "The 5% quantile, or the lower end of a 90% confidence interval.",
     "link": "/manual.html#study-input"
   },
   "quantile-0.95": {
-    "title": "95% quantile",
+    "title": "95% Quantile",
     "text": "The 95% quantile, or the upper end of a 90% confidence interval.",
     "link": "/manual.html#study-input"
   },
   "quantile-0.975": {
-    "title": "0.975% quantile",
+    "title": "0.975% Quantile",
     "text": "The 97.5% quantile, or the upper end of a 95% confidence interval.",
     "link": "/manual.html#study-input"
   },
@@ -215,12 +215,12 @@
     "link": "/manual.html#study-input"
   },
   "standard-deviation": {
-    "title": "standard deviation",
+    "title": "Standard deviation",
     "text": "The standard deviation measured the amount of variation in the given sample. It is the square root of the average of the squared deviations from the mean.",
     "link": "/manual.html#study-input"
   },
   "standard-error": {
-    "title": "standard error",
+    "title": "Standard error",
     "text": "The standard error of the mean describes the residual uncertainty around the mean. It is the standard deviation divided by the square root of the sample size.",
     "link": "/manual.html#study-input"
   },

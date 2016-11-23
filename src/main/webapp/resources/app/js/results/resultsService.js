@@ -37,7 +37,7 @@ define(['angular', 'lodash'], function(angular, _) {
         uri: 'http://trials.drugis.org/ontology#sample_size',
         dataType: INTEGER_TYPE,
         variableType: 'all',
-        category: 'Sample size',
+        category: 'sample size',
         lexiconKey: 'sample-size',
         analysisReady: true
       },
@@ -585,7 +585,7 @@ define(['angular', 'lodash'], function(angular, _) {
               node.of_moment = toUri;
             }
             return node;
-          })
+          });
         }
         return StudyService.saveJsonGraph(updatedGraph);
 
