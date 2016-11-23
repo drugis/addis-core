@@ -64,6 +64,11 @@
     "text": "The disease or health state being studied.",
     "link": "/manual.html#condition"
   },
+  "count": {
+    "title": "Subjects with event",
+    "text": "The total number of subjects that experienced the event of interest. May be an adverse event or a dichotomous outcome.",
+    "link": "/manual.html#study-input"
+  },
   "dataset": {
     "title": "Dataset",
     "text": "A dataset is a collection of studies that are somehow related, e.g. studies identified by a systematic literature review.",
@@ -89,6 +94,11 @@
     "text": "The criteria based on which participants were included into, or excluded from, the study.",
     "link": "/manual.html#eligibility-criteria"
   },
+  "event-count": {
+    "title": "Number of events",
+    "text": "The total number of events observed for the given group. May exceed the number of subjects at risk, if subjects experience more than one event.",
+    "link": "/manual.html#study-input"
+  },
   "evidence-synthesis": {
     "title": "Evidence synthesis",
     "text": "Evidence synthesis is the statistical combination of estimates from multiple primary studies into an overall pooled estimate. Evidence synthesis techniques include pair-wise meta-analysis, network meta-analysis, and meta-regression.",
@@ -98,6 +108,41 @@
     "title": "Featured dataset",
     "text": "Featured datasets are well structured datasets that serve as examples of some of ADDIS' features. They are highlighted on the home page, and are a good place to start trying out the software. If you think your dataset deserves to be featured on the home page, feel free to [contact us](https://drugis.org/contact).",
     "link": "/manual.html#featured-dataset"
+  },
+  "first-quartile": {
+    "title": "First quartile",
+    "text": "The 25% quantile, or the lower end of the inter-quartile range.",
+    "link": "/manual.html#study-input"
+  },
+  "geometric-coefficient-of-variation": {
+    "title": "geometric coefficient of variation",
+    "text": "Measure of dispersion appropriate when the log of the observations are normally distributed.",
+    "link": "/manual.html#study-input"
+  },
+  "geometric-mean": {
+    "title": "geometric mean",
+    "text": "The geometric mean is appropriate when the log of the observations are normally distributed.",
+    "link": "/manual.html#study-input"
+  },
+  "least-squares-mean": {
+    "title": "least squares mean",
+    "text": "A point estimate obtained through least squares estimation (i.e. fitting a stastistical model).",
+    "link": "/manual.html#study-input"
+  },
+  "log-mean": {
+    "title": "log mean",
+    "text": "The logarithmic mean.",
+    "link": "/manual.html#study-input"
+  },
+  "max": {
+    "title": "max",
+    "text": "The highest value measured in the given group.",
+    "link": "/manual.html#study-input"
+  },
+  "mean": {
+    "title": "mean",
+    "text": "The mean (average) value measured in the given group.",
+    "link": "/manual.html#study-input"
   },
   "measurement": {
     "title": "Measurement",
@@ -109,10 +154,25 @@
     "text": "A measurement moment corresponds to the time when measurements were taken. Measurement moments are relative to certain anchor time points within the study, e.g. the start or the end of the treatment phase.",
     "link": "/manual.html#measurement-moment"
   },
+  "median": {
+    "title": "median",
+    "text": "The median (middle-most) value measured in the given group.",
+    "link": "/manual.html#study-input"
+  },
+  "min": {
+    "title": "min",
+    "text": "The lowest value measured in the given group.",
+    "link": "/manual.html#study-input"
+  },
   "other-group": {
     "title": "Other group",
     "text": "Any group within the study that is not an arm. This includes the total study population, and may also refer to sub-groups such as all males in the study or all elderly patients in the control arm.",
     "link": "/manual.html#other-group"
+  },
+  "percentage": {
+    "title": "Percentage with event",
+    "text": "The total number of subjects that experienced the event of interest, expressed as a percentage of the number at risk (sample size). 'Subjects with event' is preferred to 'Percentage with event' when available.",
+    "link": "/manual.html#study-input"
   },
   "population-information": {
     "title": "Population information",
@@ -123,6 +183,46 @@
     "title": "Project",
     "text": "A project is a collection of analyses performed on a specific version of a single dataset. Typically, it aims to answer a specific question or a number of related questions using the dataset.",
     "link": "/manual.html#project"
+  },
+  "proportion": {
+    "title": "Proportion with event",
+    "text": "The total number of subjects that experienced the event of interest, expressed as a proportion of the number at risk (sample size). 'Subjects with event' is preferred to 'Proportion with event' when available.",
+    "link": "/manual.html#study-input"
+  },
+  "quantile-0.025": {
+    "title": "2.5% quantile",
+    "text": "The 2.5% quantile, or the lower end of a 95% confidence interval.",
+    "link": "/manual.html#study-input"
+  },
+  "quantile-0.05": {
+    "title": "5% quantile",
+    "text": "The 5% quantile, or the lower end of a 90% confidence interval.",
+    "link": "/manual.html#study-input"
+  },
+  "quantile-0.95": {
+    "title": "95% quantile",
+    "text": "The 95% quantile, or the upper end of a 90% confidence interval.",
+    "link": "/manual.html#study-input"
+  },
+  "quantile-0.975": {
+    "title": "0.975% quantile",
+    "text": "The 97.5% quantile, or the upper end of a 95% confidence interval.",
+    "link": "/manual.html#study-input"
+  },
+  "sample-size": {
+    "title": "N",
+    "text": "The sample size, N. For dichotomous outcomes, this encodes the number of subjects at risk. For continuous outcomes, it is the number of subjects for which the outcome is measured (or intended to be measured).",
+    "link": "/manual.html#study-input"
+  },
+  "standard-deviation": {
+    "title": "standard deviation",
+    "text": "The standard deviation measured the amount of variation in the given sample. It is the square root of the average of the squared deviations from the mean.",
+    "link": "/manual.html#study-input"
+  },
+  "standard-error": {
+    "title": "standard error",
+    "text": "The standard error of the mean describes the residual uncertainty around the mean. It is the standard deviation divided by the square root of the sample size.",
+    "link": "/manual.html#study-input"
   },
   "study": {
     "title": "Study",
@@ -144,6 +244,11 @@
     "text": "Study information contains basic descriptives of the study. Some are structured, such as randomization and blinding, while others are free text.",
     "link": "/manual.html#study-input"
   },
+  "third-quartile": {
+    "title": "Third quartile",
+    "text": "The 75% quantile, or the upper end of the inter-quartile range.",
+    "link": "/manual.html#study-input"
+  },
   "time-period": {
     "title": "Time period",
     "text": "A period or phase of the study during which a certain activity (or group of activities) took place. For example, a drug study might consist of a placebo run-in period, a treatment period, and a follow-up period.",
@@ -157,112 +262,6 @@
   "variable": {
     "title": "Variable",
     "text": "A variable is an event or change that is measured in a population during a study, either a baseline characteristic (e.g. \"age\"), an outcome (e.g. \"mood improvement\"), or an adverse event (e.g. \"nausea\").",
-    "link": "/manual.html#study-input"
-  },
-
-  "sample-size": {
-    "title": "N",
-    "text": "The sample size, N. For dichotomous outcomes, this encodes the number of subjects at risk. For continuous outcomes, it is the number of subjects for which the outcome is measured (or intended to be measured).",
-    "link": "/manual.html#study-input"
-  },
-  "mean": {
-    "title": "mean",
-    "text": "The mean (average) value measured in the given group.",
-    "link": "/manual.html#study-input"
-  },
-  "median": {
-    "title": "median",
-    "text": "The median (middle-most) value measured in the given group.",
-    "link": "/manual.html#study-input"
-  },
-  "geometric-mean": {
-    "title": "geometric mean",
-    "text": "The geometric mean is appropriate when the log of the observations are normally distributed.",
-    "link": "/manual.html#study-input"
-  },
-  "log-mean": {
-    "title": "log mean",
-    "text": "The logarithmic mean.",
-    "link": "/manual.html#study-input"
-  },
-  "least-squares-mean": {
-    "title": "least squares mean",
-    "text": "A point estimate obtained through least squares estimation (i.e. fitting a stastistical model).",
-    "link": "/manual.html#study-input"
-  },
-  "quantile-0.05": {
-    "title": "5% quantile",
-    "text": "The 5% quantile, or the lower end of a 90% confidence interval.",
-    "link": "/manual.html#study-input"
-  },
-  "quantile-0.95": {
-    "title": "95% quantile",
-    "text": "The 95% quantile, or the upper end of a 90% confidence interval.",
-    "link": "/manual.html#study-input"
-  },
-  "quantile-0.025": {
-    "title": "2.5% quantile",
-    "text": "The 2.5% quantile, or the lower end of a 95% confidence interval.",
-    "link": "/manual.html#study-input"
-  },
-  "quantile-0.975": {
-    "title": "0.975% quantile",
-    "text": "The 97.5% quantile, or the upper end of a 95% confidence interval.",
-    "link": "/manual.html#study-input"
-  },
-  "min": {
-    "title": "min",
-    "text": "The lowest value measured in the given group.",
-    "link": "/manual.html#study-input"
-  },
-  "max": {
-    "title": "max",
-    "text": "The highest value measured in the given group.",
-    "link": "/manual.html#study-input"
-  },
-  "geometric-coefficient-of-variation": {
-    "title": "geometric coefficient of variation",
-    "text": "Measure of dispersion appropriate when the log of the observations are normally distributed.",
-    "link": "/manual.html#study-input"
-  },
-  "first-quartile": {
-    "title": "First quartile",
-    "text": "The 25% quantile, or the lower end of the inter-quartile range.",
-    "link": "/manual.html#study-input"
-  },
-  "third-quartile": {
-    "title": "Third quartile",
-    "text": "The 75% quantile, or the upper end of the inter-quartile range.",
-    "link": "/manual.html#study-input"
-  },
-  "standard-deviation": {
-    "title": "standard deviation",
-    "text": "The standard deviation measured the amount of variation in the given sample. It is the square root of the average of the squared deviations from the mean.",
-    "link": "/manual.html#study-input"
-  },
-  "standard-error": {
-    "title": "standard error",
-    "text": "The standard error of the mean describes the residual uncertainty around the mean. It is the standard deviation divided by the square root of the sample size.",
-    "link": "/manual.html#study-input"
-  },
-  "event-count": {
-    "title": "Number of events",
-    "text": "The total number of events observed for the given group. May exceed the number of subjects at risk, if subjects experience more than one event.",
-    "link": "/manual.html#study-input"
-  },
-  "count": {
-    "title": "Subjects with event",
-    "text": "The total number of subjects that experienced the event of interest. May be an adverse event or a dichotomous outcome.",
-    "link": "/manual.html#study-input"
-  },
-  "percentage": {
-    "title": "Percentage with event",
-    "text": "The total number of subjects that experienced the event of interest, expressed as a percentage of the number at risk (sample size). 'Subjects with event' is preferred to 'Percentage with event' when available.",
-    "link": "/manual.html#study-input"
-  },
-  "proportion": {
-    "title": "Proportion with event",
-    "text": "The total number of subjects that experienced the event of interest, expressed as a proportion of the number at risk (sample size). 'Subjects with event' is preferred to 'Proportion with event' when available.",
     "link": "/manual.html#study-input"
   }
 }
