@@ -10,6 +10,9 @@
   <div class="row">
     <div class="columns small-12">
       <button ng-click="saveChanges(reportText)"><i class="fa fa-save"></i> Save</button>
+      <span ng-show="showSaving" class=fa fa-save>Saving</span>
+      <span style="color: green" ng-show="showSaved">Report saved</span>
+
     </div>
   </div>
 
