@@ -7,16 +7,15 @@ define(['angular', 'lodash'],
       $scope.reportText = '';
       $scope.showSaving = false;
       $scope.showSaved = false;
+      $scope.userId = $stateParams.userUid;
+      $scope.saveChanges = saveChanges;
+      $scope.resetToDefault = resetToDefault;
       $q.all([$scope.project.$promise, ReportResource.get($stateParams).$promise]).then(function(values) {
         $scope.loading = {
           loaded: true
         };
         $scope.reportText = values[1].data;
       });
-
-      $scope.userId = $stateParams.userUid;
-      $scope.saveChanges = saveChanges;
-      $scope.resetToDefault = resetToDefault;
 
       function saveChanges(newText) {
         ReportResource.put($stateParams, newText);
@@ -31,12 +30,11 @@ define(['angular', 'lodash'],
       }
 
       function resetToDefault() {
-        $q.all([ReportResource.delete($stateParams).$promise]).then(function(values) {
-          $scope.reportText = values[0].data;
+        ReportResource.delete($stateParams).$promise.then(function(value) {
+          $scope.reportText = value.data;
         });
+        return $scope.reportText;
       }
-
-
 
     };
     return dependencies.concat(EditReportcontroller);
