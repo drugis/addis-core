@@ -289,6 +289,10 @@ define(['lodash', 'angular'], function(_, angular) {
       }
     };
 
+    $scope.goToEditView = function() {
+      $state.go('editReport', $stateParams);
+    }
+
   };
   return dependencies.concat(SingleProjectController);
 });
