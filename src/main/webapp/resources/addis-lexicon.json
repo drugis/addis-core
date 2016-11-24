@@ -205,7 +205,7 @@
     "link": "/manual.html#study-input"
   },
   "quantile-0.975": {
-    "title": "0.975% Quantile",
+    "title": "9.75% Quantile",
     "text": "The 97.5% quantile, or the upper end of a 95% confidence interval.",
     "link": "/manual.html#study-input"
   },

@@ -212,7 +212,7 @@ define(['angular', 'lodash'], function(angular, _) {
       },
       'count': {
         type: 'count',
-        label: 'count',
+        label: 'subjects with events',
         uri: 'http://trials.drugis.org/ontology#count',
         dataType: INTEGER_TYPE,
         variableType: 'ontology:dichotomous',
