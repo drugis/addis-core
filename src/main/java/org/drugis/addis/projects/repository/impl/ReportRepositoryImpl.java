@@ -36,4 +36,10 @@ public class ReportRepositoryImpl implements ReportRepository {
       jdbcTemplate.update(query, projectId, newReport);
     }
   }
+
+  @Override
+  public String delete(Integer projectId) {
+    update(projectId, "default report text");
+    return get(projectId);
+  }
 }

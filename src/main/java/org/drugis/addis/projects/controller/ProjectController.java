@@ -37,7 +37,7 @@ import java.util.List;
 public class ProjectController extends AbstractAddisCoreController {
 
   final static Logger logger = LoggerFactory.getLogger(ProjectController.class);
-
+  final static String defaultReportText = "default report text";
   @Inject
   private ProjectRepository projectsRepository;
 
@@ -91,7 +91,7 @@ public class ProjectController extends AbstractAddisCoreController {
     try {
       return reportRepository.get(projectId);
     } catch (EmptyResultDataAccessException e) {
-      return "default report text";
+      return defaultReportText;
     }
   }
 
@@ -102,5 +102,12 @@ public class ProjectController extends AbstractAddisCoreController {
     projectService.checkOwnership(projectId, currentUser);
     reportRepository.update(projectId, newReport);
     response.setStatus(HttpStatus.SC_OK);
+  }
+
+  @RequestMapping(value = "/projects/{projectId}/report", produces = "text/plain", method = RequestMethod.DELETE)
+  @ResponseBody
+  public String deleteReport(@PathVariable Integer projectId, Principal currentUser) throws ResourceDoesNotExistException, MethodNotAllowedException {
+    projectService.checkOwnership(projectId, currentUser);
+    return reportRepository.delete(projectId);
   }
 }

@@ -28,6 +28,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import javax.inject.Inject;
+import java.net.URI;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -36,9 +37,7 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 /**
@@ -49,6 +48,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebAppConfiguration
 public class ProjectsControllerTest {
 
+  public static final String DEFAULT_REPORT_TEXT = "default report text";
   private MockMvc mockMvc;
 
   @Inject
@@ -234,10 +234,25 @@ public class ProjectsControllerTest {
     when(reportRepository.get(1)).thenThrow(new EmptyResultDataAccessException("Expected 1 result", 1));
     mockMvc.perform(get("/projects/1/report"))
             .andExpect(status().isOk())
-            .andExpect(content().string("default report text"))
+            .andExpect(content().string(DEFAULT_REPORT_TEXT))
     ;
     verify(reportRepository).get(1);
   }
+  @Test
+  public void testDeleteReport() throws Exception{
+    String newReport = "new report";
+    when(reportRepository.get(1)).thenReturn(DEFAULT_REPORT_TEXT);
+    mockMvc.perform(put("/projects/1/report").content(newReport))
+            .andExpect(status().isOk());
+    mockMvc.perform(delete("/projects/1/report"))
+            .andExpect(status().isOk());
+    verify(reportRepository).delete(1);
+    mockMvc.perform(get("/projects/1/report"))
+            .andExpect(content().contentType(MediaType.TEXT_PLAIN))
+            .andExpect(status().isOk())
+            .andExpect(content().string(DEFAULT_REPORT_TEXT));
+    verify(reportRepository).get(1);
 
+  }
 }
 

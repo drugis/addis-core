@@ -49,4 +49,16 @@ public class ReportRepositoryTest {
     assertEquals(newReport, newResult);
   }
 
+  @Test
+  public void testDeleteReport() {
+    //make sure text is not on default already
+    String newReport = "whoah new text";
+    reportRepository.update(projectId, newReport);
+    String newResult = reportRepository.get(projectId);
+    assertEquals(newReport, newResult);
+    reportRepository.delete(projectId);
+    newResult = reportRepository.get(projectId);
+    assertEquals("default report text",newResult);
+  }
+
 }

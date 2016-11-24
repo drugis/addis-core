@@ -16,6 +16,7 @@ define(['angular', 'lodash'],
 
       $scope.userId = $stateParams.userUid;
       $scope.saveChanges = saveChanges;
+      $scope.resetToDefault = resetToDefault;
 
       function saveChanges(newText) {
         ReportResource.put($stateParams, newText);
@@ -27,8 +28,15 @@ define(['angular', 'lodash'],
         $timeout(function() {
           $scope.showSaved = false;
         }, 3000);
-
       }
+
+      function resetToDefault() {
+        $q.all([ReportResource.delete($stateParams).$promise]).then(function(values) {
+          $scope.reportText = values[0].data;
+        });
+      }
+
+
 
     };
     return dependencies.concat(EditReportcontroller);

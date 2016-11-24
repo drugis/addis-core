@@ -6,7 +6,6 @@ define(['angular-resource'], function () {
       get: {
         method: 'GET',
         transformResponse: function(data) {
-          console.log('getreport');
           return {
             data: data
           };
@@ -14,6 +13,14 @@ define(['angular-resource'], function () {
       },
       put: {
         method: 'PUT'
+      },
+      delete:{
+        method: 'DELETE',
+        transformResponse: function(data){
+          return {
+            data:data
+          };
+        }
       }
     });
   };

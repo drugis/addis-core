@@ -8,4 +8,6 @@ public interface ReportRepository {
   String get(Integer projectId);
 
   void update(Integer projectId, String newReport);
+
+  String delete(Integer projectId);
 }
