@@ -38,7 +38,9 @@ require.config({
     'ngSanitize': 'bower_components/angular-sanitize/angular-sanitize',
     'lodash': 'bower_components/lodash/dist/lodash.min',
     'help-popup': 'bower_components/help-popup/help-directive',
-    'angular-patavi-client': 'bower_components/angular-patavi-client/patavi'
+    'angular-patavi-client': 'bower_components/angular-patavi-client/patavi',
+    'angular-markdown-directive': 'bower_components/angular-markdown-directive/markdown',
+    'showdown': 'bower_components/showdown/compressed/Showdown.min',
   },
   baseUrl: '/base/src/main/webapp/resources/app/js',
   shim: {
