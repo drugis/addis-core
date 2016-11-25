@@ -37,7 +37,8 @@ import java.util.List;
 public class ProjectController extends AbstractAddisCoreController {
 
   final static Logger logger = LoggerFactory.getLogger(ProjectController.class);
-  final static String defaultReportText = "default report text";
+  final static String DEFAULT_REPORT_TEXT
+          = "default report text";
   @Inject
   private ProjectRepository projectsRepository;
 
@@ -91,7 +92,7 @@ public class ProjectController extends AbstractAddisCoreController {
     try {
       return reportRepository.get(projectId);
     } catch (EmptyResultDataAccessException e) {
-      return defaultReportText;
+      return DEFAULT_REPORT_TEXT;
     }
   }
 
