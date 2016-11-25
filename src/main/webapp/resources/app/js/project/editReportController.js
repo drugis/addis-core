@@ -1,8 +1,8 @@
 'use strict';
 define(['angular', 'lodash'],
   function() {
-    var dependencies = ['$scope', '$q', '$stateParams', 'ProjectResource', 'ReportResource', '$timeout'];
-    var EditReportcontroller = function($scope, $q, $stateParams, ProjectResource, ReportResource, $timeout) {
+    var dependencies = ['$scope', '$q', '$stateParams', 'ProjectResource', 'ReportResource', '$timeout', 'UserService'];
+    var EditReportcontroller = function($scope, $q, $stateParams, ProjectResource, ReportResource, $timeout, UserService) {
       $scope.project = ProjectResource.get($stateParams);
       $scope.reportText = '';
       $scope.showSaving = false;
@@ -15,7 +15,19 @@ define(['angular', 'lodash'],
           loaded: true
         };
         $scope.reportText = values[1].data;
+        var isUserOwner = false;
+        if (UserService.hasLoggedInUser()) {
+          $scope.loginUserId = (UserService.getLoginUser()).id;
+          isUserOwner = UserService.isLoginUserId($scope.project.owner.id);
+        }
+        $scope.editMode = {
+          isUserOwner: isUserOwner,
+          disableEditing: !isUserOwner
+        };
       });
+
+
+
 
       function saveChanges(newText) {
         ReportResource.put($stateParams, newText);

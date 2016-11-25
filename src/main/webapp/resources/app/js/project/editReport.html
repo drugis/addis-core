@@ -9,8 +9,8 @@
 
   <div class="row">
     <div class="columns small-12">
-      <button ng-click="saveChanges(reportText)" ng-disabled="!reportText"><i class="fa fa-save"></i> Save</button>
-      <button ng-click="reportText=resetToDefault()"><i class="fa fa-trash"></i>Default text</button>
+      <button ng-click="saveChanges(reportText)" ng-disabled="!reportText||editMode.disableEditing"><i class="fa fa-save"></i> Save</button>
+      <button ng-click="reportText=resetToDefault()" ng-disabled="editMode.disableEditing"><i class="fa fa-trash"></i>Default text</button>
       <div ng-show="showSaving" class=fa fa-save>Saving</div>
       <span style="color: green" ng-show="showSaved">Report saved</span>
 
