@@ -341,7 +341,6 @@ define(['angular-mocks', 'angular'], function(angularMocks, angular) {
         scope.$apply();
         expect(scope.reportText).toEqual('Default report text.');
       });
-
     });
   });
 });
