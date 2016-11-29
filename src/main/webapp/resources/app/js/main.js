@@ -16,6 +16,7 @@ require.config({
     'error-reporting': 'bower_components/error-reporting/errorReportingDirective',
     'foundation': 'bower_components/foundation/js/foundation.min',
     'gemtc-web': 'bower_components/gemtc-web/app/js',
+    'help-popup': 'bower_components/help-popup/help-directive',
     'jQuery': 'bower_components/jquery/dist/jquery.min',
     'jquery-slider': 'bower_components/jslider/dist/jquery.slider.min',
     'lodash': 'bower_components/lodash/dist/lodash.min',
@@ -28,7 +29,6 @@ require.config({
     'nvd3': 'bower_components/nvd3/build/nv.d3.min',
     'showdown': 'bower_components/showdown/compressed/Showdown.min',
     'underscore': 'bower_components/underscore/underscore-min',
-    'help-popup': 'bower_components/help-popup/help-directive',
   },
   baseUrl: 'app/js',
   shim: {

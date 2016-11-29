@@ -93,8 +93,8 @@ define(['lodash', 'angular'], function(_, angular) {
           });
         });
       });
+      $scope.reportText = ReportResource.get($stateParams);
     });
-    $scope.reportText = ReportResource.get($stateParams);
 
     function generateInterventionDescriptions(interventions) {
       $scope.interventions = interventions.map(function(intervention) {
