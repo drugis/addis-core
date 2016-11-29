@@ -14,11 +14,12 @@ define(['lodash', 'angular'], function(_, angular) {
     'ANALYSIS_TYPES',
     'InterventionService',
     'activeTab',
-    'UserService'
+    'UserService',
+    'ReportResource'
   ];
   var SingleProjectController = function($scope, $q, $state, $stateParams, $location, $modal, ProjectResource, TrialverseResource,
     TrialverseStudyResource, SemanticOutcomeResource, OutcomeResource, SemanticInterventionResource, InterventionResource,
-    CovariateOptionsResource, CovariateResource, AnalysisResource, ANALYSIS_TYPES, InterventionService, activeTab, UserService) {
+    CovariateOptionsResource, CovariateResource, AnalysisResource, ANALYSIS_TYPES, InterventionService, activeTab, UserService, ReportResource) {
 
     $scope.activeTab = activeTab;
 
@@ -93,6 +94,7 @@ define(['lodash', 'angular'], function(_, angular) {
         });
       });
     });
+    $scope.reportText = ReportResource.get($stateParams);
 
     function generateInterventionDescriptions(interventions) {
       $scope.interventions = interventions.map(function(intervention) {
@@ -283,8 +285,8 @@ define(['lodash', 'angular'], function(_, angular) {
       var path = $location.path();
       if (tab === 'report') {
         $location.path(path + '/report');
-      } else if (tab==='editedReport') {
-        $location.path(path+'/editedReport');
+      } else if (tab === 'editedReport') {
+        $location.path(path + '/editedReport');
       } else {
         var newPath = path.substring(0, path.length - '/report'.length);
         $location.path(newPath);
