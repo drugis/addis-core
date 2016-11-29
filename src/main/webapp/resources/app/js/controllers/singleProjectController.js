@@ -283,6 +283,8 @@ define(['lodash', 'angular'], function(_, angular) {
       var path = $location.path();
       if (tab === 'report') {
         $location.path(path + '/report');
+      } else if (tab==='editedReport') {
+        $location.path(path+'/editedReport');
       } else {
         var newPath = path.substring(0, path.length - '/report'.length);
         $location.path(newPath);
@@ -291,7 +293,7 @@ define(['lodash', 'angular'], function(_, angular) {
 
     $scope.goToEditView = function() {
       $state.go('editReport', $stateParams);
-    }
+    };
 
   };
   return dependencies.concat(SingleProjectController);
