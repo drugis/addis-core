@@ -12,7 +12,7 @@
       <button ng-click="saveChanges(reportText)" ng-disabled="!reportText||editMode.disableEditing"><i class="fa fa-save"></i> Save</button>
       <button ng-click="reportText=resetToDefault()" ng-disabled="editMode.disableEditing"><i class="fa fa-trash"></i> Default text</button>
       <button ng-click="reportText=loadReport()" ng-disabled="editMode.disableEditing"><i class="fa fa-refresh">Generate text</i></button>
-      <button ng-click="insertText()" ng-disabled="editMode.disableEditing">insert test</button>
+      <button ng-click="reportText=insertText(reportText)" ng-disabled="editMode.disableEditing">insert test</button>
 
       <div ng-show="showSaving" class=fa fa-save>Saving</div>
       <span style="color: green" ng-show="showSaved">Report saved</span>
