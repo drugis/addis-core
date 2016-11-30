@@ -16,17 +16,14 @@ define(['showdown'], function(Showdown) {
         }
         var converter = new Showdown.Converter();
         scope.reportText = ReportResource.get($stateParams);
-        if (scope.data) {
-          scope.$watch('data', function(newVal, oldVal) {
-            if (newVal) {
-              updateHtml(newVal);
-            }
-          });
-        } else {
-          scope.reportText.$promise.then(function(reportResponse) {
-            updateHtml(reportResponse.data);
-          });
-        }
+        scope.$watch('data', function(newVal) {
+          if (newVal) {
+            updateHtml(newVal);
+          }
+        });
+        scope.reportText.$promise.then(function(reportResponse) {
+          updateHtml(reportResponse.data);
+        });
       }
     };
   };
