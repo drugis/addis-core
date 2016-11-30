@@ -14,10 +14,9 @@
         </h1>
       </div>
       <div>
-        <h5>Source dataset: <a ui-sref="versionedDataset({userUid: trialverse.ownerId, datasetUUID: project.namespaceUid, version: project.datasetVersion.split('/versions/')[1]
-      })">
-        {{::trialverse.name}}</a></h5>
-
+        <h5>Source dataset:
+          <a ui-sref="versionedDataset({userUid: trialverse.ownerId, datasetUUID: project.namespaceUid, version: project.datasetVersion.split('/versions/')[1]})">{{::trialverse.name}}</a>
+        </h5>
       </div>
       <div class="row" ng-show="project.description">
         <div class="columns large-12 small-12">
@@ -33,11 +32,11 @@
         <tab heading="Report" active="activeTab === 'report'" ng-click="setActiveTab('report')">
           <div ng-if="activeTab === 'report'">
             <div class="row">
-              <div class="columns larg-9">
+              <div class="columns large-9">
                 <markdown-report></markdown-report>
               </div>
               <div class="columns large-3">
-                <button class="right" ng-click="goToEditView()">Customize</button>
+                <button class="right" ng-show="editMode.allowEditing" ng-click="goToEditView()">Customize</button>
               </div>
             </div>
           </div>
@@ -192,7 +191,4 @@
       </tabset>
     </div>
   </div>
-
-</div>
-
 </div>

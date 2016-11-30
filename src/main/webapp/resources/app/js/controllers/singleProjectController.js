@@ -41,8 +41,9 @@ define(['lodash', 'angular'], function(_, angular) {
 
     $scope.projects = ProjectResource.query();
     $scope.project = ProjectResource.get($stateParams);
-    $scope.project.$promise.then(function() {
 
+    // load project
+    $scope.project.$promise.then(function() {
       $scope.loading.loaded = true;
 
       if (UserService.isLoginUserId($scope.project.owner.id)) {

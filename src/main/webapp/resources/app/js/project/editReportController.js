@@ -1,6 +1,6 @@
 'use strict';
-define(['angular', 'lodash'],
-  function(angular, _) {
+define(['angular', 'lodash', 'jQuery'],
+  function(angular, _, $) {
     var dependencies = ['$scope', '$q', '$state', '$stateParams', '$location', '$modal',
       'ProjectResource',
       'ReportResource',
@@ -45,6 +45,9 @@ define(['angular', 'lodash'],
       $scope.saveChanges = saveChanges;
       $scope.resetToDefault = resetToDefault;
       $scope.loadReport = loadReport;
+      $scope.insertText = insertText;
+
+
       $q.all([$scope.project.$promise, ReportResource.get($stateParams).$promise]).then(function(values) {
         $scope.loading = {
           loaded: true
@@ -101,12 +104,19 @@ define(['angular', 'lodash'],
             });
           });
         });
-
-
       });
 
+      function insertText() {
+        function insertTextAtCursor(text) {
+          var input = $('#report-input');
+          var cursorPos = input.prop('selectionStart');
+          var textBefore = $scope.reportText.substring(0, cursorPos);
+          var textAfter = $scope.reportText.substring(cursorPos, $scope.reportText.length);
+          $scope.reportText = textBefore + text + textAfter;
+        }
 
-
+        insertTextAtCursor('**its a sin**');
+      }
 
       function saveChanges(newText) {
         ReportResource.put($stateParams, newText);
