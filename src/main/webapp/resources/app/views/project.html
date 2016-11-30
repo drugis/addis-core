@@ -32,10 +32,12 @@
       <tabset>
         <tab heading="Report" active="activeTab === 'report'" ng-click="setActiveTab('report')">
           <div ng-if="activeTab === 'report'">
-              <div class="row">
+            <div class="row">
+              <div class="columns larg-9">
+                <markdown-report></markdown-report>
+              </div>
               <div class="columns large-3">
                 <button class="right" ng-click="goToEditView()">Customize</button>
-                <div btf-markdown="reportText.data"></div>
               </div>
             </div>
           </div>
