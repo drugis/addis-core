@@ -11,15 +11,15 @@
           <th rowspan="2">Interventions</th>
           <th rowspan="2">Arms</th>
           <!--FIXME: get rid of static names -->
-          <th rowspan="2" ng-show="trialData[0].measurements[momentSelections[trialData[0].studyUri].uri].type === 'dichotomous'">subjects with events
+          <th rowspan="2" ng-show="trialData[0].measurements[momentSelections[trialData[0].studyUri].uri].type === 'dichotomous'">subjects with event
             <inline-help help-key="count"></inline-help>
           </th>
 
-          <th rowspan="2" ng-show="trialData[0].measurements[momentSelections[trialData[0].studyUri].uri].type === 'continuous'">&mu;
+          <th rowspan="2" ng-show="trialData[0].measurements[momentSelections[trialData[0].studyUri].uri].type === 'continuous'">mean;
             <inline-help help-key="mean"></inline-help>
           </th>
 
-          <th rowspan="2" ng-show="trialData[0].measurements[momentSelections[trialData[0].studyUri].uri].type === 'continuous' && showSigmaN">&sigma;
+          <th rowspan="2" ng-show="trialData[0].measurements[momentSelections[trialData[0].studyUri].uri].type === 'continuous' && showSigmaN">standard deviation;
             <inline-help help-key="standard-deviation"></inline-help>
           </th>
 

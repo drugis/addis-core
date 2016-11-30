@@ -203,7 +203,7 @@ define(['angular', 'lodash'], function(angular, _) {
       },
       'event_count': {
         type: 'event_count',
-        label: 'event count',
+        label: 'number of events',
         uri: 'http://trials.drugis.org/ontology#event_count',
         dataType: INTEGER_TYPE,
         variableType: 'ontology:dichotomous',
@@ -212,7 +212,7 @@ define(['angular', 'lodash'], function(angular, _) {
       },
       'count': {
         type: 'count',
-        label: 'subjects with events',
+        label: 'subjects with event',
         uri: 'http://trials.drugis.org/ontology#count',
         dataType: INTEGER_TYPE,
         variableType: 'ontology:dichotomous',
@@ -221,7 +221,7 @@ define(['angular', 'lodash'], function(angular, _) {
       },
       'percentage': {
         type: 'percentage',
-        label: 'percentage',
+        label: 'percentage with event',
         uri: 'http://trials.drugis.org/ontology#percentage',
         dataType: DOUBLE_TYPE,
         variableType: 'ontology:dichotomous',
@@ -230,7 +230,7 @@ define(['angular', 'lodash'], function(angular, _) {
       },
       'proportion': {
         type: 'proportion',
-        label: 'proportion',
+        label: 'proportion with event',
         uri: 'http://trials.drugis.org/ontology#proportion',
         dataType: DOUBLE_TYPE,
         variableType: 'ontology:dichotomous',
