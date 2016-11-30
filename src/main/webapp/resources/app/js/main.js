@@ -4,7 +4,6 @@ require.config({
   paths: {
     'angular': 'bower_components/angular/angular',
     'angular-cookies': 'bower_components/angular-cookies/angular-cookies.min',
-    'angular-markdown-directive': 'bower_components/angular-markdown-directive/markdown',
     'angular-md5': 'bower_components/angular-md5/angular-md5.min',
     'angular-patavi-client': 'bower_components/angular-patavi-client/patavi',
     'angular-resource': 'bower_components/angular-resource/angular-resource.min',
@@ -27,7 +26,7 @@ require.config({
     'moment': 'bower_components/moment/min/moment.min',
     'ngSanitize': 'bower_components/angular-sanitize/angular-sanitize.min',
     'nvd3': 'bower_components/nvd3/build/nv.d3.min',
-    'showdown': 'bower_components/showdown/compressed/Showdown.min',
+    'showdown': 'bower_components/showdown/dist/showdown.min',
     'underscore': 'bower_components/underscore/underscore-min',
   },
   baseUrl: 'app/js',
@@ -49,10 +48,6 @@ require.config({
     'angular-md5': {
       deps: ['angular'],
       exports: 'angular-md5'
-    },
-    'angular-markdown-directive': {
-      deps: ['angular', 'showdown', 'ngSanitize'],
-      exports: 'angular-markdown-directive'
     },
     'angularanimate': {
       deps: ['angular']

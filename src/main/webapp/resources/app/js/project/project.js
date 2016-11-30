@@ -15,6 +15,7 @@ define(function (require) {
     //directives
     .directive('nmaReportView', require('project/nmaReportViewDirective'))
     .directive('ssbrReportView', require('project/ssbrReportViewDirective'))
+    .directive('markdownReport', require('project/markdownReportDirective'))
 
     .service('ProjectService', require('project/projectService'))
     ;
