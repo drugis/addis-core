@@ -1,0 +1,40 @@
+<form novalidate " ng-submit="insertComparisonResult()">
+  <div class="row ">
+    <div class="large-9 columns">
+      <h3>Insert comparison result</h3>
+    </div>
+  </div>
+  <div class="row ">
+    <div class="large-9 columns">
+    <label>
+      Select analysis
+      <select ng-model="selections.analysis" ng-options="analysis.title for analysis
+  in analyses " ng-change="selectedAnalysisChanged()"></select>
+    </label>
+    </div>
+  </div>
+  <div class="row ">
+    <div class="large-9 columns">
+    <label>
+      Select model from the analysis
+      <select ng-model="selections.model" ng-options="model.title for model in selections.analysis.models"
+      ng-change="selectedModelChanged()"></select>
+    </label>
+    </div>
+  </div>
+  <div class="row ">
+    <div class="large-9 columns">
+    <label>
+      Select comparison from the model
+      <select ng-model="selections.comparison" ng-options="comparison.label for comparison in selections.model.comparisons"></select>
+    </label>
+    </div>
+  </div>
+  <div class="row modal-bottom-button-bar">
+    <div class="large-9 columns ">
+      <button class="success" type="submit" ng-disabled="!selections.analysis || !selections.model || !selections.comparison">Insert
+      </button>
+    </div>
+  </div>
+  <a class="close-reveal-modal" ng-click="cancel()">&#215;</a>
+</form>

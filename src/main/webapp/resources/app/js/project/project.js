@@ -12,6 +12,7 @@ define(function (require) {
     .controller('EditProjectController', require('project/editProjectController'))
     .controller('EditReportController', require('project/editReportController'))
     .controller('InsertNetworkGraphController', require('project/insertNetworkGraphController'))
+    .controller('InsertComparisonResultController', require('project/insertComparisonResultController'))
 
     //directives
     .directive('nmaReportView', require('project/nmaReportViewDirective'))

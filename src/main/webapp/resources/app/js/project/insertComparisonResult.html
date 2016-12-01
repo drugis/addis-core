@@ -1,0 +1,23 @@
+<form novalidate " ng-submit="insertComparisonResult() ">
+  <div class="row ">
+    <div class="large-9 columns ">
+      <h3>Insert a network graph</h3>
+    </div>
+  </div>
+  <div class="row ">
+    <div class="large-9 columns ">
+    <label>
+      Insert graph for analysis
+      <select ng-model="selectedAnalysis " ng-options="analysis.title for analysis
+  in analyses "></select>
+    </label>
+    </div>
+  </div>
+  <div class="row modal-bottom-button-bar">
+    <div class="large-9 columns">
+      <button class="success" type="submit" ng-disabled="!selectedAnalysis">Insert
+      </button>
+    </div>
+  </div>
+  <a class="close-reveal-modal " ng-click="cancel() ">&#215;</a>
+</form>
