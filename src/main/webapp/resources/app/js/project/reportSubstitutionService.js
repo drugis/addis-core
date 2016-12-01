@@ -7,9 +7,19 @@ define(['lodash'], function(_) {
       tag: 'network-plot',
       regex: /(\&amp;|\&){3}(network-plot\s+analysis-id=\&\#34;\d+\&\#34;\s*)(\&amp;|\&){3}/g,
       replacer: inlineNetworkPlot
-    }];
+    },
+    {
+      tag: 'result-comparison',
+      regex: /(\&amp;|\&){3}(network-plot\s+analysis-id=\&\#34;\d+\&\#34;\s*)(\&amp;|\&){3}/g,
+      replacer: inlineComparisonResult
+    }
+    ];
 
     function inlineNetworkPlot(match, p1, p2) {
+      return '<' + p2.replace(/\&\#34;/g, '"') + '>';
+    }
+
+    function inlineComparisonResult(match,p1,p2){
       return '<' + p2.replace(/\&\#34;/g, '"') + '>';
     }
 
