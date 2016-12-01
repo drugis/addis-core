@@ -9,12 +9,12 @@
 
   <div class="row">
     <div class="columns small-12">
-      <button ng-click="saveChanges(reportText)" ng-disabled="!reportText||editMode.disableEditing"><i class="fa fa-save"></i> Save</button>
-      <button ng-click="reportText=resetToDefault()" ng-disabled="editMode.disableEditing"><i class="fa fa-trash"></i> Default text</button>
-      <button ng-click="reportText=loadReport()" ng-disabled="editMode.disableEditing"><i class="fa fa-refresh">Generate text</i></button>
-      <button ng-click="reportText=insertText(reportText)" ng-disabled="editMode.disableEditing">insert test</button>
+      <button ng-click="saveChanges()" ng-disabled="!reportText.text||editMode.disableEditing"><i class="fa fa-save"></i> Save</button>
+      <button ng-click="resetToDefault()" ng-disabled="editMode.disableEditing"><i class="fa fa-trash"></i> Default text</button>
+      <button ng-click="loadReport()" ng-disabled="editMode.disableEditing"><i class="fa fa-refresh"></i> Generate text</button>
+      <button ng-click="openNetworkGraphDialog()" ng-disabled="editMode.disableEditing"><i style="font-weight: bold" class="fa fa-connectdevelop"></i> Network graph</button>
 
-      <div ng-show="showSaving" class=fa fa-save>Saving</div>
+      <span ng-show="showSaving">Saving</span>
       <span style="color: green" ng-show="showSaved">Report saved</span>
     </div>
   </div>
@@ -22,11 +22,11 @@
   <div class="row">
     <div class="columns small-6" style="min-height: 100%">
       <div style="height: 85vh;">
-        <textarea ng-model="reportText" id="report-input" style="height: 100%;"></textarea>
+        <textarea ng-model="reportText.text" id="report-input" style="height: 100%;"></textarea>
       </div>
     </div>
     <div class="columns small-6">
-      <markdown-report data="reportText"></markdown-report>
+      <markdown-report data="reportText.text"></markdown-report>
     </div>
   </div>
 </div>

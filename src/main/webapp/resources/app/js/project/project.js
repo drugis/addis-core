@@ -11,12 +11,15 @@ define(function (require) {
     .controller('CreateProjectModalController', require('project/createProjectModalController'))
     .controller('EditProjectController', require('project/editProjectController'))
     .controller('EditReportController', require('project/editReportController'))
+    .controller('InsertNetworkGraphController', require('project/insertNetworkGraphController'))
 
     //directives
     .directive('nmaReportView', require('project/nmaReportViewDirective'))
     .directive('ssbrReportView', require('project/ssbrReportViewDirective'))
     .directive('markdownReport', require('project/markdownReportDirective'))
 
+    //services
     .service('ProjectService', require('project/projectService'))
+    .service('ReportSubstitutionService', require('project/reportSubstitutionService'))
     ;
 });

@@ -1,7 +1,7 @@
 'use strict';
 define(['showdown'], function(Showdown) {
-  var dependencies = ['$stateParams', '$compile', '$sanitize', 'ReportResource'];
-  var MarkdownReportDirective = function($stateParams, $compile, $sanitize, ReportResource) {
+  var dependencies = ['$stateParams', '$compile', '$sanitize', 'ReportResource', 'ReportSubstitutionService'];
+  var MarkdownReportDirective = function($stateParams, $compile, $sanitize, ReportResource, ReportSubstitutionService) {
     return {
       restrict: 'E',
       scope: {
@@ -11,6 +11,7 @@ define(['showdown'], function(Showdown) {
       link: function(scope, element) {
         function updateHtml(data) {
           var html = $sanitize(converter.makeHtml(data));
+          html = ReportSubstitutionService.inlineDirectives(html);
           element.html(html);
           $compile(element.contents())(scope);
         }

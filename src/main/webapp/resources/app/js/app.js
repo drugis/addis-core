@@ -276,6 +276,7 @@ define(
             url: '/users/:userUid/projects/:projectId/editReport',
             templateUrl: 'app/js/project/editReport.html',
             controller: 'EditReportController',
+            parent: 'project'
           })
           .state('namespace-study', {
             url: '/study/:studyUid',
