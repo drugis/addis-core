@@ -106,20 +106,20 @@ define(['angular', 'lodash', 'jQuery'],
         });
       });
 
-      function insertText() {
-        function insertTextAtCursor(text) {
-          var input = $('#report-input');
-          var cursorPos = input.prop('selectionStart');
-          var textBefore = $scope.reportText.substring(0, cursorPos);
-          var textAfter = $scope.reportText.substring(cursorPos, $scope.reportText.length);
-          $scope.reportText = textBefore + text + textAfter;
-        }
-
-        insertTextAtCursor('**its a sin**');
+      function insertTextAtCursor(reportText, text) {
+        var input = $('#report-input');
+        var cursorPos = input.prop('selectionStart');
+        var textBefore = reportText.substring(0, cursorPos);
+        var textAfter = reportText.substring(cursorPos);
+        return textBefore + text + textAfter;
       }
 
-      function saveChanges(newText) {
-        ReportResource.put($stateParams, newText);
+      function insertText(reportText) {
+        return insertTextAtCursor(reportText, '**its a sin**');
+      }
+
+      function saveChanges(reportText) {
+        ReportResource.put($stateParams, reportText);
         $scope.showSaving = true;
         $timeout(function() {
           $scope.showSaving = false;
