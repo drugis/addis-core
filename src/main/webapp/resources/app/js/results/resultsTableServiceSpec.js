@@ -48,7 +48,7 @@ define(['angular', 'angular-mocks'], function() {
         }];
         expect(resultsTableService.createHeaders(testType)).toEqual(expectedResult);
       });
-      it('should return a list containting objects which contain "subjects with events and N" labels, their respective lexicon key and wether they are implemented for use during analysiswhen the type is dichotomous', function() {
+      it('should return a list containting objects which contain "subjects with event and N" labels, their respective lexicon key and wether they are implemented for use during analysiswhen the type is dichotomous', function() {
         var testType = {
           resultProperties: [
             'http://trials.drugis.org/ontology#count',
@@ -56,7 +56,7 @@ define(['angular', 'angular-mocks'], function() {
           ]
         };
         var expectedResult = [{
-          label: 'subjects with events',
+          label: 'subjects with event',
           lexiconKey: 'count',
           analysisReady: true
         }, {
@@ -203,7 +203,7 @@ define(['angular', 'angular-mocks'], function() {
         it('should create input columns', function() {
           expect(resultRows[2].inputColumns).toBeDefined();
           expect(resultRows[2].inputColumns.length).toBe(2);
-          expect(resultRows[2].inputColumns[0].valueName).toEqual('subjects with events');
+          expect(resultRows[2].inputColumns[0].valueName).toEqual('subjects with event');
           expect(resultRows[2].inputColumns[0].dataType).toEqual(INTEGER_TYPE);
           expect(resultRows[2].inputColumns[0].isInValidValue).toEqual(false);
           expect(resultRows[2].inputColumns[0].value).toEqual(66);

@@ -20,7 +20,7 @@ define(['lodash', 'angular'], function(_, angular) {
   var SingleProjectController = function($scope, $q, $state, $stateParams, $location, $modal, ProjectResource, TrialverseResource,
     TrialverseStudyResource, SemanticOutcomeResource, OutcomeResource, SemanticInterventionResource, InterventionResource,
     CovariateOptionsResource, CovariateResource, AnalysisResource, ANALYSIS_TYPES, InterventionService, activeTab, UserService, ReportResource) {
-
+    //TODO: clean up file as a lot is not necessary anymore.
     $scope.activeTab = activeTab;
 
     $scope.analysesLoaded = false;
