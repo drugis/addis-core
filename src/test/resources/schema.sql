@@ -626,3 +626,13 @@ CREATE TABLE MeasurementMomentInclusion (
   measurementMoment VARBINARY(255)
 );
 --rollback DROP TABLE MeasurementMomentInclusion
+
+--changeset reidd:64
+CREATE TABLE customReport (
+  id SERIAL NOT NULL,
+  projectId INT NOT NULL,
+  text TEXT NOT NULL,
+  PRIMARY KEY(id),
+  FOREIGN KEY(projectId) REFERENCES Project(id)
+);
+--rollback DROP TABLE customReport

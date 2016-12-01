@@ -120,3 +120,5 @@ INSERT INTO public.funnelPlot(id, modelId) VALUES (-1, 1);
 
 INSERT INTO public.funnelPlotComparison(plotId, t1, t2, biasDirection) VALUES (-1, 2, 3, 0);
 INSERT INTO public.funnelPlotComparison(plotId, t1, t2, biasDirection) VALUES (-1, 3, 4, 1);
+
+INSERT INTO public.customReport(id, projectId, text) VALUES (-1, 1, 'this is a report');

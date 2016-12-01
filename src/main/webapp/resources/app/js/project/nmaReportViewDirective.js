@@ -42,7 +42,7 @@ define(['lodash'], function(_) {
 
         modelsPromise.then(function(models) {
 
-          // only load problem is a model has been creaded, else is may not be possible to create a vaid model
+          // only load problem if a model has been created, else it may not be possible to create a valid model
           if (models.length) {
             scope.problem = ProblemResource.get({
               analysisId: scope.analysis.id,

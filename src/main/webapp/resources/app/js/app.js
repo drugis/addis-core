@@ -7,12 +7,14 @@ define(
     'lodash',
     'mmfoundation',
     'foundation',
-    'angular-cookies',
-    'angular-ui-router',
-    'angular-select',
     'angularanimate',
+    'angular-cookies',
+    'angular-markdown-directive',
+    'angular-select',
+    'angular-ui-router',
     'angular-md5',
     'ngSanitize',
+    'showdown',
     'angular-patavi-client',
     'error-reporting',
     'controllers',
@@ -90,6 +92,7 @@ define(
       'ngSanitize',
       'ui.select',
       'angular-md5',
+      'btford.markdown',
       'ngCookies',
       'mm.foundation.tpls',
       'mm.foundation.modal',
@@ -179,7 +182,7 @@ define(
         HelpPopupService.loadLexicon($http.get('app/js/bower_components/gemtc-web/app/lexicon.json'));
         HelpPopupService.loadLexicon($http.get('addis-lexicon.json'));
 
-        $rootScope.$on('$stateChangeSuccess', function(event, toState, toParams, fromState, fromParams) {
+        $rootScope.$on('$stateChangeSuccess', function(event, toState, toParams, fromState) {
           if (toState.name === 'datasets' && fromState.name === '' && $cookies.get('returnToPage')) {
             var redirectUrl = $cookies.get('returnToPage');
             $cookies.remove('returnToPage');
@@ -270,6 +273,11 @@ define(
                 return 'report';
               }
             }
+          })
+          .state('editReport', {
+            url: '/users/:userUid/projects/:projectId/editReport',
+            templateUrl: 'app/js/project/editReport.html',
+            controller: 'EditReportController',
           })
           .state('namespace-study', {
             url: '/study/:studyUid',
@@ -469,7 +477,7 @@ define(
           .state('studyHistory', {
             url: '/users/:userUid/datasets/:datasetUUID/studies/:studyGraphUuid/history',
             templateUrl: 'app/js/dataset/studyHistory.html',
-            controller: 'StudyHistoryController'            
+            controller: 'StudyHistoryController'
           })
           .state('versionedDataset', {
             url: '/users/:userUid/datasets/:datasetUUID/versions/:versionUuid',

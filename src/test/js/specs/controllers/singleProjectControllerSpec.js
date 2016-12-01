@@ -64,6 +64,7 @@ define(['angular-mocks', 'angular'], function(angularMocks, angular) {
         $stateParams: {},
         ProjectResource: {},
         TrialverseResource: {},
+        ReportResource: {},
         SemanticOutcomeResource: {},
         OutcomeResource: {},
         SemanticInterventionResource: {},
@@ -83,25 +84,32 @@ define(['angular-mocks', 'angular'], function(angularMocks, angular) {
     describe('when first initialised', function() {
       var scope,
         projectResource,
+        reportResource,
         mockProject = {
           datasetVersion: 'version',
           id: 'projectId',
           $promise: {
             then: function() {}
-          }
-        };
+          },
+        },
+        reportText = 'Default report text.';
 
       beforeEach(inject(function($controller, $rootScope) {
         projectResource = jasmine.createSpyObj('ProjectResource', ['get', 'query']);
-
         projectResource.get.and.returnValue(mockProject);
+
+        reportResource = jasmine.createSpyObj('ReportResource', ['get', 'query']);
+        reportResource.get.and.returnValue(reportText);
+
         scope = $rootScope;
+
 
         controllerArguments.$scope = scope;
         controllerArguments.$stateParams = stateParams;
         controllerArguments.ProjectResource = projectResource;
         controllerArguments.ANALYSIS_TYPES = analysisTypes;
-
+        controllerArguments.ReportResource = reportResource;
+        
         $controller('SingleProjectController', controllerArguments);
       }));
 
@@ -125,7 +133,7 @@ define(['angular-mocks', 'angular'], function(angularMocks, angular) {
         projectDeferred, analysisDeferred, studiesDeferred, interventionsDeferred,
         projectResource, trialverseResource, semanticOutcomeResource, semanticInterventionResource,
         outcomeResource, interventionResource, analysisResource, trialverseStudyResource,
-        mockSemanticOutcomes, mockSemanticInterventions,
+        mockSemanticOutcomes, mockSemanticInterventions, reportResource,
         mockProject = {
           id: 1,
           owner: {
@@ -167,8 +175,9 @@ define(['angular-mocks', 'angular'], function(angularMocks, angular) {
           id: 5,
           name: 'testName'
         },
-        mockStudies = [mockStudy];
-
+        mockStudies = [mockStudy],
+        mockReport = 'Default report text.';
+  
       beforeEach(inject(function($controller, $q, $rootScope) {
         var mockStateParams = {
           projectId: mockProject.id
@@ -223,7 +232,8 @@ define(['angular-mocks', 'angular'], function(angularMocks, angular) {
           $promise: interventionDeferred.promise
         };
         interventionResource.save.and.returnValue(mockIntervention);
-
+        reportResource = jasmine.createSpyObj('reportResource',['get','query']);
+        reportResource.get.and.returnValue(mockReport);
 
         window = {
           config: {
@@ -238,6 +248,7 @@ define(['angular-mocks', 'angular'], function(angularMocks, angular) {
         controllerArguments.$state = state;
         controllerArguments.$stateParams = mockStateParams;
         controllerArguments.ProjectResource = projectResource;
+        controllerArguments.ReportResource = reportResource;
         controllerArguments.TrialverseResource = trialverseResource;
         controllerArguments.SemanticOutcomeResource = semanticOutcomeResource;
         controllerArguments.OutcomeResource = outcomeResource;
@@ -325,6 +336,12 @@ define(['angular-mocks', 'angular'], function(angularMocks, angular) {
           definitionLabel: 'covariate option label'
         });
       });
+      it('should place the report text on the scope', function() {
+        projectDeferred.resolve();
+        scope.$apply();
+        expect(scope.reportText).toEqual('Default report text.');
+      });
+
     });
   });
 });

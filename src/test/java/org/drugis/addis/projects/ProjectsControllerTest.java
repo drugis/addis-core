@@ -7,6 +7,7 @@ import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.projects.controller.EditProjectCommand;
 import org.drugis.addis.projects.controller.ProjectController;
 import org.drugis.addis.projects.repository.ProjectRepository;
+import org.drugis.addis.projects.repository.ReportRepository;
 import org.drugis.addis.projects.service.ProjectService;
 import org.drugis.addis.security.Account;
 import org.drugis.addis.security.repository.AccountRepository;
@@ -17,6 +18,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
@@ -25,6 +28,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import javax.inject.Inject;
+import java.net.URI;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -33,8 +37,7 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 /**
@@ -45,6 +48,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebAppConfiguration
 public class ProjectsControllerTest {
 
+  public static final String DEFAULT_REPORT_TEXT = "default report text";
   private MockMvc mockMvc;
 
   @Inject
@@ -55,6 +59,9 @@ public class ProjectsControllerTest {
 
   @Mock
   private ProjectService projectService;
+
+  @Inject
+  private ReportRepository reportRepository;
 
   @Inject
   private WebApplicationContext webApplicationContext;
@@ -74,6 +81,7 @@ public class ProjectsControllerTest {
   public void setUp() {
     reset(accountRepository);
     reset(projectRepository);
+    reset(reportRepository);
     projectService = mock(ProjectService.class);
     projectController = new ProjectController();
     user = mock(Principal.class);
@@ -202,5 +210,49 @@ public class ProjectsControllerTest {
     verify(projectService).updateProject(project.getId(), command.getName(), command.getDescription());
   }
 
+  @Test
+  public void testGetReport() throws Exception {
+    String reportContent = "report content";
+    when(reportRepository.get(1)).thenReturn(reportContent);
+    mockMvc.perform(get("/projects/1/report"))
+            .andExpect(content().contentType(MediaType.TEXT_PLAIN))
+            .andExpect(status().isOk())
+            .andExpect(content().string(reportContent));
+    verify(reportRepository).get(1);
+  }
+
+  @Test
+  public void testUpdateReport() throws Exception {
+    String newReport = "new report";
+    mockMvc.perform(put("/projects/1/report").content(newReport))
+            .andExpect(status().isOk());
+    verify(reportRepository).update(1, newReport);
+  }
+
+  @Test
+  public void testGetNonexistentShouldGetDefault() throws Exception {
+    when(reportRepository.get(1)).thenThrow(new EmptyResultDataAccessException("Expected 1 result", 1));
+    mockMvc.perform(get("/projects/1/report"))
+            .andExpect(status().isOk())
+            .andExpect(content().string(DEFAULT_REPORT_TEXT))
+    ;
+    verify(reportRepository).get(1);
+  }
+  @Test
+  public void testDeleteReport() throws Exception{
+    String newReport = "new report";
+    when(reportRepository.get(1)).thenReturn(DEFAULT_REPORT_TEXT);
+    mockMvc.perform(put("/projects/1/report").content(newReport))
+            .andExpect(status().isOk());
+    mockMvc.perform(delete("/projects/1/report"))
+            .andExpect(status().isOk());
+    verify(reportRepository).delete(1);
+    mockMvc.perform(get("/projects/1/report"))
+            .andExpect(content().contentType(MediaType.TEXT_PLAIN))
+            .andExpect(status().isOk())
+            .andExpect(content().string(DEFAULT_REPORT_TEXT));
+    verify(reportRepository).get(1);
+
+  }
 }
 

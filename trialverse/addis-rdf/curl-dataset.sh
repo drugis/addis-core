@@ -3,7 +3,7 @@
 # Config must define SERVER, APIKEY, USER
 
 export APIKEY=https://trialverse.org/apikeys/1
-export USER=chinook25@gmail.com
+export USER=osmosisch@gmail.com
 export SERVER=http://localhost:8080
 
 function extractLocation {
