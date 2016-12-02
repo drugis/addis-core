@@ -232,21 +232,21 @@ define(['angular-mocks'], function(angularMocks) {
             isIncluded: false
           },
           selectedModel: {
-            hasResult: true
+            runStatus: 'done'
           }
         }, {
           outcome: {
             isIncluded: true
           },
           selectedModel: {
-            hasResult: false
+            runStatus: 'running'
           }
         }, {
           outcome: {
             isIncluded: true
           },
           selectedModel: {
-            hasResult: true
+            runStatus: 'done'
           }
         }];
         expect(metaBenefitRiskService.isModelWithoutResults(outcomesWithAnalyses)).toBeTruthy();
@@ -257,14 +257,14 @@ define(['angular-mocks'], function(angularMocks) {
             isIncluded: false
           },
           selectedModel: {
-            hasResult: true
+            runStatus: 'done'
           }
         }, {
           outcome: {
             isIncluded: true
           },
           selectedModel: {
-            hasResult: true
+            runStatus: 'done'
           }
         }];
         expect(metaBenefitRiskService.isModelWithoutResults(outcomesWithAnalyses)).toBeFalsy();

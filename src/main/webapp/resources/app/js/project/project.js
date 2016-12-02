@@ -22,6 +22,6 @@ define(function (require) {
 
     //services
     .service('ProjectService', require('project/projectService'))
-    .service('ReportSubstitutionService', require('project/reportSubstitutionService'))
+    .service('ReportDirectiveService', require('project/reportDirectiveService'))
     ;
 });
