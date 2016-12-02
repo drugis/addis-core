@@ -10,7 +10,7 @@ define(['lodash'], function(_) {
     },
     {
       tag: 'result-comparison',
-      regex: /(\&amp;|\&){3}(network-plot\s+analysis-id=\&\#34;\d+\&\#34;\s*)(\&amp;|\&){3}/g,
+      regex: /(\&amp;|\&){3}(comparison-result\s+analysis-id=\&\#34;\d+\&\#34;\s+model-id=\&\#34;\d+\&\#34;\s+t1=\&\#34;\d+\&\#34;\s+t2=\&\#34;\d+\&\#34;\s*)(\&amp;|\&){3}/g,
       replacer: inlineComparisonResult
     }
     ];
