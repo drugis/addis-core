@@ -14,7 +14,7 @@ define(['angular-mocks'], function(angularMocks) {
         var input =
           'report text\n' +
           '===========\n' +
-          '&&&network-plot analysis-id=&#34;93&#34;&&&';
+          '{{{network-plot analysis-id=&#34;93&#34;}}}';
         var expectedResult =
           'report text\n' +
           '===========\n' +
@@ -22,9 +22,13 @@ define(['angular-mocks'], function(angularMocks) {
         var result = reportSubstitutionService.inlineDirectives(input);
         expect(result).toEqual(expectedResult);
       });
+      it('should substitute the comparison directive', function() {
+
+      });
+
       it('should ignore non-whitelisted stuff', function() {
-        var input = '&amp;&amp;&amp;leethaxxor-directive sql-inject="pwned"&amp;&amp;&amp;';
-        var expectedResult = '&amp;&amp;&amp;leethaxxor-directive sql-inject="pwned"&amp;&amp;&amp;';
+        var input = '{{{leethaxxor-directive sql-inject="pwned"}}}';
+        var expectedResult = '{{{leethaxxor-directive sql-inject="pwned"}}}';
         var result = reportSubstitutionService.inlineDirectives(input);
         expect(result).toEqual(expectedResult);
       });

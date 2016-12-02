@@ -1,7 +1,9 @@
 'use strict';
 define(['lodash'], function(_) {
-  var dependencies = ['$scope', '$q', '$stateParams', '$modalInstance', 'AnalysisResource', 'ModelResource', 'PataviService', 'InterventionResource', 'callback'];
-  var InsertComparisonResultController = function($scope, $q, $stateParams, $modalInstance, AnalysisResource, ModelResource, PataviService, InterventionResource, callback) {
+  var dependencies = ['$scope', '$q', '$stateParams', '$modalInstance', 'AnalysisResource', 'ModelResource',
+    'ReportDirectiveService', 'PataviService', 'InterventionResource', 'callback'];
+  var InsertComparisonResultController = function($scope, $q, $stateParams, $modalInstance, AnalysisResource, ModelResource,
+    ReportDirectiveService, PataviService, InterventionResource, callback) {
     var analysesPromise = AnalysisResource.query($stateParams).$promise;
 
     var modelsPromise = ModelResource.getConsistencyModels($stateParams).$promise;
@@ -24,7 +26,6 @@ define(['lodash'], function(_) {
         if (model.taskUrl) {
           PataviService.listen(model.taskUrl).then(function(modelResults) {
             model.comparisons = _.map(modelResults.relativeEffects.centering, function(comparison) {
-
               return {
                 label: interventions[comparison.t1].name + ' - ' + interventions[comparison.t2].name,
                 t1: comparison.t1,
@@ -59,8 +60,8 @@ define(['lodash'], function(_) {
     };
 
     $scope.insertComparisonResult = function() {
-      callback('&&&comparison-result analysis-id="' + $scope.selections.analysis.id + '" model-id="' +
-        $scope.selections.model.id + '" t1="' + $scope.selections.comparison.t1 + '" t2="' + $scope.selections.comparison.t2 + '"&&&');
+      callback(ReportDirectiveService.getDirectiveBuilder('result-comparison')($scope.selections.analysis.id,
+        $scope.selections.model.id, $scope.selections.comparison.t1, $scope.selections.comparison.t2));
       $modalInstance.close();
     };
 
