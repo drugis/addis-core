@@ -93,8 +93,8 @@ define(['lodash', 'angular'], function(_, angular) {
           });
         });
       });
-      $scope.reportText = ReportResource.get($stateParams);
 
+      $scope.reportText = ReportResource.get($stateParams);
       $scope.reportText.$promise.then(function() {
         if ($scope.reportText.data.localeCompare('default report text') === 0) {
           $scope.showLegacyReport = true;
