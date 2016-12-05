@@ -104,11 +104,4 @@ public class ProjectController extends AbstractAddisCoreController {
     reportRepository.update(projectId, newReport);
     response.setStatus(HttpStatus.SC_OK);
   }
-
-  @RequestMapping(value = "/projects/{projectId}/report", produces = "text/plain", method = RequestMethod.DELETE)
-  @ResponseBody
-  public String deleteReport(@PathVariable Integer projectId, Principal currentUser) throws ResourceDoesNotExistException, MethodNotAllowedException {
-    projectService.checkOwnership(projectId, currentUser);
-    return reportRepository.delete(projectId);
-  }
 }

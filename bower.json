@@ -40,7 +40,7 @@
     "requirejs": "~2.1.10",
     "selectize": "~0.8.5",
     "select2": "~3.4.5",
-    "KaTeX": "katex#~0.5.1",
+    "KaTeX": "katex#~0.6.0",
     "scrollup": "~2.4.1",
     "install": "^1.0.4",
     "angular-cookies": "^1.5.7",

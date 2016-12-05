@@ -89,7 +89,7 @@ define([], function() {
 
     function isModelWithoutResults(outcomesWithAnalyses) {
       return _.find(outcomesWithAnalyses, function(owa) {
-        return owa.outcome.isIncluded && !owa.selectedModel.hasResult;
+        return owa.outcome.isIncluded && owa.selectedModel.runStatus !== 'done';
       });
     }
 

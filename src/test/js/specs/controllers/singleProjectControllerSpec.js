@@ -92,7 +92,7 @@ define(['angular-mocks', 'angular'], function(angularMocks, angular) {
             then: function() {}
           },
         },
-        reportText = 'Default report text.';
+        reportText = 'default report text.';
 
       beforeEach(inject(function($controller, $rootScope) {
         projectResource = jasmine.createSpyObj('ProjectResource', ['get', 'query']);
@@ -109,7 +109,7 @@ define(['angular-mocks', 'angular'], function(angularMocks, angular) {
         controllerArguments.ProjectResource = projectResource;
         controllerArguments.ANALYSIS_TYPES = analysisTypes;
         controllerArguments.ReportResource = reportResource;
-        
+
         $controller('SingleProjectController', controllerArguments);
       }));
 
@@ -133,7 +133,7 @@ define(['angular-mocks', 'angular'], function(angularMocks, angular) {
         projectDeferred, analysisDeferred, studiesDeferred, interventionsDeferred,
         projectResource, trialverseResource, semanticOutcomeResource, semanticInterventionResource,
         outcomeResource, interventionResource, analysisResource, trialverseStudyResource,
-        mockSemanticOutcomes, mockSemanticInterventions, reportResource,
+        mockSemanticOutcomes, mockSemanticInterventions, reportResource, reportDeferred,
         mockProject = {
           id: 1,
           owner: {
@@ -176,8 +176,10 @@ define(['angular-mocks', 'angular'], function(angularMocks, angular) {
           name: 'testName'
         },
         mockStudies = [mockStudy],
-        mockReport = 'Default report text.';
-  
+        mockReport = {
+          data: 'default report text.'
+        };
+
       beforeEach(inject(function($controller, $q, $rootScope) {
         var mockStateParams = {
           projectId: mockProject.id
@@ -221,7 +223,6 @@ define(['angular-mocks', 'angular'], function(angularMocks, angular) {
         mockAnalysis.$promise = analysisDeferred.promise;
         studiesDeferred = $q.defer();
         mockStudies.$promise = studiesDeferred.promise;
-
         outcomeDeferred = $q.defer();
         mockOutcome = {
           $promise: outcomeDeferred.promise
@@ -232,8 +233,11 @@ define(['angular-mocks', 'angular'], function(angularMocks, angular) {
           $promise: interventionDeferred.promise
         };
         interventionResource.save.and.returnValue(mockIntervention);
-        reportResource = jasmine.createSpyObj('reportResource',['get','query']);
+
+        reportResource = jasmine.createSpyObj('reportResource', ['get']);
         reportResource.get.and.returnValue(mockReport);
+        reportDeferred = $q.defer();
+        mockReport.$promise = reportDeferred.promise;
 
         window = {
           config: {
@@ -338,8 +342,9 @@ define(['angular-mocks', 'angular'], function(angularMocks, angular) {
       });
       it('should place the report text on the scope', function() {
         projectDeferred.resolve();
+        reportDeferred.resolve();
         scope.$apply();
-        expect(scope.reportText).toEqual('Default report text.');
+        expect(scope.reportText.data).toEqual('default report text.');
       });
     });
   });

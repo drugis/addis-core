@@ -51,7 +51,7 @@ various services (SPARQL update, reasoning, etc.). The W3C comparison of
 sets of triples than Sesame, which had been tested only up to 70M triples,
 a limit easily exceeded by our use cases.
 
-We run the latest release (2.10.1) of Apache Jena and a pre-release snapshot
+We run the release (2.10.1) of Apache Jena and a pre-release snapshot
 of Fuseki (1.0.0-20130909.201554-20) for reasons that will be made clear
 below. Jena is installed under its own user on our workstations rather than
 in a virtual machine, to maximize the memory available (our machines have

@@ -53,7 +53,7 @@
             <td>{{outcomeWithAnalyses.selectedAnalysis.title}}</td>
             <td>
               {{outcomeWithAnalyses.selectedModel.title}}
-              <button class="small success" ng-if="!outcomeWithAnalyses.selectedModel.hasResult" ng-click="goToModel(outcomeWithAnalyses.selectedModel)">Run model</button>
+              <button class="small success" ng-if="outcomeWithAnalyses.selectedModel.runStatus !== 'done'" ng-click="goToModel(outcomeWithAnalyses.selectedModel)">Run model</button>
             </td>
           </tr>
         </tbody>

@@ -51,7 +51,7 @@
                   <div class="alert" ng-show="outcomeWithAnalyses.selectedModel.missingAlternatives.length">
                     Selected model is missing alternatives: {{outcomeWithAnalyses.selectedModel.missingAlternativesNames.join(', ')}}.
                   </div>
-                  <div class="alert" ng-show="!outcomeWithAnalyses.selectedModel.hasResult">
+                  <div class="alert" ng-show="outcomeWithAnalyses.selectedModel.runStatus !== 'done'">
                     This model has not yet been run.
                   </div>
                 </div>

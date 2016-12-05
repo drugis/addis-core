@@ -1,16 +1,8 @@
 'use strict';
 define(['angular', 'angular-mocks', 'controllers'],
   function() {
-    describe("The projectsController", function() {
+    describe('The projectsController', function() {
       var scope, ctrl, projectResource, trialverseResource, projectsDefer;
-      var mockProjects = [{
-        name: "testName1",
-        description: "testDesc1"
-      }, {
-        name: "testName2",
-        description: "testDesc2"
-      }];
-
       beforeEach(module('addis.controllers'));
 
       beforeEach(inject(function($rootScope, $controller, $q) {
@@ -37,8 +29,8 @@ define(['angular', 'angular-mocks', 'controllers'],
         });
       }));
 
-      it("should make a list of projects available from the resource", function() {
-        projectsDefer.resolve([{project: "projectg1"}, {project: "project2"}]);
+      it('should make a list of projects available from the resource', function() {
+        projectsDefer.resolve([{project: 'projectg1'}, {project: 'project2'}]);
         scope.$digest();
         expect(scope.projects.length).toBe(2);
       });

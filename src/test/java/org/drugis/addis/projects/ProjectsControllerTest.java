@@ -238,21 +238,5 @@ public class ProjectsControllerTest {
     ;
     verify(reportRepository).get(1);
   }
-  @Test
-  public void testDeleteReport() throws Exception{
-    String newReport = "new report";
-    when(reportRepository.get(1)).thenReturn(DEFAULT_REPORT_TEXT);
-    mockMvc.perform(put("/projects/1/report").content(newReport))
-            .andExpect(status().isOk());
-    mockMvc.perform(delete("/projects/1/report"))
-            .andExpect(status().isOk());
-    verify(reportRepository).delete(1);
-    mockMvc.perform(get("/projects/1/report"))
-            .andExpect(content().contentType(MediaType.TEXT_PLAIN))
-            .andExpect(status().isOk())
-            .andExpect(content().string(DEFAULT_REPORT_TEXT));
-    verify(reportRepository).get(1);
-
-  }
 }
 
