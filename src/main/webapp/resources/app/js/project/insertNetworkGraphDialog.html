@@ -1,16 +1,28 @@
-<form novalidate " ng-submit="insertNetworkGraph() ">
-  <div class="row ">
-    <div class="large-9 columns ">
+<form novalidate" ng-submit="insertNetworkGraph()">
+  <div class="row">
+    <div class="large-9 columns">
       <h3>Insert a network graph</h3>
     </div>
   </div>
-  <div class="row ">
-    <div class="large-9 columns ">
+  <div class="row">
+    <div class="large-9 columns">
     <label>
       Insert graph for analysis
-      <select ng-model="selectedAnalysis " ng-options="analysis.title for analysis
-  in analyses "></select>
+      <select ng-model="selectedAnalysis" ng-options="analysis.title for analysis
+  in analyses"></select>
     </label>
+    <div>
+      <label>
+        Select initial image width (can be altered later)
+        <input type="number" ng-model="imagewidth"></input>
+      </label>
+    </div>
+    <div>
+      <label>
+        Select initial image height (can be altered later)
+        <input type="number" ng-model="imageheight"></input>
+      </label>
+    </div>
     </div>
   </div>
   <div class="row modal-bottom-button-bar">
@@ -19,5 +31,5 @@
       </button>
     </div>
   </div>
-  <a class="close-reveal-modal " ng-click="cancel() ">&#215;</a>
+  <a class="close-reveal-modal" ng-click="cancel()">&#215;</a>
 </form>
