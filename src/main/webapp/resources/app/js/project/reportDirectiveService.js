@@ -6,14 +6,12 @@ define(['lodash'], function(_) {
     var DIRECTIVES = {
       'network-plot': {
         tag: 'network-plot',
-        regex: /{{{(network-plot\s+analysis-id=\&\#34;\d+\&\#34;\s+width=\&\#34;\d+\&\#34;\s+height=\&\#34;\d+\&\#34;\s*)}}}/g,
+        regex: /{{{(network-plot\s+analysis-id=\&\#34;\d+\&\#34;\s*)}}}/g,
         replacer: function(match, p1) {
-          return '<' + replaceQuotes(p1) + '>';
+          return '<div style="max-width:500px"><' + replaceQuotes(p1) + '></div>';
         },
-        builder: function(analysisId, width, heigth) {
-          return '{{{network-plot analysis-id="' + analysisId + '"' +
-            'width="' + width + '"' +
-            'heigth="' + heigth + '"}}}';
+        builder: function(analysisId) {
+          return '{{{network-plot analysis-id="' + analysisId + '"}}}';
         }
       },
       'result-comparison': {

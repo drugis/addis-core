@@ -18,7 +18,7 @@ define(['angular-mocks'], function() {
         var expectedResult =
           'report text\n' +
           '===========\n' +
-          '<network-plot analysis-id="93">';
+          '<div style="max-width:500px"><network-plot analysis-id="93"></div>';
         var result = reportDirectiveService.inlineDirectives(input);
         expect(result).toEqual(expectedResult);
       });
