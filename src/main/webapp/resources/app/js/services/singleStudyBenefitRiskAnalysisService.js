@@ -78,17 +78,17 @@ define(['lodash'], function(_) {
       return selectedIntervention.semanticInterventionUri === studyInterventionUri;
     }
 
-    function noArmMatchingOutcome(selectedOutcome, trialDataArms) {
-      return !_.find(trialDataArms, function(arm) {
-        return _.find(arm.measurements, function(measurement) {
+    function noArmMatchingOutcome(selectedOutcome, study) {
+      return !_.find(study.trialDataArms, function(arm) {
+        return _.find(arm.measurements[study.defaultMeasurementMoment], function(measurement) {
           return measurement.variableConceptUri === selectedOutcome.semanticOutcomeUri;
         });
       });
     }
 
-    function findMissingOutcomes(selectedOutcomes, trialDataArms) {
+    function findMissingOutcomes(selectedOutcomes, study) {
       return _.filter(selectedOutcomes, function(selectedOutcome) {
-        return noArmMatchingOutcome(selectedOutcome, trialDataArms);
+        return noArmMatchingOutcome(selectedOutcome, study);
       });
     }
 
@@ -106,7 +106,7 @@ define(['lodash'], function(_) {
 
     var addMissingOutcomesToStudies = function(studies, selectedOutcomes) {
       return studies.map(function(study) {
-        study.missingOutcomes = findMissingOutcomes(selectedOutcomes, study.trialDataArms);
+        study.missingOutcomes = findMissingOutcomes(selectedOutcomes, study);
         return study;
       });
     };
