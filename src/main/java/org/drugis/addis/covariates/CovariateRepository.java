@@ -14,4 +14,6 @@ public interface CovariateRepository {
   Covariate createForProject(Integer projectId, String covariateDefinitionKey, String name, String motivation, CovariateOptionType type);
 
   List<Covariate> get(List<String> covariateKeys);
+
+  void delete(Integer covariateId);
 }

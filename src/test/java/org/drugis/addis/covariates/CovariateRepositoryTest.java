@@ -43,4 +43,12 @@ public class CovariateRepositoryTest {
     assertEquals(covariates.size(), 1);
     assertEquals(covariates.iterator().next().getName(), "add name");
   }
+
+  @Test
+  public void testDelete() {
+    covariateRepository.delete(2);
+    Collection<Covariate> covariates = covariateRepository.findByProject(1);
+    assertEquals(1,covariates.size());
+    assertEquals((Integer)1,covariates.iterator().next().getId());
+  }
 }

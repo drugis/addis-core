@@ -51,7 +51,7 @@ public class ProjectsControllerTest {
   public static final String DEFAULT_REPORT_TEXT = "default report text";
   private MockMvc mockMvc;
 
-  @Inject
+@Inject
   private AccountRepository accountRepository;
 
   @Inject

@@ -65,7 +65,6 @@ import static org.drugis.addis.problems.service.ProblemService.DICHOTOMOUS_TYPE_
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
-;
 
 /**
  * Created by daan on 3/21/14.

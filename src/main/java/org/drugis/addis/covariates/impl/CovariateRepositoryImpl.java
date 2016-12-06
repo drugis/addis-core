@@ -41,4 +41,10 @@ public class CovariateRepositoryImpl implements CovariateRepository {
   public List<Covariate> get(List<String> covariateKeys) {
     return null;
   }
+
+  @Override
+  public void delete(Integer covariateId) {
+    Covariate covariate = em.find(Covariate.class, covariateId);
+    em.remove(covariate);
+  }
 }

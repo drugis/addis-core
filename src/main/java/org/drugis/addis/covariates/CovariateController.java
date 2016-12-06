@@ -32,6 +32,9 @@ public class CovariateController extends AbstractAddisCoreController {
   @Inject
   CovariateRepository covariateRepository;
 
+  @Inject
+  CovariateService covariateService;
+
   @RequestMapping(value = "/projects/{projectId}/covariates", method = RequestMethod.GET)
   @ResponseBody
   public Collection<Covariate> getCovariatesForProject(@PathVariable Integer projectId) {
@@ -50,11 +53,18 @@ public class CovariateController extends AbstractAddisCoreController {
       Covariate covariate = covariateRepository.createForProject(projectId,
               command.getCovariateDefinitionKey(), command.getName(), command.getMotivation(), command.getType());
       response.setStatus(HttpServletResponse.SC_CREATED);
-      response.setContentType(WebConstants.getApplicationJsonUtf8Value().toString());
+      response.setContentType(WebConstants.getApplicationJsonUtf8Value());
       response.setHeader("Location", request.getRequestURL() + "/");
       return covariate;
     } else {
       throw new MethodNotAllowedException();
     }
   }
+
+  @RequestMapping(value = "/projects/{projectId}/covariates/{covariateId}", method = RequestMethod.DELETE)
+  public void getCovariatesForProject(Principal currentUser, @PathVariable Integer projectId, @PathVariable Integer covariateId) throws ResourceDoesNotExistException, MethodNotAllowedException {
+    Account user = accountRepository.findAccountByUsername(currentUser.getName());
+    covariateService.delete(user, projectId, covariateId);
+  }
+
 }

@@ -26,6 +26,7 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.core.Is.is;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -41,13 +42,16 @@ public class CovariateControllerTest {
   private Account gert = new Account(3, "gert", "Gert", "van Valkenhoef", "gert@test.com");
 
   @Mock
-  private ProjectService projectService = mock(ProjectService.class);
+  private ProjectService projectService;
 
   @Mock
-  private AccountRepository accountRepository = mock(AccountRepository.class);
+  private AccountRepository accountRepository;
 
   @Mock
-  private CovariateRepository covariateRepository = mock(CovariateRepository.class);
+  private CovariateRepository covariateRepository;
+
+  @Mock
+  private CovariateService covariateService;
 
   @InjectMocks
   private CovariateController covariateController;
@@ -55,7 +59,6 @@ public class CovariateControllerTest {
 
   @Before
   public void setUp() {
-    reset(projectService, accountRepository, covariateRepository);
     when(user.getName()).thenReturn("gert");
     initMocks(this);
     mockMvc = MockMvcBuilders.standaloneSetup(covariateController).build();
@@ -126,5 +129,10 @@ public class CovariateControllerTest {
             addCovariateCommand.getName(), addCovariateCommand.getMotivation(), CovariateOptionType.POPULATION_CHARACTERISTIC);
   }
 
-
+  @Test
+  public void testDeleteCovariate() throws Exception {
+    when(accountRepository.findAccountByUsername(user.getName())).thenReturn(gert);
+    mockMvc.perform(delete("/projects/1/covariates/37").principal(user)).andExpect(status().isOk());
+    verify(covariateService).delete(gert, 1, 37);
+  }
 }
