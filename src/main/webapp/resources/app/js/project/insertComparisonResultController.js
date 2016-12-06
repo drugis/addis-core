@@ -20,7 +20,7 @@ define(['lodash'], function(_) {
     $q.all([analysesPromise, modelsPromise, interventionPromise]).then(function(values) {
       var analyses = values[0];
       var models = values[1];
-      var interventions = _.keyBy(values[2], 'id');
+      var interventions = $scope.interventions = _.keyBy(values[2], 'id');
       var modelResultsPromises = [];
 
       $scope.analyses = _.filter(analyses, ['analysisType', 'Evidence synthesis']);
@@ -64,6 +64,10 @@ define(['lodash'], function(_) {
 
     });
 
+    function sortComparisons() {
+        $scope.selections.model.comparisons = _.sortBy($scope.selections.model.comparisons, 'label');
+    }
+
     $scope.selectedAnalysisChanged = function() {
       if ($scope.selections.analysis.primaryModel) {
         $scope.selections.model = _.find($scope.selections.analysis.models, ['id', $scope.selections.analysis.primaryModel]);
@@ -77,6 +81,7 @@ define(['lodash'], function(_) {
       if (!$scope.selections.model || !$scope.selections.model.comparisons) {
         return;
       }
+      sortComparisons();
       $scope.selections.comparison = $scope.selections.model.comparisons[0];
     };
 
@@ -88,6 +93,15 @@ define(['lodash'], function(_) {
       callback(ReportDirectiveService.getDirectiveBuilder('result-comparison')($scope.selections.analysis.id,
         $scope.selections.model.id, $scope.selections.comparison.t1, $scope.selections.comparison.t2));
       $modalInstance.close();
+    };
+
+    $scope.reverseComparison = function() {
+      var comparison = $scope.selections.comparison;
+      var tmp = comparison.t1;
+      comparison.t1 = comparison.t2;
+      comparison.t2 = tmp;
+      comparison.label = $scope.interventions[comparison.t1].name + ' - ' + $scope.interventions[comparison.t2].name;
+      sortComparisons();
     };
 
   };
