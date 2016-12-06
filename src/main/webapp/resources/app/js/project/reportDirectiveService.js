@@ -8,7 +8,7 @@ define(['lodash'], function(_) {
         tag: 'network-plot',
         regex: /{{{(network-plot\s+analysis-id=\&\#34;\d+\&\#34;\s*)}}}/g,
         replacer: function(match, p1) {
-          return '<div style="max-width:500px"><' + replaceQuotes(p1) + '></div>';
+          return '<div style="max-width:500px"><' + replaceQuotes(p1) + '></network-plot></div>';
         },
         builder: function(analysisId) {
           return '{{{network-plot analysis-id="' + analysisId + '"}}}';
@@ -18,7 +18,7 @@ define(['lodash'], function(_) {
         tag: 'result-comparison',
         regex: /{{{(comparison-result\s+analysis-id=\&\#34;\d+\&\#34;\s+model-id=\&\#34;\d+\&\#34;\s+t1=\&\#34;\d+\&\#34;\s+t2=\&\#34;\d+\&\#34;\s*)}}}/g,
         replacer: function(match, p1) {
-          return '<' + replaceQuotes(p1) + '>';
+          return '<' + replaceQuotes(p1) + '></comparison-result>';
         },
         builder: function(analysisId, modelId, t1, t2) {
           return '{{{comparison-result' +
