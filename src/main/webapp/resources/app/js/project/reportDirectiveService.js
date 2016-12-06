@@ -6,26 +6,26 @@ define(['lodash'], function(_) {
     var DIRECTIVES = {
       'network-plot': {
         tag: 'network-plot',
-        regex: /{{{(network-plot\s+analysis-id=\&\#34;\d+\&\#34;\s*)}}}/g,
+        regex: /\[\[\[(network-plot\s+analysis-id=\&\#34;\d+\&\#34;\s*)\]\]\]/g,
         replacer: function(match, p1) {
           return '<div style="max-width:500px"><' + replaceQuotes(p1) + '></network-plot></div>';
         },
         builder: function(analysisId) {
-          return '{{{network-plot analysis-id="' + analysisId + '"}}}';
+          return '[[[network-plot analysis-id="' + analysisId + '"]]]';
         }
       },
       'result-comparison': {
         tag: 'result-comparison',
-        regex: /{{{(comparison-result\s+analysis-id=\&\#34;\d+\&\#34;\s+model-id=\&\#34;\d+\&\#34;\s+t1=\&\#34;\d+\&\#34;\s+t2=\&\#34;\d+\&\#34;\s*)}}}/g,
+        regex: /\[\[\[(comparison-result\s+analysis-id=\&\#34;\d+\&\#34;\s+model-id=\&\#34;\d+\&\#34;\s+t1=\&\#34;\d+\&\#34;\s+t2=\&\#34;\d+\&\#34;\s*)\]\]\]/g,
         replacer: function(match, p1) {
           return '<' + replaceQuotes(p1) + '></comparison-result>';
         },
         builder: function(analysisId, modelId, t1, t2) {
-          return '{{{comparison-result' +
+          return '[[[comparison-result' +
             ' analysis-id="' + analysisId + '"' +
             ' model-id="' + modelId + '"' +
             ' t1="' + t1 + '"' +
-            ' t2="' + t2 + '"}}}';
+            ' t2="' + t2 + '"]]]';
         }
       }
     };
