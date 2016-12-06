@@ -1,7 +1,8 @@
 'use strict';
 define(['lodash'], function(_) {
   var dependencies = ['$scope', '$q', '$stateParams', '$modalInstance', 'AnalysisResource', 'ModelResource',
-    'ReportDirectiveService', 'PataviService', 'InterventionResource', 'callback'];
+    'ReportDirectiveService', 'PataviService', 'InterventionResource', 'callback'
+  ];
   var InsertComparisonResultController = function($scope, $q, $stateParams, $modalInstance, AnalysisResource, ModelResource,
     ReportDirectiveService, PataviService, InterventionResource, callback) {
     var analysesPromise = AnalysisResource.query($stateParams).$promise;
@@ -12,19 +13,28 @@ define(['lodash'], function(_) {
 
     $scope.selections = {};
 
+    $scope.loading = {
+      loaded: false
+    };
+
     $q.all([analysesPromise, modelsPromise, interventionPromise]).then(function(values) {
       var analyses = values[0];
       var models = values[1];
       var interventions = _.keyBy(values[2], 'id');
+      var modelResultsPromises = [];
 
       $scope.analyses = _.filter(analyses, ['analysisType', 'Evidence synthesis']);
       if ($scope.analyses.length) {
         $scope.selections.analysis = $scope.analyses[0];
       }
 
+      models = _.filter(models, ['modelType.type', 'network']);
+
       models = _.map(models, function(model) {
         if (model.taskUrl) {
-          PataviService.listen(model.taskUrl).then(function(modelResults) {
+          var resultsPromise = PataviService.listen(model.taskUrl);
+          modelResultsPromises.push(resultsPromise);
+          resultsPromise.then(function(modelResults) {
             model.comparisons = _.map(modelResults.relativeEffects.centering, function(comparison) {
               return {
                 label: interventions[comparison.t1].name + ' - ' + interventions[comparison.t2].name,
@@ -37,19 +47,34 @@ define(['lodash'], function(_) {
         return model;
       });
 
-      $scope.analyses = _.map($scope.analyses, function(analysis) {
-        analysis.models = _.filter(models, ['analysisId', analysis.id]);
-        return analysis;
+      $q.all(modelResultsPromises).then(function() {
+        models = _.filter(models, function(model) {
+          return model.comparisons && model.comparisons.length;
+        });
+        $scope.analyses = _.map($scope.analyses, function(analysis) {
+          analysis.models = _.filter(models, ['analysisId', analysis.id]);
+          return analysis;
+        });
+        $scope.analyses = _.filter($scope.analyses, function(analysis) {
+          return analysis.models.length > 0;
+        });
+        $scope.selectedAnalysisChanged();
+        $scope.loading.loaded = true;
       });
+
     });
 
     $scope.selectedAnalysisChanged = function() {
-      $scope.selections.model = $scope.selections.analysis.models[0];
+      if ($scope.selections.analysis.primaryModel) {
+        $scope.selections.model = _.find($scope.selections.analysis.models, ['id', $scope.selections.analysis.primaryModel]);
+      } else {
+        $scope.selections.model = $scope.selections.analysis.models[0];
+      }
       $scope.selectedModelChanged();
     };
 
     $scope.selectedModelChanged = function() {
-      if (!$scope.selections.model) {
+      if (!$scope.selections.model || !$scope.selections.model.comparisons) {
         return;
       }
       $scope.selections.comparison = $scope.selections.model.comparisons[0];
