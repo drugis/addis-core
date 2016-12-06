@@ -45,7 +45,7 @@
             <button class="button small secondary" type="button" ng-click="cancel()">Cancel</button>
           </li>
           <li>
-            <button id="add-analysis-btn" class="button small success" ng-disabled="!newAnalysis.title || !newAnalysis.type || duplicateAnalysisName.isDuplicate" type="submit" ng-dblclick="return">Add analysis
+            <button id="add-analysis-btn" class="button small success" ng-disabled="isAdding || !newAnalysis.title || !newAnalysis.type || duplicateAnalysisName.isDuplicate" type="submit">Add analysis
             </button>
           </li>
         </ul>

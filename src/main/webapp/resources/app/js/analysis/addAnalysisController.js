@@ -11,8 +11,10 @@ define(['lodash'], function(_) {
       isDuplicate: false
     };
     $scope.analysisTypes = ANALYSIS_TYPES;
+    $scope.isAdding = false;
 
     function addAnalysis(newAnalysis) {
+      $scope.isAdding = true;
       newAnalysis.projectId = $scope.project.id;
       AnalysisResource
         .save(newAnalysis)
