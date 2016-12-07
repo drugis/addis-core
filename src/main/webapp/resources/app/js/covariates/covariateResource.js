@@ -5,8 +5,10 @@ define(['angular', 'angular-resource'], function() {
     return $resource('/projects/:projectId/covariates/:covariateId', {
       projectId: '@projectId',
       covariateId: '@id'
-    },{
-      'delete':{method: 'DELETE'}
+    }, {
+      'delete': {
+        method: 'DELETE'
+      }
     });
   };
   return dependencies.concat(CovariateResource);

@@ -66,15 +66,6 @@ define(['lodash', 'angular'], function(_, angular) {
         version: $scope.project.datasetVersion
       });
 
-      $scope.outcomes = OutcomeResource.query({
-        projectId: $scope.project.id
-      });
-
-      InterventionResource.query({
-        projectId: $scope.project.id
-      }).$promise.then(generateInterventionDescriptions);
-
-
       $scope.studies = TrialverseStudyResource.query({
         namespaceUid: $scope.project.namespaceUid,
         version: $scope.project.datasetVersion
@@ -92,10 +83,9 @@ define(['lodash', 'angular'], function(_, angular) {
               return 1;
             }
           });
-          loadCovariates();
+          reloadDefinitions();
         });
       });
-
 
       $scope.reportText = ReportResource.get($stateParams);
       $scope.reportText.$promise.then(function() {
@@ -105,13 +95,29 @@ define(['lodash', 'angular'], function(_, angular) {
       });
     });
 
-    function generateInterventionDescriptions(interventions) {
-      $scope.interventions = interventions.map(function(intervention) {
-        intervention.definitionLabel = InterventionService.generateDescriptionLabel(intervention, interventions);
-        return intervention;
+
+    function reloadDefinitions() {
+      loadCovariates();
+      loadInterventions();
+      loadOutcomes();
+    }
+
+    function loadInterventions() {
+      InterventionResource.query({
+          projectId: $scope.project.id
+        }).$promise
+        .then(generateInterventionDescriptions)
+        .then(function() {
+          $scope.interventionUsage = ProjectService.buildInterventionUsage($scope.analyses, $scope.interventions);
+        });
+    }
+
+    function loadOutcomes() {
+      $scope.outcomes = OutcomeResource.query({
+        projectId: $scope.project.id
       });
-      $scope.interventions = _.orderBy($scope.interventions, function(intervention) {
-        return intervention.name.toLowerCase();
+      $scope.outcomes.$promise.then(function() {
+        $scope.outcomeUsage = ProjectService.buildOutcomeUsage($scope.analyses, $scope.outcomes);
       });
     }
 
@@ -129,6 +135,16 @@ define(['lodash', 'angular'], function(_, angular) {
         });
       }).then(function() {
         $scope.covariateUsage = ProjectService.buildCovariateUsage($scope.analyses, $scope.covariates);
+      });
+    }
+
+    function generateInterventionDescriptions(interventions) {
+      $scope.interventions = interventions.map(function(intervention) {
+        intervention.definitionLabel = InterventionService.generateDescriptionLabel(intervention, interventions);
+        return intervention;
+      });
+      $scope.interventions = _.orderBy($scope.interventions, function(intervention) {
+        return intervention.name.toLowerCase();
       });
     }
 
@@ -201,11 +217,7 @@ define(['lodash', 'angular'], function(_, angular) {
         controller: 'AddOutcomeController',
         resolve: {
           callback: function() {
-            return function() {
-              $scope.outcomes = OutcomeResource.query({
-                projectId: $scope.project.id
-              });
-            };
+            return loadOutcomes;
           }
         }
       });
@@ -218,11 +230,7 @@ define(['lodash', 'angular'], function(_, angular) {
         controller: 'AddInterventionController',
         resolve: {
           callback: function() {
-            return function() {
-              $scope.interventions = InterventionResource.query({
-                projectId: $scope.project.id
-              }).$promise.then(generateInterventionDescriptions);
-            };
+            return loadInterventions;
           }
         }
       });
@@ -240,11 +248,7 @@ define(['lodash', 'angular'], function(_, angular) {
             return $scope.outcomes;
           },
           successCallback: function() {
-            return function() {
-              $scope.outcomes = OutcomeResource.query({
-                projectId: $scope.project.id
-              });
-            };
+            return loadOutcomes;
           }
         }
       });
@@ -262,11 +266,7 @@ define(['lodash', 'angular'], function(_, angular) {
             return $scope.interventions;
           },
           successCallback: function() {
-            return function() {
-              $scope.interventions = InterventionResource.query({
-                projectId: $scope.project.id
-              }).$promise.then(generateInterventionDescriptions);
-            };
+            return loadInterventions;
           }
         }
       });
@@ -326,6 +326,23 @@ define(['lodash', 'angular'], function(_, angular) {
       });
     };
 
+    $scope.openDeleteDefinitionDialog = function(definition, type) {
+      $modal.open({
+        templateUrl: './app/js/project/deleteDefinition.html',
+        scope: $scope,
+        controller: 'DeleteDefinitionController',
+        resolve: {
+          definition: function() {
+            return _.assign({}, definition, {
+              definitionType: type
+            });
+          },
+          callback: function() {
+            return reloadDefinitions;
+          }
+        }
+      });
+    };
   };
   return dependencies.concat(SingleProjectController);
 });

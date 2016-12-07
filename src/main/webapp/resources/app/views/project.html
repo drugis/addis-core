@@ -171,6 +171,7 @@
                       <th>Motivation</th>
                       <th>Definition</th>
                       <th ng-if="editMode.allowEditing"></th>
+                      <th ng-if="editMode.allowEditing"></th>
                     </tr>
                   </thead>
                   <tbody>
@@ -181,6 +182,16 @@
                       <td>{{outcome.motivation}}</td>
                       <td>{{::outcome.semanticOutcomeLabel}}</td>
                       <td style="text-align: center;" ng-if="editMode.allowEditing"><a ng-click="openEditOutcomeDialog(outcome)"><i class="fa fa-edit fa-2x"></i></a></td>
+                      <td style="text-align: center;" ng-if="editMode.allowEditing && !outcomeUsage[outcome.id].length"><a ng-click="openDeleteDefinitionDialog(outcome,'outcome')"><i class="fa fa-trash  fa-2x" style="color:red"></i></a>
+                      </td>
+                      <td style="text-align: center;" ng-if="editMode.allowEditing && outcomeUsage[outcome.id].length">
+                        <a class="has-tip"
+                          tooltip="outcome is used in analyses: {{outcomeUsage[outcome.id].join(', ')}}"
+                          tooltip-placement="left">
+                          <i class="fa fa-trash fa-2x" style="color: grey;"></i>
+                        </span>
+                        </a>
+                      </td>
                     </tr>
                   </tbody>
                 </table>
@@ -203,6 +214,7 @@
                       <th class="large-5">Motivation</th>
                       <th class="large-5">Definition</th>
                       <th ng-if="editMode.allowEditing"></th>
+                      <th ng-if="editMode.allowEditing"></th>
                     </tr>
                   </thead>
                   <tbody>
@@ -211,6 +223,15 @@
                       <td>{{intervention.motivation}}</td>
                       <td>{{::intervention.semanticInterventionLabel}}{{::intervention.definitionLabel}}</td>
                       <td style="text-align: center;" ng-if="editMode.allowEditing"><a ng-click="openEditInterventionDialog(intervention)"><i class="fa fa-edit fa-2x"></i></a></td>
+                      <td class="text-center" ng-if="editMode.allowEditing && !interventionUsage[intervention.id].length"><a ng-click="openDeleteDefinitionDialog(intervention,'intervention')"><i class="fa fa-trash  fa-2x" style="color:red"></i></a></td>
+                      <td ng-if="editMode.allowEditing && interventionUsage[intervention.id].length">
+                        <a class="has-tip"
+                          tooltip="Intervention is used in analyses: {{interventionUsage[intervention.id].join(', ')}}"
+                          tooltip-placement="left">
+                          <i class="fa fa-trash fa-2x" style="color: grey;"></i>
+                        </span>
+                        </a>
+                      </td>
                     </tr>
                   </tbody>
                 </table>
@@ -249,14 +270,12 @@
                       <td>{{::covariate.name}}</td>
                       <td>{{::covariate.motivation}}</td>
                       <td>{{::covariate.definitionLabel}}</td>
-                      <td class="text-center" ng-if="editMode.allowEditing && !covariateUsage[covariate.id].length"><a ng-click="openDeleteCovariateDialog(covariate)"><i class="fa fa-trash" style="color:red"></i></a></td>
+                      <td class="text-center" ng-if="editMode.allowEditing && !covariateUsage[covariate.id].length"><a ng-click="openDeleteDefinitionDialog(covariate,'covariate')"><i class="fa fa-trash  fa-2x" style="color:red"></i></a></td>
                       <td ng-if="editMode.allowEditing && covariateUsage[covariate.id].length">
                         <a class="has-tip"
                           tooltip="Covariate is used in analyses: {{covariateUsage[covariate.id].join(', ')}}"
                           tooltip-placement="left">
-                        <span class="fa-stack">
-                          <i class="fa fa-trash fa-stack-1x"></i>
-                          <i class="fa fa-ban fa-stack-2x"></i>
+                          <i class="fa fa-trash fa-2x" style="color: grey;"></i>
                         </span>
                         </a>
                       </td>

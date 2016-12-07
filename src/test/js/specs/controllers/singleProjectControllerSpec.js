@@ -206,7 +206,6 @@ define(['angular-mocks', 'angular'], function(angularMocks, angular) {
       });
     });
 
-
     describe('after loading the project', function() {
       it('should place the outcome and intervention information on the scope', function() {
         projectDeferred.resolve();
@@ -220,7 +219,6 @@ define(['angular-mocks', 'angular'], function(angularMocks, angular) {
         expect(scope.analyses).toEqual(mockAnalyses);
         expect(scope.loading.loaded).toBeTruthy();
       });
-
 
       it('should tell the scope whether the resource is loaded', function() {
         expect(scope.loading.loaded).toBeFalsy();

@@ -5,12 +5,15 @@ define([], function() {
     var DEFINITIONS = {
       covariate: {
         resource: 'CovariateResource',
-        coordinateBuilder: function() {
-          return {
-            projectId: $scope.project.id,
-            covariateId: definition.id
-          };
-        }
+        coordinate: 'covariateId'
+      },
+      intervention: {
+        resource: 'InterventionResource',
+        coordinate: 'interventionId'
+      },
+      outcome: {
+        resource: 'OutcomeResource',
+        coordinate: 'outcomeId'
       }
     };
 
@@ -19,7 +22,11 @@ define([], function() {
 
     function deleteDefinition() {
       var resource = $injector.get(DEFINITIONS[definition.definitionType].resource);
-      resource.delete(DEFINITIONS[definition.definitionType].coordinateBuilder()).$promise.then(function() {
+      var coordinates = {
+        projectId: $scope.project.id
+      };
+      coordinates[DEFINITIONS[definition.definitionType].coordinate] = definition.id;
+      resource.delete(coordinates).$promise.then(function() {
         callback();
         $modalInstance.close();
       });
