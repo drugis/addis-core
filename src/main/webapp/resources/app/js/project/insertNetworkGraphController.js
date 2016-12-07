@@ -16,7 +16,7 @@ define(['lodash'], function(_) {
     };
 
     $scope.insertNetworkGraph = function() {
-      callback(ReportDirectiveService.getDirectiveBuilder('network-plot')($scope.selection.analsysis.id));
+      callback(ReportDirectiveService.getDirectiveBuilder('network-plot')($scope.selection.analysis.id));
       $modalInstance.close();
     };
 
