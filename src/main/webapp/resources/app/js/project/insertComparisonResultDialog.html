@@ -30,21 +30,20 @@
     <div class="row ">
       <div class="large-6 columns">
         <label>
-          Select comparison from the model
-          </label>
-          <div class="row collapse">
-            <div class="columns large-10">
-              <select ng-model="selections.comparison" ng-options="comparison.label for comparison in selections.model.comparisons"></select>
-            </div>
-            <div class="columns large-2">
-              <button ng-disabled="!selections.comparison" type="button" class="postfix" ng-click="reverseComparison()">Reverse</button>
-            </div>
-          </div>
+          Treatment 1
+          <select ng-model="selections.t1" ng-options="intervention.name for intervention in interventions" ng-change="treatmentSelectionChanged()"></select>
+        </label>
+      </div>
+      <div class="large-6 columns">
+        <label>
+          Treatment 2
+          <select ng-model="selections.t2" ng-options="intervention.name for intervention in secondInterventionOptions"></select>
+        </label>
       </div>
     </div>
     <div class="row modal-bottom-button-bar">
       <div class="large-6 columns ">
-        <button class="success" type="submit" ng-disabled="!selections.analysis || !selections.model || !selections.comparison">Insert
+        <button class="success" type="submit" ng-disabled="!selections.analysis || !selections.model || !selections.t1 || !selections.t2">Insert
         </button>
       </div>
     </div>

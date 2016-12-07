@@ -74,9 +74,11 @@ define(['angular-mocks'], function() {
           model: {
             id: 2
           },
-          comparison: {
-            t1: 1,
-            t2: 2
+          t1: {
+            id: 't1id'
+          },
+          t2: {
+            id: 't2id'
           }
         };
         expect(scope.insertComparisonResult).toBeDefined();

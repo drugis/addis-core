@@ -5,22 +5,25 @@ define(['lodash'], function(_) {
   ];
   var InsertComparisonResultController = function($scope, $q, $stateParams, $modalInstance, AnalysisResource, ModelResource,
     ReportDirectiveService, PataviService, InterventionResource, callback) {
-    var analysesPromise = AnalysisResource.query($stateParams).$promise;
-
-    var modelsPromise = ModelResource.getConsistencyModels($stateParams).$promise;
-
-    var interventionPromise = InterventionResource.query($stateParams).$promise;
 
     $scope.selections = {};
-
     $scope.loading = {
       loaded: false
     };
+    $scope.insertComparisonResult = insertComparisonResult;
+    $scope.selectedAnalysisChanged = selectedAnalysisChanged;
+    $scope.selectedModelChanged = selectedModelChanged;
+    $scope.treatmentSelectionChanged = treatmentSelectionChanged;
+
+    var analysesPromise = AnalysisResource.query($stateParams).$promise;
+    var modelsPromise = ModelResource.getConsistencyModels($stateParams).$promise;
+    var interventionPromise = InterventionResource.query($stateParams).$promise;
 
     $q.all([analysesPromise, modelsPromise, interventionPromise]).then(function(values) {
       var analyses = values[0];
       var models = values[1];
-      var interventions = $scope.interventions = _.keyBy(values[2], 'id');
+      $scope.interventions = _.sortBy(values[2], 'name');
+      var interventionsById = _.keyBy($scope.interventions, 'id');
       var modelResultsPromises = [];
 
       $scope.analyses = _.filter(analyses, ['analysisType', 'Evidence synthesis']);
@@ -37,7 +40,7 @@ define(['lodash'], function(_) {
           resultsPromise.then(function(modelResults) {
             model.comparisons = _.map(modelResults.relativeEffects.centering, function(comparison) {
               return {
-                label: interventions[comparison.t1].name + ' - ' + interventions[comparison.t2].name,
+                label: interventionsById[comparison.t1].name + ' - ' + interventionsById[comparison.t2].name,
                 t1: comparison.t1,
                 t2: comparison.t2
               };
@@ -61,49 +64,40 @@ define(['lodash'], function(_) {
         $scope.selectedAnalysisChanged();
         $scope.loading.loaded = true;
       });
-
     });
 
-    function sortComparisons() {
-        $scope.selections.model.comparisons = _.sortBy($scope.selections.model.comparisons, 'label');
-    }
-
-    $scope.selectedAnalysisChanged = function() {
+    function selectedAnalysisChanged() {
       if ($scope.selections.analysis.primaryModel) {
         $scope.selections.model = _.find($scope.selections.analysis.models, ['id', $scope.selections.analysis.primaryModel]);
       } else {
         $scope.selections.model = $scope.selections.analysis.models[0];
       }
       $scope.selectedModelChanged();
-    };
+    }
 
-    $scope.selectedModelChanged = function() {
+    function selectedModelChanged() {
       if (!$scope.selections.model || !$scope.selections.model.comparisons) {
         return;
       }
-      sortComparisons();
-      $scope.selections.comparison = $scope.selections.model.comparisons[0];
-    };
+      $scope.selections.t1 = $scope.interventions[0];
+      treatmentSelectionChanged();
+    }
+
+
+    function insertComparisonResult() {
+      callback(ReportDirectiveService.getDirectiveBuilder('result-comparison')($scope.selections.analysis.id,
+        $scope.selections.model.id, $scope.selections.t1.id, $scope.selections.t2.id));
+      $modalInstance.close();
+    }
+
+    function treatmentSelectionChanged() {
+      $scope.secondInterventionOptions = _.reject($scope.interventions, ['id', $scope.selections.t1.id]);
+      $scope.selections.t2 = $scope.secondInterventionOptions[0];
+    }
 
     $scope.cancel = function() {
       $modalInstance.dismiss('cancel');
     };
-
-    $scope.insertComparisonResult = function() {
-      callback(ReportDirectiveService.getDirectiveBuilder('result-comparison')($scope.selections.analysis.id,
-        $scope.selections.model.id, $scope.selections.comparison.t1, $scope.selections.comparison.t2));
-      $modalInstance.close();
-    };
-
-    $scope.reverseComparison = function() {
-      var comparison = $scope.selections.comparison;
-      var tmp = comparison.t1;
-      comparison.t1 = comparison.t2;
-      comparison.t2 = tmp;
-      comparison.label = $scope.interventions[comparison.t1].name + ' - ' + $scope.interventions[comparison.t2].name;
-      sortComparisons();
-    };
-
   };
   return dependencies.concat(InsertComparisonResultController);
 });
