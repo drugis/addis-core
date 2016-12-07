@@ -2,10 +2,12 @@
 define(['lodash'], function(_) {
   var dependencies = ['$scope', '$stateParams', '$modalInstance', 'AnalysisResource', 'ReportDirectiveService', 'callback'];
   var InsertNetworkGraphController = function($scope, $stateParams, $modalInstance, AnalysisResource, ReportDirectiveService, callback) {
+    $scope.selection = {};
+
     AnalysisResource.query($stateParams).$promise.then(function(analyses) {
       $scope.analyses = _.filter(analyses, ['analysisType', 'Evidence synthesis']);
       if ($scope.analyses.length) {
-        $scope.selectedAnalysis = $scope.analyses[0];
+        $scope.selection.analysis = $scope.analyses[0];
       }
     });
 
@@ -14,7 +16,7 @@ define(['lodash'], function(_) {
     };
 
     $scope.insertNetworkGraph = function() {
-      callback(ReportDirectiveService.getDirectiveBuilder('network-plot')($scope.selectedAnalysis.id));
+      callback(ReportDirectiveService.getDirectiveBuilder('network-plot')($scope.selection.analsysis.id));
       $modalInstance.close();
     };
 
