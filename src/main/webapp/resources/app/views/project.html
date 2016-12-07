@@ -15,7 +15,7 @@
       </div>
       <div>
         <h5>Source dataset:
-          <a ui-sref="versionedDataset({userUid: trialverse.ownerId, datasetUUID: project.namespaceUid, version: project.datasetVersion.split('/versions/')[1]})">{{::trialverse.name}}</a>
+          <a ui-sref="versionedDataset({userUid: trialverse.ownerId, datasetUUID: project.namespaceUid, versionUuid: project.datasetVersion.split('/versions/')[1]})">{{::trialverse.name}}</a>
         </h5>
       </div>
       <div class="row" ng-show="project.description">

@@ -8,14 +8,14 @@
     <div class="large-9 columns">
       <label>
         Insert graph for analysis
-        <select ng-model="selectedAnalysis" ng-options="analysis.title for analysis
+        <select ng-model="selection.analysis" ng-options="analysis.title for analysis
     in analyses"></select>
       </label>
     </div>
   </div>
   <div class="row modal-bottom-button-bar">
     <div class="large-9 columns">
-      <button class="success" type="submit" ng-disabled="!selectedAnalysis">Insert
+      <button class="success" type="submit" ng-disabled="!selection.analysis">Insert
       </button>
     </div>
   </div>
