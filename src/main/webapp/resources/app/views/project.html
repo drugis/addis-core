@@ -78,7 +78,7 @@
                       <li ng-show="covariates.length === 0 ">no covariates defined</li>
                       <li ng-repeat="covariate in covariates | orderBy:'name'">
                         <strong>{{covariate.name}}
-                          <span ng-if="covariate.motivation.length">:</span>
+                          <span ng-if="covariate.motivation">:</span>
                         </strong>{{covariate.motivation}}
                       </li>
                     </ul>
@@ -104,7 +104,7 @@
                 </div>
               </div>
               <div class="columns large-3">
-                <button class="right" ng-show="editMode.allowEditing" ng-click="goToEditView()">Customize</button>
+                <button class="right" ng-if="editMode.allowEditing" ng-click="goToEditView()">Customize</button>
               </div>
             </div>
           </div>
@@ -118,7 +118,7 @@
                 <h2>Analyses
                   <inline-help help-key="addis-analysis"></inline-help>
                 </h2>
-                <button id="show-create-analysis-modal-btn" ng-show="editMode.allowEditing" ng-disabled="!loading.loaded"
+                <button id="show-create-analysis-modal-btn" ng-if="editMode.allowEditing" ng-disabled="!loading.loaded"
                   class="small" ng-click="openAddAnalysisDialog()"><i class="fa fa-plus"></i> Add Analysis
                 </button>
 
@@ -160,7 +160,7 @@
                 <h3 class="subheader">Outcomes
                   <inline-help help-key="addis-outcome"></inline-help>
                 </h3>
-                <button id="show-create-outcome-modal-btn" ng-show="editMode.allowEditing" ng-disabled="!loading.loaded"
+                <button id="show-create-outcome-modal-btn" ng-if="editMode.allowEditing" ng-disabled="!loading.loaded"
                   class="small" ng-click="openCreateOutcomeDialog()"><i class="fa fa-plus"></i> Add outcome
                 </button>
                 <table style="width: 100%;">
@@ -193,7 +193,7 @@
                 <h3 class="subheader">Interventions
                   <inline-help help-key="addis-intervention"></inline-help>
                 </h3>
-                <button id="show-create-intervention-modal-btn" ng-show="editMode.allowEditing" ng-disabled="!loading.loaded"
+                <button id="show-create-intervention-modal-btn" ng-if="editMode.allowEditing" ng-disabled="!loading.loaded"
                   class="small " ng-click="openCreateInterventionDialog()"><i class="fa fa-plus"></i> Add intervention
                 </button>
                 <table>
@@ -224,7 +224,7 @@
                 <h3 class="subheader">Covariates
                   <inline-help help-key="addis-covariate"></inline-help>
                 </h3>
-                <button ng-show="editMode.allowEditing" ng-disabled="!loading.loaded" class="small"
+                <button ng-if="editMode.allowEditing" ng-disabled="!loading.loaded" class="small"
                   ng-click="addCovariate()"><i class="fa fa-plus"></i> Add Covariate
                 </button>
 
@@ -241,6 +241,7 @@
                       <th class="large-3">Name</th>
                       <th class="large-6 end">Motivation</th>
                       <th class="large-3">Definition</th>
+                      <th ng-if="editMode.allowEditing"></th>
                     </tr>
                   </thead>
                   <tbody>
@@ -248,6 +249,17 @@
                       <td>{{::covariate.name}}</td>
                       <td>{{::covariate.motivation}}</td>
                       <td>{{::covariate.definitionLabel}}</td>
+                      <td class="text-center" ng-if="editMode.allowEditing && !covariateUsage[covariate.id].length"><a ng-click="openDeleteCovariateDialog(covariate)"><i class="fa fa-trash" style="color:red"></i></a></td>
+                      <td ng-if="editMode.allowEditing && covariateUsage[covariate.id].length">
+                        <a class="has-tip"
+                          tooltip="Covariate is used in analyses: {{covariateUsage[covariate.id].join(', ')}}"
+                          tooltip-placement="left">
+                        <span class="fa-stack">
+                          <i class="fa fa-trash fa-stack-1x"></i>
+                          <i class="fa fa-ban fa-stack-2x"></i>
+                        </span>
+                        </a>
+                      </td>
                     </tr>
                   </tbody>
                 </table>

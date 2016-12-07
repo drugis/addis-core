@@ -1,5 +1,6 @@
 package org.drugis.addis.covariates;
 
+import org.apache.http.HttpStatus;
 import org.drugis.addis.base.AbstractAddisCoreController;
 import org.drugis.addis.exception.MethodNotAllowedException;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
@@ -21,6 +22,7 @@ import java.util.Collection;
  * Created by connor on 12/1/15.
  */
 @Controller
+@Transactional("ptmAddisCore")
 public class CovariateController extends AbstractAddisCoreController {
 
   @Inject
@@ -43,7 +45,6 @@ public class CovariateController extends AbstractAddisCoreController {
 
   @RequestMapping(value = "/projects/{projectId}/covariates", method = RequestMethod.POST)
   @ResponseBody
-  @Transactional("ptmAddisCore")
   public Covariate addCovariateToProject(HttpServletRequest request, HttpServletResponse response, Principal currentUser,
                                          @PathVariable Integer projectId, @RequestBody AddCovariateCommand command)
           throws MethodNotAllowedException, ResourceDoesNotExistException {
@@ -62,9 +63,11 @@ public class CovariateController extends AbstractAddisCoreController {
   }
 
   @RequestMapping(value = "/projects/{projectId}/covariates/{covariateId}", method = RequestMethod.DELETE)
-  public void getCovariatesForProject(Principal currentUser, @PathVariable Integer projectId, @PathVariable Integer covariateId) throws ResourceDoesNotExistException, MethodNotAllowedException {
+  public void deleteCovariate(Principal currentUser, HttpServletResponse response, @PathVariable Integer projectId,
+                              @PathVariable Integer covariateId) throws ResourceDoesNotExistException, MethodNotAllowedException {
     Account user = accountRepository.findAccountByUsername(currentUser.getName());
     covariateService.delete(user, projectId, covariateId);
+    response.setStatus(HttpStatus.SC_OK);
   }
 
 }

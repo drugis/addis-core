@@ -2,6 +2,7 @@
 define(['lodash', 'angular'], function(_, angular) {
   var dependencies = ['$scope', '$q', '$state', '$stateParams', '$location', '$modal',
     'ProjectResource',
+    'ProjectService',
     'TrialverseResource',
     'TrialverseStudyResource',
     'SemanticOutcomeResource',
@@ -17,7 +18,8 @@ define(['lodash', 'angular'], function(_, angular) {
     'UserService',
     'ReportResource'
   ];
-  var SingleProjectController = function($scope, $q, $state, $stateParams, $location, $modal, ProjectResource, TrialverseResource,
+  var SingleProjectController = function($scope, $q, $state, $stateParams, $location, $modal, ProjectResource, ProjectService,
+    TrialverseResource,
     TrialverseStudyResource, SemanticOutcomeResource, OutcomeResource, SemanticInterventionResource, InterventionResource,
     CovariateOptionsResource, CovariateResource, AnalysisResource, ANALYSIS_TYPES, InterventionService, activeTab, UserService, ReportResource) {
     $scope.activeTab = activeTab;
@@ -72,7 +74,6 @@ define(['lodash', 'angular'], function(_, angular) {
         projectId: $scope.project.id
       }).$promise.then(generateInterventionDescriptions);
 
-      loadCovariates();
 
       $scope.studies = TrialverseStudyResource.query({
         namespaceUid: $scope.project.namespaceUid,
@@ -82,7 +83,7 @@ define(['lodash', 'angular'], function(_, angular) {
       $scope.studies.$promise.then(function() {
         $scope.analyses = AnalysisResource.query({
           projectId: $scope.project.id
-        }, function(analyses) {
+        }).$promise.then(function(analyses) {
           $scope.analysesLoaded = true;
           $scope.analyses = _.sortBy(analyses, function(analysis) {
             if (analysis.analysisType === 'Evidence synthesis') {
@@ -91,8 +92,10 @@ define(['lodash', 'angular'], function(_, angular) {
               return 1;
             }
           });
+          loadCovariates();
         });
       });
+
 
       $scope.reportText = ReportResource.get($stateParams);
       $scope.reportText.$promise.then(function() {
@@ -124,6 +127,8 @@ define(['lodash', 'angular'], function(_, angular) {
           covariate.definitionLabel = optionsMap[covariate.definitionKey].label;
           return covariate;
         });
+      }).then(function() {
+        $scope.covariateUsage = ProjectService.buildCovariateUsage($scope.analyses, $scope.covariates);
       });
     }
 
@@ -301,6 +306,24 @@ define(['lodash', 'angular'], function(_, angular) {
 
     $scope.goToEditView = function() {
       $state.go('editReport', $stateParams);
+    };
+
+    $scope.openDeleteCovariateDialog = function(covariate) {
+      $modal.open({
+        templateUrl: './app/js/project/deleteDefinition.html',
+        scope: $scope,
+        controller: 'DeleteDefinitionController',
+        resolve: {
+          definition: function() {
+            return _.assign({}, covariate, {
+              definitionType: 'covariate'
+            });
+          },
+          callback: function() {
+            return loadCovariates;
+          }
+        }
+      });
     };
 
   };
