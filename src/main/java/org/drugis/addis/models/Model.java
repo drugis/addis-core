@@ -192,8 +192,8 @@ public class Model {
   }
 
   public void setRunStatus(String newStatus) {
-    if(!"failed".equals(newStatus) && !"done".equals(newStatus) && !"progress".equals(newStatus)) {
-      throw new IllegalArgumentException("Unknown model run status");
+    if(!"failed".equals(newStatus) && !"done".equals(newStatus) && !"progress".equals(newStatus) && !"unknown".equals(newStatus)) {
+      throw new IllegalArgumentException("Unknown model run status: " + newStatus);
     }
     this.runStatus = newStatus;
   }
