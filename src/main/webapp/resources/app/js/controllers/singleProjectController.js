@@ -116,6 +116,9 @@ define(['lodash', 'angular'], function(_, angular) {
       $scope.outcomes = OutcomeResource.query({
         projectId: $scope.project.id
       });
+      $scope.outcomes.$promise.then(function(value) {
+        $scope.outcomes = value;
+      });
       $scope.outcomes.$promise.then(function() {
         $scope.outcomeUsage = ProjectService.buildOutcomeUsage($scope.analyses, $scope.outcomes);
       });

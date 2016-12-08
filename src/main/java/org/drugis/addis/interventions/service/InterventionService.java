@@ -8,7 +8,6 @@ import org.drugis.addis.interventions.model.SingleIntervention;
 import org.drugis.addis.interventions.service.impl.InvalidTypeForDoseCheckException;
 import org.drugis.addis.trialverse.model.trialdata.AbstractSemanticIntervention;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
@@ -20,4 +19,6 @@ public interface InterventionService {
   Set<SingleIntervention> resolveInterventionSets(List<InterventionSet> interventionSets) throws ResourceDoesNotExistException;
   boolean isMatched(AbstractIntervention intervention, List<AbstractSemanticIntervention> semanticIntervention) throws InvalidTypeForDoseCheckException, ResourceDoesNotExistException;
   AbstractIntervention updateNameAndMotivation(Integer projectId, Integer interventionId, String name, String motivation) throws Exception;
+
+  void delete(Integer projectId, Integer interventionId) throws ResourceDoesNotExistException;
 }

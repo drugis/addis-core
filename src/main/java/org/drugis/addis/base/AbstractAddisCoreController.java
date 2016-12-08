@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.http.HttpStatus;
+import org.springframework.social.OperationNotPermittedException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -50,5 +51,13 @@ public class AbstractAddisCoreController {
   public ErrorResponse handleIllegalArgumentException(HttpServletRequest request) {
     logger.error("Bad request.\n{}", request.getQueryString());
     return new ErrorResponse(400, "Bad request");
+  }
+
+  @ResponseStatus(HttpStatus.METHOD_NOT_ALLOWED)
+  @ExceptionHandler(OperationNotPermittedException.class)
+  @ResponseBody
+  public ErrorResponse handleOperationNotPermittedException(HttpServletRequest request) {
+    logger.error("Bad request.\n{}", request.getQueryString());
+    return new ErrorResponse(405, "Operation not permitted");
   }
 }

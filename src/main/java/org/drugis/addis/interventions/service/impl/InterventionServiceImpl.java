@@ -1,5 +1,9 @@
 package org.drugis.addis.interventions.service.impl;
 
+import org.drugis.addis.analyses.AbstractAnalysis;
+import org.drugis.addis.analyses.NetworkMetaAnalysis;
+import org.drugis.addis.analyses.SingleStudyBenefitRiskAnalysis;
+import org.drugis.addis.analyses.repository.AnalysisRepository;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.interventions.model.*;
 import org.drugis.addis.interventions.repository.InterventionRepository;
@@ -8,6 +12,7 @@ import org.drugis.addis.trialverse.model.trialdata.AbstractSemanticIntervention;
 import org.drugis.addis.trialverse.model.trialdata.Dose;
 import org.drugis.addis.trialverse.model.trialdata.FixedSemanticIntervention;
 import org.drugis.addis.trialverse.model.trialdata.TitratedSemanticIntervention;
+import org.springframework.social.OperationNotPermittedException;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
@@ -22,9 +27,12 @@ public class InterventionServiceImpl implements InterventionService {
   @Inject
   InterventionRepository interventionRepository;
 
+  @Inject
+  AnalysisRepository analysisRepository;
+
   @Override
   public AbstractIntervention updateNameAndMotivation(Integer projectId, Integer interventionId, String name, String motivation) throws Exception {
-    if(interventionRepository.isExistingInterventionName(interventionId, name)){
+    if (interventionRepository.isExistingInterventionName(interventionId, name)) {
       throw new Exception("Can not update intervention, intervention name must be unique");
     }
     AbstractIntervention abstractIntervention = interventionRepository.get(projectId, interventionId);
@@ -35,7 +43,7 @@ public class InterventionServiceImpl implements InterventionService {
 
   public List<SingleIntervention> resolveCombinations(List<CombinationIntervention> combinationInterventions) throws ResourceDoesNotExistException {
     List<SingleIntervention> singleInterventions = new ArrayList<>();
-    for(CombinationIntervention combinationIntervention: combinationInterventions){
+    for (CombinationIntervention combinationIntervention : combinationInterventions) {
       singleInterventions.addAll(resolveCombinations(combinationIntervention));
     }
     return singleInterventions;
@@ -44,7 +52,7 @@ public class InterventionServiceImpl implements InterventionService {
   @Override
   public Set<SingleIntervention> resolveInterventionSets(List<InterventionSet> interventionSets) throws ResourceDoesNotExistException {
     Set<SingleIntervention> singleInterventions = new HashSet<>();
-    for(InterventionSet interventionSet: interventionSets){
+    for (InterventionSet interventionSet : interventionSets) {
       singleInterventions.addAll(resolveInterventionSet(interventionSet));
     }
     return singleInterventions;
@@ -52,21 +60,35 @@ public class InterventionServiceImpl implements InterventionService {
 
   private Set<? extends SingleIntervention> resolveInterventionSet(InterventionSet interventionSet) throws ResourceDoesNotExistException {
     Set<SingleIntervention> singleInterventions = new HashSet<>();
-    for(Integer interventionId: interventionSet.getInterventionIds()){
+    for (Integer interventionId : interventionSet.getInterventionIds()) {
       AbstractIntervention abstractIntervention = interventionRepository.get(interventionId);
-      if(abstractIntervention instanceof SingleIntervention) {
+      if (abstractIntervention instanceof SingleIntervention) {
         singleInterventions.add((SingleIntervention) abstractIntervention);
-      } else if(abstractIntervention instanceof CombinationIntervention) {
+      } else if (abstractIntervention instanceof CombinationIntervention) {
         singleInterventions.addAll(resolveCombinations((CombinationIntervention) abstractIntervention));
       }
     }
     return singleInterventions;
   }
 
+
+  @Override
+  public void delete(Integer projectId, Integer interventionId) throws ResourceDoesNotExistException {
+    List<AbstractAnalysis> analyses = analysisRepository.query(projectId);
+    Boolean isInterventionUsed = analyses.stream()
+            .anyMatch(analysis ->
+                    analysis.getInterventionInclusions().stream()
+                            .anyMatch(inclusion -> inclusion.getInterventionId().equals(interventionId)));
+    if (isInterventionUsed) {
+      throw new OperationNotPermittedException("", "attempt to delete intervention that is in use");
+    }
+    interventionRepository.delete(interventionId);
+  }
+
   @Override
   public boolean isMatched(final AbstractIntervention intervention, final List<AbstractSemanticIntervention> semanticInterventions) throws InvalidTypeForDoseCheckException, ResourceDoesNotExistException {
 
-    if(intervention instanceof SingleIntervention) {
+    if (intervention instanceof SingleIntervention) {
       if (semanticInterventions.size() > 1) {
         return false;
       }
@@ -107,16 +129,16 @@ public class InterventionServiceImpl implements InterventionService {
       return semanticInterventionsToMatch.size() == 0; // all semantic interventions matched
     }
 
-    if(intervention instanceof InterventionSet) {
+    if (intervention instanceof InterventionSet) {
       InterventionSet interventionSet = (InterventionSet) intervention;
 
       List<AbstractIntervention> interventions = new ArrayList<>();
-      for(Integer interventionId: interventionSet.getInterventionIds()) {
+      for (Integer interventionId : interventionSet.getInterventionIds()) {
         interventions.add(interventionRepository.get(interventionId));
       }
 
-      for(AbstractIntervention interventionToMatch: interventions) {
-        if(isMatched(interventionToMatch, semanticInterventions)) {
+      for (AbstractIntervention interventionToMatch : interventions) {
+        if (isMatched(interventionToMatch, semanticInterventions)) {
           return true;
         }
       }
@@ -154,13 +176,13 @@ public class InterventionServiceImpl implements InterventionService {
 
   private boolean doseCheck(AbstractIntervention intervention, AbstractSemanticIntervention semanticIntervention) throws InvalidTypeForDoseCheckException {
 
-    if(intervention instanceof FixedDoseIntervention) {
+    if (intervention instanceof FixedDoseIntervention) {
       DoseConstraint constraint = ((FixedDoseIntervention) intervention).getConstraint();
       Dose dose = ((FixedSemanticIntervention) semanticIntervention).getDose();
       return isValid(constraint, dose);
     }
 
-    if(intervention instanceof TitratedDoseIntervention) {
+    if (intervention instanceof TitratedDoseIntervention) {
 
       DoseConstraint minConstraint = ((TitratedDoseIntervention) intervention).getMinConstraint();
       Dose minDose = ((TitratedSemanticIntervention) semanticIntervention).getMinDose();
@@ -174,19 +196,19 @@ public class InterventionServiceImpl implements InterventionService {
 
     }
 
-    if(intervention instanceof BothDoseTypesIntervention) {
+    if (intervention instanceof BothDoseTypesIntervention) {
 
       DoseConstraint minConstraint = ((BothDoseTypesIntervention) intervention).getMinConstraint();
       DoseConstraint maxConstraint = ((BothDoseTypesIntervention) intervention).getMaxConstraint();
 
-      if(semanticIntervention instanceof FixedSemanticIntervention){
+      if (semanticIntervention instanceof FixedSemanticIntervention) {
         Dose dose = ((FixedSemanticIntervention) semanticIntervention).getDose();
         boolean isValidMinConstraint = minConstraint == null || isValid(minConstraint, dose);
         boolean isValidMaxConstraint = maxConstraint == null || isValid(maxConstraint, dose);
         return isValidMinConstraint && isValidMaxConstraint;
       }
 
-      if(semanticIntervention instanceof TitratedSemanticIntervention){
+      if (semanticIntervention instanceof TitratedSemanticIntervention) {
 
         Dose minDose = ((TitratedSemanticIntervention) semanticIntervention).getMinDose();
         boolean isValidMinConstraint = minConstraint == null || isValid(minConstraint, minDose);
@@ -208,27 +230,27 @@ public class InterventionServiceImpl implements InterventionService {
     UpperDoseBound upperBound = constraint.getUpperBound();
 
     // check unit
-    if(lowerBound != null && !dose.getUnitConceptUri().equals(lowerBound.getUnitConcept())){
+    if (lowerBound != null && !dose.getUnitConceptUri().equals(lowerBound.getUnitConcept())) {
       return false;
     }
 
-    if(upperBound != null && !dose.getUnitConceptUri().equals(upperBound.getUnitConcept())){
+    if (upperBound != null && !dose.getUnitConceptUri().equals(upperBound.getUnitConcept())) {
       return false;
     }
 
     //check period
-    if(lowerBound != null && !dose.getPeriodicity().equals(lowerBound.getUnitPeriod())){
+    if (lowerBound != null && !dose.getPeriodicity().equals(lowerBound.getUnitPeriod())) {
       return false;
     }
-    if(upperBound != null && !dose.getPeriodicity().equals(upperBound.getUnitPeriod())){
+    if (upperBound != null && !dose.getPeriodicity().equals(upperBound.getUnitPeriod())) {
       return false;
     }
 
     //value
-    if(lowerBound != null && !isWithinConstraint(dose.getValue(), constraint)) {
+    if (lowerBound != null && !isWithinConstraint(dose.getValue(), constraint)) {
       return false;
     }
-    if(upperBound != null && !isWithinConstraint(dose.getValue(), constraint)) {
+    if (upperBound != null && !isWithinConstraint(dose.getValue(), constraint)) {
       return false;
     }
 
@@ -241,11 +263,11 @@ public class InterventionServiceImpl implements InterventionService {
     boolean validUpperBound = true;
     boolean validLowerBound = true;
 
-    if(lowerBound != null) {
+    if (lowerBound != null) {
       validLowerBound = lowerBound.getType().isValidForBound(value, lowerBound.getValue());
     }
 
-    if(upperBound != null) {
+    if (upperBound != null) {
       validUpperBound = upperBound.getType().isValidForBound(value, upperBound.getValue());
     }
 
@@ -254,10 +276,11 @@ public class InterventionServiceImpl implements InterventionService {
 
   private List<SingleIntervention> resolveCombinations(CombinationIntervention combinationIntervention) throws ResourceDoesNotExistException {
     List<SingleIntervention> singleInterventions = new ArrayList<>();
-    for(Integer singleInterventionId: combinationIntervention.getInterventionIds()){
+    for (Integer singleInterventionId : combinationIntervention.getInterventionIds()) {
       singleInterventions.add((SingleIntervention) interventionRepository.get(singleInterventionId));
     }
     return singleInterventions;
   }
+
 
 }

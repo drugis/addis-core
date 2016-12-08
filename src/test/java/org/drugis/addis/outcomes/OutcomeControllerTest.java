@@ -31,6 +31,7 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.core.Is.is;
 import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -149,6 +150,14 @@ public class OutcomeControllerTest {
             .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()));
     verify(accountRepository).getAccount(user);
     verify(outcomeService).updateOutcome(projectId, outcomeId, editOutcomeCommand.getName(), editOutcomeCommand.getMotivation(), editOutcomeCommand.getDirection());
+  }
+
+  @Test
+  public void deleteOutcome() throws Exception {
+    mockMvc.perform(delete("/projects/2/outcomes/1").principal(user))
+            .andExpect(status().isOk());
+    verify(accountRepository).findAccountByUsername("gert");
+    verify(outcomeService).delete(2, 1);
   }
 
 }

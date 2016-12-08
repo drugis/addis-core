@@ -2,6 +2,7 @@ package org.drugis.addis.outcomes.repository.impl;
 
 import org.drugis.addis.exception.MethodNotAllowedException;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
+import org.drugis.addis.interventions.model.AbstractIntervention;
 import org.drugis.addis.outcomes.Outcome;
 import org.drugis.addis.outcomes.repository.OutcomeRepository;
 import org.drugis.addis.projects.Project;
@@ -73,7 +74,7 @@ public class OutcomeRepositoryImpl implements OutcomeRepository {
 
   @Override
   public List<Outcome> get(Integer projectId, List<Integer> outcomeIds) {
-    if(outcomeIds.isEmpty()){
+    if (outcomeIds.isEmpty()) {
       return Collections.emptyList();
     }
     TypedQuery<Outcome> query = em.createQuery("FROM Outcome o WHERE o.project = :projectId AND o.id IN :outcomeIds", Outcome.class);
@@ -103,5 +104,14 @@ public class OutcomeRepositoryImpl implements OutcomeRepository {
     }
     em.persist(newOutcome);
     return newOutcome;
+  }
+
+  @Override
+  public void delete(Integer outcomeId) throws ResourceDoesNotExistException {
+    Outcome outcome = em.find(Outcome.class, outcomeId);
+    if (outcome == null) {
+      throw new ResourceDoesNotExistException("No outcome with id " + outcomeId);
+    }
+    em.remove(outcome);
   }
 }

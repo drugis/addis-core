@@ -22,6 +22,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
@@ -37,6 +38,7 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.core.Is.is;
 import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -273,4 +275,13 @@ public class InterventionControllerTest {
     verify(accountRepository).findAccountByUsername(gert.getUsername());
     verify(interventionRepository).create(gert, doseRestrictedInterventionCommand);
   }
+
+  @Test
+  public void deleteIntervention() throws Exception {
+    mockMvc.perform(delete("/projects/1/interventions/2").principal(user))
+    .andExpect(status().isOk());
+    verify(accountRepository).findAccountByUsername(gert.getUsername());
+    verify(interventionService).delete(1, 2);
+  }
+
 }

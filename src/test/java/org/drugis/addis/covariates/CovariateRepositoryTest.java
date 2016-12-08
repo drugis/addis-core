@@ -1,6 +1,7 @@
 package org.drugis.addis.covariates;
 
 import org.drugis.addis.config.JpaRepositoryTestConfig;
+import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.trialverse.model.emun.CovariateOption;
 import org.drugis.addis.trialverse.model.emun.CovariateOptionType;
 import org.junit.Test;
@@ -45,7 +46,7 @@ public class CovariateRepositoryTest {
   }
 
   @Test
-  public void testDelete() {
+  public void testDelete() throws ResourceDoesNotExistException {
     covariateRepository.delete(2);
     Collection<Covariate> covariates = covariateRepository.findByProject(1);
     assertEquals(1,covariates.size());

@@ -24,4 +24,6 @@ public interface OutcomeRepository {
   List<Outcome> get(Integer projectId, List<Integer> outcomeIds);
 
   Boolean isExistingOutcomeName(Integer outcomeId, String name);
+
+  void delete(Integer outcomeId) throws ResourceDoesNotExistException;
 }

@@ -1,5 +1,6 @@
 package org.drugis.addis.covariates;
 
+import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.trialverse.model.emun.CovariateOptionType;
 
 import java.util.Collection;
@@ -15,5 +16,5 @@ public interface CovariateRepository {
 
   List<Covariate> get(List<String> covariateKeys);
 
-  void delete(Integer covariateId);
+  void delete(Integer covariateId) throws ResourceDoesNotExistException;
 }

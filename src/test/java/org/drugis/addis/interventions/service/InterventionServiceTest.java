@@ -1,6 +1,10 @@
 package org.drugis.addis.interventions.service;
 
 import com.google.common.collect.ImmutableSet;
+import org.drugis.addis.analyses.AbstractAnalysis;
+import org.drugis.addis.analyses.InterventionInclusion;
+import org.drugis.addis.analyses.NetworkMetaAnalysis;
+import org.drugis.addis.analyses.repository.AnalysisRepository;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.interventions.controller.command.LowerBoundCommand;
 import org.drugis.addis.interventions.controller.command.UpperBoundCommand;
@@ -13,6 +17,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.springframework.social.OperationNotPermittedException;
 
 import java.net.URI;
 import java.util.Arrays;
@@ -22,6 +27,7 @@ import java.util.List;
 import static junit.framework.TestCase.assertFalse;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
@@ -34,6 +40,9 @@ public class InterventionServiceTest {
 
   @Mock
   private InterventionRepository interventionRepository;
+
+  @Mock
+  private AnalysisRepository analysisRepository;
 
   @InjectMocks
   private InterventionService interventionService;
@@ -313,5 +322,38 @@ public class InterventionServiceTest {
     when(interventionRepository.isExistingInterventionName(interventionId, "name")).thenReturn(false);
     when(interventionRepository.get(projectId, interventionId)).thenReturn(null);
     interventionService.updateNameAndMotivation(projectId, interventionId, name, motivation);
+  }
+
+  @Test(expected = OperationNotPermittedException.class)
+  public void deleteUsedIntervention() throws ResourceDoesNotExistException {
+    Integer projectId = 37;
+    Integer analysisId1 = 42;
+    Integer analysisId2 = 13;
+    InterventionInclusion inclusion1 = new InterventionInclusion(analysisId1, interventionId);
+    List<InterventionInclusion> interventionInclusions = Collections.singletonList(inclusion1);
+    AbstractAnalysis analysisWithInclusion = new NetworkMetaAnalysis(analysisId1, projectId, "analysisWithInclusion",
+            Collections.emptyList(), interventionInclusions, Collections.emptyList(), null);
+    AbstractAnalysis analysisWithoutInclusions = new NetworkMetaAnalysis(analysisId2, projectId, "analysisWithoutInclusion");
+    when(analysisRepository.query(projectId)).thenReturn(Arrays.asList(analysisWithInclusion, analysisWithoutInclusions));
+
+    interventionService.delete(projectId, interventionId);
+  }
+
+  @Test
+  public void deleteUnusedIntervention() throws ResourceDoesNotExistException {
+    Integer projectId = 37;
+    Integer analysisId1 = 42;
+    Integer analysisId2 = 13;
+    Integer differentInterventionId = -432;
+    InterventionInclusion inclusion1 = new InterventionInclusion(analysisId1, differentInterventionId);
+    List<InterventionInclusion> interventionInclusions = Collections.singletonList(inclusion1);
+    AbstractAnalysis analysisWithInclusion = new NetworkMetaAnalysis(analysisId1, projectId, "analysisWithInclusion",
+            Collections.emptyList(), interventionInclusions, Collections.emptyList(), null);
+    AbstractAnalysis analysisWithoutInclusions = new NetworkMetaAnalysis(analysisId2, projectId, "analysisWithoutInclusion");
+    when(analysisRepository.query(projectId)).thenReturn(Arrays.asList(analysisWithInclusion, analysisWithoutInclusions));
+
+    interventionService.delete(projectId, interventionId);
+
+    verify(analysisRepository).query(projectId);
   }
 }

@@ -10,6 +10,7 @@ import org.drugis.addis.security.Account;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
+import org.springframework.social.ResourceNotFoundException;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -50,22 +51,22 @@ public class InterventionRepositoryTest {
     int interventionId = -1;
     AbstractIntervention intervention = interventionRepository.get(interventionId);
     assertEquals(em.find(AbstractIntervention.class, interventionId), intervention);
-    assert(intervention instanceof SimpleIntervention);
+    assert (intervention instanceof SimpleIntervention);
 
     interventionId = -4;
     intervention = interventionRepository.get(interventionId);
     assertEquals(em.find(AbstractIntervention.class, interventionId), intervention);
-    assert(intervention instanceof FixedDoseIntervention);
+    assert (intervention instanceof FixedDoseIntervention);
 
     interventionId = -5;
     intervention = interventionRepository.get(interventionId);
     assertEquals(em.find(AbstractIntervention.class, interventionId), intervention);
-    assert(intervention instanceof TitratedDoseIntervention);
+    assert (intervention instanceof TitratedDoseIntervention);
 
     interventionId = -6;
     intervention = interventionRepository.get(interventionId);
     assertEquals(em.find(AbstractIntervention.class, interventionId), intervention);
-    assert(intervention instanceof CombinationIntervention);
+    assert (intervention instanceof CombinationIntervention);
   }
 
   @Test
@@ -73,35 +74,35 @@ public class InterventionRepositoryTest {
     int interventionId = -1;
     AbstractIntervention intervention = interventionRepository.get(1, interventionId);
     assertEquals(em.find(AbstractIntervention.class, interventionId), intervention);
-    assert(intervention instanceof SimpleIntervention);
+    assert (intervention instanceof SimpleIntervention);
 
     interventionId = -4;
     intervention = interventionRepository.get(2, interventionId);
     assertEquals(em.find(AbstractIntervention.class, interventionId), intervention);
-    assert(intervention instanceof FixedDoseIntervention);
+    assert (intervention instanceof FixedDoseIntervention);
 
     interventionId = -5;
     intervention = interventionRepository.get(2, interventionId);
     assertEquals(em.find(AbstractIntervention.class, interventionId), intervention);
-    assert(intervention instanceof TitratedDoseIntervention);
+    assert (intervention instanceof TitratedDoseIntervention);
 
     interventionId = -6;
     intervention = interventionRepository.get(2, interventionId);
     assertEquals(em.find(AbstractIntervention.class, interventionId), intervention);
-    assert(intervention instanceof CombinationIntervention);
+    assert (intervention instanceof CombinationIntervention);
   }
 
   @Test
   public void fixedDoseIntervention() throws InvalidConstraintException {
     DoseConstraint constraint = new DoseConstraint(
-            new LowerBoundCommand(LowerBoundType.AT_LEAST, 1d, "unit" , "P1d", URI.create("uriConcept")),
-            new UpperBoundCommand(UpperBoundType.AT_MOST, 2d, "unit" , "P1d", URI.create("uriConcept")));
+            new LowerBoundCommand(LowerBoundType.AT_LEAST, 1d, "unit", "P1d", URI.create("uriConcept")),
+            new UpperBoundCommand(UpperBoundType.AT_MOST, 2d, "unit", "P1d", URI.create("uriConcept")));
 
     FixedDoseIntervention t = new FixedDoseIntervention(null, 1, "tit", "moti", URI.create("semuri"), "semlabel",
             constraint);
     em.persist(t);
 
-    FixedDoseIntervention result = em.find(FixedDoseIntervention.class,t.getId());
+    FixedDoseIntervention result = em.find(FixedDoseIntervention.class, t.getId());
     assertEquals(t, result);
   }
 
@@ -117,7 +118,7 @@ public class InterventionRepositoryTest {
             minConstraint, maxContraint);
     em.persist(t);
 
-    TitratedDoseIntervention result = em.find(TitratedDoseIntervention.class,t.getId());
+    TitratedDoseIntervention result = em.find(TitratedDoseIntervention.class, t.getId());
     assertEquals(t, result);
   }
 
@@ -133,7 +134,7 @@ public class InterventionRepositoryTest {
             minConstraint, maxContraint);
     em.persist(t);
 
-    BothDoseTypesIntervention result = em.find(BothDoseTypesIntervention.class,t.getId());
+    BothDoseTypesIntervention result = em.find(BothDoseTypesIntervention.class, t.getId());
     assertEquals(t, result);
   }
 
@@ -142,7 +143,7 @@ public class InterventionRepositoryTest {
     Integer projectId = 1;
 
     Set<Integer> combination = new HashSet<>();
-    combination.add( -1);
+    combination.add(-1);
     combination.add(-5);
     CombinationIntervention combinationIntervention = new CombinationIntervention(null, projectId, "intervention name", "motivation", combination);
     em.persist(combinationIntervention);
@@ -213,5 +214,17 @@ public class InterventionRepositoryTest {
   public void isExistingNameWhenUseTheANewName() {
     boolean result = interventionRepository.isExistingInterventionName(-2, "new name");
     assertFalse(result);
+  }
+
+  @Test
+  public void testDelete() throws ResourceDoesNotExistException {
+    interventionRepository.delete(-1);
+    AbstractIntervention abstractIntervention = interventionRepository.get(-1);
+    assertNull(abstractIntervention);
+  }
+
+  @Test(expected = ResourceDoesNotExistException.class)
+  public void testDeleteNonexistent() throws ResourceDoesNotExistException {
+    interventionRepository.delete(-37);
   }
 }

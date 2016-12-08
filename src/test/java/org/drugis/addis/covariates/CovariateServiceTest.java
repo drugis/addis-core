@@ -56,7 +56,8 @@ public class CovariateServiceTest {
     Integer covariateId = 7;
     CovariateInclusion covariateInclusion1 = new CovariateInclusion(analysisId1, covariateId);
     List<CovariateInclusion> covariateInclusions = Collections.singletonList(covariateInclusion1);
-    AbstractAnalysis analysisWithInclusion = new NetworkMetaAnalysis(analysisId1, projectId, "analysisWithInclusion", Collections.emptyList(), Collections.emptyList(), covariateInclusions, null);
+    AbstractAnalysis analysisWithInclusion = new NetworkMetaAnalysis(analysisId1, projectId, "analysisWithInclusion",
+            Collections.emptyList(), Collections.emptyList(), covariateInclusions, null);
     AbstractAnalysis analysisWithoutInclusions = new NetworkMetaAnalysis(analysisId2, projectId, "analysisWithoutInclusion");
     List<AbstractAnalysis> analyses = Arrays.asList(analysisWithoutInclusions, analysisWithInclusion);
     when(analysisRepository.query(projectId)).thenReturn(analyses);

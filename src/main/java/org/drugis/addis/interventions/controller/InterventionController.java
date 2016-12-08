@@ -1,5 +1,6 @@
 package org.drugis.addis.interventions.controller;
 
+import org.apache.http.HttpStatus;
 import org.drugis.addis.base.AbstractAddisCoreController;
 import org.drugis.addis.exception.MethodNotAllowedException;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
@@ -45,19 +46,19 @@ public class InterventionController extends AbstractAddisCoreController {
   @RequestMapping(value = "/projects/{projectId}/interventions", method = RequestMethod.GET)
   @ResponseBody
   public List<AbstractInterventionViewAdapter> query(@PathVariable Integer projectId) throws MethodNotAllowedException, ResourceDoesNotExistException {
-      Set<AbstractIntervention> interventions = interventionRepository.query(projectId);
-      List<AbstractInterventionViewAdapter> viewAdapters = interventions.stream().map(AbstractIntervention::toViewAdapter).collect(Collectors.toList());
-      return viewAdapters;
+    Set<AbstractIntervention> interventions = interventionRepository.query(projectId);
+    List<AbstractInterventionViewAdapter> viewAdapters = interventions.stream().map(AbstractIntervention::toViewAdapter).collect(Collectors.toList());
+    return viewAdapters;
   }
 
   @RequestMapping(value = "/projects/{projectId}/interventions/{interventionId}", method = RequestMethod.GET)
   @ResponseBody
   public AbstractInterventionViewAdapter get(@PathVariable Integer projectId, @PathVariable Integer interventionId) throws MethodNotAllowedException, ResourceDoesNotExistException {
-      AbstractIntervention intervention = interventionRepository.get(interventionId);
-      if (!intervention.getProject().equals(projectId)) {
-        throw new ResourceDoesNotExistException();
-      }
-      return intervention.toViewAdapter();
+    AbstractIntervention intervention = interventionRepository.get(interventionId);
+    if (!intervention.getProject().equals(projectId)) {
+      throw new ResourceDoesNotExistException();
+    }
+    return intervention.toViewAdapter();
   }
 
   @RequestMapping(value = "/projects/{projectId}/interventions/{interventionId}", method = RequestMethod.POST)
@@ -72,7 +73,7 @@ public class InterventionController extends AbstractAddisCoreController {
   @RequestMapping(value = "/projects/{projectId}/interventions", method = RequestMethod.POST)
   @ResponseBody
   public AbstractInterventionViewAdapter create(HttpServletRequest request, HttpServletResponse response, Principal currentUser, @PathVariable Integer projectId,
-                                     @RequestBody AbstractInterventionCommand interventionCommand) throws MethodNotAllowedException, ResourceDoesNotExistException, InvalidConstraintException {
+                                                @RequestBody AbstractInterventionCommand interventionCommand) throws MethodNotAllowedException, ResourceDoesNotExistException, InvalidConstraintException {
     Account user = accountRepository.findAccountByUsername(currentUser.getName());
     if (user != null) {
       AbstractIntervention intervention = interventionRepository.create(user, interventionCommand);
@@ -82,6 +83,14 @@ public class InterventionController extends AbstractAddisCoreController {
     } else {
       throw new MethodNotAllowedException();
     }
+  }
+
+  @RequestMapping(value = "/projects/{projectId}/interventions/{interventionId}", method = RequestMethod.DELETE)
+  public void deleteIntervention(@PathVariable Integer projectId, @PathVariable Integer interventionId, Principal currentUser, HttpServletResponse response) throws ResourceDoesNotExistException, MethodNotAllowedException {
+    Account user = accountRepository.findAccountByUsername(currentUser.getName());
+    projectService.checkProjectExistsAndModifiable(user, projectId);
+    interventionService.delete(projectId, interventionId);
+    response.setStatus(HttpStatus.SC_OK);
   }
 
 }

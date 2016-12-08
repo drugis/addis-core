@@ -1,5 +1,6 @@
 package org.drugis.addis.outcomes.controller;
 
+import org.apache.http.HttpStatus;
 import org.drugis.addis.base.AbstractAddisCoreController;
 import org.drugis.addis.exception.MethodNotAllowedException;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
@@ -74,6 +75,14 @@ public class OutcomeController extends AbstractAddisCoreController {
     Account user = accountRepository.getAccount(currentUser);
     projectService.checkProjectExistsAndModifiable(user, projectId);
     return outcomeService.updateOutcome(projectId, outcomeId, command.getName(), command.getMotivation(), command.getDirection());
+  }
+
+  @RequestMapping(value = "/projects/{projectId}/outcomes/{outcomeId}", method = RequestMethod.DELETE)
+  public void deleteOutcome(@PathVariable Integer projectId, @PathVariable Integer outcomeId, Principal currentUser, HttpServletResponse response) throws ResourceDoesNotExistException, MethodNotAllowedException {
+    Account user = accountRepository.findAccountByUsername(currentUser.getName());
+    projectService.checkProjectExistsAndModifiable(user, projectId);
+    outcomeService.delete(projectId, outcomeId);
+    response.setStatus(HttpStatus.SC_OK);
   }
 
 }

@@ -21,6 +21,7 @@ import java.util.Collection;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -86,6 +87,17 @@ public class OutcomeRepositoryTest {
   public void testCannotCreateOutcomeWithDuplicateName() throws Exception {
     Account account = em.find(Account.class, 1);
     outcomeRepository.create(account, 1, "outcome 1", 1,"newMotivation", new SemanticVariable(URI.create("http://semantic.com"), "labelnew"));
+  }
+
+  @Test
+  public void delete() throws ResourceDoesNotExistException {
+    outcomeRepository.delete(1);
+    assertNull(outcomeRepository.get(1));
+  }
+
+  @Test(expected = ResourceDoesNotExistException.class)
+  public void deleteNonexistent() throws ResourceDoesNotExistException {
+    outcomeRepository.delete(-20);
   }
 
 }

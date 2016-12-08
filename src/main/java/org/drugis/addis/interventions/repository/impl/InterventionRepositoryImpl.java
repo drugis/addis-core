@@ -100,4 +100,14 @@ public class InterventionRepositoryImpl implements InterventionRepository {
     query.setParameter("name", name);
     return !query.getResultList().isEmpty();
   }
+
+  @Override
+  public void delete(Integer interventionId) throws ResourceDoesNotExistException {
+    AbstractIntervention intervention = em.find(AbstractIntervention.class, interventionId);
+    if(intervention == null) {
+      throw new ResourceDoesNotExistException("No intervention with id " + interventionId);
+    }
+    em.remove(intervention);
+
+  }
 }

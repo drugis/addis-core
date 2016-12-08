@@ -2,6 +2,7 @@ package org.drugis.addis.covariates.impl;
 
 import org.drugis.addis.covariates.Covariate;
 import org.drugis.addis.covariates.CovariateRepository;
+import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.trialverse.model.emun.CovariateOption;
 import org.drugis.addis.trialverse.model.emun.CovariateOptionType;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -43,8 +44,11 @@ public class CovariateRepositoryImpl implements CovariateRepository {
   }
 
   @Override
-  public void delete(Integer covariateId) {
+  public void delete(Integer covariateId) throws ResourceDoesNotExistException {
     Covariate covariate = em.find(Covariate.class, covariateId);
+    if (covariate== null) {
+      throw new ResourceDoesNotExistException("No covariate with id " + covariateId);
+    }
     em.remove(covariate);
   }
 }

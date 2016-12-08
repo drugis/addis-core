@@ -75,7 +75,6 @@ public class Project implements Serializable {
     this.description = description;
   }
 
-
   public String getNamespaceUid() {
     return namespaceUid;
   }
