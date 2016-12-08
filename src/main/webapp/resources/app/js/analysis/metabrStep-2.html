@@ -36,7 +36,7 @@
             ~ N({{owa.baselineDistribution.mu}}, {{owa.baselineDistribution.sigma}})</td>
           <td ng-show="!owa.baselineDistribution"><em>Not defined.</em></td>
           <td class="button-cell">
-            <button class="small" ng-click="openDistributionModal(owa)">Set</button>
+            <button ng-disabled="!editMode.allowEditing" class="small" ng-click="openDistributionModal(owa)">Set</button>
           </td>
         </tr>
       </tbody>
@@ -69,9 +69,9 @@
 </div>
 <div class="row">
   <div class="columns large-12">
-    <button type="button" class="primary" ng-click="goToStep1()">Previous step </button>
-    <button ng-cloak ng-if="!analysis.finalized" ng-disabled="hasMissingBaseLine()" ng-click="finalizeAndGoToDefaultScenario()" type="button" class="success">Finalize</button>
-    <button ng-cloak ng-if="analysis.finalized" ng-click="goToDefaultScenario()" type="button" class="">Go to MCDA</button>
+    <button ng-disabled="!editMode.allowEditing" type="button" class="primary" ng-click="goToStep1()">Previous step </button>
+    <button ng-disabled="!editMode.allowEditing" ng-cloak ng-if="!analysis.finalized" ng-disabled="hasMissingBaseLine()" ng-click="finalizeAndGoToDefaultScenario()" type="button" class="success">Finalize</button>
+    <button ng-disabled="!editMode.allowEditing" ng-cloak ng-if="analysis.finalized" ng-click="goToDefaultScenario()" type="button" class="">Go to MCDA</button>
     <div ng-repeat="message in step1AlertMessages">
       <div class="alert">{{message}}</div>
       <div></div>

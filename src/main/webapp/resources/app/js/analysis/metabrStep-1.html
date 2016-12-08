@@ -20,8 +20,8 @@
       <div class="checkbox-group">
         <div class="alternative-item" ng-repeat="alternative in alternatives">
           <label>
-            <input type="checkbox" ng-model="alternative.isIncluded" name="{{alternative.name}}"
-            ng-change="updateAlternatives()"> {{alternative.name}}
+            <input ng-disabled="!editMode.allowEditing" type="checkbox" ng-model="alternative.isIncluded"
+              name="{{alternative.name}}" ng-change="updateAlternatives()"> {{alternative.name}}
           </label>
         </div>
       </div>
@@ -33,23 +33,24 @@
       <div class="checkbox-group">
         <div class="outcome-item" ng-repeat="outcomeWithAnalyses in outcomesWithAnalyses">
           <label>
-            <input type="checkbox" ng-model="outcomeWithAnalyses.outcome.isIncluded" ng-disabled="isOutcomeDisabled(outcomeWithAnalyses)"
-            name="{{outcomeWithAnalyses.outcome.name}}" ng-change="updateMbrOutcomeInclusions(outcomeWithAnalyses)"> {{outcomeWithAnalyses.outcome.name}}
+            <input type="checkbox" ng-model="outcomeWithAnalyses.outcome.isIncluded" ng-disabled="isOutcomeDisabled(outcomeWithAnalyses) || !editMode.allowEditing"
+              name="{{outcomeWithAnalyses.outcome.name}}" ng-change="updateMbrOutcomeInclusions(outcomeWithAnalyses)"> {{outcomeWithAnalyses.outcome.name}}
           </label>
           <div class="indent-one" ng-repeat="networkMetaAnalysis in outcomeWithAnalyses.networkMetaAnalyses">
             <div class="analysis">
               <label>
                 <input ng-model="outcomeWithAnalyses.selectedAnalysis" ng-change="updateAnalysesInclusions(outcomeWithAnalyses)"
-                type="radio" ng-value="networkMetaAnalysis" ng-disabled="!outcomeWithAnalyses.outcome.isIncluded || !networkMetaAnalysis.models.length"> {{networkMetaAnalysis.title}}
+                  type="radio" ng-value="networkMetaAnalysis" ng-disabled="!outcomeWithAnalyses.outcome.isIncluded || !networkMetaAnalysis.models.length"> {{networkMetaAnalysis.title}}
               </label>
               <div class="row" ng-show="outcomeWithAnalyses.selectedAnalysis.id === networkMetaAnalysis.id && networkMetaAnalysis.models.length">
                 <div class="indent-one columns large-4">
-                  <select ng-model="outcomeWithAnalyses.selectedModel" class="model-select"
-                  ng-change="updateModelSelection(outcomeWithAnalyses, networkMetaAnalysis.interventionInclusions)"
-                  ng-options="model.title  group by model.group for model in networkMetaAnalysis.models | orderBy:['-group','+title']">
+                  <select ng-disabled="!editMode.allowEditing" ng-model="outcomeWithAnalyses.selectedModel"
+                    class="model-select" ng-change="updateModelSelection(outcomeWithAnalyses, networkMetaAnalysis.interventionInclusions)"
+                    ng-options="model.title  group by model.group for model in networkMetaAnalysis.models | orderBy:['-group','+title']">
                   </select>
                   <div class="alert" ng-show="outcomeWithAnalyses.selectedModel.missingAlternatives.length">
-                    Selected model is missing alternatives: {{outcomeWithAnalyses.selectedModel.missingAlternativesNames.join(', ')}}.
+                    Selected model is missing alternatives: {{outcomeWithAnalyses.selectedModel.missingAlternativesNames.join(',
+                    ')}}.
                   </div>
                   <div class="alert" ng-show="outcomeWithAnalyses.selectedModel.runStatus !== 'done'">
                     This model has not yet been run.
@@ -72,10 +73,11 @@
   </div>
   <div class="row">
     <div class="columns large-12">
-      <button ng-disabled="step1AlertMessages.length" type="button" class="primary" ng-click="goToStep2()">Next Step</button>
+      <button ng-disabled="step1AlertMessages.length || !editMode.allowEditing" type="button"
+        class="primary" ng-click="goToStep2()">Next Step</button>
       <div ng-repeat="message in step1AlertMessages">
         <div class="alert">{{message}}</div>
-      <div>
+        <div>
+        </div>
+      </div>
     </div>
-  </div>
-</div>
