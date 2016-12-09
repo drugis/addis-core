@@ -115,7 +115,7 @@ define(
       'gemtc.resources',
       'gemtc.constants',
       'gemtc.services',
-      'gemtc.directives',
+      'gemtc.directives'
     ];
     var trialverseDependencies = [
       'trialverse.search',

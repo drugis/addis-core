@@ -94,15 +94,24 @@ define(['angular-mocks'], function() {
     describe('buildInterventionUsage', function() {
       it('should build a usage map of the interventions', function() {
         var intervention1 = {
-          id: 1
+          id: 1,
+          type: 'simple'
         };
         var intervention2 = {
-          id: 2
+          id: 2,
+          type: 'simple'
         };
         var intervention3 = {
-          id: 3
+          id: 3,
+          type: 'simple'
         };
-        var interventions = [intervention1, intervention2, intervention3];
+        var intervention4 = {
+          id: 4,
+          name: '1 plus 2',
+          type: 'combination',
+          interventionIds: [1, 2]
+        };
+        var interventions = [intervention1, intervention2, intervention3, intervention4];
         var analyses = [{
           title: 'analysis 1',
           interventionInclusions: [{
@@ -118,9 +127,17 @@ define(['angular-mocks'], function() {
         }];
 
         var expectedResult = {
-          1: ['analysis 1', 'analysis 2'],
-          2: ['analysis 2'],
-          3: []
+          inAnalyses: {
+            1: ['analysis 1', 'analysis 2'],
+            2: ['analysis 2'],
+            3: [],
+            4: []
+          },
+          inInterventions: {
+            1: ['1 plus 2'],
+            2: ['1 plus 2'],
+            3: []
+          }
         };
 
         var result = projectService.buildInterventionUsage(analyses, interventions);

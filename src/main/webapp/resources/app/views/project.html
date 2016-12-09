@@ -188,7 +188,7 @@
                         <a class="has-tip"
                           tooltip="outcome is used in analyses: {{outcomeUsage[outcome.id].join(', ')}}"
                           tooltip-placement="left">
-                          <i class="fa fa-trash fa-2x" style="color: grey;"></i>
+                          <i class="fa fa-trash fa-2x" style="color: lightgrey;"></i>
                         </span>
                         </a>
                       </td>
@@ -223,12 +223,14 @@
                       <td>{{intervention.motivation}}</td>
                       <td>{{::intervention.semanticInterventionLabel}}{{::intervention.definitionLabel}}</td>
                       <td style="text-align: center;" ng-if="editMode.allowEditing"><a ng-click="openEditInterventionDialog(intervention)"><i class="fa fa-edit fa-2x"></i></a></td>
-                      <td class="text-center" ng-if="editMode.allowEditing && !interventionUsage[intervention.id].length"><a ng-click="openDeleteDefinitionDialog(intervention,'intervention')"><i class="fa fa-trash  fa-2x" style="color:red"></i></a></td>
-                      <td ng-if="editMode.allowEditing && interventionUsage[intervention.id].length">
+                      <td class="text-center" ng-if="editMode.allowEditing && !interventionUsage.inAnalyses[intervention.id].length && !interventionUsage.inInterventions[intervention.id].length"><a ng-click="openDeleteDefinitionDialog(intervention,'intervention')"><i class="fa fa-trash  fa-2x" style="color:red"></i></a></td>
+                      <td ng-if="editMode.allowEditing && (interventionUsage.inInterventions[intervention.id].length || interventionUsage.inAnalyses[intervention.id].length)">
                         <a class="has-tip"
-                          tooltip="Intervention is used in analyses: {{interventionUsage[intervention.id].join(', ')}}"
+                          tooltip="{{!interventionUsage.inAnalyses[intervention.id].length ? '' : 'Intervention is used in analyses:' + interventionUsage.inAnalyses[intervention.id].join(', ')}}
+
+                          {{!interventionUsage.inInterventions[intervention.id].length? '' : 'Intervention is used in interventions:' + interventionUsage.inInterventions[intervention.id].join(', ')}}"
                           tooltip-placement="left">
-                          <i class="fa fa-trash fa-2x" style="color: grey;"></i>
+                          <i class="fa fa-trash fa-2x" style="color: lightgrey;"></i>
                         </span>
                         </a>
                       </td>
@@ -275,7 +277,7 @@
                         <a class="has-tip"
                           tooltip="Covariate is used in analyses: {{covariateUsage[covariate.id].join(', ')}}"
                           tooltip-placement="left">
-                          <i class="fa fa-trash fa-2x" style="color: grey;"></i>
+                          <i class="fa fa-trash fa-2x" style="color: lightgrey;"></i>
                         </span>
                         </a>
                       </td>

@@ -22,7 +22,24 @@ define(['lodash'],
         var matcherFunction = function(analysis, intervention) {
           return _.find(analysis.interventionInclusions, ['interventionId', intervention.id]);
         };
-        return buildDefinitionUsage(analyses, interventions, matcherFunction);
+        var usageInAnalyses = buildDefinitionUsage(analyses, interventions, matcherFunction);
+        var usageInComplexInterventions = _
+          .chain(interventions)
+          .filter(['type', 'simple'])
+          .reduce(function(accum, intervention) {
+            accum[intervention.id] = _.chain(interventions)
+              .filter(function(otherIntervention) {
+                return _.includes(otherIntervention.interventionIds, intervention.id);
+              })
+              .map('name')
+              .value();
+            return accum;
+          }, {})
+          .value();
+        return {
+          inAnalyses: usageInAnalyses,
+          inInterventions: usageInComplexInterventions
+        };
       }
 
       function buildOutcomeUsage(analyses, outcomes) {
