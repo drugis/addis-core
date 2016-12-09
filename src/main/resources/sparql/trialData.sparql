@@ -14,6 +14,7 @@ SELECT DISTINCT
 ?graph
 ?studyName
 ?drug
+?isPrimaryEpoch
 ?interventionLabel
 ?defaultMeasurementMoment
 ?drugInstance
@@ -79,6 +80,8 @@ WHERE {
 
     ?epoch rdfs:label ?epochLabel .
     ?arm rdfs:label ?armLabel .
+
+    BIND (?epoch = ?primaryEpoch AS ?isPrimaryEpoch) .
 
     ?defaultMeasurementMoment
       ontology:relative_to_epoch ?primaryEpoch ;

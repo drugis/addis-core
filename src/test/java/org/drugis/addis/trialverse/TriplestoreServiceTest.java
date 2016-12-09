@@ -29,6 +29,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import java.net.URI;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -44,7 +45,7 @@ import static org.mockito.Mockito.when;
 public class TriplestoreServiceTest {
 
   @Mock
-  RestTemplate restTemplate;
+  private RestTemplate restTemplate;
 
   @Mock
   CovariateRepository covariateRepository;
@@ -56,7 +57,7 @@ public class TriplestoreServiceTest {
   QueryResultMappingService queryResultMappingService;
 
   @InjectMocks
-  TriplestoreService triplestoreService;
+  private TriplestoreService triplestoreService;
 
   @Before
   public void setUp() {
@@ -126,7 +127,6 @@ public class TriplestoreServiceTest {
   @Test
   public void testGetStudyDetails() throws ResourceDoesNotExistException {
     String namespaceUid = "namespaceUid";
-    String studyUid = "studyUid";
 
     String mockResult = TestUtils.loadResource(this.getClass(), "/triplestoreService/exampleGetStudyDetailsResult.json");
     createMockTrialverseService(mockResult);
@@ -141,7 +141,6 @@ public class TriplestoreServiceTest {
   @Test
   public void testGetStudyGroups() throws ResourceDoesNotExistException {
     String namespaceUid = "namespaceUid";
-    String studyUid = "studyUid";
 
     String mockResult = TestUtils.loadResource(this.getClass(), "/triplestoreService/exampleStudyGroupsResult.json");
     createMockTrialverseService(mockResult);
@@ -164,7 +163,6 @@ public class TriplestoreServiceTest {
   @Test
   public void testGetTreatmentActivities() {
     String namespaceUid = "namespaceUid";
-    String studyUid = "studyUid";
 
     String mockResult = TestUtils.loadResource(this.getClass(), "/triplestoreService/exampleStudyTreatmentActivitiesResult.json");
     createMockTrialverseService(mockResult);
@@ -228,7 +226,7 @@ public class TriplestoreServiceTest {
     String mockResult = TestUtils.loadResource(this.getClass(), "/triplestoreService/covariateDataExample.json");
     createMockTrialverseService(mockResult);
 
-    List<CovariateStudyValue> result = triplestoreService.getStudyLevelCovariateValues(namespaceUid, version, Arrays.asList(CovariateOption.ALLOCATION_RANDOMIZED));
+    List<CovariateStudyValue> result = triplestoreService.getStudyLevelCovariateValues(namespaceUid, version, Collections.singletonList(CovariateOption.ALLOCATION_RANDOMIZED));
     assertEquals(4, result.size());
 
   }
@@ -250,7 +248,7 @@ public class TriplestoreServiceTest {
   }
 
   private void createMockTrialverseService(String result) {
-    ResponseEntity resultEntity = new ResponseEntity(result, HttpStatus.OK);
+    ResponseEntity resultEntity = new ResponseEntity<>(result, HttpStatus.OK);
     when(restTemplate.exchange(any(URI.class), any(HttpMethod.class), any(HttpEntity.class), any(Class.class))).thenReturn(resultEntity);
   }
 

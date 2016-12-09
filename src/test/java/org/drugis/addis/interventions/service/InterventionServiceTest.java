@@ -34,6 +34,7 @@ import static org.mockito.MockitoAnnotations.initMocks;
 /**
  * Created by connor on 12-4-16.
  */
+@SuppressWarnings("ConstantConditions")
 public class InterventionServiceTest {
 
   private final URI drugInstanceUri = URI.create("drugInstanceUri");
@@ -80,7 +81,7 @@ public class InterventionServiceTest {
   }
 
   @Test
-  public void isMatchedFixedIntervention() throws Exception, InvalidConstraintException, InvalidTypeForDoseCheckException {
+  public void isMatchedFixedIntervention() throws Exception, InvalidTypeForDoseCheckException {
     Double doseValue = 123d;
     String dosePeriod = "P1D";
 
@@ -96,7 +97,7 @@ public class InterventionServiceTest {
   }
 
   @Test
-  public void isNotMatchedFixedIntervention() throws Exception, InvalidTypeForDoseCheckException, InvalidConstraintException {
+  public void isNotMatchedFixedIntervention() throws Exception, InvalidTypeForDoseCheckException {
     Double doseValue = 123d;
     String dosePeriod = "P1D";
 
@@ -111,7 +112,7 @@ public class InterventionServiceTest {
   }
 
   @Test
-  public void isMatchedTitratedIntervention() throws Exception, InvalidConstraintException, InvalidTypeForDoseCheckException {
+  public void isMatchedTitratedIntervention() throws Exception, InvalidTypeForDoseCheckException {
     Double doseValue = 123d;
     String dosePeriod = "P1D";
 
@@ -129,7 +130,7 @@ public class InterventionServiceTest {
   }
 
   @Test
-  public void isUnMatchedTitratedIntervention() throws Exception, InvalidConstraintException, InvalidTypeForDoseCheckException {
+  public void isUnMatchedTitratedIntervention() throws Exception, InvalidTypeForDoseCheckException {
     Double doseValue = 123d;
     String dosePeriod = "P1D";
 
@@ -146,7 +147,7 @@ public class InterventionServiceTest {
   }
 
   @Test
-  public void isMatchedBothIntervention() throws Exception, InvalidConstraintException, InvalidTypeForDoseCheckException {
+  public void isMatchedBothIntervention() throws Exception, InvalidTypeForDoseCheckException {
     Double doseValue = 123d;
     String dosePeriod = "P1D";
 
@@ -163,7 +164,7 @@ public class InterventionServiceTest {
   }
 
   @Test
-  public void isUnMatchedBothIntervention() throws Exception, InvalidConstraintException, InvalidTypeForDoseCheckException {
+  public void isUnMatchedBothIntervention() throws Exception, InvalidTypeForDoseCheckException {
     Double doseValue = 123d;
     String dosePeriod = "P1D";
 

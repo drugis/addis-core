@@ -51,18 +51,22 @@ import static org.mockito.MockitoAnnotations.initMocks;
 public class AnalysisServiceTest {
 
   @Mock
+  private
   AnalysisRepository analysisRepository;
 
   @Mock
   ProjectService projectService;
 
   @Mock
+  private
   ProjectRepository projectRepository;
 
   @Mock
+  private
   ModelService modelService;
 
   @Mock
+  private
   OutcomeRepository outcomeRepository;
 
   @Mock
@@ -136,7 +140,7 @@ public class AnalysisServiceTest {
     NetworkMetaAnalysis analysis = new NetworkMetaAnalysis(analysisId, wrongProject, "new name", outcome);
     NetworkMetaAnalysis oldAnalysis = mock(NetworkMetaAnalysis.class);
 
-    when(modelService.findByAnalysis(analysis.getId())).thenReturn(new ArrayList<Model>());
+    when(modelService.findByAnalysis(analysis.getId())).thenReturn(new ArrayList<>());
     when(oldAnalysis.getProjectId()).thenReturn(projectId);
     when(analysisRepository.get(analysisId)).thenReturn(oldAnalysis);
 
@@ -187,11 +191,11 @@ public class AnalysisServiceTest {
     Integer projectId = 1;
     Integer metabenefitRiskAnalysisId = 1;
     Integer outcomeId = 1;
-    Collection<Outcome> outcomes = Arrays.asList(new Outcome(outcomeId, 1, "name", "moti", new SemanticVariable(URI.create("uri"), "label")));
-    List<NetworkMetaAnalysis> analyses = Arrays.asList(new NetworkMetaAnalysis(analysisId, "title"));
+    Collection<Outcome> outcomes = Collections.singletonList(new Outcome(outcomeId, 1, "name", "moti", new SemanticVariable(URI.create("uri"), "label")));
+    List<NetworkMetaAnalysis> analyses = Collections.singletonList(new NetworkMetaAnalysis(analysisId, "title"));
 
     when(outcomeRepository.query(projectId)).thenReturn(outcomes);
-    when(networkMetaAnalysisRepository.queryByOutcomes(projectId, Arrays.asList(1))).thenReturn(analyses);
+    when(networkMetaAnalysisRepository.queryByOutcomes(projectId, Collections.singletonList(1))).thenReturn(analyses);
 
     List<MbrOutcomeInclusion> result = analysisService.buildInitialOutcomeInclusions(projectId, metabenefitRiskAnalysisId);
 
@@ -206,7 +210,7 @@ public class AnalysisServiceTest {
     Integer modelId1 = 1;
     Integer modelId2 = 2;
     Outcome outcome = new Outcome(outcomeId, 1, "name", "moti", new SemanticVariable(URI.create("uri"), "label"));
-    Collection<Outcome> outcomes = Arrays.asList(outcome);
+    Collection<Outcome> outcomes = Collections.singletonList(outcome);
     String title1 = "bbbbb";
     String title2 = "aaaaa";
     List<NetworkMetaAnalysis> analyses = Arrays.asList(new NetworkMetaAnalysis(analysisId, projectId, title1, outcome),
@@ -215,13 +219,13 @@ public class AnalysisServiceTest {
             new Model.ModelBuilder(analysisId, title2).id(modelId2).link(Model.LINK_IDENTITY).modelType(Model.NETWORK_MODEL_TYPE).build(),
             new Model.ModelBuilder(-23, title2).id(modelId2).link(Model.LINK_IDENTITY).modelType(Model.NETWORK_MODEL_TYPE).build());
 
-    when(networkMetaAnalysisRepository.queryByOutcomes(projectId, Arrays.asList(1))).thenReturn(analyses);
+    when(networkMetaAnalysisRepository.queryByOutcomes(projectId, Collections.singletonList(1))).thenReturn(analyses);
     when(outcomeRepository.query(projectId)).thenReturn(outcomes);
     when(modelService.findNetworkModelsByProject(projectId)).thenReturn(models);
 
     List<MbrOutcomeInclusion> result = analysisService.buildInitialOutcomeInclusions(projectId, metabenefitRiskAnalysisId);
 
-    assertEquals(Arrays.asList(new MbrOutcomeInclusion(metabenefitRiskAnalysisId, 1, analysisId, modelId2)), result);
+    assertEquals(Collections.singletonList(new MbrOutcomeInclusion(metabenefitRiskAnalysisId, 1, analysisId, modelId2)), result);
   }
 
   @Test
@@ -232,7 +236,7 @@ public class AnalysisServiceTest {
     Integer modelId1 = 1;
     Integer modelId2 = 2;
     Outcome outcome = new Outcome(outcomeId, 1, "name", "moti", new SemanticVariable(URI.create("uri"), "label"));
-    Collection<Outcome> outcomes = Arrays.asList(outcome);
+    Collection<Outcome> outcomes = Collections.singletonList(outcome);
     String title1 = "bbbbb";
     String title2 = "aaaaa";
     NetworkMetaAnalysis networkMetaAnalysis = new NetworkMetaAnalysis(analysisId, projectId, title1, outcome);
@@ -242,13 +246,13 @@ public class AnalysisServiceTest {
     List<Model> models = Arrays.asList(new Model.ModelBuilder(analysisId, title1).id(modelId1).link(Model.LINK_IDENTITY).link(Model.LINK_IDENTITY).modelType(Model.NETWORK_MODEL_TYPE).build(),
             new Model.ModelBuilder(3, title2).id(modelId2).link(Model.LINK_IDENTITY).modelType(Model.NETWORK_MODEL_TYPE).build());
 
-    when(networkMetaAnalysisRepository.queryByOutcomes(projectId, Arrays.asList(1))).thenReturn(analyses);
+    when(networkMetaAnalysisRepository.queryByOutcomes(projectId, Collections.singletonList(1))).thenReturn(analyses);
     when(outcomeRepository.query(projectId)).thenReturn(outcomes);
     when(modelService.findNetworkModelsByProject(projectId)).thenReturn(models);
 
     List<MbrOutcomeInclusion> result = analysisService.buildInitialOutcomeInclusions(projectId, metabenefitRiskAnalysisId);
 
-    assertEquals(Arrays.asList(new MbrOutcomeInclusion(metabenefitRiskAnalysisId, 1, analysisId, modelId1)), result);
+    assertEquals(Collections.singletonList(new MbrOutcomeInclusion(metabenefitRiskAnalysisId, 1, analysisId, modelId1)), result);
   }
 
   @Test
@@ -287,10 +291,10 @@ public class AnalysisServiceTest {
     Dose maxDose1 = new Dose(1.0, "P1D", URI.create("unitConceptUri"), "milligram", 0.001);
     AbstractSemanticIntervention arm1Intervention = new TitratedSemanticIntervention(drugInstance1, drugConcept1, minDose1, maxDose1);
     AbstractSemanticIntervention arm2Intervention = new SimpleSemanticIntervention(drugInstance2, drugConcept2);
-    TrialDataArm arm1 = new TrialDataArm(URI.create("foo/armuri1"), "armname1", drugInstance1);
+    TrialDataArm arm1 = new TrialDataArm(URI.create("foo/armuri1"), "armname1");
     arm1.addSemanticIntervention(arm1Intervention);
     arm1.setMatchedProjectInterventionIds(new HashSet<>(Collections.singletonList(includedIntervention.getId())));
-    TrialDataArm arm2 = new TrialDataArm(URI.create("foo/armuri2"), "armname2", drugInstance2);
+    TrialDataArm arm2 = new TrialDataArm(URI.create("foo/armuri2"), "armname2");
     arm2.addSemanticIntervention(arm2Intervention);
     List<TrialDataArm> study1Arms = Arrays.asList(arm1, arm2);
     TrialDataStudy study1 = new TrialDataStudy(URI.create("studyUri"), "name", study1Arms);

@@ -53,14 +53,15 @@ public class QueryResultMappingServiceImpl implements QueryResultMappingService 
       TrialDataArm trialDataArm = armCache.get(armUri);
       if( trialDataArm == null) {
         String armLabel = readValue(row, "armLabel");
-        trialDataArm = new TrialDataArm(armUri, armLabel, drugInstance);
+        trialDataArm = new TrialDataArm(armUri, armLabel);
         armCache.put(armUri, trialDataArm);
         trialDataStudy.getTrialDataArms().add(trialDataArm);
       }
 
       Measurement measurement = readMeasurement(row, studyUri, armUri);
       Pair<URI, URI> armPlusTreatment = Pair.of(armUri, readValue(row, "treatmentNode"));
-      if (!seenArmTreatmentCombinations.contains(armPlusTreatment)) {
+      Boolean isPrimaryEpochTreatment = readValue(row, "isPrimaryEpoch");
+      if (isPrimaryEpochTreatment && !seenArmTreatmentCombinations.contains(armPlusTreatment)) {
         seenArmTreatmentCombinations.add(armPlusTreatment);
         trialDataArm.addSemanticIntervention(abstractSemanticIntervention);
       }

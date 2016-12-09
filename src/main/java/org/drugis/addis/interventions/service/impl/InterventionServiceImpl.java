@@ -103,7 +103,6 @@ public class InterventionServiceImpl implements InterventionService {
       if (semanticInterventions.size() != combinationIntervention.getInterventionIds().size()) {
         return false;
       }
-      Boolean allMatched = true;
       List<SingleIntervention> singleInterventions = new ArrayList<>();
       for (Integer interventionId : combinationIntervention.getInterventionIds()) {
         singleInterventions.add((SingleIntervention) interventionRepository.get(interventionId));

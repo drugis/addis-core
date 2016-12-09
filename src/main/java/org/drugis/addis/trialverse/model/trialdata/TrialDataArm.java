@@ -9,7 +9,6 @@ import java.util.*;
 public class TrialDataArm {
   private URI uri;
   private String name;
-  private URI drugInstance;
   private Map<URI, Set<Measurement>> measurements = new HashMap<>();
   private List<AbstractSemanticIntervention> semanticInterventions = new ArrayList<>();
 
@@ -18,10 +17,9 @@ public class TrialDataArm {
   public TrialDataArm() {
   }
 
-  public TrialDataArm(URI uri, String name, URI drugInstance) {
+  public TrialDataArm(URI uri, String name) {
     this.uri = uri;
     this.name = name;
-    this.drugInstance = drugInstance;
   }
 
   public URI getUri() {
@@ -30,10 +28,6 @@ public class TrialDataArm {
 
   public String getName() {
     return name;
-  }
-
-  public URI getDrugInstance() {
-    return drugInstance;
   }
 
   public Map<URI, Set<Measurement>> getMeasurements() {
@@ -76,7 +70,6 @@ public class TrialDataArm {
 
     if (!uri.equals(arm.uri)) return false;
     if (!name.equals(arm.name)) return false;
-    if (!drugInstance.equals(arm.drugInstance)) return false;
     if (!measurements.equals(arm.measurements)) return false;
     if (!semanticInterventions.equals(arm.semanticInterventions)) return false;
     return matchedProjectInterventionIds.equals(arm.matchedProjectInterventionIds);
@@ -87,7 +80,6 @@ public class TrialDataArm {
   public int hashCode() {
     int result = uri.hashCode();
     result = 31 * result + name.hashCode();
-    result = 31 * result + drugInstance.hashCode();
     result = 31 * result + measurements.hashCode();
     result = 31 * result + semanticInterventions.hashCode();
     result = 31 * result + matchedProjectInterventionIds.hashCode();

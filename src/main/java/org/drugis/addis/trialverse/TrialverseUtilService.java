@@ -16,6 +16,7 @@ public class TrialverseUtilService {
   private static final String DOUBLE_TYPE = "http://www.w3.org/2001/XMLSchema#double";
   private static final String INTEGER_TYPE = "http://www.w3.org/2001/XMLSchema#integer";
   private static final String DURATION_TYPE = "http://www.w3.org/2001/XMLSchema#duration";
+  private static final String BOOLEAN_TYPE = "http://www.w3.org/2001/XMLSchema#boolean";
 
   public static String uritoUid(java.net.URI uri) {
     String str = uri.toString();
@@ -51,6 +52,9 @@ public class TrialverseUtilService {
       }
       if(dataType.equals(DURATION_TYPE)){
         return (T) JsonPath.read(row, "$."+ name +".value");
+      }
+      if(dataType.equals(BOOLEAN_TYPE)) {
+        return (T) new Boolean(JsonPath.read(row, "$."+ name +".value").equals("true") ? true : false);
       }
     }
     throw new ReadValueException("can not read value with name:" + name + " from row" + (row != null ?row.toJSONString():""));
