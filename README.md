@@ -5,7 +5,7 @@ ADDIS 2.x core
 
 Before starting
 -----------------------
-The setup in this readme requires several compononts already being installed and running. Please refer to the OVERALL-README.md in this folder for more information on how to do so.
+The setup in this readme requires several compononts already being installed and running. Please refer to the OVERALL-README.md in this folder for more information on how to do so, and for other readmes that might be relevant.
 
 Make sure the SASS and Bower submodules are present:
 

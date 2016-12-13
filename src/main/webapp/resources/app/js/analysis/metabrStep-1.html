@@ -40,7 +40,7 @@
             <div class="analysis">
               <label>
                 <input ng-model="outcomeWithAnalyses.selectedAnalysis" ng-change="updateAnalysesInclusions(outcomeWithAnalyses)"
-                  type="radio" ng-value="networkMetaAnalysis" ng-disabled="!outcomeWithAnalyses.outcome.isIncluded || !networkMetaAnalysis.models.length"> {{networkMetaAnalysis.title}}
+                  type="radio" ng-value="networkMetaAnalysis" ng-disabled="!outcomeWithAnalyses.outcome.isIncluded || !networkMetaAnalysis.models.length || !editMode.allowEditing""> {{networkMetaAnalysis.title}}
               </label>
               <div class="row" ng-show="outcomeWithAnalyses.selectedAnalysis.id === networkMetaAnalysis.id && networkMetaAnalysis.models.length">
                 <div class="indent-one columns large-4">
