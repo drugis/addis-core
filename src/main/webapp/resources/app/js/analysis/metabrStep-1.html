@@ -48,21 +48,18 @@
                     class="model-select" ng-change="updateModelSelection(outcomeWithAnalyses, networkMetaAnalysis.interventionInclusions)"
                     ng-options="model.title  group by model.group for model in networkMetaAnalysis.models | orderBy:['-group','+title']">
                   </select>
-                  <div class="alert" ng-show="outcomeWithAnalyses.selectedModel.missingAlternatives.length">
+                  <div ng-disabled="!editMode.allowEditing" class="alert" ng-show="outcomeWithAnalyses.selectedModel.missingAlternatives.length">
                     Selected model is missing alternatives: {{outcomeWithAnalyses.selectedModel.missingAlternativesNames.join(',
                     ')}}.
                   </div>
-                  <div class="alert" ng-show="outcomeWithAnalyses.selectedModel.runStatus !== 'done'">
+                  <div ng-disabled="!editMode.allowEditing" class="alert" ng-show="outcomeWithAnalyses.selectedModel.runStatus !== 'done'">
                     This model has not yet been run.
                   </div>
                 </div>
-                <!-- <div class="columns large-2 end" style="padding-top:0.5rem;">
-                  <a class="details"  ng-click="showModelDetails(outcomeWithAnalyses.selectedModel)">show details</a>
-                </div> -->
               </div>
             </div>
           </div>
-          <div ng-show="!outcomeWithAnalyses.networkMetaAnalyses.length" class="outcome-analyses">
+          <div ng-disabled="!editMode.allowEditing" ng-show="!outcomeWithAnalyses.networkMetaAnalyses.length" class="outcome-analyses">
             <label>
               <em>No meta-analyses available</em>
             </label>
@@ -76,7 +73,7 @@
       <button ng-disabled="step1AlertMessages.length || !editMode.allowEditing" type="button"
         class="primary" ng-click="goToStep2()">Next Step</button>
       <div ng-repeat="message in step1AlertMessages">
-        <div class="alert">{{message}}</div>
+        <div ng-show="editMode.allowEditing" class="alert">{{message}}</div>
         <div>
         </div>
       </div>
