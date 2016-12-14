@@ -4,6 +4,7 @@ define(['angular-resource'], function () {
   var ProjectResource = function ($resource) {
     return $resource('/projects/:projectId', {projectId: '@projectId'}, {
       setArchived : {
+        url: '/projects/:projectId/setArchivedStatus',
         method: 'POST'
       }
     });

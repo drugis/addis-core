@@ -9,6 +9,10 @@ public class ProjectArchiveCommand {
   public ProjectArchiveCommand() {
   }
 
+  public ProjectArchiveCommand(Boolean isArchived){
+    this.isArchived = isArchived;
+  }
+
   public Boolean getIsArchived() {
     return isArchived;
   }

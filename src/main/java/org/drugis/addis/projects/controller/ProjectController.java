@@ -106,7 +106,8 @@ public class ProjectController extends AbstractAddisCoreController {
   }
 
   @RequestMapping(value = "/projects/{projectId}/setArchivedStatus", method = RequestMethod.POST)
-  public void setArchivedStatus(@PathVariable Integer projectId, Principal principal, @RequestBody ProjectArchiveCommand archiveCommand) throws ResourceDoesNotExistException, MethodNotAllowedException {
+  @ResponseBody
+  public void setArchivedStatus(Principal principal, @PathVariable Integer projectId, @RequestBody ProjectArchiveCommand archiveCommand) throws ResourceDoesNotExistException, MethodNotAllowedException {
     projectService.checkOwnership(projectId,principal);
     projectsRepository.setArchived(projectId, archiveCommand.getIsArchived());
   }
