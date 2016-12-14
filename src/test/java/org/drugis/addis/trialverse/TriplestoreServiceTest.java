@@ -93,14 +93,13 @@ public class TriplestoreServiceTest {
     responceHeaders.add(TriplestoreServiceImpl.X_EVENT_SOURCE_VERSION, "version");
     ResponseEntity<String> resultEntity2 = new ResponseEntity<>(mockResult2, responceHeaders, HttpStatus.OK);
     String graphBody = TestUtils.loadResource(this.getClass(), "/triplestoreService/exampleNamespaceResult.ttl");
-    StringReader stringReader = new StringReader(graphBody);
-    Graph graph = GraphFactory.createGraphMem();
-    RDFDataMgr.read(graph, stringReader, "http://example.com", RDFLanguages.TURTLE);
-    ResponseEntity<Graph> resultEntity3 = new ResponseEntity<>(graph, responceHeaders, HttpStatus.OK);
+    ResponseEntity<String> resultEntity3 = new ResponseEntity<>(graphBody, responceHeaders, HttpStatus.OK);
 
     when(restTemplate.exchange(uriComponents.toUri(), HttpMethod.GET, TriplestoreServiceImpl.acceptJsonRequest, String.class)).thenReturn(resultEntity);
     when(restTemplate.exchange(uriComponents2.toUri(), HttpMethod.GET, TriplestoreServiceImpl.acceptSparqlResultsRequest, String.class)).thenReturn(resultEntity2);
-    when(restTemplate.exchange(URI.create("http://baseurl.com/d1"), HttpMethod.GET, new HttpEntity<String>(new HttpHeaders()), Graph.class)).thenReturn(resultEntity3);
+    HttpHeaders headers = new HttpHeaders();
+    headers.set(WebConstants.ACCEPT_HEADER, "text/turtle,text/html");
+    when(restTemplate.exchange(URI.create("http://localhost:8080/datasets/d1"), HttpMethod.GET, new HttpEntity<String>(headers), String.class)).thenReturn(resultEntity3);
 
     Collection<Namespace> namespaces = triplestoreService.queryNameSpaces();
 

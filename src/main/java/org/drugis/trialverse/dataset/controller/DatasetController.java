@@ -209,6 +209,7 @@ public class DatasetController extends AbstractAddisCoreController {
   public VersionNode getVersionInfo(@PathVariable String datasetUUID, @PathVariable String versionUuid) throws IOException, URISyntaxException {
     URI trialverseDatasetUri = URI.create(Namespaces.DATASET_NAMESPACE + datasetUUID);
     URI versionUri = URI.create(WebConstants.getVersionBaseUri() + versionUuid);
+    logger.info("retrieving version info for " + trialverseDatasetUri.toString() + " / " + versionUri.toString());
     return historyService.getVersionInfo(trialverseDatasetUri, versionUri);
   }
 
