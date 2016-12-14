@@ -25,7 +25,9 @@ define(['lodash'],
         var usageInAnalyses = buildDefinitionUsage(analyses, interventions, matcherFunction);
         var usageInComplexInterventions = _
           .chain(interventions)
-          .filter(['type', 'simple'])
+          .filter(function(intervention) {
+            return intervention.type !== 'combination' && intervention.type !== 'class';
+          })
           .reduce(function(accum, intervention) {
             accum[intervention.id] = _.chain(interventions)
               .filter(function(otherIntervention) {
