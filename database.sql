@@ -780,3 +780,9 @@ CREATE TABLE customReport (
   FOREIGN KEY(projectId) REFERENCES Project(id) ON DELETE CASCADE
 );
 --rollback DROP TABLE customReport
+
+--changeset reidd:65
+ALTER TABLE project ADD COLUMN isArchived boolean NOT NULL DEFAULT FALSE ;
+ALTER TABLE project ADD COLUMN archived_on date;
+--rollback ALTER TABLE project DROP COLUMN archived_on;
+--rollback ALTER TABLE project DROP COLUMN isArchived;

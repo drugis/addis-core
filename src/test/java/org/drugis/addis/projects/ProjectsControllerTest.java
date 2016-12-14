@@ -238,5 +238,31 @@ public class ProjectsControllerTest {
     ;
     verify(reportRepository).get(1);
   }
+
+
+  @Test
+  public void testArchiveProject() throws Exception {
+    String postBodyStr = "{ \"isArchived\": true }";
+    mockMvc.perform(post("/projects/1/setArchivedStatus")
+            .content(postBodyStr)
+            .principal(user)
+            .contentType(WebConstants.getApplicationJsonUtf8Value()))
+            .andExpect(status().isOk());
+    verify(projectService).checkOwnership(1, user);
+    verify(projectRepository).setArchived(1, true);
+  }
+
+  @Test
+  public void testUnArchiveProject() throws Exception {
+    String postBodyStr = "{ \"isArchived\": false }";
+    mockMvc.perform(post("/projects/1/setArchivedStatus")
+            .content(postBodyStr)
+            .principal(user)
+            .contentType(WebConstants.getApplicationJsonUtf8Value()))
+            .andExpect(status().isOk());
+    verify(projectService).checkOwnership(1, user);
+    verify(projectRepository).setArchived(1, false);
+  }
+
 }
 

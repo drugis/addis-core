@@ -22,4 +22,6 @@ public interface ProjectRepository {
   Boolean isExistingProjectName(Integer projectId, String name);
 
   Project updateNameAndDescription(Integer projectId, String name, String description) throws ResourceDoesNotExistException;
+
+  void setArchived(Integer projectId, Boolean archived);
 }

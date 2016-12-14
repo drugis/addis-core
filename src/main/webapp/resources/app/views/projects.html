@@ -18,12 +18,16 @@
               </a>
             </h5>
           </div>
+          <div class="columns large-6">
+            <button ng-if="!project.archived" ng-click="archiveProject(project)" type="button" class="tiny right info radius ng-scope" style="margin-bottom:0;">archive</button>
+          </div>
         </div>
 
         <div class="row">
-          <div class="columns large-6">
+          <div class="columns large-8">
             {{project.description}}
           </div>
+
         </div>
 
       </div>

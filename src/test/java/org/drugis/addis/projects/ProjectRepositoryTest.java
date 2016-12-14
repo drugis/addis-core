@@ -21,7 +21,7 @@ import static org.junit.Assert.*;
 @RunWith(SpringJUnit4ClassRunner.class)
 @Transactional
 @ContextConfiguration(classes = {JpaRepositoryTestConfig.class})
-public class ProjectsRepositoryTest {
+public class ProjectRepositoryTest {
   @Inject
   private ProjectRepository projectRepository;
 
@@ -60,6 +60,7 @@ public class ProjectsRepositoryTest {
     assertEquals(new Integer(1), result.getId());
     assertEquals("testname 1", result.getName());
     assertEquals("testdescription 1", result.getDescription());
+    assertEquals(false, result.getArchived());
   }
 
   @Test
@@ -67,6 +68,19 @@ public class ProjectsRepositoryTest {
     assertTrue(projectRepository.isExistingProjectName(3, "testname 1")); // duplicate name for owner
     assertFalse(projectRepository.isExistingProjectName(3, "updated")); // non duplicate name for owner
     assertFalse(projectRepository.isExistingProjectName(2, "testname 1")); // duplicate name for non owner
+  }
+
+  @Test
+  public void testArchiveAndUnArchiveProject() throws ResourceDoesNotExistException {
+    int projectId = 3;
+    projectRepository.setArchived(projectId, true);
+    Project project = projectRepository.get(projectId);
+    assertEquals(true, project.getArchived());
+    assertNotNull(project.getArchivedOn());
+    projectRepository.setArchived(projectId, false);
+    project = projectRepository.get(projectId);
+    assertEquals(false, project.getArchived());
+    assertNull(project.getArchivedOn());
   }
 
 }

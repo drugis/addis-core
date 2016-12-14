@@ -12,6 +12,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import java.util.Collection;
+import java.util.Date;
 
 /**
  * Created by daan on 2/20/14.
@@ -75,5 +76,12 @@ public class ProjectRepositoryImpl implements ProjectRepository {
     project.setName(name);
     project.setDescription(description);
     return project;
+  }
+
+  @Override
+  public void setArchived(Integer projectId, Boolean archived) {
+    Project project = em.find(Project.class, projectId);
+    project.setArchived(archived);
+    project.setArchivedOn( archived ? new Date(): null);
   }
 }
