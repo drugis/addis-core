@@ -35,7 +35,11 @@ define(['lodash'],
       loadHistory();
 
       function loadHistory() {
-        HistoryResource.query($stateParams).$promise.then(function(historyItems) {
+        var historyCoords = {
+          userUid: $stateParams.userUid,
+          datasetUUID: $stateParams.datasetUUID
+        };
+        HistoryResource.query(historyCoords).$promise.then(function(historyItems) {
           if ($scope.isHeadView) {
             $scope.currentRevision = historyItems[historyItems.length - 1];
             $scope.currentRevision.isHead = true;

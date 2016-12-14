@@ -10,18 +10,18 @@ public class Namespace {
   private String description;
   private Integer numberOfStudies;
   private String version;
+  private String headVersion;
   private Integer ownerId;
 
-  public Namespace() {
-  }
-
-  public Namespace(String uid, Integer ownerId, String name, String description, Integer numberOfStudies, String version) {
+  public Namespace(String uid, Integer ownerId, String name, String description, Integer numberOfStudies, String version, String headVersion) {
     this.uid = uid;
     this.ownerId = ownerId;
     this.name = name;
     this.description = description;
     this.numberOfStudies = numberOfStudies;
     this.version = version;
+
+    this.headVersion = headVersion;
   }
 
   public String getUid() {
@@ -48,6 +48,10 @@ public class Namespace {
     return ownerId;
   }
 
+  public String getHeadVersion() {
+    return headVersion;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
@@ -58,11 +62,10 @@ public class Namespace {
     if (!uid.equals(namespace.uid)) return false;
     if (!name.equals(namespace.name)) return false;
     if (description != null ? !description.equals(namespace.description) : namespace.description != null) return false;
-    if (numberOfStudies != null ? !numberOfStudies.equals(namespace.numberOfStudies) : namespace.numberOfStudies != null)
-      return false;
-    if (version != null ? !version.equals(namespace.version) : namespace.version != null) return false;
+    if (!numberOfStudies.equals(namespace.numberOfStudies)) return false;
+    if (!version.equals(namespace.version)) return false;
+    if (!headVersion.equals(namespace.headVersion)) return false;
     return ownerId.equals(namespace.ownerId);
-
   }
 
   @Override
@@ -70,8 +73,9 @@ public class Namespace {
     int result = uid.hashCode();
     result = 31 * result + name.hashCode();
     result = 31 * result + (description != null ? description.hashCode() : 0);
-    result = 31 * result + (numberOfStudies != null ? numberOfStudies.hashCode() : 0);
-    result = 31 * result + (version != null ? version.hashCode() : 0);
+    result = 31 * result + numberOfStudies.hashCode();
+    result = 31 * result + version.hashCode();
+    result = 31 * result + headVersion.hashCode();
     result = 31 * result + ownerId.hashCode();
     return result;
   }

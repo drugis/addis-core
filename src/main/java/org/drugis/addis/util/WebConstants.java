@@ -54,6 +54,7 @@ public class WebConstants {
   public static final String VERSION_UUID = "versionUuid";
   private static final String TRIPLESTORE_BASE_URI = loadSystemEnv("TRIPLESTORE_BASE_URI");
   private static final String TRIPLESTORE_DATA_URI = TRIPLESTORE_BASE_URI + "/current";
+  private static final String TRIPLESTORE_VERSION_URI = TRIPLESTORE_BASE_URI + "/versions/";
 
   private static final String PATAVI_URI = loadSystemEnv("PATAVI_URI");
   public static final String PATAVI_RESULTS_PATH = "/results";
@@ -97,13 +98,15 @@ public class WebConstants {
     }
   }
 
-  public String getTriplestoreBaseUri() {
+  public static String getTriplestoreBaseUri() {
     return TRIPLESTORE_BASE_URI;
   }
 
   public String getTriplestoreDataUri() {
     return TRIPLESTORE_DATA_URI;
   }
+
+  public static String getVersionBaseUri() { return TRIPLESTORE_VERSION_URI; }
 
   public static MediaType getApplicationJsonUtf8() {
     return APPLICATION_JSON_UTF8;
@@ -113,7 +116,7 @@ public class WebConstants {
     return APPLICATION_JSON_UTF8_VALUE;
   }
 
-  public URI buildVersionUri(String versionUuid) {
+  public static URI buildVersionUri(String versionUuid) {
     return UriComponentsBuilder.fromHttpUrl(getTriplestoreBaseUri())
             .path(VERSION_PATH)
             .path(versionUuid)

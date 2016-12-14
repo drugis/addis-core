@@ -3,17 +3,10 @@ define([], function() {
 
   var dependencies = ['$resource'];
   var HistoryResource = function($resource) {
-    return $resource('/users/:userUid/datasets/:datasetUUID/versions', {
+    return $resource('/users/:userUid/datasets/:datasetUUID/history/:versionUuid', {
       userUid: '@userUid',
-      datasetUUID: '@datasetUUID'
-    }, {
-      'query': {
-        isArray: true,
-        method: 'get',
-        headers: {
-          'Accept': 'application/ld+json'
-        }
-      }
+      datasetUUID: '@datasetUUID',
+      versionUuid: '@versionUuid'
     });
   };
   return dependencies.concat(HistoryResource);

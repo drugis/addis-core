@@ -28,8 +28,6 @@ import java.util.Set;
  * Created by connor on 2/28/14.
  */
 public interface TriplestoreService {
-  String TRIPLESTORE_BASE_URI = System.getenv("TRIPLESTORE_BASE_URI");
-
   static String loadResource(String filename) {
     try {
       Resource myData = new ClassPathResource(filename);

@@ -67,7 +67,7 @@ public class HistoryServiceImpl implements HistoryService {
     return createHistory(trialverseDatasetUri, null);
   }
 
-  //@Override
+  @Override
   public List<VersionNode> createHistory(URI trialverseDatasetUri, URI trialverseGraphUri) throws URISyntaxException, IOException, RevisionNotFoundException {
     VersionMapping versionMapping = versionMappingRepository.getVersionMappingByDatasetUrl(trialverseDatasetUri);
     Model historyModel = datasetReadRepository.getHistory(versionMapping.getVersionedDatasetUri());
@@ -136,6 +136,16 @@ public class HistoryServiceImpl implements HistoryService {
     return sortedVersions.stream()
             .map(AdvancedVersionNode::simplify)
             .collect(Collectors.toList());
+  }
+
+  @Override
+  public VersionNode getVersionInfo(URI trialverseDatasetUri, URI versionUri) throws URISyntaxException, IOException {
+    VersionMapping versionMapping = versionMappingRepository.getVersionMappingByDatasetUrl(trialverseDatasetUri);
+    Model historyModel = datasetReadRepository.getHistory(versionMapping.getVersionedDatasetUri());
+    Resource versionSubject = historyModel.getResource(versionUri.toString());
+    AdvancedVersionNode advancedVersionNode = buildAdvancedNewVersionNode(versionSubject, 0);
+
+    return advancedVersionNode.simplify();
   }
 
   private List<AdvancedVersionNode> createSortedVersionList(Map<String, Resource> versionMap, Resource headVersion) throws URISyntaxException {

@@ -32,10 +32,6 @@ import static org.mockito.Mockito.*;
  * Created by connor on 28-11-14.
  */
 public class GraphReadRepositoryTest {
-
-  @Mock
-  WebConstants webConstants;
-
   @Mock
   HttpClient httpClient;
 
@@ -52,8 +48,6 @@ public class GraphReadRepositoryTest {
   public void init() throws IOException {
     graphReadRepository = new GraphReadRepositoryImpl();
     MockitoAnnotations.initMocks(this);
-
-    when(webConstants.getTriplestoreBaseUri()).thenReturn("baseUri");
   }
 
   @Test
@@ -67,7 +61,6 @@ public class GraphReadRepositoryTest {
     String responseString = "check me out";
     when(entity.getContent()).thenReturn(IOUtils.toInputStream(responseString));
     when(mockResponse.getEntity()).thenReturn(entity);
-    when(webConstants.buildVersionUri(versionUuid)).thenReturn(new URI("version/versionedUri"));
     when(graphService.buildGraphUri(graphUUID)).thenReturn(URI.create(Namespaces.GRAPH_NAMESPACE + graphUUID));
     when(httpClient.execute(any(HttpPut.class))).thenReturn(mockResponse);
     graphReadRepository.getGraph(versionedDatasetUrl, versionUuid, graphUUID, WebConstants.TURTLE);

@@ -3,11 +3,9 @@ package org.drugis.trialverse.dataset.controller;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpVersion;
-import org.apache.http.entity.StringEntity;
 import org.apache.http.message.BasicHttpResponse;
 import org.apache.http.message.BasicStatusLine;
 import org.apache.jena.rdf.model.Model;
-import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.riot.RDFLanguages;
 import org.apache.jena.riot.WebContent;
 import org.drugis.addis.security.Account;
@@ -15,6 +13,7 @@ import org.drugis.addis.security.repository.AccountRepository;
 import org.drugis.addis.util.WebConstants;
 import org.drugis.trialverse.dataset.controller.command.DatasetCommand;
 import org.drugis.trialverse.dataset.model.Dataset;
+import org.drugis.trialverse.dataset.model.VersionNode;
 import org.drugis.trialverse.dataset.repository.DatasetReadRepository;
 import org.drugis.trialverse.dataset.repository.DatasetWriteRepository;
 import org.drugis.trialverse.dataset.service.DatasetService;
@@ -31,7 +30,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.social.connect.Connection;
@@ -43,7 +41,6 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 import javax.servlet.http.HttpServletResponse;
-import java.io.InputStream;
 import java.net.URI;
 import java.util.Arrays;
 import java.util.Collections;
@@ -132,9 +129,9 @@ public class DatasetControllerTest {
     when(datasetWriteRepository.createDataset(datasetCommand.getTitle(), datasetCommand.getDescription(), principal)).thenReturn(uri);
     mockMvc
             .perform(post("/users/37/datasets")
-                            .principal(user)
-                            .content(jsonContent)
-                            .contentType(webConstants.getApplicationJsonUtf8())
+                    .principal(user)
+                    .content(jsonContent)
+                    .contentType(webConstants.getApplicationJsonUtf8())
             )
             .andExpect(status().isForbidden());
 
@@ -153,9 +150,9 @@ public class DatasetControllerTest {
     Integer userId = john.getId();
     mockMvc
             .perform(post("/users/" + userId + "/datasets")
-                            .principal(user)
-                            .content(jsonContent)
-                            .contentType(webConstants.getApplicationJsonUtf8())
+                    .principal(user)
+                    .content(jsonContent)
+                    .contentType(webConstants.getApplicationJsonUtf8())
             )
             .andExpect(status().isCreated())
             .andExpect(header().string("Location", newDatasetUri));
@@ -266,18 +263,12 @@ public class DatasetControllerTest {
   @Test
   public void testGetHistory() throws Exception {
     String uuid = "uuuuiiid-yeswecan";
-    URI datasetUri = new URI(Namespaces.DATASET_NAMESPACE + uuid);
-    HttpResponse httpResponse = new BasicHttpResponse(new BasicStatusLine(new HttpVersion(1, 1), HttpStatus.OK.value(), "reason"));
-    String test = "test";
-    httpResponse.setEntity(new StringEntity(test));
-    Model historyModel = ModelFactory.createDefaultModel();
-    InputStream historyStream = new ClassPathResource("mockMergeHistory.ttl").getInputStream();
-    historyModel.read(historyStream, null, "TTL");
 
-    mockMvc.perform((get("/users/user-name-hash/datasets/" + uuid + "/versions")).principal(user))
+    mockMvc.perform((get("/users/user-name-hash/datasets/" + uuid + "/history")).principal(user))
             .andExpect(status().isOk())
             .andExpect(content().contentType("application/json;charset=UTF-8"));
 
+    verify(historyService).createHistory(URI.create(Namespaces.DATASET_NAMESPACE + uuid));
   }
 
   @Test
@@ -334,12 +325,31 @@ public class DatasetControllerTest {
     when(accountRepository.findAccountByUsername(john.getUsername())).thenReturn(john);
     when(datasetWriteRepository.editDataset(principal, datasetUuid, newTitle, newDescription)).thenReturn(newVersion);
     mockMvc.perform(post("/users/1/datasets/" + datasetUuid)
-              .contentType(WebContent.contentTypeJSON)
-              .content(jsonContent).principal(user))
+            .contentType(WebContent.contentTypeJSON)
+            .content(jsonContent).principal(user))
             .andExpect(status().isOk())
             .andExpect(header().string(WebConstants.X_EVENT_SOURCE_VERSION, newVersion));
     verify(accountRepository).findAccountByUsername(john.getUsername());
     verify(datasetWriteRepository).editDataset(principal, datasetUuid, newTitle, newDescription);
+  }
+
+  @Test
+  public void testGetSpecificVersionInfo() throws Exception {
+    String versionUuid = "someVersion";
+    String datasetUuid = "someDataset";
+    URI datasetUri = URI.create(Namespaces.DATASET_NAMESPACE + datasetUuid);
+    URI versionUri = URI.create(WebConstants.getVersionBaseUri() + versionUuid);
+
+    VersionNode versionNode = new VersionNode("Uri", "title", null, "desc", "creatore", 1, 2, "application");
+
+    when(historyService.getVersionInfo(datasetUri, versionUri)).thenReturn(versionNode);
+
+    mockMvc.perform(get("/users/1/datasets/" + datasetUuid + "/history/" + versionUuid).principal(user))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.versionTitle").value(versionNode.getVersionTitle()))
+    ;
+
+    verify(historyService).getVersionInfo(datasetUri, versionUri);
   }
 
 }

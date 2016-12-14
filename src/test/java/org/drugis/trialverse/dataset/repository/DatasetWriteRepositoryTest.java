@@ -35,9 +35,6 @@ public class DatasetWriteRepositoryTest {
   private static final java.lang.String DATASET_URI = "http://mockserver";
 
   @Mock
-  private WebConstants webConstants;
-
-  @Mock
   private VersionMappingRepository versionMappingRepository;
 
   @Mock
@@ -63,14 +60,12 @@ public class DatasetWriteRepositoryTest {
     datasetWriteRepository = new DatasetWriteRepositoryImpl();
     MockitoAnnotations.initMocks(this);
 
-    when(webConstants.getTriplestoreBaseUri()).thenReturn(DATASET_URI);
     when(jenaFactory.createDatasetURI()).thenReturn(DATASET_URI + "/someMockUuid");
-
   }
 
   @After
   public void tearDown() {
-    verifyNoMoreInteractions(webConstants, accountRepository);
+    verifyNoMoreInteractions(accountRepository);
   }
 
   @Test
@@ -86,7 +81,6 @@ public class DatasetWriteRepositoryTest {
     URI result = datasetWriteRepository.createDataset(title, description, owner);
 
     assertTrue(result.toString().startsWith(DATASET_URI + "/someMockUuid"));
-    verify(webConstants).getTriplestoreBaseUri();
     verify(accountRepository, times(2)).findAccountByUsername(owner.getUserName());
   }
 
@@ -103,7 +97,6 @@ public class DatasetWriteRepositoryTest {
     URI result = datasetWriteRepository.createDataset(title, description, owner);
 
     assertTrue(result.toString().startsWith(DATASET_URI + "/someMockUuid"));
-    verify(webConstants).getTriplestoreBaseUri();
     verify(accountRepository, times(2)).findAccountByUsername(owner.getUserName());
   }
 

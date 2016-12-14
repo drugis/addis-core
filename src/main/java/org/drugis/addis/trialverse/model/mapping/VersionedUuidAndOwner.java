@@ -12,7 +12,7 @@ public class VersionedUuidAndOwner {
     this.ownerId = ownerId;
   }
 
-  public String getVersionedUuid() {
+  public String getTriplestoreUri() {
     return versionedUuid;
   }
 

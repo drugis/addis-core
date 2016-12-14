@@ -1,5 +1,6 @@
 package org.drugis.trialverse.dataset.controller;
 
+import jdk.nashorn.internal.runtime.Version;
 import org.apache.http.HttpException;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.riot.RDFLanguages;
@@ -7,6 +8,7 @@ import org.apache.jena.riot.WebContent;
 import org.drugis.addis.base.AbstractAddisCoreController;
 import org.drugis.addis.security.Account;
 import org.drugis.addis.security.repository.AccountRepository;
+import org.drugis.addis.trialverse.model.Namespace;
 import org.drugis.addis.util.WebConstants;
 import org.drugis.trialverse.dataset.controller.command.DatasetCommand;
 import org.drugis.trialverse.dataset.exception.CreateDatasetException;
@@ -192,7 +194,7 @@ public class DatasetController extends AbstractAddisCoreController {
     trialverseIOUtilsService.writeContentToServletResponse(response, httpServletResponse);
   }
 
-  @RequestMapping(value = "/{datasetUUID}/versions", method = RequestMethod.GET)
+  @RequestMapping(value = "/{datasetUUID}/history", method = RequestMethod.GET)
   @ResponseBody
   public List<VersionNode> queryHistory(HttpServletResponse httpServletResponse, @PathVariable String datasetUUID) throws URISyntaxException, IOException, RevisionNotFoundException {
     logger.trace("executing queryHistory");
@@ -200,6 +202,14 @@ public class DatasetController extends AbstractAddisCoreController {
     List<VersionNode> history = historyService.createHistory(trialverseDatasetUri);
     httpServletResponse.setStatus(HttpServletResponse.SC_OK);
     return history;
+  }
+
+  @RequestMapping(value = "/{datasetUUID}/history/{versionUuid}", method = RequestMethod.GET)
+  @ResponseBody
+  public VersionNode getVersionInfo(@PathVariable String datasetUUID, @PathVariable String versionUuid) throws IOException, URISyntaxException {
+    URI trialverseDatasetUri = URI.create(Namespaces.DATASET_NAMESPACE + datasetUUID);
+    URI versionUri = URI.create(WebConstants.getVersionBaseUri() + versionUuid);
+    return historyService.getVersionInfo(trialverseDatasetUri, versionUri);
   }
 
   @RequestMapping(value = "/{datasetUUID}/versions/{versionUuid}", method = RequestMethod.GET)

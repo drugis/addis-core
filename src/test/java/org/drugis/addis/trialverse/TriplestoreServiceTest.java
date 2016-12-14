@@ -3,6 +3,9 @@ package org.drugis.addis.trialverse;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import net.minidev.json.parser.ParseException;
+import org.apache.jena.graph.Graph;
+import org.apache.jena.riot.RDFDataMgr;
+import org.apache.jena.sparql.graph.GraphFactory;
 import org.drugis.addis.TestUtils;
 import org.drugis.addis.covariates.CovariateRepository;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
@@ -15,6 +18,7 @@ import org.drugis.addis.trialverse.service.QueryResultMappingService;
 import org.drugis.addis.trialverse.service.TriplestoreService;
 import org.drugis.addis.trialverse.service.impl.ReadValueException;
 import org.drugis.addis.trialverse.service.impl.TriplestoreServiceImpl;
+import org.drugis.addis.util.WebConstants;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
@@ -71,13 +75,13 @@ public class TriplestoreServiceTest {
     ResponseEntity<String> resultEntity = new ResponseEntity<>(mockResult, HttpStatus.OK);
 
     UriComponents uriComponents = UriComponentsBuilder
-            .fromHttpUrl(TriplestoreService.TRIPLESTORE_BASE_URI)
+            .fromHttpUrl(WebConstants.getTriplestoreBaseUri())
             .path("datasets/")
             .build();
 
     String datasetUuid = "d1";
     String query = TriplestoreServiceImpl.NAMESPACE;
-    UriComponents uriComponents2 = UriComponentsBuilder.fromHttpUrl(TriplestoreService.TRIPLESTORE_BASE_URI)
+    UriComponents uriComponents2 = UriComponentsBuilder.fromHttpUrl(WebConstants.getTriplestoreBaseUri())
             .path("datasets/" + datasetUuid)
             .path(TriplestoreServiceImpl.QUERY_ENDPOINT)
             .queryParam(TriplestoreServiceImpl.QUERY_PARAM_QUERY, query)
@@ -86,9 +90,14 @@ public class TriplestoreServiceTest {
     MultiValueMap<String, String> responceHeaders = new HttpHeaders();
     responceHeaders.add(TriplestoreServiceImpl.X_EVENT_SOURCE_VERSION, "version");
     ResponseEntity<String> resultEntity2 = new ResponseEntity<>(mockResult2, responceHeaders, HttpStatus.OK);
+    String graphBody = TestUtils.loadResource(this.getClass(), "triplestoreService/exampleNamespaceResult.ttl");
+    Graph graph = GraphFactory.createGraphMem();
+    RDFDataMgr.read(graph, graphBody);
+    ResponseEntity<Graph> resultEntity3 = new ResponseEntity<>(graph, responceHeaders, HttpStatus.OK);
 
     when(restTemplate.exchange(uriComponents.toUri(), HttpMethod.GET, TriplestoreServiceImpl.acceptJsonRequest, String.class)).thenReturn(resultEntity);
     when(restTemplate.exchange(uriComponents2.toUri(), HttpMethod.GET, TriplestoreServiceImpl.acceptSparqlResultsRequest, String.class)).thenReturn(resultEntity2);
+    when(restTemplate.exchange(URI.create("http://baseurl/d1"), HttpMethod.GET, new HttpEntity<String>(new HttpHeaders()), Graph.class)).thenReturn(resultEntity3);
 
     Collection<Namespace> namespaces = triplestoreService.queryNameSpaces();
 

@@ -12,4 +12,5 @@ import java.util.List;
 public interface HistoryService {
   List<VersionNode> createHistory(URI trialverseDatasetUri) throws URISyntaxException, IOException, RevisionNotFoundException;
   List<VersionNode> createHistory(URI trialverseDatasetUri, URI trialverseGraphURI) throws URISyntaxException, IOException, RevisionNotFoundException;
+  VersionNode getVersionInfo(URI trialverseDatasetUri, URI versionUri) throws URISyntaxException, IOException;
 }

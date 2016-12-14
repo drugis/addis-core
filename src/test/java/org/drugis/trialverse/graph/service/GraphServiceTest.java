@@ -59,16 +59,12 @@ public class GraphServiceTest {
   @Mock
   RestTemplate restTemplate;
 
-  @Mock
-  WebConstants webConstants;
-
   String testHost = "http://localhost:8080";
 
   @Before
   public void setUp() {
     graphService = new GraphServiceImpl();
     initMocks(this);
-    when(webConstants.getTriplestoreBaseUri()).thenReturn(testHost);
   }
 
   @Test
