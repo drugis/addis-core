@@ -7,7 +7,7 @@ import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.security.repository.AccountRepository;
 import org.drugis.addis.trialverse.model.*;
 import org.drugis.addis.trialverse.model.emun.StudyDataSection;
-import org.drugis.addis.trialverse.model.mapping.VersionedUuidAndOwner;
+import org.drugis.addis.trialverse.model.mapping.TriplestoreUuidAndOwner;
 import org.drugis.addis.trialverse.service.MappingService;
 import org.drugis.addis.trialverse.service.TriplestoreService;
 import org.drugis.addis.trialverse.service.impl.ReadValueException;
@@ -52,8 +52,8 @@ public class TrialverseController {
   @ResponseBody
   public Namespace get(@PathVariable String namespaceUid, @RequestParam(required = false) String version) throws ResourceDoesNotExistException, URISyntaxException {
     if (version != null) {
-      VersionedUuidAndOwner versionedUuidAndOwner = mappingService.getVersionedUuidAndOwner(namespaceUid);
-      return triplestoreService.getNamespaceVersioned(versionedUuidAndOwner, version);
+      TriplestoreUuidAndOwner triplestoreUuidAndOwner = mappingService.getVersionedUuidAndOwner(namespaceUid);
+      return triplestoreService.getNamespaceVersioned(triplestoreUuidAndOwner, version);
     } else {
       return triplestoreService.getNamespaceHead(mappingService.getVersionedUuidAndOwner(namespaceUid));
     }

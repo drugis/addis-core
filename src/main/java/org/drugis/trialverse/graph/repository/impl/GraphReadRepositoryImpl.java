@@ -38,9 +38,6 @@ public class GraphReadRepositoryImpl implements GraphReadRepository {
   private VersionMappingRepository versionMappingRepository;
 
   @Inject
-  private WebConstants webConstants;
-
-  @Inject
   private GraphService graphService;
 
   private final Logger logger = LoggerFactory.getLogger(getClass());
@@ -53,7 +50,7 @@ public class GraphReadRepositoryImpl implements GraphReadRepository {
             .build();
     HttpGet request = new HttpGet(uriComponents.toUri());
     if(versionUuid != null) {
-      String headerValue = webConstants.buildVersionUri(versionUuid).toString();
+      String headerValue = WebConstants.buildVersionUri(versionUuid).toString();
       Header acceptVersionHeader = new BasicHeader(WebConstants.X_ACCEPT_EVENT_SOURCE_VERSION, headerValue);
       request.setHeader(acceptVersionHeader);
     }

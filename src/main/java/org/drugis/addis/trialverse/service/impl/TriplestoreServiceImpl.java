@@ -8,9 +8,10 @@ import net.minidev.json.parser.ParseException;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.jena.graph.Graph;
-import org.apache.jena.rdf.model.Model;
-import org.apache.jena.rdf.model.ModelFactory;
-import org.apache.jena.rdf.model.RDFNode;
+import org.apache.jena.rdf.model.*;
+import org.apache.jena.riot.RDFDataMgr;
+import org.apache.jena.riot.RDFLanguages;
+import org.apache.jena.sparql.graph.GraphFactory;
 import org.drugis.addis.covariates.CovariateRepository;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.interventions.model.AbstractIntervention;
@@ -19,7 +20,7 @@ import org.drugis.addis.interventions.service.InterventionService;
 import org.drugis.addis.interventions.service.impl.InvalidTypeForDoseCheckException;
 import org.drugis.addis.trialverse.model.*;
 import org.drugis.addis.trialverse.model.emun.*;
-import org.drugis.addis.trialverse.model.mapping.VersionedUuidAndOwner;
+import org.drugis.addis.trialverse.model.mapping.TriplestoreUuidAndOwner;
 import org.drugis.addis.trialverse.model.trialdata.CovariateStudyValue;
 import org.drugis.addis.trialverse.model.trialdata.TrialDataArm;
 import org.drugis.addis.trialverse.model.trialdata.TrialDataStudy;
@@ -44,6 +45,7 @@ import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.inject.Inject;
+import java.io.StringReader;
 import java.net.URI;
 import java.util.*;
 import java.util.function.Predicate;
@@ -130,39 +132,46 @@ public class TriplestoreServiceImpl implements TriplestoreService {
       String namespaceUri = jsonNode.get("id").toString();
       logger.debug("query namespaces; URI: " + namespaceUri);
 
-      namespaces.add(getNamespaceHead(new VersionedUuidAndOwner(namespaceUri, null)));
+      namespaces.add(getNamespaceHead(new TriplestoreUuidAndOwner(namespaceUri, null)));
     }
 
     return namespaces;
   }
 
   @Override
-  public Namespace getNamespaceVersioned(VersionedUuidAndOwner datasetUri, String versionUri) {
-    ResponseEntity<String> response = queryTripleStoreVersion(datasetUri.getTriplestoreUri(), NAMESPACE, versionUri);
+  public Namespace getNamespaceVersioned(TriplestoreUuidAndOwner datasetUri, String versionUri) {
+    ResponseEntity<String> response = queryTripleStoreVersion(datasetUri.getTriplestoreUuid(), NAMESPACE, versionUri);
     return buildNameSpace(datasetUri, response);
   }
 
   @Override
-  public Namespace getNamespaceHead(VersionedUuidAndOwner datasetUriAndOwner) {
-    ResponseEntity<String> response = queryTripleStoreHead(datasetUriAndOwner.getTriplestoreUri(), NAMESPACE);
+  public Namespace getNamespaceHead(TriplestoreUuidAndOwner datasetUriAndOwner) {
+    ResponseEntity<String> response = queryTripleStoreHead(datasetUriAndOwner.getTriplestoreUuid(), NAMESPACE);
     return buildNameSpace(datasetUriAndOwner, response);
   }
 
-  private Namespace buildNameSpace(VersionedUuidAndOwner datasetUriAndOwnerId, ResponseEntity<String> response) {
+  private Namespace buildNameSpace(TriplestoreUuidAndOwner triplestoreUuidAndOwner, ResponseEntity<String> response) {
     JSONArray bindings = JsonPath.read(response.getBody(), "$.results.bindings");
     JSONObject binding = (JSONObject) bindings.get(0);
     String name = JsonPath.read(binding, "$.label.value");
-    String headVersion = getHeadVersion(datasetUriAndOwnerId.getTriplestoreUri());
+    String headVersion = getHeadVersion(WebConstants.buildDatasetUri(triplestoreUuidAndOwner.getTriplestoreUuid()));
     String description = binding.containsKey("comment") ? (String) JsonPath.read(binding, "$.comment.value") : "";
     Integer numberOfStudies = Integer.parseInt(JsonPath.read(binding, "$.numberOfStudies.value"));
     String version = response.getHeaders().get(X_EVENT_SOURCE_VERSION).get(0);
-    return new Namespace(subStringAfterLastSymbol(datasetUriAndOwnerId.getTriplestoreUri(), '/'), datasetUriAndOwnerId.getOwnerId(), name, description, numberOfStudies, version, headVersion);
+    return new Namespace(triplestoreUuidAndOwner.getTriplestoreUuid(), triplestoreUuidAndOwner.getOwnerId(), name, description, numberOfStudies, version, headVersion);
   }
 
-  private String getHeadVersion(String datasetUri) {
-    ResponseEntity<Graph> exchange = restTemplate.exchange(URI.create(datasetUri), HttpMethod.GET, new HttpEntity<String>(new HttpHeaders()), Graph.class);
-    Model datasetModel = ModelFactory.createModelForGraph(exchange.getBody());
-    RDFNode headObject = datasetModel.getResource(datasetUri).getProperty(JenaProperties.headVersionProperty).getObject();
+  private String getHeadVersion(URI datasetUri) {
+    HttpHeaders headers = new HttpHeaders();
+    headers.set(WebConstants.ACCEPT_HEADER, "text/turtle,text/html");
+    ResponseEntity<String> response = restTemplate.exchange(datasetUri, HttpMethod.GET, new HttpEntity<String>(headers), String.class);
+    Graph graph = GraphFactory.createDefaultGraph();
+    StringReader reader = new StringReader(response.getBody());
+    RDFDataMgr.read(graph, reader, "http://example.com", RDFLanguages.TURTLE);
+    Model datasetModel = ModelFactory.createModelForGraph(graph);
+    Resource resource = datasetModel.getResource(datasetUri.toString());
+    Statement headVersion = resource.getProperty(JenaProperties.headVersionProperty);
+    RDFNode headObject = headVersion.getObject();
     return headObject.toString();
   }
 

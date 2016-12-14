@@ -3,16 +3,16 @@ package org.drugis.addis.trialverse.model.mapping;
 /**
  * Created by daan on 12-2-16.
  */
-public class VersionedUuidAndOwner {
+public class TriplestoreUuidAndOwner {
   private String versionedUuid;
   private Integer ownerId;
 
-  public VersionedUuidAndOwner(String versionedUuid, Integer ownerId) {
+  public TriplestoreUuidAndOwner(String versionedUuid, Integer ownerId) {
     this.versionedUuid = versionedUuid;
     this.ownerId = ownerId;
   }
 
-  public String getTriplestoreUri() {
+  public String getTriplestoreUuid() {
     return versionedUuid;
   }
 
@@ -25,7 +25,7 @@ public class VersionedUuidAndOwner {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
 
-    VersionedUuidAndOwner that = (VersionedUuidAndOwner) o;
+    TriplestoreUuidAndOwner that = (TriplestoreUuidAndOwner) o;
 
     if (!versionedUuid.equals(that.versionedUuid)) return false;
     return ownerId.equals(that.ownerId);

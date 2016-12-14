@@ -1,5 +1,5 @@
 'use strict';
-define(['lodash', 'angular'], function(_, angular) {
+define(['lodash', 'angular'], function(_) {
   var dependencies = ['$scope', '$q', '$state', '$stateParams', '$location', '$modal',
     'ProjectResource',
     'ProjectService',
@@ -16,12 +16,14 @@ define(['lodash', 'angular'], function(_, angular) {
     'InterventionService',
     'activeTab',
     'UserService',
-    'ReportResource'
+    'ReportResource',
+    'HistoryResource'
   ];
   var SingleProjectController = function($scope, $q, $state, $stateParams, $location, $modal, ProjectResource, ProjectService,
     TrialverseResource,
     TrialverseStudyResource, SemanticOutcomeResource, OutcomeResource, SemanticInterventionResource, InterventionResource,
-    CovariateOptionsResource, CovariateResource, AnalysisResource, ANALYSIS_TYPES, InterventionService, activeTab, UserService, ReportResource) {
+    CovariateOptionsResource, CovariateResource, AnalysisResource, ANALYSIS_TYPES, InterventionService, activeTab, UserService,
+    ReportResource, HistoryResource) {
     $scope.activeTab = activeTab;
 
     $scope.analysesLoaded = false;
@@ -54,6 +56,14 @@ define(['lodash', 'angular'], function(_, angular) {
       $scope.trialverse = TrialverseResource.get({
         namespaceUid: $scope.project.namespaceUid,
         version: $scope.project.datasetVersion
+      });
+
+      $scope.trialverse.$promise.then(function(dataset) {
+        $scope.currentRevision = HistoryResource.get({
+          userUid: $scope.userId,
+          datasetUUID: $scope.project.namespaceUid,
+          versionUuid: dataset.version.split('/versions/')[1]
+        });
       });
 
       $scope.semanticOutcomes = SemanticOutcomeResource.query({

@@ -29,6 +29,7 @@ public class WebConstants {
 
   public static final String API_KEY_PREFIX = "https://trialverse.org/apikeys/";
   public static final String VERSION_PATH = "versions/";
+  public static final String DATASET_PATH = "datasets/";
   public static final String QUERY_ENDPOINT = "/query";
   public static final String HISTORY_ENDPOINT = "/history";
   public static final String DATA_ENDPOINT = "/data";
@@ -119,6 +120,14 @@ public class WebConstants {
   public static URI buildVersionUri(String versionUuid) {
     return UriComponentsBuilder.fromHttpUrl(getTriplestoreBaseUri())
             .path(VERSION_PATH)
+            .path(versionUuid)
+            .build()
+            .toUri();
+  }
+
+  public static URI buildDatasetUri(String versionUuid) {
+    return UriComponentsBuilder.fromHttpUrl(getTriplestoreBaseUri())
+            .path(DATASET_PATH)
             .path(versionUuid)
             .build()
             .toUri();

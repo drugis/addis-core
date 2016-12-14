@@ -5,6 +5,7 @@ import net.minidev.json.JSONObject;
 import net.minidev.json.parser.ParseException;
 import org.apache.jena.graph.Graph;
 import org.apache.jena.riot.RDFDataMgr;
+import org.apache.jena.riot.RDFLanguages;
 import org.apache.jena.sparql.graph.GraphFactory;
 import org.drugis.addis.TestUtils;
 import org.drugis.addis.covariates.CovariateRepository;
@@ -30,6 +31,7 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.io.StringReader;
 import java.net.URI;
 import java.util.Arrays;
 import java.util.Collection;
@@ -90,14 +92,15 @@ public class TriplestoreServiceTest {
     MultiValueMap<String, String> responceHeaders = new HttpHeaders();
     responceHeaders.add(TriplestoreServiceImpl.X_EVENT_SOURCE_VERSION, "version");
     ResponseEntity<String> resultEntity2 = new ResponseEntity<>(mockResult2, responceHeaders, HttpStatus.OK);
-    String graphBody = TestUtils.loadResource(this.getClass(), "triplestoreService/exampleNamespaceResult.ttl");
+    String graphBody = TestUtils.loadResource(this.getClass(), "/triplestoreService/exampleNamespaceResult.ttl");
+    StringReader stringReader = new StringReader(graphBody);
     Graph graph = GraphFactory.createGraphMem();
-    RDFDataMgr.read(graph, graphBody);
+    RDFDataMgr.read(graph, stringReader, "http://example.com", RDFLanguages.TURTLE);
     ResponseEntity<Graph> resultEntity3 = new ResponseEntity<>(graph, responceHeaders, HttpStatus.OK);
 
     when(restTemplate.exchange(uriComponents.toUri(), HttpMethod.GET, TriplestoreServiceImpl.acceptJsonRequest, String.class)).thenReturn(resultEntity);
     when(restTemplate.exchange(uriComponents2.toUri(), HttpMethod.GET, TriplestoreServiceImpl.acceptSparqlResultsRequest, String.class)).thenReturn(resultEntity2);
-    when(restTemplate.exchange(URI.create("http://baseurl/d1"), HttpMethod.GET, new HttpEntity<String>(new HttpHeaders()), Graph.class)).thenReturn(resultEntity3);
+    when(restTemplate.exchange(URI.create("http://baseurl.com/d1"), HttpMethod.GET, new HttpEntity<String>(new HttpHeaders()), Graph.class)).thenReturn(resultEntity3);
 
     Collection<Namespace> namespaces = triplestoreService.queryNameSpaces();
 

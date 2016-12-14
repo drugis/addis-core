@@ -5,11 +5,10 @@ import net.minidev.json.parser.ParseException;
 import org.apache.commons.io.IOUtils;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.interventions.model.AbstractIntervention;
-import org.drugis.addis.interventions.model.SingleIntervention;
 import org.drugis.addis.trialverse.model.*;
 import org.drugis.addis.trialverse.model.emun.CovariateOption;
 import org.drugis.addis.trialverse.model.emun.StudyDataSection;
-import org.drugis.addis.trialverse.model.mapping.VersionedUuidAndOwner;
+import org.drugis.addis.trialverse.model.mapping.TriplestoreUuidAndOwner;
 import org.drugis.addis.trialverse.model.trialdata.CovariateStudyValue;
 import org.drugis.addis.trialverse.model.trialdata.TrialDataArm;
 import org.drugis.addis.trialverse.model.trialdata.TrialDataStudy;
@@ -41,9 +40,9 @@ public interface TriplestoreService {
 
   Collection<Namespace> queryNameSpaces() throws ParseException;
 
-  Namespace getNamespaceHead(VersionedUuidAndOwner uuidAndOwner);
+  Namespace getNamespaceHead(TriplestoreUuidAndOwner uuidAndOwner);
 
-  Namespace getNamespaceVersioned(VersionedUuidAndOwner datasetUri, String versionUri);
+  Namespace getNamespaceVersioned(TriplestoreUuidAndOwner datasetUri, String versionUri);
 
   List<SemanticVariable> getOutcomes(String namespaceUid, String version) throws ReadValueException;
 

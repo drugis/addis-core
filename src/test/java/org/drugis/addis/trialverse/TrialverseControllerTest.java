@@ -8,7 +8,7 @@ import org.drugis.addis.security.Account;
 import org.drugis.addis.security.repository.AccountRepository;
 import org.drugis.addis.trialverse.model.*;
 import org.drugis.addis.trialverse.model.emun.StudyDataSection;
-import org.drugis.addis.trialverse.model.mapping.VersionedUuidAndOwner;
+import org.drugis.addis.trialverse.model.mapping.TriplestoreUuidAndOwner;
 import org.drugis.addis.trialverse.service.MappingService;
 import org.drugis.addis.trialverse.service.TriplestoreService;
 import org.drugis.addis.trialverse.service.impl.ReadValueException;
@@ -70,7 +70,7 @@ public class TrialverseControllerTest {
   private String namespaceUid = "UID-1";
   private String versionedUuid = "versionedUuid";
   private Integer ownerId = 1;
-  private VersionedUuidAndOwner versionedUuidAndOwner = new VersionedUuidAndOwner(versionedUuid, ownerId);
+  private TriplestoreUuidAndOwner triplestoreUuidAndOwner = new TriplestoreUuidAndOwner(versionedUuid, ownerId);
 
   @Before
   public void setUp() throws URISyntaxException {
@@ -80,7 +80,7 @@ public class TrialverseControllerTest {
     when(user.getName()).thenReturn("gert");
     when(accountRepository.findAccountByUsername("gert")).thenReturn(gert);
     when(mappingService.getVersionedUuid(namespaceUid)).thenReturn(versionedUuid);
-    when(mappingService.getVersionedUuidAndOwner(namespaceUid)).thenReturn(versionedUuidAndOwner);
+    when(mappingService.getVersionedUuidAndOwner(namespaceUid)).thenReturn(triplestoreUuidAndOwner);
   }
 
   @After
@@ -123,14 +123,14 @@ public class TrialverseControllerTest {
     int numberOfStudies = 666;
     String versionUid = "current";
     Namespace namespace1 = new Namespace(namespaceUid, ownerId, "a", "descrea", numberOfStudies, versionUid, "headVersion");
-    when(triplestoreService.getNamespaceVersioned(versionedUuidAndOwner, versionUid)).thenReturn(namespace1);
+    when(triplestoreService.getNamespaceVersioned(triplestoreUuidAndOwner, versionUid)).thenReturn(namespace1);
 
     mockMvc.perform(get("/namespaces/UID-1").param("version", versionUid))
             .andExpect(status().isOk())
             .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()))
             .andExpect(jsonPath("$.name", is("a")));
 
-    verify(triplestoreService).getNamespaceVersioned(versionedUuidAndOwner, versionUid);
+    verify(triplestoreService).getNamespaceVersioned(triplestoreUuidAndOwner, versionUid);
     verify(mappingService).getVersionedUuidAndOwner(namespaceUid);
  }
 

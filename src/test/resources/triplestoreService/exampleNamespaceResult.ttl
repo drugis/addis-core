@@ -1,7 +1,7 @@
 @prefix owl:   <http://www.w3.org/2002/07/owl#> .
 @prefix es:    <http://drugis.org/eventSourcing/es#> .
 
-<http://baseurl/d1>
+<http://baseurl.com/d1>
         a        es:Dataset ;
         es:head  <http://localhost:8080/versions/ddec3b13-c657-4770-8dce-74d12d0c9e3f> ;
         <http://purl.org/dc/terms/creator>
@@ -11,4 +11,4 @@
 
 <http://localhost:8080/versions/ddec3b13-c657-4770-8dce-74d12d0c9e3f>
         a                          es:DatasetVersion ;
-        es:dataset                 <http://baseurl/d1> ;
+        es:dataset                 <http://baseurl.com/d1> .

@@ -65,9 +65,6 @@ public class GraphServiceImpl implements GraphService {
   @Inject
   private RestTemplate restTemplate;
 
-  @Inject
-  private WebConstants webConstants;
-
   private Pattern graphUriPattern = Pattern.compile("/datasets/([a-zA-z0-9\\.\\-]*)/versions/([a-zA-z0-9\\.\\-]*)/graphs/([a-zA-z0-9\\.\\-]*)");
 
   @Override
@@ -84,7 +81,7 @@ public class GraphServiceImpl implements GraphService {
     matcher.matches();
     String versionUuid = matcher.group(2);
     try {
-      URIBuilder builder = new URIBuilder(webConstants.getTriplestoreBaseUri());
+      URIBuilder builder = new URIBuilder(WebConstants.getTriplestoreBaseUri());
       builder.setPath("/versions/" + versionUuid);
       return builder.build();
     } catch (URISyntaxException e) {

@@ -1,6 +1,6 @@
 package org.drugis.addis.trialverse.service;
 
-import org.drugis.addis.trialverse.model.mapping.VersionedUuidAndOwner;
+import org.drugis.addis.trialverse.model.mapping.TriplestoreUuidAndOwner;
 
 import java.net.URISyntaxException;
 
@@ -10,7 +10,7 @@ import java.net.URISyntaxException;
 public interface MappingService {
   String getVersionedUuid(String namespaceUid) throws URISyntaxException;
 
-  VersionedUuidAndOwner getVersionedUuidAndOwner(String namespaceUuid) throws URISyntaxException;
+  TriplestoreUuidAndOwner getVersionedUuidAndOwner(String namespaceUuid) throws URISyntaxException;
 
 
 }
