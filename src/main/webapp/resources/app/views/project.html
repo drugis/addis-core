@@ -226,9 +226,9 @@
                       <td class="text-center" ng-if="editMode.allowEditing && !interventionUsage.inAnalyses[intervention.id].length && !interventionUsage.inInterventions[intervention.id].length"><a ng-click="openDeleteDefinitionDialog(intervention,'intervention')"><i class="fa fa-trash  fa-2x" style="color:red"></i></a></td>
                       <td ng-if="editMode.allowEditing && (interventionUsage.inInterventions[intervention.id].length || interventionUsage.inAnalyses[intervention.id].length)">
                         <a class="has-tip"
-                          tooltip="{{!interventionUsage.inAnalyses[intervention.id].length ? '' : '<p>Intervention is used in analyses:' + interventionUsage.inAnalyses[intervention.id].join(', ') + '</p>'}}
+                          tooltip-html-unsafe="{{!interventionUsage.inAnalyses[intervention.id].length ? '' : '<p>Intervention is used in analyses: ' + interventionUsage.inAnalyses[intervention.id].join(', ') + '</p>'}}
 
-                          {{!interventionUsage.inInterventions[intervention.id].length? '' : '<p>Intervention is used in interventions:' + interventionUsage.inInterventions[intervention.id].join(', ') + '</p>'}}"
+                          {{!interventionUsage.inInterventions[intervention.id].length? '' : '<p>Intervention is used in interventions: ' + interventionUsage.inInterventions[intervention.id].join(', ') + '</p>'}}"
                           tooltip-placement="left">
                           <i class="fa fa-trash fa-2x" style="color: lightgrey;"></i>
                         </span>
