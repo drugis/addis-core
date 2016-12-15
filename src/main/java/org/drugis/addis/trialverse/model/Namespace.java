@@ -1,5 +1,7 @@
 package org.drugis.addis.trialverse.model;
 
+import java.net.URI;
+
 /**
  * Created by connor on 2/12/14.
  */
@@ -9,18 +11,17 @@ public class Namespace {
   private String name;
   private String description;
   private Integer numberOfStudies;
-  private String version;
-  private String headVersion;
+  private URI version;
+  private URI headVersion;
   private Integer ownerId;
 
-  public Namespace(String uid, Integer ownerId, String name, String description, Integer numberOfStudies, String version, String headVersion) {
+  public Namespace(String uid, Integer ownerId, String name, String description, Integer numberOfStudies, URI version, URI headVersion) {
     this.uid = uid;
     this.ownerId = ownerId;
     this.name = name;
     this.description = description;
     this.numberOfStudies = numberOfStudies;
     this.version = version;
-
     this.headVersion = headVersion;
   }
 
@@ -40,7 +41,7 @@ public class Namespace {
     return numberOfStudies;
   }
 
-  public String getVersion() {
+  public URI getVersion() {
     return version;
   }
 
@@ -48,7 +49,7 @@ public class Namespace {
     return ownerId;
   }
 
-  public String getHeadVersion() {
+  public URI getHeadVersion() {
     return headVersion;
   }
 

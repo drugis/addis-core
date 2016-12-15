@@ -42,15 +42,17 @@ public interface TriplestoreService {
 
   Namespace getNamespaceHead(TriplestoreUuidAndOwner uuidAndOwner);
 
-  Namespace getNamespaceVersioned(TriplestoreUuidAndOwner datasetUri, String versionUri);
+  Namespace getNamespaceVersioned(TriplestoreUuidAndOwner datasetUri, URI versionUri);
 
-  List<SemanticVariable> getOutcomes(String namespaceUid, String version) throws ReadValueException;
+  String getHeadVersion(URI datasetUri);
 
-  List<SemanticVariable> getPopulationCharacteristics(String versionedUuid, String version) throws ReadValueException;
+  List<SemanticVariable> getOutcomes(String namespaceUid, URI version) throws ReadValueException;
 
-  List<SemanticInterventionUriAndName> getInterventions(String namespaceUid, String version);
+  List<SemanticVariable> getPopulationCharacteristics(String versionedUuid, URI version) throws ReadValueException;
 
-  List<Study> queryStudies(String namespaceUid, String version);
+  List<SemanticInterventionUriAndName> getInterventions(String namespaceUid, URI version);
+
+  List<Study> queryStudies(String namespaceUid, URI version);
 
   StudyWithDetails getStudydetails(String namespaceUid, String studyUid) throws ResourceDoesNotExistException;
 
@@ -58,7 +60,7 @@ public interface TriplestoreService {
 
   JSONArray getStudyEpochs(String namespaceUid, String studyUid);
 
-  List<TrialDataStudy> getSingleStudyData(String namespaceUid, URI studyUri, String version, Set<URI> outcomeUris, Set<URI> interventionUids) throws ReadValueException;
+  List<TrialDataStudy> getSingleStudyData(String namespaceUid, URI studyUri, URI version, Set<URI> outcomeUris, Set<URI> interventionUids) throws ReadValueException;
 
   List<TreatmentActivity> getStudyTreatmentActivities(String namespaceUid, String studyUid);
 
@@ -66,11 +68,11 @@ public interface TriplestoreService {
 
   Set<AbstractIntervention> findMatchingIncludedInterventions(Set<AbstractIntervention> includedInterventions, TrialDataArm arm);
 
-  List<CovariateStudyValue> getStudyLevelCovariateValues(String namespaceUid, String version, List<CovariateOption> covariates) throws ReadValueException;
+  List<CovariateStudyValue> getStudyLevelCovariateValues(String namespaceUid, URI version, List<CovariateOption> covariates) throws ReadValueException;
 
-  List<TrialDataStudy> getNetworkData(String namespaceUid, String version, URI outcomeUri, Set<URI> interventionUris, Set<String> covariateKeys) throws ReadValueException;
+  List<TrialDataStudy> getNetworkData(String namespaceUid, URI version, URI outcomeUri, Set<URI> interventionUris, Set<String> covariateKeys) throws ReadValueException;
 
-  List<TrialDataStudy> getAllTrialData(String namespaceUid, String datasetVersion, Set<URI> outcomeUris, Set<URI> interventionUris) throws ReadValueException;
+  List<TrialDataStudy> getAllTrialData(String namespaceUid, URI datasetVersion, Set<URI> outcomeUris, Set<URI> interventionUris) throws ReadValueException;
 
   List<TrialDataStudy> addMatchingInformation(Set<AbstractIntervention> includedInterventions, List<TrialDataStudy> trialData);
 }

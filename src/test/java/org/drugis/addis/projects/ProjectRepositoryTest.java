@@ -11,6 +11,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import javax.inject.Inject;
 import javax.transaction.Transactional;
+import java.net.URI;
 import java.util.Collection;
 
 import static org.junit.Assert.*;
@@ -41,7 +42,7 @@ public class ProjectRepositoryTest {
   public void testCreate() {
     Account account = new Account(1, "1000012345", "Connor", "Bonnor", "connor@test.com");
     assertEquals(3, projectRepository.query().size());
-    Project project = projectRepository.create(account, new ProjectCommand("newProjectName", "newProjectDesc", "uid1", "version 1"));
+    Project project = projectRepository.create(account, new ProjectCommand("newProjectName", "newProjectDesc", "uid1", URI.create("http://version1.com")));
     assertEquals(project.getOwner(), account);
     Collection<Project> projectList = projectRepository.query();
     assertEquals(4, projectList.size());

@@ -1,29 +1,34 @@
 package org.drugis.addis.projects.service.impl;
 
+import org.drugis.addis.covariates.Covariate;
+import org.drugis.addis.covariates.CovariateRepository;
 import org.drugis.addis.exception.MethodNotAllowedException;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
-import org.drugis.addis.interventions.model.AbstractIntervention;
-import org.drugis.addis.interventions.model.SingleIntervention;
+import org.drugis.addis.interventions.model.*;
 import org.drugis.addis.interventions.repository.InterventionRepository;
 import org.drugis.addis.outcomes.Outcome;
 import org.drugis.addis.outcomes.repository.OutcomeRepository;
 import org.drugis.addis.projects.Project;
+import org.drugis.addis.projects.ProjectCommand;
 import org.drugis.addis.projects.repository.ProjectRepository;
 import org.drugis.addis.projects.service.ProjectService;
 import org.drugis.addis.security.Account;
 import org.drugis.addis.security.repository.AccountRepository;
+import org.drugis.addis.trialverse.model.SemanticInterventionUriAndName;
+import org.drugis.addis.trialverse.model.SemanticVariable;
+import org.drugis.addis.trialverse.model.emun.CovariateOptionType;
 import org.drugis.addis.trialverse.model.trialdata.TrialDataStudy;
 import org.drugis.addis.trialverse.service.MappingService;
 import org.drugis.addis.trialverse.service.TriplestoreService;
 import org.drugis.addis.trialverse.service.impl.ReadValueException;
+import org.drugis.addis.util.WebConstants;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.security.Principal;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -49,6 +54,9 @@ public class ProjectServiceImpl implements ProjectService {
 
   @Inject
   MappingService mappingService;
+
+  @Inject
+  CovariateRepository covariateRepository;
 
   @Override
   public void checkOwnership(Integer projectId, Principal principal) throws MethodNotAllowedException, ResourceDoesNotExistException {
@@ -89,9 +97,94 @@ public class ProjectServiceImpl implements ProjectService {
 
   @Override
   public Project updateProject(Integer projectId, String name, String description) throws UpdateProjectException, ResourceDoesNotExistException {
-    if(projectRepository.isExistingProjectName(projectId, name)){
-     throw new UpdateProjectException("Can not update project; duplicate project name");
+    if (projectRepository.isExistingProjectName(projectId, name)) {
+      throw new UpdateProjectException("Can not update project; duplicate project name");
     }
     return projectRepository.updateNameAndDescription(projectId, name, description);
   }
+
+  @Override
+  public Integer copy(Account user, Integer sourceProjectId) throws ResourceDoesNotExistException, ReadValueException {
+    Project sourceProject = projectRepository.get(sourceProjectId);
+    ProjectCommand command = sourceProject.getCommand();
+    URI datasetUri = WebConstants.buildDatasetUri(sourceProject.getNamespaceUid());
+    URI headVersion = URI.create(triplestoreService.getHeadVersion(datasetUri));
+    command.setDatasetVersion(headVersion);
+    Project newProject = projectRepository.create(user, command);
+
+    //Outcomes
+    Collection<Outcome> sourceOutcomes = outcomeRepository.query(sourceProjectId);
+    List<SemanticVariable> semanticOutcomes = triplestoreService.getOutcomes(sourceProject.getNamespaceUid(), headVersion);
+
+    sourceOutcomes.stream()
+            .filter(sourceOutcome ->
+                    semanticOutcomes.stream().anyMatch(semanticOutcome -> semanticOutcome.getUri().equals(sourceOutcome.getSemanticOutcomeUri())))
+            .forEach(outcome -> {
+              SemanticVariable semanticVariable = new SemanticVariable(outcome.getSemanticOutcomeUri(), outcome.getSemanticOutcomeLabel());
+              try {
+                new Outcome(newProject.getId(), outcome.getName(), outcome.getDirection(), outcome.getMotivation(), semanticVariable);
+              } catch (Exception e) {
+                e.printStackTrace();
+              }
+            });
+
+    //Covariates
+    Collection<Covariate> sourceCovariates = covariateRepository.findByProject(sourceProjectId);
+    List<SemanticVariable> semanticCovariates = triplestoreService.getPopulationCharacteristics(sourceProject.getNamespaceUid(), headVersion);
+
+    sourceCovariates.stream()
+            .filter(sourceCovariate -> sourceCovariate.getType().equals(CovariateOptionType.STUDY_CHARACTERISTIC) ||
+                    semanticCovariates.stream().anyMatch(semanticCovariate -> semanticCovariate.getUri().toString().equals(sourceCovariate.getDefinitionKey())))
+            .forEach(covariate -> new Covariate(newProject.getId(), covariate.getName(), covariate.getMotivation(), covariate.getDefinitionKey(), covariate.getType()));
+
+    //Interventions
+    Set<AbstractIntervention> sourceInterventions = interventionRepository.query(sourceProjectId);
+    List<SemanticInterventionUriAndName> semanticInterventions = triplestoreService.getInterventions(sourceProject.getNamespaceUid(), headVersion);
+
+    Map<Integer, Integer> ii;
+
+    List<SingleIntervention> newSingleInterventions = sourceInterventions.stream()
+            .filter(intervention -> intervention instanceof SingleIntervention)
+            .map(intervention -> (SingleIntervention) intervention)
+            .filter(sourceIntervention -> semanticInterventions.stream().anyMatch(semanticIntervention -> semanticIntervention.getUri().equals(sourceIntervention.getSemanticInterventionUri())))
+            .map(intervention -> {
+              try {
+                SingleIntervention newIntervention = buildSingleIntervention(newProject.getId(), intervention);
+                return newIntervention;
+              } catch (InvalidConstraintException e) {
+                e.printStackTrace();
+              }
+              return null;
+            }).collect(Collectors.toList());
+    sourceInterventions.stream()
+            .filter(intervention -> !(intervention instanceof SingleIntervention))
+            .forEach(intervention -> {
+              if (intervention instanceof CombinationIntervention) {
+                CombinationIntervention cast = (CombinationIntervention) intervention;
+                if (!cast.getInterventionIds().stream().anyMatch(id -> ii.get(id) == null)) {
+                  new CombinationIntervention(newProject.getId(), cast.getName(), cast.getMotivation(), cast.getInterventionIds());
+                }
+              } else if(intervention instanceof InterventionSet) {
+
+              }
+            });
+    return newProject.getId();
+  }
+
+  private SingleIntervention buildSingleIntervention(Integer newProjectId, SingleIntervention intervention) throws InvalidConstraintException {
+    if(intervention instanceof SimpleIntervention) {
+      SemanticInterventionUriAndName semanticInterventionUriAndName = new SemanticInterventionUriAndName(intervention.getSemanticInterventionUri(), intervention.getSemanticInterventionLabel());
+      return new SimpleIntervention(newProjectId, intervention.getName(), intervention.getMotivation(), semanticInterventionUriAndName)
+    } else if (intervention instanceof FixedDoseIntervention) {
+      FixedDoseIntervention cast = (FixedDoseIntervention) intervention;
+      return new FixedDoseIntervention(newProjectId, cast.getName(), cast.getMotivation(), cast.getSemanticInterventionUri(), cast.getSemanticInterventionLabel(), cast.getConstraint());
+    } else if (intervention instanceof TitratedDoseIntervention) {
+      TitratedDoseIntervention cast = (TitratedDoseIntervention) intervention;
+      return new TitratedDoseIntervention(newProjectId, cast.getName(), cast.getMotivation(), cast.getSemanticInterventionUri(), cast.getSemanticInterventionLabel(), cast.getMinConstraint(), cast.getMaxConstraint());
+    } else {
+      BothDoseTypesIntervention cast = (BothDoseTypesIntervention) intervention;
+      return new BothDoseTypesIntervention(newProjectId, cast.getName(), cast.getMotivation(), cast.getSemanticInterventionUri(), cast.getSemanticInterventionLabel(), cast.getMinConstraint(), cast.getMaxConstraint());
+    }
+  }
+
 }

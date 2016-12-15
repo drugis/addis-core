@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.inject.Inject;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.List;
@@ -54,7 +55,7 @@ public class CovariateOptionsController extends AbstractAddisCoreController {
     CovariateOption[] studyCovariates = CovariateOption.values();
     List<CovariateViewAdapter> covariateOptions = Arrays.stream(studyCovariates).map(CovariateViewAdapter::new).collect(Collectors.toList());
     Project project = projectRepository.get(projectId);
-    String version = project.getDatasetVersion();
+    URI version = project.getDatasetVersion();
     List<SemanticVariable> populationCharacteristics = triplestoreService.getPopulationCharacteristics(mappingService.getVersionedUuid(project.getNamespaceUid()), version);
     List<CovariateViewAdapter> popCharAdapters = populationCharacteristics.stream().map(CovariateViewAdapter::new).collect(Collectors.toList());
     covariateOptions.addAll(popCharAdapters);

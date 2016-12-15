@@ -31,7 +31,9 @@ import javax.inject.Inject;
 import java.net.URI;
 import java.security.Principal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
@@ -51,7 +53,7 @@ public class ProjectsControllerTest {
   public static final String DEFAULT_REPORT_TEXT = "default report text";
   private MockMvc mockMvc;
 
-@Inject
+  @Inject
   private AccountRepository accountRepository;
 
   @Inject
@@ -75,6 +77,7 @@ public class ProjectsControllerTest {
   private Account john = new Account(1, "a", "john", "lennon", null),
           paul = new Account(2, "a", "paul", "mc cartney", null),
           gert = new Account(3, "gert", "Gert", "van Valkenhoef", "gert@test.com");
+  private final URI version = URI.create("http://version.com/1");
 
 
   @Before
@@ -111,11 +114,9 @@ public class ProjectsControllerTest {
 
   @Test
   public void testQueryProjects() throws Exception {
-    Project project = new Project(1, john, "name", "desc", "uid1", "version 1");
-    Project project2 = new Project(2, paul, "otherName", "other description", "uid2", "version 1");
-    ArrayList projects = new ArrayList();
-    projects.add(project);
-    projects.add(project2);
+    Project project = new Project(1, john, "name", "desc", "uid1", version);
+    Project project2 = new Project(2, paul, "otherName", "other description", "uid2", version);
+    List<Project> projects = Arrays.asList(project, project2);
     when(projectRepository.query()).thenReturn(projects);
 
     mockMvc.perform(get("/projects").principal(user))
@@ -127,16 +128,15 @@ public class ProjectsControllerTest {
             .andExpect(jsonPath("$[0].name", is(project.getName())))
             .andExpect(jsonPath("$[0].description", is(project.getDescription())))
             .andExpect(jsonPath("$[0].namespaceUid", is(project.getNamespaceUid())))
-            .andExpect(jsonPath("$[0].datasetVersion", is(project.getDatasetVersion())));
+            .andExpect(jsonPath("$[0].datasetVersion", is(project.getDatasetVersion().toString())));
 
     verify(projectRepository).query();
   }
 
   @Test
   public void testQueryProjectsWithQueryString() throws Exception {
-    Project project = new Project(2, paul, "test2", "desc", "uid1", "version 1");
-    ArrayList projects = new ArrayList();
-    projects.add(project);
+    Project project = new Project(2, paul, "test2", "desc", "uid1", version);
+    List<Project> projects = Collections.singletonList(project);
     when(projectRepository.queryByOwnerId(paul.getId())).thenReturn(projects);
 
     mockMvc.perform(get("/projects?owner=2").principal(user))
@@ -151,8 +151,8 @@ public class ProjectsControllerTest {
 
   @Test
   public void testCreateProject() throws Exception {
-    ProjectCommand projectCommand = new ProjectCommand("testname", "testdescription", "uid1", "version 1");
-    Project project = new Project(1, gert, "testname", "testdescription", "uid1", "version 1");
+    ProjectCommand projectCommand = new ProjectCommand("testname", "testdescription", "uid1", version);
+    Project project = new Project(1, gert, "testname", "testdescription", "uid1", version);
     String jsonContent = TestUtils.createJson(projectCommand);
     when(projectRepository.create(gert, projectCommand)).thenReturn(project);
     mockMvc.perform(post("/projects").principal(user).content(jsonContent).contentType(WebConstants.getApplicationJsonUtf8Value()))
@@ -165,7 +165,7 @@ public class ProjectsControllerTest {
 
   @Test
   public void testGetSingleProject() throws Exception {
-    Project project = new Project(1, john, "name", "desc", "uid1", "version 1");
+    Project project = new Project(1, john, "name", "desc", "uid1", version);
     when(projectRepository.get(project.getId())).thenReturn(project);
     mockMvc.perform(get("/projects/" + project.getId()).principal(user))
             .andExpect(status().isOk())
@@ -185,8 +185,8 @@ public class ProjectsControllerTest {
 
   @Test
   public void testHandleNullDescription() throws Exception {
-    ProjectCommand projectCommand = new ProjectCommand("testname", "uid1", "version 1");
-    Project project = new Project(1, gert, "testname", StringUtils.EMPTY, "uid1", "version 1");
+    ProjectCommand projectCommand = new ProjectCommand("testname", "uid1", version);
+    Project project = new Project(1, gert, "testname", StringUtils.EMPTY, "uid1", version);
     String requestBody = TestUtils.createJson(projectCommand);
     when(projectRepository.create(gert, projectCommand)).thenReturn(project);
     mockMvc.perform(post("/projects").principal(user).content(requestBody).contentType(WebConstants.getApplicationJsonUtf8Value()))
@@ -200,7 +200,8 @@ public class ProjectsControllerTest {
   @Test
   public void updateTitleAndDescription() throws Exception {
     EditProjectCommand command = new EditProjectCommand("updateName", "updateDescription");
-    Project project = new Project(1, gert, "updateName", "updateDescription", "uid1", "version 1");
+    URI version = URI.create("http://version.com/1");
+    Project project = new Project(1, gert, "updateName", "updateDescription", "uid1", version);
     String jsonContent = TestUtils.createJson(command);
     when(projectService.updateProject(project.getId(), command.getName(), command.getDescription())).thenReturn(project);
     mockMvc.perform(post("/projects/1").principal(user).content(jsonContent).contentType(WebConstants.getApplicationJsonUtf8Value()))

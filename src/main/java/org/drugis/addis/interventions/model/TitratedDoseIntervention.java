@@ -61,6 +61,10 @@ public class TitratedDoseIntervention extends SingleIntervention {
     this.maxConstraint = maxConstraint;
   }
 
+  public TitratedDoseIntervention(Integer project, String name, String motivation, URI semanticInterventionUri, String semanticInterventionLabel, DoseConstraint minConstraint, DoseConstraint maxConstraint) throws InvalidConstraintException {
+    this(null, project, name, motivation, semanticInterventionUri, semanticInterventionLabel, minConstraint, maxConstraint);
+  }
+
   public DoseConstraint getMinConstraint() {
     return minConstraint;
   }

@@ -121,7 +121,8 @@ public class ProblemServiceTest {
   private final Integer projectId = 101;
   private final Integer analysisId = 202;
   private final String projectDatasetUid = "projectDatasetUid";
-  private final String projectDatasetVersion = "projectDatasetVersion";
+  private final URI projectDatasetVersion = URI.create("http://versions.com/version");
+
   private final Account owner = mock(Account.class);
   private final Project project = new Project(projectId, owner, "project name", "desc", projectDatasetUid, projectDatasetVersion);
 
@@ -502,7 +503,7 @@ public class ProblemServiceTest {
   @Test
   public void testGetMetaBRProblem() throws Exception, ReadValueException, InvalidTypeForDoseCheckException {
 
-    String version = "version 1";
+    URI version = URI.create("http://versions.com/version");
     Integer projectId = 1;
     Integer analysisId = 2;
     String title = "title";

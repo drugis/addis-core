@@ -19,10 +19,18 @@ public enum CovariateOption {
   ALLOCATION_RANDOMIZED(CovariateOptionType.STUDY_CHARACTERISTIC,
           "Allocation: Randomized",
           TriplestoreService.loadResource("sparql/covariateAllocationRandomized.sparql")),
-  BLINDING_AT_LEAST_SINGLE_BLIND(CovariateOptionType.STUDY_CHARACTERISTIC, "Blinding: at least Single Blind", TriplestoreService.loadResource("sparql/covariateAtLeastSingleBlind.sparql")),
-  BLINDING_AT_LEAST_DOUBLE_BLIND(CovariateOptionType.STUDY_CHARACTERISTIC, "Blinding: at least Double Blind", TriplestoreService.loadResource("sparql/covariateAtLeastDoubleBlind.sparql")),
-  MULTI_CENTER_STUDY(CovariateOptionType.STUDY_CHARACTERISTIC, "Multi-center study", TriplestoreService.loadResource("sparql/covariateIsMultiCenterStudy.sparql")),
-  LENGTH_OF_FOLLOW_UP(CovariateOptionType.STUDY_CHARACTERISTIC, "Duration of treatment (days)", TriplestoreService.loadResource("sparql/covariateLengthOfFollowUp.sparql"));
+  BLINDING_AT_LEAST_SINGLE_BLIND(CovariateOptionType.STUDY_CHARACTERISTIC,
+          "Blinding: at least Single Blind",
+          TriplestoreService.loadResource("sparql/covariateAtLeastSingleBlind.sparql")),
+  BLINDING_AT_LEAST_DOUBLE_BLIND(CovariateOptionType.STUDY_CHARACTERISTIC,
+          "Blinding: at least Double Blind",
+          TriplestoreService.loadResource("sparql/covariateAtLeastDoubleBlind.sparql")),
+  MULTI_CENTER_STUDY(CovariateOptionType.STUDY_CHARACTERISTIC,
+          "Multi-center study",
+          TriplestoreService.loadResource("sparql/covariateIsMultiCenterStudy.sparql")),
+  LENGTH_OF_FOLLOW_UP(CovariateOptionType.STUDY_CHARACTERISTIC,
+          "Duration of treatment (days)",
+          TriplestoreService.loadResource("sparql/covariateLengthOfFollowUp.sparql"));
 
   private CovariateOptionType type;
   private String label;

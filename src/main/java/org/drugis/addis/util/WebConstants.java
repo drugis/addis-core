@@ -125,10 +125,10 @@ public class WebConstants {
             .toUri();
   }
 
-  public static URI buildDatasetUri(String versionUuid) {
+  public static URI buildDatasetUri(String datasetUuid) {
     return UriComponentsBuilder.fromHttpUrl(getTriplestoreBaseUri())
             .path(DATASET_PATH)
-            .path(versionUuid)
+            .path(datasetUuid)
             .build()
             .toUri();
   }

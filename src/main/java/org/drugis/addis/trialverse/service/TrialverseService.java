@@ -12,5 +12,5 @@ import java.util.Set;
  */
 public interface TrialverseService {
 
-  List<ObjectNode> getTrialData(String namespaceUId, String version, URI semanticOutcomeUri, Set<URI> alternativeUris, Set<String> covariateKeys) throws ReadValueException;
+  List<ObjectNode> getTrialData(String namespaceUId, URI version, URI semanticOutcomeUri, Set<URI> alternativeUris, Set<String> covariateKeys) throws ReadValueException;
 }

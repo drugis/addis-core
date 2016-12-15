@@ -1,5 +1,5 @@
 'use strict';
-define(['lodash', 'angular'], function(_) {
+define(['lodash', 'angular'], function(_, angular) {
   var dependencies = ['$scope', '$q', '$state', '$stateParams', '$location', '$modal',
     'ProjectResource',
     'ProjectService',
@@ -352,6 +352,27 @@ define(['lodash', 'angular'], function(_) {
           },
           callback: function() {
             return reloadDefinitions;
+          }
+        }
+      });
+    };
+    $scope.openUpdateDialog = function() {
+      $modal.open({
+        templateUrl: './app/js/project/updateProject.html',
+        scope: $scope,
+        controller: 'UpdateProjectController',
+        resolve: {
+          callback: function() {
+            return function(newProjectId) {
+              ProjectResource.setArchived({
+                projectId: $scope.project.id
+              }, {
+                isArchived: true
+              });
+              $state.go('project', {
+                projectId: newProjectId
+              });
+            };
           }
         }
       });

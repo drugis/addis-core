@@ -13,16 +13,7 @@ import java.util.Set;
  */
 @Entity
 @PrimaryKeyJoinColumn(name = "combinationInterventionId", referencedColumnName = "id")
-public class CombinationIntervention extends AbstractIntervention {
-
-  @ElementCollection
-  @CollectionTable(
-          name="InterventionCombination",
-          joinColumns=@JoinColumn(name="combinationInterventionId")
-  )
-  @Column(name="singleInterventionId")
-  private Set<Integer> interventionIds = new HashSet<>();
-
+public class CombinationIntervention extends MultipleIntervention {
   public CombinationIntervention() {
     super();
   }
@@ -31,7 +22,9 @@ public class CombinationIntervention extends AbstractIntervention {
     super(id, project, name, motivation);
     this.interventionIds = interventionIds;
   }
-
+  public CombinationIntervention(Integer project, String name, String motivation, Set<Integer> interventionIds) {
+    this(null, project, name, motivation, interventionIds);
+  }
   public Set<Integer> getInterventionIds() {
     return Collections.unmodifiableSet(interventionIds);
   }

@@ -13,15 +13,7 @@ import java.util.Set;
  */
 @Entity
 @PrimaryKeyJoinColumn(name = "interventionSetId", referencedColumnName = "id")
-public class InterventionSet extends AbstractIntervention {
-  @ElementCollection
-  @CollectionTable(
-      name="InterventionSetItem",
-      joinColumns=@JoinColumn(name="interventionSetId")
-  )
-  @Column(name="interventionId")
-  private Set<Integer> interventionIds = new HashSet<>();
-
+public class InterventionSet extends MultipleIntervention {
   public InterventionSet() {
     super();
   }

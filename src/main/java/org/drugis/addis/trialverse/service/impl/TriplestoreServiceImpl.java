@@ -139,7 +139,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
   }
 
   @Override
-  public Namespace getNamespaceVersioned(TriplestoreUuidAndOwner datasetUri, String versionUri) {
+  public Namespace getNamespaceVersioned(TriplestoreUuidAndOwner datasetUri, URI versionUri) {
     ResponseEntity<String> response = queryTripleStoreVersion(datasetUri.getTriplestoreUuid(), NAMESPACE, versionUri);
     return buildNameSpace(datasetUri, response);
   }
@@ -154,14 +154,15 @@ public class TriplestoreServiceImpl implements TriplestoreService {
     JSONArray bindings = JsonPath.read(response.getBody(), "$.results.bindings");
     JSONObject binding = (JSONObject) bindings.get(0);
     String name = JsonPath.read(binding, "$.label.value");
-    String headVersion = getHeadVersion(WebConstants.buildDatasetUri(triplestoreUuidAndOwner.getTriplestoreUuid()));
+    URI headVersion = URI.create(getHeadVersion(WebConstants.buildDatasetUri(triplestoreUuidAndOwner.getTriplestoreUuid())));
     String description = binding.containsKey("comment") ? (String) JsonPath.read(binding, "$.comment.value") : "";
     Integer numberOfStudies = Integer.parseInt(JsonPath.read(binding, "$.numberOfStudies.value"));
-    String version = response.getHeaders().get(X_EVENT_SOURCE_VERSION).get(0);
+    URI version = URI.create(response.getHeaders().get(X_EVENT_SOURCE_VERSION).get(0));
     return new Namespace(triplestoreUuidAndOwner.getTriplestoreUuid(), triplestoreUuidAndOwner.getOwnerId(), name, description, numberOfStudies, version, headVersion);
   }
 
-  private String getHeadVersion(URI datasetUri) {
+  @Override
+  public String getHeadVersion(URI datasetUri) {
     HttpHeaders headers = new HttpHeaders();
     headers.set(WebConstants.ACCEPT_HEADER, "text/turtle,text/html");
     ResponseEntity<String> response = restTemplate.exchange(datasetUri, HttpMethod.GET, new HttpEntity<String>(headers), String.class);
@@ -176,18 +177,18 @@ public class TriplestoreServiceImpl implements TriplestoreService {
   }
 
   @Override
-  public List<SemanticVariable> getOutcomes(String namespaceUid, String versionUri) throws ReadValueException {
+  public List<SemanticVariable> getOutcomes(String namespaceUid, URI versionUri) throws ReadValueException {
     String query = StringUtils.replace(OUTCOME_QUERY, "$namespaceUid", namespaceUid);
     return getSemanticVariables(namespaceUid, versionUri, query, "outcome");
   }
 
   @Override
-  public List<SemanticVariable> getPopulationCharacteristics(String namespaceUid, String versionUri) throws ReadValueException {
+  public List<SemanticVariable> getPopulationCharacteristics(String namespaceUid, URI versionUri) throws ReadValueException {
     String query = StringUtils.replace(POPCHAR_QUERY, "$namespaceUid", namespaceUid);
     return getSemanticVariables(namespaceUid, versionUri, query, "populationCharacteristic");
   }
 
-  private List<SemanticVariable> getSemanticVariables(String namespaceUid, String versionUri, String query, String variableType) throws ReadValueException {
+  private List<SemanticVariable> getSemanticVariables(String namespaceUid, URI versionUri, String query, String variableType) throws ReadValueException {
     List<SemanticVariable> outcomes = new ArrayList<>();
     ResponseEntity<String> response = queryTripleStoreVersion(namespaceUid, query, versionUri);
     JSONArray bindings = JsonPath.read(response.getBody(), "$.results.bindings");
@@ -201,7 +202,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
   }
 
   @Override
-  public List<SemanticInterventionUriAndName> getInterventions(String namespaceUid, String version) {
+  public List<SemanticInterventionUriAndName> getInterventions(String namespaceUid, URI version) {
     List<SemanticInterventionUriAndName> interventions = new ArrayList<>();
     String query = StringUtils.replace(INTERVENTION_QUERY, "$namespaceUid", namespaceUid);
     ResponseEntity<String> response = queryTripleStoreVersion(namespaceUid, query, version);
@@ -216,7 +217,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
   }
 
   @Override
-  public List<Study> queryStudies(String namespaceUid, String version) {
+  public List<Study> queryStudies(String namespaceUid, URI version) {
     String query = StringUtils.replace(STUDY_QUERY, "$namespaceUid", namespaceUid);
     ResponseEntity<String> response = queryTripleStoreVersion(namespaceUid, query, version);
     JSONArray bindings = JsonPath.read(response.getBody(), "$.results.bindings");
@@ -532,24 +533,24 @@ public class TriplestoreServiceImpl implements TriplestoreService {
   }
 
   @Override
-  public List<TrialDataStudy> getNetworkData(String namespaceUid, String version, URI outcomeUri,
+  public List<TrialDataStudy> getNetworkData(String namespaceUid, URI version, URI outcomeUri,
                                              Set<URI> interventionUris, Set<String> covariateKeys) throws ReadValueException {
     return getTrialData(namespaceUid, version, "?graph", Collections.singleton(outcomeUri), interventionUris, covariateKeys);
   }
 
   @Override
-  public List<TrialDataStudy> getSingleStudyData(String namespaceUid, URI studyUri, String version, Set<URI> outcomeUris, Set<URI> interventionUris) throws ReadValueException {
+  public List<TrialDataStudy> getSingleStudyData(String namespaceUid, URI studyUri, URI version, Set<URI> outcomeUris, Set<URI> interventionUris) throws ReadValueException {
     String graphSelector = studyUri == null ? null : "<" + studyUri.toString() + ">";
     return getTrialData(namespaceUid, version, graphSelector, outcomeUris, interventionUris, Collections.emptySet());
   }
 
   @Override
-  public List<TrialDataStudy> getAllTrialData(String namespaceUid, String datasetVersion, Set<URI> outcomeUris,
+  public List<TrialDataStudy> getAllTrialData(String namespaceUid, URI datasetVersion, Set<URI> outcomeUris,
                                               Set<URI> interventionUris) throws ReadValueException {
     return getTrialData(namespaceUid, datasetVersion, "?graph", outcomeUris, interventionUris, Collections.emptySet());
   }
 
-  private List<TrialDataStudy> getTrialData(String namespaceUid, String version, String graphSelector, Set<URI> outcomeUris,
+  private List<TrialDataStudy> getTrialData(String namespaceUid, URI version, String graphSelector, Set<URI> outcomeUris,
                                             Set<URI> interventionUris, Set<String> covariateKeys) throws ReadValueException {
     if (interventionUris.isEmpty() || outcomeUris.isEmpty() || graphSelector == null) {
       return Collections.emptyList();
@@ -635,7 +636,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
   }
 
   @Override
-  public List<CovariateStudyValue> getStudyLevelCovariateValues(String namespaceUid, String version,
+  public List<CovariateStudyValue> getStudyLevelCovariateValues(String namespaceUid, URI version,
                                                                 List<CovariateOption> covariates) throws ReadValueException {
     List<CovariateStudyValue> covariateStudyValues = new ArrayList<>();
     for (CovariateOption covariate : covariates) {
@@ -687,7 +688,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
     return restTemplate.exchange(uriComponents.toUri(), HttpMethod.GET, acceptSparqlResultsRequest, String.class);
   }
 
-  private ResponseEntity<String> queryTripleStoreVersion(String namespaceUid, String query, String versionUri) {
+  private ResponseEntity<String> queryTripleStoreVersion(String namespaceUid, String query, URI versionUri) {
     logger.debug("Triplestore uri = " + WebConstants.getTriplestoreBaseUri());
     logger.debug("namespaceUid = " + namespaceUid);
     logger.debug("versionUri = " + versionUri);
@@ -701,7 +702,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
 
     HttpHeaders headers = new HttpHeaders();
 
-    headers.put(X_ACCEPT_EVENT_SOURCE_VERSION, Collections.singletonList(versionUri));
+    headers.put(X_ACCEPT_EVENT_SOURCE_VERSION, Collections.singletonList(versionUri.toString()));
     headers.put(ACCEPT_HEADER, Collections.singletonList(APPLICATION_SPARQL_RESULTS_JSON));
 
     return restTemplate.exchange(uriComponents.toUri(), HttpMethod.GET, new HttpEntity<>(headers), String.class);

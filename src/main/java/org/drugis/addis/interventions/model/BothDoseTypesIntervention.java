@@ -50,15 +50,14 @@ public class BothDoseTypesIntervention extends SingleIntervention {
     return new BothDoseTypesInterventionViewAdapter(this);
   }
 
-  public BothDoseTypesIntervention(DoseConstraint minConstraint, DoseConstraint maxConstraint) {
-    this.minConstraint = minConstraint;
-    this.maxConstraint = maxConstraint;
-  }
-
   public BothDoseTypesIntervention(Integer id, Integer project, String name, String motivation, URI semanticInterventionUri, String semanticInterventionLabel, DoseConstraint minConstraint, DoseConstraint maxConstraint) {
     super(id, project, name, motivation, semanticInterventionUri, semanticInterventionLabel);
     this.minConstraint = minConstraint;
     this.maxConstraint = maxConstraint;
+  }
+
+  public BothDoseTypesIntervention(Integer project, String name, String motivation, URI semanticInterventionUri, String semanticInterventionLabel, DoseConstraint minConstraint, DoseConstraint maxConstraint) {
+    this(null, project, name, motivation, semanticInterventionUri, semanticInterventionLabel, minConstraint, maxConstraint);
   }
 
   public DoseConstraint getMinConstraint() {

@@ -27,6 +27,9 @@ public abstract class AbstractIntervention {
     this.name = name;
     this.motivation = motivation;
   }
+  public AbstractIntervention(Integer project, String name, String motivation) {
+    this(null, project, name, motivation);
+  }
 
   public void setName(String name) {
     this.name = name;

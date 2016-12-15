@@ -23,4 +23,6 @@ public interface ProjectService {
   List<TrialDataStudy> queryMatchedStudies(Integer projectId) throws ResourceDoesNotExistException, ReadValueException, URISyntaxException;
 
   Project updateProject(Integer projectId, String name, String description) throws UpdateProjectException, ResourceDoesNotExistException;
+
+  Integer copy(Account user, Integer projectId) throws ResourceDoesNotExistException, ReadValueException;
 }

@@ -221,7 +221,7 @@ public class AnalysisServiceImpl implements AnalysisService {
     List<TrialDataStudy> trialData = Collections.emptyList();
 
     String namespaceUid = mappingService.getVersionedUuid(project.getNamespaceUid());
-    String datasetVersion = project.getDatasetVersion();
+    URI datasetVersion = project.getDatasetVersion();
     if (analysis instanceof NetworkMetaAnalysis) {
       NetworkMetaAnalysis networkMetaAnalysis = (NetworkMetaAnalysis) analysis;
       if (networkMetaAnalysis.getOutcome() == null) {

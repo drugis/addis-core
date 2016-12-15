@@ -6,6 +6,9 @@ define(['angular-resource'], function () {
       setArchived : {
         url: '/projects/:projectId/setArchivedStatus',
         method: 'POST'
+      }, copy : {
+        url: '/projects/:projectId/copy',
+        method: 'POST'
       }
     });
   };

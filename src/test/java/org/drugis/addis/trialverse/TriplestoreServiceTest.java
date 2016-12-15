@@ -50,6 +50,8 @@ import static org.mockito.Mockito.when;
 
 public class TriplestoreServiceTest {
 
+  private final URI version = URI.create("http://versions.com/version");
+
   @Mock
   private RestTemplate restTemplate;
 
@@ -110,7 +112,7 @@ public class TriplestoreServiceTest {
   public void testGetOutcomes() throws ReadValueException {
     String mockResult = TestUtils.loadResource(this.getClass(), "/triplestoreService/exampleOutcomeResult.json");
     createMockTrialverseService(mockResult);
-    List<SemanticVariable> result = triplestoreService.getOutcomes("abc", "version");
+    List<SemanticVariable> result = triplestoreService.getOutcomes("abc", version);
     SemanticVariable result1 = new SemanticVariable(URI.create("http://trials.drugis.org/namespace/1/endpoint/fdszgs-adsfd-1"), "DBP 24-hour mean");
     assertEquals(result.get(0), result1);
   }
@@ -119,7 +121,7 @@ public class TriplestoreServiceTest {
   public void testGetPopulationCharacteristics() throws ReadValueException {
     String mockResult = TestUtils.loadResource(this.getClass(), "/triplestoreService/exampleOutcomeResult.json");
     createMockTrialverseService(mockResult);
-    List<SemanticVariable> result = triplestoreService.getOutcomes("abc", "version");
+    List<SemanticVariable> result = triplestoreService.getOutcomes("abc", version);
     SemanticVariable result1 = new SemanticVariable(URI.create("http://trials.drugis.org/namespace/1/endpoint/fdszgs-adsfd-1"), "DBP 24-hour mean");
     assertEquals(result.get(0), result1);
   }
@@ -129,7 +131,7 @@ public class TriplestoreServiceTest {
     String mockResult = TestUtils.loadResource(this.getClass(), "/triplestoreService/exampleInterventionResult.json");
     createMockTrialverseService(mockResult);
 
-    List<SemanticInterventionUriAndName> result = triplestoreService.getInterventions("abc", "version");
+    List<SemanticInterventionUriAndName> result = triplestoreService.getInterventions("abc", version);
     SemanticInterventionUriAndName intervention = result.get(0);
     SemanticInterventionUriAndName expectedSemanticInterventionUriAndName = new SemanticInterventionUriAndName(URI.create("fdhdfgh-saddsgfsdf-123-a"), "Azilsartan");
     assertEquals(expectedSemanticInterventionUriAndName, intervention);
@@ -142,7 +144,7 @@ public class TriplestoreServiceTest {
     String mockResult = TestUtils.loadResource(this.getClass(), "/triplestoreService/exampleGetStudyDetailsResult.json");
     createMockTrialverseService(mockResult);
 
-    StudyWithDetails studyWithDetails = triplestoreService.getStudydetails(namespaceUid, "version");
+    StudyWithDetails studyWithDetails = triplestoreService.getStudydetails(namespaceUid, "studyUid");
 
     assertNotNull(studyWithDetails.getStudyUid());
     assertNotNull(studyWithDetails.getName());
@@ -156,7 +158,7 @@ public class TriplestoreServiceTest {
     String mockResult = TestUtils.loadResource(this.getClass(), "/triplestoreService/exampleStudyGroupsResult.json");
     createMockTrialverseService(mockResult);
 
-    JSONArray arms = triplestoreService.getStudyGroups(namespaceUid, "version");
+    JSONArray arms = triplestoreService.getStudyGroups(namespaceUid, "studyUid");
 
     assertEquals(4, arms.size());
     JSONObject jsonObject = (JSONObject) arms.get(0);
@@ -178,7 +180,7 @@ public class TriplestoreServiceTest {
     String mockResult = TestUtils.loadResource(this.getClass(), "/triplestoreService/exampleStudyTreatmentActivitiesResult.json");
     createMockTrialverseService(mockResult);
 
-    List<TreatmentActivity> treatmentActivities = triplestoreService.getStudyTreatmentActivities(namespaceUid, "version");
+    List<TreatmentActivity> treatmentActivities = triplestoreService.getStudyTreatmentActivities(namespaceUid, "studyUid");
     assertEquals(4, treatmentActivities.size());
   }
 
@@ -214,14 +216,14 @@ public class TriplestoreServiceTest {
     String mockResult = TestUtils.loadResource(this.getClass(), "/triplestoreService/exampleQueryStudiesResult.json");
     createMockTrialverseService(mockResult);
 
-    List<Study> result = triplestoreService.queryStudies(namespaceUid, "version");
+    List<Study> result = triplestoreService.queryStudies(namespaceUid, version);
     assertEquals(5, result.size()); // epar example
     assertEquals(3, result.get(0).getTreatmentArms().size());
 
-    for(Study study : result) {
-      if(study.getTitle().equals("TAK491-301 / NCT00846365")){
-        for(StudyTreatmentArm arm : study.getTreatmentArms()) {
-          if(arm.getArmUid().equals("http://trials.drugis.org/instances/5b9bb252-59d3-4936-a005-7ee443878c43")) {
+    for (Study study : result) {
+      if (study.getTitle().equals("TAK491-301 / NCT00846365")) {
+        for (StudyTreatmentArm arm : study.getTreatmentArms()) {
+          if (arm.getArmUid().equals("http://trials.drugis.org/instances/5b9bb252-59d3-4936-a005-7ee443878c43")) {
             // this one should have a multi drug arm
             arm.getInterventionUids().size();
           }
@@ -233,7 +235,6 @@ public class TriplestoreServiceTest {
   @Test
   public void getCovariateTestData() throws ReadValueException {
     String namespaceUid = "namespaceUid";
-    String version = "version";
     String mockResult = TestUtils.loadResource(this.getClass(), "/triplestoreService/covariateDataExample.json");
     createMockTrialverseService(mockResult);
 
