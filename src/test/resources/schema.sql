@@ -642,3 +642,23 @@ ALTER TABLE project ADD COLUMN isArchived boolean NOT NULL DEFAULT FALSE ;
 ALTER TABLE project ADD COLUMN archived_on date;
 --rollback ALTER TABLE project DROP COLUMN archived_on;
 --rollback ALTER TABLE project DROP COLUMN isArchived;
+
+--changeset keijserj:66
+CREATE TABLE MultipleIntervention(
+   multipleInterventionId INT NOT NULL,
+   PRIMARY KEY(multipleInterventionId),
+   FOREIGN KEY(multipleInterventionId) REFERENCES AbstractIntervention(id)
+);
+CREATE TABLE MultipleInterventionItem (
+   multipleInterventionId INT NOT NULL,
+   interventionId INT NOT NULL,
+   PRIMARY KEY(multipleInterventionId, interventionId),
+   FOREIGN KEY(multipleInterventionId) REFERENCES MultipleIntervention(multipleInterventionId),
+   FOREIGN KEY(interventionId) REFERENCES AbstractIntervention(id)
+);
+INSERT INTO MultipleIntervention(multipleInterventionId) SELECT interventionSetId from InterventionSet;
+INSERT INTO MultipleInterventionItem(multipleInterventionId, interventionId) SELECT interventionSetId, interventionId from InterventionSetItem;
+INSERT INTO MultipleIntervention(multipleInterventionId) SELECT combinationInterventionId from CombinationIntervention;
+INSERT INTO MultipleInterventionItem(multipleInterventionId, interventionId) SELECT combinationInterventionId, singleInterventionId from InterventionCombination;
+DROP TABLE InterventionSetItem;
+DROP TABLE InterventionCombination;
