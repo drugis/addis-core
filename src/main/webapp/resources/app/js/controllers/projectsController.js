@@ -11,8 +11,9 @@ define(['angular', 'lodash'], function(angular, _) {
     };
 
     $scope.archiveProject = function(project) {
-      var params = angular.copy($stateParams);
-      params.projectId = project.id;
+      var params = {
+        projectId : project.id
+      };
       ProjectResource.setArchived(
         params, {
           isArchived: true
@@ -21,8 +22,9 @@ define(['angular', 'lodash'], function(angular, _) {
     };
 
     $scope.unarchiveProject = function(project) {
-      var params = angular.copy($stateParams);
-      params.projectId = project.id;
+      var params = {
+        projectId : project.id
+      };
       ProjectResource.setArchived(
         params, {
           isArchived: false
@@ -39,10 +41,13 @@ define(['angular', 'lodash'], function(angular, _) {
       $scope.projects = ProjectResource.query();
       $scope.projects.$promise.then(function() {
         $scope.loadedProjects = true;
-        $scope.projects = _.sortBy($scope.projects, ['id']);
+        $scope.projects = _.sortBy($scope.projects, ['archived','id']);
         $scope.numberOfProjectsArchived = _.reduce($scope.projects, function(accum, project) {
           return project.archived ? ++accum : accum;
         }, 0);
+        if($scope.numberOfProjectsArchived === 0) {
+          $scope.showArchived = false;
+        }
       });
       $scope.editMode.allowEditing = UserService.isLoginUserId($scope.userId);
     }

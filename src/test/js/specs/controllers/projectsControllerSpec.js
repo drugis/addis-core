@@ -2,12 +2,13 @@
 define(['angular', 'angular-mocks', 'controllers'],
   function() {
     describe('The projectsController', function() {
-      var scope, ctrl, projectResource, projectsDefer;
+      var scope,
+        projectResourceMock = jasmine.createSpyObj('ProjectResource', ['query', 'save', 'setArchived']),
+        userServiceMock = jasmine.createSpyObj('UserService', ['isLoginUserId']),
+        projectsDefer;
       beforeEach(module('addis.controllers'));
 
       beforeEach(inject(function($rootScope, $controller, $q) {
-        projectResource = jasmine.createSpyObj('projectResource', ['query', 'save']);
-
         projectsDefer = $q.defer();
         var projects = [{
           project: 'projectg1'
@@ -15,7 +16,14 @@ define(['angular', 'angular-mocks', 'controllers'],
           project: 'project2'
         }];
         projects.$promise = projectsDefer.promise;
-        projectResource.query.and.returnValue(projects);
+        projectResourceMock.query.and.returnValue(projects);
+
+        var setArchivedDefer = $q.defer();
+        var setArchivedReturnValue = {
+          $promise: setArchivedDefer.promise
+        };
+        setArchivedDefer.resolve();
+        projectResourceMock.setArchived.and.returnValue(setArchivedReturnValue);
 
         scope = $rootScope;
 
@@ -23,10 +31,11 @@ define(['angular', 'angular-mocks', 'controllers'],
           userUid: 1
         };
 
-        ctrl = $controller('ProjectsController', {
+        $controller('ProjectsController', {
           $scope: scope,
           $stateParams: stateParams,
-          'ProjectResource': projectResource
+          'ProjectResource': projectResourceMock,
+          'UserService': userServiceMock
         });
       }));
 
@@ -35,6 +44,26 @@ define(['angular', 'angular-mocks', 'controllers'],
         scope.$digest();
         expect(scope.projects.length).toBe(2);
       });
+      it('should make an archiveProject function available on the scope that sets a project to archived', function() {
+        scope.archiveProject({
+          id: 1
+        });
+        expect(projectResourceMock.setArchived).toHaveBeenCalledWith({
+          projectId: 1
+        }, {
+          isArchived: true
+        });
+      });
 
+      it('should make an unarchiveProject function available on the scope that sets a project to not archived', function() {
+        scope.unarchiveProject({
+          id: 1
+        });
+        expect(projectResourceMock.setArchived).toHaveBeenCalledWith({
+          projectId: 1
+        }, {
+          isArchived: false
+        });
+      });
     });
   });

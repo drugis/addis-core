@@ -23,11 +23,11 @@
           </div>
           <div class="columns large-6">
             <button ng-if="!project.archived && editMode.allowEditing" ng-click="archiveProject(project)" type="button"
-              class="tiny right info radius ng-scope" style="margin-bottom:0;">archive</button>
+              class="tiny right info radius" style="margin-bottom:0;">archive</button>
           </div>
           <div class="columns large-6">
             <button ng-if="project.archived && editMode.allowEditing" ng-click="unarchiveProject(project)" type="button"
-              class="tiny right info radius ng-scope" style="margin-bottom:0;">unarchive</button>
+              class="tiny right alert radius" style="margin-bottom:0;">unarchive</button>
           </div>
         </div>
 
