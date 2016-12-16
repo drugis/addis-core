@@ -5,7 +5,6 @@ import org.drugis.addis.interventions.controller.viewAdapter.InterventionSetView
 
 import javax.persistence.*;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -19,35 +18,15 @@ public class InterventionSet extends MultipleIntervention {
   }
 
   public InterventionSet(Integer id, Integer project, String name, String motivation, Set<Integer> interventionIds) {
-    super(id, project, name, motivation);
-    this.interventionIds = interventionIds;
+    super(id, project, name, motivation, interventionIds);
   }
 
-  public Set<Integer> getInterventionIds() {
-    return Collections.unmodifiableSet(this.interventionIds);
+  public InterventionSet(Integer id, String name, String motivation, Set<Integer> interventionIds) {
+    this(null, id, name, motivation, interventionIds);
   }
 
   @Override
   public AbstractInterventionViewAdapter toViewAdapter() {
     return new InterventionSetViewAdapter(this);
-  }
-
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
-    if (!super.equals(o)) return false;
-
-    InterventionSet that = (InterventionSet) o;
-
-    return interventionIds.equals(that.interventionIds);
-
-  }
-
-  @Override
-  public int hashCode() {
-    int result = super.hashCode();
-    result = 31 * result + interventionIds.hashCode();
-    return result;
   }
 }

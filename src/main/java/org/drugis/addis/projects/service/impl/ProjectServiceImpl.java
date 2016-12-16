@@ -1,5 +1,6 @@
 package org.drugis.addis.projects.service.impl;
 
+import com.sun.org.apache.xpath.internal.operations.Mult;
 import org.drugis.addis.covariates.Covariate;
 import org.drugis.addis.covariates.CovariateRepository;
 import org.drugis.addis.exception.MethodNotAllowedException;
@@ -81,15 +82,15 @@ public class ProjectServiceImpl implements ProjectService {
     Project project = projectRepository.get(projectId);
     Set<AbstractIntervention> interventions = interventionRepository.query(projectId);
     Set<URI> singleInterventionUris = interventions.stream()
-            .filter(ai -> ai instanceof SingleIntervention)
-            .map(ai -> (SingleIntervention) ai)
-            .map(SingleIntervention::getSemanticInterventionUri)
-            .collect(Collectors.toSet());
+        .filter(ai -> ai instanceof SingleIntervention)
+        .map(ai -> (SingleIntervention) ai)
+        .map(SingleIntervention::getSemanticInterventionUri)
+        .collect(Collectors.toSet());
 
     Set<URI> outcomeUris = outcomeRepository.query(projectId)
-            .stream()
-            .map(Outcome::getSemanticOutcomeUri)
-            .collect(Collectors.toSet());
+        .stream()
+        .map(Outcome::getSemanticOutcomeUri)
+        .collect(Collectors.toSet());
     List<TrialDataStudy> studies = triplestoreService.getAllTrialData(mappingService.getVersionedUuid(project.getNamespaceUid()), project.getDatasetVersion(), outcomeUris, singleInterventionUris);
     studies = triplestoreService.addMatchingInformation(interventions, studies);
     return studies;
@@ -117,64 +118,75 @@ public class ProjectServiceImpl implements ProjectService {
     List<SemanticVariable> semanticOutcomes = triplestoreService.getOutcomes(sourceProject.getNamespaceUid(), headVersion);
 
     sourceOutcomes.stream()
-            .filter(sourceOutcome ->
-                    semanticOutcomes.stream().anyMatch(semanticOutcome -> semanticOutcome.getUri().equals(sourceOutcome.getSemanticOutcomeUri())))
-            .forEach(outcome -> {
-              SemanticVariable semanticVariable = new SemanticVariable(outcome.getSemanticOutcomeUri(), outcome.getSemanticOutcomeLabel());
-              try {
-                new Outcome(newProject.getId(), outcome.getName(), outcome.getDirection(), outcome.getMotivation(), semanticVariable);
-              } catch (Exception e) {
-                e.printStackTrace();
-              }
-            });
+        .filter(sourceOutcome ->
+            semanticOutcomes.stream().anyMatch(semanticOutcome -> semanticOutcome.getUri().equals(sourceOutcome.getSemanticOutcomeUri())))
+        .forEach(outcome -> {
+          SemanticVariable semanticVariable = new SemanticVariable(outcome.getSemanticOutcomeUri(), outcome.getSemanticOutcomeLabel());
+          try {
+            new Outcome(newProject.getId(), outcome.getName(), outcome.getDirection(), outcome.getMotivation(), semanticVariable);
+          } catch (Exception e) {
+            e.printStackTrace();
+          }
+        });
 
     //Covariates
     Collection<Covariate> sourceCovariates = covariateRepository.findByProject(sourceProjectId);
     List<SemanticVariable> semanticCovariates = triplestoreService.getPopulationCharacteristics(sourceProject.getNamespaceUid(), headVersion);
 
     sourceCovariates.stream()
-            .filter(sourceCovariate -> sourceCovariate.getType().equals(CovariateOptionType.STUDY_CHARACTERISTIC) ||
-                    semanticCovariates.stream().anyMatch(semanticCovariate -> semanticCovariate.getUri().toString().equals(sourceCovariate.getDefinitionKey())))
-            .forEach(covariate -> new Covariate(newProject.getId(), covariate.getName(), covariate.getMotivation(), covariate.getDefinitionKey(), covariate.getType()));
+        .filter(sourceCovariate -> sourceCovariate.getType().equals(CovariateOptionType.STUDY_CHARACTERISTIC) ||
+            semanticCovariates.stream().anyMatch(semanticCovariate -> semanticCovariate.getUri().toString().equals(sourceCovariate.getDefinitionKey())))
+        .forEach(covariate -> new Covariate(newProject.getId(), covariate.getName(), covariate.getMotivation(), covariate.getDefinitionKey(), covariate.getType()));
 
     //Interventions
     Set<AbstractIntervention> sourceInterventions = interventionRepository.query(sourceProjectId);
     List<SemanticInterventionUriAndName> semanticInterventions = triplestoreService.getInterventions(sourceProject.getNamespaceUid(), headVersion);
 
-    Map<Integer, Integer> ii;
+    Map<Integer, Integer> oldIdToNewId = new HashMap<>();
 
-    List<SingleIntervention> newSingleInterventions = sourceInterventions.stream()
-            .filter(intervention -> intervention instanceof SingleIntervention)
-            .map(intervention -> (SingleIntervention) intervention)
-            .filter(sourceIntervention -> semanticInterventions.stream().anyMatch(semanticIntervention -> semanticIntervention.getUri().equals(sourceIntervention.getSemanticInterventionUri())))
-            .map(intervention -> {
-              try {
-                SingleIntervention newIntervention = buildSingleIntervention(newProject.getId(), intervention);
-                return newIntervention;
-              } catch (InvalidConstraintException e) {
-                e.printStackTrace();
-              }
-              return null;
-            }).collect(Collectors.toList());
     sourceInterventions.stream()
-            .filter(intervention -> !(intervention instanceof SingleIntervention))
-            .forEach(intervention -> {
-              if (intervention instanceof CombinationIntervention) {
-                CombinationIntervention cast = (CombinationIntervention) intervention;
-                if (!cast.getInterventionIds().stream().anyMatch(id -> ii.get(id) == null)) {
-                  new CombinationIntervention(newProject.getId(), cast.getName(), cast.getMotivation(), cast.getInterventionIds());
-                }
-              } else if(intervention instanceof InterventionSet) {
-
-              }
-            });
+        .filter(intervention -> intervention instanceof SingleIntervention)
+        .map(intervention -> (SingleIntervention) intervention)
+        .filter(sourceIntervention -> semanticInterventions.stream().anyMatch(semanticIntervention -> semanticIntervention.getUri().equals(sourceIntervention.getSemanticInterventionUri())))
+        .forEach(intervention -> {
+          try {
+            SingleIntervention newIntervention = buildSingleIntervention(newProject.getId(), intervention);
+            oldIdToNewId.put(intervention.getId(), newIntervention.getId());
+            return newIntervention;
+          } catch (InvalidConstraintException e) {
+            e.printStackTrace();
+          }
+          return null;
+        });
+    sourceInterventions.stream()
+        .filter(intervention -> (intervention instanceof MultipleIntervention))
+        .map(intervention -> (MultipleIntervention) intervention)
+        .forEach(intervention -> {
+          createMultipleIntervention(newProject.getId(), intervention, oldIdToNewId);
+        });
     return newProject.getId();
   }
 
+  private void createMultipleIntervention(Integer newProjectId, MultipleIntervention intervention, Map<Integer, Integer> oldIdToNewId) {
+    if (intervention.getInterventionIds().stream().anyMatch(id -> oldIdToNewId.get(id) == null)) {
+      return;
+    }
+    Set<Integer> updatedInterventionIds = intervention.getInterventionIds().stream()
+        .map(oldIdToNewId::get)
+        .collect(Collectors.toSet());
+    if (intervention instanceof CombinationIntervention) {
+      new CombinationIntervention(newProjectId, intervention.getName(), intervention.getMotivation(),
+          updatedInterventionIds);
+    } else if (intervention instanceof InterventionSet) {
+      new InterventionSet(newProjectId, intervention.getName(), intervention.getMotivation(),
+          updatedInterventionIds);
+    }
+  }
+
   private SingleIntervention buildSingleIntervention(Integer newProjectId, SingleIntervention intervention) throws InvalidConstraintException {
-    if(intervention instanceof SimpleIntervention) {
+    if (intervention instanceof SimpleIntervention) {
       SemanticInterventionUriAndName semanticInterventionUriAndName = new SemanticInterventionUriAndName(intervention.getSemanticInterventionUri(), intervention.getSemanticInterventionLabel());
-      return new SimpleIntervention(newProjectId, intervention.getName(), intervention.getMotivation(), semanticInterventionUriAndName)
+      return new SimpleIntervention(newProjectId, intervention.getName(), intervention.getMotivation(), semanticInterventionUriAndName);
     } else if (intervention instanceof FixedDoseIntervention) {
       FixedDoseIntervention cast = (FixedDoseIntervention) intervention;
       return new FixedDoseIntervention(newProjectId, cast.getName(), cast.getMotivation(), cast.getSemanticInterventionUri(), cast.getSemanticInterventionLabel(), cast.getConstraint());

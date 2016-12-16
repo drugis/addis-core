@@ -4,6 +4,7 @@ import javax.persistence.CollectionTable;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.JoinColumn;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -19,8 +20,16 @@ public abstract class MultipleIntervention extends AbstractIntervention {
   @Column(name="interventionId")
   private Set<Integer> interventionIds = new HashSet<>();
 
+  public MultipleIntervention() {
+  }
+
+  public MultipleIntervention(Integer id, Integer project, String name, String motivation, Set<Integer> interventionIds) {
+    super(id, project, name, motivation);
+    this.interventionIds = interventionIds;
+  }
+
   public Set<Integer> getInterventionIds() {
-    return interventionIds;
+    return Collections.unmodifiableSet(interventionIds);
   }
 
   @Override
