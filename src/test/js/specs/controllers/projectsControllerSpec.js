@@ -11,9 +11,15 @@ define(['angular', 'angular-mocks', 'controllers'],
       beforeEach(inject(function($rootScope, $controller, $q) {
         projectsDefer = $q.defer();
         var projects = [{
-          project: 'projectg1'
+          id: 1,
+          owner: {
+            id: 1
+          }
         }, {
-          project: 'project2'
+          id: 2,
+          owner: {
+            id: 1
+          }
         }];
         projects.$promise = projectsDefer.promise;
         projectResourceMock.query.and.returnValue(projects);
