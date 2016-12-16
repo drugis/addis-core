@@ -278,12 +278,6 @@ define(
             controller: 'EditReportController',
             parent: 'project'
           })
-          .state('namespace-study', {
-            url: '/study/:studyUid',
-            templateUrl: baseTemplatePath + 'studyReadOnly.html',
-            controller: 'StudyReadOnlyController',
-            parent: 'project'
-          })
           .state('singleStudyBenefitRisk', {
             url: '/users/:userUid/projects/:projectId/ssbr/:analysisId',
             resolve: {
