@@ -662,3 +662,6 @@ INSERT INTO MultipleIntervention(multipleInterventionId) SELECT combinationInter
 INSERT INTO MultipleInterventionItem(multipleInterventionId, interventionId) SELECT combinationInterventionId, singleInterventionId from InterventionCombination;
 DROP TABLE InterventionSetItem;
 DROP TABLE InterventionCombination;
+--rollback CREATE TABLE InterventionSet (interventionSetId INT NOT NULL, PRIMARY KEY(interventionSetId), FOREIGN KEY(interventionSetId) REFERENCES AbstractIntervention(id));
+--rollback CREATE TABLE InterventionSetItem (interventionSetId INT NOT NULL, interventionId INT NOT NULL, PRIMARY KEY(interventionSetId, interventionId), FOREIGN KEY(interventionSetId) REFERENCES InterventionSet(interventionSetId), FOREIGN KEY(interventionId) REFERENCES AbstractIntervention(id));
+--rollback

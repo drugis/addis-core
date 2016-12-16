@@ -19,36 +19,22 @@
       <div>
         <h5>Source dataset:
           <a ui-sref="versionedDataset({userUid: trialverse.ownerId, datasetUUID: project.namespaceUid, versionUuid: project.datasetVersion.split('/versions/')[1]})">{{::trialverse.name}}</a>
+          <span tooltip-html-unsafe="<em>{{currentRevision.versionDate | date:'medium'}}</em>
+        <div>
+          {{currentRevision.versionTitle}}
+        </div>
+        <div>
+          Created by {{!currentRevision.applicationName ? '' : currentRevision.applicationName + ' on behalf of '}} {{currentRevision.creator}}
+        </div>" ng-if="trialverse.headVersion !== trialverse.version">(<i class="fa fa-exclamation-triangle"></i> A newer version of this dataset exists)</span>
+          <span ng-if="trialverse.headVersion === trialverse.version" tooltip-html-unsafe="<em>{{currentRevision.versionDate | date:'medium'}}</em>
+        <div>
+          {{currentRevision.versionTitle}}
+        </div>
+        <div>
+          Created by {{!currentRevision.applicationName ? '' : currentRevision.applicationName + ' on behalf of '}} {{currentRevision.creator}}
+        </div>">(<i class="fa fa-check"></i> Based on the latest dataset version)</span>
         </h5>
-      </div>
-      <div ng-show="project.description">
-        <p class="subheader" title="Project description">{{project.description}}</p>
-      </div>
-    </div>
-    <div class="columns large-6 medium-6" style="margin-top:10px">
-      <div class="row">
-        <div class="columns small-12">
-          <span class="right" tooltip-html-unsafe="<em>{{currentRevision.versionDate | date:'medium'}}</em>
-          <div>
-            {{currentRevision.versionTitle}}
-          </div>
-          <div>
-            Created by {{!currentRevision.applicationName ? '' : currentRevision.applicationName + ' on behalf of '}} {{currentRevision.creator}}
-          </div>" ng-if="trialverse.headVersion !== trialverse.version"><i class="fa fa-exclamation-triangle"></i> This is
-            <em>not</em> the latest version</span>
-          <span class="right" ng-if="trialverse.headVersion === trialverse.version" tooltip-html-unsafe="<em>{{currentRevision.versionDate | date:'medium'}}</em>
-            <div>
-              {{currentRevision.versionTitle}}
-            </div>
-            <div>
-              Created by {{!currentRevision.applicationName ? '' : currentRevision.applicationName + ' on behalf of '}} {{currentRevision.creator}}
-            </div>"><i class="fa fa-check"></i> This is the current version</span>
-        </div>
-      </div>
-      <div class="row">
-        <div class="columns small-12">
-          <button ng-if="trialverse.headVersion !== trialverse.version" ng-click="openUpdateDialog()" class="small right success">Update project</button>
-        </div>
+        <button ng-if="trialverse.headVersion !== trialverse.version" ng-click="openUpdateDialog()" class="small success radius">Update</button>
       </div>
     </div>
   </div>

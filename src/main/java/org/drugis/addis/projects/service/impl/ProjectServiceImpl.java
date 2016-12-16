@@ -1,6 +1,5 @@
 package org.drugis.addis.projects.service.impl;
 
-import com.sun.org.apache.xpath.internal.operations.Mult;
 import org.drugis.addis.covariates.Covariate;
 import org.drugis.addis.covariates.CovariateRepository;
 import org.drugis.addis.exception.MethodNotAllowedException;
@@ -39,24 +38,31 @@ import java.util.stream.Collectors;
 public class ProjectServiceImpl implements ProjectService {
 
   @Inject
+  private
   AccountRepository accountRepository;
 
   @Inject
+  private
   ProjectRepository projectRepository;
 
   @Inject
+  private
   TriplestoreService triplestoreService;
 
   @Inject
+  private
   OutcomeRepository outcomeRepository;
 
   @Inject
+  private
   InterventionRepository interventionRepository;
 
   @Inject
+  private
   MappingService mappingService;
 
   @Inject
+  private
   CovariateRepository covariateRepository;
 
   @Override
@@ -151,36 +157,34 @@ public class ProjectServiceImpl implements ProjectService {
         .forEach(intervention -> {
           try {
             SingleIntervention newIntervention = buildSingleIntervention(newProject.getId(), intervention);
+            assert newIntervention != null;
             oldIdToNewId.put(intervention.getId(), newIntervention.getId());
-            return newIntervention;
           } catch (InvalidConstraintException e) {
             e.printStackTrace();
           }
-          return null;
         });
     sourceInterventions.stream()
         .filter(intervention -> (intervention instanceof MultipleIntervention))
         .map(intervention -> (MultipleIntervention) intervention)
-        .forEach(intervention -> {
-          createMultipleIntervention(newProject.getId(), intervention, oldIdToNewId);
-        });
+        .forEach(intervention -> buildMultipleIntervention(newProject.getId(), intervention, oldIdToNewId));
     return newProject.getId();
   }
 
-  private void createMultipleIntervention(Integer newProjectId, MultipleIntervention intervention, Map<Integer, Integer> oldIdToNewId) {
+  private MultipleIntervention buildMultipleIntervention(Integer newProjectId, MultipleIntervention intervention, Map<Integer, Integer> oldIdToNewId) {
     if (intervention.getInterventionIds().stream().anyMatch(id -> oldIdToNewId.get(id) == null)) {
-      return;
+      return null;
     }
     Set<Integer> updatedInterventionIds = intervention.getInterventionIds().stream()
         .map(oldIdToNewId::get)
         .collect(Collectors.toSet());
     if (intervention instanceof CombinationIntervention) {
-      new CombinationIntervention(newProjectId, intervention.getName(), intervention.getMotivation(),
+      return new CombinationIntervention(newProjectId, intervention.getName(), intervention.getMotivation(),
           updatedInterventionIds);
     } else if (intervention instanceof InterventionSet) {
-      new InterventionSet(newProjectId, intervention.getName(), intervention.getMotivation(),
+      return new InterventionSet(newProjectId, intervention.getName(), intervention.getMotivation(),
           updatedInterventionIds);
     }
+    return null;
   }
 
   private SingleIntervention buildSingleIntervention(Integer newProjectId, SingleIntervention intervention) throws InvalidConstraintException {
@@ -193,10 +197,11 @@ public class ProjectServiceImpl implements ProjectService {
     } else if (intervention instanceof TitratedDoseIntervention) {
       TitratedDoseIntervention cast = (TitratedDoseIntervention) intervention;
       return new TitratedDoseIntervention(newProjectId, cast.getName(), cast.getMotivation(), cast.getSemanticInterventionUri(), cast.getSemanticInterventionLabel(), cast.getMinConstraint(), cast.getMaxConstraint());
-    } else {
+    } else if (intervention instanceof BothDoseTypesIntervention){
       BothDoseTypesIntervention cast = (BothDoseTypesIntervention) intervention;
       return new BothDoseTypesIntervention(newProjectId, cast.getName(), cast.getMotivation(), cast.getSemanticInterventionUri(), cast.getSemanticInterventionLabel(), cast.getMinConstraint(), cast.getMaxConstraint());
     }
+    return null;
   }
 
 }

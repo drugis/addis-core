@@ -800,3 +800,9 @@ CREATE TABLE MultipleInterventionItem (
    FOREIGN KEY(multipleInterventionId) REFERENCES MultipleIntervention(multipleInterventionId),
    FOREIGN KEY(interventionId) REFERENCES AbstractIntervention(id)
 );
+INSERT INTO MultipleIntervention(multipleInterventionId) SELECT interventionSetId from InterventionSet;
+INSERT INTO MultipleInterventionItem(multipleInterventionId, interventionId) SELECT interventionSetId, interventionId from InterventionSetItem;
+INSERT INTO MultipleIntervention(multipleInterventionId) SELECT combinationInterventionId from CombinationIntervention;
+INSERT INTO MultipleInterventionItem(multipleInterventionId, interventionId) SELECT combinationInterventionId, singleInterventionId from InterventionCombination;
+DROP TABLE InterventionSetItem;
+DROP TABLE InterventionCombination;
