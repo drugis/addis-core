@@ -38,12 +38,9 @@ define(['angular', 'lodash'], function(angular, _) {
     };
 
     function loadProjects() {
-      $scope.projects = ProjectResource.query();
+      $scope.projects = ProjectResource.query({owner: $scope.userId});
       $scope.projects.$promise.then(function() {
         $scope.loadedProjects = true;
-        $scope.projects = _.filter($scope.projects, function(project) {
-          return project.owner.id === $scope.userId;
-        });
         $scope.projects = _.sortBy($scope.projects, ['archived', 'id']);
         $scope.numberOfProjectsArchived = _.reduce($scope.projects, function(accum, project) {
           return project.archived ? ++accum : accum;
