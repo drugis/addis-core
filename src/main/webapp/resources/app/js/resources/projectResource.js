@@ -8,7 +8,11 @@ define(['angular-resource'], function () {
         method: 'POST'
       }, copy : {
         url: '/projects/:projectId/copy',
-        method: 'POST'
+        method: 'POST', transformResponse: function(data) {
+          return {
+            newProjectId: Number.parseInt(data)
+          };
+        }
       }
     });
   };

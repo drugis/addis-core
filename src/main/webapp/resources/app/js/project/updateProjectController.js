@@ -8,8 +8,8 @@ define([], function() {
     function updateProject() {
       ProjectResource.copy($scope.projectId, {
         projectId: $scope.project.id
-      }).$promise.then(function(newProjectId) {
-        callback(newProjectId);
+      }, function(response) {
+        callback(response.newProjectId);
         $modalInstance.close();
       });
     }

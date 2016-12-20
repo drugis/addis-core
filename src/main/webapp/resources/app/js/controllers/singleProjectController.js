@@ -370,6 +370,7 @@ define(['lodash', 'angular'], function(_, angular) {
                 isArchived: true
               });
               $state.go('project', {
+                userUid: $stateParams.userUid,
                 projectId: newProjectId
               });
             };

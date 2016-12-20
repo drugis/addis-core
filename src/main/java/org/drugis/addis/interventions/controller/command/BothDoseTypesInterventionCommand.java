@@ -36,7 +36,7 @@ public class BothDoseTypesInterventionCommand extends AbstractInterventionComman
       maxConstraint = new DoseConstraint(this.bothDoseTypesMaxConstraint.getLowerBound(), this.bothDoseTypesMaxConstraint.getUpperBound());
     }
     return new BothDoseTypesIntervention(null, this.getProjectId(), this.getName(), this.getMotivation(),
-            URI.create(Namespaces.CONCEPT_NAMESPACE + this.getSemanticInterventionUuid()), this.getSemanticInterventionLabel(),
+            URI.create(this.getSemanticInterventionUri()), this.getSemanticInterventionLabel(),
             minConstraint,
             maxConstraint);
   }

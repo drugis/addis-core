@@ -19,14 +19,14 @@
       <div>
         <h5>Source dataset:
           <a ui-sref="versionedDataset({userUid: trialverse.ownerId, datasetUUID: project.namespaceUid, versionUuid: project.datasetVersion.split('/versions/')[1]})">{{::trialverse.name}}</a>
-          <span tooltip-html-unsafe="<em>{{currentRevision.versionDate | date:'medium'}}</em>
+          <span tooltip-html-unsafe="Current base: <em>{{currentRevision.versionDate | date:'medium'}}</em>
         <div>
           {{currentRevision.versionTitle}}
         </div>
         <div>
           Created by {{!currentRevision.applicationName ? '' : currentRevision.applicationName + ' on behalf of '}} {{currentRevision.creator}}
-        </div>" ng-if="trialverse.headVersion !== trialverse.version">(<i class="fa fa-exclamation-triangle"></i> A newer version of this dataset exists)</span>
-          <span ng-if="trialverse.headVersion === trialverse.version" tooltip-html-unsafe="<em>{{currentRevision.versionDate | date:'medium'}}</em>
+        </div>" ng-if="loading.loaded && trialverse.headVersion !== trialverse.version">(<i class="fa fa-exclamation-triangle"></i> A newer version of this dataset exists)</span>
+          <span ng-if="loading.loaded && trialverse.headVersion === trialverse.version" tooltip-html-unsafe="Current base: <em>{{currentRevision.versionDate | date:'medium'}}</em>
         <div>
           {{currentRevision.versionTitle}}
         </div>
@@ -34,7 +34,7 @@
           Created by {{!currentRevision.applicationName ? '' : currentRevision.applicationName + ' on behalf of '}} {{currentRevision.creator}}
         </div>">(<i class="fa fa-check"></i> Based on the latest dataset version)</span>
         </h5>
-        <button ng-if="trialverse.headVersion !== trialverse.version" ng-click="openUpdateDialog()" class="small success radius">Update</button>
+        <button ng-if="editMode.allowEditing && trialverse.headVersion !== trialverse.version" ng-click="openUpdateDialog()" class="small success radius">Update</button>
       </div>
     </div>
   </div>

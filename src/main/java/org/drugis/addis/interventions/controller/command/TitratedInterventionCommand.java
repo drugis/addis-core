@@ -29,7 +29,7 @@ public class TitratedInterventionCommand extends AbstractInterventionCommand {
       maxConstraint = new DoseConstraint(this.titratedDoseMaxConstraint.getLowerBound(), this.getTitratedDoseMaxConstraint().getUpperBound());
     }
     return new TitratedDoseIntervention(null, this.getProjectId(), this.getName(), this.getMotivation(),
-            URI.create(CONCEPT_NAMESPACE + this.getSemanticInterventionUuid()),
+            URI.create(this.getSemanticInterventionUri()),
             this.getSemanticInterventionLabel(),
             minConstraint,
             maxConstraint);

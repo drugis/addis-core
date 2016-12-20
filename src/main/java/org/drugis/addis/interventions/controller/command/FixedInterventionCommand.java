@@ -19,7 +19,7 @@ public class FixedInterventionCommand extends AbstractInterventionCommand {
   @Override
   public FixedDoseIntervention toIntervention() throws InvalidConstraintException {
     return new FixedDoseIntervention(null, this.getProjectId(), this.getName(), this.getMotivation(),
-            URI.create(Namespaces.CONCEPT_NAMESPACE + this.getSemanticInterventionUuid()),
+            URI.create(this.getSemanticInterventionUri()),
             this.getSemanticInterventionLabel(),
             new DoseConstraint(this.fixedDoseConstraint.getLowerBound(), this.fixedDoseConstraint.getUpperBound()));
   }

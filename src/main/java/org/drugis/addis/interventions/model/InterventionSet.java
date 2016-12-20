@@ -11,7 +11,7 @@ import java.util.Set;
  * Created by Daan on 06/10/2016.
  */
 @Entity
-@PrimaryKeyJoinColumn(name = "interventionSetId", referencedColumnName = "id")
+@PrimaryKeyJoinColumn(name = "interventionSetId", referencedColumnName = "multipleInterventionId")
 public class InterventionSet extends MultipleIntervention {
   public InterventionSet() {
     super();

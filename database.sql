@@ -806,3 +806,9 @@ INSERT INTO MultipleIntervention(multipleInterventionId) SELECT combinationInter
 INSERT INTO MultipleInterventionItem(multipleInterventionId, interventionId) SELECT combinationInterventionId, singleInterventionId from InterventionCombination;
 DROP TABLE InterventionSetItem;
 DROP TABLE InterventionCombination;
+--rollback CREATE TABLE InterventionSetItem (interventionSetId INT NOT NULL, interventionId INT NOT NULL, PRIMARY KEY(interventionSetId, interventionId), FOREIGN KEY(interventionSetId) REFERENCES InterventionSet(interventionSetId), FOREIGN KEY(interventionId) REFERENCES AbstractIntervention(id));
+--rollback INSERT INTO InterventionSetItem(interventionSetId, interventionId) SELECT multipleInterventionId, interventionId FROM multipleInterventionItem WHERE multipleInterventionId IN (SELECT interventionSetId FROM interventionSet) ;
+--rollback CREATE TABLE InterventionCombination (combinationInterventionId INT NOT NULL, singleInterventionId INT NOT NULL, PRIMARY KEY(combinationInterventionId, singleInterventionId), FOREIGN KEY(combinationInterventionId) REFERENCES CombinationIntervention(combinationInterventionId), FOREIGN KEY(singleInterventionId) REFERENCES SingleIntervention(singleInterventionId));
+--rollback INSERT INTO InterventionCombination(combinationInterventionId, singleInterventionId) SELECT multipleInterventionId, interventionId FROM multipleInterventionItem WHERE multipleInterventionId IN (SELECT combinationInterventionId FROM CombinationIntervention) ;
+--rollback DROP TABLE MultipleIntervention;
+--rollback DROP TABLE MultipleInterventionItem;

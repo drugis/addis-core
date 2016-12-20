@@ -103,7 +103,7 @@ define(['lodash', 'angular'], function(_, angular) {
     function buildCreateInterventionCommand(newIntervention) {
       var createInterventionCommand = angular.copy(newIntervention);
       createInterventionCommand.semanticInterventionLabel = newIntervention.semanticIntervention.label;
-      createInterventionCommand.semanticInterventionUuid = newIntervention.semanticIntervention.uri;
+      createInterventionCommand.semanticInterventionUri = newIntervention.semanticIntervention.uri;
       delete createInterventionCommand.semanticIntervention;
       createInterventionCommand = flattenTypes(createInterventionCommand); // go from object with label to value only
       createInterventionCommand = cleanUpConstaints(createInterventionCommand);

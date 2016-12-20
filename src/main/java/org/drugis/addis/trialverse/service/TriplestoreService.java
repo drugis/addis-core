@@ -75,4 +75,6 @@ public interface TriplestoreService {
   List<TrialDataStudy> getAllTrialData(String namespaceUid, URI datasetVersion, Set<URI> outcomeUris, Set<URI> interventionUris) throws ReadValueException;
 
   List<TrialDataStudy> addMatchingInformation(Set<AbstractIntervention> includedInterventions, List<TrialDataStudy> trialData);
+
+  List<URI> getUnitUris(String trialverseDatasetUuid, URI headVersion);
 }

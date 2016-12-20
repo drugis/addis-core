@@ -25,7 +25,7 @@ public class SimpleInterventionCommand extends AbstractInterventionCommand {
             super.getName(),
             super.getMotivation(),
             new SemanticInterventionUriAndName(
-                    URI.create(CONCEPT_NAMESPACE + super.getSemanticInterventionUuid()),
+                    URI.create(super.getSemanticInterventionUri()),
                     super.getSemanticInterventionLabel()
             )
     );
