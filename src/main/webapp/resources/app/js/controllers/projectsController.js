@@ -12,7 +12,7 @@ define(['angular', 'lodash'], function(angular, _) {
 
     $scope.archiveProject = function(project) {
       var params = {
-        projectId : project.id
+        projectId: project.id
       };
       ProjectResource.setArchived(
         params, {
@@ -23,7 +23,7 @@ define(['angular', 'lodash'], function(angular, _) {
 
     $scope.unarchiveProject = function(project) {
       var params = {
-        projectId : project.id
+        projectId: project.id
       };
       ProjectResource.setArchived(
         params, {
@@ -38,14 +38,14 @@ define(['angular', 'lodash'], function(angular, _) {
     };
 
     function loadProjects() {
-      $scope.projects = ProjectResource.query();
+      $scope.projects = ProjectResource.query({owner: $scope.userId});
       $scope.projects.$promise.then(function() {
         $scope.loadedProjects = true;
-        $scope.projects = _.sortBy($scope.projects, ['archived','id']);
+        $scope.projects = _.sortBy($scope.projects, ['archived', 'id']);
         $scope.numberOfProjectsArchived = _.reduce($scope.projects, function(accum, project) {
           return project.archived ? ++accum : accum;
         }, 0);
-        if($scope.numberOfProjectsArchived === 0) {
+        if ($scope.numberOfProjectsArchived === 0) {
           $scope.showArchived = false;
         }
       });
