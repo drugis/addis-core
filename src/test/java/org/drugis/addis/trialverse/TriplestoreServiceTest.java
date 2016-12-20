@@ -3,10 +3,6 @@ package org.drugis.addis.trialverse;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import net.minidev.json.parser.ParseException;
-import org.apache.jena.graph.Graph;
-import org.apache.jena.riot.RDFDataMgr;
-import org.apache.jena.riot.RDFLanguages;
-import org.apache.jena.sparql.graph.GraphFactory;
 import org.drugis.addis.TestUtils;
 import org.drugis.addis.covariates.CovariateRepository;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
@@ -31,9 +27,7 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import java.io.StringReader;
 import java.net.URI;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -133,8 +127,15 @@ public class TriplestoreServiceTest {
 
     List<SemanticInterventionUriAndName> result = triplestoreService.getInterventions("abc", version);
     SemanticInterventionUriAndName intervention = result.get(0);
-    SemanticInterventionUriAndName expectedSemanticInterventionUriAndName = new SemanticInterventionUriAndName(URI.create("fdhdfgh-saddsgfsdf-123-a"), "Azilsartan");
-    assertEquals(expectedSemanticInterventionUriAndName, intervention);
+    SemanticInterventionUriAndName expectedSemanticInterventionUuidAndName = new SemanticInterventionUriAndName(URI.create("http://trials.drugis.org/namespace/1/drug/fdhdfgh-saddsgfsdf-123-a"), "Azilsartan");
+    assertEquals(expectedSemanticInterventionUuidAndName, intervention);
+  }
+
+  @Test
+  public void testGetUnits() {
+    String mockResult = TestUtils.loadResource(this.getClass(), "/triplestoreService/exampleUnitsResult.json");
+    createMockTrialverseService(mockResult);
+    
   }
 
   @Test

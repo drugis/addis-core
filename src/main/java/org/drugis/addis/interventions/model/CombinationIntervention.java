@@ -12,7 +12,7 @@ import java.util.Set;
  * Created by connor on 31-5-16.
  */
 @Entity
-@PrimaryKeyJoinColumn(name = "combinationInterventionId", referencedColumnName = "id")
+@PrimaryKeyJoinColumn(name = "combinationInterventionId", referencedColumnName = "multipleInterventionId")
 public class CombinationIntervention extends MultipleIntervention {
   public CombinationIntervention() {
     super();

@@ -20,17 +20,17 @@ public abstract class AbstractInterventionCommand {
   private String name;
   private String motivation;
   private String semanticInterventionLabel;
-  private String semanticInterventionUuid;
+  private String semanticInterventionUri;
 
   public AbstractInterventionCommand() {
   }
 
-  public AbstractInterventionCommand(Integer projectId, String name, String motivation, String semanticInterventionLabel, String semanticInterventionUuid) {
+  public AbstractInterventionCommand(Integer projectId, String name, String motivation, String semanticInterventionLabel, String semanticInterventionUri) {
     this.projectId = projectId;
     this.name = name;
     this.motivation = motivation;
     this.semanticInterventionLabel = semanticInterventionLabel;
-    this.semanticInterventionUuid = semanticInterventionUuid;
+    this.semanticInterventionUri = semanticInterventionUri;
     if (motivation == null) {
       this.motivation = "";
     }
@@ -54,8 +54,8 @@ public abstract class AbstractInterventionCommand {
     return semanticInterventionLabel;
   }
 
-  public String getSemanticInterventionUuid() {
-    return semanticInterventionUuid;
+  public String getSemanticInterventionUri() {
+    return semanticInterventionUri;
   }
 
   @Override
@@ -69,7 +69,7 @@ public abstract class AbstractInterventionCommand {
     if (!name.equals(that.name)) return false;
     if (motivation != null ? !motivation.equals(that.motivation) : that.motivation != null) return false;
     if (!semanticInterventionLabel.equals(that.semanticInterventionLabel)) return false;
-    return semanticInterventionUuid.equals(that.semanticInterventionUuid);
+    return semanticInterventionUri.equals(that.semanticInterventionUri);
 
   }
 
@@ -79,7 +79,7 @@ public abstract class AbstractInterventionCommand {
     result = 31 * result + name.hashCode();
     result = 31 * result + (motivation != null ? motivation.hashCode() : 0);
     result = 31 * result + semanticInterventionLabel.hashCode();
-    result = 31 * result + semanticInterventionUuid.hashCode();
+    result = 31 * result + semanticInterventionUri.hashCode();
     return result;
   }
 }

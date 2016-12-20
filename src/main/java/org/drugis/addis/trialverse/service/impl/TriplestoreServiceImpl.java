@@ -75,6 +75,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
   public final static String OUTCOME_QUERY = TriplestoreService.loadResource("sparql/outcomes.sparql");
   public final static String POPCHAR_QUERY = TriplestoreService.loadResource("sparql/populationCharacteristics.sparql");
   public final static String INTERVENTION_QUERY = TriplestoreService.loadResource("sparql/interventions.sparql");
+  public final static String UNIT_CONCEPTS = TriplestoreService.loadResource("sparql/unitConcepts.sparql");
   public static final String QUERY_ENDPOINT = "/query";
   public static final String QUERY_PARAM_QUERY = "query";
   public static final String X_ACCEPT_EVENT_SOURCE_VERSION = "X-Accept-EventSource-Version";
@@ -204,23 +205,32 @@ public class TriplestoreServiceImpl implements TriplestoreService {
   @Override
   public List<SemanticInterventionUriAndName> getInterventions(String namespaceUid, URI version) {
     List<SemanticInterventionUriAndName> interventions = new ArrayList<>();
-    String query = StringUtils.replace(INTERVENTION_QUERY, "$namespaceUid", namespaceUid);
-    ResponseEntity<String> response = queryTripleStoreVersion(namespaceUid, query, version);
-    JSONArray bindings = JsonPath.read(response.getBody(), "$.results.bindings");
+    JSONArray bindings = executeQuery(namespaceUid, version, INTERVENTION_QUERY);
     for (Object binding : bindings) {
-      String uid = JsonPath.read(binding, "$.intervention.value");
-      uid = subStringAfterLastSymbol(uid, '/');
+      String uri = JsonPath.read(binding, "$.intervention.value");
       String label = JsonPath.read(binding, "$.label.value");
-      interventions.add(new SemanticInterventionUriAndName(URI.create(uid), label));
+      interventions.add(new SemanticInterventionUriAndName(URI.create(uri), label));
     }
     return interventions;
   }
 
   @Override
-  public List<Study> queryStudies(String namespaceUid, URI version) {
-    String query = StringUtils.replace(STUDY_QUERY, "$namespaceUid", namespaceUid);
+  public List<URI> getUnitUris(String namespaceUuid, URI version) {
+    JSONArray bindings = executeQuery(namespaceUuid, version, UNIT_CONCEPTS);
+    return bindings.stream()
+            .map(binding -> URI.create(JsonPath.read(binding, "$.unitConcept.value")))
+            .collect(Collectors.toList());
+  }
+
+  private JSONArray executeQuery(String namespaceUid, URI version, String query1) {
+    String query = StringUtils.replace(query1, "$namespaceUid", namespaceUid);
     ResponseEntity<String> response = queryTripleStoreVersion(namespaceUid, query, version);
-    JSONArray bindings = JsonPath.read(response.getBody(), "$.results.bindings");
+    return JsonPath.read(response.getBody(), "$.results.bindings");
+  }
+
+  @Override
+  public List<Study> queryStudies(String namespaceUid, URI version) {
+    JSONArray bindings = executeQuery(namespaceUid, version, STUDY_QUERY);
 
     Map<String, Study> studyCache = new HashMap<>();
     Map<Pair<String, String>, StudyTreatmentArm> studyArmsCache = new HashMap<>();

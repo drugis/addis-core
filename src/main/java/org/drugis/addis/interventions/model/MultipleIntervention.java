@@ -1,9 +1,6 @@
 package org.drugis.addis.interventions.model;
 
-import javax.persistence.CollectionTable;
-import javax.persistence.Column;
-import javax.persistence.ElementCollection;
-import javax.persistence.JoinColumn;
+import javax.persistence.*;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
@@ -11,6 +8,8 @@ import java.util.Set;
 /**
  * Created by joris on 15-12-16.
  */
+@Entity
+@PrimaryKeyJoinColumn(name = "multipleInterventionId", referencedColumnName = "id")
 public abstract class MultipleIntervention extends AbstractIntervention {
   @ElementCollection
   @CollectionTable(

@@ -24,5 +24,5 @@ public interface ProjectService {
 
   Project updateProject(Integer projectId, String name, String description) throws UpdateProjectException, ResourceDoesNotExistException;
 
-  Integer copy(Account user, Integer projectId) throws ResourceDoesNotExistException, ReadValueException;
+  Integer copy(Account user, Integer projectId) throws ResourceDoesNotExistException, ReadValueException, URISyntaxException;
 }

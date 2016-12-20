@@ -14,18 +14,18 @@ import java.net.URI;
 @PrimaryKeyJoinColumn(name = "fixedInterventionId", referencedColumnName = "singleInterventionId")
 public class FixedDoseIntervention extends SingleIntervention implements Serializable {
   @Embedded
-  @AttributeOverrides( {
-          @AttributeOverride(name="lowerBound.type" , column = @Column(name="lowerBoundType") ),
-          @AttributeOverride(name="lowerBound.unitName" , column = @Column(name="lowerBoundUnitName") ),
-          @AttributeOverride(name="lowerBound.unitPeriod" , column = @Column(name="lowerBoundUnitPeriod") ),
-          @AttributeOverride(name="lowerBound.unitConcept" , column = @Column(name="lowerBoundUnitConcept") ),
-          @AttributeOverride(name="lowerBound.value", column = @Column(name="lowerBoundValue") ),
-          @AttributeOverride(name="upperBound.type" , column = @Column(name="upperBoundType") ),
-          @AttributeOverride(name="upperBound.unitName" , column = @Column(name="upperBoundUnitName") ),
-          @AttributeOverride(name="upperBound.unitPeriod" , column = @Column(name="upperBoundUnitPeriod") ),
-          @AttributeOverride(name="upperBound.unitConcept" , column = @Column(name="upperBoundUnitConcept") ),
-          @AttributeOverride(name="upperBound.value", column = @Column(name="upperBoundValue") )
-  } )
+  @AttributeOverrides({
+          @AttributeOverride(name = "lowerBound.type", column = @Column(name = "lowerBoundType")),
+          @AttributeOverride(name = "lowerBound.unitName", column = @Column(name = "lowerBoundUnitName")),
+          @AttributeOverride(name = "lowerBound.unitPeriod", column = @Column(name = "lowerBoundUnitPeriod")),
+          @AttributeOverride(name = "lowerBound.unitConcept", column = @Column(name = "lowerBoundUnitConcept")),
+          @AttributeOverride(name = "lowerBound.value", column = @Column(name = "lowerBoundValue")),
+          @AttributeOverride(name = "upperBound.type", column = @Column(name = "upperBoundType")),
+          @AttributeOverride(name = "upperBound.unitName", column = @Column(name = "upperBoundUnitName")),
+          @AttributeOverride(name = "upperBound.unitPeriod", column = @Column(name = "upperBoundUnitPeriod")),
+          @AttributeOverride(name = "upperBound.unitConcept", column = @Column(name = "upperBoundUnitConcept")),
+          @AttributeOverride(name = "upperBound.value", column = @Column(name = "upperBoundValue"))
+  })
   DoseConstraint constraint;
 
   public FixedDoseIntervention() {
@@ -35,8 +35,8 @@ public class FixedDoseIntervention extends SingleIntervention implements Seriali
     return constraint;
   }
 
-  public FixedDoseIntervention(Integer id, Integer project, String name, String motivation,URI semanticInterventionUri, String semanticInterventionLabel
-                               , DoseConstraint constraint) {
+  public FixedDoseIntervention(Integer id, Integer project, String name, String motivation, URI semanticInterventionUri, String semanticInterventionLabel
+          , DoseConstraint constraint) {
     super(id, project, name, motivation, semanticInterventionUri, semanticInterventionLabel);
     this.constraint = constraint;
   }

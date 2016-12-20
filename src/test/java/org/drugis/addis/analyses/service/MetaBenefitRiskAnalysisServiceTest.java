@@ -17,7 +17,6 @@ import org.drugis.addis.problems.service.ProblemService;
 import org.drugis.addis.scenarios.Scenario;
 import org.drugis.addis.scenarios.repository.ScenarioRepository;
 import org.drugis.addis.security.Account;
-import org.drugis.addis.trialverse.model.SemanticInterventionUriAndName;
 import org.drugis.addis.trialverse.service.impl.ReadValueException;
 import org.junit.Before;
 import org.junit.Test;
