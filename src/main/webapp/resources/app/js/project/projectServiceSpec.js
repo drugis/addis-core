@@ -103,13 +103,15 @@ define(['angular-mocks'], function() {
         };
         var intervention3 = {
           id: 3,
-          type: 'simple'
-        };
-        var intervention4 = {
-          id: 4,
           name: '1 plus 2',
           type: 'combination',
           interventionIds: [1, 2]
+        };
+        var intervention4 = {
+          id: 4,
+          name: '1 or 2',
+          type: 'class',
+          interventionIds: [1, 2, 3]
         };
         var interventions = [intervention1, intervention2, intervention3, intervention4];
         var analyses = [{
@@ -134,9 +136,9 @@ define(['angular-mocks'], function() {
             4: []
           },
           inInterventions: {
-            1: ['1 plus 2'],
-            2: ['1 plus 2'],
-            3: []
+            1: ['1 plus 2', '1 or 2'],
+            2: ['1 plus 2', '1 or 2'],
+            3: ['1 or 2']
           }
         };
 
