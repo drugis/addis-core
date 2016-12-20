@@ -84,6 +84,7 @@ define(['lodash'], function(_) {
         });
         $scope.interventions = NetworkMetaAnalysisService.addInclusionsToInterventions($scope.interventions, $scope.analysis.interventionInclusions);
         $scope.covariates = NetworkMetaAnalysisService.addInclusionsToCovariates($scope.covariates, $scope.analysis.includedCovariates);
+        $scope.project.datasetVersionUuid = _.split($scope.project.datasetVersion, '/versions/')[1];
         if (!$scope.analysis.outcome && $scope.outcomes.length > 0) {
           // set first outcome as default outcome
           $scope.analysis.outcome = $scope.outcomes[0];
