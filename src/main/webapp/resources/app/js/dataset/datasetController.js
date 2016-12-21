@@ -95,7 +95,7 @@ define(['lodash'],
       function getJson(resource) {
         resource.getForJson($stateParams).$promise.then(function(response) {
           $scope.dataset = {
-            datasetUri: $scope.datasetUUID,
+            datasetUuid: $scope.datasetUUID,
             title: response['http://purl.org/dc/terms/title'],
             comment: response['http://purl.org/dc/terms/description'],
             creator: response['http://purl.org/dc/terms/creator']
@@ -176,7 +176,7 @@ define(['lodash'],
                 title: $scope.dataset.title,
                 description: $scope.dataset.comment,
                 headVersion: $scope.currentRevision.uri,
-                datasetUri: $scope.dataset.datasetUri
+                datasetUuid: $scope.dataset.datasetUuid
               };
             }
           }
