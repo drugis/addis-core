@@ -15,7 +15,15 @@ public class BothDoseTypesInterventionCommand extends AbstractInterventionComman
   private ConstraintCommand bothDoseTypesMinConstraint;
   private ConstraintCommand bothDoseTypesMaxConstraint;
 
-  private BothDoseTypesInterventionCommand() {}
+  public BothDoseTypesInterventionCommand(){}
+
+
+  public BothDoseTypesInterventionCommand(Integer projectId, String name, String motivation, URI semanticInterventionUri,
+                                          String semanticInterventionLabel, ConstraintCommand minConstraint, ConstraintCommand maxConstraint) {
+    super(projectId, name, motivation, semanticInterventionLabel, semanticInterventionUri.toString());
+    this.bothDoseTypesMinConstraint = minConstraint;
+    this.bothDoseTypesMaxConstraint = maxConstraint;
+  }
 
   public ConstraintCommand getBothDoseTypesMinConstraint() {
     return bothDoseTypesMinConstraint;

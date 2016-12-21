@@ -1,5 +1,6 @@
 package org.drugis.addis.interventions.model;
 
+import org.drugis.addis.interventions.controller.command.*;
 import org.drugis.addis.interventions.controller.viewAdapter.AbstractInterventionViewAdapter;
 import org.drugis.addis.interventions.controller.viewAdapter.FixedInterventionViewAdapter;
 

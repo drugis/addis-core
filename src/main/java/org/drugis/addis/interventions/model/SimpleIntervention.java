@@ -1,7 +1,10 @@
 package org.drugis.addis.interventions.model;
 
+import org.drugis.addis.interventions.controller.command.AbstractInterventionCommand;
+import org.drugis.addis.interventions.controller.command.SimpleInterventionCommand;
 import org.drugis.addis.interventions.controller.viewAdapter.AbstractInterventionViewAdapter;
 import org.drugis.addis.interventions.controller.viewAdapter.SimpleInterventionViewAdapter;
+import org.drugis.addis.interventions.service.InterventionService;
 import org.drugis.addis.trialverse.model.SemanticInterventionUriAndName;
 
 import javax.persistence.Entity;

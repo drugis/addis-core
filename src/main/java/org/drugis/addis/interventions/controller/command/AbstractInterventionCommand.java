@@ -25,7 +25,8 @@ public abstract class AbstractInterventionCommand {
   public AbstractInterventionCommand() {
   }
 
-  public AbstractInterventionCommand(Integer projectId, String name, String motivation, String semanticInterventionLabel, String semanticInterventionUri) {
+  public AbstractInterventionCommand(Integer projectId, String name, String motivation, String semanticInterventionLabel,
+                                     String semanticInterventionUri) {
     this.projectId = projectId;
     this.name = name;
     this.motivation = motivation;
@@ -68,9 +69,9 @@ public abstract class AbstractInterventionCommand {
     if (!projectId.equals(that.projectId)) return false;
     if (!name.equals(that.name)) return false;
     if (motivation != null ? !motivation.equals(that.motivation) : that.motivation != null) return false;
-    if (!semanticInterventionLabel.equals(that.semanticInterventionLabel)) return false;
-    return semanticInterventionUri.equals(that.semanticInterventionUri);
-
+    if (semanticInterventionLabel != null ? !semanticInterventionLabel.equals(that.semanticInterventionLabel) : that.semanticInterventionLabel != null)
+      return false;
+    return semanticInterventionUri != null ? semanticInterventionUri.equals(that.semanticInterventionUri) : that.semanticInterventionUri == null;
   }
 
   @Override
@@ -78,8 +79,8 @@ public abstract class AbstractInterventionCommand {
     int result = projectId.hashCode();
     result = 31 * result + name.hashCode();
     result = 31 * result + (motivation != null ? motivation.hashCode() : 0);
-    result = 31 * result + semanticInterventionLabel.hashCode();
-    result = 31 * result + semanticInterventionUri.hashCode();
+    result = 31 * result + (semanticInterventionLabel != null ? semanticInterventionLabel.hashCode() : 0);
+    result = 31 * result + (semanticInterventionUri != null ? semanticInterventionUri.hashCode() : 0);
     return result;
   }
 }

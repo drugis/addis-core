@@ -135,7 +135,9 @@ public class TriplestoreServiceTest {
   public void testGetUnits() {
     String mockResult = TestUtils.loadResource(this.getClass(), "/triplestoreService/exampleUnitsResult.json");
     createMockTrialverseService(mockResult);
-    
+    List<URI> unitUris = triplestoreService.getUnitUris("abc", version);
+    assertEquals(2, unitUris.size());
+    assertEquals(URI.create("http://trials.drugis.org/concepts/1"), unitUris.get(0));
   }
 
   @Test

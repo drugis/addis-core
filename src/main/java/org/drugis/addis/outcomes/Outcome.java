@@ -1,5 +1,6 @@
 package org.drugis.addis.outcomes;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.drugis.addis.trialverse.model.SemanticVariable;
 
 import javax.persistence.Entity;
@@ -99,6 +100,11 @@ public class Outcome implements Serializable{
     return URI.create(semanticOutcomeUri);
   }
 
+  @JsonIgnore
+  public SemanticVariable getSemanticVariable() {
+    return new SemanticVariable(URI.create(this.semanticOutcomeUri), this.semanticOutcomeLabel);
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
@@ -128,5 +134,4 @@ public class Outcome implements Serializable{
     result = 31 * result + (semanticOutcomeUri != null ? semanticOutcomeUri.hashCode() : 0);
     return result;
   }
-
 }

@@ -18,6 +18,14 @@ public class TitratedInterventionCommand extends AbstractInterventionCommand {
   public TitratedInterventionCommand() {
   }
 
+  public TitratedInterventionCommand(Integer projectId, String name, String motivation, String semanticInterventionLabel,
+                                     String semanticInterventionUri, ConstraintCommand titratedDoseMinConstraint,
+                                     ConstraintCommand titratedDoseMaxConstraint) {
+    super(projectId, name, motivation, semanticInterventionLabel, semanticInterventionUri);
+    this.titratedDoseMinConstraint = titratedDoseMinConstraint;
+    this.titratedDoseMaxConstraint = titratedDoseMaxConstraint;
+  }
+
   @Override
   public TitratedDoseIntervention toIntervention() throws InvalidConstraintException {
     DoseConstraint minConstraint = null;
@@ -33,12 +41,6 @@ public class TitratedInterventionCommand extends AbstractInterventionCommand {
             this.getSemanticInterventionLabel(),
             minConstraint,
             maxConstraint);
-  }
-
-  public TitratedInterventionCommand(Integer projectId, String name, String motivation, String semanticInterventionLabel, String semanticInterventionUuid, ConstraintCommand titratedDoseMinConstraint, ConstraintCommand titratedDoseMaxConstraint) {
-    super(projectId, name, motivation, semanticInterventionLabel, semanticInterventionUuid);
-    this.titratedDoseMinConstraint = titratedDoseMinConstraint;
-    this.titratedDoseMaxConstraint = titratedDoseMaxConstraint;
   }
 
   public ConstraintCommand getTitratedDoseMinConstraint() {

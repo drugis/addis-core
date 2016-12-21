@@ -192,7 +192,7 @@ public class InterventionControllerTest {
     interventions.add(1);
     CombinationIntervention combinationIntervention = new CombinationIntervention(1, 1, "name", "motivation", interventions);
     Set<Integer> interventionsIds = Sets.newHashSet(1);
-    AbstractInterventionCommand combinationInterventionCommand = new CombinationInterventionCommand(1, "name", "motivation", "http://semantic.com", "labelnew", interventionsIds);
+    AbstractInterventionCommand combinationInterventionCommand = new CombinationInterventionCommand(1, "name", "motivation", interventionsIds);
     when(interventionRepository.create(gert, combinationInterventionCommand)).thenReturn(combinationIntervention);
     String body = TestUtils.createJson(combinationInterventionCommand);
     mockMvc.perform(post("/projects/1/interventions").content(body).principal(user).contentType(WebConstants.getApplicationJsonUtf8Value()))
@@ -228,7 +228,7 @@ public class InterventionControllerTest {
             "  \"name\": \"Bupropion\",\n" +
             "  \"projectId\": 13,\n" +
             "  \"semanticInterventionLabel\": \"Bupropion\",\n" +
-            "  \"semanticInterventionUuid\": \"234-aga-34\"\n" +
+            "  \"semanticInterventionUri\": \"234-aga-34\"\n" +
             "}\n";
     SimpleIntervention intervention = new SimpleIntervention(1, 1, "name", "motivation", new SemanticInterventionUriAndName(URI.create("http://semantic.com"), "labelnew"));
     ObjectMapper mapper = new ObjectMapper();
@@ -257,7 +257,7 @@ public class InterventionControllerTest {
             "  \"name\": \"Bupropion\",\n" +
             "  \"projectId\": 13,\n" +
             "  \"semanticInterventionLabel\": \"Bupropion\",\n" +
-            "  \"semanticInterventionUuid\": \"234-aga-34\"\n" +
+            "  \"semanticInterventionUri\": \"234-aga-34\"\n" +
             "}\n";
     SimpleIntervention intervention = new SimpleIntervention(1, 1, "name", "motivation", new SemanticInterventionUriAndName(URI.create("http://semantic.com"), "labelnew"));
     ObjectMapper mapper = new ObjectMapper();

@@ -16,8 +16,8 @@ public class CombinationInterventionCommand extends AbstractInterventionCommand 
   public CombinationInterventionCommand() {
   }
 
-  public CombinationInterventionCommand(Integer projectId, String name, String motivation, String semanticInterventionLabel, String semanticInterventionUuid, Set<Integer> interventionIds) {
-    super(projectId, name, motivation, semanticInterventionLabel, semanticInterventionUuid);
+  public CombinationInterventionCommand(Integer projectId, String name, String motivation, Set<Integer> interventionIds) {
+    super(projectId, name, motivation, null, null);
     this.interventionIds = interventionIds;
   }
 
