@@ -12,10 +12,10 @@
     <div class="columns large-6 text-right">
         <span ng-if="currentRevision.historyOrder === 0">
                 <span><i class="fa fa-check"></i> This is the current version</span> <br>
-                <span><a style="text-decoration: underline;" ui-sref="datasetHistory({userUid: userUid, datasetUUID: stripFrontFilter(dataset.datasetUri, 'http://trials.drugis.org/datasets/')})">Dataset history</a></span>
+                <span><a style="text-decoration: underline;" ui-sref="datasetHistory({userUid: userUid, datasetUUID: stripFrontFilter(dataset.datasetUuid, 'http://trials.drugis.org/datasets/')})">Dataset history</a></span>
         </span>
         <span ng-if="currentRevision.historyOrder !== 0">
-                <span><i class="fa fa-exclamation-triangle"></i> This is <em>not</em> the latest version</span> (<a style="text-decoration: underline;" ui-sref="datasetHistory({userUid: userUid, datasetUUID: stripFrontFilter(dataset.datasetUri, 'http://trials.drugis.org/datasets/')})">Dataset history</a>)
+                <span><i class="fa fa-exclamation-triangle"></i> This is <em>not</em> the latest version</span> (<a style="text-decoration: underline;" ui-sref="datasetHistory({userUid: userUid, datasetUUID: stripFrontFilter(dataset.datasetUuid, 'http://trials.drugis.org/datasets/')})">Dataset history</a>)
         </span>
           <ng-transclude></ng-transclude>
         </div>
