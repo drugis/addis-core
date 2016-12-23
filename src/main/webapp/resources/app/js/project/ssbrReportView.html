@@ -4,7 +4,7 @@
   <a ng-if="analysis.analysisType === 'Benefit-risk analysis based on meta-analyses' && !analysis.finalized" ui-sref="MetaBenefitRiskCreationStep-1({userUid: user.id, projectId: project.id, analysisId: analysis.id})">View details</a>
 
   <div ng-if="analysis.analysisType === 'Benefit-risk analysis based on a single study'">
-    <strong>Data source:</strong> <a ui-sref="namespace-study({userUid: user.id, projectId: project.id, studyUid: dataSource.uid})">{{dataSource.name}}</a>
+    <strong>Data source:</strong> <a ui-sref="namespace-study({userUid: user.id, projectId: project.id, studyUuid: dataSource.uid})">{{dataSource.name}}</a>
     <em ng-if="!analysis.studyGraphUri">No study has been selected</em>
   </div>
   <div ng-if="analysis.analysisType === 'Benefit-risk analysis based on meta-analyses'">

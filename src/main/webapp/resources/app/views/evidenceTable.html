@@ -44,7 +44,7 @@
         </tr>
         <tr ng-repeat="dataRow in trialData" ng-class="{topborder: dataRow.firstStudyRow}">
           <td ng-show="dataRow.firstStudyRow" rowspan="{{dataRow.studyRowSpan}}">
-            <a ui-sref="versionedDataset.study({userUid: userId, datasetUuid: project.namespaceUid, versionUuid: project.datasetVersionUuid, studyGraphUuid: dataRow.studyUid})">{{dataRow.study}}</a>
+            <a ui-sref="versionedDataset.study({userUid: userId, datasetUuid: project.namespaceUid, versionUuid: project.datasetVersionUuid, studyGraphUuid: dataRow.studyUuid})">{{dataRow.study}}</a>
             <div class="info" ng-show="dataRow.numberOfMatchedInterventions < 2 || dataRow.numberOfIncludedInterventions < 2">Excluded; Fewer than two included interventions.
             </div>
             <div ng-show="dataRow.numberOfIncludedInterventions > 1 && isMissingByStudyMap[dataRow.studyUri]"

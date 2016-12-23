@@ -7,7 +7,7 @@ import org.joda.time.DateTime;
  */
 public class StudyWithDetails {
 
-  private String studyUid;
+  private String studyUuid;
   private String graphUuid;
   private String name;
   private String title;
@@ -34,7 +34,7 @@ public class StudyWithDetails {
 
   private StudyWithDetails(StudyWithDetailsBuilder builder) {
     this.graphUuid = builder.graphUuid;
-    this.studyUid = builder.studyUid;
+    this.studyUuid = builder.studyUuid;
     this.name = builder.name;
     this.title = builder.title;
     this.studySize = builder.studySize;
@@ -58,7 +58,7 @@ public class StudyWithDetails {
 
   public static class StudyWithDetailsBuilder {
     public String graphUuid;
-    private String studyUid;
+    private String studyUuid;
     private String name;
     private String title;
     private Integer studySize;
@@ -88,8 +88,8 @@ public class StudyWithDetails {
       return this;
     }
 
-    public StudyWithDetailsBuilder studyUid(String studyUid) {
-      this.studyUid = studyUid;
+    public StudyWithDetailsBuilder studyUuid(String studyUuid) {
+      this.studyUuid = studyUuid;
       return this;
     }
 
@@ -191,7 +191,7 @@ public class StudyWithDetails {
   }
 
   public String getStudyUid() {
-    return studyUid;
+    return studyUuid;
   }
 
   public String getGraphUuid() {

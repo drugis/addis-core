@@ -97,7 +97,7 @@ define(['lodash', 'angular'], function(_, angular) {
           dataRow.covariatesColumns = [];
           dataRow.study = study.name;
           dataRow.studyUri = study.studyUri;
-          dataRow.studyUid = dataRow.studyUri.slice(dataRow.studyUri.lastIndexOf('/') + 1);
+          dataRow.studyUuid = dataRow.studyUri.slice(dataRow.studyUri.lastIndexOf('/') + 1);
           dataRow.studyRowSpan = study.trialDataArms.length;
 
           _.forEach(covariates, function(covariate) {

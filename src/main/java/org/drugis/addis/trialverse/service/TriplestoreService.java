@@ -54,17 +54,17 @@ public interface TriplestoreService {
 
   List<Study> queryStudies(String namespaceUid, URI version);
 
-  StudyWithDetails getStudydetails(String namespaceUid, String studyUid) throws ResourceDoesNotExistException;
+  StudyWithDetails getStudydetails(String namespaceUid, String studyUuid) throws ResourceDoesNotExistException;
 
-  JSONArray getStudyGroups(String namespaceUid, String studyUid);
+  JSONArray getStudyGroups(String namespaceUid, String studyUuid);
 
-  JSONArray getStudyEpochs(String namespaceUid, String studyUid);
+  JSONArray getStudyEpochs(String namespaceUid, String studyUuid);
 
   List<TrialDataStudy> getSingleStudyData(String namespaceUid, URI studyUri, URI version, Set<URI> outcomeUris, Set<URI> interventionUids) throws ReadValueException;
 
-  List<TreatmentActivity> getStudyTreatmentActivities(String namespaceUid, String studyUid);
+  List<TreatmentActivity> getStudyTreatmentActivities(String namespaceUid, String studyUuid);
 
-  List<StudyData> getStudyData(String namespaceUid, String studyUid, StudyDataSection studyDataSection);
+  List<StudyData> getStudyData(String namespaceUid, String studyUuid, StudyDataSection studyDataSection);
 
   Set<AbstractIntervention> findMatchingIncludedInterventions(Set<AbstractIntervention> includedInterventions, TrialDataArm arm);
 

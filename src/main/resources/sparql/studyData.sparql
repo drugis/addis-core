@@ -31,7 +31,7 @@ SELECT DISTINCT
       a ontology:Variable ;
       rdfs:label ?studyDataTypeLabel .
    }
-   GRAPH graph:$studyUid {
+   GRAPH graph:$studyUuid {
      ?study a ontology:Study .
      ?study ontology:has_outcome ?outcomeUid .
      ?outcomeUid

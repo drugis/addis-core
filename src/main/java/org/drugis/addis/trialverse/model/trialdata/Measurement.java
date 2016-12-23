@@ -4,7 +4,7 @@ import java.net.URI;
 
 public class Measurement {
 
-  private URI studyUid;
+  private URI studyUuid;
   private URI variableUri;
   private URI variableConceptUri;
   private URI armUri;
@@ -18,8 +18,8 @@ public class Measurement {
   public Measurement() {
   }
 
-  public Measurement(URI studyUid, URI variableUri, URI variableConceptUri, URI armUri, URI measurementTypeURI,Integer sampleSize, Integer rate, Double stdDev, Double stdErr, Double mean) {
-    this.studyUid = studyUid;
+  public Measurement(URI studyUuid, URI variableUri, URI variableConceptUri, URI armUri, URI measurementTypeURI,Integer sampleSize, Integer rate, Double stdDev, Double stdErr, Double mean) {
+    this.studyUuid = studyUuid;
     this.variableUri = variableUri;
     this.variableConceptUri = variableConceptUri;
     this.armUri = armUri;
@@ -32,7 +32,7 @@ public class Measurement {
   }
 
   public URI getStudyUid() {
-    return studyUid;
+    return studyUuid;
   }
 
   public URI getVariableUri() {
@@ -78,7 +78,7 @@ public class Measurement {
 
     Measurement that = (Measurement) o;
 
-    if (!studyUid.equals(that.studyUid)) return false;
+    if (!studyUuid.equals(that.studyUuid)) return false;
     if (!variableUri.equals(that.variableUri)) return false;
     if (variableConceptUri != null ? !variableConceptUri.equals(that.variableConceptUri) : that.variableConceptUri != null)
       return false;
@@ -94,7 +94,7 @@ public class Measurement {
 
   @Override
   public int hashCode() {
-    int result = studyUid.hashCode();
+    int result = studyUuid.hashCode();
     result = 31 * result + variableUri.hashCode();
     result = 31 * result + (variableConceptUri != null ? variableConceptUri.hashCode() : 0);
     result = 31 * result + armUri.hashCode();

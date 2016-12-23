@@ -2,9 +2,9 @@
 define([], function() {
   var dependencies = ['$resource'];
   var studyGroupResource = function($resource) {
-    return $resource('/namespaces/:namespaceUid/studiesWithDetail/:studyUid/groups', {
+    return $resource('/namespaces/:namespaceUid/studiesWithDetail/:studyUuid/groups', {
       namespaceUid: '@namespaceUid',
-      studyUid: '@id'
+      studyUuid: '@id'
     });
   };
   return dependencies.concat(studyGroupResource);

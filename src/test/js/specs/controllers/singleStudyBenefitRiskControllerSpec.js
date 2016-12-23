@@ -27,10 +27,10 @@ define(['lodash', 'angular', 'angular-mocks', 'controllers'], function(_) {
     var studiesDeferred;
     var mockStudies = [{
       studyUri: 'graphUid1',
-      studyUid: 'uid1',
+      studyUuid: 'uid1',
     }, {
       studyUri: 'graphuid2',
-      studyUid: 'graphuid2'
+      studyUuid: 'graphuid2'
     }];
     var q;
     var mockProject = {
@@ -233,7 +233,7 @@ define(['lodash', 'angular', 'angular-mocks', 'controllers'], function(_) {
     });
 
     describe('when a study is selected', function() {
-      it('should place the selected items uid on the analysis as the studyUid', function() {
+      it('should place the selected items uid on the analysis as the studyUuid', function() {
         scope.onStudySelect({
           studyUri: 'test-uid'
         });

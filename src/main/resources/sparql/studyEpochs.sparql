@@ -7,7 +7,7 @@ PREFIX list: <http://jena.hpl.hp.com/ARQ/list#>
 PREFIX instance: <http://trials.drugis.org/instances/>
 
 SELECT ?epochUid ?label ?duration (BOUND(?primary) as ?isPrimary) {
-  GRAPH graph:$studyUid {
+  GRAPH graph:$studyUuid {
     ?study ontology:has_epochs ?epochs .
     ?epochs list:member ?epochUid .
     ?epochUid rdfs:label ?label .

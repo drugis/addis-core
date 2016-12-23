@@ -114,8 +114,8 @@ define(['lodash'], function(_) {
       });
     };
 
-    $scope.doesInterventionHaveAmbiguousArms = function(drugId, studyUid) {
-      return NetworkMetaAnalysisService.doesInterventionHaveAmbiguousArms(drugId, studyUid, $scope.trialverseData, $scope.analysis);
+    $scope.doesInterventionHaveAmbiguousArms = function(drugId, studyUuid) {
+      return NetworkMetaAnalysisService.doesInterventionHaveAmbiguousArms(drugId, studyUuid, $scope.trialverseData, $scope.analysis);
     };
 
     $scope.reloadModel = function reloadModel() {
