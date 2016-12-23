@@ -224,7 +224,7 @@ define(['angular', 'lodash'],
                 });
               });
             },
-            userUuid: function() {
+            userUid: function() {
               return $scope.loginUserInfo.id;
             },
             datasetUuid: function() {

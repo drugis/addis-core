@@ -16,7 +16,7 @@
       <button class="success"  ng-disabled="isCopying" type="submit">Copy</button>
     </div>
     <div class="large-9 columns" ng-if="copyComplete">
-      <button ng-click="cancel()">Close</button> <a ng-click="cancel()" style="margin-left:1rem; text-decoration: underline;" ui-sref="versionedDataset.study({userUid: userUuid, datasetUuid: targetDatasetUuid, versionUuid: newVersionUuid, studyGraphUuid: targetGraphUuid})">Go to new copy</a>
+      <button ng-click="cancel()">Close</button> <a ng-click="cancel()" style="margin-left:1rem; text-decoration: underline;" ui-sref="versionedDataset.study({userUid: userUid, datasetUuid: targetDatasetUuid, versionUuid: newVersionUuid, studyGraphUuid: targetGraphUuid})">Go to new copy</a>
     </div>
   </div>
   <a class="close-reveal-modal" ng-click="cancel()">&#215;</a>
