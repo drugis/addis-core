@@ -61,7 +61,7 @@ define(['lodash', 'angular'], function(_, angular) {
       $scope.trialverse.$promise.then(function(dataset) {
         $scope.currentRevision = HistoryResource.get({
           userUid: $scope.userId,
-          datasetUUID: $scope.project.namespaceUid,
+          datasetUuid: $scope.project.namespaceUid,
           versionUuid: dataset.version.split('/versions/')[1]
         });
       });

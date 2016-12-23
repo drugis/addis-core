@@ -4,9 +4,9 @@ define([], function() {
   var dependencies = ['$resource', '$stateParams'];
   var copyStudyResource = function($resource, $stateParams) {
     return $resource(
-      '/users/:userUid/datasets/:datasetUUID/graphs/:graphUuid', {
+      '/users/:userUid/datasets/:datasetUuid/graphs/:graphUuid', {
         userUid: $stateParams.userUid,
-        datasetUUID: '@targetDatasetUuid',
+        datasetUuid: '@targetDatasetUuid',
         graphUuid: '@targetGraphUuid',
         copyOf: '@copyOf'
       }, {

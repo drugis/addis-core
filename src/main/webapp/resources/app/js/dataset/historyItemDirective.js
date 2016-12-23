@@ -16,7 +16,7 @@ define([], function() {
         var uri = scope.item.uri;
         scope.userUid = $stateParams.userUid;
         scope.versionUuid = segmentAfterLastSlash(uri);
-        scope.datasetUUID = $stateParams.datasetUUID;
+        scope.datasetUuid = $stateParams.datasetUuid;
         if (scope.isStudyItem) {
           scope.studyGraphUuid = $stateParams.studyGraphUuid;
         }

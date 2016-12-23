@@ -5,9 +5,9 @@ define(['util/transformJsonLd', 'util/transformConceptJsonLd'], function(transfo
   var GraphResource = function($resource, DataModelService) {
 
     return $resource(
-      '/users/:userUid/datasets/:datasetUUID/graphs/:graphUuid', {
+      '/users/:userUid/datasets/:datasetUuid/graphs/:graphUuid', {
         userUid: '@userUid',
-        datasetUUID: '@datasetUUID',
+        datasetUuid: '@datasetUuid',
         graphUuid: '@graphUuid',
         commitTitle: '@commitTitle',
         commitDescription: '@commitDescription'

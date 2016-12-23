@@ -3,8 +3,8 @@ define([], function() {
 
   var dependencies = ['$resource'];
   var ConceptResource = function($resource) {
-    return $resource('/datasets/:datasetUUID/concepts', {
-      datasetUUID: '@datasetUUID'
+    return $resource('/datasets/:datasetUuid/concepts', {
+      datasetUuid: '@datasetUuid'
     }, {
       'get': {
         method: 'get',

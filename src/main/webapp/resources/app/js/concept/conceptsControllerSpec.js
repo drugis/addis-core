@@ -7,7 +7,7 @@ define(['angular', 'angular-mocks'], function() {
       datasetUuid = 'datasetUuid',
       versionUuid = 'versionUuid',
       stateParamsMock = {
-        datasetUUID: datasetUuid,
+        datasetUuid: datasetUuid,
         versionUuid: versionUuid
       },
       loadConceptStoreDefer,

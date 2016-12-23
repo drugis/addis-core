@@ -4,9 +4,9 @@ define(['util/transformJsonLd', 'util/transformConceptJsonLd'], function(transfo
   var dependencies = ['$resource'];
   var VersionedGraphResource = function($resource) {
     return $resource(
-      '/users/:userUid/datasets/:datasetUUID/versions/:versionUuid/graphs/:graphUuid', {
+      '/users/:userUid/datasets/:datasetUuid/versions/:versionUuid/graphs/:graphUuid', {
         usersUid: '@usersUid',
-        datasetUUID: '@datasetUUID',
+        datasetUuid: '@datasetUuid',
         graphUuid: '@graphUuid',
         versionUuid: '@versionUuid'
       }, {
