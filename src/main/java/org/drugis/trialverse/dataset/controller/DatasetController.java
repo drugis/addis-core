@@ -107,12 +107,12 @@ public class DatasetController extends AbstractAddisCoreController {
     }
   }
 
-  @RequestMapping(value = "/{datasetUUID}", method = RequestMethod.POST, consumes = WebConstants.TRIG)
+  @RequestMapping(value = "/{datasetUuid}", method = RequestMethod.POST, consumes = WebConstants.TRIG)
   @ResponseBody
   public void createDatasetWithContent(
 		  HttpServletRequest request, HttpServletResponse response,
 		  Principal currentUser, @PathVariable Integer userId,
-		  @PathVariable String datasetUUID,
+		  @PathVariable String datasetUuid,
           @RequestParam(WebConstants.COMMIT_TITLE_PARAM) String commitTitle,
           @RequestParam(value = WebConstants.COMMIT_DESCRIPTION_PARAM, required = false) String commitDescription)
       throws URISyntaxException, CreateDatasetException, HttpException, IOException {
@@ -120,7 +120,7 @@ public class DatasetController extends AbstractAddisCoreController {
     TrialversePrincipal trialversePrincipal = new TrialversePrincipal(currentUser);
     Account user = accountRepository.findAccountByUsername(trialversePrincipal.getUserName());
     if (user != null && userId.equals(user.getId())) {
-      URI datasetUri = datasetWriteRepository.createOrUpdateDatasetWithContent(request.getInputStream(), WebConstants.TRIG, JenaFactory.DATASET + datasetUUID, trialversePrincipal, commitTitle, commitDescription);
+      URI datasetUri = datasetWriteRepository.createOrUpdateDatasetWithContent(request.getInputStream(), WebConstants.TRIG, JenaFactory.DATASET + datasetUuid, trialversePrincipal, commitTitle, commitDescription);
       response.setStatus(HttpServletResponse.SC_CREATED);
       response.setHeader("Location", datasetUri.toString());
     } else {
@@ -156,18 +156,18 @@ public class DatasetController extends AbstractAddisCoreController {
   }
 
 
-  @RequestMapping(value = "/{datasetUUID}", method = RequestMethod.GET)
+  @RequestMapping(value = "/{datasetUuid}", method = RequestMethod.GET)
   @ResponseBody
-  public void getDataset(HttpServletResponse httpServletResponse, @PathVariable String datasetUUID) throws IOException, URISyntaxException {
+  public void getDataset(HttpServletResponse httpServletResponse, @PathVariable String datasetUuid) throws IOException, URISyntaxException {
     logger.trace("retrieving head dataset");
-    getVersionedDatasetAsTurtle(httpServletResponse, datasetUUID, null);
+    getVersionedDatasetAsTurtle(httpServletResponse, datasetUuid, null);
   }
 
-  @RequestMapping(value = "/{datasetUUID}", method = RequestMethod.GET, headers = WebConstants.ACCEPT_JSON_HEADER)
+  @RequestMapping(value = "/{datasetUuid}", method = RequestMethod.GET, headers = WebConstants.ACCEPT_JSON_HEADER)
   @ResponseBody
-  public void getDatasetAsJson(HttpServletResponse httpServletResponse, @PathVariable String datasetUUID) throws IOException, URISyntaxException {
+  public void getDatasetAsJson(HttpServletResponse httpServletResponse, @PathVariable String datasetUuid) throws IOException, URISyntaxException {
     logger.trace("retrieving head dataset");
-    getVersionedDatasetAsJson(httpServletResponse, datasetUUID, null);
+    getVersionedDatasetAsJson(httpServletResponse, datasetUuid, null);
   }
 
   @RequestMapping(value = "/{datasetUuid}/query", method = RequestMethod.GET)
@@ -194,47 +194,47 @@ public class DatasetController extends AbstractAddisCoreController {
     trialverseIOUtilsService.writeContentToServletResponse(response, httpServletResponse);
   }
 
-  @RequestMapping(value = "/{datasetUUID}/history", method = RequestMethod.GET)
+  @RequestMapping(value = "/{datasetUuid}/history", method = RequestMethod.GET)
   @ResponseBody
-  public List<VersionNode> queryHistory(HttpServletResponse httpServletResponse, @PathVariable String datasetUUID) throws URISyntaxException, IOException, RevisionNotFoundException {
+  public List<VersionNode> queryHistory(HttpServletResponse httpServletResponse, @PathVariable String datasetUuid) throws URISyntaxException, IOException, RevisionNotFoundException {
     logger.trace("executing queryHistory");
-    URI trialverseDatasetUri = new URI(Namespaces.DATASET_NAMESPACE + datasetUUID);
+    URI trialverseDatasetUri = new URI(Namespaces.DATASET_NAMESPACE + datasetUuid);
     List<VersionNode> history = historyService.createHistory(trialverseDatasetUri);
     httpServletResponse.setStatus(HttpServletResponse.SC_OK);
     return history;
   }
 
-  @RequestMapping(value = "/{datasetUUID}/history/{versionUuid}", method = RequestMethod.GET)
+  @RequestMapping(value = "/{datasetUuid}/history/{versionUuid}", method = RequestMethod.GET)
   @ResponseBody
-  public VersionNode getVersionInfo(@PathVariable String datasetUUID, @PathVariable String versionUuid) throws IOException, URISyntaxException {
-    URI trialverseDatasetUri = URI.create(Namespaces.DATASET_NAMESPACE + datasetUUID);
+  public VersionNode getVersionInfo(@PathVariable String datasetUuid, @PathVariable String versionUuid) throws IOException, URISyntaxException {
+    URI trialverseDatasetUri = URI.create(Namespaces.DATASET_NAMESPACE + datasetUuid);
     URI versionUri = URI.create(WebConstants.getVersionBaseUri() + versionUuid);
     logger.info("retrieving version info for " + trialverseDatasetUri.toString() + " / " + versionUri.toString());
     return historyService.getVersionInfo(trialverseDatasetUri, versionUri);
   }
 
-  @RequestMapping(value = "/{datasetUUID}/versions/{versionUuid}", method = RequestMethod.GET)
+  @RequestMapping(value = "/{datasetUuid}/versions/{versionUuid}", method = RequestMethod.GET)
   @ResponseBody
-  public void getVersionedDatasetAsTurtle(HttpServletResponse httpServletResponse, @PathVariable String datasetUUID, @PathVariable String versionUuid) throws URISyntaxException {
+  public void getVersionedDatasetAsTurtle(HttpServletResponse httpServletResponse, @PathVariable String datasetUuid, @PathVariable String versionUuid) throws URISyntaxException {
     logger.trace("retrieving versioned dataset: {}", versionUuid);
-    Model model = getVersionedDatasetModel(datasetUUID, versionUuid);
+    Model model = getVersionedDatasetModel(datasetUuid, versionUuid);
     httpServletResponse.setStatus(HttpServletResponse.SC_OK);
     httpServletResponse.setHeader("Content-Type", RDFLanguages.TURTLE.getContentType().getContentType());
     trialverseIOUtilsService.writeModelToServletResponse(model, httpServletResponse);
   }
 
-  @RequestMapping(value = "/{datasetUUID}/versions/{versionUuid}", method = RequestMethod.GET, headers = WebConstants.ACCEPT_JSON_HEADER)
+  @RequestMapping(value = "/{datasetUuid}/versions/{versionUuid}", method = RequestMethod.GET, headers = WebConstants.ACCEPT_JSON_HEADER)
   @ResponseBody
-  public void getVersionedDatasetAsJson(HttpServletResponse httpServletResponse, @PathVariable String datasetUUID, @PathVariable String versionUuid) throws URISyntaxException {
+  public void getVersionedDatasetAsJson(HttpServletResponse httpServletResponse, @PathVariable String datasetUuid, @PathVariable String versionUuid) throws URISyntaxException {
     logger.trace("retrieving versioned dataset: {}", versionUuid);
-    Model model = getVersionedDatasetModel(datasetUUID, versionUuid);
+    Model model = getVersionedDatasetModel(datasetUuid, versionUuid);
     httpServletResponse.setStatus(HttpServletResponse.SC_OK);
     httpServletResponse.setHeader("Content-Type", RDFLanguages.JSONLD.getContentType().getContentType());
     trialverseIOUtilsService.writeModelToServletResponseJson(model, httpServletResponse);
   }
 
-  public Model getVersionedDatasetModel(String datasetUUID, String versionUuid) throws URISyntaxException {
-    URI trialverseDatasetUri = new URI(Namespaces.DATASET_NAMESPACE + datasetUUID);
+  public Model getVersionedDatasetModel(String datasetUuid, String versionUuid) throws URISyntaxException {
+    URI trialverseDatasetUri = new URI(Namespaces.DATASET_NAMESPACE + datasetUuid);
     return datasetReadRepository.getVersionedDataset(trialverseDatasetUri, versionUuid);
   }
 }

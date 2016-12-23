@@ -119,11 +119,11 @@ public class DatasetReadRepositoryTest {
 
   @Test
   public void testGetVersionedDataset() throws URISyntaxException {
-    String datasetUUID = "uuid";
+    String datasetUuid = "uuid";
     String versionUuid = "versionUuid";
     String versionedUri = "baseUri/versions/" + versionUuid;
-    VersionMapping mapping = new VersionMapping(versionedUri, "itsame", Namespaces.DATASET_NAMESPACE + datasetUUID);
-    URI trialverseDatasetUrl = new URI(Namespaces.DATASET_NAMESPACE + datasetUUID);
+    VersionMapping mapping = new VersionMapping(versionedUri, "itsame", Namespaces.DATASET_NAMESPACE + datasetUuid);
+    URI trialverseDatasetUrl = new URI(Namespaces.DATASET_NAMESPACE + datasetUuid);
     when(versionMappingRepository.getVersionMappingByDatasetUrl(trialverseDatasetUrl)).thenReturn(mapping);
     HttpHeaders httpHeaders = new HttpHeaders();
     httpHeaders.add(WebConstants.X_ACCEPT_EVENT_SOURCE_VERSION, WebConstants.getVersionBaseUri() + versionUuid);
@@ -154,7 +154,7 @@ public class DatasetReadRepositoryTest {
 
   @Test
   public void testIsOwnerWhenQuerySaysFalse() throws IOException, URISyntaxException {
-    URI datasetUrl = new URI("datasetUUID");
+    URI datasetUrl = new URI("datasetUuid");
     String user1 = "other user";
     Account account = new Account(user1, "piet", "klaassen", "foo@bar.com");
     ApiKey credentials = new ApiKey();
@@ -174,7 +174,7 @@ public class DatasetReadRepositoryTest {
   @Test
   public void testIsOwnerWhenQuerySaysTrue() throws IOException, URISyntaxException {
     String user1 = "user1";
-    URI datasetUrl = new URI(Namespaces.DATASET_NAMESPACE + "datasetUUID");
+    URI datasetUrl = new URI(Namespaces.DATASET_NAMESPACE + "datasetUuid");
     Account account = new Account(user1, "piet", "klaassen", "foo@bar.com");
     ApiKey credentials = new ApiKey();
     Principal principal = new PreAuthenticatedAuthenticationToken(account, credentials);
@@ -240,10 +240,10 @@ public class DatasetReadRepositoryTest {
 
   @Test
   public void testExecuteVersionedQuery() throws URISyntaxException, IOException {
-    String datasetUUID = "datasetUUID";
+    String datasetUuid = "datasetUuid";
     String query = "SELECT * WHERE { ?s ?p ?o }";
     String acceptHeader = "confirm/deny";
-    URI datasetUrl = new URI(Namespaces.DATASET_NAMESPACE + datasetUUID);
+    URI datasetUrl = new URI(Namespaces.DATASET_NAMESPACE + datasetUuid);
     VersionMapping versionMapping = new VersionMapping(1, "http://whatever", "pietje@precies.gov", datasetUrl.toString());
     HttpResponse mockResponse = mock(CloseableHttpResponse.class);
     org.apache.http.HttpEntity entity = mock(org.apache.http.HttpEntity.class);
@@ -262,11 +262,11 @@ public class DatasetReadRepositoryTest {
 
   @Test
   public void testExecuteQueryOnHead() throws URISyntaxException, IOException {
-    String datasetUUID = "datasetUUID";
+    String datasetUuid = "datasetUuid";
     String query = "SELECT * WHERE { ?s ?p ?o }";
     String versionUuid = "myVersion";
     String acceptHeader = "confirm/deny";
-    URI datasetUrl = new URI(Namespaces.DATASET_NAMESPACE + datasetUUID);
+    URI datasetUrl = new URI(Namespaces.DATASET_NAMESPACE + datasetUuid);
     VersionMapping versionMapping = new VersionMapping(1, "http://whatever", "pietje@precies.gov", datasetUrl.toString());
 
     HttpResponse mockResponse = mock(CloseableHttpResponse.class);
