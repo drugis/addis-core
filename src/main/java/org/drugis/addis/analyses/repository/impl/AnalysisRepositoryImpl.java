@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -36,6 +37,17 @@ public class AnalysisRepositoryImpl implements AnalysisRepository {
             "a WHERE a.projectId = :projectId", AbstractAnalysis.class);
     query.setParameter("projectId", projectId);
     return query.getResultList();
+  }
+
+  @Override
+  public void setArchived(Integer analysisId, Boolean archived) throws ResourceDoesNotExistException {
+    AbstractAnalysis analysis = em.find(AbstractAnalysis.class, analysisId);
+    if (analysis == null) {
+      throw new ResourceDoesNotExistException();
+    }
+    analysis.setArchived(archived);
+    analysis.setArchivedOn(archived ? new Date() : null);
+
   }
 
 }

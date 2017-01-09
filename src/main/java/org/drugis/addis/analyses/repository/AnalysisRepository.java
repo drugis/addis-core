@@ -13,4 +13,5 @@ public interface AnalysisRepository {
 
   List<AbstractAnalysis> query(Integer projectId);
 
+  void setArchived(Integer projectId, Boolean isArchived) throws ResourceDoesNotExistException;
 }

@@ -11,6 +11,10 @@ define([], function() {
       setPrimaryModel: {
         url: '/projects/:projectId/analyses/:analysisId/setPrimaryModel',
         method: 'POST'
+      },
+      setArchived: {
+        url: '/projects/:projectId/analyses/:analysisId/setArchivedStatus',
+        method: 'POST'
       }
     });
   };

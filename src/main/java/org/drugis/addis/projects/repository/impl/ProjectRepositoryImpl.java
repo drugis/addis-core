@@ -82,6 +82,6 @@ public class ProjectRepositoryImpl implements ProjectRepository {
   public void setArchived(Integer projectId, Boolean archived) {
     Project project = em.find(Project.class, projectId);
     project.setArchived(archived);
-    project.setArchivedOn( archived ? new Date(): null);
+    project.setArchivedOn(archived ? new Date(): null);
   }
 }

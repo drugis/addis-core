@@ -150,6 +150,14 @@ public class AnalysisController extends AbstractAddisCoreController {
     return analysisService.buildEvidenceTable(projectId, analysisId);
   }
 
+  @RequestMapping(value = "/projects/{projectId}/analyses/{analysisId}/setArchivedStatus", method = RequestMethod.POST)
+  @ResponseBody
+  public void setArchivedStatus(Principal principal, @PathVariable Integer projectId, @PathVariable Integer analysisId, @RequestBody AnalysisArchiveCommand archiveCommand) throws ResourceDoesNotExistException, MethodNotAllowedException {
+    projectService.checkOwnership(projectId, principal);
+    analysisRepository.setArchived(analysisId, archiveCommand.getIsArchived());
+  }
+
+
   private SingleStudyBenefitRiskAnalysis updateSingleStudyBenefitRiskAnalysis(Account user, SingleStudyBenefitRiskAnalysis analysis) throws MethodNotAllowedException, ResourceDoesNotExistException {
     SingleStudyBenefitRiskAnalysis oldAnalysis = (SingleStudyBenefitRiskAnalysis) analysisRepository.get(analysis.getId());
     if (oldAnalysis.getProblem() != null) {

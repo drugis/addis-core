@@ -812,3 +812,9 @@ DROP TABLE InterventionCombination;
 --rollback INSERT INTO InterventionCombination(combinationInterventionId, singleInterventionId) SELECT multipleInterventionId, interventionId FROM multipleInterventionItem WHERE multipleInterventionId IN (SELECT combinationInterventionId FROM CombinationIntervention) ;
 --rollback DROP TABLE MultipleIntervention;
 --rollback DROP TABLE MultipleInterventionItem;
+
+--changeset keijserj:67
+ALTER TABLE AbstractAnalysis ADD COLUMN isArchived boolean NOT NULL DEFAULT FALSE ;
+ALTER TABLE AbstractAnalysis ADD COLUMN archived_on date;
+--rollback ALTER TABLE AbstractAnalysis DROP COLUMN archived_on;
+--rollback ALTER TABLE AbstractAnalysis DROP COLUMN isArchived;

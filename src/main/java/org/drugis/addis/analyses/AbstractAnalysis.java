@@ -31,6 +31,12 @@ public abstract class AbstractAnalysis {
   @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "analysisId", orphanRemoval = true)
   protected Set<InterventionInclusion> interventionInclusions = new HashSet<>();
 
+  private Boolean isArchived = false;
+
+  @Column(name = "archived_on")
+  @org.hibernate.annotations.Type(type = "date")
+  private Date archivedOn;
+
   public Integer getId() {
     return id;
   }
@@ -41,6 +47,21 @@ public abstract class AbstractAnalysis {
 
   public String getTitle() {
     return title;
+  }
+  public Boolean getArchived() {
+    return isArchived;
+  }
+
+  public Date getArchivedOn() {
+    return archivedOn;
+  }
+
+  public void setArchived(Boolean isArchived) {
+    this.isArchived = isArchived;
+  }
+
+  public void setArchivedOn(Date archivedOn) {
+    this.archivedOn = archivedOn;
   }
 
   public List<InterventionInclusion> getInterventionInclusions() {
