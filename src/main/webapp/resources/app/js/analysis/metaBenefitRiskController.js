@@ -43,9 +43,7 @@ define(['lodash'], function(_) {
             owa.networkMetaAnalyses = owa.networkMetaAnalyses.sort(MetaBenefitRiskService.compareAnalysesByModels);
             return owa;
           });
-
         $scope.outcomesWithAnalyses = buildOutcomesWithAnalyses(analysis, outcomes, networkMetaAnalyses, models);
-
       });
 
       $scope.alternatives = alternatives.map(function(alternative) {

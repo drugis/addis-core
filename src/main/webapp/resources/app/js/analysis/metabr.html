@@ -50,10 +50,14 @@
         <tbody>
           <tr ng-repeat="outcomeWithAnalyses in outcomesWithAnalyses">
             <td>{{outcomeWithAnalyses.outcome.name}}</td>
-            <td>{{outcomeWithAnalyses.selectedAnalysis.title}}</td>
+            <td>
+            {{outcomeWithAnalyses.selectedAnalysis.title}}
+            <span ng-if="outcomeWithAnalyses.selectedAnalysis.archived">(archived analysis)</span>
+            </td>
             <td>
               {{outcomeWithAnalyses.selectedModel.title}}
               <button class="small success" ng-if="outcomeWithAnalyses.selectedModel.runStatus !== 'done'" ng-click="goToModel(outcomeWithAnalyses.selectedModel)">Run model</button>
+              <span ng-if="outcomeWithAnalyses.selectedModel.archived">(archived model)</span>
             </td>
           </tr>
         </tbody>

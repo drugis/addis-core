@@ -79,6 +79,8 @@ define(['lodash', 'angular'], function(_, angular) {
       var alternatives = result[1];
       var outcomes = result[2];
       var models = result[3];
+      // filter out archived models
+      models = _.filter(models,function(model){return !model.archived;});
       var outcomeIds = outcomes.map(function(outcome) {
         return outcome.id;
       });
@@ -96,8 +98,11 @@ define(['lodash', 'angular'], function(_, angular) {
             owa.networkMetaAnalyses = owa.networkMetaAnalyses.sort(MetaBenefitRiskService.compareAnalysesByModels);
             return owa;
           });
+        // filter out archived analyses
+        $scope.outcomesWithAnalyses = _.filter($scope.outcomesWithAnalyses, function(outcomeWithAnalyses) {
+          return outcomeWithAnalyses.selectedAnalysis === undefined || !outcomeWithAnalyses.selectedAnalysis.archived;
+        });
         updateMissingAlternativesForAllOutcomes();
-
         // when view setup is completed
         checkStep1Validity();
       });
@@ -187,7 +192,7 @@ define(['lodash', 'angular'], function(_, angular) {
       owa.selectedModel.missingAlternativesNames = _.map(owa.selectedModel.missingAlternatives, 'name');
     }
 
-    function buildAnalysisCommand(analysis){
+    function buildAnalysisCommand(analysis) {
       var analysisCommand = angular.copy(analysis);
       analysisCommand.interventionInclusions = analysis.interventionInclusions.map(function(includedIntervention) {
         return {
