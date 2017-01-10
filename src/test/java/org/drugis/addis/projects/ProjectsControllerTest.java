@@ -240,7 +240,6 @@ public class ProjectsControllerTest {
     verify(reportRepository).get(1);
   }
 
-
   @Test
   public void testArchiveProject() throws Exception {
     String postBodyStr = "{ \"isArchived\": true }";
@@ -264,6 +263,4 @@ public class ProjectsControllerTest {
     verify(projectService).checkOwnership(1, user);
     verify(projectRepository).setArchived(1, false);
   }
-
 }
-

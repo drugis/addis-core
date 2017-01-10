@@ -81,7 +81,8 @@ public class AnalysisControllerTest {
           gert = new Account(3, "gert", "Gert", "van Valkenhoef", "gert@test.com");
 
   private URI uri = URI.create("uri");
-
+  private Integer projectId = 1;
+  private Integer analysisId = 1;
 
   @Before
   public void setUp() {
@@ -103,7 +104,6 @@ public class AnalysisControllerTest {
   public void testQueryAnalyses() throws Exception {
     SingleStudyBenefitRiskAnalysis singleStudyBenefitRiskAnalysis = new SingleStudyBenefitRiskAnalysis(1, 1, "name", Collections.emptyList(), Collections.emptyList());
     NetworkMetaAnalysis networkMetaAnalysis = new NetworkMetaAnalysis(2, 1, "name", null);
-    Integer projectId = 1;
     List<AbstractAnalysis> analyses = Arrays.asList(singleStudyBenefitRiskAnalysis, networkMetaAnalysis);
     when(analysisRepository.query(projectId)).thenReturn(analyses);
 
@@ -120,9 +120,8 @@ public class AnalysisControllerTest {
   @Test
   public void testQueryNetworkMetaAnalysisByOutcomes() throws Exception {
     Integer direction = 1;
-    Outcome outcome = new Outcome(1, 1, "name", direction,"motivation", new SemanticVariable(uri, "label"));
+    Outcome outcome = new Outcome(1, 1, "name", direction, "motivation", new SemanticVariable(uri, "label"));
     NetworkMetaAnalysis networkMetaAnalysis = new NetworkMetaAnalysis(1, 1, "name", outcome);
-    Integer projectId = 1;
     List<Integer> outcomeIds = Arrays.asList(1);
     List<NetworkMetaAnalysis> analyses = Arrays.asList(networkMetaAnalysis);
     when(networkMetaAnalysisRepository.queryByOutcomes(projectId, outcomeIds)).thenReturn(analyses);
@@ -210,7 +209,6 @@ public class AnalysisControllerTest {
 
   @Test
   public void testGetNMAnalysis() throws Exception {
-    Integer projectId = 1;
     NetworkMetaAnalysis analysis = new NetworkMetaAnalysis(1, projectId, "testName", Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), null);
     when(analysisRepository.get(analysis.getId())).thenReturn(analysis);
     ResultActions result = mockMvc.perform(get("/projects/1/analyses/1").principal(user));
@@ -227,7 +225,6 @@ public class AnalysisControllerTest {
   public void testGetAnalysisWithAProblem() throws Exception {
     String problem = "{\"key\": \"value\"}";
     SingleStudyBenefitRiskAnalysis analysis = new SingleStudyBenefitRiskAnalysis(1, 1, "name", Collections.emptyList(), Collections.emptyList(), problem);
-    Integer projectId = 1;
     when(analysisRepository.get(analysis.getId())).thenReturn(analysis);
     mockMvc.perform(get("/projects/1/analyses/1"))
             .andExpect(status().isOk())
@@ -239,8 +236,6 @@ public class AnalysisControllerTest {
 
   @Test
   public void testUpdateAnalysisWithoutProblem() throws Exception {
-    Integer projectId = 1;
-    Integer analysisId = 1;
     Integer direction = 1;
     List<Outcome> selectedOutcomes = Arrays.asList(
             new Outcome(1, projectId, "name", direction, "motivation", new SemanticVariable(uri, "label")),
@@ -274,8 +269,6 @@ public class AnalysisControllerTest {
 
   @Test
   public void testUpdateAnalysisWithCreateScenario() throws Exception {
-    Integer projectId = 1;
-    Integer analysisId = 1;
     SingleStudyBenefitRiskAnalysis oldAnalysis = new SingleStudyBenefitRiskAnalysis(1, projectId, "name", Collections.emptyList(), Collections.emptyList());
     ObjectMapper objectMapper = new ObjectMapper();
     SingleStudyBenefitRiskAnalysis newAnalysis = objectMapper.convertValue(objectMapper.readTree(exampleUpdateSingleStudyBenefitRiskRequestWithProblem()), SingleStudyBenefitRiskAnalysis.class);
@@ -295,8 +288,6 @@ public class AnalysisControllerTest {
 
   @Test
   public void testUpdateLockedAnalysisFails() throws Exception {
-    Integer projectId = 1;
-    Integer analysisId = 1;
     SingleStudyBenefitRiskAnalysis oldAnalysis = new SingleStudyBenefitRiskAnalysis(1, projectId, "name", Collections.emptyList(), Collections.emptyList(), "oldProblem");
     ObjectMapper objectMapper = new ObjectMapper();
     SingleStudyBenefitRiskAnalysis newAnalysis = objectMapper.convertValue(objectMapper.readTree(exampleUpdateSingleStudyBenefitRiskRequestWithProblem()), SingleStudyBenefitRiskAnalysis.class);
@@ -313,8 +304,6 @@ public class AnalysisControllerTest {
 
   @Test
   public void testUpdate() throws Exception {
-    Integer projectId = 1;
-    Integer analysisId = 1;
     SingleStudyBenefitRiskAnalysis oldAnalysis = new SingleStudyBenefitRiskAnalysis(1, projectId, "name", Collections.emptyList(), Collections.emptyList(), null);
     ObjectMapper objectMapper = new ObjectMapper();
     SingleStudyBenefitRiskAnalysis newAnalysis = objectMapper.convertValue(objectMapper.readTree(exampleUpdateSingleStudyBenefitRiskRequestWithProblem()), SingleStudyBenefitRiskAnalysis.class);
@@ -333,12 +322,10 @@ public class AnalysisControllerTest {
 
   @Test
   public void testUpdateNetworkMetaAnalysis() throws Exception {
-    Integer analysisId = 333;
-    Integer projectId = 101;
     Integer outcomeId = 444;
     Integer direction = 1;
     NetworkMetaAnalysis oldAnalysis = new NetworkMetaAnalysis(analysisId, projectId, "analysis name");
-    Outcome outcome = new Outcome(outcomeId, projectId, "outcome name", direction,"motivation", new SemanticVariable(uri, "label"));
+    Outcome outcome = new Outcome(outcomeId, projectId, "outcome name", direction, "motivation", new SemanticVariable(uri, "label"));
     NetworkMetaAnalysis newAnalysis = new NetworkMetaAnalysis(oldAnalysis.getId(), oldAnalysis.getProjectId(), oldAnalysis.getTitle(), outcome);
     when(analysisRepository.get(analysisId)).thenReturn(oldAnalysis);
     when(analysisService.updateNetworkMetaAnalysis(gert, newAnalysis)).thenReturn(newAnalysis);
@@ -354,8 +341,6 @@ public class AnalysisControllerTest {
 
   @Test
   public void testUpdateWithExcludedArms() throws Exception {
-    Integer analysisId = 333;
-    Integer projectId = 101;
     Integer outcomeId = 444;
     Integer direction = 1;
     Outcome outcome = new Outcome(outcomeId, projectId, "outcome name", direction, "motivation", new SemanticVariable(uri, "label"));
@@ -374,8 +359,6 @@ public class AnalysisControllerTest {
 
   @Test
   public void testUpdateWithIncludedInterventions() throws Exception {
-    Integer analysisId = 333;
-    Integer projectId = 101;
     Integer outcomeId = 444;
     Integer direction = 1;
     Outcome outcome = new Outcome(outcomeId, projectId, "outcome name", direction, "motivation", new SemanticVariable(uri, "label"));
@@ -395,8 +378,6 @@ public class AnalysisControllerTest {
 
   @Test
   public void testUpdateWithIncludedCovariates() throws Exception {
-    Integer analysisId = 333;
-    Integer projectId = 101;
     Integer outcomeId = 444;
     Integer direction = 1;
     Outcome outcome = new Outcome(outcomeId, projectId, "outcome name", direction, "motivation", new SemanticVariable(uri, "label"));
@@ -415,8 +396,6 @@ public class AnalysisControllerTest {
 
   @Test
   public void testSetPrimaryModel() throws Exception {
-    Integer projectId = 3;
-    Integer analysisId = 4;
     String modelId = "5";
     mockMvc.perform((post("/projects/{projectId}/analyses/{analysisId}/setPrimaryModel", projectId, analysisId)
             .param("modelId", modelId))
@@ -429,9 +408,7 @@ public class AnalysisControllerTest {
 
   @Test
   public void testUnsetPrimaryModel() throws Exception {
-    Integer projectId = 3;
-    Integer analysisId = 4;
-    mockMvc.perform((post("/projects/{projectId}/analyses/{analysisId}/setPrimaryModel", projectId, analysisId))
+    mockMvc.perform(post("/projects/{projectId}/analyses/{analysisId}/setPrimaryModel", projectId, analysisId)
             .principal(user))
             .andExpect(status().isOk());
     verify(projectService).checkOwnership(projectId, user);
@@ -445,6 +422,30 @@ public class AnalysisControllerTest {
 
   String exampleUpdateSingleStudyBenefitRiskRequestWithoutProblem() {
     return TestUtils.loadResource(this.getClass(), "/analysisController/exampleSingleStudyBenefitRiskAnalysisWithoutProblem.json");
+  }
+
+  @Test
+  public void testArchiveProject() throws Exception {
+    String postBodyStr = "{ \"isArchived\": true }";
+    mockMvc.perform(post("/projects/{projectId}/analyses/{analysisId}/setArchivedStatus", projectId, analysisId)
+            .content(postBodyStr)
+            .principal(user)
+            .contentType(WebConstants.getApplicationJsonUtf8Value()))
+            .andExpect(status().isOk());
+    verify(projectService).checkOwnership(1, user);
+    verify(analysisRepository).setArchived(1, true);
+  }
+
+  @Test
+  public void testUnArchiveProject() throws Exception {
+    String postBodyStr = "{ \"isArchived\": false }";
+    mockMvc.perform(post("/projects/{projectId}/analyses/{analysisId}/setArchivedStatus", projectId, analysisId)
+            .content(postBodyStr)
+            .principal(user)
+            .contentType(WebConstants.getApplicationJsonUtf8Value()))
+            .andExpect(status().isOk());
+    verify(projectService).checkOwnership(1, user);
+    verify(analysisRepository).setArchived(1, false);
   }
 
 }

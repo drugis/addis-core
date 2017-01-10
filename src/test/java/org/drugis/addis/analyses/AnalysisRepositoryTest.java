@@ -15,8 +15,7 @@ import javax.transaction.Transactional;
 import java.util.Collections;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  * Created by daan on 7-5-14.
@@ -85,4 +84,16 @@ public class AnalysisRepositoryTest {
     assertTrue(analyses.contains(analysis));
   }
 
+  @Test
+  public void testArchiveAndUnArchiveProject() throws ResourceDoesNotExistException {
+    int analysisId = -6;
+    analysisRepository.setArchived(analysisId, true);
+    AbstractAnalysis analysis = analysisRepository.get(analysisId);
+    assertEquals(true, analysis.getArchived());
+    assertNotNull(analysis.getArchivedOn());
+    analysisRepository.setArchived(analysisId, false);
+    analysis = analysisRepository.get(analysisId);
+    assertEquals(false, analysis.getArchived());
+    assertNull(analysis.getArchivedOn());
+  }
 }
