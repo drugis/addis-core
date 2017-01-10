@@ -16,7 +16,7 @@ define(['angular', 'angular-mocks', 'services'], function(angular) {
       'measurements': {
         defaultMMUri: [{
           'measurementTypeURI': CONTINUOUS_TYPE,
-          'studyUid': 'http://trials.drugis.org/graphs/favaUuid',
+          'studyUuid': 'http://trials.drugis.org/graphs/favaUuid',
           'variableUri': 'http://trials.drugis.org/instances/hamd-instance',
           'variableConceptUri': 'variableConceptUri',
           'armUri': 'http://trials.drugis.org/instances/fava-parox-arm',
@@ -38,7 +38,7 @@ define(['angular', 'angular-mocks', 'services'], function(angular) {
       'measurements': {
         defaultMMUri: [{
           'measurementTypeURI': CONTINUOUS_TYPE,
-          'studyUid': 'http://trials.drugis.org/graphs/favaUuid',
+          'studyUuid': 'http://trials.drugis.org/graphs/favaUuid',
           'variableUri': 'http://trials.drugis.org/instances/hamd-instance',
           'variableConceptUri': 'variableConceptUri',
           'armUri': 'http://trials.drugis.org/instances/fava-sertra-arm',
@@ -60,7 +60,7 @@ define(['angular', 'angular-mocks', 'services'], function(angular) {
       'measurements': {
         defaultMMUri: [{
           'measurementTypeURI': CONTINUOUS_TYPE,
-          'studyUid': 'http://trials.drugis.org/graphs/favaUuid',
+          'studyUuid': 'http://trials.drugis.org/graphs/favaUuid',
           'variableUri': 'http://trials.drugis.org/instances/hamd-instance',
           'variableConceptUri': 'variableConceptUri',
           'armUri': 'http://trials.drugis.org/instances/fava-arm-1-uri',
@@ -509,7 +509,7 @@ define(['angular', 'angular-mocks', 'services'], function(angular) {
             }],
             study: 'Fava et al, 2002',
             studyUri: 'http://trials.drugis.org/graphs/favaUuid',
-            studyUid: 'favaUuid',
+            studyUuid: 'favaUuid',
             studyRowSpan: 3,
             arm: 'Paroxetine',
             trialverseUid: 'http://trials.drugis.org/instances/fava-parox-arm',
@@ -541,7 +541,7 @@ define(['angular', 'angular-mocks', 'services'], function(angular) {
             }],
             study: 'Fava et al, 2002',
             studyUri: 'http://trials.drugis.org/graphs/favaUuid',
-            studyUid: 'favaUuid',
+            studyUuid: 'favaUuid',
             studyRowSpan: 3,
             arm: 'Sertraline',
             trialverseUid: 'http://trials.drugis.org/instances/fava-sertra-arm',
@@ -572,7 +572,7 @@ define(['angular', 'angular-mocks', 'services'], function(angular) {
             }],
             study: 'Fava et al, 2002',
             studyUri: 'http://trials.drugis.org/graphs/favaUuid',
-            studyUid: 'favaUuid',
+            studyUuid: 'favaUuid',
             studyRowSpan: 3,
             arm: 'Fluoxetine',
             trialverseUid: 'http://trials.drugis.org/instances/fava-arm-1-uri',
@@ -888,7 +888,7 @@ define(['angular', 'angular-mocks', 'services'], function(angular) {
           isIncluded: true
         }];
         var trialData = [{
-          studyUid: 'studyUid',
+          studyUuid: 'studyUuid',
           trialDataArms: [{
             drugConceptUid: 'drugUri1',
             matchedProjectInterventionIds: [1]
@@ -918,7 +918,7 @@ define(['angular', 'angular-mocks', 'services'], function(angular) {
 
         var interventions = [intervention1, intervention2, intervention3];
         var trialData = [{
-          studyUid: 'studyUid',
+          studyUuid: 'studyUuid',
           trialDataArms: [{
             matchedProjectInterventionIds: [1, 2]
           }, {

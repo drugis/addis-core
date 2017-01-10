@@ -10,7 +10,7 @@ import java.util.Set;
  */
 public class Study {
 
-  private String studyUid;
+  private String studyUuid;
   private String studyGraphUid;
   private String name;
   private String title;
@@ -20,8 +20,8 @@ public class Study {
   public Study() {
   }
 
-  public Study(String studyUid, String studyGraphUid, String name, String title, List<String> outcomeUids) {
-    this.studyUid = studyUid;
+  public Study(String studyUuid, String studyGraphUid, String name, String title, List<String> outcomeUids) {
+    this.studyUuid = studyUuid;
     this.studyGraphUid = studyGraphUid;
     this.name = name;
     this.title = title;
@@ -29,7 +29,7 @@ public class Study {
   }
 
   public String getStudyUid() {
-    return studyUid;
+    return studyUuid;
   }
 
   public String getStudyGraphUid() {
@@ -59,7 +59,7 @@ public class Study {
 
     Study study = (Study) o;
 
-    if (studyUid != null ? !studyUid.equals(study.studyUid) : study.studyUid != null) return false;
+    if (studyUuid != null ? !studyUuid.equals(study.studyUuid) : study.studyUuid != null) return false;
     if (studyGraphUid != null ? !studyGraphUid.equals(study.studyGraphUid) : study.studyGraphUid != null)
       return false;
     if (name != null ? !name.equals(study.name) : study.name != null) return false;
@@ -71,7 +71,7 @@ public class Study {
 
   @Override
   public int hashCode() {
-    int result = studyUid != null ? studyUid.hashCode() : 0;
+    int result = studyUuid != null ? studyUuid.hashCode() : 0;
     result = 31 * result + (studyGraphUid != null ? studyGraphUid.hashCode() : 0);
     result = 31 * result + (name != null ? name.hashCode() : 0);
     result = 31 * result + (title != null ? title.hashCode() : 0);

@@ -18,10 +18,10 @@
   <ul class="breadcrumbs fixed">
     <li><a ui-sref="datasets({userUid: user.id})">{{user.firstName}} {{user.lastName}}</a></li>
     <li><a ui-sref="datasets({userUid: userUid})">Datasets</a></li>
-    <li ng-if="versionUuid"><a ui-sref="versionedDataset({userUid: userUid, datasetUUID: datasetUUID, versionUuid: versionUuid})">{{dataset.title}}</a></li>
-    <li ng-if="versionUuid"><a ui-sref="versionedDataset({userUid: userUid, datasetUUID: datasetUUID, versionUuid: versionUuid})">Studies</a></li>
-    <li ng-if="!versionUuid"><a ui-sref="versionedDataset({userUid: userUid, datasetUUID: datasetUUID})">{{dataset.title}}</a></li>
-    <li ng-if="!versionUuid"><a ui-sref="versionedDataset({userUid: userUid, datasetUUID: datasetUUID})">Studies</a></li>
+    <li ng-if="versionUuid"><a ui-sref="versionedDataset({userUid: userUid, datasetUuid: datasetUuid, versionUuid: versionUuid})">{{dataset.title}}</a></li>
+    <li ng-if="versionUuid"><a ui-sref="versionedDataset({userUid: userUid, datasetUuid: datasetUuid, versionUuid: versionUuid})">Studies</a></li>
+    <li ng-if="!versionUuid"><a ui-sref="versionedDataset({userUid: userUid, datasetUuid: datasetUuid})">{{dataset.title}}</a></li>
+    <li ng-if="!versionUuid"><a ui-sref="versionedDataset({userUid: userUid, datasetUuid: datasetUuid})">Studies</a></li>
     <li class="current active">{{study.label}}</li>
   </ul>
   <div class="row nav-bar-spacer">
@@ -68,7 +68,7 @@
       </div>
       <version-info>
         <div>
-          <a ui-sref="studyHistory({userUid: userUid, datasetUUID: datasetUUID, studyGraphUuid: studyGraphUuid})" style="text-decoration: underline;">Study History</a> <br>
+          <a ui-sref="studyHistory({userUid: userUid, datasetUuid: datasetUuid, studyGraphUuid: studyGraphUuid})" style="text-decoration: underline;">Study History</a> <br>
           <button ng-if="hasLoggedInUser" class="small" ng-disabled="!currentRevision" ng-click="openCopyDialog()"
             style="margin-top: 0.3rem;"><i class="fa fa-code-fork"></i> Copy study</button>
         </div>

@@ -4,12 +4,12 @@ define(['angular-mocks'], function(angularMocks) {
 
     var scope,
       userUid = 'userUid',
-      datasetUUID = 'datasetUUID',
+      datasetUuid = 'datasetUuid',
       studyGraphUuid = 'studyGraphUuid',
       versionUuid = 'versionUuid',
       mockStateParams = {
         userUid: userUid,
-        datasetUUID: datasetUUID,
+        datasetUuid: datasetUuid,
         studyGraphUuid: studyGraphUuid,
         versionUuid: versionUuid
       },

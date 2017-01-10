@@ -156,7 +156,7 @@ public class GraphControllerTest {
 
   @Test
   public void testGetGraph() throws Exception {
-    String datasetUuid = "datasetUUID";
+    String datasetUuid = "datasetUuid";
     String graphUUID = "graphUUID";
     String versionUuid = "versionUuid";
     String versionedDatasetUrl = "http://myversiondDatasetUrl";
@@ -179,13 +179,13 @@ public class GraphControllerTest {
   @Test(expected = NestedServletException.class)
   public void testCreateGraphUserIsNotDatasetOwner() throws Exception {
     String jsonContent = Utils.loadResource(this.getClass(), "/mockStudy.json");
-    String datasetUUID = "datasetUUID";
-    URI datasetUri = new URI(Namespaces.DATASET_NAMESPACE + datasetUUID);
+    String datasetUuid = "datasetUuid";
+    URI datasetUri = new URI(Namespaces.DATASET_NAMESPACE + datasetUuid);
     String graphUUID = "graphUUID";
     when(datasetReadRepository.isOwner(datasetUri, user)).thenReturn(false);
 
     mockMvc.perform(
-            put("/users/" + userHash + "/datasets/" + datasetUUID + "/graphs/" + graphUUID)
+            put("/users/" + userHash + "/datasets/" + datasetUuid + "/graphs/" + graphUUID)
                     .content(jsonContent)
                     .contentType(WebConstants.JSON_LD)
                     .param(WebConstants.COMMIT_TITLE_PARAM, "test title header")
@@ -199,8 +199,8 @@ public class GraphControllerTest {
   @Test
   public void testImportStudy() throws Exception, ClinicalTrialsImportError {
 
-    String datasetUUID = "datasetUUID";
-    URI datasetUri = new URI(Namespaces.DATASET_NAMESPACE + datasetUUID);
+    String datasetUuid = "datasetUuid";
+    URI datasetUri = new URI(Namespaces.DATASET_NAMESPACE + datasetUuid);
     String graphUUID = "graphUUID";
     String studyRef = "123ABC";
     String title = "test title header";
@@ -209,24 +209,24 @@ public class GraphControllerTest {
     Header mockHeader = mock(Header.class);
     when(mockHeader.getValue()).thenReturn(versionValue);
 
-    when(clinicalTrialsImportService.importStudy(title, null, datasetUUID, graphUUID, studyRef)).thenReturn(mockHeader);
+    when(clinicalTrialsImportService.importStudy(title, null, datasetUuid, graphUUID, studyRef)).thenReturn(mockHeader);
 
     mockMvc.perform(
-            post("/users/" + userHash + "/datasets/" + datasetUUID + "/graphs/" + graphUUID + "/import/" + studyRef)
+            post("/users/" + userHash + "/datasets/" + datasetUuid + "/graphs/" + graphUUID + "/import/" + studyRef)
                     .param(WebConstants.COMMIT_TITLE_PARAM, title)
                     .principal(user))
             .andExpect(status().isOk())
             .andExpect(header().string(WebConstants.X_EVENT_SOURCE_VERSION, versionValue));
 
     verify(datasetReadRepository).isOwner(datasetUri, user);
-    verify(clinicalTrialsImportService).importStudy(title, null, datasetUUID, graphUUID, studyRef);
+    verify(clinicalTrialsImportService).importStudy(title, null, datasetUuid, graphUUID, studyRef);
   }
 
   @Test
   public void testUpdateJsonGraph() throws Exception {
     String updateContent = "updateContent";
-    String datasetUUID = "datasetUUID";
-    URI datasetUrl = new URI(Namespaces.DATASET_NAMESPACE + datasetUUID);
+    String datasetUuid = "datasetUuid";
+    URI datasetUrl = new URI(Namespaces.DATASET_NAMESPACE + datasetUuid);
     String graphUUID = "graphUUID";
 
     when(datasetReadRepository.isOwner(datasetUrl, user)).thenReturn(true);
@@ -234,7 +234,7 @@ public class GraphControllerTest {
     when(graphWriteRepository.updateGraph(Matchers.<URI>anyObject(), anyString(), any(InputStream.class), anyString(), anyString())).thenReturn(versionHeader);
 
     mockMvc.perform(
-            put("/users/" + userHash + "/datasets/" + datasetUUID + "/graphs/" + graphUUID)
+            put("/users/" + userHash + "/datasets/" + datasetUuid + "/graphs/" + graphUUID)
                     .content(updateContent)
                     .contentType(WebConstants.JSON_LD)
                     .param(WebConstants.COMMIT_TITLE_PARAM, "test title header")
@@ -251,8 +251,8 @@ public class GraphControllerTest {
   @Test
   public void testUpdateGraph() throws Exception {
     String updateContent = "updateContent";
-    String datasetUUID = "datasetUUID";
-    URI datasetUrl = new URI(Namespaces.DATASET_NAMESPACE + datasetUUID);
+    String datasetUuid = "datasetUuid";
+    URI datasetUrl = new URI(Namespaces.DATASET_NAMESPACE + datasetUuid);
     String graphUUID = "graphUUID";
 
     when(datasetReadRepository.isOwner(datasetUrl, user)).thenReturn(true);
@@ -260,7 +260,7 @@ public class GraphControllerTest {
     when(graphWriteRepository.updateGraph(Matchers.<URI>anyObject(), anyString(), any(InputStream.class), anyString(), anyString())).thenReturn(versionHeader);
 
     mockMvc.perform(
-            put("/users/" + userHash + "/datasets/" + datasetUUID + "/graphs/" + graphUUID)
+            put("/users/" + userHash + "/datasets/" + datasetUuid + "/graphs/" + graphUUID)
                     .content(updateContent)
                     .contentType(WebConstants.JSON_LD)
                     .param(WebConstants.COMMIT_TITLE_PARAM, "test title header")
@@ -303,13 +303,13 @@ public class GraphControllerTest {
   @Test(expected = NestedServletException.class)
   public void testUpdateGraphUserNotDatasetOwner() throws Exception {
     String jsonContent = Utils.loadResource(this.getClass(), "/mockStudy.json");
-    String datasetUUID = "datasetUUID";
-    URI datasetUrl = new URI(Namespaces.DATASET_NAMESPACE + datasetUUID);
+    String datasetUuid = "datasetUuid";
+    URI datasetUrl = new URI(Namespaces.DATASET_NAMESPACE + datasetUuid);
     String graphUUID = "graphUUID";
     when(datasetReadRepository.isOwner(datasetUrl, user)).thenReturn(false);
 
     mockMvc.perform(
-            put("/users/" + userHash + "/datasets/" + datasetUUID + "/graphs/" + graphUUID)
+            put("/users/" + userHash + "/datasets/" + datasetUuid + "/graphs/" + graphUUID)
                     .content(jsonContent)
                     .contentType(WebConstants.JSON_LD)
                     .param(WebConstants.COMMIT_TITLE_PARAM, "test title header")
@@ -320,16 +320,16 @@ public class GraphControllerTest {
 
   @Test
   public void testDeleteGraph() throws Exception, DeleteGraphException {
-    String datasetUUID = "datasetUuid";
+    String datasetUuid = "datasetUuid";
     String graphUUID = "graphUuid";
-    URI datasetUrl = new URI(Namespaces.DATASET_NAMESPACE + datasetUUID);
+    URI datasetUrl = new URI(Namespaces.DATASET_NAMESPACE + datasetUuid);
     Header newVersionHeader = new BasicHeader(WebConstants.X_EVENT_SOURCE_VERSION, "newVersion");
 
     when(datasetReadRepository.isOwner(datasetUrl, user)).thenReturn(true);
     when(graphWriteRepository.deleteGraph(datasetUrl, graphUUID)).thenReturn(newVersionHeader);
 
     mockMvc.perform(
-        delete("/users/" + userHash + "/datasets/" + datasetUUID + "/graphs/" + graphUUID)
+        delete("/users/" + userHash + "/datasets/" + datasetUuid + "/graphs/" + graphUUID)
         .principal(user)
 
     ).andExpect(status().isOk())

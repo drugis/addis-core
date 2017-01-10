@@ -21,7 +21,7 @@ define([], function() {
           ItemService.getGraphAndContext().then(function(graph) {
             GraphResource.putJson({
               userUid: scope.userUid,
-              datasetUUID: scope.datasetUuid,
+              datasetUuid: scope.datasetUuid,
               graphUuid: scope.graphUuid,
               commitTitle: commitTitle,
               commitDescription: commitDescription

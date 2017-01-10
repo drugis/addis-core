@@ -61,16 +61,16 @@ public class SparqlQueryTest {
 
     @Test
     public void studyDataQueryEndpoints() {
-        String studyUid = "507251cc-86a2-431c-a266-2ced26e35f07";
+        String studyUuid = "507251cc-86a2-431c-a266-2ced26e35f07";
 
         String queryUnderTest = TriplestoreServiceImpl.STUDY_DATA;
-        queryUnderTest = StringUtils.replace(queryUnderTest, "$studyUid", studyUid);
+        queryUnderTest = StringUtils.replace(queryUnderTest, "$studyUuid", studyUuid);
         queryUnderTest = StringUtils.replace(queryUnderTest, "$studyDataType", StudyDataSection.ENDPOINTS.toString());
 
         Model studyModel = readModelFromFile("TAK491-019.ttl");
         Model conceptsModel = readModelFromFile("concepts.ttl");
         Dataset dataset = DatasetFactory.createMem();
-        dataset.addNamedModel(GRAPH_PREFIX + studyUid, studyModel);
+        dataset.addNamedModel(GRAPH_PREFIX + studyUuid, studyModel);
         dataset.addNamedModel(GRAPH_PREFIX + "concepts", conceptsModel);
 
         int numberOfResultRows = 0;

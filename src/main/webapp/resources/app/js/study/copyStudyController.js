@@ -1,8 +1,8 @@
 'use strict';
 define([],
   function() {
-    var dependencies = ['$scope', '$modalInstance', 'datasets', 'userUuid', 'datasetUuid', 'graphUuid', 'versionUuid', 'CopyStudyResource', 'UUIDService'];
-    var CopyStudyController = function($scope, $modalInstance, datasets, userUuid, datasetUuid, graphUuid, versionUuid, CopyStudyResource, UUIDService) {
+    var dependencies = ['$scope', '$modalInstance', 'datasets', 'userUid', 'datasetUuid', 'graphUuid', 'versionUuid', 'CopyStudyResource', 'UUIDService'];
+    var CopyStudyController = function($scope, $modalInstance, datasets, userUid, datasetUuid, graphUuid, versionUuid, CopyStudyResource, UUIDService) {
 
       $scope.datasets = datasets;
 
@@ -10,7 +10,7 @@ define([],
         $scope.isCopying = true;
         $scope.targetDatasetUuid = targetDataset.uri.split('/')[targetDataset.uri.split('/').length - 1];
         $scope.targetGraphUuid = UUIDService.generate();
-        $scope.userUuid = userUuid;
+        $scope.userUid = userUid;
 
         var copyMessage = {
           targetDatasetUuid: $scope.targetDatasetUuid,

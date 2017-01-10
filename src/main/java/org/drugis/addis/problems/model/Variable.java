@@ -19,9 +19,9 @@ public class Variable {
   public Variable() {
   }
 
-  public Variable(URI uri, String studyUid, String name, String description, String unitDescription, Boolean isPrimary, MeasurementType measurementType, URI variableConceptUri) {
+  public Variable(URI uri, String studyUuid, String name, String description, String unitDescription, Boolean isPrimary, MeasurementType measurementType, URI variableConceptUri) {
     this.uri = uri;
-    this.study = studyUid;
+    this.study = studyUuid;
     this.name = name;
     this.description = description;
     this.unitDescription = unitDescription;

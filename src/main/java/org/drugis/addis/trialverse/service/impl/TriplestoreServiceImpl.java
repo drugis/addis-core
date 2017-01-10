@@ -237,7 +237,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
 
     for (Object binding : bindings) {
       String studyUri = JsonPath.read(binding, "$.studyUri.value");
-      String studyUid = subStringAfterLastSymbol(studyUri, '/');
+      String studyUuid = subStringAfterLastSymbol(studyUri, '/');
       String studyGraphUri = JsonPath.read(binding, "$.studyGraphUri.value");
       String studyGraphUuid = subStringAfterLastSymbol(studyGraphUri, '/');
       String name = JsonPath.read(binding, "$.label.value");
@@ -247,20 +247,20 @@ public class TriplestoreServiceImpl implements TriplestoreService {
       String armUid = JsonPath.read(binding, "$.armUid.value");
       String interventionUid = JsonPath.read(binding, "$.drugUid.value");
 
-      Study study = studyCache.get(studyUid);
+      Study study = studyCache.get(studyUuid);
       if(study == null) {
-        study = new Study(studyUid, studyGraphUuid, name, title, Arrays.asList(outcomeUids));
+        study = new Study(studyUuid, studyGraphUuid, name, title, Arrays.asList(outcomeUids));
       }
 
-      StudyTreatmentArm studyArm = studyArmsCache.get(Pair.of(studyUid, armUid));
+      StudyTreatmentArm studyArm = studyArmsCache.get(Pair.of(studyUuid, armUid));
       if(studyArm == null) {
         studyArm = new StudyTreatmentArm(armUid);
       }
 
       studyArm.getInterventionUids().add(interventionUid);
-      studyArmsCache.put(Pair.of(studyUid, armUid), studyArm);
+      studyArmsCache.put(Pair.of(studyUuid, armUid), studyArm);
       study.getTreatmentArms().add(studyArm);
-      studyCache.put(studyUid, study);
+      studyCache.put(studyUuid, study);
 
     }
     return new ArrayList<>(studyCache.values());
@@ -282,14 +282,14 @@ public class TriplestoreServiceImpl implements TriplestoreService {
   }
 
   @Override
-  public JSONArray getStudyGroups(String namespaceUid, String studyUid) {
-    String query = StringUtils.replace(STUDY_GROUPS_QUERY, "$studyUid", studyUid);
+  public JSONArray getStudyGroups(String namespaceUid, String studyUuid) {
+    String query = StringUtils.replace(STUDY_GROUPS_QUERY, "$studyUuid", studyUuid);
     return getQueryResultList(namespaceUid, query);
   }
 
   @Override
-  public JSONArray getStudyEpochs(String namespaceUid, String studyUid) {
-    String query = StringUtils.replace(STUDY_ARMS_EPOCHS, "$studyUid", studyUid);
+  public JSONArray getStudyEpochs(String namespaceUid, String studyUuid) {
+    String query = StringUtils.replace(STUDY_ARMS_EPOCHS, "$studyUuid", studyUuid);
     return getQueryResultList(namespaceUid, query);
   }
 
@@ -318,8 +318,8 @@ public class TriplestoreServiceImpl implements TriplestoreService {
   }
 
   @Override
-  public List<TreatmentActivity> getStudyTreatmentActivities(String namespaceUid, String studyUid) {
-    String query = StringUtils.replace(STUDY_TREATMENT_ACTIVITIES, "$studyUid", studyUid);
+  public List<TreatmentActivity> getStudyTreatmentActivities(String namespaceUid, String studyUuid) {
+    String query = StringUtils.replace(STUDY_TREATMENT_ACTIVITIES, "$studyUuid", studyUuid);
     JSONArray queryResult = getQueryResultList(namespaceUid, query);
 
     Map<String, TreatmentActivity> treatmentActivityMap = new HashMap<>();
@@ -374,8 +374,8 @@ public class TriplestoreServiceImpl implements TriplestoreService {
   }
 
   @Override
-  public List<StudyData> getStudyData(String namespaceUid, String studyUid, StudyDataSection studyDataSection) {
-    String query = StringUtils.replace(STUDY_DATA, "$studyUid", studyUid);
+  public List<StudyData> getStudyData(String namespaceUid, String studyUuid, StudyDataSection studyDataSection) {
+    String query = StringUtils.replace(STUDY_DATA, "$studyUuid", studyUuid);
     query = StringUtils.replace(query, "$studyDataType", studyDataSection.toString());
     logger.debug(query);
     JSONArray queryResult = getQueryResultList(namespaceUid, query);
@@ -505,7 +505,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
     return new StudyWithDetails
             .StudyWithDetailsBuilder()
             .graphUuid(graphUuid)
-            .studyUid(uid)
+            .studyUuid(uid)
             .name(name)
             .title(title)
             .studySize(studySize)

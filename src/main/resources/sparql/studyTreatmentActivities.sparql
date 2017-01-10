@@ -23,7 +23,7 @@ SELECT DISTINCT
   ?fixedUnitLabel
   ?fixedDosingPeriodicity
 WHERE {
-  GRAPH graph:$studyUid {
+  GRAPH graph:$studyUuid {
  ?studyUid ontology:has_epochs ?epochs .
      ?studyUid ontology:has_arm ?armUid .
      ?epochs  list:member ?epochUid .

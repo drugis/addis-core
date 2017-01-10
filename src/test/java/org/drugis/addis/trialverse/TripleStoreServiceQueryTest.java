@@ -32,7 +32,7 @@ public class TripleStoreServiceQueryTest {
     InputStream mockStudyGraph1 = new ClassPathResource("trialverseModel/abergCompleteStudy.ttl").getInputStream();
     model1.read(mockStudyGraph1, null, "TTL");
     Dataset dataset = DatasetFactory.createMem();
-    URI studyUri = URI.create("http://trials.drugis.org/graphs/studyUid");
+    URI studyUri = URI.create("http://trials.drugis.org/graphs/studyUuid");
     dataset.addNamedModel(String.valueOf(studyUri), model1);
 
     String template = TriplestoreServiceImpl.TRIAL_DATA;
@@ -65,7 +65,7 @@ public class TripleStoreServiceQueryTest {
     InputStream mockStudyGraph1 = new ClassPathResource("trialverseModel/abergCompleteStudy.ttl").getInputStream();
     model1.read(mockStudyGraph1, null, "TTL");
     Dataset dataset = DatasetFactory.createMem();
-    URI studyUri = URI.create("http://trials.drugis.org/graphs/studyUid");
+    URI studyUri = URI.create("http://trials.drugis.org/graphs/studyUuid");
     dataset.addNamedModel(String.valueOf(studyUri), model1);
 
     String template = TriplestoreServiceImpl.TRIAL_DATA;

@@ -12,7 +12,7 @@ define(['angular', 'lodash'],
       UserService) {
 
       $scope.userUid = $stateParams.userUid;
-      $scope.datasetUUID = $stateParams.datasetUUID;
+      $scope.datasetUuid = $stateParams.datasetUuid;
       if ($stateParams.versionUuid) {
         $scope.versionUuid = $stateParams.versionUuid;
       }
@@ -220,15 +220,15 @@ define(['angular', 'lodash'],
                 userUid: $scope.loginUserInfo.id
               }).$promise.then(function(result) {
                 return _.filter(result, function(dataset) {
-                  return dataset.uri !== 'http://trials.drugis.org/datasets/' + $scope.datasetUUID;
+                  return dataset.uri !== 'http://trials.drugis.org/datasets/' + $scope.datasetUuid;
                 });
               });
             },
-            userUuid: function() {
+            userUid: function() {
               return $scope.loginUserInfo.id;
             },
             datasetUuid: function() {
-              return $stateParams.datasetUUID;
+              return $stateParams.datasetUuid;
             },
             graphUuid: function() {
               return $stateParams.studyGraphUuid;
@@ -249,14 +249,14 @@ define(['angular', 'lodash'],
         if ($stateParams.versionUuid) {
           getStudyFromBackendDefer = VersionedGraphResource.getJson({
             userUid: $stateParams.userUid,
-            datasetUUID: $stateParams.datasetUUID,
+            datasetUuid: $stateParams.datasetUuid,
             graphUuid: $stateParams.studyGraphUuid,
             versionUuid: $stateParams.versionUuid
           });
         } else {
           getStudyFromBackendDefer = GraphResource.getJson({
             userUid: $stateParams.userUid,
-            datasetUUID: $stateParams.datasetUUID,
+            datasetUuid: $stateParams.datasetUuid,
             graphUuid: $stateParams.studyGraphUuid
           });
         }
@@ -357,14 +357,14 @@ define(['angular', 'lodash'],
                 if (deRegisterStateChangeStart) {
                   deRegisterStateChangeStart();
                 }
-                $location.path('/users/' + $stateParams.userUid + '/datasets/' + $stateParams.datasetUUID + '/versions/' + newVersion + '/studies/' + $stateParams.studyGraphUuid);
+                $location.path('/users/' + $stateParams.userUid + '/datasets/' + $stateParams.datasetUuid + '/versions/' + newVersion + '/studies/' + $stateParams.studyGraphUuid);
               };
             },
             userUid: function() {
               return $stateParams.userUid;
             },
             datasetUuid: function() {
-              return $stateParams.datasetUUID;
+              return $stateParams.datasetUuid;
             },
             graphUuid: function() {
               return $stateParams.studyGraphUuid;

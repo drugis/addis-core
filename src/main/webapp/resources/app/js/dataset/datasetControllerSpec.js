@@ -20,12 +20,12 @@ define(['angular-mocks'], function(angularMocks) {
         '@graph': {}
       },
       userUid = 'userUid',
-      datasetUUID = 'uuid-1',
+      datasetUuid = 'uuid-1',
       versionUuid = 'version-1',
       state = jasmine.createSpyObj('state', ['go']),
       stateParams = {
         userUid: userUid,
-        datasetUUID: datasetUUID,
+        datasetUuid: datasetUuid,
         versionUuid: versionUuid
       };
 

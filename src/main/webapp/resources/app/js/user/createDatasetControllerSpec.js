@@ -10,11 +10,11 @@ define(['angular', 'angular-mocks'], function() {
       },
       datasetDeferred = {},
       userUid = 'userUid',
-      datasetUUID = 'uuid-1',
+      datasetUuid = 'uuid-1',
       versionUuid = 'version-1',
       stateParams = {
         userUid: userUid,
-        datasetUUID: datasetUUID,
+        datasetUuid: datasetUuid,
         versionUuid: versionUuid
       };
     mockDatasetResource.save.and.returnValue(mockDataset);

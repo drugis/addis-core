@@ -13,7 +13,7 @@ define(['angular'],
         };
         DatasetResource.save({
           userUid: userUid,
-          datasetUUID: $scope.dataset.datasetUri,
+          datasetUuid: $scope.dataset.datasetUri,
         }, datasetCommand, function() {
           callback($scope.dataset.title, $scope.dataset.description);
         });

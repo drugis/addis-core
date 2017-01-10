@@ -2,9 +2,9 @@
 define([], function() {
   var dependencies = ['$resource'];
   var StudyDesignResource = function($resource) {
-    return $resource('/namespaces/:namespaceUid/studiesWithDetail/:studyUid/studyDesign', {
+    return $resource('/namespaces/:namespaceUid/studiesWithDetail/:studyUuid/studyDesign', {
       namespaceUid: '@namespaceUid',
-      studyUid: '@id'
+      studyUuid: '@id'
     }, {
       'get': {
         isArray: true

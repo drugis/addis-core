@@ -7,13 +7,13 @@
       {
         "uri": { "type": "uri" , "value": "http://trials.drugis.org/study/1/drug/1" },
         "type": { "type": "uri" , "value": "http://trials.drugis.org/namespace/2/drug/e2611534a509251f2e1cdrug" },
-        "studyUid": { "type": "uri" , "value": "http://trials.drugis.org/study/e2611534a509251f2e1cstudy1" },
+        "studyUuid": { "type": "uri" , "value": "http://trials.drugis.org/study/e2611534a509251f2e1cstudy1" },
         "drugUid": { "type": "uri" , "value": "http://trials.drugis.org/drug/e2611534a509251f2e1cddruguid1" }
       } ,
       {
         "uri": { "type": "uri" , "value": "http://trials.drugis.org/study/1/drug/4" },
          "type": { "type": "uri" , "value": "http://trials.drugis.org/namespace/2/drug/e2611534a509251f2e1cnogeendrug" },
-        "studyUid": { "type": "uri" , "value": "http://trials.drugis.org/study/e2611534a509251f2e1cstudy1" },
+        "studyUuid": { "type": "uri" , "value": "http://trials.drugis.org/study/e2611534a509251f2e1cstudy1" },
         "drugUid": { "type": "uri" , "value": "http://trials.drugis.org/drug/e2611534a509251f2e1cddruguid2" }
       }
     ]

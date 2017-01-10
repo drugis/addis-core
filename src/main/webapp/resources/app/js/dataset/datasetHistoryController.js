@@ -4,18 +4,18 @@ define([],
     var dependencies = ['$scope', '$stateParams', 'HistoryResource', 'DatasetResource'];
     var DatasetHistoryController = function($scope, $stateParams, HistoryResource, DatasetResource) {
 
-      $scope.datasetUUID = $stateParams.datasetUUID;
+      $scope.datasetUuid = $stateParams.datasetUuid;
       $scope.userUid = $stateParams.userUid;
 
       function getDataset() {
         DatasetResource.getForJson($stateParams).$promise.then(function(response) {
           $scope.dataset = {
-            datasetUri: $scope.datasetUUID,
+            datasetUri: $scope.datasetUuid,
             label: response['http://purl.org/dc/terms/title'],
             comment: response['http://purl.org/dc/terms/description'],
             creator: response['http://purl.org/dc/terms/creator']
           };
-          $scope.dataset.uuid = $stateParams.datasetUUID;
+          $scope.dataset.uuid = $stateParams.datasetUuid;
         });
       }
       getDataset();

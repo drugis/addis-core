@@ -11,7 +11,7 @@ define(['lodash'],
       $scope.showEditDatasetModal = showEditDatasetModal;
       $scope.showDeleteStudyDialog = showDeleteStudyDialog;
       $scope.userUid = $stateParams.userUid;
-      $scope.datasetUUID = $stateParams.datasetUUID;
+      $scope.datasetUuid = $stateParams.datasetUuid;
       // no version so this must be head view
       $scope.isHeadView = !$stateParams.versionUuid;
       if (!$scope.isHeadView) {
@@ -37,7 +37,7 @@ define(['lodash'],
       function loadHistory() {
         var historyCoords = {
           userUid: $stateParams.userUid,
-          datasetUUID: $stateParams.datasetUUID
+          datasetUuid: $stateParams.datasetUuid
         };
         HistoryResource.query(historyCoords).$promise.then(function(historyItems) {
           if ($scope.isHeadView) {
@@ -75,14 +75,14 @@ define(['lodash'],
         if ($scope.versionUuid) {
           getConceptsFromBackendDefer = VersionedGraphResource.getConceptJson({
             userUid: $stateParams.userUid,
-            datasetUUID: $stateParams.datasetUUID,
+            datasetUuid: $stateParams.datasetUuid,
             graphUuid: 'concepts',
             versionUuid: $stateParams.versionUuid
           });
         } else {
           getConceptsFromBackendDefer = GraphResource.getConceptJson({
             userUid: $stateParams.userUid,
-            datasetUUID: $stateParams.datasetUUID,
+            datasetUuid: $stateParams.datasetUuid,
             graphUuid: 'concepts',
           });
         }
@@ -95,7 +95,7 @@ define(['lodash'],
       function getJson(resource) {
         resource.getForJson($stateParams).$promise.then(function(response) {
           $scope.dataset = {
-            datasetUuid: $scope.datasetUUID,
+            datasetUuid: $scope.datasetUuid,
             title: response['http://purl.org/dc/terms/title'],
             comment: response['http://purl.org/dc/terms/description'],
             creator: response['http://purl.org/dc/terms/creator']
@@ -105,7 +105,7 @@ define(['lodash'],
       }
 
       function loadStudiesWithDetail() {
-        StudiesWithDetailsService.get($stateParams.userUid, $stateParams.datasetUUID, $stateParams.versionUuid)
+        StudiesWithDetailsService.get($stateParams.userUid, $stateParams.datasetUuid, $stateParams.versionUuid)
           .then(function(result) {
             $scope.studiesWithDetail = result instanceof Array ? result : [];
           });
@@ -132,7 +132,7 @@ define(['lodash'],
             successCallback: function() {
               return function(newVersion) {
                 $location.path('/users/' + $stateParams.userUid + '/datasets/' +
-                  $stateParams.datasetUUID + '/versions/' + newVersion);
+                  $stateParams.datasetUuid + '/versions/' + newVersion);
               };
             }
           }
@@ -149,7 +149,7 @@ define(['lodash'],
             successCallback: function() {
               return function(newVersion) {
                 $location.path('/users/' + $stateParams.userUid + '/datasets/' +
-                  $stateParams.datasetUUID + '/versions/' + newVersion);
+                  $stateParams.datasetUuid + '/versions/' + newVersion);
               };
             },
             study: function() {

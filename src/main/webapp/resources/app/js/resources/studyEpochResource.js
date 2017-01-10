@@ -2,9 +2,9 @@
 define([], function() {
   var dependencies = ['$resource'];
   var studyEpochResource = function($resource) {
-    return $resource('/namespaces/:namespaceUid/studiesWithDetail/:studyUid/epochs/:epochUid', {
+    return $resource('/namespaces/:namespaceUid/studiesWithDetail/:studyUuid/epochs/:epochUid', {
       namespaceUid: '@namespaceUid',
-      studyUid: '@id',
+      studyUuid: '@id',
       epochUid: '@epochUid'
     });
   };

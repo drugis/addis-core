@@ -3,9 +3,9 @@ define([], function() {
 
   var dependencies = ['$resource'];
   var HistoryResource = function($resource) {
-    return $resource('/users/:userUid/datasets/:datasetUUID/history/:versionUuid', {
+    return $resource('/users/:userUid/datasets/:datasetUuid/history/:versionUuid', {
       userUid: '@userUid',
-      datasetUUID: '@datasetUUID',
+      datasetUuid: '@datasetUuid',
       versionUuid: '@versionUuid'
     });
   };

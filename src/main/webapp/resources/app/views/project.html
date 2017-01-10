@@ -18,7 +18,7 @@
       </div>
       <div>
         <h5>Source dataset:
-          <a ui-sref="versionedDataset({userUid: trialverse.ownerId, datasetUUID: project.namespaceUid, versionUuid: project.datasetVersion.split('/versions/')[1]})">{{::trialverse.name}}</a>
+          <a ui-sref="versionedDataset({userUid: trialverse.ownerId, datasetUuid: project.namespaceUid, versionUuid: project.datasetVersion.split('/versions/')[1]})">{{::trialverse.name}}</a>
           <span tooltip-html-unsafe="Current base: <em>{{currentRevision.versionDate | date:'medium'}}</em>
         <div>
           {{currentRevision.versionTitle}}

@@ -448,7 +448,7 @@ define(
           })
           // trialverse states
           .state('dataset', {
-            url: '/users/:userUid/datasets/:datasetUUID',
+            url: '/users/:userUid/datasets/:datasetUuid',
             templateUrl: 'app/js/dataset/dataset.html',
             controller: 'DatasetController'
           })
@@ -463,17 +463,17 @@ define(
             controller: 'StudyController'
           })
           .state('datasetHistory', {
-            url: '/users/:userUid/datasets/:datasetUUID/history',
+            url: '/users/:userUid/datasets/:datasetUuid/history',
             templateUrl: 'app/js/dataset/datasetHistory.html',
             controller: 'DatasetHistoryController'
           })
           .state('studyHistory', {
-            url: '/users/:userUid/datasets/:datasetUUID/studies/:studyGraphUuid/history',
+            url: '/users/:userUid/datasets/:datasetUuid/studies/:studyGraphUuid/history',
             templateUrl: 'app/js/dataset/studyHistory.html',
             controller: 'StudyHistoryController'
           })
           .state('versionedDataset', {
-            url: '/users/:userUid/datasets/:datasetUUID/versions/:versionUuid',
+            url: '/users/:userUid/datasets/:datasetUuid/versions/:versionUuid',
             templateUrl: 'app/js/dataset/dataset.html',
             controller: 'DatasetController'
           })

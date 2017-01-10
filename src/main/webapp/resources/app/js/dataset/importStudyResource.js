@@ -5,9 +5,9 @@ define([], function() {
   var ImportStudyResource = function($resource) {
 
     return $resource(
-      '/users/:userUid/datasets/:datasetUUID/graphs/:graphUuid/import/:importStudyRef', {
+      '/users/:userUid/datasets/:datasetUuid/graphs/:graphUuid/import/:importStudyRef', {
         userUid: '@userUid',
-        datasetUUID: '@datasetUUID',
+        datasetUuid: '@datasetUuid',
         graphUuid: '@graphUuid',
         importStudyRef: '@importStudyRef',
         commitTitle: '@commitTitle',

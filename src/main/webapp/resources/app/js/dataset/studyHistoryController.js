@@ -5,23 +5,23 @@ define([],
     var StudyHistoryController = function($scope, $stateParams, StudyHistoryResource, DatasetResource, StudiesWithDetailsService) {
 
       $scope.userUid = $stateParams.userUid;
-      $scope.datasetUUID = $stateParams.datasetUUID;
+      $scope.datasetUuid = $stateParams.datasetUuid;
       $scope.studyGraphUuid = $stateParams.studyGraphUuid;
 
       function getDataset() {
         DatasetResource.getForJson($stateParams).$promise.then(function(response) {
           $scope.dataset = {
-            datasetUri: $scope.datasetUUID,
+            datasetUri: $scope.datasetUuid,
             label: response['http://purl.org/dc/terms/title'],
             comment: response['http://purl.org/dc/terms/description'],
             creator: response['http://purl.org/dc/terms/creator']
           };
-          $scope.dataset.uuid = $stateParams.datasetUUID;
+          $scope.dataset.uuid = $stateParams.datasetUuid;
         });
       }
 
       function getStudyTitle() {
-        StudiesWithDetailsService.getWithoutDetails($scope.userUid, $scope.datasetUUID, null /* version */ , $scope.studyGraphUuid)
+        StudiesWithDetailsService.getWithoutDetails($scope.userUid, $scope.datasetUuid, null /* version */ , $scope.studyGraphUuid)
           .then(function(response) {
             $scope.studyTitle = response[0].label;
           });

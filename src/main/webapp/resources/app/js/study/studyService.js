@@ -247,7 +247,7 @@ define(['lodash'], function(_) {
 
       GraphResource.putJson({
         userUid: userUid,
-        datasetUUID: datasetUid,
+        datasetUuid: datasetUid,
         graphUuid: uuid,
         commitTitle: 'Initial study creation: ' + study.label
       }, emptyStudy, function(value, responseHeaders) {

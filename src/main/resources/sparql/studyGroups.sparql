@@ -7,7 +7,7 @@ PREFIX list: <http://jena.hpl.hp.com/ARQ/list#>
 PREFIX instance: <http://trials.drugis.org/instances/>
 
 SELECT ?groupUri ?label ?numberOfParticipantsStarting ?isArm {
-   GRAPH graph:$studyUid {
+   GRAPH graph:$studyUuid {
        {
        ?study ontology:has_arm ?groupUri .
        ?groupUri a ontology:Arm ;

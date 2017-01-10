@@ -21,7 +21,7 @@ define(['lodash'], function(_) {
 
     $scope.createStudy = function(study) {
       $scope.isCreatingStudy = true;
-      var newStudyVersionPromise = StudyService.createEmptyStudy(study, $stateParams.userUid, $stateParams.datasetUUID);
+      var newStudyVersionPromise = StudyService.createEmptyStudy(study, $stateParams.userUid, $stateParams.datasetUuid);
       newStudyVersionPromise.then(function(newVersion) {
         successCallback(newVersion);
         $scope.isCreatingStudy = false;
@@ -64,7 +64,7 @@ define(['lodash'], function(_) {
       var importStudyRef = studyImport.basicInfo.id;
       ImportStudyResource.import({
         userUid: $stateParams.userUid,
-        datasetUUID: $stateParams.datasetUUID,
+        datasetUuid: $stateParams.datasetUuid,
         graphUuid: uuid,
         importStudyRef: importStudyRef,
         commitTitle: 'Import ' + importStudyRef + ' from ClinicalTrials.gov',
