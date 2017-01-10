@@ -25,7 +25,9 @@
         </div>
         <div>
           Created by {{!currentRevision.applicationName ? '' : currentRevision.applicationName + ' on behalf of '}} {{currentRevision.creator}}
-        </div>" ng-if="loading.loaded && trialverse.headVersion !== trialverse.version">(<i class="fa fa-exclamation-triangle"></i> A newer version of this dataset exists)</span>
+        </div>" ng-if="loading.loaded && trialverse.headVersion !== trialverse.version">(<i class="fa fa-exclamation-triangle"></i> A newer version of this dataset
+            exists)
+          </span>
           <span ng-if="loading.loaded && trialverse.headVersion === trialverse.version" tooltip-html-unsafe="Current base: <em>{{currentRevision.versionDate | date:'medium'}}</em>
         <div>
           {{currentRevision.versionTitle}}
@@ -34,7 +36,8 @@
           Created by {{!currentRevision.applicationName ? '' : currentRevision.applicationName + ' on behalf of '}} {{currentRevision.creator}}
         </div>">(<i class="fa fa-check"></i> Based on the latest dataset version)</span>
         </h5>
-        <button ng-if="editMode.allowEditing && trialverse.headVersion !== trialverse.version" ng-click="openUpdateDialog()" class="small success radius">Update</button>
+        <button ng-if="editMode.allowEditing && trialverse.headVersion !== trialverse.version"
+          ng-click="openUpdateDialog()" class="small success radius">Update</button>
       </div>
     </div>
   </div>
@@ -150,17 +153,38 @@
                       <th>Name</th>
                       <th>Analysis type</th>
                       <th>Data source</th>
+                      <th>
+                        <button ng-disabled="numberOfAnalysesArchived === 0" ng-hide="showArchived || !analysesLoaded"
+                          class="button secondary small right ng-binding" ng-click="toggleShowArchived()"
+                          style=""><i class="fa fa-eye"></i> Show archived ({{numberOfAnalysesArchived}})
+                        </button>
+                        <button ng-hide="!showArchived || !analysesLoaded" class="button secondary small right ng-binding"
+                          ng-click="toggleShowArchived()" style=""><i class="fa fa-eye"></i> Hide archived ({{numberOfAnalysesArchived}})
+                        </button>
+
+                      </th>
                     </tr>
                   </thead>
                   <tbody>
-                    <tr class="clickable on-hover" ng-repeat="analysis in analyses" ng-click="goToAnalysis(analysis)"
-                      ng-switch="analysis.analysisType">
-                      <td>{{analysis.title}}</td>
-                      <td>{{analysis.analysisType}}</td>
-                      <td ng-switch-when="Benefit-risk analysis based on a single study">{{findStudyLabel(analysis)}}
-                      </td>
-                      <td ng-switch-when="Evidence synthesis"></td>
-                      <td ng-switch-when="Benefit-risk analysis based on meta-analyses"></td>
+                    <tr ng-repeat="analysis in analyses" ng-switch="analysis.analysisType">
+                      <div>
+                        <td ng-show="showArchived || analysis.archived === false" class="clickable on-hover"
+                          ng-click="goToAnalysis(analysis)">
+                          <a>{{analysis.title}}</a>
+                          <span ng-if="analysis.archived"> (archived on: {{analysis.archivedOn}})</span>
+                        </td>
+                        <td ng-show="showArchived || analysis.archived === false">{{analysis.analysisType}}</td>
+                        <td ng-show="showArchived || analysis.archived === false" ng-switch-when="Benefit-risk analysis based on a single study">{{findStudyLabel(analysis)}}
+                        </td>
+                        <td ng-show="showArchived || analysis.archived === false" ng-switch-when="Evidence synthesis"></td>
+                        <td ng-show="showArchived || analysis.archived === false" ng-switch-when="Benefit-risk analysis based on meta-analyses"></td>
+                        <td ng-show="showArchived || analysis.archived === false">
+                          <button ng-if="!analysis.archived && editMode.allowEditing" ng-click="archiveAnalysis(analysis)"
+                            type="button" class="tiny right info radius" style="margin-bottom:0;">archive</button>
+                          <button ng-if="analysis.archived && editMode.allowEditing" ng-click="unarchiveAnalysis(analysis)"
+                            type="button" class="tiny right alert radius" style="margin-bottom:0;">unarchive</button>
+                        </td>
+                      </div>
                     </tr>
                   </tbody>
                 </table>

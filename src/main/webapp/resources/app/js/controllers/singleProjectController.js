@@ -28,6 +28,8 @@ define(['lodash', 'angular'], function(_, angular) {
 
     $scope.analysesLoaded = false;
     $scope.covariatesLoaded = true;
+    $scope.showArchived = false;
+    $scope.numberOfAnalysesArchived = 0;
     $scope.loading = {
       loaded: false
     };
@@ -81,21 +83,7 @@ define(['lodash', 'angular'], function(_, angular) {
         version: $scope.project.datasetVersion
       });
 
-      $scope.studies.$promise.then(function() {
-        $scope.analyses = AnalysisResource.query({
-          projectId: $scope.project.id
-        }).$promise.then(function(analyses) {
-          $scope.analysesLoaded = true;
-          $scope.analyses = _.sortBy(analyses, function(analysis) {
-            if (analysis.analysisType === 'Evidence synthesis') {
-              return 0;
-            } else {
-              return 1;
-            }
-          });
-          reloadDefinitions();
-        });
-      });
+      loadAnalyses();
 
       $scope.reportText = ReportResource.get($stateParams);
       $scope.reportText.$promise.then(function() {
@@ -110,6 +98,32 @@ define(['lodash', 'angular'], function(_, angular) {
       loadCovariates();
       loadInterventions();
       loadOutcomes();
+    }
+
+    function loadAnalyses() {
+      $scope.studies.$promise.then(function() {
+        $scope.analyses = AnalysisResource.query({
+          projectId: $scope.project.id
+        }).$promise.then(function(analyses) {
+          $scope.analysesLoaded = true;
+          $scope.numberOfAnalysesArchived = _.reduce(analyses, function(accum, analysis) {
+            return analysis.archived ? ++accum : accum;
+          }, 0);
+          if ($scope.numberOfAnalysesArchived === 0) {
+            $scope.showArchived = false;
+          }
+          $scope.analyses = _.sortBy(analyses, function(analysis) {
+            if (analysis.analysisType === 'Evidence synthesis' && analysis.archived === false) {
+              return 0;
+            } else if (analysis.archived === false) {
+              return 1;
+            } else {
+              return 2;
+            }
+          });
+          reloadDefinitions();
+        });
+      });
     }
 
     function loadInterventions() {
@@ -378,6 +392,37 @@ define(['lodash', 'angular'], function(_, angular) {
         }
       });
     };
+    
+    $scope.archiveAnalysis = function(analysis) {
+      var params = {
+        projectId: $scope.project.id,
+        analysisId: analysis.id
+      };
+      AnalysisResource.setArchived(
+        params, {
+          isArchived: true
+        }
+      ).$promise.then(
+        loadAnalyses);
+    };
+
+    $scope.unarchiveAnalysis = function(analysis) {
+      var params = {
+        projectId: $scope.project.id,
+        analysisId: analysis.id
+      };
+      AnalysisResource.setArchived(
+        params, {
+          isArchived: false
+        }
+      ).$promise.then(
+        loadAnalyses);
+    };
+
+    $scope.toggleShowArchived = function() {
+      $scope.showArchived = !$scope.showArchived;
+    };
+
   };
   return dependencies.concat(SingleProjectController);
 });
