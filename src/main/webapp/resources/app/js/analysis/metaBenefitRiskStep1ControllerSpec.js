@@ -10,11 +10,14 @@ define(['angular-mocks'], function(angularMocks) {
       interventionResourceMock = jasmine.createSpyObj('InterventionResource', ['query']),
       outcomeResourceMock = jasmine.createSpyObj('OutcomeResource', ['query']),
       modelResourceMock = jasmine.createSpyObj('OutcomeResource', ['getConsistencyModels']),
+      projectResourceMock = jasmine.createSpyObj('ProjectResource', ['get']),
+      userServiceMock = jasmine.createSpyObj('UserService', ['isLoginUserId']),
       analysisDefer,
       analysisQueryDefer,
       interventionDefer,
       outcomeDefer,
       modelsDefer,
+      projectDefer,
       metaBenefitRiskService = jasmine.createSpyObj('MetaBenefitRiskService', [
         'addModelsGroup',
         'compareAnalysesByModels',
@@ -38,6 +41,7 @@ define(['angular-mocks'], function(angularMocks) {
       interventionDefer = q.defer();
       outcomeDefer = q.defer();
       modelsDefer = q.defer();
+      projectDefer = q.defer();
 
       analysisResourceMock.get.and.returnValue({
         $promise: analysisDefer.promise
@@ -54,6 +58,10 @@ define(['angular-mocks'], function(angularMocks) {
       modelResourceMock.getConsistencyModels.and.returnValue({
         $promise: modelsDefer.promise
       });
+      projectResourceMock.get.and.returnValue({
+        $promise: projectDefer.promise
+      });
+      userServiceMock.isLoginUserId.and.returnValue(true);
 
       metaBenefitRiskService.compareAnalysesByModels.and.returnValue(0);
       metaBenefitRiskService.joinModelsWithAnalysis.and.returnValue([]);
@@ -62,12 +70,16 @@ define(['angular-mocks'], function(angularMocks) {
         $scope: scope,
         $q: q,
         $stateParams: stateParamsMock,
-        $state: {go: function(){}},
+        $state: {
+          go: function() {}
+        },
         AnalysisResource: analysisResourceMock,
         InterventionResource: interventionResourceMock,
         OutcomeResource: outcomeResourceMock,
         MetaBenefitRiskService: metaBenefitRiskService,
-        ModelResource: modelResourceMock
+        ModelResource: modelResourceMock,
+        ProjectResource: projectResourceMock,
+        UserService: userServiceMock
       });
 
     }));

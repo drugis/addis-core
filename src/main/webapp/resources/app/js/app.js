@@ -429,22 +429,19 @@ define(
           })
           // meta-benefit-risk states
           .state('MetaBenefitRiskCreationStep-1', {
-            url: '/metabr/:analysisId/step-1',
+            url: '/users/:userUid/projects/:projectId/metabr/:analysisId/step-1',
             templateUrl: 'app/js/analysis/metabrStep-1.html',
-            controller: 'MetaBenefitRiskStep1Controller',
-            parent: 'project'
+            controller: 'MetaBenefitRiskStep1Controller'
           })
           .state('MetaBenefitRiskCreationStep-2', {
-            url: '/metabr/:analysisId/step-2',
+            url: '/users/:userUid/projects/:projectId/metabr/:analysisId/step-2',
             templateUrl: 'app/js/analysis/metabrStep-2.html',
-            controller: 'MetaBenefitRiskStep2Controller',
-            parent: 'project'
+            controller: 'MetaBenefitRiskStep2Controller'
           })
           .state('metaBenefitRisk', {
-            url: '/metabr/:analysisId',
+            url: '/users/:userUid/projects/:projectId/metabr/:analysisId',
             templateUrl: 'app/js/analysis/metabr.html',
-            controller: 'MetaBenefitRiskController',
-            parent: 'project'
+            controller: 'MetaBenefitRiskController'
           })
           // trialverse states
           .state('dataset', {

@@ -1,5 +1,5 @@
 'use strict';
-define([], function() {
+define(['lodash'], function(_) {
   var dependencies = [];
   var MetaBenefitRiskAnalysisService = function() {
 
@@ -77,19 +77,21 @@ define([], function() {
 
     function numberOfSelectedOutcomes(outcomesWithAnalyses) {
       return outcomesWithAnalyses.reduce(function(count, owa) {
-        return owa.outcome.isIncluded ? ++count : count;
+        return owa.outcome.isIncluded && 
+        owa.selectedAnalysis && !owa.selectedAnalysis.archived && 
+        owa.selectedModel && !owa.selectedModel.archived ? ++count : count;
       }, 0);
     }
 
     function isModelWithMissingAlternatives(outcomesWithAnalyses) {
       return _.find(outcomesWithAnalyses, function(owa) {
-        return owa.outcome.isIncluded && owa.selectedModel.missingAlternatives.length;
+        return owa.outcome.isIncluded && owa.selectedModel && owa.selectedModel.missingAlternatives.length;
       });
     }
 
     function isModelWithoutResults(outcomesWithAnalyses) {
       return _.find(outcomesWithAnalyses, function(owa) {
-        return owa.outcome.isIncluded && owa.selectedModel.runStatus !== 'done';
+        return owa.outcome.isIncluded && owa.selectedModel && owa.selectedModel.runStatus !== 'done';
       });
     }
 

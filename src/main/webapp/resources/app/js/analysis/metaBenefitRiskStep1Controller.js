@@ -1,10 +1,10 @@
 'use strict';
 define(['lodash', 'angular'], function(_, angular) {
   var dependencies = ['$scope', '$q', '$stateParams', '$state', 'AnalysisResource', 'InterventionResource',
-    'OutcomeResource', 'MetaBenefitRiskService', 'ModelResource'
+    'OutcomeResource', 'MetaBenefitRiskService', 'ModelResource', 'ProjectResource', 'UserService'
   ];
   var MetBenefitRiskStep1Controller = function($scope, $q, $stateParams, $state, AnalysisResource, InterventionResource,
-    OutcomeResource, MetaBenefitRiskService, ModelResource) {
+    OutcomeResource, MetaBenefitRiskService, ModelResource, ProjectResource, UserService) {
     $scope.updateAlternatives = updateAlternatives;
     $scope.updateMbrOutcomeInclusions = updateMbrOutcomeInclusions;
     $scope.updateAnalysesInclusions = updateAnalysesInclusions;
@@ -16,7 +16,16 @@ define(['lodash', 'angular'], function(_, angular) {
     $scope.alternatives = InterventionResource.query($stateParams);
     $scope.outcomes = OutcomeResource.query($stateParams);
     $scope.models = ModelResource.getConsistencyModels($stateParams);
+    $scope.project = ProjectResource.get($stateParams);
 
+    $scope.editMode = {
+      allowEditing: false
+    };
+    $scope.project.$promise.then(function() {
+      if (UserService.isLoginUserId($scope.project.owner.id)) {
+        $scope.editMode.allowEditing = true;
+      }
+    });
 
     function goToStep2() {
       $state.go('MetaBenefitRiskCreationStep-2', $stateParams);
@@ -80,7 +89,9 @@ define(['lodash', 'angular'], function(_, angular) {
       var outcomes = result[2];
       var models = result[3];
       // filter out archived models
-      models = _.filter(models,function(model){return !model.archived;});
+      models = _.filter(models, function(model) {
+        return !model.archived;
+      });
       var outcomeIds = outcomes.map(function(outcome) {
         return outcome.id;
       });

@@ -39,7 +39,7 @@
           <div class="indent-one" ng-repeat="networkMetaAnalysis in outcomeWithAnalyses.networkMetaAnalyses">
             <div class="analysis">
               <label>
-                <input ng-disabled="!editMode.allowEditing ||!outcomeWithAnalyses.outcome.isIncluded || !networkMetaAnalysis.models.length" ng-model="outcomeWithAnalyses.selectedAnalysis" ng-change="updateAnalysesInclusions(outcomeWithAnalyses)"
+                <input ng-disabled="!editMode.allowEditing || !outcomeWithAnalyses.outcome.isIncluded || !networkMetaAnalysis.models.length" ng-model="outcomeWithAnalyses.selectedAnalysis" ng-change="updateAnalysesInclusions(outcomeWithAnalyses)"
                   type="radio" ng-value="networkMetaAnalysis" > {{networkMetaAnalysis.title}}
               </label>
               <div class="row" ng-show="outcomeWithAnalyses.selectedAnalysis.id === networkMetaAnalysis.id && networkMetaAnalysis.models.length">

@@ -154,10 +154,14 @@ define(['angular-mocks'], function(angularMocks) {
     });
 
     describe('numberOfSelectedOutcomes', function() {
-      it('should return the number of selected outcomes', function() {
+      it('should return the number of selected outcomes, which do not contain archived analyses or models', function() {
         var outcomesWithAnalyses = [{
           outcome: {
             isIncluded: false
+          }, selectedAnalysis: {
+            archived: true
+          }, selectedModel: {
+            archived: false
           }
         }, {
           outcome: {
@@ -166,9 +170,21 @@ define(['angular-mocks'], function(angularMocks) {
         }, {
           outcome: {
             isIncluded: true
+          }, selectedAnalysis: {
+            archived: true
+          }, selectedModel: {
+            archived: false
+          }
+        }, {
+          outcome: {
+            isIncluded: true
+          }, selectedAnalysis: {
+            archived: false
+          }, selectedModel: {
+            archived: false
           }
         }];
-        expect(metaBenefitRiskService.numberOfSelectedOutcomes(outcomesWithAnalyses)).toBe(2);
+        expect(metaBenefitRiskService.numberOfSelectedOutcomes(outcomesWithAnalyses)).toBe(1);
       });
     });
 
