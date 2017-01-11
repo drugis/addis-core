@@ -1,10 +1,10 @@
 'use strict';
 define(['lodash'], function(_) {
   var dependencies = ['$scope', '$q', '$stateParams', '$state', 'AnalysisResource', 'InterventionResource',
-    'OutcomeResource', 'MetaBenefitRiskService', 'ModelResource', 'ScenarioResource', 'UserService'
+    'OutcomeResource', 'MetaBenefitRiskService', 'ModelResource', 'ScenarioResource', 'UserService', 'ProjectResource'
   ];
   var MetBenefitRiskController = function($scope, $q, $stateParams, $state, AnalysisResource, InterventionResource,
-    OutcomeResource, MetaBenefitRiskService, ModelResource, ScenarioResource, UserService) {
+    OutcomeResource, MetaBenefitRiskService, ModelResource, ScenarioResource, UserService, ProjectResource) {
 
     $scope.analysis = AnalysisResource.get($stateParams);
     $scope.alternatives = InterventionResource.query($stateParams);
@@ -12,12 +12,19 @@ define(['lodash'], function(_) {
     $scope.models = ModelResource.getConsistencyModels($stateParams);
     $scope.goToDefaultScenario = goToDefaultScenario;
     $scope.goToModel = goToModel;
+    $scope.userId = $stateParams.userUid;
+    $scope.project = ProjectResource.get($stateParams);
+
     $scope.editMode = {
       allowEditing: false
     };
+    $scope.project.$promise.then(function() {
+      if (UserService.isLoginUserId($scope.project.owner.id)) {
+        $scope.editMode.allowEditing = true;
+      }
+    });
 
-
-    var promises = [$scope.analysis.$promise, $scope.alternatives.$promise, $scope.outcomes.$promise, $scope.models.$promise];
+    var promises = [$scope.analysis.$promise, $scope.alternatives.$promise, $scope.outcomes.$promise, $scope.models.$promise, $scope.project.$promise];
 
     $q.all(promises).then(function(result) {
       var analysis = result[0];

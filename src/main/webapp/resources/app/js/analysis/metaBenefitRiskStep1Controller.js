@@ -17,6 +17,7 @@ define(['lodash', 'angular'], function(_, angular) {
     $scope.outcomes = OutcomeResource.query($stateParams);
     $scope.models = ModelResource.getConsistencyModels($stateParams);
     $scope.project = ProjectResource.get($stateParams);
+    $scope.userId = $stateParams.userUid;
 
     $scope.editMode = {
       allowEditing: false

@@ -3,11 +3,11 @@ define(['lodash'], function(_) {
   var dependencies = ['$scope', '$q', '$stateParams', '$state', '$modal',
     'AnalysisResource', 'InterventionResource', 'OutcomeResource',
     'MetaBenefitRiskService', 'ModelResource', 'ProblemResource',
-    'ScalesService', 'ScenarioResource', 'DEFAULT_VIEW'
+    'ScalesService', 'ScenarioResource', 'DEFAULT_VIEW', 'ProjectResource', 'UserService'
   ];
   var MetBenefitRiskStep2Controller = function($scope, $q, $stateParams, $state, $modal,
     AnalysisResource, InterventionResource, OutcomeResource, MetaBenefitRiskService,
-    ModelResource, ProblemResource, ScalesService, ScenarioResource, DEFAULT_VIEW) {
+    ModelResource, ProblemResource, ScalesService, ScenarioResource, DEFAULT_VIEW, ProjectResource, UserService) {
 
     $scope.goToStep1 = goToStep1;
     $scope.openDistributionModal = openDistributionModal;
@@ -19,7 +19,17 @@ define(['lodash'], function(_) {
     $scope.hasMissingBaseLine = hasMissingBaseLine;
     $scope.finalizeAndGoToDefaultScenario = finalizeAndGoToDefaultScenario;
     $scope.goToDefaultScenario = goToDefaultScenario;
+    $scope.project = ProjectResource.get($stateParams);
+    $scope.userId = $stateParams.userUid;
 
+    $scope.editMode = {
+      allowEditing: false
+    };
+    $scope.project.$promise.then(function() {
+      if (UserService.isLoginUserId($scope.project.owner.id)) {
+        $scope.editMode.allowEditing = true;
+      }
+    });
     var promises = [$scope.analysis.$promise, $scope.alternatives.$promise, $scope.outcomes.$promise, $scope.models.$promise];
 
     $q.all(promises).then(function(result) {
