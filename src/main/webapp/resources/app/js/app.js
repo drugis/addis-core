@@ -181,8 +181,8 @@ define(
         HelpPopupService.loadLexicon($http.get('addis-lexicon.json'));
 
         $rootScope.$on('$stateChangeSuccess', function(event, toState, toParams, fromState) {
-          if (toState.name === 'datasets' && fromState.name === '' && $cookies.get('returnToPage')) {
-            var redirectUrl = $cookies.get('returnToPage');
+          var redirectUrl = $cookies.get('returnToPage');
+          if (toState.name === 'datasets' && fromState.name === '' && redirectUrl && redirectUrl !== '/') {
             $cookies.remove('returnToPage');
             $location.path(redirectUrl);
           }
