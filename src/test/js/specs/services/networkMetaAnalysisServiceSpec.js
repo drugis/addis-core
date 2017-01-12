@@ -810,7 +810,14 @@ define(['angular', 'angular-mocks', 'services'], function(angular) {
             uri: 'customMoment2'
           }]
         };
-        var trialData = [study1, study2];
+        var study3 = {
+          studyUri: 'studyUri3',
+          defaultMeasurementMoment: 'momentNotInData',
+          measurementMoments: [{
+            uri: 'customMoment3'
+          }]
+        };
+        var trialData = [study1, study2, study3];
         var analysis = {
           includedMeasurementMoments: [{
             study: 'studyUri2',
@@ -819,7 +826,8 @@ define(['angular', 'angular-mocks', 'services'], function(angular) {
         };
         var expectedResult = {
           studyUri1: study1.measurementMoments[0],
-          studyUri2: study2.measurementMoments[1]
+          studyUri2: study2.measurementMoments[1],
+          studyUri3: study3.measurementMoments[0]
         };
         var result = NetworkMetaAnalysisService.buildMomentSelections(trialData, analysis);
         expect(result).toEqual(expectedResult);
