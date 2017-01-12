@@ -30,19 +30,17 @@ define(['angular', 'angular-mocks'], function(angular, angularMocks) {
     describe('query units', function() {
 
       beforeEach(function() {
-        graphDefer.resolve({
-          '@graph': [{
-            "@id": "http://trials.drugis.org/instances/unitUuid1",
-            "@type": "ontology:Unit",
-            "conversionMultiplier": "1.000000e-03",
-            "label": "milligram"
-          }, {
-            "@id": "http://trials.drugis.org/instances/unitUuid2",
-            "@type": "ontology:Unit",
-            "conversionMultiplier": "1.000000e-00",
-            "label": "liter"
-          }]
-        });
+        graphDefer.resolve([{
+          '@id': 'http://trials.drugis.org/instances/unitUuid1',
+          '@type': 'ontology:Unit',
+          'conversionMultiplier': '1.000000e-03',
+          'label': 'milligram'
+        }, {
+          '@id': 'http://trials.drugis.org/instances/unitUuid2',
+          '@type': 'ontology:Unit',
+          'conversionMultiplier': '1.000000e-00',
+          'label': 'liter'
+        }]);
       });
 
       it('should return the units contained in the graph', function(done) {
