@@ -546,6 +546,9 @@ define(['lodash', 'angular'], function(_, angular) {
         var selectedMM = _.find(study.measurementMoments, function(measurementMoment) {
           return measurementMoment.uri === selectedMMUri;
         });
+        if(!selectedMM) { // no data for selected measurement moment means it's not on the study
+          selectedMM = study.measurementMoments[0];
+        }
         selectedMM.isDefault = selected ? false : true;
         accum[study.studyUri] = selectedMM;
         return accum;
