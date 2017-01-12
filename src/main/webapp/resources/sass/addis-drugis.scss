@@ -232,3 +232,11 @@ background-image: linear-gradient(to bottom, #eee 1%, #fff 15%);
 .ssbr-warning-information {
   color: rgba(41, 62, 163, 0.85);
 }
+
+.ng-hide.ng-hide-animate {
+  display: none !important;
+}
+
+.no-margin {
+  margin: 0px;
+}
