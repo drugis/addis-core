@@ -9,7 +9,7 @@
           Created by <span ng-if="currentRevision.applicationName">{{currentRevision.applicationName}} on behalf of </span><a ui-sref="datasets({userUid: currentRevision.userId})">{{currentRevision.creator}}</a>
         </div>
     </div>
-    <div class="columns large-6 text-right">
+    <div class="columns large-6 text-right" ng-show="currentRevision">
         <span ng-if="currentRevision.historyOrder === 0">
                 <span><i class="fa fa-check"></i> This is the current version</span> <br>
                 <span><a style="text-decoration: underline;" ui-sref="datasetHistory({userUid: userUid, datasetUuid: stripFrontFilter(dataset.datasetUuid, 'http://trials.drugis.org/datasets/')})">Dataset history</a></span>
