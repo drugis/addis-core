@@ -13,7 +13,7 @@ define(['lodash'],
 
       function queryItems() {
         return StudyService.getJsonGraph().then(function(graph) {
-          var nodes = _.filter(graph['@graph'], function(node) {
+          var nodes = _.filter(graph, function(node) {
             return node['@type'] === 'ontology:Unit';
           });
           return _.map(nodes, nodeToFrontEnd);

@@ -48,7 +48,7 @@ SELECT DISTINCT
 ?minDoseUnitConcept
 ?minDoseUnitLabel
 ?minDoseUnitMultiplier
-(COALESCE(?treatmentTypeOptional, "http://trials.drugis.org/ontology#SimpleDrugTreatment") AS ?treatmentType)
+?treatmentType
 WHERE {
   BIND ($graphSelector AS ?graph) .
   GRAPH $graphSelector {
@@ -113,22 +113,19 @@ WHERE {
 
     OPTIONAL {
         ?treatmentNode
-          a ontology:FixedDoseDrugTreatment ;
-          a ?treatmentTypeOptional ;
+          a ?treatmentType ;
           ontology:treatment_dose [
             rdf:value ?fixedDoseValue ;
             ontology:dosingPeriodicity ?fixedDoseDosingPeriodicity ;
             ontology:unit ?fixedDoseUnit
           ] .
-          ?fixedDoseUnit
-            a ?fixedDoseUnitConcept ;
-            rdfs:label ?fixedDoseUnitLabel ;
-            qudt:conversionMultiplier ?fixedDoseUnitMultiplier .
-    } .
+        ?fixedDoseUnit
+          a ?fixedDoseUnitConcept ;
+          rdfs:label ?fixedDoseUnitLabel .
+    }
     OPTIONAL {
         ?treatmentNode
-          a ontology:TitratedDoseDrugTreatment ;
-          a ?treatmentTypeOptional ;
+          a ?treatmentType ;
           ontology:treatment_max_dose [
             rdf:value ?maxDoseValue ;
             ontology:dosingPeriodicity ?maxDoseDosingPeriodicity ;
@@ -141,13 +138,11 @@ WHERE {
            ] .
           ?maxDoseUnit
             a ?maxDoseUnitConcept ;
-            rdfs:label ?maxDoseUnitLabel ;
-            qudt:conversionMultiplier ?maxDoseUnitMultiplier .
+            rdfs:label ?maxDoseUnitLabel  .
           ?minDoseUnit
             a ?minDoseUnitConcept ;
-            rdfs:label ?minDoseUnitLabel ;
-            qudt:conversionMultiplier ?minDoseUnitMultiplier .
-    } .
+            rdfs:label ?minDoseUnitLabel  .
+    }
     {
       SELECT ?study ?arm
       WHERE {
