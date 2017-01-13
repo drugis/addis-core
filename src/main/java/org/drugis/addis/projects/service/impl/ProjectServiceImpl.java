@@ -197,7 +197,7 @@ public class ProjectServiceImpl implements ProjectService {
               Set<Integer> updatedInterventionIds = intervention.getInterventionIds().stream()
                       .map(oldIdToNewInterventionId::get)
                       .collect(Collectors.toSet());
-              AbstractInterventionCommand combinationCommand= new CombinationInterventionCommand(newProject.getId(),
+              AbstractInterventionCommand combinationCommand = new CombinationInterventionCommand(newProject.getId(),
                       intervention.getName(), intervention.getMotivation(), updatedInterventionIds);
               try {
                 AbstractIntervention newIntervention = interventionRepository.create(user, combinationCommand);
@@ -215,7 +215,7 @@ public class ProjectServiceImpl implements ProjectService {
               Set<Integer> updatedInterventionIds = intervention.getInterventionIds().stream()
                       .map(oldIdToNewInterventionId::get)
                       .collect(Collectors.toSet());
-              AbstractInterventionCommand setCommand= new InterventionSetCommand(newProject.getId(),
+              AbstractInterventionCommand setCommand = new InterventionSetCommand(newProject.getId(),
                       intervention.getName(), intervention.getMotivation(), updatedInterventionIds);
               try {
                 interventionRepository.create(user, setCommand);
@@ -249,8 +249,8 @@ public class ProjectServiceImpl implements ProjectService {
   private Boolean areConstraintUnitsKnown(DoseConstraint constraint, List<URI> uriConcepts) {
     return constraint == null ||
             (
-                    (constraint.getLowerBound() == null || uriConcepts.contains(constraint.getLowerBound().getUnitConcept())) &&
-                            (constraint.getUpperBound() == null || uriConcepts.contains(constraint.getUpperBound().getUnitConcept()))
+              (constraint.getLowerBound() == null || uriConcepts.contains(constraint.getLowerBound().getUnitConcept())) &&
+              (constraint.getUpperBound() == null || uriConcepts.contains(constraint.getUpperBound().getUnitConcept()))
             );
   }
 }

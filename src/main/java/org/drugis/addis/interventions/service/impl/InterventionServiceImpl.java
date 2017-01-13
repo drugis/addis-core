@@ -3,7 +3,6 @@ package org.drugis.addis.interventions.service.impl;
 import org.drugis.addis.analyses.AbstractAnalysis;
 import org.drugis.addis.analyses.repository.AnalysisRepository;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
-import org.drugis.addis.interventions.controller.command.AbstractInterventionCommand;
 import org.drugis.addis.interventions.model.*;
 import org.drugis.addis.interventions.repository.InterventionRepository;
 import org.drugis.addis.interventions.service.InterventionService;
@@ -150,13 +149,8 @@ public class InterventionServiceImpl implements InterventionService {
       return checkSimple(singleIntervention, semanticIntervention);
     }
 
-    if (singleIntervention instanceof FixedDoseIntervention) {
-
-      return !(!checkType(singleIntervention, semanticIntervention) || !checkSimple(singleIntervention, semanticIntervention) || !doseCheck(singleIntervention, semanticIntervention));
-    }
-
-    if (singleIntervention instanceof TitratedDoseIntervention || singleIntervention instanceof BothDoseTypesIntervention) {
-      return !(!checkType(singleIntervention, semanticIntervention) || !checkSimple(singleIntervention, semanticIntervention) || !doseCheck(singleIntervention, semanticIntervention));
+    if (singleIntervention instanceof FixedDoseIntervention || singleIntervention instanceof TitratedDoseIntervention || singleIntervention instanceof BothDoseTypesIntervention) {
+      return checkType(singleIntervention, semanticIntervention) && checkSimple(singleIntervention, semanticIntervention) && checkDose(singleIntervention, semanticIntervention);
     }
     return false;
   }
@@ -172,7 +166,7 @@ public class InterventionServiceImpl implements InterventionService {
             intervention instanceof BothDoseTypesIntervention && semanticIntervention instanceof TitratedSemanticIntervention);
   }
 
-  private boolean doseCheck(AbstractIntervention intervention, AbstractSemanticIntervention semanticIntervention) throws InvalidTypeForDoseCheckException {
+  private boolean checkDose(AbstractIntervention intervention, AbstractSemanticIntervention semanticIntervention) throws InvalidTypeForDoseCheckException {
 
     if (intervention instanceof FixedDoseIntervention) {
       DoseConstraint constraint = ((FixedDoseIntervention) intervention).getConstraint();
