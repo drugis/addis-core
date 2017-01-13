@@ -2,10 +2,10 @@
 define(['lodash'],
   function(_) {
     var dependencies = ['$scope', '$window', '$location', '$stateParams', '$state', '$modal', '$filter', 'DatasetVersionedResource', 'StudiesWithDetailsService',
-      'HistoryResource', 'ConceptService', 'VersionedGraphResource', 'DatasetResource', 'GraphResource', 'UserService'
+      'HistoryResource', 'ConceptService', 'VersionedGraphResource', 'DatasetResource', 'GraphResource', 'UserService', 'DataModelService'
     ];
     var DatasetController = function($scope, $window, $location, $stateParams, $state, $modal, $filter, DatasetVersionedResource, StudiesWithDetailsService,
-      HistoryResource, ConceptService, VersionedGraphResource, DatasetResource, GraphResource, UserService) {
+      HistoryResource, ConceptService, VersionedGraphResource, DatasetResource, GraphResource, UserService, DataModelService) {
 
       $scope.createProjectDialog = createProjectDialog;
       $scope.showEditDatasetModal = showEditDatasetModal;
@@ -71,25 +71,26 @@ define(['lodash'],
 
       function loadConcepts() {
         // load the concepts data from the backend
-        var getConceptsFromBackendDefer;
+        var conceptsPromise;
         if ($scope.versionUuid) {
-          getConceptsFromBackendDefer = VersionedGraphResource.getConceptJson({
+          conceptsPromise = VersionedGraphResource.getConceptJson({
             userUid: $stateParams.userUid,
             datasetUuid: $stateParams.datasetUuid,
             graphUuid: 'concepts',
             versionUuid: $stateParams.versionUuid
-          });
+          }).$promise;
         } else {
-          getConceptsFromBackendDefer = GraphResource.getConceptJson({
+          conceptsPromise = GraphResource.getConceptJson({
             userUid: $stateParams.userUid,
             datasetUuid: $stateParams.datasetUuid,
             graphUuid: 'concepts',
-          });
+          }).$promise;
         }
-
+        var cleanedConceptsPromise = conceptsPromise.then(function(conceptsData) {
+          return DataModelService.correctUnitConceptType(conceptsData);
+        });
         // place loaded data into fontend cache and return a promise
-        ConceptService.loadJson(getConceptsFromBackendDefer.$promise);
-        return getConceptsFromBackendDefer.$promise;
+        return ConceptService.loadJson(cleanedConceptsPromise);
       }
 
       function getJson(resource) {

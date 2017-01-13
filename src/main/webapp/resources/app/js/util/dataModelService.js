@@ -75,9 +75,37 @@ define(['angular', 'lodash'], function(angular, _) {
       return data;
     }
 
+    function addTypeToUnits(data) {
+      data['@graph'] = _.map(data['@graph'], function(node) {
+        if (node.conversionMultiplier) {
+          var newNode = angular.copy(node);
+          newNode.sameAs = node['@type'];
+          newNode['@type'] = 'ontology:Unit';
+          return newNode;
+        }
+        return node;
+      });
+
+      return data;
+    }
+
+    function correctUnitConceptType(data) {
+      data['@graph'] = _.map(data['@graph'], function(node) {
+        if (node['@type'] === 'http://www.w3.org/2002/07/owl#Class') {
+          var newNode = angular.copy(node);
+          newNode['@type'] = 'ontology:Unit';
+          return newNode;
+        }
+        return node;
+      });
+      return data;
+    }
+
     return {
       updateCategories: updateCategories,
-      normalizeFirstAndRest: normalizeFirstAndRest
+      normalizeFirstAndRest: normalizeFirstAndRest,
+      addTypeToUnits: addTypeToUnits,
+      correctUnitConceptType: correctUnitConceptType
     };
   };
   return dependencies.concat(DataModelService);

@@ -189,6 +189,12 @@ define(['angular', 'lodash'],
           helpKey: 'adverse-event',
           serviceName: 'AdverseEventService',
           typeUri: 'ontology:Variable'
+        },
+        units: {
+          label: 'Units',
+          helpKey: 'unit',
+          serviceName: 'UnitService',
+          typeUri: 'ontology:Unit'
         }
       };
 

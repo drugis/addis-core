@@ -24,6 +24,7 @@ define(['util/transformJsonLd', 'util/transformConceptJsonLd'], function(transfo
             var graphData = JSON.parse(data);
             graphData = DataModelService.normalizeFirstAndRest(graphData);
             graphData = DataModelService.updateCategories(graphData);
+            graphData = DataModelService.addTypeToUnits(graphData);
             return transformStudyJsonLd(graphData);
           }
         },

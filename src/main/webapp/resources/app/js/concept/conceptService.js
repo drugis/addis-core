@@ -3,7 +3,6 @@ define([], function() {
   var dependencies = ['$q', 'UUIDService'];
   var ConceptService = function($q, UUIDService) {
 
-    var conceptsGraphUriBase = 'http://trials.drugis.org/concepts/';
     var modified = false;
     var conceptJsonPromise;
 
@@ -45,7 +44,7 @@ define([], function() {
     function queryItems() {
       return conceptJsonPromise.then(function(json) {
        // transformConceptJson(json);
-        return _.map(json['@graph'], toFrontEnd)
+        return _.map(json['@graph'], toFrontEnd);
       });
     }
 
@@ -57,8 +56,6 @@ define([], function() {
         return json;
       });
     }
-
-
 
     function areConceptsModified() {
       return modified;
@@ -76,19 +73,6 @@ define([], function() {
     function getGraphAndContext() {
       return conceptJsonPromise.then(function(graphAndContext) {
         return graphAndContext;
-      });
-    }
-
-    function getJsonGraph() {
-      return conceptJsonPromise.then(function(graph) {
-        return graph['@graph'];
-      });
-    }
-
-    function saveJsonGraph(newGraph) {
-      return conceptJsonPromise.then(function(jsonLd) {
-        jsonLd['@graph'] = newGraph;
-        modified = true;
       });
     }
 

@@ -150,5 +150,52 @@ define(['angular', 'angular-mocks', 'util/util'], function() {
         expect(dataModelService.normalizeFirstAndRest(oldStyleGraph)).toEqual(expectedGraph);
       });
     });
+
+    describe('addTypeToUnits', function() {
+      it('should move concept unit references to sameAs and add a ontology:Unit property', function() {
+        var oldStyleGraph = {
+          '@graph': [{
+            '@id': 'unit',
+            '@type': 'http://trials.drugis.org/concepts/gramConcept',
+            'label': 'milligram',
+            'conversionMultiplier': '1.0e-03'
+          }]
+        };
+        var expectedGraph = {
+          '@graph': [{
+            '@id': 'unit',
+            '@type': 'ontology:Unit',
+            'sameAs': 'http://trials.drugis.org/concepts/gramConcept',
+            'label': 'milligram',
+            'conversionMultiplier': '1.0e-03'
+          }]
+        };
+        expect(dataModelService.addTypeToUnits(oldStyleGraph)).toEqual(expectedGraph);
+      });
+    });
+
+    describe('correctUnitConceptType', function() {
+      it('should change units with type http://www.w3.org/2002/07/owl#Class to ontology:Unit', function() {
+        var oldStyleGraph = {
+          '@graph': [{
+            '@id': 'http://trials.drugis.org/concepts/848c1592-d599-4f8f-b072-6695e40fa8e0',
+            '@type': 'http://www.w3.org/2002/07/owl#Class',
+            'symbol': 'g',
+            'label': 'gram',
+            'sameAs': 'http://qudt.org/schema/qudt#Gram'
+          }]
+        };
+        var expectedGraph = {
+          '@graph': [{
+            '@id': 'http://trials.drugis.org/concepts/848c1592-d599-4f8f-b072-6695e40fa8e0',
+            '@type': 'ontology:Unit',
+            'symbol': 'g',
+            'label': 'gram',
+            'sameAs': 'http://qudt.org/schema/qudt#Gram'
+          }]
+        };
+        expect(dataModelService.correctUnitConceptType(oldStyleGraph)).toEqual(expectedGraph);
+      });
+    });
   });
 });

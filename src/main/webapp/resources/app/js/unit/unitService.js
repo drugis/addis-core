@@ -7,7 +7,8 @@ define(['lodash'],
         function nodeToFrontEnd(node) {
           return {
             uri: node['@id'],
-            label: node.label
+            label: node.label,
+            conceptMapping: node.sameAs
           };
         }
 
