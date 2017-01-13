@@ -1,17 +1,11 @@
 'use strict';
-define(['angular'], function(angular) {
+define(['lodash', 'angular'], function(_) {
   var dependencies = [];
   var OwnProjectsFilter = function() {
     return function(projects, userId, negate) {
-      var filtered = [];
-      if (projects.$resolved) {
-        angular.forEach(projects, function(project) {
-          if (negate ? project.owner.id !== userId : project.owner.id === userId) {
-            this.push(project);
-          }
-        }, filtered);
-      }
-      return filtered;
+      return _.filter(projects, function(project) {
+        return negate ? project.owner.id !== userId : project.owner.id === userId;
+      });
     };
   };
   return dependencies.concat(OwnProjectsFilter);

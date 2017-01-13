@@ -35,7 +35,11 @@ define(['lodash'],
       loadHistory();
 
       function loadHistory() {
-        HistoryResource.query($stateParams).$promise.then(function(historyItems) {
+        var historyCoords = {
+          userUid: $stateParams.userUid,
+          datasetUUID: $stateParams.datasetUUID
+        };
+        HistoryResource.query(historyCoords).$promise.then(function(historyItems) {
           if ($scope.isHeadView) {
             $scope.currentRevision = historyItems[historyItems.length - 1];
             $scope.currentRevision.isHead = true;
@@ -91,7 +95,7 @@ define(['lodash'],
       function getJson(resource) {
         resource.getForJson($stateParams).$promise.then(function(response) {
           $scope.dataset = {
-            datasetUri: $scope.datasetUUID,
+            datasetUuid: $scope.datasetUUID,
             title: response['http://purl.org/dc/terms/title'],
             comment: response['http://purl.org/dc/terms/description'],
             creator: response['http://purl.org/dc/terms/creator']
@@ -172,7 +176,7 @@ define(['lodash'],
                 title: $scope.dataset.title,
                 description: $scope.dataset.comment,
                 headVersion: $scope.currentRevision.uri,
-                datasetUri: $scope.dataset.datasetUri
+                datasetUuid: $scope.dataset.datasetUuid
               };
             }
           }

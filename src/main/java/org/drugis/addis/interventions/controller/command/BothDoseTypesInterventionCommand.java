@@ -15,7 +15,15 @@ public class BothDoseTypesInterventionCommand extends AbstractInterventionComman
   private ConstraintCommand bothDoseTypesMinConstraint;
   private ConstraintCommand bothDoseTypesMaxConstraint;
 
-  private BothDoseTypesInterventionCommand() {}
+  public BothDoseTypesInterventionCommand(){}
+
+
+  public BothDoseTypesInterventionCommand(Integer projectId, String name, String motivation, URI semanticInterventionUri,
+                                          String semanticInterventionLabel, ConstraintCommand minConstraint, ConstraintCommand maxConstraint) {
+    super(projectId, name, motivation, semanticInterventionLabel, semanticInterventionUri.toString());
+    this.bothDoseTypesMinConstraint = minConstraint;
+    this.bothDoseTypesMaxConstraint = maxConstraint;
+  }
 
   public ConstraintCommand getBothDoseTypesMinConstraint() {
     return bothDoseTypesMinConstraint;
@@ -36,7 +44,7 @@ public class BothDoseTypesInterventionCommand extends AbstractInterventionComman
       maxConstraint = new DoseConstraint(this.bothDoseTypesMaxConstraint.getLowerBound(), this.bothDoseTypesMaxConstraint.getUpperBound());
     }
     return new BothDoseTypesIntervention(null, this.getProjectId(), this.getName(), this.getMotivation(),
-            URI.create(Namespaces.CONCEPT_NAMESPACE + this.getSemanticInterventionUuid()), this.getSemanticInterventionLabel(),
+            URI.create(this.getSemanticInterventionUri()), this.getSemanticInterventionLabel(),
             minConstraint,
             maxConstraint);
   }

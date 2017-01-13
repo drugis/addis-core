@@ -8,6 +8,14 @@ define(['angular-mocks', 'angular'], function(angularMocks, angular) {
       projectServiceMock = jasmine.createSpyObj('ProjectService', ['buildCovariateUsage', 'buildOutcomeUsage', 'buildInterventionUsage']),
       analysisResourceMock = jasmine.createSpyObj('analysisResource', ['query', 'save']),
       userServiceMock = jasmine.createSpyObj('UserService', ['isLoginUserId']),
+      historyResourceMock = jasmine.createSpyObj('historyResource', ['get']),
+      projectResource = jasmine.createSpyObj('projectResource', ['get', 'save', 'query']),
+      semanticOutcomeResource = jasmine.createSpyObj('semanticOutcomeResource', ['query']),
+      trialverseResource = jasmine.createSpyObj('trialverseResource', ['get']),
+      outcomeResource = jasmine.createSpyObj('outcomeResource', ['query', 'save']),
+      semanticInterventionResource = jasmine.createSpyObj('semanticInterventionResource', ['query']),
+      interventionResource = jasmine.createSpyObj('interventionResource', ['query', 'save']),
+      trialverseStudyResource = jasmine.createSpyObj('trialverseStudyResource', ['query']),
       covariateOptions = [{
         key: 'COV_OPTION_KEY',
         label: 'covariate option label'
@@ -43,9 +51,8 @@ define(['angular-mocks', 'angular'], function(angularMocks, angular) {
       },
       scope, state,
       projectDeferred, analysisDeferred, studiesDeferred, interventionsDeferred,
-      projectResource, trialverseResource, semanticOutcomeResource, semanticInterventionResource,
-      outcomeResource, interventionResource, trialverseStudyResource,
       mockSemanticOutcomes, mockSemanticInterventions, reportResource, reportDeferred,
+      trialverseDeferred, analysesDeferred,
       mockProject = {
         id: 1,
         owner: {
@@ -106,40 +113,33 @@ define(['angular-mocks', 'angular'], function(angularMocks, angular) {
       covariatesDeferred.resolve(covariates);
       covariates.$promise = covariatesDeferred.promise;
       covariateResource.query.and.returnValue(covariates);
-      projectServiceMock.buildCovariateUsage.and.returnValue({});
-      var analysesDefer = $q.defer();
-      mockAnalysesResult.$promise = analysesDefer.promise;
-      analysesDefer.resolve(mockAnalyses);
+
+      analysesDeferred = $q.defer();
+      mockAnalysesResult.$promise = analysesDeferred.promise;
+      analysesDeferred.resolve(mockAnalyses);
       analysisResourceMock.query.and.returnValue(mockAnalysesResult);
+
       mockSemanticOutcomes = ['a', 'b', 'c'];
       mockSemanticInterventions = ['e', 'f', 'g'];
-      projectResource = jasmine.createSpyObj('projectResource', ['get', 'save', 'query']);
-      projectResource.get.and.returnValue(mockProject);
-      trialverseResource = jasmine.createSpyObj('trialverseResource', ['get']);
-      trialverseResource.get.and.returnValue(mockTrialverse);
-      semanticOutcomeResource = jasmine.createSpyObj('semanticOutcomeResource', ['query']);
-      semanticOutcomeResource.query.and.returnValue(mockSemanticOutcomes);
-      outcomeResource = jasmine.createSpyObj('outcomeResource', ['query', 'save']);
-      var outcomeResultDefer = $q.defer();
-      outcomeResult = {
-        $promise: outcomeResultDefer.promise
-      };
-      outcomeResultDefer.resolve(mockOutcomes);
-      outcomeResource.query.and.returnValue(outcomeResult);
-      semanticInterventionResource = jasmine.createSpyObj('semanticInterventionResource', ['query']);
-      semanticInterventionResource.query.and.returnValue(mockSemanticInterventions);
 
       interventionsDeferred = $q.defer();
+      var outcomeResultDeferred = $q.defer();
+      outcomeResult = {
+        $promise: outcomeResultDeferred.promise
+      };
+      outcomeResultDeferred.resolve(mockOutcomes);
+
       mockInterventions.$promise = interventionsDeferred.promise;
-      interventionResource = jasmine.createSpyObj('interventionResource', ['query', 'save']);
       interventionResource.query.and.returnValue(mockInterventions);
-
+      outcomeResource.query.and.returnValue(outcomeResult);
+      semanticInterventionResource.query.and.returnValue(mockSemanticInterventions);
       interventionService.generateDescriptionLabel.and.returnValue('desc label');
-
       analysisResourceMock.save.and.returnValue(mockAnalysis);
-
-      trialverseStudyResource = jasmine.createSpyObj('trialverseStudyResource', ['query']);
       trialverseStudyResource.query.and.returnValue(mockStudies);
+      semanticOutcomeResource.query.and.returnValue(mockSemanticOutcomes);
+      projectServiceMock.buildCovariateUsage.and.returnValue({});
+      projectResource.get.and.returnValue(mockProject);
+      trialverseResource.get.and.returnValue(mockTrialverse);
 
       scope = $rootScope;
       scope.createOutcomeModal = jasmine.createSpyObj('createOutcomeModal', ['close']);
@@ -161,6 +161,9 @@ define(['angular-mocks', 'angular'], function(angularMocks, angular) {
       mockIntervention = {
         $promise: interventionDeferred.promise
       };
+      trialverseDeferred = $q.defer();
+      mockTrialverse.$promise = trialverseDeferred.promise;
+
       interventionResource.save.and.returnValue(mockIntervention);
 
       reportResource = jasmine.createSpyObj('reportResource', ['get']);
@@ -169,6 +172,12 @@ define(['angular-mocks', 'angular'], function(angularMocks, angular) {
       mockReport.$promise = reportDeferred.promise;
 
       state = jasmine.createSpyObj('state', ['go']);
+
+      var mockHistory = {
+        creator: 'Jan',
+        uri: 'http://computer:1234/versions/bla'
+      };
+      historyResourceMock.get.and.returnValue(mockHistory);
 
       $controller('SingleProjectController', {
         $scope: scope,
@@ -194,7 +203,8 @@ define(['angular-mocks', 'angular'], function(angularMocks, angular) {
         InterventionService: interventionService,
         activeTab: 'details',
         UserService: userServiceMock,
-        ReportResource: reportResource
+        ReportResource: reportResource,
+        HistoryResource: historyResourceMock
       });
     }));
     describe('when first initialised', function() {
@@ -293,6 +303,17 @@ define(['angular-mocks', 'angular'], function(angularMocks, angular) {
         reportDeferred.resolve();
         scope.$apply();
         expect(scope.reportText.data).toEqual('default report text.');
+      });
+      it('should add version information on the scope', function() {
+        projectDeferred.resolve();
+        trialverseDeferred.resolve({
+          version: '/versions/dataserVerion'
+        });
+        scope.$apply();
+        expect(scope.currentRevision).toEqual({
+          creator: 'Jan',
+          uri: 'http://computer:1234/versions/bla'
+        });
       });
     });
   });

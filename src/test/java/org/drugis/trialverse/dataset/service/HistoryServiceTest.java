@@ -29,6 +29,7 @@ import java.util.List;
 
 import static junit.framework.TestCase.assertNull;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
@@ -77,7 +78,9 @@ public class HistoryServiceTest {
   public void setUp() throws URISyntaxException, IOException {
     historyService = new HistoryServiceImpl();
     initMocks(this);
+
     historyModel.read(historyStream, null, "TTL");
+
     when(versionMappingRepository.getVersionMappingByDatasetUrl(trialverseDatasetUri)).thenReturn(mapping);
     when(datasetReadRepository.getHistory(mapping.getVersionedDatasetUri())).thenReturn(historyModel);
     when(apiKeyRepository.get(apiKeyId)).thenReturn(apiKey);
@@ -86,7 +89,6 @@ public class HistoryServiceTest {
 
   @Test
   public void testCreateHistory() throws RevisionNotFoundException, IOException, URISyntaxException {
-
     List<VersionNode> history = historyService.createHistory(trialverseDatasetUri);
 
     assertEquals(4, history.size());
@@ -100,7 +102,6 @@ public class HistoryServiceTest {
 
   @Test
   public void testCreateFilteredHistory() throws RevisionNotFoundException, IOException, URISyntaxException {
-
     List<VersionNode> coolHistory = historyService.createHistory(trialverseDatasetUri, coolGraphUri);
 
     assertEquals(3, coolHistory.size());
@@ -111,7 +112,14 @@ public class HistoryServiceTest {
     assertEquals(1, uncoolHistory.size());
     VersionNode uncoolCreationVersion = uncoolHistory.get(0);
     assertEquals("Create both graphs", uncoolCreationVersion.getVersionTitle());
+  }
 
+  @Test
+  public void testGetSingleHistoryInfo() throws IOException, URISyntaxException {
+    VersionNode versionInfo = historyService.getVersionInfo(trialverseDatasetUri, URI.create("http://localhost:8080/versions/twoBeforeHeadVersion"));
+
+    assertNotNull(versionInfo);
+    assertEquals("Create both graphs", versionInfo.getVersionTitle());
   }
 
 }

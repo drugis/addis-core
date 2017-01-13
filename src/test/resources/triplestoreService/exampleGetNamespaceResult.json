@@ -1,6 +1,6 @@
 {
   "head": {
-    "vars": [ "label" , "comment" , "sourceUrl" , "numberOfStudies" ]
+    "vars": [ "label" , "comment" , "sourceUrl" , "headVersion",  "numberOfStudies" ]
   } ,
   "results": {
     "bindings": [
@@ -8,7 +8,8 @@
         "label": { "type": "literal" , "value": "Edarbi EPAR" } ,
         "comment": { "type": "literal" , "value": "Hypertension dataset based on the Edarbi EPAR" } ,
         "sourceUrl": { "datatype": "http://www.w3.org/2001/XMLSchema#anyURI" , "type": "typed-literal" , "value": "http://www.ema.europa.eu/docs/en_GB/document_library/EPAR_-_Public_assessment_report/human/002293/WC500119206.pdf" } ,
-        "numberOfStudies": { "datatype": "http://www.w3.org/2001/XMLSchema#integer" , "type": "typed-literal" , "value": "5" }
+        "numberOfStudies": { "datatype": "http://www.w3.org/2001/XMLSchema#integer" , "type": "typed-literal" , "value": "5" },
+        "headVersion": { "datatype": "http://www.w3.org/2001/XMLSchema#anyURI" , "type": "typed-literal" , "value": "http://localhost:8080/versions/some-awesome-uuid" }
       }
     ]
   }

@@ -1,9 +1,13 @@
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX ontology: <http://trials.drugis.org/ontology#>
+PREFIX es: <http://drugis.org/eventSourcing/es#>
 
-## ADD sourceUrl
-
-SELECT ?dataset ?label ?comment (COUNT(?study) AS ?numberOfStudies) WHERE {
+SELECT DISTINCT
+  ?dataset
+  ?label
+  ?comment
+  (COUNT(?study) AS ?numberOfStudies)
+WHERE {
   ?dataset dcterms:title ?label .
   OPTIONAL { ?dataset dcterms:description ?comment . } .
   OPTIONAL {

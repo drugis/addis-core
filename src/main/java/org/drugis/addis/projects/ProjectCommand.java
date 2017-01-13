@@ -1,5 +1,7 @@
 package org.drugis.addis.projects;
 
+import java.net.URI;
+
 /**
  * Created by daan on 3/5/14.
  */
@@ -7,18 +9,18 @@ public class ProjectCommand {
   private String name;
   private String description;
   private String namespaceUid;
-  private String datasetVersion;
+  private URI datasetVersion;
 
   public ProjectCommand() {
   }
 
-  public ProjectCommand(String name, String namespaceUid, String datasetVersion) {
+  public ProjectCommand(String name, String namespaceUid, URI datasetVersion) {
     this.name = name;
     this.namespaceUid = namespaceUid;
     this.datasetVersion = datasetVersion;
   }
 
-  public ProjectCommand(String name, String description, String namespaceUid, String datasetVersion) {
+  public ProjectCommand(String name, String description, String namespaceUid, URI datasetVersion) {
     this.name = name;
     this.description = description;
     this.namespaceUid = namespaceUid;
@@ -37,8 +39,12 @@ public class ProjectCommand {
     return namespaceUid;
   }
 
-  public String getDatasetVersion() {
+  public URI getDatasetVersion() {
     return datasetVersion;
+  }
+
+  public void setDatasetVersion(URI datasetVersion) {
+    this.datasetVersion = datasetVersion;
   }
 
   @Override

@@ -2,7 +2,7 @@ package org.drugis.addis.trialverse.service.impl;
 
 import org.drugis.addis.security.Account;
 import org.drugis.addis.security.repository.AccountRepository;
-import org.drugis.addis.trialverse.model.mapping.VersionedUuidAndOwner;
+import org.drugis.addis.trialverse.model.mapping.TriplestoreUuidAndOwner;
 import org.drugis.addis.trialverse.service.MappingService;
 import org.drugis.trialverse.dataset.model.VersionMapping;
 import org.drugis.trialverse.dataset.repository.VersionMappingRepository;
@@ -32,10 +32,10 @@ public class MappingServiceImpl implements MappingService {
   }
 
   @Override
-  public VersionedUuidAndOwner getVersionedUuidAndOwner(String namespaceUuid) throws URISyntaxException {
+  public TriplestoreUuidAndOwner getVersionedUuidAndOwner(String namespaceUuid) throws URISyntaxException {
     VersionMapping mapping = versionMappingRepository.getVersionMappingByDatasetUrl(new URI(Namespaces.DATASET_NAMESPACE + namespaceUuid));
     String versionedUuid = mapping.getVersionedDatasetUri().toString().split("/datasets/")[1];
     Account account = accountRepository.findAccountByEmail(mapping.getOwnerUuid());
-    return new VersionedUuidAndOwner(versionedUuid, account.getId());
+    return new TriplestoreUuidAndOwner(versionedUuid, account.getId());
   }
 }

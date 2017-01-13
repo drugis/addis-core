@@ -36,6 +36,11 @@ public abstract class SingleIntervention extends AbstractIntervention {
     this.semanticInterventionLabel = semanticInterventionLabel;
   }
 
+  public SingleIntervention(Integer project, String name, String motivation, URI semanticInterventionUri,
+                            String semanticInterventionLabel) {
+    this(null, project, name, motivation, semanticInterventionUri, semanticInterventionLabel);
+  }
+
   public URI getSemanticInterventionUri() {
     return URI.create(semanticInterventionUri);
   }

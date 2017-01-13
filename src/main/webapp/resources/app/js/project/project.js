@@ -14,6 +14,7 @@ define(function (require) {
     .controller('InsertNetworkGraphController', require('project/insertNetworkGraphController'))
     .controller('InsertComparisonResultController', require('project/insertComparisonResultController'))
     .controller('DeleteDefinitionController',require('project/deleteDefinitionController'))
+    .controller('UpdateProjectController', require('project/updateProjectController'))
 
     //directives
     .directive('nmaReportView', require('project/nmaReportViewDirective'))

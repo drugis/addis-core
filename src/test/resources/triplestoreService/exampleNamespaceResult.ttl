@@ -1,0 +1,14 @@
+@prefix owl:   <http://www.w3.org/2002/07/owl#> .
+@prefix es:    <http://drugis.org/eventSourcing/es#> .
+
+<http://localhost:8080/datasets/d1>
+        a        es:Dataset ;
+        es:head  <http://localhost:8080/versions/ddec3b13-c657-4770-8dce-74d12d0c9e3f> ;
+        <http://purl.org/dc/terms/creator>
+                <https://trialverse.org/apikeys/1> ;
+        <http://purl.org/dc/terms/date>
+                "2016-11-23T09:28:19Z"^^<http://www.w3.org/2001/XMLSchema#dateTime> .
+
+<http://localhost:8080/versions/ddec3b13-c657-4770-8dce-74d12d0c9e3f>
+        a                          es:DatasetVersion ;
+        es:dataset                 <http://localhost:8080/datasets/d1> .

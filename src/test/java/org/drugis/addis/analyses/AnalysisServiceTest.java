@@ -267,7 +267,7 @@ public class AnalysisServiceTest {
     List<CovariateInclusion> includedCovariates = Collections.emptyList();
     Outcome outcome = new Outcome(1, projectId, "outcome", null, new SemanticVariable(URI.create("http://test/uri"), "semantic outcome label"));
     AbstractAnalysis networkMetaAnalysis = new NetworkMetaAnalysis(1, projectId, "title", excludedArms, includedInterventions, includedCovariates, outcome);
-    String version = "version";
+    URI version = URI.create("http://versions.com/version");
     Account owner = mock(Account.class);
     String namespaceUid = "namespaceUid";
     Project project = new Project(projectId, owner, "proj", "desc", namespaceUid, version);

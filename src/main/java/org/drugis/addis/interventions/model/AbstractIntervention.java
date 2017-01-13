@@ -1,5 +1,6 @@
 package org.drugis.addis.interventions.model;
 
+import org.drugis.addis.interventions.controller.command.AbstractInterventionCommand;
 import org.drugis.addis.interventions.controller.viewAdapter.AbstractInterventionViewAdapter;
 
 import javax.persistence.*;
@@ -26,6 +27,9 @@ public abstract class AbstractIntervention {
     this.project = project;
     this.name = name;
     this.motivation = motivation;
+  }
+  public AbstractIntervention(Integer project, String name, String motivation) {
+    this(null, project, name, motivation);
   }
 
   public void setName(String name) {

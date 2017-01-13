@@ -7,22 +7,27 @@ import net.minidev.json.parser.JSONParser;
 import net.minidev.json.parser.ParseException;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
+import org.apache.jena.graph.Graph;
+import org.apache.jena.rdf.model.*;
+import org.apache.jena.riot.RDFDataMgr;
+import org.apache.jena.riot.RDFLanguages;
+import org.apache.jena.sparql.graph.GraphFactory;
 import org.drugis.addis.covariates.CovariateRepository;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.interventions.model.AbstractIntervention;
-import org.drugis.addis.interventions.model.SingleIntervention;
 import org.drugis.addis.interventions.repository.InterventionRepository;
 import org.drugis.addis.interventions.service.InterventionService;
 import org.drugis.addis.interventions.service.impl.InvalidTypeForDoseCheckException;
 import org.drugis.addis.trialverse.model.*;
 import org.drugis.addis.trialverse.model.emun.*;
-import org.drugis.addis.trialverse.model.mapping.VersionedUuidAndOwner;
+import org.drugis.addis.trialverse.model.mapping.TriplestoreUuidAndOwner;
 import org.drugis.addis.trialverse.model.trialdata.CovariateStudyValue;
 import org.drugis.addis.trialverse.model.trialdata.TrialDataArm;
 import org.drugis.addis.trialverse.model.trialdata.TrialDataStudy;
 import org.drugis.addis.trialverse.service.QueryResultMappingService;
 import org.drugis.addis.trialverse.service.TriplestoreService;
 import org.drugis.addis.util.WebConstants;
+import org.drugis.trialverse.util.JenaProperties;
 import org.drugis.trialverse.util.Namespaces;
 import org.joda.time.DateTime;
 import org.joda.time.Period;
@@ -40,6 +45,7 @@ import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.inject.Inject;
+import java.io.StringReader;
 import java.net.URI;
 import java.util.*;
 import java.util.function.Predicate;
@@ -69,6 +75,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
   public final static String OUTCOME_QUERY = TriplestoreService.loadResource("sparql/outcomes.sparql");
   public final static String POPCHAR_QUERY = TriplestoreService.loadResource("sparql/populationCharacteristics.sparql");
   public final static String INTERVENTION_QUERY = TriplestoreService.loadResource("sparql/interventions.sparql");
+  public final static String UNIT_CONCEPTS = TriplestoreService.loadResource("sparql/unitConcepts.sparql");
   public static final String QUERY_ENDPOINT = "/query";
   public static final String QUERY_PARAM_QUERY = "query";
   public static final String X_ACCEPT_EVENT_SOURCE_VERSION = "X-Accept-EventSource-Version";
@@ -112,7 +119,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
   @Override
   public Collection<Namespace> queryNameSpaces() throws ParseException {
     UriComponents uriComponents = UriComponentsBuilder
-            .fromHttpUrl(TRIPLESTORE_BASE_URI)
+            .fromHttpUrl(WebConstants.getTriplestoreBaseUri())
             .path("datasets/")
             .build();
 
@@ -126,48 +133,63 @@ public class TriplestoreServiceImpl implements TriplestoreService {
       String namespaceUri = jsonNode.get("id").toString();
       logger.debug("query namespaces; URI: " + namespaceUri);
 
-      namespaces.add(getNamespaceHead(new VersionedUuidAndOwner(namespaceUri, null)));
+      namespaces.add(getNamespaceHead(new TriplestoreUuidAndOwner(namespaceUri, null)));
     }
 
     return namespaces;
   }
 
   @Override
-  public Namespace getNamespaceVersioned(VersionedUuidAndOwner datasetUri, String versionUri) {
-    ResponseEntity<String> response = queryTripleStoreVersion(datasetUri.getVersionedUuid(), NAMESPACE, versionUri);
+  public Namespace getNamespaceVersioned(TriplestoreUuidAndOwner datasetUri, URI versionUri) {
+    ResponseEntity<String> response = queryTripleStoreVersion(datasetUri.getTriplestoreUuid(), NAMESPACE, versionUri);
     return buildNameSpace(datasetUri, response);
   }
 
   @Override
-  public Namespace getNamespaceHead(VersionedUuidAndOwner datasetUriAndOwner) {
-    ResponseEntity<String> response = queryTripleStoreHead(datasetUriAndOwner.getVersionedUuid(), NAMESPACE);
+  public Namespace getNamespaceHead(TriplestoreUuidAndOwner datasetUriAndOwner) {
+    ResponseEntity<String> response = queryTripleStoreHead(datasetUriAndOwner.getTriplestoreUuid(), NAMESPACE);
     return buildNameSpace(datasetUriAndOwner, response);
   }
 
-  private Namespace buildNameSpace(VersionedUuidAndOwner datasetUriAndOwnerId, ResponseEntity<String> response) {
+  private Namespace buildNameSpace(TriplestoreUuidAndOwner triplestoreUuidAndOwner, ResponseEntity<String> response) {
     JSONArray bindings = JsonPath.read(response.getBody(), "$.results.bindings");
     JSONObject binding = (JSONObject) bindings.get(0);
     String name = JsonPath.read(binding, "$.label.value");
+    URI headVersion = URI.create(getHeadVersion(WebConstants.buildDatasetUri(triplestoreUuidAndOwner.getTriplestoreUuid())));
     String description = binding.containsKey("comment") ? (String) JsonPath.read(binding, "$.comment.value") : "";
-    Integer numberOfStudies = Integer.parseInt(JsonPath.<String>read(binding, "$.numberOfStudies.value"));
-    String version = response.getHeaders().get(X_EVENT_SOURCE_VERSION).get(0);
-    return new Namespace(subStringAfterLastSymbol(datasetUriAndOwnerId.getVersionedUuid(), '/'), datasetUriAndOwnerId.getOwnerId(), name, description, numberOfStudies, version);
+    Integer numberOfStudies = Integer.parseInt(JsonPath.read(binding, "$.numberOfStudies.value"));
+    URI version = URI.create(response.getHeaders().get(X_EVENT_SOURCE_VERSION).get(0));
+    return new Namespace(triplestoreUuidAndOwner.getTriplestoreUuid(), triplestoreUuidAndOwner.getOwnerId(), name, description, numberOfStudies, version, headVersion);
   }
 
+  @Override
+  public String getHeadVersion(URI datasetUri) {
+    HttpHeaders headers = new HttpHeaders();
+    headers.set(WebConstants.ACCEPT_HEADER, "text/turtle,text/html");
+    ResponseEntity<String> response = restTemplate.exchange(datasetUri, HttpMethod.GET, new HttpEntity<String>(headers), String.class);
+    Graph graph = GraphFactory.createDefaultGraph();
+    StringReader reader = new StringReader(response.getBody());
+    RDFDataMgr.read(graph, reader, "http://example.com", RDFLanguages.TURTLE);
+    Model datasetModel = ModelFactory.createModelForGraph(graph);
+    Resource resource = datasetModel.getResource(datasetUri.toString());
+    Statement headVersion = resource.getProperty(JenaProperties.headVersionProperty);
+    RDFNode headObject = headVersion.getObject();
+    return headObject.toString();
+  }
 
   @Override
-  public List<SemanticVariable> getOutcomes(String namespaceUid, String versionUri) throws ReadValueException {
+  public List<SemanticVariable> getOutcomes(String namespaceUid, URI versionUri) throws ReadValueException {
     String query = StringUtils.replace(OUTCOME_QUERY, "$namespaceUid", namespaceUid);
     return getSemanticVariables(namespaceUid, versionUri, query, "outcome");
   }
 
   @Override
-  public List<SemanticVariable> getPopulationCharacteristics(String namespaceUid, String versionUri) throws ReadValueException {
+  public List<SemanticVariable> getPopulationCharacteristics(String namespaceUid, URI versionUri) throws ReadValueException {
     String query = StringUtils.replace(POPCHAR_QUERY, "$namespaceUid", namespaceUid);
     return getSemanticVariables(namespaceUid, versionUri, query, "populationCharacteristic");
   }
 
-  private List<SemanticVariable> getSemanticVariables(String namespaceUid, String versionUri, String query, String variableType) throws ReadValueException {
+  private List<SemanticVariable> getSemanticVariables(String namespaceUid, URI versionUri, String query, String variableType) throws ReadValueException {
     List<SemanticVariable> outcomes = new ArrayList<>();
     ResponseEntity<String> response = queryTripleStoreVersion(namespaceUid, query, versionUri);
     JSONArray bindings = JsonPath.read(response.getBody(), "$.results.bindings");
@@ -181,25 +203,34 @@ public class TriplestoreServiceImpl implements TriplestoreService {
   }
 
   @Override
-  public List<SemanticInterventionUriAndName> getInterventions(String namespaceUid, String version) {
+  public List<SemanticInterventionUriAndName> getInterventions(String namespaceUid, URI version) {
     List<SemanticInterventionUriAndName> interventions = new ArrayList<>();
-    String query = StringUtils.replace(INTERVENTION_QUERY, "$namespaceUid", namespaceUid);
-    ResponseEntity<String> response = queryTripleStoreVersion(namespaceUid, query, version);
-    JSONArray bindings = JsonPath.read(response.getBody(), "$.results.bindings");
+    JSONArray bindings = executeQuery(namespaceUid, version, INTERVENTION_QUERY);
     for (Object binding : bindings) {
-      String uid = JsonPath.read(binding, "$.intervention.value");
-      uid = subStringAfterLastSymbol(uid, '/');
+      String uri = JsonPath.read(binding, "$.intervention.value");
       String label = JsonPath.read(binding, "$.label.value");
-      interventions.add(new SemanticInterventionUriAndName(URI.create(uid), label));
+      interventions.add(new SemanticInterventionUriAndName(URI.create(uri), label));
     }
     return interventions;
   }
 
   @Override
-  public List<Study> queryStudies(String namespaceUid, String version) {
-    String query = StringUtils.replace(STUDY_QUERY, "$namespaceUid", namespaceUid);
+  public List<URI> getUnitUris(String namespaceUuid, URI version) {
+    JSONArray bindings = executeQuery(namespaceUuid, version, UNIT_CONCEPTS);
+    return bindings.stream()
+            .map(binding -> URI.create(JsonPath.read(binding, "$.unitConcept.value")))
+            .collect(Collectors.toList());
+  }
+
+  private JSONArray executeQuery(String namespaceUid, URI version, String query1) {
+    String query = StringUtils.replace(query1, "$namespaceUid", namespaceUid);
     ResponseEntity<String> response = queryTripleStoreVersion(namespaceUid, query, version);
-    JSONArray bindings = JsonPath.read(response.getBody(), "$.results.bindings");
+    return JsonPath.read(response.getBody(), "$.results.bindings");
+  }
+
+  @Override
+  public List<Study> queryStudies(String namespaceUid, URI version) {
+    JSONArray bindings = executeQuery(namespaceUid, version, STUDY_QUERY);
 
     Map<String, Study> studyCache = new HashMap<>();
     Map<Pair<String, String>, StudyTreatmentArm> studyArmsCache = new HashMap<>();
@@ -449,27 +480,27 @@ public class TriplestoreServiceImpl implements TriplestoreService {
 
   private StudyWithDetails buildStudyWithDetailsFromJsonObject(Object binding) {
     JSONObject row = (net.minidev.json.JSONObject) binding;
-    String graphUuid = row.containsKey("graphUri") ? subStringAfterLastSymbol(JsonPath.<String>read(binding, "$.graphUri.value"), '/') : null;
-    String uid = subStringAfterLastSymbol(JsonPath.<String>read(binding, "$.studyUri.value"), '/');
-    String name = row.containsKey("label") ? JsonPath.<String>read(binding, "$.label.value") : null;
-    String title = row.containsKey("title") ? JsonPath.<String>read(binding, "$.title.value") : null;
-    Integer studySize = row.containsKey("studySize") ? Integer.parseInt(JsonPath.<String>read(binding, "$.studySize.value")) : null;
-    String allocation = row.containsKey("allocation") ? StudyAllocationEnum.fromString(subStringAfterLastSymbol(JsonPath.<String>read(binding, "$.allocation.value"), '#')).toString() : null;
-    String blinding = row.containsKey("blinding") ? StudyBlindingEnum.fromString(subStringAfterLastSymbol(JsonPath.<String>read(binding, "$.blinding.value"), '#')).toString() : null;
-    String inclusionCriteria = row.containsKey("inclusionCriteria") ? JsonPath.<String>read(binding, "$.inclusionCriteria.value") : null;
-    Integer numberOfStudyCenters = row.containsKey("numberOfCenters") ? Integer.parseInt(JsonPath.<String>read(binding, "$.numberOfCenters.value")) : null;
-    String publicationURLs = row.containsKey("publications") ? JsonPath.<String>read(binding, "$.publications.value") : null;
-    String status = row.containsKey("status") ? StudyStatusEnum.fromString(subStringAfterLastSymbol(JsonPath.<String>read(binding, "$.status.value"), '#')).toString() : null;
-    String indication = row.containsKey("indication") ? JsonPath.<String>read(binding, "$.indication.value") : null;
-    String objective = row.containsKey("objective") ? JsonPath.<String>read(binding, "$.objective.value") : null;
-    String investigationalDrugNames = row.containsKey("drugNames") ? JsonPath.<String>read(binding, "$.drugNames.value") : null;
+    String graphUuid = row.containsKey("graphUri") ? subStringAfterLastSymbol(JsonPath.read(binding, "$.graphUri.value"), '/') : null;
+    String uid = subStringAfterLastSymbol(JsonPath.read(binding, "$.studyUri.value"), '/');
+    String name = row.containsKey("label") ? JsonPath.read(binding, "$.label.value") : null;
+    String title = row.containsKey("title") ? JsonPath.read(binding, "$.title.value") : null;
+    Integer studySize = row.containsKey("studySize") ? Integer.parseInt(JsonPath.read(binding, "$.studySize.value")) : null;
+    String allocation = row.containsKey("allocation") ? StudyAllocationEnum.fromString(subStringAfterLastSymbol(JsonPath.read(binding, "$.allocation.value"), '#')).toString() : null;
+    String blinding = row.containsKey("blinding") ? StudyBlindingEnum.fromString(subStringAfterLastSymbol(JsonPath.read(binding, "$.blinding.value"), '#')).toString() : null;
+    String inclusionCriteria = row.containsKey("inclusionCriteria") ? JsonPath.read(binding, "$.inclusionCriteria.value") : null;
+    Integer numberOfStudyCenters = row.containsKey("numberOfCenters") ? Integer.parseInt(JsonPath.read(binding, "$.numberOfCenters.value")) : null;
+    String publicationURLs = row.containsKey("publications") ? JsonPath.read(binding, "$.publications.value") : null;
+    String status = row.containsKey("status") ? StudyStatusEnum.fromString(subStringAfterLastSymbol(JsonPath.read(binding, "$.status.value"), '#')).toString() : null;
+    String indication = row.containsKey("indication") ? JsonPath.read(binding, "$.indication.value") : null;
+    String objective = row.containsKey("objective") ? JsonPath.read(binding, "$.objective.value") : null;
+    String investigationalDrugNames = row.containsKey("drugNames") ? JsonPath.read(binding, "$.drugNames.value") : null;
     Integer numberOfArms = row.containsKey("numberOfArms") ? Integer.parseInt(JsonPath.read(binding, "$.numberOfArms.value")) : null;
 
     DateTimeFormatter formatter = DateTimeFormat.forPattern(STUDY_DATE_FORMAT);
-    DateTime startDate = row.containsKey("startDate") ? formatter.parseDateTime(JsonPath.<String>read(binding, "$.startDate.value")).toDateMidnight().toDateTime() : null;
-    DateTime endDate = row.containsKey("endDate") ? formatter.parseDateTime(JsonPath.<String>read(binding, "$.endDate.value")).toDateMidnight().toDateTime() : null;
+    DateTime startDate = row.containsKey("startDate") ? formatter.parseDateTime(JsonPath.read(binding, "$.startDate.value")).toDateMidnight().toDateTime() : null;
+    DateTime endDate = row.containsKey("endDate") ? formatter.parseDateTime(JsonPath.read(binding, "$.endDate.value")).toDateMidnight().toDateTime() : null;
 
-    String dosing = row.containsKey("doseType") ? JsonPath.<String>read(binding, "$.doseType.value") : "Fixed"; //todo needs better way of querying
+    String dosing = row.containsKey("doseType") ? JsonPath.read(binding, "$.doseType.value") : "Fixed"; //todo needs better way of querying
 
     return new StudyWithDetails
             .StudyWithDetailsBuilder()
@@ -512,24 +543,24 @@ public class TriplestoreServiceImpl implements TriplestoreService {
   }
 
   @Override
-  public List<TrialDataStudy> getNetworkData(String namespaceUid, String version, URI outcomeUri,
+  public List<TrialDataStudy> getNetworkData(String namespaceUid, URI version, URI outcomeUri,
                                              Set<URI> interventionUris, Set<String> covariateKeys) throws ReadValueException {
     return getTrialData(namespaceUid, version, "?graph", Collections.singleton(outcomeUri), interventionUris, covariateKeys);
   }
 
   @Override
-  public List<TrialDataStudy> getSingleStudyData(String namespaceUid, URI studyUri, String version, Set<URI> outcomeUris, Set<URI> interventionUris) throws ReadValueException {
+  public List<TrialDataStudy> getSingleStudyData(String namespaceUid, URI studyUri, URI version, Set<URI> outcomeUris, Set<URI> interventionUris) throws ReadValueException {
     String graphSelector = studyUri == null ? null : "<" + studyUri.toString() + ">";
     return getTrialData(namespaceUid, version, graphSelector, outcomeUris, interventionUris, Collections.emptySet());
   }
 
   @Override
-  public List<TrialDataStudy> getAllTrialData(String namespaceUid, String datasetVersion, Set<URI> outcomeUris,
+  public List<TrialDataStudy> getAllTrialData(String namespaceUid, URI datasetVersion, Set<URI> outcomeUris,
                                               Set<URI> interventionUris) throws ReadValueException {
     return getTrialData(namespaceUid, datasetVersion, "?graph", outcomeUris, interventionUris, Collections.emptySet());
   }
 
-  private List<TrialDataStudy> getTrialData(String namespaceUid, String version, String graphSelector, Set<URI> outcomeUris,
+  private List<TrialDataStudy> getTrialData(String namespaceUid, URI version, String graphSelector, Set<URI> outcomeUris,
                                             Set<URI> interventionUris, Set<String> covariateKeys) throws ReadValueException {
     if (interventionUris.isEmpty() || outcomeUris.isEmpty() || graphSelector == null) {
       return Collections.emptyList();
@@ -615,7 +646,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
   }
 
   @Override
-  public List<CovariateStudyValue> getStudyLevelCovariateValues(String namespaceUid, String version,
+  public List<CovariateStudyValue> getStudyLevelCovariateValues(String namespaceUid, URI version,
                                                                 List<CovariateOption> covariates) throws ReadValueException {
     List<CovariateStudyValue> covariateStudyValues = new ArrayList<>();
     for (CovariateOption covariate : covariates) {
@@ -635,7 +666,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
   private Double extractValueFromRow(JSONObject row) {
     Double value = null;
     if (row.containsKey("value")) {
-      String valueAsString = JsonPath.<String>read(row, "$.value.value");
+      String valueAsString = JsonPath.read(row, "$.value.value");
       if (JsonPath.<String>read(row, "$.value.datatype").equals(DATATYPE_DURATION)) {
         Period period = Period.parse(valueAsString);
         if(period.getMonths() > 0) {
@@ -654,11 +685,11 @@ public class TriplestoreServiceImpl implements TriplestoreService {
   private ResponseEntity<String> queryTripleStoreHead(String datasetUri, String query) {
     String datasetUuid = subStringAfterLastSymbol(datasetUri, '/');
 
-    logger.debug("Triplestore uri = " + TRIPLESTORE_BASE_URI);
+    logger.debug("Triplestore uri = " + WebConstants.getTriplestoreBaseUri());
     logger.debug("sparql query = " + query);
     logger.debug("dataset uuid = " + datasetUuid);
 
-    UriComponents uriComponents = UriComponentsBuilder.fromHttpUrl(TRIPLESTORE_BASE_URI)
+    UriComponents uriComponents = UriComponentsBuilder.fromHttpUrl(WebConstants.getTriplestoreBaseUri())
             .path("datasets/" + datasetUuid)
             .path(QUERY_ENDPOINT)
             .queryParam(QUERY_PARAM_QUERY, query)
@@ -667,13 +698,13 @@ public class TriplestoreServiceImpl implements TriplestoreService {
     return restTemplate.exchange(uriComponents.toUri(), HttpMethod.GET, acceptSparqlResultsRequest, String.class);
   }
 
-  private ResponseEntity<String> queryTripleStoreVersion(String namespaceUid, String query, String versionUri) {
-    logger.debug("Triplestore uri = " + TRIPLESTORE_BASE_URI);
+  private ResponseEntity<String> queryTripleStoreVersion(String namespaceUid, String query, URI versionUri) {
+    logger.debug("Triplestore uri = " + WebConstants.getTriplestoreBaseUri());
     logger.debug("namespaceUid = " + namespaceUid);
     logger.debug("versionUri = " + versionUri);
     logger.debug("sparql query = " + query);
 
-    UriComponents uriComponents = UriComponentsBuilder.fromHttpUrl(TRIPLESTORE_BASE_URI)
+    UriComponents uriComponents = UriComponentsBuilder.fromHttpUrl(WebConstants.getTriplestoreBaseUri())
             .path("datasets/" + namespaceUid)
             .path(QUERY_ENDPOINT)
             .queryParam(QUERY_PARAM_QUERY, query)
@@ -681,7 +712,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
 
     HttpHeaders headers = new HttpHeaders();
 
-    headers.put(X_ACCEPT_EVENT_SOURCE_VERSION, Collections.singletonList(versionUri));
+    headers.put(X_ACCEPT_EVENT_SOURCE_VERSION, Collections.singletonList(versionUri.toString()));
     headers.put(ACCEPT_HEADER, Collections.singletonList(APPLICATION_SPARQL_RESULTS_JSON));
 
     return restTemplate.exchange(uriComponents.toUri(), HttpMethod.GET, new HttpEntity<>(headers), String.class);

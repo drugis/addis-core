@@ -8,7 +8,7 @@
   </ul>
   <div class="row nav-bar-spacer">
     <div class="column large-12">
-      <button ng-show="hasLoggedInUser && isHeadView" class="right" type="button" ng-click="createProjectDialog()">Create project</button>
+      <button ng-show="hasLoggedInUser" class="right" type="button" ng-click="createProjectDialog()">Create project</button>
       <h1>{{dataset.title}} <a ng-if="isEditingAllowed" title="Edit title and description" ng-click="showEditDatasetModal()"><i class="fa fa-edit"></i></a></h1>
       <p>{{dataset.comment}} <a ng-if="isEditingAllowed && dataset.comment" title="Edit title and description" ng-click="showEditDatasetModal()"><i class="fa fa-edit"></i></a></p>
       <div class="row nav-bar-spacer">
@@ -16,8 +16,8 @@
           <version-info></version-info>
         </div>
       </div>
-        <a ng-if="versionUuid" ui-sref="versionedDataset.concepts({userUid: user.id, datasetUUID: stripFrontFilter(dataset.datasetUri, 'http://trials.drugis.org/datasets/'), versionUuid: versionUuid})">Go to concepts</a>
-        <a ng-if="!versionUuid" ui-sref="dataset.concepts({userUid: user.id, datasetUUID: stripFrontFilter(dataset.datasetUri, 'http://trials.drugis.org/datasets/')})">Go to concepts</a><inline-help help-key="concept"></inline-help>
+        <a ng-if="versionUuid" ui-sref="versionedDataset.concepts({userUid: user.id, datasetUUID: stripFrontFilter(dataset.datasetUuid, 'http://trials.drugis.org/datasets/'), versionUuid: versionUuid})">Go to concepts</a>
+        <a ng-if="!versionUuid" ui-sref="dataset.concepts({userUid: user.id, datasetUUID: stripFrontFilter(dataset.datasetUuid, 'http://trials.drugis.org/datasets/')})">Go to concepts</a><inline-help help-key="concept"></inline-help>
       <hr>
     </div>
   </div>
@@ -64,9 +64,9 @@
             <td ng-if="isEditingAllowed"><a ng-click="showDeleteStudyDialog(studyWithDetails)"><i class="fa fa-trash-o" style="color: red;"></i></a></td>
             <td style="vertical-align: top;">
 
-              <a ng-if="!isHeadView" ui-sref="versionedDataset.study({userUid: user.id, datasetUUID: stripFrontFilter(dataset.datasetUri, 'http://trials.drugis.org/datasets/'),
+              <a ng-if="!isHeadView" ui-sref="versionedDataset.study({userUid: user.id, datasetUUID: stripFrontFilter(dataset.datasetUuid, 'http://trials.drugis.org/datasets/'),
             studyGraphUuid: (studyWithDetails.graphUri | stripFrontFilter:'http://trials.drugis.org/graphs/'), versionUuid: versionUuid})">{{::studyWithDetails.label}}</a>
-              <a ng-if="isHeadView" ui-sref="dataset.study({userUid: user.id, datasetUUID: stripFrontFilter(dataset.datasetUri, 'http://trials.drugis.org/datasets/'),
+              <a ng-if="isHeadView" ui-sref="dataset.study({userUid: user.id, datasetUUID: stripFrontFilter(dataset.datasetUuid, 'http://trials.drugis.org/datasets/'),
             studyGraphUuid: (studyWithDetails.graphUri | stripFrontFilter:'http://trials.drugis.org/graphs/')})">{{::studyWithDetails.label}}</a>
             </td>
             <td style="vertical-align: top;" ng-if="column.visible" ng-repeat="column in tableOptions.columns">

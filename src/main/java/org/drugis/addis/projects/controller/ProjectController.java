@@ -104,4 +104,18 @@ public class ProjectController extends AbstractAddisCoreController {
     reportRepository.update(projectId, newReport);
     response.setStatus(HttpStatus.SC_OK);
   }
+
+  @RequestMapping(value = "/projects/{projectId}/setArchivedStatus", method = RequestMethod.POST)
+  @ResponseBody
+  public void setArchivedStatus(Principal principal, @PathVariable Integer projectId, @RequestBody ProjectArchiveCommand archiveCommand) throws ResourceDoesNotExistException, MethodNotAllowedException {
+    projectService.checkOwnership(projectId, principal);
+    projectsRepository.setArchived(projectId, archiveCommand.getIsArchived());
+  }
+
+  @RequestMapping(value = "/projects/{projectId}/copy", method = RequestMethod.POST)
+  @ResponseBody
+  public Integer copy(Principal principal, @PathVariable Integer projectId) throws ResourceDoesNotExistException, MethodNotAllowedException, ReadValueException, URISyntaxException {
+    Account user = accountRepository.findAccountByUsername(principal.getName());
+    return projectService.copy(user, projectId);
+  }
 }

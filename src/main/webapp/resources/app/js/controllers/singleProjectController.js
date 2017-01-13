@@ -16,12 +16,14 @@ define(['lodash', 'angular'], function(_, angular) {
     'InterventionService',
     'activeTab',
     'UserService',
-    'ReportResource'
+    'ReportResource',
+    'HistoryResource'
   ];
   var SingleProjectController = function($scope, $q, $state, $stateParams, $location, $modal, ProjectResource, ProjectService,
     TrialverseResource,
     TrialverseStudyResource, SemanticOutcomeResource, OutcomeResource, SemanticInterventionResource, InterventionResource,
-    CovariateOptionsResource, CovariateResource, AnalysisResource, ANALYSIS_TYPES, InterventionService, activeTab, UserService, ReportResource) {
+    CovariateOptionsResource, CovariateResource, AnalysisResource, ANALYSIS_TYPES, InterventionService, activeTab, UserService,
+    ReportResource, HistoryResource) {
     $scope.activeTab = activeTab;
 
     $scope.analysesLoaded = false;
@@ -54,6 +56,14 @@ define(['lodash', 'angular'], function(_, angular) {
       $scope.trialverse = TrialverseResource.get({
         namespaceUid: $scope.project.namespaceUid,
         version: $scope.project.datasetVersion
+      });
+
+      $scope.trialverse.$promise.then(function(dataset) {
+        $scope.currentRevision = HistoryResource.get({
+          userUid: $scope.userId,
+          datasetUUID: $scope.project.namespaceUid,
+          versionUuid: dataset.version.split('/versions/')[1]
+        });
       });
 
       $scope.semanticOutcomes = SemanticOutcomeResource.query({
@@ -342,6 +352,28 @@ define(['lodash', 'angular'], function(_, angular) {
           },
           callback: function() {
             return reloadDefinitions;
+          }
+        }
+      });
+    };
+    $scope.openUpdateDialog = function() {
+      $modal.open({
+        templateUrl: './app/js/project/updateProject.html',
+        scope: $scope,
+        controller: 'UpdateProjectController',
+        resolve: {
+          callback: function() {
+            return function(newProjectId) {
+              ProjectResource.setArchived({
+                projectId: $scope.project.id
+              }, {
+                isArchived: true
+              });
+              $state.go('project', {
+                userUid: $stateParams.userUid,
+                projectId: newProjectId
+              });
+            };
           }
         }
       });

@@ -81,7 +81,7 @@ public class CovariateOptionsControllerTest {
   public void getCovariateOptionsForProject() throws Exception, ReadValueException {
     Integer projectId = 1;
     String tvUuid = "tvUuid";
-    String version = "version";
+    URI version = URI.create("http://version.com");
     Project project = new Project(null, null, null, "uuid", version);
     SemanticVariable semPopChar = new SemanticVariable(URI.create("uri1"), "label1");
     SemanticVariable semNonPopCharVar = new SemanticVariable(URI.create("uri2"), "label2");

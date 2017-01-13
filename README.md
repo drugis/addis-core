@@ -5,7 +5,7 @@ ADDIS 2.x core
 
 Before starting
 -----------------------
-The setup in this readme requires several compononts already being installed and running. Please refer to the OVERALL-README.md in this folder for more information on how to do so.
+The setup in this readme requires several compononts already being installed and running. Please refer to the OVERALL-README.md in this folder for more information on how to do so, and for other readmes that might be relevant.
 
 Make sure the SASS and Bower submodules are present:
 
@@ -35,14 +35,13 @@ In addition to this, you will need an instance of [Patavi](https://github.com/dr
 
 To authenticate with Patavi, you need a client certificate signed by the Certificate Authority (CA) trusted by Patavi, in a JKS keystore.
 
-If Patavi presents a certificate signed by your own CA, you need to trust that CA. To do this, generate a JKS truststore. This needs to contain the certificate of your own CA and (for OAuth) Google's CA (GeoTrust). The drugis.org domains are signed by StartCom. In that case, the trust store should contain:
+If Patavi presents a certificate signed by your own CA, you need to trust that CA. To do this, generate a JKS truststore. This needs to contain the certificate of your own CA and (for OAuth) Google's CA (GeoTrust). The drugis.org domains also depend on GeoTrust. In that case, the trust store should contain:
 
 ```
 keytool -importcert -file /etc/ssl/certs/GeoTrust_Global_CA.pem -alias geotrustCA -keystore <jks location>
-keytool -importcert -file /etc/ssl/certs/StartCom_Certification_Authority.pem -alias startcomCA -keystore <jks location>
 ```
 
-However, in most Java distributions these CAs are trusted by default, so you do not need to generate and configure the trust store in that case.
+However, in most Java distributions this CA is trusted by default, so you do not need to generate and configure the trust store in that case.
 
 Set up the environment:
 

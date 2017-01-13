@@ -1,0 +1,15 @@
+{
+  "results": {
+    "bindings": [{
+      "unitConcept": {
+        "type": "uri",
+        "value": "http://trials.drugis.org/concepts/1"
+      }
+    }, {
+      "unitConcept": {
+        "type": "uri",
+        "value": "http://trials.drugis.org/concepts/2"
+      }
+    }]
+  }
+}

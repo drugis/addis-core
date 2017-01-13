@@ -25,7 +25,7 @@ public class JenaGraphMessageConverter extends AbstractHttpMessageConverter<Grap
     private static MediaType s_turtle = MediaType.parseMediaType("text/turtle");
     private static List<MediaType> s_supported = new ArrayList<>();
 
-    public static final String BASE_URI = "http://example.com/"; // FIXME
+    private static final String BASE_URI = "http://example.com/"; // FIXME
 
     static {
         // Add all supported languages

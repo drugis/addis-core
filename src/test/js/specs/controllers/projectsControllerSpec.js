@@ -2,38 +2,74 @@
 define(['angular', 'angular-mocks', 'controllers'],
   function() {
     describe('The projectsController', function() {
-      var scope, ctrl, projectResource, trialverseResource, projectsDefer;
+      var scope,
+        projectResourceMock = jasmine.createSpyObj('ProjectResource', ['query', 'save', 'setArchived']),
+        userServiceMock = jasmine.createSpyObj('UserService', ['isLoginUserId']),
+        projectsDefer;
       beforeEach(module('addis.controllers'));
 
       beforeEach(inject(function($rootScope, $controller, $q) {
-        trialverseResource = jasmine.createSpyObj('trialverseResource', ['query']);
-        projectResource = jasmine.createSpyObj('projectResource', ['query', 'save']);
-
         projectsDefer = $q.defer();
-        var projects = {};
+        var projects = [{
+          id: 1,
+          owner: {
+            id: 1
+          }
+        }, {
+          id: 2,
+          owner: {
+            id: 1
+          }
+        }];
         projects.$promise = projectsDefer.promise;
-        projectResource.query.and.returnValue(projects);
-        trialverseResource.query.and.returnValue([{
-          key: 'val'
-        }]);
+        projectResourceMock.query.and.returnValue(projects);
+
+        var setArchivedDefer = $q.defer();
+        var setArchivedReturnValue = {
+          $promise: setArchivedDefer.promise
+        };
+        setArchivedDefer.resolve();
+        projectResourceMock.setArchived.and.returnValue(setArchivedReturnValue);
 
         scope = $rootScope;
 
-        var stateParams = {userUid: 1};
+        var stateParams = {
+          userUid: 1
+        };
 
-        ctrl = $controller('ProjectsController', {
+        $controller('ProjectsController', {
           $scope: scope,
           $stateParams: stateParams,
-          'ProjectResource': projectResource,
-          'TrialverseResource': trialverseResource
+          'ProjectResource': projectResourceMock,
+          'UserService': userServiceMock
         });
       }));
 
       it('should make a list of projects available from the resource', function() {
-        projectsDefer.resolve([{project: 'projectg1'}, {project: 'project2'}]);
+        projectsDefer.resolve();
         scope.$digest();
         expect(scope.projects.length).toBe(2);
       });
+      it('should make an archiveProject function available on the scope that sets a project to archived', function() {
+        scope.archiveProject({
+          id: 1
+        });
+        expect(projectResourceMock.setArchived).toHaveBeenCalledWith({
+          projectId: 1
+        }, {
+          isArchived: true
+        });
+      });
 
+      it('should make an unarchiveProject function available on the scope that sets a project to not archived', function() {
+        scope.unarchiveProject({
+          id: 1
+        });
+        expect(projectResourceMock.setArchived).toHaveBeenCalledWith({
+          projectId: 1
+        }, {
+          isArchived: false
+        });
+      });
     });
   });

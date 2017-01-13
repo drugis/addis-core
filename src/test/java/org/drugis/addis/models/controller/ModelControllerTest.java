@@ -547,11 +547,6 @@ public class ModelControllerTest {
     Integer modelId = 315;
     CreateFunnelPlotCommand createFunnelPlotCommand = new CreateFunnelPlotCommand(modelId, includedComparisons);
     String postBodyStr = TestUtils.createJson(createFunnelPlotCommand);
-//    String postBodyStr =  "{\"modelId\":315,\"includedComparisons\":[" +
-//            "{\"t1\":251,\"t2\":249,\"biasDirection\":\"t2\"}," +
-//            "{\"t1\":253,\"t2\":249,\"biasDirection\":\"t2\"}," +
-//            "{\"t1\":252,\"t2\":249,\"biasDirection\":\"t2\"}," +
-//            "{\"t1\":250,\"t2\":249,\"biasDirection\":\"t2\"}]}\n";
     System.out.print(postBodyStr);
     MockHttpServletRequestBuilder post = post("/projects/1/analyses/2/models/3/funnelPlots")
             .content(postBodyStr)

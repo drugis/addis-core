@@ -125,7 +125,7 @@ public class ProblemServiceImpl implements ProblemService {
     final Map<String, Outcome> outcomesByName = outcomes.stream().collect(Collectors.toMap(Outcome::getName, Function.identity()));
     final Map<Integer, Outcome> outcomesById = outcomes.stream().collect(Collectors.toMap(Outcome::getId, Function.identity()));
     List<URI> taskUris = models.stream().map(Model::getTaskUrl)
-            .filter(taskUri -> taskUri != null)
+            .filter(Objects::nonNull)
             .collect(Collectors.toList());
     final Map<URI, PataviTask> pataviTaskMap = pataviTaskRepository.findByUrls(taskUris)
             .stream()
@@ -337,7 +337,7 @@ public class ProblemServiceImpl implements ProblemService {
     }
 
     // if there's an entry with missing standard deviation or samplesize, move everything to standard error
-    Boolean isStdErrEntry = entries.stream().filter(entry -> entry instanceof ContinuousStdErrEntry).findFirst().isPresent();
+    Boolean isStdErrEntry = entries.stream().anyMatch(entry -> entry instanceof ContinuousStdErrEntry);
     if (isStdErrEntry) {
       entries = entries.stream().map(entry -> {
         if (entry instanceof ContinuousStdErrEntry) {

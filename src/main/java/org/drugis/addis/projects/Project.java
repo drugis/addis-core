@@ -1,9 +1,13 @@
 package org.drugis.addis.projects;
 
 import org.drugis.addis.security.Account;
+import org.drugis.addis.util.URIStringConverter;
+import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.net.URI;
+import java.util.Date;
 
 /**
  * Created by daan on 2/6/14.
@@ -19,22 +23,24 @@ public class Project implements Serializable {
   @JoinColumn(name = "owner")
   private Account owner;
 
-  @Column
   private String name;
 
-  @Column
   private String description;
 
-  @Column
   private String namespaceUid;
 
-  @Column
-  private String datasetVersion;
+  @Convert(converter = URIStringConverter.class)
+  private URI datasetVersion;
+
+  private Boolean isArchived = false;
+  @Column(name = "archived_on")
+  @Type(type = "date")
+  private Date archivedOn;
 
   public Project() {
   }
 
-  public Project(Integer id, Account owner, String name, String description, String namespaceUid, String datasetVersion) {
+  public Project(Integer id, Account owner, String name, String description, String namespaceUid, URI datasetVersion) {
     this.id = id;
     this.owner = owner;
     this.name = name;
@@ -43,7 +49,7 @@ public class Project implements Serializable {
     this.datasetVersion = datasetVersion;
   }
 
-  public Project(Account owner, String name, String description, String namespaceUid, String datasetVersion) {
+  public Project(Account owner, String name, String description, String namespaceUid, URI datasetVersion) {
     this.owner = owner;
     this.name = name;
     this.description = description;
@@ -79,8 +85,24 @@ public class Project implements Serializable {
     return namespaceUid;
   }
 
-  public String getDatasetVersion() {
+  public URI getDatasetVersion() {
     return datasetVersion;
+  }
+
+  public Boolean getArchived() {
+    return isArchived;
+  }
+
+  public Date getArchivedOn() {
+    return archivedOn;
+  }
+
+  public void setArchived(Boolean isArchived) {
+    this.isArchived = isArchived;
+  }
+
+  public void setArchivedOn(Date archivedOn) {
+    this.archivedOn = archivedOn;
   }
 
   @Override
@@ -90,24 +112,30 @@ public class Project implements Serializable {
 
     Project project = (Project) o;
 
-    if (!datasetVersion.equals(project.datasetVersion)) return false;
-    if (description != null ? !description.equals(project.description) : project.description != null) return false;
-    if (id != null ? !id.equals(project.id) : project.id != null) return false;
-    if (!name.equals(project.name)) return false;
-    if (!namespaceUid.equals(project.namespaceUid)) return false;
+    if (!id.equals(project.id)) return false;
     if (!owner.equals(project.owner)) return false;
-
-    return true;
+    if (!name.equals(project.name)) return false;
+    if (!description.equals(project.description)) return false;
+    if (!namespaceUid.equals(project.namespaceUid)) return false;
+    if (!datasetVersion.equals(project.datasetVersion)) return false;
+    if (!isArchived.equals(project.isArchived)) return false;
+    return archivedOn != null ? archivedOn.equals(project.archivedOn) : project.archivedOn == null;
   }
 
   @Override
   public int hashCode() {
-    int result = id != null ? id.hashCode() : 0;
+    int result = id.hashCode();
     result = 31 * result + owner.hashCode();
     result = 31 * result + name.hashCode();
-    result = 31 * result + (description != null ? description.hashCode() : 0);
+    result = 31 * result + description.hashCode();
     result = 31 * result + namespaceUid.hashCode();
     result = 31 * result + datasetVersion.hashCode();
+    result = 31 * result + isArchived.hashCode();
+    result = 31 * result + (archivedOn != null ? archivedOn.hashCode() : 0);
     return result;
+  }
+
+  public ProjectCommand getCommand() {
+    return new ProjectCommand(this.getName(), this.getDescription(), this.getNamespaceUid(), this.getDatasetVersion());
   }
 }

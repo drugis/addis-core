@@ -89,7 +89,7 @@ define(['angular-mocks'], function(angularMocks) {
         scope.$digest();
         expect(datasetVersionedResource.getForJson).toHaveBeenCalled();
         expect(scope.dataset).toEqual({
-          datasetUri: 'uuid-1',
+          datasetUuid: 'uuid-1',
           title: 'title',
           comment: 'description',
           creator: 'creator'

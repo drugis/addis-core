@@ -22,25 +22,20 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import javax.inject.Inject;
 import java.net.URI;
 import java.security.Principal;
-import java.util.Collections;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.core.Is.is;
 import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 /**
@@ -140,10 +135,10 @@ public class InterventionControllerTest {
   @Test
   public void updateNameAndDescription() throws Exception {
     Integer projectId = 1;
-    Integer intervetionId = 2;
+    Integer interventionId = 2;
     EditInterventionCommand editCommand = new EditInterventionCommand("new name", "new motivation");
-    AbstractIntervention updatedIntervention = new SimpleIntervention(intervetionId, projectId, editCommand.getName(), editCommand.getMotivation(), URI.create("uri"), "semlabel");
-    when(interventionService.updateNameAndMotivation(projectId, intervetionId, editCommand.getName(), editCommand.getMotivation())).thenReturn(updatedIntervention);
+    AbstractIntervention updatedIntervention = new SimpleIntervention(interventionId, projectId, editCommand.getName(), editCommand.getMotivation(), URI.create("uri"), "semlabel");
+    when(interventionService.updateNameAndMotivation(projectId, interventionId, editCommand.getName(), editCommand.getMotivation())).thenReturn(updatedIntervention);
     String body = TestUtils.createJson(editCommand);
 
     mockMvc.perform(post("/projects/1/interventions/2").content(body).principal(user).contentType(WebConstants.getApplicationJsonUtf8Value()))
@@ -151,7 +146,7 @@ public class InterventionControllerTest {
             .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()));
 
     verify(accountRepository).getAccount(user);
-    verify(interventionService).updateNameAndMotivation(projectId, intervetionId, editCommand.getName(), editCommand.getMotivation());
+    verify(interventionService).updateNameAndMotivation(projectId, interventionId, editCommand.getName(), editCommand.getMotivation());
   }
 
   @Test
@@ -197,7 +192,7 @@ public class InterventionControllerTest {
     interventions.add(1);
     CombinationIntervention combinationIntervention = new CombinationIntervention(1, 1, "name", "motivation", interventions);
     Set<Integer> interventionsIds = Sets.newHashSet(1);
-    AbstractInterventionCommand combinationInterventionCommand = new CombinationInterventionCommand(1, "name", "motivation", "http://semantic.com", "labelnew", interventionsIds);
+    AbstractInterventionCommand combinationInterventionCommand = new CombinationInterventionCommand(1, "name", "motivation", interventionsIds);
     when(interventionRepository.create(gert, combinationInterventionCommand)).thenReturn(combinationIntervention);
     String body = TestUtils.createJson(combinationInterventionCommand);
     mockMvc.perform(post("/projects/1/interventions").content(body).principal(user).contentType(WebConstants.getApplicationJsonUtf8Value()))
@@ -233,7 +228,7 @@ public class InterventionControllerTest {
             "  \"name\": \"Bupropion\",\n" +
             "  \"projectId\": 13,\n" +
             "  \"semanticInterventionLabel\": \"Bupropion\",\n" +
-            "  \"semanticInterventionUuid\": \"234-aga-34\"\n" +
+            "  \"semanticInterventionUri\": \"234-aga-34\"\n" +
             "}\n";
     SimpleIntervention intervention = new SimpleIntervention(1, 1, "name", "motivation", new SemanticInterventionUriAndName(URI.create("http://semantic.com"), "labelnew"));
     ObjectMapper mapper = new ObjectMapper();
@@ -262,7 +257,7 @@ public class InterventionControllerTest {
             "  \"name\": \"Bupropion\",\n" +
             "  \"projectId\": 13,\n" +
             "  \"semanticInterventionLabel\": \"Bupropion\",\n" +
-            "  \"semanticInterventionUuid\": \"234-aga-34\"\n" +
+            "  \"semanticInterventionUri\": \"234-aga-34\"\n" +
             "}\n";
     SimpleIntervention intervention = new SimpleIntervention(1, 1, "name", "motivation", new SemanticInterventionUriAndName(URI.create("http://semantic.com"), "labelnew"));
     ObjectMapper mapper = new ObjectMapper();
