@@ -74,9 +74,12 @@ define(['lodash', 'angular'], function(_, angular) {
     }
 
     function getOutcomeMeasurement(analysis, trialDataArm, selectedMM) {
-      return _.find(trialDataArm.measurements[selectedMM.uri], function(measurement) {
-        return analysis.outcome.semanticOutcomeUri === measurement.variableConceptUri;
-      });
+      if (selectedMM) {
+        return _.find(trialDataArm.measurements[selectedMM.uri], function(measurement) {
+          return analysis.outcome.semanticOutcomeUri === measurement.variableConceptUri;
+        });
+      }
+      return null;
     }
 
     function buildTableFromTrialData(trialDataStudies, interventions, analysis, covariates, treatmentOverlapMap) {
@@ -160,7 +163,7 @@ define(['lodash', 'angular'], function(_, angular) {
       return _.find(dataRows, function(dataRow) {
         //if I find a data row which contains stdErr but misses either stdDev or N
         return _.find(dataRow.measurements, function(measurement) {
-          return (measurement.sigma === 'NA' || measurement.sampleSize === 'NA') && measurement.stdErr !== 'NA';
+          return (measurement.sigma === 'NA' || measurement.sampleSize === 'NA') && measurement.stdErr !== 'NA' && measurement.stdErr !== null;
         });
       });
     }
@@ -253,17 +256,21 @@ define(['lodash', 'angular'], function(_, angular) {
             return false; //no matched interventions, therefore missing values don't count
           }
           var measurement = getOutcomeMeasurement(analysis, trialDataArm, selectedMM);
-          var measurementType = measurement.measurementTypeURI;
+          if (measurement) {
+            var measurementType = measurement.measurementTypeURI;
 
-          var isMeanMissing = isMissingValue(measurement.mean, 'mean', measurementType);
-          var isStdDevMissing = isMissingValue(measurement.stdDev, 'stdDev', measurementType);
-          var isSampleSizeMissing = isMissingValue(measurement.sampleSize, 'sampleSize', measurementType);
-          var isStdErrMissing = isMissingValue(measurement.stdErr, 'stdErr', measurementType);
-          var isRateMissing = isMissingValue(measurement.rate, 'rate', measurementType);
+            var isMeanMissing = isMissingValue(measurement.mean, 'mean', measurementType);
+            var isStdDevMissing = isMissingValue(measurement.stdDev, 'stdDev', measurementType);
+            var isSampleSizeMissing = isMissingValue(measurement.sampleSize, 'sampleSize', measurementType);
+            var isStdErrMissing = isMissingValue(measurement.stdErr, 'stdErr', measurementType);
+            var isRateMissing = isMissingValue(measurement.rate, 'rate', measurementType);
 
-          return isMeanMissing || isRateMissing ||
-            (isStdDevMissing && isStdErrMissing) ||
-            (isSampleSizeMissing && isStdErrMissing);
+            return isMeanMissing || isRateMissing ||
+              (isStdDevMissing && isStdErrMissing) ||
+              (isSampleSizeMissing && isStdErrMissing);
+            } else {
+              return true;
+            }
         });
         return accum;
       }, {});
@@ -309,7 +316,7 @@ define(['lodash', 'angular'], function(_, angular) {
 
           if (matchedIntervention) {
             var outcomeMeasurement = getOutcomeMeasurement(analysis, trialDataArm, selectedMM);
-            sum += outcomeMeasurement.sampleSize;
+            sum += outcomeMeasurement ? outcomeMeasurement.sampleSize : 0;
           }
         });
         return sum;
@@ -546,10 +553,9 @@ define(['lodash', 'angular'], function(_, angular) {
         var selectedMM = _.find(study.measurementMoments, function(measurementMoment) {
           return measurementMoment.uri === selectedMMUri;
         });
-        if(!selectedMM) { // no data for selected measurement moment means it's not on the study
-          selectedMM = study.measurementMoments[0];
+        if (selectedMM) { // no data for selected measurement moment means it's not on the study
+          selectedMM.isDefault = selected ? false : true;
         }
-        selectedMM.isDefault = selected ? false : true;
         accum[study.studyUri] = selectedMM;
         return accum;
       }, {});
