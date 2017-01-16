@@ -71,7 +71,7 @@ define(['angular', 'lodash'], function(angular, _) {
           }
           if (angular.isString(newTreatment.doseUnit)) {
             var doseUnitExists = _.find(scope.doseUnits, function(doseUnit) {
-              return doseUnit.label === newTreatment.doseUnit;
+              return doseUnit.label.toLowerCase() === newTreatment.doseUnit.toLowerCase();
             });
             if (doseUnitExists === undefined) {
               newTreatment.doseUnit = {
@@ -83,7 +83,6 @@ define(['angular', 'lodash'], function(angular, _) {
             }
             scope.doseUnits.push(newTreatment.doseUnit);
           }
-
 
           reset();
           scope.treatmentAdded(newTreatment);

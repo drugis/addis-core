@@ -1,7 +1,7 @@
 'use strict';
 define(['lodash'], function(_) {
-  var dependencies = ['MappingService'];
-  var ConceptMappingItemDirective = function(MappingService) {
+  var dependencies = ['MappingService', '$modal'];
+  var ConceptMappingItemDirective = function(MappingService, $modal) {
     return {
       restrict: 'E',
       templateUrl: 'app/js/mapping/conceptMappingItemDirective.html',
@@ -19,6 +19,14 @@ define(['lodash'], function(_) {
         scope.removeMapping = function() {
           MappingService.removeMapping(scope.studyConcept, scope.selectedDatasetConcept);
           scope.selectedDatasetConcept = undefined;
+        };
+
+        scope.openRepairModal = function() {
+          $modal.open({
+            templateUrl: 'app/js/unit/repairUnit.html',
+            scope: scope,
+            settings: scope.settings
+          });
         };
 
         scope.datasetConcepts.then(function(concepts) {

@@ -55,7 +55,7 @@ define(['lodash', 'angular'], function(_, angular) {
         function() {
           $modalInstance.dismiss('cancel');
         });
-    }
+    };
 
     $scope.actionType = actionType;
 
