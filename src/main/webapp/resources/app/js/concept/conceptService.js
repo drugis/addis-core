@@ -1,5 +1,5 @@
 'use strict';
-define([], function() {
+define(['lodash'], function(_) {
   var dependencies = ['$q', 'UUIDService'];
   var ConceptService = function($q, UUIDService) {
 
@@ -14,6 +14,10 @@ define([], function() {
       'ontology:Variable': {
         uri: 'ontology:Variable',
         label: 'Variable'
+      },
+      'ontology:Unit':{
+        uri: 'ontology:Unit',
+        label: 'Unit'
       }
     };
 

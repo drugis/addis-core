@@ -19,6 +19,7 @@
       <li class="heading">Concepts</li>
       <li><a ng-click="sideNavClick('drugs')">Drugs</a></li>
       <li><a ng-click="sideNavClick('variables')">Variables</a></li>
+      <li><a ng-click="sideNavClick('units')">Units</a></li>
     </ul>
   </div>
   <div class="columns large-10 medium-9">
@@ -32,6 +33,10 @@
     <h3>Variables<inline-help help-key="variable"></inline-help></h3>
     <ul id="variables">
       <li ng-repeat="concept in concepts | filter:'ontology:Variable'  | orderBy:'label'">{{concept.label}}</li>
+    </ul>
+    <h3>Units<inline-help help-key="unit"></inline-help></h3>
+    <ul id="units">
+      <li ng-repeat="concept in concepts | filter:'ontology:Unit'  | orderBy:'label'">{{concept.label}}</li>
     </ul>
   </div>
 </div>

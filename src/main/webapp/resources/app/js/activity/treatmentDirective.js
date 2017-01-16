@@ -1,5 +1,5 @@
 'use strict';
-define(['angular'], function(angular) {
+define(['angular', 'lodash'], function(angular, _) {
   var dependencies = ['$stateParams', 'DrugService', 'UnitService', 'UUIDService'];
   var INSTANCE_PREFIX = 'http://trials.drugis.org/instances/';
 
@@ -69,12 +69,18 @@ define(['angular'], function(angular) {
             };
             scope.drugs.push(newTreatment.drug);
           }
-
           if (angular.isString(newTreatment.doseUnit)) {
-            newTreatment.doseUnit = {
-              uri: INSTANCE_PREFIX + UUIDService.generate(),
-              label: newTreatment.doseUnit
-            };
+            var doseUnitExists = _.find(scope.doseUnits, function(doseUnit) {
+              return doseUnit.label === newTreatment.doseUnit;
+            });
+            if (doseUnitExists === undefined) {
+              newTreatment.doseUnit = {
+                uri: INSTANCE_PREFIX + UUIDService.generate(),
+                label: newTreatment.doseUnit
+              };
+            } else {
+              newTreatment.doseUnit = doseUnitExists;
+            }
             scope.doseUnits.push(newTreatment.doseUnit);
           }
 

@@ -11,6 +11,9 @@ define([], function() {
     }, {
       uri: 'ontology:Variable',
       label: 'Variable'
+    },{
+      uri: 'ontology:Unit',
+      label: 'Unit'
     }];
 
     $scope.createConcept = function() {
