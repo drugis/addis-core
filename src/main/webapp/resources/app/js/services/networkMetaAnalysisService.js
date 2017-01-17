@@ -177,6 +177,19 @@ define(['lodash', 'angular'], function(_, angular) {
       });
     }
 
+    function getMeasurementType(trialData) {
+      var studyWithMeasurement = _.find(trialData, function(study) {
+        return _.find(study.trialDataArms, function(trialDataArm) {
+          return _.find(trialDataArm.measurements, function(measurementsForMoment) {
+            return _.find(measurementsForMoment, function(measurement) {
+              return measurement.measurementTypeURI;
+            });
+          });
+        });
+      });
+      return getRowMeasurementType(_.values(studyWithMeasurement.trialDataArms[0].measurements)[0][0]);
+    }
+
     function measurementsByMM(analysis, trialDataArm, measurementMoments) {
       return _.reduce(measurementMoments, function(accum, measurementMoment) {
         var outcomeMeasurement = getOutcomeMeasurement(analysis, trialDataArm, measurementMoment);
@@ -268,9 +281,9 @@ define(['lodash', 'angular'], function(_, angular) {
             return isMeanMissing || isRateMissing ||
               (isStdDevMissing && isStdErrMissing) ||
               (isSampleSizeMissing && isStdErrMissing);
-            } else {
-              return true;
-            }
+          } else {
+            return true;
+          }
         });
         return accum;
       }, {});
@@ -572,6 +585,7 @@ define(['lodash', 'angular'], function(_, angular) {
       changeCovariateInclusion: changeCovariateInclusion,
       checkSigmaNShow: checkSigmaNShow,
       checkStdErrShow: checkStdErrShow,
+      getMeasurementType: getMeasurementType,
       cleanUpExcludedArms: cleanUpExcludedArms,
       doesInterventionHaveAmbiguousArms: doesInterventionHaveAmbiguousArms,
       doesModelHaveAmbiguousArms: doesModelHaveAmbiguousArms,

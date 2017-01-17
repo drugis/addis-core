@@ -11,15 +11,15 @@
           <th rowspan="2">Interventions</th>
           <th rowspan="2">Arms</th>
           <!--FIXME: get rid of static names -->
-          <th rowspan="2" ng-show="trialData[0].measurements[momentSelections[trialData[0].studyUri].uri].type === 'dichotomous'">subjects with event
+          <th rowspan="2" ng-show="measurementType === 'dichotomous'">subjects with event
             <inline-help help-key="count"></inline-help>
           </th>
 
-          <th rowspan="2" ng-show="trialData[0].measurements[momentSelections[trialData[0].studyUri].uri].type === 'continuous'">mean
+          <th rowspan="2" ng-show="measurementType === 'continuous'">mean
             <inline-help help-key="mean"></inline-help>
           </th>
 
-          <th rowspan="2" ng-show="trialData[0].measurements[momentSelections[trialData[0].studyUri].uri].type === 'continuous' && showSigmaN">standard deviation
+          <th rowspan="2" ng-show="measurementType === 'continuous' && showSigmaN">standard deviation
             <inline-help help-key="standard-deviation"></inline-help>
           </th>
 
@@ -84,15 +84,15 @@
             </label>
           </td>
 
-          <td ng-show="dataRow.measurements[momentSelections[dataRow.studyUri].uri].type === 'dichotomous'"
+          <td ng-show="measurementType === 'dichotomous'"
             ng-class="{undefined:dataRow.intervention === 'unmatched'}" class="text-center">
             {{dataRow.measurements[momentSelections[dataRow.studyUri].uri].rate}}
           </td>
-          <td ng-show="dataRow.measurements[momentSelections[dataRow.studyUri].uri].type === 'continuous'"
+          <td ng-show="measurementType === 'continuous'"
             class="large-2" ng-class="{undefined:dataRow.intervention === 'unmatched'}"
             class="text-center">{{dataRow.measurements[momentSelections[dataRow.studyUri].uri].mu}}
           </td>
-          <td ng-show="showSigmaN && dataRow.measurements[momentSelections[dataRow.studyUri].uri].type === 'continuous'"
+          <td ng-show="showSigmaN && measurementType === 'continuous'"
             class="large-2" ng-class="{undefined:dataRow.intervention === 'unmatched'}"
             class="text-center">{{dataRow.measurements[momentSelections[dataRow.studyUri].uri].sigma}}
           </td>
@@ -100,7 +100,7 @@
             class="text-center">
             {{dataRow.measurements[momentSelections[dataRow.studyUri].uri].sampleSize}}
           </td>
-          <td ng-show="showStdErr && dataRow.measurements[momentSelections[dataRow.studyUri].uri].type === 'continuous'"
+          <td ng-show="showStdErr && measurementType === 'continuous'"
             class="large-2" ng-class="{undefined:dataRow.intervention === 'unmatched'}"
             class="text-center">{{dataRow.measurements[momentSelections[dataRow.studyUri].uri].stdErr}}
           </td>

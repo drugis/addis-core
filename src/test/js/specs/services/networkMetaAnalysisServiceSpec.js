@@ -598,7 +598,6 @@ define(['angular', 'angular-mocks', 'services'], function(angular) {
           });
         })
       );
-
     });
 
     describe('changeArmExclusion', function() {
@@ -643,7 +642,6 @@ define(['angular', 'angular-mocks', 'services'], function(angular) {
         expect(analysis.excludedArms.length).toBe(1);
         expect(analysis.excludedArms[0].trialverseId).toBe(-3);
       }));
-
     });
 
     describe('doesInterventionHaveAmbiguousArms', function() {
@@ -705,7 +703,6 @@ define(['angular', 'angular-mocks', 'services'], function(angular) {
         };
         expect(NetworkMetaAnalysisService.doesInterventionHaveAmbiguousArms(drugConceptUid, studyUri, trialverseData, analysis)).toBeFalsy();
       }));
-
     });
 
     describe('doesModelHaveAmbiguousArms', function() {
@@ -743,7 +740,6 @@ define(['angular', 'angular-mocks', 'services'], function(angular) {
         };
         expect(NetworkMetaAnalysisService.doesModelHaveAmbiguousArms(trialverseData, analysis)).toBeTruthy();
       }));
-
     });
 
     describe('addInclusionsToInterventions', function() {
@@ -1095,6 +1091,7 @@ define(['angular', 'angular-mocks', 'services'], function(angular) {
         expect(NetworkMetaAnalysisService.doesModelHaveInsufficientCovariateValues(badtrialData)).toBeTruthy();
       }));
     });
+
     describe('checkStdErrShow', function() {
       beforeEach(module('addis.services'));
 
@@ -1129,6 +1126,7 @@ define(['angular', 'angular-mocks', 'services'], function(angular) {
 
       }));
     });
+
     describe('checkSigmaNShow', function() {
       beforeEach(module('addis.services'));
       it('should return truthy if there is at least one row with data for either sigma or N', inject(function(NetworkMetaAnalysisService) {
@@ -1158,6 +1156,32 @@ define(['angular', 'angular-mocks', 'services'], function(angular) {
           }]
         }];
         expect(NetworkMetaAnalysisService.checkSigmaNShow(dataRows)).toBeFalsy();
+      }));
+    });
+
+    describe('getMeasurementType', function() {
+      beforeEach(module('addis.services'));
+      it('should get the measurement type from the trial data', inject(function(NetworkMetaAnalysisService) {
+        var dichotomousData = [{
+          trialDataArms: [{
+            measurements: {
+              'http://measurementMoment.uri/1': [{
+                measurementTypeURI: 'http://trials.drugis.org/ontology#dichotomous'
+              }]
+            }
+          }]
+        }];
+        var continuousData = [{
+          trialDataArms: [{
+            measurements: {
+              'http://measurementMoment.uri/1': [{
+                measurementTypeURI: 'http://trials.drugis.org/ontology#continuous'
+              }]
+            }
+          }]
+        }];
+        expect(NetworkMetaAnalysisService.getMeasurementType(dichotomousData)).toEqual('dichotomous');
+        expect(NetworkMetaAnalysisService.getMeasurementType(continuousData)).toEqual('continuous');
       }));
     });
   });

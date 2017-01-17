@@ -117,7 +117,8 @@ define(['angular', 'angular-mocks', 'controllers'], function() {
         'doesModelHaveInsufficientCovariateValues',
         'getIncludedInterventions',
         'transformTrialDataToNetwork',
-        'transformTrialDataToTableRows'
+        'transformTrialDataToTableRows',
+        'getMeasurementType'
       ]);
       var mockNetwork = {
         interventions: []

@@ -147,6 +147,7 @@ define(['lodash'], function(_) {
           $scope.isModelCreationBlocked = checkCanNotCreateModel();
           $scope.showStdErr = NetworkMetaAnalysisService.checkStdErrShow($scope.trialData);
           $scope.showSigmaN = NetworkMetaAnalysisService.checkSigmaNShow($scope.trialData);
+          $scope.measurementType = NetworkMetaAnalysisService.getMeasurementType($scope.trialverseData);
           $scope.loading.loaded = true;
         });
     };
