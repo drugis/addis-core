@@ -28,6 +28,7 @@ define(
     'analysis/analysis',
     'util/util',
     'study/study',
+    'unit/unit',
     'graph/graph',
     'populationInformation/populationInformation',
     'arm/arm',
@@ -140,7 +141,8 @@ define(
       'trialverse.concept',
       'trialverse.commit',
       'trialverse.mapping',
-      'trialverse.studyInformation'
+      'trialverse.studyInformation',
+      'trialverse.unit'
     ];
 
     Number.isInteger = Number.isInteger || function(value) {

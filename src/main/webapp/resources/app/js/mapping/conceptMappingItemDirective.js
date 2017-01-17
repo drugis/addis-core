@@ -25,7 +25,12 @@ define(['lodash'], function(_) {
           $modal.open({
             templateUrl: 'app/js/unit/repairUnit.html',
             scope: scope,
-            settings: scope.settings
+            controller: 'RepairUnitController',
+            resolve: {
+              unit: function() {
+                return scope.studyConcept;
+              }
+            }
           });
         };
 

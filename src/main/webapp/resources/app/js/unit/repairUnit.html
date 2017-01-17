@@ -1,0 +1,29 @@
+<div class="row">
+  <div class="large-9 columns">
+    <h3>Repair Unit</h3>
+  </div>
+</div>
+<form novalidate ng-submit="merge(mergeTarget)">
+  <div class="row">
+    <div class="large-9 columns">
+      <hr>
+      <p>
+        <h4>Merge this unit ({{unit.label}}) into other unit</h4>
+        <em>All doses using {{unit.label}} will be transferred to the target unit</em>
+      </p>
+      <div class="row">
+        <div class="large-6 columns">
+          <label>Target unit
+            <select ng-model="mergeTarget" ng-options="otherUnit.label for otherUnit in otherUnits"></select>
+          </label>
+        </div>
+      </div>
+      <div class="row">
+        <div class="large-6 columns">
+          <button class="button small" ng-disabled="!mergeTarget || isMerging" type="submit">Merge</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</form>
+<a class="close-reveal-modal" ng-click="cancel()">&#215;</a>

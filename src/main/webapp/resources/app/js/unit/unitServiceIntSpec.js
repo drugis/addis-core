@@ -1,35 +1,35 @@
 'use strict';
-define(['angular', 'angular-mocks'], function(angular, angularMocks) {
+define(['angular', 'angular-mocks', 'unit/unit'], function() {
   describe('the unit service service', function() {
 
     var rootScope, q,
-      studyServiceMock = jasmine.createSpyObj('StudyService', ['getStudy', 'getJsonGraph', 'save', 'saveJsonGraph']),
-      graphDefer,
+      studyServiceMock = jasmine.createSpyObj('StudyService', ['getJsonGraph', 'saveJsonGraph']),
+      saveDefer,
       unitService;
 
 
     beforeEach(function() {
-      module('trialverse.activity', function($provide) {
+      module('trialverse.unit', function($provide) {
         $provide.value('StudyService', studyServiceMock);
       });
     });
-
-    beforeEach(module('trialverse.activity'));
 
     beforeEach(inject(function($q, $rootScope, UnitService) {
       q = $q;
       rootScope = $rootScope;
 
       unitService = UnitService;
-      graphDefer = q.defer();
-      studyServiceMock.getJsonGraph.and.returnValue(graphDefer.promise);
-
+      saveDefer = q.defer();
+      studyServiceMock.saveJsonGraph.and.returnValue(saveDefer.promise);
+      saveDefer.resolve();
     }));
 
 
     describe('query units', function() {
 
       beforeEach(function() {
+        var graphDefer = q.defer();
+        studyServiceMock.getJsonGraph.and.returnValue(graphDefer.promise);
         graphDefer.resolve([{
           '@id': 'http://trials.drugis.org/instances/unitUuid1',
           '@type': 'ontology:Unit',
@@ -60,7 +60,82 @@ define(['angular', 'angular-mocks'], function(angular, angularMocks) {
       });
     });
 
-
-
+    describe('merge', function() {
+      var sourceUnit = {
+        uri: 'http://trials.drugis.org/instances/unitUuid1'
+      };
+      var targetUnit = {
+        uri: 'http://trials.drugis.org/instances/unitUuid2'
+      };
+      
+      beforeEach(function() {
+        var graphDefer = q.defer();
+        studyServiceMock.getJsonGraph.and.returnValue(graphDefer.promise);
+        graphDefer.resolve([{
+          '@type': 'ontology:Study',
+          has_activity: [{
+            has_drug_treatment: [{
+              treatment_dose: [{
+                '@id': 'http://trials.drugis.org/instances/someDose1',
+                'unit': targetUnit.uri
+              }]
+            }, {
+              treatment_dose: [{
+                '@id': 'http://trials.drugis.org/instances/someDose2',
+                'unit': 'http://trials.drugis.org/instances/someOtherUnit'
+              }]
+            }, {
+              treatment_dose: [{
+                '@id': 'http://trials.drugis.org/instances/someDose3',
+                'unit': sourceUnit.uri
+              }]
+            }]
+          }]
+        }, {
+          '@id': sourceUnit.uri,
+          '@type': 'ontology:Unit',
+          'conversionMultiplier': '1.000000e-03',
+          'label': 'sourceMilligram'
+        }, {
+          '@id': targetUnit.uri,
+          '@type': 'ontology:Unit',
+          'conversionMultiplier': '1.000000e-00',
+          'label': 'targetMilligram'
+        }]);
+      });
+      it('should remove the source unit and replace the unit of all doses with the source unit with the target unit', function(done) {
+        var expectedGraph = [{
+          '@type': 'ontology:Study',
+          has_activity: [{
+            has_drug_treatment: [{
+              treatment_dose: [{
+                '@id': 'http://trials.drugis.org/instances/someDose1',
+                'unit': targetUnit.uri
+              }]
+            }, {
+              treatment_dose: [{
+                '@id': 'http://trials.drugis.org/instances/someDose2',
+                'unit': 'http://trials.drugis.org/instances/someOtherUnit'
+              }]
+            }, {
+              treatment_dose: [{
+                '@id': 'http://trials.drugis.org/instances/someDose3',
+                'unit': targetUnit.uri
+              }]
+            }]
+          }]
+        }, {
+          '@id': targetUnit.uri,
+          '@type': 'ontology:Unit',
+          'conversionMultiplier': '1.000000e-00',
+          'label': 'targetMilligram'
+        }];
+        unitService.merge(sourceUnit, targetUnit).then(function() {
+          expect(studyServiceMock.saveJsonGraph).toHaveBeenCalledWith(expectedGraph);
+          done();
+        });
+        rootScope.$digest();
+      });
+    });
   });
 });
