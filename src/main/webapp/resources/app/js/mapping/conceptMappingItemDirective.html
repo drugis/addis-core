@@ -3,7 +3,7 @@
   ng-model="selectedDatasetConcept" ng-change="updateMapping()" ng-options="datasetConcept.label for datasetConcept in filteredConcepts | orderBy:'label'">
 </select>
 <button ng-disabled="!selectedDatasetConcept" class="small secondary" ng-click="removeMapping()">remove</button>
-<button ng-show="settings.label==='Units'" class="small secondary" ng-click="openRepairModal()">repair</button>
+<button ng-show="settings.label==='Units'" class="small secondary" ng-click="openRepairModal()">merge</button>
 </span>
 <span ng-show="!isEditingAllowed">
   <span ng-show="selectedDatasetConcept">{{selectedDatasetConcept.label}}</span>

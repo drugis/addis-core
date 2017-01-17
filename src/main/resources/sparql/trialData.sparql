@@ -2,7 +2,6 @@ PREFIX ontology: <http://trials.drugis.org/ontology#>
 PREFIX dataset: <http://trials.drugis.org/datasets/>
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-PREFIX qudt: <http://qudt.org/schema/qudt#>
 PREFIX owl: <http://www.w3.org/2002/07/owl#>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#> 
 PREFIX entity: <http://trials.drugis.org/entities/>
@@ -48,7 +47,7 @@ SELECT DISTINCT
 ?minDoseUnitConcept
 ?minDoseUnitLabel
 ?minDoseUnitMultiplier
-?treatmentType
+(COALESCE(?treatmentTypeOptional, "http://trials.drugis.org/ontology#SimpleDrugTreatment") AS ?treatmentType)
 WHERE {
   BIND ($graphSelector AS ?graph) .
   GRAPH $graphSelector {
@@ -113,19 +112,21 @@ WHERE {
 
     OPTIONAL {
         ?treatmentNode
-          a ?treatmentType ;
+          a ontology:FixedDoseDrugTreatment ;
+          a ?treatmentTypeOptional ;
           ontology:treatment_dose [
             rdf:value ?fixedDoseValue ;
             ontology:dosingPeriodicity ?fixedDoseDosingPeriodicity ;
             ontology:unit ?fixedDoseUnit
           ] .
-        ?fixedDoseUnit
-          a ?fixedDoseUnitConcept ;
-          rdfs:label ?fixedDoseUnitLabel .
-    }
+          ?fixedDoseUnit
+            a ?fixedDoseUnitConcept ;
+            rdfs:label ?fixedDoseUnitLabel  .
+    } .
     OPTIONAL {
         ?treatmentNode
-          a ?treatmentType ;
+          a ontology:TitratedDoseDrugTreatment ;
+          a ?treatmentTypeOptional ;
           ontology:treatment_max_dose [
             rdf:value ?maxDoseValue ;
             ontology:dosingPeriodicity ?maxDoseDosingPeriodicity ;
@@ -142,7 +143,7 @@ WHERE {
           ?minDoseUnit
             a ?minDoseUnitConcept ;
             rdfs:label ?minDoseUnitLabel  .
-    }
+    } .
     {
       SELECT ?study ?arm
       WHERE {

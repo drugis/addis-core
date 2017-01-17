@@ -1,15 +1,9 @@
-<div class="row">
-  <div class="large-9 columns">
-    <h3>Repair Unit</h3>
-  </div>
-</div>
 <form novalidate ng-submit="merge(mergeTarget)">
   <div class="row">
     <div class="large-9 columns">
-      <hr>
       <p>
-        <h4>Merge this unit ({{unit.label}}) into other unit</h4>
-        <em>All doses using {{unit.label}} will be transferred to the target unit</em>
+        <h4>Merge {{unit.label}} into another unit</h4>
+        <em>After merging, all doses using {{unit.label}} will use the target unit, and {{unit.label}} will be deleted.</em>
       </p>
       <div class="row">
         <div class="large-6 columns">

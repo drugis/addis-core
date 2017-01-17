@@ -9,7 +9,6 @@ PREFIX entity: <http://trials.drugis.org/entities/>
 PREFIX concept: <http://trials.drugis.org/concepts/>
 PREFIX instance: <http://trials.drugis.org/instances/>
 PREFIX graph: <http://trials.drugis.org/graphs/>
-PREFIX qudt: <http://qudt.org/schema/qudt#>
 
 SELECT DISTINCT
 ?graph
@@ -81,8 +80,7 @@ WHERE {
           ] .
           ?fixedDoseUnit
             a ?fixedDoseUnitConcept ;
-            rdfs:label ?fixedDoseUnitLabel ;
-            qudt:conversionMultiplier ?fixedDoseUnitMultiplier .
+            rdfs:label ?fixedDoseUnitLabel  .
     } .
     OPTIONAL {
         ?treatmentNode
@@ -100,12 +98,10 @@ WHERE {
            ] .
           ?maxDoseUnit
             a ?maxDoseUnitConcept ;
-            rdfs:label ?maxDoseUnitLabel ;
-            qudt:conversionMultiplier ?maxDoseUnitMultiplier .
+            rdfs:label ?maxDoseUnitLabel  .
           ?minDoseUnit
             a ?minDoseUnitConcept ;
-            rdfs:label ?minDoseUnitLabel ;
-            qudt:conversionMultiplier ?minDoseUnitMultiplier .
+            rdfs:label ?minDoseUnitLabel .
     } .
 #    # also get the measurement while we're here
     ?measurementMoment

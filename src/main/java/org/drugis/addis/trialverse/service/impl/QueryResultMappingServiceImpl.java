@@ -51,7 +51,7 @@ public class QueryResultMappingServiceImpl implements QueryResultMappingService 
 
       URI armUri = readValue(row, "arm");
       TrialDataArm trialDataArm = armCache.get(armUri);
-      if (trialDataArm == null) {
+      if( trialDataArm == null) {
         String armLabel = readValue(row, "armLabel");
         trialDataArm = new TrialDataArm(armUri, armLabel);
         armCache.put(armUri, trialDataArm);
@@ -81,16 +81,16 @@ public class QueryResultMappingServiceImpl implements QueryResultMappingService 
     if (row.containsKey("mean")) {
       mean = readValue(row, "mean");
     }
-    if (row.containsKey("stdDev")) {
+    if(row.containsKey("stdDev")) {
       stdDev = readValue(row, "stdDev");
     }
-    if (row.containsKey("stdErr")) {
+    if(row.containsKey("stdErr")) {
       stdErr = readValue(row, "stdErr");
     }
-    if (row.containsKey("count")) {
+    if (row.containsKey("count")){
       rate = readValue(row, "count");
     }
-    if (row.containsKey("sampleSize")) {
+    if (row.containsKey("sampleSize")){
       sampleSize = readValue(row, "sampleSize");
     }
 
@@ -110,34 +110,38 @@ public class QueryResultMappingServiceImpl implements QueryResultMappingService 
 
   private AbstractSemanticIntervention readSemanticIntervention(JSONObject row, URI drugInstance) throws ReadValueException {
     URI drugConcept = readValue(row, "drug");
-    AbstractSemanticIntervention abstractSemanticIntervention = null;
+    AbstractSemanticIntervention abstractSemanticIntervention;
     Object treatmentType = readValue(row, "treatmentType");
-    if (treatmentType == null) {
-      abstractSemanticIntervention = new SimpleSemanticIntervention(drugInstance, drugConcept);
-    } else if (FIXED_INTERVENTION_TYPE.equals(treatmentType.toString())) {
-      Double fixedDoseValue = readValue(row, "fixedDoseValue");
-      String fixedDoseDosingPeriodicity = readValue(row, "fixedDoseDosingPeriodicity");
-      URI fixedDoseUnitConceptUri = readValue(row, "fixedDoseUnitConcept");
-      String fixedDoseUnitLabel = readValue(row, "fixedDoseUnitLabel");
-      Double fixedDoseUnitMultiplier = readValue(row, "fixedDoseUnitMultiplier");
-      Dose fixedDose = new Dose(fixedDoseValue, fixedDoseDosingPeriodicity, fixedDoseUnitConceptUri, fixedDoseUnitLabel, fixedDoseUnitMultiplier);
-      abstractSemanticIntervention = new FixedSemanticIntervention(drugInstance, drugConcept, fixedDose);
-    } else if (TITRATED_INTERVENTION_TYPE.equals(treatmentType.toString())) {
-      Double maxDoseValue = readValue(row, "maxDoseValue");
-      String maxDoseDosingPeriodicity = readValue(row, "maxDoseDosingPeriodicity");
-      URI maxDoseUnitConceptUri = readValue(row, "maxDoseUnitConcept");
-      String maxDoseUnitLabel = readValue(row, "maxDoseUnitLabel");
-      Double maxDoseUnitMultiplier = readValue(row, "maxDoseUnitMultiplier");
-      Dose maxDose = new Dose(maxDoseValue, maxDoseDosingPeriodicity, maxDoseUnitConceptUri, maxDoseUnitLabel, maxDoseUnitMultiplier);
-      Double minDoseValue = readValue(row, "minDoseValue");
-      String minDoseDosingPeriodicity = readValue(row, "minDoseDosingPeriodicity");
-      URI minDoseUnitConceptUri = readValue(row, "minDoseUnitConcept");
-      String minDoseUnitLabel = readValue(row, "minDoseUnitLabel");
-      Double minDoseUnitMultiplier = readValue(row, "minDoseUnitMultiplier");
-      Dose mixDose = new Dose(minDoseValue, minDoseDosingPeriodicity, minDoseUnitConceptUri, minDoseUnitLabel, minDoseUnitMultiplier);
-      abstractSemanticIntervention = new TitratedSemanticIntervention(drugInstance, drugConcept, mixDose, maxDose);
-    } else {
-      throw new RuntimeException("foo");
+    if(treatmentType == null) {
+      throw new RuntimeException("missing treatment type in trial data");
+    }
+    switch (treatmentType.toString()){
+      case FIXED_INTERVENTION_TYPE:
+        Double fixedDoseValue = readValue(row, "fixedDoseValue");
+        String fixedDoseDosingPeriodicity = readValue(row, "fixedDoseDosingPeriodicity");
+        URI fixedDoseUnitConceptUri = readValue(row, "fixedDoseUnitConcept");
+        String fixedDoseUnitLabel = readValue(row, "fixedDoseUnitLabel");
+        Double fixedDoseUnitMultiplier = readValue(row, "fixedDoseUnitMultiplier");
+        Dose fixedDose = new Dose(fixedDoseValue, fixedDoseDosingPeriodicity, fixedDoseUnitConceptUri, fixedDoseUnitLabel, fixedDoseUnitMultiplier);
+        abstractSemanticIntervention = new FixedSemanticIntervention(drugInstance, drugConcept, fixedDose);
+        break;
+      case TITRATED_INTERVENTION_TYPE:
+        Double maxDoseValue = readValue(row, "maxDoseValue");
+        String maxDoseDosingPeriodicity = readValue(row, "maxDoseDosingPeriodicity");
+        URI maxDoseUnitConceptUri = readValue(row, "maxDoseUnitConcept");
+        String maxDoseUnitLabel = readValue(row, "maxDoseUnitLabel");
+        Double maxDoseUnitMultiplier = readValue(row, "maxDoseUnitMultiplier");
+        Dose maxDose = new Dose(maxDoseValue, maxDoseDosingPeriodicity, maxDoseUnitConceptUri,maxDoseUnitLabel, maxDoseUnitMultiplier);
+        Double minDoseValue = readValue(row, "minDoseValue");
+        String minDoseDosingPeriodicity = readValue(row, "minDoseDosingPeriodicity");
+        URI minDoseUnitConceptUri = readValue(row, "minDoseUnitConcept");
+        String minDoseUnitLabel = readValue(row, "minDoseUnitLabel");
+        Double minDoseUnitMultiplier = readValue(row, "minDoseUnitMultiplier");
+        Dose mixDose = new Dose(minDoseValue, minDoseDosingPeriodicity, minDoseUnitConceptUri ,minDoseUnitLabel, minDoseUnitMultiplier);
+        abstractSemanticIntervention = new TitratedSemanticIntervention(drugInstance, drugConcept, mixDose, maxDose);
+        break;
+      default:
+        abstractSemanticIntervention = new SimpleSemanticIntervention(drugInstance, drugConcept);
     }
     return abstractSemanticIntervention;
   }
