@@ -29,7 +29,7 @@ Importer TODO:
        rdfs:label "Participant count" ;
        rdfs:comment "Number of participants presenting with an event" ;
        addis:has_property addis:count , addis:sample_size ;
-       addis:unitName qudt:Person .
+       addis:unit qudt:Person .
 
    :m01 a Measurement ;
         addis:of_moment :mm2 ;

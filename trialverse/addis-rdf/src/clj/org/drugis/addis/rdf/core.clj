@@ -23,7 +23,7 @@
                (= unit-name "liter") (trig/spo uri [(trig/iri :owl "sameAs") (trig/iri :qudt "Liter")])
                :else uri)]
     (trig/spo subj 
-              [(trig/iri :rdf "type") (trig/iri :owl "Class")]
+              [(trig/iri :rdf "type") (trig/iri :ontology "Unit")]
               [(trig/iri :rdfs "label") (trig/lit unit-name)]
               [(trig/iri :qudt "symbol") (trig/lit unit-symbol)])))
 
@@ -245,7 +245,8 @@
 (defn study-unit-rdf [xml instance-uri entity-uris]
   (let [unit-key (dose-unit-key xml)]
     (trig/spo instance-uri
-              [(trig/iri :rdf "type") ((entity-uris :unit) (:baseUnit unit-key))]
+              [(trig/iri :rdf "type") (trig/iri :ontology "Unit")]
+              [(trig/iri :owl "sameAs") ((entity-uris :unit) (:baseUnit unit-key))]
               [(trig/iri :rdfs "label") (str (lower-case (:prefix unit-key)) (:baseUnit unit-key))]
               [(trig/iri :qudt "conversionMultiplier") (unitPrefix (:prefix unit-key))])))
 

@@ -229,11 +229,11 @@
 (def units-table
   {:xml-id (x2s/value #(vtd/attr % :name))
    :sql-id :id
-   :each "./activities/studyActivity/activity/treatment/drugTreatment/*/doseUnit/unitName"
+   :each "./activities/studyActivity/activity/treatment/drugTreatment/*/doseUnit/unit"
    :table :units
    :columns {:study (x2s/parent-ref)
              :name (x2s/value #(vtd/attr % :name))}
-   :post-insert (entity-ref-rdf-callback "unitName")})
+   :post-insert (entity-ref-rdf-callback "unit")})
 
 (def treatment-dosings-table
   {:sql-id (juxt :treatment :planned_time)
@@ -242,7 +242,7 @@
    :columns {:treatment (x2s/parent-ref)
              :planned_time (x2s/value (as-duration "P0D"))
              :scale_modifier (x2s/xpath-attr "./*/doseUnit" :scaleModifier)
-             :unitName (x2s/sibling-ref :units #(vtd/attr (vtd/at % "./*/doseUnit/unitName") :name))}
+             :unit (x2s/sibling-ref :units #(vtd/attr (vtd/at % "./*/doseUnit/unit") :name))}
    :collapse [{:each "./flexibleDose"
                :columns {:min_dose (x2s/value #(as-double (vtd/attr % :minDose)))
                          :max_dose (x2s/value #(as-double (vtd/attr % :maxDose)))}}
