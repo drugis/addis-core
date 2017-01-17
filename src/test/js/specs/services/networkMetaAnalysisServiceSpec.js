@@ -827,7 +827,7 @@ define(['angular', 'angular-mocks', 'services'], function(angular) {
         var expectedResult = {
           studyUri1: study1.measurementMoments[0],
           studyUri2: study2.measurementMoments[1],
-          studyUri3: study3.measurementMoments[0]
+          studyUri3: undefined
         };
         var result = NetworkMetaAnalysisService.buildMomentSelections(trialData, analysis);
         expect(result).toEqual(expectedResult);
