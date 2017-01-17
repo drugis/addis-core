@@ -47,7 +47,6 @@ define(['lodash'], function(_) {
 
     function queryItems() {
       return conceptJsonPromise.then(function(json) {
-       // transformConceptJson(json);
         return _.map(json['@graph'], toFrontEnd);
       });
     }
@@ -55,7 +54,6 @@ define(['lodash'], function(_) {
     function addItem(concept) {
       return conceptJsonPromise.then(function(json) {
         modified = true;
-        //transformConceptJson(json);
         json['@graph'].push(toBackEnd(concept));
         return json;
       });
