@@ -69,6 +69,11 @@
     "text": "The total number of subjects that experienced the event of interest. May be an adverse event or a dichotomous outcome.",
     "link": "/manual.html#study-input"
   },
+  "d80-table":{
+    "title": "Summary of efficacy table",
+    "text": "Display the Summary of Efficacy Table according to the EMA D80 Clinical report template",
+    "link": "http://www.ema.europa.eu/docs/en_GB/document_library/Regulatory_and_procedural_guideline/2009/10/WC500004800.pdf"
+  },
   "dataset": {
     "title": "Dataset",
     "text": "A dataset is a collection of studies that are somehow related, e.g. studies identified by a systematic literature review.",
