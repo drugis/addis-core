@@ -75,14 +75,11 @@ public class InterventionController extends AbstractAddisCoreController {
   public AbstractInterventionViewAdapter create(HttpServletRequest request, HttpServletResponse response, Principal currentUser, @PathVariable Integer projectId,
                                                 @RequestBody AbstractInterventionCommand interventionCommand) throws MethodNotAllowedException, ResourceDoesNotExistException, InvalidConstraintException {
     Account user = accountRepository.findAccountByUsername(currentUser.getName());
-    if (user != null) {
-      AbstractIntervention intervention = interventionRepository.create(user, interventionCommand);
-      response.setStatus(HttpServletResponse.SC_CREATED);
-      response.setHeader("Location", request.getRequestURL() + "/");
-      return intervention.toViewAdapter();
-    } else {
-      throw new MethodNotAllowedException();
-    }
+    projectService.checkProjectExistsAndModifiable(user, projectId);
+    AbstractIntervention intervention = interventionRepository.create(user, interventionCommand);
+    response.setStatus(HttpServletResponse.SC_CREATED);
+    response.setHeader("Location", request.getRequestURL() + "/");
+    return intervention.toViewAdapter();
   }
 
   @RequestMapping(value = "/projects/{projectId}/interventions/{interventionId}", method = RequestMethod.DELETE)

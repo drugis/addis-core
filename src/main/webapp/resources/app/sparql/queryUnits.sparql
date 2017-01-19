@@ -29,8 +29,15 @@ WHERE {
         ]
       ] .
     } .
-    ?unit
-      rdfs:label ?unitName ;
-      a ?unitConcept .
+    { ?unit
+        rdfs:label ?unitName ;
+        a ?unitConcept .
+    } UNION {
+      ?unit
+        rdfs:label ?unitName ;
+        a ontology:Unit ;
+        owl:sameAs ?unitConcept .
+    } .
+    FILTER (?unitConcept != ontology:Unit) .
   }
 }

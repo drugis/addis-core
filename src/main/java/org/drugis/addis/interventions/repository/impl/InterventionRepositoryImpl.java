@@ -68,13 +68,6 @@ public class InterventionRepositoryImpl implements InterventionRepository {
   @Override
   public AbstractIntervention create(Account user, AbstractInterventionCommand interventionCommand) throws MethodNotAllowedException, ResourceDoesNotExistException, InvalidConstraintException {
     AbstractIntervention newIntervention = interventionCommand.toIntervention();
-    Project project = em.find(Project.class, newIntervention.getProject());
-    if (project == null) {
-      throw new ResourceDoesNotExistException();
-    }
-    if (project.getOwner().getId().intValue() != user.getId().intValue()) {
-      throw new MethodNotAllowedException();
-    }
     TypedQuery<AbstractIntervention> query = em.createQuery("FROM AbstractIntervention i WHERE i.name = :interventionName AND i.project = :projectId", AbstractIntervention.class);
     query.setParameter("interventionName", interventionCommand.getName());
     query.setParameter("projectId", interventionCommand.getProjectId());
