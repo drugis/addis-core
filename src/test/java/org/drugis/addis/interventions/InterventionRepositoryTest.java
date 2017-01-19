@@ -175,22 +175,6 @@ public class InterventionRepositoryTest {
     assertTrue(interventionRepository.query(1).contains(result));
   }
 
-
-  @Test(expected = MethodNotAllowedException.class)
-  public void testCannotCreateInterventionInNotOwnedProject() throws Exception, InvalidConstraintException {
-    Account account = em.find(Account.class, 2);
-    AbstractInterventionCommand interventionCommand = new SimpleInterventionCommand(1, "newName", "newMotivation", "http://semantic.com", "labelnew");
-    interventionRepository.create(account, interventionCommand);
-  }
-
-
-  @Test(expected = ResourceDoesNotExistException.class)
-  public void testCannotCreateInterventionInNonexistentProject() throws Exception, InvalidConstraintException {
-    Account account = em.find(Account.class, 2);
-    AbstractInterventionCommand interventionCommand = new SimpleInterventionCommand(13221, "newName", "newMotivation", "http://semantic.com", "labelnew");
-    interventionRepository.create(account, interventionCommand);
-  }
-
   @Test(expected = InvalidDataAccessApiUsageException.class)
   public void testCreateWithDuplicateNameFails() throws Exception, InvalidConstraintException {
     Account user = em.find(Account.class, 1);
