@@ -85,7 +85,7 @@
     </tr>
     <tr ng-repeat="endpoint in endpoints">
       <td>{{endpoint.label}}</td>
-      <td ng-repeat="arm in arms">{{measurements[endpoint.uri][arm.armURI] ? measurements[endpoint.uri][arm.armURI] : '&lt;point estimate&gt; &lt;variability&gt; &lt;n&gt;'}}</td>
+      <td ng-repeat="arm in arms">{{measurements[endpoint.uri][arm.armURI] ? buildResultLabel(measurements[endpoint.uri][arm.armURI]) : '&lt;point estimate&gt; &lt;variability&gt; &lt;n&gt;'}}</td>
     </tr>
 
     <tr ng-repeat="row in effectEstimateRows">
