@@ -119,9 +119,16 @@ WHERE {
             ontology:dosingPeriodicity ?fixedDoseDosingPeriodicity ;
             ontology:unit ?fixedDoseUnit
           ] .
-          ?fixedDoseUnit
-            a ?fixedDoseUnitConcept ;
-            rdfs:label ?fixedDoseUnitLabel  .
+          { ?fixedDoseUnit
+                rdfs:label ?fixedDoseUnitLabel ;
+                a ?fixedDoseUnitConcept .
+          } UNION {
+            ?fixedDoseUnit
+                rdfs:label ?fixedDoseUnitLabel ;
+                a ontology:Unit ;
+                owl:sameAs ?fixedDoseUnitConcept .
+          } .
+          FILTER (?fixedDoseUnitConcept != ontology:Unit) .
     } .
     OPTIONAL {
         ?treatmentNode
@@ -137,12 +144,27 @@ WHERE {
                       ontology:dosingPeriodicity ?minDoseDosingPeriodicity ;
                       ontology:unit ?minDoseUnit
            ] .
-          ?maxDoseUnit
-            a ?maxDoseUnitConcept ;
-            rdfs:label ?maxDoseUnitLabel  .
-          ?minDoseUnit
-            a ?minDoseUnitConcept ;
-            rdfs:label ?minDoseUnitLabel  .
+          { ?maxDoseUnit
+              rdfs:label ?maxDoseUnitLabel ;
+              a ?maxDoseUnitConcept .
+          } UNION {
+            ?maxDoseUnit
+                rdfs:label ?maxDoseUnitLabel ;
+                a ontology:Unit ;
+                owl:sameAs ?maxDoseUnitConcept .
+          } .
+          FILTER (?maxDoseUnitConcept != ontology:Unit) .
+          { ?minDoseUnit
+                rdfs:label ?minDoseUnitLabel ;
+                a ?minDoseUnitConcept .
+          } UNION {
+              ?minDoseUnit
+                  rdfs:label ?minDoseUnitLabel ;
+                  a ontology:Unit ;
+                  owl:sameAs ?minDoseUnitConcept .
+          } .
+          FILTER (?minDoseUnitConcept != ontology:Unit) .
+
     } .
     {
       SELECT ?study ?arm
