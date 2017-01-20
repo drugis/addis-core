@@ -204,24 +204,10 @@ define(['angular-mocks', 'angular'], function(angularMocks, angular) {
         activeTab: 'details',
         UserService: userServiceMock,
         ReportResource: reportResource,
-        HistoryResource: historyResourceMock
+        HistoryResource: historyResourceMock,
+        project: mockProject
       });
     }));
-    describe('when first initialised', function() {
-      it('should set loading to false', function() {
-        expect(scope.loading.loaded).toBeFalsy();
-      });
-
-      it('should place project information on the scope', function() {
-        expect(projectResource.get).toHaveBeenCalledWith(stateParams);
-        expect(scope.project).toEqual(mockProject);
-      });
-
-      it('should not initially allow editing', function() {
-        expect(scope.editMode.allowEditing).toBeFalsy();
-      });
-    });
-
     describe('after loading the project', function() {
       it('should place the outcome and intervention information on the scope', function() {
         projectDeferred.resolve();
@@ -233,13 +219,6 @@ define(['angular-mocks', 'angular'], function(angularMocks, angular) {
         delete expextedInterventions.$promise;
         expect(scope.interventions).toEqual(expextedInterventions);
         expect(scope.analyses).toEqual(mockAnalyses);
-        expect(scope.loading.loaded).toBeTruthy();
-      });
-
-      it('should tell the scope whether the resource is loaded', function() {
-        expect(scope.loading.loaded).toBeFalsy();
-        projectDeferred.resolve();
-        scope.$apply();
         expect(scope.loading.loaded).toBeTruthy();
       });
 
@@ -264,10 +243,7 @@ define(['angular-mocks', 'angular'], function(angularMocks, angular) {
       });
 
       it('isOwnProject should be true if the project is owned by the logged-in user', function() {
-        userServiceMock.isLoginUserId.and.returnValue(true);
-        projectDeferred.resolve();
-        scope.$apply();
-        expect(scope.editMode.allowEditing).toBeTruthy();
+        expect(scope.editMode.allowEditing).toEqual(userServiceMock.isLoginUserId());
       });
 
       it('isOwnProject should be false if the project is not owned by the logged-in user', function() {
