@@ -1,11 +1,12 @@
 'use strict';
-define(['lodash'], function(_) {
+define(['lodash', 'mctad'], function(_, mctad) {
   var dependencies = ['$scope', '$filter', '$modalInstance', '$q', 'EpochService', 'ArmService',
     'ActivityService', 'StudyDesignService', 'EndpointService', 'MeasurementMomentService', 'ResultsService',
-    'study'
+    'EstimatesResource', 'study'
   ];
   var D80TableController = function($scope, $filter, $modalInstance, $q, EpochService, ArmService,
-    ActivityService, StudyDesignService, EndpointService, MeasurementMomentService, ResultsService, study) {
+    ActivityService, StudyDesignService, EndpointService, MeasurementMomentService, ResultsService,
+    EstimatesResource, study) {
     $scope.study = study;
     $scope.buildResultLabel = buildResultLabel;
 
@@ -66,17 +67,22 @@ define(['lodash'], function(_) {
             }, {});
             return accum;
           }, {});
+          var estimates = EstimatesResource.getEstimates($scope.measurements);
+
           $scope.effectEstimateRows = [];
-          _.foreach($scope.arms.slice(1), function(arm) {
-            _.forEach($scope.endpoints, function(endpoint) {
-              var measurement = $scope.measurements[endpoint.uri][arm.armURI];
-              var baseline = $scope.arms[0];
-              $scope.effectEstimateRows.push({
-                endpoint: endpoint,
-                arm: arm,
-                difference: buildDifference(measurement),
-                confidenceInterval: buildConfidenceInterval(measurement),
-                pValue: buildPValue(measurement)
+          estimates.$promise.then(function(estimateResults) {
+            var baseline = _.find($scope.arms, ['armURI', estimateResults.baselineUri]);
+            var subjectArms = _.reject($scope.arms, ['armURI', estimateResults.baselineUri]);
+            _.forEach(subjectArms, function(arm) {
+              _.forEach($scope.endpoints, function(endpoint) {
+                var estimate = estimateResults[endpoint.uri][arm.armURI];
+                $scope.effectEstimateRows.push({
+                  endpoint: endpoint,
+                  arm: arm,
+                  difference: getDifference(estimate),
+                  confidenceInterval: getConfidenceInterval(estimate),
+                  pValue: getPValue(estimate)
+                });
               });
             });
           });
@@ -84,20 +90,25 @@ define(['lodash'], function(_) {
       }
     });
 
-    function buildDifference(baseline, subject) {
-      if(baseline.type === 'dichotomous') {
-        var sampleSize = baseline.sampleSize + subject.sampleSize;
-        var degreesOfFreedom = sampleSize - 2;
-        var mu = Math.log((subject.count / subject.sampleSize) / (baseline.count / baseline.sampleSize));
-        var sigma = Math.sqrt((1.0 / subject.count) + (1.0 / baseline.count) - 
-                              (1.0 / subject.sampleSize) - (1.0 / baseline.sampleSize));
-        var distribution = new TransformedLogStudentT(mu, sigma, degreesOfFreedom);
+    function getDifference(baseline, subject) {
+      if (baseline.type === 'dichotomous') {
+        // var sampleSize = baseline.sampleSize + subject.sampleSize;
+        // var degreesOfFreedom = sampleSize - 2;
+        // var mu = Math.log((subject.count / subject.sampleSize) / (baseline.count / baseline.sampleSize));
+        // var sigma = Math.sqrt((1.0 / subject.count) + (1.0 / baseline.count) - //NB: this is the LOG error
+        //   (1.0 / subject.sampleSize) - (1.0 / baseline.sampleSize));
+        // var distribution = mctad.t(degreesOfFreedom); // new TransformedLogStudentT(mu, sigma, degreesOfFreedom);
+        // var pointEstimate = calculateQuantile(distribution, 0.5, sigma, mu);
       }
     }
 
-    function buildConfidenceInterval(measurement) {}
+    function calculateQuantile(distribution, quantile, sigma, mu) {
+      return (1 - distribution.cdf(quantile)) * sigma + mu;
+    }
 
-    function buildPValue(measurement) {}
+    function getConfidenceInterval(measurement) {}
+
+    function getPValue(measurement) {}
 
     function findValue(results, property) {
       return _.find(results, ['result_property', property]);

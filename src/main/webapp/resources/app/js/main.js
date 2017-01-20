@@ -21,6 +21,7 @@ require.config({
     'lodash': 'bower_components/lodash/dist/lodash.min',
     'MathJax': 'bower_components/MathJax/MathJax.js?config=TeX-MML-AM_HTMLorMML',
     'mcda': 'bower_components/mcda-web/app/js',
+    'mctad': 'bower_components/mctad/mctad.min',
     'mmfoundation': 'bower_components/angular-foundation/dist/mm-foundation-tpls-0.9.0-SNAPSHOT',
     'modernizr': 'bower_components/modernizr/modernizr',
     'moment': 'bower_components/moment/min/moment.min',
@@ -78,6 +79,9 @@ require.config({
     },
     'd3': {
       exports: 'd3'
+    },
+    'mctad': {
+      exports: 'mctad'
     },
     'nvd3': {
       deps: ['d3'],
