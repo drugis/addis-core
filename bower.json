@@ -21,7 +21,7 @@
     "angular-mocks": "~1.5.0",
     "angular-md5": "~0.1.7",
     "angular-resource": "~1.5.0",
-    "angular-ui-router": "~0.2.11",
+    "angular-ui-router": "~1.0.0-rc.1",
     "angular-ui-select": "~0.16.1",
     "bowser": "~0.7.3",
     "d3": "3.5.6",

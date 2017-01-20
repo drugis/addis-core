@@ -17,14 +17,17 @@ define(['lodash', 'angular'], function(_, angular) {
     'activeTab',
     'UserService',
     'ReportResource',
-    'HistoryResource'
+    'HistoryResource',
+    'project'
   ];
   var SingleProjectController = function($scope, $q, $state, $stateParams, $location, $modal, ProjectResource, ProjectService,
     TrialverseResource,
     TrialverseStudyResource, SemanticOutcomeResource, OutcomeResource, SemanticInterventionResource, InterventionResource,
     CovariateOptionsResource, CovariateResource, AnalysisResource, ANALYSIS_TYPES, InterventionService, activeTab, UserService,
-    ReportResource, HistoryResource) {
-    $scope.activeTab = activeTab;
+    ReportResource, HistoryResource, project) {
+    $scope.tabSelection = {
+      activeTab: activeTab
+    };
 
     $scope.analysesLoaded = false;
     $scope.covariatesLoaded = true;
@@ -44,53 +47,49 @@ define(['lodash', 'angular'], function(_, angular) {
     };
     $scope.userId = $stateParams.userUid;
 
+    $scope.project = project;
     $scope.projects = ProjectResource.query();
-    $scope.project = ProjectResource.get($stateParams);
 
     // load project
-    $scope.project.$promise.then(function() {
-      $scope.loading.loaded = true;
+    $scope.loading.loaded = true;
 
-      if (UserService.isLoginUserId($scope.project.owner.id)) {
-        $scope.editMode.allowEditing = true;
+    $scope.editMode.allowEditing = UserService.isLoginUserId($scope.project.owner.id);
+
+    $scope.trialverse = TrialverseResource.get({
+      namespaceUid: $scope.project.namespaceUid,
+      version: $scope.project.datasetVersion
+    });
+
+    $scope.trialverse.$promise.then(function(dataset) {
+      $scope.currentRevision = HistoryResource.get({
+        userUid: $scope.userId,
+        datasetUuid: $scope.project.namespaceUid,
+        versionUuid: dataset.version.split('/versions/')[1]
+      });
+    });
+
+    $scope.semanticOutcomes = SemanticOutcomeResource.query({
+      namespaceUid: $scope.project.namespaceUid,
+      version: $scope.project.datasetVersion
+    });
+
+    $scope.semanticInterventions = SemanticInterventionResource.query({
+      namespaceUid: $scope.project.namespaceUid,
+      version: $scope.project.datasetVersion
+    });
+
+    $scope.studies = TrialverseStudyResource.query({
+      namespaceUid: $scope.project.namespaceUid,
+      version: $scope.project.datasetVersion
+    });
+
+    loadAnalyses();
+
+    $scope.reportText = ReportResource.get($stateParams);
+    $scope.reportText.$promise.then(function() {
+      if ($scope.reportText.data.localeCompare('default report text') === 0) {
+        $scope.showLegacyReport = true;
       }
-
-      $scope.trialverse = TrialverseResource.get({
-        namespaceUid: $scope.project.namespaceUid,
-        version: $scope.project.datasetVersion
-      });
-
-      $scope.trialverse.$promise.then(function(dataset) {
-        $scope.currentRevision = HistoryResource.get({
-          userUid: $scope.userId,
-          datasetUuid: $scope.project.namespaceUid,
-          versionUuid: dataset.version.split('/versions/')[1]
-        });
-      });
-
-      $scope.semanticOutcomes = SemanticOutcomeResource.query({
-        namespaceUid: $scope.project.namespaceUid,
-        version: $scope.project.datasetVersion
-      });
-
-      $scope.semanticInterventions = SemanticInterventionResource.query({
-        namespaceUid: $scope.project.namespaceUid,
-        version: $scope.project.datasetVersion
-      });
-
-      $scope.studies = TrialverseStudyResource.query({
-        namespaceUid: $scope.project.namespaceUid,
-        version: $scope.project.datasetVersion
-      });
-
-      loadAnalyses();
-
-      $scope.reportText = ReportResource.get($stateParams);
-      $scope.reportText.$promise.then(function() {
-        if ($scope.reportText.data.localeCompare('default report text') === 0) {
-          $scope.showLegacyReport = true;
-        }
-      });
     });
 
 
@@ -316,18 +315,15 @@ define(['lodash', 'angular'], function(_, angular) {
     };
 
     $scope.setActiveTab = function(tab) {
-      if (tab === $scope.activeTab) {
+      if (tab === $scope.tabSelection.activeTab) {
         return;
       }
-      $scope.activeTab = tab;
-      var path = $location.path();
       if (tab === 'report') {
-        $location.path(path + '/report');
-      } else if (tab === 'editedReport') {
-        $location.path(path + '/editedReport');
-      } else {
-        var newPath = path.substring(0, path.length - '/report'.length);
-        $location.path(newPath);
+        $state.go('projectReport', $stateParams);
+      } else if (tab === 'details') {
+        $state.go('project', $stateParams, {
+          reload: true
+        });
       }
     };
 
@@ -392,7 +388,7 @@ define(['lodash', 'angular'], function(_, angular) {
         }
       });
     };
-    
+
     $scope.archiveAnalysis = function(analysis) {
       var params = {
         projectId: $scope.project.id,

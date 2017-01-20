@@ -1,8 +1,9 @@
 PREFIX graph: <http://trials.drugis.org/graphs/>
 PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX ontology: <http://trials.drugis.org/ontology#>
 
 SELECT ?unitConcept WHERE {
 GRAPH graph:concepts {
-      ?unitConcept a owl:Class .
+      { ?unitConcept a owl:Class } UNION { ?unitConcept a ontology:Unit } .
   }
 }

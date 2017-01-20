@@ -266,7 +266,7 @@
   },
   "unit": {
     "title": "Unit",
-    "text": "An unit of measurement, e.g. gram, liter, mg. Used to define quantities of treatment doses.",
+    "text": "An unit of measurement, e.g. gram, liter, meter. Used to define quantities of treatment doses.",
     "link": "/manual.html#study-input"
   },
   "variable": {

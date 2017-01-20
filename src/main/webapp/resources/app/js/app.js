@@ -261,13 +261,17 @@ define(
             resolve: {
               activeTab: function() {
                 return 'details';
-              }
+              },
+              project: ['$stateParams', 'ProjectResource', function($stateParams, ProjectResource) {
+                return  ProjectResource.get($stateParams).$promise;
+              }]
             }
           })
           .state('projectReport', {
-            url: '/users/:userUid/projects/:projectId/report',
+            url: '/report',
             templateUrl: baseTemplatePath + 'project.html',
             controller: 'SingleProjectController',
+            parent:'project',
             resolve: {
               activeTab: function() {
                 return 'report';
@@ -275,7 +279,7 @@ define(
             }
           })
           .state('editReport', {
-            url: '/users/:userUid/projects/:projectId/editReport',
+            url: '/editReport',
             templateUrl: 'app/js/project/editReport.html',
             controller: 'EditReportController',
             parent: 'project'
@@ -349,7 +353,7 @@ define(
             url: '/users/:userUid/projects/:projectId/nma/:analysisId/models/createModel',
             templateUrl: gemtcWebBaseTemplatePath + 'js/models/createModel.html',
             controller: 'CreateModelController',
-            resolve: {
+            resolve: {  // FIXME why on earth not just initialise in controller
               model: function() {
                 return {
                   linearModel: 'random',

@@ -52,7 +52,7 @@ define(['lodash'], function(_) {
               });
               scope.studyDesign = studyDesign;
 
-              // only listen for events when laoding is done
+              // only listen for events when loading is done
               refreshStudyDesignListener = scope.$on('refreshStudyDesign', function() {
                 reloadData();
               });
