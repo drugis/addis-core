@@ -102,7 +102,7 @@
                 </div>
                 <!-- analyses -->
                 <div class="row" ng-repeat="analysis in analyses">
-                  <div class="columns large-12">
+                  <div ng-if="!analysis.archived" class="columns large-12">
                     <h2>Analysis: {{::analysis.title}}
                       <inline-help help-key="addis-analysis"></inline-help>
                     </h2>
