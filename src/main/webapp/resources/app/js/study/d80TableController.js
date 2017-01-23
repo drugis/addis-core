@@ -103,6 +103,20 @@ define(['lodash', 'mctad'], function(_, mctad) {
     }
 
     function calculateQuantile(distribution, quantile, sigma, mu) {
+      // given we want to use quartiles with a non-sample population
+      var quartiles = {};
+      if(distribution.size % 2 === 0){
+        // even distro
+        quartiles.first = Math.ceil(0.25 * distribution.size);
+        quartiles.firstValue = distribution[quartiles.first];
+        quartiles.second = 0.5 * distribution.size;
+        quartiles.secondValue = (distribution[quartiles.second] + distribution[quartiles.second+1])/2;
+        quartiles.third = Math.ceil(0.75 * distribution.size);
+        quartiles.thirdValue = distribution[quartiles.first];
+      } else{
+
+      }
+
       return (1 - distribution.cdf(quantile)) * sigma + mu;
     }
 

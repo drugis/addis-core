@@ -1,5 +1,5 @@
 'use strict';
-define([], function(angular) {
+define([], function() {
   var dependencies = ['$resource'];
 
   var RemarksResource = function($resource) {
