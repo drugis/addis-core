@@ -1,12 +1,38 @@
 package org.drugis.addis.statistics.command;
 
-import org.drugis.addis.trialverse.model.trialdata.Measurement;
-
-import java.net.URI;
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Created by daan on 20-1-17.
  */
-public class EstimatesCommand extends HashMap<URI, EstimatesCommandEntry> {
+public class EstimatesCommand {
+  List<AbstractMeasurementCommand> measurements = new ArrayList<>();
+
+  public EstimatesCommand() {
+  }
+
+  public EstimatesCommand(List<AbstractMeasurementCommand> measurements) {
+    this.measurements = measurements;
+  }
+
+  public List<AbstractMeasurementCommand> getMeasurements() {
+    return Collections.unmodifiableList(measurements);
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+
+    EstimatesCommand that = (EstimatesCommand) o;
+
+    return measurements.equals(that.measurements);
+  }
+
+  @Override
+  public int hashCode() {
+    return measurements.hashCode();
+  }
 }

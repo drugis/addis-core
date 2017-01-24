@@ -105,22 +105,40 @@ define(['lodash', 'mctad'], function(_, mctad) {
     function calculateQuantile(distribution, quantile, sigma, mu) {
       // given we want to use quartiles with a non-sample population
       var quartiles = {};
-      if(distribution.size % 2 === 0){
+      if (distribution.size % 2 === 0) {
         // even distro
         quartiles.first = Math.ceil(0.25 * distribution.size);
         quartiles.firstValue = distribution[quartiles.first];
         quartiles.second = 0.5 * distribution.size;
-        quartiles.secondValue = (distribution[quartiles.second] + distribution[quartiles.second+1])/2;
+        quartiles.secondValue = (distribution[quartiles.second] + distribution[quartiles.second + 1]) / 2;
         quartiles.third = Math.ceil(0.75 * distribution.size);
         quartiles.thirdValue = distribution[quartiles.first];
-      } else{
-
+      } else {
+        quartiles.first = Math.ceil(0.25 * distribution.size);
+        quartiles.firstValue = distribution[quartiles.first];
+        quartiles.second = Math.ceil(0.5 * distribution.size);
+        quartiles.secondValue = distribution[quartiles.second];
+        quartiles.third = Math.ceil(0.75 * distribution.size);
+        quartiles.thirdValue = distribution[quartiles.first];
       }
-
-      return (1 - distribution.cdf(quantile)) * sigma + mu;
+      return quartiles;
+      // return (1 - distribution.cdf(quantile)) * sigma + mu;
     }
 
-    function getConfidenceInterval(measurement) {}
+    function getConfidenceInterval(measurement, mu, sigma) {
+      //confidence level 99% --> zstar = 2.576
+      //confidence level 98% --> zstar = 2.326
+      //confidence level 95% --> zstar = 1.96
+      //confidence level 90% --> zstar = 1.645
+      var zstar = 1.96;
+      var n = measurement.sampleSize;
+      var lower = mu - zstar * (sigma / (Math.sqrt(n)));
+      var upper = mu + zstar * (sigma / (Math.sqrt(n)));
+      return {
+        lower: lower,
+        upper: upper
+      };
+    }
 
     function getPValue(measurement) {}
 
