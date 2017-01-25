@@ -59,7 +59,7 @@ public class StatisticsServiceImpl implements StatisticsService {
   }
 
   private Estimate getEstimate(AbstractMeasurementCommand baseline, AbstractMeasurementCommand subject) {
-     // (baseline, subject) -> relEffect; releEffect -> distribution; distribution -> confidenceInterval; confidenceInterval -> quantiles(0.5, 0.05, 0.95), pvalue
+     // (baseline, subject) -> relEffect; releEffect -> distribution; distribution -> confidenceInterval; confidenceInterval -> quantiles(0.025, 0.05, 0.975), pvalue
     AbstractRelativeEffect relativeEffect = buildRelativeEffect(baseline, subject);
     Distribution distribution = relativeEffect.getDistribution();
     Double pointEstimate = distribution.getQuantile(0.5);

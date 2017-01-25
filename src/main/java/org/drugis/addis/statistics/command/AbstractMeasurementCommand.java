@@ -1,10 +1,16 @@
 package org.drugis.addis.statistics.command;
 
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+
 import java.net.URI;
 
 /**
  * Created by daan on 20-1-17.
  */
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
+@JsonSubTypes({@JsonSubTypes.Type(value = ContinuousMeasurementCommand.class, name = "continuous"),
+        @JsonSubTypes.Type(value = DichotomousMeasurementCommand.class, name = "dichotomous")})
 public abstract class AbstractMeasurementCommand {
   URI endpointUri;
   URI armUri;

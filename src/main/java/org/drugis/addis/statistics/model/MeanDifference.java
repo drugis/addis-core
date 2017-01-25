@@ -34,21 +34,7 @@ public class MeanDifference extends AbstractRelativeEffect {
   }
 
   public Double getMu() {
-    return getCorrectionJ() * getCohenD();
-  }
-
-  private Double getCorrectionJ() {
-    return (1 - (3 / (4 * (double) getDegreesOfFreedom() - 1)));
-  }
-
-  private Double getCohenD() {
-    return (subject.getMean() - baseline.getMean()) / getPooledStdDev();
-  }
-
-  private Double getPooledStdDev() {
-    Double numerator = (subject.getSampleSize() - 1) * square(subject.getStdDev())
-            + (baseline.getSampleSize() - 1) * square(baseline.getStdDev());
-    return Math.sqrt(numerator / getDegreesOfFreedom());
+    return subject.getMean() - baseline.getMean();
   }
 
   private Double square(Double x) {
@@ -56,14 +42,10 @@ public class MeanDifference extends AbstractRelativeEffect {
   }
 
   public Double getSigma() {
-    return Math.sqrt(square(getCorrectionJ()) * getCohenVariance());
+    return Math.sqrt(square(subject.getStdDev()) / subject.getSampleSize()
+            + square(baseline.getStdDev()) / baseline.getSampleSize());
   }
 
-  private Double getCohenVariance() {
-    Double fraction1 = (double) (getSampleSize() / (subject.getSampleSize() * baseline.getSampleSize()));
-    Double fraction2 = square(getCohenD()) / (2.0 *  getSampleSize());
-    return fraction1 + fraction2;
-  }
 
   public Integer getDegreesOfFreedom() {
     return getSampleSize() - 2;

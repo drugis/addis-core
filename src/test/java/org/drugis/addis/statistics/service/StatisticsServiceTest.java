@@ -71,11 +71,10 @@ public class StatisticsServiceTest {
 
     assertNotNull(result);
     Estimate estimate = result.getEstimates().get(ENDPOINT_1_URI).get(0);
-    assertEquals(0.45626274260243255, estimate.getPointEstimate(), 0.000001);
-    assertEquals(0.35434786073548247, estimate.getConfidenceIntervalLowerBound(), 0.000001);
-    assertEquals(0.5581776244693826, estimate.getConfidenceIntervalUpperBound(), 0.000001);
-    assertEquals(3.932315695276714E-11, estimate.getpValue(), 0.000001);
+    assertEquals(1.0, estimate.getPointEstimate(), 0.000001);
+    assertEquals(-0.3598742251457008, estimate.getConfidenceIntervalLowerBound(), 0.000001);
+    assertEquals(2.3598742251457, estimate.getConfidenceIntervalUpperBound(), 0.000001);
+    assertEquals(0.14494767628248684, estimate.getpValue(), 0.000001);
   }
-
 
 }

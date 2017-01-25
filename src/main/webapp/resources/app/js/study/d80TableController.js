@@ -73,15 +73,16 @@ define(['lodash', 'mctad'], function(_, mctad) {
           estimates.$promise.then(function(estimateResults) {
             var baseline = _.find($scope.arms, ['armURI', estimateResults.baselineUri]);
             var subjectArms = _.reject($scope.arms, ['armURI', estimateResults.baselineUri]);
-            _.forEach(subjectArms, function(arm) {
-              _.forEach($scope.endpoints, function(endpoint) {
+            _.forEach($scope.endpoints, function(endpoint) {
+              _.forEach(subjectArms, function(arm) {
                 var estimate = estimateResults[endpoint.uri][arm.armURI];
                 $scope.effectEstimateRows.push({
                   endpoint: endpoint,
                   arm: arm,
                   difference: getDifference(estimate),
-                  confidenceInterval: getConfidenceInterval(estimate),
-                  pValue: getPValue(estimate)
+                  confidenceIntervalLowerBound: estimate.confidenceIntervalLowerBound,
+                  confidenceIntervalUpperBound: estimate.confidenceIntervalUpperBound,
+                  pValue: estimate.pValue
                 });
               });
             });
@@ -102,45 +103,14 @@ define(['lodash', 'mctad'], function(_, mctad) {
       }
     }
 
-    function calculateQuantile(distribution, quantile, sigma, mu) {
-      // given we want to use quartiles with a non-sample population
-      var quartiles = {};
-      if (distribution.size % 2 === 0) {
-        // even distro
-        quartiles.first = Math.ceil(0.25 * distribution.size);
-        quartiles.firstValue = distribution[quartiles.first];
-        quartiles.second = 0.5 * distribution.size;
-        quartiles.secondValue = (distribution[quartiles.second] + distribution[quartiles.second + 1]) / 2;
-        quartiles.third = Math.ceil(0.75 * distribution.size);
-        quartiles.thirdValue = distribution[quartiles.first];
-      } else {
-        quartiles.first = Math.ceil(0.25 * distribution.size);
-        quartiles.firstValue = distribution[quartiles.first];
-        quartiles.second = Math.ceil(0.5 * distribution.size);
-        quartiles.secondValue = distribution[quartiles.second];
-        quartiles.third = Math.ceil(0.75 * distribution.size);
-        quartiles.thirdValue = distribution[quartiles.first];
-      }
-      return quartiles;
-      // return (1 - distribution.cdf(quantile)) * sigma + mu;
-    }
-
-    function getConfidenceInterval(measurement, mu, sigma) {
-      //confidence level 99% --> zstar = 2.576
-      //confidence level 98% --> zstar = 2.326
-      //confidence level 95% --> zstar = 1.96
-      //confidence level 90% --> zstar = 1.645
-      var zstar = 1.96;
-      var n = measurement.sampleSize;
-      var lower = mu - zstar * (sigma / (Math.sqrt(n)));
-      var upper = mu + zstar * (sigma / (Math.sqrt(n)));
+    function getConfidenceInterval(measurement) {
       return {
-        lower: lower,
-        upper: upper
+        lowerbound: measurement.confidenceIntervalLowerBound,
+        upperbound: measurement.confidenceIntervalUpperBound
       };
     }
 
-    function getPValue(measurement) {}
+   
 
     function findValue(results, property) {
       return _.find(results, ['result_property', property]);
