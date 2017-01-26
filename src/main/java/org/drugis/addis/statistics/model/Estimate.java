@@ -1,5 +1,7 @@
 package org.drugis.addis.statistics.model;
 
+import java.net.URI;
+
 /**
  * Created by joris on 24-1-17.
  */
@@ -8,15 +10,17 @@ public class Estimate {
   private Double confidenceIntervalUpperBound;
   private Double pValue;
   private Double pointEstimate;
+  private URI armUri;
 
-  public Estimate(){
+  public Estimate() {
   }
 
-  public Estimate(Double pointEstimate, Double confidenceIntervalLowerBound, Double confidenceIntervalUpperBound, Double pValue) {
+  public Estimate(Double pointEstimate, Double confidenceIntervalLowerBound, Double confidenceIntervalUpperBound, Double pValue, URI armUri) {
     this.pointEstimate = pointEstimate;
     this.confidenceIntervalLowerBound = confidenceIntervalLowerBound;
     this.confidenceIntervalUpperBound = confidenceIntervalUpperBound;
     this.pValue = pValue;
+    this.armUri = armUri;
   }
 
   public Double getConfidenceIntervalLowerBound() {
@@ -33,5 +37,9 @@ public class Estimate {
 
   public Double getPointEstimate() {
     return pointEstimate;
+  }
+
+  public URI getArmUri() {
+    return armUri;
   }
 }

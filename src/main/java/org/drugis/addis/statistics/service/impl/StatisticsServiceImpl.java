@@ -19,8 +19,6 @@ import java.util.stream.Collectors;
  */
 @Service
 public class StatisticsServiceImpl implements StatisticsService {
-  private final static Logger logger = LoggerFactory.getLogger(StatisticsService.class);
-
   @Override
   public Estimates getEstimates(EstimatesCommand command) {
     List<AbstractMeasurementCommand> measurements = command.getMeasurements();
@@ -67,7 +65,7 @@ public class StatisticsServiceImpl implements StatisticsService {
     Double confidenceIntervalUpperBound = distribution.getQuantile(0.975);
     double prob = distribution.getCumulativeProbability(relativeEffect.getNeutralValue());
     Double pValue = 2 * Math.min(prob, 1 - prob);
-    return new Estimate(pointEstimate, confidenceIntervalLowerBound, confidenceIntervalUpperBound, pValue);
+    return new Estimate(pointEstimate, confidenceIntervalLowerBound, confidenceIntervalUpperBound, pValue, subject.getArmUri());
   }
 
   private AbstractRelativeEffect buildRelativeEffect(AbstractMeasurementCommand baseline, AbstractMeasurementCommand subject) {

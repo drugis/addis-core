@@ -1,5 +1,5 @@
 'use strict';
-define(['lodash', 'mctad'], function(_, mctad) {
+define(['lodash'], function(_) {
   var dependencies = ['$scope', '$filter', '$modalInstance', '$q', 'EpochService', 'ArmService',
     'ActivityService', 'StudyDesignService', 'EndpointService', 'MeasurementMomentService', 'ResultsService',
     'EstimatesResource', 'study'
@@ -60,6 +60,7 @@ define(['lodash', 'mctad'], function(_, mctad) {
               }, resultsByEndpointAndArm)
               .value();
           });
+
           $scope.measurements = _.reduce(resultsByEndpointAndArm, function(accum, endPointResultsByArm, endpointUri) {
             accum[endpointUri] = _.reduce(endPointResultsByArm, function(accum, armResults, armUri) {
               accum[armUri] = buildResultsObject(armResults, endpointsByUri[endpointUri]);
@@ -67,64 +68,101 @@ define(['lodash', 'mctad'], function(_, mctad) {
             }, {});
             return accum;
           }, {});
-          var estimates = EstimatesResource.getEstimates($scope.measurements);
+
+          var toBackEndMeasurements = _.reduce(resultsByEndpointAndArm, function(accum, endPointResultsByArm, endpointUri) {
+            return accum.concat(_.map(endPointResultsByArm, function(armResults, armUri) {
+              return buildResultsObject(armResults, endpointsByUri[endpointUri], endpointUri, armUri);
+            }));
+          }, []);
+
+          var estimates = EstimatesResource.getEstimates({
+            measurements: toBackEndMeasurements
+          });
 
           $scope.effectEstimateRows = [];
           estimates.$promise.then(function(estimateResults) {
-            var baseline = _.find($scope.arms, ['armURI', estimateResults.baselineUri]);
+            // var baseline = _.find($scope.arms, ['armURI', estimateResults.baselineUri]);
             var subjectArms = _.reject($scope.arms, ['armURI', estimateResults.baselineUri]);
             _.forEach($scope.endpoints, function(endpoint) {
+              var mmType = endpoint.measurementType === 'ontology:dichotomous' ? 'Risk ratio' : 'Mean difference';
+
+              var row1 = {
+                endpoint: endpoint,
+                rowLabel: 'Comparison Groups',
+                rowValues: []
+              };
+              var row2 = {
+                rowLabel: mmType,
+                rowValues: []
+              };
+              var row3 = {
+                rowLabel: 'Confidence Interval',
+                rowValues: []
+              };
+              var row4 = {
+                rowLabel: 'P-value',
+                rowValues: []
+              };
               _.forEach(subjectArms, function(arm) {
-                var estimate = estimateResults[endpoint.uri][arm.armURI];
-                $scope.effectEstimateRows.push({
-                  endpoint: endpoint,
-                  arm: arm,
-                  difference: getDifference(estimate),
-                  confidenceIntervalLowerBound: estimate.confidenceIntervalLowerBound,
-                  confidenceIntervalUpperBound: estimate.confidenceIntervalUpperBound,
-                  pValue: estimate.pValue
+                var estimate = _.find(estimateResults.estimates[endpoint.uri], {
+                  'armUri': arm.armURI
                 });
+                if (estimate) {
+
+                  row1.rowValues.push({
+                    value: arm.label
+                  });
+                  row2.rowValues.push({
+                    value: estimate.pointEstimate.toFixed(2)
+                  });
+                  row3.rowValues.push({
+                    value: '(' + estimate.confidenceIntervalLowerBound.toFixed(2) + ', ' + estimate.confidenceIntervalUpperBound.toFixed(2) + ')'
+                  });
+                  row4.rowValues.push({
+                    value: estimate.pValue.toFixed(2)
+                  });
+                } else {
+                  row1.rowValues.push({
+                    value: arm.label ? arm.label : '<group descriptors>'
+                  });
+                  row2.rowValues.push({
+                    value: '<point estimate>'
+                  });
+                  row3.rowValues.push({
+                    value: '<confidence interval>'
+                  });
+                  row4.rowValues.push({
+                    value: '<P-value>'
+                  });
+                }
               });
+              $scope.effectEstimateRows.push(row1);
+              $scope.effectEstimateRows.push(row2);
+              $scope.effectEstimateRows.push(row3);
+              $scope.effectEstimateRows.push(row4);
             });
           });
         });
       }
     });
 
-    function getDifference(baseline, subject) {
-      if (baseline.type === 'dichotomous') {
-        // var sampleSize = baseline.sampleSize + subject.sampleSize;
-        // var degreesOfFreedom = sampleSize - 2;
-        // var mu = Math.log((subject.count / subject.sampleSize) / (baseline.count / baseline.sampleSize));
-        // var sigma = Math.sqrt((1.0 / subject.count) + (1.0 / baseline.count) - //NB: this is the LOG error
-        //   (1.0 / subject.sampleSize) - (1.0 / baseline.sampleSize));
-        // var distribution = mctad.t(degreesOfFreedom); // new TransformedLogStudentT(mu, sigma, degreesOfFreedom);
-        // var pointEstimate = calculateQuantile(distribution, 0.5, sigma, mu);
-      }
-    }
-
-    function getConfidenceInterval(measurement) {
-      return {
-        lowerbound: measurement.confidenceIntervalLowerBound,
-        upperbound: measurement.confidenceIntervalUpperBound
-      };
-    }
-
-   
-
     function findValue(results, property) {
       return _.find(results, ['result_property', property]);
     }
 
-    function buildResultsObject(armResults, endpoint) {
+    function buildResultsObject(armResults, endpoint, endpointUri, armUri) {
       if (endpoint.measurementType === 'ontology:dichotomous') {
         return {
+          endpointUri: endpointUri,
+          armUri: armUri,
           type: 'dichotomous',
           count: findValue(armResults, 'count').value,
           sampleSize: findValue(armResults, 'sample_size').value
         };
       } else if (endpoint.measurementType === 'ontology:continuous') {
         return {
+          endpointUri: endpointUri,
+          armUri: armUri,
           type: 'continuous',
           mean: findValue(armResults, 'mean').value,
           stdDev: findValue(armResults, 'standard_deviation').value,

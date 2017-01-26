@@ -37,7 +37,6 @@
     "KaTeX": "katex#~0.6.0",
     "lodash": "~4.2.0",
     "mcda-web": "https://github.com/drugis/mcda-elicitation-web.git#0.10.2",
-    "mctad": "https://github.com/erictheise/mctad.js.git",
     "modernizr": "~2.8.0",
     "moment": "~2.10.0",
     "nvd3": "1.8.1",

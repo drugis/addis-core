@@ -90,15 +90,9 @@
 
     <tr ng-repeat="row in effectEstimateRows">
       <td rowspan='{{endpoints.length * 4}}' ng-if="$first">Effect estimate per comparison</td>
-      <td ng-if="$index % 4 === 0" rowspan='4'>{{row.endpoint.label}}</td>
-      <td ng-if="$index % 4 === 0">Comparison groups</td>
-      <td ng-if="$index % 4 === 0" ng-repeat="arm in arms.slice(1)">{{arm.label}}</td>
-      <td ng-if="$index % 4 === 1">{{endpoint.measurementType === 'ontology:dichotomous' ? 'Risk ratio' : 'Mean difference'}}</td>
-      <td ng-if="$index % 4 === 1" ng-repeat="arm in arms.slice(1)">@{stat}</td>
-      <td ng-if="$index % 4 === 2">Confidence Interval</td>
-      <td ng-if="$index % 4 === 2" ng-repeat="arm in arms.slice(1)">@{stat}</td>
-      <td ng-if="$index % 4 === 3">P-value</td>
-      <td ng-if="$index % 4 === 3" ng-repeat="arm in arms.slice(1)">@{stat}</td>
+      <td ng-if="$index % 4*(arms.length-1) === 0" rowspan='4'>{{row.endpoint.label}}</td>
+      <td>{{row.rowLabel}}</td>
+      <td ng-repeat="rowValue in row.rowValues">{{rowValue.value}}</td>
     </tr>
 
     <tr>
