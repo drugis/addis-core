@@ -27,10 +27,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.mockito.Mockito.when;
+import static org.hamcrest.CoreMatchers.is;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 /**
  * Created by joris on 25-1-17.
@@ -82,6 +82,7 @@ public class statisticsControllerTest {
 //    EstimatesCommand deser = mapper.readValue(body, EstimatesCommand.class);
     mockMvc.perform(post("/statistics/estimates").content(body).contentType(WebConstants.getApplicationJsonUtf8Value()))
             .andExpect(status().isOk())
-            .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()));
+            .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()))
+            .andExpect((jsonPath("$.baselineUri", is(resultEstimates.getBaselineUri().toString()))));
   }
 }
