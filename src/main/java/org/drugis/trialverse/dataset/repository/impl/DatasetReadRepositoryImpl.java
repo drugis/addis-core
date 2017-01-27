@@ -15,6 +15,7 @@ import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.jena.riot.RDFLanguages;
 import org.apache.jena.riot.WebContent;
 import org.apache.jena.sparql.graph.GraphFactory;
+import org.apache.jena.util.iterator.ExtendedIterator;
 import org.apache.jena.vocabulary.DCTerms;
 import org.apache.jena.vocabulary.RDF;
 import org.drugis.addis.security.Account;
@@ -156,11 +157,14 @@ public class DatasetReadRepositoryImpl implements DatasetReadRepository {
     if (datasetGraph == null) { // can happen if the default graph is empty
       datasetGraph = GraphFactory.createGraphMem();
     }
-    datasetGraph.getPrefixMapping().setNsPrefix("es", HTTP_DRUGIS_ORG_EVENT_SOURCING_ES);
-    datasetGraph.add(new Triple(NodeFactory.createURI(mapping.getTrialverseDatasetUrl()), headProperty, NodeFactory.createURI(version)));
-    datasetGraph.add(new Triple(NodeFactory.createURI(mapping.getTrialverseDatasetUrl()), RDF.Nodes.type, CLASS_VOID_DATASET));
+
+    String datasetUri = getDatasetUri(datasetGraph);
+
+    datasetGraph.add(new Triple(NodeFactory.createURI(datasetUri), headProperty, NodeFactory.createURI(version)));
+    datasetGraph.add(new Triple(NodeFactory.createURI(datasetUri), RDF.Nodes.type, CLASS_VOID_DATASET));
     return  ModelFactory.createModelForGraph(datasetGraph);
   }
+
 
   @Override
   public Model getVersionedDataset(URI trialverseDatasetUri, String versionUuid) {
@@ -173,10 +177,14 @@ public class DatasetReadRepositoryImpl implements DatasetReadRepository {
     HttpEntity<String> requestEntity = new HttpEntity<>(httpHeaders);
     String uri = versionMapping.getVersionedDatasetUrl() + WebConstants.DATA_ENDPOINT + WebConstants.QUERY_STRING_DEFAULT_GRAPH;
 
-    ResponseEntity<Graph> responseEntity = restTemplate.exchange(uri, HttpMethod.GET, requestEntity, Graph.class);
+    Graph datasetGraph = restTemplate.exchange(uri, HttpMethod.GET, requestEntity, Graph.class).getBody();
+    if (datasetGraph == null) { // can happen if the default graph is empty
+      datasetGraph = GraphFactory.createGraphMem();
+    }
+    String datasetUri = getDatasetUri(datasetGraph);
 
-    Graph typedGraph = addDatasetType(versionMapping.getTrialverseDatasetUrl(), responseEntity.getBody());
-    Graph graph = addCreator(versionMapping.getTrialverseDatasetUrl(), versionMapping.getOwnerUuid(), typedGraph);
+    Graph typedGraph = addDatasetType(datasetUri, datasetGraph);
+    Graph graph = addCreator(datasetUri, versionMapping.getOwnerUuid(), typedGraph);
     return ModelFactory.createModelForGraph(graph);
   }
 
@@ -230,6 +238,13 @@ public class DatasetReadRepositoryImpl implements DatasetReadRepository {
     String versionUri = responseEntity.getHeaders().get(WebConstants.X_EVENT_SOURCE_VERSION).get(0);
     jsonObject.put(WebConstants.VERSION_UUID, versionUri.split("/")[4]);
     return jsonObject;
+  }
+
+
+  private String getDatasetUri(Graph datasetGraph) {
+    ExtendedIterator<Triple> datasetIterator = datasetGraph.find(Node.ANY, Node.ANY, Node.ANY);
+    Triple datasetTriple = datasetIterator.next();
+    return datasetTriple.getSubject().getURI();
   }
 
   private byte[] executeRequestAndCloseResponse(HttpGet request) throws IOException {

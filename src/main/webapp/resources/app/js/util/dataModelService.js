@@ -77,7 +77,8 @@ define(['angular', 'lodash'], function(angular, _) {
 
     function addTypeToUnits(data) {
       data['@graph'] = _.map(data['@graph'], function(node) {
-        if (node.conversionMultiplier) {
+        if (node.conversionMultiplier && node['@type'] !== 'http://trials.drugis.org/ontology#Unit' &&
+          node['@type'] !== 'ontology:Unit') {
           var newNode = angular.copy(node);
           newNode.sameAs = node['@type'];
           newNode['@type'] = 'ontology:Unit';
