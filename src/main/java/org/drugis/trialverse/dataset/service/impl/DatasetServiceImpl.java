@@ -2,6 +2,7 @@ package org.drugis.trialverse.dataset.service.impl;
 
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.Statement;
+import org.apache.jena.rdf.model.StmtIterator;
 import org.drugis.addis.security.Account;
 import org.drugis.addis.security.repository.AccountRepository;
 import org.drugis.trialverse.dataset.model.Dataset;
@@ -41,9 +42,8 @@ public class DatasetServiceImpl implements DatasetService {
     return versionMappingRepository.findMappingsByEmail(user.getEmail())
             .stream()
             .map((mapping) -> {
-              String trialverseDatasetUrl = mapping.getTrialverseDatasetUrl();
               Model dataset = datasetReadRepository.queryDataset(mapping);
-              return buildDataset(dataset, user, trialverseDatasetUrl);
+              return buildDataset(dataset, user, mapping.getTrialverseDatasetUrl());
             })
             .collect(Collectors.toList());
   }
@@ -55,21 +55,22 @@ public class DatasetServiceImpl implements DatasetService {
     List<Dataset> datasets = versionMappings.stream()
             .map((mapping) -> {
               Account user = accountRepository.findAccountByEmail(mapping.getOwnerUuid());
-              String trialverseDatasetUrl = mapping.getTrialverseDatasetUrl();
               Model dataset = datasetReadRepository.queryDataset(mapping);
-              return buildDataset(dataset, user, trialverseDatasetUrl);
+              return buildDataset(dataset, user, mapping.getTrialverseDatasetUrl());
             })
             .collect(Collectors.toList());
     return datasets;
   }
 
-  private Dataset buildDataset(Model model, Account user, String trialverseDatasetUrl) {
+  private Dataset buildDataset(Model model, Account user, String jenaUrl) {
+    StmtIterator stmtIterator = model.listStatements(null, JenaProperties.TYPE_PROPERTY, JenaProperties.DATASET_PROPERTY);
+    String trialverseDatasetUrl = stmtIterator.next().getSubject().getURI();
     Statement titleTriple = model.getProperty(model.getResource(trialverseDatasetUrl), JenaProperties.TITLE_PROPERTY);
     Statement descriptionTriple = model.getProperty(model.getResource(trialverseDatasetUrl), JenaProperties.DESCRIPTION_PROPERTY);
     Statement headVersionTriple = model.getProperty(model.getResource(trialverseDatasetUrl), JenaProperties.headVersionProperty);
     String description = descriptionTriple != null ? descriptionTriple.getObject().toString() : null;
     String title = titleTriple != null ? titleTriple.getObject().toString() : null;
     String headVersion = headVersionTriple.getObject().toString();
-    return new Dataset(trialverseDatasetUrl, user, title, description, headVersion);
+    return new Dataset(jenaUrl, user, title, description, headVersion);
   }
 }

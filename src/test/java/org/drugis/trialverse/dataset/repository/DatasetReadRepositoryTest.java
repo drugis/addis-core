@@ -16,6 +16,8 @@ import org.apache.http.message.BasicStatusLine;
 import org.apache.jena.atlas.json.JSON;
 import org.apache.jena.atlas.json.JsonObject;
 import org.apache.jena.graph.Graph;
+import org.apache.jena.graph.NodeFactory;
+import org.apache.jena.graph.Triple;
 import org.apache.jena.query.*;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
@@ -29,6 +31,7 @@ import org.drugis.trialverse.dataset.model.VersionMapping;
 import org.drugis.trialverse.dataset.repository.impl.DatasetReadRepositoryImpl;
 import org.drugis.addis.security.Account;
 import org.drugis.trialverse.util.JenaGraphMessageConverter;
+import org.drugis.trialverse.util.JenaProperties;
 import org.drugis.trialverse.util.Namespaces;
 import org.drugis.addis.util.WebConstants;
 import org.junit.After;
@@ -104,7 +107,11 @@ public class DatasetReadRepositoryTest {
     when(versionMappingRepository.findMappingsByEmail(account.getEmail())).thenReturn(mockResult);
     HttpHeaders httpHeaders = new HttpHeaders();
     httpHeaders.add(WebConstants.X_EVENT_SOURCE_VERSION, "http://myhost/myversion");
-    ResponseEntity<Object> responseEntity = new ResponseEntity<>(GraphFactory.createGraphMem(), httpHeaders, HttpStatus.OK);
+    Graph datasetGraph = GraphFactory.createGraphMem();
+    datasetGraph.add(new Triple(NodeFactory.createURI("http://anything.com"),
+            NodeFactory.createURI("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),
+            NodeFactory.createURI("http://trials.drugis.org/ontology#Dataset")));
+    ResponseEntity<Object> responseEntity = new ResponseEntity<>(datasetGraph, httpHeaders, HttpStatus.OK);
     List<HttpMessageConverter<?>> convertorList = new ArrayList<>();
     convertorList.add(new JenaGraphMessageConverter());
     when(restTemplate.getMessageConverters()).thenReturn(convertorList);
@@ -129,7 +136,11 @@ public class DatasetReadRepositoryTest {
     httpHeaders.add(WebConstants.X_ACCEPT_EVENT_SOURCE_VERSION, WebConstants.getVersionBaseUri() + versionUuid);
     httpHeaders.add(ACCEPT, RDFLanguages.TURTLE.getContentType().getContentType());
     HttpEntity<String> requestEntity = new HttpEntity<>(httpHeaders);
-    ResponseEntity<Graph> responseEntity = new ResponseEntity<>(GraphFactory.createGraphMem(), HttpStatus.OK);
+    Graph datasetGraph = GraphFactory.createGraphMem();
+    datasetGraph.add(new Triple(NodeFactory.createURI(trialverseDatasetUrl.toString()),
+            NodeFactory.createURI("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),
+            NodeFactory.createURI("http://trials.drugis.org/ontology#Dataset")));
+    ResponseEntity<Graph> responseEntity = new ResponseEntity<>(datasetGraph, HttpStatus.OK);
     String uri = versionedUri + WebConstants.DATA_ENDPOINT + WebConstants.QUERY_STRING_DEFAULT_GRAPH;
     when(restTemplate.exchange(uri, HttpMethod.GET, requestEntity, Graph.class)).thenReturn(responseEntity);
 
@@ -143,9 +154,11 @@ public class DatasetReadRepositoryTest {
     String expectedGraph = "<rdf:RDF\n" +
             "    xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n" +
             "    xmlns:j.0=\"http://purl.org/dc/terms/\"\n" +
-            "    xmlns:j.1=\"http://rdfs.org/ns/void#\" > \n" +
+            "    xmlns:j.1=\"http://trials.drugis.org/ontology#\"\n" +
+            "    xmlns:j.2=\"http://rdfs.org/ns/void#\" > \n" +
             "  <rdf:Description rdf:about=\"http://trials.drugis.org/datasets/uuid\">\n" +
             "    <j.0:creator>itsame</j.0:creator>\n" +
+            "    <rdf:type rdf:resource=\"http://trials.drugis.org/ontology#Dataset\"/>\n" +
             "    <rdf:type rdf:resource=\"http://rdfs.org/ns/void#Dataset\"/>\n" +
             "  </rdf:Description>\n" +
             "</rdf:RDF>\n";
