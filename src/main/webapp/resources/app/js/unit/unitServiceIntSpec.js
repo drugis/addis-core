@@ -67,7 +67,7 @@ define(['angular', 'angular-mocks', 'unit/unit'], function() {
       var targetUnit = {
         uri: 'http://trials.drugis.org/instances/unitUuid2'
       };
-      
+
       beforeEach(function() {
         var graphDefer = q.defer();
         studyServiceMock.getJsonGraph.and.returnValue(graphDefer.promise);
@@ -89,6 +89,18 @@ define(['angular', 'angular-mocks', 'unit/unit'], function() {
                 '@id': 'http://trials.drugis.org/instances/someDose3',
                 'unit': sourceUnit.uri
               }]
+            }]
+          }, {
+            has_drug_treatment: [{
+              treatment_min_dose: [{
+                '@id': 'http://trials.drugis.org/instances/someDoseTitrated1',
+                'unit': sourceUnit.uri
+              }],
+              treatment_max_dose: [{
+                '@id': 'http://trials.drugis.org/instances/someDoseTitrated2',
+                'unit': sourceUnit.uri
+              }]
+
             }]
           }]
         }, {
@@ -120,6 +132,17 @@ define(['angular', 'angular-mocks', 'unit/unit'], function() {
             }, {
               treatment_dose: [{
                 '@id': 'http://trials.drugis.org/instances/someDose3',
+                'unit': targetUnit.uri
+              }]
+            }]
+          }, {
+            has_drug_treatment: [{
+              treatment_min_dose: [{
+                '@id': 'http://trials.drugis.org/instances/someDoseTitrated1',
+                'unit': targetUnit.uri
+              }],
+              treatment_max_dose: [{
+                '@id': 'http://trials.drugis.org/instances/someDoseTitrated2',
                 'unit': targetUnit.uri
               }]
             }]
