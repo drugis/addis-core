@@ -24,6 +24,7 @@ define(function(require) {
 
   //services
   .factory('StudyService', require('study/studyService'))
+  .factory('D80TableService', require('study/d80TableService'))
 
   //resources
   .factory('CopyStudyResource', require('study/copyStudyResource'))
