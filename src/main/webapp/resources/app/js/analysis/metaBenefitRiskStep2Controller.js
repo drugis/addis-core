@@ -52,6 +52,7 @@ define(['lodash'], function(_) {
 
         $scope.outcomesWithAnalyses = buildOutcomesWithAnalyses(analysis, outcomes, networkMetaAnalyses, models);
         resetScales();
+
       });
 
       $scope.alternatives = alternatives.map(function(alternative) {
@@ -172,6 +173,9 @@ define(['lodash'], function(_) {
             console.log('ScalesService.getObservedScales error');
           });
         }
+      });
+      $scope.isMissingBaseline = _.find($scope.outcomesWithAnalyses, function(owa) {
+        return !owa.baselineDistribution;
       });
     }
 
