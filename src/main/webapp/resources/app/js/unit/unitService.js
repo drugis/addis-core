@@ -14,13 +14,31 @@ define(['lodash'], function(_) {
     function updateActivities(study, unit, mergeTarget) {
       return _.map(study.has_activity, function(activity) {
         activity.has_drug_treatment = _.map(activity.has_drug_treatment, function(drugTreatment) {
-          drugTreatment.treatment_dose = _.map(drugTreatment.treatment_dose, function(dose) {
-            if (dose.unit === unit.uri) {
-              dose.unit = mergeTarget.uri;
-            }
-            return dose;
-          });
-          return drugTreatment;
+          if (drugTreatment.treatment_dose) {
+            drugTreatment.treatment_dose = _.map(drugTreatment.treatment_dose, function(dose) {
+              if (dose.unit === unit.uri) {
+                dose.unit = mergeTarget.uri;
+              }
+              return dose;
+            });
+            return drugTreatment;
+          }
+          if (drugTreatment.treatment_min_dose) {
+            drugTreatment.treatment_min_dose = _.map(drugTreatment.treatment_min_dose, function(dose) {
+              if (dose.unit === unit.uri) {
+                dose.unit = mergeTarget.uri;
+              }
+              return dose;
+            }); 
+                       
+            drugTreatment.treatment_max_dose = _.map(drugTreatment.treatment_max_dose, function(dose) {
+              if (dose.unit === unit.uri) {
+                dose.unit = mergeTarget.uri;
+              }
+              return dose;
+            });
+            return drugTreatment;
+          }
         });
         return activity;
       });

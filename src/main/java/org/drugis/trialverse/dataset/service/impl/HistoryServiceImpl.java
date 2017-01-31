@@ -72,7 +72,7 @@ public class HistoryServiceImpl implements HistoryService {
     VersionMapping versionMapping = versionMappingRepository.getVersionMappingByDatasetUrl(trialverseDatasetUri);
     Model historyModel = datasetReadRepository.getHistory(versionMapping.getVersionedDatasetUri());
 
-    ResIterator stmtIterator = historyModel.listSubjectsWithProperty(JenaProperties.typeProperty, JenaProperties.datasetVersionObject);
+    ResIterator stmtIterator = historyModel.listSubjectsWithProperty(JenaProperties.TYPE_PROPERTY, JenaProperties.datasetVersionObject);
 
     Map<String, Resource> versionMap = new HashMap<>();
     Map<String, Boolean> referencedMap = new HashMap<>();

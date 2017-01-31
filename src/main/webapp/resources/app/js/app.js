@@ -458,7 +458,7 @@ define(
           .state('dataset.concepts', {
             url: '/concepts',
             templateUrl: 'app/js/concept/concepts.html',
-            controller: 'ConceptController'
+            controller: 'ConceptsController'
           })
           .state('dataset.study', {
             url: '/studies/:studyGraphUuid',
@@ -483,7 +483,7 @@ define(
           .state('versionedDataset.concepts', {
             url: '/concepts',
             templateUrl: 'app/js/concept/concepts.html',
-            controller: 'ConceptController'
+            controller: 'ConceptsController'
           })
           .state('versionedDataset.study', {
             url: '/studies/:studyGraphUuid',

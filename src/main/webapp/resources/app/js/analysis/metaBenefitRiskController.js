@@ -51,6 +51,9 @@ define(['lodash'], function(_) {
             return owa;
           });
         $scope.outcomesWithAnalyses = buildOutcomesWithAnalyses(analysis, outcomes, networkMetaAnalyses, models);
+        $scope.isMissingBaseline = _.find($scope.outcomesWithAnalyses, function(owa) {
+          return !owa.baselineDistribution;
+        });
       });
 
       $scope.alternatives = alternatives.map(function(alternative) {

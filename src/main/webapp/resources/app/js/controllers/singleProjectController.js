@@ -273,6 +273,9 @@ define(['lodash', 'angular'], function(_, angular) {
           outcomes: function() {
             return $scope.outcomes;
           },
+          usage: function() {
+            return $scope.outcomeUsage[outcome.id];
+          },
           successCallback: function() {
             return loadOutcomes;
           }

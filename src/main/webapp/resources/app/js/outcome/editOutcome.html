@@ -14,9 +14,9 @@
   <div class="row">
     <div class="large-10 columns">
       <label>Outcome direction</label>
-      <input type="radio" id="higher-is-better-radio" ng-value="1" ng-model="outcome.direction">
+      <input type="radio" id="higher-is-better-radio" ng-value="1" ng-model="outcome.direction" ng-disabled="usage.length">
       <label for="higher-is-better-radio">Higher is better</label>
-      <input type="radio" id="lower-is-better-radio" ng-value="-1" ng-model="outcome.direction">
+      <input type="radio" id="lower-is-better-radio" ng-value="-1" ng-model="outcome.direction" ng-disabled="usage.length">
       <label for="lower-is-better-radio">Lower is better</label>
     </div>
   </div>
