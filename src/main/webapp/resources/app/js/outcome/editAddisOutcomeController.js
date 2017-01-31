@@ -1,9 +1,10 @@
 'use strict';
 define(['angular'],
   function(angular) {
-    var dependencies = ['$scope', '$modalInstance', 'ProjectService', 'OutcomeResource', 'successCallback', 'outcome', 'outcomes'];
-    var EditAddisOutcomeController = function($scope, $modalInstance, ProjectService, OutcomeResource, successCallback, outcome, outcomes) {
+    var dependencies = ['$scope', '$modalInstance', 'ProjectService', 'OutcomeResource', 'successCallback', 'outcome', 'outcomes', 'usage'];
+    var EditAddisOutcomeController = function($scope, $modalInstance, ProjectService, OutcomeResource, successCallback, outcome, outcomes, usage) {
       $scope.outcome = angular.copy(outcome);
+      $scope.usage = usage;
 
       $scope.saveOutcome = function() {
         $scope.isSaving = true;
