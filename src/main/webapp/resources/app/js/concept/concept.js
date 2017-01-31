@@ -10,7 +10,7 @@ define(function (require) {
     .factory('ConceptService', require('concept/conceptService'))
 
     //controllers
-    .controller('ConceptController', require('concept/conceptController'))
+    .controller('ConceptsController', require('concept/conceptsController'))
     .controller('CreateConceptController', require('concept/createConceptController'))
 
      //resources

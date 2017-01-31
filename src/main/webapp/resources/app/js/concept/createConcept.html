@@ -6,15 +6,15 @@
   </div>
   <div class="row">
     <div class="large-12 medium-12 columns">
-      Title: <input ng-model="concept.label" type="text"></input>
+      Title: <input ng-model="concept.label" ng-change="checkDuplicate(concept)" type="text"></input>
       <label>Type
-        <select ng-model="concept.type" ng-options="typeOption.label for typeOption in typeOptions"></select>
+        <select ng-model="concept.type" ng-options="typeOption.label for typeOption in typeOptions" ng-change="checkDuplicate(concept)"></select>
       </label>
     </div>
   </div>
   <div class="row modal-bottom-button-bar">
     <div class="large-12 columns">
-    <button class="success" type="submit" ng-disabled="!concept.label || !concept.type">Create concept</button>
+    <button class="success" type="submit" ng-disabled="!concept.label || !concept.type || isDuplicate">Create concept</button>
     </div>
   </div>
   <a class="close-reveal-modal" ng-click="cancel()">×</a>

@@ -32,7 +32,7 @@ define(['angular', 'angular-mocks'], function() {
       conceptServiceMock.loadStore.and.returnValue(loadConceptStoreDefer.promise);
       conceptServiceMock.queryItems.and.returnValue(queryItemsDefer.promise);
 
-      $controller('ConceptController', {
+      $controller('ConceptsController', {
         $scope: scope,
         $modal: modalMock,
         $stateParams: stateParamsMock,

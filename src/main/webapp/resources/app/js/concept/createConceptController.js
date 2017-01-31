@@ -1,9 +1,10 @@
 'use strict';
-define([], function() {
-  var dependencies = ['$scope', '$stateParams', 'callback', '$modalInstance', 'ConceptService'];
+define(['lodash'], function(_) {
+  var dependencies = ['$scope', '$stateParams', 'callback', '$modalInstance', 'ConceptService', 'concepts'];
 
-  var CreateConceptController = function($scope, $stateParams, callback, $modalInstance, ConceptService) {
+  var CreateConceptController = function($scope, $stateParams, callback, $modalInstance, ConceptService, concepts) {
     $scope.concept = {};
+    $scope.isDuplicate = false;
 
     $scope.typeOptions = [{
       uri: 'ontology:Drug',
@@ -11,7 +12,7 @@ define([], function() {
     }, {
       uri: 'ontology:Variable',
       label: 'Variable'
-    },{
+    }, {
       uri: 'ontology:Unit',
       label: 'Unit'
     }];
@@ -20,6 +21,13 @@ define([], function() {
       return ConceptService.addItem($scope.concept).then(function() {
         callback();
         $modalInstance.close();
+      });
+    };
+
+    $scope.checkDuplicate = function(newConcept) {
+      $scope.isDuplicate = _.find(concepts, function(oldConcept) {
+        return newConcept.label === oldConcept.label &&
+          (!newConcept.type || newConcept.type.uri === oldConcept.type.uri);
       });
     };
 
