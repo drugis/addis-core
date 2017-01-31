@@ -1,5 +1,5 @@
 'use strict';
-define(['lodash'], function(_) {
+define(['lodash', 'clipboard'], function(_, Clipboard) {
   var dependencies = ['$scope', '$filter', '$modalInstance', '$q', 'EpochService', 'ArmService',
     'ActivityService', 'StudyDesignService', 'EndpointService', 'MeasurementMomentService', 'ResultsService',
     'EstimatesResource', 'D80TableService', 'study'
@@ -10,6 +10,7 @@ define(['lodash'], function(_) {
     $scope.study = study;
     $scope.buildResultLabel = D80TableService.buildResultLabel;
 
+    var clipboard = new Clipboard('.clipboard-button');
     var exponentialFilter = $filter('exponentialFilter'),
       durationFilter = $filter('durationFilter');
 
@@ -46,19 +47,17 @@ define(['lodash'], function(_) {
 
           var resultsByEndpointAndArm = D80TableService.buildResultsByEndpointAndArm(results, primaryMeasurementMoment.uri);
 
+          var toBackEndMeasurements = [];
           $scope.measurements = _.reduce(resultsByEndpointAndArm, function(accum, endPointResultsByArm, endpointUri) {
             accum[endpointUri] = _.reduce(endPointResultsByArm, function(accum, armResults, armUri) {
-              accum[armUri] = D80TableService.buildResultsObject(armResults, endpointsByUri[endpointUri], endpointUri, armUri);
+              var resultsObject = D80TableService.buildResultsObject(armResults, endpointsByUri[endpointUri], armUri);
+              resultsObject.label = D80TableService.buildResultLabel(resultsObject);
+              toBackEndMeasurements.push(resultsObject);
+              accum[armUri] = resultsObject;
               return accum;
             }, {});
             return accum;
           }, {});
-
-          var toBackEndMeasurements = _.reduce(resultsByEndpointAndArm, function(accum, endPointResultsByArm, endpointUri) {
-            return accum.concat(_.map(endPointResultsByArm, function(armResults, armUri) {
-              return D80TableService.buildResultsObject(armResults, endpointsByUri[endpointUri], endpointUri, armUri);
-            }));
-          }, []);
 
           var estimates = EstimatesResource.getEstimates({
             measurements: toBackEndMeasurements

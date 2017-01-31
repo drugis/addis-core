@@ -179,6 +179,41 @@ table.network-meta-analysis-table {
   font-weight: bold;
   text-align: center;
 }
+
+// d80 table
+table.d-80 {
+    padding:0;
+    margin:0;
+    border:1px;
+    background-color:#FFFFFF;
+    color:#000000;
+    vertical-align:center;
+    border-width: 1px;
+    border-spacing: 0px;
+    border-style: solid;
+    border-color: black;
+    border-collapse: collapse;
+}
+table.nested {
+    width:100%;
+    padding:0px;
+    margin:0px;
+    border-width: 0px;
+    border-style: none;
+    border-collapse: collapse;
+  }
+table.nested td {
+  padding:0px;
+  margin:0px;
+  border-width: 0px;
+  border-style: none;
+  border-collapse: collapse;
+}
+  table.nested td.left {
+    border-width: 0px 1px 0px 0px;
+    border-style: none;
+    margin-right: 1em;;
+  }
 /////////////////////// graphs and tables ////////////////////////
 $table-title-font-size: 14px;
 $table-title-margin-top: 10px;

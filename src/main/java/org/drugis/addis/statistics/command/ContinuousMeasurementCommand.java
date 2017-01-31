@@ -1,35 +1,61 @@
 package org.drugis.addis.statistics.command;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.drugis.addis.statistics.exception.MissingMeasurementException;
+
 import java.net.URI;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by joris on 24-1-17.
  */
 public class ContinuousMeasurementCommand extends AbstractMeasurementCommand {
-  private Double mean;
-  private Double stdDev;
-  private Integer sampleSize;
+  Map<String, Double> resultProperties = new HashMap<>();
 
-  public ContinuousMeasurementCommand() {
-  }
+  public ContinuousMeasurementCommand(){}
 
-  public ContinuousMeasurementCommand(URI endpointUri, URI armUri, Double mean, Double stdDev, Integer sampleSize) {
+  public ContinuousMeasurementCommand(URI endpointUri, URI armUri, Map<String, Double> resultProperties) {
     super(endpointUri, armUri);
-    this.mean = mean;
-    this.stdDev = stdDev;
-    this.sampleSize = sampleSize;
+    this.resultProperties = resultProperties;
   }
 
-  public Double getMean() {
+  public Map<String, Double> getResultProperties() {
+    return resultProperties;
+  }
+
+  @JsonIgnore
+  public Double getMean() throws MissingMeasurementException {
+    Double mean = resultProperties.get("mean");
+    if(mean == null) {
+      throw new MissingMeasurementException("missing mean");
+    }
     return mean;
   }
 
-  public Double getStdDev() {
-    return stdDev;
+  @JsonIgnore
+  public Integer getSampleSize() throws MissingMeasurementException {
+    Double sampleSize = resultProperties.get("sampleSize");
+    if(sampleSize == null) {
+      throw new MissingMeasurementException("missing sample size");
+    }
+    return sampleSize.intValue();
   }
 
-  public Integer getSampleSize() {
-    return sampleSize;
+  @JsonIgnore
+  public Double getStdDev() throws MissingMeasurementException {
+    Double stdDev = resultProperties.get("standardDeviation");
+    if(stdDev == null) {
+      Double stdErr = resultProperties.get("standardError");
+      Integer sampleSize = getSampleSize();
+      if(stdErr != null && sampleSize != null) {
+        stdDev = stdErr * Math.sqrt(sampleSize);
+      }
+    }
+    if(stdDev == null) {
+      throw new MissingMeasurementException("missing standard deviation");
+    }
+    return stdDev;
   }
 
   @Override
@@ -40,17 +66,13 @@ public class ContinuousMeasurementCommand extends AbstractMeasurementCommand {
 
     ContinuousMeasurementCommand that = (ContinuousMeasurementCommand) o;
 
-    if (mean != null ? !mean.equals(that.mean) : that.mean != null) return false;
-    if (stdDev != null ? !stdDev.equals(that.stdDev) : that.stdDev != null) return false;
-    return sampleSize != null ? sampleSize.equals(that.sampleSize) : that.sampleSize == null;
+    return resultProperties.equals(that.resultProperties);
   }
 
   @Override
   public int hashCode() {
     int result = super.hashCode();
-    result = 31 * result + (mean != null ? mean.hashCode() : 0);
-    result = 31 * result + (stdDev != null ? stdDev.hashCode() : 0);
-    result = 31 * result + (sampleSize != null ? sampleSize.hashCode() : 0);
+    result = 31 * result + resultProperties.hashCode();
     return result;
   }
 }

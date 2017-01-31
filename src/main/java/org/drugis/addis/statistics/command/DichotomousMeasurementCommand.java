@@ -1,29 +1,46 @@
 package org.drugis.addis.statistics.command;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.drugis.addis.statistics.exception.MissingMeasurementException;
+
 import java.net.URI;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by daan on 20-1-17.
  */
 public class DichotomousMeasurementCommand extends AbstractMeasurementCommand {
-  private Integer count;
-  private Integer sampleSize;
+  Map<String, Double> resultProperties = new HashMap<>();
 
   public DichotomousMeasurementCommand() {
   }
 
-  public DichotomousMeasurementCommand(URI endpointUri, URI armUri, Integer count, Integer sampleSize) {
+  public DichotomousMeasurementCommand(URI endpointUri, URI armUri, Map<String, Double> resultProperties) {
     super(endpointUri, armUri);
-    this.count = count;
-    this.sampleSize = sampleSize;
+    this.resultProperties = resultProperties;
   }
 
-  public Integer getCount() {
-    return count;
+  public Map<String, Double> getResultProperties() {
+    return resultProperties;
   }
 
-  public Integer getSampleSize() {
-    return sampleSize;
+  @JsonIgnore
+  public Integer getCount() throws MissingMeasurementException {
+    Double count = resultProperties.get("count");
+    if (count == null) {
+      throw new MissingMeasurementException("missing count");
+    }
+    return count.intValue();
+  }
+
+  @JsonIgnore
+  public Integer getSampleSize() throws MissingMeasurementException {
+    Double sampleSize = resultProperties.get("sampleSize");
+    if (sampleSize == null) {
+      throw new MissingMeasurementException("missing sample size");
+    }
+    return sampleSize.intValue();
   }
 
   @Override
@@ -34,15 +51,13 @@ public class DichotomousMeasurementCommand extends AbstractMeasurementCommand {
 
     DichotomousMeasurementCommand that = (DichotomousMeasurementCommand) o;
 
-    if (count != null ? !count.equals(that.count) : that.count != null) return false;
-    return sampleSize != null ? sampleSize.equals(that.sampleSize) : that.sampleSize == null;
+    return resultProperties.equals(that.resultProperties);
   }
 
   @Override
   public int hashCode() {
     int result = super.hashCode();
-    result = 31 * result + (count != null ? count.hashCode() : 0);
-    result = 31 * result + (sampleSize != null ? sampleSize.hashCode() : 0);
+    result = 31 * result + resultProperties.hashCode();
     return result;
   }
 }

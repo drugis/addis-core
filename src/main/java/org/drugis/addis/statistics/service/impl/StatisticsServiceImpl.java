@@ -4,6 +4,7 @@ import org.drugis.addis.statistics.command.AbstractMeasurementCommand;
 import org.drugis.addis.statistics.command.ContinuousMeasurementCommand;
 import org.drugis.addis.statistics.command.DichotomousMeasurementCommand;
 import org.drugis.addis.statistics.command.EstimatesCommand;
+import org.drugis.addis.statistics.exception.MissingMeasurementException;
 import org.drugis.addis.statistics.model.*;
 import org.drugis.addis.statistics.service.StatisticsService;
 import org.slf4j.Logger;
@@ -25,7 +26,8 @@ public class StatisticsServiceImpl implements StatisticsService {
     if (measurements.isEmpty()){
       return null;
     }
-    Map<URI, List<AbstractMeasurementCommand>> measurementsByEndpointAndArm = measurements.stream().collect(Collectors.groupingBy(AbstractMeasurementCommand::getEndpointUri));
+    Map<URI, List<AbstractMeasurementCommand>> measurementsByEndpointAndArm = measurements
+            .stream().collect(Collectors.groupingBy(AbstractMeasurementCommand::getEndpointUri));
     URI baselineUri = measurements.get(0).getArmUri();
     Map<URI, List<Estimate>> estimatesByEndpointUri = calculateEstimates(measurementsByEndpointAndArm, baselineUri);
     return new Estimates(baselineUri, estimatesByEndpointUri);
@@ -57,15 +59,22 @@ public class StatisticsServiceImpl implements StatisticsService {
   }
 
   private Estimate getEstimate(AbstractMeasurementCommand baseline, AbstractMeasurementCommand subject) {
-     // (baseline, subject) -> relEffect; releEffect -> distribution; distribution -> confidenceInterval; confidenceInterval -> quantiles(0.025, 0.05, 0.975), pvalue
     AbstractRelativeEffect relativeEffect = buildRelativeEffect(baseline, subject);
-    Distribution distribution = relativeEffect.getDistribution();
-    Double pointEstimate = distribution.getQuantile(0.5);
-    Double confidenceIntervalLowerBound = distribution.getQuantile(0.025);
-    Double confidenceIntervalUpperBound = distribution.getQuantile(0.975);
-    double prob = distribution.getCumulativeProbability(relativeEffect.getNeutralValue());
-    Double pValue = 2 * Math.min(prob, 1 - prob);
-    return new Estimate(pointEstimate, confidenceIntervalLowerBound, confidenceIntervalUpperBound, pValue, subject.getArmUri());
+    Distribution distribution = null;
+    try {
+      distribution = relativeEffect != null ? relativeEffect.getDistribution() : null;
+    } catch (MissingMeasurementException e) {
+      e.printStackTrace();
+    }
+    if(distribution != null) {
+      Double pointEstimate = distribution.getQuantile(0.5);
+      Double confidenceIntervalLowerBound = distribution.getQuantile(0.025);
+      Double confidenceIntervalUpperBound = distribution.getQuantile(0.975);
+      double prob = distribution.getCumulativeProbability(relativeEffect.getNeutralValue());
+      Double pValue = 2 * Math.min(prob, 1 - prob);
+      return new Estimate(pointEstimate, confidenceIntervalLowerBound, confidenceIntervalUpperBound, pValue, subject.getArmUri());
+    }
+    return null;
   }
 
   private AbstractRelativeEffect buildRelativeEffect(AbstractMeasurementCommand baseline, AbstractMeasurementCommand subject) {

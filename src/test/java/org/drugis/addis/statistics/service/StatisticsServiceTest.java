@@ -13,7 +13,9 @@ import org.mockito.InjectMocks;
 
 import java.net.URI;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -43,8 +45,14 @@ public class StatisticsServiceTest {
   public void testGetEstimatesForDichotomous() {
     Integer countE1A1 = 10;
     Integer countE1A2 = 11;
-    AbstractMeasurementCommand measurementE1A1 = new DichotomousMeasurementCommand(ENDPOINT_1_URI, ARM_1_URI, countE1A1, SAMPLE_SIZE_E_1_A_1);
-    AbstractMeasurementCommand measurementE1A2 = new DichotomousMeasurementCommand(ENDPOINT_1_URI, ARM_2_URI, countE1A2, SAMPLE_SIZE_E_1_A_2);
+    Map<String, Double> measurement1Properties = new HashMap<>();
+    measurement1Properties.put("count", Double.valueOf(countE1A1));
+    measurement1Properties.put("sampleSize", Double.valueOf(SAMPLE_SIZE_E_1_A_1));
+    Map<String, Double> measurement2Properties = new HashMap<>();
+    measurement2Properties.put("count", Double.valueOf(countE1A2));
+    measurement2Properties.put("sampleSize", Double.valueOf(SAMPLE_SIZE_E_1_A_2));
+    AbstractMeasurementCommand measurementE1A1 = new DichotomousMeasurementCommand(ENDPOINT_1_URI, ARM_1_URI, measurement1Properties);
+    AbstractMeasurementCommand measurementE1A2 = new DichotomousMeasurementCommand(ENDPOINT_1_URI, ARM_2_URI, measurement2Properties);
     List<AbstractMeasurementCommand> measurements = Arrays.asList(measurementE1A1, measurementE1A2);
     EstimatesCommand command = new EstimatesCommand(measurements);
     Estimates result = statisticsService.getEstimates(command);
@@ -63,8 +71,16 @@ public class StatisticsServiceTest {
     Double stdDevE1A1 = 2.2;
     Double meanE1A2 = 11.;
     Double stdDevE1A2 = 2.1;
-    AbstractMeasurementCommand measurementE1A1 = new ContinuousMeasurementCommand(ENDPOINT_1_URI, ARM_1_URI, meanE1A1, stdDevE1A1, SAMPLE_SIZE_E_1_A_1);
-    AbstractMeasurementCommand measurementE1A2 = new ContinuousMeasurementCommand(ENDPOINT_1_URI, ARM_2_URI, meanE1A2, stdDevE1A2, SAMPLE_SIZE_E_1_A_2);
+    Map<String, Double> measurement1Properties = new HashMap<>();
+    measurement1Properties.put("mean", meanE1A1);
+    measurement1Properties.put("standardDeviation", stdDevE1A1);
+    measurement1Properties.put("sampleSize", Double.valueOf(SAMPLE_SIZE_E_1_A_1));
+    Map<String, Double> measurement2Properties = new HashMap<>();
+    measurement2Properties.put("mean", meanE1A2);
+    measurement2Properties.put("standardDeviation", stdDevE1A2);
+    measurement2Properties.put("sampleSize", Double.valueOf(SAMPLE_SIZE_E_1_A_2));
+    AbstractMeasurementCommand measurementE1A1 = new ContinuousMeasurementCommand(ENDPOINT_1_URI, ARM_1_URI, measurement1Properties);
+    AbstractMeasurementCommand measurementE1A2 = new ContinuousMeasurementCommand(ENDPOINT_1_URI, ARM_2_URI, measurement2Properties);
     List<AbstractMeasurementCommand> measurements = Arrays.asList(measurementE1A1, measurementE1A2);
     EstimatesCommand command = new EstimatesCommand(measurements);
     Estimates result = statisticsService.getEstimates(command);

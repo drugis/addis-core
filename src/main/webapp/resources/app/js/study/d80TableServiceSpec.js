@@ -152,13 +152,96 @@ define(['angular-mocks'], function() {
       });
     });
     describe('buildResultLabel', function() {
+      it('should return an appropriate label for the given results', function() {
+        var resultsObject = {
+          type: 'dichotomous',
+          resultProperties: {
+            count: 5,
+            sampleSize: 20
+          }
+        };
+        var expectedLabel = '5/20';
+        expect(expectedLabel).toEqual(d80tableservice.buildResultLabel(resultsObject));
+        resultsObject = {
+          type: 'continuous',
+          resultProperties: {
+            mean: '55E-1',
+            standardDeviation: 0.5,
+            sampleSize: 20
+          }
+        };
+        expectedLabel = '5.5 ± 0.5 (20)';
+        expect(expectedLabel).toEqual(d80tableservice.buildResultLabel(resultsObject));
+        resultsObject = {
+          type: 'wrong type',
+          resultProperties: {}
+        };
+        expect(function() {
+          d80tableservice.buildResultLabel(resultsObject);
+        }).toThrow('unknown measurement type');
+      });
 
     });
     describe('buildResultsObject', function() {
+      it('should return the appropriate resultsObject', function() {
+        var armResults = [{
+          result_property: 'count',
+          value: 19
+        }, {
+          result_property: 'sample_size',
+          value: 30
+        }];
+        var endpoint = {
+          uri: 'http://endpoint.com/1',
+          measurementType: 'ontology:dichotomous',
+          resultProperties: ['bla#count', 'bla#sample_size']
+        };
+        var armUri = 'http://arm.some/1';
 
+        var expectedResult = {
+          endpointUri: endpoint.uri,
+          armUri: armUri,
+          type: 'dichotomous',
+          resultProperties: {
+            count: 19,
+            sampleSize: 30
+          }
+        };
+        expect(d80tableservice.buildResultsObject(armResults, endpoint, armUri)).toEqual(expectedResult);
+      });
     });
     describe('buildArmTreatmentsLabel', function() {
-      
+      it('should return the appropriate treatment label for the arm', function() {
+        var treatments = [{
+          treatmentDoseType: 'ontology:FixedDoseDrugTreatment',
+          drug: {
+            label: 'Floepsetine'
+          },
+          fixedValue: 10,
+          doseUnit: {
+            label: 'mg'
+          },
+          dosingPeriodicity: 'P1D'
+        }, {
+          treatmentDoseType: 'ontology:TitratedDoseDrugTreatment',
+          drug: {
+            label: 'Plopsatine'
+          },
+          minValue: 5,
+          maxValue: 10,
+          doseUnit: {
+            label: 'ml'
+          },
+          dosingPeriodicity: 'PT12H'
+        }];
+        var expectedResult = 'Floepsetine 10 mg per 1 day(s) + Plopsatine 5-10 ml per 12 hour(s)';
+        expect(d80tableservice.buildArmTreatmentsLabel(treatments)).toEqual(expectedResult);
+        expect(function() {
+          d80tableservice.buildArmTreatmentsLabel([{
+            treatmentDoseType: 'ontology:wrongtype'
+          }]);
+        }).toThrow('unknown dosage type');
+      });
     });
   });
 });

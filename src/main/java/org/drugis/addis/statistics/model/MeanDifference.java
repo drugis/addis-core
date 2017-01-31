@@ -1,6 +1,7 @@
 package org.drugis.addis.statistics.model;
 
 import org.drugis.addis.statistics.command.ContinuousMeasurementCommand;
+import org.drugis.addis.statistics.exception.MissingMeasurementException;
 
 /**
  * Created by joris on 24-1-17.
@@ -24,7 +25,7 @@ public class MeanDifference extends AbstractRelativeEffect {
   }
 
   @Override
-  public Distribution getDistribution() {
+  public Distribution getDistribution() throws MissingMeasurementException {
     return new TransformedStudentT(getMu(), getSigma(), getDegreesOfFreedom());
   }
 
@@ -33,7 +34,7 @@ public class MeanDifference extends AbstractRelativeEffect {
     return 0.0;
   }
 
-  public Double getMu() {
+  public Double getMu() throws MissingMeasurementException {
     return subject.getMean() - baseline.getMean();
   }
 
@@ -41,17 +42,17 @@ public class MeanDifference extends AbstractRelativeEffect {
     return x * x;
   }
 
-  public Double getSigma() {
+  public Double getSigma() throws MissingMeasurementException {
     return Math.sqrt(square(subject.getStdDev()) / subject.getSampleSize()
             + square(baseline.getStdDev()) / baseline.getSampleSize());
   }
 
 
-  public Integer getDegreesOfFreedom() {
+  public Integer getDegreesOfFreedom() throws MissingMeasurementException {
     return getSampleSize() - 2;
   }
 
-  public Integer getSampleSize() {
+  public Integer getSampleSize() throws MissingMeasurementException {
     return subject.getSampleSize() + baseline.getSampleSize();
   }
 }

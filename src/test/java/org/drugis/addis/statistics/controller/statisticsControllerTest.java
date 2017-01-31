@@ -2,9 +2,11 @@ package org.drugis.addis.statistics.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
+import org.apache.commons.math3.analysis.function.Abs;
 import org.drugis.addis.TestUtils;
 import org.drugis.addis.config.TestConfig;
 import org.drugis.addis.statistics.command.AbstractMeasurementCommand;
+import org.drugis.addis.statistics.command.ContinuousMeasurementCommand;
 import org.drugis.addis.statistics.command.DichotomousMeasurementCommand;
 import org.drugis.addis.statistics.command.EstimatesCommand;
 import org.drugis.addis.statistics.model.Estimate;
@@ -23,6 +25,7 @@ import org.springframework.web.context.WebApplicationContext;
 
 import javax.inject.Inject;
 import java.net.URI;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -54,22 +57,31 @@ public class statisticsControllerTest {
 
   @Test
   public void getEstimatesTest() throws Exception {
-    URI endpointUri = URI.create("http://endpoints.com/1");
+    URI endpoint1Uri = URI.create("http://endpoints.com/dichotomous");
+    URI endpoint2Uri = URI.create("http://endpoints.com/continuous");
     Integer sampleSize1 = 100;
     Integer count1 = 75;
     URI armA1Uri = URI.create("http://arm.uri/1");
     Integer sampleSize2 = 150;
     Integer count2 = 81;
     URI armA2Uri = URI.create("http://arm.uri/2");
-    Integer sampleSize3 = 45;
-    Integer count3 = 15;
-    URI armA3Uri = URI.create("http://arm.uri/3");
-
-    AbstractMeasurementCommand measurement1 = new DichotomousMeasurementCommand(endpointUri, armA1Uri, count1, sampleSize1);
-    AbstractMeasurementCommand[] rest = new AbstractMeasurementCommand[2];
-    rest[0] = new DichotomousMeasurementCommand(endpointUri, armA2Uri, count2, sampleSize2);
-    rest[1] = new DichotomousMeasurementCommand(endpointUri, armA3Uri, count3, sampleSize3);
-    List<AbstractMeasurementCommand> measurements = Lists.asList(measurement1, rest);
+    Map<String, Double> dichoMeas1 = new HashMap<>();
+    dichoMeas1.put("count", Double.valueOf(count1));
+    dichoMeas1.put("sampleSize", Double.valueOf(sampleSize1));
+    Map<String, Double> dichoMeas2 = new HashMap<>();
+    dichoMeas2.put("count", Double.valueOf(count2));
+    dichoMeas2.put("sampleSize", Double.valueOf(sampleSize2));
+    AbstractMeasurementCommand dichotomous1 = new DichotomousMeasurementCommand(endpoint1Uri, armA1Uri, dichoMeas1);
+    AbstractMeasurementCommand dichotomous2 = new DichotomousMeasurementCommand(endpoint1Uri, armA2Uri, dichoMeas2);
+    Map<String, Double> contMeas1 = new HashMap<>();
+    contMeas1.put("standardDeviation", 1.90);
+    contMeas1.put("sampleSize", 20.0);
+    Map<String, Double> contMeas2 = new HashMap<>();
+    contMeas2.put("standardError", 1.90);
+    contMeas2.put("sampleSize", 20.0);
+    AbstractMeasurementCommand continuous1 = new ContinuousMeasurementCommand(endpoint2Uri, armA1Uri, contMeas1);
+    AbstractMeasurementCommand continuous2 = new ContinuousMeasurementCommand(endpoint2Uri, armA1Uri, contMeas2);
+    List<AbstractMeasurementCommand> measurements = Arrays.asList(dichotomous1, dichotomous2, continuous1, continuous2);
     EstimatesCommand command = new EstimatesCommand(measurements);
     String body = TestUtils.createJson(command);
 
@@ -78,8 +90,8 @@ public class statisticsControllerTest {
     Estimates resultEstimates = new Estimates(baselineUri, estimates);
     when(statisticsService.getEstimates(command)).thenReturn(resultEstimates);
 
-//    ObjectMapper mapper = new ObjectMapper();
-//    EstimatesCommand deser = mapper.readValue(body, EstimatesCommand.class);
+//     ObjectMapper mapper = new ObjectMapper(); // for debugging porpoises
+//    EstimatesCommand desert = mapper.readValue(body, EstimatesCommand.class);
     mockMvc.perform(post("/statistics/estimates").content(body).contentType(WebConstants.getApplicationJsonUtf8Value()))
             .andExpect(status().isOk())
             .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()))

@@ -2,9 +2,13 @@ package org.drugis.addis.statistics.model;
 
 import org.apache.commons.math3.distribution.TDistribution;
 import org.drugis.addis.statistics.command.ContinuousMeasurementCommand;
+import org.drugis.addis.statistics.exception.MissingMeasurementException;
 import org.junit.Before;
 import org.junit.Test;
 import java.net.URI;
+import java.util.HashMap;
+import java.util.Map;
+
 import static junit.framework.TestCase.assertEquals;
 
 /**
@@ -15,8 +19,8 @@ public class meanDifferenceTest {
   private Double stdDevE1A1 = 0.2;
   private Double meanE1A2 = 4.7811;
   private Double stdDevE1A2 = 2.5;
-  private static final int subjectSize = 35;
-  private static final int baselineSize = 41;
+  private static final Integer subjectSize = 35;
+  private static final Integer baselineSize = 41;
   private MeanDifference meanDifference;
   private ContinuousMeasurementCommand subject;
   private ContinuousMeasurementCommand baseline;
@@ -26,24 +30,32 @@ public class meanDifferenceTest {
 
   @Before
   public void setUp() {
-    subject = new ContinuousMeasurementCommand(ENDPOINT_1_URI, ARM_1_URI, meanE1A1, stdDevE1A1, subjectSize);
-    baseline = new ContinuousMeasurementCommand(ENDPOINT_1_URI, ARM_2_URI, meanE1A2, stdDevE1A2, baselineSize);
+    Map<String, Double> measurement1Properties = new HashMap<>();
+    measurement1Properties.put("mean", meanE1A1);
+    measurement1Properties.put("standardDeviation", stdDevE1A1);
+    measurement1Properties.put("sampleSize", Double.valueOf(subjectSize));
+    Map<String, Double> measurement2Properties = new HashMap<>();
+    measurement2Properties.put("mean", meanE1A2);
+    measurement2Properties.put("standardDeviation", stdDevE1A2);
+    measurement2Properties.put("sampleSize", Double.valueOf(baselineSize));
+    subject = new ContinuousMeasurementCommand(ENDPOINT_1_URI, ARM_1_URI, measurement1Properties);
+    baseline = new ContinuousMeasurementCommand(ENDPOINT_1_URI, ARM_2_URI, measurement2Properties);
     meanDifference = new MeanDifference(baseline, subject);
   }
 
   @Test
-  public void testGetMean() {
+  public void testGetMean() throws MissingMeasurementException {
     assertEquals(meanE1A1 - meanE1A2, meanDifference.getDistribution().getQuantile(0.5), 0.0001);
   }
 
   @Test
-  public void testGetError() {
+  public void testGetError() throws MissingMeasurementException {
     Double expected = Math.sqrt(square(stdDevE1A1) / subjectSize + square(stdDevE1A2) / baselineSize);
     assertEquals(expected, meanDifference.getSigma(), 0.0001);
   }
 
   @Test
-  public void testGetConfidenceInterval() {
+  public void testGetConfidenceInterval() throws MissingMeasurementException {
     double t = getT(subjectSize + baselineSize - 2);
     double upper = meanDifference.getDistribution().getQuantile(0.5) + t * meanDifference.getSigma();
     double lower = meanDifference.getDistribution().getQuantile(0.5) - t * meanDifference.getSigma();
@@ -52,13 +64,13 @@ public class meanDifferenceTest {
   }
 
   @Test
-  public void testGetSampleSize() {
+  public void testGetSampleSize() throws MissingMeasurementException {
     int expected = subjectSize + baselineSize;
     assertEquals(expected, (int) meanDifference.getSampleSize());
   }
 
   @Test
-  public void testPValue() {
+  public void testPValue() throws MissingMeasurementException {
     double prob = meanDifference.getDistribution().getCumulativeProbability(meanDifference.getNeutralValue());
     assertEquals(0.0, 2 * Math.min(prob, 1 - prob), 0.0000001);
   }

@@ -2,6 +2,7 @@ package org.drugis.addis.statistics.model;
 
 import org.drugis.addis.statistics.command.AbstractMeasurementCommand;
 import org.drugis.addis.statistics.command.DichotomousMeasurementCommand;
+import org.drugis.addis.statistics.exception.MissingMeasurementException;
 
 /**
  * Created by joris on 24-1-17.
@@ -17,15 +18,15 @@ public class RiskRatio extends AbstractRelativeEffect {
   }
 
   @Override
-  public Distribution getDistribution() {
+  public Distribution getDistribution() throws MissingMeasurementException {
     return new TransformedLogStudentT(getMu(), getSigma(), getDegreesOfFreedom());
   }
 
-  public boolean isDefined() {
+  public boolean isDefined() throws MissingMeasurementException {
     return baseline.getCount() > 0 && subject.getCount() > 0;
   }
 
-  protected double getMu() {
+  protected double getMu() throws MissingMeasurementException {
     if (!isDefined())
       return Double.NaN;
 
@@ -34,7 +35,7 @@ public class RiskRatio extends AbstractRelativeEffect {
                     ((double) baseline.getCount() / (double) baseline.getSampleSize()));
   }
 
-  public Double getSigma() { //NB: this is the LOG error
+  public Double getSigma() throws MissingMeasurementException { //NB: this is the LOG error
     if (!isDefined())
       return Double.NaN;
 
@@ -44,11 +45,11 @@ public class RiskRatio extends AbstractRelativeEffect {
             (1.0 / (double) baseline.getSampleSize()));
   }
 
-  protected Integer getDegreesOfFreedom() {
+  protected Integer getDegreesOfFreedom() throws MissingMeasurementException {
     return getSampleSize() - 2;
   }
 
-  public Integer getSampleSize() {
+  public Integer getSampleSize() throws MissingMeasurementException {
     return subject.getSampleSize() + baseline.getSampleSize();
   }
 

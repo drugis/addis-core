@@ -72,32 +72,33 @@ define(['lodash'], function(_) {
       return resultRows;
     }
 
-    function buildResultsObject(armResults, endpoint, endpointUri, armUri) {
+    function buildResultsObject(armResults, endpoint, armUri) {
 
       function findValue(results, property) {
         return _.find(results, ['result_property', property]);
       }
 
       var resultsObject = {
-        endpointUri: endpointUri,
+        endpointUri: endpoint.uri,
         armUri: armUri,
-        type: endpoint.measurementType === 'ontology:dichotomous' ? 'dichotomous' : 'continuous'
+        type: endpoint.measurementType === 'ontology:dichotomous' ? 'dichotomous' : 'continuous',
+        resultProperties: {}
       };
 
       _.forEach(endpoint.resultProperties, function(resultProperty) {
         var propertyName = resultProperty.split('#')[1];
         var propertyValue = findValue(armResults, propertyName);
-        resultsObject[snakeToCamel(propertyName)] = propertyValue ? propertyValue.value : undefined;
+        resultsObject.resultProperties[snakeToCamel(propertyName)] = propertyValue ? propertyValue.value : undefined;
       });
       return resultsObject;
     }
 
     function buildResultLabel(resultsObject) {
       if (resultsObject.type === 'dichotomous') {
-        return resultsObject.count + '/' + resultsObject.sampleSize;
+        return resultsObject.resultProperties.count + '/' + resultsObject.resultProperties.sampleSize;
       } else if (resultsObject.type === 'continuous') {
-        return exponentialFilter(resultsObject.mean) + ' ± ' + exponentialFilter(resultsObject.stdDev) +
-          ' (' + resultsObject.sampleSize + ')';
+        return exponentialFilter(resultsObject.resultProperties.mean) + ' ± ' + exponentialFilter(resultsObject.resultProperties.standardDeviation) +
+          ' (' + resultsObject.resultProperties.sampleSize + ')';
       } else {
         throw ('unknown measurement type');
       }
@@ -117,7 +118,7 @@ define(['lodash'], function(_) {
             ' ' + treatment.doseUnit.label + ' per ' + durationFilter(treatment.dosingPeriodicity);
         } else if (treatment.treatmentDoseType === 'ontology:TitratedDoseDrugTreatment') {
           return treatment.drug.label + ' ' + exponentialFilter(treatment.minValue) +
-            '-' + exponentialFilter(treatment.minValue) + ' ' + treatment.doseUnit.label + ' per ' +
+            '-' + exponentialFilter(treatment.maxValue) + ' ' + treatment.doseUnit.label + ' per ' +
             durationFilter(treatment.dosingPeriodicity);
         } else {
           throw ('unknown dosage type');
