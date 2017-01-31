@@ -22,6 +22,7 @@ require.config({
     'angular-select': 'bower_components/angular-ui-select/dist/select.min',
     'angular-ui-router': 'bower_components/angular-ui-router/release/angular-ui-router',
     'angularanimate': 'bower_components/angular-animate/angular-animate',
+    'clipboard': 'bower_components/clipboard/dist/clipboard.min',
     'd3': 'bower_components/d3/d3.min',
     'domReady': 'bower_components/requirejs-domready/domReady',
     'error-reporting': 'bower_components/error-reporting/errorReportingDirective',
