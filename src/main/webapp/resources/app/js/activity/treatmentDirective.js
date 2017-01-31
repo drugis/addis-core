@@ -54,35 +54,33 @@ define(['angular', 'lodash'], function(angular, _) {
           return false;
         };
 
-
+        function createIfNotExists(newTreatment, propertyName) {
+          if (angular.isString(newTreatment[propertyName])) {
+            var existingItem = _.find(scope[propertyName + 's'], function(property) {
+              return property.label.toLowerCase() === newTreatment[propertyName].toLowerCase();
+            });
+            if (!existingItem) {
+              newTreatment[propertyName] = {
+                uri: INSTANCE_PREFIX + UUIDService.generate(),
+                label: newTreatment[propertyName]
+              };
+              scope[propertyName + 's'].push(newTreatment[propertyName]);
+            } else {
+              newTreatment[propertyName] = existingItem;
+            }
+          }
+        }
+        
         scope.addTreatment = function(treatment) {
+
           var newTreatment = angular.copy(treatment);
 
           if (!scope.itemScratch.treatments) {
             scope.itemScratch.treatments = [];
           }
 
-          if (angular.isString(newTreatment.drug)) {
-            newTreatment.drug = {
-              uri: INSTANCE_PREFIX + UUIDService.generate(),
-              label: treatment.drug
-            };
-            scope.drugs.push(newTreatment.drug);
-          }
-          if (angular.isString(newTreatment.doseUnit)) {
-            var doseUnitExists = _.find(scope.doseUnits, function(doseUnit) {
-              return doseUnit.label.toLowerCase() === newTreatment.doseUnit.toLowerCase();
-            });
-            if (doseUnitExists === undefined) {
-              newTreatment.doseUnit = {
-                uri: INSTANCE_PREFIX + UUIDService.generate(),
-                label: newTreatment.doseUnit
-              };
-            } else {
-              newTreatment.doseUnit = doseUnitExists;
-            }
-            scope.doseUnits.push(newTreatment.doseUnit);
-          }
+          createIfNotExists(newTreatment, 'drug');
+          createIfNotExists(newTreatment, 'doseUnit');
 
           reset();
           scope.treatmentAdded(newTreatment);
