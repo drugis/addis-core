@@ -63,8 +63,8 @@ public class StatisticsServiceImpl implements StatisticsService {
     Distribution distribution = null;
     try {
       distribution = relativeEffect != null ? relativeEffect.getDistribution() : null;
-    } catch (MissingMeasurementException e) {
-      e.printStackTrace();
+    } catch (MissingMeasurementException | IllegalArgumentException e) {
+      // in case the distribution can't be made, nothing needs to happen but we want a null estimate
     }
     if(distribution != null) {
       Double pointEstimate = distribution.getQuantile(0.5);
