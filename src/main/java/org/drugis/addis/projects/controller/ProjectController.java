@@ -26,6 +26,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.net.URISyntaxException;
 import java.security.Principal;
+import java.sql.SQLException;
 import java.util.Collection;
 import java.util.List;
 
@@ -114,8 +115,15 @@ public class ProjectController extends AbstractAddisCoreController {
 
   @RequestMapping(value = "/projects/{projectId}/copy", method = RequestMethod.POST)
   @ResponseBody
-  public Integer copy(Principal principal, @PathVariable Integer projectId) throws ResourceDoesNotExistException, MethodNotAllowedException, ReadValueException, URISyntaxException {
+  public Integer copy(Principal principal, @PathVariable Integer projectId) throws ResourceDoesNotExistException, MethodNotAllowedException, SQLException {
     Account user = accountRepository.findAccountByUsername(principal.getName());
     return projectService.copy(user, projectId);
+  }
+
+  @RequestMapping(value = "/projects/{projectId}/update", method = RequestMethod.POST)
+  @ResponseBody
+  public Integer update(Principal principal, @PathVariable Integer projectId) throws ResourceDoesNotExistException, MethodNotAllowedException, ReadValueException, URISyntaxException {
+    Account user = accountRepository.findAccountByUsername(principal.getName());
+    return projectService.createUpdated(user, projectId);
   }
 }

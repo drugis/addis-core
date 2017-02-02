@@ -3,6 +3,7 @@ package org.drugis.addis.analyses;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.drugis.addis.covariates.Covariate;
 import org.drugis.addis.outcomes.Outcome;
 import org.drugis.trialverse.util.Utils;
 
@@ -91,13 +92,27 @@ public class NetworkMetaAnalysis extends AbstractAnalysis implements Serializabl
     return Collections.unmodifiableList(new ArrayList<>(includedCovariates));
   }
 
+  public void updateCovariateInclusions(List<CovariateInclusion> newInclusions) {
+    this.includedCovariates.clear();
+    this.includedCovariates.addAll(newInclusions);
+  }
+
   @JsonIgnore
   public Set<MeasurementMomentInclusion> getIncludedMeasurementMoments() {
     return Collections.unmodifiableSet(includedMeasurementMoments);
   }
 
+  public void updateMeasurementMomentInclusions(Set<MeasurementMomentInclusion> newInclusions) {
+    this.includedMeasurementMoments.clear();
+    this.includedMeasurementMoments.addAll(newInclusions);
+  }
+
   public Outcome getOutcome() {
     return outcome;
+  }
+
+  public void setOutcome(Outcome outcome) {
+    this.outcome = outcome;
   }
 
   public Integer getPrimaryModel() {
@@ -108,11 +123,11 @@ public class NetworkMetaAnalysis extends AbstractAnalysis implements Serializabl
     this.primaryModel = primaryModel;
   }
 
-  public void updateArmExclusions(Set<ArmExclusion> excludedArms){
+  public void updateArmExclusions(Set<ArmExclusion> excludedArms) {
     Utils.updateSet(this.excludedArms, excludedArms);
   }
 
-  public void updateIncludedCovariates(Set<CovariateInclusion> includedCovariates){
+  public void updateIncludedCovariates(Set<CovariateInclusion> includedCovariates) {
     Utils.updateSet(this.includedCovariates, includedCovariates);
   }
 

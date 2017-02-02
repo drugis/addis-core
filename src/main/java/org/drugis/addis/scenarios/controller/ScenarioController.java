@@ -41,7 +41,7 @@ public class ScenarioController extends AbstractAddisCoreController {
   @RequestMapping(value = "/projects/{projectId}/analyses/{analysisId}/scenarios", method = RequestMethod.GET)
   @ResponseBody
   public Collection<Scenario> query(@PathVariable Integer projectId, @PathVariable Integer analysisId) {
-    return scenarioRepository.query(projectId, analysisId);
+    return scenarioRepository.queryByProjectAndAnalysis(projectId, analysisId);
   }
 
   @RequestMapping(value = "/projects/{projectId}/analyses/{analysisId}/scenarios/{scenarioId}", method = RequestMethod.POST)

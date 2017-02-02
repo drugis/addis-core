@@ -131,17 +131,134 @@ public class ProjectServiceTest {
   }
 
   @Test
-  public void copy() throws Exception, ReadValueException {
+  public void testCopy() throws Exception, ReadValueException {
+    Integer newProjectId = -3;
+    Project mockNewProject = mock(Project.class);
+    ProjectCommand mockCommand = mock(ProjectCommand.class);
+
+    when(mockProject.getCommand()).thenReturn(mockCommand);
+    when(mockNewProject.getId()).thenReturn(newProjectId);
+    when(mockProject.getDatasetVersion()).thenReturn(URI.create("http://mockProject/version1/"));
+    when(projectRepository.create(account, mockCommand)).thenReturn(mockNewProject);
+
+    // Outcomes
+    SemanticVariable semanticOutcome1 = new SemanticVariable(URI.create("http://www.bs.org/outcomeIn"), "semanticLabel1");
+    SemanticVariable semanticOutcome2 = new SemanticVariable(URI.create("http://www.bs.org/outcomeOut"), "semanticLabel2");
+    Outcome outcome1 = new Outcome(1, projectId, "outcome1", "motivation", semanticOutcome1);
+    Outcome outcome2 = new Outcome(2, projectId, "outcome2", "motivation", semanticOutcome2);
+    Collection<Outcome> sourceOutcomes = Arrays.asList(outcome1, outcome2);
+
+    when(outcomeRepository.query(projectId)).thenReturn(sourceOutcomes);
+    when(outcomeRepository.create(account, newProjectId, outcome1.getName(), outcome1.getDirection(), outcome1.getMotivation(),
+            outcome1.getSemanticVariable())).thenReturn(outcome1);
+    when(outcomeRepository.create(account, newProjectId, outcome2.getName(), outcome2.getDirection(), outcome2.getMotivation(),
+            outcome2.getSemanticVariable())).thenReturn(outcome2);
+
+    // Covariates
+    Covariate covariate1 = new Covariate(-10, newProjectId, "covariate 1", null, "http://covariates.nl/1",
+            CovariateOptionType.POPULATION_CHARACTERISTIC);
+    Covariate covariate2 = new Covariate(-11, newProjectId, "covariate 2", null, "http://covariates.nl/2",
+            CovariateOptionType.POPULATION_CHARACTERISTIC);
+    Covariate covariateStudyLevel = new Covariate(-13, newProjectId, "covariate study level", null,
+            CovariateOption.LENGTH_OF_FOLLOW_UP.toString(), CovariateOptionType.STUDY_CHARACTERISTIC);
+    Collection<Covariate> covariates = Arrays.asList(covariate1, covariate2, covariateStudyLevel);
+
+    when(covariateRepository.findByProject(projectId)).thenReturn(covariates);
+    when(covariateRepository.createForProject(newProjectId, covariate1.getDefinitionKey(), covariate1.getName(),
+            covariate1.getMotivation(), covariate1.getType())).thenReturn(covariate1);
+    when(covariateRepository.createForProject(newProjectId, covariate2.getDefinitionKey(), covariate2.getName(),
+            covariate2.getMotivation(), covariate2.getType())).thenReturn(covariate2);
+    when(covariateRepository.createForProject(newProjectId, covariateStudyLevel.getDefinitionKey(), covariateStudyLevel.getName(),
+            covariateStudyLevel.getMotivation(), covariateStudyLevel.getType())).thenReturn(covariateStudyLevel);
+
+    // Interventions - getting old interventions
+    URI semanticInterventionUri = URI.create("http://bla.com/semanticInterventions/1");
+    String semanticInterventionLabel = "semantic intervention label";
+    SimpleIntervention simpleIntervention = new SimpleIntervention(1, projectId, "simple", null,
+            semanticInterventionUri, semanticInterventionLabel);
+    URI gramUri = URI.create("http://trials.drugis.org/concepts/gram");
+    LowerBoundCommand lowerBound = new LowerBoundCommand(LowerBoundType.AT_LEAST, 0.1, "mg", "pt1d",
+            gramUri);
+    DoseConstraint constraint = new DoseConstraint(lowerBound, null);
+    FixedDoseIntervention fixedDoseIntervention = new FixedDoseIntervention(3, projectId, "fixed dose", null,
+            semanticInterventionUri, semanticInterventionLabel, constraint);
+    TitratedDoseIntervention titratedDoseIntervention = new TitratedDoseIntervention(5, projectId, "titrated dose", null,
+            semanticInterventionUri, semanticInterventionLabel, constraint, null);
+    BothDoseTypesIntervention bothDoseTypesIntervention = new BothDoseTypesIntervention(7, projectId, "both dose", null,
+            semanticInterventionUri, semanticInterventionLabel, null, constraint);
+    CombinationIntervention combinationIntervention = new CombinationIntervention(9, projectId, "combo", null,
+            Sets.newHashSet(simpleIntervention.getId(), fixedDoseIntervention.getId()));
+    InterventionSet interventionSet = new InterventionSet(11, projectId, "set", null,
+            Sets.newHashSet(combinationIntervention.getId(), titratedDoseIntervention.getId()));
+
+    Set<AbstractIntervention> sourceInterventions = Sets.newHashSet(simpleIntervention, fixedDoseIntervention,
+            titratedDoseIntervention, bothDoseTypesIntervention, combinationIntervention, interventionSet);
+    when(interventionRepository.query(projectId)).thenReturn(sourceInterventions);
+
+    // Interventions - creating new interventions
+    AbstractInterventionCommand simpleCommand = InterventionService.buildSingleInterventionCommand(newProjectId, simpleIntervention);
+    AbstractInterventionCommand fixedCommand = InterventionService.buildSingleInterventionCommand(newProjectId, fixedDoseIntervention);
+    AbstractInterventionCommand titratedCommand = InterventionService.buildSingleInterventionCommand(newProjectId, titratedDoseIntervention);
+    AbstractInterventionCommand bothTypesCommand = InterventionService.buildSingleInterventionCommand(newProjectId, bothDoseTypesIntervention);
+    mockCreateSingleIntervention(simpleIntervention, SimpleIntervention.class, simpleCommand);
+    mockCreateSingleIntervention(fixedDoseIntervention, FixedDoseIntervention.class, fixedCommand);
+    mockCreateSingleIntervention(titratedDoseIntervention, TitratedDoseIntervention.class, titratedCommand);
+    mockCreateSingleIntervention(bothDoseTypesIntervention, BothDoseTypesIntervention.class, bothTypesCommand);
+    AbstractInterventionCommand combiCommand = new CombinationInterventionCommand(newProjectId, combinationIntervention.getName(),
+            combinationIntervention.getMotivation(), Sets.newHashSet(-simpleIntervention.getId(), -fixedDoseIntervention.getId()));
+    CombinationIntervention newCombination = mock(CombinationIntervention.class);
+    AbstractInterventionCommand setCommand = new InterventionSetCommand(newProjectId, interventionSet.getName(),
+            interventionSet.getMotivation(), Sets.newHashSet(-combinationIntervention.getId(), -titratedDoseIntervention.getId()));
+    InterventionSet newSet = mock(InterventionSet.class);
+
+    when(newCombination.getId()).thenReturn(-combinationIntervention.getId());
+    when(interventionRepository.create(account, combiCommand)).thenReturn(newCombination);
+    when(newSet.getId()).thenReturn(-combinationIntervention.getId());
+    when(interventionRepository.create(account, setCommand)).thenReturn(newSet);
+
+    /// *8888888888**************************** GO *********************888888888888888* ///
+    projectService.copy(account, projectId);
+    /// *8888888888**************************** GO *********************888888888888888* ///
+
+    verify(outcomeRepository).query(projectId);
+    verify(outcomeRepository).create(account, newProjectId, outcome1.getName(), outcome1.getDirection(), outcome1.getMotivation(),
+            outcome1.getSemanticVariable());
+    verify(outcomeRepository).create(account, newProjectId, outcome2.getName(), outcome2.getDirection(), outcome2.getMotivation(),
+            outcome2.getSemanticVariable());
+    verifyNoMoreInteractions(outcomeRepository);
+
+    verify(covariateRepository).findByProject(projectId);
+    verify(covariateRepository).createForProject(newProjectId, covariate1.getDefinitionKey(), covariate1.getName(),
+            covariate1.getMotivation(), CovariateOptionType.POPULATION_CHARACTERISTIC);
+    verify(covariateRepository).createForProject(newProjectId, covariate2.getDefinitionKey(), covariate2.getName(),
+            covariate2.getMotivation(), CovariateOptionType.POPULATION_CHARACTERISTIC);
+    verify(covariateRepository).createForProject(newProjectId, covariateStudyLevel.getDefinitionKey(), covariateStudyLevel.getName(),
+            covariateStudyLevel.getMotivation(), CovariateOptionType.STUDY_CHARACTERISTIC);
+    verifyNoMoreInteractions(covariateRepository);
+
+    verify(interventionRepository).query(projectId);
+    verify(interventionRepository).create(account, simpleCommand);
+    verify(interventionRepository).create(account, fixedCommand);
+    verify(interventionRepository).create(account, titratedCommand);
+    verify(interventionRepository).create(account, bothTypesCommand);
+    verify(interventionRepository).create(account, combiCommand);
+    verify(interventionRepository).create(account, setCommand);
+    verifyNoMoreInteractions(interventionRepository);
+  }
+
+  @Test
+  public void createUpdated() throws Exception, ReadValueException {
     Integer newProjectId = -3;
     URI headVersion = URI.create("http://www.drugis.org/datasets/headversion");
     ProjectCommand mockCommand = mock(ProjectCommand.class);
     Project mockNewProject = mock(Project.class);
-    when(mockNewProject.getId()).thenReturn(newProjectId);
+
     when(mockProject.getCommand()).thenReturn(mockCommand);
+    when(mockNewProject.getId()).thenReturn(newProjectId);
     when(triplestoreService.getHeadVersion((mapping.getVersionedDatasetUri()))).thenReturn(headVersion.toString());
     when(projectRepository.create(account, mockCommand)).thenReturn(mockNewProject);
 
-    // outcomes
+    // Outcomes
     Integer filteredInOutcomeId = 1;
     Integer filteredOutOutcomeId = 2;
     SemanticVariable semanticOutcomeFilteredIn = new SemanticVariable(URI.create("http://www.bs.org/outcomeIn"), "semanticLabel1");
@@ -151,13 +268,13 @@ public class ProjectServiceTest {
     Collection<Outcome> sourceOutcomes = Arrays.asList(outcomeFilteredIn, outcomeFilteredOut);
     SemanticVariable semanticOutcome = new SemanticVariable(semanticOutcomeFilteredIn.getUri(), semanticOutcomeFilteredIn.getLabel());
     List<SemanticVariable> semanticOutcomes = Collections.singletonList(semanticOutcome);
-    Outcome newOutcome = mock(Outcome.class);
+    Outcome newMockOutcome = mock(Outcome.class);
     when(triplestoreService.getOutcomes(datasetUuid, headVersion)).thenReturn(semanticOutcomes);
     when(outcomeRepository.query(projectId)).thenReturn(sourceOutcomes);
     when(outcomeRepository.create(account, newProjectId, outcomeFilteredIn.getName(), outcomeFilteredIn.getDirection(), outcomeFilteredIn.getMotivation(),
-            outcomeFilteredIn.getSemanticVariable())).thenReturn(newOutcome);
+            outcomeFilteredIn.getSemanticVariable())).thenReturn(newMockOutcome);
 
-    // covariates
+    // Covariates
     URI covariateFilteredInUri = URI.create("http://trials.drugis.org/concepts/age");
     Integer covariateInId = -10;
     Covariate covariateFilteredIn = new Covariate(covariateInId, newProjectId, "covariate in", null, covariateFilteredInUri.toString(),
@@ -169,6 +286,11 @@ public class ProjectServiceTest {
     Collection<Covariate> covariates = Arrays.asList(covariateFilteredIn, covariateFilteredOut, covariateStudyLevel);
     SemanticVariable semanticCovariateFilteredIn = new SemanticVariable(covariateFilteredInUri, "bla");
     when(covariateRepository.findByProject(projectId)).thenReturn(covariates);
+    when(covariateRepository.createForProject(newProjectId, covariateFilteredIn.getDefinitionKey(), covariateFilteredIn.getName(),
+            covariateFilteredIn.getMotivation(), covariateFilteredIn.getType())).thenReturn(covariateFilteredIn);
+    when(covariateRepository.createForProject(newProjectId, covariateStudyLevel.getDefinitionKey(), covariateStudyLevel.getName(),
+            covariateStudyLevel.getMotivation(), covariateStudyLevel.getType())).thenReturn(covariateStudyLevel);
+
     List<SemanticVariable> populationCharacteristics = Collections.singletonList(semanticCovariateFilteredIn);
     when(triplestoreService.getPopulationCharacteristics(datasetUuid, headVersion)).thenReturn(populationCharacteristics);
 
@@ -252,7 +374,7 @@ public class ProjectServiceTest {
 
 
     /// *8888888888**************************** GO *********************888888888888888* ///
-    projectService.copy(account, projectId);
+    projectService.createUpdated(account, projectId);
     /// *8888888888**************************** GO *********************888888888888888* ///
 
     verify(outcomeRepository).query(projectId);

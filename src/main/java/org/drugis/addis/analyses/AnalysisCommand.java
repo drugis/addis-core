@@ -14,8 +14,6 @@ public class AnalysisCommand {
 
   private List<Integer> selectedOutcomeIds = new ArrayList<>();
 
-  private Integer id;
-
   public AnalysisCommand() {
   }
 
@@ -26,16 +24,6 @@ public class AnalysisCommand {
   }
 
   public AnalysisCommand(Integer projectId, String title, String type, List<Integer> selectedOutcomeIds) {
-    this.projectId = projectId;
-    this.title = title;
-    this.type = type;
-    if (selectedOutcomeIds != null) {
-      this.selectedOutcomeIds = selectedOutcomeIds;
-    }
-  }
-
-  public AnalysisCommand(Integer id, Integer projectId, String title, String type, List<Integer> selectedOutcomeIds) {
-    this.id = id;
     this.projectId = projectId;
     this.title = title;
     this.type = type;
@@ -58,10 +46,6 @@ public class AnalysisCommand {
 
   public List<Integer> getSelectedOutcomeIds() {
     return Collections.unmodifiableList(selectedOutcomeIds);
-  }
-
-  public Integer getId() {
-    return id;
   }
 
   @Override

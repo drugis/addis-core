@@ -73,6 +73,22 @@ public class Model {
   public Model() {
   }
 
+  public Model(Model other) {
+    this.taskUrl = other.getTaskUrl().toString();
+    this.analysisId = other.getAnalysisId();
+    this.title = other.getTitle();
+    this.linearModel = other.getLinearModel();
+    this.modelType = other.modelType;
+    this.heterogeneityPrior = other.heterogeneityPrior;
+    this.burnInIterations = other.getBurnInIterations();
+    this.inferenceIterations = other.getInferenceIterations();
+    this.thinningFactor = other.getThinningFactor();
+    this.likelihood=other.getLikelihood();
+    this.outcomeScale=other.getOutcomeScale();
+    this.regressor=other.getRegressor();
+    this.sensitivity=other.getSensitivity();
+  }
+
   private Model(ModelBuilder builder) throws InvalidModelException {
     this.id = builder.id;
     if (builder.taskUri != null) {
@@ -124,6 +140,10 @@ public class Model {
 
   public Integer getAnalysisId() {
     return analysisId;
+  }
+
+  public void setAnalysisId(Integer analysisId) {
+    this.analysisId = analysisId;
   }
 
   public URI getTaskUrl() {
@@ -182,10 +202,10 @@ public class Model {
     return regressor;
   }
 
+
   public JSONObject getSensitivity() {
     return sensitivity;
   }
-
 
   public String getRunStatus() {
     return runStatus;
@@ -512,7 +532,7 @@ public class Model {
     }
   }
 
-  public abstract class HeterogeneityValues {
+  abstract class HeterogeneityValues {
   }
 
   public class HeterogeneityStdDevValues extends HeterogeneityValues {
@@ -522,7 +542,7 @@ public class Model {
     public HeterogeneityStdDevValues() {
     }
 
-    public HeterogeneityStdDevValues(Double lower, Double upper) {
+    HeterogeneityStdDevValues(Double lower, Double upper) {
       this.lower = lower;
       this.upper = upper;
     }
@@ -543,7 +563,7 @@ public class Model {
     public HeterogeneityVarianceValues() {
     }
 
-    public HeterogeneityVarianceValues(Double mean, Double stdDev) {
+    HeterogeneityVarianceValues(Double mean, Double stdDev) {
       this.mean = mean;
       this.stdDev = stdDev;
     }
@@ -564,7 +584,7 @@ public class Model {
     public HeterogeneityPrecisionValues() {
     }
 
-    public HeterogeneityPrecisionValues(Double rate, Double shape) {
+    HeterogeneityPrecisionValues(Double rate, Double shape) {
       this.rate = rate;
       this.shape = shape;
     }
@@ -585,7 +605,7 @@ public class Model {
     public ModelType() {
     }
 
-    public ModelType(String type, TypeDetails details) {
+    ModelType(String type, TypeDetails details) {
       this.type = type;
       this.details = details;
     }
@@ -606,7 +626,7 @@ public class Model {
     public TypeDetails() {
     }
 
-    public TypeDetails(DetailNode from, DetailNode to) {
+    TypeDetails(DetailNode from, DetailNode to) {
       this.from = from;
       this.to = to;
     }

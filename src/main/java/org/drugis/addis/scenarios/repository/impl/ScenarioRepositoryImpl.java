@@ -32,7 +32,20 @@ public class ScenarioRepositoryImpl implements ScenarioRepository {
   }
 
   @Override
-  public Collection<Scenario> query(Integer projectId, Integer analysisId) {
+  public Collection<Scenario> queryByProject(Integer projectId) {
+    TypedQuery<Scenario> query = em.createQuery(
+            "SELECT DISTINCT s FROM Scenario s\n" +
+                    "where s.workspace in (\n" +
+                    "SELECT id FROM AbstractAnalysis where projectid = :projectId)"
+            , Scenario.class
+    );
+    query.setParameter("projectId", projectId);
+    return query.getResultList();
+
+  }
+
+  @Override
+  public Collection<Scenario> queryByProjectAndAnalysis(Integer projectId, Integer analysisId) {
     TypedQuery<Scenario> query = em.createQuery(
             "SELECT DISTINCT s FROM Scenario s\n" +
                     "  WHERE s.workspace = :analysisId \n" +

@@ -72,7 +72,7 @@ public class SingleStudyBenefitRiskAnalysis extends AbstractAnalysis {
 
   public void setStudyGraphUri(URI studyGraphUri) {
     this.studyGraphUri = studyGraphUri == null ? null : studyGraphUri.toString();
-  }
+}
 
   public List<Outcome> getSelectedOutcomes() {
     return selectedOutcomes == null ? Collections.EMPTY_LIST : Collections.unmodifiableList(new ArrayList<>(selectedOutcomes));

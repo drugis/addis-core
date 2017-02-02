@@ -12,12 +12,9 @@ public interface ScenarioRepository {
 
   Scenario create(Integer analysisId, String title, String state);
 
-  Collection<Scenario> query(Integer projectId, Integer analysisId);
+  Collection<Scenario> queryByProject(Integer projectId);
 
-  /**
-   * Only title and state are mutable.
-   *
-   * @param state A JSON string
-   */
+  Collection<Scenario> queryByProjectAndAnalysis(Integer projectId, Integer analysisId);
+
   Scenario update(Integer id, String title, String state);
 }
