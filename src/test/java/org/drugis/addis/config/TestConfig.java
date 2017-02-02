@@ -17,6 +17,7 @@ import org.drugis.addis.projects.service.ProjectService;
 import org.drugis.addis.remarks.repository.RemarksRepository;
 import org.drugis.addis.scenarios.repository.ScenarioRepository;
 import org.drugis.addis.security.repository.AccountRepository;
+import org.drugis.addis.statistics.service.StatisticsService;
 import org.drugis.addis.trialverse.service.ClinicalTrialsImportService;
 import org.drugis.addis.trialverse.service.MappingService;
 import org.drugis.addis.trialverse.service.TriplestoreService;
@@ -43,6 +44,7 @@ import static org.mockito.Mockito.mock;
         "org.drugis.addis.scenarios.service",
         "org.drugis.addis.models.controller",
         "org.drugis.addis.models.service",
+        "org.drugis.addis.statistics.controller"
 })
 public class TestConfig {
   @Bean
@@ -163,5 +165,8 @@ public class TestConfig {
 
   @Bean
   public ClinicalTrialsImportService mockClinicalTrialsImportService() {return mock(ClinicalTrialsImportService.class);}
+
+  @Bean
+  public StatisticsService statisticsService(){return mock(StatisticsService.class);}
 }
 

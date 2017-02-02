@@ -34,8 +34,8 @@
         <label>Treatment drugs</label>
         <ul class="form-list">
           <li ng-repeat="treatment in itemScratch.treatments">
-            <span ng-show="treatment.treatmentDoseType === 'ontology:FixedDoseDrugTreatment'">{{treatment.drug.label}}, {{treatment.fixedValue}} {{treatment.doseUnit.label}} per {{treatment.dosingPeriodicity | durationFilter }}</span>
-            <span ng-show="treatment.treatmentDoseType === 'ontology:TitratedDoseDrugTreatment'">{{treatment.drug.label}}, {{treatment.minValue}}-{{treatment.maxValue}} {{treatment.doseUnit.label}} per {{treatment.dosingPeriodicity | durationFilter }}</span>
+            <span ng-show="treatment.treatmentDoseType === 'ontology:FixedDoseDrugTreatment'">{{treatment.drug.label}}, {{treatment.fixedValue | exponentialFilter}} {{treatment.doseUnit.label}} per {{treatment.dosingPeriodicity | durationFilter }}</span>
+            <span ng-show="treatment.treatmentDoseType === 'ontology:TitratedDoseDrugTreatment'">{{treatment.drug.label}}, {{treatment.minValue | exponentialFilter}}-{{treatment.maxValue | exponentialFilter}} {{treatment.doseUnit.label}} per {{treatment.dosingPeriodicity | durationFilter }}</span>
 
           </li>
           <li ng-show="!itemScratch.treatments">no treatment drugs defined</li>

@@ -22,6 +22,7 @@ define(['angular', 'lodash'],
       $scope.study = {};
       $scope.resetStudy = resetStudy;
       $scope.showEditStudyModal = showEditStudyModal;
+      $scope.showD80Table = showD80Table;
 
       // onload
       StudyService.reset();
@@ -214,6 +215,18 @@ define(['angular', 'lodash'],
             }
           }
         });
+      }
+
+      function showD80Table() {
+       $modal.open({
+          templateUrl: 'app/js/study/view/d80Table.html',
+          controller: 'D80TableController',
+          resolve: {
+            study: function() {
+              return $scope.study;
+            }
+          }
+        }); 
       }
 
       function openCopyDialog() {

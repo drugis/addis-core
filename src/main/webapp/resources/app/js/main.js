@@ -10,6 +10,7 @@ require.config({
     'angular-ui-router': 'bower_components/angular-ui-router/release/angular-ui-router.min',
     'angular-select': 'bower_components/angular-ui-select/dist/select.min',
     'angularanimate': 'bower_components/angular-animate/angular-animate.min',
+    'clipboard': 'bower_components/clipboard/dist/clipboard.min',
     'd3': 'bower_components/d3/d3.min',
     'domReady': 'bower_components/requirejs-domready/domReady',
     'error-reporting': 'bower_components/error-reporting/errorReportingDirective',
@@ -21,6 +22,7 @@ require.config({
     'lodash': 'bower_components/lodash/dist/lodash.min',
     'MathJax': 'bower_components/MathJax/MathJax.js?config=TeX-MML-AM_HTMLorMML',
     'mcda': 'bower_components/mcda-web/app/js',
+    'mctad': 'bower_components/mctad/mctad.min',
     'mmfoundation': 'bower_components/angular-foundation/dist/mm-foundation-tpls-0.9.0-SNAPSHOT',
     'modernizr': 'bower_components/modernizr/modernizr',
     'moment': 'bower_components/moment/min/moment.min',
@@ -78,6 +80,9 @@ require.config({
     },
     'd3': {
       exports: 'd3'
+    },
+    'mctad': {
+      exports: 'mctad'
     },
     'nvd3': {
       deps: ['d3'],

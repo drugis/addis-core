@@ -16,11 +16,15 @@ define(['lodash'], function(_) {
       link: function(scope) {
         function reloadResults() {
           if (scope.isExpanded) {
-            scope.results = ResultsService.queryResults(scope.variable.uri);
+            var resultsPromise = ResultsService.queryResults(scope.variable.uri);
 
-            return $q.all([scope.arms, scope.measurementMoments, scope.groups, scope.results]).then(function() {
-              scope.inputRows = ResultsTableService.createInputRows(scope.variable, scope.arms, scope.groups,
-                scope.measurementMoments, scope.results.$$state.value);
+            return $q.all([scope.arms, scope.measurementMoments, scope.groups, resultsPromise]).then(function(values) {
+              var arms = values[0],
+               measurementMoments = values[1],
+               groups = values[2],
+               results = values[3];
+              scope.inputRows = ResultsTableService.createInputRows(scope.variable, arms, groups,
+                measurementMoments, results);
               scope.inputHeaders = ResultsTableService.createHeaders(scope.variable);
               scope.measurementMomentOptions = ResultsTableService.buildMeasurementMomentOptions(scope.variable.measuredAtMoments);
               scope.measurementMomentSelections = _.reduce(scope.inputRows, function(accum, inputRow) {

@@ -83,6 +83,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
   protected void configure(HttpSecurity http) throws Exception {
     String[] whitelist = {"/", "/trialverse", "/trialverse/**",
             "/patavi", // allow POST mcda models anonymously
+            "/statistics/**", // allow calculation of estimations for d80 table
             "/favicon.ico", "/favicon.png", "/app/**", "/auth/**",
             "/signin", "/signup", "/**/modal/*.html", "/manual.html"};
     // Disable CSFR protection on the following urls:
