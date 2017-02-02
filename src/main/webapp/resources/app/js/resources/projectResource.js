@@ -17,6 +17,15 @@ define(['angular-resource'], function() {
             newProjectId: Number.parseInt(data)
           };
         }
+      },
+      update: {
+        url: '/projects/:projectId/update',
+        method: 'POST',
+        transformResponse: function(data) {
+          return {
+            newProjectId: Number.parseInt(data)
+          };
+        }
       }
     });
   };

@@ -38,6 +38,7 @@
         </h5>
         <button ng-if="editMode.allowEditing && trialverse.headVersion !== trialverse.version"
           ng-click="openUpdateDialog()" class="small success radius">Update</button>
+        <button ng-click="openCopyDialog()" ng-if="editMode.allowCopying" class="small radius">Copy</button>
       </div>
     </div>
   </div>

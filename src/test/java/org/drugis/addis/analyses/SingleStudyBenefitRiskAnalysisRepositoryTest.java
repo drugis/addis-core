@@ -129,14 +129,6 @@ public class SingleStudyBenefitRiskAnalysisRepositoryTest {
     singleStudyBenefitRiskAnalysisRepository.update(user, analysis);
   }
 
-  @Test(expected = MethodNotAllowedException.class)
-  public void testUpdateNotOwnedProjectFails() throws ResourceDoesNotExistException, MethodNotAllowedException {
-    Account user = em.find(Account.class, 1);
-    int notOwnedProjectId = 2;
-    SingleStudyBenefitRiskAnalysis analysis = new SingleStudyBenefitRiskAnalysis(notOwnedProjectId, "new name", Collections.EMPTY_LIST, Collections.EMPTY_LIST);
-    singleStudyBenefitRiskAnalysisRepository.update(user, analysis);
-  }
-
   @Test(expected = ResourceDoesNotExistException.class)
   public void testUpdateAnalysisWithNonProjectOutcome() throws ResourceDoesNotExistException, MethodNotAllowedException {
     Account user = em.find(Account.class, 2);

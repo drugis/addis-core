@@ -26,7 +26,7 @@ define(['lodash'], function(_) {
 
     $scope.checkDuplicate = function(newConcept) {
       $scope.isDuplicate = _.find(concepts, function(oldConcept) {
-        return newConcept.label === oldConcept.label &&
+        return newConcept.label.toLowerCase() === oldConcept.label.toLowerCase() &&
           (!newConcept.type || newConcept.type.uri === oldConcept.type.uri);
       });
     };

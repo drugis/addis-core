@@ -138,30 +138,25 @@ public class NetworkMetaAnalysis extends AbstractAnalysis implements Serializabl
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
-    if (!(o instanceof NetworkMetaAnalysis)) return false;
+    if (o == null || getClass() != o.getClass()) return false;
+    if (!super.equals(o)) return false;
 
     NetworkMetaAnalysis that = (NetworkMetaAnalysis) o;
 
-    if (id != null ? !id.equals(that.id) : that.id != null) return false;
-    if (!projectId.equals(that.projectId)) return false;
-    if (!title.equals(that.title)) return false;
     if (primaryModel != null ? !primaryModel.equals(that.primaryModel) : that.primaryModel != null) return false;
     if (!excludedArms.equals(that.excludedArms)) return false;
-    if (!interventionInclusions.equals(that.interventionInclusions)) return false;
     if (!includedCovariates.equals(that.includedCovariates)) return false;
+    if (!includedMeasurementMoments.equals(that.includedMeasurementMoments)) return false;
     return outcome != null ? outcome.equals(that.outcome) : that.outcome == null;
-
   }
 
   @Override
   public int hashCode() {
-    int result = id != null ? id.hashCode() : 0;
-    result = 31 * result + projectId.hashCode();
-    result = 31 * result + title.hashCode();
+    int result = super.hashCode();
     result = 31 * result + (primaryModel != null ? primaryModel.hashCode() : 0);
     result = 31 * result + excludedArms.hashCode();
-    result = 31 * result + interventionInclusions.hashCode();
     result = 31 * result + includedCovariates.hashCode();
+    result = 31 * result + includedMeasurementMoments.hashCode();
     result = 31 * result + (outcome != null ? outcome.hashCode() : 0);
     return result;
   }

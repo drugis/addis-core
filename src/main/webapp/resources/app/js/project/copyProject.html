@@ -1,0 +1,27 @@
+<form novalidate ng-submit="copyProject(newTitle)">
+  <div class="row">
+    <div class="large-12 columns">
+      <h3 class="warning">Copy project</h3>
+      <p>You can create a new copy of this project. You will own the new project. All
+        definitions, analyses, models and scenarios of the source project will be
+        copied.
+      </p>
+      <p>Once the copy is complete you will be taken to the new project.</p>
+      <p>Are you sure?</p>
+    </div>
+  </div>
+  <div class="row">
+    <div class="large-6 small-12 columns">
+      <label>New project title
+        <input type="text" ng-model="newTitle">
+      </label>
+    </div>
+  </div>
+  <div class="row">
+    <div class="large-9 columns">
+      <button ng-disabled="!newTitle" class="success" type="submit">Yes</button>
+      <button type="button" ng-click="cancel()">No</button>
+    </div>
+  </div>
+  <a class="close-reveal-modal" ng-click="cancel()">&#215;</a>
+</form>

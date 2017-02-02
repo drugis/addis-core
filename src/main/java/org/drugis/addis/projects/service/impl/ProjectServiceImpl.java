@@ -3,6 +3,7 @@ package org.drugis.addis.projects.service.impl;
 import org.drugis.addis.analyses.*;
 import org.drugis.addis.analyses.repository.AnalysisRepository;
 import org.drugis.addis.analyses.repository.MetaBenefitRiskAnalysisRepository;
+import org.drugis.addis.analyses.repository.NetworkMetaAnalysisRepository;
 import org.drugis.addis.analyses.service.AnalysisService;
 import org.drugis.addis.covariates.Covariate;
 import org.drugis.addis.covariates.CovariateRepository;
@@ -95,6 +96,9 @@ public class ProjectServiceImpl implements ProjectService {
   @Inject
   private ScenarioRepository scenarioRepository;
 
+  @Inject
+  private NetworkMetaAnalysisRepository networkMetaAnalysisRepository;
+
   @Qualifier("emAddisCore")
   @PersistenceContext(unitName = "addisCore")
   @Inject
@@ -146,10 +150,11 @@ public class ProjectServiceImpl implements ProjectService {
   }
 
   @Override
-  public Integer copy(Account user, Integer sourceProjectId) throws ResourceDoesNotExistException, SQLException {
+  public Integer copy(Account user, Integer sourceProjectId, String newTitle) throws ResourceDoesNotExistException, SQLException {
     Project sourceProject = projectRepository.get(sourceProjectId);
     ProjectCommand command = sourceProject.getCommand();
     command.setDatasetVersion(sourceProject.getDatasetVersion());
+    command.setName(newTitle);
     Project newProject = projectRepository.create(user, command);
 
     //outcomes
@@ -184,17 +189,31 @@ public class ProjectServiceImpl implements ProjectService {
     sourceAnalyses.stream()
             .filter(analysis -> analysis instanceof SingleStudyBenefitRiskAnalysis)
             .map(analysis -> (SingleStudyBenefitRiskAnalysis) analysis)
-            .forEach(singleStudyBenefitRiskAnalysisCreator(newProject, user, oldToNewInterventionId, oldToNewOutcomeId));
+            .forEach(singleStudyBenefitRiskAnalysisCreator(newProject, user, oldToNewAnalysisId, oldToNewInterventionId, oldToNewOutcomeId));
     sourceAnalyses.stream()
             .filter(analysis -> analysis instanceof NetworkMetaAnalysis)
             .map(analysis -> (NetworkMetaAnalysis) analysis)
-            .forEach(netWorkMetaAnalysisCreator(user, newProject, oldToNewAnalysisId, oldToNewInterventionId, oldToNewCovariateId));
+            .forEach(netWorkMetaAnalysisCreator(user, newProject,
+                    oldToNewAnalysisId,
+                    oldToNewOutcomeId,
+                    oldToNewInterventionId,
+                    oldToNewCovariateId));
 
 
     //models
     Map<Integer, Integer> oldToNewModelId = new HashMap<>();
     Collection<Model> sourceModels = modelRepository.findNetworkModelsByProject(sourceProjectId);
     sourceModels.forEach(modelCreator(oldToNewAnalysisId, oldToNewModelId));
+
+    //update primary models
+    analysisRepository.query(newProject.getId()).stream()
+            .filter(analysis -> analysis instanceof NetworkMetaAnalysis)
+            .map(analysis -> (NetworkMetaAnalysis) analysis)
+            .forEach(nma -> {
+              if (nma.getPrimaryModel() != null) {
+                nma.setPrimaryModel(oldToNewModelId.get(nma.getPrimaryModel()));
+              }
+            });
 
     //mbr analyses
     sourceAnalyses.stream()
@@ -213,16 +232,24 @@ public class ProjectServiceImpl implements ProjectService {
   private Consumer<MetaBenefitRiskAnalysis> metaBenefitRiskCreator(Account user, Project newProject, Map<Integer, Integer> oldToNewOutcomeId, Map<Integer, Integer> oldToNewInterventionId, Map<Integer, Integer> oldToNewAnalysisId, Map<Integer, Integer> oldToNewModelId) {
     return oldAnalysis -> {
       AnalysisCommand analysisCommand = new AnalysisCommand(newProject.getId(), oldAnalysis.getTitle(),
-              AnalysisType.EVIDENCE_SYNTHESIS);
+              AnalysisType.META_BENEFIT_RISK_ANALYSIS_LABEL);
       try {
         MetaBenefitRiskAnalysis newAnalysis = metaBenefitRiskAnalysisRepository.create(user, analysisCommand);
+        em.flush(); // needed to unbuffer the interventioninclusion additions from the constructor
+        oldToNewAnalysisId.put(oldAnalysis.getId(), newAnalysis.getId());
+        newAnalysis.setProblem(oldAnalysis.getProblem());
         newAnalysis.setFinalized(oldAnalysis.isFinalized());
         updateIncludedInterventions(oldAnalysis, newAnalysis, oldToNewInterventionId);
+
         List<MbrOutcomeInclusion> updateMBROutcomeInclusions = oldAnalysis.getMbrOutcomeInclusions().stream()
-                .map(inclusion -> new MbrOutcomeInclusion(newAnalysis.getId(),
-                        oldToNewOutcomeId.get(inclusion.getOutcomeId()),
-                        oldToNewAnalysisId.get(inclusion.getNetworkMetaAnalysisId()),
-                        oldToNewModelId.get(inclusion.getModelId())))
+                .map(inclusion -> {
+                  MbrOutcomeInclusion newInclusion = new MbrOutcomeInclusion(newAnalysis.getId(),
+                          oldToNewOutcomeId.get(inclusion.getOutcomeId()),
+                          oldToNewAnalysisId.get(inclusion.getNetworkMetaAnalysisId()),
+                          oldToNewModelId.get(inclusion.getModelId()));
+                  newInclusion.setBaseline(inclusion.getBaseline());
+                  return newInclusion;
+                })
                 .collect(Collectors.toList());
         newAnalysis.setMbrOutcomeInclusions(updateMBROutcomeInclusions);
       } catch (ResourceDoesNotExistException | MethodNotAllowedException | IOException | SQLException e) {
@@ -244,14 +271,20 @@ public class ProjectServiceImpl implements ProjectService {
     };
   }
 
-  private Consumer<? super SingleStudyBenefitRiskAnalysis> singleStudyBenefitRiskAnalysisCreator(Project newProject, Account user, Map<Integer, Integer> oldIdToNewInterventionId, Map<Integer, Integer> oldIdToNewOutcomeId) {
-    return analysis -> {
-      AnalysisCommand analysisCommand = new AnalysisCommand(newProject.getId(), analysis.getTitle(),
+  private Consumer<? super SingleStudyBenefitRiskAnalysis> singleStudyBenefitRiskAnalysisCreator(
+          Project newProject, Account user, Map<Integer, Integer> oldToNewAnalysisId,
+          Map<Integer, Integer> oldIdToNewInterventionId,
+          Map<Integer, Integer> oldIdToNewOutcomeId) {
+    return oldAnalysis -> {
+      AnalysisCommand analysisCommand = new AnalysisCommand(newProject.getId(), oldAnalysis.getTitle(),
               AnalysisType.SINGLE_STUDY_BENEFIT_RISK_LABEL);
       try {
         final SingleStudyBenefitRiskAnalysis newAnalysis = analysisService.createSingleStudyBenefitRiskAnalysis(user, analysisCommand);
-        newAnalysis.setStudyGraphUri(analysis.getStudyGraphUri());
-        List<Outcome> updatedOutcomes = analysis.getSelectedOutcomes().stream()
+        em.flush(); // may be redundant
+        newAnalysis.setStudyGraphUri(oldAnalysis.getStudyGraphUri());
+        newAnalysis.setProblem(oldAnalysis.getProblem());
+        oldToNewAnalysisId.put(oldAnalysis.getId(), newAnalysis.getId());
+        List<Outcome> updatedOutcomes = oldAnalysis.getSelectedOutcomes().stream()
                 .map(outcome -> {
                   try {
                     return outcomeRepository.get(oldIdToNewOutcomeId.get(outcome.getId()));
@@ -262,7 +295,7 @@ public class ProjectServiceImpl implements ProjectService {
                 })
                 .collect(Collectors.toList());
         newAnalysis.updateSelectedOutcomes(updatedOutcomes);
-        updateIncludedInterventions(analysis, newAnalysis, oldIdToNewInterventionId);
+        updateIncludedInterventions(oldAnalysis, newAnalysis, oldIdToNewInterventionId);
       } catch (MethodNotAllowedException | ResourceDoesNotExistException e) {
         e.printStackTrace();
       }
@@ -271,23 +304,30 @@ public class ProjectServiceImpl implements ProjectService {
 
   private void updateIncludedInterventions(AbstractAnalysis oldAnalysis, AbstractAnalysis newAnalysis, Map<Integer, Integer> oldIdToNewInterventionId) {
     Set<InterventionInclusion> interventionInclusions = oldAnalysis.getInterventionInclusions().stream()
-            .map(inclusion -> new InterventionInclusion(newAnalysis.getId(), oldIdToNewInterventionId.get(inclusion.getInterventionId())))
+            .map(inclusion -> new InterventionInclusion(newAnalysis.getId(),
+                    oldIdToNewInterventionId.get(inclusion.getInterventionId())))
             .collect(Collectors.toSet());
     newAnalysis.updateIncludedInterventions(interventionInclusions);
   }
 
   private Consumer<? super NetworkMetaAnalysis> netWorkMetaAnalysisCreator(
-          Account user, Project newProject, Map<Integer, Integer> oldToNewAnalysisId,
-          Map<Integer, Integer> oldToNewInterventionId, Map<Integer, Integer> oldToNewCovariateId) {
+          Account user, Project newProject,
+          Map<Integer, Integer> oldToNewAnalysisId,
+          Map<Integer, Integer> oldToNewOutcomeId,
+          Map<Integer, Integer> oldToNewInterventionId,
+          Map<Integer, Integer> oldToNewCovariateId) {
     return oldAnalysis -> {
       AnalysisCommand command = new AnalysisCommand(newProject.getId(), oldAnalysis.getTitle(),
               AnalysisType.EVIDENCE_SYNTHESIS);
       try {
         final NetworkMetaAnalysis newAnalysis = analysisService.createNetworkMetaAnalysis(user, command);
+        em.flush(); // needed to unbuffer the interventioninclusion additions from the constructor
         updateIncludedInterventions(oldAnalysis, newAnalysis, oldToNewInterventionId);
         if (oldAnalysis.getOutcome() != null) {
-          newAnalysis.setOutcome(outcomeRepository.get(oldAnalysis.getOutcome().getId()));
+          Outcome updatedOutcome = outcomeRepository.get(oldToNewOutcomeId.get(oldAnalysis.getOutcome().getId()));
+          newAnalysis.setOutcome(updatedOutcome);
         }
+        newAnalysis.setPrimaryModel(oldAnalysis.getPrimaryModel());
         List<CovariateInclusion> updatedCovariateInclusions = oldAnalysis.getCovariateInclusions().stream()
                 .map(inclusion -> new CovariateInclusion(newAnalysis.getId(), oldToNewCovariateId.get(inclusion.getCovariateId())))
                 .collect(Collectors.toList());
@@ -438,7 +478,8 @@ public class ProjectServiceImpl implements ProjectService {
       AbstractInterventionCommand setCommand = new InterventionSetCommand(newProject.getId(),
               intervention.getName(), intervention.getMotivation(), updatedInterventionIds);
       try {
-        interventionRepository.create(user, setCommand);
+        AbstractIntervention newIntervention = interventionRepository.create(user, setCommand);
+        oldIdToNewInterventionId.put(intervention.getId(), newIntervention.getId());
       } catch (MethodNotAllowedException | ResourceDoesNotExistException | InvalidConstraintException e) {
         e.printStackTrace();
       }

@@ -67,26 +67,27 @@ public class Model {
 
   private Boolean archived;
   @Column(name = "archived_on")
-  @Type(type="date")
+  @Type(type = "date")
   private Date archivedOn;
 
   public Model() {
   }
 
   public Model(Model other) {
-    this.taskUrl = other.getTaskUrl().toString();
-    this.analysisId = other.getAnalysisId();
-    this.title = other.getTitle();
-    this.linearModel = other.getLinearModel();
+    this.analysisId = other.analysisId;
+    this.title = other.title;
+    this.linearModel = other.linearModel;
     this.modelType = other.modelType;
     this.heterogeneityPrior = other.heterogeneityPrior;
-    this.burnInIterations = other.getBurnInIterations();
-    this.inferenceIterations = other.getInferenceIterations();
-    this.thinningFactor = other.getThinningFactor();
-    this.likelihood=other.getLikelihood();
-    this.outcomeScale=other.getOutcomeScale();
-    this.regressor=other.getRegressor();
-    this.sensitivity=other.getSensitivity();
+    this.burnInIterations = other.burnInIterations;
+    this.inferenceIterations = other.inferenceIterations;
+    this.thinningFactor = other.thinningFactor;
+    this.likelihood = other.likelihood;
+    this.link = other.link;
+    this.outcomeScale = other.outcomeScale;
+    this.regressor = other.regressor;
+    this.sensitivity = other.sensitivity;
+    this.archived = false;
   }
 
   private Model(ModelBuilder builder) throws InvalidModelException {
@@ -103,7 +104,7 @@ public class Model {
     this.likelihood = builder.likelihood;
     this.link = builder.link;
 
-    if(!LINK_OPTIONS.contains(this.link)){
+    if (!LINK_OPTIONS.contains(this.link)) {
       throw new InvalidModelException(this.link + " is not a valid link type");
     }
     this.outcomeScale = builder.outcomeScale;
@@ -136,6 +137,10 @@ public class Model {
 
   public Integer getId() {
     return id;
+  }
+
+  public void setId(Integer id) {
+    this.id = id;
   }
 
   public Integer getAnalysisId() {
@@ -212,7 +217,7 @@ public class Model {
   }
 
   public void setRunStatus(String newStatus) {
-    if(!"failed".equals(newStatus) && !"done".equals(newStatus) && !"progress".equals(newStatus) && !"unknown".equals(newStatus)) {
+    if (!"failed".equals(newStatus) && !"done".equals(newStatus) && !"progress".equals(newStatus) && !"unknown".equals(newStatus)) {
       throw new IllegalArgumentException("Unknown model run status: " + newStatus);
     }
     this.runStatus = newStatus;
@@ -348,6 +353,7 @@ public class Model {
     result = 31 * result + (archivedOn != null ? archivedOn.hashCode() : 0);
     return result;
   }
+
 
   public static class DetailNode {
     Integer id;

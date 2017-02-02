@@ -1,13 +1,14 @@
 'use strict';
 define([], function() {
   var dependencies = ['$scope', '$stateParams', '$modalInstance', 'ProjectResource', 'callback'];
-  var UpdateProjectController = function($scope, $stateParams, $modalInstance, ProjectResource, callback) {
+  var CopyProjectController = function($scope, $stateParams, $modalInstance, ProjectResource, callback) {
+    $scope.copyProject = copyProject;
 
-    $scope.updateProject = updateProject;
-
-    function updateProject() {
-      ProjectResource.update($scope.project.id, {
+    function copyProject(newTitle) {
+      ProjectResource.copy({
         projectId: $scope.project.id
+      }, {
+        newTitle: newTitle
       }, function(response) {
         callback(response.newProjectId);
         $modalInstance.close();
@@ -18,5 +19,5 @@ define([], function() {
       $modalInstance.dismiss('cancel');
     };
   };
-  return dependencies.concat(UpdateProjectController);
+  return dependencies.concat(CopyProjectController);
 });

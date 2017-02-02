@@ -1,6 +1,10 @@
 package org.drugis.addis.projects.service;
 
 import com.google.common.collect.Sets;
+import org.drugis.addis.analyses.*;
+import org.drugis.addis.analyses.repository.AnalysisRepository;
+import org.drugis.addis.analyses.repository.MetaBenefitRiskAnalysisRepository;
+import org.drugis.addis.analyses.service.AnalysisService;
 import org.drugis.addis.covariates.Covariate;
 import org.drugis.addis.covariates.CovariateRepository;
 import org.drugis.addis.exception.MethodNotAllowedException;
@@ -9,6 +13,8 @@ import org.drugis.addis.interventions.controller.command.*;
 import org.drugis.addis.interventions.model.*;
 import org.drugis.addis.interventions.repository.InterventionRepository;
 import org.drugis.addis.interventions.service.InterventionService;
+import org.drugis.addis.models.Model;
+import org.drugis.addis.models.repository.ModelRepository;
 import org.drugis.addis.outcomes.Outcome;
 import org.drugis.addis.outcomes.repository.OutcomeRepository;
 import org.drugis.addis.projects.Project;
@@ -16,6 +22,8 @@ import org.drugis.addis.projects.ProjectCommand;
 import org.drugis.addis.projects.repository.ProjectRepository;
 import org.drugis.addis.projects.service.impl.ProjectServiceImpl;
 import org.drugis.addis.projects.service.impl.UpdateProjectException;
+import org.drugis.addis.scenarios.Scenario;
+import org.drugis.addis.scenarios.repository.ScenarioRepository;
 import org.drugis.addis.security.Account;
 import org.drugis.addis.security.repository.AccountRepository;
 import org.drugis.addis.trialverse.model.SemanticInterventionUriAndName;
@@ -31,6 +39,7 @@ import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
+import javax.persistence.EntityManager;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.security.Principal;
@@ -66,9 +75,26 @@ public class ProjectServiceTest {
   @Mock
   private TriplestoreService triplestoreService;
 
+  @Mock
+  private AnalysisRepository analysisRepository;
+
+  @Mock
+  private ModelRepository modelRepository;
+
+  @Mock
+  private ScenarioRepository scenarioRepository;
+
+  @Mock
+  private AnalysisService analysisService;
+
+  @Mock
+  private MetaBenefitRiskAnalysisRepository metaBenefitRiskAnalysisRepository;
+
+  @Mock
+  private EntityManager em;
+
   @InjectMocks
-  private
-  ProjectService projectService;
+  private ProjectService projectService;
 
   private Integer projectId = 1;
   private String username = "gert";
@@ -133,6 +159,7 @@ public class ProjectServiceTest {
   @Test
   public void testCopy() throws Exception, ReadValueException {
     Integer newProjectId = -3;
+    String newTitle = "new project title";
     Project mockNewProject = mock(Project.class);
     ProjectCommand mockCommand = mock(ProjectCommand.class);
 
@@ -144,15 +171,23 @@ public class ProjectServiceTest {
     // Outcomes
     SemanticVariable semanticOutcome1 = new SemanticVariable(URI.create("http://www.bs.org/outcomeIn"), "semanticLabel1");
     SemanticVariable semanticOutcome2 = new SemanticVariable(URI.create("http://www.bs.org/outcomeOut"), "semanticLabel2");
-    Outcome outcome1 = new Outcome(1, projectId, "outcome1", "motivation", semanticOutcome1);
-    Outcome outcome2 = new Outcome(2, projectId, "outcome2", "motivation", semanticOutcome2);
+    Integer outcomeId1 = 980;
+    Integer outcomeId2 = 1024;
+    Outcome outcome1 = new Outcome(outcomeId1, projectId, "outcome1", "motivation", semanticOutcome1);
+    Outcome outcome2 = new Outcome(outcomeId2, projectId, "outcome2", "motivation", semanticOutcome2);
     Collection<Outcome> sourceOutcomes = Arrays.asList(outcome1, outcome2);
 
+    when(outcomeRepository.get(outcome1.getId())).thenReturn(outcome1);
+    when(outcomeRepository.get(outcome2.getId())).thenReturn(outcome2);
     when(outcomeRepository.query(projectId)).thenReturn(sourceOutcomes);
+    Outcome newOutcome1 = new Outcome(outcomeId1 + 1, newProjectId, outcome1.getName(), outcome1.getDirection(),
+            outcome1.getMotivation(), outcome1.getSemanticVariable());
+    Outcome newOutcome2 = new Outcome(outcomeId2 + 1, newProjectId, outcome2.getName(), outcome2.getDirection(),
+            outcome2.getMotivation(), outcome2.getSemanticVariable());
     when(outcomeRepository.create(account, newProjectId, outcome1.getName(), outcome1.getDirection(), outcome1.getMotivation(),
-            outcome1.getSemanticVariable())).thenReturn(outcome1);
+            outcome1.getSemanticVariable())).thenReturn(newOutcome1);
     when(outcomeRepository.create(account, newProjectId, outcome2.getName(), outcome2.getDirection(), outcome2.getMotivation(),
-            outcome2.getSemanticVariable())).thenReturn(outcome2);
+            outcome2.getSemanticVariable())).thenReturn(newOutcome2);
 
     // Covariates
     Covariate covariate1 = new Covariate(-10, newProjectId, "covariate 1", null, "http://covariates.nl/1",
@@ -216,15 +251,92 @@ public class ProjectServiceTest {
     when(newSet.getId()).thenReturn(-combinationIntervention.getId());
     when(interventionRepository.create(account, setCommand)).thenReturn(newSet);
 
+    // Analyses
+    Integer ssbrId = 37;
+    InterventionInclusion ssbrInterventionInclusion1 = new InterventionInclusion(ssbrId, fixedDoseIntervention.getId());
+    InterventionInclusion ssbrInterventionInclusion2 = new InterventionInclusion(ssbrId, titratedDoseIntervention.getId());
+    List<InterventionInclusion> ssbrInterventionInclusions = Arrays.asList(ssbrInterventionInclusion1, ssbrInterventionInclusion2);
+    AbstractAnalysis ssbr = new SingleStudyBenefitRiskAnalysis(ssbrId, projectId, "ssbr", new ArrayList<>(sourceOutcomes), ssbrInterventionInclusions);
+    AnalysisCommand ssbrCommand = new AnalysisCommand(newProjectId, ssbr.getTitle(), AnalysisType.SINGLE_STUDY_BENEFIT_RISK_LABEL);
+    when(analysisService.createSingleStudyBenefitRiskAnalysis(account, ssbrCommand)).thenReturn(new SingleStudyBenefitRiskAnalysis(ssbrId + 1, projectId, "ssbr",
+            Collections.emptyList(), Collections.emptyList()));
+
+    Integer nmaId1 = 42;
+    List<ArmExclusion> nmaExcludedArms = Collections.singletonList(new ArmExclusion(nmaId1, URI.create("http://anything.Groningen")));
+    List<InterventionInclusion> nmaInterventionInclusions1 = Collections.singletonList(new InterventionInclusion(nmaId1, fixedDoseIntervention.getId()));
+    List<CovariateInclusion> nmaIncludedCovariates1 = Collections.singletonList(new CovariateInclusion(nmaId1, covariate1.getId()));
+    AbstractAnalysis nma1 = new NetworkMetaAnalysis(nmaId1, projectId, "nma1", nmaExcludedArms, nmaInterventionInclusions1, nmaIncludedCovariates1, outcome1);
+    AnalysisCommand nmaCommand1 = new AnalysisCommand(newProjectId, nma1.getTitle(), AnalysisType.EVIDENCE_SYNTHESIS);
+    when(analysisService.createNetworkMetaAnalysis(account, nmaCommand1)).thenReturn(new NetworkMetaAnalysis(nmaId1 + 1, projectId, "nma1",
+            Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), outcome1));
+
+    Integer nmaId2 = 1337;
+    List<InterventionInclusion> nmaInterventionInclusions2 = Collections.singletonList(new InterventionInclusion(nmaId2, titratedDoseIntervention.getId()));
+    AbstractAnalysis nma2 = new NetworkMetaAnalysis(nmaId2, projectId, "nma2", Collections.emptyList(), nmaInterventionInclusions2, Collections.emptyList(), outcome2);
+    AnalysisCommand nmaCommand2 = new AnalysisCommand(newProjectId, nma2.getTitle(), AnalysisType.EVIDENCE_SYNTHESIS);
+    when(analysisService.createNetworkMetaAnalysis(account, nmaCommand2)).thenReturn(new NetworkMetaAnalysis(nmaId2 + 1, projectId, "nma2",
+            Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), outcome1));
+
+    //models before Metabr
+    Integer modelId1 = 1414;
+    Integer modelId2 = 5318008;
+    Model model1 = new Model.ModelBuilder(nmaId1, "model 1")
+            .id(modelId1)
+            .link("identity")
+            .modelType(Model.NETWORK_MODEL_TYPE)
+            .build();
+    Model model2 = new Model.ModelBuilder(nmaId2, "model 2").id(modelId2).link("identity")
+            .modelType(Model.NETWORK_MODEL_TYPE).build();
+    when(modelRepository.findNetworkModelsByProject(projectId)).thenReturn(Arrays.asList(model1, model2));
+    Model newModel1 = new Model(model1);
+    newModel1.setAnalysisId(nmaId1 + 1);
+    Model persistedModel1 = new Model(newModel1);
+    persistedModel1.setId(modelId1 + 1);
+    Model newModel2 = new Model(model2);
+    newModel2.setAnalysisId(nmaId2 + 1);
+    Model persistedModel2 = new Model(newModel2);
+    persistedModel2.setId(modelId2 + 1);
+    when(modelRepository.persist(newModel1)).thenReturn(persistedModel1);
+    when(modelRepository.persist(newModel2)).thenReturn(persistedModel2);
+
+    //metabr
+    Integer metaBRId = 707;
+    Set<InterventionInclusion> mbrInterventionInclusions = Sets.newHashSet(new InterventionInclusion(metaBRId, fixedDoseIntervention.getId()));
+    MetaBenefitRiskAnalysis metaBR = new MetaBenefitRiskAnalysis(metaBRId, projectId, "mbr", mbrInterventionInclusions);
+    List<MbrOutcomeInclusion> mbrOutcomeInclusions = Arrays.asList(new MbrOutcomeInclusion(metaBRId, outcome1.getId(), nmaId1, modelId1),
+            new MbrOutcomeInclusion(metaBRId, outcome2.getId(), nmaId2, modelId2));
+    metaBR.setMbrOutcomeInclusions(mbrOutcomeInclusions);
+    List<AbstractAnalysis> sourceAnalyses = Arrays.asList(ssbr, nma1, nma2, metaBR);
+    when(analysisRepository.query(projectId)).thenReturn(sourceAnalyses);
+    AnalysisCommand metaBRCommand = new AnalysisCommand(newProjectId, metaBR.getTitle(), AnalysisType.META_BENEFIT_RISK_ANALYSIS_LABEL);
+    MetaBenefitRiskAnalysis newMetaBR = new MetaBenefitRiskAnalysis(metaBRId + 1, newProjectId, metaBR.getTitle());
+    when(metaBenefitRiskAnalysisRepository.create(account, metaBRCommand)).thenReturn(newMetaBR);
+
+    //scenarios
+    Integer scenarioId1 = 317;
+    Integer scenarioId2 = 313;
+    Scenario scenario1 = new Scenario(scenarioId1, ssbrId, "scenario 1", "Nevada");
+    Scenario scenario2 = new Scenario(scenarioId2, metaBRId, "scenario 2", "Missouri");
+    Collection<Scenario> scenarios = Arrays.asList(scenario1, scenario2);
+    when(scenarioRepository.queryByProject(projectId)).thenReturn(scenarios);
+    Scenario newScenario1 = new Scenario(scenarioId1 + 1, ssbrId + 1, scenario1.getTitle(), scenario1.getState());
+    when(scenarioRepository.create(ssbrId + 1, scenario1.getTitle(), scenario1.getState())).thenReturn(newScenario1);
+    Scenario newScenario2 = new Scenario(scenarioId2 + 1, metaBRId + 1, scenario2.getTitle(), scenario2.getState());
+    when(scenarioRepository.create(metaBRId + 1, scenario2.getTitle(), scenario2.getState())).thenReturn(newScenario2);
+
     /// *8888888888**************************** GO *********************888888888888888* ///
-    projectService.copy(account, projectId);
+    Integer copiedId = projectService.copy(account, projectId, newTitle);
     /// *8888888888**************************** GO *********************888888888888888* ///
+
+    assertEquals(newProjectId, copiedId);
 
     verify(outcomeRepository).query(projectId);
     verify(outcomeRepository).create(account, newProjectId, outcome1.getName(), outcome1.getDirection(), outcome1.getMotivation(),
             outcome1.getSemanticVariable());
     verify(outcomeRepository).create(account, newProjectId, outcome2.getName(), outcome2.getDirection(), outcome2.getMotivation(),
             outcome2.getSemanticVariable());
+    verify(outcomeRepository, times(2)).get(newOutcome1.getId());
+    verify(outcomeRepository, times(2)).get(newOutcome2.getId());
     verifyNoMoreInteractions(outcomeRepository);
 
     verify(covariateRepository).findByProject(projectId);
@@ -244,6 +356,22 @@ public class ProjectServiceTest {
     verify(interventionRepository).create(account, combiCommand);
     verify(interventionRepository).create(account, setCommand);
     verifyNoMoreInteractions(interventionRepository);
+
+    verify(analysisRepository).query(projectId);
+    verify(analysisService).createSingleStudyBenefitRiskAnalysis(account, ssbrCommand);
+    verify(analysisService).createNetworkMetaAnalysis(account, nmaCommand1);
+    verify(analysisService).createNetworkMetaAnalysis(account, nmaCommand2);
+    verifyNoMoreInteractions(analysisService);
+
+    verify(modelRepository).findNetworkModelsByProject(projectId);
+    verify(modelRepository).persist(newModel1);
+    verify(modelRepository).persist(newModel2);
+    verifyNoMoreInteractions(modelRepository);
+
+    verify(scenarioRepository).queryByProject(projectId);
+    verify(scenarioRepository).create(ssbrId + 1, scenario1.getTitle(), scenario1.getState());
+    verify(scenarioRepository).create(metaBRId + 1, scenario2.getTitle(), scenario2.getState());
+    verifyNoMoreInteractions(scenarioRepository);
   }
 
   @Test
