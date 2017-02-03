@@ -252,6 +252,7 @@ public class ProjectServiceImpl implements ProjectService {
                 })
                 .collect(Collectors.toList());
         newAnalysis.setMbrOutcomeInclusions(updateMBROutcomeInclusions);
+        em.merge(newAnalysis);
       } catch (ResourceDoesNotExistException | MethodNotAllowedException | IOException | SQLException e) {
         e.printStackTrace();
       }
