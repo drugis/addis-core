@@ -6,7 +6,7 @@ define(['angular-mocks'], function(angularMocks) {
       mockModal = jasmine.createSpyObj('$mock', ['open']),
       studiesWithDetailsService = jasmine.createSpyObj('StudiesWithDetailsService', ['get']),
       historyResource = jasmine.createSpyObj('HistoryResource', ['query']),
-      conceptService = jasmine.createSpyObj('ConceptService', ['loadJson', 'queryItems']),
+      conceptsService = jasmine.createSpyObj('ConceptsService', ['loadJson', 'queryItems']),
       versionedGraphResource = jasmine.createSpyObj('VersionedGraphResource', ['get', 'getConceptJson']),
       datasetResource = jasmine.createSpyObj('DatasetResource', ['getForJson']),
       datasetVersionedResource = jasmine.createSpyObj('DatasetVersionedResource', ['getForJson']),
@@ -44,7 +44,7 @@ define(['angular-mocks'], function(angularMocks) {
       datasetDeferred = $q.defer();
 
       studiesWithDetailsService.get.and.returnValue(studiesWithDetailsGetDeferred.promise);
-      conceptService.loadJson.and.returnValue(conceptsJsonDefer.promise);
+      conceptsService.loadJson.and.returnValue(conceptsJsonDefer.promise);
       versionedGraphResource.getConceptJson.and.returnValue({
         $promise: conceptsJsonDefer.promise
       });
@@ -69,7 +69,7 @@ define(['angular-mocks'], function(angularMocks) {
         DatasetResource: datasetResource,
         StudiesWithDetailsService: studiesWithDetailsService,
         HistoryResource: historyResource,
-        ConceptService: conceptService,
+        ConceptsService: conceptsService,
         VersionedGraphResource: versionedGraphResource,
         UserService: userService,
         DataModelService: dataModelServiceMock
@@ -127,7 +127,7 @@ define(['angular-mocks'], function(angularMocks) {
         scope.$digest();
         expect(scope.datasetConcepts).toBeDefined(); // promise resolved
         expect(versionedGraphResource.getConceptJson).toHaveBeenCalled();
-        expect(conceptService.loadJson).toHaveBeenCalled();
+        expect(conceptsService.loadJson).toHaveBeenCalled();
       });
 
     });
@@ -144,7 +144,7 @@ define(['angular-mocks'], function(angularMocks) {
           DatasetResource: datasetResource,
           StudiesWithDetailsService: studiesWithDetailsService,
           HistoryResource: historyResource,
-          ConceptService: conceptService,
+          ConceptsService: conceptsService,
           VersionedGraphResource: versionedGraphResource,
           UserService: userService
         });

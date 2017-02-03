@@ -2,6 +2,82 @@
 define(['angular-mocks'], function() {
   var d80tableservice;
   describe('the d80tableservice', function() {
+    var results = [
+      [{
+        armUri: 'arm1Uri',
+        outcomeUri: 'outcome1Uri',
+        momentUri: 'primaryMomentUri',
+        result_property: 'mean',
+        value: 3.6
+      }, {
+        armUri: 'arm1Uri',
+        outcomeUri: 'outcome1Uri',
+        momentUri: 'primaryMomentUri',
+        result_property: 'sample_size',
+        value: 36
+      }, {
+        armUri: 'arm1Uri',
+        outcomeUri: 'outcome1Uri',
+        momentUri: 'primaryMomentUri',
+        result_property: 'standard_deviation',
+        value: 3
+      }, {
+        armUri: 'arm2Uri',
+        outcomeUri: 'outcome1Uri',
+        momentUri: 'primaryMomentUri',
+        result_property: 'mean',
+        value: 13.6
+      }, {
+        armUri: 'arm2Uri',
+        outcomeUri: 'outcome1Uri',
+        momentUri: 'primaryMomentUri',
+        result_property: 'sample_size',
+        value: 136
+      }, {
+        armUri: 'arm2Uri',
+        outcomeUri: 'outcome1Uri',
+        momentUri: 'primaryMomentUri',
+        result_property: 'standard_deviation',
+        value: 13
+      }],
+      [{
+        armUri: 'arm1Uri',
+        outcomeUri: 'outcome2Uri',
+        momentUri: 'primaryMomentUri',
+        result_property: 'count',
+        value: 23
+      }, {
+        armUri: 'arm1Uri',
+        outcomeUri: 'outcome2Uri',
+        momentUri: 'primaryMomentUri',
+        result_property: 'sample_size',
+        value: 236
+      }, {
+        armUri: 'arm2Uri',
+        outcomeUri: 'outcome2Uri',
+        momentUri: 'primaryMomentUri',
+        result_property: 'count',
+        value: 33
+      }, {
+        armUri: 'arm2Uri',
+        outcomeUri: 'outcome2Uri',
+        momentUri: 'primaryMomentUri',
+        result_property: 'sample_size',
+        value: 336
+      }, {
+        armUri: 'arm2Uri',
+        outcomeUri: 'outcome2Uri',
+        momentUri: 'notPrimaruMomentUri',
+        result_property: 'count',
+        value: 33
+      }, {
+        armUri: 'arm2Uri',
+        outcomeUri: 'outcome2Uri',
+        momentUri: 'notPrimaruMomentUri',
+        result_property: 'sample_size',
+        value: 336
+      }]
+    ];
     beforeEach(module('trialverse.study'));
     beforeEach(inject(function(D80TableService) {
       d80tableservice = D80TableService;
@@ -9,82 +85,6 @@ define(['angular-mocks'], function() {
 
     describe('buildResultsByEndpointAndArm', function() {
       it('should build a map of endpoints to arms to results for the data fo the primary measurement moment', function() {
-        var results = [
-          [{
-            armUri: 'arm1Uri',
-            outcomeUri: 'outcome1Uri',
-            momentUri: 'primaryMomentUri',
-            result_property: 'mean',
-            value: 3.6
-          }, {
-            armUri: 'arm1Uri',
-            outcomeUri: 'outcome1Uri',
-            momentUri: 'primaryMomentUri',
-            result_property: 'sample_size',
-            value: 36
-          }, {
-            armUri: 'arm1Uri',
-            outcomeUri: 'outcome1Uri',
-            momentUri: 'primaryMomentUri',
-            result_property: 'standard_deviation',
-            value: 3
-          }, {
-            armUri: 'arm2Uri',
-            outcomeUri: 'outcome1Uri',
-            momentUri: 'primaryMomentUri',
-            result_property: 'mean',
-            value: 13.6
-          }, {
-            armUri: 'arm2Uri',
-            outcomeUri: 'outcome1Uri',
-            momentUri: 'primaryMomentUri',
-            result_property: 'sample_size',
-            value: 136
-          }, {
-            armUri: 'arm2Uri',
-            outcomeUri: 'outcome1Uri',
-            momentUri: 'primaryMomentUri',
-            result_property: 'standard_deviation',
-            value: 13
-          }],
-          [{
-            armUri: 'arm1Uri',
-            outcomeUri: 'outcome2Uri',
-            momentUri: 'primaryMomentUri',
-            result_property: 'count',
-            value: 23
-          }, {
-            armUri: 'arm1Uri',
-            outcomeUri: 'outcome2Uri',
-            momentUri: 'primaryMomentUri',
-            result_property: 'sample_size',
-            value: 236
-          }, {
-            armUri: 'arm2Uri',
-            outcomeUri: 'outcome2Uri',
-            momentUri: 'primaryMomentUri',
-            result_property: 'count',
-            value: 33
-          }, {
-            armUri: 'arm2Uri',
-            outcomeUri: 'outcome2Uri',
-            momentUri: 'primaryMomentUri',
-            result_property: 'sample_size',
-            value: 336
-          }, {
-            armUri: 'arm2Uri',
-            outcomeUri: 'outcome2Uri',
-            momentUri: 'notPrimaruMomentUri',
-            result_property: 'count',
-            value: 33
-          }, {
-            armUri: 'arm2Uri',
-            outcomeUri: 'outcome2Uri',
-            momentUri: 'notPrimaruMomentUri',
-            result_property: 'sample_size',
-            value: 336
-          }]
-        ];
 
         var expectedResult = {
           outcome1Uri: {
@@ -98,6 +98,111 @@ define(['angular-mocks'], function() {
         };
 
         var result = d80tableservice.buildResultsByEndpointAndArm(results, 'primaryMomentUri');
+        expect(result).toEqual(expectedResult);
+      });
+    });
+
+    describe('buildMeasurements', function() {
+      it('should build the measurements from the results primary measurement moment uri and endpoints', function() {
+        var endpoints = [{
+          uri: 'outcome1Uri',
+          measurementType: 'ontology:continuous',
+          resultProperties: ['bla#mean', 'bla#sample_size', 'bla#standard_deviation']
+        }, {
+          uri: 'outcome2Uri',
+          measurementType: 'ontology:dichotomous',
+          resultProperties: ['bla#count', 'bla#sample_size']
+        }];
+
+        var expectedResult = {
+          outcome1Uri: {
+            arm1Uri: {
+              endpointUri: 'outcome1Uri',
+              armUri: 'arm1Uri',
+              type: 'continuous',
+              resultProperties: {
+                mean: 3.6,
+                sampleSize: 36,
+                standardDeviation: 3
+              },
+              label: '3.6 ± 3 (36)'
+            },
+            arm2Uri: {
+              endpointUri: 'outcome1Uri',
+              armUri: 'arm2Uri',
+              type: 'continuous',
+              resultProperties: {
+                mean: 13.6,
+                sampleSize: 136,
+                standardDeviation: 13
+              },
+              label: '13.6 ± 13 (136)'
+            }
+          },
+          outcome2Uri: {
+            arm1Uri: {
+              endpointUri: 'outcome2Uri',
+              armUri: 'arm1Uri',
+              type: 'dichotomous',
+              resultProperties: {
+                count: 23,
+                sampleSize: 236
+              },
+              label: '23/236'
+            },
+            arm2Uri: {
+              endpointUri: 'outcome2Uri',
+              armUri: 'arm2Uri',
+              type: 'dichotomous',
+              resultProperties: {
+                count: 33,
+                sampleSize: 336
+              },
+              label: '33/336'
+            }
+          },
+          toBackEndMeasurements: [{
+            endpointUri: 'outcome1Uri',
+            armUri: 'arm1Uri',
+            type: 'continuous',
+            resultProperties: {
+              mean: 3.6,
+              sampleSize: 36,
+              standardDeviation: 3
+            },
+            label: '3.6 ± 3 (36)'
+          }, {
+            endpointUri: 'outcome1Uri',
+            armUri: 'arm2Uri',
+            type: 'continuous',
+            resultProperties: {
+              mean: 13.6,
+              sampleSize: 136,
+              standardDeviation: 13
+            },
+            label: '13.6 ± 13 (136)'
+          }, {
+            endpointUri: 'outcome2Uri',
+            armUri: 'arm1Uri',
+            type: 'dichotomous',
+            resultProperties: {
+              count: 23,
+              sampleSize: 236
+            },
+            label: '23/236'
+          }, {
+            endpointUri: 'outcome2Uri',
+            armUri: 'arm2Uri',
+            type: 'dichotomous',
+            resultProperties: {
+              count: 33,
+              sampleSize: 336
+            },
+            label: '33/336'
+          }]
+        };
+
+        var result = d80tableservice.buildMeasurements(results, 'primaryMomentUri', endpoints);
         expect(result).toEqual(expectedResult);
       });
     });
@@ -151,6 +256,7 @@ define(['angular-mocks'], function() {
         expect(result).toEqual(expectedResult);
       });
     });
+    
     describe('buildResultLabel', function() {
       it('should return an appropriate label for the given results', function() {
         var resultsObject = {
@@ -180,8 +286,8 @@ define(['angular-mocks'], function() {
           d80tableservice.buildResultLabel(resultsObject);
         }).toThrow('unknown measurement type');
       });
-
     });
+
     describe('buildResultsObject', function() {
       it('should return the appropriate resultsObject', function() {
         var armResults = [{
@@ -210,6 +316,7 @@ define(['angular-mocks'], function() {
         expect(d80tableservice.buildResultsObject(armResults, endpoint, armUri)).toEqual(expectedResult);
       });
     });
+
     describe('buildArmTreatmentsLabel', function() {
       it('should return the appropriate treatment label for the arm', function() {
         var treatments = [{

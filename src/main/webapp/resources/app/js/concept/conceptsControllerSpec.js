@@ -13,7 +13,7 @@ define(['angular', 'angular-mocks'], function() {
       loadConceptStoreDefer,
       queryItemsDefer,
       modalMock = jasmine.createSpyObj('$modal', ['open']),
-      conceptServiceMock = jasmine.createSpyObj('ConceptService', ['loadStore', 'queryItems']),
+      conceptsServiceMock = jasmine.createSpyObj('ConceptsService', ['loadStore', 'queryItems']),
       datasetConceptDefer;
 
     beforeEach(module('trialverse.concept'));
@@ -29,14 +29,14 @@ define(['angular', 'angular-mocks'], function() {
       loadConceptStoreDefer = $q.defer();
       queryItemsDefer = $q.defer();
 
-      conceptServiceMock.loadStore.and.returnValue(loadConceptStoreDefer.promise);
-      conceptServiceMock.queryItems.and.returnValue(queryItemsDefer.promise);
+      conceptsServiceMock.loadStore.and.returnValue(loadConceptStoreDefer.promise);
+      conceptsServiceMock.queryItems.and.returnValue(queryItemsDefer.promise);
 
       $controller('ConceptsController', {
         $scope: scope,
         $modal: modalMock,
         $stateParams: stateParamsMock,
-        ConceptService: conceptServiceMock,
+        ConceptsService: conceptsServiceMock,
         VersionedGraphResource: VersionedGraphResource,
         CONCEPT_GRAPH_UUID: 'CONCEPT_GRAPH_UUID'
       });

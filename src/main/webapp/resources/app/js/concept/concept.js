@@ -7,7 +7,7 @@ define(function (require) {
       'trialverse.graph',
       'trialverse.util'])
     // services
-    .factory('ConceptService', require('concept/conceptService'))
+    .factory('ConceptsService', require('concept/conceptsService'))
 
     //controllers
     .controller('ConceptsController', require('concept/conceptsController'))

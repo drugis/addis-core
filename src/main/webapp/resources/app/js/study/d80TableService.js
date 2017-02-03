@@ -25,6 +25,26 @@ define(['lodash'], function(_) {
       return resultsByEndpointAndArm;
     }
 
+    function buildMeasurements(results, primaryMeasurementMomentUri, endpoints) {
+      var endpointsByUri = _.keyBy(endpoints, 'uri');
+
+      var resultsByEndpointAndArm = buildResultsByEndpointAndArm(results, primaryMeasurementMomentUri);
+
+      var toBackEndMeasurements = [];
+      var measurements = _.reduce(resultsByEndpointAndArm, function(accum, endPointResultsByArm, endpointUri) {
+        accum[endpointUri] = _.reduce(endPointResultsByArm, function(accum, armResults, armUri) {
+          var resultsObject = buildResultsObject(armResults, endpointsByUri[endpointUri], armUri);
+          resultsObject.label = buildResultLabel(resultsObject);
+          toBackEndMeasurements.push(resultsObject);
+          accum[armUri] = resultsObject;
+          return accum;
+        }, {});
+        return accum;
+      }, {});
+      measurements.toBackEndMeasurements = toBackEndMeasurements;
+      return measurements;
+    }
+
     function buildEstimateRows(estimateResults, endpoints, arms) {
       var resultRows = [];
       var subjectArms = _.reject(arms, ['armURI', estimateResults.baselineUri]);
@@ -105,12 +125,6 @@ define(['lodash'], function(_) {
 
     }
 
-    function snakeToCamel(snakeString) {
-      return snakeString.replace(/_\w/g, function(m) {
-        return m[1].toUpperCase();
-      });
-    }
-
     function buildArmTreatmentsLabel(treatments) {
       var treatmentLabels = _.map(treatments, function(treatment) {
         if (treatment.treatmentDoseType === 'ontology:FixedDoseDrugTreatment') {
@@ -127,8 +141,15 @@ define(['lodash'], function(_) {
       return treatmentLabels.join(' + ');
     }
 
+    function snakeToCamel(snakeString) {
+      return snakeString.replace(/_\w/g, function(m) {
+        return m[1].toUpperCase();
+      });
+    }
+
     return {
       buildResultsByEndpointAndArm: buildResultsByEndpointAndArm,
+      buildMeasurements: buildMeasurements,
       buildEstimateRows: buildEstimateRows,
       buildResultsObject: buildResultsObject,
       buildResultLabel: buildResultLabel,

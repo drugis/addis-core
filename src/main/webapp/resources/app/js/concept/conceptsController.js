@@ -2,14 +2,14 @@
 define([],
   function() {
     var dependencies = ['$scope', '$modal', '$stateParams', '$anchorScroll', '$location',
-      'ConceptService', 'VersionedGraphResource', 'CONCEPT_GRAPH_UUID'
+      'ConceptsService', 'VersionedGraphResource', 'CONCEPT_GRAPH_UUID'
     ];
     var ConceptsController = function($scope, $modal, $stateParams, $anchorScroll, $location,
-      ConceptService, VersionedGraphResource, CONCEPT_GRAPH_UUID) {
+      ConceptsService, VersionedGraphResource, CONCEPT_GRAPH_UUID) {
       var datasetUri = 'http://trials.drugis/org/datasets/' + $stateParams.datasetUuid;
 
       function reloadConceptsFromScratch() {
-        return ConceptService.queryItems(datasetUri).then(function(conceptsJson) {
+        return ConceptsService.queryItems(datasetUri).then(function(conceptsJson) {
           $scope.concepts = conceptsJson;
         });
       }
@@ -17,12 +17,10 @@ define([],
       $scope.openAddConceptDialog = function() {
         $modal.open({
           templateUrl: 'app/js/concept/createConcept.html',
-          controller: 'CreateConceptController',
+          controller: 'CreateConceptsController',
           resolve: {
             callback: function() {
               return reloadConceptsFromScratch;
-            },concepts: function(){
-              return $scope.concepts;
             }
           }
         });
@@ -35,7 +33,7 @@ define([],
       };
 
       $scope.areConceptsModified = function() {
-        return ConceptService.areConceptsModified();
+        return ConceptsService.areConceptsModified();
       };
 
       $scope.saveConcepts = function() {
@@ -45,7 +43,7 @@ define([],
           resolve: {
             callback: function() {
               return function(newVersion) {
-                ConceptService.conceptsSaved();
+                ConceptsService.conceptsSaved();
                 $location.path('/users/' + $stateParams.userUid + '/datasets/' + $stateParams.datasetUuid + '/versions/' + newVersion + '/concepts');
               };
             },
@@ -59,7 +57,7 @@ define([],
               return CONCEPT_GRAPH_UUID;
             },
             itemServiceName: function() {
-              return 'ConceptService';
+              return 'ConceptsService';
             }
           }
         });

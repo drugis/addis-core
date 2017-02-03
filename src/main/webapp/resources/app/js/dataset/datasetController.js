@@ -2,10 +2,10 @@
 define(['lodash'],
   function(_) {
     var dependencies = ['$scope', '$window', '$location', '$stateParams', '$state', '$modal', '$filter', 'DatasetVersionedResource', 'StudiesWithDetailsService',
-      'HistoryResource', 'ConceptService', 'VersionedGraphResource', 'DatasetResource', 'GraphResource', 'UserService', 'DataModelService'
+      'HistoryResource', 'ConceptsService', 'VersionedGraphResource', 'DatasetResource', 'GraphResource', 'UserService', 'DataModelService'
     ];
     var DatasetController = function($scope, $window, $location, $stateParams, $state, $modal, $filter, DatasetVersionedResource, StudiesWithDetailsService,
-      HistoryResource, ConceptService, VersionedGraphResource, DatasetResource, GraphResource, UserService, DataModelService) {
+      HistoryResource, ConceptsService, VersionedGraphResource, DatasetResource, GraphResource, UserService, DataModelService) {
 
       $scope.createProjectDialog = createProjectDialog;
       $scope.showEditDatasetModal = showEditDatasetModal;
@@ -90,7 +90,7 @@ define(['lodash'],
           return DataModelService.correctUnitConceptType(conceptsData);
         });
         // place loaded data into fontend cache and return a promise
-        return ConceptService.loadJson(cleanedConceptsPromise);
+        return ConceptsService.loadJson(cleanedConceptsPromise);
       }
 
       function getJson(resource) {

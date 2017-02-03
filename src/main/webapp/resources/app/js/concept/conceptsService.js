@@ -1,7 +1,7 @@
 'use strict';
 define(['lodash'], function(_) {
   var dependencies = ['$q', 'UUIDService'];
-  var ConceptService = function($q, UUIDService) {
+  var ConceptsService = function($q, UUIDService) {
 
     var modified = false;
     var conceptJsonPromise;
@@ -88,5 +88,5 @@ define(['lodash'], function(_) {
     };
 
   };
-  return dependencies.concat(ConceptService);
+  return dependencies.concat(ConceptsService);
 });
