@@ -64,7 +64,7 @@ define(['lodash', 'clipboard'], function(_, Clipboard) {
     }
 
     $scope.selectBaseLine = function(newBaseline) {
-      $scope.measurements.baselineUri = newBaseline.Uri;
+      $scope.measurements.baselineUri = newBaseline.armURI;
       var estimates = EstimatesResource.getEstimates({
         measurements: $scope.measurements.toBackEndMeasurements
       });
