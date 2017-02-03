@@ -4,7 +4,7 @@ define([],
     var dependencies = ['$scope', '$modal', '$stateParams', '$anchorScroll', '$location',
       'ConceptsService', 'VersionedGraphResource', 'CONCEPT_GRAPH_UUID'
     ];
-    var ConceptController = function($scope, $modal, $stateParams, $anchorScroll, $location,
+    var ConceptsController = function($scope, $modal, $stateParams, $anchorScroll, $location,
       ConceptsService, VersionedGraphResource, CONCEPT_GRAPH_UUID) {
       var datasetUri = 'http://trials.drugis/org/datasets/' + $stateParams.datasetUuid;
 
@@ -17,7 +17,7 @@ define([],
       $scope.openAddConceptDialog = function() {
         $modal.open({
           templateUrl: 'app/js/concept/createConcept.html',
-          controller: 'CreateConceptController',
+          controller: 'CreateConceptsController',
           resolve: {
             callback: function() {
               return reloadConceptsFromScratch;
@@ -74,5 +74,5 @@ define([],
       };
 
     };
-    return dependencies.concat(ConceptController);
+    return dependencies.concat(ConceptsController);
   });

@@ -1,8 +1,8 @@
 'use strict';
 define(['lodash'], function(_) {
-  var dependencies = ['$scope', '$stateParams', 'callback', '$modalInstance', 'ConceptService', 'concepts'];
+  var dependencies = ['$scope', '$stateParams', 'callback', '$modalInstance', 'ConceptsService', 'concepts'];
 
-  var CreateConceptController = function($scope, $stateParams, callback, $modalInstance, ConceptService, concepts) {
+  var CreateConceptController = function($scope, $stateParams, callback, $modalInstance, ConceptsService, concepts) {
     $scope.concept = {};
     $scope.isDuplicate = false;
 
@@ -18,7 +18,7 @@ define(['lodash'], function(_) {
     }];
 
     $scope.createConcept = function() {
-      return ConceptService.addItem($scope.concept).then(function() {
+      return ConceptsService.addItem($scope.concept).then(function() {
         callback();
         $modalInstance.close();
       });

@@ -24,15 +24,14 @@ define(function(require) {
 
   //services
   .factory('StudyService', require('study/studyService'))
-  .factory('D80TableService', require('study/d80TableService'))
+    .factory('D80TableService', require('study/d80TableService'))
 
   //resources
   .factory('CopyStudyResource', require('study/copyStudyResource'))
-  .factory('DatasetResource', require('dataset/datasetResource'))
-.factory('EstimatesResource',require('study/estimatesResource'))
-  //directives
-  .directive('studyCategory', require('study/categoryDirective'))
-  .directive('categoryItemDirective', require('study/categoryItemDirective'))
-  .directive('variableCategory', require('study/variableCategoryDirective'))
-    ;
+    .factory('DatasetResource', require('dataset/datasetResource'))
+    .factory('EstimatesResource', require('study/estimatesResource'))
+    //directives
+    .directive('studyCategory', require('study/categoryDirective'))
+    .directive('categoryItemDirective', require('study/categoryItemDirective'))
+    .directive('variableCategory', require('study/variableCategoryDirective'));
 });
