@@ -261,6 +261,7 @@ public class AnalysisControllerTest {
             .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()))
             .andExpect(jsonPath("$.selectedOutcomes", hasSize(3)))
             .andExpect(jsonPath("$.interventionInclusions", hasSize(2)));
+    verify(projectService).checkProjectExistsAndModifiable(gert,projectId);
     verify(analysisRepository).get(analysisId);
     verify(accountRepository).findAccountByUsername("gert");
     verify(singleStudyBenefitRiskAnalysisRepository).update(gert, newAnalysis);
@@ -280,6 +281,7 @@ public class AnalysisControllerTest {
             .contentType(WebConstants.getApplicationJsonUtf8Value()))
             .andExpect(status().isOk())
             .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()));
+    verify(projectService).checkProjectExistsAndModifiable(gert, projectId);
     verify(accountRepository).findAccountByUsername("gert");
     verify(analysisRepository).get(analysisId);
     verify(scenarioRepository).create(analysisId, Scenario.DEFAULT_TITLE, "{\"problem\":" + newAnalysis.getProblem() + "}");
@@ -314,6 +316,7 @@ public class AnalysisControllerTest {
             .principal(user)
             .contentType(WebConstants.getApplicationJsonUtf8Value()))
             .andExpect(status().isOk());
+    verify(projectService).checkProjectExistsAndModifiable(gert,projectId );
     verify(accountRepository).findAccountByUsername("gert");
     verify(analysisRepository).get(analysisId);
     verify(singleStudyBenefitRiskAnalysisRepository).update(gert, newAnalysis);

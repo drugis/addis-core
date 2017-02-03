@@ -35,9 +35,6 @@ public class SingleStudyBenefitRiskAnalysisRepositoryImpl implements org.drugis.
   @Inject
   InterventionRepository interventionRepository;
 
-  @Inject
-  private ProjectService projectService;
-
   @Override
   public Collection<SingleStudyBenefitRiskAnalysis> query(Integer projectId) {
     TypedQuery<SingleStudyBenefitRiskAnalysis> query = em.createQuery("FROM SingleStudyBenefitRiskAnalysis " +
@@ -55,8 +52,6 @@ public class SingleStudyBenefitRiskAnalysisRepositoryImpl implements org.drugis.
 
   @Override
   public SingleStudyBenefitRiskAnalysis update(Account user, SingleStudyBenefitRiskAnalysis analysis) throws ResourceDoesNotExistException, MethodNotAllowedException {
-    projectService.checkProjectExistsAndModifiable(user, analysis.getProjectId());
-
     if (isNotEmpty(analysis.getSelectedOutcomes())) {
       // do not allow selection of outcomes that are not in the project
       for (Outcome outcome : analysis.getSelectedOutcomes()) {

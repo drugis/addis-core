@@ -103,14 +103,14 @@ public class ScenarioControllerTest {
     Integer projectId = 1;
     Integer analysisId = 1;
     Collection<Scenario> scenarios = Arrays.asList(scenario1, scenario2);
-    when(scenarioRepository.query(projectId, analysisId)).thenReturn(scenarios);
+    when(scenarioRepository.queryByProjectAndAnalysis(projectId, analysisId)).thenReturn(scenarios);
     mockMvc.perform(get("/projects/" + projectId + "/analyses/" + analysisId + "/scenarios").principal(user))
             .andExpect(status().isOk())
             .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()))
             .andExpect(jsonPath("$", hasSize(2)))
             .andExpect(jsonPath("$[0].id", is(scenario1.getId())))
             .andExpect(jsonPath("$[1].id", is(scenario2.getId())));
-    verify(scenarioRepository).query(projectId, analysisId);
+    verify(scenarioRepository).queryByProjectAndAnalysis(projectId, analysisId);
   }
 
   @Test

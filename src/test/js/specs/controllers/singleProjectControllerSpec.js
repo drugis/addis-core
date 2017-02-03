@@ -7,7 +7,7 @@ define(['angular-mocks', 'angular'], function(angularMocks, angular) {
       interventionService = jasmine.createSpyObj('InterventionService', ['generateDescriptionLabel']),
       projectServiceMock = jasmine.createSpyObj('ProjectService', ['buildCovariateUsage', 'buildOutcomeUsage', 'buildInterventionUsage']),
       analysisResourceMock = jasmine.createSpyObj('analysisResource', ['query', 'save']),
-      userServiceMock = jasmine.createSpyObj('UserService', ['isLoginUserId']),
+      userServiceMock = jasmine.createSpyObj('UserService', ['isLoginUserId','hasLoggedInUser']),
       historyResourceMock = jasmine.createSpyObj('historyResource', ['get']),
       projectResource = jasmine.createSpyObj('projectResource', ['get', 'save', 'query']),
       semanticOutcomeResource = jasmine.createSpyObj('semanticOutcomeResource', ['query']),
@@ -172,6 +172,8 @@ define(['angular-mocks', 'angular'], function(angularMocks, angular) {
       mockReport.$promise = reportDeferred.promise;
 
       state = jasmine.createSpyObj('state', ['go']);
+      userServiceMock.hasLoggedInUser.and.returnValue(true);
+        
 
       var mockHistory = {
         creator: 'Jan',

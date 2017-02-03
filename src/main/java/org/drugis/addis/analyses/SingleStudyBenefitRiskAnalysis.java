@@ -72,7 +72,7 @@ public class SingleStudyBenefitRiskAnalysis extends AbstractAnalysis {
 
   public void setStudyGraphUri(URI studyGraphUri) {
     this.studyGraphUri = studyGraphUri == null ? null : studyGraphUri.toString();
-  }
+}
 
   public List<Outcome> getSelectedOutcomes() {
     return selectedOutcomes == null ? Collections.EMPTY_LIST : Collections.unmodifiableList(new ArrayList<>(selectedOutcomes));
@@ -96,18 +96,19 @@ public class SingleStudyBenefitRiskAnalysis extends AbstractAnalysis {
   public boolean equals(Object o) {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
+    if (!super.equals(o)) return false;
 
     SingleStudyBenefitRiskAnalysis that = (SingleStudyBenefitRiskAnalysis) o;
 
     if (problem != null ? !problem.equals(that.problem) : that.problem != null) return false;
     if (studyGraphUri != null ? !studyGraphUri.equals(that.studyGraphUri) : that.studyGraphUri != null) return false;
     return selectedOutcomes.equals(that.selectedOutcomes);
-
   }
 
   @Override
   public int hashCode() {
-    int result = problem != null ? problem.hashCode() : 0;
+    int result = super.hashCode();
+    result = 31 * result + (problem != null ? problem.hashCode() : 0);
     result = 31 * result + (studyGraphUri != null ? studyGraphUri.hashCode() : 0);
     result = 31 * result + selectedOutcomes.hashCode();
     return result;

@@ -1,5 +1,10 @@
 package org.drugis.addis.projects.service.impl;
 
+import org.drugis.addis.analyses.*;
+import org.drugis.addis.analyses.repository.AnalysisRepository;
+import org.drugis.addis.analyses.repository.MetaBenefitRiskAnalysisRepository;
+import org.drugis.addis.analyses.repository.NetworkMetaAnalysisRepository;
+import org.drugis.addis.analyses.service.AnalysisService;
 import org.drugis.addis.covariates.Covariate;
 import org.drugis.addis.covariates.CovariateRepository;
 import org.drugis.addis.exception.MethodNotAllowedException;
@@ -8,12 +13,17 @@ import org.drugis.addis.interventions.controller.command.*;
 import org.drugis.addis.interventions.model.*;
 import org.drugis.addis.interventions.repository.InterventionRepository;
 import org.drugis.addis.interventions.service.InterventionService;
+import org.drugis.addis.models.Model;
+import org.drugis.addis.models.exceptions.InvalidModelException;
+import org.drugis.addis.models.repository.ModelRepository;
 import org.drugis.addis.outcomes.Outcome;
 import org.drugis.addis.outcomes.repository.OutcomeRepository;
 import org.drugis.addis.projects.Project;
 import org.drugis.addis.projects.ProjectCommand;
 import org.drugis.addis.projects.repository.ProjectRepository;
 import org.drugis.addis.projects.service.ProjectService;
+import org.drugis.addis.scenarios.Scenario;
+import org.drugis.addis.scenarios.repository.ScenarioRepository;
 import org.drugis.addis.security.Account;
 import org.drugis.addis.security.repository.AccountRepository;
 import org.drugis.addis.trialverse.model.SemanticInterventionUriAndName;
@@ -32,10 +42,13 @@ import org.springframework.stereotype.Service;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.security.Principal;
+import java.sql.SQLException;
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 /**
@@ -45,35 +58,46 @@ import java.util.stream.Collectors;
 public class ProjectServiceImpl implements ProjectService {
 
   @Inject
-  private
-  AccountRepository accountRepository;
+  private AccountRepository accountRepository;
 
   @Inject
-  private
-  ProjectRepository projectRepository;
+  private AnalysisRepository analysisRepository;
 
   @Inject
-  private
-  TriplestoreService triplestoreService;
+  private AnalysisService analysisService;
 
   @Inject
-  private
-  OutcomeRepository outcomeRepository;
+  private MetaBenefitRiskAnalysisRepository metaBenefitRiskAnalysisRepository;
 
   @Inject
-  private
-  InterventionRepository interventionRepository;
+  private ProjectRepository projectRepository;
 
   @Inject
-  private
-  MappingService mappingService;
+  private TriplestoreService triplestoreService;
 
   @Inject
-  private
-  CovariateRepository covariateRepository;
+  private OutcomeRepository outcomeRepository;
 
   @Inject
-  VersionMappingRepository versionMappingRepository;
+  private InterventionRepository interventionRepository;
+
+  @Inject
+  private MappingService mappingService;
+
+  @Inject
+  private CovariateRepository covariateRepository;
+
+  @Inject
+  private VersionMappingRepository versionMappingRepository;
+
+  @Inject
+  private ModelRepository modelRepository;
+
+  @Inject
+  private ScenarioRepository scenarioRepository;
+
+  @Inject
+  private NetworkMetaAnalysisRepository networkMetaAnalysisRepository;
 
   @Qualifier("emAddisCore")
   @PersistenceContext(unitName = "addisCore")
@@ -126,11 +150,210 @@ public class ProjectServiceImpl implements ProjectService {
   }
 
   @Override
-  public Integer copy(Account user, Integer sourceProjectId) throws ResourceDoesNotExistException, ReadValueException, URISyntaxException {
+  public Integer copy(Account user, Integer sourceProjectId, String newTitle) throws ResourceDoesNotExistException, SQLException {
     Project sourceProject = projectRepository.get(sourceProjectId);
     ProjectCommand command = sourceProject.getCommand();
-    String addisDatasetUuid = sourceProject.getNamespaceUid();
-    URI datasetUri = URI.create(Namespaces.DATASET_NAMESPACE + addisDatasetUuid);
+    command.setDatasetVersion(sourceProject.getDatasetVersion());
+    command.setName(newTitle);
+    Project newProject = projectRepository.create(user, command);
+
+    //outcomes
+    Map<Integer, Integer> oldToNewOutcomeId = new HashMap<>();
+    Collection<Outcome> sourceOutcomes = outcomeRepository.query(sourceProjectId);
+    sourceOutcomes.forEach(outcomeCreator(user, newProject, oldToNewOutcomeId));
+
+    //covariates
+    Map<Integer, Integer> oldToNewCovariateId = new HashMap<>();
+    Collection<Covariate> sourceCovariates = covariateRepository.findByProject(sourceProjectId);
+    sourceCovariates.forEach(covariateCreator(newProject, oldToNewCovariateId));
+
+    //interventions
+    Map<Integer, Integer> oldToNewInterventionId = new HashMap<>();
+    Set<AbstractIntervention> sourceInterventions = interventionRepository.query(sourceProjectId);
+    sourceInterventions.stream()
+            .filter(intervention -> intervention instanceof SingleIntervention)
+            .map(intervention -> (SingleIntervention) intervention)
+            .forEach(singleInterventionCreator(user, newProject, oldToNewInterventionId));
+    sourceInterventions.stream()
+            .filter(intervention -> (intervention instanceof CombinationIntervention))
+            .map(intervention -> (CombinationIntervention) intervention)
+            .forEach(combinationInterventionCreator(user, newProject, oldToNewInterventionId));
+    sourceInterventions.stream()
+            .filter(intervention -> (intervention instanceof InterventionSet))
+            .map(intervention -> (InterventionSet) intervention)
+            .forEach(interventionSetCreator(user, newProject, oldToNewInterventionId));
+
+    //analyses
+    Map<Integer, Integer> oldToNewAnalysisId = new HashMap<>();
+    Collection<AbstractAnalysis> sourceAnalyses = analysisRepository.query(sourceProjectId);
+    sourceAnalyses.stream()
+            .filter(analysis -> analysis instanceof SingleStudyBenefitRiskAnalysis)
+            .map(analysis -> (SingleStudyBenefitRiskAnalysis) analysis)
+            .forEach(singleStudyBenefitRiskAnalysisCreator(newProject, user, oldToNewAnalysisId, oldToNewInterventionId, oldToNewOutcomeId));
+    sourceAnalyses.stream()
+            .filter(analysis -> analysis instanceof NetworkMetaAnalysis)
+            .map(analysis -> (NetworkMetaAnalysis) analysis)
+            .forEach(netWorkMetaAnalysisCreator(user, newProject,
+                    oldToNewAnalysisId,
+                    oldToNewOutcomeId,
+                    oldToNewInterventionId,
+                    oldToNewCovariateId));
+
+
+    //models
+    Map<Integer, Integer> oldToNewModelId = new HashMap<>();
+    Collection<Model> sourceModels = modelRepository.findNetworkModelsByProject(sourceProjectId);
+    sourceModels.forEach(modelCreator(oldToNewAnalysisId, oldToNewModelId));
+
+    //update primary models
+    analysisRepository.query(newProject.getId()).stream()
+            .filter(analysis -> analysis instanceof NetworkMetaAnalysis)
+            .map(analysis -> (NetworkMetaAnalysis) analysis)
+            .forEach(nma -> {
+              if (nma.getPrimaryModel() != null) {
+                nma.setPrimaryModel(oldToNewModelId.get(nma.getPrimaryModel()));
+              }
+            });
+
+    //mbr analyses
+    sourceAnalyses.stream()
+            .filter(analysis -> analysis instanceof MetaBenefitRiskAnalysis)
+            .map(analysis -> (MetaBenefitRiskAnalysis) analysis)
+            .forEach(metaBenefitRiskCreator(user, newProject, oldToNewOutcomeId, oldToNewInterventionId, oldToNewAnalysisId, oldToNewModelId));
+
+    //scenario's
+    Collection<Scenario> sourceScenarios = scenarioRepository.queryByProject(sourceProjectId);
+    sourceScenarios.forEach(scenario -> scenarioRepository.create(oldToNewAnalysisId.get(scenario.getWorkspace()),
+            scenario.getTitle(), scenario.getState()));
+
+    return newProject.getId();
+  }
+
+  private Consumer<MetaBenefitRiskAnalysis> metaBenefitRiskCreator(Account user, Project newProject, Map<Integer, Integer> oldToNewOutcomeId, Map<Integer, Integer> oldToNewInterventionId, Map<Integer, Integer> oldToNewAnalysisId, Map<Integer, Integer> oldToNewModelId) {
+    return oldAnalysis -> {
+      AnalysisCommand analysisCommand = new AnalysisCommand(newProject.getId(), oldAnalysis.getTitle(),
+              AnalysisType.META_BENEFIT_RISK_ANALYSIS_LABEL);
+      try {
+        MetaBenefitRiskAnalysis newAnalysis = metaBenefitRiskAnalysisRepository.create(user, analysisCommand);
+        em.flush(); // needed to unbuffer the interventioninclusion additions from the constructor
+        oldToNewAnalysisId.put(oldAnalysis.getId(), newAnalysis.getId());
+        newAnalysis.setProblem(oldAnalysis.getProblem());
+        newAnalysis.setFinalized(oldAnalysis.isFinalized());
+        updateIncludedInterventions(oldAnalysis, newAnalysis, oldToNewInterventionId);
+
+        List<MbrOutcomeInclusion> updateMBROutcomeInclusions = oldAnalysis.getMbrOutcomeInclusions().stream()
+                .map(inclusion -> {
+                  MbrOutcomeInclusion newInclusion = new MbrOutcomeInclusion(newAnalysis.getId(),
+                          oldToNewOutcomeId.get(inclusion.getOutcomeId()),
+                          oldToNewAnalysisId.get(inclusion.getNetworkMetaAnalysisId()),
+                          oldToNewModelId.get(inclusion.getModelId()));
+                  newInclusion.setBaseline(inclusion.getBaseline());
+                  return newInclusion;
+                })
+                .collect(Collectors.toList());
+        newAnalysis.setMbrOutcomeInclusions(updateMBROutcomeInclusions);
+        em.merge(newAnalysis);
+      } catch (ResourceDoesNotExistException | MethodNotAllowedException | IOException | SQLException e) {
+        e.printStackTrace();
+      }
+    };
+  }
+
+  private Consumer<Model> modelCreator(Map<Integer, Integer> oldIdToNewAnalysisId, Map<Integer, Integer> oldToNewModelId) {
+    return oldModel -> {
+      try {
+        Model newModel = new Model(oldModel);
+        newModel.setAnalysisId(oldIdToNewAnalysisId.get(oldModel.getAnalysisId()));
+        newModel = modelRepository.persist(newModel);
+        oldToNewModelId.put(oldModel.getId(), newModel.getId());
+      } catch (InvalidModelException e) {
+        e.printStackTrace();
+      }
+    };
+  }
+
+  private Consumer<? super SingleStudyBenefitRiskAnalysis> singleStudyBenefitRiskAnalysisCreator(
+          Project newProject, Account user, Map<Integer, Integer> oldToNewAnalysisId,
+          Map<Integer, Integer> oldIdToNewInterventionId,
+          Map<Integer, Integer> oldIdToNewOutcomeId) {
+    return oldAnalysis -> {
+      AnalysisCommand analysisCommand = new AnalysisCommand(newProject.getId(), oldAnalysis.getTitle(),
+              AnalysisType.SINGLE_STUDY_BENEFIT_RISK_LABEL);
+      try {
+        final SingleStudyBenefitRiskAnalysis newAnalysis = analysisService.createSingleStudyBenefitRiskAnalysis(user, analysisCommand);
+        em.flush(); // may be redundant
+        newAnalysis.setStudyGraphUri(oldAnalysis.getStudyGraphUri());
+        newAnalysis.setProblem(oldAnalysis.getProblem());
+        oldToNewAnalysisId.put(oldAnalysis.getId(), newAnalysis.getId());
+        List<Outcome> updatedOutcomes = oldAnalysis.getSelectedOutcomes().stream()
+                .map(outcome -> {
+                  try {
+                    return outcomeRepository.get(oldIdToNewOutcomeId.get(outcome.getId()));
+                  } catch (ResourceDoesNotExistException e) {
+                    e.printStackTrace();
+                  }
+                  return null;
+                })
+                .collect(Collectors.toList());
+        newAnalysis.updateSelectedOutcomes(updatedOutcomes);
+        updateIncludedInterventions(oldAnalysis, newAnalysis, oldIdToNewInterventionId);
+      } catch (MethodNotAllowedException | ResourceDoesNotExistException e) {
+        e.printStackTrace();
+      }
+    };
+  }
+
+  private void updateIncludedInterventions(AbstractAnalysis oldAnalysis, AbstractAnalysis newAnalysis, Map<Integer, Integer> oldIdToNewInterventionId) {
+    Set<InterventionInclusion> interventionInclusions = oldAnalysis.getInterventionInclusions().stream()
+            .map(inclusion -> new InterventionInclusion(newAnalysis.getId(),
+                    oldIdToNewInterventionId.get(inclusion.getInterventionId())))
+            .collect(Collectors.toSet());
+    newAnalysis.updateIncludedInterventions(interventionInclusions);
+  }
+
+  private Consumer<? super NetworkMetaAnalysis> netWorkMetaAnalysisCreator(
+          Account user, Project newProject,
+          Map<Integer, Integer> oldToNewAnalysisId,
+          Map<Integer, Integer> oldToNewOutcomeId,
+          Map<Integer, Integer> oldToNewInterventionId,
+          Map<Integer, Integer> oldToNewCovariateId) {
+    return oldAnalysis -> {
+      AnalysisCommand command = new AnalysisCommand(newProject.getId(), oldAnalysis.getTitle(),
+              AnalysisType.EVIDENCE_SYNTHESIS);
+      try {
+        final NetworkMetaAnalysis newAnalysis = analysisService.createNetworkMetaAnalysis(user, command);
+        em.flush(); // needed to unbuffer the interventioninclusion additions from the constructor
+        updateIncludedInterventions(oldAnalysis, newAnalysis, oldToNewInterventionId);
+        if (oldAnalysis.getOutcome() != null) {
+          Outcome updatedOutcome = outcomeRepository.get(oldToNewOutcomeId.get(oldAnalysis.getOutcome().getId()));
+          newAnalysis.setOutcome(updatedOutcome);
+        }
+        newAnalysis.setPrimaryModel(oldAnalysis.getPrimaryModel());
+        List<CovariateInclusion> updatedCovariateInclusions = oldAnalysis.getCovariateInclusions().stream()
+                .map(inclusion -> new CovariateInclusion(newAnalysis.getId(), oldToNewCovariateId.get(inclusion.getCovariateId())))
+                .collect(Collectors.toList());
+        newAnalysis.updateCovariateInclusions(updatedCovariateInclusions);
+        Set<MeasurementMomentInclusion> updatedMMInclusions = oldAnalysis.getIncludedMeasurementMoments().stream()
+                .map(inclusion -> new MeasurementMomentInclusion(newAnalysis.getId(), inclusion.getStudy(), inclusion.getMeasurementMoment()))
+                .collect(Collectors.toSet());
+        newAnalysis.updateMeasurementMomentInclusions(updatedMMInclusions);
+        Set<ArmExclusion> updatedArmExclusions = oldAnalysis.getExcludedArms().stream()
+                .map(exclusion -> new ArmExclusion(newAnalysis.getId(), exclusion.getTrialverseUid()))
+                .collect(Collectors.toSet());
+        newAnalysis.updateArmExclusions(updatedArmExclusions);
+        oldToNewAnalysisId.put(oldAnalysis.getId(), newAnalysis.getId());
+      } catch (ResourceDoesNotExistException | MethodNotAllowedException e) {
+        e.printStackTrace();
+      }
+    };
+  }
+
+  @Override
+  public Integer createUpdated(Account user, Integer sourceProjectId) throws ResourceDoesNotExistException,
+          ReadValueException, URISyntaxException {
+    Project sourceProject = projectRepository.get(sourceProjectId);
+    ProjectCommand command = sourceProject.getCommand();
+    URI datasetUri = URI.create(Namespaces.DATASET_NAMESPACE + sourceProject.getNamespaceUid());
     VersionMapping mapping = versionMappingRepository.getVersionMappingByDatasetUrl(datasetUri);
     String trialverseDatasetUuid = mapping.getVersionedDatasetUri().toString().split("/datasets/")[1];
     URI headVersion = URI.create(triplestoreService.getHeadVersion(mapping.getVersionedDatasetUri()));
@@ -138,22 +361,40 @@ public class ProjectServiceImpl implements ProjectService {
     Project newProject = projectRepository.create(user, command);
 
     //Outcomes
+    createOutcomes(user, sourceProjectId, trialverseDatasetUuid, headVersion, newProject);
+
+    //Covariates
+    createCovariates(sourceProjectId, trialverseDatasetUuid, headVersion, newProject);
+
+    //Interventions
+    createInterventions(user, sourceProjectId, trialverseDatasetUuid, headVersion, newProject);
+
+    return newProject.getId();
+  }
+
+  private void createOutcomes(Account user, Integer sourceProjectId, String trialverseDatasetUuid, URI headVersion, Project newProject) throws ReadValueException {
     Collection<Outcome> sourceOutcomes = outcomeRepository.query(sourceProjectId);
     List<SemanticVariable> semanticOutcomes = triplestoreService.getOutcomes(trialverseDatasetUuid, headVersion);
 
     sourceOutcomes.stream()
             .filter(sourceOutcome ->
                     semanticOutcomes.stream().anyMatch(semanticOutcome -> semanticOutcome.getUri().equals(sourceOutcome.getSemanticOutcomeUri())))
-            .forEach(outcome -> {
-              SemanticVariable semanticVariable = new SemanticVariable(outcome.getSemanticOutcomeUri(), outcome.getSemanticOutcomeLabel());
-              try {
-                outcomeRepository.create(user, newProject.getId(), outcome.getName(), outcome.getDirection(), outcome.getMotivation(), semanticVariable);
-              } catch (Exception e) {
-                e.printStackTrace();
-              }
-            });
+            .forEach(outcomeCreator(user, newProject, new HashMap<>()));
+  }
 
-    //Covariates
+  private Consumer<Outcome> outcomeCreator(Account user, Project newProject, Map<Integer, Integer> oldToNewOutcomeId) {
+    return outcome -> {
+      SemanticVariable semanticVariable = new SemanticVariable(outcome.getSemanticOutcomeUri(), outcome.getSemanticOutcomeLabel());
+      try {
+        Outcome newOutcome = outcomeRepository.create(user, newProject.getId(), outcome.getName(), outcome.getDirection(), outcome.getMotivation(), semanticVariable);
+        oldToNewOutcomeId.put(outcome.getId(), newOutcome.getId());
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
+    };
+  }
+
+  private void createCovariates(Integer sourceProjectId, String trialverseDatasetUuid, URI headVersion, Project newProject) throws ReadValueException {
     Collection<Covariate> sourceCovariates = covariateRepository.findByProject(sourceProjectId);
     List<SemanticVariable> semanticCovariates = triplestoreService.getPopulationCharacteristics(trialverseDatasetUuid, headVersion);
 
@@ -161,10 +402,18 @@ public class ProjectServiceImpl implements ProjectService {
             .filter(sourceCovariate -> sourceCovariate.getType().equals(CovariateOptionType.STUDY_CHARACTERISTIC) ||
                     semanticCovariates.stream()
                             .anyMatch(semanticCovariate -> semanticCovariate.getUri().toString().equals(sourceCovariate.getDefinitionKey())))
-            .forEach(covariate -> covariateRepository.createForProject(newProject.getId(), covariate.getDefinitionKey(), covariate.getName(),
-                    covariate.getMotivation(), covariate.getType()));
+            .forEach(covariateCreator(newProject, new HashMap<>()));
+  }
 
-    //Interventions
+  private Consumer<Covariate> covariateCreator(Project newProject, Map<Integer, Integer> oldIdToNewCovariateId) {
+    return covariate -> {
+      Covariate newCovariate = covariateRepository.createForProject(newProject.getId(), covariate.getDefinitionKey(),
+              covariate.getName(), covariate.getMotivation(), covariate.getType());
+      oldIdToNewCovariateId.put(covariate.getId(), newCovariate.getId());
+    };
+  }
+
+  private void createInterventions(Account user, Integer sourceProjectId, String trialverseDatasetUuid, URI headVersion, Project newProject) {
     Set<AbstractIntervention> sourceInterventions = interventionRepository.query(sourceProjectId);
     List<SemanticInterventionUriAndName> semanticInterventions = triplestoreService.getInterventions(trialverseDatasetUuid, headVersion);
     List<URI> unitConcepts = triplestoreService.getUnitUris(trialverseDatasetUuid, headVersion);
@@ -176,55 +425,66 @@ public class ProjectServiceImpl implements ProjectService {
             .map(intervention -> (SingleIntervention) intervention)
             .filter(sourceIntervention -> semanticInterventions.stream().anyMatch(semanticIntervention -> semanticIntervention.getUri().equals(sourceIntervention.getSemanticInterventionUri())))
             .filter(intervention -> checkInterventionUnits(intervention, unitConcepts))
-            .forEach(intervention -> {
-              try {
-                AbstractInterventionCommand newInterventionCommand =
-                        InterventionService.buildSingleInterventionCommand(newProject.getId(), intervention);
-                assert newInterventionCommand != null;
-                AbstractIntervention newIntervention = interventionRepository.create(user, newInterventionCommand);
-                oldIdToNewInterventionId.put(intervention.getId(), newIntervention.getId());
-              } catch (InvalidConstraintException | MethodNotAllowedException | ResourceDoesNotExistException e) {
-                e.printStackTrace();
-              }
-            });
+            .forEach(singleInterventionCreator(user, newProject, oldIdToNewInterventionId));
 
     //combination interventions before intervention sets because intervention sets may contain combination interventions
     sourceInterventions.stream()
             .filter(intervention -> (intervention instanceof CombinationIntervention))
             .map(intervention -> (CombinationIntervention) intervention)
             .filter(intervention -> intervention.getInterventionIds().stream().allMatch(id -> oldIdToNewInterventionId.get(id) != null))
-            .forEach(intervention -> {
-              Set<Integer> updatedInterventionIds = intervention.getInterventionIds().stream()
-                      .map(oldIdToNewInterventionId::get)
-                      .collect(Collectors.toSet());
-              AbstractInterventionCommand combinationCommand = new CombinationInterventionCommand(newProject.getId(),
-                      intervention.getName(), intervention.getMotivation(), updatedInterventionIds);
-              try {
-                AbstractIntervention newIntervention = interventionRepository.create(user, combinationCommand);
-                oldIdToNewInterventionId.put(intervention.getId(), newIntervention.getId());
-              } catch (MethodNotAllowedException | ResourceDoesNotExistException | InvalidConstraintException e) {
-                e.printStackTrace();
-              }
-            });
+            .forEach(combinationInterventionCreator(user, newProject, oldIdToNewInterventionId));
     // intervention sets
     sourceInterventions.stream()
             .filter(intervention -> (intervention instanceof InterventionSet))
             .map(intervention -> (InterventionSet) intervention)
             .filter(intervention -> intervention.getInterventionIds().stream().allMatch(id -> oldIdToNewInterventionId.get(id) != null))
-            .forEach(intervention -> {
-              Set<Integer> updatedInterventionIds = intervention.getInterventionIds().stream()
-                      .map(oldIdToNewInterventionId::get)
-                      .collect(Collectors.toSet());
-              AbstractInterventionCommand setCommand = new InterventionSetCommand(newProject.getId(),
-                      intervention.getName(), intervention.getMotivation(), updatedInterventionIds);
-              try {
-                interventionRepository.create(user, setCommand);
-              } catch (MethodNotAllowedException | ResourceDoesNotExistException | InvalidConstraintException e) {
-                e.printStackTrace();
-              }
-            });
+            .forEach(interventionSetCreator(user, newProject, oldIdToNewInterventionId));
+  }
 
-    return newProject.getId();
+  private Consumer<CombinationIntervention> combinationInterventionCreator(Account user, Project newProject, Map<Integer, Integer> oldIdToNewInterventionId) {
+    return intervention -> {
+      Set<Integer> updatedInterventionIds = intervention.getInterventionIds().stream()
+              .map(oldIdToNewInterventionId::get)
+              .collect(Collectors.toSet());
+      AbstractInterventionCommand combinationCommand = new CombinationInterventionCommand(newProject.getId(),
+              intervention.getName(), intervention.getMotivation(), updatedInterventionIds);
+      try {
+        AbstractIntervention newIntervention = interventionRepository.create(user, combinationCommand);
+        oldIdToNewInterventionId.put(intervention.getId(), newIntervention.getId());
+      } catch (MethodNotAllowedException | ResourceDoesNotExistException | InvalidConstraintException e) {
+        e.printStackTrace();
+      }
+    };
+  }
+
+  private Consumer<SingleIntervention> singleInterventionCreator(Account user, Project newProject, Map<Integer, Integer> oldIdToNewInterventionId) {
+    return intervention -> {
+      try {
+        AbstractInterventionCommand newInterventionCommand =
+                InterventionService.buildSingleInterventionCommand(newProject.getId(), intervention);
+        assert newInterventionCommand != null;
+        AbstractIntervention newIntervention = interventionRepository.create(user, newInterventionCommand);
+        oldIdToNewInterventionId.put(intervention.getId(), newIntervention.getId());
+      } catch (InvalidConstraintException | MethodNotAllowedException | ResourceDoesNotExistException e) {
+        e.printStackTrace();
+      }
+    };
+  }
+
+  private Consumer<InterventionSet> interventionSetCreator(Account user, Project newProject, Map<Integer, Integer> oldIdToNewInterventionId) {
+    return intervention -> {
+      Set<Integer> updatedInterventionIds = intervention.getInterventionIds().stream()
+              .map(oldIdToNewInterventionId::get)
+              .collect(Collectors.toSet());
+      AbstractInterventionCommand setCommand = new InterventionSetCommand(newProject.getId(),
+              intervention.getName(), intervention.getMotivation(), updatedInterventionIds);
+      try {
+        AbstractIntervention newIntervention = interventionRepository.create(user, setCommand);
+        oldIdToNewInterventionId.put(intervention.getId(), newIntervention.getId());
+      } catch (MethodNotAllowedException | ResourceDoesNotExistException | InvalidConstraintException e) {
+        e.printStackTrace();
+      }
+    };
   }
 
   private Boolean checkInterventionUnits(SingleIntervention intervention, List<URI> unitConcepts) {
@@ -249,8 +509,8 @@ public class ProjectServiceImpl implements ProjectService {
   private Boolean areConstraintUnitsKnown(DoseConstraint constraint, List<URI> uriConcepts) {
     return constraint == null ||
             (
-              (constraint.getLowerBound() == null || uriConcepts.contains(constraint.getLowerBound().getUnitConcept())) &&
-              (constraint.getUpperBound() == null || uriConcepts.contains(constraint.getUpperBound().getUnitConcept()))
+                    (constraint.getLowerBound() == null || uriConcepts.contains(constraint.getLowerBound().getUnitConcept())) &&
+                            (constraint.getUpperBound() == null || uriConcepts.contains(constraint.getUpperBound().getUnitConcept()))
             );
   }
 }

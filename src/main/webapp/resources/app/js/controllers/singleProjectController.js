@@ -54,6 +54,7 @@ define(['lodash', 'angular'], function(_, angular) {
     $scope.loading.loaded = true;
 
     $scope.editMode.allowEditing = UserService.isLoginUserId($scope.project.owner.id);
+    $scope.editMode.allowCopying = UserService.hasLoggedInUser();
 
     $scope.trialverse = TrialverseResource.get({
       namespaceUid: $scope.project.namespaceUid,
@@ -382,6 +383,24 @@ define(['lodash', 'angular'], function(_, angular) {
               }, {
                 isArchived: true
               });
+              $state.go('project', {
+                userUid: $stateParams.userUid,
+                projectId: newProjectId
+              });
+            };
+          }
+        }
+      });
+    };
+    
+    $scope.openCopyDialog = function() {
+      $modal.open({
+        templateUrl: './app/js/project/copyProject.html',
+        scope: $scope,
+        controller: 'CopyProjectController',
+        resolve: {
+          callback: function() {
+            return function(newProjectId) {
               $state.go('project', {
                 userUid: $stateParams.userUid,
                 projectId: newProjectId

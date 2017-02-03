@@ -163,6 +163,7 @@ public class AnalysisController extends AbstractAddisCoreController {
     if (oldAnalysis.getProblem() != null) {
       throw new MethodNotAllowedException();
     }
+    projectService.checkProjectExistsAndModifiable(user, analysis.getProjectId());
     SingleStudyBenefitRiskAnalysis updatedAnalysis = singleStudyBenefitRiskAnalysisRepository.update(user, analysis);
     if (analysis.getProblem() != null) {
       String state = analysis.getProblem();

@@ -3,6 +3,7 @@ package org.drugis.addis.analyses;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.drugis.addis.covariates.Covariate;
 import org.drugis.addis.outcomes.Outcome;
 import org.drugis.trialverse.util.Utils;
 
@@ -91,13 +92,27 @@ public class NetworkMetaAnalysis extends AbstractAnalysis implements Serializabl
     return Collections.unmodifiableList(new ArrayList<>(includedCovariates));
   }
 
+  public void updateCovariateInclusions(List<CovariateInclusion> newInclusions) {
+    this.includedCovariates.clear();
+    this.includedCovariates.addAll(newInclusions);
+  }
+
   @JsonIgnore
   public Set<MeasurementMomentInclusion> getIncludedMeasurementMoments() {
     return Collections.unmodifiableSet(includedMeasurementMoments);
   }
 
+  public void updateMeasurementMomentInclusions(Set<MeasurementMomentInclusion> newInclusions) {
+    this.includedMeasurementMoments.clear();
+    this.includedMeasurementMoments.addAll(newInclusions);
+  }
+
   public Outcome getOutcome() {
     return outcome;
+  }
+
+  public void setOutcome(Outcome outcome) {
+    this.outcome = outcome;
   }
 
   public Integer getPrimaryModel() {
@@ -108,11 +123,11 @@ public class NetworkMetaAnalysis extends AbstractAnalysis implements Serializabl
     this.primaryModel = primaryModel;
   }
 
-  public void updateArmExclusions(Set<ArmExclusion> excludedArms){
+  public void updateArmExclusions(Set<ArmExclusion> excludedArms) {
     Utils.updateSet(this.excludedArms, excludedArms);
   }
 
-  public void updateIncludedCovariates(Set<CovariateInclusion> includedCovariates){
+  public void updateIncludedCovariates(Set<CovariateInclusion> includedCovariates) {
     Utils.updateSet(this.includedCovariates, includedCovariates);
   }
 
@@ -123,30 +138,25 @@ public class NetworkMetaAnalysis extends AbstractAnalysis implements Serializabl
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
-    if (!(o instanceof NetworkMetaAnalysis)) return false;
+    if (o == null || getClass() != o.getClass()) return false;
+    if (!super.equals(o)) return false;
 
     NetworkMetaAnalysis that = (NetworkMetaAnalysis) o;
 
-    if (id != null ? !id.equals(that.id) : that.id != null) return false;
-    if (!projectId.equals(that.projectId)) return false;
-    if (!title.equals(that.title)) return false;
     if (primaryModel != null ? !primaryModel.equals(that.primaryModel) : that.primaryModel != null) return false;
     if (!excludedArms.equals(that.excludedArms)) return false;
-    if (!interventionInclusions.equals(that.interventionInclusions)) return false;
     if (!includedCovariates.equals(that.includedCovariates)) return false;
+    if (!includedMeasurementMoments.equals(that.includedMeasurementMoments)) return false;
     return outcome != null ? outcome.equals(that.outcome) : that.outcome == null;
-
   }
 
   @Override
   public int hashCode() {
-    int result = id != null ? id.hashCode() : 0;
-    result = 31 * result + projectId.hashCode();
-    result = 31 * result + title.hashCode();
+    int result = super.hashCode();
     result = 31 * result + (primaryModel != null ? primaryModel.hashCode() : 0);
     result = 31 * result + excludedArms.hashCode();
-    result = 31 * result + interventionInclusions.hashCode();
     result = 31 * result + includedCovariates.hashCode();
+    result = 31 * result + includedMeasurementMoments.hashCode();
     result = 31 * result + (outcome != null ? outcome.hashCode() : 0);
     return result;
   }

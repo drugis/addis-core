@@ -67,10 +67,27 @@ public class Model {
 
   private Boolean archived;
   @Column(name = "archived_on")
-  @Type(type="date")
+  @Type(type = "date")
   private Date archivedOn;
 
   public Model() {
+  }
+
+  public Model(Model other) {
+    this.analysisId = other.analysisId;
+    this.title = other.title;
+    this.linearModel = other.linearModel;
+    this.modelType = other.modelType;
+    this.heterogeneityPrior = other.heterogeneityPrior;
+    this.burnInIterations = other.burnInIterations;
+    this.inferenceIterations = other.inferenceIterations;
+    this.thinningFactor = other.thinningFactor;
+    this.likelihood = other.likelihood;
+    this.link = other.link;
+    this.outcomeScale = other.outcomeScale;
+    this.regressor = other.regressor;
+    this.sensitivity = other.sensitivity;
+    this.archived = false;
   }
 
   private Model(ModelBuilder builder) throws InvalidModelException {
@@ -87,7 +104,7 @@ public class Model {
     this.likelihood = builder.likelihood;
     this.link = builder.link;
 
-    if(!LINK_OPTIONS.contains(this.link)){
+    if (!LINK_OPTIONS.contains(this.link)) {
       throw new InvalidModelException(this.link + " is not a valid link type");
     }
     this.outcomeScale = builder.outcomeScale;
@@ -122,8 +139,16 @@ public class Model {
     return id;
   }
 
+  public void setId(Integer id) {
+    this.id = id;
+  }
+
   public Integer getAnalysisId() {
     return analysisId;
+  }
+
+  public void setAnalysisId(Integer analysisId) {
+    this.analysisId = analysisId;
   }
 
   public URI getTaskUrl() {
@@ -182,17 +207,17 @@ public class Model {
     return regressor;
   }
 
+
   public JSONObject getSensitivity() {
     return sensitivity;
   }
-
 
   public String getRunStatus() {
     return runStatus;
   }
 
   public void setRunStatus(String newStatus) {
-    if(!"failed".equals(newStatus) && !"done".equals(newStatus) && !"progress".equals(newStatus) && !"unknown".equals(newStatus)) {
+    if (!"failed".equals(newStatus) && !"done".equals(newStatus) && !"progress".equals(newStatus) && !"unknown".equals(newStatus)) {
       throw new IllegalArgumentException("Unknown model run status: " + newStatus);
     }
     this.runStatus = newStatus;
@@ -328,6 +353,7 @@ public class Model {
     result = 31 * result + (archivedOn != null ? archivedOn.hashCode() : 0);
     return result;
   }
+
 
   public static class DetailNode {
     Integer id;
@@ -512,7 +538,7 @@ public class Model {
     }
   }
 
-  public abstract class HeterogeneityValues {
+  abstract class HeterogeneityValues {
   }
 
   public class HeterogeneityStdDevValues extends HeterogeneityValues {
@@ -522,7 +548,7 @@ public class Model {
     public HeterogeneityStdDevValues() {
     }
 
-    public HeterogeneityStdDevValues(Double lower, Double upper) {
+    HeterogeneityStdDevValues(Double lower, Double upper) {
       this.lower = lower;
       this.upper = upper;
     }
@@ -543,7 +569,7 @@ public class Model {
     public HeterogeneityVarianceValues() {
     }
 
-    public HeterogeneityVarianceValues(Double mean, Double stdDev) {
+    HeterogeneityVarianceValues(Double mean, Double stdDev) {
       this.mean = mean;
       this.stdDev = stdDev;
     }
@@ -564,7 +590,7 @@ public class Model {
     public HeterogeneityPrecisionValues() {
     }
 
-    public HeterogeneityPrecisionValues(Double rate, Double shape) {
+    HeterogeneityPrecisionValues(Double rate, Double shape) {
       this.rate = rate;
       this.shape = shape;
     }
@@ -585,7 +611,7 @@ public class Model {
     public ModelType() {
     }
 
-    public ModelType(String type, TypeDetails details) {
+    ModelType(String type, TypeDetails details) {
       this.type = type;
       this.details = details;
     }
@@ -606,7 +632,7 @@ public class Model {
     public TypeDetails() {
     }
 
-    public TypeDetails(DetailNode from, DetailNode to) {
+    TypeDetails(DetailNode from, DetailNode to) {
       this.from = from;
       this.to = to;
     }

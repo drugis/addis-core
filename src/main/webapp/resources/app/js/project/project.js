@@ -15,6 +15,7 @@ define(function (require) {
     .controller('InsertComparisonResultController', require('project/insertComparisonResultController'))
     .controller('DeleteDefinitionController',require('project/deleteDefinitionController'))
     .controller('UpdateProjectController', require('project/updateProjectController'))
+    .controller('CopyProjectController', require('project/copyProjectController'))
 
     //directives
     .directive('nmaReportView', require('project/nmaReportViewDirective'))

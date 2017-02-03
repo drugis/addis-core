@@ -10,6 +10,7 @@ import org.drugis.addis.trialverse.service.impl.ReadValueException;
 
 import java.net.URISyntaxException;
 import java.security.Principal;
+import java.sql.SQLException;
 import java.util.List;
 
 /**
@@ -24,5 +25,7 @@ public interface ProjectService {
 
   Project updateProject(Integer projectId, String name, String description) throws UpdateProjectException, ResourceDoesNotExistException;
 
-  Integer copy(Account user, Integer projectId) throws ResourceDoesNotExistException, ReadValueException, URISyntaxException;
+  Integer copy(Account user, Integer projectId, String newTitle) throws ResourceDoesNotExistException, SQLException;
+
+  Integer createUpdated(Account user, Integer projectId) throws ResourceDoesNotExistException, ReadValueException, URISyntaxException;
 }

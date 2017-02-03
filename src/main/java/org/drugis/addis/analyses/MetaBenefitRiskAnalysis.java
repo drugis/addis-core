@@ -86,27 +86,21 @@ public class MetaBenefitRiskAnalysis extends AbstractAnalysis implements Seriali
   public boolean equals(Object o) {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
+    if (!super.equals(o)) return false;
 
     MetaBenefitRiskAnalysis that = (MetaBenefitRiskAnalysis) o;
 
     if (finalized != that.finalized) return false;
-    if (id != null ? !id.equals(that.id) : that.id != null) return false;
-    if (!projectId.equals(that.projectId)) return false;
-    if (!title.equals(that.title)) return false;
-    if (!interventionInclusions.equals(that.interventionInclusions)) return false;
+    if (problem != null ? !problem.equals(that.problem) : that.problem != null) return false;
     return mbrOutcomeInclusions.equals(that.mbrOutcomeInclusions);
-
   }
 
   @Override
   public int hashCode() {
-    int result = id != null ? id.hashCode() : 0;
-    result = 31 * result + projectId.hashCode();
-    result = 31 * result + title.hashCode();
-    result = 31 * result + interventionInclusions.hashCode();
-    result = 31 * result + mbrOutcomeInclusions.hashCode();
+    int result = super.hashCode();
     result = 31 * result + (finalized ? 1 : 0);
+    result = 31 * result + (problem != null ? problem.hashCode() : 0);
+    result = 31 * result + mbrOutcomeInclusions.hashCode();
     return result;
   }
-
 }

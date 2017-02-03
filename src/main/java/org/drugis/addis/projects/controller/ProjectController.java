@@ -4,6 +4,7 @@ import org.apache.http.HttpStatus;
 import org.drugis.addis.base.AbstractAddisCoreController;
 import org.drugis.addis.exception.MethodNotAllowedException;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
+import org.drugis.addis.projects.CopyCommand;
 import org.drugis.addis.projects.Project;
 import org.drugis.addis.projects.ProjectCommand;
 import org.drugis.addis.projects.repository.ProjectRepository;
@@ -26,6 +27,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.net.URISyntaxException;
 import java.security.Principal;
+import java.sql.SQLException;
 import java.util.Collection;
 import java.util.List;
 
@@ -114,8 +116,17 @@ public class ProjectController extends AbstractAddisCoreController {
 
   @RequestMapping(value = "/projects/{projectId}/copy", method = RequestMethod.POST)
   @ResponseBody
-  public Integer copy(Principal principal, @PathVariable Integer projectId) throws ResourceDoesNotExistException, MethodNotAllowedException, ReadValueException, URISyntaxException {
+  public Integer copy(Principal principal, @PathVariable Integer projectId,
+                      @RequestBody CopyCommand copyCommand) throws ResourceDoesNotExistException,
+          MethodNotAllowedException, SQLException {
     Account user = accountRepository.findAccountByUsername(principal.getName());
-    return projectService.copy(user, projectId);
+    return projectService.copy(user, projectId, copyCommand.getNewTitle());
+  }
+
+  @RequestMapping(value = "/projects/{projectId}/update", method = RequestMethod.POST)
+  @ResponseBody
+  public Integer update(Principal principal, @PathVariable Integer projectId) throws ResourceDoesNotExistException, MethodNotAllowedException, ReadValueException, URISyntaxException {
+    Account user = accountRepository.findAccountByUsername(principal.getName());
+    return projectService.createUpdated(user, projectId);
   }
 }

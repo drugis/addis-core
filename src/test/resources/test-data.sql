@@ -98,6 +98,7 @@ INSERT INTO public.scenario (id, workspace, title, state) VALUES (1, -1, 'Defaul
 INSERT INTO public.scenario (id, workspace, title, state) VALUES (2, -1, 'Scenario title', 'problem state modified');
 INSERT INTO public.scenario (id, workspace, title, state) VALUES (3, -2, 'Default for different analysis', 'problem state modified');
 INSERT INTO public.scenario (id, workspace, title, state) VALUES (4, -10, 'Default', 'problem state');
+INSERT INTO public.scenario (id, workspace, title, state) VALUES (5, -4, 'Not in project 1', 'perfect');
 
 
 INSERT INTO public.armExclusion (id, trialverseUid, analysisId) VALUES (-1, '-101', -6);

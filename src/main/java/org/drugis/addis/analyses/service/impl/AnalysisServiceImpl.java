@@ -147,7 +147,7 @@ public class AnalysisServiceImpl implements AnalysisService {
       return primaryModel.get().getId();
     } else {
       return analysisModels.stream()
-              .sorted((object1, object2) -> object1.getTitle().compareTo(object2.getTitle()))
+              .sorted(Comparator.comparing(Model::getTitle))
               .findFirst().get().getId();
     }
   }
@@ -155,9 +155,7 @@ public class AnalysisServiceImpl implements AnalysisService {
   private boolean analysisHasModel(List<Model> models, NetworkMetaAnalysis nma) {
     return models
             .stream()
-            .filter(m -> m.getAnalysisId().equals(nma.getId()))
-            .findFirst()
-            .isPresent();
+            .anyMatch(m -> m.getAnalysisId().equals(nma.getId()));
   }
 
   @Override

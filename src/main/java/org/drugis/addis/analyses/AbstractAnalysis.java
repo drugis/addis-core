@@ -71,4 +71,30 @@ public abstract class AbstractAnalysis {
   public void updateIncludedInterventions(Set<InterventionInclusion> includedInterventions){
     Utils.updateSet(this.interventionInclusions, includedInterventions);
   }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+
+    AbstractAnalysis analysis = (AbstractAnalysis) o;
+
+    if (id != null ? !id.equals(analysis.id) : analysis.id != null) return false;
+    if (!projectId.equals(analysis.projectId)) return false;
+    if (!title.equals(analysis.title)) return false;
+    if (!interventionInclusions.equals(analysis.interventionInclusions)) return false;
+    if (!isArchived.equals(analysis.isArchived)) return false;
+    return archivedOn != null ? archivedOn.equals(analysis.archivedOn) : analysis.archivedOn == null;
+  }
+
+  @Override
+  public int hashCode() {
+    int result = id != null ? id.hashCode() : 0;
+    result = 31 * result + projectId.hashCode();
+    result = 31 * result + title.hashCode();
+    result = 31 * result + interventionInclusions.hashCode();
+    result = 31 * result + isArchived.hashCode();
+    result = 31 * result + (archivedOn != null ? archivedOn.hashCode() : 0);
+    return result;
+  }
 }

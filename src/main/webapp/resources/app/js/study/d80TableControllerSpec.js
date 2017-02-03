@@ -1,6 +1,6 @@
 'use strict';
 define(['angular-mocks'], function() {
-  fdescribe('the d80 controller', function() {
+  describe('the d80 controller', function() {
     var
       rootScope,
       epochServiceMock = jasmine.createSpyObj('EpochService', ['queryItems']),
