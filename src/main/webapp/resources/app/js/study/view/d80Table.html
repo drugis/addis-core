@@ -5,6 +5,13 @@
 </div>
 <div class="row">
   <div class="columns large-12">
+    <div class="columns large-6">Select baseline:
+      <select ng-model="baseline" ng-options="bla as arm.label for arm in arms track by arm.label" ng-change="selectBaseLine(baseline)"></select>
+    </div>
+  </div>
+</div>
+<div class="row">
+  <div class="columns large-12">
 
 
     <table class="d-80" id="d-80-table">

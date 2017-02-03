@@ -28,7 +28,11 @@ public class StatisticsServiceImpl implements StatisticsService {
     }
     Map<URI, List<AbstractMeasurementCommand>> measurementsByEndpointAndArm = measurements
             .stream().collect(Collectors.groupingBy(AbstractMeasurementCommand::getEndpointUri));
-    URI baselineUri = measurements.get(0).getArmUri();
+    URI baselineUri = command.getBaselineUri();
+    if(baselineUri == null){
+      baselineUri = measurements.get(0).getArmUri();
+    }
+
     Map<URI, List<Estimate>> estimatesByEndpointUri = calculateEstimates(measurementsByEndpointAndArm, baselineUri);
     return new Estimates(baselineUri, estimatesByEndpointUri);
   }

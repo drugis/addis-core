@@ -35,6 +35,7 @@ define(['lodash', 'clipboard'], function(_, Clipboard) {
           arm.treatmentLabel = arm.activity.treatments.length === 0 ? '<treatment>' : D80TableService.buildArmTreatmentsLabel(arm.activity.treatments);
           return arm;
         });
+        $scope.baseline = $scope.arms[0].label;
         var primaryMeasurementMoment = _.find($scope.measurementMoments, function(measurementMoment) {
           return measurementMoment.offset === 'PT0S' && measurementMoment.relativeToAnchor === 'ontology:anchorEpochEnd' &&
             measurementMoment.epochUri === $scope.primaryEpoch.uri;
@@ -44,7 +45,8 @@ define(['lodash', 'clipboard'], function(_, Clipboard) {
           $scope.measurements = D80TableService.buildMeasurements(results, primaryMeasurementMoment.uri, $scope.endpoints);
 
           var estimates = EstimatesResource.getEstimates({
-            measurements: $scope.measurements.toBackEndMeasurements
+            measurements: $scope.measurements.toBackEndMeasurements,
+            baselineUri: undefined
           });
 
           estimates.$promise.then(function(estimateResults) {
@@ -60,6 +62,17 @@ define(['lodash', 'clipboard'], function(_, Clipboard) {
         return resolvedValue;
       });
     }
+
+    $scope.selectBaseLine = function(newBaseline) {
+      $scope.measurements.baselineUri = newBaseline.Uri;
+      var estimates = EstimatesResource.getEstimates({
+        measurements: $scope.measurements.toBackEndMeasurements
+      });
+
+      estimates.$promise.then(function(estimateResults) {
+        $scope.effectEstimateRows = D80TableService.buildEstimateRows(estimateResults, $scope.endpoints, $scope.arms);
+      });
+    };
 
     $scope.cancel = function() {
       $modalInstance.dismiss('cancel');
