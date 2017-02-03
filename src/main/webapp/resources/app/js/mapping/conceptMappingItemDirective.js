@@ -8,6 +8,7 @@ define(['lodash'], function(_) {
       scope: {
         settings: '=',
         studyConcept: '=',
+        studyConcepts: '=',
         datasetConcepts: '=',
         isEditingAllowed: '='
       },
