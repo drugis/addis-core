@@ -23,8 +23,7 @@
         </tr>
         <tr>
           <td>Duration of main phase:</td>
-          <td ng-if="primaryEpoch" colspan='{{arms.length}}'>{{primaryEpoch.duration | durationFilter}}</td>
-          <td ng-if="!primaryEpoch" colspan='{{arms.length}}'>&lt;duration&gt;</td>
+          <td colspan='{{arms.length}}'>&lt;duration&gt;</td>
         </tr>
         <tr>
           <td>Duration of Run-in phase:</td>
@@ -71,7 +70,7 @@
           <td colspan='{{arms.length + 1}}'>&lt;date&gt;</td>
         </tr>
         <tr class='bold'>
-          <td colspan='@{fullcolspan}'>Results and Analysis</td>
+          <td colspan='{{arms.length + 2}}'>Results and Analysis</td>
         </tr>
         <tr>
           <td class='bold'>Analysis description</td>

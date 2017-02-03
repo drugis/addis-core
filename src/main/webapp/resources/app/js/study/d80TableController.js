@@ -11,8 +11,6 @@ define(['lodash', 'clipboard'], function(_, Clipboard) {
     $scope.buildResultLabel = D80TableService.buildResultLabel;
 
     var clipboard = new Clipboard('.clipboard-button');
-    var exponentialFilter = $filter('exponentialFilter'),
-      durationFilter = $filter('durationFilter');
 
     var allThePromises = [
       queryItems(EpochService, 'epochs').then(function(epochs) {
@@ -34,7 +32,7 @@ define(['lodash', 'clipboard'], function(_, Clipboard) {
           arm.activity = _.find($scope.activities, function(activity) {
             return activity.activityUri === coord.activityUri;
           });
-          arm.treatmentLabel = arm.activity.treatments.length === 0 ? '<treatment>' : buildArmTreatmentsLabel(arm.activity.treatments);
+          arm.treatmentLabel = arm.activity.treatments.length === 0 ? '<treatment>' : D80TableService.buildArmTreatmentsLabel(arm.activity.treatments);
           return arm;
         });
         var primaryMeasurementMoment = _.find($scope.measurementMoments, function(measurementMoment) {
@@ -43,24 +41,10 @@ define(['lodash', 'clipboard'], function(_, Clipboard) {
         });
         var resultsPromises = _.map(_.map($scope.endpoints, 'uri'), ResultsService.queryResultsByOutcome);
         $q.all(resultsPromises).then(function(results) {
-          var endpointsByUri = _.keyBy($scope.endpoints, 'uri');
-
-          var resultsByEndpointAndArm = D80TableService.buildResultsByEndpointAndArm(results, primaryMeasurementMoment.uri);
-
-          var toBackEndMeasurements = [];
-          $scope.measurements = _.reduce(resultsByEndpointAndArm, function(accum, endPointResultsByArm, endpointUri) {
-            accum[endpointUri] = _.reduce(endPointResultsByArm, function(accum, armResults, armUri) {
-              var resultsObject = D80TableService.buildResultsObject(armResults, endpointsByUri[endpointUri], armUri);
-              resultsObject.label = D80TableService.buildResultLabel(resultsObject);
-              toBackEndMeasurements.push(resultsObject);
-              accum[armUri] = resultsObject;
-              return accum;
-            }, {});
-            return accum;
-          }, {});
+          $scope.measurements = D80TableService.buildMeasurements(results, primaryMeasurementMoment.uri, $scope.endpoints);
 
           var estimates = EstimatesResource.getEstimates({
-            measurements: toBackEndMeasurements
+            measurements: $scope.measurements.toBackEndMeasurements
           });
 
           estimates.$promise.then(function(estimateResults) {
@@ -69,23 +53,6 @@ define(['lodash', 'clipboard'], function(_, Clipboard) {
         });
       }
     });
-
-
-    function buildArmTreatmentsLabel(treatments) {
-      var treatmentLabels = _.map(treatments, function(treatment) {
-        if (treatment.treatmentDoseType === 'ontology:FixedDoseDrugTreatment') {
-          return treatment.drug.label + ' ' + exponentialFilter(treatment.fixedValue) +
-            ' ' + treatment.doseUnit.label + ' per ' + durationFilter(treatment.dosingPeriodicity);
-        } else if (treatment.treatmentDoseType === 'ontology:TitratedDoseDrugTreatment') {
-          return treatment.drug.label + ' ' + exponentialFilter(treatment.minValue) +
-            '-' + exponentialFilter(treatment.minValue) + ' ' + treatment.doseUnit.label + ' per ' +
-            durationFilter(treatment.dosingPeriodicity);
-        } else {
-          throw ('unknown dosage type');
-        }
-      });
-      return treatmentLabels.join(' + ');
-    }
 
     function queryItems(service, scopeProperty) {
       return service.queryItems().then(function(resolvedValue) {
