@@ -3,17 +3,17 @@ define(['angular', 'angular-mocks'], function() {
   describe('concept service', function() {
 
     var scope, q,
-      conceptService,
+      conceptsService,
       jsonPromiseDefer;
 
     beforeEach(module('trialverse.concept'));
 
-    beforeEach(inject(function($rootScope, $q, ConceptService) {
+    beforeEach(inject(function($rootScope, $q, ConceptsService) {
       scope = $rootScope;
       q = $q;
-      conceptService = ConceptService;
+      conceptsService = ConceptsService;
       jsonPromiseDefer = q.defer();
-      conceptService.loadJson(jsonPromiseDefer.promise);
+      conceptsService.loadJson(jsonPromiseDefer.promise);
     }));
 
     describe('queryItems', function() {
@@ -36,7 +36,7 @@ define(['angular', 'angular-mocks'], function() {
           },
           label: 'Weight Loss'
         }];
-        conceptService.queryItems().then(function(result) {
+        conceptsService.queryItems().then(function(result) {
           expect(result).toEqual(expected);
           done();
         });
@@ -58,8 +58,8 @@ define(['angular', 'angular-mocks'], function() {
             uri: 'ontology:Variable'
           }
         };
-        conceptService.addItem(newConcept).then(function() {
-          conceptService.queryItems().then(function(result) {
+        conceptsService.addItem(newConcept).then(function() {
+          conceptsService.queryItems().then(function(result) {
             var concepts = result;
             expect(concepts.length).toBe(1);
             expect(concepts[0].label).toEqual(newConcept.label);
