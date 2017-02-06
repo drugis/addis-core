@@ -9,7 +9,7 @@ import java.util.List;
  * Created by daan on 20-1-17.
  */
 public class EstimatesCommand {
-  URI baselineUri = null;
+  URI baselineUri;
 
   List<AbstractMeasurementCommand> measurements = new ArrayList<>();
   public EstimatesCommand() {
@@ -35,15 +35,13 @@ public class EstimatesCommand {
     EstimatesCommand that = (EstimatesCommand) o;
 
     if (baselineUri != null ? !baselineUri.equals(that.baselineUri) : that.baselineUri != null) return false;
-    if (!measurements.equals(that.measurements)) return false;
-
-    return true;
+    return measurements != null ? measurements.equals(that.measurements) : that.measurements == null;
   }
 
   @Override
   public int hashCode() {
     int result = baselineUri != null ? baselineUri.hashCode() : 0;
-    result = 31 * result + measurements.hashCode();
+    result = 31 * result + (measurements != null ? measurements.hashCode() : 0);
     return result;
   }
 }

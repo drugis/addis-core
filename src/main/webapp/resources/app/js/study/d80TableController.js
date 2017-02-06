@@ -46,7 +46,6 @@ define(['lodash', 'clipboard'], function(_, Clipboard) {
 
           var estimates = EstimatesResource.getEstimates({
             measurements: $scope.measurements.toBackEndMeasurements,
-            baselineUri: undefined
           });
 
           estimates.$promise.then(function(estimateResults) {
@@ -66,12 +65,14 @@ define(['lodash', 'clipboard'], function(_, Clipboard) {
     $scope.selectBaseLine = function(newBaseline) {
       $scope.measurements.baselineUri = newBaseline.armURI;
       var estimates = EstimatesResource.getEstimates({
-        measurements: $scope.measurements.toBackEndMeasurements
+        measurements: $scope.measurements.toBackEndMeasurements,
+        baselineUri: newBaseline.armURI
       });
 
       estimates.$promise.then(function(estimateResults) {
         $scope.effectEstimateRows = D80TableService.buildEstimateRows(estimateResults, $scope.endpoints, $scope.arms);
       });
+
     };
 
     $scope.cancel = function() {
