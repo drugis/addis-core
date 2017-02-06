@@ -35,7 +35,7 @@ define(['lodash', 'clipboard'], function(_, Clipboard) {
           arm.treatmentLabel = arm.activity.treatments.length === 0 ? '<treatment>' : D80TableService.buildArmTreatmentsLabel(arm.activity.treatments);
           return arm;
         });
-        $scope.baseline = $scope.arms[0].label;
+        $scope.baseline = $scope.arms[0];
         var primaryMeasurementMoment = _.find($scope.measurementMoments, function(measurementMoment) {
           return measurementMoment.offset === 'PT0S' && measurementMoment.relativeToAnchor === 'ontology:anchorEpochEnd' &&
             measurementMoment.epochUri === $scope.primaryEpoch.uri;
@@ -46,6 +46,7 @@ define(['lodash', 'clipboard'], function(_, Clipboard) {
 
           var estimates = EstimatesResource.getEstimates({
             measurements: $scope.measurements.toBackEndMeasurements,
+            baselineUri: $scope.baseline.armURI
           });
 
           estimates.$promise.then(function(estimateResults) {
@@ -63,10 +64,10 @@ define(['lodash', 'clipboard'], function(_, Clipboard) {
     }
 
     $scope.selectBaseLine = function(newBaseline) {
-      $scope.measurements.baselineUri = newBaseline.armURI;
+      $scope.baseline = newBaseline;
       var estimates = EstimatesResource.getEstimates({
         measurements: $scope.measurements.toBackEndMeasurements,
-        baselineUri: newBaseline.armURI
+        baselineUri: $scope.baseline.armURI
       });
 
       estimates.$promise.then(function(estimateResults) {
