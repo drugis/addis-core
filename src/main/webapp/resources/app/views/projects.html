@@ -15,7 +15,7 @@
         <div class="row">
           <div class="columns large-6">
             <h5>
-              <a ui-sref="projectReport({userUid: user.id, projectId: project.id})">
+              <a ui-sref="project({userUid: user.id, projectId: project.id})">
                 <span title="project name">{{project.name}}</span>
                 <span ng-if=project.archived>(archived on {{project.archivedOn}})</span>
               </a>
