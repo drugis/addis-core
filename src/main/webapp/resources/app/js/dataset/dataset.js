@@ -13,6 +13,7 @@ define(function (require) {
 
     //services
     .factory('StudiesWithDetailsService', require('dataset/studiesWithDetailsService'))
+    .factory('DatasetService', require('dataset/datasetService'))
 
     //resources
     .factory('DatasetVersionedResource', require('dataset/datasetVersionedResource'))
