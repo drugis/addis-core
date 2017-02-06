@@ -17,10 +17,12 @@ define([],
       $scope.openAddConceptDialog = function() {
         $modal.open({
           templateUrl: 'app/js/concept/createConcept.html',
-          controller: 'CreateConceptsController',
+          controller: 'CreateConceptController',
           resolve: {
             callback: function() {
               return reloadConceptsFromScratch;
+            }, concepts: function(){
+              return $scope.concepts;
             }
           }
         });

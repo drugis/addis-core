@@ -15,6 +15,5 @@ define(function (require) {
 
      //resources
     .factory('DatasetVersionedResource', require('dataset/datasetVersionedResource')) // only need resource, not entire module
-
     ;
 });
