@@ -23,7 +23,11 @@ define(['lodash'],
       $scope.stripFrontFilter = $filter('stripFrontFilter');
       $scope.isEditingAllowed = false;
       loadStudiesWithDetail();
-      $scope.datasetConcepts = loadConcepts();
+      $scope.datasetConcepts = loadConcepts().then(function(graph) {
+        $scope.interventions = _.filter(graph['@graph'], ['@type', 'ontology:Drug']);
+        $scope.variables = _.filter(graph['@graph'], ['@type', 'ontology:Variable']);
+      });
+      $scope.filters = [];
 
 
       if ($scope.isHeadView) {
@@ -118,6 +122,44 @@ define(['lodash'],
           scope: $scope,
           controller: function($scope, $modalInstance) {
             $scope.cancel = function() {
+              $modalInstance.dismiss('cancel');
+            };
+          }
+        });
+      };
+
+      $scope.showFilterOptions = function() {
+        $modal.open({
+          templateUrl: 'app/js/dataset/filterOptions.html',
+          scope: $scope,
+          controller: function($scope, $modalInstance) {
+            $scope.cancel = function() {
+              $modalInstance.dismiss('cancel');
+            };
+            $scope.updateFilteredStudies = function() {
+              _.map($scope.studiesWithDetail, function(study) {
+                study.dontShowStudy = false;
+              });
+              _.forEach($scope.interventions, function(intervention) {
+                if (intervention.filteredIn) {
+                  _.map($scope.studiesWithDetail, function(study) {
+                    if (!_.includes(study.drugNames, intervention.label)) {
+                      study.dontShowStudy = true;
+                    }
+                  });
+                }
+              });
+
+              //variables/outcomes are not yet queried to the frontend
+              // _.forEach($scope.variables, function(variable) {
+              //   if (variable.filteredIn) {
+              //     _.map($scope.studiesWithDetail, function(study) {
+              //       if (!_.includes(study.vars, variable.label)) {
+              //         study.dontShowStudy = true;
+              //       }
+              //     });
+              //   }
+              // });
               $modalInstance.dismiss('cancel');
             };
           }
