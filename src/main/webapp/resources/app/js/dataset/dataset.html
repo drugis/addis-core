@@ -33,8 +33,8 @@
     margin-left: 0.5rem;
     vertical-align: super;" ng-click="showStudyDialog()"><i class="fa fa-plus"></i></button>
       </div>
-      <em ng-if="studiesWithDetail && !studiesWithDetail[0].label">No studies have been defined</em>
-      <p style="margin-bottom: 0;" ng-if="studiesWithDetail[0].label">
+      <em ng-if="studiesWithDetail && !studiesWithDetail.length">No studies have been defined</em>
+      <p style="margin-bottom: 0;" ng-if="studiesWithDetail.length">
         <button class="button small secondary" ng-click="showTableOptions()">
           <i class="fa fa-cog"></i>&nbsp; Show/Hide Columns
         </button>
@@ -42,7 +42,7 @@
           <i class="fa fa-binoculars"></i>&nbsp; Filter Studies
         </button>
       </p>
-      <table ng-if="studiesWithDetail[0].label">
+      <table ng-if="studiesWithDetail.length">
         <thead>
           <tr>
             <th ng-if="isEditingAllowed" class="text-center"></th>
@@ -64,22 +64,22 @@
           </tr>
         </thead>
         <tbody>
-          <tr ng-if="!studiesWithDetail">
+          <tr ng-if="!filteredStudies">
             <td colspan="21">No studies in dataset</td>
           </tr>
-          <tr ng-if="!studyWithDetails.dontShowStudy" ng-repeat="studyWithDetails in studiesWithDetail | orderBy:tableOptions.orderByField:tableOptions.reverseSortOrder ">
-            <td ng-if="isEditingAllowed"><a ng-click="showDeleteStudyDialog(studyWithDetails)"><i class="fa fa-trash-o" style="color: red;"></i></a></td>
+          <tr ng-repeat="filteredStudy in filteredStudies | orderBy:tableOptions.orderByField:tableOptions.reverseSortOrder ">
+            <td ng-if="isEditingAllowed"><a ng-click="showDeleteStudyDialog(filteredStudy)"><i class="fa fa-trash-o" style="color: red;"></i></a></td>
             <td style="vertical-align: top;">
               <a ng-if="!isHeadView" ui-sref="versionedDataset.study({userUid: user.id, datasetUuid: stripFrontFilter(dataset.datasetUuid, 'http://trials.drugis.org/datasets/'),
-            studyGraphUuid: (studyWithDetails.graphUri | stripFrontFilter:'http://trials.drugis.org/graphs/'), versionUuid: versionUuid})">{{::studyWithDetails.label}}</a>
+            studyGraphUuid: (filteredStudy.graphUri | stripFrontFilter:'http://trials.drugis.org/graphs/'), versionUuid: versionUuid})">{{::filteredStudy.label}}</a>
               <a ng-if="isHeadView" ui-sref="dataset.study({userUid: user.id, datasetUuid: stripFrontFilter(dataset.datasetUuid, 'http://trials.drugis.org/datasets/'),
-            studyGraphUuid: (studyWithDetails.graphUri | stripFrontFilter:'http://trials.drugis.org/graphs/')})">{{::studyWithDetails.label}}</a>
+            studyGraphUuid: (filteredStudy.graphUri | stripFrontFilter:'http://trials.drugis.org/graphs/')})">{{::filteredStudy.label}}</a>
             </td>
             <td style="vertical-align: top;" ng-if="column.visible" ng-repeat="column in tableOptions.columns">
-              <span ng-if="!column.type" style="white-space: pre-wrap;">{{::studyWithDetails[column.id]}}</span>
-              <span ng-if="column.type === 'removePreamble'">{{::studyWithDetails[column.id] | stripFrontFilter : column.frontStr}}</span>
-              <span ng-if="column.type === 'dosing'">{{::studyWithDetails[column.id] | dosingFilter}}</span>
-              <span ng-if="column.type === 'urlList'" ng-repeat="uri in studyWithDetails.publications | splitOnTokenFilter">
+              <span ng-if="!column.type" style="white-space: pre-wrap;">{{::filteredStudy[column.id]}}</span>
+              <span ng-if="column.type === 'removePreamble'">{{::filteredStudy[column.id] | stripFrontFilter : column.frontStr}}</span>
+              <span ng-if="column.type === 'dosing'">{{::filteredStudy[column.id] | dosingFilter}}</span>
+              <span ng-if="column.type === 'urlList'" ng-repeat="uri in filteredStudy.publications | splitOnTokenFilter">
                 <a target="_blank" ng-href={{uri}}>{{::uri}}</a>
                 <span ng-if=!$last>, </span>
               </span>
@@ -87,16 +87,17 @@
           </tr>
         </tbody>
       </table>
+      <em ng-if="filteredStudies && !filteredStudies.length">No studies have been found using chosen filter</em>
     </div>
   </div>
-  <div ng-show="!studiesWithDetail" class="row">
+  <div ng-show="!filteredStudies" class="row">
     <div class="column center large-12">
       <i class="fa fa-spinner fa-spin fa-3x"></i>
       <p>Loading study data...
       </p>
     </div>
   </div>
-  <div ng-show="studiesWithDetail.$resolved && !studiesWithDetail.length" class="row">
+  <div ng-show="filteredStudies.$resolved && !filteredStudies.length" class="row">
     <div class="column center large-12">
     </div>
   </div>

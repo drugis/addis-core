@@ -11,13 +11,22 @@ SELECT
   (SUM(distinct ?numberOfParticipantsStarting) as ?studySize)
   (group_concat(DISTINCT ?publication; separator = ', ') as ?publications)
   (group_concat(DISTINCT ?drugName; separator = ', ') as ?drugNames)
-  ?status ?numberOfCenters ?indication ?startDate ?endDate ?doseType 
+  (group_concat(DISTINCT ?drug; separator = ', ') as ?drugUris)
+  (group_concat(DISTINCT ?outcomeConcept; separator = ', ') as ?outcomeUris)
+  ?status ?numberOfCenters ?indication ?startDate ?endDate ?doseType
 WHERE {
   GRAPH ?graphUri {
       ?studyUri
         rdfs:label ?label ;
         a ontology:Study ;
         rdfs:comment ?title .
+      OPTIONAL {
+        ?studyUri ontology:has_outcome ?outcomeInstance .
+        ?outcomeInstance
+            ontology:of_variable [
+                owl:sameAs ?outcomeConcept
+            ]
+      }
       OPTIONAL {
         ?studyUri ontology:has_allocation ?allocation .
       }

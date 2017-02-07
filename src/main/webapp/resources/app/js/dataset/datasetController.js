@@ -1,11 +1,14 @@
 'use strict';
 define(['lodash'],
   function(_) {
-    var dependencies = ['$scope', '$window', '$location', '$stateParams', '$state', '$modal', '$filter', 'DatasetVersionedResource', 'StudiesWithDetailsService',
-      'HistoryResource', 'ConceptsService', 'VersionedGraphResource', 'DatasetResource', 'GraphResource', 'UserService', 'DataModelService'
+    var dependencies = ['$scope', '$window', '$location', '$stateParams', '$state', '$modal', '$filter',
+      'DatasetVersionedResource', 'StudiesWithDetailsService', 'HistoryResource', 'ConceptsService',
+      'VersionedGraphResource', 'DatasetResource', 'GraphResource', 'UserService', 'DataModelService'
     ];
-    var DatasetController = function($scope, $window, $location, $stateParams, $state, $modal, $filter, DatasetVersionedResource, StudiesWithDetailsService,
-      HistoryResource, ConceptsService, VersionedGraphResource, DatasetResource, GraphResource, UserService, DataModelService) {
+    var DatasetController = function($scope, $window, $location, $stateParams, $state, $modal, $filter,
+      DatasetVersionedResource, StudiesWithDetailsService, HistoryResource, ConceptsService,
+      VersionedGraphResource, DatasetResource, GraphResource, UserService, DataModelService
+    ) {
 
       $scope.createProjectDialog = createProjectDialog;
       $scope.showEditDatasetModal = showEditDatasetModal;
@@ -27,8 +30,7 @@ define(['lodash'],
         $scope.interventions = _.filter(graph['@graph'], ['@type', 'ontology:Drug']);
         $scope.variables = _.filter(graph['@graph'], ['@type', 'ontology:Variable']);
       });
-      $scope.filters = [];
-
+      $scope.filter = {};
 
       if ($scope.isHeadView) {
         getJson(DatasetResource);
@@ -113,6 +115,7 @@ define(['lodash'],
         StudiesWithDetailsService.get($stateParams.userUid, $stateParams.datasetUuid, $stateParams.versionUuid)
           .then(function(result) {
             $scope.studiesWithDetail = result instanceof Array ? result : [];
+            $scope.filteredStudies = $scope.studiesWithDetail;
           });
       }
 
@@ -132,36 +135,15 @@ define(['lodash'],
         $modal.open({
           templateUrl: 'app/js/dataset/filterOptions.html',
           scope: $scope,
-          controller: function($scope, $modalInstance) {
-            $scope.cancel = function() {
-              $modalInstance.dismiss('cancel');
-            };
-            $scope.updateFilteredStudies = function() {
-              _.map($scope.studiesWithDetail, function(study) {
-                study.dontShowStudy = false;
-              });
-              _.forEach($scope.interventions, function(intervention) {
-                if (intervention.filteredIn) {
-                  _.map($scope.studiesWithDetail, function(study) {
-                    if (!_.includes(study.drugNames, intervention.label)) {
-                      study.dontShowStudy = true;
-                    }
-                  });
-                }
-              });
-
-              //variables/outcomes are not yet queried to the frontend
-              // _.forEach($scope.variables, function(variable) {
-              //   if (variable.filteredIn) {
-              //     _.map($scope.studiesWithDetail, function(study) {
-              //       if (!_.includes(study.vars, variable.label)) {
-              //         study.dontShowStudy = true;
-              //       }
-              //     });
-              //   }
-              // });
-              $modalInstance.dismiss('cancel');
-            };
+          controller: 'FilterDatasetController',
+          resolve: {
+            callback: function() {
+              return function(drugFilters, variableFilters, filteredStudies) {
+                $scope.drugFilters = drugFilters;
+                $scope.variableFilters = variableFilters;
+                $scope.filteredStudies = filteredStudies;
+              };
+            }
           }
         });
       };

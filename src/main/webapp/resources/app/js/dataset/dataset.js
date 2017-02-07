@@ -10,6 +10,7 @@ define(function (require) {
     .controller('DatasetHistoryController', require('dataset/datasetHistoryController'))
     .controller('StudyHistoryController', require('dataset/studyHistoryController'))
     .controller('EditDatasetController', require('dataset/editDatasetController'))
+    .controller('FilterDatasetController', require('dataset/filterDatasetController'))
 
     //services
     .factory('StudiesWithDetailsService', require('dataset/studiesWithDetailsService'))
