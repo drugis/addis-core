@@ -17,9 +17,9 @@ define(['angular-mocks'], function(angularMocks) {
       studiesWithDetailsGetDeferred,
       mockQueryDatasetDeferred,
       conceptsJsonDefer,
-      mockStudiesWithDetail = {
-        '@graph': {}
-      },
+      mockStudiesWithDetail = [{
+        id: 'study 1'
+      }],
       userUid = 'userUid',
       datasetUuid = 'uuid-1',
       versionUuid = 'version-1',
@@ -96,13 +96,12 @@ define(['angular-mocks'], function(angularMocks) {
           comment: 'description',
           creator: 'creator'
         });
-
       });
 
       it('should get the studies with detail and place them on the scope', function() {
         studiesWithDetailsGetDeferred.resolve(mockStudiesWithDetail);
         scope.$digest();
-        expect(scope.studiesWithDetail).toEqual([]);
+        expect(scope.studiesWithDetail).toEqual(mockStudiesWithDetail);
       });
 
       it('should place the table options on the scope', function() {

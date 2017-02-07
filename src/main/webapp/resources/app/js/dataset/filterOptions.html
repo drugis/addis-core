@@ -4,7 +4,7 @@
   <div class="row">
     <div class="large-6 columns medium-6">
       <span>Select interventions to filter on:</span>
-      <ui-select class="addis-select2" style="width:100%;" multiple theme="select2" ng-model="filter.drugs"
+      <ui-select class="addis-select2" style="width:100%;" multiple theme="select2" ng-model="filterSelections.drugs"
         data-placeholder="no criteria selected"">
         <ui-select-match>{{$item.label}}</ui-select-match>
         <ui-select-choices repeat="intervention in interventions | filter: $select.search">
@@ -15,7 +15,7 @@
 
     <div class="large-6 columns medium-6">
       <span>Select variables to filter on:</span>
-      <ui-select class="addis-select2" style="width:100%;" multiple theme="select2" ng-model="filter.variables"
+      <ui-select class="addis-select2" style="width:100%;" multiple theme="select2" ng-model="filterSelections.variables"
         data-placeholder="no criteria selected"">
         <ui-select-match>{{$item.label}}</ui-select-match>
         <ui-select-choices repeat="variable in variables | filter: $select.search">

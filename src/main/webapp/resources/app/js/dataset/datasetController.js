@@ -1,15 +1,16 @@
 'use strict';
 define(['lodash'],
   function(_) {
-    var dependencies = ['$scope', '$window', '$location', '$stateParams', '$state', '$modal', '$filter',
+    var dependencies = ['$scope', '$window', '$stateParams', '$state', '$modal', '$filter',
       'DatasetVersionedResource', 'StudiesWithDetailsService', 'HistoryResource', 'ConceptsService',
-      'VersionedGraphResource', 'DatasetResource', 'GraphResource', 'UserService', 'DataModelService'
+      'VersionedGraphResource', 'DatasetResource', 'GraphResource', 'UserService', 'DataModelService',
+      'DatasetService'
     ];
-    var DatasetController = function($scope, $window, $location, $stateParams, $state, $modal, $filter,
+    var DatasetController = function($scope, $window, $stateParams, $state, $modal, $filter,
       DatasetVersionedResource, StudiesWithDetailsService, HistoryResource, ConceptsService,
-      VersionedGraphResource, DatasetResource, GraphResource, UserService, DataModelService
+      VersionedGraphResource, DatasetResource, GraphResource, UserService, DataModelService,
+      DatasetService
     ) {
-
       $scope.createProjectDialog = createProjectDialog;
       $scope.showEditDatasetModal = showEditDatasetModal;
       $scope.showDeleteStudyDialog = showDeleteStudyDialog;
@@ -25,12 +26,14 @@ define(['lodash'],
 
       $scope.stripFrontFilter = $filter('stripFrontFilter');
       $scope.isEditingAllowed = false;
+      $scope.onStudyFilterChange = onStudyFilterChange;
+      $scope.toggleFilterOptions = toggleFilterOptions;
       loadStudiesWithDetail();
-      $scope.datasetConcepts = loadConcepts().then(function(graph) {
-        $scope.interventions = _.filter(graph['@graph'], ['@type', 'ontology:Drug']);
-        $scope.variables = _.filter(graph['@graph'], ['@type', 'ontology:Variable']);
+      $scope.datasetConcepts = loadConcepts(); // scope placement for child states
+      $scope.datasetConcepts.then(function(concepts) {
+        $scope.interventions = _.filter(concepts['@graph'], ['@type', 'ontology:Drug']);
+        $scope.variables = _.filter(concepts['@graph'], ['@type', 'ontology:Variable']);
       });
-      $scope.filter = {};
 
       if ($scope.isHeadView) {
         getJson(DatasetResource);
@@ -131,22 +134,12 @@ define(['lodash'],
         });
       };
 
-      $scope.showFilterOptions = function() {
-        $modal.open({
-          templateUrl: 'app/js/dataset/filterOptions.html',
-          scope: $scope,
-          controller: 'FilterDatasetController',
-          resolve: {
-            callback: function() {
-              return function(drugFilters, variableFilters, filteredStudies) {
-                $scope.drugFilters = drugFilters;
-                $scope.variableFilters = variableFilters;
-                $scope.filteredStudies = filteredStudies;
-              };
-            }
-          }
-        });
-      };
+      function onStudyFilterChange(filterSelections) {
+        $scope.filteredStudies = DatasetService.filterStudies($scope.studiesWithDetail, filterSelections);
+      }
+      function toggleFilterOptions() {
+        $scope.showFilterOptions = !$scope.showFilterOptions;
+      }
 
       $scope.showStudyDialog = function() {
         $modal.open({
@@ -156,8 +149,11 @@ define(['lodash'],
           resolve: {
             successCallback: function() {
               return function(newVersion) {
-                $location.path('/users/' + $stateParams.userUid + '/datasets/' +
-                  $stateParams.datasetUuid + '/versions/' + newVersion);
+                $state.go('study', {
+                  userUid: $stateParams.userUid,
+                  datasetUuid: $stateParams.datasetUuid,
+                  versionUuid: newVersion
+                });
               };
             }
           }
@@ -173,8 +169,11 @@ define(['lodash'],
           resolve: {
             successCallback: function() {
               return function(newVersion) {
-                $location.path('/users/' + $stateParams.userUid + '/datasets/' +
-                  $stateParams.datasetUuid + '/versions/' + newVersion);
+                $state.go('study', {
+                  userUid: $stateParams.userUid,
+                  datasetUuid: $stateParams.datasetUuid,
+                  versionUuid: newVersion
+                });
               };
             },
             study: function() {
@@ -291,6 +290,7 @@ define(['lodash'],
         reverseSortOrder: false,
         orderByField: 'label'
       };
+
     };
     return dependencies.concat(DatasetController);
   });
