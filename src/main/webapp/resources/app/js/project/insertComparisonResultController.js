@@ -25,13 +25,12 @@ define(['lodash'], function(_) {
       $scope.interventions = _.sortBy(values[2], 'name');
       var interventionsById = _.keyBy($scope.interventions, 'id');
       var modelResultsPromises = [];
-
-      $scope.analyses = _.filter(analyses, ['analysisType', 'Evidence synthesis']);
+      $scope.analyses = _.chain(analyses).reject('archived').filter(['analysisType', 'Evidence synthesis']).value();
       if ($scope.analyses.length) {
         $scope.selections.analysis = $scope.analyses[0];
       }
 
-      models = _.filter(models, ['modelType.type', 'network']);
+      models = _.chain(models).reject('archived').filter(['modelType.type', 'network']).value();
 
       models = _.map(models, function(model) {
         if (model.taskUrl) {
@@ -61,13 +60,19 @@ define(['lodash'], function(_) {
         $scope.analyses = _.filter($scope.analyses, function(analysis) {
           return analysis.models.length > 0;
         });
+        if($scope.analyses.length) {
+          $scope.selections.analysis = $scope.analyses[0];
+        }
         $scope.selectedAnalysisChanged();
         $scope.loading.loaded = true;
       });
     });
 
     function selectedAnalysisChanged() {
-      if ($scope.selections.analysis.primaryModel) {
+      if(!$scope.selections.analysis){
+        return;
+      }
+      if($scope.selections.analysis.primaryModel) {
         $scope.selections.model = _.find($scope.selections.analysis.models, ['id', $scope.selections.analysis.primaryModel]);
       } else {
         $scope.selections.model = $scope.selections.analysis.models[0];

@@ -22,6 +22,7 @@ define(['angular', 'lodash', 'jQuery'],
       $scope.insertTextAtCursor = insertTextAtCursor;
       $scope.openNetworkGraphDialog = openNetworkGraphDialog;
       $scope.openComparisonResultDialog = openComparisonResultDialog;
+      $scope.openLeagueTableDialog = openLeagueTableDialog;
 
       ReportResource.get($stateParams).$promise.then(function(report) {
         $scope.reportText.text = report.data;
@@ -79,6 +80,19 @@ define(['angular', 'lodash', 'jQuery'],
         });
       }
 
+      function openLeagueTableDialog() {
+        $modal.open({
+          templateUrl: './app/js/project/insertRelativeEffectsTableDialog.html',
+          controller: 'InsertRelativeEffectsTableController',
+          resolve: {
+            callback: function() {
+              return function(graphText) {
+                insertTextAtCursor(graphText);
+              };
+            }
+          }
+        });
+      }
     };
     return dependencies.concat(EditReportcontroller);
   });

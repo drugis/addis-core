@@ -27,6 +27,17 @@ define(['lodash'], function(_) {
             ' t1="' + t1 + '"' +
             ' t2="' + t2 + '"]]]';
         }
+      },
+      'relative-effects-table': {
+        tag: 'relative-effects-table',
+        regex: /\[\[\[(relative-effects-table\s+analysis-id=\&\#34;\d+\&\#34;\s+model-id=\&\#34;\d+\&\#34;\s+)\]\]\]/g,
+        replacer: function(match, p1){
+          return '<' + replaceQuotes(p1) + '></relative-effects-table>';
+        },builder: function(analysisId, modelId){
+          return '[[[relative-effects-table' +
+            ' analysis-id="' + analysisId + '"' +
+            ' model-id="' + modelId + '"]]]';
+        }
       }
     };
 
