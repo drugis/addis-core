@@ -70,7 +70,7 @@ public class ModelRepositoryImpl implements ModelRepository {
   }
 
   @Override
-  public List<Model> findNetworkModelsByProject(Integer projectId) throws SQLException {
+  public List<Model> findModelsByProject(Integer projectId) throws SQLException {
     TypedQuery<Model> query = em.createQuery("SELECT m FROM Model m, NetworkMetaAnalysis a WHERE " +
             "m.analysisId = a.id AND a.projectId = :projectId", Model.class);
     query.setParameter("projectId", projectId);
