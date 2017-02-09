@@ -1,61 +1,66 @@
 'use strict';
 define(['lodash'], function(_) {
-  var dependencies = ['$stateParams', 'ModelResource', 'PataviService'];
-  var ComparisonResultDirective = function($stateParams, ModelResource, PataviService) {
+  var dependencies = ['$stateParams', '$q', 'ModelResource', 'ModelService',
+    'PataviService', 'RelativeEffectsTableService', 'ProblemResource', 'AnalysisService'
+  ];
+  var RelativeEffectsTableDirective = function($stateParams, $q, ModelResource, ModelService,
+    PataviService, RelativeEffectsTableService, ProblemResource, AnalysisService) {
     return {
       restrict: 'E',
       scope: {
         analysisId: '=',
         modelId: '=',
-        t1: '=',
-        t2: '='
+        regressionLevel: '='
       },
-      template: '<span ng-if="!resultsMessage.text">{{median | number:3}} ({{lowerBound | number:3}}, {{upperBound | number:3}})</span>{{resultsMessage.text}}',
+      templateUrl: 'app/js/project/relativeEffectsTableTemplate.html',
+
       link: function(scope) {
         scope.resultsMessage = {};
+
         function getResults(model) {
           return PataviService.listen(model.taskUrl);
         }
+        var problemPromise = ProblemResource.get({
+          analysisId: scope.analysisId,
+          projectId: $stateParams.projectId
+        }).$promise;
 
-        ModelResource.get({
-            projectId: $stateParams.projectId,
-            analysisId: scope.analysisId,
-            modelId: scope.modelId
-          }).$promise
-          .then(getResults)
-          .then(function(results) {
-            var inversionFactor = 1;
-            var relEffects = _.find(results.relativeEffects.centering, function(relEffect) {
-              return relEffect.t1 === scope.t1.toString() && relEffect.t2 === scope.t2.toString();
+
+        var modelPromise = ModelResource.get({
+          projectId: $stateParams.projectId,
+          analysisId: scope.analysisId,
+          modelId: scope.modelId
+        }).$promise;
+
+        $q.all([problemPromise, modelPromise]).then(function(values) {
+          scope.problem = values[0];
+          scope.model = values[1];
+          scope.scaleName = AnalysisService.getScaleName(scope.model);
+
+          getResults(scope.model).then(function(results) {
+            scope.result = results;
+            scope.relativeEffectsTables = _.map(results.relativeEffects, function(relativeEffect, key) {
+              return {
+                level: key,
+                table: RelativeEffectsTableService.buildTable(relativeEffect, results.logScale, scope.problem.treatments)
+              };
             });
-            if (!relEffects) {
-              //interventions inverted
-              relEffects = _.find(results.relativeEffects.centering, function(relEffect) {
-                return relEffect.t2 === scope.t1.toString() && relEffect.t1 === scope.t2.toString();
-              });
-              inversionFactor = -1;
+            if (scope.regressionLevel) {
+              scope.relativeEffectsTable = _.find(scope.relativeEffectsTables, ['level', scope.regressionLevel.toString()]);
+            } else if (scope.model.regressor && ModelService.isVariableBinary(scope.model.regressor.variable, scope.problem)) {
+              scope.relativeEffectsTables = ModelService.filterCentering(scope.relativeEffectsTables);
+              scope.relativeEffectsTable = scope.relativeEffectsTable = scope.relativeEffectsTables[0];
             }
-            if (relEffects) {
-              scope.median = results.logScale ?
-                Math.exp(inversionFactor * relEffects.quantiles['50%']) :
-                inversionFactor * relEffects.quantiles['50%'];
-              scope.lowerBound = results.logScale ?
-                Math.exp(inversionFactor * relEffects.quantiles['2.5%']) :
-                inversionFactor * relEffects.quantiles['2.5%'];
-              scope.upperBound = results.logScale ?
-                Math.exp(inversionFactor * relEffects.quantiles['97.5%']) :
-                inversionFactor * relEffects.quantiles['97.5%'];
-              if (inversionFactor === -1) {
-                var tmp = scope.upperBound;
-                scope.upperBound = scope.lowerBound;
-                scope.lowerBound = tmp;
+            if (!scope.relativeEffectsTable) {
+              scope.relativeEffectsTable = ModelService.findCentering(scope.relativeEffectsTables);
+              if (scope.model.regressor) {
+                scope.relativeEffectsTable.level = 'centering (' + scope.result.regressor.modelRegressor.mu + ')';
               }
-            } else {
-              scope.resultsMessage.text = 'No results for comparison';
             }
           });
+        });
       }
     };
   };
-  return dependencies.concat(ComparisonResultDirective);
+  return dependencies.concat(RelativeEffectsTableDirective);
 });

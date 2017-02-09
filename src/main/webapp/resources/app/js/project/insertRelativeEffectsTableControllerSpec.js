@@ -1,6 +1,6 @@
 'use strict';
 define(['angular-mocks'], function() {
-  fdescribe('the insert relative effects table controller', function() {
+  describe('the insert relative effects table controller', function() {
     var scope, q,
       stateParamsMock = {},
       modalInstanceMock = {

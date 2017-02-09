@@ -66,10 +66,15 @@ define(['lodash'], function(_) {
     };
 
     function insertRelativeEffectsTable() {
-      callback(ReportDirectiveService.getDirectiveBuilder('relative-effects-table')($scope.selections.analysis.id, $scope.selections.model.id));
+      if ($scope.selections.regressionLevel) {
+        callback(ReportDirectiveService.getDirectiveBuilder('relative-effects-table')($scope.selections.analysis.id,
+          $scope.selections.model.id, $scope.selections.regressionLevel));
+      } else {
+        callback(ReportDirectiveService.getDirectiveBuilder('relative-effects-table')($scope.selections.analysis.id,
+          $scope.selections.model.id));
+      }
       $modalInstance.close();
     }
-
   };
   return dependencies.concat(InsertRelativeEffectsTableController);
 });
