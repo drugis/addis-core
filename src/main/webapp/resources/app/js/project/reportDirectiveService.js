@@ -27,6 +27,18 @@ define(['lodash'], function(_) {
             ' t1="' + t1 + '"' +
             ' t2="' + t2 + '"]]]';
         }
+      },
+      'relative-effects-table': {
+        tag: 'relative-effects-table',
+        regex:  /\[\[\[(relative-effects-table\s+analysis-id=\&\#34;\d+\&\#34;\s+model-id=\&\#34;\d+\&\#34;(\s+regression-level=\&\#34;\d+\&\#34;){0,1}\s*)\]\]\]/g,
+        replacer: function(match, p1) {
+          return '<' + replaceQuotes(p1) + '></relative-effects-table>';
+        },
+        builder: function(analysisId, modelId, regressionLevel) {
+          return regressionLevel ? '[[[relative-effects-table' + ' analysis-id="' + analysisId + '"' + ' model-id="' + 
+          modelId +'" regression-level=' + '"' + regressionLevel + '"]]]' : '[[[relative-effects-table' + ' analysis-id="' + 
+          analysisId + '"' + ' model-id="' + modelId + '"]]]';
+        }
       }
     };
 

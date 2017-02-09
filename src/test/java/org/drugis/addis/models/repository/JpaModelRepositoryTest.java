@@ -160,14 +160,14 @@ public class JpaModelRepositoryTest {
   @Test
   public void testFindByProject() throws Exception {
     Integer projectId = 1;
-    List<Model> models = modelRepository.findNetworkModelsByProject(projectId);
+    List<Model> models = modelRepository.findModelsByProject(projectId);
     assertEquals(2, models.size());
   }
 
   @Test
   public void testFindNetworkModelsByProject() throws SQLException {
     Integer projectId = 2;
-    List<Model> networkModelsByProject = modelRepository.findNetworkModelsByProject(projectId);
+    List<Model> networkModelsByProject = modelRepository.findModelsByProject(projectId);
     assertEquals(2, networkModelsByProject.size());
   }
 

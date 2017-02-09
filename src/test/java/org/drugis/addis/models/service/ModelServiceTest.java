@@ -56,6 +56,9 @@ public class ModelServiceTest {
   private ModelService modelService;
 
   private Model.ModelBuilder modelBuilder;
+  private final Integer projectId = 1;
+  private final Integer analysisId = 55;
+
 
   @Before
   public void setUp() throws Exception {
@@ -63,7 +66,6 @@ public class ModelServiceTest {
     MockitoAnnotations.initMocks(this);
 
     // some default values to use as a basis for tests
-    Integer analysisId = 55;
     String modelTitle = "model title";
     String linearModel = Model.LINEAR_MODEL_FIXED;
     Integer burnInIterations = 5000;
@@ -84,7 +86,7 @@ public class ModelServiceTest {
   }
 
   @Test
-  public void testCreateNetwork() throws InvalidModelException, ResourceDoesNotExistException  {
+  public void testCreateNetwork() throws InvalidModelException, ResourceDoesNotExistException {
     Integer analysisId = 55;
     String modelTitle = "model title";
     String linearModel = Model.LINEAR_MODEL_FIXED;
@@ -120,7 +122,7 @@ public class ModelServiceTest {
   }
 
   @Test
-  public void testCreateHeterogeneityStdDevNetwork() throws InvalidModelException, ResourceDoesNotExistException  {
+  public void testCreateHeterogeneityStdDevNetwork() throws InvalidModelException, ResourceDoesNotExistException {
     Integer analysisId = 55;
     String modelTitle = "model title";
     String linearModel = Model.LINEAR_MODEL_RANDOM;
@@ -153,7 +155,7 @@ public class ModelServiceTest {
   }
 
   @Test
-  public void testCreateHeterogeneityVarianceNetwork() throws InvalidModelException, ResourceDoesNotExistException  {
+  public void testCreateHeterogeneityVarianceNetwork() throws InvalidModelException, ResourceDoesNotExistException {
     Integer analysisId = 55;
     String modelTitle = "model title";
     String linearModel = Model.LINEAR_MODEL_FIXED;
@@ -184,8 +186,9 @@ public class ModelServiceTest {
     assertEquals(expectedModel, createdModel);
     verify(modelRepository).persist(internalModel);
   }
+
   @Test
-  public void testCreateHeterogeneityPrecisionNetwork() throws InvalidModelException, ResourceDoesNotExistException  {
+  public void testCreateHeterogeneityPrecisionNetwork() throws InvalidModelException, ResourceDoesNotExistException {
     Integer analysisId = 55;
     String modelTitle = "model title";
     String linearModel = Model.LINEAR_MODEL_FIXED;
@@ -217,7 +220,7 @@ public class ModelServiceTest {
   }
 
   @Test
-  public void testCreatePairwise() throws InvalidModelException, ResourceDoesNotExistException  {
+  public void testCreatePairwise() throws InvalidModelException, ResourceDoesNotExistException {
     Integer analysisId = 55;
     String modelTitle = "model title";
     String linearModel = Model.LINEAR_MODEL_FIXED;
@@ -254,7 +257,7 @@ public class ModelServiceTest {
   }
 
   @Test
-  public void testCreateMetaRegression() throws InvalidModelException, ResourceDoesNotExistException  {
+  public void testCreateMetaRegression() throws InvalidModelException, ResourceDoesNotExistException {
     Integer analysisId = 55;
     String modelTitle = "model title";
     String linearModel = Model.LINEAR_MODEL_FIXED;
@@ -330,7 +333,7 @@ public class ModelServiceTest {
     Integer projectId = 3;
     Principal pricipal = mock(Principal.class);
     Model model = mock(Model.class);
-    AbstractAnalysis analysis= mock(AbstractAnalysis.class);
+    AbstractAnalysis analysis = mock(AbstractAnalysis.class);
 
     when(model.getAnalysisId()).thenReturn(analysisId);
     when(analysis.getProjectId()).thenReturn(projectId);
@@ -351,7 +354,7 @@ public class ModelServiceTest {
     Integer projectId = 3;
     Principal pricipal = mock(Principal.class);
     Model model = mock(Model.class);
-    AbstractAnalysis analysis= mock(AbstractAnalysis.class);
+    AbstractAnalysis analysis = mock(AbstractAnalysis.class);
 
     when(model.getAnalysisId()).thenReturn(analysisId);
     when(analysis.getProjectId()).thenReturn(projectId);
@@ -448,9 +451,7 @@ public class ModelServiceTest {
   }
 
   @Test
-  public void testQueryConsistencyModels() throws InvalidModelException, SQLException, IOException {
-    Integer projectId = 1;
-    Integer analysisId = 3;
+  public void testQueryModelsByProject() throws InvalidModelException, SQLException, IOException {
     String modelTitle = "title";
     Model networkTypeModel = new Model.ModelBuilder(analysisId, modelTitle).link(Model.LINK_IDENTITY).modelType(Model.NETWORK_MODEL_TYPE).build();
     URI taskUri = URI.create("https://patavi.drugis.org/task/taskId1");
@@ -464,7 +465,31 @@ public class ModelServiceTest {
     List<Model> projectModels = Arrays.asList(networkTypeModel, pairwiseTypeModel, otherTypeModel);
     List<PataviTask> pataviTask = Collections.singletonList(new PataviTask(TestUtils.buildPataviTaskJson("taskId1")));
     when(pataviTaskRepository.findByUrls(Collections.singletonList(taskUri))).thenReturn(pataviTask);
-    when(modelRepository.findNetworkModelsByProject(projectId)).thenReturn(projectModels);
+    when(modelRepository.findModelsByProject(projectId)).thenReturn(projectModels);
+
+    List<Model> result = modelService.queryModelsByProject(projectId);
+
+    assertTrue(result.contains(pairwiseTypeModel));
+    assertTrue(result.contains(networkTypeModel));
+    assertTrue(result.contains(otherTypeModel));
+  }
+
+  @Test
+  public void testQueryConsistencyModels() throws InvalidModelException, SQLException, IOException {
+    String modelTitle = "title";
+    Model networkTypeModel = new Model.ModelBuilder(analysisId, modelTitle).link(Model.LINK_IDENTITY).modelType(Model.NETWORK_MODEL_TYPE).build();
+    URI taskUri = URI.create("https://patavi.drugis.org/task/taskId1");
+    Model pairwiseTypeModel = new Model.ModelBuilder(analysisId, modelTitle).link(Model.LINK_IDENTITY)
+            .modelType(Model.PAIRWISE_MODEL_TYPE).from(new Model.DetailNode(1, "from")).to(new Model.DetailNode(2, "to"))
+            .taskUri(taskUri)
+            .build();
+    Model otherTypeModel = new Model.ModelBuilder(analysisId, modelTitle).link(Model.LINK_IDENTITY).modelType(Model.NODE_SPLITTING_MODEL_TYPE)
+            .from(new Model.DetailNode(1, "from")).to(new Model.DetailNode(2, "to"))
+            .build();
+    List<Model> projectModels = Arrays.asList(networkTypeModel, pairwiseTypeModel, otherTypeModel);
+    List<PataviTask> pataviTask = Collections.singletonList(new PataviTask(TestUtils.buildPataviTaskJson("taskId1")));
+    when(pataviTaskRepository.findByUrls(Collections.singletonList(taskUri))).thenReturn(pataviTask);
+    when(modelRepository.findModelsByProject(projectId)).thenReturn(projectModels);
 
     List<Model> result = modelService.queryConsistencyModels(projectId);
 
