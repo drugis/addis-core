@@ -1,0 +1,18 @@
+<div class="row">
+  <div class="columns large-6 small-8">
+    <p>
+      <strong>Relative effects plots </strong>
+    </p>
+  </div>
+</div>
+<div class="row">
+  <div class="columns large-6 small-8">
+    <label ng-show="relativeEffectsPlots.length > 1"> Covariate level: {{relativeEffectsPlot.level}}
+    </label>
+  </div>
+</div>
+<div class="row">
+  <div class="columns large-12">
+    <img ng-src="{{relativeEffectsPlot.plots[selectedBaseline.id][0].href}}">
+  </div>
+</div>

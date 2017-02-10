@@ -13,6 +13,7 @@ define(function (require) {
     .controller('EditReportController', require('project/editReportController'))
     .controller('InsertNetworkGraphController', require('project/insertNetworkGraphController'))
     .controller('InsertComparisonResultController', require('project/insertComparisonResultController'))
+    .controller('InsertRelativeEffectsPlotController', require('project/insertRelativeEffectsPlotController'))
     .controller('InsertRelativeEffectsTableController', require('project/insertRelativeEffectsTableController'))
     .controller('DeleteDefinitionController',require('project/deleteDefinitionController'))
     .controller('UpdateProjectController', require('project/updateProjectController'))
@@ -24,6 +25,7 @@ define(function (require) {
     .directive('markdownReport', require('project/markdownReportDirective'))
     .directive('comparisonResult', require('project/comparisonResultDirective'))
     .directive('relativeEffectsTable', require('project/relativeEffectsTableDirective'))
+    .directive('relativeEffectsPlot', require('project/relativeEffectsPlotDirective'))
 
     //services
     .service('ProjectService', require('project/projectService'))
