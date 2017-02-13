@@ -24,7 +24,7 @@
     <div class="large-9 columns">
       <label>
         Choose baseline
-        <select ng-model="selections.baselineTreatment" ng-options="treatment.interventionId for treatment in selections.analysis.interventionInclusions"></select>
+        <select ng-model="selections.baselineTreatment" ng-options="intervention.name for intervention in selections.analysis.interventionsWithName"></select>
       </label>
     </div>
   </div>
