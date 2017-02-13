@@ -22,7 +22,8 @@ define(['angular', 'lodash', 'jQuery'],
       $scope.insertTextAtCursor = insertTextAtCursor;
       $scope.openNetworkGraphDialog = openNetworkGraphDialog;
       $scope.openComparisonResultDialog = openComparisonResultDialog;
-      $scope.openRelativeEffectTableDialog = openRelativeEffectTableDialog;
+      $scope.openRelativeEffectsTableDialog = openRelativeEffectsTableDialog;
+      $scope.openRelativeEffectsPlotDialog = openRelativeEffectsPlotDialog;
 
       ReportResource.get($stateParams).$promise.then(function(report) {
         $scope.reportText.text = report.data;
@@ -80,10 +81,24 @@ define(['angular', 'lodash', 'jQuery'],
         });
       }
 
-      function openRelativeEffectTableDialog() {
+      function openRelativeEffectsTableDialog() {
         $modal.open({
           templateUrl: './app/js/project/insertRelativeEffectsTableDialog.html',
           controller: 'InsertRelativeEffectsTableController',
+          resolve: {
+            callback: function() {
+              return function(graphText) {
+                insertTextAtCursor(graphText);
+              };
+            }
+          }
+        });
+      }
+
+      function openRelativeEffectsPlotDialog() {
+        $modal.open({
+          templateUrl: './app/js/project/insertRelativeEffectsPlotDialog.html',
+          controller: 'InsertRelativeEffectsPlotController',
           resolve: {
             callback: function() {
               return function(graphText) {

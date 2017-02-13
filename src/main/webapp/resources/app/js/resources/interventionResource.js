@@ -8,6 +8,11 @@ define([], function() {
     }, {
       'delete': {
         method: 'DELETE'
+      },
+      'queryByProject': {
+        url: '/projects/:projectId/interventions',
+        method: 'GET',
+        isArray: true
       }
     });
   };
