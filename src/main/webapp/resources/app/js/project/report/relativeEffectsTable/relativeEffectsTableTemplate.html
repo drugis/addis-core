@@ -1,0 +1,26 @@
+<div class="columns large-12">
+  <div class="row">
+    <div class="columns large-4">
+      <strong>Relative effects table</strong>
+      <br> <span ng-if="relativeEffectsTables.length > 1">Covariate level: {{relativeEffectsTable.level}}</span>
+    </div>
+  </div>
+  <table>
+    <caption>Comparison of the included interventions: {{::scaleName}} (95% CrI). Each cell
+      gives the effect of the column-defining intervention relative to the row-defining
+      intervention.
+    </caption>
+    <tr ng-repeat="relativeEffectsRow in relativeEffectsTable.table.rows">
+      <td class="text-center" ng-class="{'empty-cell': $index <= $parent.$index-1}" ng-repeat="relativeEffectsCell in relativeEffectsRow.cells">
+        <div ng-switch="relativeEffectsCell.cellType">
+          <span ng-switch-when="effect">{{relativeEffectsCell.mean | number: 3}} ({{relativeEffectsCell.lowerBound
+            | number: 3}}, {{relativeEffectsCell.upperBound | number: 3}})
+          </span>
+          <span ng-switch-when="label" class="table-cell-label">{{relativeEffectsCell.label}}
+          </span>
+          <span ng-switch-when="empty"></span>
+        </div>
+      </td>
+    </tr>
+  </table>
+</div>

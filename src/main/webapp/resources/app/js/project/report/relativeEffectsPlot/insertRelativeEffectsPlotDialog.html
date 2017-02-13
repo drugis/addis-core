@@ -1,0 +1,47 @@
+<form novalidate" ng-submit="insertRelativeEffectsPlot()">
+  <div class="row">
+    <div class="large-9 columns">
+      <h3>Insert relative effects plot</h3>
+    </div>
+  </div>
+  <div class="row">
+    <div class="large-9 columns">
+      <label>
+        Select analysis
+        <select ng-model="selections.analysis" ng-options="analysis.title for analysis in analyses" ng-change="selectedAnalysisChanged()"></select>
+      </label>
+    </div>
+  </div>
+  <div class="row">
+    <div class="large-9 columns">
+      <label>
+        Select model
+        <select ng-model="selections.model" ng-options="model.title for model in selections.analysis.models" ng-change="selectedModelChanged()"></select>
+      </label>
+    </div>
+  </div>  
+  <div class="row">
+    <div class="large-9 columns">
+      <label>
+        Select baseline
+        <select ng-model="selections.baselineIntervention" ng-options="intervention.name for intervention in selections.analysis.interventions"></select>
+      </label>
+    </div>
+  </div>
+  <div ng-if="isRegressionModel && selections.model.regressor.levels.length" class="row">
+    <div class="large-9 columns">
+      <label>
+        Select covariate level
+        <select ng-model="selections.regressionLevel" ng-options="level for level in selections.model.regressor.levels">
+        </select>
+      </label>
+    </div>
+  </div>
+  <div class="row modal-bottom-button-bar">
+    <div class="large-9 columns">
+      <button class="success" type="submit" ng-disabled="!selections.analysis || !selections.model || !selections.baselineIntervention">Insert
+      </button>
+    </div>
+  </div>
+  <a class="close-reveal-modal" ng-click="cancel()">&#215;</a>
+</form>
