@@ -1,13 +1,23 @@
 'use strict';
 define(['angular-mocks'], function() {
   describe('the insert relative effects plot controller', function() {
-    var scope, q,
+    var scope,
       stateParamsMock = {},
       modalInstanceMock = {
         close: function() {}
       },
+      intervention1 = {
+        id: 1
+      },
+      intervention2 = {
+        id: 2
+      },
+      intervention3 = {
+        id: 3
+      },
       analysisResourceMock = jasmine.createSpyObj('AnalysisResource', ['query']),
       modelResourceMock = jasmine.createSpyObj('ModelResource', ['queryByProject']),
+      interventionResourceMock = jasmine.createSpyObj('InterventionResource', ['queryByProject']),
       reportDirectiveServiceMock = jasmine.createSpyObj('ReportDirectiveService', ['getDirectiveBuilder']),
       callbackMock = jasmine.createSpy('callback');
 
@@ -17,7 +27,6 @@ define(['angular-mocks'], function() {
     beforeEach(module('addis.project'));
     beforeEach(inject(function($rootScope, $controller, $q) {
       scope = $rootScope;
-      q = $q;
 
       analysesDefer = $q.defer();
       var analysesQueryResult = {
@@ -32,6 +41,12 @@ define(['angular-mocks'], function() {
       modelResourceMock.queryByProject.and.returnValue(modelQueryResult);
       reportDirectiveServiceMock.getDirectiveBuilder.and.returnValue(function() {});
 
+      var interventionsDefer = $q.defer();
+      interventionResourceMock.queryByProject.and.returnValue({
+        $promise: interventionsDefer.promise
+      });
+      interventionsDefer.resolve([intervention1, intervention2, intervention3]);
+
       $controller('InsertRelativeEffectsPlotController', {
         $scope: scope,
         $q: $q,
@@ -39,6 +54,7 @@ define(['angular-mocks'], function() {
         $modalInstance: modalInstanceMock,
         'AnalysisResource': analysisResourceMock,
         'ModelResource': modelResourceMock,
+        'InterventionResource': interventionResourceMock,
         'ReportDirectiveService': reportDirectiveServiceMock,
         callback: callbackMock
       });
@@ -55,20 +71,35 @@ define(['angular-mocks'], function() {
     });
 
     describe('once the analyses and models are loaded', function() {
+      var interventionInclusion1 = {
+          interventionId: 1,
+          analysisId: 1
+        },
+        interventionInclusion2 = {
+          interventionId: 2,
+          analysisId: 4
+        },
+        interventionInclusion3 = {
+          interventionId: 3,
+          analysisId: 1
+        };
       var analyses = [{
         analysisType: 'Evidence synthesis',
-        id: 1
+        id: 1,
+        interventionInclusions: [interventionInclusion1, interventionInclusion3]
       }, {
         analysisType: 'Not evidence synthesis',
         id: 2,
       }, {
         analysisType: 'Evidence synthesis',
         archived: true,
-        id: 3,
+        id: 3
       }, {
         analysisType: 'Evidence synthesis',
         id: 4,
+        interventionInclusions: [interventionInclusion2]
       }];
+
       var models = [{
         id: 31,
         analysisId: 4,
@@ -97,6 +128,12 @@ define(['angular-mocks'], function() {
         modelType: {
           type: 'pairwise'
         }
+      }, {
+        id: 44,
+        analysisId: 1,
+        modelType: {
+          type: 'node-split'
+        }
       }];
       beforeEach(function() {
         analysesDefer.resolve(analyses);
@@ -110,16 +147,23 @@ define(['angular-mocks'], function() {
         var expectedAnalyses = [{
           analysisType: 'Evidence synthesis',
           id: 1,
-          models: [models[2], models[3]]
+          models: [models[2], models[3]],
+          interventionInclusions: [interventionInclusion1, interventionInclusion3],
+          interventions: [intervention1, intervention3]
         }, {
           analysisType: 'Evidence synthesis',
           id: 4,
-          models: [models[0]]
+          models: [models[0]],
+          interventionInclusions: [interventionInclusion2],
+          interventions: [intervention2]
         }];
-        expect(scope.analyses).toEqual(expectedAnalyses);
-        expect(scope.selections.analysis).toEqual(expectedAnalyses[0]);
-        expect(scope.selections.model).toEqual(models[2]);
-        expect(scope.selections.regressionLevel).toBe(1);
+        console.log(JSON.stringify(scope.analyses[1], null, 2));
+        console.log(JSON.stringify(expectedAnalyses[1], null, 2));
+        expect(scope.analyses[1]).toEqual(expectedAnalyses[1]);
+        // expect(scope.analyses).toEqual(expectedAnalyses);
+        // expect(scope.selections.analysis).toEqual(expectedAnalyses[0]);
+        // expect(scope.selections.model).toEqual(models[2]);
+        // expect(scope.selections.regressionLevel).toBe(1);
       });
       it('selectedAnalysisChanged should update the selected model and clear the regressionLevel if needed', function() {
         scope.selections.analysis = analyses[3];

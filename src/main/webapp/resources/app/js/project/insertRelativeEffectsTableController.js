@@ -66,13 +66,8 @@ define(['lodash'], function(_) {
     };
 
     function insertRelativeEffectsTable() {
-      if ($scope.selections.regressionLevel) {
-        callback(ReportDirectiveService.getDirectiveBuilder('relative-effects-table')($scope.selections.analysis.id,
-          $scope.selections.model.id, $scope.selections.regressionLevel));
-      } else {
-        callback(ReportDirectiveService.getDirectiveBuilder('relative-effects-table')($scope.selections.analysis.id,
-          $scope.selections.model.id));
-      }
+      callback(ReportDirectiveService.getDirectiveBuilder('relative-effects-table')($scope.selections.analysis.id,
+        $scope.selections.model.id, $scope.selections.regressionLevel));
       $modalInstance.close();
     }
   };

@@ -1,14 +1,11 @@
 <div class="row">
   <div class="columns large-6 small-8">
-    <p>
       <strong>Relative effects plots </strong>
-    </p>
   </div>
 </div>
-<div class="row">
+<div class="row" ng-if="relativeEffectsPlots.length > 1">
   <div class="columns large-6 small-8">
-    <label ng-show="relativeEffectsPlots.length > 1"> Covariate level: {{relativeEffectsPlot.level}}
-    </label>
+    Covariate level: {{relativeEffectsPlot.level}}
   </div>
 </div>
 <div class="row">

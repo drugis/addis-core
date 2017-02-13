@@ -7,7 +7,7 @@ define(['lodash'], function(_) {
     ReportDirectiveService, callback, ModelResource, InterventionResource) {
     var analysesPromise = AnalysisResource.query($stateParams).$promise;
     var modelsPromise = ModelResource.queryByProject($stateParams).$promise;
-    var interventionPromise = InterventionResource.queryByProject($stateParams).$promise;
+    var interventionsPromise = InterventionResource.queryByProject($stateParams).$promise;
 
     $scope.selections = {};
     $scope.isRegressionModel = false;
@@ -19,10 +19,10 @@ define(['lodash'], function(_) {
       loaded: false
     };
 
-    $q.all([analysesPromise, modelsPromise, interventionPromise]).then(function(values) {
+    $q.all([analysesPromise, modelsPromise, interventionsPromise]).then(function(values) {
       var analyses = values[0];
       var models = values[1];
-      $scope.interventions = values[2];
+      var interventions = values[2];
 
       models = _.chain(models).reject('archived').reject(['modelType.type', 'node-split']).value();
       $scope.analyses = _.chain(analyses)
@@ -33,6 +33,12 @@ define(['lodash'], function(_) {
           return analysis;
         })
         .filter('models.length')
+        .map(function(analysis) {
+          analysis.interventions = _.filter(interventions, function(intervention) {
+            return _.find(analysis.interventionInclusions, ['interventionId', intervention.id]);
+          });
+          return analysis;
+        })
         .value();
       if ($scope.analyses.length) {
         $scope.selections.analysis = $scope.analyses[0];
@@ -52,15 +58,8 @@ define(['lodash'], function(_) {
         $scope.selections.model = $scope.selections.analysis.models[0];
       }
 
-      $scope.selections.analysis.interventionsWithName = [];
-      _.forEach($scope.interventions, function(intervention) {
-        _.forEach($scope.selections.analysis.interventionInclusions, function(includedIntervention) {
-          if (includedIntervention.interventionId === intervention.id) {
-            $scope.selections.analysis.interventionsWithName.push(intervention);
-          }
-        });
-      });
-      $scope.selections.baselineTreatment = $scope.selections.analysis.interventionsWithName[0];
+
+      $scope.selections.baselineIntervention = $scope.selections.analysis.interventions[0];
 
       selectedModelChanged();
     }
@@ -82,13 +81,8 @@ define(['lodash'], function(_) {
     };
 
     function insertRelativeEffectsPlot() {
-      if ($scope.selections.regressionLevel) {
-        callback(ReportDirectiveService.getDirectiveBuilder('relative-effects-plot')($scope.selections.analysis.id,
-          $scope.selections.model.id, $scope.selections.baselineTreatment.id, $scope.selections.regressionLevel));
-      } else {
-        callback(ReportDirectiveService.getDirectiveBuilder('relative-effects-plot')($scope.selections.analysis.id,
-          $scope.selections.model.id, $scope.selections.baselineTreatment.id));
-      }
+      callback(ReportDirectiveService.getDirectiveBuilder('relative-effects-plot')($scope.selections.analysis.id,
+        $scope.selections.model.id, $scope.selections.baselineIntervention.id, $scope.selections.regressionLevel));
       $modalInstance.close();
     }
   };

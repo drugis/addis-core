@@ -35,7 +35,7 @@ define(['lodash'], function(_) {
           return '<' + replaceQuotes(p1) + '></relative-effects-table>';
         },
         builder: function(analysisId, modelId, regressionLevel) {
-          return regressionLevel ? '[[[relative-effects-table' + ' analysis-id="' + analysisId + '"' + ' model-id="' +
+          return regressionLevel !== undefined ? '[[[relative-effects-table' + ' analysis-id="' + analysisId + '"' + ' model-id="' +
             modelId + '" regression-level=' + '"' + regressionLevel + '"]]]' : '[[[relative-effects-table' + ' analysis-id="' +
             analysisId + '"' + ' model-id="' + modelId + '"]]]';
         }
@@ -47,7 +47,7 @@ define(['lodash'], function(_) {
           return '<' + replaceQuotes(p1) + '></relative-effects-plot>';
         },
         builder: function(analysisId, modelId, baselineTreatmentId, regressionLevel) {
-          return regressionLevel ? '[[[relative-effects-plot' + ' analysis-id="' + analysisId + '"' + ' model-id="' +
+          return regressionLevel !== undefined ? '[[[relative-effects-plot' + ' analysis-id="' + analysisId + '"' + ' model-id="' +
             modelId + '" baseline-treatment-id='+ '"' + baselineTreatmentId +'" regression-level=' + '"' + 
             regressionLevel + '"]]]' : '[[[relative-effects-plot' + ' analysis-id="' +
             analysisId + '"' + ' model-id="' + modelId + '" baseline-treatment-id='+ '"' + baselineTreatmentId + '"]]]';

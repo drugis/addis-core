@@ -26,9 +26,9 @@ define(['lodash'], function(_) {
           projectId: $stateParams.projectId
         }).$promise;
 
-        function prefixPlots(plots) {
+        function prefixPlots(model, plots) {
           return _.reduce(plots, function(accum, plot, key) {
-            accum[key] = ResultsPlotService.prefixImageUris(plot, scope.model.taskUrl + '/results/');
+            accum[key] = ResultsPlotService.prefixImageUris(plot, model.taskUrl + '/results/');
             return accum;
           }, {});
         }
@@ -40,34 +40,31 @@ define(['lodash'], function(_) {
         }).$promise;
 
         $q.all([problemPromise, modelPromise]).then(function(values) {
-          scope.problem = values[0];
-          scope.model = values[1];
-          scope.scaleName = AnalysisService.getScaleName(scope.model);
+          var problem = values[0];
+          var model = values[1];
 
-          getResults(scope.model).then(function(results) {
-            scope.result = results;
+          getResults(model).then(function(results) {
 
-            if (scope.problem.treatments && scope.problem.treatments.length > 0) {
-              scope.selectedBaseline = _.find(scope.problem.treatments, ['id',scope.baselineTreatmentId]);
+            if (problem.treatments && problem.treatments.length > 0) {
+              scope.selectedBaseline = _.find(problem.treatments, ['id',scope.baselineTreatmentId]);
             }
 
             scope.relativeEffectsPlots = _.map(results.relativeEffectPlots, function(plots, key) {
               return {
                 level: key,
-                plots: prefixPlots(plots)
+                plots: prefixPlots(model, plots)
               };
             });
 
-            if (scope.regressionLevel) {
+            if (scope.regressionLevel !== undefined) {
               scope.relativeEffectsPlot = _.find(scope.relativeEffectsPlots, ['level', scope.regressionLevel.toString()]);
-            } else if (scope.model.regressor && ModelService.isVariableBinary(scope.model.regressor.variable, scope.problem)) {
-              scope.relativeEffectsPlots = ModelService.filterCentering(scope.relativeEffectsPlots);
+            } else if (model.regressor && ModelService.isVariableBinary(model.regressor.variable, problem)) {
               scope.relativeEffectsPlot = scope.relativeEffectsPlot = scope.relativeEffectsPlots[0];
             }
             if (!scope.relativeEffectsPlot) {
               scope.relativeEffectsPlot = ModelService.findCentering(scope.relativeEffectsPlots);
-              if (scope.model.regressor) {
-                scope.relativeEffectsPlot.level = 'centering (' + scope.result.regressor.modelRegressor.mu + ')';
+              if (model.regressor) {
+                scope.relativeEffectsPlot.level = 'centering (' + results.regressor.modelRegressor.mu + ')';
               }
             }
           });
