@@ -280,7 +280,7 @@ define(
           })
           .state('editReport', {
             url: '/editReport',
-            templateUrl: 'app/js/project/editReport.html',
+            templateUrl: 'app/js/project/report/editReport.html',
             controller: 'EditReportController',
             parent: 'project'
           })
