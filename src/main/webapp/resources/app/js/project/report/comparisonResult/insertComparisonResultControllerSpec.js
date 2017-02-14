@@ -6,10 +6,8 @@ define(['angular-mocks'], function() {
       modalInstanceMock = {
         close: function() {}
       },
-      analysisResourceMock = jasmine.createSpyObj('AnalysisResource', ['query']),
-      modelResourceMock = jasmine.createSpyObj('ModelResource', ['getConsistencyModels']),
+      cacheServiceMock = jasmine.createSpyObj('CacheService', ['getConsistencyModels','getAnalyses', 'getInterventions']),
       reportDirectiveServiceMock = jasmine.createSpyObj('ReportDirectiveService', ['getDirectiveBuilder']),
-      interventionResourceMock = jasmine.createSpyObj('InterventionResource', ['query']),
       pataviServiceMock = jasmine.createSpyObj('PataviService', ['listen']),
       callbackMock = jasmine.createSpy('callback');
 
@@ -26,19 +24,19 @@ define(['angular-mocks'], function() {
       var getAnalyses = {
         $promise: analysesDefer.promise
       };
-      analysisResourceMock.query.and.returnValue(getAnalyses);
+      cacheServiceMock.getAnalyses.and.returnValue(getAnalyses.$promise);
 
       modelsDefer = $q.defer();
       var getModels = {
         $promise: modelsDefer.promise
       };
-      modelResourceMock.getConsistencyModels.and.returnValue(getModels);
+      cacheServiceMock.getConsistencyModels.and.returnValue(getModels.$promise);
 
       interventionsDefer = $q.defer();
       var getInterventions = {
         $promise: interventionsDefer.promise
       };
-      interventionResourceMock.query.and.returnValue(getInterventions);
+      cacheServiceMock.getInterventions.and.returnValue(getInterventions.$promise);
 
       reportDirectiveServiceMock.getDirectiveBuilder.and.returnValue(function() {});
 
@@ -47,20 +45,18 @@ define(['angular-mocks'], function() {
         $q: $q,
         $stateParams: stateParamsMock,
         $modalInstance: modalInstanceMock,
-        'AnalysisResource': analysisResourceMock,
-        'ModelResource': modelResourceMock,
+        'CacheService': cacheServiceMock,
         'ReportDirectiveService': reportDirectiveServiceMock,
         'PataviService': pataviServiceMock,
-        'InterventionResource': interventionResourceMock,
         callback: callbackMock
       });
     }));
 
     describe('on load', function() {
       it('should get the analyses, models and interventions', function() {
-        expect(analysisResourceMock.query).toHaveBeenCalled();
-        expect(modelResourceMock.getConsistencyModels).toHaveBeenCalled();
-        expect(interventionResourceMock.query).toHaveBeenCalled();
+        expect(cacheServiceMock.getAnalyses).toHaveBeenCalled();
+        expect(cacheServiceMock.getConsistencyModels).toHaveBeenCalled();
+        expect(cacheServiceMock.getInterventions).toHaveBeenCalled();
       });
       it('loading.loaded should be false', function() {
         expect(scope.loading.loaded).toBe(false);

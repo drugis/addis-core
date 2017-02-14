@@ -1,12 +1,12 @@
 'use strict';
 define(['lodash'], function(_) {
   var dependencies = ['$scope', '$stateParams', '$modalInstance', '$q', 'AnalysisResource',
-    'ReportDirectiveService', 'callback', 'ModelResource'
+    'ReportDirectiveService', 'callback', 'CacheService'
   ];
   var InsertRelativeEffectsTableController = function($scope, $stateParams, $modalInstance, $q, AnalysisResource,
-    ReportDirectiveService, callback, ModelResource) {
-    var analysesPromise = AnalysisResource.query($stateParams).$promise;
-    var modelsPromise = ModelResource.queryByProject($stateParams).$promise;
+    ReportDirectiveService, callback, CacheService) {
+    var analysesPromise = CacheService.getAnalyses($stateParams);
+    var modelsPromise = CacheService.getModelsByProject($stateParams);
 
     $scope.selections = {};
     $scope.isRegressionModel = false;

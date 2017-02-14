@@ -1,10 +1,10 @@
 'use strict';
 define(['lodash'], function(_) {
-  var dependencies = ['$stateParams', '$q', 'ModelResource', 'ModelService',
-    'PataviService', 'RelativeEffectsTableService', 'ProblemResource', 'AnalysisService'
+  var dependencies = ['$stateParams', '$q', 'ModelService',
+    'PataviService', 'RelativeEffectsTableService', 'CacheService', 'AnalysisService'
   ];
-  var RelativeEffectsTableDirective = function($stateParams, $q, ModelResource, ModelService,
-    PataviService, RelativeEffectsTableService, ProblemResource, AnalysisService) {
+  var RelativeEffectsTableDirective = function($stateParams, $q, ModelService,
+    PataviService, RelativeEffectsTableService, CacheService, AnalysisService) {
     return {
       restrict: 'E',
       scope: {
@@ -12,7 +12,7 @@ define(['lodash'], function(_) {
         modelId: '=',
         regressionLevel: '='
       },
-      templateUrl: 'app/js/project/relativeEffectsTableTemplate.html',
+      templateUrl: 'app/js/project/report/relativeEffectsTable/relativeEffectsTableTemplate.html',
 
       link: function(scope) {
         scope.resultsMessage = {};
@@ -20,18 +20,9 @@ define(['lodash'], function(_) {
         function getResults(model) {
           return PataviService.listen(model.taskUrl);
         }
-        
-        var problemPromise = ProblemResource.get({
-          analysisId: scope.analysisId,
-          projectId: $stateParams.projectId
-        }).$promise;
 
-
-        var modelPromise = ModelResource.get({
-          projectId: $stateParams.projectId,
-          analysisId: scope.analysisId,
-          modelId: scope.modelId
-        }).$promise;
+        var problemPromise = CacheService.getProblem($stateParams.projectId, scope.analysisId);
+        var modelPromise = CacheService.getModel($stateParams.projectId, scope.analysisId, scope.modelId);
 
         $q.all([problemPromise, modelPromise]).then(function(values) {
           var problem = values[0];

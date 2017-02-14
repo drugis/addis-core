@@ -55,7 +55,7 @@ define(['angular', 'lodash', 'jQuery'],
 
       function openNetworkGraphDialog() {
         $modal.open({
-          templateUrl: './app/js/project/insertNetworkGraphDialog.html',
+          templateUrl: './app/js/project/report/networkGraph/insertNetworkGraphDialog.html',
           controller: 'InsertNetworkGraphController',
           resolve: {
             callback: function() {
@@ -69,7 +69,7 @@ define(['angular', 'lodash', 'jQuery'],
 
       function openComparisonResultDialog() {
         $modal.open({
-          templateUrl: './app/js/project/insertComparisonResultDialog.html',
+          templateUrl: './app/js/project/report/comparisonResult/insertComparisonResultDialog.html',
           controller: 'InsertComparisonResultController',
           resolve: {
             callback: function() {
@@ -83,7 +83,7 @@ define(['angular', 'lodash', 'jQuery'],
 
       function openRelativeEffectsTableDialog() {
         $modal.open({
-          templateUrl: './app/js/project/insertRelativeEffectsTableDialog.html',
+          templateUrl: './app/js/project/report/relativeEffectsTable/insertRelativeEffectsTableDialog.html',
           controller: 'InsertRelativeEffectsTableController',
           resolve: {
             callback: function() {
@@ -97,7 +97,7 @@ define(['angular', 'lodash', 'jQuery'],
 
       function openRelativeEffectsPlotDialog() {
         $modal.open({
-          templateUrl: './app/js/project/insertRelativeEffectsPlotDialog.html',
+          templateUrl: './app/js/project/report/relativeEffectsPlot/insertRelativeEffectsPlotDialog.html',
           controller: 'InsertRelativeEffectsPlotController',
           resolve: {
             callback: function() {
