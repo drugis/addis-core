@@ -48,11 +48,37 @@ define(['lodash'], function(_) {
         },
         builder: function(analysisId, modelId, baselineTreatmentId, regressionLevel) {
           return regressionLevel !== undefined ? '[[[relative-effects-plot' + ' analysis-id="' + analysisId + '"' + ' model-id="' +
-            modelId + '" baseline-treatment-id='+ '"' + baselineTreatmentId +'" regression-level=' + '"' + 
+            modelId + '" baseline-treatment-id=' + '"' + baselineTreatmentId + '" regression-level=' + '"' +
             regressionLevel + '"]]]' : '[[[relative-effects-plot' + ' analysis-id="' +
-            analysisId + '"' + ' model-id="' + modelId + '" baseline-treatment-id='+ '"' + baselineTreatmentId + '"]]]';
+            analysisId + '"' + ' model-id="' + modelId + '" baseline-treatment-id=' + '"' + baselineTreatmentId + '"]]]';
+        }
+      },
+      'rank-probabilities-table': {
+        tag: 'rank-probabilities-table',
+        regex: /\[\[\[(rank-probabilities-table\s+analysis-id=\&\#34;\d+\&\#34;\s+model-id=\&\#34;\d+\&\#34;(\s+regression-level=\&\#34;\d+\&\#34;){0,1}\s*)\]\]\]/g,
+        replacer: function(match, p1) {
+          return '<' + replaceQuotes(p1) + '></rank-probabilities-table>';
+        },
+        builder: function(analysisId, modelId, regressionLevel) {
+          return regressionLevel !== undefined ? '[[[rank-probabilities-table' + ' analysis-id="' + analysisId + '"' + ' model-id="' +
+            modelId + '" regression-level=' + '"' + regressionLevel + '"]]]' : '[[[rank-probabilities-table' + ' analysis-id="' +
+            analysisId + '"' + ' model-id="' + modelId + '"]]]';
+        }
+      },
+      'rank-probabilities-plot': {
+        tag: 'rank-probabilities-plot',
+        regex: /\[\[\[(rank-probabilities-plot\s+analysis-id=\&\#34;\d+\&\#34;\s+model-id=\&\#34;\d+\&\#34;\s+baseline-treatment-id=\&\#34;\d+\&\#34;(\s+regression-level=\&\#34;\d+\&\#34;){0,1}\s*)\]\]\]/g,
+        replacer: function(match, p1) {
+          return '<' + replaceQuotes(p1) + '></rank-probabilities-plot>';
+        },
+        builder: function(analysisId, modelId, baselineTreatmentId, regressionLevel) {
+          return regressionLevel !== undefined ? '[[[rank-probabilities-plot' + ' analysis-id="' + analysisId + '"' + ' model-id="' +
+            modelId + '" baseline-treatment-id=' + '"' + baselineTreatmentId + '" regression-level=' + '"' +
+            regressionLevel + '"]]]' : '[[[rank-probabilities-plot' + ' analysis-id="' +
+            analysisId + '"' + ' model-id="' + modelId + '" baseline-treatment-id=' + '"' + baselineTreatmentId + '"]]]';
         }
       }
+
     };
 
     function replaceQuotes(input) {

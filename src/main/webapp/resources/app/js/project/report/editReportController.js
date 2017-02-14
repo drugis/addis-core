@@ -24,6 +24,8 @@ define(['angular', 'lodash', 'jQuery'],
       $scope.openComparisonResultDialog = openComparisonResultDialog;
       $scope.openRelativeEffectsTableDialog = openRelativeEffectsTableDialog;
       $scope.openRelativeEffectsPlotDialog = openRelativeEffectsPlotDialog;
+      $scope.openRankProbabilitiesTableDialog = openRankProbabilitiesTableDialog;
+      $scope.openRankProbabilitiesPlotDialog = openRankProbabilitiesPlotDialog;
 
       ReportResource.get($stateParams).$promise.then(function(report) {
         $scope.reportText.text = report.data;
@@ -99,6 +101,34 @@ define(['angular', 'lodash', 'jQuery'],
         $modal.open({
           templateUrl: './app/js/project/report/relativeEffectsPlot/insertRelativeEffectsPlotDialog.html',
           controller: 'InsertRelativeEffectsPlotController',
+          resolve: {
+            callback: function() {
+              return function(graphText) {
+                insertTextAtCursor(graphText);
+              };
+            }
+          }
+        });
+      }
+
+      function openRankProbabilitiesTableDialog() {
+        $modal.open({
+          templateUrl: './app/js/project/report/rankProbabilitiesTable/insertRankProbabilitiesTableDialog.html',
+          controller: 'InsertRankProbabilitiesTableController',
+          resolve: {
+            callback: function() {
+              return function(graphText) {
+                insertTextAtCursor(graphText);
+              };
+            }
+          }
+        });
+      }
+
+      function openRankProbabilitiesPlotDialog() {
+        $modal.open({
+          templateUrl: './app/js/project/report/rankProbabilitiesPlot/insertRankProbabilitiesPlotDialog.html',
+          controller: 'InsertRankProbabilitiesPlotController',
           resolve: {
             callback: function() {
               return function(graphText) {

@@ -20,7 +20,9 @@ define(function (require) {
     .controller('InsertComparisonResultController', require('project/report/comparisonResult/insertComparisonResultController'))
     .controller('InsertRelativeEffectsPlotController', require('project/report/relativeEffectsPlot/insertRelativeEffectsPlotController'))
     .controller('InsertRelativeEffectsTableController', require('project/report/relativeEffectsTable/insertRelativeEffectsTableController'))
-
+    .controller('InsertRankProbabilitiesTableController', require('project/report/rankProbabilitiesTable/insertRankProbabilitiesTableController'))
+.controller('InsertRankProbabilitiesPlotController', require('project/report/rankProbabilitiesPlot/insertRankProbabilitiesPlotController'))
+    
     //directives
     .directive('nmaReportView', require('project/nmaReportViewDirective'))
     .directive('ssbrReportView', require('project/ssbrReportViewDirective'))
@@ -28,7 +30,9 @@ define(function (require) {
     .directive('comparisonResult', require('project/report/comparisonResult/comparisonResultDirective'))
     .directive('relativeEffectsTable', require('project/report/relativeEffectsTable/relativeEffectsTableDirective'))
     .directive('relativeEffectsPlot', require('project/report/relativeEffectsPlot/relativeEffectsPlotDirective'))
-
+    .directive('rankProbabilitiesTable', require('project/report/rankProbabilitiesTable/rankProbabilitiesTableDirective'))
+    .directive('rankProbabilitiesPlot', require('project/report/rankProbabilitiesPlot/rankProbabilitiesPlotDirective'))
+    
     //services
     .service('ProjectService', require('project/projectService'))
     .service('ReportDirectiveService', require('project/report/reportDirectiveService'))
