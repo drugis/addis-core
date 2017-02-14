@@ -1,13 +1,13 @@
 'use strict';
 define(['lodash'], function(_) {
-  var dependencies = ['$scope', '$stateParams', '$modalInstance', '$q', 
-    'ReportDirectiveService', 'callback', 'CacheService', 'InterventionResource'
+  var dependencies = ['$scope', '$stateParams', '$modalInstance', '$q',
+    'ReportDirectiveService', 'callback', 'CacheService'
   ];
-  var InsertRelativeEffectsTableController = function($scope, $stateParams, $modalInstance, $q, 
-    ReportDirectiveService, callback, CacheService, InterventionResource) {
+  var InsertRelativeEffectsTableController = function($scope, $stateParams, $modalInstance, $q,
+    ReportDirectiveService, callback, CacheService) {
     var analysesPromise = CacheService.getAnalyses($stateParams);
     var modelsPromise = CacheService.getModelsByProject($stateParams);
-    var interventionsPromise = InterventionResource.queryByProject($stateParams).$promise;
+    var interventionsPromise = CacheService.getInterventions($stateParams);
 
     $scope.selections = {};
     $scope.isRegressionModel = false;

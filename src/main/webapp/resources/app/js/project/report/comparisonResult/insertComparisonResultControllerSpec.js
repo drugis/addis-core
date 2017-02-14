@@ -6,9 +6,8 @@ define(['angular-mocks'], function() {
       modalInstanceMock = {
         close: function() {}
       },
-      cacheServiceMock = jasmine.createSpyObj('CacheService', ['getConsistencyModels','getAnalyses']),
+      cacheServiceMock = jasmine.createSpyObj('CacheService', ['getConsistencyModels','getAnalyses', 'getInterventions']),
       reportDirectiveServiceMock = jasmine.createSpyObj('ReportDirectiveService', ['getDirectiveBuilder']),
-      interventionResourceMock = jasmine.createSpyObj('InterventionResource', ['query']),
       pataviServiceMock = jasmine.createSpyObj('PataviService', ['listen']),
       callbackMock = jasmine.createSpy('callback');
 
@@ -37,7 +36,7 @@ define(['angular-mocks'], function() {
       var getInterventions = {
         $promise: interventionsDefer.promise
       };
-      interventionResourceMock.query.and.returnValue(getInterventions);
+      cacheServiceMock.getInterventions.and.returnValue(getInterventions.$promise);
 
       reportDirectiveServiceMock.getDirectiveBuilder.and.returnValue(function() {});
 
@@ -49,7 +48,6 @@ define(['angular-mocks'], function() {
         'CacheService': cacheServiceMock,
         'ReportDirectiveService': reportDirectiveServiceMock,
         'PataviService': pataviServiceMock,
-        'InterventionResource': interventionResourceMock,
         callback: callbackMock
       });
     }));
@@ -58,7 +56,7 @@ define(['angular-mocks'], function() {
       it('should get the analyses, models and interventions', function() {
         expect(cacheServiceMock.getAnalyses).toHaveBeenCalled();
         expect(cacheServiceMock.getConsistencyModels).toHaveBeenCalled();
-        expect(interventionResourceMock.query).toHaveBeenCalled();
+        expect(cacheServiceMock.getInterventions).toHaveBeenCalled();
       });
       it('loading.loaded should be false', function() {
         expect(scope.loading.loaded).toBe(false);

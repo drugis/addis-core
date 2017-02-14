@@ -1,15 +1,16 @@
 'use strict';
 
 define(['lodash'], function(_) {
-  var dependencies = ['$q', 'AnalysisResource', 'ModelResource', 'ProblemResource'];
+  var dependencies = ['$q', 'AnalysisResource', 'ModelResource', 'ProblemResource', 'InterventionResource'];
 
-  var CacheService = function($q, AnalysisResource, ModelResource, ProblemResource) {
+  var CacheService = function($q, AnalysisResource, ModelResource, ProblemResource, InterventionResource) {
     var cache = {
       analysesPromises: {},
       modelPromises: [],
       problemPromises: {},
       consistecyModelsPromises: {},
-      modelsByProjectPromises: {}
+      modelsByProjectPromises: {},
+      interventionPromises: {}
     };
 
     function getAnalysis(projectId, analysisId) {
@@ -81,13 +82,22 @@ define(['lodash'], function(_) {
       return cache.problemPromises[analysisId];
     }
 
+    function getInterventions(projectId) {
+      if (cache.interventionPromises[projectId]) {
+        return cache.interventionPromises[projectId];
+      }
+      cache.interventionPromises[projectId] = InterventionResource.query(projectId).$promise;
+      return cache.interventionPromises[projectId];
+    }
+
     return {
       getAnalysis: getAnalysis,
       getAnalyses: getAnalyses,
       getModel: getModel,
       getProblem: getProblem,
       getConsistencyModels: getConsistencyModels,
-      getModelsByProject: getModelsByProject
+      getModelsByProject: getModelsByProject,
+      getInterventions: getInterventions
     };
   };
   return dependencies.concat(CacheService);

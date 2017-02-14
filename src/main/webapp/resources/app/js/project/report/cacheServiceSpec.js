@@ -9,16 +9,20 @@ define(['angular-mocks'], function() {
       problemPromise,
       modelDefer,
       modelPromise,
+      interventionDefer,
+      interventionPromise,
       projectId,
       analysisId,
       analysisResourceMock = jasmine.createSpyObj('AnalysisResource', ['get','query']),
       modelResourceMock = jasmine.createSpyObj('ModelResource', ['get', 'getConsistencyModels', 'queryByProject']),
-      problemResourceMock = jasmine.createSpyObj('ProblemResource', ['get']);
+      problemResourceMock = jasmine.createSpyObj('ProblemResource', ['get']),
+      interventionResourceMock = jasmine.createSpyObj('InterventionResource',['query']);
 
     beforeEach(module('addis.project', function($provide) {
       $provide.value('AnalysisResource', analysisResourceMock);
       $provide.value('ProblemResource', problemResourceMock);
       $provide.value('ModelResource', modelResourceMock);
+      $provide.value('InterventionResource', interventionResourceMock);
     }));
 
     beforeEach(inject(function($q) {
@@ -28,6 +32,8 @@ define(['angular-mocks'], function() {
       problemPromise = problemDefer.promise;
       modelDefer = $q.defer();
       modelPromise = modelDefer.promise;
+      interventionDefer = $q.defer();
+      interventionPromise = interventionDefer.promise;
       projectId = 1;
       analysisId = 11;
     }));
@@ -42,6 +48,7 @@ define(['angular-mocks'], function() {
       expect(modelResourceMock.get).not.toHaveBeenCalled();
       expect(modelResourceMock.getConsistencyModels).not.toHaveBeenCalled();
       expect(modelResourceMock.queryByProject).not.toHaveBeenCalled();
+      expect(interventionResourceMock.query).not.toHaveBeenCalled();
     });
 
     describe('getProblem,', function() {
@@ -182,12 +189,34 @@ define(['angular-mocks'], function() {
       it('for models already cached should not perform a request, but should return the resulting promise', function() {
         var resultPromise = cacheService.getModelsByProject(projectId);
         expect(resultPromise).toBe(modelPromise);
-        modelResourceMock.get.calls.reset();
+        modelResourceMock.queryByProject.calls.reset();
         resultPromise = cacheService.getModelsByProject(projectId);
         expect(resultPromise).toBe(modelPromise);
-        expect(modelResourceMock.queryByProject).toHaveBeenCalled();
+        expect(modelResourceMock.queryByProject).not.toHaveBeenCalled();
       });
     });
 
+    describe('getInterventions,', function() {
+      beforeEach(function() {
+        interventionResourceMock.query.and.returnValue({
+          $promise: interventionPromise
+        });
+      });
+
+      it('for models not already cached should perform a request and return the resulting promise', function() {
+        var resultPromise = cacheService.getInterventions(projectId);
+        expect(resultPromise).toBe(interventionPromise);
+        expect(interventionResourceMock.query).toHaveBeenCalled();
+      });
+
+      it('for models already cached should not perform a request, but should return the resulting promise', function() {
+        var resultPromise = cacheService.getInterventions(projectId);
+        expect(resultPromise).toBe(interventionPromise);
+        interventionResourceMock.query.calls.reset();
+        resultPromise = cacheService.getInterventions(projectId);
+        expect(resultPromise).toBe(interventionPromise);
+        expect(interventionResourceMock.query).not.toHaveBeenCalled();
+      });
+    });
   });
 });

@@ -15,8 +15,7 @@ define(['angular-mocks'], function() {
       intervention3 = {
         id: 3
       },
-      cacheServiceMock = jasmine.createSpyObj('CacheService', ['getModelsByProject','getAnalyses']),
-      interventionResourceMock = jasmine.createSpyObj('InterventionResource', ['queryByProject']),
+      cacheServiceMock = jasmine.createSpyObj('CacheService', ['getModelsByProject','getAnalyses', 'getInterventions']),
       reportDirectiveServiceMock = jasmine.createSpyObj('ReportDirectiveService', ['getDirectiveBuilder']),
       callbackMock = jasmine.createSpy('callback');
 
@@ -41,9 +40,7 @@ define(['angular-mocks'], function() {
       reportDirectiveServiceMock.getDirectiveBuilder.and.returnValue(function() {});
 
       var interventionsDefer = $q.defer();
-      interventionResourceMock.queryByProject.and.returnValue({
-        $promise: interventionsDefer.promise
-      });
+      cacheServiceMock.getInterventions.and.returnValue(interventionsDefer.promise);
       interventionsDefer.resolve([intervention1, intervention2, intervention3]);
 
       $controller('InsertRelativeEffectsPlotController', {
@@ -52,7 +49,6 @@ define(['angular-mocks'], function() {
         $stateParams: stateParamsMock,
         $modalInstance: modalInstanceMock,
         'CacheService': cacheServiceMock,
-        'InterventionResource': interventionResourceMock,
         'ReportDirectiveService': reportDirectiveServiceMock,
         callback: callbackMock
       });
