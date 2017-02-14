@@ -1,9 +1,9 @@
 'use strict';
 define(['lodash'], function(_) {
-  var dependencies = ['$stateParams', '$q', 'ModelResource', 'ModelService',
+  var dependencies = ['$stateParams', '$q', 'ModelService',
     'PataviService', 'RelativeEffectsTableService', 'CacheService', 'AnalysisService'
   ];
-  var RelativeEffectsTableDirective = function($stateParams, $q, ModelResource, ModelService,
+  var RelativeEffectsTableDirective = function($stateParams, $q, ModelService,
     PataviService, RelativeEffectsTableService, CacheService, AnalysisService) {
     return {
       restrict: 'E',
@@ -22,7 +22,6 @@ define(['lodash'], function(_) {
         }
 
         var problemPromise = CacheService.getProblem($stateParams.projectId, scope.analysisId);
-
         var modelPromise = CacheService.getModel($stateParams.projectId, scope.analysisId, scope.modelId);
 
         $q.all([problemPromise, modelPromise]).then(function(values) {

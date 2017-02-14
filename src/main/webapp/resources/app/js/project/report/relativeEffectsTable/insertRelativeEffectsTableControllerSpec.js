@@ -6,8 +6,7 @@ define(['angular-mocks'], function() {
       modalInstanceMock = {
         close: function() {}
       },
-      analysisResourceMock = jasmine.createSpyObj('AnalysisResource', ['query']),
-      modelResourceMock = jasmine.createSpyObj('ModelResource', ['queryByProject']),
+      cacheServiceMock = jasmine.createSpyObj('CacheService', ['getModelsByProject','getAnalyses']),
       reportDirectiveServiceMock = jasmine.createSpyObj('ReportDirectiveService', ['getDirectiveBuilder']),
       callbackMock = jasmine.createSpy('callback');
 
@@ -23,13 +22,13 @@ define(['angular-mocks'], function() {
       var analysesQueryResult = {
         $promise: analysesDefer.promise
       };
-      analysisResourceMock.query.and.returnValue(analysesQueryResult);
+      cacheServiceMock.getAnalyses.and.returnValue(analysesQueryResult.$promise);
 
       modelsDefer = $q.defer();
       var modelQueryResult = {
         $promise: modelsDefer.promise
       };
-      modelResourceMock.queryByProject.and.returnValue(modelQueryResult);
+      cacheServiceMock.getModelsByProject.and.returnValue(modelQueryResult.$promise);
       reportDirectiveServiceMock.getDirectiveBuilder.and.returnValue(function() {});
 
       $controller('InsertRelativeEffectsTableController', {
@@ -37,8 +36,7 @@ define(['angular-mocks'], function() {
         $q: $q,
         $stateParams: stateParamsMock,
         $modalInstance: modalInstanceMock,
-        'AnalysisResource': analysisResourceMock,
-        'ModelResource': modelResourceMock,
+        'CacheService': cacheServiceMock,
         'ReportDirectiveService': reportDirectiveServiceMock,
         callback: callbackMock
       });
@@ -46,8 +44,8 @@ define(['angular-mocks'], function() {
 
     describe('on load', function() {
       it('should get the analyses and models', function() {
-        expect(analysisResourceMock.query).toHaveBeenCalled();
-        expect(modelResourceMock.queryByProject).toHaveBeenCalled();
+        expect(cacheServiceMock.getAnalyses).toHaveBeenCalled();
+        expect(cacheServiceMock.getModelsByProject).toHaveBeenCalled();
       });
       it('loading.loaded should be false', function() {
         expect(scope.loading.loaded).toBe(false);

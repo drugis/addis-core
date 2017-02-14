@@ -1,11 +1,11 @@
 'use strict';
 define(['lodash'], function(_) {
-  var dependencies = ['$stateParams', '$q', 'ModelResource', 'ModelService',
-    'PataviService', 'AnalysisService','ResultsPlotService',
+  var dependencies = ['$stateParams', '$q', 'ModelService',
+    'PataviService', 'ResultsPlotService',
     'CacheService'
   ];
-  var RelativeEffectsPlotDirective = function($stateParams, $q, ModelResource, ModelService,
-    PataviService, AnalysisService,ResultsPlotService, CacheService) {
+  var RelativeEffectsPlotDirective = function($stateParams, $q, ModelService,
+    PataviService, ResultsPlotService, CacheService) {
     return {
       restrict: 'E',
       scope: {
@@ -22,7 +22,6 @@ define(['lodash'], function(_) {
         function getResults(model) {
           return PataviService.listen(model.taskUrl);
         }
-        var problemPromise = CacheService.getProblem($stateParams.projectId, scope.analysisId);
 
         function prefixPlots(model, plots) {
           return _.reduce(plots, function(accum, plot, key) {
@@ -31,11 +30,8 @@ define(['lodash'], function(_) {
           }, {});
         }
 
-        var modelPromise = ModelResource.get({
-          projectId: $stateParams.projectId,
-          analysisId: scope.analysisId,
-          modelId: scope.modelId
-        }).$promise;
+        var problemPromise = CacheService.getProblem($stateParams.projectId, scope.analysisId);
+        var modelPromise = CacheService.getModel($stateParams.projectId, scope.analysisId, scope.modelId);
 
         $q.all([problemPromise, modelPromise]).then(function(values) {
           var problem = values[0];
@@ -44,7 +40,7 @@ define(['lodash'], function(_) {
           getResults(model).then(function(results) {
 
             if (problem.treatments && problem.treatments.length > 0) {
-              scope.selectedBaseline = _.find(problem.treatments, ['id',scope.baselineTreatmentId]);
+              scope.selectedBaseline = _.find(problem.treatments, ['id', scope.baselineTreatmentId]);
             }
 
             scope.relativeEffectsPlots = _.map(results.relativeEffectPlots, function(plots, key) {

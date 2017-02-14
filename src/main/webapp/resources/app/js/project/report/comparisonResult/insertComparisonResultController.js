@@ -1,9 +1,9 @@
 'use strict';
 define(['lodash'], function(_) {
-  var dependencies = ['$scope', '$q', '$stateParams', '$modalInstance', 'AnalysisResource', 'ModelResource',
+  var dependencies = ['$scope', '$q', '$stateParams', '$modalInstance', 'CacheService',
     'ReportDirectiveService', 'PataviService', 'InterventionResource', 'callback'
   ];
-  var InsertComparisonResultController = function($scope, $q, $stateParams, $modalInstance, AnalysisResource, ModelResource,
+  var InsertComparisonResultController = function($scope, $q, $stateParams, $modalInstance, CacheService,
     ReportDirectiveService, PataviService, InterventionResource, callback) {
 
     $scope.selections = {};
@@ -15,8 +15,8 @@ define(['lodash'], function(_) {
     $scope.selectedModelChanged = selectedModelChanged;
     $scope.treatmentSelectionChanged = treatmentSelectionChanged;
 
-    var analysesPromise = AnalysisResource.query($stateParams).$promise;
-    var modelsPromise = ModelResource.getConsistencyModels($stateParams).$promise;
+    var analysesPromise = CacheService.getAnalyses($stateParams);
+    var modelsPromise = CacheService.getConsistencyModels($stateParams);
     var interventionPromise = InterventionResource.query($stateParams).$promise;
 
     $q.all([analysesPromise, modelsPromise, interventionPromise]).then(function(values) {

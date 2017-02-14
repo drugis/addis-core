@@ -1,6 +1,6 @@
 'use strict';
 define(['angular-mocks'], function() {
-  fdescribe('The caching service,', function() {
+  describe('The caching service,', function() {
     var
       cacheService,
       analysisDefer,
@@ -11,8 +11,8 @@ define(['angular-mocks'], function() {
       modelPromise,
       projectId,
       analysisId,
-      analysisResourceMock = jasmine.createSpyObj('AnalysisResource', ['get']),
-      modelResourceMock = jasmine.createSpyObj('ModelResource', ['get']),
+      analysisResourceMock = jasmine.createSpyObj('AnalysisResource', ['get','query']),
+      modelResourceMock = jasmine.createSpyObj('ModelResource', ['get', 'getConsistencyModels', 'queryByProject']),
       problemResourceMock = jasmine.createSpyObj('ProblemResource', ['get']);
 
     beforeEach(module('addis.project', function($provide) {
@@ -39,6 +39,9 @@ define(['angular-mocks'], function() {
     it('should not place requests uninvited', function() {
       expect(analysisResourceMock.get).not.toHaveBeenCalled();
       expect(problemResourceMock.get).not.toHaveBeenCalled();
+      expect(modelResourceMock.get).not.toHaveBeenCalled();
+      expect(modelResourceMock.getConsistencyModels).not.toHaveBeenCalled();
+      expect(modelResourceMock.queryByProject).not.toHaveBeenCalled();
     });
 
     describe('getProblem,', function() {
@@ -50,18 +53,16 @@ define(['angular-mocks'], function() {
 
       it('for problems not already cached should perform a request and return the resulting promise', function() {
         var resultPromise = cacheService.getProblem(projectId, analysisId);
-        expect(resultPromise).toEqual(problemPromise);
+        expect(resultPromise).toBe(problemPromise);
         expect(problemResourceMock.get).toHaveBeenCalled();
-        expect(analysisResourceMock.get).not.toHaveBeenCalled();
       });
 
       it('for problems already cached should not perform a request, but should return the resulting promise', function() {
         var resultPromise = cacheService.getProblem(projectId, analysisId);
-        expect(resultPromise).toEqual(problemPromise);
+        expect(resultPromise).toBe(problemPromise);
         problemResourceMock.get.calls.reset();
         resultPromise = cacheService.getProblem(projectId, analysisId);
-        expect(resultPromise).toEqual(problemPromise);
-        expect(analysisResourceMock.get).not.toHaveBeenCalled();
+        expect(resultPromise).toBe(problemPromise);
         expect(problemResourceMock.get).not.toHaveBeenCalled();
       });
     });
@@ -74,22 +75,44 @@ define(['angular-mocks'], function() {
 
       it('for analyses not already cached should perform a request and return the resulting promise', function() {
         var resultPromise = cacheService.getAnalysis(projectId, analysisId);
-        expect(resultPromise).toEqual(analysisPromise);
+        expect(resultPromise).toBe(analysisPromise);
         expect(analysisResourceMock.get).toHaveBeenCalled();
-        expect(problemResourceMock.get).not.toHaveBeenCalled();
       });
 
       it('for analyses already cached should not perform a request, but should return the resulting promise', function() {
         var resultPromise = cacheService.getAnalysis(projectId, analysisId);
-        expect(resultPromise).toEqual(analysisPromise);
+        expect(resultPromise).toBe(analysisPromise);
         analysisResourceMock.get.calls.reset();
         resultPromise = cacheService.getAnalysis(projectId, analysisId);
-        expect(resultPromise).toEqual(analysisPromise);
+        expect(resultPromise).toBe(analysisPromise);
         expect(analysisResourceMock.get).not.toHaveBeenCalled();
-        expect(problemResourceMock.get).not.toHaveBeenCalled();
       });
 
     });
+
+    describe('getAnalyses', function() {
+      beforeEach(function() {
+        analysisResourceMock.query.and.returnValue({
+          $promise: analysisPromise
+        });
+      });
+
+      it('for analyses not already cached should perform a request and return the resulting promise', function() {
+        var resultPromise = cacheService.getAnalyses(projectId);
+        expect(resultPromise).toBe(analysisPromise);
+        expect(analysisResourceMock.query).toHaveBeenCalled();
+      });
+
+      it('for analyses already cached should not perform a request, but should return the resulting promise', function() {
+        var resultPromise = cacheService.getAnalyses(projectId);
+        expect(resultPromise).toBe(analysisPromise);
+        analysisResourceMock.query.calls.reset();
+        resultPromise = cacheService.getAnalyses(projectId);
+        expect(resultPromise).toBe(analysisPromise);
+        expect(analysisResourceMock.query).not.toHaveBeenCalled();
+      });
+    });
+
     describe('getModel,', function() {
       beforeEach(function() {
         modelResourceMock.get.and.returnValue({
@@ -100,49 +123,69 @@ define(['angular-mocks'], function() {
       it('for models not already cached should perform a request and return the resulting promise', function() {
         var modelId = 111;
         var resultPromise = cacheService.getModel(projectId, analysisId, modelId);
-        expect(resultPromise).toEqual(modelPromise);
-        expect(analysisResourceMock.get).not.toHaveBeenCalled();
-        expect(problemResourceMock.get).not.toHaveBeenCalled();
+        expect(resultPromise).toBe(modelPromise);
         expect(modelResourceMock.get).toHaveBeenCalled();
       });
 
-      it('for analyses already cached should not perform a request, but should return the resulting promise', function() {
+      it('for models already cached should not perform a request, but should return the resulting promise', function() {
         var modelId = 111;
         var resultPromise = cacheService.getModel(projectId, analysisId, modelId);
-        expect(resultPromise).toEqual(modelPromise);
-        analysisResourceMock.get.calls.reset();
+        expect(resultPromise).toBe(modelPromise);
+        modelResourceMock.get.calls.reset();
         resultPromise = cacheService.getModel(projectId, analysisId, modelId);
-        expect(resultPromise).toEqual(modelPromise);
-        expect(analysisResourceMock.get).not.toHaveBeenCalled();
-        expect(problemResourceMock.get).not.toHaveBeenCalled();
+        expect(resultPromise).toBe(modelPromise);
         expect(modelResourceMock.get).not.toHaveBeenCalled();
       });
     });
 
     describe('getConsistencyModels', function() {
       beforeEach(function() {
-        modelResourceMock.get.and.returnValue({
+        modelResourceMock.getConsistencyModels.and.returnValue({
           $promise: modelPromise
         });
       });
 
       it('for models not already cached should perform a request and return the resulting promise', function() {
-        var resultPromise = cacheService.getModel(projectId, analysisId);
-        expect(resultPromise).toEqual(modelPromise);
+        var resultPromise = cacheService.getConsistencyModels(projectId);
+        expect(resultPromise).toBe(modelPromise);
         expect(analysisResourceMock.get).not.toHaveBeenCalled();
         expect(problemResourceMock.get).not.toHaveBeenCalled();
-        expect(modelResourceMock.get).toHaveBeenCalled();
+        expect(modelResourceMock.getConsistencyModels).toHaveBeenCalled();
       });
 
       it('for models already cached should not perform a request, but should return the resulting promise', function() {
-        var resultPromise = cacheService.getModel(projectId, analysisId);
-        expect(resultPromise).toEqual(modelPromise);
-        analysisResourceMock.get.calls.reset();
-        resultPromise = cacheService.getModel(projectId, analysisId);
-        expect(resultPromise).toEqual(modelPromise);
+        var resultPromise = cacheService.getConsistencyModels(projectId);
+        expect(resultPromise).toBe(modelPromise);
+        modelResourceMock.get.calls.reset();
+        resultPromise = cacheService.getConsistencyModels(projectId);
+        expect(resultPromise).toBe(modelPromise);
         expect(analysisResourceMock.get).not.toHaveBeenCalled();
         expect(problemResourceMock.get).not.toHaveBeenCalled();
         expect(modelResourceMock.get).not.toHaveBeenCalled();
+        expect(modelResourceMock.getConsistencyModels).toHaveBeenCalled();
+      });
+    });
+
+    describe('getModelsByProject', function() {
+      beforeEach(function() {
+        modelResourceMock.queryByProject.and.returnValue({
+          $promise: modelPromise
+        });
+      });
+
+      it('for models not already cached should perform a request and return the resulting promise', function() {
+        var resultPromise = cacheService.getModelsByProject(projectId);
+        expect(resultPromise).toBe(modelPromise);
+        expect(modelResourceMock.queryByProject).toHaveBeenCalled();
+      });
+
+      it('for models already cached should not perform a request, but should return the resulting promise', function() {
+        var resultPromise = cacheService.getModelsByProject(projectId);
+        expect(resultPromise).toBe(modelPromise);
+        modelResourceMock.get.calls.reset();
+        resultPromise = cacheService.getModelsByProject(projectId);
+        expect(resultPromise).toBe(modelPromise);
+        expect(modelResourceMock.queryByProject).toHaveBeenCalled();
       });
     });
 

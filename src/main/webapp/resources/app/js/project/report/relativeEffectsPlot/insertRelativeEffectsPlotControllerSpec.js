@@ -15,8 +15,7 @@ define(['angular-mocks'], function() {
       intervention3 = {
         id: 3
       },
-      analysisResourceMock = jasmine.createSpyObj('AnalysisResource', ['query']),
-      modelResourceMock = jasmine.createSpyObj('ModelResource', ['queryByProject']),
+      cacheServiceMock = jasmine.createSpyObj('CacheService', ['getModelsByProject','getAnalyses']),
       interventionResourceMock = jasmine.createSpyObj('InterventionResource', ['queryByProject']),
       reportDirectiveServiceMock = jasmine.createSpyObj('ReportDirectiveService', ['getDirectiveBuilder']),
       callbackMock = jasmine.createSpy('callback');
@@ -32,13 +31,13 @@ define(['angular-mocks'], function() {
       var analysesQueryResult = {
         $promise: analysesDefer.promise
       };
-      analysisResourceMock.query.and.returnValue(analysesQueryResult);
+      cacheServiceMock.getAnalyses.and.returnValue(analysesQueryResult.$promise);
 
       modelsDefer = $q.defer();
       var modelQueryResult = {
         $promise: modelsDefer.promise
       };
-      modelResourceMock.queryByProject.and.returnValue(modelQueryResult);
+      cacheServiceMock.getModelsByProject.and.returnValue(modelQueryResult.$promise);
       reportDirectiveServiceMock.getDirectiveBuilder.and.returnValue(function() {});
 
       var interventionsDefer = $q.defer();
@@ -52,8 +51,7 @@ define(['angular-mocks'], function() {
         $q: $q,
         $stateParams: stateParamsMock,
         $modalInstance: modalInstanceMock,
-        'AnalysisResource': analysisResourceMock,
-        'ModelResource': modelResourceMock,
+        'CacheService': cacheServiceMock,
         'InterventionResource': interventionResourceMock,
         'ReportDirectiveService': reportDirectiveServiceMock,
         callback: callbackMock
@@ -62,8 +60,8 @@ define(['angular-mocks'], function() {
 
     describe('on load', function() {
       it('should get the analyses and models', function() {
-        expect(analysisResourceMock.query).toHaveBeenCalled();
-        expect(modelResourceMock.queryByProject).toHaveBeenCalled();
+        expect(cacheServiceMock.getAnalyses).toHaveBeenCalled();
+        expect(cacheServiceMock.getModelsByProject).toHaveBeenCalled();
       });
       it('loading.loaded should be false', function() {
         expect(scope.loading.loaded).toBe(false);
@@ -157,13 +155,7 @@ define(['angular-mocks'], function() {
           interventionInclusions: [interventionInclusion2],
           interventions: [intervention2]
         }];
-        console.log(JSON.stringify(scope.analyses[1], null, 2));
-        console.log(JSON.stringify(expectedAnalyses[1], null, 2));
         expect(scope.analyses[1]).toEqual(expectedAnalyses[1]);
-        // expect(scope.analyses).toEqual(expectedAnalyses);
-        // expect(scope.selections.analysis).toEqual(expectedAnalyses[0]);
-        // expect(scope.selections.model).toEqual(models[2]);
-        // expect(scope.selections.regressionLevel).toBe(1);
       });
       it('selectedAnalysisChanged should update the selected model and clear the regressionLevel if needed', function() {
         scope.selections.analysis = analyses[3];

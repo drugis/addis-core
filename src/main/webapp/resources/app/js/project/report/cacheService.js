@@ -6,8 +6,10 @@ define(['lodash'], function(_) {
   var CacheService = function($q, AnalysisResource, ModelResource, ProblemResource) {
     var cache = {
       analysesPromises: {},
-      modelPromises: {},
-      problemPromises: []
+      modelPromises: [],
+      problemPromises: {},
+      consistecyModelsPromises: {},
+      modelsByProjectPromises: {}
     };
 
     function getAnalysis(projectId, analysisId) {
@@ -20,6 +22,15 @@ define(['lodash'], function(_) {
       }).$promise;
       return cache.analysesPromises[analysisId];
     }
+
+    function getAnalyses(projectId) {
+      if (cache.analysesPromises[projectId]) {
+        return cache.analysesPromises[projectId];
+      }
+      cache.analysesPromises[projectId] = AnalysisResource.query(projectId).$promise;
+      return cache.analysesPromises[projectId];
+    }
+
 
     function getModel(projectId, analysisId, modelId) {
       var modelObject = _.find(cache.modelPromises, function(modelPromise) {
@@ -37,9 +48,26 @@ define(['lodash'], function(_) {
           modelId: modelId
         }).$promise
       };
-      cache.problemPromises.push(modelObject);
+      cache.modelPromises.push(modelObject);
 
       return modelObject.promise;
+    }
+
+    function getConsistencyModels(projectId) {
+      if (cache.consistecyModelsPromises[projectId]) {
+        return cache.consistecyModelsPromises[projectId];
+      }
+      cache.consistecyModelsPromises[projectId] = ModelResource.getConsistencyModels(projectId).$promise;
+      return cache.consistecyModelsPromises[projectId];
+    }
+
+    function getModelsByProject(projectId) {
+      if (cache.modelsByProjectPromises[projectId]) {
+        return cache.modelsByProjectPromises[projectId];
+      }
+      cache.modelsByProjectPromises[projectId] = ModelResource.queryByProject(projectId).$promise;
+      return cache.modelsByProjectPromises[projectId];
+
     }
 
     function getProblem(projectId, analysisId) {
@@ -55,8 +83,11 @@ define(['lodash'], function(_) {
 
     return {
       getAnalysis: getAnalysis,
+      getAnalyses: getAnalyses,
       getModel: getModel,
-      getProblem: getProblem
+      getProblem: getProblem,
+      getConsistencyModels: getConsistencyModels,
+      getModelsByProject: getModelsByProject
     };
   };
   return dependencies.concat(CacheService);
