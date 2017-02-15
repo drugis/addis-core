@@ -15,8 +15,37 @@ define(['angular-mocks'], function() {
       intervention3 = {
         id: 3
       },
-      cacheServiceMock = jasmine.createSpyObj('CacheService', ['getModelsByProject','getAnalyses', 'getInterventions']),
-      reportDirectiveServiceMock = jasmine.createSpyObj('ReportDirectiveService', ['getDirectiveBuilder']),
+      mockAnalysis = {
+        id: 1,
+        primaryModel: -1,
+        models: [{
+          id: -1,
+          modelType: {
+            type: 'regression',
+          },
+          regressor: {
+            levels: ['centering', 1, 2]
+          }
+        }],
+        interventions: [{
+          id: -10
+        }]
+      },
+      mockNonRegressionAnalysis = {
+        id: 2,
+        primaryModel: -2,
+        models: [{
+          id: -2,
+          modelType: {
+            type: 'network',
+          }
+        }],
+        interventions: [{
+          id: -10
+        }]
+      },
+      cacheServiceMock = jasmine.createSpyObj('CacheService', ['getModelsByProject', 'getAnalyses', 'getInterventions']),
+      reportDirectiveServiceMock = jasmine.createSpyObj('ReportDirectiveService', ['getDirectiveBuilder', 'getNonNodeSplitModels', 'getDecoratedSyntheses']),
       callbackMock = jasmine.createSpy('callback');
 
     var analysesDefer;
@@ -38,6 +67,7 @@ define(['angular-mocks'], function() {
       };
       cacheServiceMock.getModelsByProject.and.returnValue(modelQueryResult.$promise);
       reportDirectiveServiceMock.getDirectiveBuilder.and.returnValue(function() {});
+      reportDirectiveServiceMock.getDecoratedSyntheses.and.returnValue([mockAnalysis, mockNonRegressionAnalysis]);
 
       var interventionsDefer = $q.defer();
       cacheServiceMock.getInterventions.and.returnValue(interventionsDefer.promise);
@@ -65,98 +95,30 @@ define(['angular-mocks'], function() {
     });
 
     describe('once the analyses and models are loaded', function() {
-      var interventionInclusion1 = {
-          interventionId: 1,
-          analysisId: 1
-        },
-        interventionInclusion2 = {
-          interventionId: 2,
-          analysisId: 4
-        },
-        interventionInclusion3 = {
-          interventionId: 3,
-          analysisId: 1
-        };
-      var analyses = [{
-        analysisType: 'Evidence synthesis',
-        id: 1,
-        interventionInclusions: [interventionInclusion1, interventionInclusion3]
-      }, {
-        analysisType: 'Not evidence synthesis',
-        id: 2,
-      }, {
-        analysisType: 'Evidence synthesis',
-        archived: true,
-        id: 3
-      }, {
-        analysisType: 'Evidence synthesis',
-        id: 4,
-        interventionInclusions: [interventionInclusion2]
-      }];
-
-      var models = [{
-        id: 31,
-        analysisId: 4,
-        modelType: {
-          type: 'network'
-        }
-      }, {
-        id: 42,
-        analysisId: 1,
-        archived: true,
-        modelType: {
-          type: 'network'
-        }
-      }, {
-        id: 27,
-        analysisId: 1,
-        modelType: {
-          type: 'regression'
-        },
-        regressor: {
-          levels: [1, 2, 3]
-        }
-      }, {
-        id: 43,
-        analysisId: 1,
-        modelType: {
-          type: 'pairwise'
-        }
-      }, {
-        id: 44,
-        analysisId: 1,
-        modelType: {
-          type: 'node-split'
-        }
-      }];
       beforeEach(function() {
-        analysesDefer.resolve(analyses);
-        modelsDefer.resolve(models);
+        analysesDefer.resolve();
+        modelsDefer.resolve();
         scope.$digest();
       });
       it('loading.loaded should be true', function() {
         expect(scope.loading.loaded).toBe(true);
       });
       it('the analyses should be put on the scope, containing the appropriate models, without archived analyses and models', function() {
-        var expectedAnalyses = [{
-          analysisType: 'Evidence synthesis',
-          id: 1,
-          models: [models[2], models[3]],
-          interventionInclusions: [interventionInclusion1, interventionInclusion3],
-          interventions: [intervention1, intervention3]
-        }, {
-          analysisType: 'Evidence synthesis',
-          id: 4,
-          models: [models[0]],
-          interventionInclusions: [interventionInclusion2],
-          interventions: [intervention2]
-        }];
-        expect(scope.analyses[1]).toEqual(expectedAnalyses[1]);
+        var expectedAnalyses = [mockAnalysis, mockNonRegressionAnalysis];
+        expect(scope.analyses).toEqual(expectedAnalyses);
+        expect(scope.selections.analysis).toEqual(mockAnalysis);
+        expect(scope.selections.model).toEqual(mockAnalysis.models[0]);
+        expect(scope.selections.regressionLevel).toEqual('centering');
       });
       it('selectedAnalysisChanged should update the selected model and clear the regressionLevel if needed', function() {
-        scope.selections.analysis = analyses[3];
+        scope.selections.analysis = mockNonRegressionAnalysis;
         scope.selectedAnalysisChanged();
-        expect(scope.selections.model).toEqual(models[0]);
+        expect(scope.selections.model).toEqual({
+          id: -2,
+          modelType: {
+            type: 'network',
+          }
+        });
         expect(scope.selections.regressionLevel).not.toBeDefined();
       });
     });

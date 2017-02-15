@@ -1,15 +1,13 @@
 <div class="row">
-  <div class="columns large-6 small-8">
-      <strong>Rank probabilities plots </strong>
-  </div>
-</div>
-<div class="row" ng-if="true">
-  <div class="columns large-6 small-8">
-    Covariate level: {{relativeEffectsPlot.level}}
+  <div class="columns large-4">
+    <strong>Rank probabilities plot</strong>
+    <span ng-if="rankProbabilities.level!=='centering (undefined)'"><br> Covariate level: {{rankProbabilities.level}}</span>
   </div>
 </div>
 <div class="row">
   <div class="columns large-12">
-    <img ng-src="">
+    <div class="addis-graph" style="width:450px; height:450px;" export file-name="'rankProbabilities'">
+      <data-gemtc-rank-plot value="rankProbabilities.data" stacked="true"></data-gemtc-rank-plot>
+    </div>
   </div>
 </div>

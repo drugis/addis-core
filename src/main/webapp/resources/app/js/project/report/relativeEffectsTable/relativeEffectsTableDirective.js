@@ -33,7 +33,7 @@ define(['lodash'], function(_) {
             scope.relativeEffectsTables = _.map(results.relativeEffects, function(relativeEffect, key) {
               return {
                 level: key,
-                table: RelativeEffectsTableService.buildTable(relativeEffect, results.logScale, problem.treatments)
+                table: RelativeEffectsTableService.buildTable(relativeEffect, problem.treatments, results.logScale)
               };
             });
             if (scope.regressionLevel !== undefined) {

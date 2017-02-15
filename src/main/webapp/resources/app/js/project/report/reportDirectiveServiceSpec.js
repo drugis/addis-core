@@ -48,6 +48,69 @@ define(['angular-mocks'], function() {
         var result = reportDirectiveService.inlineDirectives(input);
         expect(result).toEqual(expectedResult);
       });
+      it('should work for instances of relative-effects-table', function() {
+        var input = '[[[relative-effects-table analysis-id=&#34;37&#34; model-id=&#34;42&#34; regression-level=&#34;100&#34;]]] [[[relative-effects-table analysis-id=&#34;37&#34; model-id=&#34;42&#34;]]]';
+        var expectedResult = '<relative-effects-table analysis-id="37" model-id="42" regression-level="100"></relative-effects-table> <relative-effects-table analysis-id="37" model-id="42"></relative-effects-table>';
+        var result = reportDirectiveService.inlineDirectives(input);
+        expect(result).toEqual(expectedResult);
+      });
+      it('should work for instances of relative-effects-plot', function() {
+        var input = '[[[relative-effects-plot analysis-id=&#34;37&#34; model-id=&#34;42&#34; baseline-treatment-id=&#34;5&#34; regression-level=&#34;100&#34;]]] [[[relative-effects-plot analysis-id=&#34;37&#34; model-id=&#34;42&#34; baseline-treatment-id=&#34;5&#34;]]]';
+        var expectedResult = '<relative-effects-plot analysis-id="37" model-id="42" baseline-treatment-id="5" regression-level="100"></relative-effects-plot> <relative-effects-plot analysis-id="37" model-id="42" baseline-treatment-id="5"></relative-effects-plot>';
+        var result = reportDirectiveService.inlineDirectives(input);
+        expect(result).toEqual(expectedResult);
+      });
+      it('should work for instances of rank-probabilities-table', function() {
+        var input = '[[[rank-probabilities-table analysis-id=&#34;37&#34; model-id=&#34;42&#34; regression-level=&#34;100&#34;]]] [[[rank-probabilities-table analysis-id=&#34;37&#34; model-id=&#34;42&#34;]]]';
+        var expectedResult = '<rank-probabilities-table analysis-id="37" model-id="42" regression-level="100"></rank-probabilities-table> <rank-probabilities-table analysis-id="37" model-id="42"></rank-probabilities-table>';
+        var result = reportDirectiveService.inlineDirectives(input);
+        expect(result).toEqual(expectedResult);
+      });
+      it('should work for instances of rank-probabilities-plot', function() {
+        var input = '[[[rank-probabilities-plot analysis-id=&#34;37&#34; model-id=&#34;42&#34; baseline-treatment-id=&#34;5&#34; regression-level=&#34;100&#34;]]] [[[rank-probabilities-plot analysis-id=&#34;37&#34; model-id=&#34;42&#34; baseline-treatment-id=&#34;5&#34;]]]';
+        var expectedResult = '<rank-probabilities-plot analysis-id="37" model-id="42" baseline-treatment-id="5" regression-level="100"></rank-probabilities-plot> <rank-probabilities-plot analysis-id="37" model-id="42" baseline-treatment-id="5"></rank-probabilities-plot>';
+        var result = reportDirectiveService.inlineDirectives(input);
+        expect(result).toEqual(expectedResult);
+      });
+    });
+    describe('getNonNodeSplitModels', function() {
+      it('should retrieve the non-nodesplit models and for regression models with levels add the "centering" level', function() {
+        var synthesisModel = {
+          modelType: {
+            type: 'evidence synthesis'
+          }
+        };
+        var regressionModelNoLevels = {
+          modelType: {
+            type: 'regression'
+          },
+          regressor: {}
+        };
+        var regressionModelLevels = {
+          modelType: {
+            type: 'regression'
+          },
+          regressor: {
+            levels: [1, 2]
+          }
+        };
+        var nodesplitModel = {
+          modelType: {
+            type: 'node-split'
+          }
+        };
+        var models = [synthesisModel, regressionModelNoLevels, regressionModelLevels, nodesplitModel];
+        var expectedResult = [synthesisModel, regressionModelNoLevels, {
+          modelType: {
+            type: 'regression'
+          },
+          regressor: {
+            levels: ['centering', 1, 2]
+          }
+        }];
+        var result = reportDirectiveService.getNonNodeSplitModels(models);
+        expect(result).toEqual(expectedResult);
+      });
     });
   });
 });

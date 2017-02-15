@@ -3,7 +3,7 @@
     <div class="columns large-4">
       <strong>Rank probabilities table</strong>
       <br>
-      <span ng-if="rankProbabilitiesByLevel.length > 1">Covariate level: {{rankProbabilities.level}}</span>
+      <span ng-if="rankProbabilities.level!=='centering (undefined)'">Covariate level: {{rankProbabilities.level}}</span>
     </div>
   </div>
   <table>

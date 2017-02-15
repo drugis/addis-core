@@ -47,10 +47,11 @@ define(['lodash'], function(_) {
           return '<' + replaceQuotes(p1) + '></relative-effects-plot>';
         },
         builder: function(analysisId, modelId, baselineTreatmentId, regressionLevel) {
-          return regressionLevel !== undefined ? '[[[relative-effects-plot' + ' analysis-id="' + analysisId + '"' + ' model-id="' +
-            modelId + '" baseline-treatment-id=' + '"' + baselineTreatmentId + '" regression-level=' + '"' +
-            regressionLevel + '"]]]' : '[[[relative-effects-plot' + ' analysis-id="' +
-            analysisId + '"' + ' model-id="' + modelId + '" baseline-treatment-id=' + '"' + baselineTreatmentId + '"]]]';
+          return regressionLevel !== undefined && regressionLevel.indexOf('centering') < 0 ?
+            '[[[relative-effects-plot' + ' analysis-id="' + analysisId + '"' + ' model-id="' + modelId + '" baseline-treatment-id=' + '"' +
+            baselineTreatmentId + '" regression-level=' + '"' + regressionLevel + '"]]]' :
+            '[[[relative-effects-plot' + ' analysis-id="' + analysisId + '"' + ' model-id="' + modelId + '" baseline-treatment-id=' + '"' +
+            baselineTreatmentId + '"]]]';
         }
       },
       'rank-probabilities-table': {
@@ -60,9 +61,9 @@ define(['lodash'], function(_) {
           return '<' + replaceQuotes(p1) + '></rank-probabilities-table>';
         },
         builder: function(analysisId, modelId, regressionLevel) {
-          return regressionLevel !== undefined ? '[[[rank-probabilities-table' + ' analysis-id="' + analysisId + '"' + ' model-id="' +
-            modelId + '" regression-level=' + '"' + regressionLevel + '"]]]' : '[[[rank-probabilities-table' + ' analysis-id="' +
-            analysisId + '"' + ' model-id="' + modelId + '"]]]';
+          return regressionLevel !== undefined && regressionLevel.indexOf('centering') < 0 ?
+            '[[[rank-probabilities-table' + ' analysis-id="' + analysisId + '"' + ' model-id="' + modelId + '" regression-level=' + '"' + regressionLevel + '"]]]' :
+            '[[[rank-probabilities-table' + ' analysis-id="' + analysisId + '"' + ' model-id="' + modelId + '"]]]';
         }
       },
       'rank-probabilities-plot': {
@@ -72,13 +73,13 @@ define(['lodash'], function(_) {
           return '<' + replaceQuotes(p1) + '></rank-probabilities-plot>';
         },
         builder: function(analysisId, modelId, baselineTreatmentId, regressionLevel) {
-          return regressionLevel !== undefined ? '[[[rank-probabilities-plot' + ' analysis-id="' + analysisId + '"' + ' model-id="' +
-            modelId + '" baseline-treatment-id=' + '"' + baselineTreatmentId + '" regression-level=' + '"' +
-            regressionLevel + '"]]]' : '[[[rank-probabilities-plot' + ' analysis-id="' +
-            analysisId + '"' + ' model-id="' + modelId + '" baseline-treatment-id=' + '"' + baselineTreatmentId + '"]]]';
+          return regressionLevel !== undefined && regressionLevel.indexOf('centering') < 0 ?
+            '[[[rank-probabilities-plot' + ' analysis-id="' + analysisId + '"' + ' model-id="' + modelId + '" baseline-treatment-id=' + '"' +
+            baselineTreatmentId + '" regression-level=' + '"' + regressionLevel + '"]]]' :
+            '[[[rank-probabilities-plot' + ' analysis-id="' + analysisId + '"' + ' model-id="' + modelId + '" baseline-treatment-id=' + '"' +
+            baselineTreatmentId + '"]]]';
         }
       }
-
     };
 
     function replaceQuotes(input) {
@@ -96,9 +97,42 @@ define(['lodash'], function(_) {
       return DIRECTIVES[directiveName].builder;
     }
 
+    function getNonNodeSplitModels(models) {
+      return _.chain(models)
+        .reject('archived')
+        .reject(['modelType.type', 'node-split'])
+        .map(function(model) {
+          if (model.modelType.type === 'regression' && model.regressor.levels.length) {
+            model.regressor.levels = ['centering'].concat(model.regressor.levels);
+          }
+          return model;
+        })
+        .value();
+    }
+
+    function getDecoratedSyntheses(analyses, models, interventions) {
+      return _.chain(analyses)
+        .reject('archived')
+        .filter(['analysisType', 'Evidence synthesis'])
+        .map(function(analysis) {
+          analysis.models = _.filter(models, ['analysisId', analysis.id]);
+          return analysis;
+        })
+        .filter('models.length')
+        .map(function(analysis) {
+          analysis.interventions = _.filter(interventions, function(intervention) {
+            return _.find(analysis.interventionInclusions, ['interventionId', intervention.id]);
+          });
+          return analysis;
+        })
+        .value();
+    }
+
     return {
       inlineDirectives: inlineDirectives,
-      getDirectiveBuilder: getDirectiveBuilder
+      getDirectiveBuilder: getDirectiveBuilder,
+      getNonNodeSplitModels: getNonNodeSplitModels,
+      getDecoratedSyntheses: getDecoratedSyntheses
     };
   };
   return dependencies.concat(ReportStubstitutionService);
