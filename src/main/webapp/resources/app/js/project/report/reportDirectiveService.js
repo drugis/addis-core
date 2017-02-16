@@ -79,6 +79,16 @@ define(['lodash'], function(_) {
             '[[[rank-probabilities-plot' + ' analysis-id="' + analysisId + '"' + ' model-id="' + modelId + '" baseline-treatment-id=' + '"' +
             baselineTreatmentId + '"]]]';
         }
+      },
+      'forest-plot': {
+        tag: 'forest-plot',
+        regex: /\[\[\[(forest-plot\s+analysis-id=\&\#34;\d+\&\#34;\s+model-id=\&\#34;\d+\&\#34;\s*)\]\]\]/g,
+        replacer: function(match, p1) {
+          return '<' + replaceQuotes(p1) + '></forest-plot>';
+        },
+        builder: function(analysisId, modelId) {
+          return '[[[forest-plot' + ' analysis-id="' + analysisId + '"' + ' model-id="' + modelId + '"]]]';
+        }
       }
     };
 
@@ -110,6 +120,13 @@ define(['lodash'], function(_) {
         .value();
     }
 
+    function getPairwiseModels(models) {
+      return _.chain(models)
+        .reject('archived')
+        .filter(['modelType.type', 'pairwise'])
+        .value();
+    }
+
     function getDecoratedSyntheses(analyses, models, interventions) {
       return _.chain(analyses)
         .reject('archived')
@@ -132,6 +149,7 @@ define(['lodash'], function(_) {
       inlineDirectives: inlineDirectives,
       getDirectiveBuilder: getDirectiveBuilder,
       getNonNodeSplitModels: getNonNodeSplitModels,
+      getPairwiseModels:getPairwiseModels,
       getDecoratedSyntheses: getDecoratedSyntheses
     };
   };

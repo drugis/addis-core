@@ -11,12 +11,13 @@
     <div class="columns small-12">
       <button ng-click="saveChanges()" ng-disabled="!reportText.text||!editMode.allowEditing"><i class="fa fa-save"></i> Save</button>
       <button ng-click="resetToDefault()" ng-disabled="!editMode.allowEditing"><i class="fa fa-trash"></i> Default text</button>
-      <button ng-click="openRelativeEffectsTableDialog()" ng-disabled="!editMode.allowEditing"><i class="fa fa-refresh"></i> Relative Effects Table</button>
-      <button ng-click="openNetworkGraphDialog()" ng-disabled="!editMode.allowEditing"><i style="font-weight: bold" class="fa fa-connectdevelop"></i> Network graph</button>
-      <button ng-click="openComparisonResultDialog()" ng-disabled="!editMode.allowEditing"><i class="fa fa-arrows-h"></i> Comparison result</button>
-      <button ng-click="openRelativeEffectsPlotDialog()" ng-disabled="!editMode.allowEditing"><i class="fa fa-bars"></i> Relative Effects Plot</button>
-      <button ng-click="openRankProbabilitiesTableDialog()" ng-disabled="!editMode.allowEditing"><i class="fa fa-coffee"></i> Rank Probabilities Table</button>
-      <button ng-click="openRankProbabilitiesPlotDialog()" ng-disabled="!editMode.allowEditing"><i class="fa fa-taxi"></i> Rank Probabilities Plot</button>
+      <button ng-click="openInsertDialog('relative-effects-table')" ng-disabled="!editMode.allowEditing"><i class="fa fa-refresh"></i> Relative Effects Table</button>
+      <button ng-click="openInsertDialog('network-plot')" ng-disabled="!editMode.allowEditing"><i style="font-weight: bold" class="fa fa-connectdevelop"></i> Network graph</button>
+      <button ng-click="openInsertDialog('comparison-result')" ng-disabled="!editMode.allowEditing"><i class="fa fa-arrows-h"></i> Comparison result</button>
+      <button ng-click="openInsertDialog('relative-effects-plot')" ng-disabled="!editMode.allowEditing"><i class="fa fa-bars"></i> Relative Effects Plot</button>
+      <button ng-click="openInsertDialog('rank-probabilities-table')" ng-disabled="!editMode.allowEditing"><i class="fa fa-coffee"></i> Rank Probabilities Table</button>
+      <button ng-click="openInsertDialog('rank-probabilities-plot')" ng-disabled="!editMode.allowEditing"><i class="fa fa-taxi"></i> Rank Probabilities Plot</button>
+      <button ng-click="openInsertDialog('forest-plot')" ng-disabled="!editMode.allowEditing"><i class="fa fa-tree"></i> Pairwise Forest Plot</button>
       <span ng-show="showSaving">Saving</span>
       <span style="color: green" ng-show="showSaved">Report saved</span>
     </div>

@@ -45,23 +45,30 @@ define(['lodash'], function(_) {
       case 'rank-probabilities-plot':
         $scope.showSelectBaseline = true;
         break;
+      case 'forest-plot':
+        $scope.showSelectRegression = false;
+        break;
     }
 
     $q.all([analysesPromise, modelsPromise, interventionsPromise]).then(function(values) {
       var analyses = values[0];
       var models = values[1];
       $scope.interventions = values[2];
-      models = ReportDirectiveService.getNonNodeSplitModels(models);
+      if (directiveName === 'forest-plot') {
+        models = ReportDirectiveService.getPairwiseModels(models);
+      } else {
+        models = ReportDirectiveService.getNonNodeSplitModels(models);
+      }
 
       if (directiveName === 'comparison-result') {
-        loadComparisonModels(models, analyses);
+        loadComparisonModelsAndAnalyses(models, analyses);
       } else {
         loadAnalyses(analyses, models);
       }
     });
 
     function loadAnalyses(analyses, models) {
-      analyses = ReportDirectiveService.getDecoratedSyntheses(analyses, models, $scope.interventions);
+      $scope.analyses = ReportDirectiveService.getDecoratedSyntheses(analyses, models, $scope.interventions);
 
       if (analyses.length) {
         $scope.selections.analysis = analyses[0];
@@ -72,7 +79,7 @@ define(['lodash'], function(_) {
       $scope.loading.loaded = true;
     }
 
-    function loadComparisonModels(models, analyses) {
+    function loadComparisonModelsAndAnalyses(models, analyses) {
       var interventionsById = _.chain($scope.interventions)
         .sortBy('name')
         .keyBy('id')
@@ -177,6 +184,9 @@ define(['lodash'], function(_) {
             $scope.selections.model.id, $scope.selections.baselineIntervention.id, $scope.selections.regressionLevel));
           $modalInstance.close();
           break;
+        case 'forest-plot':
+          callback(ReportDirectiveService.getDirectiveBuilder(directiveName)($scope.selections.analysis.id, $scope.selections.model.id));
+          $modalInstance.close();
       }
     }
   };
