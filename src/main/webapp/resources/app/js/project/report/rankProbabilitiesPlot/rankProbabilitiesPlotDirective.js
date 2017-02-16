@@ -1,5 +1,5 @@
 'use strict';
-define(['lodash', 'd3', 'nvd3'], function(_, d3, nv) {
+define(['lodash'], function(_) {
   var dependencies = ['$stateParams', '$q', 'ModelService',
     'PataviService', 'ResultsPlotService',
     'CacheService'

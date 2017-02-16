@@ -35,7 +35,7 @@ define(['lodash'], function(_) {
           return '<' + replaceQuotes(p1) + '></relative-effects-table>';
         },
         builder: function(analysisId, modelId, regressionLevel) {
-          return regressionLevel !== undefined ? '[[[relative-effects-table' + ' analysis-id="' + analysisId + '"' + ' model-id="' +
+          return regressionLevel !== undefined && Number.isInteger(regressionLevel) ? '[[[relative-effects-table' + ' analysis-id="' + analysisId + '"' + ' model-id="' +
             modelId + '" regression-level=' + '"' + regressionLevel + '"]]]' : '[[[relative-effects-table' + ' analysis-id="' +
             analysisId + '"' + ' model-id="' + modelId + '"]]]';
         }
@@ -47,7 +47,7 @@ define(['lodash'], function(_) {
           return '<' + replaceQuotes(p1) + '></relative-effects-plot>';
         },
         builder: function(analysisId, modelId, baselineTreatmentId, regressionLevel) {
-          return regressionLevel !== undefined && regressionLevel.indexOf('centering') < 0 ?
+          return regressionLevel !== undefined && Number.isInteger(regressionLevel) ?
             '[[[relative-effects-plot' + ' analysis-id="' + analysisId + '"' + ' model-id="' + modelId + '" baseline-treatment-id=' + '"' +
             baselineTreatmentId + '" regression-level=' + '"' + regressionLevel + '"]]]' :
             '[[[relative-effects-plot' + ' analysis-id="' + analysisId + '"' + ' model-id="' + modelId + '" baseline-treatment-id=' + '"' +
@@ -61,7 +61,7 @@ define(['lodash'], function(_) {
           return '<' + replaceQuotes(p1) + '></rank-probabilities-table>';
         },
         builder: function(analysisId, modelId, regressionLevel) {
-          return regressionLevel !== undefined && regressionLevel.indexOf('centering') < 0 ?
+          return regressionLevel !== undefined && Number.isInteger(regressionLevel) ?
             '[[[rank-probabilities-table' + ' analysis-id="' + analysisId + '"' + ' model-id="' + modelId + '" regression-level=' + '"' + regressionLevel + '"]]]' :
             '[[[rank-probabilities-table' + ' analysis-id="' + analysisId + '"' + ' model-id="' + modelId + '"]]]';
         }
@@ -73,7 +73,7 @@ define(['lodash'], function(_) {
           return '<' + replaceQuotes(p1) + '></rank-probabilities-plot>';
         },
         builder: function(analysisId, modelId, baselineTreatmentId, regressionLevel) {
-          return regressionLevel !== undefined && regressionLevel.indexOf('centering') < 0 ?
+          return regressionLevel !== undefined && Number.isInteger(regressionLevel) ?
             '[[[rank-probabilities-plot' + ' analysis-id="' + analysisId + '"' + ' model-id="' + modelId + '" baseline-treatment-id=' + '"' +
             baselineTreatmentId + '" regression-level=' + '"' + regressionLevel + '"]]]' :
             '[[[rank-probabilities-plot' + ' analysis-id="' + analysisId + '"' + ' model-id="' + modelId + '" baseline-treatment-id=' + '"' +
@@ -102,7 +102,7 @@ define(['lodash'], function(_) {
         .reject('archived')
         .reject(['modelType.type', 'node-split'])
         .map(function(model) {
-          if (model.modelType.type === 'regression' && model.regressor.levels.length) {
+          if (model.modelType.type === 'regression' && model.regressor.levels && !_.includes(model.regressor.levels, 'centering')) {
             model.regressor.levels = ['centering'].concat(model.regressor.levels);
           }
           return model;

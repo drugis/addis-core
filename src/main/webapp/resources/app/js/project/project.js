@@ -16,16 +16,10 @@ define(function(require) {
     .controller('DeleteDefinitionController', require('project/deleteDefinitionController'))
     .controller('UpdateProjectController', require('project/updateProjectController'))
     .controller('CopyProjectController', require('project/copyProjectController'))
-    .controller('InsertNetworkGraphController', require('project/report/networkGraph/insertNetworkGraphController'))
-    .controller('InsertComparisonResultController', require('project/report/comparisonResult/insertComparisonResultController'))
-    .controller('InsertRelativeEffectsPlotController', require('project/report/relativeEffectsPlot/insertRelativeEffectsPlotController'))
-    .controller('InsertRelativeEffectsTableController', require('project/report/relativeEffectsTable/insertRelativeEffectsTableController'))
-    .controller('InsertRankProbabilitiesTableController', require('project/report/rankProbabilitiesTable/insertRankProbabilitiesTableController'))
-    .controller('InsertRankProbabilitiesPlotController', require('project/report/rankProbabilitiesPlot/insertRankProbabilitiesPlotController'))
-    .controller('BaseInsertDirectiveController', require('project/report/baseInsertDirectiveController'))
+    .controller('InsertDirectiveController', require('project/report/insertDirectiveController'))
 
   //directives
-    .directive('nmaReportView', require('project/nmaReportViewDirective'))
+  .directive('nmaReportView', require('project/nmaReportViewDirective'))
     .directive('ssbrReportView', require('project/ssbrReportViewDirective'))
     .directive('markdownReport', require('project/report/markdownReportDirective'))
     .directive('comparisonResult', require('project/report/comparisonResult/comparisonResultDirective'))

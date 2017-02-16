@@ -1,7 +1,7 @@
 <form novalidate" ng-submit="insertDirective()">
   <div class="row">
     <div class="large-9 columns">
-      <h3>Insert rank probabilities plot</h3>
+      <h3>Insert {{title}}</h3>
     </div>
   </div>
   <div class="row">
@@ -12,7 +12,7 @@
       </label>
     </div>
   </div>
-  <div class="row">
+  <div ng-if="showSelectModel" class="row">
     <div class="large-9 columns">
       <label>
         Select model
@@ -20,7 +20,7 @@
       </label>
     </div>
   </div>  
-  <div class="row">
+  <div ng-if="showSelectBaseline" class="row">
     <div class="large-9 columns">
       <label>
         Select baseline
@@ -28,7 +28,7 @@
       </label>
     </div>
   </div>
-  <div ng-if="isRegressionModel && selections.model.regressor.levels.length" class="row">
+  <div ng-if="showSelectRegression && isRegressionModel && selections.model.regressor.levels.length" class="row">
     <div class="large-9 columns">
       <label>
         Select covariate level
@@ -37,6 +37,20 @@
       </label>
     </div>
   </div>
+  <div ng-if="showSelectInterventions" class="row ">
+      <div class="large-6 columns">
+        <label>
+          Treatment 1
+          <select ng-model="selections.t1" ng-options="intervention.name for intervention in interventions" ng-change="selectedTreatmentChanged()"></select>
+        </label>
+      </div>
+      <div class="large-6 columns">
+        <label>
+          Treatment 2
+          <select ng-model="selections.t2" ng-options="intervention.name for intervention in secondInterventionOptions"></select>
+        </label>
+      </div>
+    </div>
   <div class="row modal-bottom-button-bar">
     <div class="large-9 columns">
       <button class="success" type="submit" ng-disabled="!selections.analysis || !selections.model || !selections.baselineIntervention">Insert

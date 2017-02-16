@@ -57,13 +57,16 @@ define(['angular', 'lodash', 'jQuery'],
 
       function openNetworkGraphDialog() {
         $modal.open({
-          templateUrl: './app/js/project/report/networkGraph/insertNetworkGraphDialog.html',
-          controller: 'InsertNetworkGraphController',
+          templateUrl: './app/js/project/report/insertDirectiveDialog.html',
+          controller: 'InsertDirectiveController',
           resolve: {
             callback: function() {
               return function(graphText) {
                 insertTextAtCursor(graphText);
               };
+            },
+            directiveName: function() {
+              return 'network-plot';
             }
           }
         });
@@ -71,13 +74,16 @@ define(['angular', 'lodash', 'jQuery'],
 
       function openComparisonResultDialog() {
         $modal.open({
-          templateUrl: './app/js/project/report/comparisonResult/insertComparisonResultDialog.html',
-          controller: 'InsertComparisonResultController',
+          templateUrl: './app/js/project/report/insertDirectiveDialog.html',
+          controller: 'InsertDirectiveController',
           resolve: {
             callback: function() {
               return function(graphText) {
                 insertTextAtCursor(graphText);
               };
+            },
+            directiveName: function() {
+              return 'comparison-result';
             }
           }
         });
@@ -85,13 +91,16 @@ define(['angular', 'lodash', 'jQuery'],
 
       function openRelativeEffectsTableDialog() {
         $modal.open({
-          templateUrl: './app/js/project/report/relativeEffectsTable/insertRelativeEffectsTableDialog.html',
-          controller: 'InsertRelativeEffectsTableController',
+          templateUrl: './app/js/project/report/insertDirectiveDialog.html',
+          controller: 'InsertDirectiveController',
           resolve: {
             callback: function() {
               return function(graphText) {
                 insertTextAtCursor(graphText);
               };
+            },
+            directiveName: function() {
+              return 'relative-effects-table';
             }
           }
         });
@@ -99,13 +108,16 @@ define(['angular', 'lodash', 'jQuery'],
 
       function openRelativeEffectsPlotDialog() {
         $modal.open({
-          templateUrl: './app/js/project/report/relativeEffectsPlot/insertRelativeEffectsPlotDialog.html',
-          controller: 'InsertRelativeEffectsPlotController',
+          templateUrl: './app/js/project/report/insertDirectiveDialog.html',
+          controller: 'InsertDirectiveController',
           resolve: {
             callback: function() {
               return function(graphText) {
                 insertTextAtCursor(graphText);
               };
+            },
+            directiveName: function() {
+              return 'relative-effects-plot';
             }
           }
         });
@@ -113,13 +125,16 @@ define(['angular', 'lodash', 'jQuery'],
 
       function openRankProbabilitiesTableDialog() {
         $modal.open({
-          templateUrl: './app/js/project/report/rankProbabilitiesTable/insertRankProbabilitiesTableDialog.html',
-          controller: 'InsertRankProbabilitiesTableController',
+          templateUrl: './app/js/project/report/insertDirectiveDialog.html',
+          controller: 'InsertDirectiveController',
           resolve: {
             callback: function() {
               return function(graphText) {
                 insertTextAtCursor(graphText);
               };
+            },
+            directiveName: function() {
+              return 'rank-probabilities-table';
             }
           }
         });
@@ -127,13 +142,16 @@ define(['angular', 'lodash', 'jQuery'],
 
       function openRankProbabilitiesPlotDialog() {
         $modal.open({
-          templateUrl: './app/js/project/report/rankProbabilitiesPlot/insertRankProbabilitiesPlotDialog.html',
-          controller: 'InsertRankProbabilitiesPlotController',
+          templateUrl: './app/js/project/report/insertDirectiveDialog.html',
+          controller: 'InsertDirectiveController',
           resolve: {
             callback: function() {
               return function(graphText) {
                 insertTextAtCursor(graphText);
               };
+            },
+            directiveName: function() {
+              return 'rank-probabilities-plot';
             }
           }
         });

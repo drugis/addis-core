@@ -1,6 +1,6 @@
 'use strict';
 define(['angular-mocks'], function() {
-  describe('the insert relative effects plot controller', function() {
+  fdescribe('the insert directive controller', function() {
     var scope,
       stateParamsMock = {},
       modalInstanceMock = {
@@ -15,12 +15,14 @@ define(['angular-mocks'], function() {
       intervention3 = {
         id: 3
       },
-      cacheServiceMock = jasmine.createSpyObj('CacheService', ['getModelsByProject','getAnalyses', 'getInterventions']),
-      reportDirectiveServiceMock = jasmine.createSpyObj('ReportDirectiveService', ['getDirectiveBuilder']),
-      callbackMock = jasmine.createSpy('callback');
+      cacheServiceMock = jasmine.createSpyObj('CacheService', ['getModelsByProject', 'getAnalyses', 'getInterventions']),
+      reportDirectiveServiceMock = jasmine.createSpyObj('ReportDirectiveService', ['getDirectiveBuilder', 'getNonNodeSplitModels', 'getDecoratedSyntheses']),
+      callbackMock = jasmine.createSpy('callback'),
+      pataviServiceMock = jasmine.createSpy('PataviService', ['listen']);
 
     var analysesDefer;
     var modelsDefer;
+    var interventionsDefer;
 
     beforeEach(module('addis.project'));
     beforeEach(inject(function($rootScope, $controller, $q) {
@@ -38,19 +40,22 @@ define(['angular-mocks'], function() {
       };
       cacheServiceMock.getModelsByProject.and.returnValue(modelQueryResult.$promise);
       reportDirectiveServiceMock.getDirectiveBuilder.and.returnValue(function() {});
-
-      var interventionsDefer = $q.defer();
+      interventionsDefer = $q.defer();
       cacheServiceMock.getInterventions.and.returnValue(interventionsDefer.promise);
       interventionsDefer.resolve([intervention1, intervention2, intervention3]);
 
-      $controller('InsertRelativeEffectsPlotController', {
+      var directiveName = 'relative-effects-table';
+
+      $controller('InsertDirectiveController', {
         $scope: scope,
         $q: $q,
         $stateParams: stateParamsMock,
         $modalInstance: modalInstanceMock,
-        'CacheService': cacheServiceMock,
         'ReportDirectiveService': reportDirectiveServiceMock,
-        callback: callbackMock
+        'CacheService': cacheServiceMock,
+        'PataviService': pataviServiceMock,
+        callback: callbackMock,
+        directiveName: directiveName
       });
     }));
 
@@ -58,13 +63,14 @@ define(['angular-mocks'], function() {
       it('should get the analyses and models', function() {
         expect(cacheServiceMock.getAnalyses).toHaveBeenCalled();
         expect(cacheServiceMock.getModelsByProject).toHaveBeenCalled();
+        expect(cacheServiceMock.getInterventions).toHaveBeenCalled();
       });
       it('loading.loaded should be false', function() {
         expect(scope.loading.loaded).toBe(false);
       });
     });
 
-    describe('once the analyses and models are loaded', function() {
+    describe('once the analyses, models, and interventions are loaded', function() {
       var interventionInclusion1 = {
           interventionId: 1,
           analysisId: 1
@@ -77,22 +83,6 @@ define(['angular-mocks'], function() {
           interventionId: 3,
           analysisId: 1
         };
-      var analyses = [{
-        analysisType: 'Evidence synthesis',
-        id: 1,
-        interventionInclusions: [interventionInclusion1, interventionInclusion3]
-      }, {
-        analysisType: 'Not evidence synthesis',
-        id: 2,
-      }, {
-        analysisType: 'Evidence synthesis',
-        archived: true,
-        id: 3
-      }, {
-        analysisType: 'Evidence synthesis',
-        id: 4,
-        interventionInclusions: [interventionInclusion2]
-      }];
 
       var models = [{
         id: 31,
@@ -129,36 +119,43 @@ define(['angular-mocks'], function() {
           type: 'node-split'
         }
       }];
+      var analyses = [{
+        analysisType: 'Evidence synthesis',
+        id: 1,
+        interventionInclusions: [interventionInclusion1, interventionInclusion3],
+        models: [models[1], models[2], models[3], models[4]]
+      }, {
+        analysisType: 'Not evidence synthesis',
+        id: 2,
+      }, {
+        analysisType: 'Evidence synthesis',
+        archived: true,
+        id: 3
+      }, {
+        analysisType: 'Evidence synthesis',
+        id: 4,
+        interventionInclusions: [interventionInclusion2],
+        models: [models[0]]
+      }];
+      reportDirectiveServiceMock.getNonNodeSplitModels.and.returnValue(models);
+      reportDirectiveServiceMock.getDecoratedSyntheses.and.returnValue(analyses);
+
       beforeEach(function() {
         analysesDefer.resolve(analyses);
         modelsDefer.resolve(models);
         scope.$digest();
       });
+
       it('loading.loaded should be true', function() {
         expect(scope.loading.loaded).toBe(true);
       });
-      it('the analyses should be put on the scope, containing the appropriate models, without archived analyses and models', function() {
-        var expectedAnalyses = [{
-          analysisType: 'Evidence synthesis',
-          id: 1,
-          models: [models[2], models[3]],
-          interventionInclusions: [interventionInclusion1, interventionInclusion3],
-          interventions: [intervention1, intervention3]
-        }, {
-          analysisType: 'Evidence synthesis',
-          id: 4,
-          models: [models[0]],
-          interventionInclusions: [interventionInclusion2],
-          interventions: [intervention2]
-        }];
-        expect(scope.analyses[1]).toEqual(expectedAnalyses[1]);
-      });
+
       it('selectedAnalysisChanged should update the selected model and clear the regressionLevel if needed', function() {
         scope.selections.analysis = analyses[3];
         scope.selectedAnalysisChanged();
         expect(scope.selections.model).toEqual(models[0]);
         expect(scope.selections.regressionLevel).not.toBeDefined();
       });
-    });
+   });
   });
 });
