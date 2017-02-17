@@ -73,18 +73,162 @@ define(['angular-mocks'], function() {
         expect(result).toEqual(expectedResult);
       });
     });
-    describe('getNonNodeSplitModels', function() {
+
+    describe('getDirectiveBuilder', function() {
+      it('for network-plot should return a network plot builder', function() {
+        var builder = reportDirectiveService.getDirectiveBuilder('network-plot');
+        var selections = {
+          analysis: {
+            id: 3
+          }
+        };
+        expect(builder(selections)).toEqual('[[[network-plot analysis-id="3"]]]');
+      });
+      it('for comparison-result should return a comparison result builder', function() {
+        var builder = reportDirectiveService.getDirectiveBuilder('comparison-result');
+        var selections = {
+          analysis: {
+            id: 3
+          },
+          model: {
+            id: 30
+          },
+          t1: {
+            id: 300
+          },
+          t2: {
+            id: 3000
+          }
+        };
+        expect(builder(selections)).toEqual('[[[comparison-result analysis-id="3" model-id="30" t1="300" t2="3000"]]]');
+      });
+      it('for relative-effects-table should return a relative effects table builder (both with and without regression level)', function() {
+        var builder = reportDirectiveService.getDirectiveBuilder('relative-effects-table');
+        var selectionsNoRegression = {
+          analysis: {
+            id: 3
+          },
+          model: {
+            id: 30
+          }
+        };
+        var selectionsWithRegression = {
+          analysis: {
+            id: 3
+          },
+          model: {
+            id: 30
+          },
+          regressionLevel: 300
+        };
+        expect(builder(selectionsNoRegression)).toEqual('[[[relative-effects-table analysis-id="3" model-id="30"]]]');
+        expect(builder(selectionsWithRegression)).toEqual('[[[relative-effects-table analysis-id="3" model-id="30" regression-level="300"]]]');
+      });
+      it('for relative-effects-plot should return a relative effects plot builder (both with and without regression level)', function() {
+        var builder = reportDirectiveService.getDirectiveBuilder('relative-effects-plot');
+        var selectionsNoRegression = {
+          analysis: {
+            id: 3
+          },
+          model: {
+            id: 30
+          },
+          baselineIntervention: {
+            id: 300
+          }
+        };
+        var selectionsWithRegression = {
+          analysis: {
+            id: 3
+          },
+          model: {
+            id: 30
+          },
+          regressionLevel: 300,
+          baselineIntervention: {
+            id: 3000
+          }
+        };
+        expect(builder(selectionsNoRegression)).toEqual('[[[relative-effects-plot analysis-id="3" model-id="30" baseline-treatment-id="300"]]]');
+        expect(builder(selectionsWithRegression)).toEqual('[[[relative-effects-plot analysis-id="3" model-id="30" baseline-treatment-id="3000" regression-level="300"]]]');
+      });
+      it('for rank-probabilities-table should return a rank probabilities table builder (both with and without regression level)', function() {
+        var builder = reportDirectiveService.getDirectiveBuilder('rank-probabilities-table');
+        var selectionsNoRegression = {
+          analysis: {
+            id: 3
+          },
+          model: {
+            id: 30
+          }
+        };
+        var selectionsWithRegression = {
+          analysis: {
+            id: 3
+          },
+          model: {
+            id: 30
+          },
+          regressionLevel: 300
+        };
+        expect(builder(selectionsNoRegression)).toEqual('[[[rank-probabilities-table analysis-id="3" model-id="30"]]]');
+        expect(builder(selectionsWithRegression)).toEqual('[[[rank-probabilities-table analysis-id="3" model-id="30" regression-level="300"]]]');
+      });
+      it('for rank-probabilities-plot should return a rank probabilities plot builder (both with and without regression level)', function() {
+        var builder = reportDirectiveService.getDirectiveBuilder('rank-probabilities-plot');
+        var selectionsNoRegression = {
+          analysis: {
+            id: 3
+          },
+          model: {
+            id: 30
+          },
+          baselineIntervention: {
+            id: 300
+          }
+        };
+        var selectionsWithRegression = {
+          analysis: {
+            id: 3
+          },
+          model: {
+            id: 30
+          },
+          regressionLevel: 300,
+          baselineIntervention: {
+            id: 3000
+          }
+        };
+        expect(builder(selectionsNoRegression)).toEqual('[[[rank-probabilities-plot analysis-id="3" model-id="30" baseline-treatment-id="300"]]]');
+        expect(builder(selectionsWithRegression)).toEqual('[[[rank-probabilities-plot analysis-id="3" model-id="30" baseline-treatment-id="3000" regression-level="300"]]]');
+      });
+      it('for forest-plot should return a forest plot builder', function() {
+        var builder = reportDirectiveService.getDirectiveBuilder('forest-plot');
+        var selections = {
+          analysis: {
+            id: 3
+          },
+          model: {
+            id: 30
+          }
+        };
+        expect(builder(selections)).toEqual('[[[forest-plot analysis-id="3" model-id="30"]]]');
+      });
+    });
+    describe('getAllowedModels', function() {
       it('should retrieve the non-nodesplit models and for regression models with levels add the "centering" level', function() {
         var synthesisModel = {
           modelType: {
-            type: 'evidence synthesis'
-          }
+            type: 'network'
+          },
+          runStatus: 'done'
         };
         var regressionModelNoLevels = {
           modelType: {
             type: 'regression'
           },
-          regressor: {}
+          regressor: {},
+          runStatus: 'done'
         };
         var regressionModelLevels = {
           modelType: {
@@ -92,7 +236,8 @@ define(['angular-mocks'], function() {
           },
           regressor: {
             levels: [1, 2]
-          }
+          },
+          runStatus: 'done'
         };
         var nodesplitModel = {
           modelType: {
@@ -106,9 +251,10 @@ define(['angular-mocks'], function() {
           },
           regressor: {
             levels: ['centering', 1, 2]
-          }
+          },
+          runStatus: 'done'
         }];
-        var result = reportDirectiveService.getNonNodeSplitModels(models);
+        var result = reportDirectiveService.getAllowedModels(models, 'relative-effects-table');
         expect(result).toEqual(expectedResult);
       });
     });

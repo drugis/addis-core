@@ -10,23 +10,38 @@ define(['lodash'], function(_) {
         replacer: function(match, p1) {
           return '<div style="max-width:500px"><' + replaceQuotes(p1) + '></network-plot></div>';
         },
-        builder: function(analysisId) {
-          return '[[[network-plot analysis-id="' + analysisId + '"]]]';
-        }
+        builder: function(selections) {
+          return '[[[network-plot analysis-id="' + selections.analysis.id + '"]]]';
+        },
+        showSettings: {
+          showSelectModel: false,
+          showSelectRegression: false,
+          showSelectBaseline: false,
+          showSelectInterventions: false
+        },
+        allowedModelTypes: ['network', 'pairwise', 'node-split', 'regression']
       },
-      'result-comparison': {
-        tag: 'result-comparison',
+      'comparison-result': {
+        tag: 'comparison-result',
         regex: /\[\[\[(comparison-result\s+analysis-id=\&\#34;\d+\&\#34;\s+model-id=\&\#34;\d+\&\#34;\s+t1=\&\#34;\d+\&\#34;\s+t2=\&\#34;\d+\&\#34;\s*)\]\]\]/g,
         replacer: function(match, p1) {
           return '<' + replaceQuotes(p1) + '></comparison-result>';
         },
-        builder: function(analysisId, modelId, t1, t2) {
+        builder: function(selections) {
           return '[[[comparison-result' +
-            ' analysis-id="' + analysisId + '"' +
-            ' model-id="' + modelId + '"' +
-            ' t1="' + t1 + '"' +
-            ' t2="' + t2 + '"]]]';
-        }
+            ' analysis-id="' + selections.analysis.id + '"' +
+            ' model-id="' + selections.model.id + '"' +
+            ' t1="' + selections.t1.id + '"' +
+            ' t2="' + selections.t2.id + '"]]]';
+        },
+        showSettings: {
+          showSelectModel: true,
+          showSelectRegression: false,
+          showSelectBaseline: false,
+          showSelectInterventions: true
+        },
+        allowedModelTypes: ['network', 'pairwise']
+
       },
       'relative-effects-table': {
         tag: 'relative-effects-table',
@@ -34,11 +49,19 @@ define(['lodash'], function(_) {
         replacer: function(match, p1) {
           return '<' + replaceQuotes(p1) + '></relative-effects-table>';
         },
-        builder: function(analysisId, modelId, regressionLevel) {
-          return regressionLevel !== undefined && Number.isInteger(regressionLevel) ? '[[[relative-effects-table' + ' analysis-id="' + analysisId + '"' + ' model-id="' +
-            modelId + '" regression-level=' + '"' + regressionLevel + '"]]]' : '[[[relative-effects-table' + ' analysis-id="' +
-            analysisId + '"' + ' model-id="' + modelId + '"]]]';
-        }
+        builder: function(selections) {
+          return selections.regressionLevel !== undefined && Number.isInteger(selections.regressionLevel) ? '[[[relative-effects-table' + ' analysis-id="' + selections.analysis.id + '"' + ' model-id="' +
+            selections.model.id + '" regression-level=' + '"' + selections.regressionLevel + '"]]]' : '[[[relative-effects-table' + ' analysis-id="' +
+            selections.analysis.id + '"' + ' model-id="' + selections.model.id + '"]]]';
+        },
+        showSettings: {
+          showSelectModel: true,
+          showSelectRegression: true,
+          showSelectBaseline: false,
+          showSelectInterventions: false
+        },
+        allowedModelTypes: ['network', 'pairwise', 'regression']
+
       },
       'relative-effects-plot': {
         tag: 'relative-effects-plot',
@@ -46,13 +69,21 @@ define(['lodash'], function(_) {
         replacer: function(match, p1) {
           return '<' + replaceQuotes(p1) + '></relative-effects-plot>';
         },
-        builder: function(analysisId, modelId, baselineTreatmentId, regressionLevel) {
-          return regressionLevel !== undefined && Number.isInteger(regressionLevel) ?
-            '[[[relative-effects-plot' + ' analysis-id="' + analysisId + '"' + ' model-id="' + modelId + '" baseline-treatment-id=' + '"' +
-            baselineTreatmentId + '" regression-level=' + '"' + regressionLevel + '"]]]' :
-            '[[[relative-effects-plot' + ' analysis-id="' + analysisId + '"' + ' model-id="' + modelId + '" baseline-treatment-id=' + '"' +
-            baselineTreatmentId + '"]]]';
-        }
+        builder: function(selections) {
+          return selections.regressionLevel !== undefined && Number.isInteger(selections.regressionLevel) ?
+            '[[[relative-effects-plot' + ' analysis-id="' + selections.analysis.id + '"' + ' model-id="' + selections.model.id + '" baseline-treatment-id=' + '"' +
+            selections.baselineIntervention.id + '" regression-level=' + '"' + selections.regressionLevel + '"]]]' :
+            '[[[relative-effects-plot' + ' analysis-id="' + selections.analysis.id + '"' + ' model-id="' + selections.model.id + '" baseline-treatment-id=' + '"' +
+            selections.baselineIntervention.id + '"]]]';
+        },
+        showSettings: {
+          showSelectModel: true,
+          showSelectRegression: true,
+          showSelectBaseline: true,
+          showSelectInterventions: false
+        },
+        allowedModelTypes: ['network', 'regression']
+
       },
       'rank-probabilities-table': {
         tag: 'rank-probabilities-table',
@@ -60,11 +91,19 @@ define(['lodash'], function(_) {
         replacer: function(match, p1) {
           return '<' + replaceQuotes(p1) + '></rank-probabilities-table>';
         },
-        builder: function(analysisId, modelId, regressionLevel) {
-          return regressionLevel !== undefined && Number.isInteger(regressionLevel) ?
-            '[[[rank-probabilities-table' + ' analysis-id="' + analysisId + '"' + ' model-id="' + modelId + '" regression-level=' + '"' + regressionLevel + '"]]]' :
-            '[[[rank-probabilities-table' + ' analysis-id="' + analysisId + '"' + ' model-id="' + modelId + '"]]]';
-        }
+        builder: function(selections) {
+          return selections.regressionLevel !== undefined && Number.isInteger(selections.regressionLevel) ?
+            '[[[rank-probabilities-table' + ' analysis-id="' + selections.analysis.id + '"' + ' model-id="' + selections.model.id + '" regression-level=' + '"' + selections.regressionLevel + '"]]]' :
+            '[[[rank-probabilities-table' + ' analysis-id="' + selections.analysis.id + '"' + ' model-id="' + selections.model.id + '"]]]';
+        },
+        showSettings: {
+          showSelectModel: true,
+          showSelectRegression: true,
+          showSelectBaseline: false,
+          showSelectInterventions: false
+        },
+        allowedModelTypes: ['network', 'pairwise', 'regression']
+
       },
       'rank-probabilities-plot': {
         tag: 'rank-probabilities-plot',
@@ -72,13 +111,21 @@ define(['lodash'], function(_) {
         replacer: function(match, p1) {
           return '<' + replaceQuotes(p1) + '></rank-probabilities-plot>';
         },
-        builder: function(analysisId, modelId, baselineTreatmentId, regressionLevel) {
-          return regressionLevel !== undefined && Number.isInteger(regressionLevel) ?
-            '[[[rank-probabilities-plot' + ' analysis-id="' + analysisId + '"' + ' model-id="' + modelId + '" baseline-treatment-id=' + '"' +
-            baselineTreatmentId + '" regression-level=' + '"' + regressionLevel + '"]]]' :
-            '[[[rank-probabilities-plot' + ' analysis-id="' + analysisId + '"' + ' model-id="' + modelId + '" baseline-treatment-id=' + '"' +
-            baselineTreatmentId + '"]]]';
-        }
+        builder: function(selections) {
+          return selections.regressionLevel !== undefined && Number.isInteger(selections.regressionLevel) ?
+            '[[[rank-probabilities-plot' + ' analysis-id="' + selections.analysis.id + '"' + ' model-id="' + selections.model.id + '" baseline-treatment-id=' + '"' +
+            selections.baselineIntervention.id + '" regression-level=' + '"' + selections.regressionLevel + '"]]]' :
+            '[[[rank-probabilities-plot' + ' analysis-id="' + selections.analysis.id + '"' + ' model-id="' + selections.model.id + '" baseline-treatment-id=' + '"' +
+            selections.baselineIntervention.id + '"]]]';
+        },
+        showSettings: {
+          showSelectModel: true,
+          showSelectRegression: true,
+          showSelectBaseline: true,
+          showSelectInterventions: false
+        },
+        allowedModelTypes: ['network', 'pairwise', 'regression']
+
       },
       'forest-plot': {
         tag: 'forest-plot',
@@ -86,9 +133,16 @@ define(['lodash'], function(_) {
         replacer: function(match, p1) {
           return '<' + replaceQuotes(p1) + '></forest-plot>';
         },
-        builder: function(analysisId, modelId) {
-          return '[[[forest-plot' + ' analysis-id="' + analysisId + '"' + ' model-id="' + modelId + '"]]]';
-        }
+        builder: function(selections) {
+          return '[[[forest-plot' + ' analysis-id="' + selections.analysis.id + '"' + ' model-id="' + selections.model.id + '"]]]';
+        },
+        showSettings: {
+          showSelectModel: true,
+          showSelectRegression: false,
+          showSelectBaseline: false,
+          showSelectInterventions: false
+        },
+        allowedModelTypes: ['pairwise']
       }
     };
 
@@ -107,23 +161,23 @@ define(['lodash'], function(_) {
       return DIRECTIVES[directiveName].builder;
     }
 
-    function getNonNodeSplitModels(models) {
+    function getShowSettings(directiveName) {
+      return DIRECTIVES[directiveName].showSettings;
+    }
+
+    function getAllowedModels(models, directiveName) {
       return _.chain(models)
         .reject('archived')
-        .reject(['modelType.type', 'node-split'])
+        .filter(['runStatus', 'done'])
+        .filter(function(model) {
+          return _.includes(DIRECTIVES[directiveName].allowedModelTypes, model.modelType.type);
+        })
         .map(function(model) {
           if (model.modelType.type === 'regression' && model.regressor.levels && !_.includes(model.regressor.levels, 'centering')) {
             model.regressor.levels = ['centering'].concat(model.regressor.levels);
           }
           return model;
         })
-        .value();
-    }
-
-    function getPairwiseModels(models) {
-      return _.chain(models)
-        .reject('archived')
-        .filter(['modelType.type', 'pairwise'])
         .value();
     }
 
@@ -148,9 +202,9 @@ define(['lodash'], function(_) {
     return {
       inlineDirectives: inlineDirectives,
       getDirectiveBuilder: getDirectiveBuilder,
-      getNonNodeSplitModels: getNonNodeSplitModels,
-      getPairwiseModels:getPairwiseModels,
-      getDecoratedSyntheses: getDecoratedSyntheses
+      getAllowedModels: getAllowedModels,
+      getDecoratedSyntheses: getDecoratedSyntheses,
+      getShowSettings: getShowSettings
     };
   };
   return dependencies.concat(ReportStubstitutionService);

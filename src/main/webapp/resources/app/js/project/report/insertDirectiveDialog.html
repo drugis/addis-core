@@ -12,7 +12,7 @@
       </label>
     </div>
   </div>
-  <div ng-if="showSelectModel" class="row">
+  <div ng-if="showSettings.showSelectModel" class="row">
     <div class="large-9 columns">
       <label>
         Select model
@@ -20,7 +20,7 @@
       </label>
     </div>
   </div>  
-  <div ng-if="showSelectBaseline" class="row">
+  <div ng-if="showSettings.showSelectBaseline" class="row">
     <div class="large-9 columns">
       <label>
         Select baseline
@@ -28,7 +28,7 @@
       </label>
     </div>
   </div>
-  <div ng-if="showSelectRegression && isRegressionModel && selections.model.regressor.levels.length" class="row">
+  <div ng-if="showSettings.showSelectRegression && isRegressionModel && selections.model.regressor.levels.length" class="row">
     <div class="large-9 columns">
       <label>
         Select covariate level
@@ -37,7 +37,7 @@
       </label>
     </div>
   </div>
-  <div ng-if="showSelectInterventions" class="row ">
+  <div ng-if="showSettings.showSelectInterventions" class="row ">
       <div class="large-6 columns">
         <label>
           Treatment 1

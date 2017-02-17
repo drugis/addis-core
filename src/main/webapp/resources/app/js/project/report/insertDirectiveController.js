@@ -5,60 +5,27 @@ define(['lodash'], function(_) {
   ];
   var InsertDirectiveController = function($scope, $stateParams, $modalInstance, $q,
     ReportDirectiveService, CacheService, PataviService, callback, directiveName) {
-    var analysesPromise = CacheService.getAnalyses($stateParams);
-    var modelsPromise = CacheService.getModelsByProject($stateParams);
-    var interventionsPromise = CacheService.getInterventions($stateParams);
-
+    $scope.loading = {
+      loaded: false
+    };
     $scope.selections = {};
     $scope.isRegressionModel = false;
-    $scope.showSelectBaseline = false;
-    $scope.showSelectInterventions = false;
-    $scope.showSelectModel = true;
-    $scope.showSelectRegression = true;
+    $scope.title = directiveName.replace(/-/g, ' ');
+    $scope.showSettings = ReportDirectiveService.getShowSettings(directiveName);
     $scope.selectedAnalysisChanged = selectedAnalysisChanged;
     $scope.selectedModelChanged = selectedModelChanged;
     $scope.selectedTreatmentChanged = selectedTreatmentChanged;
     $scope.insertDirective = insertDirective;
 
-    $scope.loading = {
-      loaded: false
-    };
-
-    $scope.title = directiveName.replace(/-/g, ' ');
-
-    switch (directiveName) {
-      case 'network-plot':
-        $scope.showSelectModel = false;
-        $scope.showSelectRegression = false;
-        break;
-      case 'comparison-result':
-        $scope.showSelectRegression = false;
-        $scope.showSelectInterventions = true;
-        break;
-      case 'relative-effects-table':
-        break;
-      case 'relative-effects-plot':
-        $scope.showSelectBaseline = true;
-        break;
-      case 'rank-probabilities-table':
-        break;
-      case 'rank-probabilities-plot':
-        $scope.showSelectBaseline = true;
-        break;
-      case 'forest-plot':
-        $scope.showSelectRegression = false;
-        break;
-    }
+    var analysesPromise = CacheService.getAnalyses($stateParams);
+    var modelsPromise = CacheService.getModelsByProject($stateParams);
+    var interventionsPromise = CacheService.getInterventions($stateParams);
 
     $q.all([analysesPromise, modelsPromise, interventionsPromise]).then(function(values) {
       var analyses = values[0];
       var models = values[1];
-      $scope.interventions = values[2];
-      if (directiveName === 'forest-plot') {
-        models = ReportDirectiveService.getPairwiseModels(models);
-      } else {
-        models = ReportDirectiveService.getNonNodeSplitModels(models);
-      }
+      $scope.interventions = _.sortBy(values[2], 'name');
+      models = ReportDirectiveService.getAllowedModels(models, directiveName);
 
       if (directiveName === 'comparison-result') {
         loadComparisonModelsAndAnalyses(models, analyses);
@@ -69,9 +36,8 @@ define(['lodash'], function(_) {
 
     function loadAnalyses(analyses, models) {
       $scope.analyses = ReportDirectiveService.getDecoratedSyntheses(analyses, models, $scope.interventions);
-
-      if (analyses.length) {
-        $scope.selections.analysis = analyses[0];
+      if ($scope.analyses.length) {
+        $scope.selections.analysis = $scope.analyses[0];
       }
       if (directiveName !== 'network-plot') {
         $scope.selectedAnalysisChanged();
@@ -80,13 +46,10 @@ define(['lodash'], function(_) {
     }
 
     function loadComparisonModelsAndAnalyses(models, analyses) {
-      var interventionsById = _.chain($scope.interventions)
-        .sortBy('name')
-        .keyBy('id')
-        .value();
+      var interventionsById = _.keyBy($scope.interventions, 'id');
       var modelResultsPromises = [];
 
-      models = _.map(models, function(model) {
+      var modelsWithComparisons = _.map(models, function(model) {
         if (model.taskUrl) {
           var resultsPromise = PataviService.listen(model.taskUrl);
           modelResultsPromises.push(resultsPromise);
@@ -103,23 +66,19 @@ define(['lodash'], function(_) {
         return model;
       });
       $q.all(modelResultsPromises).then(function() {
-        models = _.filter(models, function(model) {
+        var filteredModels = _.filter(modelsWithComparisons, function(model) {
           return model.comparisons && model.comparisons.length;
         });
-        loadAnalyses(analyses, models);
+        loadAnalyses(analyses, filteredModels);
       });
     }
-
 
     function selectedAnalysisChanged() {
       if (!$scope.selections.analysis) {
         return;
       }
-      if ($scope.selections.analysis.primaryModel) {
-        $scope.selections.model = _.find($scope.selections.analysis.models, ['id', $scope.selections.analysis.primaryModel]);
-      } else {
-        $scope.selections.model = $scope.selections.analysis.models[0];
-      }
+      $scope.selections.model = _.find($scope.selections.analysis.models, ['id', $scope.selections.analysis.primaryModel]) || $scope.selections.analysis.models[0];
+
       if (directiveName === 'relative-effects-plot' || directiveName === 'rank-probabilities-plot') {
         $scope.selections.baselineIntervention = $scope.selections.analysis.interventions[0];
       }
@@ -136,7 +95,7 @@ define(['lodash'], function(_) {
       } else {
         delete $scope.selections.regressionLevel;
       }
-      if ($scope.showSelectInterventions) {
+      if (directiveName === 'comparison-result') {
         if (!$scope.selections.model.comparisons) {
           return;
         }
@@ -149,45 +108,14 @@ define(['lodash'], function(_) {
       $scope.secondInterventionOptions = _.reject($scope.interventions, ['id', $scope.selections.t1.id]);
       $scope.selections.t2 = $scope.secondInterventionOptions[0];
     }
+
     $scope.cancel = function() {
       $modalInstance.dismiss('cancel');
     };
 
     function insertDirective() {
-      switch (directiveName) {
-        case 'network-plot':
-          callback(ReportDirectiveService.getDirectiveBuilder(directiveName)($scope.selections.analysis.id));
-          $modalInstance.close();
-          break;
-        case 'comparison-result':
-          callback(ReportDirectiveService.getDirectiveBuilder('result-comparison')($scope.selections.analysis.id,
-            $scope.selections.model.id, $scope.selections.t1.id, $scope.selections.t2.id));
-          $modalInstance.close();
-          break;
-        case 'relative-effects-table':
-          callback(ReportDirectiveService.getDirectiveBuilder(directiveName)($scope.selections.analysis.id,
-            $scope.selections.model.id, $scope.selections.regressionLevel));
-          $modalInstance.close();
-          break;
-        case 'relative-effects-plot':
-          callback(ReportDirectiveService.getDirectiveBuilder(directiveName)($scope.selections.analysis.id,
-            $scope.selections.model.id, $scope.selections.baselineIntervention.id, $scope.selections.regressionLevel));
-          $modalInstance.close();
-          break;
-        case 'rank-probabilities-table':
-          callback(ReportDirectiveService.getDirectiveBuilder(directiveName)($scope.selections.analysis.id,
-            $scope.selections.model.id, $scope.selections.regressionLevel));
-          $modalInstance.close();
-          break;
-        case 'rank-probabilities-plot':
-          callback(ReportDirectiveService.getDirectiveBuilder(directiveName)($scope.selections.analysis.id,
-            $scope.selections.model.id, $scope.selections.baselineIntervention.id, $scope.selections.regressionLevel));
-          $modalInstance.close();
-          break;
-        case 'forest-plot':
-          callback(ReportDirectiveService.getDirectiveBuilder(directiveName)($scope.selections.analysis.id, $scope.selections.model.id));
-          $modalInstance.close();
-      }
+      callback(ReportDirectiveService.getDirectiveBuilder(directiveName)($scope.selections));
+      $modalInstance.close();
     }
   };
   return dependencies.concat(InsertDirectiveController);
