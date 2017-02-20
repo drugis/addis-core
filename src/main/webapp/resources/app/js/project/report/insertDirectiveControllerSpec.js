@@ -98,6 +98,7 @@ define(['angular-mocks'], function() {
         analysisType: 'Evidence synthesis',
         id: 1,
         interventionInclusions: [interventionInclusion1, interventionInclusion3],
+        interventions: [interventionInclusion1, interventionInclusion3],
         models: [models[1], models[2], models[3], models[4]]
       }, {
         analysisType: 'Not evidence synthesis',
@@ -110,6 +111,7 @@ define(['angular-mocks'], function() {
         analysisType: 'Evidence synthesis',
         id: 4,
         interventionInclusions: [interventionInclusion2],
+        interventions: [interventionInclusion2],
         models: [models[0]]
       }];
 
@@ -181,7 +183,8 @@ define(['angular-mocks'], function() {
         analysisType: 'Evidence synthesis',
         id: 1,
         interventionInclusions: [],
-        models: [models[0], models[1]]
+        models: [models[0], models[1]],
+        interventions: [{label: 'intervention1'}]
       }];
 
 

@@ -67,8 +67,8 @@ define(['angular-mocks'], function() {
         expect(result).toEqual(expectedResult);
       });
       it('should work for instances of rank-probabilities-plot', function() {
-        var input = '[[[rank-probabilities-plot analysis-id=&#34;37&#34; model-id=&#34;42&#34; baseline-treatment-id=&#34;5&#34; regression-level=&#34;100&#34;]]] [[[rank-probabilities-plot analysis-id=&#34;37&#34; model-id=&#34;42&#34; baseline-treatment-id=&#34;5&#34;]]]';
-        var expectedResult = '<rank-probabilities-plot analysis-id="37" model-id="42" baseline-treatment-id="5" regression-level="100"></rank-probabilities-plot> <rank-probabilities-plot analysis-id="37" model-id="42" baseline-treatment-id="5"></rank-probabilities-plot>';
+        var input = '[[[rank-probabilities-plot analysis-id=&#34;37&#34; model-id=&#34;42&#34; regression-level=&#34;100&#34;]]] [[[rank-probabilities-plot analysis-id=&#34;37&#34; model-id=&#34;42&#34;]]]';
+        var expectedResult = '<rank-probabilities-plot analysis-id="37" model-id="42" regression-level="100"></rank-probabilities-plot> <rank-probabilities-plot analysis-id="37" model-id="42"></rank-probabilities-plot>';
         var result = reportDirectiveService.inlineDirectives(input);
         expect(result).toEqual(expectedResult);
       });
@@ -199,8 +199,8 @@ define(['angular-mocks'], function() {
             id: 3000
           }
         };
-        expect(builder(selectionsNoRegression)).toEqual('[[[rank-probabilities-plot analysis-id="3" model-id="30" baseline-treatment-id="300"]]]');
-        expect(builder(selectionsWithRegression)).toEqual('[[[rank-probabilities-plot analysis-id="3" model-id="30" baseline-treatment-id="3000" regression-level="300"]]]');
+        expect(builder(selectionsNoRegression)).toEqual('[[[rank-probabilities-plot analysis-id="3" model-id="30"]]]');
+        expect(builder(selectionsWithRegression)).toEqual('[[[rank-probabilities-plot analysis-id="3" model-id="30" regression-level="300"]]]');
       });
       it('for forest-plot should return a forest plot builder', function() {
         var builder = reportDirectiveService.getDirectiveBuilder('forest-plot');
