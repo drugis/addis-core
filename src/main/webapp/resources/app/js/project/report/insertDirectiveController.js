@@ -16,6 +16,7 @@ define(['lodash'], function(_) {
     $scope.selectedModelChanged = selectedModelChanged;
     $scope.selectedTreatmentChanged = selectedTreatmentChanged;
     $scope.insertDirective = insertDirective;
+    $scope.sortOptions = ['alfabetical','point estimate'];
 
     var analysesPromise = CacheService.getAnalyses($stateParams);
     var modelsPromise = CacheService.getModelsByProject($stateParams);
@@ -27,6 +28,9 @@ define(['lodash'], function(_) {
       $scope.interventions = _.sortBy(values[2], 'name');
       models = ReportDirectiveService.getAllowedModels(models, directiveName);
 
+      if(directiveName === 'treatment-effects'){
+        $scope.selections.sortingType = $scope.sortOptions[0];
+      }
       if (directiveName === 'comparison-result') {
         loadComparisonModelsAndAnalyses(models, analyses);
       } else {
@@ -79,7 +83,7 @@ define(['lodash'], function(_) {
       }
       $scope.selections.model = _.find($scope.selections.analysis.models, ['id', $scope.selections.analysis.primaryModel]) || $scope.selections.analysis.models[0];
 
-      if (directiveName === 'relative-effects-plot' || directiveName === 'rank-probabilities-plot') {
+      if (directiveName === 'relative-effects-plot' || directiveName === 'rank-probabilities-plot' || 'treatment-effects') {
         $scope.selections.baselineIntervention = $scope.selections.analysis.interventions[0];
       }
       selectedModelChanged();

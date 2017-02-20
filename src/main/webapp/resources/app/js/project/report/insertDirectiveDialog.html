@@ -38,19 +38,30 @@
     </div>
   </div>
   <div ng-if="showSettings.showSelectInterventions" class="row ">
-      <div class="large-6 columns">
-        <label>
-          Treatment 1
-          <select ng-model="selections.t1" ng-options="intervention.name for intervention in interventions" ng-change="selectedTreatmentChanged()"></select>
-        </label>
-      </div>
-      <div class="large-6 columns">
-        <label>
-          Treatment 2
-          <select ng-model="selections.t2" ng-options="intervention.name for intervention in secondInterventionOptions"></select>
-        </label>
-      </div>
+    <div class="large-6 columns">
+      <label>
+        Treatment 1
+        <select ng-model="selections.t1" ng-options="intervention.name for intervention in interventions" ng-change="selectedTreatmentChanged()"></select>
+      </label>
     </div>
+    <div class="large-6 columns">
+      <label>
+        Treatment 2
+        <select ng-model="selections.t2" ng-options="intervention.name for intervention in secondInterventionOptions"></select>
+      </label>
+    </div>
+  </div>
+ <div ng-if="showSettings.showSelectSorting" class="row">
+    <div class="large-9 columns">
+      <label>
+        Select sorting option
+        <div ng-repeat="sortOption in sortOptions"> 
+          <input type="radio" ng-model="selections.sortingType" ng-value="sortOption"> {{sortOption}}
+          </input>
+        </div>
+      </label>
+    </div>
+  </div>
   <div class="row modal-bottom-button-bar">
     <div class="large-9 columns">
       <button class="success" type="submit" ng-disabled="!selections.analysis">Insert

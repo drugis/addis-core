@@ -17,7 +17,8 @@ define(['lodash'], function(_) {
           showSelectModel: false,
           showSelectRegression: false,
           showSelectBaseline: false,
-          showSelectInterventions: false
+          showSelectInterventions: false,
+          showSelectSorting: false
         },
         allowedModelTypes: ['network', 'pairwise', 'node-split', 'regression']
       },
@@ -38,7 +39,8 @@ define(['lodash'], function(_) {
           showSelectModel: true,
           showSelectRegression: false,
           showSelectBaseline: false,
-          showSelectInterventions: true
+          showSelectInterventions: true,
+          showSelectSorting: false
         },
         allowedModelTypes: ['network', 'pairwise']
 
@@ -58,7 +60,8 @@ define(['lodash'], function(_) {
           showSelectModel: true,
           showSelectRegression: true,
           showSelectBaseline: false,
-          showSelectInterventions: false
+          showSelectInterventions: false,
+          showSelectSorting: false
         },
         allowedModelTypes: ['network', 'pairwise', 'regression']
 
@@ -80,7 +83,8 @@ define(['lodash'], function(_) {
           showSelectModel: true,
           showSelectRegression: true,
           showSelectBaseline: true,
-          showSelectInterventions: false
+          showSelectInterventions: false,
+          showSelectSorting: false
         },
         allowedModelTypes: ['network', 'regression']
 
@@ -100,29 +104,29 @@ define(['lodash'], function(_) {
           showSelectModel: true,
           showSelectRegression: true,
           showSelectBaseline: false,
-          showSelectInterventions: false
+          showSelectInterventions: false,
+          showSelectSorting: false
         },
         allowedModelTypes: ['network', 'pairwise', 'regression']
 
       },
       'rank-probabilities-plot': {
         tag: 'rank-probabilities-plot',
-        regex: /\[\[\[(rank-probabilities-plot\s+analysis-id=\&\#34;\d+\&\#34;\s+model-id=\&\#34;\d+\&\#34;\s+baseline-treatment-id=\&\#34;\d+\&\#34;(\s+regression-level=\&\#34;\d+\&\#34;){0,1}\s*)\]\]\]/g,
+        regex: /\[\[\[(rank-probabilities-plot\s+analysis-id=\&\#34;\d+\&\#34;\s+model-id=\&\#34;\d+\&\#34;(\s+regression-level=\&\#34;\d+\&\#34;){0,1}\s*)\]\]\]/g,
         replacer: function(match, p1) {
           return '<' + replaceQuotes(p1) + '></rank-probabilities-plot>';
         },
         builder: function(selections) {
           return selections.regressionLevel !== undefined && Number.isInteger(selections.regressionLevel) ?
-            '[[[rank-probabilities-plot' + ' analysis-id="' + selections.analysis.id + '"' + ' model-id="' + selections.model.id + '" baseline-treatment-id=' + '"' +
-            selections.baselineIntervention.id + '" regression-level=' + '"' + selections.regressionLevel + '"]]]' :
-            '[[[rank-probabilities-plot' + ' analysis-id="' + selections.analysis.id + '"' + ' model-id="' + selections.model.id + '" baseline-treatment-id=' + '"' +
-            selections.baselineIntervention.id + '"]]]';
+            '[[[rank-probabilities-plot' + ' analysis-id="' + selections.analysis.id + '"' + ' model-id="' + selections.model.id + '" regression-level=' + '"' + selections.regressionLevel + '"]]]' :
+            '[[[rank-probabilities-plot' + ' analysis-id="' + selections.analysis.id + '"' + ' model-id="' + selections.model.id + '"]]]';
         },
         showSettings: {
           showSelectModel: true,
           showSelectRegression: true,
-          showSelectBaseline: true,
-          showSelectInterventions: false
+          showSelectBaseline: false,
+          showSelectInterventions: false,
+          showSelectSorting: false
         },
         allowedModelTypes: ['network', 'pairwise', 'regression']
 
@@ -140,9 +144,32 @@ define(['lodash'], function(_) {
           showSelectModel: true,
           showSelectRegression: false,
           showSelectBaseline: false,
-          showSelectInterventions: false
+          showSelectInterventions: false,
+          showSelectSorting: false
         },
         allowedModelTypes: ['pairwise']
+      },
+      'treatment-effects': {
+        tag: 'treatment-effects',
+        regex: /\[\[\[(treatment-effects\s+analysis-id=\&\#34;\d+\&\#34;\s+model-id=\&\#34;\d+\&\#34;\s+baseline-treatment-id=\&\#34;\d+\&\#34;\s+sorting-type=\&\#34;(alfabetical|point\sestimate)\&\#34;(\s+regression-level=\&\#34;\d+\&\#34;){0,1}\s*)\]\]\]/g,
+        replacer: function(match, p1) {
+          return '<' + replaceQuotes(p1) + '></treatment-effects>';
+        },
+        builder: function(selections) {
+          return selections.regressionLevel !== undefined && Number.isInteger(selections.regressionLevel) ?
+            '[[[treatment-effects' + ' analysis-id="' + selections.analysis.id + '"' + ' model-id="' + selections.model.id + '" baseline-treatment-id=' + '"' +
+            selections.baselineIntervention.id + '" sorting-type=' + '"' + selections.sortingType + '" regression-level=' + '"' + selections.regressionLevel + '"]]]' :
+            '[[[treatment-effects' + ' analysis-id="' + selections.analysis.id + '"' + ' model-id="' + selections.model.id + '" baseline-treatment-id=' + '"' +
+            selections.baselineIntervention.id + '" sorting-type=' + '"' + selections.sortingType + '"]]]';
+        },
+        showSettings: {
+          showSelectModel: true,
+          showSelectRegression: true,
+          showSelectBaseline: true,
+          showSelectInterventions: false,
+          showSelectSorting: true
+        },
+        allowedModelTypes: ['network', 'pairwise', 'regression']
       }
     };
 
