@@ -16,7 +16,7 @@ define(['lodash'], function(_) {
     $scope.selectedModelChanged = selectedModelChanged;
     $scope.selectedTreatmentChanged = selectedTreatmentChanged;
     $scope.insertDirective = insertDirective;
-    $scope.sortOptions = ['alfabetical','point estimate'];
+    $scope.sortOptions = ['alphabetical','point-estimate'];
 
     var analysesPromise = CacheService.getAnalyses($stateParams);
     var modelsPromise = CacheService.getModelsByProject($stateParams);

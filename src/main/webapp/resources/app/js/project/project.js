@@ -28,6 +28,7 @@ define(function(require) {
     .directive('rankProbabilitiesTable', require('project/report/rankProbabilitiesTable/rankProbabilitiesTableDirective'))
     .directive('rankProbabilitiesPlot', require('project/report/rankProbabilitiesPlot/rankProbabilitiesPlotDirective'))
     .directive('forestPlot', require('project/report/forestPlot/forestPlotDirective'))
+    .directive('treatmentEffects', require('project/report/treatmentEffects/treatmentEffectsDirective'))
 
   //services
   .service('ProjectService', require('project/projectService'))

@@ -151,7 +151,7 @@ define(['lodash'], function(_) {
       },
       'treatment-effects': {
         tag: 'treatment-effects',
-        regex: /\[\[\[(treatment-effects\s+analysis-id=\&\#34;\d+\&\#34;\s+model-id=\&\#34;\d+\&\#34;\s+baseline-treatment-id=\&\#34;\d+\&\#34;\s+sorting-type=\&\#34;(alfabetical|point\sestimate)\&\#34;(\s+regression-level=\&\#34;\d+\&\#34;){0,1}\s*)\]\]\]/g,
+        regex: /\[\[\[(treatment-effects\s+analysis-id=\&\#34;\d+\&\#34;\s+model-id=\&\#34;\d+\&\#34;\s+baseline-treatment-id=\&\#34;\d+\&\#34;\s+sorting-type=\&\#34;(alphabetical|point-estimate)\&\#34;(\s+regression-level=\&\#34;\d+\&\#34;){0,1}\s*)\]\]\]/g,
         replacer: function(match, p1) {
           return '<' + replaceQuotes(p1) + '></treatment-effects>';
         },
