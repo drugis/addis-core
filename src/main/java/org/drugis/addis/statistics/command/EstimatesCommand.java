@@ -1,5 +1,6 @@
 package org.drugis.addis.statistics.command;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -8,8 +9,9 @@ import java.util.List;
  * Created by daan on 20-1-17.
  */
 public class EstimatesCommand {
-  List<AbstractMeasurementCommand> measurements = new ArrayList<>();
+  URI baselineUri;
 
+  List<AbstractMeasurementCommand> measurements = new ArrayList<>();
   public EstimatesCommand() {
   }
 
@@ -21,6 +23,10 @@ public class EstimatesCommand {
     return Collections.unmodifiableList(measurements);
   }
 
+  public URI getBaselineUri() {
+    return baselineUri;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
@@ -28,11 +34,14 @@ public class EstimatesCommand {
 
     EstimatesCommand that = (EstimatesCommand) o;
 
-    return measurements.equals(that.measurements);
+    if (baselineUri != null ? !baselineUri.equals(that.baselineUri) : that.baselineUri != null) return false;
+    return measurements != null ? measurements.equals(that.measurements) : that.measurements == null;
   }
 
   @Override
   public int hashCode() {
-    return measurements.hashCode();
+    int result = baselineUri != null ? baselineUri.hashCode() : 0;
+    result = 31 * result + (measurements != null ? measurements.hashCode() : 0);
+    return result;
   }
 }

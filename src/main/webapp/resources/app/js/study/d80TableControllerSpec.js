@@ -136,7 +136,8 @@ define(['angular-mocks'], function() {
         expect(d80TableServiceMock.buildMeasurements).toHaveBeenCalledWith([results], measurementMoments[0].uri, endpoints);
         expect(rootScope.measurements).toEqual(builtMeasurements);
         expect(estimatesResourceMock.getEstimates).toHaveBeenCalledWith({
-          measurements: toBackEndMeasurements
+          measurements: toBackEndMeasurements,
+          baselineUri: 'armUri1'
         });
         expect(d80TableServiceMock.buildEstimateRows).toHaveBeenCalledWith(estimates,endpoints,arms);
       });
