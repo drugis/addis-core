@@ -162,19 +162,19 @@
                       </tr>
                     </thead>
                     <tbody>
-                      <tr ng-repeat="analysis in analyses" ng-switch="analysis.analysisType">
+                      <tr ng-repeat="analysis in analyses" ng-switch="analysis.analysisType" ng-if="showArchived || analysis.archived === false" >
                         <div>
-                          <td ng-show="showArchived || analysis.archived === false" class="clickable on-hover"
+                          <td class="clickable on-hover"
                             ng-click="goToAnalysis(analysis)">
                             <a>{{analysis.title}}</a>
                             <span ng-if="analysis.archived"> (archived on: {{analysis.archivedOn}})</span>
                           </td>
-                          <td ng-show="showArchived || analysis.archived === false">{{analysis.analysisType}}</td>
-                          <td ng-show="showArchived || analysis.archived === false" ng-switch-when="Benefit-risk analysis based on a single study">{{findStudyLabel(analysis)}}
+                          <td>{{analysis.analysisType}}</td>
+                          <td ng-switch-when="Benefit-risk analysis based on a single study">{{findStudyLabel(analysis)}}
                           </td>
-                          <td ng-show="showArchived || analysis.archived === false" ng-switch-when="Evidence synthesis"></td>
-                          <td ng-show="showArchived || analysis.archived === false" ng-switch-when="Benefit-risk analysis based on meta-analyses"></td>
-                          <td ng-show="showArchived || analysis.archived === false">
+                          <td ng-switch-when="Evidence synthesis"></td>
+                          <td ng-switch-when="Benefit-risk analysis based on meta-analyses"></td>
+                          <td>
                             <button ng-if="!analysis.archived && editMode.allowEditing" ng-click="archiveAnalysis(analysis)"
                               type="button" class="tiny right info radius" style="margin-bottom:0;">archive</button>
                             <button ng-if="analysis.archived && editMode.allowEditing" ng-click="unarchiveAnalysis(analysis)"
