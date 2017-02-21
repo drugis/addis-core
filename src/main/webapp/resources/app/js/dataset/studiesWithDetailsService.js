@@ -39,7 +39,6 @@ define(['lodash'], function(_) {
       }); 
     }
 
-
     function get(userUid, datasetUuid, datasetVersionUuid) {
       return executeQuery(queryStudiesWithDetails, userUid, datasetUuid, datasetVersionUuid);
     }
