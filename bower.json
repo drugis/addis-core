@@ -46,7 +46,7 @@
     "showdown": "^1.5.0",
     "scrollup": "~2.4.1",
     "toc": "~0.3.2",
-    "clipboard": "^1.5.16"
+    "clipboard": "^1.6.0"
   },
   "resolutions": {
     "d3": "3.5.6",
