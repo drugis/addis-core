@@ -151,16 +151,16 @@ define(['lodash'], function(_) {
       },
       'treatment-effects': {
         tag: 'treatment-effects',
-        regex: /\[\[\[(treatment-effects\s+analysis-id=\&\#34;\d+\&\#34;\s+model-id=\&\#34;\d+\&\#34;\s+baseline-treatment-id=\&\#34;\d+\&\#34;\s+sorting-type=\&\#34;(alphabetical|point-estimate)\&\#34;(\s+regression-level=\&\#34;\d+\&\#34;){0,1}\s*)\]\]\]/g,
+        regex: /\[\[\[(treatment-effects\s+analysis-id=\&\#34;\d+\&\#34;\s+model-id=\&\#34;\d+\&\#34;\s+baseline-treatment-id=\&\#34;\d+\&\#34;\s+sorting-type=\&\#34;('alphabetical'|'point-estimate')\&\#34;(\s+regression-level=\&\#34;\d+\&\#34;){0,1}\s*)\]\]\]/g,
         replacer: function(match, p1) {
           return '<' + replaceQuotes(p1) + '></treatment-effects>';
         },
         builder: function(selections) {
           return selections.regressionLevel !== undefined && Number.isInteger(selections.regressionLevel) ?
             '[[[treatment-effects' + ' analysis-id="' + selections.analysis.id + '"' + ' model-id="' + selections.model.id + '" baseline-treatment-id=' + '"' +
-            selections.baselineIntervention.id + '" sorting-type=' + '"' + selections.sortingType + '" regression-level=' + '"' + selections.regressionLevel + '"]]]' :
+            selections.baselineIntervention.id + '" sorting-type=' + '"\'' + selections.sortingType + '\'" regression-level=' + '"' + selections.regressionLevel + '"]]]' :
             '[[[treatment-effects' + ' analysis-id="' + selections.analysis.id + '"' + ' model-id="' + selections.model.id + '" baseline-treatment-id=' + '"' +
-            selections.baselineIntervention.id + '" sorting-type=' + '"' + selections.sortingType + '"]]]';
+            selections.baselineIntervention.id + '" sorting-type=' + '"\'' + selections.sortingType + '\'"]]]';
         },
         showSettings: {
           showSelectModel: true,

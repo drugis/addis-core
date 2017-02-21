@@ -11,8 +11,8 @@ define(['lodash'], function(_) {
         analysisId: '=',
         modelId: '=',
         baselineTreatmentId: '=',
-        regressionLevel: '=',
-        sortingType: '='
+        sortingType: '=',
+        regressionLevel: '='
       },
       templateUrl: 'app/js/project/report/treatmentEffects/treatmentEffectsTemplate.html',
 
@@ -49,7 +49,15 @@ define(['lodash'], function(_) {
             }
 
             if (scope.sortingType === 'point-estimate') {
-              scope.treatmentEffects.row = _.sortBy(scope.treatmentEffects.row, 'median');
+              CacheService.getAnalysis($stateParams.projectId, scope.analysisId).then(function(analysis) {
+                if (analysis.outcome.direction === 1) {
+                  //highger is better, so descending
+                  scope.treatmentEffects.row = _.orderBy(scope.treatmentEffects.row, 'median', ['desc']);
+                } else {
+                  //lower is better, so ascending
+                  scope.treatmentEffects.row = _.orderBy(scope.treatmentEffects.row, 'median');
+                }
+              });
             } else {
               scope.treatmentEffects.row = _.sortBy(scope.treatmentEffects.row, 'name');
             }

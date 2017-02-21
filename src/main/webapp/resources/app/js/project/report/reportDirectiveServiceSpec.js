@@ -72,6 +72,12 @@ define(['angular-mocks'], function() {
         var result = reportDirectiveService.inlineDirectives(input);
         expect(result).toEqual(expectedResult);
       });
+      it('should work for instances of treatment-effects', function() {
+        var input = '[[[treatment-effects analysis-id=&#34;37&#34; model-id=&#34;42&#34; baseline-treatment-id=&#34;34&#34; sorting-type=&#34;\'alphabetical\'&#34; regression-level=&#34;100&#34;]]] [[[treatment-effects analysis-id=&#34;37&#34; model-id=&#34;42&#34; baseline-treatment-id=&#34;34&#34; sorting-type=&#34;\'alphabetical\'&#34;]]]';
+        var expectedResult = '<treatment-effects analysis-id="37" model-id="42" baseline-treatment-id="34" sorting-type="\'alphabetical\'" regression-level="100"></treatment-effects> <treatment-effects analysis-id="37" model-id="42" baseline-treatment-id="34" sorting-type="\'alphabetical\'"></treatment-effects>';
+        var result = reportDirectiveService.inlineDirectives(input);
+        expect(result).toEqual(expectedResult);
+      });
     });
 
     describe('getDirectiveBuilder', function() {
@@ -213,6 +219,37 @@ define(['angular-mocks'], function() {
           }
         };
         expect(builder(selections)).toEqual('[[[forest-plot analysis-id="3" model-id="30"]]]');
+      });
+      it('for treatment-effects should return a treatment effects builder', function() {
+        var builder = reportDirectiveService.getDirectiveBuilder('treatment-effects');
+        var selectionsNoRegression = {
+          analysis: {
+            id: 3
+          },
+          model: {
+            id: 30
+          },
+          baselineIntervention: {
+            id: 300
+          },
+          sortingType: 'alphabetical'
+        };
+        var selectionsWithRegression = {
+          analysis: {
+            id: 3
+          },
+          model: {
+            id: 30
+          },
+          regressionLevel: 300,
+          baselineIntervention: {
+            id: 3000
+          },
+          sortingType: 'alphabetical'
+        };
+        expect(builder(selectionsNoRegression)).toEqual('[[[treatment-effects analysis-id="3" model-id="30" baseline-treatment-id="300" sorting-type="\'alphabetical\'"]]]');
+        expect(builder(selectionsWithRegression)).toEqual('[[[treatment-effects analysis-id="3" model-id="30" baseline-treatment-id="3000" sorting-type="\'alphabetical\'" regression-level="300"]]]');
+
       });
     });
     describe('getAllowedModels', function() {
