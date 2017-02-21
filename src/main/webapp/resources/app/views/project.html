@@ -154,14 +154,10 @@
                         <th>Analysis type</th>
                         <th>Data source</th>
                         <th>
-                          <button ng-disabled="numberOfAnalysesArchived === 0" ng-hide="showArchived || !analysesLoaded"
+                          <button ng-disabled="numberOfAnalysesArchived === 0" ng-hide="!analysesLoaded"
                             class="button secondary small right ng-binding no-margin"
-                            ng-click="toggleShowArchived()" style=""><i class="fa fa-eye"></i> Show archived ({{numberOfAnalysesArchived}})
+                            ng-click="toggleShowArchived()" style=""><i class="fa fa-eye"></i> {{showArchived? 'Hide' :'Show'}} archived ({{numberOfAnalysesArchived}})
                           </button>
-                          <button ng-hide="!showArchived || !analysesLoaded" class="button secondary small right ng-binding no-margin"
-                            ng-click="toggleShowArchived()" style=""><i class="fa fa-eye"></i> Hide archived ({{numberOfAnalysesArchived}})
-                          </button>
-
                         </th>
                       </tr>
                     </thead>
