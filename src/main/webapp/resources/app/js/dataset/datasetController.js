@@ -282,11 +282,15 @@ define(['lodash'],
         }, {
           id: 'startDate',
           label: 'Start date',
-          visible: false,
+          visible: false
         }, {
           id: 'endDate',
           label: 'End date',
-          visible: false,
+          visible: false
+        },{
+          id: 'treatments',
+          label: 'Study treatments',
+          visible: false
         }],
         reverseSortOrder: false,
         orderByField: 'label'
