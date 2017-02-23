@@ -6,13 +6,14 @@
   </div>
   <div class="row">
     <div class="large-9 columns">
-      <label>
+      <label ng-if="selections.analysis">
         Select analysis
         <select ng-model="selections.analysis" ng-options="analysis.title for analysis in analyses" ng-change="selectedAnalysisChanged()"></select>
       </label>
+      <label ng-if="!selections.analysis">No valid analyses avaiable for {{title}}</label>
     </div>
   </div>
-  <div ng-if="showSettings.showSelectModel" class="row">
+  <div ng-if="showSettings.showSelectModel && selections.analysis" class="row">
     <div class="large-9 columns">
       <label>
         Select model
@@ -20,7 +21,7 @@
       </label>
     </div>
   </div>  
-  <div ng-if="showSettings.showSelectBaseline" class="row">
+  <div ng-if="showSettings.showSelectBaseline && selections.analysis" class="row">
     <div class="large-9 columns">
       <label>
         Select baseline
@@ -28,7 +29,7 @@
       </label>
     </div>
   </div>
-  <div ng-if="showSettings.showSelectRegression && isRegressionModel && selections.model.regressor.levels.length" class="row">
+  <div ng-if="selections.analysis && showSettings.showSelectRegression && isRegressionModel && selections.model.regressor.levels.length" class="row">
     <div class="large-9 columns">
       <label>
         Select covariate level
@@ -37,7 +38,7 @@
       </label>
     </div>
   </div>
-  <div ng-if="showSettings.showSelectInterventions" class="row ">
+  <div ng-if="selections.analysis && showSettings.showSelectInterventions" class="row ">
     <div class="large-6 columns">
       <label>
         Treatment 1
@@ -51,7 +52,7 @@
       </label>
     </div>
   </div>
- <div ng-if="showSettings.showSelectSorting" class="row">
+ <div ng-if="selections.analysis && showSettings.showSelectSorting" class="row">
     <div class="large-9 columns">
       <label>
         Select sorting option (point-estmate sorts best to worst)

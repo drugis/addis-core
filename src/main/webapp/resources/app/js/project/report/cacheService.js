@@ -24,12 +24,12 @@ define(['lodash'], function(_) {
       return cache.analysesPromises[analysisId];
     }
 
-    function getAnalyses(projectId) {
-      if (cache.analysesPromises[projectId]) {
-        return cache.analysesPromises[projectId];
+    function getAnalyses(params) {
+      if (cache.analysesPromises[params.projectId]) {
+        return cache.analysesPromises[params.projectId];
       }
-      cache.analysesPromises[projectId] = AnalysisResource.query(projectId).$promise;
-      return cache.analysesPromises[projectId];
+      cache.analysesPromises[params.projectId] = AnalysisResource.query(params).$promise;
+      return cache.analysesPromises[params.projectId];
     }
 
 
@@ -54,20 +54,20 @@ define(['lodash'], function(_) {
       return modelObject.promise;
     }
 
-    function getConsistencyModels(projectId) {
-      if (cache.consistecyModelsPromises[projectId]) {
-        return cache.consistecyModelsPromises[projectId];
+    function getConsistencyModels(params) {
+      if (cache.consistecyModelsPromises[params.projectId]) {
+        return cache.consistecyModelsPromises[params.projectId];
       }
-      cache.consistecyModelsPromises[projectId] = ModelResource.getConsistencyModels(projectId).$promise;
-      return cache.consistecyModelsPromises[projectId];
+      cache.consistecyModelsPromises[params.projectId] = ModelResource.getConsistencyModels(params).$promise;
+      return cache.consistecyModelsPromises[params.projectId];
     }
 
-    function getModelsByProject(projectId) {
-      if (cache.modelsByProjectPromises[projectId]) {
-        return cache.modelsByProjectPromises[projectId];
+    function getModelsByProject(params) {
+      if (cache.modelsByProjectPromises[params.projectId]) {
+        return cache.modelsByProjectPromises[params.projectId];
       }
-      cache.modelsByProjectPromises[projectId] = ModelResource.queryByProject(projectId).$promise;
-      return cache.modelsByProjectPromises[projectId];
+      cache.modelsByProjectPromises[params.projectId] = ModelResource.queryByProject(params).$promise;
+      return cache.modelsByProjectPromises[params.projectId];
 
     }
 
@@ -82,12 +82,12 @@ define(['lodash'], function(_) {
       return cache.problemPromises[analysisId];
     }
 
-    function getInterventions(projectId) {
-      if (cache.interventionPromises[projectId]) {
-        return cache.interventionPromises[projectId];
+    function getInterventions(params) {
+      if (cache.interventionPromises[params.projectId]) {
+        return cache.interventionPromises[params.projectId];
       }
-      cache.interventionPromises[projectId] = InterventionResource.query(projectId).$promise;
-      return cache.interventionPromises[projectId];
+      cache.interventionPromises[params.projectId] = InterventionResource.query(params).$promise;
+      return cache.interventionPromises[params.projectId];
     }
 
     return {
