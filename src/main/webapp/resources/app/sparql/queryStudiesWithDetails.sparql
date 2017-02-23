@@ -20,13 +20,13 @@ SELECT
   (group_concat(DISTINCT ?drugName; separator = ', ') as ?drugNames)
   (group_concat(DISTINCT ?drug; separator = ', ') as ?drugUris)
   (group_concat(DISTINCT ?outcomeConcept; separator = ', ') as ?outcomeUris)
-  (group_concat(DISTINCT ?activity; separator = ', ') as ?activities)
   ?status
   ?numberOfCenters
   ?indication
   ?startDate
   ?endDate
   ?doseType
+  (group_concat(DISTINCT ?activity; separator = ', ') as ?activities)
 WHERE {
   GRAPH ?graphUri {
       ?studyUri

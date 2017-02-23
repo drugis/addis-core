@@ -288,8 +288,8 @@ define(['lodash'],
           label: 'End date',
           visible: false
         },{
-          id: 'treatments',
-          label: 'Study treatments',
+          id: 'interventions',
+          label: 'Interventions',
           visible: false
         }],
         reverseSortOrder: false,
