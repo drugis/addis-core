@@ -25,7 +25,7 @@ define(['angular', 'lodash'], function(angular, _) {
     };
     $scope.userId = $stateParams.userUid;
     $scope.isProblemDefined = !!currentAnalysis.problem;
-    $scope.editMode.disableEditing = !$scope.editMode.isUserOwner || $scope.isProblemDefined;
+    $scope.editMode.disableEditing = !$scope.editMode.isUserOwner || $scope.isProblemDefined || $scope.analysis.archived; 
     $scope.studies = [];
     $scope.$parent.analysis = currentAnalysis;
     $scope.$parent.project = currentProject;
