@@ -402,7 +402,7 @@ define(['lodash', 'angular'], function(_, angular) {
           callback: function() {
             return function(newProjectId) {
               $state.go('project', {
-                userUid: UserService.getLoginUser,
+                userUid: UserService.getLoginUser().id,
                 projectId: newProjectId
               });
             };
