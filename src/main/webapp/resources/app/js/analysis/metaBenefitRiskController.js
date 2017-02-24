@@ -19,7 +19,7 @@ define(['lodash'], function(_) {
       allowEditing: false
     };
     $scope.project.$promise.then(function() {
-      if (UserService.isLoginUserId($scope.project.owner.id)) {
+      if (UserService.isLoginUserId($scope.project.owner.id) && !$scope.analysis.archived) {
         $scope.editMode.allowEditing = true;
       }
     });

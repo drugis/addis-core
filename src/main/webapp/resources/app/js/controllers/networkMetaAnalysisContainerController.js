@@ -37,7 +37,7 @@ define(['lodash'], function(_) {
 
     $scope.editMode = {
       isUserOwner: isUserOwner,
-      disableEditing: !isUserOwner
+      disableEditing: !isUserOwner || $scope.analysis.archived
     };
 
     $scope.models = ModelResource.query({
