@@ -1,15 +1,32 @@
 'use strict';
 define(['angular', 'lodash'], function(angular, _) {
-  var dependencies = ['$scope', '$stateParams', '$state',
-    'currentAnalysis', 'currentProject',
-    'OutcomeResource', 'InterventionResource',
-    'SingleStudyBenefitRiskAnalysisService', 'DEFAULT_VIEW', 'AnalysisResource',
-    'ProjectStudiesResource', 'UserService'
+  var dependencies = ['$scope', '$stateParams', '$state', '$modal',
+    'currentAnalysis',
+    'currentProject',
+    'OutcomeResource',
+    'InterventionResource',
+    'SingleStudyBenefitRiskAnalysisService',
+    'DEFAULT_VIEW',
+    'AnalysisResource',
+    'ProjectStudiesResource',
+    'UserService',
+    'ProblemResource',
+    'ScalesService',
+    'MetaBenefitRiskService'
   ];
-  var SingleStudyBenefitRiskAnalysisController = function($scope, $stateParams,
-    $state, currentAnalysis, currentProject, OutcomeResource,
-    InterventionResource, SingleStudyBenefitRiskAnalysisService,
-    DEFAULT_VIEW, AnalysisResource, ProjectStudiesResource, UserService) {
+  var SingleStudyBenefitRiskAnalysisController = function($scope, $stateParams, $state, $modal,
+    currentAnalysis,
+    currentProject,
+    OutcomeResource,
+    InterventionResource,
+    SingleStudyBenefitRiskAnalysisService,
+    DEFAULT_VIEW,
+    AnalysisResource,
+    ProjectStudiesResource,
+    UserService,
+    ProblemResource,
+    ScalesService,
+    MetaBenefitRiskService) {
 
     var deregisterOutcomeWatch, deregisterInterventionWatch;
     $scope.$parent.loading = {
@@ -25,7 +42,6 @@ define(['angular', 'lodash'], function(angular, _) {
     };
     $scope.userId = $stateParams.userUid;
     $scope.isProblemDefined = !!currentAnalysis.problem;
-    $scope.editMode.disableEditing = !$scope.editMode.isUserOwner || $scope.isProblemDefined || $scope.analysis.archived; 
     $scope.studies = [];
     $scope.$parent.analysis = currentAnalysis;
     $scope.$parent.project = currentProject;
@@ -34,6 +50,8 @@ define(['angular', 'lodash'], function(angular, _) {
     $scope.project = currentProject;
     $scope.outcomes = $scope.analysis.selectedOutcomes;
     $scope.interventions = $scope.analysis.interventionInclusions;
+
+    $scope.editMode.disableEditing = !$scope.editMode.isUserOwner || $scope.isProblemDefined || $scope.analysis.archived;
 
     var projectIdParam = {
       projectId: $stateParams.projectId
@@ -183,6 +201,33 @@ define(['angular', 'lodash'], function(angular, _) {
           $scope.workspace = response;
           $scope.goToDefaultScenarioView();
         });
+      });
+    };
+
+    $scope.openDistributionModal = function(selectedOutcome) {
+      $modal.open({
+        templateUrl: './app/js/analysis/setBaselineDistribution.html',
+        controller: 'SetSingleStudyBaselineDistributionController',
+        windowClass: 'small',
+        resolve: {
+          outcome: function() {
+            return selectedOutcome;
+          },
+          alternatives: function() {
+            return $scope.interventions;
+          },
+          interventionInclusions: function() {
+            return $scope.analysis.interventionInclusions;
+          },
+          setBaselineDistribution: function() {
+            return function(baseline) {
+              _.extend(selectedOutcome, {
+                baselineDistribution: baseline
+              });
+              $scope.analysis.$save();
+            };
+          }
+        }
       });
     };
 

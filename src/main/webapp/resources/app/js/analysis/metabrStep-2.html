@@ -29,14 +29,14 @@
     <table class="">
       <caption>Baseline distributions</caption>
       <tbody>
-        <tr ng-repeat="owa in outcomesWithAnalyses | filter:{outcome: {isIncluded: true}}">
-          <td class="table-head">{{owa.outcome.name}}</td>
-          <td ng-show="owa.baselineDistribution">{{owa.baselineDistribution.scale}}
-             ({{owa.baselineDistribution.name}})
-            ~ N({{owa.baselineDistribution.mu}}, {{owa.baselineDistribution.sigma}})</td>
-          <td ng-show="!owa.baselineDistribution"><em>Not defined.</em></td>
+        <tr ng-repeat="outcomeWithAnalysis in outcomesWithAnalyses | filter:{outcome: {isIncluded: true}}">
+          <td class="table-head">{{outcomeWithAnalysis.outcome.name}}</td>
+          <td ng-show="outcomeWithAnalysis.baselineDistribution">{{outcomeWithAnalysis.baselineDistribution.scale}}
+             ({{outcomeWithAnalysis.baselineDistribution.name}})
+            ~ N({{outcomeWithAnalysis.baselineDistribution.mu}}, {{outcomeWithAnalysis.baselineDistribution.sigma}})</td>
+          <td ng-show="!outcomeWithAnalysis.baselineDistribution"><em>Not defined.</em></td>
           <td class="button-cell">
-            <button ng-disabled="!editMode.allowEditing" class="small" ng-click="openDistributionModal(owa)">Set</button>
+            <button ng-disabled="!editMode.allowEditing" class="small" ng-click="openDistributionModal(outcomeWithAnalysis)">Set</button>
           </td>
         </tr>
       </tbody>
@@ -54,14 +54,14 @@
         </tr>
       </thead>
       <tbody>
-        <tr ng-repeat="owa in outcomesWithAnalyses">
-          <td class="table-head">{{owa.outcome.name}}</td>
+        <tr ng-repeat="outcomeWithAnalysis in outcomesWithAnalyses">
+          <td class="table-head">{{outcomeWithAnalysis.outcome.name}}</td>
           <td ng-repeat="alternative in alternatives  | filter:!isIncluded">
-            <span ng-if="owa.scales[alternative.name]">
-             {{owa.scales[alternative.name]['50%']}}
-            ({{owa.scales[alternative.name]['2.5%']}},
-             {{owa.scales[alternative.name]['97.5%']}})</span>
-            <span ng-if="!owa.scales[alternative.name]">NA</span>
+            <span ng-if="outcomeWithAnalysis.scales[alternative.name]">
+             {{outcomeWithAnalysis.scales[alternative.name]['50%']}}
+            ({{outcomeWithAnalysis.scales[alternative.name]['2.5%']}},
+             {{outcomeWithAnalysis.scales[alternative.name]['97.5%']}})</span>
+            <span ng-if="!outcomeWithAnalysis.scales[alternative.name]">NA</span>
           </td>
       </tbody>
     </table>
