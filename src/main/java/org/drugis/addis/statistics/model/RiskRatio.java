@@ -1,6 +1,5 @@
 package org.drugis.addis.statistics.model;
 
-import org.drugis.addis.statistics.command.AbstractMeasurementCommand;
 import org.drugis.addis.statistics.command.DichotomousMeasurementCommand;
 import org.drugis.addis.statistics.exception.MissingMeasurementException;
 

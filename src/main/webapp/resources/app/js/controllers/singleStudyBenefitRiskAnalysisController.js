@@ -1,6 +1,6 @@
 'use strict';
 define(['angular', 'lodash'], function(angular, _) {
-  var dependencies = ['$scope', '$stateParams', '$state', '$modal',
+  var dependencies = ['$scope', '$stateParams', '$state',
     'currentAnalysis',
     'currentProject',
     'OutcomeResource',
@@ -10,11 +10,8 @@ define(['angular', 'lodash'], function(angular, _) {
     'AnalysisResource',
     'ProjectStudiesResource',
     'UserService',
-    'ProblemResource',
-    'ScalesService',
-    'MetaBenefitRiskService'
   ];
-  var SingleStudyBenefitRiskAnalysisController = function($scope, $stateParams, $state, $modal,
+  var SingleStudyBenefitRiskAnalysisController = function($scope, $stateParams, $state,
     currentAnalysis,
     currentProject,
     OutcomeResource,
@@ -23,10 +20,8 @@ define(['angular', 'lodash'], function(angular, _) {
     DEFAULT_VIEW,
     AnalysisResource,
     ProjectStudiesResource,
-    UserService,
-    ProblemResource,
-    ScalesService,
-    MetaBenefitRiskService) {
+    UserService
+  ) {
 
     var deregisterOutcomeWatch, deregisterInterventionWatch;
     $scope.$parent.loading = {
@@ -201,33 +196,6 @@ define(['angular', 'lodash'], function(angular, _) {
           $scope.workspace = response;
           $scope.goToDefaultScenarioView();
         });
-      });
-    };
-
-    $scope.openDistributionModal = function(selectedOutcome) {
-      $modal.open({
-        templateUrl: './app/js/analysis/setBaselineDistribution.html',
-        controller: 'SetSingleStudyBaselineDistributionController',
-        windowClass: 'small',
-        resolve: {
-          outcome: function() {
-            return selectedOutcome;
-          },
-          alternatives: function() {
-            return $scope.interventions;
-          },
-          interventionInclusions: function() {
-            return $scope.analysis.interventionInclusions;
-          },
-          setBaselineDistribution: function() {
-            return function(baseline) {
-              _.extend(selectedOutcome, {
-                baselineDistribution: baseline
-              });
-              $scope.analysis.$save();
-            };
-          }
-        }
       });
     };
 

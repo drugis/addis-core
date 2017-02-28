@@ -72,26 +72,6 @@
       </div>
     </div>
     <div class="row">
-      <div class="columns large-12">
-        <table class="">
-          <caption>Baseline distributions</caption>
-          <tbody>
-            <tr ng-repeat="selectedOutcome in analysis.selectedOutcomes">
-              <td class="table-head">{{selectedOutcome.name}}</td>
-              <td ng-show="selectedOutcome.baselineDistribution">({{selectedOutcome.baselineDistribution.name}})
-                ~ N({{selectedOutcome.baselineDistribution.mu}}, {{selectedOutcome.baselineDistribution.sigma}})</td>
-              <td ng-show="!selectedOutcome.baselineDistribution">
-                <em>Not defined.</em>
-              </td>
-              <td class="button-cell">
-                <button ng-disabled="editMode.disableEditing" class="small" ng-click="openDistributionModal(selectedOutcome)">Set</button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-    <div class="row">
       <div class="columns large-6 ">
         <div ng-switch on="isProblemDefined">
           <button ng-switch-when="false" ng-disabled="analysis.selectedOutcomes.length < 2 ||

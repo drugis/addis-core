@@ -178,8 +178,7 @@ public class ProblemServiceImpl implements ProblemService {
       JsonNode taskResults = resultsByTaskUrl.get(taskUrl);
 
       Map<Integer, MultiVariateDistribution> distributionByInterventionId = objectMapper.readValue(
-              taskResults.get("multivariateSummary").toString(), new TypeReference<Map<Integer, MultiVariateDistribution>>() {
-              });
+              taskResults.get("multivariateSummary").toString(), new TypeReference<Map<Integer, MultiVariateDistribution>>() {});
 
       AbstractIntervention baselineIntervention = includedInterventionsByName.get(baseline.getName());
       MultiVariateDistribution distr = distributionByInterventionId.get(baselineIntervention.getId());
@@ -253,9 +252,11 @@ public class ProblemServiceImpl implements ProblemService {
               new MetaBenefitRiskProblem.PerformanceTableEntry.Performance.Parameters(outcomeInclusion.getBaseline(), relative);
       String modelLinkType = modelMap.get(outcomeInclusion.getModelId()).getLink();
 
-      String modelPerformanceType = "relative-normal";
+      String modelPerformanceType;
       if (!Model.LINK_IDENTITY.equals(modelLinkType)) {
         modelPerformanceType = "relative-" + modelLinkType + "-normal";
+      } else {
+        modelPerformanceType = "relative-normal";
       }
 
       MetaBenefitRiskProblem.PerformanceTableEntry.Performance performance =
