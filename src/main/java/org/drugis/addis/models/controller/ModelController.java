@@ -19,6 +19,8 @@ import org.drugis.addis.models.repository.ModelRepository;
 import org.drugis.addis.models.service.ModelService;
 import org.drugis.addis.patavitask.repository.PataviTaskRepository;
 import org.drugis.addis.patavitask.repository.UnexpectedNumberOfResultsException;
+import org.drugis.addis.problems.model.Baseline;
+import org.drugis.addis.problems.model.modelBaseline.repository.ModelBaselineRepository;
 import org.drugis.addis.projects.service.ProjectService;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
@@ -58,6 +60,9 @@ public class ModelController extends AbstractAddisCoreController {
 
   @Inject
   FunnelPlotRepository funnelPlotRepository;
+
+  @Inject
+  ModelBaselineRepository modelBaselineRepository;
 
   @RequestMapping(value = "/projects/{projectId}/analyses/{analysisId}/models", method = RequestMethod.POST)
   @ResponseBody
@@ -132,5 +137,17 @@ public class ModelController extends AbstractAddisCoreController {
     } else {
       throw new ResourceDoesNotExistException("attempt to get results of model with no task");
     }
+  }
+
+  @RequestMapping(value = "/projects/{projectId}/analyses/{analysisId}/models/{modelId}/baseline", method = RequestMethod.PUT)
+  public void setBaseline(HttpServletResponse response, Principal principal, @PathVariable Integer projectId, @PathVariable Integer analysisId, @PathVariable Integer modelId, @RequestBody Baseline baseline) throws IOException, SQLException, ResourceDoesNotExistException, MethodNotAllowedException {
+//    projectService.checkOwnership(projectId, principal);
+
+  }
+
+  @RequestMapping(value = "/projects/{projectId}/analyses/{analysisId}/models/{modelId}/baseline", method = RequestMethod.GET)
+  @ResponseBody
+  public Baseline getBaseline(HttpServletResponse response, @PathVariable Integer projectId, @PathVariable Integer analysisId, @PathVariable Integer modelId) throws IOException, SQLException {
+    return modelBaselineRepository.getModelBaseline(modelId).getBaseline();
   }
 }

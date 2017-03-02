@@ -818,3 +818,12 @@ ALTER TABLE AbstractAnalysis ADD COLUMN isArchived boolean NOT NULL DEFAULT FALS
 ALTER TABLE AbstractAnalysis ADD COLUMN archived_on date;
 --rollback ALTER TABLE AbstractAnalysis DROP COLUMN archived_on;
 --rollback ALTER TABLE AbstractAnalysis DROP COLUMN isArchived;
+
+--changeset keijserj:68
+CREATE TABLE modelBaseline (
+  modelId INT NOT NULL,
+  baseline JSONB NOT NULL,
+  PRIMARY KEY (modelId),
+  FOREIGN KEY (modelId) REFERENCES model(id)
+);
+--rollback DROP TABLE modelBaseline
