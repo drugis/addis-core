@@ -10,7 +10,7 @@
         Select analysis
         <select ng-model="selections.analysis" ng-options="analysis.title for analysis in analyses" ng-change="selectedAnalysisChanged()"></select>
       </label>
-      <label ng-if="!selections.analysis">No valid analyses avaiable for {{title}}</label>
+      <label ng-if="!selections.analysis">No valid analyses available for {{title}}</label>
     </div>
   </div>
   <div ng-if="showSettings.showSelectModel && selections.analysis" class="row">
