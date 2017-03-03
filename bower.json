@@ -38,7 +38,7 @@
     "mcda-web": "https://github.com/drugis/mcda-elicitation-web.git#0.10.2",
     "modernizr": "~2.8.0",
     "moment": "~2.10.0",
-    "nvd3": "1.8.1",
+    "nvd3": "1.8.5",
     "requirejs-domready": "~2.0.1",
     "requirejs": "~2.1.10",
     "selectize": "~0.8.5",

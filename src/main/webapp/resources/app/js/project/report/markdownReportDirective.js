@@ -7,7 +7,7 @@ define(['showdown'], function(Showdown) {
       scope: {
         data: '='
       },
-      templateUrl: 'app/js/project/markdownReportDirective.html',
+      templateUrl: 'app/js/project/report/markdownReportDirective.html',
       link: function(scope, element) {
         function updateHtml(data) {
           var html = $sanitize(converter.makeHtml(data));

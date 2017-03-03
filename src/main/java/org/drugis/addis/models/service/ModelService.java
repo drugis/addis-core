@@ -37,4 +37,6 @@ public interface ModelService {
   List<Model> get(List<Integer> modelIds) throws SQLException, IOException;
 
   Model get(Integer modelId) throws IOException, SQLException;
+
+  List<Model> queryModelsByProject(Integer projectId) throws SQLException, IOException;
 }

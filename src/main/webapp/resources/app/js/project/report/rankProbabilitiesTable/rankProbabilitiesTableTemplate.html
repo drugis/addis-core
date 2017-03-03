@@ -1,0 +1,25 @@
+<div class="columns large-12">
+  <div class="row">
+    <div class="columns large-4">
+      <strong>Rank probabilities table</strong>
+      <br>
+      <span ng-if="rankProbabilities.level!=='centering (undefined)'">Covariate level: {{rankProbabilities.level}}</span>
+    </div>
+  </div>
+  <table>
+    <thead>
+      <tr>
+        <th></th>
+        <th ng-repeat="rank in rankProbabilities.data">Rank {{::$index + 1}}</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr ng-repeat="(treatment, rankValues) in rankProbabilities.data">
+        <td>{{::treatment}}</td>
+        <td ng-repeat="rank in rankValues track by $index">
+          {{rank | number : 3}}
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>

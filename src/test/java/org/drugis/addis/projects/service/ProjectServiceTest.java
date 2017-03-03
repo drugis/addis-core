@@ -287,7 +287,7 @@ public class ProjectServiceTest {
             .build();
     Model model2 = new Model.ModelBuilder(nmaId2, "model 2").id(modelId2).link("identity")
             .modelType(Model.NETWORK_MODEL_TYPE).build();
-    when(modelRepository.findNetworkModelsByProject(projectId)).thenReturn(Arrays.asList(model1, model2));
+    when(modelRepository.findModelsByProject(projectId)).thenReturn(Arrays.asList(model1, model2));
     Model newModel1 = new Model(model1);
     newModel1.setAnalysisId(nmaId1 + 1);
     Model persistedModel1 = new Model(newModel1);
@@ -363,7 +363,7 @@ public class ProjectServiceTest {
     verify(analysisService).createNetworkMetaAnalysis(account, nmaCommand2);
     verifyNoMoreInteractions(analysisService);
 
-    verify(modelRepository).findNetworkModelsByProject(projectId);
+    verify(modelRepository).findModelsByProject(projectId);
     verify(modelRepository).persist(newModel1);
     verify(modelRepository).persist(newModel2);
     verifyNoMoreInteractions(modelRepository);
