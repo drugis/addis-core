@@ -27,7 +27,7 @@ import org.drugis.addis.patavitask.PataviTask;
 import org.drugis.addis.patavitask.repository.PataviTaskRepository;
 import org.drugis.addis.patavitask.repository.UnexpectedNumberOfResultsException;
 import org.drugis.addis.problems.model.*;
-import org.drugis.addis.problems.model.Baseline;
+import org.drugis.addis.problems.model.NormalBaselineDistribution;
 import org.drugis.addis.problems.service.ProblemService;
 import org.drugis.addis.problems.service.model.AbstractMeasurementEntry;
 import org.drugis.addis.projects.Project;
@@ -174,7 +174,7 @@ public class ProblemServiceImpl implements ProblemService {
     List<MetaBenefitRiskProblem.PerformanceTableEntry> performanceTable = new ArrayList<>(outcomesByName.size());
     for (MbrOutcomeInclusion outcomeInclusion : inclusionsWithBaselineAndModelResults) {
 
-      Baseline baseline = objectMapper.readValue(outcomeInclusion.getBaseline(), Baseline.class);
+      NormalBaselineDistribution baseline = objectMapper.readValue(outcomeInclusion.getBaseline(), NormalBaselineDistribution.class);
       URI taskUrl = tasksByModelId.get(outcomeInclusion.getModelId()).getSelf();
       JsonNode taskResults = resultsByTaskUrl.get(taskUrl);
 

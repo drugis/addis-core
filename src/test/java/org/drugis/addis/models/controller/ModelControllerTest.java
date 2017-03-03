@@ -16,6 +16,9 @@ import org.drugis.addis.models.repository.FunnelPlotRepository;
 import org.drugis.addis.models.repository.ModelRepository;
 import org.drugis.addis.models.service.ModelService;
 import org.drugis.addis.patavitask.repository.PataviTaskRepository;
+import org.drugis.addis.problems.model.NormalBaselineDistribution;
+import org.drugis.addis.models.ModelBaseline;
+import org.drugis.addis.models.repository.ModelBaselineRepository;
 import org.drugis.addis.projects.service.ProjectService;
 import org.drugis.addis.util.WebConstants;
 import org.junit.After;
@@ -41,13 +44,10 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import static org.hamcrest.Matchers.empty;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.*;
 import static org.hamcrest.core.Is.is;
 import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -67,6 +67,9 @@ public class ModelControllerTest {
 
   @Mock
   private ModelRepository modelRepository;
+
+  @Mock
+  private ModelBaselineRepository modelBaselineRepository;
 
   @Mock
   private FunnelPlotRepository funnelPlotRepository;
@@ -118,7 +121,7 @@ public class ModelControllerTest {
 
   @After
   public void tearDown() {
-    verifyNoMoreInteractions(analysisService, projectService, modelService);
+    verifyNoMoreInteractions(analysisService, projectService, modelService, modelBaselineRepository);
   }
 
   @Test
@@ -136,12 +139,11 @@ public class ModelControllerTest {
     Model model = modelBuilder.build();
     ModelTypeCommand modelTypeCommand = new ModelTypeCommand("network", null);
 
-    HeterogeneityPriorCommand heterogeneityPriorCommand = null;
     CreateModelCommand createModelCommand = new CreateModelCommand.CreateModelCommandBuilder()
             .setTitle(modelTitle)
             .setLinearModel(linearModel)
             .setModelType(modelTypeCommand)
-            .setHeterogeneityPriorCommand(heterogeneityPriorCommand)
+            .setHeterogeneityPriorCommand(null)
             .setBurnInIterations(burnInIterations)
             .setInferenceIterations(inferenceIterations)
             .setThinningFactor(thinningFactor)
@@ -162,7 +164,6 @@ public class ModelControllerTest {
 
     verify(analysisService).checkCoordinates(projectId, analysisId);
     verify(projectService).checkOwnership(projectId, user);
-
     verify(modelService).createModel(analysisId, createModelCommand);
 
   }
@@ -372,7 +373,6 @@ public class ModelControllerTest {
 
     Model model = modelBuilder.build();
     ModelTypeCommand modelTypeCommand = new ModelTypeCommand(Model.REGRESSION_MODEL_TYPE);
-    HeterogeneityPriorCommand heterogeneityPriorCommand = null;
 
     JSONObject regressor = new JSONObject();
     regressor.put("a", "b");
@@ -380,7 +380,7 @@ public class ModelControllerTest {
             .setTitle(modelTitle)
             .setLinearModel(linearModel)
             .setModelType(modelTypeCommand)
-            .setHeterogeneityPriorCommand(heterogeneityPriorCommand)
+            .setHeterogeneityPriorCommand(null)
             .setBurnInIterations(burnInIterations)
             .setInferenceIterations(inferenceIterations)
             .setThinningFactor(thinningFactor)
@@ -547,14 +547,13 @@ public class ModelControllerTest {
     Integer modelId = 315;
     CreateFunnelPlotCommand createFunnelPlotCommand = new CreateFunnelPlotCommand(modelId, includedComparisons);
     String postBodyStr = TestUtils.createJson(createFunnelPlotCommand);
-    System.out.print(postBodyStr);
     MockHttpServletRequestBuilder post = post("/projects/1/analyses/2/models/3/funnelPlots")
             .content(postBodyStr)
             .principal(user)
             .contentType(WebConstants.getApplicationJsonUtf8Value());
     mockMvc.perform(post).andExpect(status().isCreated());
     verify(analysisService).checkCoordinates(1, 2);
-    verify(projectService).checkOwnership(1, user);
+    verify(modelService).checkOwnership(3, user);
     verify(funnelPlotRepository).create(createFunnelPlotCommand);
   }
 
@@ -576,6 +575,36 @@ public class ModelControllerTest {
             .andExpect(jsonPath("$[0].id", equalTo(funnelPlot.getId())));
 
     verify(funnelPlotRepository).query(modelId);
+  }
+
+  @Test
+  public void testGetModelBaseline() throws Exception {
+    int modelId = 3;
+    ModelBaseline modelBaseline = new ModelBaseline(modelId, "testBaseline");
+    when(modelBaselineRepository.getModelBaseline(modelId)).thenReturn(modelBaseline);
+
+    mockMvc.perform(get("/projects/1/analyses/2/models/3/baseline").principal(user))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()))
+            .andExpect(jsonPath("$", notNullValue()))
+            .andExpect(jsonPath("$.modelId", equalTo(modelBaseline.getModelId())))
+            .andExpect(jsonPath("$.baseline", equalTo(modelBaseline.getBaseline())));
+    verify(modelBaselineRepository).getModelBaseline(modelId);
+  }
+
+  @Test
+  public void testSetModelBaseline() throws Exception {
+    NormalBaselineDistribution normalBaselineDistribution = new NormalBaselineDistribution("scale", 1.2, 3.3, "name", "dnorm");
+    String putBodyStr = TestUtils.createJson(normalBaselineDistribution);
+    ModelBaseline modelBaseline = new ModelBaseline(3, putBodyStr);
+    MockHttpServletRequestBuilder put = put("/projects/1/analyses/2/models/3/baseline")
+            .content(putBodyStr)
+            .principal(user)
+            .contentType(WebConstants.getApplicationJsonUtf8Value());
+
+    mockMvc.perform(put).andExpect(status().isOk());
+    verify(modelService).checkOwnership(3, user);
+    verify(modelBaselineRepository).setModelBaseline(3, putBodyStr);
   }
 
 }

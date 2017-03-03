@@ -676,8 +676,8 @@ ALTER TABLE AbstractAnalysis ADD COLUMN archived_on date;
 --changeset keijserj:68
 CREATE TABLE modelBaseline (
   modelId INT NOT NULL,
-  baseline JSONB NOT NULL,
+  baseline VARCHAR NOT NULL,
   PRIMARY KEY (modelId),
-  FOREIGN KEY (modelId) REFERENCES model(id)
+  FOREIGN KEY (modelId) REFERENCES Model(id)
 );
 --rollback DROP TABLE modelBaseline

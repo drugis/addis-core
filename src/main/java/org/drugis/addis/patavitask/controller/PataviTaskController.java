@@ -31,11 +31,12 @@ public class PataviTaskController {
 
   @RequestMapping(value="/patavi", method = RequestMethod.POST)
   @ResponseBody
-  public void mcdaTask(HttpServletResponse response, @RequestBody Object problem) {
+  public PataviTaskUriHolder mcdaTask(HttpServletResponse response, @RequestBody Object problem) {
     JSONObject jsonProblem = new JSONObject((LinkedHashMap)problem); // can't directly use JSONObject as requestbody because it doesn't get deserialised
     PataviTaskUriHolder mcdaPataviTaskUriHolder = pataviTaskService.getMcdaPataviTaskUriHolder(jsonProblem);
     response.setHeader("location", mcdaPataviTaskUriHolder.getUri().toString());
     response.setStatus(HttpServletResponse.SC_CREATED);
+    return mcdaPataviTaskUriHolder;
   }
 
 }

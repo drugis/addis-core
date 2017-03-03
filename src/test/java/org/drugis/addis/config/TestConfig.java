@@ -10,6 +10,7 @@ import org.drugis.addis.models.repository.ModelRepository;
 import org.drugis.addis.outcomes.repository.OutcomeRepository;
 import org.drugis.addis.outcomes.service.OutcomeService;
 import org.drugis.addis.patavitask.repository.PataviTaskRepository;
+import org.drugis.addis.models.repository.ModelBaselineRepository;
 import org.drugis.addis.problems.service.ProblemService;
 import org.drugis.addis.projects.repository.ProjectRepository;
 import org.drugis.addis.projects.repository.ReportRepository;
@@ -63,7 +64,9 @@ public class TestConfig {
   }
 
   @Bean
-  public ProjectService mockProjectService() { return mock(ProjectService.class); }
+  public ProjectService mockProjectService() {
+    return mock(ProjectService.class);
+  }
 
   @Bean
   public InterventionRepository interventionRepository() {
@@ -141,7 +144,14 @@ public class TestConfig {
   }
 
   @Bean
-  public RemarksRepository mockRemarksRepository() { return mock(RemarksRepository.class);}
+  public RemarksRepository mockRemarksRepository() {
+    return mock(RemarksRepository.class);
+  }
+
+  @Bean
+  public ModelBaselineRepository mockModelBaselineRepository() {
+    return mock(ModelBaselineRepository.class);
+  }
 
   @Bean
   public VersionMappingRepository mockVersionMappingRepository() {
@@ -160,13 +170,17 @@ public class TestConfig {
 
   @Bean
   public CovariateRepository mockCovariateRepository() {
-    return  mock(CovariateRepository.class);
+    return mock(CovariateRepository.class);
   }
 
   @Bean
-  public ClinicalTrialsImportService mockClinicalTrialsImportService() {return mock(ClinicalTrialsImportService.class);}
+  public ClinicalTrialsImportService mockClinicalTrialsImportService() {
+    return mock(ClinicalTrialsImportService.class);
+  }
 
   @Bean
-  public StatisticsService statisticsService(){return mock(StatisticsService.class);}
+  public StatisticsService statisticsService() {
+    return mock(StatisticsService.class);
+  }
 }
 

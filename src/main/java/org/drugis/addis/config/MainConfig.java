@@ -178,6 +178,7 @@ public class MainConfig {
             "org.drugis.addis.analyses",
             "org.drugis.addis.scenarios",
             "org.drugis.addis.models",
+            "org.drugis.addis.problems",
             "org.drugis.addis.covariates",
             "org.drugis.addis.remarks",
             "org.drugis.trialverse");

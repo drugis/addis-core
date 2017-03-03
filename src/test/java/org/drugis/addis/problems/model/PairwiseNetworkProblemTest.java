@@ -46,7 +46,7 @@ public class PairwiseNetworkProblemTest {
       Map<String, Map<String, Double>> studyCovariates = new HashMap<>();
       NetworkMetaAnalysisProblem problem = new NetworkMetaAnalysisProblem(entries, treatments, studyCovariates);
 
-        Pair details = Pair.of(new Model.DetailNode(-1, "treatment1"), new Model.DetailNode(-1, "treatment3"));
+        Pair<Model.DetailNode, Model.DetailNode> details = Pair.of(new Model.DetailNode(-1, "treatment1"), new Model.DetailNode(-1, "treatment3"));
         PairwiseNetworkProblem pairwiseNetworkProblem = new PairwiseNetworkProblem(problem, details);
 
         assertNotNull(pairwiseNetworkProblem);

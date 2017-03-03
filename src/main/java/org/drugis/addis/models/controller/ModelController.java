@@ -1,6 +1,5 @@
 package org.drugis.addis.models.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpStatus;
@@ -19,8 +18,8 @@ import org.drugis.addis.models.repository.ModelRepository;
 import org.drugis.addis.models.service.ModelService;
 import org.drugis.addis.patavitask.repository.PataviTaskRepository;
 import org.drugis.addis.patavitask.repository.UnexpectedNumberOfResultsException;
-import org.drugis.addis.problems.model.Baseline;
-import org.drugis.addis.problems.model.modelBaseline.repository.ModelBaselineRepository;
+import org.drugis.addis.models.ModelBaseline;
+import org.drugis.addis.models.repository.ModelBaselineRepository;
 import org.drugis.addis.projects.service.ProjectService;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
@@ -47,10 +46,10 @@ public class ModelController extends AbstractAddisCoreController {
   AnalysisService analysisService;
 
   @Inject
-  ProjectService projectService;
+  ModelService modelService;
 
   @Inject
-  ModelService modelService;
+  ProjectService projectService;
 
   @Inject
   PataviTaskRepository pataviTaskRepository;
@@ -67,7 +66,7 @@ public class ModelController extends AbstractAddisCoreController {
   @RequestMapping(value = "/projects/{projectId}/analyses/{analysisId}/models", method = RequestMethod.POST)
   @ResponseBody
   public Model create(HttpServletResponse response, Principal principal, @PathVariable Integer projectId,
-                      @PathVariable Integer analysisId, @RequestBody CreateModelCommand createModelCommand) throws ResourceDoesNotExistException, MethodNotAllowedException, JsonProcessingException, InvalidModelException {
+                      @PathVariable Integer analysisId, @RequestBody CreateModelCommand createModelCommand) throws ResourceDoesNotExistException, MethodNotAllowedException, IOException, InvalidModelException {
     projectService.checkOwnership(projectId, principal);
     analysisService.checkCoordinates(projectId, analysisId);
     Model createdModel = modelService.createModel(analysisId, createModelCommand);
@@ -110,8 +109,8 @@ public class ModelController extends AbstractAddisCoreController {
 
   @RequestMapping(value = "/projects/{projectId}/analyses/{analysisId}/models/{modelId}/funnelPlots", method = RequestMethod.POST)
   public void createFunnelPlot(HttpServletResponse response, Principal principal,
-                               @PathVariable Integer projectId, @PathVariable Integer modelId, @PathVariable Integer analysisId, @RequestBody CreateFunnelPlotCommand createFunnelPlotCommand) throws ResourceDoesNotExistException, MethodNotAllowedException {
-    projectService.checkOwnership(projectId, principal);
+                               @PathVariable Integer projectId, @PathVariable Integer modelId, @PathVariable Integer analysisId, @RequestBody CreateFunnelPlotCommand createFunnelPlotCommand) throws ResourceDoesNotExistException, MethodNotAllowedException, IOException {
+    modelService.checkOwnership(modelId, principal);
     analysisService.checkCoordinates(projectId, analysisId);
     funnelPlotRepository.create(createFunnelPlotCommand);
     response.setStatus(HttpStatus.SC_CREATED);
@@ -140,14 +139,16 @@ public class ModelController extends AbstractAddisCoreController {
   }
 
   @RequestMapping(value = "/projects/{projectId}/analyses/{analysisId}/models/{modelId}/baseline", method = RequestMethod.PUT)
-  public void setBaseline(HttpServletResponse response, Principal principal, @PathVariable Integer projectId, @PathVariable Integer analysisId, @PathVariable Integer modelId, @RequestBody Baseline baseline) throws IOException, SQLException, ResourceDoesNotExistException, MethodNotAllowedException {
-//    projectService.checkOwnership(projectId, principal);
-
+  public void setBaseline(HttpServletResponse response, Principal principal, @PathVariable Integer modelId, @RequestBody String baseline) throws IOException, SQLException, ResourceDoesNotExistException, MethodNotAllowedException {
+    modelService.checkOwnership(modelId, principal);
+    modelBaselineRepository.setModelBaseline(modelId, baseline);
+    response.setStatus(HttpStatus.SC_OK);
+    System.out.println("foo");
   }
 
   @RequestMapping(value = "/projects/{projectId}/analyses/{analysisId}/models/{modelId}/baseline", method = RequestMethod.GET)
   @ResponseBody
-  public Baseline getBaseline(HttpServletResponse response, @PathVariable Integer projectId, @PathVariable Integer analysisId, @PathVariable Integer modelId) throws IOException, SQLException {
-    return modelBaselineRepository.getModelBaseline(modelId).getBaseline();
+  public ModelBaseline getBaseline(@PathVariable Integer modelId) throws IOException, SQLException {
+    return modelBaselineRepository.getModelBaseline(modelId);
   }
 }

@@ -1,21 +1,23 @@
-package org.drugis.addis.problems.model.modelBaseline;
+package org.drugis.addis.models;
 
-import org.drugis.addis.problems.model.Baseline;
+import com.fasterxml.jackson.annotation.JsonRawValue;
 
 import javax.persistence.Entity;
+import javax.persistence.Id;
 
 /**
  * Created by joris on 2-3-17.
  */
 @Entity
 public class ModelBaseline {
+  @Id
   private Integer modelId;
-  private Baseline baseline;
+  private String baseline;
 
   public ModelBaseline() {
   }
 
-  public ModelBaseline(Integer modelId, Baseline baseline) {
+  public ModelBaseline(Integer modelId, String baseline) {
     this.modelId = modelId;
     this.baseline = baseline;
   }
@@ -24,15 +26,12 @@ public class ModelBaseline {
     return modelId;
   }
 
-  public void setModelId(Integer modelId) {
-    this.modelId = modelId;
-  }
-
-  public Baseline getBaseline() {
+  @JsonRawValue
+  public String getBaseline() {
     return baseline;
   }
 
-  public void setBaseline(Baseline baseline) {
+  public void setBaseline(String baseline) {
     this.baseline = baseline;
   }
 
