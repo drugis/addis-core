@@ -535,6 +535,17 @@ public class ModelControllerTest {
   }
 
   @Test
+  public void testQueryModelsByProject() throws Exception {
+    Integer projectId = 1;
+    when(modelService.queryModelsByProject(projectId)).thenReturn(Collections.<Model>emptyList());
+    ResultActions resultActions = mockMvc.perform(get("/projects/1/models").principal(user));
+    resultActions
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$", empty()));
+    verify(modelService).queryModelsByProject(projectId);
+  }
+
+  @Test
   public void testCreateFunnelPlot() throws Exception {
     CreateFunnelPlotComparisonCommand comparison1 = new CreateFunnelPlotComparisonCommand(251, 249, BiasDirection.T_2);
     CreateFunnelPlotComparisonCommand comparison2 = new CreateFunnelPlotComparisonCommand(253, 249, BiasDirection.T_2);

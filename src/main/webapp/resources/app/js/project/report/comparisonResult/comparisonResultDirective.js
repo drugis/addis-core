@@ -1,7 +1,7 @@
 'use strict';
 define(['lodash'], function(_) {
-  var dependencies = ['$stateParams', 'ModelResource', 'PataviService'];
-  var ComparisonResultDirective = function($stateParams, ModelResource, PataviService) {
+  var dependencies = ['$stateParams', 'CacheService', 'PataviService'];
+  var ComparisonResultDirective = function($stateParams, CacheService, PataviService) {
     return {
       restrict: 'E',
       scope: {
@@ -17,11 +17,7 @@ define(['lodash'], function(_) {
           return PataviService.listen(model.taskUrl);
         }
 
-        ModelResource.get({
-            projectId: $stateParams.projectId,
-            analysisId: scope.analysisId,
-            modelId: scope.modelId
-          }).$promise
+        CacheService.getModel($stateParams.projectId, scope.analysisId, scope.modelId)
           .then(getResults)
           .then(function(results) {
             var inversionFactor = 1;
