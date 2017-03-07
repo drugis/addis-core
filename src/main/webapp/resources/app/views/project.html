@@ -49,10 +49,10 @@
         <tab heading="Report" active="tabSelection.activeTab === 'report'" ng-click="setActiveTab('report')">
           <div ng-if="tabSelection.activeTab === 'report'">
             <div class="row">
-              <div ng-show="!showLegacyReport" class="columns large-9">
+              <div ng-if="!showLegacyReport" class="columns large-9">
                 <markdown-report></markdown-report>
               </div>
-              <div ng-show="showLegacyReport" class="columns large-9">
+              <div ng-if="showLegacyReport" class="columns large-9">
                 <!-- outcomes -->
                 <div class="row">
                   <div class="columns large-12">
