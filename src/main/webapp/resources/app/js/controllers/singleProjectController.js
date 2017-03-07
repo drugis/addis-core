@@ -53,7 +53,7 @@ define(['lodash', 'angular'], function(_, angular) {
     // load project
     $scope.loading.loaded = true;
 
-    $scope.editMode.allowEditing = UserService.isLoginUserId($scope.project.owner.id);
+    $scope.editMode.allowEditing = !project.archived && UserService.isLoginUserId($scope.project.owner.id);
     $scope.editMode.allowCopying = UserService.hasLoggedInUser();
 
     $scope.trialverse = TrialverseResource.get({
