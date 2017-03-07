@@ -77,8 +77,8 @@ define(['lodash'], function(_) {
     });
 
     function hasMissingBaseLine() {
-      return _.find($scope.outcomesWithAnalyses, function(owa) {
-        return !owa.baselineDistribution;
+      return _.find($scope.outcomesWithAnalyses, function(outcomeWithAnalysis) {
+        return !outcomeWithAnalysis.baselineDistribution;
       });
     }
 
@@ -104,18 +104,18 @@ define(['lodash'], function(_) {
     function buildOutcomesWithAnalyses(analysis, outcomes, networkMetaAnalyses, models) {
       return outcomes
         .map(_.partial(MetaBenefitRiskService.buildOutcomesWithAnalyses, analysis, networkMetaAnalyses, models))
-        .map(function(owa) {
-          owa.networkMetaAnalyses = owa.networkMetaAnalyses.sort(MetaBenefitRiskService.compareAnalysesByModels);
-          return owa;
+        .map(function(outcomeWithAnalysis) {
+          outcomeWithAnalysis.networkMetaAnalyses = outcomeWithAnalysis.networkMetaAnalyses.sort(MetaBenefitRiskService.compareAnalysesByModels);
+          return outcomeWithAnalysis;
         })
-        .filter(function(owa) {
-          return owa.outcome.isIncluded;
+        .filter(function(outcomeWithAnalysis) {
+          return outcomeWithAnalysis.outcome.isIncluded;
         })
-        .map(function(owa) {
-          owa.baselineDistribution = _.find($scope.analysis.mbrOutcomeInclusions, function(inclusion) {
-            return inclusion.outcomeId === owa.outcome.id;
+        .map(function(outcomeWithAnalysis) {
+          outcomeWithAnalysis.baselineDistribution = _.find($scope.analysis.mbrOutcomeInclusions, function(inclusion) {
+            return inclusion.outcomeId === outcomeWithAnalysis.outcome.id;
           }).baseline;
-          return owa;
+          return outcomeWithAnalysis;
         });
     }
 
@@ -124,14 +124,14 @@ define(['lodash'], function(_) {
       $state.go('MetaBenefitRiskCreationStep-1', $stateParams);
     }
 
-    function openDistributionModal(owa) {
+    function openDistributionModal(outcomeWithAnalysis) {
       $modal.open({
         templateUrl: './app/js/analysis/setBaselineDistribution.html',
         controller: 'SetBaselineDistributionController',
         windowClass: 'small',
         resolve: {
           outcomeWithAnalysis: function() {
-            return owa;
+            return outcomeWithAnalysis;
           },
           alternatives: function() {
             return $scope.alternatives;
@@ -142,7 +142,7 @@ define(['lodash'], function(_) {
           setBaselineDistribution: function() {
             return function(baseline) {
               $scope.analysis.mbrOutcomeInclusions.map(function(mbrOutcomeInclusion) {
-                if (mbrOutcomeInclusion.outcomeId === owa.outcome.id) {
+                if (mbrOutcomeInclusion.outcomeId === outcomeWithAnalysis.outcome.id) {
                   return _.extend(mbrOutcomeInclusion, {
                     baseline: baseline
                   });
@@ -174,8 +174,8 @@ define(['lodash'], function(_) {
           });
         }
       });
-      $scope.isMissingBaseline = _.find($scope.outcomesWithAnalyses, function(owa) {
-        return !owa.baselineDistribution;
+      $scope.isMissingBaseline = _.find($scope.outcomesWithAnalyses, function(outcomeWithAnalysis) {
+        return !outcomeWithAnalysis.baselineDistribution;
       });
     }
 

@@ -14,8 +14,6 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
-;
-
 /**
  * Created by daan on 22-5-14.
  */

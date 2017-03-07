@@ -3,7 +3,7 @@ package org.drugis.trialverse.util;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.drugis.addis.problems.model.Baseline;
+import org.drugis.addis.problems.model.NormalBaselineDistribution;
 import org.drugis.addis.problems.model.MultiVariateDistribution;
 import org.junit.Test;
 
@@ -157,7 +157,7 @@ public class UtilTest {
             "\t      \"sigma\": 6,\n" +
             "\t      \"name\": \"Fluoxetine\"\n" +
             "\t    }";
-    Baseline baseline = objectMapper.readValue(baselineJsonString, Baseline.class);
+    NormalBaselineDistribution baseline = objectMapper.readValue(baselineJsonString, NormalBaselineDistribution.class);
     assertEquals("log odds", baseline.getScale());
     assertEquals((Double)4.0, baseline.getMu());
     assertEquals((Double)6.0, baseline.getSigma());

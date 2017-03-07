@@ -17,7 +17,8 @@
     <div class="row">
       <div class="columns large-4">
         <p class="" style="color: rgba(41, 62, 163, 0.85);">
-          Choose criteria and alternatives to use in your analysis, and the study from which to extract data.
+          Choose criteria and alternatives to use in your analysis, and the study from which
+          to extract data.
         </p>
       </div>
     </div>
@@ -26,7 +27,8 @@
         <div>
           Selected Criteria
         </div>
-        <ui-select class="addis-select2" style="width:100%;" multiple theme="select2" ng-model="analysis.selectedOutcomes" data-placeholder="no criteria selected" ng-disabled="editMode.disableEditing">
+        <ui-select class="addis-select2" style="width:100%;" multiple theme="select2" ng-model="analysis.selectedOutcomes"
+          data-placeholder="no criteria selected" ng-disabled="editMode.disableEditing">
           <ui-select-match>{{$item.name}}</ui-select-match>
           <ui-select-choices repeat="outcome in outcomes | filter: $select.search">
             <div ng-bind-html="outcome.name | highlight: $select.search"></div>
@@ -39,7 +41,8 @@
         <div>
           Selected Alternatives
         </div>
-        <ui-select class="addis-select2" style="width:100%;" multiple theme="select2" ng-model="analysis.interventionInclusions" data-placeholder="no alternative selected" ng-disabled="editMode.disableEditing">
+        <ui-select class="addis-select2" style="width:100%;" multiple theme="select2" ng-model="analysis.interventionInclusions"
+          data-placeholder="no alternative selected" ng-disabled="editMode.disableEditing">
           <ui-select-match>{{$item.name}}</ui-select-match>
           <ui-select-choices repeat="intervention in interventions | filter: $select.search">
             <div ng-bind-html="intervention.name | highlight: $select.search"></div>
@@ -52,7 +55,9 @@
         <div>
           Selected Study
         </div>
-        <ui-select class="addis-select2" style="width:100%;" theme="select2" ng-model="studyModel.selectedStudy" data-placeholder="no study selected" on-select="onStudySelect($item, $model)" ng-disabled="editMode.disableEditing">
+        <ui-select class="addis-select2" style="width:100%;" theme="select2" ng-model="studyModel.selectedStudy"
+          data-placeholder="no study selected" on-select="onStudySelect($item, $model)"
+          ng-disabled="editMode.disableEditing">
           <ui-select-match>{{$select.selected.name}}
             <i ng-if="$select.selected.group === 1" class="fa fa-exclamation-triangle"></i>
           </ui-select-match>
@@ -69,14 +74,12 @@
     <div class="row">
       <div class="columns large-6 ">
         <div ng-switch on="isProblemDefined">
-          <button ng-switch-when="false"
-            ng-disabled="analysis.selectedOutcomes.length < 2 ||
+          <button ng-switch-when="false" ng-disabled="analysis.selectedOutcomes.length < 2 ||
                          analysis.interventionInclusions.length < 2 ||
                          !studyModel.selectedStudy ||
                          studyModel.selectedStudy.missingInterventions.length > 0 ||
                          studyModel.selectedStudy.missingOutcomes.length > 0 ||
-                         studyModel.selectedStudy.hasMatchedMixedTreatmentArm"
-            ng-click="createProblem()">Perform MCDA Analysis
+                         studyModel.selectedStudy.hasMatchedMixedTreatmentArm" ng-click="createProblem()">Perform MCDA Analysis
           </button>
           <button ng-switch-when="true" ng-click="goToDefaultScenarioView()">Go to MCDA Analysis</button>
         </div>
@@ -85,39 +88,45 @@
         </p>
         <div ng-if="studyModel.selectedStudy.missingOutcomes.length > 0">
           <p>
-            <em><i class="fa fa-exclamation-triangle"></i>
-          Selected study lacks these outcomes:
-          <span ng-repeat="missingOutcome in studyModel.selectedStudy.missingOutcomes">{{missingOutcome.name}}
-            <span ng-if="!$last">,</span>
-          </span>
-        </em>
+            <em><i class="fa fa-exclamation-triangle"></i> Selected study lacks these
+              outcomes:
+              <span ng-repeat="missingOutcome in studyModel.selectedStudy.missingOutcomes">{{missingOutcome.name}}
+                <span ng-if="!$last">,</span>
+              </span>
+            </em>
           </p>
         </div>
         <p ng-if="analysis.interventionInclusions.length < 2"><i class="fa fa-exclamation-triangle"></i>
-          <em>At least two interventions should be selected so that a tradeoff can be made.</em>
+          <em>At least two interventions should be selected so that a tradeoff can be
+            made.</em>
         </p>
         <div ng-if="studyModel.selectedStudy.missingInterventions.length > 0">
           <p>
             <em>
-          <i class="fa fa-exclamation-triangle"></i> Selected study lacks these intervention(s):
-          <span ng-repeat="missingIntervention in studyModel.selectedStudy.missingInterventions">{{missingIntervention.name}}
-            <span ng-if="!$last">,</span>
-          </span>
-        </em>
+              <i class="fa fa-exclamation-triangle"></i> Selected study lacks these
+              intervention(s):
+              <span ng-repeat="missingIntervention in studyModel.selectedStudy.missingInterventions">{{missingIntervention.name}}
+                <span ng-if="!$last">,</span>
+              </span>
+            </em>
           </p>
         </div>
         <div ng-if="studyModel.selectedStudy.hasMatchedMixedTreatmentArm">
           <p>
             <em>
-          <i class="fa fa-exclamation-triangle"></i> Selected study has a combination treatment arm for at least one of the selected alternatives. We do not currently support analysis of such studies.
-        </em>
+              <i class="fa fa-exclamation-triangle"></i> Selected study has a combination
+              treatment arm for at least one of the selected alternatives. We do
+              not currently support analysis of such studies.
+            </em>
           </p>
         </div>
         <div ng-if="studyModel.selectedStudy.overlappingInterventions.length > 0">
           <p>
             <em>
-          <i class="fa fa-exclamation-triangle"></i> The following interventions overlap: {{overlappingInterventionsList}}; please exclude interventions to fix this.
-        </em>
+              <i class="fa fa-exclamation-triangle"></i> The following interventions
+              overlap: {{overlappingInterventionsList}}; please exclude interventions
+              to fix this.
+            </em>
           </p>
         </div>
       </div>

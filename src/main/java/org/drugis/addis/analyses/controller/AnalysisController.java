@@ -52,8 +52,6 @@ public class AnalysisController extends AbstractAddisCoreController {
   @Inject
   NetworkMetaAnalysisRepository networkMetaAnalysisRepository;
   @Inject
-  MetaBenefitRiskAnalysisRepository metaBenefitRiskAnalysisRepository;
-  @Inject
   AccountRepository accountRepository;
   @Inject
   AnalysisService analysisService;
@@ -102,7 +100,7 @@ public class AnalysisController extends AbstractAddisCoreController {
           analysis = analysisService.createNetworkMetaAnalysis(user, analysisCommand);
           break;
         case AnalysisType.META_BENEFIT_RISK_ANALYSIS_LABEL:
-          analysis = metaBenefitRiskAnalysisRepository.create(user, analysisCommand);
+          analysis = analysisService.createMetaBenefitRiskAnalysis(user, analysisCommand);
           break;
         default:
           throw new RuntimeException("unknown analysis type.");

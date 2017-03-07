@@ -48,7 +48,6 @@ import static org.mockito.Mockito.mock;
                 "org.drugis.addis.util",
                 "org.drugis.addis.covariates",
                 "org.drugis.addis.remarks"
-
         })
 @EnableTransactionManagement
 @EnableJpaRepositories(basePackages = {

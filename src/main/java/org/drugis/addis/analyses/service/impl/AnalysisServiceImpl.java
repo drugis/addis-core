@@ -3,6 +3,7 @@ package org.drugis.addis.analyses.service.impl;
 import org.apache.commons.lang.NotImplementedException;
 import org.drugis.addis.analyses.*;
 import org.drugis.addis.analyses.repository.AnalysisRepository;
+import org.drugis.addis.analyses.repository.MetaBenefitRiskAnalysisRepository;
 import org.drugis.addis.analyses.repository.NetworkMetaAnalysisRepository;
 import org.drugis.addis.analyses.repository.SingleStudyBenefitRiskAnalysisRepository;
 import org.drugis.addis.analyses.service.AnalysisService;
@@ -53,6 +54,9 @@ public class AnalysisServiceImpl implements AnalysisService {
 
   @Inject
   SingleStudyBenefitRiskAnalysisRepository singleStudyBenefitRiskAnalysisRepository;
+
+  @Inject
+  MetaBenefitRiskAnalysisRepository metaBenefitRiskAnalysisRepository;
 
   @Inject
   ProjectService projectService;
@@ -168,6 +172,12 @@ public class AnalysisServiceImpl implements AnalysisService {
   public SingleStudyBenefitRiskAnalysis createSingleStudyBenefitRiskAnalysis(Account user, AnalysisCommand analysisCommand) throws ResourceDoesNotExistException, MethodNotAllowedException {
     projectService.checkProjectExistsAndModifiable(user, analysisCommand.getProjectId());
     return singleStudyBenefitRiskAnalysisRepository.create(analysisCommand);
+  }
+
+  @Override
+  public MetaBenefitRiskAnalysis createMetaBenefitRiskAnalysis(Account user, AnalysisCommand analysisCommand) throws MethodNotAllowedException, SQLException, IOException, ResourceDoesNotExistException {
+    projectService.checkProjectExistsAndModifiable(user, analysisCommand.getProjectId());
+    return metaBenefitRiskAnalysisRepository.create(user, analysisCommand);
   }
 
   @Override

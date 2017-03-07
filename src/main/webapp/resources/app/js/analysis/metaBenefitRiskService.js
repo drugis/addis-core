@@ -8,7 +8,7 @@ define(['lodash'], function(_) {
         return nma.outcome.id === outcome.id;
       });
 
-      // set the radioBtn state based on the stored inclusions
+      // set the radioButton state based on the stored inclusions
       var selectedAnalysis;
       var selectedModel;
       outcomeAnalyses.forEach(function(outcomeAnalysis) {

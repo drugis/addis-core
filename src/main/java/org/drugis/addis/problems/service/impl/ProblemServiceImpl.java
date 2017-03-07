@@ -27,6 +27,7 @@ import org.drugis.addis.patavitask.PataviTask;
 import org.drugis.addis.patavitask.repository.PataviTaskRepository;
 import org.drugis.addis.patavitask.repository.UnexpectedNumberOfResultsException;
 import org.drugis.addis.problems.model.*;
+import org.drugis.addis.problems.model.NormalBaselineDistribution;
 import org.drugis.addis.problems.service.ProblemService;
 import org.drugis.addis.problems.service.model.AbstractMeasurementEntry;
 import org.drugis.addis.projects.Project;
@@ -173,13 +174,12 @@ public class ProblemServiceImpl implements ProblemService {
     List<MetaBenefitRiskProblem.PerformanceTableEntry> performanceTable = new ArrayList<>(outcomesByName.size());
     for (MbrOutcomeInclusion outcomeInclusion : inclusionsWithBaselineAndModelResults) {
 
-      Baseline baseline = objectMapper.readValue(outcomeInclusion.getBaseline(), Baseline.class);
+      NormalBaselineDistribution baseline = objectMapper.readValue(outcomeInclusion.getBaseline(), NormalBaselineDistribution.class);
       URI taskUrl = tasksByModelId.get(outcomeInclusion.getModelId()).getSelf();
       JsonNode taskResults = resultsByTaskUrl.get(taskUrl);
 
       Map<Integer, MultiVariateDistribution> distributionByInterventionId = objectMapper.readValue(
-              taskResults.get("multivariateSummary").toString(), new TypeReference<Map<Integer, MultiVariateDistribution>>() {
-              });
+              taskResults.get("multivariateSummary").toString(), new TypeReference<Map<Integer, MultiVariateDistribution>>() {});
 
       AbstractIntervention baselineIntervention = includedInterventionsByName.get(baseline.getName());
       MultiVariateDistribution distr = distributionByInterventionId.get(baselineIntervention.getId());
@@ -253,9 +253,11 @@ public class ProblemServiceImpl implements ProblemService {
               new MetaBenefitRiskProblem.PerformanceTableEntry.Performance.Parameters(outcomeInclusion.getBaseline(), relative);
       String modelLinkType = modelMap.get(outcomeInclusion.getModelId()).getLink();
 
-      String modelPerformanceType = "relative-normal";
+      String modelPerformanceType;
       if (!Model.LINK_IDENTITY.equals(modelLinkType)) {
         modelPerformanceType = "relative-" + modelLinkType + "-normal";
+      } else {
+        modelPerformanceType = "relative-normal";
       }
 
       MetaBenefitRiskProblem.PerformanceTableEntry.Performance performance =

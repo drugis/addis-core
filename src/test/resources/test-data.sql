@@ -124,3 +124,5 @@ INSERT INTO public.funnelPlotComparison(plotId, t1, t2, biasDirection) VALUES (-
 INSERT INTO public.funnelPlotComparison(plotId, t1, t2, biasDirection) VALUES (-1, 3, 4, 1);
 
 INSERT INTO public.customReport(id, projectId, text) VALUES (-1, 1, 'this is a report');
+
+INSERT INTO public.modelBaseline(modelId, baseline) VALUES(1, '{"type": "dnorm"}');
