@@ -1,5 +1,6 @@
 package org.drugis.addis.projects.service.impl;
 
+import net.minidev.json.JSONObject;
 import org.drugis.addis.analyses.*;
 import org.drugis.addis.analyses.repository.AnalysisRepository;
 import org.drugis.addis.analyses.repository.MetaBenefitRiskAnalysisRepository;
@@ -203,7 +204,7 @@ public class ProjectServiceImpl implements ProjectService {
     //models
     Map<Integer, Integer> oldToNewModelId = new HashMap<>();
     Collection<Model> sourceModels = modelRepository.findModelsByProject(sourceProjectId);
-    sourceModels.forEach(modelCreator(oldToNewAnalysisId, oldToNewModelId));
+    sourceModels.forEach(modelCreator(oldToNewAnalysisId, oldToNewModelId, oldToNewInterventionId));
 
     //update primary models
     analysisRepository.query(newProject.getId()).stream()
@@ -259,13 +260,20 @@ public class ProjectServiceImpl implements ProjectService {
     };
   }
 
-  private Consumer<Model> modelCreator(Map<Integer, Integer> oldIdToNewAnalysisId, Map<Integer, Integer> oldToNewModelId) {
+  private Consumer<Model> modelCreator(Map<Integer, Integer> oldIdToNewAnalysisId, Map<Integer, Integer> oldToNewModelId, Map<Integer, Integer> oldToNewInterventionId) {
     return oldModel -> {
       try {
         Model newModel = new Model(oldModel);
         newModel.setAnalysisId(oldIdToNewAnalysisId.get(oldModel.getAnalysisId()));
         newModel = modelRepository.persist(newModel);
         oldToNewModelId.put(oldModel.getId(), newModel.getId());
+        JSONObject regressor = newModel.getRegressor();
+        if (regressor != null){
+          Integer oldId = Integer.parseInt(regressor.get("control").toString());
+          regressor.remove("control");
+          regressor.put("control", oldToNewInterventionId.get(oldId).toString());
+          newModel.setRegressor(regressor);
+        }
       } catch (InvalidModelException e) {
         e.printStackTrace();
       }
