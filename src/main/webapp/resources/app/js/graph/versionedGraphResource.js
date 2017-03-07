@@ -1,8 +1,8 @@
 'use strict';
 define(['util/transformJsonLd', 'util/transformConceptJsonLd'], function(transformStudyJsonLd, transformConceptJsonLd) {
 
-  var dependencies = ['$resource'];
-  var VersionedGraphResource = function($resource) {
+  var dependencies = ['$resource', 'DataModelService'];
+  var VersionedGraphResource = function($resource, DataModelService) {
     return $resource(
       '/users/:userUid/datasets/:datasetUuid/versions/:versionUuid/graphs/:graphUuid', {
         usersUid: '@usersUid',
@@ -27,7 +27,11 @@ define(['util/transformJsonLd', 'util/transformConceptJsonLd'], function(transfo
             'Accept': 'application/ld+json'
           },
           transformResponse: function(data) {
-            return transformStudyJsonLd(JSON.parse(data));
+            var graphData = JSON.parse(data);
+            graphData = DataModelService.normalizeFirstAndRest(graphData);
+            graphData = DataModelService.updateCategories(graphData);
+            graphData = DataModelService.addTypeToUnits(graphData);
+            return transformStudyJsonLd(graphData);
           }
         },
         'getConceptJson': {

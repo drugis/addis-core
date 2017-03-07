@@ -53,7 +53,7 @@ define(['lodash', 'angular'], function(_, angular) {
     // load project
     $scope.loading.loaded = true;
 
-    $scope.editMode.allowEditing = UserService.isLoginUserId($scope.project.owner.id);
+    $scope.editMode.allowEditing = !project.archived && UserService.isLoginUserId($scope.project.owner.id);
     $scope.editMode.allowCopying = UserService.hasLoggedInUser();
 
     $scope.trialverse = TrialverseResource.get({
@@ -90,6 +90,8 @@ define(['lodash', 'angular'], function(_, angular) {
     $scope.reportText.$promise.then(function() {
       if ($scope.reportText.data.localeCompare('default report text') === 0) {
         $scope.showLegacyReport = true;
+      } else {
+        $scope.showLegacyReport = false;
       }
     });
 

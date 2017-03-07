@@ -16,11 +16,12 @@ define(['lodash'], function(_) {
     $scope.selectedModelChanged = selectedModelChanged;
     $scope.selectedTreatmentChanged = selectedTreatmentChanged;
     $scope.insertDirective = insertDirective;
-    $scope.sortOptions = ['alphabetical','point-estimate'];
+    $scope.sortOptions = ['alphabetical', 'point-estimate'];
 
     var analysesPromise = CacheService.getAnalyses($stateParams);
     var modelsPromise = CacheService.getModelsByProject($stateParams);
     var interventionsPromise = CacheService.getInterventions($stateParams);
+    var DIRECTIVES_WITH_INTERVENTIONS = ['relative-effects-plot', 'rank-probabilities-plot', 'treatment-effects'];
 
     $q.all([analysesPromise, modelsPromise, interventionsPromise]).then(function(values) {
       var analyses = values[0];
@@ -28,17 +29,29 @@ define(['lodash'], function(_) {
       $scope.interventions = _.sortBy(values[2], 'name');
       models = ReportDirectiveService.getAllowedModels(models, directiveName);
 
-      if(directiveName === 'treatment-effects'){
+      if (directiveName === 'treatment-effects') {
         $scope.selections.sortingType = $scope.sortOptions[0];
       }
       if (directiveName === 'comparison-result') {
         loadComparisonModelsAndAnalyses(models, analyses);
+      } else if (directiveName === 'network-plot') {
+        loadAnalyses(analyses);
       } else {
-        loadAnalyses(analyses, models);
+        loadAnalysesWithModels(analyses, models);
       }
     });
 
-    function loadAnalyses(analyses, models) {
+    function loadAnalyses(analyses) {
+      $scope.analyses = _.chain(analyses)
+        .reject('archived')
+        .filter(['analysisType', 'Evidence synthesis'])
+        .value();
+      if ($scope.analyses.length) {
+        $scope.selections.analysis = $scope.analyses[0];
+      }
+    }
+
+    function loadAnalysesWithModels(analyses, models) {
       $scope.analyses = ReportDirectiveService.getDecoratedSyntheses(analyses, models, $scope.interventions);
       if ($scope.analyses.length) {
         $scope.selections.analysis = $scope.analyses[0];
@@ -73,17 +86,17 @@ define(['lodash'], function(_) {
         var filteredModels = _.filter(modelsWithComparisons, function(model) {
           return model.comparisons && model.comparisons.length;
         });
-        loadAnalyses(analyses, filteredModels);
+        loadAnalysesWithModels(analyses, filteredModels);
       });
     }
 
     function selectedAnalysisChanged() {
-      if (!$scope.selections.analysis) {
+      if (!$scope.selections.analysis || !$scope.selections.analysis.models) {
         return;
       }
       $scope.selections.model = _.find($scope.selections.analysis.models, ['id', $scope.selections.analysis.primaryModel]) || $scope.selections.analysis.models[0];
 
-      if (directiveName === 'relative-effects-plot' || directiveName === 'rank-probabilities-plot' || 'treatment-effects') {
+      if (DIRECTIVES_WITH_INTERVENTIONS.indexOf(directiveName) >= 0) {
         $scope.selections.baselineIntervention = $scope.selections.analysis.interventions[0];
       }
       selectedModelChanged();

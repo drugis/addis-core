@@ -207,6 +207,9 @@ public class Model {
     return regressor;
   }
 
+  public void setRegressor(JSONObject regressor) {
+    this.regressor = regressor;
+  }
 
   public JSONObject getSensitivity() {
     return sensitivity;
