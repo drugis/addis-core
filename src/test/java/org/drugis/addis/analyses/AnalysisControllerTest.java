@@ -159,14 +159,14 @@ public class AnalysisControllerTest {
   public void testCreateMetaBenefitRiskAnalysis() throws Exception {
     MetaBenefitRiskAnalysis analysis = new MetaBenefitRiskAnalysis(1, 1, "title", Collections.emptySet());
     AnalysisCommand analysisCommand = new AnalysisCommand(1, "name", AnalysisType.META_BENEFIT_RISK_ANALYSIS_LABEL);
-    when(metaBenefitRiskAnalysisRepository.create(gert, analysisCommand)).thenReturn(analysis);
+    when(analysisService.createMetaBenefitRiskAnalysis(gert, analysisCommand)).thenReturn(analysis);
     String body = TestUtils.createJson(analysisCommand);
     mockMvc.perform(post("/projects/1/analyses").content(body).principal(user).contentType(WebConstants.getApplicationJsonUtf8Value()))
             .andExpect(status().isCreated())
             .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()))
             .andExpect(jsonPath("$.id", notNullValue()));
     verify(accountRepository).findAccountByUsername("gert");
-    verify(metaBenefitRiskAnalysisRepository).create(gert, analysisCommand);
+    verify(analysisService).createMetaBenefitRiskAnalysis(gert, analysisCommand);
   }
 
   @Test
