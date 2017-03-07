@@ -202,7 +202,7 @@ public class ProjectServiceImpl implements ProjectService {
 
     //models
     Map<Integer, Integer> oldToNewModelId = new HashMap<>();
-    Collection<Model> sourceModels = modelRepository.findNetworkModelsByProject(sourceProjectId);
+    Collection<Model> sourceModels = modelRepository.findModelsByProject(sourceProjectId);
     sourceModels.forEach(modelCreator(oldToNewAnalysisId, oldToNewModelId));
 
     //update primary models
