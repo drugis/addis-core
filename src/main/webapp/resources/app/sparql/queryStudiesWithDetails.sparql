@@ -76,11 +76,14 @@ WHERE {
        SELECT ?studyUri ?doseType
          WHERE {
           BIND ('Flexible' as ?doseType)
-           ?activity a ontology:TreatmentActivity ;
-             ontology:has_activity_application [
-               ontology:applied_to_arm ?arm
-             ] ;
-             ontology:has_drug_treatment [ a ontology:TitratedDoseDrugTreatment ] .
+            ?activity 
+              a ontology:TreatmentActivity ;
+              ontology:has_activity_application [
+                ontology:applied_to_arm ?arm
+              ] ;
+              ontology:has_drug_treatment [ 
+                a ontology:TitratedDoseDrugTreatment 
+              ] .
              ?studyUri ontology:has_arm ?arm .
           } GROUP BY ?studyUri ?doseType
             HAVING (COUNT(*) > 0)

@@ -4,7 +4,7 @@ define(['angular-mocks'], function(angularMocks) {
 
     var scope, httpBackend,
       mockModal = jasmine.createSpyObj('$mock', ['open']),
-      studiesWithDetailsService = jasmine.createSpyObj('StudiesWithDetailsService', ['get']),
+      studiesWithDetailsService = jasmine.createSpyObj('StudiesWithDetailsService', ['get', 'getTreatmentActivities', 'addActivitiesToStudies']),
       historyResource = jasmine.createSpyObj('HistoryResource', ['query']),
       conceptsService = jasmine.createSpyObj('ConceptsService', ['loadJson', 'queryItems']),
       versionedGraphResource = jasmine.createSpyObj('VersionedGraphResource', ['get', 'getConceptJson']),
