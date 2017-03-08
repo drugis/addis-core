@@ -1,0 +1,102 @@
+PREFIX ontology: <http://trials.drugis.org/ontology#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+
+SELECT DISTINCT
+?study
+?studyName
+?drug
+?drugName
+?drugInstance
+?activity
+?treatmentNode
+?fixedDoseValue
+?fixedDoseDosingPeriodicity
+?fixedDoseUnitConcept
+?fixedDoseUnitLabel
+?maxDoseValue
+?maxDoseDosingPeriodicity
+?maxDoseUnitConcept
+?maxDoseUnitLabel
+?minDoseValue
+?minDoseDosingPeriodicity
+?minDoseUnitConcept
+?minDoseUnitLabel
+?treatmentType
+WHERE {
+  GRAPH ?studyGraph {
+    ?study
+      rdfs:label ?studyName ;
+      a ontology:Study .
+    ?drugInstance 
+      a ontology:Drug ;
+      owl:sameAs ?drug ;
+      rdfs:label ?drugName ;
+      .
+    ?activity a ontology:TreatmentActivity ;
+      ontology:has_activity_application [
+        ontology:applied_to_arm ?arm ;
+        ontology:applied_in_epoch ?epoch
+      ] ;
+      ontology:has_drug_treatment ?treatmentNode .
+    ?treatmentNode ontology:treatment_has_drug ?drugInstance .
+
+    OPTIONAL {
+        ?treatmentNode
+          a ontology:FixedDoseDrugTreatment ;
+          a ?treatmentType ;
+          ontology:treatment_dose [
+            rdf:value ?fixedDoseValue ;
+            ontology:dosingPeriodicity ?fixedDoseDosingPeriodicity ;
+            ontology:unit ?fixedDoseUnit
+          ] .
+          { ?fixedDoseUnit
+                rdfs:label ?fixedDoseUnitLabel ;
+                a ?fixedDoseUnitConcept .
+          } UNION {
+            ?fixedDoseUnit
+                rdfs:label ?fixedDoseUnitLabel ;
+                a ontology:Unit ;
+                owl:sameAs ?fixedDoseUnitConcept .
+          } .
+          FILTER (?fixedDoseUnitConcept != ontology:Unit) .
+    } .
+    OPTIONAL {
+        ?treatmentNode
+          a ontology:TitratedDoseDrugTreatment ;
+          a ?treatmentType ;
+          ontology:treatment_max_dose [
+            rdf:value ?maxDoseValue ;
+            ontology:dosingPeriodicity ?maxDoseDosingPeriodicity ;
+            ontology:unit ?maxDoseUnit
+          ] ;
+          ontology:treatment_min_dose [
+                      rdf:value ?minDoseValue ;
+                      ontology:dosingPeriodicity ?minDoseDosingPeriodicity ;
+                      ontology:unit ?minDoseUnit
+           ] .
+          { ?maxDoseUnit
+              rdfs:label ?maxDoseUnitLabel ;
+              a ?maxDoseUnitConcept .
+          } UNION {
+            ?maxDoseUnit
+                rdfs:label ?maxDoseUnitLabel ;
+                a ontology:Unit ;
+                owl:sameAs ?maxDoseUnitConcept .
+          } .
+          FILTER (?maxDoseUnitConcept != ontology:Unit) .
+          { ?minDoseUnit
+                rdfs:label ?minDoseUnitLabel ;
+                a ?minDoseUnitConcept .
+          } UNION {
+              ?minDoseUnit
+                  rdfs:label ?minDoseUnitLabel ;
+                  a ontology:Unit ;
+                  owl:sameAs ?minDoseUnitConcept .
+          } .
+          FILTER (?minDoseUnitConcept != ontology:Unit) .
+
+    } .
+  }
+}
