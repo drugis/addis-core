@@ -88,16 +88,16 @@ define(['lodash'], function(_) {
             return model.id === mbrOutcomeInclusion.modelId;
           });
           if (baselineModel && baselineModel.baseline) {
-            mbrOutcomeInclusion.baseline = baselineModel.baseline.baseline;
+            if (_.find($scope.alternatives, function(alternative) {
+                return alternative.name.localeCompare(baselineModel.baseline.baseline.name)===0;
+              })) {
+              mbrOutcomeInclusion.baseline = baselineModel.baseline.baseline;
+            }
           }
         }
       });
       return analysis;
     }
-
-
-
-
 
     function hasMissingBaseLine() {
       return _.find($scope.outcomesWithAnalyses, function(outcomeWithAnalysis) {

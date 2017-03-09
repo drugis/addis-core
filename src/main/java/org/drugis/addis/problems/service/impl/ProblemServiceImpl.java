@@ -182,7 +182,7 @@ public class ProblemServiceImpl implements ProblemService {
               taskResults.get("multivariateSummary").toString(), new TypeReference<Map<Integer, MultiVariateDistribution>>() {});
 
       AbstractIntervention baselineIntervention = includedInterventionsByName.get(baseline.getName());
-      MultiVariateDistribution distr = distributionByInterventionId.get(baselineIntervention.getId());
+        MultiVariateDistribution distr = distributionByInterventionId.get(baselineIntervention.getId());
       //
       Map<String, Double> mu = distr.getMu().entrySet().stream()
               .collect(Collectors.toMap(
