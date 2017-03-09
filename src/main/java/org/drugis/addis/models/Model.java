@@ -7,6 +7,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.drugis.addis.models.exceptions.InvalidModelException;
 import org.drugis.addis.util.JSONObjectConverter;
 import org.hibernate.annotations.Type;
+import org.springframework.context.annotation.Primary;
 
 import javax.persistence.*;
 import java.net.URI;
@@ -67,6 +68,10 @@ public class Model {
   @Column(name = "archived_on")
   @Type(type = "date")
   private Date archivedOn;
+
+  @OneToOne
+  @PrimaryKeyJoinColumn(referencedColumnName = "modelId")
+  private ModelBaseline baseline;
 
   public Model() {
   }
@@ -217,6 +222,10 @@ public class Model {
     return runStatus;
   }
 
+  public ModelBaseline getBaseline() {
+    return baseline;
+  }
+
   public void setRunStatus(String newStatus) {
     if (!"failed".equals(newStatus) && !"done".equals(newStatus) && !"progress".equals(newStatus) && !"unknown".equals(newStatus)) {
       throw new IllegalArgumentException("Unknown model run status: " + newStatus);
@@ -239,6 +248,8 @@ public class Model {
   public void setArchivedOn(Date archivedOn) {
     this.archivedOn = archivedOn;
   }
+
+
 
   @JsonIgnore
   public String getModelTypeTypeAsString() {

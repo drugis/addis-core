@@ -3,11 +3,13 @@ define(['lodash'], function(_) {
   var dependencies = ['$scope', '$q', '$stateParams', '$state', '$modal',
     'AnalysisResource', 'InterventionResource', 'OutcomeResource',
     'MetaBenefitRiskService', 'ModelResource', 'ProblemResource',
-    'ScalesService', 'ScenarioResource', 'DEFAULT_VIEW', 'ProjectResource', 'UserService'
+    'ScalesService', 'ScenarioResource', 'DEFAULT_VIEW', 'ProjectResource', 'UserService',
+    'gemtcRootPath'
   ];
   var MetBenefitRiskStep2Controller = function($scope, $q, $stateParams, $state, $modal,
     AnalysisResource, InterventionResource, OutcomeResource, MetaBenefitRiskService,
-    ModelResource, ProblemResource, ScalesService, ScenarioResource, DEFAULT_VIEW, ProjectResource, UserService) {
+    ModelResource, ProblemResource, ScalesService, ScenarioResource, DEFAULT_VIEW, ProjectResource, UserService,
+    gemtcRootPath) {
 
     $scope.goToStep1 = goToStep1;
     $scope.openDistributionModal = openDistributionModal;
@@ -37,6 +39,7 @@ define(['lodash'], function(_) {
       var alternatives = result[1];
       var outcomes = result[2];
       var models = result[3];
+
       var outcomeIds = outcomes.map(function(outcome) {
         return outcome.id;
       });
@@ -50,9 +53,11 @@ define(['lodash'], function(_) {
           .map(_.partial(MetaBenefitRiskService.joinModelsWithAnalysis, models))
           .map(MetaBenefitRiskService.addModelsGroup);
 
-        $scope.outcomesWithAnalyses = buildOutcomesWithAnalyses(analysis, outcomes, networkMetaAnalyses, models);
-        resetScales();
-
+        analysis = addModelBaseline(analysis, models);
+        analysis.$save().then(function() {
+          $scope.outcomesWithAnalyses = buildOutcomesWithAnalyses(analysis, outcomes, networkMetaAnalyses, models);
+          resetScales();
+        });
       });
 
       $scope.alternatives = alternatives.map(function(alternative) {
@@ -75,6 +80,24 @@ define(['lodash'], function(_) {
         return outcome;
       });
     });
+
+    function addModelBaseline(analysis, models) {
+      _.forEach(analysis.mbrOutcomeInclusions, function(mbrOutcomeInclusion) {
+        if (!mbrOutcomeInclusion.baseline) {
+          var baselineModel = _.find(models, function(model) {
+            return model.id === mbrOutcomeInclusion.modelId;
+          });
+          if (baselineModel && baselineModel.baseline) {
+            mbrOutcomeInclusion.baseline = baselineModel.baseline.baseline;
+          }
+        }
+      });
+      return analysis;
+    }
+
+
+
+
 
     function hasMissingBaseLine() {
       return _.find($scope.outcomesWithAnalyses, function(outcomeWithAnalysis) {
@@ -126,7 +149,7 @@ define(['lodash'], function(_) {
 
     function openDistributionModal(outcomeWithAnalysis) {
       $modal.open({
-        templateUrl: './app/js/analysis/setBaselineDistribution.html',
+        templateUrl: gemtcRootPath + 'js/models/setBaselineDistribution.html',
         controller: 'SetBaselineDistributionController',
         windowClass: 'small',
         resolve: {
