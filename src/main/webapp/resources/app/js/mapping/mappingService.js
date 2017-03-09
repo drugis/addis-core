@@ -46,22 +46,22 @@ define(['lodash'], function(_) {
     }
 
     function removeMapping(studyConcept, datasetConcept) {
-      if (datasetConcept['@type'] === 'ontology:Drug') {
-        return removeDrugMapping(studyConcept, datasetConcept);
+      if (datasetConcept['@type'] === 'ontology:Drug' || datasetConcept['@type'] === 'ontology:Unit') {
+        return removeGeneralMapping(studyConcept);
       } else if (datasetConcept['@type'] === 'ontology:Variable') {
-        return removeVariableMapping(studyConcept, datasetConcept);
-      }
-    };
+        return removeVariableMapping(studyConcept);
+      } 
+    }
 
-    function removeDrugMapping(studyConcept, datasetConcept) {
+    function removeGeneralMapping(studyConcept) {
       return StudyService.getJsonGraph().then(function(graph) {
-        var drugNode = findNodeWithId(graph, studyConcept.uri);
-        delete drugNode.sameAs;
+        var node = findNodeWithId(graph, studyConcept.uri);
+        delete node.sameAs;
         return StudyService.saveJsonGraph(graph);
       });
     }
 
-    function removeVariableMapping(studyConcept, datasetConcept) {
+    function removeVariableMapping(studyConcept) {
       return StudyService.getStudy().then(function(study) {
         var outcomeNode = findNodeWithId(study.has_outcome, studyConcept.uri);
         delete outcomeNode.of_variable[0].sameAs;
