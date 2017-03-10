@@ -172,6 +172,9 @@ define(['lodash'], function(_) {
           interventionInclusions: function() {
             return $scope.analysis.interventionInclusions;
           },
+          problem: function() {
+            return null;
+          },
           setBaselineDistribution: function() {
             return function(baseline) {
               $scope.analysis.mbrOutcomeInclusions = $scope.analysis.mbrOutcomeInclusions.map(function(mbrOutcomeInclusion) {
