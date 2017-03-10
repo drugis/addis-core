@@ -9,7 +9,11 @@ define(['lodash'], function(_) {
       });
 
       var mbrOutcomeInclusion = _.find(analysis.mbrOutcomeInclusions, ['outcomeId', outcome.id]);
-
+      if(!mbrOutcomeInclusion) {
+        return {
+          outcome: outcome
+        };
+      }
       var selectedAnalysis = _.find(nmasForOutcome, function(nma) {
         return mbrOutcomeInclusion.outcomeId === nma.outcome.id &&
           mbrOutcomeInclusion.networkMetaAnalysisId === nma.id;
