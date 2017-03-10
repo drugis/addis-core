@@ -38,26 +38,10 @@ define(['lodash'], function(_) {
       var analysis = result[0];
       var alternatives = result[1];
       var outcomes = result[2];
-      var models = result[3];
+      var models = _.reject(result[3], 'archived');
 
       var outcomeIds = outcomes.map(function(outcome) {
         return outcome.id;
-      });
-
-      $scope.networkMetaAnalyses = AnalysisResource.query({
-        projectId: $stateParams.projectId,
-        outcomeIds: outcomeIds
-      });
-      $scope.networkMetaAnalyses.$promise.then(function(networkMetaAnalyses) {
-        networkMetaAnalyses = networkMetaAnalyses
-          .map(_.partial(MetaBenefitRiskService.joinModelsWithAnalysis, models))
-          .map(MetaBenefitRiskService.addModelsGroup);
-
-        analysis = addModelBaseline(analysis, models);
-        analysis.$save().then(function() {
-          $scope.outcomesWithAnalyses = buildOutcomesWithAnalyses(analysis, outcomes, networkMetaAnalyses, models);
-          resetScales();
-        });
       });
 
       $scope.alternatives = alternatives.map(function(alternative) {
@@ -68,6 +52,23 @@ define(['lodash'], function(_) {
           alternative.isIncluded = true;
         }
         return alternative;
+      });
+
+      AnalysisResource.query({
+        projectId: $stateParams.projectId,
+        outcomeIds: outcomeIds
+      }).$promise.then(function(networkMetaAnalyses) {
+        var filteredNetworkMetaAnalyses = networkMetaAnalyses
+          .filter(function(analysis) {
+            return !analysis.archived;
+          })
+          .map(_.partial(MetaBenefitRiskService.joinModelsWithAnalysis, models))
+          .map(MetaBenefitRiskService.addModelsGroup);
+        $scope.networkMetaAnalyses = filteredNetworkMetaAnalyses;
+
+        analysis = addModelBaseline(analysis, models);
+          $scope.outcomesWithAnalyses = buildOutcomesWithAnalyses(analysis, outcomes, filteredNetworkMetaAnalyses, models);
+          resetScales();
       });
 
       $scope.outcomes = outcomes.map(function(outcome) {
@@ -84,12 +85,17 @@ define(['lodash'], function(_) {
     function addModelBaseline(analysis, models) {
       _.forEach(analysis.mbrOutcomeInclusions, function(mbrOutcomeInclusion) {
         if (!mbrOutcomeInclusion.baseline) {
+          // there is no baseline set yet, check if you can use the modelBaseline
           var baselineModel = _.find(models, function(model) {
             return model.id === mbrOutcomeInclusion.modelId;
           });
           if (baselineModel && baselineModel.baseline) {
-            if (_.find($scope.alternatives, function(alternative) {
-                return alternative.name.localeCompare(baselineModel.baseline.baseline.name)===0;
+            // there is a model with a baseline, yay
+            if (_.find(analysis.interventionInclusions, function(interventionInclusion) {
+                //there is an intervention with the right name!
+                return _.find($scope.alternatives, function(alternative) {
+                  return interventionInclusion.interventionId === alternative.id;
+                }).name.localeCompare(baselineModel.baseline.baseline.name) === 0;
               })) {
               mbrOutcomeInclusion.baseline = baselineModel.baseline.baseline;
             }
@@ -130,7 +136,7 @@ define(['lodash'], function(_) {
 
     function buildOutcomesWithAnalyses(analysis, outcomes, networkMetaAnalyses, models) {
       return outcomes
-        .map(_.partial(MetaBenefitRiskService.buildOutcomesWithAnalyses, analysis, networkMetaAnalyses, models))
+        .map(_.partial(MetaBenefitRiskService.buildOutcomeWithAnalyses, analysis, networkMetaAnalyses, models))
         .map(function(outcomeWithAnalysis) {
           outcomeWithAnalysis.networkMetaAnalyses = outcomeWithAnalysis.networkMetaAnalyses.sort(MetaBenefitRiskService.compareAnalysesByModels);
           return outcomeWithAnalysis;
@@ -168,7 +174,7 @@ define(['lodash'], function(_) {
           },
           setBaselineDistribution: function() {
             return function(baseline) {
-              $scope.analysis.mbrOutcomeInclusions.map(function(mbrOutcomeInclusion) {
+              $scope.analysis.mbrOutcomeInclusions = $scope.analysis.mbrOutcomeInclusions.map(function(mbrOutcomeInclusion) {
                 if (mbrOutcomeInclusion.outcomeId === outcomeWithAnalysis.outcome.id) {
                   return _.extend(mbrOutcomeInclusion, {
                     baseline: baseline
