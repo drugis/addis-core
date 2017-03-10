@@ -64,7 +64,8 @@ define(['angular-mocks'], function(angularMocks) {
           selectedModel: models[0]
         };
         var expectedExcludedResult = {
-          outcome: outcome2
+          outcome: outcome2,
+          networkMetaAnalyses: []
         };
         var resultIncluded = metaBenefitRiskService.buildOutcomeWithAnalyses(analysis, networkMetaAnalyses, models, outcome1);
         var resultExcluded = metaBenefitRiskService.buildOutcomeWithAnalyses(analysis, networkMetaAnalyses, models, outcome2);
