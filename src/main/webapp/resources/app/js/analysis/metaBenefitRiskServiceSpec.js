@@ -9,7 +9,7 @@ define(['angular-mocks'], function(angularMocks) {
       metaBenefitRiskService = MetaBenefitRiskService;
     }));
 
-    describe('buildOutcomesWithAnalyses', function() {
+    describe('buildOutcomeWithAnalyses', function() {
       it('should build inclusions when the outcome is included', function() {
         var outcome = {
           id: 1,
@@ -60,7 +60,7 @@ define(['angular-mocks'], function(angularMocks) {
           selectedModel: models[0]
         };
 
-        var result = metaBenefitRiskService.buildOutcomesWithAnalyses(analysis, networkMetaAnalyses, models, outcome);
+        var result = metaBenefitRiskService.buildOutcomeWithAnalyses(analysis, networkMetaAnalyses, models, outcome);
 
         expect(result).toEqual(expectedResult);
       });

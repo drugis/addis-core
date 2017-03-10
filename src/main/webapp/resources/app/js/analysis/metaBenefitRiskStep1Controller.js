@@ -88,11 +88,7 @@ define(['lodash', 'angular'], function(_, angular) {
       var analysis = result[0];
       var alternatives = result[1];
       var outcomes = result[2];
-      var models = result[3];
-      // filter out archived models
-      models = _.filter(models, function(model) {
-        return !model.archived;
-      });
+      var models = _.reject(result[3], 'archived');
       var outcomeIds = outcomes.map(function(outcome) {
         return outcome.id;
       });
@@ -102,18 +98,17 @@ define(['lodash', 'angular'], function(_, angular) {
         outcomeIds: outcomeIds
       }).$promise.then(function(networkMetaAnalyses) {
         networkMetaAnalyses = networkMetaAnalyses
+          .filter(function(analysis) {
+            return !analysis.archived;
+          })
           .map(_.partial(MetaBenefitRiskService.joinModelsWithAnalysis, models))
           .map(MetaBenefitRiskService.addModelsGroup);
         $scope.outcomesWithAnalyses = outcomes
-          .map(_.partial(MetaBenefitRiskService.buildOutcomesWithAnalyses, analysis, networkMetaAnalyses, models))
+          .map(_.partial(MetaBenefitRiskService.buildOutcomeWithAnalyses, analysis, networkMetaAnalyses, models))
           .map(function(owa) {
             owa.networkMetaAnalyses = owa.networkMetaAnalyses.sort(MetaBenefitRiskService.compareAnalysesByModels);
             return owa;
           });
-        // filter out archived analyses
-        $scope.outcomesWithAnalyses = _.filter($scope.outcomesWithAnalyses, function(outcomeWithAnalyses) {
-          return outcomeWithAnalyses.selectedAnalysis === undefined || !outcomeWithAnalyses.selectedAnalysis.archived;
-        });
         updateMissingAlternativesForAllOutcomes();
         // when view setup is completed
         checkStep1Validity();
