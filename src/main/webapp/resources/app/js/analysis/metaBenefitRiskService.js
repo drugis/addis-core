@@ -9,9 +9,10 @@ define(['lodash'], function(_) {
       });
 
       var mbrOutcomeInclusion = _.find(analysis.mbrOutcomeInclusions, ['outcomeId', outcome.id]);
-      if(!mbrOutcomeInclusion) {
+      if (!mbrOutcomeInclusion) {
         return {
-          outcome: outcome
+          outcome: outcome,
+          networkMetaAnalyses: []
         };
       }
       var selectedAnalysis = _.find(nmasForOutcome, function(nma) {
