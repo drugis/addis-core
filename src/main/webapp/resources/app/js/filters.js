@@ -9,5 +9,6 @@ define(function (require) {
     .filter('addisOntologyFilter', require('filters/addisOntologyFilter'))
     .filter('anchorEpochFilter', require('filters/anchorEpochFilter'))
     .filter('categoricalFilter', require('filters/categoricalFilter'))
-    .filter('activityTypeFilter', require('filters/activityTypeFilter'));
+    .filter('activityTypeFilter', require('filters/activityTypeFilter'))
+    ;
 });

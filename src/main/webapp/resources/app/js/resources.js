@@ -1,6 +1,6 @@
 'use strict';
 define(function (require) {
-  var angular = require('angular', '');
+  var angular = require('angular');
   return angular.module('addis.resources', ['ngResource'])
     .factory('ProjectResource', require('resources/projectResource'))
     .factory('TrialverseResource', require('resources/trialverseResource'))
