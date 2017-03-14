@@ -551,12 +551,14 @@ public class ProblemServiceTest {
     Integer nma1Id = 31;
     Integer nma2Id = 32;
     String baseline1JsonString = "{\n" +
+            "\"type\": \"dnorm\",\n" +
             "\"scale\": \"log odds\",\n" +
             "\"mu\": 4,\n" +
             "\"sigma\": 6,\n" +
             "\"name\": \"fluox\"\n" +
             "}";
     String baseline2JsonString = "{\n" +
+            "\"type\": \"dnorm\",\n" +
             "\"scale\": \"log odds\",\n" +
             "\"mu\": 4,\n" +
             "\"sigma\": 6,\n" +
@@ -598,8 +600,8 @@ public class ProblemServiceTest {
     results.put(pataviTask1.getSelf(), task1Results);
     results.put(pataviTask2.getSelf(), task2Results);
 
-    List<Integer> modelIds = Arrays.asList(model2.getId(), model1.getId());
-    List<Integer> outcomeIds = Arrays.asList(outcome2.getId(), outcome1.getId());
+    List<Integer> modelIds = Arrays.asList(model1.getId(), model2.getId());
+    List<Integer> outcomeIds = Arrays.asList(outcome1.getId(), outcome2.getId());
     when(projectRepository.get(projectId)).thenReturn(project);
     when(modelService.get(modelIds)).thenReturn(models);
     when(outcomeRepository.get(projectId, outcomeIds)).thenReturn(outcomes);
@@ -622,12 +624,12 @@ public class ProblemServiceTest {
     assertEquals(3, problem.getAlternatives().size());
     assertEquals(2, problem.getCriteria().size());
     assertEquals(2, problem.getPerformanceTable().size());
-    assertEquals("relative-cloglog-normal", problem.getPerformanceTable().get(0).getPerformance().getType());
-    assertEquals("relative-normal", problem.getPerformanceTable().get(1).getPerformance().getType());
-    List<List<Double>> expectedDataHeadache = Arrays.asList(Arrays.asList(0.0, 0.0, 0.0), Arrays.asList(0.0, 74.346, 1.9648), Arrays.asList(0.0, 1.9648, 74.837));
-    assertEquals(expectedDataHeadache, problem.getPerformanceTable().get(0).getPerformance().getParameters().getRelative().getCov().getData());
+    assertEquals("relative-normal", problem.getPerformanceTable().get(0).getPerformance().getType());
+    assertEquals("relative-cloglog-normal", problem.getPerformanceTable().get(1).getPerformance().getType());
     List<List<Double>> expectedDataHam = Arrays.asList(Arrays.asList(0.0, 0.0, 0.0), Arrays.asList(0.0, 74.346, 1.9648), Arrays.asList(0.0, 1.9648, 74.837));
-    assertEquals(expectedDataHam, problem.getPerformanceTable().get(1).getPerformance().getParameters().getRelative().getCov().getData());
+    assertEquals(expectedDataHam, problem.getPerformanceTable().get(0).getPerformance().getParameters().getRelative().getCov().getData());
+    List<List<Double>> expectedDataHeadache = Arrays.asList(Arrays.asList(0.0, 0.0, 0.0), Arrays.asList(0.0, 74.346, 1.9648), Arrays.asList(0.0, 1.9648, 74.837));
+    assertEquals(expectedDataHeadache, problem.getPerformanceTable().get(1).getPerformance().getParameters().getRelative().getCov().getData());
   }
 
   @Test

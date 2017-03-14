@@ -173,8 +173,7 @@ public class ProblemServiceImpl implements ProblemService {
 
     List<MetaBenefitRiskProblem.PerformanceTableEntry> performanceTable = new ArrayList<>(outcomesByName.size());
     for (MbrOutcomeInclusion outcomeInclusion : inclusionsWithBaselineAndModelResults) {
-
-      NormalBaselineDistribution baseline = objectMapper.readValue(outcomeInclusion.getBaseline(), NormalBaselineDistribution.class);
+      AbstractBaselineDistribution baseline = objectMapper.readValue(outcomeInclusion.getBaseline(), AbstractBaselineDistribution.class);
       URI taskUrl = tasksByModelId.get(outcomeInclusion.getModelId()).getSelf();
       JsonNode taskResults = resultsByTaskUrl.get(taskUrl);
 

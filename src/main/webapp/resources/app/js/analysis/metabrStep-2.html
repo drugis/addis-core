@@ -31,9 +31,7 @@
       <tbody>
         <tr ng-repeat="outcomeWithAnalysis in outcomesWithAnalyses | filter:{outcome: {isIncluded: true}}">
           <td class="table-head">{{outcomeWithAnalysis.outcome.name}}</td>
-          <td ng-show="outcomeWithAnalysis.baselineDistribution">{{outcomeWithAnalysis.baselineDistribution.scale}}
-             ({{outcomeWithAnalysis.baselineDistribution.name}})
-            ~ N({{outcomeWithAnalysis.baselineDistribution.mu}}, {{outcomeWithAnalysis.baselineDistribution.sigma}})</td>
+          <td ng-show="outcomeWithAnalysis.baselineDistribution">{{outcomeWithAnalysis.baselineDistribution | distributionToStringFilter}}</td>
           <td ng-show="!outcomeWithAnalysis.baselineDistribution"><em>Not defined.</em></td>
           <td class="button-cell">
             <button ng-disabled="!editMode.allowEditing" class="small" ng-click="openDistributionModal(outcomeWithAnalysis)">Set</button>
