@@ -152,6 +152,7 @@ public class UtilTest {
   @Test
   public void baselineTest() throws IOException {
     String baselineJsonString = "{\n" +
+            "\t      \"type\": \"dnorm\",\n" +
             "\t      \"scale\": \"log odds\",\n" +
             "\t      \"mu\": 4,\n" +
             "\t      \"sigma\": 6,\n" +

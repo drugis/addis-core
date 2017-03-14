@@ -67,8 +67,10 @@ define(['lodash'], function(_) {
         $scope.networkMetaAnalyses = filteredNetworkMetaAnalyses;
 
         analysis = addModelBaseline(analysis, models);
+        $scope.analysis.$save().then(function() {
           $scope.outcomesWithAnalyses = buildOutcomesWithAnalyses(analysis, outcomes, filteredNetworkMetaAnalyses, models);
           resetScales();
+        });
       });
 
       $scope.outcomes = outcomes.map(function(outcome) {
@@ -167,6 +169,9 @@ define(['lodash'], function(_) {
           },
           interventionInclusions: function() {
             return $scope.analysis.interventionInclusions;
+          },
+          problem: function() {
+            return null;
           },
           setBaselineDistribution: function() {
             return function(baseline) {

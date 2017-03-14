@@ -118,8 +118,8 @@ public class MetaBenefitRiskAnalysisServiceImpl implements MetaBenefitRiskAnalys
 
   @Override
   public List<MbrOutcomeInclusion> cleanInclusions(MetaBenefitRiskAnalysis analysis, MetaBenefitRiskAnalysis oldAnalysis) {
-    if (analysis.getInterventionInclusions().size() < oldAnalysis.getInterventionInclusions().size()) {
-      Sets.SetView<InterventionInclusion> difference = Sets.difference(Sets.newHashSet(oldAnalysis.getInterventionInclusions()), Sets.newHashSet(analysis.getInterventionInclusions()));
+    if (!analysis.getInterventionInclusions().equals(oldAnalysis.getInterventionInclusions())) {
+      Sets.SetView<InterventionInclusion> difference = Sets.symmetricDifference(Sets.newHashSet(oldAnalysis.getInterventionInclusions()), Sets.newHashSet(analysis.getInterventionInclusions()));
       Integer removedInterventionId = difference.iterator().next().getInterventionId();
       ObjectMapper om = new ObjectMapper();
       return analysis.getMbrOutcomeInclusions().stream().map(moi -> {
