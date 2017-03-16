@@ -1,6 +1,6 @@
 'use strict';
 define(['lodash', 'angular', 'angular-mocks', 'controllers'], function(_) {
-  describe('The Single Study Benefit-Risk AnalysisController', function() {
+  describe('The Single Study Benefit-Risk Analysis Controller', function() {
     var scope;
     var userId = 54;
     var mockStateParams = {
@@ -12,7 +12,7 @@ define(['lodash', 'angular', 'angular-mocks', 'controllers'], function(_) {
     var interventionResource = jasmine.createSpyObj('InterventionResource', ['query']);
     var analysisResource = jasmine.createSpyObj('AnalysisResource', ['save']);
     var projectStudiesResource = jasmine.createSpyObj('projectStudiesResource', ['query']);
-    var singleStudyBenefitRiskAnalysisService = jasmine.createSpyObj('singleStudyBenefitRiskAnalysisService', ['getProblem', 'getDefaultScenario', 'validateProblem',
+    var singleStudyBenefitRiskService = jasmine.createSpyObj('singleStudyBenefitRiskService', ['getProblem', 'getDefaultScenario', 'validateProblem',
       'concatWithNoDuplicates', 'addMissingOutcomesToStudies', 'addMissingInterventionsToStudies',
       'addHasMatchedMixedTreatmentArm', 'recalculateGroup', 'addOverlappingInterventionsToStudies'
     ]);
@@ -40,8 +40,19 @@ define(['lodash', 'angular', 'angular-mocks', 'controllers'], function(_) {
       owner: 'user'
     };
     var mockAnalysis = {
-      selectedOutcomes: {},
-      interventionInclusions: [],
+      id: 2,
+      selectedOutcomes: [{
+        semanticOutcomeUri: 'a'
+      }, {
+        semanticOutcomeUri: 'b'
+      }, {
+        semanticOutcomeUri: 'a'
+      }],
+      interventionInclusions: [{
+        c: 'c'
+      }, {
+        d: 'd'
+      }],
       studyGraphUri: 'graphUid1'
     };
 
@@ -57,35 +68,15 @@ define(['lodash', 'angular', 'angular-mocks', 'controllers'], function(_) {
       userService = jasmine.createSpyObj('UserService', ['isLoginUserId']);
 
       // set the mock state params
-      mockStateParams.projectId = 1;
-      mockStateParams.analysisId = 2;
-
-      // set a mockNameSpace for the current project
-      scope.project = mockProject;
-
-      // set some mock outcomes anU interventions
-      scope.analysis = {
-        selectedOutcomes: [],
-        interventionInclusions: [],
-        studyGraphUri: 'graphuid2'
-      };
-      scope.analysis.selectedOutcomes = [{
-        a: 'a'
-      }, {
-        b: 'b'
-      }];
-      scope.analysis.interventionInclusions = [{
-        c: 'c'
-      }, {
-        d: 'd'
-      }];
+      mockStateParams.projectId = mockProject.id;
+      mockStateParams.analysisId = mockAnalysis.id;
 
       // set a mock result value for the service call
-      singleStudyBenefitRiskAnalysisService.concatWithNoDuplicates.and.returnValue(mockOutcomes);
-      singleStudyBenefitRiskAnalysisService.addMissingOutcomesToStudies.and.returnValue(mockStudies);
-      singleStudyBenefitRiskAnalysisService.addMissingInterventionsToStudies.and.returnValue(mockStudies);
-      singleStudyBenefitRiskAnalysisService.addHasMatchedMixedTreatmentArm.and.returnValue(mockStudies);
-      singleStudyBenefitRiskAnalysisService.addOverlappingInterventionsToStudies.and.returnValue(mockStudies);
+      singleStudyBenefitRiskService.concatWithNoDuplicates.and.returnValue(mockOutcomes);
+      singleStudyBenefitRiskService.addMissingOutcomesToStudies.and.returnValue(mockStudies);
+      singleStudyBenefitRiskService.addMissingInterventionsToStudies.and.returnValue(mockStudies);
+      singleStudyBenefitRiskService.addHasMatchedMixedTreatmentArm.and.returnValue(mockStudies);
+      singleStudyBenefitRiskService.addOverlappingInterventionsToStudies.and.returnValue(mockStudies);
 
       outcomesDeferred = $q.defer();
       mockOutcomes.$promise = outcomesDeferred.promise;
@@ -99,7 +90,7 @@ define(['lodash', 'angular', 'angular-mocks', 'controllers'], function(_) {
       mockStudies.$promise = studiesDeferred.promise;
       projectStudiesResource.query.and.returnValue(mockStudies);
 
-      $controller('SingleStudyBenefitRiskAnalysisController', {
+      $controller('SingleStudyBenefitRiskController', {
         $scope: scope,
         $stateParams: mockStateParams,
         $state: state,
@@ -108,7 +99,7 @@ define(['lodash', 'angular', 'angular-mocks', 'controllers'], function(_) {
         'OutcomeResource': outcomeResource,
         'InterventionResource': interventionResource,
         'projectStudiesResource': projectStudiesResource,
-        'SingleStudyBenefitRiskAnalysisService': singleStudyBenefitRiskAnalysisService,
+        'SingleStudyBenefitRiskService': singleStudyBenefitRiskService,
         'DEFAULT_VIEW': 'DEFAULT_VIEW',
         'AnalysisResource': analysisResource,
         'ProjectStudiesResource': projectStudiesResource,
@@ -211,7 +202,7 @@ define(['lodash', 'angular', 'angular-mocks', 'controllers'], function(_) {
       });
 
       it('update the outcome list to contain the already selectedOutcomes as well as the outcome options (that have not been selected)', function() {
-        expect(singleStudyBenefitRiskAnalysisService.concatWithNoDuplicates).toHaveBeenCalled();
+        expect(singleStudyBenefitRiskService.concatWithNoDuplicates).toHaveBeenCalled();
       });
 
     });
@@ -228,7 +219,7 @@ define(['lodash', 'angular', 'angular-mocks', 'controllers'], function(_) {
       });
 
       it('should place the selected study on the studyModel', function() {
-        expect(scope.studyModel.selectedStudy).toBe(mockStudies[1]);
+        expect(scope.studyModel.selectedStudy).toBe(mockStudies[0]);
       });
     });
 
@@ -261,6 +252,14 @@ define(['lodash', 'angular', 'angular-mocks', 'controllers'], function(_) {
       });
     });
 
+    describe('when checkDuplicateOutcomes is called,', function() {
+      it('should set a list of all selected outcomes with conflicting concepts on the scope', function() {
+        expect(scope.duplicateOutcomesList).toEqual(
+           [[scope.analysis.selectedOutcomes[0],scope.analysis.selectedOutcomes[2]]]
+        );
+      });
+    });
+
     describe('when outcomes, interventions and studies haven been resolved and the selected interventions change', function() {
       beforeEach(function() {
         outcomesDeferred.resolve(mockOutcomes);
@@ -277,7 +276,7 @@ define(['lodash', 'angular', 'angular-mocks', 'controllers'], function(_) {
         scope.$apply();
         scope.dirty = true;
 
-        expect(singleStudyBenefitRiskAnalysisService.addOverlappingInterventionsToStudies).toHaveBeenCalled();
+        expect(singleStudyBenefitRiskService.addOverlappingInterventionsToStudies).toHaveBeenCalled();
         expect(analysisResource.save).toHaveBeenCalled();
       });
     });
@@ -293,14 +292,14 @@ define(['lodash', 'angular', 'angular-mocks', 'controllers'], function(_) {
       beforeEach(function() {
         defaultScenarioDeferred = q.defer();
         defaultScenario.$promise = defaultScenarioDeferred.promise;
-        singleStudyBenefitRiskAnalysisService.getDefaultScenario.and.returnValue(defaultScenario.$promise);
+        singleStudyBenefitRiskService.getDefaultScenario.and.returnValue(defaultScenario.$promise);
         defaultScenarioDeferred.resolve(defaultScenario);
         scope.goToDefaultScenarioView();
         scope.$apply();
       });
 
       it('should go to the default view using the default scenario id', function() {
-        expect(singleStudyBenefitRiskAnalysisService.getDefaultScenario).toHaveBeenCalled();
+        expect(singleStudyBenefitRiskService.getDefaultScenario).toHaveBeenCalled();
         expect(state.go).toHaveBeenCalledWith('DEFAULT_VIEW', _.extend(mockStateParams, {
           id: defaultScenarioId
         }));
@@ -324,7 +323,7 @@ define(['lodash', 'angular', 'angular-mocks', 'controllers'], function(_) {
         scope.analysis.$promise = analysisDeferred.promise;
         saveDeferred = q.defer();
         saveDeferred.$promise = saveDeferred.promise;
-        singleStudyBenefitRiskAnalysisService.getProblem.and.returnValue(problem.$promise);
+        singleStudyBenefitRiskService.getProblem.and.returnValue(problem.$promise);
         analysisResource.save.and.returnValue(saveDeferred);
         problemDeferred.resolve(problem);
         analysisDeferred.resolve();
@@ -337,10 +336,8 @@ define(['lodash', 'angular', 'angular-mocks', 'controllers'], function(_) {
       it('should create the problem, save the analysis and then go to the defaultScenario view', function() {
         expect(scope.analysis.problem).toEqual(problem);
         expect(analysisResource.save).toHaveBeenCalled();
-        expect(singleStudyBenefitRiskAnalysisService.getDefaultScenario).toHaveBeenCalled();
+        expect(singleStudyBenefitRiskService.getDefaultScenario).toHaveBeenCalled();
       });
     });
-
-
   });
 });

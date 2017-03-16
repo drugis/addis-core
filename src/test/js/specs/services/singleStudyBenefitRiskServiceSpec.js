@@ -1,5 +1,5 @@
 define(['angular', 'angular-mocks', 'services'], function() {
-  describe('The singleStudyBenefitRisk Analysis service', function() {
+  describe('The single Study Benefit-Risk Analysis service', function() {
 
     var mockProblemResource,
       mockScenarioResource;
@@ -28,12 +28,12 @@ define(['angular', 'angular-mocks', 'services'], function() {
       });
 
       it('should return a problemResoure',
-        inject(function(SingleStudyBenefitRiskAnalysisService) {
+        inject(function(SingleStudyBenefitRiskService) {
           var mockProblem = {
             $promise: 'promise'
           };
           mockProblemResource.get.and.returnValue(mockProblem);
-          expect(SingleStudyBenefitRiskAnalysisService.getProblem()).toEqual(mockProblem.$promise);
+          expect(SingleStudyBenefitRiskService.getProblem()).toEqual(mockProblem.$promise);
         }));
     });
 
@@ -66,7 +66,7 @@ define(['angular', 'angular-mocks', 'services'], function() {
       });
 
       it('should return the default scenario when getDefaultScenario is called',
-        inject(function($rootScope, $q, SingleStudyBenefitRiskAnalysisService) {
+        inject(function($rootScope, $q, SingleStudyBenefitRiskService) {
           var defaultScenario,
             scenariosDeferred = $q.defer(),
             scenarios = [{
@@ -76,7 +76,7 @@ define(['angular', 'angular-mocks', 'services'], function() {
           scenarios.$promise = scenariosDeferred.promise;
           mockScenarioResource.query.and.returnValue(scenarios);
 
-          defaultScenario = SingleStudyBenefitRiskAnalysisService.getDefaultScenario();
+          defaultScenario = SingleStudyBenefitRiskService.getDefaultScenario();
           expect(defaultScenario.then).not.toBeNull();
           defaultScenario.then(function(result) {
             defaultScenario = result;
@@ -90,7 +90,7 @@ define(['angular', 'angular-mocks', 'services'], function() {
 
     describe('validateProblem', function() {
       it('should reject problems that do not have performance data for each combination of criterion and alternative',
-        inject(function(SingleStudyBenefitRiskAnalysisService) {
+        inject(function(SingleStudyBenefitRiskService) {
           var analysis = {
             selectedOutcomes: [{
               name: 'outcome1',
@@ -110,7 +110,7 @@ define(['angular', 'angular-mocks', 'services'], function() {
           var problem = {
             performanceTable: [{}]
           };
-          expect(SingleStudyBenefitRiskAnalysisService.validateProblem(analysis, problem)).toBeFalsy();
+          expect(SingleStudyBenefitRiskService.validateProblem(analysis, problem)).toBeFalsy();
           problem = {
             performanceTable: [{
               alternativeUri: 'interventionUri1',
@@ -123,19 +123,19 @@ define(['angular', 'angular-mocks', 'services'], function() {
               criterionUri: 'outcomeUri1'
             }]
           };
-          expect(SingleStudyBenefitRiskAnalysisService.validateProblem(analysis, problem)).toBeFalsy();
+          expect(SingleStudyBenefitRiskService.validateProblem(analysis, problem)).toBeFalsy();
           problem.performanceTable.push({
             alternativeUri: 'interventionUri2',
             criterionUri: 'outcomeUri2'
           });
-          expect(SingleStudyBenefitRiskAnalysisService.validateProblem(analysis, problem)).toBeTruthy();
+          expect(SingleStudyBenefitRiskService.validateProblem(analysis, problem)).toBeTruthy();
         }));
     });
 
     describe('addMissingOutcomesToStudies', function() {
       beforeEach(module('addis.services'));
 
-      it('should find find 2 missing outcomes', inject(function(SingleStudyBenefitRiskAnalysisService) {
+      it('should find find 2 missing outcomes', inject(function(SingleStudyBenefitRiskService) {
         var studies = [{
           defaultMeasurementMoment: 'measurementMoment1',
           trialDataArms: [{
@@ -188,7 +188,7 @@ define(['angular', 'angular-mocks', 'services'], function() {
           semanticOutcomeUri: 'semanticOutcomeUri2'
         }];
 
-        var result = SingleStudyBenefitRiskAnalysisService.addMissingOutcomesToStudies(studies, selectedOutcomes);
+        var result = SingleStudyBenefitRiskService.addMissingOutcomesToStudies(studies, selectedOutcomes);
         expect(result[0].missingOutcomes).toEqual([selectedOutcomes[1]]);
         expect(result[1].missingOutcomes).toEqual(selectedOutcomes);
         expect(result[2].missingOutcomes).toEqual([]);
@@ -200,7 +200,7 @@ define(['angular', 'angular-mocks', 'services'], function() {
       beforeEach(module('addis.services'));
 
       it('should add the source objects to the target if not already on target',
-        inject(function(SingleStudyBenefitRiskAnalysisService) {
+        inject(function(SingleStudyBenefitRiskService) {
 
           var source = [{
             name: 'bob'
@@ -229,7 +229,7 @@ define(['angular', 'angular-mocks', 'services'], function() {
             name: 'lisa'
           }];
 
-          expect(SingleStudyBenefitRiskAnalysisService.concatWithNoDuplicates(source, target, isNameEqual)).toEqual(expectResult);
+          expect(SingleStudyBenefitRiskService.concatWithNoDuplicates(source, target, isNameEqual)).toEqual(expectResult);
         })
       );
     });
@@ -237,7 +237,7 @@ define(['angular', 'angular-mocks', 'services'], function() {
     describe('addHasMatchedMixedTreatmentArm', function() {
       beforeEach(module('addis.services'));
       it('should set hasMatchedMixedTreatmentArm to true for each study in which a selected intervention is matched to a mixed' +
-        'treatment arm', inject(function(SingleStudyBenefitRiskAnalysisService) {
+        'treatment arm', inject(function(SingleStudyBenefitRiskService) {
           var studies = [{
             treatmentArms: [{
               interventionUids: [
@@ -265,7 +265,7 @@ define(['angular', 'angular-mocks', 'services'], function() {
           }, {
             semanticInterventionUri: 'uid 2'
           }];
-          SingleStudyBenefitRiskAnalysisService.addHasMatchedMixedTreatmentArm(studies, selectedInterventions);
+          SingleStudyBenefitRiskService.addHasMatchedMixedTreatmentArm(studies, selectedInterventions);
           expect(studies[0].hasMatchedMixedTreatmentArm).toBeTruthy();
           expect(studies[1].hasMatchedMixedTreatmentArm).toBeFalsy();
         }));
@@ -273,7 +273,7 @@ define(['angular', 'angular-mocks', 'services'], function() {
 
     describe('addOverlappingInterventionsToStudies', function() {
       beforeEach(module('addis.services'));
-      it('should add a list of overlapping interventions to the studies', inject(function(SingleStudyBenefitRiskAnalysisService) {
+      it('should add a list of overlapping interventions to the studies', inject(function(SingleStudyBenefitRiskService) {
         var trialDataArm = {
           matchedProjectInterventionIds: [1, 2]
         };
@@ -288,7 +288,7 @@ define(['angular', 'angular-mocks', 'services'], function() {
           id: 2
         }];
 
-        var result = SingleStudyBenefitRiskAnalysisService.addOverlappingInterventionsToStudies(studies, selectedInterventions);
+        var result = SingleStudyBenefitRiskService.addOverlappingInterventionsToStudies(studies, selectedInterventions);
 
         expect(result).toEqual([{
           trialDataArms: [trialDataArm],
