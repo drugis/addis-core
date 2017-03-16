@@ -11,6 +11,7 @@ define(['angular', 'lodash'], function(angular, _) {
     InterventionResource, SingleStudyBenefitRiskService,
     DEFAULT_VIEW, AnalysisResource, ProjectStudiesResource, UserService) {
 
+    $scope.analysis = currentAnalysis;
     var deregisterOutcomeWatch, deregisterInterventionWatch;
     $scope.$parent.loading = {
       loaded: true
@@ -25,7 +26,7 @@ define(['angular', 'lodash'], function(angular, _) {
     };
     $scope.userId = $stateParams.userUid;
     $scope.isProblemDefined = !!currentAnalysis.problem;
-    $scope.editMode.disableEditing = !$scope.editMode.isUserOwner || $scope.isProblemDefined || $scope.analysis.archived; 
+    $scope.editMode.disableEditing = !$scope.editMode.isUserOwner || $scope.isProblemDefined || $scope.analysis.archived;
     $scope.studies = [];
     $scope.$parent.analysis = currentAnalysis;
     $scope.$parent.project = currentProject;
@@ -34,6 +35,8 @@ define(['angular', 'lodash'], function(angular, _) {
     $scope.project = currentProject;
     $scope.outcomes = $scope.analysis.selectedOutcomes;
     $scope.interventions = $scope.analysis.interventionInclusions;
+    checkDuplicateOutcomes();
+
 
     var projectIdParam = {
       projectId: $stateParams.projectId
@@ -62,7 +65,15 @@ define(['angular', 'lodash'], function(angular, _) {
       return result;
     };
 
-    function outcomesChanged() {
+    function checkDuplicateOutcomes() {
+      var outcomesByUri = _.groupBy($scope.analysis.selectedOutcomes, 'semanticOutcomeUri');
+      $scope.duplicateOutcomesList = _.filter(outcomesByUri, function(outcomeByUri) {
+        return outcomeByUri.length > 1;
+      });
+    }
+
+    function outcomesChanged() { // Criteria
+      checkDuplicateOutcomes();
       $scope.studies = SingleStudyBenefitRiskService.addMissingOutcomesToStudies($scope.studies, $scope.analysis.selectedOutcomes);
       SingleStudyBenefitRiskService.addHasMatchedMixedTreatmentArm($scope.studies, $scope.analysis.interventionInclusions);
       SingleStudyBenefitRiskService.recalculateGroup($scope.studies);

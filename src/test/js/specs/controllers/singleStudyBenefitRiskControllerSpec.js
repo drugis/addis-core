@@ -40,8 +40,19 @@ define(['lodash', 'angular', 'angular-mocks', 'controllers'], function(_) {
       owner: 'user'
     };
     var mockAnalysis = {
-      selectedOutcomes: {},
-      interventionInclusions: [],
+      id: 2,
+      selectedOutcomes: [{
+        semanticOutcomeUri: 'a'
+      }, {
+        semanticOutcomeUri: 'b'
+      }, {
+        semanticOutcomeUri: 'a'
+      }],
+      interventionInclusions: [{
+        c: 'c'
+      }, {
+        d: 'd'
+      }],
       studyGraphUri: 'graphUid1'
     };
 
@@ -57,28 +68,8 @@ define(['lodash', 'angular', 'angular-mocks', 'controllers'], function(_) {
       userService = jasmine.createSpyObj('UserService', ['isLoginUserId']);
 
       // set the mock state params
-      mockStateParams.projectId = 1;
-      mockStateParams.analysisId = 2;
-
-      // set a mockNameSpace for the current project
-      scope.project = mockProject;
-
-      // set some mock outcomes anU interventions
-      scope.analysis = {
-        selectedOutcomes: [],
-        interventionInclusions: [],
-        studyGraphUri: 'graphuid2'
-      };
-      scope.analysis.selectedOutcomes = [{
-        a: 'a'
-      }, {
-        b: 'b'
-      }];
-      scope.analysis.interventionInclusions = [{
-        c: 'c'
-      }, {
-        d: 'd'
-      }];
+      mockStateParams.projectId = mockProject.id;
+      mockStateParams.analysisId = mockAnalysis.id;
 
       // set a mock result value for the service call
       singleStudyBenefitRiskService.concatWithNoDuplicates.and.returnValue(mockOutcomes);
@@ -228,7 +219,7 @@ define(['lodash', 'angular', 'angular-mocks', 'controllers'], function(_) {
       });
 
       it('should place the selected study on the studyModel', function() {
-        expect(scope.studyModel.selectedStudy).toBe(mockStudies[1]);
+        expect(scope.studyModel.selectedStudy).toBe(mockStudies[0]);
       });
     });
 
@@ -258,6 +249,14 @@ define(['lodash', 'angular', 'angular-mocks', 'controllers'], function(_) {
         scope.dirty = true;
 
         expect(analysisResource.save).toHaveBeenCalled();
+      });
+    });
+
+    describe('when checkDuplicateOutcomes is called,', function() {
+      it('should set a list of all selected outcomes with conflicting concepts on the scope', function() {
+        expect(scope.duplicateOutcomesList).toEqual(
+           [[scope.analysis.selectedOutcomes[0],scope.analysis.selectedOutcomes[2]]]
+        );
       });
     });
 
@@ -340,7 +339,5 @@ define(['lodash', 'angular', 'angular-mocks', 'controllers'], function(_) {
         expect(singleStudyBenefitRiskService.getDefaultScenario).toHaveBeenCalled();
       });
     });
-
-
   });
 });
