@@ -300,8 +300,8 @@ define(
                 }
               ]
             },
-            templateUrl: baseTemplatePath + 'singleStudyBenefitRiskAnalysisView.html',
-            controller: 'SingleStudyBenefitRiskAnalysisController'
+            templateUrl: baseTemplatePath + 'singleStudyBenefitRiskView.html',
+            controller: 'SingleStudyBenefitRiskController'
           })
           .state('networkMetaAnalysisContainer', {
             templateUrl: baseTemplatePath + 'networkMetaAnalysisContainer.html',

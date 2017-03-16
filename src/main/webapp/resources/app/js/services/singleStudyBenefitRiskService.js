@@ -1,7 +1,7 @@
 'use strict';
 define(['lodash'], function(_) {
   var dependencies = ['$stateParams', 'ProblemResource', 'ScenarioResource'];
-  var SingleStudyBenefitRiskAnalysisService = function($stateParams, ProblemResource, ScenarioResource) {
+  var SingleStudyBenefitRiskService = function($stateParams, ProblemResource, ScenarioResource) {
 
     var getDefaultScenario = function() {
       return ScenarioResource
@@ -174,5 +174,5 @@ define(['lodash'], function(_) {
       recalculateGroup: recalculateGroup
     };
   };
-  return dependencies.concat(SingleStudyBenefitRiskAnalysisService);
+  return dependencies.concat(SingleStudyBenefitRiskService);
 });
