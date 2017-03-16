@@ -31,8 +31,14 @@ define(['lodash'],
       loadStudiesWithDetail();
       $scope.datasetConcepts = loadConcepts(); // scope placement for child states
       $scope.datasetConcepts.then(function(concepts) {
-        $scope.interventions = _.filter(concepts['@graph'], ['@type', 'ontology:Drug']);
-        $scope.variables = _.filter(concepts['@graph'], ['@type', 'ontology:Variable']);
+        $scope.interventions = _.chain(concepts['@graph'])
+        .filter(['@type', 'ontology:Drug'])
+        .sortBy(['label'])
+        .value();
+        $scope.variables = _.chain(concepts['@graph'])
+        .filter(['@type', 'ontology:Variable'])
+        .sortBy(['label'])
+        .value();
       });
 
       if ($scope.isHeadView) {
