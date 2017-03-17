@@ -1,12 +1,12 @@
 'use strict';
 define(['lodash'],
   function(_) {
-    var dependencies = ['$scope', '$window', '$stateParams', '$state', '$modal', '$filter',
+    var dependencies = ['$scope', '$window', '$stateParams', '$state', '$modal', '$filter', '$q',
       'DatasetVersionedResource', 'StudiesWithDetailsService', 'HistoryResource', 'ConceptsService',
       'VersionedGraphResource', 'DatasetResource', 'GraphResource', 'UserService', 'DataModelService',
       'DatasetService'
     ];
-    var DatasetController = function($scope, $window, $stateParams, $state, $modal, $filter,
+    var DatasetController = function($scope, $window, $stateParams, $state, $modal, $filter, $q,
       DatasetVersionedResource, StudiesWithDetailsService, HistoryResource, ConceptsService,
       VersionedGraphResource, DatasetResource, GraphResource, UserService, DataModelService,
       DatasetService
@@ -31,8 +31,14 @@ define(['lodash'],
       loadStudiesWithDetail();
       $scope.datasetConcepts = loadConcepts(); // scope placement for child states
       $scope.datasetConcepts.then(function(concepts) {
-        $scope.interventions = _.filter(concepts['@graph'], ['@type', 'ontology:Drug']);
-        $scope.variables = _.filter(concepts['@graph'], ['@type', 'ontology:Variable']);
+        $scope.interventions = _.chain(concepts['@graph'])
+        .filter(['@type', 'ontology:Drug'])
+        .sortBy(['label'])
+        .value();
+        $scope.variables = _.chain(concepts['@graph'])
+        .filter(['@type', 'ontology:Variable'])
+        .sortBy(['label'])
+        .value();
       });
 
       if ($scope.isHeadView) {
@@ -115,11 +121,16 @@ define(['lodash'],
       }
 
       function loadStudiesWithDetail() {
-        StudiesWithDetailsService.get($stateParams.userUid, $stateParams.datasetUuid, $stateParams.versionUuid)
-          .then(function(result) {
-            $scope.studiesWithDetail = result instanceof Array ? result : [];
-            $scope.filteredStudies = $scope.studiesWithDetail;
-          });
+        var studiesWithDetailPromise = StudiesWithDetailsService.get($stateParams.userUid, $stateParams.datasetUuid, $stateParams.versionUuid);
+        var treatmentActivitiesPromise = StudiesWithDetailsService.getTreatmentActivities($stateParams.userUid, $stateParams.datasetUuid, $stateParams.versionUuid);
+        $q.all([studiesWithDetailPromise, treatmentActivitiesPromise]).then(function(result) {
+          var studiesWithDetail = result[0] instanceof Array ? result[0] : [];
+          var treatmentActivities = result[1] instanceof Array ? result[1] : [];
+          StudiesWithDetailsService.addActivitiesToStudies(studiesWithDetail, treatmentActivities);
+          $scope.studiesWithDetail = studiesWithDetail ;
+          $scope.filteredStudies = $scope.studiesWithDetail;
+        });
+
       }
 
       $scope.showTableOptions = function() {
@@ -138,6 +149,7 @@ define(['lodash'],
         $scope.filterSelections = filterSelections; //in case user goes back to the page from child state
         $scope.filteredStudies = DatasetService.filterStudies($scope.studiesWithDetail, filterSelections);
       }
+
       function toggleFilterOptions() {
         $scope.showFilterOptions = !$scope.showFilterOptions;
       }
@@ -282,11 +294,15 @@ define(['lodash'],
         }, {
           id: 'startDate',
           label: 'Start date',
-          visible: false,
+          visible: false
         }, {
           id: 'endDate',
           label: 'End date',
-          visible: false,
+          visible: false
+        }, {
+          id: 'treatments',
+          label: 'Treatments',
+          visible: false
         }],
         reverseSortOrder: false,
         orderByField: 'label'

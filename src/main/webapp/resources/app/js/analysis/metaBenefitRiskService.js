@@ -3,37 +3,27 @@ define(['lodash'], function(_) {
   var dependencies = [];
   var MetaBenefitRiskAnalysisService = function() {
 
-    function buildOutcomesWithAnalyses(analysis, networkMetaAnalyses, models, outcome) {
-      var outcomeAnalyses = networkMetaAnalyses.filter(function(nma) {
+    function buildOutcomeWithAnalyses(analysis, networkMetaAnalyses, models, outcome) {
+      var nmasForOutcome = networkMetaAnalyses.filter(function(nma) {
         return nma.outcome.id === outcome.id;
       });
 
-      // set the radioButton state based on the stored inclusions
-      var selectedAnalysis;
-      var selectedModel;
-      outcomeAnalyses.forEach(function(outcomeAnalysis) {
-        var isInclusionSet = false;
+      var mbrOutcomeInclusion = _.find(analysis.mbrOutcomeInclusions, ['outcomeId', outcome.id]);
+      if (!mbrOutcomeInclusion) {
+        return {
+          outcome: outcome,
+          networkMetaAnalyses: []
+        };
+      }
+      var selectedAnalysis = _.find(nmasForOutcome, function(nma) {
+        return mbrOutcomeInclusion.outcomeId === nma.outcome.id &&
+          mbrOutcomeInclusion.networkMetaAnalysisId === nma.id;
+      }) || nmasForOutcome[0];
+      var selectedModel = _.find(models, ['id', mbrOutcomeInclusion.modelId]);
 
-        analysis.mbrOutcomeInclusions.forEach(function(outcomeInclusion) {
-          if (outcomeInclusion.outcomeId === outcomeAnalysis.outcome.id &&
-            outcomeInclusion.networkMetaAnalysisId === outcomeAnalysis.id) {
-            selectedAnalysis = outcomeAnalysis;
-            isInclusionSet = true;
-
-            selectedModel = _.find(models, function(model) {
-              return model.id === outcomeInclusion.modelId;
-            });
-          }
-        });
-
-        if (!isInclusionSet && outcomeAnalyses.length > 0 && outcome.isIncluded) {
-          selectedAnalysis = outcomeAnalyses[0];
-        }
-
-      });
       return {
         outcome: outcome,
-        networkMetaAnalyses: outcomeAnalyses,
+        networkMetaAnalyses: nmasForOutcome,
         selectedAnalysis: selectedAnalysis,
         selectedModel: selectedModel
       };
@@ -77,9 +67,9 @@ define(['lodash'], function(_) {
 
     function numberOfSelectedOutcomes(outcomesWithAnalyses) {
       return outcomesWithAnalyses.reduce(function(count, owa) {
-        return owa.outcome.isIncluded && 
-        owa.selectedAnalysis && !owa.selectedAnalysis.archived && 
-        owa.selectedModel && !owa.selectedModel.archived ? ++count : count;
+        return owa.outcome.isIncluded &&
+          owa.selectedAnalysis && !owa.selectedAnalysis.archived &&
+          owa.selectedModel && !owa.selectedModel.archived ? ++count : count;
       }, 0);
     }
 
@@ -109,7 +99,7 @@ define(['lodash'], function(_) {
       });
     }
 
-    function addScales(owas, interventionInclusions , scaleResults) {
+    function addScales(owas, interventionInclusions, scaleResults) {
       return owas.map(function(owa) {
         owa.scales = interventionInclusions.reduce(function(accum, includedAlternative) {
           if (scaleResults[owa.outcome.name]) {
@@ -124,7 +114,7 @@ define(['lodash'], function(_) {
     return {
       addModelsGroup: addModelsGroup,
       compareAnalysesByModels: compareAnalysesByModels,
-      buildOutcomesWithAnalyses: buildOutcomesWithAnalyses,
+      buildOutcomeWithAnalyses: buildOutcomeWithAnalyses,
       joinModelsWithAnalysis: joinModelsWithAnalysis,
       numberOfSelectedInterventions: numberOfSelectedInterventions,
       numberOfSelectedOutcomes: numberOfSelectedOutcomes,

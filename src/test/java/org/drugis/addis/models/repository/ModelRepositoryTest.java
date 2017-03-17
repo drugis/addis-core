@@ -26,7 +26,7 @@ import static org.junit.Assert.*;
 @RunWith(SpringJUnit4ClassRunner.class)
 @Transactional
 @ContextConfiguration(classes = {JpaRepositoryTestConfig.class})
-public class JpaModelRepositoryTest {
+public class ModelRepositoryTest {
 
   @PersistenceContext(unitName = "addisCore")
   EntityManager em;

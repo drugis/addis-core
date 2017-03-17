@@ -4,7 +4,6 @@ package org.drugis.addis.problems.model;
  * Created by connor on 8-3-16.
  */
 public class NormalBaselineDistribution extends AbstractBaselineDistribution {
-  private String scale;
   private Double mu;
   private Double sigma;
 
@@ -13,14 +12,9 @@ public class NormalBaselineDistribution extends AbstractBaselineDistribution {
   }
 
   public NormalBaselineDistribution(String scale, Double mu, Double sigma, String name, String type) {
-    super(name, type);
-    this.scale = scale;
+    super(name, type, scale);
     this.mu = mu;
     this.sigma = sigma;
-  }
-
-  public String getScale() {
-    return scale;
   }
 
   public Double getMu() {
@@ -39,7 +33,6 @@ public class NormalBaselineDistribution extends AbstractBaselineDistribution {
 
     NormalBaselineDistribution that = (NormalBaselineDistribution) o;
 
-    if (!scale.equals(that.scale)) return false;
     if (!mu.equals(that.mu)) return false;
     return sigma.equals(that.sigma);
   }
@@ -47,7 +40,6 @@ public class NormalBaselineDistribution extends AbstractBaselineDistribution {
   @Override
   public int hashCode() {
     int result = super.hashCode();
-    result = 31 * result + scale.hashCode();
     result = 31 * result + mu.hashCode();
     result = 31 * result + sigma.hashCode();
     return result;

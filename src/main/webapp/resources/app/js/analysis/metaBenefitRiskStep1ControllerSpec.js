@@ -22,7 +22,7 @@ define(['angular-mocks'], function(angularMocks) {
         'addModelsGroup',
         'compareAnalysesByModels',
         'joinModelsWithAnalysis',
-        'buildOutcomesWithAnalyses',
+        'buildOutcomeWithAnalyses',
         'numberOfSelectedInterventions',
         'numberOfSelectedOutcomes',
         'isModelWithMissingAlternatives',
@@ -86,7 +86,7 @@ define(['angular-mocks'], function(angularMocks) {
 
     describe('when the analysis, outcomes and alternatives are loaded', function() {
       beforeEach(function() {
-        metaBenefitRiskService.buildOutcomesWithAnalyses.and.returnValue({
+        metaBenefitRiskService.buildOutcomeWithAnalyses.and.returnValue({
           networkMetaAnalyses: []
         });
 
@@ -103,7 +103,7 @@ define(['angular-mocks'], function(angularMocks) {
       it('should build the outcomesWithAnalyses', function() {
         expect(metaBenefitRiskService.joinModelsWithAnalysis).toHaveBeenCalled();
         expect(metaBenefitRiskService.addModelsGroup).toHaveBeenCalled();
-        expect(metaBenefitRiskService.buildOutcomesWithAnalyses).toHaveBeenCalled();
+        expect(metaBenefitRiskService.buildOutcomeWithAnalyses).toHaveBeenCalled();
       });
 
     });

@@ -136,9 +136,9 @@ public class ProblemServiceImpl implements ProblemService {
             .collect(Collectors.toMap(Model::getId, m -> pataviTaskMap.get(m.getTaskUrl())));
     final Map<URI, JsonNode> resultsByTaskUrl = pataviTaskRepository.getResults(taskUris);
     final List<MbrOutcomeInclusion> inclusionsWithBaselineAndModelResults = analysis.getMbrOutcomeInclusions().stream()
-            .filter(moi -> moi.getBaseline() != null)
-            .filter(moi -> {
-              URI taskUrl = modelMap.get(moi.getModelId()).getTaskUrl();
+            .filter(mbrOutcomeInclusion -> mbrOutcomeInclusion.getBaseline() != null)
+            .filter(mbrOutcomeInclusion -> {
+              URI taskUrl = modelMap.get(mbrOutcomeInclusion.getModelId()).getTaskUrl();
               return taskUrl != null && resultsByTaskUrl.get(taskUrl) != null;
             })
             .collect(Collectors.toList());
@@ -148,24 +148,24 @@ public class ProblemServiceImpl implements ProblemService {
             .collect(Collectors.toMap(AbstractIntervention::getId, Function.identity()));
     final List<AbstractIntervention> includedAlternatives = inclusions
             .stream()
-            .map(i -> interventionMap.get(i.getInterventionId()))
+            .map(inclusion -> interventionMap.get(inclusion.getInterventionId()))
             .collect(Collectors.toList());
 
     Map<String, CriterionEntry> criteriaWithBaseline = new HashMap<>();
-    outcomesByName.values().forEach(o -> {
-      Optional<MbrOutcomeInclusion> outcomeInclusion = inclusionsWithBaselineAndModelResults.stream().filter(moi -> moi.getOutcomeId().equals(o.getId())).findFirst();
+    outcomesByName.values().forEach(outcome -> {
+      Optional<MbrOutcomeInclusion> outcomeInclusion = inclusionsWithBaselineAndModelResults.stream().filter(mbrOutcomeInclusion -> mbrOutcomeInclusion.getOutcomeId().equals(outcome.getId())).findFirst();
       if (outcomeInclusion.isPresent()) {
-        Model m = modelMap.get(outcomeInclusion.get().getModelId());
-        if (m.getLikelihood().equals("binom")) {
-          criteriaWithBaseline.put(o.getName(), new CriterionEntry(o.getSemanticOutcomeUri(), o.getName(), Arrays.asList(0d, 1d), null, "proportion"));
+        Model model = modelMap.get(outcomeInclusion.get().getModelId());
+        if (model.getLikelihood().equals("binom")) {
+          criteriaWithBaseline.put(outcome.getName(), new CriterionEntry(outcome.getSemanticOutcomeUri(), outcome.getName(), Arrays.asList(0d, 1d), null, "proportion"));
         } else {
-          criteriaWithBaseline.put(o.getName(), new CriterionEntry(o.getSemanticOutcomeUri(), o.getName()));
+          criteriaWithBaseline.put(outcome.getName(), new CriterionEntry(outcome.getSemanticOutcomeUri(), outcome.getName()));
         }
       }
     });
     Map<String, AlternativeEntry> alternatives = includedAlternatives
             .stream()
-            .collect(Collectors.toMap(AbstractIntervention::getName, i -> new AlternativeEntry(i.getId(), i.getName())));
+            .collect(Collectors.toMap(AbstractIntervention::getName, includedAlternative -> new AlternativeEntry(includedAlternative.getId(), includedAlternative.getName())));
 
     final Map<String, AbstractIntervention> includedInterventionsByName = includedAlternatives
             .stream()
@@ -173,8 +173,7 @@ public class ProblemServiceImpl implements ProblemService {
 
     List<MetaBenefitRiskProblem.PerformanceTableEntry> performanceTable = new ArrayList<>(outcomesByName.size());
     for (MbrOutcomeInclusion outcomeInclusion : inclusionsWithBaselineAndModelResults) {
-
-      NormalBaselineDistribution baseline = objectMapper.readValue(outcomeInclusion.getBaseline(), NormalBaselineDistribution.class);
+      AbstractBaselineDistribution baseline = objectMapper.readValue(outcomeInclusion.getBaseline(), AbstractBaselineDistribution.class);
       URI taskUrl = tasksByModelId.get(outcomeInclusion.getModelId()).getSelf();
       JsonNode taskResults = resultsByTaskUrl.get(taskUrl);
 
@@ -182,7 +181,7 @@ public class ProblemServiceImpl implements ProblemService {
               taskResults.get("multivariateSummary").toString(), new TypeReference<Map<Integer, MultiVariateDistribution>>() {});
 
       AbstractIntervention baselineIntervention = includedInterventionsByName.get(baseline.getName());
-      MultiVariateDistribution distr = distributionByInterventionId.get(baselineIntervention.getId());
+        MultiVariateDistribution distr = distributionByInterventionId.get(baselineIntervention.getId());
       //
       Map<String, Double> mu = distr.getMu().entrySet().stream()
               .collect(Collectors.toMap(

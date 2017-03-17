@@ -54,6 +54,7 @@ define(
     'gemtc-web/constants',
     'gemtc-web/services',
     'gemtc-web/directives',
+    'gemtc-web/filters',
     'mcda/services/effectsTableService',
     'mcda/controllers',
     'mcda/directives',
@@ -116,7 +117,8 @@ define(
       'gemtc.resources',
       'gemtc.constants',
       'gemtc.services',
-      'gemtc.directives'
+      'gemtc.directives',
+      'gemtc.filters'
     ];
     var trialverseDependencies = [
       'trialverse.search',

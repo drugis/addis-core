@@ -2,7 +2,7 @@ define(['angular', 'angular-mocks', 'filters'], function () {
   describe("The duration offset filter", function () {
     var durationOffsetFilter;
 
-    beforeEach(module('addis.filters'));
+    beforeEach(module('trialverse.util'));
 
     beforeEach(inject(function($filter) {
       durationOffsetFilter = $filter('durationOffsetFilter');
@@ -13,11 +13,11 @@ define(['angular', 'angular-mocks', 'filters'], function () {
     });
 
     it("should add ' after ' a positive duration ", function() {
-      expect(durationOffsetFilter("P1D")).toEqual("a day after ");
+      expect(durationOffsetFilter("P1D")).toEqual("1 day(s) after ");
     });
 
     it("should add ' before ' a negative duration ", function() {
-      expect(durationOffsetFilter("P1D")).toEqual("a day after ");
+      expect(durationOffsetFilter("P1D")).toEqual("1 day(s) after ");
     });
 
     it("should replace empty periods with and emply string ", function() { // is this what we want ? :s

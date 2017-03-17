@@ -9,11 +9,15 @@ define(['angular-mocks'], function(angularMocks) {
       metaBenefitRiskService = MetaBenefitRiskService;
     }));
 
-    describe('buildOutcomesWithAnalyses', function() {
-      it('should build inclusions when the outcome is included', function() {
-        var outcome = {
+    describe('buildOutcomeWithAnalyses', function() {
+      it('should build inclusions when the outcome is included, and ignore excluded outcomes', function() {
+        var outcome1 = {
           id: 1,
           isIncluded: true
+        };
+        var outcome2 = {
+          id: 2,
+          isIncluded: false
         };
         var analysis = {
           id: 7,
@@ -25,18 +29,18 @@ define(['angular-mocks'], function(angularMocks) {
         };
         var networkMetaAnalyses = [{
           id: 3,
-          outcome: outcome
+          outcome: outcome1
         }, {
           id: 5,
-          outcome: outcome
+          outcome: outcome1
         }];
         var models = [{
           id: 1
         }, {
           id: 2
         }];
-        var expectedResult = {
-          outcome: outcome,
+        var expectedIncludedResult = {
+          outcome: outcome1,
           networkMetaAnalyses: [{
             id: 3,
             outcome: {
@@ -59,10 +63,14 @@ define(['angular-mocks'], function(angularMocks) {
           },
           selectedModel: models[0]
         };
-
-        var result = metaBenefitRiskService.buildOutcomesWithAnalyses(analysis, networkMetaAnalyses, models, outcome);
-
-        expect(result).toEqual(expectedResult);
+        var expectedExcludedResult = {
+          outcome: outcome2,
+          networkMetaAnalyses: []
+        };
+        var resultIncluded = metaBenefitRiskService.buildOutcomeWithAnalyses(analysis, networkMetaAnalyses, models, outcome1);
+        var resultExcluded = metaBenefitRiskService.buildOutcomeWithAnalyses(analysis, networkMetaAnalyses, models, outcome2);
+        expect(resultIncluded).toEqual(expectedIncludedResult);
+        expect(resultExcluded).toEqual(expectedExcludedResult);
       });
     });
 
@@ -158,9 +166,11 @@ define(['angular-mocks'], function(angularMocks) {
         var outcomesWithAnalyses = [{
           outcome: {
             isIncluded: false
-          }, selectedAnalysis: {
+          },
+          selectedAnalysis: {
             archived: true
-          }, selectedModel: {
+          },
+          selectedModel: {
             archived: false
           }
         }, {
@@ -170,17 +180,21 @@ define(['angular-mocks'], function(angularMocks) {
         }, {
           outcome: {
             isIncluded: true
-          }, selectedAnalysis: {
+          },
+          selectedAnalysis: {
             archived: true
-          }, selectedModel: {
+          },
+          selectedModel: {
             archived: false
           }
         }, {
           outcome: {
             isIncluded: true
-          }, selectedAnalysis: {
+          },
+          selectedAnalysis: {
             archived: false
-          }, selectedModel: {
+          },
+          selectedModel: {
             archived: false
           }
         }];

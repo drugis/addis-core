@@ -45,7 +45,7 @@ define(['lodash'], function(_) {
           .map(_.partial(MetaBenefitRiskService.joinModelsWithAnalysis, models))
           .map(MetaBenefitRiskService.addModelsGroup);
         $scope.outcomesWithAnalyses = outcomes
-          .map(_.partial(MetaBenefitRiskService.buildOutcomesWithAnalyses, analysis, networkMetaAnalyses, models))
+          .map(_.partial(MetaBenefitRiskService.buildOutcomeWithAnalyses, analysis, networkMetaAnalyses, models))
           .map(function(owa) {
             owa.networkMetaAnalyses = owa.networkMetaAnalyses.sort(MetaBenefitRiskService.compareAnalysesByModels);
             return owa;
@@ -86,7 +86,7 @@ define(['lodash'], function(_) {
 
     function buildOutcomesWithAnalyses(analysis, outcomes, networkMetaAnalyses, models) {
       return outcomes
-        .map(_.partial(MetaBenefitRiskService.buildOutcomesWithAnalyses, analysis, networkMetaAnalyses, models))
+        .map(_.partial(MetaBenefitRiskService.buildOutcomeWithAnalyses, analysis, networkMetaAnalyses, models))
         .map(function(owa) {
           owa.networkMetaAnalyses = owa.networkMetaAnalyses.sort(MetaBenefitRiskService.compareAnalysesByModels);
           return owa;

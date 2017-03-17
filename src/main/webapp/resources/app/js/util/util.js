@@ -19,6 +19,7 @@ define(function(require) {
   // filters
   .filter('ontologyFilter', require('util/filters/ontologyFilter'))
     .filter('durationFilter', require('util/filters/durationFilter'))
+    .filter('durationOffsetFilter', require('util/filters/durationOffsetFilter'))
     .filter('stripFrontFilter', require('util/filters/stripFrontFilter'))
     .filter('exponentialFilter', require('util/filters/exponentialFilter'))
 

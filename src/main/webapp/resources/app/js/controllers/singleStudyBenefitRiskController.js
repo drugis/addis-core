@@ -1,15 +1,27 @@
 'use strict';
 define(['angular', 'lodash'], function(angular, _) {
   var dependencies = ['$scope', '$stateParams', '$state',
-    'currentAnalysis', 'currentProject',
-    'OutcomeResource', 'InterventionResource',
-    'SingleStudyBenefitRiskService', 'DEFAULT_VIEW', 'AnalysisResource',
-    'ProjectStudiesResource', 'UserService'
+    'currentAnalysis',
+    'currentProject',
+    'OutcomeResource',
+    'InterventionResource',
+    'SingleStudyBenefitRiskService',
+    'DEFAULT_VIEW',
+    'AnalysisResource',
+    'ProjectStudiesResource',
+    'UserService',
   ];
-  var SingleStudyBenefitRiskController = function($scope, $stateParams,
-    $state, currentAnalysis, currentProject, OutcomeResource,
-    InterventionResource, SingleStudyBenefitRiskService,
-    DEFAULT_VIEW, AnalysisResource, ProjectStudiesResource, UserService) {
+  var SingleStudyBenefitRiskController = function($scope, $stateParams, $state,
+    currentAnalysis,
+    currentProject,
+    OutcomeResource,
+    InterventionResource,
+    SingleStudyBenefitRiskService,
+    DEFAULT_VIEW,
+    AnalysisResource,
+    ProjectStudiesResource,
+    UserService
+  ) {
 
     $scope.analysis = currentAnalysis;
     var deregisterOutcomeWatch, deregisterInterventionWatch;
@@ -37,8 +49,6 @@ define(['angular', 'lodash'], function(angular, _) {
     $scope.interventions = $scope.analysis.interventionInclusions;
     checkDuplicateOutcomes();
 
-
-    $scope.editMode.disableEditing = !$scope.editMode.isUserOwner || $scope.isProblemDefined || $scope.analysis.archived;
 
     var projectIdParam = {
       projectId: $stateParams.projectId
