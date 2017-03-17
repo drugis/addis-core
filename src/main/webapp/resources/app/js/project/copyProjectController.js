@@ -3,9 +3,12 @@ define([], function() {
   var dependencies = ['$scope', '$stateParams', '$modalInstance', 'ProjectResource', 'callback'];
   var CopyProjectController = function($scope, $stateParams, $modalInstance, ProjectResource, callback) {
     $scope.copyProject = copyProject;
+    $scope.isCopying=false;
+
 
     function copyProject(newTitle) {
-      ProjectResource.copy({
+      $scope.isCopying = true;
+        ProjectResource.copy({
         projectId: $scope.project.id
       }, {
         newTitle: newTitle

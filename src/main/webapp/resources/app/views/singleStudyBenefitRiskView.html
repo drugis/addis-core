@@ -79,7 +79,9 @@
                          !studyModel.selectedStudy ||
                          studyModel.selectedStudy.missingInterventions.length > 0 ||
                          studyModel.selectedStudy.missingOutcomes.length > 0 ||
-                         studyModel.selectedStudy.hasMatchedMixedTreatmentArm" ng-click="createProblem()">Perform MCDA Analysis
+                         studyModel.selectedStudy.hasMatchedMixedTreatmentArm ||
+                         duplicateOutcomesList.length"
+            ng-click="createProblem()">Perform MCDA Analysis
           </button>
           <button ng-switch-when="true" ng-click="goToDefaultScenarioView()">Go to MCDA Analysis</button>
         </div>
@@ -123,10 +125,16 @@
         <div ng-if="studyModel.selectedStudy.overlappingInterventions.length > 0">
           <p>
             <em>
-              <i class="fa fa-exclamation-triangle"></i> The following interventions
-              overlap: {{overlappingInterventionsList}}; please exclude interventions
-              to fix this.
-            </em>
+          <i class="fa fa-exclamation-triangle"></i> The following interventions overlap: {{overlappingInterventionsList}}; please exclude interventions to fix this.
+        </em>
+          </p>
+        </div>
+        <div ng-if="duplicateOutcomesList.length">
+          <p>
+            <em>
+          <i class="fa fa-exclamation-triangle"></i> The following criteria share a concept:
+          <span ng-repeat="duplicates in duplicateOutcomesList"> {{duplicates[0].name}} and {{duplicates[1].name}},</span> please exclude outcomes to fix this.
+        </em>
           </p>
         </div>
       </div>

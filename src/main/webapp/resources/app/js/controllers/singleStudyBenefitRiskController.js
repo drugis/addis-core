@@ -1,28 +1,17 @@
 'use strict';
 define(['angular', 'lodash'], function(angular, _) {
   var dependencies = ['$scope', '$stateParams', '$state',
-    'currentAnalysis',
-    'currentProject',
-    'OutcomeResource',
-    'InterventionResource',
-    'SingleStudyBenefitRiskAnalysisService',
-    'DEFAULT_VIEW',
-    'AnalysisResource',
-    'ProjectStudiesResource',
-    'UserService',
+    'currentAnalysis', 'currentProject',
+    'OutcomeResource', 'InterventionResource',
+    'SingleStudyBenefitRiskService', 'DEFAULT_VIEW', 'AnalysisResource',
+    'ProjectStudiesResource', 'UserService'
   ];
-  var SingleStudyBenefitRiskAnalysisController = function($scope, $stateParams, $state,
-    currentAnalysis,
-    currentProject,
-    OutcomeResource,
-    InterventionResource,
-    SingleStudyBenefitRiskAnalysisService,
-    DEFAULT_VIEW,
-    AnalysisResource,
-    ProjectStudiesResource,
-    UserService
-  ) {
+  var SingleStudyBenefitRiskController = function($scope, $stateParams,
+    $state, currentAnalysis, currentProject, OutcomeResource,
+    InterventionResource, SingleStudyBenefitRiskService,
+    DEFAULT_VIEW, AnalysisResource, ProjectStudiesResource, UserService) {
 
+    $scope.analysis = currentAnalysis;
     var deregisterOutcomeWatch, deregisterInterventionWatch;
     $scope.$parent.loading = {
       loaded: true
@@ -37,6 +26,7 @@ define(['angular', 'lodash'], function(angular, _) {
     };
     $scope.userId = $stateParams.userUid;
     $scope.isProblemDefined = !!currentAnalysis.problem;
+    $scope.editMode.disableEditing = !$scope.editMode.isUserOwner || $scope.isProblemDefined || $scope.analysis.archived;
     $scope.studies = [];
     $scope.$parent.analysis = currentAnalysis;
     $scope.$parent.project = currentProject;
@@ -45,6 +35,8 @@ define(['angular', 'lodash'], function(angular, _) {
     $scope.project = currentProject;
     $scope.outcomes = $scope.analysis.selectedOutcomes;
     $scope.interventions = $scope.analysis.interventionInclusions;
+    checkDuplicateOutcomes();
+
 
     $scope.editMode.disableEditing = !$scope.editMode.isUserOwner || $scope.isProblemDefined || $scope.analysis.archived;
 
@@ -75,10 +67,18 @@ define(['angular', 'lodash'], function(angular, _) {
       return result;
     };
 
-    function outcomesChanged() {
-      $scope.studies = SingleStudyBenefitRiskAnalysisService.addMissingOutcomesToStudies($scope.studies, $scope.analysis.selectedOutcomes);
-      SingleStudyBenefitRiskAnalysisService.addHasMatchedMixedTreatmentArm($scope.studies, $scope.analysis.interventionInclusions);
-      SingleStudyBenefitRiskAnalysisService.recalculateGroup($scope.studies);
+    function checkDuplicateOutcomes() {
+      var outcomesByUri = _.groupBy($scope.analysis.selectedOutcomes, 'semanticOutcomeUri');
+      $scope.duplicateOutcomesList = _.filter(outcomesByUri, function(outcomeByUri) {
+        return outcomeByUri.length > 1;
+      });
+    }
+
+    function outcomesChanged() { // Criteria
+      checkDuplicateOutcomes();
+      $scope.studies = SingleStudyBenefitRiskService.addMissingOutcomesToStudies($scope.studies, $scope.analysis.selectedOutcomes);
+      SingleStudyBenefitRiskService.addHasMatchedMixedTreatmentArm($scope.studies, $scope.analysis.interventionInclusions);
+      SingleStudyBenefitRiskService.recalculateGroup($scope.studies);
 
       // necessary because angular-select uses $watchcollection instead of $watch
       $scope.studies.push({
@@ -88,10 +88,10 @@ define(['angular', 'lodash'], function(angular, _) {
     }
 
     function interventionsChanged() {
-      $scope.studies = SingleStudyBenefitRiskAnalysisService.addMissingInterventionsToStudies($scope.studies, $scope.analysis.interventionInclusions);
-      SingleStudyBenefitRiskAnalysisService.addHasMatchedMixedTreatmentArm($scope.studies, $scope.analysis.interventionInclusions);
-      $scope.studies = SingleStudyBenefitRiskAnalysisService.addOverlappingInterventionsToStudies($scope.studies, $scope.analysis.interventionInclusions);
-      SingleStudyBenefitRiskAnalysisService.recalculateGroup($scope.studies);
+      $scope.studies = SingleStudyBenefitRiskService.addMissingInterventionsToStudies($scope.studies, $scope.analysis.interventionInclusions);
+      SingleStudyBenefitRiskService.addHasMatchedMixedTreatmentArm($scope.studies, $scope.analysis.interventionInclusions);
+      $scope.studies = SingleStudyBenefitRiskService.addOverlappingInterventionsToStudies($scope.studies, $scope.analysis.interventionInclusions);
+      SingleStudyBenefitRiskService.recalculateGroup($scope.studies);
 
       // necessary because angular-select uses $watchcollection instead of $watch
       $scope.studies.push({
@@ -102,7 +102,7 @@ define(['angular', 'lodash'], function(angular, _) {
 
     OutcomeResource.query(projectIdParam).$promise.then(function(outcomes) {
       // use same object in options list as in selected option list, as ui-select uses object equality internaly
-      $scope.outcomes = SingleStudyBenefitRiskAnalysisService.concatWithNoDuplicates(outcomes, $scope.outcomes, isIdEqual);
+      $scope.outcomes = SingleStudyBenefitRiskService.concatWithNoDuplicates(outcomes, $scope.outcomes, isIdEqual);
       deregisterOutcomeWatch = $scope.$watchCollection('analysis.selectedOutcomes', function(oldValue, newValue) {
         if (newValue.length !== oldValue.length) {
           outcomesChanged();
@@ -118,7 +118,7 @@ define(['angular', 'lodash'], function(angular, _) {
         });
       });
       // use same object in options list as in selected option list, as ui-select uses object equality internaly
-      $scope.interventions = SingleStudyBenefitRiskAnalysisService.concatWithNoDuplicates(interventions, $scope.analysis.interventionInclusions, isIdEqual);
+      $scope.interventions = SingleStudyBenefitRiskService.concatWithNoDuplicates(interventions, $scope.analysis.interventionInclusions, isIdEqual);
       deregisterInterventionWatch = $scope.$watchCollection('analysis.interventionInclusions', function(oldValue, newValue) {
         if (newValue.length !== oldValue.length) {
           interventionsChanged();
@@ -136,11 +136,11 @@ define(['angular', 'lodash'], function(angular, _) {
         return study.studyUri === $scope.analysis.studyGraphUri;
       });
 
-      $scope.studies = SingleStudyBenefitRiskAnalysisService.addMissingOutcomesToStudies($scope.studies, $scope.analysis.selectedOutcomes);
-      $scope.studies = SingleStudyBenefitRiskAnalysisService.addMissingInterventionsToStudies($scope.studies, $scope.analysis.interventionInclusions);
-      SingleStudyBenefitRiskAnalysisService.addHasMatchedMixedTreatmentArm($scope.studies, $scope.analysis.interventionInclusions);
-      $scope.studies = SingleStudyBenefitRiskAnalysisService.addOverlappingInterventionsToStudies($scope.studies, $scope.analysis.interventionInclusions);
-      SingleStudyBenefitRiskAnalysisService.recalculateGroup($scope.studies);
+      $scope.studies = SingleStudyBenefitRiskService.addMissingOutcomesToStudies($scope.studies, $scope.analysis.selectedOutcomes);
+      $scope.studies = SingleStudyBenefitRiskService.addMissingInterventionsToStudies($scope.studies, $scope.analysis.interventionInclusions);
+      SingleStudyBenefitRiskService.addHasMatchedMixedTreatmentArm($scope.studies, $scope.analysis.interventionInclusions);
+      $scope.studies = SingleStudyBenefitRiskService.addOverlappingInterventionsToStudies($scope.studies, $scope.analysis.interventionInclusions);
+      SingleStudyBenefitRiskService.recalculateGroup($scope.studies);
     });
 
     function analysisToSaveCommand(analysis) {
@@ -172,7 +172,7 @@ define(['angular', 'lodash'], function(angular, _) {
     });
 
     $scope.goToDefaultScenarioView = function() {
-      SingleStudyBenefitRiskAnalysisService
+      SingleStudyBenefitRiskService
         .getDefaultScenario()
         .then(function(scenario) {
           $state.go(DEFAULT_VIEW, _.extend($stateParams, {
@@ -188,7 +188,7 @@ define(['angular', 'lodash'], function(angular, _) {
       if (deregisterInterventionWatch) {
         deregisterInterventionWatch();
       }
-      SingleStudyBenefitRiskAnalysisService.getProblem($scope.analysis).then(function(problem) {
+      SingleStudyBenefitRiskService.getProblem($scope.analysis).then(function(problem) {
         $scope.analysis.problem = problem;
         var saveCommand = analysisToSaveCommand($scope.analysis);
         AnalysisResource.save(saveCommand).$promise.then(function(response) {
@@ -200,5 +200,5 @@ define(['angular', 'lodash'], function(angular, _) {
     };
 
   };
-  return dependencies.concat(SingleStudyBenefitRiskAnalysisController);
+  return dependencies.concat(SingleStudyBenefitRiskController);
 });

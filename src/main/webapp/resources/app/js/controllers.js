@@ -4,7 +4,7 @@ define(function (require) {
   return angular.module('addis.controllers', [])
     .controller('ProjectsController', require('controllers/projectsController'))
     .controller('SingleProjectController', require('controllers/singleProjectController'))
-    .controller('SingleStudyBenefitRiskAnalysisController', require('controllers/singleStudyBenefitRiskAnalysisController'))
+    .controller('SingleStudyBenefitRiskController', require('controllers/singleStudyBenefitRiskController'))
     .controller('NetworkMetaAnalysisContainerController', require('controllers/networkMetaAnalysisContainerController'))
     .controller('NetworkMetaAnalysisModelContainerController', require('controllers/networkMetaAnalysisModelContainerController'));
 });
