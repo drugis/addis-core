@@ -33,6 +33,7 @@
     vertical-align: super;" ng-click="showStudyDialog()"><i class="fa fa-plus"></i></button>
       </div>
       <em ng-if="studiesWithDetail && !studiesWithDetail.length">No studies have been defined</em>
+      <em ng-if="studiesWithDetail && studiesWithDetail.length && !filteredStudies.length">No studies have been found using chosen filter(s)</em>
       <p style="margin-bottom: 0;" ng-if="studiesWithDetail.length">
         <button class="button small secondary" ng-click="showTableOptions()">
           <i class="fa fa-cog"></i>&nbsp; Show/Hide Columns
@@ -70,7 +71,7 @@
         </div>
       </div>
 
-      <table ng-if="studiesWithDetail.length">
+      <table ng-if="filteredStudies.length">
         <thead>
           <tr>
             <th ng-if="isEditingAllowed" class="text-center"></th>
@@ -92,9 +93,6 @@
           </tr>
         </thead>
         <tbody>
-          <tr ng-if="!filteredStudies">
-            <td colspan="21">No studies in dataset</td>
-          </tr>
           <tr ng-repeat="filteredStudy in filteredStudies | orderBy:tableOptions.orderByField:tableOptions.reverseSortOrder ">
             <td ng-if="isEditingAllowed"><a ng-click="showDeleteStudyDialog(filteredStudy)"><i class="fa fa-trash-o" style="color: red;"></i></a></td>
             <td style="vertical-align: top;">
@@ -115,7 +113,6 @@
           </tr>
         </tbody>
       </table>
-      <em ng-if="filteredStudies && !filteredStudies.length">No studies have been found using chosen filter</em>
     </div>
   </div>
   <div ng-show="!filteredStudies" class="row">
