@@ -7,7 +7,8 @@ define(['lodash'], function(_) {
       return {
         uri: node['@id'],
         label: node.label,
-        conceptMapping: node.sameAs
+        conceptMapping: node.sameAs,
+        conversionMultiplier: node.conversionMultiplier
       };
     }
 

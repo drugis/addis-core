@@ -1,4 +1,6 @@
-<h4>{{settings.label}}<inline-help help-key="{{settings.helpKey}}"></inline-help></h4>
+<h4>{{settings.label}}
+  <inline-help help-key="{{settings.helpKey}}"></inline-help>
+</h4>
 <table width="100%">
   <tr>
     <th width="33%">Study Concept</th>
@@ -7,11 +9,8 @@
   <tr ng-repeat="studyConcept in studyConcepts">
     <td>{{studyConcept.label}}</td>
     <td>
-      <concept-mapping-item
-        study-concepts="studyConcepts"
-        is-editing-allowed="isEditingAllowed"
-        settings="settings"
-        study-concept="studyConcept"
-        dataset-concepts="datasetConcepts"></concept-mapping-item></td>
-    </tr>
-  </table>
+      <concept-mapping-item study-concepts="studyConcepts" is-editing-allowed="isEditingAllowed"
+        settings="settings" study-concept="studyConcept" dataset-concepts="datasetConcepts"></concept-mapping-item>
+    </td>
+  </tr>
+</table>
