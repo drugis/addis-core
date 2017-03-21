@@ -104,7 +104,7 @@ define(['lodash', 'angular'], function(_, angular) {
           .map(_.partial(MetaBenefitRiskService.joinModelsWithAnalysis, models))
           .map(MetaBenefitRiskService.addModelsGroup);
         $scope.outcomesWithAnalyses = outcomes
-          .map(_.partial(MetaBenefitRiskService.buildOutcomeWithAnalyses, analysis, networkMetaAnalyses, models))
+          .map(_.partial(MetaBenefitRiskService.buildOutcomeWithAnalyses, analysis, networkMetaAnalyses))
           .map(function(owa) {
             owa.networkMetaAnalyses = owa.networkMetaAnalyses.sort(MetaBenefitRiskService.compareAnalysesByModels);
             return owa;

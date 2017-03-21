@@ -68,7 +68,7 @@ define(['lodash'], function(_) {
 
         analysis = addModelBaseline(analysis, models);
         $scope.analysis.$save().then(function() {
-          $scope.outcomesWithAnalyses = buildOutcomesWithAnalyses(analysis, outcomes, filteredNetworkMetaAnalyses, models);
+          $scope.outcomesWithAnalyses = MetaBenefitRiskService.buildOutcomesWithAnalyses(analysis, outcomes, filteredNetworkMetaAnalyses);
           resetScales();
         });
       });
@@ -132,25 +132,6 @@ define(['lodash'], function(_) {
         });
     }
 
-    function buildOutcomesWithAnalyses(analysis, outcomes, networkMetaAnalyses, models) {
-      return outcomes
-        .map(_.partial(MetaBenefitRiskService.buildOutcomeWithAnalyses, analysis, networkMetaAnalyses, models))
-        .map(function(outcomeWithAnalysis) {
-          outcomeWithAnalysis.networkMetaAnalyses = outcomeWithAnalysis.networkMetaAnalyses.sort(MetaBenefitRiskService.compareAnalysesByModels);
-          return outcomeWithAnalysis;
-        })
-        .filter(function(outcomeWithAnalysis) {
-          return outcomeWithAnalysis.outcome.isIncluded;
-        })
-        .map(function(outcomeWithAnalysis) {
-          outcomeWithAnalysis.baselineDistribution = _.find($scope.analysis.mbrOutcomeInclusions, function(inclusion) {
-            return inclusion.outcomeId === outcomeWithAnalysis.outcome.id;
-          }).baseline;
-          return outcomeWithAnalysis;
-        });
-    }
-
-
     function goToStep1() {
       $state.go('MetaBenefitRiskCreationStep-1', $stateParams);
     }
@@ -185,7 +166,7 @@ define(['lodash'], function(_) {
                 }
               });
               $scope.analysis.$save().then(function() {
-                $scope.outcomesWithAnalyses = buildOutcomesWithAnalyses($scope.analysis, $scope.outcomes, $scope.networkMetaAnalyses, $scope.models);
+                $scope.outcomesWithAnalyses = MetaBenefitRiskService.buildOutcomesWithAnalyses($scope.analysis, $scope.outcomes, $scope.networkMetaAnalyses);
                 resetScales();
               });
             };

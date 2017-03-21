@@ -45,14 +45,14 @@ define(['lodash'], function(_) {
           .map(_.partial(MetaBenefitRiskService.joinModelsWithAnalysis, models))
           .map(MetaBenefitRiskService.addModelsGroup);
         $scope.outcomesWithAnalyses = outcomes
-          .map(_.partial(MetaBenefitRiskService.buildOutcomeWithAnalyses, analysis, networkMetaAnalyses, models))
-          .map(function(owa) {
-            owa.networkMetaAnalyses = owa.networkMetaAnalyses.sort(MetaBenefitRiskService.compareAnalysesByModels);
-            return owa;
+          .map(_.partial(MetaBenefitRiskService.buildOutcomeWithAnalyses, analysis, networkMetaAnalyses))
+          .map(function(outcomeWithAnalysis) {
+            outcomeWithAnalysis.networkMetaAnalyses = outcomeWithAnalysis.networkMetaAnalyses.sort(MetaBenefitRiskService.compareAnalysesByModels);
+            return outcomeWithAnalysis;
           });
-        $scope.outcomesWithAnalyses = buildOutcomesWithAnalyses(analysis, outcomes, networkMetaAnalyses, models);
-        $scope.isMissingBaseline = _.find($scope.outcomesWithAnalyses, function(owa) {
-          return !owa.baselineDistribution;
+        $scope.outcomesWithAnalyses = MetaBenefitRiskService.buildOutcomesWithAnalyses(analysis, outcomes, networkMetaAnalyses);
+        $scope.isMissingBaseline = _.find($scope.outcomesWithAnalyses, function(outcomeWithAnalysis) {
+          return !outcomeWithAnalysis.baselineDistribution;
         });
       });
 
@@ -84,23 +84,7 @@ define(['lodash'], function(_) {
       });
     }
 
-    function buildOutcomesWithAnalyses(analysis, outcomes, networkMetaAnalyses, models) {
-      return outcomes
-        .map(_.partial(MetaBenefitRiskService.buildOutcomeWithAnalyses, analysis, networkMetaAnalyses, models))
-        .map(function(owa) {
-          owa.networkMetaAnalyses = owa.networkMetaAnalyses.sort(MetaBenefitRiskService.compareAnalysesByModels);
-          return owa;
-        })
-        .filter(function(owa) {
-          return owa.outcome.isIncluded;
-        })
-        .map(function(owa) {
-          owa.baselineDistribution = $scope.analysis.mbrOutcomeInclusions.find(function(inclusion) {
-            return inclusion.outcomeId === owa.outcome.id;
-          }).baseline;
-          return owa;
-        });
-    }
+
 
     function goToDefaultScenario() {
       ScenarioResource

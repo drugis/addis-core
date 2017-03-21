@@ -76,13 +76,13 @@ WHERE {
        SELECT ?studyUri ?doseType
          WHERE {
           BIND ('Flexible' as ?doseType)
-            ?activity 
+            ?activity
               a ontology:TreatmentActivity ;
               ontology:has_activity_application [
                 ontology:applied_to_arm ?arm
               ] ;
-              ontology:has_drug_treatment [ 
-                a ontology:TitratedDoseDrugTreatment 
+              ontology:has_drug_treatment [
+                a ontology:TitratedDoseDrugTreatment
               ] .
              ?studyUri ontology:has_arm ?arm .
           } GROUP BY ?studyUri ?doseType
@@ -109,4 +109,4 @@ WHERE {
       }
     }
 } GROUP BY ?graphUri ?studyUri ?title ?label ?allocation ?blinding ?objective ?inclusionCriteria ?status ?numberOfCenters ?indication ?startDate ?endDate ?doseType
-
+HAVING (?studyUri != "")
