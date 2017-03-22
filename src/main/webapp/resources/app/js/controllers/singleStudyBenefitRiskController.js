@@ -67,13 +67,13 @@ define(['angular', 'lodash'], function(angular, _) {
     };
 
     $scope.isValidAnalysis = function(analysis) {
-      var twoOrMoreInerventions = analysis.interventionInclusions.length >= 2;
+      var twoOrMoreInterventions = analysis.interventionInclusions.length >= 2;
       var twoOrMoreOutcomes = analysis.selectedOutcomes.length >= 2;
       var noMatchedMixedTreatmentArm = $scope.studyModel.selectedStudy && !$scope.studyModel.selectedStudy.hasMatchedMixedTreatmentArm;
       var noMissingOutcomes = $scope.studyModel.selectedStudy && !hasMissingOutcomes($scope.studyModel.selectedStudy);
       var noMissingInterventions = $scope.studyModel.selectedStudy && !hasMissingInterventions($scope.studyModel.selectedStudy);
 
-      var result = twoOrMoreInerventions && twoOrMoreOutcomes && noMatchedMixedTreatmentArm && noMissingOutcomes && noMissingInterventions;
+      var result = twoOrMoreInterventions && twoOrMoreOutcomes && noMatchedMixedTreatmentArm && noMissingOutcomes && noMissingInterventions;
       return result;
     };
 

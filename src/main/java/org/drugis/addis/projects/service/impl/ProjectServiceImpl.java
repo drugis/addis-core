@@ -268,7 +268,7 @@ public class ProjectServiceImpl implements ProjectService {
         newModel = modelRepository.persist(newModel);
         oldToNewModelId.put(oldModel.getId(), newModel.getId());
         JSONObject regressor = newModel.getRegressor();
-        if (regressor != null){
+        if (regressor != null) {
           Integer oldId = Integer.parseInt(regressor.get("control").toString());
           regressor.remove("control");
           regressor.put("control", oldToNewInterventionId.get(oldId).toString());
@@ -369,25 +369,113 @@ public class ProjectServiceImpl implements ProjectService {
     Project newProject = projectRepository.create(user, command);
 
     //Outcomes
-    createOutcomes(user, sourceProjectId, trialverseDatasetUuid, headVersion, newProject);
+    Map<Integer, Integer> oldToNewOutcomeId = new HashMap<>();
+    createOutcomes(user, sourceProjectId, trialverseDatasetUuid, headVersion, newProject, oldToNewOutcomeId);
+
 
     //Covariates
-    createCovariates(sourceProjectId, trialverseDatasetUuid, headVersion, newProject);
+    Map<Integer, Integer> oldToNewCovariateId = new HashMap<>();
+    createCovariates(sourceProjectId, trialverseDatasetUuid, headVersion, newProject, oldToNewCovariateId);
 
     //Interventions
-    createInterventions(user, sourceProjectId, trialverseDatasetUuid, headVersion, newProject);
+    Map<Integer, Integer> oldToNewInterventionId = new HashMap<>();
+    createInterventions(user, sourceProjectId, trialverseDatasetUuid, headVersion, newProject, oldToNewInterventionId);
 
+    //Analyses
+    Map<Integer, Integer> oldToNewAnalysisId = new HashMap<>();
+    Collection<AbstractAnalysis> sourceAnalyses = analysisRepository.query(sourceProjectId);
+    sourceAnalyses.stream()
+            .filter(analysis -> analysis instanceof NetworkMetaAnalysis)
+            .filter(analysis -> !analysis.getArchived())
+            .map(analysis -> (NetworkMetaAnalysis) analysis)
+            .filter(analysis -> checkNetworkMetaAnalysisDependencies(analysis, oldToNewOutcomeId, oldToNewCovariateId, oldToNewInterventionId))
+            .forEach(netWorkMetaAnalysisUpdateCreator(user, newProject,
+                    oldToNewAnalysisId,
+                    oldToNewOutcomeId,
+                    oldToNewInterventionId,
+                    oldToNewCovariateId));
     return newProject.getId();
   }
 
-  private void createOutcomes(Account user, Integer sourceProjectId, String trialverseDatasetUuid, URI headVersion, Project newProject) throws ReadValueException {
+  private Consumer<? super NetworkMetaAnalysis> netWorkMetaAnalysisUpdateCreator(Account user, Project newProject, Map<Integer, Integer> oldToNewAnalysisId, Map<Integer, Integer> oldToNewOutcomeId, Map<Integer, Integer> oldToNewInterventionId, Map<Integer, Integer> oldToNewCovariateId) {
+    // can probably use the networkMetaAnalysisCreator once updating of models is implemented
+    return oldAnalysis -> {
+      AnalysisCommand command = new AnalysisCommand(newProject.getId(), oldAnalysis.getTitle(),
+              AnalysisType.EVIDENCE_SYNTHESIS);
+      try {
+        final NetworkMetaAnalysis newAnalysis = analysisService.createNetworkMetaAnalysis(user, command);
+
+        // update interventions
+        em.flush(); // needed to unbuffer the intervention inclusion additions from the constructor
+        updateIncludedInterventions(oldAnalysis, newAnalysis, oldToNewInterventionId);
+
+        // update outcome
+        if (oldAnalysis.getOutcome() != null) {
+          Outcome updatedOutcome = outcomeRepository.get(oldToNewOutcomeId.get(oldAnalysis.getOutcome().getId()));
+          newAnalysis.setOutcome(updatedOutcome);
+        }
+
+        // update covariates
+        List<CovariateInclusion> updatedCovariateInclusions = oldAnalysis.getCovariateInclusions().stream()
+                .map(inclusion -> new CovariateInclusion(newAnalysis.getId(), oldToNewCovariateId.get(inclusion.getCovariateId())))
+                .collect(Collectors.toList());
+        newAnalysis.updateCovariateInclusions(updatedCovariateInclusions);
+
+        // update measurement moments
+        List<TrialDataStudy> studiesForNewProject = analysisService.buildEvidenceTable(newProject.getId(), oldAnalysis.getId());
+        Set<MeasurementMomentInclusion> updatedMMInclusions = oldAnalysis.getIncludedMeasurementMoments().stream()
+                .filter(inclusion -> studiesForNewProject.stream()
+                        .anyMatch(study -> study.getMeasurementMoments().stream()
+                                .anyMatch(measurementMoment -> measurementMoment.getUri().equals(inclusion.getMeasurementMoment()))))
+                .map(inclusion -> new MeasurementMomentInclusion(newAnalysis.getId(), inclusion.getStudy(), inclusion.getMeasurementMoment()))
+                .collect(Collectors.toSet());
+        newAnalysis.updateMeasurementMomentInclusions(updatedMMInclusions);
+
+        // update arm exclusions
+        Set<ArmExclusion> updatedArmExclusions = oldAnalysis.getExcludedArms().stream()
+                .filter(exclusion -> studiesForNewProject.stream()
+                        .anyMatch(study -> study.getTrialDataArms().stream()
+                                .anyMatch(trialDataArm -> trialDataArm.getUri().equals(exclusion.getTrialverseUid()))))
+                .map(exclusion -> new ArmExclusion(newAnalysis.getId(), exclusion.getTrialverseUid()))
+                .collect(Collectors.toSet());
+        newAnalysis.updateArmExclusions(updatedArmExclusions);
+
+        oldToNewAnalysisId.put(oldAnalysis.getId(), newAnalysis.getId());
+      } catch (ResourceDoesNotExistException | MethodNotAllowedException | ReadValueException | URISyntaxException e) {
+        e.printStackTrace();
+      }
+    };
+  }
+
+  private boolean checkNetworkMetaAnalysisDependencies(NetworkMetaAnalysis analysis,
+                                                       Map<Integer, Integer> oldToNewOutcomeId,
+                                                       Map<Integer, Integer> oldToNewCovariateId,
+                                                       Map<Integer, Integer> oldToNewInterventionId) {
+    if (analysis.getOutcome() != null && oldToNewOutcomeId.get(analysis.getOutcome().getId()) == null) {
+      return false;
+    }
+    for (CovariateInclusion covariateInclusion : analysis.getCovariateInclusions()) {
+      if (oldToNewCovariateId.get(covariateInclusion.getCovariateId()) == null) {
+        return false;
+      }
+    }
+    for (InterventionInclusion interventionInclusion : analysis.getInterventionInclusions()) {
+      if (oldToNewInterventionId.get(interventionInclusion.getInterventionId()) == null) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  private void createOutcomes(Account user, Integer sourceProjectId, String trialverseDatasetUuid, URI headVersion, Project newProject, Map<Integer, Integer> oldIdToNewCovariateId) throws ReadValueException {
     Collection<Outcome> sourceOutcomes = outcomeRepository.query(sourceProjectId);
+    // List of target outcomes
     List<SemanticVariable> semanticOutcomes = triplestoreService.getOutcomes(trialverseDatasetUuid, headVersion);
 
     sourceOutcomes.stream()
             .filter(sourceOutcome ->
                     semanticOutcomes.stream().anyMatch(semanticOutcome -> semanticOutcome.getUri().equals(sourceOutcome.getSemanticOutcomeUri())))
-            .forEach(outcomeCreator(user, newProject, new HashMap<>()));
+            .forEach(outcomeCreator(user, newProject, oldIdToNewCovariateId));
   }
 
   private Consumer<Outcome> outcomeCreator(Account user, Project newProject, Map<Integer, Integer> oldToNewOutcomeId) {
@@ -402,7 +490,7 @@ public class ProjectServiceImpl implements ProjectService {
     };
   }
 
-  private void createCovariates(Integer sourceProjectId, String trialverseDatasetUuid, URI headVersion, Project newProject) throws ReadValueException {
+  private void createCovariates(Integer sourceProjectId, String trialverseDatasetUuid, URI headVersion, Project newProject, Map<Integer, Integer> oldToNewCovariateId) throws ReadValueException {
     Collection<Covariate> sourceCovariates = covariateRepository.findByProject(sourceProjectId);
     List<SemanticVariable> semanticCovariates = triplestoreService.getPopulationCharacteristics(trialverseDatasetUuid, headVersion);
 
@@ -410,7 +498,7 @@ public class ProjectServiceImpl implements ProjectService {
             .filter(sourceCovariate -> sourceCovariate.getType().equals(CovariateOptionType.STUDY_CHARACTERISTIC) ||
                     semanticCovariates.stream()
                             .anyMatch(semanticCovariate -> semanticCovariate.getUri().toString().equals(sourceCovariate.getDefinitionKey())))
-            .forEach(covariateCreator(newProject, new HashMap<>()));
+            .forEach(covariateCreator(newProject, oldToNewCovariateId));
   }
 
   private Consumer<Covariate> covariateCreator(Project newProject, Map<Integer, Integer> oldIdToNewCovariateId) {
@@ -421,32 +509,30 @@ public class ProjectServiceImpl implements ProjectService {
     };
   }
 
-  private void createInterventions(Account user, Integer sourceProjectId, String trialverseDatasetUuid, URI headVersion, Project newProject) {
+  private void createInterventions(Account user, Integer sourceProjectId, String trialverseDatasetUuid, URI headVersion, Project newProject, Map<Integer, Integer> oldToNewInterventionId) {
     Set<AbstractIntervention> sourceInterventions = interventionRepository.query(sourceProjectId);
     List<SemanticInterventionUriAndName> semanticInterventions = triplestoreService.getInterventions(trialverseDatasetUuid, headVersion);
     List<URI> unitConcepts = triplestoreService.getUnitUris(trialverseDatasetUuid, headVersion);
-
-    Map<Integer, Integer> oldIdToNewInterventionId = new HashMap<>();
 
     sourceInterventions.stream()
             .filter(intervention -> intervention instanceof SingleIntervention)
             .map(intervention -> (SingleIntervention) intervention)
             .filter(sourceIntervention -> semanticInterventions.stream().anyMatch(semanticIntervention -> semanticIntervention.getUri().equals(sourceIntervention.getSemanticInterventionUri())))
             .filter(intervention -> checkInterventionUnits(intervention, unitConcepts))
-            .forEach(singleInterventionCreator(user, newProject, oldIdToNewInterventionId));
+            .forEach(singleInterventionCreator(user, newProject, oldToNewInterventionId));
 
     //combination interventions before intervention sets because intervention sets may contain combination interventions
     sourceInterventions.stream()
             .filter(intervention -> (intervention instanceof CombinationIntervention))
             .map(intervention -> (CombinationIntervention) intervention)
-            .filter(intervention -> intervention.getInterventionIds().stream().allMatch(id -> oldIdToNewInterventionId.get(id) != null))
-            .forEach(combinationInterventionCreator(user, newProject, oldIdToNewInterventionId));
+            .filter(intervention -> intervention.getInterventionIds().stream().allMatch(id -> oldToNewInterventionId.get(id) != null))
+            .forEach(combinationInterventionCreator(user, newProject, oldToNewInterventionId));
     // intervention sets
     sourceInterventions.stream()
             .filter(intervention -> (intervention instanceof InterventionSet))
             .map(intervention -> (InterventionSet) intervention)
-            .filter(intervention -> intervention.getInterventionIds().stream().allMatch(id -> oldIdToNewInterventionId.get(id) != null))
-            .forEach(interventionSetCreator(user, newProject, oldIdToNewInterventionId));
+            .filter(intervention -> intervention.getInterventionIds().stream().allMatch(id -> oldToNewInterventionId.get(id) != null))
+            .forEach(interventionSetCreator(user, newProject, oldToNewInterventionId));
   }
 
   private Consumer<CombinationIntervention> combinationInterventionCreator(Account user, Project newProject, Map<Integer, Integer> oldIdToNewInterventionId) {
