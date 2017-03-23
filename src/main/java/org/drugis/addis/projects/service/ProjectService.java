@@ -27,5 +27,5 @@ public interface ProjectService {
 
   Integer copy(Account user, Integer projectId, String newTitle) throws ResourceDoesNotExistException, SQLException;
 
-  Integer createUpdated(Account user, Integer projectId) throws ResourceDoesNotExistException, ReadValueException, URISyntaxException;
+  Integer createUpdated(Account user, Integer projectId) throws ResourceDoesNotExistException, ReadValueException, URISyntaxException, SQLException;
 }

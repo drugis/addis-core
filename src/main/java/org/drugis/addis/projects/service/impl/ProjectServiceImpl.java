@@ -30,6 +30,7 @@ import org.drugis.addis.security.repository.AccountRepository;
 import org.drugis.addis.trialverse.model.SemanticInterventionUriAndName;
 import org.drugis.addis.trialverse.model.SemanticVariable;
 import org.drugis.addis.trialverse.model.emun.CovariateOptionType;
+import org.drugis.addis.trialverse.model.trialdata.TrialDataArm;
 import org.drugis.addis.trialverse.model.trialdata.TrialDataStudy;
 import org.drugis.addis.trialverse.service.MappingService;
 import org.drugis.addis.trialverse.service.TriplestoreService;
@@ -51,6 +52,7 @@ import java.sql.SQLException;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Created by connor on 16-4-14.
@@ -358,7 +360,7 @@ public class ProjectServiceImpl implements ProjectService {
 
   @Override
   public Integer createUpdated(Account user, Integer sourceProjectId) throws ResourceDoesNotExistException,
-          ReadValueException, URISyntaxException {
+          ReadValueException, URISyntaxException, SQLException {
     Project sourceProject = projectRepository.get(sourceProjectId);
     ProjectCommand command = sourceProject.getCommand();
     URI datasetUri = URI.create(Namespaces.DATASET_NAMESPACE + sourceProject.getNamespaceUid());
@@ -394,7 +396,92 @@ public class ProjectServiceImpl implements ProjectService {
                     oldToNewOutcomeId,
                     oldToNewInterventionId,
                     oldToNewCovariateId));
+
+    //models
+    Map<Integer, Integer> oldToNewModelId = new HashMap<>();
+    Collection<Model> sourceModels = modelRepository.findModelsByProject(sourceProjectId);
+    sourceModels.stream()
+            .filter(model -> {
+              try {
+                return checkModelDependencies(model, newProject, sourceProject, oldToNewAnalysisId);
+              } catch (ResourceDoesNotExistException | ReadValueException | URISyntaxException e) {
+                e.printStackTrace();
+                return false;
+              }
+            })
+            .forEach(modelCreator(oldToNewAnalysisId, oldToNewModelId, oldToNewInterventionId));
+
+    //update primary models
+    analysisRepository.query(newProject.getId()).stream()
+            .filter(analysis -> analysis instanceof NetworkMetaAnalysis)
+            .map(analysis -> (NetworkMetaAnalysis) analysis)
+            .forEach(nma -> {
+              if (nma.getPrimaryModel() != null) {
+                nma.setPrimaryModel(oldToNewModelId.get(nma.getPrimaryModel()));
+              }
+            });
+
+
     return newProject.getId();
+  }
+
+  private boolean checkModelDependencies(Model model, Project newProject, Project sourceProject, Map<Integer, Integer> oldToNewAnalysisId) throws ResourceDoesNotExistException, ReadValueException, URISyntaxException {
+    // how about excluded arms? do we care about them
+    NetworkMetaAnalysis newAnalysis;
+    NetworkMetaAnalysis oldAnalysis;
+    if (oldToNewAnalysisId.get(model.getAnalysisId()) == null) {
+      return false;
+    } else {
+      newAnalysis = (NetworkMetaAnalysis) analysisRepository.get(oldToNewAnalysisId.get(model.getAnalysisId()));
+      oldAnalysis = (NetworkMetaAnalysis) analysisRepository.get(model.getAnalysisId());
+      // we already know covariates and interventions are alright, otherwise the analysis would not have been copied
+    }
+
+    // build list of included arms of analysis from old project
+    ArrayList filteredOldArms = new ArrayList();
+    List<TrialDataStudy> studiesForOldProject = analysisService.buildEvidenceTable(sourceProject.getId(), oldAnalysis.getId());
+    for (TrialDataStudy study : studiesForOldProject) {
+      List<TrialDataArm> arms = study.getTrialDataArms();
+      filteredOldArms = (ArrayList) arms.stream().filter(arm -> {
+        for (ArmExclusion armExclusion : oldAnalysis.getExcludedArms()) {
+          if (armExclusion.getTrialverseUid() == arm.getUri()) {
+            return false;
+          }
+        }
+        return true;
+      });
+    }
+
+    // build list of included arms of analysis from new project
+    ArrayList filteredNewArms = new ArrayList();
+    List<TrialDataStudy> studiesForNewProject = analysisService.buildEvidenceTable(newProject.getId(), newAnalysis.getId());
+    for (TrialDataStudy study : studiesForNewProject) {
+      List<TrialDataArm> arms = study.getTrialDataArms();
+      filteredNewArms = (ArrayList) arms.stream().filter(arm -> {
+        for (ArmExclusion armExclusion : newAnalysis.getExcludedArms()) {
+          if (armExclusion.getTrialverseUid() == arm.getUri()) {
+            return false;
+          }
+        }
+        return true;
+      });
+    }
+
+    // See if all old arms still exist in the new project
+    for (Object newArm : filteredNewArms) {
+      TrialDataArm castedNewArm = (TrialDataArm) newArm;
+      if (!filteredOldArms.stream().anyMatch(oldArm -> {
+        TrialDataArm castedOldArm = (TrialDataArm) oldArm;
+        castedNewArm.getMeasurementsForMoment(newAnalysis.getm)
+        return castedNewArm.getUri() == castedOldArm.getUri();
+      })) {
+        return false; //missing a needed arm
+      }
+    }
+
+    // check missing values for included arms
+
+    return true;
   }
 
   private Consumer<? super NetworkMetaAnalysis> netWorkMetaAnalysisUpdateCreator(Account user, Project newProject, Map<Integer, Integer> oldToNewAnalysisId, Map<Integer, Integer> oldToNewOutcomeId, Map<Integer, Integer> oldToNewInterventionId, Map<Integer, Integer> oldToNewCovariateId) {
@@ -404,6 +491,7 @@ public class ProjectServiceImpl implements ProjectService {
               AnalysisType.EVIDENCE_SYNTHESIS);
       try {
         final NetworkMetaAnalysis newAnalysis = analysisService.createNetworkMetaAnalysis(user, command);
+        newAnalysis.setPrimaryModel(oldAnalysis.getPrimaryModel());
 
         // update interventions
         em.flush(); // needed to unbuffer the intervention inclusion additions from the constructor
