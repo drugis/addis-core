@@ -9,16 +9,22 @@ import org.drugis.addis.analyses.service.AnalysisService;
 import org.drugis.addis.covariates.Covariate;
 import org.drugis.addis.covariates.CovariateRepository;
 import org.drugis.addis.exception.MethodNotAllowedException;
+import org.drugis.addis.exception.ProblemCreationException;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.interventions.controller.command.*;
 import org.drugis.addis.interventions.model.*;
 import org.drugis.addis.interventions.repository.InterventionRepository;
 import org.drugis.addis.interventions.service.InterventionService;
+import org.drugis.addis.interventions.service.impl.InvalidTypeForDoseCheckException;
 import org.drugis.addis.models.Model;
 import org.drugis.addis.models.exceptions.InvalidModelException;
 import org.drugis.addis.models.repository.ModelRepository;
 import org.drugis.addis.outcomes.Outcome;
 import org.drugis.addis.outcomes.repository.OutcomeRepository;
+import org.drugis.addis.patavitask.repository.UnexpectedNumberOfResultsException;
+import org.drugis.addis.problems.model.AbstractNetworkMetaAnalysisProblemEntry;
+import org.drugis.addis.problems.model.NetworkMetaAnalysisProblem;
+import org.drugis.addis.problems.service.ProblemService;
 import org.drugis.addis.projects.Project;
 import org.drugis.addis.projects.ProjectCommand;
 import org.drugis.addis.projects.repository.ProjectRepository;
@@ -30,7 +36,6 @@ import org.drugis.addis.security.repository.AccountRepository;
 import org.drugis.addis.trialverse.model.SemanticInterventionUriAndName;
 import org.drugis.addis.trialverse.model.SemanticVariable;
 import org.drugis.addis.trialverse.model.emun.CovariateOptionType;
-import org.drugis.addis.trialverse.model.trialdata.TrialDataArm;
 import org.drugis.addis.trialverse.model.trialdata.TrialDataStudy;
 import org.drugis.addis.trialverse.service.MappingService;
 import org.drugis.addis.trialverse.service.TriplestoreService;
@@ -52,7 +57,6 @@ import java.sql.SQLException;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * Created by connor on 16-4-14.
@@ -101,6 +105,9 @@ public class ProjectServiceImpl implements ProjectService {
 
   @Inject
   private NetworkMetaAnalysisRepository networkMetaAnalysisRepository;
+
+  @Inject
+  private ProblemService problemService;
 
   @Qualifier("emAddisCore")
   @PersistenceContext(unitName = "addisCore")
@@ -403,7 +410,7 @@ public class ProjectServiceImpl implements ProjectService {
     sourceModels.stream()
             .filter(model -> {
               try {
-                return checkModelDependencies(model, newProject, sourceProject, oldToNewAnalysisId);
+                return checkModelDependencies(model, newProject, sourceProject, oldToNewAnalysisId, oldToNewInterventionId);
               } catch (ResourceDoesNotExistException | ReadValueException | URISyntaxException e) {
                 e.printStackTrace();
                 return false;
@@ -421,11 +428,10 @@ public class ProjectServiceImpl implements ProjectService {
               }
             });
 
-
     return newProject.getId();
   }
 
-  private boolean checkModelDependencies(Model model, Project newProject, Project sourceProject, Map<Integer, Integer> oldToNewAnalysisId) throws ResourceDoesNotExistException, ReadValueException, URISyntaxException {
+  private boolean checkModelDependencies(Model model, Project newProject, Project sourceProject, Map<Integer, Integer> oldToNewAnalysisId, Map<Integer, Integer> toNewAnalysisId) throws ResourceDoesNotExistException, ReadValueException, URISyntaxException, SQLException, InvalidTypeForDoseCheckException, UnexpectedNumberOfResultsException, IOException {
     // how about excluded arms? do we care about them
     NetworkMetaAnalysis newAnalysis;
     NetworkMetaAnalysis oldAnalysis;
@@ -437,54 +443,77 @@ public class ProjectServiceImpl implements ProjectService {
       // we already know covariates and interventions are alright, otherwise the analysis would not have been copied
     }
 
-    // build list of included arms of analysis from old project
-    ArrayList filteredOldArms = new ArrayList();
-    List<TrialDataStudy> studiesForOldProject = analysisService.buildEvidenceTable(sourceProject.getId(), oldAnalysis.getId());
-    for (TrialDataStudy study : studiesForOldProject) {
-      List<TrialDataArm> arms = study.getTrialDataArms();
-      filteredOldArms = (ArrayList) arms.stream().filter(arm -> {
-        for (ArmExclusion armExclusion : oldAnalysis.getExcludedArms()) {
-          if (armExclusion.getTrialverseUid() == arm.getUri()) {
-            return false;
-          }
-        }
-        return true;
-      });
+    try {
+      NetworkMetaAnalysisProblem oldProblem = (NetworkMetaAnalysisProblem) problemService.getProblem(sourceProject.getId(), oldAnalysis.getId());
+      NetworkMetaAnalysisProblem newProblem = (NetworkMetaAnalysisProblem) problemService.getProblem(newProject.getId(), newAnalysis.getId());
+    } catch(ResourceDoesNotExistException | ProblemCreationException e) {
+      throw new
     }
+    return areEntriesIdenticalEnough(oldProblem.getEntries(), newProblem.getEntries(), Map<Integer, Integer> oldToNewInterventionId);
 
-    // build list of included arms of analysis from new project
-    ArrayList filteredNewArms = new ArrayList();
-    List<TrialDataStudy> studiesForNewProject = analysisService.buildEvidenceTable(newProject.getId(), newAnalysis.getId());
-    for (TrialDataStudy study : studiesForNewProject) {
-      List<TrialDataArm> arms = study.getTrialDataArms();
-      filteredNewArms = (ArrayList) arms.stream().filter(arm -> {
-        for (ArmExclusion armExclusion : newAnalysis.getExcludedArms()) {
-          if (armExclusion.getTrialverseUid() == arm.getUri()) {
-            return false;
-          }
-        }
-        return true;
-      });
-    }
-
-    // See if all old arms still exist in the new project
-    for (Object newArm : filteredNewArms) {
-      TrialDataArm castedNewArm = (TrialDataArm) newArm;
-      if (!filteredOldArms.stream().anyMatch(oldArm -> {
-        TrialDataArm castedOldArm = (TrialDataArm) oldArm;
-        castedNewArm.getMeasurementsForMoment(newAnalysis.getm)
-        return castedNewArm.getUri() == castedOldArm.getUri();
-      })) {
-        return false; //missing a needed arm
-      }
-    }
-
-    // check missing values for included arms
+//
+//    // build list of included arms of analysis from old project
+//    ArrayList filteredOldArms = new ArrayList();
+//    List<TrialDataStudy> studiesForOldProject = analysisService.buildEvidenceTable(sourceProject.getId(), oldAnalysis.getId());
+//    for (TrialDataStudy study : studiesForOldProject) {
+//      List<TrialDataArm> arms = study.getTrialDataArms();
+//      filteredOldArms = (ArrayList) arms.stream().filter(arm -> {
+//        for (ArmExclusion armExclusion : oldAnalysis.getExcludedArms()) {
+//          if (armExclusion.getTrialverseUid() == arm.getUri()) {
+//            return false;
+//          }
+//        }
+//        return true;
+//      });
+//    }
+//
+//    // build list of included arms of analysis from new project
+//    ArrayList filteredNewArms = new ArrayList();
+//    List<TrialDataStudy> studiesForNewProject = analysisService.buildEvidenceTable(newProject.getId(), newAnalysis.getId());
+//    for (TrialDataStudy study : studiesForNewProject) {
+//      List<TrialDataArm> arms = study.getTrialDataArms();
+//      filteredNewArms = (ArrayList) arms.stream().filter(arm -> {
+//        for (ArmExclusion armExclusion : newAnalysis.getExcludedArms()) {
+//          if (armExclusion.getTrialverseUid() == arm.getUri()) {
+//            return false;
+//          }
+//        }
+//        return true;
+//      });
+//    }
+//
+//    // See if all old arms still exist in the new project
+//    // switch new and old, for all old much match to new, not the other way around
+//    for (Object newArm : filteredNewArms) {
+//      TrialDataArm castedNewArm = (TrialDataArm) newArm;
+//      if (!filteredOldArms.stream().anyMatch(oldArm -> {
+//        TrialDataArm castedOldArm = (TrialDataArm) oldArm;
+//        return castedNewArm.getUri() == castedOldArm.getUri();
+//      })) {
+//        return false; //missing a needed arm
+//      }
+//    }
+//
+//    // check missing values for included arms
 
     return true;
   }
 
-  private Consumer<? super NetworkMetaAnalysis> netWorkMetaAnalysisUpdateCreator(Account user, Project newProject, Map<Integer, Integer> oldToNewAnalysisId, Map<Integer, Integer> oldToNewOutcomeId, Map<Integer, Integer> oldToNewInterventionId, Map<Integer, Integer> oldToNewCovariateId) {
+  private boolean isSameEntry(AbstractNetworkMetaAnalysisProblemEntry oldEntry, AbstractNetworkMetaAnalysisProblemEntry newEntry) {
+
+  }
+
+  private boolean areEntriesIdenticalEnough(List<AbstractNetworkMetaAnalysisProblemEntry> oldEntries, List<AbstractNetworkMetaAnalysisProblemEntry> newEntries) {
+    for (AbstractNetworkMetaAnalysisProblemEntry oldEntry : oldEntries) {
+      newEntries.stream().anyMatch(newEntry ->))
+    }
+    return true;
+  }
+
+  private Consumer<? super NetworkMetaAnalysis> netWorkMetaAnalysisUpdateCreator(
+          Account user, Project newProject, Map<Integer, Integer> oldToNewAnalysisId,
+          Map<Integer, Integer> oldToNewOutcomeId, Map<Integer, Integer> oldToNewInterventionId,
+          Map<Integer, Integer> oldToNewCovariateId) {
     // can probably use the networkMetaAnalysisCreator once updating of models is implemented
     return oldAnalysis -> {
       AnalysisCommand command = new AnalysisCommand(newProject.getId(), oldAnalysis.getTitle(),
