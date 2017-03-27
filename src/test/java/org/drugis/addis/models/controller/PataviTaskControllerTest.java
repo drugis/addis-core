@@ -1,6 +1,7 @@
 package org.drugis.addis.models.controller;
 
 import org.drugis.addis.config.TestConfig;
+import org.drugis.addis.exception.ProblemCreationException;
 import org.drugis.addis.interventions.service.impl.InvalidTypeForDoseCheckException;
 import org.drugis.addis.models.exceptions.InvalidModelException;
 import org.drugis.addis.patavitask.PataviTaskUriHolder;
@@ -68,7 +69,7 @@ public class PataviTaskControllerTest {
   }
 
   @Test
-  public void testGetTaskForModel() throws Exception, InvalidModelException, ReadValueException, InvalidTypeForDoseCheckException {
+  public void testGetTaskForModel() throws Exception, InvalidModelException, ReadValueException, InvalidTypeForDoseCheckException, ProblemCreationException {
     URI uri = URI.create("www.nogonahappen.com");
     PataviTaskUriHolder pataviTaskUriHolder = new PataviTaskUriHolder(uri);
     int projectId = 45;

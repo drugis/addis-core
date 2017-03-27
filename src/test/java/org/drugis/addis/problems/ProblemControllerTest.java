@@ -2,6 +2,7 @@ package org.drugis.addis.problems;
 
 import net.minidev.json.JSONObject;
 import org.drugis.addis.config.TestConfig;
+import org.drugis.addis.exception.ProblemCreationException;
 import org.drugis.addis.interventions.service.impl.InvalidTypeForDoseCheckException;
 import org.drugis.addis.problems.model.*;
 import org.drugis.addis.problems.service.ProblemService;
@@ -54,7 +55,7 @@ public class ProblemControllerTest {
   }
 
   @Test
-  public void testGetSingleStudybenefitRiskProblem() throws Exception, ReadValueException, InvalidTypeForDoseCheckException {
+  public void testGetSingleStudybenefitRiskProblem() throws Exception, ReadValueException, InvalidTypeForDoseCheckException, ProblemCreationException {
     RatePerformance ratePerformance = new RatePerformance(new RatePerformanceParameters(10, 50));
     Integer alternative1 = 1;
     Integer alternative2 = 2;
@@ -80,7 +81,7 @@ public class ProblemControllerTest {
   }
 
   @Test
-  public void testGetNetworkMetaAnalysisProblem() throws Exception, ReadValueException, InvalidTypeForDoseCheckException {
+  public void testGetNetworkMetaAnalysisProblem() throws Exception, ReadValueException, InvalidTypeForDoseCheckException, ProblemCreationException {
     int treatmentId1 = 1;
     int treatmentId2 = 2;
     AbstractNetworkMetaAnalysisProblemEntry entry1 = new RateNetworkMetaAnalysisProblemEntry("study", treatmentId1, 10, 5);
@@ -98,14 +99,14 @@ public class ProblemControllerTest {
       .andExpect(jsonPath("$", notNullValue()))
       .andExpect(jsonPath("$.entries", hasSize(2)))
       .andExpect((jsonPath("$.entries[0].treatment", equalTo(entry1.getTreatment()))))
-      .andExpect((jsonPath("$.entries[0].responders", is(((RateNetworkMetaAnalysisProblemEntry) entry1).getResponders().intValue()))))
+      .andExpect((jsonPath("$.entries[0].responders", is(((RateNetworkMetaAnalysisProblemEntry) entry1).getResponders()))))
             .andExpect((jsonPath("$.treatments[0].id", equalTo(treatmentId1))))
             .andExpect((jsonPath("$.studyLevelCovariates", equalTo(new JSONObject()))));
     verify(problemService).getProblem(projectId, analysisId);
   }
 
   @Test
-  public void testGetNetworkMetaAnalysisNoCovariates() throws Exception, ReadValueException, InvalidTypeForDoseCheckException {
+  public void testGetNetworkMetaAnalysisNoCovariates() throws Exception, ReadValueException, InvalidTypeForDoseCheckException, ProblemCreationException {
     int treatmentId1 = 1;
     int treatmentId2 = 2;
     AbstractNetworkMetaAnalysisProblemEntry entry1 = new RateNetworkMetaAnalysisProblemEntry("study", treatmentId1, 10, 5);
@@ -123,7 +124,7 @@ public class ProblemControllerTest {
             .andExpect(jsonPath("$", notNullValue()))
             .andExpect(jsonPath("$.entries", hasSize(2)))
             .andExpect(jsonPath("$.entries[0].treatment", equalTo(entry1.getTreatment())))
-            .andExpect(jsonPath("$.entries[0].responders", is(((RateNetworkMetaAnalysisProblemEntry) entry1).getResponders().intValue())))
+            .andExpect(jsonPath("$.entries[0].responders", is(((RateNetworkMetaAnalysisProblemEntry) entry1).getResponders())))
             .andExpect(jsonPath("$.treatments[0].id", equalTo(treatmentId1)))
             .andExpect(jsonPath("$.studyLevelCovariates").doesNotExist());
     verify(problemService).getProblem(projectId, analysisId);
