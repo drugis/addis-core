@@ -13,6 +13,7 @@ import org.drugis.addis.analyses.repository.SingleStudyBenefitRiskAnalysisReposi
 import org.drugis.addis.analyses.service.AnalysisService;
 import org.drugis.addis.covariates.Covariate;
 import org.drugis.addis.covariates.CovariateRepository;
+import org.drugis.addis.exception.ProblemCreationException;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.interventions.model.AbstractIntervention;
 import org.drugis.addis.interventions.model.SimpleIntervention;
@@ -166,7 +167,7 @@ public class ProblemServiceTest {
   }
 
   @Test
-  public void testGetSingleStudyBenefitRiskProblem() throws Exception, ReadValueException, InvalidTypeForDoseCheckException {
+  public void testGetSingleStudyBenefitRiskProblem() throws Exception, ReadValueException, InvalidTypeForDoseCheckException, ProblemCreationException {
     URI secondOutcomeUri = URI.create("http://secondSemantic");
     SemanticVariable secondSemanticOutcome = new SemanticVariable(secondOutcomeUri, "second semantic outcome");
     Outcome secondOutcome = new Outcome(-303, projectId, "second outcome", direction, "very", secondSemanticOutcome);
@@ -291,7 +292,7 @@ public class ProblemServiceTest {
   }
 
   @Test
-  public void testGetNmaProblemDichotomous() throws URISyntaxException, SQLException, IOException, ReadValueException, ResourceDoesNotExistException, InvalidTypeForDoseCheckException, UnexpectedNumberOfResultsException {
+  public void testGetNmaProblemDichotomous() throws URISyntaxException, SQLException, IOException, ReadValueException, ResourceDoesNotExistException, InvalidTypeForDoseCheckException, UnexpectedNumberOfResultsException, ProblemCreationException {
 
     // analysis
     NetworkMetaAnalysis networkMetaAnalysis = new NetworkMetaAnalysis(analysisId, project.getId(), "nma title", outcome);
@@ -367,7 +368,7 @@ public class ProblemServiceTest {
   }
 
   @Test
-  public void testGetNmaProblemContinuous() throws URISyntaxException, SQLException, IOException, ReadValueException, ResourceDoesNotExistException, InvalidTypeForDoseCheckException, UnexpectedNumberOfResultsException {
+  public void testGetNmaProblemContinuous() throws URISyntaxException, SQLException, IOException, ReadValueException, ResourceDoesNotExistException, InvalidTypeForDoseCheckException, UnexpectedNumberOfResultsException, ProblemCreationException {
 
     // analysis
     NetworkMetaAnalysis networkMetaAnalysis = new NetworkMetaAnalysis(analysisId, project.getId(), "nma title", outcome);
@@ -501,7 +502,7 @@ public class ProblemServiceTest {
   }
 
   @Test
-  public void testGetMetaBRProblem() throws Exception, ReadValueException, InvalidTypeForDoseCheckException {
+  public void testGetMetaBRProblem() throws Exception, ReadValueException, InvalidTypeForDoseCheckException, ProblemCreationException {
 
     URI version = URI.create("http://versions.com/version");
     Integer projectId = 1;

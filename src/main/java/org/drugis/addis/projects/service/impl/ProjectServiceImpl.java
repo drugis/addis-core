@@ -408,10 +408,11 @@ public class ProjectServiceImpl implements ProjectService {
     Map<Integer, Integer> oldToNewModelId = new HashMap<>();
     Collection<Model> sourceModels = modelRepository.findModelsByProject(sourceProjectId);
     sourceModels.stream()
+            .filter(model -> !model.getArchived())
             .filter(model -> {
               try {
                 return checkModelDependencies(model, newProject, sourceProject, oldToNewAnalysisId, oldToNewInterventionId);
-              } catch (ResourceDoesNotExistException | ReadValueException | URISyntaxException e) {
+              } catch (ResourceDoesNotExistException | UnexpectedNumberOfResultsException | URISyntaxException | SQLException | ReadValueException | IOException | InvalidTypeForDoseCheckException | ProblemCreationException e) {
                 e.printStackTrace();
                 return false;
               }
@@ -431,10 +432,11 @@ public class ProjectServiceImpl implements ProjectService {
     return newProject.getId();
   }
 
-  private boolean checkModelDependencies(Model model, Project newProject, Project sourceProject, Map<Integer, Integer> oldToNewAnalysisId, Map<Integer, Integer> toNewAnalysisId) throws ResourceDoesNotExistException, ReadValueException, URISyntaxException, SQLException, InvalidTypeForDoseCheckException, UnexpectedNumberOfResultsException, IOException {
-    // how about excluded arms? do we care about them
+  private boolean checkModelDependencies(Model model, Project newProject, Project sourceProject, Map<Integer, Integer> oldToNewAnalysisId, Map<Integer, Integer> oldToNewInterventionId) throws ResourceDoesNotExistException, ReadValueException, URISyntaxException, SQLException, InvalidTypeForDoseCheckException, UnexpectedNumberOfResultsException, IOException, ProblemCreationException {
     NetworkMetaAnalysis newAnalysis;
     NetworkMetaAnalysis oldAnalysis;
+    NetworkMetaAnalysisProblem oldProblem;
+    NetworkMetaAnalysisProblem newProblem;
     if (oldToNewAnalysisId.get(model.getAnalysisId()) == null) {
       return false;
     } else {
@@ -443,13 +445,10 @@ public class ProjectServiceImpl implements ProjectService {
       // we already know covariates and interventions are alright, otherwise the analysis would not have been copied
     }
 
-    try {
-      NetworkMetaAnalysisProblem oldProblem = (NetworkMetaAnalysisProblem) problemService.getProblem(sourceProject.getId(), oldAnalysis.getId());
-      NetworkMetaAnalysisProblem newProblem = (NetworkMetaAnalysisProblem) problemService.getProblem(newProject.getId(), newAnalysis.getId());
-    } catch(ResourceDoesNotExistException | ProblemCreationException e) {
-      throw new
-    }
-    return areEntriesIdenticalEnough(oldProblem.getEntries(), newProblem.getEntries(), Map<Integer, Integer> oldToNewInterventionId);
+    newProblem = (NetworkMetaAnalysisProblem) problemService.getProblem(newProject.getId(), newAnalysis.getId());
+    oldProblem = (NetworkMetaAnalysisProblem) problemService.getProblem(sourceProject.getId(), oldAnalysis.getId());
+
+    return areEntriesIdenticalEnough(oldProblem.getEntries(), newProblem.getEntries(), oldToNewInterventionId);
 
 //
 //    // build list of included arms of analysis from old project
@@ -494,18 +493,27 @@ public class ProjectServiceImpl implements ProjectService {
 //      }
 //    }
 //
-//    // check missing values for included arms
-
-    return true;
   }
 
-  private boolean isSameEntry(AbstractNetworkMetaAnalysisProblemEntry oldEntry, AbstractNetworkMetaAnalysisProblemEntry newEntry) {
-
+  private boolean isSameEntry(AbstractNetworkMetaAnalysisProblemEntry oldEntry,
+                              AbstractNetworkMetaAnalysisProblemEntry newEntry,
+                              Map<Integer, Integer> oldToNewInterventionId) {
+    return oldToNewInterventionId.get(oldEntry.getTreatment()).equals(newEntry.getTreatment())
+            && oldEntry.getStudy().equals(newEntry.getStudy());
   }
 
-  private boolean areEntriesIdenticalEnough(List<AbstractNetworkMetaAnalysisProblemEntry> oldEntries, List<AbstractNetworkMetaAnalysisProblemEntry> newEntries) {
+  private boolean areEntriesIdenticalEnough(List<AbstractNetworkMetaAnalysisProblemEntry> oldEntries,
+                                            List<AbstractNetworkMetaAnalysisProblemEntry> newEntries,
+                                            Map<Integer, Integer> oldToNewInterventionId) {
+    // Number of entries must be the same
+    if (oldEntries.size() != newEntries.size()) {
+      return false;
+    }
+    // For every old entry a new one must exist.
     for (AbstractNetworkMetaAnalysisProblemEntry oldEntry : oldEntries) {
-      newEntries.stream().anyMatch(newEntry ->))
+      if (newEntries.stream().noneMatch(newEntry -> isSameEntry(oldEntry, newEntry, oldToNewInterventionId))) {
+        return false;
+      }
     }
     return true;
   }
