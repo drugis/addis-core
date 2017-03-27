@@ -10,33 +10,25 @@ Jena-es:
 Patavi:
 --------------
 For Patavi there are three readmes to go through. The only important thing in this file is how to get an instance of RabbitMQ running.<br>
-/patavi/README.md 
+[/patavi/README.md](https://github.com/drugis/patavi/blob/master/README.md)
 
 Next you will need to get the Patavi server running.<br>
-/patavi/server/docker/README.md 
+[/patavi/server/docker/README.md](https://github.com/drugis/patavi/blob/master/server/docker/README.md)
 
 And for the last Patavi readme, you will get a worker up and running. Please note that it is not necessary to build and run an example worker.<br>
-/patavi/worker/docker/README.md
+[/patavi/worker/docker/README.md](https://github.com/drugis/patavi/blob/master/worker/docker/README.md)
 
 Patavi workers
 ----------
 
 You will need to set up the Patavi workers for GeMTC and MCDA:
- - /gemtc-web/README.md
- - /mcda-elicitation-web/README.md
+ - [/gemtc-web/README.md](https://github.com/drugis/gemtc-web/blob/master/README.md)
+ - [/mcda-elicitation-web/README.md](https://github.com/drugis/mcda-elicitation-web/blob/master/README.md)
 
 Addis-core:
 --------------
 In order to go through the next readme, it is necessary that Jena-es, Patavi and the Patavi workers are running. 
-/addis-core/README.md 
-
-Other READMEs
---------------
-**Addis 1:**<br>
-/addis/README.md
-
-**Trialverse:**<br>
-/addis-core/trialverse/README.md
+[/addis-core/README.md](https://github.com/drugis/addis-core/edit/master/README.md)
 
 Other
 --------------
