@@ -38,4 +38,6 @@ public abstract class AbstractNetworkMetaAnalysisProblemEntry {
     result = 31 * result + treatment.hashCode();
     return result;
   }
+
+  public abstract boolean hasMissingValues();
 }

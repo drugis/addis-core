@@ -36,6 +36,7 @@ import org.drugis.addis.security.repository.AccountRepository;
 import org.drugis.addis.trialverse.model.SemanticInterventionUriAndName;
 import org.drugis.addis.trialverse.model.SemanticVariable;
 import org.drugis.addis.trialverse.model.emun.CovariateOptionType;
+import org.drugis.addis.trialverse.model.trialdata.TrialDataArm;
 import org.drugis.addis.trialverse.model.trialdata.TrialDataStudy;
 import org.drugis.addis.trialverse.service.MappingService;
 import org.drugis.addis.trialverse.service.TriplestoreService;
@@ -43,6 +44,8 @@ import org.drugis.addis.trialverse.service.impl.ReadValueException;
 import org.drugis.trialverse.dataset.model.VersionMapping;
 import org.drugis.trialverse.dataset.repository.VersionMappingRepository;
 import org.drugis.trialverse.util.Namespaces;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
@@ -63,6 +66,8 @@ import java.util.stream.Collectors;
  */
 @Service
 public class ProjectServiceImpl implements ProjectService {
+
+  final static Logger logger = LoggerFactory.getLogger(ProjectService.class);
 
   @Inject
   private AccountRepository accountRepository;
@@ -397,7 +402,10 @@ public class ProjectServiceImpl implements ProjectService {
             .filter(analysis -> analysis instanceof NetworkMetaAnalysis)
             .filter(analysis -> !analysis.getArchived())
             .map(analysis -> (NetworkMetaAnalysis) analysis)
-            .filter(analysis -> checkNetworkMetaAnalysisDependencies(analysis, oldToNewOutcomeId, oldToNewCovariateId, oldToNewInterventionId))
+            .filter(analysis -> checkNetworkMetaAnalysisDependencies(analysis,
+                    oldToNewOutcomeId,
+                    oldToNewCovariateId,
+                    oldToNewInterventionId))
             .forEach(netWorkMetaAnalysisUpdateCreator(user, newProject,
                     oldToNewAnalysisId,
                     oldToNewOutcomeId,
@@ -449,57 +457,13 @@ public class ProjectServiceImpl implements ProjectService {
     oldProblem = (NetworkMetaAnalysisProblem) problemService.getProblem(sourceProject.getId(), oldAnalysis.getId());
 
     return areEntriesIdenticalEnough(oldProblem.getEntries(), newProblem.getEntries(), oldToNewInterventionId);
-
-//
-//    // build list of included arms of analysis from old project
-//    ArrayList filteredOldArms = new ArrayList();
-//    List<TrialDataStudy> studiesForOldProject = analysisService.buildEvidenceTable(sourceProject.getId(), oldAnalysis.getId());
-//    for (TrialDataStudy study : studiesForOldProject) {
-//      List<TrialDataArm> arms = study.getTrialDataArms();
-//      filteredOldArms = (ArrayList) arms.stream().filter(arm -> {
-//        for (ArmExclusion armExclusion : oldAnalysis.getExcludedArms()) {
-//          if (armExclusion.getTrialverseUid() == arm.getUri()) {
-//            return false;
-//          }
-//        }
-//        return true;
-//      });
-//    }
-//
-//    // build list of included arms of analysis from new project
-//    ArrayList filteredNewArms = new ArrayList();
-//    List<TrialDataStudy> studiesForNewProject = analysisService.buildEvidenceTable(newProject.getId(), newAnalysis.getId());
-//    for (TrialDataStudy study : studiesForNewProject) {
-//      List<TrialDataArm> arms = study.getTrialDataArms();
-//      filteredNewArms = (ArrayList) arms.stream().filter(arm -> {
-//        for (ArmExclusion armExclusion : newAnalysis.getExcludedArms()) {
-//          if (armExclusion.getTrialverseUid() == arm.getUri()) {
-//            return false;
-//          }
-//        }
-//        return true;
-//      });
-//    }
-//
-//    // See if all old arms still exist in the new project
-//    // switch new and old, for all old much match to new, not the other way around
-//    for (Object newArm : filteredNewArms) {
-//      TrialDataArm castedNewArm = (TrialDataArm) newArm;
-//      if (!filteredOldArms.stream().anyMatch(oldArm -> {
-//        TrialDataArm castedOldArm = (TrialDataArm) oldArm;
-//        return castedNewArm.getUri() == castedOldArm.getUri();
-//      })) {
-//        return false; //missing a needed arm
-//      }
-//    }
-//
   }
 
   private boolean isSameEntry(AbstractNetworkMetaAnalysisProblemEntry oldEntry,
                               AbstractNetworkMetaAnalysisProblemEntry newEntry,
                               Map<Integer, Integer> oldToNewInterventionId) {
     return oldToNewInterventionId.get(oldEntry.getTreatment()).equals(newEntry.getTreatment())
-            && oldEntry.getStudy().equals(newEntry.getStudy());
+            && oldEntry.getStudy().equals(newEntry.getStudy()) && !newEntry.hasMissingValues();
   }
 
   private boolean areEntriesIdenticalEnough(List<AbstractNetworkMetaAnalysisProblemEntry> oldEntries,
