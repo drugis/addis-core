@@ -20,6 +20,7 @@ define(['lodash'], function(_) {
     $scope.networkGraph = {};
     $scope.trialData = {};
     $scope.treatmentOverlapMap = {};
+    $scope.isModelCreationBlocked = checkCanNotCreateModel();
     $scope.loading = {
       loaded: false
     };
@@ -197,7 +198,7 @@ define(['lodash'], function(_) {
     function checkCanNotCreateModel() {
       return ($scope.editMode && $scope.editMode.disableEditing) ||
         $scope.tableHasAmbiguousArm ||
-        $scope.interventions.length < 2 ||
+        !$scope.interventions || $scope.interventions.length < 2 ||
         $scope.isNetworkDisconnected ||
         $scope.hasLessThanTwoInterventions ||
         $scope.hasTreatmentOverlap ||
@@ -205,7 +206,6 @@ define(['lodash'], function(_) {
         $scope.hasInsufficientCovariateValues ||
         !$scope.hasIncludedStudies();
     }
-    $scope.isModelCreationBlocked = checkCanNotCreateModel();
 
     $scope.changeArmExclusion = function(dataRow) {
       $scope.tableHasAmbiguousArm = false;
