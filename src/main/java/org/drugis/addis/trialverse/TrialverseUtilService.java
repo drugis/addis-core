@@ -1,5 +1,6 @@
 package org.drugis.addis.trialverse;
 
+import com.jayway.jsonpath.InvalidPathException;
 import com.jayway.jsonpath.JsonPath;
 import net.minidev.json.JSONObject;
 import org.drugis.addis.trialverse.service.impl.ReadValueException;
@@ -33,7 +34,11 @@ public class TrialverseUtilService {
     }
     String type  = JsonPath.read(row, "$." + name + ".type");
     if(LITERAL.equals(type)) {
-      return JsonPath.read(row, "$." + name + ".value");
+      try{
+        return readTypedLiteral(row, name);
+      } catch (InvalidPathException e) {
+        return JsonPath.read(row, "$." + name + ".value");
+      }
     }
     else if(URI.equals(type)){
       try {
@@ -43,20 +48,25 @@ public class TrialverseUtilService {
       }
     }
     else if(TYPED_LITERAL.equals(type)){
-      String dataType  = JsonPath.read(row, "$." + name + ".datatype");
-      if(dataType.equals(DOUBLE_TYPE)){
-        return (T) new Double(Double.parseDouble(JsonPath.read(row, "$."+ name +".value")));
-      }
-      if(dataType.equals(INTEGER_TYPE)){
-        return (T) new Integer(Integer.parseInt(JsonPath.read(row, "$."+ name +".value")));
-      }
-      if(dataType.equals(DURATION_TYPE)){
-        return (T) JsonPath.read(row, "$."+ name +".value");
-      }
-      if(dataType.equals(BOOLEAN_TYPE)) {
-        return (T) new Boolean(JsonPath.read(row, "$."+ name +".value").equals("true") ? true : false);
-      }
+      return readTypedLiteral(row, name);
     }
     throw new ReadValueException("can not read value with name:" + name + " from row" + (row != null ?row.toJSONString():""));
+  }
+
+  private static <T> T readTypedLiteral(JSONObject row, String name) {
+    String dataType  = JsonPath.read(row, "$." + name + ".datatype");
+    if(dataType.equals(DOUBLE_TYPE)){
+      return (T) new Double(Double.parseDouble(JsonPath.read(row, "$."+ name +".value")));
+    }
+    if(dataType.equals(INTEGER_TYPE)){
+      return (T) new Integer(Integer.parseInt(JsonPath.read(row, "$."+ name +".value")));
+    }
+    if(dataType.equals(DURATION_TYPE)){
+      return (T) JsonPath.read(row, "$."+ name +".value");
+    }
+    if(dataType.equals(BOOLEAN_TYPE)) {
+      return (T) new Boolean(JsonPath.read(row, "$."+ name +".value").equals("true") ? true : false);
+    }
+    return null;
   }
 }
