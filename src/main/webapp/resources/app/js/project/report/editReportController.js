@@ -10,9 +10,9 @@ define(['angular', 'lodash', 'jQuery'],
       ProjectResource,
       ReportResource,
       $timeout) {
-
       $scope.reportText = {
-        text: ''
+        text: '',
+        changed: false
       };
       $scope.showSaving = false;
       $scope.showSaved = false;
@@ -26,6 +26,16 @@ define(['angular', 'lodash', 'jQuery'],
         $scope.reportText.text = report.data;
       });
 
+      $scope.$on('$stateChangeStart', function(event) {
+        if ($scope.reportText.changed) {
+          var answer = confirm('There are unsaved changes, are you sure you want to leave this page?');
+          if (!answer) {
+            event.preventDefault();
+          }
+        }
+
+      });
+
       function insertTextAtCursor(text) {
         var input = $('#report-input');
         var cursorPos = input.prop('selectionStart');
@@ -37,6 +47,7 @@ define(['angular', 'lodash', 'jQuery'],
       function saveChanges() {
         ReportResource.put($stateParams, $scope.reportText.text);
         $scope.showSaving = true;
+        $scope.reportText.changed = false;
         $timeout(function() {
           $scope.showSaving = false;
           $scope.showSaved = true;

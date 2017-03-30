@@ -9,30 +9,56 @@
 
   <div class="row">
     <div class="columns small-12">
-      <button ng-click="saveChanges()" ng-disabled="!reportText.text||!editMode.allowEditing"><i class="fa fa-save"></i> Save</button>
-      <button ng-click="resetToDefault()" ng-disabled="!editMode.allowEditing"><i class="fa fa-trash"></i> Default text</button>
-      <button ng-click="openInsertDialog('relative-effects-table')" ng-disabled="!editMode.allowEditing"><i class="fa fa-refresh"></i> Relative Effects Table</button>
-      <button ng-click="openInsertDialog('network-plot')" ng-disabled="!editMode.allowEditing"><i style="font-weight: bold" class="fa fa-connectdevelop"></i> Network graph</button>
-      <button ng-click="openInsertDialog('comparison-result')" ng-disabled="!editMode.allowEditing"><i class="fa fa-arrows-h"></i> Comparison result</button>
-      <button ng-click="openInsertDialog('relative-effects-plot')" ng-disabled="!editMode.allowEditing"><i class="fa fa-bars"></i> Relative Effects Plot</button>
-      <button ng-click="openInsertDialog('rank-probabilities-table')" ng-disabled="!editMode.allowEditing"><i class="fa fa-coffee"></i> Rank Probabilities Table</button>
-      <button ng-click="openInsertDialog('rank-probabilities-plot')" ng-disabled="!editMode.allowEditing"><i class="fa fa-taxi"></i> Rank Probabilities Plot</button>
-      <button ng-click="openInsertDialog('forest-plot')" ng-disabled="!editMode.allowEditing"><i class="fa fa-tree"></i> Pairwise Forest Plot</button>
-      <button ng-click="openInsertDialog('treatment-effects')" ng-disabled="!editMode.allowEditing"><i class="fa fa-eyedropper"></i> Treatment Effects</button>
-      <span ng-show="showSaving">Saving</span>
-      <span style="color: green" ng-show="showSaved">Report saved</span>
+      <div class="button-bar">
+        <ul class="button-group">
+          <li>
+            <button class="small" ng-click="saveChanges()" ng-disabled="!reportText.text||!editMode.allowEditing||!reportText.changed"><i class="fa fa-save"></i> Save</button>
+          </li>
+          <li>
+            <button class="small" ng-click="resetToDefault()" ng-disabled="!editMode.allowEditing"><i class="fa fa-trash"></i> Default text</button>
+          </li>
+          <li>
+            <button class="small" ng-click="openInsertDialog('network-plot')" ng-disabled="!editMode.allowEditing"><i style="font-weight: bold" class="fa fa-connectdevelop"></i> Network
+              graph
+            </button>
+          </li>
+          <li>
+            <button class="small" ng-click="openInsertDialog('relative-effects-table')" ng-disabled="!editMode.allowEditing"><i class="fa fa-refresh"></i> Relative Effects Table</button>
+          </li>
+          <li>
+            <button class="small" ng-click="openInsertDialog('relative-effects-plot')" ng-disabled="!editMode.allowEditing"><i class="fa fa-bars"></i> Relative Effects Plot</button>
+          </li>
+          <li>
+            <button class="small" ng-click="openInsertDialog('treatment-effects')" ng-disabled="!editMode.allowEditing"><i class="fa fa-eyedropper"></i> Treatment Effects</button>
+          </li>
+          <li>
+            <button class="small" ng-click="openInsertDialog('comparison-result')" ng-disabled="!editMode.allowEditing"><i class="fa fa-arrows-h"></i> Comparison result</button>
+          </li>
+          <li>
+            <button class="small" ng-click="openInsertDialog('rank-probabilities-table')" ng-disabled="!editMode.allowEditing"><i class="fa fa-table"></i> Rank Probabilities Table</button>
+          </li>
+          <li>
+            <button class="small" ng-click="openInsertDialog('rank-probabilities-plot')" ng-disabled="!editMode.allowEditing"><i class="fa fa-bar-chart"></i> Rank Probabilities Plot</button>
+          </li>
+          <li>
+            <button class="small" ng-click="openInsertDialog('forest-plot')" ng-disabled="!editMode.allowEditing"><i class="fa fa-tree"></i> Pairwise Forest Plot</button>
+          </li>
+        </ul>
+        <span ng-show="showSaving">Saving</span>
+        <span style="color: green" ng-show="showSaved">Report saved</span>
+      </div>
     </div>
   </div>
 
   <div class="row">
     <div class="columns small-6" style="min-height: 100%">
       <div style="height: 85vh;">
-        <textarea ng-trim="false" ng-model-options="{debounce:1000}" ng-model="reportText.text" id="report-input"
-          style="height: 100%;"></textarea>
+        <textarea ng-trim="false" ng-model-options="{debounce:1000}" ng-model="reportText.text"
+          id="report-input" style="height: 100%;" ng-change="reportText.changed = true"></textarea>
       </div>
     </div>
     <div class="columns small-6">
       <markdown-report data="reportText.text"></markdown-report>
     </div>
   </div>
-  </div>
+</div>
