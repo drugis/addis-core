@@ -3,7 +3,25 @@ define(['lodash'], function(_) {
   var dependencies = [];
   var MetaBenefitRiskAnalysisService = function() {
 
-    function buildOutcomeWithAnalyses(analysis, networkMetaAnalyses, models, outcome) {
+    function buildOutcomesWithAnalyses(analysis, outcomes, networkMetaAnalyses) {
+      return outcomes
+        .map(_.partial(buildOutcomeWithAnalyses, analysis, networkMetaAnalyses))
+        .map(function(outcomeWithAnalysis) {
+          outcomeWithAnalysis.networkMetaAnalyses = outcomeWithAnalysis.networkMetaAnalyses.sort(compareAnalysesByModels);
+          return outcomeWithAnalysis;
+        })
+        .filter(function(outcomeWithAnalysis) {
+          return outcomeWithAnalysis.outcome.isIncluded;
+        })
+        .map(function(outcomeWithAnalysis) {
+          outcomeWithAnalysis.baselineDistribution = analysis.mbrOutcomeInclusions.find(function(inclusion) {
+            return inclusion.outcomeId === outcomeWithAnalysis.outcome.id;
+          }).baseline;
+          return outcomeWithAnalysis;
+        });
+    }
+
+    function buildOutcomeWithAnalyses(analysis, networkMetaAnalyses, outcome) {
       var nmasForOutcome = networkMetaAnalyses.filter(function(nma) {
         return nma.outcome.id === outcome.id;
       });
@@ -12,14 +30,14 @@ define(['lodash'], function(_) {
       if (!mbrOutcomeInclusion) {
         return {
           outcome: outcome,
-          networkMetaAnalyses: []
+          networkMetaAnalyses: nmasForOutcome
         };
       }
       var selectedAnalysis = _.find(nmasForOutcome, function(nma) {
-        return mbrOutcomeInclusion.outcomeId === nma.outcome.id &&
+        return outcome.id === nma.outcome.id &&
           mbrOutcomeInclusion.networkMetaAnalysisId === nma.id;
       }) || nmasForOutcome[0];
-      var selectedModel = _.find(models, ['id', mbrOutcomeInclusion.modelId]);
+      var selectedModel = _.find(selectedAnalysis.models, ['id', mbrOutcomeInclusion.modelId]);
 
       return {
         outcome: outcome,
@@ -115,6 +133,7 @@ define(['lodash'], function(_) {
       addModelsGroup: addModelsGroup,
       compareAnalysesByModels: compareAnalysesByModels,
       buildOutcomeWithAnalyses: buildOutcomeWithAnalyses,
+      buildOutcomesWithAnalyses: buildOutcomesWithAnalyses,
       joinModelsWithAnalysis: joinModelsWithAnalysis,
       numberOfSelectedInterventions: numberOfSelectedInterventions,
       numberOfSelectedOutcomes: numberOfSelectedOutcomes,

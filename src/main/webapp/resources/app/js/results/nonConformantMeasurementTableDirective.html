@@ -2,7 +2,7 @@
   <button type="button" class="button" ng-click="toggle()">{{isExpanded ? 'Hide' : 'Show'}} non-conformant measurements</button>
   <table style="width: 100%;" ng-if="isExpanded">
     <tr>
-      <th colspan="6">
+      <th colspan="{{inputHeaders.length + 2}}">
         <div class="right">
           <a
           ng-show="isEditingAllowed"

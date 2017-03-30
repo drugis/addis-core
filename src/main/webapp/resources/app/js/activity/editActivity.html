@@ -21,7 +21,9 @@
   <div class="row">
     <div class="large-12 medium-12 columns">
       <label>Type
-        <select ng-disabled="treatmentDirective.isVisible" ng-model="itemScratch.activityType" placeholder="select type" ng-options="activityType.label for activityType in activityTypeOptions" ng-change="showScrolbarIfNessesary()">
+        <select ng-disabled="treatmentDirective.isVisible" ng-model="itemScratch.activityType"
+          placeholder="select type" ng-options="activityType.label for activityType in activityTypeOptions"
+          ng-change="showScrolbarIfNessesary()">
         </select>
       </label>
     </div>
@@ -34,8 +36,12 @@
         <label>Treatment drugs</label>
         <ul class="form-list">
           <li ng-repeat="treatment in itemScratch.treatments">
-            <span ng-show="treatment.treatmentDoseType === 'ontology:FixedDoseDrugTreatment'">{{treatment.drug.label}}, {{treatment.fixedValue | exponentialFilter}} {{treatment.doseUnit.label}} per {{treatment.dosingPeriodicity | durationFilter }}</span>
-            <span ng-show="treatment.treatmentDoseType === 'ontology:TitratedDoseDrugTreatment'">{{treatment.drug.label}}, {{treatment.minValue | exponentialFilter}}-{{treatment.maxValue | exponentialFilter}} {{treatment.doseUnit.label}} per {{treatment.dosingPeriodicity | durationFilter }}</span>
+            <span ng-show="treatment.treatmentDoseType === 'ontology:FixedDoseDrugTreatment'">{{treatment.drug.label}}, {{treatment.fixedValue | exponentialFilter}}
+              {{treatment.doseUnit.label}} per {{treatment.dosingPeriodicity | durationFilter
+              }}</span>
+            <span ng-show="treatment.treatmentDoseType === 'ontology:TitratedDoseDrugTreatment'">{{treatment.drug.label}}, {{treatment.minValue | exponentialFilter}}-{{treatment.maxValue
+              | exponentialFilter}} {{treatment.doseUnit.label}} per {{treatment.dosingPeriodicity
+              | durationFilter }}</span>
 
           </li>
           <li ng-show="!itemScratch.treatments">no treatment drugs defined</li>
