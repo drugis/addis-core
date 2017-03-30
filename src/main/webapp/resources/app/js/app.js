@@ -262,7 +262,7 @@ define(
             controller: 'SingleProjectController',
             resolve: {
               activeTab: function() {
-                return 'details';
+                return 'analyses';
               },
               project: ['$stateParams', 'ProjectResource', function($stateParams, ProjectResource) {
                 return  ProjectResource.get($stateParams).$promise;
@@ -277,6 +277,17 @@ define(
             resolve: {
               activeTab: function() {
                 return 'report';
+              }
+            }
+          })
+          .state('projectDefinitions', {
+            url: '/definitions',
+            templateUrl: baseTemplatePath + 'project.html',
+            controller: 'SingleProjectController',
+            parent:'project',
+            resolve: {
+              activeTab: function() {
+                return 'definitions';
               }
             }
           })

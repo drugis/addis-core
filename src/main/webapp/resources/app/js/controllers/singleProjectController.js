@@ -326,7 +326,9 @@ define(['lodash', 'angular'], function(_, angular) {
       }
       if (tab === 'report') {
         $state.go('projectReport', $stateParams);
-      } else if (tab === 'details') {
+      } else if (tab === 'definitions') {
+        $state.go('projectDefinitions', $stateParams);
+      } else if(tab === 'analyses'){
         $state.go('project', $stateParams, {
           reload: true
         });
