@@ -12,12 +12,7 @@ define(['angular-mocks'], function(angularMocks) {
     describe('buildOutcomeWithAnalyses', function() {
       it('should build inclusions when the outcome is included, and ignore excluded outcomes', function() {
         var outcome1 = {
-          id: 1,
-          isIncluded: true
-        };
-        var outcome2 = {
-          id: 2,
-          isIncluded: false
+          id: 1
         };
         var analysis = {
           id: 7,
@@ -27,50 +22,47 @@ define(['angular-mocks'], function(angularMocks) {
             modelId: 1
           }]
         };
-        var networkMetaAnalyses = [{
-          id: 3,
-          outcome: outcome1
-        }, {
-          id: 5,
-          outcome: outcome1
-        }];
         var models = [{
           id: 1
         }, {
           id: 2
         }];
-        var expectedIncludedResult = {
+        var networkMetaAnalyses = [{
+          id: 3,
+          outcome: outcome1,
+          models: models
+        }, {
+          id: 5,
+          outcome: outcome1,
+          models: models
+        }];
+        var expectedResult = {
           outcome: outcome1,
           networkMetaAnalyses: [{
             id: 3,
             outcome: {
-              id: 1,
-              isIncluded: true
-            }
+              id: 1
+            },
+            models: models
           }, {
             id: 5,
             outcome: {
-              id: 1,
-              isIncluded: true
-            }
+              id: 1
+            },
+            models: models
           }],
           selectedAnalysis: {
             id: 3,
             outcome: {
-              id: 1,
-              isIncluded: true
-            }
+              id: 1
+            },
+            models: models
           },
           selectedModel: models[0]
         };
-        var expectedExcludedResult = {
-          outcome: outcome2,
-          networkMetaAnalyses: []
-        };
-        var resultIncluded = metaBenefitRiskService.buildOutcomeWithAnalyses(analysis, networkMetaAnalyses, models, outcome1);
-        var resultExcluded = metaBenefitRiskService.buildOutcomeWithAnalyses(analysis, networkMetaAnalyses, models, outcome2);
-        expect(resultIncluded).toEqual(expectedIncludedResult);
-        expect(resultExcluded).toEqual(expectedExcludedResult);
+
+        var resultIncluded = metaBenefitRiskService.buildOutcomeWithAnalyses(analysis, networkMetaAnalyses, outcome1);
+        expect(resultIncluded).toEqual(expectedResult);
       });
     });
 

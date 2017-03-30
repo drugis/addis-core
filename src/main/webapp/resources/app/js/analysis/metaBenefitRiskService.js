@@ -30,7 +30,7 @@ define(['lodash'], function(_) {
       if (!mbrOutcomeInclusion) {
         return {
           outcome: outcome,
-          networkMetaAnalyses: networkMetaAnalyses
+          networkMetaAnalyses: nmasForOutcome
         };
       }
       var selectedAnalysis = _.find(nmasForOutcome, function(nma) {
