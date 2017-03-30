@@ -3,8 +3,9 @@
 <ul class="breadcrumbs fixed">
   <li><a ui-sref="datasets({userUid: user.id})">{{user.firstName}} {{user.lastName}}</a></li>
   <li><a ui-sref="datasets({userUid: user.id})">Datasets</a></li>
-  <li><a ui-sref="versionedDataset({userUid: userUid, datasetUuid: datasetUuid, versionUuid: versionUuid})">{{dataset.title}}</a></li>
-  <li><a class="current active">Concepts</a></li>
+  <li ng-if="versionUuid"><a ui-sref="versionedDataset({userUid: userUid, datasetUuid: datasetUuid, versionUuid: versionUuid})">{{dataset.title}}</a></li>
+  <li ng-if="!versionUuid"><a ui-sref="dataset({userUid: userUid, datasetUuid: datasetUuid})">{{dataset.title}}</a></li>
+  <li class="current active">Concepts</li>
 </ul>
 <div class="row nav-bar-spacer">
   <div class="columns large-2 medium-3">
