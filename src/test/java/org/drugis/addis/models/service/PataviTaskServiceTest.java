@@ -3,6 +3,7 @@ package org.drugis.addis.models.service;
 import org.drugis.addis.analyses.AbstractAnalysis;
 import org.drugis.addis.analyses.NetworkMetaAnalysis;
 import org.drugis.addis.analyses.repository.AnalysisRepository;
+import org.drugis.addis.exception.ProblemCreationException;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.interventions.service.impl.InvalidTypeForDoseCheckException;
 import org.drugis.addis.models.Model;
@@ -69,7 +70,7 @@ public class PataviTaskServiceTest {
   }
 
   @Test
-  public void testFindTaskWhenThereIsNoTask() throws Exception, ReadValueException, InvalidTypeForDoseCheckException {
+  public void testFindTaskWhenThereIsNoTask() throws Exception, ReadValueException, InvalidTypeForDoseCheckException, ProblemCreationException {
     Integer modelId = -2;
     String problem = "Yo";
     Integer projectId = -6;
@@ -103,7 +104,7 @@ public class PataviTaskServiceTest {
   }
 
   @Test
-  public void testFindTaskWhenThereAlreadyIsATask() throws Exception, ReadValueException, InvalidTypeForDoseCheckException {
+  public void testFindTaskWhenThereAlreadyIsATask() throws Exception, ReadValueException, InvalidTypeForDoseCheckException, ProblemCreationException {
     Integer modelId = -2;
     Integer projectId = -6;
     Integer analysisId = -7;
@@ -139,7 +140,7 @@ public class PataviTaskServiceTest {
   }
 
   @Test(expected = ResourceDoesNotExistException.class)
-  public void testFindTaskForInvalidModel() throws Exception, ReadValueException, InvalidTypeForDoseCheckException {
+  public void testFindTaskForInvalidModel() throws Exception, ReadValueException, InvalidTypeForDoseCheckException, ProblemCreationException {
     Integer projectId = -6;
     Integer analysisId = -7;
     Integer invalidModelId = -2;

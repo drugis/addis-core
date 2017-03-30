@@ -10,6 +10,7 @@ import org.drugis.addis.analyses.repository.MetaBenefitRiskAnalysisRepository;
 import org.drugis.addis.analyses.service.AnalysisService;
 import org.drugis.addis.analyses.service.MetaBenefitRiskAnalysisService;
 import org.drugis.addis.exception.MethodNotAllowedException;
+import org.drugis.addis.exception.ProblemCreationException;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.interventions.model.AbstractIntervention;
 import org.drugis.addis.interventions.repository.InterventionRepository;
@@ -72,7 +73,7 @@ public class MetaBenefitRiskAnalysisServiceImpl implements MetaBenefitRiskAnalys
   private ObjectMapper objectMapper = new ObjectMapper();
 
   @Override
-  public MetaBenefitRiskAnalysis update(Account user, Integer projectId, MetaBenefitRiskAnalysis analysis) throws URISyntaxException, SQLException, IOException, ResourceDoesNotExistException, MethodNotAllowedException, ReadValueException, InvalidTypeForDoseCheckException, UnexpectedNumberOfResultsException {
+  public MetaBenefitRiskAnalysis update(Account user, Integer projectId, MetaBenefitRiskAnalysis analysis) throws URISyntaxException, SQLException, IOException, ResourceDoesNotExistException, MethodNotAllowedException, ReadValueException, InvalidTypeForDoseCheckException, UnexpectedNumberOfResultsException, ProblemCreationException {
     MetaBenefitRiskAnalysis storedAnalysis = metaBenefitRiskAnalysisRepository.find(analysis.getId());
     if(storedAnalysis.isFinalized()) {
       throw new MethodNotAllowedException();

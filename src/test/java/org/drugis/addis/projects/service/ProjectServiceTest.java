@@ -8,6 +8,7 @@ import org.drugis.addis.analyses.service.AnalysisService;
 import org.drugis.addis.covariates.Covariate;
 import org.drugis.addis.covariates.CovariateRepository;
 import org.drugis.addis.exception.MethodNotAllowedException;
+import org.drugis.addis.exception.ProblemCreationException;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.interventions.controller.command.*;
 import org.drugis.addis.interventions.model.*;
@@ -17,6 +18,11 @@ import org.drugis.addis.models.Model;
 import org.drugis.addis.models.repository.ModelRepository;
 import org.drugis.addis.outcomes.Outcome;
 import org.drugis.addis.outcomes.repository.OutcomeRepository;
+import org.drugis.addis.problems.model.AbstractNetworkMetaAnalysisProblemEntry;
+import org.drugis.addis.problems.model.AbstractProblem;
+import org.drugis.addis.problems.model.ContinuousNetworkMetaAnalysisProblemEntry;
+import org.drugis.addis.problems.model.NetworkMetaAnalysisProblem;
+import org.drugis.addis.problems.service.ProblemService;
 import org.drugis.addis.projects.Project;
 import org.drugis.addis.projects.ProjectCommand;
 import org.drugis.addis.projects.repository.ProjectRepository;
@@ -92,6 +98,9 @@ public class ProjectServiceTest {
 
   @Mock
   private EntityManager em;
+
+  @Mock
+  private ProblemService problemService;
 
   @InjectMocks
   private ProjectService projectService;
@@ -375,7 +384,7 @@ public class ProjectServiceTest {
   }
 
   @Test
-  public void createUpdated() throws Exception, ReadValueException {
+  public void createUpdated() throws Exception, ReadValueException, ProblemCreationException {
     Integer newProjectId = -3;
     URI headVersion = URI.create("http://www.drugis.org/datasets/headversion");
     ProjectCommand mockCommand = mock(ProjectCommand.class);
@@ -500,6 +509,55 @@ public class ProjectServiceTest {
     when(newSet.getId()).thenReturn(-combinationInterventionFilteredIn.getId());
     when(interventionRepository.create(account, setCommand)).thenReturn(newSet);
 
+    // analyses
+    Integer nmaId1 = 42;
+    List<ArmExclusion> nmaExcludedArms = Collections.singletonList(new ArmExclusion(nmaId1, URI.create("http://anything.Groningen")));
+    List<InterventionInclusion> nmaInterventionInclusions1 = Collections.singletonList(new InterventionInclusion(nmaId1, fixedDoseInterventionFilteredIn.getId()));
+    List<CovariateInclusion> nmaIncludedCovariates1 = Collections.singletonList(new CovariateInclusion(nmaId1, covariateFilteredIn.getId()));
+    AbstractAnalysis nma1 = new NetworkMetaAnalysis(nmaId1, projectId, "nma1", nmaExcludedArms, nmaInterventionInclusions1, nmaIncludedCovariates1, outcomeFilteredIn);
+    AnalysisCommand nmaCommand1 = new AnalysisCommand(newProjectId, nma1.getTitle(), AnalysisType.EVIDENCE_SYNTHESIS);
+    NetworkMetaAnalysis newNma1 = new NetworkMetaAnalysis(nmaId1 + 1, projectId, "nma1",
+            Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), outcomeFilteredIn);
+    when(analysisService.createNetworkMetaAnalysis(account, nmaCommand1)).thenReturn(newNma1);
+
+    Integer nmaId2 = 1337;
+    List<InterventionInclusion> nmaInterventionInclusions2 = Collections.singletonList(new InterventionInclusion(nmaId2, titratedDoseInterventionFilteredIn.getId()));
+    AbstractAnalysis nma2 = new NetworkMetaAnalysis(nmaId2, projectId, "nma2", Collections.emptyList(), nmaInterventionInclusions2, Collections.emptyList(), outcomeFilteredOut);
+    AnalysisCommand nmaCommand2 = new AnalysisCommand(newProjectId, nma2.getTitle(), AnalysisType.EVIDENCE_SYNTHESIS);
+    NetworkMetaAnalysis newNma2 = new NetworkMetaAnalysis(nmaId2 + 1, projectId, "nma2",
+            Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), outcomeFilteredIn);
+    when(analysisService.createNetworkMetaAnalysis(account, nmaCommand2)).thenReturn(newNma2);
+
+    List<AbstractAnalysis> sourceAnalyses = Arrays.asList(nma1, nma2);
+    when(analysisRepository.query(projectId)).thenReturn(sourceAnalyses);
+    when(outcomeRepository.get(outcomeFilteredIn.getId())).thenReturn(outcomeFilteredIn);
+
+    //models
+    Integer modelId1 = 1414;
+    Model model1 = new Model.ModelBuilder(nmaId1, "model 1")
+            .id(modelId1)
+            .link("identity")
+            .modelType(Model.NETWORK_MODEL_TYPE)
+            .build();
+
+    when(modelRepository.findModelsByProject(projectId)).thenReturn(Collections.singletonList(model1));
+    Model newModel1 = new Model(model1);
+    newModel1.setAnalysisId(nmaId1 + 1);
+
+    when(analysisRepository.get(newNma1.getId())).thenReturn(newNma1);
+    when(analysisRepository.get(model1.getAnalysisId())).thenReturn(nma1);
+    AbstractNetworkMetaAnalysisProblemEntry newEntry1 = new ContinuousNetworkMetaAnalysisProblemEntry("study", 1, 1234, 6., 0.4);
+    AbstractNetworkMetaAnalysisProblemEntry oldEntry1 = new ContinuousNetworkMetaAnalysisProblemEntry("study", 1, 12, 3., 0.2);
+    List<AbstractNetworkMetaAnalysisProblemEntry> newEntries1 = Collections.singletonList(newEntry1);
+    List<AbstractNetworkMetaAnalysisProblemEntry> oldEntries1 = Collections.singletonList(oldEntry1);
+    AbstractProblem newProblem1 = new NetworkMetaAnalysisProblem(newEntries1, null, null);
+    AbstractProblem oldProblem1 = new NetworkMetaAnalysisProblem(oldEntries1, null, null);
+    when(mockNewProject.getId()).thenReturn(newProjectId);
+    when(mockProject.getId()).thenReturn(projectId);
+    when(problemService.getProblem(newProjectId, newNma1.getId())).thenReturn(newProblem1);
+    when(problemService.getProblem(projectId, nma1.getId())).thenReturn(oldProblem1);
+
+    when(mockNewProject.getId()).thenReturn(newProjectId);
 
     /// *8888888888**************************** GO *********************888888888888888* ///
     projectService.createUpdated(account, projectId);
@@ -508,6 +566,7 @@ public class ProjectServiceTest {
     verify(outcomeRepository).query(projectId);
     verify(outcomeRepository).create(account, newProjectId, outcomeFilteredIn.getName(), outcomeFilteredIn.getDirection(), outcomeFilteredIn.getMotivation(),
             outcomeFilteredIn.getSemanticVariable());
+    verify(outcomeRepository).get(newMockOutcome.getId());
     verifyNoMoreInteractions(outcomeRepository);
 
     verify(covariateRepository).findByProject(projectId);
@@ -532,6 +591,23 @@ public class ProjectServiceTest {
     verify(triplestoreService).getUnitUris(datasetUuid, headVersion);
     verify(triplestoreService).getInterventions(datasetUuid, headVersion);
     verifyNoMoreInteractions(triplestoreService);
+
+    verify(analysisRepository).query(projectId);
+    verify(analysisRepository).get(newNma1.getId());
+    verify(analysisRepository).get(model1.getAnalysisId());
+    verify(analysisRepository).query(newProjectId);
+    verifyNoMoreInteractions(analysisRepository);
+
+    verify(analysisService).createNetworkMetaAnalysis(account, nmaCommand1);
+    verify(analysisService).buildEvidenceTable(newProjectId, nmaId1);
+    verifyNoMoreInteractions(analysisService);
+
+    verify(modelRepository).findModelsByProject(projectId);
+    verifyNoMoreInteractions(modelRepository);
+
+    verify(problemService).getProblem(newProjectId, newNma1.getId());
+    verify(problemService).getProblem(projectId, nma1.getId());
+    verifyNoMoreInteractions(problemService);
   }
 
   private void mockCreateSingleIntervention(SingleIntervention intervention, Class<? extends SingleIntervention> classToMock, AbstractInterventionCommand command) throws InvalidConstraintException, MethodNotAllowedException, ResourceDoesNotExistException {

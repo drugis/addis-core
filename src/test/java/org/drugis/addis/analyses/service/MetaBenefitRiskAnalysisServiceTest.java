@@ -7,6 +7,7 @@ import org.drugis.addis.analyses.MetaBenefitRiskAnalysis;
 import org.drugis.addis.analyses.repository.MetaBenefitRiskAnalysisRepository;
 import org.drugis.addis.analyses.service.impl.MetaBenefitRiskAnalysisServiceImpl;
 import org.drugis.addis.exception.MethodNotAllowedException;
+import org.drugis.addis.exception.ProblemCreationException;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.interventions.model.AbstractIntervention;
 import org.drugis.addis.interventions.model.SimpleIntervention;
@@ -63,14 +64,14 @@ public class MetaBenefitRiskAnalysisServiceTest {
 
 
   @Test
-  public void testUpdateWithFinalizingAnalysis() throws ResourceDoesNotExistException, SQLException, MethodNotAllowedException, IOException, URISyntaxException, ReadValueException, InvalidTypeForDoseCheckException, UnexpectedNumberOfResultsException {
+  public void testUpdateWithFinalizingAnalysis() throws ResourceDoesNotExistException, SQLException, MethodNotAllowedException, IOException, URISyntaxException, ReadValueException, InvalidTypeForDoseCheckException, UnexpectedNumberOfResultsException, ProblemCreationException {
     MetaBenefitRiskAnalysis analysis = new MetaBenefitRiskAnalysis(analysisId, projectId, "tittle");
     analysis.setFinalized(true);
 
     MetaBenefitRiskAnalysis oldAnalysis = new MetaBenefitRiskAnalysis(analysisId, projectId, "tittle");
 
     when(metaBenefitRiskAnalysisRepository.find(analysis.getId())).thenReturn(oldAnalysis);
-    when(problemService.getProblem(projectId, analysisId)).thenReturn(null);
+    when(problemService.getProblem (projectId, analysisId)).thenReturn(null);
 
     metaBenefitRiskAnalysisService.update(user, projectId, analysis);
 
@@ -82,7 +83,7 @@ public class MetaBenefitRiskAnalysisServiceTest {
   }
 
   @Test
-  public void testUpdateWithNonFinalizingAnalysis() throws ResourceDoesNotExistException, SQLException, MethodNotAllowedException, IOException, URISyntaxException, ReadValueException, InvalidTypeForDoseCheckException, UnexpectedNumberOfResultsException {
+  public void testUpdateWithNonFinalizingAnalysis() throws ResourceDoesNotExistException, SQLException, MethodNotAllowedException, IOException, URISyntaxException, ReadValueException, InvalidTypeForDoseCheckException, UnexpectedNumberOfResultsException, ProblemCreationException {
     MetaBenefitRiskAnalysis analysis = new MetaBenefitRiskAnalysis(analysisId, projectId, "tittle");
     MetaBenefitRiskAnalysis oldAnalysis = new MetaBenefitRiskAnalysis(analysisId, projectId, "tittle");
 
@@ -96,7 +97,7 @@ public class MetaBenefitRiskAnalysisServiceTest {
   }
 
   @Test(expected = MethodNotAllowedException.class)
-  public void testUpdateFinalizedAnalysisFails() throws ResourceDoesNotExistException, SQLException, MethodNotAllowedException, IOException, URISyntaxException, ReadValueException, InvalidTypeForDoseCheckException, UnexpectedNumberOfResultsException {
+  public void testUpdateFinalizedAnalysisFails() throws ResourceDoesNotExistException, SQLException, MethodNotAllowedException, IOException, URISyntaxException, ReadValueException, InvalidTypeForDoseCheckException, UnexpectedNumberOfResultsException, ProblemCreationException {
     MetaBenefitRiskAnalysis analysis = new MetaBenefitRiskAnalysis(analysisId, projectId, "tittle");
     MetaBenefitRiskAnalysis oldAnalysis = new MetaBenefitRiskAnalysis(analysisId, projectId, "tittle");
     oldAnalysis.setFinalized(true);

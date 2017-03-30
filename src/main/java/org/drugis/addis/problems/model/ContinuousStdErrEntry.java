@@ -25,6 +25,11 @@ public class ContinuousStdErrEntry extends AbstractNetworkMetaAnalysisProblemEnt
   }
 
   @Override
+  public boolean hasMissingValues() {
+    return mean == null || stdErr == null;
+  }
+
+  @Override
   public boolean equals(Object o) {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
