@@ -12,7 +12,7 @@
       <div class="button-bar">
         <ul class="button-group">
           <li>
-            <button class="small" ng-click="saveChanges()" ng-disabled="!reportText.text||!editMode.allowEditing"><i class="fa fa-save"></i> Save</button>
+            <button class="small" ng-click="saveChanges()" ng-disabled="!reportText.text||!editMode.allowEditing||!reportText.changed"><i class="fa fa-save"></i> Save</button>
           </li>
           <li>
             <button class="small" ng-click="resetToDefault()" ng-disabled="!editMode.allowEditing"><i class="fa fa-trash"></i> Default text</button>
@@ -54,7 +54,7 @@
     <div class="columns small-6" style="min-height: 100%">
       <div style="height: 85vh;">
         <textarea ng-trim="false" ng-model-options="{debounce:1000}" ng-model="reportText.text"
-          id="report-input" style="height: 100%;"></textarea>
+          id="report-input" style="height: 100%;" ng-change="reportText.changed = true"></textarea>
       </div>
     </div>
     <div class="columns small-6">
