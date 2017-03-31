@@ -19,7 +19,7 @@ define([], function() {
             refreshListener();
           }
 
-          service.queryItems($stateParams.studyUUID).then(function(queryResult) {
+          service.queryItems($stateParams.studyGraphUuid).then(function(queryResult) {
             scope.studyConcepts = queryResult;
 
             refreshListener = scope.$on('refreshStudyDesign', function() {

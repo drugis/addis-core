@@ -41,22 +41,35 @@ define(['lodash'], function(_) {
       return StudyService.getJsonGraph().then(function(graph) {
         var unitNode = findNodeWithId(graph, studyConcept.uri);
         unitNode.sameAs = datasetConcept['@id'];
+        unitNode.conversionMultiplier = studyConcept.conversionMultiplier;
         return StudyService.saveJsonGraph(graph);
       });
     }
 
     function removeMapping(studyConcept, datasetConcept) {
-      if (datasetConcept['@type'] === 'ontology:Drug' || datasetConcept['@type'] === 'ontology:Unit') {
-        return removeGeneralMapping(studyConcept);
+      if (datasetConcept['@type'] === 'ontology:Unit') {
+        return removeUnitMapping(studyConcept);
       } else if (datasetConcept['@type'] === 'ontology:Variable') {
         return removeVariableMapping(studyConcept);
-      } 
+      } else if (datasetConcept['@type'] === 'ontology:Drug') {
+        return removeDrugMapping(studyConcept);
+      }
     }
 
-    function removeGeneralMapping(studyConcept) {
+    function removeDrugMapping(studyConcept) {
       return StudyService.getJsonGraph().then(function(graph) {
         var node = findNodeWithId(graph, studyConcept.uri);
         delete node.sameAs;
+        return StudyService.saveJsonGraph(graph);
+      });
+
+    }
+
+    function removeUnitMapping(studyConcept) {
+      return StudyService.getJsonGraph().then(function(graph) {
+        var node = findNodeWithId(graph, studyConcept.uri);
+        delete node.sameAs;
+        delete node.conversionMultiplier;
         return StudyService.saveJsonGraph(graph);
       });
     }
