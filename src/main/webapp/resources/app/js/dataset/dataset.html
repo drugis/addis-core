@@ -45,24 +45,32 @@
         <div class="row">
           <div class="large-6 columns medium-6">
             <span>Studies should include these interventions:</span>
-            <ui-select class="addis-select2" style="width:100%;" multiple theme="select2" on-select="onStudyFilterChange(filterSelections)"
+            <ui-select ng-if="interventions.length" class="addis-select2" style="width:100%;"
+              multiple theme="select2" on-select="onStudyFilterChange(filterSelections)"
               on-remove="onStudyFilterChange(filterSelections)" ng-model="filterSelections.drugs">
               <ui-select-match>{{$item.label}}</ui-select-match>
               <ui-select-choices repeat="intervention in interventions | filter: $select.search">
                 <div ng-bind-html="intervention.label | highlight: $select.search"></div>
               </ui-select-choices>
             </ui-select>
+            <div ng-if="!interventions.length">
+              <em>No intervention concepts defined.</em>
+            </div>
           </div>
 
           <div class="large-6 columns medium-6 ">
             <span>Studies should measure these variables:</span>
-            <ui-select class="addis-select2" style="width:100%;" multiple theme="select2" ng-model="filterSelections.variables"
-              on-select="onStudyFilterChange(filterSelections)" on-remove="onStudyFilterChange(filterSelections)">
+            <ui-select ng-if="variables.length" class="addis-select2" style="width:100%;" multiple
+              theme="select2" ng-model="filterSelections.variables" on-select="onStudyFilterChange(filterSelections)"
+              on-remove="onStudyFilterChange(filterSelections)">
               <ui-select-match>{{$item.label}}</ui-select-match>
               <ui-select-choices repeat="variable in variables | filter: $select.search">
                 <div ng-bind-html="variable.label | highlight: $select.search"></div>
               </ui-select-choices>
             </ui-select>
+            <div ng-if="!variables.length">
+              <em>No variable concepts defined.</em>
+            </div>
           </div>
         </div>
       </div>
