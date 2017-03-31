@@ -46,67 +46,6 @@
   <div class="row">
     <div class="columns large-12">
       <tabset>
-        <tab heading="Analyses" active="tabSelection.activeTab === 'analyses'" ng-click="setActiveTab('analyses')">
-          <div ng-if="tabSelection.activeTab === 'analyses'">
-            <div class="row section">
-              <div class="columns large-6 ">
-                <h2>Analyses
-                  <inline-help help-key="addis-analysis"></inline-help>
-                </h2>
-                <button id="show-create-analysis-modal-btn" ng-if="editMode.allowEditing" ng-disabled="!loading.loaded"
-                  class="small" ng-click="openAddAnalysisDialog()"><i class="fa fa-plus"></i> Add Analysis
-                </button>
-
-                <div ng-show="!analysesLoaded">
-                  <i class="fa fa-spinner fa-spin fa-3x"></i>
-                  <p>Loading analyses...</p>
-                </div>
-                <div>
-                  <em ng-show="analysesLoaded && analyses.length === 0">No analyses have been defined</em>
-                </div>
-                <div ng-show="analysesLoaded && analyses.length > 0">
-                  <table style="width: 100%;">
-                    <thead>
-                      <tr>
-                        <th>Name</th>
-                        <th>Analysis type</th>
-                        <th>Data source</th>
-                        <th>
-                          <button ng-disabled="numberOfAnalysesArchived === 0" ng-hide="!analysesLoaded" class="button secondary small right ng-binding no-margin"
-                            ng-click="toggleShowArchived()" style=""><i class="fa fa-eye"></i> {{showArchived? 'Hide' :'Show'}}
-                            archived ({{numberOfAnalysesArchived}})
-                          </button>
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr ng-repeat="analysis in analyses" ng-switch="analysis.analysisType" ng-if="showArchived || analysis.archived === false">
-                        <div>
-                          <td class="clickable on-hover" ng-click="goToAnalysis(analysis)">
-                            <a>{{analysis.title}}</a>
-                            <span ng-if="analysis.archived"> (archived on: {{analysis.archivedOn}})</span>
-                          </td>
-                          <td>{{analysis.analysisType}}</td>
-                          <td ng-switch-when="Benefit-risk analysis based on a single study">{{findStudyLabel(analysis)}}
-                          </td>
-                          <td ng-switch-when="Evidence synthesis"></td>
-                          <td ng-switch-when="Benefit-risk analysis based on meta-analyses"></td>
-                          <td>
-                            <button ng-if="!analysis.archived && editMode.allowEditing" ng-click="archiveAnalysis(analysis)"
-                              type="button" class="tiny right info radius" style="margin-bottom:0;">archive</button>
-                            <button ng-if="analysis.archived && editMode.allowEditing" ng-click="unarchiveAnalysis(analysis)"
-                              type="button" class="tiny right alert radius" style="margin-bottom:0;">unarchive</button>
-                          </td>
-                        </div>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            </div>
-          </div>
-        </tab>
-
         <tab heading="Definitions" active="tabSelection.activeTab === 'definitions'" ng-click="setActiveTab('definitions')">
           <div ng-if="tabSelection.activeTab === 'definitions'">
             <div class="row section">
@@ -241,6 +180,67 @@
                     </tr>
                   </tbody>
                 </table>
+              </div>
+            </div>
+          </div>
+        </tab>
+
+        <tab heading="Analyses" active="tabSelection.activeTab === 'analyses'" ng-click="setActiveTab('analyses')">
+          <div ng-if="tabSelection.activeTab === 'analyses'">
+            <div class="row section">
+              <div class="columns large-6 ">
+                <h2>Analyses
+                  <inline-help help-key="addis-analysis"></inline-help>
+                </h2>
+                <button id="show-create-analysis-modal-btn" ng-if="editMode.allowEditing" ng-disabled="!loading.loaded"
+                  class="small" ng-click="openAddAnalysisDialog()"><i class="fa fa-plus"></i> Add Analysis
+                </button>
+
+                <div ng-show="!analysesLoaded">
+                  <i class="fa fa-spinner fa-spin fa-3x"></i>
+                  <p>Loading analyses...</p>
+                </div>
+                <div>
+                  <em ng-show="analysesLoaded && analyses.length === 0">No analyses have been defined</em>
+                </div>
+                <div ng-show="analysesLoaded && analyses.length > 0">
+                  <table style="width: 100%;">
+                    <thead>
+                      <tr>
+                        <th>Name</th>
+                        <th>Analysis type</th>
+                        <th>Data source</th>
+                        <th>
+                          <button ng-disabled="numberOfAnalysesArchived === 0" ng-hide="!analysesLoaded" class="button secondary small right ng-binding no-margin"
+                            ng-click="toggleShowArchived()" style=""><i class="fa fa-eye"></i> {{showArchived? 'Hide' :'Show'}}
+                            archived ({{numberOfAnalysesArchived}})
+                          </button>
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr ng-repeat="analysis in analyses" ng-switch="analysis.analysisType" ng-if="showArchived || analysis.archived === false">
+                        <div>
+                          <td class="clickable on-hover" ng-click="goToAnalysis(analysis)">
+                            <a>{{analysis.title}}</a>
+                            <span ng-if="analysis.archived"> (archived on: {{analysis.archivedOn}})</span>
+                          </td>
+                          <td>{{analysis.analysisType}}</td>
+                          <td ng-switch-when="Benefit-risk analysis based on a single study">{{findStudyLabel(analysis)}}
+                          </td>
+                          <td ng-switch-when="Evidence synthesis"></td>
+                          <td ng-switch-when="Benefit-risk analysis based on meta-analyses"></td>
+                          <td>
+                            <button ng-if="!analysis.archived && editMode.allowEditing" ng-click="archiveAnalysis(analysis)"
+                              type="button" class="tiny right info radius" style="margin-bottom:0;">archive</button>
+                            <button ng-if="analysis.archived && editMode.allowEditing" ng-click="unarchiveAnalysis(analysis)"
+                              type="button" class="tiny right alert radius" style="margin-bottom:0;">unarchive</button>
+                          </td>
+                        </div>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
               </div>
             </div>
           </div>
