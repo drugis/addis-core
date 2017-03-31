@@ -31,6 +31,11 @@ public class ContinuousNetworkMetaAnalysisProblemEntry extends AbstractNetworkMe
   }
 
   @Override
+  public boolean hasMissingValues() {
+    return mean == null || stdDev == null || sampleSize == null;
+  }
+
+  @Override
   public boolean equals(Object o) {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;

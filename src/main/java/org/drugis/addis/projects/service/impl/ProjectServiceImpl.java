@@ -9,16 +9,22 @@ import org.drugis.addis.analyses.service.AnalysisService;
 import org.drugis.addis.covariates.Covariate;
 import org.drugis.addis.covariates.CovariateRepository;
 import org.drugis.addis.exception.MethodNotAllowedException;
+import org.drugis.addis.exception.ProblemCreationException;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.interventions.controller.command.*;
 import org.drugis.addis.interventions.model.*;
 import org.drugis.addis.interventions.repository.InterventionRepository;
 import org.drugis.addis.interventions.service.InterventionService;
+import org.drugis.addis.interventions.service.impl.InvalidTypeForDoseCheckException;
 import org.drugis.addis.models.Model;
 import org.drugis.addis.models.exceptions.InvalidModelException;
 import org.drugis.addis.models.repository.ModelRepository;
 import org.drugis.addis.outcomes.Outcome;
 import org.drugis.addis.outcomes.repository.OutcomeRepository;
+import org.drugis.addis.patavitask.repository.UnexpectedNumberOfResultsException;
+import org.drugis.addis.problems.model.AbstractNetworkMetaAnalysisProblemEntry;
+import org.drugis.addis.problems.model.NetworkMetaAnalysisProblem;
+import org.drugis.addis.problems.service.ProblemService;
 import org.drugis.addis.projects.Project;
 import org.drugis.addis.projects.ProjectCommand;
 import org.drugis.addis.projects.repository.ProjectRepository;
@@ -30,6 +36,7 @@ import org.drugis.addis.security.repository.AccountRepository;
 import org.drugis.addis.trialverse.model.SemanticInterventionUriAndName;
 import org.drugis.addis.trialverse.model.SemanticVariable;
 import org.drugis.addis.trialverse.model.emun.CovariateOptionType;
+import org.drugis.addis.trialverse.model.trialdata.TrialDataArm;
 import org.drugis.addis.trialverse.model.trialdata.TrialDataStudy;
 import org.drugis.addis.trialverse.service.MappingService;
 import org.drugis.addis.trialverse.service.TriplestoreService;
@@ -37,6 +44,8 @@ import org.drugis.addis.trialverse.service.impl.ReadValueException;
 import org.drugis.trialverse.dataset.model.VersionMapping;
 import org.drugis.trialverse.dataset.repository.VersionMappingRepository;
 import org.drugis.trialverse.util.Namespaces;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
@@ -57,6 +66,8 @@ import java.util.stream.Collectors;
  */
 @Service
 public class ProjectServiceImpl implements ProjectService {
+
+  final static Logger logger = LoggerFactory.getLogger(ProjectService.class);
 
   @Inject
   private AccountRepository accountRepository;
@@ -99,6 +110,9 @@ public class ProjectServiceImpl implements ProjectService {
 
   @Inject
   private NetworkMetaAnalysisRepository networkMetaAnalysisRepository;
+
+  @Inject
+  private ProblemService problemService;
 
   @Qualifier("emAddisCore")
   @PersistenceContext(unitName = "addisCore")
@@ -358,7 +372,7 @@ public class ProjectServiceImpl implements ProjectService {
 
   @Override
   public Integer createUpdated(Account user, Integer sourceProjectId) throws ResourceDoesNotExistException,
-          ReadValueException, URISyntaxException {
+          ReadValueException, URISyntaxException, SQLException {
     Project sourceProject = projectRepository.get(sourceProjectId);
     ProjectCommand command = sourceProject.getCommand();
     URI datasetUri = URI.create(Namespaces.DATASET_NAMESPACE + sourceProject.getNamespaceUid());
@@ -388,22 +402,97 @@ public class ProjectServiceImpl implements ProjectService {
             .filter(analysis -> analysis instanceof NetworkMetaAnalysis)
             .filter(analysis -> !analysis.getArchived())
             .map(analysis -> (NetworkMetaAnalysis) analysis)
-            .filter(analysis -> checkNetworkMetaAnalysisDependencies(analysis, oldToNewOutcomeId, oldToNewCovariateId, oldToNewInterventionId))
+            .filter(analysis -> checkNetworkMetaAnalysisDependencies(analysis,
+                    oldToNewOutcomeId,
+                    oldToNewCovariateId,
+                    oldToNewInterventionId))
             .forEach(netWorkMetaAnalysisUpdateCreator(user, newProject,
                     oldToNewAnalysisId,
                     oldToNewOutcomeId,
                     oldToNewInterventionId,
                     oldToNewCovariateId));
+
+    //models
+    Map<Integer, Integer> oldToNewModelId = new HashMap<>();
+    Collection<Model> sourceModels = modelRepository.findModelsByProject(sourceProjectId);
+    sourceModels.stream()
+            .filter(model -> !model.getArchived())
+            .filter(model -> {
+              try {
+                return checkModelDependencies(model, newProject, sourceProject, oldToNewAnalysisId, oldToNewInterventionId);
+              } catch (ResourceDoesNotExistException | UnexpectedNumberOfResultsException | URISyntaxException | SQLException | ReadValueException | IOException | InvalidTypeForDoseCheckException | ProblemCreationException e) {
+                e.printStackTrace();
+                return false;
+              }
+            })
+            .forEach(modelCreator(oldToNewAnalysisId, oldToNewModelId, oldToNewInterventionId));
+
+    //update primary models
+    analysisRepository.query(newProject.getId()).stream()
+            .filter(analysis -> analysis instanceof NetworkMetaAnalysis)
+            .map(analysis -> (NetworkMetaAnalysis) analysis)
+            .forEach(nma -> {
+              if (nma.getPrimaryModel() != null) {
+                nma.setPrimaryModel(oldToNewModelId.get(nma.getPrimaryModel()));
+              }
+            });
+
     return newProject.getId();
   }
 
-  private Consumer<? super NetworkMetaAnalysis> netWorkMetaAnalysisUpdateCreator(Account user, Project newProject, Map<Integer, Integer> oldToNewAnalysisId, Map<Integer, Integer> oldToNewOutcomeId, Map<Integer, Integer> oldToNewInterventionId, Map<Integer, Integer> oldToNewCovariateId) {
+  private boolean checkModelDependencies(Model model, Project newProject, Project sourceProject, Map<Integer, Integer> oldToNewAnalysisId, Map<Integer, Integer> oldToNewInterventionId) throws ResourceDoesNotExistException, ReadValueException, URISyntaxException, SQLException, InvalidTypeForDoseCheckException, UnexpectedNumberOfResultsException, IOException, ProblemCreationException {
+    NetworkMetaAnalysis newAnalysis;
+    NetworkMetaAnalysis oldAnalysis;
+    NetworkMetaAnalysisProblem oldProblem;
+    NetworkMetaAnalysisProblem newProblem;
+    if (oldToNewAnalysisId.get(model.getAnalysisId()) == null) {
+      return false;
+    } else {
+      newAnalysis = (NetworkMetaAnalysis) analysisRepository.get(oldToNewAnalysisId.get(model.getAnalysisId()));
+      oldAnalysis = (NetworkMetaAnalysis) analysisRepository.get(model.getAnalysisId());
+      // we already know covariates and interventions are alright, otherwise the analysis would not have been copied
+    }
+
+    newProblem = (NetworkMetaAnalysisProblem) problemService.getProblem(newProject.getId(), newAnalysis.getId());
+    oldProblem = (NetworkMetaAnalysisProblem) problemService.getProblem(sourceProject.getId(), oldAnalysis.getId());
+
+    return areEntriesIdenticalEnough(oldProblem.getEntries(), newProblem.getEntries(), oldToNewInterventionId);
+  }
+
+  private boolean isSameEntry(AbstractNetworkMetaAnalysisProblemEntry oldEntry,
+                              AbstractNetworkMetaAnalysisProblemEntry newEntry,
+                              Map<Integer, Integer> oldToNewInterventionId) {
+    return oldToNewInterventionId.get(oldEntry.getTreatment()).equals(newEntry.getTreatment())
+            && oldEntry.getStudy().equals(newEntry.getStudy()) && !newEntry.hasMissingValues();
+  }
+
+  private boolean areEntriesIdenticalEnough(List<AbstractNetworkMetaAnalysisProblemEntry> oldEntries,
+                                            List<AbstractNetworkMetaAnalysisProblemEntry> newEntries,
+                                            Map<Integer, Integer> oldToNewInterventionId) {
+    // Number of entries must be the same
+    if (oldEntries.size() != newEntries.size()) {
+      return false;
+    }
+    // For every old entry a new one must exist.
+    for (AbstractNetworkMetaAnalysisProblemEntry oldEntry : oldEntries) {
+      if (newEntries.stream().noneMatch(newEntry -> isSameEntry(oldEntry, newEntry, oldToNewInterventionId))) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  private Consumer<? super NetworkMetaAnalysis> netWorkMetaAnalysisUpdateCreator(
+          Account user, Project newProject, Map<Integer, Integer> oldToNewAnalysisId,
+          Map<Integer, Integer> oldToNewOutcomeId, Map<Integer, Integer> oldToNewInterventionId,
+          Map<Integer, Integer> oldToNewCovariateId) {
     // can probably use the networkMetaAnalysisCreator once updating of models is implemented
     return oldAnalysis -> {
       AnalysisCommand command = new AnalysisCommand(newProject.getId(), oldAnalysis.getTitle(),
               AnalysisType.EVIDENCE_SYNTHESIS);
       try {
         final NetworkMetaAnalysis newAnalysis = analysisService.createNetworkMetaAnalysis(user, command);
+        newAnalysis.setPrimaryModel(oldAnalysis.getPrimaryModel());
 
         // update interventions
         em.flush(); // needed to unbuffer the intervention inclusion additions from the constructor

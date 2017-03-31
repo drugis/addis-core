@@ -13,6 +13,7 @@ import org.drugis.addis.analyses.repository.SingleStudyBenefitRiskAnalysisReposi
 import org.drugis.addis.analyses.service.AnalysisService;
 import org.drugis.addis.covariates.Covariate;
 import org.drugis.addis.covariates.CovariateRepository;
+import org.drugis.addis.exception.ProblemCreationException;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.interventions.model.AbstractIntervention;
 import org.drugis.addis.interventions.model.SingleIntervention;
@@ -103,15 +104,20 @@ public class ProblemServiceImpl implements ProblemService {
   private ObjectMapper objectMapper = new ObjectMapper();
 
   @Override
-  public AbstractProblem getProblem(Integer projectId, Integer analysisId) throws ResourceDoesNotExistException, URISyntaxException, SQLException, IOException, ReadValueException, InvalidTypeForDoseCheckException, UnexpectedNumberOfResultsException {
+  public AbstractProblem getProblem(Integer projectId, Integer analysisId) throws ResourceDoesNotExistException, ProblemCreationException {
     Project project = projectRepository.get(projectId);
     AbstractAnalysis analysis = analysisRepository.get(analysisId);
-    if (analysis instanceof SingleStudyBenefitRiskAnalysis) {
-      return getSingleStudyBenefitRiskProblem(project, (SingleStudyBenefitRiskAnalysis) analysis);
-    } else if (analysis instanceof NetworkMetaAnalysis) {
-      return getNetworkMetaAnalysisProblem(project, (NetworkMetaAnalysis) analysis);
-    } else if (analysis instanceof MetaBenefitRiskAnalysis) {
-      return getMetaBenefitRiskAnalysisProblem(project, (MetaBenefitRiskAnalysis) analysis);
+    try {
+      if (analysis instanceof SingleStudyBenefitRiskAnalysis) {
+        return getSingleStudyBenefitRiskProblem(project, (SingleStudyBenefitRiskAnalysis) analysis);
+      } else if (analysis instanceof NetworkMetaAnalysis) {
+        return getNetworkMetaAnalysisProblem(project, (NetworkMetaAnalysis) analysis);
+      } else if (analysis instanceof MetaBenefitRiskAnalysis) {
+        return getMetaBenefitRiskAnalysisProblem(project, (MetaBenefitRiskAnalysis) analysis);
+      }
+    } catch (URISyntaxException | SQLException | IOException | ReadValueException | InvalidTypeForDoseCheckException |
+            UnexpectedNumberOfResultsException e) {
+      throw new ProblemCreationException(e);
     }
     throw new RuntimeException("unknown analysis type");
   }

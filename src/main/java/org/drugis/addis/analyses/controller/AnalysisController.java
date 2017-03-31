@@ -10,6 +10,7 @@ import org.drugis.addis.analyses.service.AnalysisService;
 import org.drugis.addis.analyses.service.MetaBenefitRiskAnalysisService;
 import org.drugis.addis.base.AbstractAddisCoreController;
 import org.drugis.addis.exception.MethodNotAllowedException;
+import org.drugis.addis.exception.ProblemCreationException;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.interventions.service.impl.InvalidTypeForDoseCheckException;
 import org.drugis.addis.patavitask.repository.UnexpectedNumberOfResultsException;
@@ -125,7 +126,7 @@ public class AnalysisController extends AbstractAddisCoreController {
 
   @RequestMapping(value = "/projects/{projectId}/analyses/{analysisId}", method = RequestMethod.POST)
   @ResponseBody
-  public AbstractAnalysis update(Principal currentUser, @PathVariable Integer projectId, @RequestBody AbstractAnalysis analysis) throws MethodNotAllowedException, ResourceDoesNotExistException, SQLException, IOException, URISyntaxException, ReadValueException, InvalidTypeForDoseCheckException, UnexpectedNumberOfResultsException {
+  public AbstractAnalysis update(Principal currentUser, @PathVariable Integer projectId, @RequestBody AbstractAnalysis analysis) throws MethodNotAllowedException, ResourceDoesNotExistException, SQLException, IOException, URISyntaxException, ReadValueException, InvalidTypeForDoseCheckException, UnexpectedNumberOfResultsException, ProblemCreationException {
     Account user = accountRepository.findAccountByUsername(currentUser.getName());
     if (user != null) {
       if (analysis instanceof SingleStudyBenefitRiskAnalysis) {

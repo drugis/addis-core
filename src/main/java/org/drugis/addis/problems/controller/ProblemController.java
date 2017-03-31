@@ -1,6 +1,7 @@
 package org.drugis.addis.problems.controller;
 
 import org.drugis.addis.base.AbstractAddisCoreController;
+import org.drugis.addis.exception.ProblemCreationException;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.interventions.service.impl.InvalidTypeForDoseCheckException;
 import org.drugis.addis.patavitask.repository.UnexpectedNumberOfResultsException;
@@ -31,7 +32,7 @@ public class ProblemController extends AbstractAddisCoreController {
 
   @RequestMapping(value = "/projects/{projectId}/analyses/{analysisId}/problem", method = RequestMethod.GET)
   @ResponseBody
-  public AbstractProblem get(@PathVariable Integer projectId, @PathVariable Integer analysisId) throws ResourceDoesNotExistException, URISyntaxException, SQLException, IOException, ReadValueException, InvalidTypeForDoseCheckException, UnexpectedNumberOfResultsException {
+  public AbstractProblem get(@PathVariable Integer projectId, @PathVariable Integer analysisId) throws ResourceDoesNotExistException, URISyntaxException, SQLException, IOException, ReadValueException, InvalidTypeForDoseCheckException, UnexpectedNumberOfResultsException, ProblemCreationException {
     return problemService.getProblem(projectId, analysisId);
   }
 }

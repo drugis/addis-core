@@ -3,6 +3,7 @@ package org.drugis.addis.patavitask.service.impl;
 import org.drugis.addis.analyses.AbstractAnalysis;
 import org.drugis.addis.analyses.NetworkMetaAnalysis;
 import org.drugis.addis.analyses.repository.AnalysisRepository;
+import org.drugis.addis.exception.ProblemCreationException;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.interventions.service.impl.InvalidTypeForDoseCheckException;
 import org.drugis.addis.models.Model;
@@ -47,7 +48,7 @@ public class PataviTaskServiceImpl implements PataviTaskService {
   WebConstants webConstants;
 
   @Override
-  public PataviTaskUriHolder getGemtcPataviTaskUriHolder(Integer projectId, Integer analysisId, Integer modelId) throws Exception, ReadValueException, InvalidTypeForDoseCheckException {
+  public PataviTaskUriHolder getGemtcPataviTaskUriHolder(Integer projectId, Integer analysisId, Integer modelId) throws Exception, ReadValueException, InvalidTypeForDoseCheckException, ProblemCreationException {
     logger.trace("PataviTaskServiceImpl.getGemtcPataviTaskUriHolder, projectId = " + projectId + " analysisId = " + analysisId + "modelId = " + modelId);
     AbstractAnalysis analysis = analysisRepository.get(analysisId);
     if(!(analysis instanceof NetworkMetaAnalysis)){
