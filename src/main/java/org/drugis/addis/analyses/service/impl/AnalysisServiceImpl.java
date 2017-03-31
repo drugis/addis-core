@@ -217,18 +217,18 @@ public class AnalysisServiceImpl implements AnalysisService {
   public List<TrialDataStudy> buildEvidenceTable(Integer projectId, Integer analysisId) throws ResourceDoesNotExistException, ReadValueException, URISyntaxException {
     Project project = projectRepository.get(projectId);
     AbstractAnalysis analysis = analysisRepository.get(analysisId);
+
+    // Interventions
     Set<AbstractIntervention> includedInterventions = getIncludedInterventions(analysis);
-
     Set<SingleIntervention> singleInterventions = getSingleInterventions(includedInterventions);
-
     Set<URI> includedInterventionUris = singleInterventions.stream()
             .map(SingleIntervention::getSemanticInterventionUri)
             .collect(Collectors.toSet());
 
     List<TrialDataStudy> trialData = Collections.emptyList();
-
     String namespaceUid = mappingService.getVersionedUuid(project.getNamespaceUid());
     URI datasetVersion = project.getDatasetVersion();
+
     if (analysis instanceof NetworkMetaAnalysis) {
       NetworkMetaAnalysis networkMetaAnalysis = (NetworkMetaAnalysis) analysis;
       if (networkMetaAnalysis.getOutcome() == null) {
@@ -236,6 +236,7 @@ public class AnalysisServiceImpl implements AnalysisService {
         return trialData;
       }
 
+      // Covariates
       Set<String> includedCovariates = getIncludedCovariates(networkMetaAnalysis).stream()
               .map(Covariate::getDefinitionKey)
               .collect(Collectors.toSet());
