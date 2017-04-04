@@ -1,0 +1,52 @@
+PREFIX ontology: <http://trials.drugis.org/ontology#>
+PREFIX dataset: <http://trials.drugis.org/datasets/>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+PREFIX entity: <http://trials.drugis.org/entities/>
+PREFIX concept: <http://trials.drugis.org/concepts/>
+PREFIX instance: <http://trials.drugis.org/instances/>
+PREFIX graph: <http://trials.drugis.org/graphs/>
+
+#replace string categories with IRI refs to newly created instances
+DELETE {
+  ?restNode rdf:first ?item .
+}
+INSERT {
+  ?restNode
+    rdf:first ?newIri .
+  ?newIri
+    a ontology:Category ;
+    rdfs:title ?item .
+}
+WHERE {
+  ?study
+    a ontology:Study ;
+    ontology:has_outcome ?outcomeInstance .
+  ?outcomeInstance ontology:of_variable [
+    ontology:categoryList ?categoryList
+  ].
+  ?categoryList rdf:rest* ?restNode .
+  ?restNode rdf:first ?item ;
+    rdf:rest ?tailNode .
+  BIND(datatype(?item) as ?type) .
+  FILTER (?type = xsd:string) .
+  BIND (IRI(CONCAT("http://trials.drugis.org/instances/", STRUUID())) as ?newIri ) .
+}
+
+#replace string references to categories with IRI refs to categories
+DELETE {
+  ?countBlankNode ontology:category ?title .
+}
+INSERT {
+  ?countBlankNode ontology:category ?categoryInstance .
+}
+WHERE {
+  ?categoryInstance
+    a ontology:Category ;
+    rdfs:title ?title .
+
+  ?measurementInstance ontology:category_count ?countBlankNode .
+  ?countBlankNode  ontology:category ?title .
+}
