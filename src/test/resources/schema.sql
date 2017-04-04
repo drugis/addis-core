@@ -681,3 +681,12 @@ CREATE TABLE modelBaseline (
   FOREIGN KEY (modelId) REFERENCES Model(id)
 );
 --rollback DROP TABLE modelBaseline
+
+--changeset keijserj:69
+CREATE TABLE effectsTable (
+    analysisId INT NOT NULL,
+    effectsTable VARBINARY(255),
+    PRIMARY KEY (analysisId),
+    FOREIGN KEY (analysisId) REFERENCES AbstractAnalysis(id)
+);
+--rollback DROP TABLE effectsTable
