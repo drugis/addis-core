@@ -3,6 +3,7 @@ package org.drugis.addis.config;
 import org.drugis.addis.analyses.repository.*;
 import org.drugis.addis.analyses.service.AnalysisService;
 import org.drugis.addis.covariates.CovariateRepository;
+import org.drugis.addis.effectsTables.EffectsTableRepository;
 import org.drugis.addis.interventions.repository.InterventionRepository;
 import org.drugis.addis.interventions.service.InterventionService;
 import org.drugis.addis.models.repository.FunnelPlotRepository;
@@ -45,7 +46,8 @@ import static org.mockito.Mockito.mock;
         "org.drugis.addis.scenarios.service",
         "org.drugis.addis.models.controller",
         "org.drugis.addis.models.service",
-        "org.drugis.addis.statistics.controller"
+        "org.drugis.addis.statistics.controller",
+        "org.drugis.addis.effectsTables"
 })
 public class TestConfig {
   @Bean
@@ -181,6 +183,11 @@ public class TestConfig {
   @Bean
   public StatisticsService statisticsService() {
     return mock(StatisticsService.class);
+  }
+
+  @Bean
+  public EffectsTableRepository effectsTableRepository() {
+    return mock(EffectsTableRepository.class);
   }
 }
 

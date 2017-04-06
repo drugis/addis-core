@@ -46,6 +46,7 @@ import static org.mockito.Mockito.mock;
                 "org.drugis.addis.trialverse.factory",
                 "org.drugis.trialverse",
                 "org.drugis.addis.util",
+                "org.drugis.addis.effectsTables",
                 "org.drugis.addis.covariates",
                 "org.drugis.addis.remarks"
         })
@@ -59,6 +60,7 @@ import static org.mockito.Mockito.mock;
         "org.drugis.addis.models",
         "org.drugis.addis.remarks",
         "org.drugis.addis.covariates",
+        "org.drugis.addis.effectsTables",
         "org.drugis.addis.security",
         "org.drugis.trialverse"
 })
@@ -134,6 +136,7 @@ public class JpaRepositoryTestConfig {
             "org.drugis.addis.models",
             "org.drugis.addis.covariates",
             "org.drugis.addis.remarks",
+            "org.drugis.addis.effectsTables",
             "org.drugis.trialverse.dataset",
             "org.drugis.trialverse.graph");
     em.setDataSource(dataSource());

@@ -829,10 +829,10 @@ CREATE TABLE modelBaseline (
 --rollback DROP TABLE modelBaseline
 
 --changeset keijserj:69
-CREATE TABLE effectsTable (
+CREATE TABLE effectsTableExclusion (
     analysisId INT NOT NULL,
-    effectsTable BYTEA,
-    PRIMARY KEY (analysisId),
+    alternativeId INT NOT NULL,
+    PRIMARY KEY (analysisId, alternativeId),
     FOREIGN KEY (analysisId) REFERENCES AbstractAnalysis(id)
 );
 --rollback DROP TABLE effectsTable
