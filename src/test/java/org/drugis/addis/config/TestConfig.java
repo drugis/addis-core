@@ -3,15 +3,15 @@ package org.drugis.addis.config;
 import org.drugis.addis.analyses.repository.*;
 import org.drugis.addis.analyses.service.AnalysisService;
 import org.drugis.addis.covariates.CovariateRepository;
-import org.drugis.addis.effectsTables.EffectsTableRepository;
+import org.drugis.addis.effectsTables.repository.EffectsTableRepository;
 import org.drugis.addis.interventions.repository.InterventionRepository;
 import org.drugis.addis.interventions.service.InterventionService;
 import org.drugis.addis.models.repository.FunnelPlotRepository;
+import org.drugis.addis.models.repository.ModelBaselineRepository;
 import org.drugis.addis.models.repository.ModelRepository;
 import org.drugis.addis.outcomes.repository.OutcomeRepository;
 import org.drugis.addis.outcomes.service.OutcomeService;
 import org.drugis.addis.patavitask.repository.PataviTaskRepository;
-import org.drugis.addis.models.repository.ModelBaselineRepository;
 import org.drugis.addis.problems.service.ProblemService;
 import org.drugis.addis.projects.repository.ProjectRepository;
 import org.drugis.addis.projects.repository.ReportRepository;
@@ -47,7 +47,7 @@ import static org.mockito.Mockito.mock;
         "org.drugis.addis.models.controller",
         "org.drugis.addis.models.service",
         "org.drugis.addis.statistics.controller",
-        "org.drugis.addis.effectsTables"
+        "org.drugis.addis.effectsTables.controller"
 })
 public class TestConfig {
   @Bean

@@ -1,8 +1,8 @@
-package org.drugis.addis.effectsTables.impl;
+package org.drugis.addis.effectsTables.repository.impl;
 
 import org.drugis.addis.config.JpaRepositoryTestConfig;
 import org.drugis.addis.effectsTables.EffectsTableExclusion;
-import org.drugis.addis.effectsTables.EffectsTableRepository;
+import org.drugis.addis.effectsTables.repository.EffectsTableRepository;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;

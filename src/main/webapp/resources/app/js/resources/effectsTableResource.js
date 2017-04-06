@@ -6,13 +6,9 @@ define(function() {
       projectId: '@projectId',
       analysisId: '@analysisId'
     }, {
-      'setEffectsTableExclusion': {
+      'toggleExclusion': {
         url: '/projects/:projectId/analyses/:analysisId/effectsTable',
         method: 'POST'
-      }, 'getEffectsTableExclusions': {
-        url: '/projects/:projectId/analyses/:analysisId/effectsTable',
-        method: 'GET',
-        isArray: true
       }
     });
   };

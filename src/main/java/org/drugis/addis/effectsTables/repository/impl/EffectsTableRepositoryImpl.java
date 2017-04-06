@@ -1,7 +1,7 @@
-package org.drugis.addis.effectsTables.impl;
+package org.drugis.addis.effectsTables.repository.impl;
 
 import org.drugis.addis.effectsTables.EffectsTableExclusion;
-import org.drugis.addis.effectsTables.EffectsTableRepository;
+import org.drugis.addis.effectsTables.repository.EffectsTableRepository;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
 

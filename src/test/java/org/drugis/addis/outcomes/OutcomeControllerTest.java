@@ -113,7 +113,10 @@ public class OutcomeControllerTest {
     OutcomeCommand outcomeCommand = new OutcomeCommand(1, "name", 1, "motivation", semanticOutcome);
     when(outcomeRepository.create(gert, 1, "name", 1, "motivation", semanticOutcome)).thenReturn(outcome);
     String body = TestUtils.createJson(outcomeCommand);
-    mockMvc.perform(post("/projects/1/outcomes").content(body).principal(user).contentType(WebConstants.getApplicationJsonUtf8Value()))
+    mockMvc.perform(post("/projects/1/outcomes")
+            .content(body)
+            .principal(user)
+            .contentType(WebConstants.getApplicationJsonUtf8Value()))
       .andExpect(status().isCreated())
       .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()))
       .andExpect(jsonPath("$.id", notNullValue()));
@@ -128,7 +131,10 @@ public class OutcomeControllerTest {
     when(outcomeRepository.create(gert, 1, "name", 1, "", semanticOutcome)).thenReturn(outcome);
     OutcomeCommand outcomeCommand = new OutcomeCommand(1, "name", 1, "", semanticOutcome);
     String body = TestUtils.createJson(outcomeCommand);
-    mockMvc.perform(post("/projects/1/outcomes").content(body).principal(user).contentType(WebConstants.getApplicationJsonUtf8Value()))
+    mockMvc.perform(post("/projects/1/outcomes")
+            .content(body)
+            .principal(user)
+            .contentType(WebConstants.getApplicationJsonUtf8Value()))
       .andExpect(status().isCreated())
       .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()))
       .andExpect(jsonPath("$.id", notNullValue()));

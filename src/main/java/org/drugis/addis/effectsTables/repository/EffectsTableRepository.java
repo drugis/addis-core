@@ -1,4 +1,6 @@
-package org.drugis.addis.effectsTables;
+package org.drugis.addis.effectsTables.repository;
+
+import org.drugis.addis.effectsTables.EffectsTableExclusion;
 
 import java.util.List;
 
