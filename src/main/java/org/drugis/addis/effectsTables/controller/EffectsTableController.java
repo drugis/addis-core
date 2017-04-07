@@ -2,6 +2,7 @@ package org.drugis.addis.effectsTables.controller;
 
 import org.apache.http.HttpStatus;
 import org.drugis.addis.base.AbstractAddisCoreController;
+import org.drugis.addis.effectsTables.AlternativeIdCommand;
 import org.drugis.addis.effectsTables.EffectsTableExclusion;
 import org.drugis.addis.effectsTables.repository.EffectsTableRepository;
 import org.drugis.addis.exception.MethodNotAllowedException;
@@ -41,10 +42,10 @@ public class EffectsTableController extends AbstractAddisCoreController {
   }
 
   @RequestMapping(value="/projects/{projectId}/analyses/{analysisId}/effectsTable", method = RequestMethod.POST)
-  public void setEffectsTableExclusion(HttpServletResponse response, Principal currentUser, @PathVariable Integer projectId, @PathVariable Integer analysisId, @RequestBody Integer alternativeId) throws ResourceDoesNotExistException, MethodNotAllowedException {
+  public void setEffectsTableExclusion(HttpServletResponse response, Principal currentUser, @PathVariable Integer projectId, @PathVariable Integer analysisId, @RequestBody AlternativeIdCommand alternativeId) throws ResourceDoesNotExistException, MethodNotAllowedException {
     Account user = accountRepository.findAccountByUsername(currentUser.getName());
     projectService.checkProjectExistsAndModifiable(user, projectId);
-    effectsTableRepository.setEffectsTableExclusion(analysisId, alternativeId);
+    effectsTableRepository.setEffectsTableExclusion(analysisId, alternativeId.getAlternativeId());
     response.setStatus(HttpStatus.SC_OK);
   }
 }
