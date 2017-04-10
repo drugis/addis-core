@@ -1,0 +1,42 @@
+PREFIX ontology: <http://trials.drugis.org/ontology#>
+PREFIX dataset: <http://trials.drugis.org/datasets/>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+PREFIX entity: <http://trials.drugis.org/entities/>
+PREFIX concept: <http://trials.drugis.org/concepts/>
+PREFIX instance: <http://trials.drugis.org/instances/>
+PREFIX graph: <http://trials.drugis.org/graphs/>
+PREFIX qudt: <http://qudt.org/schema/qudt#> 
+
+DELETE {
+  ?unitNode a ?concept .
+}
+INSERT {
+  ?unitNode owl:sameAs ?concept ;
+    a ontology:Unit . 
+}
+WHERE {
+  ?blankNode ontology:unit ?unitNode .
+  ?unitNode a ?concept .
+  FILTER (?concept != ontology:Unit) .
+};
+
+INSERT {
+  ?unitNode qudt:conversionMultiplier 1.000000e-03 .
+}
+WHERE {
+  ?blankNode ontology:unit ?unitNode .
+  ?unitNode a ontology:Unit .
+  ?unitNode rdfs:label "milligram" .
+};
+
+INSERT {
+  ?unitNode qudt:conversionMultiplier 1.000000e-06 .
+}
+WHERE {
+  ?blankNode ontology:unit ?unitNode .
+  ?unitNode a ontology:Unit .
+  ?unitNode rdfs:label "microgram" .
+}

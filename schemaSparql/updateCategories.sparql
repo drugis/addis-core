@@ -33,7 +33,7 @@ WHERE {
   BIND(datatype(?item) as ?type) .
   FILTER (?type = xsd:string) .
   BIND (IRI(CONCAT("http://trials.drugis.org/instances/", STRUUID())) as ?newIri ) .
-}
+};
 
 #replace string references to categories with IRI refs to categories
 DELETE {
