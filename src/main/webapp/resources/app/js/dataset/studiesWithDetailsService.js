@@ -79,6 +79,8 @@ define(['lodash'], function(_) {
       } else if (activity.treatmentType === 'http://trials.drugis.org/ontology#TitratedDoseDrugTreatment') {
         return activity.drugName + ' ' + $filter('exponentialFilter')(activity.minDoseValue) + '-' +
           $filter('exponentialFilter')(activity.maxDoseValue) + ' ' + activity.minDoseUnitLabel + ' per ' + $filter('durationFilter')(activity.minDoseDosingPeriodicity);
+      } else {
+        return '<Activity unavailable: missing concept mapping>';
       }
     }
 
