@@ -17,6 +17,8 @@ define(function(require) {
     .controller('UpdateProjectController', require('project/updateProjectController'))
     .controller('CopyProjectController', require('project/copyProjectController'))
     .controller('InsertDirectiveController', require('project/report/insertDirectiveController'))
+    .controller('RepairInterventionController', require('project/repairInterventionController'))
+
 
   //directives
   .directive('nmaReportView', require('project/nmaReportViewDirective'))

@@ -11,22 +11,24 @@ import java.net.URI;
 @Embeddable
 public class UpperDoseBound {
   @Enumerated(EnumType.STRING)
-  UpperBoundType type;
+  private UpperBoundType type;
 
-  Double value;
-  String unitName;
-  String unitPeriod;
-  String unitConcept;
+  private Double value;
+  private String unitName;
+  private String unitPeriod;
+  private String unitConcept;
+  private Double conversionMultiplier;
 
   public UpperDoseBound() {
   }
 
-  public UpperDoseBound(UpperBoundType type, Double value, String unitName, String unitPeriod, URI unitConcept) {
+  public UpperDoseBound(UpperBoundType type, Double value, String unitName, String unitPeriod, URI unitConcept, Double conversionMultiplier) {
     this.type = type;
     this.value = value;
     this.unitName = unitName;
     this.unitPeriod = unitPeriod;
     this.unitConcept = unitConcept.toString();
+    this.conversionMultiplier = conversionMultiplier;
   }
 
   public UpperBoundType getType() {
@@ -49,6 +51,10 @@ public class UpperDoseBound {
     return URI.create(unitConcept);
   }
 
+  public Double getConversionMultiplier() {
+    return conversionMultiplier;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
@@ -58,8 +64,10 @@ public class UpperDoseBound {
 
     if (type != that.type) return false;
     if (!value.equals(that.value)) return false;
-    return unitName.equals(that.unitName);
-
+    if (!unitName.equals(that.unitName)) return false;
+    if (!unitPeriod.equals(that.unitPeriod)) return false;
+    if (!unitConcept.equals(that.unitConcept)) return false;
+    return conversionMultiplier != null ? conversionMultiplier.equals(that.conversionMultiplier) : that.conversionMultiplier == null;
   }
 
   @Override
@@ -67,6 +75,9 @@ public class UpperDoseBound {
     int result = type.hashCode();
     result = 31 * result + value.hashCode();
     result = 31 * result + unitName.hashCode();
+    result = 31 * result + unitPeriod.hashCode();
+    result = 31 * result + unitConcept.hashCode();
+    result = 31 * result + (conversionMultiplier != null ? conversionMultiplier.hashCode() : 0);
     return result;
   }
 }

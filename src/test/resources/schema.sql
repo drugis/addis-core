@@ -681,3 +681,9 @@ CREATE TABLE modelBaseline (
   FOREIGN KEY (modelId) REFERENCES Model(id)
 );
 --rollback DROP TABLE modelBaseline
+
+--changeset keijserJ:69 (
+ALTER TABLE fixedDoseIntervention ADD COLUMN lowerBoundConversionMultiplier;
+ALTER TABLE fixedDoseIntervention ADD COLUMN upperBoundConversionMultiplier;
+--rollback ALTER TABLE fixedDoseIntervention DROP COLUMN lowerBoundConversionMultiplier;
+--rollback ALTER TABLE fixedDoseIntervention DROP COLUMN upperBoundConversionMultiplier;
