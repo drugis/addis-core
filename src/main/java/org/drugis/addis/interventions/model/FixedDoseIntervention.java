@@ -21,11 +21,14 @@ public class FixedDoseIntervention extends SingleIntervention implements Seriali
           @AttributeOverride(name = "lowerBound.unitPeriod", column = @Column(name = "lowerBoundUnitPeriod")),
           @AttributeOverride(name = "lowerBound.unitConcept", column = @Column(name = "lowerBoundUnitConcept")),
           @AttributeOverride(name = "lowerBound.value", column = @Column(name = "lowerBoundValue")),
+          @AttributeOverride(name = "lowerBound.conversionMultiplier", column = @Column(name = "lowerBoundConversionMultiplier")),
           @AttributeOverride(name = "upperBound.type", column = @Column(name = "upperBoundType")),
           @AttributeOverride(name = "upperBound.unitName", column = @Column(name = "upperBoundUnitName")),
           @AttributeOverride(name = "upperBound.unitPeriod", column = @Column(name = "upperBoundUnitPeriod")),
           @AttributeOverride(name = "upperBound.unitConcept", column = @Column(name = "upperBoundUnitConcept")),
-          @AttributeOverride(name = "upperBound.value", column = @Column(name = "upperBoundValue"))
+          @AttributeOverride(name = "upperBound.value", column = @Column(name = "upperBoundValue")),
+          @AttributeOverride(name = "upperBound.conversionMultiplier", column = @Column(name = "upperBoundConversionMultiplier"))
+
   })
   DoseConstraint constraint;
 

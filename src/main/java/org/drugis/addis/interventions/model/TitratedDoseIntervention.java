@@ -20,11 +20,13 @@ public class TitratedDoseIntervention extends SingleIntervention {
           @AttributeOverride(name="lowerBound.unitPeriod" , column = @Column(name="minLowerBoundUnitPeriod") ),
           @AttributeOverride(name="lowerBound.unitConcept" , column = @Column(name="minLowerBoundUnitConcept") ),
           @AttributeOverride(name="lowerBound.value", column = @Column(name="minLowerBoundValue") ),
+          @AttributeOverride(name="lowerBound.conversionMultiplier", column = @Column(name="minLowerBoundConversionMultiplier") ),
           @AttributeOverride(name="upperBound.type" , column = @Column(name="minUpperBoundType") ),
           @AttributeOverride(name="upperBound.unitName" , column = @Column(name="minUpperBoundUnitName") ),
           @AttributeOverride(name="upperBound.unitPeriod" , column = @Column(name="minUpperBoundUnitPeriod") ),
           @AttributeOverride(name="upperBound.unitConcept" , column = @Column(name="minUpperBoundUnitConcept") ),
-          @AttributeOverride(name="upperBound.value", column = @Column(name="minUpperBoundValue") )
+          @AttributeOverride(name="upperBound.value", column = @Column(name="minUpperBoundValue") ),
+          @AttributeOverride(name="upperBound.conversionMultiplier", column = @Column(name="minUpperBoundConversionMultiplier") )
   } )
   private DoseConstraint minConstraint;
 
@@ -35,11 +37,13 @@ public class TitratedDoseIntervention extends SingleIntervention {
           @AttributeOverride(name="lowerBound.unitPeriod" , column = @Column(name="maxLowerBoundUnitPeriod") ),
           @AttributeOverride(name="lowerBound.unitConcept" , column = @Column(name="maxLowerBoundUnitConcept") ),
           @AttributeOverride(name="lowerBound.value", column = @Column(name="maxLowerBoundValue") ),
+          @AttributeOverride(name="lowerBound.conversionMultiplier", column = @Column(name="maxLowerBoundConversionMultiplier") ),
           @AttributeOverride(name="upperBound.type" , column = @Column(name="maxUpperBoundType") ),
           @AttributeOverride(name="upperBound.unitName" , column = @Column(name="maxUpperBoundUnitName") ),
           @AttributeOverride(name="upperBound.unitPeriod" , column = @Column(name="maxUpperBoundUnitPeriod") ),
           @AttributeOverride(name="upperBound.unitConcept" , column = @Column(name="maxUpperBoundUnitConcept") ),
-          @AttributeOverride(name="upperBound.value", column = @Column(name="maxUpperBoundValue") )
+          @AttributeOverride(name="upperBound.value", column = @Column(name="maxUpperBoundValue") ),
+          @AttributeOverride(name="upperBound.conversionMultiplier", column = @Column(name="maxUpperBoundConversionMultiplier") )
   } )
   private DoseConstraint maxConstraint;
 

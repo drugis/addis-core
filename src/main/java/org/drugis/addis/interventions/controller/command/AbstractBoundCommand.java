@@ -10,7 +10,7 @@ public abstract class AbstractBoundCommand {
   private String unitPeriod;
   private URI unitConcept;
   private Double value;
-  private Double conversionMultplier;
+  private Double conversionMultiplier;
 
   public AbstractBoundCommand() {}
 
@@ -37,8 +37,8 @@ public abstract class AbstractBoundCommand {
     return unitConcept;
   }
 
-  public Double getConversionMultplier() {
-    return conversionMultplier;
+  public Double getConversionMultiplier() {
+    return conversionMultiplier;
   }
 
   @Override
@@ -52,7 +52,7 @@ public abstract class AbstractBoundCommand {
     if (!unitPeriod.equals(that.unitPeriod)) return false;
     if (!unitConcept.equals(that.unitConcept)) return false;
     if (!value.equals(that.value)) return false;
-    return conversionMultplier != null ? conversionMultplier.equals(that.conversionMultplier) : that.conversionMultplier == null;
+    return conversionMultiplier != null ? conversionMultiplier.equals(that.conversionMultiplier) : that.conversionMultiplier == null;
   }
 
   @Override
@@ -61,7 +61,7 @@ public abstract class AbstractBoundCommand {
     result = 31 * result + unitPeriod.hashCode();
     result = 31 * result + unitConcept.hashCode();
     result = 31 * result + value.hashCode();
-    result = 31 * result + (conversionMultplier != null ? conversionMultplier.hashCode() : 0);
+    result = 31 * result + (conversionMultiplier != null ? conversionMultiplier.hashCode() : 0);
     return result;
   }
 }

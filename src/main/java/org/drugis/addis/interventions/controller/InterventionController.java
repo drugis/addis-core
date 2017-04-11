@@ -4,6 +4,7 @@ import org.apache.http.HttpStatus;
 import org.drugis.addis.base.AbstractAddisCoreController;
 import org.drugis.addis.exception.MethodNotAllowedException;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
+import org.drugis.addis.interventions.SetMultipliersCommand;
 import org.drugis.addis.interventions.controller.command.AbstractInterventionCommand;
 import org.drugis.addis.interventions.controller.command.EditInterventionCommand;
 import org.drugis.addis.interventions.controller.viewAdapter.AbstractInterventionViewAdapter;
@@ -63,7 +64,9 @@ public class InterventionController extends AbstractAddisCoreController {
 
   @RequestMapping(value = "/projects/{projectId}/interventions/{interventionId}", method = RequestMethod.POST)
   @ResponseBody
-  public AbstractInterventionViewAdapter edit(Principal currentUser, @PathVariable Integer projectId, @PathVariable Integer interventionId, @RequestBody EditInterventionCommand command) throws Exception {
+  public AbstractInterventionViewAdapter edit(Principal currentUser, @PathVariable Integer projectId,
+                                              @PathVariable Integer interventionId,
+                                              @RequestBody EditInterventionCommand command) throws Exception {
     Account user = accountRepository.getAccount(currentUser);
     projectService.checkProjectExistsAndModifiable(user, projectId);
     AbstractIntervention updatedIntervention = interventionService.updateNameAndMotivation(projectId, interventionId, command.getName(), command.getMotivation());
@@ -83,11 +86,21 @@ public class InterventionController extends AbstractAddisCoreController {
   }
 
   @RequestMapping(value = "/projects/{projectId}/interventions/{interventionId}", method = RequestMethod.DELETE)
-  public void deleteIntervention(@PathVariable Integer projectId, @PathVariable Integer interventionId, Principal currentUser, HttpServletResponse response) throws ResourceDoesNotExistException, MethodNotAllowedException {
+  public void deleteIntervention(@PathVariable Integer projectId, @PathVariable Integer interventionId,
+                                 Principal currentUser, HttpServletResponse response) throws ResourceDoesNotExistException, MethodNotAllowedException {
     Account user = accountRepository.findAccountByUsername(currentUser.getName());
     projectService.checkProjectExistsAndModifiable(user, projectId);
     interventionService.delete(projectId, interventionId);
     response.setStatus(HttpStatus.SC_OK);
+  }
+
+  @RequestMapping(value = "/projects/{projectId}/interventions/{interventionId}/setConversionMultiplier", method = RequestMethod.POST)
+  public void setConversionMultiplier(@PathVariable Integer projectId, @PathVariable Integer interventionId,
+                                      Principal currentUser, HttpServletResponse response,
+                                      @RequestBody SetMultipliersCommand command) throws ResourceDoesNotExistException, MethodNotAllowedException {
+    Account user = accountRepository.findAccountByUsername(currentUser.getName());
+    projectService.checkProjectExistsAndModifiable(user, projectId);
+    interventionService.setMultipliers(interventionId, command);
   }
 
 }

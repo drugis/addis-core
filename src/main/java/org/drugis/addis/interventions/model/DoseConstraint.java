@@ -35,11 +35,11 @@ public class DoseConstraint {
 
     if(lowerBound != null) {
       this.lowerBound = new LowerDoseBound(lowerBound.getType(), lowerBound.getValue(), lowerBound.getUnitName(),
-              lowerBound.getUnitPeriod(), lowerBound.getUnitConcept(), lowerBound.getConversionMultplier());
+              lowerBound.getUnitPeriod(), lowerBound.getUnitConcept(), lowerBound.getConversionMultiplier());
     }
     if(upperBound != null) {
       this.upperBound = new UpperDoseBound(upperBound.getType(), upperBound.getValue(), upperBound.getUnitName(),
-              upperBound.getUnitPeriod(), upperBound.getUnitConcept(), upperBound.getConversionMultplier());
+              upperBound.getUnitPeriod(), upperBound.getUnitConcept(), upperBound.getConversionMultiplier());
     }
   }
 
