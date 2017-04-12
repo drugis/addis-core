@@ -13,6 +13,10 @@ define([], function() {
         url: '/projects/:projectId/interventions',
         method: 'GET',
         isArray: true
+      },
+      'setConversionMultiplier': {
+        url: '/projects/:projectId/interventions/:interventionId/setConversionMultiplier',
+        method: 'POST'
       }
     });
   };

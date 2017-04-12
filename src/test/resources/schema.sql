@@ -364,7 +364,6 @@ ALTER TABLE scenario DROP CONSTRAINT ssbr_scenario_workspace_fkey;
 --rollback DROP TABLE MetaBenefitRiskAnalysis;
 --rollback ALTER TABLE scenario ADD CONSTRAINT ssbr_scenario_workspace_fkey FOREIGN KEY (workspace) REFERENCES SingleStudyBenefitRiskAnalysis(id);
 
-
 --changeset stroombergc:39
 CREATE TABLE FeaturedDataset (
    datasetUrl VARCHAR NOT NULL,
@@ -460,7 +459,6 @@ CREATE TABLE BothDoseTypesIntervention (
 );
 
 CREATE SEQUENCE shared_intervention_id_seq;
-
 
 --rollback DROP TABLE FixedDoseIntervention;
 --rollback DROP TABLE TitratedDoseIntervention;
@@ -572,13 +570,11 @@ CREATE TABLE InterventionCombination (
 --rollback INSERT INTO AbstractIntervention (semanticInterventionLabel, semanticInterventionUri) SELECT semanticInterventionLabel, semanticInterventionUri FROM SingleIntervention;
 --rollback DROP TABLE SingleIntervention;
 
-
 --changeset stroombergc:58
 ALTER TABLE model ADD COLUMN archived boolean NOT NULL DEFAULT FALSE ;
 ALTER TABLE model ADD COLUMN archived_on date;
 --rollback ALTER TABLE model DROP COLUMN archived_on;
 --rollback ALTER TABLE model DROP COLUMN archived;
-
 
 --changeset reidd:59
 CREATE TABLE funnelPlot (
@@ -680,7 +676,7 @@ CREATE TABLE modelBaseline (
   PRIMARY KEY (modelId),
   FOREIGN KEY (modelId) REFERENCES Model(id)
 );
---rollback DROP TABLE modelBaseline
+--rollback DROP TABLE modelBaseline;
 
 --changeset keijserj:69
 ALTER TABLE FixedDoseIntervention ADD COLUMN lowerBoundConversionMultiplier DOUBLE PRECISION;
@@ -693,13 +689,12 @@ ALTER TABLE BothDoseTypesIntervention ADD COLUMN minLowerBoundConversionMultipli
 ALTER TABLE BothDoseTypesIntervention ADD COLUMN minUpperBoundConversionMultiplier DOUBLE PRECISION;
 ALTER TABLE BothDoseTypesIntervention ADD COLUMN maxLowerBoundConversionMultiplier DOUBLE PRECISION;
 ALTER TABLE BothDoseTypesIntervention ADD COLUMN maxUpperBoundConversionMultiplier DOUBLE PRECISION;
-
---rollback ALTER TABLE fixedDoseIntervention DROP COLUMN lowerBoundConversionMultiplier;
---rollback ALTER TABLE fixedDoseIntervention DROP COLUMN upperBoundConversionMultiplier;
---rollback ALTER TABLE titratedDoseIntervention DROP COLUMN minLowerBoundConversionMultiplier;
---rollback ALTER TABLE titratedDoseIntervention DROP COLUMN minUpperBoundConversionMultiplier;
---rollback ALTER TABLE titratedDoseIntervention DROP COLUMN maxLowerBoundConversionMultiplier;
---rollback ALTER TABLE titratedDoseIntervention DROP COLUMN maxUpperBoundConversionMultiplier;
+--rollback ALTER TABLE FixedDoseIntervention DROP COLUMN lowerBoundConversionMultiplier;
+--rollback ALTER TABLE FixedDoseIntervention DROP COLUMN upperBoundConversionMultiplier;
+--rollback ALTER TABLE TitratedDoseIntervention DROP COLUMN minLowerBoundConversionMultiplier;
+--rollback ALTER TABLE TitratedDoseIntervention DROP COLUMN minUpperBoundConversionMultiplier;
+--rollback ALTER TABLE TitratedDoseIntervention DROP COLUMN maxLowerBoundConversionMultiplier;
+--rollback ALTER TABLE TitratedDoseIntervention DROP COLUMN maxUpperBoundConversionMultiplier;
 --rollback ALTER TABLE BothDoseTypesIntervention DROP COLUMN minLowerBoundConversionMultiplier;
 --rollback ALTER TABLE BothDoseTypesIntervention DROP COLUMN minUpperBoundConversionMultiplier;
 --rollback ALTER TABLE BothDoseTypesIntervention DROP COLUMN maxLowerBoundConversionMultiplier;

@@ -50,6 +50,14 @@ public class FixedDoseIntervention extends SingleIntervention implements Seriali
     this(null, project, name, motivation, semanticInterventionUri, semanticInterventionLabel, constraint);
   }
 
+  public void setLowerBoundConversionMultiplier(Double multiplier) {
+    constraint.setLowerBoundConversionMultiplier(multiplier);
+  }
+
+  public void setUpperBoundConversionMultiplier(Double multiplier) {
+      constraint.setUpperBoundConversionMultiplier(multiplier);
+  }
+
   @Override
   public AbstractInterventionViewAdapter toViewAdapter() {
     return new FixedInterventionViewAdapter(this);

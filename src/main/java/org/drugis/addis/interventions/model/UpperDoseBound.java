@@ -55,6 +55,10 @@ public class UpperDoseBound {
     return conversionMultiplier;
   }
 
+  public void setConversionMultiplier(Double conversionMultiplier) {
+    this.conversionMultiplier = conversionMultiplier;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;

@@ -1,7 +1,10 @@
 'use strict';
 define(['lodash'], function(_) {
-  var dependencies = ['$scope', '$stateParams', '$modalInstance', 'intervention', 'callback'];
-  var RepairInterventionController = function($scope, $stateParams, $modalInstance, intervention, callback) {
+  var dependencies = ['$scope', '$stateParams', '$modalInstance', '$q',
+    'InterventionResource', 'intervention', 'callback'
+  ];
+  var RepairInterventionController = function($scope, $stateParams, $modalInstance, $q,
+    InterventionResource, intervention, callback) {
     $scope.intervention = intervention;
     $scope.updateInterventionMultiplierMapping = updateInterventionMultiplierMapping;
     $scope.units = [];
@@ -37,30 +40,65 @@ define(['lodash'], function(_) {
 
     function buildUnits() {
       if ($scope.intervention.type === 'fixed') {
-        $scope.units.push($scope.intervention.constraint.lowerBound);
+        $scope.units.push({
+          unitName: $scope.intervention.constraint.lowerBound.unitName,
+          unitConcept: $scope.intervention.constraint.lowerBound.unitConcept,
+          conversionMultiplier: $scope.intervention.constraint.lowerBound.conversionMultiplier
+        });
         if ($scope.intervention.constraint.upperBound) {
-          $scope.units.push($scope.intervention.constraint.upperBound);
+          $scope.units.push({
+            unitName: $scope.intervention.constraint.upperBound.unitName,
+            unitConcept: $scope.intervention.constraint.upperBound.unitConcept,
+            conversionMultiplier: $scope.intervention.constraint.upperBound.conversionMultiplier
+          });
         }
       } else if ($scope.intervention.type === 'titrated') {
-        $scope.units.push($scope.intervention.minConstraint.lowerBound);
+        //min
+        $scope.units.push({
+          unitName: $scope.intervention.minConstraint.lowerBound.unitName,
+          unitConcept: $scope.intervention.minConstraint.lowerBound.unitConcept,
+          conversionMultiplier: $scope.intervention.minConstraint.lowerBound.conversionMultiplier
+        });
         if ($scope.intervention.minConstraint.upperBound) {
-          $scope.units.push($scope.intervention.minConstraint.upperBound);
+          $scope.units.push({
+            unitName: $scope.intervention.minConstraint.upperBound.unitName,
+            unitConcept: $scope.intervention.minConstraint.upperBound.unitConcept,
+            conversionMultiplier: $scope.intervention.minConstraint.upperBound.conversionMultiplier
+          });
         }
-        $scope.units.push($scope.intervention.maxConstraint.lowerBound);
+        //max
+        $scope.units.push({
+          unitName: $scope.intervention.maxConstraint.lowerBound.unitName,
+          unitConcept: $scope.intervention.maxConstraint.lowerBound.unitConcept,
+          conversionMultiplier: $scope.intervention.maxConstraint.lowerBound.conversionMultiplier
+        });
         if ($scope.intervention.maxConstraint.upperBound) {
-          $scope.units.push($scope.intervention.maxConstraint.upperBound);
+          $scope.units.push({
+            unitName: $scope.intervention.maxConstraint.upperBound.unitName,
+            unitConcept: $scope.intervention.maxConstraint.upperBound.unitConcept,
+            conversionMultiplier: $scope.intervention.maxConstraint.upperBound.conversionMultiplier
+          });
         }
 
       }
-      $scope.units = _.uniqBy($scope.units, ['unitName','unitConcept']);
+      $scope.units = _.uniqBy($scope.units, ['unitName', 'unitConcept']);
+      // _.forEacht($scope.units, function(unit){
+
+      // });
     }
 
     function updateInterventionMultiplierMapping() {
-      //persist newly set conversion multipliers here
-
-      callback();
-      $modalInstance.close();
+      InterventionResource.setConversionMultiplier({
+        projectId: $scope.project.id,
+        interventionId: $scope.intervention.id
+      }, {
+        multipliers: $scope.units
+      }).$promise.then(function() {
+        callback();
+        $modalInstance.close();
+      });
     }
+
     $scope.cancel = function() {
       $modalInstance.dismiss('cancel');
     };

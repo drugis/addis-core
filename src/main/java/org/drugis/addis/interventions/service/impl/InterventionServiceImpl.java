@@ -3,6 +3,7 @@ package org.drugis.addis.interventions.service.impl;
 import org.drugis.addis.analyses.AbstractAnalysis;
 import org.drugis.addis.analyses.repository.AnalysisRepository;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
+import org.drugis.addis.interventions.InterventionMultiplierCommand;
 import org.drugis.addis.interventions.SetMultipliersCommand;
 import org.drugis.addis.interventions.model.*;
 import org.drugis.addis.interventions.repository.InterventionRepository;
@@ -15,6 +16,7 @@ import org.springframework.social.OperationNotPermittedException;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
+import java.net.URI;
 import java.util.*;
 
 /**
@@ -276,7 +278,70 @@ public class InterventionServiceImpl implements InterventionService {
   }
 
   @Override
-  public void setMultipliers(Integer interventionId, SetMultipliersCommand command) {
+  public void setMultipliers(Integer interventionId, SetMultipliersCommand command) throws ResourceDoesNotExistException {
+    AbstractIntervention intervention = interventionRepository.get(interventionId);
+    for (InterventionMultiplierCommand multiplierCommand : command.getMultipliers()) {
+      Double multiplier = multiplierCommand.getConversionMultiplier();
+      URI unitConcept = multiplierCommand.getUnitConcept();
+      String unitName = multiplierCommand.getUnitName();
+      if (intervention instanceof FixedDoseIntervention) {
+        DoseConstraint constraint = ((FixedDoseIntervention) intervention).getConstraint();
+        if (constraint.getLowerBound().getUnitConcept().equals(unitConcept) &&
+                constraint.getLowerBound().getUnitName().equals(unitName)) {
+          ((FixedDoseIntervention) intervention).setLowerBoundConversionMultiplier(multiplier);
+        }
+        if (constraint.getUpperBound() != null && constraint.getUpperBound().getUnitConcept().equals(unitConcept)
+                && constraint.getUpperBound().getUnitName().equals(unitName)) {
+          ((FixedDoseIntervention) intervention).setUpperBoundConversionMultiplier(multiplier);
+        }
+      } else if (intervention instanceof  TitratedDoseIntervention){
+        TitratedDoseIntervention titratedIntervention = (TitratedDoseIntervention) intervention;
+        DoseConstraint minConstraint = titratedIntervention.getMinConstraint();
+        DoseConstraint maxConstraint = titratedIntervention.getMaxConstraint();
 
+        // min
+        if (minConstraint.getLowerBound().getUnitConcept().equals(unitConcept) &&
+                minConstraint.getLowerBound().getUnitName().equals(unitName)) {
+          titratedIntervention.setMinLowerBoundConversionMultiplier(multiplier);
+        }
+        if (minConstraint.getUpperBound() != null && minConstraint.getUpperBound().getUnitConcept().equals(unitConcept)
+                && minConstraint.getUpperBound().getUnitName().equals(unitName)) {
+          titratedIntervention.setMinUpperBoundConversionMultiplier(multiplier);
+        }
+        // max
+        if (maxConstraint.getLowerBound().getUnitConcept().equals(unitConcept) &&
+                maxConstraint.getLowerBound().getUnitName().equals(unitName)) {
+          titratedIntervention.setMaxLowerBoundConversionMultiplier(multiplier);
+        }
+        if (maxConstraint.getUpperBound() != null && maxConstraint.getUpperBound().getUnitConcept().equals(unitConcept)
+                && maxConstraint.getUpperBound().getUnitName().equals(unitName)) {
+          titratedIntervention.setMaxUpperBoundConversionMultiplier(multiplier);
+        }
+      } else if(intervention instanceof BothDoseTypesIntervention){
+        BothDoseTypesIntervention bothDoseTypesIntervention = (BothDoseTypesIntervention) intervention;
+        DoseConstraint minConstraint = bothDoseTypesIntervention.getMinConstraint();
+        DoseConstraint maxConstraint = bothDoseTypesIntervention.getMaxConstraint();
+
+        // min
+        if (minConstraint.getLowerBound().getUnitConcept().equals(unitConcept) &&
+                minConstraint.getLowerBound().getUnitName().equals(unitName)) {
+          bothDoseTypesIntervention.setMinLowerBoundConversionMultiplier(multiplier);
+        }
+        if (minConstraint.getUpperBound() != null && minConstraint.getUpperBound().getUnitConcept().equals(unitConcept)
+                && minConstraint.getUpperBound().getUnitName().equals(unitName)) {
+          bothDoseTypesIntervention.setMinUpperBoundConversionMultiplier(multiplier);
+        }
+        // max
+        if (maxConstraint.getLowerBound().getUnitConcept().equals(unitConcept) &&
+                maxConstraint.getLowerBound().getUnitName().equals(unitName)) {
+          bothDoseTypesIntervention.setMaxLowerBoundConversionMultiplier(multiplier);
+        }
+        if (maxConstraint.getUpperBound() != null && maxConstraint.getUpperBound().getUnitConcept().equals(unitConcept)
+                && maxConstraint.getUpperBound().getUnitName().equals(unitName)) {
+          bothDoseTypesIntervention.setMaxUpperBoundConversionMultiplier(multiplier);
+        }
+      }
+    }
   }
 }
+

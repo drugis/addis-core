@@ -13,6 +13,12 @@ public class InterventionMultiplierCommand {
   public InterventionMultiplierCommand() {
   }
 
+  public InterventionMultiplierCommand(String unitName, URI unitConcept, Double conversionMultiplier) {
+    this.unitName = unitName;
+    this.unitConcept = unitConcept;
+    this.conversionMultiplier = conversionMultiplier;
+  }
+
   public String getUnitName() {
     return unitName;
   }

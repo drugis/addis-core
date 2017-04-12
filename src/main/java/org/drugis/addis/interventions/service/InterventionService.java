@@ -58,5 +58,5 @@ public interface InterventionService {
     return new ConstraintCommand(lowerBoundCommand, upperBoundCommand);
   }
 
-  void setMultipliers(Integer interventionId, SetMultipliersCommand command);
+  void setMultipliers(Integer interventionId, SetMultipliersCommand command) throws ResourceDoesNotExistException;
 }

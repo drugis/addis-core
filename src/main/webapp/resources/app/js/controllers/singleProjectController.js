@@ -183,6 +183,7 @@ define(['lodash', 'angular'], function(_, angular) {
     }
 
     function checkUnitMultipliers() {
+      $scope.editMode.interventionRepairPossible = false;
       var interventions = $scope.interventions;
       $scope.interventions = _.map(interventions, function(intervention) {
         if (intervention.type === 'fixed') {
@@ -204,9 +205,7 @@ define(['lodash', 'angular'], function(_, angular) {
           }
 
         }
-
         return intervention;
-
       });
     }
 
