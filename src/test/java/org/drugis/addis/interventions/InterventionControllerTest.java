@@ -2,6 +2,7 @@ package org.drugis.addis.interventions;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Sets;
+import org.apache.jena.atlas.json.JSON;
 import org.drugis.addis.TestUtils;
 import org.drugis.addis.config.TestConfig;
 import org.drugis.addis.interventions.controller.command.*;
@@ -28,8 +29,7 @@ import org.springframework.web.context.WebApplicationContext;
 import javax.inject.Inject;
 import java.net.URI;
 import java.security.Principal;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.notNullValue;
@@ -104,7 +104,7 @@ public class InterventionControllerTest {
   public void testQueryCombinationInterventions() throws Exception {
 
     Integer projectId = 1;
-    CombinationIntervention intervention = new CombinationIntervention(1,projectId, "name", "motivation", Sets.newHashSet(1));
+    CombinationIntervention intervention = new CombinationIntervention(1, projectId, "name", "motivation", Sets.newHashSet(1));
 
     Set<AbstractIntervention> interventions = Sets.newHashSet(intervention);
     when(interventionRepository.query(projectId)).thenReturn(interventions);
@@ -241,6 +241,7 @@ public class InterventionControllerTest {
     verify(accountRepository).findAccountByUsername(gert.getUsername());
     verify(interventionRepository).create(gert, doseRestrictedInterventionCommand);
   }
+
   @Test
   public void testCreateBothDoseIntervention() throws Exception {
     String body = "{\n" +
@@ -272,11 +273,28 @@ public class InterventionControllerTest {
   }
 
   @Test
-  public void deleteIntervention() throws Exception {
+  public void testDeleteIntervention() throws Exception {
     mockMvc.perform(delete("/projects/1/interventions/2").principal(user))
-    .andExpect(status().isOk());
+            .andExpect(status().isOk());
     verify(accountRepository).findAccountByUsername(gert.getUsername());
     verify(interventionService).delete(1, 2);
+  }
+
+  @Test
+  public void testSetConversionMultioplier() throws Exception {
+    String body = "{\"multipliers\": [{\"unitName\": \"milligram\", " +
+            "\"unitConcept\": \"http://conceptURI.com\", \"conversionMultiplier\": 0.001}]}";
+    mockMvc.perform(post("/projects/1/interventions/2/setConversionMultiplier")
+            .content(body)
+            .principal(user)
+            .contentType(WebConstants.getApplicationJsonUtf8Value()))
+            .andExpect(status().isOk());
+    InterventionMultiplierCommand multiplier = new InterventionMultiplierCommand("milligram",
+            URI.create("http://conceptURI.com"), 0.001);
+    List<InterventionMultiplierCommand> multipliers = Collections.singletonList(multiplier);
+    SetMultipliersCommand command = new SetMultipliersCommand(multipliers);
+    verify(accountRepository).findAccountByUsername(gert.getUsername());
+    verify(interventionService).setMultipliers(2, command);
   }
 
 }

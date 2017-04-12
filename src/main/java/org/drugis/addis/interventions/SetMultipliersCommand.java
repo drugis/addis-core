@@ -11,6 +11,10 @@ public  class SetMultipliersCommand {
   public SetMultipliersCommand() {
   }
 
+  public SetMultipliersCommand(List<InterventionMultiplierCommand> multipliers) {
+    this.multipliers = multipliers;
+  }
+
   public List<InterventionMultiplierCommand> getMultipliers() {
     return multipliers;
   }

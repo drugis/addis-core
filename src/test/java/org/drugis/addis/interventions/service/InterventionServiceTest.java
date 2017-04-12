@@ -6,6 +6,8 @@ import org.drugis.addis.analyses.InterventionInclusion;
 import org.drugis.addis.analyses.NetworkMetaAnalysis;
 import org.drugis.addis.analyses.repository.AnalysisRepository;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
+import org.drugis.addis.interventions.InterventionMultiplierCommand;
+import org.drugis.addis.interventions.SetMultipliersCommand;
 import org.drugis.addis.interventions.controller.command.LowerBoundCommand;
 import org.drugis.addis.interventions.controller.command.UpperBoundCommand;
 import org.drugis.addis.interventions.model.*;
@@ -356,5 +358,16 @@ public class InterventionServiceTest {
     interventionService.delete(projectId, interventionId);
 
     verify(analysisRepository).query(projectId);
+  }
+  @Test
+  public void testSetMultipliers() throws ResourceDoesNotExistException {
+
+    InterventionMultiplierCommand multiplier = new InterventionMultiplierCommand("milligram",
+            URI.create("http://concept.com"), 0.001);
+    List<InterventionMultiplierCommand> multipliers = Collections.singletonList(multiplier);
+    SetMultipliersCommand command = new SetMultipliersCommand(multipliers);
+    when(interventionRepository.get(interventionId)).thenReturn(/*create stuff*/);
+    interventionService.setMultipliers(interventionId,command);
+    verify(interventionRepository).get(interventionId);
   }
 }

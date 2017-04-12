@@ -82,9 +82,6 @@ define(['lodash'], function(_) {
 
       }
       $scope.units = _.uniqBy($scope.units, ['unitName', 'unitConcept']);
-      // _.forEacht($scope.units, function(unit){
-
-      // });
     }
 
     function updateInterventionMultiplierMapping() {
