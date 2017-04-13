@@ -75,11 +75,13 @@ define(['lodash'], function(_) {
 
     function buildUnits() {
       if ($scope.intervention.type === 'fixed') {
-        $scope.units.push({
-          unitName: $scope.intervention.constraint.lowerBound.unitName,
-          unitConcept: $scope.intervention.constraint.lowerBound.unitConcept,
-          conversionMultiplier: $scope.intervention.constraint.lowerBound.conversionMultiplier
-        });
+        if ($scope.intervention.constraint.lowerBound) {
+          $scope.units.push({
+            unitName: $scope.intervention.constraint.lowerBound.unitName,
+            unitConcept: $scope.intervention.constraint.lowerBound.unitConcept,
+            conversionMultiplier: $scope.intervention.constraint.lowerBound.conversionMultiplier
+          });
+        }
         if ($scope.intervention.constraint.upperBound) {
           $scope.units.push({
             unitName: $scope.intervention.constraint.upperBound.unitName,
@@ -89,11 +91,13 @@ define(['lodash'], function(_) {
         }
       } else if ($scope.intervention.type === 'titrated') {
         //min
-        $scope.units.push({
-          unitName: $scope.intervention.minConstraint.lowerBound.unitName,
-          unitConcept: $scope.intervention.minConstraint.lowerBound.unitConcept,
-          conversionMultiplier: $scope.intervention.minConstraint.lowerBound.conversionMultiplier
-        });
+        if ($scope.intervention.maxConstraint.lowerBound) {
+          $scope.units.push({
+            unitName: $scope.intervention.minConstraint.lowerBound.unitName,
+            unitConcept: $scope.intervention.minConstraint.lowerBound.unitConcept,
+            conversionMultiplier: $scope.intervention.minConstraint.lowerBound.conversionMultiplier
+          });
+        }
         if ($scope.intervention.minConstraint.upperBound) {
           $scope.units.push({
             unitName: $scope.intervention.minConstraint.upperBound.unitName,
@@ -102,11 +106,13 @@ define(['lodash'], function(_) {
           });
         }
         //max
-        $scope.units.push({
-          unitName: $scope.intervention.maxConstraint.lowerBound.unitName,
-          unitConcept: $scope.intervention.maxConstraint.lowerBound.unitConcept,
-          conversionMultiplier: $scope.intervention.maxConstraint.lowerBound.conversionMultiplier
-        });
+        if ($scope.intervention.maxConstraint.upperBound) {
+          $scope.units.push({
+            unitName: $scope.intervention.maxConstraint.lowerBound.unitName,
+            unitConcept: $scope.intervention.maxConstraint.lowerBound.unitConcept,
+            conversionMultiplier: $scope.intervention.maxConstraint.lowerBound.conversionMultiplier
+          });
+        }
         if ($scope.intervention.maxConstraint.upperBound) {
           $scope.units.push({
             unitName: $scope.intervention.maxConstraint.upperBound.unitName,
