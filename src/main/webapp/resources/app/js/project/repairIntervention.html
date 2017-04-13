@@ -4,7 +4,8 @@
       <h3>Unit mappings for {{intervention.name}}</h3>
     </div>
   </div>
-  <table>
+  <div class="large-9 columns">Please select an appropriate metric multiplier for each of the unit types below.</div>
+  <table class="large-9 columns">
     <thead>
       <th>Unit name</th>
       <th>Multiplier</th>
@@ -15,10 +16,10 @@
         <td>{{unit.unitName}}</td>
         <td>
           <select ng-model="unit.conversionMultiplier" ng-options="multiplier.conversionMultiplier as multiplier.label for multiplier in metricMultipliers">
-            <option value="">{{'No multiplier (selected)'}}</option>
+            <option value="">{{'No multiplier selected'}}</option>
           </select>
         </td>
-        <td>{{unit.unitConcept}}</td>
+        <td>{{unit.name}}</td>
       </tr>
     </tbody>
   </table>

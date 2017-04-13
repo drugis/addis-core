@@ -1,10 +1,13 @@
 'use strict';
 define(['lodash'], function(_) {
   var dependencies = ['$scope', '$stateParams', '$modalInstance', '$q',
-    'InterventionResource', 'intervention', 'callback'
+    'InterventionResource', 'intervention', 'callback',
+    'ConceptsService', 'DataModelService', 'VersionedGraphResource', 'GraphResource'
   ];
   var RepairInterventionController = function($scope, $stateParams, $modalInstance, $q,
-    InterventionResource, intervention, callback) {
+    InterventionResource, intervention, callback,
+    ConceptsService, DataModelService, VersionedGraphResource, GraphResource) {
+    var datasetUri = 'http://trials.drugis/org/datasets/' + $scope.project.namespaceUid;
     $scope.intervention = intervention;
     $scope.updateInterventionMultiplierMapping = updateInterventionMultiplierMapping;
     $scope.units = [];
@@ -24,6 +27,9 @@ define(['lodash'], function(_) {
       label: 'deci',
       conversionMultiplier: 1e-01
     }, {
+      label: 'no multiplier',
+      conversionMultiplier: 1e00
+    }, {
       label: 'deca',
       conversionMultiplier: 1e01
     }, {
@@ -36,7 +42,36 @@ define(['lodash'], function(_) {
       label: 'mega',
       conversionMultiplier: 1e06
     }];
-    buildUnits();
+    loadConcepts().then(function() {
+      buildUnits();
+    });
+
+    function loadConcepts() {
+      var conceptsPromise;
+      if ($scope.project.datasetVersion) {
+        conceptsPromise = VersionedGraphResource.getConceptJson({
+          userUid: $scope.currentRevision.userId,
+          datasetUuid: $scope.project.namespaceUid,
+          graphUuid: 'concepts',
+          versionUuid: $scope.currentRevision.uri.split('/versions/')[1]
+        }).$promise;
+      } else {
+        conceptsPromise = GraphResource.getConceptJson({
+          userUid: $scope.currentRevision.userId,
+          datasetUuid: $scope.project.namespaceUid,
+          graphUuid: 'concepts',
+        }).$promise;
+      }
+      var cleanedConceptsPromise = conceptsPromise.then(function(conceptsData) {
+        return DataModelService.correctUnitConceptType(conceptsData);
+      });
+      ConceptsService.loadJson(cleanedConceptsPromise);
+      return ConceptsService.queryItems(datasetUri).then(function(conceptsJson) {
+        $scope.concepts = conceptsJson;
+      });
+    }
+
+
 
     function buildUnits() {
       if ($scope.intervention.type === 'fixed') {
@@ -82,14 +117,24 @@ define(['lodash'], function(_) {
 
       }
       $scope.units = _.uniqBy($scope.units, ['unitName', 'unitConcept']);
+      _.forEach($scope.units, function(unit) {
+        var concept = _.find($scope.concepts, function(concept) {
+          return concept.uri === unit.unitConcept;
+        });
+        unit.name = concept.label;
+      });
     }
 
     function updateInterventionMultiplierMapping() {
+      var units = _.map($scope.units, function(unit) {
+        delete unit.name;
+        return unit;
+      });
       InterventionResource.setConversionMultiplier({
         projectId: $scope.project.id,
         interventionId: $scope.intervention.id
       }, {
-        multipliers: $scope.units
+        multipliers: units
       }).$promise.then(function() {
         callback();
         $modalInstance.close();

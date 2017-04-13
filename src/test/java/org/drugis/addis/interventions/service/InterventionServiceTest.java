@@ -360,13 +360,16 @@ public class InterventionServiceTest {
     verify(analysisRepository).query(projectId);
   }
   @Test
-  public void testSetMultipliers() throws ResourceDoesNotExistException {
-
+  public void testSetMultipliers() throws ResourceDoesNotExistException, InvalidConstraintException {
     InterventionMultiplierCommand multiplier = new InterventionMultiplierCommand("milligram",
             URI.create("http://concept.com"), 0.001);
     List<InterventionMultiplierCommand> multipliers = Collections.singletonList(multiplier);
     SetMultipliersCommand command = new SetMultipliersCommand(multipliers);
-    when(interventionRepository.get(interventionId)).thenReturn(/*create stuff*/);
+    LowerBoundCommand lowerBound = new LowerBoundCommand(LowerBoundType.AT_LEAST, 1.,"gram","P1D",URI.create("http://concept.com"));
+    UpperBoundCommand upperBound = new UpperBoundCommand(UpperBoundType.AT_MOST, 5., "gram", "P1D", URI.create("http://concept.com"));
+    DoseConstraint constraint = new DoseConstraint(lowerBound,upperBound);
+    when(interventionRepository.get(interventionId)).thenReturn(
+            new FixedDoseIntervention(2,1,"parafine",null, URI.create("semanticURI"),"semanticInterventionLabel",constraint));
     interventionService.setMultipliers(interventionId,command);
     verify(interventionRepository).get(interventionId);
   }

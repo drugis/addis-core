@@ -281,7 +281,7 @@ public class InterventionControllerTest {
   }
 
   @Test
-  public void testSetConversionMultioplier() throws Exception {
+  public void testSetConversionMultiplier() throws Exception {
     String body = "{\"multipliers\": [{\"unitName\": \"milligram\", " +
             "\"unitConcept\": \"http://conceptURI.com\", \"conversionMultiplier\": 0.001}]}";
     mockMvc.perform(post("/projects/1/interventions/2/setConversionMultiplier")
