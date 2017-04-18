@@ -857,4 +857,4 @@ CREATE TABLE effectsTableExclusion (
     PRIMARY KEY (analysisId, alternativeId),
     FOREIGN KEY (analysisId) REFERENCES AbstractAnalysis(id)
 );
---rollback DROP TABLE effectsTable
+--rollback DROP TABLE effectsTableExclusion;
