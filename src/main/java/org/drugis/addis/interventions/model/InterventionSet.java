@@ -1,7 +1,9 @@
 package org.drugis.addis.interventions.model;
 
+import org.drugis.addis.interventions.SetMultipliersCommand;
 import org.drugis.addis.interventions.controller.viewAdapter.AbstractInterventionViewAdapter;
 import org.drugis.addis.interventions.controller.viewAdapter.InterventionSetViewAdapter;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import javax.persistence.*;
 import java.util.Collections;
@@ -28,5 +30,10 @@ public class InterventionSet extends MultipleIntervention {
   @Override
   public AbstractInterventionViewAdapter toViewAdapter() {
     return new InterventionSetViewAdapter(this);
+  }
+
+  @Override
+  public void updateMultipliers(SetMultipliersCommand command) {
+    throw new NotImplementedException(); // should always update component interventions directly instead
   }
 }

@@ -7,6 +7,7 @@ import org.drugis.addis.interventions.model.*;
 import org.drugis.addis.interventions.service.impl.InvalidTypeForDoseCheckException;
 import org.drugis.addis.trialverse.model.trialdata.AbstractSemanticIntervention;
 
+import java.net.URI;
 import java.util.List;
 import java.util.Set;
 

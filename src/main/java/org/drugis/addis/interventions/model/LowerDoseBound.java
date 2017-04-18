@@ -59,6 +59,10 @@ public class LowerDoseBound {
     this.conversionMultiplier = conversionMultiplier;
   }
 
+  public Boolean isMatched(URI unitConcept, String unitName) {
+    return this.unitConcept.equals(unitConcept.toString()) && this.unitName.equals(unitName);
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;

@@ -1,13 +1,13 @@
 'use strict';
-define(['angular-mocks', 'angular'], function(angularMocks, angular) {
+define(['angular-mocks', 'angular', 'lodash'], function(angularMocks, angular, _) {
   describe('the SingleProjectController', function() {
     var
       covariateOptionsResource = jasmine.createSpyObj('CovariateOptionsResource', ['query', 'getProjectCovariates']),
       covariateResource = jasmine.createSpyObj('CovariateResource', ['query']),
       interventionService = jasmine.createSpyObj('InterventionService', ['generateDescriptionLabel']),
-      projectServiceMock = jasmine.createSpyObj('ProjectService', ['buildCovariateUsage', 'buildOutcomeUsage', 'buildInterventionUsage']),
+      projectServiceMock = jasmine.createSpyObj('ProjectService', ['buildCovariateUsage', 'buildOutcomeUsage', 'buildInterventionUsage', 'addMissingMultiplierInfo']),
       analysisResourceMock = jasmine.createSpyObj('analysisResource', ['query', 'save']),
-      userServiceMock = jasmine.createSpyObj('UserService', ['isLoginUserId','hasLoggedInUser']),
+      userServiceMock = jasmine.createSpyObj('UserService', ['isLoginUserId', 'hasLoggedInUser']),
       historyResourceMock = jasmine.createSpyObj('historyResource', ['get']),
       projectResource = jasmine.createSpyObj('projectResource', ['get', 'save', 'query']),
       semanticOutcomeResource = jasmine.createSpyObj('semanticOutcomeResource', ['query']),
@@ -73,6 +73,7 @@ define(['angular-mocks', 'angular'], function(angularMocks, angular) {
       mockOutcomes = [1, 2, 3],
       mockOutcome,
       outcomeDeferred,
+      interventionQueryResult,
       mockInterventions = [{
         name: 'a',
         val: 4
@@ -98,6 +99,7 @@ define(['angular-mocks', 'angular'], function(angularMocks, angular) {
       mockReport = {
         data: 'default report text.'
       };
+
     beforeEach(angularMocks.module('addis.controllers'));
 
     beforeEach(inject(function($controller, $q, $rootScope) {
@@ -129,8 +131,10 @@ define(['angular-mocks', 'angular'], function(angularMocks, angular) {
       };
       outcomeResultDeferred.resolve(mockOutcomes);
 
-      mockInterventions.$promise = interventionsDeferred.promise;
-      interventionResource.query.and.returnValue(mockInterventions);
+      interventionQueryResult = _.extend({}, mockInterventions, {
+        $promise: interventionsDeferred.promise
+      });
+      interventionResource.query.and.returnValue(interventionQueryResult);
       outcomeResource.query.and.returnValue(outcomeResult);
       semanticInterventionResource.query.and.returnValue(mockSemanticInterventions);
       interventionService.generateDescriptionLabel.and.returnValue('desc label');
@@ -138,6 +142,7 @@ define(['angular-mocks', 'angular'], function(angularMocks, angular) {
       trialverseStudyResource.query.and.returnValue(mockStudies);
       semanticOutcomeResource.query.and.returnValue(mockSemanticOutcomes);
       projectServiceMock.buildCovariateUsage.and.returnValue({});
+      projectServiceMock.addMissingMultiplierInfo.and.returnValue(mockInterventions);
       projectResource.get.and.returnValue(mockProject);
       trialverseResource.get.and.returnValue(mockTrialverse);
 
@@ -173,7 +178,7 @@ define(['angular-mocks', 'angular'], function(angularMocks, angular) {
 
       state = jasmine.createSpyObj('state', ['go']);
       userServiceMock.hasLoggedInUser.and.returnValue(true);
-        
+
 
       var mockHistory = {
         creator: 'Jan',
@@ -217,9 +222,7 @@ define(['angular-mocks', 'angular'], function(angularMocks, angular) {
         interventionsDeferred.resolve(mockInterventions);
         scope.$apply();
         expect(scope.outcomes).toEqual(mockOutcomes);
-        var expextedInterventions = angular.copy(mockInterventions);
-        delete expextedInterventions.$promise;
-        expect(scope.interventions).toEqual(expextedInterventions);
+        expect(scope.interventions).toEqual(mockInterventions);
         expect(scope.analyses).toEqual(mockAnalyses);
         expect(scope.loading.loaded).toBeTruthy();
       });

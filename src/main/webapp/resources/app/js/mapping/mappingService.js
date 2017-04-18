@@ -3,6 +3,38 @@ define(['lodash'], function(_) {
   var dependencies = ['StudyService'];
   var MappingService = function(StudyService) {
 
+    var METRIC_MULTIPLIERS = [{
+      label: 'nano',
+      conversionMultiplier: 1e-09
+    }, {
+      label: 'micro',
+      conversionMultiplier: 1e-06
+    }, {
+      label: 'milli',
+      conversionMultiplier: 1e-03
+    }, {
+      label: 'centi',
+      conversionMultiplier: 1e-02
+    }, {
+      label: 'deci',
+      conversionMultiplier: 1e-01
+    }, {
+      label: 'no multiplier',
+      conversionMultiplier: 1e00
+    }, {
+      label: 'deca',
+      conversionMultiplier: 1e01
+    }, {
+      label: 'hecto',
+      conversionMultiplier: 1e02
+    }, {
+      label: 'kilo',
+      conversionMultiplier: 1e03
+    }, {
+      label: 'mega',
+      conversionMultiplier: 1e06
+    }];
+
     function findNodeWithId(graph, uri) {
       return _.find(graph, function(node) {
         return node['@id'] === uri;
@@ -82,11 +114,32 @@ define(['lodash'], function(_) {
       });
     }
 
+    function getUnits(constraint) {
+      var desiredProperties = ['unitName', 'unitConcept', 'conversionMultiplier'];
+      var units = [_.pick(constraint.lowerBound, desiredProperties), _.pick(constraint.upperBound, desiredProperties)];
+      return _.reject(units, _.isEmpty);
+    }
+
+    function getUnitsFromIntervention(intervention, concepts) {
+      var units;
+      if (intervention.type === 'fixed') {
+        units = getUnits(intervention.constraint);
+      } else if (intervention.type === 'titrated' || intervention.type === 'both') {
+        units = getUnits(intervention.minConstraint).concat(getUnits(intervention.maxConstraint));
+      }
+      return  _.uniqWith(units, function(unit1, unit2) {
+        return _.isEqual(
+          _.pick(unit1, ['unitName', 'unitConcept']),
+          _.pick(unit2, ['unitName', 'unitConcept']));
+      });
+    }
+
     return {
       updateMapping: updateMapping,
-      removeMapping: removeMapping
+      removeMapping: removeMapping,
+      getUnitsFromIntervention: getUnitsFromIntervention,
+      METRIC_MULTIPLIERS: METRIC_MULTIPLIERS
     };
-
 
   };
 

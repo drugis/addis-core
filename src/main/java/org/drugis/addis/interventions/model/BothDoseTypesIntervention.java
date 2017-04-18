@@ -1,5 +1,7 @@
 package org.drugis.addis.interventions.model;
 
+import org.drugis.addis.interventions.InterventionMultiplierCommand;
+import org.drugis.addis.interventions.SetMultipliersCommand;
 import org.drugis.addis.interventions.controller.viewAdapter.AbstractInterventionViewAdapter;
 import org.drugis.addis.interventions.controller.viewAdapter.BothDoseTypesInterventionViewAdapter;
 
@@ -84,6 +86,18 @@ public class BothDoseTypesIntervention extends SingleIntervention {
   public void setMaxUpperBoundConversionMultiplier(Double multiplier){
     maxConstraint.setUpperBoundConversionMultiplier(multiplier);
   }
+
+  @Override
+  public void updateMultipliers(SetMultipliersCommand command) {
+    for (InterventionMultiplierCommand multiplierCommand : command.getMultipliers()) {
+      Double multiplier = multiplierCommand.getConversionMultiplier();
+      URI unitConcept = multiplierCommand.getUnitConcept();
+      String unitName = multiplierCommand.getUnitName();
+      AbstractIntervention.updateConstraint(minConstraint, multiplier, unitConcept, unitName);
+      AbstractIntervention.updateConstraint(maxConstraint, multiplier, unitConcept, unitName);
+    }
+  }
+
 
   @Override
   public boolean equals(Object o) {

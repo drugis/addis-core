@@ -28,6 +28,7 @@ import java.util.List;
 
 import static junit.framework.TestCase.assertFalse;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -192,8 +193,8 @@ public class InterventionServiceTest {
     DoseConstraint minConstraint = null;
     DoseConstraint maxConstraint = new DoseConstraint(overTwenty, atMostEighty);
     AbstractIntervention intervention = new BothDoseTypesIntervention(interventionId, projectId, "name", "motive", drugConceptUri, "intervention sem",
-        minConstraint,
-        maxConstraint);
+            minConstraint,
+            maxConstraint);
     assertFalse(interventionService.isMatched(intervention, Collections.singletonList(fixedSemantic)));
   }
 
@@ -359,18 +360,88 @@ public class InterventionServiceTest {
 
     verify(analysisRepository).query(projectId);
   }
+
   @Test
-  public void testSetMultipliers() throws ResourceDoesNotExistException, InvalidConstraintException {
+  public void testSetFixedDoseMultipliers() throws ResourceDoesNotExistException, InvalidConstraintException {
     InterventionMultiplierCommand multiplier = new InterventionMultiplierCommand("milligram",
             URI.create("http://concept.com"), 0.001);
     List<InterventionMultiplierCommand> multipliers = Collections.singletonList(multiplier);
     SetMultipliersCommand command = new SetMultipliersCommand(multipliers);
-    LowerBoundCommand lowerBound = new LowerBoundCommand(LowerBoundType.AT_LEAST, 1.,"gram","P1D",URI.create("http://concept.com"));
-    UpperBoundCommand upperBound = new UpperBoundCommand(UpperBoundType.AT_MOST, 5., "gram", "P1D", URI.create("http://concept.com"));
-    DoseConstraint constraint = new DoseConstraint(lowerBound,upperBound);
+    LowerBoundCommand lowerBound = new LowerBoundCommand(LowerBoundType.AT_LEAST, 1., "milligram", "P1D",
+            URI.create("http://concept.com"));
+    UpperBoundCommand upperBound = new UpperBoundCommand(UpperBoundType.AT_MOST, 5., "nanogram", "P1D",
+            URI.create("http://concept.com"));
+    DoseConstraint constraint = new DoseConstraint(lowerBound, upperBound);
+    FixedDoseIntervention fixedIntervention = new FixedDoseIntervention(2, 1, "paraffin", "no motivation",
+            URI.create("semanticURI"), "semanticInterventionLabel",
+            constraint);
     when(interventionRepository.get(interventionId)).thenReturn(
-            new FixedDoseIntervention(2,1,"parafine",null, URI.create("semanticURI"),"semanticInterventionLabel",constraint));
-    interventionService.setMultipliers(interventionId,command);
+            fixedIntervention);
+
+    interventionService.setMultipliers(interventionId, command);
+
+    assertEquals(multiplier.getConversionMultiplier(), fixedIntervention.getConstraint().getLowerBound().getConversionMultiplier());
+    assertNull(fixedIntervention.getConstraint().getUpperBound().getConversionMultiplier());
+    verify(interventionRepository).get(interventionId);
+  }
+
+  @Test
+  public void testSetTitratedDoseMultipliers() throws ResourceDoesNotExistException, InvalidConstraintException {
+    InterventionMultiplierCommand multiplier = new InterventionMultiplierCommand("milligram",
+            URI.create("http://concept.com"), 0.001);
+    List<InterventionMultiplierCommand> multipliers = Collections.singletonList(multiplier);
+    SetMultipliersCommand command = new SetMultipliersCommand(multipliers);
+    LowerBoundCommand minLowerBound = new LowerBoundCommand(LowerBoundType.AT_LEAST, 1., "milligram", "P1D",
+            URI.create("http://concept.com"));
+    UpperBoundCommand minUpperBound = new UpperBoundCommand(UpperBoundType.AT_MOST, 5., "nanogram", "P1D",
+            URI.create("http://concept.com"));
+    LowerBoundCommand maxLowerBound = new LowerBoundCommand(LowerBoundType.AT_LEAST, 1., "nanogram", "P1D",
+            URI.create("http://concept.com"));
+    UpperBoundCommand maxUpperBound = new UpperBoundCommand(UpperBoundType.AT_MOST, 5., "milligram", "P1D",
+            URI.create("http://concept.com"));
+    DoseConstraint minConstraint = new DoseConstraint(minLowerBound, minUpperBound);
+    DoseConstraint maxConstraint = new DoseConstraint(maxLowerBound, maxUpperBound);
+    TitratedDoseIntervention titratedDoseIntervention = new TitratedDoseIntervention(2, 1, "paraffin", "no motivation",
+            URI.create("semanticURI"), "semanticInterventionLabel",
+            minConstraint, maxConstraint);
+    when(interventionRepository.get(interventionId)).thenReturn(titratedDoseIntervention);
+
+    interventionService.setMultipliers(interventionId, command);
+
+    assertEquals(multiplier.getConversionMultiplier(), titratedDoseIntervention.getMinConstraint().getLowerBound().getConversionMultiplier());
+    assertNull(titratedDoseIntervention.getMinConstraint().getUpperBound().getConversionMultiplier());
+    assertNull(titratedDoseIntervention.getMaxConstraint().getLowerBound().getConversionMultiplier());
+    assertEquals(multiplier.getConversionMultiplier(), titratedDoseIntervention.getMaxConstraint().getUpperBound().getConversionMultiplier());
+    verify(interventionRepository).get(interventionId);
+  }
+
+  @Test
+  public void testSetBothDoseTypeIntervention() throws ResourceDoesNotExistException, InvalidConstraintException {
+    InterventionMultiplierCommand multiplier = new InterventionMultiplierCommand("milligram",
+            URI.create("http://concept.com"), 0.001);
+    List<InterventionMultiplierCommand> multipliers = Collections.singletonList(multiplier);
+    SetMultipliersCommand command = new SetMultipliersCommand(multipliers);
+    LowerBoundCommand minLowerBound = new LowerBoundCommand(LowerBoundType.AT_LEAST, 1., "milligram", "P1D",
+            URI.create("http://concept.com"));
+    UpperBoundCommand minUpperBound = new UpperBoundCommand(UpperBoundType.AT_MOST, 5., "nanogram", "P1D",
+            URI.create("http://concept.com"));
+    LowerBoundCommand maxLowerBound = new LowerBoundCommand(LowerBoundType.AT_LEAST, 1., "nanogram", "P1D",
+            URI.create("http://concept.com"));
+    UpperBoundCommand maxUpperBound = new UpperBoundCommand(UpperBoundType.AT_MOST, 5., "milligram", "P1D",
+            URI.create("http://concept.com"));
+    DoseConstraint minConstraint = new DoseConstraint(minLowerBound, minUpperBound);
+    DoseConstraint maxConstraint = new DoseConstraint(maxLowerBound, maxUpperBound);
+    BothDoseTypesIntervention bothDoseTypesIntervention = new BothDoseTypesIntervention(2, 1, "paraffin", "no motivation",
+            URI.create("semanticURI"), "semanticInterventionLabel",
+            minConstraint, maxConstraint);
+    when(interventionRepository.get(interventionId)).thenReturn(bothDoseTypesIntervention);
+
+    interventionService.setMultipliers(interventionId, command);
+
+    assertEquals(multiplier.getConversionMultiplier(), bothDoseTypesIntervention.getMinConstraint().getLowerBound().getConversionMultiplier());
+    assertNull(bothDoseTypesIntervention.getMinConstraint().getUpperBound().getConversionMultiplier());
+    assertNull(bothDoseTypesIntervention.getMaxConstraint().getLowerBound().getConversionMultiplier());
+    assertEquals(multiplier.getConversionMultiplier(), bothDoseTypesIntervention.getMaxConstraint().getUpperBound().getConversionMultiplier());
     verify(interventionRepository).get(interventionId);
   }
 }

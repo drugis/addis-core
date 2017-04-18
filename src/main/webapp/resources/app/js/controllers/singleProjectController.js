@@ -183,30 +183,8 @@ define(['lodash', 'angular'], function(_, angular) {
     }
 
     function checkUnitMultipliers() {
-      $scope.editMode.interventionRepairPossible = false;
-      var interventions = $scope.interventions;
-      $scope.interventions = _.map(interventions, function(intervention) {
-        if (intervention.type === 'fixed') {
-          if (!intervention.constraint.lowerBound.conversionMultiplier ||
-            (intervention.constraint.upperBound && !intervention.constraint.upperBound.conversionMultiplier)) {
-            $scope.editMode.interventionRepairPossible = true;
-            intervention.hasMissingMultipliers = true;
-          }
-        } else if (intervention.type === 'titrated') {
-          if (!intervention.minConstraint.lowerBound.conversionMultiplier ||
-            (intervention.minConstraint.upperBound && !intervention.minConstraint.upperBound.conversionMultiplier)) {
-            $scope.editMode.interventionRepairPossible = true;
-            intervention.hasMissingMultipliers = true;
-          }
-          if (!intervention.maxConstraint.lowerBound.conversionMultiplier ||
-            (intervention.maxConstraint.upperBound && !intervention.maxConstraint.upperBound.conversionMultiplier)) {
-            $scope.editMode.interventionRepairPossible = true;
-            intervention.hasMissingMultipliers = true;
-          }
-
-        }
-        return intervention;
-      });
+      $scope.interventions = ProjectService.addMissingMultiplierInfo($scope.interventions);
+      $scope.editMode.interventionRepairPossible = _.find($scope.interventions, 'hasMissingMultipliers');
     }
 
     function generateInterventionDescriptions(interventions) {

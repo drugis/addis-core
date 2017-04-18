@@ -14,34 +14,7 @@ define(['lodash'], function(_) {
       },
       link: function(scope) {
         scope.selections = {};
-        scope.metricMultipliers = [{
-          label: 'nano',
-          conversionMultiplier: 1e-09
-        }, {
-          label: 'micro',
-          conversionMultiplier: 1e-06
-        }, {
-          label: 'milli',
-          conversionMultiplier: 1e-03
-        }, {
-          label: 'centi',
-          conversionMultiplier: 1e-02
-        }, {
-          label: 'deci',
-          conversionMultiplier: 1e-01
-        }, {
-          label: 'deca',
-          conversionMultiplier: 1e01
-        }, {
-          label: 'hecto',
-          conversionMultiplier: 1e02
-        }, {
-          label: 'kilo',
-          conversionMultiplier: 1e03
-        }, {
-          label: 'mega',
-          conversionMultiplier: 1e06
-        }];
+        scope.metricMultipliers = MappingService.METRIC_MULTIPLIERS;
 
         scope.updateMapping = function() {
           if (scope.selectedDatasetConcept === null) {

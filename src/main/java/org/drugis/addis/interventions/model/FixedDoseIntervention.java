@@ -1,8 +1,10 @@
 package org.drugis.addis.interventions.model;
 
-import org.drugis.addis.interventions.controller.command.*;
+import org.drugis.addis.interventions.InterventionMultiplierCommand;
+import org.drugis.addis.interventions.SetMultipliersCommand;
 import org.drugis.addis.interventions.controller.viewAdapter.AbstractInterventionViewAdapter;
 import org.drugis.addis.interventions.controller.viewAdapter.FixedInterventionViewAdapter;
+import org.drugis.addis.interventions.service.InterventionService;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -50,17 +52,19 @@ public class FixedDoseIntervention extends SingleIntervention implements Seriali
     this(null, project, name, motivation, semanticInterventionUri, semanticInterventionLabel, constraint);
   }
 
-  public void setLowerBoundConversionMultiplier(Double multiplier) {
-    constraint.setLowerBoundConversionMultiplier(multiplier);
-  }
-
-  public void setUpperBoundConversionMultiplier(Double multiplier) {
-      constraint.setUpperBoundConversionMultiplier(multiplier);
-  }
-
   @Override
   public AbstractInterventionViewAdapter toViewAdapter() {
     return new FixedInterventionViewAdapter(this);
+  }
+
+  @Override
+  public void updateMultipliers(SetMultipliersCommand command) {
+    for (InterventionMultiplierCommand multiplierCommand : command.getMultipliers()) {
+      Double multiplier = multiplierCommand.getConversionMultiplier();
+      URI unitConcept = multiplierCommand.getUnitConcept();
+      String unitName = multiplierCommand.getUnitName();
+      AbstractIntervention.updateConstraint(constraint, multiplier, unitConcept, unitName);
+    }
   }
 
   @Override
@@ -74,6 +78,7 @@ public class FixedDoseIntervention extends SingleIntervention implements Seriali
     return constraint.equals(that.constraint);
 
   }
+
 
   @Override
   public int hashCode() {

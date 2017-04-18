@@ -1,11 +1,13 @@
 package org.drugis.addis.interventions.model;
 
+import org.drugis.addis.interventions.SetMultipliersCommand;
 import org.drugis.addis.interventions.controller.command.AbstractInterventionCommand;
 import org.drugis.addis.interventions.controller.command.SimpleInterventionCommand;
 import org.drugis.addis.interventions.controller.viewAdapter.AbstractInterventionViewAdapter;
 import org.drugis.addis.interventions.controller.viewAdapter.SimpleInterventionViewAdapter;
 import org.drugis.addis.interventions.service.InterventionService;
 import org.drugis.addis.trialverse.model.SemanticInterventionUriAndName;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import javax.persistence.Entity;
 import javax.persistence.PrimaryKeyJoinColumn;
@@ -31,6 +33,10 @@ public class SimpleIntervention extends SingleIntervention implements Serializab
     return new SimpleInterventionViewAdapter(this);
   }
 
+  @Override
+  public void updateMultipliers(SetMultipliersCommand command) {
+    throw new NotImplementedException(); // does not have multiplier
+  }
   public SimpleIntervention(Integer projectId, String name, String motivation, SemanticInterventionUriAndName semanticInterventionUriAndName) {
     this(null, projectId, name, motivation, semanticInterventionUriAndName.getUri(), semanticInterventionUriAndName.getLabel());
   }
