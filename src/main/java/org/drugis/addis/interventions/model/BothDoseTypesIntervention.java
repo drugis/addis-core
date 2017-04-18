@@ -1,5 +1,7 @@
 package org.drugis.addis.interventions.model;
 
+import org.drugis.addis.interventions.InterventionMultiplierCommand;
+import org.drugis.addis.interventions.SetMultipliersCommand;
 import org.drugis.addis.interventions.controller.viewAdapter.AbstractInterventionViewAdapter;
 import org.drugis.addis.interventions.controller.viewAdapter.BothDoseTypesInterventionViewAdapter;
 
@@ -19,11 +21,13 @@ public class BothDoseTypesIntervention extends SingleIntervention {
           @AttributeOverride(name="lowerBound.unitPeriod" , column = @Column(name="minLowerBoundUnitPeriod") ),
           @AttributeOverride(name="lowerBound.unitConcept" , column = @Column(name="minLowerBoundUnitConcept") ),
           @AttributeOverride(name="lowerBound.value", column = @Column(name="minLowerBoundValue") ),
+          @AttributeOverride(name="lowerBound.conversionMultiplier", column = @Column(name="minLowerBoundConversionMultiplier") ),
           @AttributeOverride(name="upperBound.type" , column = @Column(name="minUpperBoundType") ),
           @AttributeOverride(name="upperBound.unitName" , column = @Column(name="minUpperBoundUnitName") ),
           @AttributeOverride(name="upperBound.unitPeriod" , column = @Column(name="minUpperBoundUnitPeriod") ),
           @AttributeOverride(name="upperBound.unitConcept" , column = @Column(name="minUpperBoundUnitConcept") ),
-          @AttributeOverride(name="upperBound.value", column = @Column(name="minUpperBoundValue") )
+          @AttributeOverride(name="upperBound.value", column = @Column(name="minUpperBoundValue") ),
+          @AttributeOverride(name="upperBound.conversionMultiplier", column = @Column(name="minUpperBoundConversionMultiplier") )
   } )
   private DoseConstraint minConstraint;
 
@@ -34,11 +38,13 @@ public class BothDoseTypesIntervention extends SingleIntervention {
           @AttributeOverride(name="lowerBound.unitPeriod" , column = @Column(name="maxLowerBoundUnitPeriod") ),
           @AttributeOverride(name="lowerBound.unitConcept" , column = @Column(name="maxLowerBoundUnitConcept") ),
           @AttributeOverride(name="lowerBound.value", column = @Column(name="maxLowerBoundValue") ),
+          @AttributeOverride(name="lowerBound.conversionMultiplier", column = @Column(name="maxLowerBoundConversionMultiplier") ),
           @AttributeOverride(name="upperBound.type" , column = @Column(name="maxUpperBoundType") ),
           @AttributeOverride(name="upperBound.unitName" , column = @Column(name="maxUpperBoundUnitName") ),
           @AttributeOverride(name="upperBound.unitPeriod" , column = @Column(name="maxUpperBoundUnitPeriod") ),
           @AttributeOverride(name="upperBound.unitConcept" , column = @Column(name="maxUpperBoundUnitConcept") ),
-          @AttributeOverride(name="upperBound.value", column = @Column(name="maxUpperBoundValue") )
+          @AttributeOverride(name="upperBound.value", column = @Column(name="maxUpperBoundValue") ),
+          @AttributeOverride(name="upperBound.conversionMultiplier", column = @Column(name="maxUpperBoundConversionMultiplier") )
   } )
   private DoseConstraint maxConstraint;
 
@@ -67,6 +73,31 @@ public class BothDoseTypesIntervention extends SingleIntervention {
   public DoseConstraint getMaxConstraint() {
     return maxConstraint;
   }
+
+  public void setMinLowerBoundConversionMultiplier(Double multiplier){
+    minConstraint.setLowerBoundConversionMultiplier(multiplier);
+  }
+  public void setMinUpperBoundConversionMultiplier(Double multiplier){
+    minConstraint.setUpperBoundConversionMultiplier(multiplier);
+  }
+  public void setMaxLowerBoundConversionMultiplier(Double multiplier){
+    maxConstraint.setLowerBoundConversionMultiplier(multiplier);
+  }
+  public void setMaxUpperBoundConversionMultiplier(Double multiplier){
+    maxConstraint.setUpperBoundConversionMultiplier(multiplier);
+  }
+
+  @Override
+  public void updateMultipliers(SetMultipliersCommand command) {
+    for (InterventionMultiplierCommand multiplierCommand : command.getMultipliers()) {
+      Double multiplier = multiplierCommand.getConversionMultiplier();
+      URI unitConcept = multiplierCommand.getUnitConcept();
+      String unitName = multiplierCommand.getUnitName();
+      AbstractIntervention.updateConstraint(minConstraint, multiplier, unitConcept, unitName);
+      AbstractIntervention.updateConstraint(maxConstraint, multiplier, unitConcept, unitName);
+    }
+  }
+
 
   @Override
   public boolean equals(Object o) {

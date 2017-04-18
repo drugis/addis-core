@@ -46,11 +46,15 @@ define(['angular-mocks'], function() {
           maxDoseValue: '3.000000e+01',
           maxDoseDosingPeriodicity: 'P1D',
           maxDoseUnitLabel: 'mg'
+        }, {
+          study: study1.studyUri,
+          activity: 'activity3',
+          drugName: 'Parafine'
         }];
 
         var expectedResult = [{
           studyUri: 'http://studies/1',
-          treatments: 'Paroxetine 30 mg per 1 day(s) + Metformine 10-30 mg per 1 day(s), xAzilsartan 20 mg per 1 day(s)'
+          treatments: '<Activity unavailable: missing concept mapping>, Paroxetine 30 mg per 1 day(s) + Metformine 10-30 mg per 1 day(s), xAzilsartan 20 mg per 1 day(s)'
         }, {
           studyUri: 'http://studies/2',
           treatments: ''
@@ -61,6 +65,5 @@ define(['angular-mocks'], function() {
         expect(result).toEqual(expectedResult);
       });
     });
-
   });
 });

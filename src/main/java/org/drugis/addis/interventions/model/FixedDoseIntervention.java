@@ -1,8 +1,10 @@
 package org.drugis.addis.interventions.model;
 
-import org.drugis.addis.interventions.controller.command.*;
+import org.drugis.addis.interventions.InterventionMultiplierCommand;
+import org.drugis.addis.interventions.SetMultipliersCommand;
 import org.drugis.addis.interventions.controller.viewAdapter.AbstractInterventionViewAdapter;
 import org.drugis.addis.interventions.controller.viewAdapter.FixedInterventionViewAdapter;
+import org.drugis.addis.interventions.service.InterventionService;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -21,11 +23,14 @@ public class FixedDoseIntervention extends SingleIntervention implements Seriali
           @AttributeOverride(name = "lowerBound.unitPeriod", column = @Column(name = "lowerBoundUnitPeriod")),
           @AttributeOverride(name = "lowerBound.unitConcept", column = @Column(name = "lowerBoundUnitConcept")),
           @AttributeOverride(name = "lowerBound.value", column = @Column(name = "lowerBoundValue")),
+          @AttributeOverride(name = "lowerBound.conversionMultiplier", column = @Column(name = "lowerBoundConversionMultiplier")),
           @AttributeOverride(name = "upperBound.type", column = @Column(name = "upperBoundType")),
           @AttributeOverride(name = "upperBound.unitName", column = @Column(name = "upperBoundUnitName")),
           @AttributeOverride(name = "upperBound.unitPeriod", column = @Column(name = "upperBoundUnitPeriod")),
           @AttributeOverride(name = "upperBound.unitConcept", column = @Column(name = "upperBoundUnitConcept")),
-          @AttributeOverride(name = "upperBound.value", column = @Column(name = "upperBoundValue"))
+          @AttributeOverride(name = "upperBound.value", column = @Column(name = "upperBoundValue")),
+          @AttributeOverride(name = "upperBound.conversionMultiplier", column = @Column(name = "upperBoundConversionMultiplier"))
+
   })
   DoseConstraint constraint;
 
@@ -53,6 +58,16 @@ public class FixedDoseIntervention extends SingleIntervention implements Seriali
   }
 
   @Override
+  public void updateMultipliers(SetMultipliersCommand command) {
+    for (InterventionMultiplierCommand multiplierCommand : command.getMultipliers()) {
+      Double multiplier = multiplierCommand.getConversionMultiplier();
+      URI unitConcept = multiplierCommand.getUnitConcept();
+      String unitName = multiplierCommand.getUnitName();
+      AbstractIntervention.updateConstraint(constraint, multiplier, unitConcept, unitName);
+    }
+  }
+
+  @Override
   public boolean equals(Object o) {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
@@ -63,6 +78,7 @@ public class FixedDoseIntervention extends SingleIntervention implements Seriali
     return constraint.equals(that.constraint);
 
   }
+
 
   @Override
   public int hashCode() {

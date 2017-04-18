@@ -1,5 +1,5 @@
 'use strict';
-define(['angular-mocks'], function() {
+define(['lodash', 'angular-mocks'], function(_) {
   describe('the project service', function() {
     var projectService;
 
@@ -161,7 +161,7 @@ define(['angular-mocks'], function() {
         };
         var outcome4 = {
           id: 4
-        }
+        };
         var outcomes = [outcome1, outcome2, outcome3, outcome4];
         var analyses = [{
           analysisType: 'Evidence synthesis',
@@ -191,6 +191,93 @@ define(['angular-mocks'], function() {
         var result = projectService.buildOutcomeUsage(analyses, outcomes);
 
         expect(result).toEqual(expectedResult);
+      });
+    });
+
+    // var interventions = [simple, fixedOK, fixedMissing, titratedOK, titrateMissing, combination, set];
+    describe('addMissingMultiplierInfo', function() {
+      it('should do nothing for simple, combination or set interventions', function() {
+        var simple = {
+          type: 'simple'
+        };
+        var combination = {
+          type: 'combination'
+        };
+        var set = {
+          type: 'class'
+        };
+        var interventions = [simple, combination, set];
+
+        var result = projectService.addMissingMultiplierInfo(interventions);
+        var anyMissing = _.find(result, 'hasMissingMultipliers');
+
+        expect(anyMissing).toBeFalsy();
+      });
+      it('should check fixed interventions', function() {
+        var fixedOK = {
+          type: 'fixed',
+          constraint: {
+            lowerBound: null,
+            upperBound: {
+              conversionMultiplier: 0.001
+            }
+          }
+        };
+        var fixedMissing = {
+          type: 'fixed',
+          constraint: {
+            lowerBound: null,
+            upperBound: {}
+          }
+        };
+        var interventions = [fixedOK, fixedMissing];
+
+        var result = projectService.addMissingMultiplierInfo(interventions);
+
+        expect(result[0].hasMissingMultipliers).toBeFalsy();
+        expect(result[1].hasMissingMultipliers).toBeTruthy();
+      });
+      it('should check titrated and BothType interventions', function() {
+        var titratedOK = {
+          type: 'titrated',
+          minConstraint: {
+            lowerBound: null,
+            upperBound: {
+              conversionMultiplier: 0.001
+            }
+          },
+          maxConstraint: {
+            lowerBound: {
+              conversionMultiplier: 0.01
+            },
+            upperBound: null
+          }
+
+        };
+        var titratedMissing = {
+          type: 'titrated',
+          minConstraint: {
+            lowerBound: {
+              conversionMultiplier: 0.001
+            },
+            upperBound: null
+          },
+          maxConstraint: {
+            lowerBound: {
+              conversionMultiplier: 0.01
+            },
+            upperBound: {}
+          }
+        };
+        var bothTypeMissing = _.cloneDeep(titratedMissing);
+        bothTypeMissing.type = 'both';
+        var interventions = [titratedOK, titratedMissing, bothTypeMissing];
+
+        var result = projectService.addMissingMultiplierInfo(interventions);
+
+        expect(result[0].hasMissingMultipliers).toBeFalsy();
+        expect(result[1].hasMissingMultipliers).toBeTruthy();
+        expect(result[1].hasMissingMultipliers).toBeTruthy();
       });
     });
 

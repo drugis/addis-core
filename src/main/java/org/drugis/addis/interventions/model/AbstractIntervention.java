@@ -1,9 +1,11 @@
 package org.drugis.addis.interventions.model;
 
+import org.drugis.addis.interventions.SetMultipliersCommand;
 import org.drugis.addis.interventions.controller.command.AbstractInterventionCommand;
 import org.drugis.addis.interventions.controller.viewAdapter.AbstractInterventionViewAdapter;
 
 import javax.persistence.*;
+import java.net.URI;
 
 /**
  * Created by daan on 5-4-16.
@@ -57,6 +59,17 @@ public abstract class AbstractIntervention {
   }
 
   public abstract AbstractInterventionViewAdapter toViewAdapter();
+
+  public abstract void updateMultipliers(SetMultipliersCommand command);
+
+  static void updateConstraint(DoseConstraint constraint, Double multiplier, URI unitConcept, String unitName) {
+    if (constraint.getLowerBound() != null && constraint.getLowerBound().isMatched(unitConcept, unitName)) {
+      constraint.setLowerBoundConversionMultiplier(multiplier);
+    }
+    if (constraint.getUpperBound() != null && constraint.getUpperBound().isMatched(unitConcept, unitName)) {
+      constraint.setUpperBoundConversionMultiplier(multiplier);
+    }
+  }
 
   @Override
   public boolean equals(Object o) {

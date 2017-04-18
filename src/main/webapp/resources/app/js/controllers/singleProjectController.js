@@ -20,11 +20,25 @@ define(['lodash', 'angular'], function(_, angular) {
     'HistoryResource',
     'project'
   ];
-  var SingleProjectController = function($scope, $q, $state, $stateParams, $location, $modal, ProjectResource, ProjectService,
+  var SingleProjectController = function($scope, $q, $state, $stateParams, $location, $modal,
+    ProjectResource,
+    ProjectService,
     TrialverseResource,
-    TrialverseStudyResource, SemanticOutcomeResource, OutcomeResource, SemanticInterventionResource, InterventionResource,
-    CovariateOptionsResource, CovariateResource, AnalysisResource, ANALYSIS_TYPES, InterventionService, activeTab, UserService,
-    ReportResource, HistoryResource, project) {
+    TrialverseStudyResource,
+    SemanticOutcomeResource,
+    OutcomeResource,
+    SemanticInterventionResource,
+    InterventionResource,
+    CovariateOptionsResource,
+    CovariateResource,
+    AnalysisResource,
+    ANALYSIS_TYPES,
+    InterventionService,
+    activeTab,
+    UserService,
+    ReportResource,
+    HistoryResource,
+    project) {
     $scope.tabSelection = {
       activeTab: activeTab
     };
@@ -133,6 +147,7 @@ define(['lodash', 'angular'], function(_, angular) {
           projectId: $scope.project.id
         }).$promise
         .then(generateInterventionDescriptions)
+        .then(checkUnitMultipliers)
         .then(function() {
           $scope.interventionUsage = ProjectService.buildInterventionUsage($scope.analyses, $scope.interventions);
         });
@@ -165,6 +180,11 @@ define(['lodash', 'angular'], function(_, angular) {
       }).then(function() {
         $scope.covariateUsage = ProjectService.buildCovariateUsage($scope.analyses, $scope.covariates);
       });
+    }
+
+    function checkUnitMultipliers() {
+      $scope.interventions = ProjectService.addMissingMultiplierInfo($scope.interventions);
+      $scope.editMode.interventionRepairPossible = _.find($scope.interventions, 'hasMissingMultipliers');
     }
 
     function generateInterventionDescriptions(interventions) {
@@ -328,7 +348,7 @@ define(['lodash', 'angular'], function(_, angular) {
         $state.go('projectReport', $stateParams);
       } else if (tab === 'definitions') {
         $state.go('project', $stateParams);
-      } else if(tab === 'analyses'){
+      } else if (tab === 'analyses') {
         $state.go('projectAnalyses', $stateParams, {
           reload: true
         });
@@ -396,7 +416,7 @@ define(['lodash', 'angular'], function(_, angular) {
         }
       });
     };
-    
+
     $scope.openCopyDialog = function() {
       $modal.open({
         templateUrl: './app/js/project/copyProject.html',
@@ -410,6 +430,22 @@ define(['lodash', 'angular'], function(_, angular) {
                 projectId: newProjectId
               });
             };
+          }
+        }
+      });
+    };
+
+    $scope.openRepairInterventionDialog = function(intervention) {
+      $modal.open({
+        templateUrl: './app/js/project/repairIntervention.html',
+        scope: $scope,
+        controller: 'RepairInterventionController',
+        resolve: {
+          intervention: function() {
+            return intervention;
+          },
+          callback: function() {
+            return loadInterventions;
           }
         }
       });
