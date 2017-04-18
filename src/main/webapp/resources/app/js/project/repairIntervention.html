@@ -14,10 +14,11 @@
     <tbody>
       <tr ng-repeat="unit in units">
         <td>{{unit.unitName}}</td>
-        <td>
-          <select ng-model="unit.conversionMultiplier" ng-options="multiplier.conversionMultiplier as multiplier.label for multiplier in metricMultipliers">
+        <td >
+          <span class="cell-with-single-btn"><select ng-model="unit.conversionMultiplier" ng-options="multiplier.conversionMultiplier as multiplier.label for multiplier in metricMultipliers">
             <option value="">{{'No multiplier selected'}}</option>
           </select>
+          </span>
         </td>
         <td>{{conceptsByUri[unit.unitConcept].label}}</td>
       </tr>
