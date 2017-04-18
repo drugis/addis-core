@@ -829,6 +829,15 @@ CREATE TABLE modelBaseline (
 --rollback DROP TABLE modelBaseline;
 
 --changeset keijserj:69
+CREATE TABLE effectsTableExclusion (
+    analysisId INT NOT NULL,
+    alternativeId INT NOT NULL,
+    PRIMARY KEY (analysisId, alternativeId),
+    FOREIGN KEY (analysisId) REFERENCES AbstractAnalysis(id)
+);
+--rollback DROP TABLE effectsTableExclusion;
+
+--changeset keijserj:70
 ALTER TABLE FixedDoseIntervention ADD COLUMN lowerBoundConversionMultiplier DOUBLE PRECISION;
 ALTER TABLE FixedDoseIntervention ADD COLUMN upperBoundConversionMultiplier DOUBLE PRECISION;
 ALTER TABLE TitratedDoseIntervention ADD COLUMN minLowerBoundConversionMultiplier DOUBLE PRECISION;
@@ -849,12 +858,3 @@ ALTER TABLE BothDoseTypesIntervention ADD COLUMN maxUpperBoundConversionMultipli
 --rollback ALTER TABLE BothDoseTypesIntervention DROP COLUMN minUpperBoundConversionMultiplier;
 --rollback ALTER TABLE BothDoseTypesIntervention DROP COLUMN maxLowerBoundConversionMultiplier;
 --rollback ALTER TABLE BothDoseTypesIntervention DROP COLUMN maxUpperBoundConversionMultiplier;
-
---changeset keijserj:70
-CREATE TABLE effectsTableExclusion (
-    analysisId INT NOT NULL,
-    alternativeId INT NOT NULL,
-    PRIMARY KEY (analysisId, alternativeId),
-    FOREIGN KEY (analysisId) REFERENCES AbstractAnalysis(id)
-);
---rollback DROP TABLE effectsTableExclusion;
