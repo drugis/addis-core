@@ -13,7 +13,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
@@ -55,7 +54,7 @@ public class OutcomeControllerTest {
   @Inject
   private OutcomeService outcomeService;
 
-  @Autowired
+  @Inject
   private WebApplicationContext webApplicationContext;
 
   private Principal user;
@@ -114,7 +113,10 @@ public class OutcomeControllerTest {
     OutcomeCommand outcomeCommand = new OutcomeCommand(1, "name", 1, "motivation", semanticOutcome);
     when(outcomeRepository.create(gert, 1, "name", 1, "motivation", semanticOutcome)).thenReturn(outcome);
     String body = TestUtils.createJson(outcomeCommand);
-    mockMvc.perform(post("/projects/1/outcomes").content(body).principal(user).contentType(WebConstants.getApplicationJsonUtf8Value()))
+    mockMvc.perform(post("/projects/1/outcomes")
+            .content(body)
+            .principal(user)
+            .contentType(WebConstants.getApplicationJsonUtf8Value()))
       .andExpect(status().isCreated())
       .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()))
       .andExpect(jsonPath("$.id", notNullValue()));
@@ -129,7 +131,10 @@ public class OutcomeControllerTest {
     when(outcomeRepository.create(gert, 1, "name", 1, "", semanticOutcome)).thenReturn(outcome);
     OutcomeCommand outcomeCommand = new OutcomeCommand(1, "name", 1, "", semanticOutcome);
     String body = TestUtils.createJson(outcomeCommand);
-    mockMvc.perform(post("/projects/1/outcomes").content(body).principal(user).contentType(WebConstants.getApplicationJsonUtf8Value()))
+    mockMvc.perform(post("/projects/1/outcomes")
+            .content(body)
+            .principal(user)
+            .contentType(WebConstants.getApplicationJsonUtf8Value()))
       .andExpect(status().isCreated())
       .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()))
       .andExpect(jsonPath("$.id", notNullValue()));

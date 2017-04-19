@@ -126,3 +126,7 @@ INSERT INTO public.funnelPlotComparison(plotId, t1, t2, biasDirection) VALUES (-
 INSERT INTO public.customReport(id, projectId, text) VALUES (-1, 1, 'this is a report');
 
 INSERT INTO public.modelBaseline(modelId, baseline) VALUES(1, '{"type": "dnorm"}');
+
+INSERT INTO public.effectsTableExclusion(analysisId, alternativeId) VALUES(-1, 1);
+INSERT INTO public.effectsTableExclusion(analysisId, alternativeId) VALUES(-2, 1);
+INSERT INTO public.effectsTableExclusion(analysisId, alternativeId) VALUES(-1, 2);
