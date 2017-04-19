@@ -6,8 +6,8 @@ import org.drugis.addis.analyses.InterventionInclusion;
 import org.drugis.addis.analyses.NetworkMetaAnalysis;
 import org.drugis.addis.analyses.repository.AnalysisRepository;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
-import org.drugis.addis.interventions.InterventionMultiplierCommand;
-import org.drugis.addis.interventions.SetMultipliersCommand;
+import org.drugis.addis.interventions.controller.command.InterventionMultiplierCommand;
+import org.drugis.addis.interventions.controller.command.SetMultipliersCommand;
 import org.drugis.addis.interventions.controller.command.LowerBoundCommand;
 import org.drugis.addis.interventions.controller.command.UpperBoundCommand;
 import org.drugis.addis.interventions.model.*;
@@ -87,9 +87,9 @@ public class InterventionServiceTest {
 
   @Test
   public void isMatchedFixedIntervention() throws Exception, InvalidTypeForDoseCheckException {
-    LowerBoundCommand lowerBound = new LowerBoundCommand(LowerBoundType.AT_LEAST, (doseValue - 1) * 10, unitLabel,
+    LowerBoundCommand lowerBound = new LowerBoundCommand(LowerBoundType.AT_LEAST, doseValue - 1, unitLabel,
             dosePeriod, unitConcept, 0.1);
-    UpperBoundCommand upperBound = new UpperBoundCommand(UpperBoundType.AT_MOST, (doseValue + 1) / 1000, unitLabel,
+    UpperBoundCommand upperBound = new UpperBoundCommand(UpperBoundType.AT_MOST, doseValue + 1, unitLabel,
             dosePeriod, unitConcept, 1000.0);
     DoseConstraint doseConstraint = new DoseConstraint(lowerBound, upperBound);
     AbstractIntervention intervention = new FixedDoseIntervention(interventionId, projectId, "intervention name",
@@ -104,9 +104,10 @@ public class InterventionServiceTest {
 
   @Test
   public void isNotMatchedFixedIntervention() throws Exception, InvalidTypeForDoseCheckException {
-
-    LowerBoundCommand lowerBound = new LowerBoundCommand(LowerBoundType.AT_LEAST, doseValue + 1, unitLabel, dosePeriod, unitConcept, null);
-    UpperBoundCommand upperBound = new UpperBoundCommand(UpperBoundType.AT_MOST, doseValue + 1, unitLabel, dosePeriod, unitConcept, null);
+    LowerBoundCommand lowerBound = new LowerBoundCommand(LowerBoundType.AT_LEAST, doseValue + 1, unitLabel,
+            dosePeriod, unitConcept, 0.5);
+    UpperBoundCommand upperBound = new UpperBoundCommand(UpperBoundType.AT_MOST, doseValue + 1, unitLabel,
+            dosePeriod, unitConcept, null);
     DoseConstraint doseConstraint = new DoseConstraint(lowerBound, upperBound);
     AbstractIntervention intervention = new FixedDoseIntervention(interventionId, projectId, "intervention name", "moti", drugConceptUri, "sem label", doseConstraint);
     Dose fixedMatchingDose = new Dose(doseValue, dosePeriod, unitConcept, unitLabel, unitMultiplier);
@@ -117,9 +118,10 @@ public class InterventionServiceTest {
 
   @Test
   public void isMatchedTitratedIntervention() throws Exception, InvalidTypeForDoseCheckException {
-
-    LowerBoundCommand lowerBound = new LowerBoundCommand(LowerBoundType.AT_LEAST, doseValue - 1, unitLabel, dosePeriod, unitConcept, null);
-    UpperBoundCommand upperBound = new UpperBoundCommand(UpperBoundType.AT_MOST, doseValue + 1, unitLabel, dosePeriod, unitConcept, null);
+    LowerBoundCommand lowerBound = new LowerBoundCommand(LowerBoundType.AT_LEAST, doseValue - 1, unitLabel,
+            dosePeriod, unitConcept, 0.2);
+    UpperBoundCommand upperBound = new UpperBoundCommand(UpperBoundType.AT_MOST, doseValue + 1, unitLabel,
+            dosePeriod, unitConcept, 5.0);
     DoseConstraint minConstraint = new DoseConstraint(lowerBound, upperBound);
     DoseConstraint maxConstraint = null;
     AbstractIntervention intervention = new TitratedDoseIntervention(interventionId, projectId, "intervention name", "moti", drugConceptUri, "sem label", minConstraint, maxConstraint);
@@ -133,7 +135,6 @@ public class InterventionServiceTest {
 
   @Test
   public void isUnmatchedTitratedIntervention() throws Exception, InvalidTypeForDoseCheckException {
-
     LowerBoundCommand lowerBound = new LowerBoundCommand(LowerBoundType.AT_LEAST, doseValue - 1, unitLabel, dosePeriod, unitConcept, null);
     UpperBoundCommand upperBound = new UpperBoundCommand(UpperBoundType.AT_MOST, doseValue - 999, unitLabel, dosePeriod, unitConcept, null);
     DoseConstraint minConstraint = new DoseConstraint(lowerBound, upperBound);
@@ -148,9 +149,8 @@ public class InterventionServiceTest {
 
   @Test
   public void isMatchedBothIntervention() throws Exception, InvalidTypeForDoseCheckException {
-
-    LowerBoundCommand lowerBound = new LowerBoundCommand(LowerBoundType.AT_LEAST, doseValue - 1, unitLabel, dosePeriod, unitConcept, null);
-    UpperBoundCommand upperBound = new UpperBoundCommand(UpperBoundType.AT_MOST, doseValue + 1, unitLabel, dosePeriod, unitConcept, null);
+    LowerBoundCommand lowerBound = new LowerBoundCommand(LowerBoundType.AT_LEAST, doseValue - 1, unitLabel, dosePeriod, unitConcept, unitMultiplier);
+    UpperBoundCommand upperBound = new UpperBoundCommand(UpperBoundType.AT_MOST, doseValue + 1, unitLabel, dosePeriod, unitConcept, unitMultiplier);
     DoseConstraint minConstraint = new DoseConstraint(lowerBound, upperBound);
     DoseConstraint maxConstraint = null;
     AbstractIntervention intervention = new BothDoseTypesIntervention(interventionId, projectId, "intervention name", "moti", drugConceptUri, "sem label", minConstraint, maxConstraint);
@@ -163,7 +163,6 @@ public class InterventionServiceTest {
 
   @Test
   public void isUnMatchedBothIntervention() throws Exception, InvalidTypeForDoseCheckException {
-
     LowerBoundCommand lowerBound = new LowerBoundCommand(LowerBoundType.AT_LEAST, doseValue - 1, unitLabel, dosePeriod, unitConcept, null);
     UpperBoundCommand upperBound = new UpperBoundCommand(UpperBoundType.AT_MOST, doseValue - 999, unitLabel, dosePeriod, unitConcept, null);
     DoseConstraint minConstraint = new DoseConstraint(lowerBound, upperBound);
@@ -188,6 +187,7 @@ public class InterventionServiceTest {
     AbstractIntervention intervention = new BothDoseTypesIntervention(interventionId, projectId, "name", "motive", drugConceptUri, "intervention sem",
             minConstraint,
             maxConstraint);
+
     assertFalse(interventionService.isMatched(intervention, Collections.singletonList(fixedSemantic)));
   }
 
@@ -196,8 +196,8 @@ public class InterventionServiceTest {
     Integer fixedInterventionId = 1;
     Integer titratedInterventionId = 2;
 
-    LowerBoundCommand lowerBound = new LowerBoundCommand(LowerBoundType.AT_LEAST, doseValue - 1, unitLabel, dosePeriod, unitConcept, null);
-    UpperBoundCommand upperBound = new UpperBoundCommand(UpperBoundType.AT_MOST, doseValue + 1, unitLabel, dosePeriod, unitConcept, null);
+    LowerBoundCommand lowerBound = new LowerBoundCommand(LowerBoundType.AT_LEAST, doseValue - 1, unitLabel, dosePeriod, unitConcept, unitMultiplier);
+    UpperBoundCommand upperBound = new UpperBoundCommand(UpperBoundType.AT_MOST, doseValue + 1, unitLabel, dosePeriod, unitConcept, unitMultiplier);
     DoseConstraint doseConstraint = new DoseConstraint(lowerBound, upperBound);
     AbstractIntervention fixedIntervention = new FixedDoseIntervention(interventionId, projectId, "intervention name", "moti", drugConceptUri, "sem label", doseConstraint);
 
@@ -226,8 +226,8 @@ public class InterventionServiceTest {
     Integer fixedInterventionId = 1;
     Integer titratedInterventionId = 2;
 
-    LowerBoundCommand lowerBound = new LowerBoundCommand(LowerBoundType.AT_LEAST, doseValue - 1, unitLabel, dosePeriod, unitConcept, null);
-    UpperBoundCommand upperBound = new UpperBoundCommand(UpperBoundType.AT_MOST, doseValue + 1, unitLabel, dosePeriod, unitConcept, null);
+    LowerBoundCommand lowerBound = new LowerBoundCommand(LowerBoundType.AT_LEAST, doseValue - 1, unitLabel, dosePeriod, unitConcept, unitMultiplier);
+    UpperBoundCommand upperBound = new UpperBoundCommand(UpperBoundType.AT_MOST, doseValue + 1, unitLabel, dosePeriod, unitConcept, unitMultiplier);
     DoseConstraint doseConstraint = new DoseConstraint(lowerBound, upperBound);
     AbstractIntervention fixedIntervention = new FixedDoseIntervention(interventionId, projectId, "intervention name", "moti", drugConceptUri, "sem label", doseConstraint);
 
@@ -257,8 +257,8 @@ public class InterventionServiceTest {
     Integer titratedInterventionId = 2;
     Integer combinationInterventionId = 3;
 
-    LowerBoundCommand lowerBound = new LowerBoundCommand(LowerBoundType.AT_LEAST, doseValue - 1, unitLabel, dosePeriod, unitConcept, null);
-    UpperBoundCommand upperBound = new UpperBoundCommand(UpperBoundType.AT_MOST, doseValue + 1, unitLabel, dosePeriod, unitConcept, null);
+    LowerBoundCommand lowerBound = new LowerBoundCommand(LowerBoundType.AT_LEAST, doseValue - 1, unitLabel, dosePeriod, unitConcept, unitMultiplier);
+    UpperBoundCommand upperBound = new UpperBoundCommand(UpperBoundType.AT_MOST, doseValue + 1, unitLabel, dosePeriod, unitConcept, unitMultiplier);
     DoseConstraint doseConstraint = new DoseConstraint(lowerBound, upperBound);
     AbstractIntervention fixedIntervention = new FixedDoseIntervention(interventionId, projectId, "intervention name", "moti", drugConceptUri, "sem label", doseConstraint);
 

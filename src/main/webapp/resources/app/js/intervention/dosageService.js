@@ -34,21 +34,7 @@ define(['lodash', 'moment'], function(_, moment) {
             }
           });
       }).then(function(response) {
-        var uniqueCombinations = _.uniqBy(response.data, function(row) {
-          return row.unitName + row.unitPeriod;
-        });
-        return uniqueCombinations.map(function(unit) {
-          var periodLabel = moment.duration(unit.unitPeriod).humanize();
-          periodLabel = periodLabel === 'a day' ? 'day' : periodLabel;
-          periodLabel = periodLabel === 'an hour' ? 'hour' : periodLabel;
-          periodLabel = periodLabel === 'a week' ? 'week' : periodLabel;
-          return {
-            unitName: unit.unitName,
-            label: unit.unitName + '/' + periodLabel,
-            unitPeriod: unit.unitPeriod,
-            unitConcept: unit.unitConcept
-          };
-        });
+        return response.data;
       });
     }
 

@@ -1,7 +1,7 @@
 'use strict';
 define(['angular'], function() {
-  var dependencies = ['$stateParams', 'DosageService', 'InterventionService'];
-  var constraintDirective = function($stateParams, DosageService, InterventionService) {
+  var dependencies = ['$stateParams', 'DosageService', 'InterventionService', 'ScaledUnitResource'];
+  var constraintDirective = function($stateParams, DosageService, InterventionService, ScaledUnitResource) {
     return {
       scope: {
         model: '=',
@@ -35,6 +35,10 @@ define(['angular'], function() {
             };
           }
         }
+
+        ScaledUnitResource.get($stateParams).$promise.then(function(scaledUnits){
+          scope.scaledUnits = scaledUnits;
+        });
 
         DosageService.get($stateParams.userUid, scope.datasetUuid).then(function(units) {
           scope.units = units;

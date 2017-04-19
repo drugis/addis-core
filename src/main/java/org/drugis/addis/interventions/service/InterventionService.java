@@ -1,7 +1,7 @@
 package org.drugis.addis.interventions.service;
 
 import org.drugis.addis.exception.ResourceDoesNotExistException;
-import org.drugis.addis.interventions.SetMultipliersCommand;
+import org.drugis.addis.interventions.controller.command.SetMultipliersCommand;
 import org.drugis.addis.interventions.controller.command.*;
 import org.drugis.addis.interventions.model.*;
 import org.drugis.addis.interventions.service.impl.InvalidTypeForDoseCheckException;

@@ -20,7 +20,6 @@ public class UpperDoseBound {
   private String unitPeriod;
   private String unitConcept;
   private Double conversionMultiplier;
-  private Double scaledValue;
 
   public UpperDoseBound() {
   }

@@ -21,7 +21,6 @@ public class LowerDoseBound {
   private String unitPeriod;
   private String unitConcept;
   private Double conversionMultiplier;
-  private Double scaledValue;
 
   public LowerDoseBound() {
   }

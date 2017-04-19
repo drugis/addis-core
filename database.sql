@@ -849,3 +849,14 @@ ALTER TABLE BothDoseTypesIntervention ADD COLUMN maxUpperBoundConversionMultipli
 --rollback ALTER TABLE BothDoseTypesIntervention DROP COLUMN minUpperBoundConversionMultiplier;
 --rollback ALTER TABLE BothDoseTypesIntervention DROP COLUMN maxLowerBoundConversionMultiplier;
 --rollback ALTER TABLE BothDoseTypesIntervention DROP COLUMN maxUpperBoundConversionMultiplier;
+
+--changeset reidd:71
+CREATE TABLE scaledUnit (
+  id SERIAL NOT NULL,
+  projectId INT NOT NULL,
+  conceptUri VARCHAR NOT NULL,
+  multiplier DOUBLE PRECISION NOT NULL,
+  name VARCHAR NOT NULL,
+  PRIMARY KEY (id),
+  FOREIGN KEY(projectId) REFERENCES Project(id)
+);
