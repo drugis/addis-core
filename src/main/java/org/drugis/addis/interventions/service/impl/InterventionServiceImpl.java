@@ -228,7 +228,6 @@ public class InterventionServiceImpl implements InterventionService {
     if (lowerBound != null && !dose.getUnitConceptUri().equals(lowerBound.getUnitConcept())) {
       return false;
     }
-
     if (upperBound != null && !dose.getUnitConceptUri().equals(upperBound.getUnitConcept())) {
       return false;
     }
@@ -259,13 +258,11 @@ public class InterventionServiceImpl implements InterventionService {
     boolean validLowerBound = true;
 
     if (lowerBound != null) {
-      validLowerBound = lowerBound.getType().isValidForBound(value, lowerBound.getValue());
+      validLowerBound = lowerBound.getType().isValidForBound(value, lowerBound.getScaledValue());
     }
-
     if (upperBound != null) {
-      validUpperBound = upperBound.getType().isValidForBound(value, upperBound.getValue());
+      validUpperBound = upperBound.getType().isValidForBound(value, upperBound.getScaledValue());
     }
-
     return validLowerBound && validUpperBound;
   }
 

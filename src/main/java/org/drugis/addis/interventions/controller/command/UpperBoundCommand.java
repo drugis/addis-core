@@ -14,8 +14,8 @@ public class UpperBoundCommand extends AbstractBoundCommand {
     super();
   }
 
-  public UpperBoundCommand(UpperBoundType type, Double value, String unitName, String unitPeriod, URI unitConcept) {
-    super(value, unitName, unitPeriod, unitConcept);
+  public UpperBoundCommand(UpperBoundType type, Double value, String unitName, String unitPeriod, URI unitConcept, Double conversionMultiplier) {
+    super(value, unitName, unitPeriod, unitConcept, conversionMultiplier);
     this.type = type;
   }
 

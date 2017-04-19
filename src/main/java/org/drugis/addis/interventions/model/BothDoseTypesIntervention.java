@@ -74,19 +74,6 @@ public class BothDoseTypesIntervention extends SingleIntervention {
     return maxConstraint;
   }
 
-  public void setMinLowerBoundConversionMultiplier(Double multiplier){
-    minConstraint.setLowerBoundConversionMultiplier(multiplier);
-  }
-  public void setMinUpperBoundConversionMultiplier(Double multiplier){
-    minConstraint.setUpperBoundConversionMultiplier(multiplier);
-  }
-  public void setMaxLowerBoundConversionMultiplier(Double multiplier){
-    maxConstraint.setLowerBoundConversionMultiplier(multiplier);
-  }
-  public void setMaxUpperBoundConversionMultiplier(Double multiplier){
-    maxConstraint.setUpperBoundConversionMultiplier(multiplier);
-  }
-
   @Override
   public void updateMultipliers(SetMultipliersCommand command) {
     for (InterventionMultiplierCommand multiplierCommand : command.getMultipliers()) {

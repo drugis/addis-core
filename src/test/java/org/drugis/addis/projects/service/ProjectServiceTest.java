@@ -222,7 +222,7 @@ public class ProjectServiceTest {
             semanticInterventionUri, semanticInterventionLabel);
     URI gramUri = URI.create("http://trials.drugis.org/concepts/gram");
     LowerBoundCommand lowerBound = new LowerBoundCommand(LowerBoundType.AT_LEAST, 0.1, "mg", "pt1d",
-            gramUri);
+            gramUri, null);
     DoseConstraint constraint = new DoseConstraint(lowerBound, null);
     FixedDoseIntervention fixedDoseIntervention = new FixedDoseIntervention(3, projectId, "fixed dose", null,
             semanticInterventionUri, semanticInterventionLabel, constraint);
@@ -452,9 +452,9 @@ public class ProjectServiceTest {
             URI.create("http://bla.com/semanticInterventions/2"), "semantic intervention label");
     URI gramUri = URI.create("http://trials.drugis.org/concepts/gram");
     LowerBoundCommand lowerBoundFilteredIn = new LowerBoundCommand(LowerBoundType.AT_LEAST, 0.1, "mg", "pt1d",
-            gramUri);
+            gramUri, null);
     LowerBoundCommand lowerBoundFilteredOut = new LowerBoundCommand(LowerBoundType.AT_LEAST, 0.1, "mg", "pt1d",
-            URI.create("http://nonsense.com"));
+            URI.create("http://nonsense.com"), null);
     UpperBoundCommand upperBound = null;
     DoseConstraint constraintFilteredIn = new DoseConstraint(lowerBoundFilteredIn, upperBound);
     DoseConstraint constraintFilteredOut = new DoseConstraint(lowerBoundFilteredOut, upperBound);
