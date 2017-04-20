@@ -47,16 +47,18 @@ define(['lodash', 'angular'], function(_, angular) {
       }
       if (constraint.lowerBound) {
         constraint.lowerBound.type = constraint.lowerBound.type.value;
-        constraint.lowerBound.unitName = constraint.lowerBound.unit.unitName;
+        constraint.lowerBound.unitName = constraint.lowerBound.unit.name;
         constraint.lowerBound.unitPeriod = constraint.lowerBound.unit.unitPeriod;
-        constraint.lowerBound.unitConcept = constraint.lowerBound.unit.unitConcept;
+        constraint.lowerBound.unitConcept = constraint.lowerBound.unit.conceptUri;
+        constraint.lowerBound.conversionMultiplier = constraint.lowerBound.unit.multiplier;
         delete constraint.lowerBound.unit;
       }
       if (constraint.upperBound) {
         constraint.upperBound.type = constraint.upperBound.type.value;
-        constraint.upperBound.unitName = constraint.upperBound.unit.unitName;
+        constraint.upperBound.unitName = constraint.upperBound.unit.name;
         constraint.upperBound.unitPeriod = constraint.upperBound.unit.unitPeriod;
-        constraint.upperBound.unitConcept = constraint.upperBound.unit.unitConcept;
+        constraint.upperBound.unitConcept = constraint.upperBound.unit.conceptUri;
+        constraint.upperBound.conversionMultiplier = constraint.upperBound.unit.multiplier;
         delete constraint.upperBound.unit;
       }
       return constraint;
