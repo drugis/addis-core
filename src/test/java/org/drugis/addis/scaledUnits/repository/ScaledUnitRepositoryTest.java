@@ -43,9 +43,8 @@ public class ScaledUnitRepositoryTest {
 
   @Test
   public void testCreate() {
-    ScaledUnit unit = new ScaledUnit(projectId,
-            URI.create("http://concept10.bla"), 0.01, "gram");
-    scaledUnitRepository.create(unit);
+    ScaledUnit unit = new ScaledUnit(21, projectId, URI.create("http://concept10.bla"), 0.01, "gram");
+    scaledUnitRepository.create(unit.getProjectId(), unit.getConceptUri(), unit.getMultiplier(), unit.getName());
     List<ScaledUnit> result = scaledUnitRepository.query(projectId);
     assertEquals(result.get(1), unit);
   }

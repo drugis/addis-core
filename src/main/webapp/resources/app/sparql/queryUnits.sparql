@@ -13,6 +13,5 @@ WHERE {
     ?unitUri 
       a ontology:Unit ;
       rdfs:label ?unitName .
-
   }
 }

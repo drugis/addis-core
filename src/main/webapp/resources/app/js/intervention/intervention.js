@@ -15,6 +15,6 @@ define(function(require) {
 
   //directives
   .directive('constraint', require('intervention/constraintDirective'))
-
+  .directive('bound', require('intervention/boundDirective'))
   ;
 });

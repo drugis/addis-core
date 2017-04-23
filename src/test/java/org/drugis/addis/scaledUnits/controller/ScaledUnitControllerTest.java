@@ -8,6 +8,7 @@ import org.drugis.addis.projects.repository.ProjectRepository;
 import org.drugis.addis.projects.repository.ReportRepository;
 import org.drugis.addis.projects.service.ProjectService;
 import org.drugis.addis.scaledUnits.ScaledUnit;
+import org.drugis.addis.scaledUnits.ScaledUnitCommand;
 import org.drugis.addis.scaledUnits.repository.ScaledUnitRepository;
 import org.drugis.addis.security.Account;
 import org.drugis.addis.security.repository.AccountRepository;
@@ -96,14 +97,17 @@ public class ScaledUnitControllerTest {
 
   @Test
   public void testCreate() throws Exception {
-    ScaledUnit scaledUnit = new ScaledUnit(projectId, URI.create("http://gram.com"), 0.001, "scaled unit");
-    String body = TestUtils.createJson(scaledUnit);
+    URI conceptUri = URI.create("http://gram.com");
+    double multiplier = 0.001;
+    String name = "scaled unit";
+    ScaledUnitCommand scaledUnitCommand = new ScaledUnitCommand(conceptUri, multiplier, name);
+    String body = TestUtils.createJson(scaledUnitCommand);
     mockMvc.perform(post("/projects/" + projectId + "/scaledUnits")
             .content(body)
             .principal(user)
             .contentType(WebConstants.getApplicationJsonUtf8Value()))
             .andExpect(status().isCreated());
-    verify(scaledUnitRepository).create(scaledUnit);
+    verify(scaledUnitRepository).create(projectId, conceptUri, multiplier, name);
   }
 
 }

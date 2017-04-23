@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
+import java.net.URI;
 import java.util.List;
 
 /**
@@ -28,7 +29,8 @@ public class ScaledUnitRepositoryImpl implements ScaledUnitRepository {
   }
 
   @Override
-  public void create(ScaledUnit unit) {
-    em.persist(unit);
+  public void create(Integer projectId, URI conceptUri, Double multiplier, String name) {
+    ScaledUnit newUnit = new ScaledUnit(projectId, conceptUri, multiplier, name);
+    em.persist(newUnit);
   }
 }

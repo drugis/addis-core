@@ -4,6 +4,7 @@ import org.drugis.addis.exception.MethodNotAllowedException;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.projects.service.ProjectService;
 import org.drugis.addis.scaledUnits.ScaledUnit;
+import org.drugis.addis.scaledUnits.ScaledUnitCommand;
 import org.drugis.addis.scaledUnits.repository.ScaledUnitRepository;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,10 +35,10 @@ public class ScaledUnitController {
   }
 
   @RequestMapping(value = "/projects/{projectId}/scaledUnits", method = RequestMethod.POST)
-  public void create(@PathVariable Integer projectId, @RequestBody ScaledUnit unit,
+  public void create(@PathVariable Integer projectId, @RequestBody ScaledUnitCommand unitCommand,
                      Principal user, HttpServletResponse response) throws ResourceDoesNotExistException, MethodNotAllowedException {
     projectService.checkOwnership(projectId, user);
-    scaledUnitRepository.create(unit);
+    scaledUnitRepository.create(projectId, unitCommand.getConceptUri(), unitCommand.multiplier, unitCommand.getName());
     response.setStatus(HttpServletResponse.SC_CREATED);
   }
 }
