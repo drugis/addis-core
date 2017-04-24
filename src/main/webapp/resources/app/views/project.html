@@ -129,7 +129,7 @@
                         </a>
                       </td>
                       <td ng-if="editMode.allowEditing && editMode.interventionRepairPossible && intervention.hasMissingMultipliers"><a class="has-tip" tooltip-placement="left" tooltip-html-unsafe="Intervention has missing unit multiplier mapping(s)" ng-click="openRepairInterventionDialog(intervention)"><i class="fa fa-wrench fa-2x"></i></a></td>
-                      <td ng-if="editMode.allowEditing && editMode.interventionRepairPossible && intervention.hasMissingMultipliers" ng-disabled="!intervention.hasMissingMultipliers"><i class="fa fa-wrench fa-2x" style="color: lightgrey;"></i></td>
+                      <td ng-if="editMode.allowEditing && editMode.interventionRepairPossible && !intervention.hasMissingMultipliers" ng-disabled="!intervention.hasMissingMultipliers"><i class="fa fa-wrench fa-2x" style="color: lightgrey;"></i></td>
                     </tr>
                   </tbody>
                 </table>

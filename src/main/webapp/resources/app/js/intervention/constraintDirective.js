@@ -1,27 +1,14 @@
 'use strict';
 define([], function() {
-  var dependencies = ['$stateParams', 'ScaledUnitResource', 'DosageService'];
-  var constraintDirective = function($stateParams, ScaledUnitResource, DosageService) {
+  var dependencies = [];
+  var constraintDirective = function() {
     return {
       scope: {
         model: '=',
-        datasetUuid: '@'
+        scaledUnits: '='
       },
       restrict: 'E',
-      templateUrl: '/app/js/intervention/constraintDirective.html',
-      link: function(scope) {
-        // vars
-        scope.model = {};
-
-        //loading
-        DosageService.get($stateParams.userUid, scope.datasetUuid).then(function(units) {
-          scope.unitConcepts = units;
-        });
-        scope.scaledUnits = ScaledUnitResource.query($stateParams);
-        scope.$on('scaledUnitsChanged', function() {
-          scope.scaledUnits = ScaledUnitResource.query($stateParams);
-        });
-      },
+      templateUrl: '/app/js/intervention/constraintDirective.html'
     };
   };
 

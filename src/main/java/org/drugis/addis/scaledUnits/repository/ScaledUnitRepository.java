@@ -11,5 +11,5 @@ import java.util.List;
 public interface ScaledUnitRepository {
   List<ScaledUnit> query(Integer projectId) ;
 
-  void create(Integer projectId, URI conceptUri, Double multiplier, String name);
+  ScaledUnit create(Integer projectId, URI conceptUri, Double multiplier, String name);
 }

@@ -62,12 +62,10 @@ define(['angular', 'angular-mocks'], function() {
           expect(result).toEqual([{
             unitName: 'milligram',
             unitPeriod: 'P1D',
-            label: 'milligram/day',
             unitConcept: 'conceptUri'
           }, {
             unitName: 'milligram',
             unitPeriod: 'PT1H',
-            label: 'milligram/hour',
             unitConcept: 'conceptUri'
           }]);
           done();

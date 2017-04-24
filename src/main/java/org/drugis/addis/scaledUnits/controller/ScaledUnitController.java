@@ -35,10 +35,11 @@ public class ScaledUnitController {
   }
 
   @RequestMapping(value = "/projects/{projectId}/scaledUnits", method = RequestMethod.POST)
-  public void create(@PathVariable Integer projectId, @RequestBody ScaledUnitCommand unitCommand,
+  @ResponseBody
+  public ScaledUnit create(@PathVariable Integer projectId, @RequestBody ScaledUnitCommand unitCommand,
                      Principal user, HttpServletResponse response) throws ResourceDoesNotExistException, MethodNotAllowedException {
     projectService.checkOwnership(projectId, user);
-    scaledUnitRepository.create(projectId, unitCommand.getConceptUri(), unitCommand.multiplier, unitCommand.getName());
     response.setStatus(HttpServletResponse.SC_CREATED);
+    return scaledUnitRepository.create(projectId, unitCommand.getConceptUri(), unitCommand.multiplier, unitCommand.getName());
   }
 }

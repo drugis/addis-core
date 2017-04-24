@@ -1,15 +1,17 @@
 'use strict';
 define(['lodash', 'angular'], function(_, angular) {
-  var dependencies = ['$scope', '$modalInstance', 'callback', 'InterventionResource', 'ProjectService'];
-  var AddInterventionController = function($scope, $modalInstance, callback, InterventionResource, ProjectService) {
-
+  var dependencies = ['$scope', '$stateParams', '$modalInstance', 'callback', 'InterventionResource',
+    'ScaledUnitResource', 'InterventionService', 'ProjectService', 'DosageService'
+  ];
+  var AddInterventionController = function($scope, $stateParams, $modalInstance, callback, InterventionResource,
+    ScaledUnitResource, InterventionService, ProjectService, DosageService) {
     var deregisterConstraintWatch;
 
     $scope.checkForDuplicateInterventionName = checkForDuplicateInterventionName;
     $scope.cancel = cancel;
     $scope.addIntervention = addIntervention;
     $scope.selectTab = selectTab;
-    $scope.cleanUpBounds = cleanUpBounds;
+    $scope.interventionTypeSwitched = interventionTypeSwitched;
     $scope.addCombinedIntervention = addCombinedIntervention;
     $scope.addInterventionClass = addInterventionClass;
     $scope.numberOfSelectedInterventions = numberOfSelectedInterventions;
@@ -24,12 +26,23 @@ define(['lodash', 'angular'], function(_, angular) {
     $scope.isAddingIntervention = false;
     $scope.activeTab = 'simple';
 
+    $scope.scaledUnits = ScaledUnitResource.query($stateParams);
+
     $scope.singleInterventions = _.reject($scope.interventions, function(intervention) {
       return intervention.type === 'combination' || intervention.type === 'class';
     });
 
     $scope.nonClassInterventions = _.reject($scope.interventions, {
       'type': 'class'
+    });
+    DosageService.get($stateParams.userUid, $scope.project.namespaceUid).then(function(units) {
+      $scope.unitConcepts = units;
+    });
+
+    $scope.$on('scaledUnitsChanged', function() {
+      ScaledUnitResource.query($stateParams).$promise.then(function(units) {
+        $scope.scaledUnits = units;
+      });
     });
 
     function flattenTypes(newIntervention) {
@@ -48,7 +61,7 @@ define(['lodash', 'angular'], function(_, angular) {
       if (constraint.lowerBound) {
         constraint.lowerBound.type = constraint.lowerBound.type.value;
         constraint.lowerBound.unitName = constraint.lowerBound.unit.name;
-        constraint.lowerBound.unitPeriod = constraint.lowerBound.unit.unitPeriod;
+        constraint.lowerBound.unitPeriod = constraint.lowerBound.unitPeriod;
         constraint.lowerBound.unitConcept = constraint.lowerBound.unit.conceptUri;
         constraint.lowerBound.conversionMultiplier = constraint.lowerBound.unit.multiplier;
         delete constraint.lowerBound.unit;
@@ -56,7 +69,7 @@ define(['lodash', 'angular'], function(_, angular) {
       if (constraint.upperBound) {
         constraint.upperBound.type = constraint.upperBound.type.value;
         constraint.upperBound.unitName = constraint.upperBound.unit.name;
-        constraint.upperBound.unitPeriod = constraint.upperBound.unit.unitPeriod;
+        constraint.upperBound.unitPeriod = constraint.upperBound.unitPeriod;
         constraint.upperBound.unitConcept = constraint.upperBound.unit.conceptUri;
         constraint.upperBound.conversionMultiplier = constraint.upperBound.unit.multiplier;
         delete constraint.upperBound.unit;
@@ -108,38 +121,10 @@ define(['lodash', 'angular'], function(_, angular) {
       createInterventionCommand.semanticInterventionUri = newIntervention.semanticIntervention.uri;
       delete createInterventionCommand.semanticIntervention;
       createInterventionCommand = flattenTypes(createInterventionCommand); // go from object with label to value only
-      createInterventionCommand = cleanUpConstraints(createInterventionCommand);
+      createInterventionCommand = InterventionService.cleanUpBounds(createInterventionCommand);
       return createInterventionCommand;
     }
 
-    /*
-     ** remove constraints from the command if no bounds are set
-     */
-    function cleanUpConstraints(createInterventionCommand) {
-      var cleanedCommand = angular.copy(createInterventionCommand);
-
-      if (createInterventionCommand.type === 'both') {
-        if (!createInterventionCommand.bothDoseTypesMinConstraint.lowerBound &&
-          !createInterventionCommand.bothDoseTypesMinConstraint.upperBound) {
-          delete cleanedCommand.bothDoseTypesMinConstraint;
-        }
-        if (!createInterventionCommand.bothDoseTypesMaxConstraint.lowerBound &&
-          !createInterventionCommand.bothDoseTypesMaxConstraint.upperBound) {
-          delete cleanedCommand.bothDoseTypesMaxConstraint;
-        }
-      } else if (createInterventionCommand.type === 'titrated') {
-        if (!createInterventionCommand.titratedDoseMinConstraint.lowerBound &&
-          !createInterventionCommand.titratedDoseMinConstraint.upperBound) {
-          delete cleanedCommand.titratedDoseMinConstraint;
-        }
-        if (!createInterventionCommand.titratedDoseMaxConstraint.lowerBound &&
-          !createInterventionCommand.titratedDoseMaxConstraint.upperBound) {
-          delete cleanedCommand.titratedDoseMaxConstraint;
-        }
-      }
-
-      return cleanedCommand;
-    }
 
     function checkForDuplicateInterventionName(intervention) {
       $scope.duplicateInterventionName.isDuplicate = ProjectService.checkforDuplicateName($scope.interventions, intervention);
@@ -150,7 +135,7 @@ define(['lodash', 'angular'], function(_, angular) {
       $modalInstance.dismiss('cancel');
     }
 
-    function cleanUpBounds() {
+    function interventionTypeSwitched() {
       if ($scope.newIntervention.type === 'fixed') {
         delete $scope.newIntervention.titratedDoseMinConstraint;
         delete $scope.newIntervention.titratedDoseMaxConstraint;

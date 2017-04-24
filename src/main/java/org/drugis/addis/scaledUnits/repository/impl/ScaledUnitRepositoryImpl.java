@@ -29,8 +29,9 @@ public class ScaledUnitRepositoryImpl implements ScaledUnitRepository {
   }
 
   @Override
-  public void create(Integer projectId, URI conceptUri, Double multiplier, String name) {
+  public ScaledUnit create(Integer projectId, URI conceptUri, Double multiplier, String name) {
     ScaledUnit newUnit = new ScaledUnit(projectId, conceptUri, multiplier, name);
     em.persist(newUnit);
+    return newUnit;
   }
 }
