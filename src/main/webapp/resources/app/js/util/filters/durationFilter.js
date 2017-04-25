@@ -12,9 +12,9 @@ define(['moment'], function(moment) {
       } else {
         var momentDuration = moment.duration(duration);
         if (momentDuration.asDays() >= 1) {
-          return momentDuration.asDays().toPrecision(3) + ' day(s)';
+          return parseFloat(momentDuration.asDays().toFixed(3)) + ' day(s)';
         } else {
-          return momentDuration.asHours().toPrecision(3) + ' hour(s)';
+          return parseFloat(momentDuration.asHours().toFixed(3)) + ' hour(s)';
         }
       }
     };
