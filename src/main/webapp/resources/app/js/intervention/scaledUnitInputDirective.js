@@ -14,6 +14,7 @@ define(['lodash'], function(_) {
           unit: scope.unitConcepts[0]
         };
         setDefaultName(scope.newScaledUnit);
+        scope.addScale={};
 
         //functions
         scope.saveScaledUnit = saveScaledUnit;
@@ -28,7 +29,7 @@ define(['lodash'], function(_) {
           };
           scope.isSavingUnit = true;
           ScaledUnitResource.save($stateParams, saveCommand).$promise.then(function() {
-            delete scope.isAddingScaledUnit;
+            delete scope.addScale.isAddingScaledUnit;
             scope.isSavingUnit = false;
             scope.$emit('scaledUnitsChanged');
           });

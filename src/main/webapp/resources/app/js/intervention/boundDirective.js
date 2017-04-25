@@ -22,7 +22,6 @@ define(['lodash'], function(_) {
 
         //functions
         scope.toggleBound = toggleBound;
-        scope.updatePeriodicity = updatePeriodicity;
 
         function toggleBound(newState) {
           if (!newState) {
@@ -33,25 +32,6 @@ define(['lodash'], function(_) {
               unit: scope.scaledUnits[0],
               unitPeriod: 'P1D'
             });
-          }
-        }
-
-        function updatePeriodicity() {
-          var duration = {
-            periodType: scope.lowerBoundPeriodicity.unit,
-            numberOfPeriods: scope.lowerBoundPeriodicity.amount
-          };
-          scope.model.lowerBound.unit.unitPeriod = DurationService.generateDurationString(duration);
-          if (!scope.model.lowerBound.unit.unitPeriod) {
-            scope.model.lowerBound.unit.unitPeriod = 'P1D';
-          }
-        }
-
-        function updatePeriod() {
-          if (!scope.model.lowerBound.unit.unitPeriod) {
-            scope.model.lowerBound.unit.unitPeriod = 'P1D';
-          } else {
-            updateLowerBoundPeriodicity();
           }
         }
       },

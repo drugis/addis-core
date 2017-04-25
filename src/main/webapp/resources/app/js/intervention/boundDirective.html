@@ -15,9 +15,9 @@
     <select ng-disabled="!bound.isEnabled" ng-model="bound.unit" ng-options="scaledUnit.name for scaledUnit in scaledUnits track by scaledUnit.id"></select>
   </div>
   <div class="columns large-3 end">
-    per {{bound.unitPeriod | durationFilter}}
+    <label>per {{(bound.unitPeriod | durationFilter)| exponentialFilter}}
     <a ng-if="bound.isEnabled" ng-click="editPeriod.isAddingDuration = true"><i class="fa fa-edit"></i></a>
-    <i ng-if="!bound.isEnabled" class="fa fa-edit" style="color: lightgrey;"></i>
+    <i ng-if="!bound.isEnabled" class="fa fa-edit" style="color: lightgrey;"></i></label>
   </div>
 </div>
 

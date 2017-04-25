@@ -15,6 +15,7 @@ define(['lodash', 'angular'], function(_, angular) {
     $scope.addCombinedIntervention = addCombinedIntervention;
     $scope.addInterventionClass = addInterventionClass;
     $scope.numberOfSelectedInterventions = numberOfSelectedInterventions;
+    $scope.loadScaledUnits = loadScaledUnits;
 
     $scope.newIntervention = {
       type: 'simple',
@@ -26,7 +27,7 @@ define(['lodash', 'angular'], function(_, angular) {
     $scope.isAddingIntervention = false;
     $scope.activeTab = 'simple';
 
-    $scope.scaledUnits = ScaledUnitResource.query($stateParams);
+    loadScaledUnits();
 
     $scope.singleInterventions = _.reject($scope.interventions, function(intervention) {
       return intervention.type === 'combination' || intervention.type === 'class';
@@ -40,10 +41,14 @@ define(['lodash', 'angular'], function(_, angular) {
     });
 
     $scope.$on('scaledUnitsChanged', function() {
-      ScaledUnitResource.query($stateParams).$promise.then(function(units) {
-        $scope.scaledUnits = units;
-      });
+      loadScaledUnits();
     });
+
+    function loadScaledUnits() {
+      ScaledUnitResource.query($stateParams).$promise.then(function(units) {
+        $scope.scaledUnits = _.sortBy(units, ['conceptUri', 'multiplier']);
+      });
+    }
 
     function flattenTypes(newIntervention) {
       newIntervention.fixedDoseConstraint = flattenType(newIntervention.fixedDoseConstraint);
