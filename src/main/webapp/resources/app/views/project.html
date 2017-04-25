@@ -83,7 +83,6 @@
                         <a class="has-tip" tooltip-html-unsafe="<i class='fa fa-exclamation-triangle'></i> Outcome is used in analyses: {{outcomeUsage[outcome.id].join(', ')}}"
                           tooltip-placement="left">
                           <i class="fa fa-trash fa-2x" style="color: lightgrey;"></i>
-                          </span>
                         </a>
                       </td>
                     </tr>
@@ -109,6 +108,7 @@
                       <th class="large-5">Definition</th>
                       <th ng-if="editMode.allowEditing"></th>
                       <th ng-if="editMode.allowEditing"></th>
+                      <th ng-if="editMode.allowEditing && editMode.interventionRepairPossible"></th>
                     </tr>
                   </thead>
                   <tbody>
@@ -126,9 +126,10 @@
                           {{!interventionUsage.inInterventions[intervention.id].length? '' : '<i class=\'fa fa-exclamation-triangle\'></i> Intervention is used in interventions: ' + interventionUsage.inInterventions[intervention.id].join(', ') }}"
                           tooltip-placement="left">
                           <i class="fa fa-trash fa-2x" style="color: lightgrey;"></i>
-                          </span>
                         </a>
                       </td>
+                      <td ng-if="editMode.allowEditing && editMode.interventionRepairPossible && intervention.hasMissingMultipliers"><a class="has-tip" tooltip-placement="left" tooltip-html-unsafe="Intervention has missing unit multiplier mapping(s)" ng-click="openRepairInterventionDialog(intervention)"><i class="fa fa-wrench fa-2x"></i></a></td>
+                      <td ng-if="editMode.allowEditing && editMode.interventionRepairPossible && !intervention.hasMissingMultipliers" ng-disabled="!intervention.hasMissingMultipliers"><i class="fa fa-wrench fa-2x" style="color: lightgrey;"></i></td>
                     </tr>
                   </tbody>
                 </table>
@@ -174,7 +175,6 @@
                         <a class="has-tip" tooltip-html-unsafe="<i class='fa fa-exclamation-triangle'></i> Covariate is used in analyses: {{covariateUsage[covariate.id].join(', ')}}"
                           tooltip-placement="left">
                           <i class="fa fa-trash fa-2x" style="color: lightgrey;"></i>
-                          </span>
                         </a>
                       </td>
                     </tr>

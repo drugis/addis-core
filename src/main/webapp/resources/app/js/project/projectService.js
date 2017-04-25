@@ -66,11 +66,29 @@ define(['lodash'], function(_) {
       }, {});
     }
 
+    function isMultiplierMissing(constraint) {
+      return (constraint.lowerBound && !constraint.lowerBound.conversionMultiplier) ||
+        (constraint.upperBound && !constraint.upperBound.conversionMultiplier);
+    }
+
+    function addMissingMultiplierInfo(interventions) {
+      return _.map(interventions, function(intervention) {
+        if (intervention.type === 'fixed') {
+          intervention.hasMissingMultipliers = isMultiplierMissing(intervention.constraint);
+        } else if (intervention.type === 'titrated' || intervention.type === 'both') {
+          intervention.hasMissingMultipliers = isMultiplierMissing(intervention.minConstraint) ||
+            isMultiplierMissing(intervention.maxConstraint);
+        }
+        return intervention;
+      });
+    }
+
     return {
       checkforDuplicateName: checkforDuplicateName,
       buildCovariateUsage: buildCovariateUsage,
       buildInterventionUsage: buildInterventionUsage,
-      buildOutcomeUsage: buildOutcomeUsage
+      buildOutcomeUsage: buildOutcomeUsage,
+      addMissingMultiplierInfo: addMissingMultiplierInfo
     };
   };
   return dependencies.concat(ProjectService);

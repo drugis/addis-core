@@ -3,6 +3,8 @@ package org.drugis.addis.interventions.service.impl;
 import org.drugis.addis.analyses.AbstractAnalysis;
 import org.drugis.addis.analyses.repository.AnalysisRepository;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
+import org.drugis.addis.interventions.InterventionMultiplierCommand;
+import org.drugis.addis.interventions.SetMultipliersCommand;
 import org.drugis.addis.interventions.model.*;
 import org.drugis.addis.interventions.repository.InterventionRepository;
 import org.drugis.addis.interventions.service.InterventionService;
@@ -14,6 +16,7 @@ import org.springframework.social.OperationNotPermittedException;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
+import java.net.URI;
 import java.util.*;
 
 /**
@@ -274,5 +277,10 @@ public class InterventionServiceImpl implements InterventionService {
     return singleInterventions;
   }
 
-
+  @Override
+  public void setMultipliers(Integer interventionId, SetMultipliersCommand command) throws ResourceDoesNotExistException {
+    AbstractIntervention intervention = interventionRepository.get(interventionId);
+    intervention.updateMultipliers(command);
+  }
 }
+

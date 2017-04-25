@@ -29,15 +29,27 @@ public class DoseConstraint {
 
   public DoseConstraint(LowerBoundCommand lowerBound, UpperBoundCommand upperBound) throws InvalidConstraintException {
 
-    if(lowerBound == null && upperBound == null) {
+    if (lowerBound == null && upperBound == null) {
       throw new InvalidConstraintException("upper and lower bounds may not both be null");
     }
 
-    if(lowerBound != null) {
-      this.lowerBound = new LowerDoseBound(lowerBound.getType(), lowerBound.getValue(), lowerBound.getUnitName(), lowerBound.getUnitPeriod(), lowerBound.getUnitConcept());
+    if (lowerBound != null) {
+      this.lowerBound = new LowerDoseBound(lowerBound.getType(), lowerBound.getValue(), lowerBound.getUnitName(),
+              lowerBound.getUnitPeriod(), lowerBound.getUnitConcept(), lowerBound.getConversionMultiplier());
     }
-    if(upperBound != null) {
-      this.upperBound = new UpperDoseBound(upperBound.getType(), upperBound.getValue(), upperBound.getUnitName(), upperBound.getUnitPeriod(), upperBound.getUnitConcept());
+    if (upperBound != null) {
+      this.upperBound = new UpperDoseBound(upperBound.getType(), upperBound.getValue(), upperBound.getUnitName(),
+              upperBound.getUnitPeriod(), upperBound.getUnitConcept(), upperBound.getConversionMultiplier());
+    }
+  }
+
+  public void setLowerBoundConversionMultiplier(Double multiplier) {
+    lowerBound.setConversionMultiplier(multiplier);
+  }
+
+  public void setUpperBoundConversionMultiplier(Double multiplier) {
+    if (upperBound != null) {
+      upperBound.setConversionMultiplier(multiplier);
     }
   }
 

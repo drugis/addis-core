@@ -1,0 +1,34 @@
+<form novalidate ng-submit="updateInterventionMultiplierMapping()">
+  <div class="row">
+    <div class="large-12 columns">
+      <h3>Unit mappings for {{intervention.name}}</h3>
+    </div>
+  </div>
+  <div class="large-9 columns">Please select an appropriate metric multiplier for each of the unit types below.</div>
+  <table class="large-9 columns">
+    <thead>
+      <th>Unit name</th>
+      <th>Multiplier</th>
+      <th>Concept</th>
+    </thead>
+    <tbody>
+      <tr ng-repeat="unit in units">
+        <td>{{unit.unitName}}</td>
+        <td >
+          <span class="cell-with-single-btn"><select ng-model="unit.conversionMultiplier" ng-options="multiplier.conversionMultiplier as multiplier.label for multiplier in metricMultipliers">
+            <option value="">{{'No multiplier selected'}}</option>
+          </select>
+          </span>
+        </td>
+        <td>{{conceptsByUri[unit.unitConcept].label}}</td>
+      </tr>
+    </tbody>
+  </table>
+  <div class="row">
+    <div class="large-9 columns">
+      <button class="success" type="submit">Save</button>
+      <button type="button" ng-click="cancel()">Cancel</button>
+    </div>
+  </div>
+  <a class="close-reveal-modal" ng-click="cancel()">&#215;</a>
+</form>

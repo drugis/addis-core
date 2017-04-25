@@ -106,14 +106,14 @@ define(['lodash', 'angular'], function(_, angular) {
       createInterventionCommand.semanticInterventionUri = newIntervention.semanticIntervention.uri;
       delete createInterventionCommand.semanticIntervention;
       createInterventionCommand = flattenTypes(createInterventionCommand); // go from object with label to value only
-      createInterventionCommand = cleanUpConstaints(createInterventionCommand);
+      createInterventionCommand = cleanUpConstraints(createInterventionCommand);
       return createInterventionCommand;
     }
 
     /*
      ** remove constraints from the command if no bounds are set
      */
-    function cleanUpConstaints(createInterventionCommand) {
+    function cleanUpConstraints(createInterventionCommand) {
       var cleanedCommand = angular.copy(createInterventionCommand);
 
       if (createInterventionCommand.type === 'both') {

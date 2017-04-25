@@ -3,8 +3,9 @@ define(['angular', 'angular-mocks'], function() {
   describe('the mapping service', function() {
 
     var rootScope, q,
-      studyServiceMock = jasmine.createSpyObj('StudyService', ['getJsonGraph', 
-        'saveGraph', 'getStudy', 'save', 'saveJsonGraph']),
+      studyServiceMock = jasmine.createSpyObj('StudyService', ['getJsonGraph',
+        'saveGraph', 'getStudy', 'save', 'saveJsonGraph'
+      ]),
       mappingService,
       studyDefer,
       studyGraphDefer;
@@ -251,5 +252,87 @@ define(['angular', 'angular-mocks'], function() {
       });
     });
 
+    describe('getUnitsFromIntervention', function() {
+      it('should get all unique units from a fixed intervention', function() {
+        var intervention = {
+          type: 'fixed',
+          constraint: {
+            lowerBound: {
+              unitName: 'milligram',
+              unitConcept: 'http://gramConcept',
+              conversionMultiplier: 0.001,
+              randomProperty: 'bla'
+            },
+            upperBound: {
+              unitName: 'kilogram',
+              unitConcept: 'http://gramConcept',
+            }
+          }
+        };
+        var concepts = [{
+          uri: 'http://gramConcept',
+          label: 'gram'
+        }];
+        var result = mappingService.getUnitsFromIntervention(intervention, concepts);
+        var expectedResult = [{
+          unitName: 'milligram',
+          unitConcept: 'http://gramConcept',
+          conversionMultiplier: 0.001
+        }, {
+          unitName: 'kilogram',
+          unitConcept: 'http://gramConcept'
+        }];
+        expect(result).toEqual(expectedResult);
+      });
+      it('should get all unique units from a titrated/both intervention', function() {
+        var intervention = {
+          type: 'both',
+          minConstraint: {
+            lowerBound: {
+              unitName: 'milligram',
+              unitConcept: 'http://gramConcept',
+              conversionMultiplier: 0.001,
+              randomProperty: 'bla'
+            },
+            upperBound: {
+              unitName: 'kilogram',
+              unitConcept: 'http://gramConcept',
+            }
+          },
+          maxConstraint: {
+            lowerBound: {
+              unitName: 'milligram',
+              unitConcept: 'http://gramConcept',
+            },
+            upperBound: {
+              unitName: 'liter',
+              unitConcept: 'http://literConcept',
+            }
+          }
+        };
+        var concepts = [{
+          uri: 'http://gramConcept',
+          label: 'gram'
+        }, {
+          uri: 'http://literConcept',
+          label: 'liter'
+        }];
+
+        var result = mappingService.getUnitsFromIntervention(intervention, concepts);
+
+        var expectedResult = [{
+          unitName: 'milligram',
+          unitConcept: 'http://gramConcept',
+          conversionMultiplier: 0.001
+        }, {
+          unitName: 'kilogram',
+          unitConcept: 'http://gramConcept'
+        }, {
+          unitName: 'liter',
+          unitConcept: 'http://literConcept'
+        }];
+        expect(result).toEqual(expectedResult);
+      });
+    });
   });
 });

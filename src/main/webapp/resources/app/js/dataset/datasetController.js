@@ -104,7 +104,7 @@ define(['lodash'],
         var cleanedConceptsPromise = conceptsPromise.then(function(conceptsData) {
           return DataModelService.correctUnitConceptType(conceptsData);
         });
-        // place loaded data into fontend cache and return a promise
+        // place loaded data into frontend cache and return a promise
         return ConceptsService.loadJson(cleanedConceptsPromise);
       }
 
