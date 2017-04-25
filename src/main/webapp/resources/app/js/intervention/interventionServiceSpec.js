@@ -52,13 +52,13 @@ define(['angular', 'angular-mocks'], function() {
 
     var combinationIntervention = {
       type: 'combination',
-      interventionIds: [1,2]
+      interventionIds: [1, 2]
     };
 
     var interventionSet = {
       type: 'class',
-      interventionIds: [1,2]
-    }
+      interventionIds: [1, 2]
+    };
 
     beforeEach(module('addis.interventions'));
 
@@ -81,6 +81,103 @@ define(['angular', 'angular-mocks'], function() {
         expect(interventionService.generateDescriptionLabel(bothIntervention)).toEqual(': min dose >= 1.2 unit/day AND >= 1.2 unit/day; max dose >= 1.2 unit/day AND >= 1.2 unit/day');
         expect(interventionService.generateDescriptionLabel(combinationIntervention, interventions)).toEqual('placebo + sertraline');
         expect(interventionService.generateDescriptionLabel(interventionSet, interventions)).toEqual('placebo OR sertraline');
+      });
+    });
+
+    describe('cleanUpBounds', function() {
+      it('should clean up a fixed dose intervention', function() {
+        var fixedDoseCommand = {
+          type: 'fixed',
+          fixedDoseConstraint: {
+            lowerBound: {
+              isEnabled: true
+            },
+            upperBound: {
+              bla: 'bla'
+            }
+          }
+        };
+
+        var result = interventionService.cleanUpBounds(fixedDoseCommand);
+
+        var expectedResult = {
+          type: 'fixed',
+          fixedDoseConstraint: {
+            lowerBound: {
+              isEnabled: true
+            }
+          }
+        };
+
+        expect(result).toEqual(expectedResult);
+      });
+      it('should clean up a titrated dose intervention', function() {
+        var titratedDoseCommand = {
+          type: 'titrated',
+          titratedDoseMinConstraint: {
+            lowerBound: {
+              isEnabled: true
+            },
+            upperBound: {
+              bla: 'bla'
+            }
+          },
+          titratedDoseMaxConstraint: {
+            lowerBound: {
+              bla: 'bla'
+            },
+            upperBound: {
+              foo: 'bar'
+            }
+          }
+        };
+
+        var result = interventionService.cleanUpBounds(titratedDoseCommand);
+
+        var expectedResult = {
+          type: 'titrated',
+          titratedDoseMinConstraint: {
+            lowerBound: {
+              isEnabled: true
+            }
+          }
+        };
+
+        expect(result).toEqual(expectedResult);
+      });
+      it('should clean up a both-dose intervention', function() {
+        var titratedDoseCommand = {
+          type: 'both',
+          bothDoseTypesMinConstraint: {
+            lowerBound: {
+              isEnabled: true
+            },
+            upperBound: {
+              bla: 'bla'
+            }
+          },
+          bothDoseTypesMaxConstraint: {
+            lowerBound: {
+              bla: 'bla'
+            },
+            upperBound: {
+              foo: 'bar'
+            }
+          }
+        };
+
+        var result = interventionService.cleanUpBounds(titratedDoseCommand);
+
+        var expectedResult = {
+          type: 'both',
+          bothDoseTypesMinConstraint: {
+            lowerBound: {
+              isEnabled: true
+            }
+          }
+        };
+
+        expect(result).toEqual(expectedResult);
       });
     });
   });

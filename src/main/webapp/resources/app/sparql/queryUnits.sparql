@@ -4,40 +4,14 @@ PREFIX dataset: <http://trials.drugis.org/datasets/>
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX qudt: <http://qudt.org/schema/qudt#> 
 
 SELECT DISTINCT
-  ?unitName ?unitPeriod ?unitConcept
+  ?unitName ?unitUri
 WHERE {
-  GRAPH ?graphUri {
-    ?study ontology:has_activity ?treatmentActivity .
-    {
-      ?treatmentActivity
-      a ontology:TreatmentActivity ;
-      ontology:has_drug_treatment [
-        ontology:treatment_min_dose [
-          ontology:unit ?unit ;
-          ontology:dosingPeriodicity ?unitPeriod
-        ]
-      ] .
-    } UNION {
-      ?treatmentActivity
-      a ontology:TreatmentActivity ;
-      ontology:has_drug_treatment [
-        ontology:treatment_dose [
-          ontology:unit ?unit ;
-          ontology:dosingPeriodicity ?unitPeriod
-        ]
-      ] .
-    } .
-    { ?unit
-        rdfs:label ?unitName ;
-        a ?unitConcept .
-    } UNION {
-      ?unit
-        rdfs:label ?unitName ;
-        a ontology:Unit ;
-        owl:sameAs ?unitConcept .
-    } .
-    FILTER (?unitConcept != ontology:Unit) .
+  GRAPH <http://trials.drugis.org/graphs/concepts> {
+    ?unitUri 
+      a ontology:Unit ;
+      rdfs:label ?unitName .
   }
 }

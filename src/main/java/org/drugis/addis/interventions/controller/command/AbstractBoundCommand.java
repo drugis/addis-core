@@ -14,11 +14,12 @@ public abstract class AbstractBoundCommand {
 
   public AbstractBoundCommand() {}
 
-  public AbstractBoundCommand(Double value, String unitName, String unitPeriod, URI unitConcept) {
+  public AbstractBoundCommand(Double value, String unitName, String unitPeriod, URI unitConcept, Double conversionMultiplier) {
     this.value = value;
     this.unitName = unitName;
     this.unitPeriod = unitPeriod;
     this.unitConcept = unitConcept;
+    this.conversionMultiplier = conversionMultiplier;
   }
 
   public String getUnitName() {

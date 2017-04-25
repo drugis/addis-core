@@ -2,7 +2,6 @@ package org.drugis.addis.interventions;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Sets;
-import org.apache.jena.atlas.json.JSON;
 import org.drugis.addis.TestUtils;
 import org.drugis.addis.config.TestConfig;
 import org.drugis.addis.interventions.controller.command.*;
@@ -83,7 +82,7 @@ public class InterventionControllerTest {
   @Test
   public void testQueryInterventions() throws Exception {
 
-    DoseConstraint constraint = new DoseConstraint(new LowerBoundCommand(LowerBoundType.AT_LEAST, 2d, "mili", "P1D", URI.create("unitConcept")), null);
+    DoseConstraint constraint = new DoseConstraint(new LowerBoundCommand(LowerBoundType.AT_LEAST, 2d, "mili", "P1D", URI.create("unitConcept"), null), null);
     FixedDoseIntervention intervention = new FixedDoseIntervention(1, "name", "motivation", URI.create("http://semantic.com"), "labelnew", constraint);
     Integer projectId = 1;
     Set<AbstractIntervention> interventions = Sets.newHashSet(intervention);
@@ -172,8 +171,8 @@ public class InterventionControllerTest {
     String unit = "mili";
     Double val = 1.1;
     String period = "P2D";
-    LowerBoundCommand lower = new LowerBoundCommand(lowerType, val, unit, period, URI.create("unitConcept"));
-    UpperBoundCommand upper = new UpperBoundCommand(upperType, val, unit, period, URI.create("unitConcept"));
+    LowerBoundCommand lower = new LowerBoundCommand(lowerType, val, unit, period, URI.create("unitConcept"), null);
+    UpperBoundCommand upper = new UpperBoundCommand(upperType, val, unit, period, URI.create("unitConcept"), null);
     ConstraintCommand fixedDoseConstraintCommand = new ConstraintCommand(lower, upper);
     AbstractInterventionCommand doseRestrictedInterventionCommand = new FixedInterventionCommand(1, "name", "motivation", "http://semantic.com", "labelnew", fixedDoseConstraintCommand);
     when(interventionRepository.create(gert, doseRestrictedInterventionCommand)).thenReturn(intervention);

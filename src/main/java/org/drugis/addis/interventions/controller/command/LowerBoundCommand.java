@@ -14,8 +14,8 @@ public class LowerBoundCommand extends AbstractBoundCommand {
     super();
   }
 
-  public LowerBoundCommand(LowerBoundType type, Double value, String unitName, String unitPeriod, URI unitConcept) {
-    super(value, unitName, unitPeriod, unitConcept);
+  public LowerBoundCommand(LowerBoundType type, Double value, String unitName, String unitPeriod, URI unitConcept, Double conversionMultiplier) {
+    super(value, unitName, unitPeriod, unitConcept, conversionMultiplier);
     this.type = type;
   }
 

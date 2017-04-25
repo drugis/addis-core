@@ -1,5 +1,5 @@
 'use strict';
-define(['lodash', 'moment'], function(_, moment) {
+define(['angular', 'lodash', 'moment'], function(angular, _, moment) {
   var dependencies = [];
   var InterventionService = function() {
 
@@ -91,10 +91,52 @@ define(['lodash', 'moment'], function(_, moment) {
       return label;
     }
 
+    function omitEmptyBounds(constraint) {
+      if (!constraint) {
+        return;
+      }
+      var omitList = [];
+      if (!constraint.lowerBound || !constraint.lowerBound.isEnabled) {
+        omitList.push('lowerBound');
+      }
+      if (!constraint.upperBound || !constraint.upperBound.isEnabled) {
+        omitList.push('upperBound');
+      }
+      return _.omit(constraint, omitList);
+    }
+
+    function omitEmptyConstraints(constraint, minConstraintName, maxConstraintName) {
+      if (!constraint) {
+        return;
+      }
+      var emptyConstraints = _.filter([minConstraintName, maxConstraintName], function(constraintName) {
+        return _.isEmpty(constraint[constraintName]);
+      });
+      return _.omit(constraint, emptyConstraints);
+    }
+
+    function cleanUpBounds(createInterventionCommand) {
+      var cleanedCommand = angular.copy(createInterventionCommand);
+
+      if (cleanedCommand.type === 'fixed') {
+        cleanedCommand.fixedDoseConstraint = omitEmptyBounds(cleanedCommand.fixedDoseConstraint);
+      } else if (cleanedCommand.type === 'titrated') {
+        cleanedCommand.titratedDoseMinConstraint = omitEmptyBounds(cleanedCommand.titratedDoseMinConstraint);
+        cleanedCommand.titratedDoseMaxConstraint = omitEmptyBounds(cleanedCommand.titratedDoseMaxConstraint);
+        cleanedCommand = omitEmptyConstraints(cleanedCommand, 'titratedDoseMinConstraint', 'titratedDoseMaxConstraint');
+      } else if (cleanedCommand.type === 'both') {
+        cleanedCommand.bothDoseTypesMinConstraint = omitEmptyBounds(cleanedCommand.bothDoseTypesMinConstraint);
+        cleanedCommand.bothDoseTypesMaxConstraint = omitEmptyBounds(cleanedCommand.bothDoseTypesMaxConstraint);
+        cleanedCommand = omitEmptyConstraints(cleanedCommand, 'bothDoseTypesMinConstraint', 'bothDoseTypesMaxConstraint');
+      }
+      return cleanedCommand;
+    }
+
     return {
       LOWER_BOUND_OPTIONS: LOWER_BOUND_OPTIONS,
       UPPER_BOUND_OPTIONS: UPPER_BOUND_OPTIONS,
-      generateDescriptionLabel: generateDescriptionLabel
+      generateDescriptionLabel: generateDescriptionLabel,
+      cleanUpBounds: cleanUpBounds
     };
   };
   return dependencies.concat(InterventionService);

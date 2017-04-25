@@ -17,6 +17,7 @@ import org.drugis.addis.projects.repository.ProjectRepository;
 import org.drugis.addis.projects.repository.ReportRepository;
 import org.drugis.addis.projects.service.ProjectService;
 import org.drugis.addis.remarks.repository.RemarksRepository;
+import org.drugis.addis.scaledUnits.repository.ScaledUnitRepository;
 import org.drugis.addis.scenarios.repository.ScenarioRepository;
 import org.drugis.addis.security.repository.AccountRepository;
 import org.drugis.addis.statistics.service.StatisticsService;

@@ -364,7 +364,6 @@ ALTER TABLE scenario DROP CONSTRAINT ssbr_scenario_workspace_fkey;
 --rollback DROP TABLE MetaBenefitRiskAnalysis;
 --rollback ALTER TABLE scenario ADD CONSTRAINT ssbr_scenario_workspace_fkey FOREIGN KEY (workspace) REFERENCES SingleStudyBenefitRiskAnalysis(id);
 
-
 --changeset stroombergc:39
 CREATE TABLE FeaturedDataset (
    datasetUrl VARCHAR NOT NULL,
@@ -460,7 +459,6 @@ CREATE TABLE BothDoseTypesIntervention (
 );
 
 CREATE SEQUENCE shared_intervention_id_seq;
-
 
 --rollback DROP TABLE FixedDoseIntervention;
 --rollback DROP TABLE TitratedDoseIntervention;
@@ -572,13 +570,11 @@ CREATE TABLE InterventionCombination (
 --rollback INSERT INTO AbstractIntervention (semanticInterventionLabel, semanticInterventionUri) SELECT semanticInterventionLabel, semanticInterventionUri FROM SingleIntervention;
 --rollback DROP TABLE SingleIntervention;
 
-
 --changeset stroombergc:58
 ALTER TABLE model ADD COLUMN archived boolean NOT NULL DEFAULT FALSE ;
 ALTER TABLE model ADD COLUMN archived_on date;
 --rollback ALTER TABLE model DROP COLUMN archived_on;
 --rollback ALTER TABLE model DROP COLUMN archived;
-
 
 --changeset reidd:59
 CREATE TABLE funnelPlot (
@@ -713,3 +709,13 @@ ALTER TABLE BothDoseTypesIntervention ADD COLUMN maxUpperBoundConversionMultipli
 --rollback ALTER TABLE BothDoseTypesIntervention DROP COLUMN maxLowerBoundConversionMultiplier;
 --rollback ALTER TABLE BothDoseTypesIntervention DROP COLUMN maxUpperBoundConversionMultiplier;
 
+--changeset reidd:71
+CREATE TABLE scaledUnit (
+  id SERIAL NOT NULL,
+  projectId INT NOT NULL,
+  conceptUri VARCHAR NOT NULL,
+  multiplier DOUBLE PRECISION NOT NULL,
+  name VARCHAR NOT NULL,
+  PRIMARY KEY (id),
+  FOREIGN KEY(projectId) REFERENCES Project(id)
+);
