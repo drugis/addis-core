@@ -1,5 +1,5 @@
 'use strict';
-define(['lodash'], function(_) {
+define(['angular', 'lodash'], function(angular, _) {
   var dependencies = ['$scope', '$q', '$stateParams', '$state', '$modal',
     'AnalysisResource', 'InterventionResource', 'OutcomeResource',
     'MetaBenefitRiskService', 'ModelResource', 'ProblemResource',
@@ -113,9 +113,26 @@ define(['lodash'], function(_) {
       });
     }
 
+    function analysisToSaveCommand(analysis) {
+      var saveAnalysis = angular.copy(analysis);
+      saveAnalysis.interventionInclusions = saveAnalysis.interventionInclusions.map(function(intervention) {
+        return {
+          interventionId: intervention.id,
+          analysisId: saveAnalysis.id
+        };
+      });
+      return {
+        id: analysis.id,
+        projectId: analysis.projectId,
+        analysis: saveAnalysis
+      };
+    }
+
     function finalizeAndGoToDefaultScenario() {
       $scope.analysis.finalized = true;
-      $scope.analysis.$save().then(goToDefaultScenario);
+      var saveCommand = analysisToSaveCommand($scope.analysis);
+      AnalysisResource.save(saveCommand);
+      // $scope.analysis.$save().then(goToDefaultScenario);
     }
 
     function goToDefaultScenario() {

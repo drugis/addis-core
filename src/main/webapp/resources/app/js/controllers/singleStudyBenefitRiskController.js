@@ -10,6 +10,7 @@ define(['angular', 'lodash'], function(angular, _) {
     'AnalysisResource',
     'ProjectStudiesResource',
     'UserService',
+    'WorkspaceService'
   ];
   var SingleStudyBenefitRiskController = function($scope, $stateParams, $state,
     currentAnalysis,
@@ -20,7 +21,8 @@ define(['angular', 'lodash'], function(angular, _) {
     DEFAULT_VIEW,
     AnalysisResource,
     ProjectStudiesResource,
-    UserService
+    UserService,
+    WorkspaceService
   ) {
 
     $scope.analysis = currentAnalysis;
@@ -154,14 +156,18 @@ define(['angular', 'lodash'], function(angular, _) {
     });
 
     function analysisToSaveCommand(analysis) {
-      var saveCommand = angular.copy(analysis);
-      saveCommand.interventionInclusions = saveCommand.interventionInclusions.map(function(intervention) {
+      var saveAnalysis = angular.copy(analysis);
+      saveAnalysis.interventionInclusions = saveAnalysis.interventionInclusions.map(function(intervention) {
         return {
           interventionId: intervention.id,
-          analysisId: saveCommand.id
+          analysisId: saveAnalysis.id
         };
       });
-      return saveCommand;
+      return {
+        id: analysis.id,
+        projectId: analysis.projectId,
+        analysis: saveAnalysis
+      };
     }
 
     function saveAnalysis() {
@@ -200,7 +206,7 @@ define(['angular', 'lodash'], function(angular, _) {
       }
       SingleStudyBenefitRiskService.getProblem($scope.analysis).then(function(problem) {
         $scope.analysis.problem = problem;
-        var saveCommand = analysisToSaveCommand($scope.analysis);
+        var saveCommand = analysisToSaveCommand($scope.analysis, WorkspaceService.reduceProblem(problem));
         AnalysisResource.save(saveCommand).$promise.then(function(response) {
           $scope.analysis = response;
           $scope.workspace = response;
