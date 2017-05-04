@@ -1,15 +1,34 @@
 'use strict';
 define(['angular', 'lodash'], function(angular, _) {
   var dependencies = ['$scope', '$q', '$stateParams', '$state', '$modal',
-    'AnalysisResource', 'InterventionResource', 'OutcomeResource',
-    'MetaBenefitRiskService', 'ModelResource', 'ProblemResource',
-    'ScalesService', 'ScenarioResource', 'DEFAULT_VIEW', 'ProjectResource', 'UserService',
-    'gemtcRootPath'
+    'AnalysisResource',
+    'InterventionResource',
+    'OutcomeResource',
+    'MetaBenefitRiskService',
+    'ModelResource',
+    'ProblemResource',
+    'ScalesService',
+    'ScenarioResource',
+    'DEFAULT_VIEW',
+    'ProjectResource',
+    'UserService',
+    'gemtcRootPath',
+    'WorkspaceService'
   ];
   var MetBenefitRiskStep2Controller = function($scope, $q, $stateParams, $state, $modal,
-    AnalysisResource, InterventionResource, OutcomeResource, MetaBenefitRiskService,
-    ModelResource, ProblemResource, ScalesService, ScenarioResource, DEFAULT_VIEW, ProjectResource, UserService,
-    gemtcRootPath) {
+    AnalysisResource,
+    InterventionResource,
+    OutcomeResource,
+    MetaBenefitRiskService,
+    ModelResource,
+    ProblemResource,
+    ScalesService,
+    ScenarioResource,
+    DEFAULT_VIEW,
+    ProjectResource,
+    UserService,
+    gemtcRootPath,
+    WorkspaceService) {
 
     $scope.goToStep1 = goToStep1;
     $scope.openDistributionModal = openDistributionModal;
@@ -67,7 +86,8 @@ define(['angular', 'lodash'], function(angular, _) {
         $scope.networkMetaAnalyses = filteredNetworkMetaAnalyses;
 
         analysis = addModelBaseline(analysis, models);
-        $scope.analysis.$save().then(function() {
+        var saveCommand = analysisToSaveCommand($scope.analysis);
+        AnalysisResource.save(saveCommand, function() {
           $scope.outcomesWithAnalyses = MetaBenefitRiskService.buildOutcomesWithAnalyses(analysis, outcomes, filteredNetworkMetaAnalyses);
           resetScales();
         });
@@ -113,26 +133,24 @@ define(['angular', 'lodash'], function(angular, _) {
       });
     }
 
-    function analysisToSaveCommand(analysis) {
-      var saveAnalysis = angular.copy(analysis);
-      saveAnalysis.interventionInclusions = saveAnalysis.interventionInclusions.map(function(intervention) {
-        return {
-          interventionId: intervention.id,
-          analysisId: saveAnalysis.id
-        };
-      });
+    function analysisToSaveCommand(analysis, problem) {
+      var analysisToSave = angular.copy(analysis);
       return {
         id: analysis.id,
         projectId: analysis.projectId,
-        analysis: saveAnalysis
+        analysis: analysisToSave,
+        scenarioState: JSON.stringify(problem, null, 2)
       };
     }
 
     function finalizeAndGoToDefaultScenario() {
       $scope.analysis.finalized = true;
-      var saveCommand = analysisToSaveCommand($scope.analysis);
-      AnalysisResource.save(saveCommand);
-      // $scope.analysis.$save().then(goToDefaultScenario);
+      ProblemResource.get($stateParams).$promise.then(function(problem) {
+        var saveCommand = analysisToSaveCommand($scope.analysis, WorkspaceService.reduceProblem(problem));
+        AnalysisResource.save(saveCommand, function() {
+          goToDefaultScenario();
+        });
+      });
     }
 
     function goToDefaultScenario() {
@@ -182,7 +200,8 @@ define(['angular', 'lodash'], function(angular, _) {
                   return mbrOutcomeInclusion;
                 }
               });
-              $scope.analysis.$save().then(function() {
+              var saveCommand = analysisToSaveCommand($scope.analysis);
+              AnalysisResource.save(saveCommand).$save().then(function() {
                 $scope.outcomesWithAnalyses = MetaBenefitRiskService.buildOutcomesWithAnalyses($scope.analysis, $scope.outcomes, $scope.networkMetaAnalyses);
                 resetScales();
               });

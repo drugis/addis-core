@@ -155,18 +155,19 @@ define(['angular', 'lodash'], function(angular, _) {
       SingleStudyBenefitRiskService.recalculateGroup($scope.studies);
     });
 
-    function analysisToSaveCommand(analysis) {
-      var saveAnalysis = angular.copy(analysis);
-      saveAnalysis.interventionInclusions = saveAnalysis.interventionInclusions.map(function(intervention) {
+    function analysisToSaveCommand(analysis, problem) {
+      var analysisToSave = angular.copy(analysis);
+      analysisToSave.interventionInclusions = analysisToSave.interventionInclusions.map(function(intervention) {
         return {
           interventionId: intervention.id,
-          analysisId: saveAnalysis.id
+          analysisId: analysisToSave.id
         };
       });
       return {
         id: analysis.id,
         projectId: analysis.projectId,
-        analysis: saveAnalysis
+        analysis: analysisToSave,
+        scenarioState: JSON.stringify(problem,null,2)
       };
     }
 

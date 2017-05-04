@@ -89,7 +89,8 @@ public class AnalysisController extends AbstractAddisCoreController {
 
   @RequestMapping(value = "/projects/{projectId}/analyses", method = RequestMethod.POST)
   @ResponseBody
-  public AbstractAnalysis create(HttpServletRequest request, HttpServletResponse response, Principal currentUser, @RequestBody AnalysisCommand analysisCommand) throws MethodNotAllowedException, ResourceDoesNotExistException, SQLException, IOException {
+  public AbstractAnalysis create(HttpServletRequest request, HttpServletResponse response, Principal currentUser,
+                                 @RequestBody AnalysisCommand analysisCommand) throws MethodNotAllowedException, ResourceDoesNotExistException, SQLException, IOException {
     Account user = accountRepository.findAccountByUsername(currentUser.getName());
     if (user != null) {
       AbstractAnalysis analysis;
@@ -127,17 +128,19 @@ public class AnalysisController extends AbstractAddisCoreController {
   @RequestMapping(value = "/projects/{projectId}/analyses/{analysisId}", method = RequestMethod.POST)
   @ResponseBody
   public AbstractAnalysis update(Principal currentUser, @PathVariable Integer projectId,
-                                 @RequestBody AnalysisUpdateCommand analysisCommand) throws MethodNotAllowedException, ResourceDoesNotExistException, SQLException, IOException, URISyntaxException, ReadValueException, InvalidTypeForDoseCheckException, UnexpectedNumberOfResultsException, ProblemCreationException {
-    AbstractAnalysis analysis = analysisCommand.getAnalysis();
+                                 @RequestBody AnalysisUpdateCommand analysisUpdateCommand) throws MethodNotAllowedException, ResourceDoesNotExistException, SQLException, IOException, URISyntaxException, ReadValueException, InvalidTypeForDoseCheckException, UnexpectedNumberOfResultsException, ProblemCreationException {
+    AbstractAnalysis analysis = analysisUpdateCommand.getAnalysis();
     Account user = accountRepository.findAccountByUsername(currentUser.getName());
     if (user != null) {
       if (analysis instanceof SingleStudyBenefitRiskAnalysis) {
         SingleStudyBenefitRiskAnalysis singleStudyBenefitRiskAnalysis = (SingleStudyBenefitRiskAnalysis) analysis;
-        return updateSingleStudyBenefitRiskAnalysis(user, singleStudyBenefitRiskAnalysis, analysisCommand.getScenarioState());
+        return updateSingleStudyBenefitRiskAnalysis(user,
+                singleStudyBenefitRiskAnalysis, analysisUpdateCommand.getScenarioState());
       } else if (analysis instanceof NetworkMetaAnalysis) {
         return analysisService.updateNetworkMetaAnalysis(user, (NetworkMetaAnalysis) analysis);
       } else if (analysis instanceof MetaBenefitRiskAnalysis) {
-        return metaBenefitRiskAnalysisService.update(user, projectId, (MetaBenefitRiskAnalysis) analysis);
+        return metaBenefitRiskAnalysisService.update(user, projectId, (MetaBenefitRiskAnalysis) analysis,
+                analysisUpdateCommand.getScenarioState());
       }
       throw new ResourceDoesNotExistException();
     } else {
@@ -159,7 +162,9 @@ public class AnalysisController extends AbstractAddisCoreController {
   }
 
 
-  private SingleStudyBenefitRiskAnalysis updateSingleStudyBenefitRiskAnalysis(Account user, SingleStudyBenefitRiskAnalysis analysis, String scenarioState) throws MethodNotAllowedException, ResourceDoesNotExistException {
+  private SingleStudyBenefitRiskAnalysis updateSingleStudyBenefitRiskAnalysis(Account user,
+                                                                              SingleStudyBenefitRiskAnalysis analysis,
+                                                                              String scenarioState) throws MethodNotAllowedException, ResourceDoesNotExistException {
     SingleStudyBenefitRiskAnalysis oldAnalysis = (SingleStudyBenefitRiskAnalysis) analysisRepository.get(analysis.getId());
     if (oldAnalysis.getProblem() != null) {
       throw new MethodNotAllowedException();
