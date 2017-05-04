@@ -6,7 +6,7 @@ define(['angular-mocks'], function(angularMocks) {
       stateParamsMock = {
         projectId: 1
       },
-      analysisResourceMock = jasmine.createSpyObj('AnalysisResource', ['get', 'query']),
+      analysisResourceMock = jasmine.createSpyObj('AnalysisResource', ['get', 'query', 'save']),
       interventionResourceMock = jasmine.createSpyObj('InterventionResource', ['query']),
       outcomeResourceMock = jasmine.createSpyObj('OutcomeResource', ['query']),
       modelResourceMock = jasmine.createSpyObj('OutcomeResource', ['getConsistencyModels']),

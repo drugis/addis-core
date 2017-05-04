@@ -4,6 +4,7 @@ import com.google.common.collect.Sets;
 import org.drugis.addis.analyses.InterventionInclusion;
 import org.drugis.addis.analyses.MbrOutcomeInclusion;
 import org.drugis.addis.analyses.MetaBenefitRiskAnalysis;
+import org.drugis.addis.analyses.controller.AnalysisUpdateCommand;
 import org.drugis.addis.analyses.repository.MetaBenefitRiskAnalysisRepository;
 import org.drugis.addis.analyses.service.impl.MetaBenefitRiskAnalysisServiceImpl;
 import org.drugis.addis.exception.MethodNotAllowedException;
@@ -73,11 +74,11 @@ public class MetaBenefitRiskAnalysisServiceTest {
     when(metaBenefitRiskAnalysisRepository.find(analysis.getId())).thenReturn(oldAnalysis);
     when(problemService.getProblem (projectId, analysisId)).thenReturn(null);
 
-    metaBenefitRiskAnalysisService.update(user, projectId, analysis);
+    metaBenefitRiskAnalysisService.update(user, projectId, analysis, "");
 
     verify(metaBenefitRiskAnalysisRepository).find(analysisId);
     verify(problemService).getProblem(projectId, analysisId);
-    verify(scenarioRepository).create(analysisId, Scenario.DEFAULT_TITLE, "{\"problem\":null}");
+    verify(scenarioRepository).create(analysisId, Scenario.DEFAULT_TITLE, "{\"problem\":}");
     verify(metaBenefitRiskAnalysisRepository).update(user, analysis);
     verifyNoMoreInteractions(metaBenefitRiskAnalysisRepository, scenarioRepository, problemService);
   }
@@ -89,7 +90,7 @@ public class MetaBenefitRiskAnalysisServiceTest {
 
     when(metaBenefitRiskAnalysisRepository.find(analysis.getId())).thenReturn(oldAnalysis);
 
-    metaBenefitRiskAnalysisService.update(user, projectId, analysis);
+    metaBenefitRiskAnalysisService.update(user, projectId, analysis,"");
 
     verify(metaBenefitRiskAnalysisRepository).find(analysisId);
     verify(metaBenefitRiskAnalysisRepository).update(user, analysis);
@@ -104,7 +105,7 @@ public class MetaBenefitRiskAnalysisServiceTest {
 
     when(metaBenefitRiskAnalysisRepository.find(analysis.getId())).thenReturn(oldAnalysis);
 
-    metaBenefitRiskAnalysisService.update(user, projectId, analysis);
+    metaBenefitRiskAnalysisService.update(user, projectId, analysis, "");
   }
 
   @Test

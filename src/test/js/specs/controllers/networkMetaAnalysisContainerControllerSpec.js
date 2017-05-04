@@ -10,6 +10,7 @@ define(['angular', 'angular-mocks', 'controllers'], function() {
       outcomesDeferred,
       interventionResource,
       analysisService,
+      analysisResource,
       userService,
       networkMetaAnalysisService,
       covariates = [{
@@ -21,7 +22,6 @@ define(['angular', 'angular-mocks', 'controllers'], function() {
       trialverseTrialDataDeferred,
       mockAnalysis = {
         id: 101,
-        $save: function() {},
         outcome: {
           id: 2,
           semanticOutcomeUri: 'semanticOutcomeUri'
@@ -80,7 +80,6 @@ define(['angular', 'angular-mocks', 'controllers'], function() {
       q = $q;
       analysisDeferred = $q.defer();
       mockAnalysis.$promise = analysisDeferred.promise;
-      spyOn(mockAnalysis, '$save');
       projectDeferred = $q.defer();
       mockProject.$promise = projectDeferred.promise;
       outcomesDeferred = $q.defer();
@@ -100,6 +99,7 @@ define(['angular', 'angular-mocks', 'controllers'], function() {
       EvidenceTableResource = jasmine.createSpyObj('EvidenceTableResource', ['query', 'get']);
       EvidenceTableResource.query.and.returnValue(mockTrialData);
       analysisService = jasmine.createSpyObj('AnalysisService', ['isNetworkDisconnected']);
+      analysisResource = jasmine.createSpyObj('AnalysisResource',['save']);
       networkMetaAnalysisService = jasmine.createSpyObj('NetworkMetaAnalysisService', [
         'addInclusionsToCovariates',
         'addInclusionsToInterventions',
@@ -125,12 +125,10 @@ define(['angular', 'angular-mocks', 'controllers'], function() {
       };
       networkMetaAnalysisService.transformTrialDataToNetwork.and.returnValue(mockNetwork);
       networkMetaAnalysisService.transformTrialDataToTableRows.and.returnValue([]);
-      networkMetaAnalysisService.changeArmExclusion.and.returnValue({
-        $save: function() {}
-      });
       networkMetaAnalysisService.doesInterventionHaveAmbiguousArms.and.returnValue(true);
       networkMetaAnalysisService.addInclusionsToInterventions.and.returnValue(mockInterventions);
       networkMetaAnalysisService.getIncludedInterventions.and.returnValue(mockInterventions);
+      networkMetaAnalysisService.changeArmExclusion.and.returnValue(mockAnalysis);
 
       covariateDeferred = $q.defer();
       covariates.$promise = covariateDeferred.promise;
@@ -156,6 +154,7 @@ define(['angular', 'angular-mocks', 'controllers'], function() {
         EvidenceTableResource: EvidenceTableResource,
         NetworkMetaAnalysisService: networkMetaAnalysisService,
         AnalysisService: analysisService,
+        AnalysisResource: analysisResource,
         ModelResource: modelResource,
         UserService: userService
       });
@@ -187,7 +186,7 @@ define(['angular', 'angular-mocks', 'controllers'], function() {
       it('should save the analysis when the selected outcome changes', function() {
         mockAnalysis.outcome = mockOutcomes[0];
         scope.changeSelectedOutcome();
-        expect(scope.analysis.$save).toHaveBeenCalled();
+        expect(analysisResource.save).toHaveBeenCalled();
       });
       describe('and there is already an outcome defined on the analysis', function() {
         it('should get the tabledata and transform it to table rows and network', function() {
@@ -211,6 +210,7 @@ define(['angular', 'angular-mocks', 'controllers'], function() {
         it('should set tableHasAmbiguousArm to false', function() {
           expect(scope.tableHasAmbiguousArm).toBeFalsy();
           expect(networkMetaAnalysisService.changeArmExclusion).toHaveBeenCalled();
+          expect(analysisResource.save).toHaveBeenCalled();
         });
       });
       describe('and the intervention inclusion is changed', function() {
@@ -222,7 +222,7 @@ define(['angular', 'angular-mocks', 'controllers'], function() {
           scope.changeInterventionInclusion(intervention);
           expect(networkMetaAnalysisService.buildInterventionInclusions).toHaveBeenCalled();
           expect(networkMetaAnalysisService.cleanUpExcludedArms).toHaveBeenCalled();
-          expect(scope.analysis.$save).toHaveBeenCalled();
+          expect(analysisResource.save).toHaveBeenCalled();
         });
       });
       describe('and the doesInterventionHaveAmbiguousArms function is called', function() {
@@ -253,7 +253,7 @@ define(['angular', 'angular-mocks', 'controllers'], function() {
           scope.changeMeasurementMoment(newMoment, dataRow);
         });
         it('clean up old inclusions for the study and make a new one for non-default measurement moment', function() {
-          expect(scope.analysis.$save).toHaveBeenCalled();
+          expect(analysisResource.save).toHaveBeenCalled();
           expect(mockAnalysis.includedMeasurementMoments).toEqual([{
             analysisId: mockAnalysis.id,
             study: dataRow.studyUri,

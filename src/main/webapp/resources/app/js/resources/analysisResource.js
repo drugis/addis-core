@@ -4,10 +4,8 @@ define([], function() {
   var AnalysisResource = function($resource) {
     return $resource('/projects/:projectId/analyses/:analysisId', {
       projectId: '@projectId',
-      analysisId: '@id',
-      modelId: '@modelId',
-      outcomeIds: '@outcomeIds'
-    }, {
+      analysisId: '@id'
+      }, {
       setPrimaryModel: {
         url: '/projects/:projectId/analyses/:analysisId/setPrimaryModel',
         method: 'POST'
