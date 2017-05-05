@@ -28,8 +28,7 @@ require.config({
     'moment': 'bower_components/moment/min/moment.min',
     'ngSanitize': 'bower_components/angular-sanitize/angular-sanitize.min',
     'nvd3': 'bower_components/nvd3/build/nv.d3.min',
-    'showdown': 'bower_components/showdown/dist/showdown.min',
-    'underscore': 'bower_components/underscore/underscore-min',
+    'showdown': 'bower_components/showdown/dist/showdown.min'
   },
   baseUrl: 'app/js',
   shim: {
@@ -87,9 +86,6 @@ require.config({
     'nvd3': {
       deps: ['d3'],
       exports: 'nv'
-    },
-    'underscore': {
-      exports: '_'
     },
     'lodash': {
       exports: '_'
