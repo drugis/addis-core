@@ -869,3 +869,4 @@ CREATE TABLE scaledUnit (
   PRIMARY KEY (id),
   FOREIGN KEY(projectId) REFERENCES Project(id)
 );
+--rollback DROP TABLE scaledUnit;
