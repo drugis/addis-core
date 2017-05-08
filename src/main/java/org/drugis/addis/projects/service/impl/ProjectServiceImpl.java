@@ -33,10 +33,11 @@ import org.drugis.addis.scenarios.Scenario;
 import org.drugis.addis.scenarios.repository.ScenarioRepository;
 import org.drugis.addis.security.Account;
 import org.drugis.addis.security.repository.AccountRepository;
+import org.drugis.addis.subProblem.SubProblem;
+import org.drugis.addis.subProblem.repository.SubProblemRepository;
 import org.drugis.addis.trialverse.model.SemanticInterventionUriAndName;
 import org.drugis.addis.trialverse.model.SemanticVariable;
 import org.drugis.addis.trialverse.model.emun.CovariateOptionType;
-import org.drugis.addis.trialverse.model.trialdata.TrialDataArm;
 import org.drugis.addis.trialverse.model.trialdata.TrialDataStudy;
 import org.drugis.addis.trialverse.service.MappingService;
 import org.drugis.addis.trialverse.service.TriplestoreService;
@@ -104,6 +105,9 @@ public class ProjectServiceImpl implements ProjectService {
 
   @Inject
   private ModelRepository modelRepository;
+
+  @Inject
+  private SubProblemRepository subProblemRepository;
 
   @Inject
   private ScenarioRepository scenarioRepository;
@@ -236,10 +240,19 @@ public class ProjectServiceImpl implements ProjectService {
             .map(analysis -> (MetaBenefitRiskAnalysis) analysis)
             .forEach(metaBenefitRiskCreator(user, newProject, oldToNewOutcomeId, oldToNewInterventionId, oldToNewAnalysisId, oldToNewModelId));
 
+    //subProblems
+    HashMap<Integer, Integer> oldToNewSubProblemId = new HashMap<>();
+    Collection<SubProblem> subProblems = subProblemRepository.queryByProject(sourceProjectId);
+    subProblems.forEach(subProblem -> {
+      SubProblem newSubProblem = subProblemRepository.create(oldToNewAnalysisId.get(subProblem.getWorkspaceId()),
+              subProblem.getDefinition(), subProblem.getTitle());
+        oldToNewSubProblemId.put(subProblem.getId(), newSubProblem.getId());
+    });
+
     //scenario's
     Collection<Scenario> sourceScenarios = scenarioRepository.queryByProject(sourceProjectId);
     sourceScenarios.forEach(scenario -> scenarioRepository.create(oldToNewAnalysisId.get(scenario.getWorkspace()),
-            scenario.getTitle(), scenario.getState()));
+            oldToNewSubProblemId.get(scenario.getSubProblemId()), scenario.getTitle(), scenario.getState()));
 
     return newProject.getId();
   }

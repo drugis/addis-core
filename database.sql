@@ -870,3 +870,21 @@ CREATE TABLE scaledUnit (
   FOREIGN KEY(projectId) REFERENCES Project(id)
 );
 --rollback DROP TABLE scaledUnit;
+
+--changeset keijserj:72
+CREATE TABLE subProblem(
+  id SERIAL NOT NULL,
+  workspaceId INT NOT NULL,
+  definition VARCHAR NOT NULL,
+  title VARCHAR NOT NULL,
+  PRIMARY KEY(id),
+  FOREIGN KEY(workspaceId) REFERENCES AbstractAnalysis(id) ON DELETE CASCADE
+);
+INSERT INTO subProblem (workspaceId, definition, title) SELECT id, '{}', 'Default' FROM singlestudybenefitriskanalysis;
+INSERT INTO subProblem (workspaceId, definition, title) SELECT id, '{}', 'Default' FROM metabenefitriskanalysis;
+ALTER TABLE scenario ADD COLUMN subProblemId INT;
+UPDATE scenario SET subProblemId = subProblem.id FROM subProblem WHERE subProblem.workspaceId = scenario.workspace;
+ALTER TABLE scenario ALTER COLUMN subProblemId SET NOT NULL;
+ALTER TABLE scenario ADD FOREIGN KEY (subProblemId) REFERENCES subProblem (id) ON DELETE CASCADE;
+--rollback ALTER TABLE scenario DROP COLUMN subproblemId;
+--rollback DROP TABLE subProblem;

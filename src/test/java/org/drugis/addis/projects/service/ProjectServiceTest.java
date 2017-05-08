@@ -32,6 +32,8 @@ import org.drugis.addis.scenarios.Scenario;
 import org.drugis.addis.scenarios.repository.ScenarioRepository;
 import org.drugis.addis.security.Account;
 import org.drugis.addis.security.repository.AccountRepository;
+import org.drugis.addis.subProblem.SubProblem;
+import org.drugis.addis.subProblem.repository.SubProblemRepository;
 import org.drugis.addis.trialverse.model.SemanticInterventionUriAndName;
 import org.drugis.addis.trialverse.model.SemanticVariable;
 import org.drugis.addis.trialverse.model.emun.CovariateOption;
@@ -102,6 +104,9 @@ public class ProjectServiceTest {
   @Mock
   private ProblemService problemService;
 
+  @Mock
+  private SubProblemRepository subProblemRepository;
+
   @InjectMocks
   private ProjectService projectService;
 
@@ -114,6 +119,7 @@ public class ProjectServiceTest {
 
   private static final String datasetUuid = "datasetUuid";
   private static final URI versionedDatasetUri = URI.create("http://trials.drugis.org/datasets/" + datasetUuid);
+  private Integer subProblemId = 100;
 
   @Before
   public void setUp() throws ResourceDoesNotExistException, URISyntaxException {
@@ -321,17 +327,36 @@ public class ProjectServiceTest {
     MetaBenefitRiskAnalysis newMetaBR = new MetaBenefitRiskAnalysis(metaBRId + 1, newProjectId, metaBR.getTitle());
     when(metaBenefitRiskAnalysisRepository.create(account, metaBRCommand)).thenReturn(newMetaBR);
 
+    //subProblems
+    Integer newSsbrId = ssbrId + 1;
+    String ssbrDef = "ssbr def";
+    int ssbrSubProblemId = 12346;
+    SubProblem ssbrSubProblem = new SubProblem(ssbrSubProblemId, ssbrId, ssbrDef, "Default");
+    String mbrDef = "mbr def";
+    int mbrSubProblemId = 1234;
+    SubProblem mbrSubProblem = new SubProblem(mbrSubProblemId, metaBRId, mbrDef, "Default");
+    Collection<SubProblem> subProblems = Arrays.asList(ssbrSubProblem, mbrSubProblem);
+    when(subProblemRepository.queryByProject(projectId)).thenReturn(subProblems);
+    Integer newSsbrSubProblemId = 64312;
+    SubProblem newSsbrSubProblem = new SubProblem(newSsbrSubProblemId, newSsbrId, ssbrDef, "Default");
+    when(subProblemRepository.create(newSsbrId, ssbrDef, "Default")).thenReturn(newSsbrSubProblem);
+    Integer newMbrSubProblemId = 4321;
+    SubProblem newMbrSubProblem = new SubProblem(newMbrSubProblemId, newMetaBR.getId(), mbrDef, "Default");
+    when(subProblemRepository.create(newMetaBR.getId(), mbrDef, "Default")).thenReturn(newMbrSubProblem);
+
     //scenarios
     Integer scenarioId1 = 317;
     Integer scenarioId2 = 313;
-    Scenario scenario1 = new Scenario(scenarioId1, ssbrId, "scenario 1", "Nevada");
-    Scenario scenario2 = new Scenario(scenarioId2, metaBRId, "scenario 2", "Missouri");
+    Scenario scenario1 = new Scenario(scenarioId1, ssbrId, ssbrSubProblemId, "scenario 1", "Nevada");
+    Scenario scenario2 = new Scenario(scenarioId2, metaBRId, mbrSubProblemId, "scenario 2", "Missouri");
     Collection<Scenario> scenarios = Arrays.asList(scenario1, scenario2);
     when(scenarioRepository.queryByProject(projectId)).thenReturn(scenarios);
-    Scenario newScenario1 = new Scenario(scenarioId1 + 1, ssbrId + 1, scenario1.getTitle(), scenario1.getState());
-    when(scenarioRepository.create(ssbrId + 1, scenario1.getTitle(), scenario1.getState())).thenReturn(newScenario1);
-    Scenario newScenario2 = new Scenario(scenarioId2 + 1, metaBRId + 1, scenario2.getTitle(), scenario2.getState());
-    when(scenarioRepository.create(metaBRId + 1, scenario2.getTitle(), scenario2.getState())).thenReturn(newScenario2);
+    Scenario newScenario1 = new Scenario(scenarioId1 + 1, newSsbrId, scenario1.getTitle(), scenario1.getState());
+    when(scenarioRepository.create(newSsbrId, newSsbrSubProblemId, scenario1.getTitle(),
+            scenario1.getState())).thenReturn(newScenario1);
+    Scenario newScenario2 = new Scenario(scenarioId2 + 1, newMetaBR.getId(), scenario2.getTitle(), scenario2.getState());
+    when(scenarioRepository.create(newMetaBR.getId(), newMbrSubProblemId, scenario2.getTitle(),
+            scenario2.getState())).thenReturn(newScenario2);
 
     /// *8888888888**************************** GO *********************888888888888888* ///
     Integer copiedId = projectService.copy(account, projectId, newTitle);
@@ -378,8 +403,8 @@ public class ProjectServiceTest {
     verifyNoMoreInteractions(modelRepository);
 
     verify(scenarioRepository).queryByProject(projectId);
-    verify(scenarioRepository).create(ssbrId + 1, scenario1.getTitle(), scenario1.getState());
-    verify(scenarioRepository).create(metaBRId + 1, scenario2.getTitle(), scenario2.getState());
+    verify(scenarioRepository).create(ssbrId + 1, newSsbrSubProblemId, scenario1.getTitle(), scenario1.getState());
+    verify(scenarioRepository).create(metaBRId + 1, newMbrSubProblemId, scenario2.getTitle(), scenario2.getState());
     verifyNoMoreInteractions(scenarioRepository);
   }
 

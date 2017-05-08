@@ -32,35 +32,49 @@ public class ScenarioController extends AbstractAddisCoreController {
   @Inject
   ProjectService projectService;
 
-  @RequestMapping(value = "/projects/{projectId}/analyses/{analysisId}/scenarios/{scenarioId}", method = RequestMethod.GET)
+  @RequestMapping(value = "/projects/{projectId}/analyses/{analysisId}/problems/{subProblemId}/scenarios/{scenarioId}", method = RequestMethod.GET)
   @ResponseBody
   public Scenario get(@PathVariable Integer scenarioId) {
     return scenarioRepository.get(scenarioId);
   }
 
-  @RequestMapping(value = "/projects/{projectId}/analyses/{analysisId}/scenarios", method = RequestMethod.GET)
+  @RequestMapping(value = "/projects/{projectId}/analyses/{analysisId}/problems/{subProblemId}/scenarios", method = RequestMethod.GET)
   @ResponseBody
-  public Collection<Scenario> query(@PathVariable Integer projectId, @PathVariable Integer analysisId) {
-    return scenarioRepository.queryByProjectAndAnalysis(projectId, analysisId);
+  public Collection<Scenario> queryBySubProblem(@PathVariable Integer projectId,
+                                                @PathVariable Integer analysisId,
+                                                @PathVariable Integer subProblemId) {
+    return scenarioRepository.queryBySubProblem(projectId, analysisId, subProblemId);
   }
 
-  @RequestMapping(value = "/projects/{projectId}/analyses/{analysisId}/scenarios/{scenarioId}", method = RequestMethod.POST)
+  @RequestMapping(value = "/projects/{projectId}/analyses/{analysisId}/scenarios", method = RequestMethod.GET)
   @ResponseBody
-  public Scenario update(Principal principal, @PathVariable Integer projectId, @PathVariable Integer analysisId, @RequestBody Scenario scenario)
-    throws ResourceDoesNotExistException, MethodNotAllowedException {
-    scenarioService.checkCoordinates(projectId, analysisId, scenario);
+  public Collection<Scenario> queryByAnalysis(@PathVariable Integer projectId,
+                                              @PathVariable Integer analysisId) {
+    return scenarioRepository.queryByAnalysis(projectId, analysisId);
+  }
+
+  @RequestMapping(value = "/projects/{projectId}/analyses/{analysisId}/problems/{subProblemId}/scenarios/{scenarioId}", method = RequestMethod.POST)
+  @ResponseBody
+  public Scenario update(Principal principal, @PathVariable Integer projectId,
+                         @PathVariable Integer analysisId,
+                         @PathVariable Integer subProblemId,
+                         @RequestBody Scenario scenario)
+          throws ResourceDoesNotExistException, MethodNotAllowedException {
+    scenarioService.checkCoordinates(projectId, analysisId, subProblemId, scenario);
     projectService.checkOwnership(projectId, principal);
     return scenarioRepository.update(scenario.getId(), scenario.getTitle(), scenario.getState());
   }
 
-  @RequestMapping(value = "/projects/{projectId}/analyses/{analysisId}/scenarios", method = RequestMethod.POST)
+  @RequestMapping(value = "/projects/{projectId}/analyses/{analysisId}/problems/{subProblemId}/scenarios", method = RequestMethod.POST)
   @ResponseBody
-  public Scenario create(Principal principal, HttpServletResponse response, @PathVariable Integer projectId, @PathVariable Integer analysisId, @RequestBody Scenario scenario)
-    throws ResourceDoesNotExistException, MethodNotAllowedException {
+  public Scenario create(Principal principal, HttpServletResponse response, @PathVariable Integer projectId,
+                         @PathVariable Integer analysisId,
+                         @PathVariable Integer subProblemId, @RequestBody Scenario scenario)
+          throws ResourceDoesNotExistException, MethodNotAllowedException {
     scenario.setWorkspace(analysisId);
-    scenarioService.checkCoordinates(projectId, analysisId, scenario);
+    scenarioService.checkCoordinates(projectId, analysisId, subProblemId, scenario);
     projectService.checkOwnership(projectId, principal);
-    Scenario result = scenarioRepository.create(analysisId, scenario.getTitle(), scenario.getState());
+    Scenario result = scenarioRepository.create(analysisId, subProblemId, scenario.getTitle(), scenario.getState());
     response.setStatus(HttpServletResponse.SC_CREATED);
     return result;
   }

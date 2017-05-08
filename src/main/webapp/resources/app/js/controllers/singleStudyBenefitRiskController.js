@@ -167,7 +167,7 @@ define(['angular', 'lodash'], function(angular, _) {
         id: analysis.id,
         projectId: analysis.projectId,
         analysis: analysisToSave,
-        scenarioState: JSON.stringify(problem,null,2)
+        scenarioState: JSON.stringify(problem, null, 2)
       };
     }
 
@@ -207,7 +207,9 @@ define(['angular', 'lodash'], function(angular, _) {
       }
       SingleStudyBenefitRiskService.getProblem($scope.analysis).then(function(problem) {
         $scope.analysis.problem = problem;
-        var saveCommand = analysisToSaveCommand($scope.analysis, WorkspaceService.reduceProblem(problem));
+        var saveCommand = analysisToSaveCommand($scope.analysis, {
+          problem: WorkspaceService.reduceProblem(problem)
+        });
         AnalysisResource.save(saveCommand).$promise.then(function(response) {
           $scope.analysis = response;
           $scope.workspace = response;

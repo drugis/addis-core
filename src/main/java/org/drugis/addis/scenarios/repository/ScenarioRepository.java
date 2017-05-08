@@ -10,11 +10,13 @@ import java.util.Collection;
 public interface ScenarioRepository {
   Scenario get(Integer id);
 
-  Scenario create(Integer analysisId, String title, String state);
+  Scenario create(Integer analysisId, Integer subProblemId, String title, String state);
 
   Collection<Scenario> queryByProject(Integer projectId);
 
-  Collection<Scenario> queryByProjectAndAnalysis(Integer projectId, Integer analysisId);
+  Collection<Scenario> queryByAnalysis(Integer projectId, Integer analysisId);
+
+  Collection<Scenario> queryBySubProblem(Integer projectId, Integer analysisId, Integer subProblemId);
 
   Scenario update(Integer id, String title, String state);
 }

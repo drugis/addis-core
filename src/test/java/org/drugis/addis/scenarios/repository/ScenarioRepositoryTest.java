@@ -28,6 +28,7 @@ public class ScenarioRepositoryTest {
   @PersistenceContext(unitName = "addisCore")
   EntityManager em;
   private final Integer projectId = 1;
+  private Integer subProblemId = 100;
 
   @Test
   public void testGet() throws Exception {
@@ -42,7 +43,7 @@ public class ScenarioRepositoryTest {
     int workspaceId = -2;
     String title = "title";
     String problem = "Problem";
-    Scenario created = scenarioRepository.create(workspaceId, title, problem);
+    Scenario created = scenarioRepository.create(workspaceId, subProblemId, title, problem);
     Scenario found = em.find(Scenario.class, created.getId());
     assertEquals(found, created);
   }
@@ -50,7 +51,7 @@ public class ScenarioRepositoryTest {
   @Test
   public void testQueryByProjectAndAnalysis() {
     Integer analysisId = -1;
-    Collection<Scenario> result = scenarioRepository.queryByProjectAndAnalysis(projectId, analysisId);
+    Collection<Scenario> result = scenarioRepository.queryBySubProblem(projectId, analysisId, subProblemId);
     assertNotNull(result);
     assertEquals(2, result.size());
     Scenario defaultScenario = em.find(Scenario.class, 1);
@@ -67,7 +68,7 @@ public class ScenarioRepositoryTest {
   @Test
   public void testQueryFromMetaBenefitRisk() {
     Integer analysisId = -10;
-    Collection<Scenario> result = scenarioRepository.queryByProjectAndAnalysis(projectId, analysisId);
+    Collection<Scenario> result = scenarioRepository.queryBySubProblem(projectId, analysisId, subProblemId);
     assertNotNull(result);
     assertEquals(1, result.size());
     Scenario defaultScenario = em.find(Scenario.class, 4);

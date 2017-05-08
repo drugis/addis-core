@@ -3,7 +3,6 @@ package org.drugis.addis.analyses.controller;
 import org.apache.http.HttpStatus;
 import org.drugis.addis.analyses.*;
 import org.drugis.addis.analyses.repository.AnalysisRepository;
-import org.drugis.addis.analyses.repository.MetaBenefitRiskAnalysisRepository;
 import org.drugis.addis.analyses.repository.NetworkMetaAnalysisRepository;
 import org.drugis.addis.analyses.repository.SingleStudyBenefitRiskAnalysisRepository;
 import org.drugis.addis.analyses.service.AnalysisService;
@@ -15,10 +14,9 @@ import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.interventions.service.impl.InvalidTypeForDoseCheckException;
 import org.drugis.addis.patavitask.repository.UnexpectedNumberOfResultsException;
 import org.drugis.addis.projects.service.ProjectService;
-import org.drugis.addis.scenarios.Scenario;
-import org.drugis.addis.scenarios.repository.ScenarioRepository;
 import org.drugis.addis.security.Account;
 import org.drugis.addis.security.repository.AccountRepository;
+import org.drugis.addis.subProblem.service.SubProblemService;
 import org.drugis.addis.trialverse.model.trialdata.TrialDataStudy;
 import org.drugis.addis.trialverse.service.impl.ReadValueException;
 import org.slf4j.Logger;
@@ -57,7 +55,7 @@ public class AnalysisController extends AbstractAddisCoreController {
   @Inject
   AnalysisService analysisService;
   @Inject
-  private ScenarioRepository scenarioRepository;
+  private SubProblemService subProblemService;
   @Inject
   private ProjectService projectService;
   @Inject
@@ -135,7 +133,7 @@ public class AnalysisController extends AbstractAddisCoreController {
       if (analysis instanceof SingleStudyBenefitRiskAnalysis) {
         SingleStudyBenefitRiskAnalysis singleStudyBenefitRiskAnalysis = (SingleStudyBenefitRiskAnalysis) analysis;
         return updateSingleStudyBenefitRiskAnalysis(user,
-                singleStudyBenefitRiskAnalysis, analysisUpdateCommand.getScenarioState());
+                projectId, singleStudyBenefitRiskAnalysis, analysisUpdateCommand.getScenarioState());
       } else if (analysis instanceof NetworkMetaAnalysis) {
         return analysisService.updateNetworkMetaAnalysis(user, (NetworkMetaAnalysis) analysis);
       } else if (analysis instanceof MetaBenefitRiskAnalysis) {
@@ -163,7 +161,7 @@ public class AnalysisController extends AbstractAddisCoreController {
 
 
   private SingleStudyBenefitRiskAnalysis updateSingleStudyBenefitRiskAnalysis(Account user,
-                                                                              SingleStudyBenefitRiskAnalysis analysis,
+                                                                              Integer projectId, SingleStudyBenefitRiskAnalysis analysis,
                                                                               String scenarioState) throws MethodNotAllowedException, ResourceDoesNotExistException {
     SingleStudyBenefitRiskAnalysis oldAnalysis = (SingleStudyBenefitRiskAnalysis) analysisRepository.get(analysis.getId());
     if (oldAnalysis.getProblem() != null) {
@@ -172,7 +170,7 @@ public class AnalysisController extends AbstractAddisCoreController {
     projectService.checkProjectExistsAndModifiable(user, analysis.getProjectId());
     SingleStudyBenefitRiskAnalysis updatedAnalysis = singleStudyBenefitRiskAnalysisRepository.update(user, analysis);
     if (analysis.getProblem() != null) {
-      scenarioRepository.create(analysis.getId(), Scenario.DEFAULT_TITLE, "{\"problem\":" + scenarioState + "}");
+      subProblemService.createMCDADefaults(projectId, analysis.getId(), scenarioState);
     }
     return updatedAnalysis;
   }

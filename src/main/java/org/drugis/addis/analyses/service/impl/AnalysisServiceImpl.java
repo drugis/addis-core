@@ -290,5 +290,4 @@ public class AnalysisServiceImpl implements AnalysisService {
     singleInterventions.addAll(interventionService.resolveInterventionSets(interventionSets));
     return singleInterventions;
   }
-
 }

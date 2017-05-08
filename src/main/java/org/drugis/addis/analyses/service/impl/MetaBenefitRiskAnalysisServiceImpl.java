@@ -21,9 +21,9 @@ import org.drugis.addis.patavitask.repository.UnexpectedNumberOfResultsException
 import org.drugis.addis.problems.model.AbstractProblem;
 import org.drugis.addis.problems.service.ProblemService;
 import org.drugis.addis.projects.service.ProjectService;
-import org.drugis.addis.scenarios.Scenario;
 import org.drugis.addis.scenarios.repository.ScenarioRepository;
 import org.drugis.addis.security.Account;
+import org.drugis.addis.subProblem.service.SubProblemService;
 import org.drugis.addis.trialverse.service.impl.ReadValueException;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
@@ -61,6 +61,9 @@ public class MetaBenefitRiskAnalysisServiceImpl implements MetaBenefitRiskAnalys
   private ProblemService problemService;
 
   @Inject
+  private SubProblemService subProblemService;
+
+  @Inject
   ProjectService projectService;
 
   @Inject
@@ -80,11 +83,10 @@ public class MetaBenefitRiskAnalysisServiceImpl implements MetaBenefitRiskAnalys
       throw new MethodNotAllowedException();
     }
     if(analysis.isFinalized()) {
-      // create default scenario
       AbstractProblem problem = problemService.getProblem(projectId, analysis.getId());
       String problemString = objectMapper.writeValueAsString(problem);
       analysis.setProblem(problemString);
-      scenarioRepository.create(analysis.getId(), Scenario.DEFAULT_TITLE, "{\"problem\":" + scenarioState + "}");
+      subProblemService.createMCDADefaults(projectId, analysis.getId(), scenarioState);
     }
     return metaBenefitRiskAnalysisRepository.update(user, analysis);
   }
