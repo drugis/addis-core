@@ -45,15 +45,15 @@ public class AnalysisController extends AbstractAddisCoreController {
   final static Logger logger = LoggerFactory.getLogger(AnalysisController.class);
 
   @Inject
-  AnalysisRepository analysisRepository;
+  private AnalysisRepository analysisRepository;
   @Inject
-  SingleStudyBenefitRiskAnalysisRepository singleStudyBenefitRiskAnalysisRepository;
+  private SingleStudyBenefitRiskAnalysisRepository singleStudyBenefitRiskAnalysisRepository;
   @Inject
-  NetworkMetaAnalysisRepository networkMetaAnalysisRepository;
+  private NetworkMetaAnalysisRepository networkMetaAnalysisRepository;
   @Inject
-  AccountRepository accountRepository;
+  private AccountRepository accountRepository;
   @Inject
-  AnalysisService analysisService;
+  private AnalysisService analysisService;
   @Inject
   private SubProblemService subProblemService;
   @Inject

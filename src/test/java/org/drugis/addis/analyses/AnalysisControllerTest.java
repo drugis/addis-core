@@ -53,9 +53,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class AnalysisControllerTest {
 
   @Inject
-  CriteriaRepository criteriaRepository;
+  private CriteriaRepository criteriaRepository;
   @Inject
-  SubProblemService subProblemService;
+  private SubProblemService subProblemService;
   private MockMvc mockMvc;
   @Inject
   private AccountRepository accountRepository;
@@ -126,10 +126,8 @@ public class AnalysisControllerTest {
     when(networkMetaAnalysisRepository.queryByOutcomes(projectId, outcomeIds)).thenReturn(analyses);
 
     ResultActions result = mockMvc
-            .perform(
-                    get("/projects/{projectId}/analyses", projectId)
-                            .param("outcomeIds", "1")
-            );
+            .perform(get("/projects/{projectId}/analyses", projectId)
+                    .param("outcomeIds", "1"));
     result
             .andExpect(status().isOk())
             .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()))
@@ -146,7 +144,10 @@ public class AnalysisControllerTest {
     AnalysisCommand analysisCommand = new AnalysisCommand(1, "name", AnalysisType.SINGLE_STUDY_BENEFIT_RISK_LABEL);
     when(analysisService.createSingleStudyBenefitRiskAnalysis(gert, analysisCommand)).thenReturn(analysis);
     String body = TestUtils.createJson(analysisCommand);
-    mockMvc.perform(post("/projects/1/analyses").content(body).principal(user).contentType(WebConstants.getApplicationJsonUtf8Value()))
+    mockMvc.perform(post("/projects/1/analyses")
+            .content(body)
+            .principal(user)
+            .contentType(WebConstants.getApplicationJsonUtf8Value()))
             .andExpect(status().isCreated())
             .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()))
             .andExpect(jsonPath("$.id", notNullValue()));

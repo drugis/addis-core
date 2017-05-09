@@ -25,7 +25,7 @@ import java.util.Collection;
 public class SubProblemController {
 
   @Inject
-  SubProblemRepository subProblemRepository;
+  private SubProblemRepository subProblemRepository;
 
   @Inject
   private ProjectService projectService;
@@ -39,7 +39,7 @@ public class SubProblemController {
     return subProblemRepository.get(subProblemId);
   }
 
-  @RequestMapping(value = "/projects/{projectId}/analyses/{analysisId}", method = RequestMethod.GET)
+  @RequestMapping(value = "/projects/{projectId}/analyses/{analysisId}/problems/", method = RequestMethod.GET)
   @ResponseBody
   public Collection<SubProblem> query(@PathVariable Integer projectId, @PathVariable Integer analysisId) {
     return subProblemRepository.queryByProjectAndAnalysis(projectId, analysisId);
@@ -51,7 +51,7 @@ public class SubProblemController {
                            @PathVariable Integer projectId, @PathVariable Integer analysisId,
                            @RequestBody SubProblemCommand subProblemCommand) throws ResourceDoesNotExistException, MethodNotAllowedException {
     projectService.checkOwnership(projectId, principal);
-    analysisService.checkCoordinates(projectId,analysisId);
+    analysisService.checkCoordinates(projectId, analysisId);
     response.setStatus(HttpStatus.SC_CREATED);
     return subProblemRepository.create(analysisId, subProblemCommand.getDefinition(), subProblemCommand.getTitle());
   }
