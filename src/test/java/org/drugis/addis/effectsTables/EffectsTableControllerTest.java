@@ -1,7 +1,9 @@
 package org.drugis.addis.effectsTables;
 
+import org.drugis.addis.TestUtils;
 import org.drugis.addis.config.TestConfig;
 import org.drugis.addis.effectsTables.repository.EffectsTableRepository;
+import org.drugis.addis.projects.service.ProjectService;
 import org.drugis.addis.security.Account;
 import org.drugis.addis.security.repository.AccountRepository;
 import org.drugis.addis.util.WebConstants;
@@ -42,6 +44,8 @@ public class EffectsTableControllerTest {
   @Inject
   private AccountRepository accountRepository;
 
+  @Inject
+  private ProjectService projectService;
   private MockMvc mockMvc;
 
   private Integer analysisId = 2;
@@ -67,7 +71,7 @@ public class EffectsTableControllerTest {
   @Test
   public void testGetEffectsTable() throws Exception {
     when(effectsTableRepository.getEffectsTableExclusions(analysisId))
-            .thenReturn(Arrays.asList(new EffectsTableExclusion(analysisId, 1), new EffectsTableExclusion(analysisId, 2)));
+            .thenReturn(Arrays.asList(new EffectsTableExclusion(analysisId, "1"), new EffectsTableExclusion(analysisId, "2")));
     mockMvc.perform(get("/projects/1/analyses/2/effectsTable"))
             .andExpect(status().isOk())
             .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()))
@@ -77,13 +81,14 @@ public class EffectsTableControllerTest {
 
   @Test
   public void testSetEffectsTableExclusion() throws Exception {
-    String body = "3";
+    AlternativeIdCommand alternativeIdCommand = new AlternativeIdCommand("abc3");
+    String body = TestUtils.createJson(alternativeIdCommand);
     mockMvc.perform(post("/projects/1/analyses/2/effectsTable")
-            .content(body)
             .principal(user)
+            .content(body)
             .contentType(WebConstants.getApplicationJsonUtf8Value()))
             .andExpect(status().isOk());
     verify(accountRepository).findAccountByUsername("gert");
-    verify(effectsTableRepository).setEffectsTableExclusion(analysisId, 3);
+    verify(effectsTableRepository).setEffectsTableExclusion(analysisId, "abc3");
   }
 }

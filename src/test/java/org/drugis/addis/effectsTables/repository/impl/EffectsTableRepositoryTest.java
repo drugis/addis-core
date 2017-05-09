@@ -39,7 +39,7 @@ public class EffectsTableRepositoryTest {
   @Test
   public void testGetEffectsTable() throws Exception {
     List<EffectsTableExclusion> result = effectsTableRepository.getEffectsTableExclusions(analysisId);
-    List<EffectsTableExclusion> expectedResult = Arrays.asList(new EffectsTableExclusion(-1, 1), new EffectsTableExclusion(-1, 2));
+    List<EffectsTableExclusion> expectedResult = Arrays.asList(new EffectsTableExclusion(-1, "1"), new EffectsTableExclusion(-1, "2"));
     for (int i = 0; i < result.size(); i++) {
       assertEquals(result.get(i), expectedResult.get(i));
     }
@@ -48,10 +48,11 @@ public class EffectsTableRepositoryTest {
   @Test
   public void testSetEffectsTableExclusion() throws Exception {
     // add alternative with id 3, remove alternative with id 2
-    effectsTableRepository.setEffectsTableExclusion(analysisId,3);
-    effectsTableRepository.setEffectsTableExclusion(analysisId,2);
+    effectsTableRepository.setEffectsTableExclusion(analysisId,"3");
+    effectsTableRepository.setEffectsTableExclusion(analysisId,"2");
     List<EffectsTableExclusion> result = effectsTableRepository.getEffectsTableExclusions(analysisId);
-    List<EffectsTableExclusion> expectedResult = Arrays.asList(new EffectsTableExclusion(-1, 1), new EffectsTableExclusion(-1, 3));
+    List<EffectsTableExclusion> expectedResult = Arrays.asList(
+            new EffectsTableExclusion(analysisId, "1"), new EffectsTableExclusion(analysisId, "3"));
     for (int i = 0; i < result.size(); i++) {
       assertEquals(result.get(i), expectedResult.get(i));
     }
