@@ -9,7 +9,7 @@ import java.util.List;
  */
 public interface EffectsTableRepository {
 
-  void setEffectsTableExclusion(Integer analysisId, Integer alternativeId);
+  void setEffectsTableExclusion(Integer analysisId, String alternativeId);
 
   List<EffectsTableExclusion> getEffectsTableExclusions(Integer analysisId);
 }

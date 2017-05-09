@@ -719,3 +719,6 @@ CREATE TABLE scaledUnit (
   PRIMARY KEY (id),
   FOREIGN KEY(projectId) REFERENCES Project(id)
 );
+
+--changeset keijserj:73
+ALTER TABLE effectsTableExclusion ALTER COLUMN alternativeId VARCHAR;

@@ -870,3 +870,7 @@ CREATE TABLE scaledUnit (
   FOREIGN KEY(projectId) REFERENCES Project(id)
 );
 --rollback DROP TABLE scaledUnit;
+
+--changeset keijserj:73
+ALTER TABLE effectsTableExclusion ALTER COLUMN alternativeId TYPE VARCHAR;
+--rollback ALTER TABLE effectsTableExclusion ALTER COLUMN alternativeId TYPE int USING alternativeId::integer;
