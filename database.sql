@@ -888,3 +888,7 @@ ALTER TABLE scenario ALTER COLUMN subProblemId SET NOT NULL;
 ALTER TABLE scenario ADD FOREIGN KEY (subProblemId) REFERENCES subProblem (id) ON DELETE CASCADE;
 --rollback ALTER TABLE scenario DROP COLUMN subproblemId;
 --rollback DROP TABLE subProblem;
+
+--changeset keijserj:73
+ALTER TABLE effectsTableExclusion ALTER COLUMN alternativeId TYPE VARCHAR;
+--rollback ALTER TABLE effectsTableExclusion ALTER COLUMN alternativeId TYPE int USING alternativeId::integer;

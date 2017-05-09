@@ -4,15 +4,15 @@ package org.drugis.addis.effectsTables;
  * Created by joris on 7-4-17.
  */
 public class AlternativeIdCommand {
-  private Integer alternativeId;
+  private String alternativeId;
 
   public AlternativeIdCommand(){}
 
-  public AlternativeIdCommand(Integer id) {
+  public AlternativeIdCommand(String id) {
     this.alternativeId = id;
   }
 
-  public Integer getAlternativeId() {
+  public String getAlternativeId() {
     return alternativeId;
   }
 }
