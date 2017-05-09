@@ -858,3 +858,7 @@ ALTER TABLE BothDoseTypesIntervention ADD COLUMN maxUpperBoundConversionMultipli
 --rollback ALTER TABLE BothDoseTypesIntervention DROP COLUMN minUpperBoundConversionMultiplier;
 --rollback ALTER TABLE BothDoseTypesIntervention DROP COLUMN maxLowerBoundConversionMultiplier;
 --rollback ALTER TABLE BothDoseTypesIntervention DROP COLUMN maxUpperBoundConversionMultiplier;
+
+--changeset keijserj:73
+ALTER TABLE effectsTableExclusion ALTER COLUMN alternativeId TYPE VARCHAR;
+--rollback ALTER TABLE effectsTableExclusion ALTER COLUMN alternativeId TYPE int USING alternativeId::integer;
