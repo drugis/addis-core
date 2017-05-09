@@ -42,10 +42,11 @@ public class EffectsTableController extends AbstractAddisCoreController {
   }
 
   @RequestMapping(value="/projects/{projectId}/analyses/{analysisId}/effectsTable", method = RequestMethod.POST)
-  public void setEffectsTableExclusion(HttpServletResponse response, Principal currentUser, @PathVariable Integer projectId, @PathVariable Integer analysisId, @RequestBody AlternativeIdCommand alternativeId) throws ResourceDoesNotExistException, MethodNotAllowedException {
+  public void setEffectsTableExclusion(HttpServletResponse response, Principal currentUser, @PathVariable Integer projectId,
+                                       @PathVariable Integer analysisId, @RequestBody AlternativeIdCommand alternativeIdCommand) throws ResourceDoesNotExistException, MethodNotAllowedException {
     Account user = accountRepository.findAccountByUsername(currentUser.getName());
     projectService.checkProjectExistsAndModifiable(user, projectId);
-    effectsTableRepository.setEffectsTableExclusion(analysisId, alternativeId.getAlternativeId());
+    effectsTableRepository.setEffectsTableExclusion(analysisId, alternativeIdCommand.getAlternativeId());
     response.setStatus(HttpStatus.SC_OK);
   }
 }
