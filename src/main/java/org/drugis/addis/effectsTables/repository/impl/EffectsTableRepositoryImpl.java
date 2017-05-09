@@ -20,7 +20,7 @@ class EffectsTableRepositoryImpl implements EffectsTableRepository {
   private EntityManager em;
 
   @Override
-  public void setEffectsTableExclusion(Integer analysisId, Integer alternativeId) {
+  public void setEffectsTableExclusion(Integer analysisId, String alternativeId) {
     TypedQuery<EffectsTableExclusion> query = em.createQuery(
             "FROM EffectsTableExclusion WHERE analysisId = :analysisId AND alternativeId = :alternativeId",
             EffectsTableExclusion.class);

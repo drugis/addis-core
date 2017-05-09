@@ -1,5 +1,7 @@
 package org.drugis.addis.effectsTables;
 
+import org.hibernate.annotations.GenericGenerator;
+
 import javax.persistence.*;
 import java.io.Serializable;
 
@@ -11,12 +13,12 @@ public class EffectsTableExclusion {
 
   static class PK implements Serializable {
     protected Integer analysisId;
-    protected Integer alternativeId;
+    protected String alternativeId;
 
     public PK() {
     }
 
-    public PK(Integer analysisId, Integer alternativeId) {
+    public PK(Integer analysisId, String alternativeId) {
       this.analysisId = analysisId;
       this.alternativeId = alternativeId;
     }
@@ -43,12 +45,14 @@ public class EffectsTableExclusion {
   @Id
   private Integer analysisId;
   @Id
-  private Integer alternativeId;
+  @GeneratedValue(generator = "uuid")
+  @GenericGenerator(name = "uuid", strategy = "uuid2")
+  private String alternativeId;
 
   public EffectsTableExclusion() {
   }
 
-  public EffectsTableExclusion(Integer analysisId, Integer alternativeId) {
+  public EffectsTableExclusion(Integer analysisId, String alternativeId) {
     this.analysisId = analysisId;
     this.alternativeId = alternativeId;
   }
@@ -57,7 +61,7 @@ public class EffectsTableExclusion {
     return analysisId;
   }
 
-  public Integer getAlternativeId() {
+  public String getAlternativeId() {
     return alternativeId;
   }
 
