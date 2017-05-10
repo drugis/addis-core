@@ -11,7 +11,7 @@ import org.drugis.addis.outcomes.Outcome;
 import org.drugis.addis.projects.service.ProjectService;
 import org.drugis.addis.security.Account;
 import org.drugis.addis.security.repository.AccountRepository;
-import org.drugis.addis.subProblem.service.SubProblemService;
+import org.drugis.addis.subProblems.service.SubProblemService;
 import org.drugis.addis.trialverse.model.SemanticInterventionUriAndName;
 import org.drugis.addis.trialverse.model.SemanticVariable;
 import org.drugis.addis.util.WebConstants;

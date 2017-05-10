@@ -1,4 +1,4 @@
-package org.drugis.addis.subProblem;
+package org.drugis.addis.subProblems;
 
 import com.fasterxml.jackson.annotation.JsonRawValue;
 

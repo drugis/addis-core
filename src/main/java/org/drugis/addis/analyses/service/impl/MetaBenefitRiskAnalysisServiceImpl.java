@@ -23,7 +23,7 @@ import org.drugis.addis.problems.service.ProblemService;
 import org.drugis.addis.projects.service.ProjectService;
 import org.drugis.addis.scenarios.repository.ScenarioRepository;
 import org.drugis.addis.security.Account;
-import org.drugis.addis.subProblem.service.SubProblemService;
+import org.drugis.addis.subProblems.service.SubProblemService;
 import org.drugis.addis.trialverse.service.impl.ReadValueException;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;

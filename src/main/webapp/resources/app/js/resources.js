@@ -1,5 +1,5 @@
 'use strict';
-define(function (require) {
+define(function(require) {
   var angular = require('angular');
   return angular.module('addis.resources', ['ngResource'])
     .factory('ProjectResource', require('resources/projectResource'))
@@ -24,5 +24,7 @@ define(function (require) {
     .factory('StudyAdverseEventsResource', require('resources/studyAdverseEventsResource'))
     .factory('EffectsTableResource', require('resources/effectsTableResource'))
     .factory('RemarksResource', require('resources/mcdaEffectsTableRemarksResource'))
-    .factory('ScaledUnitResource', require('resources/scaledUnitResource'));
+    .factory('ScaledUnitResource', require('resources/scaledUnitResource'))
+    .factory('SubProblemResource', require('resources/subProblemResource'))
+    ;
 });

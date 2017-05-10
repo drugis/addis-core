@@ -5,8 +5,8 @@ import org.drugis.addis.analyses.repository.AnalysisRepository;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.scenarios.Scenario;
 import org.drugis.addis.scenarios.service.ScenarioService;
-import org.drugis.addis.subProblem.SubProblem;
-import org.drugis.addis.subProblem.repository.SubProblemRepository;
+import org.drugis.addis.subProblems.SubProblem;
+import org.drugis.addis.subProblems.repository.SubProblemRepository;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
@@ -21,15 +21,17 @@ public class ScenarioServiceImpl implements ScenarioService {
   private AnalysisRepository analysisRepository;
 
   @Inject
-  SubProblemRepository subProblemRepository;
+  private SubProblemRepository subProblemRepository;
 
   @Override
   public void checkCoordinates(Integer projectId, Integer analysisId, Integer subProblemId, Scenario scenario) throws ResourceDoesNotExistException {
     AbstractAnalysis analysis = analysisRepository.get(analysisId);
+    SubProblem subProblem = subProblemRepository.get(subProblemId);
 
-    if (!analysis.getProjectId().equals(projectId) || !analysisId.equals(scenario.getWorkspace())) {
+    if (!analysis.getProjectId().equals(projectId) ||
+            !subProblem.getWorkspaceId().equals(analysisId) ||
+            !scenario.getSubProblemId().equals(subProblemId)) {
       throw new ResourceDoesNotExistException();
     }
-    SubProblem subProblem = subProblemRepository.get(subProblemId);  // FIXME
   }
 }

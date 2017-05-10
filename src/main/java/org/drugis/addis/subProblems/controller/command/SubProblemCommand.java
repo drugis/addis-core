@@ -1,6 +1,4 @@
-package org.drugis.addis.subProblem.controller.command;
-
-import com.fasterxml.jackson.annotation.JsonRawValue;
+package org.drugis.addis.subProblems.controller.command;
 
 /**
  * Created by joris on 8-5-17.

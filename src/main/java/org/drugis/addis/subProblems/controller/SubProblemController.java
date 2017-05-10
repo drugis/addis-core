@@ -1,13 +1,14 @@
-package org.drugis.addis.subProblem.controller;
+package org.drugis.addis.subProblems.controller;
 
 import org.apache.http.HttpStatus;
 import org.drugis.addis.analyses.service.AnalysisService;
+import org.drugis.addis.base.AbstractAddisCoreController;
 import org.drugis.addis.exception.MethodNotAllowedException;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.projects.service.ProjectService;
-import org.drugis.addis.subProblem.SubProblem;
-import org.drugis.addis.subProblem.controller.command.SubProblemCommand;
-import org.drugis.addis.subProblem.repository.SubProblemRepository;
+import org.drugis.addis.subProblems.SubProblem;
+import org.drugis.addis.subProblems.controller.command.SubProblemCommand;
+import org.drugis.addis.subProblems.repository.SubProblemRepository;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
@@ -22,7 +23,7 @@ import java.util.Collection;
  */
 @Controller
 @Transactional("ptmAddisCore")
-public class SubProblemController {
+public class SubProblemController extends AbstractAddisCoreController {
 
   @Inject
   private SubProblemRepository subProblemRepository;
@@ -35,11 +36,11 @@ public class SubProblemController {
 
   @RequestMapping(value = "/projects/{projectId}/analyses/{analysisId}/problems/{subProblemId}", method = RequestMethod.GET)
   @ResponseBody
-  public SubProblem get(@PathVariable Integer subProblemId) {
+  public SubProblem get(@PathVariable Integer subProblemId) throws ResourceDoesNotExistException {
     return subProblemRepository.get(subProblemId);
   }
 
-  @RequestMapping(value = "/projects/{projectId}/analyses/{analysisId}/problems/", method = RequestMethod.GET)
+  @RequestMapping(value = "/projects/{projectId}/analyses/{analysisId}/problems", method = RequestMethod.GET)
   @ResponseBody
   public Collection<SubProblem> query(@PathVariable Integer projectId, @PathVariable Integer analysisId) {
     return subProblemRepository.queryByProjectAndAnalysis(projectId, analysisId);

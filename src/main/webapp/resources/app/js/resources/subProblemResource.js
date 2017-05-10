@@ -1,12 +1,12 @@
 'use strict';
 define([], function() {
   var dependencies = ['$resource'];
-  var ScenarioResource = function($resource) {
-    return $resource('/projects/:projectId/analyses/:analysisId/scenarios/:id', {
+  var SubProblemResource = function($resource) {
+    return $resource('/projects/:projectId/analyses/:analysisId/problems/:problemId', {
       projectId: '@projectId',
       analysisId: '@analysisId',
-      id: '@id'
+      problemId: '@problemId'
     });
   };
-  return dependencies.concat(ScenarioResource);
+  return dependencies.concat(SubProblemResource);
 });

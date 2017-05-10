@@ -1,6 +1,7 @@
-package org.drugis.addis.subProblem.repository;
+package org.drugis.addis.subProblems.repository;
 
-import org.drugis.addis.subProblem.SubProblem;
+import org.drugis.addis.exception.ResourceDoesNotExistException;
+import org.drugis.addis.subProblems.SubProblem;
 
 import java.util.Collection;
 
@@ -14,5 +15,5 @@ public interface SubProblemRepository {
 
   Collection<SubProblem> queryByProjectAndAnalysis(Integer projectId, Integer workspaceId);
 
-  SubProblem get(Integer subProblemId);
+  SubProblem get(Integer subProblemId) throws ResourceDoesNotExistException;
 }

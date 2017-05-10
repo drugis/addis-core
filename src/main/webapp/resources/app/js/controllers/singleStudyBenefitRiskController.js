@@ -190,10 +190,11 @@ define(['angular', 'lodash'], function(angular, _) {
 
     $scope.goToDefaultScenarioView = function() {
       SingleStudyBenefitRiskService
-        .getDefaultScenario()
-        .then(function(scenario) {
+        .getDefaultScenarioIds($stateParams)
+        .then(function(ids) {
           $state.go(DEFAULT_VIEW, _.extend($stateParams, {
-            id: scenario.id
+            id: ids.scenario,
+            problemId: ids.problem
           }));
         });
     };

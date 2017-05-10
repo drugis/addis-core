@@ -1,10 +1,10 @@
-package org.drugis.addis.subProblem.service.impl;
+package org.drugis.addis.subProblems.service.impl;
 
 import org.drugis.addis.scenarios.Scenario;
 import org.drugis.addis.scenarios.repository.ScenarioRepository;
-import org.drugis.addis.subProblem.SubProblem;
-import org.drugis.addis.subProblem.repository.SubProblemRepository;
-import org.drugis.addis.subProblem.service.SubProblemService;
+import org.drugis.addis.subProblems.SubProblem;
+import org.drugis.addis.subProblems.repository.SubProblemRepository;
+import org.drugis.addis.subProblems.service.SubProblemService;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;

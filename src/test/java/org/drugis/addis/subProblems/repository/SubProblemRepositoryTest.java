@@ -1,7 +1,8 @@
-package org.drugis.addis.subProblem.repository;
+package org.drugis.addis.subProblems.repository;
 
 import org.drugis.addis.config.JpaRepositoryTestConfig;
-import org.drugis.addis.subProblem.SubProblem;
+import org.drugis.addis.exception.ResourceDoesNotExistException;
+import org.drugis.addis.subProblems.SubProblem;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
@@ -58,8 +59,14 @@ public class SubProblemRepositoryTest {
   }
 
   @Test
-  public void testGet() {
+  public void testGet() throws ResourceDoesNotExistException {
     SubProblem subProblem = subProblemRepository.get(100);
     assertEquals(defaultSubProblem, subProblem);
   }
+
+  @Test(expected = ResourceDoesNotExistException.class)
+  public void testMissingException() throws ResourceDoesNotExistException {
+    subProblemRepository.get(-11100);
+  }
+
 }

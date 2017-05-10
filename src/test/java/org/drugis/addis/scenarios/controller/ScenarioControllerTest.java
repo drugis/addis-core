@@ -3,6 +3,8 @@ package org.drugis.addis.scenarios.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.drugis.addis.TestUtils;
 import org.drugis.addis.config.TestConfig;
+import org.drugis.addis.exception.MethodNotAllowedException;
+import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.projects.service.ProjectService;
 import org.drugis.addis.scenarios.Scenario;
 import org.drugis.addis.scenarios.repository.ScenarioRepository;
@@ -65,6 +67,8 @@ public class ScenarioControllerTest {
 
   private Principal user;
   private Integer subProblemId = 100;
+  private Integer projectId = 1;
+  private Integer analysisId = 1;
 
   @Before
   public void setUp() {
@@ -101,8 +105,6 @@ public class ScenarioControllerTest {
   public void testQuery() throws Exception {
     Scenario scenario1 = new Scenario(1, 1, subProblemId, "Default", "problem");
     Scenario scenario2 = new Scenario(2, 1, subProblemId, "Default", "problem");
-    Integer projectId = 1;
-    Integer analysisId = 1;
     Collection<Scenario> scenarios = Arrays.asList(scenario1, scenario2);
     when(scenarioRepository.queryBySubProblem(projectId, analysisId, subProblemId)).thenReturn(scenarios);
     mockMvc.perform(get("/projects/" + projectId + "/analyses/" + analysisId + "/problems/" + subProblemId + "/scenarios").principal(user))
@@ -116,8 +118,6 @@ public class ScenarioControllerTest {
 
   @Test
   public void testUpdate() throws Exception {
-    Integer projectId = 1;
-    Integer analysisId = 1;
     Scenario scenario = new Scenario(1, 1, subProblemId, "Default", "{\"key\":\"value\"}");
     String content = TestUtils.createJson(scenario);
     System.out.println(content);
@@ -136,8 +136,6 @@ public class ScenarioControllerTest {
 
   @Test
   public void testCreate() throws Exception {
-    Integer projectId = 1;
-    Integer analysisId = 1;
     Scenario scenario = new Scenario(1, analysisId, subProblemId, "Default", "{\"key\":\"value\"}");
     String content = TestUtils.createJson(scenario);
     when(scenarioRepository.create(analysisId, subProblemId, scenario.getTitle(), scenario.getState())).thenReturn(scenario);
@@ -146,16 +144,39 @@ public class ScenarioControllerTest {
             .andExpect(status().isCreated())
             .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()))
             .andExpect(jsonPath("$.title", is(scenario.getTitle())));
-
     verify(scenarioService).checkCoordinates(projectId, analysisId, subProblemId, scenario);
     verify(projectService).checkOwnership(projectId, user);
     verify(scenarioRepository).create(analysisId, subProblemId, scenario.getTitle(), scenario.getState());
   }
 
   @Test
+  public void testCreateWithoutCredentials() throws Exception {
+    Scenario scenario = new Scenario(1, analysisId, subProblemId, "Default", "{\"key\":\"value\"}");
+    String body = TestUtils.createJson(scenario);
+    doThrow(new MethodNotAllowedException()).when(projectService).checkOwnership(1, user);
+    mockMvc.perform(
+            post("/projects/" + projectId + "/analyses/" + analysisId + "/problems/" + subProblemId + "/scenarios/")
+                    .content(body)
+                    .principal(user)
+                    .contentType(WebConstants.getApplicationJsonUtf8Value()))
+            .andExpect(status().isForbidden());
+  }
+
+  @Test
+  public void testCreateWithWrongCoordinateFails() throws Exception {
+    Scenario scenario = new Scenario(1, analysisId, subProblemId, "Default", "{\"key\":\"value\"}");
+    String body = TestUtils.createJson(scenario);
+    doThrow(new ResourceDoesNotExistException()).when(scenarioService).checkCoordinates(projectId, analysisId, subProblemId, scenario);
+    mockMvc.perform(
+            post("/projects/" + projectId + "/analyses/" + analysisId + "/problems/" + subProblemId + "/scenarios/")
+                    .content(body)
+                    .principal(user)
+                    .contentType(WebConstants.getApplicationJsonUtf8Value()))
+            .andExpect(status().isNotFound());
+  }
+
+  @Test
   public void testComplex() throws Exception {
-    Integer projectId = 1;
-    Integer analysisId = 1;
     String content = "{\"title\":\"Scenario z32\",\"subProblemId\":100,\"state\":{\"problem\":{\"title\":\"foo\",\"alternatives\":{\"plac\":{\"title\":\"plac\"},\"az\":{\"title\":\"az\"}},\"criteria\":{\"nonserious-ads\":{\"title\":\"non-serious ads\",\"scale\":[0,1],\"pvf\":{\"range\":[0.012,0.136],\"type\":\"linear\",\"direction\":\"decreasing\"},\"id\":\"nonserious-ads\",\"w\":\"w_1\"},\"serious-ads\":{\"title\":\"Serious ads\",\"scale\":[0,1],\"pvf\":{\"range\":[0.001,0.037],\"type\":\"linear\",\"direction\":\"decreasing\"},\"id\":\"serious-ads\",\"w\":\"w_2\"}},\"performanceTable\":[{\"alternative\":\"az\",\"criterion\":\"serious-ads\",\"performance\":{\"parameters\":{\"alpha\":2,\"beta\":137},\"type\":\"dbeta\"}},{\"alternative\":\"plac\",\"criterion\":\"serious-ads\",\"performance\":{\"parameters\":{\"alpha\":1,\"beta\":139},\"type\":\"dbeta\"}},{\"alternative\":\"plac\",\"criterion\":\"nonserious-ads\",\"performance\":{\"parameters\":{\"alpha\":4,\"beta\":136},\"type\":\"dbeta\"}},{\"alternative\":\"az\",\"criterion\":\"nonserious-ads\",\"performance\":{\"parameters\":{\"alpha\":10,\"beta\":129},\"type\":\"dbeta\"}}],\"method\":\"scales\"}}}";
     ObjectMapper mapper = new ObjectMapper();
     Scenario scenario = mapper.readValue(content, Scenario.class);

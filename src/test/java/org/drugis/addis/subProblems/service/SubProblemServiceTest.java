@@ -1,10 +1,10 @@
-package org.drugis.addis.subProblem.service;
+package org.drugis.addis.subProblems.service;
 
 import org.drugis.addis.scenarios.Scenario;
 import org.drugis.addis.scenarios.repository.ScenarioRepository;
-import org.drugis.addis.subProblem.SubProblem;
-import org.drugis.addis.subProblem.repository.SubProblemRepository;
-import org.drugis.addis.subProblem.service.impl.SubProblemServiceImpl;
+import org.drugis.addis.subProblems.SubProblem;
+import org.drugis.addis.subProblems.repository.SubProblemRepository;
+import org.drugis.addis.subProblems.service.impl.SubProblemServiceImpl;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;

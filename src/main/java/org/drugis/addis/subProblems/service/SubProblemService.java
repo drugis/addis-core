@@ -1,4 +1,4 @@
-package org.drugis.addis.subProblem.service;
+package org.drugis.addis.subProblems.service;
 
 /**
  * Created by joris on 8-5-17.

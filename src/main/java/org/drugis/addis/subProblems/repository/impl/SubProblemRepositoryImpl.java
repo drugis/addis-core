@@ -1,7 +1,8 @@
-package org.drugis.addis.subProblem.repository.impl;
+package org.drugis.addis.subProblems.repository.impl;
 
-import org.drugis.addis.subProblem.SubProblem;
-import org.drugis.addis.subProblem.repository.SubProblemRepository;
+import org.drugis.addis.exception.ResourceDoesNotExistException;
+import org.drugis.addis.subProblems.SubProblem;
+import org.drugis.addis.subProblems.repository.SubProblemRepository;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
 
@@ -56,7 +57,11 @@ public class SubProblemRepositoryImpl implements SubProblemRepository {
   }
 
   @Override
-  public SubProblem get(Integer subProblemId) {
-    return em.find(SubProblem.class, subProblemId);
+  public SubProblem get(Integer subProblemId) throws ResourceDoesNotExistException {
+    SubProblem subProblem = em.find(SubProblem.class, subProblemId);
+    if(subProblem == null) {
+      throw new ResourceDoesNotExistException();
+    }
+    return subProblem;
   }
 }

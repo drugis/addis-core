@@ -1,15 +1,16 @@
-package org.drugis.addis.subProblem.controller;
+package org.drugis.addis.subProblems.controller;
 
 import org.drugis.addis.TestUtils;
 import org.drugis.addis.analyses.service.AnalysisService;
 import org.drugis.addis.config.TestConfig;
 import org.drugis.addis.exception.MethodNotAllowedException;
+import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.projects.service.ProjectService;
 import org.drugis.addis.security.Account;
 import org.drugis.addis.security.repository.AccountRepository;
-import org.drugis.addis.subProblem.SubProblem;
-import org.drugis.addis.subProblem.controller.command.SubProblemCommand;
-import org.drugis.addis.subProblem.repository.SubProblemRepository;
+import org.drugis.addis.subProblems.SubProblem;
+import org.drugis.addis.subProblems.controller.command.SubProblemCommand;
+import org.drugis.addis.subProblems.repository.SubProblemRepository;
 import org.drugis.addis.util.WebConstants;
 import org.junit.After;
 import org.junit.Before;
@@ -80,6 +81,8 @@ public class SubProblemControllerTest {
   @After
   public void tearDown() {
     verifyNoMoreInteractions(subProblemRepository);
+    reset(projectService, analysisService);
+
   }
 
   @Test
@@ -92,16 +95,31 @@ public class SubProblemControllerTest {
     verify(subProblemRepository).get(3);
   }
 
-//  @Test
-//  public void testCreateWithoutCredentialsFails() throws Exception {
-//    SubProblemCommand subProblemCommand = new SubProblemCommand("{}", "Degauss");
-//    String body = TestUtils.createJson(subProblemCommand);
-//    mockMvc.perform(
-//            post("/projects/1/analyses/2/problems")
-//                    .content(body)
-//                    .contentType(WebConstants.getApplicationJsonUtf8Value()))
-//            .andExpect(status().isMethodNotAllowed());
-//  }
+  @Test
+  public void testCreateWithoutCredentialsFails() throws Exception {
+    SubProblemCommand subProblemCommand = new SubProblemCommand("{}", "Degauss");
+    String body = TestUtils.createJson(subProblemCommand);
+    doThrow(new MethodNotAllowedException()).when(projectService).checkOwnership(1,user);
+    mockMvc.perform(
+            post("/projects/1/analyses/2/problems")
+                    .content(body)
+                    .principal(user)
+                    .contentType(WebConstants.getApplicationJsonUtf8Value()))
+            .andExpect(status().isForbidden());
+  }
+
+  @Test
+  public void testCreateWithWrongCoordinateFails() throws Exception {
+    SubProblemCommand subProblemCommand = new SubProblemCommand("{}", "Degauss");
+    String body = TestUtils.createJson(subProblemCommand);
+    doThrow(new ResourceDoesNotExistException()).when(analysisService).checkCoordinates(1,2);
+    mockMvc.perform(
+            post("/projects/1/analyses/2/problems")
+                    .content(body)
+                    .principal(user)
+                    .contentType(WebConstants.getApplicationJsonUtf8Value()))
+            .andExpect(status().isNotFound());
+  }
 
   @Test
   public void testCreate() throws Exception {
