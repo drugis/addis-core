@@ -91,7 +91,7 @@ define(['lodash'], function(_) {
         .query(_.omit($stateParams, 'id'))
         .$promise
         .then(function(scenarios) {
-          $state.go('overview', {
+          $state.go('evidence', {
             userUid: $scope.userId,
             projectId: $stateParams.projectId,
             analysisId: $stateParams.analysisId,
