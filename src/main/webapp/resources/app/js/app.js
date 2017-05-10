@@ -156,7 +156,7 @@ define(
     var app = angular.module('addis', dependencies.concat(mcdaDependencies, gemtcWebDependencies, trialverseDependencies));
 
     app.constant('Tasks', Config.tasks);
-    app.constant('DEFAULT_VIEW', 'overview');
+    app.constant('DEFAULT_VIEW', 'evidence');
     app.constant('ANALYSIS_TYPES', [{
       label: 'Evidence synthesis',
       stateName: 'networkMetaAnalysis'
