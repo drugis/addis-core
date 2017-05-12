@@ -15,14 +15,21 @@ import javax.inject.Inject;
 @Service
 public class SubProblemServiceImpl implements SubProblemService {
   @Inject
-  SubProblemRepository subProblemRepository;
+  private SubProblemRepository subProblemRepository;
 
   @Inject
-  ScenarioRepository scenarioRepository;
+  private ScenarioRepository scenarioRepository;
 
   @Override
   public void createMCDADefaults(Integer projectId, Integer analysisId, String scenarioState) {
     SubProblem subProblem = subProblemRepository.create(analysisId, "{}", "Default");
     scenarioRepository.create(analysisId, subProblem.getId(), Scenario.DEFAULT_TITLE, scenarioState);
+  }
+
+  @Override
+  public SubProblem createSubProblem(Integer analysisId, String definition, String title, String scenarioState){
+    SubProblem subProblem = subProblemRepository.create(analysisId, definition,title);
+    scenarioRepository.create(analysisId, subProblem.getId(), Scenario.DEFAULT_TITLE, scenarioState);
+    return subProblem;
   }
 }

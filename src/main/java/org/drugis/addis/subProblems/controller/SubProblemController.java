@@ -9,6 +9,7 @@ import org.drugis.addis.projects.service.ProjectService;
 import org.drugis.addis.subProblems.SubProblem;
 import org.drugis.addis.subProblems.controller.command.SubProblemCommand;
 import org.drugis.addis.subProblems.repository.SubProblemRepository;
+import org.drugis.addis.subProblems.service.SubProblemService;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
@@ -27,6 +28,9 @@ public class SubProblemController extends AbstractAddisCoreController {
 
   @Inject
   private SubProblemRepository subProblemRepository;
+
+  @Inject
+  private SubProblemService subProblemService;
 
   @Inject
   private ProjectService projectService;
@@ -54,7 +58,7 @@ public class SubProblemController extends AbstractAddisCoreController {
     projectService.checkOwnership(projectId, principal);
     analysisService.checkCoordinates(projectId, analysisId);
     response.setStatus(HttpStatus.SC_CREATED);
-    return subProblemRepository.create(analysisId, subProblemCommand.getDefinition(), subProblemCommand.getTitle());
+    return subProblemService.createSubProblem(analysisId, subProblemCommand.getDefinition(), subProblemCommand.getTitle(), subProblemCommand.getScenarioState());
   }
 
 }

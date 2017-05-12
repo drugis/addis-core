@@ -11,6 +11,7 @@ import org.drugis.addis.security.repository.AccountRepository;
 import org.drugis.addis.subProblems.SubProblem;
 import org.drugis.addis.subProblems.controller.command.SubProblemCommand;
 import org.drugis.addis.subProblems.repository.SubProblemRepository;
+import org.drugis.addis.subProblems.service.SubProblemService;
 import org.drugis.addis.util.WebConstants;
 import org.junit.After;
 import org.junit.Before;
@@ -51,16 +52,16 @@ public class SubProblemControllerTest {
   @Mock
   private SubProblemRepository subProblemRepository;
 
-  @Inject
+  @Mock
+  private SubProblemService subProblemService;
+
+  @Mock
   private ProjectService projectService;
 
   @Inject
   private WebApplicationContext webApplicationContext;
 
-  @Inject
-  private AccountRepository accountRepository;
-
-  @Inject
+  @Mock
   private AnalysisService analysisService;
 
   @InjectMocks
@@ -74,8 +75,6 @@ public class SubProblemControllerTest {
     initMocks(this);
     mockMvc = MockMvcBuilders.standaloneSetup(subProblemController).build();
     user = mock(Principal.class);
-    when(user.getName()).thenReturn("gert");
-    when(accountRepository.findAccountByUsername("gert")).thenReturn(gert);
   }
 
   @After
@@ -97,7 +96,7 @@ public class SubProblemControllerTest {
 
   @Test
   public void testCreateWithoutCredentialsFails() throws Exception {
-    SubProblemCommand subProblemCommand = new SubProblemCommand("{}", "Degauss");
+    SubProblemCommand subProblemCommand = new SubProblemCommand("{}", "Degauss", "scenarioState");
     String body = TestUtils.createJson(subProblemCommand);
     doThrow(new MethodNotAllowedException()).when(projectService).checkOwnership(1,user);
     mockMvc.perform(
@@ -110,7 +109,7 @@ public class SubProblemControllerTest {
 
   @Test
   public void testCreateWithWrongCoordinateFails() throws Exception {
-    SubProblemCommand subProblemCommand = new SubProblemCommand("{}", "Degauss");
+    SubProblemCommand subProblemCommand = new SubProblemCommand("{}", "Degauss", "scenarioState");
     String body = TestUtils.createJson(subProblemCommand);
     doThrow(new ResourceDoesNotExistException()).when(analysisService).checkCoordinates(1,2);
     mockMvc.perform(
@@ -123,10 +122,10 @@ public class SubProblemControllerTest {
 
   @Test
   public void testCreate() throws Exception {
-    SubProblemCommand subProblemCommand = new SubProblemCommand("{}", "Degauss");
+    SubProblemCommand subProblemCommand = new SubProblemCommand("{}", "Degauss", "scenarioState");
     String body = TestUtils.createJson(subProblemCommand);
 
-    when(subProblemRepository.create(2, "{}", "Degauss")).thenReturn(new SubProblem(2, "{}", "Degauss"));
+    when(subProblemService.createSubProblem(2, "{}", "Degauss", "scenarioState")).thenReturn(new SubProblem(2, "{}", "Degauss"));
 
     mockMvc.perform(
             post("/projects/1/analyses/2/problems")
@@ -135,7 +134,7 @@ public class SubProblemControllerTest {
                     .contentType(WebConstants.getApplicationJsonUtf8Value()))
             .andExpect(status().isCreated())
             .andExpect(jsonPath("$.title", is("Degauss")));
-    verify(subProblemRepository).create(2, "{}", "Degauss");
+    verify(subProblemService).createSubProblem(2, "{}", "Degauss", "scenarioState");
   }
 
 
