@@ -18,6 +18,8 @@ define(['lodash', 'angular'], function(_, angular) {
     'UserService',
     'ReportResource',
     'HistoryResource',
+    'DosageService',
+    'ScaledUnitResource',
     'project'
   ];
   var SingleProjectController = function($scope, $q, $state, $stateParams, $location, $modal,
@@ -38,6 +40,8 @@ define(['lodash', 'angular'], function(_, angular) {
     UserService,
     ReportResource,
     HistoryResource,
+    DosageService,
+    ScaledUnitResource,
     project) {
     $scope.tabSelection = {
       activeTab: activeTab
@@ -112,6 +116,7 @@ define(['lodash', 'angular'], function(_, angular) {
 
     function reloadDefinitions() {
       loadCovariates();
+      loadUnits();
       loadInterventions();
       loadOutcomes();
     }
@@ -141,6 +146,22 @@ define(['lodash', 'angular'], function(_, angular) {
         });
       });
     }
+
+    function loadUnits() {
+      var unitsPromise = DosageService.get($stateParams.userUid, $scope.project.namespaceUid);
+      var scaledUnitsPromise = ScaledUnitResource.query($stateParams).$promise;
+      $q.all([unitsPromise, scaledUnitsPromise]).then(function(results) {
+        $scope.unitConcepts = results[0];
+        var unitConcepts = _.keyBy($scope.unitConcepts, 'unitUri');
+        var scaledUnits = results[1];
+        $scope.units = _.map(scaledUnits, function(unit) {
+          return _.extend({}, unit, {
+            conceptName: unitConcepts[unit.conceptUri].unitName
+          });
+        });
+      });
+    }
+
 
     function loadInterventions() {
       InterventionResource.query({
@@ -267,6 +288,24 @@ define(['lodash', 'angular'], function(_, angular) {
         resolve: {
           callback: function() {
             return loadOutcomes;
+          }
+        }
+      });
+    };
+
+    $scope.openCreateScaledUnitDialog = function() {
+      $modal.open({
+        templateUrl: './app/js/project/addScaledUnit.html',
+        controller: 'AddScaledUnitController',
+        resolve: {
+          callback: function() {
+            return loadUnits;
+          },
+          unitConcepts: function(){
+            return $scope.unitConcepts;
+          },
+          scaledUnits: function(){
+            return $scope.units;
           }
         }
       });

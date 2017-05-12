@@ -14,7 +14,7 @@ define(['lodash'], function(_) {
           unit: scope.unitConcepts[0]
         };
         setDefaultName(scope.newScaledUnit);
-        scope.addScale={};
+        scope.addScale = {};
 
         //functions
         scope.saveScaledUnit = saveScaledUnit;

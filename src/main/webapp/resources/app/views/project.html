@@ -48,8 +48,8 @@
       <tabset>
         <tab heading="Definitions" active="tabSelection.activeTab === 'definitions'" ng-click="setActiveTab('definitions')">
           <div ng-if="tabSelection.activeTab === 'definitions'">
+            <!-- Outcomes -->
             <div class="row section">
-              <!-- Outcomes -->
               <div class="columns large-12">
                 <h3 class="subheader">Outcomes
                   <inline-help help-key="addis-outcome"></inline-help>
@@ -91,8 +91,32 @@
               </div>
             </div>
 
+            <!-- Interventions -->
             <div class="row section">
-              <!-- Interventions -->
+              <div class="columns large-12">
+                <h3 class="subheader">Units
+                  <!-- <inline-help help-key="addis-unit"></inline-help> -->
+                </h3>
+                <button id="show-create-unit-modal-btn" ng-if="editMode.allowEditing" ng-disabled="!loading.loaded"
+                  class="small " ng-click="openCreateScaledUnitDialog()"><i class="fa fa-plus"></i> Add unit
+                </button>
+                <table>
+                  <thead>
+                    <th>Name</th>
+                    <th>Concept</th>
+                    <th>Multiplier</th>
+                  </thead>
+                  <tbody ng-repeat="unit in units">
+                    <td>{{unit.name}}</td>
+                    <td>{{unit.conceptName}}</td>
+                    <td>{{unit.multiplier}}</td>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- Interventions -->
+            <div class="row section">
               <div class="columns large-12">
                 <h3 class="subheader">Interventions
                   <inline-help help-key="addis-intervention"></inline-help>
