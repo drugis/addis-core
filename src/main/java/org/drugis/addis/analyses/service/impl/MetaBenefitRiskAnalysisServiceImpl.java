@@ -64,10 +64,10 @@ public class MetaBenefitRiskAnalysisServiceImpl implements MetaBenefitRiskAnalys
   private SubProblemService subProblemService;
 
   @Inject
-  ProjectService projectService;
+  private ProjectService projectService;
 
   @Inject
-  InterventionRepository interventionRepository;
+  private InterventionRepository interventionRepository;
 
 
 
