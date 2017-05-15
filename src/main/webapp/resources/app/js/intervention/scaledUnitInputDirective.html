@@ -1,5 +1,5 @@
 <div class="row">
-  <div class="columns large-2 large-offset-2">
+  <div class="columns large-2">
     <label>
       Multiplier
       <select ng-model="newScaledUnit.multiplier" ng-options="multiplier.label for multiplier in metricMultipliers"
@@ -13,7 +13,7 @@
         ng-change="setDefaultName(newScaledUnit)"></select>
     </label>
   </div>
-  <div class="columns large-2">
+  <div class="columns large-4">
     <label>
       Unit name
       <input type="text" ng-model="newScaledUnit.name">
@@ -21,12 +21,12 @@
   </div>
   <div class="columns large-4 end" style="padding-top: 1.48em;">
     <button class="small" type="button" ng-disabled="isSavingUnit || !newScaledUnit.multiplier || !newScaledUnit.unit || !newScaledUnit.name || isDuplicateName(newScaledUnit.name)"
-      ng-click="saveScaledUnit(newScaledUnit)">Save{{isDuplicateName(newScaledUnit.name)? '*' : ''}}</button>
-    <button class="small" type="button" ng-click="addScale.isAddingScaledUnit = false">Cancel</button>
+      ng-click="saveScaledUnit(newScaledUnit)">Save</button>
+    <button ng-hide="addScale.isAddingScaledUnit" class="small" type="button" ng-click="cancelScaledUnit()">Cancel</button>
   </div>
 </div>
-<div class="row" ng-if="isDuplicateName(newScaledUnit.name) && addScale.isAddingScaledUnit">
-  <div class="columns large-4 large-offset-2">
-    <em>*duplicate name</em>
+<div class="row" ng-if="isDuplicateName(newScaledUnit.name)">
+  <div class="columns large-4 large-offset-8">
+    <em>duplicate name</em>
   </div>
 </div>

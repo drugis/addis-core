@@ -6,7 +6,7 @@ define(['lodash', 'angular'], function(_, angular) {
   var AddInterventionController = function($scope, $stateParams, $modalInstance, callback, InterventionResource,
     ScaledUnitResource, InterventionService, ProjectService, DosageService) {
     var deregisterConstraintWatch;
-
+    // functions
     $scope.checkForDuplicateInterventionName = checkForDuplicateInterventionName;
     $scope.cancel = cancel;
     $scope.addIntervention = addIntervention;
@@ -17,6 +17,7 @@ define(['lodash', 'angular'], function(_, angular) {
     $scope.numberOfSelectedInterventions = numberOfSelectedInterventions;
     $scope.loadScaledUnits = loadScaledUnits;
 
+    // vars
     $scope.newIntervention = {
       type: 'simple',
       projectId: $scope.project.id
@@ -26,22 +27,27 @@ define(['lodash', 'angular'], function(_, angular) {
     };
     $scope.isAddingIntervention = false;
     $scope.activeTab = 'simple';
+    $scope.addScale = {
+      isAddingScaledUnit: false
+    };
 
+    // init
     loadScaledUnits();
-
     $scope.singleInterventions = _.reject($scope.interventions, function(intervention) {
       return intervention.type === 'combination' || intervention.type === 'class';
     });
-
     $scope.nonClassInterventions = _.reject($scope.interventions, {
       'type': 'class'
     });
     DosageService.get($stateParams.userUid, $scope.project.namespaceUid).then(function(units) {
       $scope.unitConcepts = units;
     });
-
     $scope.$on('scaledUnitsChanged', function() {
+      $scope.addScale.isAddingScaledUnit = false;
       loadScaledUnits();
+    });
+    $scope.$on('scaledUnitCancelled', function(){
+      $scope.addScale.isAddingScaledUnit = false;
     });
 
     function loadScaledUnits() {
@@ -146,14 +152,17 @@ define(['lodash', 'angular'], function(_, angular) {
         delete $scope.newIntervention.titratedDoseMaxConstraint;
         delete $scope.newIntervention.bothDoseTypesMinConstraint;
         delete $scope.newIntervention.bothDoseTypesMaxConstraint;
+        $scope.addScale.isAddingScaledUnit = false;
       } else if ($scope.newIntervention.type === 'titrated') {
         delete $scope.newIntervention.fixedDoseConstraint;
         delete $scope.newIntervention.bothDoseTypesMinConstraint;
         delete $scope.newIntervention.bothDoseTypesMaxConstraint;
+        $scope.addScale.isAddingScaledUnit = false;
       } else if ($scope.newIntervention.type === 'both') {
         delete $scope.newIntervention.fixedDoseConstraint;
         delete $scope.newIntervention.titratedDoseMinConstraint;
         delete $scope.newIntervention.titratedDoseMaxConstraint;
+        $scope.addScale.isAddingScaledUnit = false;
       }
     }
 

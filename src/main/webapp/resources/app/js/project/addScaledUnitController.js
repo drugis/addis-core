@@ -1,5 +1,5 @@
 'use strict';
-define(['lodash', 'angular'], function(_, angular) {
+define([], function() {
   var dependencies = ['$scope', '$stateParams', '$modalInstance', 'callback', 'unitConcepts', 'scaledUnits'];
   var AddScaledUnitController = function($scope, $stateParams, $modalInstance, callback, unitConcepts, scaledUnits) {
     // vars
@@ -8,7 +8,7 @@ define(['lodash', 'angular'], function(_, angular) {
 
     $scope.cancel = cancel;
     $scope.$on('scaledUnitsChanged', close);
-
+    $scope.$on('scaledUnitCancelled', cancel);
 
     function close() {
       callback();

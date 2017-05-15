@@ -91,25 +91,29 @@
               </div>
             </div>
 
-            <!-- Interventions -->
+            <!-- Units -->
             <div class="row section">
               <div class="columns large-12">
                 <h3 class="subheader">Units
-                  <!-- <inline-help help-key="addis-unit"></inline-help> -->
+                  <inline-help help-key="unit"></inline-help>
                 </h3>
                 <button id="show-create-unit-modal-btn" ng-if="editMode.allowEditing" ng-disabled="!loading.loaded"
                   class="small " ng-click="openCreateScaledUnitDialog()"><i class="fa fa-plus"></i> Add unit
                 </button>
-                <table>
+                <table style="width: 100%;">
                   <thead>
-                    <th>Name</th>
-                    <th>Concept</th>
-                    <th>Multiplier</th>
+                    <tr>
+                      <th class="large-4">Name</th>
+                      <th class="large-4">Concept</th>
+                      <th class="large-4">Multiplier</th>
+                    </tr>
                   </thead>
-                  <tbody ng-repeat="unit in units">
-                    <td>{{unit.name}}</td>
-                    <td>{{unit.conceptName}}</td>
-                    <td>{{unit.multiplier}}</td>
+                  <tbody>
+                    <tr ng-repeat="unit in units">
+                      <td>{{unit.name}}</td>
+                      <td>{{unit.conceptName}}</td>
+                      <td>{{unit.multiplier}}</td>
+                    </tr>
                   </tbody>
                 </table>
               </div>
@@ -152,8 +156,12 @@
                           <i class="fa fa-trash fa-2x" style="color: lightgrey;"></i>
                         </a>
                       </td>
-                      <td ng-if="editMode.allowEditing && editMode.interventionRepairPossible && intervention.hasMissingMultipliers"><a class="has-tip" tooltip-placement="left" tooltip-html-unsafe="Intervention has missing unit multiplier mapping(s)" ng-click="openRepairInterventionDialog(intervention)"><i class="fa fa-wrench fa-2x"></i></a></td>
-                      <td ng-if="editMode.allowEditing && editMode.interventionRepairPossible && !intervention.hasMissingMultipliers" ng-disabled="!intervention.hasMissingMultipliers"><i class="fa fa-wrench fa-2x" style="color: lightgrey;"></i></td>
+                      <td ng-if="editMode.allowEditing && editMode.interventionRepairPossible && intervention.hasMissingMultipliers">
+                        <a class="has-tip" tooltip-placement="left" tooltip-html-unsafe="Intervention has missing unit multiplier mapping(s)"
+                          ng-click="openRepairInterventionDialog(intervention)"><i class="fa fa-wrench fa-2x"></i></a>
+                      </td>
+                      <td ng-if="editMode.allowEditing && editMode.interventionRepairPossible && !intervention.hasMissingMultipliers"
+                        ng-disabled="!intervention.hasMissingMultipliers"><i class="fa fa-wrench fa-2x" style="color: lightgrey;"></i></td>
                     </tr>
                   </tbody>
                 </table>
