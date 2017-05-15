@@ -162,7 +162,6 @@ define(['lodash', 'angular'], function(_, angular) {
       });
     }
 
-
     function loadInterventions() {
       InterventionResource.query({
           projectId: $scope.project.id
