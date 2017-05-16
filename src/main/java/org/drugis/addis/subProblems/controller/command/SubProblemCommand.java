@@ -1,5 +1,7 @@
 package org.drugis.addis.subProblems.controller.command;
 
+import com.fasterxml.jackson.annotation.JsonRawValue;
+
 /**
  * Created by joris on 8-5-17.
  */
@@ -8,6 +10,7 @@ public class SubProblemCommand {
   private String title;
   private String scenarioState;
 
+  @JsonRawValue
   public String getDefinition() {
     return definition;
   }
@@ -16,6 +19,7 @@ public class SubProblemCommand {
     return title;
   }
 
+  @JsonRawValue
   public String getScenarioState() {
     return scenarioState;
   }

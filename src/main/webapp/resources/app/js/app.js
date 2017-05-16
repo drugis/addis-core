@@ -68,6 +68,7 @@ define(
     'mcda/services/partialValueFunction',
     'mcda/services/scaleRangeService',
     'mcda/services/util',
+    'mcda/subProblem/subProblem',
     'covariates/covariates',
     'home/home'
   ],
@@ -85,6 +86,7 @@ define(
       'elicit.resultsService',
       'elicit.util',
       'elicit.routeFactory',
+      'elicit.subProblem',
       'mm.foundation',
       'ngAnimate'
     ];

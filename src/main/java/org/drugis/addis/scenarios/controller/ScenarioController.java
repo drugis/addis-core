@@ -24,13 +24,13 @@ import java.util.Collection;
 public class ScenarioController extends AbstractAddisCoreController {
 
   @Inject
-  ScenarioRepository scenarioRepository;
+  private ScenarioRepository scenarioRepository;
 
   @Inject
-  ScenarioService scenarioService;
+  private ScenarioService scenarioService;
 
   @Inject
-  ProjectService projectService;
+  private ProjectService projectService;
 
   @RequestMapping(value = "/projects/{projectId}/analyses/{analysisId}/problems/{subProblemId}/scenarios/{scenarioId}", method = RequestMethod.GET)
   @ResponseBody

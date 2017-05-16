@@ -30,8 +30,11 @@ define(['lodash'], function(_) {
       });
     };
 
-    var getProblem = function() {
-      return ProblemResource.get().$promise;
+    var getProblem = function(projectId, analysisId) {
+      return ProblemResource.get({
+        projectId: projectId,
+        analysisId: analysisId
+      }).$promise;
     };
 
     var concatWithNoDuplicates = function(source, target, comparatorFunction) {
