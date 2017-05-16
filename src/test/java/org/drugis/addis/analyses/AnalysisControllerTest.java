@@ -2,6 +2,7 @@ package org.drugis.addis.analyses;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.drugis.addis.TestUtils;
+import org.drugis.addis.analyses.controller.AnalysisUpdateCommand;
 import org.drugis.addis.analyses.repository.*;
 import org.drugis.addis.analyses.service.AnalysisService;
 import org.drugis.addis.config.TestConfig;
@@ -122,8 +123,8 @@ public class AnalysisControllerTest {
     Integer direction = 1;
     Outcome outcome = new Outcome(1, 1, "name", direction, "motivation", new SemanticVariable(uri, "label"));
     NetworkMetaAnalysis networkMetaAnalysis = new NetworkMetaAnalysis(1, 1, "name", outcome);
-    List<Integer> outcomeIds = Arrays.asList(1);
-    List<NetworkMetaAnalysis> analyses = Arrays.asList(networkMetaAnalysis);
+    List<Integer> outcomeIds = Collections.singletonList(1);
+    List<NetworkMetaAnalysis> analyses = Collections.singletonList(networkMetaAnalysis);
     when(networkMetaAnalysisRepository.queryByOutcomes(projectId, outcomeIds)).thenReturn(analyses);
 
     ResultActions result = mockMvc
@@ -251,10 +252,12 @@ public class AnalysisControllerTest {
     SingleStudyBenefitRiskAnalysis oldAnalysis = new SingleStudyBenefitRiskAnalysis(1, projectId, "name", selectedOutcomes, interventionInclusions);
     ObjectMapper objectMapper = new ObjectMapper();
     SingleStudyBenefitRiskAnalysis newAnalysis = objectMapper.convertValue(objectMapper.readTree(exampleUpdateSingleStudyBenefitRiskRequestWithoutProblem()), SingleStudyBenefitRiskAnalysis.class);
+    AnalysisUpdateCommand newAnalysisCommand = new AnalysisUpdateCommand(newAnalysis, null);
+    String jsonCommand = TestUtils.createJson(newAnalysisCommand);
     when(analysisRepository.get(analysisId)).thenReturn(oldAnalysis);
     when(singleStudyBenefitRiskAnalysisRepository.update(gert, newAnalysis)).thenReturn(newAnalysis);
     mockMvc.perform(post("/projects/{projectId}/analyses/{analysisId}", projectId, analysisId)
-            .content(exampleUpdateSingleStudyBenefitRiskRequestWithoutProblem())
+            .content(jsonCommand)
             .principal(user)
             .contentType(WebConstants.getApplicationJsonUtf8Value()))
             .andExpect(status().isOk())
@@ -273,10 +276,13 @@ public class AnalysisControllerTest {
     SingleStudyBenefitRiskAnalysis oldAnalysis = new SingleStudyBenefitRiskAnalysis(1, projectId, "name", Collections.emptyList(), Collections.emptyList());
     ObjectMapper objectMapper = new ObjectMapper();
     SingleStudyBenefitRiskAnalysis newAnalysis = objectMapper.convertValue(objectMapper.readTree(exampleUpdateSingleStudyBenefitRiskRequestWithProblem()), SingleStudyBenefitRiskAnalysis.class);
+    AnalysisUpdateCommand newAnalysisCommand = new AnalysisUpdateCommand(newAnalysis, newAnalysis.getProblem());
+    String jsonCommand = TestUtils.createJson(newAnalysisCommand);
+
     when(analysisRepository.get(analysisId)).thenReturn(oldAnalysis);
     when(singleStudyBenefitRiskAnalysisRepository.update(gert, newAnalysis)).thenReturn(newAnalysis);
     mockMvc.perform(post("/projects/{projectId}/analyses/{analysisId}", projectId, analysisId)
-            .content(exampleUpdateSingleStudyBenefitRiskRequestWithProblem())
+            .content(jsonCommand)
             .principal(user)
             .contentType(WebConstants.getApplicationJsonUtf8Value()))
             .andExpect(status().isOk())
@@ -293,10 +299,13 @@ public class AnalysisControllerTest {
     SingleStudyBenefitRiskAnalysis oldAnalysis = new SingleStudyBenefitRiskAnalysis(1, projectId, "name", Collections.emptyList(), Collections.emptyList(), "oldProblem");
     ObjectMapper objectMapper = new ObjectMapper();
     SingleStudyBenefitRiskAnalysis newAnalysis = objectMapper.convertValue(objectMapper.readTree(exampleUpdateSingleStudyBenefitRiskRequestWithProblem()), SingleStudyBenefitRiskAnalysis.class);
+    AnalysisUpdateCommand newAnalysisCommand = new AnalysisUpdateCommand(newAnalysis, null);
+    String jsonCommand = TestUtils.createJson(newAnalysisCommand);
+
     when(analysisRepository.get(analysisId)).thenReturn(oldAnalysis);
     when(singleStudyBenefitRiskAnalysisRepository.update(gert, newAnalysis)).thenReturn(newAnalysis);
     mockMvc.perform(post("/projects/{projectId}/analyses/{analysisId}", projectId, analysisId)
-            .content(exampleUpdateSingleStudyBenefitRiskRequestWithProblem())
+            .content(jsonCommand)
             .principal(user)
             .contentType(WebConstants.getApplicationJsonUtf8Value()))
             .andExpect(status().isForbidden());
@@ -309,10 +318,12 @@ public class AnalysisControllerTest {
     SingleStudyBenefitRiskAnalysis oldAnalysis = new SingleStudyBenefitRiskAnalysis(1, projectId, "name", Collections.emptyList(), Collections.emptyList(), null);
     ObjectMapper objectMapper = new ObjectMapper();
     SingleStudyBenefitRiskAnalysis newAnalysis = objectMapper.convertValue(objectMapper.readTree(exampleUpdateSingleStudyBenefitRiskRequestWithProblem()), SingleStudyBenefitRiskAnalysis.class);
+    AnalysisUpdateCommand newAnalysisCommand = new AnalysisUpdateCommand(newAnalysis, newAnalysis.getProblem());
+    String jsonCommand = TestUtils.createJson(newAnalysisCommand);
     when(analysisRepository.get(analysisId)).thenReturn(oldAnalysis);
     when(singleStudyBenefitRiskAnalysisRepository.update(gert, newAnalysis)).thenReturn(newAnalysis);
     mockMvc.perform(post("/projects/{projectId}/analyses/{analysisId}", 1, 1)
-            .content(exampleUpdateSingleStudyBenefitRiskRequestWithProblem())
+            .content(jsonCommand)
             .principal(user)
             .contentType(WebConstants.getApplicationJsonUtf8Value()))
             .andExpect(status().isOk());
@@ -332,7 +343,8 @@ public class AnalysisControllerTest {
     NetworkMetaAnalysis newAnalysis = new NetworkMetaAnalysis(oldAnalysis.getId(), oldAnalysis.getProjectId(), oldAnalysis.getTitle(), outcome);
     when(analysisRepository.get(analysisId)).thenReturn(oldAnalysis);
     when(analysisService.updateNetworkMetaAnalysis(gert, newAnalysis)).thenReturn(newAnalysis);
-    String jsonCommand = TestUtils.createJson(newAnalysis);
+    AnalysisUpdateCommand newAnalysisCommand = new AnalysisUpdateCommand(newAnalysis, null);
+    String jsonCommand = TestUtils.createJson(newAnalysisCommand);
     mockMvc.perform(post("/projects/{projectId}/analyses/{analysisId}", projectId, analysisId)
             .content(jsonCommand)
             .principal(user)
@@ -349,8 +361,8 @@ public class AnalysisControllerTest {
     Outcome outcome = new Outcome(outcomeId, projectId, "outcome name", direction, "motivation", new SemanticVariable(uri, "label"));
     List<ArmExclusion> excludedArms = Arrays.asList(new ArmExclusion(analysisId, URI.create("-1L")), new ArmExclusion(analysisId, URI.create("-2L")));
     NetworkMetaAnalysis newAnalysis = new NetworkMetaAnalysis(analysisId, projectId, "name", excludedArms, Collections.emptyList(), Collections.emptyList(), outcome);
-
-    String jsonCommand = TestUtils.createJson(newAnalysis);
+    AnalysisUpdateCommand newAnalysisCommand = new AnalysisUpdateCommand(newAnalysis, null);
+    String jsonCommand = TestUtils.createJson(newAnalysisCommand);
     mockMvc.perform(post("/projects/{projectId}/analyses/{analysisId}", projectId, analysisId)
             .content(jsonCommand)
             .principal(user)
@@ -368,8 +380,8 @@ public class AnalysisControllerTest {
     NetworkMetaAnalysis analysis = new NetworkMetaAnalysis(1, 1, "adsf");
     List<InterventionInclusion> includedInterventions = Arrays.asList(new InterventionInclusion(analysis.getId(), -1), new InterventionInclusion(analysis.getId(), -2));
     NetworkMetaAnalysis newAnalysis = new NetworkMetaAnalysis(analysisId, projectId, "name", Collections.emptyList(), includedInterventions, Collections.emptyList(), outcome);
-
-    String jsonCommand = TestUtils.createJson(newAnalysis);
+    AnalysisUpdateCommand newAnalysisCommand = new AnalysisUpdateCommand(newAnalysis, null);
+    String jsonCommand = TestUtils.createJson(newAnalysisCommand);
     mockMvc.perform(post("/projects/{projectId}/analyses/{analysisId}", projectId, analysisId)
             .content(jsonCommand)
             .principal(user)
@@ -386,8 +398,9 @@ public class AnalysisControllerTest {
     Outcome outcome = new Outcome(outcomeId, projectId, "outcome name", direction, "motivation", new SemanticVariable(uri, "label"));
     List<CovariateInclusion> covariateInclusions = Arrays.asList(new CovariateInclusion(analysisId, -1), new CovariateInclusion(analysisId, -2));
     NetworkMetaAnalysis newAnalysis = new NetworkMetaAnalysis(analysisId, projectId, "name", Collections.emptyList(), Collections.emptyList(), covariateInclusions, outcome);
+    AnalysisUpdateCommand newAnalysisCommand = new AnalysisUpdateCommand(newAnalysis, null);
+    String jsonCommand = TestUtils.createJson(newAnalysisCommand);
 
-    String jsonCommand = TestUtils.createJson(newAnalysis);
     mockMvc.perform(post("/projects/{projectId}/analyses/{analysisId}", projectId, analysisId)
             .content(jsonCommand)
             .principal(user)
@@ -419,11 +432,11 @@ public class AnalysisControllerTest {
   }
 
 
-  String exampleUpdateSingleStudyBenefitRiskRequestWithProblem() {
+  private String exampleUpdateSingleStudyBenefitRiskRequestWithProblem() {
     return TestUtils.loadResource(this.getClass(), "/analysisController/exampleSingleStudyBenefitRiskAnalysisWithProblem.json");
   }
 
-  String exampleUpdateSingleStudyBenefitRiskRequestWithoutProblem() {
+  private String exampleUpdateSingleStudyBenefitRiskRequestWithoutProblem() {
     return TestUtils.loadResource(this.getClass(), "/analysisController/exampleSingleStudyBenefitRiskAnalysisWithoutProblem.json");
   }
 

@@ -16,6 +16,7 @@ define(['lodash', 'angular', 'angular-mocks', 'controllers'], function(_) {
       'concatWithNoDuplicates', 'addMissingOutcomesToStudies', 'addMissingInterventionsToStudies',
       'addHasMatchedMixedTreatmentArm', 'recalculateGroup', 'addOverlappingInterventionsToStudies'
     ]);
+    var workspaceService = jasmine.createSpyObj('WorkspaceService',['reduceProblem']);
     var outcomesDeferred;
     var interventionDeferred;
     var mockOutcomes = [{
@@ -103,6 +104,7 @@ define(['lodash', 'angular', 'angular-mocks', 'controllers'], function(_) {
         'DEFAULT_VIEW': 'DEFAULT_VIEW',
         'AnalysisResource': analysisResource,
         'ProjectStudiesResource': projectStudiesResource,
+        'WorkspaceService': workspaceService,
         UserService: userService
       });
     }));

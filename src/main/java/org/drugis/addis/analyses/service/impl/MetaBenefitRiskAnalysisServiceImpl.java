@@ -73,7 +73,8 @@ public class MetaBenefitRiskAnalysisServiceImpl implements MetaBenefitRiskAnalys
   private ObjectMapper objectMapper = new ObjectMapper();
 
   @Override
-  public MetaBenefitRiskAnalysis update(Account user, Integer projectId, MetaBenefitRiskAnalysis analysis) throws URISyntaxException, SQLException, IOException, ResourceDoesNotExistException, MethodNotAllowedException, ReadValueException, InvalidTypeForDoseCheckException, UnexpectedNumberOfResultsException, ProblemCreationException {
+  public MetaBenefitRiskAnalysis update(Account user, Integer projectId,
+                                        MetaBenefitRiskAnalysis analysis, String scenarioState) throws URISyntaxException, SQLException, IOException, ResourceDoesNotExistException, MethodNotAllowedException, ReadValueException, InvalidTypeForDoseCheckException, UnexpectedNumberOfResultsException, ProblemCreationException {
     MetaBenefitRiskAnalysis storedAnalysis = metaBenefitRiskAnalysisRepository.find(analysis.getId());
     if(storedAnalysis.isFinalized()) {
       throw new MethodNotAllowedException();
@@ -83,7 +84,7 @@ public class MetaBenefitRiskAnalysisServiceImpl implements MetaBenefitRiskAnalys
       AbstractProblem problem = problemService.getProblem(projectId, analysis.getId());
       String problemString = objectMapper.writeValueAsString(problem);
       analysis.setProblem(problemString);
-      scenarioRepository.create(analysis.getId(), Scenario.DEFAULT_TITLE, "{\"problem\":" + problemString + "}");
+      scenarioRepository.create(analysis.getId(), Scenario.DEFAULT_TITLE, "{\"problem\":" + scenarioState + "}");
     }
     return metaBenefitRiskAnalysisRepository.update(user, analysis);
   }
@@ -119,7 +120,9 @@ public class MetaBenefitRiskAnalysisServiceImpl implements MetaBenefitRiskAnalys
 
   @Override
   public List<MbrOutcomeInclusion> cleanInclusions(MetaBenefitRiskAnalysis analysis, MetaBenefitRiskAnalysis oldAnalysis) {
-    if (!analysis.getInterventionInclusions().equals(oldAnalysis.getInterventionInclusions())) {
+    HashSet newInterventionInclusions = new HashSet(analysis.getInterventionInclusions());
+    HashSet oldInterventionInclusions = new HashSet(oldAnalysis.getInterventionInclusions());
+    if (!newInterventionInclusions.equals(oldInterventionInclusions)) {
       Sets.SetView<InterventionInclusion> difference = Sets.symmetricDifference(Sets.newHashSet(oldAnalysis.getInterventionInclusions()), Sets.newHashSet(analysis.getInterventionInclusions()));
       Integer removedInterventionId = difference.iterator().next().getInterventionId();
       ObjectMapper om = new ObjectMapper();

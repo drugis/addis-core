@@ -10,6 +10,7 @@ define(['angular', 'lodash'], function(angular, _) {
     'AnalysisResource',
     'ProjectStudiesResource',
     'UserService',
+    'WorkspaceService'
   ];
   var SingleStudyBenefitRiskController = function($scope, $stateParams, $state,
     currentAnalysis,
@@ -20,7 +21,8 @@ define(['angular', 'lodash'], function(angular, _) {
     DEFAULT_VIEW,
     AnalysisResource,
     ProjectStudiesResource,
-    UserService
+    UserService,
+    WorkspaceService
   ) {
 
     $scope.analysis = currentAnalysis;
@@ -153,15 +155,20 @@ define(['angular', 'lodash'], function(angular, _) {
       SingleStudyBenefitRiskService.recalculateGroup($scope.studies);
     });
 
-    function analysisToSaveCommand(analysis) {
-      var saveCommand = angular.copy(analysis);
-      saveCommand.interventionInclusions = saveCommand.interventionInclusions.map(function(intervention) {
+    function analysisToSaveCommand(analysis, problem) {
+      var analysisToSave = angular.copy(analysis);
+      analysisToSave.interventionInclusions = analysisToSave.interventionInclusions.map(function(intervention) {
         return {
           interventionId: intervention.id,
-          analysisId: saveCommand.id
+          analysisId: analysisToSave.id
         };
       });
-      return saveCommand;
+      return {
+        id: analysis.id,
+        projectId: analysis.projectId,
+        analysis: analysisToSave,
+        scenarioState: JSON.stringify(problem,null,2)
+      };
     }
 
     function saveAnalysis() {
@@ -200,7 +207,7 @@ define(['angular', 'lodash'], function(angular, _) {
       }
       SingleStudyBenefitRiskService.getProblem($scope.analysis).then(function(problem) {
         $scope.analysis.problem = problem;
-        var saveCommand = analysisToSaveCommand($scope.analysis);
+        var saveCommand = analysisToSaveCommand($scope.analysis, WorkspaceService.reduceProblem(problem));
         AnalysisResource.save(saveCommand).$promise.then(function(response) {
           $scope.analysis = response;
           $scope.workspace = response;
