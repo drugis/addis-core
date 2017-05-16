@@ -1,13 +1,13 @@
 'use strict';
-define(['lodash'], function(_) {
+define(['angular', 'lodash'], function(angular, _) {
   var dependencies = ['$scope', '$q', '$state', '$stateParams', 'currentAnalysis', 'currentProject', 'OutcomeResource',
     'InterventionResource', 'CovariateResource', 'ModelResource', 'NetworkMetaAnalysisService', 'AnalysisService',
-    'EvidenceTableResource', 'UserService'
+    'EvidenceTableResource', 'UserService', 'AnalysisResource'
   ];
 
   var NetworkMetaAnalysisContainerController = function($scope, $q, $state, $stateParams, currentAnalysis, currentProject,
     OutcomeResource, InterventionResource, CovariateResource, ModelResource, NetworkMetaAnalysisService, AnalysisService,
-    EvidenceTableResource, UserService) {
+    EvidenceTableResource, UserService, AnalysisResource) {
 
     $scope.isAnalysisLocked = true;
     $scope.isNetworkDisconnected = true;
@@ -89,13 +89,22 @@ define(['lodash'], function(_) {
         if (!$scope.analysis.outcome && $scope.outcomes.length > 0) {
           // set first outcome as default outcome
           $scope.analysis.outcome = $scope.outcomes[0];
-          $scope.analysis.$save(function() {
+          var saveCommand = analysisToSaveCommand($scope.analysis);
+          AnalysisResource.save(saveCommand, function() {
             $scope.reloadModel();
           });
         } else {
           $scope.reloadModel();
         }
       });
+
+    function analysisToSaveCommand(analysis) {
+      return {
+        id: analysis.id,
+        projectId: analysis.projectId,
+        analysis: analysis
+      };
+    }
 
     $scope.gotoCreateModel = function() {
       $state.go('createModel', {
@@ -131,8 +140,7 @@ define(['lodash'], function(_) {
           projectId: $scope.project.id,
           analysisId: $scope.analysis.id
         })
-        .$promise
-        .then(function(trialverseData) {
+        .$promise.then(function(trialverseData) {
           $scope.trialverseData = trialverseData;
           $scope.momentSelections = NetworkMetaAnalysisService.buildMomentSelections(trialverseData, $scope.analysis);
           var includedInterventions = NetworkMetaAnalysisService.getIncludedInterventions($scope.interventions);
@@ -158,7 +166,8 @@ define(['lodash'], function(_) {
       if ($scope.trialverseData && !intervention.isIncluded) {
         $scope.analysis.excludedArms = NetworkMetaAnalysisService.cleanUpExcludedArms(intervention, $scope.analysis, $scope.trialverseData, $scope.interventions);
       }
-      $scope.analysis.$save(function() {
+      var saveCommand = analysisToSaveCommand($scope.analysis);
+      AnalysisResource.save(saveCommand, function() {
         $scope.reloadModel();
       });
     };
@@ -166,7 +175,8 @@ define(['lodash'], function(_) {
     $scope.changeSelectedOutcome = function() {
       $scope.tableHasAmbiguousArm = false;
       $scope.analysis.excludedArms = [];
-      $scope.analysis.$save(function() {
+      var saveCommand = analysisToSaveCommand($scope.analysis);
+      AnalysisResource.save(saveCommand, function() {
         $scope.reloadModel();
       });
     };
@@ -211,14 +221,16 @@ define(['lodash'], function(_) {
       $scope.tableHasAmbiguousArm = false;
       $scope.analysis = NetworkMetaAnalysisService.changeArmExclusion(dataRow, $scope.analysis);
       updateNetwork();
-      $scope.analysis.$save(function() {
+      var saveCommand = analysisToSaveCommand($scope.analysis);
+      AnalysisResource.save(saveCommand, function() {
         $scope.reloadModel();
       });
     };
 
     $scope.changeCovariateInclusion = function(covariate) {
       $scope.analysis.includedCovariates = NetworkMetaAnalysisService.changeCovariateInclusion(covariate, $scope.analysis);
-      $scope.analysis.$save(function() {
+      var saveCommand = analysisToSaveCommand($scope.analysis);
+      AnalysisResource.save(saveCommand, function() {
         $scope.covariates = NetworkMetaAnalysisService.addInclusionsToCovariates($scope.covariates, $scope.analysis.includedCovariates);
         $scope.reloadModel();
       });
@@ -237,7 +249,8 @@ define(['lodash'], function(_) {
         $scope.analysis.includedMeasurementMoments.push(newInclusion);
       }
 
-      $scope.analysis.$save(function() {
+      var saveCommand = analysisToSaveCommand($scope.analysis);
+      AnalysisResource.save(saveCommand, function() {
         $scope.reloadModel();
       });
     };

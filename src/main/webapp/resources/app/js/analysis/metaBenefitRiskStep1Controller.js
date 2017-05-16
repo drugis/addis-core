@@ -158,7 +158,8 @@ define(['lodash', 'angular'], function(_, angular) {
     function updateAlternatives() {
       setIncludedAlternatives();
       updateMissingAlternativesForAllOutcomes();
-      buildAnalysisCommand($scope.analysis).$save();
+      var saveCommand = analysisToSaveCommand($scope.analysis);
+      AnalysisResource.save(saveCommand);
       checkStep1Validity();
     }
 
@@ -199,15 +200,19 @@ define(['lodash', 'angular'], function(_, angular) {
       owa.selectedModel.missingAlternativesNames = _.map(owa.selectedModel.missingAlternatives, 'name');
     }
 
-    function buildAnalysisCommand(analysis) {
-      var analysisCommand = angular.copy(analysis);
-      analysisCommand.interventionInclusions = analysis.interventionInclusions.map(function(includedIntervention) {
+    function analysisToSaveCommand(analysis) {
+      var analysisToSave = angular.copy(analysis);
+      analysisToSave.interventionInclusions = analysisToSave.interventionInclusions.map(function(intervention) {
         return {
-          analysisId: $scope.analysis.id,
-          interventionId: includedIntervention.id
+          interventionId: intervention.id,
+          analysisId: analysisToSave.id
         };
       });
-      return analysisCommand;
+      return {
+        id: analysis.id,
+        projectId: analysis.projectId,
+        analysis: analysisToSave
+      };
     }
 
     function buildInclusions() {
@@ -222,7 +227,8 @@ define(['lodash', 'angular'], function(_, angular) {
         };
       });
       checkStep1Validity();
-      buildAnalysisCommand($scope.analysis).$save();
+      var saveCommand = analysisToSaveCommand($scope.analysis);
+      AnalysisResource.save(saveCommand);
     }
 
   };
