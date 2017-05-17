@@ -27,8 +27,8 @@ public class SubProblemServiceImpl implements SubProblemService {
   }
 
   @Override
-  public SubProblem createSubProblem(Integer analysisId, String definition, String title, String scenarioState){
-    SubProblem subProblem = subProblemRepository.create(analysisId, definition,title);
+  public SubProblem createSubProblem(Integer analysisId, String definition, String title, String scenarioState) {
+    SubProblem subProblem = subProblemRepository.create(analysisId, definition, title);
     scenarioRepository.create(analysisId, subProblem.getId(), Scenario.DEFAULT_TITLE, scenarioState);
     return subProblem;
   }

@@ -33,9 +33,11 @@ public class SubProblemRepositoryTest {
   @Test
   public void testCreate() {
     String definition = "{}";
-    SubProblem result = subProblemRepository.create(workspaceId, definition, "Default");
+    String title = "not default";
+    SubProblem result = subProblemRepository.create(workspaceId, definition, title);
     assertEquals(workspaceId, result.getWorkspaceId());
     assertEquals(definition, result.getDefinition());
+    assertEquals(title, result.getTitle());
   }
 
   @Test

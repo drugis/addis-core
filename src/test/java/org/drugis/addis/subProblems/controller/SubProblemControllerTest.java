@@ -122,10 +122,10 @@ public class SubProblemControllerTest {
 
   @Test
   public void testCreate() throws Exception {
-    SubProblemCommand subProblemCommand = new SubProblemCommand("{}", "Degauss", "scenarioState");
+    SubProblemCommand subProblemCommand = new SubProblemCommand("{}", "Degauss", "{}");
     String body = TestUtils.createJson(subProblemCommand);
 
-    when(subProblemService.createSubProblem(2, "{}", "Degauss", "scenarioState")).thenReturn(new SubProblem(2, "{}", "Degauss"));
+    when(subProblemService.createSubProblem(2, "\"{}\"", "Degauss", "\"{}\"")).thenReturn(new SubProblem(2, "{}", "Degauss"));
 
     mockMvc.perform(
             post("/projects/1/analyses/2/problems")
@@ -134,7 +134,7 @@ public class SubProblemControllerTest {
                     .contentType(WebConstants.getApplicationJsonUtf8Value()))
             .andExpect(status().isCreated())
             .andExpect(jsonPath("$.title", is("Degauss")));
-    verify(subProblemService).createSubProblem(2, "{}", "Degauss", "scenarioState");
+    verify(subProblemService).createSubProblem(2, "\"{}\"", "Degauss", "\"{}\"");
   }
 
 

@@ -23,7 +23,7 @@ public class SubProblemRepositoryImpl implements SubProblemRepository {
 
   @Override
   public SubProblem create(Integer workspaceId, String definition, String title) {
-    SubProblem newSubProblem = new SubProblem(workspaceId, definition, "Default");
+    SubProblem newSubProblem = new SubProblem(workspaceId, definition, title);
     em.persist(newSubProblem);
     return newSubProblem;
   }

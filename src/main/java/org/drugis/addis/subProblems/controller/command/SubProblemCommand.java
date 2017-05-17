@@ -1,6 +1,8 @@
 package org.drugis.addis.subProblems.controller.command;
 
 import com.fasterxml.jackson.annotation.JsonRawValue;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import org.drugis.addis.util.ObjectToStringDeserializer;
 
 /**
  * Created by joris on 8-5-17.
@@ -10,18 +12,26 @@ public class SubProblemCommand {
   private String title;
   private String scenarioState;
 
-  @JsonRawValue
   public String getDefinition() {
     return definition;
+  }
+
+  @JsonDeserialize(using = ObjectToStringDeserializer.class)
+  public void setDefinition(String definition) {
+    this.definition = definition;
   }
 
   public String getTitle() {
     return title;
   }
 
-  @JsonRawValue
   public String getScenarioState() {
     return scenarioState;
+  }
+
+  @JsonDeserialize(using = ObjectToStringDeserializer.class)
+  public void setScenarioState(String scenarioState) {
+    this.scenarioState = scenarioState;
   }
 
   public SubProblemCommand() {
