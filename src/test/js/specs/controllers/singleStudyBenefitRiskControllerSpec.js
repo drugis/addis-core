@@ -12,11 +12,11 @@ define(['lodash', 'angular', 'angular-mocks', 'controllers'], function(_) {
     var interventionResource = jasmine.createSpyObj('InterventionResource', ['query']);
     var analysisResource = jasmine.createSpyObj('AnalysisResource', ['save']);
     var projectStudiesResource = jasmine.createSpyObj('projectStudiesResource', ['query']);
-    var singleStudyBenefitRiskService = jasmine.createSpyObj('singleStudyBenefitRiskService', ['getProblem', 'getDefaultScenario', 'validateProblem',
+    var singleStudyBenefitRiskService = jasmine.createSpyObj('singleStudyBenefitRiskService', ['getProblem', 'getDefaultScenarioIds', 'validateProblem',
       'concatWithNoDuplicates', 'addMissingOutcomesToStudies', 'addMissingInterventionsToStudies',
       'addHasMatchedMixedTreatmentArm', 'recalculateGroup', 'addOverlappingInterventionsToStudies'
     ]);
-    var workspaceService = jasmine.createSpyObj('WorkspaceService',['reduceProblem']);
+    var workspaceService = jasmine.createSpyObj('WorkspaceService', ['reduceProblem']);
     var outcomesDeferred;
     var interventionDeferred;
     var mockOutcomes = [{
@@ -71,7 +71,6 @@ define(['lodash', 'angular', 'angular-mocks', 'controllers'], function(_) {
       // set the mock state params
       mockStateParams.projectId = mockProject.id;
       mockStateParams.analysisId = mockAnalysis.id;
-
       // set a mock result value for the service call
       singleStudyBenefitRiskService.concatWithNoDuplicates.and.returnValue(mockOutcomes);
       singleStudyBenefitRiskService.addMissingOutcomesToStudies.and.returnValue(mockStudies);
@@ -257,7 +256,9 @@ define(['lodash', 'angular', 'angular-mocks', 'controllers'], function(_) {
     describe('when checkDuplicateOutcomes is called,', function() {
       it('should set a list of all selected outcomes with conflicting concepts on the scope', function() {
         expect(scope.duplicateOutcomesList).toEqual(
-           [[scope.analysis.selectedOutcomes[0],scope.analysis.selectedOutcomes[2]]]
+          [
+            [scope.analysis.selectedOutcomes[0], scope.analysis.selectedOutcomes[2]]
+          ]
         );
       });
     });
@@ -283,28 +284,30 @@ define(['lodash', 'angular', 'angular-mocks', 'controllers'], function(_) {
       });
     });
 
-    describe('when goToOverView is called', function() {
+    describe('when goToDefaultScenarioView is called', function() {
       var defaultScenarioId = 324;
-      var defaultScenario = {
-        name: 'defaultScenario',
-        id: defaultScenarioId
+      var defaultProblemId = 423;
+      var defaultScenarioIds = {
+        problem: defaultProblemId,
+        scenario: defaultScenarioId
       };
-      var defaultScenarioDeferred;
-
+      var defaultScenarioIdsDeferred;
       beforeEach(function() {
-        defaultScenarioDeferred = q.defer();
-        defaultScenario.$promise = defaultScenarioDeferred.promise;
-        singleStudyBenefitRiskService.getDefaultScenario.and.returnValue(defaultScenario.$promise);
-        defaultScenarioDeferred.resolve(defaultScenario);
+        defaultScenarioIdsDeferred = q.defer();
+        defaultScenarioIds.$promise = defaultScenarioIdsDeferred.promise;
+        singleStudyBenefitRiskService.getDefaultScenarioIds.and.returnValue(defaultScenarioIds.$promise);
+        defaultScenarioIdsDeferred.resolve(defaultScenarioIds);
         scope.goToDefaultScenarioView();
         scope.$apply();
       });
 
-      it('should go to the default view using the default scenario id', function() {
-        expect(singleStudyBenefitRiskService.getDefaultScenario).toHaveBeenCalled();
-        expect(state.go).toHaveBeenCalledWith('DEFAULT_VIEW', _.extend(mockStateParams, {
+      it('should go to the default view using the default problem and scenario ids', function() {
+        var mockStateParamsExtended = _.extend(mockStateParams, {
+          problemId: 1,
           id: defaultScenarioId
-        }));
+        });
+        expect(singleStudyBenefitRiskService.getDefaultScenarioIds).toHaveBeenCalledWith(mockStateParamsExtended);
+        expect(state.go).toHaveBeenCalledWith('DEFAULT_VIEW', mockStateParamsExtended);
       });
 
     });
@@ -338,7 +341,7 @@ define(['lodash', 'angular', 'angular-mocks', 'controllers'], function(_) {
       it('should create the problem, save the analysis and then go to the defaultScenario view', function() {
         expect(scope.analysis.problem).toEqual(problem);
         expect(analysisResource.save).toHaveBeenCalled();
-        expect(singleStudyBenefitRiskService.getDefaultScenario).toHaveBeenCalled();
+        expect(singleStudyBenefitRiskService.getDefaultScenarioIds).toHaveBeenCalled();
       });
     });
   });
