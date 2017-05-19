@@ -3,6 +3,8 @@ package org.drugis.addis.scenarios.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.drugis.addis.TestUtils;
 import org.drugis.addis.config.TestConfig;
+import org.drugis.addis.exception.MethodNotAllowedException;
+import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.projects.service.ProjectService;
 import org.drugis.addis.scenarios.Scenario;
 import org.drugis.addis.scenarios.repository.ScenarioRepository;
@@ -64,6 +66,9 @@ public class ScenarioControllerTest {
   private ScenarioController scenarioController;
 
   private Principal user;
+  private Integer subProblemId = 100;
+  private Integer projectId = 1;
+  private Integer analysisId = 1;
 
   @Before
   public void setUp() {
@@ -87,9 +92,9 @@ public class ScenarioControllerTest {
 
   @Test
   public void testGet() throws Exception {
-    Scenario scenario = new Scenario(1, 1, "Default", "problem");
+    Scenario scenario = new Scenario(1, 1, subProblemId, "Default", "problem");
     when(scenarioRepository.get(scenario.getId())).thenReturn(scenario);
-    mockMvc.perform(get("/projects/1/analyses/1/scenarios/" + scenario.getId()).principal(user))
+    mockMvc.perform(get("/projects/1/analyses/1/problems/" + subProblemId + "/scenarios/" + scenario.getId()).principal(user))
             .andExpect(status().isOk())
             .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()))
             .andExpect(jsonPath("$.id", is(scenario.getId())));
@@ -98,75 +103,92 @@ public class ScenarioControllerTest {
 
   @Test
   public void testQuery() throws Exception {
-    Scenario scenario1 = new Scenario(1, 1, "Default", "problem");
-    Scenario scenario2 = new Scenario(2, 1, "Default", "problem");
-    Integer projectId = 1;
-    Integer analysisId = 1;
+    Scenario scenario1 = new Scenario(1, 1, subProblemId, "Default", "problem");
+    Scenario scenario2 = new Scenario(2, 1, subProblemId, "Default", "problem");
     Collection<Scenario> scenarios = Arrays.asList(scenario1, scenario2);
-    when(scenarioRepository.queryByProjectAndAnalysis(projectId, analysisId)).thenReturn(scenarios);
-    mockMvc.perform(get("/projects/" + projectId + "/analyses/" + analysisId + "/scenarios").principal(user))
+    when(scenarioRepository.queryBySubProblem(projectId, analysisId, subProblemId)).thenReturn(scenarios);
+    mockMvc.perform(get("/projects/" + projectId + "/analyses/" + analysisId + "/problems/" + subProblemId + "/scenarios").principal(user))
             .andExpect(status().isOk())
             .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()))
             .andExpect(jsonPath("$", hasSize(2)))
             .andExpect(jsonPath("$[0].id", is(scenario1.getId())))
             .andExpect(jsonPath("$[1].id", is(scenario2.getId())));
-    verify(scenarioRepository).queryByProjectAndAnalysis(projectId, analysisId);
+    verify(scenarioRepository).queryBySubProblem(projectId, analysisId, subProblemId);
   }
 
   @Test
   public void testUpdate() throws Exception {
-    Integer projectId = 1;
-    Integer analysisId = 1;
-    Scenario scenario = new Scenario(1, 1, "Default", "{\"key\":\"value\"}");
+    Scenario scenario = new Scenario(1, 1, subProblemId, "Default", "{\"key\":\"value\"}");
     String content = TestUtils.createJson(scenario);
     System.out.println(content);
     when(scenarioRepository.update(scenario.getId(), scenario.getTitle(), scenario.getState())).thenReturn(scenario);
-    mockMvc.perform(post("/projects/" + projectId + "/analyses/" + analysisId + "/scenarios/" + scenario.getId())
+    mockMvc.perform(post("/projects/" + projectId + "/analyses/" + analysisId + "/problems/" + subProblemId + "/scenarios/" + scenario.getId())
             .content(content)
             .principal(user)
             .contentType(WebConstants.getApplicationJsonUtf8Value()))
             .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()))
             .andExpect(status().isOk());
 
-    verify(scenarioService).checkCoordinates(projectId, analysisId, scenario);
+    verify(scenarioService).checkCoordinates(projectId, analysisId, subProblemId, scenario);
     verify(projectService).checkOwnership(projectId, user);
     verify(scenarioRepository).update(scenario.getId(), scenario.getTitle(), scenario.getState());
   }
 
   @Test
   public void testCreate() throws Exception {
-    Integer projectId = 1;
-    Integer analysisId = 1;
-    Scenario scenario = new Scenario(1, "Default", "{\"key\":\"value\"}");
+    Scenario scenario = new Scenario(1, analysisId, subProblemId, "Default", "{\"key\":\"value\"}");
     String content = TestUtils.createJson(scenario);
-    when(scenarioRepository.create(analysisId, scenario.getTitle(), scenario.getState())).thenReturn(scenario);
-    mockMvc.perform(post("/projects/" + projectId + "/analyses/" + analysisId + "/scenarios/")
-      .content(content).principal(user).contentType(WebConstants.getApplicationJsonUtf8Value()))
-      .andExpect(status().isCreated())
-      .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()))
-      .andExpect(jsonPath("$.title", is(scenario.getTitle())));
-
-    verify(scenarioService).checkCoordinates(projectId, analysisId, scenario);
+    when(scenarioRepository.create(analysisId, subProblemId, scenario.getTitle(), scenario.getState())).thenReturn(scenario);
+    mockMvc.perform(post("/projects/" + projectId + "/analyses/" + analysisId + "/problems/" + subProblemId + "/scenarios/")
+            .content(content).principal(user).contentType(WebConstants.getApplicationJsonUtf8Value()))
+            .andExpect(status().isCreated())
+            .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()))
+            .andExpect(jsonPath("$.title", is(scenario.getTitle())));
+    verify(scenarioService).checkCoordinates(projectId, analysisId, subProblemId, scenario);
     verify(projectService).checkOwnership(projectId, user);
-    verify(scenarioRepository).create(analysisId, scenario.getTitle(), scenario.getState());
+    verify(scenarioRepository).create(analysisId, subProblemId, scenario.getTitle(), scenario.getState());
+  }
+
+  @Test
+  public void testCreateWithoutCredentials() throws Exception {
+    Scenario scenario = new Scenario(1, analysisId, subProblemId, "Default", "{\"key\":\"value\"}");
+    String body = TestUtils.createJson(scenario);
+    doThrow(new MethodNotAllowedException()).when(projectService).checkOwnership(1, user);
+    mockMvc.perform(
+            post("/projects/" + projectId + "/analyses/" + analysisId + "/problems/" + subProblemId + "/scenarios/")
+                    .content(body)
+                    .principal(user)
+                    .contentType(WebConstants.getApplicationJsonUtf8Value()))
+            .andExpect(status().isForbidden());
+  }
+
+  @Test
+  public void testCreateWithWrongCoordinateFails() throws Exception {
+    Scenario scenario = new Scenario(1, analysisId, subProblemId, "Default", "{\"key\":\"value\"}");
+    String body = TestUtils.createJson(scenario);
+    doThrow(new ResourceDoesNotExistException()).when(scenarioService).checkCoordinates(projectId, analysisId, subProblemId, scenario);
+    mockMvc.perform(
+            post("/projects/" + projectId + "/analyses/" + analysisId + "/problems/" + subProblemId + "/scenarios/")
+                    .content(body)
+                    .principal(user)
+                    .contentType(WebConstants.getApplicationJsonUtf8Value()))
+            .andExpect(status().isNotFound());
   }
 
   @Test
   public void testComplex() throws Exception {
-    Integer projectId = 1;
-    Integer analysisId = 1;
-    String content = "{\"title\":\"Scenario z32\",\"state\":{\"problem\":{\"title\":\"foo\",\"alternatives\":{\"plac\":{\"title\":\"plac\"},\"az\":{\"title\":\"az\"}},\"criteria\":{\"nonserious-ads\":{\"title\":\"non-serious ads\",\"scale\":[0,1],\"pvf\":{\"range\":[0.012,0.136],\"type\":\"linear\",\"direction\":\"decreasing\"},\"id\":\"nonserious-ads\",\"w\":\"w_1\"},\"serious-ads\":{\"title\":\"Serious ads\",\"scale\":[0,1],\"pvf\":{\"range\":[0.001,0.037],\"type\":\"linear\",\"direction\":\"decreasing\"},\"id\":\"serious-ads\",\"w\":\"w_2\"}},\"performanceTable\":[{\"alternative\":\"az\",\"criterion\":\"serious-ads\",\"performance\":{\"parameters\":{\"alpha\":2,\"beta\":137},\"type\":\"dbeta\"}},{\"alternative\":\"plac\",\"criterion\":\"serious-ads\",\"performance\":{\"parameters\":{\"alpha\":1,\"beta\":139},\"type\":\"dbeta\"}},{\"alternative\":\"plac\",\"criterion\":\"nonserious-ads\",\"performance\":{\"parameters\":{\"alpha\":4,\"beta\":136},\"type\":\"dbeta\"}},{\"alternative\":\"az\",\"criterion\":\"nonserious-ads\",\"performance\":{\"parameters\":{\"alpha\":10,\"beta\":129},\"type\":\"dbeta\"}}],\"method\":\"scales\"}}}";
+    String content = "{\"title\":\"Scenario z32\",\"subProblemId\":100,\"state\":{\"problem\":{\"title\":\"foo\",\"alternatives\":{\"plac\":{\"title\":\"plac\"},\"az\":{\"title\":\"az\"}},\"criteria\":{\"nonserious-ads\":{\"title\":\"non-serious ads\",\"scale\":[0,1],\"pvf\":{\"range\":[0.012,0.136],\"type\":\"linear\",\"direction\":\"decreasing\"},\"id\":\"nonserious-ads\",\"w\":\"w_1\"},\"serious-ads\":{\"title\":\"Serious ads\",\"scale\":[0,1],\"pvf\":{\"range\":[0.001,0.037],\"type\":\"linear\",\"direction\":\"decreasing\"},\"id\":\"serious-ads\",\"w\":\"w_2\"}},\"performanceTable\":[{\"alternative\":\"az\",\"criterion\":\"serious-ads\",\"performance\":{\"parameters\":{\"alpha\":2,\"beta\":137},\"type\":\"dbeta\"}},{\"alternative\":\"plac\",\"criterion\":\"serious-ads\",\"performance\":{\"parameters\":{\"alpha\":1,\"beta\":139},\"type\":\"dbeta\"}},{\"alternative\":\"plac\",\"criterion\":\"nonserious-ads\",\"performance\":{\"parameters\":{\"alpha\":4,\"beta\":136},\"type\":\"dbeta\"}},{\"alternative\":\"az\",\"criterion\":\"nonserious-ads\",\"performance\":{\"parameters\":{\"alpha\":10,\"beta\":129},\"type\":\"dbeta\"}}],\"method\":\"scales\"}}}";
     ObjectMapper mapper = new ObjectMapper();
     Scenario scenario = mapper.readValue(content, Scenario.class);
-    when(scenarioRepository.create(analysisId, scenario.getTitle(), scenario.getState())).thenReturn(scenario);
+    when(scenarioRepository.create(analysisId, subProblemId, scenario.getTitle(), scenario.getState())).thenReturn(scenario);
     //NB: controller sets workspace/analysisID in scenario
     scenario.setWorkspace(analysisId);
-    mockMvc.perform(post("/projects/" + projectId + "/analyses/" + analysisId + "/scenarios/")
-      .content(content).principal(user).contentType(WebConstants.getApplicationJsonUtf8Value()))
-      .andExpect(status().isCreated());
-    verify(scenarioService).checkCoordinates(projectId, analysisId, scenario);
+    mockMvc.perform(post("/projects/" + projectId + "/analyses/" + analysisId + "/problems/" + subProblemId + "/scenarios/")
+            .content(content).principal(user).contentType(WebConstants.getApplicationJsonUtf8Value()))
+            .andExpect(status().isCreated());
+    verify(scenarioService).checkCoordinates(projectId, analysisId, subProblemId, scenario);
     verify(projectService).checkOwnership(projectId, user);
-    verify(scenarioRepository).create(analysisId, "Scenario z32", scenario.getState());
+    verify(scenarioRepository).create(analysisId, subProblemId, "Scenario z32", scenario.getState());
   }
 
 }

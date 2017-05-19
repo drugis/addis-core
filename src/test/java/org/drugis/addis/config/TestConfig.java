@@ -17,10 +17,11 @@ import org.drugis.addis.projects.repository.ProjectRepository;
 import org.drugis.addis.projects.repository.ReportRepository;
 import org.drugis.addis.projects.service.ProjectService;
 import org.drugis.addis.remarks.repository.RemarksRepository;
-import org.drugis.addis.scaledUnits.repository.ScaledUnitRepository;
 import org.drugis.addis.scenarios.repository.ScenarioRepository;
 import org.drugis.addis.security.repository.AccountRepository;
 import org.drugis.addis.statistics.service.StatisticsService;
+import org.drugis.addis.subProblems.repository.SubProblemRepository;
+import org.drugis.addis.subProblems.service.SubProblemService;
 import org.drugis.addis.trialverse.service.ClinicalTrialsImportService;
 import org.drugis.addis.trialverse.service.MappingService;
 import org.drugis.addis.trialverse.service.TriplestoreService;
@@ -189,6 +190,16 @@ public class TestConfig {
   @Bean
   public EffectsTableRepository effectsTableRepository() {
     return mock(EffectsTableRepository.class);
+  }
+
+  @Bean
+  public SubProblemService subProblemService() {
+    return mock(SubProblemService.class);
+  }
+
+  @Bean
+  public SubProblemRepository subProblemRepository() {
+    return mock(SubProblemRepository.class);
   }
 }
 

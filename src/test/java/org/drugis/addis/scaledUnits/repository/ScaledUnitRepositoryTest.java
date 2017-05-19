@@ -38,7 +38,7 @@ public class ScaledUnitRepositoryTest {
     List<ScaledUnit> result = scaledUnitRepository.query(projectId);
     ScaledUnit unit = new ScaledUnit(10, projectId,
             URI.create("http://concept10.bla"), 0.1, "gram");
-    assertEquals(result.get(0), unit);
+    assertEquals(unit, result.get(0));
   }
 
   @Test
@@ -46,6 +46,6 @@ public class ScaledUnitRepositoryTest {
     ScaledUnit unit = new ScaledUnit(21, projectId, URI.create("http://concept10.bla"), 0.01, "gram");
     scaledUnitRepository.create(unit.getProjectId(), unit.getConceptUri(), unit.getMultiplier(), unit.getName());
     List<ScaledUnit> result = scaledUnitRepository.query(projectId);
-    assertEquals(result.get(1), unit);
+    assertEquals(unit, result.get(1));
   }
 }

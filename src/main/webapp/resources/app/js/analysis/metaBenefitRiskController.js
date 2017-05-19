@@ -1,10 +1,12 @@
 'use strict';
 define(['lodash'], function(_) {
   var dependencies = ['$scope', '$q', '$stateParams', '$state', 'AnalysisResource', 'InterventionResource',
-    'OutcomeResource', 'MetaBenefitRiskService', 'ModelResource', 'ScenarioResource', 'UserService', 'ProjectResource'
+    'OutcomeResource', 'MetaBenefitRiskService', 'ModelResource', 'ScenarioResource', 'UserService', 'ProjectResource',
+    'SubProblemResource'
   ];
   var MetBenefitRiskController = function($scope, $q, $stateParams, $state, AnalysisResource, InterventionResource,
-    OutcomeResource, MetaBenefitRiskService, ModelResource, ScenarioResource, UserService, ProjectResource) {
+    OutcomeResource, MetaBenefitRiskService, ModelResource, ScenarioResource, UserService, ProjectResource,
+    SubProblemResource) {
 
     $scope.analysis = AnalysisResource.get($stateParams);
     $scope.alternatives = InterventionResource.query($stateParams);
@@ -87,17 +89,22 @@ define(['lodash'], function(_) {
 
 
     function goToDefaultScenario() {
-      ScenarioResource
-        .query(_.omit($stateParams, 'id'))
-        .$promise
-        .then(function(scenarios) {
+      var params = $stateParams;
+      SubProblemResource.query(params).$promise.then(function(subProblems) {
+        var subProblem = subProblems[0];
+        params = _.extend({}, params, {
+          problemId: subProblem.id
+        });
+        ScenarioResource.query(params).$promise.then(function(scenarios) {
           $state.go('evidence', {
             userUid: $scope.userId,
-            projectId: $stateParams.projectId,
-            analysisId: $stateParams.analysisId,
+            projectId: params.projectId,
+            analysisId: params.analysisId,
+            problemId: subProblem.id,
             id: scenarios[0].id
           });
         });
+      });
     }
 
     function goToModel(model) {

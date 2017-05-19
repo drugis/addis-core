@@ -146,7 +146,9 @@ define(['angular', 'lodash'], function(angular, _) {
     function finalizeAndGoToDefaultScenario() {
       $scope.analysis.finalized = true;
       ProblemResource.get($stateParams).$promise.then(function(problem) {
-        var saveCommand = analysisToSaveCommand($scope.analysis, WorkspaceService.reduceProblem(problem));
+        var saveCommand = analysisToSaveCommand($scope.analysis, {
+          problem: WorkspaceService.reduceProblem(problem)
+        });
         AnalysisResource.save(saveCommand, function() {
           goToDefaultScenario();
         });

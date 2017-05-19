@@ -698,16 +698,6 @@ ALTER TABLE BothDoseTypesIntervention ADD COLUMN minLowerBoundConversionMultipli
 ALTER TABLE BothDoseTypesIntervention ADD COLUMN minUpperBoundConversionMultiplier DOUBLE PRECISION;
 ALTER TABLE BothDoseTypesIntervention ADD COLUMN maxLowerBoundConversionMultiplier DOUBLE PRECISION;
 ALTER TABLE BothDoseTypesIntervention ADD COLUMN maxUpperBoundConversionMultiplier DOUBLE PRECISION;
---rollback ALTER TABLE FixedDoseIntervention DROP COLUMN lowerBoundConversionMultiplier;
---rollback ALTER TABLE FixedDoseIntervention DROP COLUMN upperBoundConversionMultiplier;
---rollback ALTER TABLE TitratedDoseIntervention DROP COLUMN minLowerBoundConversionMultiplier;
---rollback ALTER TABLE TitratedDoseIntervention DROP COLUMN minUpperBoundConversionMultiplier;
---rollback ALTER TABLE TitratedDoseIntervention DROP COLUMN maxLowerBoundConversionMultiplier;
---rollback ALTER TABLE TitratedDoseIntervention DROP COLUMN maxUpperBoundConversionMultiplier;
---rollback ALTER TABLE BothDoseTypesIntervention DROP COLUMN minLowerBoundConversionMultiplier;
---rollback ALTER TABLE BothDoseTypesIntervention DROP COLUMN minUpperBoundConversionMultiplier;
---rollback ALTER TABLE BothDoseTypesIntervention DROP COLUMN maxLowerBoundConversionMultiplier;
---rollback ALTER TABLE BothDoseTypesIntervention DROP COLUMN maxUpperBoundConversionMultiplier;
 
 --changeset reidd:71
 CREATE TABLE scaledUnit (
@@ -719,6 +709,17 @@ CREATE TABLE scaledUnit (
   PRIMARY KEY (id),
   FOREIGN KEY(projectId) REFERENCES Project(id)
 );
+
+--changeset keijserj:72
+CREATE TABLE subProblem(
+  id SERIAL NOT NULL,
+  workspaceId INT NOT NULL,
+  definition VARCHAR NOT NULL,
+  title VARCHAR NOT NULL,
+  PRIMARY KEY(id),
+  FOREIGN KEY(workspaceId) REFERENCES AbstractAnalysis(id) ON DELETE CASCADE
+);
+ALTER TABLE scenario ADD COLUMN subProblemId INT;
 
 --changeset keijserj:73
 ALTER TABLE effectsTableExclusion ALTER COLUMN alternativeId VARCHAR;

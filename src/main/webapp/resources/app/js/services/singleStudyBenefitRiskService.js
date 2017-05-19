@@ -1,16 +1,7 @@
 'use strict';
 define(['lodash'], function(_) {
-  var dependencies = ['$stateParams', 'ProblemResource', 'ScenarioResource'];
-  var SingleStudyBenefitRiskService = function($stateParams, ProblemResource, ScenarioResource) {
-
-    var getDefaultScenario = function() {
-      return ScenarioResource
-        .query(_.omit($stateParams, 'id'))
-        .$promise
-        .then(function(scenarios) {
-          return scenarios[0];
-        });
-    };
+  var dependencies = ['ProblemResource', 'ScenarioResource', 'SubProblemResource'];
+  var SingleStudyBenefitRiskService = function(ProblemResource, ScenarioResource, SubProblemResource) {
 
     var verifyCell = function(performanceEntry, outcome, intervention) {
       var result = performanceEntry.criterionUri === outcome.semanticOutcomeUri && performanceEntry.alternativeUri === intervention.semanticInterventionUri;
@@ -39,8 +30,11 @@ define(['lodash'], function(_) {
       });
     };
 
-    var getProblem = function() {
-      return ProblemResource.get($stateParams).$promise;
+    var getProblem = function(projectId, analysisId) {
+      return ProblemResource.get({
+        projectId: projectId,
+        analysisId: analysisId
+      }).$promise;
     };
 
     var concatWithNoDuplicates = function(source, target, comparatorFunction) {
@@ -153,6 +147,38 @@ define(['lodash'], function(_) {
       });
     }
 
+    function getDefaultSubProblem(params) {
+      return SubProblemResource
+        .query(_.omit(params, 'id'))
+        .$promise
+        .then(function(scenarios) {
+          return scenarios[0];
+        });
+    }
+
+    var getDefaultScenario = function(params) {
+      return ScenarioResource
+        .query(_.omit(params, 'id'))
+        .$promise
+        .then(function(scenarios) {
+          return scenarios[0];
+        });
+    };
+
+    function getDefaultScenarioIds(params) {
+      return getDefaultSubProblem(params).then(function(subProblem) {
+        var newParams = _.extend({
+          problemId: subProblem.id
+        }, params);
+        return getDefaultScenario(newParams).then(function(scenario) {
+          return {
+            scenario: scenario.id,
+            problem: subProblem.id
+          };
+        });
+      });
+    }
+
     var addHasMatchedMixedTreatmentArm = function(studies, selectedInterventions) {
       _.each(studies, function(study) {
         study.hasMatchedMixedTreatmentArm = _.some(study.treatmentArms, function(treatmentArm) {
@@ -171,7 +197,8 @@ define(['lodash'], function(_) {
       addOverlappingInterventionsToStudies: addOverlappingInterventionsToStudies,
       addHasMatchedMixedTreatmentArm: addHasMatchedMixedTreatmentArm,
       isValidStudyOption: isValidStudyOption,
-      recalculateGroup: recalculateGroup
+      recalculateGroup: recalculateGroup,
+      getDefaultScenarioIds: getDefaultScenarioIds
     };
   };
   return dependencies.concat(SingleStudyBenefitRiskService);

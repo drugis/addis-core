@@ -7,6 +7,5 @@ import org.drugis.addis.scenarios.Scenario;
  * Created by connor on 16-4-14.
  */
 public interface ScenarioService {
-  public void checkCoordinates(Integer projectId, Integer analysisId, Scenario scenario) throws ResourceDoesNotExistException;
-
+  void checkCoordinates(Integer projectId, Integer analysisId, Integer subProblemId, Scenario scenario) throws ResourceDoesNotExistException;
 }
