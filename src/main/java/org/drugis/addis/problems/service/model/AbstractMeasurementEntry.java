@@ -7,19 +7,19 @@ import java.net.URI;
  */
 public abstract class AbstractMeasurementEntry {
   private Integer alternative;
-  private URI criterionUri;
+  private URI criterion; // nb not necessarily an uri in other cases of br-problem
 
-  protected AbstractMeasurementEntry(Integer alternative, URI criterionUri) {
+  protected AbstractMeasurementEntry(Integer alternative, URI criterion) {
     this.alternative = alternative;
-    this.criterionUri = criterionUri;
+    this.criterion = criterion;
   }
 
   public String getAlternative() {
     return alternative.toString();
   }
 
-  public URI getCriterionUri() {
-    return this.criterionUri;
+  public URI getCriterion() {
+    return this.criterion;
   }
 
   public abstract AbstractPerformance getPerformance();
@@ -32,7 +32,7 @@ public abstract class AbstractMeasurementEntry {
     AbstractMeasurementEntry that = (AbstractMeasurementEntry) o;
 
     if (!alternative.equals(that.alternative)) return false;
-    if (!criterionUri.equals(that.criterionUri)) return false;
+    if (!criterion.equals(that.criterion)) return false;
 
     return true;
   }
@@ -40,7 +40,7 @@ public abstract class AbstractMeasurementEntry {
   @Override
   public int hashCode() {
     int result = alternative.hashCode();
-    result = 31 * result + criterionUri.hashCode();
+    result = 31 * result + criterion.hashCode();
     return result;
   }
 }
