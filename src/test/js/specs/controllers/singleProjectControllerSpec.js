@@ -16,6 +16,8 @@ define(['angular-mocks', 'angular', 'lodash'], function(angularMocks, angular, _
       semanticInterventionResource = jasmine.createSpyObj('semanticInterventionResource', ['query']),
       interventionResource = jasmine.createSpyObj('interventionResource', ['query', 'save']),
       trialverseStudyResource = jasmine.createSpyObj('trialverseStudyResource', ['query']),
+      dosageService = jasmine.createSpyObj('DosageService', ['get']),
+      scaledUnitResource = jasmine.createSpyObj('ScaledUnitResource', ['query']),
       covariateOptions = [{
         key: 'COV_OPTION_KEY',
         label: 'covariate option label'
@@ -52,7 +54,7 @@ define(['angular-mocks', 'angular', 'lodash'], function(angularMocks, angular, _
       scope, state,
       projectDeferred, analysisDeferred, studiesDeferred, interventionsDeferred,
       mockSemanticOutcomes, mockSemanticInterventions, reportResource, reportDeferred,
-      trialverseDeferred, analysesDeferred,
+      trialverseDeferred, analysesDeferred, unitConceptsDeferred, scaledUnitsDeferred,
       mockProject = {
         id: 1,
         owner: {
@@ -98,7 +100,21 @@ define(['angular-mocks', 'angular', 'lodash'], function(angularMocks, angular, _
       mockStudies = [mockStudy],
       mockReport = {
         data: 'default report text.'
-      };
+      },
+      mockScaledUnits = [{
+        conceptUri: 'unitUri2',
+        id: 1,
+        multiplier: 1,
+        name: 'liter',
+        projectId: 1
+      }],
+      mockUnitConcepts = [{
+        unitName: 'gram',
+        unitUri: 'unitUri1'
+      }, {
+        unitName: 'liter',
+        unitUri: 'unitUri2'
+      }];
 
     beforeEach(angularMocks.module('addis.controllers'));
 
@@ -146,10 +162,19 @@ define(['angular-mocks', 'angular', 'lodash'], function(angularMocks, angular, _
       projectResource.get.and.returnValue(mockProject);
       trialverseResource.get.and.returnValue(mockTrialverse);
 
+      unitConceptsDeferred = $q.defer();
+      mockUnitConcepts.$promise = unitConceptsDeferred.promise;
+      dosageService.get.and.returnValue(mockUnitConcepts);
+
+      scaledUnitsDeferred = $q.defer();
+      mockScaledUnits.$promise = scaledUnitsDeferred.promise;
+      scaledUnitResource.query.and.returnValue(mockScaledUnits);
+
       scope = $rootScope;
       scope.createOutcomeModal = jasmine.createSpyObj('createOutcomeModal', ['close']);
       scope.createInterventionModal = jasmine.createSpyObj('createInterventionModal', ['close']);
       scope.createAnalysisModal = jasmine.createSpyObj('createAnalysisModal', ['close']);
+
 
       projectDeferred = $q.defer();
       mockProject.$promise = projectDeferred.promise;
@@ -212,19 +237,32 @@ define(['angular-mocks', 'angular', 'lodash'], function(angularMocks, angular, _
         UserService: userServiceMock,
         ReportResource: reportResource,
         HistoryResource: historyResourceMock,
-        project: mockProject
+        project: mockProject,
+        DosageService: dosageService,
+        ScaledUnitResource: scaledUnitResource
       });
     }));
     describe('after loading the project', function() {
-      it('should place the outcome and intervention information on the scope', function() {
+      it('should place the outcome and intervention information, unitconcepts and units on the scope ', function() {
         projectDeferred.resolve();
         studiesDeferred.resolve();
         interventionsDeferred.resolve(mockInterventions);
+        unitConceptsDeferred.resolve();
+        scaledUnitsDeferred.resolve(mockScaledUnits);
         scope.$apply();
         expect(scope.outcomes).toEqual(mockOutcomes);
         expect(scope.interventions).toEqual(mockInterventions);
         expect(scope.analyses).toEqual(mockAnalyses);
         expect(scope.loading.loaded).toBeTruthy();
+        expect(scope.unitConcepts).toEqual(mockUnitConcepts);
+        expect(scope.units).toEqual([{
+          conceptName: 'liter',
+          conceptUri: 'unitUri2',
+          id: 1,
+          multiplier: 1,
+          name: 'liter',
+          projectId: 1
+        }]);
       });
 
       it('should place the associated trialverse information on the scope', function() {

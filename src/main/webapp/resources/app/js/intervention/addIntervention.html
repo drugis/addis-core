@@ -82,7 +82,12 @@
           <div class="indent-one" ng-if="newIntervention.type === 'fixed'">
             <constraint id="fixed-constraint" scaled-units="scaledUnits" model="newIntervention.fixedDoseConstraint"
               dataset-uuid="{{project.namespaceUid}}" />
-            <scaled-unit-input unit-concepts="unitConcepts" scaled-units="scaledUnits"></scaled-unit-input>
+            <div ng-if="!addScale.isAddingScaledUnit">
+              <button type="button" ng-click="addScale.isAddingScaledUnit=true">Add unit</button>
+            </div>
+            <div ng-if="addScale.isAddingScaledUnit">
+              <scaled-unit-input unit-concepts="unitConcepts" scaled-units="scaledUnits"></scaled-unit-input>
+            </div>
           </div>
           <div class="indent-one" ng-if="newIntervention.type === 'titrated'">
             <span>Min dose
@@ -93,7 +98,12 @@
               <constraint model="newIntervention.titratedDoseMaxConstraint" scaled-units="scaledUnits"
               />
             </span>
-            <scaled-unit-input unit-concepts="unitConcepts" scaled-units="scaledUnits"></scaled-unit-input>
+            <div ng-if="!addScale.isAddingScaledUnit">
+              <button type="button" ng-click="addScale.isAddingScaledUnit=true">Add unit</button>
+            </div>
+            <div ng-if="addScale.isAddingScaledUnit">
+              <scaled-unit-input unit-concepts="unitConcepts" scaled-units="scaledUnits"></scaled-unit-input>
+            </div>
           </div>
           <div class="indent-one" ng-if="newIntervention.type === 'both'">
             Min dose
@@ -101,7 +111,12 @@
             /> Max dose
             <constraint model="newIntervention.bothDoseTypesMaxConstraint" scaled-units="scaledUnits"
             />
-            <scaled-unit-input unit-concepts="unitConcepts" scaled-units="scaledUnits"></scaled-unit-input>
+            <div ng-if="!addScale.isAddingScaledUnit">
+              <button type="button" ng-click="addScale.isAddingScaledUnit=true">Add unit</button>
+            </div>
+            <div ng-if="addScale.isAddingScaledUnit">
+              <scaled-unit-input unit-concepts="unitConcepts" scaled-units="scaledUnits"></scaled-unit-input>
+            </div>
           </div>
 
         </div>

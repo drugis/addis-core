@@ -14,12 +14,12 @@ define(['lodash'], function(_) {
           unit: scope.unitConcepts[0]
         };
         setDefaultName(scope.newScaledUnit);
-        scope.addScale={};
 
         //functions
         scope.saveScaledUnit = saveScaledUnit;
         scope.isDuplicateName = isDuplicateName;
         scope.setDefaultName = setDefaultName;
+        scope.cancelScaledUnit = cancelScaledUnit;
 
         function saveScaledUnit(newScaledUnit) {
           var saveCommand = {
@@ -29,7 +29,6 @@ define(['lodash'], function(_) {
           };
           scope.isSavingUnit = true;
           ScaledUnitResource.save($stateParams, saveCommand).$promise.then(function() {
-            delete scope.addScale.isAddingScaledUnit;
             scope.isSavingUnit = false;
             scope.$emit('scaledUnitsChanged');
           });
@@ -45,6 +44,10 @@ define(['lodash'], function(_) {
 
         function isDuplicateName(name) {
           return _.find(scope.scaledUnits, ['name', name]);
+        }
+
+        function cancelScaledUnit(){
+          scope.$emit('scaledUnitCancelled');
         }
 
 

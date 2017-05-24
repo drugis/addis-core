@@ -51,10 +51,10 @@ public interface InterventionService {
 
     LowerDoseBound oldLower = constraint.getLowerBound();
     LowerBoundCommand lowerBoundCommand = oldLower == null ? null : new LowerBoundCommand(oldLower.getType(), oldLower.getValue(), oldLower.getUnitName(),
-            oldLower.getUnitPeriod(), oldLower.getUnitConcept(), null);
+            oldLower.getUnitPeriod(), oldLower.getUnitConcept(), oldLower.getConversionMultiplier());
     UpperDoseBound oldUpper = constraint.getUpperBound();
     UpperBoundCommand upperBoundCommand = oldUpper == null ? null : new UpperBoundCommand(oldUpper.getType(), oldUpper.getValue(), oldUpper.getUnitName(),
-            oldUpper.getUnitPeriod(), oldUpper.getUnitConcept(), null);
+            oldUpper.getUnitPeriod(), oldUpper.getUnitConcept(), oldUpper.getConversionMultiplier());
     return new ConstraintCommand(lowerBoundCommand, upperBoundCommand);
   }
 

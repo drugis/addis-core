@@ -1,6 +1,6 @@
 {
   "name": "addis-core",
-  "version": "0.6.1",
+  "version": "0.6.2",
   "homepage": "https://github.com/drugis/addis-core",
   "authors": [],
   "license": "GPL3",
@@ -28,7 +28,7 @@
     "fastclick": "~0.6.11",
     "font-awesome": "~4.3.0",
     "foundation": "~5.5.3",
-    "gemtc-web": "https://github.com/drugis/gemtc-web.git#master",
+    "gemtc-web": "https://github.com/drugis/gemtc-web.git#0.6.1",
     "help-popup": "https://github.com/drugis/help-popup.git#0.1.0",
     "install": "^1.0.4",
     "jasmine": "~2.0.0",

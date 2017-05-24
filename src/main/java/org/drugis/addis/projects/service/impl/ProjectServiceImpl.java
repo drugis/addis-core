@@ -11,7 +11,9 @@ import org.drugis.addis.covariates.CovariateRepository;
 import org.drugis.addis.exception.MethodNotAllowedException;
 import org.drugis.addis.exception.ProblemCreationException;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
-import org.drugis.addis.interventions.controller.command.*;
+import org.drugis.addis.interventions.controller.command.AbstractInterventionCommand;
+import org.drugis.addis.interventions.controller.command.CombinationInterventionCommand;
+import org.drugis.addis.interventions.controller.command.InterventionSetCommand;
 import org.drugis.addis.interventions.model.*;
 import org.drugis.addis.interventions.repository.InterventionRepository;
 import org.drugis.addis.interventions.service.InterventionService;
@@ -29,6 +31,8 @@ import org.drugis.addis.projects.Project;
 import org.drugis.addis.projects.ProjectCommand;
 import org.drugis.addis.projects.repository.ProjectRepository;
 import org.drugis.addis.projects.service.ProjectService;
+import org.drugis.addis.scaledUnits.ScaledUnit;
+import org.drugis.addis.scaledUnits.repository.ScaledUnitRepository;
 import org.drugis.addis.scenarios.Scenario;
 import org.drugis.addis.scenarios.repository.ScenarioRepository;
 import org.drugis.addis.security.Account;
@@ -93,6 +97,9 @@ public class ProjectServiceImpl implements ProjectService {
 
   @Inject
   private InterventionRepository interventionRepository;
+
+  @Inject
+  private ScaledUnitRepository scaledUnitRepository;
 
   @Inject
   private MappingService mappingService;
@@ -185,6 +192,10 @@ public class ProjectServiceImpl implements ProjectService {
     Map<Integer, Integer> oldToNewCovariateId = new HashMap<>();
     Collection<Covariate> sourceCovariates = covariateRepository.findByProject(sourceProjectId);
     sourceCovariates.forEach(covariateCreator(newProject, oldToNewCovariateId));
+
+    //units
+    scaledUnitRepository.query(sourceProjectId).forEach(oldUnit -> scaledUnitRepository
+            .create(newProject.getId(), oldUnit.getConceptUri(), oldUnit.getMultiplier(), oldUnit.getName()));
 
     //interventions
     Map<Integer, Integer> oldToNewInterventionId = new HashMap<>();
@@ -403,6 +414,10 @@ public class ProjectServiceImpl implements ProjectService {
     //Covariates
     Map<Integer, Integer> oldToNewCovariateId = new HashMap<>();
     createCovariates(sourceProjectId, trialverseDatasetUuid, headVersion, newProject, oldToNewCovariateId);
+
+    //units
+    scaledUnitRepository.query(sourceProjectId).forEach(oldUnit -> scaledUnitRepository
+            .create(newProject.getId(), oldUnit.getConceptUri(), oldUnit.getMultiplier(), oldUnit.getName()));
 
     //Interventions
     Map<Integer, Integer> oldToNewInterventionId = new HashMap<>();

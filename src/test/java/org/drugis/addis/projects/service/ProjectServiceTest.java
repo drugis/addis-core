@@ -28,6 +28,8 @@ import org.drugis.addis.projects.ProjectCommand;
 import org.drugis.addis.projects.repository.ProjectRepository;
 import org.drugis.addis.projects.service.impl.ProjectServiceImpl;
 import org.drugis.addis.projects.service.impl.UpdateProjectException;
+import org.drugis.addis.scaledUnits.ScaledUnit;
+import org.drugis.addis.scaledUnits.repository.ScaledUnitRepository;
 import org.drugis.addis.scenarios.Scenario;
 import org.drugis.addis.scenarios.repository.ScenarioRepository;
 import org.drugis.addis.security.Account;
@@ -106,6 +108,9 @@ public class ProjectServiceTest {
 
   @Mock
   private SubProblemRepository subProblemRepository;
+
+  @Mock
+  private ScaledUnitRepository scaledUnitRepository;
 
   @InjectMocks
   private ProjectService projectService;
@@ -220,6 +225,10 @@ public class ProjectServiceTest {
             covariate2.getMotivation(), covariate2.getType())).thenReturn(covariate2);
     when(covariateRepository.createForProject(newProjectId, covariateStudyLevel.getDefinitionKey(), covariateStudyLevel.getName(),
             covariateStudyLevel.getMotivation(), covariateStudyLevel.getType())).thenReturn(covariateStudyLevel);
+
+    //units
+    ScaledUnit scaledUnit = new ScaledUnit(1,projectId, URI.create("gram"),0.001,"milligram");
+    when(scaledUnitRepository.query(projectId)).thenReturn(Collections.singletonList(scaledUnit));
 
     // Interventions - getting old interventions
     URI semanticInterventionUri = URI.create("http://bla.com/semanticInterventions/1");
@@ -373,6 +382,8 @@ public class ProjectServiceTest {
     verify(outcomeRepository, times(2)).get(newOutcome2.getId());
     verifyNoMoreInteractions(outcomeRepository);
 
+    verify(scaledUnitRepository).query(projectId);
+
     verify(covariateRepository).findByProject(projectId);
     verify(covariateRepository).createForProject(newProjectId, covariate1.getDefinitionKey(), covariate1.getName(),
             covariate1.getMotivation(), CovariateOptionType.POPULATION_CHARACTERISTIC);
@@ -455,6 +466,10 @@ public class ProjectServiceTest {
 
     List<SemanticVariable> populationCharacteristics = Collections.singletonList(semanticCovariateFilteredIn);
     when(triplestoreService.getPopulationCharacteristics(datasetUuid, headVersion)).thenReturn(populationCharacteristics);
+
+    //units
+    ScaledUnit scaledUnit = new ScaledUnit(1,projectId, URI.create("gram"),0.001,"milligram");
+    when(scaledUnitRepository.query(projectId)).thenReturn(Collections.singletonList(scaledUnit));
 
     // Interventions
     // Cases:
@@ -600,6 +615,7 @@ public class ProjectServiceTest {
     verify(covariateRepository).createForProject(newProjectId, covariateStudyLevel.getDefinitionKey(), covariateStudyLevel.getName(),
             covariateStudyLevel.getMotivation(), CovariateOptionType.STUDY_CHARACTERISTIC);
     verifyNoMoreInteractions(covariateRepository);
+    verify(scaledUnitRepository).query(projectId);
 
     verify(interventionRepository).query(projectId);
     verify(interventionRepository).create(account, simpleCommand);
