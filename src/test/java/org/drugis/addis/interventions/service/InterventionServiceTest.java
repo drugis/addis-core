@@ -102,6 +102,23 @@ public class InterventionServiceTest {
     assertTrue(interventionService.isMatched(intervention, Collections.singletonList(semanticIntervention)));
   }
 
+
+  @Test
+  public void precisionTest() throws Exception, InvalidTypeForDoseCheckException {
+    LowerBoundCommand lowerBound = null;
+    UpperBoundCommand upperBound = new UpperBoundCommand(UpperBoundType.LESS_THAN, 1.8, unitLabel,
+            dosePeriod, unitConcept, 0.001);
+    DoseConstraint doseConstraint = new DoseConstraint(lowerBound, upperBound);
+    AbstractIntervention intervention = new FixedDoseIntervention(interventionId, projectId, "intervention name",
+            "moti", drugConceptUri, "sem label", doseConstraint);
+
+    Dose fixedMatchingDose = new Dose(0.0018, dosePeriod, unitConcept, unitLabel, unitMultiplier);
+    AbstractSemanticIntervention semanticIntervention = new FixedSemanticIntervention(drugInstanceUri, drugConceptUri,
+            fixedMatchingDose);
+
+    assertFalse(interventionService.isMatched(intervention, Collections.singletonList(semanticIntervention)));
+  }
+
   @Test
   public void isNotMatchedFixedIntervention() throws Exception, InvalidTypeForDoseCheckException {
     LowerBoundCommand lowerBound = new LowerBoundCommand(LowerBoundType.AT_LEAST, doseValue + 1, unitLabel,

@@ -1,11 +1,11 @@
 package org.drugis.addis.interventions.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonRawValue;
 
 import javax.persistence.Embeddable;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import java.math.BigDecimal;
 import java.net.URI;
 
 /**
@@ -59,8 +59,9 @@ public class LowerDoseBound {
   }
 
   @JsonIgnore
-  public Double getScaledValue() {
-    return conversionMultiplier != null ? conversionMultiplier * value : value;
+  public BigDecimal getScaledValue() {
+    BigDecimal bigDecimalValue = new BigDecimal(value.toString());
+    return conversionMultiplier != null ? bigDecimalValue.multiply(new BigDecimal(conversionMultiplier.toString())) : bigDecimalValue;
   }
 
   public void setConversionMultiplier(Double conversionMultiplier) {

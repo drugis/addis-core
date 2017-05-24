@@ -2,6 +2,7 @@ package org.drugis.addis.trialverse.model.trialdata;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import java.math.BigDecimal;
 import java.net.URI;
 
 /**
@@ -28,8 +29,8 @@ public class Dose {
   }
 
   @JsonIgnore
-  public Double getScaledValue() {
-    return this.value * (this.unitMultiplier == null ? 1.0 : this.unitMultiplier);
+  public BigDecimal getScaledValue() {
+    return new BigDecimal(this.value.toString()).multiply(new BigDecimal(this.unitMultiplier == null ? "1" : this.unitMultiplier.toString()));
   }
 
   public String getPeriodicity() {

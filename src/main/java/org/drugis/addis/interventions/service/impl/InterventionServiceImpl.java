@@ -15,6 +15,7 @@ import org.springframework.social.OperationNotPermittedException;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
+import java.math.BigDecimal;
 import java.util.*;
 
 /**
@@ -241,7 +242,7 @@ public class InterventionServiceImpl implements InterventionService {
     }
 
     //value
-    Double scaledValue = dose.getScaledValue();
+    BigDecimal scaledValue = dose.getScaledValue();
     if (lowerBound != null && !isWithinConstraint(scaledValue, constraint)) {
       return false;
     }
@@ -252,17 +253,17 @@ public class InterventionServiceImpl implements InterventionService {
     return true;
   }
 
-  private boolean isWithinConstraint(Double value, DoseConstraint constraint) {
+  private boolean isWithinConstraint(BigDecimal scaledValue, DoseConstraint constraint) {
     LowerDoseBound lowerBound = constraint.getLowerBound();
     UpperDoseBound upperBound = constraint.getUpperBound();
     boolean validUpperBound = true;
     boolean validLowerBound = true;
 
     if (lowerBound != null) {
-      validLowerBound = lowerBound.getType().isValidForBound(value, lowerBound.getScaledValue());
+      validLowerBound = lowerBound.getType().isValidForBound(scaledValue, lowerBound.getScaledValue());
     }
     if (upperBound != null) {
-      validUpperBound = upperBound.getType().isValidForBound(value, upperBound.getScaledValue());
+      validUpperBound = upperBound.getType().isValidForBound(scaledValue, upperBound.getScaledValue());
     }
     return validLowerBound && validUpperBound;
   }
