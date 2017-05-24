@@ -1,5 +1,7 @@
 package org.drugis.addis.interventions.model;
 
+import java.math.BigDecimal;
+
 /**
  * Created by daan on 1-4-16.
  */
@@ -7,12 +9,12 @@ package org.drugis.addis.interventions.model;
 public enum UpperBoundType {
   LESS_THAN, AT_MOST;
 
-  public boolean isValidForBound(Double value, Double boundValue) {
+  public boolean isValidForBound(BigDecimal value, BigDecimal boundValue) {
     switch (this) {
       case LESS_THAN:
-        return value < boundValue;
+        return value.compareTo(boundValue) < 0;
       case AT_MOST:
-        return value <= boundValue;
+        return value.compareTo(boundValue) <= 0;
       default:
         return false;
     }

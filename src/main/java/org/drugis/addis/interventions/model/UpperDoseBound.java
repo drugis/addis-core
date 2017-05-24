@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import javax.persistence.Embeddable;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import java.math.BigDecimal;
 import java.net.URI;
 
 /**
@@ -58,8 +59,9 @@ public class UpperDoseBound {
   }
 
   @JsonIgnore
-  public Double getScaledValue() {
-    return conversionMultiplier != null ? conversionMultiplier * value : value;
+  public BigDecimal getScaledValue() {
+    BigDecimal bigDecimalValue = new BigDecimal(value);
+    return conversionMultiplier != null ? bigDecimalValue.multiply(new BigDecimal(conversionMultiplier)) : bigDecimalValue;
   }
 
   public void setConversionMultiplier(Double conversionMultiplier) {
