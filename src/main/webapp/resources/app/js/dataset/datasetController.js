@@ -112,9 +112,9 @@ define(['lodash'],
         resource.getForJson($stateParams).$promise.then(function(response) {
           $scope.dataset = {
             datasetUuid: $scope.datasetUuid,
-            title: response['http://purl.org/dc/terms/title'],
-            comment: response['http://purl.org/dc/terms/description'],
-            creator: response['http://purl.org/dc/terms/creator']
+            title: response['@graph'][0]['http://purl.org/dc/terms/title'],
+            comment: response['@graph'][0]['http://purl.org/dc/terms/description'],
+            creator: response['@graph'][0]['http://purl.org/dc/terms/creator']
           };
           $scope.isEditingAllowed = isEditingAllowed();
         });
