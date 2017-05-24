@@ -167,7 +167,7 @@ define(['angular', 'lodash'], function(angular, _) {
         id: analysis.id,
         projectId: analysis.projectId,
         analysis: analysisToSave,
-        scenarioState: JSON.stringify(problem,null,2)
+        scenarioState: JSON.stringify(problem, null, 2)
       };
     }
 
@@ -190,10 +190,11 @@ define(['angular', 'lodash'], function(angular, _) {
 
     $scope.goToDefaultScenarioView = function() {
       SingleStudyBenefitRiskService
-        .getDefaultScenario()
-        .then(function(scenario) {
+        .getDefaultScenarioIds($stateParams)
+        .then(function(ids) {
           $state.go(DEFAULT_VIEW, _.extend($stateParams, {
-            id: scenario.id
+            id: ids.scenario,
+            problemId: ids.problem
           }));
         });
     };
@@ -205,9 +206,11 @@ define(['angular', 'lodash'], function(angular, _) {
       if (deregisterInterventionWatch) {
         deregisterInterventionWatch();
       }
-      SingleStudyBenefitRiskService.getProblem($scope.analysis).then(function(problem) {
+      SingleStudyBenefitRiskService.getProblem($scope.analysis.projectId, $scope.analysis.id).then(function(problem) {
         $scope.analysis.problem = problem;
-        var saveCommand = analysisToSaveCommand($scope.analysis, WorkspaceService.reduceProblem(problem));
+        var saveCommand = analysisToSaveCommand($scope.analysis, {
+          problem: WorkspaceService.reduceProblem(problem)
+        });
         AnalysisResource.save(saveCommand).$promise.then(function(response) {
           $scope.analysis = response;
           $scope.workspace = response;

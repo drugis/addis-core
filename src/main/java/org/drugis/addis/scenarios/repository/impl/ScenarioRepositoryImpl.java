@@ -25,8 +25,8 @@ public class ScenarioRepositoryImpl implements ScenarioRepository {
   }
 
   @Override
-  public Scenario create(Integer analysisId, String title, String state) {
-    Scenario scenario = new Scenario(analysisId, title, state);
+  public Scenario create(Integer analysisId, Integer subProblemId, String title, String state) {
+    Scenario scenario = new Scenario(analysisId, subProblemId, title, state);
     em.persist(scenario);
     return scenario;
   }
@@ -41,14 +41,31 @@ public class ScenarioRepositoryImpl implements ScenarioRepository {
     );
     query.setParameter("projectId", projectId);
     return query.getResultList();
-
   }
 
   @Override
-  public Collection<Scenario> queryByProjectAndAnalysis(Integer projectId, Integer analysisId) {
+  public Collection<Scenario> queryByAnalysis(Integer projectId, Integer analysisId) {
     TypedQuery<Scenario> query = em.createQuery(
             "SELECT DISTINCT s FROM Scenario s\n" +
                     "  WHERE s.workspace = :analysisId \n" +
+                    "  AND s.workspace in (\n" +
+                    "    SELECT id FROM SingleStudyBenefitRiskAnalysis where id = :analysisId and projectId = :projectId\n" +
+                    "  ) OR s.workspace in (\n" +
+                    "    SELECT id FROM MetaBenefitRiskAnalysis where id = :analysisId and projectId = :projectId\n" +
+                    "  )"
+            , Scenario.class
+    );
+    query.setParameter("analysisId", analysisId);
+    query.setParameter("projectId", projectId);
+    return query.getResultList();
+  }
+
+  @Override
+  public Collection<Scenario> queryBySubProblem(Integer projectId, Integer analysisId, Integer subProblemId) {
+    TypedQuery<Scenario> query = em.createQuery(
+            "SELECT DISTINCT s FROM Scenario s\n" +
+                    "  WHERE s.workspace = :analysisId \n" +
+                    "  AND s.subProblemId = :subProblemId \n" +
                     "  AND s.workspace in (\n" +
                     "    SELECT id FROM SingleStudyBenefitRiskAnalysis where id = :analysisId and projectid = :projectId\n" +
                     "  ) OR s.workspace in (\n" +
@@ -58,6 +75,7 @@ public class ScenarioRepositoryImpl implements ScenarioRepository {
     );
     query.setParameter("analysisId", analysisId);
     query.setParameter("projectId", projectId);
+    query.setParameter("subProblemId", subProblemId);
     return query.getResultList();
   }
 

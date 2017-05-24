@@ -6,8 +6,8 @@ import org.drugis.addis.analyses.AbstractAnalysis;
  * Created by joris on 3-5-17.
  */
 public class AnalysisUpdateCommand {
-  AbstractAnalysis analysis;
-  String scenarioState;
+  private AbstractAnalysis analysis;
+  private String scenarioState;
 
   public AnalysisUpdateCommand() {
   }

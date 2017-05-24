@@ -23,6 +23,7 @@ public class Scenario {
 
   // refers to analysis but named workspace due to mcda-web
   private Integer workspace;
+  private Integer subProblemId;
   private String title;
 
   @JsonRawValue
@@ -31,13 +32,14 @@ public class Scenario {
   public Scenario() {
   }
 
-  public Scenario(Integer workspace, String title, String state) {
-    this(null, workspace, title, state);
+  public Scenario(Integer workspace, Integer subProblemId, String title, String state) {
+    this(null, workspace, subProblemId, title, state);
   }
 
-  public Scenario(Integer id, Integer workspace, String title, String state) {
+  public Scenario(Integer id, Integer workspace, Integer subProblemId, String title, String state) {
     this.id = id;
     this.workspace = workspace;
+    this.subProblemId = subProblemId;
     this.title = title;
     this.state = state;
   }
@@ -48,6 +50,10 @@ public class Scenario {
 
   public Integer getWorkspace() {
     return workspace;
+  }
+
+  public Integer getSubProblemId() {
+    return subProblemId;
   }
 
   public void setWorkspace(Integer workspace) {
@@ -79,20 +85,19 @@ public class Scenario {
     Scenario scenario = (Scenario) o;
 
     if (id != null ? !id.equals(scenario.id) : scenario.id != null) return false;
-    if (!state.equals(scenario.state)) return false;
-    if (!title.equals(scenario.title)) return false;
     if (workspace != null ? !workspace.equals(scenario.workspace) : scenario.workspace != null) return false;
-
-    return true;
+    if (!subProblemId.equals(scenario.subProblemId)) return false;
+    if (!title.equals(scenario.title)) return false;
+    return state.equals(scenario.state);
   }
 
   @Override
   public int hashCode() {
     int result = id != null ? id.hashCode() : 0;
     result = 31 * result + (workspace != null ? workspace.hashCode() : 0);
+    result = 31 * result + subProblemId.hashCode();
     result = 31 * result + title.hashCode();
     result = 31 * result + state.hashCode();
     return result;
   }
-
 }

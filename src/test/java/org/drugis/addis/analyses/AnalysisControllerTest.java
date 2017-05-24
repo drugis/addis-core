@@ -9,10 +9,9 @@ import org.drugis.addis.config.TestConfig;
 import org.drugis.addis.interventions.model.SimpleIntervention;
 import org.drugis.addis.outcomes.Outcome;
 import org.drugis.addis.projects.service.ProjectService;
-import org.drugis.addis.scenarios.Scenario;
-import org.drugis.addis.scenarios.repository.ScenarioRepository;
 import org.drugis.addis.security.Account;
 import org.drugis.addis.security.repository.AccountRepository;
+import org.drugis.addis.subProblems.service.SubProblemService;
 import org.drugis.addis.trialverse.model.SemanticInterventionUriAndName;
 import org.drugis.addis.trialverse.model.SemanticVariable;
 import org.drugis.addis.util.WebConstants;
@@ -54,9 +53,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class AnalysisControllerTest {
 
   @Inject
-  CriteriaRepository criteriaRepository;
+  private CriteriaRepository criteriaRepository;
   @Inject
-  ScenarioRepository scenarioRepository;
+  private SubProblemService subProblemService;
   private MockMvc mockMvc;
   @Inject
   private AccountRepository accountRepository;
@@ -77,18 +76,17 @@ public class AnalysisControllerTest {
 
   private Principal user;
 
-  private Account john = new Account(1, "a", "john", "lennon", null),
-          paul = new Account(2, "a", "paul", "mc kaartnie", null),
-          gert = new Account(3, "gert", "Gert", "van Valkenhoef", "gert@test.com");
+  private Account gert = new Account(3, "gert", "Gert", "van Valkenhoef", "gert@test.com");
 
   private URI uri = URI.create("uri");
   private Integer projectId = 1;
   private Integer analysisId = 1;
+  private Integer subProblemId = 100;
 
   @Before
   public void setUp() {
     reset(accountRepository, analysisRepository, singleStudyBenefitRiskAnalysisRepository,
-            networkMetaAnalysisRepository, scenarioRepository, criteriaRepository, analysisService, projectService);
+            networkMetaAnalysisRepository, subProblemService, criteriaRepository, analysisService, projectService);
     mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
     user = mock(Principal.class);
     when(user.getName()).thenReturn("gert");
@@ -98,7 +96,7 @@ public class AnalysisControllerTest {
   @After
   public void tearDown() {
     verifyNoMoreInteractions(accountRepository, analysisRepository, singleStudyBenefitRiskAnalysisRepository,
-            networkMetaAnalysisRepository, analysisService, criteriaRepository, scenarioRepository, projectService);
+            networkMetaAnalysisRepository, analysisService, criteriaRepository, subProblemService, projectService);
   }
 
   @Test
@@ -128,10 +126,8 @@ public class AnalysisControllerTest {
     when(networkMetaAnalysisRepository.queryByOutcomes(projectId, outcomeIds)).thenReturn(analyses);
 
     ResultActions result = mockMvc
-            .perform(
-                    get("/projects/{projectId}/analyses", projectId)
-                            .param("outcomeIds", "1")
-            );
+            .perform(get("/projects/{projectId}/analyses", projectId)
+                    .param("outcomeIds", "1"));
     result
             .andExpect(status().isOk())
             .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()))
@@ -148,7 +144,10 @@ public class AnalysisControllerTest {
     AnalysisCommand analysisCommand = new AnalysisCommand(1, "name", AnalysisType.SINGLE_STUDY_BENEFIT_RISK_LABEL);
     when(analysisService.createSingleStudyBenefitRiskAnalysis(gert, analysisCommand)).thenReturn(analysis);
     String body = TestUtils.createJson(analysisCommand);
-    mockMvc.perform(post("/projects/1/analyses").content(body).principal(user).contentType(WebConstants.getApplicationJsonUtf8Value()))
+    mockMvc.perform(post("/projects/1/analyses")
+            .content(body)
+            .principal(user)
+            .contentType(WebConstants.getApplicationJsonUtf8Value()))
             .andExpect(status().isCreated())
             .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()))
             .andExpect(jsonPath("$.id", notNullValue()));
@@ -264,7 +263,7 @@ public class AnalysisControllerTest {
             .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()))
             .andExpect(jsonPath("$.selectedOutcomes", hasSize(3)))
             .andExpect(jsonPath("$.interventionInclusions", hasSize(2)));
-    verify(projectService).checkProjectExistsAndModifiable(gert,projectId);
+    verify(projectService).checkProjectExistsAndModifiable(gert, projectId);
     verify(analysisRepository).get(analysisId);
     verify(accountRepository).findAccountByUsername("gert");
     verify(singleStudyBenefitRiskAnalysisRepository).update(gert, newAnalysis);
@@ -276,7 +275,7 @@ public class AnalysisControllerTest {
     SingleStudyBenefitRiskAnalysis oldAnalysis = new SingleStudyBenefitRiskAnalysis(1, projectId, "name", Collections.emptyList(), Collections.emptyList());
     ObjectMapper objectMapper = new ObjectMapper();
     SingleStudyBenefitRiskAnalysis newAnalysis = objectMapper.convertValue(objectMapper.readTree(exampleUpdateSingleStudyBenefitRiskRequestWithProblem()), SingleStudyBenefitRiskAnalysis.class);
-    AnalysisUpdateCommand newAnalysisCommand = new AnalysisUpdateCommand(newAnalysis, newAnalysis.getProblem());
+    AnalysisUpdateCommand newAnalysisCommand = new AnalysisUpdateCommand(newAnalysis, "{scenariostate}");
     String jsonCommand = TestUtils.createJson(newAnalysisCommand);
 
     when(analysisRepository.get(analysisId)).thenReturn(oldAnalysis);
@@ -290,7 +289,7 @@ public class AnalysisControllerTest {
     verify(projectService).checkProjectExistsAndModifiable(gert, projectId);
     verify(accountRepository).findAccountByUsername("gert");
     verify(analysisRepository).get(analysisId);
-    verify(scenarioRepository).create(analysisId, Scenario.DEFAULT_TITLE, "{\"problem\":" + newAnalysis.getProblem() + "}");
+    verify(subProblemService).createMCDADefaults(projectId, analysisId, "{scenariostate}");
     verify(singleStudyBenefitRiskAnalysisRepository).update(gert, newAnalysis);
   }
 
@@ -318,7 +317,7 @@ public class AnalysisControllerTest {
     SingleStudyBenefitRiskAnalysis oldAnalysis = new SingleStudyBenefitRiskAnalysis(1, projectId, "name", Collections.emptyList(), Collections.emptyList(), null);
     ObjectMapper objectMapper = new ObjectMapper();
     SingleStudyBenefitRiskAnalysis newAnalysis = objectMapper.convertValue(objectMapper.readTree(exampleUpdateSingleStudyBenefitRiskRequestWithProblem()), SingleStudyBenefitRiskAnalysis.class);
-    AnalysisUpdateCommand newAnalysisCommand = new AnalysisUpdateCommand(newAnalysis, newAnalysis.getProblem());
+    AnalysisUpdateCommand newAnalysisCommand = new AnalysisUpdateCommand(newAnalysis, "{scenariostate}");
     String jsonCommand = TestUtils.createJson(newAnalysisCommand);
     when(analysisRepository.get(analysisId)).thenReturn(oldAnalysis);
     when(singleStudyBenefitRiskAnalysisRepository.update(gert, newAnalysis)).thenReturn(newAnalysis);
@@ -327,11 +326,11 @@ public class AnalysisControllerTest {
             .principal(user)
             .contentType(WebConstants.getApplicationJsonUtf8Value()))
             .andExpect(status().isOk());
-    verify(projectService).checkProjectExistsAndModifiable(gert,projectId );
+    verify(projectService).checkProjectExistsAndModifiable(gert, projectId);
     verify(accountRepository).findAccountByUsername("gert");
     verify(analysisRepository).get(analysisId);
     verify(singleStudyBenefitRiskAnalysisRepository).update(gert, newAnalysis);
-    verify(scenarioRepository).create(analysisId, Scenario.DEFAULT_TITLE, "{\"problem\":" + newAnalysis.getProblem() + "}");
+    verify(subProblemService).createMCDADefaults(projectId, analysisId, "{scenariostate}");
   }
 
   @Test
