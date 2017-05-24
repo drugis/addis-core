@@ -1,13 +1,11 @@
 package org.drugis.addis.interventions.model;
 
-import org.drugis.addis.interventions.SetMultipliersCommand;
+import org.drugis.addis.interventions.controller.command.SetMultipliersCommand;
 import org.drugis.addis.interventions.controller.viewAdapter.AbstractInterventionViewAdapter;
 import org.drugis.addis.interventions.controller.viewAdapter.CombinationInterventionViewAdapter;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import javax.persistence.*;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.Set;
 
 /**

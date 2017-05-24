@@ -12,7 +12,7 @@ import java.net.URI;
  * Created by daan on 5-4-16.
  */
 public class BothDoseTypesInterventionCommand extends AbstractInterventionCommand {
-  private ConstraintCommand bothDoseTypesMinConstraint;
+  private ConstraintCommand bothDoseTypesMinConstraint; //TODO: refactor to shared property with titrated
   private ConstraintCommand bothDoseTypesMaxConstraint;
 
   public BothDoseTypesInterventionCommand(){}

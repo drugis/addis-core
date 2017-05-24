@@ -1,8 +1,7 @@
 package org.drugis.addis.interventions.model;
 
-import org.drugis.addis.interventions.InterventionMultiplierCommand;
-import org.drugis.addis.interventions.SetMultipliersCommand;
-import org.drugis.addis.interventions.controller.command.*;
+import org.drugis.addis.interventions.controller.command.InterventionMultiplierCommand;
+import org.drugis.addis.interventions.controller.command.SetMultipliersCommand;
 import org.drugis.addis.interventions.controller.viewAdapter.AbstractInterventionViewAdapter;
 import org.drugis.addis.interventions.controller.viewAdapter.TitratedInterventionViewAdapter;
 

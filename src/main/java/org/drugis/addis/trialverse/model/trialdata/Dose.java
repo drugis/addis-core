@@ -1,5 +1,7 @@
 package org.drugis.addis.trialverse.model.trialdata;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.net.URI;
 
 /**
@@ -23,6 +25,11 @@ public class Dose {
 
   public Double getValue() {
     return value;
+  }
+
+  @JsonIgnore
+  public Double getScaledValue() {
+    return this.value * (this.unitMultiplier == null ? 1.0 : this.unitMultiplier);
   }
 
   public String getPeriodicity() {

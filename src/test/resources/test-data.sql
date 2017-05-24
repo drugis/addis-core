@@ -130,3 +130,6 @@ INSERT INTO public.modelBaseline(modelId, baseline) VALUES(1, '{"type": "dnorm"}
 INSERT INTO public.effectsTableExclusion(analysisId, alternativeId) VALUES(-1, 1);
 INSERT INTO public.effectsTableExclusion(analysisId, alternativeId) VALUES(-2, 1);
 INSERT INTO public.effectsTableExclusion(analysisId, alternativeId) VALUES(-1, 2);
+
+INSERT INTO public.scaledUnit(id, projectId, conceptUri, multiplier, name) VALUES(10, 1, 'http://concept10.bla', 0.1, 'gram');
+INSERT INTO public.scaledUnit(id, projectId, conceptUri, multiplier, name) VALUES(20, 2, 'http://concept20.bla', 0.01, 'liter');

@@ -28,6 +28,8 @@ import org.drugis.addis.projects.ProjectCommand;
 import org.drugis.addis.projects.repository.ProjectRepository;
 import org.drugis.addis.projects.service.impl.ProjectServiceImpl;
 import org.drugis.addis.projects.service.impl.UpdateProjectException;
+import org.drugis.addis.scaledUnits.ScaledUnit;
+import org.drugis.addis.scaledUnits.repository.ScaledUnitRepository;
 import org.drugis.addis.scenarios.Scenario;
 import org.drugis.addis.scenarios.repository.ScenarioRepository;
 import org.drugis.addis.security.Account;
@@ -101,6 +103,9 @@ public class ProjectServiceTest {
 
   @Mock
   private ProblemService problemService;
+
+  @Mock
+  private ScaledUnitRepository scaledUnitRepository;
 
   @InjectMocks
   private ProjectService projectService;
@@ -215,6 +220,10 @@ public class ProjectServiceTest {
     when(covariateRepository.createForProject(newProjectId, covariateStudyLevel.getDefinitionKey(), covariateStudyLevel.getName(),
             covariateStudyLevel.getMotivation(), covariateStudyLevel.getType())).thenReturn(covariateStudyLevel);
 
+    //units
+    ScaledUnit scaledUnit = new ScaledUnit(1,projectId, URI.create("gram"),0.001,"milligram");
+    when(scaledUnitRepository.query(projectId)).thenReturn(Collections.singletonList(scaledUnit));
+
     // Interventions - getting old interventions
     URI semanticInterventionUri = URI.create("http://bla.com/semanticInterventions/1");
     String semanticInterventionLabel = "semantic intervention label";
@@ -222,7 +231,7 @@ public class ProjectServiceTest {
             semanticInterventionUri, semanticInterventionLabel);
     URI gramUri = URI.create("http://trials.drugis.org/concepts/gram");
     LowerBoundCommand lowerBound = new LowerBoundCommand(LowerBoundType.AT_LEAST, 0.1, "mg", "pt1d",
-            gramUri);
+            gramUri, null);
     DoseConstraint constraint = new DoseConstraint(lowerBound, null);
     FixedDoseIntervention fixedDoseIntervention = new FixedDoseIntervention(3, projectId, "fixed dose", null,
             semanticInterventionUri, semanticInterventionLabel, constraint);
@@ -348,6 +357,8 @@ public class ProjectServiceTest {
     verify(outcomeRepository, times(2)).get(newOutcome2.getId());
     verifyNoMoreInteractions(outcomeRepository);
 
+    verify(scaledUnitRepository).query(projectId);
+
     verify(covariateRepository).findByProject(projectId);
     verify(covariateRepository).createForProject(newProjectId, covariate1.getDefinitionKey(), covariate1.getName(),
             covariate1.getMotivation(), CovariateOptionType.POPULATION_CHARACTERISTIC);
@@ -431,6 +442,10 @@ public class ProjectServiceTest {
     List<SemanticVariable> populationCharacteristics = Collections.singletonList(semanticCovariateFilteredIn);
     when(triplestoreService.getPopulationCharacteristics(datasetUuid, headVersion)).thenReturn(populationCharacteristics);
 
+    //units
+    ScaledUnit scaledUnit = new ScaledUnit(1,projectId, URI.create("gram"),0.001,"milligram");
+    when(scaledUnitRepository.query(projectId)).thenReturn(Collections.singletonList(scaledUnit));
+
     // Interventions
     // Cases:
     // - simple intervention, semantic concept still in dataset
@@ -452,9 +467,9 @@ public class ProjectServiceTest {
             URI.create("http://bla.com/semanticInterventions/2"), "semantic intervention label");
     URI gramUri = URI.create("http://trials.drugis.org/concepts/gram");
     LowerBoundCommand lowerBoundFilteredIn = new LowerBoundCommand(LowerBoundType.AT_LEAST, 0.1, "mg", "pt1d",
-            gramUri);
+            gramUri, null);
     LowerBoundCommand lowerBoundFilteredOut = new LowerBoundCommand(LowerBoundType.AT_LEAST, 0.1, "mg", "pt1d",
-            URI.create("http://nonsense.com"));
+            URI.create("http://nonsense.com"), null);
     UpperBoundCommand upperBound = null;
     DoseConstraint constraintFilteredIn = new DoseConstraint(lowerBoundFilteredIn, upperBound);
     DoseConstraint constraintFilteredOut = new DoseConstraint(lowerBoundFilteredOut, upperBound);
@@ -575,6 +590,7 @@ public class ProjectServiceTest {
     verify(covariateRepository).createForProject(newProjectId, covariateStudyLevel.getDefinitionKey(), covariateStudyLevel.getName(),
             covariateStudyLevel.getMotivation(), CovariateOptionType.STUDY_CHARACTERISTIC);
     verifyNoMoreInteractions(covariateRepository);
+    verify(scaledUnitRepository).query(projectId);
 
     verify(interventionRepository).query(projectId);
     verify(interventionRepository).create(account, simpleCommand);

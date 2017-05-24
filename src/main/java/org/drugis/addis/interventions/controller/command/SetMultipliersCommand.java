@@ -1,4 +1,4 @@
-package org.drugis.addis.interventions;
+package org.drugis.addis.interventions.controller.command;
 
 import java.util.List;
 

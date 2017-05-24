@@ -1,7 +1,7 @@
 package org.drugis.addis.interventions.model;
 
-import org.drugis.addis.interventions.InterventionMultiplierCommand;
-import org.drugis.addis.interventions.SetMultipliersCommand;
+import org.drugis.addis.interventions.controller.command.InterventionMultiplierCommand;
+import org.drugis.addis.interventions.controller.command.SetMultipliersCommand;
 import org.drugis.addis.interventions.controller.viewAdapter.AbstractInterventionViewAdapter;
 import org.drugis.addis.interventions.controller.viewAdapter.BothDoseTypesInterventionViewAdapter;
 
@@ -72,19 +72,6 @@ public class BothDoseTypesIntervention extends SingleIntervention {
 
   public DoseConstraint getMaxConstraint() {
     return maxConstraint;
-  }
-
-  public void setMinLowerBoundConversionMultiplier(Double multiplier){
-    minConstraint.setLowerBoundConversionMultiplier(multiplier);
-  }
-  public void setMinUpperBoundConversionMultiplier(Double multiplier){
-    minConstraint.setUpperBoundConversionMultiplier(multiplier);
-  }
-  public void setMaxLowerBoundConversionMultiplier(Double multiplier){
-    maxConstraint.setLowerBoundConversionMultiplier(multiplier);
-  }
-  public void setMaxUpperBoundConversionMultiplier(Double multiplier){
-    maxConstraint.setUpperBoundConversionMultiplier(multiplier);
   }
 
   @Override

@@ -1,13 +1,12 @@
 package org.drugis.addis.interventions.service;
 
 import org.drugis.addis.exception.ResourceDoesNotExistException;
-import org.drugis.addis.interventions.SetMultipliersCommand;
+import org.drugis.addis.interventions.controller.command.SetMultipliersCommand;
 import org.drugis.addis.interventions.controller.command.*;
 import org.drugis.addis.interventions.model.*;
 import org.drugis.addis.interventions.service.impl.InvalidTypeForDoseCheckException;
 import org.drugis.addis.trialverse.model.trialdata.AbstractSemanticIntervention;
 
-import java.net.URI;
 import java.util.List;
 import java.util.Set;
 
@@ -52,10 +51,10 @@ public interface InterventionService {
 
     LowerDoseBound oldLower = constraint.getLowerBound();
     LowerBoundCommand lowerBoundCommand = oldLower == null ? null : new LowerBoundCommand(oldLower.getType(), oldLower.getValue(), oldLower.getUnitName(),
-            oldLower.getUnitPeriod(), oldLower.getUnitConcept());
+            oldLower.getUnitPeriod(), oldLower.getUnitConcept(), oldLower.getConversionMultiplier());
     UpperDoseBound oldUpper = constraint.getUpperBound();
     UpperBoundCommand upperBoundCommand = oldUpper == null ? null : new UpperBoundCommand(oldUpper.getType(), oldUpper.getValue(), oldUpper.getUnitName(),
-            oldUpper.getUnitPeriod(), oldUpper.getUnitConcept());
+            oldUpper.getUnitPeriod(), oldUpper.getUnitConcept(), oldUpper.getConversionMultiplier());
     return new ConstraintCommand(lowerBoundCommand, upperBoundCommand);
   }
 

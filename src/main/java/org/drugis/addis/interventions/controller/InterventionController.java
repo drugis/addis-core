@@ -4,7 +4,7 @@ import org.apache.http.HttpStatus;
 import org.drugis.addis.base.AbstractAddisCoreController;
 import org.drugis.addis.exception.MethodNotAllowedException;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
-import org.drugis.addis.interventions.SetMultipliersCommand;
+import org.drugis.addis.interventions.controller.command.SetMultipliersCommand;
 import org.drugis.addis.interventions.controller.command.AbstractInterventionCommand;
 import org.drugis.addis.interventions.controller.command.EditInterventionCommand;
 import org.drugis.addis.interventions.controller.viewAdapter.AbstractInterventionViewAdapter;
@@ -48,8 +48,7 @@ public class InterventionController extends AbstractAddisCoreController {
   @ResponseBody
   public List<AbstractInterventionViewAdapter> query(@PathVariable Integer projectId) throws MethodNotAllowedException, ResourceDoesNotExistException {
     Set<AbstractIntervention> interventions = interventionRepository.query(projectId);
-    List<AbstractInterventionViewAdapter> viewAdapters = interventions.stream().map(AbstractIntervention::toViewAdapter).collect(Collectors.toList());
-    return viewAdapters;
+    return interventions.stream().map(AbstractIntervention::toViewAdapter).collect(Collectors.toList());
   }
 
   @RequestMapping(value = "/projects/{projectId}/interventions/{interventionId}", method = RequestMethod.GET)

@@ -1,5 +1,7 @@
 package org.drugis.addis.interventions.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.Embeddable;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -53,6 +55,11 @@ public class UpperDoseBound {
 
   public Double getConversionMultiplier() {
     return conversionMultiplier;
+  }
+
+  @JsonIgnore
+  public Double getScaledValue() {
+    return conversionMultiplier != null ? conversionMultiplier * value : value;
   }
 
   public void setConversionMultiplier(Double conversionMultiplier) {
