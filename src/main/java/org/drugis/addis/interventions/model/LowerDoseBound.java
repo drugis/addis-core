@@ -60,8 +60,8 @@ public class LowerDoseBound {
 
   @JsonIgnore
   public BigDecimal getScaledValue() {
-    BigDecimal bigDecimalValue = new BigDecimal(value);
-    return conversionMultiplier != null ? bigDecimalValue.multiply(new BigDecimal(conversionMultiplier)) : bigDecimalValue;
+    BigDecimal bigDecimalValue = new BigDecimal(value.toString());
+    return conversionMultiplier != null ? bigDecimalValue.multiply(new BigDecimal(conversionMultiplier.toString())) : bigDecimalValue;
   }
 
   public void setConversionMultiplier(Double conversionMultiplier) {

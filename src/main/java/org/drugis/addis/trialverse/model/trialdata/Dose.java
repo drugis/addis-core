@@ -30,7 +30,7 @@ public class Dose {
 
   @JsonIgnore
   public BigDecimal getScaledValue() {
-    return new BigDecimal(this.value).multiply(new BigDecimal(this.unitMultiplier == null ? 1.0 : this.unitMultiplier));
+    return new BigDecimal(this.value.toString()).multiply(new BigDecimal(this.unitMultiplier == null ? "1" : this.unitMultiplier.toString()));
   }
 
   public String getPeriodicity() {
