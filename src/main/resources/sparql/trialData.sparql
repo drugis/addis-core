@@ -8,6 +8,7 @@ PREFIX entity: <http://trials.drugis.org/entities/>
 PREFIX concept: <http://trials.drugis.org/concepts/>
 PREFIX instance: <http://trials.drugis.org/instances/>
 PREFIX graph: <http://trials.drugis.org/graphs/>
+PREFIX qudt: <http://qudt.org/schema/qudt#>
 
 SELECT DISTINCT
 ?graph
@@ -122,11 +123,13 @@ WHERE {
           { ?fixedDoseUnit
                 rdfs:label ?fixedDoseUnitLabel ;
                 a ?fixedDoseUnitConcept .
+            OPTIONAL { ?fixedDoseUnit qudt:conversionMultiplier ?fixedDoseUnitMultiplier }
           } UNION {
             ?fixedDoseUnit
                 rdfs:label ?fixedDoseUnitLabel ;
                 a ontology:Unit ;
                 owl:sameAs ?fixedDoseUnitConcept .
+            OPTIONAL { ?fixedDoseUnit qudt:conversionMultiplier ?fixedDoseUnitMultiplier }
           } .
           FILTER (?fixedDoseUnitConcept != ontology:Unit) .
     } .
@@ -147,21 +150,25 @@ WHERE {
           { ?maxDoseUnit
               rdfs:label ?maxDoseUnitLabel ;
               a ?maxDoseUnitConcept .
+            OPTIONAL { ?maxDoseUnit qudt:conversionMultiplier ?maxDoseUnitMultiplier }
           } UNION {
             ?maxDoseUnit
                 rdfs:label ?maxDoseUnitLabel ;
                 a ontology:Unit ;
                 owl:sameAs ?maxDoseUnitConcept .
+            OPTIONAL { ?maxDoseUnit qudt:conversionMultiplier ?maxDoseUnitMultiplier }
           } .
           FILTER (?maxDoseUnitConcept != ontology:Unit) .
           { ?minDoseUnit
                 rdfs:label ?minDoseUnitLabel ;
                 a ?minDoseUnitConcept .
+            OPTIONAL { ?minDoseUnit qudt:conversionMultiplier ?minDoseUnitMultiplier }
           } UNION {
               ?minDoseUnit
                   rdfs:label ?minDoseUnitLabel ;
                   a ontology:Unit ;
                   owl:sameAs ?minDoseUnitConcept .
+            OPTIONAL { ?minDoseUnit qudt:conversionMultiplier ?minDoseUnitMultiplier }
           } .
           FILTER (?minDoseUnitConcept != ontology:Unit) .
 

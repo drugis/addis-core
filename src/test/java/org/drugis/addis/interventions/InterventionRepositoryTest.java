@@ -1,7 +1,6 @@
 package org.drugis.addis.interventions;
 
 import org.drugis.addis.config.JpaRepositoryTestConfig;
-import org.drugis.addis.exception.MethodNotAllowedException;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.interventions.controller.command.*;
 import org.drugis.addis.interventions.model.*;
@@ -10,7 +9,6 @@ import org.drugis.addis.security.Account;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
-import org.springframework.social.ResourceNotFoundException;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -95,8 +93,8 @@ public class InterventionRepositoryTest {
   @Test
   public void fixedDoseIntervention() throws InvalidConstraintException {
     DoseConstraint constraint = new DoseConstraint(
-            new LowerBoundCommand(LowerBoundType.AT_LEAST, 1d, "unit", "P1d", URI.create("uriConcept")),
-            new UpperBoundCommand(UpperBoundType.AT_MOST, 2d, "unit", "P1d", URI.create("uriConcept")));
+            new LowerBoundCommand(LowerBoundType.AT_LEAST, 1d, "unit", "P1d", URI.create("uriConcept"), null),
+            new UpperBoundCommand(UpperBoundType.AT_MOST, 2d, "unit", "P1d", URI.create("uriConcept"), null));
 
     FixedDoseIntervention t = new FixedDoseIntervention(null, 1, "tit", "moti", URI.create("semuri"), "semlabel",
             constraint);
@@ -109,11 +107,11 @@ public class InterventionRepositoryTest {
   @Test
   public void titratedDoseIntervention() throws InvalidConstraintException {
     DoseConstraint minConstraint = new DoseConstraint(
-            new LowerBoundCommand(LowerBoundType.AT_LEAST, 1d, "unit", "P1D", URI.create("uriConcept")),
-            new UpperBoundCommand(UpperBoundType.AT_MOST, 2d, "unit", "P1D", URI.create("uriConcept")));
+            new LowerBoundCommand(LowerBoundType.AT_LEAST, 1d, "unit", "P1D", URI.create("uriConcept"), null),
+            new UpperBoundCommand(UpperBoundType.AT_MOST, 2d, "unit", "P1D", URI.create("uriConcept"), null));
     DoseConstraint maxContraint = new DoseConstraint(
-            new LowerBoundCommand(LowerBoundType.AT_LEAST, 1d, "unit", "P1D", URI.create("uriConcept")),
-            new UpperBoundCommand(UpperBoundType.AT_MOST, 2d, "unit", "P1D", URI.create("uriConcept")));
+            new LowerBoundCommand(LowerBoundType.AT_LEAST, 1d, "unit", "P1D", URI.create("uriConcept"), null),
+            new UpperBoundCommand(UpperBoundType.AT_MOST, 2d, "unit", "P1D", URI.create("uriConcept"), null));
     TitratedDoseIntervention t = new TitratedDoseIntervention(null, 1, "tit", "moti", URI.create("semuri"), "semlabel",
             minConstraint, maxContraint);
     em.persist(t);
@@ -125,11 +123,11 @@ public class InterventionRepositoryTest {
   @Test
   public void bothDoseIntervention() throws InvalidConstraintException {
     DoseConstraint minConstraint = new DoseConstraint(
-            new LowerBoundCommand(LowerBoundType.AT_LEAST, 1d, "unit", "P1D", URI.create("uriConcept")),
-            new UpperBoundCommand(UpperBoundType.AT_MOST, 2d, "unit", "P1D", URI.create("uriConcept")));
+            new LowerBoundCommand(LowerBoundType.AT_LEAST, 1d, "unit", "P1D", URI.create("uriConcept"), null),
+            new UpperBoundCommand(UpperBoundType.AT_MOST, 2d, "unit", "P1D", URI.create("uriConcept"), null));
     DoseConstraint maxContraint = new DoseConstraint(
-            new LowerBoundCommand(LowerBoundType.AT_LEAST, 1d, "unit", "P1D", URI.create("uriConcept")),
-            new UpperBoundCommand(UpperBoundType.AT_MOST, 2d, "unit", "P1D", URI.create("uriConcept")));
+            new LowerBoundCommand(LowerBoundType.AT_LEAST, 1d, "unit", "P1D", URI.create("uriConcept"), null),
+            new UpperBoundCommand(UpperBoundType.AT_MOST, 2d, "unit", "P1D", URI.create("uriConcept"), null));
     BothDoseTypesIntervention t = new BothDoseTypesIntervention(null, 1, "tit", "moti", URI.create("semuri"), "semlabel",
             minConstraint, maxContraint);
     em.persist(t);
@@ -165,8 +163,8 @@ public class InterventionRepositoryTest {
 
   @Test
   public void testCreateTitratedIntervention() throws Exception, InvalidConstraintException {
-    LowerBoundCommand lowerBound = new LowerBoundCommand(LowerBoundType.AT_LEAST, 3.0, "mg", "P1D", URI.create("uriConcept"));
-    UpperBoundCommand upperBound = new UpperBoundCommand(UpperBoundType.AT_MOST, 4.5, "mg", "P1D", URI.create("uriConcept"));
+    LowerBoundCommand lowerBound = new LowerBoundCommand(LowerBoundType.AT_LEAST, 3.0, "mg", "P1D", URI.create("uriConcept"), null);
+    UpperBoundCommand upperBound = new UpperBoundCommand(UpperBoundType.AT_MOST, 4.5, "mg", "P1D", URI.create("uriConcept"), null);
     ConstraintCommand minConstraintCommand = new ConstraintCommand(lowerBound, upperBound);
     AbstractInterventionCommand interventionCommand = new TitratedInterventionCommand(1, "newName", "newMotivation",
             "http://semantic.com", "labelnew", minConstraintCommand, null);

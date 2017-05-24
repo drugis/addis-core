@@ -77,9 +77,6 @@ public class ModelControllerTest {
   @Mock
   private PataviTaskRepository pataviTaskRepository;
 
-  @Inject
-  private WebApplicationContext webApplicationContext;
-
   @InjectMocks
   private ModelController modelController;
 

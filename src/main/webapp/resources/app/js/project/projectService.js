@@ -67,8 +67,8 @@ define(['lodash'], function(_) {
     }
 
     function isMultiplierMissing(constraint) {
-      return (constraint.lowerBound && !constraint.lowerBound.conversionMultiplier) ||
-        (constraint.upperBound && !constraint.upperBound.conversionMultiplier);
+      return constraint && ((constraint.lowerBound && !constraint.lowerBound.conversionMultiplier) ||
+        (constraint.upperBound && !constraint.upperBound.conversionMultiplier));
     }
 
     function addMissingMultiplierInfo(interventions) {

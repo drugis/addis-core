@@ -3,8 +3,7 @@ package org.drugis.addis.interventions.service.impl;
 import org.drugis.addis.analyses.AbstractAnalysis;
 import org.drugis.addis.analyses.repository.AnalysisRepository;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
-import org.drugis.addis.interventions.InterventionMultiplierCommand;
-import org.drugis.addis.interventions.SetMultipliersCommand;
+import org.drugis.addis.interventions.controller.command.SetMultipliersCommand;
 import org.drugis.addis.interventions.model.*;
 import org.drugis.addis.interventions.repository.InterventionRepository;
 import org.drugis.addis.interventions.service.InterventionService;
@@ -16,7 +15,7 @@ import org.springframework.social.OperationNotPermittedException;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
-import java.net.URI;
+import java.math.BigDecimal;
 import java.util.*;
 
 /**
@@ -152,8 +151,10 @@ public class InterventionServiceImpl implements InterventionService {
       return checkSimple(singleIntervention, semanticIntervention);
     }
 
-    if (singleIntervention instanceof FixedDoseIntervention || singleIntervention instanceof TitratedDoseIntervention || singleIntervention instanceof BothDoseTypesIntervention) {
-      return checkType(singleIntervention, semanticIntervention) && checkSimple(singleIntervention, semanticIntervention) && checkDose(singleIntervention, semanticIntervention);
+    if (singleIntervention instanceof FixedDoseIntervention || singleIntervention instanceof TitratedDoseIntervention
+            || singleIntervention instanceof BothDoseTypesIntervention) {
+      return checkType(singleIntervention, semanticIntervention) && checkSimple(singleIntervention, semanticIntervention) &&
+              checkDose(singleIntervention, semanticIntervention);
     }
     return false;
   }
@@ -228,7 +229,6 @@ public class InterventionServiceImpl implements InterventionService {
     if (lowerBound != null && !dose.getUnitConceptUri().equals(lowerBound.getUnitConcept())) {
       return false;
     }
-
     if (upperBound != null && !dose.getUnitConceptUri().equals(upperBound.getUnitConcept())) {
       return false;
     }
@@ -242,30 +242,29 @@ public class InterventionServiceImpl implements InterventionService {
     }
 
     //value
-    if (lowerBound != null && !isWithinConstraint(dose.getValue(), constraint)) {
+    BigDecimal scaledValue = dose.getScaledValue();
+    if (lowerBound != null && !isWithinConstraint(scaledValue, constraint)) {
       return false;
     }
-    if (upperBound != null && !isWithinConstraint(dose.getValue(), constraint)) {
+    if (upperBound != null && !isWithinConstraint(scaledValue, constraint)) {
       return false;
     }
 
     return true;
   }
 
-  private boolean isWithinConstraint(Double value, DoseConstraint constraint) {
+  private boolean isWithinConstraint(BigDecimal scaledValue, DoseConstraint constraint) {
     LowerDoseBound lowerBound = constraint.getLowerBound();
     UpperDoseBound upperBound = constraint.getUpperBound();
     boolean validUpperBound = true;
     boolean validLowerBound = true;
 
     if (lowerBound != null) {
-      validLowerBound = lowerBound.getType().isValidForBound(value, lowerBound.getValue());
+      validLowerBound = lowerBound.getType().isValidForBound(scaledValue, lowerBound.getScaledValue());
     }
-
     if (upperBound != null) {
-      validUpperBound = upperBound.getType().isValidForBound(value, upperBound.getValue());
+      validUpperBound = upperBound.getType().isValidForBound(scaledValue, upperBound.getScaledValue());
     }
-
     return validLowerBound && validUpperBound;
   }
 

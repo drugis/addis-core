@@ -48,7 +48,8 @@ import static org.mockito.Mockito.mock;
                 "org.drugis.addis.util",
                 "org.drugis.addis.effectsTables",
                 "org.drugis.addis.covariates",
-                "org.drugis.addis.remarks"
+                "org.drugis.addis.remarks",
+                "org.drugis.addis.scaledUnits"
         })
 @EnableTransactionManagement
 @EnableJpaRepositories(basePackages = {
@@ -62,7 +63,8 @@ import static org.mockito.Mockito.mock;
         "org.drugis.addis.covariates",
         "org.drugis.addis.effectsTables",
         "org.drugis.addis.security",
-        "org.drugis.trialverse"
+        "org.drugis.trialverse",
+        "org.drugis.addis.scaledUnits"
 })
 public class JpaRepositoryTestConfig {
 
@@ -138,7 +140,8 @@ public class JpaRepositoryTestConfig {
             "org.drugis.addis.remarks",
             "org.drugis.addis.effectsTables",
             "org.drugis.trialverse.dataset",
-            "org.drugis.trialverse.graph");
+            "org.drugis.trialverse.graph",
+            "org.drugis.addis.scaledUnits");
     em.setDataSource(dataSource());
     em.setPersistenceUnitName("addisCore");
     em.setLoadTimeWeaver(new InstrumentationLoadTimeWeaver());

@@ -43,16 +43,6 @@ public class DoseConstraint {
     }
   }
 
-  public void setLowerBoundConversionMultiplier(Double multiplier) {
-    lowerBound.setConversionMultiplier(multiplier);
-  }
-
-  public void setUpperBoundConversionMultiplier(Double multiplier) {
-    if (upperBound != null) {
-      upperBound.setConversionMultiplier(multiplier);
-    }
-  }
-
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;

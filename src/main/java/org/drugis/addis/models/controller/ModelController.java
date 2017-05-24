@@ -150,7 +150,6 @@ public class ModelController extends AbstractAddisCoreController {
     modelService.checkOwnership(modelId, principal);
     modelBaselineRepository.setModelBaseline(modelId, baseline);
     response.setStatus(HttpStatus.SC_OK);
-    System.out.println("foo");
   }
 
   @RequestMapping(value = "/projects/{projectId}/analyses/{analysisId}/models/{modelId}/baseline", method = RequestMethod.GET)

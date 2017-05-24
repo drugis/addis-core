@@ -71,6 +71,7 @@ import java.util.Properties;
         "org.drugis.addis.remarks",
         "org.drugis.addis.trialverse",
         "org.drugis.trialverse",
+        "org.drugis.addis.scaledUnits"
 })
 public class MainConfig {
 
@@ -183,7 +184,8 @@ public class MainConfig {
             "org.drugis.addis.problems",
             "org.drugis.addis.covariates",
             "org.drugis.addis.remarks",
-            "org.drugis.trialverse");
+            "org.drugis.trialverse",
+            "org.drugis.addis.scaledUnits");
     em.setDataSource(dataSource());
     em.setPersistenceUnitName("addisCore");
     em.setLoadTimeWeaver(new InstrumentationLoadTimeWeaver());
