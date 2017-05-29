@@ -1,6 +1,6 @@
 package org.drugis.addis.effectsTables.repository;
 
-import org.drugis.addis.effectsTables.EffectsTableExclusion;
+import org.drugis.addis.effectsTables.EffectsTableAlternativeInclusion;
 
 import java.util.List;
 
@@ -9,7 +9,7 @@ import java.util.List;
  */
 public interface EffectsTableRepository {
 
-  void setEffectsTableExclusion(Integer analysisId, String alternativeId);
+  void setEffectsTableAlternativeInclusion(Integer analysisId, List<String> alternativeId);
 
-  List<EffectsTableExclusion> getEffectsTableExclusions(Integer analysisId);
+  List<EffectsTableAlternativeInclusion> getEffectsTableAlternativeInclusions(Integer analysisId);
 }
