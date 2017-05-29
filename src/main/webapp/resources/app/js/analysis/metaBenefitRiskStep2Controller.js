@@ -13,7 +13,8 @@ define(['angular', 'lodash'], function(angular, _) {
     'ProjectResource',
     'UserService',
     'gemtcRootPath',
-    'WorkspaceService'
+    'WorkspaceService',
+    'SubProblemResource'
   ];
   var MetBenefitRiskStep2Controller = function($scope, $q, $stateParams, $state, $modal,
     AnalysisResource,
@@ -28,7 +29,8 @@ define(['angular', 'lodash'], function(angular, _) {
     ProjectResource,
     UserService,
     gemtcRootPath,
-    WorkspaceService) {
+    WorkspaceService,
+    SubProblemResource) {
 
     $scope.goToStep1 = goToStep1;
     $scope.openDistributionModal = openDistributionModal;
@@ -156,17 +158,22 @@ define(['angular', 'lodash'], function(angular, _) {
     }
 
     function goToDefaultScenario() {
-      ScenarioResource
-        .query(_.omit($stateParams, 'id'))
-        .$promise
-        .then(function(scenarios) {
+      var params = $stateParams;
+      SubProblemResource.query(params).$promise.then(function(subProblems) {
+        var subProblem = subProblems[0];
+        params = _.extend({}, params, {
+          problemId: subProblem.id
+        });
+        ScenarioResource.query(params).$promise.then(function(scenarios) {
           $state.go(DEFAULT_VIEW, {
             userUid: $scope.userId,
-            projectId: $stateParams.projectId,
-            analysisId: $stateParams.analysisId,
+            projectId: params.projectId,
+            analysisId: params.analysisId,
+            problemId: subProblem.id,
             id: scenarios[0].id
           });
         });
+      });
     }
 
     function goToStep1() {

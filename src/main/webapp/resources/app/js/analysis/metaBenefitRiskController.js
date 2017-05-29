@@ -2,11 +2,11 @@
 define(['lodash'], function(_) {
   var dependencies = ['$scope', '$q', '$stateParams', '$state', 'AnalysisResource', 'InterventionResource',
     'OutcomeResource', 'MetaBenefitRiskService', 'ModelResource', 'ScenarioResource', 'UserService', 'ProjectResource',
-    'SubProblemResource'
+    'SubProblemResource', 'DEFAULT_VIEW'
   ];
   var MetBenefitRiskController = function($scope, $q, $stateParams, $state, AnalysisResource, InterventionResource,
     OutcomeResource, MetaBenefitRiskService, ModelResource, ScenarioResource, UserService, ProjectResource,
-    SubProblemResource) {
+    SubProblemResource, DEFAULT_VIEW) {
 
     $scope.analysis = AnalysisResource.get($stateParams);
     $scope.alternatives = InterventionResource.query($stateParams);
@@ -96,7 +96,7 @@ define(['lodash'], function(_) {
           problemId: subProblem.id
         });
         ScenarioResource.query(params).$promise.then(function(scenarios) {
-          $state.go('evidence', {
+          $state.go(DEFAULT_VIEW, {
             userUid: $scope.userId,
             projectId: params.projectId,
             analysisId: params.analysisId,
