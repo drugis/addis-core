@@ -52,8 +52,8 @@ public class EffectsTableRepositoryTest {
     effectsTableRepository.setEffectsTableAlternativeInclusion(analysisId, Collections.singletonList("3"));
     effectsTableRepository.setEffectsTableAlternativeInclusion(analysisId,Collections.singletonList("2"));
     List<EffectsTableAlternativeInclusion> result = effectsTableRepository.getEffectsTableAlternativeInclusions(analysisId);
-    List<EffectsTableAlternativeInclusion> expectedResult = Arrays.asList(
-            new EffectsTableAlternativeInclusion(analysisId, "1"), new EffectsTableAlternativeInclusion(analysisId, "3"));
+    List<EffectsTableAlternativeInclusion> expectedResult = Collections.singletonList(
+            new EffectsTableAlternativeInclusion(analysisId, "2"));
     for (int i = 0; i < result.size(); i++) {
       assertEquals(result.get(i), expectedResult.get(i));
     }
