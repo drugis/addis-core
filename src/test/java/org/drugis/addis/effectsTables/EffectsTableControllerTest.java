@@ -81,7 +81,7 @@ public class EffectsTableControllerTest {
   }
 
   @Test
-  public void testSetEffectsTableExclusion() throws Exception {
+  public void testSetEffectsTableInclusions() throws Exception {
     AlternativeInclusionsCommand alternativeInclusionsCommand = new AlternativeInclusionsCommand(Collections.singletonList("abc3"));
     String body = TestUtils.createJson(alternativeInclusionsCommand);
     mockMvc.perform(post("/projects/1/analyses/2/effectsTable")
