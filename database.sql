@@ -841,8 +841,8 @@ CREATE TABLE effectsTableExclusion (
 ALTER TABLE FixedDoseIntervention ADD COLUMN lowerBoundConversionMultiplier DOUBLE PRECISION;
 ALTER TABLE FixedDoseIntervention ADD COLUMN upperBoundConversionMultiplier DOUBLE PRECISION;
 ALTER TABLE TitratedDoseIntervention ADD COLUMN minLowerBoundConversionMultiplier DOUBLE PRECISION;
-ALTER TABLE TitratedDoseIntervention ADD COLUMN minUpperBoundConversionMultiplier DOUBLE PRECISION;
 ALTER TABLE TitratedDoseIntervention ADD COLUMN maxLowerBoundConversionMultiplier DOUBLE PRECISION;
+ALTER TABLE TitratedDoseIntervention ADD COLUMN minUpperBoundConversionMultiplier DOUBLE PRECISION;
 ALTER TABLE TitratedDoseIntervention ADD COLUMN maxUpperBoundConversionMultiplier DOUBLE PRECISION;
 ALTER TABLE BothDoseTypesIntervention ADD COLUMN minLowerBoundConversionMultiplier DOUBLE PRECISION;
 ALTER TABLE BothDoseTypesIntervention ADD COLUMN minUpperBoundConversionMultiplier DOUBLE PRECISION;
@@ -851,12 +851,12 @@ ALTER TABLE BothDoseTypesIntervention ADD COLUMN maxUpperBoundConversionMultipli
 --rollback ALTER TABLE FixedDoseIntervention DROP COLUMN lowerBoundConversionMultiplier;
 --rollback ALTER TABLE FixedDoseIntervention DROP COLUMN upperBoundConversionMultiplier;
 --rollback ALTER TABLE TitratedDoseIntervention DROP COLUMN minLowerBoundConversionMultiplier;
---rollback ALTER TABLE TitratedDoseIntervention DROP COLUMN minUpperBoundConversionMultiplier;
 --rollback ALTER TABLE TitratedDoseIntervention DROP COLUMN maxLowerBoundConversionMultiplier;
+--rollback ALTER TABLE TitratedDoseIntervention DROP COLUMN minUpperBoundConversionMultiplier;
 --rollback ALTER TABLE TitratedDoseIntervention DROP COLUMN maxUpperBoundConversionMultiplier;
 --rollback ALTER TABLE BothDoseTypesIntervention DROP COLUMN minLowerBoundConversionMultiplier;
---rollback ALTER TABLE BothDoseTypesIntervention DROP COLUMN minUpperBoundConversionMultiplier;
 --rollback ALTER TABLE BothDoseTypesIntervention DROP COLUMN maxLowerBoundConversionMultiplier;
+--rollback ALTER TABLE BothDoseTypesIntervention DROP COLUMN minUpperBoundConversionMultiplier;
 --rollback ALTER TABLE BothDoseTypesIntervention DROP COLUMN maxUpperBoundConversionMultiplier;
 
 --changeset reidd:71
