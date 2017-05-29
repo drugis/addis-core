@@ -34,7 +34,7 @@ public class NetworkMetaAnalysisRepositoryTest {
   private NetworkMetaAnalysisRepository networkMetaAnalysisRepository;
 
   @PersistenceContext(unitName = "addisCore")
-  EntityManager em;
+  private EntityManager em;
 
   @Test
   public void testCreate() throws ResourceDoesNotExistException, MethodNotAllowedException {
@@ -44,8 +44,8 @@ public class NetworkMetaAnalysisRepositoryTest {
     assertNotNull(analysis);
     NetworkMetaAnalysis expectedAnalysis = em.find(NetworkMetaAnalysis.class, analysis.getId());
     assertEquals(expectedAnalysis, analysis);
-    assertEquals(2, analysis.getInterventionInclusions().size());
-    assertEquals(2, expectedAnalysis.getInterventionInclusions().size());
+    assertEquals(0, analysis.getInterventionInclusions().size());
+    assertEquals(0, expectedAnalysis.getInterventionInclusions().size());
   }
 
   @Test
