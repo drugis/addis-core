@@ -1,65 +1,68 @@
 <div class="row">
-    <div class="columns large-12">
-        <div class="row">
-            <div class="columns large-10">
-                <label>Selected Outcome</label>
-                <select ng-show="editMode.isUserOwner" ng-model="analysis.outcome" ng-options="outcome.name for outcome in outcomes"
-                    ng-disabled="editMode.disableEditing || hasModel"
-                ng-change="changeSelectedOutcome()"></select>
-                <div ng-show="!editMode.isUserOwner && analysis.outcome" style="margin-bottom: 1rem;">{{analysis.outcome.name}}</div>
-                <div ng-show="!editMode.isUserOwner && !analysis.outcome" style="margin-bottom: 1rem;"><em>No outcome selected</em></div>
-            </div>
+  <div class="columns large-12">
+    <div class="row">
+      <div class="columns large-10">
+        <label>Selected Outcome</label>
+        <select ng-show="editMode.isUserOwner" ng-model="analysis.outcome" ng-options="outcome.name for outcome in outcomes"
+          ng-disabled="editMode.disableEditing || hasModel" ng-change="changeSelectedOutcome()"></select>
+        <div ng-show="!editMode.isUserOwner && analysis.outcome" style="margin-bottom: 1rem;">{{analysis.outcome.name}}</div>
+        <div ng-show="!editMode.isUserOwner && !analysis.outcome" style="margin-bottom: 1rem;">
+          <em>No outcome selected</em>
         </div>
-        <div class="row">
-            <div class="columns large-6">
-                <label>Included interventions</label>
-                <div class="checkbox-group">
-                    <div ng-repeat="intervention in interventions">
-                        <label>
-                          <input type="checkbox" ng-model="intervention.isIncluded"
-                            ng-disabled="editMode.disableEditing || hasModel"
-                            ng-change="changeInterventionInclusion(intervention)">
-                        {{intervention.name}}
-                        </label>
-                        <div class="alert animate-show" ng-if="loading.loaded && isOverlappingIntervention(intervention)">
-                          <em>Overlaps:
-                            <span ng-repeat="overlap in treatmentOverlapMap[intervention.id]">
-                            {{overlap.name}} {{$last ? '' : ', '}}
-                            </span></em>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="columns large-6">
-                <label>Included covariates</label>
-                <em ng-if="loading.loaded && covariates.length === 0">No covariates have been defined.</em>
-
-                <div ng-if="loading.loaded && covariates.length > 0" class="checkbox-group">
-                    <div ng-repeat="covariate in covariates">
-                        <label><input type="checkbox" ng-model="covariate.isIncluded"
-                                      ng-disabled="editMode.disableEditing || hasModel"
-                                      ng-change="changeCovariateInclusion(covariate)">
-                            {{covariate.name}}</label>
-                    </div>
-                    <div class="alert animate-show" ng-show="loading.loaded && hasInsufficientCovariateValues">
-                      <em>Covariates should have more than one different value.</em>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="row">
-            <div class="columns large-12  medium-12 small-12">
-                <span class="alert animate-show" ng-show="loading.loaded && analysis.outcome && isNetworkDisconnected">Network not connected.
-                </span>
-                <span class="alert animate-show" ng-show="loading.loaded && interventions.length < 2">Fewer than two interventions defined.
-                </span>
-                <span class="alert animate-show"
-                      ng-show="loading.loaded && tableHasAmbiguousArm && interventions.length > 1 && !hasLessThanTwoInterventions">Ambiguous arms: more than one arm selected for single intervention.
-                </span>
-                <span class="alert animate-show" ng-show="loading.loaded && hasLessThanTwoInterventions">A least two interventions are needed to perform the analysis.</span>
-                <span id="intervention-overlap-warning" class="alert animate-show" ng-show="loading.loaded && hasTreatmentOverlap">Overlapping interventions detected: please exclude interventions to fix this.</span>
-                <span class="alert animate-show" ng-show="loading.loaded && containsMissingValue">The evidence table contains missing values</span>
-            </div>
-        </div>
+      </div>
     </div>
+    <div class="row">
+      <div class="columns large-6">
+        <label>Included interventions</label>
+        <div>
+          <button ng-if="!editMode.disableEditing && !hasModel" class="tiny" ng-click="selectAllInterventions()">Select all</button>
+          <button ng-if="!editMode.disableEditing && !hasModel" class="tiny" ng-click="deselectAllInterventions()">Deselect all</button>
+        </div>
+        <div class="checkbox-group">
+          <div ng-repeat="intervention in interventions">
+            <label>
+              <input type="checkbox" ng-model="intervention.isIncluded" ng-disabled="editMode.disableEditing || hasModel"
+                ng-change="changeInterventionInclusion(intervention)"> {{intervention.name}}
+            </label>
+            <div class="alert animate-show" ng-if="loading.loaded && isOverlappingIntervention(intervention)">
+              <em>Overlaps:
+                <span ng-repeat="overlap in treatmentOverlapMap[intervention.id]">
+                  {{overlap.name}} {{$last ? '' : ', '}}
+                </span>
+              </em>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="columns large-6">
+        <label>Included covariates</label>
+        <em ng-if="loading.loaded && covariates.length === 0">No covariates have been defined.</em>
+
+        <div ng-if="loading.loaded && covariates.length > 0" class="checkbox-group">
+          <div ng-repeat="covariate in covariates">
+            <label>
+              <input type="checkbox" ng-model="covariate.isIncluded" ng-disabled="editMode.disableEditing || hasModel"
+                ng-change="changeCovariateInclusion(covariate)"> {{covariate.name}}
+            </label>
+          </div>
+          <div class="alert animate-show" ng-show="loading.loaded && hasInsufficientCovariateValues">
+            <em>Covariates should have more than one different value.</em>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="columns large-12  medium-12 small-12">
+        <span class="alert animate-show" ng-show="loading.loaded && analysis.outcome && isNetworkDisconnected">Network not connected.
+        </span>
+        <span class="alert animate-show" ng-show="loading.loaded && interventions.length < 2">Fewer than two interventions defined.
+        </span>
+        <span class="alert animate-show" ng-show="loading.loaded && tableHasAmbiguousArm && interventions.length > 1 && !hasLessThanTwoInterventions">Ambiguous arms: more than one arm selected for single intervention.
+        </span>
+        <span class="alert animate-show" ng-show="loading.loaded && hasLessThanTwoInterventions">A least two interventions are needed to perform the analysis.</span>
+        <span id="intervention-overlap-warning" class="alert animate-show" ng-show="loading.loaded && hasTreatmentOverlap">Overlapping interventions detected: please exclude interventions to fix this.</span>
+        <span class="alert animate-show" ng-show="loading.loaded && containsMissingValue">The evidence table contains missing values</span>
+      </div>
+    </div>
+  </div>
 </div>

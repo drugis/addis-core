@@ -545,7 +545,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
   @Override
   public List<TrialDataStudy> getNetworkData(String namespaceUid, URI version, URI outcomeUri,
                                              Set<URI> interventionUris, Set<String> covariateKeys) throws ReadValueException {
-    return getTrialData(namespaceUid, version, "?graph", Collections.singleton(outcomeUri), interventionUris, covariateKeys);
+      return getTrialData(namespaceUid, version, "?graph", Collections.singleton(outcomeUri), interventionUris, covariateKeys);
   }
 
   @Override
