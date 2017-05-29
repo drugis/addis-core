@@ -66,7 +66,7 @@ public class MetaBenefitRiskAnalysisRepositoryTest {
 
     assertNotNull(metaBenefitRiskAnalysis);
     assertNotNull(metaBenefitRiskAnalysis.getId());
-    assertEquals(2, metaBenefitRiskAnalysis.getInterventionInclusions().size());
+    assertEquals(0, metaBenefitRiskAnalysis.getInterventionInclusions().size());
     assertEquals(0, metaBenefitRiskAnalysis.getMbrOutcomeInclusions().size());
   }
 
