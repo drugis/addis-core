@@ -21,15 +21,15 @@ class EffectsTableRepositoryImpl implements EffectsTableRepository {
 
   @Override
   public void setEffectsTableAlternativeInclusion(Integer analysisId, List<String> alternativeIds) {
-    List<EffectsTableAlternativeInclusion> resultList = getEffectsTableAlternativeInclusions(analysisId);
+    List<EffectsTableAlternativeInclusion> oldInclusions = getEffectsTableAlternativeInclusions(analysisId);
 
     for (String alternativeId : alternativeIds) {
       boolean alreadyIncluded = false;
-      for (EffectsTableAlternativeInclusion effectsTableAlternativeInclusion : resultList) {
+      for (EffectsTableAlternativeInclusion oldInclusion : oldInclusions) {
         // Look if it is already in the db
-        if (effectsTableAlternativeInclusion.getAlternativeId().equals(alternativeId)) {
+        if (oldInclusion.getAlternativeId().equals(alternativeId)) {
           alreadyIncluded = true;
-          resultList.remove(effectsTableAlternativeInclusion);
+          oldInclusions.remove(oldInclusion);
           break;
         }
       }
@@ -38,9 +38,9 @@ class EffectsTableRepositoryImpl implements EffectsTableRepository {
         em.persist(new EffectsTableAlternativeInclusion(analysisId, alternativeId));
       }
     }
-    for(EffectsTableAlternativeInclusion effectsTableAlternativeInclusion : resultList){
+    for(EffectsTableAlternativeInclusion notIncludedAfterUpdate : oldInclusions){
       // remove everything from the db that is not on the new list
-      em.remove(effectsTableAlternativeInclusion);
+      em.remove(notIncludedAfterUpdate);
     }
   }
 
