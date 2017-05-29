@@ -2,8 +2,8 @@ package org.drugis.addis.effectsTables.controller;
 
 import org.apache.http.HttpStatus;
 import org.drugis.addis.base.AbstractAddisCoreController;
-import org.drugis.addis.effectsTables.AlternativeIdCommand;
-import org.drugis.addis.effectsTables.EffectsTableExclusion;
+import org.drugis.addis.effectsTables.AlternativeInclusionsCommand;
+import org.drugis.addis.effectsTables.EffectsTableAlternativeInclusion;
 import org.drugis.addis.effectsTables.repository.EffectsTableRepository;
 import org.drugis.addis.exception.MethodNotAllowedException;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
@@ -37,16 +37,16 @@ public class EffectsTableController extends AbstractAddisCoreController {
 
   @RequestMapping(value = "/projects/{projectId}/analyses/{analysisId}/effectsTable", method = RequestMethod.GET)
   @ResponseBody
-  public List<EffectsTableExclusion> getEffectsTable(@PathVariable Integer projectId, @PathVariable Integer analysisId){
-    return effectsTableRepository.getEffectsTableExclusions(analysisId);
+  public List<EffectsTableAlternativeInclusion> getEffectsTable(@PathVariable Integer projectId, @PathVariable Integer analysisId){
+    return effectsTableRepository.getEffectsTableAlternativeInclusions(analysisId);
   }
 
   @RequestMapping(value="/projects/{projectId}/analyses/{analysisId}/effectsTable", method = RequestMethod.POST)
-  public void setEffectsTableExclusion(HttpServletResponse response, Principal currentUser, @PathVariable Integer projectId,
-                                       @PathVariable Integer analysisId, @RequestBody AlternativeIdCommand alternativeIdCommand) throws ResourceDoesNotExistException, MethodNotAllowedException {
+  public void setEffectsTableInclusions(HttpServletResponse response, Principal currentUser, @PathVariable Integer projectId,
+                                       @PathVariable Integer analysisId, @RequestBody AlternativeInclusionsCommand alternativeInclusionsCommand) throws ResourceDoesNotExistException, MethodNotAllowedException {
     Account user = accountRepository.findAccountByUsername(currentUser.getName());
     projectService.checkProjectExistsAndModifiable(user, projectId);
-    effectsTableRepository.setEffectsTableExclusion(analysisId, alternativeIdCommand.getAlternativeId());
+    effectsTableRepository.setEffectsTableAlternativeInclusion(analysisId, alternativeInclusionsCommand.getAlternativeIds());
     response.setStatus(HttpStatus.SC_OK);
   }
 }

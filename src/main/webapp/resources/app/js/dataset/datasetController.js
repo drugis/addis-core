@@ -182,7 +182,7 @@ define(['lodash'],
           resolve: {
             successCallback: function() {
               return function(newVersion) {
-                $state.go('study', {
+                $state.go('versionedDataset', {
                   userUid: $stateParams.userUid,
                   datasetUuid: $stateParams.datasetUuid,
                   versionUuid: newVersion

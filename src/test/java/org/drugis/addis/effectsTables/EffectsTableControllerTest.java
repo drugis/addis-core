@@ -21,6 +21,7 @@ import org.springframework.web.context.WebApplicationContext;
 import javax.inject.Inject;
 import java.security.Principal;
 import java.util.Arrays;
+import java.util.Collections;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.Mockito.*;
@@ -70,25 +71,25 @@ public class EffectsTableControllerTest {
 
   @Test
   public void testGetEffectsTable() throws Exception {
-    when(effectsTableRepository.getEffectsTableExclusions(analysisId))
-            .thenReturn(Arrays.asList(new EffectsTableExclusion(analysisId, "1"), new EffectsTableExclusion(analysisId, "2")));
+    when(effectsTableRepository.getEffectsTableAlternativeInclusions(analysisId))
+            .thenReturn(Arrays.asList(new EffectsTableAlternativeInclusion(analysisId, "1"), new EffectsTableAlternativeInclusion(analysisId, "2")));
     mockMvc.perform(get("/projects/1/analyses/2/effectsTable"))
             .andExpect(status().isOk())
             .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()))
             .andExpect(jsonPath("$", hasSize(2)));
-    verify(effectsTableRepository).getEffectsTableExclusions(analysisId);
+    verify(effectsTableRepository).getEffectsTableAlternativeInclusions(analysisId);
   }
 
   @Test
   public void testSetEffectsTableExclusion() throws Exception {
-    AlternativeIdCommand alternativeIdCommand = new AlternativeIdCommand("abc3");
-    String body = TestUtils.createJson(alternativeIdCommand);
+    AlternativeInclusionsCommand alternativeInclusionsCommand = new AlternativeInclusionsCommand(Collections.singletonList("abc3"));
+    String body = TestUtils.createJson(alternativeInclusionsCommand);
     mockMvc.perform(post("/projects/1/analyses/2/effectsTable")
             .principal(user)
             .content(body)
             .contentType(WebConstants.getApplicationJsonUtf8Value()))
             .andExpect(status().isOk());
     verify(accountRepository).findAccountByUsername("gert");
-    verify(effectsTableRepository).setEffectsTableExclusion(analysisId, "abc3");
+    verify(effectsTableRepository).setEffectsTableAlternativeInclusion(analysisId, Collections.singletonList("abc3"));
   }
 }

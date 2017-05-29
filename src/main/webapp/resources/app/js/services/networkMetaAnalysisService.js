@@ -179,6 +179,7 @@ define(['lodash', 'angular'], function(_, angular) {
 
     function getMeasurementType(trialData) {
       var studyWithMeasurement = _.find(trialData, function(study) {
+
         return _.find(study.trialDataArms, function(trialDataArm) {
           return _.find(trialDataArm.measurements, function(measurementsForMoment) {
             return _.find(measurementsForMoment, function(measurement) {
@@ -187,6 +188,9 @@ define(['lodash', 'angular'], function(_, angular) {
           });
         });
       });
+      if(!studyWithMeasurement){
+        return undefined;
+      }
       return getRowMeasurementType(_.values(studyWithMeasurement.trialDataArms[0].measurements)[0][0]);
     }
 
