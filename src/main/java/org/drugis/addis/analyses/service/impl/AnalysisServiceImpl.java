@@ -47,37 +47,37 @@ import java.util.stream.Collectors;
 public class AnalysisServiceImpl implements AnalysisService {
 
   @Inject
-  AnalysisRepository analysisRepository;
+  private AnalysisRepository analysisRepository;
 
   @Inject
-  NetworkMetaAnalysisRepository networkMetaAnalysisRepository;
+  private NetworkMetaAnalysisRepository networkMetaAnalysisRepository;
 
   @Inject
-  SingleStudyBenefitRiskAnalysisRepository singleStudyBenefitRiskAnalysisRepository;
+  private SingleStudyBenefitRiskAnalysisRepository singleStudyBenefitRiskAnalysisRepository;
 
   @Inject
-  MetaBenefitRiskAnalysisRepository metaBenefitRiskAnalysisRepository;
+  private MetaBenefitRiskAnalysisRepository metaBenefitRiskAnalysisRepository;
 
   @Inject
-  ProjectService projectService;
+  private ProjectService projectService;
 
   @Inject
-  ModelService modelService;
+  private ModelService modelService;
 
   @Inject
-  OutcomeRepository outcomeRepository;
+  private OutcomeRepository outcomeRepository;
 
   @Inject
-  InterventionRepository interventionRepository;
+  private InterventionRepository interventionRepository;
 
   @Inject
-  TriplestoreService triplestoreService;
+  private TriplestoreService triplestoreService;
 
   @Inject
-  ProjectRepository projectRepository;
+  private ProjectRepository projectRepository;
 
   @Inject
-  MappingService mappingService;
+  private MappingService mappingService;
 
   @Inject
   private CovariateRepository covariateRepository;
@@ -122,6 +122,7 @@ public class AnalysisServiceImpl implements AnalysisService {
     return outcomes.stream()
             .filter(o -> findValidNetworkMetaAnalysis(networkMetaAnalyses, models, o).isPresent())
             .map(o -> {
+              //noinspection ConstantConditions -- already checked in filter
               NetworkMetaAnalysis validNma = findValidNetworkMetaAnalysis(networkMetaAnalyses, models, o).get();
               return new MbrOutcomeInclusion(metabenefitRiskAnalysisId, o.getId(), validNma.getId(), selectModelId(validNma, models));
             })
@@ -138,28 +139,25 @@ public class AnalysisServiceImpl implements AnalysisService {
 
   private Integer selectModelId(NetworkMetaAnalysis networkMetaAnalysis, List<Model> consistencyModels) {
 
-    List<Model> analysisModels = new ArrayList<>();
-    for (Model model : consistencyModels) {
-      if (model.getAnalysisId().equals(networkMetaAnalysis.getId())) {
-        analysisModels.add(model);
-      }
-    }
+    List<Model> analysisModels = consistencyModels.stream()
+        .filter(model -> !model.getArchived() && model.getAnalysisId().equals(networkMetaAnalysis.getId()))
+        .collect(Collectors.toList());
     if (networkMetaAnalysis.getPrimaryModel() != null) {
       Optional<Model> primaryModel = analysisModels.stream()
               .filter(m -> m.getId().equals(networkMetaAnalysis.getPrimaryModel()))
               .findFirst();
-      return primaryModel.get().getId();
+      return primaryModel.orElse(null).getId();
     } else {
       return analysisModels.stream()
               .sorted(Comparator.comparing(Model::getTitle))
-              .findFirst().get().getId();
+              .findFirst().orElse(null).getId();
     }
   }
 
   private boolean analysisHasModel(List<Model> models, NetworkMetaAnalysis nma) {
     return models
             .stream()
-            .anyMatch(m -> m.getAnalysisId().equals(nma.getId()));
+            .anyMatch(m -> m.getAnalysisId().equals(nma.getId()) && ! m.getArchived());
   }
 
   @Override
