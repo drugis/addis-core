@@ -37,7 +37,7 @@ define(['lodash'], function(_) {
         return outcome.id === nma.outcome.id &&
           mbrOutcomeInclusion.networkMetaAnalysisId === nma.id;
       }) || nmasForOutcome[0];
-      var selectedModel = _.find(selectedAnalysis.models, ['id', mbrOutcomeInclusion.modelId]);
+      var selectedModel = !selectedAnalysis? undefined : _.find(selectedAnalysis.models, ['id', mbrOutcomeInclusion.modelId]);
 
       return {
         outcome: outcome,
