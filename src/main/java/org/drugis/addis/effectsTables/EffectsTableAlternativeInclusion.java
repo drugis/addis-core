@@ -1,15 +1,13 @@
 package org.drugis.addis.effectsTables;
 
-import org.hibernate.annotations.GenericGenerator;
-
 import javax.persistence.*;
 import java.io.Serializable;
 
 /**
  * Created by joris on 4-4-17.
  */
-@Entity @IdClass(EffectsTableExclusion.PK.class)
-public class EffectsTableExclusion {
+@Entity @IdClass(EffectsTableAlternativeInclusion.PK.class)
+public class EffectsTableAlternativeInclusion {
 
   static class PK implements Serializable {
     protected Integer analysisId;
@@ -47,10 +45,10 @@ public class EffectsTableExclusion {
   @Id
   private String alternativeId;
 
-  public EffectsTableExclusion() {
+  public EffectsTableAlternativeInclusion() {
   }
 
-  public EffectsTableExclusion(Integer analysisId, String alternativeId) {
+  public EffectsTableAlternativeInclusion(Integer analysisId, String alternativeId) {
     this.analysisId = analysisId;
     this.alternativeId = alternativeId;
   }
@@ -68,7 +66,7 @@ public class EffectsTableExclusion {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
 
-    EffectsTableExclusion that = (EffectsTableExclusion) o;
+    EffectsTableAlternativeInclusion that = (EffectsTableAlternativeInclusion) o;
 
     if (!analysisId.equals(that.analysisId)) return false;
     return alternativeId.equals(that.alternativeId);

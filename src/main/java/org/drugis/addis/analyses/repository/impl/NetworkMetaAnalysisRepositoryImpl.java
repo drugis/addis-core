@@ -24,10 +24,10 @@ import java.util.*;
 public class NetworkMetaAnalysisRepositoryImpl implements NetworkMetaAnalysisRepository {
   @Qualifier("emAddisCore")
   @PersistenceContext(unitName = "addisCore")
-  EntityManager em;
+  private EntityManager em;
 
   @Inject
-  InterventionRepository interventionRepository;
+  private InterventionRepository interventionRepository;
 
   @Override
   public NetworkMetaAnalysis create(AnalysisCommand analysisCommand) throws MethodNotAllowedException, ResourceDoesNotExistException {
@@ -36,9 +36,6 @@ public class NetworkMetaAnalysisRepositoryImpl implements NetworkMetaAnalysisRep
 
     Collection<AbstractIntervention> interventions = interventionRepository.query(analysisCommand.getProjectId());
     Set<InterventionInclusion> interventionInclusions = new HashSet<>(interventions.size());
-    for (AbstractIntervention intervention : interventions) {
-      interventionInclusions.add(new InterventionInclusion(networkMetaAnalysis.getId(), intervention.getId()));
-    }
     networkMetaAnalysis.updateIncludedInterventions(interventionInclusions);
     return update(networkMetaAnalysis);
   }
