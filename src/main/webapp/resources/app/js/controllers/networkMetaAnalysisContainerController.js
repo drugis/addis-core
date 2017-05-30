@@ -43,7 +43,7 @@ define(['angular', 'lodash'], function(angular, _) {
       isUserOwner: isUserOwner,
       disableEditing: !isUserOwner || $scope.project.archived || $scope.analysis.archived
     };
-      
+
     $scope.models = ModelResource.query({
       projectId: $stateParams.projectId,
       analysisId: $stateParams.analysisId
@@ -147,7 +147,6 @@ define(['angular', 'lodash'], function(angular, _) {
           $scope.trialverseData = trialverseData;
           $scope.momentSelections = NetworkMetaAnalysisService.buildMomentSelections(trialverseData, $scope.analysis);
           var includedInterventions = NetworkMetaAnalysisService.getIncludedInterventions($scope.interventions);
-          updateNetwork();
           $scope.treatmentOverlapMap = NetworkMetaAnalysisService.buildOverlappingTreatmentMap($scope.interventions, trialverseData);
           $scope.trialData = NetworkMetaAnalysisService.transformTrialDataToTableRows(trialverseData, includedInterventions, $scope.analysis, $scope.covariates, $scope.treatmentOverlapMap);
           $scope.tableHasAmbiguousArm = NetworkMetaAnalysisService.doesModelHaveAmbiguousArms(trialverseData, $scope.analysis);
@@ -160,6 +159,7 @@ define(['angular', 'lodash'], function(angular, _) {
           $scope.showStdErr = NetworkMetaAnalysisService.checkStdErrShow($scope.trialData);
           $scope.showSigmaN = NetworkMetaAnalysisService.checkSigmaNShow($scope.trialData);
           $scope.measurementType = NetworkMetaAnalysisService.getMeasurementType($scope.trialverseData);
+          updateNetwork();
           $scope.loading.loaded = true;
         });
     };
@@ -226,7 +226,8 @@ define(['angular', 'lodash'], function(angular, _) {
 
     function updateNetwork() {
       var includedInterventions = NetworkMetaAnalysisService.getIncludedInterventions($scope.interventions);
-      $scope.networkGraph.network = NetworkMetaAnalysisService.transformTrialDataToNetwork($scope.trialverseData, includedInterventions, $scope.analysis, $scope.momentSelections);
+      $scope.networkGraph.network = NetworkMetaAnalysisService.transformTrialDataToNetwork(
+        $scope.trialverseData, includedInterventions, $scope.analysis, $scope.momentSelections);
       $scope.isNetworkDisconnected = AnalysisService.isNetworkDisconnected($scope.networkGraph.network);
     }
 
