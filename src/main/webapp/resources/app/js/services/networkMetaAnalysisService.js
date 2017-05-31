@@ -187,7 +187,7 @@ define(['lodash', 'angular'], function(_, angular) {
           });
         });
       });
-      return getRowMeasurementType(_.values(studyWithMeasurement.trialDataArms[0].measurements)[0][0]);
+      return !studyWithMeasurement ? undefined : getRowMeasurementType(_.values(studyWithMeasurement.trialDataArms[0].measurements)[0][0]);
     }
 
     function measurementsByMM(analysis, trialDataArm, measurementMoments) {
