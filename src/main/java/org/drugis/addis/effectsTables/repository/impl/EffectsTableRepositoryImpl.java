@@ -1,6 +1,6 @@
 package org.drugis.addis.effectsTables.repository.impl;
 
-import org.drugis.addis.effectsTables.EffectsTableExclusion;
+import org.drugis.addis.effectsTables.EffectsTableAlternativeInclusion;
 import org.drugis.addis.effectsTables.repository.EffectsTableRepository;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
@@ -20,29 +20,33 @@ class EffectsTableRepositoryImpl implements EffectsTableRepository {
   private EntityManager em;
 
   @Override
-  public void setEffectsTableExclusion(Integer analysisId, String alternativeId) {
-    TypedQuery<EffectsTableExclusion> query = em.createQuery(
-            "FROM EffectsTableExclusion WHERE analysisId = :analysisId AND alternativeId = :alternativeId",
-            EffectsTableExclusion.class);
-    query.setParameter("analysisId", analysisId);
-    query.setParameter("alternativeId",alternativeId);
-    List<EffectsTableExclusion> resultList = query.getResultList();
-    EffectsTableExclusion effectsTableExclusion = null;
-    if(!resultList.isEmpty()){
-      effectsTableExclusion = resultList.get(0);
-    }
+  public void setEffectsTableAlternativeInclusion(Integer analysisId, List<String> alternativeIds) {
+    List<EffectsTableAlternativeInclusion> oldInclusions = getEffectsTableAlternativeInclusions(analysisId);
 
-    if (effectsTableExclusion == null) {
-      effectsTableExclusion = new EffectsTableExclusion(analysisId, alternativeId);
-      em.persist(effectsTableExclusion);
-    } else {
-      em.remove(effectsTableExclusion);
+    for (String alternativeId : alternativeIds) {
+      boolean alreadyIncluded = false;
+      for (EffectsTableAlternativeInclusion oldInclusion : oldInclusions) {
+        // Look if it is already in the db
+        if (oldInclusion.getAlternativeId().equals(alternativeId)) {
+          alreadyIncluded = true;
+          oldInclusions.remove(oldInclusion);
+          break;
+        }
+      }
+      if (!alreadyIncluded) {
+        //do nothing is it is already in the db, otherwise add it
+        em.persist(new EffectsTableAlternativeInclusion(analysisId, alternativeId));
+      }
+    }
+    for(EffectsTableAlternativeInclusion notIncludedAfterUpdate : oldInclusions){
+      // remove everything from the db that is not on the new list
+      em.remove(notIncludedAfterUpdate);
     }
   }
 
   @Override
-  public List<EffectsTableExclusion> getEffectsTableExclusions(Integer analysisId) {
-    TypedQuery<EffectsTableExclusion> query = em.createQuery("FROM EffectsTableExclusion WHERE analysisId = :analysisId", EffectsTableExclusion.class);
+  public List<EffectsTableAlternativeInclusion> getEffectsTableAlternativeInclusions(Integer analysisId) {
+    TypedQuery<EffectsTableAlternativeInclusion> query = em.createQuery("FROM EffectsTableAlternativeInclusion WHERE analysisId = :analysisId", EffectsTableAlternativeInclusion.class);
     query.setParameter("analysisId", analysisId);
     return query.getResultList();
   }

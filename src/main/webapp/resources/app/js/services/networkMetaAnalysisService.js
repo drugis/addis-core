@@ -179,6 +179,7 @@ define(['lodash', 'angular'], function(_, angular) {
 
     function getMeasurementType(trialData) {
       var studyWithMeasurement = _.find(trialData, function(study) {
+
         return _.find(study.trialDataArms, function(trialDataArm) {
           return _.find(trialDataArm.measurements, function(measurementsForMoment) {
             return _.find(measurementsForMoment, function(measurement) {

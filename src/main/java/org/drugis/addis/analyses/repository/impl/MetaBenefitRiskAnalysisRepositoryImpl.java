@@ -35,13 +35,13 @@ import java.util.stream.Collectors;
 public class MetaBenefitRiskAnalysisRepositoryImpl implements MetaBenefitRiskAnalysisRepository {
   @Qualifier("emAddisCore")
   @PersistenceContext(unitName = "addisCore")
-  EntityManager em;
+  private EntityManager em;
 
   @Inject
-  AnalysisService analysisService;
+  private AnalysisService analysisService;
 
   @Inject
-  ProjectService projectService;
+  private ProjectService projectService;
 
   @Inject
   InterventionRepository interventionRepository;
@@ -50,7 +50,7 @@ public class MetaBenefitRiskAnalysisRepositoryImpl implements MetaBenefitRiskAna
   ScenarioRepository scenarioRepository;
 
   @Inject
-  MetaBenefitRiskAnalysisService metaBenefitRiskAnalysisService;
+  private MetaBenefitRiskAnalysisService metaBenefitRiskAnalysisService;
 
 
   @Override
@@ -72,10 +72,7 @@ public class MetaBenefitRiskAnalysisRepositoryImpl implements MetaBenefitRiskAna
     final Integer metaKey = metaBenefitRiskAnalysis.getId();
     assert (metaKey != null);
 
-    Collection<AbstractIntervention> interventions = interventionRepository.query(metaBenefitRiskAnalysis.getProjectId());
-    List<InterventionInclusion> interventionInclusions = interventions.stream().map(i -> new InterventionInclusion(metaKey, i.getId())).collect(Collectors.toList());
-    interventionInclusions.forEach(ii -> em.persist(ii));
-    metaBenefitRiskAnalysis.updateIncludedInterventions(new HashSet<>(interventionInclusions));
+    metaBenefitRiskAnalysis.updateIncludedInterventions(new HashSet<>());
 
     em.flush();
 

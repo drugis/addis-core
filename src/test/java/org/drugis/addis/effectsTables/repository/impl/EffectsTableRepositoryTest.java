@@ -1,7 +1,7 @@
 package org.drugis.addis.effectsTables.repository.impl;
 
 import org.drugis.addis.config.JpaRepositoryTestConfig;
-import org.drugis.addis.effectsTables.EffectsTableExclusion;
+import org.drugis.addis.effectsTables.EffectsTableAlternativeInclusion;
 import org.drugis.addis.effectsTables.repository.EffectsTableRepository;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -14,6 +14,7 @@ import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -38,21 +39,21 @@ public class EffectsTableRepositoryTest {
 
   @Test
   public void testGetEffectsTable() throws Exception {
-    List<EffectsTableExclusion> result = effectsTableRepository.getEffectsTableExclusions(analysisId);
-    List<EffectsTableExclusion> expectedResult = Arrays.asList(new EffectsTableExclusion(-1, "1"), new EffectsTableExclusion(-1, "2"));
+    List<EffectsTableAlternativeInclusion> result = effectsTableRepository.getEffectsTableAlternativeInclusions(analysisId);
+    List<EffectsTableAlternativeInclusion> expectedResult = Arrays.asList(new EffectsTableAlternativeInclusion(-1, "1"), new EffectsTableAlternativeInclusion(-1, "2"));
     for (int i = 0; i < result.size(); i++) {
       assertEquals(result.get(i), expectedResult.get(i));
     }
   }
 
   @Test
-  public void testSetEffectsTableExclusion() throws Exception {
+  public void testSetEffectsTableInclusions() throws Exception {
     // add alternative with id 3, remove alternative with id 2
-    effectsTableRepository.setEffectsTableExclusion(analysisId,"3");
-    effectsTableRepository.setEffectsTableExclusion(analysisId,"2");
-    List<EffectsTableExclusion> result = effectsTableRepository.getEffectsTableExclusions(analysisId);
-    List<EffectsTableExclusion> expectedResult = Arrays.asList(
-            new EffectsTableExclusion(analysisId, "1"), new EffectsTableExclusion(analysisId, "3"));
+    effectsTableRepository.setEffectsTableAlternativeInclusion(analysisId, Collections.singletonList("3"));
+    effectsTableRepository.setEffectsTableAlternativeInclusion(analysisId,Collections.singletonList("2"));
+    List<EffectsTableAlternativeInclusion> result = effectsTableRepository.getEffectsTableAlternativeInclusions(analysisId);
+    List<EffectsTableAlternativeInclusion> expectedResult = Collections.singletonList(
+            new EffectsTableAlternativeInclusion(analysisId, "2"));
     for (int i = 0; i < result.size(); i++) {
       assertEquals(result.get(i), expectedResult.get(i));
     }

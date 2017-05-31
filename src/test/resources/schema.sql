@@ -723,3 +723,6 @@ ALTER TABLE scenario ADD COLUMN subProblemId INT;
 
 --changeset keijserj:73
 ALTER TABLE effectsTableExclusion ALTER COLUMN alternativeId VARCHAR;
+
+--changeset keijserj:74
+ALTER TABLE effectsTableExclusion RENAME TO effectsTableAlternativeInclusion;

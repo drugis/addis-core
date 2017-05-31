@@ -6,7 +6,7 @@ define(function() {
       projectId: '@projectId',
       analysisId: '@analysisId'
     }, {
-      'toggleExclusion': {
+      'setEffectsTableInclusions': {
         url: '/projects/:projectId/analyses/:analysisId/effectsTable',
         method: 'POST'
       }

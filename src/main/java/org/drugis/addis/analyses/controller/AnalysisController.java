@@ -63,25 +63,25 @@ public class AnalysisController extends AbstractAddisCoreController {
 
   @RequestMapping(value = "/projects/{projectId}/analyses", method = RequestMethod.GET, params = {"outcomeIds"})
   @ResponseBody
-  public NetworkMetaAnalysis[] queryNetworkMetaAnalysisByOutcomes(@PathVariable Integer projectId, @RequestParam(name = "outcomeIds", required=false) List<Integer> outcomeIds) throws MethodNotAllowedException, ResourceDoesNotExistException {
-      Collection<NetworkMetaAnalysis> networkMetaAnalyses = networkMetaAnalysisRepository.queryByOutcomes(projectId, outcomeIds);
-      NetworkMetaAnalysis[] networkMetaAnalysesArray = new NetworkMetaAnalysis[networkMetaAnalyses.size()];
-      return networkMetaAnalyses.toArray(networkMetaAnalysesArray);
+  public NetworkMetaAnalysis[] queryNetworkMetaAnalysisByOutcomes(@PathVariable Integer projectId, @RequestParam(name = "outcomeIds", required = false) List<Integer> outcomeIds) throws MethodNotAllowedException, ResourceDoesNotExistException {
+    Collection<NetworkMetaAnalysis> networkMetaAnalyses = networkMetaAnalysisRepository.queryByOutcomes(projectId, outcomeIds);
+    NetworkMetaAnalysis[] networkMetaAnalysesArray = new NetworkMetaAnalysis[networkMetaAnalyses.size()];
+    return networkMetaAnalyses.toArray(networkMetaAnalysesArray);
   }
 
 
   @RequestMapping(value = "/projects/{projectId}/analyses", method = RequestMethod.GET)
   @ResponseBody
   public AbstractAnalysis[] query(@PathVariable Integer projectId) throws MethodNotAllowedException, ResourceDoesNotExistException {
-      List<AbstractAnalysis> abstractAnalysisList = analysisRepository.query(projectId);
-      AbstractAnalysis[] abstractAnalysesArray = new AbstractAnalysis[abstractAnalysisList.size()];
-      return abstractAnalysisList.toArray(abstractAnalysesArray);
+    List<AbstractAnalysis> abstractAnalysisList = analysisRepository.query(projectId);
+    AbstractAnalysis[] abstractAnalysesArray = new AbstractAnalysis[abstractAnalysisList.size()];
+    return abstractAnalysisList.toArray(abstractAnalysesArray);
   }
 
   @RequestMapping(value = "/projects/{projectId}/analyses/{analysisId}", method = RequestMethod.GET)
   @ResponseBody
   public AbstractAnalysis get(@PathVariable Integer analysisId) throws MethodNotAllowedException, ResourceDoesNotExistException {
-      return analysisRepository.get(analysisId);
+    return analysisRepository.get(analysisId);
   }
 
 
@@ -117,7 +117,7 @@ public class AnalysisController extends AbstractAddisCoreController {
   public void setPrimaryModel(HttpServletResponse response, Principal currentUser,
                               @PathVariable Integer projectId,
                               @PathVariable Integer analysisId,
-                              @RequestParam(required=false) Integer modelId) throws MethodNotAllowedException, ResourceDoesNotExistException {
+                              @RequestParam(value = "modelId", required = false) Integer modelId) throws MethodNotAllowedException, ResourceDoesNotExistException {
     projectService.checkOwnership(projectId, currentUser);
     networkMetaAnalysisRepository.setPrimaryModel(analysisId, modelId);
     response.setStatus(HttpStatus.SC_OK);

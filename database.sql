@@ -892,3 +892,7 @@ ALTER TABLE scenario ADD FOREIGN KEY (subProblemId) REFERENCES subProblem (id) O
 --changeset keijserj:73
 ALTER TABLE effectsTableExclusion ALTER COLUMN alternativeId TYPE VARCHAR;
 --rollback ALTER TABLE effectsTableExclusion ALTER COLUMN alternativeId TYPE int USING alternativeId::integer;
+
+--changeset keijserj:74
+ALTER TABLE effectsTableExclusion RENAME TO effectsTableAlternativeInclusion;
+--rollback ALTER TABLE effectsTableAlternativeInclusion RENAME TO effectsTableExclusion;

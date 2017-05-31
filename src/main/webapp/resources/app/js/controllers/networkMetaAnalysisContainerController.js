@@ -9,6 +9,7 @@ define(['angular', 'lodash'], function(angular, _) {
     OutcomeResource, InterventionResource, CovariateResource, ModelResource, NetworkMetaAnalysisService, AnalysisService,
     EvidenceTableResource, UserService, AnalysisResource) {
 
+    // vars
     $scope.isAnalysisLocked = true;
     $scope.isNetworkDisconnected = true;
     $scope.hasModel = true;
@@ -24,13 +25,15 @@ define(['angular', 'lodash'], function(angular, _) {
     $scope.loading = {
       loaded: false
     };
-
-
-    var isUserOwner = false;
-
     // make available for create model permission check in models.html (which is in gemtc subproject)
     $scope.userId = Number($stateParams.userUid);
+    var isUserOwner = false;
 
+    // functions
+    $scope.selectAllInterventions = selectAllInterventions;
+    $scope.deselectAllInterventions = deselectAllInterventions;
+
+    // init
     if (UserService.hasLoggedInUser()) {
       $scope.loginUserId = (UserService.getLoginUser()).id;
       isUserOwner = UserService.isLoginUserId($scope.project.owner.id);
@@ -40,7 +43,7 @@ define(['angular', 'lodash'], function(angular, _) {
       isUserOwner: isUserOwner,
       disableEditing: !isUserOwner || $scope.project.archived || $scope.analysis.archived
     };
-
+      
     $scope.models = ModelResource.query({
       projectId: $stateParams.projectId,
       analysisId: $stateParams.analysisId
@@ -171,6 +174,29 @@ define(['angular', 'lodash'], function(angular, _) {
         $scope.reloadModel();
       });
     };
+
+    function selectAllInterventions() {
+      _.forEach($scope.interventions, function(intervention) {
+        intervention.isIncluded = true;
+      });
+      $scope.analysis.interventionInclusions = NetworkMetaAnalysisService.buildInterventionInclusions($scope.interventions, $scope.analysis);
+      var saveCommand = analysisToSaveCommand($scope.analysis);
+      AnalysisResource.save(saveCommand, function() {
+        $scope.reloadModel();
+      });
+    }
+
+    function deselectAllInterventions() {
+      _.forEach($scope.interventions, function(intervention) {
+        intervention.isIncluded = false;
+      });
+      $scope.analysis.excludedArms = [];
+      $scope.analysis.interventionInclusions = NetworkMetaAnalysisService.buildInterventionInclusions($scope.interventions, $scope.analysis);
+      var saveCommand = analysisToSaveCommand($scope.analysis);
+      AnalysisResource.save(saveCommand, function() {
+        $scope.reloadModel();
+      });
+    }
 
     $scope.changeSelectedOutcome = function() {
       $scope.tableHasAmbiguousArm = false;

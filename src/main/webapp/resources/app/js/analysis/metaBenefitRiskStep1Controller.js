@@ -5,13 +5,16 @@ define(['lodash', 'angular'], function(_, angular) {
   ];
   var MetBenefitRiskStep1Controller = function($scope, $q, $stateParams, $state, AnalysisResource, InterventionResource,
     OutcomeResource, MetaBenefitRiskService, ModelResource, ProjectResource, UserService) {
+    // functions
     $scope.updateAlternatives = updateAlternatives;
     $scope.updateMbrOutcomeInclusions = updateMbrOutcomeInclusions;
     $scope.updateAnalysesInclusions = updateAnalysesInclusions;
     $scope.isOutcomeDisabled = isOutcomeDisabled;
     $scope.updateModelSelection = updateModelSelection;
     $scope.goToStep2 = goToStep2;
-
+    $scope.selectAllAlternatives = selectAllAlternatives;
+    $scope.deselectAllAlternatives = deselectAllAlternatives;
+    // init
     $scope.analysis = AnalysisResource.get($stateParams);
     $scope.alternatives = InterventionResource.query($stateParams);
     $scope.outcomes = OutcomeResource.query($stateParams);
@@ -162,6 +165,22 @@ define(['lodash', 'angular'], function(_, angular) {
       AnalysisResource.save(saveCommand);
       checkStep1Validity();
     }
+
+    function selectAllAlternatives() {
+      _.forEach($scope.alternatives, function(alternative) {
+        alternative.isIncluded = true;
+      });
+      updateAlternatives();
+    }
+
+    function deselectAllAlternatives() {
+      _.forEach($scope.alternatives, function(alternative) {
+        alternative.isIncluded = false;
+      });
+      updateAlternatives();
+
+    }
+
 
     function changeAnalysisSelection(outcomeWithAnalyses) {
       var analysis;
