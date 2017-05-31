@@ -4,6 +4,9 @@ define(['angular', 'angular-mocks', 'controllers'], function() {
     var scope,
       state,
       q,
+      timeout = function(fn) { // fake timeout which triggers immediately
+        fn();
+      },
       analysisDeferred,
       interventionDeferred,
       covariateDeferred,
@@ -144,6 +147,7 @@ define(['angular', 'angular-mocks', 'controllers'], function() {
         $window: mockWindow,
         $scope: scope,
         $q: q,
+        $timeout: timeout,
         $state: state,
         $stateParams: mockStateParams,
         currentAnalysis: mockAnalysis,
