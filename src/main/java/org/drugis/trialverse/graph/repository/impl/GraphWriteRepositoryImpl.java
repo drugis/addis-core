@@ -25,6 +25,7 @@ import org.drugis.trialverse.graph.service.GraphService;
 import org.drugis.trialverse.security.TrialversePrincipal;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -61,10 +62,10 @@ public class GraphWriteRepositoryImpl implements GraphWriteRepository {
   private final static Logger logger = LoggerFactory.getLogger(GraphWriteRepositoryImpl.class);
 
   @Override
+  @CacheEvict(cacheNames = "datasetHistory", key="#datasetUri")
   public Header updateGraph(URI datasetUri, String graphUuid, InputStream graph, String commitTitle, String commitDescription) throws IOException, UpdateGraphException {
-    VersionMapping versionMapping = versionMappingRepository.getVersionMappingByDatasetUrl(datasetUri);
 
-    UriComponents uriComponents = UriComponentsBuilder.fromHttpUrl(versionMapping.getVersionedDatasetUrl())
+    UriComponents uriComponents = UriComponentsBuilder.fromHttpUrl(datasetUri.toString())
             .path(DATA_ENDPOINT)
             .queryParam("graph", graphService.buildGraphUri(graphUuid))
             .build();
@@ -96,10 +97,10 @@ public class GraphWriteRepositoryImpl implements GraphWriteRepository {
   }
 
   @Override
+  @CacheEvict(cacheNames = "datasetHistory", key="#datasetUri")
   public Header deleteGraph(URI datasetUri, String graphUuid) throws DeleteGraphException {
-    VersionMapping versionMapping = versionMappingRepository.getVersionMappingByDatasetUrl(datasetUri);
 
-    UriComponents uriComponents = UriComponentsBuilder.fromHttpUrl(versionMapping.getVersionedDatasetUrl())
+    UriComponents uriComponents = UriComponentsBuilder.fromHttpUrl(datasetUri.toString())
         .path(DATA_ENDPOINT)
         .queryParam("graph", graphService.buildGraphUri(graphUuid))
         .build();

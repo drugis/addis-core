@@ -28,6 +28,7 @@ import org.drugis.trialverse.dataset.repository.VersionMappingRepository;
 import org.drugis.trialverse.security.TrialversePrincipal;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpEntity;
@@ -167,6 +168,7 @@ public class DatasetReadRepositoryImpl implements DatasetReadRepository {
 
 
   @Override
+  @Cacheable(cacheNames="versionedDataset", key="#trialverseDatasetUri.toString()+(#versionUuid?:'headVersion')")
   public Model getVersionedDataset(URI trialverseDatasetUri, String versionUuid) {
     VersionMapping versionMapping = versionMappingRepository.getVersionMappingByDatasetUrl(trialverseDatasetUri);
     HttpHeaders httpHeaders = new HttpHeaders();
@@ -189,6 +191,7 @@ public class DatasetReadRepositoryImpl implements DatasetReadRepository {
   }
 
   @Override
+  @Cacheable(cacheNames="versionedDatasetQuery", key="#trialverseDatasetUri.toString()+(#versionUuid?:'headVersion'+#query.hashCode())")
   public byte[] executeQuery(String query, URI trialverseDatasetUri, String versionUuid, String acceptHeader) throws IOException {
     VersionMapping versionMapping = versionMappingRepository.getVersionMappingByDatasetUrl(trialverseDatasetUri);
     UriComponents uriComponents = UriComponentsBuilder.fromHttpUrl(versionMapping.getVersionedDatasetUrl())
@@ -218,6 +221,7 @@ public class DatasetReadRepositoryImpl implements DatasetReadRepository {
   }
 
   @Override
+  @Cacheable(cacheNames="datasetHistory", key="#datasetUri")
   public Model getHistory(URI datasetUri) throws IOException {
     URI uri = UriComponentsBuilder.fromHttpUrl(datasetUri.toString())
             .path(WebConstants.HISTORY_ENDPOINT)

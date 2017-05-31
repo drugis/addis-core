@@ -103,19 +103,19 @@ public class DatasetWriteRepositoryTest {
   @Test
   public void testEditDataset() throws URISyntaxException, EditDatasetException {
     String datasetUuid = "datasetUuid";
-    String datasetUri = Namespaces.DATASET_NAMESPACE + datasetUuid;
+    URI datasetUri = URI.create(Namespaces.DATASET_NAMESPACE + datasetUuid);
     String newTitle = "new title";
 
     HttpHeaders headers = new HttpHeaders();
     headers.add(WebConstants.X_EVENT_SOURCE_VERSION, "newVersion");
     ResponseEntity responseEntity = new ResponseEntity(headers, HttpStatus.OK);
 
-    VersionMapping mapping = new VersionMapping("versionedUrl", account.getEmail(), datasetUri);
+    VersionMapping mapping = new VersionMapping("versionedUrl", account.getEmail(), datasetUri.toString());
 
-    when(versionMappingRepository.getVersionMappingByDatasetUrl(URI.create(datasetUri))).thenReturn(mapping);
+    when(versionMappingRepository.getVersionMappingByDatasetUrl(datasetUri)).thenReturn(mapping);
     when(restTemplate.postForEntity(anyString(), anyObject(), any(Class.class))).thenReturn(responseEntity);
 
-    String newVersion = datasetWriteRepository.editDataset(owner, datasetUuid, newTitle, null);
+    String newVersion = datasetWriteRepository.editDataset(owner, datasetUri, newTitle, null);
 
     assertEquals("newVersion", newVersion);
     verify(accountRepository).findAccountByUsername(owner.getUserName());

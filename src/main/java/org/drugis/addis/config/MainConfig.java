@@ -30,6 +30,10 @@ import org.drugis.trialverse.util.JenaGraphMessageConverter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.cache.CacheManager;
+import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.cache.concurrent.ConcurrentMapCache;
+import org.springframework.cache.support.SimpleCacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.ComponentScan.Filter;
@@ -54,6 +58,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.security.*;
 import java.security.cert.CertificateException;
+import java.util.Arrays;
 import java.util.Properties;
 
 @Configuration
@@ -74,6 +79,7 @@ import java.util.Properties;
         "org.drugis.addis.scaledUnits",
         "org.drugis.addis.subProblems"
 })
+@EnableCaching
 public class MainConfig {
 
   private final static Logger logger = LoggerFactory.getLogger(MainConfig.class);
@@ -85,6 +91,17 @@ public class MainConfig {
     if (trustStoreLocation == null) {
       logger.warn("Missing trust store location java property (set using 'javax.net.ssl.trustStore')");
     }
+  }
+
+  @Bean
+  public CacheManager cacheManager() {
+    SimpleCacheManager cacheManager = new SimpleCacheManager();
+    cacheManager.setCaches(Arrays.asList(
+            new ConcurrentMapCache("versionedDataset"),
+            new ConcurrentMapCache("versionedDatasetQuery"),
+            new ConcurrentMapCache("datasetHistory")
+    ));
+    return cacheManager;
   }
 
   @Bean

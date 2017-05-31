@@ -25,6 +25,7 @@ import org.drugis.addis.util.WebConstants;
 import org.drugis.trialverse.util.Namespaces;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -134,16 +135,14 @@ public class DatasetWriteRepositoryImpl implements DatasetWriteRepository {
   }
 
   @Override
-  public String editDataset(TrialversePrincipal owner, String datasetUuid, String title, String description) throws URISyntaxException, EditDatasetException {
-    URI datasetUri = URI.create(Namespaces.DATASET_NAMESPACE + datasetUuid);
-    VersionMapping mapping = versionMappingRepository.getVersionMappingByDatasetUrl(datasetUri);
-
+  @CacheEvict(cacheNames = "datasetHistory", key="#datasetUri")
+  public String editDataset(TrialversePrincipal owner, URI datasetUri, String title, String description) throws URISyntaxException, EditDatasetException {
     String editDatasetQuery = EDIT_DATASET.replace("$newTitle", title)
             .replace("$datasetUri", datasetUri.toString());
     if(description != null) {
       editDatasetQuery = editDatasetQuery.concat(INSERT_DESCRIPTION.replace("$newDescription", description).replace("$datasetUri", datasetUri.toString()));
     }
-    String updateUri = mapping.getVersionedDatasetUri().toString() + "/update";
+    String updateUri = datasetUri.toString() + "/update";
     HttpHeaders httpHeaders = createEventSourcingHeaders(owner, EDIT_TITLE_MESSAGE, WebContent.contentTypeSPARQLUpdate);
 
     HttpEntity<?> requestEntity = new HttpEntity<>(editDatasetQuery, httpHeaders);

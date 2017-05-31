@@ -2,9 +2,9 @@
   <navbar-directive>
   </navbar-directive>
   <ul class="breadcrumbs fixed">
-    <li><a ui-sref="datasets({userUid: user.id})">{{::user.firstName}} {{::user.lastName}}</a></li>
+    <li><a ui-sref="datasets({userUid: user.id})">{{user.firstName}} {{user.lastName}}</a></li>
     <li><a ui-sref="datasets({userUid: user.id})">Datasets</a></li>
-    <li class="current active">{{::dataset.title}}</li>
+    <li class="current active">{{dataset.title}}</li>
   </ul>
   <div class="row nav-bar-spacer">
     <div class="column large-12">
@@ -90,7 +90,7 @@
             </th>
             <th class="sortable" ng-if="column.visible" ng-repeat="column in tableOptions.columns"
               ng-click="tableOptions.orderByField = column.id; tableOptions.reverseSortOrder=!tableOptions.reverseSortOrder">
-              {{::column.label}}
+              {{column.label}}
               <i ng-if="tableOptions.reverseSortOrder &&  tableOptions.orderByField === column.id"
                 class="fa fa-caret-up"></i>
               <i ng-if="!tableOptions.reverseSortOrder &&  tableOptions.orderByField === column.id"
@@ -103,16 +103,16 @@
             <td ng-if="isEditingAllowed"><a ng-click="showDeleteStudyDialog(filteredStudy)"><i class="fa fa-trash-o" style="color: red;"></i></a></td>
             <td style="vertical-align: top;">
               <a ng-if="!isHeadView" ui-sref="versionedDataset.study({userUid: user.id, datasetUuid: stripFrontFilter(dataset.datasetUuid, 'http://trials.drugis.org/datasets/'),
-            studyGraphUuid: (filteredStudy.graphUri | stripFrontFilter:'http://trials.drugis.org/graphs/'), versionUuid: versionUuid})">{{::filteredStudy.label}}</a>
+            studyGraphUuid: (filteredStudy.graphUri | stripFrontFilter:'http://trials.drugis.org/graphs/'), versionUuid: versionUuid})">{{filteredStudy.label}}</a>
               <a ng-if="isHeadView" ui-sref="dataset.study({userUid: user.id, datasetUuid: stripFrontFilter(dataset.datasetUuid, 'http://trials.drugis.org/datasets/'),
-            studyGraphUuid: (filteredStudy.graphUri | stripFrontFilter:'http://trials.drugis.org/graphs/')})">{{::filteredStudy.label}}</a>
+            studyGraphUuid: (filteredStudy.graphUri | stripFrontFilter:'http://trials.drugis.org/graphs/')})">{{filteredStudy.label}}</a>
             </td>
             <td style="vertical-align: top;" ng-if="column.visible" ng-repeat="column in tableOptions.columns">
-              <span ng-if="!column.type" style="white-space: pre-wrap;">{{::filteredStudy[column.id]}}</span>
-              <span ng-if="column.type === 'removePreamble'">{{::filteredStudy[column.id] | stripFrontFilter : column.frontStr}}</span>
-              <span ng-if="column.type === 'dosing'">{{::filteredStudy[column.id] | dosingFilter}}</span>
+              <span ng-if="!column.type" style="white-space: pre-wrap;">{{filteredStudy[column.id]}}</span>
+              <span ng-if="column.type === 'removePreamble'">{{filteredStudy[column.id] | stripFrontFilter : column.frontStr}}</span>
+              <span ng-if="column.type === 'dosing'">{{filteredStudy[column.id] | dosingFilter}}</span>
               <span ng-if="column.type === 'urlList'" ng-repeat="uri in filteredStudy.publications | splitOnTokenFilter">
-                <a target="_blank" ng-href={{uri}}>{{::uri}}</a>
+                <a target="_blank" ng-href={{uri}}>{{uri}}</a>
                 <span ng-if=!$last>, </span>
               </span>
             </td>

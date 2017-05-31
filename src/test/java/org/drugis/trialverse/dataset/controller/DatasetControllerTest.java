@@ -321,16 +321,17 @@ public class DatasetControllerTest {
     DatasetCommand datasetCommand = new DatasetCommand(newTitle, newDescription);
     String jsonContent = Utils.createJson(datasetCommand);
     String datasetUuid = "datasetUuid";
+    URI datasetUri = URI.create(Namespaces.DATASET_NAMESPACE + datasetUuid);
     String newVersion = "newVersion";
     when(accountRepository.findAccountByUsername(john.getUsername())).thenReturn(john);
-    when(datasetWriteRepository.editDataset(principal, datasetUuid, newTitle, newDescription)).thenReturn(newVersion);
+    when(datasetWriteRepository.editDataset(principal, datasetUri, newTitle, newDescription)).thenReturn(newVersion);
     mockMvc.perform(post("/users/1/datasets/" + datasetUuid)
             .contentType(WebContent.contentTypeJSON)
             .content(jsonContent).principal(user))
             .andExpect(status().isOk())
             .andExpect(header().string(WebConstants.X_EVENT_SOURCE_VERSION, newVersion));
     verify(accountRepository).findAccountByUsername(john.getUsername());
-    verify(datasetWriteRepository).editDataset(principal, datasetUuid, newTitle, newDescription);
+    verify(datasetWriteRepository).editDataset(principal, datasetUri, newTitle, newDescription);
   }
 
   @Test
