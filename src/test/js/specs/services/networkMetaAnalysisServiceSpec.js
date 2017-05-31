@@ -994,7 +994,7 @@ define(['angular', 'angular-mocks', 'services'], function(angular) {
                 measurementTypeURI: 'http://trials.drugis.org/ontology#continuous',
                 mean: 1.1,
                 stdDev: 0.5,
-                sampleSize: null, // it's missing !  
+                sampleSize: null, // it's missing !
                 stdErr: 4
 
               }]
@@ -1182,6 +1182,9 @@ define(['angular', 'angular-mocks', 'services'], function(angular) {
         }];
         expect(NetworkMetaAnalysisService.getMeasurementType(dichotomousData)).toEqual('dichotomous');
         expect(NetworkMetaAnalysisService.getMeasurementType(continuousData)).toEqual('continuous');
+      }));
+      it('should work for empty trialdata', inject(function(NetworkMetaAnalysisService) {
+        expect(NetworkMetaAnalysisService.getMeasurementType([])).not.toBeDefined();
       }));
     });
   });
