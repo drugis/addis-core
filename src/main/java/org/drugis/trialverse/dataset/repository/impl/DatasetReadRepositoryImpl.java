@@ -80,7 +80,7 @@ public class DatasetReadRepositoryImpl implements DatasetReadRepository {
   private HttpClient httpClient;
 
   @Inject
-  AccountRepository accountRepository;
+  private AccountRepository accountRepository;
 
   private final Node headProperty = ResourceFactory.createProperty(HTTP_DRUGIS_ORG_EVENT_SOURCING_ES, "head").asNode();
 
@@ -221,7 +221,7 @@ public class DatasetReadRepositoryImpl implements DatasetReadRepository {
   }
 
   @Override
-  @Cacheable(cacheNames="datasetHistory", key="#datasetUri")
+  @Cacheable(cacheNames="datasetHistory", key="#datasetUri.toString()")
   public Model getHistory(URI datasetUri) throws IOException {
     URI uri = UriComponentsBuilder.fromHttpUrl(datasetUri.toString())
             .path(WebConstants.HISTORY_ENDPOINT)

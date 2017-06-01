@@ -62,7 +62,7 @@ public class GraphWriteRepositoryImpl implements GraphWriteRepository {
   private final static Logger logger = LoggerFactory.getLogger(GraphWriteRepositoryImpl.class);
 
   @Override
-  @CacheEvict(cacheNames = "datasetHistory", key="#datasetUri")
+  @CacheEvict(cacheNames = "datasetHistory", key="#datasetUri.toString()")
   public Header updateGraph(URI datasetUri, String graphUuid, InputStream graph, String commitTitle, String commitDescription) throws IOException, UpdateGraphException {
 
     UriComponents uriComponents = UriComponentsBuilder.fromHttpUrl(datasetUri.toString())
@@ -97,7 +97,7 @@ public class GraphWriteRepositoryImpl implements GraphWriteRepository {
   }
 
   @Override
-  @CacheEvict(cacheNames = "datasetHistory", key="#datasetUri")
+  @CacheEvict(cacheNames = "datasetHistory", key="#datasetUri.toString()")
   public Header deleteGraph(URI datasetUri, String graphUuid) throws DeleteGraphException {
 
     UriComponents uriComponents = UriComponentsBuilder.fromHttpUrl(datasetUri.toString())

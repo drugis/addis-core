@@ -135,7 +135,7 @@ public class DatasetWriteRepositoryImpl implements DatasetWriteRepository {
   }
 
   @Override
-  @CacheEvict(cacheNames = "datasetHistory", key="#datasetUri")
+  @CacheEvict(cacheNames = "datasetHistory", key="#datasetUri.toString()")
   public String editDataset(TrialversePrincipal owner, URI datasetUri, String title, String description) throws URISyntaxException, EditDatasetException {
     String editDatasetQuery = EDIT_DATASET.replace("$newTitle", title)
             .replace("$datasetUri", datasetUri.toString());
