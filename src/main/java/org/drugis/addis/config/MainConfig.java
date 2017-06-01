@@ -31,12 +31,13 @@ import org.ehcache.config.CacheConfiguration;
 import org.ehcache.config.builders.CacheConfigurationBuilder;
 import org.ehcache.config.builders.ResourcePoolsBuilder;
 import org.ehcache.core.config.DefaultConfiguration;
+import org.ehcache.expiry.Duration;
 import org.ehcache.expiry.Expirations;
-import org.ehcache.jsr107.Eh107Configuration;
 import org.ehcache.jsr107.EhcacheCachingProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cache.jcache.JCacheCacheManager;
 import org.springframework.context.annotation.Bean;
@@ -56,9 +57,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.client.RestTemplate;
 
-import javax.cache.CacheManager;
 import javax.cache.Caching;
-import javax.cache.spi.CachingProvider;
 import javax.net.ssl.SSLContext;
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
@@ -104,7 +103,7 @@ public class MainConfig {
   }
 
   @Bean
-  public org.springframework.cache.CacheManager cacheManager() {
+  public CacheManager cacheManager() {
     long cacheSize = 100;
     long ttl = 60*60*4;
 
@@ -112,7 +111,7 @@ public class MainConfig {
             .newCacheConfigurationBuilder(Object.class, Object.class, ResourcePoolsBuilder
                     .newResourcePoolsBuilder()
                     .heap(cacheSize))
-            .withExpiry(Expirations.timeToLiveExpiration(new org.ehcache.expiry.Duration(ttl, TimeUnit.SECONDS)))
+            .withExpiry(Expirations.timeToLiveExpiration(new Duration(ttl, TimeUnit.SECONDS)))
             .build();
 
     Map<String, CacheConfiguration<?, ?>> caches = createCacheConfigurations(cacheConfiguration);

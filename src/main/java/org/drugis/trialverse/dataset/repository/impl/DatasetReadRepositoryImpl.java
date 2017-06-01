@@ -191,7 +191,7 @@ public class DatasetReadRepositoryImpl implements DatasetReadRepository {
   }
 
   @Override
-  @Cacheable(cacheNames="versionedDatasetQuery", key="#trialverseDatasetUri.toString()+(#versionUuid?:'headVersion'+#query.hashCode())")
+  @Cacheable(cacheNames="versionedDatasetQuery", key="#trialverseDatasetUri.toString()+(#versionUuid?:'headVersion')+#query.hashCode()")
   public byte[] executeQuery(String query, URI trialverseDatasetUri, String versionUuid, String acceptHeader) throws IOException {
     VersionMapping versionMapping = versionMappingRepository.getVersionMappingByDatasetUrl(trialverseDatasetUri);
     UriComponents uriComponents = UriComponentsBuilder.fromHttpUrl(versionMapping.getVersionedDatasetUrl())
