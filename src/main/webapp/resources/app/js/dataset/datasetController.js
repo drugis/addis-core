@@ -61,7 +61,6 @@ define(['lodash'],
             $scope.currentRevision = historyItems[historyItems.length - 1];
             $scope.currentRevision.isHead = true;
           } else {
-            // sort to know iF curentRevission is head
             $scope.currentRevision = _.find(historyItems, function(item) {
               return item.uri.lastIndexOf($stateParams.versionUuid) > 0;
             });
