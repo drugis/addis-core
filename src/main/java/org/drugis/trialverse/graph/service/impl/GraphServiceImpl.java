@@ -110,7 +110,7 @@ public class GraphServiceImpl implements GraphService {
   }
 
   @Override
-  @CacheEvict(cacheNames = "datasetHistory", key="#targetDatasetUri")
+  @CacheEvict(cacheNames = "datasetHistory", key="#targetDatasetUri.toString()")
   public URI copy(URI targetDatasetUri, URI targetGraphUri, URI copyOfUri) throws URISyntaxException, IOException, RevisionNotFoundException {
 
     URI trialverseDatasetUri = extractDatasetUri(copyOfUri);
