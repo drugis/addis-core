@@ -191,18 +191,18 @@ public class DatasetReadRepositoryImpl implements DatasetReadRepository {
   }
 
   @Override
-  @Cacheable(cacheNames="versionedDatasetQuery", key="#trialverseDatasetUri.toString()+(#versionUuid?:'headVersion')+#query.hashCode()")
-  public byte[] executeQuery(String query, URI trialverseDatasetUri, String versionUuid, String acceptHeader) throws IOException {
+  @Cacheable(cacheNames="versionedDatasetQuery", key="#trialverseDatasetUri.toString()+(#versionUri != null?#versionUri.toString():'headVersion')+#query.hashCode()")
+  public byte[] executeQuery(String query, URI trialverseDatasetUri, URI versionUri, String acceptHeaderValue) throws IOException {
     VersionMapping versionMapping = versionMappingRepository.getVersionMappingByDatasetUrl(trialverseDatasetUri);
     UriComponents uriComponents = UriComponentsBuilder.fromHttpUrl(versionMapping.getVersionedDatasetUrl())
             .path(WebConstants.QUERY_ENDPOINT)
             .queryParam(WebConstants.QUERY_PARAM_QUERY, query)
             .build();
     HttpGet request = new HttpGet(uriComponents.toUri());
-    if(StringUtils.isNotEmpty(versionUuid)) {
-      request.addHeader(WebConstants.X_ACCEPT_EVENT_SOURCE_VERSION, WebConstants.buildVersionUri(versionUuid).toString());
+    if(versionUri != null) {
+      request.addHeader(WebConstants.X_ACCEPT_EVENT_SOURCE_VERSION, versionUri.toString());
     }
-    request.addHeader(org.apache.http.HttpHeaders.ACCEPT, acceptHeader);
+    request.addHeader(org.apache.http.HttpHeaders.ACCEPT, acceptHeaderValue);
     return executeRequestAndCloseResponse(request);
   }
 

@@ -115,7 +115,7 @@ public class DatasetWriteRepositoryTest {
     when(versionMappingRepository.getVersionMappingByDatasetUrl(datasetUri)).thenReturn(mapping);
     when(restTemplate.postForEntity(anyString(), anyObject(), any(Class.class))).thenReturn(responseEntity);
 
-    String newVersion = datasetWriteRepository.editDataset(owner, datasetUri, newTitle, null);
+    String newVersion = datasetWriteRepository.editDataset(owner, mapping, newTitle, null);
 
     assertEquals("newVersion", newVersion);
     verify(accountRepository).findAccountByUsername(owner.getUserName());

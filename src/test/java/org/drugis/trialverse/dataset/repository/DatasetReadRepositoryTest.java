@@ -252,7 +252,7 @@ public class DatasetReadRepositoryTest {
   }
 
   @Test
-  public void testExecuteVersionedQuery() throws URISyntaxException, IOException {
+  public void testExecuteQueryOnHead() throws URISyntaxException, IOException {
     String datasetUuid = "datasetUuid";
     String query = "SELECT * WHERE { ?s ?p ?o }";
     String acceptHeader = "confirm/deny";
@@ -274,10 +274,10 @@ public class DatasetReadRepositoryTest {
   }
 
   @Test
-  public void testExecuteQueryOnHead() throws URISyntaxException, IOException {
+  public void testExecuteVersionedQuery() throws URISyntaxException, IOException {
     String datasetUuid = "datasetUuid";
     String query = "SELECT * WHERE { ?s ?p ?o }";
-    String versionUuid = "myVersion";
+    String versionUuid = "http://myVersion.ninja";
     String acceptHeader = "confirm/deny";
     URI datasetUrl = new URI(Namespaces.DATASET_NAMESPACE + datasetUuid);
     VersionMapping versionMapping = new VersionMapping(1, "http://whatever", "pietje@precies.gov", datasetUrl.toString());
@@ -292,7 +292,7 @@ public class DatasetReadRepositoryTest {
     when(httpClient.execute(any(HttpGet.class))).thenReturn(mockResponse);
     when(versionMappingRepository.getVersionMappingByDatasetUrl(datasetUrl)).thenReturn(versionMapping);
 
-    datasetReadRepository.executeQuery(query, datasetUrl, versionUuid, acceptHeader);
+    datasetReadRepository.executeQuery(query, datasetUrl, URI.create(versionUuid), acceptHeader);
 
     verify(versionMappingRepository).getVersionMappingByDatasetUrl(datasetUrl);
     verify(httpClient).execute(any(HttpGet.class));

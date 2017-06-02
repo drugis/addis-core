@@ -135,14 +135,15 @@ public class DatasetWriteRepositoryImpl implements DatasetWriteRepository {
   }
 
   @Override
-  @CacheEvict(cacheNames = "datasetHistory", key="#datasetUri.toString()")
-  public String editDataset(TrialversePrincipal owner, URI datasetUri, String title, String description) throws URISyntaxException, EditDatasetException {
+  @CacheEvict(cacheNames = "datasetHistory", key="#mapping.getVersionedDatasetUrl()")
+  public String editDataset(TrialversePrincipal owner, VersionMapping mapping, String title, String description) throws URISyntaxException, EditDatasetException {
     String editDatasetQuery = EDIT_DATASET.replace("$newTitle", title)
-            .replace("$datasetUri", datasetUri.toString());
+            .replace("$datasetUri", mapping.getTrialverseDatasetUrl());
     if(description != null) {
-      editDatasetQuery = editDatasetQuery.concat(INSERT_DESCRIPTION.replace("$newDescription", description).replace("$datasetUri", datasetUri.toString()));
+      editDatasetQuery = editDatasetQuery.concat(INSERT_DESCRIPTION
+              .replace("$newDescription", description).replace("$datasetUri", mapping.getTrialverseDatasetUrl()));
     }
-    String updateUri = datasetUri.toString() + "/update";
+    String updateUri = mapping.getVersionedDatasetUrl() + "/update";
     HttpHeaders httpHeaders = createEventSourcingHeaders(owner, EDIT_TITLE_MESSAGE, WebContent.contentTypeSPARQLUpdate);
 
     HttpEntity<?> requestEntity = new HttpEntity<>(editDatasetQuery, httpHeaders);

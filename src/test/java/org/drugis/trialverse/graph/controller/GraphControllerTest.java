@@ -110,10 +110,12 @@ public class GraphControllerTest {
     URI trialverseDatasetUri = new URI(Namespaces.DATASET_NAMESPACE + datasetUuid);
     InputStream inputStream = new ByteArrayInputStream(new byte[]{});
     Header versionHeader = new BasicHeader("version", "http://trials.drugis.org/versions/3012");
+    VersionMapping mapping = new VersionMapping("any-versioned-url", "someone", trialverseDatasetUri.toString());
 
     when(datasetReadRepository.isOwner(trialverseDatasetUri, user)).thenReturn(true);
     when(graphService.jsonGraphInputStreamToTurtleInputStream(any())).thenReturn(inputStream);
-    when(graphWriteRepository.updateGraph(Matchers.<URI>anyObject(), anyString(), any(InputStream.class), anyString(), anyString())).thenReturn(versionHeader);
+    when(graphWriteRepository.updateGraph(Matchers.anyObject(), anyString(), any(InputStream.class), anyString(), anyString())).thenReturn(versionHeader);
+    when(versionMappingRepository.getVersionMappingByDatasetUrl(trialverseDatasetUri)).thenReturn(mapping);
 
     mockMvc.perform(put("/users/" + userHash + "/datasets/" + datasetUuid + "/graphs/" + graphUuid)
             .principal(user)
@@ -124,8 +126,9 @@ public class GraphControllerTest {
             .andExpect(status().isOk())
             .andExpect(header().string(WebConstants.X_EVENT_SOURCE_VERSION, versionHeader.getValue()));
 
+    verify(versionMappingRepository).getVersionMappingByDatasetUrl(trialverseDatasetUri);
     verify(datasetReadRepository).isOwner(trialverseDatasetUri, user);
-    verify(graphWriteRepository).updateGraph(Matchers.<URI>anyObject(), anyString(), any(InputStream.class), anyString(), anyString());
+    verify(graphWriteRepository).updateGraph(Matchers.anyObject(), anyString(), any(InputStream.class), anyString(), anyString());
   }
 
   @Test
@@ -137,9 +140,11 @@ public class GraphControllerTest {
     String commitDescription = "commit+description";
     URI trialverseDatasetUri = new URI(Namespaces.DATASET_NAMESPACE + datasetUuid);
     Header versionHeader = new BasicHeader("version", "http://trials.drugis.org/versions/3012");
+    VersionMapping mapping = new VersionMapping("any-versioned-url", "someone", trialverseDatasetUri.toString());
 
     when(datasetReadRepository.isOwner(trialverseDatasetUri, user)).thenReturn(true);
-    when(graphWriteRepository.updateGraph(Matchers.<URI>anyObject(), anyString(), any(InputStream.class), anyString(), anyString())).thenReturn(versionHeader);
+    when(graphWriteRepository.updateGraph(Matchers.anyObject(), anyString(), any(InputStream.class), anyString(), anyString())).thenReturn(versionHeader);
+    when(versionMappingRepository.getVersionMappingByDatasetUrl(trialverseDatasetUri)).thenReturn(mapping);
 
     mockMvc.perform(put("/users/" + userHash + "/datasets/" + datasetUuid + "/graphs/" + graphUuid)
             .principal(user)
@@ -150,8 +155,9 @@ public class GraphControllerTest {
             .andExpect(status().isOk())
             .andExpect(header().string(WebConstants.X_EVENT_SOURCE_VERSION, versionHeader.getValue()));
 
+    verify(versionMappingRepository).getVersionMappingByDatasetUrl(trialverseDatasetUri);
     verify(datasetReadRepository).isOwner(trialverseDatasetUri, user);
-    verify(graphWriteRepository).updateGraph(Matchers.<URI>anyObject(), anyString(), any(InputStream.class), anyString(), anyString());
+    verify(graphWriteRepository).updateGraph(Matchers.anyObject(), anyString(), any(InputStream.class), anyString(), anyString());
   }
 
   @Test
@@ -197,7 +203,7 @@ public class GraphControllerTest {
   }
 
   @Test
-  public void testImportStudy() throws Exception, ClinicalTrialsImportError {
+  public void testImportStudy() throws Exception {
 
     String datasetUuid = "datasetUuid";
     URI datasetUri = new URI(Namespaces.DATASET_NAMESPACE + datasetUuid);
@@ -226,13 +232,15 @@ public class GraphControllerTest {
   public void testUpdateJsonGraph() throws Exception {
     String updateContent = "updateContent";
     String datasetUuid = "datasetUuid";
-    URI datasetUrl = new URI(Namespaces.DATASET_NAMESPACE + datasetUuid);
+    URI datasetUri = new URI(Namespaces.DATASET_NAMESPACE + datasetUuid);
     String graphUUID = "graphUUID";
 
-    when(datasetReadRepository.isOwner(datasetUrl, user)).thenReturn(true);
+    when(datasetReadRepository.isOwner(datasetUri, user)).thenReturn(true);
     Header versionHeader = new BasicHeader(WebConstants.X_EVENT_SOURCE_VERSION, "http://myVersion");
-    when(graphWriteRepository.updateGraph(Matchers.<URI>anyObject(), anyString(), any(InputStream.class), anyString(), anyString())).thenReturn(versionHeader);
-
+    when(graphWriteRepository.updateGraph(Matchers.anyObject(), anyString(), any(InputStream.class), anyString(), anyString())).thenReturn(versionHeader);
+    String versionedUrl = "anything";
+    VersionMapping mapping = new VersionMapping(versionedUrl, "owner", datasetUri.toString());
+    when(versionMappingRepository.getVersionMappingByDatasetUrl(datasetUri)).thenReturn(mapping);
     mockMvc.perform(
             put("/users/" + userHash + "/datasets/" + datasetUuid + "/graphs/" + graphUUID)
                     .content(updateContent)
@@ -244,20 +252,25 @@ public class GraphControllerTest {
             .andExpect(header().string(WebConstants.X_EVENT_SOURCE_VERSION, "http://myVersion"));
 
     verify(graphService).jsonGraphInputStreamToTurtleInputStream(any(InputStream.class));
-    verify(datasetReadRepository).isOwner(datasetUrl, user);
-    verify(graphWriteRepository).updateGraph(Matchers.<URI>anyObject(), anyString(), any(InputStream.class), anyString(), anyString());
+    verify(datasetReadRepository).isOwner(datasetUri, user);
+    verify(graphWriteRepository).updateGraph(Matchers.anyObject(), anyString(), any(InputStream.class), anyString(), anyString());
+    verify(versionMappingRepository).getVersionMappingByDatasetUrl(datasetUri);
   }
 
   @Test
   public void testUpdateGraph() throws Exception {
     String updateContent = "updateContent";
     String datasetUuid = "datasetUuid";
-    URI datasetUrl = new URI(Namespaces.DATASET_NAMESPACE + datasetUuid);
+    URI datasetUri = new URI(Namespaces.DATASET_NAMESPACE + datasetUuid);
+    String versionedUrl = "anything";
     String graphUUID = "graphUUID";
 
-    when(datasetReadRepository.isOwner(datasetUrl, user)).thenReturn(true);
+    VersionMapping mapping = new VersionMapping(versionedUrl, "someone", datasetUri.toString());
+    when(versionMappingRepository.getVersionMappingByDatasetUrl(datasetUri)).thenReturn(mapping);
+
+    when(datasetReadRepository.isOwner(datasetUri, user)).thenReturn(true);
     Header versionHeader = new BasicHeader(WebConstants.X_EVENT_SOURCE_VERSION, "http://myVersion");
-    when(graphWriteRepository.updateGraph(Matchers.<URI>anyObject(), anyString(), any(InputStream.class), anyString(), anyString())).thenReturn(versionHeader);
+    when(graphWriteRepository.updateGraph(Matchers.anyObject(), anyString(), any(InputStream.class), anyString(), anyString())).thenReturn(versionHeader);
 
     mockMvc.perform(
             put("/users/" + userHash + "/datasets/" + datasetUuid + "/graphs/" + graphUUID)
@@ -269,8 +282,9 @@ public class GraphControllerTest {
             .andExpect(status().isOk())
             .andExpect(header().string(WebConstants.X_EVENT_SOURCE_VERSION, "http://myVersion"));
 
-    verify(datasetReadRepository).isOwner(datasetUrl, user);
-    verify(graphWriteRepository).updateGraph(Matchers.<URI>anyObject(), anyString(), any(InputStream.class), anyString(), anyString());
+    verify(datasetReadRepository).isOwner(datasetUri, user);
+    verify(graphWriteRepository).updateGraph(Matchers.anyObject(), anyString(), any(InputStream.class), anyString(), anyString());
+    verify(versionMappingRepository).getVersionMappingByDatasetUrl(datasetUri);
   }
 
   @Test
@@ -284,10 +298,12 @@ public class GraphControllerTest {
     URI targetDatasetUri = URI.create(Namespaces.DATASET_NAMESPACE + datasetUuid);
     URI targetGraphUri = URI.create(Namespaces.GRAPH_NAMESPACE + graphUuid);
 
+    VersionMapping mapping = new VersionMapping(targetDatasetUri.toString(), "someone", datasetUri.toString());
+    when(versionMappingRepository.getVersionMappingByDatasetUrl(datasetUri)).thenReturn(mapping);
+
     when(datasetReadRepository.isOwner(datasetUri, user)).thenReturn(true);
     when(graphService.copy(targetDatasetUri, targetGraphUri, sourceGraphUri)).thenReturn(URI.create(newVersion));
     when(graphService.buildGraphUri(graphUuid)).thenReturn(targetGraphUri);
-
     mockMvc.perform(
             put("/users/" + userHash + "/datasets/" + datasetUuid + "/graphs/" + graphUuid)
                     .content("")
@@ -322,11 +338,15 @@ public class GraphControllerTest {
   public void testDeleteGraph() throws Exception, DeleteGraphException {
     String datasetUuid = "datasetUuid";
     String graphUUID = "graphUuid";
-    URI datasetUrl = new URI(Namespaces.DATASET_NAMESPACE + datasetUuid);
+    URI datasetUri = new URI(Namespaces.DATASET_NAMESPACE + datasetUuid);
+    String versionedUrl = "http://versioned/url";
     Header newVersionHeader = new BasicHeader(WebConstants.X_EVENT_SOURCE_VERSION, "newVersion");
 
-    when(datasetReadRepository.isOwner(datasetUrl, user)).thenReturn(true);
-    when(graphWriteRepository.deleteGraph(datasetUrl, graphUUID)).thenReturn(newVersionHeader);
+    VersionMapping mapping = new VersionMapping(versionedUrl, "someone", datasetUri.toString());
+    when(versionMappingRepository.getVersionMappingByDatasetUrl(datasetUri)).thenReturn(mapping);
+
+    when(datasetReadRepository.isOwner(datasetUri, user)).thenReturn(true);
+    when(graphWriteRepository.deleteGraph(URI.create(versionedUrl), graphUUID)).thenReturn(newVersionHeader);
 
     mockMvc.perform(
         delete("/users/" + userHash + "/datasets/" + datasetUuid + "/graphs/" + graphUUID)
@@ -335,7 +355,8 @@ public class GraphControllerTest {
     ).andExpect(status().isOk())
     .andExpect(header().string(WebConstants.X_EVENT_SOURCE_VERSION, "newVersion"));
 
-    verify(datasetReadRepository).isOwner(datasetUrl, user);
-    verify(graphWriteRepository).deleteGraph(datasetUrl, graphUUID);
+    verify(datasetReadRepository).isOwner(datasetUri, user);
+    verify(graphWriteRepository).deleteGraph(URI.create(versionedUrl), graphUUID);
+    verify(versionMappingRepository).getVersionMappingByDatasetUrl(datasetUri);
   }
 }

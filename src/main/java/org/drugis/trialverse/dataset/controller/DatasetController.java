@@ -102,8 +102,7 @@ public class DatasetController extends AbstractAddisCoreController {
     if (user != null && userId.equals(user.getId())) {
       URI datasetUri = URI.create(Namespaces.DATASET_NAMESPACE + datasetUuid);
       VersionMapping mapping = versionMappingRepository.getVersionMappingByDatasetUrl(datasetUri);
-      URI versionedDatasetUri = mapping.getVersionedDatasetUri();
-      String newVersion = datasetWriteRepository.editDataset(trialversePrincipal, versionedDatasetUri, datasetCommand.getTitle(), datasetCommand.getDescription());
+      String newVersion = datasetWriteRepository.editDataset(trialversePrincipal, mapping, datasetCommand.getTitle(), datasetCommand.getDescription());
       response.setHeader(WebConstants.X_EVENT_SOURCE_VERSION, newVersion);
     } else {
       logger.error("attempted to edit dataset for user that is not the login-user ");
@@ -192,7 +191,7 @@ public class DatasetController extends AbstractAddisCoreController {
                                     @PathVariable String datasetUuid, @PathVariable String versionUuid) throws URISyntaxException, IOException {
     logger.trace("executing gertseki query");
     URI trialverseDatasetUri = new URI(Namespaces.DATASET_NAMESPACE + datasetUuid);
-    byte[] response = datasetReadRepository.executeQuery(query, trialverseDatasetUri, versionUuid, acceptHeaderValue);
+    byte[] response = datasetReadRepository.executeQuery(query, trialverseDatasetUri, WebConstants.buildVersionUri(versionUuid), acceptHeaderValue);
     httpServletResponse.setStatus(HttpServletResponse.SC_OK);
     httpServletResponse.setHeader("Content-Type", acceptHeaderValue);
     trialverseIOUtilsService.writeContentToServletResponse(response, httpServletResponse);
