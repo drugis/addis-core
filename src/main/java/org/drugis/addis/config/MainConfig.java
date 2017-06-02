@@ -104,13 +104,13 @@ public class MainConfig {
 
   @Bean
   public CacheManager cacheManager() {
-    long cacheSize = 100;
+    long numberOfCacheItems = 100;
     long ttl = 60*60*4;
 
     CacheConfiguration<Object, Object> cacheConfiguration = CacheConfigurationBuilder
             .newCacheConfigurationBuilder(Object.class, Object.class, ResourcePoolsBuilder
                     .newResourcePoolsBuilder()
-                    .heap(cacheSize))
+                    .heap(numberOfCacheItems))
             .withExpiry(Expirations.timeToLiveExpiration(new Duration(ttl, TimeUnit.SECONDS)))
             .build();
 
@@ -121,11 +121,12 @@ public class MainConfig {
     return new JCacheCacheManager(provider.getCacheManager(provider.getDefaultURI(), configuration));
   }
 
-  private Map<String, org.ehcache.config.CacheConfiguration<?, ?>> createCacheConfigurations(org.ehcache.config.CacheConfiguration<Object, Object> cacheConfiguration) {
-    Map<String, org.ehcache.config.CacheConfiguration<?, ?>> caches = new HashMap<>();
+  private Map<String, CacheConfiguration<?, ?>> createCacheConfigurations(CacheConfiguration<Object, Object> cacheConfiguration) {
+    Map<String, CacheConfiguration<?, ?>> caches = new HashMap<>();
     caches.put("versionedDataset", cacheConfiguration);
     caches.put("versionedDatasetQuery", cacheConfiguration);
     caches.put("datasetHistory", cacheConfiguration);
+    caches.put("featuredDatasets", cacheConfiguration);
     return caches;
   }
 

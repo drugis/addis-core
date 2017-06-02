@@ -22,6 +22,7 @@ import org.drugis.trialverse.graph.service.GraphService;
 import org.drugis.trialverse.security.TrialversePrincipal;
 import org.drugis.trialverse.util.Namespaces;
 import org.drugis.addis.util.WebConstants;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -109,9 +110,8 @@ public class GraphServiceImpl implements GraphService {
   }
 
   @Override
+  @CacheEvict(cacheNames = "datasetHistory", key="#targetDatasetUri")
   public URI copy(URI targetDatasetUri, URI targetGraphUri, URI copyOfUri) throws URISyntaxException, IOException, RevisionNotFoundException {
-
-    VersionMapping targetDatasetMapping = versionMappingRepository.getVersionMappingByDatasetUrl(targetDatasetUri);
 
     URI trialverseDatasetUri = extractDatasetUri(copyOfUri);
     VersionMapping sourceDatasetMapping = versionMappingRepository.getVersionMappingByDatasetUrl(trialverseDatasetUri);
@@ -119,7 +119,7 @@ public class GraphServiceImpl implements GraphService {
 
     URI revisionUri = getRevisionUri(historyModel, copyOfUri);
 
-    URI uri = UriComponentsBuilder.fromHttpUrl(targetDatasetMapping.getVersionedDatasetUrl())
+    URI uri = UriComponentsBuilder.fromHttpUrl(targetDatasetUri.toString())
             .path(WebConstants.DATA_ENDPOINT)
             .queryParam(WebConstants.COPY_OF_QUERY_PARAM, revisionUri.toString())
             .queryParam(WebConstants.GRAPH_QUERY_PARAM, targetGraphUri.toString())

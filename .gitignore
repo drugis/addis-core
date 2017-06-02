@@ -8,7 +8,7 @@ src/test/karma-test-results.xml
 .project
 .settings/
 node_modules/
-rollingCoolness.log
+rollingCoolness.*
 src/test/PhantomJS_2.1.1_(Linux_0.0.0)/
 ssl/
 trialverse/addis-rdf/00-body

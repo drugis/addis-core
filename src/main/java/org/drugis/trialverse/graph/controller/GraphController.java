@@ -213,7 +213,8 @@ public class GraphController extends AbstractAddisCoreController {
     URI trialverseDatasetUri = new URI(Namespaces.DATASET_NAMESPACE + datasetUuid);
     if (datasetReadRepository.isOwner(trialverseDatasetUri, currentUser)) {
       URI targetGraphUri = graphService.buildGraphUri(graphUuid);
-      URI newVersion = graphService.copy(trialverseDatasetUri, targetGraphUri, URI.create(copyOfUri));
+      VersionMapping targetDatasetMapping = versionMappingRepository.getVersionMappingByDatasetUrl(trialverseDatasetUri);
+      URI newVersion = graphService.copy(targetDatasetMapping.getVersionedDatasetUri(), targetGraphUri, URI.create(copyOfUri));
       trialverseResponse.setHeader(WebConstants.X_EVENT_SOURCE_VERSION, newVersion.toString());
       trialverseResponse.setStatus(HttpStatus.OK.value());
     } else {
