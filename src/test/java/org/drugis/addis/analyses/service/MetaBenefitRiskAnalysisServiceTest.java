@@ -6,6 +6,8 @@ import org.drugis.addis.analyses.MbrOutcomeInclusion;
 import org.drugis.addis.analyses.MetaBenefitRiskAnalysis;
 import org.drugis.addis.analyses.repository.MetaBenefitRiskAnalysisRepository;
 import org.drugis.addis.analyses.service.impl.MetaBenefitRiskAnalysisServiceImpl;
+import org.drugis.addis.effectsTables.EffectsTableAlternativeInclusion;
+import org.drugis.addis.effectsTables.repository.EffectsTableRepository;
 import org.drugis.addis.exception.MethodNotAllowedException;
 import org.drugis.addis.exception.ProblemCreationException;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
@@ -53,6 +55,9 @@ public class MetaBenefitRiskAnalysisServiceTest {
 
   @Mock
   private InterventionRepository interventionRepository;
+
+  @Mock
+  private EffectsTableRepository effectsTableRepository;
 
   @InjectMocks
   private MetaBenefitRiskAnalysisService metaBenefitRiskAnalysisService = new MetaBenefitRiskAnalysisServiceImpl();
