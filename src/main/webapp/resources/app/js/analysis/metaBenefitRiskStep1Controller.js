@@ -14,6 +14,9 @@ define(['lodash', 'angular'], function(_, angular) {
     $scope.goToStep2 = goToStep2;
     $scope.selectAllAlternatives = selectAllAlternatives;
     $scope.deselectAllAlternatives = deselectAllAlternatives;
+    $scope.selectAllOutcomes = selectAllOutcomes;
+    $scope.deselectAllOutcomes = deselectAllOutcomes;
+
     // init
     $scope.analysis = AnalysisResource.get($stateParams);
     $scope.alternatives = InterventionResource.query($stateParams);
@@ -178,9 +181,25 @@ define(['lodash', 'angular'], function(_, angular) {
         alternative.isIncluded = false;
       });
       updateAlternatives();
-
     }
 
+    function selectAllOutcomes() {
+      _.forEach($scope.outcomesWithAnalyses, function(outcomeWithAnalyses) {
+        if (!outcomeWithAnalyses.outcome.isIncluded) {
+          outcomeWithAnalyses.outcome.isIncluded = true;
+          updateMbrOutcomeInclusions(outcomeWithAnalyses);
+        }
+      });
+    }
+
+    function deselectAllOutcomes() {
+      _.forEach($scope.outcomesWithAnalyses, function(outcomeWithAnalyses) {
+        if (outcomeWithAnalyses.outcome.isIncluded) {
+          outcomeWithAnalyses.outcome.isIncluded = false;
+          updateMbrOutcomeInclusions(outcomeWithAnalyses);
+        }
+      });
+    }
 
     function changeAnalysisSelection(outcomeWithAnalyses) {
       var analysis;
