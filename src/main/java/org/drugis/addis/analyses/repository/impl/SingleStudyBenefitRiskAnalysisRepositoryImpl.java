@@ -3,6 +3,7 @@ package org.drugis.addis.analyses.repository.impl;
 import org.drugis.addis.analyses.AnalysisCommand;
 import org.drugis.addis.analyses.InterventionInclusion;
 import org.drugis.addis.analyses.SingleStudyBenefitRiskAnalysis;
+import org.drugis.addis.effectsTables.repository.EffectsTableRepository;
 import org.drugis.addis.exception.MethodNotAllowedException;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.interventions.model.AbstractIntervention;
@@ -30,10 +31,13 @@ import static org.apache.commons.collections.CollectionUtils.isNotEmpty;
 public class SingleStudyBenefitRiskAnalysisRepositoryImpl implements org.drugis.addis.analyses.repository.SingleStudyBenefitRiskAnalysisRepository {
   @Qualifier("emAddisCore")
   @PersistenceContext(unitName = "addisCore")
-  EntityManager em;
+  private EntityManager em;
 
   @Inject
-  InterventionRepository interventionRepository;
+  private InterventionRepository interventionRepository;
+
+  @Inject
+  private EffectsTableRepository effectsTableRepository;
 
   @Override
   public Collection<SingleStudyBenefitRiskAnalysis> query(Integer projectId) {
@@ -72,7 +76,14 @@ public class SingleStudyBenefitRiskAnalysisRepositoryImpl implements org.drugis.
         }
       }
     }
-
+    if (analysis.getProblem() != null) {
+      List<InterventionInclusion> interventionInclusions = analysis.getInterventionInclusions();
+      List<String> interventionInclusionsAsStrings = interventionInclusions
+              .stream()
+              .map(interventionInclusion -> interventionInclusion.getInterventionId().toString())
+              .collect(Collectors.toList());
+      effectsTableRepository.setEffectsTableAlternativeInclusion(analysis.getId(), interventionInclusionsAsStrings);
+    }
     return em.merge(analysis);
   }
 

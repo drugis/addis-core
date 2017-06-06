@@ -1,11 +1,11 @@
 'use strict';
 define(['angular', 'lodash'], function(angular, _) {
-  var dependencies = ['$scope', '$q', '$state', '$stateParams', 'currentAnalysis', 'currentProject', 'OutcomeResource',
+  var dependencies = ['$scope', '$timeout', '$q', '$state', '$stateParams', 'currentAnalysis', 'currentProject', 'OutcomeResource',
     'InterventionResource', 'CovariateResource', 'ModelResource', 'NetworkMetaAnalysisService', 'AnalysisService',
     'EvidenceTableResource', 'UserService', 'AnalysisResource'
   ];
 
-  var NetworkMetaAnalysisContainerController = function($scope, $q, $state, $stateParams, currentAnalysis, currentProject,
+  var NetworkMetaAnalysisContainerController = function($scope, $timeout, $q, $state, $stateParams, currentAnalysis, currentProject,
     OutcomeResource, InterventionResource, CovariateResource, ModelResource, NetworkMetaAnalysisService, AnalysisService,
     EvidenceTableResource, UserService, AnalysisResource) {
 
@@ -225,9 +225,11 @@ define(['angular', 'lodash'], function(angular, _) {
     }
 
     function updateNetwork() {
-      var includedInterventions = NetworkMetaAnalysisService.getIncludedInterventions($scope.interventions);
-      $scope.networkGraph.network = NetworkMetaAnalysisService.transformTrialDataToNetwork($scope.trialverseData, includedInterventions, $scope.analysis, $scope.momentSelections);
-      $scope.isNetworkDisconnected = AnalysisService.isNetworkDisconnected($scope.networkGraph.network);
+      $timeout(function() {
+        var includedInterventions = NetworkMetaAnalysisService.getIncludedInterventions($scope.interventions);
+        $scope.networkGraph.network = NetworkMetaAnalysisService.transformTrialDataToNetwork($scope.trialverseData, includedInterventions, $scope.analysis, $scope.momentSelections);
+        $scope.isNetworkDisconnected = AnalysisService.isNetworkDisconnected($scope.networkGraph.network);
+      });
     }
 
 

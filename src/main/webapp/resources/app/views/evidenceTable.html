@@ -40,7 +40,7 @@
           <td colspan="7">No outcome selected.</td>
         </tr>
         <tr ng-show="analysis.outcome && !trialData.length">
-          <td colspan="7">No studies measuring selected outcome.</td>
+          <td colspan="7">No studies found for selected outcome and intervention(s).</td>
         </tr>
         <tr ng-repeat="dataRow in trialData" ng-class="{topborder: dataRow.firstStudyRow}">
           <td ng-show="dataRow.firstStudyRow" rowspan="{{dataRow.studyRowSpan}}">
