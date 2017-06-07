@@ -142,7 +142,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
   }
 
   @Override
-  @Cacheable(cacheNames = "triplestoreVersionedNameSpace", key = "#datasetUri.hashCode()+ (#version!=null ? #version.toString():'') ")
+  @Cacheable(cacheNames = "triplestoreVersionedNameSpace", key = "#datasetUri.hashCode() + #versionUri.toString()")
   public Namespace getNamespaceVersioned(TriplestoreUuidAndOwner datasetUri, URI versionUri) {
     ResponseEntity<String> response = queryTripleStoreVersion(datasetUri.getTriplestoreUuid(), NAMESPACE, versionUri);
     return buildNameSpace(datasetUri, response);
@@ -181,7 +181,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
   }
 
   @Override
-  @Cacheable(cacheNames = "triplestoreOutcomes", key = "#namespaceUid+(#version!=null ? #version.toString():'')")
+  @Cacheable(cacheNames = "triplestoreOutcomes", key = "#namespaceUid+(#versionUri!=null ? #versionUri.toString():'')")
   public List<SemanticVariable> getOutcomes(String namespaceUid, URI versionUri) throws ReadValueException {
     String query = StringUtils.replace(OUTCOME_QUERY, "$namespaceUid", namespaceUid);
     return getSemanticVariables(namespaceUid, versionUri, query, "outcome");
@@ -704,6 +704,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
     return restTemplate.exchange(uriComponents.toUri(), HttpMethod.GET, acceptSparqlResultsRequest, String.class);
   }
 
+  @Cacheable(cacheNames="versionedDatasetQuery", key="#namespaceUid+(#versionUri != null?#versionUri.toString():'headVersion')+#query.hashCode()")
   private ResponseEntity<String> queryTripleStoreVersion(String namespaceUid, String query, URI versionUri) {
     logger.debug("Triplestore uri = " + WebConstants.getTriplestoreBaseUri());
     logger.debug("namespaceUid = " + namespaceUid);
