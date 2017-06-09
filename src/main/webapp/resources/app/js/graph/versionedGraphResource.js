@@ -19,7 +19,8 @@ define(['util/transformJsonLd', 'util/transformConceptJsonLd'], function(transfo
             return {
               data: data // property on Responce object to access raw result data
             };
-          }
+          },
+          cache: true
         },
         'getJson': {
           method: 'get',
@@ -32,7 +33,8 @@ define(['util/transformJsonLd', 'util/transformConceptJsonLd'], function(transfo
             graphData = DataModelService.updateCategories(graphData);
             graphData = DataModelService.addTypeToUnits(graphData);
             return transformStudyJsonLd(graphData);
-          }
+          },
+          cache: true
         },
         'getConceptJson': {
           method: 'get',
@@ -41,7 +43,8 @@ define(['util/transformJsonLd', 'util/transformConceptJsonLd'], function(transfo
           },
           transformResponse: function(data) {
             return transformConceptJsonLd(JSON.parse(data));
-          }
+          },
+          cache: true
         }
       });
   };

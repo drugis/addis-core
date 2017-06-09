@@ -73,8 +73,7 @@ public class GraphController extends AbstractAddisCoreController {
   @Inject
   private HistoryService historyService;
 
-
-  Logger logger = LoggerFactory.getLogger(getClass());
+  private Logger logger = LoggerFactory.getLogger(getClass());
 
   @RequestMapping(value = "/versions/{versionUuid}/graphs/{graphUuid}", method = RequestMethod.GET, produces = WebConstants.TURTLE)
   @ResponseBody
@@ -131,7 +130,8 @@ public class GraphController extends AbstractAddisCoreController {
                           @PathVariable String graphUuid) throws URISyntaxException, DeleteGraphException {
     URI trialverseDatasetUri = new URI(Namespaces.DATASET_NAMESPACE + datasetUuid);
     if (datasetReadRepository.isOwner(trialverseDatasetUri, currentUser)) {
-      Header versionHeader = graphWriteRepository.deleteGraph(trialverseDatasetUri, graphUuid);
+      VersionMapping versionMapping = versionMappingRepository.getVersionMappingByDatasetUrl(trialverseDatasetUri);
+      Header versionHeader = graphWriteRepository.deleteGraph(versionMapping.getVersionedDatasetUri(), graphUuid);
       httpServletResponse.setHeader(WebConstants.X_EVENT_SOURCE_VERSION, versionHeader.getValue());
       httpServletResponse.setStatus(HttpStatus.OK.value());
     }
@@ -180,7 +180,9 @@ public class GraphController extends AbstractAddisCoreController {
                            String commitDescription,
                            String datasetUuid,
                            String graphUuid, InputStream graph) throws IOException, UpdateGraphException, URISyntaxException {
-    Header versionHeader = graphWriteRepository.updateGraph(new URI(Namespaces.DATASET_NAMESPACE + datasetUuid), graphUuid, graph, commitTitle, commitDescription);
+    URI versionedDatasetUri = versionMappingRepository.getVersionMappingByDatasetUrl(
+            new URI(Namespaces.DATASET_NAMESPACE + datasetUuid)).getVersionedDatasetUri();
+    Header versionHeader = graphWriteRepository.updateGraph(versionedDatasetUri, graphUuid, graph, commitTitle, commitDescription);
     trialverseResponse.setHeader(WebConstants.X_EVENT_SOURCE_VERSION, versionHeader.getValue());
     trialverseResponse.setStatus(HttpStatus.OK.value());
   }
@@ -210,7 +212,8 @@ public class GraphController extends AbstractAddisCoreController {
     URI trialverseDatasetUri = new URI(Namespaces.DATASET_NAMESPACE + datasetUuid);
     if (datasetReadRepository.isOwner(trialverseDatasetUri, currentUser)) {
       URI targetGraphUri = graphService.buildGraphUri(graphUuid);
-      URI newVersion = graphService.copy(trialverseDatasetUri, targetGraphUri, URI.create(copyOfUri));
+      VersionMapping targetDatasetMapping = versionMappingRepository.getVersionMappingByDatasetUrl(trialverseDatasetUri);
+      URI newVersion = graphService.copy(targetDatasetMapping.getVersionedDatasetUri(), targetGraphUri, URI.create(copyOfUri));
       trialverseResponse.setHeader(WebConstants.X_EVENT_SOURCE_VERSION, newVersion.toString());
       trialverseResponse.setStatus(HttpStatus.OK.value());
     } else {

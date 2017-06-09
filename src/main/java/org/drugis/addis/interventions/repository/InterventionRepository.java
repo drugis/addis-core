@@ -30,4 +30,5 @@ public interface InterventionRepository {
   boolean isExistingInterventionName(Integer interventionId, String name);
 
   void delete(Integer interventionId) throws ResourceDoesNotExistException;
+
 }

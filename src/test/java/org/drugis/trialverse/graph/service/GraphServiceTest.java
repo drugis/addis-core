@@ -83,7 +83,7 @@ public class GraphServiceTest {
     HttpHeaders httpHeaders = new HttpHeaders();
     httpHeaders.add(WebConstants.X_EVENT_SOURCE_VERSION, "newVersion");
     ResponseEntity responseEntity = new ResponseEntity(httpHeaders, HttpStatus.OK);
-    String targetDatasetVersionedUri = "http://versionedURI";
+    String targetDatasetVersionedUri = "http://target.dataset";
     VersionMapping targetMapping = new VersionMapping(targetDatasetVersionedUri, null, targetDatasetUri.toString());
     String sourceDatasetVersionedUrl =  "http://sourceDatasetUrl";
     VersionMapping sourceMapping = new VersionMapping(sourceDatasetVersionedUrl, null, sourceDatasetUri.toString());
@@ -93,7 +93,6 @@ public class GraphServiceTest {
             .queryParam(WebConstants.GRAPH_QUERY_PARAM, targetGraphUri.toString())
             .build()
             .toUri();
-
     when(versionMappingRepository.getVersionMappingByDatasetUrl(targetDatasetUri)).thenReturn(targetMapping);
     when(versionMappingRepository.getVersionMappingByDatasetUrl(sourceDatasetUri)).thenReturn(sourceMapping);
     ApiKey apiKey = mock(ApiKey.class);

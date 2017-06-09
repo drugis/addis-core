@@ -15,7 +15,7 @@ define([], function() {
         isArray: false,
         transformResponse: function(data) {
           return {
-            data: data // property on Responce object to access raw result data
+            data: data // property on response object to access raw result data
           };
         }
       },
@@ -33,7 +33,7 @@ define([], function() {
         },
         transformResponse: function(data) {
           return {
-            data: data // property on Responce object to access raw result data
+            data: data // property on response object to access raw result data
           };
         }
       },

@@ -9,6 +9,7 @@ import org.drugis.addis.analyses.MetaBenefitRiskAnalysis;
 import org.drugis.addis.analyses.repository.MetaBenefitRiskAnalysisRepository;
 import org.drugis.addis.analyses.service.AnalysisService;
 import org.drugis.addis.analyses.service.MetaBenefitRiskAnalysisService;
+import org.drugis.addis.effectsTables.repository.EffectsTableRepository;
 import org.drugis.addis.exception.MethodNotAllowedException;
 import org.drugis.addis.exception.ProblemCreationException;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
@@ -69,7 +70,8 @@ public class MetaBenefitRiskAnalysisServiceImpl implements MetaBenefitRiskAnalys
   @Inject
   private InterventionRepository interventionRepository;
 
-
+  @Inject
+  private EffectsTableRepository effectsTableRepository;
 
   @Inject
   private ScenarioRepository scenarioRepository;
@@ -87,6 +89,20 @@ public class MetaBenefitRiskAnalysisServiceImpl implements MetaBenefitRiskAnalys
       String problemString = objectMapper.writeValueAsString(problem);
       analysis.setProblem(problemString);
       subProblemService.createMCDADefaults(projectId, analysis.getId(), scenarioState);
+
+      List<InterventionInclusion> interventionInclusions = analysis.getInterventionInclusions();
+      List<String> interventionInclusionsAsStrings = interventionInclusions
+              .stream()
+              .map(interventionInclusion -> {
+                try {
+                  return interventionRepository.get(interventionInclusion.getInterventionId()).getName();
+                } catch (ResourceDoesNotExistException e) {
+                  e.printStackTrace();
+                  return null;
+                }
+              })
+              .collect(Collectors.toList());
+      effectsTableRepository.setEffectsTableAlternativeInclusion(analysis.getId(), interventionInclusionsAsStrings);
     }
     return metaBenefitRiskAnalysisRepository.update(user, analysis);
   }
@@ -128,20 +144,20 @@ public class MetaBenefitRiskAnalysisServiceImpl implements MetaBenefitRiskAnalys
       Sets.SetView<InterventionInclusion> difference = Sets.symmetricDifference(Sets.newHashSet(oldAnalysis.getInterventionInclusions()), Sets.newHashSet(analysis.getInterventionInclusions()));
       Integer removedInterventionId = difference.iterator().next().getInterventionId();
       ObjectMapper om = new ObjectMapper();
-      return analysis.getMbrOutcomeInclusions().stream().map(moi -> {
-        if (moi.getBaseline() != null) {
+      return analysis.getMbrOutcomeInclusions().stream().map(mbrOutcomeInclusion -> {
+        if (mbrOutcomeInclusion.getBaseline() != null) {
           try {
-            JsonNode baseline = om.readTree(moi.getBaseline());
+            JsonNode baseline = om.readTree(mbrOutcomeInclusion.getBaseline());
             String baselineInterventionName = baseline.get("name").asText();
             AbstractIntervention intervention = interventionRepository.getByProjectIdAndName(analysis.getProjectId(), baselineInterventionName);
             if (intervention.getId().equals(removedInterventionId)) {
-              moi.setBaseline(null);
+              mbrOutcomeInclusion.setBaseline(null);
             }
           } catch (IOException e) {
-            throw new RuntimeException("Attempt to read baseline " + moi.getBaseline());
+            throw new RuntimeException("Attempt to read baseline " + mbrOutcomeInclusion.getBaseline());
           }
         }
-        return moi;
+        return mbrOutcomeInclusion;
       }).collect(Collectors.toList());
     }
     return analysis.getMbrOutcomeInclusions();
