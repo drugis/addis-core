@@ -43,7 +43,7 @@ define(['angular', 'lodash'], function(angular, _) {
       isUserOwner: isUserOwner,
       disableEditing: !isUserOwner || $scope.project.archived || $scope.analysis.archived
     };
-
+      
     $scope.models = ModelResource.query({
       projectId: $stateParams.projectId,
       analysisId: $stateParams.analysisId
