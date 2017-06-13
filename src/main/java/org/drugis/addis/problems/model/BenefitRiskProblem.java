@@ -8,13 +8,13 @@ import java.util.Map;
 /**
  * Created by connor on 4-3-16.
  */
-public class MetaBenefitRiskProblem extends AbstractProblem {
+public class BenefitRiskProblem extends AbstractProblem {
 
   private Map<String, CriterionEntry> criteria;
   private Map<String, AlternativeEntry> alternatives;
   private List<PerformanceTableEntry> performanceTable;
 
-  public MetaBenefitRiskProblem(Map<String, CriterionEntry> criteria, Map<String, AlternativeEntry> alternatives, List<PerformanceTableEntry> performanceTable) {
+  public BenefitRiskProblem(Map<String, CriterionEntry> criteria, Map<String, AlternativeEntry> alternatives, List<PerformanceTableEntry> performanceTable) {
     this.criteria = criteria;
     this.alternatives = alternatives;
     this.performanceTable = performanceTable;

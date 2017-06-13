@@ -1,4 +1,4 @@
-package org.drugis.addis.analyses;
+package org.drugis.addis.analyses.model;
 
 import com.fasterxml.jackson.annotation.JsonRawValue;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
@@ -7,25 +7,24 @@ import org.drugis.addis.util.ObjectToStringDeserializer;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.IdClass;
-import java.io.Serializable;
 
 /**
  * Created by connor on 26-2-16.
  */
 @Entity
-@IdClass(MbrOutcomeInclusion.MbrOutcomeInclusionPK.class)
-public class MbrOutcomeInclusion implements Serializable {
+@IdClass(BenefitRiskNMAOutcomeInclusion.BrOutcomeInclusionPK.class)
+public class BenefitRiskNMAOutcomeInclusion {
 
-  public static class MbrOutcomeInclusionPK implements Serializable {
-    protected Integer metaBenefitRiskAnalysisId;
+  public static class BrOutcomeInclusionPK  {
+    protected Integer analysisId;
     protected Integer outcomeId;
     protected Integer networkMetaAnalysisId;
     protected Integer modelId;
 
-    public MbrOutcomeInclusionPK() {}
+    public BrOutcomeInclusionPK() {}
 
-    public MbrOutcomeInclusionPK(Integer metaBenefitRiskAnalysisId, Integer outcomeId, Integer networkMetaAnalysisId, Integer modelId) {
-      this.metaBenefitRiskAnalysisId = metaBenefitRiskAnalysisId;
+    public BrOutcomeInclusionPK(Integer analysisId, Integer outcomeId, Integer networkMetaAnalysisId, Integer modelId) {
+      this.analysisId = analysisId;
       this.outcomeId = outcomeId;
       this.networkMetaAnalysisId = networkMetaAnalysisId;
       this.modelId = modelId;
@@ -36,48 +35,49 @@ public class MbrOutcomeInclusion implements Serializable {
       if (this == o) return true;
       if (o == null || getClass() != o.getClass()) return false;
 
-      MbrOutcomeInclusionPK that = (MbrOutcomeInclusionPK) o;
+      BrOutcomeInclusionPK that = (BrOutcomeInclusionPK) o;
 
-      if (!metaBenefitRiskAnalysisId.equals(that.metaBenefitRiskAnalysisId)) return false;
+      if (!analysisId.equals(that.analysisId)) return false;
       if (!outcomeId.equals(that.outcomeId)) return false;
-      if (!networkMetaAnalysisId.equals(that.networkMetaAnalysisId)) return false;
-      return modelId.equals(that.modelId);
-
+      if (networkMetaAnalysisId != null ? !networkMetaAnalysisId.equals(that.networkMetaAnalysisId) : that.networkMetaAnalysisId != null)
+        return false;
+      return modelId != null ? modelId.equals(that.modelId) : that.modelId == null;
     }
 
     @Override
     public int hashCode() {
-      int result = metaBenefitRiskAnalysisId.hashCode();
+      int result = analysisId.hashCode();
       result = 31 * result + outcomeId.hashCode();
-      result = 31 * result + networkMetaAnalysisId.hashCode();
-      result = 31 * result + modelId.hashCode();
+      result = 31 * result + (networkMetaAnalysisId != null ? networkMetaAnalysisId.hashCode() : 0);
+      result = 31 * result + (modelId != null ? modelId.hashCode() : 0);
       return result;
     }
   }
 
   @Id
-  private Integer metaBenefitRiskAnalysisId;
+  private Integer analysisId;
   @Id
   private Integer outcomeId;
   @Id
   private Integer networkMetaAnalysisId;
   @Id
   private Integer modelId;
+
   @JsonRawValue
   private String baseline;
 
-  public MbrOutcomeInclusion() {
+  public BenefitRiskNMAOutcomeInclusion() {
   }
 
-  public MbrOutcomeInclusion(Integer metaBenefitRiskAnalysisId, Integer outcomeId, Integer networkMetaAnalysisId, Integer modelId) {
-    this.metaBenefitRiskAnalysisId = metaBenefitRiskAnalysisId;
+  public BenefitRiskNMAOutcomeInclusion(Integer analysisId, Integer outcomeId, Integer networkMetaAnalysisId, Integer modelId) {
+    this.analysisId = analysisId;
     this.outcomeId = outcomeId;
     this.networkMetaAnalysisId = networkMetaAnalysisId;
     this.modelId = modelId;
   }
 
-  public Integer getMetaBenefitRiskAnalysisId() {
-    return metaBenefitRiskAnalysisId;
+  public Integer getAnalysisId() {
+    return analysisId;
   }
 
   public Integer getOutcomeId() {
@@ -107,22 +107,22 @@ public class MbrOutcomeInclusion implements Serializable {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
 
-    MbrOutcomeInclusion that = (MbrOutcomeInclusion) o;
+    BenefitRiskNMAOutcomeInclusion that = (BenefitRiskNMAOutcomeInclusion) o;
 
-    if (!metaBenefitRiskAnalysisId.equals(that.metaBenefitRiskAnalysisId)) return false;
+    if (!analysisId.equals(that.analysisId)) return false;
     if (!outcomeId.equals(that.outcomeId)) return false;
-    if (!networkMetaAnalysisId.equals(that.networkMetaAnalysisId)) return false;
-    if (!modelId.equals(that.modelId)) return false;
+    if (networkMetaAnalysisId != null ? !networkMetaAnalysisId.equals(that.networkMetaAnalysisId) : that.networkMetaAnalysisId != null)
+      return false;
+    if (modelId != null ? !modelId.equals(that.modelId) : that.modelId != null) return false;
     return baseline != null ? baseline.equals(that.baseline) : that.baseline == null;
-
   }
 
   @Override
   public int hashCode() {
-    int result = metaBenefitRiskAnalysisId.hashCode();
+    int result = analysisId.hashCode();
     result = 31 * result + outcomeId.hashCode();
-    result = 31 * result + networkMetaAnalysisId.hashCode();
-    result = 31 * result + modelId.hashCode();
+    result = 31 * result + (networkMetaAnalysisId != null ? networkMetaAnalysisId.hashCode() : 0);
+    result = 31 * result + (modelId != null ? modelId.hashCode() : 0);
     result = 31 * result + (baseline != null ? baseline.hashCode() : 0);
     return result;
   }

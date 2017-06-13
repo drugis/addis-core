@@ -1,12 +1,11 @@
 package org.drugis.addis.analyses.controller;
 
 import org.apache.http.HttpStatus;
-import org.drugis.addis.analyses.*;
+import org.drugis.addis.analyses.model.*;
 import org.drugis.addis.analyses.repository.AnalysisRepository;
 import org.drugis.addis.analyses.repository.NetworkMetaAnalysisRepository;
-import org.drugis.addis.analyses.repository.SingleStudyBenefitRiskAnalysisRepository;
 import org.drugis.addis.analyses.service.AnalysisService;
-import org.drugis.addis.analyses.service.MetaBenefitRiskAnalysisService;
+import org.drugis.addis.analyses.service.BenefitRiskAnalysisService;
 import org.drugis.addis.base.AbstractAddisCoreController;
 import org.drugis.addis.exception.MethodNotAllowedException;
 import org.drugis.addis.exception.ProblemCreationException;
@@ -47,8 +46,6 @@ public class AnalysisController extends AbstractAddisCoreController {
   @Inject
   private AnalysisRepository analysisRepository;
   @Inject
-  private SingleStudyBenefitRiskAnalysisRepository singleStudyBenefitRiskAnalysisRepository;
-  @Inject
   private NetworkMetaAnalysisRepository networkMetaAnalysisRepository;
   @Inject
   private AccountRepository accountRepository;
@@ -59,7 +56,7 @@ public class AnalysisController extends AbstractAddisCoreController {
   @Inject
   private ProjectService projectService;
   @Inject
-  private MetaBenefitRiskAnalysisService metaBenefitRiskAnalysisService;
+  private BenefitRiskAnalysisService benefitRiskAnalysisService;
 
   @RequestMapping(value = "/projects/{projectId}/analyses", method = RequestMethod.GET, params = {"outcomeIds"})
   @ResponseBody
@@ -93,14 +90,11 @@ public class AnalysisController extends AbstractAddisCoreController {
     if (user != null) {
       AbstractAnalysis analysis;
       switch (analysisCommand.getType()) {
-        case AnalysisType.SINGLE_STUDY_BENEFIT_RISK_LABEL:
-          analysis = analysisService.createSingleStudyBenefitRiskAnalysis(user, analysisCommand);
-          break;
         case AnalysisType.EVIDENCE_SYNTHESIS:
           analysis = analysisService.createNetworkMetaAnalysis(user, analysisCommand);
           break;
-        case AnalysisType.META_BENEFIT_RISK_ANALYSIS_LABEL:
-          analysis = analysisService.createMetaBenefitRiskAnalysis(user, analysisCommand);
+        case AnalysisType.BENEFIT_RISK_ANALYSIS_LABEL:
+          analysis = analysisService.createBenefitRiskAnalysis(user, analysisCommand);
           break;
         default:
           throw new RuntimeException("unknown analysis type.");
@@ -130,14 +124,12 @@ public class AnalysisController extends AbstractAddisCoreController {
     AbstractAnalysis analysis = analysisUpdateCommand.getAnalysis();
     Account user = accountRepository.findAccountByUsername(currentUser.getName());
     if (user != null) {
-      if (analysis instanceof SingleStudyBenefitRiskAnalysis) {
-        SingleStudyBenefitRiskAnalysis singleStudyBenefitRiskAnalysis = (SingleStudyBenefitRiskAnalysis) analysis;
-        return updateSingleStudyBenefitRiskAnalysis(user,
-                projectId, singleStudyBenefitRiskAnalysis, analysisUpdateCommand.getScenarioState());
-      } else if (analysis instanceof NetworkMetaAnalysis) {
+      if (analysis instanceof NetworkMetaAnalysis) {
         return analysisService.updateNetworkMetaAnalysis(user, (NetworkMetaAnalysis) analysis);
-      } else if (analysis instanceof MetaBenefitRiskAnalysis) {
-        return metaBenefitRiskAnalysisService.update(user, projectId, (MetaBenefitRiskAnalysis) analysis,
+      } else if (analysis instanceof BenefitRiskAnalysis) {
+//FIXME: check differences  return updateSingleStudyBenefitRiskAnalysis(user,
+//              projectId, singleStudyBenefitRiskAnalysis, analysisUpdateCommand.getScenarioState());
+        return benefitRiskAnalysisService.update(user, projectId, (BenefitRiskAnalysis) analysis,
                 analysisUpdateCommand.getScenarioState());
       }
       throw new ResourceDoesNotExistException();
@@ -159,21 +151,21 @@ public class AnalysisController extends AbstractAddisCoreController {
     analysisRepository.setArchived(analysisId, archiveCommand.getIsArchived());
   }
 
-
-  private SingleStudyBenefitRiskAnalysis updateSingleStudyBenefitRiskAnalysis(Account user,
-                                                                              Integer projectId, SingleStudyBenefitRiskAnalysis analysis,
-                                                                              String scenarioState) throws MethodNotAllowedException, ResourceDoesNotExistException {
-    SingleStudyBenefitRiskAnalysis oldAnalysis = (SingleStudyBenefitRiskAnalysis) analysisRepository.get(analysis.getId());
-    if (oldAnalysis.getProblem() != null) {
-      throw new MethodNotAllowedException();
-    }
-    projectService.checkProjectExistsAndModifiable(user, analysis.getProjectId());
-    SingleStudyBenefitRiskAnalysis updatedAnalysis = singleStudyBenefitRiskAnalysisRepository.update(user, analysis);
-    if (analysis.getProblem() != null) {
-      subProblemService.createMCDADefaults(projectId, analysis.getId(), scenarioState);
-    }
-    return updatedAnalysis;
-  }
+//FIXME: check differences
+//  private SingleStudyBenefitRiskAnalysis updateSingleStudyBenefitRiskAnalysis(Account user,
+//                                                                              Integer projectId, SingleStudyBenefitRiskAnalysis analysis,
+//                                                                              String scenarioState) throws MethodNotAllowedException, ResourceDoesNotExistException {
+//    SingleStudyBenefitRiskAnalysis oldAnalysis = (SingleStudyBenefitRiskAnalysis) analysisRepository.get(analysis.getId());
+//    if (oldAnalysis.getProblem() != null) {
+//      throw new MethodNotAllowedException();
+//    }
+//    projectService.checkProjectExistsAndModifiable(user, analysis.getProjectId());
+//    SingleStudyBenefitRiskAnalysis updatedAnalysis = singleStudyBenefitRiskAnalysisRepository.update(user, analysis);
+//    if (analysis.getProblem() != null) {
+//      subProblemService.createMCDADefaults(projectId, analysis.getId(), scenarioState);
+//    }
+//    return updatedAnalysis;
+//  }
 
 
 }

@@ -2,7 +2,7 @@ package org.drugis.addis.models.repository;
 
 import net.minidev.json.JSONObject;
 import org.apache.commons.lang3.tuple.Pair;
-import org.drugis.addis.analyses.NetworkMetaAnalysis;
+import org.drugis.addis.analyses.model.NetworkMetaAnalysis;
 import org.drugis.addis.config.JpaRepositoryTestConfig;
 import org.drugis.addis.models.Model;
 import org.junit.Test;

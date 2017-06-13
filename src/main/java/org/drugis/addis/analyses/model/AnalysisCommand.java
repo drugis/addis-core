@@ -1,4 +1,4 @@
-package org.drugis.addis.analyses;
+package org.drugis.addis.analyses.model;
 
 import java.util.ArrayList;
 import java.util.Collections;

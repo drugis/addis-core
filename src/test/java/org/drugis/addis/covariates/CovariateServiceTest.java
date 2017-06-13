@@ -1,8 +1,8 @@
 package org.drugis.addis.covariates;
 
-import org.drugis.addis.analyses.AbstractAnalysis;
-import org.drugis.addis.analyses.CovariateInclusion;
-import org.drugis.addis.analyses.NetworkMetaAnalysis;
+import org.drugis.addis.analyses.model.AbstractAnalysis;
+import org.drugis.addis.analyses.model.CovariateInclusion;
+import org.drugis.addis.analyses.model.NetworkMetaAnalysis;
 import org.drugis.addis.analyses.repository.AnalysisRepository;
 import org.drugis.addis.covariates.impl.CovariateServiceImpl;
 import org.drugis.addis.exception.MethodNotAllowedException;

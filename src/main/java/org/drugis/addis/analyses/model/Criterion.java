@@ -1,4 +1,4 @@
-package org.drugis.addis.analyses;
+package org.drugis.addis.analyses.model;
 
 /**
  * Created by connor on 3/13/14.

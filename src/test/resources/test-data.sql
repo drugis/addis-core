@@ -51,8 +51,8 @@ INSERT INTO public.MultipleIntervention (multipleInterventionId) VALUES(-6);
 INSERT INTO public.MultipleInterventionItem (multipleInterventionId, interventionId ) VALUES (-6, -5);
 
 INSERT INTO public.AbstractAnalysis(id, projectId, title) VALUES (-1, 1, 'analysis 1');
-INSERT INTO public.AbstractAnalysis(id, projectId, title) VALUES (-2, 1, 'analysis 3');
-INSERT INTO public.AbstractAnalysis(id, projectId, title) VALUES (-3, 1, 'analysis 2');
+INSERT INTO public.AbstractAnalysis(id, projectId, title) VALUES (-2, 1, 'analysis 2');
+INSERT INTO public.AbstractAnalysis(id, projectId, title) VALUES (-3, 1, 'analysis 3');
 INSERT INTO public.AbstractAnalysis(id, projectId, title) VALUES (-4, 2, 'analysis 4');
 INSERT INTO public.AbstractAnalysis(id, projectId, title) VALUES (-5, 1, 'nma');
 INSERT INTO public.AbstractAnalysis(id, projectId, title) VALUES (-6, 1, 'nma 2');
@@ -60,16 +60,15 @@ INSERT INTO public.AbstractAnalysis(id, projectId, title) VALUES (-8, 1, 'nma 3'
 INSERT INTO public.AbstractAnalysis(id, projectId, title) VALUES (-7, 2, 'nma task test');
 INSERT INTO public.AbstractAnalysis(id, projectId, title) VALUES (-10, 1, 'metabr 1');
 
-INSERT INTO public.SingleStudyBenefitRiskAnalysis (id) VALUES (-1);
-INSERT INTO public.SingleStudyBenefitRiskAnalysis (id) VALUES (-2);
-INSERT INTO public.SingleStudyBenefitRiskAnalysis (id) VALUES (-3);
-INSERT INTO public.SingleStudyBenefitRiskAnalysis (id, problem) VALUES (-4, 'singlestudy problem');
+INSERT INTO public.BenefitRiskAnalysis (id, finalized) VALUES (-1, false);
+INSERT INTO public.BenefitRiskAnalysis (id, finalized) VALUES (-2, false);
+INSERT INTO public.BenefitRiskAnalysis (id, finalized) VALUES (-3, false);
+INSERT INTO public.BenefitRiskAnalysis (id, problem, finalized) VALUES (-4, 'singlestudy problem', true);
 
-INSERT INTO public.SingleStudyBenefitRiskAnalysis_outcome (analysisId, outcomeId) VALUES (-3, 1);
-INSERT INTO public.SingleStudyBenefitRiskAnalysis_outcome (analysisId, outcomeId) VALUES (-3, 2);
-
-INSERT INTO public.SingleStudyBenefitRiskAnalysis_outcome (analysisId, outcomeId) VALUES (-4, 1);
-INSERT INTO public.SingleStudyBenefitRiskAnalysis_outcome (analysisId, outcomeId) VALUES (-4, 2);
+INSERT INTO public.brOutcomeInclusion(analysisId, outcomeId, studyGraphUri) VALUES (-3, 1, 'http://study.graph.uri');
+INSERT INTO public.brOutcomeInclusion(analysisId, outcomeId, studyGraphUri) VALUES (-3, 2, 'http://study.graph.uri');
+INSERT INTO public.brOutcomeInclusion(analysisId, outcomeId, studyGraphUri) VALUES (-4, 1, 'http://study.graph.uri');
+INSERT INTO public.brOutcomeInclusion(analysisId, outcomeId, studyGraphUri) VALUES (-4, 2, 'http://study.graph.uri');
 
 INSERT INTO public.interventioninclusion (analysisId, interventionId) VALUES (-3, -1);
 INSERT INTO public.interventioninclusion (analysisId, interventionId) VALUES (-3, -2);
@@ -90,9 +89,9 @@ INSERT INTO public.model(id, analysisId, taskUrl, title, linearModel, modelType,
 
 UPDATE public.NetworkMetaAnalysis SET primaryModel = 1 WHERE id = -7;
 
-INSERT INTO public.MetaBenefitRiskAnalysis(id, finalized) VALUES (-10, FALSE);
+INSERT INTO public.BenefitRiskAnalysis(id, finalized) VALUES (-10, FALSE);
 INSERT INTO public.interventionInclusion(analysisId, interventionId) VALUES (-10, -1);
-INSERT INTO public.MbrOutcomeInclusion(metaBenefitRiskAnalysisId, outcomeId, networkMetaAnalysisId, modelId) VALUES (-10, 1, -5, 1);
+INSERT INTO public.brOutcomeInclusion(analysisId, outcomeId, networkMetaAnalysisId, modelId) VALUES (-10, 1, -5, 1);
 
 INSERT INTO public.subProblem (id, workspaceId, definition, title) VALUES (100, -1, '{}', 'Default');
 INSERT INTO public.subProblem (id, workspaceId, definition, title) VALUES (101, -2, '{}', 'Default');
@@ -109,8 +108,6 @@ INSERT INTO public.armExclusion (id, trialverseUid, analysisId) VALUES (-1, '-10
 INSERT INTO public.armExclusion (id, trialverseUid, analysisId) VALUES (-2, '-102', -6);
 
 INSERT INTO public.interventionInclusion (interventionId, analysisId) VALUES (-2, -6);
-
-INSERT INTO public.remarks(analysisId, remarks) VALUES(-1, 'yo yo yo !');
 
 INSERT INTO public.covariate(id, project, name, motivation, definitionkey, type) VALUES (1, 1, 'covariate 1 name', 'my motivation', 'ALLOCATION_RANDOMIZED', 'STUDY_CHARACTERISTIC');
 INSERT INTO public.covariate(id, project, name, motivation, definitionkey, type) VALUES (2, 1, 'covariate 2 name', 'my motivation', 'BLINDING_AT_LEAST_SINGLE_BLIND', 'STUDY_CHARACTERISTIC');

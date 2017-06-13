@@ -1,6 +1,6 @@
 package org.drugis.addis.analyses.controller;
 
-import org.drugis.addis.analyses.AbstractAnalysis;
+import org.drugis.addis.analyses.model.AbstractAnalysis;
 
 /**
  * Created by joris on 3-5-17.

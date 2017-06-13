@@ -1,4 +1,4 @@
-package org.drugis.addis.analyses;
+package org.drugis.addis.analyses.model;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
@@ -13,9 +13,8 @@ import java.util.*;
  * Created by connor on 6-5-14.
  */
 @JsonTypeInfo(use = com.fasterxml.jackson.annotation.JsonTypeInfo.Id.NAME, include = As.PROPERTY, property = "analysisType")
-@JsonSubTypes({@Type(value = SingleStudyBenefitRiskAnalysis.class, name = AnalysisType.SINGLE_STUDY_BENEFIT_RISK_LABEL),
-        @Type(value = NetworkMetaAnalysis.class, name = AnalysisType.EVIDENCE_SYNTHESIS),
-        @Type(value = MetaBenefitRiskAnalysis.class, name = AnalysisType.META_BENEFIT_RISK_ANALYSIS_LABEL)})
+@JsonSubTypes({@Type(value = NetworkMetaAnalysis.class, name = AnalysisType.EVIDENCE_SYNTHESIS),
+        @Type(value = BenefitRiskAnalysis.class, name = AnalysisType.BENEFIT_RISK_ANALYSIS_LABEL)})
 @Inheritance(strategy = InheritanceType.JOINED)
 @Entity
 public abstract class AbstractAnalysis {

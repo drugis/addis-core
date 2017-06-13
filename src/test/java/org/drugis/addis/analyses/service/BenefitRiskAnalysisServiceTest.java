@@ -1,12 +1,11 @@
 package org.drugis.addis.analyses.service;
 
 import com.google.common.collect.Sets;
-import org.drugis.addis.analyses.InterventionInclusion;
-import org.drugis.addis.analyses.MbrOutcomeInclusion;
-import org.drugis.addis.analyses.MetaBenefitRiskAnalysis;
-import org.drugis.addis.analyses.repository.MetaBenefitRiskAnalysisRepository;
-import org.drugis.addis.analyses.service.impl.MetaBenefitRiskAnalysisServiceImpl;
-import org.drugis.addis.effectsTables.EffectsTableAlternativeInclusion;
+import org.drugis.addis.analyses.model.InterventionInclusion;
+import org.drugis.addis.analyses.model.BenefitRiskNMAOutcomeInclusion;
+import org.drugis.addis.analyses.model.BenefitRiskAnalysis;
+import org.drugis.addis.analyses.repository.BenefitRiskAnalysisRepository;
+import org.drugis.addis.analyses.service.impl.BenefitRiskAnalysisServiceImpl;
 import org.drugis.addis.effectsTables.repository.EffectsTableRepository;
 import org.drugis.addis.exception.MethodNotAllowedException;
 import org.drugis.addis.exception.ProblemCreationException;
@@ -39,10 +38,10 @@ import static org.mockito.MockitoAnnotations.initMocks;
 /**
  * Created by connor on 9-3-16.
  */
-public class MetaBenefitRiskAnalysisServiceTest {
+public class BenefitRiskAnalysisServiceTest {
 
   @Mock
-  private MetaBenefitRiskAnalysisRepository metaBenefitRiskAnalysisRepository;
+  private BenefitRiskAnalysisRepository benefitRiskAnalysisRepository;
 
   @Mock
   private ScenarioRepository scenarioRepository;
@@ -60,7 +59,7 @@ public class MetaBenefitRiskAnalysisServiceTest {
   private EffectsTableRepository effectsTableRepository;
 
   @InjectMocks
-  private MetaBenefitRiskAnalysisService metaBenefitRiskAnalysisService = new MetaBenefitRiskAnalysisServiceImpl();
+  private BenefitRiskAnalysisService benefitRiskAnalysisService = new BenefitRiskAnalysisServiceImpl();
   private final Account user = new Account("jondoe", "jon", "doe", "e@mail.com");
   private final Integer projectId = 1;
   private final Integer analysisId = 2;
@@ -73,46 +72,46 @@ public class MetaBenefitRiskAnalysisServiceTest {
 
   @Test
   public void testUpdateWithFinalizingAnalysis() throws ResourceDoesNotExistException, SQLException, MethodNotAllowedException, IOException, URISyntaxException, ReadValueException, InvalidTypeForDoseCheckException, UnexpectedNumberOfResultsException, ProblemCreationException {
-    MetaBenefitRiskAnalysis analysis = new MetaBenefitRiskAnalysis(analysisId, projectId, "tittle");
+    BenefitRiskAnalysis analysis = new BenefitRiskAnalysis(analysisId, projectId, "tittle");
     analysis.setFinalized(true);
 
-    MetaBenefitRiskAnalysis oldAnalysis = new MetaBenefitRiskAnalysis(analysisId, projectId, "tittle");
+    BenefitRiskAnalysis oldAnalysis = new BenefitRiskAnalysis(analysisId, projectId, "tittle");
 
-    when(metaBenefitRiskAnalysisRepository.find(analysis.getId())).thenReturn(oldAnalysis);
+    when(benefitRiskAnalysisRepository.find(analysis.getId())).thenReturn(oldAnalysis);
     when(problemService.getProblem(projectId, analysisId)).thenReturn(null);
 
-    metaBenefitRiskAnalysisService.update(user, projectId, analysis, "");
+    benefitRiskAnalysisService.update(user, projectId, analysis, "");
 
-    verify(metaBenefitRiskAnalysisRepository).find(analysisId);
+    verify(benefitRiskAnalysisRepository).find(analysisId);
     verify(problemService).getProblem(projectId, analysisId);
     verify(subProblemService).createMCDADefaults(projectId, analysisId, "");
-    verify(metaBenefitRiskAnalysisRepository).update(user, analysis);
-    verifyNoMoreInteractions(metaBenefitRiskAnalysisRepository, scenarioRepository, problemService);
+    verify(benefitRiskAnalysisRepository).update(user, analysis);
+    verifyNoMoreInteractions(benefitRiskAnalysisRepository, scenarioRepository, problemService);
   }
 
   @Test
   public void testUpdateWithNonFinalizingAnalysis() throws ResourceDoesNotExistException, SQLException, MethodNotAllowedException, IOException, URISyntaxException, ReadValueException, InvalidTypeForDoseCheckException, UnexpectedNumberOfResultsException, ProblemCreationException {
-    MetaBenefitRiskAnalysis analysis = new MetaBenefitRiskAnalysis(analysisId, projectId, "tittle");
-    MetaBenefitRiskAnalysis oldAnalysis = new MetaBenefitRiskAnalysis(analysisId, projectId, "tittle");
+    BenefitRiskAnalysis analysis = new BenefitRiskAnalysis(analysisId, projectId, "tittle");
+    BenefitRiskAnalysis oldAnalysis = new BenefitRiskAnalysis(analysisId, projectId, "tittle");
 
-    when(metaBenefitRiskAnalysisRepository.find(analysis.getId())).thenReturn(oldAnalysis);
+    when(benefitRiskAnalysisRepository.find(analysis.getId())).thenReturn(oldAnalysis);
 
-    metaBenefitRiskAnalysisService.update(user, projectId, analysis, "");
+    benefitRiskAnalysisService.update(user, projectId, analysis, "");
 
-    verify(metaBenefitRiskAnalysisRepository).find(analysisId);
-    verify(metaBenefitRiskAnalysisRepository).update(user, analysis);
-    verifyNoMoreInteractions(metaBenefitRiskAnalysisRepository, scenarioRepository, problemService);
+    verify(benefitRiskAnalysisRepository).find(analysisId);
+    verify(benefitRiskAnalysisRepository).update(user, analysis);
+    verifyNoMoreInteractions(benefitRiskAnalysisRepository, scenarioRepository, problemService);
   }
 
   @Test(expected = MethodNotAllowedException.class)
   public void testUpdateFinalizedAnalysisFails() throws ResourceDoesNotExistException, SQLException, MethodNotAllowedException, IOException, URISyntaxException, ReadValueException, InvalidTypeForDoseCheckException, UnexpectedNumberOfResultsException, ProblemCreationException {
-    MetaBenefitRiskAnalysis analysis = new MetaBenefitRiskAnalysis(analysisId, projectId, "tittle");
-    MetaBenefitRiskAnalysis oldAnalysis = new MetaBenefitRiskAnalysis(analysisId, projectId, "tittle");
+    BenefitRiskAnalysis analysis = new BenefitRiskAnalysis(analysisId, projectId, "tittle");
+    BenefitRiskAnalysis oldAnalysis = new BenefitRiskAnalysis(analysisId, projectId, "tittle");
     oldAnalysis.setFinalized(true);
 
-    when(metaBenefitRiskAnalysisRepository.find(analysis.getId())).thenReturn(oldAnalysis);
+    when(benefitRiskAnalysisRepository.find(analysis.getId())).thenReturn(oldAnalysis);
 
-    metaBenefitRiskAnalysisService.update(user, projectId, analysis, "");
+    benefitRiskAnalysisService.update(user, projectId, analysis, "");
   }
 
   @Test
@@ -120,8 +119,8 @@ public class MetaBenefitRiskAnalysisServiceTest {
     Integer outcomeId = -10;
     Integer nmaId = -100;
     Integer modelId = -1000;
-    MetaBenefitRiskAnalysis analysis = new MetaBenefitRiskAnalysis(projectId, "title");
-    MetaBenefitRiskAnalysis oldAnalysis = new MetaBenefitRiskAnalysis(projectId, "title");
+    BenefitRiskAnalysis analysis = new BenefitRiskAnalysis(projectId, "title");
+    BenefitRiskAnalysis oldAnalysis = new BenefitRiskAnalysis(projectId, "title");
 
     Integer sertraId = -1;
     String sertraName = "sertraline";
@@ -139,16 +138,16 @@ public class MetaBenefitRiskAnalysisServiceTest {
     HashSet<InterventionInclusion> includedInterventions = Sets.newHashSet(fluoxInclusion, sertraInclusion);
     oldAnalysis.updateIncludedInterventions(includedInterventions);
 
-    MbrOutcomeInclusion outcomeInclusion = new MbrOutcomeInclusion(analysisId, outcomeId, nmaId, modelId);
+    BenefitRiskNMAOutcomeInclusion outcomeInclusion = new BenefitRiskNMAOutcomeInclusion(analysisId, outcomeId, nmaId, modelId);
     outcomeInclusion.setBaseline("{\"name\": \"" + fluoxName + "\"}");
-    analysis.setMbrOutcomeInclusions(Collections.singletonList(outcomeInclusion));
-    oldAnalysis.setMbrOutcomeInclusions(Collections.singletonList(outcomeInclusion));
+    analysis.setBenefitRiskNMAOutcomeInclusions(Collections.singletonList(outcomeInclusion));
+    oldAnalysis.setBenefitRiskNMAOutcomeInclusions(Collections.singletonList(outcomeInclusion));
 
     when(interventionRepository.getByProjectIdAndName(projectId, fluoxName)).thenReturn(fluox);
     when(interventionRepository.getByProjectIdAndName(projectId, sertraName)).thenReturn(sertra);
 
-    List<MbrOutcomeInclusion> cleanInclusions = metaBenefitRiskAnalysisService.cleanInclusions(analysis, oldAnalysis);
+    List<BenefitRiskNMAOutcomeInclusion> cleanInclusions = benefitRiskAnalysisService.cleanInclusions(analysis, oldAnalysis);
 
-    assertEquals(Collections.singletonList(new MbrOutcomeInclusion(analysisId, outcomeId, nmaId, modelId)), cleanInclusions);
+    assertEquals(Collections.singletonList(new BenefitRiskNMAOutcomeInclusion(analysisId, outcomeId, nmaId, modelId)), cleanInclusions);
   }
 }

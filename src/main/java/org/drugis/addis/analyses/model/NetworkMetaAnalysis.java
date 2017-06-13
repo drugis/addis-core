@@ -1,9 +1,8 @@
-package org.drugis.addis.analyses;
+package org.drugis.addis.analyses.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import org.drugis.addis.covariates.Covariate;
 import org.drugis.addis.outcomes.Outcome;
 import org.drugis.trialverse.util.Utils;
 

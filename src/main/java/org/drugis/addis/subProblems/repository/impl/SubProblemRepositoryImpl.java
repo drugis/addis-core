@@ -33,9 +33,7 @@ public class SubProblemRepositoryImpl implements SubProblemRepository {
     TypedQuery<SubProblem> query = em.createQuery(
             "SELECT DISTINCT sp FROM SubProblem sp\n" +
                     " WHERE sp.workspaceId in(\n " +
-                    "    SELECT id FROM SingleStudyBenefitRiskAnalysis where projectid = :projectId\n" +
-                    "  ) OR sp.workspaceId in (\n" +
-                    "    SELECT id FROM MetaBenefitRiskAnalysis where projectid = :projectId\n" +
+                    "    SELECT id FROM BenefitRiskAnalysis where projectid = :projectId\n" +
                     "  )", SubProblem.class);
     query.setParameter("projectId", projectId);
     return query.getResultList();
@@ -47,9 +45,7 @@ public class SubProblemRepositoryImpl implements SubProblemRepository {
             "SELECT DISTINCT sp FROM SubProblem sp\n" +
                     " WHERE sp.workspaceId = :workspaceId \n" +
                     " AND sp.workspaceId in(\n " +
-                    "    SELECT id FROM SingleStudyBenefitRiskAnalysis where id = :workspaceId and projectid = :projectId\n" +
-                    "  ) OR sp.workspaceId in (\n" +
-                    "    SELECT id FROM MetaBenefitRiskAnalysis where id = :workspaceId and projectid = :projectId\n" +
+                    "    SELECT id FROM BenefitRiskAnalysis where id = :workspaceId and projectid = :projectId\n" +
                     "  )", SubProblem.class);
     query.setParameter("workspaceId", workspaceId);
     query.setParameter("projectId", projectId);

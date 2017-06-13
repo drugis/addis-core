@@ -2,7 +2,7 @@ package org.drugis.addis.models.service;
 
 import net.minidev.json.JSONObject;
 import org.drugis.addis.TestUtils;
-import org.drugis.addis.analyses.AbstractAnalysis;
+import org.drugis.addis.analyses.model.AbstractAnalysis;
 import org.drugis.addis.analyses.repository.AnalysisRepository;
 import org.drugis.addis.exception.MethodNotAllowedException;
 import org.drugis.addis.exception.ResourceDoesNotExistException;

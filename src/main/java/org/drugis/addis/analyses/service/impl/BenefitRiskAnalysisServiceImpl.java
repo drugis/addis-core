@@ -3,12 +3,12 @@ package org.drugis.addis.analyses.service.impl;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Sets;
-import org.drugis.addis.analyses.InterventionInclusion;
-import org.drugis.addis.analyses.MbrOutcomeInclusion;
-import org.drugis.addis.analyses.MetaBenefitRiskAnalysis;
-import org.drugis.addis.analyses.repository.MetaBenefitRiskAnalysisRepository;
+import org.drugis.addis.analyses.model.InterventionInclusion;
+import org.drugis.addis.analyses.model.BenefitRiskNMAOutcomeInclusion;
+import org.drugis.addis.analyses.model.BenefitRiskAnalysis;
+import org.drugis.addis.analyses.repository.BenefitRiskAnalysisRepository;
 import org.drugis.addis.analyses.service.AnalysisService;
-import org.drugis.addis.analyses.service.MetaBenefitRiskAnalysisService;
+import org.drugis.addis.analyses.service.BenefitRiskAnalysisService;
 import org.drugis.addis.effectsTables.repository.EffectsTableRepository;
 import org.drugis.addis.exception.MethodNotAllowedException;
 import org.drugis.addis.exception.ProblemCreationException;
@@ -46,14 +46,14 @@ import static org.apache.commons.collections.CollectionUtils.isNotEmpty;
  * Created by connor on 9-3-16.
  */
 @Service
-public class MetaBenefitRiskAnalysisServiceImpl implements MetaBenefitRiskAnalysisService {
+public class BenefitRiskAnalysisServiceImpl implements BenefitRiskAnalysisService {
 
   @Inject
   private AnalysisService analysisService;
 
   @Inject
   @Lazy
-  private MetaBenefitRiskAnalysisRepository metaBenefitRiskAnalysisRepository;
+  private BenefitRiskAnalysisRepository benefitRiskAnalysisRepository;
 
   @Inject
   private OutcomeRepository outcomeRepository;
@@ -78,9 +78,9 @@ public class MetaBenefitRiskAnalysisServiceImpl implements MetaBenefitRiskAnalys
   private ObjectMapper objectMapper = new ObjectMapper();
 
   @Override
-  public MetaBenefitRiskAnalysis update(Account user, Integer projectId,
-                                        MetaBenefitRiskAnalysis analysis, String scenarioState) throws URISyntaxException, SQLException, IOException, ResourceDoesNotExistException, MethodNotAllowedException, ReadValueException, InvalidTypeForDoseCheckException, UnexpectedNumberOfResultsException, ProblemCreationException {
-    MetaBenefitRiskAnalysis storedAnalysis = metaBenefitRiskAnalysisRepository.find(analysis.getId());
+  public BenefitRiskAnalysis update(Account user, Integer projectId,
+                                    BenefitRiskAnalysis analysis, String scenarioState) throws URISyntaxException, SQLException, IOException, ResourceDoesNotExistException, MethodNotAllowedException, ReadValueException, InvalidTypeForDoseCheckException, UnexpectedNumberOfResultsException, ProblemCreationException {
+    BenefitRiskAnalysis storedAnalysis = benefitRiskAnalysisRepository.find(analysis.getId());
     if(storedAnalysis.isFinalized()) {
       throw new MethodNotAllowedException();
     }
@@ -104,11 +104,11 @@ public class MetaBenefitRiskAnalysisServiceImpl implements MetaBenefitRiskAnalys
               .collect(Collectors.toList());
       effectsTableRepository.setEffectsTableAlternativeInclusion(analysis.getId(), interventionInclusionsAsStrings);
     }
-    return metaBenefitRiskAnalysisRepository.update(user, analysis);
+    return benefitRiskAnalysisRepository.update(user, analysis);
   }
 
   @Override
-  public void checkMetaBenefitRiskAnalysis(Account user, MetaBenefitRiskAnalysis analysis) throws ResourceDoesNotExistException, MethodNotAllowedException {
+  public void updateBenefitRiskAnalysis(Account user, BenefitRiskAnalysis analysis) throws ResourceDoesNotExistException, MethodNotAllowedException {
     projectService.checkProjectExistsAndModifiable(user, analysis.getProjectId());
     analysisService.checkProjectIdChange(analysis);
 
@@ -124,10 +124,10 @@ public class MetaBenefitRiskAnalysisServiceImpl implements MetaBenefitRiskAnalys
         }
       }
     }
-    if (isNotEmpty(analysis.getMbrOutcomeInclusions())) {
+    if (isNotEmpty(analysis.getBenefitRiskNMAOutcomeInclusions())) {
       // do not allow selection of outcomes that are not in the project
-      for (MbrOutcomeInclusion mbrOutcomeInclusion : analysis.getMbrOutcomeInclusions()) {
-        Integer outcomeId = mbrOutcomeInclusion.getOutcomeId();
+      for (BenefitRiskNMAOutcomeInclusion benefitRiskNMAOutcomeInclusion : analysis.getBenefitRiskNMAOutcomeInclusions()) {
+        Integer outcomeId = benefitRiskNMAOutcomeInclusion.getOutcomeId();
         Outcome outcome = outcomeRepository.get(outcomeId);
         if (!outcome.getProject().equals(analysis.getProjectId())) {
           throw new ResourceDoesNotExistException();
@@ -137,14 +137,14 @@ public class MetaBenefitRiskAnalysisServiceImpl implements MetaBenefitRiskAnalys
   }
 
   @Override
-  public List<MbrOutcomeInclusion> cleanInclusions(MetaBenefitRiskAnalysis analysis, MetaBenefitRiskAnalysis oldAnalysis) {
+  public List<BenefitRiskNMAOutcomeInclusion> cleanInclusions(BenefitRiskAnalysis analysis, BenefitRiskAnalysis oldAnalysis) {
     HashSet newInterventionInclusions = new HashSet(analysis.getInterventionInclusions());
     HashSet oldInterventionInclusions = new HashSet(oldAnalysis.getInterventionInclusions());
     if (!newInterventionInclusions.equals(oldInterventionInclusions)) {
       Sets.SetView<InterventionInclusion> difference = Sets.symmetricDifference(Sets.newHashSet(oldAnalysis.getInterventionInclusions()), Sets.newHashSet(analysis.getInterventionInclusions()));
       Integer removedInterventionId = difference.iterator().next().getInterventionId();
       ObjectMapper om = new ObjectMapper();
-      return analysis.getMbrOutcomeInclusions().stream().map(mbrOutcomeInclusion -> {
+      return analysis.getBenefitRiskNMAOutcomeInclusions().stream().map(mbrOutcomeInclusion -> {
         if (mbrOutcomeInclusion.getBaseline() != null) {
           try {
             JsonNode baseline = om.readTree(mbrOutcomeInclusion.getBaseline());
@@ -160,6 +160,6 @@ public class MetaBenefitRiskAnalysisServiceImpl implements MetaBenefitRiskAnalys
         return mbrOutcomeInclusion;
       }).collect(Collectors.toList());
     }
-    return analysis.getMbrOutcomeInclusions();
+    return analysis.getBenefitRiskNMAOutcomeInclusions();
   }
 }

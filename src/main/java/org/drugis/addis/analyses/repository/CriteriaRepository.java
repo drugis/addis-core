@@ -1,6 +1,6 @@
 package org.drugis.addis.analyses.repository;
 
-import org.drugis.addis.analyses.Criterion;
+import org.drugis.addis.analyses.model.Criterion;
 
 import java.util.List;
 
