@@ -26,10 +26,7 @@ import javax.inject.Inject;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -81,7 +78,7 @@ public class PataviTaskRepositoryImpl implements PataviTaskRepository {
   @Override
   public Map<URI, JsonNode> getResults(List<URI> taskUris) throws URISyntaxException, IOException {
     List<URI> filteredUris = taskUris.stream()
-            .filter(uri -> uri != null)
+            .filter(Objects::nonNull)
             .collect(Collectors.toList());
 
     Map<URI, JsonNode> result = new HashMap<>();
@@ -102,7 +99,7 @@ public class PataviTaskRepositoryImpl implements PataviTaskRepository {
 
   @Override
   public List<PataviTask> findByUrls(List<URI> taskUris) throws IOException {
-    return taskUris.stream().filter(taskUri -> taskUri != null).map(this::getTask).collect(Collectors.toList());
+    return taskUris.stream().filter(Objects::nonNull).map(this::getTask).collect(Collectors.toList());
   }
 
   private PataviTask getTask(URI taskUrl) {

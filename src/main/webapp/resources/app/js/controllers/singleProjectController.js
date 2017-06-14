@@ -231,8 +231,7 @@ define(['lodash', 'angular'], function(_, angular) {
         return type.label === analysis.analysisType;
       }));
 
-      //todo if analysis is gemtc type and has a problem go to models view
-      if (analysisType.label === 'Benefit-risk analysis based on meta-analyses' && analysis.finalized) {
+      if (analysisType.label === 'Benefit-risk analysis' && analysis.finalized) {
         analysisType.stateName = 'metaBenefitRisk';
       }
 

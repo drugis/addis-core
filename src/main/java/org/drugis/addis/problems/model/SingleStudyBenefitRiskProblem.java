@@ -14,20 +14,14 @@ import java.util.Map;
  */
 @JsonDeserialize(using = ObjectToStringDeserializer.class)
 public class SingleStudyBenefitRiskProblem extends AbstractProblem {
-  private String title;
   private Map<URI, CriterionEntry> criteria;
   private Map<Integer, AlternativeEntry> alternatives;
   private List<AbstractMeasurementEntry> performanceTable;
 
-  public SingleStudyBenefitRiskProblem(String title, Map<Integer, AlternativeEntry> alternatives, Map<URI, CriterionEntry> criteria, List<AbstractMeasurementEntry> performanceTable) {
-    this.title = title;
+  public SingleStudyBenefitRiskProblem(Map<Integer, AlternativeEntry> alternatives, Map<URI, CriterionEntry> criteria, List<AbstractMeasurementEntry> performanceTable) {
     this.alternatives = alternatives;
     this.criteria = criteria;
     this.performanceTable = performanceTable;
-  }
-
-  public String getTitle() {
-    return title;
   }
 
   public Map<Integer, AlternativeEntry> getAlternatives() {
@@ -47,21 +41,17 @@ public class SingleStudyBenefitRiskProblem extends AbstractProblem {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
 
-    SingleStudyBenefitRiskProblem problem = (SingleStudyBenefitRiskProblem) o;
+    SingleStudyBenefitRiskProblem that = (SingleStudyBenefitRiskProblem) o;
 
-    if (!alternatives.equals(problem.alternatives)) return false;
-    if (!criteria.equals(problem.criteria)) return false;
-    if (!performanceTable.equals(problem.performanceTable)) return false;
-    if (!title.equals(problem.title)) return false;
-
-    return true;
+    if (!criteria.equals(that.criteria)) return false;
+    if (!alternatives.equals(that.alternatives)) return false;
+    return performanceTable.equals(that.performanceTable);
   }
 
   @Override
   public int hashCode() {
-    int result = title.hashCode();
+    int result = criteria.hashCode();
     result = 31 * result + alternatives.hashCode();
-    result = 31 * result + criteria.hashCode();
     result = 31 * result + performanceTable.hashCode();
     return result;
   }

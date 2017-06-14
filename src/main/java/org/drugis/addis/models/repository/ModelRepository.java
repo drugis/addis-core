@@ -6,6 +6,7 @@ import org.drugis.addis.models.exceptions.InvalidModelException;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by daan on 22-5-14.
@@ -18,7 +19,7 @@ public interface ModelRepository {
 
   Model get(Integer modelId) throws IOException;
 
-  List<Model> get(List<Integer> modelIds);
+  List<Model> get(Set<Integer> modelIds);
 
   List<Model> findByAnalysis(Integer networkMetaAnalysisId) throws SQLException;
 

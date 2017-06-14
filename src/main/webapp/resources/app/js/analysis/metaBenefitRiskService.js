@@ -14,7 +14,7 @@ define(['lodash'], function(_) {
           return outcomeWithAnalysis.outcome.isIncluded;
         })
         .map(function(outcomeWithAnalysis) {
-          outcomeWithAnalysis.baselineDistribution = analysis.mbrOutcomeInclusions.find(function(inclusion) {
+          outcomeWithAnalysis.baselineDistribution = analysis.benefitRiskNMAOutcomeInclusions.find(function(inclusion) {
             return inclusion.outcomeId === outcomeWithAnalysis.outcome.id;
           }).baseline;
           return outcomeWithAnalysis;
@@ -26,8 +26,8 @@ define(['lodash'], function(_) {
         return nma.outcome.id === outcome.id;
       });
 
-      var mbrOutcomeInclusion = _.find(analysis.mbrOutcomeInclusions, ['outcomeId', outcome.id]);
-      if (!mbrOutcomeInclusion) {
+      var benefitRiskNMAOutcomeInclusion = _.find(analysis.benefitRiskNMAOutcomeInclusions, ['outcomeId', outcome.id]);
+      if (!benefitRiskNMAOutcomeInclusion) {
         return {
           outcome: outcome,
           networkMetaAnalyses: nmasForOutcome
@@ -35,9 +35,9 @@ define(['lodash'], function(_) {
       }
       var selectedAnalysis = _.find(nmasForOutcome, function(nma) {
         return outcome.id === nma.outcome.id &&
-          mbrOutcomeInclusion.networkMetaAnalysisId === nma.id;
+          benefitRiskNMAOutcomeInclusion.networkMetaAnalysisId === nma.id;
       }) || nmasForOutcome[0];
-      var selectedModel = !selectedAnalysis? undefined : _.find(selectedAnalysis.models, ['id', mbrOutcomeInclusion.modelId]);
+      var selectedModel = !selectedAnalysis? undefined : _.find(selectedAnalysis.models, ['id', benefitRiskNMAOutcomeInclusion.modelId]);
 
       return {
         outcome: outcome,

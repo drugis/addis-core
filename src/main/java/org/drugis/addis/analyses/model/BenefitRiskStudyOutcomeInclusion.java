@@ -5,6 +5,7 @@ import org.hibernate.annotations.Type;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.IdClass;
+import java.io.Serializable;
 import java.net.URI;
 
 /**
@@ -13,7 +14,7 @@ import java.net.URI;
 @Entity
 @IdClass(BenefitRiskStudyOutcomeInclusion.BenefitRiskStudyOutcomeInclusionPK.class)
 public class BenefitRiskStudyOutcomeInclusion {
-  public static class BenefitRiskStudyOutcomeInclusionPK  {
+  public static class BenefitRiskStudyOutcomeInclusionPK implements Serializable {
     protected Integer analysisId;
     protected Integer outcomeId;
     protected URI studyGraphUri;
@@ -56,6 +57,9 @@ public class BenefitRiskStudyOutcomeInclusion {
   @Id
   @Type(type = "org.drugis.addis.util.UriUserType")
   private URI studyGraphUri;
+
+  public BenefitRiskStudyOutcomeInclusion() {
+  }
 
   public BenefitRiskStudyOutcomeInclusion(Integer analysisId, Integer outcomeId, URI studyGraphUri) {
     this.analysisId = analysisId;

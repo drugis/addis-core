@@ -60,26 +60,16 @@ INSERT INTO public.AbstractAnalysis(id, projectId, title) VALUES (-8, 1, 'nma 3'
 INSERT INTO public.AbstractAnalysis(id, projectId, title) VALUES (-7, 2, 'nma task test');
 INSERT INTO public.AbstractAnalysis(id, projectId, title) VALUES (-10, 1, 'metabr 1');
 
-INSERT INTO public.BenefitRiskAnalysis (id, finalized) VALUES (-1, false);
-INSERT INTO public.BenefitRiskAnalysis (id, finalized) VALUES (-2, false);
-INSERT INTO public.BenefitRiskAnalysis (id, finalized) VALUES (-3, false);
-INSERT INTO public.BenefitRiskAnalysis (id, problem, finalized) VALUES (-4, 'singlestudy problem', true);
-
-INSERT INTO public.brOutcomeInclusion(analysisId, outcomeId, studyGraphUri) VALUES (-3, 1, 'http://study.graph.uri');
-INSERT INTO public.brOutcomeInclusion(analysisId, outcomeId, studyGraphUri) VALUES (-3, 2, 'http://study.graph.uri');
-INSERT INTO public.brOutcomeInclusion(analysisId, outcomeId, studyGraphUri) VALUES (-4, 1, 'http://study.graph.uri');
-INSERT INTO public.brOutcomeInclusion(analysisId, outcomeId, studyGraphUri) VALUES (-4, 2, 'http://study.graph.uri');
-
-INSERT INTO public.interventioninclusion (analysisId, interventionId) VALUES (-3, -1);
-INSERT INTO public.interventioninclusion (analysisId, interventionId) VALUES (-3, -2);
-
-INSERT INTO public.interventioninclusion (analysisId, interventionId) VALUES (-4, -1);
-INSERT INTO public.interventioninclusion (analysisId, interventionId) VALUES (-4, -2);
-
 INSERT INTO public.NetworkMetaAnalysis(id, outcomeId) VALUES (-5, 1);
 INSERT INTO public.NetworkMetaAnalysis(id, outcomeId) VALUES (-6, 1);
 INSERT INTO public.NetworkMetaAnalysis(id, outcomeId) VALUES (-8, 1);
 INSERT INTO public.NetworkMetaAnalysis(id) VALUES (-7);
+
+INSERT INTO public.BenefitRiskAnalysis (id, finalized) VALUES (-1, false);
+INSERT INTO public.BenefitRiskAnalysis (id, finalized) VALUES (-2, false);
+INSERT INTO public.BenefitRiskAnalysis (id, finalized) VALUES (-3, false);
+INSERT INTO public.BenefitRiskAnalysis (id, problem, finalized) VALUES (-4, 'singlestudy problem', true);
+INSERT INTO public.BenefitRiskAnalysis (id, finalized) VALUES (-10, FALSE);
 
 INSERT INTO public.model(id, analysisId, title, linearModel, modelType, heterogeneityPrior, burnInIterations, inferenceIterations, thinningFactor, likelihood, link) VALUES (1, -5, 'model title', 'fixed', '{"type": "network"}', '{"type": "automatic"}', 5000, 20000, 10, 'binom', 'logit');
 INSERT INTO public.model(id, analysisId, title, linearModel, modelType, heterogeneityPrior, burnInIterations, inferenceIterations, thinningFactor, likelihood, link, outcomeScale) VALUES (2, -5, 'model title', 'fixed', '{"type": "pairwise", "details": {"to": {id: -1, "name" : "study1"}, "from": {"id": -2, "name": "study2"}}}', '{"type": "variance", "values": {"mean": 2.3, "stdDev": 0.3} }', 5000, 20000, 10,  'binom', 'logit', 2.2);
@@ -89,9 +79,22 @@ INSERT INTO public.model(id, analysisId, taskUrl, title, linearModel, modelType,
 
 UPDATE public.NetworkMetaAnalysis SET primaryModel = 1 WHERE id = -7;
 
-INSERT INTO public.BenefitRiskAnalysis(id, finalized) VALUES (-10, FALSE);
-INSERT INTO public.interventionInclusion(analysisId, interventionId) VALUES (-10, -1);
-INSERT INTO public.brOutcomeInclusion(analysisId, outcomeId, networkMetaAnalysisId, modelId) VALUES (-10, 1, -5, 1);
+INSERT INTO public.BenefitRiskStudyOutcomeInclusion (analysisId, outcomeId, studyGraphUri) VALUES (-2, 1, 'http://study.graph.uri');
+INSERT INTO public.BenefitRiskStudyOutcomeInclusion (analysisId, outcomeId, studyGraphUri) VALUES (-3, 1, 'http://study.graph.uri');
+INSERT INTO public.BenefitRiskStudyOutcomeInclusion (analysisId, outcomeId, studyGraphUri) VALUES (-3, 2, 'http://study.graph.uri');
+INSERT INTO public.BenefitRiskStudyOutcomeInclusion (analysisId, outcomeId, studyGraphUri) VALUES (-4, 1, 'http://study.graph.uri');
+INSERT INTO public.BenefitRiskStudyOutcomeInclusion (analysisId, outcomeId, studyGraphUri) VALUES (-4, 2, 'http://study.graph.uri');
+
+INSERT INTO public.BenefitRiskNMAOutcomeInclusion (analysisId, outcomeId, networkMetaAnalysisId, modelId) VALUES (-2, 1, -5, 1);
+INSERT INTO public.BenefitRiskNMAOutcomeInclusion (analysisId, outcomeId, networkMetaAnalysisId, modelId) VALUES (-10, 1, -5, 1);
+
+INSERT INTO public.interventioninclusion (analysisId, interventionId) VALUES (-2, -1);
+INSERT INTO public.interventioninclusion (analysisId, interventionId) VALUES (-2, -2);
+INSERT INTO public.interventioninclusion (analysisId, interventionId) VALUES (-3, -1);
+INSERT INTO public.interventioninclusion (analysisId, interventionId) VALUES (-3, -2);
+INSERT INTO public.interventioninclusion (analysisId, interventionId) VALUES (-4, -1);
+INSERT INTO public.interventioninclusion (analysisId, interventionId) VALUES (-4, -2);
+INSERT INTO public.interventionInclusion (analysisId, interventionId) VALUES (-10, -1);
 
 INSERT INTO public.subProblem (id, workspaceId, definition, title) VALUES (100, -1, '{}', 'Default');
 INSERT INTO public.subProblem (id, workspaceId, definition, title) VALUES (101, -2, '{}', 'Default');

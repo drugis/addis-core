@@ -96,8 +96,8 @@ define(['angular', 'lodash'], function(angular, _) {
       });
 
       $scope.outcomes = outcomes.map(function(outcome) {
-        var isOutcomeInInclusions = _.find(analysis.mbrOutcomeInclusions, function(mbrOutcomeInclusion) {
-          return mbrOutcomeInclusion.outcomeId === outcome.id;
+        var isOutcomeInInclusions = _.find(analysis.benefitRiskNMAOutcomeInclusions, function(benefitRiskNMAOutcomeInclusion) {
+          return benefitRiskNMAOutcomeInclusion.outcomeId === outcome.id;
         });
         if (isOutcomeInInclusions) {
           outcome.isIncluded = true;
@@ -107,11 +107,11 @@ define(['angular', 'lodash'], function(angular, _) {
     });
 
     function addModelBaseline(analysis, models) {
-      _.forEach(analysis.mbrOutcomeInclusions, function(mbrOutcomeInclusion) {
-        if (!mbrOutcomeInclusion.baseline) {
+      _.forEach(analysis.benefitRiskNMAOutcomeInclusions, function(benefitRiskNMAOutcomeInclusion) {
+        if (!benefitRiskNMAOutcomeInclusion.baseline) {
           // there is no baseline set yet, check if you can use the modelBaseline
           var baselineModel = _.find(models, function(model) {
-            return model.id === mbrOutcomeInclusion.modelId;
+            return model.id === benefitRiskNMAOutcomeInclusion.modelId;
           });
           if (baselineModel && baselineModel.baseline) {
             // there is a model with a baseline, yay
@@ -121,7 +121,7 @@ define(['angular', 'lodash'], function(angular, _) {
                   return interventionInclusion.interventionId === alternative.id;
                 }).name.localeCompare(baselineModel.baseline.baseline.name) === 0;
               })) {
-              mbrOutcomeInclusion.baseline = baselineModel.baseline.baseline;
+              benefitRiskNMAOutcomeInclusion.baseline = baselineModel.baseline.baseline;
             }
           }
         }
@@ -200,13 +200,13 @@ define(['angular', 'lodash'], function(angular, _) {
           },
           setBaselineDistribution: function() {
             return function(baseline) {
-              $scope.analysis.mbrOutcomeInclusions = $scope.analysis.mbrOutcomeInclusions.map(function(mbrOutcomeInclusion) {
-                if (mbrOutcomeInclusion.outcomeId === outcomeWithAnalysis.outcome.id) {
-                  return _.extend(mbrOutcomeInclusion, {
+              $scope.analysis.benefitRiskNMAOutcomeInclusions = $scope.analysis.benefitRiskNMAOutcomeInclusions.map(function(benefitRiskNMAOutcomeInclusion) {
+                if (benefitRiskNMAOutcomeInclusion.outcomeId === outcomeWithAnalysis.outcome.id) {
+                  return _.extend(benefitRiskNMAOutcomeInclusion, {
                     baseline: baseline
                   });
                 } else {
-                  return mbrOutcomeInclusion;
+                  return benefitRiskNMAOutcomeInclusion;
                 }
               });
               var saveCommand = analysisToSaveCommand($scope.analysis);

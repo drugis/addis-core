@@ -7,6 +7,7 @@ import org.drugis.addis.util.ObjectToStringDeserializer;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.IdClass;
+import java.io.Serializable;
 
 /**
  * Created by connor on 26-2-16.
@@ -15,13 +16,14 @@ import javax.persistence.IdClass;
 @IdClass(BenefitRiskNMAOutcomeInclusion.BrOutcomeInclusionPK.class)
 public class BenefitRiskNMAOutcomeInclusion {
 
-  public static class BrOutcomeInclusionPK  {
+  public static class BrOutcomeInclusionPK implements Serializable {
     protected Integer analysisId;
     protected Integer outcomeId;
     protected Integer networkMetaAnalysisId;
     protected Integer modelId;
 
-    public BrOutcomeInclusionPK() {}
+    public BrOutcomeInclusionPK() {
+    }
 
     public BrOutcomeInclusionPK(Integer analysisId, Integer outcomeId, Integer networkMetaAnalysisId, Integer modelId) {
       this.analysisId = analysisId;

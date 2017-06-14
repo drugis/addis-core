@@ -17,6 +17,7 @@ import java.sql.SQLException;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by connor on 23-5-14.
@@ -52,7 +53,7 @@ public class ModelRepositoryImpl implements ModelRepository {
   }
 
   @Override
-  public List<Model> get(List<Integer> modelIds) {
+  public List<Model> get(Set<Integer> modelIds) {
     if(modelIds.isEmpty()) {
       return Collections.emptyList();
     }

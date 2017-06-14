@@ -127,8 +127,6 @@ public class AnalysisController extends AbstractAddisCoreController {
       if (analysis instanceof NetworkMetaAnalysis) {
         return analysisService.updateNetworkMetaAnalysis(user, (NetworkMetaAnalysis) analysis);
       } else if (analysis instanceof BenefitRiskAnalysis) {
-//FIXME: check differences  return updateSingleStudyBenefitRiskAnalysis(user,
-//              projectId, singleStudyBenefitRiskAnalysis, analysisUpdateCommand.getScenarioState());
         return benefitRiskAnalysisService.update(user, projectId, (BenefitRiskAnalysis) analysis,
                 analysisUpdateCommand.getScenarioState());
       }
@@ -150,22 +148,5 @@ public class AnalysisController extends AbstractAddisCoreController {
     projectService.checkOwnership(projectId, principal);
     analysisRepository.setArchived(analysisId, archiveCommand.getIsArchived());
   }
-
-//FIXME: check differences
-//  private SingleStudyBenefitRiskAnalysis updateSingleStudyBenefitRiskAnalysis(Account user,
-//                                                                              Integer projectId, SingleStudyBenefitRiskAnalysis analysis,
-//                                                                              String scenarioState) throws MethodNotAllowedException, ResourceDoesNotExistException {
-//    SingleStudyBenefitRiskAnalysis oldAnalysis = (SingleStudyBenefitRiskAnalysis) analysisRepository.get(analysis.getId());
-//    if (oldAnalysis.getProblem() != null) {
-//      throw new MethodNotAllowedException();
-//    }
-//    projectService.checkProjectExistsAndModifiable(user, analysis.getProjectId());
-//    SingleStudyBenefitRiskAnalysis updatedAnalysis = singleStudyBenefitRiskAnalysisRepository.update(user, analysis);
-//    if (analysis.getProblem() != null) {
-//      subProblemService.createMCDADefaults(projectId, analysis.getId(), scenarioState);
-//    }
-//    return updatedAnalysis;
-//  }
-
 
 }

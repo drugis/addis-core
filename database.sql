@@ -900,27 +900,23 @@ ALTER TABLE effectsTableExclusion RENAME TO effectsTableAlternativeInclusion;
 --changeset reidd:75
 DROP TABLE remarks;
 ALTER TABLE metabenefitriskanalysis RENAME TO benefitriskanalysis;
-CREATE TABLE
 INSERT INTO benefitriskanalysis(id, problem, finalized) SELECT id, problem, CASE WHEN problem IS NULL THEN false ELSE true END FROM SingleStudyBenefitRiskAnalysis;
-ALTER TABLE mbroutcomeinclusion RENAME TO brOutcomeInclusion;
-ALTER TABLE brOutcomeInclusion RENAME COLUMN metabenefitriskanalysisid TO analysisId;
-ALTER TABLE brOutcomeInclusion ADD COLUMN studyGraphUri VARCHAR;
-ALTER TABLE brOutcomeInclusion DROP CONSTRAINT mbrOutcomeInclusion_pkey;
-ALTER TABLE brOutcomeInclusion ALTER COLUMN networkMetaAnalysisId DROP NOT NULL;
-ALTER TABLE brOutcomeInclusion ALTER COLUMN modelId DROP NOT NULL;
-CREATE UNIQUE INDEX metaBrOutcomeInclusion_unique ON brOutcomeInclusion (analysisId, outcomeId, networkMetaAnalysisId, modelId)
-    WHERE networkMetaAnalysisId IS NOT NULL;
-CREATE UNIQUE INDEX ssBrOutcomeInclusion_unique ON brOutcomeInclusion (analysisId, outcomeId, studyGraphUri)
-    WHERE networkMetaAnalysisId IS NULL;
-
-INSERT INTO brOutcomeInclusion (analysisId, studyGraphUri, outcomeId)
+ALTER TABLE mbroutcomeinclusion RENAME TO BenefitRiskNMAOutcomeInclusion;
+CREATE TABLE BenefitRiskStudyOutcomeInclusion(
+    analysisId INT NOT NULL,
+    outcomeId INT NOT NULL,
+    studyGraphUri VARCHAR,
+    PRIMARY KEY(analysisId, outcomeId),
+    FOREIGN KEY(analysisId) REFERENCES BenefitRiskAnalysis(id),
+    FOREIGN KEY(outcomeId) REFERENCES outcome(id)
+);
+ALTER TABLE BenefitRiskNMAOutcomeInclusion RENAME COLUMN metabenefitriskanalysisid TO analysisId;
+INSERT INTO BenefitRiskStudyOutcomeInclusion (analysisId, studyGraphUri, outcomeId)
     SELECT id, studyGraphUri, outcomeId
     FROM SingleStudyBenefitRiskAnalysis INNER JOIN SingleStudyBenefitRiskAnalysis_Outcome ON SingleStudyBenefitRiskAnalysis.id = SingleStudyBenefitRiskAnalysis_Outcome.analysisId;
 DROP TABLE SingleStudyBenefitRiskAnalysis_Outcome;
 DROP TABLE SingleStudyBenefitRiskAnalysis;
 
---rollback DROP INDEX metaBrOutcomeInclusion_unique ;
---rollback DROP INDEX ssBrOutcomeInclusion_unique ;
 --rollback CREATE TABLE SingleStudyBenefitRiskAnalysis (
 --rollback     id INT DEFAULT nextval('shared_analysis_id_seq') NOT NULL,
 --rollback     problem VARCHAR,
@@ -935,11 +931,11 @@ DROP TABLE SingleStudyBenefitRiskAnalysis;
 --rollback     FOREIGN KEY(outcomeId) REFERENCES outcome(id)
 --rollback );
 --rollback INSERT INTO SingleStudyBenefitRiskAnalysis (id, problem, studyGraphUri)
---rollback     SELECT DISTINCT analysisId, problem, studyGraphUri FROM brOutcomeInclusion JOIN BenefitRiskAnalysis
---rollback         ON BenefitRiskAnalysis.id = brOutcomeInclusion.analysisId WHERE networkMetaAnalysisId IS NULL ;
+--rollback     SELECT DISTINCT analysisId, problem, studyGraphUri FROM BenefitRiskStudyOutcomeInclusion JOIN BenefitRiskAnalysis
+--rollback         ON BenefitRiskAnalysis.id = BenefitRiskStudyOutcomeInclusion.analysisId WHERE networkMetaAnalysisId IS NULL ;
 --rollback INSERT INTO SingleStudyBenefitRiskAnalysis_Outcome (analysisId, outcomeId)
 --rollback     SELECT analysisId, outcomeId
---rollback     FROM brOutcomeInclusion WHERE networkMetaAnalysisId IS NULL;
+--rollback     FROM BenefitRiskStudyOutcomeInclusion;
 --rollback DELETE FROM brOutcomeInclusion WHERE networkMetaAnalysisId IS NULL;
 --rollback DELETE FROM benefitRiskAnalysis WHERE id NOT IN (SELECT analysisId FROM brOutcomeInclusion);
 --rollback ALTER TABLE brOutcomeInclusion DROP CONSTRAINT brOutcomeInclusion_pkey;

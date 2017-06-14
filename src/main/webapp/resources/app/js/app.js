@@ -163,10 +163,7 @@ define(
       label: 'Evidence synthesis',
       stateName: 'networkMetaAnalysis'
     }, {
-      label: 'Benefit-risk analysis based on a single study',
-      stateName: 'singleStudyBenefitRisk'
-    }, {
-      label: 'Benefit-risk analysis based on meta-analyses',
+      label: 'Benefit-risk analysis',
       stateName: 'MetaBenefitRiskCreationStep-1'
     }]);
     app.constant('mcdaRootPath', 'app/js/bower_components/mcda-web/app/');
@@ -298,25 +295,6 @@ define(
             templateUrl: 'app/js/project/report/editReport.html',
             controller: 'EditReportController',
             parent: 'project'
-          })
-          .state('singleStudyBenefitRisk', {
-            url: '/users/:userUid/projects/:projectId/ssbr/:analysisId',
-            resolve: {
-              currentAnalysis: ['$stateParams', 'AnalysisResource',
-                function($stateParams, AnalysisResource) {
-                  return AnalysisResource.get($stateParams).$promise;
-                }
-              ],
-              currentProject: ['$stateParams', 'ProjectResource',
-                function($stateParams, ProjectResource) {
-                  return ProjectResource.get({
-                    projectId: $stateParams.projectId
-                  }).$promise;
-                }
-              ]
-            },
-            templateUrl: baseTemplatePath + 'singleStudyBenefitRiskView.html',
-            controller: 'SingleStudyBenefitRiskController'
           })
           .state('networkMetaAnalysisContainer', {
             templateUrl: baseTemplatePath + 'networkMetaAnalysisContainer.html',

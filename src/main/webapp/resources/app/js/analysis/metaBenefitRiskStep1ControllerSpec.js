@@ -91,7 +91,7 @@ define(['angular-mocks'], function(angularMocks) {
         });
 
         analysisDefer.resolve({
-          mbrOutcomeInclusions: []
+          benefitRiskNMAOutcomeInclusions: []
         });
         interventionDefer.resolve([]);
         outcomeDefer.resolve([{}]);
@@ -108,7 +108,7 @@ define(['angular-mocks'], function(angularMocks) {
 
     });
 
-    describe('when updateMbrOutcomeInclusions is called by checking the outcome', function() {
+    describe('when updateBenefitRiskNMAOutcomeInclusions is called by checking the outcome', function() {
       var outcomeWithAnalysis;
       beforeEach(function() {
         outcomeWithAnalysis = {
@@ -130,7 +130,7 @@ define(['angular-mocks'], function(angularMocks) {
         };
         scope.outcomesWithAnalyses = [outcomeWithAnalysis];
 
-        scope.updateMbrOutcomeInclusions(outcomeWithAnalysis);
+        scope.updateBenefitRiskNMAOutcomeInclusions(outcomeWithAnalysis);
       });
 
       it('should select the first analysis belonging to the outcome', function() {
@@ -138,7 +138,7 @@ define(['angular-mocks'], function(angularMocks) {
       });
 
       it('should build the metabenefitrisk analysis inclusions', function() {
-        expect(scope.analysis.mbrOutcomeInclusions).toEqual([{
+        expect(scope.analysis.benefitRiskNMAOutcomeInclusions).toEqual([{
           metaBenefitRiskAnalysisId: 1,
           outcomeId: 3,
           networkMetaAnalysisId: 5,
@@ -147,7 +147,7 @@ define(['angular-mocks'], function(angularMocks) {
       });
     });
 
-    describe('when updateMbrOutcomeInclusions is called by UNchecking the outcome', function() {
+    describe('when updateBenefitRiskNMAOutcomeInclusions is called by UNchecking the outcome', function() {
       var outcomeWithAnalysis;
       beforeEach(function() {
         outcomeWithAnalysis = {
@@ -166,7 +166,7 @@ define(['angular-mocks'], function(angularMocks) {
         };
         scope.analysis = {
           id: 1,
-          mbrOutcomeInclusions: [{
+          benefitRiskNMAOutcomeInclusions: [{
             metaBenefitRiskAnalysisId: 1,
             outcomeId: 3,
             networkMetaAnalysisId: 5
@@ -176,7 +176,7 @@ define(['angular-mocks'], function(angularMocks) {
         };
         scope.outcomesWithAnalyses = [outcomeWithAnalysis];
 
-        scope.updateMbrOutcomeInclusions(outcomeWithAnalysis);
+        scope.updateBenefitRiskNMAOutcomeInclusions(outcomeWithAnalysis);
       });
 
       it('should unselect the analysis belonging to the outcome', function() {
@@ -184,7 +184,7 @@ define(['angular-mocks'], function(angularMocks) {
       });
 
       it('should remove the unchecked outcome', function() {
-        expect(scope.analysis.mbrOutcomeInclusions).toEqual([]);
+        expect(scope.analysis.benefitRiskNMAOutcomeInclusions).toEqual([]);
       });
     });
 

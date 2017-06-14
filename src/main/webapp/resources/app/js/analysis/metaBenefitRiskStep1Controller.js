@@ -7,7 +7,7 @@ define(['lodash', 'angular'], function(_, angular) {
     OutcomeResource, MetaBenefitRiskService, ModelResource, ProjectResource, UserService) {
     // functions
     $scope.updateAlternatives = updateAlternatives;
-    $scope.updateMbrOutcomeInclusions = updateMbrOutcomeInclusions;
+    $scope.updateBenefitRiskNMAOutcomeInclusions = updateBenefitRiskNMAOutcomeInclusions;
     $scope.updateAnalysesInclusions = updateAnalysesInclusions;
     $scope.isOutcomeDisabled = isOutcomeDisabled;
     $scope.updateModelSelection = updateModelSelection;
@@ -76,7 +76,7 @@ define(['lodash', 'angular'], function(_, angular) {
       buildInclusions();
     }
 
-    function updateMbrOutcomeInclusions(changedOutcome) {
+    function updateBenefitRiskNMAOutcomeInclusions(changedOutcome) {
       changeAnalysisSelection(changedOutcome);
       updateAnalysesInclusions(changedOutcome);
     }
@@ -132,8 +132,8 @@ define(['lodash', 'angular'], function(_, angular) {
       setIncludedAlternatives();
 
       $scope.outcomes = outcomes.map(function(outcome) {
-        var isOutcomeInInclusions = analysis.mbrOutcomeInclusions.find(function(mbrOutcomeInclusion) {
-          return mbrOutcomeInclusion.outcomeId === outcome.id;
+        var isOutcomeInInclusions = analysis.benefitRiskNMAOutcomeInclusions.find(function(benefitRiskNMAOutcomeInclusion) {
+          return benefitRiskNMAOutcomeInclusion.outcomeId === outcome.id;
         });
         if (isOutcomeInInclusions) {
           outcome.isIncluded = true;
@@ -187,7 +187,7 @@ define(['lodash', 'angular'], function(_, angular) {
       _.forEach($scope.outcomesWithAnalyses, function(outcomeWithAnalyses) {
         if (!outcomeWithAnalyses.outcome.isIncluded) {
           outcomeWithAnalyses.outcome.isIncluded = true;
-          updateMbrOutcomeInclusions(outcomeWithAnalyses);
+          updateBenefitRiskNMAOutcomeInclusions(outcomeWithAnalyses);
         }
       });
     }
@@ -196,7 +196,7 @@ define(['lodash', 'angular'], function(_, angular) {
       _.forEach($scope.outcomesWithAnalyses, function(outcomeWithAnalyses) {
         if (outcomeWithAnalyses.outcome.isIncluded) {
           outcomeWithAnalyses.outcome.isIncluded = false;
-          updateMbrOutcomeInclusions(outcomeWithAnalyses);
+          updateBenefitRiskNMAOutcomeInclusions(outcomeWithAnalyses);
         }
       });
     }
@@ -254,11 +254,11 @@ define(['lodash', 'angular'], function(_, angular) {
     }
 
     function buildInclusions() {
-      $scope.analysis.mbrOutcomeInclusions = $scope.outcomesWithAnalyses.filter(function(outcomeWithAnalyses) {
+      $scope.analysis.benefitRiskNMAOutcomeInclusions = $scope.outcomesWithAnalyses.filter(function(outcomeWithAnalyses) {
         return outcomeWithAnalyses.outcome.isIncluded;
       }).map(function(outcomeWithAnalyses) {
         return {
-          metaBenefitRiskAnalysisId: $scope.analysis.id,
+          analysisId: $scope.analysis.id,
           outcomeId: outcomeWithAnalyses.outcome.id,
           networkMetaAnalysisId: outcomeWithAnalyses.selectedAnalysis.id,
           modelId: outcomeWithAnalyses.selectedModel.id

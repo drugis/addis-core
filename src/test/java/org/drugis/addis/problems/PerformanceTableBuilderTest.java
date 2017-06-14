@@ -94,12 +94,12 @@ public class PerformanceTableBuilderTest {
 
     ContinuousMeasurementEntry continuousMeasurementEntry = (ContinuousMeasurementEntry) performanceTable.get(0);
     assertEquals(alternativeUri1.toString(), continuousMeasurementEntry.getAlternative());
-    assertEquals(criterionUri1, continuousMeasurementEntry.getCriterion());
+    assertEquals(criterionUri1.toString(), continuousMeasurementEntry.getCriterion());
     assertEquals(ContinuousPerformance.DNORM, continuousMeasurementEntry.getPerformance().getType());
 
     RateMeasurementEntry rateMeasurementEntry = (RateMeasurementEntry) performanceTable.get(1);
     assertEquals(alternativeUri2.toString(), rateMeasurementEntry.getAlternative());
-    assertEquals(criterionUri2, rateMeasurementEntry.getCriterion());
+    assertEquals(criterionUri2.toString(), rateMeasurementEntry.getCriterion());
     assertEquals(RatePerformance.DBETA, rateMeasurementEntry.getPerformance().getType());
 
     Integer expectedAlpha = dichotomousMeasurement.getRate() + 1;

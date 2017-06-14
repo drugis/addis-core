@@ -94,7 +94,6 @@ public class BenefitRiskAnalysis extends AbstractAnalysis implements Serializabl
     this.benefitRiskStudyOutcomeInclusions.addAll(benefitRiskStudyOutcomeInclusions);
   }
 
-
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
@@ -105,7 +104,8 @@ public class BenefitRiskAnalysis extends AbstractAnalysis implements Serializabl
 
     if (finalized != that.finalized) return false;
     if (problem != null ? !problem.equals(that.problem) : that.problem != null) return false;
-    return benefitRiskNMAOutcomeInclusions.equals(that.benefitRiskNMAOutcomeInclusions);
+    if (!benefitRiskNMAOutcomeInclusions.equals(that.benefitRiskNMAOutcomeInclusions)) return false;
+    return benefitRiskStudyOutcomeInclusions.equals(that.benefitRiskStudyOutcomeInclusions);
   }
 
   @Override
@@ -114,6 +114,7 @@ public class BenefitRiskAnalysis extends AbstractAnalysis implements Serializabl
     result = 31 * result + (finalized ? 1 : 0);
     result = 31 * result + (problem != null ? problem.hashCode() : 0);
     result = 31 * result + benefitRiskNMAOutcomeInclusions.hashCode();
+    result = 31 * result + benefitRiskStudyOutcomeInclusions.hashCode();
     return result;
   }
 }

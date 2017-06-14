@@ -1,5 +1,6 @@
 package org.drugis.addis.models.service;
 
+import com.google.common.collect.Sets;
 import net.minidev.json.JSONObject;
 import org.drugis.addis.TestUtils;
 import org.drugis.addis.analyses.model.AbstractAnalysis;
@@ -25,10 +26,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.security.Principal;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
@@ -502,7 +500,7 @@ public class ModelServiceTest {
   public void testGetModels() throws IOException, SQLException, InvalidModelException {
     Integer modelId1 = -1;
     Integer modelId2 = -2;
-    List<Integer> modelIds = Arrays.asList(modelId1, modelId2);
+    Set<Integer> modelIds = Sets.newHashSet(modelId1, modelId2);
     Integer analysisId1 = -10;
     URI taskUri = URI.create("https://patavi.drugis.org/task/taskId1");
     Model modelWithTask = new Model.ModelBuilder(analysisId1, "model 1")

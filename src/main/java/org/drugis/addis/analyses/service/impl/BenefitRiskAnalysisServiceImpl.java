@@ -84,6 +84,7 @@ public class BenefitRiskAnalysisServiceImpl implements BenefitRiskAnalysisServic
     if(storedAnalysis.isFinalized()) {
       throw new MethodNotAllowedException();
     }
+    projectService.checkProjectExistsAndModifiable(user, analysis.getProjectId());
     if(analysis.isFinalized()) {
       AbstractProblem problem = problemService.getProblem(projectId, analysis.getId());
       String problemString = objectMapper.writeValueAsString(problem);
@@ -144,20 +145,20 @@ public class BenefitRiskAnalysisServiceImpl implements BenefitRiskAnalysisServic
       Sets.SetView<InterventionInclusion> difference = Sets.symmetricDifference(Sets.newHashSet(oldAnalysis.getInterventionInclusions()), Sets.newHashSet(analysis.getInterventionInclusions()));
       Integer removedInterventionId = difference.iterator().next().getInterventionId();
       ObjectMapper om = new ObjectMapper();
-      return analysis.getBenefitRiskNMAOutcomeInclusions().stream().map(mbrOutcomeInclusion -> {
-        if (mbrOutcomeInclusion.getBaseline() != null) {
+      return analysis.getBenefitRiskNMAOutcomeInclusions().stream().map(benefitRiskNMAOutcomeInclusion -> {
+        if (benefitRiskNMAOutcomeInclusion.getBaseline() != null) {
           try {
-            JsonNode baseline = om.readTree(mbrOutcomeInclusion.getBaseline());
+            JsonNode baseline = om.readTree(benefitRiskNMAOutcomeInclusion.getBaseline());
             String baselineInterventionName = baseline.get("name").asText();
             AbstractIntervention intervention = interventionRepository.getByProjectIdAndName(analysis.getProjectId(), baselineInterventionName);
             if (intervention.getId().equals(removedInterventionId)) {
-              mbrOutcomeInclusion.setBaseline(null);
+              benefitRiskNMAOutcomeInclusion.setBaseline(null);
             }
           } catch (IOException e) {
-            throw new RuntimeException("Attempt to read baseline " + mbrOutcomeInclusion.getBaseline());
+            throw new RuntimeException("Attempt to read baseline " + benefitRiskNMAOutcomeInclusion.getBaseline());
           }
         }
-        return mbrOutcomeInclusion;
+        return benefitRiskNMAOutcomeInclusion;
       }).collect(Collectors.toList());
     }
     return analysis.getBenefitRiskNMAOutcomeInclusions();

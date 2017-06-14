@@ -35,11 +35,11 @@ public class PerformanceTableBuilder {
     return performanceTable;
   }
 
-  private ContinuousMeasurementEntry createNormalDistributionEntry(Integer interventionId, URI criterionUid, Double mean, Double standardDeviation, Integer sampleSize, Double standardError) {
+  private ContinuousMeasurementEntry createNormalDistributionEntry(Integer interventionId, URI criterionUri, Double mean, Double standardDeviation, Integer sampleSize, Double standardError) {
     Double sigma = standardError != null ? standardError : standardDeviation / Math.sqrt(sampleSize);
 
     ContinuousPerformance performance = new ContinuousPerformance(new ContinuousPerformanceParameters(mean, sigma));
-    return new ContinuousMeasurementEntry(interventionId, criterionUid, performance);
+    return new ContinuousMeasurementEntry(interventionId, criterionUri.toString(), performance);
   }
 
   private RateMeasurementEntry createBetaDistributionEntry(Integer interventonId, URI criterionUri, Integer rate, Integer sampleSize) {
@@ -47,7 +47,7 @@ public class PerformanceTableBuilder {
     int beta = sampleSize - rate + 1;
 
     RatePerformance performance = new RatePerformance(new RatePerformanceParameters(alpha, beta));
-    return new RateMeasurementEntry(interventonId, criterionUri, performance);
+    return new RateMeasurementEntry(interventonId, criterionUri.toString(), performance);
   }
 
 }

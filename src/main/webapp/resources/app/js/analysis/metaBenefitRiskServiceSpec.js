@@ -16,7 +16,7 @@ define(['angular-mocks'], function(angularMocks) {
         };
         var analysis = {
           id: 7,
-          mbrOutcomeInclusions: [{
+          benefitRiskNMAOutcomeInclusions: [{
             outcomeId: 1,
             networkMetaAnalysisId: 3,
             modelId: 1

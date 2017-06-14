@@ -1,26 +1,29 @@
 <div>
-  <a ng-if="analysis.analysisType === 'Benefit-risk analysis based on a single study'" ui-sref="singleStudyBenefitRisk({userUid: user.id, projectId: project.id, analysisId: analysis.id})">View details</a>
-  <a ng-if="analysis.analysisType === 'Benefit-risk analysis based on meta-analyses' && analysis.finalized" ui-sref="metaBenefitRisk({userUid: user.id, projectId: project.id, analysisId: analysis.id})">View details</a>
-  <a ng-if="analysis.analysisType === 'Benefit-risk analysis based on meta-analyses' && !analysis.finalized" ui-sref="MetaBenefitRiskCreationStep-1({userUid: user.id, projectId: project.id, analysisId: analysis.id})">View details</a>
+  <a ng-if="analysis.analysisType === 'Benefit-risk analysis' && analysis.finalized"
+    ui-sref="metaBenefitRisk({userUid: user.id, projectId: project.id, analysisId: analysis.id})">View details</a>
+  <a ng-if="analysis.analysisType === 'Benefit-risk analysis' && !analysis.finalized"
+    ui-sref="MetaBenefitRiskCreationStep-1({userUid: user.id, projectId: project.id, analysisId: analysis.id})">View details</a>
 
-  <div ng-if="analysis.analysisType === 'Benefit-risk analysis based on a single study'">
+  <!--FIXME -->
+  <div ng-if="analysis.analysisType === 'Benefit-risk analysis'">
     <strong>Data source:</strong> <a ui-sref="namespace-study({userUid: user.id, projectId: project.id, studyUuid: dataSource.uid})">{{dataSource.name}}</a>
     <em ng-if="!analysis.studyGraphUri">No study has been selected</em>
   </div>
-  <div ng-if="analysis.analysisType === 'Benefit-risk analysis based on meta-analyses'">
+  <div ng-if="analysis.analysisType === 'Benefit-risk analysis'">
     <strong>Data sources:</strong>
     <ul>
-      <li ng-repeat="outcomeInclusion in analysis.mbrOutcomeInclusions">
+      <li ng-repeat="outcomeInclusion in analysis.benefitRiskNMAOutcomeInclusions.concat(analysis.benefitRiskStudyOutcomeInclusions)">
         {{outcomes[outcomeInclusion.outcomeId].name}}:
         <a ui-sref="networkMetaAnalysis({userUid: user.id, projectId: project.id, analysisId: outcomeInclusion.networkMetaAnalysisId})">
           {{analyses[outcomeInclusion.networkMetaAnalysisId].title}}
         </a> &mdash;
-        <a ui-sref="model({userUid: user.id, projectId: project.id, analysisId: outcomeInclusion.networkMetaAnalysisId, modelId: outcomeInclusion.modelId})" >
+        <a ui-sref="model({userUid: user.id, projectId: project.id, analysisId: outcomeInclusion.networkMetaAnalysisId, modelId: outcomeInclusion.modelId})">
           {{models[outcomeInclusion.modelId].title}}
         </a>
       </li>
     </ul>
   </div>
+  <!-- /FIXME -->
 
   <Strong>Effects table:</Strong>
   <table>

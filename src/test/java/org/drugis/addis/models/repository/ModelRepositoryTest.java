@@ -1,5 +1,6 @@
 package org.drugis.addis.models.repository;
 
+import com.google.common.collect.Sets;
 import net.minidev.json.JSONObject;
 import org.apache.commons.lang3.tuple.Pair;
 import org.drugis.addis.analyses.model.NetworkMetaAnalysis;
@@ -20,6 +21,7 @@ import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import static org.junit.Assert.*;
 
@@ -138,7 +140,7 @@ public class ModelRepositoryTest {
 
   @Test
   public void testGetByModelIds() {
-    List<Integer> modelIds = Arrays.asList(1, 2);
+    Set<Integer> modelIds = Sets.newHashSet(1, 2);
     List<Model> result = modelRepository.get(modelIds);
     assertNotNull(result);
     assertEquals(2, result.size());
@@ -146,7 +148,7 @@ public class ModelRepositoryTest {
 
   @Test
   public void testGetByModelIdsWithEmptyList() {
-    List<Integer> modelIds = Collections.emptyList();
+    Set<Integer> modelIds = Collections.emptySet();
     List<Model> result = modelRepository.get(modelIds);
     assertTrue(result.isEmpty());
   }

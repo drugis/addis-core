@@ -60,7 +60,7 @@ public class BenefitRiskAnalysisRepositoryTest {
     BenefitRiskAnalysis benefitRiskAnalysis = benefitRiskAnalysisRepository.find(analysisId);
     Set<InterventionInclusion> interventionInclusions = Sets.newHashSet(
             new InterventionInclusion(analysisId, -1),
-            new InterventionInclusion(analysisId, 2));
+            new InterventionInclusion(analysisId, -2));
     BenefitRiskAnalysis expectedAnalysis = new BenefitRiskAnalysis(analysisId, 1, "analysis 3", interventionInclusions);
 
     List<BenefitRiskStudyOutcomeInclusion> outcomeInclusions = Arrays.asList(
@@ -72,10 +72,23 @@ public class BenefitRiskAnalysisRepositoryTest {
 
   @Test
   public void testFindHybrid() {
+  int analysisId = -2;
+    BenefitRiskAnalysis benefitRiskAnalysis = benefitRiskAnalysisRepository.find(analysisId);
+    Set<InterventionInclusion> interventionInclusions = Sets.newHashSet(
+            new InterventionInclusion(analysisId, -1),
+            new InterventionInclusion(analysisId, -2));
+    BenefitRiskAnalysis expectedAnalysis = new BenefitRiskAnalysis(analysisId, 1, "analysis 2", interventionInclusions);
 
+    List<BenefitRiskStudyOutcomeInclusion> studyOutcomeInclusions = Collections.singletonList(
+            new BenefitRiskStudyOutcomeInclusion(analysisId, 1, URI.create("http://study.graph.uri")));
+    List<BenefitRiskNMAOutcomeInclusion>  nMAOutcomeInclusions = Collections.singletonList(
+            new BenefitRiskNMAOutcomeInclusion(analysisId, 1,-5,1));
+    expectedAnalysis.setBenefitRiskStudyOutcomeInclusions(studyOutcomeInclusions);
+    expectedAnalysis.setBenefitRiskNMAOutcomeInclusions(nMAOutcomeInclusions);
+    assertEquals(expectedAnalysis, benefitRiskAnalysis);
   }
 
-    @Test
+  @Test
   public void testQuery() {
     int projectId = 1;
     Collection<BenefitRiskAnalysis> brAnalyses = benefitRiskAnalysisRepository.queryByProject(projectId);
@@ -143,7 +156,7 @@ public class BenefitRiskAnalysisRepositoryTest {
     BenefitRiskAnalysis updatedAnalysis = em.find(BenefitRiskAnalysis.class, analysisId);
     assertEquals(Sets.newHashSet(Arrays.asList(newInclusion1, newInclusion2)), Sets.newHashSet(updatedAnalysis.getBenefitRiskNMAOutcomeInclusions()));
 
-    TypedQuery<BenefitRiskNMAOutcomeInclusion> query = em.createQuery("FROM BrOutcomeInclusion WHERE analysisId = :analysisId", BenefitRiskNMAOutcomeInclusion.class);
+    TypedQuery<BenefitRiskNMAOutcomeInclusion> query = em.createQuery("FROM BenefitRiskNMAOutcomeInclusion WHERE analysisId = :analysisId", BenefitRiskNMAOutcomeInclusion.class);
     query.setParameter("analysisId", analysisId);
     List<BenefitRiskNMAOutcomeInclusion> resultList = query.getResultList();
     assertEquals(2, resultList.size());

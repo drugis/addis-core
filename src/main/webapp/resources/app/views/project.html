@@ -258,10 +258,9 @@
                             <span ng-if="analysis.archived"> (archived on: {{analysis.archivedOn}})</span>
                           </td>
                           <td>{{analysis.analysisType}}</td>
-                          <td ng-switch-when="Benefit-risk analysis based on a single study">{{findStudyLabel(analysis)}}
-                          </td>
+                          <td ng-switch-when="Benefit-risk analysis">{{findStudyLabel(analysis)}}</td> <!-- FIXME -->
                           <td ng-switch-when="Evidence synthesis"></td>
-                          <td ng-switch-when="Benefit-risk analysis based on meta-analyses"></td>
+                          <td ng-switch-when="Benefit-risk analysis"></td>
                           <td>
                             <button ng-if="!analysis.archived && editMode.allowEditing" ng-click="archiveAnalysis(analysis)"
                               type="button" class="tiny right info radius" style="margin-bottom:0;">archive</button>

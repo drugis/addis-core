@@ -16,6 +16,7 @@ import org.drugis.addis.interventions.repository.InterventionRepository;
 import org.drugis.addis.interventions.service.impl.InvalidTypeForDoseCheckException;
 import org.drugis.addis.patavitask.repository.UnexpectedNumberOfResultsException;
 import org.drugis.addis.problems.service.ProblemService;
+import org.drugis.addis.projects.service.ProjectService;
 import org.drugis.addis.scenarios.repository.ScenarioRepository;
 import org.drugis.addis.security.Account;
 import org.drugis.addis.subProblems.service.SubProblemService;
@@ -58,6 +59,9 @@ public class BenefitRiskAnalysisServiceTest {
   @Mock
   private EffectsTableRepository effectsTableRepository;
 
+  @Mock
+  private ProjectService projectService;
+
   @InjectMocks
   private BenefitRiskAnalysisService benefitRiskAnalysisService = new BenefitRiskAnalysisServiceImpl();
   private final Account user = new Account("jondoe", "jon", "doe", "e@mail.com");
@@ -95,7 +99,6 @@ public class BenefitRiskAnalysisServiceTest {
     BenefitRiskAnalysis oldAnalysis = new BenefitRiskAnalysis(analysisId, projectId, "tittle");
 
     when(benefitRiskAnalysisRepository.find(analysis.getId())).thenReturn(oldAnalysis);
-
     benefitRiskAnalysisService.update(user, projectId, analysis, "");
 
     verify(benefitRiskAnalysisRepository).find(analysisId);

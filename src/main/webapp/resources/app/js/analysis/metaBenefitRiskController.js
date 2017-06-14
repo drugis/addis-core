@@ -70,8 +70,8 @@ define(['lodash'], function(_) {
       setIncludedAlternatives();
 
       $scope.outcomes = outcomes.map(function(outcome) {
-        var isOutcomeInInclusions = _.find(analysis.mbrOutcomeInclusions, function(mbrOutcomeInclusion) {
-          return mbrOutcomeInclusion.outcomeId === outcome.id;
+        var isOutcomeInInclusions = _.find(analysis.benefitRiskNMAOutcomeInclusions, function(benefitRiskNMAOutcomeInclusion) {
+          return benefitRiskNMAOutcomeInclusion.outcomeId === outcome.id;
         });
         if (isOutcomeInInclusions) {
           outcome.isIncluded = true;
@@ -85,8 +85,6 @@ define(['lodash'], function(_) {
         return alternative.isIncluded;
       });
     }
-
-
 
     function goToDefaultScenario() {
       var params = $stateParams;
