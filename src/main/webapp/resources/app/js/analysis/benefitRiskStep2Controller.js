@@ -4,7 +4,7 @@ define(['angular', 'lodash'], function(angular, _) {
     'AnalysisResource',
     'InterventionResource',
     'OutcomeResource',
-    'MetaBenefitRiskService',
+    'BenefitRiskService',
     'ModelResource',
     'ProblemResource',
     'ScalesService',
@@ -20,7 +20,7 @@ define(['angular', 'lodash'], function(angular, _) {
     AnalysisResource,
     InterventionResource,
     OutcomeResource,
-    MetaBenefitRiskService,
+    BenefitRiskService,
     ModelResource,
     ProblemResource,
     ScalesService,
@@ -83,14 +83,14 @@ define(['angular', 'lodash'], function(angular, _) {
           .filter(function(analysis) {
             return !analysis.archived;
           })
-          .map(_.partial(MetaBenefitRiskService.joinModelsWithAnalysis, models))
-          .map(MetaBenefitRiskService.addModelsGroup);
+          .map(_.partial(BenefitRiskService.joinModelsWithAnalysis, models))
+          .map(BenefitRiskService.addModelsGroup);
         $scope.networkMetaAnalyses = filteredNetworkMetaAnalyses;
 
         analysis = addModelBaseline(analysis, models);
         var saveCommand = analysisToSaveCommand($scope.analysis);
         AnalysisResource.save(saveCommand, function() {
-          $scope.outcomesWithAnalyses = MetaBenefitRiskService.buildOutcomesWithAnalyses(analysis, outcomes, filteredNetworkMetaAnalyses);
+          $scope.outcomesWithAnalyses = BenefitRiskService.buildOutcomesWithAnalyses(analysis, outcomes, filteredNetworkMetaAnalyses);
           resetScales();
         });
       });
@@ -211,7 +211,7 @@ define(['angular', 'lodash'], function(angular, _) {
               });
               var saveCommand = analysisToSaveCommand($scope.analysis);
               AnalysisResource.save(saveCommand).$save().then(function() {
-                $scope.outcomesWithAnalyses = MetaBenefitRiskService.buildOutcomesWithAnalyses($scope.analysis, $scope.outcomes, $scope.networkMetaAnalyses);
+                $scope.outcomesWithAnalyses = BenefitRiskService.buildOutcomesWithAnalyses($scope.analysis, $scope.outcomes, $scope.networkMetaAnalyses);
                 resetScales();
               });
             };
@@ -227,7 +227,7 @@ define(['angular', 'lodash'], function(angular, _) {
             var includedAlternatives = _.filter($scope.alternatives, function(alternative) {
               return alternative.isIncluded;
             });
-            $scope.outcomesWithAnalyses = MetaBenefitRiskService.addScales($scope.outcomesWithAnalyses,
+            $scope.outcomesWithAnalyses = BenefitRiskService.addScales($scope.outcomesWithAnalyses,
               includedAlternatives, result);
           }, function() {
             console.log('ScalesService.getObservedScales error');

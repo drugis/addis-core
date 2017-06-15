@@ -1,10 +1,10 @@
 'use strict';
 define(['lodash', 'angular'], function(_, angular) {
   var dependencies = ['$scope', '$q', '$stateParams', '$state', 'AnalysisResource', 'InterventionResource',
-    'OutcomeResource', 'MetaBenefitRiskService', 'ModelResource', 'ProjectResource', 'UserService'
+    'OutcomeResource', 'BenefitRiskService', 'ModelResource', 'ProjectResource', 'UserService'
   ];
   var MetBenefitRiskStep1Controller = function($scope, $q, $stateParams, $state, AnalysisResource, InterventionResource,
-    OutcomeResource, MetaBenefitRiskService, ModelResource, ProjectResource, UserService) {
+    OutcomeResource, BenefitRiskService, ModelResource, ProjectResource, UserService) {
     // functions
     $scope.updateAlternatives = updateAlternatives;
     $scope.updateBenefitRiskNMAOutcomeInclusions = updateBenefitRiskNMAOutcomeInclusions;
@@ -35,7 +35,7 @@ define(['lodash', 'angular'], function(_, angular) {
     });
 
     function goToStep2() {
-      $state.go('MetaBenefitRiskCreationStep-2', $stateParams);
+      $state.go('BenefitRiskCreationStep-2', $stateParams);
     }
 
     /*
@@ -47,22 +47,22 @@ define(['lodash', 'angular'], function(_, angular) {
     function checkStep1Validity() {
       $scope.step1AlertMessages = [];
       //(1)
-      var numberOfSelectedInterventions = MetaBenefitRiskService.numberOfSelectedInterventions($scope.alternatives);
+      var numberOfSelectedInterventions = BenefitRiskService.numberOfSelectedInterventions($scope.alternatives);
       if (numberOfSelectedInterventions < 2) {
         $scope.step1AlertMessages.push('At least two alternatives must be selected.');
       }
       //(2)
-      var numberOfSelectedOutcomes = MetaBenefitRiskService.numberOfSelectedOutcomes($scope.outcomesWithAnalyses);
+      var numberOfSelectedOutcomes = BenefitRiskService.numberOfSelectedOutcomes($scope.outcomesWithAnalyses);
       if (numberOfSelectedOutcomes < 2) {
         $scope.step1AlertMessages.push('At least two outcomes must be selected.');
       }
       //(3)
-      var isModelWithMissingAlternatives = MetaBenefitRiskService.isModelWithMissingAlternatives($scope.outcomesWithAnalyses);
+      var isModelWithMissingAlternatives = BenefitRiskService.isModelWithMissingAlternatives($scope.outcomesWithAnalyses);
       if (isModelWithMissingAlternatives) {
         $scope.step1AlertMessages.push('A model with missing alternatives is selected');
       }
       //(3)
-      var isModelWithoutResults = MetaBenefitRiskService.isModelWithoutResults($scope.outcomesWithAnalyses);
+      var isModelWithoutResults = BenefitRiskService.isModelWithoutResults($scope.outcomesWithAnalyses);
       if (isModelWithoutResults) {
         $scope.step1AlertMessages.push('A model that has not yet run is selected');
       }
@@ -107,12 +107,12 @@ define(['lodash', 'angular'], function(_, angular) {
           .filter(function(analysis) {
             return !analysis.archived;
           })
-          .map(_.partial(MetaBenefitRiskService.joinModelsWithAnalysis, models))
-          .map(MetaBenefitRiskService.addModelsGroup);
+          .map(_.partial(BenefitRiskService.joinModelsWithAnalysis, models))
+          .map(BenefitRiskService.addModelsGroup);
         $scope.outcomesWithAnalyses = outcomes
-          .map(_.partial(MetaBenefitRiskService.buildOutcomeWithAnalyses, analysis, networkMetaAnalyses))
+          .map(_.partial(BenefitRiskService.buildOutcomeWithAnalyses, analysis, networkMetaAnalyses))
           .map(function(owa) {
-            owa.networkMetaAnalyses = owa.networkMetaAnalyses.sort(MetaBenefitRiskService.compareAnalysesByModels);
+            owa.networkMetaAnalyses = owa.networkMetaAnalyses.sort(BenefitRiskService.compareAnalysesByModels);
             return owa;
           });
         updateMissingAlternativesForAllOutcomes();
@@ -234,7 +234,7 @@ define(['lodash', 'angular'], function(_, angular) {
     }
 
     function updateMissingAlternatives(owa) {
-      owa.selectedModel.missingAlternatives = MetaBenefitRiskService.findMissingAlternatives($scope.analysis.interventionInclusions, owa);
+      owa.selectedModel.missingAlternatives = BenefitRiskService.findMissingAlternatives($scope.analysis.interventionInclusions, owa);
       owa.selectedModel.missingAlternativesNames = _.map(owa.selectedModel.missingAlternatives, 'name');
     }
 

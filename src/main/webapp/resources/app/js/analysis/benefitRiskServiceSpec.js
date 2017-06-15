@@ -1,12 +1,12 @@
 'use strict';
 define(['angular-mocks'], function(angularMocks) {
-  describe('meta-benefit-risk service', function() {
-    var metaBenefitRiskService;
+  describe('benefit-risk service', function() {
+    var benefitRiskService;
 
     beforeEach(angularMocks.module('addis.analysis'));
 
-    beforeEach(inject(function(MetaBenefitRiskService) {
-      metaBenefitRiskService = MetaBenefitRiskService;
+    beforeEach(inject(function(BenefitRiskService) {
+      benefitRiskService = BenefitRiskService;
     }));
 
     describe('buildOutcomeWithAnalyses', function() {
@@ -61,7 +61,7 @@ define(['angular-mocks'], function(angularMocks) {
           selectedModel: models[0]
         };
 
-        var resultIncluded = metaBenefitRiskService.buildOutcomeWithAnalyses(analysis, networkMetaAnalyses, outcome1);
+        var resultIncluded = benefitRiskService.buildOutcomeWithAnalyses(analysis, networkMetaAnalyses, outcome1);
         expect(resultIncluded).toEqual(expectedResult);
       });
     });
@@ -78,7 +78,7 @@ define(['angular-mocks'], function(angularMocks) {
         var analysis = {
           id: 1
         };
-        var result = metaBenefitRiskService.joinModelsWithAnalysis(models, analysis);
+        var result = benefitRiskService.joinModelsWithAnalysis(models, analysis);
         expect(result.models).toEqual([models[0], models[2]]);
       });
     });
@@ -91,8 +91,8 @@ define(['angular-mocks'], function(angularMocks) {
         var b = {
           models: []
         };
-        expect(metaBenefitRiskService.compareAnalysesByModels(a, b)).toBe(-1);
-        expect(metaBenefitRiskService.compareAnalysesByModels(b, a)).toBe(1);
+        expect(benefitRiskService.compareAnalysesByModels(a, b)).toBe(-1);
+        expect(benefitRiskService.compareAnalysesByModels(b, a)).toBe(1);
       });
       it('should do nothing if both analyses have models', function() {
         var a = {
@@ -101,8 +101,8 @@ define(['angular-mocks'], function(angularMocks) {
         var b = {
           models: [1]
         };
-        expect(metaBenefitRiskService.compareAnalysesByModels(a, b)).toBe(0);
-        expect(metaBenefitRiskService.compareAnalysesByModels(b, a)).toBe(0);
+        expect(benefitRiskService.compareAnalysesByModels(a, b)).toBe(0);
+        expect(benefitRiskService.compareAnalysesByModels(b, a)).toBe(0);
       });
       it('should do nothing if neither analysis has a model', function() {
         var a = {
@@ -111,15 +111,15 @@ define(['angular-mocks'], function(angularMocks) {
         var b = {
           models: []
         };
-        expect(metaBenefitRiskService.compareAnalysesByModels(a, b)).toBe(0);
-        expect(metaBenefitRiskService.compareAnalysesByModels(b, a)).toBe(0);
+        expect(benefitRiskService.compareAnalysesByModels(a, b)).toBe(0);
+        expect(benefitRiskService.compareAnalysesByModels(b, a)).toBe(0);
       });
     });
 
     describe('addModelsGroup', function() {
       it('should decorate the models with their group', function() {
 
-        var result = metaBenefitRiskService.addModelsGroup({
+        var result = benefitRiskService.addModelsGroup({
           primaryModel: 1,
           models: [{
             id: 1
@@ -149,7 +149,7 @@ define(['angular-mocks'], function(angularMocks) {
         }, {
           isIncluded: true
         }];
-        expect(metaBenefitRiskService.numberOfSelectedInterventions(alternatives)).toBe(2);
+        expect(benefitRiskService.numberOfSelectedInterventions(alternatives)).toBe(2);
       });
     });
 
@@ -190,7 +190,7 @@ define(['angular-mocks'], function(angularMocks) {
             archived: false
           }
         }];
-        expect(metaBenefitRiskService.numberOfSelectedOutcomes(outcomesWithAnalyses)).toBe(1);
+        expect(benefitRiskService.numberOfSelectedOutcomes(outcomesWithAnalyses)).toBe(1);
       });
     });
 
@@ -218,7 +218,7 @@ define(['angular-mocks'], function(angularMocks) {
             missingAlternatives: []
           }
         }];
-        expect(metaBenefitRiskService.isModelWithMissingAlternatives(outcomesWithAnalyses)).toBeTruthy();
+        expect(benefitRiskService.isModelWithMissingAlternatives(outcomesWithAnalyses)).toBeTruthy();
       });
       it('should return false if none of the selected outcomes has a model with missing alternatives', function() {
         var outcomesWithAnalyses = [{
@@ -243,7 +243,7 @@ define(['angular-mocks'], function(angularMocks) {
             missingAlternatives: []
           }
         }];
-        expect(metaBenefitRiskService.isModelWithMissingAlternatives(outcomesWithAnalyses)).toBeFalsy();
+        expect(benefitRiskService.isModelWithMissingAlternatives(outcomesWithAnalyses)).toBeFalsy();
       });
     });
 
@@ -271,7 +271,7 @@ define(['angular-mocks'], function(angularMocks) {
             runStatus: 'done'
           }
         }];
-        expect(metaBenefitRiskService.isModelWithoutResults(outcomesWithAnalyses)).toBeTruthy();
+        expect(benefitRiskService.isModelWithoutResults(outcomesWithAnalyses)).toBeTruthy();
       });
       it('should return false if none of the selected outcomes has a model with missing results', function() {
         var outcomesWithAnalyses = [{
@@ -289,7 +289,7 @@ define(['angular-mocks'], function(angularMocks) {
             runStatus: 'done'
           }
         }];
-        expect(metaBenefitRiskService.isModelWithoutResults(outcomesWithAnalyses)).toBeFalsy();
+        expect(benefitRiskService.isModelWithoutResults(outcomesWithAnalyses)).toBeFalsy();
       });
     });
     describe('findMissingAlternatives for a pairwise analysis', function() {
@@ -319,7 +319,7 @@ define(['angular-mocks'], function(angularMocks) {
             }
           }
         };
-        var result = metaBenefitRiskService.findMissingAlternatives(interventionInclusions, owa);
+        var result = benefitRiskService.findMissingAlternatives(interventionInclusions, owa);
         expect(result).toEqual(expectedResult);
       });
     });
@@ -349,7 +349,7 @@ define(['angular-mocks'], function(angularMocks) {
             }]
           }
         };
-        var result = metaBenefitRiskService.findMissingAlternatives(interventionInclusions, owa);
+        var result = benefitRiskService.findMissingAlternatives(interventionInclusions, owa);
         expect(result).toEqual(expectedResult);
       });
     });
@@ -447,7 +447,7 @@ define(['angular-mocks'], function(angularMocks) {
           }
         }];
 
-        var result = metaBenefitRiskService.addScales(owas, alternatives, scaleResults);
+        var result = benefitRiskService.addScales(owas, alternatives, scaleResults);
         expect(result.length).toBe(owas.length);
         expect(result[0].scales).not.toBeNull();
         expect(result).toEqual(expected);

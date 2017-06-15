@@ -1,6 +1,6 @@
 'use strict';
 define(['angular-mocks'], function(angularMocks) {
-  describe('meta benefit-risk step 1 controller', function() {
+  describe('benefit-risk step 1 controller', function() {
 
     var scope, q,
       stateParamsMock = {
@@ -18,7 +18,7 @@ define(['angular-mocks'], function(angularMocks) {
       outcomeDefer,
       modelsDefer,
       projectDefer,
-      metaBenefitRiskService = jasmine.createSpyObj('MetaBenefitRiskService', [
+      benefitRiskService = jasmine.createSpyObj('BenefitRiskService', [
         'addModelsGroup',
         'compareAnalysesByModels',
         'joinModelsWithAnalysis',
@@ -63,10 +63,10 @@ define(['angular-mocks'], function(angularMocks) {
       });
       userServiceMock.isLoginUserId.and.returnValue(true);
 
-      metaBenefitRiskService.compareAnalysesByModels.and.returnValue(0);
-      metaBenefitRiskService.joinModelsWithAnalysis.and.returnValue([]);
+      benefitRiskService.compareAnalysesByModels.and.returnValue(0);
+      benefitRiskService.joinModelsWithAnalysis.and.returnValue([]);
 
-      $controller('MetaBenefitRiskStep1Controller', {
+      $controller('BenefitRiskStep1Controller', {
         $scope: scope,
         $q: q,
         $stateParams: stateParamsMock,
@@ -76,7 +76,7 @@ define(['angular-mocks'], function(angularMocks) {
         AnalysisResource: analysisResourceMock,
         InterventionResource: interventionResourceMock,
         OutcomeResource: outcomeResourceMock,
-        MetaBenefitRiskService: metaBenefitRiskService,
+        BenefitRiskService: benefitRiskService,
         ModelResource: modelResourceMock,
         ProjectResource: projectResourceMock,
         UserService: userServiceMock
@@ -86,7 +86,7 @@ define(['angular-mocks'], function(angularMocks) {
 
     describe('when the analysis, outcomes and alternatives are loaded', function() {
       beforeEach(function() {
-        metaBenefitRiskService.buildOutcomeWithAnalyses.and.returnValue({
+        benefitRiskService.buildOutcomeWithAnalyses.and.returnValue({
           networkMetaAnalyses: []
         });
 
@@ -101,9 +101,9 @@ define(['angular-mocks'], function(angularMocks) {
       });
 
       it('should build the outcomesWithAnalyses', function() {
-        expect(metaBenefitRiskService.joinModelsWithAnalysis).toHaveBeenCalled();
-        expect(metaBenefitRiskService.addModelsGroup).toHaveBeenCalled();
-        expect(metaBenefitRiskService.buildOutcomeWithAnalyses).toHaveBeenCalled();
+        expect(benefitRiskService.joinModelsWithAnalysis).toHaveBeenCalled();
+        expect(benefitRiskService.addModelsGroup).toHaveBeenCalled();
+        expect(benefitRiskService.buildOutcomeWithAnalyses).toHaveBeenCalled();
       });
 
     });
@@ -137,9 +137,9 @@ define(['angular-mocks'], function(angularMocks) {
         expect(outcomeWithAnalysis.selectedAnalysis.id).toBe(5);
       });
 
-      it('should build the metabenefitrisk analysis inclusions', function() {
+      it('should build the benefitrisk analysis inclusions', function() {
         expect(scope.analysis.benefitRiskNMAOutcomeInclusions).toEqual([{
-          metaBenefitRiskAnalysisId: 1,
+          benefitRiskAnalysisId: 1,
           outcomeId: 3,
           networkMetaAnalysisId: 5,
           modelId: 1
@@ -167,7 +167,7 @@ define(['angular-mocks'], function(angularMocks) {
         scope.analysis = {
           id: 1,
           benefitRiskNMAOutcomeInclusions: [{
-            metaBenefitRiskAnalysisId: 1,
+            benefitRiskAnalysisId: 1,
             outcomeId: 3,
             networkMetaAnalysisId: 5
           }],

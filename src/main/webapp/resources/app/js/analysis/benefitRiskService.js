@@ -1,7 +1,7 @@
 'use strict';
 define(['lodash'], function(_) {
   var dependencies = [];
-  var MetaBenefitRiskAnalysisService = function() {
+  var BenefitRiskAnalysisService = function() {
 
     function buildOutcomesWithAnalyses(analysis, outcomes, networkMetaAnalyses) {
       return outcomes
@@ -144,5 +144,5 @@ define(['lodash'], function(_) {
     };
   };
 
-  return dependencies.concat(MetaBenefitRiskAnalysisService);
+  return dependencies.concat(BenefitRiskAnalysisService);
 });

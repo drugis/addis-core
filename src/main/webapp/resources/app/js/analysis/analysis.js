@@ -8,12 +8,11 @@ define(function (require) {
     dependencies)
     // controllers
     .controller('AddAnalysisController', require('analysis/addAnalysisController'))
-    .controller('MetaBenefitRiskStep1Controller', require('analysis/metaBenefitRiskStep1Controller'))
-    .controller('MetaBenefitRiskStep2Controller', require('analysis/metaBenefitRiskStep2Controller'))
+    .controller('BenefitRiskStep1Controller', require('analysis/benefitRiskStep1Controller'))
+    .controller('BenefitRiskStep2Controller', require('analysis/benefitRiskStep2Controller'))
     .controller('BenefitRiskController', require('analysis/benefitRiskController'))
-    .controller('MetaBenefitRiskController', require('analysis/metaBenefitRiskController'))
     //services
-    .factory('MetaBenefitRiskService', require('analysis/metaBenefitRiskService'))
+    .factory('BenefitRiskService', require('analysis/benefitRiskService'))
     //filter
 
     ;

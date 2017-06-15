@@ -232,7 +232,7 @@ define(['lodash', 'angular'], function(_, angular) {
       }));
 
       if (analysisType.label === 'Benefit-risk analysis' && analysis.finalized) {
-        analysisType.stateName = 'metaBenefitRisk';
+        analysisType.stateName = 'BenefitRisk';
       }
 
       $state.go(analysisType.stateName, {
