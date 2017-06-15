@@ -465,7 +465,7 @@ define(
           // mcda states
           .state('benefitRisk', {
             abstract: true,
-            controller: 'BenefitRiskController',
+            controller: 'AbstractBenefitRiskController',
             url: '/users/:userUid/projects/:projectId/benefitRisk/:analysisId',
             templateUrl: 'app/js/analysis/benefitRiskContainer.html',
             resolve: {

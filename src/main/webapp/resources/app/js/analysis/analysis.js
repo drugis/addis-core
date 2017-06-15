@@ -11,6 +11,7 @@ define(function (require) {
     .controller('BenefitRiskStep1Controller', require('analysis/benefitRiskStep1Controller'))
     .controller('BenefitRiskStep2Controller', require('analysis/benefitRiskStep2Controller'))
     .controller('BenefitRiskController', require('analysis/benefitRiskController'))
+    .controller('AbstractBenefitRiskController', require('analysis/abstractBenefitRiskController'))
     //services
     .factory('BenefitRiskService', require('analysis/benefitRiskService'))
     //filter
