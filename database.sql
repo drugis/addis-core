@@ -939,6 +939,7 @@ DROP TABLE SingleStudyBenefitRiskAnalysis;
 --rollback DROP TABLE BenefitRiskStudyOutcomeInclusion;
 --rollback DELETE FROM benefitRiskAnalysis WHERE id NOT IN (SELECT analysisId FROM BenefitRiskNMAOutcomeInclusion);
 --rollback ALTER TABLE BenefitRiskNMAOutcomeInclusion RENAME COLUMN analysisId TO metaBenefitRiskAnalysisId;
+--rollback ALTER TABLE BenefitRiskNMAOutcomeInclusion RENAME TO mBROutcomeInclusion;
 --rollback ALTER TABLE benefitRiskAnalysis RENAME TO metabenefitriskanalysis;
 --rollback CREATE TABLE remarks (
 --rollback   analysisId INT NOT NULL,
