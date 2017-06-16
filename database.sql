@@ -932,17 +932,13 @@ DROP TABLE SingleStudyBenefitRiskAnalysis;
 --rollback );
 --rollback INSERT INTO SingleStudyBenefitRiskAnalysis (id, problem, studyGraphUri)
 --rollback     SELECT DISTINCT analysisId, problem, studyGraphUri FROM BenefitRiskStudyOutcomeInclusion JOIN BenefitRiskAnalysis
---rollback         ON BenefitRiskAnalysis.id = BenefitRiskStudyOutcomeInclusion.analysisId WHERE networkMetaAnalysisId IS NULL ;
+--rollback         ON BenefitRiskAnalysis.id = BenefitRiskStudyOutcomeInclusion.analysisId;
 --rollback INSERT INTO SingleStudyBenefitRiskAnalysis_Outcome (analysisId, outcomeId)
 --rollback     SELECT analysisId, outcomeId
 --rollback     FROM BenefitRiskStudyOutcomeInclusion;
---rollback DELETE FROM brOutcomeInclusion WHERE networkMetaAnalysisId IS NULL;
---rollback DELETE FROM benefitRiskAnalysis WHERE id NOT IN (SELECT analysisId FROM brOutcomeInclusion);
---rollback ALTER TABLE brOutcomeInclusion DROP CONSTRAINT brOutcomeInclusion_pkey;
---rollback ALTER TABLE brOutcomeInclusion DROP COLUMN studyGraphUri;
---rollback ALTER TABLE brOutcomeInclusion RENAME TO mbrOutcomeInclusion;
---rollback ALTER TABLE mbrOutcomeInclusion RENAME COLUMN analysisId TO metaBenefitRiskAnalysisId;
---rollback ALTER TABLE mbrOutcomeInclusion ADD PRIMARY KEY (metaBenefitRiskAnalysisId, outcomeId, networkMetaAnalysisId, modelId);
+--rollback DROP TABLE BenefitRiskStudyOutcomeInclusion;
+--rollback DELETE FROM benefitRiskAnalysis WHERE id NOT IN (SELECT analysisId FROM BenefitRiskNMAOutcomeInclusion);
+--rollback ALTER TABLE BenefitRiskNMAOutcomeInclusion RENAME COLUMN analysisId TO metaBenefitRiskAnalysisId;
 --rollback ALTER TABLE benefitRiskAnalysis RENAME TO metabenefitriskanalysis;
 --rollback CREATE TABLE remarks (
 --rollback   analysisId INT NOT NULL,
