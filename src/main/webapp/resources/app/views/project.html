@@ -241,7 +241,6 @@
                       <tr>
                         <th>Name</th>
                         <th>Analysis type</th>
-                        <th>Data source</th>
                         <th>
                           <button ng-disabled="numberOfAnalysesArchived === 0" ng-hide="!analysesLoaded" class="button secondary small right ng-binding no-margin"
                             ng-click="toggleShowArchived()" style=""><i class="fa fa-eye"></i> {{showArchived? 'Hide' :'Show'}}
@@ -258,9 +257,6 @@
                             <span ng-if="analysis.archived"> (archived on: {{analysis.archivedOn}})</span>
                           </td>
                           <td>{{analysis.analysisType}}</td>
-                          <td ng-switch-when="Benefit-risk analysis">{{findStudyLabel(analysis)}}</td> <!-- FIXME -->
-                          <td ng-switch-when="Evidence synthesis"></td>
-                          <td ng-switch-when="Benefit-risk analysis"></td>
                           <td>
                             <button ng-if="!analysis.archived && editMode.allowEditing" ng-click="archiveAnalysis(analysis)"
                               type="button" class="tiny right info radius" style="margin-bottom:0;">archive</button>

@@ -172,9 +172,9 @@ public class ProblemServiceImpl implements ProblemService {
       }
     });
 
-    Map<Integer, AlternativeEntry> alternatives = includedAlternatives
+    Map<String, AlternativeEntry> alternatives = includedAlternatives
             .stream()
-            .collect(Collectors.toMap(AbstractIntervention::getId,
+            .collect(Collectors.toMap(AbstractIntervention::getName,
                     includedAlternative -> new AlternativeEntry(includedAlternative.getId(), includedAlternative.getName())));
 
     final Map<String, AbstractIntervention> includedInterventionsByName = includedAlternatives
@@ -489,7 +489,7 @@ public class ProblemServiceImpl implements ProblemService {
     }
     TrialDataStudy trialDataStudy = singleStudyMeasurements.get(0);
 
-    Map<Integer, AlternativeEntry> alternatives = new HashMap<>();
+    Map<String, AlternativeEntry> alternatives = new HashMap<>();
     Map<URI, CriterionEntry> criteria = new HashMap<>();
     Set<Pair<Measurement, Integer>> measurementDrugInstancePairs = new HashSet<>();
     for (TrialDataArm arm : trialDataStudy.getTrialDataArms()) {
@@ -505,7 +505,7 @@ public class ProblemServiceImpl implements ProblemService {
 
         arm.setMatchedProjectInterventionIds(ImmutableSet.of(matchedProjectInterventionId));
         String alternativeName = alternativeToInterventionMap.get(matchedProjectInterventionId.toString()).getName();
-        alternatives.put(matchedProjectInterventionId, new AlternativeEntry(matchedProjectInterventionId, alternativeName));
+        alternatives.put(alternativeName, new AlternativeEntry(matchedProjectInterventionId, alternativeName));
       } else if (matchingIncludedInterventions.size() > 1) {
         throw new RuntimeException("too many matched interventions for arm when creating problem");
       }

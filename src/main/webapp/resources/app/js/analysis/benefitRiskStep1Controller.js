@@ -1,19 +1,24 @@
 'use strict';
 define(['lodash', 'angular'], function(_, angular) {
-  var dependencies = ['$scope', '$q', '$stateParams', '$state', 'AnalysisResource', 'InterventionResource',
-    'OutcomeResource', 'BenefitRiskService', 'ModelResource', 'ProjectResource', 'UserService'
+  var dependencies = ['$scope', '$q', '$stateParams', '$state',
+    'ProjectStudiesResource',
+    'AnalysisResource', 'InterventionResource',
+    'OutcomeResource', 'BenefitRiskService',
+    'ModelResource', 'ProjectResource', 'UserService', 'SingleStudyBenefitRiskService'
   ];
-  var MetBenefitRiskStep1Controller = function($scope, $q, $stateParams, $state, AnalysisResource, InterventionResource,
-    OutcomeResource, BenefitRiskService, ModelResource, ProjectResource, UserService) {
+  var MetBenefitRiskStep1Controller = function($scope, $q, $stateParams, $state,
+    ProjectStudiesResource,
+    AnalysisResource, InterventionResource,
+    OutcomeResource, BenefitRiskService,
+    ModelResource, ProjectResource, UserService, SingleStudyBenefitRiskService) {
     // functions
-    $scope.updateAlternatives = updateAlternatives;
+    $scope.addedAlternative = addedAlternative;
+    $scope.removedAlternative = removedAlternative;
     $scope.updateBenefitRiskNMAOutcomeInclusions = updateBenefitRiskNMAOutcomeInclusions;
     $scope.updateAnalysesInclusions = updateAnalysesInclusions;
     $scope.isOutcomeDisabled = isOutcomeDisabled;
     $scope.updateModelSelection = updateModelSelection;
     $scope.goToStep2 = goToStep2;
-    $scope.selectAllAlternatives = selectAllAlternatives;
-    $scope.deselectAllAlternatives = deselectAllAlternatives;
     $scope.selectAllOutcomes = selectAllOutcomes;
     $scope.deselectAllOutcomes = deselectAllOutcomes;
 
@@ -23,6 +28,9 @@ define(['lodash', 'angular'], function(_, angular) {
     $scope.outcomes = OutcomeResource.query($stateParams);
     $scope.models = ModelResource.getConsistencyModels($stateParams);
     $scope.project = ProjectResource.get($stateParams);
+    var studiesPromise = ProjectStudiesResource.query({
+      projectId: $stateParams.projectId
+    }).$promise;
     $scope.userId = $stateParams.userUid;
 
     $scope.editMode = {
@@ -47,8 +55,7 @@ define(['lodash', 'angular'], function(_, angular) {
     function checkStep1Validity() {
       $scope.step1AlertMessages = [];
       //(1)
-      var numberOfSelectedInterventions = BenefitRiskService.numberOfSelectedInterventions($scope.alternatives);
-      if (numberOfSelectedInterventions < 2) {
+      if ($scope.includedAlternatives.length < 2) {
         $scope.step1AlertMessages.push('At least two alternatives must be selected.');
       }
       //(2)
@@ -77,7 +84,11 @@ define(['lodash', 'angular'], function(_, angular) {
     }
 
     function updateBenefitRiskNMAOutcomeInclusions(changedOutcome) {
-      changeAnalysisSelection(changedOutcome);
+      if (hasSelectableAnalysis(changedOutcome) && changedOutcome.outcome.isIncluded) {
+        changedOutcome.selectedAnalysis = changedOutcome.networkMetaAnalyses[0];
+      } else {
+        changedOutcome.selectedAnalysis = undefined;
+      }
       updateAnalysesInclusions(changedOutcome);
     }
 
@@ -88,17 +99,27 @@ define(['lodash', 'angular'], function(_, angular) {
       buildInclusions();
     }
 
-    var promises = [$scope.analysis.$promise, $scope.alternatives.$promise, $scope.outcomes.$promise, $scope.models.$promise];
+    var promises = [$scope.analysis.$promise, $scope.alternatives.$promise, $scope.outcomes.$promise, $scope.models.$promise,
+      studiesPromise
+    ];
 
     $q.all(promises).then(function(result) {
       var analysis = result[0];
       var alternatives = result[1];
       var outcomes = result[2];
       var models = _.reject(result[3], 'archived');
+      var studies = result[4];
+
       var outcomeIds = outcomes.map(function(outcome) {
         return outcome.id;
       });
 
+      $scope.studies = studies;
+      $scope.studyArrayLength = studies.length;
+
+      // $scope.studyModel.selectedStudy = _.find(studies, function(study) {
+      //   return study.studyUri === $scope.analysis.studyGraphUri;
+      // });
       AnalysisResource.query({
         projectId: $stateParams.projectId,
         outcomeIds: outcomeIds
@@ -116,20 +137,19 @@ define(['lodash', 'angular'], function(_, angular) {
             return owa;
           });
         updateMissingAlternativesForAllOutcomes();
+
+        updateStudyMissingStuff();
         // when view setup is completed
         checkStep1Validity();
       });
 
-      $scope.alternatives = alternatives.map(function(alternative) {
-        var isAlternativeInInclusions = analysis.interventionInclusions.find(function(includedAlternative) {
+      $scope.alternatives = alternatives;
+
+      $scope.includedAlternatives = alternatives.filter(function(alternative) {
+        return analysis.interventionInclusions.find(function(includedAlternative) {
           return includedAlternative.interventionId === alternative.id;
         });
-        if (isAlternativeInInclusions) {
-          alternative.isIncluded = true;
-        }
-        return alternative;
       });
-      setIncludedAlternatives();
 
       $scope.outcomes = outcomes.map(function(outcome) {
         var isOutcomeInInclusions = analysis.benefitRiskNMAOutcomeInclusions.find(function(benefitRiskNMAOutcomeInclusion) {
@@ -142,74 +162,57 @@ define(['lodash', 'angular'], function(_, angular) {
       });
     });
 
+    function updateStudyMissingStuff() {
+      $scope.studies = SingleStudyBenefitRiskService.addMissingOutcomesToStudies($scope.studies, $scope.outcomesWithAnalyses);
+      $scope.studies = SingleStudyBenefitRiskService.addMissingInterventionsToStudies($scope.studies, $scope.includedAlternatives);
+      SingleStudyBenefitRiskService.addHasMatchedMixedTreatmentArm($scope.studies, $scope.alternativeInclusions);
+      $scope.studies = SingleStudyBenefitRiskService.addOverlappingInterventionsToStudies($scope.studies, $scope.alternativeInclusions);
+      SingleStudyBenefitRiskService.recalculateGroup($scope.studies);
+    }
+
     function isOutcomeDisabled(outcomeWithAnalyses) {
       return !outcomeWithAnalyses.networkMetaAnalyses.length ||
         !hasSelectableAnalysis(outcomeWithAnalyses);
     }
 
-    function setIncludedAlternatives() {
-      $scope.analysis.interventionInclusions = $scope.alternatives.filter(function(alternative) {
-        return alternative.isIncluded;
-      });
-    }
-
     function updateMissingAlternativesForAllOutcomes() {
       $scope.outcomesWithAnalyses.filter(function(outcome) {
         return outcome.selectedModel;
-      }).forEach(function(outcome) {
-        updateMissingAlternatives(outcome);
-      });
+      }).forEach(updateMissingAlternatives);
+    }
+
+    function addedAlternative(alternative) {
+      $scope.includedAlternatives.push(alternative);
+      updateAlternatives();
+    }
+
+    function removedAlternative(alternative) {
+      $scope.includedAlternatives.splice($scope.includedAlternatives.indexOf(alternative), 1);
+      updateAlternatives();
     }
 
     function updateAlternatives() {
-      setIncludedAlternatives();
       updateMissingAlternativesForAllOutcomes();
       var saveCommand = analysisToSaveCommand($scope.analysis);
       AnalysisResource.save(saveCommand);
+      updateStudyMissingStuff();
       checkStep1Validity();
     }
 
-    function selectAllAlternatives() {
-      _.forEach($scope.alternatives, function(alternative) {
-        alternative.isIncluded = true;
-      });
-      updateAlternatives();
-    }
-
-    function deselectAllAlternatives() {
-      _.forEach($scope.alternatives, function(alternative) {
-        alternative.isIncluded = false;
-      });
-      updateAlternatives();
-    }
-
     function selectAllOutcomes() {
-      _.forEach($scope.outcomesWithAnalyses, function(outcomeWithAnalyses) {
-        if (!outcomeWithAnalyses.outcome.isIncluded) {
-          outcomeWithAnalyses.outcome.isIncluded = true;
-          updateBenefitRiskNMAOutcomeInclusions(outcomeWithAnalyses);
-        }
+      $scope.outcomesWithAnalyses = $scope.outcomesWithAnalyses.map(function(owa) {
+        owa.isIncluded = true;
+        return owa;
       });
+      updateAllOutcomeInclusions();
     }
 
     function deselectAllOutcomes() {
-      _.forEach($scope.outcomesWithAnalyses, function(outcomeWithAnalyses) {
-        if (outcomeWithAnalyses.outcome.isIncluded) {
-          outcomeWithAnalyses.outcome.isIncluded = false;
-          updateBenefitRiskNMAOutcomeInclusions(outcomeWithAnalyses);
-        }
+      $scope.outcomesWithAnalyses = $scope.outcomesWithAnalyses.map(function(owa) {
+        owa.isIncluded = false;
+        return owa;
       });
-    }
-
-    function changeAnalysisSelection(outcomeWithAnalyses) {
-      var analysis;
-      if (hasSelectableAnalysis(outcomeWithAnalyses) && outcomeWithAnalyses.outcome.isIncluded) {
-        analysis = outcomeWithAnalyses.networkMetaAnalyses[0];
-        outcomeWithAnalyses.selectedAnalysis = analysis;
-      } else {
-        outcomeWithAnalyses.selectedAnalysis = undefined;
-      }
-      return analysis;
+      buildInclusions();
     }
 
     function hasSelectableAnalysis(outcomeWithAnalyses) {
@@ -234,13 +237,13 @@ define(['lodash', 'angular'], function(_, angular) {
     }
 
     function updateMissingAlternatives(owa) {
-      owa.selectedModel.missingAlternatives = BenefitRiskService.findMissingAlternatives($scope.analysis.interventionInclusions, owa);
+      owa.selectedModel.missingAlternatives = BenefitRiskService.findMissingAlternatives($scope.includedAlternatives, owa);
       owa.selectedModel.missingAlternativesNames = _.map(owa.selectedModel.missingAlternatives, 'name');
     }
 
     function analysisToSaveCommand(analysis) {
       var analysisToSave = angular.copy(analysis);
-      analysisToSave.interventionInclusions = analysisToSave.interventionInclusions.map(function(intervention) {
+      analysisToSave.interventionInclusions = $scope.includedAlternatives.map(function(intervention) {
         return {
           interventionId: intervention.id,
           analysisId: analysisToSave.id
@@ -265,6 +268,7 @@ define(['lodash', 'angular'], function(_, angular) {
         };
       });
       checkStep1Validity();
+      updateStudyMissingStuff();
       var saveCommand = analysisToSaveCommand($scope.analysis);
       AnalysisResource.save(saveCommand);
     }

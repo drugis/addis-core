@@ -15,16 +15,16 @@ import java.util.Map;
 @JsonDeserialize(using = ObjectToStringDeserializer.class)
 public class SingleStudyBenefitRiskProblem extends AbstractProblem {
   private Map<URI, CriterionEntry> criteria;
-  private Map<Integer, AlternativeEntry> alternatives;
+  private Map<String, AlternativeEntry> alternatives;
   private List<AbstractMeasurementEntry> performanceTable;
 
-  public SingleStudyBenefitRiskProblem(Map<Integer, AlternativeEntry> alternatives, Map<URI, CriterionEntry> criteria, List<AbstractMeasurementEntry> performanceTable) {
+  public SingleStudyBenefitRiskProblem(Map<String, AlternativeEntry> alternatives, Map<URI, CriterionEntry> criteria, List<AbstractMeasurementEntry> performanceTable) {
     this.alternatives = alternatives;
     this.criteria = criteria;
     this.performanceTable = performanceTable;
   }
 
-  public Map<Integer, AlternativeEntry> getAlternatives() {
+  public Map<String, AlternativeEntry> getAlternatives() {
     return alternatives;
   }
 

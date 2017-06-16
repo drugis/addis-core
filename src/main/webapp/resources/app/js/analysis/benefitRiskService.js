@@ -77,12 +77,6 @@ define(['lodash'], function(_) {
       return analysis;
     }
 
-    function numberOfSelectedInterventions(alternatives) {
-      return alternatives.reduce(function(count, alternative) {
-        return alternative.isIncluded ? ++count : count;
-      }, 0);
-    }
-
     function numberOfSelectedOutcomes(outcomesWithAnalyses) {
       return outcomesWithAnalyses.reduce(function(count, owa) {
         return owa.outcome.isIncluded &&
@@ -135,7 +129,6 @@ define(['lodash'], function(_) {
       buildOutcomeWithAnalyses: buildOutcomeWithAnalyses,
       buildOutcomesWithAnalyses: buildOutcomesWithAnalyses,
       joinModelsWithAnalysis: joinModelsWithAnalysis,
-      numberOfSelectedInterventions: numberOfSelectedInterventions,
       numberOfSelectedOutcomes: numberOfSelectedOutcomes,
       isModelWithMissingAlternatives: isModelWithMissingAlternatives,
       isModelWithoutResults: isModelWithoutResults,
