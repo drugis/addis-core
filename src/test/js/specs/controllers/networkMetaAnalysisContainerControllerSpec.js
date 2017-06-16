@@ -4,9 +4,6 @@ define(['angular', 'angular-mocks', 'controllers'], function() {
     var scope,
       state,
       q,
-      timeout = function(fn) { // fake timeout which triggers immediately
-        fn();
-      },
       analysisDeferred,
       interventionDeferred,
       covariateDeferred,
@@ -77,7 +74,15 @@ define(['angular', 'angular-mocks', 'controllers'], function() {
         analysisId: 600
       },
       modelResource,
-      modelDeferred;
+      modelDeferred,
+      timeout = function(fn) { // fake timeout which triggers immediately
+        fn();
+        return {
+          then: function(fn) {
+            fn();
+          }
+        };
+      };
     beforeEach(module('addis.controllers'));
     beforeEach(inject(function($rootScope, $controller, $q) {
       q = $q;
@@ -91,6 +96,7 @@ define(['angular', 'angular-mocks', 'controllers'], function() {
       mockInterventions.$promise = interventionDeferred.promise;
       trialverseTrialDataDeferred = $q.defer();
       mockTrialData.$promise = trialverseTrialDataDeferred.promise;
+
       scope = $rootScope;
       scope.analysis = mockAnalysis;
       scope.project = mockProject;
@@ -102,7 +108,7 @@ define(['angular', 'angular-mocks', 'controllers'], function() {
       EvidenceTableResource = jasmine.createSpyObj('EvidenceTableResource', ['query', 'get']);
       EvidenceTableResource.query.and.returnValue(mockTrialData);
       analysisService = jasmine.createSpyObj('AnalysisService', ['isNetworkDisconnected']);
-      analysisResource = jasmine.createSpyObj('AnalysisResource',['save']);
+      analysisResource = jasmine.createSpyObj('AnalysisResource', ['save']);
       networkMetaAnalysisService = jasmine.createSpyObj('NetworkMetaAnalysisService', [
         'addInclusionsToCovariates',
         'addInclusionsToInterventions',
