@@ -37,13 +37,14 @@ define(['lodash'], function(_) {
         return outcome.id === nma.outcome.id &&
           benefitRiskNMAOutcomeInclusion.networkMetaAnalysisId === nma.id;
       }) || nmasForOutcome[0];
-      var selectedModel = !selectedAnalysis? undefined : _.find(selectedAnalysis.models, ['id', benefitRiskNMAOutcomeInclusion.modelId]);
+      var selectedModel = !selectedAnalysis ? undefined : _.find(selectedAnalysis.models, ['id', benefitRiskNMAOutcomeInclusion.modelId]);
 
       return {
         outcome: outcome,
         networkMetaAnalyses: nmasForOutcome,
         selectedAnalysis: selectedAnalysis,
-        selectedModel: selectedModel
+        selectedModel: selectedModel,
+        dataType: 'network'
       };
     }
 
@@ -77,12 +78,19 @@ define(['lodash'], function(_) {
       return analysis;
     }
 
-    function numberOfSelectedOutcomes(outcomesWithAnalyses) {
-      return outcomesWithAnalyses.reduce(function(count, owa) {
-        return owa.outcome.isIncluded &&
-          owa.selectedAnalysis && !owa.selectedAnalysis.archived &&
-          owa.selectedModel && !owa.selectedModel.archived ? ++count : count;
-      }, 0);
+    function numberOfSelectedOutcomes(outcomeInclusions) {
+      var goodOutcomes = _.filter(outcomeInclusions, function(inclusion) {
+        if (!inclusion.outcome.isIncluded) {
+          return false;
+        } else {
+          if (inclusion.selectedAnalysis) {
+            return !inclusion.selectedAnalysis.archived && inclusion.selectedModel && !inclusion.selectedModel.archived;
+          } else {
+            return inclusion.selectedStudy;
+          }
+        }
+      });
+      return goodOutcomes.length;
     }
 
     function isModelWithMissingAlternatives(outcomesWithAnalyses) {
@@ -123,6 +131,43 @@ define(['lodash'], function(_) {
       });
     }
 
+    function isInvalidStudySelected(outcomeInclusions) {
+      var invalidStudy = _.chain(outcomeInclusions)
+        .filter(['dataType', 'single-study'])
+        .find(function(inclusion) {
+          return (
+            (inclusion.selectedStudy.missingInterventions && inclusion.selectedStudy.missingInterventions.length > 0) ||
+            (inclusion.selectedStudy.missingOutcomes && inclusion.selectedStudy.missingOutcomes.length > 0)
+          );
+        }).value();
+      return invalidStudy;
+    }
+
+    function hasMissingStudy(outcomeInclusions) {
+      return _.find(outcomeInclusions, function(inclusion) {
+        return _.isEqual(inclusion.selectedStudy, {});
+      });
+    }
+
+    function findOverlappingInterventions(studies) {
+      var overlappingInterventionsList = _.reduce(studies, function(accum, study) {
+        return accum.concat(study.overlappingInterventions);
+      }, []);
+      return _.uniqBy(overlappingInterventionsList, 'id');
+    }
+
+
+    function findOverlappingOutcomes(outcomeInclusions) {
+      return _.chain(outcomeInclusions)
+        .map('outcome')
+        .filter('isIncluded')
+        .groupBy('semanticOutcomeUri')
+        .filter(function(outcomeByUri) {
+          return outcomeByUri.length > 1;
+        })
+        .value();
+    }
+
     return {
       addModelsGroup: addModelsGroup,
       compareAnalysesByModels: compareAnalysesByModels,
@@ -133,7 +178,11 @@ define(['lodash'], function(_) {
       isModelWithMissingAlternatives: isModelWithMissingAlternatives,
       isModelWithoutResults: isModelWithoutResults,
       findMissingAlternatives: findMissingAlternatives,
-      addScales: addScales
+      addScales: addScales,
+      isInvalidStudySelected: isInvalidStudySelected,
+      hasMissingStudy: hasMissingStudy,
+      findOverlappingInterventions: findOverlappingInterventions,
+      findOverlappingOutcomes: findOverlappingOutcomes
     };
   };
 

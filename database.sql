@@ -899,9 +899,10 @@ ALTER TABLE effectsTableExclusion RENAME TO effectsTableAlternativeInclusion;
 
 --changeset reidd:75
 DROP TABLE remarks;
-ALTER TABLE metabenefitriskanalysis RENAME TO benefitriskanalysis;
-INSERT INTO benefitriskanalysis(id, problem, finalized) SELECT id, problem, CASE WHEN problem IS NULL THEN false ELSE true END FROM SingleStudyBenefitRiskAnalysis;
-ALTER TABLE mbroutcomeinclusion RENAME TO BenefitRiskNMAOutcomeInclusion;
+ALTER TABLE metaBenefitRiskAnalysis RENAME TO benefitRiskAnalysis;
+INSERT INTO benefitRiskAnalysis(id, problem, finalized) SELECT id, problem, CASE WHEN problem IS NULL THEN false ELSE true END FROM SingleStudyBenefitRiskAnalysis;
+ALTER TABLE mbrOutcomeInclusion RENAME TO BenefitRiskNMAOutcomeInclusion;
+ALTER TABLE BenefitRiskNMAOutcomeInclusion RENAME COLUMN metaBenefitRiskAnalysisId TO analysisId;
 CREATE TABLE BenefitRiskStudyOutcomeInclusion(
     analysisId INT NOT NULL,
     outcomeId INT NOT NULL,
@@ -910,7 +911,6 @@ CREATE TABLE BenefitRiskStudyOutcomeInclusion(
     FOREIGN KEY(analysisId) REFERENCES BenefitRiskAnalysis(id),
     FOREIGN KEY(outcomeId) REFERENCES outcome(id)
 );
-ALTER TABLE BenefitRiskNMAOutcomeInclusion RENAME COLUMN metabenefitriskanalysisid TO analysisId;
 INSERT INTO BenefitRiskStudyOutcomeInclusion (analysisId, studyGraphUri, outcomeId)
     SELECT id, studyGraphUri, outcomeId
     FROM SingleStudyBenefitRiskAnalysis INNER JOIN SingleStudyBenefitRiskAnalysis_Outcome ON SingleStudyBenefitRiskAnalysis.id = SingleStudyBenefitRiskAnalysis_Outcome.analysisId;
@@ -940,7 +940,7 @@ DROP TABLE SingleStudyBenefitRiskAnalysis;
 --rollback DELETE FROM benefitRiskAnalysis WHERE id NOT IN (SELECT analysisId FROM BenefitRiskNMAOutcomeInclusion);
 --rollback ALTER TABLE BenefitRiskNMAOutcomeInclusion RENAME COLUMN analysisId TO metaBenefitRiskAnalysisId;
 --rollback ALTER TABLE BenefitRiskNMAOutcomeInclusion RENAME TO mBROutcomeInclusion;
---rollback ALTER TABLE benefitRiskAnalysis RENAME TO metabenefitriskanalysis;
+--rollback ALTER TABLE benefitRiskAnalysis RENAME TO metaBenefitRiskAnalysis;
 --rollback CREATE TABLE remarks (
 --rollback   analysisId INT NOT NULL,
 --rollback   remarks TEXT,

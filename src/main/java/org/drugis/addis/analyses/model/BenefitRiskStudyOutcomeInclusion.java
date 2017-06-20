@@ -17,15 +17,13 @@ public class BenefitRiskStudyOutcomeInclusion {
   public static class BenefitRiskStudyOutcomeInclusionPK implements Serializable {
     protected Integer analysisId;
     protected Integer outcomeId;
-    protected URI studyGraphUri;
 
     public BenefitRiskStudyOutcomeInclusionPK() {
     }
 
-    public BenefitRiskStudyOutcomeInclusionPK(Integer analysisId, Integer outcomeId, URI studyGraphUri) {
+    public BenefitRiskStudyOutcomeInclusionPK(Integer analysisId, Integer outcomeId) {
       this.analysisId = analysisId;
       this.outcomeId = outcomeId;
-      this.studyGraphUri = studyGraphUri;
     }
 
     @Override
@@ -36,15 +34,13 @@ public class BenefitRiskStudyOutcomeInclusion {
       BenefitRiskStudyOutcomeInclusionPK that = (BenefitRiskStudyOutcomeInclusionPK) o;
 
       if (!analysisId.equals(that.analysisId)) return false;
-      if (!outcomeId.equals(that.outcomeId)) return false;
-      return studyGraphUri != null ? studyGraphUri.equals(that.studyGraphUri) : that.studyGraphUri == null;
+      return outcomeId.equals(that.outcomeId);
     }
 
     @Override
     public int hashCode() {
       int result = analysisId.hashCode();
       result = 31 * result + outcomeId.hashCode();
-      result = 31 * result + (studyGraphUri != null ? studyGraphUri.hashCode() : 0);
       return result;
     }
   }
@@ -54,7 +50,6 @@ public class BenefitRiskStudyOutcomeInclusion {
 
   @Id
   private Integer outcomeId;
-  @Id
   @Type(type = "org.drugis.addis.util.UriUserType")
   private URI studyGraphUri;
 

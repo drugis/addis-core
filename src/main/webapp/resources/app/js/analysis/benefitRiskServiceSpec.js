@@ -38,6 +38,7 @@ define(['angular-mocks'], function(angularMocks) {
         }];
         var expectedResult = {
           outcome: outcome1,
+          dataType: 'network',
           networkMetaAnalyses: [{
             id: 3,
             outcome: {
@@ -140,19 +141,6 @@ define(['angular-mocks'], function(angularMocks) {
       });
     });
 
-    describe('numberOfSelectedInterventions', function() {
-      it('should return the number of selected interventions', function() {
-        var alternatives = [{
-          isIncluded: false
-        }, {}, {
-          isIncluded: true
-        }, {
-          isIncluded: true
-        }];
-        expect(benefitRiskService.numberOfSelectedInterventions(alternatives)).toBe(2);
-      });
-    });
-
     describe('numberOfSelectedOutcomes', function() {
       it('should return the number of selected outcomes, which do not contain archived analyses or models', function() {
         var outcomesWithAnalyses = [{
@@ -173,6 +161,11 @@ define(['angular-mocks'], function(angularMocks) {
           outcome: {
             isIncluded: true
           },
+          selectedStudy: {}
+        }, {
+          outcome: {
+            isIncluded: true
+          },
           selectedAnalysis: {
             archived: true
           },
@@ -190,7 +183,7 @@ define(['angular-mocks'], function(angularMocks) {
             archived: false
           }
         }];
-        expect(benefitRiskService.numberOfSelectedOutcomes(outcomesWithAnalyses)).toBe(1);
+        expect(benefitRiskService.numberOfSelectedOutcomes(outcomesWithAnalyses)).toBe(2);
       });
     });
 
@@ -292,6 +285,7 @@ define(['angular-mocks'], function(angularMocks) {
         expect(benefitRiskService.isModelWithoutResults(outcomesWithAnalyses)).toBeFalsy();
       });
     });
+
     describe('findMissingAlternatives for a pairwise analysis', function() {
       it('should return a list of alternatives that are included in the analysis but not in the model', function() {
         var interventionInclusions = [{
@@ -323,6 +317,7 @@ define(['angular-mocks'], function(angularMocks) {
         expect(result).toEqual(expectedResult);
       });
     });
+
     describe('findMissingAlternatives for evidence synthesis', function() {
       it('should return a list of alternatives that are included in the analysis but not in the model', function() {
         var interventionInclusions = [{
@@ -451,6 +446,135 @@ define(['angular-mocks'], function(angularMocks) {
         expect(result.length).toBe(owas.length);
         expect(result[0].scales).not.toBeNull();
         expect(result).toEqual(expected);
+      });
+    });
+
+    describe('isInvalidStudySelected', function() {
+      it('should be false if everything is ok', function() {
+        var outcomeInclusions = [{
+          dataType: 'network'
+        }, {
+          dataType: 'single-study',
+          selectedStudy: {
+            missingInterventions: [],
+            missingOutcomes: []
+          }
+        }];
+        expect(benefitRiskService.isInvalidStudySelected(outcomeInclusions)).toBeFalsy();
+      });
+      it('should be true if there are missing interventions', function() {
+        var outcomeInclusions = [{
+          dataType: 'single-study',
+          selectedStudy: {
+            missingInterventions: [{}],
+            missingOutcomes: []
+          }
+        }];
+        expect(benefitRiskService.isInvalidStudySelected(outcomeInclusions)).toBeTruthy();
+      });
+      it('should be true if there are missing outcomes', function() {
+        var outcomeInclusions = [{
+          dataType: 'single-study',
+          selectedStudy: {
+            missingInterventions: [],
+            missingOutcomes: [{}]
+          }
+        }];
+        expect(benefitRiskService.isInvalidStudySelected(outcomeInclusions)).toBeTruthy();
+      });
+    });
+
+    describe('hasMissingStudy', function() {
+      it('should be false if everything is fine', function() {
+        var outcomeInclusions = [{
+          dataType: 'network'
+        }, {
+          dataType: 'single-study',
+          selectedStudy: {
+            studyUri: 'http://cool.ninja'
+          }
+        }];
+        expect(benefitRiskService.hasMissingStudy(outcomeInclusions)).toBeFalsy();
+      });
+      it('should be true if a study is not selected', function() {
+        var outcomeInclusions = [{
+          dataType: 'network'
+        }, {
+          dataType: 'single-study',
+          selectedStudy: {
+            studyUri: 'http://cool.ninja'
+          }
+        }, {
+          dataType: 'single-study',
+          selectedStudy: {}
+        }];
+        expect(benefitRiskService.hasMissingStudy(outcomeInclusions)).toBeTruthy();
+      });
+    });
+
+    describe('findOverlappingInterventions', function() {
+      it('should build a list of uniqueue overlapping interventions', function() {
+        var studies = [{
+          overlappingInterventions: []
+        }, {
+          overlappingInterventions: [{
+            id: 1
+          }, {
+            id: 2
+          }]
+        }, {
+          overlappingInterventions: [{
+            id: 2
+          }, {
+            id: 3
+          }]
+        }];
+        var expectedInterventions = [{
+          id: 1
+        }, {
+          id: 2
+        }, {
+          id: 3
+        }];
+        var result = benefitRiskService.findOverlappingInterventions(studies);
+        expect(result).toEqual(expectedInterventions);
+      });
+    });
+
+    fdescribe('findOverlappingOutcomes', function() {
+      it('should return a list of outcomes which share concepts with an other', function() {
+        var outcomeInclusions = [{
+          outcome: {
+            isIncluded: true,
+            title: 'outcome 1',
+            semanticOutcomeUri: '123'
+          }
+        }, {
+          outcome: {
+            isIncluded: true,
+            title: 'outcome 2',
+            semanticOutcomeUri: '123'
+          }
+        }, {
+          outcome: {
+            isIncluded: false,
+            title: 'outcome 3',
+            semanticOutcomeUri: '123'
+          }
+        }];
+        var result = benefitRiskService.findOverlappingOutcomes(outcomeInclusions);
+        var expectedResult = [
+          [{
+            isIncluded: true,
+            title: 'outcome 1',
+            semanticOutcomeUri: '123'
+          }, {
+            isIncluded: true,
+            title: 'outcome 2',
+            semanticOutcomeUri: '123'
+          }]
+        ];
+        expect(result).toEqual(expectedResult);
       });
     });
   });

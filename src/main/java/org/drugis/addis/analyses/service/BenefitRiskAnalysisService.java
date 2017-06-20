@@ -2,6 +2,7 @@ package org.drugis.addis.analyses.service;
 
 import org.drugis.addis.analyses.model.BenefitRiskNMAOutcomeInclusion;
 import org.drugis.addis.analyses.model.BenefitRiskAnalysis;
+import org.drugis.addis.analyses.model.BenefitRiskStudyOutcomeInclusion;
 import org.drugis.addis.exception.MethodNotAllowedException;
 import org.drugis.addis.exception.ProblemCreationException;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
@@ -23,5 +24,6 @@ public interface BenefitRiskAnalysisService {
 
   void updateBenefitRiskAnalysis(Account user, BenefitRiskAnalysis analysis) throws ResourceDoesNotExistException, MethodNotAllowedException;
 
-  List<BenefitRiskNMAOutcomeInclusion> cleanInclusions(BenefitRiskAnalysis analysis, BenefitRiskAnalysis oldAnalysis);
+  List<BenefitRiskNMAOutcomeInclusion> removeBaselinesWithoutIntervention(BenefitRiskAnalysis analysis, BenefitRiskAnalysis oldAnalysis);
+
 }

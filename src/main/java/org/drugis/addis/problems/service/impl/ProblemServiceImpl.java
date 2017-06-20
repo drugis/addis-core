@@ -174,7 +174,7 @@ public class ProblemServiceImpl implements ProblemService {
 
     Map<String, AlternativeEntry> alternatives = includedAlternatives
             .stream()
-            .collect(Collectors.toMap(AbstractIntervention::getName,
+            .collect(Collectors.toMap(includedAlternative -> includedAlternative.getId().toString(),
                     includedAlternative -> new AlternativeEntry(includedAlternative.getId(), includedAlternative.getName())));
 
     final Map<String, AbstractIntervention> includedInterventionsByName = includedAlternatives
@@ -200,7 +200,14 @@ public class ProblemServiceImpl implements ProblemService {
   }
 
   @SuppressWarnings("SuspiciousNameCombination")
-  private AbstractMeasurementEntry getPerformanceTableEntry(Map<Integer, Model> modelMap, Map<Integer, Outcome> outcomesById, Map<Integer, PataviTask> tasksByModelId, Map<URI, JsonNode> resultsByTaskUrl, Map<Integer, AbstractIntervention> interventionMap, Map<String, AbstractIntervention> includedInterventionsByName, BenefitRiskNMAOutcomeInclusion outcomeInclusion) {
+  private AbstractMeasurementEntry getPerformanceTableEntry(
+          Map<Integer, Model> modelMap,
+          Map<Integer, Outcome> outcomesById,
+          Map<Integer, PataviTask> tasksByModelId,
+          Map<URI, JsonNode> resultsByTaskUrl,
+          Map<Integer, AbstractIntervention> interventionMap,
+          Map<String, AbstractIntervention> includedInterventionsByName,
+          BenefitRiskNMAOutcomeInclusion outcomeInclusion) {
     AbstractBaselineDistribution tempBaseline = null;
     try {
       tempBaseline = objectMapper.readValue(outcomeInclusion.getBaseline(), AbstractBaselineDistribution.class);
@@ -228,8 +235,7 @@ public class ProblemServiceImpl implements ProblemService {
             .collect(Collectors.toMap(
                     e -> {
                       String key = e.getKey();
-                      int interventionId = Integer.parseInt(key.substring(key.lastIndexOf('.') + 1));
-                      return interventionMap.get(interventionId).getName();
+                      return key.substring(key.lastIndexOf('.') + 1);
                     },
                     Map.Entry::getValue));
 
@@ -476,8 +482,8 @@ public class ProblemServiceImpl implements ProblemService {
                                                                          Set<AbstractIntervention> includedInterventions) {
     final Set<URI> outcomeUris = Sets.newHashSet(outcome.getSemanticOutcomeUri());
     final Set<URI> alternativeUris = getSingleAlternativeUris(includedInterventions);
-    final Map<String, AbstractIntervention> alternativeToInterventionMap = includedInterventions.stream()
-            .collect(Collectors.toMap(abstractIntervention -> abstractIntervention.getId().toString(), Function.identity()));
+    final Map<Integer, AbstractIntervention> alternativeToInterventionMap = includedInterventions.stream()
+            .collect(Collectors.toMap(AbstractIntervention::getId, Function.identity()));
 
     final String versionedUuid = mappingService.getVersionedUuid(project.getNamespaceUid());
     List<TrialDataStudy> singleStudyMeasurements = null;
@@ -504,8 +510,9 @@ public class ProblemServiceImpl implements ProblemService {
         }
 
         arm.setMatchedProjectInterventionIds(ImmutableSet.of(matchedProjectInterventionId));
-        String alternativeName = alternativeToInterventionMap.get(matchedProjectInterventionId.toString()).getName();
-        alternatives.put(alternativeName, new AlternativeEntry(matchedProjectInterventionId, alternativeName));
+        AbstractIntervention intervention = alternativeToInterventionMap.get(matchedProjectInterventionId);
+
+        alternatives.put(intervention.getId().toString(), new AlternativeEntry(matchedProjectInterventionId, intervention.getName()));
       } else if (matchingIncludedInterventions.size() > 1) {
         throw new RuntimeException("too many matched interventions for arm when creating problem");
       }

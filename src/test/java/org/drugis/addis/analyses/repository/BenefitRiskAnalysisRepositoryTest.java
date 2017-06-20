@@ -49,8 +49,12 @@ public class BenefitRiskAnalysisRepositoryTest {
     BenefitRiskAnalysis benefitRiskAnalysis = benefitRiskAnalysisRepository.find(analysisId);
     Set<InterventionInclusion> interventionInclusions = Sets.newHashSet(new InterventionInclusion(analysisId, -1));
     BenefitRiskAnalysis expectedAnalysis = new BenefitRiskAnalysis(analysisId, 1, "metabr 1", interventionInclusions);
-    List<BenefitRiskNMAOutcomeInclusion> outcomeInclusions = Collections.singletonList(new BenefitRiskNMAOutcomeInclusion(analysisId, 1, -5, 1));
+    BenefitRiskNMAOutcomeInclusion nmaInclusion = new BenefitRiskNMAOutcomeInclusion(analysisId, 1, -5, 1);
+    List<BenefitRiskNMAOutcomeInclusion> outcomeInclusions = Collections.singletonList(nmaInclusion);
     expectedAnalysis.setBenefitRiskNMAOutcomeInclusions(outcomeInclusions);
+    BenefitRiskStudyOutcomeInclusion studyInclusion = new BenefitRiskStudyOutcomeInclusion(analysisId, 2, null);
+    List<BenefitRiskStudyOutcomeInclusion> studyInclusions = Collections.singletonList(studyInclusion);
+    expectedAnalysis.setBenefitRiskStudyOutcomeInclusions(studyInclusions);
     assertEquals(expectedAnalysis, benefitRiskAnalysis);
   }
 

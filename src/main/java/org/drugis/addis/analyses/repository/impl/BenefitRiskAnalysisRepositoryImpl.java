@@ -77,7 +77,7 @@ public class BenefitRiskAnalysisRepositoryImpl implements BenefitRiskAnalysisRep
   public BenefitRiskAnalysis update(Account user, BenefitRiskAnalysis analysis) throws ResourceDoesNotExistException, MethodNotAllowedException {
     benefitRiskAnalysisService.updateBenefitRiskAnalysis(user, analysis);
     BenefitRiskAnalysis oldAnalysis = em.find(BenefitRiskAnalysis.class, analysis.getId());
-    analysis.setBenefitRiskNMAOutcomeInclusions(benefitRiskAnalysisService.cleanInclusions(analysis, oldAnalysis));
+    analysis.setBenefitRiskNMAOutcomeInclusions(benefitRiskAnalysisService.removeBaselinesWithoutIntervention(analysis, oldAnalysis));
     return em.merge(analysis);
   }
 

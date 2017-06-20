@@ -14,7 +14,8 @@ define(function (require) {
     .controller('AbstractBenefitRiskController', require('analysis/abstractBenefitRiskController'))
     //services
     .factory('BenefitRiskService', require('analysis/benefitRiskService'))
-    //filter
+    //directives
+    .directive('studySelect', require('analysis/directives/studySelectDirective'))
 
     ;
 });

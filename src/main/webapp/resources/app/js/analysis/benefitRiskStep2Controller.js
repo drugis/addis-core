@@ -177,7 +177,7 @@ define(['angular', 'lodash'], function(angular, _) {
     }
 
     function goToStep1() {
-      $state.go('MetaBenefitRiskCreationStep-1', $stateParams);
+      $state.go('BenefitRiskCreationStep-1', $stateParams);
     }
 
     function openDistributionModal(outcomeWithAnalysis) {

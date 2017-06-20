@@ -84,6 +84,7 @@ INSERT INTO public.BenefitRiskStudyOutcomeInclusion (analysisId, outcomeId, stud
 INSERT INTO public.BenefitRiskStudyOutcomeInclusion (analysisId, outcomeId, studyGraphUri) VALUES (-3, 2, 'http://study.graph.uri');
 INSERT INTO public.BenefitRiskStudyOutcomeInclusion (analysisId, outcomeId, studyGraphUri) VALUES (-4, 1, 'http://study.graph.uri');
 INSERT INTO public.BenefitRiskStudyOutcomeInclusion (analysisId, outcomeId, studyGraphUri) VALUES (-4, 2, 'http://study.graph.uri');
+INSERT INTO public.BenefitRiskStudyOutcomeInclusion (analysisId, outcomeId, studyGraphUri) VALUES (-10, 2, null);
 
 INSERT INTO public.BenefitRiskNMAOutcomeInclusion (analysisId, outcomeId, networkMetaAnalysisId, modelId) VALUES (-2, 1, -5, 1);
 INSERT INTO public.BenefitRiskNMAOutcomeInclusion (analysisId, outcomeId, networkMetaAnalysisId, modelId) VALUES (-10, 1, -5, 1);

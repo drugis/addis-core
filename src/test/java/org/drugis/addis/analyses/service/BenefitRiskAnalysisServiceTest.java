@@ -149,7 +149,7 @@ public class BenefitRiskAnalysisServiceTest {
     when(interventionRepository.getByProjectIdAndName(projectId, fluoxName)).thenReturn(fluox);
     when(interventionRepository.getByProjectIdAndName(projectId, sertraName)).thenReturn(sertra);
 
-    List<BenefitRiskNMAOutcomeInclusion> cleanInclusions = benefitRiskAnalysisService.cleanInclusions(analysis, oldAnalysis);
+    List<BenefitRiskNMAOutcomeInclusion> cleanInclusions = benefitRiskAnalysisService.removeBaselinesWithoutIntervention(analysis, oldAnalysis);
 
     assertEquals(Collections.singletonList(new BenefitRiskNMAOutcomeInclusion(analysisId, outcomeId, nmaId, modelId)), cleanInclusions);
   }

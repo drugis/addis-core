@@ -25,29 +25,36 @@
           <div ng-bind-html="alternative.name | highlight: $select.search"></div>
         </ui-select-choices>
       </ui-select>
+      <div ng-if="overlappingInterventions.length > 0">
+        <p>
+          <em>
+            <i class="fa fa-exclamation-triangle"></i> The following interventions
+            overlap: <span ng-repeat="overlappingIntervention in overlappingInterventions">{{overlappingIntervention.name}};</span> please exclude interventions
+            to fix this.
+          </em>
+        </p>
+      </div>
     </div>
   </div>
   <div class="row">
     <div class="columns large-12">
       <h3 class="subheader">Outcomes</h3>
-      <div>
-        <button ng-if="editMode.allowEditing" class="tiny" ng-click="selectAllOutcomes()">Select all</button>
-        <button ng-if="editMode.allowEditing" class="tiny" ng-click="deselectAllOutcomes()">Deselect all</button>
-      </div>
       <div class="checkbox-group">
         <div class="outcome-item" ng-repeat="outcomeWithAnalyses in outcomesWithAnalyses">
           <label>
             <input type="checkbox" ng-model="outcomeWithAnalyses.outcome.isIncluded" ng-disabled="isOutcomeDisabled(outcomeWithAnalyses) || !editMode.allowEditing"
-              name="{{outcomeWithAnalyses.outcome.name}}" ng-change="updateBenefitRiskNMAOutcomeInclusions(outcomeWithAnalyses)"> {{outcomeWithAnalyses.outcome.name}}
+              name="{{outcomeWithAnalyses.outcome.name}}" ng-change="updateBenefitRiskOutcomeInclusions(outcomeWithAnalyses)"> {{outcomeWithAnalyses.outcome.name}}
           </label>
 
           <div class="indent-one">
             <label>Data source</label>
             <input type="radio" ng-model="outcomeWithAnalyses.dataType" id="{{outcomeWithAnalyses.outcome.name + 'single-study'}}"
-              ng-value="'single-study'" ng-disabled="isOutcomeDisabled(outcomeWithAnalyses) || !editMode.allowEditing">
+              ng-value="'single-study'" ng-disabled="isOutcomeDisabled(outcomeWithAnalyses) || !outcomeWithAnalyses.outcome.isIncluded || !editMode.allowEditing"
+              ng-change="updateBenefitRiskOutcomeInclusions(outcomeWithAnalyses)">
             <label for="{{outcomeWithAnalyses.outcome.name + 'single-study'}}">Single study</label>
             <input type="radio" ng-model="outcomeWithAnalyses.dataType" id="{{outcomeWithAnalyses.outcome.name + 'network'}}"
-              ng-value="'network'" ng-disabled="isOutcomeDisabled(outcomeWithAnalyses) || !editMode.allowEditing">
+              ng-value="'network'" ng-disabled="isOutcomeDisabled(outcomeWithAnalyses) || !outcomeWithAnalyses.outcome.isIncluded || !editMode.allowEditing"
+              ng-change="updateBenefitRiskOutcomeInclusions(outcomeWithAnalyses)">
             <label for="{{outcomeWithAnalyses.outcome.name + 'network'}}">Network model</label>
           </div>
           <div class="columns large-12 indent-one">
@@ -78,22 +85,8 @@
               </div>
               <div ng-if="outcomeWithAnalyses.dataType === 'single-study'" class="columns large-5 medium-12 indent-one">
                 <div class="row">
-                  <LABEL>
-                    Selected Study
-                  </LABEL>
-                  <ui-select class="addis-select2" style="width:100%;" theme="select2" ng-model="studyModel.selectedStudy"
-                    on-select="onStudySelect($item)" ng-disabled="editMode.disableEditing">
-                    <ui-select-match>{{$select.selected.name}}
-                      <i ng-if="$select.selected.group === 1" class="fa fa-exclamation-triangle"></i>
-                    </ui-select-match>
-                    <ui-select-choices group-by="'groupLabel'" repeat="study in studies | orderBy:['group', 'name'] | filter: $select.search">
-                      <span ng-bind-html="study.name | highlight: $select.search"></span>
-                      <i ng-if="study.group === 1" class="fa fa-exclamation-triangle"></i>
-                    </ui-select-choices>
-                  </ui-select>
-                  <p class="fixed-height-info-container">
-                    <!-- dummy spacer-->
-                  </p>
+                  <study-select studies="studies" outcome="outcomeWithAnalyses" interventions="includedAlternatives"
+                    selection="outcomeWithAnalyses" on-change="saveInclusions"></study-select>
                 </div>
               </div>
             </div>
@@ -111,6 +104,7 @@
       </div>
     </div>
   </div>
+
   <div class="row">
     <div class="columns large-12">
       <button ng-disabled="step1AlertMessages.length || !editMode.allowEditing" type="button"
@@ -121,3 +115,5 @@
         </div>
       </div>
     </div>
+  </div>
+</div>

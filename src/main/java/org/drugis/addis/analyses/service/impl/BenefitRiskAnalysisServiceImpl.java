@@ -3,6 +3,7 @@ package org.drugis.addis.analyses.service.impl;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Sets;
+import org.drugis.addis.analyses.model.BenefitRiskStudyOutcomeInclusion;
 import org.drugis.addis.analyses.model.InterventionInclusion;
 import org.drugis.addis.analyses.model.BenefitRiskNMAOutcomeInclusion;
 import org.drugis.addis.analyses.model.BenefitRiskAnalysis;
@@ -81,11 +82,11 @@ public class BenefitRiskAnalysisServiceImpl implements BenefitRiskAnalysisServic
   public BenefitRiskAnalysis update(Account user, Integer projectId,
                                     BenefitRiskAnalysis analysis, String scenarioState) throws URISyntaxException, SQLException, IOException, ResourceDoesNotExistException, MethodNotAllowedException, ReadValueException, InvalidTypeForDoseCheckException, UnexpectedNumberOfResultsException, ProblemCreationException {
     BenefitRiskAnalysis storedAnalysis = benefitRiskAnalysisRepository.find(analysis.getId());
-    if(storedAnalysis.isFinalized()) {
+    if (storedAnalysis.isFinalized()) {
       throw new MethodNotAllowedException();
     }
     projectService.checkProjectExistsAndModifiable(user, analysis.getProjectId());
-    if(analysis.isFinalized()) {
+    if (analysis.isFinalized()) {
       AbstractProblem problem = problemService.getProblem(projectId, analysis.getId());
       String problemString = objectMapper.writeValueAsString(problem);
       analysis.setProblem(problemString);
@@ -135,12 +136,22 @@ public class BenefitRiskAnalysisServiceImpl implements BenefitRiskAnalysisServic
         }
       }
     }
+    if (isNotEmpty(analysis.getBenefitRiskStudyOutcomeInclusions())) {
+      // do not allow selection of outcomes that are not in the project
+      for (BenefitRiskStudyOutcomeInclusion benefitRiskStudyOutcomeInclusion : analysis.getBenefitRiskStudyOutcomeInclusions()) {
+        Integer outcomeId = benefitRiskStudyOutcomeInclusion.getOutcomeId();
+        Outcome outcome = outcomeRepository.get(outcomeId);
+        if (!outcome.getProject().equals(analysis.getProjectId())) {
+          throw new ResourceDoesNotExistException();
+        }
+      }
+    }
   }
 
   @Override
-  public List<BenefitRiskNMAOutcomeInclusion> cleanInclusions(BenefitRiskAnalysis analysis, BenefitRiskAnalysis oldAnalysis) {
-    HashSet newInterventionInclusions = new HashSet(analysis.getInterventionInclusions());
-    HashSet oldInterventionInclusions = new HashSet(oldAnalysis.getInterventionInclusions());
+  public List<BenefitRiskNMAOutcomeInclusion> removeBaselinesWithoutIntervention(BenefitRiskAnalysis analysis, BenefitRiskAnalysis oldAnalysis) {
+    HashSet<InterventionInclusion> newInterventionInclusions = new HashSet<>(analysis.getInterventionInclusions());
+    HashSet<InterventionInclusion> oldInterventionInclusions = new HashSet<>(oldAnalysis.getInterventionInclusions());
     if (!newInterventionInclusions.equals(oldInterventionInclusions)) {
       Sets.SetView<InterventionInclusion> difference = Sets.symmetricDifference(Sets.newHashSet(oldAnalysis.getInterventionInclusions()), Sets.newHashSet(analysis.getInterventionInclusions()));
       Integer removedInterventionId = difference.iterator().next().getInterventionId();
