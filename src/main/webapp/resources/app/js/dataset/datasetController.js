@@ -110,11 +110,12 @@ define(['lodash'],
 
       function getJson(resource) {
         resource.getForJson($stateParams).$promise.then(function(response) {
+          var dsResponse = response['@graph'] ? _.reduce(response['@graph'], _.merge) : response;
           $scope.dataset = {
             datasetUuid: $scope.datasetUuid,
-            title: response['http://purl.org/dc/terms/title'],
-            comment: response['http://purl.org/dc/terms/description'],
-            creator: response['http://purl.org/dc/terms/creator']
+            title: dsResponse['http://purl.org/dc/terms/title'],
+            comment: dsResponse['http://purl.org/dc/terms/description'],
+            creator: dsResponse['http://purl.org/dc/terms/creator']
           };
           $scope.isEditingAllowed = isEditingAllowed();
         });
