@@ -180,11 +180,14 @@ public class ProblemServiceImpl implements ProblemService {
     final Map<String, AbstractIntervention> includedInterventionsByName = includedAlternatives
             .stream()
             .collect(Collectors.toMap(AbstractIntervention::getName, Function.identity()));
+    final Map<String, AbstractIntervention> includedInterventionsById = includedAlternatives
+            .stream()
+            .collect(Collectors.toMap(i -> i.getId().toString(), Function.identity()));
 
     List<AbstractMeasurementEntry> performanceTable =
             inclusionsWithBaselineAndModelResults.stream()
                     .map(outcomeInclusion -> getPerformanceTableEntry(modelMap,
-                            outcomesById, tasksByModelId, resultsByTaskUrl, interventionMap,
+                            outcomesById, tasksByModelId, resultsByTaskUrl, includedInterventionsById,
                             includedInterventionsByName, outcomeInclusion))
                     .collect(Collectors.toList());
 
@@ -205,7 +208,7 @@ public class ProblemServiceImpl implements ProblemService {
           Map<Integer, Outcome> outcomesById,
           Map<Integer, PataviTask> tasksByModelId,
           Map<URI, JsonNode> resultsByTaskUrl,
-          Map<Integer, AbstractIntervention> interventionMap,
+          Map<String, AbstractIntervention> interventionsByKey,
           Map<String, AbstractIntervention> includedInterventionsByName,
           BenefitRiskNMAOutcomeInclusion outcomeInclusion) {
     AbstractBaselineDistribution tempBaseline = null;
@@ -214,7 +217,9 @@ public class ProblemServiceImpl implements ProblemService {
     } catch (IOException e) {
       e.printStackTrace();
     }
-    final AbstractBaselineDistribution baseline = tempBaseline;
+    final AbstractBaselineDistribution baselineDistribution = tempBaseline;
+    assert baselineDistribution != null;
+
     URI taskUrl = tasksByModelId.get(outcomeInclusion.getModelId()).getSelf();
     JsonNode taskResults = resultsByTaskUrl.get(taskUrl);
 
@@ -227,11 +232,12 @@ public class ProblemServiceImpl implements ProblemService {
     } catch (IOException e) {
       e.printStackTrace();
     }
+    assert distributionByInterventionId != null;
 
-    AbstractIntervention baselineIntervention = includedInterventionsByName.get(baseline.getName());
-    MultiVariateDistribution distr = distributionByInterventionId.get(baselineIntervention.getId());
+    AbstractIntervention baselineIntervention = includedInterventionsByName.get(baselineDistribution.getName());
+    MultiVariateDistribution distribution = distributionByInterventionId.get(baselineIntervention.getId());
 
-    Map<String, Double> mu = distr.getMu().entrySet().stream()
+    Map<String, Double> mu = distribution.getMu().entrySet().stream()
             .collect(Collectors.toMap(
                     e -> {
                       String key = e.getKey();
@@ -240,31 +246,32 @@ public class ProblemServiceImpl implements ProblemService {
                     Map.Entry::getValue));
 
     // filter mu
-    mu = mu.entrySet().stream().filter(m -> includedInterventionsByName.keySet().contains(m.getKey()))
+    mu = mu.entrySet().stream().filter(m -> interventionsByKey.containsKey(m.getKey()))
             .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
     //add baseline to mu
-    mu.put(baseline.getName(), 0.0);
+    String baselineInterventionId = baselineIntervention.getId().toString();
+    mu.put(baselineInterventionId, 0.0);
 
     List<String> rowNames = new ArrayList<>();
     rowNames.addAll(mu.keySet());
 
     // place baseline at the front of the list
     //noinspection ComparatorMethodParameterNotUsed
-    rowNames.sort((rn1, rn2) -> rn1.equals(baseline.getName()) ? -1 : 0);
+    rowNames.sort((rn1, rn2) -> rn1.equals(includedInterventionsByName.get(baselineDistribution.getName()).getId().toString()) ? -1 : 0);
 
     Map<Pair<String, String>, Double> dataMap = new HashMap<>();
 
-    final Map<String, Map<String, Double>> sigma = distr.getSigma();
+    final Map<String, Map<String, Double>> sigma = distribution.getSigma();
     for (String interventionY : rowNames) {
       rowNames
               .stream()
               .filter(interventionX ->
-                      !interventionX.equals(baseline.getName()) && !interventionY.equals(baseline.getName()))
+                      !interventionX.equals(baselineInterventionId) && !interventionY.equals(baselineInterventionId))
               .forEach(interventionX -> {
                 Double value = sigma
-                        .get(getD(includedInterventionsByName, baseline.getName(), interventionX))
-                        .get(getD(includedInterventionsByName, baseline.getName(), interventionY));
+                        .get("d." + baselineInterventionId + '.' + interventionX)
+                        .get("d." + baselineInterventionId + '.' + interventionY);
                 dataMap.put(new ImmutablePair<>(interventionX, interventionY), value);
                 dataMap.put(new ImmutablePair<>(interventionY, interventionX), value);
               });
@@ -284,7 +291,7 @@ public class ProblemServiceImpl implements ProblemService {
     rowNames.forEach(rowName ->
             rowNames
                     .stream()
-                    .filter(colName -> !baseline.getName().equals(rowName) && !baseline.getName().equals(colName))
+                    .filter(colName -> !baselineInterventionId.equals(rowName) && !baselineInterventionId.equals(colName))
                     .forEach(colName -> data
                             .get(rowNames.indexOf(rowName))
                             .set(rowNames.indexOf(colName), dataMap.get(ImmutablePair.of(rowName, colName))))
@@ -321,10 +328,6 @@ public class ProblemServiceImpl implements ProblemService {
               .collect(Collectors.toList());
     }
     return new NetworkMetaAnalysisProblem(entries, problem.getTreatments(), problem.getStudyLevelCovariates());
-  }
-
-  private String getD(Map<String, AbstractIntervention> includedInterventionsByName, String base, String otherIntervention) {
-    return "d." + includedInterventionsByName.get(base).getId() + '.' + includedInterventionsByName.get(otherIntervention).getId();
   }
 
   private Set<Integer> getInclusionIdsWithBaseline(List<BenefitRiskNMAOutcomeInclusion> outcomeInclusions, ToIntFunction<BenefitRiskNMAOutcomeInclusion> idSelector) {

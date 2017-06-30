@@ -138,8 +138,7 @@ public class GraphController extends AbstractAddisCoreController {
   }
 
 
-  @RequestMapping(value = "/graphs/{graphUuid}",
-          method = RequestMethod.PUT, consumes = WebConstants.JSON_LD)
+  @RequestMapping(value = "/graphs/{graphUuid}", method = RequestMethod.PUT, consumes = WebConstants.JSON_LD)
   public void setJsonGraph(HttpServletRequest request, HttpServletResponse trialverseResponse, Principal currentUser,
                            @RequestParam(WebConstants.COMMIT_TITLE_PARAM) String commitTitle,
                            @RequestParam(value = WebConstants.COMMIT_DESCRIPTION_PARAM, required = false) String commitDescription,
@@ -148,8 +147,8 @@ public class GraphController extends AbstractAddisCoreController {
     logger.trace("set graph");
     URI trialverseDatasetUri = new URI(Namespaces.DATASET_NAMESPACE + datasetUuid);
     if (datasetReadRepository.isOwner(trialverseDatasetUri, currentUser)) {
-      InputStream turtleStream = graphService.jsonGraphInputStreamToTurtleInputStream(request.getInputStream());
-      createGraph(trialverseResponse, commitTitle, commitDescription, datasetUuid, graphUuid, turtleStream);
+      InputStream jsonldStream = graphService.jsonGraphInputStreamToTurtleInputStream(request.getInputStream());
+      createGraph(trialverseResponse, commitTitle, commitDescription, datasetUuid, graphUuid, jsonldStream);
     } else {
       throw new MethodNotAllowedException();
     }
