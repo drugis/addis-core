@@ -4,6 +4,14 @@ define(['angular', 'angular-mocks', 'controllers'], function() {
     var scope,
       state,
       q,
+      timeout = function(fn) { // fake timeout which triggers immediately
+        fn();
+        return {
+          then: function(fn2) {
+            fn2();
+          }
+        };
+      },
       analysisDeferred,
       interventionDeferred,
       covariateDeferred,
@@ -74,15 +82,7 @@ define(['angular', 'angular-mocks', 'controllers'], function() {
         analysisId: 600
       },
       modelResource,
-      modelDeferred,
-      timeout = function(fn) { // fake timeout which triggers immediately
-        fn();
-        return {
-          then: function(fn) {
-            fn();
-          }
-        };
-      };
+      modelDeferred;
     beforeEach(module('addis.controllers'));
     beforeEach(inject(function($rootScope, $controller, $q) {
       q = $q;

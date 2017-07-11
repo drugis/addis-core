@@ -4,7 +4,7 @@ define(['lodash'], function(_) {
     'OutcomeResource', 'BenefitRiskService', 'ModelResource', 'ScenarioResource', 'UserService', 'ProjectResource',
     'SubProblemResource', 'DEFAULT_VIEW'
   ];
-  var MetBenefitRiskController = function($scope, $q, $stateParams, $state, AnalysisResource, InterventionResource,
+  var BenefitRiskController = function($scope, $q, $stateParams, $state, AnalysisResource, InterventionResource,
     OutcomeResource, BenefitRiskService, ModelResource, ScenarioResource, UserService, ProjectResource,
     SubProblemResource, DEFAULT_VIEW) {
 
@@ -115,5 +115,5 @@ define(['lodash'], function(_) {
     }
 
   };
-  return dependencies.concat(MetBenefitRiskController);
+  return dependencies.concat(BenefitRiskController);
 });

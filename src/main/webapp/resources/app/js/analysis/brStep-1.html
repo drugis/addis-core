@@ -42,18 +42,18 @@
       <div class="checkbox-group">
         <div class="outcome-item" ng-repeat="outcomeWithAnalyses in outcomesWithAnalyses">
           <label>
-            <input type="checkbox" ng-model="outcomeWithAnalyses.outcome.isIncluded" ng-disabled="isOutcomeDisabled(outcomeWithAnalyses) || !editMode.allowEditing"
+            <input type="checkbox" ng-model="outcomeWithAnalyses.outcome.isIncluded" ng-disabled="!editMode.allowEditing"
               name="{{outcomeWithAnalyses.outcome.name}}" ng-change="updateBenefitRiskOutcomeInclusions(outcomeWithAnalyses)"> {{outcomeWithAnalyses.outcome.name}}
           </label>
 
           <div class="indent-one">
             <label>Data source</label>
             <input type="radio" ng-model="outcomeWithAnalyses.dataType" id="{{outcomeWithAnalyses.outcome.name + 'single-study'}}"
-              ng-value="'single-study'" ng-disabled="isOutcomeDisabled(outcomeWithAnalyses) || !outcomeWithAnalyses.outcome.isIncluded || !editMode.allowEditing"
+              ng-value="'single-study'" ng-disabled="!outcomeWithAnalyses.outcome.isIncluded || !editMode.allowEditing"
               ng-change="updateBenefitRiskOutcomeInclusions(outcomeWithAnalyses)">
             <label for="{{outcomeWithAnalyses.outcome.name + 'single-study'}}">Single study</label>
             <input type="radio" ng-model="outcomeWithAnalyses.dataType" id="{{outcomeWithAnalyses.outcome.name + 'network'}}"
-              ng-value="'network'" ng-disabled="isOutcomeDisabled(outcomeWithAnalyses) || !outcomeWithAnalyses.outcome.isIncluded || !editMode.allowEditing"
+              ng-value="'network'" ng-disabled="isOutcomeDisabled(outcomeWithAnalyses) || !outcomeWithAnalyses.outcome.isIncluded || !editMode.allowEditing || !outcomeWithAnalyses.networkMetaAnalyses.length"
               ng-change="updateBenefitRiskOutcomeInclusions(outcomeWithAnalyses)">
             <label for="{{outcomeWithAnalyses.outcome.name + 'network'}}">Network model</label>
           </div>

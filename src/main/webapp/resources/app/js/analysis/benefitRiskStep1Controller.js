@@ -16,7 +16,6 @@ define(['lodash', 'angular'], function(_, angular) {
     $scope.removedAlternative = removedAlternative;
     $scope.updateBenefitRiskOutcomeInclusions = updateBenefitRiskOutcomeInclusions;
     $scope.updateAnalysesInclusions = updateAnalysesInclusions;
-    $scope.isOutcomeDisabled = isOutcomeDisabled;
     $scope.updateModelSelection = updateModelSelection;
     $scope.goToStep2 = goToStep2;
     $scope.saveInclusions = saveInclusions;
@@ -147,7 +146,7 @@ define(['lodash', 'angular'], function(_, angular) {
         $scope.step1AlertMessages.push('There are overlapping interventions');
       }
       if (BenefitRiskService.findOverlappingOutcomes($scope.outcomesWithAnalyses).length > 0) {
-        $scope.step1AlertMessages.push('There are overlapping outcomes'); 
+        $scope.step1AlertMessages.push('There are overlapping outcomes');
       }
     }
 
@@ -228,11 +227,11 @@ define(['lodash', 'angular'], function(_, angular) {
       tempStudies = SingleStudyBenefitRiskService.addHasMatchedMixedTreatmentArm(tempStudies, $scope.includedAlternatives);
       $scope.studies = SingleStudyBenefitRiskService.addOverlappingInterventionsToStudies(tempStudies, $scope.includedAlternatives);
       $scope.overlappingInterventions = BenefitRiskService.findOverlappingInterventions($scope.studies);
-    }
-
-    function isOutcomeDisabled(outcomeWithAnalyses) {
-      return !outcomeWithAnalyses.networkMetaAnalyses.length ||
-        !hasSelectableAnalysis(outcomeWithAnalyses);
+      _.forEach($scope.outcomesWithAnalyses, function(outcomeWithAnalyses) {
+        if(outcomeWithAnalyses.selectedStudy){
+          outcomeWithAnalyses.selectedStudy = _.find($scope.studies, ['studyUri', outcomeWithAnalyses.selectedStudy.studyUri]);
+        }
+      });
     }
 
     function addedAlternative(alternative) {

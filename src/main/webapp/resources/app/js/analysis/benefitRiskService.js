@@ -4,21 +4,35 @@ define(['lodash'], function(_) {
   var BenefitRiskAnalysisService = function() {
 
     function buildOutcomesWithAnalyses(analysis, outcomes, networkMetaAnalyses) {
-      return outcomes
-        .map(_.partial(buildOutcomeWithAnalyses, analysis, networkMetaAnalyses))
-        .map(function(outcomeWithAnalysis) {
-          outcomeWithAnalysis.networkMetaAnalyses = outcomeWithAnalysis.networkMetaAnalyses.sort(compareAnalysesByModels);
-          return outcomeWithAnalysis;
-        })
-        .filter(function(outcomeWithAnalysis) {
-          return outcomeWithAnalysis.outcome.isIncluded;
-        })
-        .map(function(outcomeWithAnalysis) {
-          outcomeWithAnalysis.baselineDistribution = analysis.benefitRiskNMAOutcomeInclusions.find(function(inclusion) {
-            return inclusion.outcomeId === outcomeWithAnalysis.outcome.id;
-          }).baseline;
-          return outcomeWithAnalysis;
-        });
+      var outcomesById = _.keyBy(outcomes, 'id');
+      var outcomesWithAnalysis = _.map(analysis.benefitRiskNMAOutcomeInclusions, function(benefitRiskNMAOutcomeInclusion) {
+        return buildOutcomeWithAnalyses(analysis, networkMetaAnalyses, outcomesById[benefitRiskNMAOutcomeInclusion.outcomeId]);
+      });
+      var outcomesWithStudy = _.map(analysis.benefitRiskStudyOutcomeInclusions, function(benefitRiskStudyOutcomeInclusion) {
+        return buildOutcomeWithStudy(analysis, benefitRiskStudyOutcomeInclusion.studyGraphUri, outcomesById[benefitRiskStudyOutcomeInclusion.outcomeId]);
+      });
+      return outcomesWithAnalysis.concat(outcomesWithStudy);
+      // return outcomes
+      //   .map(_.partial(buildOutcomeWithAnalyses, analysis, networkMetaAnalyses))
+      //   .map(function(outcomeWithAnalysis) {
+      //     outcomeWithAnalysis.networkMetaAnalyses = outcomeWithAnalysis.networkMetaAnalyses.sort(compareAnalysesByModels);
+      //     return outcomeWithAnalysis;
+      //   })
+      //   .filter(function(outcomeWithAnalysis) {
+      //     return outcomeWithAnalysis.outcome.isIncluded;
+      //   })
+      //   .map(function(outcomeWithAnalysis) {
+      //     outcomeWithAnalysis.baselineDistribution = analysis.benefitRiskNMAOutcomeInclusions.find(function(inclusion) {
+      //       return inclusion.outcomeId === outcomeWithAnalysis.outcome.id;
+      //     }).baseline;
+      //     return outcomeWithAnalysis;
+      //   });
+    }
+
+    function buildOutcomeWithStudy(analysis, studyGraphUri, outcome) {
+      return {
+        outcome: outcome
+      };
     }
 
     function buildOutcomeWithAnalyses(analysis, networkMetaAnalyses, outcome) {
@@ -44,7 +58,8 @@ define(['lodash'], function(_) {
         networkMetaAnalyses: nmasForOutcome,
         selectedAnalysis: selectedAnalysis,
         selectedModel: selectedModel,
-        dataType: 'network'
+        dataType: 'network',
+        baselineDistribution: benefitRiskNMAOutcomeInclusion.baseline
       };
     }
 
@@ -122,8 +137,8 @@ define(['lodash'], function(_) {
     function addScales(owas, interventionInclusions, scaleResults) {
       return owas.map(function(owa) {
         owa.scales = interventionInclusions.reduce(function(accum, includedAlternative) {
-          if (scaleResults[owa.outcome.name]) {
-            accum[includedAlternative.name] = scaleResults[owa.outcome.name][includedAlternative.name];
+          if (scaleResults[owa.outcome.semanticOutcomeUri]) {
+            accum[includedAlternative.id] = scaleResults[owa.outcome.semanticOutcomeUri][includedAlternative.id];
           }
           return accum;
         }, {});
@@ -136,8 +151,8 @@ define(['lodash'], function(_) {
         .filter(['dataType', 'single-study'])
         .find(function(inclusion) {
           return (
-            (inclusion.selectedStudy.missingInterventions && inclusion.selectedStudy.missingInterventions.length > 0) ||
-            (inclusion.selectedStudy.missingOutcomes && inclusion.selectedStudy.missingOutcomes.length > 0)
+            (inclusion.selectedStudy && inclusion.selectedStudy.missingInterventions && inclusion.selectedStudy.missingInterventions.length > 0) ||
+            (inclusion.selectedStudy && inclusion.selectedStudy.missingOutcomes && inclusion.selectedStudy.missingOutcomes.length > 0)
           );
         }).value();
       return invalidStudy;

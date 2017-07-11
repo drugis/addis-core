@@ -509,7 +509,7 @@ public class ProblemServiceImpl implements ProblemService {
         for (Measurement measurement : measurements) {
           measurementDrugInstancePairs.add(Pair.of(measurement, matchedProjectInterventionId));
           CriterionEntry criterionEntry = createCriterionEntry(measurement, outcome);
-          criteria.put(measurement.getVariableUri(), criterionEntry);
+          criteria.put(measurement.getVariableConceptUri(), criterionEntry);
         }
 
         arm.setMatchedProjectInterventionIds(ImmutableSet.of(matchedProjectInterventionId));

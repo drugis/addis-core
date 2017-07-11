@@ -16,7 +16,7 @@ define(['angular', 'lodash'], function(angular, _) {
     'WorkspaceService',
     'SubProblemResource'
   ];
-  var MetBenefitRiskStep2Controller = function($scope, $q, $stateParams, $state, $modal,
+  var BenefitRiskStep2Controller = function($scope, $q, $stateParams, $state, $modal,
     AnalysisResource,
     InterventionResource,
     OutcomeResource,
@@ -79,12 +79,13 @@ define(['angular', 'lodash'], function(angular, _) {
         projectId: $stateParams.projectId,
         outcomeIds: outcomeIds
       }).$promise.then(function(networkMetaAnalyses) {
-        var filteredNetworkMetaAnalyses = networkMetaAnalyses
-          .filter(function(analysis) {
-            return !analysis.archived;
+        var filteredNetworkMetaAnalyses = _.chain(networkMetaAnalyses)
+          .reject(function(analysis) {
+            return analysis.archived;
           })
           .map(_.partial(BenefitRiskService.joinModelsWithAnalysis, models))
-          .map(BenefitRiskService.addModelsGroup);
+          .map(BenefitRiskService.addModelsGroup)
+          .value();
         $scope.networkMetaAnalyses = filteredNetworkMetaAnalyses;
 
         analysis = addModelBaseline(analysis, models);
@@ -131,7 +132,7 @@ define(['angular', 'lodash'], function(angular, _) {
 
     function hasMissingBaseLine() {
       return _.find($scope.outcomesWithAnalyses, function(outcomeWithAnalysis) {
-        return !outcomeWithAnalysis.baselineDistribution;
+        return outcomeWithAnalysis.dataType === 'network' && !outcomeWithAnalysis.baselineDistribution;
       });
     }
 
@@ -234,11 +235,9 @@ define(['angular', 'lodash'], function(angular, _) {
           });
         }
       });
-      $scope.isMissingBaseline = _.find($scope.outcomesWithAnalyses, function(outcomeWithAnalysis) {
-        return !outcomeWithAnalysis.baselineDistribution;
-      });
+      $scope.isMissingBaseline = hasMissingBaseLine();
     }
 
   };
-  return dependencies.concat(MetBenefitRiskStep2Controller);
+  return dependencies.concat(BenefitRiskStep2Controller);
 });

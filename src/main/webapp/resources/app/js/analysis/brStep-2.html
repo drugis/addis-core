@@ -55,11 +55,11 @@
         <tr ng-repeat="outcomeWithAnalysis in outcomesWithAnalyses">
           <td class="table-head">{{outcomeWithAnalysis.outcome.name}}</td>
           <td ng-repeat="alternative in alternatives  | filter:!isIncluded">
-            <span ng-if="outcomeWithAnalysis.scales[alternative.name]">
-             {{outcomeWithAnalysis.scales[alternative.name]['50%']}}
-            ({{outcomeWithAnalysis.scales[alternative.name]['2.5%']}},
-             {{outcomeWithAnalysis.scales[alternative.name]['97.5%']}})</span>
-            <span ng-if="!outcomeWithAnalysis.scales[alternative.name]">NA</span>
+            <span ng-if="outcomeWithAnalysis.scales[alternative.id]">
+             {{outcomeWithAnalysis.scales[alternative.id]['50%']}}
+            ({{outcomeWithAnalysis.scales[alternative.id]['2.5%']}},
+             {{outcomeWithAnalysis.scales[alternative.id]['97.5%']}})</span>
+            <span ng-if="!outcomeWithAnalysis.scales[alternative.id]">NA</span>
           </td>
       </tbody>
     </table>
