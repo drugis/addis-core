@@ -132,7 +132,6 @@ define(['angular', 'angular-mocks'], function() {
 
     describe('delete arm', function() {
 
-
       beforeEach(function(done) {
         var arm2 = {
           label: 'arm 2 label'
@@ -159,9 +158,8 @@ define(['angular', 'angular-mocks'], function() {
           expect(result[1].label).toBe('arm 3 label');
           done();
         });
+        rootScope.$digest();
       });
     });
-
-
   });
 });

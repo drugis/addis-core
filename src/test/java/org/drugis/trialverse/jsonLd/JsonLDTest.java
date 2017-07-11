@@ -53,7 +53,7 @@ public class JsonLDTest {
     model.read(new StringReader(exampleJsonLd), "http://example.com", RDFLanguages.strLangJSONLD);
 
     ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-    RDFDataMgr.write(outputStream, model, Lang.TURTLE) ;
+    RDFDataMgr.write(outputStream, model, Lang.TURTLE);
     String turtleStringModel = outputStream.toString();
 
     Model model1a = ModelFactory.createDefaultModel();
@@ -119,8 +119,6 @@ public class JsonLDTest {
     }
 
   }
-
-
 
 
 }

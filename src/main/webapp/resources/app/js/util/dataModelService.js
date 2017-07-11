@@ -17,6 +17,15 @@ define(['angular', 'lodash'], function(angular, _) {
 
     function updateCategories(data) {
       var graph = data['@graph'];
+      graph = _.map(graph, function(node) {
+        if (node['@type'] === 'http://trials.drugis.org/ontology#Category' && node.title) {
+          var withLabel = _.merge({}, node, {
+            label: node.title
+          });
+          return _.omit(withLabel, 'title');
+        }
+        return node;
+      });
       var newCategoryInstances = [];
       var oldCategoriesByName = {};
 
@@ -56,6 +65,7 @@ define(['angular', 'lodash'], function(angular, _) {
         }
         return node;
       });
+
 
       return data;
     }

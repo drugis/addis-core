@@ -36,6 +36,7 @@ define(['angular', 'angular-mocks', 'lodash'], function(angular, angularMocks, _
       studyServiceMock.getStudy.and.returnValue(studyDefer.promise);
       studyServiceMock.getJsonGraph.and.returnValue(graphDefer.promise);
       studyServiceMock.save.and.returnValue(saveDefer.promise);
+      studyServiceMock.saveJsonGraph.and.returnValue(saveDefer.promise);
       uuidServiceMock.generate.and.returnValue('generatedUUID');
       activityService = ActivityService;
     }));
@@ -137,7 +138,6 @@ define(['angular', 'angular-mocks', 'lodash'], function(angular, angularMocks, _
         graphDefer.resolve(jsonGraph);
         rootScope.$apply();
       });
-
 
       it('should return the activities contained in the study', function(done) {
 
@@ -344,6 +344,7 @@ define(['angular', 'angular-mocks', 'lodash'], function(angular, angularMocks, _
 
           done();
         });
+        rootScope.$digest();
       });
     });
 
