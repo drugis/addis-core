@@ -6,6 +6,11 @@ define(['angular', 'angular-mocks', 'controllers'], function() {
       q,
       timeout = function(fn) { // fake timeout which triggers immediately
         fn();
+        return {
+          then: function(fn2) {
+            fn2();
+          }
+        };
       },
       analysisDeferred,
       interventionDeferred,

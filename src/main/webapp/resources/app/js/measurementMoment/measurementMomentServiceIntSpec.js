@@ -400,7 +400,7 @@ define(['angular-mocks'], function(angularMocks) {
         rootScope.$digest();
       });
 
-      it('should merge the results conected to the measurementMoments', function() {
+      it('should merge the results connected to the measurementMoments', function() {
         expect(studyService.save).toHaveBeenCalledWith(expectedStudyAfterMeasuredAtUpdate);
         expect(resultsServiceMock.queryResultsByMeasurementMoment).toHaveBeenCalledWith(source.uri);
         expect(resultsServiceMock.queryResultsByMeasurementMoment).toHaveBeenCalledWith(target.uri);
@@ -408,7 +408,7 @@ define(['angular-mocks'], function(angularMocks) {
         expect(repairServiceMock.mergeResults).toHaveBeenCalledWith(target.uri, sourceResults, targetResults,
           jasmine.any(Function), 'of_moment');
         expect(repairServiceMock.mergeResults.calls.count()).toBe(1);
-        expect(studyService.saveJsonGraph.calls.argsFor(1)).toEqual([expectedSave]);
+        expect(studyService.saveJsonGraph.calls.mostRecent().args).toEqual([expectedSave]);
 
       });
       afterEach(function() {

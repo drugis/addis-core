@@ -44,6 +44,26 @@ public class JsonLDTest {
     assertTrue(model.isIsomorphicWith(model2));
   }
 
+  @Test
+  public void testIso() throws IOException {
+    String beforeJsonLd = loadResource(this.getClass(), "/before.json");
+    String afterJsonLd = loadResource(this.getClass(), "/after.json");
+    Model before = ModelFactory.createDefaultModel();
+    before.read(new StringReader(beforeJsonLd), "http://example.com", RDFLanguages.strLangJSONLD);
+    Model after = ModelFactory.createDefaultModel();
+    after.read(new StringReader(afterJsonLd), "http://example.com", RDFLanguages.strLangJSONLD);
+    if (!before.isIsomorphicWith(after)) {
+      Delta d = new Delta(before.getGraph());
+      d.clear();
+      GraphUtil.addInto(d, after.getGraph());
+      System.err.println("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+      RDFDataMgr.write(System.err, d.getAdditions(), Lang.TURTLE);
+      System.err.println("-------------------------------------------------------------------------------------");
+      RDFDataMgr.write(System.err, d.getDeletions(), Lang.TURTLE);
+      fail("!!!!!!!!!!!!!!!!!!!!!! RDF not equal");
+    }
+  }
+
   @Ignore
   @Test
   public void testTurtleRoundtrip() throws IOException, ScriptException {
@@ -53,7 +73,7 @@ public class JsonLDTest {
     model.read(new StringReader(exampleJsonLd), "http://example.com", RDFLanguages.strLangJSONLD);
 
     ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-    RDFDataMgr.write(outputStream, model, Lang.TURTLE) ;
+    RDFDataMgr.write(outputStream, model, Lang.TURTLE);
     String turtleStringModel = outputStream.toString();
 
     Model model1a = ModelFactory.createDefaultModel();
@@ -119,8 +139,6 @@ public class JsonLDTest {
     }
 
   }
-
-
 
 
 }

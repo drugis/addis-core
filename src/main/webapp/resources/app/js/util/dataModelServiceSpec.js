@@ -110,7 +110,23 @@ define(['angular', 'angular-mocks', 'util/util'], function() {
           uuidServiceMock.generate.and.returnValues('newUuid1', 'newUuid2', 'newUuid3');
 
           expect(dataModelService.updateCategories(oldStyleGraph)).toEqual(expectedGraph);
-
+        });
+        it('should change any category titles to labels', function() {
+          var oldStyleGraph = {
+            '@graph': [{
+              '@id': 'http://trials.drugis.org/instances/09660420-d112-4316-adea-2b66c0836c39',
+              '@type': 'http://trials.drugis.org/ontology#Category',
+              'title': 'female'
+            }]
+          };
+          var expectedGraph = {
+            '@graph': [{
+              '@id': 'http://trials.drugis.org/instances/09660420-d112-4316-adea-2b66c0836c39',
+              '@type': 'http://trials.drugis.org/ontology#Category',
+              'label': 'female'
+            }]
+          };
+          expect(dataModelService.updateCategories(oldStyleGraph)).toEqual(expectedGraph);
         });
       });
     });
