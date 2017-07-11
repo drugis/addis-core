@@ -13,9 +13,11 @@ import org.drugis.addis.security.repository.AccountRepository;
 import org.drugis.addis.util.WebConstants;
 import org.drugis.trialverse.dataset.controller.command.DatasetCommand;
 import org.drugis.trialverse.dataset.model.Dataset;
+import org.drugis.trialverse.dataset.model.VersionMapping;
 import org.drugis.trialverse.dataset.model.VersionNode;
 import org.drugis.trialverse.dataset.repository.DatasetReadRepository;
 import org.drugis.trialverse.dataset.repository.DatasetWriteRepository;
+import org.drugis.trialverse.dataset.repository.VersionMappingRepository;
 import org.drugis.trialverse.dataset.service.DatasetService;
 import org.drugis.trialverse.dataset.service.HistoryService;
 import org.drugis.trialverse.graph.service.GraphService;
@@ -86,6 +88,9 @@ public class DatasetControllerTest {
   @Mock
   private DatasetService datasetService;
 
+  @Mock
+  private VersionMappingRepository versionMappingRepository;
+
   @InjectMocks
   private DatasetController datasetController;
 
@@ -104,6 +109,7 @@ public class DatasetControllerTest {
     principal = new TrialversePrincipal(user);
     accountRepository = mock(AccountRepository.class);
     datasetWriteRepository = mock(DatasetWriteRepository.class);
+    versionMappingRepository = mock(VersionMappingRepository.class);
     datasetController = new DatasetController();
     webConstants = mock(WebConstants.class);
 
@@ -298,12 +304,13 @@ public class DatasetControllerTest {
   public void testExecuteVersionedQuery() throws Exception {
     String uuid = "uuuuiiid-yeswecan";
     String query = "Select * where { ?a ?b ?c}";
-    String version = "my-version";
+    String versionUuid = "my-version";
+    URI version = WebConstants.buildVersionUri(versionUuid);
     URI trialverseDatasetUri = new URI(Namespaces.DATASET_NAMESPACE + uuid);
     String acceptValue = "c/d";
     String responseStr = "foo";
     when(datasetReadRepository.executeQuery(query, trialverseDatasetUri, version, acceptValue)).thenReturn(responseStr.getBytes());
-    mockMvc.perform(get("/users/user-name-hash/datasets/" + uuid + "/versions/" + version + "/query")
+    mockMvc.perform(get("/users/user-name-hash/datasets/" + uuid + "/versions/" + versionUuid + "/query")
             .param("query", query)
             .header("Accept", acceptValue)
             .principal(user))
@@ -321,16 +328,19 @@ public class DatasetControllerTest {
     DatasetCommand datasetCommand = new DatasetCommand(newTitle, newDescription);
     String jsonContent = Utils.createJson(datasetCommand);
     String datasetUuid = "datasetUuid";
+    URI datasetUri = URI.create(Namespaces.DATASET_NAMESPACE + datasetUuid);
     String newVersion = "newVersion";
+    VersionMapping versionMapping = new VersionMapping(1, "http://versioned/" + datasetUuid, john.getId().toString(), datasetUri.toString());
     when(accountRepository.findAccountByUsername(john.getUsername())).thenReturn(john);
-    when(datasetWriteRepository.editDataset(principal, datasetUuid, newTitle, newDescription)).thenReturn(newVersion);
+    when(versionMappingRepository.getVersionMappingByDatasetUrl(datasetUri)).thenReturn(versionMapping);
+    when(datasetWriteRepository.editDataset(principal, versionMapping, newTitle, newDescription)).thenReturn(newVersion);
     mockMvc.perform(post("/users/1/datasets/" + datasetUuid)
             .contentType(WebContent.contentTypeJSON)
             .content(jsonContent).principal(user))
             .andExpect(status().isOk())
             .andExpect(header().string(WebConstants.X_EVENT_SOURCE_VERSION, newVersion));
     verify(accountRepository).findAccountByUsername(john.getUsername());
-    verify(datasetWriteRepository).editDataset(principal, datasetUuid, newTitle, newDescription);
+    verify(datasetWriteRepository).editDataset(principal, versionMapping, newTitle, newDescription);
   }
 
   @Test

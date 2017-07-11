@@ -112,10 +112,7 @@ public class GraphWriteRepositoryTest {
     String titleValue = "test title header";
     when(mockHttpServletRequest.getParameter(WebConstants.COMMIT_TITLE_PARAM)).thenReturn(titleValue);
     URI datasetUrl = new URI(Namespaces.DATASET_NAMESPACE + datasetUuid);
-    String versionStoreDatasetUri = "http://versionstoreUri";
-    VersionMapping versionMapping = new VersionMapping(1, versionStoreDatasetUri, "userName", datasetUrl.toString());
 
-    when(versionMappingRepository.getVersionMappingByDatasetUrl(datasetUrl)).thenReturn(versionMapping);
     when(accountRepository.findAccountByUsername(username)).thenReturn(account);
     when(graphService.buildGraphUri(graphUuid)).thenReturn(URI.create(Namespaces.GRAPH_NAMESPACE + graphUuid));
     Header resultHeader = graphWriteRepository.updateGraph(datasetUrl, graphUuid, delegatingServletInputStream, titleValue, null );
@@ -123,7 +120,6 @@ public class GraphWriteRepositoryTest {
     assertEquals(versionHeader, resultHeader);
 
     verify(httpClient).execute(any(HttpPut.class));
-    verify(versionMappingRepository).getVersionMappingByDatasetUrl(datasetUrl);
     verify(accountRepository).findAccountByUsername(username);
   }
 
@@ -140,33 +136,24 @@ public class GraphWriteRepositoryTest {
     String descriptionValue = "test description";
     when(mockHttpServletRequest.getParameter(WebConstants.COMMIT_DESCRIPTION_PARAM)).thenReturn(descriptionValue);
     URI datasetUrl = new URI(Namespaces.DATASET_NAMESPACE + datasetUuid);
-    String versionStoreDatasetUri = "http://versionStoreDatasetUri";
-    VersionMapping versionMapping = new VersionMapping(1, versionStoreDatasetUri, "userName", datasetUrl.toString());
-    when(versionMappingRepository.getVersionMappingByDatasetUrl(datasetUrl)).thenReturn(versionMapping);
 
     Header resultHeader = graphWriteRepository.updateGraph(datasetUrl, graphUuid, delegatingServletInputStream, titleValue, descriptionValue);
 
     assertEquals(versionHeader, resultHeader);
 
     verify(httpClient).execute(any(HttpPut.class));
-    verify(versionMappingRepository).getVersionMappingByDatasetUrl(datasetUrl);
   }
 
   @Test
   public void testDeleteGraph() throws DeleteGraphException, IOException, URISyntaxException {
     String datasetUuid = "datasetuuid";
     String graphUuid = "graphUuid";
-    HttpServletRequest mockHttpServletRequest = mock(HttpServletRequest.class);
     URI datasetUrl = new URI(Namespaces.DATASET_NAMESPACE + datasetUuid);
-    String versionStoreDatasetUri = "http://versionStoreDatasetUri";
-    VersionMapping versionMapping = new VersionMapping(1, versionStoreDatasetUri, "userName", datasetUrl.toString());
-    when(versionMappingRepository.getVersionMappingByDatasetUrl(datasetUrl)).thenReturn(versionMapping);
 
     Header resultHeader = graphWriteRepository.deleteGraph(datasetUrl, graphUuid);
 
     assertEquals(versionHeader, resultHeader);
     verify(httpClient).execute(any(HttpDelete.class));
-    verify(versionMappingRepository).getVersionMappingByDatasetUrl(datasetUrl);
   }
 
 }

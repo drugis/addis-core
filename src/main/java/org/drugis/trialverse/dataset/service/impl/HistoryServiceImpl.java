@@ -210,29 +210,18 @@ public class HistoryServiceImpl implements HistoryService {
     String userUuid = DigestUtils.sha256Hex(mapping.getOwnerUuid());
     String version = versionAndGraph.getLeft();
     String graph = versionAndGraph.getRight();
-    String title = getStudyTitle(sourceDatasetUri, version, graph);
+    String title = getStudyTitle(sourceDatasetUri, URI.create(version), graph);
     // find graph and version for the merge revision
     return new Merge(revisionUri, mapping.getTrialverseDatasetUrl(), version, graph, title, userUuid);
   }
 
-  private String getStudyTitle(String sourceDatasetUri, String version, String graph) throws IOException {
+  private String getStudyTitle(String sourceDatasetUri, URI version, String graph) throws IOException {
     String template = IOUtils.toString(new ClassPathResource("getGraphTitle.sparql")
             .getInputStream(), "UTF-8");
     String query = template.replace("$graphUri", graph);
-    ResponseEntity<String> response = executeVersionedQuery(sourceDatasetUri, version, query);
-    return JsonPath.read(response.getBody(), "$.results.bindings[0].$title.$value");
-  }
-
-  private ResponseEntity<String> executeVersionedQuery(String sourceDatasetUri, String version, String query) {
-    UriComponents uriComponents = UriComponentsBuilder.fromHttpUrl(sourceDatasetUri)
-            .path(WebConstants.QUERY_ENDPOINT)
-            .queryParam(WebConstants.QUERY_PARAM_QUERY, query)
-            .build();
-    HttpHeaders headers = new HttpHeaders();
-    headers.put(WebConstants.X_ACCEPT_EVENT_SOURCE_VERSION, Collections.singletonList(version));
-    headers.put(WebConstants.ACCEPT_HEADER, Collections.singletonList(WebConstants.APPLICATION_SPARQL_RESULTS_JSON));
-
-    return restTemplate.exchange(uriComponents.toUri(), HttpMethod.GET, new HttpEntity<>(headers), String.class);
+    VersionMapping mapping = versionMappingRepository.getVersionMappingByVersionedURl(URI.create(sourceDatasetUri));
+    byte[] response = datasetReadRepository.executeQuery(query, mapping.getTrialverseDatasetUri(), version, WebConstants.APPLICATION_SPARQL_RESULTS_JSON);
+    return JsonPath.read(new String(response), "$.results.bindings[0].$title.$value");
   }
 
   private Pair<String, String> getVersionAndGraph(Model historyModel, String revisionUri) throws URISyntaxException,

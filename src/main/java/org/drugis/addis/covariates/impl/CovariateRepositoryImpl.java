@@ -21,7 +21,7 @@ public class CovariateRepositoryImpl implements CovariateRepository {
 
   @Qualifier("emAddisCore")
   @PersistenceContext(unitName = "addisCore")
-  EntityManager em;
+  private EntityManager em;
 
   @Override
   public Collection<Covariate> findByProject(Integer projectId) {

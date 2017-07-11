@@ -27,9 +27,19 @@ import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.ssl.SSLContexts;
 import org.drugis.addis.util.WebConstants;
 import org.drugis.trialverse.util.JenaGraphMessageConverter;
+import org.ehcache.config.CacheConfiguration;
+import org.ehcache.config.builders.CacheConfigurationBuilder;
+import org.ehcache.config.builders.ResourcePoolsBuilder;
+import org.ehcache.core.config.DefaultConfiguration;
+import org.ehcache.expiry.Duration;
+import org.ehcache.expiry.Expirations;
+import org.ehcache.jsr107.EhcacheCachingProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.cache.CacheManager;
+import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.cache.jcache.JCacheCacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.ComponentScan.Filter;
@@ -47,6 +57,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.client.RestTemplate;
 
+import javax.cache.Caching;
 import javax.net.ssl.SSLContext;
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
@@ -54,7 +65,10 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.security.*;
 import java.security.cert.CertificateException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.TimeUnit;
 
 @Configuration
 @ComponentScan(excludeFilters = {@Filter(Configuration.class)}, basePackages = {
@@ -74,6 +88,7 @@ import java.util.Properties;
         "org.drugis.addis.scaledUnits",
         "org.drugis.addis.subProblems"
 })
+@EnableCaching
 public class MainConfig {
 
   private final static Logger logger = LoggerFactory.getLogger(MainConfig.class);
@@ -85,6 +100,38 @@ public class MainConfig {
     if (trustStoreLocation == null) {
       logger.warn("Missing trust store location java property (set using 'javax.net.ssl.trustStore')");
     }
+  }
+
+  @Bean
+  public CacheManager cacheManager() {
+    long numberOfCacheItems = 100;
+    long ttl = 60*60*4;
+
+    CacheConfiguration<Object, Object> cacheConfiguration = CacheConfigurationBuilder
+            .newCacheConfigurationBuilder(Object.class, Object.class, ResourcePoolsBuilder
+                    .newResourcePoolsBuilder()
+                    .heap(numberOfCacheItems))
+            .withExpiry(Expirations.timeToLiveExpiration(new Duration(ttl, TimeUnit.SECONDS)))
+            .build();
+
+    Map<String, CacheConfiguration<?, ?>> caches = createCacheConfigurations(cacheConfiguration);
+
+    EhcacheCachingProvider provider = (EhcacheCachingProvider) Caching.getCachingProvider();
+    DefaultConfiguration configuration = new DefaultConfiguration(caches, provider.getDefaultClassLoader());
+    return new JCacheCacheManager(provider.getCacheManager(provider.getDefaultURI(), configuration));
+  }
+
+  private Map<String, CacheConfiguration<?, ?>> createCacheConfigurations(CacheConfiguration<Object, Object> cacheConfiguration) {
+    Map<String, CacheConfiguration<?, ?>> caches = new HashMap<>();
+    caches.put("versionedDataset", cacheConfiguration);
+    caches.put("versionedDatasetQuery", cacheConfiguration);
+    caches.put("datasetHistory", cacheConfiguration);
+    caches.put("featuredDatasets", cacheConfiguration);
+    caches.put("triplestoreVersionedNameSpace", cacheConfiguration);
+    caches.put("triplestoreQueryStudies", cacheConfiguration);
+    caches.put("triplestoreInterventions", cacheConfiguration);
+    caches.put("triplestoreOutcomes", cacheConfiguration);
+    return caches;
   }
 
   @Bean

@@ -147,20 +147,22 @@ define(['angular', 'lodash'], function(angular, _) {
           $scope.trialverseData = trialverseData;
           $scope.momentSelections = NetworkMetaAnalysisService.buildMomentSelections(trialverseData, $scope.analysis);
           var includedInterventions = NetworkMetaAnalysisService.getIncludedInterventions($scope.interventions);
-          updateNetwork();
           $scope.treatmentOverlapMap = NetworkMetaAnalysisService.buildOverlappingTreatmentMap($scope.interventions, trialverseData);
-          $scope.trialData = NetworkMetaAnalysisService.transformTrialDataToTableRows(trialverseData, includedInterventions, $scope.analysis, $scope.covariates, $scope.treatmentOverlapMap);
+          $scope.trialData = NetworkMetaAnalysisService.transformTrialDataToTableRows(
+            trialverseData, includedInterventions, $scope.analysis, $scope.covariates, $scope.treatmentOverlapMap);
           $scope.tableHasAmbiguousArm = NetworkMetaAnalysisService.doesModelHaveAmbiguousArms(trialverseData, $scope.analysis);
           $scope.hasInsufficientCovariateValues = NetworkMetaAnalysisService.doesModelHaveInsufficientCovariateValues($scope.trialData);
           $scope.hasLessThanTwoInterventions = includedInterventions.length < 2;
           $scope.hasTreatmentOverlap = hasTreatmentOverlap();
           $scope.isMissingByStudyMap = NetworkMetaAnalysisService.buildMissingValueByStudyMap(trialverseData, $scope.analysis, $scope.momentSelections);
           $scope.containsMissingValue = _.find($scope.isMissingByStudyMap);
-          $scope.isModelCreationBlocked = checkCanNotCreateModel();
           $scope.showStdErr = NetworkMetaAnalysisService.checkStdErrShow($scope.trialData);
           $scope.showSigmaN = NetworkMetaAnalysisService.checkSigmaNShow($scope.trialData);
           $scope.measurementType = NetworkMetaAnalysisService.getMeasurementType($scope.trialverseData);
-          $scope.loading.loaded = true;
+          updateNetwork().then(function() {
+            $scope.isModelCreationBlocked = checkCanNotCreateModel();
+            $scope.loading.loaded = true;
+          });
         });
     };
 
@@ -225,7 +227,7 @@ define(['angular', 'lodash'], function(angular, _) {
     }
 
     function updateNetwork() {
-      $timeout(function() {
+      return $timeout(function() {
         var includedInterventions = NetworkMetaAnalysisService.getIncludedInterventions($scope.interventions);
         $scope.networkGraph.network = NetworkMetaAnalysisService.transformTrialDataToNetwork($scope.trialverseData, includedInterventions, $scope.analysis, $scope.momentSelections);
         $scope.isNetworkDisconnected = AnalysisService.isNetworkDisconnected($scope.networkGraph.network);

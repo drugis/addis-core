@@ -52,14 +52,13 @@ public class DatasetServiceImpl implements DatasetService {
   public List<Dataset> findFeatured() {
     List<FeaturedDataset> featuredDatasets = featuredDatasetRepository.findAll();
     List<VersionMapping> versionMappings = versionMappingRepository.findMappingsByTrialverseDatasetUrls(featuredDatasets.stream().map(FeaturedDataset::getDatasetUrl).collect(Collectors.toList()));
-    List<Dataset> datasets = versionMappings.stream()
+    return versionMappings.stream()
             .map((mapping) -> {
               Account user = accountRepository.findAccountByEmail(mapping.getOwnerUuid());
               Model dataset = datasetReadRepository.queryDataset(mapping);
               return buildDataset(dataset, user, mapping.getTrialverseDatasetUrl());
             })
             .collect(Collectors.toList());
-    return datasets;
   }
 
   private Dataset buildDataset(Model model, Account user, String jenaUrl) {

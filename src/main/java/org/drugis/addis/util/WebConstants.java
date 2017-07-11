@@ -1,5 +1,6 @@
 package org.drugis.addis.util;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.jena.riot.WebContent;
 import org.slf4j.LoggerFactory;
@@ -118,6 +119,7 @@ public class WebConstants {
   }
 
   public static URI buildVersionUri(String versionUuid) {
+    if(StringUtils.isEmpty(versionUuid)) return null;
     return UriComponentsBuilder.fromHttpUrl(getTriplestoreBaseUri())
             .path(VERSION_PATH)
             .path(versionUuid)

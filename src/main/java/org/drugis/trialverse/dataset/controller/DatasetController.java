@@ -16,6 +16,7 @@ import org.drugis.trialverse.dataset.exception.EditDatasetException;
 import org.drugis.trialverse.dataset.exception.RevisionNotFoundException;
 import org.drugis.trialverse.dataset.factory.JenaFactory;
 import org.drugis.trialverse.dataset.model.Dataset;
+import org.drugis.trialverse.dataset.model.VersionMapping;
 import org.drugis.trialverse.dataset.model.VersionNode;
 import org.drugis.trialverse.dataset.repository.DatasetReadRepository;
 import org.drugis.trialverse.dataset.repository.DatasetWriteRepository;
@@ -99,7 +100,9 @@ public class DatasetController extends AbstractAddisCoreController {
     TrialversePrincipal trialversePrincipal = new TrialversePrincipal(currentUser);
     Account user = accountRepository.findAccountByUsername(trialversePrincipal.getUserName());
     if (user != null && userId.equals(user.getId())) {
-      String newVersion = datasetWriteRepository.editDataset(trialversePrincipal, datasetUuid, datasetCommand.getTitle(), datasetCommand.getDescription());
+      URI datasetUri = URI.create(Namespaces.DATASET_NAMESPACE + datasetUuid);
+      VersionMapping mapping = versionMappingRepository.getVersionMappingByDatasetUrl(datasetUri);
+      String newVersion = datasetWriteRepository.editDataset(trialversePrincipal, mapping, datasetCommand.getTitle(), datasetCommand.getDescription());
       response.setHeader(WebConstants.X_EVENT_SOURCE_VERSION, newVersion);
     } else {
       logger.error("attempted to edit dataset for user that is not the login-user ");
@@ -188,7 +191,7 @@ public class DatasetController extends AbstractAddisCoreController {
                                     @PathVariable String datasetUuid, @PathVariable String versionUuid) throws URISyntaxException, IOException {
     logger.trace("executing gertseki query");
     URI trialverseDatasetUri = new URI(Namespaces.DATASET_NAMESPACE + datasetUuid);
-    byte[] response = datasetReadRepository.executeQuery(query, trialverseDatasetUri, versionUuid, acceptHeaderValue);
+    byte[] response = datasetReadRepository.executeQuery(query, trialverseDatasetUri, WebConstants.buildVersionUri(versionUuid), acceptHeaderValue);
     httpServletResponse.setStatus(HttpServletResponse.SC_OK);
     httpServletResponse.setHeader("Content-Type", acceptHeaderValue);
     trialverseIOUtilsService.writeContentToServletResponse(response, httpServletResponse);
@@ -233,7 +236,7 @@ public class DatasetController extends AbstractAddisCoreController {
     trialverseIOUtilsService.writeModelToServletResponseJson(model, httpServletResponse);
   }
 
-  public Model getVersionedDatasetModel(String datasetUuid, String versionUuid) throws URISyntaxException {
+  private Model getVersionedDatasetModel(String datasetUuid, String versionUuid) throws URISyntaxException {
     URI trialverseDatasetUri = new URI(Namespaces.DATASET_NAMESPACE + datasetUuid);
     return datasetReadRepository.getVersionedDataset(trialverseDatasetUri, versionUuid);
   }

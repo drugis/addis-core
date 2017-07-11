@@ -48,8 +48,12 @@ public class VersionMapping implements Serializable {
         return versionedDatasetUrl;
     }
 
-    public URI getVersionedDatasetUri() throws URISyntaxException {
-        return new URI(versionedDatasetUrl);
+    public URI getVersionedDatasetUri() {
+        return URI.create(versionedDatasetUrl);
+    }
+
+    public URI getTrialverseDatasetUri() {
+        return URI.create(trialverseDatasetUrl);
     }
 
     public String getOwnerUuid() {

@@ -28,6 +28,7 @@ import org.drugis.trialverse.dataset.repository.VersionMappingRepository;
 import org.drugis.trialverse.security.TrialversePrincipal;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpEntity;
@@ -79,7 +80,7 @@ public class DatasetReadRepositoryImpl implements DatasetReadRepository {
   private HttpClient httpClient;
 
   @Inject
-  AccountRepository accountRepository;
+  private AccountRepository accountRepository;
 
   private final Node headProperty = ResourceFactory.createProperty(HTTP_DRUGIS_ORG_EVENT_SOURCING_ES, "head").asNode();
 
@@ -167,6 +168,7 @@ public class DatasetReadRepositoryImpl implements DatasetReadRepository {
 
 
   @Override
+  @Cacheable(cacheNames="versionedDataset", key="#trialverseDatasetUri.toString()+(#versionUuid?:'headVersion')")
   public Model getVersionedDataset(URI trialverseDatasetUri, String versionUuid) {
     VersionMapping versionMapping = versionMappingRepository.getVersionMappingByDatasetUrl(trialverseDatasetUri);
     HttpHeaders httpHeaders = new HttpHeaders();
@@ -189,17 +191,18 @@ public class DatasetReadRepositoryImpl implements DatasetReadRepository {
   }
 
   @Override
-  public byte[] executeQuery(String query, URI trialverseDatasetUri, String versionUuid, String acceptHeader) throws IOException {
+  @Cacheable(cacheNames="versionedDatasetQuery", key="#trialverseDatasetUri.toString()+(#versionUri != null?#versionUri.toString():'headVersion')+#query.hashCode()")
+  public byte[] executeQuery(String query, URI trialverseDatasetUri, URI versionUri, String acceptHeaderValue) throws IOException {
     VersionMapping versionMapping = versionMappingRepository.getVersionMappingByDatasetUrl(trialverseDatasetUri);
     UriComponents uriComponents = UriComponentsBuilder.fromHttpUrl(versionMapping.getVersionedDatasetUrl())
             .path(WebConstants.QUERY_ENDPOINT)
             .queryParam(WebConstants.QUERY_PARAM_QUERY, query)
             .build();
     HttpGet request = new HttpGet(uriComponents.toUri());
-    if(StringUtils.isNotEmpty(versionUuid)) {
-      request.addHeader(WebConstants.X_ACCEPT_EVENT_SOURCE_VERSION, WebConstants.buildVersionUri(versionUuid).toString());
+    if(versionUri != null) {
+      request.addHeader(WebConstants.X_ACCEPT_EVENT_SOURCE_VERSION, versionUri.toString());
     }
-    request.addHeader(org.apache.http.HttpHeaders.ACCEPT, acceptHeader);
+    request.addHeader(org.apache.http.HttpHeaders.ACCEPT, acceptHeaderValue);
     return executeRequestAndCloseResponse(request);
   }
 
@@ -218,6 +221,7 @@ public class DatasetReadRepositoryImpl implements DatasetReadRepository {
   }
 
   @Override
+  @Cacheable(cacheNames="datasetHistory", key="#datasetUri.toString()")
   public Model getHistory(URI datasetUri) throws IOException {
     URI uri = UriComponentsBuilder.fromHttpUrl(datasetUri.toString())
             .path(WebConstants.HISTORY_ENDPOINT)

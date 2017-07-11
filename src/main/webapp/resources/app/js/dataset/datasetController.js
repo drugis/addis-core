@@ -11,9 +11,14 @@ define(['lodash'],
       VersionedGraphResource, DatasetResource, GraphResource, UserService, DataModelService,
       DatasetService
     ) {
+      // functions
       $scope.createProjectDialog = createProjectDialog;
       $scope.showEditDatasetModal = showEditDatasetModal;
       $scope.showDeleteStudyDialog = showDeleteStudyDialog;
+      $scope.onStudyFilterChange = onStudyFilterChange;
+      $scope.toggleFilterOptions = toggleFilterOptions;
+      
+      // vars
       $scope.userUid = $stateParams.userUid;
       $scope.datasetUuid = $stateParams.datasetUuid;
       // no version so this must be head view
@@ -21,13 +26,11 @@ define(['lodash'],
       if (!$scope.isHeadView) {
         $scope.versionUuid = $stateParams.versionUuid;
       }
-
       $scope.hasLoggedInUser = UserService.hasLoggedInUser();
-
       $scope.stripFrontFilter = $filter('stripFrontFilter');
       $scope.isEditingAllowed = false;
-      $scope.onStudyFilterChange = onStudyFilterChange;
-      $scope.toggleFilterOptions = toggleFilterOptions;
+
+      // init
       loadStudiesWithDetail();
       $scope.datasetConcepts = loadConcepts(); // scope placement for child states
       $scope.datasetConcepts.then(function(concepts) {
@@ -42,13 +45,12 @@ define(['lodash'],
       });
 
       if ($scope.isHeadView) {
-        getJson(DatasetResource);
+        getDataset(DatasetResource);
       } else {
-        getJson(DatasetVersionedResource);
+        getDataset(DatasetVersionedResource);
       }
 
       loadHistory();
-
       function loadHistory() {
         var historyCoords = {
           userUid: $stateParams.userUid,
@@ -59,7 +61,6 @@ define(['lodash'],
             $scope.currentRevision = historyItems[historyItems.length - 1];
             $scope.currentRevision.isHead = true;
           } else {
-            // sort to know iF curentRevission is head
             $scope.currentRevision = _.find(historyItems, function(item) {
               return item.uri.lastIndexOf($stateParams.versionUuid) > 0;
             });
@@ -108,7 +109,7 @@ define(['lodash'],
         return ConceptsService.loadJson(cleanedConceptsPromise);
       }
 
-      function getJson(resource) {
+      function getDataset(resource) {
         resource.getForJson($stateParams).$promise.then(function(response) {
           var dsResponse = response['@graph'] ? _.reduce(response['@graph'], _.merge) : response;
           $scope.dataset = {

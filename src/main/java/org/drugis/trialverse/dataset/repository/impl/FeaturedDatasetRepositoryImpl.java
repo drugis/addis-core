@@ -3,6 +3,7 @@ package org.drugis.trialverse.dataset.repository.impl;
 import org.drugis.trialverse.dataset.model.FeaturedDataset;
 import org.drugis.trialverse.dataset.repository.FeaturedDatasetRepository;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
@@ -17,9 +18,10 @@ public class FeaturedDatasetRepositoryImpl implements FeaturedDatasetRepository 
 
   @Qualifier("emAddisCore")
   @PersistenceContext(unitName = "addisCore")
-  EntityManager em;
+  private EntityManager em;
 
   @Override
+  @Cacheable(cacheNames = "featuredDatasets")
   public List<FeaturedDataset> findAll() {
     return em.createQuery("FROM FeaturedDataset").getResultList();
   }

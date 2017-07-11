@@ -15,15 +15,17 @@ define([], function() {
         },
         transformResponse: function(data) {
           return {
-            data: data // property on Responce object to access raw result data
+            data: data // property on response object to access raw result data
           };
-        }
+        },
+        cache: true
       },
       'getForJson': {
         method: 'get',
         headers: {
-           'Accept': 'application/json; charset=UTF-8'
-        }
+          'Accept': 'application/json; charset=UTF-8'
+        },
+        cache: true
       },
       'query': {
         method: 'GET',
@@ -33,16 +35,18 @@ define([], function() {
         isArray: false,
         transformResponse: function(data) {
           return {
-            data: data // property on Responce object to access raw result data
+            data: data // property on response object to access raw result data
           };
         },
+        cache: true
       },
       'queryForJson': {
         method: 'GET',
         isArray: true,
         headers: {
           'Accept': 'application/json; charset=UTF-8'
-        }
+        },
+        cache: true
       }
     });
   };

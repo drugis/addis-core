@@ -11,11 +11,13 @@ import org.drugis.addis.interventions.repository.InterventionRepository;
 import org.drugis.addis.projects.Project;
 import org.drugis.addis.security.Account;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -27,7 +29,7 @@ public class InterventionRepositoryImpl implements InterventionRepository {
 
   @Qualifier("emAddisCore")
   @PersistenceContext(unitName = "addisCore")
-  EntityManager em;
+  private EntityManager em;
 
   @Override
   public Set<AbstractIntervention> query(Integer projectId) {
@@ -101,6 +103,5 @@ public class InterventionRepositoryImpl implements InterventionRepository {
       throw new ResourceDoesNotExistException("No intervention with id " + interventionId);
     }
     em.remove(intervention);
-
   }
 }

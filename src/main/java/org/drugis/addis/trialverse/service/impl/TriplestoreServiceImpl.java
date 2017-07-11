@@ -29,12 +29,14 @@ import org.drugis.addis.trialverse.service.TriplestoreService;
 import org.drugis.addis.util.WebConstants;
 import org.drugis.trialverse.util.JenaProperties;
 import org.drugis.trialverse.util.Namespaces;
+import org.hibernate.annotations.Cache;
 import org.joda.time.DateTime;
 import org.joda.time.Period;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -90,19 +92,19 @@ public class TriplestoreServiceImpl implements TriplestoreService {
   private static final String DATATYPE_DURATION = "http://www.w3.org/2001/XMLSchema#duration";
 
   @Inject
-  RestTemplate restTemplate;
+  private RestTemplate restTemplate;
 
   @Inject
-  CovariateRepository covariateRepository;
+  private CovariateRepository covariateRepository;
 
   @Inject
-  InterventionRepository interventionRepository;
+  private InterventionRepository interventionRepository;
 
   @Inject
-  InterventionService interventionService;
+  private InterventionService interventionService;
 
   @Inject
-  QueryResultMappingService queryResultMappingService;
+  private QueryResultMappingService queryResultMappingService;
 
   private static HttpHeaders createGetJsonHeader() {
     HttpHeaders headers = new HttpHeaders();
@@ -140,6 +142,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
   }
 
   @Override
+  @Cacheable(cacheNames = "triplestoreVersionedNameSpace", key = "#datasetUri.hashCode() + #versionUri.toString()")
   public Namespace getNamespaceVersioned(TriplestoreUuidAndOwner datasetUri, URI versionUri) {
     ResponseEntity<String> response = queryTripleStoreVersion(datasetUri.getTriplestoreUuid(), NAMESPACE, versionUri);
     return buildNameSpace(datasetUri, response);
@@ -178,6 +181,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
   }
 
   @Override
+  @Cacheable(cacheNames = "triplestoreOutcomes", key = "#namespaceUid+(#versionUri!=null ? #versionUri.toString():'')")
   public List<SemanticVariable> getOutcomes(String namespaceUid, URI versionUri) throws ReadValueException {
     String query = StringUtils.replace(OUTCOME_QUERY, "$namespaceUid", namespaceUid);
     return getSemanticVariables(namespaceUid, versionUri, query, "outcome");
@@ -203,6 +207,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
   }
 
   @Override
+  @Cacheable(cacheNames = "triplestoreInterventions", key = "#namespaceUid+#version.toString()")
   public List<SemanticInterventionUriAndName> getInterventions(String namespaceUid, URI version) {
     List<SemanticInterventionUriAndName> interventions = new ArrayList<>();
     JSONArray bindings = executeQuery(namespaceUid, version, INTERVENTION_QUERY);
@@ -229,6 +234,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
   }
 
   @Override
+  @Cacheable(cacheNames = "triplestoreQueryStudies", key = "#namespaceUid+#version.toString()")
   public List<Study> queryStudies(String namespaceUid, URI version) {
     JSONArray bindings = executeQuery(namespaceUid, version, STUDY_QUERY);
 
@@ -698,6 +704,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
     return restTemplate.exchange(uriComponents.toUri(), HttpMethod.GET, acceptSparqlResultsRequest, String.class);
   }
 
+  @Cacheable(cacheNames="versionedDatasetQuery", key="#namespaceUid+(#versionUri != null?#versionUri.toString():'headVersion')+#query.hashCode()")
   private ResponseEntity<String> queryTripleStoreVersion(String namespaceUid, String query, URI versionUri) {
     logger.debug("Triplestore uri = " + WebConstants.getTriplestoreBaseUri());
     logger.debug("namespaceUid = " + namespaceUid);

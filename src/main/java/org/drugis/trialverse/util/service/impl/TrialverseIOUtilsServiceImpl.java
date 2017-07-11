@@ -19,7 +19,7 @@ import java.io.IOException;
 @Service
 public class TrialverseIOUtilsServiceImpl implements TrialverseIOUtilsService {
 
-  final static Logger logger = LoggerFactory.getLogger(TrialverseIOUtilsServiceImpl.class);
+  private final static Logger logger = LoggerFactory.getLogger(TrialverseIOUtilsServiceImpl.class);
 
   @Override
   public void writeContentToServletResponse(byte[] content, HttpServletResponse httpServletResponse) throws IOException {
