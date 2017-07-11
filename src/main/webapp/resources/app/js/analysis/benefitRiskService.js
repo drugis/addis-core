@@ -53,14 +53,17 @@ define(['lodash'], function(_) {
       }) || nmasForOutcome[0];
       var selectedModel = !selectedAnalysis ? undefined : _.find(selectedAnalysis.models, ['id', benefitRiskNMAOutcomeInclusion.modelId]);
 
-      return {
+      var owa = {
         outcome: outcome,
         networkMetaAnalyses: nmasForOutcome,
         selectedAnalysis: selectedAnalysis,
         selectedModel: selectedModel,
         dataType: 'network',
-        baselineDistribution: benefitRiskNMAOutcomeInclusion.baseline
       };
+      if (benefitRiskNMAOutcomeInclusion.baseline) {
+        owa.baselineDistribution = benefitRiskNMAOutcomeInclusion.baseline;
+      }
+      return owa;
     }
 
     function joinModelsWithAnalysis(models, networkMetaAnalysis) {

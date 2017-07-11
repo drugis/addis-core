@@ -11,11 +11,15 @@ define(['angular-mocks'], function(angularMocks) {
       outcomeResourceMock = jasmine.createSpyObj('OutcomeResource', ['query']),
       modelResourceMock = jasmine.createSpyObj('OutcomeResource', ['getConsistencyModels']),
       projectResourceMock = jasmine.createSpyObj('ProjectResource', ['get']),
+      projectStudiesResourceMock = jasmine.createSpyObj('ProjectStudiesResource', ['query']),
       userServiceMock = jasmine.createSpyObj('UserService', ['isLoginUserId']),
+      singleStudyBenefitRiskServiceMock = jasmine.createSpyObj('SingleStudyBenefitRiskService', ['addMissingInterventionsToStudies',
+        'addHasMatchedMixedTreatmentArm', 'addOverlappingInterventionsToStudies']),
       analysisDefer,
       analysisQueryDefer,
       interventionDefer,
       outcomeDefer,
+      studiesDefer,
       modelsDefer,
       projectDefer,
       benefitRiskService = jasmine.createSpyObj('BenefitRiskService', [
@@ -42,6 +46,7 @@ define(['angular-mocks'], function(angularMocks) {
       outcomeDefer = q.defer();
       modelsDefer = q.defer();
       projectDefer = q.defer();
+      studiesDefer = q.defer();
 
       analysisResourceMock.get.and.returnValue({
         $promise: analysisDefer.promise
@@ -61,6 +66,9 @@ define(['angular-mocks'], function(angularMocks) {
       projectResourceMock.get.and.returnValue({
         $promise: projectDefer.promise
       });
+      projectStudiesResourceMock.query.and.returnValue({
+        $promise: studiesDefer.promise
+      });
       userServiceMock.isLoginUserId.and.returnValue(true);
 
       benefitRiskService.compareAnalysesByModels.and.returnValue(0);
@@ -73,30 +81,34 @@ define(['angular-mocks'], function(angularMocks) {
         $state: {
           go: function() {}
         },
+        ProjectStudiesResource: projectStudiesResourceMock,
         AnalysisResource: analysisResourceMock,
         InterventionResource: interventionResourceMock,
         OutcomeResource: outcomeResourceMock,
         BenefitRiskService: benefitRiskService,
         ModelResource: modelResourceMock,
         ProjectResource: projectResourceMock,
-        UserService: userServiceMock
+        UserService: userServiceMock,
+        SingleStudyBenefitRiskService: singleStudyBenefitRiskServiceMock
       });
 
     }));
 
-    describe('when the analysis, outcomes and alternatives are loaded', function() {
+    fdescribe('when the analysis, outcomes, models, studies and alternatives are loaded', function() {
       beforeEach(function() {
         benefitRiskService.buildOutcomeWithAnalyses.and.returnValue({
           networkMetaAnalyses: []
         });
 
         analysisDefer.resolve({
-          benefitRiskNMAOutcomeInclusions: []
+          benefitRiskNMAOutcomeInclusions: [],
+          benefitRiskStudyOutcomeInclusions: []
         });
         interventionDefer.resolve([]);
         outcomeDefer.resolve([{}]);
-        analysisQueryDefer.resolve([{}]);
+        analysisQueryDefer.resolve([]);
         modelsDefer.resolve([]);
+        studiesDefer.resolve([]);
         scope.$digest();
       });
 

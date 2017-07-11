@@ -353,28 +353,33 @@ define(['angular-mocks'], function(angularMocks) {
       it('should add the scales to the effects table', function() {
         var owas = [{
           outcome: {
-            name: 'hamd'
+            name: 'hamd',
+            semanticOutcomeUri: 'http://outcomes/hamd'
           }
         }, {
           outcome: {
-            name: 'headache'
+            name: 'headache',
+            semanticOutcomeUri: 'http://outcomes/headache'
+
           }
         }];
         var alternatives = [{
-          name: 'fluox'
+          name: 'fluox',
+          id: 1
         }, {
-          name: 'sertra'
+          name: 'sertra',
+          id: 2
         }];
         var scaleResults = {
-          hamd: {
-            fluox: {
+          'http://outcomes/hamd': {
+            1: {
               result: {
                 '2.5%': 1,
                 '50%': 2,
                 '97.5%': 3
               }
             },
-            sertra: {
+            2: {
               result: {
                 '2.5%': 4,
                 '50%': 5,
@@ -382,15 +387,15 @@ define(['angular-mocks'], function(angularMocks) {
               }
             }
           },
-          headache: {
-            fluox: {
+          'http://outcomes/headache': {
+            1: {
               result: {
                 '2.5%': 7,
                 '50%': 8,
                 '97.5%': 9
               }
             },
-            sertra: {
+            2: {
               result: {
                 '2.5%': 10,
                 '50%': 11,
@@ -401,18 +406,19 @@ define(['angular-mocks'], function(angularMocks) {
         };
 
         var expected = [{
-          'outcome': {
-            'name': 'hamd'
+          outcome: {
+            name: 'hamd',
+            semanticOutcomeUri: 'http://outcomes/hamd'
           },
           'scales': {
-            'fluox': {
+            '1': {
               'result': {
                 '2.5%': 1,
                 '50%': 2,
                 '97.5%': 3
               }
             },
-            'sertra': {
+            '2': {
               'result': {
                 '2.5%': 4,
                 '50%': 5,
@@ -421,18 +427,19 @@ define(['angular-mocks'], function(angularMocks) {
             }
           }
         }, {
-          'outcome': {
-            'name': 'headache'
+          outcome: {
+            name: 'headache',
+            semanticOutcomeUri: 'http://outcomes/headache'
           },
-          'scales': {
-            'fluox': {
+          scales: {
+            '1': {
               'result': {
                 '2.5%': 7,
                 '50%': 8,
                 '97.5%': 9
               }
             },
-            'sertra': {
+            '2': {
               'result': {
                 '2.5%': 10,
                 '50%': 11,
@@ -541,7 +548,7 @@ define(['angular-mocks'], function(angularMocks) {
       });
     });
 
-    fdescribe('findOverlappingOutcomes', function() {
+    describe('findOverlappingOutcomes', function() {
       it('should return a list of outcomes which share concepts with an other', function() {
         var outcomeInclusions = [{
           outcome: {
