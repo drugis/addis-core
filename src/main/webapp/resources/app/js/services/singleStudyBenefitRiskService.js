@@ -75,6 +75,13 @@ define(['lodash'], function(_) {
       });
     }
 
+    var addMissingOutcomesToStudies = function(studies, selectedOutcomes) {
+      return studies.map(function(study) {
+        study.missingOutcomes = findMissingOutcomes(selectedOutcomes, study);
+        return study;
+      });
+    };
+
     function noArmMatchingIntervention(intervention, trialDataArms) {
       return !_.find(trialDataArms, function(arm) {
         return arm.matchedProjectInterventionIds.indexOf(intervention.id) > -1;
@@ -86,13 +93,6 @@ define(['lodash'], function(_) {
         return noArmMatchingIntervention(selectedIntervention, trialDataArms);
       });
     }
-
-    var addMissingOutcomesToStudies = function(studies, selectedOutcomes) {
-      return studies.map(function(study) {
-        study.missingOutcomes = findMissingOutcomes(selectedOutcomes, study);
-        return study;
-      });
-    };
 
     function addMissingInterventionsToStudies(studies, selectedInterventions) {
       return studies.map(function(study) {

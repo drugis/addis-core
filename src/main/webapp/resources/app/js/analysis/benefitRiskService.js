@@ -12,21 +12,6 @@ define(['lodash'], function(_) {
         return buildOutcomeWithStudy(analysis, benefitRiskStudyOutcomeInclusion.studyGraphUri, outcomesById[benefitRiskStudyOutcomeInclusion.outcomeId]);
       });
       return outcomesWithAnalysis.concat(outcomesWithStudy);
-      // return outcomes
-      //   .map(_.partial(buildOutcomeWithAnalyses, analysis, networkMetaAnalyses))
-      //   .map(function(outcomeWithAnalysis) {
-      //     outcomeWithAnalysis.networkMetaAnalyses = outcomeWithAnalysis.networkMetaAnalyses.sort(compareAnalysesByModels);
-      //     return outcomeWithAnalysis;
-      //   })
-      //   .filter(function(outcomeWithAnalysis) {
-      //     return outcomeWithAnalysis.outcome.isIncluded;
-      //   })
-      //   .map(function(outcomeWithAnalysis) {
-      //     outcomeWithAnalysis.baselineDistribution = analysis.benefitRiskNMAOutcomeInclusions.find(function(inclusion) {
-      //       return inclusion.outcomeId === outcomeWithAnalysis.outcome.id;
-      //     }).baseline;
-      //     return outcomeWithAnalysis;
-      //   });
     }
 
     function buildOutcomeWithStudy(analysis, studyGraphUri, outcome) {

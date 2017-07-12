@@ -6,8 +6,8 @@ define(['lodash'], function(_) {
 
     function isValidStudy(study) {
       return study &&
-        study.missingInterventions.length === 0 &&
-        study.missingOutcomes.length === 0 &&
+        (!study.missingInterventions || study.missingInterventions.length === 0) &&
+        (!study.missingOutcomes || study.missingOutcomes.length === 0) &&
         !study.hasMatchedMixedTreatmentArm;
     }
 
@@ -26,8 +26,7 @@ define(['lodash'], function(_) {
           scope.selection = {};
         }
         scope.$watch('studies', function() {
-          var studyOptions = SingleStudyBenefitRiskService.addMissingOutcomesToStudies(scope.studies, [scope.outcome]);
-          scope.studyOptions = SingleStudyBenefitRiskService.recalculateGroup(studyOptions);
+          scope.studyOptions = SingleStudyBenefitRiskService.recalculateGroup(scope.studies);
           var oldSelection = scope.selection.selectedStudy;
           if(oldSelection) {
             scope.selection.selectedStudy = _.find(scope.studyOptions, ['studyUri', oldSelection.studyUri]);
