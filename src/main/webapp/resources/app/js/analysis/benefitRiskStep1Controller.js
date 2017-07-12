@@ -287,7 +287,7 @@ define(['lodash', 'angular'], function(_, angular) {
         return {
           analysisId: $scope.analysis.id,
           outcomeId: outcomeWithAnalyses.outcome.id,
-          studyGraphUri: outcomeWithAnalyses.selectedStudy.studyUri
+          studyGraphUri: outcomeWithAnalyses.selectedStudy ? outcomeWithAnalyses.selectedStudy.studyUri : undefined 
         };
       });
       checkStep1Validity();
