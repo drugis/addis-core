@@ -289,7 +289,7 @@ public class ProblemServiceTest {
 
     Map<URI, CriterionEntry> actualCriteria = actualProblem.getCriteria();
     assertTrue(actualCriteria.keySet().contains(variableUri));
-    assertTrue(actualCriteria.keySet().contains(secondOutcomeUri));
+    assertTrue(actualCriteria.keySet().contains(semanticOutcome.getUri()));
   }
 
   @Test
