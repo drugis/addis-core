@@ -259,13 +259,13 @@ define(['angular', 'angular-mocks', 'lodash'], function(angular, angularMocks, _
           '@type': 'ontology:Study',
           has_activity: []
         };
-        jsonGraph =  [{
-            '@id': 'http://unit/oldUnit',
-            label: 'old unit label'
-          }, {
-            '@id': 'http://drug/oldDrugUuid',
-            label: 'old drug'
-          }, jsonStudy];
+        jsonGraph = [{
+          '@id': 'http://unit/oldUnit',
+          label: 'old unit label'
+        }, {
+          '@id': 'http://drug/oldDrugUuid',
+          label: 'old drug'
+        }, jsonStudy];
         expectedGraph = angular.copy(jsonGraph);
         expectedGraph.push({
           '@id': 'http://drug/newDrugUuid',
@@ -341,10 +341,8 @@ define(['angular', 'angular-mocks', 'lodash'], function(angular, angularMocks, _
           expect(activity.treatments[1].minValue).toEqual('120');
           expect(activity.treatments[1].maxValue).toEqual('1300');
 
-
           done();
         });
-        rootScope.$digest();
       });
     });
 
@@ -524,6 +522,7 @@ define(['angular', 'angular-mocks', 'lodash'], function(angular, angularMocks, _
         rootScope.$digest();
       });
     });
+
     describe('delete activity', function() {
       beforeEach(function() {
         jsonStudy = {
@@ -556,7 +555,6 @@ define(['angular', 'angular-mocks', 'lodash'], function(angular, angularMocks, _
         });
         rootScope.$digest();
       });
-
     });
   });
 });

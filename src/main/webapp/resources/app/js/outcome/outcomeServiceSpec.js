@@ -229,7 +229,6 @@ define(['angular-mocks'], function(angularMocks) {
           expect(queryResult[0].label).toEqual(newPopulationChar.label);
           done();
         });
-        rootScope.$digest();
       });
     });
 
@@ -306,7 +305,6 @@ define(['angular-mocks'], function(angularMocks) {
           expect(queryResult[1].measuredAtMoments.length).toBe(2);
           done();
         });
-        rootScope.$digest();
       });
     });
 
@@ -368,7 +366,6 @@ define(['angular-mocks'], function(angularMocks) {
           expect(queryResult.length).toEqual(1);
           done();
         });
-        rootScope.$digest();
       });
     });
 

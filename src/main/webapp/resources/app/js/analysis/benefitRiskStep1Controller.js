@@ -62,18 +62,21 @@ define(['lodash', 'angular'], function(_, angular) {
         projectId: $stateParams.projectId,
         outcomeIds: outcomeIds
       }).$promise.then(function(networkMetaAnalyses) {
-        networkMetaAnalyses = networkMetaAnalyses
-          .filter(function(analysis) {
-            return !analysis.archived;
+        networkMetaAnalyses =
+          _.chain(networkMetaAnalyses)
+          .reject(function(analysis) {
+            return analysis.archived;
           })
           .map(_.partial(BenefitRiskService.joinModelsWithAnalysis, models))
-          .map(BenefitRiskService.addModelsGroup);
-        var outcomesWithAnalyses = outcomes
+          .map(BenefitRiskService.addModelsGroup)
+          .value();
+        var outcomesWithAnalyses = _.chain(outcomes)
           .map(_.partial(BenefitRiskService.buildOutcomeWithAnalyses, analysis, networkMetaAnalyses))
           .map(function(owa) {
             owa.networkMetaAnalyses = owa.networkMetaAnalyses.sort(BenefitRiskService.compareAnalysesByModels);
             return owa;
-          });
+          })
+          .value();
 
         $scope.outcomesWithAnalyses = _.map(outcomesWithAnalyses, function(outcomeWithAnalyses) {
           var outcomeWithAnalysesCopy = _.cloneDeep(outcomeWithAnalyses);
@@ -228,7 +231,7 @@ define(['lodash', 'angular'], function(_, angular) {
       $scope.studies = SingleStudyBenefitRiskService.addOverlappingInterventionsToStudies(tempStudies, $scope.includedAlternatives);
       $scope.overlappingInterventions = BenefitRiskService.findOverlappingInterventions($scope.studies);
       _.forEach($scope.outcomesWithAnalyses, function(outcomeWithAnalyses) {
-        if(outcomeWithAnalyses.selectedStudy){
+        if (outcomeWithAnalyses.selectedStudy) {
           outcomeWithAnalyses.selectedStudy = _.find($scope.studies, ['studyUri', outcomeWithAnalyses.selectedStudy.studyUri]);
         }
       });

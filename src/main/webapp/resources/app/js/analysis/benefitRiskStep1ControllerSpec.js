@@ -13,8 +13,11 @@ define(['angular-mocks'], function(angularMocks) {
       projectResourceMock = jasmine.createSpyObj('ProjectResource', ['get']),
       projectStudiesResourceMock = jasmine.createSpyObj('ProjectStudiesResource', ['query']),
       userServiceMock = jasmine.createSpyObj('UserService', ['isLoginUserId']),
-      singleStudyBenefitRiskServiceMock = jasmine.createSpyObj('SingleStudyBenefitRiskService', ['addMissingInterventionsToStudies',
-        'addHasMatchedMixedTreatmentArm', 'addOverlappingInterventionsToStudies']),
+      singleStudyBenefitRiskServiceMock = jasmine.createSpyObj('SingleStudyBenefitRiskService', [
+        'addMissingInterventionsToStudies',
+        'addHasMatchedMixedTreatmentArm',
+        'addOverlappingInterventionsToStudies'
+      ]),
       analysisDefer,
       analysisQueryDefer,
       interventionDefer,
@@ -31,7 +34,11 @@ define(['angular-mocks'], function(angularMocks) {
         'numberOfSelectedOutcomes',
         'isModelWithMissingAlternatives',
         'isModelWithoutResults',
-        'findMissingAlternatives'
+        'findMissingAlternatives',
+        'findOverlappingInterventions',
+        'isInvalidStudySelected',
+        'hasMissingStudy',
+        'findOverlappingOutcomes'
       ]);
 
     beforeEach(module('addis.analysis'));
@@ -73,7 +80,8 @@ define(['angular-mocks'], function(angularMocks) {
 
       benefitRiskService.compareAnalysesByModels.and.returnValue(0);
       benefitRiskService.joinModelsWithAnalysis.and.returnValue([]);
-
+      benefitRiskService.findOverlappingInterventions.and.returnValue([]);
+      benefitRiskService.findOverlappingOutcomes.and.returnValue([]);
       $controller('BenefitRiskStep1Controller', {
         $scope: scope,
         $q: q,
@@ -94,19 +102,23 @@ define(['angular-mocks'], function(angularMocks) {
 
     }));
 
-    fdescribe('when the analysis, outcomes, models, studies and alternatives are loaded', function() {
+    describe('when the analysis, outcomes, models, studies and alternatives are loaded', function() {
       beforeEach(function() {
         benefitRiskService.buildOutcomeWithAnalyses.and.returnValue({
-          networkMetaAnalyses: []
+          networkMetaAnalyses: [],
+          outcome: {
+            id: 1
+          }
         });
-
+       
         analysisDefer.resolve({
           benefitRiskNMAOutcomeInclusions: [],
           benefitRiskStudyOutcomeInclusions: []
         });
         interventionDefer.resolve([]);
-        outcomeDefer.resolve([{}]);
-        analysisQueryDefer.resolve([]);
+        outcomeDefer.resolve([{
+        }]);
+        analysisQueryDefer.resolve([{}]);
         modelsDefer.resolve([]);
         studiesDefer.resolve([]);
         scope.$digest();
@@ -120,7 +132,7 @@ define(['angular-mocks'], function(angularMocks) {
 
     });
 
-    describe('when updateBenefitRiskNMAOutcomeInclusions is called by checking the outcome', function() {
+    describe('when updateBenefitRiskOutcomeInclusions is called by checking the outcome', function() {
       var outcomeWithAnalysis;
       beforeEach(function() {
         outcomeWithAnalysis = {
@@ -133,16 +145,32 @@ define(['angular-mocks'], function(angularMocks) {
             models: [{
               id: 1
             }]
-          }]
+          }],
+          selectedAnalysis: {
+            id: 1
+          },
+          selectedModel: {},
+          dataType: 'network'
         };
         scope.analysis = {
           id: 1,
+          benefitRiskNMAOutcomeInclusions: [{
+            analysisId: 1,
+            outcomeId: 3,
+            networkMetaAnalysisId: 5
+          }],
+          benefitRiskStudyOutcomeInclusions: [{
+            analysisId: 1,
+            outcomeId: 3,
+            studyGraphUri: 'http://ryfari.com'
+          }],
           $save: function() {},
           interventionInclusions: []
         };
         scope.outcomesWithAnalyses = [outcomeWithAnalysis];
-
-        scope.updateBenefitRiskNMAOutcomeInclusions(outcomeWithAnalysis);
+        scope.includedAlternatives = [];
+        scope.overlappingInterventions = [];
+        scope.updateBenefitRiskOutcomeInclusions(outcomeWithAnalysis);
       });
 
       it('should select the first analysis belonging to the outcome', function() {
@@ -151,7 +179,7 @@ define(['angular-mocks'], function(angularMocks) {
 
       it('should build the benefitrisk analysis inclusions', function() {
         expect(scope.analysis.benefitRiskNMAOutcomeInclusions).toEqual([{
-          benefitRiskAnalysisId: 1,
+          analysisId: 1,
           outcomeId: 3,
           networkMetaAnalysisId: 5,
           modelId: 1
@@ -159,7 +187,7 @@ define(['angular-mocks'], function(angularMocks) {
       });
     });
 
-    describe('when updateBenefitRiskNMAOutcomeInclusions is called by UNchecking the outcome', function() {
+    describe('when updateBenefitRiskOutcomeInclusions is called by UNchecking the outcome', function() {
       var outcomeWithAnalysis;
       beforeEach(function() {
         outcomeWithAnalysis = {
@@ -174,29 +202,40 @@ define(['angular-mocks'], function(angularMocks) {
           selectedAnalysis: {
             id: 1
           },
-          selectedModel: {}
+          selectedModel: {},
+          dataType: 'network'
         };
         scope.analysis = {
           id: 1,
           benefitRiskNMAOutcomeInclusions: [{
-            benefitRiskAnalysisId: 1,
+            analysisId: 1,
             outcomeId: 3,
             networkMetaAnalysisId: 5
+          }],
+          benefitRiskStudyOutcomeInclusions: [{
+            analysisId: 1,
+            outcomeId: 3,
+            studyGraphUri: 'http://ryfari.com'
           }],
           $save: function() {},
           interventionInclusions: []
         };
         scope.outcomesWithAnalyses = [outcomeWithAnalysis];
-
-        scope.updateBenefitRiskNMAOutcomeInclusions(outcomeWithAnalysis);
+        scope.includedAlternatives = [];
+        scope.overlappingInterventions = [];
+        scope.updateBenefitRiskOutcomeInclusions(outcomeWithAnalysis);
       });
 
       it('should unselect the analysis belonging to the outcome', function() {
+        expect(outcomeWithAnalysis.selectedModelId).toBeUndefined();
+        expect(outcomeWithAnalysis.selectedStudyId).toBeUndefined();
         expect(outcomeWithAnalysis.selectedAnalysisId).toBeUndefined();
+        expect(outcomeWithAnalysis.dataType).toBeUndefined();
       });
 
       it('should remove the unchecked outcome', function() {
         expect(scope.analysis.benefitRiskNMAOutcomeInclusions).toEqual([]);
+        expect(scope.analysis.benefitRiskStudyOutcomeInclusions).toEqual([]);
       });
     });
 
