@@ -18,6 +18,11 @@ define(['angular-mocks'], function(angularMocks) {
         'addHasMatchedMixedTreatmentArm',
         'addOverlappingInterventionsToStudies'
       ]),
+      scenarioResourceMock = jasmine.createSpyObj('ScenarioResource',['query']),
+      subProblemResourceMock = jasmine.createSpyObj('SubProblemResource', ['query']),
+      problemResourceMock = jasmine.createSpyObj('ProblemResource', ['get']),
+      workspaceServiceMock = jasmine.createSpyObj('WorkspaceService',['reduceProblem']),
+      DEFAULT_VIEW= 'default view',
       analysisDefer,
       analysisQueryDefer,
       interventionDefer,
@@ -38,7 +43,8 @@ define(['angular-mocks'], function(angularMocks) {
         'findOverlappingInterventions',
         'isInvalidStudySelected',
         'hasMissingStudy',
-        'findOverlappingOutcomes'
+        'findOverlappingOutcomes',
+        'addStudiesToOutcomes'
       ]);
 
     beforeEach(module('addis.analysis'));
@@ -82,6 +88,8 @@ define(['angular-mocks'], function(angularMocks) {
       benefitRiskService.joinModelsWithAnalysis.and.returnValue([]);
       benefitRiskService.findOverlappingInterventions.and.returnValue([]);
       benefitRiskService.findOverlappingOutcomes.and.returnValue([]);
+      benefitRiskService.addStudiesToOutcomes.and.returnValue([]);
+      
       $controller('BenefitRiskStep1Controller', {
         $scope: scope,
         $q: q,
@@ -97,7 +105,12 @@ define(['angular-mocks'], function(angularMocks) {
         ModelResource: modelResourceMock,
         ProjectResource: projectResourceMock,
         UserService: userServiceMock,
-        SingleStudyBenefitRiskService: singleStudyBenefitRiskServiceMock
+        SingleStudyBenefitRiskService: singleStudyBenefitRiskServiceMock,
+        ScenarioResource: scenarioResourceMock,
+        SubProblemResource: subProblemResourceMock,
+        ProblemResource: problemResourceMock,
+        WorkspaceService: workspaceServiceMock,
+        DEFAULT_VIEW: DEFAULT_VIEW
       });
 
     }));

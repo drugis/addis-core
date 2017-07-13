@@ -2,11 +2,11 @@
 define(['lodash'], function(_) {
   var dependencies = ['$scope', '$q', '$stateParams', '$state', 'AnalysisResource', 'InterventionResource',
     'OutcomeResource', 'BenefitRiskService', 'ModelResource', 'ScenarioResource', 'UserService', 'ProjectResource',
-    'SubProblemResource', 'DEFAULT_VIEW'
+    'ProjectStudiesResource', 'SubProblemResource', 'TrialverseResource', 'DEFAULT_VIEW'
   ];
   var BenefitRiskController = function($scope, $q, $stateParams, $state, AnalysisResource, InterventionResource,
     OutcomeResource, BenefitRiskService, ModelResource, ScenarioResource, UserService, ProjectResource,
-    SubProblemResource, DEFAULT_VIEW) {
+    ProjectStudiesResource, SubProblemResource, TrialverseResource, DEFAULT_VIEW) {
 
     $scope.analysis = AnalysisResource.get($stateParams);
     $scope.alternatives = InterventionResource.query($stateParams);
@@ -16,26 +16,49 @@ define(['lodash'], function(_) {
     $scope.goToModel = goToModel;
     $scope.userId = $stateParams.userUid;
     $scope.project = ProjectResource.get($stateParams);
+    var studiesPromise = ProjectStudiesResource.query({
+      projectId: $stateParams.projectId
+    }).$promise;
 
     $scope.editMode = {
       allowEditing: false
     };
-    $scope.project.$promise.then(function() {
-      if (UserService.isLoginUserId($scope.project.owner.id) && !$scope.analysis.archived) {
-        $scope.editMode.allowEditing = true;
-      }
-    });
 
-    var promises = [$scope.analysis.$promise, $scope.alternatives.$promise, $scope.outcomes.$promise, $scope.models.$promise, $scope.project.$promise];
+    var promises = [$scope.analysis.$promise,
+      $scope.alternatives.$promise,
+      $scope.outcomes.$promise,
+      $scope.models.$promise,
+      $scope.project.$promise,
+      studiesPromise
+    ];
 
     $q.all(promises).then(function(result) {
       var analysis = result[0];
       var alternatives = result[1];
       var outcomes = result[2];
       var models = result[3];
-      var outcomeIds = outcomes.map(function(outcome) {
-        return outcome.id;
+      var project = result[4];
+      var studies = _.map(result[5], function(study) {
+        return _.extend({}, study, {
+          uuid: study.studyUri.split('/graphs/')[1]
+        });
       });
+
+      if (UserService.isLoginUserId(project.owner.id) && !analysis.archived) {
+        $scope.editMode.allowEditing = true;
+      }
+
+      $scope.projectVersionUuid = project.datasetVersion.split('/versions/')[1];
+      TrialverseResource.get({
+        namespaceUid: $scope.project.namespaceUid,
+        version: $scope.project.datasetVersion
+      }).$promise.then(function(dataset) {
+        $scope.datasetOwnerId = dataset.ownerId;
+      });
+
+
+      var outcomeIds = _.map(outcomes, 'id');
+
       if (UserService.isLoginUserId($stateParams.projectId)) {
         $scope.editMode.allowEditing = true;
       }
@@ -46,14 +69,12 @@ define(['lodash'], function(_) {
         networkMetaAnalyses = networkMetaAnalyses
           .map(_.partial(BenefitRiskService.joinModelsWithAnalysis, models))
           .map(BenefitRiskService.addModelsGroup);
-        $scope.outcomesWithAnalyses = outcomes
-          .map(_.partial(BenefitRiskService.buildOutcomeWithAnalyses, analysis, networkMetaAnalyses))
-          .map(function(outcomeWithAnalysis) {
-            outcomeWithAnalysis.networkMetaAnalyses = outcomeWithAnalysis.networkMetaAnalyses.sort(BenefitRiskService.compareAnalysesByModels);
-            return outcomeWithAnalysis;
-          });
-        $scope.outcomesWithAnalyses = BenefitRiskService.buildOutcomesWithAnalyses(analysis, outcomes, networkMetaAnalyses);
-        $scope.isMissingBaseline = _.find($scope.outcomesWithAnalyses, function(outcomeWithAnalysis) {
+        var outcomesWithAnalyses = BenefitRiskService.buildOutcomesWithAnalyses(analysis, outcomes, networkMetaAnalyses);
+        outcomesWithAnalyses = BenefitRiskService.addStudiesToOutcomes(outcomesWithAnalyses, analysis.benefitRiskStudyOutcomeInclusions, studies);
+        outcomesWithAnalyses = _.partition(outcomesWithAnalyses, ['dataType', 'network']);
+        $scope.networkOWAs = outcomesWithAnalyses[0];
+        $scope.studyOutcomes = outcomesWithAnalyses[1];
+        $scope.isMissingBaseline = _.find($scope.networkOWAs, function(outcomeWithAnalysis) {
           return !outcomeWithAnalysis.baselineDistribution;
         });
       });

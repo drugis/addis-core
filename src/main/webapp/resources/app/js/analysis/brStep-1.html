@@ -21,7 +21,7 @@
         data-placeholder="no alternative selected" ng-disabled="!editMode.allowEditing"
         on-select="addedAlternative($item)" on-remove="removedAlternative($item)">
         <ui-select-match>{{$item.name}}</ui-select-match>
-        <ui-select-choices repeat="alternative in alternatives | filter: $select.search">
+        <ui-select-choices repeat="alternative in alternatives | orderBy: 'name' | filter: $select.search">
           <div ng-bind-html="alternative.name | highlight: $select.search"></div>
         </ui-select-choices>
       </ui-select>
@@ -29,7 +29,8 @@
         <p>
           <em>
             <i class="fa fa-exclamation-triangle"></i> The following interventions
-            overlap: <span ng-repeat="overlappingIntervention in overlappingInterventions">{{overlappingIntervention.name}};</span> please exclude interventions
+            overlap:
+            <span ng-repeat="overlappingIntervention in overlappingInterventions">{{overlappingIntervention.name}};</span> please exclude interventions
             to fix this.
           </em>
         </p>
@@ -85,8 +86,7 @@
               </div>
               <div ng-if="outcomeWithAnalyses.dataType === 'single-study'" class="columns large-5 medium-12 indent-one">
                 <div class="row">
-                  <study-select studies="studies" outcome="outcomeWithAnalyses" interventions="includedAlternatives"
-                    selection="outcomeWithAnalyses" on-change="saveInclusions"></study-select>
+                  <study-select studies="studies" outcome="outcomeWithAnalyses" interventions="includedAlternatives" selection="outcomeWithAnalyses" on-change="saveInclusions" edit-mode="editMode"></study-select>
                 </div>
               </div>
             </div>
@@ -107,11 +107,13 @@
 
   <div class="row">
     <div class="columns large-12">
-      <button ng-disabled="step1AlertMessages.length || !editMode.allowEditing" type="button"
-        class="primary" ng-click="goToStep2()">Next Step</button>
+      <button ng-if="analysis.benefitRiskNMAOutcomeInclusions.length > 0" ng-disabled="step1AlertMessages.length || !editMode.allowEditing"
+        type="button" class="primary" ng-click="goToStep2()">Set baselines</button>
+      <button ng-if="analysis.benefitRiskNMAOutcomeInclusions.length === 0" ng-disabled="step1AlertMessages.length || !editMode.allowEditing"
+        type="button" class="primary" ng-click="finalizeAndGoToDefaultScenario()">Perform MCDA</button>
       <div ng-repeat="message in step1AlertMessages">
-        <div ng-show="editMode.allowEditing" class="alert">{{message}}</div>
-        <div>
+        <div class="alert">
+          {{message}}
         </div>
       </div>
     </div>

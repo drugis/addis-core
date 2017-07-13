@@ -3,6 +3,22 @@ define(['lodash'], function(_) {
   var dependencies = [];
   var BenefitRiskAnalysisService = function() {
 
+    function addStudiesToOutcomes(outcomesWithAnalyses, studyInclusions, studies) {
+      return _.map(outcomesWithAnalyses, function(outcomeWithAnalyses) {
+        var outcomeWithAnalysesCopy = _.cloneDeep(outcomeWithAnalyses);
+        var inclusion = _.find(studyInclusions, ['outcomeId', outcomeWithAnalysesCopy.outcome.id]);
+        if (inclusion) {
+          outcomeWithAnalysesCopy.dataType = 'single-study';
+          if (inclusion.studyGraphUri) {
+            outcomeWithAnalysesCopy.selectedStudy = _.find(studies, ['studyUri', inclusion.studyGraphUri]);
+          } else {
+            outcomeWithAnalysesCopy.selectedStudy = {};
+          }
+        }
+        return outcomeWithAnalysesCopy;
+      });
+    }
+
     function buildOutcomesWithAnalyses(analysis, outcomes, networkMetaAnalyses) {
       var outcomesById = _.keyBy(outcomes, 'id');
       var outcomesWithAnalysis = _.map(analysis.benefitRiskNMAOutcomeInclusions, function(benefitRiskNMAOutcomeInclusion) {
@@ -173,6 +189,7 @@ define(['lodash'], function(_) {
 
     return {
       addModelsGroup: addModelsGroup,
+      addStudiesToOutcomes: addStudiesToOutcomes,
       compareAnalysesByModels: compareAnalysesByModels,
       buildOutcomeWithAnalyses: buildOutcomeWithAnalyses,
       buildOutcomesWithAnalyses: buildOutcomesWithAnalyses,

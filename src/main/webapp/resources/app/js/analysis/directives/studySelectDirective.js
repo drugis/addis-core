@@ -19,16 +19,18 @@ define(['lodash'], function(_) {
         outcome: '=',
         interventions: '=',
         selection: '=',
-        onChange: '='
+        onChange: '=',
+        editMode: '='
       },
       link: function(scope) {
         if (!scope.selection) {
           scope.selection = {};
         }
         scope.$watch('studies', function() {
-          scope.studyOptions = SingleStudyBenefitRiskService.recalculateGroup(scope.studies);
+          var studyOptions = SingleStudyBenefitRiskService.addMissingOutcomesToStudies(scope.studies, [scope.outcome]);
+          scope.studyOptions = SingleStudyBenefitRiskService.recalculateGroup(studyOptions);
           var oldSelection = scope.selection.selectedStudy;
-          if(oldSelection) {
+          if (oldSelection) {
             scope.selection.selectedStudy = _.find(scope.studyOptions, ['studyUri', oldSelection.studyUri]);
           }
         });

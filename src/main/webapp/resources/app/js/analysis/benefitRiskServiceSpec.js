@@ -9,6 +9,47 @@ define(['angular-mocks'], function(angularMocks) {
       benefitRiskService = BenefitRiskService;
     }));
 
+    describe('addStudiesToOutcomes', function() {
+      it('should set the selected study on the outcomesWithAnalyses if possible', function() {
+        var outcomesWithAnalyses = [{
+          outcome: {
+            id: 1
+          }
+        }, {
+          outcome: {
+            id: 2
+          }
+        }];
+        var studyInclusions = [{
+          studyGraphUri: 'http://study1.uri',
+          outcomeId: 1
+        }, {
+          outcomeId: 2
+        }];
+        var studies = [{
+          studyUri: 'http://study1.uri'
+        }];
+        var result = benefitRiskService.addStudiesToOutcomes(outcomesWithAnalyses, studyInclusions, studies);
+        var expectedResult = [{
+          outcome: {
+            id: 1
+          },
+          selectedStudy: {
+            studyUri: 'http://study1.uri'
+          },
+          dataType: 'single-study'
+        }, {
+          outcome: {
+            id: 2
+          },
+          selectedStudy: {},
+          dataType: 'single-study'
+        }];
+        expect(result).toEqual(expectedResult);
+      });
+
+    });
+
     describe('buildOutcomeWithAnalyses', function() {
       it('should build inclusions when the outcome is included, and ignore excluded outcomes', function() {
         var outcome1 = {

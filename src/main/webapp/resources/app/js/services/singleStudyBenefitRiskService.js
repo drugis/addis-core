@@ -69,7 +69,7 @@ define(['lodash'], function(_) {
       });
     }
 
-    function findMissingOutcomes(selectedOutcomes, study) {
+    function findMissingOutcomes(study, selectedOutcomes) {
       return _.filter(selectedOutcomes, function(selectedOutcome) {
         return noArmMatchingOutcome(selectedOutcome, study);
       });
@@ -77,8 +77,9 @@ define(['lodash'], function(_) {
 
     var addMissingOutcomesToStudies = function(studies, selectedOutcomes) {
       return studies.map(function(study) {
-        study.missingOutcomes = findMissingOutcomes(selectedOutcomes, study);
-        return study;
+        var updatedStudy = _.cloneDeep(study);
+        updatedStudy.missingOutcomes = findMissingOutcomes(updatedStudy, selectedOutcomes);
+        return updatedStudy;
       });
     };
 
@@ -199,7 +200,8 @@ define(['lodash'], function(_) {
       addHasMatchedMixedTreatmentArm: addHasMatchedMixedTreatmentArm,
       isValidStudyOption: isValidStudyOption,
       recalculateGroup: recalculateGroup,
-      getDefaultScenarioIds: getDefaultScenarioIds
+      getDefaultScenarioIds: getDefaultScenarioIds,
+      findMissingOutcomes: findMissingOutcomes
     };
   };
   return dependencies.concat(SingleStudyBenefitRiskService);

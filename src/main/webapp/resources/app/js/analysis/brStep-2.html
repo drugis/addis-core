@@ -24,9 +24,9 @@
     </div>
   </div>
 </div>
-<div class="row">
+<div class="row" ng-if="analysis.benefitRiskNMAOutcomeInclusions.length > 0">
   <div class="columns large-12">
-    <table class="">
+    <table>
       <caption>Baseline distributions</caption>
       <tbody>
         <tr ng-repeat="outcomeWithAnalysis in outcomesWithAnalyses | filter:{outcome: {isIncluded: true}}">

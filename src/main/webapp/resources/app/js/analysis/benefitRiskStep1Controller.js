@@ -4,13 +4,23 @@ define(['lodash', 'angular'], function(_, angular) {
     'ProjectStudiesResource',
     'AnalysisResource', 'InterventionResource',
     'OutcomeResource', 'BenefitRiskService',
-    'ModelResource', 'ProjectResource', 'UserService', 'SingleStudyBenefitRiskService'
+    'ModelResource', 'ProjectResource',
+    'ProjectResource',
+    'ScenarioResource', 'SubProblemResource',
+    'UserService', 'SingleStudyBenefitRiskService',
+    'WorkspaceService',
+    'DEFAULT_VIEW'
   ];
   var BenefitRiskStep1Controller = function($scope, $q, $stateParams, $state,
     ProjectStudiesResource,
     AnalysisResource, InterventionResource,
     OutcomeResource, BenefitRiskService,
-    ModelResource, ProjectResource, UserService, SingleStudyBenefitRiskService) {
+    ModelResource, ProblemResource,
+    ProjectResource,
+    ScenarioResource, SubProblemResource,
+    UserService, SingleStudyBenefitRiskService,
+    WorkspaceService,
+    DEFAULT_VIEW) {
     // functions
     $scope.addedAlternative = addedAlternative;
     $scope.removedAlternative = removedAlternative;
@@ -19,6 +29,7 @@ define(['lodash', 'angular'], function(_, angular) {
     $scope.updateModelSelection = updateModelSelection;
     $scope.goToStep2 = goToStep2;
     $scope.saveInclusions = saveInclusions;
+    $scope.finalizeAndGoToDefaultScenario = finalizeAndGoToDefaultScenario;
 
     // init
     $scope.analysis = AnalysisResource.get($stateParams);
@@ -35,12 +46,15 @@ define(['lodash', 'angular'], function(_, angular) {
       allowEditing: false
     };
     $scope.project.$promise.then(function() {
-      if (UserService.isLoginUserId($scope.project.owner.id) && !$scope.analysis.archived) {
+      if (UserService.isLoginUserId($scope.project.owner.id) && !$scope.analysis.archived && !$scope.analysis.finalized) {
         $scope.editMode.allowEditing = true;
       }
     });
 
-    var promises = [$scope.analysis.$promise, $scope.alternatives.$promise, $scope.outcomes.$promise, $scope.models.$promise,
+    var promises = [$scope.analysis.$promise,
+      $scope.alternatives.$promise,
+      $scope.outcomes.$promise,
+      $scope.models.$promise,
       studiesPromise
     ];
 
@@ -51,9 +65,7 @@ define(['lodash', 'angular'], function(_, angular) {
       var models = _.reject(result[3], 'archived');
       var studies = result[4];
 
-      var outcomeIds = outcomes.map(function(outcome) {
-        return outcome.id;
-      });
+      var outcomeIds = _.map(outcomes, 'id');
 
       $scope.studies = studies;
       $scope.studyArrayLength = studies.length;
@@ -78,19 +90,8 @@ define(['lodash', 'angular'], function(_, angular) {
           })
           .value();
 
-        $scope.outcomesWithAnalyses = _.map(outcomesWithAnalyses, function(outcomeWithAnalyses) {
-          var outcomeWithAnalysesCopy = _.cloneDeep(outcomeWithAnalyses);
-          var inclusion = _.find(analysis.benefitRiskStudyOutcomeInclusions, ['outcomeId', outcomeWithAnalysesCopy.outcome.id]);
-          if (inclusion) {
-            outcomeWithAnalysesCopy.dataType = 'single-study';
-            if (inclusion.studyGraphUri) {
-              outcomeWithAnalysesCopy.selectedStudy = _.find($scope.studies, ['studyUri', inclusion.studyGraphUri]);
-            } else {
-              outcomeWithAnalysesCopy.selectedStudy = {};
-            }
-          }
-          return outcomeWithAnalysesCopy;
-        });
+        $scope.outcomesWithAnalyses = BenefitRiskService.addStudiesToOutcomes(
+          outcomesWithAnalyses, analysis.benefitRiskStudyOutcomeInclusions, $scope.studies);
 
         updateMissingAlternativesForAllOutcomes();
 
@@ -150,6 +151,9 @@ define(['lodash', 'angular'], function(_, angular) {
       }
       if (BenefitRiskService.findOverlappingOutcomes($scope.outcomesWithAnalyses).length > 0) {
         $scope.step1AlertMessages.push('There are overlapping outcomes');
+      }
+      if($scope.analysis.finalized){
+        $scope.step1AlertMessages.push('Analysis is already finalized');
       }
     }
 
@@ -231,8 +235,9 @@ define(['lodash', 'angular'], function(_, angular) {
       $scope.studies = SingleStudyBenefitRiskService.addOverlappingInterventionsToStudies(tempStudies, $scope.includedAlternatives);
       $scope.overlappingInterventions = BenefitRiskService.findOverlappingInterventions($scope.studies);
       _.forEach($scope.outcomesWithAnalyses, function(outcomeWithAnalyses) {
-        if (outcomeWithAnalyses.selectedStudy) {
+        if (!_.isEmpty(outcomeWithAnalyses.selectedStudy)) {
           outcomeWithAnalyses.selectedStudy = _.find($scope.studies, ['studyUri', outcomeWithAnalyses.selectedStudy.studyUri]);
+          outcomeWithAnalyses.selectedStudy.missingOutcomes = SingleStudyBenefitRiskService.findMissingOutcomes(outcomeWithAnalyses.selectedStudy, [outcomeWithAnalyses]);
         }
       });
     }
@@ -287,13 +292,54 @@ define(['lodash', 'angular'], function(_, angular) {
         return {
           analysisId: $scope.analysis.id,
           outcomeId: outcomeWithAnalyses.outcome.id,
-          studyGraphUri: outcomeWithAnalyses.selectedStudy ? outcomeWithAnalyses.selectedStudy.studyUri : undefined 
+          studyGraphUri: outcomeWithAnalyses.selectedStudy ? outcomeWithAnalyses.selectedStudy.studyUri : undefined
         };
       });
       checkStep1Validity();
       updateStudyMissingStuff();
       var saveCommand = analysisToSaveCommand($scope.analysis);
       AnalysisResource.save(saveCommand);
+    }
+
+    function finalizedAnalysisToSaveCommand(analysis, problem) {
+      var analysisToSave = angular.copy(analysis);
+      return {
+        id: analysis.id,
+        projectId: analysis.projectId,
+        analysis: analysisToSave,
+        scenarioState: JSON.stringify(problem, null, 2)
+      };
+    }
+    function finalizeAndGoToDefaultScenario() {
+      $scope.analysis.finalized = true;
+      ProblemResource.get($stateParams).$promise.then(function(problem) {
+        var saveCommand = finalizedAnalysisToSaveCommand($scope.analysis, {
+          problem: WorkspaceService.reduceProblem(problem)
+        });
+        AnalysisResource.save(saveCommand, function() {
+          goToDefaultScenario();
+        });
+      });
+
+    }
+
+    function goToDefaultScenario() {
+      var params = $stateParams;
+      SubProblemResource.query(params).$promise.then(function(subProblems) {
+        var subProblem = subProblems[0];
+        params = _.extend({}, params, {
+          problemId: subProblem.id
+        });
+        ScenarioResource.query(params).$promise.then(function(scenarios) {
+          $state.go(DEFAULT_VIEW, {
+            userUid: $scope.userId,
+            projectId: params.projectId,
+            analysisId: params.analysisId,
+            problemId: subProblem.id,
+            id: scenarios[0].id
+          });
+        });
+      });
     }
 
   };
