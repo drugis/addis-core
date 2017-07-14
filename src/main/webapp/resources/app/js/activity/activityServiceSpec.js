@@ -322,7 +322,6 @@ define(['angular', 'angular-mocks', 'lodash'], function(angular, angularMocks, _
       it('should add the new activity to the graph', function(done) {
         expect(studyServiceMock.saveJsonGraph).toHaveBeenCalledWith(expectedGraph);
         activityService.queryItems().then(function(resultActivities) {
-
           expect(resultActivities.length).toBe(1);
           var activity = resultActivities[0];
           expect(activity.treatments.length).toBe(2);
