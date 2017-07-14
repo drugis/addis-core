@@ -68,7 +68,7 @@ public class ClinicalTrialsImportServiceImpl implements ClinicalTrialsImportServ
   @Override
   public Header importStudy(String commitTitle,
                             String commitDescription,
-                            String datasetUuid,
+                            String datasetUri,
                             String graphUuid,
                             String importStudyRef) throws ClinicalTrialsImportError {
     HttpGet httpGet = new HttpGet(importerServiceLocation + "/" + importStudyRef + "/rdf");
@@ -76,7 +76,7 @@ public class ClinicalTrialsImportServiceImpl implements ClinicalTrialsImportServ
       int responceStatusCode = response.getStatusLine().getStatusCode();
       if (responceStatusCode == HttpStatus.SC_OK) {
         InputStream content = response.getEntity().getContent();
-        return graphWriteRepository.updateGraph(new URI(Namespaces.DATASET_NAMESPACE + datasetUuid), graphUuid, content, commitTitle, commitDescription);
+        return graphWriteRepository.updateGraph(URI.create(datasetUri), graphUuid, content, commitTitle, commitDescription);
       } else {
         throw new ClinicalTrialsImportError("could not import study, errorCode: " + responceStatusCode + " reason:" + response.getStatusLine().getReasonPhrase());
       }
@@ -84,8 +84,6 @@ public class ClinicalTrialsImportServiceImpl implements ClinicalTrialsImportServ
       throw new ClinicalTrialsImportError("could get study data, " + e.toString());
     } catch (UpdateGraphException e) {
       throw new ClinicalTrialsImportError("could not update graph, " + e.toString());
-    } catch (URISyntaxException e) {
-      throw new ClinicalTrialsImportError("could not create URI, " + e.toString());
     }
   }
 }

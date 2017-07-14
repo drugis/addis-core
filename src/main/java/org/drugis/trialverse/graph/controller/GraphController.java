@@ -166,8 +166,9 @@ public class GraphController extends AbstractAddisCoreController {
           throws MethodNotAllowedException, ClinicalTrialsImportError, URISyntaxException, UnsupportedEncodingException {
     logger.trace("import graph");
     URI trialverseDatasetUri = new URI(Namespaces.DATASET_NAMESPACE + datasetUuid);
+    VersionMapping mapping = versionMappingRepository.getVersionMappingByDatasetUrl(trialverseDatasetUri);
     if (datasetReadRepository.isOwner(trialverseDatasetUri, currentUser)) {
-      Header versionHeader = clinicalTrialsImportService.importStudy(commitTitle, commitDescription, datasetUuid, graphUuid, importStudyRef);
+      Header versionHeader = clinicalTrialsImportService.importStudy(commitTitle, commitDescription, mapping.getVersionedDatasetUrl(), graphUuid, importStudyRef);
       trialverseResponse.setHeader(WebConstants.X_EVENT_SOURCE_VERSION, versionHeader.getValue());
       trialverseResponse.setStatus(HttpStatus.OK.value());
     } else {
