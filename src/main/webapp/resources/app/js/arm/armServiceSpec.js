@@ -146,8 +146,6 @@ define(['angular', 'angular-mocks'], function() {
             });
           });
         });
-
-
         rootScope.$digest();
       });
 
@@ -158,6 +156,7 @@ define(['angular', 'angular-mocks'], function() {
           expect(result[1].label).toBe('arm 3 label');
           done();
         });
+        rootScope.$digest();
       });
     });
   });

@@ -343,6 +343,7 @@ define(['angular', 'angular-mocks', 'lodash'], function(angular, angularMocks, _
 
           done();
         });
+        rootScope.$digest();
       });
     });
 
