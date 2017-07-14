@@ -11,7 +11,6 @@ import org.drugis.addis.trialverse.service.impl.ClinicalTrialsImportError;
 import org.drugis.addis.trialverse.service.impl.ClinicalTrialsImportServiceImpl;
 import org.drugis.trialverse.graph.exception.UpdateGraphException;
 import org.drugis.trialverse.graph.repository.GraphWriteRepository;
-import org.drugis.trialverse.util.Namespaces;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
@@ -109,7 +108,7 @@ public class ClinicalTrialsImportServiceTest {
     when(response.getEntity()).thenReturn(entity);
     when(httpClient.execute(any())).thenReturn(response);
     Header mockHeader = mock(Header.class);
-    when(graphWriteRepository.updateGraph(new URI(Namespaces.DATASET_NAMESPACE + datasetUuid),graphUuid, inputStream, commitTitle, commitDesc)).thenReturn(mockHeader);
+    when(graphWriteRepository.updateGraph(URI.create(datasetUuid), graphUuid, inputStream, commitTitle, commitDesc)).thenReturn(mockHeader);
 
     Header result = clinicalTrialsImportService.importStudy(commitTitle, commitDesc, datasetUuid, graphUuid, studyRef);
     assertEquals(mockHeader, result);

@@ -215,7 +215,9 @@ public class GraphControllerTest {
     Header mockHeader = mock(Header.class);
     when(mockHeader.getValue()).thenReturn(versionValue);
 
-    when(clinicalTrialsImportService.importStudy(title, null, datasetUuid, graphUUID, studyRef)).thenReturn(mockHeader);
+    String trialverseDatasetUri = "trialverseDatasetUri";
+    when(versionMappingRepository.getVersionMappingByDatasetUrl(datasetUri)).thenReturn(new VersionMapping(trialverseDatasetUri, "ownerUuid", "addisUri"));
+    when(clinicalTrialsImportService.importStudy(title, null, trialverseDatasetUri, graphUUID, studyRef)).thenReturn(mockHeader);
 
     mockMvc.perform(
             post("/users/" + userHash + "/datasets/" + datasetUuid + "/graphs/" + graphUUID + "/import/" + studyRef)
@@ -225,7 +227,7 @@ public class GraphControllerTest {
             .andExpect(header().string(WebConstants.X_EVENT_SOURCE_VERSION, versionValue));
 
     verify(datasetReadRepository).isOwner(datasetUri, user);
-    verify(clinicalTrialsImportService).importStudy(title, null, datasetUuid, graphUUID, studyRef);
+    verify(clinicalTrialsImportService).importStudy(title, null, trialverseDatasetUri, graphUUID, studyRef);
   }
 
   @Test
