@@ -896,3 +896,57 @@ ALTER TABLE effectsTableExclusion ALTER COLUMN alternativeId TYPE VARCHAR;
 --changeset keijserj:74
 ALTER TABLE effectsTableExclusion RENAME TO effectsTableAlternativeInclusion;
 --rollback ALTER TABLE effectsTableAlternativeInclusion RENAME TO effectsTableExclusion;
+
+--changeset reidd:75
+DROP TABLE remarks;
+ALTER TABLE metaBenefitRiskAnalysis RENAME TO benefitRiskAnalysis;
+INSERT INTO benefitRiskAnalysis(id, problem, finalized) SELECT id, problem,
+  CASE WHEN problem IS NULL THEN false
+  ELSE true END FROM SingleStudyBenefitRiskAnalysis;
+ALTER TABLE mbrOutcomeInclusion RENAME TO BenefitRiskNMAOutcomeInclusion;
+ALTER TABLE BenefitRiskNMAOutcomeInclusion RENAME COLUMN metaBenefitRiskAnalysisId TO analysisId;
+CREATE TABLE BenefitRiskStudyOutcomeInclusion(
+    analysisId INT NOT NULL,
+    outcomeId INT NOT NULL,
+    studyGraphUri VARCHAR,
+    PRIMARY KEY(analysisId, outcomeId),
+    FOREIGN KEY(analysisId) REFERENCES BenefitRiskAnalysis(id),
+    FOREIGN KEY(outcomeId) REFERENCES outcome(id)
+);
+INSERT INTO BenefitRiskStudyOutcomeInclusion (analysisId, studyGraphUri, outcomeId)
+    SELECT id, studyGraphUri, outcomeId
+    FROM SingleStudyBenefitRiskAnalysis INNER JOIN SingleStudyBenefitRiskAnalysis_Outcome ON SingleStudyBenefitRiskAnalysis.id = SingleStudyBenefitRiskAnalysis_Outcome.analysisId;
+DROP TABLE SingleStudyBenefitRiskAnalysis_Outcome;
+DROP TABLE SingleStudyBenefitRiskAnalysis;
+
+--rollback CREATE TABLE SingleStudyBenefitRiskAnalysis (
+--rollback     id INT DEFAULT nextval('shared_analysis_id_seq') NOT NULL,
+--rollback     problem VARCHAR,
+--rollback     studyGraphUri VARCHAR,
+--rollback     PRIMARY KEY (id)
+--rollback );
+--rollback CREATE TABLE SingleStudyBenefitRiskAnalysis_Outcome (
+--rollback     analysisId INT NOT NULL,
+--rollback     outcomeId INT NOT NULL,
+--rollback     PRIMARY KEY (analysisId, outcomeId),
+--rollback     FOREIGN KEY(analysisId) REFERENCES SingleStudyBenefitRiskAnalysis(id),
+--rollback     FOREIGN KEY(outcomeId) REFERENCES outcome(id)
+--rollback );
+--rollback INSERT INTO SingleStudyBenefitRiskAnalysis (id, problem, studyGraphUri)
+--rollback     SELECT DISTINCT analysisId, problem, studyGraphUri FROM BenefitRiskStudyOutcomeInclusion JOIN BenefitRiskAnalysis
+--rollback         ON BenefitRiskAnalysis.id = BenefitRiskStudyOutcomeInclusion.analysisId;
+--rollback INSERT INTO SingleStudyBenefitRiskAnalysis_Outcome (analysisId, outcomeId)
+--rollback     SELECT analysisId, outcomeId
+--rollback     FROM BenefitRiskStudyOutcomeInclusion;
+--rollback ALTER TABLE BenefitRiskStudyOutcomeInclusion DROP CONSTRAINT benefitriskstudyoutcomeinclusion_analysisid_fkey;
+--rollback DELETE FROM benefitRiskAnalysis WHERE id IN (SELECT analysisId FROM BenefitRiskStudyOutcomeInclusion);
+--rollback DROP TABLE BenefitRiskStudyOutcomeInclusion;
+--rollback ALTER TABLE BenefitRiskNMAOutcomeInclusion RENAME COLUMN analysisId TO metaBenefitRiskAnalysisId;
+--rollback ALTER TABLE BenefitRiskNMAOutcomeInclusion RENAME TO mBROutcomeInclusion;
+--rollback ALTER TABLE benefitRiskAnalysis RENAME TO metaBenefitRiskAnalysis;
+--rollback CREATE TABLE remarks (
+--rollback   analysisId INT NOT NULL,
+--rollback   remarks TEXT,
+--rollback   PRIMARY KEY (analysisId),
+--rollback   FOREIGN KEY(analysisId) REFERENCES SingleStudyBenefitRiskAnalysis(id)
+--rollback );
