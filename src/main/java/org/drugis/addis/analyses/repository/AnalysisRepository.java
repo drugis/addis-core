@@ -1,6 +1,6 @@
 package org.drugis.addis.analyses.repository;
 
-import org.drugis.addis.analyses.AbstractAnalysis;
+import org.drugis.addis.analyses.model.AbstractAnalysis;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
 
 import java.util.List;

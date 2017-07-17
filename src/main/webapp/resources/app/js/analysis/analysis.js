@@ -8,13 +8,14 @@ define(function (require) {
     dependencies)
     // controllers
     .controller('AddAnalysisController', require('analysis/addAnalysisController'))
-    .controller('MetaBenefitRiskStep1Controller', require('analysis/metaBenefitRiskStep1Controller'))
-    .controller('MetaBenefitRiskStep2Controller', require('analysis/metaBenefitRiskStep2Controller'))
+    .controller('BenefitRiskStep1Controller', require('analysis/benefitRiskStep1Controller'))
+    .controller('BenefitRiskStep2Controller', require('analysis/benefitRiskStep2Controller'))
     .controller('BenefitRiskController', require('analysis/benefitRiskController'))
-    .controller('MetaBenefitRiskController', require('analysis/metaBenefitRiskController'))
+    .controller('AbstractBenefitRiskController', require('analysis/abstractBenefitRiskController'))
     //services
-    .factory('MetaBenefitRiskService', require('analysis/metaBenefitRiskService'))
-    //filter
+    .factory('BenefitRiskService', require('analysis/benefitRiskService'))
+    //directives
+    .directive('studySelect', require('analysis/directives/studySelectDirective'))
 
     ;
 });

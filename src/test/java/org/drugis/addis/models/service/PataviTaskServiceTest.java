@@ -1,7 +1,7 @@
 package org.drugis.addis.models.service;
 
-import org.drugis.addis.analyses.AbstractAnalysis;
-import org.drugis.addis.analyses.NetworkMetaAnalysis;
+import org.drugis.addis.analyses.model.AbstractAnalysis;
+import org.drugis.addis.analyses.model.NetworkMetaAnalysis;
 import org.drugis.addis.analyses.repository.AnalysisRepository;
 import org.drugis.addis.exception.ProblemCreationException;
 import org.drugis.addis.exception.ResourceDoesNotExistException;

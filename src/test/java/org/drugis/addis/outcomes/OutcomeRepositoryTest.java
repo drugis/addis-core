@@ -1,5 +1,6 @@
 package org.drugis.addis.outcomes;
 
+import com.google.common.collect.Sets;
 import org.drugis.addis.config.JpaRepositoryTestConfig;
 import org.drugis.addis.exception.MethodNotAllowedException;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
@@ -58,7 +59,7 @@ public class OutcomeRepositoryTest {
 
   @Test
   public void testGetByProjectAndIds() throws ResourceDoesNotExistException {
-    List<Outcome> outcome = outcomeRepository.get(1, Arrays.asList(1, 2));
+    List<Outcome> outcome = outcomeRepository.get(1, Sets.newHashSet(1, 2));
     assertEquals(2, outcome.size());
   }
 

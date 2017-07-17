@@ -1,6 +1,6 @@
 package org.drugis.addis.scenarios.service;
 
-import org.drugis.addis.analyses.SingleStudyBenefitRiskAnalysis;
+import org.drugis.addis.analyses.model.BenefitRiskAnalysis;
 import org.drugis.addis.analyses.repository.AnalysisRepository;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.projects.Project;
@@ -37,7 +37,7 @@ public class ScenarioServiceTest {
   private Integer projectId = 1;
   private Integer analysisId = 2;
   private Project project = mock(Project.class);
-  private SingleStudyBenefitRiskAnalysis analysis = mock(SingleStudyBenefitRiskAnalysis.class);
+  private BenefitRiskAnalysis analysis = mock(BenefitRiskAnalysis.class);
   private Integer subProblemId = 100;
   private Scenario scenario = new Scenario(2, subProblemId, "title", "state");
   private SubProblem subProblem = new SubProblem(subProblemId, analysisId, "definition", "title");

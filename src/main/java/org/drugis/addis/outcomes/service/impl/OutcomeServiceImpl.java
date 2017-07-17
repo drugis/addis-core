@@ -1,9 +1,8 @@
 package org.drugis.addis.outcomes.service.impl;
 
-import org.drugis.addis.analyses.AbstractAnalysis;
-import org.drugis.addis.analyses.MetaBenefitRiskAnalysis;
-import org.drugis.addis.analyses.NetworkMetaAnalysis;
-import org.drugis.addis.analyses.SingleStudyBenefitRiskAnalysis;
+import org.drugis.addis.analyses.model.AbstractAnalysis;
+import org.drugis.addis.analyses.model.BenefitRiskAnalysis;
+import org.drugis.addis.analyses.model.NetworkMetaAnalysis;
 import org.drugis.addis.analyses.repository.AnalysisRepository;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.outcomes.Outcome;
@@ -48,13 +47,9 @@ public class OutcomeServiceImpl implements OutcomeService {
               if(analysis instanceof NetworkMetaAnalysis) {
                 NetworkMetaAnalysis nma = (NetworkMetaAnalysis)analysis;
                 return nma.getOutcome() != null && nma.getOutcome().getId().equals(outcomeId);
-              } else if (analysis instanceof SingleStudyBenefitRiskAnalysis) {
-                SingleStudyBenefitRiskAnalysis ssbr = (SingleStudyBenefitRiskAnalysis) analysis;
-                return ssbr.getSelectedOutcomes().stream()
-                        .anyMatch(selectedOutcome -> selectedOutcome.getId().equals(outcomeId));
-              } else if (analysis instanceof MetaBenefitRiskAnalysis) {
-                MetaBenefitRiskAnalysis metabr = (MetaBenefitRiskAnalysis) analysis;
-                return metabr.getMbrOutcomeInclusions().stream()
+              } else if (analysis instanceof BenefitRiskAnalysis) {
+                BenefitRiskAnalysis metabr = (BenefitRiskAnalysis) analysis;
+                return metabr.getBenefitRiskNMAOutcomeInclusions().stream()
                         .anyMatch(outcomeInclusion -> outcomeInclusion.getOutcomeId().equals(outcomeId));
               }
               return false;

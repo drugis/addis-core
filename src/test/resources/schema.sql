@@ -726,3 +726,24 @@ ALTER TABLE effectsTableExclusion ALTER COLUMN alternativeId VARCHAR;
 
 --changeset keijserj:74
 ALTER TABLE effectsTableExclusion RENAME TO effectsTableAlternativeInclusion;
+
+--changeset reidd:75
+DROP TABLE remarks;
+ALTER TABLE metabenefitriskanalysis RENAME TO benefitriskanalysis;
+INSERT INTO benefitriskanalysis(id, problem, finalized) SELECT id, problem, CASE WHEN problem IS NULL THEN false ELSE true END FROM SingleStudyBenefitRiskAnalysis;
+
+ALTER TABLE mbroutcomeinclusion RENAME TO BenefitRiskNMAOutcomeInclusion;
+CREATE TABLE BenefitRiskStudyOutcomeInclusion(
+    analysisId INT NOT NULL,
+    outcomeId INT NOT NULL,
+    studyGraphUri VARCHAR,
+    PRIMARY KEY(analysisId, outcomeId),
+    FOREIGN KEY(analysisId) REFERENCES BenefitRiskAnalysis(id),
+    FOREIGN KEY(outcomeId) REFERENCES outcome(id)
+);
+ALTER TABLE BenefitRiskNMAOutcomeInclusion ALTER COLUMN  metabenefitriskanalysisid RENAME TO analysisId;
+INSERT INTO BenefitRiskStudyOutcomeInclusion(analysisId, studyGraphUri, outcomeId)
+    SELECT id, studyGraphUri, outcomeId
+    FROM SingleStudyBenefitRiskAnalysis INNER JOIN SingleStudyBenefitRiskAnalysis_Outcome ON SingleStudyBenefitRiskAnalysis.id = SingleStudyBenefitRiskAnalysis_Outcome.analysisId;
+DROP TABLE SingleStudyBenefitRiskAnalysis_Outcome;
+DROP TABLE SingleStudyBenefitRiskAnalysis;

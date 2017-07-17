@@ -8,6 +8,7 @@ import org.drugis.addis.trialverse.model.SemanticVariable;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by daan on 3/7/14.
@@ -21,7 +22,7 @@ public interface OutcomeRepository {
 
   Outcome create(Account user, Integer projectId, String name, Integer direction, String motivation, SemanticVariable semanticVariable) throws MethodNotAllowedException, ResourceDoesNotExistException, Exception;
 
-  List<Outcome> get(Integer projectId, List<Integer> outcomeIds);
+  List<Outcome> get(Integer projectId, Set<Integer> outcomeIds);
 
   Boolean isExistingOutcomeName(Integer outcomeId, String name);
 

@@ -23,10 +23,10 @@ public class PerformanceTableBuilder {
       Measurement measurement = pair.getLeft();
       Integer interventionId = pair.getRight();
       if (measurement.getMeasurementTypeURI().equals(ProblemService.DICHOTOMOUS_TYPE_URI)) {
-        performanceTable.add(createBetaDistributionEntry(interventionId, measurement.getVariableUri(),
+        performanceTable.add(createBetaDistributionEntry(interventionId, measurement.getVariableConceptUri(),
                 measurement.getRate(), measurement.getSampleSize()));
       } else if (measurement.getMeasurementTypeURI().equals(ProblemService.CONTINUOUS_TYPE_URI)) {
-        performanceTable.add(createNormalDistributionEntry(interventionId, measurement.getVariableUri(),
+        performanceTable.add(createNormalDistributionEntry(interventionId, measurement.getVariableConceptUri(),
                 measurement.getMean(), measurement.getStdDev(), measurement.getSampleSize(), measurement.getStdErr()));
       } else {
         throw new IllegalArgumentException("Unknown measurement type: " + measurement.getMeasurementTypeURI());
@@ -35,19 +35,19 @@ public class PerformanceTableBuilder {
     return performanceTable;
   }
 
-  private ContinuousMeasurementEntry createNormalDistributionEntry(Integer interventionId, URI criterionUid, Double mean, Double standardDeviation, Integer sampleSize, Double standardError) {
+  private ContinuousMeasurementEntry createNormalDistributionEntry(Integer interventionId, URI criterionUri, Double mean, Double standardDeviation, Integer sampleSize, Double standardError) {
     Double sigma = standardError != null ? standardError : standardDeviation / Math.sqrt(sampleSize);
 
     ContinuousPerformance performance = new ContinuousPerformance(new ContinuousPerformanceParameters(mean, sigma));
-    return new ContinuousMeasurementEntry(interventionId, criterionUid, performance);
+    return new ContinuousMeasurementEntry(interventionId, criterionUri.toString(), performance);
   }
 
-  private RateMeasurementEntry createBetaDistributionEntry(Integer interventonId, URI criterionUri, Integer rate, Integer sampleSize) {
+  private RateMeasurementEntry createBetaDistributionEntry(Integer interventionId, URI criterionUri, Integer rate, Integer sampleSize) {
     int alpha = rate + 1;
     int beta = sampleSize - rate + 1;
 
     RatePerformance performance = new RatePerformance(new RatePerformanceParameters(alpha, beta));
-    return new RateMeasurementEntry(interventonId, criterionUri, performance);
+    return new RateMeasurementEntry(interventionId, criterionUri.toString(), performance);
   }
 
 }

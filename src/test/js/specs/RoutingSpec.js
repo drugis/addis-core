@@ -31,12 +31,12 @@ define(['angular', 'angular-mocks', 'jQuery', 'app'], function () {
         analysisId: 2
       })).toEqual('#/users/42/projects/1/nma/2');
     });
-    it('should navigate to #/projects/1/ssbr/2 ', function () {
-      expect($state.href('singleStudyBenefitRisk', {
+    it('should navigate to #/projects/1/br/2 ', function () {
+      expect($state.href('BenefitRisk', {
         userUid: 1,
         projectId: 2,
         analysisId: 3
-      })).toEqual('#/users/1/projects/2/ssbr/3');
+      })).toEqual('#/users/1/projects/2/br/3');
     });
   });
 });
