@@ -8,14 +8,14 @@ PREFIX entity: <http://trials.drugis.org/entities/>
 PREFIX concept: <http://trials.drugis.org/concepts/>
 PREFIX instance: <http://trials.drugis.org/instances/>
 PREFIX graph: <http://trials.drugis.org/graphs/>
-PREFIX qudt: <http://qudt.org/schema/qudt#> 
+PREFIX qudt: <http://qudt.org/schema/qudt#>
 
 DELETE {
   ?unitNode a ?concept .
 }
 INSERT {
   ?unitNode owl:sameAs ?concept ;
-    a ontology:Unit . 
+    a ontology:Unit .
 }
 WHERE {
   ?blankNode ontology:unit ?unitNode .
@@ -24,7 +24,7 @@ WHERE {
 };
 
 INSERT {
-  ?unitNode qudt:conversionMultiplier 1.000000e-03 .
+  ?unitNode qudt:conversionMultiplier 1.0E-3 .
 }
 WHERE {
   ?blankNode ontology:unit ?unitNode .
@@ -33,7 +33,7 @@ WHERE {
 };
 
 INSERT {
-  ?unitNode qudt:conversionMultiplier 1.000000e-06 .
+  ?unitNode qudt:conversionMultiplier 1.0E-6 .
 }
 WHERE {
   ?blankNode ontology:unit ?unitNode .
