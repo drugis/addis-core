@@ -21,7 +21,7 @@ import static org.junit.Assert.assertEquals;
  */
 public class TrialverseIOUtilsServiceTest {
 
-  TrialverseIOUtilsService trialverseIOUtilsService;
+  private TrialverseIOUtilsService trialverseIOUtilsService;
 
   @Before
   public void init() {
@@ -65,11 +65,10 @@ public class TrialverseIOUtilsServiceTest {
 
     String expected = "{\n" +
             "  \"@id\" : \"http://test.com/asd\",\n" +
-            "  \"http://something\" : \"c\",\n" +
+            "  \"something\" : \"c\",\n" +
             "  \"@context\" : {\n" +
             "    \"something\" : {\n" +
-            "      \"@id\" : \"http://something\",\n" +
-            "      \"@type\" : \"http://www.w3.org/2001/XMLSchema#string\"\n" +
+            "      \"@id\" : \"http://something\"\n" +
             "    }\n" +
             "  }\n" +
             "}";

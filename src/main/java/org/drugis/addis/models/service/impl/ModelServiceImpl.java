@@ -1,6 +1,7 @@
 package org.drugis.addis.models.service.impl;
 
-import org.drugis.addis.analyses.AbstractAnalysis;
+import com.google.common.collect.Sets;
+import org.drugis.addis.analyses.model.AbstractAnalysis;
 import org.drugis.addis.analyses.repository.AnalysisRepository;
 import org.drugis.addis.exception.MethodNotAllowedException;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
@@ -22,6 +23,7 @@ import java.sql.SQLException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -103,7 +105,7 @@ public class ModelServiceImpl implements ModelService {
 
   @Override
   public List<Model> query(Integer analysisId) throws SQLException, IOException {
-    return addRunStatusToModels(modelRepository.findByAnalysis(analysisId));
+    return addRunStatusToModels(Sets.newHashSet(modelRepository.findByAnalysis(analysisId)));
   }
 
   @Override
@@ -139,7 +141,7 @@ public class ModelServiceImpl implements ModelService {
 
   @Override
   public List<Model> queryModelsByProject(Integer projectId) throws SQLException, IOException {
-    List<Model> models = modelRepository.findModelsByProject(projectId);
+    Set<Model> models = Sets.newHashSet(modelRepository.findModelsByProject(projectId));
     return addRunStatusToModels(models);
   }
 
@@ -164,21 +166,25 @@ public class ModelServiceImpl implements ModelService {
   }
 
   @Override
-  public List<Model> get(List<Integer> modelIds) throws SQLException, IOException {
-    return addRunStatusToModels(modelRepository.get(modelIds));
+  public List<Model> get(Set<Integer> modelIds) throws SQLException, IOException {
+    return addRunStatusToModels(Sets.newHashSet(modelRepository.get(modelIds)));
   }
 
   @Override
   public Model find(Integer modelId) throws IOException, SQLException {
-    return addRunStatusToModels(Collections.singletonList(modelRepository.find(modelId))).get(0);
+    return addRunStatusToModels(Sets.newHashSet(modelRepository.find(modelId))).get(0);
   }
 
   @Override
   public Model get(Integer modelId) throws IOException, SQLException {
-    return addRunStatusToModels(Collections.singletonList(modelRepository.get(modelId))).get(0);
+    return addRunStatusToModels(Sets.newHashSet(modelRepository.get(modelId))).get(0);
   }
 
   private List<Model> addRunStatusToModels(List<Model> models) throws SQLException, IOException {
+    return addRunStatusToModels(Sets.newHashSet(models));
+  }
+
+  private List<Model> addRunStatusToModels(Set<Model> models) throws SQLException, IOException {
     List<URI> taskUrls = models.stream()
             .filter(model -> model.getTaskUrl() != null)
             .map(Model::getTaskUrl).collect(Collectors.toList());

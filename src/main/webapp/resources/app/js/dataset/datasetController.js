@@ -17,7 +17,7 @@ define(['lodash'],
       $scope.showDeleteStudyDialog = showDeleteStudyDialog;
       $scope.onStudyFilterChange = onStudyFilterChange;
       $scope.toggleFilterOptions = toggleFilterOptions;
-      
+
       // vars
       $scope.userUid = $stateParams.userUid;
       $scope.datasetUuid = $stateParams.datasetUuid;
@@ -35,13 +35,13 @@ define(['lodash'],
       $scope.datasetConcepts = loadConcepts(); // scope placement for child states
       $scope.datasetConcepts.then(function(concepts) {
         $scope.interventions = _.chain(concepts['@graph'])
-        .filter(['@type', 'ontology:Drug'])
-        .sortBy(['label'])
-        .value();
+          .filter(['@type', 'ontology:Drug'])
+          .sortBy(['label'])
+          .value();
         $scope.variables = _.chain(concepts['@graph'])
-        .filter(['@type', 'ontology:Variable'])
-        .sortBy(['label'])
-        .value();
+          .filter(['@type', 'ontology:Variable'])
+          .sortBy(['label'])
+          .value();
       });
 
       if ($scope.isHeadView) {
@@ -51,6 +51,7 @@ define(['lodash'],
       }
 
       loadHistory();
+
       function loadHistory() {
         var historyCoords = {
           userUid: $stateParams.userUid,
@@ -110,16 +111,20 @@ define(['lodash'],
       }
 
       function getDataset(resource) {
+        function getPurlProperty(response, propertyName) {
+          return response[propertyName] ? response[propertyName] : response['http://purl.org/dc/terms/' + propertyName];
+        }
         resource.getForJson($stateParams).$promise.then(function(response) {
           $scope.dataset = {
             datasetUuid: $scope.datasetUuid,
-            title: response['http://purl.org/dc/terms/title'],
-            comment: response['http://purl.org/dc/terms/description'],
-            creator: response['http://purl.org/dc/terms/creator']
+            title: getPurlProperty(response, 'title'),
+            comment: getPurlProperty(response, 'description'),
+            creator: getPurlProperty(response, 'creator')
           };
           $scope.isEditingAllowed = isEditingAllowed();
         });
       }
+
 
       function loadStudiesWithDetail() {
         var studiesWithDetailPromise = StudiesWithDetailsService.get($stateParams.userUid, $stateParams.datasetUuid, $stateParams.versionUuid);
@@ -128,7 +133,7 @@ define(['lodash'],
           var studiesWithDetail = result[0] instanceof Array ? result[0] : [];
           var treatmentActivities = result[1] instanceof Array ? result[1] : [];
           StudiesWithDetailsService.addActivitiesToStudies(studiesWithDetail, treatmentActivities);
-          $scope.studiesWithDetail = studiesWithDetail ;
+          $scope.studiesWithDetail = studiesWithDetail;
           $scope.filteredStudies = $scope.studiesWithDetail;
         });
 

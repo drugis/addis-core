@@ -2,7 +2,6 @@ package org.drugis.addis.outcomes.repository.impl;
 
 import org.drugis.addis.exception.MethodNotAllowedException;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
-import org.drugis.addis.interventions.model.AbstractIntervention;
 import org.drugis.addis.outcomes.Outcome;
 import org.drugis.addis.outcomes.repository.OutcomeRepository;
 import org.drugis.addis.projects.Project;
@@ -20,6 +19,7 @@ import javax.persistence.TypedQuery;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by daan on 3/7/14.
@@ -73,7 +73,7 @@ public class OutcomeRepositoryImpl implements OutcomeRepository {
   }
 
   @Override
-  public List<Outcome> get(Integer projectId, List<Integer> outcomeIds) {
+  public List<Outcome> get(Integer projectId, Set<Integer> outcomeIds) {
     if (outcomeIds.isEmpty()) {
       return Collections.emptyList();
     }

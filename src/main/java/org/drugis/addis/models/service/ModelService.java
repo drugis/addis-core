@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.security.Principal;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Set;
 
 ;
 
@@ -34,7 +35,7 @@ public interface ModelService {
 
   Model find(Integer modelId) throws IOException, SQLException;
 
-  List<Model> get(List<Integer> modelIds) throws SQLException, IOException;
+  List<Model> get(Set<Integer> modelIds) throws SQLException, IOException;
 
   Model get(Integer modelId) throws IOException, SQLException;
 

@@ -146,8 +146,6 @@ define(['angular', 'angular-mocks'], function() {
             });
           });
         });
-
-
         rootScope.$digest();
       });
 

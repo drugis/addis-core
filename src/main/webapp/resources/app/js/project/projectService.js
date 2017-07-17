@@ -47,10 +47,9 @@ define(['lodash'], function(_) {
       var matcherFunction = function(analysis, outcome) {
         if (analysis.analysisType === 'Evidence synthesis') {
           return analysis.outcome && analysis.outcome.id === outcome.id;
-        } else if (analysis.analysisType === 'Benefit-risk analysis based on a single study') {
-          return _.find(analysis.selectedOutcomes, ['id', outcome.id]);
-        } else if (analysis.analysisType === 'Benefit-risk analysis based on meta-analyses') {
-          return _.find(analysis.mbrOutcomeInclusions, ['outcomeId', outcome.id]);
+        } else if (analysis.analysisType === 'Benefit-risk analysis') {
+          return _.find(analysis.benefitRiskStudyOutcomeInclusions, ['outcomeId', outcome.id]) ||
+             _.find(analysis.benefitRiskNMAOutcomeInclusions, ['outcomeId', outcome.id]);
         }
 
       };

@@ -42,31 +42,20 @@ define(['lodash'], function(_) {
       return complement.concat(target);
     };
 
-    var findMissing = function(searchList, optionList, comparatorFunction) {
+    function findMissing(searchList, optionList, comparatorFunction) {
       return _.filter(searchList, function(searchItem) {
         return !_.find(optionList, function(option) {
           return comparatorFunction(option, searchItem);
         });
       });
-    };
+    }
 
-    var isValidStudyOption = function(study) {
+    function isValidStudyOption(study) {
       var noMissingOutcomes = study.missingOutcomes ? study.missingOutcomes.length === 0 : true;
       var noMissingInterventions = study.missingInterventions ? study.missingInterventions.length === 0 : true;
       var noMixedTreatmentArm = !study.hasMatchedMixedTreatmentArm;
       return noMissingOutcomes && noMissingInterventions && noMixedTreatmentArm;
-    };
-
-    // Add a 'group' property for sorting alphabetically within groups while placing the 'valid' group on top of the options list
-    var addGroup = function(study) {
-      if (isValidStudyOption(study)) {
-        study.group = 0;
-        study.groupLabel = 'Compatible studies';
-      } else {
-        study.group = 1;
-        study.groupLabel = 'Incompatible Studies';
-      }
-    };
+    }
 
     function isSameIntervention(studyInterventionUri, selectedIntervention) {
       return selectedIntervention.semanticInterventionUri === studyInterventionUri;
@@ -75,16 +64,24 @@ define(['lodash'], function(_) {
     function noArmMatchingOutcome(selectedOutcome, study) {
       return !_.find(study.trialDataArms, function(arm) {
         return _.find(arm.measurements[study.defaultMeasurementMoment], function(measurement) {
-          return measurement.variableConceptUri === selectedOutcome.semanticOutcomeUri;
+          return measurement.variableConceptUri === selectedOutcome.outcome.semanticOutcomeUri;
         });
       });
     }
 
-    function findMissingOutcomes(selectedOutcomes, study) {
+    function findMissingOutcomes(study, selectedOutcomes) {
       return _.filter(selectedOutcomes, function(selectedOutcome) {
         return noArmMatchingOutcome(selectedOutcome, study);
       });
     }
+
+    var addMissingOutcomesToStudies = function(studies, selectedOutcomes) {
+      return studies.map(function(study) {
+        var updatedStudy = _.cloneDeep(study);
+        updatedStudy.missingOutcomes = findMissingOutcomes(updatedStudy, selectedOutcomes);
+        return updatedStudy;
+      });
+    };
 
     function noArmMatchingIntervention(intervention, trialDataArms) {
       return !_.find(trialDataArms, function(arm) {
@@ -98,32 +95,34 @@ define(['lodash'], function(_) {
       });
     }
 
-    var addMissingOutcomesToStudies = function(studies, selectedOutcomes) {
-      return studies.map(function(study) {
-        study.missingOutcomes = findMissingOutcomes(selectedOutcomes, study);
-        return study;
-      });
-    };
-
-    var addMissingInterventionsToStudies = function(studies, selectedInterventions) {
+    function addMissingInterventionsToStudies(studies, selectedInterventions) {
       return studies.map(function(study) {
         study.missingInterventions = findMissingInterventions(selectedInterventions, study.trialDataArms);
         return study;
       });
-    };
+    }
 
-    var addOverlappingInterventionsToStudies = function(studies, selectedInterventions) {
+    function addOverlappingInterventionsToStudies(studies, selectedInterventions) {
       return _.map(studies, function(study) {
         study.overlappingInterventions = findOverlappingIntervention(selectedInterventions, study);
         return study;
       });
-    };
+    }
 
-    var recalculateGroup = function(studies) {
-      _.each(studies, function(study) {
-        addGroup(study);
+    // Add a 'group' property for sorting alphabetically within groups while placing the 'valid' group on top of the options list
+    function recalculateGroup(studies) {
+      return _.map(studies, function(study) {
+        var modifiedStudy = {};
+        if (isValidStudyOption(study)) {
+          modifiedStudy.group = 0;
+          modifiedStudy.groupLabel = 'Compatible studies';
+        } else {
+          modifiedStudy.group = 1;
+          modifiedStudy.groupLabel = 'Incompatible Studies';
+        }
+        return _.merge({}, study, modifiedStudy);
       });
-    };
+    }
 
     function findOverlappingIntervention(selectedInterventions, study) {
       return _.reduce(study.trialDataArms, function(accum, arm) {
@@ -179,13 +178,16 @@ define(['lodash'], function(_) {
       });
     }
 
-    var addHasMatchedMixedTreatmentArm = function(studies, selectedInterventions) {
-      _.each(studies, function(study) {
-        study.hasMatchedMixedTreatmentArm = _.some(study.treatmentArms, function(treatmentArm) {
-          return treatmentArm.interventionUids.length > 1 && findAllMatchingInterventions(selectedInterventions, treatmentArm).length > 0;
-        });
+    function addHasMatchedMixedTreatmentArm(studies, selectedInterventions) {
+      return _.map(studies, function(study) {
+        var modifiedStudy = {
+          hasMatchedMixedTreatmentArm: _.some(study.treatmentArms, function(treatmentArm) {
+            return treatmentArm.interventionUids.length > 1 && findAllMatchingInterventions(selectedInterventions, treatmentArm).length > 0;
+          })
+        };
+        return _.merge({}, study, modifiedStudy);
       });
-    };
+    }
 
     return {
       getProblem: getProblem,
@@ -198,7 +200,8 @@ define(['lodash'], function(_) {
       addHasMatchedMixedTreatmentArm: addHasMatchedMixedTreatmentArm,
       isValidStudyOption: isValidStudyOption,
       recalculateGroup: recalculateGroup,
-      getDefaultScenarioIds: getDefaultScenarioIds
+      getDefaultScenarioIds: getDefaultScenarioIds,
+      findMissingOutcomes: findMissingOutcomes
     };
   };
   return dependencies.concat(SingleStudyBenefitRiskService);

@@ -1,11 +1,10 @@
 package org.drugis.addis.analyses.service.impl;
 
 import org.apache.commons.lang.NotImplementedException;
-import org.drugis.addis.analyses.*;
+import org.drugis.addis.analyses.model.*;
 import org.drugis.addis.analyses.repository.AnalysisRepository;
-import org.drugis.addis.analyses.repository.MetaBenefitRiskAnalysisRepository;
+import org.drugis.addis.analyses.repository.BenefitRiskAnalysisRepository;
 import org.drugis.addis.analyses.repository.NetworkMetaAnalysisRepository;
-import org.drugis.addis.analyses.repository.SingleStudyBenefitRiskAnalysisRepository;
 import org.drugis.addis.analyses.service.AnalysisService;
 import org.drugis.addis.covariates.Covariate;
 import org.drugis.addis.covariates.CovariateRepository;
@@ -17,9 +16,7 @@ import org.drugis.addis.interventions.model.InterventionSet;
 import org.drugis.addis.interventions.model.SingleIntervention;
 import org.drugis.addis.interventions.repository.InterventionRepository;
 import org.drugis.addis.interventions.service.InterventionService;
-import org.drugis.addis.models.Model;
 import org.drugis.addis.models.service.ModelService;
-import org.drugis.addis.outcomes.Outcome;
 import org.drugis.addis.outcomes.repository.OutcomeRepository;
 import org.drugis.addis.projects.Project;
 import org.drugis.addis.projects.repository.ProjectRepository;
@@ -53,10 +50,7 @@ public class AnalysisServiceImpl implements AnalysisService {
   private NetworkMetaAnalysisRepository networkMetaAnalysisRepository;
 
   @Inject
-  private SingleStudyBenefitRiskAnalysisRepository singleStudyBenefitRiskAnalysisRepository;
-
-  @Inject
-  private MetaBenefitRiskAnalysisRepository metaBenefitRiskAnalysisRepository;
+  private BenefitRiskAnalysisRepository benefitRiskAnalysisRepository;
 
   @Inject
   private ProjectService projectService;
@@ -112,70 +106,15 @@ public class AnalysisServiceImpl implements AnalysisService {
   }
 
   @Override
-  public List<MbrOutcomeInclusion> buildInitialOutcomeInclusions(Integer projectId, Integer metabenefitRiskAnalysisId) throws SQLException, IOException {
-    Collection<Outcome> outcomes = outcomeRepository.query(projectId);
-    List<Integer> outcomeIds = outcomes.stream()
-            .map(Outcome::getId)
-            .collect(Collectors.toList());
-    List<NetworkMetaAnalysis> networkMetaAnalyses = networkMetaAnalysisRepository.queryByOutcomes(projectId, outcomeIds);
-    List<Model> models = modelService.findNetworkModelsByProject(projectId);
-    return outcomes.stream()
-            .filter(o -> findValidNetworkMetaAnalysis(networkMetaAnalyses, models, o).isPresent())
-            .map(o -> {
-              //noinspection ConstantConditions -- already checked in filter
-              NetworkMetaAnalysis validNma = findValidNetworkMetaAnalysis(networkMetaAnalyses, models, o).get();
-              return new MbrOutcomeInclusion(metabenefitRiskAnalysisId, o.getId(), validNma.getId(), selectModelId(validNma, models));
-            })
-            .collect(Collectors.toList());
-  }
-
-  private Optional<NetworkMetaAnalysis> findValidNetworkMetaAnalysis(List<NetworkMetaAnalysis> networkMetaAnalyses, List<Model> models, Outcome o) {
-    return networkMetaAnalyses
-            .stream()
-            .filter(nma -> nma.getOutcome() != null && Objects.equals(nma.getOutcome().getId(), o.getId()))
-            .filter(nma -> analysisHasModel(models, nma))
-            .findFirst();
-  }
-
-  private Integer selectModelId(NetworkMetaAnalysis networkMetaAnalysis, List<Model> consistencyModels) {
-
-    List<Model> analysisModels = consistencyModels.stream()
-        .filter(model -> !model.getArchived() && model.getAnalysisId().equals(networkMetaAnalysis.getId()))
-        .collect(Collectors.toList());
-    if (networkMetaAnalysis.getPrimaryModel() != null) {
-      Optional<Model> primaryModel = analysisModels.stream()
-              .filter(m -> m.getId().equals(networkMetaAnalysis.getPrimaryModel()))
-              .findFirst();
-      return primaryModel.orElse(null).getId();
-    } else {
-      return analysisModels.stream()
-              .sorted(Comparator.comparing(Model::getTitle))
-              .findFirst().orElse(null).getId();
-    }
-  }
-
-  private boolean analysisHasModel(List<Model> models, NetworkMetaAnalysis nma) {
-    return models
-            .stream()
-            .anyMatch(m -> m.getAnalysisId().equals(nma.getId()) && ! m.getArchived());
-  }
-
-  @Override
   public NetworkMetaAnalysis createNetworkMetaAnalysis(Account user, AnalysisCommand analysisCommand) throws ResourceDoesNotExistException, MethodNotAllowedException {
     projectService.checkProjectExistsAndModifiable(user, analysisCommand.getProjectId());
     return networkMetaAnalysisRepository.create(analysisCommand);
   }
 
   @Override
-  public SingleStudyBenefitRiskAnalysis createSingleStudyBenefitRiskAnalysis(Account user, AnalysisCommand analysisCommand) throws ResourceDoesNotExistException, MethodNotAllowedException {
+  public BenefitRiskAnalysis createBenefitRiskAnalysis(Account user, AnalysisCommand analysisCommand) throws MethodNotAllowedException, SQLException, IOException, ResourceDoesNotExistException {
     projectService.checkProjectExistsAndModifiable(user, analysisCommand.getProjectId());
-    return singleStudyBenefitRiskAnalysisRepository.create(analysisCommand);
-  }
-
-  @Override
-  public MetaBenefitRiskAnalysis createMetaBenefitRiskAnalysis(Account user, AnalysisCommand analysisCommand) throws MethodNotAllowedException, SQLException, IOException, ResourceDoesNotExistException {
-    projectService.checkProjectExistsAndModifiable(user, analysisCommand.getProjectId());
-    return metaBenefitRiskAnalysisRepository.create(user, analysisCommand);
+    return benefitRiskAnalysisRepository.create(user, analysisCommand);
   }
 
   @Override
@@ -241,15 +180,6 @@ public class AnalysisServiceImpl implements AnalysisService {
 
       trialData = triplestoreService.getNetworkData(namespaceUid, datasetVersion,
               networkMetaAnalysis.getOutcome().getSemanticOutcomeUri(), includedInterventionUris, includedCovariates);
-
-    } else if (analysis instanceof SingleStudyBenefitRiskAnalysis) {
-      SingleStudyBenefitRiskAnalysis singleStudyBenefitRiskAnalysis = (SingleStudyBenefitRiskAnalysis) analysis;
-
-      Set<URI> outcomeUris = singleStudyBenefitRiskAnalysis.getSelectedOutcomes().stream().map(Outcome::getSemanticOutcomeUri).collect(Collectors.toSet());
-
-      trialData = triplestoreService.getSingleStudyData(namespaceUid,
-              singleStudyBenefitRiskAnalysis.getStudyGraphUri(), datasetVersion, outcomeUris, includedInterventionUris);
-
     } else {
       throw new NotImplementedException("not yet implemented for other analysis types");
     }

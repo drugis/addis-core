@@ -65,22 +65,22 @@ import static org.mockito.Mockito.*;
 public class DatasetReadRepositoryTest {
 
   @Mock
-  JenaFactory jenaFactory;
+  private JenaFactory jenaFactory;
 
   @Mock
-  VersionMappingRepository versionMappingRepository;
+  private VersionMappingRepository versionMappingRepository;
 
   @Mock
-  RestTemplate restTemplate;
+  private RestTemplate restTemplate;
 
   @Mock
-  AccountRepository accountRepository;
+  private AccountRepository accountRepository;
 
   @Mock
-  HttpClient httpClient;
+  private HttpClient httpClient;
 
   @InjectMocks
-  DatasetReadRepository datasetReadRepository;
+  private DatasetReadRepository datasetReadRepository;
 
   @Before
   public void init() throws IOException {
@@ -155,12 +155,11 @@ public class DatasetReadRepositoryTest {
             "    xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n" +
             "    xmlns:j.0=\"http://purl.org/dc/terms/\"\n" +
             "    xmlns:j.1=\"http://trials.drugis.org/ontology#\"\n" +
-            "    xmlns:j.2=\"http://rdfs.org/ns/void#\" > \n" +
-            "  <rdf:Description rdf:about=\"http://trials.drugis.org/datasets/uuid\">\n" +
+            "    xmlns:j.2=\"http://rdfs.org/ns/void#\">\n" +
+            "  <j.1:Dataset rdf:about=\"http://trials.drugis.org/datasets/uuid\">\n" +
             "    <j.0:creator>itsame</j.0:creator>\n" +
-            "    <rdf:type rdf:resource=\"http://trials.drugis.org/ontology#Dataset\"/>\n" +
             "    <rdf:type rdf:resource=\"http://rdfs.org/ns/void#Dataset\"/>\n" +
-            "  </rdf:Description>\n" +
+            "  </j.1:Dataset>\n" +
             "</rdf:RDF>\n";
     assertEquals(expectedGraph, writer.toString());
   }

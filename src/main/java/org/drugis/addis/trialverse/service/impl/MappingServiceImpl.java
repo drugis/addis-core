@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
 import java.net.URI;
-import java.net.URISyntaxException;
 
 /**
  * Created by daan on 9-2-16.
@@ -20,20 +19,20 @@ import java.net.URISyntaxException;
 public class MappingServiceImpl implements MappingService {
 
   @Inject
-  VersionMappingRepository versionMappingRepository;
+  private VersionMappingRepository versionMappingRepository;
 
   @Inject
-  AccountRepository accountRepository;
+  private AccountRepository accountRepository;
 
   @Override
-  public String getVersionedUuid(String namespaceUid) throws URISyntaxException {
-    VersionMapping mapping = versionMappingRepository.getVersionMappingByDatasetUrl(new URI(Namespaces.DATASET_NAMESPACE + namespaceUid));
+  public String getVersionedUuid(String namespaceUid) {
+    VersionMapping mapping = versionMappingRepository.getVersionMappingByDatasetUrl(URI.create(Namespaces.DATASET_NAMESPACE + namespaceUid));
     return mapping.getVersionedDatasetUri().toString().split("/datasets/")[1];
   }
 
   @Override
-  public TriplestoreUuidAndOwner getVersionedUuidAndOwner(String namespaceUuid) throws URISyntaxException {
-    VersionMapping mapping = versionMappingRepository.getVersionMappingByDatasetUrl(new URI(Namespaces.DATASET_NAMESPACE + namespaceUuid));
+  public TriplestoreUuidAndOwner getVersionedUuidAndOwner(String namespaceUuid) {
+    VersionMapping mapping = versionMappingRepository.getVersionMappingByDatasetUrl(URI.create(Namespaces.DATASET_NAMESPACE + namespaceUuid));
     String versionedUuid = mapping.getVersionedDatasetUri().toString().split("/datasets/")[1];
     Account account = accountRepository.findAccountByEmail(mapping.getOwnerUuid());
     return new TriplestoreUuidAndOwner(versionedUuid, account.getId());

@@ -96,6 +96,7 @@ define(['angular', 'angular-mocks', 'controllers'], function() {
       mockInterventions.$promise = interventionDeferred.promise;
       trialverseTrialDataDeferred = $q.defer();
       mockTrialData.$promise = trialverseTrialDataDeferred.promise;
+
       scope = $rootScope;
       scope.analysis = mockAnalysis;
       scope.project = mockProject;
@@ -107,7 +108,7 @@ define(['angular', 'angular-mocks', 'controllers'], function() {
       EvidenceTableResource = jasmine.createSpyObj('EvidenceTableResource', ['query', 'get']);
       EvidenceTableResource.query.and.returnValue(mockTrialData);
       analysisService = jasmine.createSpyObj('AnalysisService', ['isNetworkDisconnected']);
-      analysisResource = jasmine.createSpyObj('AnalysisResource',['save']);
+      analysisResource = jasmine.createSpyObj('AnalysisResource', ['save']);
       networkMetaAnalysisService = jasmine.createSpyObj('NetworkMetaAnalysisService', [
         'addInclusionsToCovariates',
         'addInclusionsToInterventions',

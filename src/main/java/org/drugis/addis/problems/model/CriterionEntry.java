@@ -7,26 +7,26 @@ import java.util.List;
  * Created by connor on 25-3-14.
  */
 public class CriterionEntry {
-  private URI criterionUri;
+  private String criterion;
   private List<Double> scale;
   private PartialValueFunction pvf;
   private String title;
   private String unitOfMeasurement;
 
-  public CriterionEntry(URI criterionUri, String title) {
-    this(criterionUri, title, null, null, null);
+  public CriterionEntry(String criterion, String title) {
+    this(criterion, title, null, null, null);
   }
 
-  public CriterionEntry(URI criterionUri, String title, List<Double> scale, PartialValueFunction partialValueFunction, String unitOfMeasurement) {
-    this.criterionUri = criterionUri;
+  public CriterionEntry(String criterion, String title, List<Double> scale, PartialValueFunction partialValueFunction, String unitOfMeasurement) {
+    this.criterion = criterion;
     this.title = title;
     this.scale = scale;
     this.pvf = partialValueFunction;
     this.unitOfMeasurement = unitOfMeasurement;
   }
 
-  public URI getCriterionUri() {
-    return criterionUri;
+  public String getCriterion() {
+    return criterion;
   }
 
   public String getTitle() {
@@ -52,7 +52,7 @@ public class CriterionEntry {
 
     CriterionEntry that = (CriterionEntry) o;
 
-    if (!criterionUri.equals(that.criterionUri)) return false;
+    if (!criterion.equals(that.criterion)) return false;
     if (!scale.equals(that.scale)) return false;
     if (pvf != null ? !pvf.equals(that.pvf) : that.pvf != null) return false;
     if (!title.equals(that.title)) return false;
@@ -62,7 +62,7 @@ public class CriterionEntry {
 
   @Override
   public int hashCode() {
-    int result = criterionUri.hashCode();
+    int result = criterion.hashCode();
     result = 31 * result + scale.hashCode();
     result = 31 * result + (pvf != null ? pvf.hashCode() : 0);
     result = 31 * result + title.hashCode();

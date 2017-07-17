@@ -900,9 +900,13 @@ ALTER TABLE effectsTableExclusion RENAME TO effectsTableAlternativeInclusion;
 --changeset reidd:75
 DROP TABLE remarks;
 ALTER TABLE metaBenefitRiskAnalysis RENAME TO benefitRiskAnalysis;
+<<<<<<< HEAD
 INSERT INTO benefitRiskAnalysis(id, problem, finalized) SELECT id, problem,
   CASE WHEN problem IS NULL THEN false
   ELSE true END FROM SingleStudyBenefitRiskAnalysis;
+=======
+INSERT INTO benefitRiskAnalysis(id, problem, finalized) SELECT id, problem, CASE WHEN problem IS NULL THEN false ELSE true END FROM SingleStudyBenefitRiskAnalysis;
+>>>>>>> feature/brMerge
 ALTER TABLE mbrOutcomeInclusion RENAME TO BenefitRiskNMAOutcomeInclusion;
 ALTER TABLE BenefitRiskNMAOutcomeInclusion RENAME COLUMN metaBenefitRiskAnalysisId TO analysisId;
 CREATE TABLE BenefitRiskStudyOutcomeInclusion(
