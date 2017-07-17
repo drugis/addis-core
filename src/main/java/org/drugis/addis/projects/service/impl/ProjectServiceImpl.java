@@ -277,7 +277,7 @@ public class ProjectServiceImpl implements ProjectService {
         newAnalysis.setFinalized(oldAnalysis.isFinalized());
         updateIncludedInterventions(oldAnalysis, newAnalysis, oldToNewInterventionId);
 
-        List<BenefitRiskNMAOutcomeInclusion> updateBenefitRiskNMAOutcomeInclusions = oldAnalysis.getBenefitRiskNMAOutcomeInclusions().stream()
+        List<BenefitRiskNMAOutcomeInclusion> updatedBenefitRiskNMAOutcomeInclusions = oldAnalysis.getBenefitRiskNMAOutcomeInclusions().stream()
                 .map(inclusion -> {
                   BenefitRiskNMAOutcomeInclusion newInclusion = new BenefitRiskNMAOutcomeInclusion(newAnalysis.getId(),
                           oldToNewOutcomeId.get(inclusion.getOutcomeId()),
@@ -287,9 +287,15 @@ public class ProjectServiceImpl implements ProjectService {
                   return newInclusion;
                 })
                 .collect(Collectors.toList());
-        newAnalysis.setBenefitRiskNMAOutcomeInclusions(updateBenefitRiskNMAOutcomeInclusions);
+        newAnalysis.setBenefitRiskNMAOutcomeInclusions(updatedBenefitRiskNMAOutcomeInclusions);
 
-        //TODO studies MOFO
+        List<BenefitRiskStudyOutcomeInclusion> updatedBenefitRiskStudyOutcomeInclusions = oldAnalysis.getBenefitRiskStudyOutcomeInclusions().stream()
+                .map(inclusion -> new BenefitRiskStudyOutcomeInclusion(newAnalysis.getId(),
+                        oldToNewOutcomeId.get(inclusion.getOutcomeId()),
+                        inclusion.getStudyGraphUri()
+                ))
+                .collect(Collectors.toList());
+        newAnalysis.setBenefitRiskStudyOutcomeInclusions(updatedBenefitRiskStudyOutcomeInclusions);
         em.merge(newAnalysis);
       } catch (ResourceDoesNotExistException | MethodNotAllowedException | IOException | SQLException e) {
         e.printStackTrace();
