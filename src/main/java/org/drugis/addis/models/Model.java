@@ -1,13 +1,15 @@
 package org.drugis.addis.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import net.minidev.json.JSONObject;
 import net.minidev.json.JSONValue;
 import org.apache.commons.lang3.tuple.Pair;
+import org.drugis.addis.exception.OperationNotPermittedException;
 import org.drugis.addis.models.exceptions.InvalidModelException;
 import org.drugis.addis.util.JSONObjectConverter;
 import org.hibernate.annotations.Type;
-import org.springframework.context.annotation.Primary;
 
 import javax.persistence.*;
 import java.net.URI;
@@ -250,7 +252,6 @@ public class Model {
   }
 
 
-
   @JsonIgnore
   public String getModelTypeTypeAsString() {
     JSONObject jsonObject = (JSONObject) JSONValue.parse(modelType);
@@ -366,6 +367,22 @@ public class Model {
     return result;
   }
 
+  public void updateTypeDetails(Integer newFromId, Integer newToId) throws OperationNotPermittedException {
+    if(!getModelTypeTypeAsString().equals("pairwise") && !getModelTypeTypeAsString().equals("node-split")){
+      throw new OperationNotPermittedException("Can only update typedetails for pairwise and node split models.");
+    }
+    Pair<DetailNode, DetailNode> pairwiseDetails = getPairwiseDetails();
+    TypeDetails typeDetails = new TypeDetails(
+            new DetailNode(newFromId, pairwiseDetails.getLeft().getName()),
+            new DetailNode(newToId, pairwiseDetails.getRight().getName())
+    );
+    ObjectMapper objectMapper = new ObjectMapper();
+    try {
+      this.modelType = objectMapper.writeValueAsString(new ModelType(getModelTypeTypeAsString(), typeDetails));
+    } catch (JsonProcessingException e) {
+      throw new OperationNotPermittedException(e.getMessage());
+    }
+  }
 
   public static class DetailNode {
     Integer id;

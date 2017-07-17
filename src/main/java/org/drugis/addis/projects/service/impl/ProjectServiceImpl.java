@@ -1,5 +1,6 @@
 package org.drugis.addis.projects.service.impl;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import net.minidev.json.JSONObject;
 import org.drugis.addis.analyses.model.*;
 import org.drugis.addis.analyses.repository.AnalysisRepository;
@@ -9,6 +10,7 @@ import org.drugis.addis.analyses.service.AnalysisService;
 import org.drugis.addis.covariates.Covariate;
 import org.drugis.addis.covariates.CovariateRepository;
 import org.drugis.addis.exception.MethodNotAllowedException;
+import org.drugis.addis.exception.OperationNotPermittedException;
 import org.drugis.addis.exception.ProblemCreationException;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.interventions.controller.command.AbstractInterventionCommand;
@@ -286,6 +288,8 @@ public class ProjectServiceImpl implements ProjectService {
                 })
                 .collect(Collectors.toList());
         newAnalysis.setBenefitRiskNMAOutcomeInclusions(updateBenefitRiskNMAOutcomeInclusions);
+
+        //TODO studies MOFO
         em.merge(newAnalysis);
       } catch (ResourceDoesNotExistException | MethodNotAllowedException | IOException | SQLException e) {
         e.printStackTrace();
@@ -300,6 +304,7 @@ public class ProjectServiceImpl implements ProjectService {
         newModel.setAnalysisId(oldIdToNewAnalysisId.get(oldModel.getAnalysisId()));
         newModel = modelRepository.persist(newModel);
         oldToNewModelId.put(oldModel.getId(), newModel.getId());
+
         JSONObject regressor = newModel.getRegressor();
         if (regressor != null) {
           Integer oldId = Integer.parseInt(regressor.get("control").toString());
@@ -307,42 +312,19 @@ public class ProjectServiceImpl implements ProjectService {
           regressor.put("control", oldToNewInterventionId.get(oldId).toString());
           newModel.setRegressor(regressor);
         }
-      } catch (InvalidModelException e) {
+
+        Model.ModelType modelType = newModel.getModelType();
+        if (modelType.getType().equals("pairwise") || modelType.getType().equals("node-split")){
+          Model.TypeDetails details = modelType.getDetails();
+          Model.DetailNode from = details.getFrom();
+          Model.DetailNode to = details.getTo();
+          newModel.updateTypeDetails(oldToNewInterventionId.get(from.getId()), oldToNewInterventionId.get(to.getId()));
+        }
+      } catch (InvalidModelException | OperationNotPermittedException e) {
         e.printStackTrace();
       }
     };
   }
-
-//  private Consumer<? super SingleStudyBenefitRiskAnalysis> singleStudyBenefitRiskAnalysisCreator(
-//          Project newProject, Account user, Map<Integer, Integer> oldToNewAnalysisId,
-//          Map<Integer, Integer> oldIdToNewInterventionId,
-//          Map<Integer, Integer> oldIdToNewOutcomeId) {
-//    return oldAnalysis -> {
-//      AnalysisCommand analysisCommand = new AnalysisCommand(newProject.getId(), oldAnalysis.getTitle(),
-//              AnalysisType.SINGLE_STUDY_BENEFIT_RISK_LABEL);
-//      try {
-//        final SingleStudyBenefitRiskAnalysis newAnalysis = analysisService.createSingleStudyBenefitRiskAnalysis(user, analysisCommand);
-//        em.flush(); // may be redundant
-//        newAnalysis.setStudyGraphUri(oldAnalysis.getStudyGraphUri());
-//        newAnalysis.setProblem(oldAnalysis.getProblem());
-//        oldToNewAnalysisId.put(oldAnalysis.getId(), newAnalysis.getId());
-//        List<Outcome> updatedOutcomes = oldAnalysis.getSelectedOutcomes().stream()
-//                .map(outcome -> {
-//                  try {
-//                    return outcomeRepository.get(oldIdToNewOutcomeId.get(outcome.getId()));
-//                  } catch (ResourceDoesNotExistException e) {
-//                    e.printStackTrace();
-//                  }
-//                  return null;
-//                })
-//                .collect(Collectors.toList());
-//        newAnalysis.updateSelectedOutcomes(updatedOutcomes);
-//        updateIncludedInterventions(oldAnalysis, newAnalysis, oldIdToNewInterventionId);
-//      } catch (MethodNotAllowedException | ResourceDoesNotExistException e) {
-//        e.printStackTrace();
-//      }
-//    };
-//  }
 
   private void updateIncludedInterventions(AbstractAnalysis oldAnalysis, AbstractAnalysis newAnalysis, Map<Integer, Integer> oldIdToNewInterventionId) {
     Set<InterventionInclusion> interventionInclusions = oldAnalysis.getInterventionInclusions().stream()
