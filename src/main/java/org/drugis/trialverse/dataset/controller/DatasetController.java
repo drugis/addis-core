@@ -1,6 +1,5 @@
 package org.drugis.trialverse.dataset.controller;
 
-import jdk.nashorn.internal.runtime.Version;
 import org.apache.http.HttpException;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.riot.RDFLanguages;
@@ -8,7 +7,6 @@ import org.apache.jena.riot.WebContent;
 import org.drugis.addis.base.AbstractAddisCoreController;
 import org.drugis.addis.security.Account;
 import org.drugis.addis.security.repository.AccountRepository;
-import org.drugis.addis.trialverse.model.Namespace;
 import org.drugis.addis.util.WebConstants;
 import org.drugis.trialverse.dataset.controller.command.DatasetCommand;
 import org.drugis.trialverse.dataset.exception.CreateDatasetException;

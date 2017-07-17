@@ -16,7 +16,6 @@ import org.drugis.addis.security.Account;
 import org.drugis.addis.security.AuthenticationService;
 import org.drugis.addis.security.repository.AccountRepository;
 import org.drugis.addis.util.WebConstants;
-import org.drugis.trialverse.dataset.model.VersionMapping;
 import org.drugis.trialverse.dataset.repository.VersionMappingRepository;
 import org.drugis.trialverse.graph.exception.DeleteGraphException;
 import org.drugis.trialverse.graph.exception.UpdateGraphException;
@@ -26,6 +25,7 @@ import org.drugis.trialverse.security.TrialversePrincipal;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -62,7 +62,9 @@ public class GraphWriteRepositoryImpl implements GraphWriteRepository {
   private final static Logger logger = LoggerFactory.getLogger(GraphWriteRepositoryImpl.class);
 
   @Override
-  @CacheEvict(cacheNames = "datasetHistory", key="#datasetUri.toString()")
+  @Caching(evict = {
+          @CacheEvict(cacheNames = "datasetHistory", key = "#datasetUri.toString()"),
+          @CacheEvict(cacheNames = "versionedDatasetQuery", allEntries = true)})
   public Header updateGraph(URI datasetUri, String graphUuid, InputStream graph, String commitTitle, String commitDescription) throws IOException, UpdateGraphException {
 
     UriComponents uriComponents = UriComponentsBuilder.fromHttpUrl(datasetUri.toString())
@@ -76,34 +78,36 @@ public class GraphWriteRepositoryImpl implements GraphWriteRepository {
 
     putRequest = addCreatorToRequest(putRequest);
 
-    if(StringUtils.isNotEmpty(commitDescription)) {
+    if (StringUtils.isNotEmpty(commitDescription)) {
       putRequest.setHeader(WebConstants.EVENT_SOURCE_DESCRIPTION_HEADER, Base64.encodeBase64String(commitDescription.getBytes()));
     }
 
     HttpEntity putBody = new InputStreamEntity(graph);
 
-    ((HttpPut)putRequest).setEntity(putBody);
+    ((HttpPut) putRequest).setEntity(putBody);
     logger.debug("execute updateGraph");
 
     Header versionHeader;
-    try(CloseableHttpResponse response =  (CloseableHttpResponse) httpClient.execute(putRequest)) {
+    try (CloseableHttpResponse response = (CloseableHttpResponse) httpClient.execute(putRequest)) {
       versionHeader = response.getFirstHeader(WebConstants.X_EVENT_SOURCE_VERSION);
       EntityUtils.consume(response.getEntity());
       return versionHeader;
-    } catch(Exception e) {
+    } catch (Exception e) {
       logger.debug("error updating graph {}", e);
       throw new UpdateGraphException();
     }
   }
 
   @Override
-  @CacheEvict(cacheNames = "datasetHistory", key="#datasetUri.toString()")
+  @Caching(evict = {
+          @CacheEvict(cacheNames = "datasetHistory", key = "#datasetUri.toString()"),
+          @CacheEvict(cacheNames = "versionedDatasetQuery", allEntries = true)})
   public Header deleteGraph(URI datasetUri, String graphUuid) throws DeleteGraphException {
 
     UriComponents uriComponents = UriComponentsBuilder.fromHttpUrl(datasetUri.toString())
-        .path(DATA_ENDPOINT)
-        .queryParam("graph", graphService.buildGraphUri(graphUuid))
-        .build();
+            .path(DATA_ENDPOINT)
+            .queryParam("graph", graphService.buildGraphUri(graphUuid))
+            .build();
 
     HttpRequestBase deleteRequest = new HttpDelete(uriComponents.toUri());
 
@@ -111,11 +115,11 @@ public class GraphWriteRepositoryImpl implements GraphWriteRepository {
     deleteRequest.setHeader(WebConstants.EVENT_SOURCE_TITLE_HEADER, Base64.encodeBase64String("Deleted graph.".getBytes()));
 
     Header versionHeader;
-    try(CloseableHttpResponse response =  (CloseableHttpResponse) httpClient.execute(deleteRequest)) {
+    try (CloseableHttpResponse response = (CloseableHttpResponse) httpClient.execute(deleteRequest)) {
       versionHeader = response.getFirstHeader(WebConstants.X_EVENT_SOURCE_VERSION);
       EntityUtils.consume(response.getEntity());
       return versionHeader;
-    }  catch(Exception e) {
+    } catch (Exception e) {
       logger.debug("error deleting graph {}", e);
       throw new DeleteGraphException();
     }
@@ -126,7 +130,7 @@ public class GraphWriteRepositoryImpl implements GraphWriteRepository {
     TrialversePrincipal owner = authenticationService.getAuthentication();
     Account user = accountRepository.findAccountByUsername(owner.getUserName());
 
-    if(owner.hasApiKey()) {
+    if (owner.hasApiKey()) {
       deleteRequest.setHeader(WebConstants.EVENT_SOURCE_CREATOR_HEADER, "https://trialverse.org/apikeys/" + owner.getApiKey().getId());
     } else {
       deleteRequest.setHeader(WebConstants.EVENT_SOURCE_CREATOR_HEADER, "mailto:" + user.getEmail());

@@ -333,6 +333,67 @@ define(['angular', 'angular-mocks'], function() {
         }];
         expect(result).toEqual(expectedResult);
       });
+      it('should work if only lower or upper is set for a titrated/both intervention', function() {
+        var interventionNoMax = {
+          type: 'both',
+          minConstraint: {
+            lowerBound: {
+              unitName: 'milligram',
+              unitConcept: 'http://gramConcept',
+              conversionMultiplier: 0.001,
+              randomProperty: 'bla'
+            },
+            upperBound: {
+              unitName: 'kilogram',
+              unitConcept: 'http://gramConcept',
+            }
+          }
+        };
+        var concepts = [{
+          uri: 'http://gramConcept',
+          label: 'gram'
+        }, {
+          uri: 'http://literConcept',
+          label: 'liter'
+        }];
+
+        var resultNoMax = mappingService.getUnitsFromIntervention(interventionNoMax, concepts);
+
+        var expectedResultNoMax = [{
+          unitName: 'milligram',
+          unitConcept: 'http://gramConcept',
+          conversionMultiplier: 0.001
+        }, {
+          unitName: 'kilogram',
+          unitConcept: 'http://gramConcept'
+        }];
+        expect(resultNoMax).toEqual(expectedResultNoMax);
+
+        var interventionNoMin = {
+          type: 'titrated',
+          maxConstraint: {
+            lowerBound: {
+              unitName: 'gram',
+              unitConcept: 'http://gramConcept',
+            },
+            upperBound: {
+              unitName: 'liter',
+              unitConcept: 'http://literConcept',
+            }
+          }
+        };
+
+        var resultNoMin = mappingService.getUnitsFromIntervention(interventionNoMin, concepts);
+
+        var expectedResultNoMin = [{
+          unitName: 'gram',
+          unitConcept: 'http://gramConcept'
+        }, {
+          unitName: 'liter',
+          unitConcept: 'http://literConcept'
+        }];
+        expect(resultNoMin).toEqual(expectedResultNoMin);
+      });
     });
   });
 });
