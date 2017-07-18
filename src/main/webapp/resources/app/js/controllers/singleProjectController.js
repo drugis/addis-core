@@ -110,6 +110,9 @@ define(['lodash', 'angular'], function(_, angular) {
       }
     });
 
+    $scope.$on('scaledUnitsChanged', function() {
+      loadUnits();
+    });
 
     function reloadDefinitions() {
       //TODO make proper loading check that takes all loads into account
