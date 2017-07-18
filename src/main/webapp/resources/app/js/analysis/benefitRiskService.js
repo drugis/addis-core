@@ -174,7 +174,7 @@ define(['lodash'], function(_) {
 
     function hasMissingStudy(outcomeInclusions) {
       return _.find(outcomeInclusions, function(inclusion) {
-        return _.isEqual(inclusion.selectedStudy, {});
+        return inclusion.dataType === 'single-study' && _.isEmpty(inclusion.selectedStudy);
       });
     }
 
