@@ -169,8 +169,8 @@ define(
     app.constant('mcdaRootPath', 'app/js/bower_components/mcda-web/app/');
     app.constant('gemtcRootPath', 'app/js/bower_components/gemtc-web/app/');
 
-    app.run(['$rootScope', '$window', '$http', '$location', '$cookies', 'HelpPopupService',
-      function($rootScope, $window, $http, $location, $cookies, HelpPopupService) {
+    app.run(['$rootScope', '$window', '$http', '$location', '$cookies', 'HelpPopupService', 'CacheService',
+      function($rootScope, $window, $http, $location, $cookies, HelpPopupService, CacheService) {
         $rootScope.$safeApply = function($scope, fn) {
           var phase = $scope.$root.$$phase;
           if (phase === '$apply' || phase === '$digest') {
@@ -190,6 +190,12 @@ define(
             $location.path(redirectUrl);
           }
           $window.scrollTo(0, 0);
+        });
+
+        $rootScope.$on('modelResultsAvailable', function(event, ids) {
+          CacheService.evict('modelPromises', ids.modelId);
+          CacheService.evict('consistencyModelsPromises', ids.projectId);
+          CacheService.evict('modelsByProjectPromises', ids.projectId);
         });
       }
     ]);

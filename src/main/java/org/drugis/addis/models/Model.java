@@ -45,7 +45,7 @@ public class Model {
   public final static String VARIANCE_HETEROGENEITY_PRIOR_TYPE = "variance";
   public final static String PRECISION_HETEROGENEITY_PRIOR_TYPE = "precision";
   @Transient
-  String runStatus;
+  private String runStatus;
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Integer id;
@@ -368,7 +368,7 @@ public class Model {
   }
 
   public void updateTypeDetails(Integer newFromId, Integer newToId) throws OperationNotPermittedException {
-    if(!getModelTypeTypeAsString().equals("pairwise") && !getModelTypeTypeAsString().equals("node-split")){
+    if (!getModelTypeTypeAsString().equals("pairwise") && !getModelTypeTypeAsString().equals("node-split")) {
       throw new OperationNotPermittedException("Can only update typedetails for pairwise and node split models.");
     }
     Pair<DetailNode, DetailNode> pairwiseDetails = getPairwiseDetails();
