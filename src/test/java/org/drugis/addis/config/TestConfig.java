@@ -1,6 +1,9 @@
 package org.drugis.addis.config;
 
-import org.drugis.addis.analyses.repository.*;
+import org.drugis.addis.analyses.repository.AnalysisRepository;
+import org.drugis.addis.analyses.repository.CriteriaRepository;
+import org.drugis.addis.analyses.repository.BenefitRiskAnalysisRepository;
+import org.drugis.addis.analyses.repository.NetworkMetaAnalysisRepository;
 import org.drugis.addis.analyses.service.AnalysisService;
 import org.drugis.addis.covariates.CovariateRepository;
 import org.drugis.addis.effectsTables.repository.EffectsTableRepository;
@@ -16,7 +19,6 @@ import org.drugis.addis.problems.service.ProblemService;
 import org.drugis.addis.projects.repository.ProjectRepository;
 import org.drugis.addis.projects.repository.ReportRepository;
 import org.drugis.addis.projects.service.ProjectService;
-import org.drugis.addis.remarks.repository.RemarksRepository;
 import org.drugis.addis.scenarios.repository.ScenarioRepository;
 import org.drugis.addis.security.repository.AccountRepository;
 import org.drugis.addis.statistics.service.StatisticsService;
@@ -98,18 +100,13 @@ public class TestConfig {
   }
 
   @Bean
-  public SingleStudyBenefitRiskAnalysisRepository singleStudyBenefitRiskAnalysisRepository() {
-    return mock(SingleStudyBenefitRiskAnalysisRepository.class);
-  }
-
-  @Bean
   public NetworkMetaAnalysisRepository networkMetaAnalysisRepository() {
     return mock(NetworkMetaAnalysisRepository.class);
   }
 
   @Bean
-  public MetaBenefitRiskAnalysisRepository metaBenefitRiskAnalysisRepository() {
-    return mock(MetaBenefitRiskAnalysisRepository.class);
+  public BenefitRiskAnalysisRepository benefitRiskAnalysisRepository() {
+    return mock(BenefitRiskAnalysisRepository.class);
   }
 
   @Bean
@@ -145,11 +142,6 @@ public class TestConfig {
   @Bean
   public PataviTaskRepository mockPataviTaskRepository() {
     return mock(PataviTaskRepository.class);
-  }
-
-  @Bean
-  public RemarksRepository mockRemarksRepository() {
-    return mock(RemarksRepository.class);
   }
 
   @Bean

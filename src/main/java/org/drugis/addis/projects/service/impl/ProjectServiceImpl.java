@@ -1,14 +1,16 @@
 package org.drugis.addis.projects.service.impl;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import net.minidev.json.JSONObject;
-import org.drugis.addis.analyses.*;
+import org.drugis.addis.analyses.model.*;
 import org.drugis.addis.analyses.repository.AnalysisRepository;
-import org.drugis.addis.analyses.repository.MetaBenefitRiskAnalysisRepository;
+import org.drugis.addis.analyses.repository.BenefitRiskAnalysisRepository;
 import org.drugis.addis.analyses.repository.NetworkMetaAnalysisRepository;
 import org.drugis.addis.analyses.service.AnalysisService;
 import org.drugis.addis.covariates.Covariate;
 import org.drugis.addis.covariates.CovariateRepository;
 import org.drugis.addis.exception.MethodNotAllowedException;
+import org.drugis.addis.exception.OperationNotPermittedException;
 import org.drugis.addis.exception.ProblemCreationException;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.interventions.controller.command.AbstractInterventionCommand;
@@ -31,7 +33,6 @@ import org.drugis.addis.projects.Project;
 import org.drugis.addis.projects.ProjectCommand;
 import org.drugis.addis.projects.repository.ProjectRepository;
 import org.drugis.addis.projects.service.ProjectService;
-import org.drugis.addis.scaledUnits.ScaledUnit;
 import org.drugis.addis.scaledUnits.repository.ScaledUnitRepository;
 import org.drugis.addis.scenarios.Scenario;
 import org.drugis.addis.scenarios.repository.ScenarioRepository;
@@ -84,7 +85,7 @@ public class ProjectServiceImpl implements ProjectService {
   private AnalysisService analysisService;
 
   @Inject
-  private MetaBenefitRiskAnalysisRepository metaBenefitRiskAnalysisRepository;
+  private BenefitRiskAnalysisRepository benefitRiskAnalysisRepository;
 
   @Inject
   private ProjectRepository projectRepository;
@@ -217,10 +218,6 @@ public class ProjectServiceImpl implements ProjectService {
     Map<Integer, Integer> oldToNewAnalysisId = new HashMap<>();
     Collection<AbstractAnalysis> sourceAnalyses = analysisRepository.query(sourceProjectId);
     sourceAnalyses.stream()
-            .filter(analysis -> analysis instanceof SingleStudyBenefitRiskAnalysis)
-            .map(analysis -> (SingleStudyBenefitRiskAnalysis) analysis)
-            .forEach(singleStudyBenefitRiskAnalysisCreator(newProject, user, oldToNewAnalysisId, oldToNewInterventionId, oldToNewOutcomeId));
-    sourceAnalyses.stream()
             .filter(analysis -> analysis instanceof NetworkMetaAnalysis)
             .map(analysis -> (NetworkMetaAnalysis) analysis)
             .forEach(netWorkMetaAnalysisCreator(user, newProject,
@@ -247,9 +244,9 @@ public class ProjectServiceImpl implements ProjectService {
 
     //mbr analyses
     sourceAnalyses.stream()
-            .filter(analysis -> analysis instanceof MetaBenefitRiskAnalysis)
-            .map(analysis -> (MetaBenefitRiskAnalysis) analysis)
-            .forEach(metaBenefitRiskCreator(user, newProject, oldToNewOutcomeId, oldToNewInterventionId, oldToNewAnalysisId, oldToNewModelId));
+            .filter(analysis -> analysis instanceof BenefitRiskAnalysis)
+            .map(analysis -> (BenefitRiskAnalysis) analysis)
+            .forEach(benefitRiskCreator(user, newProject, oldToNewOutcomeId, oldToNewInterventionId, oldToNewAnalysisId, oldToNewModelId));
 
     //subProblems
     HashMap<Integer, Integer> oldToNewSubProblemId = new HashMap<>();
@@ -268,21 +265,21 @@ public class ProjectServiceImpl implements ProjectService {
     return newProject.getId();
   }
 
-  private Consumer<MetaBenefitRiskAnalysis> metaBenefitRiskCreator(Account user, Project newProject, Map<Integer, Integer> oldToNewOutcomeId, Map<Integer, Integer> oldToNewInterventionId, Map<Integer, Integer> oldToNewAnalysisId, Map<Integer, Integer> oldToNewModelId) {
+  private Consumer<BenefitRiskAnalysis> benefitRiskCreator(Account user, Project newProject, Map<Integer, Integer> oldToNewOutcomeId, Map<Integer, Integer> oldToNewInterventionId, Map<Integer, Integer> oldToNewAnalysisId, Map<Integer, Integer> oldToNewModelId) {
     return oldAnalysis -> {
       AnalysisCommand analysisCommand = new AnalysisCommand(newProject.getId(), oldAnalysis.getTitle(),
-              AnalysisType.META_BENEFIT_RISK_ANALYSIS_LABEL);
+              AnalysisType.BENEFIT_RISK_ANALYSIS_LABEL);
       try {
-        MetaBenefitRiskAnalysis newAnalysis = metaBenefitRiskAnalysisRepository.create(user, analysisCommand);
+        BenefitRiskAnalysis newAnalysis = benefitRiskAnalysisRepository.create(user, analysisCommand);
         em.flush(); // needed to unbuffer the interventioninclusion additions from the constructor
         oldToNewAnalysisId.put(oldAnalysis.getId(), newAnalysis.getId());
         newAnalysis.setProblem(oldAnalysis.getProblem());
         newAnalysis.setFinalized(oldAnalysis.isFinalized());
         updateIncludedInterventions(oldAnalysis, newAnalysis, oldToNewInterventionId);
 
-        List<MbrOutcomeInclusion> updateMBROutcomeInclusions = oldAnalysis.getMbrOutcomeInclusions().stream()
+        List<BenefitRiskNMAOutcomeInclusion> updatedBenefitRiskNMAOutcomeInclusions = oldAnalysis.getBenefitRiskNMAOutcomeInclusions().stream()
                 .map(inclusion -> {
-                  MbrOutcomeInclusion newInclusion = new MbrOutcomeInclusion(newAnalysis.getId(),
+                  BenefitRiskNMAOutcomeInclusion newInclusion = new BenefitRiskNMAOutcomeInclusion(newAnalysis.getId(),
                           oldToNewOutcomeId.get(inclusion.getOutcomeId()),
                           oldToNewAnalysisId.get(inclusion.getNetworkMetaAnalysisId()),
                           oldToNewModelId.get(inclusion.getModelId()));
@@ -290,7 +287,15 @@ public class ProjectServiceImpl implements ProjectService {
                   return newInclusion;
                 })
                 .collect(Collectors.toList());
-        newAnalysis.setMbrOutcomeInclusions(updateMBROutcomeInclusions);
+        newAnalysis.setBenefitRiskNMAOutcomeInclusions(updatedBenefitRiskNMAOutcomeInclusions);
+
+        List<BenefitRiskStudyOutcomeInclusion> updatedBenefitRiskStudyOutcomeInclusions = oldAnalysis.getBenefitRiskStudyOutcomeInclusions().stream()
+                .map(inclusion -> new BenefitRiskStudyOutcomeInclusion(newAnalysis.getId(),
+                        oldToNewOutcomeId.get(inclusion.getOutcomeId()),
+                        inclusion.getStudyGraphUri()
+                ))
+                .collect(Collectors.toList());
+        newAnalysis.setBenefitRiskStudyOutcomeInclusions(updatedBenefitRiskStudyOutcomeInclusions);
         em.merge(newAnalysis);
       } catch (ResourceDoesNotExistException | MethodNotAllowedException | IOException | SQLException e) {
         e.printStackTrace();
@@ -305,6 +310,7 @@ public class ProjectServiceImpl implements ProjectService {
         newModel.setAnalysisId(oldIdToNewAnalysisId.get(oldModel.getAnalysisId()));
         newModel = modelRepository.persist(newModel);
         oldToNewModelId.put(oldModel.getId(), newModel.getId());
+
         JSONObject regressor = newModel.getRegressor();
         if (regressor != null) {
           Integer oldId = Integer.parseInt(regressor.get("control").toString());
@@ -312,38 +318,15 @@ public class ProjectServiceImpl implements ProjectService {
           regressor.put("control", oldToNewInterventionId.get(oldId).toString());
           newModel.setRegressor(regressor);
         }
-      } catch (InvalidModelException e) {
-        e.printStackTrace();
-      }
-    };
-  }
 
-  private Consumer<? super SingleStudyBenefitRiskAnalysis> singleStudyBenefitRiskAnalysisCreator(
-          Project newProject, Account user, Map<Integer, Integer> oldToNewAnalysisId,
-          Map<Integer, Integer> oldIdToNewInterventionId,
-          Map<Integer, Integer> oldIdToNewOutcomeId) {
-    return oldAnalysis -> {
-      AnalysisCommand analysisCommand = new AnalysisCommand(newProject.getId(), oldAnalysis.getTitle(),
-              AnalysisType.SINGLE_STUDY_BENEFIT_RISK_LABEL);
-      try {
-        final SingleStudyBenefitRiskAnalysis newAnalysis = analysisService.createSingleStudyBenefitRiskAnalysis(user, analysisCommand);
-        em.flush(); // may be redundant
-        newAnalysis.setStudyGraphUri(oldAnalysis.getStudyGraphUri());
-        newAnalysis.setProblem(oldAnalysis.getProblem());
-        oldToNewAnalysisId.put(oldAnalysis.getId(), newAnalysis.getId());
-        List<Outcome> updatedOutcomes = oldAnalysis.getSelectedOutcomes().stream()
-                .map(outcome -> {
-                  try {
-                    return outcomeRepository.get(oldIdToNewOutcomeId.get(outcome.getId()));
-                  } catch (ResourceDoesNotExistException e) {
-                    e.printStackTrace();
-                  }
-                  return null;
-                })
-                .collect(Collectors.toList());
-        newAnalysis.updateSelectedOutcomes(updatedOutcomes);
-        updateIncludedInterventions(oldAnalysis, newAnalysis, oldIdToNewInterventionId);
-      } catch (MethodNotAllowedException | ResourceDoesNotExistException e) {
+        Model.ModelType modelType = newModel.getModelType();
+        if (modelType.getType().equals("pairwise") || modelType.getType().equals("node-split")){
+          Model.TypeDetails details = modelType.getDetails();
+          Model.DetailNode from = details.getFrom();
+          Model.DetailNode to = details.getTo();
+          newModel.updateTypeDetails(oldToNewInterventionId.get(from.getId()), oldToNewInterventionId.get(to.getId()));
+        }
+      } catch (InvalidModelException | OperationNotPermittedException e) {
         e.printStackTrace();
       }
     };

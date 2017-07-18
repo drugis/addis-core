@@ -68,7 +68,7 @@ public class ScenarioRepositoryTest {
   @Test
   public void testQueryFromMetaBenefitRisk() {
     Integer analysisId = -10;
-    Collection<Scenario> result = scenarioRepository.queryBySubProblem(projectId, analysisId, subProblemId);
+    Collection<Scenario> result = scenarioRepository.queryBySubProblem(projectId, analysisId, 102);
     assertNotNull(result);
     assertEquals(1, result.size());
     Scenario defaultScenario = em.find(Scenario.class, 4);

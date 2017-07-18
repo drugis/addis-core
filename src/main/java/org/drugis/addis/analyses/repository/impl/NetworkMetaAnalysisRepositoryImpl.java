@@ -1,8 +1,8 @@
 package org.drugis.addis.analyses.repository.impl;
 
-import org.drugis.addis.analyses.AnalysisCommand;
-import org.drugis.addis.analyses.InterventionInclusion;
-import org.drugis.addis.analyses.NetworkMetaAnalysis;
+import org.drugis.addis.analyses.model.AnalysisCommand;
+import org.drugis.addis.analyses.model.InterventionInclusion;
+import org.drugis.addis.analyses.model.NetworkMetaAnalysis;
 import org.drugis.addis.analyses.repository.NetworkMetaAnalysisRepository;
 import org.drugis.addis.exception.MethodNotAllowedException;
 import org.drugis.addis.exception.ResourceDoesNotExistException;

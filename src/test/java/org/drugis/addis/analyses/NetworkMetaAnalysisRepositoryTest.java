@@ -1,5 +1,6 @@
 package org.drugis.addis.analyses;
 
+import org.drugis.addis.analyses.model.*;
 import org.drugis.addis.analyses.repository.NetworkMetaAnalysisRepository;
 import org.drugis.addis.config.JpaRepositoryTestConfig;
 import org.drugis.addis.exception.MethodNotAllowedException;

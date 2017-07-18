@@ -1,6 +1,6 @@
 package org.drugis.addis.analyses.repository.impl;
 
-import org.drugis.addis.analyses.AbstractAnalysis;
+import org.drugis.addis.analyses.model.AbstractAnalysis;
 import org.drugis.addis.analyses.repository.AnalysisRepository;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.springframework.beans.factory.annotation.Qualifier;

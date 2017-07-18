@@ -2,6 +2,7 @@ package org.drugis.addis.analyses;
 
 import com.google.common.collect.Sets;
 import org.apache.jena.ext.com.google.common.collect.ImmutableSet;
+import org.drugis.addis.analyses.model.*;
 import org.drugis.addis.analyses.repository.AnalysisRepository;
 import org.drugis.addis.analyses.repository.NetworkMetaAnalysisRepository;
 import org.drugis.addis.analyses.service.AnalysisService;
@@ -100,18 +101,6 @@ public class AnalysisServiceTest {
   }
 
   @Test
-  public void testCheckCoordinatesSSBR() throws ResourceDoesNotExistException {
-    SingleStudyBenefitRiskAnalysis singleStudyBenefitRiskAnalysis = mock(SingleStudyBenefitRiskAnalysis.class);
-    when(singleStudyBenefitRiskAnalysis.getProjectId()).thenReturn(projectId);
-    when(analysisRepository.get(analysisId)).thenReturn(singleStudyBenefitRiskAnalysis);
-
-    analysisService.checkCoordinates(projectId, analysisId);
-
-    verify(analysisRepository).get(analysisId);
-    verifyNoMoreInteractions(analysisRepository);
-  }
-
-  @Test
   public void testCheckCoordinatesNMA() throws ResourceDoesNotExistException {
     NetworkMetaAnalysis networkMetaAnalysis = mock(NetworkMetaAnalysis.class);
     when(networkMetaAnalysis.getProjectId()).thenReturn(projectId);
@@ -184,102 +173,6 @@ public class AnalysisServiceTest {
     when(oldAnalysis.getProjectId()).thenReturn(projectId);
     when(analysisRepository.get(analysisId)).thenReturn(oldAnalysis);
     analysisService.updateNetworkMetaAnalysis(user, analysis);
-  }
-
-  @Test
-  public void testBuildInitialOutcomeInclusionsCheckNmaNoOutcome() throws Exception {
-    Integer projectId = 1;
-    Integer metabenefitRiskAnalysisId = 1;
-    Integer outcomeId = 1;
-    Collection<Outcome> outcomes = Collections.singletonList(new Outcome(outcomeId, 1, "name", "moti", new SemanticVariable(URI.create("uri"), "label")));
-    List<NetworkMetaAnalysis> analyses = Collections.singletonList(new NetworkMetaAnalysis(analysisId, "title"));
-
-    when(outcomeRepository.query(projectId)).thenReturn(outcomes);
-    when(networkMetaAnalysisRepository.queryByOutcomes(projectId, Collections.singletonList(1))).thenReturn(analyses);
-
-    List<MbrOutcomeInclusion> result = analysisService.buildInitialOutcomeInclusions(projectId, metabenefitRiskAnalysisId);
-
-    assertTrue(result.isEmpty());
-  }
-
-  @Test
-  public void testBuildInitialOutcomeInclusionsWithoutPrimary() throws Exception {
-    Integer projectId = 1;
-    Integer metabenefitRiskAnalysisId = 1;
-    Integer outcomeId = 1;
-    Integer modelId1 = 1;
-    Integer modelId2 = 2;
-    Outcome outcome = new Outcome(outcomeId, 1, "name", "moti", new SemanticVariable(URI.create("uri"), "label"));
-    Collection<Outcome> outcomes = Collections.singletonList(outcome);
-    String title1 = "bbbbb";
-    String title2 = "aaaaa";
-    List<NetworkMetaAnalysis> analyses = Arrays.asList(new NetworkMetaAnalysis(analysisId, projectId, title1, outcome),
-            new NetworkMetaAnalysis(4, projectId, title1, outcome));
-    Model archivedModel = new Model.ModelBuilder(analysisId, title2 + " -- archived").id(modelId2).link(Model.LINK_IDENTITY).modelType(Model.NETWORK_MODEL_TYPE).build();
-    archivedModel.setArchived(true);
-    List<Model> models = Arrays.asList(archivedModel, new Model.ModelBuilder(analysisId, title1).id(modelId1).link(Model.LINK_IDENTITY).modelType(Model.NETWORK_MODEL_TYPE).build(),
-            new Model.ModelBuilder(-23, title2).id(modelId2 + 1).link(Model.LINK_IDENTITY).modelType(Model.NETWORK_MODEL_TYPE).build());
-
-    when(networkMetaAnalysisRepository.queryByOutcomes(projectId, Collections.singletonList(1))).thenReturn(analyses);
-    when(outcomeRepository.query(projectId)).thenReturn(outcomes);
-    when(modelService.findNetworkModelsByProject(projectId)).thenReturn(models);
-
-    List<MbrOutcomeInclusion> result = analysisService.buildInitialOutcomeInclusions(projectId, metabenefitRiskAnalysisId);
-
-    assertEquals(Collections.singletonList(new MbrOutcomeInclusion(metabenefitRiskAnalysisId, 1, analysisId, modelId1)), result);
-  }
-
-  @Test
-  public void testBuildInitialOutcomeInclusionsSkipArchived() throws Exception {
-    Integer projectId = 1;
-    Integer metabenefitRiskAnalysisId = 1;
-    Integer outcomeId = 1;
-    Integer modelId1 = 1;
-    Integer modelId2 = 2;
-    Outcome outcome = new Outcome(outcomeId, 1, "name", "moti", new SemanticVariable(URI.create("uri"), "label"));
-    Collection<Outcome> outcomes = Collections.singletonList(outcome);
-    String title1 = "bbbbb";
-    String title2 = "aaaaa";
-    List<NetworkMetaAnalysis> analyses = Arrays.asList(new NetworkMetaAnalysis(analysisId, projectId, title1, outcome),
-        new NetworkMetaAnalysis(4, projectId, title1, outcome));
-    Model archivedModel = new Model.ModelBuilder(analysisId, title2 + " -- archived").id(modelId2 + 1).link(Model.LINK_IDENTITY).modelType(Model.NETWORK_MODEL_TYPE).build();
-    archivedModel.setArchived(true);
-    List<Model> models = Collections.singletonList(archivedModel);
-
-    when(networkMetaAnalysisRepository.queryByOutcomes(projectId, Collections.singletonList(1))).thenReturn(analyses);
-    when(outcomeRepository.query(projectId)).thenReturn(outcomes);
-    when(modelService.findNetworkModelsByProject(projectId)).thenReturn(models);
-
-    List<MbrOutcomeInclusion> result = analysisService.buildInitialOutcomeInclusions(projectId, metabenefitRiskAnalysisId);
-
-    assertEquals(Collections.emptyList(), result);
-  }
-
-  @Test
-  public void testBuildInitialOutcomeInclusionsWithPrimary() throws Exception {
-    Integer projectId = 1;
-    Integer metabenefitRiskAnalysisId = 1;
-    Integer outcomeId = 1;
-    Integer modelId1 = 1;
-    Integer modelId2 = 2;
-    Outcome outcome = new Outcome(outcomeId, 1, "name", "moti", new SemanticVariable(URI.create("uri"), "label"));
-    Collection<Outcome> outcomes = Collections.singletonList(outcome);
-    String title1 = "bbbbb";
-    String title2 = "aaaaa";
-    NetworkMetaAnalysis networkMetaAnalysis = new NetworkMetaAnalysis(analysisId, projectId, title1, outcome);
-    networkMetaAnalysis.setPrimaryModel(modelId1);
-    List<NetworkMetaAnalysis> analyses = Arrays.asList(networkMetaAnalysis,
-            new NetworkMetaAnalysis(4, projectId, title1, outcome));
-    List<Model> models = Arrays.asList(new Model.ModelBuilder(analysisId, title1).id(modelId1).link(Model.LINK_IDENTITY).link(Model.LINK_IDENTITY).modelType(Model.NETWORK_MODEL_TYPE).build(),
-            new Model.ModelBuilder(3, title2).id(modelId2).link(Model.LINK_IDENTITY).modelType(Model.NETWORK_MODEL_TYPE).build());
-
-    when(networkMetaAnalysisRepository.queryByOutcomes(projectId, Collections.singletonList(1))).thenReturn(analyses);
-    when(outcomeRepository.query(projectId)).thenReturn(outcomes);
-    when(modelService.findNetworkModelsByProject(projectId)).thenReturn(models);
-
-    List<MbrOutcomeInclusion> result = analysisService.buildInitialOutcomeInclusions(projectId, metabenefitRiskAnalysisId);
-
-    assertEquals(Collections.singletonList(new MbrOutcomeInclusion(metabenefitRiskAnalysisId, 1, analysisId, modelId1)), result);
   }
 
   @Test

@@ -1,9 +1,9 @@
 package org.drugis.addis.projects.service;
 
 import com.google.common.collect.Sets;
-import org.drugis.addis.analyses.*;
+import org.drugis.addis.analyses.model.*;
 import org.drugis.addis.analyses.repository.AnalysisRepository;
-import org.drugis.addis.analyses.repository.MetaBenefitRiskAnalysisRepository;
+import org.drugis.addis.analyses.repository.BenefitRiskAnalysisRepository;
 import org.drugis.addis.analyses.service.AnalysisService;
 import org.drugis.addis.covariates.Covariate;
 import org.drugis.addis.covariates.CovariateRepository;
@@ -98,7 +98,7 @@ public class ProjectServiceTest {
   private AnalysisService analysisService;
 
   @Mock
-  private MetaBenefitRiskAnalysisRepository metaBenefitRiskAnalysisRepository;
+  private BenefitRiskAnalysisRepository benefitRiskAnalysisRepository;
 
   @Mock
   private EntityManager em;
@@ -276,15 +276,6 @@ public class ProjectServiceTest {
     when(interventionRepository.create(account, setCommand)).thenReturn(newSet);
 
     // Analyses
-    Integer ssbrId = 37;
-    InterventionInclusion ssbrInterventionInclusion1 = new InterventionInclusion(ssbrId, fixedDoseIntervention.getId());
-    InterventionInclusion ssbrInterventionInclusion2 = new InterventionInclusion(ssbrId, titratedDoseIntervention.getId());
-    List<InterventionInclusion> ssbrInterventionInclusions = Arrays.asList(ssbrInterventionInclusion1, ssbrInterventionInclusion2);
-    AbstractAnalysis ssbr = new SingleStudyBenefitRiskAnalysis(ssbrId, projectId, "ssbr", new ArrayList<>(sourceOutcomes), ssbrInterventionInclusions);
-    AnalysisCommand ssbrCommand = new AnalysisCommand(newProjectId, ssbr.getTitle(), AnalysisType.SINGLE_STUDY_BENEFIT_RISK_LABEL);
-    when(analysisService.createSingleStudyBenefitRiskAnalysis(account, ssbrCommand)).thenReturn(new SingleStudyBenefitRiskAnalysis(ssbrId + 1, projectId, "ssbr",
-            Collections.emptyList(), Collections.emptyList()));
-
     Integer nmaId1 = 42;
     List<ArmExclusion> nmaExcludedArms = Collections.singletonList(new ArmExclusion(nmaId1, URI.create("http://anything.Groningen")));
     List<InterventionInclusion> nmaInterventionInclusions1 = Collections.singletonList(new InterventionInclusion(nmaId1, fixedDoseIntervention.getId()));
@@ -309,7 +300,9 @@ public class ProjectServiceTest {
             .link("identity")
             .modelType(Model.NETWORK_MODEL_TYPE)
             .build();
-    Model model2 = new Model.ModelBuilder(nmaId2, "model 2").id(modelId2).link("identity")
+    Model model2 = new Model.ModelBuilder(nmaId1, "model 2")
+            .id(modelId2)
+            .link("identity")
             .modelType(Model.NETWORK_MODEL_TYPE).build();
     when(modelRepository.findModelsByProject(projectId)).thenReturn(Arrays.asList(model1, model2));
     Model newModel1 = new Model(model1);
@@ -317,7 +310,7 @@ public class ProjectServiceTest {
     Model persistedModel1 = new Model(newModel1);
     persistedModel1.setId(modelId1 + 1);
     Model newModel2 = new Model(model2);
-    newModel2.setAnalysisId(nmaId2 + 1);
+    newModel2.setAnalysisId(nmaId1 + 1);
     Model persistedModel2 = new Model(newModel2);
     persistedModel2.setId(modelId2 + 1);
     when(modelRepository.persist(newModel1)).thenReturn(persistedModel1);
@@ -326,43 +319,33 @@ public class ProjectServiceTest {
     //metabr
     Integer metaBRId = 707;
     Set<InterventionInclusion> mbrInterventionInclusions = Sets.newHashSet(new InterventionInclusion(metaBRId, fixedDoseIntervention.getId()));
-    MetaBenefitRiskAnalysis metaBR = new MetaBenefitRiskAnalysis(metaBRId, projectId, "mbr", mbrInterventionInclusions);
-    List<MbrOutcomeInclusion> mbrOutcomeInclusions = Arrays.asList(new MbrOutcomeInclusion(metaBRId, outcome1.getId(), nmaId1, modelId1),
-            new MbrOutcomeInclusion(metaBRId, outcome2.getId(), nmaId2, modelId2));
-    metaBR.setMbrOutcomeInclusions(mbrOutcomeInclusions);
-    List<AbstractAnalysis> sourceAnalyses = Arrays.asList(ssbr, nma1, nma2, metaBR);
+    BenefitRiskAnalysis metaBR = new BenefitRiskAnalysis(metaBRId, projectId, "mbr", mbrInterventionInclusions);
+    List<BenefitRiskNMAOutcomeInclusion> benefitRiskNMAOutcomeInclusions = Collections.singletonList(
+            new BenefitRiskNMAOutcomeInclusion(metaBRId, outcome2.getId(), nmaId2, modelId2));
+    List<BenefitRiskStudyOutcomeInclusion> benefitRiskStudyOutcomeInclusions = Collections.singletonList(new BenefitRiskStudyOutcomeInclusion(metaBRId, outcome1.getId(), URI.create("http://study1.uri")));
+    metaBR.setBenefitRiskNMAOutcomeInclusions(benefitRiskNMAOutcomeInclusions);
+    metaBR.setBenefitRiskStudyOutcomeInclusions(benefitRiskStudyOutcomeInclusions);
+    List<AbstractAnalysis> sourceAnalyses = Arrays.asList(nma1, nma2, metaBR);
     when(analysisRepository.query(projectId)).thenReturn(sourceAnalyses);
-    AnalysisCommand metaBRCommand = new AnalysisCommand(newProjectId, metaBR.getTitle(), AnalysisType.META_BENEFIT_RISK_ANALYSIS_LABEL);
-    MetaBenefitRiskAnalysis newMetaBR = new MetaBenefitRiskAnalysis(metaBRId + 1, newProjectId, metaBR.getTitle());
-    when(metaBenefitRiskAnalysisRepository.create(account, metaBRCommand)).thenReturn(newMetaBR);
+    AnalysisCommand metaBRCommand = new AnalysisCommand(newProjectId, metaBR.getTitle(), AnalysisType.BENEFIT_RISK_ANALYSIS_LABEL);
+    BenefitRiskAnalysis newMetaBR = new BenefitRiskAnalysis(metaBRId + 1, newProjectId, metaBR.getTitle());
+    when(benefitRiskAnalysisRepository.create(account, metaBRCommand)).thenReturn(newMetaBR);
 
     //subProblems
-    Integer newSsbrId = ssbrId + 1;
-    String ssbrDef = "ssbr def";
-    int ssbrSubProblemId = 12346;
-    SubProblem ssbrSubProblem = new SubProblem(ssbrSubProblemId, ssbrId, ssbrDef, "Default");
     String mbrDef = "mbr def";
     int mbrSubProblemId = 1234;
     SubProblem mbrSubProblem = new SubProblem(mbrSubProblemId, metaBRId, mbrDef, "Default");
-    Collection<SubProblem> subProblems = Arrays.asList(ssbrSubProblem, mbrSubProblem);
+    Collection<SubProblem> subProblems = Collections.singletonList(mbrSubProblem);
     when(subProblemRepository.queryByProject(projectId)).thenReturn(subProblems);
-    Integer newSsbrSubProblemId = 64312;
-    SubProblem newSsbrSubProblem = new SubProblem(newSsbrSubProblemId, newSsbrId, ssbrDef, "Default");
-    when(subProblemRepository.create(newSsbrId, ssbrDef, "Default")).thenReturn(newSsbrSubProblem);
     Integer newMbrSubProblemId = 4321;
     SubProblem newMbrSubProblem = new SubProblem(newMbrSubProblemId, newMetaBR.getId(), mbrDef, "Default");
     when(subProblemRepository.create(newMetaBR.getId(), mbrDef, "Default")).thenReturn(newMbrSubProblem);
 
     //scenarios
-    Integer scenarioId1 = 317;
     Integer scenarioId2 = 313;
-    Scenario scenario1 = new Scenario(scenarioId1, ssbrId, ssbrSubProblemId, "scenario 1", "Nevada");
     Scenario scenario2 = new Scenario(scenarioId2, metaBRId, mbrSubProblemId, "scenario 2", "Missouri");
-    Collection<Scenario> scenarios = Arrays.asList(scenario1, scenario2);
+    Collection<Scenario> scenarios = Collections.singletonList(scenario2);
     when(scenarioRepository.queryByProject(projectId)).thenReturn(scenarios);
-    Scenario newScenario1 = new Scenario(scenarioId1 + 1, newSsbrId, scenario1.getTitle(), scenario1.getState());
-    when(scenarioRepository.create(newSsbrId, newSsbrSubProblemId, scenario1.getTitle(),
-            scenario1.getState())).thenReturn(newScenario1);
     Scenario newScenario2 = new Scenario(scenarioId2 + 1, newMetaBR.getId(), scenario2.getTitle(), scenario2.getState());
     when(scenarioRepository.create(newMetaBR.getId(), newMbrSubProblemId, scenario2.getTitle(),
             scenario2.getState())).thenReturn(newScenario2);
@@ -378,8 +361,8 @@ public class ProjectServiceTest {
             outcome1.getSemanticVariable());
     verify(outcomeRepository).create(account, newProjectId, outcome2.getName(), outcome2.getDirection(), outcome2.getMotivation(),
             outcome2.getSemanticVariable());
-    verify(outcomeRepository, times(2)).get(newOutcome1.getId());
-    verify(outcomeRepository, times(2)).get(newOutcome2.getId());
+    verify(outcomeRepository, times(1)).get(newOutcome1.getId());
+    verify(outcomeRepository, times(1)).get(newOutcome2.getId());
     verifyNoMoreInteractions(outcomeRepository);
 
     verify(scaledUnitRepository).query(projectId);
@@ -403,7 +386,6 @@ public class ProjectServiceTest {
     verifyNoMoreInteractions(interventionRepository);
 
     verify(analysisRepository).query(projectId);
-    verify(analysisService).createSingleStudyBenefitRiskAnalysis(account, ssbrCommand);
     verify(analysisService).createNetworkMetaAnalysis(account, nmaCommand1);
     verify(analysisService).createNetworkMetaAnalysis(account, nmaCommand2);
     verifyNoMoreInteractions(analysisService);
@@ -414,7 +396,6 @@ public class ProjectServiceTest {
     verifyNoMoreInteractions(modelRepository);
 
     verify(scenarioRepository).queryByProject(projectId);
-    verify(scenarioRepository).create(ssbrId + 1, newSsbrSubProblemId, scenario1.getTitle(), scenario1.getState());
     verify(scenarioRepository).create(metaBRId + 1, newMbrSubProblemId, scenario2.getTitle(), scenario2.getState());
     verifyNoMoreInteractions(scenarioRepository);
   }
@@ -574,15 +555,21 @@ public class ProjectServiceTest {
 
     //models
     Integer modelId1 = 1414;
+    Integer modelId2 = 1515;
     Model model1 = new Model.ModelBuilder(nmaId1, "model 1")
             .id(modelId1)
             .link("identity")
             .modelType(Model.NETWORK_MODEL_TYPE)
             .build();
+    Model model2 = new Model.ModelBuilder(nmaId1, "model 2")
+            .id(modelId2)
+            .link("identity")
+            .modelType(Model.PAIRWISE_MODEL_TYPE)
+            .from(new Model.DetailNode(titratedDoseInterventionFilteredIn.getId(), "titrated"))
+            .to(new Model.DetailNode(fixedDoseInterventionFilteredIn.getId(), "fixed"))
+            .build();
 
-    when(modelRepository.findModelsByProject(projectId)).thenReturn(Collections.singletonList(model1));
-    Model newModel1 = new Model(model1);
-    newModel1.setAnalysisId(nmaId1 + 1);
+    when(modelRepository.findModelsByProject(projectId)).thenReturn(Arrays.asList(model1, model2));
 
     when(analysisRepository.get(newNma1.getId())).thenReturn(newNma1);
     when(analysisRepository.get(model1.getAnalysisId())).thenReturn(nma1);
@@ -634,8 +621,8 @@ public class ProjectServiceTest {
     verifyNoMoreInteractions(triplestoreService);
 
     verify(analysisRepository).query(projectId);
-    verify(analysisRepository).get(newNma1.getId());
-    verify(analysisRepository).get(model1.getAnalysisId());
+    verify(analysisRepository, times(2)).get(newNma1.getId());
+    verify(analysisRepository, times(2)).get(model1.getAnalysisId());
     verify(analysisRepository).query(newProjectId);
     verifyNoMoreInteractions(analysisRepository);
 
@@ -646,8 +633,8 @@ public class ProjectServiceTest {
     verify(modelRepository).findModelsByProject(projectId);
     verifyNoMoreInteractions(modelRepository);
 
-    verify(problemService).getProblem(newProjectId, newNma1.getId());
-    verify(problemService).getProblem(projectId, nma1.getId());
+    verify(problemService, times(2)).getProblem(newProjectId, newNma1.getId());
+    verify(problemService, times(2)).getProblem(projectId, nma1.getId());
     verifyNoMoreInteractions(problemService);
   }
 

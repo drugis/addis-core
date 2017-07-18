@@ -105,13 +105,12 @@ public class MainConfig {
   @Bean
   public CacheManager cacheManager() {
     long numberOfCacheItems = 100;
-    long ttl = 60*60*4;
+    long fourHours = 60*60*4;
 
     CacheConfiguration<Object, Object> cacheConfiguration = CacheConfigurationBuilder
             .newCacheConfigurationBuilder(Object.class, Object.class, ResourcePoolsBuilder
-                    .newResourcePoolsBuilder()
                     .heap(numberOfCacheItems))
-            .withExpiry(Expirations.timeToLiveExpiration(new Duration(ttl, TimeUnit.SECONDS)))
+            .withExpiry(Expirations.timeToLiveExpiration(new Duration(fourHours, TimeUnit.SECONDS)))
             .build();
 
     Map<String, CacheConfiguration<?, ?>> caches = createCacheConfigurations(cacheConfiguration);

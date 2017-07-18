@@ -1,27 +1,28 @@
 'use strict';
 
-define(['lodash'], function(_) {
+define([], function() {
   var dependencies = ['$q', 'AnalysisResource', 'ModelResource', 'ProblemResource', 'InterventionResource'];
 
   var CacheService = function($q, AnalysisResource, ModelResource, ProblemResource, InterventionResource) {
     var cache = {
       analysesPromises: {},
-      modelPromises: [],
+      analysisPromises: {},
+      modelPromises: {},
       problemPromises: {},
-      consistecyModelsPromises: {},
+      consistencyModelsPromises: {},
       modelsByProjectPromises: {},
       interventionPromises: {}
     };
 
     function getAnalysis(projectId, analysisId) {
-      if (cache.analysesPromises[analysisId]) {
-        return cache.analysesPromises[analysisId];
+      if (cache.analysisPromises[analysisId]) {
+        return cache.analysisPromises[analysisId];
       }
-      cache.analysesPromises[analysisId] = AnalysisResource.get({
+      cache.analysisPromises[analysisId] = AnalysisResource.get({
         projectId: projectId,
         analysisId: analysisId
       }).$promise;
-      return cache.analysesPromises[analysisId];
+      return cache.analysisPromises[analysisId];
     }
 
     function getAnalyses(params) {
@@ -34,32 +35,23 @@ define(['lodash'], function(_) {
 
 
     function getModel(projectId, analysisId, modelId) {
-      var modelObject = _.find(cache.modelPromises, function(modelPromise) {
-        return modelPromise.analysisId === analysisId && modelPromise.modelId === modelId;
-      });
-      if (modelObject) {
-        return modelObject.promise;
+      if (cache.modelPromises[modelId]) {
+        return cache.modelPromises[modelId];
       }
-      modelObject = {
+      cache.modelPromises[modelId] = ModelResource.get({
+        projectId: projectId,
         analysisId: analysisId,
-        modelId: modelId,
-        promise: ModelResource.get({
-          projectId: projectId,
-          analysisId: analysisId,
-          modelId: modelId
-        }).$promise
-      };
-      cache.modelPromises.push(modelObject);
-
-      return modelObject.promise;
+        modelId: modelId
+      }).$promise;
+      return cache.modelPromises[modelId];
     }
 
     function getConsistencyModels(params) {
-      if (cache.consistecyModelsPromises[params.projectId]) {
-        return cache.consistecyModelsPromises[params.projectId];
+      if (cache.consistencyModelsPromises[params.projectId]) {
+        return cache.consistencyModelsPromises[params.projectId];
       }
-      cache.consistecyModelsPromises[params.projectId] = ModelResource.getConsistencyModels(params).$promise;
-      return cache.consistecyModelsPromises[params.projectId];
+      cache.consistencyModelsPromises[params.projectId] = ModelResource.getConsistencyModels(params).$promise;
+      return cache.consistencyModelsPromises[params.projectId];
     }
 
     function getModelsByProject(params) {
@@ -90,6 +82,10 @@ define(['lodash'], function(_) {
       return cache.interventionPromises[params.projectId];
     }
 
+    function evict(cacheName, key) {
+        delete cache[cacheName][key];
+    }
+
     return {
       getAnalysis: getAnalysis,
       getAnalyses: getAnalyses,
@@ -97,7 +93,8 @@ define(['lodash'], function(_) {
       getProblem: getProblem,
       getConsistencyModels: getConsistencyModels,
       getModelsByProject: getModelsByProject,
-      getInterventions: getInterventions
+      getInterventions: getInterventions,
+      evict: evict
     };
   };
   return dependencies.concat(CacheService);

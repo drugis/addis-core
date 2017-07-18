@@ -1,5 +1,8 @@
 package org.drugis.addis.analyses;
 
+import org.drugis.addis.analyses.model.AbstractAnalysis;
+import org.drugis.addis.analyses.model.BenefitRiskAnalysis;
+import org.drugis.addis.analyses.model.NetworkMetaAnalysis;
 import org.drugis.addis.analyses.repository.AnalysisRepository;
 import org.drugis.addis.config.JpaRepositoryTestConfig;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
@@ -32,16 +35,6 @@ public class AnalysisRepositoryTest {
   EntityManager em;
 
   @Test
-  public void testGetSingleStudyBenefitRiskAnalysis() throws ResourceDoesNotExistException {
-    Integer analysisId = -4;
-    AbstractAnalysis analysis = analysisRepository.get(analysisId);
-    SingleStudyBenefitRiskAnalysis castAnalysis = (SingleStudyBenefitRiskAnalysis) analysis;
-    SingleStudyBenefitRiskAnalysis singleStudyBenefitRiskAnalysis = em.find(SingleStudyBenefitRiskAnalysis.class, analysisId);
-    assertEquals(2, singleStudyBenefitRiskAnalysis.getSelectedOutcomes().size());
-    assertEquals(singleStudyBenefitRiskAnalysis, castAnalysis);
-  }
-
-  @Test
   public void testGetNetworkMetaAnalysis() throws ResourceDoesNotExistException {
     Integer analysisId = -5;
     AbstractAnalysis analysis = analysisRepository.get(analysisId);
@@ -51,14 +44,14 @@ public class AnalysisRepositoryTest {
   }
 
   @Test
-  public void testGetMetaBenefitRiskAnalysis() throws ResourceDoesNotExistException {
+  public void testGetBenefitRiskAnalysis() throws ResourceDoesNotExistException {
     Integer analysisId = -10;
     AbstractAnalysis analysis = analysisRepository.get(analysisId);
-    MetaBenefitRiskAnalysis castAnalysis = (MetaBenefitRiskAnalysis) analysis;
-    MetaBenefitRiskAnalysis metaBenefitRiskAnalysis = em.find(MetaBenefitRiskAnalysis.class, analysisId);
-    metaBenefitRiskAnalysis = em.find(MetaBenefitRiskAnalysis.class, metaBenefitRiskAnalysis.getId());
-    assertEquals(1, metaBenefitRiskAnalysis.getInterventionInclusions().size());
-    assertEquals(metaBenefitRiskAnalysis, castAnalysis);
+    BenefitRiskAnalysis castAnalysis = (BenefitRiskAnalysis) analysis;
+    BenefitRiskAnalysis benefitRiskAnalysis = em.find(BenefitRiskAnalysis.class, analysisId);
+    benefitRiskAnalysis = em.find(BenefitRiskAnalysis.class, benefitRiskAnalysis.getId());
+    assertEquals(1, benefitRiskAnalysis.getInterventionInclusions().size());
+    assertEquals(benefitRiskAnalysis, castAnalysis);
   }
 
   @Test
@@ -80,7 +73,7 @@ public class AnalysisRepositoryTest {
     Integer projectId = 1;
     List<AbstractAnalysis> analyses = analysisRepository.query(projectId);
     assertEquals(7, analyses.size());
-    SingleStudyBenefitRiskAnalysis analysis = new SingleStudyBenefitRiskAnalysis(-1, 1, "analysis 1", Collections.EMPTY_LIST, Collections.EMPTY_LIST);
+    BenefitRiskAnalysis analysis = new BenefitRiskAnalysis(-1, 1, "analysis 1", Collections.emptySet());
     assertTrue(analyses.contains(analysis));
   }
 

@@ -1,6 +1,7 @@
 package org.drugis.addis.models;
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.drugis.addis.exception.OperationNotPermittedException;
 import org.drugis.addis.models.exceptions.InvalidModelException;
 import org.junit.Before;
 import org.junit.Test;
@@ -115,6 +116,27 @@ public class ModelTest {
     assertEquals("treatment1", details.getLeft().getName());
     assertEquals("treatment2", details.getRight().getName());
   }
+
+  @Test
+  public void testUpdateTypeDetails() throws OperationNotPermittedException {
+    pairwiseModel.updateTypeDetails(3, 4);
+    Model.ModelType pairwiseModelType = pairwiseModel.getModelType();
+    assertEquals("pairwise", pairwiseModelType.getType());
+    assertEquals(new Integer(3), pairwiseModelType.getDetails().getFrom().getId());
+    assertEquals(new Integer(4), pairwiseModelType.getDetails().getTo().getId());
+
+    nodeSplitModel.updateTypeDetails(3, 4);
+    Model.ModelType nodesplitModelType = nodeSplitModel.getModelType();
+    assertEquals("node-split", nodesplitModelType.getType());
+    assertEquals(new Integer(3), nodesplitModelType.getDetails().getFrom().getId());
+    assertEquals(new Integer(4), nodesplitModelType.getDetails().getTo().getId());
+  }
+
+  @Test(expected = OperationNotPermittedException.class)
+  public void testUpdateNonPairwiseTypeDetailsFails() throws OperationNotPermittedException {
+    networkModel.updateTypeDetails(3, 4);
+  }
+
 
   @Test
   public void testGetAutomaticHeterogeneityPrior() {

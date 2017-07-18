@@ -170,13 +170,19 @@ define(['lodash', 'angular-mocks'], function(_) {
             id: outcome1.id
           }
         }, {
-          analysisType: 'Benefit-risk analysis based on a single study',
+          analysisType: 'Benefit-risk analysis',
           title: 'ssbr',
-          selectedOutcomes: [outcome1, outcome2]
+          benefitRiskStudyOutcomeInclusions: [{
+            outcomeId: outcome1.id
+          }, {
+            outcomeId: outcome2.id
+          }],
+          benefitRiskNMAOutcomeInclusions: []
         }, {
-          analysisType: 'Benefit-risk analysis based on meta-analyses',
+          analysisType: 'Benefit-risk analysis',
           title: 'metabr',
-          mbrOutcomeInclusions: [{
+          benefitRiskStudyOutcomeInclusions: [],
+          benefitRiskNMAOutcomeInclusions: [{
             outcomeId: 3
           }]
         }];

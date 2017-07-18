@@ -1,0 +1,92 @@
+<div ui-view>
+  <navbar-directive></navbar-directive>
+  <ul class="breadcrumbs fixed">
+    <li>
+      <a ui-sref="datasets({userUid: user.id})">{{user.firstName}}
+        {{user.lastName}}</a>
+    </li>
+    <li>
+      <a ui-sref="projects({userUid: userId})">Projects</a>
+    </li>
+    <li>
+      <a ui-sref="project({userUid: userId, projectId: project.id})">{{project.name}}</a>
+    </li>
+    <li class="current active">{{analysis.title}}</li>
+  </ul>
+  <div>
+    <div class="project-header row">
+      <div class="columns large-12">
+        <h1 class="inline-header" title="Analysis title">{{analysis.title}}</h1>
+        <h3 class="subheader inline-header" title="Analysis type">/ {{analysis.analysisType}}
+        </h3>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="columns large-12">
+      <h3 class="subheader">Alternatives</h3>
+      <div class="checkbox-group">
+        <div class="alternative-item" ng-repeat="alternative in alternatives">
+          <ul>
+            <li ng-if="alternative.isIncluded"> {{alternative.name}}</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="columns large-12">
+      <table>
+        <caption>Selected outcomes and their data sources</caption>
+        <thead>
+          <tr>
+            <th>Outcome</th>
+            <th colspan="3">Data source</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr ng-if="networkOWAs.length">
+            <td class="y-head"></td>
+            <td class="y-head">Analysis</td>
+            <td class="y-head">Model</td>
+            <td class="y-head">Baseline distribution</td>
+          </tr>
+          <tr ng-repeat="owa in networkOWAs">
+            <td>{{owa.outcome.name}}</td>
+            <td ng-if="owa.selectedAnalysis">
+              <a ui-sref="networkMetaAnalysis({userUid: userId, projectId: project.id, analysisId: owa.selectedAnalysis.id})">{{owa.selectedAnalysis.title}}</a>
+              <span ng-if="owa.selectedAnalysis.archived">(archived analysis)</span>
+            </td>
+            <td ng-if="owa.selectedAnalysis">
+              <a ui-sref="model({userUid: userId, projectId: project.id, analysisId: owa.selectedAnalysis.id, modelId: owa.selectedModel.id})">{{owa.selectedModel.title}}</a>
+              <button class="small success" ng-if="owa.selectedModel.runStatus !== 'done'"
+                ng-click="goToModel(owa.selectedModel)">Run model</button>
+              <span ng-if="owa.selectedModel.archived">(archived model)</span>
+            </td>
+            <td ng-if="owa.baselineDistribution">{{owa.baselineDistribution | distributionToStringFilter}}</td>
+            <td ng-if="!owa.baselineDistribution">
+              <em>Not defined.</em>
+            </td>
+          </tr>
+          <tr ng-if="studyOutcomes.length">
+            <td class="y-head"></td>
+            <td class="y-head" colspan="3">Study</td>
+          </tr>
+          <tr ng-repeat="studyOutcome in studyOutcomes">
+            <td>{{studyOutcome.outcome.name}}</td>
+            <td colspan="3">
+              <a ui-sref="versionedDataset.study({userUid: datasetOwnerId, datasetUuid: project.namespaceUid, versionUuid: projectVersionUuid, studyGraphUuid: studyOutcome.selectedStudy.uuid})">{{studyOutcome.selectedStudy.name}}</a>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="columns large-12">
+      <button ng-click="goToDefaultScenario()" ng-disabled="isMissingBaseline">Go to MCDA</button>
+    </div>
+  </div>

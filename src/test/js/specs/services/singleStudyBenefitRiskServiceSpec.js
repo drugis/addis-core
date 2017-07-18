@@ -182,11 +182,11 @@ define(['angular', 'angular-mocks', 'services'], function() {
             }
           }]
         }];
-        var selectedOutcomes = [{
+        var selectedOutcomes = [{outcome:{
           semanticOutcomeUri: 'semanticOutcomeUri1'
-        }, {
+        }}, {outcome:{
           semanticOutcomeUri: 'semanticOutcomeUri2'
-        }];
+        }}];
 
         var result = SingleStudyBenefitRiskService.addMissingOutcomesToStudies(studies, selectedOutcomes);
         expect(result[0].missingOutcomes).toEqual([selectedOutcomes[1]]);
@@ -265,9 +265,9 @@ define(['angular', 'angular-mocks', 'services'], function() {
           }, {
             semanticInterventionUri: 'uid 2'
           }];
-          SingleStudyBenefitRiskService.addHasMatchedMixedTreatmentArm(studies, selectedInterventions);
-          expect(studies[0].hasMatchedMixedTreatmentArm).toBeTruthy();
-          expect(studies[1].hasMatchedMixedTreatmentArm).toBeFalsy();
+          var result = SingleStudyBenefitRiskService.addHasMatchedMixedTreatmentArm(studies, selectedInterventions);
+          expect(result[0].hasMatchedMixedTreatmentArm).toBeTruthy();
+          expect(result[1].hasMatchedMixedTreatmentArm).toBeFalsy();
         }));
     });
 

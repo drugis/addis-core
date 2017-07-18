@@ -2,14 +2,13 @@ package org.drugis.addis.problems;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
 import net.minidev.json.JSONObject;
 import org.apache.commons.lang3.tuple.Pair;
-import org.apache.jena.ext.com.google.common.collect.ImmutableSet;
 import org.drugis.addis.TestUtils;
-import org.drugis.addis.analyses.*;
+import org.drugis.addis.analyses.model.*;
 import org.drugis.addis.analyses.repository.AnalysisRepository;
-import org.drugis.addis.analyses.repository.SingleStudyBenefitRiskAnalysisRepository;
 import org.drugis.addis.analyses.service.AnalysisService;
 import org.drugis.addis.covariates.Covariate;
 import org.drugis.addis.covariates.CovariateRepository;
@@ -35,6 +34,8 @@ import org.drugis.addis.problems.service.impl.PerformanceTableBuilder;
 import org.drugis.addis.problems.service.impl.ProblemServiceImpl;
 import org.drugis.addis.problems.service.model.AbstractMeasurementEntry;
 import org.drugis.addis.problems.service.model.ContinuousMeasurementEntry;
+import org.drugis.addis.problems.service.model.PerformanceParameters;
+import org.drugis.addis.problems.service.model.RelativePerformanceParameters;
 import org.drugis.addis.projects.Project;
 import org.drugis.addis.projects.repository.ProjectRepository;
 import org.drugis.addis.security.Account;
@@ -71,9 +72,6 @@ import static org.mockito.Mockito.*;
  * Created by daan on 3/21/14.
  */
 public class ProblemServiceTest {
-
-  @Mock
-  SingleStudyBenefitRiskAnalysisRepository singleStudyBenefitRiskAnalysisRepository;
 
   @Mock
   AnalysisRepository analysisRepository;
@@ -162,7 +160,7 @@ public class ProblemServiceTest {
 
   @After
   public void cleanUp() throws URISyntaxException {
-    verifyNoMoreInteractions(analysisRepository, projectRepository, singleStudyBenefitRiskAnalysisRepository,
+    verifyNoMoreInteractions(analysisRepository, projectRepository,
             interventionRepository, trialverseService, triplestoreService, mappingService, modelService);
   }
 
@@ -171,13 +169,13 @@ public class ProblemServiceTest {
     URI secondOutcomeUri = URI.create("http://secondSemantic");
     SemanticVariable secondSemanticOutcome = new SemanticVariable(secondOutcomeUri, "second semantic outcome");
     Outcome secondOutcome = new Outcome(-303, projectId, "second outcome", direction, "very", secondSemanticOutcome);
-    List<Outcome> outcomes = Arrays.asList(outcome, secondOutcome);
     //include interventions: fluox and sertra
     InterventionInclusion fluoxInclusion = new InterventionInclusion(analysisId, fluoxIntervention.getId());
     InterventionInclusion sertraInclusion = new InterventionInclusion(analysisId, sertraIntervention.getId());
-    List<InterventionInclusion> interventionInclusions = Arrays.asList(fluoxInclusion, sertraInclusion);
-    SingleStudyBenefitRiskAnalysis singleStudyAnalysis = new SingleStudyBenefitRiskAnalysis(analysisId, projectId, "single study analysis", outcomes, interventionInclusions);
+    Set<InterventionInclusion> interventionInclusions = Sets.newHashSet(fluoxInclusion, sertraInclusion);
+    BenefitRiskAnalysis singleStudyAnalysis = new BenefitRiskAnalysis(analysisId, projectId, "single study analysis", interventionInclusions);
     when(analysisRepository.get(analysisId)).thenReturn(singleStudyAnalysis);
+    when(outcomeRepository.get(projectId, Sets.newHashSet(outcome.getId(), secondOutcome.getId()))).thenReturn(Arrays.asList(outcome, secondOutcome));
 
     URI defaultMeasurementMoment = URI.create("defaultMeasurementMoment");
     URI daanEtAlUri = URI.create("DaanEtAlUri");
@@ -236,13 +234,16 @@ public class ProblemServiceTest {
     daanEtAl.setDefaultMeasurementMoment(defaultMeasurementMoment);
 
     // actually set study in analysis
-    singleStudyAnalysis.setStudyGraphUri(daanEtAlUri);
+    BenefitRiskStudyOutcomeInclusion outcomeInclusion = new BenefitRiskStudyOutcomeInclusion(analysisId, outcome.getId(), daanEtAlUri);
+    BenefitRiskStudyOutcomeInclusion secondOutcomeInclusion = new BenefitRiskStudyOutcomeInclusion(analysisId, secondOutcome.getId(), daanEtAlUri);
+    singleStudyAnalysis.setBenefitRiskStudyOutcomeInclusions(Arrays.asList(outcomeInclusion, secondOutcomeInclusion));
 
     List<TrialDataStudy> studyResult = Collections.singletonList(daanEtAl);
     Set<URI> outcomeUris = new HashSet<>(Arrays.asList(outcome.getSemanticOutcomeUri(), secondOutcome.getSemanticOutcomeUri()));
     Set<URI> interventionUris = new HashSet<>(Arrays.asList(fluoxIntervention.getSemanticInterventionUri(), sertraIntervention.getSemanticInterventionUri()));
 
-    when(triplestoreService.getSingleStudyData(versionedUuid, daanEtAl.getStudyUri(), project.getDatasetVersion(), outcomeUris, interventionUris)).thenReturn(studyResult);
+    when(triplestoreService.getSingleStudyData(versionedUuid, daanEtAl.getStudyUri(), project.getDatasetVersion(), Sets.newHashSet(outcome.getSemanticOutcomeUri()), interventionUris)).thenReturn(studyResult);
+    when(triplestoreService.getSingleStudyData(versionedUuid, daanEtAl.getStudyUri(), project.getDatasetVersion(), Sets.newHashSet(secondOutcome.getSemanticOutcomeUri()), interventionUris)).thenReturn(studyResult);
 
     AbstractMeasurementEntry measurementEntry = mock(ContinuousMeasurementEntry.class);
     List<AbstractMeasurementEntry> performanceTable = Collections.singletonList(measurementEntry);
@@ -260,17 +261,19 @@ public class ProblemServiceTest {
     when(mappingService.getVersionedUuid(project.getNamespaceUid())).thenReturn(versionedUuid);
 
     // --------------- execute ---------------- //
-    SingleStudyBenefitRiskProblem actualProblem = (SingleStudyBenefitRiskProblem) problemService.getProblem(projectId, analysisId);
+    BenefitRiskProblem actualProblem = (BenefitRiskProblem) problemService.getProblem(projectId, analysisId);
     // --------------- execute ---------------- //
 
+    verify(modelService).get(Collections.emptySet());
     verify(projectRepository).get(projectId);
     verify(analysisRepository).get(analysisId);
-    verify(triplestoreService).getSingleStudyData(versionedUuid, daanEtAl.getStudyUri(), project.getDatasetVersion(), outcomeUris, interventionUris);
-    verify(triplestoreService).findMatchingIncludedInterventions(includedInterventions, daanEtAlFluoxArm);
-    verify(triplestoreService).findMatchingIncludedInterventions(includedInterventions, daanEtAlSertraArm);
-    verify(triplestoreService).findMatchingIncludedInterventions(includedInterventions, unmatchedDaanEtAlParoxArm);
-    verify(performanceTablebuilder).build(any());
-    verify(mappingService).getVersionedUuid(project.getNamespaceUid());
+    verify(triplestoreService).getSingleStudyData(versionedUuid, daanEtAl.getStudyUri(), project.getDatasetVersion(), Sets.newHashSet(outcome.getSemanticOutcomeUri()), interventionUris);
+    verify(triplestoreService).getSingleStudyData(versionedUuid, daanEtAl.getStudyUri(), project.getDatasetVersion(), Sets.newHashSet(secondOutcome.getSemanticOutcomeUri()), interventionUris);
+    verify(triplestoreService, times(2)).findMatchingIncludedInterventions(includedInterventions, daanEtAlFluoxArm);
+    verify(triplestoreService, times(2)).findMatchingIncludedInterventions(includedInterventions, daanEtAlSertraArm);
+    verify(triplestoreService, times(2)).findMatchingIncludedInterventions(includedInterventions, unmatchedDaanEtAlParoxArm);
+    verify(performanceTablebuilder, times(2)).build(any());
+    verify(mappingService, times(2)).getVersionedUuid(project.getNamespaceUid());
     verify(interventionRepository).query(project.getId());
 
     Pair<Measurement, Integer> pair1 = Pair.of(daanEtAlFluoxMeasurement1, daanEtAlFluoxArm.getMatchedProjectInterventionIds().iterator().next());
@@ -278,17 +281,15 @@ public class ProblemServiceTest {
     Pair<Measurement, Integer> pair3 = Pair.of(daanEtAlSertraMeasurement1, daanEtAlSertraArm.getMatchedProjectInterventionIds().iterator().next());
     Pair<Measurement, Integer> pair4 = Pair.of(daanEtAlSertraMeasurement2, daanEtAlSertraArm.getMatchedProjectInterventionIds().iterator().next());
     Set<Pair<Measurement, Integer>> instancePairs = ImmutableSet.of(pair1, pair2, pair3, pair4);
-    verify(performanceTablebuilder).build(instancePairs);
+    verify(performanceTablebuilder, times(2)).build(instancePairs);
 
     assertNotNull(actualProblem);
-    assertNotNull(actualProblem.getTitle());
-    assertEquals(singleStudyAnalysis.getTitle(), actualProblem.getTitle());
     assertNotNull(actualProblem.getAlternatives());
     assertNotNull(actualProblem.getCriteria());
 
     Map<URI, CriterionEntry> actualCriteria = actualProblem.getCriteria();
     assertTrue(actualCriteria.keySet().contains(variableUri));
-    assertTrue(actualCriteria.keySet().contains(secondOutcomeUri));
+    assertTrue(actualCriteria.keySet().contains(semanticOutcome.getUri()));
   }
 
   @Test
@@ -548,7 +549,7 @@ public class ProblemServiceTest {
     List<Outcome> outcomes = Arrays.asList(outcome1, outcome2);
 
 
-    MetaBenefitRiskAnalysis analysis = new MetaBenefitRiskAnalysis(analysisId, projectId, title, includedAlternatives);
+    BenefitRiskAnalysis analysis = new BenefitRiskAnalysis(analysisId, projectId, title, includedAlternatives);
     Integer nma1Id = 31;
     Integer nma2Id = 32;
     String baseline1JsonString = "{\n" +
@@ -566,12 +567,12 @@ public class ProblemServiceTest {
             "\"name\": \"fluox\"\n" +
             "}";
 
-    MbrOutcomeInclusion inclusion1 = new MbrOutcomeInclusion(analysisId, outcome1.getId(), nma1Id, model1.getId());
+    BenefitRiskNMAOutcomeInclusion inclusion1 = new BenefitRiskNMAOutcomeInclusion(analysisId, outcome1.getId(), nma1Id, model1.getId());
     inclusion1.setBaseline(baseline1JsonString);
-    MbrOutcomeInclusion inclusion2 = new MbrOutcomeInclusion(analysisId, outcome2.getId(), nma2Id, model2.getId());
+    BenefitRiskNMAOutcomeInclusion inclusion2 = new BenefitRiskNMAOutcomeInclusion(analysisId, outcome2.getId(), nma2Id, model2.getId());
     inclusion2.setBaseline(baseline2JsonString);
-    List<MbrOutcomeInclusion> outcomeInclusions = Arrays.asList(inclusion1, inclusion2);
-    analysis.setMbrOutcomeInclusions(outcomeInclusions);
+    List<BenefitRiskNMAOutcomeInclusion> outcomeInclusions = Arrays.asList(inclusion1, inclusion2);
+    analysis.setBenefitRiskNMAOutcomeInclusions(outcomeInclusions);
 
     ObjectMapper om = new ObjectMapper();
     String results1 = "{\n" +
@@ -601,8 +602,8 @@ public class ProblemServiceTest {
     results.put(pataviTask1.getSelf(), task1Results);
     results.put(pataviTask2.getSelf(), task2Results);
 
-    List<Integer> modelIds = Arrays.asList(model1.getId(), model2.getId());
-    List<Integer> outcomeIds = Arrays.asList(outcome1.getId(), outcome2.getId());
+    Set<Integer> modelIds = Sets.newHashSet(model1.getId(), model2.getId());
+    Set<Integer> outcomeIds = Sets.newHashSet(outcome1.getId(), outcome2.getId());
     when(projectRepository.get(projectId)).thenReturn(project);
     when(modelService.get(modelIds)).thenReturn(models);
     when(outcomeRepository.get(projectId, outcomeIds)).thenReturn(outcomes);
@@ -612,7 +613,7 @@ public class ProblemServiceTest {
     when(pataviTaskRepository.getResults(taskIds)).thenReturn(results);
     when(interventionRepository.query(projectId)).thenReturn(interventions);
 
-    MetaBenefitRiskProblem problem = (MetaBenefitRiskProblem) problemService.getProblem(projectId, analysisId);
+    BenefitRiskProblem problem = (BenefitRiskProblem) problemService.getProblem(projectId, analysisId);
 
     verify(projectRepository).get(projectId);
     verify(modelService).get(modelIds);
@@ -628,9 +629,11 @@ public class ProblemServiceTest {
     assertEquals("relative-normal", problem.getPerformanceTable().get(0).getPerformance().getType());
     assertEquals("relative-cloglog-normal", problem.getPerformanceTable().get(1).getPerformance().getType());
     List<List<Double>> expectedDataHam = Arrays.asList(Arrays.asList(0.0, 0.0, 0.0), Arrays.asList(0.0, 74.346, 1.9648), Arrays.asList(0.0, 1.9648, 74.837));
-    assertEquals(expectedDataHam, problem.getPerformanceTable().get(0).getPerformance().getParameters().getRelative().getCov().getData());
+    RelativePerformanceParameters parameters = (RelativePerformanceParameters) problem.getPerformanceTable().get(0).getPerformance().getParameters();
+    assertEquals(expectedDataHam, parameters.getRelative().getCov().getData());
     List<List<Double>> expectedDataHeadache = Arrays.asList(Arrays.asList(0.0, 0.0, 0.0), Arrays.asList(0.0, 74.346, 1.9648), Arrays.asList(0.0, 1.9648, 74.837));
-    assertEquals(expectedDataHeadache, problem.getPerformanceTable().get(1).getPerformance().getParameters().getRelative().getCov().getData());
+    RelativePerformanceParameters otherParameters = (RelativePerformanceParameters) problem.getPerformanceTable().get(1).getPerformance().getParameters();
+    assertEquals(expectedDataHeadache, otherParameters.getRelative().getCov().getData());
   }
 
   @Test
