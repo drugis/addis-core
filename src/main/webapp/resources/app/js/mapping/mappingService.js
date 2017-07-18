@@ -123,7 +123,7 @@ define(['lodash'], function(_) {
       return _.reject(units, _.isEmpty);
     }
 
-    function getUnitsFromIntervention(intervention, concepts) {
+    function getUnitsFromIntervention(intervention) {
       var units;
       if (intervention.type === 'fixed') {
         units = getUnits(intervention.constraint);
