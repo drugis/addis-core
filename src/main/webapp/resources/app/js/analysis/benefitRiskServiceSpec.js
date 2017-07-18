@@ -609,18 +609,28 @@ define(['angular-mocks'], function(angularMocks) {
         expect(benefitRiskService.hasMissingStudy(outcomeInclusions)).toBeFalsy();
       });
       it('should be true if a study is not selected', function() {
-        var outcomeInclusions = [{
+        var networkOnly = [{
           dataType: 'network'
-        }, {
+        }];
+        expect(benefitRiskService.hasMissingStudy(networkOnly)).toBeFalsy();
+
+        var withGoodSelection = [{
           dataType: 'single-study',
           selectedStudy: {
             studyUri: 'http://cool.ninja'
           }
-        }, {
+        }];
+        expect(benefitRiskService.hasMissingStudy(withGoodSelection)).toBeFalsy();
+
+        var withMissingStudy1 = [{
           dataType: 'single-study',
           selectedStudy: {}
         }];
-        expect(benefitRiskService.hasMissingStudy(outcomeInclusions)).toBeTruthy();
+        expect(benefitRiskService.hasMissingStudy(withMissingStudy1)).toBeTruthy();
+        var withMissingStudy2 = [{
+          dataType: 'single-study',
+        }];
+        expect(benefitRiskService.hasMissingStudy(withMissingStudy2)).toBeTruthy();
       });
     });
 
