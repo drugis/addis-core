@@ -2,27 +2,27 @@
   "activity": {
     "title": "Activity",
     "text": "An activity describes what happened to a specific arm of the study during a specific time period. For example, during the \"treatment phase\", the \"aspirin arm\" might receive \"20 mg/day of aspirin\". In addition to interventions, activities include things such as placebo wash-out and randomization.",
-    "link": "/manual.html#activity"
+    "link": "/manual.html#study-input"
   },
   "addis-analysis": {
     "title": "Analysis",
     "text": "Analyses can be performed based on the project dataset, for example a network meta-analysis on one of the outcomes of interest. An analysis can consist of multiple models, for example a primary comparative analysis and several models to investigate heterogeneity and inconsistency. Currently, an analysis can be an evidence synthesis (e.g. meta-analysis) or a benefit-risk analysis.",
-    "link": "/manual.html#analyses"
+    "link": "/manual.html#analysis-projects"
   },
   "addis-covariate": {
     "title": "Covariate",
     "text": "A covariate is a study-level variable that may affect the relative treatment effects observed in primary studies. For example, whether the study was randomized or the disease severity at baseline could be covariates. Currently, a covariate can be defined either as one of the studies' design characteristics, or as a baseline characteristic describing the studies' populations.",
-    "link": "/manual.html#covariate"
+    "link": "/manual.html#defining-covariates"
   },
   "addis-intervention": {
     "title": "Intervention",
     "text": "An intervention defines one of the alternative treatments of interest for the project, based on concepts defined in the dataset. Definitions can be simple (e.g. \"drug A\"), or more complex (e.g. \"drug A, dose between 10 and 20 mg/day\").",
-    "link": "/manual.html#intervention"
+    "link": "/manual.html#defining-interventions"
   },
   "addis-outcome": {
     "title": "Outcome",
     "text": "An outcome defines a variable of interest for the project, based on concepts defined in the dataset. Project outcomes are different from dataset outcomes; for example, what was considered an adverse event in primary studies may well be an outcome of interest in your meta-analysis.",
-    "link": "/manual.html#outcome"
+    "link": "/manual.html#defining-outcomes"
   },
   "adverse-event": {
     "title": "Adverse event",
@@ -32,7 +32,7 @@
   "arm": {
     "title": "Arm",
     "text": "In randomized studies participants are randomized into groups called \"arms\", each of which receives a different intervention. We loosely use this term to also refer to the groups being compared in a comparative cohort study.",
-    "link": "/manual.html#arm"
+    "link": "/manual.html#study-input"
   },
   "baseline-characteristic": {
     "title": "Baseline characteristic",
@@ -57,7 +57,7 @@
   "concept-mapping": {
     "title": "Concept mapping",
     "text": "A concept mapping harmonizes a term used at the study level (e.g. \"50% or greater improvement on HAM-D\"), to a concept defined at the dataset level (e.g. \"HAM-D response\"). Concept mappings enable greater flexibility in re-using study extractions made by others, or for a previous project.",
-    "link": "/manual.html#concept-mapping"
+    "link": "/manual.html#concept"
   },
   "condition": {
     "title": "(Health) condition",
@@ -77,7 +77,7 @@
   "dataset": {
     "title": "Dataset",
     "text": "A dataset is a collection of studies that are somehow related, e.g. studies identified by a systematic literature review.",
-    "link": "/manual.html#dataset"
+    "link": "/manual.html#dataset-management"
   },
   "dataset-history": {
     "title": "Dataset history",
@@ -157,7 +157,7 @@
   "measurement-moment": {
     "title": "Measurement moment",
     "text": "A measurement moment corresponds to the time when measurements were taken. Measurement moments are relative to certain anchor time points within the study, e.g. the start or the end of the treatment phase.",
-    "link": "/manual.html#measurement-moment"
+    "link": "/manual.html#study-input"
   },
   "median": {
     "title": "Median",
@@ -172,7 +172,7 @@
   "other-group": {
     "title": "Other group",
     "text": "Any group within the study that is not an arm. This includes the total study population, and may also refer to sub-groups such as all males in the study or all elderly patients in the control arm.",
-    "link": "/manual.html#other-group"
+    "link": "/manual.html#study-input"
   },
   "percentage": {
     "title": "Percentage with event",
@@ -187,7 +187,7 @@
   "project": {
     "title": "Project",
     "text": "A project is a collection of analyses performed on a specific version of a single dataset. Typically, it aims to answer a specific question or a number of related questions using the dataset.",
-    "link": "/manual.html#project"
+    "link": "/manual.html#analysis-projects"
   },
   "proportion": {
     "title": "Proportion with event",
@@ -237,7 +237,7 @@
   "study-design": {
     "title": "Study design",
     "text": "The study design table captures which activities were applied to each arm during each of the time periods of the study.",
-    "link": "/manual.html#study-design"
+    "link": "/manual.html#study-input"
   },
   "study-history": {
     "title": "Study history",
@@ -257,7 +257,7 @@
   "time-period": {
     "title": "Time period",
     "text": "A period or phase of the study during which a certain activity (or group of activities) took place. For example, a drug study might consist of a placebo run-in period, a treatment period, and a follow-up period.",
-    "link": "/manual.html#time-period"
+    "link": "/manual.html#study-input"
   },
   "trialverse-outcome": {
     "title": "Outcome",
@@ -267,7 +267,7 @@
   "unit": {
     "title": "Unit",
     "text": "An unit of measurement, e.g. gram, liter, meter. Used to define quantities of treatment doses.",
-    "link": "/manual.html#study-input"
+    "link": "/manual.html#defining-units"
   },
   "variable": {
     "title": "Variable",
