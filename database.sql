@@ -900,7 +900,9 @@ ALTER TABLE effectsTableExclusion RENAME TO effectsTableAlternativeInclusion;
 --changeset reidd:75
 DROP TABLE remarks;
 ALTER TABLE metaBenefitRiskAnalysis RENAME TO benefitRiskAnalysis;
-INSERT INTO benefitRiskAnalysis(id, problem, finalized) SELECT id, problem, CASE WHEN problem IS NULL THEN false ELSE true END FROM SingleStudyBenefitRiskAnalysis;
+INSERT INTO benefitRiskAnalysis(id, problem, finalized) SELECT id, problem,
+  CASE WHEN problem IS NULL THEN false
+  ELSE true END FROM SingleStudyBenefitRiskAnalysis;
 ALTER TABLE mbrOutcomeInclusion RENAME TO BenefitRiskNMAOutcomeInclusion;
 ALTER TABLE BenefitRiskNMAOutcomeInclusion RENAME COLUMN metaBenefitRiskAnalysisId TO analysisId;
 CREATE TABLE BenefitRiskStudyOutcomeInclusion(
@@ -936,8 +938,9 @@ DROP TABLE SingleStudyBenefitRiskAnalysis;
 --rollback INSERT INTO SingleStudyBenefitRiskAnalysis_Outcome (analysisId, outcomeId)
 --rollback     SELECT analysisId, outcomeId
 --rollback     FROM BenefitRiskStudyOutcomeInclusion;
+--rollback ALTER TABLE BenefitRiskStudyOutcomeInclusion DROP CONSTRAINT benefitriskstudyoutcomeinclusion_analysisid_fkey;
+--rollback DELETE FROM benefitRiskAnalysis WHERE id IN (SELECT analysisId FROM BenefitRiskStudyOutcomeInclusion);
 --rollback DROP TABLE BenefitRiskStudyOutcomeInclusion;
---rollback DELETE FROM benefitRiskAnalysis WHERE id NOT IN (SELECT analysisId FROM BenefitRiskNMAOutcomeInclusion);
 --rollback ALTER TABLE BenefitRiskNMAOutcomeInclusion RENAME COLUMN analysisId TO metaBenefitRiskAnalysisId;
 --rollback ALTER TABLE BenefitRiskNMAOutcomeInclusion RENAME TO mBROutcomeInclusion;
 --rollback ALTER TABLE benefitRiskAnalysis RENAME TO metaBenefitRiskAnalysis;

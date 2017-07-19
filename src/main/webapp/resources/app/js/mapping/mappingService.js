@@ -115,12 +115,15 @@ define(['lodash'], function(_) {
     }
 
     function getUnits(constraint) {
+      if(!constraint) {
+        return [];
+      }
       var desiredProperties = ['unitName', 'unitConcept', 'conversionMultiplier'];
       var units = [_.pick(constraint.lowerBound, desiredProperties), _.pick(constraint.upperBound, desiredProperties)];
       return _.reject(units, _.isEmpty);
     }
 
-    function getUnitsFromIntervention(intervention, concepts) {
+    function getUnitsFromIntervention(intervention) {
       var units;
       if (intervention.type === 'fixed') {
         units = getUnits(intervention.constraint);

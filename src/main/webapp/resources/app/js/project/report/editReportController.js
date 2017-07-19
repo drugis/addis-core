@@ -42,6 +42,7 @@ define(['angular', 'lodash', 'jQuery'],
         var textBefore = $scope.reportText.text.substring(0, cursorPos);
         var textAfter = $scope.reportText.text.substring(cursorPos);
         $scope.reportText.text = textBefore + text + textAfter;
+        $scope.reportText.changed = true;
       }
 
       function saveChanges() {

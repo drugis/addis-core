@@ -68,9 +68,6 @@ define(['lodash', 'angular'], function(_, angular) {
     $scope.project = project;
     $scope.projects = ProjectResource.query();
 
-    // load project
-    $scope.loading.loaded = true;
-
     $scope.editMode.allowEditing = !project.archived && UserService.isLoginUserId($scope.project.owner.id);
     $scope.editMode.allowCopying = UserService.hasLoggedInUser();
 
@@ -113,8 +110,12 @@ define(['lodash', 'angular'], function(_, angular) {
       }
     });
 
+    $scope.$on('scaledUnitsChanged', function() {
+      loadUnits();
+    });
 
     function reloadDefinitions() {
+      //TODO make proper loading check that takes all loads into account
       loadCovariates();
       loadUnits();
       loadInterventions();
@@ -152,13 +153,15 @@ define(['lodash', 'angular'], function(_, angular) {
       var scaledUnitsPromise = ScaledUnitResource.query($stateParams).$promise;
       $q.all([unitsPromise, scaledUnitsPromise]).then(function(results) {
         $scope.unitConcepts = results[0];
-        var unitConcepts = _.keyBy($scope.unitConcepts, 'unitUri');
         var scaledUnits = results[1];
+
+        var unitConcepts = _.keyBy($scope.unitConcepts, 'unitUri');
         $scope.units = _.map(scaledUnits, function(unit) {
           return _.extend({}, unit, {
             conceptName: unitConcepts[unit.conceptUri].unitName
           });
         });
+        $scope.loading.loaded = true;
       });
     }
 
@@ -299,10 +302,10 @@ define(['lodash', 'angular'], function(_, angular) {
           callback: function() {
             return loadUnits;
           },
-          unitConcepts: function(){
+          unitConcepts: function() {
             return $scope.unitConcepts;
           },
-          scaledUnits: function(){
+          scaledUnits: function() {
             return $scope.units;
           }
         }

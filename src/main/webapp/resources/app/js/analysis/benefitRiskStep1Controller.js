@@ -135,6 +135,14 @@ define(['lodash', 'angular'], function(_, angular) {
       if (numberOfSelectedOutcomes < 2) {
         $scope.step1AlertMessages.push('At least two outcomes must be selected');
       }
+      var isMissingAnalysis = BenefitRiskService.isMissingAnalysis($scope.outcomesWithAnalyses);
+      if (isMissingAnalysis) {
+        $scope.step1AlertMessages.push('An outcome with missing network model is selected');
+      }
+      var isMissingDataType = BenefitRiskService.isMissingDataType($scope.outcomesWithAnalyses);
+      if (isMissingDataType) {
+        $scope.step1AlertMessages.push('The data source type of an outcome has not been chosen');
+      }
       var isModelWithMissingAlternatives = BenefitRiskService.isModelWithMissingAlternatives($scope.outcomesWithAnalyses);
       if (isModelWithMissingAlternatives) {
         $scope.step1AlertMessages.push('A model with missing alternatives is selected');
@@ -152,7 +160,7 @@ define(['lodash', 'angular'], function(_, angular) {
       if (BenefitRiskService.findOverlappingOutcomes($scope.outcomesWithAnalyses).length > 0) {
         $scope.step1AlertMessages.push('There are overlapping outcomes');
       }
-      if($scope.analysis.finalized){
+      if ($scope.analysis.finalized) {
         $scope.step1AlertMessages.push('Analysis is already finalized');
       }
     }
@@ -174,8 +182,9 @@ define(['lodash', 'angular'], function(_, angular) {
       } else {
         if (changedOutcome.dataType === 'network') {
           changedOutcome.selectedStudy = undefined;
-          if (hasSelectableAnalysis(changedOutcome)) {
-            changedOutcome.selectedAnalysis = changedOutcome.networkMetaAnalyses[0];
+          var selectedAnalysis = findSelectableAnalysis(changedOutcome);
+          if (selectedAnalysis) {
+            changedOutcome.selectedAnalysis = selectedAnalysis;
             changeModelSelection(changedOutcome);
             if (changedOutcome.selectedModel) {
               updateMissingAlternatives(changedOutcome);
@@ -190,9 +199,8 @@ define(['lodash', 'angular'], function(_, angular) {
       saveInclusions();
     }
 
-    function hasSelectableAnalysis(outcome) {
-      var firstAnalysis = outcome.networkMetaAnalyses[0];
-      return firstAnalysis && firstAnalysis.models.length;
+    function findSelectableAnalysis(outcome) {
+      return _.find(outcome.networkMetaAnalyses, 'models.length');
     }
 
     function changeModelSelection(changedOutcome) {
@@ -277,13 +285,13 @@ define(['lodash', 'angular'], function(_, angular) {
 
     function saveInclusions() {
       $scope.analysis.benefitRiskNMAOutcomeInclusions = $scope.outcomesWithAnalyses.filter(function(outcomeWithAnalyses) {
-        return outcomeWithAnalyses.outcome.isIncluded && outcomeWithAnalyses.dataType === 'network';
+        return outcomeWithAnalyses.outcome.isIncluded && outcomeWithAnalyses.dataType === 'network' && outcomeWithAnalyses.selectedAnalysis;
       }).map(function(outcomeWithAnalyses) {
         return {
           analysisId: $scope.analysis.id,
           outcomeId: outcomeWithAnalyses.outcome.id,
           networkMetaAnalysisId: outcomeWithAnalyses.selectedAnalysis.id,
-          modelId: outcomeWithAnalyses.selectedModel.id
+          modelId: outcomeWithAnalyses.selectedModel ? outcomeWithAnalyses.selectedModel.id : undefined
         };
       });
       $scope.analysis.benefitRiskStudyOutcomeInclusions = $scope.outcomesWithAnalyses.filter(function(outcomeWithAnalyses) {
@@ -310,6 +318,7 @@ define(['lodash', 'angular'], function(_, angular) {
         scenarioState: JSON.stringify(problem, null, 2)
       };
     }
+
     function finalizeAndGoToDefaultScenario() {
       $scope.analysis.finalized = true;
       ProblemResource.get($stateParams).$promise.then(function(problem) {

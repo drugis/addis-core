@@ -39,6 +39,8 @@ define(['angular-mocks'], function(angularMocks) {
         'numberOfSelectedOutcomes',
         'isModelWithMissingAlternatives',
         'isModelWithoutResults',
+        'isMissingAnalysis',
+        'isMissingDataType',
         'findMissingAlternatives',
         'findOverlappingInterventions',
         'isInvalidStudySelected',
@@ -89,7 +91,7 @@ define(['angular-mocks'], function(angularMocks) {
       benefitRiskService.findOverlappingInterventions.and.returnValue([]);
       benefitRiskService.findOverlappingOutcomes.and.returnValue([]);
       benefitRiskService.addStudiesToOutcomes.and.returnValue([]);
-      
+
       $controller('BenefitRiskStep1Controller', {
         $scope: scope,
         $q: q,
@@ -123,7 +125,7 @@ define(['angular-mocks'], function(angularMocks) {
             id: 1
           }
         });
-       
+
         analysisDefer.resolve({
           benefitRiskNMAOutcomeInclusions: [],
           benefitRiskStudyOutcomeInclusions: []

@@ -39,7 +39,10 @@
         <tr ng-show="!analysis.outcome">
           <td colspan="7">No outcome selected.</td>
         </tr>
-        <tr ng-show="analysis.outcome && !trialData.length">
+        <tr ng-show="!loading.loaded">
+          <td colspan="7">Loading studies</td>
+        </tr>
+        <tr ng-show="analysis.outcome && !trialData.length && loading.loaded">
           <td colspan="7">No studies found for selected outcome and intervention(s).</td>
         </tr>
         <tr ng-repeat="dataRow in trialData" ng-class="{topborder: dataRow.firstStudyRow}">

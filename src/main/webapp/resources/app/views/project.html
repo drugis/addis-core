@@ -97,9 +97,10 @@
                 <h3 class="subheader">Units
                   <inline-help help-key="unit"></inline-help>
                 </h3>
-                <button id="show-create-unit-modal-btn" ng-if="editMode.allowEditing" ng-disabled="!loading.loaded"
+                <button id="show-create-unit-modal-btn" ng-if="editMode.allowEditing" ng-disabled="loading.loaded && !unitConcepts.length"
                   class="small " ng-click="openCreateScaledUnitDialog()"><i class="fa fa-plus"></i> Add unit
                 </button>
+                <span ng-if="loading.loaded && !unitConcepts.length" class="alert">No unit concepts defined in dataset.</span>
                 <table style="width: 100%;">
                   <thead>
                     <tr>

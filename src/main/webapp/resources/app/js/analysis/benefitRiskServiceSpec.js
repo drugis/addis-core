@@ -228,6 +228,70 @@ define(['angular-mocks'], function(angularMocks) {
       });
     });
 
+    describe('isMissingAnalysis', function() {
+      it('should return true if any outcome selection is a network but missing a selected analysis', function() {
+        var noIncludedOutcome = [{
+          dataType: 'network',
+          outcome: {
+            isIncluded: false
+          },
+          selectedAnalysis: {
+            id: 1
+          }
+        }];
+        expect(benefitRiskService.isMissingAnalysis(noIncludedOutcome)).toBeFalsy();
+        var includedWithAnalysis = [{
+          dataType: 'network',
+          outcome: {
+            isIncluded: true
+          },
+          selectedAnalysis: {
+            id: 1
+          }
+        }];
+        expect(benefitRiskService.isMissingAnalysis(includedWithAnalysis)).toBeFalsy();
+        var includedWithoutAnalysis = [{
+          dataType: 'network',
+          outcome: {
+            isIncluded: true
+          }
+        }, {
+          dataType: 'study',
+          outcome: {
+            isIncluded: true
+          },
+          selectedAnalysis: {
+            nonsense: 'yo'
+          }
+        }];
+        expect(benefitRiskService.isMissingAnalysis(includedWithoutAnalysis)).toBeTruthy();
+      });
+    });
+
+    describe('isMissingDataType', function() {
+      it('should return true if there is an outcome for which the data source type has not yet been chosen', function() {
+        var includedButNoType = [{
+          outcome: {
+            isIncluded: true
+          }
+        }];
+        expect(benefitRiskService.isMissingDataType(includedButNoType)).toBeTruthy();
+        var notIncluded = [{
+          outcome: {
+            isIncluded: false
+          }
+        }];
+        expect(benefitRiskService.isMissingDataType(notIncluded)).toBeFalsy();
+        var includedWithType = [{
+          dataType: 'network',
+          outcome: {
+            isIncluded: true
+          }
+        }];
+        expect(benefitRiskService.isMissingDataType(includedWithType)).toBeFalsy();
+      });
+    });
+
     describe('isModelWithMissingAlternatives', function() {
       it('should return true if any selected outcome has a model with missing alternatives', function() {
         var outcomesWithAnalyses = [{
@@ -545,18 +609,28 @@ define(['angular-mocks'], function(angularMocks) {
         expect(benefitRiskService.hasMissingStudy(outcomeInclusions)).toBeFalsy();
       });
       it('should be true if a study is not selected', function() {
-        var outcomeInclusions = [{
+        var networkOnly = [{
           dataType: 'network'
-        }, {
+        }];
+        expect(benefitRiskService.hasMissingStudy(networkOnly)).toBeFalsy();
+
+        var withGoodSelection = [{
           dataType: 'single-study',
           selectedStudy: {
             studyUri: 'http://cool.ninja'
           }
-        }, {
+        }];
+        expect(benefitRiskService.hasMissingStudy(withGoodSelection)).toBeFalsy();
+
+        var withMissingStudy1 = [{
           dataType: 'single-study',
           selectedStudy: {}
         }];
-        expect(benefitRiskService.hasMissingStudy(outcomeInclusions)).toBeTruthy();
+        expect(benefitRiskService.hasMissingStudy(withMissingStudy1)).toBeTruthy();
+        var withMissingStudy2 = [{
+          dataType: 'single-study',
+        }];
+        expect(benefitRiskService.hasMissingStudy(withMissingStudy2)).toBeTruthy();
       });
     });
 

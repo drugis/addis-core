@@ -1,7 +1,7 @@
 'use strict';
 define(['lodash'], function(_) {
-  var dependencies = ['$scope', '$state', '$modalInstance', 'AnalysisResource', 'ANALYSIS_TYPES'];
-  var AddAnalysisController = function($scope, $state, $modalInstance, AnalysisResource, ANALYSIS_TYPES) {
+  var dependencies = ['$scope', '$state', '$modalInstance', 'AnalysisResource', 'CacheService', 'ANALYSIS_TYPES'];
+  var AddAnalysisController = function($scope, $state, $modalInstance, AnalysisResource, CacheService, ANALYSIS_TYPES) {
     $scope.checkForDuplicateAnalysisName = checkForDuplicateAnalysisName;
     $scope.cancel = cancel;
     $scope.addAnalysis = addAnalysis;
@@ -19,6 +19,7 @@ define(['lodash'], function(_) {
       AnalysisResource
         .save(newAnalysis)
         .$promise.then(function(savedAnalysis) {
+          CacheService.evict('analysesPromises', $scope.project.id);
           $modalInstance.close();
           goToAnalysis(savedAnalysis.id, savedAnalysis.analysisType);
         });

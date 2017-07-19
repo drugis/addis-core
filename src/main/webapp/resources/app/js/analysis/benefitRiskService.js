@@ -3,6 +3,16 @@ define(['lodash'], function(_) {
   var dependencies = [];
   var BenefitRiskAnalysisService = function() {
 
+    function isMissingDataType(outcomesWithAnalyses) {
+      return _(outcomesWithAnalyses).filter('outcome.isIncluded').reject('dataType').value().length;
+    }
+
+    function isMissingAnalysis(outcomesWithAnalyses) {
+      return _.find(outcomesWithAnalyses, function(outcomeWithAnalyses) {
+        return outcomeWithAnalyses.dataType === 'network' && !outcomeWithAnalyses.selectedAnalysis;
+      });
+    }
+
     function addStudiesToOutcomes(outcomesWithAnalyses, studyInclusions, studies) {
       return _.map(outcomesWithAnalyses, function(outcomeWithAnalyses) {
         var outcomeWithAnalysesCopy = _.cloneDeep(outcomeWithAnalyses);
@@ -164,7 +174,7 @@ define(['lodash'], function(_) {
 
     function hasMissingStudy(outcomeInclusions) {
       return _.find(outcomeInclusions, function(inclusion) {
-        return _.isEqual(inclusion.selectedStudy, {});
+        return inclusion.dataType === 'single-study' && _.isEmpty(inclusion.selectedStudy);
       });
     }
 
@@ -188,6 +198,8 @@ define(['lodash'], function(_) {
     }
 
     return {
+      isMissingDataType: isMissingDataType,
+      isMissingAnalysis: isMissingAnalysis,
       addModelsGroup: addModelsGroup,
       addStudiesToOutcomes: addStudiesToOutcomes,
       compareAnalysesByModels: compareAnalysesByModels,

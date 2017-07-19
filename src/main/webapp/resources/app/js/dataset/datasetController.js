@@ -115,6 +115,7 @@ define(['lodash'],
           return response[propertyName] ? response[propertyName] : response['http://purl.org/dc/terms/' + propertyName];
         }
         resource.getForJson($stateParams).$promise.then(function(response) {
+          var dsResponse = response['@graph'] ? _.reduce(response['@graph'], _.merge) : response;
           $scope.dataset = {
             datasetUuid: $scope.datasetUuid,
             title: getPurlProperty(response, 'title'),
