@@ -3,7 +3,7 @@
     <div class="row">
       <div class="columns large-10">
         <label>Selected Outcome</label>
-        <select ng-show="editMode.isUserOwner" ng-model="analysis.outcome" ng-options="outcome.name for outcome in outcomes"
+        <select ng-show="editMode.isUserOwner" ng-model="analysis.outcome" ng-options="outcome.name for outcome in outcomes | orderBy: 'name'"
           ng-disabled="editMode.disableEditing || hasModel" ng-change="changeSelectedOutcome()"></select>
         <div ng-show="!editMode.isUserOwner && analysis.outcome" style="margin-bottom: 1rem;">{{analysis.outcome.name}}</div>
         <div ng-show="!editMode.isUserOwner && !analysis.outcome" style="margin-bottom: 1rem;">
