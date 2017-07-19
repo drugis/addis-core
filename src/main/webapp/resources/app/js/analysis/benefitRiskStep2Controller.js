@@ -46,7 +46,8 @@ define(['angular', 'lodash'], function(angular, _) {
     $scope.userId = $stateParams.userUid;
 
     $scope.editMode = {
-      allowEditing: false
+      allowEditing: false,
+      loaded: false
     };
     $scope.project.$promise.then(function() {
       if (UserService.isLoginUserId($scope.project.owner.id) && !$scope.analysis.archived) {
@@ -105,6 +106,8 @@ define(['angular', 'lodash'], function(angular, _) {
         }
         return outcome;
       });
+      
+      $scope.editMode.loaded = true;
     });
 
     function addModelBaseline(analysis, models) {
