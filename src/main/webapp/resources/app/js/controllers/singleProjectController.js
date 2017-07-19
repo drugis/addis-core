@@ -134,7 +134,7 @@ define(['lodash', 'angular'], function(_, angular) {
           if ($scope.numberOfAnalysesArchived === 0) {
             $scope.showArchived = false;
           }
-          $scope.analyses = _.sortBy(analyses, function(analysis) {
+          $scope.analyses = _(analyses).sortBy('title').sortBy(function(analysis) {
             if (analysis.analysisType === 'Evidence synthesis' && analysis.archived === false) {
               return 0;
             } else if (analysis.archived === false) {
@@ -142,7 +142,7 @@ define(['lodash', 'angular'], function(_, angular) {
             } else {
               return 2;
             }
-          });
+          }).value();
           reloadDefinitions();
         });
       });
