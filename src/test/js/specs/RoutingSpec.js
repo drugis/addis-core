@@ -15,28 +15,28 @@ define(['angular', 'angular-mocks', 'jQuery', 'app'], function () {
       $httpBackend.expect('GET', 'app/js/bower_components/gemtc-web/app/lexicon.json').respond(200);
     }));
     it('navigate to #/projects from projects', function () {
-      expect($state.href('projects', {userUid: 1})).toEqual('#/users/1/projects');
+      expect($state.href('projects', {userUid: 1})).toEqual('#!/users/1/projects');
     });
 
-    it('should navigate to #/projects/1 ', function () {
+    it('should navigate to #!/projects/1 ', function () {
       expect($state.href('project', {
         userUid: 37,
         projectId: 1
-      })).toEqual('#/users/37/projects/1');
+      })).toEqual('#!/users/37/projects/1');
     });
-    it('should navigate to #/projects/1/nma/2 ', function () {
+    it('should navigate to #!/projects/1/nma/2 ', function () {
       expect($state.href('networkMetaAnalysis', {
         userUid: 42,
         projectId: 1,
         analysisId: 2
-      })).toEqual('#/users/42/projects/1/nma/2');
+      })).toEqual('#!/users/42/projects/1/nma/2');
     });
-    it('should navigate to #/projects/1/br/2 ', function () {
+    it('should navigate to #!/projects/1/br/2 ', function () {
       expect($state.href('BenefitRisk', {
         userUid: 1,
         projectId: 2,
         analysisId: 3
-      })).toEqual('#/users/1/projects/2/br/3');
+      })).toEqual('#!/users/1/projects/2/br/3');
     });
   });
 });
