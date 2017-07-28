@@ -169,6 +169,10 @@ define(
     app.constant('mcdaRootPath', 'app/js/bower_components/mcda-web/app/');
     app.constant('gemtcRootPath', 'app/js/bower_components/gemtc-web/app/');
 
+    app.config(['$locationProvider', function($locationProvider) {
+      $locationProvider.hashPrefix('');
+    }]);
+
     app.run(['$rootScope', '$window', '$http', '$location', '$cookies', 'HelpPopupService', 'CacheService',
       function($rootScope, $window, $http, $location, $cookies, HelpPopupService, CacheService) {
         $rootScope.$safeApply = function($scope, fn) {
@@ -270,7 +274,7 @@ define(
                 return 'definitions';
               },
               project: ['$stateParams', 'ProjectResource', function($stateParams, ProjectResource) {
-                return  ProjectResource.get($stateParams).$promise;
+                return ProjectResource.get($stateParams).$promise;
               }]
             }
           })
@@ -278,7 +282,7 @@ define(
             url: '/report',
             templateUrl: baseTemplatePath + 'project.html',
             controller: 'SingleProjectController',
-            parent:'project',
+            parent: 'project',
             resolve: {
               activeTab: function() {
                 return 'report';
@@ -289,7 +293,7 @@ define(
             url: '/definitions',
             templateUrl: baseTemplatePath + 'project.html',
             controller: 'SingleProjectController',
-            parent:'project',
+            parent: 'project',
             resolve: {
               activeTab: function() {
                 return 'analyses';
