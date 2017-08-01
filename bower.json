@@ -46,7 +46,8 @@
     "select2": "~3.4.5",
     "showdown": "^1.5.0",
     "scrollup": "~2.4.1",
-    "toc": "~0.3.2"
+    "toc": "~0.3.2",
+    "angularjs-slider": "^6.2.3"
   },
   "resolutions": {
     "d3": "3.5.6",

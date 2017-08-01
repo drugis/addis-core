@@ -66,9 +66,10 @@ define(
     'mcda/services/hashCodeService',
     'mcda/services/util',
     'mcda/preferences/partialValueFunctionService',
-    'mcda/results/resultsService',
+    'mcda/results/results',
     'mcda/subProblem/scaleRangeService',
     'mcda/subProblem/subProblem',
+    'bower_components/angularjs-slider/dist/rzslider',
     'covariates/covariates',
     'home/home'
   ],
@@ -83,10 +84,10 @@ define(
       'elicit.directives',
       'elicit.controllers',
       'elicit.pvfService',
-      'elicit.resultsService',
       'elicit.util',
       'elicit.routeFactory',
       'elicit.subProblem',
+      'elicit.results',
       'mm.foundation',
       'ngAnimate'
     ];
