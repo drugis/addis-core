@@ -1,54 +1,7 @@
 'use strict';
 define(['lodash'], function(_) {
-  var dependencies = ['ProblemResource', 'ScenarioResource', 'SubProblemResource'];
-  var SingleStudyBenefitRiskService = function(ProblemResource, ScenarioResource, SubProblemResource) {
-
-    var verifyCell = function(performanceEntry, outcome, intervention) {
-      var result = performanceEntry.criterionUri === outcome.semanticOutcomeUri && performanceEntry.alternativeUri === intervention.semanticInterventionUri;
-      return result;
-    };
-
-    var findPerformanceEntry = function(performanceTable, outcome, intervention) {
-      var result = _.find(performanceTable, function(performanceEntry) {
-        return verifyCell(performanceEntry, outcome, intervention);
-      });
-      return result;
-    };
-
-    var checkAllInterventionsForOutcome = function(performanceTable, outcome, selectedInterventions) {
-      var result = _.every(selectedInterventions, function(intervention) {
-        return findPerformanceEntry(performanceTable, outcome, intervention);
-      });
-      return result;
-    };
-
-    var validateProblem = function(analysis, problem) {
-      var selectedOutcomes = analysis.selectedOutcomes;
-      var selectedInterventions = analysis.selectedInterventions;
-      return _.every(selectedOutcomes, function(outcome) {
-        return checkAllInterventionsForOutcome(problem.performanceTable, outcome, selectedInterventions);
-      });
-    };
-
-    var getProblem = function(projectId, analysisId) {
-      return ProblemResource.get({
-        projectId: projectId,
-        analysisId: analysisId
-      }).$promise;
-    };
-
-    var concatWithNoDuplicates = function(source, target, comparatorFunction) {
-      var complement = findMissing(source, target, comparatorFunction);
-      return complement.concat(target);
-    };
-
-    function findMissing(searchList, optionList, comparatorFunction) {
-      return _.filter(searchList, function(searchItem) {
-        return !_.find(optionList, function(option) {
-          return comparatorFunction(option, searchItem);
-        });
-      });
-    }
+  var dependencies = [];
+  var SingleStudyBenefitRiskService = function() {
 
     function isValidStudyOption(study) {
       var noMissingOutcomes = study.missingOutcomes ? study.missingOutcomes.length === 0 : true;
@@ -146,38 +99,6 @@ define(['lodash'], function(_) {
       });
     }
 
-    function getDefaultSubProblem(params) {
-      return SubProblemResource
-        .query(_.omit(params, 'id'))
-        .$promise
-        .then(function(scenarios) {
-          return scenarios[0];
-        });
-    }
-
-    var getDefaultScenario = function(params) {
-      return ScenarioResource
-        .query(_.omit(params, 'id'))
-        .$promise
-        .then(function(scenarios) {
-          return scenarios[0];
-        });
-    };
-
-    function getDefaultScenarioIds(params) {
-      return getDefaultSubProblem(params).then(function(subProblem) {
-        var newParams = _.extend({
-          problemId: subProblem.id
-        }, params);
-        return getDefaultScenario(newParams).then(function(scenario) {
-          return {
-            scenario: scenario.id,
-            problem: subProblem.id
-          };
-        });
-      });
-    }
-
     function addHasMatchedMixedTreatmentArm(studies, selectedInterventions) {
       return _.map(studies, function(study) {
         var modifiedStudy = {
@@ -190,18 +111,11 @@ define(['lodash'], function(_) {
     }
 
     return {
-      getProblem: getProblem,
-      validateProblem: validateProblem,
-      getDefaultScenario: getDefaultScenario,
-      concatWithNoDuplicates: concatWithNoDuplicates,
-      addMissingOutcomesToStudies: addMissingOutcomesToStudies,
       addMissingInterventionsToStudies: addMissingInterventionsToStudies,
       addOverlappingInterventionsToStudies: addOverlappingInterventionsToStudies,
       addHasMatchedMixedTreatmentArm: addHasMatchedMixedTreatmentArm,
-      isValidStudyOption: isValidStudyOption,
-      recalculateGroup: recalculateGroup,
-      getDefaultScenarioIds: getDefaultScenarioIds,
-      findMissingOutcomes: findMissingOutcomes
+      addMissingOutcomesToStudies: addMissingOutcomesToStudies,
+      recalculateGroup: recalculateGroup
     };
   };
   return dependencies.concat(SingleStudyBenefitRiskService);
