@@ -31,6 +31,8 @@ define(['angular', 'lodash', 'jQuery'],
           var answer = confirm('There are unsaved changes, are you sure you want to leave this page?');
           if (!answer) {
             transition.abort();
+          } else {
+            $scope.reportText.changed = false;
           }
         }
 
