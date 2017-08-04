@@ -35,7 +35,6 @@ define(['angular', 'lodash', 'jQuery'],
             $scope.reportText.changed = false;
           }
         }
-
       });
 
       function insertTextAtCursor(text) {
