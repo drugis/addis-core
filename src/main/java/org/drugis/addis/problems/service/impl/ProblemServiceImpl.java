@@ -167,7 +167,7 @@ public class ProblemServiceImpl implements ProblemService {
               .findFirst();
       if (outcomeInclusion.isPresent()) {
         Model model = modelMap.get(outcomeInclusion.get().getModelId());
-        URI modelURI = getModelUri(model);
+        URI modelURI = getModelUri(model, project);
         if (model.getLikelihood().equals("binom")) {
           criteriaWithBaseline.put(outcome.getSemanticOutcomeUri(), new CriterionEntry(outcome.getSemanticOutcomeUri().toString(),
                   outcome.getName(), Arrays.asList(0d, 1d), null, "proportion", "meta analysis", modelURI));
@@ -209,23 +209,13 @@ public class ProblemServiceImpl implements ProblemService {
     return new BenefitRiskProblem(criteriaWithBaseline, alternatives, performanceTable);
   }
 
-  private URI getModelUri(Model model) {
-    AbstractAnalysis modelAnalysis = null;
-    try {
-      modelAnalysis = analysisRepository.get(model.getAnalysisId());
-    } catch (ResourceDoesNotExistException e) {
-      e.printStackTrace();
-    }
-    Integer modelProjectId = modelAnalysis.getProjectId();
-    Integer modelOwnerId = -1;
-    try {
-      modelOwnerId = projectRepository.get(modelProjectId).getOwner().getId();
-    } catch (ResourceDoesNotExistException e) {
-      e.printStackTrace();
-    }
+  private URI getModelUri(Model model, Project project) {
+    Integer modelAnalysisId = model.getAnalysisId();
+    Integer modelProjectId = project.getId();
+    Integer modelOwnerId = project.getOwner().getId();
 
     return URI.create("/#/users/" + modelOwnerId + "/projects/" + modelProjectId +
-            "/nma/" + modelAnalysis.getId() + "/models/" + model.getId());
+            "/nma/" + modelAnalysisId + "/models/" + model.getId());
   }
 
   @SuppressWarnings("SuspiciousNameCombination")
