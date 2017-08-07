@@ -96,9 +96,6 @@ public class ProblemServiceImpl implements ProblemService {
   @Inject
   private InterventionService interventionService;
 
-  @Inject
-  private MappingService mappingService;
-
   private ObjectMapper objectMapper = new ObjectMapper();
 
   @Override
