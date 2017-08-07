@@ -96,6 +96,9 @@ public class ProblemServiceImpl implements ProblemService {
   @Inject
   private InterventionService interventionService;
 
+  @Inject
+  private MappingService mappingService;
+
   private ObjectMapper objectMapper = new ObjectMapper();
 
   @Override
@@ -567,10 +570,11 @@ public class ProblemServiceImpl implements ProblemService {
     } else {
       throw new RuntimeException("Invalid measurement");
     }
+    Integer ownerId = mappingService.getVersionedUuidAndOwner(project.getNamespaceUid()).getOwnerId();
     // NB: partialvaluefunctions to be filled in by MCDA component, left null here
     return new CriterionEntry(measurement.getVariableUri().toString(), outcome.getName(), scale, null,
             unitOfMeasurement, "study",
-            URI.create("/#/users/" + project.getOwner().getId() +
+            URI.create("/#/users/" + ownerId +
                     "/datasets/" + project.getNamespaceUid() +
                     "/versions/" + project.getDatasetVersion().toString().split("/versions/")[1]+
                     "/studies/" + studyGraphUri.toString().split("/graphs/")[1] ));
