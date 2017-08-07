@@ -115,11 +115,14 @@ public class ProblemServiceImpl implements ProblemService {
     throw new RuntimeException("unknown analysis type");
   }
 
-  private BenefitRiskProblem getBenefitRiskAnalysisProblem(Project project, BenefitRiskAnalysis analysis) throws SQLException, IOException, UnexpectedNumberOfResultsException, URISyntaxException {
-    final Set<Integer> networkModelIds = getInclusionIdsWithBaseline(analysis.getBenefitRiskNMAOutcomeInclusions(), BenefitRiskNMAOutcomeInclusion::getModelId);
+  private BenefitRiskProblem getBenefitRiskAnalysisProblem(Project project, BenefitRiskAnalysis analysis) throws
+          SQLException, IOException, UnexpectedNumberOfResultsException, URISyntaxException {
+    final Set<Integer> networkModelIds = getInclusionIdsWithBaseline(analysis.getBenefitRiskNMAOutcomeInclusions(),
+            BenefitRiskNMAOutcomeInclusion::getModelId);
     final Set<Integer> outcomeIds = getInclusionIdsWithBaseline(analysis.getBenefitRiskNMAOutcomeInclusions(),
             BenefitRiskNMAOutcomeInclusion::getOutcomeId);
-    outcomeIds.addAll(analysis.getBenefitRiskStudyOutcomeInclusions().stream().map(BenefitRiskStudyOutcomeInclusion::getOutcomeId).collect(Collectors.toList()));
+    outcomeIds.addAll(analysis.getBenefitRiskStudyOutcomeInclusions().stream().map(
+            BenefitRiskStudyOutcomeInclusion::getOutcomeId).collect(Collectors.toList()));
 
     final List<Model> models = modelService.get(networkModelIds);
     final Map<Integer, Model> modelMap = models.stream()
@@ -195,7 +198,8 @@ public class ProblemServiceImpl implements ProblemService {
                     .collect(Collectors.toList());
 
     List<SingleStudyBenefitRiskProblem> singleStudyProblems = analysis.getBenefitRiskStudyOutcomeInclusions().stream()
-            .map(inclusion -> getSingleStudyBenefitRiskProblem(project, inclusion.getStudyGraphUri(), outcomesById.get(inclusion.getOutcomeId()), includedAlternatives))
+            .map(inclusion -> getSingleStudyBenefitRiskProblem(project, inclusion.getStudyGraphUri(),
+                    outcomesById.get(inclusion.getOutcomeId()), includedAlternatives))
             .collect(Collectors.toList());
     singleStudyProblems.forEach(problem -> {
       criteriaWithBaseline.putAll(problem.getCriteria());
@@ -352,11 +356,13 @@ public class ProblemServiceImpl implements ProblemService {
     return new NetworkMetaAnalysisProblem(entries, problem.getTreatments(), problem.getStudyLevelCovariates());
   }
 
-  private Set<Integer> getInclusionIdsWithBaseline(List<BenefitRiskNMAOutcomeInclusion> outcomeInclusions, ToIntFunction<BenefitRiskNMAOutcomeInclusion> idSelector) {
+  private Set<Integer> getInclusionIdsWithBaseline(List<BenefitRiskNMAOutcomeInclusion> outcomeInclusions,
+                                                   ToIntFunction<BenefitRiskNMAOutcomeInclusion> idSelector) {
     return outcomeInclusions.stream().mapToInt(idSelector).boxed().collect(Collectors.toSet());
   }
 
-  private NetworkMetaAnalysisProblem getNetworkMetaAnalysisProblem(Project project, NetworkMetaAnalysis analysis) throws URISyntaxException, ReadValueException, ResourceDoesNotExistException {
+  private NetworkMetaAnalysisProblem getNetworkMetaAnalysisProblem(Project project, NetworkMetaAnalysis analysis) throws
+          URISyntaxException, ReadValueException, ResourceDoesNotExistException {
     // create treatment entries based only on included interventions
     Set<AbstractIntervention> allProjectInterventions = interventionRepository.query(project.getId());
     Set<AbstractIntervention> includedInterventions = onlyIncludedInterventions(allProjectInterventions, analysis.getInterventionInclusions());
@@ -529,7 +535,7 @@ public class ProblemServiceImpl implements ProblemService {
         Integer matchedProjectInterventionId = matchingIncludedInterventions.iterator().next().getId();
         for (Measurement measurement : measurements) {
           measurementDrugInstancePairs.add(Pair.of(measurement, matchedProjectInterventionId));
-          CriterionEntry criterionEntry = createCriterionEntry(measurement, outcome);
+          CriterionEntry criterionEntry = createCriterionEntry(project, measurement, outcome, studyGraphUri);
           criteria.put(measurement.getVariableConceptUri(), criterionEntry);
         }
 
@@ -559,7 +565,7 @@ public class ProblemServiceImpl implements ProblemService {
             .collect(Collectors.toSet());
   }
 
-  private CriterionEntry createCriterionEntry(Measurement measurement, Outcome outcome) throws EnumConstantNotPresentException {
+  private CriterionEntry createCriterionEntry(Project project, Measurement measurement, Outcome outcome, URI studyGraphUri) throws EnumConstantNotPresentException {
     List<Double> scale;
     String unitOfMeasurement;
     if (measurement.getRate() != null) { // rate measurement
@@ -573,8 +579,11 @@ public class ProblemServiceImpl implements ProblemService {
     }
     // NB: partialvaluefunctions to be filled in by MCDA component, left null here
     return new CriterionEntry(measurement.getVariableUri().toString(), outcome.getName(), scale, null,
-            unitOfMeasurement, "study", null);
+            unitOfMeasurement, "study",
+            URI.create("/#/users/" + project.getOwner().getId() +
+                    "/datasets/" + project.getNamespaceUid() +
+                    "/versions/" + project.getDatasetVersion().toString().split("/versions/")[1]+
+                    "/studies/" + studyGraphUri.toString().split("/graphs/")[1] ));
   }
-
 
 }

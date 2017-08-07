@@ -260,7 +260,7 @@ public class ProblemServiceTest {
     when(mappingService.getVersionedUuid(project.getNamespaceUid())).thenReturn(versionedUuid);
 
     // --------------- execute ---------------- //
-    BenefitRiskProblem actualProblem = (BenefitRiskProblem) problemService.getProblem(projectId, analysisId, );
+    BenefitRiskProblem actualProblem = (BenefitRiskProblem) problemService.getProblem(projectId, analysisId);
     // --------------- execute ---------------- //
 
     verify(modelService).get(Collections.emptySet());
@@ -333,7 +333,7 @@ public class ProblemServiceTest {
 
 
     // --------------- execute ---------------- //
-    final AbstractProblem problem = problemService.getProblem(project.getId(), networkMetaAnalysis.getId(), );
+    final AbstractProblem problem = problemService.getProblem(project.getId(), networkMetaAnalysis.getId());
     // --------------- execute ---------------- //
 
 
@@ -390,7 +390,7 @@ public class ProblemServiceTest {
     when(analysisService.buildEvidenceTable(project.getId(), networkMetaAnalysis.getId())).thenReturn(trialDataStudies);
 
     // --------------- execute ---------------- //
-    final AbstractProblem problem = problemService.getProblem(project.getId(), networkMetaAnalysis.getId(), );
+    final AbstractProblem problem = problemService.getProblem(project.getId(), networkMetaAnalysis.getId());
     // --------------- execute ---------------- //
 
 
@@ -612,7 +612,7 @@ public class ProblemServiceTest {
     when(pataviTaskRepository.getResults(taskIds)).thenReturn(results);
     when(interventionRepository.query(projectId)).thenReturn(interventions);
 
-    BenefitRiskProblem problem = (BenefitRiskProblem) problemService.getProblem(projectId, analysisId, );
+    BenefitRiskProblem problem = (BenefitRiskProblem) problemService.getProblem(projectId, analysisId);
 
     verify(projectRepository).get(projectId);
     verify(modelService).get(modelIds);
