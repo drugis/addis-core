@@ -164,10 +164,13 @@ public class ProblemServiceImpl implements ProblemService {
               .findFirst();
       if (outcomeInclusion.isPresent()) {
         Model model = modelMap.get(outcomeInclusion.get().getModelId());
+        URI modelURI = getModelUri(model);
         if (model.getLikelihood().equals("binom")) {
-          criteriaWithBaseline.put(outcome.getSemanticOutcomeUri(), new CriterionEntry(outcome.getSemanticOutcomeUri().toString(), outcome.getName(), Arrays.asList(0d, 1d), null, "proportion"));
+          criteriaWithBaseline.put(outcome.getSemanticOutcomeUri(), new CriterionEntry(outcome.getSemanticOutcomeUri().toString(),
+                  outcome.getName(), Arrays.asList(0d, 1d), null, "proportion", "meta analysis", modelURI));
         } else {
-          criteriaWithBaseline.put(outcome.getSemanticOutcomeUri(), new CriterionEntry(outcome.getSemanticOutcomeUri().toString(), outcome.getName()));
+          criteriaWithBaseline.put(outcome.getSemanticOutcomeUri(), new CriterionEntry(outcome.getSemanticOutcomeUri().toString(),
+                  outcome.getName(), "meta analysis", modelURI));
         }
       }
     });
@@ -200,6 +203,25 @@ public class ProblemServiceImpl implements ProblemService {
       performanceTable.addAll(problem.getPerformanceTable());
     });
     return new BenefitRiskProblem(criteriaWithBaseline, alternatives, performanceTable);
+  }
+
+  private URI getModelUri(Model model) {
+    AbstractAnalysis modelAnalysis = null;
+    try {
+      modelAnalysis = analysisRepository.get(model.getAnalysisId());
+    } catch (ResourceDoesNotExistException e) {
+      e.printStackTrace();
+    }
+    Integer modelProjectId = modelAnalysis.getProjectId();
+    Integer modelOwnerId = -1;
+    try {
+      modelOwnerId = projectRepository.get(modelProjectId).getOwner().getId();
+    } catch (ResourceDoesNotExistException e) {
+      e.printStackTrace();
+    }
+
+    return URI.create("/#/users/" + modelOwnerId + "/projects/" + modelProjectId +
+            "/nma/" + modelAnalysis.getId() + "/models/" + model.getId());
   }
 
   @SuppressWarnings("SuspiciousNameCombination")
@@ -497,7 +519,6 @@ public class ProblemServiceImpl implements ProblemService {
       e.printStackTrace();
     }
     TrialDataStudy trialDataStudy = singleStudyMeasurements.get(0);
-
     Map<String, AlternativeEntry> alternatives = new HashMap<>();
     Map<URI, CriterionEntry> criteria = new HashMap<>();
     Set<Pair<Measurement, Integer>> measurementDrugInstancePairs = new HashSet<>();
@@ -551,7 +572,8 @@ public class ProblemServiceImpl implements ProblemService {
       throw new RuntimeException("Invalid measurement");
     }
     // NB: partialvaluefunctions to be filled in by MCDA component, left null here
-    return new CriterionEntry(measurement.getVariableUri().toString(), outcome.getName(), scale, null, unitOfMeasurement);
+    return new CriterionEntry(measurement.getVariableUri().toString(), outcome.getName(), scale, null,
+            unitOfMeasurement, "study", null);
   }
 
 

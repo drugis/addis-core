@@ -12,17 +12,26 @@ public class CriterionEntry {
   private PartialValueFunction pvf;
   private String title;
   private String unitOfMeasurement;
+  private String source;
+  private URI sourceLink;
 
   public CriterionEntry(String criterion, String title) {
-    this(criterion, title, null, null, null);
+    this(criterion, title, null, null, null, null, null);
   }
 
-  public CriterionEntry(String criterion, String title, List<Double> scale, PartialValueFunction partialValueFunction, String unitOfMeasurement) {
+  public CriterionEntry(String criterion, String title, String source, URI sourceLink) {
+    this(criterion, title, null, null, null, source, sourceLink);
+  }
+
+
+  public CriterionEntry(String criterion, String title, List<Double> scale, PartialValueFunction partialValueFunction, String unitOfMeasurement, String source, URI sourceLink) {
     this.criterion = criterion;
     this.title = title;
     this.scale = scale;
     this.pvf = partialValueFunction;
     this.unitOfMeasurement = unitOfMeasurement;
+    this.source = source;
+    this.sourceLink = sourceLink;
   }
 
   public String getCriterion() {
@@ -45,6 +54,14 @@ public class CriterionEntry {
     return unitOfMeasurement;
   }
 
+  public String getSource() {
+    return source;
+  }
+
+  public URI getSourceLink() {
+    return sourceLink;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
@@ -56,8 +73,10 @@ public class CriterionEntry {
     if (!scale.equals(that.scale)) return false;
     if (pvf != null ? !pvf.equals(that.pvf) : that.pvf != null) return false;
     if (!title.equals(that.title)) return false;
-    return unitOfMeasurement != null ? unitOfMeasurement.equals(that.unitOfMeasurement) : that.unitOfMeasurement == null;
-
+    if (unitOfMeasurement != null ? !unitOfMeasurement.equals(that.unitOfMeasurement) : that.unitOfMeasurement != null)
+      return false;
+    if (source != null ? !source.equals(that.source) : that.source != null) return false;
+    return sourceLink != null ? sourceLink.equals(that.sourceLink) : that.sourceLink == null;
   }
 
   @Override
@@ -67,6 +86,8 @@ public class CriterionEntry {
     result = 31 * result + (pvf != null ? pvf.hashCode() : 0);
     result = 31 * result + title.hashCode();
     result = 31 * result + (unitOfMeasurement != null ? unitOfMeasurement.hashCode() : 0);
+    result = 31 * result + (source != null ? source.hashCode() : 0);
+    result = 31 * result + (sourceLink != null ? sourceLink.hashCode() : 0);
     return result;
   }
 }

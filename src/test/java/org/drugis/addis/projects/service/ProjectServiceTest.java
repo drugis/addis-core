@@ -581,8 +581,8 @@ public class ProjectServiceTest {
     AbstractProblem oldProblem1 = new NetworkMetaAnalysisProblem(oldEntries1, null, null);
     when(mockNewProject.getId()).thenReturn(newProjectId);
     when(mockProject.getId()).thenReturn(projectId);
-    when(problemService.getProblem(newProjectId, newNma1.getId())).thenReturn(newProblem1);
-    when(problemService.getProblem(projectId, nma1.getId())).thenReturn(oldProblem1);
+    when(problemService.getProblem(newProjectId, newNma1.getId(), )).thenReturn(newProblem1);
+    when(problemService.getProblem(projectId, nma1.getId(), )).thenReturn(oldProblem1);
 
     when(mockNewProject.getId()).thenReturn(newProjectId);
 
@@ -633,8 +633,8 @@ public class ProjectServiceTest {
     verify(modelRepository).findModelsByProject(projectId);
     verifyNoMoreInteractions(modelRepository);
 
-    verify(problemService, times(2)).getProblem(newProjectId, newNma1.getId());
-    verify(problemService, times(2)).getProblem(projectId, nma1.getId());
+    verify(problemService, times(2)).getProblem(newProjectId, newNma1.getId(), );
+    verify(problemService, times(2)).getProblem(projectId, nma1.getId(), );
     verifyNoMoreInteractions(problemService);
   }
 

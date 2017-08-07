@@ -1,6 +1,5 @@
 package org.drugis.addis.projects.service.impl;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import net.minidev.json.JSONObject;
 import org.drugis.addis.analyses.model.*;
 import org.drugis.addis.analyses.repository.AnalysisRepository;
