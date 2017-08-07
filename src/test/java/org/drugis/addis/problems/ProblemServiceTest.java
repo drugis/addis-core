@@ -42,6 +42,7 @@ import org.drugis.addis.trialverse.model.SemanticInterventionUriAndName;
 import org.drugis.addis.trialverse.model.SemanticVariable;
 import org.drugis.addis.trialverse.model.emun.CovariateOption;
 import org.drugis.addis.trialverse.model.emun.CovariateOptionType;
+import org.drugis.addis.trialverse.model.mapping.TriplestoreUuidAndOwner;
 import org.drugis.addis.trialverse.model.trialdata.*;
 import org.drugis.addis.trialverse.service.MappingService;
 import org.drugis.addis.trialverse.service.TrialverseService;
@@ -262,10 +263,12 @@ public class ProblemServiceTest {
     when(mappingService.getVersionedUuid(project.getNamespaceUid())).thenReturn(versionedUuid);
 
     when(owner.getId()).thenReturn(ownerId);
+    when(mappingService.getVersionedUuidAndOwner(project.getNamespaceUid())).thenReturn(new TriplestoreUuidAndOwner("someversion", 37));
     // --------------- execute ---------------- //
     BenefitRiskProblem actualProblem = (BenefitRiskProblem) problemService.getProblem(projectId, analysisId);
     // --------------- execute ---------------- //
 
+    verify(mappingService, times(8)).getVersionedUuidAndOwner(project.getNamespaceUid());
     verify(modelService).get(Collections.emptySet());
     verify(projectRepository).get(projectId);
     verify(analysisRepository).get(analysisId);
