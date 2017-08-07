@@ -115,7 +115,8 @@ define(['lodash'], function(_) {
       addOverlappingInterventionsToStudies: addOverlappingInterventionsToStudies,
       addHasMatchedMixedTreatmentArm: addHasMatchedMixedTreatmentArm,
       addMissingOutcomesToStudies: addMissingOutcomesToStudies,
-      recalculateGroup: recalculateGroup
+      recalculateGroup: recalculateGroup,
+      findMissingOutcomes: findMissingOutcomes
     };
   };
   return dependencies.concat(SingleStudyBenefitRiskService);
