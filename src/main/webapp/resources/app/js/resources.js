@@ -22,7 +22,6 @@ define(function(require) {
     .factory('StudyPopulationCharacteristicsResource', require('resources/studyPopulationCharacteristicsResource'))
     .factory('StudyEndpointsResource', require('resources/studyEndpointsResource'))
     .factory('StudyAdverseEventsResource', require('resources/studyAdverseEventsResource'))
-    .factory('EffectsTableResource', require('resources/effectsTableResource'))
     .factory('ScaledUnitResource', require('resources/scaledUnitResource'))
     .factory('SubProblemResource', require('resources/subProblemResource'))
     ;
