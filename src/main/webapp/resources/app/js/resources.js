@@ -10,7 +10,6 @@ define(function(require) {
     .factory('InterventionResource', require('resources/interventionResource'))
     .factory('AnalysisResource', require('resources/analysisResource'))
     .factory('TrialverseStudyResource', require('resources/trialverseStudyResource'))
-    .factory('EvidenceTableResource', require('resources/evidenceTableResource'))
     .factory('ProjectStudiesResource', require('resources/projectStudiesResource'))
     .factory('TrialverseStudiesWithDetailsResource', require('resources/trialverseStudiesWithDetailsResource'))
     .factory('ScenarioResource', require('resources/scenarioResource'))
@@ -22,7 +21,6 @@ define(function(require) {
     .factory('StudyPopulationCharacteristicsResource', require('resources/studyPopulationCharacteristicsResource'))
     .factory('StudyEndpointsResource', require('resources/studyEndpointsResource'))
     .factory('StudyAdverseEventsResource', require('resources/studyAdverseEventsResource'))
-    .factory('EffectsTableResource', require('resources/effectsTableResource'))
     .factory('ScaledUnitResource', require('resources/scaledUnitResource'))
     .factory('SubProblemResource', require('resources/subProblemResource'))
     ;
