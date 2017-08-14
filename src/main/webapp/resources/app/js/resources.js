@@ -2,6 +2,7 @@
 define(function(require) {
   var angular = require('angular');
   return angular.module('addis.resources', ['ngResource'])
+    .factory('EvidenceTableResource', require('resources/evidenceTableResource'))
     .factory('ProjectResource', require('resources/projectResource'))
     .factory('TrialverseResource', require('resources/trialverseResource'))
     .factory('SemanticOutcomeResource', require('resources/semanticOutcomeResource'))
