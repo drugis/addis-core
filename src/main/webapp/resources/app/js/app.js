@@ -69,7 +69,7 @@ define(
     'mcda/results/results',
     'mcda/subProblem/scaleRangeService',
     'mcda/subProblem/subProblem',
-    'angularjs-slider',
+    'bower_components/angularjs-slider/dist/rzslider',
     'covariates/covariates',
     'home/home'
   ],
