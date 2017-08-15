@@ -185,7 +185,6 @@ define(['lodash'], function(_) {
       return _.uniqBy(overlappingInterventionsList, 'id');
     }
 
-
     function findOverlappingOutcomes(outcomeInclusions) {
       return _.chain(outcomeInclusions)
         .map('outcome')
@@ -195,6 +194,29 @@ define(['lodash'], function(_) {
           return outcomeByUri.length > 1;
         })
         .value();
+    }
+
+    function addModelBaseline(analysis, models, alternatives) {
+      _.forEach(analysis.benefitRiskNMAOutcomeInclusions, function(benefitRiskNMAOutcomeInclusion) {
+        if (!benefitRiskNMAOutcomeInclusion.baseline) {
+          // there is no baseline set yet, check if you can use the modelBaseline
+          var baselineModel = _.find(models, function(model) {
+            return model.id === benefitRiskNMAOutcomeInclusion.modelId;
+          });
+          if (baselineModel && baselineModel.baseline) {
+            // there is a model with a baseline, yay
+            if (_.find(analysis.interventionInclusions, function(interventionInclusion) {
+                //there is an intervention with the right name!
+                return _.find(alternatives, function(alternative) {
+                  return interventionInclusion.interventionId === alternative.id;
+                }).name.localeCompare(baselineModel.baseline.baseline.name) === 0;
+              })) {
+              benefitRiskNMAOutcomeInclusion.baseline = baselineModel.baseline.baseline;
+            }
+          }
+        }
+      });
+      return analysis;
     }
 
     return {
@@ -214,7 +236,8 @@ define(['lodash'], function(_) {
       isInvalidStudySelected: isInvalidStudySelected,
       hasMissingStudy: hasMissingStudy,
       findOverlappingInterventions: findOverlappingInterventions,
-      findOverlappingOutcomes: findOverlappingOutcomes
+      findOverlappingOutcomes: findOverlappingOutcomes,
+      addModelBaseline: addModelBaseline
     };
   };
 
