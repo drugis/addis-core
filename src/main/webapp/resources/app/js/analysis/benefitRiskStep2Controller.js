@@ -111,26 +111,7 @@ define(['angular', 'lodash'], function(angular, _) {
     });
 
     function addModelBaseline(analysis, models) {
-      _.forEach(analysis.benefitRiskNMAOutcomeInclusions, function(benefitRiskNMAOutcomeInclusion) {
-        if (!benefitRiskNMAOutcomeInclusion.baseline) {
-          // there is no baseline set yet, check if you can use the modelBaseline
-          var baselineModel = _.find(models, function(model) {
-            return model.id === benefitRiskNMAOutcomeInclusion.modelId;
-          });
-          if (baselineModel && baselineModel.baseline) {
-            // there is a model with a baseline, yay
-            if (_.find(analysis.interventionInclusions, function(interventionInclusion) {
-                //there is an intervention with the right name!
-                return _.find($scope.alternatives, function(alternative) {
-                  return interventionInclusion.interventionId === alternative.id;
-                }).name.localeCompare(baselineModel.baseline.baseline.name) === 0;
-              })) {
-              benefitRiskNMAOutcomeInclusion.baseline = baselineModel.baseline.baseline;
-            }
-          }
-        }
-      });
-      return analysis;
+      return BenefitRiskService.addModelBaseline(analysis,models, $scope.alternatives);
     }
 
     function hasMissingBaseLine() {
