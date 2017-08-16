@@ -2,6 +2,11 @@
 define([], function() {
   var dependencies = ['$scope', '$modalInstance', '$injector', 'definition', 'callback'];
   var DeleteDefinitionController = function($scope, $modalInstance, $injector, definition, callback) {
+    // functions
+    $scope.deleteDefinition = deleteDefinition;
+    $scope.cancel = cancel;
+
+    // init
     var DEFINITIONS = {
       covariate: {
         resource: 'CovariateResource',
@@ -16,8 +21,6 @@ define([], function() {
         coordinate: 'outcomeId'
       }
     };
-
-    $scope.deleteDefinition = deleteDefinition;
     $scope.definition = definition;
 
     function deleteDefinition() {
@@ -32,9 +35,9 @@ define([], function() {
       });
     }
 
-    $scope.cancel = function() {
+    function cancel() {
       $modalInstance.dismiss('cancel');
-    };
+    }
   };
 
   return dependencies.concat(DeleteDefinitionController);

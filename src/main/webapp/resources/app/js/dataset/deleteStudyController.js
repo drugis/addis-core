@@ -8,6 +8,7 @@ define(['lodash'], function(_) {
 
     $scope.deleteStudy = deleteStudy;
     $scope.study = study;
+    $scope.cancel = cancel;
 
     function deleteStudy() {
       GraphResource.delete(
@@ -22,9 +23,9 @@ define(['lodash'], function(_) {
         });
     }
 
-    $scope.cancel = function() {
+    function cancel() {
       $modalInstance.dismiss('cancel');
-    };
+    }
 
   };
 

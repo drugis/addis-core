@@ -2,10 +2,14 @@
 define([], function() {
   var dependencies = ['$scope', '$state', '$modalInstance', 'ProjectResource', 'dataset'];
   var CreateProjectModalController = function($scope, $state, $modalInstance, ProjectResource, dataset) {
+    // functions
+    $scope.createProject = createProject;
+    $scope.cancel = cancel;
 
+    // init
     $scope.dataset = dataset;
 
-    $scope.createProject = function(newProject) {
+    function createProject(newProject) {
       // datasetsController and datasetController use a different property to store the namespaceUuid
       newProject.namespaceUid = dataset.datasetUuid || dataset.uri.split('/datasets/')[1];
 
@@ -19,11 +23,11 @@ define([], function() {
           projectId: savedProject.id
         });
       });
-    };
+    }
 
-    $scope.cancel = function() {
+    function cancel() {
       $modalInstance.dismiss('cancel');
-    };
+    }
   };
   return dependencies.concat(CreateProjectModalController);
 });

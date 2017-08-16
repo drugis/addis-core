@@ -3,9 +3,15 @@ define(['angular'],
   function(angular) {
     var dependencies = ['$scope', '$stateParams', '$modalInstance', 'DatasetResource', 'dataset', 'userUid', 'callback'];
     var EditDatasetController = function($scope, $stateParams, $modalInstance, DatasetResource, dataset, userUid, callback) {
+      // functions
+      $scope.editDataset =editDataset;
+      $scope.cancel =cancel; 
+      
+      // init
       $scope.dataset = angular.copy(dataset);
       $scope.dataset.description = $scope.dataset.comment;
-      $scope.editDataset = function() {
+      
+      function editDataset() {
         $scope.isEditing = true;
         var datasetCommand = {
           title: $scope.dataset.title,
@@ -18,10 +24,11 @@ define(['angular'],
           callback($scope.dataset.title, $scope.dataset.description);
         });
         $modalInstance.close();
-      };
-      $scope.cancel = function() {
+      }
+      
+      function cancel() {
         $modalInstance.dismiss('cancel');
-      };
+      }
     };
     return dependencies.concat(EditDatasetController);
   });

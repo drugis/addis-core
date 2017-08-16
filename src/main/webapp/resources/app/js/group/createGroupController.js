@@ -3,9 +3,14 @@ define([],
   function() {
     var dependencies = ['$scope', '$state', '$modalInstance', 'GroupService', 'callback'];
     var CreateGroupController = function($scope, $state, $modalInstance, GroupService, callback) {
+      // functions
+      $scope.createGroup =createGroup;
+      $scope.cancel = cancel;
+
+      // init
       $scope.item = {}; // necessary to make html bindings not go to parent scope
 
-      $scope.createGroup = function () {
+       function createGroup() {
         GroupService.addItem($scope.item, $scope.studyUuid).then(function() {
           console.log('group ' + $scope.item + 'create');
           callback();
@@ -15,12 +20,11 @@ define([],
           console.error('failed to add group');
           $modalInstance.dismiss('cancel');
         });
+      }
 
-      };
-
-      $scope.cancel = function() {
+      function cancel() {
         $modalInstance.dismiss('cancel');
-      };
+      }
     };
     return dependencies.concat(CreateGroupController);
   });

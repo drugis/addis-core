@@ -10,23 +10,25 @@ define(['angular', 'lodash'],
       VersionedGraphResource, GraphResource, $location, $anchorScroll,
       $modal, StudyService, ResultsService, StudyDesignService, DatasetResource,
       UserService) {
-
-      $scope.userUid = $stateParams.userUid;
+      // functions
+      $scope.sideNavClick = sideNavClick;
+      $scope.saveStudy = saveStudy;
+      $scope.openCopyDialog = openCopyDialog;
+      $scope.resetStudy = resetStudy;
+      $scope.showEditStudyModal = showEditStudyModal;
+      $scope.showD80Table = showD80Table;
+      $scope.isStudyModified = isStudyModified;
+      
+      // init
       $scope.datasetUuid = $stateParams.datasetUuid;
+      $scope.userUid = $stateParams.userUid;
       if ($stateParams.versionUuid) {
         $scope.versionUuid = $stateParams.versionUuid;
       }
       $scope.studyGraphUuid = $stateParams.studyGraphUuid;
       $scope.hasLoggedInUser = UserService.hasLoggedInUser();
-      $scope.openCopyDialog = openCopyDialog;
       $scope.study = {};
-      $scope.resetStudy = resetStudy;
-      $scope.showEditStudyModal = showEditStudyModal;
-      $scope.showD80Table = showD80Table;
-
-      // onload
       StudyService.reset();
-
       $scope.categorySettings = {
         studyInformation: {
           service: 'StudyInformationService',
@@ -199,6 +201,60 @@ define(['angular', 'lodash'],
         }
       };
 
+      $scope.$on('updateStudyDesign', function() {
+        ResultsService.cleanupMeasurements().then(function() {
+          $scope.$broadcast('refreshResults');
+        });
+        StudyDesignService.cleanupCoordinates($stateParams.studyUUID).then(function() {
+          $scope.$broadcast('refreshStudyDesign');
+        });
+      });
+
+      var deRegisterStateChangeStart = $scope.$on('$stateChangeStart', function(event, toState, toParams) {
+        if (!StudyService.isStudyModified()) {
+          return;
+        }
+        event.preventDefault();
+        $modal.open({
+          templateUrl: 'app/js/study/unsavedChanges/unsavedWarningModal.html',
+          controller: 'UnsavedChangesWarningModalController',
+          windowClass: 'small',
+          resolve: {
+            doNavigate: function() {
+              return function() {
+                deRegisterStateChangeStart();
+                $state.go(toState.name, toParams);
+              };
+            },
+            stayHere: function() {
+              return function() {
+                return;
+              };
+            }
+          }
+        });
+      });
+      
+      reloadStudyModel();
+
+      var navbar = document.getElementsByClassName('side-nav');
+      angular.element($window).bind('scroll', function() {
+        $(navbar[0]).css('margin-top', this.pageYOffset - 20);
+        $scope.$apply();
+      });
+
+      $scope.navSettings = {
+        isCompact: false,
+        isHidden: false
+      };
+
+      // check if the menu still fits on resize
+      angular.element($window).bind('resize', function() {
+        $scope.$apply(calculateNavSettings());
+      });
+      // initial setup
+      calculateNavSettings();
+
       function showEditStudyModal() {
         $modal.open({
           templateUrl: 'app/js/study/editStudy.html',
@@ -218,7 +274,7 @@ define(['angular', 'lodash'],
       }
 
       function showD80Table() {
-       $modal.open({
+        $modal.open({
           templateUrl: 'app/js/study/view/d80Table.html',
           controller: 'D80TableController',
           resolve: {
@@ -226,7 +282,7 @@ define(['angular', 'lodash'],
               return $scope.study;
             }
           }
-        }); 
+        });
       }
 
       function openCopyDialog() {
@@ -310,48 +366,11 @@ define(['angular', 'lodash'],
         }
       }
 
-      reloadStudyModel();
-
-      $scope.$on('updateStudyDesign', function() {
-        ResultsService.cleanupMeasurements().then(function() {
-          $scope.$broadcast('refreshResults');
-        });
-        StudyDesignService.cleanupCoordinates($stateParams.studyUUID).then(function() {
-          $scope.$broadcast('refreshStudyDesign');
-        });
-      });
-
-
-      var deRegisterStateChangeStart = $scope.$on('$stateChangeStart', function(event, toState, toParams) {
-        if (!StudyService.isStudyModified()) {
-          return;
-        }
-        event.preventDefault();
-        $modal.open({
-          templateUrl: 'app/js/study/unsavedChanges/unsavedWarningModal.html',
-          controller: 'UnsavedChangesWarningModalController',
-          windowClass: 'small',
-          resolve: {
-            doNavigate: function() {
-              return function() {
-                deRegisterStateChangeStart();
-                $state.go(toState.name, toParams);
-              };
-            },
-            stayHere: function() {
-              return function() {
-                return;
-              };
-            }
-          }
-        });
-      });
-
-      $scope.isStudyModified = function() {
+      function isStudyModified() {
         return StudyService.isStudyModified();
-      };
+      }
 
-      $scope.sideNavClick = function(anchor) {
+      function sideNavClick(anchor) {
         var newHash = anchor;
         $anchorScroll.yOffset = 73;
         if ($location.hash() !== newHash) {
@@ -359,9 +378,9 @@ define(['angular', 'lodash'],
         } else {
           $anchorScroll();
         }
-      };
+      }
 
-      $scope.saveStudy = function() {
+      function saveStudy() {
         // skip save check in controller as ng-disabled does not work with a <a> tag needed by foundation menu item
         if (!StudyService.isStudyModified()) {
           return;
@@ -393,32 +412,13 @@ define(['angular', 'lodash'],
             }
           }
         });
-      };
-
-      var navbar = document.getElementsByClassName('side-nav');
-      angular.element($window).bind('scroll', function() {
-        $(navbar[0]).css('margin-top', this.pageYOffset - 20);
-        $scope.$apply();
-      });
-
-      $scope.navSettings = {
-        isCompact: false,
-        isHidden: false
-      };
+      }
 
       function calculateNavSettings() {
         var windowHeight = $window.innerHeight;
         $scope.navSettings.isCompact = windowHeight < 1022;
         $scope.navSettings.isHidden = windowHeight < 799;
       }
-
-      // check if the menu still fits on resize
-      angular.element($window).bind('resize', function() {
-        $scope.$apply(calculateNavSettings());
-      });
-      // initial setup
-      calculateNavSettings();
-
     };
     return dependencies.concat(StudyController);
   });

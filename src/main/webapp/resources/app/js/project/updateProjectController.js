@@ -2,8 +2,12 @@
 define([], function() {
   var dependencies = ['$scope', '$stateParams', '$modalInstance', 'ProjectResource', 'callback'];
   var UpdateProjectController = function($scope, $stateParams, $modalInstance, ProjectResource, callback) {
+    // functions
     $scope.updateProject = updateProject;
-    $scope.isUpdating=false;
+    $scope.cancel = cancel;
+
+    // init
+    $scope.isUpdating = false;
 
     function updateProject() {
       $scope.isUpdating = true;
@@ -15,9 +19,9 @@ define([], function() {
       });
     }
 
-    $scope.cancel = function() {
+    function cancel() {
       $modalInstance.dismiss('cancel');
-    };
+    }
   };
   return dependencies.concat(UpdateProjectController);
 });
