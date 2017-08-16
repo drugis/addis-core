@@ -3,40 +3,36 @@ define(['lodash'], function(_) {
   var dependencies = ['$scope', '$stateParams', 'callback', '$modalInstance', 'ConceptsService', 'concepts'];
 
   var CreateConceptController = function($scope, $stateParams, callback, $modalInstance, ConceptsService, concepts) {
+    // init
     $scope.concept = {};
     $scope.isDuplicate = false;
+    $scope.typeOptions = ConceptsService.typeOptions;
 
-    $scope.typeOptions = [{
-      uri: 'ontology:Drug',
-      label: 'Drug'
-    }, {
-      uri: 'ontology:Variable',
-      label: 'Variable'
-    }, {
-      uri: 'ontology:Unit',
-      label: 'Unit'
-    }];
+    // functions
+    $scope.checkDuplicate = checkDuplicate;
+    $scope.cancel = cancel;
+    $scope.createConcept = createConcept;
 
-    $scope.createConcept = function() {
+    function createConcept() {
       return ConceptsService.addItem($scope.concept).then(function() {
         callback();
         $modalInstance.close();
       });
-    };
+    }
 
-    $scope.checkDuplicate = function(newConcept) {
+    function checkDuplicate(newConcept) {
       $scope.isDuplicate = _.find(concepts, function(oldConcept) {
-        if(oldConcept.label === undefined){
+        if (oldConcept.label === undefined) {
           return newConcept.label !== undefined && !newConcept.type;
         }
         return newConcept.label !== undefined && newConcept.label.toLowerCase() === oldConcept.label.toLowerCase() &&
           (!newConcept.type || newConcept.type.uri === oldConcept.type.uri);
       });
-    };
+    }
 
-    $scope.cancel = function() {
+    function cancel() {
       $modalInstance.dismiss('cancel');
-    };
+    }
   };
   return dependencies.concat(CreateConceptController);
 });

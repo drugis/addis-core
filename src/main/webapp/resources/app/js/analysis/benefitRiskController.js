@@ -21,7 +21,8 @@ define(['lodash'], function(_) {
     }).$promise;
 
     $scope.editMode = {
-      allowEditing: false
+      allowEditing: false,
+      loaded: false
     };
 
     var promises = [$scope.analysis.$promise,
@@ -56,12 +57,8 @@ define(['lodash'], function(_) {
         $scope.datasetOwnerId = dataset.ownerId;
       });
 
-
       var outcomeIds = _.map(outcomes, 'id');
 
-      if (UserService.isLoginUserId($stateParams.projectId)) {
-        $scope.editMode.allowEditing = true;
-      }
       AnalysisResource.query({
         projectId: $stateParams.projectId,
         outcomeIds: outcomeIds
@@ -99,6 +96,8 @@ define(['lodash'], function(_) {
         }
         return outcome;
       });
+
+      $scope.editMode.loaded = true;
     });
 
     function setIncludedAlternatives() {

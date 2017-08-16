@@ -6,7 +6,16 @@ define([],
     ];
     var ConceptsController = function($scope, $modal, $stateParams, $anchorScroll, $location,
       ConceptsService, VersionedGraphResource, CONCEPT_GRAPH_UUID) {
+      // init
       var datasetUri = 'http://trials.drugis/org/datasets/' + $stateParams.datasetUuid;
+      $scope.datasetConcepts.then(reloadConceptsFromScratch);
+
+      // functions
+      $scope.sideNavClick = sideNavClick;
+      $scope.saveConcepts = saveConcepts;
+      $scope.areConceptsModified = areConceptsModified;
+      $scope.resetConcepts = resetConcepts;
+      $scope.openAddConceptDialog = openAddConceptDialog;
 
       function reloadConceptsFromScratch() {
         return ConceptsService.queryItems(datasetUri).then(function(conceptsJson) {
@@ -14,31 +23,30 @@ define([],
         });
       }
 
-      $scope.openAddConceptDialog = function() {
+      function openAddConceptDialog() {
         $modal.open({
           templateUrl: 'app/js/concept/createConcept.html',
           controller: 'CreateConceptController',
           resolve: {
             callback: function() {
               return reloadConceptsFromScratch;
-            }, concepts: function(){
+            },
+            concepts: function() {
               return $scope.concepts;
             }
           }
         });
-      };
+      }
 
-      $scope.datasetConcepts.then(reloadConceptsFromScratch);
-
-      $scope.resetConcepts = function() {
+      function resetConcepts() {
         $scope.$parent.loadConcepts().then(reloadConceptsFromScratch);
-      };
+      }
 
-      $scope.areConceptsModified = function() {
+      function areConceptsModified() {
         return ConceptsService.areConceptsModified();
-      };
+      }
 
-      $scope.saveConcepts = function() {
+      function saveConcepts() {
         $modal.open({
           templateUrl: 'app/js/commit/commit.html',
           controller: 'CommitController',
@@ -63,9 +71,9 @@ define([],
             }
           }
         });
-      };
+      }
 
-      $scope.sideNavClick = function(anchor) {
+      function sideNavClick(anchor) {
         var newHash = anchor;
         $anchorScroll.yOffset = 73;
         if ($location.hash() !== newHash) {
@@ -73,7 +81,7 @@ define([],
         } else {
           $anchorScroll();
         }
-      };
+      }
 
     };
     return dependencies.concat(ConceptsController);

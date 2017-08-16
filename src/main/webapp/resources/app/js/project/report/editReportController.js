@@ -1,12 +1,12 @@
 'use strict';
 define(['angular', 'lodash', 'jQuery'],
   function(angular, _, $) {
-    var dependencies = ['$scope', '$stateParams', '$modal',
+    var dependencies = ['$transitions','$scope', '$stateParams', '$modal',
       'ProjectResource',
       'ReportResource',
       '$timeout'
     ];
-    var EditReportcontroller = function($scope, $stateParams, $modal,
+    var EditReportcontroller = function($transitions, $scope, $stateParams, $modal,
       ProjectResource,
       ReportResource,
       $timeout) {
@@ -26,14 +26,15 @@ define(['angular', 'lodash', 'jQuery'],
         $scope.reportText.text = report.data;
       });
 
-      $scope.$on('$stateChangeStart', function(event) {
+      $transitions.onStart({},function(transition){  
         if ($scope.reportText.changed) {
           var answer = confirm('There are unsaved changes, are you sure you want to leave this page?');
           if (!answer) {
-            event.preventDefault();
+            transition.abort();
+          } else {
+            $scope.reportText.changed = false;
           }
         }
-
       });
 
       function insertTextAtCursor(text) {
@@ -42,6 +43,7 @@ define(['angular', 'lodash', 'jQuery'],
         var textBefore = $scope.reportText.text.substring(0, cursorPos);
         var textAfter = $scope.reportText.text.substring(cursorPos);
         $scope.reportText.text = textBefore + text + textAfter;
+        $scope.reportText.changed = true;
       }
 
       function saveChanges() {

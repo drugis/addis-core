@@ -32,6 +32,17 @@ define(['angular', 'lodash'], function(angular, _) {
     // functions
     $scope.selectAllInterventions = selectAllInterventions;
     $scope.deselectAllInterventions = deselectAllInterventions;
+    $scope.changeMeasurementMoment = changeMeasurementMoment;
+    $scope.changeCovariateInclusion = changeCovariateInclusion;
+    $scope.changeArmExclusion = changeArmExclusion;
+    $scope.isOverlappingIntervention = isOverlappingIntervention;
+    $scope.changeSelectedOutcome = changeSelectedOutcome;
+    $scope.changeInterventionInclusion = changeInterventionInclusion;
+    $scope.reloadModel = reloadModel;
+    $scope.doesInterventionHaveAmbiguousArms = doesInterventionHaveAmbiguousArms;
+    $scope.hasIncludedStudies = hasIncludedStudies;
+    $scope.gotoCreateModel = gotoCreateModel;
+    $scope.lessThanTwoInterventionArms = lessThanTwoInterventionArms;
 
     // init
     if (UserService.hasLoggedInUser()) {
@@ -109,29 +120,29 @@ define(['angular', 'lodash'], function(angular, _) {
       };
     }
 
-    $scope.gotoCreateModel = function() {
+    function gotoCreateModel() {
       $state.go('createModel', {
         userUid: $stateParams.userUid,
         projectId: $stateParams.projectId,
         analysisId: $stateParams.analysisId
       });
-    };
+    }
 
-    $scope.lessThanTwoInterventionArms = function(dataRow) {
+    function lessThanTwoInterventionArms(dataRow) {
       return dataRow.numberOfMatchedInterventions < 2;
-    };
+    }
 
-    $scope.hasIncludedStudies = function() {
+    function hasIncludedStudies() {
       return _.find($scope.trialData, function(dataRow) {
         return !$scope.lessThanTwoInterventionArms(dataRow);
       });
-    };
+    }
 
-    $scope.doesInterventionHaveAmbiguousArms = function(drugId, studyUuid) {
+    function doesInterventionHaveAmbiguousArms(drugId, studyUuid) {
       return NetworkMetaAnalysisService.doesInterventionHaveAmbiguousArms(drugId, studyUuid, $scope.trialverseData, $scope.analysis);
-    };
+    }
 
-    $scope.reloadModel = function reloadModel() {
+    function reloadModel() {
       if (!$scope.analysis.outcome) {
         // can not get data without outcome
         $scope.loading.loaded = true;
@@ -164,9 +175,9 @@ define(['angular', 'lodash'], function(angular, _) {
             $scope.loading.loaded = true;
           });
         });
-    };
+    }
 
-    $scope.changeInterventionInclusion = function(intervention) {
+    function changeInterventionInclusion(intervention) {
       $scope.analysis.interventionInclusions = NetworkMetaAnalysisService.buildInterventionInclusions($scope.interventions, $scope.analysis);
       if ($scope.trialverseData && !intervention.isIncluded) {
         $scope.analysis.excludedArms = NetworkMetaAnalysisService.cleanUpExcludedArms(intervention, $scope.analysis, $scope.trialverseData, $scope.interventions);
@@ -175,7 +186,7 @@ define(['angular', 'lodash'], function(angular, _) {
       AnalysisResource.save(saveCommand, function() {
         $scope.reloadModel();
       });
-    };
+    }
 
     function selectAllInterventions() {
       _.forEach($scope.interventions, function(intervention) {
@@ -200,25 +211,25 @@ define(['angular', 'lodash'], function(angular, _) {
       });
     }
 
-    $scope.changeSelectedOutcome = function() {
+    function changeSelectedOutcome() {
       $scope.tableHasAmbiguousArm = false;
       $scope.analysis.excludedArms = [];
       var saveCommand = analysisToSaveCommand($scope.analysis);
       AnalysisResource.save(saveCommand, function() {
         $scope.reloadModel();
       });
-    };
+    }
 
-    $scope.isOverlappingIntervention = function(intervention) {
+    function isOverlappingIntervention(intervention) {
       return $scope.treatmentOverlapMap[intervention.id];
-    };
+    }
 
-    var hasTreatmentOverlap = function() {
+    function hasTreatmentOverlap() {
       var overlapCount = _.reduce($scope.treatmentOverlapMap, function(count) {
         return ++count;
       }, 0);
       return overlapCount > 0;
-    };
+    }
 
     function resolveOutcomeId(outcomeId) {
       return _.find($scope.outcomes, function matchOutcome(outcome) {
@@ -247,7 +258,7 @@ define(['angular', 'lodash'], function(angular, _) {
         !$scope.hasIncludedStudies();
     }
 
-    $scope.changeArmExclusion = function(dataRow) {
+    function changeArmExclusion(dataRow) {
       $scope.tableHasAmbiguousArm = false;
       $scope.analysis = NetworkMetaAnalysisService.changeArmExclusion(dataRow, $scope.analysis);
       updateNetwork();
@@ -255,18 +266,18 @@ define(['angular', 'lodash'], function(angular, _) {
       AnalysisResource.save(saveCommand, function() {
         $scope.reloadModel();
       });
-    };
+    }
 
-    $scope.changeCovariateInclusion = function(covariate) {
+    function changeCovariateInclusion(covariate) {
       $scope.analysis.includedCovariates = NetworkMetaAnalysisService.changeCovariateInclusion(covariate, $scope.analysis);
       var saveCommand = analysisToSaveCommand($scope.analysis);
       AnalysisResource.save(saveCommand, function() {
         $scope.covariates = NetworkMetaAnalysisService.addInclusionsToCovariates($scope.covariates, $scope.analysis.includedCovariates);
         $scope.reloadModel();
       });
-    };
+    }
 
-    $scope.changeMeasurementMoment = function(newMeasurementMoment, dataRow) {
+    function changeMeasurementMoment(newMeasurementMoment, dataRow) {
       // always remove old inclusion for this study
       $scope.analysis.includedMeasurementMoments = _.reject($scope.analysis.includedMeasurementMoments, ['study', dataRow.studyUri]);
 
@@ -283,7 +294,7 @@ define(['angular', 'lodash'], function(angular, _) {
       AnalysisResource.save(saveCommand, function() {
         $scope.reloadModel();
       });
-    };
+    }
 
   };
 

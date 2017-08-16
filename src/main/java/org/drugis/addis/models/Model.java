@@ -93,6 +93,7 @@ public class Model {
     this.regressor = other.regressor;
     this.sensitivity = other.sensitivity;
     this.archived = false;
+    this.baseline = other.baseline;
   }
 
   private Model(ModelBuilder builder) throws InvalidModelException {

@@ -10,7 +10,6 @@ import org.drugis.addis.analyses.model.BenefitRiskAnalysis;
 import org.drugis.addis.analyses.repository.BenefitRiskAnalysisRepository;
 import org.drugis.addis.analyses.service.AnalysisService;
 import org.drugis.addis.analyses.service.BenefitRiskAnalysisService;
-import org.drugis.addis.effectsTables.repository.EffectsTableRepository;
 import org.drugis.addis.exception.MethodNotAllowedException;
 import org.drugis.addis.exception.ProblemCreationException;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
@@ -72,9 +71,6 @@ public class BenefitRiskAnalysisServiceImpl implements BenefitRiskAnalysisServic
   private InterventionRepository interventionRepository;
 
   @Inject
-  private EffectsTableRepository effectsTableRepository;
-
-  @Inject
   private ScenarioRepository scenarioRepository;
   private ObjectMapper objectMapper = new ObjectMapper();
 
@@ -91,20 +87,6 @@ public class BenefitRiskAnalysisServiceImpl implements BenefitRiskAnalysisServic
       String problemString = objectMapper.writeValueAsString(problem);
       analysis.setProblem(problemString);
       subProblemService.createMCDADefaults(projectId, analysis.getId(), scenarioState);
-
-      List<InterventionInclusion> interventionInclusions = analysis.getInterventionInclusions();
-      List<String> interventionInclusionsAsStrings = interventionInclusions
-              .stream()
-              .map(interventionInclusion -> {
-                try {
-                  return interventionRepository.get(interventionInclusion.getInterventionId()).getName();
-                } catch (ResourceDoesNotExistException e) {
-                  e.printStackTrace();
-                  return null;
-                }
-              })
-              .collect(Collectors.toList());
-      effectsTableRepository.setEffectsTableAlternativeInclusion(analysis.getId(), interventionInclusionsAsStrings);
     }
     return benefitRiskAnalysisRepository.update(user, analysis);
   }

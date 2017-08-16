@@ -69,6 +69,6 @@ define(['angular', 'angular-mocks'], function() {
         });
         scope.$digest();
       });
-    })
+    });
   });
 });

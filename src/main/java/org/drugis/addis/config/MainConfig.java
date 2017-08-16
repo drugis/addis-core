@@ -77,7 +77,6 @@ import java.util.concurrent.TimeUnit;
 @EnableJpaRepositories(basePackages = {"org.drugis.addis.projects",
         "org.drugis.addis.security",
         "org.drugis.addis.covariates",
-        "org.drugis.addis.effectsTables",
         "org.drugis.addis.interventions",
         "org.drugis.addis.outcomes",
         "org.drugis.addis.scenarios",
@@ -126,7 +125,6 @@ public class MainConfig {
     caches.put("versionedDatasetQuery", cacheConfiguration);
     caches.put("datasetHistory", cacheConfiguration);
     caches.put("featuredDatasets", cacheConfiguration);
-    caches.put("triplestoreVersionedNameSpace", cacheConfiguration);
     caches.put("triplestoreQueryStudies", cacheConfiguration);
     caches.put("triplestoreInterventions", cacheConfiguration);
     caches.put("triplestoreOutcomes", cacheConfiguration);
@@ -225,7 +223,6 @@ public class MainConfig {
             "org.drugis.addis.interventions",
             "org.drugis.addis.security",
             "org.drugis.addis.analyses",
-            "org.drugis.addis.effectsTables",
             "org.drugis.addis.scenarios",
             "org.drugis.addis.models",
             "org.drugis.addis.problems",

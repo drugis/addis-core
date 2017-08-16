@@ -142,7 +142,6 @@ public class TriplestoreServiceImpl implements TriplestoreService {
   }
 
   @Override
-  @Cacheable(cacheNames = "triplestoreVersionedNameSpace", key = "#datasetUri.hashCode() + #versionUri.toString()")
   public Namespace getNamespaceVersioned(TriplestoreUuidAndOwner datasetUri, URI versionUri) {
     ResponseEntity<String> response = queryTripleStoreVersion(datasetUri.getTriplestoreUuid(), NAMESPACE, versionUri);
     return buildNameSpace(datasetUri, response);

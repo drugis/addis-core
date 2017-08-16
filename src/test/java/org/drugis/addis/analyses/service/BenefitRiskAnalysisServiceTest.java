@@ -6,7 +6,6 @@ import org.drugis.addis.analyses.model.BenefitRiskNMAOutcomeInclusion;
 import org.drugis.addis.analyses.model.BenefitRiskAnalysis;
 import org.drugis.addis.analyses.repository.BenefitRiskAnalysisRepository;
 import org.drugis.addis.analyses.service.impl.BenefitRiskAnalysisServiceImpl;
-import org.drugis.addis.effectsTables.repository.EffectsTableRepository;
 import org.drugis.addis.exception.MethodNotAllowedException;
 import org.drugis.addis.exception.ProblemCreationException;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
@@ -55,9 +54,6 @@ public class BenefitRiskAnalysisServiceTest {
 
   @Mock
   private InterventionRepository interventionRepository;
-
-  @Mock
-  private EffectsTableRepository effectsTableRepository;
 
   @Mock
   private ProjectService projectService;

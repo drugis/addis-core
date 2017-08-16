@@ -279,7 +279,7 @@
         <p>Where necessary, it is possible to assign non-conformant measurements to
           a specific measurement moment (note that you may first need to enable the
           measurement moment for that outcome).</p>
-        <h3 id="harmonization">Harmonization</h3>
+        <h3 id="concept">Harmonization</h3>
         <p>Different studies may use the same name to refer to different concepts. For
           example, one study may use “treatment response” to mean “a 50% or greater
           improvement of the MADRS score” while another may use it to mean “a 40%
@@ -354,6 +354,8 @@
         <p>At the moment, outcome definition is simple: select an variable concept from
           the dataset (population characteristic, adverse event or endpoint), and
           choose the name under which to use it in the project.</p>
+        <h4 id="defining-units"> Defining units</h4>
+        <p>The definition of a unit is a combination of a metric multiplier and a dataset level unit concept e.g., milli and gram.</p>
         <h4 id="defining-covariates">Defining covariates</h4>
         <p>Covariate definition is simple: select which covariate to use (either a population
           characteristic or a study characteristic), and choose the name under which
@@ -444,7 +446,8 @@
         <p>Benefit-risk analysis in ADDIS is based on the <a href="http://drugis.org/software/r-packages/smaa">SMAA</a>          package for the <a href="https://www.r-project.org/">R statistical software</a>.</p>
         </p>
         <h3 id="creating-a-benefit-risk-analysis">Creating a benefit-risk analysis</h3>
-        <p>In ADDIS, benefit-risk analyses can be based on either a single study, or on a set of network (consistency) models.</p>
+        <p>In ADDIS, benefit-risk analyses can be based on either a single study, or
+          on a set of network (consistency) models.</p>
 
         <h4 id="creating-a-single-study-benefit-risk-analysis">Creating a single study benefit-risk analysis</h4>
         <p>To create a single study benefit-risk analysis, first make sure you have
@@ -464,22 +467,28 @@
         <h4 id="creating-a-meta-benefit-risk-analysis">Creating a meta benefit-risk analysis</h4>
         <p>To create a meta benefit-risk analysis, first make sure you have defined
           the outcomes, interventions, and network meta-analyses you wish to include
-          in your analysis. Also make sure that those network meta-analyses have consistency
-          models that have been run, and use the outcomes and interventions.
+          in your analysis. Also make sure that those network meta-analyses have
+          consistency models that have been run, and use the outcomes and interventions.
           Then, on the analyses tab of the project overview, choose &quot;Add Analysis&quot;.
           In the pop-up dialog, enter a title for the new analysis, and choose &quot;
           Benefit-risk analysis based on meta-analysis&quot; as the analysis type.
         </p>
         <p>After this, you will be taken to the first step of the meta benefit-risk
-          analysis creation process. Here, you select the alternatives, outcomes, and, for each
-          outcome, which network meta-analysis and model you wish to include. When
-          you are done, after pressing &quot;Next Step&quot;, you are taken to the second meta benefit-risk analysis screen. Here you set the baseline distributions
-          for each included outcome, and see the corresponding absolute effects table.
-          If a baseline distribution was already defined for an outcome's network meta-analysis model, it will be selected by default.
-          You can set or override a baseline distribution by clicking the &quot;Set&quot; button, next to an outcome. This allows you to select the alternative you which to use as a baseline, and what the mean and standard deviation of the normal distribution should be.
-          Once all distributions are set, the &quot;finalize&quot; button will
-          become available, which <em>locks</em> all selections, takes you to the MCDA module of ADDIS where the
-          benefit-risk analysis will take place, as described in the sections below.
+          analysis creation process. Here, you select the alternatives, outcomes,
+          and, for each outcome, which network meta-analysis and model you wish to
+          include. When you are done, after pressing &quot;Next Step&quot;, you are
+          taken to the second meta benefit-risk analysis screen. Here you set the
+          baseline distributions for each included outcome, and see the corresponding
+          absolute effects table. If a baseline distribution was already defined
+          for an outcome's network meta-analysis model, it will be selected by default.
+          You can set or override a baseline distribution by clicking the &quot;Set&quot;
+          button, next to an outcome. This allows you to select the alternative you
+          which to use as a baseline, and what the mean and standard deviation of
+          the normal distribution should be. Once all distributions are set, the
+          &quot;finalize&quot; button will become available, which
+          <em>locks</em> all selections, takes you to the MCDA module of ADDIS where
+          the benefit-risk analysis will take place, as described in the sections
+          below.
         </p>
 
         <div id="mcda-shared-content"></div>

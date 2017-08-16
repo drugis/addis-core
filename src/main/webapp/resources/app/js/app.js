@@ -66,9 +66,10 @@ define(
     'mcda/services/hashCodeService',
     'mcda/services/util',
     'mcda/preferences/partialValueFunctionService',
-    'mcda/results/resultsService',
+    'mcda/results/results',
     'mcda/subProblem/scaleRangeService',
     'mcda/subProblem/subProblem',
+    'bower_components/angularjs-slider/dist/rzslider',
     'covariates/covariates',
     'home/home'
   ],
@@ -83,10 +84,10 @@ define(
       'elicit.directives',
       'elicit.controllers',
       'elicit.pvfService',
-      'elicit.resultsService',
       'elicit.util',
       'elicit.routeFactory',
       'elicit.subProblem',
+      'elicit.results',
       'mm.foundation',
       'ngAnimate'
     ];
@@ -168,6 +169,10 @@ define(
     }]);
     app.constant('mcdaRootPath', 'app/js/bower_components/mcda-web/app/');
     app.constant('gemtcRootPath', 'app/js/bower_components/gemtc-web/app/');
+
+    app.config(['$locationProvider', function($locationProvider) {
+      $locationProvider.hashPrefix('');
+    }]);
 
     app.run(['$rootScope', '$window', '$http', '$location', '$cookies', 'HelpPopupService', 'CacheService',
       function($rootScope, $window, $http, $location, $cookies, HelpPopupService, CacheService) {
@@ -270,7 +275,7 @@ define(
                 return 'definitions';
               },
               project: ['$stateParams', 'ProjectResource', function($stateParams, ProjectResource) {
-                return  ProjectResource.get($stateParams).$promise;
+                return ProjectResource.get($stateParams).$promise;
               }]
             }
           })
@@ -278,7 +283,7 @@ define(
             url: '/report',
             templateUrl: baseTemplatePath + 'project.html',
             controller: 'SingleProjectController',
-            parent:'project',
+            parent: 'project',
             resolve: {
               activeTab: function() {
                 return 'report';
@@ -289,7 +294,7 @@ define(
             url: '/definitions',
             templateUrl: baseTemplatePath + 'project.html',
             controller: 'SingleProjectController',
-            parent:'project',
+            parent: 'project',
             resolve: {
               activeTab: function() {
                 return 'analyses';
