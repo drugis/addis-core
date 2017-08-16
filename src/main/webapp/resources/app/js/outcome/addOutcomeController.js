@@ -2,10 +2,12 @@
 define(['lodash'], function(_) {
   var dependencies = ['$scope', '$modalInstance', 'callback', 'OutcomeResource'];
   var AddOutcomeController = function($scope, $modalInstance, callback, OutcomeResource) {
+    // functions
     $scope.checkForDuplicateOutcomeName = checkForDuplicateOutcomeName;
     $scope.cancel = cancel;
     $scope.addOutcome = addOutcome;
 
+    // init
     $scope.newOutcome = {
       direction: 1
     };

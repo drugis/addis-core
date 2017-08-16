@@ -5,6 +5,14 @@ define(['lodash'], function(_) {
   ];
   var InsertDirectiveController = function($scope, $stateParams, $modalInstance, $q,
     ReportDirectiveService, CacheService, PataviService, callback, directiveName) {
+    // functions
+    $scope.selectedAnalysisChanged = selectedAnalysisChanged;
+    $scope.selectedModelChanged = selectedModelChanged;
+    $scope.selectedTreatmentChanged = selectedTreatmentChanged;
+    $scope.insertDirective = insertDirective;
+    $scope.cancel = cancel;
+
+    // init
     $scope.loading = {
       loaded: false
     };
@@ -12,10 +20,6 @@ define(['lodash'], function(_) {
     $scope.isRegressionModel = false;
     $scope.title = directiveName.replace(/-/g, ' ');
     $scope.showSettings = ReportDirectiveService.getShowSettings(directiveName);
-    $scope.selectedAnalysisChanged = selectedAnalysisChanged;
-    $scope.selectedModelChanged = selectedModelChanged;
-    $scope.selectedTreatmentChanged = selectedTreatmentChanged;
-    $scope.insertDirective = insertDirective;
     $scope.sortOptions = ['alphabetical', 'point-estimate'];
 
     var analysesPromise = CacheService.getAnalyses($stateParams);
@@ -126,9 +130,9 @@ define(['lodash'], function(_) {
       $scope.selections.t2 = $scope.secondInterventionOptions[0];
     }
 
-    $scope.cancel = function() {
+    function cancel() {
       $modalInstance.dismiss('cancel');
-    };
+    }
 
     function insertDirective() {
       callback(ReportDirectiveService.getDirectiveBuilder(directiveName)($scope.selections));

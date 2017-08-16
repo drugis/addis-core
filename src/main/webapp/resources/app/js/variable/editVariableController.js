@@ -7,27 +7,29 @@ define(['lodash'], function(_) {
   var EditItemController = function($scope, $state, $modalInstance,
     OutcomeService, itemService, MeasurementMomentService,
     ResultsService, callback, item, itemType) {
+    // functions
+    $scope.measurementMomentEquals = measurementMomentEquals;
+    $scope.deleteCategory = deleteCategory;
+    $scope.addCategory = addCategory;
+    $scope.addCategoryEnterKey = addCategoryEnterKey;
+    $scope.editItem = editItem;
+    $scope.resetResultProperties = resetResultProperties;
+    $scope.cancel = cancel;
 
+    // init
     $scope.isEditing = false;
     $scope.item = item;
     $scope.itemType = itemType;
     $scope.measurementMoments = MeasurementMomentService.queryItems();
     $scope.resultProperties = _.map(ResultsService.VARIABLE_TYPE_DETAILS, _.identity);
-    $scope.deleteCategory = deleteCategory;
-    $scope.addCategory = addCategory;
-    $scope.addCategoryEnterKey = addCategoryEnterKey;
 
     item.selectedResultProperties = _.filter($scope.resultProperties, function(resultProperty) {
       return _.includes(item.resultProperties, resultProperty.uri);
     });
-    $scope.measurementMomentEquals = function(moment1, moment2) {
+
+    function measurementMomentEquals(moment1, moment2) {
       return moment1.uri === moment2.uri;
-    };
-    $scope.editItem = editItem;
-    $scope.resetResultProperties = resetResultProperties;
-    $scope.cancel = function() {
-      $modalInstance.dismiss('cancel');
-    };
+    }
 
     function resetResultProperties() {
       item.selectedResultProperties = ResultsService.getDefaultResultProperties($scope.item.measurementType);
@@ -83,7 +85,9 @@ define(['lodash'], function(_) {
       }
     }
 
-
+    function cancel() {
+      $modalInstance.dismiss('cancel');
+    }
   };
   return dependencies.concat(EditItemController);
 });

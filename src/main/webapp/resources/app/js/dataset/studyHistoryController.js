@@ -8,6 +8,19 @@ define([],
       $scope.datasetUuid = $stateParams.datasetUuid;
       $scope.studyGraphUuid = $stateParams.studyGraphUuid;
 
+      getDataset();
+      getStudyTitle();
+
+      $scope.historyItems = StudyHistoryResource.query($stateParams);
+      $scope.historyItems.$promise.then(function() {
+        function oldToNew(a, b) {
+          return b.i - a.i;
+        }
+        $scope.historyItems.sort(oldToNew);
+        var headItemUri = ($scope.historyItems[0].uri);
+        $scope.headVersion = headItemUri.substr(headItemUri.lastIndexOf('/') + 1);
+      });
+
       function getDataset() {
         DatasetResource.getForJson($stateParams).$promise.then(function(response) {
           $scope.dataset = {
@@ -26,19 +39,6 @@ define([],
             $scope.studyTitle = response[0].label;
           });
       }
-
-      getDataset();
-      getStudyTitle();
-
-      $scope.historyItems = StudyHistoryResource.query($stateParams);
-      $scope.historyItems.$promise.then(function() {
-        function oldToNew(a, b) {
-          return b.i - a.i;
-        }
-        $scope.historyItems.sort(oldToNew);
-        var headItemUri = ($scope.historyItems[0].uri);
-        $scope.headVersion = headItemUri.substr(headItemUri.lastIndexOf('/') + 1);
-      });
     };
     return dependencies.concat(StudyHistoryController);
   });

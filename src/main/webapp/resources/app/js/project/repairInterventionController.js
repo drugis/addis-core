@@ -7,9 +7,13 @@ define(['lodash'], function(_) {
   var RepairInterventionController = function($scope, $stateParams, $modalInstance, $q,
     InterventionResource, intervention, callback,
     ConceptsService, MappingService, DataModelService, VersionedGraphResource) {
+    // functions
+    $scope.updateInterventionMultiplierMapping = updateInterventionMultiplierMapping;
+    $scope.cancel = cancel;
+
+    // init
     var datasetUri = 'http://trials.drugis/org/datasets/' + $scope.project.namespaceUid;
     $scope.intervention = intervention;
-    $scope.updateInterventionMultiplierMapping = updateInterventionMultiplierMapping;
     $scope.units = [];
     $scope.metricMultipliers = MappingService.METRIC_MULTIPLIERS;
 
@@ -47,9 +51,9 @@ define(['lodash'], function(_) {
       });
     }
 
-    $scope.cancel = function() {
+    function cancel() {
       $modalInstance.dismiss('cancel');
-    };
+    }
   };
   return dependencies.concat(RepairInterventionController);
 });

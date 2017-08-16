@@ -4,9 +4,12 @@ define(['lodash'],
     var dependencies = ['$scope', '$filter', 'UserService',
       '$stateParams', '$state', 'UserResource', 'md5'
     ];
-
     var UserController = function($scope, $filter, UserService,
       $stateParams, $state, UserResource, md5) {
+      // functions
+      $scope.selectTab = selectTab;
+
+      // init
       $scope.stripFrontFilter = $filter('stripFrontFilter');
       $scope.otherUsers = [];
       $scope.userUid = Number($stateParams.userUid);
@@ -23,15 +26,6 @@ define(['lodash'],
         $scope.activetab = currentState.name;
       });
 
-      $scope.selectTab = function(tab) {
-        if ($state.current.name !== tab) {
-          $scope.activetab = tab;
-          $state.go(tab, {
-            userUid: $stateParams.userUid
-          });
-        }
-      };
-
       UserResource.query(function(users) {
         _.each(users, function(user) {
           user.md5 = md5.createHash(user.email);
@@ -42,6 +36,15 @@ define(['lodash'],
           }
         });
       });
+
+      function selectTab(tab) {
+        if ($state.current.name !== tab) {
+          $scope.activetab = tab;
+          $state.go(tab, {
+            userUid: $stateParams.userUid
+          });
+        }
+      }
 
     };
     return dependencies.concat(UserController);

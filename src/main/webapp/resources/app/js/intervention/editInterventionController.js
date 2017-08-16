@@ -3,9 +3,15 @@ define(['angular'],
   function(angular) {
     var dependencies = ['$scope', '$modalInstance', 'ProjectService', 'InterventionResource', 'successCallback', 'intervention', 'interventions'];
     var EditInterventionController = function($scope, $modalInstance, ProjectService, InterventionResource, successCallback, intervention, interventions) {
+      // functions
+      $scope.saveIntervention = saveIntervention;
+      $scope.checkForDuplicateInterventionName = checkForDuplicateInterventionName;
+      $scope.cancel = cancel;
+
+      // init
       $scope.intervention = angular.copy(intervention);
 
-      $scope.saveIntervention = function() {
+      function saveIntervention() {
         $scope.isSaving = true;
         var editCommand = {
           name: $scope.intervention.name,
@@ -18,15 +24,15 @@ define(['angular'],
           $modalInstance.close();
           successCallback($scope.intervention.name, $scope.intervention.motivation);
         });
-      };
+      }
 
-      $scope.checkForDuplicateInterventionName = function(intervention) {
+      function checkForDuplicateInterventionName(intervention) {
         $scope.isDuplicateName = ProjectService.checkforDuplicateName(interventions, intervention);
-      };
+      }
 
-      $scope.cancel = function() {
+      function cancel() {
         $modalInstance.dismiss('cancel');
-      };
+      }
     };
     return dependencies.concat(EditInterventionController);
   });

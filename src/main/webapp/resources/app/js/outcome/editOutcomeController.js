@@ -3,7 +3,12 @@ define(['lodash'],
   function(_) {
     var dependencies = ['$scope', '$state', '$modalInstance', 'itemService', 'callback', 'item', '$injector', 'OutcomeService'];
     var EditOutcomeController = function($scope, $state, $modalInstance, itemService, callback, item, $injector, OutcomeService) {
+      // functions
+      $scope.merge = merge;
+      $scope.updateMergeWarning = updateMergeWarning;
+      $scope.cancel = cancel;
 
+      // init
       $scope.isEditing = false;
       $scope.item = item;
       var ItemService = $injector.get($scope.settings.service);
@@ -15,7 +20,7 @@ define(['lodash'],
       });
       $scope.showMergeWarning = false;
 
-      $scope.merge = function(targetOutcome) {
+      function merge(targetOutcome) {
         $scope.isEditing = true;
         OutcomeService.merge(item, targetOutcome, ItemService.TYPE).then(function() {
             callback();
@@ -24,18 +29,18 @@ define(['lodash'],
           function() {
             $modalInstance.dismiss('cancel');
           });
-      };
+      }
 
-      $scope.updateMergeWarning = function(targetOutcome) {
+      function updateMergeWarning(targetOutcome) {
         $scope.showDifferentTypeWarning = OutcomeService.hasDifferentType(item, targetOutcome);
         OutcomeService.hasOverlap(item, targetOutcome).then(function(result) {
           $scope.showMergeWarning = result;
         });
-      };
+      }
 
-      $scope.cancel = function() {
+      function cancel() {
         $modalInstance.dismiss('cancel');
-      };
+      }
     };
     return dependencies.concat(EditOutcomeController);
   });

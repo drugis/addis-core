@@ -17,6 +17,8 @@ define(['lodash'],
       $scope.showDeleteStudyDialog = showDeleteStudyDialog;
       $scope.onStudyFilterChange = onStudyFilterChange;
       $scope.toggleFilterOptions = toggleFilterOptions;
+      $scope.showTableOptions =showTableOptions;
+      $scope.showStudyDialog =showStudyDialog;
 
       // vars
       $scope.userUid = $stateParams.userUid;
@@ -140,7 +142,7 @@ define(['lodash'],
 
       }
 
-      $scope.showTableOptions = function() {
+      function showTableOptions() {
         $modal.open({
           templateUrl: 'app/js/dataset/tableOptions.html',
           scope: $scope,
@@ -150,7 +152,7 @@ define(['lodash'],
             };
           }
         });
-      };
+      }
 
       function onStudyFilterChange(filterSelections) {
         $scope.filterSelections = filterSelections; //in case user goes back to the page from child state
@@ -161,7 +163,7 @@ define(['lodash'],
         $scope.showFilterOptions = !$scope.showFilterOptions;
       }
 
-      $scope.showStudyDialog = function() {
+      function showStudyDialog() {
         $modal.open({
           templateUrl: 'app/js/dataset/createStudy.html',
           scope: $scope,
@@ -178,7 +180,7 @@ define(['lodash'],
             }
           }
         });
-      };
+      }
 
       function showDeleteStudyDialog(study) {
         $modal.open({

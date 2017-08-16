@@ -228,7 +228,6 @@ define(['angular', 'lodash'],
         });
       }
 
-
       return {
         queryItems: queryItems,
         addItem: addItem,

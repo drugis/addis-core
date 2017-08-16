@@ -7,10 +7,14 @@ define([],
     ];
     var EditPopulationInformationController = function($scope, $state, $modalInstance,
       itemService, callback, item) {
+      // functions
+      $scope.editItem = editItem;
+      $scope.cancel = cancel;
 
+      // init
       $scope.itemScratch = item;
 
-      $scope.editItem = function() {
+      function editItem() {
         itemService.editItem($scope.itemScratch).then(function() {
             callback();
             $modalInstance.close();
@@ -18,11 +22,11 @@ define([],
           function() {
             $modalInstance.dismiss('cancel');
           });
-      };
+      }
 
-      $scope.cancel = function() {
+      function cancel() {
         $modalInstance.dismiss('cancel');
-      };
+      }
     };
     return dependencies.concat(EditPopulationInformationController);
   });
