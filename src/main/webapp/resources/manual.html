@@ -355,7 +355,8 @@
           the dataset (population characteristic, adverse event or endpoint), and
           choose the name under which to use it in the project.</p>
         <h4 id="defining-units"> Defining units</h4>
-        <p>The definition of a unit is a combination of a metric multiplier and a dataset level unit concept e.g., milli and gram.</p>
+        <p>The definition of a unit is a combination of a metric multiplier and a dataset
+          level unit concept e.g., milli and gram.</p>
         <h4 id="defining-covariates">Defining covariates</h4>
         <p>Covariate definition is simple: select which covariate to use (either a population
           characteristic or a study characteristic), and choose the name under which
@@ -498,67 +499,60 @@
     </div>
 
     <script>
-      $("#gemtc-shared-toc").load(
-        "app/js/bower_components/gemtc-web/app/manual/shared-toc.html");
+      var gemtcDeferred = $.Deferred(),
+        gemtcToCDeferred = $.Deferred();
       $("#gemtc-shared-content").load(
         "app/js/bower_components/gemtc-web/app/manual/shared.html",
         function() {
-          $('h4', this).replaceWith(function() {
-            return '<h5 id="' + $(this).attr('id') + '">' + $(this).text() +
-              '</h5>';
-          });
-          $('h3', this).replaceWith(function() {
-            return '<h4 id="' + $(this).attr('id') + '">' + $(this).text() +
-              '</h4>';
-          });
-          $('h2', this).replaceWith(function() {
-            return '<h3 id="' + $(this).attr('id') + '">' + $(this).text() +
-              '</h3>';
-          });
           $('img', this).each(function() {
             $img = $(this);
             $img.attr('src', 'app/js/bower_components/gemtc-web/app/' +
               $img.attr('src'));
           });
-          renderMathInElement(document.body);
-          $(function() {
-            $.scrollUp();
-          });
-          $("#toc").toc({
-            'selectors': 'h2,h3,h4'
-          });
+          gemtcDeferred.resolve();
         });
 
-      $("#mcda-shared-toc").load(
-        "app/js/bower_components/mcda-web/manual/shared-toc.html");
+      var mcdaDeferred = $.Deferred(),
+        mcdaToCDeferred = $.Deferred();
       $("#mcda-shared-content").load(
         "app/js/bower_components/mcda-web/manual/shared.html",
         function() {
-          $('h4', this).replaceWith(function() {
-            return '<h5 id="' + $(this).attr('id') + '">' + $(this).text() +
-              '</h5>';
-          });
-          $('h3', this).replaceWith(function() {
-            return '<h4 id="' + $(this).attr('id') + '">' + $(this).text() +
-              '</h4>';
-          });
-          $('h2', this).replaceWith(function() {
-            return '<h3 id="' + $(this).attr('id') + '">' + $(this).text() +
-              '</h3>';
-          });
           $('img', this).each(function() {
             $img = $(this);
             $img.attr('src', 'app/js/bower_components/mcda-web/' +
               $img.attr('src'));
           });
-          renderMathInElement(document.body);
-          $(function() {
-            $.scrollUp();
-          });
-          $("#toc").toc({
-            'selectors': 'h2,h3,h4'
-          });
+          mcdaDeferred.resolve();
         });
+      $.when(gemtcDeferred, mcdaDeferred).then(function() {
+        $('h4', this).replaceWith(function() {
+          return '<h5 id="' + $(this).attr('id') + '">' + $(this).text() +
+            '</h5>';
+        });
+        $('h3', this).replaceWith(function() {
+          return '<h4 id="' + $(this).attr('id') + '">' + $(this).text() +
+            '</h4>';
+        });
+        $('h2', this).replaceWith(function() {
+          return '<h3 id="' + $(this).attr('id') + '">' + $(this).text() +
+            '</h3>';
+        });
+
+        renderMathInElement(document.body);
+        $("#toc").toc({
+          'selectors': 'h2,h3,h4'
+        });
+        $(function() {
+          $.scrollUp();
+        });
+        if (window.location.hash) {
+          setTimeout(function() { // wait for reflows to finish
+            $('html, body').animate({
+              scrollTop: $(window.location.hash).offset().top
+            }, 1000);
+          }, 1);
+        }
+      });
     </script>
 
 </body>
