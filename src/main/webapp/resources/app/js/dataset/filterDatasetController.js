@@ -2,19 +2,23 @@
 define([], function() {
   var dependencies = ['$scope', '$modalInstance', 'interventions', 'variables', 'filterSelections', 'callback'];
   var FilterDatasetController = function($scope, $modalInstance, interventions, variables, filterSelections, callback) {
+    // functions
+    $scope.cancel = cancel;
+    $scope.updateFilteredStudies = updateFilteredStudies;
 
+    // init
     $scope.interventions = interventions;
     $scope.variables = variables;
     $scope.filterSelections = filterSelections;
 
-    $scope.updateFilteredStudies = function() {
+    function updateFilteredStudies() {
       callback($scope.filterSelections);
       $modalInstance.dismiss('cancel');
-    };
+    }
 
-    $scope.cancel = function() {
+    function cancel() {
       $modalInstance.dismiss('cancel');
-    };
+    }
   };
   return dependencies.concat(FilterDatasetController);
 });

@@ -1,16 +1,19 @@
 'use strict';
 define([],
   function() {
-    var dependencies = ['$scope','$modalInstance', 'PopulationCharacteristicService', 'MeasurementMomentService', 'callback'];
+    var dependencies = ['$scope', '$modalInstance', 'PopulationCharacteristicService', 'MeasurementMomentService', 'callback'];
     var CreatePopulationCharacteristicController = function($scope, $modalInstance, PopulationCharacteristicService, MeasurementMomentService, callback) {
+      // functions
+      $scope.createPopulationCharacteristic = createPopulationCharacteristic;
+      $scope.cancel = cancel;
 
+      // init
       $scope.item = {
         measuredAtMoments: []
       };
-
       $scope.measurementMoments = MeasurementMomentService.queryItems();
 
-      $scope.createPopulationCharacteristic = function() {
+      function createPopulationCharacteristic() {
         PopulationCharacteristicService.addItem($scope.item)
           .then(function() {
               callback();
@@ -21,11 +24,11 @@ define([],
               $modalInstance.dismiss('cancel');
             });
 
-      };
+      }
 
-      $scope.cancel = function() {
+      function cancel() {
         $modalInstance.dismiss('cancel');
-      };
+      }
     };
     return dependencies.concat(CreatePopulationCharacteristicController);
   });

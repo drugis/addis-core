@@ -699,5 +699,82 @@ define(['angular-mocks'], function(angularMocks) {
         expect(result).toEqual(expectedResult);
       });
     });
+
+    describe('addModelBaseline', function() {
+      it('should add the baseline to the models if possible', function() {
+        var analysis = {
+          benefitRiskNMAOutcomeInclusions: [{
+            modelId: 'modelId1'
+          }, {
+            modelId: 'modelId2',
+            baseline: 'somebaseline'
+          }, {
+            modelId: 'modelId3'
+          }],
+          interventionInclusions: [{
+            interventionId: 'interventionId1'
+          }, {
+            interventionId: 'interventionId2'
+          }]
+        };
+        var models = [{
+            id: 'modelId1',
+            baseline: {
+              baseline: {
+                name: 'interventionName1'
+              }
+            }
+          }, {
+            id: 'modelId2',
+            baseline: {
+              baseline: {
+                baseline: {
+                  name: 'interventionName1'
+                }
+              }
+            }
+          },
+          {
+            id: 'modelId3',
+            baseline: {
+              baseline: {
+                name: 'interventionName2'
+              }
+            }
+          }
+        ];
+
+        var alternatives = [{
+          id: 'interventionId1',
+          name: 'interventionName1'
+        }, {
+          id: 'interventionId2',
+          name: 'interventionName2'
+        }];
+        var result = benefitRiskService.addModelBaseline(analysis, models, alternatives);
+        var expectedResult = {
+          benefitRiskNMAOutcomeInclusions: [{
+            modelId: 'modelId1',
+            baseline: {
+              name: 'interventionName1'
+            }
+          }, {
+            modelId: 'modelId2',
+            baseline: 'somebaseline'
+          }, {
+            modelId: 'modelId3',
+            baseline: {
+              name: 'interventionName2'
+            }
+          }],
+          interventionInclusions: [{
+            interventionId: 'interventionId1'
+          }, {
+            interventionId: 'interventionId2'
+          }]
+        };
+        expect(result).toEqual(expectedResult);
+      });
+    });
   });
 });

@@ -3,10 +3,14 @@ define([],
   function() {
     var dependencies = ['$scope', '$modalInstance', 'datasets', 'userUid', 'datasetUuid', 'graphUuid', 'versionUuid', 'CopyStudyResource', 'UUIDService'];
     var CopyStudyController = function($scope, $modalInstance, datasets, userUid, datasetUuid, graphUuid, versionUuid, CopyStudyResource, UUIDService) {
+      // functions
+      $scope.copyStudy = copyStudy;
+      $scope.cancel = cancel;
 
+      // init
       $scope.datasets = datasets;
 
-      $scope.copyStudy = function(targetDataset) {
+      function copyStudy(targetDataset) {
         $scope.isCopying = true;
         $scope.targetDatasetUuid = targetDataset.uri.split('/')[targetDataset.uri.split('/').length - 1];
         $scope.targetGraphUuid = UUIDService.generate();
@@ -26,11 +30,12 @@ define([],
           function() {
             $modalInstance.dismiss('cancel');
           });
-      };
+      }
 
-      $scope.cancel = function() {
+      function cancel() {
         $modalInstance.dismiss('cancel');
-      };
+      }
+
     };
     return dependencies.concat(CopyStudyController);
   });

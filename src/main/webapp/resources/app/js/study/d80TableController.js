@@ -7,6 +7,11 @@ define(['lodash', 'clipboard'], function(_, Clipboard) {
   var D80TableController = function($scope, $filter, $modalInstance, $q, EpochService, ArmService,
     ActivityService, StudyDesignService, EndpointService, MeasurementMomentService, ResultsService,
     EstimatesResource, D80TableService, study) {
+    // functions
+    $scope.selectBaseLine = selectBaseLine;
+    $scope.cancel = cancel;
+
+    // init
     $scope.study = study;
     $scope.buildResultLabel = D80TableService.buildResultLabel;
 
@@ -63,7 +68,7 @@ define(['lodash', 'clipboard'], function(_, Clipboard) {
       });
     }
 
-    $scope.selectBaseLine = function(newBaseline) {
+    function selectBaseLine(newBaseline) {
       $scope.baseline = newBaseline;
       var estimates = EstimatesResource.getEstimates({
         measurements: $scope.measurements.toBackEndMeasurements,
@@ -73,12 +78,11 @@ define(['lodash', 'clipboard'], function(_, Clipboard) {
       estimates.$promise.then(function(estimateResults) {
         $scope.effectEstimateRows = D80TableService.buildEstimateRows(estimateResults, $scope.endpoints, $scope.arms);
       });
+    }
 
-    };
-
-    $scope.cancel = function() {
+    function cancel() {
       $modalInstance.dismiss('cancel');
-    };
+    }
   };
   return dependencies.concat(D80TableController);
 });

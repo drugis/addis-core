@@ -2,13 +2,18 @@
 define([], function() {
   var dependencies = ['$scope', '$stateParams', 'CovariateResource', 'CovariateOptionsResource', '$modalInstance', 'callback'];
   var AddCovariateController = function($scope, $stateParams, CovariateResource, CovariateOptionsResource, $modalInstance, callback) {
+    // functions
+    $scope.addCovariate = addCovariate;
+    $scope.cancel = cancel;
+    $scope.alReadyAdded = alReadyAdded;
 
+    // init
     $scope.covariatesOptions = CovariateOptionsResource.getProjectCovariates($stateParams);
     var selectedOptionsKeys = $scope.covariates.map(function(covariate) {
       return covariate.definitionKey;
     });
 
-    $scope.addCovariate = function(covariate) {
+    function addCovariate(covariate) {
       $scope.isAddingCovariate = true;
       covariate.covariateDefinitionKey = covariate.definition.key;
       covariate.type = covariate.definition.typeKey;
@@ -19,15 +24,15 @@ define([], function() {
         $modalInstance.close();
         $scope.isAddingCovariate = false;
       });
-    };
+    }
 
-    $scope.cancel = function() {
+    function cancel() {
       $modalInstance.dismiss('cancel');
-    };
+    }
 
-    $scope.alReadyAdded = function(covariate) {
+    function alReadyAdded(covariate) {
       return selectedOptionsKeys.indexOf(covariate.definition.key) >= 0;
-    };
+    }
 
 
   };

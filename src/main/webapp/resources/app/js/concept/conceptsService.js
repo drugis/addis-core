@@ -84,7 +84,8 @@ define(['lodash'], function(_) {
       areConceptsModified: areConceptsModified,
       conceptsSaved: conceptsSaved,
       loadJson: loadJson,
-      getGraphAndContext: getGraphAndContext
+      getGraphAndContext: getGraphAndContext,
+      typeOptions: typeOptions
     };
 
   };

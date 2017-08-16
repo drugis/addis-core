@@ -3,7 +3,12 @@ define([],
   function() {
     var dependencies = ['$scope', '$modalInstance', 'EpochService', 'callback', 'DurationService'];
     var addEpochController = function($scope, $modalInstance, EpochService, callback, DurationService) {
+      // functions
+      $scope.addItem = addItem;
+      $scope.cancel = cancel;
+      $scope.changeToInstantaneous = changeToInstantaneous;
 
+      // init
       $scope.periodTypeOptions = [{
         value: 'H',
         type: 'time',
@@ -27,7 +32,7 @@ define([],
 
       $scope.isValidDuration = DurationService.isValidDuration;
 
-      $scope.addItem = function() {
+      function addItem() {
         EpochService.addItem($scope.item)
           .then(function() {
               callback();
@@ -37,16 +42,15 @@ define([],
               console.error('failed to create epoch');
               $modalInstance.dismiss('cancel');
             });
+      }
 
-      };
-
-      $scope.cancel = function() {
+      function cancel() {
         $modalInstance.dismiss('cancel');
-      };
+      }
 
-      $scope.changeToInstantaneous = function() {
+      function changeToInstantaneous() {
         $scope.item.duration = 'PT0S';
-      };
+      }
     };
     return dependencies.concat(addEpochController);
   });

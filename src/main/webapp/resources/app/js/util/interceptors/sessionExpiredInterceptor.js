@@ -10,7 +10,7 @@ define(['angular'], function() {
         }
         return $q.reject(response);
       }
-    }
+    };
   };
   return dependencies.concat(SessionExpiredInterceptor);
 });

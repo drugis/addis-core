@@ -126,7 +126,6 @@ public class MainConfig {
     caches.put("versionedDatasetQuery", cacheConfiguration);
     caches.put("datasetHistory", cacheConfiguration);
     caches.put("featuredDatasets", cacheConfiguration);
-    caches.put("triplestoreVersionedNameSpace", cacheConfiguration);
     caches.put("triplestoreQueryStudies", cacheConfiguration);
     caches.put("triplestoreInterventions", cacheConfiguration);
     caches.put("triplestoreOutcomes", cacheConfiguration);

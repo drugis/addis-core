@@ -3,16 +3,21 @@ define(['angular', 'lodash'],
   function(angular, _) {
     var dependencies = ['$scope', '$modalInstance', 'ProjectResource', 'project', 'otherProjectNames', 'callback'];
     var EditProjectController = function($scope, $modalInstance, ProjectResource, project, otherProjectNames, callback) {
+      // functions
+      $scope.isNameTaken = isNameTaken;
+      $scope.editProject = editProject;
+      $scope.cancel = cancel;
 
+      // init
       $scope.project = angular.copy(project);
 
-      $scope.isNameTaken = function(proposedName) {
-        return !!_.find(otherProjectNames, function(name){
+      function isNameTaken(proposedName) {
+        return !!_.find(otherProjectNames, function(name) {
           return name === proposedName;
         });
-      };
+      }
 
-      $scope.editProject = function() {
+      function editProject() {
         $scope.isEditing = true;
         var editProjectCommand = {
           name: $scope.project.name,
@@ -24,10 +29,11 @@ define(['angular', 'lodash'],
           callback($scope.project.name, $scope.project.description);
         });
         $modalInstance.close();
-      };
-      $scope.cancel = function() {
+      }
+
+      function cancel() {
         $modalInstance.dismiss('cancel');
-      };
+      }
     };
     return dependencies.concat(EditProjectController);
   });

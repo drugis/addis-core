@@ -7,19 +7,26 @@ define(['lodash'], function(_) {
 
   var CreateStudyController = function($scope, $stateParams, $modalInstance,
     successCallback, StudyService, ImportStudyResource, ImportStudyInfoResource, UUIDService) {
+    // functions 
+    $scope.isUniqueShortName = isUniqueShortName;
+    $scope.createStudy = createStudy;
+    $scope.isValidNct = isValidNct;
+    $scope.cancel = cancel;
+    $scope.getInfo = getInfo;
 
+    // variables
     $scope.isCreatingStudy = false;
     $scope.importing = false;
     $scope.studyImport = {};
 
-    $scope.isUniqueShortName = function(shortName) {
+    function isUniqueShortName(shortName) {
       var anyduplicateName = _.find($scope.studiesWithDetail, function(existingStudy) {
         return existingStudy.label === shortName;
       });
       return !anyduplicateName;
-    };
+    }
 
-    $scope.createStudy = function(study) {
+    function createStudy(study) {
       $scope.isCreatingStudy = true;
       var newStudyVersionPromise = StudyService.createEmptyStudy(study, $stateParams.userUid, $stateParams.datasetUuid);
       newStudyVersionPromise.then(function(newVersion) {
@@ -27,13 +34,13 @@ define(['lodash'], function(_) {
         $scope.isCreatingStudy = false;
         $modalInstance.close();
       });
-    };
+    }
 
-    $scope.isValidNct = function(nctId) {
+    function isValidNct(nctId) {
       return new RegExp('^' + 'NCT+').test(nctId);
-    };
+    }
 
-    $scope.getInfo = function(studyImport) {
+    function getInfo(studyImport) {
       studyImport.error = undefined;
       studyImport.notFound = false;
       studyImport.nctId = studyImport.nctId.toUpperCase();
@@ -56,8 +63,9 @@ define(['lodash'], function(_) {
           $scope.studyImport.loading = false;
         });
       }
-    };
+    }
 
+    //putting it on the scope this style, because import is a reserved name
     $scope.import = function(studyImport) {
       $scope.isCreatingStudy = true;
       var uuid = UUIDService.generate();
@@ -82,10 +90,9 @@ define(['lodash'], function(_) {
       });
     };
 
-    $scope.cancel = function() {
+    function cancel() {
       $modalInstance.dismiss('cancel');
-    };
-
+    }
 
   };
   return dependencies.concat(CreateStudyController);

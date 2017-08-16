@@ -3,10 +3,16 @@ define(['angular'],
   function(angular) {
     var dependencies = ['$scope', '$modalInstance', 'ProjectService', 'OutcomeResource', 'successCallback', 'outcome', 'outcomes', 'usage'];
     var EditAddisOutcomeController = function($scope, $modalInstance, ProjectService, OutcomeResource, successCallback, outcome, outcomes, usage) {
+      // functions
+      $scope.saveOutcome = saveOutcome;
+      $scope.checkForDuplicateOutcomeName = checkForDuplicateOutcomeName;
+      $scope.cancel = cancel;
+
+      // init
       $scope.outcome = angular.copy(outcome);
       $scope.usage = usage;
 
-      $scope.saveOutcome = function() {
+      function saveOutcome() {
         $scope.isSaving = true;
         var editCommand = {
           name: $scope.outcome.name,
@@ -20,15 +26,15 @@ define(['angular'],
           $modalInstance.close();
           successCallback($scope.outcome.name, $scope.outcome.motivation, $scope.outcome.direction);
         });
-      };
+      }
 
-      $scope.checkForDuplicateOutcomeName = function(name) {
+      function checkForDuplicateOutcomeName(name) {
         $scope.isDuplicateName = ProjectService.checkforDuplicateName(outcomes, name);
-      };
+      }
 
-      $scope.cancel = function() {
+      function cancel() {
         $modalInstance.dismiss('cancel');
-      };
+      }
     };
     return dependencies.concat(EditAddisOutcomeController);
   });

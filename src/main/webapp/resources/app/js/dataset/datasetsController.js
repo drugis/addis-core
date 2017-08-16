@@ -3,10 +3,14 @@ define([], function() {
   var dependencies = ['$scope', '$modal', '$filter', '$stateParams', '$state', 'DatasetResource', 'UserService'];
 
   var DatasetsController = function($scope, $modal, $filter, $stateParams, $state, DatasetResource, UserService) {
+    // functions
+    $scope.reloadDatasets = reloadDatasets;
+    $scope.createDatasetDialog = createDatasetDialog;
+    $scope.createProjectDialog = createProjectDialog;
+
+    // init
     $scope.stripFrontFilter = $filter('stripFrontFilter');
     $scope.datasetsLoaded = false;
-    $scope.reloadDatasets = reloadDatasets;
-
     $scope.loginUser = UserService.getLoginUser();
     $scope.showCreateProjectButton = UserService.hasLoggedInUser();
 
@@ -20,7 +24,7 @@ define([], function() {
       });
     }
 
-    $scope.createDatasetDialog = function() {
+    function createDatasetDialog() {
       $modal.open({
         templateUrl: 'app/js/user/createDataset.html',
         controller: 'CreateDatasetController',
@@ -30,9 +34,9 @@ define([], function() {
           }
         }
       });
-    };
+    }
 
-    $scope.createProjectDialog = function(dataset) {
+    function createProjectDialog(dataset) {
       $modal.open({
         templateUrl: 'app/js/project/createProjectModal.html',
         controller: 'CreateProjectModalController',
@@ -49,7 +53,7 @@ define([], function() {
           }
         }
       });
-    };
+    }
 
   };
   return dependencies.concat(DatasetsController);

@@ -16,12 +16,6 @@ define(['lodash'], function(_) {
       },
       link: function(scope) {
 
-        function hasMissingPvfs(criteria) {
-          return _.find(criteria, function(criterion) {
-            return !criterion.pvf;
-          });
-        }
-
         if(scope.analysis.problem) {
           scope.problem = scope.analysis.problem;
           scope.problem.valueTree = WorkspaceService.buildValueTree(scope.analysis.problem);

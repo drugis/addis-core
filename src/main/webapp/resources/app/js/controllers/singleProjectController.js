@@ -43,6 +43,28 @@ define(['lodash', 'angular'], function(_, angular) {
     DosageService,
     ScaledUnitResource,
     project) {
+    // functions 
+    $scope.toggleShowArchived = toggleShowArchived;
+    $scope.unarchiveAnalysis = unarchiveAnalysis;
+    $scope.archiveAnalysis = archiveAnalysis;
+    $scope.openRepairInterventionDialog = openRepairInterventionDialog;
+    $scope.openCopyDialog = openCopyDialog;
+    $scope.findStudyLabel = findStudyLabel;
+    $scope.goToAnalysis = goToAnalysis;
+    $scope.openEditProjectDialog = openEditProjectDialog;
+    $scope.openAddAnalysisDialog = openAddAnalysisDialog;
+    $scope.openCreateOutcomeDialog = openCreateOutcomeDialog;
+    $scope.openCreateScaledUnitDialog = openCreateScaledUnitDialog;
+    $scope.openCreateInterventionDialog = openCreateInterventionDialog;
+    $scope.openEditOutcomeDialog = openEditOutcomeDialog;
+    $scope.openEditInterventionDialog = openEditInterventionDialog;
+    $scope.addCovariate = addCovariate;
+    $scope.setActiveTab = setActiveTab;
+    $scope.goToEditView = goToEditView;
+    $scope.openDeleteCovariateDialog = openDeleteCovariateDialog;
+    $scope.openDeleteDefinitionDialog = openDeleteDefinitionDialog;
+    $scope.openUpdateDialog = openUpdateDialog;
+
     $scope.tabSelection = {
       activeTab: activeTab
     };
@@ -220,16 +242,16 @@ define(['lodash', 'angular'], function(_, angular) {
       });
     }
 
-    $scope.findStudyLabel = function(analysis) {
+    function findStudyLabel(analysis) {
       var study = _.find($scope.studies, function(study) {
         return 'http://trials.drugis.org/graphs/' + study.studyGraphUid === analysis.studyGraphUri;
       });
       if (study) {
         return study.name;
       }
-    };
+    }
 
-    $scope.goToAnalysis = function(analysis) {
+    function goToAnalysis(analysis) {
       var analysisType = angular.copy(_.find(ANALYSIS_TYPES, function(type) {
         return type.label === analysis.analysisType;
       }));
@@ -243,9 +265,9 @@ define(['lodash', 'angular'], function(_, angular) {
         projectId: $scope.project.id,
         analysisId: analysis.id
       });
-    };
+    }
 
-    $scope.openEditProjectDialog = function() {
+    function openEditProjectDialog() {
       $modal.open({
         templateUrl: './app/js/project/editProject.html',
         controller: 'EditProjectController',
@@ -271,17 +293,17 @@ define(['lodash', 'angular'], function(_, angular) {
           }
         }
       });
-    };
+    }
 
-    $scope.openAddAnalysisDialog = function() {
+    function openAddAnalysisDialog() {
       $modal.open({
         templateUrl: './app/js/analysis/addAnalysis.html',
         scope: $scope,
         controller: 'AddAnalysisController'
       });
-    };
+    }
 
-    $scope.openCreateOutcomeDialog = function() {
+    function openCreateOutcomeDialog() {
       $modal.open({
         templateUrl: './app/js/outcome/addOutcome.html',
         scope: $scope,
@@ -292,9 +314,9 @@ define(['lodash', 'angular'], function(_, angular) {
           }
         }
       });
-    };
+    }
 
-    $scope.openCreateScaledUnitDialog = function() {
+    function openCreateScaledUnitDialog() {
       $modal.open({
         templateUrl: './app/js/project/addScaledUnit.html',
         controller: 'AddScaledUnitController',
@@ -310,9 +332,9 @@ define(['lodash', 'angular'], function(_, angular) {
           }
         }
       });
-    };
+    }
 
-    $scope.openCreateInterventionDialog = function() {
+    function openCreateInterventionDialog() {
       $modal.open({
         templateUrl: './app/js/intervention/addIntervention.html',
         scope: $scope,
@@ -323,9 +345,9 @@ define(['lodash', 'angular'], function(_, angular) {
           }
         }
       });
-    };
+    }
 
-    $scope.openEditOutcomeDialog = function(outcome) {
+    function openEditOutcomeDialog(outcome) {
       $modal.open({
         templateUrl: './app/js/outcome/editOutcome.html',
         controller: 'EditAddisOutcomeController',
@@ -344,9 +366,9 @@ define(['lodash', 'angular'], function(_, angular) {
           }
         }
       });
-    };
+    }
 
-    $scope.openEditInterventionDialog = function(intervention) {
+    function openEditInterventionDialog(intervention) {
       $modal.open({
         templateUrl: './app/js/intervention/editIntervention.html',
         controller: 'EditInterventionController',
@@ -362,9 +384,9 @@ define(['lodash', 'angular'], function(_, angular) {
           }
         }
       });
-    };
+    }
 
-    $scope.addCovariate = function() {
+    function addCovariate() {
       $modal.open({
         templateUrl: './app/js/covariates/addCovariate.html',
         scope: $scope,
@@ -378,9 +400,9 @@ define(['lodash', 'angular'], function(_, angular) {
           }
         }
       });
-    };
+    }
 
-    $scope.setActiveTab = function(tab) {
+    function setActiveTab(tab) {
       if (tab === $scope.tabSelection.activeTab) {
         return;
       }
@@ -393,13 +415,13 @@ define(['lodash', 'angular'], function(_, angular) {
           reload: true
         });
       }
-    };
+    }
 
-    $scope.goToEditView = function() {
+    function goToEditView() {
       $state.go('editReport', $stateParams);
-    };
+    }
 
-    $scope.openDeleteCovariateDialog = function(covariate) {
+    function openDeleteCovariateDialog(covariate) {
       $modal.open({
         templateUrl: './app/js/project/deleteDefinition.html',
         scope: $scope,
@@ -415,9 +437,9 @@ define(['lodash', 'angular'], function(_, angular) {
           }
         }
       });
-    };
+    }
 
-    $scope.openDeleteDefinitionDialog = function(definition, type) {
+    function openDeleteDefinitionDialog(definition, type) {
       $modal.open({
         templateUrl: './app/js/project/deleteDefinition.html',
         scope: $scope,
@@ -433,8 +455,9 @@ define(['lodash', 'angular'], function(_, angular) {
           }
         }
       });
-    };
-    $scope.openUpdateDialog = function() {
+    }
+
+    function openUpdateDialog() {
       $modal.open({
         templateUrl: './app/js/project/updateProject.html',
         scope: $scope,
@@ -455,9 +478,9 @@ define(['lodash', 'angular'], function(_, angular) {
           }
         }
       });
-    };
+    }
 
-    $scope.openCopyDialog = function() {
+    function openCopyDialog() {
       $modal.open({
         templateUrl: './app/js/project/copyProject.html',
         scope: $scope,
@@ -473,9 +496,9 @@ define(['lodash', 'angular'], function(_, angular) {
           }
         }
       });
-    };
+    }
 
-    $scope.openRepairInterventionDialog = function(intervention) {
+    function openRepairInterventionDialog(intervention) {
       $modal.open({
         templateUrl: './app/js/project/repairIntervention.html',
         scope: $scope,
@@ -489,9 +512,9 @@ define(['lodash', 'angular'], function(_, angular) {
           }
         }
       });
-    };
+    }
 
-    $scope.archiveAnalysis = function(analysis) {
+    function archiveAnalysis(analysis) {
       var params = {
         projectId: $scope.project.id,
         analysisId: analysis.id
@@ -502,9 +525,9 @@ define(['lodash', 'angular'], function(_, angular) {
         }
       ).$promise.then(
         loadAnalyses);
-    };
+    }
 
-    $scope.unarchiveAnalysis = function(analysis) {
+    function unarchiveAnalysis(analysis) {
       var params = {
         projectId: $scope.project.id,
         analysisId: analysis.id
@@ -515,11 +538,11 @@ define(['lodash', 'angular'], function(_, angular) {
         }
       ).$promise.then(
         loadAnalyses);
-    };
+    }
 
-    $scope.toggleShowArchived = function() {
+    function toggleShowArchived() {
       $scope.showArchived = !$scope.showArchived;
-    };
+    }
 
   };
   return dependencies.concat(SingleProjectController);
