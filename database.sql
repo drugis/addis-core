@@ -950,3 +950,8 @@ DROP TABLE SingleStudyBenefitRiskAnalysis;
 --rollback   PRIMARY KEY (analysisId),
 --rollback   FOREIGN KEY(analysisId) REFERENCES SingleStudyBenefitRiskAnalysis(id)
 --rollback );
+
+--changeset keijserj:76
+DROP TABLE effectsTableAlternativeInclusion;
+
+--rollback CREATE TABLE effectsTableAlternativeInclusion;
