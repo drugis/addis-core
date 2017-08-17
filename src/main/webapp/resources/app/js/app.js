@@ -174,8 +174,8 @@ define(
       $locationProvider.hashPrefix('');
     }]);
 
-    app.run(['$rootScope', '$window', '$http', '$location', '$cookies', 'HelpPopupService', 'CacheService',
-      function($rootScope, $window, $http, $location, $cookies, HelpPopupService, CacheService) {
+    app.run(['$rootScope', '$window', '$http', '$location', '$transitions', '$cookies', 'HelpPopupService', 'CacheService',
+      function($rootScope, $window, $http, $location, $transitions, $cookies, HelpPopupService, CacheService) {
         $rootScope.$safeApply = function($scope, fn) {
           var phase = $scope.$root.$$phase;
           if (phase === '$apply' || phase === '$digest') {
@@ -188,9 +188,9 @@ define(
         HelpPopupService.loadLexicon($http.get('app/js/bower_components/gemtc-web/app/lexicon.json'));
         HelpPopupService.loadLexicon($http.get('addis-lexicon.json'));
 
-        $rootScope.$on('$stateChangeSuccess', function(event, toState, toParams, fromState) {
+        $transitions.onSuccess({}, function(transition) {
           var redirectUrl = $cookies.get('returnToPage');
-          if (toState.name === 'datasets' && fromState.name === '' && redirectUrl && redirectUrl !== '/') {
+          if (transition.to().name === 'datasets' && transition.from().name === '' && redirectUrl && redirectUrl !== '/') {
             $cookies.remove('returnToPage');
             $location.path(redirectUrl);
           }

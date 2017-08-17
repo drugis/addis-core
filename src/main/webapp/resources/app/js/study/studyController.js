@@ -1,12 +1,12 @@
 'use strict';
 define(['angular', 'lodash'],
   function(angular, _) {
-    var dependencies = ['$scope', '$state', '$stateParams', '$window', '$filter',
+    var dependencies = ['$scope', '$q', '$state', '$stateParams', '$window', '$filter', '$transitions',
       'VersionedGraphResource', 'GraphResource', '$location', '$anchorScroll',
       '$modal', 'StudyService', 'ResultsService', 'StudyDesignService', 'DatasetResource',
       'UserService'
     ];
-    var StudyController = function($scope, $state, $stateParams, $window, $filter,
+    var StudyController = function($scope, $q, $state, $stateParams, $window, $filter, $transitions,
       VersionedGraphResource, GraphResource, $location, $anchorScroll,
       $modal, StudyService, ResultsService, StudyDesignService, DatasetResource,
       UserService) {
@@ -18,7 +18,7 @@ define(['angular', 'lodash'],
       $scope.showEditStudyModal = showEditStudyModal;
       $scope.showD80Table = showD80Table;
       $scope.isStudyModified = isStudyModified;
-      
+
       // init
       $scope.datasetUuid = $stateParams.datasetUuid;
       $scope.userUid = $stateParams.userUid;
@@ -210,11 +210,11 @@ define(['angular', 'lodash'],
         });
       });
 
-      var deRegisterStateChangeStart = $scope.$on('$stateChangeStart', function(event, toState, toParams) {
+      var deRegisterStateChangeStart = $transitions.onStart({}, function() {
         if (!StudyService.isStudyModified()) {
           return;
         }
-        event.preventDefault();
+        var stateChangeDeferred = $q.defer();
         $modal.open({
           templateUrl: 'app/js/study/unsavedChanges/unsavedWarningModal.html',
           controller: 'UnsavedChangesWarningModalController',
@@ -223,18 +223,19 @@ define(['angular', 'lodash'],
             doNavigate: function() {
               return function() {
                 deRegisterStateChangeStart();
-                $state.go(toState.name, toParams);
+                stateChangeDeferred.resolve(true);
               };
             },
             stayHere: function() {
               return function() {
-                return;
+                stateChangeDeferred.resolve(false);
               };
             }
           }
         });
+        return stateChangeDeferred.promise;
       });
-      
+
       reloadStudyModel();
 
       var navbar = document.getElementsByClassName('side-nav');
