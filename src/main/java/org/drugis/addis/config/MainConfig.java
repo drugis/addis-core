@@ -227,7 +227,6 @@ public class MainConfig {
             "org.drugis.addis.models",
             "org.drugis.addis.problems",
             "org.drugis.addis.covariates",
-            "org.drugis.addis.remarks",
             "org.drugis.trialverse",
             "org.drugis.addis.scaledUnits",
             "org.drugis.addis.subProblems");

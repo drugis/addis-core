@@ -35,5 +35,6 @@ define(function(require) {
   //services
   .service('ProjectService', require('project/projectService'))
     .service('ReportDirectiveService', require('project/report/reportDirectiveService'))
+    .service('DefaultReportService', require('project/report/defaultReportService'))
     .service('CacheService', require('project/report/cacheService'));
 });

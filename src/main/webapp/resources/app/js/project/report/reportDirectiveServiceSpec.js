@@ -249,9 +249,9 @@ define(['angular-mocks'], function() {
         };
         expect(builder(selectionsNoRegression)).toEqual('[[[treatment-effects analysis-id="3" model-id="30" baseline-treatment-id="300" sorting-type="\'alphabetical\'"]]]');
         expect(builder(selectionsWithRegression)).toEqual('[[[treatment-effects analysis-id="3" model-id="30" baseline-treatment-id="3000" sorting-type="\'alphabetical\'" regression-level="300"]]]');
-
       });
     });
+
     describe('getAllowedModels', function() {
       it('should retrieve the non-nodesplit models and for regression models with levels add the "centering" level', function() {
         var synthesisModel = {
@@ -295,5 +295,6 @@ define(['angular-mocks'], function() {
         expect(result).toEqual(expectedResult);
       });
     });
+
   });
 });

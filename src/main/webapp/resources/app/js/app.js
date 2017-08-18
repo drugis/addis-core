@@ -202,6 +202,11 @@ define(
           CacheService.evict('consistencyModelsPromises', ids.projectId);
           CacheService.evict('modelsByProjectPromises', ids.projectId);
         });
+
+        $rootScope.$on('primaryModelSet', function(event, ids){
+          CacheService.evict('analysisPromises', ids.analysisId);
+          CacheService.evict('analysesPromises', ids.projectId);
+        });
       }
     ]);
 

@@ -6,11 +6,8 @@ define(['lodash', 'angular'], function(_, angular) {
     'TrialverseResource',
     'TrialverseStudyResource',
     'SemanticOutcomeResource',
-    'OutcomeResource',
     'SemanticInterventionResource',
-    'InterventionResource',
     'CovariateOptionsResource',
-    'CovariateResource',
     'AnalysisResource',
     'ANALYSIS_TYPES',
     'InterventionService',
@@ -20,6 +17,7 @@ define(['lodash', 'angular'], function(_, angular) {
     'HistoryResource',
     'DosageService',
     'ScaledUnitResource',
+    'CacheService',
     'project'
   ];
   var SingleProjectController = function($scope, $q, $state, $stateParams, $location, $modal,
@@ -28,11 +26,8 @@ define(['lodash', 'angular'], function(_, angular) {
     TrialverseResource,
     TrialverseStudyResource,
     SemanticOutcomeResource,
-    OutcomeResource,
     SemanticInterventionResource,
-    InterventionResource,
     CovariateOptionsResource,
-    CovariateResource,
     AnalysisResource,
     ANALYSIS_TYPES,
     InterventionService,
@@ -42,8 +37,9 @@ define(['lodash', 'angular'], function(_, angular) {
     HistoryResource,
     DosageService,
     ScaledUnitResource,
+    CacheService,
     project) {
-    // functions 
+    // functions
     $scope.toggleShowArchived = toggleShowArchived;
     $scope.unarchiveAnalysis = unarchiveAnalysis;
     $scope.archiveAnalysis = archiveAnalysis;
@@ -61,7 +57,6 @@ define(['lodash', 'angular'], function(_, angular) {
     $scope.addCovariate = addCovariate;
     $scope.setActiveTab = setActiveTab;
     $scope.goToEditView = goToEditView;
-    $scope.openDeleteCovariateDialog = openDeleteCovariateDialog;
     $scope.openDeleteDefinitionDialog = openDeleteDefinitionDialog;
     $scope.openUpdateDialog = openUpdateDialog;
 
@@ -124,13 +119,6 @@ define(['lodash', 'angular'], function(_, angular) {
     loadAnalyses();
 
     $scope.reportText = ReportResource.get($stateParams);
-    $scope.reportText.$promise.then(function() {
-      if ($scope.reportText.data.localeCompare('default report text') === 0) {
-        $scope.showLegacyReport = true;
-      } else {
-        $scope.showLegacyReport = false;
-      }
-    });
 
     $scope.$on('scaledUnitsChanged', function() {
       loadUnits();
@@ -146,9 +134,9 @@ define(['lodash', 'angular'], function(_, angular) {
 
     function loadAnalyses() {
       $scope.studies.$promise.then(function() {
-        $scope.analyses = AnalysisResource.query({
+        $scope.analyses = CacheService.getAnalyses({
           projectId: $scope.project.id
-        }).$promise.then(function(analyses) {
+        }).then(function(analyses) {
           $scope.analysesLoaded = true;
           $scope.numberOfAnalysesArchived = _.reduce(analyses, function(accum, analysis) {
             return analysis.archived ? ++accum : accum;
@@ -188,9 +176,9 @@ define(['lodash', 'angular'], function(_, angular) {
     }
 
     function loadInterventions() {
-      InterventionResource.query({
+      CacheService.getInterventions({
           projectId: $scope.project.id
-        }).$promise
+        })
         .then(generateInterventionDescriptions)
         .then(checkUnitMultipliers)
         .then(function() {
@@ -199,13 +187,10 @@ define(['lodash', 'angular'], function(_, angular) {
     }
 
     function loadOutcomes() {
-      $scope.outcomes = OutcomeResource.query({
+      CacheService.getOutcomes({
         projectId: $scope.project.id
-      });
-      $scope.outcomes.$promise.then(function(value) {
+      }).then(function(value) {
         $scope.outcomes = value;
-      });
-      $scope.outcomes.$promise.then(function() {
         $scope.outcomeUsage = ProjectService.buildOutcomeUsage($scope.analyses, $scope.outcomes);
       });
     }
@@ -213,9 +198,9 @@ define(['lodash', 'angular'], function(_, angular) {
     function loadCovariates() {
       // we need to get the options in order to display the definition label, as only the definition key is stored on the covariate
       $q.all([CovariateOptionsResource.getProjectCovariates($stateParams).$promise,
-        CovariateResource.query({
+        CacheService.getCovariates({
           projectId: $scope.project.id
-        }).$promise
+        })
       ]).then(function(result) {
         var optionsMap = _.keyBy(result[0], 'key');
         $scope.covariates = result[1].map(function(covariate) {
@@ -310,7 +295,10 @@ define(['lodash', 'angular'], function(_, angular) {
         controller: 'AddOutcomeController',
         resolve: {
           callback: function() {
-            return loadOutcomes;
+            return function() {
+              CacheService.evict('outcomesPromises', $stateParams.projectId);
+              loadOutcomes();
+            };
           }
         }
       });
@@ -341,7 +329,10 @@ define(['lodash', 'angular'], function(_, angular) {
         controller: 'AddInterventionController',
         resolve: {
           callback: function() {
-            return loadInterventions;
+            return function() {
+              CacheService.evict('interventionsPromises', $stateParams.projectId);
+              loadInterventions();
+            };
           }
         }
       });
@@ -362,7 +353,10 @@ define(['lodash', 'angular'], function(_, angular) {
             return $scope.outcomeUsage[outcome.id];
           },
           successCallback: function() {
-            return loadOutcomes;
+            return function() {
+              CacheService.evict('outcomesPromises', $stateParams.projectId);
+              loadOutcomes();
+            };
           }
         }
       });
@@ -380,7 +374,10 @@ define(['lodash', 'angular'], function(_, angular) {
             return $scope.interventions;
           },
           successCallback: function() {
-            return loadInterventions;
+            return function() {
+              CacheService.evict('interventionsPromises', $stateParams.projectId);
+              loadInterventions();
+            };
           }
         }
       });
@@ -396,7 +393,10 @@ define(['lodash', 'angular'], function(_, angular) {
             return $scope.outcomes;
           },
           callback: function() {
-            return loadCovariates;
+            return function() {
+              CacheService.evict('covariatesPromises', $stateParams.projectId);
+              loadCovariates();
+            };
           }
         }
       });
@@ -421,24 +421,6 @@ define(['lodash', 'angular'], function(_, angular) {
       $state.go('editReport', $stateParams);
     }
 
-    function openDeleteCovariateDialog(covariate) {
-      $modal.open({
-        templateUrl: './app/js/project/deleteDefinition.html',
-        scope: $scope,
-        controller: 'DeleteDefinitionController',
-        resolve: {
-          definition: function() {
-            return _.assign({}, covariate, {
-              definitionType: 'covariate'
-            });
-          },
-          callback: function() {
-            return loadCovariates;
-          }
-        }
-      });
-    }
-
     function openDeleteDefinitionDialog(definition, type) {
       $modal.open({
         templateUrl: './app/js/project/deleteDefinition.html',
@@ -451,7 +433,12 @@ define(['lodash', 'angular'], function(_, angular) {
             });
           },
           callback: function() {
-            return reloadDefinitions;
+            return function() {
+              CacheService.evict('interventionsPromises', $stateParams.projectId);
+              CacheService.evict('outcomesPromises', $stateParams.projectId);
+              CacheService.evict('covariatesPromises', $stateParams.projectId);
+              reloadDefinitions();
+            };
           }
         }
       });
@@ -508,7 +495,10 @@ define(['lodash', 'angular'], function(_, angular) {
             return intervention;
           },
           callback: function() {
-            return loadInterventions;
+            return function() {
+              CacheService.evict('interventionsPromises', $stateParams.projectId);
+              loadInterventions();
+            };
           }
         }
       });
@@ -523,9 +513,13 @@ define(['lodash', 'angular'], function(_, angular) {
         params, {
           isArchived: true
         }
-      ).$promise.then(
-        loadAnalyses);
+      ).$promise.then(function() {
+        CacheService.evict('analysisPromises', analysis.id);
+        CacheService.evict('analysesPromises', $stateParams.projectId);
+        loadAnalyses();
+      });
     }
+
 
     function unarchiveAnalysis(analysis) {
       var params = {
@@ -536,8 +530,11 @@ define(['lodash', 'angular'], function(_, angular) {
         params, {
           isArchived: false
         }
-      ).$promise.then(
-        loadAnalyses);
+      ).$promise.then(function() {
+        CacheService.evict('analysisPromises', analysis.id);
+        CacheService.evict('analysesPromises', $stateParams.projectId);
+        loadAnalyses();
+      });
     }
 
     function toggleShowArchived() {

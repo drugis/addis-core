@@ -3,7 +3,6 @@ define(['angular-mocks', 'angular', 'lodash'], function(angularMocks, angular, _
   describe('the SingleProjectController', function() {
     var
       covariateOptionsResource = jasmine.createSpyObj('CovariateOptionsResource', ['query', 'getProjectCovariates']),
-      covariateResource = jasmine.createSpyObj('CovariateResource', ['query']),
       interventionService = jasmine.createSpyObj('InterventionService', ['generateDescriptionLabel']),
       projectServiceMock = jasmine.createSpyObj('ProjectService', ['buildCovariateUsage', 'buildOutcomeUsage', 'buildInterventionUsage', 'addMissingMultiplierInfo']),
       analysisResourceMock = jasmine.createSpyObj('analysisResource', ['query', 'save']),
@@ -12,12 +11,12 @@ define(['angular-mocks', 'angular', 'lodash'], function(angularMocks, angular, _
       projectResource = jasmine.createSpyObj('projectResource', ['get', 'save', 'query']),
       semanticOutcomeResource = jasmine.createSpyObj('semanticOutcomeResource', ['query']),
       trialverseResource = jasmine.createSpyObj('trialverseResource', ['get']),
-      outcomeResource = jasmine.createSpyObj('outcomeResource', ['query', 'save']),
       semanticInterventionResource = jasmine.createSpyObj('semanticInterventionResource', ['query']),
-      interventionResource = jasmine.createSpyObj('interventionResource', ['query', 'save']),
       trialverseStudyResource = jasmine.createSpyObj('trialverseStudyResource', ['query']),
       dosageService = jasmine.createSpyObj('DosageService', ['get']),
       scaledUnitResource = jasmine.createSpyObj('ScaledUnitResource', ['query']),
+      cacheServiceMock = jasmine.createSpyObj('CacheService', ['getOutcomes',
+        'getInterventions', 'getCovariates', 'getAnalyses', 'getModelsByProject', 'evict']),
       covariateOptions = [{
         key: 'COV_OPTION_KEY',
         label: 'covariate option label'
@@ -37,7 +36,6 @@ define(['angular-mocks', 'angular', 'lodash'], function(angularMocks, angular, _
         definitionKey: 'popchar-key'
       }],
       covariateOptionsDeferred, covariateOptionsWithPopcharsDeferred, covariatesDeferred,
-      mockAnalysesResult = {},
       mockAnalyses = [{}],
       analysisTypes = [{
         label: 'type1',
@@ -71,11 +69,9 @@ define(['angular-mocks', 'angular', 'lodash'], function(angularMocks, angular, _
         name: 'trialverseName',
         description: 'trialverseDescription'
       },
-      outcomeResult,
       mockOutcomes = [1, 2, 3],
       mockOutcome,
       outcomeDeferred,
-      interventionQueryResult,
       mockInterventions = [{
         name: 'a',
         val: 4
@@ -130,28 +126,21 @@ define(['angular-mocks', 'angular', 'lodash'], function(angularMocks, angular, _
       covariatesDeferred = $q.defer();
       covariatesDeferred.resolve(covariates);
       covariates.$promise = covariatesDeferred.promise;
-      covariateResource.query.and.returnValue(covariates);
+      cacheServiceMock.getCovariates.and.returnValue(covariatesDeferred.promise);
 
       analysesDeferred = $q.defer();
-      mockAnalysesResult.$promise = analysesDeferred.promise;
       analysesDeferred.resolve(mockAnalyses);
-      analysisResourceMock.query.and.returnValue(mockAnalysesResult);
+      cacheServiceMock.getAnalyses.and.returnValue(analysesDeferred.promise);
 
       mockSemanticOutcomes = ['a', 'b', 'c'];
       mockSemanticInterventions = ['e', 'f', 'g'];
 
       interventionsDeferred = $q.defer();
       var outcomeResultDeferred = $q.defer();
-      outcomeResult = {
-        $promise: outcomeResultDeferred.promise
-      };
       outcomeResultDeferred.resolve(mockOutcomes);
 
-      interventionQueryResult = _.extend({}, mockInterventions, {
-        $promise: interventionsDeferred.promise
-      });
-      interventionResource.query.and.returnValue(interventionQueryResult);
-      outcomeResource.query.and.returnValue(outcomeResult);
+      cacheServiceMock.getInterventions.and.returnValue(interventionsDeferred.promise);
+      cacheServiceMock.getOutcomes.and.returnValue(outcomeResultDeferred.promise);
       semanticInterventionResource.query.and.returnValue(mockSemanticInterventions);
       interventionService.generateDescriptionLabel.and.returnValue('desc label');
       analysisResourceMock.save.and.returnValue(mockAnalysis);
@@ -186,15 +175,12 @@ define(['angular-mocks', 'angular', 'lodash'], function(angularMocks, angular, _
       mockOutcome = {
         $promise: outcomeDeferred.promise
       };
-      outcomeResource.save.and.returnValue(mockOutcome);
       interventionDeferred = $q.defer();
       mockIntervention = {
         $promise: interventionDeferred.promise
       };
       trialverseDeferred = $q.defer();
       mockTrialverse.$promise = trialverseDeferred.promise;
-
-      interventionResource.save.and.returnValue(mockIntervention);
 
       reportResource = jasmine.createSpyObj('reportResource', ['get']);
       reportResource.get.and.returnValue(mockReport);
@@ -225,11 +211,8 @@ define(['angular-mocks', 'angular', 'lodash'], function(angularMocks, angular, _
         TrialverseResource: trialverseResource,
         TrialverseStudyResource: trialverseStudyResource,
         SemanticOutcomeResource: semanticOutcomeResource,
-        OutcomeResource: outcomeResource,
         SemanticInterventionResource: semanticInterventionResource,
-        InterventionResource: interventionResource,
         CovariateOptionsResource: covariateOptionsResource,
-        CovariateResource: covariateResource,
         AnalysisResource: analysisResourceMock,
         ANALYSIS_TYPES: analysisTypes,
         InterventionService: interventionService,
@@ -239,7 +222,8 @@ define(['angular-mocks', 'angular', 'lodash'], function(angularMocks, angular, _
         HistoryResource: historyResourceMock,
         project: mockProject,
         DosageService: dosageService,
-        ScaledUnitResource: scaledUnitResource
+        ScaledUnitResource: scaledUnitResource,
+        CacheService: cacheServiceMock
       });
     }));
     describe('after loading the project', function() {
