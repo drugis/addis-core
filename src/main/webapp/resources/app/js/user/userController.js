@@ -22,10 +22,6 @@ define(['lodash'],
         $scope.activetab = $state.current.name;
       }
 
-      $scope.$on('$stateChangeSuccess', function(event, currentState) {
-        $scope.activetab = currentState.name;
-      });
-
       UserResource.query(function(users) {
         _.each(users, function(user) {
           user.md5 = md5.createHash(user.email);

@@ -11,7 +11,7 @@ define([],
 
       $scope.cancel = function() {
         stayHere();
-        $modalInstance.dismiss('cancel');
+        $modalInstance.close();
       };
 
     };

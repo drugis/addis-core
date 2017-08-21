@@ -1,18 +1,32 @@
 'use strict';
 
 define([], function() {
-  var dependencies = ['$q', 'AnalysisResource', 'ModelResource', 'ProblemResource', 'InterventionResource'];
+  var dependencies = ['$q', 'ProjectResource', 'AnalysisResource', 'ModelResource', 'ProblemResource',
+    'InterventionResource', 'OutcomeResource', 'CovariateResource'
+  ];
 
-  var CacheService = function($q, AnalysisResource, ModelResource, ProblemResource, InterventionResource) {
+  var CacheService = function($q, ProjectResource, AnalysisResource, ModelResource, ProblemResource,
+    InterventionResource, OutcomeResource, CovariateResource) {
     var cache = {
+      projectPromises: {},
       analysesPromises: {},
       analysisPromises: {},
       modelPromises: {},
       problemPromises: {},
       consistencyModelsPromises: {},
       modelsByProjectPromises: {},
-      interventionPromises: {}
+      interventionsPromises: {},
+      outcomesPromises: {},
+      covariatesPromises: {}
     };
+
+    function getProject(params) {
+      if(cache.projectPromises[params.projectId]) {
+        return cache.projectPromises[params.projectId];
+      }
+      cache.projectPromises[params.projectId] = ProjectResource.get(params).$promise;
+      return cache.projectPromises[params.projectId];
+    }
 
     function getAnalysis(projectId, analysisId) {
       if (cache.analysisPromises[analysisId]) {
@@ -75,18 +89,35 @@ define([], function() {
     }
 
     function getInterventions(params) {
-      if (cache.interventionPromises[params.projectId]) {
-        return cache.interventionPromises[params.projectId];
+      if (cache.interventionsPromises[params.projectId]) {
+        return cache.interventionsPromises[params.projectId];
       }
-      cache.interventionPromises[params.projectId] = InterventionResource.query(params).$promise;
-      return cache.interventionPromises[params.projectId];
+      cache.interventionsPromises[params.projectId] = InterventionResource.query(params).$promise;
+      return cache.interventionsPromises[params.projectId];
+    }
+
+    function getOutcomes(params) {
+      if (cache.outcomesPromises[params.projectId]) {
+        return cache.outcomesPromises[params.projectId];
+      }
+      cache.outcomesPromises[params.projectId] = OutcomeResource.query(params).$promise;
+      return cache.outcomesPromises[params.projectId];
+    }
+
+    function getCovariates(params) {
+      if (cache.covariatesPromises[params.projectId]) {
+        return cache.covariatesPromises[params.projectId];
+      }
+      cache.covariatesPromises[params.projectId] = CovariateResource.query(params).$promise;
+      return cache.covariatesPromises[params.projectId];
     }
 
     function evict(cacheName, key) {
-        delete cache[cacheName][key];
+      delete cache[cacheName][key];
     }
 
     return {
+      getProject: getProject,
       getAnalysis: getAnalysis,
       getAnalyses: getAnalyses,
       getModel: getModel,
@@ -94,6 +125,8 @@ define([], function() {
       getConsistencyModels: getConsistencyModels,
       getModelsByProject: getModelsByProject,
       getInterventions: getInterventions,
+      getOutcomes: getOutcomes,
+      getCovariates: getCovariates,
       evict: evict
     };
   };

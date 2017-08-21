@@ -25,7 +25,9 @@ define(['lodash'], function(_) {
             scope.interventions = NetworkMetaAnalysisService.addInclusionsToInterventions(scope.interventions, scope.analysis.interventionInclusions);
             var includedInterventions = NetworkMetaAnalysisService.getIncludedInterventions(scope.interventions);
             var momentSelections = NetworkMetaAnalysisService.buildMomentSelections(trialverseData, scope.analysis);
-            scope.network = NetworkMetaAnalysisService.transformTrialDataToNetwork(trialverseData, includedInterventions, scope.analysis, momentSelections);
+            scope.network = {
+              network: NetworkMetaAnalysisService.transformTrialDataToNetwork(trialverseData, includedInterventions, scope.analysis, momentSelections)
+            };
           });
 
 
@@ -64,8 +66,6 @@ define(['lodash'], function(_) {
 
           if (scope.primaryModel) {
             primaryModelDefer.resolve(scope.primaryModel);
-          } else {
-            primaryModelDefer.reject('no primary model had been set');
           }
 
         });

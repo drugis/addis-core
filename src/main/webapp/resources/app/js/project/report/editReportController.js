@@ -1,14 +1,16 @@
 'use strict';
 define(['angular', 'lodash', 'jQuery'],
   function(angular, _, $) {
-    var dependencies = ['$transitions','$scope', '$stateParams', '$modal',
+    var dependencies = ['$transitions', '$scope', '$stateParams', '$modal',
       'ProjectResource',
       'ReportResource',
+      'DefaultReportService',
       '$timeout'
     ];
     var EditReportcontroller = function($transitions, $scope, $stateParams, $modal,
       ProjectResource,
       ReportResource,
+      DefaultReportService,
       $timeout) {
       $scope.reportText = {
         text: '',
@@ -26,7 +28,7 @@ define(['angular', 'lodash', 'jQuery'],
         $scope.reportText.text = report.data;
       });
 
-      $transitions.onStart({},function(transition){  
+      $transitions.onStart({}, function(transition) {
         if ($scope.reportText.changed) {
           var answer = confirm('There are unsaved changes, are you sure you want to leave this page?');
           if (!answer) {
@@ -60,7 +62,10 @@ define(['angular', 'lodash', 'jQuery'],
       }
 
       function resetToDefault() {
-        $scope.reportText.text = 'default report text';
+        DefaultReportService.generateDefaultReport($stateParams.projectId).then(function(defaultReport) {
+          $scope.reportText.text = defaultReport;
+          $scope.reportText.changed = true;
+        });
       }
 
       function openInsertDialog(directiveName) {
