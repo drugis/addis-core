@@ -31,21 +31,21 @@ import java.net.URI;
 @Service
 public class PataviTaskServiceImpl implements PataviTaskService {
   public final static String PATAVI_URI_BASE = System.getenv("PATAVI_URI");
-  final static Logger logger = LoggerFactory.getLogger(PataviTaskServiceImpl.class);
+  private final static Logger logger = LoggerFactory.getLogger(PataviTaskServiceImpl.class);
   @Inject
-  ModelService modelService;
+  private ModelService modelService;
 
   @Inject
-  AnalysisRepository analysisRepository;
+  private AnalysisRepository analysisRepository;
 
   @Inject
-  PataviTaskRepository pataviTaskRepository;
+  private PataviTaskRepository pataviTaskRepository;
 
   @Inject
-  ProblemService problemService;
+  private ProblemService problemService;
 
   @Inject
-  WebConstants webConstants;
+  private WebConstants webConstants;
 
   @Override
   public PataviTaskUriHolder getGemtcPataviTaskUriHolder(Integer projectId, Integer analysisId, Integer modelId) throws Exception, ReadValueException, InvalidTypeForDoseCheckException, ProblemCreationException {

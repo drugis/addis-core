@@ -34,7 +34,6 @@ import org.drugis.addis.problems.service.impl.PerformanceTableBuilder;
 import org.drugis.addis.problems.service.impl.ProblemServiceImpl;
 import org.drugis.addis.problems.service.model.AbstractMeasurementEntry;
 import org.drugis.addis.problems.service.model.ContinuousMeasurementEntry;
-import org.drugis.addis.problems.service.model.PerformanceParameters;
 import org.drugis.addis.problems.service.model.RelativePerformanceParameters;
 import org.drugis.addis.projects.Project;
 import org.drugis.addis.projects.repository.ProjectRepository;
@@ -43,6 +42,7 @@ import org.drugis.addis.trialverse.model.SemanticInterventionUriAndName;
 import org.drugis.addis.trialverse.model.SemanticVariable;
 import org.drugis.addis.trialverse.model.emun.CovariateOption;
 import org.drugis.addis.trialverse.model.emun.CovariateOptionType;
+import org.drugis.addis.trialverse.model.mapping.TriplestoreUuidAndOwner;
 import org.drugis.addis.trialverse.model.trialdata.*;
 import org.drugis.addis.trialverse.service.MappingService;
 import org.drugis.addis.trialverse.service.TrialverseService;
@@ -74,53 +74,53 @@ import static org.mockito.Mockito.*;
 public class ProblemServiceTest {
 
   @Mock
-  AnalysisRepository analysisRepository;
+  private AnalysisRepository analysisRepository;
 
   @Mock
-  ProjectRepository projectRepository;
+  private ProjectRepository projectRepository;
 
   @Mock
-  CovariateRepository covariateRepository;
+  private CovariateRepository covariateRepository;
 
   @Mock
-  PerformanceTableBuilder performanceTablebuilder;
+  private PerformanceTableBuilder performanceTablebuilder;
 
   @Mock
-  InterventionRepository interventionRepository;
+  private InterventionRepository interventionRepository;
 
   @Mock
-  InterventionService interventionService;
+  private InterventionService interventionService;
 
   @Mock
-  ModelService modelService;
+  private ModelService modelService;
 
   @Mock
-  OutcomeRepository outcomeRepository;
+  private OutcomeRepository outcomeRepository;
 
   @Mock
-  PataviTaskRepository pataviTaskRepository;
+  private PataviTaskRepository pataviTaskRepository;
 
   @Mock
-  MappingService mappingService;
+  private MappingService mappingService;
 
   @Mock
-  TrialverseService trialverseService;
+  private TrialverseService trialverseService;
 
   @Mock
   private TriplestoreService triplestoreService;
 
   @Mock
-  AnalysisService analysisService;
+  private AnalysisService analysisService;
 
   @InjectMocks
-  ProblemService problemService;
+  private ProblemService problemService;
 
   private final String namespaceUid = "UID 1";
   private final String versionedUuid = "versionedUuid";
   private final Integer projectId = 101;
   private final Integer analysisId = 202;
   private final String projectDatasetUid = "projectDatasetUid";
-  private final URI projectDatasetVersion = URI.create("http://versions.com/version");
+  private final URI projectDatasetVersion = URI.create("http://versions.com/versions/versionedUuid");
 
   private final Account owner = mock(Account.class);
   private final Project project = new Project(projectId, owner, "project name", "desc", projectDatasetUid, projectDatasetVersion);
@@ -144,6 +144,7 @@ public class ProblemServiceTest {
   private final SingleIntervention sertraIntervention = new SimpleIntervention(sertraInterventionId, project.getId(),
           "sertraline", "moti", sertraConcept.getUri(), sertraConcept.getLabel());
   private final Set<AbstractIntervention> allProjectInterventions = Sets.newHashSet(fluoxIntervention, paroxIntervention, sertraIntervention);
+  private final Integer ownerId = 37;
 
   public ProblemServiceTest() throws Exception {
   }
@@ -174,11 +175,12 @@ public class ProblemServiceTest {
     InterventionInclusion sertraInclusion = new InterventionInclusion(analysisId, sertraIntervention.getId());
     Set<InterventionInclusion> interventionInclusions = Sets.newHashSet(fluoxInclusion, sertraInclusion);
     BenefitRiskAnalysis singleStudyAnalysis = new BenefitRiskAnalysis(analysisId, projectId, "single study analysis", interventionInclusions);
+    when(projectRepository.get(projectId)).thenReturn(project);
     when(analysisRepository.get(analysisId)).thenReturn(singleStudyAnalysis);
     when(outcomeRepository.get(projectId, Sets.newHashSet(outcome.getId(), secondOutcome.getId()))).thenReturn(Arrays.asList(outcome, secondOutcome));
 
     URI defaultMeasurementMoment = URI.create("defaultMeasurementMoment");
-    URI daanEtAlUri = URI.create("DaanEtAlUri");
+    URI daanEtAlUri = URI.create("http://thiscomputer.com/graphs/DaanEtAlUri");
     URI daanEtAlFluoxInstance = URI.create("daanEtAlFluoxInstance");
     URI daanEtAlFluoxArmUri = URI.create("daanEtAlFluoxArm");
     int daanEtAlFluoxSampleSize = 20;
@@ -260,10 +262,13 @@ public class ProblemServiceTest {
     when(performanceTablebuilder.build(any())).thenReturn(performanceTable);
     when(mappingService.getVersionedUuid(project.getNamespaceUid())).thenReturn(versionedUuid);
 
+    when(owner.getId()).thenReturn(ownerId);
+    when(mappingService.getVersionedUuidAndOwner(project.getNamespaceUid())).thenReturn(new TriplestoreUuidAndOwner("someversion", 37));
     // --------------- execute ---------------- //
     BenefitRiskProblem actualProblem = (BenefitRiskProblem) problemService.getProblem(projectId, analysisId);
     // --------------- execute ---------------- //
 
+    verify(mappingService, times(8)).getVersionedUuidAndOwner(project.getNamespaceUid());
     verify(modelService).get(Collections.emptySet());
     verify(projectRepository).get(projectId);
     verify(analysisRepository).get(analysisId);
@@ -514,6 +519,7 @@ public class ProblemServiceTest {
     when(project.getId()).thenReturn(projectId);
     when(project.getNamespaceUid()).thenReturn(namespaceUid);
     when(project.getDatasetVersion()).thenReturn(version);
+    when(project.getOwner()).thenReturn(owner);
 
     Set<InterventionInclusion> includedAlternatives = new HashSet<>(3);
     SingleIntervention intervention1 = new SimpleIntervention(11, projectId, "fluox", "", new SemanticInterventionUriAndName(URI.create("uri1"), "fluoxS"));
