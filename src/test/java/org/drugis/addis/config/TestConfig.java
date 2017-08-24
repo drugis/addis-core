@@ -6,7 +6,6 @@ import org.drugis.addis.analyses.repository.BenefitRiskAnalysisRepository;
 import org.drugis.addis.analyses.repository.NetworkMetaAnalysisRepository;
 import org.drugis.addis.analyses.service.AnalysisService;
 import org.drugis.addis.covariates.CovariateRepository;
-import org.drugis.addis.effectsTables.repository.EffectsTableRepository;
 import org.drugis.addis.interventions.repository.InterventionRepository;
 import org.drugis.addis.interventions.service.InterventionService;
 import org.drugis.addis.models.repository.FunnelPlotRepository;
@@ -50,8 +49,7 @@ import static org.mockito.Mockito.mock;
         "org.drugis.addis.scenarios.service",
         "org.drugis.addis.models.controller",
         "org.drugis.addis.models.service",
-        "org.drugis.addis.statistics.controller",
-        "org.drugis.addis.effectsTables.controller"
+        "org.drugis.addis.statistics.controller"
 })
 public class TestConfig {
   @Bean
@@ -177,11 +175,6 @@ public class TestConfig {
   @Bean
   public StatisticsService statisticsService() {
     return mock(StatisticsService.class);
-  }
-
-  @Bean
-  public EffectsTableRepository effectsTableRepository() {
-    return mock(EffectsTableRepository.class);
   }
 
   @Bean
