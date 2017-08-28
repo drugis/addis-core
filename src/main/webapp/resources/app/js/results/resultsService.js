@@ -28,7 +28,8 @@ define(['angular', 'lodash'], function(angular, _) {
       'event_count',
       'percentage',
       'proportion',
-      'exposure'
+      'exposure',
+      'hazard_ratio'
     ];
 
     var VARIABLE_TYPE_DETAILS = {
@@ -117,7 +118,7 @@ define(['angular', 'lodash'], function(angular, _) {
         label: '2.5% quantile',
         uri: 'http://trials.drugis.org/ontology#quantile_0.025',
         dataType: DOUBLE_TYPE,
-        variableTypes: ['ontology:continuous'],
+        variableTypes: ['ontology:continuous', 'ontology:survival'],
         category: 'Quantiles',
         lexiconKey: 'quantile-0.025',
         analysisReady: false
@@ -127,7 +128,7 @@ define(['angular', 'lodash'], function(angular, _) {
         label: '97.5% quantile',
         uri: 'http://trials.drugis.org/ontology#quantile_0.975',
         dataType: DOUBLE_TYPE,
-        variableTypes: ['ontology:continuous'],
+        variableTypes: ['ontology:continuous', 'ontology:survival'],
         category: 'Quantiles',
         lexiconKey: 'quantile-0.975',
         analysisReady: false
@@ -246,6 +247,15 @@ define(['angular', 'lodash'], function(angular, _) {
         variableTypes: ['ontology:survival'],
         lexiconKey: 'exposure',
         analysisReady: true
+      },
+      hazard_ratio: {
+        type: 'hazard_ratio',
+        label: 'hazard ratio',
+        uri: 'http://trials.drugis.org/ontology#hazard_ratio',
+        dataType: DOUBLE_TYPE,
+        variableTypes: ['ontology:survival'],
+        lexiconKey: 'hazard-ratio',
+        analysisReady: false
       }
     };
 

@@ -1108,9 +1108,8 @@ define(['angular-mocks'], function(angularMocks) {
               varDetails.standard_error
             ]
           }
-        }
+        };
         expect(result).toEqual(expectedResult);
-
       });
     });
 
@@ -1147,8 +1146,13 @@ define(['angular-mocks'], function(angularMocks) {
           varTypes.standard_deviation,
           varTypes.standard_error
         ]
-        var expectedSurvivalResult = [varTypes.count, varTypes.exposure];
-
+        var expectedSurvivalResult = [
+          varTypes['quantile_0.025'],
+          varTypes['quantile_0.975'],
+          varTypes.count,
+          varTypes.exposure,
+          varTypes.hazard_ratio
+        ];
         expect(dichotomousResult).toEqual(expectedDichotomousResult);
         expect(continuousResult).toEqual(expectedContinuousResult);
         expect(survivalResult).toEqual(expectedSurvivalResult);

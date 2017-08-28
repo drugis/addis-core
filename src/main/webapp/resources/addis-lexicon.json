@@ -134,6 +134,11 @@
     "text": "The geometric mean is appropriate when the log of the observations are normally distributed.",
     "link": "/manual.html#study-input"
   },
+  "hazard-ratio": {
+    "title": "Hazard ratio",
+    "text": "The hazard ratio describes by which factor being in one group is more (or less) hazardous another group. For example a treated population may die at twice the rate per unit time as the control population, yielding a  hazard ratio of 2.",
+    "link": "/manual.html#study-input"
+  },
   "least-squares-mean": {
     "title": "Least squares mean",
     "text": "A point estimate obtained through least squares estimation (i.e. fitting a stastistical model).",
