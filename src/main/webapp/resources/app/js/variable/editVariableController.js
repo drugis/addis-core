@@ -21,7 +21,7 @@ define(['lodash'], function(_) {
     $scope.item = item;
     $scope.itemType = itemType;
     $scope.measurementMoments = MeasurementMomentService.queryItems();
-    $scope.resultProperties = _.map(ResultsService.VARIABLE_TYPE_DETAILS, _.identity);
+    $scope.resultProperties = _.values(ResultsService.VARIABLE_TYPE_DETAILS);
 
     item.selectedResultProperties = _.filter($scope.resultProperties, function(resultProperty) {
       return _.includes(item.resultProperties, resultProperty.uri);

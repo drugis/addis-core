@@ -135,6 +135,10 @@ define(['lodash'], function(_) {
         '@id': 'http://trials.drugis.org/ontology#count',
         '@type': 'http://www.w3.org/2001/XMLSchema#integer'
       },
+      'exposure': {
+        '@id': 'http://trials.drugis.org/ontology#exposure',
+        '@type': 'http://www.w3.org/2001/XMLSchema#integer'
+      },
       'has_drug_treatment': {
         '@id': 'http://trials.drugis.org/ontology#has_drug_treatment',
         '@type': '@id'

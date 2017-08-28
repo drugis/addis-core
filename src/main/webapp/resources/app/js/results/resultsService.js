@@ -28,6 +28,7 @@ define(['angular', 'lodash'], function(angular, _) {
       'event_count',
       'percentage',
       'proportion',
+      'exposure'
     ];
 
     var VARIABLE_TYPE_DETAILS = {
@@ -36,8 +37,8 @@ define(['angular', 'lodash'], function(angular, _) {
         label: 'N',
         uri: 'http://trials.drugis.org/ontology#sample_size',
         dataType: INTEGER_TYPE,
-        variableType: 'all',
-        category: 'sample size',
+        variableTypes: ['ontology:continuous', 'ontology:dichotomous'],
+        category: 'Sample size',
         lexiconKey: 'sample-size',
         analysisReady: true
       },
@@ -46,7 +47,7 @@ define(['angular', 'lodash'], function(angular, _) {
         label: 'mean',
         uri: 'http://trials.drugis.org/ontology#mean',
         dataType: DOUBLE_TYPE,
-        variableType: 'ontology:continuous',
+        variableTypes: ['ontology:continuous'],
         category: 'Central tendency',
         lexiconKey: 'mean',
         analysisReady: true
@@ -56,7 +57,7 @@ define(['angular', 'lodash'], function(angular, _) {
         label: 'median',
         uri: 'http://trials.drugis.org/ontology#median',
         dataType: DOUBLE_TYPE,
-        variableType: 'ontology:continuous',
+        variableTypes: ['ontology:continuous'],
         category: 'Central tendency',
         lexiconKey: 'median',
         analysisReady: false
@@ -66,7 +67,7 @@ define(['angular', 'lodash'], function(angular, _) {
         label: 'geometric mean',
         uri: 'http://trials.drugis.org/ontology#geometric_mean',
         dataType: DOUBLE_TYPE,
-        variableType: 'ontology:continuous',
+        variableTypes: ['ontology:continuous'],
         category: 'Central tendency',
         lexiconKey: 'geometric-mean',
         analysisReady: false
@@ -76,7 +77,7 @@ define(['angular', 'lodash'], function(angular, _) {
         label: 'log mean',
         uri: 'http://trials.drugis.org/ontology#log_mean',
         dataType: DOUBLE_TYPE,
-        variableType: 'ontology:continuous',
+        variableTypes: ['ontology:continuous'],
         category: 'Central tendency',
         lexiconKey: 'log-mean',
         analysisReady: false
@@ -86,7 +87,7 @@ define(['angular', 'lodash'], function(angular, _) {
         label: 'least squares mean',
         uri: 'http://trials.drugis.org/ontology#least_squares_mean',
         dataType: DOUBLE_TYPE,
-        variableType: 'ontology:continuous',
+        variableTypes: ['ontology:continuous'],
         category: 'Central tendency',
         lexiconKey: 'least-squares-mean',
         analysisReady: false
@@ -96,7 +97,7 @@ define(['angular', 'lodash'], function(angular, _) {
         label: '5% quantile',
         uri: 'http://trials.drugis.org/ontology#quantile_0.05',
         dataType: DOUBLE_TYPE,
-        variableType: 'ontology:continuous',
+        variableTypes: ['ontology:continuous'],
         category: 'Quantiles',
         lexiconKey: 'quantile-0.05',
         analysisReady: false
@@ -106,7 +107,7 @@ define(['angular', 'lodash'], function(angular, _) {
         label: '95% quantile',
         uri: 'http://trials.drugis.org/ontology#quantile_0.95',
         dataType: DOUBLE_TYPE,
-        variableType: 'ontology:continuous',
+        variableTypes: ['ontology:continuous'],
         category: 'Quantiles',
         lexiconKey: 'quantile-0.95',
         analysisReady: false
@@ -116,7 +117,7 @@ define(['angular', 'lodash'], function(angular, _) {
         label: '2.5% quantile',
         uri: 'http://trials.drugis.org/ontology#quantile_0.025',
         dataType: DOUBLE_TYPE,
-        variableType: 'ontology:continuous',
+        variableTypes: ['ontology:continuous'],
         category: 'Quantiles',
         lexiconKey: 'quantile-0.025',
         analysisReady: false
@@ -126,7 +127,7 @@ define(['angular', 'lodash'], function(angular, _) {
         label: '97.5% quantile',
         uri: 'http://trials.drugis.org/ontology#quantile_0.975',
         dataType: DOUBLE_TYPE,
-        variableType: 'ontology:continuous',
+        variableTypes: ['ontology:continuous'],
         category: 'Quantiles',
         lexiconKey: 'quantile-0.975',
         analysisReady: false
@@ -136,7 +137,7 @@ define(['angular', 'lodash'], function(angular, _) {
         label: 'min',
         uri: 'http://trials.drugis.org/ontology#min',
         dataType: DOUBLE_TYPE,
-        variableType: 'ontology:continuous',
+        variableTypes: ['ontology:continuous'],
         category: 'Dispersion',
         lexiconKey: 'min',
         analysisReady: false
@@ -146,7 +147,7 @@ define(['angular', 'lodash'], function(angular, _) {
         label: 'max',
         uri: 'http://trials.drugis.org/ontology#max',
         dataType: DOUBLE_TYPE,
-        variableType: 'ontology:continuous',
+        variableTypes: ['ontology:continuous'],
         category: 'Dispersion',
         lexiconKey: 'max',
         analysisReady: false
@@ -156,7 +157,7 @@ define(['angular', 'lodash'], function(angular, _) {
         label: 'geometric coefficient of variation',
         uri: 'http://trials.drugis.org/ontology#geometric_coefficient_of_variation',
         dataType: DOUBLE_TYPE,
-        variableType: 'ontology:continuous',
+        variableTypes: ['ontology:continuous'],
         category: 'Dispersion',
         lexiconKey: 'geometric-coefficient-of-variation',
         analysisReady: false
@@ -166,7 +167,7 @@ define(['angular', 'lodash'], function(angular, _) {
         label: 'first quartile',
         uri: 'http://trials.drugis.org/ontology#first_quartile',
         dataType: DOUBLE_TYPE,
-        variableType: 'ontology:continuous',
+        variableTypes: ['ontology:continuous'],
         category: 'Quantiles',
         lexiconKey: 'first-quartile',
         analysisReady: false
@@ -176,7 +177,7 @@ define(['angular', 'lodash'], function(angular, _) {
         label: 'third quartile',
         uri: 'http://trials.drugis.org/ontology#third_quartile',
         dataType: DOUBLE_TYPE,
-        variableType: 'ontology:continuous',
+        variableTypes: ['ontology:continuous'],
         category: 'Quantiles',
         lexiconKey: 'third-quartile',
         analysisReady: false
@@ -186,7 +187,7 @@ define(['angular', 'lodash'], function(angular, _) {
         label: 'standard deviation',
         uri: 'http://trials.drugis.org/ontology#standard_deviation',
         dataType: DOUBLE_TYPE,
-        variableType: 'ontology:continuous',
+        variableTypes: ['ontology:continuous'],
         category: 'Dispersion',
         lexiconKey: 'standard-deviation',
         analysisReady: true
@@ -196,7 +197,7 @@ define(['angular', 'lodash'], function(angular, _) {
         label: 'standard error',
         uri: 'http://trials.drugis.org/ontology#standard_error',
         dataType: DOUBLE_TYPE,
-        variableType: 'ontology:continuous',
+        variableTypes: ['ontology:continuous'],
         category: 'Dispersion',
         lexiconKey: 'standard-error',
         analysisReady: true
@@ -206,7 +207,7 @@ define(['angular', 'lodash'], function(angular, _) {
         label: 'number of events',
         uri: 'http://trials.drugis.org/ontology#event_count',
         dataType: INTEGER_TYPE,
-        variableType: 'ontology:dichotomous',
+        variableTypes: ['ontology:dichotomous'],
         lexiconKey: 'event-count',
         analysisReady: false
       },
@@ -215,7 +216,7 @@ define(['angular', 'lodash'], function(angular, _) {
         label: 'subjects with event',
         uri: 'http://trials.drugis.org/ontology#count',
         dataType: INTEGER_TYPE,
-        variableType: 'ontology:dichotomous',
+        variableTypes: ['ontology:dichotomous', 'ontology:survival'],
         lexiconKey: 'count',
         analysisReady: true
       },
@@ -224,7 +225,7 @@ define(['angular', 'lodash'], function(angular, _) {
         label: 'percentage with event',
         uri: 'http://trials.drugis.org/ontology#percentage',
         dataType: DOUBLE_TYPE,
-        variableType: 'ontology:dichotomous',
+        variableTypes: ['ontology:dichotomous'],
         lexiconKey: 'percentage',
         analysisReady: false
       },
@@ -233,10 +234,19 @@ define(['angular', 'lodash'], function(angular, _) {
         label: 'proportion with event',
         uri: 'http://trials.drugis.org/ontology#proportion',
         dataType: DOUBLE_TYPE,
-        variableType: 'ontology:dichotomous',
+        variableTypes: ['ontology:dichotomous'],
         lexiconKey: 'proportion',
         analysisReady: false
       },
+      exposure: {
+        type: 'exposure',
+        label: 'total observation time',
+        uri: 'http://trials.drugis.org/ontology#exposure',
+        dataType: INTEGER_TYPE,
+        variableTypes: ['ontology:survival'],
+        lexiconKey: 'exposure',
+        analysisReady: true
+      }
     };
 
     function getVariableDetails(variableTypeUri) {
@@ -590,7 +600,6 @@ define(['angular', 'lodash'], function(angular, _) {
         return StudyService.saveJsonGraph(updatedGraph);
 
       });
-
     }
 
     function isExistingMeasurement(measurementMomentUri, measurementInstanceList) {
@@ -624,10 +633,43 @@ define(['angular', 'lodash'], function(angular, _) {
         ];
       } else if (measurementType === 'ontology:categorical') {
         return [];
+      } else if (measurementType === 'ontology:survival') {
+        return [
+          VARIABLE_TYPE_DETAILS.count,
+          VARIABLE_TYPE_DETAILS.exposure
+        ]
       } else {
         console.error('unknown measurement type ' + measurementType);
       }
     }
+
+    function getResultPropertiesForType(measurementType) {
+      return _.filter(VARIABLE_TYPE_DETAILS, function(varType) {
+        return varType.variableTypes === 'all' || varType.variableTypes.indexOf(measurementType) > -1;
+      });
+    }
+
+    function buildPropertyCategories(variable) {
+      var properties = getResultPropertiesForType(variable.measurementType);
+      var categories = _(properties)
+        .keyBy('category')
+        .reduce(function(accum, resultProperty, categoryName) {
+          var categoryProperties = _(properties)
+            .filter(['category', categoryName])
+            .map(function(property) {
+              return _.extend({}, property, {
+                isSelected: !!_.find(variable.selectedResultProperties, ['type', property.type])
+              });
+            }).value();
+          accum[categoryName] = {
+            categoryLabel: categoryName,
+            properties: categoryProperties
+          };
+          return accum;
+        }, {});
+      return categories;
+    }
+
 
     function _queryResults(uri, typeFunction) {
       return StudyService.getJsonGraph().then(function(graph) {
@@ -675,6 +717,8 @@ define(['angular', 'lodash'], function(angular, _) {
       isStudyNode: isStudyNode,
       getVariableDetails: getVariableDetails,
       getDefaultResultProperties: getDefaultResultProperties,
+      getResultPropertiesForType: getResultPropertiesForType,
+      buildPropertyCategories: buildPropertyCategories,
       VARIABLE_TYPE_DETAILS: VARIABLE_TYPE_DETAILS,
       INTEGER_TYPE: INTEGER_TYPE,
       DOUBLE_TYPE: DOUBLE_TYPE,

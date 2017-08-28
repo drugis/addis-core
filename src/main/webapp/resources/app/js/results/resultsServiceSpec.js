@@ -1046,9 +1046,112 @@ define(['angular-mocks'], function(angularMocks) {
           resultsService.VARIABLE_TYPE_DETAILS.sample_size,
           resultsService.VARIABLE_TYPE_DETAILS.count
         ];
+        var survivalProperties = [
+          resultsService.VARIABLE_TYPE_DETAILS.count,
+          resultsService.VARIABLE_TYPE_DETAILS.exposure
+        ];
 
         expect(resultsService.getDefaultResultProperties('ontology:dichotomous')).toEqual(dichotomousProperties);
         expect(resultsService.getDefaultResultProperties('ontology:continuous')).toEqual(continuousProperties);
+        expect(resultsService.getDefaultResultProperties('ontology:survival')).toEqual(survivalProperties);
+      });
+    });
+
+    describe('buildPropertyCategories', function() {
+      it('should build the categories for a continuous variable', function() {
+        var varDetails = _.reduce(resultsService.VARIABLE_TYPE_DETAILS, function(accum, varType) {
+          accum[varType.type] = _.extend({}, varType, {
+            isSelected: false
+          });
+          return accum;
+        }, {});
+        var variable = {
+          measurementType: 'ontology:continuous',
+          selectedProperties: []
+        };
+
+        var result = resultsService.buildPropertyCategories(variable);
+
+        var expectedResult = {
+          'Sample size': {
+            categoryLabel: 'Sample size',
+            properties: [varDetails.sample_size],
+          },
+          'Central tendency': {
+            categoryLabel: 'Central tendency',
+            properties: [varDetails.mean,
+              varDetails.median,
+              varDetails.geometric_mean,
+              varDetails.log_mean,
+              varDetails.least_squares_mean
+            ]
+          },
+          'Quantiles': {
+            categoryLabel: 'Quantiles',
+            properties: [
+              varDetails['quantile_0.05'],
+              varDetails['quantile_0.95'],
+              varDetails['quantile_0.025'],
+              varDetails['quantile_0.975'],
+              varDetails.first_quartile,
+              varDetails.third_quartile,
+
+            ]
+          },
+          'Dispersion': {
+            categoryLabel: 'Dispersion',
+            properties: [
+              varDetails.min,
+              varDetails.max,
+              varDetails.geometric_coefficient_of_variation,
+              varDetails.standard_deviation,
+              varDetails.standard_error
+            ]
+          }
+        }
+        expect(result).toEqual(expectedResult);
+
+      });
+    });
+
+    describe('getResultPropertiesForType', function() {
+      it('should get the right variable details for each specific type', function() {
+        var varTypes = resultsService.VARIABLE_TYPE_DETAILS;
+        var dichotomousResult = resultsService.getResultPropertiesForType('ontology:dichotomous');
+        var continuousResult = resultsService.getResultPropertiesForType('ontology:continuous');
+        var survivalResult = resultsService.getResultPropertiesForType('ontology:survival');
+
+        var expectedDichotomousResult = [
+          varTypes.sample_size,
+          varTypes.event_count,
+          varTypes.count,
+          varTypes.percentage,
+          varTypes.proportion
+        ];
+        var expectedContinuousResult = [
+          varTypes.sample_size,
+          varTypes.mean,
+          varTypes.median,
+          varTypes.geometric_mean,
+          varTypes.log_mean,
+          varTypes.least_squares_mean,
+          varTypes['quantile_0.05'],
+          varTypes['quantile_0.95'],
+          varTypes['quantile_0.025'],
+          varTypes['quantile_0.975'],
+          varTypes.min,
+          varTypes.max,
+          varTypes.geometric_coefficient_of_variation,
+          varTypes.first_quartile,
+          varTypes.third_quartile,
+          varTypes.standard_deviation,
+          varTypes.standard_error
+        ]
+        var expectedSurvivalResult = [varTypes.count, varTypes.exposure];
+
+        expect(dichotomousResult).toEqual(expectedDichotomousResult);
+        expect(continuousResult).toEqual(expectedContinuousResult);
+        expect(survivalResult).toEqual(expectedSurvivalResult);
       });
     });
 

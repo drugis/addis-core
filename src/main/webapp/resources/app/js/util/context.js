@@ -72,6 +72,10 @@ define([], function() {
         '@id': 'http://trials.drugis.org/ontology#sample_size',
         '@type': 'http://www.w3.org/2001/XMLSchema#integer'
       },
+      'exposure': {
+        '@id': 'http://trials.drugis.org/ontology#exposure',
+        '@type': 'http://www.w3.org/2001/XMLSchema#integer'
+      },
       'of_outcome': {
         '@id': 'http://trials.drugis.org/ontology#of_outcome',
         '@type': '@id'
