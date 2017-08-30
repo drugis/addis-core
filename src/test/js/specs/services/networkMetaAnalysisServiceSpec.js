@@ -23,7 +23,8 @@ define(['angular', 'angular-mocks', 'services'], function(angular) {
           'sampleSize': 96,
           'rate': 64,
           'stdDev': null,
-          'mean': null
+          'mean': null,
+          exposure: null
         }]
       },
       'semanticIntervention': {
@@ -45,7 +46,8 @@ define(['angular', 'angular-mocks', 'services'], function(angular) {
           'sampleSize': 96,
           'rate': 70,
           'stdDev': null,
-          'mean': null
+          'mean': null,
+          exposure: null
         }]
       },
       'semanticIntervention': {
@@ -67,7 +69,8 @@ define(['angular', 'angular-mocks', 'services'], function(angular) {
           'sampleSize': 92,
           'rate': 57,
           'stdDev': null,
-          'mean': null
+          'mean': null,
+          exposure: null
         }]
       },
       'semanticIntervention': {
@@ -523,7 +526,8 @@ define(['angular', 'angular-mocks', 'services'], function(angular) {
                 mu: 'NA',
                 sigma: 'NA',
                 sampleSize: 96,
-                stdErr: 'NA'
+                stdErr: 'NA',
+                exposure: 'NA'
               }
             },
             measurementMoments: trialVerseStudyData[0].measurementMoments,
@@ -555,7 +559,8 @@ define(['angular', 'angular-mocks', 'services'], function(angular) {
                 mu: 'NA',
                 sigma: 'NA',
                 sampleSize: 96,
-                stdErr: 'NA'
+                stdErr: 'NA',
+                exposure: 'NA'
               }
             },
             measurementMoments: trialVerseStudyData[0].measurementMoments,
@@ -587,7 +592,8 @@ define(['angular', 'angular-mocks', 'services'], function(angular) {
                 mu: 'NA',
                 sigma: 'NA',
                 sampleSize: 92,
-                stdErr: 'NA'
+                stdErr: 'NA',
+                exposure: 'NA'
               }
             },
             firstInterventionRow: true,
@@ -1092,71 +1098,78 @@ define(['angular', 'angular-mocks', 'services'], function(angular) {
       }));
     });
 
-    describe('checkStdErrShow', function() {
-      beforeEach(module('addis.services'));
+    describe('checkColumnsToShow', function() {
+      describe('for continuous outcomes', function() {
 
-      it('should be truthy if there is a datarow with stderr present and one of sigma or samplesize missing', inject(function(NetworkMetaAnalysisService) {
-        var dataRows = [{
-          measurements: [{
-            sigma: 0.3,
-            sampleSize: 0.4,
-            stdErr: 'NA'
-          }, {
-            sigma: 0.3,
-            sampleSize: 'NA',
-            stdErr: 4
-          }]
-        }];
-        expect(NetworkMetaAnalysisService.checkStdErrShow(dataRows)).toBeTruthy();
-      }));
+        beforeEach(module('addis.services'));
 
-      it('should be falsy if there is no datarow with stderr present and one of sigma or samplesize missing', inject(function(NetworkMetaAnalysisService) {
-        var dataRows = [{
-          measurements: [{
-            sigma: 0.3,
-            sampleSize: 0.4,
-            stdErr: 'NA'
-          }, {
-            sigma: 0.3,
-            sampleSize: 31,
-            stdErr: 4
-          }]
-        }];
-        expect(NetworkMetaAnalysisService.checkStdErrShow(dataRows)).toBeFalsy();
-
-      }));
-    });
-
-    describe('checkSigmaNShow', function() {
-      beforeEach(module('addis.services'));
-      it('should return truthy if there is at least one row with data for either sigma or N', inject(function(NetworkMetaAnalysisService) {
-        var dataRows = [{
-          measurements: [{
-            sigma: 'NA',
-            sampleSize: 'NA',
-            stdErr: 1.3
-          }, {
-            sigma: 'NA',
-            sampleSize: 31,
-            stdErr: 4
-          }]
-        }];
-        expect(NetworkMetaAnalysisService.checkSigmaNShow(dataRows)).toBeTruthy();
-      }));
-      it('should return falsy if there is no row with data for either sigma or N', inject(function(NetworkMetaAnalysisService) {
-        var dataRows = [{
-          measurements: [{
-            sigma: 'NA',
-            sampleSize: 'NA',
-            stdErr: 1.3
-          }, {
-            sigma: 'NA',
-            sampleSize: 'NA',
-            stdErr: 4
-          }]
-        }];
-        expect(NetworkMetaAnalysisService.checkSigmaNShow(dataRows)).toBeFalsy();
-      }));
+        it('should be correct for some missing values', inject(function(NetworkMetaAnalysisService) {
+          var dataRows = [{
+            measurements: [{
+              sigma: 0.3,
+              sampleSize: 0.4,
+              stdErr: 'NA'
+            }, {
+              sigma: 0.3,
+              sampleSize: 'NA',
+              stdErr: 4
+            }]
+          }];
+          var expectedResult = {
+            rate: false,
+            mu: true,
+            sigma: true,
+            sampleSize: true,
+            stdErr: true,
+            exposure: false
+          };
+          expect(NetworkMetaAnalysisService.checkColumnsToShow(dataRows, 'continuous')).toEqual(expectedResult);
+        }));
+        it('should not show sigma if it has no values', inject(function(NetworkMetaAnalysisService) {
+          var dataRows = [{
+            measurements: [{
+              sigma: 'NA',
+              sampleSize: 'NA',
+              stdErr: 1.3
+            }, {
+              sigma: 'NA',
+              sampleSize: 31,
+              stdErr: 4
+            }]
+          }];
+          var expectedResult = {
+            rate: false,
+            mu: true,
+            sigma: false,
+            sampleSize: true,
+            stdErr: true,
+            exposure: false
+          };
+          expect(NetworkMetaAnalysisService.checkColumnsToShow(dataRows, 'continuous')).toEqual(expectedResult);
+        }));
+        it('should no show N if there is no data', inject(function(NetworkMetaAnalysisService) {
+          var dataRows = [{
+            measurements: [{
+              sigma: 'NA',
+              sampleSize: 'NA',
+              stdErr: 1.3
+            }, {
+              sigma: 'NA',
+              sampleSize: 'NA',
+              stdErr: 4
+            }]
+          }];
+          var expectedResult = {
+            rate: false,
+            mu: true,
+            sigma: false,
+            sampleSize: false,
+            stdErr: true,
+            exposure: false
+          };
+          expect(NetworkMetaAnalysisService.checkColumnsToShow(dataRows, 'continuous')).toEqual(expectedResult);
+        }));
+      });
     });
 
     describe('getMeasurementType', function() {

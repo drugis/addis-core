@@ -7,6 +7,7 @@ define(['lodash', 'angular'], function(_, angular) {
     var CONTINUOUS_TYPE = 'http://trials.drugis.org/ontology#continuous';
     var DICHOTOMOUS_TYPE = 'http://trials.drugis.org/ontology#dichotomous';
     var CATEGORICAL_TYPE = 'http://trials.drugis.org/ontology#categorical';
+    var SURVIVAL_TYPE = 'http://trials.drugis.org/ontology#survival';
 
     function sortTableByStudyAndIntervention(table) {
       // sort table by studies and interventions
@@ -175,7 +176,7 @@ define(['lodash', 'angular'], function(_, angular) {
       if (measurementType !== 'continuous') {
         return false;
       }
-      return _.find(dataRows, function(dataRow) {
+      return !!_.find(dataRows, function(dataRow) {
         return _.find(dataRow.measurements, function(measurement) {
           return measurement.sigma !== 'NA';
         });
@@ -186,7 +187,7 @@ define(['lodash', 'angular'], function(_, angular) {
       if (measurementType !== 'continuous' && measurementType !== 'dichotomous') {
         return false;
       }
-      return _.find(dataRows, function(dataRow) {
+      return !!_.find(dataRows, function(dataRow) {
         return _.find(dataRow.measurements, function(measurement) {
           return measurement.sampleSize !== 'NA';
         });
@@ -197,8 +198,7 @@ define(['lodash', 'angular'], function(_, angular) {
       if (measurementType !== 'continuous') {
         return false;
       }
-      return _.find(dataRows, function(dataRow) {
-        //if I find a data row which contains stdErr but misses either stdDev or N
+      return !!_.find(dataRows, function(dataRow) {
         return _.find(dataRow.measurements, function(measurement) {
           return measurement.stdErr !== 'NA' && measurement.stdErr !== null;
         });
@@ -270,6 +270,11 @@ define(['lodash', 'angular'], function(_, angular) {
       }
       if (type === DICHOTOMOUS_TYPE) {
         if (field === 'rate' || field === 'sampleSize') {
+          return true;
+        }
+      }
+      if (type === SURVIVAL_TYPE) {
+        if(field ==='exposure') {
           return true;
         }
       }
