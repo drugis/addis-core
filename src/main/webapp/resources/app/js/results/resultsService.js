@@ -93,6 +93,15 @@ define(['angular', 'lodash'], function(angular, _) {
         lexiconKey: 'least-squares-mean',
         analysisReady: false
       },
+      hazard_ratio: {
+        type: 'hazard_ratio',
+        label: 'hazard ratio',
+        uri: 'http://trials.drugis.org/ontology#hazard_ratio',
+        dataType: DOUBLE_TYPE,
+        variableTypes: ['ontology:survival'],
+        lexiconKey: 'hazard-ratio',
+        analysisReady: false
+      },
       'quantile_0.05': {
         type: 'quantile_0.05',
         label: '5% quantile',
@@ -247,15 +256,6 @@ define(['angular', 'lodash'], function(angular, _) {
         variableTypes: ['ontology:survival'],
         lexiconKey: 'exposure',
         analysisReady: true
-      },
-      hazard_ratio: {
-        type: 'hazard_ratio',
-        label: 'hazard ratio',
-        uri: 'http://trials.drugis.org/ontology#hazard_ratio',
-        dataType: DOUBLE_TYPE,
-        variableTypes: ['ontology:survival'],
-        lexiconKey: 'hazard-ratio',
-        analysisReady: false
       }
     };
 
