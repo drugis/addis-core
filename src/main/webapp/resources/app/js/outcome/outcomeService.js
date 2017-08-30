@@ -76,7 +76,6 @@ define(['angular', 'lodash'],
           '@id': item.uri,
           is_measured_at: item.measuredAtMoments.length === 1 ? item.measuredAtMoments[0].uri : _.map(item.measuredAtMoments, 'uri'),
           label: item.label,
-          survival_time_scale: item.timeScale,
           of_variable: [{
             '@type': 'ontology:Variable',
             'measurementType': item.measurementType,
@@ -84,6 +83,9 @@ define(['angular', 'lodash'],
           }],
           has_result_property: item.resultProperties
         };
+        if(item.timeScale){
+          newItem.survival_time_scale = item.timeScale;
+        }
         if(item.conceptMapping) {
           newItem.of_variable[0].sameAs = item.conceptMapping;
         }
@@ -196,13 +198,11 @@ define(['angular', 'lodash'],
           var isMeassuredByTarget = _.find(target.measuredAtMoments, function(targetMeasurementMoment) {
             return targetMeasurementMoment.uri === sourceMeasurementMoment.uri;
           });
-
           if (!isMeassuredByTarget) {
             accum.push(sourceMeasurementMoment);
           }
           return accum;
         }, []);
-
         target.measuredAtMoments = _.compact([].concat(target.measuredAtMoments).concat(newMoments));
         return editItem(target, type);
       }
