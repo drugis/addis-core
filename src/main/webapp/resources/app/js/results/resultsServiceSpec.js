@@ -1,5 +1,5 @@
 'use strict';
-define(['angular-mocks'], function(angularMocks) {
+define(['angular-mocks', 'lodash'], function(angularMocks, _) {
   describe('the resultsService service', function() {
 
     var rootScope, q;
@@ -1145,13 +1145,13 @@ define(['angular-mocks'], function(angularMocks) {
           varTypes.third_quartile,
           varTypes.standard_deviation,
           varTypes.standard_error
-        ]
+        ];
         var expectedSurvivalResult = [
+          varTypes.hazard_ratio,
           varTypes['quantile_0.025'],
           varTypes['quantile_0.975'],
           varTypes.count,
-          varTypes.exposure,
-          varTypes.hazard_ratio
+          varTypes.exposure
         ];
         expect(dichotomousResult).toEqual(expectedDichotomousResult);
         expect(continuousResult).toEqual(expectedContinuousResult);
