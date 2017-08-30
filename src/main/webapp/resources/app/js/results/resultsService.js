@@ -243,7 +243,7 @@ define(['angular', 'lodash'], function(angular, _) {
         type: 'exposure',
         label: 'total observation time',
         uri: 'http://trials.drugis.org/ontology#exposure',
-        dataType: INTEGER_TYPE,
+        dataType: DOUBLE_TYPE,
         variableTypes: ['ontology:survival'],
         lexiconKey: 'exposure',
         analysisReady: true
@@ -258,6 +258,20 @@ define(['angular', 'lodash'], function(angular, _) {
         analysisReady: false
       }
     };
+
+    var TIME_SCALE_OPTIONS = [{
+      label: 'Days',
+      duration: 'P1D'
+    }, {
+      label: 'Weeks',
+      duration: 'P1W'
+    }, {
+      label: 'Months',
+      duration: 'P1M'
+    }, {
+      label: 'Years',
+      duration: 'P1Y'
+    }];
 
     function getVariableDetails(variableTypeUri) {
       var normalisedUri = variableTypeUri;
@@ -732,6 +746,7 @@ define(['angular', 'lodash'], function(angular, _) {
       VARIABLE_TYPE_DETAILS: VARIABLE_TYPE_DETAILS,
       INTEGER_TYPE: INTEGER_TYPE,
       DOUBLE_TYPE: DOUBLE_TYPE,
+      TIME_SCALE_OPTIONS: TIME_SCALE_OPTIONS
     };
   };
   return dependencies.concat(ResultsService);

@@ -26,6 +26,7 @@ define(['angular', 'lodash'],
         var frontEndItem = {
           uri: item['@id'],
           label: item.label,
+          timeScale: item.survival_time_scale,
           measurementType: item.of_variable[0].measurementType,
           measuredAtMoments: [],
           conceptMapping: item.of_variable[0].sameAs
@@ -75,6 +76,7 @@ define(['angular', 'lodash'],
           '@id': item.uri,
           is_measured_at: item.measuredAtMoments.length === 1 ? item.measuredAtMoments[0].uri : _.map(item.measuredAtMoments, 'uri'),
           label: item.label,
+          survival_time_scale: item.timeScale,
           of_variable: [{
             '@type': 'ontology:Variable',
             'measurementType': item.measurementType,

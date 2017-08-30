@@ -52,7 +52,16 @@
       </span>
       <result-properties ng-show="changeResultProperties" variable="item"></result-properties>
       <br>
-      <button class="small" type="button" ng-click="changeResultProperties=!changeResultProperties">{{changeResultProperties ? 'Hide result properties' : 'Change'}}</button>
+      <button class="small" type="button" ng-click="changeResultProperties = !changeResultProperties">{{changeResultProperties ? 'Hide result properties' : 'Change'}}</button>
+    </div>
+  </div>
+
+  <div class="row" ng-if="showTimeScaleInput">
+    <div class="large-9 columns">
+    <label>
+      Time scale
+      <select ng-options="timeScaleOption.duration as timeScaleOption.label for timeScaleOption in timeScaleOptions" ng-model="item.timeScale"></select>
+    </label>
     </div>
   </div>
 

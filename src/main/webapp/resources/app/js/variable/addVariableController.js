@@ -1,7 +1,10 @@
 'use strict';
 define(['lodash'], function(_) {
-  var dependencies = ['$scope', '$injector', '$modalInstance', 'MeasurementMomentService', 'ResultsService', 'callback', 'settings'];
-  var addVariableController = function($scope, $injector, $modalInstance, MeasurementMomentService, ResultsService, callback, settings) {
+  var dependencies = ['$scope', '$injector', '$modalInstance', 'MeasurementMomentService',
+    'ResultsService', 'callback', 'settings'
+  ];
+  var addVariableController = function($scope, $injector, $modalInstance, MeasurementMomentService,
+    ResultsService, callback, settings) {
     // functions
     $scope.addItem = addItem;
     $scope.resetResultProperties = resetResultProperties;
@@ -23,8 +26,22 @@ define(['lodash'], function(_) {
     };
     $scope.measurementMoments = MeasurementMomentService.queryItems();
     $scope.resultProperties = ResultsService.VARIABLE_TYPE_DETAILS;
+    $scope.timeScaleOptions = ResultsService.TIME_SCALE_OPTIONS;
 
     resetResultProperties();
+
+    $scope.$watch('item.selectedResultProperties', checkTimeScaleInput);
+
+    function checkTimeScaleInput() {
+      $scope.showTimeScaleInput = _.find($scope.item.selectedResultProperties, ['uri', 'http://trials.drugis.org/ontology#exposure']);
+      if(!$scope.showTimeScaleInput) {
+        delete $scope.item.timeScale;
+      } else {
+        if(!$scope.item.timeScale) {
+          $scope.item.timeScale = 'P1W';
+        }
+      }
+    }
 
     function measurementMomentEquals(moment1, moment2) {
       return moment1.uri === moment2.uri;
@@ -50,7 +67,7 @@ define(['lodash'], function(_) {
           },
           function() {
             console.error('failed to create ' + settings.itemName);
-            $modalInstance.dismiss('cancel');
+            $modalInstance.close('cancel');
           });
     }
 
@@ -76,12 +93,11 @@ define(['lodash'], function(_) {
     }
 
     function deleteCategory(category) {
-      $scope.item.categoryList.splice(
-        $scope.item.categoryList.indexOf(category), 1);
+      $scope.item.categoryList.splice($scope.item.categoryList.indexOf(category), 1);
     }
 
     function cancel() {
-      $modalInstance.dismiss('cancel');
+      $modalInstance.close('cancel');
     }
   };
   return dependencies.concat(addVariableController);
