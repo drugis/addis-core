@@ -141,20 +141,6 @@ public class TriplestoreServiceTest {
   }
 
   @Test
-  public void testGetStudyDetails() throws ResourceDoesNotExistException {
-    String namespaceUid = "namespaceUid";
-
-    String mockResult = TestUtils.loadResource(this.getClass(), "/triplestoreService/exampleGetStudyDetailsResult.json");
-    createMockTrialverseService(mockResult);
-
-    StudyWithDetails studyWithDetails = triplestoreService.getStudydetails(namespaceUid, "studyUuid");
-
-    assertNotNull(studyWithDetails.getStudyUid());
-    assertNotNull(studyWithDetails.getName());
-    assertNotNull(studyWithDetails.getTitle());
-  }
-
-  @Test
   public void testGetStudyGroups() throws ResourceDoesNotExistException {
     String namespaceUid = "namespaceUid";
 
@@ -185,32 +171,6 @@ public class TriplestoreServiceTest {
 
     List<TreatmentActivity> treatmentActivities = triplestoreService.getStudyTreatmentActivities(namespaceUid, "studyUuid");
     assertEquals(4, treatmentActivities.size());
-  }
-
-  @Test
-  public void testGetStudyDataForBaseLineCharacteristics() {
-    String namespaceUid = "namespaceUid";
-    String studyUuid = "studyUuid";
-    StudyDataSection studyDataSection = StudyDataSection.BASE_LINE_CHARACTERISTICS;
-
-    String mockResult = TestUtils.loadResource(this.getClass(), "/triplestoreService/exampleBaseLineCharacteristicsResult.json");
-    createMockTrialverseService(mockResult);
-
-    List<StudyData> result = triplestoreService.getStudyData(namespaceUid, studyUuid, studyDataSection);
-    assertEquals(2, result.size());
-  }
-
-  @Test
-  public void testGetStudyDataForEndPoints() {
-    String namespaceUid = "namespaceUid";
-    String studyUuid = "studyUuid";
-    StudyDataSection studyDataSection = StudyDataSection.ENDPOINTS;
-
-    String mockResult = TestUtils.loadResource(this.getClass(), "/triplestoreService/exampleEndPointResult.json");
-    createMockTrialverseService(mockResult);
-
-    List<StudyData> result = triplestoreService.getStudyData(namespaceUid, studyUuid, studyDataSection);
-    assertEquals(15, result.size());
   }
 
   @Test

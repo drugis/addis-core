@@ -67,11 +67,9 @@ public class TriplestoreServiceImpl implements TriplestoreService {
   public final static String NAMESPACE = TriplestoreService.loadResource("sparql/namespace.sparql");
   public final static String POPCHAR_DATA_QUERY = TriplestoreService.loadResource("sparql/populationCharacteristicCovariateData.sparql");
   public final static String STUDY_QUERY = TriplestoreService.loadResource("sparql/studyQuery.sparql");
-  public final static String STUDY_DETAILS_QUERY = TriplestoreService.loadResource("sparql/studyDetails.sparql");
   public final static String STUDY_GROUPS_QUERY = TriplestoreService.loadResource("sparql/studyGroups.sparql");
   public final static String STUDY_ARMS_EPOCHS = TriplestoreService.loadResource("sparql/studyEpochs.sparql");
   public final static String STUDY_TREATMENT_ACTIVITIES = TriplestoreService.loadResource("sparql/studyTreatmentActivities.sparql");
-  public final static String STUDY_DATA = TriplestoreService.loadResource("sparql/studyData.sparql");
   public final static String SINGLE_STUDY_MEASUREMENTS = TriplestoreService.loadResource("sparql/singleStudyMeasurements.sparql");
   public final static String TRIAL_DATA = TriplestoreService.loadResource("sparql/trialData.sparql");
   public final static String OUTCOME_QUERY = TriplestoreService.loadResource("sparql/outcomes.sparql");
@@ -272,21 +270,6 @@ public class TriplestoreServiceImpl implements TriplestoreService {
   }
 
   @Override
-  public StudyWithDetails getStudydetails(String namespaceUid, String studyGraphUid) throws ResourceDoesNotExistException {
-    String query = StringUtils.replace(STUDY_DETAILS_QUERY,  "$studyGraphUid", studyGraphUid);
-    logger.debug(query);
-    ResponseEntity<String> response = queryTripleStoreHead(namespaceUid, query);
-    JSONArray bindings = JsonPath.read(response.getBody(), "$.results.bindings");
-    if (bindings.size() != 1) {
-      throw new ResourceDoesNotExistException();
-    }
-
-    StudyWithDetails studyWithDetails = buildStudyWithDetailsFromJsonObject(bindings.get(0));
-    studyWithDetails.setGraphUuid(studyGraphUid);
-    return studyWithDetails;
-  }
-
-  @Override
   public JSONArray getStudyGroups(String namespaceUid, String studyUuid) {
     String query = StringUtils.replace(STUDY_GROUPS_QUERY, "$studyUuid", studyUuid);
     return getQueryResultList(namespaceUid, query);
@@ -296,30 +279,6 @@ public class TriplestoreServiceImpl implements TriplestoreService {
   public JSONArray getStudyEpochs(String namespaceUid, String studyUuid) {
     String query = StringUtils.replace(STUDY_ARMS_EPOCHS, "$studyUuid", studyUuid);
     return getQueryResultList(namespaceUid, query);
-  }
-
-  private Integer tryParseInt(String str) {
-    try {
-      return Integer.parseInt(str);
-    } catch (NumberFormatException e) {
-      return null;
-    }
-  }
-
-  private Long tryParseLong(String str) {
-    try {
-      return Long.parseLong(str);
-    } catch (NumberFormatException e) {
-      return null;
-    }
-  }
-
-  private Double tryParseDouble(String str) {
-    try {
-      return Double.parseDouble(str);
-    } catch (NumberFormatException e) {
-      return null;
-    }
   }
 
   @Override
@@ -377,85 +336,6 @@ public class TriplestoreServiceImpl implements TriplestoreService {
     }
     return administeredDrug;
   }
-
-  @Override
-  public List<StudyData> getStudyData(String namespaceUid, String studyUuid, StudyDataSection studyDataSection) {
-    String query = StringUtils.replace(STUDY_DATA, "$studyUuid", studyUuid);
-    query = StringUtils.replace(query, "$studyDataType", studyDataSection.toString());
-    logger.debug(query);
-    JSONArray queryResult = getQueryResultList(namespaceUid, query);
-
-    Map<String, StudyData> stringStudyDataMap = new HashMap<>();
-    Map<Pair<String, String>, StudyDataMoment> outcomeMomentCache = new HashMap<>();
-
-    for (Object object : queryResult) {
-      JSONObject jsonObject = (JSONObject) object;
-
-      String studyDataTypeUri = (String) jsonObject.get("studyDataTypeUri");
-      StudyData studyData = stringStudyDataMap.get(studyDataTypeUri);
-      if (studyData == null) {
-        String studyDataTypeLabel = (String) jsonObject.get("studyDataTypeLabel");
-        studyData = new StudyData(studyDataSection, studyDataTypeUri, studyDataTypeLabel);
-        stringStudyDataMap.put(studyDataTypeUri, studyData);
-      }
-      String outcomeUid = (String) jsonObject.get("outcomeUid");
-      String momentUid = (String) jsonObject.get("momentUid");
-
-      StudyDataMoment moment = outcomeMomentCache.get(Pair.of(outcomeUid, momentUid));
-      if (moment == null) {
-        String relativeToAnchorOntology = ((String) jsonObject.get("relativeToAnchor"));
-        String timeOffsetDuration = ((String) jsonObject.get("timeOffset"));
-        String relativeToEpochLabel = ((String) jsonObject.get("relativeToEpochLabel"));
-        moment = new StudyDataMoment(relativeToAnchorOntology, timeOffsetDuration, relativeToEpochLabel);
-        outcomeMomentCache.put(Pair.of(outcomeUid, momentUid), moment);
-        studyData.getStudyDataMoments().add(moment);
-      }
-
-      AbstractStudyDataValue studyDataArmValue;
-      String armInstanceUid = (String) jsonObject.get("instanceUid");
-      String label = (String) jsonObject.get("groupLabel");
-      Boolean isArm = Boolean.parseBoolean((String) jsonObject.get("isArm"));
-      Integer sampleSize = jsonObject.containsKey("sampleSize") ? tryParseInt((String) jsonObject.get("sampleSize")) : null; // FIXME: why is this an integer when the count is Long?
-      String sampleDuration = jsonObject.containsKey("sampleDuration") ? (String) jsonObject.get("sampleDuration") : null;
-
-      if (jsonObject.containsKey("count")) {
-        studyDataArmValue = new RateStudyDataValue.RateStudyDataValueBuilder(armInstanceUid, label, isArm)
-                .count(tryParseLong((String) jsonObject.get("count")))
-                .sampleSize(sampleSize)
-                .sampleDuration(sampleDuration)
-                .build();
-        moment.getStudyDataValues().add(studyDataArmValue);
-      } else if (jsonObject.containsKey("mean") || jsonObject.containsKey("std")) {
-        studyDataArmValue = new ContinuousStudyDataValue.ContinuousStudyDataValueBuilder(armInstanceUid, label, isArm)
-                .mean(jsonObject.containsKey("mean") ? tryParseDouble((String) jsonObject.get("mean")) : null)
-                .std(jsonObject.containsKey("std") ? tryParseDouble((String) jsonObject.get("std")) : null)
-                .sampleSize(sampleSize)
-                .sampleDuration(sampleDuration)
-                .build();
-        moment.getStudyDataValues().add(studyDataArmValue);
-      } else if (jsonObject.containsKey("categoryCount")) {
-        CategoricalStudyDataValue existingValue = findExistingCategoricalArmValue(armInstanceUid, moment.getStudyDataValues());
-        if(existingValue == null) {
-          existingValue = new CategoricalStudyDataValue(armInstanceUid, label, isArm);
-          moment.getStudyDataValues().add(existingValue);
-        }
-        Pair<String, Integer> value = Pair.of((String) jsonObject.get("categoryLabel"), Integer.parseInt((String) jsonObject.get("categoryCount")));
-        existingValue.getValues().add(value);
-      }
-
-    }
-    return new ArrayList<>(stringStudyDataMap.values());
-  }
-
-  private CategoricalStudyDataValue findExistingCategoricalArmValue(String armInstanceUid, List<AbstractStudyDataValue> studyDataArmValues) {
-    for(AbstractStudyDataValue armValue: studyDataArmValues) {
-      if (armValue.getInstanceUid().equals(armInstanceUid) && armValue instanceof CategoricalStudyDataValue) {
-        return (CategoricalStudyDataValue) armValue;
-      }
-    }
-    return null;
-  }
-
 
   private JSONArray getQueryResultList(String namespaceUid, String query) {
     logger.debug(query);
