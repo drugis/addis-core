@@ -178,53 +178,6 @@ public class NamespaceControllerTest {
     verify(mappingService).getVersionedUuid(namespaceUid);
   }
 
-  @Test
-  public void testGetStudyGroups() throws Exception {
-    String studyUuid = "studyUuid";
-    JSONArray result = new JSONArray();
-    result.add(createTestResultObject());
-    when(triplestoreService.getStudyGroups(versionedUuid, studyUuid)).thenReturn(result);
-
-    ResultActions resultActions = mockMvc.perform(get("/namespaces/" + namespaceUid + "/studiesWithDetail/studyUuid/groups").param("version", versionUri.toString()));
-    resultActions
-            .andExpect(status().isOk())
-            .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()))
-            .andExpect(jsonPath("$[0].stringObject", is("string value")))
-            .andExpect(jsonPath("$[0].numberObject", is(1)))
-            .andExpect(jsonPath("$[0].dateObject", is(new DateTime(1980, 9, 10, 12, 0).getMillis())));
-
-    verify(triplestoreService).getStudyGroups(versionedUuid, studyUuid);
-    verify(mappingService).getVersionedUuid(namespaceUid);
-  }
-
-  @Test
-  public void testGetStudyEpochs() throws Exception {
-    String studyUuid = "studyUuid";
-    JSONArray result = new JSONArray();
-    result.add(createTestResultObject());
-    when(triplestoreService.getStudyEpochs(versionedUuid, studyUuid)).thenReturn(result);
-
-    ResultActions resultActions = mockMvc.perform(get("/namespaces/" + namespaceUid + "/studiesWithDetail/studyUuid/epochs").param("version", versionUri.toString()));
-    resultActions.andExpect(status().isOk()); // returns generic result
-
-    verify(triplestoreService).getStudyEpochs(versionedUuid, studyUuid);
-    verify(mappingService).getVersionedUuid(namespaceUid);
-  }
-
-  @Test
-  public void testGetStudyTreatmentActivities() throws Exception {
-    String studyUuid = "studyUuid";
-    List<TreatmentActivity> result = Collections.singletonList(new TreatmentActivity("uir", "type"));
-    when(triplestoreService.getStudyTreatmentActivities(versionedUuid, studyUuid)).thenReturn(result);
-
-    ResultActions resultActions = mockMvc.perform(get("/namespaces/" + namespaceUid + "/studiesWithDetail/studyUuid/treatmentActivities").param("version", versionUri.toString()));
-    resultActions.andExpect(status().isOk());
-    resultActions.andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()));
-
-    verify(triplestoreService).getStudyTreatmentActivities(versionedUuid, studyUuid);
-    verify(mappingService).getVersionedUuid(namespaceUid);
-  }
-
   private JSONObject createTestResultObject() {
     JSONObject object = new JSONObject();
     object.put("stringObject", "string value");

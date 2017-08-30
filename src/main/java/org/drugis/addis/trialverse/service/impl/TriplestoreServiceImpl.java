@@ -63,14 +63,9 @@ import static org.drugis.addis.trialverse.TrialverseUtilService.subStringAfterLa
 @Service
 public class TriplestoreServiceImpl implements TriplestoreService {
 
-  public final static String STUDY_DATE_FORMAT = "yyyy-MM-dd";
   public final static String NAMESPACE = TriplestoreService.loadResource("sparql/namespace.sparql");
   public final static String POPCHAR_DATA_QUERY = TriplestoreService.loadResource("sparql/populationCharacteristicCovariateData.sparql");
   public final static String STUDY_QUERY = TriplestoreService.loadResource("sparql/studyQuery.sparql");
-  public final static String STUDY_GROUPS_QUERY = TriplestoreService.loadResource("sparql/studyGroups.sparql");
-  public final static String STUDY_ARMS_EPOCHS = TriplestoreService.loadResource("sparql/studyEpochs.sparql");
-  public final static String STUDY_TREATMENT_ACTIVITIES = TriplestoreService.loadResource("sparql/studyTreatmentActivities.sparql");
-  public final static String SINGLE_STUDY_MEASUREMENTS = TriplestoreService.loadResource("sparql/singleStudyMeasurements.sparql");
   public final static String TRIAL_DATA = TriplestoreService.loadResource("sparql/trialData.sparql");
   public final static String OUTCOME_QUERY = TriplestoreService.loadResource("sparql/outcomes.sparql");
   public final static String POPCHAR_QUERY = TriplestoreService.loadResource("sparql/populationCharacteristics.sparql");
@@ -267,147 +262,6 @@ public class TriplestoreServiceImpl implements TriplestoreService {
 
     }
     return new ArrayList<>(studyCache.values());
-  }
-
-  @Override
-  public JSONArray getStudyGroups(String namespaceUid, String studyUuid) {
-    String query = StringUtils.replace(STUDY_GROUPS_QUERY, "$studyUuid", studyUuid);
-    return getQueryResultList(namespaceUid, query);
-  }
-
-  @Override
-  public JSONArray getStudyEpochs(String namespaceUid, String studyUuid) {
-    String query = StringUtils.replace(STUDY_ARMS_EPOCHS, "$studyUuid", studyUuid);
-    return getQueryResultList(namespaceUid, query);
-  }
-
-  @Override
-  public List<TreatmentActivity> getStudyTreatmentActivities(String namespaceUid, String studyUuid) {
-    String query = StringUtils.replace(STUDY_TREATMENT_ACTIVITIES, "$studyUuid", studyUuid);
-    JSONArray queryResult = getQueryResultList(namespaceUid, query);
-
-    Map<String, TreatmentActivity> treatmentActivityMap = new HashMap<>();
-    for (Object object : queryResult) {
-      JSONObject jsonObject = (JSONObject) object;
-      String treatmentActivityUid = (String) jsonObject.get("treatmentActivityUid");
-      TreatmentActivity treatmentActivity = treatmentActivityMap.get(treatmentActivityUid);
-      if (treatmentActivity == null) {
-        String treatmentActivityType = (String) jsonObject.get("treatmentActivityType");
-        treatmentActivity = new TreatmentActivity(treatmentActivityUid, treatmentActivityType);
-        treatmentActivityMap.put(treatmentActivityUid, treatmentActivity);
-      }
-
-      String epochUid = (String) jsonObject.get("epochUid");
-      String armUid = (String) jsonObject.get("armUid");
-      treatmentActivity.getActivityApplications().add(new ActivityApplication(epochUid, armUid));
-
-      if (jsonObject.containsKey("drugUid")) {
-        AdministeredDrug administeredDrug = buildAdministeredDrug(jsonObject);
-        treatmentActivity.getAdministeredDrugs().add(administeredDrug);
-      }
-    }
-
-    return new ArrayList<>(treatmentActivityMap.values());
-  }
-
-  private AdministeredDrug buildAdministeredDrug(JSONObject jsonObject) {
-    String drugUid = (String) jsonObject.get("drugUid");
-    String treatmentDrugLabel = (String) jsonObject.get("treatmentDrugLabel");
-    AdministeredDrug administeredDrug;
-    if (jsonObject.containsKey("fixedValue")) {
-      administeredDrug = new FixedAdministeredDrug.FixedAdministeredDrugBuilder()
-              .drugUid(drugUid)
-              .drugLabel(treatmentDrugLabel)
-              .fixedDosingPeriodicity((String) jsonObject.get("fixedDosingPeriodicity"))
-              .fixedUnitLabel((String) jsonObject.get("fixedUnitLabel"))
-              .fixedValue(Double.parseDouble((String) jsonObject.get("fixedValue")))
-              .build();
-    } else {
-      administeredDrug = new FlexibleAdministeredDrug.FlexibleAdministeredDrugBuilder()
-              .drugUid(drugUid)
-              .drugLabel(treatmentDrugLabel)
-              .minDosingPeriodicity((String) jsonObject.get("minDosingPeriodicity"))
-              .minUnitLabel((String) jsonObject.get("minUnitLabel"))
-              .minValue(Double.parseDouble((String) jsonObject.get("minValue")))
-              .maxDosingPeriodicity((String) jsonObject.get("maxDosingPeriodicity"))
-              .maxUnitLabel((String) jsonObject.get("maxUnitLabel"))
-              .maxValue(Double.parseDouble((String) jsonObject.get("maxValue")))
-              .build();
-    }
-    return administeredDrug;
-  }
-
-  private JSONArray getQueryResultList(String namespaceUid, String query) {
-    logger.debug(query);
-    ResponseEntity<String> response = queryTripleStoreHead(namespaceUid, query);
-    JSONArray bindings = JsonPath.read(response.getBody(), "$.results.bindings");
-    return parseBindings(bindings);
-  }
-
-  private JSONArray parseBindings(JSONArray bindings) {
-    JSONArray result = new JSONArray();
-    for (Object binding : bindings) {
-      JSONObject jsonObject = parseBinding(binding);
-      result.add(jsonObject);
-    }
-    return result;
-  }
-
-  private JSONObject parseBinding(Object binding) {
-    JSONObject jsonObject = (JSONObject) binding;
-    JSONObject newObject = new JSONObject();
-    for (String key : jsonObject.keySet()) {
-      Object value = JsonPath.read(binding, "$. " + key + ".value");
-      newObject.put(key, value);
-    }
-    return newObject;
-  }
-
-  private StudyWithDetails buildStudyWithDetailsFromJsonObject(Object binding) {
-    JSONObject row = (net.minidev.json.JSONObject) binding;
-    String graphUuid = row.containsKey("graphUri") ? subStringAfterLastSymbol(JsonPath.read(binding, "$.graphUri.value"), '/') : null;
-    String uid = subStringAfterLastSymbol(JsonPath.read(binding, "$.studyUri.value"), '/');
-    String name = row.containsKey("label") ? JsonPath.read(binding, "$.label.value") : null;
-    String title = row.containsKey("title") ? JsonPath.read(binding, "$.title.value") : null;
-    Integer studySize = row.containsKey("studySize") ? Integer.parseInt(JsonPath.read(binding, "$.studySize.value")) : null;
-    String allocation = row.containsKey("allocation") ? StudyAllocationEnum.fromString(subStringAfterLastSymbol(JsonPath.read(binding, "$.allocation.value"), '#')).toString() : null;
-    String blinding = row.containsKey("blinding") ? StudyBlindingEnum.fromString(subStringAfterLastSymbol(JsonPath.read(binding, "$.blinding.value"), '#')).toString() : null;
-    String inclusionCriteria = row.containsKey("inclusionCriteria") ? JsonPath.read(binding, "$.inclusionCriteria.value") : null;
-    Integer numberOfStudyCenters = row.containsKey("numberOfCenters") ? Integer.parseInt(JsonPath.read(binding, "$.numberOfCenters.value")) : null;
-    String publicationURLs = row.containsKey("publications") ? JsonPath.read(binding, "$.publications.value") : null;
-    String status = row.containsKey("status") ? StudyStatusEnum.fromString(subStringAfterLastSymbol(JsonPath.read(binding, "$.status.value"), '#')).toString() : null;
-    String indication = row.containsKey("indication") ? JsonPath.read(binding, "$.indication.value") : null;
-    String objective = row.containsKey("objective") ? JsonPath.read(binding, "$.objective.value") : null;
-    String investigationalDrugNames = row.containsKey("drugNames") ? JsonPath.read(binding, "$.drugNames.value") : null;
-    Integer numberOfArms = row.containsKey("numberOfArms") ? Integer.parseInt(JsonPath.read(binding, "$.numberOfArms.value")) : null;
-
-    DateTimeFormatter formatter = DateTimeFormat.forPattern(STUDY_DATE_FORMAT);
-    DateTime startDate = row.containsKey("startDate") ? formatter.parseDateTime(JsonPath.read(binding, "$.startDate.value")).toDateMidnight().toDateTime() : null;
-    DateTime endDate = row.containsKey("endDate") ? formatter.parseDateTime(JsonPath.read(binding, "$.endDate.value")).toDateMidnight().toDateTime() : null;
-
-    String dosing = row.containsKey("doseType") ? JsonPath.read(binding, "$.doseType.value") : "Fixed"; //todo needs better way of querying
-
-    return new StudyWithDetails
-            .StudyWithDetailsBuilder()
-            .graphUuid(graphUuid)
-            .studyUuid(uid)
-            .name(name)
-            .title(title)
-            .studySize(studySize)
-            .allocation(allocation)
-            .blinding(blinding)
-            .inclusionCriteria(inclusionCriteria)
-            .numberOfStudyCenters(numberOfStudyCenters)
-            .pubmedUrls(publicationURLs)
-            .status(status)
-            .indication(indication)
-            .objectives(objective)
-            .investigationalDrugNames(investigationalDrugNames)
-            .startDate(startDate)
-            .endDate(endDate)
-            .numberOfArms(numberOfArms)
-            .dosing(dosing)
-            .build();
   }
 
   public static String buildInterventionUnionString(Set<URI> interventionUris) {

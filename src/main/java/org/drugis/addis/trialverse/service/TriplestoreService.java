@@ -54,13 +54,7 @@ public interface TriplestoreService {
 
   List<Study> queryStudies(String namespaceUid, URI version);
 
-  JSONArray getStudyGroups(String namespaceUid, String studyUuid);
-
-  JSONArray getStudyEpochs(String namespaceUid, String studyUuid);
-
   List<TrialDataStudy> getSingleStudyData(String namespaceUid, URI studyUri, URI version, Set<URI> outcomeUris, Set<URI> interventionUids) throws ReadValueException;
-
-  List<TreatmentActivity> getStudyTreatmentActivities(String namespaceUid, String studyUuid);
 
   Set<AbstractIntervention> findMatchingIncludedInterventions(Set<AbstractIntervention> includedInterventions, TrialDataArm arm);
 
