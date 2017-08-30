@@ -74,7 +74,7 @@ define([], function() {
       },
       'exposure': {
         '@id': 'http://trials.drugis.org/ontology#exposure',
-        '@type': 'http://www.w3.org/2001/XMLSchema#integer'
+        '@type': 'http://www.w3.org/2001/XMLSchema#double'
       },
       'survival_time_scale': {
         '@id': 'http://trials.drugis.org/ontology#survival_time_scale',

@@ -159,20 +159,48 @@ define(['lodash', 'angular'], function(_, angular) {
       return dataRows;
     }
 
-    function checkStdErrShow(dataRows) {
+    function checkColumnsToShow(dataRows, measurementType) {
+      var columnsToShow = {
+        rate: (measurementType === 'dichotomous' || measurementType === 'survival'),
+        mu: measurementType === 'continuous',
+        sigma: shouldShowSigma(dataRows, measurementType),
+        sampleSize: shouldShowN(dataRows, measurementType),
+        stdErr: shouldShowStandardError(dataRows,measurementType),
+        exposure: measurementType === 'survival'
+      };
+      return columnsToShow;
+    }
+
+    function shouldShowSigma(dataRows, measurementType) {
+      if (measurementType !== 'continuous') {
+        return false;
+      }
       return _.find(dataRows, function(dataRow) {
-        //if I find a data row which contains stdErr but misses either stdDev or N
         return _.find(dataRow.measurements, function(measurement) {
-          return (measurement.sigma === 'NA' || measurement.sampleSize === 'NA') && measurement.stdErr !== 'NA' && measurement.stdErr !== null;
+          return measurement.sigma !== 'NA';
         });
       });
     }
 
-    function checkSigmaNShow(dataRows) {
+    function shouldShowN(dataRows, measurementType) {
+      if (measurementType !== 'continuous' && measurementType !== 'dichotomous') {
+        return false;
+      }
       return _.find(dataRows, function(dataRow) {
-        //if I find either no sigma or no N I don't need either to show
         return _.find(dataRow.measurements, function(measurement) {
-          return measurement.sigma !== 'NA' || measurement.sampleSize !== 'NA';
+          return measurement.sampleSize !== 'NA';
+        });
+      });
+    }
+
+    function shouldShowStandardError(dataRows, measurementType){
+      if (measurementType !== 'continuous') {
+        return false;
+      }
+      return _.find(dataRows, function(dataRow) {
+        //if I find a data row which contains stdErr but misses either stdDev or N
+        return _.find(dataRow.measurements, function(measurement) {
+          return measurement.stdErr !== 'NA' && measurement.stdErr !== null;
         });
       });
     }
@@ -204,6 +232,7 @@ define(['lodash', 'angular'], function(_, angular) {
           sigma: sigma,
           sampleSize: toTableLabel(outcomeMeasurement, 'sampleSize'),
           stdErr: toTableLabel(outcomeMeasurement, 'stdErr'),
+          exposure: toTableLabel(outcomeMeasurement,'exposure'),
           type: getRowMeasurementType(outcomeMeasurement)
         };
         return accum;
@@ -584,8 +613,7 @@ define(['lodash', 'angular'], function(_, angular) {
       buildOverlappingTreatmentMap: buildOverlappingTreatmentMap,
       changeArmExclusion: changeArmExclusion,
       changeCovariateInclusion: changeCovariateInclusion,
-      checkSigmaNShow: checkSigmaNShow,
-      checkStdErrShow: checkStdErrShow,
+      checkColumnsToShow: checkColumnsToShow,
       getMeasurementType: getMeasurementType,
       cleanUpExcludedArms: cleanUpExcludedArms,
       doesInterventionHaveAmbiguousArms: doesInterventionHaveAmbiguousArms,
