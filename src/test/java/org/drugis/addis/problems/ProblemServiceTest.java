@@ -187,10 +187,10 @@ public class ProblemServiceTest {
     int daanEtAlFluoxRate = 30;
     URI variableUri = outcome.getSemanticOutcomeUri();
     URI variableConceptUri = outcome.getSemanticOutcomeUri();
-    Measurement daanEtAlFluoxMeasurement1 = new Measurement(daanEtAlUri, variableUri, variableConceptUri, daanEtAlFluoxArmUri,
-            DICHOTOMOUS_TYPE_URI, daanEtAlFluoxSampleSize, daanEtAlFluoxRate, null, null, null);
-    Measurement daanEtAlFluoxMeasurement2 = new Measurement(daanEtAlUri, secondOutcomeUri, variableConceptUri, daanEtAlFluoxArmUri,
-            DICHOTOMOUS_TYPE_URI, daanEtAlFluoxSampleSize, daanEtAlFluoxRate, null, null, null);
+    Measurement daanEtAlFluoxMeasurement1 = new Measurement(daanEtAlUri, variableUri, variableConceptUri, null, daanEtAlFluoxArmUri,
+            DICHOTOMOUS_TYPE_URI, daanEtAlFluoxSampleSize, daanEtAlFluoxRate, null, null, null, null);
+    Measurement daanEtAlFluoxMeasurement2 = new Measurement(daanEtAlUri, secondOutcomeUri, variableConceptUri, null, daanEtAlFluoxArmUri,
+            DICHOTOMOUS_TYPE_URI, daanEtAlFluoxSampleSize, daanEtAlFluoxRate, null, null, null, null);
     AbstractSemanticIntervention simpleSemanticFluoxIntervention = new SimpleSemanticIntervention(daanEtAlFluoxInstance, fluoxConceptUri);
 
     TrialDataArm daanEtAlFluoxArm = new TrialDataArm(daanEtAlFluoxArmUri, "daanEtAlFluoxArm");
@@ -202,10 +202,10 @@ public class ProblemServiceTest {
     URI daanEtAlSertraArmUri = URI.create("daanEtAlSertraArm");
     int daanEtAlSertraSampleSize = 40;
     int daanEtAlSertraRate = 5;
-    Measurement daanEtAlSertraMeasurement1 = new Measurement(daanEtAlUri, variableUri, variableConceptUri, daanEtAlSertraArmUri,
-            DICHOTOMOUS_TYPE_URI, daanEtAlSertraSampleSize, daanEtAlSertraRate, null, null, null);
-    Measurement daanEtAlSertraMeasurement2 = new Measurement(daanEtAlUri, secondOutcomeUri, variableConceptUri, daanEtAlSertraArmUri,
-            DICHOTOMOUS_TYPE_URI, daanEtAlSertraSampleSize, daanEtAlSertraRate, null, null, null);
+    Measurement daanEtAlSertraMeasurement1 = new Measurement(daanEtAlUri, variableUri, variableConceptUri, null, daanEtAlSertraArmUri,
+            DICHOTOMOUS_TYPE_URI, daanEtAlSertraSampleSize, daanEtAlSertraRate, null, null, null, null);
+    Measurement daanEtAlSertraMeasurement2 = new Measurement(daanEtAlUri, secondOutcomeUri, variableConceptUri, null, daanEtAlSertraArmUri,
+            DICHOTOMOUS_TYPE_URI, daanEtAlSertraSampleSize, daanEtAlSertraRate, null, null, null, null);
     AbstractSemanticIntervention simpleSemanticSertraIntervention = new SimpleSemanticIntervention(daanEtAlSertraInstance, sertraConceptUri);
 
     TrialDataArm daanEtAlSertraArm = new TrialDataArm(daanEtAlSertraArmUri, "daanEtAlSertraArm");
@@ -217,10 +217,10 @@ public class ProblemServiceTest {
     URI daanEtAlParoxArmUri = URI.create("daanEtAlParoxArm");
     int daanEtAlParoxSampleSize = 40;
     int daanEtAlParoxRate = 5;
-    Measurement daanEtAlParoxMeasurement1 = new Measurement(daanEtAlUri, variableUri, variableConceptUri, daanEtAlParoxArmUri,
-            DICHOTOMOUS_TYPE_URI, daanEtAlParoxSampleSize, daanEtAlParoxRate, null, null, null);
-    Measurement daanEtAlParoxMeasurement2 = new Measurement(daanEtAlUri, secondOutcomeUri, variableConceptUri, daanEtAlParoxArmUri,
-            DICHOTOMOUS_TYPE_URI, daanEtAlParoxSampleSize, daanEtAlParoxRate, null, null, null);
+    Measurement daanEtAlParoxMeasurement1 = new Measurement(daanEtAlUri, variableUri, variableConceptUri, null, daanEtAlParoxArmUri,
+            DICHOTOMOUS_TYPE_URI, daanEtAlParoxSampleSize, daanEtAlParoxRate, null, null, null, null);
+    Measurement daanEtAlParoxMeasurement2 = new Measurement(daanEtAlUri, secondOutcomeUri, variableConceptUri, null, daanEtAlParoxArmUri,
+            DICHOTOMOUS_TYPE_URI, daanEtAlParoxSampleSize, daanEtAlParoxRate, null, null, null, null);
     AbstractSemanticIntervention simpleSemanticParoxIntervention = new SimpleSemanticIntervention(daanEtAlParoxInstance, paroxConceptUri);
 
     TrialDataArm unmatchedDaanEtAlParoxArm = new TrialDataArm(daanEtAlParoxArmUri, "daanEtAlParoxArm");
@@ -433,15 +433,15 @@ public class ProblemServiceTest {
     URI daanEtAlFluoxArmUri = URI.create(title + "FluoxArm");
     Integer daanEtAlFluoxSampleSize = 9001;
     Double daanEtAlFluoxStdErr = 0.4;
-    Measurement defaultDaanEtAlFluoxMeasurement = new Measurement(uri, variableUri, variableConceptUri, daanEtAlFluoxArmUri,
-            CONTINUOUS_TYPE_URI, daanEtAlFluoxSampleSize, null, null, daanEtAlFluoxStdErr, null);
+    Measurement defaultDaanEtAlFluoxMeasurement = new Measurement(uri, variableUri, variableConceptUri, null, daanEtAlFluoxArmUri,
+            CONTINUOUS_TYPE_URI, daanEtAlFluoxSampleSize, null, null, daanEtAlFluoxStdErr, null, null);
     URI daanEtAlSertraArmUri = URI.create(title + "SertraArm");
     Integer daanEtAlSertraSampleSize = 42;
     Double daanEtAlSertraMean = 0.43;
     Double daanEtAlSertraStdDev = 0.33;
 
-    Measurement daanEtAlSertraMeasurement = new Measurement(uri, variableUri, variableConceptUri, daanEtAlSertraArmUri,
-            CONTINUOUS_TYPE_URI, daanEtAlSertraSampleSize, null, daanEtAlSertraStdDev, null, daanEtAlSertraMean);
+    Measurement daanEtAlSertraMeasurement = new Measurement(uri, variableUri, variableConceptUri, null, daanEtAlSertraArmUri,
+            CONTINUOUS_TYPE_URI, daanEtAlSertraSampleSize, null, daanEtAlSertraStdDev, null, daanEtAlSertraMean, null);
 
     study.getTrialDataArms().forEach(arm -> arm.getMeasurements().clear());
     TrialDataArm fluoxArm = study.getTrialDataArms().get(0);
@@ -463,8 +463,8 @@ public class ProblemServiceTest {
     URI daanEtAlFluoxArmUri = URI.create(title + "FluoxArm");
     int daanEtAlFluoxSampleSize = 20;
     int daanEtAlFluoxRate = 30;
-    Measurement defaultDaanEtAlFluoxMeasurement = new Measurement(uri, variableUri, variableConceptUri, daanEtAlFluoxArmUri,
-            DICHOTOMOUS_TYPE_URI, daanEtAlFluoxSampleSize, daanEtAlFluoxRate, null, null, null);
+    Measurement defaultDaanEtAlFluoxMeasurement = new Measurement(uri, variableUri, variableConceptUri, null, daanEtAlFluoxArmUri,
+            DICHOTOMOUS_TYPE_URI, daanEtAlFluoxSampleSize, daanEtAlFluoxRate, null, null, null, null);
     AbstractSemanticIntervention simpleSemanticFluoxIntervention = new SimpleSemanticIntervention(daanEtAlFluoxInstance, fluoxConceptUri);
 
     TrialDataArm daanEtAlFluoxArm = new TrialDataArm(daanEtAlFluoxArmUri, "daanEtAlFluoxArm");
@@ -475,8 +475,8 @@ public class ProblemServiceTest {
     URI daanEtAlSertraArmUri = URI.create(title + "SertraArm");
     int daanEtAlSertraSampleSize = 40;
     int daanEtAlSertraRate = 5;
-    Measurement daanEtAlSertraMeasurement = new Measurement(uri, variableUri, variableConceptUri, daanEtAlSertraArmUri,
-            DICHOTOMOUS_TYPE_URI, daanEtAlSertraSampleSize, daanEtAlSertraRate, null, null, null);
+    Measurement daanEtAlSertraMeasurement = new Measurement(uri, variableUri, variableConceptUri, null, daanEtAlSertraArmUri,
+            DICHOTOMOUS_TYPE_URI, daanEtAlSertraSampleSize, daanEtAlSertraRate, null, null, null, null);
     AbstractSemanticIntervention simpleSemanticSertraIntervention = new SimpleSemanticIntervention(daanEtAlSertraInstance, sertraConceptUri);
 
     TrialDataArm daanEtAlSertraArm = new TrialDataArm(daanEtAlSertraArmUri, title + "SertraArm");
@@ -484,8 +484,8 @@ public class ProblemServiceTest {
     daanEtAlFluoxArm.addSemanticIntervention(simpleSemanticSertraIntervention);
 
     URI daanEtAlExcludedArmUri = URI.create(title + "excludeme");
-    Measurement daanEtAlExcludedMeasurement = new Measurement(uri, variableUri, variableConceptUri, daanEtAlExcludedArmUri,
-            DICHOTOMOUS_TYPE_URI, daanEtAlSertraSampleSize, daanEtAlSertraRate, null, null, null);
+    Measurement daanEtAlExcludedMeasurement = new Measurement(uri, variableUri, variableConceptUri, null, daanEtAlExcludedArmUri,
+            DICHOTOMOUS_TYPE_URI, daanEtAlSertraSampleSize, daanEtAlSertraRate, null, null, null, null);
     TrialDataArm excludedArm = new TrialDataArm(daanEtAlSertraArmUri, title + "excludedArm");
     excludedArm.addMeasurement(measurementMoment, daanEtAlExcludedMeasurement);
     excludedArm.addSemanticIntervention(simpleSemanticSertraIntervention);

@@ -128,7 +128,7 @@ public class CovariateOptionEnumTest {
     InputStream datasetsModelStream = new ClassPathResource(pathToMockStudy).getInputStream();
     Model model = ModelFactory.createDefaultModel();
     model.read(datasetsModelStream, null, "TTL");
-    Dataset dataset = DatasetFactory.createMem();
+    Dataset dataset = DatasetFactory.createGeneral();
     dataset.addNamedModel("3e6794f1-c95c-486e-ac8d-55e9259d0f4a", model);
 
     String query = covariate.getQuery();

@@ -44,12 +44,12 @@ public class PerformanceTableBuilderTest {
   private Variable variable2 = new Variable(URI.create("102L"), "1L", variableName2, "desc", null, false, MeasurementType.CONTINUOUS, URI.create("varConcept2"));
 
 
-  private Measurement dichotomousMeasurement = new Measurement(URI.create("1L"), variable1.getUri(), variable1.getVariableConceptUri(),
-          arm1.getUri(), DICHOTOMOUS_TYPE_URI, 111, 42, null, null, null);
-  private Measurement continuousMeasurementStdDev = new Measurement(URI.create("1L"), variable2.getUri(), variable2.getVariableConceptUri(),
-          arm1.getUri(), CONTINUOUS_TYPE_URI, 222, null, 0.2, null, 7.56);
-  private Measurement continuousMeasurementStdErr = new Measurement(URI.create("1L"), variable2.getUri(), variable2.getVariableConceptUri(),
-          arm1.getUri(), CONTINUOUS_TYPE_URI, 333, null, null, 0.3, 7.56);
+  private Measurement dichotomousMeasurement = new Measurement(URI.create("1L"), variable1.getUri(), variable1.getVariableConceptUri(), null,
+          arm1.getUri(), DICHOTOMOUS_TYPE_URI, 111, 42, null, null, null, null);
+  private Measurement continuousMeasurementStdDev = new Measurement(URI.create("1L"), variable2.getUri(), variable2.getVariableConceptUri(), null,
+          arm1.getUri(), CONTINUOUS_TYPE_URI, 222, null, 0.2, null, 7.56, null);
+  private Measurement continuousMeasurementStdErr = new Measurement(URI.create("1L"), variable2.getUri(), variable2.getVariableConceptUri(), null,
+          arm1.getUri(), CONTINUOUS_TYPE_URI, 333, null, null, 0.3, 7.56, null);
 
   @Before
   public void setUp() throws Exception {
@@ -72,19 +72,19 @@ public class PerformanceTableBuilderTest {
 
     URI studyUri = URI.create("itsastudio");
     Integer alternativeUri1 = 1;
-    Pair<Measurement, Integer> row1 = Pair.of(new Measurement(studyUri, criterionUri1, dichotomousMeasurement.getVariableConceptUri(),
-            arm1.getUri(), CONTINUOUS_TYPE_URI, sampleSize1, null, stdDev, null, mu), alternativeUri1);
+    Pair<Measurement, Integer> row1 = Pair.of(new Measurement(studyUri, criterionUri1, dichotomousMeasurement.getVariableConceptUri(), null,
+            arm1.getUri(), CONTINUOUS_TYPE_URI, sampleSize1, null, stdDev, null, mu, null), alternativeUri1);
     Integer alternativeUri2 = 2;
-    Pair<Measurement, Integer> row2 = Pair.of(new Measurement(studyUri, criterionUri2, continuousMeasurementStdDev.getVariableConceptUri(),
-            arm2.getUri(), DICHOTOMOUS_TYPE_URI, sampleSize2, rate, null, null, null), alternativeUri2);
-    Pair<Measurement, Integer> row3 = Pair.of(new Measurement(studyUri, criterionUri1, dichotomousMeasurement.getVariableConceptUri(),
-            arm2.getUri(), CONTINUOUS_TYPE_URI, sampleSize1, null, stdDev, null, mu), alternativeUri2);
-    Pair<Measurement, Integer> row4 = Pair.of(new Measurement(studyUri, criterionUri2, continuousMeasurementStdDev.getVariableConceptUri(),
-            arm1.getUri(), DICHOTOMOUS_TYPE_URI, sampleSize2, rate, null, null, null), alternativeUri1);
-    Pair<Measurement, Integer> row5 = Pair.of(new Measurement(studyUri, criterionUri1, continuousMeasurementStdErr.getVariableConceptUri(),
-            arm1.getUri(), CONTINUOUS_TYPE_URI, sampleSize3, null, null, stdErr, null), alternativeUri1);
-    Pair<Measurement, Integer> row6 = Pair.of(new Measurement(studyUri, criterionUri2, continuousMeasurementStdErr.getVariableConceptUri(),
-            arm1.getUri(), CONTINUOUS_TYPE_URI, sampleSize3, null, null, stdErr, null), alternativeUri2);
+    Pair<Measurement, Integer> row2 = Pair.of(new Measurement(studyUri, criterionUri2, continuousMeasurementStdDev.getVariableConceptUri(), null,
+            arm2.getUri(), DICHOTOMOUS_TYPE_URI, sampleSize2, rate, null, null, null, null), alternativeUri2);
+    Pair<Measurement, Integer> row3 = Pair.of(new Measurement(studyUri, criterionUri1, dichotomousMeasurement.getVariableConceptUri(), null,
+            arm2.getUri(), CONTINUOUS_TYPE_URI, sampleSize1, null, stdDev, null, mu, null), alternativeUri2);
+    Pair<Measurement, Integer> row4 = Pair.of(new Measurement(studyUri, criterionUri2, continuousMeasurementStdDev.getVariableConceptUri(), null,
+            arm1.getUri(), DICHOTOMOUS_TYPE_URI, sampleSize2, rate, null, null, null, null), alternativeUri1);
+    Pair<Measurement, Integer> row5 = Pair.of(new Measurement(studyUri, criterionUri1, continuousMeasurementStdErr.getVariableConceptUri(), null,
+            arm1.getUri(), CONTINUOUS_TYPE_URI, sampleSize3, null, null, stdErr, null, null), alternativeUri1);
+    Pair<Measurement, Integer> row6 = Pair.of(new Measurement(studyUri, criterionUri2, continuousMeasurementStdErr.getVariableConceptUri(), null,
+            arm1.getUri(), CONTINUOUS_TYPE_URI, sampleSize3, null, null, stdErr, null, null), alternativeUri2);
 
     // EXECUTE
     Set<Pair<Measurement, Integer>> measurementPairs = ImmutableSet.of(row1, row2, row3, row4, row5, row6);
