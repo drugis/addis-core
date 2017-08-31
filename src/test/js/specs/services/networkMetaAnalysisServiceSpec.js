@@ -3,110 +3,110 @@ define(['angular', 'angular-mocks', 'services'], function(angular) {
   var CONTINUOUS_TYPE = 'http://trials.drugis.org/ontology#continuous';
 
   var exampleStudies = [{
-    'studyUri': 'http://trials.drugis.org/graphs/favaUuid',
-    'name': 'Fava et al, 2002',
-    'defaultMeasurementMoment': 'defaultMMUri',
-    'measurementMoments': [{
+    studyUri: 'http://trials.drugis.org/graphs/favaUuid',
+    name: 'Fava et al, 2002',
+    defaultMeasurementMoment: 'defaultMMUri',
+    measurementMoments: [{
       uri: 'defaultMMUri'
     }],
-    'trialDataArms': [{
-      'uri': 'http://trials.drugis.org/instances/fava-parox-arm',
-      'name': 'Paroxetine',
-      'drugInstance': 'http://trials.drugis.org/instances/parox-instance',
-      'measurements': {
+    trialDataArms: [{
+      uri: 'http://trials.drugis.org/instances/fava-parox-arm',
+      name: 'Paroxetine',
+      drugInstance: 'http://trials.drugis.org/instances/parox-instance',
+      measurements: {
         defaultMMUri: [{
-          'measurementTypeURI': CONTINUOUS_TYPE,
-          'studyUuid': 'http://trials.drugis.org/graphs/favaUuid',
-          'variableUri': 'http://trials.drugis.org/instances/hamd-instance',
-          'variableConceptUri': 'variableConceptUri',
-          'armUri': 'http://trials.drugis.org/instances/fava-parox-arm',
-          'sampleSize': 96,
-          'rate': 64,
-          'stdDev': null,
-          'mean': null,
+          measurementTypeURI: CONTINUOUS_TYPE,
+          studyUuid: 'http://trials.drugis.org/graphs/favaUuid',
+          variableUri: 'http://trials.drugis.org/instances/hamd-instance',
+          variableConceptUri: 'variableConceptUri',
+          armUri: 'http://trials.drugis.org/instances/fava-parox-arm',
+          sampleSize: 96,
+          rate: null,
+          stdDev: null,
+          mean: 3.5,
           exposure: null
         }]
       },
-      'semanticIntervention': {
-        'drugInstance': 'http://trials.drugis.org/instances/parox-instance',
-        'drugConcept': 'http://trials.drugis.org/concepts/parox-concept'
+      semanticIntervention: {
+        drugInstance: 'http://trials.drugis.org/instances/parox-instance',
+        drugConcept: 'http://trials.drugis.org/concepts/parox-concept'
       },
-      'matchedProjectInterventionIds': [2]
+      matchedProjectInterventionIds: [2]
     }, {
-      'uri': 'http://trials.drugis.org/instances/fava-sertra-arm',
-      'name': 'Sertraline',
-      'drugInstance': 'http://trials.drugis.org/instances/sertra-instance',
-      'measurements': {
+      uri: 'http://trials.drugis.org/instances/fava-sertra-arm',
+      name: 'Sertraline',
+      drugInstance: 'http://trials.drugis.org/instances/sertra-instance',
+      measurements: {
         defaultMMUri: [{
-          'measurementTypeURI': CONTINUOUS_TYPE,
-          'studyUuid': 'http://trials.drugis.org/graphs/favaUuid',
-          'variableUri': 'http://trials.drugis.org/instances/hamd-instance',
-          'variableConceptUri': 'variableConceptUri',
-          'armUri': 'http://trials.drugis.org/instances/fava-sertra-arm',
-          'sampleSize': 96,
-          'rate': 70,
-          'stdDev': null,
-          'mean': null,
+          measurementTypeURI: CONTINUOUS_TYPE,
+          studyUuid: 'http://trials.drugis.org/graphs/favaUuid',
+          variableUri: 'http://trials.drugis.org/instances/hamd-instance',
+          variableConceptUri: 'variableConceptUri',
+          armUri: 'http://trials.drugis.org/instances/fava-sertra-arm',
+          sampleSize: 96,
+          rate: null,
+          stdDev: null,
+          mean: 4.5,
           exposure: null
         }]
       },
-      'semanticIntervention': {
-        'drugInstance': 'http://trials.drugis.org/instances/sertra-instance',
-        'drugConcept': 'http://trials.drugis.org/concepts/sertra-concept'
+      semanticIntervention: {
+        drugInstance: 'http://trials.drugis.org/instances/sertra-instance',
+        drugConcept: 'http://trials.drugis.org/concepts/sertra-concept'
       },
-      'matchedProjectInterventionIds': [3]
+      matchedProjectInterventionIds: [3]
     }, {
-      'uri': 'http://trials.drugis.org/instances/fava-arm-1-uri',
-      'name': 'Fluoxetine',
-      'drugInstance': 'http://trials.drugis.org/instances/fluoxInstance',
-      'measurements': {
+      uri: 'http://trials.drugis.org/instances/fava-arm-1-uri',
+      name: 'Fluoxetine',
+      drugInstance: 'http://trials.drugis.org/instances/fluoxInstance',
+      measurements: {
         defaultMMUri: [{
-          'measurementTypeURI': CONTINUOUS_TYPE,
-          'studyUuid': 'http://trials.drugis.org/graphs/favaUuid',
-          'variableUri': 'http://trials.drugis.org/instances/hamd-instance',
-          'variableConceptUri': 'variableConceptUri',
-          'armUri': 'http://trials.drugis.org/instances/fava-arm-1-uri',
-          'sampleSize': 92,
-          'rate': 57,
-          'stdDev': null,
-          'mean': null,
+          measurementTypeURI: CONTINUOUS_TYPE,
+          studyUuid: 'http://trials.drugis.org/graphs/favaUuid',
+          variableUri: 'http://trials.drugis.org/instances/hamd-instance',
+          variableConceptUri: 'variableConceptUri',
+          armUri: 'http://trials.drugis.org/instances/fava-arm-1-uri',
+          sampleSize: 92,
+          rate: null,
+          stdDev: null,
+          mean: 5.5,
           exposure: null
         }]
       },
-      'semanticIntervention': {
-        'drugInstance': 'http://trials.drugis.org/instances/fluoxInstance',
-        'drugConcept': 'http://trials.drugis.org/concepts/fluox-concept'
+      semanticIntervention: {
+        drugInstance: 'http://trials.drugis.org/instances/fluoxInstance',
+        drugConcept: 'http://trials.drugis.org/concepts/fluox-concept'
       },
-      'matchedProjectInterventionIds': [1]
+      matchedProjectInterventionIds: [1]
     }],
-    'covariateValues': [{
-      'covariateKey': 'COVARIATE_KEY',
+    covariateValues: [{
+      covariateKey: 'COVARIATE_KEY',
       value: 123
     }]
   }];
 
   var exampleNetworkStudies = [{
-    'studyUri': '44',
-    'name': 'TAK491-008 / NCT00696241',
+    studyUri: '44',
+    name: 'TAK491-008 / NCT00696241',
     defaultMeasurementMoment: 'defaultMMUri',
-    'covariateValues': [{
-      'covariateKey': 'COVARIATE_KEY',
+    covariateValues: [{
+      covariateKey: 'COVARIATE_KEY',
       value: 123
     }, ],
-    'trialDataArms': [{
-      'uri': '144',
-      'name': 'Azilsartan Medoxomil 40 mg QD',
-      'drugInstance': '98',
-      'measurements': {
+    trialDataArms: [{
+      uri: '144',
+      name: 'Azilsartan Medoxomil 40 mg QD',
+      drugInstance: '98',
+      measurements: {
         defaultMMUri: [{
-          'measurementTypeURI': CONTINUOUS_TYPE,
-          'mean': -14.47,
-          'armUri': '144',
-          'variableUri': 698,
-          'variableConceptUri': 'variableConceptUri1',
+          measurementTypeURI: CONTINUOUS_TYPE,
+          mean: -14.47,
+          armUri: '144',
+          variableUri: 698,
+          variableConceptUri: 'variableConceptUri1',
           'measurementAttribute': 'mean',
-          'sampleSize': 276,
-          'stdDev': 15.815811834996014
+          sampleSize: 276,
+          stdDev: 15.815811834996014
         }]
       },
       semanticIntervention: {
@@ -115,19 +115,19 @@ define(['angular', 'angular-mocks', 'services'], function(angular) {
       },
       matchedProjectInterventionIds: [null]
     }, {
-      'uri': '145',
-      'name': 'Azilsartan Medoxomil 80 mg QD',
+      uri: '145',
+      name: 'Azilsartan Medoxomil 80 mg QD',
       'study': '44',
-      'drugInstance': '98',
-      'measurements': {
+      drugInstance: '98',
+      measurements: {
         defaultMMUri: [{
-          'measurementTypeURI': CONTINUOUS_TYPE,
-          'mean': -17.58,
-          'armUri': '145',
-          'variableUri': '698',
-          'variableConceptUri': 'variableConceptUri1',
-          'sampleSize': 279,
-          'stdDev': 15.818018554800092
+          measurementTypeURI: CONTINUOUS_TYPE,
+          mean: -17.58,
+          armUri: '145',
+          variableUri: '698',
+          variableConceptUri: 'variableConceptUri1',
+          sampleSize: 279,
+          stdDev: 15.818018554800092
         }]
       },
       semanticIntervention: {
@@ -136,18 +136,18 @@ define(['angular', 'angular-mocks', 'services'], function(angular) {
       },
       matchedProjectInterventionIds: [null]
     }, {
-      'uri': '146',
-      'name': 'Olmesartan 40 mg QD',
-      'drugInstance': '99',
-      'measurements': {
+      uri: '146',
+      name: 'Olmesartan 40 mg QD',
+      drugInstance: '99',
+      measurements: {
         defaultMMUri: [{
-          'measurementTypeURI': CONTINUOUS_TYPE,
-          'mean': -14.87,
-          'armUri': '146',
-          'variableUri': '698',
-          'variableConceptUri': 'variableConceptUri1',
-          'sampleSize': 280,
-          'stdDev': 15.812874501494028
+          measurementTypeURI: CONTINUOUS_TYPE,
+          mean: -14.87,
+          armUri: '146',
+          variableUri: '698',
+          variableConceptUri: 'variableConceptUri1',
+          sampleSize: 280,
+          stdDev: 15.812874501494028
         }]
       },
       semanticIntervention: {
@@ -158,18 +158,18 @@ define(['angular', 'angular-mocks', 'services'], function(angular) {
       matchedProjectInterventionIds: [44]
 
     }, {
-      'uri': '147',
-      'name': 'Placebo QD',
-      'drugInstance': '100',
-      'measurements': {
+      uri: '147',
+      name: 'Placebo QD',
+      drugInstance: '100',
+      measurements: {
         defaultMMUri: [{
-          'measurementTypeURI': CONTINUOUS_TYPE,
-          'mean': -2.06,
-          'armUri': '147',
+          measurementTypeURI: CONTINUOUS_TYPE,
+          mean: -2.06,
+          armUri: '147',
           'variabletUri': '698',
-          'variableConceptUri': 'variableConceptUri1',
-          'sampleSize': 140,
-          'stdDev': 15.819597340008373
+          variableConceptUri: 'variableConceptUri1',
+          sampleSize: 140,
+          stdDev: 15.819597340008373
         }]
       },
       semanticIntervention: {
@@ -178,18 +178,18 @@ define(['angular', 'angular-mocks', 'services'], function(angular) {
       },
       matchedProjectInterventionIds: [43]
     }, {
-      'uri': 143,
-      'name': 'Azilsartan Medoxomil 20 mg QD',
-      'drugInstance': '98',
-      'measurements': {
+      uri: 143,
+      name: 'Azilsartan Medoxomil 20 mg QD',
+      drugInstance: '98',
+      measurements: {
         defaultMMUri: [{
-          'measurementTypeURI': CONTINUOUS_TYPE,
-          'mean': -14.28,
-          'armUri': '143',
-          'variableUri': 698,
-          'variableConceptUri': 'variableConceptUri1',
-          'sampleSize': 274,
-          'stdDev': 15.824615761527987
+          measurementTypeURI: CONTINUOUS_TYPE,
+          mean: -14.28,
+          armUri: '143',
+          variableUri: 698,
+          variableConceptUri: 'variableConceptUri1',
+          sampleSize: 274,
+          stdDev: 15.824615761527987
         }]
       },
       semanticIntervention: {
@@ -199,23 +199,23 @@ define(['angular', 'angular-mocks', 'services'], function(angular) {
       matchedProjectInterventionIds: [null]
     }]
   }, {
-    'studyUri': '45',
-    'name': 'TAK491-011 / NCT00591253',
-    'defaultMeasurementMoment': 'defaultMMUri',
-    'trialDataArms': [{
-      'uri': '149',
-      'name': 'Azilsartan Medoxomil 40 mg QD',
-      'drugInstance': '101',
-      'measurements': {
+    studyUri: '45',
+    name: 'TAK491-011 / NCT00591253',
+    defaultMeasurementMoment: 'defaultMMUri',
+    trialDataArms: [{
+      uri: '149',
+      name: 'Azilsartan Medoxomil 40 mg QD',
+      drugInstance: '101',
+      measurements: {
         defaultMMUri: [{
-          'measurementTypeURI': CONTINUOUS_TYPE,
-          'mean': -9.51,
-          'armUri': '149',
-          'variableUri': '731',
-          'variableConceptUri': 'variableConceptUri1',
+          measurementTypeURI: CONTINUOUS_TYPE,
+          mean: -9.51,
+          armUri: '149',
+          variableUri: '731',
+          variableConceptUri: 'variableConceptUri1',
           'measurementAttribute': 'mean',
-          'sampleSize': 134,
-          'stdDev': 15.395863080711
+          sampleSize: 134,
+          stdDev: 15.395863080711
         }]
       },
       semanticIntervention: {
@@ -224,19 +224,19 @@ define(['angular', 'angular-mocks', 'services'], function(angular) {
       },
       matchedProjectInterventionIds: [null]
     }, {
-      'uri': '150',
-      'name': 'Azilsartan Medoxomil 80 mg QD',
-      'drugInstance': '101',
-      'measurements': {
+      uri: '150',
+      name: 'Azilsartan Medoxomil 80 mg QD',
+      drugInstance: '101',
+      measurements: {
         defaultMMUri: [{
-          'measurementTypeURI': CONTINUOUS_TYPE,
-          'mean': -9.58,
-          'armUri': '150',
-          'variableUri': '731',
-          'variableConceptUri': 'variableConceptUri1',
+          measurementTypeURI: CONTINUOUS_TYPE,
+          mean: -9.58,
+          armUri: '150',
+          variableUri: '731',
+          variableConceptUri: 'variableConceptUri1',
           'measurementAttribute': 'mean',
-          'sampleSize': 130,
-          'stdDev': 15.403769993089353
+          sampleSize: 130,
+          stdDev: 15.403769993089353
         }]
       },
       semanticIntervention: {
@@ -245,18 +245,18 @@ define(['angular', 'angular-mocks', 'services'], function(angular) {
       },
       matchedProjectInterventionIds: [null]
     }, {
-      'uri': '151',
-      'name': 'Placebo QD',
-      'drugInstance': '102',
-      'measurements': {
+      uri: '151',
+      name: 'Placebo QD',
+      drugInstance: '102',
+      measurements: {
         defaultMMUri: [{
-          'measurementTypeURI': CONTINUOUS_TYPE,
-          'mean': -3.04,
-          'armUri': 151,
-          'variableUri': 731,
-          'variableConceptUri': 'variableConceptUri1',
-          'sampleSize': 271,
-          'stdDev': 15.37290593869617
+          measurementTypeURI: CONTINUOUS_TYPE,
+          mean: -3.04,
+          armUri: 151,
+          variableUri: 731,
+          variableConceptUri: 'variableConceptUri1',
+          sampleSize: 271,
+          stdDev: 15.37290593869617
         }]
       },
       semanticIntervention: {
@@ -266,22 +266,22 @@ define(['angular', 'angular-mocks', 'services'], function(angular) {
       matchedProjectInterventionIds: [43]
     }]
   }, {
-    'studyUri': '46',
-    'name': 'TAK491-019 / NCT00696436',
-    'defaultMeasurementMoment': 'defaultMMUri',
-    'trialDataArms': [{
-      'uri': '156',
-      'name': 'Olmesartan 40 mg QD',
-      'drugInstance': '105',
-      'measurements': {
+    studyUri: '46',
+    name: 'TAK491-019 / NCT00696436',
+    defaultMeasurementMoment: 'defaultMMUri',
+    trialDataArms: [{
+      uri: '156',
+      name: 'Olmesartan 40 mg QD',
+      drugInstance: '105',
+      measurements: {
         defaultMMUri: [{
-          'measurementTypeURI': CONTINUOUS_TYPE,
-          'mean': -13.2,
-          'armUri': '156',
-          'variableUri': '758',
-          'variableConceptUri': 'variableConceptUri1',
-          'sampleSize': 283,
-          'stdDev': 15.729134591578775
+          measurementTypeURI: CONTINUOUS_TYPE,
+          mean: -13.2,
+          armUri: '156',
+          variableUri: '758',
+          variableConceptUri: 'variableConceptUri1',
+          sampleSize: 283,
+          stdDev: 15.729134591578775
         }]
       },
       semanticIntervention: {
@@ -290,18 +290,18 @@ define(['angular', 'angular-mocks', 'services'], function(angular) {
       },
       matchedProjectInterventionIds: [44]
     }, {
-      'uri': 155,
-      'name': 'Valsartan 320 mg QD',
-      'drugInstance': '104',
-      'measurements': {
+      uri: 155,
+      name: 'Valsartan 320 mg QD',
+      drugInstance: '104',
+      measurements: {
         defaultMMUri: [{
-          'measurementTypeURI': CONTINUOUS_TYPE,
-          'mean': -11.31,
-          'armUri': '155',
-          'variableUri': '758',
-          'variableConceptUri': 'variableConceptUri1',
-          'sampleSize': 271,
-          'stdDev': 15.721284139662384
+          measurementTypeURI: CONTINUOUS_TYPE,
+          mean: -11.31,
+          armUri: '155',
+          variableUri: '758',
+          variableConceptUri: 'variableConceptUri1',
+          sampleSize: 271,
+          stdDev: 15.721284139662384
         }]
       },
       semanticIntervention: {
@@ -310,18 +310,18 @@ define(['angular', 'angular-mocks', 'services'], function(angular) {
       },
       matchedProjectInterventionIds: [null]
     }, {
-      'uri': 157,
-      'name': 'Placebo QD',
-      'drugInstance': '106',
-      'measurements': {
+      uri: 157,
+      name: 'Placebo QD',
+      drugInstance: '106',
+      measurements: {
         defaultMMUri: [{
-          'measurementTypeURI': CONTINUOUS_TYPE,
-          'mean': -1.83,
-          'armUri': '157',
-          'variableUri': '758',
-          'variableConceptUri': 'variableConceptUri1',
-          'sampleSize': 148,
-          'stdDev': 15.730023903351194
+          measurementTypeURI: CONTINUOUS_TYPE,
+          mean: -1.83,
+          armUri: '157',
+          variableUri: '758',
+          variableConceptUri: 'variableConceptUri1',
+          sampleSize: 148,
+          stdDev: 15.730023903351194
         }]
       },
       semanticIntervention: {
@@ -330,17 +330,17 @@ define(['angular', 'angular-mocks', 'services'], function(angular) {
       },
       matchedProjectInterventionIds: [43]
     }, {
-      'uri': 154,
-      'name': 'Azilsartan Medoxomil 80 mg QD',
-      'drugInstance': '103',
-      'measurements': {
+      uri: 154,
+      name: 'Azilsartan Medoxomil 80 mg QD',
+      drugInstance: '103',
+      measurements: {
         defaultMMUri: [{
-          'measurementTypeURI': CONTINUOUS_TYPE,
-          'realValue': -16.74,
-          'armUri': 154,
-          'variableUri': 758,
-          'variableConceptUri': 'variableConceptUri1',
-          'stdDev': 15.725114625973317
+          measurementTypeURI: CONTINUOUS_TYPE,
+          realValue: -16.74,
+          armUri: 154,
+          variableUri: 758,
+          variableConceptUri: 'variableConceptUri1',
+          stdDev: 15.725114625973317
         }]
       },
       semanticIntervention: {
@@ -349,18 +349,18 @@ define(['angular', 'angular-mocks', 'services'], function(angular) {
       },
       matchedProjectInterventionIds: [null]
     }, {
-      'uri': '153',
-      'name': 'Azilsartan Medoxomil 40 mg QD',
-      'drugInstance': '103',
-      'measurements': {
+      uri: '153',
+      name: 'Azilsartan Medoxomil 40 mg QD',
+      drugInstance: '103',
+      measurements: {
         defaultMMUri: [{
-          'measurementTypeURI': CONTINUOUS_TYPE,
-          'mean': -16.38,
-          'armUri': '153',
-          'variableUri': '758',
-          'variableConceptUri': 'variableConceptUri1',
-          'sampleSize': 269,
-          'stdDev': 15.728769468715601
+          measurementTypeURI: CONTINUOUS_TYPE,
+          mean: -16.38,
+          armUri: '153',
+          variableUri: '758',
+          variableConceptUri: 'variableConceptUri1',
+          sampleSize: 269,
+          stdDev: 15.728769468715601
         }]
       },
       semanticIntervention: {
@@ -374,13 +374,13 @@ define(['angular', 'angular-mocks', 'services'], function(angular) {
   var expectedNetwork = {
     'interventions': [{
       'name': 'placebo',
-      'sampleSize': 559
+      sampleSize: 559
     }, {
       'name': 'Olmes',
-      'sampleSize': 563
+      sampleSize: 563
     }, {
       'name': 'Chlora',
-      'sampleSize': 0
+      sampleSize: 0
     }],
     'edges': [{
       'from': {
@@ -522,12 +522,12 @@ define(['angular', 'angular-mocks', 'services'], function(angular) {
             measurements: {
               defaultMMUri: {
                 type: 'continuous',
-                rate: 64,
-                mu: 'NA',
+                rate: null,
+                mu: 3.5,
                 sigma: 'NA',
                 sampleSize: 96,
                 stdErr: 'NA',
-                exposure: 'NA'
+                exposure: null
               }
             },
             measurementMoments: trialVerseStudyData[0].measurementMoments,
@@ -555,12 +555,12 @@ define(['angular', 'angular-mocks', 'services'], function(angular) {
             measurements: {
               defaultMMUri: {
                 type: 'continuous',
-                rate: 70,
-                mu: 'NA',
+                rate: null,
+                mu: 4.5,
                 sigma: 'NA',
                 sampleSize: 96,
                 stdErr: 'NA',
-                exposure: 'NA'
+                exposure: null
               }
             },
             measurementMoments: trialVerseStudyData[0].measurementMoments,
@@ -588,12 +588,12 @@ define(['angular', 'angular-mocks', 'services'], function(angular) {
             measurements: {
               defaultMMUri: {
                 type: 'continuous',
-                rate: 57,
-                mu: 'NA',
+                rate: null,
+                mu: 5.5,
                 sigma: 'NA',
                 sampleSize: 92,
                 stdErr: 'NA',
-                exposure: 'NA'
+                exposure: null
               }
             },
             firstInterventionRow: true,
