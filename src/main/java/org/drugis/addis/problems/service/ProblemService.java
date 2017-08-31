@@ -15,6 +15,7 @@ import java.net.URI;
 public interface ProblemService {
   URI DICHOTOMOUS_TYPE_URI = URI.create("http://trials.drugis.org/ontology#dichotomous");
   URI CONTINUOUS_TYPE_URI = URI.create("http://trials.drugis.org/ontology#continuous");
+  URI SURVIVAL_TYPE_URI = URI.create("http://trials.drugis.org/ontology#survival");
 
   AbstractProblem getProblem(Integer projectId, Integer analysisId) throws ResourceDoesNotExistException, ProblemCreationException;
   NetworkMetaAnalysisProblem applyModelSettings(NetworkMetaAnalysisProblem problem, Model model);

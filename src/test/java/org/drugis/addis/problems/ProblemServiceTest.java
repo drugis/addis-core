@@ -64,6 +64,7 @@ import java.util.stream.Collectors;
 
 import static org.drugis.addis.problems.service.ProblemService.CONTINUOUS_TYPE_URI;
 import static org.drugis.addis.problems.service.ProblemService.DICHOTOMOUS_TYPE_URI;
+import static org.drugis.addis.problems.service.ProblemService.SURVIVAL_TYPE_URI;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
@@ -304,11 +305,7 @@ public class ProblemServiceTest {
     NetworkMetaAnalysis networkMetaAnalysis = new NetworkMetaAnalysis(analysisId, project.getId(), "nma title", outcome);
     when(analysisRepository.get(networkMetaAnalysis.getId())).thenReturn(networkMetaAnalysis);
 
-    //include interventions: fluox and sertra
-    InterventionInclusion fluoxInclusion = new InterventionInclusion(networkMetaAnalysis.getId(), fluoxIntervention.getId());
-    InterventionInclusion sertraInclusion = new InterventionInclusion(networkMetaAnalysis.getId(), sertraIntervention.getId());
-    HashSet<InterventionInclusion> interventionInclusions = new HashSet<>(Arrays.asList(fluoxInclusion, sertraInclusion));
-    networkMetaAnalysis.updateIncludedInterventions(interventionInclusions);
+    HashSet<InterventionInclusion> interventionInclusions = includeFluoxAndSertra(networkMetaAnalysis);
 
     // covariates
     Integer includedCovariateId = -1;
@@ -356,10 +353,7 @@ public class ProblemServiceTest {
     RateNetworkMetaAnalysisProblemEntry sertraEntry = (RateNetworkMetaAnalysisProblemEntry) entries.get(1);
     assertEquals(sertraIntervention.getId(), sertraEntry.getTreatment());
 
-    TreatmentEntry fluoxTreatmentEntry = new TreatmentEntry(fluoxIntervention.getId(), fluoxIntervention.getName());
-    TreatmentEntry sertraTreatmentEntry = new TreatmentEntry(sertraIntervention.getId(), sertraIntervention.getName());
-    Set<TreatmentEntry> expectedTreatments = Sets.newHashSet(fluoxTreatmentEntry, sertraTreatmentEntry);
-    assertEquals(expectedTreatments, Sets.newHashSet(networkProblem.getTreatments()));
+    checkTreatments(networkProblem);
 
     Map<String, Map<String, Double>> studyLevelCovariates = networkProblem.getStudyLevelCovariates();
     assertEquals(covariateInclusions.size() * 2 /* 2 studies */, studyLevelCovariates.size());
@@ -373,6 +367,15 @@ public class ProblemServiceTest {
     verify(covariateRepository, times(2)).findByProject(project.getId());
   }
 
+  private HashSet<InterventionInclusion> includeFluoxAndSertra(NetworkMetaAnalysis networkMetaAnalysis) {
+    //include interventions: fluox and sertra
+    InterventionInclusion fluoxInclusion = new InterventionInclusion(networkMetaAnalysis.getId(), fluoxIntervention.getId());
+    InterventionInclusion sertraInclusion = new InterventionInclusion(networkMetaAnalysis.getId(), sertraIntervention.getId());
+    HashSet<InterventionInclusion> interventionInclusions = new HashSet<>(Arrays.asList(fluoxInclusion, sertraInclusion));
+    networkMetaAnalysis.updateIncludedInterventions(interventionInclusions);
+    return interventionInclusions;
+  }
+
   @Test
   public void testGetNmaProblemContinuous() throws URISyntaxException, SQLException, IOException, ReadValueException, ResourceDoesNotExistException, InvalidTypeForDoseCheckException, UnexpectedNumberOfResultsException, ProblemCreationException {
 
@@ -381,10 +384,7 @@ public class ProblemServiceTest {
     when(analysisRepository.get(networkMetaAnalysis.getId())).thenReturn(networkMetaAnalysis);
 
     //include interventions: fluox and sertra
-    InterventionInclusion fluoxInclusion = new InterventionInclusion(networkMetaAnalysis.getId(), fluoxIntervention.getId());
-    InterventionInclusion sertraInclusion = new InterventionInclusion(networkMetaAnalysis.getId(), sertraIntervention.getId());
-    HashSet<InterventionInclusion> interventionInclusions = new HashSet<>(Arrays.asList(fluoxInclusion, sertraInclusion));
-    networkMetaAnalysis.updateIncludedInterventions(interventionInclusions);
+    HashSet<InterventionInclusion> interventionInclusions = includeFluoxAndSertra(networkMetaAnalysis);
 
     TrialDataStudy daanEtAl = createStudyMock(networkMetaAnalysis, null, URI.create("DaanEtAlUri"), "DaanEtal");
     TrialDataStudy pietEtAl = createStudyMock(networkMetaAnalysis, null, URI.create("PietEtAlUri"), "PietEtAl");
@@ -413,16 +413,91 @@ public class ProblemServiceTest {
     ContinuousStdErrEntry sertraEntry = (ContinuousStdErrEntry) entries.get(1);
     assertEquals(sertraIntervention.getId(), sertraEntry.getTreatment());
 
-    TreatmentEntry fluoxTreatmentEntry = new TreatmentEntry(fluoxIntervention.getId(), fluoxIntervention.getName());
-    TreatmentEntry sertraTreatmentEntry = new TreatmentEntry(sertraIntervention.getId(), sertraIntervention.getName());
-    Set<TreatmentEntry> expectedTreatments = Sets.newHashSet(fluoxTreatmentEntry, sertraTreatmentEntry);
-    assertEquals(expectedTreatments, Sets.newHashSet(networkProblem.getTreatments()));
+    checkTreatments(networkProblem);
 
+    verifyRepositoryCalls(networkMetaAnalysis);
+  }
+
+  private void verifyRepositoryCalls(NetworkMetaAnalysis networkMetaAnalysis) throws ResourceDoesNotExistException {
     verify(projectRepository).get(project.getId());
     verify(analysisRepository).get(networkMetaAnalysis.getId());
     verify(interventionRepository).query(project.getId());
     verify(covariateRepository).findByProject(project.getId());
   }
+
+  @Test
+  public void testGetNmaProblemSurvival() throws URISyntaxException, SQLException, IOException, ReadValueException, ResourceDoesNotExistException, InvalidTypeForDoseCheckException, UnexpectedNumberOfResultsException, ProblemCreationException {
+
+    // analysis
+    NetworkMetaAnalysis networkMetaAnalysis = new NetworkMetaAnalysis(analysisId, project.getId(), "nma title", outcome);
+    when(analysisRepository.get(networkMetaAnalysis.getId())).thenReturn(networkMetaAnalysis);
+
+    //include interventions: fluox and sertra
+    HashSet<InterventionInclusion> interventionInclusions = includeFluoxAndSertra(networkMetaAnalysis);
+
+    TrialDataStudy daanEtAl = createStudyMock(networkMetaAnalysis, null, URI.create("DaanEtAlUri"), "DaanEtal");
+    TrialDataStudy pietEtAl = createStudyMock(networkMetaAnalysis, null, URI.create("PietEtAlUri"), "PietEtAl");
+
+    setSurvivalMeasurements(daanEtAl);
+    setSurvivalMeasurements(pietEtAl);
+
+    List<TrialDataStudy> trialDataStudies = Arrays.asList(daanEtAl, pietEtAl);
+    when(analysisService.buildEvidenceTable(project.getId(), networkMetaAnalysis.getId())).thenReturn(trialDataStudies);
+
+    // --------------- execute ---------------- //
+    final AbstractProblem problem = problemService.getProblem(project.getId(), networkMetaAnalysis.getId());
+    // --------------- execute ---------------- //
+
+    assertNotNull(problem);
+    assertTrue(problem instanceof NetworkMetaAnalysisProblem);
+    NetworkMetaAnalysisProblem networkProblem = (NetworkMetaAnalysisProblem) problem;
+    assertEquals(interventionInclusions.size(), networkProblem.getTreatments().size());
+
+    List<AbstractNetworkMetaAnalysisProblemEntry> entries = networkProblem.getEntries();
+    assertNotNull(entries);
+    assertEquals(4, entries.size());
+    SurvivalEntry fluoxEntry = (SurvivalEntry) entries.get(0);
+    assertEquals(fluoxIntervention.getId(), fluoxEntry.getTreatment());
+    SurvivalEntry sertraEntry = (SurvivalEntry) entries.get(1);
+    assertEquals(sertraIntervention.getId(), sertraEntry.getTreatment());
+
+    checkTreatments(networkProblem);
+
+    verifyRepositoryCalls(networkMetaAnalysis);
+  }
+
+  private void setSurvivalMeasurements(TrialDataStudy study) {
+    URI defaultMeasurementMomentUri = URI.create("defaultMeasurementMoment");
+    String title = study.getName();
+    URI uri = study.getStudyUri();
+    URI variableUri = outcome.getSemanticOutcomeUri();
+    URI variableConceptUri = outcome.getSemanticOutcomeUri();
+    URI fluoxArmUri = URI.create(title + "FluoxArm");
+    Integer fluoxResponders = 30;
+    Double fluoxExposure = 10000.0;
+    Measurement fluoxMeasurement = new Measurement(uri, variableUri, variableConceptUri, "P1W", fluoxArmUri,
+            SURVIVAL_TYPE_URI, null, fluoxResponders, null, null, null, fluoxExposure);
+
+    URI sertraArmUri = URI.create(title + "SertraArm");
+    Integer sertraResponders = 30;
+    Double sertraExposure = 10000.0;
+    Measurement sertraMeasurement = new Measurement(uri, variableUri, variableConceptUri, "P1W", sertraArmUri,
+            SURVIVAL_TYPE_URI, null, sertraResponders, null, null, null, sertraExposure);
+
+    study.getTrialDataArms().forEach(arm -> arm.getMeasurements().clear());
+    TrialDataArm fluoxArm = study.getTrialDataArms().get(0);
+    fluoxArm.addMeasurement(defaultMeasurementMomentUri, fluoxMeasurement);
+    TrialDataArm sertraArm = study.getTrialDataArms().get(1);
+    sertraArm.addMeasurement(defaultMeasurementMomentUri, sertraMeasurement);
+  }
+
+  private void checkTreatments(NetworkMetaAnalysisProblem networkProblem) {
+    TreatmentEntry fluoxTreatmentEntry = new TreatmentEntry(fluoxIntervention.getId(), fluoxIntervention.getName());
+    TreatmentEntry sertraTreatmentEntry = new TreatmentEntry(sertraIntervention.getId(), sertraIntervention.getName());
+    Set<TreatmentEntry> expectedTreatments = Sets.newHashSet(fluoxTreatmentEntry, sertraTreatmentEntry);
+    assertEquals(expectedTreatments, Sets.newHashSet(networkProblem.getTreatments()));
+  }
+
 
   private void setContinuousMeasurements(TrialDataStudy study) {
     URI defaultMeasurementMomentUri = URI.create("defaultMeasurementMoment");
