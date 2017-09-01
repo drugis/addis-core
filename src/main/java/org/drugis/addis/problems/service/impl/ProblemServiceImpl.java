@@ -320,10 +320,12 @@ public class ProblemServiceImpl implements ProblemService {
     String modelLinkType = modelMap.get(outcomeInclusion.getModelId()).getLink();
 
     String modelPerformanceType;
-    if (!Model.LINK_IDENTITY.equals(modelLinkType)) {
-      modelPerformanceType = "relative-" + modelLinkType + "-normal";
-    } else {
+    if (Model.LINK_IDENTITY.equals(modelLinkType)) {
       modelPerformanceType = "relative-normal";
+    } else if(Model.LIKELIHOOD_POISSON.equals(modelMap.get(outcomeInclusion.getModelId()).getLikelihood())) {
+      modelPerformanceType = "relative-survival";
+    } else {
+      modelPerformanceType = "relative-" + modelLinkType + "-normal";
     }
 
     RelativePerformance performance = new RelativePerformance(modelPerformanceType, parameters);
@@ -482,7 +484,8 @@ public class ProblemServiceImpl implements ProblemService {
     } else if (measurement.getMeasurementTypeURI().equals(SURVIVAL_TYPE_URI)) {
       Integer rate = measurement.getRate();
       Double exposure = measurement.getExposure();
-      return new SurvivalEntry(studyName, treatmentId, rate, exposure);
+      String timeScale = measurement.getSurvivalTimeScale();
+      return new SurvivalEntry(studyName, treatmentId, timeScale, rate, exposure);
     }
     throw new RuntimeException("unknown measurement type");
   }
