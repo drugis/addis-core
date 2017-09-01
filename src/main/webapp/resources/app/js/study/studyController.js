@@ -210,7 +210,11 @@ define(['angular', 'lodash'],
         });
       });
 
-      var deRegisterStateChangeStart = $transitions.onStart({}, function() {
+      var deRegisterStateChangeStart = $transitions.onStart({
+        to: function(state) {
+          return state.name !== 'dataset.study';
+        }
+      }, function() {
         if (!StudyService.isStudyModified()) {
           return;
         }
@@ -373,7 +377,7 @@ define(['angular', 'lodash'],
 
       function sideNavClick(anchor) {
         var newHash = anchor;
-        $anchorScroll.yOffset = 73;
+        $anchorScroll.yOffset = 85;
         if ($location.hash() !== newHash) {
           $location.hash(anchor);
         } else {
