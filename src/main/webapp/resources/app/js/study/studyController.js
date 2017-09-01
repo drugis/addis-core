@@ -210,7 +210,11 @@ define(['angular', 'lodash'],
         });
       });
 
-      var deRegisterStateChangeStart = $transitions.onStart({}, function() {
+      var deRegisterStateChangeStart = $transitions.onStart({
+        to: function(state) {
+          return state.name !== 'dataset.study';
+        }
+      }, function() {
         if (!StudyService.isStudyModified()) {
           return;
         }
@@ -293,7 +297,7 @@ define(['angular', 'lodash'],
           resolve: {
             datasets: function() {
               return DatasetResource.queryForJson({
-                userUid: $scope.loginUserInfo.id
+                userUid: $scope.userUid
               }).$promise.then(function(result) {
                 return _.filter(result, function(dataset) {
                   return dataset.uri !== 'http://trials.drugis.org/datasets/' + $scope.datasetUuid;
@@ -301,7 +305,7 @@ define(['angular', 'lodash'],
               });
             },
             userUid: function() {
-              return $scope.loginUserInfo.id;
+              return $scope.userUid;
             },
             datasetUuid: function() {
               return $stateParams.datasetUuid;
@@ -373,7 +377,7 @@ define(['angular', 'lodash'],
 
       function sideNavClick(anchor) {
         var newHash = anchor;
-        $anchorScroll.yOffset = 73;
+        $anchorScroll.yOffset = 85;
         if ($location.hash() !== newHash) {
           $location.hash(anchor);
         } else {
