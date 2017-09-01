@@ -297,7 +297,7 @@ define(['angular', 'lodash'],
           resolve: {
             datasets: function() {
               return DatasetResource.queryForJson({
-                userUid: $scope.loginUserInfo.id
+                userUid: $scope.userUid
               }).$promise.then(function(result) {
                 return _.filter(result, function(dataset) {
                   return dataset.uri !== 'http://trials.drugis.org/datasets/' + $scope.datasetUuid;
@@ -305,7 +305,7 @@ define(['angular', 'lodash'],
               });
             },
             userUid: function() {
-              return $scope.loginUserInfo.id;
+              return $scope.userUid;
             },
             datasetUuid: function() {
               return $stateParams.datasetUuid;
