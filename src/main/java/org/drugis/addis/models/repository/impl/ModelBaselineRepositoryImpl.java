@@ -15,7 +15,7 @@ import javax.persistence.PersistenceContext;
 public class ModelBaselineRepositoryImpl implements ModelBaselineRepository {
   @Qualifier("emAddisCore")
   @PersistenceContext(unitName = "addisCore")
-  EntityManager em;
+  private EntityManager em;
 
   @Override
   public ModelBaseline getModelBaseline(Integer modelId) {

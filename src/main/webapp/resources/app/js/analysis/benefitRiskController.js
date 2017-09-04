@@ -67,7 +67,8 @@ define(['lodash'], function(_) {
           .map(_.partial(BenefitRiskService.joinModelsWithAnalysis, models))
           .map(BenefitRiskService.addModelsGroup);
         var outcomesWithAnalyses = BenefitRiskService.buildOutcomesWithAnalyses(analysis, outcomes, networkMetaAnalyses);
-        outcomesWithAnalyses = BenefitRiskService.addStudiesToOutcomes(outcomesWithAnalyses, analysis.benefitRiskStudyOutcomeInclusions, studies);
+        outcomesWithAnalyses = BenefitRiskService.addStudiesToOutcomes(
+          outcomesWithAnalyses, analysis.benefitRiskStudyOutcomeInclusions, studies);
         outcomesWithAnalyses = _.partition(outcomesWithAnalyses, ['dataType', 'network']);
         $scope.networkOWAs = outcomesWithAnalyses[0];
         $scope.studyOutcomes = outcomesWithAnalyses[1];
