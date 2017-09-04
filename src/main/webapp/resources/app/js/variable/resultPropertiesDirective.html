@@ -1,31 +1,29 @@
 <div>
   <ul class="inline-list" ng-if="variable.measurementType === 'ontology:continuous'">
-    <li ng-repeat="(categoryLabel, category) in categories">
-      {{categoryLabel}}
+    <li ng-repeat="category in categories">
+      {{category.categoryLabel}}
       <ul class="no-bullet">
         <li ng-repeat="property in category.properties">
           <label>
-            <input type="checkbox" 
-            ng-model="property.isSelected" 
-            ng-change="updateSelection()"> {{property.label}}</input>
-            <span style="color: red" ng-show="{{!property.analysisReady}}">*</span>
-            <inline-help help-key="{{property.lexiconKey}}" "></inline-help>
+            <input type="checkbox" ng-model="property.isSelected" ng-change="updateSelection()"> {{property.label}}</input>
+            <span class="alert" ng-show="{{!property.analysisReady}}">*</span>
+            <inline-help help-key="{{property.lexiconKey}}"></inline-help>
           </label>
         </li>
       </ul>
     </li>
   </ul>
-  <ul ng-if="variable.measurementType==='ontology:dichotomous' "  class="no-bullet ">
-    <li ng-repeat="property in properties ">
+  <ul ng-if="variable.measurementType==='ontology:dichotomous' || variable.measurementType==='ontology:survival'"  class="no-bullet">
+    <li ng-repeat="property in properties">
       <label>
         <input
           type="checkbox"
-          ng-model="property.isSelected "
-          ng-change="updateSelection() "> {{property.label}}</input>
-          <span style="color: red " ng-show="{{!property.analysisReady}} ">*</span>
+          ng-model="property.isSelected"
+          ng-change="updateSelection()"> {{property.label}}</input>
+          <span class="alert" ng-show="{{!property.analysisReady}}">*</span>
           <inline-help help-key='{{property.lexiconKey}}'></inline-help>
       </label>
     </li>
   </ul>
-  <div style="color: red " ng-if="hasNotAnalysedProperty ">*These measurements are currently not supported for analysis.
+  <div class="alert" ng-if="hasNotAnalysedProperty">*These measurements are currently not supported for analysis.
 </div>

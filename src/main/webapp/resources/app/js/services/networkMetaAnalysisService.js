@@ -7,6 +7,7 @@ define(['lodash', 'angular'], function(_, angular) {
     var CONTINUOUS_TYPE = 'http://trials.drugis.org/ontology#continuous';
     var DICHOTOMOUS_TYPE = 'http://trials.drugis.org/ontology#dichotomous';
     var CATEGORICAL_TYPE = 'http://trials.drugis.org/ontology#categorical';
+    var SURVIVAL_TYPE = 'http://trials.drugis.org/ontology#survival';
 
     function sortTableByStudyAndIntervention(table) {
       // sort table by studies and interventions
@@ -159,20 +160,47 @@ define(['lodash', 'angular'], function(_, angular) {
       return dataRows;
     }
 
-    function checkStdErrShow(dataRows) {
-      return _.find(dataRows, function(dataRow) {
-        //if I find a data row which contains stdErr but misses either stdDev or N
+    function checkColumnsToShow(dataRows, measurementType) {
+      var columnsToShow = {
+        rate: (measurementType === 'dichotomous' || measurementType === 'survival'),
+        mu: measurementType === 'continuous',
+        sigma: shouldShowSigma(dataRows, measurementType),
+        sampleSize: shouldShowN(dataRows, measurementType),
+        stdErr: shouldShowStandardError(dataRows,measurementType),
+        exposure: measurementType === 'survival'
+      };
+      return columnsToShow;
+    }
+
+    function shouldShowSigma(dataRows, measurementType) {
+      if (measurementType !== 'continuous') {
+        return false;
+      }
+      return !!_.find(dataRows, function(dataRow) {
         return _.find(dataRow.measurements, function(measurement) {
-          return (measurement.sigma === 'NA' || measurement.sampleSize === 'NA') && measurement.stdErr !== 'NA' && measurement.stdErr !== null;
+          return measurement.sigma !== 'NA';
         });
       });
     }
 
-    function checkSigmaNShow(dataRows) {
-      return _.find(dataRows, function(dataRow) {
-        //if I find either no sigma or no N I don't need either to show
+    function shouldShowN(dataRows, measurementType) {
+      if (measurementType !== 'continuous' && measurementType !== 'dichotomous') {
+        return false;
+      }
+      return !!_.find(dataRows, function(dataRow) {
         return _.find(dataRow.measurements, function(measurement) {
-          return measurement.sigma !== 'NA' || measurement.sampleSize !== 'NA';
+          return measurement.sampleSize !== 'NA';
+        });
+      });
+    }
+
+    function shouldShowStandardError(dataRows, measurementType){
+      if (measurementType !== 'continuous') {
+        return false;
+      }
+      return !!_.find(dataRows, function(dataRow) {
+        return _.find(dataRow.measurements, function(measurement) {
+          return measurement.stdErr !== 'NA' && measurement.stdErr !== null;
         });
       });
     }
@@ -204,6 +232,7 @@ define(['lodash', 'angular'], function(_, angular) {
           sigma: sigma,
           sampleSize: toTableLabel(outcomeMeasurement, 'sampleSize'),
           stdErr: toTableLabel(outcomeMeasurement, 'stdErr'),
+          exposure: toTableLabel(outcomeMeasurement,'exposure'),
           type: getRowMeasurementType(outcomeMeasurement)
         };
         return accum;
@@ -241,6 +270,11 @@ define(['lodash', 'angular'], function(_, angular) {
       }
       if (type === DICHOTOMOUS_TYPE) {
         if (field === 'rate' || field === 'sampleSize') {
+          return true;
+        }
+      }
+      if (type === SURVIVAL_TYPE) {
+        if(field ==='exposure') {
           return true;
         }
       }
@@ -584,8 +618,7 @@ define(['lodash', 'angular'], function(_, angular) {
       buildOverlappingTreatmentMap: buildOverlappingTreatmentMap,
       changeArmExclusion: changeArmExclusion,
       changeCovariateInclusion: changeCovariateInclusion,
-      checkSigmaNShow: checkSigmaNShow,
-      checkStdErrShow: checkStdErrShow,
+      checkColumnsToShow: checkColumnsToShow,
       getMeasurementType: getMeasurementType,
       cleanUpExcludedArms: cleanUpExcludedArms,
       doesInterventionHaveAmbiguousArms: doesInterventionHaveAmbiguousArms,

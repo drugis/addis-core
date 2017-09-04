@@ -303,7 +303,7 @@ public class DatasetReadRepositoryTest {
     Model model1 = ModelFactory.createDefaultModel();
     InputStream mockStudyGraph1 = new ClassPathResource("despressionStudyExample1.ttl").getInputStream();
     model1.read(mockStudyGraph1, null, "TTL");
-    Dataset dataset = DatasetFactory.createMem();
+    Dataset dataset = DatasetFactory.createGeneral();
     dataset.addNamedModel("http://study1", model1);
 
     Model model2 = ModelFactory.createDefaultModel();

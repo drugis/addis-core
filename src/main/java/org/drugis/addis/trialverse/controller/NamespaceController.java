@@ -78,48 +78,6 @@ public class NamespaceController {
     return triplestoreService.queryStudies(mappingService.getVersionedUuid(namespaceUid), URI.create(version));
   }
 
-  @RequestMapping(value = "/{namespaceUid}/studiesWithDetail/{studyUuid}", method = RequestMethod.GET)
-  @ResponseBody
-  public StudyWithDetails getStudyWithDetails(@PathVariable String namespaceUid, @PathVariable String studyUuid) throws ResourceDoesNotExistException, URISyntaxException {
-    return triplestoreService.getStudydetails(mappingService.getVersionedUuid(namespaceUid), studyUuid);
-  }
-
-  @RequestMapping(value = "/{namespaceUid}/studiesWithDetail/{studyUuid}/groups", method = RequestMethod.GET)
-  @ResponseBody
-  public JSONArray getStudyGroups(@PathVariable String namespaceUid, @PathVariable String studyUuid) throws ResourceDoesNotExistException, URISyntaxException {
-    return triplestoreService.getStudyGroups(mappingService.getVersionedUuid(namespaceUid), studyUuid);
-  }
-
-  @RequestMapping(value = "/{namespaceUid}/studiesWithDetail/{studyUuid}/epochs", method = RequestMethod.GET)
-  @ResponseBody
-  public JSONArray getStudyEpochs(@PathVariable String namespaceUid, @PathVariable String studyUuid) throws ResourceDoesNotExistException, URISyntaxException {
-    return triplestoreService.getStudyEpochs(mappingService.getVersionedUuid(namespaceUid), studyUuid);
-  }
-
-  @RequestMapping(value = "/{namespaceUid}/studiesWithDetail/{studyUuid}/treatmentActivities", method = RequestMethod.GET)
-  @ResponseBody
-  public List<TreatmentActivity> getStudyTreatmentActivities(@PathVariable String namespaceUid, @PathVariable String studyUuid) throws ResourceDoesNotExistException, URISyntaxException {
-    return triplestoreService.getStudyTreatmentActivities(mappingService.getVersionedUuid(namespaceUid), studyUuid);
-  }
-
-  @RequestMapping(value = "/{namespaceUid}/studiesWithDetail/{studyUuid}/studyData/populationCharacteristics", method = RequestMethod.GET)
-  @ResponseBody
-  public List<StudyData> getStudyPopulationCharacteristicsData(@PathVariable String namespaceUid, @PathVariable String studyUuid) throws ResourceDoesNotExistException, URISyntaxException {
-    return triplestoreService.getStudyData(mappingService.getVersionedUuid(namespaceUid), studyUuid, StudyDataSection.BASE_LINE_CHARACTERISTICS);
-  }
-
-  @RequestMapping(value = "/{namespaceUid}/studiesWithDetail/{studyUuid}/studyData/adverseEvents", method = RequestMethod.GET)
-  @ResponseBody
-  public List<StudyData> getStudyAdverseEventsData(@PathVariable String namespaceUid, @PathVariable String studyUuid) throws ResourceDoesNotExistException, URISyntaxException {
-    return triplestoreService.getStudyData(mappingService.getVersionedUuid(namespaceUid), studyUuid, StudyDataSection.ADVERSE_EVENTS);
-  }
-
-  @RequestMapping(value = "/{namespaceUid}/studiesWithDetail/{studyUuid}/studyData/endpoints", method = RequestMethod.GET)
-  @ResponseBody
-  public List<StudyData> getStudyEndpointsData(@PathVariable String namespaceUid, @PathVariable String studyUuid) throws ResourceDoesNotExistException, URISyntaxException {
-    return triplestoreService.getStudyData(mappingService.getVersionedUuid(namespaceUid), studyUuid, StudyDataSection.ENDPOINTS);
-  }
-
   @ResponseStatus(HttpStatus.NOT_FOUND)
   @ExceptionHandler(ResourceDoesNotExistException.class)
   public String handleResourceDoesNotExist(HttpServletRequest request) {

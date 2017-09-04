@@ -320,10 +320,12 @@ public class ProblemServiceImpl implements ProblemService {
     String modelLinkType = modelMap.get(outcomeInclusion.getModelId()).getLink();
 
     String modelPerformanceType;
-    if (!Model.LINK_IDENTITY.equals(modelLinkType)) {
-      modelPerformanceType = "relative-" + modelLinkType + "-normal";
-    } else {
+    if (Model.LINK_IDENTITY.equals(modelLinkType)) {
       modelPerformanceType = "relative-normal";
+    } else if(Model.LIKELIHOOD_POISSON.equals(modelMap.get(outcomeInclusion.getModelId()).getLikelihood())) {
+      modelPerformanceType = "relative-survival";
+    } else {
+      modelPerformanceType = "relative-" + modelLinkType + "-normal";
     }
 
     RelativePerformance performance = new RelativePerformance(modelPerformanceType, parameters);
@@ -397,7 +399,7 @@ public class ProblemServiceImpl implements ProblemService {
       }
     }
 
-    // if there's an entry with missing standard deviation or samplesize, move everything to standard error
+    // if there's an entry with missing standard deviation or sample size, move everything to standard error
     Boolean isStdErrEntry = entries.stream().anyMatch(entry -> entry instanceof ContinuousStdErrEntry);
     if (isStdErrEntry) {
       entries = entries.stream().map(entry -> {
@@ -479,6 +481,11 @@ public class ProblemServiceImpl implements ProblemService {
     } else if (measurement.getMeasurementTypeURI().equals(DICHOTOMOUS_TYPE_URI)) {
       Integer rate = measurement.getRate();
       return new RateNetworkMetaAnalysisProblemEntry(studyName, treatmentId, sampleSize, rate);
+    } else if (measurement.getMeasurementTypeURI().equals(SURVIVAL_TYPE_URI)) {
+      Integer rate = measurement.getRate();
+      Double exposure = measurement.getExposure();
+      String timeScale = measurement.getSurvivalTimeScale();
+      return new SurvivalEntry(studyName, treatmentId, timeScale, rate, exposure);
     }
     throw new RuntimeException("unknown measurement type");
   }

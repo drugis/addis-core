@@ -68,8 +68,8 @@
 <div class="row">
   <div class="columns large-12">
     <button ng-disabled="!editMode.allowEditing || !editMode.loaded" type="button" class="primary" ng-click="goToStep1()">Previous step </button>
-    <button ng-disabled="!editMode.allowEditing || !editMode.loaded || isMissingBaseline" ng-cloak ng-if="!analysis.finalized" ng-disabled="hasMissingBaseLine()" ng-click="finalizeAndGoToDefaultScenario()" type="button" class="success">Finalize</button>
-    <button ng-disabled="!editMode.allowEditing || !editMode.loaded" ng-cloak ng-if="analysis.finalized" ng-click="goToDefaultScenario()" type="button" class="">Go to MCDA</button>
+    <button ng-disabled="!editMode.allowEditing || !editMode.loaded || isMissingBaseline ||analysis.finalized || hassMissingBaseLine()" ng-cloak ng-click="finalizeAndGoToDefaultScenario()" type="button" class="success">Finalize</button>
+    <div ng-if="analysis.finalized"><i class="fa fa-spinner fa-spin fa-3x"></i></div><span ng-if="analysis.finalized">Finalizing analysis</span>
     <div ng-repeat="message in step1AlertMessages">
       <div class="alert">{{message}}</div>
       <div></div>

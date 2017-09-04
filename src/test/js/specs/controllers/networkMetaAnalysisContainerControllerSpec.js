@@ -127,7 +127,8 @@ define(['angular', 'angular-mocks', 'controllers'], function() {
         'getIncludedInterventions',
         'transformTrialDataToNetwork',
         'transformTrialDataToTableRows',
-        'getMeasurementType'
+        'getMeasurementType',
+        'checkColumnsToShow'
       ]);
       var mockNetwork = {
         interventions: []

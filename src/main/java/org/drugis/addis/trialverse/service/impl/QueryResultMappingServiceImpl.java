@@ -72,11 +72,13 @@ public class QueryResultMappingServiceImpl implements QueryResultMappingService 
   }
 
   private Measurement readMeasurement(JSONObject row, URI studyUri, URI armUri) throws ReadValueException {
+    String survivalTimeScale = null;
     Double mean = null;
     Double stdDev = null;
     Double stdErr = null;
     Integer rate = null;
     Integer sampleSize = null;
+    Double exposure = null;
 
     if (row.containsKey("mean")) {
       mean = readValue(row, "mean");
@@ -93,11 +95,17 @@ public class QueryResultMappingServiceImpl implements QueryResultMappingService 
     if (row.containsKey("sampleSize")) {
       sampleSize = readValue(row, "sampleSize");
     }
+    if(row.containsKey("exposure")) {
+      exposure = readValue(row, "exposure");
+    }
+    if(row.containsKey("survivalTimeScale")) {
+      survivalTimeScale = readValue(row, "survivalTimeScale");
+    }
 
     URI variableUri = readValue(row, "outcomeInstance");
     URI variableConceptUri = readValue(row, "outcomeTypeUri");
     URI measurementTypeUri = readValue(row, "measurementType");
-    return new Measurement(studyUri, variableUri, variableConceptUri, armUri, measurementTypeUri, sampleSize, rate, stdDev, stdErr, mean);
+    return new Measurement(studyUri, variableUri, variableConceptUri, survivalTimeScale, armUri, measurementTypeUri, sampleSize, rate, stdDev, stdErr, mean, exposure);
   }
 
   @Override

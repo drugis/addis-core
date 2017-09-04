@@ -109,6 +109,11 @@
     "text": "Evidence synthesis is the statistical combination of estimates from multiple primary studies into an overall pooled estimate. Evidence synthesis techniques include pair-wise meta-analysis, network meta-analysis, and meta-regression.",
     "link": "/manual.html#evidence-synthesis"
   },
+  "exposure": {
+    "title": "Total observation time",
+    "text": "The cumulative amount of time that all subjects in the study were exposed to treatment",
+    "link": "/manual.html#study-input"
+  },
   "featured-dataset": {
     "title": "Featured dataset",
     "text": "Featured datasets are well structured datasets that serve as examples of some of ADDIS' features. They are highlighted on the home page, and are a good place to start trying out the software. If you think your dataset deserves to be featured on the home page, feel free to [contact us](https://drugis.org/contact).",
@@ -127,6 +132,11 @@
   "geometric-mean": {
     "title": "Geometric mean",
     "text": "The geometric mean is appropriate when the log of the observations are normally distributed.",
+    "link": "/manual.html#study-input"
+  },
+  "hazard-ratio": {
+    "title": "Hazard ratio",
+    "text": "The hazard ratio describes by which factor being in one group is more (or less) hazardous another group. For example a treated population may die at twice the rate per unit time as the control population, yielding a  hazard ratio of 2.",
     "link": "/manual.html#study-input"
   },
   "least-squares-mean": {

@@ -30,6 +30,8 @@ SELECT DISTINCT
 ?stdErr
 ?count
 ?sampleSize
+?exposure
+?survivalTimeScale
 ?fixedDoseValue
 ?fixedDoseDosingPeriodicity
 ?fixedDoseUnitConcept
@@ -109,6 +111,10 @@ WHERE {
     }
     OPTIONAL {
       ?measurement ontology:sample_size ?sampleSize .
+    }
+    OPTIONAL {
+      ?measurement ontology:exposure ?exposure .
+      ?outcomeInstance ontology:survival_time_scale ?survivalTimeScale .
     }
 
     OPTIONAL {

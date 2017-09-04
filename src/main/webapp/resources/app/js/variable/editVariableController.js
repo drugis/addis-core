@@ -21,8 +21,21 @@ define(['lodash'], function(_) {
     $scope.item = item;
     $scope.itemType = itemType;
     $scope.measurementMoments = MeasurementMomentService.queryItems();
-    $scope.resultProperties = _.map(ResultsService.VARIABLE_TYPE_DETAILS, _.identity);
+    $scope.resultProperties = _.values(ResultsService.VARIABLE_TYPE_DETAILS);
+    $scope.timeScaleOptions = ResultsService.TIME_SCALE_OPTIONS;
 
+    $scope.$watch('item.selectedResultProperties', checkTimeScaleInput);
+
+    function checkTimeScaleInput() {
+      $scope.showTimeScaleInput = _.find($scope.item.selectedResultProperties, ['uri', 'http://trials.drugis.org/ontology#exposure']);
+      if(!$scope.showTimeScaleInput) {
+        delete $scope.item.timeScale;
+      } else {
+        if(!$scope.item.timeScale) {
+          $scope.item.timeScale = 'P1W';
+        }
+      }
+    }
     item.selectedResultProperties = _.filter($scope.resultProperties, function(resultProperty) {
       return _.includes(item.resultProperties, resultProperty.uri);
     });
@@ -51,7 +64,7 @@ define(['lodash'], function(_) {
           $modalInstance.close();
         },
         function() {
-          $modalInstance.dismiss('cancel');
+          $modalInstance.close('cancel');
         });
     }
 
@@ -86,7 +99,7 @@ define(['lodash'], function(_) {
     }
 
     function cancel() {
-      $modalInstance.dismiss('cancel');
+      $modalInstance.close('cancel');
     }
   };
   return dependencies.concat(EditItemController);

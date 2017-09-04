@@ -26,6 +26,7 @@ define(['angular', 'lodash'],
         var frontEndItem = {
           uri: item['@id'],
           label: item.label,
+          timeScale: item.survival_time_scale,
           measurementType: item.of_variable[0].measurementType,
           measuredAtMoments: [],
           conceptMapping: item.of_variable[0].sameAs
@@ -82,6 +83,9 @@ define(['angular', 'lodash'],
           }],
           has_result_property: item.resultProperties
         };
+        if(item.timeScale){
+          newItem.survival_time_scale = item.timeScale;
+        }
         if(item.conceptMapping) {
           newItem.of_variable[0].sameAs = item.conceptMapping;
         }
@@ -194,13 +198,11 @@ define(['angular', 'lodash'],
           var isMeassuredByTarget = _.find(target.measuredAtMoments, function(targetMeasurementMoment) {
             return targetMeasurementMoment.uri === sourceMeasurementMoment.uri;
           });
-
           if (!isMeassuredByTarget) {
             accum.push(sourceMeasurementMoment);
           }
           return accum;
         }, []);
-
         target.measuredAtMoments = _.compact([].concat(target.measuredAtMoments).concat(newMoments));
         return editItem(target, type);
       }

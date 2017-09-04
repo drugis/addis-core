@@ -88,21 +88,26 @@ define(['lodash'], function(_) {
           }
         }
       }
-      if (!variable.resultProperties.map) {
-        // there is only one resultproperty
-        return [{
-          'label': ResultsService.getVariableDetails(variable.resultProperties).label,
-          'lexiconKey': ResultsService.getVariableDetails(variable.resultProperties).lexiconKey,
-          'analysisReady': ResultsService.getVariableDetails(variable.resultProperties).analysisReady
-        }];
-      }
-      return variable.resultProperties.map(function(type) {
-        return {
-          'label': ResultsService.getVariableDetails(type).label,
-          'lexiconKey': ResultsService.getVariableDetails(type).lexiconKey,
-          'analysisReady': ResultsService.getVariableDetails(type).analysisReady
+
+      function createHeader(resultProperty) {
+        var scaleStrings = {
+          P1D: ' (days)',
+          P1W: ' (weeks)',
+          P1M: ' (months)',
+          P1Y: ' (years)'
         };
-      });
+        var variableDetails = ResultsService.getVariableDetails(resultProperty);
+        return {
+          'label': variableDetails.label + (variableDetails.type === 'exposure' ? scaleStrings[variable.timeScale] : ''),
+          'lexiconKey': variableDetails.lexiconKey,
+          'analysisReady': variableDetails.analysisReady
+        };
+      }
+
+      if (!variable.resultProperties.map) { // there is only one resultproperty
+        return [createHeader(variable.resultProperties)];
+      }
+      return _.map(variable.resultProperties, createHeader);
     }
 
     function createRow(variable, group, numberOfGroups, measurementMoment, rowValueObjects) {

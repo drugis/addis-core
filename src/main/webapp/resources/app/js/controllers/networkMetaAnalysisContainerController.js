@@ -8,6 +8,20 @@ define(['angular', 'lodash'], function(angular, _) {
   var NetworkMetaAnalysisContainerController = function($scope, $timeout, $q, $state, $stateParams, currentAnalysis, currentProject,
     OutcomeResource, InterventionResource, CovariateResource, ModelResource, NetworkMetaAnalysisService, AnalysisService,
     EvidenceTableResource, UserService, AnalysisResource) {
+    // functions
+    $scope.selectAllInterventions = selectAllInterventions;
+    $scope.deselectAllInterventions = deselectAllInterventions;
+    $scope.changeMeasurementMoment = changeMeasurementMoment;
+    $scope.changeCovariateInclusion = changeCovariateInclusion;
+    $scope.changeArmExclusion = changeArmExclusion;
+    $scope.isOverlappingIntervention = isOverlappingIntervention;
+    $scope.changeSelectedOutcome = changeSelectedOutcome;
+    $scope.changeInterventionInclusion = changeInterventionInclusion;
+    $scope.reloadModel = reloadModel;
+    $scope.doesInterventionHaveAmbiguousArms = doesInterventionHaveAmbiguousArms;
+    $scope.hasIncludedStudies = hasIncludedStudies;
+    $scope.gotoCreateModel = gotoCreateModel;
+    $scope.lessThanTwoInterventionArms = lessThanTwoInterventionArms;
 
     // vars
     $scope.isAnalysisLocked = true;
@@ -29,20 +43,37 @@ define(['angular', 'lodash'], function(angular, _) {
     $scope.userId = Number($stateParams.userUid);
     var isUserOwner = false;
 
-    // functions
-    $scope.selectAllInterventions = selectAllInterventions;
-    $scope.deselectAllInterventions = deselectAllInterventions;
-    $scope.changeMeasurementMoment = changeMeasurementMoment;
-    $scope.changeCovariateInclusion = changeCovariateInclusion;
-    $scope.changeArmExclusion = changeArmExclusion;
-    $scope.isOverlappingIntervention = isOverlappingIntervention;
-    $scope.changeSelectedOutcome = changeSelectedOutcome;
-    $scope.changeInterventionInclusion = changeInterventionInclusion;
-    $scope.reloadModel = reloadModel;
-    $scope.doesInterventionHaveAmbiguousArms = doesInterventionHaveAmbiguousArms;
-    $scope.hasIncludedStudies = hasIncludedStudies;
-    $scope.gotoCreateModel = gotoCreateModel;
-    $scope.lessThanTwoInterventionArms = lessThanTwoInterventionArms;
+    $scope.columns = [{
+        label: 'subject with event',
+        helpKey: 'count',
+        dataKey:'rate'
+      },
+      {
+        label: 'mean',
+        helpKey: 'mean',
+        dataKey:'mu'
+      },
+      {
+        label: 'standard deviation',
+        helpKey: 'standard-deviation',
+        dataKey:'sigma'
+      },
+      {
+        label: 'N',
+        helpKey: 'sample-size',
+        dataKey:'sampleSize'
+      },
+      {
+        label: 'standard error',
+        helpKey: 'standard-error',
+        dataKey:'stdErr'
+      },
+      {
+        label: 'exposure',
+        helpKey: 'exposure',
+        dataKey:'exposure'
+      }
+    ];
 
     // init
     if (UserService.hasLoggedInUser()) {
@@ -167,9 +198,8 @@ define(['angular', 'lodash'], function(angular, _) {
           $scope.hasTreatmentOverlap = hasTreatmentOverlap();
           $scope.isMissingByStudyMap = NetworkMetaAnalysisService.buildMissingValueByStudyMap(trialverseData, $scope.analysis, $scope.momentSelections);
           $scope.containsMissingValue = _.find($scope.isMissingByStudyMap);
-          $scope.showStdErr = NetworkMetaAnalysisService.checkStdErrShow($scope.trialData);
-          $scope.showSigmaN = NetworkMetaAnalysisService.checkSigmaNShow($scope.trialData);
           $scope.measurementType = NetworkMetaAnalysisService.getMeasurementType($scope.trialverseData);
+          $scope.showColumn = NetworkMetaAnalysisService.checkColumnsToShow($scope.trialData, $scope.measurementType);
           updateNetwork().then(function() {
             $scope.isModelCreationBlocked = checkCanNotCreateModel();
             $scope.loading.loaded = true;
