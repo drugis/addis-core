@@ -14,7 +14,9 @@ define(['angular', 'lodash'], function(angular, _) {
     'UserService',
     'gemtcRootPath',
     'WorkspaceService',
-    'SubProblemResource'
+    'SubProblemResource',
+    'ProjectStudiesResource',
+    'TrialverseResource'
   ];
   var BenefitRiskStep2Controller = function($scope, $q, $stateParams, $state, $modal,
     AnalysisResource,
@@ -30,7 +32,9 @@ define(['angular', 'lodash'], function(angular, _) {
     UserService,
     gemtcRootPath,
     WorkspaceService,
-    SubProblemResource) {
+    SubProblemResource,
+    ProjectStudiesResource,
+    TrialverseResource) {
 
     $scope.goToStep1 = goToStep1;
     $scope.openDistributionModal = openDistributionModal;
@@ -53,6 +57,13 @@ define(['angular', 'lodash'], function(angular, _) {
       if (UserService.isLoginUserId($scope.project.owner.id) && !$scope.analysis.archived) {
         $scope.editMode.allowEditing = true;
       }
+      $scope.projectVersionUuid = $scope.project.datasetVersion.split('/versions/')[1];
+      TrialverseResource.get({
+        namespaceUid: $scope.project.namespaceUid,
+        version: $scope.project.datasetVersion
+      }).$promise.then(function(dataset) {
+        $scope.datasetOwnerId = dataset.ownerId;
+      });
     });
     var promises = [$scope.analysis.$promise, $scope.alternatives.$promise, $scope.outcomes.$promise, $scope.models.$promise];
 
@@ -93,7 +104,18 @@ define(['angular', 'lodash'], function(angular, _) {
         var saveCommand = analysisToSaveCommand($scope.analysis);
         AnalysisResource.save(saveCommand, function() {
           $scope.outcomesWithAnalyses = BenefitRiskService.buildOutcomesWithAnalyses(analysis, outcomes, filteredNetworkMetaAnalyses);
-          resetScales();
+          ProjectStudiesResource.query({
+            projectId: $stateParams.projectId
+          }).$promise.then(function(studies) {
+            $scope.studiesWithUuid = _.map(studies, function(study) {
+              return _.extend({}, study, {
+                uuid: study.studyUri.split('/graphs/')[1]
+              });
+            });
+            $scope.outcomesWithAnalyses = BenefitRiskService.addStudiesToOutcomes(
+              $scope.outcomesWithAnalyses, analysis.benefitRiskStudyOutcomeInclusions, $scope.studiesWithUuid);
+            resetScales();
+          });
         });
       });
 
@@ -106,12 +128,12 @@ define(['angular', 'lodash'], function(angular, _) {
         }
         return outcome;
       });
-      
+
       $scope.editMode.loaded = true;
     });
 
     function addModelBaseline(analysis, models) {
-      return BenefitRiskService.addModelBaseline(analysis,models, $scope.alternatives);
+      return BenefitRiskService.addModelBaseline(analysis, models, $scope.alternatives);
     }
 
     function hasMissingBaseLine() {
@@ -166,43 +188,54 @@ define(['angular', 'lodash'], function(angular, _) {
     }
 
     function openDistributionModal(outcomeWithAnalysis) {
-      $modal.open({
-        templateUrl: gemtcRootPath + 'js/models/setBaselineDistribution.html',
-        controller: 'SetBaselineDistributionController',
-        windowClass: 'small',
-        resolve: {
-          outcomeWithAnalysis: function() {
-            return outcomeWithAnalysis;
-          },
-          alternatives: function() {
-            return $scope.alternatives;
-          },
-          interventionInclusions: function() {
-            return $scope.analysis.interventionInclusions;
-          },
-          problem: function() {
-            return null;
-          },
-          setBaselineDistribution: function() {
-            return function(baseline) {
-              $scope.analysis.benefitRiskNMAOutcomeInclusions = $scope.analysis.benefitRiskNMAOutcomeInclusions.map(function(benefitRiskNMAOutcomeInclusion) {
-                if (benefitRiskNMAOutcomeInclusion.outcomeId === outcomeWithAnalysis.outcome.id) {
-                  return _.extend(benefitRiskNMAOutcomeInclusion, {
-                    baseline: baseline
-                  });
-                } else {
-                  return benefitRiskNMAOutcomeInclusion;
-                }
-              });
-              var saveCommand = analysisToSaveCommand($scope.analysis);
-              AnalysisResource.save(saveCommand).$save().then(function() {
-                $scope.outcomesWithAnalyses = BenefitRiskService.buildOutcomesWithAnalyses($scope.analysis, $scope.outcomes, $scope.networkMetaAnalyses);
-                resetScales();
-              });
-            };
+      var problem = null;
+      ProblemResource.get({
+        analysisId: outcomeWithAnalysis.selectedAnalysis.id,
+        projectId: $stateParams.projectId
+      }).$promise.then(function(result) {
+        problem = result;
+        $modal.open({
+          templateUrl: gemtcRootPath + 'js/models/setBaselineDistribution.html',
+          controller: 'SetBaselineDistributionController',
+          windowClass: 'small',
+          resolve: {
+            outcomeWithAnalysis: function() {
+              return outcomeWithAnalysis;
+            },
+            alternatives: function() {
+              return $scope.alternatives;
+            },
+            interventionInclusions: function() {
+              return $scope.analysis.interventionInclusions;
+            },
+            problem: function() {
+              return problem;
+            },
+            setBaselineDistribution: function() {
+              return function(baseline) {
+                $scope.analysis.benefitRiskNMAOutcomeInclusions = $scope.analysis.benefitRiskNMAOutcomeInclusions.map(function(benefitRiskNMAOutcomeInclusion) {
+                  if (benefitRiskNMAOutcomeInclusion.outcomeId === outcomeWithAnalysis.outcome.id) {
+                    return _.extend(benefitRiskNMAOutcomeInclusion, {
+                      baseline: baseline
+                    });
+                  } else {
+                    return benefitRiskNMAOutcomeInclusion;
+                  }
+                });
+                var saveCommand = analysisToSaveCommand($scope.analysis);
+                AnalysisResource.save(saveCommand).$save().then(function() {
+                  $scope.outcomesWithAnalyses = BenefitRiskService.buildOutcomesWithAnalyses(
+                    $scope.analysis, $scope.outcomes, $scope.networkMetaAnalyses);
+                  $scope.outcomesWithAnalyses = BenefitRiskService.addStudiesToOutcomes(
+                    $scope.outcomesWithAnalyses, $scope.analysis.benefitRiskStudyOutcomeInclusions, $scope.studiesWithUuid);
+                  resetScales();
+                });
+              };
+            }
           }
-        }
+        });
       });
+
     }
 
     function resetScales() {
