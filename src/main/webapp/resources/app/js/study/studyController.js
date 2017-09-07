@@ -212,7 +212,7 @@ define(['angular', 'lodash'],
 
       var deRegisterStateChangeStart = $transitions.onStart({
         to: function(state) {
-          return state.name !== 'dataset.study';
+          return state.name !== 'dataset.study' && state.name !== 'versionedDataset.study';
         }
       }, function() {
         if (!StudyService.isStudyModified()) {
