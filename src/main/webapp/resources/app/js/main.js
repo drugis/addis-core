@@ -109,7 +109,7 @@ require.config({
 
 window.name = 'NG_DEFER_BOOTSTRAP!';
 
-require(['require', 'angular', 'app'], function(require, angular) {
+require(['angular', 'app'], function(angular) {
   require(['domReady!'], function(document) {
     angular.bootstrap(document, ['addis']);
   });
