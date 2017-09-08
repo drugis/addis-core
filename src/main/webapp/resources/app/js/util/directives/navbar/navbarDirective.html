@@ -1,47 +1,47 @@
-  <div class="fixed">
-    <nav class="top-bar" data-topbar>
-      <ul class="title-area">
-        <li class="name">
-          <h1>
-            <a ng-if="!isAnonymous" id="logo" ui-sref="datasets({userUid: loginUserInfo.id})">addis.drugis.org</a>
-            <a ng-if="isAnonymous" id="logo" ui-sref="home">addis.drugis.org</a>
-          </h1>
-        </li>
-      </ul>
+<div class="fixed">
+  <nav class="top-bar" data-topbar>
+    <ul class="title-area">
+      <li class="name">
+        <h1>
+          <a ng-if="!isAnonymous" id="logo" ui-sref="datasets({userUid: loginUserInfo.id})">addis.drugis.org</a>
+          <a ng-if="isAnonymous" id="logo" ui-sref="home">addis.drugis.org</a>
+        </h1>
+      </li>
+    </ul>
 
-      <section class="top-bar-section">
-        <!-- Left Nav Section -->
-        <ng-transclude></ng-transclude>
+    <section class="top-bar-section">
+      <!-- Left Nav Section -->
+      <ng-transclude></ng-transclude>
 
-        <!-- Right Nav Section -->
-        <ul class="right">
-          <li>
-            <a class="manual" href="/manual.html" target="_blank">
+      <!-- Right Nav Section -->
+      <ul class="right">
+        <li>
+          <a class="manual" href="/manual.html" target="_blank">
               <i class="fa fa-book"></i> Manual
             </a>
-          </li>
-          <li ng-if="!isAnonymous && !isOwnUserPage" class="has-dropdown not-click">
-            <a href="#">
-              <img class="user-image" ng-src="{{loginUserInfo.imageUrl}}">
-              <span ng-show="!navSettings.isHidden">{{loginUserInfo.name}}</span>
-            </a>
-            <ul class="dropdown">
-              <li>
-                <a href="signout">Sign out</a>
-              </li>
-            </ul>
-          </li>
-          <li ng-if="!isAnonymous && isOwnUserPage">
-                <a href="signout">Sign out</a>
-          </li>
-          <li ng-if="isAnonymous">
-                <a href="/auth/google?scope=openid+email+profile" ng-click="signin()">Sign in</a>
-          </li>
-        </ul>
-      </section>
-    </nav>
-
-    <section>
-      <div class="color-stripe"></div>
+        </li>
+        <li ng-if="!isAnonymous && !isOwnUserPage" class="has-dropdown not-click">
+          <a href="#">
+            <img class="user-image" ng-src="{{loginUserInfo.imageUrl}}">
+            <span ng-show="!navSettings.isHidden">{{loginUserInfo.name}}</span>
+          </a>
+          <ul class="dropdown">
+            <li>
+              <a href="signout">Sign out</a>
+            </li>
+          </ul>
+        </li>
+        <li ng-if="!isAnonymous && isOwnUserPage">
+          <a href="signout">Sign out</a>
+        </li>
+        <li ng-if="isAnonymous">
+          <a href="/auth/google?scope=openid+email+profile" ng-click="signin()">Sign in</a>
+        </li>
+      </ul>
     </section>
-  </div>
+  </nav>
+
+  <section>
+    <div class="color-stripe"></div>
+  </section>
+</div>

@@ -63,7 +63,7 @@ define(['lodash'], function(_) {
         }).$promise.then(function(scenarios) {
           scope.scenarios = scenarios.map(function(scenario) {
             if (TaskDependencies.isAccessible({ requires: ['scale-range', 'partial-value-function']}, scenario.state).accessible) {
-              scenario.state = MCDAResultsService.getResults(scope, scenario.state);
+              scenario.state = MCDAResultsService.getResults(scope, scenario.state.problem);
             }
             return scenario;
           });
