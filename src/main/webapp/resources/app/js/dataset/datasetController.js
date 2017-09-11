@@ -120,9 +120,9 @@ define(['lodash'],
           var dsResponse = response['@graph'] ? _.reduce(response['@graph'], _.merge) : response;
           $scope.dataset = {
             datasetUuid: $scope.datasetUuid,
-            title: getPurlProperty(response, 'title'),
-            comment: getPurlProperty(response, 'description'),
-            creator: getPurlProperty(response, 'creator')
+            title: getPurlProperty(dsResponse, 'title'),
+            comment: getPurlProperty(dsResponse, 'description'),
+            creator: getPurlProperty(dsResponse, 'creator')
           };
           $scope.isEditingAllowed = isEditingAllowed();
         });
