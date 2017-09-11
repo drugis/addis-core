@@ -30,6 +30,10 @@ sudo -u postgres psql -c "CREATE USER patavitask WITH PASSWORD 'develop'"
 sudo -u postgres psql -c "CREATE DATABASE patavitask ENCODING 'utf-8' OWNER patavitask"
 
 ```
+Next, you will need to insert an applicationkey into the addiscore database; when logged into the db do:
+INSERT INTO applicationkey (secretkey, accountid, applicationname, creationdate, revocationdate) values ('[yourkey]', [accountid], '[yourname]', 'mm/dd/yyyy', 'mm/dd/yyyy');
+
+
 
 In addition to this, you will need an instance of [Patavi](https://github.com/drugis/patavi) and [Jena-ES](https://github.com/drugis/jena-es) running. It is assumed here that Patavi is running on port 3000 and Jena-ES on port 3030.
 
