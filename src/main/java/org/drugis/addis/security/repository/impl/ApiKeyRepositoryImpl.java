@@ -20,16 +20,12 @@ public class ApiKeyRepositoryImpl implements ApiKeyRepository {
   @Qualifier("jtAddisCore")
   private JdbcTemplate jdbcTemplate;
 
-  private RowMapper<ApiKey> rowMapper = new RowMapper<ApiKey>() {
-    public ApiKey mapRow(ResultSet rs, int rowNum) throws SQLException {
-      return new ApiKey(rs.getInt("id"),
-              rs.getString("secretKey"),
-              rs.getInt("accountId"),
-              rs.getString("applicationName"),
-              rs.getDate("creationDate"),
-              rs.getDate("revocationDate"));
-    }
-  };
+  private RowMapper<ApiKey> rowMapper = (rs, rowNum) -> new ApiKey(rs.getInt("id"),
+          rs.getString("secretKey"),
+          rs.getInt("accountId"),
+          rs.getString("applicationName"),
+          rs.getDate("creationDate"),
+          rs.getDate("revocationDate"));
 
   @Override
   public ApiKey getKeyBySecretCode(String secretCode) {

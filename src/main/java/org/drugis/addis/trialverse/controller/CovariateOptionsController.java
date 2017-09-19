@@ -44,7 +44,8 @@ public class CovariateOptionsController extends AbstractAddisCoreController {
   @ResponseBody
   public List<CovariateViewAdapter> getCovariateOptions() {
     CovariateOption[] studyCovariates = CovariateOption.values();
-    List<CovariateViewAdapter> covariateOptions = Arrays.stream(studyCovariates).map(CovariateViewAdapter::new).collect(Collectors.toList());
+    List<CovariateViewAdapter> covariateOptions = Arrays.stream(studyCovariates).
+            map(CovariateViewAdapter::new).collect(Collectors.toList());
 
     return covariateOptions;
   }

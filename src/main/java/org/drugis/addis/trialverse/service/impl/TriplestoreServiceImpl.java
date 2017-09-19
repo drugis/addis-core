@@ -177,8 +177,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
 
   @Override
   public List<SemanticVariable> getPopulationCharacteristics(String namespaceUid, URI versionUri) throws ReadValueException {
-    String query = StringUtils.replace(POPCHAR_QUERY, "$namespaceUid", namespaceUid);
-    return getSemanticVariables(namespaceUid, versionUri, query, "populationCharacteristic");
+    return getSemanticVariables(namespaceUid, versionUri, POPCHAR_QUERY, "populationCharacteristic");
   }
 
   private List<SemanticVariable> getSemanticVariables(String namespaceUid, URI versionUri, String query, String variableType) throws ReadValueException {

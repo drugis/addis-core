@@ -55,8 +55,9 @@ public class WebConstants {
 
   public static final String VERSION_UUID = "versionUuid";
   private static final String TRIPLESTORE_BASE_URI = loadSystemEnv("TRIPLESTORE_BASE_URI");
+  private static final String EVENT_SOURCE_URI_PREFIX = loadSystemEnv("EVENT_SOURCE_URI_PREFIX");
   private static final String TRIPLESTORE_DATA_URI = TRIPLESTORE_BASE_URI + "/current";
-  private static final String TRIPLESTORE_VERSION_URI = TRIPLESTORE_BASE_URI + "/versions/";
+  private static final String TRIPLESTORE_VERSION_URI = EVENT_SOURCE_URI_PREFIX + "/versions/";
 
   private static final String PATAVI_URI = loadSystemEnv("PATAVI_URI");
   public static final String PATAVI_RESULTS_PATH = "/results";
@@ -104,6 +105,10 @@ public class WebConstants {
     return TRIPLESTORE_BASE_URI;
   }
 
+  public static String getEventSourceUriPrefix() {
+    return EVENT_SOURCE_URI_PREFIX;
+  }
+
   public String getTriplestoreDataUri() {
     return TRIPLESTORE_DATA_URI;
   }
@@ -120,7 +125,7 @@ public class WebConstants {
 
   public static URI buildVersionUri(String versionUuid) {
     if(StringUtils.isEmpty(versionUuid)) return null;
-    return UriComponentsBuilder.fromHttpUrl(getTriplestoreBaseUri())
+    return UriComponentsBuilder.fromHttpUrl(getEventSourceUriPrefix())
             .path(VERSION_PATH)
             .path(versionUuid)
             .build()
