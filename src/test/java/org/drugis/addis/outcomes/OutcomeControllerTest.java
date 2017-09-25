@@ -24,6 +24,7 @@ import javax.inject.Inject;
 import java.net.URI;
 import java.security.Principal;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static org.hamcrest.Matchers.hasSize;
@@ -80,9 +81,9 @@ public class OutcomeControllerTest {
 
   @Test
   public void testQueryOutcomes() throws Exception {
-    Outcome outcome = new Outcome(1, "name", "motivation", new SemanticVariable(URI.create("http://semantic.com"), "labelnew"));
+    Outcome outcome = new Outcome(1, 1, "name", "motivation", new SemanticVariable(URI.create("http://semantic.com"), "labelnew"));
     Integer projectId = 1;
-    List<Outcome> outcomes = Arrays.asList(outcome);
+    List<Outcome> outcomes = Collections.singletonList(outcome);
     when(outcomeRepository.query(projectId)).thenReturn(outcomes);
 
     mockMvc.perform(get("/projects/1/outcomes"))

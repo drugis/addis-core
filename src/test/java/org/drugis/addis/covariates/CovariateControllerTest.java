@@ -67,8 +67,8 @@ public class CovariateControllerTest {
   @Test
   public void getCovariatesForProjectTest() throws Exception {
     Integer projectId = 1;
-    Covariate covariate1 = new Covariate(projectId, "name", "motivation", CovariateOption.MULTI_CENTER_STUDY.toString(), null);
-    Covariate covariate2 = new Covariate(projectId, "other name", "motivation", CovariateOption.ALLOCATION_RANDOMIZED.toString(), null);
+    Covariate covariate1 = new Covariate(projectId, "name", "motivation", CovariateOption.MULTI_CENTER_STUDY.toString(), CovariateOptionType.STUDY_CHARACTERISTIC);
+    Covariate covariate2 = new Covariate(projectId, "other name", "motivation", CovariateOption.ALLOCATION_RANDOMIZED.toString(), CovariateOptionType.STUDY_CHARACTERISTIC);
     Collection<Covariate> covariates = Arrays.asList(covariate1, covariate2);
     when(covariateRepository.findByProject(projectId)).thenReturn(covariates);
     ResultActions result = mockMvc.perform(get("/projects/1/covariates"));
@@ -85,7 +85,7 @@ public class CovariateControllerTest {
             "my test covariate", "my motivation", CovariateOptionType.STUDY_CHARACTERISTIC);
     String body = TestUtils.createJson(addCovariateCommand);
     when(accountRepository.findAccountByUsername(user.getName())).thenReturn(gert);
-    Covariate covariate = new Covariate(projectId, "name", "motivation", CovariateOption.MULTI_CENTER_STUDY.toString(), null);
+    Covariate covariate = new Covariate(projectId, "name", "motivation", CovariateOption.MULTI_CENTER_STUDY.toString(), CovariateOptionType.STUDY_CHARACTERISTIC);
     when(covariateRepository.createForProject(projectId, addCovariateCommand.getCovariateDefinitionKey(),
             addCovariateCommand.getName(), addCovariateCommand.getMotivation(), addCovariateCommand.getType()))
             .thenReturn(covariate);

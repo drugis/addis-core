@@ -110,7 +110,7 @@ public class ProblemControllerTest {
     List<AbstractNetworkMetaAnalysisProblemEntry> entries = Arrays.asList(entry1, entry2);
     List<TreatmentEntry> treatments = Arrays.asList(new TreatmentEntry(treatmentId1, "treatment 1 name"), new TreatmentEntry(treatmentId2, "treatment 2 name"));
 
-    NetworkMetaAnalysisProblem networkMetaAnalysisProblem = new NetworkMetaAnalysisProblem(entries, treatments, null);
+    NetworkMetaAnalysisProblem networkMetaAnalysisProblem = new NetworkMetaAnalysisProblem(entries, treatments);
     Integer projectId = 1;
     Integer analysisId = 2;
     when(problemService.getProblem(projectId, analysisId)).thenReturn(networkMetaAnalysisProblem);

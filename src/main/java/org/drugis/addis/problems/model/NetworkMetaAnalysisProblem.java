@@ -7,6 +7,7 @@ import org.drugis.addis.models.Model;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -29,6 +30,10 @@ public class NetworkMetaAnalysisProblem extends AbstractProblem {
     this.entries = entries;
     this.treatments = treatments;
     this.studyLevelCovariates = studyLevelCovariates;
+  }
+
+  public NetworkMetaAnalysisProblem(List<AbstractNetworkMetaAnalysisProblemEntry> entries, List<TreatmentEntry> treatments) {
+    this(entries, treatments, null);
   }
 
   public List<AbstractNetworkMetaAnalysisProblemEntry> getEntries() {
@@ -76,20 +81,18 @@ public class NetworkMetaAnalysisProblem extends AbstractProblem {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
 
-    NetworkMetaAnalysisProblem problem = (NetworkMetaAnalysisProblem) o;
+    NetworkMetaAnalysisProblem that = (NetworkMetaAnalysisProblem) o;
 
-    if (!entries.equals(problem.entries)) return false;
-    if (!treatments.equals(problem.treatments)) return false;
-    return studyLevelCovariates.equals(problem.studyLevelCovariates);
-
+    if (!entries.equals(that.entries)) return false;
+    if (!treatments.equals(that.treatments)) return false;
+    return studyLevelCovariates != null ? studyLevelCovariates.equals(that.studyLevelCovariates) : that.studyLevelCovariates == null;
   }
 
   @Override
   public int hashCode() {
     int result = entries.hashCode();
     result = 31 * result + treatments.hashCode();
-    result = 31 * result + studyLevelCovariates.hashCode();
+    result = 31 * result + (studyLevelCovariates != null ? studyLevelCovariates.hashCode() : 0);
     return result;
   }
-
 }

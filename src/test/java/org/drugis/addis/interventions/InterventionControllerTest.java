@@ -83,7 +83,7 @@ public class InterventionControllerTest {
   public void testQueryInterventions() throws Exception {
 
     DoseConstraint constraint = new DoseConstraint(new LowerBoundCommand(LowerBoundType.AT_LEAST, 2d, "mili", "P1D", URI.create("unitConcept"), null), null);
-    FixedDoseIntervention intervention = new FixedDoseIntervention(1, "name", "motivation", URI.create("http://semantic.com"), "labelnew", constraint);
+    FixedDoseIntervention intervention = new FixedDoseIntervention(1, 1, "name", "motivation", URI.create("http://semantic.com"), "labelnew", constraint);
     Integer projectId = 1;
     Set<AbstractIntervention> interventions = Sets.newHashSet(intervention);
     when(interventionRepository.query(projectId)).thenReturn(interventions);

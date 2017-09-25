@@ -74,8 +74,8 @@ public class ProjectsControllerTest {
 
   private Principal user;
 
-  private Account john = new Account(1, "a", "john", "lennon", null),
-          paul = new Account(2, "a", "paul", "mc cartney", null),
+  private Account john = new Account(1, "a", "john", "lennon", "john@apple.co"),
+          paul = new Account(2, "a", "paul", "mc cartney", "paul@apple.co"),
           gert = new Account(3, "gert", "Gert", "van Valkenhoef", "gert@test.com");
   private final URI version = URI.create("http://version.com/1");
 
