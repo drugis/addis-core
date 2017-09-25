@@ -10,6 +10,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
 @JsonSubTypes({@JsonSubTypes.Type(value = NormalBaselineDistribution.class, name = "dnorm"),
         @JsonSubTypes.Type(value = BetaLogitBaselineDistribution.class, name="dbeta-logit"),
+        @JsonSubTypes.Type(value = BetaCloglogBaselineDistribution.class, name="dbeta-cloglog"),
         @JsonSubTypes.Type(value = StudentTBaselineDistribution.class, name="dt"),
         @JsonSubTypes.Type(value = SurvivalBaselineDistribution.class, name="dsurv")})
 public abstract class AbstractBaselineDistribution {
