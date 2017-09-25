@@ -63,7 +63,9 @@ define(['lodash', 'angular'], function(_, angular) {
       var analysis = result[0];
       var alternatives = result[1];
       var outcomes = result[2];
-      var models = _.reject(result[3], 'archived');
+      var models = _.reject(_.reject(result[3], 'archived'), function(model) {
+        return model.likelihood === 'binom' && model.link === 'log' ;
+      });
       var studies = result[4];
 
       var outcomeIds = _.map(outcomes, 'id');

@@ -169,6 +169,7 @@ define(
     }]);
     app.constant('mcdaRootPath', 'app/js/bower_components/mcda-web/app/');
     app.constant('gemtcRootPath', 'app/js/bower_components/gemtc-web/app/');
+    app.constant('isGemtcStandAlone', false);
 
     app.config(['$locationProvider', function($locationProvider) {
       $locationProvider.hashPrefix('');
@@ -203,7 +204,7 @@ define(
           CacheService.evict('modelsByProjectPromises', ids.projectId);
         });
 
-        $rootScope.$on('primaryModelSet', function(event, ids){
+        $rootScope.$on('primaryModelSet', function(event, ids) {
           CacheService.evict('analysisPromises', ids.analysisId);
           CacheService.evict('analysesPromises', ids.projectId);
         });
@@ -214,8 +215,8 @@ define(
       uiSelectConfig.theme = 'select2';
     });
 
-    app.config(['Tasks', '$stateProvider', '$urlRouterProvider', 'ANALYSIS_TYPES', '$httpProvider', 'MCDARouteProvider',
-      function(Tasks, $stateProvider, $urlRouterProvider, ANALYSIS_TYPES, $httpProvider, MCDARouteProvider) {
+    app.config(['Tasks', 'isGemtcStandAlone', '$stateProvider', '$urlRouterProvider', 'ANALYSIS_TYPES', '$httpProvider', 'MCDARouteProvider',
+      function(Tasks, isGemtcStandAlone, $stateProvider, $urlRouterProvider, ANALYSIS_TYPES, $httpProvider, MCDARouteProvider) {
         var baseTemplatePath = 'app/views/';
         var mcdaBaseTemplatePath = 'app/js/bower_components/mcda-web/app/views/';
         var gemtcWebBaseTemplatePath = 'app/js/bower_components/gemtc-web/app/';
