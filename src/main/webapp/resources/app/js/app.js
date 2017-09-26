@@ -215,8 +215,8 @@ define(
       uiSelectConfig.theme = 'select2';
     });
 
-    app.config(['Tasks', 'isGemtcStandAlone', '$stateProvider', '$urlRouterProvider', 'ANALYSIS_TYPES', '$httpProvider', 'MCDARouteProvider',
-      function(Tasks, isGemtcStandAlone, $stateProvider, $urlRouterProvider, ANALYSIS_TYPES, $httpProvider, MCDARouteProvider) {
+    app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', 'MCDARouteProvider',
+      function($stateProvider, $urlRouterProvider, $httpProvider, MCDARouteProvider) {
         var baseTemplatePath = 'app/views/';
         var mcdaBaseTemplatePath = 'app/js/bower_components/mcda-web/app/views/';
         var gemtcWebBaseTemplatePath = 'app/js/bower_components/gemtc-web/app/';
