@@ -1,12 +1,48 @@
-@import"settings";
-@import"addis-settings";
-@import"../app/js/bower_components/foundation/scss/foundation.scss";
-@import"drugis";
-@import"../app/js/bower_components/gemtc-web/app/sass/_gemtc-drugis-base.scss";
-@import"addis-base";
-@import"../app/js/bower_components/mcda-web/sass/_mcda-drugis-base.scss";
+@import "addis-settings";
+@import "settings";
+@import "../app/js/bower_components/foundation-sites/scss/foundation";
+@import "drugis";
+@import "../app/js/bower_components/gemtc-web/app/sass/_gemtc-drugis-base.scss";
+@import "addis-base";
+@import "../app/js/bower_components/mcda-web/sass/_mcda-drugis-base.scss";
 @import "../app/js/bower_components/gemtc-web/app/sass/mmfoundation-animations";
-
+@include foundation-global-styles;
+@include foundation-xy-grid-classes;
+@include foundation-typography;
+@include foundation-button;
+@include foundation-forms;
+@include foundation-accordion;
+@include foundation-accordion-menu;
+@include foundation-badge;
+@include foundation-breadcrumbs;
+@include foundation-button-group;
+@include foundation-callout;
+@include foundation-card;
+@include foundation-close-button;
+@include foundation-menu;
+@include foundation-menu-icon;
+@include foundation-drilldown-menu;
+@include foundation-dropdown;
+@include foundation-dropdown-menu;
+@include foundation-responsive-embed;
+@include foundation-label;
+@include foundation-media-object;
+@include foundation-off-canvas;
+@include foundation-orbit;
+@include foundation-pagination;
+@include foundation-progress-bar;
+@include foundation-slider;
+@include foundation-sticky;
+@include foundation-reveal;
+@include foundation-switch;
+@include foundation-table;
+@include foundation-tabs;
+@include foundation-thumbnail;
+@include foundation-title-bar;
+@include foundation-tooltip;
+@include foundation-top-bar;
+@include foundation-visibility-classes;
+@include foundation-flex-classes;
 // load addis style settings //
  .alert {
   color: $alert-color;
@@ -19,12 +55,9 @@
   color: $warning-color;
 }
 .info {
-  color: darken($info-color, 10%);
+  color: darken($secondary-color, 10%);
 }
-.color-stripe {
-  background: $drugis-color;
-  height: 0.45rem;
-}
+
 .alert-box-message {
   padding-right: 1.25rem;
 }
@@ -130,7 +163,7 @@ table {
       text-align: center;
       button {
         margin-bottom: 0;
-        font-size: $table-row-font-size;
+        font-size: $global-font-size;
       }
     }
   }

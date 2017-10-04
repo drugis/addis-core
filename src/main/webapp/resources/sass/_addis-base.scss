@@ -1,3 +1,4 @@
+
 [ng\:cloak], [ng-cloak], .ng-cloak {
   display: none !important;
 }
@@ -33,9 +34,12 @@
   display: inline;
 }
 
+.featured-dataset {
+  height: 14rem;
+}
+
 .featured-dataset-comment {
-  height: 8rem;
-  overflow-y: hidden;
+  overflow-y: auto;
 }
 
 div.row.section {

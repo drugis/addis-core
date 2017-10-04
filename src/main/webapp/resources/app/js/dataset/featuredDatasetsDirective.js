@@ -13,13 +13,6 @@ define([], function() {
         scope.isVisible = true;
         scope.showCreateProjectButton = UserService.hasLoggedInUser();
         scope.featuredDatasets = [];
-        scope.$watch('featuredDatasets', function(newSet, oldSet) {
-          if (oldSet !== newSet) {
-            var cols = $('.featured-dataset-col');
-            $(cols[cols.length - 1]).addClass('end');
-          }
-        });
-
         DatasetResource.getFeatured().$promise.then(function(response) {
           scope.featuredDatasets = response;
         });
