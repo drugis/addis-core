@@ -1,49 +1,54 @@
 <form novalidate ng-submit="addItem()">
-  <div class="row">
-    <div class="large-9 medium-12 columns">
-      <h3>Add a new epoch</h3>
+  <div class="grid-container">
+    <div class="grid-x">
+      <div class="cell">
+        <h3>Add a new epoch</h3>
+      </div>
+    </div>
+    <div class="grid-x">
+      <div class="cell">
+        <label>Name
+          <input autofocus="true" type="text" ng-model="item.label">
+        </label>
+      </div>
+    </div>
+    <div class="grid-x">
+      <div class="cell">
+        <label>Description
+          <textarea grid-xs="8" ng-model="item.comment"></textarea>
+        </label>
+      </div>
+    </div>
+    <div class="grid-x" ng-class="{'form-input-group': (item.durationType != 'period')}">
+      <div class="cell">
+        <label>Duration</label>
+        <input ng-model="item.durationType" type="radio" name="durationType" value="instantaneous"
+          id="instantaneousOption" ng-change="changeToInstantaneous()">
+        <label for="instantaneousOption">instantaneous</label>
+        <input ng-model="item.durationType" type="radio" name="durationType" value="period"
+          id="periodOption">
+        <label for="periodOption">duration</label>
+      </div>
+    </div>
+    <div ng-show="item.durationType == 'period'" class="grid-x form-input-group">
+      <duration-input duration-string="item.duration">
+      </duration-input>
+    </div>
+    <div class="grid-x form-input-group">
+      <div class="cell">
+        <label for="isPrimaryCheckBox">Is primary epoch</label>
+        <input id="isPrimaryCheckBox" ng-model="item.isPrimaryEpoch"
+          type="checkbox">
+      </div>
+    </div>
+    <div class="grid-x">
+      <div class="cell">
+        <button class="button success" type="submit" ng-disabled="(!item.label || !isValidDuration(item.duration) || !item.durationType)">Add
+        </button>
+      </div>
     </div>
   </div>
-  <div class="row">
-    <div class="large-9 medium-12 columns">
-      <label>Name
-        <input autofocus="true" type="text" ng-model="item.label">
-      </label>
-    </div>
-  </div>
-  <div class="row">
-    <div class="large-9 medium-12 columns">
-      <label>Description
-        <textarea rows="8" ng-model="item.comment"></textarea>
-      </label>
-    </div>
-  </div>
-  <div class="row" ng-class="{'form-input-group': (item.durationType != 'period')}">
-    <div class="large-12 columns">
-      <label>Duration</label>
-      <input ng-model="item.durationType" type="radio" name="durationType"
-             value="instantaneous" id="instantaneousOption" ng-change="changeToInstantaneous()"><label for="instantaneousOption">instantaneous</label>
-      <input ng-model="item.durationType" type="radio" name="durationType"
-             value="period" id="periodOption"><label
-        for="periodOption">duration</label>
-    </div>
-  </div>
-  <div ng-show="item.durationType == 'period'" class="row form-input-group">
-       <duration-input duration-string="item.duration">
-    </duration-input>
-  </div>
-  <div class="row form-input-group">
-    <div class="large-9 medium-6 columns">
-      <label for="isPrimaryCheckBox">Is primary epoch</label><input id="isPrimaryCheckBox"
-                                                                    ng-model="item.isPrimaryEpoch" type="checkbox">
-    </div>
-  </div>
-  <div class="row">
-    <div class="large-9 columns">
-      <button class="success" type="submit"
-              ng-disabled="(!item.label || !isValidDuration(item.duration) || !item.durationType)">Add
-      </button>
-    </div>
-  </div>
-  <a class="close-reveal-modal" ng-click="cancel()">&#215;</a>
+  <button ng-click="cancel()" class="close-button" aria-label="Close reveal" type="button">
+    <span aria-hidden="true">&times;</span>
+  </button>
 </form>

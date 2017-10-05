@@ -1,23 +1,26 @@
 <form novalidate ng-submit="copyStudy(targetDataset)">
-  <div class="row">
-    <div class="large-9 columns">
-      <h3>Copy study</h3>
-      <label>Choose target dataset
-        <select
-        ng-disabled="copyComplete"
-        ng-options="dataset.title for dataset in datasets"
-        ng-model="targetDataset">
-        </select>
-      </label>
+  <div class="grid-container">
+    <div class="grid-x">
+      <div class="cell">
+        <h3>Copy study</h3>
+        <label>Choose target dataset
+          <select ng-disabled="copyComplete" ng-options="dataset.title for dataset in datasets"
+            ng-model="targetDataset">
+          </select>
+        </label>
+      </div>
+    </div>
+    <div class="grid-x">
+      <div class="cell" ng-if="!copyComplete">
+        <button class="button success" ng-disabled="isCopying" type="submit">Copy</button>
+      </div>
+      <div class="cell" ng-if="copyComplete">
+        <button class="button" type="button" ng-click="cancel()">Close</button> <a ng-click="cancel()" style="margin-left:1rem; text-decoration: underline;"
+          ui-sref="versionedDataset.study({userUid: userUid, datasetUuid: targetDatasetUuid, versionUuid: newVersionUuid, studyGraphUuid: targetGraphUuid})">Go to new copy</a>
+      </div>
     </div>
   </div>
-  <div class="row">
-    <div class="large-9 columns" ng-if="!copyComplete">
-      <button class="success"  ng-disabled="isCopying" type="submit">Copy</button>
-    </div>
-    <div class="large-9 columns" ng-if="copyComplete">
-      <button type="button" ng-click="cancel()">Close</button> <a ng-click="cancel()" style="margin-left:1rem; text-decoration: underline;" ui-sref="versionedDataset.study({userUid: userUid, datasetUuid: targetDatasetUuid, versionUuid: newVersionUuid, studyGraphUuid: targetGraphUuid})">Go to new copy</a>
-    </div>
-  </div>
-  <a class="close-reveal-modal" ng-click="cancel()">&#215;</a>
+  <button ng-click="cancel()" class="close-button" aria-label="Close reveal" type="button">
+    <span aria-hidden="true">&times;</span>
+  </button>
 </form>

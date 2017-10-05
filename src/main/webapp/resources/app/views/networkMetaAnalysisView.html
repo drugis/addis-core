@@ -1,7 +1,7 @@
-<div class="row">
-  <div class="columns large-12">
-    <div class="row">
-      <div class="columns large-10">
+<div class="grid-x">
+  <div class="cell">
+    <div class="grid-x">
+      <div class="cell large-10">
         <label>Selected Outcome</label>
         <select ng-show="editMode.isUserOwner" ng-model="analysis.outcome" ng-options="outcome.name for outcome in outcomes | orderBy: 'name'"
           ng-disabled="editMode.disableEditing || hasModel" ng-change="changeSelectedOutcome()"></select>
@@ -11,12 +11,12 @@
         </div>
       </div>
     </div>
-    <div class="row">
-      <div class="columns large-6">
+    <div class="grid-x">
+      <div class="cell large-6">
         <label>Included interventions</label>
         <div>
-          <button ng-if="!editMode.disableEditing && !hasModel" class="tiny" ng-click="selectAllInterventions()">Select all</button>
-          <button ng-if="!editMode.disableEditing && !hasModel" class="tiny" ng-click="deselectAllInterventions()">Deselect all</button>
+          <button ng-if="!editMode.disableEditing && !hasModel" class="button tiny" ng-click="selectAllInterventions()">Select all</button>
+          <button ng-if="!editMode.disableEditing && !hasModel" class="button tiny" ng-click="deselectAllInterventions()">Deselect all</button>
         </div>
         <div class="checkbox-group">
           <div ng-repeat="intervention in interventions">
@@ -34,7 +34,7 @@
           </div>
         </div>
       </div>
-      <div class="columns large-6">
+      <div class="cell large-6">
         <label>Included covariates</label>
         <em ng-if="loading.loaded && covariates.length === 0">No covariates have been defined.</em>
 
@@ -51,8 +51,8 @@
         </div>
       </div>
     </div>
-    <div class="row">
-      <div class="columns large-12  medium-12 small-12">
+    <div class="grid-x">
+      <div class="cell">
         <span class="alert animate-show" ng-show="loading.loaded && analysis.outcome && isNetworkDisconnected">Network not connected.
         </span>
         <span class="alert animate-show" ng-show="loading.loaded && interventions.length < 2">Fewer than two interventions defined.

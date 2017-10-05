@@ -1,17 +1,11 @@
 <style>
-.local-hide.ng-hide {
-  transition:0.33s linear all;
-  opacity:0;
-}
-
-
-
-
-
-
+  .local-hide.ng-hide {
+    transition: 0.33s linear all;
+    opacity: 0;
+  }
 </style>
 
-<div ng-show="isVisible && featuredDatasets.length > 0" class="grid-x local-hide">
+<div ng-show="isVisible && featuredDatasets.length > 0" class="grid-x">
   <div class="cell">
     <a class="right">
       <span ng-click="toggleVisibility()">hide</span>
@@ -30,13 +24,11 @@
             <br>
           </div>
           <div class="cell button-group-small shrink">
-            <button
-                ui-sref="dataset({userUid: featuredDataset.creator.id, datasetUuid: stripFrontFilter(featuredDataset.uri, 'http://trials.drugis.org/datasets/')})"
-                class="button">View Dataset
+            <button ui-sref="dataset({userUid: featuredDataset.creator.id, datasetUuid: stripFrontFilter(featuredDataset.uri, 'http://trials.drugis.org/datasets/')})"
+              class="button">View Dataset
             </button>
-            <button ng-if="showCreateProjectButton" type="button"
-                    ng-click="createProjectDialog({dataset: featuredDataset})"
-                    class="button">Create project
+            <button ng-if="showCreateProjectButton" type="button" ng-click="createProjectDialog({dataset: featuredDataset})"
+              class="button">Create project
             </button>
           </div>
         </div>

@@ -1,6 +1,7 @@
 <form novalidate ng-submit="copyProject(newTitle)">
-  <div class="row">
-    <div class="large-12 columns">
+   <div class="grid-container">
+ <div class="grid-x">
+    <div class="cell">
       <h3 class="warning">Copy project</h3>
       <p>You can create a new copy of this project. You will own the new project. All
         definitions, analyses, models and scenarios of the source project will be
@@ -9,20 +10,23 @@
       <p>Once the copy is complete you will be taken to the new project.</p>
       <p>Are you sure?</p>
     </div>
-    <div class="large-12 columns" ng-if="isCopying"><i class ="fa fa-spinner fa-spin"></i>Copying project, please wait a moment.</div>
+    <div class="cell" ng-if="isCopying"><i class ="fa fa-spinner fa-spin"></i>Copying project, please wait a moment.</div>
   </div>
-  <div class="row">
-    <div class="large-6 small-12 columns">
+  <div class="grid-x">
+    <div class="cell large-6 small-12">
       <label>New project title
         <input type="text" ng-model="newTitle">
       </label>
     </div>
   </div>
-  <div class="row">
-    <div class="large-9 columns">
-      <button ng-disabled="isCopying || !newTitle" nclass="success" type="submit">Yes</button>
-      <button type="button" ng-click="cancel()">No</button>
+  <div class="grid-x">
+    <div class="cell large-9">
+      <button class="button" ng-disabled="isCopying || !newTitle" nclass="success" type="submit">Yes</button>
+      <button class="button" type="button" ng-click="cancel()">No</button>
     </div>
   </div>
-  <a class="close-reveal-modal" ng-click="cancel()">&#215;</a>
+</div>
+   <button ng-click="cancel()" class="close-button" aria-label="Close reveal" type="button">
+    <span aria-hidden="true">&times;</span>
+  </button>
 </form>

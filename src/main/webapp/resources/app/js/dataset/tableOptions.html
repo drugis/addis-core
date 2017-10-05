@@ -1,33 +1,38 @@
 <h3>Columns to be shown</h3>
 
 <form name="projectForm">
-    <div class="row">
-        <div class="large-6 columns medium-6">
-            <ul class="no-bullet">
-                <li ng-repeat="column in tableOptions.columns" ng-show="$even">
-                    <input id="{{column.id}}" ng-model="column.visible" type="checkbox">
-                    <label ng-click="column.visible = !column.visible">{{column.label}}</label>
-                </li>
-            </ul>
+  <div class="grid-container">
+    <div class="grid-x">
+      <div class="cell large-6 medium-6">
+        <ul class="no-bullet">
+          <li ng-repeat="column in tableOptions.columns" ng-show="$even">
+            <input id="{{column.id}}" ng-model="column.visible" type="checkbox">
+            <label ng-click="column.visible = !column.visible">{{column.label}}</label>
+          </li>
+        </ul>
 
-        </div>
-        <div class="large-6 columns medium-6">
-            <ul class="no-bullet">
-                <li ng-repeat="column in tableOptions.columns" ng-show="$odd">
-                    <input id="{{column.id}}" ng-model="column.visible" type="checkbox">
-                    <label ng-click="column.visible = !column.visible">{{column.label}}</label>
-                </li>
-            </ul>
-        </div>
+      </div>
+      <div class="cell large-6 medium-6">
+        <ul class="no-bullet">
+          <li ng-repeat="column in tableOptions.columns" ng-show="$odd">
+            <input id="{{column.id}}" ng-model="column.visible" type="checkbox">
+            <label ng-click="column.visible = !column.visible">{{column.label}}</label>
+          </li>
+        </ul>
+      </div>
     </div>
-    <div class="row">
-        <div class="large-12 columns">
-            <ul class="button-group">
-                <li>
-                    <button class="button" ng-click="cancel()">Close</button>
-                </li>
-            </ul>
-        </div>
+
+    <div class="grid-x">
+      <div class="cell">
+        <ul class="button-group">
+          <li>
+            <button class="button" ng-click="cancel()">Close</button>
+          </li>
+        </ul>
+      </div>
     </div>
-    <a class="close-reveal-modal" ng-click="cancel()">&#215;</a>
+  </div>
+  <button ng-click="cancel()" class="close-button" aria-label="Close reveal" type="button">
+    <span aria-hidden="true">&times;</span>
+  </button>
 </form>

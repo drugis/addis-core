@@ -6,8 +6,8 @@
     <li class="current active">{{::project.name}}</li>
   </ul>
 
-  <div class="project-header row">
-    <div class="columns large-6 medium-6">
+  <div class="grid-x project-header">
+    <div class="cell large-6 medium-6">
       <div>
         <h1 class="inline-header" title="Project title">{{project.name}}
           <a ng-if="editMode.allowEditing" title="Edit title and description" ng-click="openEditProjectDialog()"><i class="fa fa-edit"></i></a>
@@ -37,25 +37,25 @@
         </div>">(<i class="fa fa-check"></i> Based on the latest dataset version)</span>
         </h5>
         <button ng-if="editMode.allowEditing && trialverse.headVersion !== trialverse.version"
-          ng-click="openUpdateDialog()" class="small success radius">Update</button>
-        <button ng-click="openCopyDialog()" ng-if="editMode.allowCopying" class="small radius">Copy</button>
+          ng-click="openUpdateDialog()" class="button small success radius">Update</button>
+        <button ng-click="openCopyDialog()" ng-if="editMode.allowCopying" class="button small radius">Copy</button>
       </div>
     </div>
   </div>
 
-  <div class="row">
-    <div class="columns large-12">
+  <div class="grid-x">
+    <div class="cell">
       <tabset>
         <tab heading="Definitions" active="tabSelection.activeTab === 'definitions'" ng-click="setActiveTab('definitions')">
           <div ng-if="tabSelection.activeTab === 'definitions'">
             <!-- Outcomes -->
-            <div class="row section">
-              <div class="columns large-12">
+            <div class="grid-x section">
+              <div class="cell">
                 <h3 class="subheader">Outcomes
                   <inline-help help-key="addis-outcome"></inline-help>
                 </h3>
                 <button id="show-create-outcome-modal-btn" ng-if="editMode.allowEditing" ng-disabled="!loading.loaded"
-                  class="small" ng-click="openCreateOutcomeDialog()"><i class="fa fa-plus"></i> Add outcome
+                  class="button small" ng-click="openCreateOutcomeDialog()"><i class="fa fa-plus"></i> Add outcome
                 </button>
                 <table style="width: 100%;">
                   <thead>
@@ -92,13 +92,13 @@
             </div>
 
             <!-- Units -->
-            <div class="row section">
-              <div class="columns large-12">
+            <div class="grid-x section">
+              <div class="cell">
                 <h3 class="subheader">Units
                   <inline-help help-key="unit"></inline-help>
                 </h3>
                 <button id="show-create-unit-modal-btn" ng-if="editMode.allowEditing" ng-disabled="loading.loaded && !unitConcepts.length"
-                  class="small " ng-click="openCreateScaledUnitDialog()"><i class="fa fa-plus"></i> Add unit
+                  class="button small" ng-click="openCreateScaledUnitDialog()"><i class="fa fa-plus"></i> Add unit
                 </button>
                 <span ng-if="loading.loaded && !unitConcepts.length" class="alert">No unit concepts defined in dataset.</span>
                 <table style="width: 100%;">
@@ -121,13 +121,13 @@
             </div>
 
             <!-- Interventions -->
-            <div class="row section">
-              <div class="columns large-12">
+            <div class="grid-x section">
+              <div class="cell">
                 <h3 class="subheader">Interventions
                   <inline-help help-key="addis-intervention"></inline-help>
                 </h3>
                 <button id="show-create-intervention-modal-btn" ng-if="editMode.allowEditing" ng-disabled="!loading.loaded"
-                  class="small " ng-click="openCreateInterventionDialog()"><i class="fa fa-plus"></i> Add intervention
+                  class="button small" ng-click="openCreateInterventionDialog()"><i class="fa fa-plus"></i> Add intervention
                 </button>
                 <table>
                   <thead>
@@ -170,13 +170,13 @@
             </div>
 
             <!-- Covariates -->
-            <div class="row section">
-              <div class="columns large-12">
+            <div class="grid-x section">
+              <div class="cell">
 
                 <h3 class="subheader">Covariates
                   <inline-help help-key="addis-covariate"></inline-help>
                 </h3>
-                <button ng-if="editMode.allowEditing" ng-disabled="!loading.loaded" class="small"
+                <button ng-if="editMode.allowEditing" ng-disabled="!loading.loaded" class="button small"
                   ng-click="addCovariate()"><i class="fa fa-plus"></i> Add Covariate
                 </button>
 
@@ -220,13 +220,13 @@
 
         <tab heading="Analyses" active="tabSelection.activeTab === 'analyses'" ng-click="setActiveTab('analyses')">
           <div ng-if="tabSelection.activeTab === 'analyses'">
-            <div class="row section">
-              <div class="columns large-6 ">
+            <div class="grid-x section">
+              <div class="cell large-6 ">
                 <h2>Analyses
                   <inline-help help-key="addis-analysis"></inline-help>
                 </h2>
                 <button id="show-create-analysis-modal-btn" ng-if="editMode.allowEditing" ng-disabled="!loading.loaded"
-                  class="small" ng-click="openAddAnalysisDialog()"><i class="fa fa-plus"></i> Add Analysis
+                  class="button small" ng-click="openAddAnalysisDialog()"><i class="fa fa-plus"></i> Add Analysis
                 </button>
 
                 <div ng-show="!analysesLoaded">
@@ -260,9 +260,10 @@
                           <td>{{analysis.analysisType}}</td>
                           <td>
                             <button ng-if="!analysis.archived && editMode.allowEditing" ng-click="archiveAnalysis(analysis)"
-                              type="button" class="tiny right info radius" style="margin-bottom:0;">archive</button>
+                              type="button" class="button tiny right info radius" style="margin-bottom:0;">archive</button>
                             <button ng-if="analysis.archived && editMode.allowEditing" ng-click="unarchiveAnalysis(analysis)"
-                              type="button" class="tiny right alert radius" style="margin-bottom:0;">unarchive</button>
+                              type="button" class="button tiny right alert radius"
+                              style="margin-bottom:0;">unarchive</button>
                           </td>
                         </div>
                       </tr>
@@ -276,12 +277,12 @@
 
         <tab heading="Report" active="tabSelection.activeTab === 'report'" ng-click="setActiveTab('report')">
           <div ng-if="tabSelection.activeTab === 'report'">
-            <div class="row">
-              <div ng-if="!showLegacyReport" class="columns large-9">
+            <div class="grid-x">
+              <div ng-if="!showLegacyReport" class="cell large-9">
                 <markdown-report></markdown-report>
               </div>
-              <div class="columns large-3">
-                <button class="right" ng-if="editMode.allowEditing" ng-click="goToEditView()">Customize</button>
+              <div class="cell large-3">
+                <button class="button right" ng-if="editMode.allowEditing" ng-click="goToEditView()">Customize</button>
               </div>
             </div>
           </div>

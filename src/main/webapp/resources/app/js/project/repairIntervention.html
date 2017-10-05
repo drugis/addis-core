@@ -1,36 +1,40 @@
 <form novalidate ng-submit="updateInterventionMultiplierMapping()">
-  <div class="row">
-    <div class="large-12 columns">
-      <h3>Unit mappings for {{intervention.name}}</h3>
+  <div class="grid-container">
+    <div class="grid-x">
+      <div class="cell">
+        <h3>Unit mappings for {{intervention.name}}</h3>
+      </div>
+    </div>
+    <div class="cell">Please select an appropriate metric multiplier for each of the unit types below.
+      <table class="cell">
+        <thead>
+          <th>Unit name</th>
+          <th>Multiplier</th>
+          <th>Concept</th>
+        </thead>
+        <tbody>
+          <tr ng-repeat="unit in units">
+            <td>{{unit.unitName}}</td>
+            <td>
+              <span class="cell-with-single-btn">
+                <select style="width:100%;" ng-model="unit.conversionMultiplier" ng-options="multiplier.conversionMultiplier as multiplier.label for multiplier in metricMultipliers">
+                  <option value="">{{' -- none selected -- '}}</option>
+                </select>
+              </span>
+            </td>
+            <td>{{conceptsByUri[unit.unitConcept].label}}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="grid-x">
+      <div class="cell">
+        <button class="button success" type="submit">Save</button>
+        <button class="button" type="button" ng-click="cancel()">Cancel</button>
+      </div>
     </div>
   </div>
-  <div class="large-9 columns">Please select an appropriate metric multiplier for each of the unit types below.
-    <table class="large-9 columns">
-      <thead>
-        <th>Unit name</th>
-        <th>Multiplier</th>
-        <th>Concept</th>
-      </thead>
-      <tbody>
-        <tr ng-repeat="unit in units">
-          <td>{{unit.unitName}}</td>
-          <td>
-            <span class="cell-with-single-btn">
-              <select style="width:100%;" ng-model="unit.conversionMultiplier" ng-options="multiplier.conversionMultiplier as multiplier.label for multiplier in metricMultipliers">
-                <option value="">{{' -- none selected -- '}}</option>
-              </select>
-            </span>
-          </td>
-          <td>{{conceptsByUri[unit.unitConcept].label}}</td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-  <div class="row">
-    <div class="large-9 columns">
-      <button class="success" type="submit">Save</button>
-      <button type="button" ng-click="cancel()">Cancel</button>
-    </div>
-  </div>
-  <a class="close-reveal-modal" ng-click="cancel()">&#215;</a>
+  <button ng-click="cancel()" class="close-button" aria-label="Close reveal" type="button">
+    <span aria-hidden="true">&times;</span>
+  </button>
 </form>

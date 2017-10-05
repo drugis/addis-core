@@ -44,22 +44,20 @@
 @include foundation-visibility-classes;
 @include foundation-flex-classes;
 // load addis style settings //
- .alert {
-  color: $alert-color;
-}
-.error-message {
-  display: block;
-  color: $drugis-color;
-}
-.warning {
-  color: $warning-color;
-}
 .info {
   color: darken($secondary-color, 10%);
 }
-
-.alert-box-message {
-  padding-right: 1.25rem;
+.button.secondary {
+    background-color: #e7e7e7;
+    border-color: #b9b9b9;
+    color: #333333;
+}
+.button.disabled.success, .button.disabled.success:hover, .button.disabled.success:focus, .button[disabled].success, .button[disabled].success:hover, .button[disabled].success:focus {
+  color: #FFFFFF;
+  opacity: 0.7;
+}
+.button.success {
+    color: #FFFFFF
 }
 
 // addis style //
@@ -158,6 +156,8 @@ table {
       a:hover {
         text-decoration: underline;
       }
+      font-size: 0.875rem;
+      padding: 0.5625rem 0.625rem;
     }
     td.button-cell {
       text-align: center;

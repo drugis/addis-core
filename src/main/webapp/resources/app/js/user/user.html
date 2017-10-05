@@ -1,24 +1,28 @@
 <navbar-directive></navbar-directive>
-<div class="row">
-  <div class="columns large-12">
-    <div class="row user-header">
-      <div class="columns large-1">
-        <img class="user-image-large" ng-src="https://secure.gravatar.com/avatar/{{::user.md5}}?s=43&d=mm">
+<div class="grid-x grid-padding-x">
+  <div class="cell">
+      <div class="grid-x user-header">
+        <div class="cell large-1">
+          <img class="user-image-large" ng-src="https://secure.gravatar.com/avatar/{{::user.md5}}?s=43&d=mm">
+        </div>
+        <div class="cell large-11">
+          <h1 id="user-view-user-name">{{::user.firstName}} {{::user.lastName}}</h1>
+        </div>
       </div>
-      <div class="columns large-11">
-        <h1 id="user-view-user-name">{{::user.firstName}} {{::user.lastName}}</h1>
+      <div class="grid-x">
+        <div class="cell">
+          <tabset>
+            <tab heading="Datasets" ng-click="selectTab('datasets')" active="activetab === 'datasets'">
+              <div ng-if="activetab === 'datasets'" ui-view></div>
+            </tab>
+            <tab heading="Projects" ng-click="selectTab('projects')" active="activetab === 'projects'">
+              <div ng-if="activetab === 'projects'" ui-view></div>
+            </tab>
+            <tab heading="Search Studies" ng-click="selectTab('search')" active="activetab === 'search'">
+              <div ng-if="activetab === 'search'" ui-view></div>
+            </tab>
+          </tabset>
+        </div>
       </div>
-    </div>
-    <tabset>
-      <tab heading="Datasets" ng-click="selectTab('datasets')" active="activetab === 'datasets'">
-        <div ng-if="activetab === 'datasets'" ui-view></div>
-      </tab>
-      <tab heading="Projects" ng-click="selectTab('projects')" active="activetab === 'projects'">
-        <div ng-if="activetab === 'projects'" ui-view></div>
-      </tab>
-      <tab heading="Search Studies" ng-click="selectTab('search')" active="activetab === 'search'">
-        <div ng-if="activetab === 'search'" ui-view></div>
-      </tab>
-    </tabset>
   </div>
 </div>

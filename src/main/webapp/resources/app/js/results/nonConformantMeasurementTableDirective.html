@@ -4,10 +4,7 @@
     <tr>
       <th colspan="{{inputHeaders.length + 2}}">
         <div class="right">
-          <a
-          ng-show="isEditingAllowed"
-          ng-click="repairNonConformantMeasurements()"
-          title="repair"> <i class="fa fa-wrench fa-2x fa-fw"></i> </a>
+          <a ng-show="isEditingAllowed" ng-click="repairNonConformantMeasurements()" title="repair"> <i class="fa fa-wrench fa-2x fa-fw"></i> </a>
         </div>
         <h5>Non-conformant measurements for {{variable.label}}</h5>
         <em class="warning">Warning, non-conformant measurements will not be used during analysis</em>
@@ -16,22 +13,22 @@
     <tr>
       <th>Label</th>
       <th>Arm/Group</th>
-      <th ng-repeat="inputHeader in inputHeaders">{{inputHeader.label}}<inline-help ng-if="inputHeader.lexiconKey" help-key="{{inputHeader.lexiconKey}}"></inline-help></th>
+      <th ng-repeat="inputHeader in inputHeaders">{{inputHeader.label}}
+        <inline-help ng-if="inputHeader.lexiconKey" help-key="{{inputHeader.lexiconKey}}"></inline-help>
+      </th>
     </tr>
     <tr ng-repeat="inputRow in inputRows">
-      <td class="y-head" rowspan="{{inputRow.numberOfGroups}}" ng-if="$index % inputRow.numberOfGroups === 0"
-        style="text-align: left;">
-
-        <div class="large-12 columns">
+      <td class="y-head" rowspan="{{inputRow.numberOfGroups}}" ng-if="$index % inputRow.numberOfGroups === 0" style="text-align: left;">
+        <div class="cell">
           <div>{{::inputRow.label}}</div>
-          <div class="row collapse" ng-show="isEditingAllowed">
+          <div class="grid-x collapse" ng-show="isEditingAllowed">
             <label>Select measurement moment</label>
-            <div class="small-9 columns">
+            <div class="cell small-9">
               <select style="display: inline;" ng-options="moment.label for moment in variable.measuredAtMoments"
                 ng-model="selectedMoment" ng-change="updateIsExistingMeasurement(selectedMoment, inputRow.measurementInstanceList)">
               </select>
             </div>
-            <div class="small-3 columns">
+            <div class="cell small-3">
               <button class="postfix" type="button" ng-disabled="!selectedMoment || selectedMoment.isExistingMeasurement"
                 ng-click="setToMoment(selectedMoment, inputRow.measurementInstanceList)">Confirm</button>
             </div>

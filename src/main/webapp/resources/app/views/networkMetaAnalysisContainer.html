@@ -6,19 +6,19 @@
   <li><a ui-sref="project({userUid: userId, projectId: project.id})">{{project.name}}</a></li>
   <li class="current active">{{analysis.title}}</li>
 </ul>
-<div class="project-header row ">
-  <div class="columns large-12">
+<div class="grid-x project-header">
+  <div class="cell">
     <h1 class="inline-header" title="Analysis title">{{analysis.title}}</h1>
     <h3 class="subheader inline-header" title="Analysis type">/ {{analysis.analysisType}}</h3>
   </div>
 </div>
 <hr>
-<div class="row">
-  <div class="columns large-6">
+<div class="grid-x">
+  <div class="cell large-6">
     <div ui-view="networkMetaAnalysis"></div>
     <div ui-view="models"></div>
   </div>
-  <div class="columns large-6">
+  <div class="cell large-6">
     <div ui-view="network"></div>
   </div>
 </div>

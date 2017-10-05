@@ -1,16 +1,22 @@
 <form novalidate ng-submit="yes()">
-  <div class="row">
-    <div class="large-12 columns">
-      <h3 class="warning">This study has uncommited changes</h3>
-      <p>Navigating to another page will undo the uncommitted changes you made to the study.</p>
-      <p>Do you want to continue?</h5>
+  <div class="grid-container">
+    <div class="grid-x">
+      <div class="cell">
+        <h3 class="warning">This study has uncommited changes</h3>
+        <p>Navigating to another page will undo the uncommitted changes you made to
+          the study.</p>
+        <p>Do you want to continue?</h5>
+      </div>
     </div>
-  </div>
-  <div class="row">
-    <div class="large-9 columns" >
-      <button class="success" type="submit">Yes</button>
-      <button type="button" ng-click="cancel()">No</button>
+    <div class="grid-x">
+      <div class="cell">
+        <button class="button success" type="submit">Yes</button>
+        <button class="button" type="button" ng-click="cancel()">No</button>
+      </div>
     </div>
+    </p>
   </div>
-  <a class="close-reveal-modal" ng-click="cancel()">&#215;</a>
+  <button ng-click="cancel()" class="close-button" aria-label="Close reveal" type="button">
+    <span aria-hidden="true">&times;</span>
+  </button>
 </form>

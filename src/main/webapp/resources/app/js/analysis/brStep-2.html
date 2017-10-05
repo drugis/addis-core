@@ -14,77 +14,81 @@
     <li class="current active">{{analysis.title}} Step 2
     </li>
   </ul>
-  <div>
-    <div class="project-header row">
-      <div class="columns large-12">
+
+  <div class="grid-container">
+    <div class="grid-x project-header">
+      <div class="cell">
         <h1 class="inline-header" title="Analysis title">{{analysis.title}}</h1>
         <h3 class="subheader inline-header" title="Analysis type">/ {{analysis.analysisType}}
         </h3>
       </div>
     </div>
-  </div>
-  <div class="row" ng-if="analysis.benefitRiskNMAOutcomeInclusions.length > 0">
-    <div class="columns large-12">
-      <table>
-        <caption>Baseline distributions</caption>
-        <tbody>
-          <tr ng-repeat="outcomeWithAnalysis in outcomesWithAnalyses | filter:{outcome: {isIncluded: true}}">
-            <td class="table-head">{{outcomeWithAnalysis.outcome.name}}</td>
-            <td ng-show="outcomeWithAnalysis.baselineDistribution">{{outcomeWithAnalysis.baselineDistribution | distributionToStringFilter}}</td>
-            <td ng-show="!outcomeWithAnalysis.baselineDistribution">
-              <em>Not defined.</em>
-            </td>
-            <td class="button-cell">
-              <button ng-disabled="!editMode.allowEditing || !editMode.loaded" class="small" ng-click="openDistributionModal(outcomeWithAnalysis)">Set</button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
-
-  <div class="row">
-    <div class="columns large-12">
-      <table class="">
-        <caption>Effects table</caption>
-        <thead>
-          <tr>
-            <td>Outcome</td>
-            <td>Data source</td>
-            <td ng-repeat="alternative in alternatives | filter:!isIncluded">{{alternative.name}}</td>
-          </tr>
-        </thead>
-        <tbody>
-          <tr ng-repeat="outcomeWithAnalysis in outcomesWithAnalyses">
-            <td class="table-head">{{outcomeWithAnalysis.outcome.name}}</td>
-            <td ng-if="outcomeWithAnalysis.selectedModel">
-              <a ui-sref="model({userUid: userId, projectId: project.id, analysisId: outcomeWithAnalysis.selectedAnalysis.id, modelId: outcomeWithAnalysis.selectedModel.id})">{{outcomeWithAnalysis.selectedModel.title}}</a>
-            </td>
-            <td ng-if="outcomeWithAnalysis.selectedStudy">
-              <a ui-sref="versionedDataset.study({userUid: datasetOwnerId, datasetUuid: project.namespaceUid, versionUuid: projectVersionUuid, studyGraphUuid: outcomeWithAnalysis.selectedStudy.uuid})">{{outcomeWithAnalysis.selectedStudy.name}}</a>
-            </td>
-            <td ng-repeat="alternative in alternatives  | filter:!isIncluded">
-              <span ng-if="outcomeWithAnalysis.scales[alternative.id]">
-                {{outcomeWithAnalysis.scales[alternative.id]['50%']}} ({{outcomeWithAnalysis.scales[alternative.id]['2.5%']}},
-                {{outcomeWithAnalysis.scales[alternative.id]['97.5%']}})
-              </span>
-              <span ng-if="!outcomeWithAnalysis.scales[alternative.id]">NA</span>
-            </td>
-        </tbody>
-      </table>
-    </div>
-  </div>
-
-  <div class="row">
-    <div class="columns large-12">
-      <button ng-disabled="!editMode.allowEditing || !editMode.loaded" type="button" class="primary"
-        ng-click="goToStep1()">Previous step </button>
-      <button ng-disabled="!editMode.allowEditing || !editMode.loaded || isMissingBaseline ||analysis.finalized || hassMissingBaseLine()"
-        ng-cloak ng-click="finalizeAndGoToDefaultScenario()" type="button" class="success">Finalize</button>
-      <div ng-if="analysis.finalized"><i class="fa fa-spinner fa-spin fa-3x"></i></div>
-      <span ng-if="analysis.finalized">Finalizing analysis</span>
-      <div ng-repeat="message in step1AlertMessages">
-        <div class="alert">{{message}}</div>
-        <div></div>
+    <div class="grid-x" ng-if="analysis.benefitRiskNMAOutcomeInclusions.length > 0">
+      <div class="cell">
+        <table>
+          <caption>Baseline distributions</caption>
+          <tbody>
+            <tr ng-repeat="outcomeWithAnalysis in outcomesWithAnalyses | filter:{outcome: {isIncluded: true}}">
+              <td class="table-head">{{outcomeWithAnalysis.outcome.name}}</td>
+              <td ng-show="outcomeWithAnalysis.baselineDistribution">{{outcomeWithAnalysis.baselineDistribution | distributionToStringFilter}}</td>
+              <td ng-show="!outcomeWithAnalysis.baselineDistribution">
+                <em>Not defined.</em>
+              </td>
+              <td class="button-cell">
+                <button ng-disabled="!editMode.allowEditing || !editMode.loaded" class="button small" ng-click="openDistributionModal(outcomeWithAnalysis)">Set</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
       </div>
     </div>
+
+    <div class="grid-x">
+      <div class="cell">
+        <table>
+          <caption>Effects table</caption>
+          <thead>
+            <tr>
+              <td>Outcome</td>
+              <td>Data source</td>
+              <td ng-repeat="alternative in alternatives | filter:!isIncluded">{{alternative.name}}</td>
+            </tr>
+          </thead>
+          <tbody>
+            <tr ng-repeat="outcomeWithAnalysis in outcomesWithAnalyses">
+              <td class="table-head">{{outcomeWithAnalysis.outcome.name}}</td>
+              <td ng-if="outcomeWithAnalysis.selectedModel">
+                <a ui-sref="model({userUid: userId, projectId: project.id, analysisId: outcomeWithAnalysis.selectedAnalysis.id, modelId: outcomeWithAnalysis.selectedModel.id})">{{outcomeWithAnalysis.selectedModel.title}}</a>
+              </td>
+              <td ng-if="outcomeWithAnalysis.selectedStudy">
+                <a ui-sref="versionedDataset.study({userUid: datasetOwnerId, datasetUuid: project.namespaceUid, versionUuid: projectVersionUuid, studyGraphUuid: outcomeWithAnalysis.selectedStudy.uuid})">{{outcomeWithAnalysis.selectedStudy.name}}</a>
+              </td>
+              <td ng-repeat="alternative in alternatives  | filter:!isIncluded">
+                <span ng-if="outcomeWithAnalysis.scales[alternative.id]">
+                  {{outcomeWithAnalysis.scales[alternative.id]['50%']}} ({{outcomeWithAnalysis.scales[alternative.id]['2.5%']}},
+                  {{outcomeWithAnalysis.scales[alternative.id]['97.5%']}})
+                </span>
+                <span ng-if="!outcomeWithAnalysis.scales[alternative.id]">NA</span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="grid-x">
+      <div class="cell">
+        <button ng-disabled="!editMode.allowEditing || !editMode.loaded" type="button" class="button primary"
+          ng-click="goToStep1()">Previous step </button>
+        <button ng-disabled="!editMode.allowEditing || !editMode.loaded || isMissingBaseline ||analysis.finalized || hassMissingBaseLine()"
+          ng-cloak ng-click="finalizeAndGoToDefaultScenario()" type="button" class="button success">Finalize</button>
+        <div ng-if="analysis.finalized"><i class="fa fa-spinner fa-spin fa-3x"></i></div>
+        <span ng-if="analysis.finalized">Finalizing analysis</span>
+        <div ng-repeat="message in step1AlertMessages">
+          <div class="alert">{{message}}</div>
+          <div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

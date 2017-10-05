@@ -1,50 +1,59 @@
 <form id="add-analysis-form" novalidate ng-submit="addAnalysis(newAnalysis)">
-
-  <div class="row">
-    <div class="large-10 columns">
-      <h3>Add a new analysis</h3>
+  <div class="grid-container">
+    <div class="grid-x">
+      <div class="cell">
+        <h3>Add a new analysis</h3>
+      </div>
     </div>
-  </div>
 
-  <div class="row">
-    <div class="large-10 columns">
-      <label>Title
-        <input id="analysis-title-input" type="text" ng-model="newAnalysis.title" ng-change="checkForDuplicateAnalysisName(newAnalysis.title)">
-        <div class="alert" ng-show="duplicateAnalysisName.isDuplicate">Duplicate name.</div>
-      </label>
+    <div class="grid-x">
+      <div class="cell">
+        <label>Title
+          <input id="analysis-title-input" type="text" ng-model="newAnalysis.title" ng-change="checkForDuplicateAnalysisName(newAnalysis.title)">
+          <div class="alert" ng-show="duplicateAnalysisName.isDuplicate">Duplicate name.</div>
+        </label>
+      </div>
     </div>
-  </div>
-  <div class="row">
-    <div class="large-10 columns">
-      <label>Analysis type</label>
-        <div class="row ">
-          <div class="columns large-12 stacked-radio">
-            <input id="analysis-type-meta-analysis" type="radio" value="Evidence synthesis" ng-model="newAnalysis.type" >
-            <label for="analysis-type-meta-analysis" class="ng-binding">Evidence synthesis<inline-help help-key="evidence-synthesis"></inline-help></label>
+    <div class="grid-x">
+      <div class="cell">
+        <label>Analysis type</label>
+        <div class="grid-x ">
+          <div class="cell stacked-radio">
+            <input id="analysis-type-meta-analysis" type="radio" value="Evidence synthesis" ng-model="newAnalysis.type">
+            <label for="analysis-type-meta-analysis" class="ng-binding">Evidence synthesis
+              <inline-help help-key="evidence-synthesis"></inline-help>
+            </label>
           </div>
         </div>
-        <div class="row">
-          <div class="columns large-12 stacked-radio">
-            <input id="analysis-type-benefit-risk" type="radio" value="Benefit-risk analysis" ng-model="newAnalysis.type" >
-            <label for="analysis-type-benefit-risk">Benefit-risk analysis<inline-help help-key="benefit-risk-analysis"></inline-help></label>
+        <div class="grid-x">
+          <div class="cell stacked-radio">
+            <input id="analysis-type-benefit-risk" type="radio" value="Benefit-risk analysis"
+              ng-model="newAnalysis.type">
+            <label for="analysis-type-benefit-risk">Benefit-risk analysis
+              <inline-help help-key="benefit-risk-analysis"></inline-help>
+            </label>
           </div>
         </div>
+      </div>
     </div>
-  </div>
 
-  <div class="row" style="margin-top: 1rem;">
-    <div class="columns large-6">
+    <div class="grid-x" style="margin-top: 1rem;">
+      <div class="cell large-6">
         <ul class="button-group">
           <li>
             <button class="button small secondary" type="button" ng-click="cancel()">Cancel</button>
           </li>
           <li>
-            <button id="add-analysis-btn" class="button small success" ng-disabled="isAdding || !newAnalysis.title || !newAnalysis.type || duplicateAnalysisName.isDuplicate" type="submit">Add analysis
+            <button id="add-analysis-btn" class="button small success" ng-disabled="isAdding || !newAnalysis.title || !newAnalysis.type || duplicateAnalysisName.isDuplicate"
+              type="submit">Add analysis
             </button>
           </li>
         </ul>
       </div>
+    </div>
   </div>
-  <a class="close-reveal-modal" ng-click="cancel()">&#215;</a>
+  <button ng-click="cancel()" class="close-button" aria-label="Close reveal" type="button">
+    <span aria-hidden="true">&times;</span>
+  </button>
 
 </form>

@@ -1,15 +1,19 @@
 <form novalidate ng-submit="deleteDefinition()">
-  <div class="row">
-    <div class="large-12 columns">
-      <h3 class="warning">This will delete {{::definition.definitionType}} {{::definition.name}}</h3>
-      <p>Are you sure?</p>
+  <div class="grid-container">
+    <div class="grid-x">
+      <div class="cell">
+        <h3 class="warning">This will delete {{::definition.definitionType}} {{::definition.name}}</h3>
+        <p>Are you sure?</p>
+      </div>
+    </div>
+    <div class="grid-x">
+      <div class="cell">
+        <button class="button success" type="submit">Yes</button>
+        <button class="button" type="button" ng-click="cancel()">No</button>
+      </div>
     </div>
   </div>
-  <div class="row">
-    <div class="large-9 columns" >
-      <button class="success" type="submit">Yes</button>
-      <button type="button" ng-click="cancel()">No</button>
-    </div>
-  </div>
-  <a class="close-reveal-modal" ng-click="cancel()">&#215;</a>
+  <button ng-click="cancel()" class="close-button" aria-label="Close reveal" type="button">
+    <span aria-hidden="true">&times;</span>
+  </button>
 </form>
