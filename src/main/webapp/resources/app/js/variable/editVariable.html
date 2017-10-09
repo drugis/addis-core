@@ -34,54 +34,58 @@
       <div class="cell">
         <label>Categories</label>
         <ul class="no-bullet" ng-if="item.categoryList.length">
-          <li ng-repeat="category in item.categoryList"><a><i class="fa fa-trash-o" style="color: red;" ng-click="deleteCategory(category)"></i></a>            {{category.label}}</li>
+          <li ng-repeat="category in item.categoryList"><a><i class="fa fa-trash-o" style="color: red;" ng-click="deleteCategory(category)"></i></a>{{category.label}}</li>
         </ul>
-        <span ng-if="!item.categoryList.length">(no categories defined yet)</span>
+      </div>
+      <div class="cell" ng-if="!item.categoryList.length">(no categories defined yet)</div>
+      <div class="cell large-8">
         <input ng-model="newCategory.categoryLabel" ng-keypress="addCategoryEnterKey($event, newCategory)">
-        <button class="button small" ng-disabled="cannotAddCategory(newCategory)" type="button"
+      </div>
+      <div class="cell large-4">
+        <button class="button tiny" ng-disabled="cannotAddCategory(newCategory)" type="button"
           ng-click="addCategory(newCategory)">Add category</button>
         <span class="alert" ng-if="isDuplicateCategory(newCategory)">Duplicate category name</span>
       </div>
     </div>
 
 
-    <div class="grid-x" ng-if="item.measurementType !== 'ontology:categorical'">
-      <div class="cell">
-        <label>Included result properties:</label>
-        <span ng-show="!changeResultProperties" ng-repeat="resultProperty in item.selectedResultProperties">
-          <strong>{{resultProperty.label}}{{$last ? '' : ', '}}</strong>
-        </span>
-        <result-properties ng-show="changeResultProperties" variable="item"></result-properties>
-        <br>
-        <button class="button small" type="button" ng-click="changeResultProperties = !changeResultProperties">{{changeResultProperties ? 'Hide result properties' : 'Change'}}</button>
-      </div>
+  <div class="grid-x" ng-if="item.measurementType !== 'ontology:categorical'">
+    <div class="cell">
+      <label>Included result properties:</label>
+      <span ng-show="!changeResultProperties" ng-repeat="resultProperty in item.selectedResultProperties">
+        <strong>{{resultProperty.label}}{{$last ? '' : ', '}}</strong>
+      </span>
+      <result-properties ng-show="changeResultProperties" variable="item"></result-properties>
+      <br>
+      <button class="button" type="button" ng-click="changeResultProperties = !changeResultProperties">{{changeResultProperties ? 'Hide result properties' : 'Change'}}</button>
     </div>
+  </div>
 
-    <div class="grid-x" ng-if="showTimeScaleInput">
-      <div class="cell">
-        <label>
-          Time scale
-          <select ng-options="timeScaleOption.duration as timeScaleOption.label for timeScaleOption in timeScaleOptions"
-            ng-model="item.timeScale"></select>
-        </label>
-      </div>
+  <div class="grid-x" ng-if="showTimeScaleInput">
+    <div class="cell">
+      <label>
+        Time scale
+        <select ng-options="timeScaleOption.duration as timeScaleOption.label for timeScaleOption in timeScaleOptions"
+          ng-model="item.timeScale"></select>
+      </label>
     </div>
+  </div>
 
-    <div class="grid-x">
-      <div class="cell">
-        <label>Measurement moments</label>
-        <subset-select target="item.measuredAtMoments" source="measurementMoments" equals="measurementMomentEquals"></subset-select>
-      </div>
+  <div class="grid-x">
+    <div class="cell">
+      <label>Measurement moments</label>
+      <subset-select target="item.measuredAtMoments" source="measurementMoments" equals="measurementMomentEquals"></subset-select>
     </div>
+  </div>
 
 
-    <div class="grid-x">
-      <div class="cell">
-        <button class="button success" type="button" ng-disabled="!item.label || !item.measurementType || isEditing"
-          ng-click="editItem()">Edit
-        </button>
-      </div>
+  <div class="grid-x">
+    <div class="cell">
+      <button class="button success" type="button" ng-disabled="!item.label || !item.measurementType || isEditing"
+        ng-click="editItem()">Edit
+      </button>
     </div>
+  </div>
   </div>
   <button ng-click="cancel()" class="close-button" aria-label="Close reveal" type="button">
     <span aria-hidden="true">&times;</span>

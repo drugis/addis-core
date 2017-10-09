@@ -6,20 +6,22 @@
   <li><a ui-sref="project({userUid: userId, projectId: project.id})">{{project.name}}</a></li>
   <li class="current active">{{analysis.title}}</li>
 </ul>
-<div class="grid-x project-header">
-  <div class="cell">
-    <h1 class="inline-header" title="Analysis title">{{analysis.title}}</h1>
-    <h3 class="subheader inline-header" title="Analysis type">/ {{analysis.analysisType}}</h3>
+<div class=grid-container>
+  <div class="grid-x project-header">
+    <div class="cell">
+      <h1 class="inline-header" title="Analysis title">{{analysis.title}}</h1>
+      <h3 class="subheader inline-header" title="Analysis type">/ {{analysis.analysisType}}</h3>
+    </div>
   </div>
+  <hr>
+  <div class="grid-x grid-margin-x">
+    <div class="cell large-6">
+      <div ui-view="networkMetaAnalysis"></div>
+      <div ui-view="models"></div>
+    </div>
+    <div class="cell large-6">
+      <div ui-view="network"></div>
+    </div>
+  </div>
+  <div ui-view="evidenceTable"></div>
 </div>
-<hr>
-<div class="grid-x">
-  <div class="cell large-6">
-    <div ui-view="networkMetaAnalysis"></div>
-    <div ui-view="models"></div>
-  </div>
-  <div class="cell large-6">
-    <div ui-view="network"></div>
-  </div>
-</div>
-<div ui-view="evidenceTable"></div>

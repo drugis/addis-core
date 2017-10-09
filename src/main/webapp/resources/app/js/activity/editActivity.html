@@ -30,7 +30,7 @@
       </div>
     </div>
 
-    <div ng-show="itemScratch.activityType.uri === 'ontology:TreatmentActivity' ">
+    <div ng-show="itemScratch.activityType.uri === 'ontology:TreatmentActivity'">
 
       <div class="grid-x">
         <div class="cell">
@@ -48,7 +48,7 @@
             </li>
             <li ng-show="!itemScratch.treatments">no treatment drugs defined</li>
           </ul>
-          <a class="button tiny" ng-click="addDrugClicked()" ng-show="!treatmentDirective.isVisible  "><i class="fa fa-plus"></i> Add treatment drug</a>
+          <a class="button small" ng-click="addDrugClicked()" ng-show="!treatmentDirective.isVisible  "><i class="fa fa-plus"></i> Add treatment drug</a>
         </div>
       </div>
 
@@ -56,8 +56,8 @@
     </div>
 
 
-    <div class="grid-x modal-bottom-button-bar">
-      <div class="large-12 columns">
+    <div class="grid-x">
+      <div class="cell">
         <button class="button success" type="submit" ng-disabled="!itemScratch.label || !itemScratch.activityType || isAddTreatmentMode || treatmentDirective.isVisible || isEditing">{{actionType}}</button>
       </div>
     </div>

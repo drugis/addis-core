@@ -34,7 +34,7 @@
       <duration-input duration-string="itemScratch.duration">
       </duration-input>
     </div>
-    <div class="grid-x form-input-group">
+    <div class="grid-x">
       <div class="cell">
         <label for="isPrimaryCheckBox">Is primary epoch</label>
         <input id="isPrimaryCheckBox" ng-model="itemScratch.isPrimary" type="checkbox">
@@ -42,7 +42,7 @@
     </div>
     <div class="grid-x">
       <div class="cell">
-        <button class="success" type="button submit" ng-disabled="(!itemScratch.label || !isValidDuration(itemScratch.duration)) || isEditing">Edit
+        <button class="button success" type="button submit" ng-disabled="(!itemScratch.label || !isValidDuration(itemScratch.duration)) || isEditing">Edit
         </button>
       </div>
     </div>

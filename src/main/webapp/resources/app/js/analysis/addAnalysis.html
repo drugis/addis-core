@@ -38,17 +38,11 @@
     </div>
 
     <div class="grid-x" style="margin-top: 1rem;">
-      <div class="cell large-6">
-        <ul class="button-group">
-          <li>
-            <button class="button small secondary" type="button" ng-click="cancel()">Cancel</button>
-          </li>
-          <li>
-            <button id="add-analysis-btn" class="button small success" ng-disabled="isAdding || !newAnalysis.title || !newAnalysis.type || duplicateAnalysisName.isDuplicate"
-              type="submit">Add analysis
-            </button>
-          </li>
-        </ul>
+      <div class="cell large-6 button-group">
+        <button class="button small secondary" type="button" ng-click="cancel()">Cancel</button>
+        <button id="add-analysis-btn" class="button small success" ng-disabled="isAdding || !newAnalysis.title || !newAnalysis.type || duplicateAnalysisName.isDuplicate"
+          type="submit">Add analysis
+        </button>
       </div>
     </div>
   </div>

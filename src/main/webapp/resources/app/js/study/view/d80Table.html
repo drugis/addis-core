@@ -5,12 +5,10 @@
     </div>
   </div>
   <div class="grid-x">
-    <div class="cell">
       <div class="cell large-6">Select baseline:
         <select ng-model="baseline" ng-options="arm as arm.label for arm in arms" ng-change="selectBaseLine(baseline)"
           ng-init="measurements.baselineUri"></select>
       </div>
-    </div>
   </div>
   <div class="grid-x">
     <div class="cell">
@@ -133,4 +131,7 @@
       </button>
     </div>
   </div>
+  <button ng-click="cancel()" class="close-button" aria-label="Close reveal" type="button">
+    <span aria-hidden="true">&times;</span>
+  </button>
 </div>

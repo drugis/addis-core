@@ -13,7 +13,7 @@
     </li>
     <li class="current active">{{analysis.title}}</li>
   </ul>
-  <div>
+  <div class="grid-container">
     <div class="grid-x project-header">
       <div class="cell">
         <h1 class="inline-header" title="Analysis title">{{analysis.title}}</h1>
@@ -21,9 +21,7 @@
         </h3>
       </div>
     </div>
-  </div>
 
-  <div class="grid-container">
     <div class="grid-x">
       <div class="cell">
         <h3 class="subheader">Alternatives</h3>
@@ -38,7 +36,7 @@
     </div>
 
     <div class="grid-x">
-      <div class="cell">
+      <div class="cell large-8">
         <table>
           <caption>Selected outcomes and their data sources</caption>
           <thead>
@@ -54,19 +52,20 @@
               <td class="y-head">Model</td>
               <td class="y-head">Baseline distribution</td>
             </tr>
-            <tr ng-repeat="owa in networkOWAs">
-              <td>{{owa.outcome.name}}</td>
-              <td ng-if="owa.selectedAnalysis">
-                <a ui-sref="networkMetaAnalysis({userUid: userId, projectId: project.id, analysisId: owa.selectedAnalysis.id})">{{owa.selectedAnalysis.title}}</a>
-                <span ng-if="owa.selectedAnalysis.archived">(archived analysis)</span>
+            <tr ng-repeat="outcomeWithAnalysis in networkOWAs">
+              <td>{{outcomeWithAnalysis.outcome.name}}</td>
+              <td ng-if="outcomeWithAnalysis.selectedAnalysis">
+                <a ui-sref="networkMetaAnalysis({userUid: userId, projectId: project.id, analysisId: outcomeWithAnalysis.selectedAnalysis.id})">{{outcomeWithAnalysis.selectedAnalysis.title}}</a>
+                <span ng-if="outcomeWithAnalysis.selectedAnalysis.archived">(archived analysis)</span>
               </td>
-              <td ng-if="owa.selectedAnalysis">
-                <a ui-sref="model({userUid: userId, projectId: project.id, analysisId: owa.selectedAnalysis.id, modelId: owa.selectedModel.id})">{{owa.selectedModel.title}}</a>
-                <button class="button small success" ng-if="owa.selectedModel.runStatus !== 'done'" ng-click="goToModel(owa.selectedModel)">Run model</button>
-                <span ng-if="owa.selectedModel.archived">(archived model)</span>
+              <td ng-if="outcomeWithAnalysis.selectedAnalysis">
+                <a ui-sref="model({userUid: userId, projectId: project.id, analysisId: outcomeWithAnalysis.selectedAnalysis.id, modelId: outcomeWithAnalysis.selectedModel.id})">{{outcomeWithAnalysis.selectedModel.title}}</a>
+                <button class="button small success" ng-if="outcomeWithAnalysis.selectedModel.runStatus !== 'done'"
+                  ng-click="goToModel(outcomeWithAnalysis.selectedModel)">Run model</button>
+                <span ng-if="outcomeWithAnalysis.selectedModel.archived">(archived model)</span>
               </td>
-              <td ng-if="owa.baselineDistribution">{{owa.baselineDistribution | distributionToStringFilter}}</td>
-              <td ng-if="!owa.baselineDistribution">
+              <td ng-if="outcomeWithAnalysis.baselineDistribution">{{outcomeWithAnalysis.baselineDistribution | distributionToStringFilter}}</td>
+              <td ng-if="!outcomeWithAnalysis.baselineDistribution">
                 <em>Not defined.</em>
               </td>
             </tr>
@@ -91,3 +90,4 @@
       </div>
     </div>
   </div>
+</div>

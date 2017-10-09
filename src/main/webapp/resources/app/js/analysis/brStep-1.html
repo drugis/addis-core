@@ -15,7 +15,7 @@
       </div>
     </div>
     <div class="grid-x">
-      <div class="cell large-6 medium-12">
+      <div class="cell large-6 medium-8">
         <h3 class="subheader">Alternatives</h3>
         <ui-select class="addis-select2" style="width:100%;" multiple theme="select2" ng-model="includedAlternatives"
           data-placeholder="no alternative selected" ng-disabled="!editMode.allowEditing || !editMode.loaded"
@@ -60,35 +60,32 @@
             </div>
             <div class="cell indent-one">
               <div class="grid-x">
-                <div ng-if="outcomeWithAnalyses.dataType === 'network'" class="indent-one" ng-repeat="networkMetaAnalysis in outcomeWithAnalyses.networkMetaAnalyses">
-                  <div ng-if="!networkMetaAnalysis.archived" class="analysis">
-                    <label>
-                      <input ng-disabled="!editMode.allowEditing || !editMode.loaded || !outcomeWithAnalyses.outcome.isIncluded || !networkMetaAnalysis.models.length"
-                        ng-model="outcomeWithAnalyses.selectedAnalysis" ng-change="updateAnalysesInclusions(outcomeWithAnalyses)"
-                        type="radio" ng-value="networkMetaAnalysis"> {{networkMetaAnalysis.title}}
-                    </label>
-                    <div class="grid-x" ng-show="outcomeWithAnalyses.selectedAnalysis.id === networkMetaAnalysis.id && networkMetaAnalysis.models.length">
-                      <div class="indent-one cell large-4">
-                        <select ng-disabled="!editMode.allowEditing || !editMode.loaded" ng-model="outcomeWithAnalyses.selectedModel"
-                          class="model-select" ng-change="updateModelSelection(outcomeWithAnalyses)"
-                          ng-options="model.title  group by model.group for model in networkMetaAnalysis.models | orderBy:['-group','+title']">
-                        </select>
-                        <div ng-disabled="!editMode.allowEditing || !editMode.loaded" class="alert" ng-show="outcomeWithAnalyses.selectedModel.missingAlternatives.length">
-                          Selected model is missing alternatives: {{outcomeWithAnalyses.selectedModel.missingAlternativesNames.join(',
-                          ')}}.
-                        </div>
-                        <div ng-disabled="!editMode.allowEditing" class="alert" ng-show="outcomeWithAnalyses.selectedModel.runStatus !== 'done'">
-                          This model has not yet been run.
-                        </div>
+                <div ng-if="outcomeWithAnalyses.dataType === 'network' && !networkMetaAnalysis.archived"
+                  class="cell analysis indent-one" ng-repeat="networkMetaAnalysis in outcomeWithAnalyses.networkMetaAnalyses">
+                  <label>
+                    <input ng-disabled="!editMode.allowEditing || !editMode.loaded || !outcomeWithAnalyses.outcome.isIncluded || !networkMetaAnalysis.models.length"
+                      ng-model="outcomeWithAnalyses.selectedAnalysis" ng-change="updateAnalysesInclusions(outcomeWithAnalyses)"
+                      type="radio" ng-value="networkMetaAnalysis"> {{networkMetaAnalysis.title}}
+                  </label>
+                  <div class="grid-x" ng-show="outcomeWithAnalyses.selectedAnalysis.id === networkMetaAnalysis.id && networkMetaAnalysis.models.length">
+                    <div class="cell large-3 medium-3 small-6 indent-one">
+                      <select ng-disabled="!editMode.allowEditing || !editMode.loaded" ng-model="outcomeWithAnalyses.selectedModel"
+                        class="model-select" ng-change="updateModelSelection(outcomeWithAnalyses)"
+                        ng-options="model.title  group by model.group for model in networkMetaAnalysis.models | orderBy:['-group','+title']">
+                      </select>
+                      <div ng-disabled="!editMode.allowEditing || !editMode.loaded" class="alert" ng-show="outcomeWithAnalyses.selectedModel.missingAlternatives.length">
+                        Selected model is missing alternatives: {{outcomeWithAnalyses.selectedModel.missingAlternativesNames.join(',
+                        ')}}.
+                      </div>
+                      <div ng-disabled="!editMode.allowEditing" class="alert" ng-show="outcomeWithAnalyses.selectedModel.runStatus !== 'done'">
+                        This model has not yet been run.
                       </div>
                     </div>
                   </div>
                 </div>
-                <div ng-if="outcomeWithAnalyses.dataType === 'single-study'" class="cell large-5 medium-12 indent-one">
-                  <div class="grid-x">
-                    <study-select studies="studies" outcome="outcomeWithAnalyses" interventions="includedAlternatives"
-                      selection="outcomeWithAnalyses" on-change="saveInclusions" edit-mode="editMode"></study-select>
-                  </div>
+                <div ng-if="outcomeWithAnalyses.dataType === 'single-study'" class="cell large-4 medium-4 small-8 indent-one">
+                  <study-select studies="studies" outcome="outcomeWithAnalyses" interventions="includedAlternatives"
+                    selection="outcomeWithAnalyses" on-change="saveInclusions" edit-mode="editMode"></study-select>
                 </div>
               </div>
             </div>
@@ -100,7 +97,6 @@
                 <em>No meta-analyses available</em>
               </label>
             </div>
-
           </div>
         </div>
       </div>
@@ -108,9 +104,11 @@
 
     <div class="grid-x">
       <div class="cell">
-        <button ng-if="analysis.benefitRiskNMAOutcomeInclusions.length > 0" ng-disabled="step1AlertMessages.length || !editMode.allowEditing || !editMode.loaded"
+        <button class="button" ng-show="analysis.benefitRiskNMAOutcomeInclusions.length > 0"
+          ng-disabled="step1AlertMessages.length || !editMode.allowEditing || !editMode.loaded"
           type="button" class="primary" ng-click="goToStep2()">Set baselines</button>
-        <button ng-if="analysis.benefitRiskNMAOutcomeInclusions.length === 0" ng-disabled="step1AlertMessages.length || !editMode.allowEditing || !editMode.loaded"
+        <button class="button" ng-show="analysis.benefitRiskNMAOutcomeInclusions.length === 0"
+          ng-disabled="step1AlertMessages.length || !editMode.allowEditing || !editMode.loaded"
           type="button" class="primary" ng-click="finalizeAndGoToDefaultScenario()">Perform MCDA</button>
         <div ng-repeat="message in step1AlertMessages">
           <div class="alert">

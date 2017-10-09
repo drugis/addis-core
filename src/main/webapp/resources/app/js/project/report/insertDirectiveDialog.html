@@ -41,7 +41,7 @@
         </label>
       </div>
     </div>
-    <div class="grid-x" ng-if="selections.analysis && showSettings.showSelectInterventions">
+    <div class="grid-x grid-margin-x" ng-if="selections.analysis && showSettings.showSelectInterventions">
       <div class="cell large-6">
         <label>
           Treatment 1
@@ -67,15 +67,15 @@
         </label>
       </div>
     </div>
-    <div class="grid-x" modal-bottom-button-bar ">
-      <div class="cell ">
-        <button class="success " type="submit " ng-disabled="!selections.analysis ">Insert
+    <div class="grid-x modal-bottom-button-bar">
+      <div class="cell">
+        <button class="button success" type="submit" ng-disabled="!selections.analysis">Insert
         </button>
       </div>
     </div>
   </div>
-  <button ng-click="cancel() " class="close-button " aria-label="Close reveal
-      " type="button ">
-    <span aria-hidden="true ">&times;</span>
+  <button ng-click="cancel()" class="close-button" aria-label="Close reveal
+     " type="button">
+    <span aria-hidden="true">&times;</span>
   </button>
 </form>

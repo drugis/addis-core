@@ -327,6 +327,7 @@ define(['lodash', 'angular'], function(_, angular) {
         templateUrl: './app/js/intervention/addIntervention.html',
         scope: $scope,
         controller: 'AddInterventionController',
+        size: 'large',
         resolve: {
           callback: function() {
             return function() {

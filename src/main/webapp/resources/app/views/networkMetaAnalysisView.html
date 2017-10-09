@@ -14,22 +14,24 @@
     <div class="grid-x">
       <div class="cell large-6">
         <label>Included interventions</label>
-        <div>
-          <button ng-if="!editMode.disableEditing && !hasModel" class="button tiny" ng-click="selectAllInterventions()">Select all</button>
-          <button ng-if="!editMode.disableEditing && !hasModel" class="button tiny" ng-click="deselectAllInterventions()">Deselect all</button>
-        </div>
-        <div class="checkbox-group">
-          <div ng-repeat="intervention in interventions">
-            <label>
-              <input type="checkbox" ng-model="intervention.isIncluded" ng-disabled="editMode.disableEditing || hasModel"
-                ng-change="changeInterventionInclusion(intervention)"> {{intervention.name}}
-            </label>
-            <div class="alert animate-show" ng-if="loading.loaded && isOverlappingIntervention(intervention)">
-              <em>Overlaps:
-                <span ng-repeat="overlap in treatmentOverlapMap[intervention.id]">
-                  {{overlap.name}} {{$last ? '' : ', '}}
-                </span>
-              </em>
+        <div class="grid-x">
+          <div class="cell button-group small" ng-if="!editMode.disableEditing && !hasModel">
+            <button class="button" ng-click="selectAllInterventions()">Select all</button>
+            <button class="button" ng-click="deselectAllInterventions()">Deselect all</button>
+          </div>
+          <div class="cell checkbox-group">
+            <div ng-repeat="intervention in interventions">
+              <label>
+                <input type="checkbox" ng-model="intervention.isIncluded" ng-disabled="editMode.disableEditing || hasModel"
+                  ng-change="changeInterventionInclusion(intervention)"> {{intervention.name}}
+              </label>
+              <div class="alert animate-show" ng-if="loading.loaded && isOverlappingIntervention(intervention)">
+                <em>Overlaps:
+                  <span ng-repeat="overlap in treatmentOverlapMap[intervention.id]">
+                    {{overlap.name}} {{$last ? '' : ', '}}
+                  </span>
+                </em>
+              </div>
             </div>
           </div>
         </div>

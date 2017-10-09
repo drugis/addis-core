@@ -1,25 +1,18 @@
 <div id="{{settings.anchorId}}" class="study-item">
-    <h3>{{settings.header}}<inline-help ng-if="settings.helpId" help-key="{{settings.helpId}}"></inline-help></h3>
+  <h3>{{settings.header}}
+    <inline-help ng-if="settings.helpId" help-key="{{settings.helpId}}"></inline-help>
+  </h3>
 
-    <div ng-if="items.length === 0">
-        <p class="panel">{{settings.categoryEmptyMessage}}</p>
+  <div ng-if="items.length === 0">
+    <p class="panel callout primary">{{settings.categoryEmptyMessage}}</p>
+  </div>
+  <div ng-if="items">
+    <div class="panel callout primary" ng-repeat="item in items | orderBy:'pos'">
+      <category-item-directive itemIndex="{{$index}}" item="item" study-uuid="studyUuid"
+        reload-items="reloadItems" settings="settings" is-editing-allowed="isEditingAllowed"
+        is-single-item="isSingleItem" is-repairable="isRepairable"></category-item-directive>
     </div>
-    <div ng-if="items">
-        <div class="panel clearfix" ng-repeat="item in items | orderBy:'pos'">
+  </div>
 
-            <category-item-directive
-            itemIndex="{{$index}}"
-            item="item"
-            study-uuid="studyUuid"
-            reload-items="reloadItems"
-            settings="settings"
-            is-editing-allowed="isEditingAllowed"
-            is-single-item="isSingleItem"
-            is-repairable="isRepairable"
-            ></category-item-directive>
-        </div>
-    </div>
-
-    <a ng-show="isEditingAllowed && !isSingleItem" ng-click="addItem()" class="button success"><i class="fa fa-plus"></i> Add {{settings.itemName}}</a>
-
+  <a ng-show="isEditingAllowed && !isSingleItem" ng-click="addItem()" class="button success"><i class="fa fa-plus"></i> Add {{settings.itemName}}</a>
 </div>

@@ -1,7 +1,6 @@
 @import "addis-settings";
 @import "settings";
 @import "../app/js/bower_components/foundation-sites/scss/foundation";
-@import "drugis";
 @import "../app/js/bower_components/gemtc-web/app/sass/_gemtc-drugis-base.scss";
 @import "addis-base";
 @import "../app/js/bower_components/mcda-web/sass/_mcda-drugis-base.scss";
@@ -43,9 +42,12 @@
 @include foundation-top-bar;
 @include foundation-visibility-classes;
 @include foundation-flex-classes;
+
+@import "drugis";
+
 // load addis style settings //
 .info {
-  color: darken($secondary-color, 10%);
+  color: #77c0de;
 }
 .button.secondary {
     background-color: #e7e7e7;
