@@ -1,16 +1,18 @@
 <div class="fixed">
   <div class="top-bar">
-    <div class="top-bar-left">
-      <ul class="menu">
-        <li>
-          <a ng-if="!isAnonymous" id="logo" ui-sref="datasets({userUid: loginUserInfo.id})">addis.drugis.org</a>
-          <a ng-if="isAnonymous" id="logo" ui-sref="home">addis.drugis.org</a>
-        </li>
-      </ul>
+    <div class="grid-x top-bar-left">
+      <div class="cell large-2">
+        <ul class="menu">
+          <li>
+            <a ng-if="!isAnonymous" id="logo" ui-sref="datasets({userUid: loginUserInfo.id})">addis.drugis.org</a>
+            <a ng-if="isAnonymous" id="logo" ui-sref="home">addis.drugis.org</a>
+          </li>
+        </ul>
+      </div>
       <ng-transclude></ng-transclude>
     </div>
     <div class="top-bar-right">
-    <!-- Right Nav Section -->
+      <!-- Right Nav Section -->
       <ul class="dropdown menu" data-dropdown-menu>
         <li>
           <a class="manual" href="/manual.html" target="_blank">

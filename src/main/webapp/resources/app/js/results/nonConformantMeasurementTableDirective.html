@@ -19,7 +19,7 @@
     </tr>
     <tr ng-repeat="inputRow in inputRows">
       <td class="y-head" rowspan="{{inputRow.numberOfGroups}}" ng-if="$index % inputRow.numberOfGroups === 0" style="text-align: left;">
-        <div class="cell">
+        <div>
           <div>{{::inputRow.label}}</div>
           <div class="grid-x collapse" ng-show="isEditingAllowed">
             <label>Select measurement moment</label>
@@ -29,7 +29,7 @@
               </select>
             </div>
             <div class="cell small-3">
-              <button class="postfix" type="button" ng-disabled="!selectedMoment || selectedMoment.isExistingMeasurement"
+              <button class="button postfix" type="button" ng-disabled="!selectedMoment || selectedMoment.isExistingMeasurement"
                 ng-click="setToMoment(selectedMoment, inputRow.measurementInstanceList)">Confirm</button>
             </div>
           </div>

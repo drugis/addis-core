@@ -99,7 +99,7 @@
                 />
               </span>
               <div ng-if="!addScale.isAddingScaledUnit">
-                <button type="button" ng-click="addScale.isAddingScaledUnit=true">Add unit</button>
+                <button class="button" type="button" ng-click="addScale.isAddingScaledUnit=true">Add unit</button>
               </div>
               <div ng-if="addScale.isAddingScaledUnit">
                 <scaled-unit-input unit-concepts="unitConcepts" scaled-units="scaledUnits"></scaled-unit-input>
@@ -112,7 +112,7 @@
               <constraint model="newIntervention.bothDoseTypesMaxConstraint" scaled-units="scaledUnits"
               />
               <div ng-if="!addScale.isAddingScaledUnit">
-                <button type="button" ng-click="addScale.isAddingScaledUnit=true">Add unit</button>
+                <button class="button" type="button" ng-click="addScale.isAddingScaledUnit=true">Add unit</button>
               </div>
               <div ng-if="addScale.isAddingScaledUnit">
                 <scaled-unit-input unit-concepts="unitConcepts" scaled-units="scaledUnits"></scaled-unit-input>

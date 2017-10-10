@@ -1,19 +1,14 @@
 <div ui-view>
   <navbar-directive>
-    <ul class="left top-bar-content">
-      <li id="top-bar-commit" ng-show="navSettings.isHidden && isEditingAllowed" class="has-form">
-        <a ng-click="saveStudy()" class="button success" ng-class="{'disabled' : !isStudyModified()}">
-          Commit changes
-        </a>
-      </li>
-
-      <li id="top-bar-commit-cancel" ng-show="navSettings.isHidden && isEditingAllowed"
-        class="has-form">
-        <a class="button secondary" ng-click="resetStudy()" ng-class="{'disabled' : !isStudyModified()}">
-            Undo changes
-          </a>
-      </li>
-    </ul>
+    <div class="cell large-2 button-group no-bottom-margin small" ng-show="navSettings.isHidden && isEditingAllowed"
+      class="has-form">
+      <button class="button success" ng-click="saveStudy()" ng-class="{'disabled' : !isStudyModified()}">
+        Commit changes
+      </button>
+      <button class="button secondary" ng-click="resetStudy()" ng-class="{'disabled' : !isStudyModified()}">
+        Undo changes
+      </button>
+    </div>
   </navbar-directive>
   <ul class="breadcrumbs fixed">
     <li><a ui-sref="datasets({userUid: user.id})">{{user.firstName}} {{user.lastName}}</a></li>

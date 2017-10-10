@@ -22,8 +22,8 @@
     </ul>
   </nav>
     <section id="hero">
-    <div class="row">
-      <div class="large-12 columns">
+    <div class="grid-x">
+      <div class="cell">
         <h1><c:out value="${errorCode}"/><br/>
           <small><c:out value="${reasonPhrase}"/></small>
         </h1>

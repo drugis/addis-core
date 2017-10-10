@@ -56,8 +56,8 @@
   </nav>
 
   <section id="hero">
-    <div class="row">
-      <div class="columns large-offset-2 large-8 medium-12">
+    <div class="grid-x">
+      <div class="cell large-offset-2 large-8 medium-12">
         <h1>Trialverse<small>.org</small></h1>
         <h4>The portal to extract and share clinical trials data</h4>
       </h1>
@@ -66,8 +66,8 @@
   </section>
 
   <section class="content">
-    <div class="row">
-      <div class="columns large-offset-2 large-8 medium-12">
+    <div class="grid-x">
+      <div class="cell large-offset-2 large-8 medium-12">
         <p>Trialverse aims to enable world-wide collaboration on extracting data and meta-data on existing clinical trials, and to eventually reduce the duplication of effort inherent in the current systematic review and evidence-based decision making processes.
 	It is part of <a href="https://drugis.org/software/addis2/">ADDIS 2</a>, a <a href="https://drugis.org/">drugis.org</a> project,
 	and is currently in early development.</p>

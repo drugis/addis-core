@@ -36,8 +36,14 @@
         <ul class="no-bullet" ng-if="item.categoryList.length">
           <li ng-repeat="category in item.categoryList"><a><i class="fa fa-trash-o" style="color: red;" ng-click="deleteCategory(category)"></i></a>            {{category}}</li>
         </ul>
-        <span ng-if="!item.categoryList.length">(no categories defined yet)</span>
+      </div>
+      <div class="cell" ng-if="!item.categoryList.length">
+        (no categories defined yet)
+      </div>
+      <div class="cell">
         <input ng-model="newCategory.categoryLabel" ng-keypress="addCategoryEnterKey($event, newCategory)">
+      </div>
+      <div class="cell">
         <button class="button small" ng-disabled="cannotAddCategory(newCategory)" type="button"
           ng-click="addCategory(newCategory)">Add category</button>
         <span class="alert" ng-if="isDuplicateCategory(newCategory)">Duplicate category name</span>
