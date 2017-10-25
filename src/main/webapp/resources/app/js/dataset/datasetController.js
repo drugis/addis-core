@@ -34,6 +34,7 @@ define(['lodash'],
 
       // init
       loadStudiesWithDetail();
+      $scope.loadConcepts = loadConcepts; // do not remove, child controller uses it
       $scope.datasetConcepts = loadConcepts(); // scope placement for child states
       $scope.datasetConcepts.then(function(concepts) {
         $scope.interventions = _.chain(concepts['@graph'])
