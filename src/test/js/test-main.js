@@ -15,11 +15,12 @@ require.config({
   paths: {
     'angular': 'bower_components/angular/angular',
     'angular-cookies': 'bower_components/angular-cookies/angular-cookies.min',
-    'angular-resource': 'bower_components/angular-resource/angular-resource',
     'angular-md5': 'bower_components/angular-md5/angular-md5',
-    'angular-mocks': 'bower_components/angular-mocks/angular-mocks',
     'angular-patavi-client': 'bower_components/angular-patavi-client/patavi',
+    'angular-mocks': 'bower_components/angular-mocks/angular-mocks',
+    'angular-resource': 'bower_components/angular-resource/angular-resource',
     'angular-select': 'bower_components/angular-ui-select/dist/select.min',
+    'angular-touch': 'bower_components/angular-touch/angular-touch',
     'angular-ui-router': 'bower_components/angular-ui-router/release/angular-ui-router',
     'angularanimate': 'bower_components/angular-animate/angular-animate',
     'clipboard': 'bower_components/clipboard/dist/clipboard.min',
@@ -36,16 +37,19 @@ require.config({
     'lodash': 'bower_components/lodash/dist/lodash.min',
     'MathJax': 'bower_components/MathJax/MathJax.js?config=TeX-MML-AM_HTMLorMML',
     'mcda': 'bower_components/mcda-web/app/js',
-    'mmfoundation': 'bower_components/angular-foundation/dist/mm-foundation-tpls-0.9.0-SNAPSHOT',
+    'mmfoundation': 'bower_components/angular-foundation-6/dist/angular-foundation.min',
     'modernizr': 'bower_components/modernizr/modernizr',
     'moment': 'bower_components/moment/min/moment.min',
     'ngSanitize': 'bower_components/angular-sanitize/angular-sanitize',
     'nvd3': 'bower_components/nvd3/build/nv.d3.min',
-    'showdown': 'bower_components/showdown/dist/showdown.min',
-    'underscore': 'bower_components/underscore/underscore', 
+    'showdown': 'bower_components/showdown/dist/showdown.min'
   },
   baseUrl: '/base/src/main/webapp/resources/app/js',
   shim: {
+    'angular-touch': {
+      deps: ['angular'],
+      exports: 'ngTouch'
+    },
     'jQuery': {
       exports: 'jQuery'
     },
@@ -105,9 +109,6 @@ require.config({
     'angular-mocks': {
       deps: ['angular'],
       exports: 'angular.mock'
-    },
-    'underscore': {
-      exports: '_'
     },
     'domReady': {
       exports: 'domReady'

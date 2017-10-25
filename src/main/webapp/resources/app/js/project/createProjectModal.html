@@ -1,34 +1,38 @@
 <form novalidate ng-submit="createProject(project)">
-  <div class="row">
-    <div class="large-9 columns">
+  <div class="grid-container">
+  <div class="grid-x">
+    <div class="cell">
       <label>Dataset
-        <h3>{{dataset.title}}</h3>
+        <h4>{{dataset.title}}</h4>
       </label>
     </div>
   </div>
-  <div class="row">
-    <div class="large-9 columns">
+  <div class="grid-x">
+    <div class="cell">
       <h3>Create a new project</h3>
     </div>
   </div>
-  <div class="row">
-    <div class="large-9 columns">
+  <div class="grid-x">
+    <div class="cell">
       <label>Name
         <input autofocus type="text" ng-model="project.name">
       </label>
     </div>
   </div>
-  <div class="row">
-    <div class="large-9 columns">
+  <div class="grid-x">
+    <div class="cell">
       <label>Description
-        <textarea rows="8" ng-model="project.description"></textarea>
+        <textarea grid-xs="8" ng-model="project.description"></textarea>
       </label>
     </div>
   </div>
-  <div class="row">
-    <div class="large-9 columns">
-      <button class="success" type="submit" ng-disabled="!project.name">Create</button>
+  <div class="grid-x">
+    <div class="cell">
+      <button class="button success" type="submit" ng-disabled="!project.name">Create</button>
     </div>
   </div>
-  <a class="close-reveal-modal" ng-click="cancel()">&#215;</a>
+</div>
+  <button ng-click="cancel()" class="close-button" aria-label="Close reveal" type="button">
+    <span aria-hidden="true">&times;</span>
+  </button>
 </form>

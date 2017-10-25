@@ -1,10 +1,10 @@
-<div class="row" ng-show="treatmentDirective.isVisible">
+<div class="grid-x" ng-show="treatmentDirective.isVisible">
 
-  <div class="large-12 medium-12 columns">
+  <div class="cell">
     <div class="panel">
 
-      <div class="row">
-        <div class="large-12 medium-12 columns">
+      <div class="grid-x">
+        <div class="cell">
           <label>Drug
             <input type="text" ng-model="treatment.drug" typeahead="drug as drug.label for drug in drugs | filter:{label:$viewValue}"
               class="form-control">
@@ -12,8 +12,8 @@
         </div>
       </div>
 
-      <div class="row">
-        <div class="large-9 medium-12 columns">
+      <div class="grid-x">
+        <div class="cell">
           <label>Dose type</label>
           <input ng-model="treatment.treatmentDoseType" type="radio" value="ontology:FixedDoseDrugTreatment"
             id="fixedOption">
@@ -24,12 +24,12 @@
         </div>
       </div>
 
-      <div class="row" ng-show="treatment.treatmentDoseType === 'ontology:FixedDoseDrugTreatment' ">
-        <div class="large-2 medium-3 columns">
+      <div class="grid-x grid-margin-x" ng-show="treatment.treatmentDoseType === 'ontology:FixedDoseDrugTreatment' ">
+        <div class="cell large-4">
           <label>Dose amount</label>
           <input ng-model="treatment.fixedValue" type="number">
         </div>
-        <div class="large-2 medium-3 columns end">
+        <div class="cell large-4">
           <label>Dose unit name
             <input type="text" ng-model="treatment.doseUnit" typeahead="doseUnit as doseUnit.label for doseUnit in doseUnits | filter:$viewValue"
               class="form-control">
@@ -37,16 +37,16 @@
         </div>
       </div>
 
-      <div class="row" ng-show="treatment.treatmentDoseType === 'ontology:TitratedDoseDrugTreatment' ">
-        <div class="large-2 medium-3 columns">
+      <div class="grid-x grid-margin-x" ng-show="treatment.treatmentDoseType === 'ontology:TitratedDoseDrugTreatment' ">
+        <div class="cell large-3">
           <label>Minimum dose</label>
           <input ng-model="treatment.minValue" type="number">
         </div>
-        <div class="large-2 medium-3 columns">
+        <div class="cell large-3">
           <label>Maximum dose</label>
           <input ng-model="treatment.maxValue" type="number">
         </div>
-        <div class="large-3 medium-3 columns end">
+        <div class="cell large-5">
           <label>Dose unit name
             <input type="text" ng-model="treatment.doseUnit" typeahead="doseUnit as doseUnit.label for doseUnit in doseUnits | filter:$viewValue"
               class="form-control">
@@ -54,23 +54,19 @@
         </div>
       </div>
 
-      <div class="row">
-        <div class="columns large-12">
+      <div class="grid-x">
+        <div class="cell">
           Once per
         </div>
       </div>
-      <div class="row">
+      <div class="grid-x">
         <duration-input duration-string="treatment.dosingPeriodicity" template-url="app/js/activity/dosingPeriodicityDirective.html"></duration-input>
       </div>
 
-      <ul class="button-group">
-        <li>
+      <div class="button-group">
           <button type="button" class="button small secondary" ng-click="cancelAddDrug()">Cancel</button>
-        </li>
-        <li>
-          <button type="button" class="small" ng-disabled="!isValidTreatment()" ng-click="addTreatment(treatment)">Add drug</button>
-        </li>
-      </ul>
+          <button type="button" class="button small" ng-disabled="!isValidTreatment()" ng-click="addTreatment(treatment)">Add drug</button>
+      </div>
 
     </div>
   </div>

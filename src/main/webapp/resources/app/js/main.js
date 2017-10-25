@@ -9,13 +9,13 @@ require.config({
     'angular-resource': 'bower_components/angular-resource/angular-resource.min',
     'angular-ui-router': 'bower_components/angular-ui-router/release/angular-ui-router.min',
     'angular-select': 'bower_components/angular-ui-select/dist/select.min',
+    'angular-touch': 'bower_components/angular-touch/angular-touch',
     'angularanimate': 'bower_components/angular-animate/angular-animate.min',
     'angularjs-slider': 'bower_components/angularjs-slider/dist/rzslider.min',
     'clipboard': 'bower_components/clipboard/dist/clipboard.min',
     'd3': 'bower_components/d3/d3.min',
     'domReady': 'bower_components/requirejs-domready/domReady',
     'error-reporting': 'bower_components/error-reporting/errorReportingDirective',
-    'foundation': 'bower_components/foundation/js/foundation.min',
     'gemtc-web': 'bower_components/gemtc-web/app/js',
     'help-popup': 'bower_components/help-popup/help-directive',
     'jQuery': 'bower_components/jquery/dist/jquery.min',
@@ -24,7 +24,7 @@ require.config({
     'MathJax': 'bower_components/MathJax/MathJax.js?config=TeX-MML-AM_HTMLorMML',
     'mcda': 'bower_components/mcda-web/app/js',
     'mctad': 'bower_components/mctad/mctad.min',
-    'mmfoundation': 'bower_components/angular-foundation/dist/mm-foundation-tpls-0.9.0-SNAPSHOT',
+    'mmfoundation': 'bower_components/angular-foundation-6/dist/angular-foundation.min',
     'modernizr': 'bower_components/modernizr/modernizr',
     'moment': 'bower_components/moment/min/moment.min',
     'ngSanitize': 'bower_components/angular-sanitize/angular-sanitize.min',
@@ -56,6 +56,10 @@ require.config({
     },
     'mmfoundation': {
       deps: ['angular']
+    },
+    'angular-touch': {
+      deps: ['angular'],
+      exports: 'ngTouch'
     },
     'help-popup': {
       deps: ['angular']
@@ -90,9 +94,6 @@ require.config({
     },
     'lodash': {
       exports: '_'
-    },
-    'foundation': {
-      deps: ['jQuery', 'modernizr']
     },
     'domReady': {
       exports: 'domReady'

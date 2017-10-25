@@ -1,73 +1,81 @@
-<form novalidate" ng-submit="insertDirective()">
-  <div class="row">
-    <div class="large-9 columns">
-      <h3>Insert {{title}}</h3>
+<form novalidate ng-submit="insertDirective()">
+  <div class="grid-container">
+    <div class="grid-x">
+      <div class="cell">
+        <h3>Insert {{title}}</h3>
+      </div>
+    </div>
+    <div class="grid-x">
+      <div class="cell">
+        <label ng-if="selections.analysis">
+          Select analysis
+          <select ng-model="selections.analysis" ng-options="analysis.title for analysis in analyses"
+            ng-change="selectedAnalysisChanged()"></select>
+        </label>
+        <label ng-if="!selections.analysis">No valid analyses available for {{title}}</label>
+      </div>
+    </div>
+    <div class="grid-x" ng-if="showSettings.showSelectModel && selections.analysis">
+      <div class="cell">
+        <label>
+          Select model
+          <select ng-model="selections.model" ng-options="model.title for model in selections.analysis.models"
+            ng-change="selectedModelChanged()"></select>
+        </label>
+      </div>
+    </div>
+    <div class="grid-x" ng-if="showSettings.showSelectBaseline && selections.analysis">
+      <div class="cell">
+        <label>
+          Select baseline
+          <select ng-model="selections.baselineIntervention" ng-options="intervention.name for intervention in selections.analysis.interventions"></select>
+        </label>
+      </div>
+    </div>
+    <div class="grid-x" ng-if="selections.analysis && showSettings.showSelectRegression && isRegressionModel && selections.model.regressor.levels.length">
+      <div class="cell">
+        <label>
+          Select covariate level
+          <select ng-model="selections.regressionLevel" ng-options="level for level in selections.model.regressor.levels">
+          </select>
+        </label>
+      </div>
+    </div>
+    <div class="grid-x grid-margin-x" ng-if="selections.analysis && showSettings.showSelectInterventions">
+      <div class="cell large-6">
+        <label>
+          Treatment 1
+          <select ng-model="selections.t1" ng-options="intervention.name for intervention in interventions"
+            ng-change="selectedTreatmentChanged()"></select>
+        </label>
+      </div>
+      <div class="cell large-6">
+        <label>
+          Treatment 2
+          <select ng-model="selections.t2" ng-options="intervention.name for intervention in secondInterventionOptions"></select>
+        </label>
+      </div>
+    </div>
+    <div class="grid-x" ng-if="selections.analysis && showSettings.showSelectSorting">
+      <div class="cell">
+        <label>
+          Select sorting option (point-estmate sorts best to worst)
+          <div ng-repeat="sortOption in sortOptions">
+            <input type="radio" ng-model="selections.sortingType" ng-value="sortOption"> {{sortOption}}
+            </input>
+          </div>
+        </label>
+      </div>
+    </div>
+    <div class="grid-x modal-bottom-button-bar">
+      <div class="cell">
+        <button class="button success" type="submit" ng-disabled="!selections.analysis">Insert
+        </button>
+      </div>
     </div>
   </div>
-  <div class="row">
-    <div class="large-9 columns">
-      <label ng-if="selections.analysis">
-        Select analysis
-        <select ng-model="selections.analysis" ng-options="analysis.title for analysis in analyses" ng-change="selectedAnalysisChanged()"></select>
-      </label>
-      <label ng-if="!selections.analysis">No valid analyses available for {{title}}</label>
-    </div>
-  </div>
-  <div ng-if="showSettings.showSelectModel && selections.analysis" class="row">
-    <div class="large-9 columns">
-      <label>
-        Select model
-        <select ng-model="selections.model" ng-options="model.title for model in selections.analysis.models" ng-change="selectedModelChanged()"></select>
-      </label>
-    </div>
-  </div>  
-  <div ng-if="showSettings.showSelectBaseline && selections.analysis" class="row">
-    <div class="large-9 columns">
-      <label>
-        Select baseline
-        <select ng-model="selections.baselineIntervention" ng-options="intervention.name for intervention in selections.analysis.interventions"></select>
-      </label>
-    </div>
-  </div>
-  <div ng-if="selections.analysis && showSettings.showSelectRegression && isRegressionModel && selections.model.regressor.levels.length" class="row">
-    <div class="large-9 columns">
-      <label>
-        Select covariate level
-        <select ng-model="selections.regressionLevel" ng-options="level for level in selections.model.regressor.levels">
-        </select>
-      </label>
-    </div>
-  </div>
-  <div ng-if="selections.analysis && showSettings.showSelectInterventions" class="row ">
-    <div class="large-6 columns">
-      <label>
-        Treatment 1
-        <select ng-model="selections.t1" ng-options="intervention.name for intervention in interventions" ng-change="selectedTreatmentChanged()"></select>
-      </label>
-    </div>
-    <div class="large-6 columns">
-      <label>
-        Treatment 2
-        <select ng-model="selections.t2" ng-options="intervention.name for intervention in secondInterventionOptions"></select>
-      </label>
-    </div>
-  </div>
- <div ng-if="selections.analysis && showSettings.showSelectSorting" class="row">
-    <div class="large-9 columns">
-      <label>
-        Select sorting option (point-estmate sorts best to worst)
-        <div ng-repeat="sortOption in sortOptions"> 
-          <input type="radio" ng-model="selections.sortingType" ng-value="sortOption"> {{sortOption}}
-          </input>
-        </div>
-      </label>
-    </div>
-  </div>
-  <div class="row modal-bottom-button-bar">
-    <div class="large-9 columns">
-      <button class="success" type="submit" ng-disabled="!selections.analysis">Insert
-      </button>
-    </div>
-  </div>
-  <a class="close-reveal-modal" ng-click="cancel()">&#215;</a>
+  <button ng-click="cancel()" class="close-button" aria-label="Close reveal
+     " type="button">
+    <span aria-hidden="true">&times;</span>
+  </button>
 </form>

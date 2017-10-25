@@ -8,15 +8,17 @@
   <li><a ui-sref="dataset.study({userUid: userUid, datasetUuid: datasetUuid, studyGraphUuid: studyGraphUuid})">{{studyTitle}}</a></li>
   <li class="current active">History</li>
 </ul>
-<div class="row">
-  <div class="columns large-12">
-    <h1>Study history
-      <inline-help help-key="study-history"></inline-help>
-    </h1>
-    <ul class="no-bullet">
-      <li ng-repeat="historyItem in historyItems | orderBy : 'historyOrder'">
-        <history-item item="historyItem" is-study-item="true"></history-item>
-      </li>
-    </ul>
+<div class="grid-container">
+  <div class="grid-x">
+    <div class="cell">
+      <h1>Study history
+        <inline-help help-key="study-history"></inline-help>
+      </h1>
+      <ul class="no-bullet">
+        <li ng-repeat="historyItem in historyItems | orderBy : 'historyOrder'">
+          <history-item item="historyItem" is-study-item="true"></history-item>
+        </li>
+      </ul>
+    </div>
   </div>
 </div>

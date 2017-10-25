@@ -6,13 +6,17 @@
   <li><a ui-sref="dataset({userUid: user.id, datasetUuid: datasetUuid})">{{dataset.label}}</a></li>
   <li class="current active">History</li>
 </ul>
-<div class="row">
-  <div class="columns large-12">
-    <h1>Dataset history<inline-help help-key="dataset-history"></inline-help></h1>
-    <ul class="no-bullet">
-      <li ng-repeat="historyItem in historyItems | orderBy : 'historyOrder'  ">
-        <history-item item="historyItem"></history-item>
-      </li>
-    </ul>
+<div class="grid-container">
+  <div class="grid-x">
+    <div class="cell">
+      <h1>Dataset history
+        <inline-help help-key="dataset-history"></inline-help>
+      </h1>
+      <ul class="no-bullet">
+        <li ng-repeat="historyItem in historyItems | orderBy : 'historyOrder'  ">
+          <history-item item="historyItem"></history-item>
+        </li>
+      </ul>
+    </div>
   </div>
 </div>

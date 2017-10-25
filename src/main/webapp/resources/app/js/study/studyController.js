@@ -282,6 +282,7 @@ define(['angular', 'lodash'],
         $modal.open({
           templateUrl: 'app/js/study/view/d80Table.html',
           controller: 'D80TableController',
+          size: 'large',
           resolve: {
             study: function() {
               return $scope.study;

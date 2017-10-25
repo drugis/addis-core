@@ -1,23 +1,23 @@
 <div ui-view>
   <navbar-directive>
   </navbar-directive>
-  <div class="row nav-bar-spacer" style="margin-bottom: 2rem;">
-    <div class="columns  large-8 medium-10 small-12">
+  <div class="grid-x nav-bar-spacer" style="margin-bottom: 2rem;">
+    <div class="cell  large-8 medium-10 small-12">
       <h2>Search</h2>
       <form ng-submit="search(searchTerm)">
-        <div class="row collapse">
-          <div class="small-10 columns">
+        <div class="grid-x collapse">
+          <div class="cell small-10">
             <input type="text" autofocus="true" placeholder="Search for studies by title or description" ng-model="searchTerm" />
           </div>
-          <div class="small-2 columns">
+          <div class="cell small-2">
             <button class="button postfix" type="submit" ng-disabled="!searchTerm">Search</button>
           </div>
         </div>
       </form>
     </div>
   </div>
-  <div class="row" ng-show="searchResults">
-    <div class="columns large-8 medium-10 small-12">
+  <div class="grid-x" ng-show="searchResults">
+    <div class="cell large-8 medium-10 small-12">
       <h3>Results</h3>
       <ul class="no-bullet">
         <li ng-repeat="searchResult in searchResults" style="padding-top: 1rem; padding-bottom: 1rem">

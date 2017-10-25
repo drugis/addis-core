@@ -1,30 +1,30 @@
 <tabset>
   <tab heading="Empty Study">
     <form novalidate ng-submit="createStudy(study)">
-      <div class="row">
-        <div class="large-9 columns">
+      <div class="grid-x">
+        <div class="cell">
           <h3>Create a new study</h3>
         </div>
       </div>
-      <div class="row">
-        <div class="large-9 columns">
+      <div class="grid-x">
+        <div class="cell">
           <label>Short Name (e.g. Hansen 2005)
             <input autofocus type="text" ng-model="study.label">
           </label>
           <label class="alert" ng-show="!isUniqueShortName(study.label)">Short name must be unique</label>
         </div>
       </div>
-      <div class="row">
-        <div class="large-9 columns">
+      <div class="grid-x">
+        <div class="cell">
           <label>Title
             <textarea rows="8" ng-model="study.comment"></textarea>
           </label>
         </div>
       </div>
-      <div class="row">
-        <div class="large-9 columns">
-          <button class="success" type="submit" ng-disabled="!study.comment || !isUniqueShortName(study.label) || isCreatingStudy">
-            Create
+      <div class="grid-x">
+        <div class="cell">
+          <button class="button success" type="submit" ng-disabled="!study.comment || !isUniqueShortName(study.label) || isCreatingStudy">
+            create
           </button>
         </div>
       </div>
@@ -32,20 +32,20 @@
   </tab>
   <tab heading="ClinicalTrials.gov">
     <form novalidate ng-submit="import(studyImport)">
-      <div class="row">
-        <div class="large-9 columns">
+      <div class="grid-x">
+        <div class="cell">
           <h3>Import study</h3>
         </div>
       </div>
-      <div class="row">
-        <div class="large-9 columns">
+      <div class="grid-x">
+        <div class="cell">
           <label>NCT ID</label>
           <input autofocus type="text" ng-disabled="studyImport.loading" ng-model="studyImport.nctId"
             ng-model-options="{ debounce: 800 }" ng-change="getInfo(studyImport)">
         </div>
       </div>
-      <div class="row">
-        <div class="large-9 columns">
+      <div class="grid-x">
+        <div class="cell">
           <style>
             .local-hide.ng-hide {
               transition: 0.33s linear all;
@@ -118,9 +118,9 @@
           </table>
         </div>
       </div>
-      <div class="row" style="margin-top: 1rem;">
-        <div class="large-9 columns">
-          <button class="success" type="submit" ng-disabled="isCreatingStudy || !studyImport.nctId || !isValidNct(studyImport.nctId) || !studyImport.basicInfo || !studyImport.basicInfo._links">
+      <div class="grid-x" style="margin-top: 1rem;">
+        <div class="cell">
+          <button class="button success" type="submit" ng-disabled="isCreatingStudy || !studyImport.nctId || !isValidNct(studyImport.nctId) || !studyImport.basicInfo || !studyImport.basicInfo._links">
             Import
           </button>
           <span ng-show="isCreatingStudy"><i class="fa fa-spinner fa-spin"></i> importing study</span>
@@ -129,4 +129,6 @@
     </form>
   </tab>
 </tabset>
-<a class="close-reveal-modal" ng-click="cancel()">&#215;</a>
+<button ng-click="cancel()" class="close-button" aria-label="Close reveal" type="button">
+  <span aria-hidden="true">&times;</span>
+</button>

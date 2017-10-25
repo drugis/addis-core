@@ -1,23 +1,28 @@
 <form novalidate ng-submit="merge(mergeTarget)">
-  <div class="row">
-    <div class="large-9 columns">
-      <p>
-        <h4>Merge {{unit.label}} into another unit</h4>
-        <em>After merging, all doses using {{unit.label}} will use the target unit, and {{unit.label}} will be deleted.</em>
-      </p>
-      <div class="row">
-        <div class="large-6 columns">
-          <label>Target unit
-            <select ng-model="mergeTarget" ng-options="otherUnit.label for otherUnit in otherUnits"></select>
-          </label>
+  <div class="grid-container">
+    <div class="grid-x">
+      <div class="cell">
+        <p>
+          <h4>Merge {{unit.label}} into another unit</h4>
+          <em>After merging, all doses using {{unit.label}} will use the target unit,
+            and {{unit.label}} will be deleted.</em>
+        </p>
+        <div class="grid-x">
+          <div class="cell">
+            <label>Target unit
+              <select ng-model="mergeTarget" ng-options="otherUnit.label for otherUnit in otherUnits"></select>
+            </label>
+          </div>
         </div>
-      </div>
-      <div class="row">
-        <div class="large-6 columns">
-          <button class="button small" ng-disabled="!mergeTarget || isMerging" type="submit">Merge</button>
+        <div class="grid-x">
+          <div class="cell">
+            <button class="button small" ng-disabled="!mergeTarget || isMerging" type="submit">Merge</button>
+          </div>
         </div>
       </div>
     </div>
   </div>
 </form>
-<a class="close-reveal-modal" ng-click="cancel()">&#215;</a>
+<button ng-click="cancel()" class="close-button" aria-label="Close reveal" type="button">
+  <span aria-hidden="true">&times;</span>
+</button>

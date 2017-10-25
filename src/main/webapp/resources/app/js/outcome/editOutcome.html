@@ -1,37 +1,43 @@
 <form novalidate ng-submit="saveOutcome()">
-  <div class="row">
-    <div class="large-9 columns">
-      <h3>Edit Outcome</h3>
+  <div class="grid-container">
+    <div class="grid-x">
+      <div class="cell">
+        <h3>Edit Outcome</h3>
+      </div>
+    </div>
+    <div class="grid-x">
+      <div class="cell">
+        <label>Name
+          <input autofocus type="text" ng-model="outcome.name" ng-change="checkForDuplicateOutcomeName(outcome)">
+        </label>
+      </div>
+    </div>
+    <div class="grid-x">
+      <div class="cell">
+        <label>Outcome direction</label>
+        <input type="radio" id="higher-is-better-radio" ng-value="1" ng-model="outcome.direction"
+          ng-disabled="usage.length">
+        <label for="higher-is-better-radio">Higher is better</label>
+        <input type="radio" id="lower-is-better-radio" ng-value="-1" ng-model="outcome.direction"
+          ng-disabled="usage.length">
+        <label for="lower-is-better-radio">Lower is better</label>
+      </div>
+    </div>
+    <div class="grid-x">
+      <div class="cell">
+        <label>Motivation
+          <textarea rows="8" ng-model="outcome.motivation"></textarea>
+        </label>
+      </div>
+    </div>
+    <div class="grid-x">
+      <div class="cell">
+        <button class="button success" type="submit" ng-disabled="!outcome.name || isDuplicateName || isSaving">Edit</button>
+        <div class="alert" ng-show="isDuplicateName">Duplicate name.</div>
+      </div>
     </div>
   </div>
-  <div class="row">
-    <div class="large-9 columns">
-      <label>Name
-        <input autofocus type="text" ng-model="outcome.name" ng-change="checkForDuplicateOutcomeName(outcome)">
-      </label>
-    </div>
-  </div>
-  <div class="row">
-    <div class="large-10 columns">
-      <label>Outcome direction</label>
-      <input type="radio" id="higher-is-better-radio" ng-value="1" ng-model="outcome.direction" ng-disabled="usage.length">
-      <label for="higher-is-better-radio">Higher is better</label>
-      <input type="radio" id="lower-is-better-radio" ng-value="-1" ng-model="outcome.direction" ng-disabled="usage.length">
-      <label for="lower-is-better-radio">Lower is better</label>
-    </div>
-  </div>
-  <div class="row">
-    <div class="large-9 columns">
-      <label>Motivation
-        <textarea rows="8" ng-model="outcome.motivation"></textarea>
-      </label>
-    </div>
-  </div>
-  <div class="row">
-    <div class="large-9 columns">
-      <button class="success" type="submit" ng-disabled="!outcome.name || isDuplicateName || isSaving">Edit</button>
-      <div class="alert" ng-show="isDuplicateName">Duplicate name.</div>
-    </div>
-  </div>
-  <a class="close-reveal-modal" ng-click="cancel()">&#215;</a>
+  <button ng-click="cancel()" class="close-button" aria-label="Close reveal" type="button">
+    <span aria-hidden="true">&times;</span>
+  </button>
 </form>

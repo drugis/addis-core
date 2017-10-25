@@ -1,18 +1,28 @@
 <form novalidate ng-submit="updateProject()">
-  <div class="row">
-    <div class="large-12 columns">
-      <h3 class="warning">Update project</h3>
-      <p>You can create a new copy of this project that is based on the latest version of the source dataset. The new project will contain all the outcomes, interventions, and covariates that you have defined (provided that the concepts they are based on still exist in the updated dataset). It will keep all network meta analyses, for which the outcome, interventions, and covariates still exist. It will keep all models for which the same entries still exist.</p>
-      <p>Once the update is complete you will be taken to the new project, and this project will be archived.</p>
-      <p>Are you sure?</p>
+  <div class="grid-container">
+    <div class="grid-x">
+      <div class="cell">
+        <h3 class="warning">Update project</h3>
+        <p>You can create a new copy of this project that is based on the latest version
+          of the source dataset. The new project will contain all the outcomes, interventions,
+          and covariates that you have defined (provided that the concepts they are
+          based on still exist in the updated dataset). It will keep all network
+          meta analyses, for which the outcome, interventions, and covariates still
+          exist. It will keep all models for which the same entries still exist.</p>
+        <p>Once the update is complete you will be taken to the new project, and this
+          project will be archived.</p>
+        <p>Are you sure?</p>
+      </div>
+      <div class="cell" ng-if="isUpdating"><i class="fa fa-spinner fa-spin"></i>Updating project, please wait a moment.</div>
     </div>
-    <div class="large-12 columns" ng-if="isUpdating"><i class ="fa fa-spinner fa-spin"></i>Updating project, please wait a moment.</div>
-  </div>
-  <div class="row">
-    <div class="large-9 columns" >
-      <button ng-disabled=isUpdating class="success" type="submit">Yes</button>
-      <button ng-disabled=isUpdating type="button" ng-click="cancel()">No</button>
+    <div class="grid-x">
+      <div class="cell">
+        <button ng-disabled=isUpdating class="button success" type="submit">Yes</button>
+        <button ng-disabled=isUpdating class="button" type="button" ng-click="cancel()">No</button>
+      </div>
     </div>
   </div>
-  <a class="close-reveal-modal" ng-click="cancel()">&#215;</a>
+  <button ng-click="cancel()" class="close-button" aria-label="Close reveal" type="button">
+    <span aria-hidden="true">&times;</span>
+  </button>
 </form>

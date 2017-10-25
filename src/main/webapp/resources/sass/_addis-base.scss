@@ -1,16 +1,17 @@
+
 [ng\:cloak], [ng-cloak], .ng-cloak {
   display: none !important;
 }
 
 .subdued {
-  color: $addis-grey;
+  color: #f4f4f4; //$addis-grey;
 }
 
 .row.application-link {
   margin: 1rem 0;
 }
 
-.row.user-header {
+.grid-x.user-header {
   margin-top: 2rem;
   margin-bottom: 1rem;
   .user-image-large {
@@ -33,9 +34,12 @@
   display: inline;
 }
 
+.featured-dataset {
+  height: 14rem;
+}
+
 .featured-dataset-comment {
-  height: 8rem;
-  overflow-y: hidden;
+  overflow-y: auto;
 }
 
 div.row.section {
@@ -78,12 +82,21 @@ li#top-bar-commit-cancel > a.secondary.disabled:hover{
 /////////////////////////// end top nav
 
 ////////////////////////// side nav ////////////
+.side-nav {
+    margin: 0px;
+}
 .side-nav .button {
   margin-bottom: 0.5rem;
   padding-left: 0.8rem;
   padding-right: 0.8rem;
 }
-
+.side-nav li.divider {
+  border-top: 1px solid;
+  height: 0;
+  list-style: none;
+  padding: 0;
+  border-top-color: #e6e6e6;
+}
 .modified-warning {
   font-size: 14px;
   font-style: italic;
@@ -94,9 +107,20 @@ li#top-bar-commit-cancel > a.secondary.disabled:hover{
 ul.side-nav {
   margin-top: -20px;
   padding: 2rem 1rem;
-  background-color: $addis-grey;
+  background-color: #f4f4f4;
 }
-
+.side-nav li {
+    font-size: 0.875rem;
+    font-weight: normal;
+    margin: 0 0 0.4375rem 0;
+    list-style-type:none;
+}
+.side-nav li a:not(.button) {
+    color: #452F8C;
+    display: block;
+    margin: 0;
+    padding: 0.4375rem 0.875rem;
+}
 ul.side-nav li.heading,
 ul.side-nav li a.heading {
   color: #008CBA;
@@ -191,7 +215,6 @@ tr.clickable td {
     width: 66%;
     margin: 0;
     margin-right: 1rem;
-    padding-right: 1rem; // leave room for drop-down icon
   }
   button {
     margin: 0;

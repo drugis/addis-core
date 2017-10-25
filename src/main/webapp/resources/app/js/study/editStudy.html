@@ -1,27 +1,31 @@
 <form novalidate ng-submit="saveStudy()">
-  <div class="row">
-    <div class="large-9 columns">
-      <h3>Edit study</h3>
+  <div class="grid-container">
+    <div class="grid-x">
+      <div class="cell">
+        <h3>Edit study</h3>
+      </div>
+    </div>
+    <div class="grid-x">
+      <div class="cell">
+        <label>Name
+          <input autofocus type="text" ng-model="study.label">
+        </label>
+      </div>
+    </div>
+    <div class="grid-x">
+      <div class="cell">
+        <label>Description
+          <textarea rows="8" ng-model="study.comment"></textarea>
+        </label>
+      </div>
+    </div>
+    <div class="grid-x">
+      <div class="cell">
+        <button class="button success" type="submit" ng-disabled="!study.label || isSaving">Edit</button>
+      </div>
     </div>
   </div>
-  <div class="row">
-    <div class="large-9 columns">
-      <label>Name
-        <input autofocus type="text" ng-model="study.label">
-      </label>
-    </div>
-  </div>
-  <div class="row">
-    <div class="large-9 columns">
-      <label>Description
-        <textarea rows="8" ng-model="study.comment"></textarea>
-      </label>
-    </div>
-  </div>
-  <div class="row">
-    <div class="large-9 columns">
-      <button class="success" type="submit" ng-disabled="!study.label || isSaving">Edit</button>
-    </div>
-  </div>
-  <a class="close-reveal-modal" ng-click="cancel()">&#215;</a>
+  <button ng-click="cancel()" class="close-button" aria-label="Close reveal" type="button">
+    <span aria-hidden="true">&times;</span>
+  </button>
 </form>

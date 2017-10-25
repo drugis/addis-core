@@ -1,32 +1,65 @@
-@import"settings";
-@import"addis-settings";
-@import"../app/js/bower_components/foundation/scss/foundation.scss";
-@import"drugis";
-@import"../app/js/bower_components/gemtc-web/app/sass/_gemtc-drugis-base.scss";
-@import"addis-base";
-@import"../app/js/bower_components/mcda-web/sass/_mcda-drugis-base.scss";
+@import "addis-settings";
+@import "settings";
+@import "../app/js/bower_components/foundation-sites/scss/foundation";
+@import "../app/js/bower_components/gemtc-web/app/sass/_gemtc-drugis-base.scss";
+@import "addis-base";
+@import "../app/js/bower_components/mcda-web/sass/_mcda-drugis-base.scss";
 @import "../app/js/bower_components/gemtc-web/app/sass/mmfoundation-animations";
+@include foundation-global-styles;
+@include foundation-xy-grid-classes;
+@include foundation-typography;
+@include foundation-button;
+@include foundation-forms;
+@include foundation-accordion;
+@include foundation-accordion-menu;
+@include foundation-badge;
+@include foundation-breadcrumbs;
+@include foundation-button-group;
+@include foundation-callout;
+@include foundation-card;
+@include foundation-close-button;
+@include foundation-menu;
+@include foundation-menu-icon;
+@include foundation-drilldown-menu;
+@include foundation-dropdown;
+@include foundation-dropdown-menu;
+@include foundation-responsive-embed;
+@include foundation-label;
+@include foundation-media-object;
+@include foundation-off-canvas;
+@include foundation-orbit;
+@include foundation-pagination;
+@include foundation-progress-bar;
+@include foundation-slider;
+@include foundation-sticky;
+@include foundation-reveal;
+@include foundation-switch;
+@include foundation-table;
+@include foundation-tabs;
+@include foundation-thumbnail;
+@include foundation-title-bar;
+@include foundation-tooltip;
+@include foundation-top-bar;
+@include foundation-visibility-classes;
+@include foundation-flex-classes;
+
+@import "drugis";
 
 // load addis style settings //
- .alert {
-  color: $alert-color;
-}
-.error-message {
-  display: block;
-  color: $drugis-color;
-}
-.warning {
-  color: $warning-color;
-}
 .info {
-  color: darken($info-color, 10%);
+  color: #77c0de;
 }
-.color-stripe {
-  background: $drugis-color;
-  height: 0.45rem;
+.button.secondary {
+    background-color: #e7e7e7;
+    border-color: #b9b9b9;
+    color: #333333;
 }
-.alert-box-message {
-  padding-right: 1.25rem;
+.button.disabled.success, .button.disabled.success:hover, .button.disabled.success:focus, .button[disabled].success, .button[disabled].success:hover, .button[disabled].success:focus {
+  color: #FFFFFF;
+  opacity: 0.7;
+}
+.button.success {
+    color: #FFFFFF
 }
 
 // addis style //
@@ -49,6 +82,9 @@ label {
   background: $addis-grey;
   margin-bottom: 10px;
   padding: 0.5rem 0.25rem 0.5rem 0.5rem;
+}
+.no-bottom-margin {
+  margin-bottom: 0;
 }
 
 // project //
@@ -125,12 +161,14 @@ table {
       a:hover {
         text-decoration: underline;
       }
+      font-size: 0.875rem;
+      padding: 0.5625rem 0.625rem;
     }
     td.button-cell {
       text-align: center;
       button {
         margin-bottom: 0;
-        font-size: $table-row-font-size;
+        font-size: $global-font-size;
       }
     }
   }
