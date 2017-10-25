@@ -22,7 +22,7 @@
     "angular-resource": "~1.6.5",
     "angular-ui-router": "~1.0.5",
     "angular-ui-select": "~0.19.8",
-    "angularjs-slider": "^6.2.3",
+    "angularjs-slider": "https://github.com/danielreid/angularjs-slider.git#feature/restrictedRange",
     "bowser": "~0.7.3",
     "clipboard": "^1.6.0",
     "d3": "3.5.6",

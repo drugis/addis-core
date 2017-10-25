@@ -67,7 +67,6 @@ define(
     'mcda/services/util',
     'mcda/preferences/partialValueFunctionService',
     'mcda/results/results',
-    'mcda/subProblem/scaleRangeService',
     'mcda/subProblem/subProblem',
     'bower_components/angularjs-slider/dist/rzslider',
     'covariates/covariates',
@@ -76,7 +75,6 @@ define(
   function(angular, require, $, Config, _) {
     var mcdaDependencies = [
       'elicit.effectsTableService',
-      'elicit.scaleRangeService',
       'elicit.workspaceResource',
       'elicit.workspaceService',
       'elicit.scalesService',

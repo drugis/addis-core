@@ -297,7 +297,7 @@ define(['angular', 'lodash'],
           resolve: {
             datasets: function() {
               return DatasetResource.queryForJson({
-                userUid: $scope.userUid
+                userUid: UserService.getLoginUser().id
               }).$promise.then(function(result) {
                 return _.filter(result, function(dataset) {
                   return dataset.uri !== 'http://trials.drugis.org/datasets/' + $scope.datasetUuid;
