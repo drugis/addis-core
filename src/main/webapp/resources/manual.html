@@ -221,7 +221,12 @@
         </div>
         <h3 id="study-input">Study input</h3>
         <p>After creating a study in one of your datasets, it is possible to extend
-          and modify its information. Study information is divided in several subsections
+          and modify its information. Here is a brief overview of study entry. 
+          We provide <a href="#study-entry-example">a guided example</a> of study entry further
+          below.
+        </p>
+        <p>
+          Study information is divided in several subsections
           that can be input separately. First, study characteristics, such as group
           allocation and population eligibility criteria. Second, arms and groups,
           which denote subpopulations of the study population with arms being used
@@ -231,11 +236,7 @@
           different treatments, or wash-out. The study design connects the arms,
           epochs, and activities: for each arm and epoch, an activity should take
           place.
-        </p>
-        <div class="figure">
-          <img src="img/study-design.png" alt="Study design" />
-        </div>
-        <p>Fifth, measurement moments, which indicate a moment during the study at which
+          Fifth, measurement moments, which indicate a moment during the study at which
           data were gathered. Measurement moments are defined as taking place a certain
           period of time either after the beginning or before the end of an epoch
           (this time period can be zero). Sixth, variables, meaning which events
@@ -249,7 +250,123 @@
           consist of up to two tables for each variable, one with results that are
           properly structured, meaning they are assigned to a group, variable and
           measurement moment, and one with non-conformant measurements that do not
-          have an associated measurement moment (see below for how to fix this).</p>
+          have an associated measurement moment (see <a href="#study-repair">the repair section</a>
+          for how to fix this).</p>
+        <h3 id="concept">Harmonization</h3>
+        <p>Different studies may use the same name to refer to different concepts. For
+          example, one study may use “treatment response” to mean “a 50% or greater
+          improvement of the MADRS score” while another may use it to mean “a 40%
+          or greater improvement of the HAM-D score”. To allow cross-trial analyses
+          based on a dataset, it is necessary to create concepts at the dataset level,
+          and indicate for each concept from a trial to which dataset-level concept
+          it corresponds. This process is often called
+          <em>harmonization</em> or
+          <em>mapping</em> of the concepts, and is required for concepts including outcomes,
+          treatments, and units of measure.</p>
+        <h3 id="study-entry-example">Study entry example</h3>
+        <p>To more clearly explain the study entry process and to highlight some potential 
+          pitfalls, we here go through the process of entering an example study into the 
+          system, namely <a href="https://www.researchgate.net/profile/Maurizio_Fava/publication/227227954_A_Double-Blind_Study_of_Paroxetine_Fluoxetine_and_Placebo_an_Outpatients_with_Major_Depression/links/57026ee108aec6e56fb336e0.pdf">the Fava et al. 1998 study on depression</a>
+          also included in our <a href="https://addis.drugis.org/#/users/3/datasets/65f9e23d-6e8d-4ccd-aacd-95b672520ce2">example dataset</a> based on the <a href="https://www.ncbi.nlm.nih.gov/pubmed/16172440">Hansen 2005 systematic
+          review</a>.
+        </p>
+        <p>
+          Note that we assume here that the <a href="#concept">concepts of interest</a> have already been defined at the dataset level.</p>
+        </p>
+        <p>
+          First, we enter the study characteristics, most of which can be found in the abstract.
+        </p>
+        <div class="figure">
+          <img src="img/study-information.png" alt="Entering study information" />
+        </div>
+        <p>
+          Second, we find the population information. Note the illustration is somewhat abridged to save space.
+        </p>
+        <div class="figure">
+          <img src="img/population-information.png" alt="Entering population information" />
+        </div>
+        <p>
+          Next, we enter the arms. These are abstract containers that divide the population into subpopulations. 
+          You can give these any name you wish, but we recommend to name them according to the treatment regime
+          this subpopulation will receive.
+        </p>
+        <div class="figure">
+          <img src="img/arms.png" alt="Entering arms" />
+        </div>
+        <p>
+          Now we enter the epochs. These are a set of abstract segments intended to represent the different parts in time
+          of a subject's participation in a study. They may have an optional duration. <em>NB: For study data to be used in ADDIS analyses it is necessary to indicate which epoch is the primary treatment epoch.</em>
+        </p>
+        <div class="figure">
+          <img src="img/epochs.png" alt="Entering epochs" />
+        </div>
+        <p>
+          Next comes creating the study's activities. These represent everything that is done to the participants of the
+          study. The activities currently supported by ADDIS can be divided into two categories, abstract ones such as randomization and screening, and concrete (drug) treatment activities. In the image we show the definition of a drug treatment. Once selecting the 'drug treatment' activity type, an 'add drug' button becomes available. ADDIS supports mixed treatment activities, and therefore lets the user add multiple drugs to a single treatment activity.
+        </p>
+        <p>
+          There are several things to pay close attention to here. First, make sure to consistently choose the same name for the same unit (eg. don't mix mg and milligram). Second, it's only possible to actually create the treatment activity once you've finished the drug addition process (note that in the screenshot the bottom 'add' button is disabled because we haven't clicked 'add drug' yet).
+        </p>
+        <div class="figure">
+          <img src="img/fluoxetine-activity.png" alt="Adding a drug treatment activity" />
+        </div>
+        <p>
+          We combine the definitions created above by filling out the study design, indicating which activity takes place for each arm in each epoch.
+        </p>
+        <div class="figure">
+          <img src="img/study-design.png" alt="Completing the study design" />
+        </div>
+        <p>
+          The study only reports measurements for baseline (ie. before treatment, at the beginning of the main phase) and at the end of the main phase, so we define those two measurement moments as options for which to enter measurement data.
+          <em>NB: For data to be automatically included in analyses by ADDIS it is necesary to select a measurement moment at the enf of the main phase.</em>
+        </p>
+        <div class="figure">
+          <img src="img/measurement-moments.png" alt="Creating measurement moments" />
+        </div>
+        <p>
+          In ADDIS, data can be entered for three types of variables: Baseline (population) characteristics, Outomes and Adverse Events. Here we show the example of creating and entering the data for the Age baseline characteristic. 
+          Age is measured at the baseline, ie. the beginning of the main phase so we only select that measurement moment. It is stated in the paper that there is no significant different across arms for age, so we enter the same values for all groups.
+          Note that it is possible to change the result properties for each variable, but not all result properties are supported for analysis yet.
+        </p>
+        <div class="figure">
+          <img src="img/baseline-characteristic.png" alt="Creating a baseline characteristic" />
+        </div>
+        <div class="figure">
+          <img src="img/age.png" alt="Entering data for the 'age' baseline characteristic" />
+        </div>
+        <p>
+          Finally, we ensure that the concepts from our study are correctly mapped to the dataset-level concepts that we defined earlier.
+        </p>
+        <div class="figure">
+          <img src="img/concepts.png" alt="Mapping the study concepts" />
+        </div>
+        <h3 id="checklist-getting-to-analysis-ready">Checklist: getting to &quot;analysis ready&quot;</h3>
+        <p>To ensure your studies are picked up for analysis in ADDIS, it is important
+          that they are entered accurately and adhere to some best practices. Pay
+          attention to the following:</p>
+        <ul>
+          <li>There are at least two arms</li>
+          <li>The epochs have been defined, and a primary epoch has been chosen</li>
+          <li>There is a measurement moment defined at 0 days before the end of the primary
+            epoch (due to a limitation in how analyses are defined, only measurements
+            at this measurement moment will be used in analyses)</li>
+          <li>The study design table is complete: there is an activity selected at each
+            cell of the table</li>
+          <li>In the primary epoch, a (different) treatment activity has been selected
+            for each arm (these will be recognized as the treatments being compared)</li>
+          <li>The outcomes of interest have measurement data at 0 days before the end
+            of the primary epoch</li>
+          <li>The outcomes, drugs, and units of interest are mapped to dataset-level
+            concepts
+          </li>
+          <li>The measurement data is specified using the attributes recognized for analysis:
+            <ul>
+              <li>For continuous outcomes: mean, standard deviation, sample size</li>
+              <li>For dichotomous outcomes: count, sample size</li>
+              <li>For survival outcomes: number of subjects with event, total exposure time</li>
+            </ul>
+          </li>
+        </ul>
         <h3 id="study-repair">Study repair</h3>
         <p>In general, when you import a study from ClinicalTrials.gov, it is likely
           that some of the data will not be structured correctly. Repair tools are
@@ -279,43 +396,7 @@
         <p>Where necessary, it is possible to assign non-conformant measurements to
           a specific measurement moment (note that you may first need to enable the
           measurement moment for that outcome).</p>
-        <h3 id="concept">Harmonization</h3>
-        <p>Different studies may use the same name to refer to different concepts. For
-          example, one study may use “treatment response” to mean “a 50% or greater
-          improvement of the MADRS score” while another may use it to mean “a 40%
-          or greater improvement of the HAM-D score”. To allow cross-trial analyses
-          based on a dataset, it is necessary to create concepts at the dataset level,
-          and indicate for each concept from a trial to which dataset-level concept
-          it corresponds. This process is often called
-          <em>harmonization</em> or
-          <em>mapping</em> of the concepts, and is required for concepts including outcomes,
-          treatments, and units of measure.</p>
-        <h3 id="checklist-getting-to-analysis-ready">Checklist: getting to &quot;analysis ready&quot;</h3>
-        <p>To ensure your studies are picked up for analysis in ADDIS, it is important
-          that they are entered accurately and adhere to some best practices. Pay
-          attention to the following:</p>
-        <ul>
-          <li>There are at least two arms</li>
-          <li>The epochs have been defined, and a primary epoch has been chosen</li>
-          <li>There is a measurement moment defined at 0 days before the end of the primary
-            epoch (due to a limitation in how analyses are defined, only measurements
-            at this measurement moment will be used in analyses)</li>
-          <li>The study design table is complete: there is an activity selected at each
-            cell of the table</li>
-          <li>In the primary epoch, a (different) treatment activity has been selected
-            for each arm (these will be recognized as the treatments being compared)</li>
-          <li>The outcomes of interest have measurement data at 0 days before the end
-            of the primary epoch</li>
-          <li>The outcomes, drugs, and units of interest are mapped to dataset-level
-            concepts
-          </li>
-          <li>The measurement data is specified using the attributes recognized for analysis:
-            <ul>
-              <li>For continuous outcomes: mean, standard deviation, sample size</li>
-              <li>For dichotomous outcomes: count, sample size</li>
-            </ul>
-          </li>
-        </ul>
+
         <h2 id="analysis-projects">Analysis projects</h2>
         <p>In ADDIS, a project consists of definitions and analyses, and is based on
           a specific version of a specific dataset. Within a project, concepts are
