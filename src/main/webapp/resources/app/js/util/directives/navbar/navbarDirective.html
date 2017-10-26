@@ -1,20 +1,19 @@
 <div class="fixed">
-  <nav class="top-bar" data-topbar>
-    <ul class="title-area">
-      <li class="name">
-        <h1>
-          <a ng-if="!isAnonymous" id="logo" ui-sref="datasets({userUid: loginUserInfo.id})">addis.drugis.org</a>
-          <a ng-if="isAnonymous" id="logo" ui-sref="home">addis.drugis.org</a>
-        </h1>
-      </li>
-    </ul>
-
-    <section class="top-bar-section">
-      <!-- Left Nav Section -->
+  <div class="top-bar">
+    <div class="grid-x top-bar-left">
+      <div class="cell large-2 medium-4">
+        <ul class="menu">
+          <li>
+            <a ng-if="!isAnonymous" id="logo" ui-sref="datasets({userUid: loginUserInfo.id})">addis.drugis.org</a>
+            <a ng-if="isAnonymous" id="logo" ui-sref="home">addis.drugis.org</a>
+          </li>
+        </ul>
+      </div>
       <ng-transclude></ng-transclude>
-
+    </div>
+    <div class="top-bar-right">
       <!-- Right Nav Section -->
-      <ul class="right">
+      <ul class="dropdown menu" data-dropdown-menu>
         <li>
           <a class="manual" href="/manual.html" target="_blank">
               <i class="fa fa-book"></i> Manual
@@ -25,7 +24,7 @@
             <img class="user-image" ng-src="{{loginUserInfo.imageUrl}}">
             <span ng-show="!navSettings.isHidden">{{loginUserInfo.name}}</span>
           </a>
-          <ul class="dropdown">
+          <ul class="menu vertical">
             <li>
               <a href="signout">Sign out</a>
             </li>
@@ -35,11 +34,11 @@
           <a href="signout">Sign out</a>
         </li>
         <li ng-if="isAnonymous">
-          <a href="/auth/google?scope=openid+email+profile" ng-click="signin()">Sign in</a>
+          <a class="manual" href="/auth/google?scope=openid+email+profile" ng-click="signin()">Sign in</a>
         </li>
       </ul>
-    </section>
-  </nav>
+    </div>
+  </div>
 
   <section>
     <div class="color-stripe"></div>

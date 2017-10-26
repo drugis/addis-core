@@ -1,135 +1,137 @@
-<div class="row">
-  <div class="columns large-12">
-    <h3>Day 80 summary of efficacy table</h3>
-  </div>
-</div>
-<div class="row">
-  <div class="columns large-12">
-    <div class="columns large-6">Select baseline:
-      <select ng-model="baseline" ng-options="arm as arm.label for arm in arms" ng-change="selectBaseLine(baseline)" ng-init="measurements.baselineUri"></select>
+<div class="grid-container">
+  <div class="grid-x">
+    <div class="cell">
+      <h3>Day 80 summary of efficacy table</h3>
     </div>
   </div>
-</div>
-<div class="row">
-  <div class="columns large-12">
-
-
-    <table class="d-80" id="d-80-table">
-      <tbody>
-        <tr class='bold'>
-          <td class='first'>Title:</td>
-          <td colspan='{{arms.length + 1}}'>{{study.comment}}</td>
-        </tr>
-        <tr>
-          <td>Study identifier</td>
-          <td colspan='{{arms.length + 1}}'>{{study.nctId}}</td>
-        </tr>
-        <tr>
-          <td rowspan='4'>Design</td>
-          <td colspan='{{arms.length + 1}}'>&lt;free text&gt;</td>
-        </tr>
-        <tr>
-          <td>Duration of main phase:</td>
-          <td colspan='{{arms.length}}'>&lt;duration&gt;</td>
-        </tr>
-        <tr>
-          <td>Duration of Run-in phase:</td>
-          <td colspan='{{arms.length}}'>&lt;time&gt; &lt;not applicable&gt;</td>
-        </tr>
-        <tr>
-          <td>Duration of Extension phase:</td>
-          <td colspan='{{arms.length}}'>&lt;time&gt; &lt;not applicable&gt;</td>
-        </tr>
-        <tr>
-          <td>Hypothesis</td>
-          <td colspan='{{arms.length + 1}}'>&lt;Superiority&gt; &lt;Equivalence&gt; &lt;Non-inferiority&gt; &lt;Exploratory:
-            specify&gt;
-          </td>
-        </tr>
-        <tr>
-          <td>Treatments groups</td>
-          <td colspan='{{arms.length + 1}}'>
-            <table class='nested'>
-              <tr ng-repeat="arm in arms">
-                <td class='left'>{{arm.label}}</td>
-                <td ng-if="primaryEpoch">{{arm.activity ? arm.treatmentLabel : '&lt;treatment&gt;'}} {{primaryEpoch.duration
-                  | durationFilter}} &lt;number randomized&gt;</td>
-                <td ng-if="!primaryEpoch">&lt;treatment&gt; &lt;duration&gt; &lt;number randomized&gt;</td>
-              </tr>
-            </table>
-          </td>
-
-        </tr>
-        <tr>
-          <td>Endpoints and definitions</td>
-          <td colspan='{{arms.length + 1}}'>
-            <table class='nested'>
-              <tr ng-repeat="endpoint in endpoints">
-                <td class='left'>&lt;Co-&gt; Primary endpoint </td>
-                <td class='left'> {{endpoint.label}}</td>
-                <td>&lt;free text&gt;</td>
-              </tr>
-            </table>
-          </td>
-        </tr>
-        <tr>
-          <td>Database lock</td>
-          <td colspan='{{arms.length + 1}}'>&lt;date&gt;</td>
-        </tr>
-        <tr class='bold'>
-          <td colspan='{{arms.length + 2}}'>Results and Analysis</td>
-        </tr>
-        <tr>
-          <td class='bold'>Analysis description</td>
-          <td colspan='{{arms.length + 1}}' class='bold'>Primary Analysis</td>
-        </tr>
-        <tr>
-          <td>Analysis population and time point description</td>
-          <td colspan='{{arms.length + 1}}'>&lt;Intent to treat&gt; &lt;Per protocol&gt; &lt;other specify&gt; &lt;time
-            point&gt;
-          </td>
-        </tr>
-        <tr>
-          <td rowspan='{{endpoints.length + 2}}'>Descriptive statistics and estimate variability</td>
-          <td>Treatment group</td>
-          <td ng-repeat="arm in arms">{{arm.label}}</td>
-        </tr>
-        <tr>
-          <td>Number of subject</td>
-          <td ng-repeat="arm in arms">&lt;number randomized&gt;</td>
-        </tr>
-        <tr ng-repeat="endpoint in endpoints">
-          <td>{{endpoint.label}}</td>
-          <td ng-repeat="arm in arms">{{measurements[endpoint.uri][arm.armURI] ? measurements[endpoint.uri][arm.armURI].label
-            : '&lt;point estimate&gt; &lt;variability&gt; &lt;n&gt;'}}</td>
-        </tr>
-
-        <tr ng-repeat="row in effectEstimateRows">
-          <td rowspan='{{endpoints.length * 4}}' ng-if="$first">Effect estimate per comparison</td>
-          <td ng-if="$index % 4*(arms.length-1) === 0" rowspan='4'>{{row.endpoint.label}}</td>
-          <td>{{row.rowLabel}}</td>
-          <td ng-repeat="rowValue in row.rowValues track by $index">{{rowValue}}</td>
-        </tr>
-
-        <tr>
-          <td>Notes</td>
-          <td colspan='{{arms.length + 1}}'>&lt;free text&gt;</td>
-        </tr>
-        <tr>
-          <td>Analysis description</td>
-          <td colspan='{{arms.length + 1}}'>&lt;Secondary analysis&gt; &lt;Co-primary Analysis&gt; &lt;Other, specify:
-            &gt;
-          </td>
-        </tr>
-      </tbody>
-    </table>
+  <div class="grid-x">
+      <div class="cell large-6">Select baseline:
+        <select ng-model="baseline" ng-options="arm as arm.label for arm in arms" ng-change="selectBaseLine(baseline)"
+          ng-init="measurements.baselineUri"></select>
+      </div>
   </div>
-</div>
-<div class="row">
-  <div class="columns large-12">
-    <br>
-    <button class="clipboard-button" data-clipboard-target="#d-80-table">
-      <i class="fa fa-clipboard"></i> Copy to clipboard
-    </button>
+  <div class="grid-x">
+    <div class="cell">
+      <table class="d-80" id="d-80-table">
+        <tbody>
+          <tr class='bold'>
+            <td class='first'>Title:</td>
+            <td colspan='{{arms.length + 1}}'>{{study.comment}}</td>
+          </tr>
+          <tr>
+            <td>Study identifier</td>
+            <td colspan='{{arms.length + 1}}'>{{study.nctId}}</td>
+          </tr>
+          <tr>
+            <td rowspan='4'>Design</td>
+            <td colspan='{{arms.length + 1}}'>&lt;free text&gt;</td>
+          </tr>
+          <tr>
+            <td>Duration of main phase:</td>
+            <td colspan='{{arms.length}}'>&lt;duration&gt;</td>
+          </tr>
+          <tr>
+            <td>Duration of Run-in phase:</td>
+            <td colspan='{{arms.length}}'>&lt;time&gt; &lt;not applicable&gt;</td>
+          </tr>
+          <tr>
+            <td>Duration of Extension phase:</td>
+            <td colspan='{{arms.length}}'>&lt;time&gt; &lt;not applicable&gt;</td>
+          </tr>
+          <tr>
+            <td>Hypothesis</td>
+            <td colspan='{{arms.length + 1}}'>&lt;Superiority&gt; &lt;Equivalence&gt; &lt;Non-inferiority&gt; &lt;Exploratory:
+              specify&gt;
+            </td>
+          </tr>
+          <tr>
+            <td>Treatments groups</td>
+            <td colspan='{{arms.length + 1}}'>
+              <table class='nested'>
+                <tr ng-repeat="arm in arms">
+                  <td class='left'>{{arm.label}}</td>
+                  <td ng-if="primaryEpoch">{{arm.activity ? arm.treatmentLabel : '&lt;treatment&gt;'}} {{primaryEpoch.duration
+                    | durationFilter}} &lt;number randomized&gt;</td>
+                  <td ng-if="!primaryEpoch">&lt;treatment&gt; &lt;duration&gt; &lt;number randomized&gt;</td>
+                </tr>
+              </table>
+            </td>
+
+          </tr>
+          <tr>
+            <td>Endpoints and definitions</td>
+            <td colspan='{{arms.length + 1}}'>
+              <table class='nested'>
+                <tr ng-repeat="endpoint in endpoints">
+                  <td class='left'>&lt;Co-&gt; Primary endpoint </td>
+                  <td class='left'> {{endpoint.label}}</td>
+                  <td>&lt;free text&gt;</td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+          <tr>
+            <td>Database lock</td>
+            <td colspan='{{arms.length + 1}}'>&lt;date&gt;</td>
+          </tr>
+          <tr class='bold'>
+            <td colspan='{{arms.length + 2}}'>Results and Analysis</td>
+          </tr>
+          <tr>
+            <td class='bold'>Analysis description</td>
+            <td colspan='{{arms.length + 1}}' class='bold'>Primary Analysis</td>
+          </tr>
+          <tr>
+            <td>Analysis population and time point description</td>
+            <td colspan='{{arms.length + 1}}'>&lt;Intent to treat&gt; &lt;Per protocol&gt; &lt;other specify&gt; &lt;time
+              point&gt;
+            </td>
+          </tr>
+          <tr>
+            <td rowspan='{{endpoints.length + 2}}'>Descriptive statistics and estimate variability</td>
+            <td>Treatment group</td>
+            <td ng-repeat="arm in arms">{{arm.label}}</td>
+          </tr>
+          <tr>
+            <td>Number of subject</td>
+            <td ng-repeat="arm in arms">&lt;number randomized&gt;</td>
+          </tr>
+          <tr ng-repeat="endpoint in endpoints">
+            <td>{{endpoint.label}}</td>
+            <td ng-repeat="arm in arms">{{measurements[endpoint.uri][arm.armURI] ? measurements[endpoint.uri][arm.armURI].label
+              : '&lt;point estimate&gt; &lt;variability&gt; &lt;n&gt;'}}</td>
+          </tr>
+
+          <tr ng-repeat="row in effectEstimateRows">
+            <td rowspan='{{endpoints.length * 4}}' ng-if="$first">Effect estimate per comparison</td>
+            <td ng-if="$index % 4*(arms.length-1) === 0" rowspan='4'>{{row.endpoint.label}}</td>
+            <td>{{row.rowLabel}}</td>
+            <td ng-repeat="rowValue in row.rowValues track by $index">{{rowValue}}</td>
+          </tr>
+
+          <tr>
+            <td>Notes</td>
+            <td colspan='{{arms.length + 1}}'>&lt;free text&gt;</td>
+          </tr>
+          <tr>
+            <td>Analysis description</td>
+            <td colspan='{{arms.length + 1}}'>&lt;Secondary analysis&gt; &lt;Co-primary Analysis&gt; &lt;Other, specify:
+              &gt;
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   </div>
+  <div class="grid-x">
+    <div class="cell">
+      <br>
+      <button class="button clipboard-button" data-clipboard-target="#d-80-table">
+        <i class="fa fa-clipboard"></i> Copy to clipboard
+      </button>
+    </div>
+  </div>
+  <button ng-click="cancel()" class="close-button" aria-label="Close reveal" type="button">
+    <span aria-hidden="true">&times;</span>
+  </button>
 </div>

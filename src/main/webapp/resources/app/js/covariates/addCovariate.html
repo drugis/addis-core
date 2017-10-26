@@ -1,13 +1,13 @@
 <form id="add-covariate-form" novalidate ng-submit="addCovariate(covariate)">
-
-  <div class="row">
-    <div class="large-9 columns">
+<div class="grid-containter">
+  <div class="grid-x">
+    <div class="cell">
       <h3>Add a new Covariate</h3>
     </div>
   </div>
 
-  <div class="row">
-    <div class="large-9 columns">
+  <div class="grid-x">
+    <div class="cell">
       <label>Definition
         <select id="covariate-devinition-select"
           ng-options="covariate.label group by covariate.typeLabel for covariate in covariatesOptions"
@@ -17,29 +17,31 @@
     </div>
   </div>
 
-  <div class="row">
-    <div class="large-9 columns">
+  <div class="grid-x">
+    <div class="cell">
       <label>Name
         <input id="covariate-name-input" type="text" ng-model="covariate.name">
       </label>
     </div>
   </div>
 
-  <div class="row">
-    <div class="large-9 columns">
+  <div class="grid-x">
+    <div class="cell">
       <label>Motivation
-        <textarea rows=4 id="covariate-motivation-textarea" ng-model="covariate.motivation"></textarea>
+        <textarea grid-xs=4 id="covariate-motivation-textarea" ng-model="covariate.motivation"></textarea>
       </label>
     </div>
   </div>
 
-  <div class="row modal-bottom-button-bar">
-    <div class="large-9 columns">
-      <button id="submit-add-covariate-btn" class="success" type="submit" ng-disabled="!covariate.definition || !covariate.name || alReadyAdded(covariate)">Add
+  <div class="grid-x modal-bottom-button-bar">
+    <div class="cell">
+      <button id="submit-add-covariate-btn" class="button success" type="submit" ng-disabled="!covariate.definition || !covariate.name || alReadyAdded(covariate)">Add
       </button>
     </div>
   </div>
-
-  <a class="close-reveal-modal" ng-click="cancel()">&#215;</a>
+</div>
+  <button ng-click="cancel()" class="close-button" aria-label="Close reveal" type="button">
+    <span aria-hidden="true">&times;</span>
+  </button>
 
 </form>

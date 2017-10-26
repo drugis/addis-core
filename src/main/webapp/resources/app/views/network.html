@@ -1,7 +1,7 @@
 <label>Network graph</label>
 <div class="addis-graph">
-  <div class="row">
-    <div class="columns large-11 large-centered">
+  <div class="grid-x">
+    <div class="cell large-11 large-centered">
       <div ng-show="!analysis.outcome">
         <p>No outcome selected.</p>
       </div>
@@ -11,8 +11,8 @@
       <network-plot ng-show="!hasTreatmentOverlap && analysis.outcome" network="networkGraph"></network-plot>
     </div>
   </div>
-  <div class="row">
-    <div class="columns large-12">
+  <div class="grid-x">
+    <div class="cell">
       <div class="graph-legend text-smaller">
         <p>The network graph shows the evidence network for all selected interventions.
           The size of an intervention's circle reflects the total number of participants

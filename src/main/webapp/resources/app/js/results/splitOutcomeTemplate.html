@@ -1,25 +1,29 @@
-<div class="row">
-  <div class="large-9 columns">
-    <h3>Split up outcome measure</h3>
+<div class="grid-container">
+  <div class="grid-x">
+    <div class="cell">
+      <h3>Split up outcome measure</h3>
+    </div>
   </div>
+  <form novalidate ng-submit="splitOutcome(targetName)">
+    <div class="grid-x">
+      <div class="cell large-6">
+        <h5>{{outcome.label}}</h5>
+        <label>New outcome name
+          <input type="text" ng-model="targetName">
+        </label>
+      </div>
+    </div>
+    <div class="grid-x">
+      <div class="cell">
+        <label>Rows to include</label>
+        <label ng-repeat="(rowLabel, row) in nonConformantMeasurementsMap">
+          <input type="checkbox" ng-model="row.toMove" ng-click="labelChecked()"> {{rowLabel}}
+        </label>
+        <button class="button" type="submit" ng-disabled="!targetName || !numberOfRowsChecked">Split</button>
+      </div>
+    </div>
+  </form>
 </div>
-<form novalidate ng-submit="splitOutcome(targetName)">
-  <div class="row">
-    <div class="large-6 columns">
-      <h5>{{outcome.label}}</h5>
-      <label>New outcome name
-        <input type="text" ng-model="targetName">
-      </label>
-    </div>
-  </div>
-  <div class="row">
-    <div class="large-9 columns">
-      <label>Rows to include</label>
-      <label ng-repeat="(rowLabel, row) in nonConformantMeasurementsMap">
-        <input type="checkbox" ng-model="row.toMove" ng-click="labelChecked()"> {{rowLabel}}
-      </label>
-      <button class="button" type="submit" ng-disabled="!targetName || !numberOfRowsChecked">Split</button>
-    </div>
-  </div>
-</form>
-<a class="close-reveal-modal" ng-click="cancel()">&#215;</a>
+<button ng-click="cancel()" class="close-button" aria-label="Close reveal" type="button">
+  <span aria-hidden="true">&times;</span>
+</button>

@@ -3,7 +3,8 @@
   <tr>
     <th>Measurement moment</th>
     <th>Arm/Group</th>
-    <th ng-repeat="inputHeader in inputHeaders">{{inputHeader.label}}<span style="color: red" ng-show="inputHeader.lexiconKey && !inputHeader.analysisReady">*</span>
+    <th ng-repeat="inputHeader in inputHeaders">{{inputHeader.label}}
+      <span style="color: red" ng-show="inputHeader.lexiconKey && !inputHeader.analysisReady">*</span>
       <inline-help ng-if="inputHeader.lexiconKey" help-key="{{inputHeader.lexiconKey}}"></inline-help>
     </th>
   </tr>
@@ -11,22 +12,20 @@
     <td class="y-head" rowspan="{{inputRow.numberOfGroups}}" ng-if="$index % inputRow.numberOfGroups === 0"
       style="vertical-align:baseline">
       <span ng-if="!isEditingMM[inputRow.measurementMoment.uri]">{{inputRow.measurementMoment.label}}</span>
-      <div class="row collapse" ng-if="isEditingMM[inputRow.measurementMoment.uri]">
-        <div class="small-6 columns">
+      <div class="grid-x collapse" ng-if="isEditingMM[inputRow.measurementMoment.uri]">
+        <div class="cell large-6 medium-6 small-6">
           <select ng-options="mm.label for mm in measurementMomentOptions[inputRow.measurementMoment.uri]"
             ng-model="measurementMomentSelections[inputRow.measurementMoment.uri]"
             ng-change="checkMeasurementOverlap()"></select>
         </div>
-        <div class="small-3 columns">
-          <button type="button" class="postfix" ng-click="editMeasurementMoment(inputRow.measurementMoment.uri, inputRow.rowLabel)"
+        <div class="cell button-group expanded large-6 medium-6 small-6">
+          <button class="button" type="button" class="postfix" ng-click="editMeasurementMoment(inputRow.measurementMoment.uri, inputRow.rowLabel)"
             ng-disabled="measurementMomentSelections[inputRow.measurementMoment.uri].label === 'Unassign' && !inputRow.rowLabel.trim()">Done</button>
-        </div>
-        <div class="small-3 columns">
-          <button type="button" class="postfix alert" ng-click="isEditingMM[inputRow.measurementMoment.uri] = false">Cancel</button>
+          <button type="button" class="button postfix alert" ng-click="isEditingMM[inputRow.measurementMoment.uri] = false">Cancel</button>
         </div>
       </div>
-      <div class="row" ng-if="isEditingMM[inputRow.measurementMoment.uri] && measurementMomentSelections[inputRow.measurementMoment.uri].label === 'Unassign'">
-        <div class="columns small-12">
+      <div class="grid-x" ng-if="isEditingMM[inputRow.measurementMoment.uri] && measurementMomentSelections[inputRow.measurementMoment.uri].label === 'Unassign'">
+        <div class="cell small-12">
           <label>Non-conformant row label</label>
           <input type="text" ng-model="inputRow.rowLabel">
         </div>
@@ -42,4 +41,4 @@
     </td>
   </tr>
 </table>
-  <div style="color: red" ng-if="hasNotAnalysedProperty">*These measurements are currently not supported for analysis.</div>
+<div style="color: red" ng-if="hasNotAnalysedProperty">*These measurements are currently not supported for analysis.</div>

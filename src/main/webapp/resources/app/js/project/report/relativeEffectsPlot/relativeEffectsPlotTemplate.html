@@ -1,15 +1,15 @@
-<div class="row">
-  <div class="columns large-6 small-8">
+<div class="grid-x">
+  <div class="cell large-6 small-8">
     <strong>Relative effects plot</strong>
   </div>
 </div>
-<div class="row" ng-if="relativeEffectsPlots.length > 1">
-  <div class="columns large-6 small-8">
+<div class="grid-x" ng-if="relativeEffectsPlots.length > 1">
+  <div class="cell large-6 small-8">
     Covariate level: {{relativeEffectsPlot.level}}
   </div>
 </div>
-<div class="row">
-  <div class="columns large-12">
+<div class="grid-x">
+  <div class="cell">
     <img ng-src="{{relativeEffectsPlot.plots[selectedBaseline.id][0].href}}">
   </div>
 </div>

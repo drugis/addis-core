@@ -8,7 +8,7 @@ sass_dir = "src/main/webapp/resources/sass"
 images_dir = "src/main/webapp/resources/app/img"
 javascripts_dir = "src/main/webapp/resources/app/js"
 
-add_import_path "src/main/webapp/resources/app/js/bower_components/foundation/scss"
+add_import_path "src/main/webapp/resources/app/js/bower_components/foundation-sites/scss"
 add_import_path "src/main/webapp/resources/drugis-css"
 # You can select your preferred output style here (can be overridden via the command line):
 # output_style = :expanded or :nested or :compact or :compressed

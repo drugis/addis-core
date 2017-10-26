@@ -1,48 +1,52 @@
-<div class="row">
-  <div class="large-9 columns">
-    <h3>Repair {{item.label}}</h3>
-  </div>
-</div>
-<form novalidate ng-submit="reclassifyAsArm()">
-  <div class="row">
-    <div class="large-9 columns">
-      <hr>
-      <p>
-        <h4>Reclassify this group as a "arm"</h4>
-        <em>All measurement data will be kept</em>
-      </p>
-      <button class="button small" type="submit">Reclassify</button>
+<div class="grid-container">
+  <div class="grid-x">
+    <div class="cell">
+      <h3>Repair {{item.label}}</h3>
     </div>
   </div>
-</form>
-<form novalidate ng-submit="merge(mergeTarget)">
-  <div class="row">
-    <div class="large-9 columns">
-      <hr>
-      <p>
-        <h4>Merge this group into other group</h4>
-        <em>All measurements will be transferred to the target group</em>
-      </p>
-      <div class="row">
-        <div class="large-6 columns">
-          <label>Target group
-            <select ng-model="mergeTarget" ng-options="group.label for group in otherGroups"
+  <form novalidate ng-submit="reclassifyAsArm()">
+    <div class="grid-x">
+      <div class="cell">
+        <hr>
+        <p>
+          <h4>Reclassify this group as a "arm"</h4>
+          <em>All measurement data will be kept</em>
+        </p>
+        <button class="button small" type="submit">Reclassify</button>
+      </div>
+    </div>
+  </form>
+  <form novalidate ng-submit="merge(mergeTarget)">
+    <div class="grid-x">
+      <div class="cell">
+        <hr>
+        <p>
+          <h4>Merge this group into other group</h4>
+          <em>All measurements will be transferred to the target group</em>
+        </p>
+        <div class="grid-x">
+          <div class="cell large-6">
+            <label>Target group
+              <select ng-model="mergeTarget" ng-options="group.label for group in otherGroups"
                 ng-change="updateMergeWarning(mergeTarget)"></select>
-          </label>
+            </label>
+          </div>
         </div>
-      </div>
-      <div class="row">
-        <div class="large-10 columns">
-          <div style="padding-bottom: 1rem;" class="warning" ng-show="showMergeWarning">Warning ! The selected target group contains overlapping measurements,
-            these will take precedence over the source group measurmements.</div>
+        <div class="grid-x">
+          <div class="cell large-10">
+            <div style="padding-bottom: 1rem;" class="warning" ng-show="showMergeWarning">Warning ! The selected target group contains overlapping measurements,
+              these will take precedence over the source group measurmements.</div>
+          </div>
         </div>
-      </div>
-      <div class="row">
-        <div class="large-6 columns">
-          <button class="button small" ng-disabled="!mergeTarget || isEditing" type="submit">Merge</button>
+        <div class="grid-x">
+          <div class="cell large-6">
+            <button class="button small" ng-disabled="!mergeTarget || isEditing" type="submit">Merge</button>
+          </div>
         </div>
       </div>
     </div>
-  </div>
-</form>
-<a class="close-reveal-modal" ng-click="cancel()">&#215;</a>
+  </form>
+</div>
+<button ng-click="cancel()" class="close-button" aria-label="Close reveal" type="button">
+  <span aria-hidden="true">&times;</span>
+</button>

@@ -7,37 +7,48 @@
   <li ng-if="!versionUuid"><a ui-sref="dataset({userUid: userUid, datasetUuid: datasetUuid})">{{dataset.title}}</a></li>
   <li class="current active">Concepts</li>
 </ul>
-<div class="row nav-bar-spacer">
-  <div class="columns large-2 medium-3">
-    <ul class="side-nav">
-      <button ng-show="isEditingAllowed" ng-disabled="!areConceptsModified()" ng-click="saveConcepts()"
-      class="button expand success">Commit changes</button>
-      <div ng-show="isEditingAllowed" class="modified-warning info">
-        <div ng-show="areConceptsModified()"><a ng-click="resetConcepts()" style="text-decoration: underline;">undo changes</a></div>
-        <div ng-show="!areConceptsModified()">No unsaved changes</div>
-      </div>
-      <li class="divider"></li>
-      <li class="heading">Concepts</li>
-      <li><a ng-click="sideNavClick('drugs')">Drugs</a></li>
-      <li><a ng-click="sideNavClick('variables')">Variables</a></li>
-      <li><a ng-click="sideNavClick('units')">Units</a></li>
-    </ul>
-  </div>
-  <div class="columns large-10 medium-9">
-    <h1>Concepts<inline-help help-key="concept"></inline-help></h1>
-    <version-info></version-info>
-    <button ng-show="isEditingAllowed" class="small" ng-click="openAddConceptDialog()"><i class="fa fa-plus"></i>  Add Concept</button>
-    <h3>Drugs<inline-help help-key="drug"></inline-help></h3>
-    <ul id="drugs">
-      <li ng-repeat="concept in concepts | filter:'ontology:Drug' | orderBy:'label'">{{concept.label}}</li>
-    </ul>
-    <h3>Variables<inline-help help-key="variable"></inline-help></h3>
-    <ul id="variables">
-      <li ng-repeat="concept in concepts | filter:'ontology:Variable'  | orderBy:'label'">{{concept.label}}</li>
-    </ul>
-    <h3>Units<inline-help help-key="unit"></inline-help></h3>
-    <ul id="units">
-      <li ng-repeat="concept in concepts | filter:'ontology:Unit'  | orderBy:'label'">{{concept.label}}</li>
-    </ul>
+
+<div class="grid-container">
+  <div class="grid-x grid-margin-x nav-bar-spacer">
+    <div class="cell large-2 medium-3">
+      <ul class="side-nav">
+        <button ng-show="isEditingAllowed" ng-disabled="!areConceptsModified()" ng-click="saveConcepts()"
+          class="button success">Commit changes</button>
+        <div ng-show="isEditingAllowed" class="modified-warning info">
+          <div ng-show="areConceptsModified()"><a ng-click="resetConcepts()" style="text-decoration: underline;">undo changes</a></div>
+          <div ng-show="!areConceptsModified()">No unsaved changes</div>
+        </div>
+        <li class="divider"></li>
+        <li class="heading">Concepts</li>
+        <li><a ng-click="sideNavClick('drugs')">Drugs</a></li>
+        <li><a ng-click="sideNavClick('variables')">Variables</a></li>
+        <li><a ng-click="sideNavClick('units')">Units</a></li>
+      </ul>
+    </div>
+    <div class="cell large-10 medium-9">
+      <h1>Concepts
+        <inline-help help-key="concept"></inline-help>
+      </h1>
+      <version-info></version-info>
+      <button ng-show="isEditingAllowed" class="button small" ng-click="openAddConceptDialog()"><i class="fa fa-plus"></i> Add Concept</button>
+      <h3>Drugs
+        <inline-help help-key="drug"></inline-help>
+      </h3>
+      <ul id="drugs">
+        <li ng-repeat="concept in concepts | filter:'ontology:Drug' | orderBy:'label'">{{concept.label}}</li>
+      </ul>
+      <h3>Variables
+        <inline-help help-key="variable"></inline-help>
+      </h3>
+      <ul id="variables">
+        <li ng-repeat="concept in concepts | filter:'ontology:Variable'  | orderBy:'label'">{{concept.label}}</li>
+      </ul>
+      <h3>Units
+        <inline-help help-key="unit"></inline-help>
+      </h3>
+      <ul id="units">
+        <li ng-repeat="concept in concepts | filter:'ontology:Unit'  | orderBy:'label'">{{concept.label}}</li>
+      </ul>
+    </div>
   </div>
 </div>

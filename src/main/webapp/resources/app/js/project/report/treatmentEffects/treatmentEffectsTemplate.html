@@ -1,6 +1,7 @@
-<div class="columns large-12">
-  <div class="row">
-    <span ng-repeat="point in treatmentEffects.row"> {{point.name}} {{point.median.toFixed(3)}} ({{point.lowerBound.toFixed(3)}}, {{point.upperBound.toFixed(3)}})</span>
+<div class="row">
+  <div class="cell">
+    <span ng-repeat="point in treatmentEffects.row"> {{point.name}} {{point.median.toFixed(3)}} ({{point.lowerBound.toFixed(3)}},
+      {{point.upperBound.toFixed(3)}})</span>
     <span ng-if="treatmentEffectsRows.length > 1"> Covariate level: {{treatmentEffects.level}}</span>
   </div>
 </div>

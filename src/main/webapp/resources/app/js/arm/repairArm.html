@@ -1,47 +1,50 @@
-<div class="row">
-  <div class="large-9 columns">
-    <h3>Repair {{item.label}}</h3>
-  </div>
-</div>
-<form novalidate ng-submit="reclassifyAsGroup()">
-  <div class="row">
-    <div class="large-9 columns">
-      <hr>
-      <p>
-        <h4>Reclassify this arm as a "group"</h4>
-        <em>All measurement data will be kept</em>
-      </p>
-      <button class="button small" type="submit">Reclassify</button>
+<div class="grid-container">
+  <div class="grid-x">
+    <div class="cell">
+      <h3>Repair {{item.label}}</h3>
     </div>
   </div>
-</form>
-<form novalidate ng-submit="merge(mergeTarget)">
-  <div class="row">
-    <div class="large-9 columns">
-      <hr>
-      <p>
-        <h4>Merge this arm into other arm</h4>
-        <em>All measurements will be transferred to the target arm</em>
-      </p>
-      <div class="row">
-        <div class="large-6 columns">
-          <label>Target arm
-            <select ng-model="mergeTarget" ng-options="arm.label for arm in otherArms" ng-change="updateMergeWarning(mergeTarget)"></select>
-          </label>
-        </div>
+  <form novalidate ng-submit="reclassifyAsGroup()">
+    <div class="grid-x">
+      <div class="cell">
+        <hr>
+        <p>
+          <h4>Reclassify this arm as a "group"</h4>
+          <em>All measurement data will be kept</em>
+        </p>
+        <button class="button small" type="submit">Reclassify</button>
       </div>
-      <div class="row">
-        <div class="large-10 columns">
-          <div style="padding-bottom: 1rem;" class="warning" ng-show="showMergeWarning">Warning ! The selected target arm contains overlapping measurements, these
-            will take precedence over the source arm measuremements.</div>
+    </div>
+  </form>
+  <form novalidate ng-submit="merge(mergeTarget)">
+    <div class="grid-x">
+      <div class="cell">
+        <hr>
+        <p>
+          <h4>Merge this arm into other arm</h4>
+          <em>All measurements will be transferred to the target arm</em>
+        </p>
+        <div class="grid-x">
+          <div class="cell large-6">
+            <label>Target arm
+              <select ng-model="mergeTarget" ng-options="arm.label for arm in otherArms" ng-change="updateMergeWarning(mergeTarget)"></select>
+            </label>
+          </div>
         </div>
-      </div>
-      <div class="row">
-        <div class="large-6 columns">
-          <button class="button small" ng-disabled="!mergeTarget || isEditing" type="submit">Merge</button>
+        <div class="grid-x">
+          <div class="cell large-10">
+            <div style="padding-bottom: 1rem;" class="warning" ng-show="showMergeWarning">Warning ! The selected target arm contains overlapping measurements,
+              these will take precedence over the source arm measuremements.</div>
+          </div>
+        </div>
+        <div class="grid-x">
+          <div class="cell large-6">
+            <button class="button small" ng-disabled="!mergeTarget || isEditing" type="submit">Merge</button>
+          </div>
         </div>
       </div>
     </div>
-  </div>
-</form>
-<a class="close-reveal-modal" ng-click="cancel()">&#215;</a>
+  </form>
+  <button ng-click="cancel()" class="close-button" aria-label="Close reveal" type="button">
+    <span aria-hidden="true">&times;</span>
+  </button>
