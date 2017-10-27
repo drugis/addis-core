@@ -149,13 +149,14 @@
           you create in ADDIS.</p>
         <h3 id="creating-an-account">Creating an account</h3>
         <p>You can create an ADDIS account simply by signing in to ADDIS using your
-          existing Google account. If you do not yet have a Google account, <a href="https://accounts.google.com/signup">create your Google account</a>          before signing in to ADDIS. After you sign in for the first time, basic
+          existing Google account. If you do not yet have a Google account, <a href="https://accounts.google.com/signup">create your Google account</a> 
+          before signing in to ADDIS. After you sign in for the first time, basic
           personal information (e.g. your name) is retrieved from Google and stored
           in ADDIS. It is currently not possible to change this information in ADDIS.</p>
         <h3 id="creating-a-profile-picture">Creating a profile picture</h3>
         <p>We use <a href="http://gravatar.com/">gravatar</a> to display profile pictures.
           If you already have a gravatar, and it is not being displayed, make sure
-          it is linked to the primary e-mail address of your Google account. If
+          it is linked to the primary email address of your Google account. If
           youdo not have a gravatar, you can sign up for free to create a new one. To
           change your profile picture, simply update it on gravatar, and the new
           version should display in ADDIS within a few minutes; clear your
@@ -179,21 +180,21 @@
           is changed, because the changes will create a new, different,
           version.Any changes to a study or the concepts list are temporary at first, until
           you are satisfied with your changes and opt to commit them.
-          Committingmakes your changes permanent, and lets you supply a short title and descriptive
+          Committing makes your changes permanent, and lets you supply a short title and descriptive
           message to describe the changes that you made. After committing, the specific
           version of the dataset that includes your changes will be available to
           everyone forever.</p>
         <h3 id="study-oriented-versus-analysis-oriented">Study-oriented versus analysis-oriented</h3>
         <p>Traditional meta-analysis software treats study data in an
           <em>analysis oriented</em> way: you input study data into separate tables
-          foreach analysis, where the studies are rows. Such data tables are specific
+          for each analysis, where the studies are rows. Such data tables are specific
           to each analysis, and the data can not easily be reused between analyses.
           By contrast, ADDIS stores data in a
           <em>study oriented</em> way, which means that each study extraction in ADDIS
           is a structured representation of what happened in that study, and what
           the outcomes were. Ultimately, study data should be extracted only once,
           and ADDIS uses matching rules to identify data eligible for inclusion
-          ineach analysis.</p>
+          in each analysis.</p>
         <h3 id="creating-a-study">Creating a study</h3>
         <p>From the dataset screen, it is possible to create new studies. There are
           currently three ways to create a study: 1. create an empty study, with
@@ -211,11 +212,11 @@
         <p>The imported study will contain nearly all the data reported in ClinicalTrials.gov.
           However, ADDIS expects the data to be more structured than is often the
           case in ClinicalTrials.gov. You may need to clean up the data before
-          thestudy is ready for analysis, as described in the section &quot;Study repair&quot;
+          the study is ready for analysis, as described in the section &quot;Study repair&quot;
           below.
         </p>
         <p>To copy a study, navigate to it either through the search screen, or by
-          clickingon the user, dataset and study desired, and click the 'Copy Study' button
+          clicking on the user, dataset and study desired, and click the 'Copy Study' button
           at the top of the screen. The system will ask you which of your datasets
           the study should be copied to.</p>
         <div class="figure">
@@ -232,13 +233,10 @@
           allocation and population eligibility criteria. Second, arms and groups,
           which denote subpopulations of the study population with arms being used
           to separate groups that receive different treatment, typically after
-          randomization.Third, epochs, which indicate discrete time periods in the study's running
-          time. Fourth, activities, which take place during the study, e.g. randomization,
-          different treatments, or wash-out. The study design connects the arms,
+          randomization. Third, epochs, which indicate discrete time periods in the study's running time. Fourth, activities, which take place during the study, e.g. randomization, different treatments, or wash-out. The study design connects the arms,
           epochs, and activities: for each arm and epoch, an activity should take
-          place.
-        Fifth, measurement moments, which indicate a moment during the study at
-          whichdata were gathered. Measurement moments are defined as taking place a certain
+          place. Fifth, measurement moments, which indicate a moment during the study at
+          which data was gathered. Measurement moments are defined as taking place a certain
           period of time either after the beginning or before the end of an epoch
           (this time period can be zero). Sixth, variables, meaning which events
           and characteristics in the population are measured, e.g. mood improvement,
@@ -251,19 +249,18 @@
           consist of up to two tables for each variable, one with results that are
           properly structured, meaning they are assigned to a group, variable and
           measurement moment, and one with non-conformant measurements that do not
-          have an associated measurement moment (see <a href="#study-repair">the repairsection</ a >
-           for how to fix this).</p>
+          have an associated measurement moment (see <a href="#study-repair">the repairsection</a> on how to fix this).</p>
         <h3 id="concept">Harmonization</h3>
         <p>Different studies may use the same name to refer to different concepts.
-          Forexample, one study may use “treatment response” to mean “a 50% or
-          greaterimprovement of the MADRS score” while another may use it to mean “a 40%
+          For example, one study may use “treatment response” to mean “a 50% or
+          greater improvement of the MADRS score” while another may use it to mean “a 40%
           or greater improvement of the HAM-D score”. To allow cross-trial
-          analysesbased on a dataset, it is necessary to create concepts at the dataset level,
-          and indicate for each concept from a trial to which dataset-level
-          conceptit corresponds. This process is often called
+          analyses based on a dataset, it is necessary to create concepts at the dataset level,
+          and indicate for each concept from a trial to which dataset level
+          concept it corresponds. This process is often called
           <em>harmonization</em> or
           <em>mapping</em> of the concepts, and is required for concepts including
-          outcomes,treatments, and units of measure.</p>
+          outcomes, treatments, and units of measure.</p>
         <h3 id="study-entry-example">Study entry example</h3>
         <p>To more clearly explain the study entry process and to highlight some potential
           pitfalls, we here go through the process of entering an example study into the
@@ -318,15 +315,15 @@
           <img src="img/study-design.png" alt="Completing the study design" />
         </div>
         <p>
-          The study only reports measurements for baseline (ie. before treatment, at the beginning of the main phase) and at the end of the main phase, so we define those two measurement moments as options for which to enter measurement data.
-          <em>NB: For data to be automatically included in analyses by ADDIS it is necesary to select a measurement moment at the enf of the main phase.</em>
+          The study only reports measurements for baseline (i.e. before treatment, at the beginning of the main phase) and at the end of the main phase, so we define those two measurement moments as options for which to enter measurement data.
+          <em>NB: For data to be automatically included in analyses by ADDIS it is necesary to select a measurement moment at the end of the main phase.</em>
         </p>
         <div class="figure">
           <img src="img/measurement-moments.png" alt="Creating measurement moments" />
         </div>
         <p>
-          In ADDIS, data can be entered for three types of variables: Baseline (population) characteristics, Outomes and Adverse Events. Here we show the example of creating and entering the data for the Age baseline characteristic.
-          Age is measured at the baseline, ie. the beginning of the main phase so we only select that measurement moment. It is stated in the paper that there is no significant different across arms for age, so we enter the same values for all groups.
+          In ADDIS, data can be entered for three types of variables: Baseline (population) characteristics, Outcomes and Adverse Events. Here we show the example of creating and entering the data for the Age baseline characteristic.
+          Age is measured at the baseline, i.e. the beginning of the main phase so we only select that measurement moment. It is stated in the paper that there is no significant different across arms for age, so we enter the same values for all groups.
           Note that it is possible to change the result properties for each variable, but not all result properties are supported for analysis yet.
         </p>
         <div class="figure">
@@ -336,12 +333,12 @@
           <img src="img/age.png" alt="Entering data for the 'age' baseline characteristic" />
         </div>
         <p>
-          Finally, we ensure that the concepts from our study are correctly mapped to the dataset-level concepts that we defined earlier.
+          Finally, we ensure that the concepts from our study are correctly mapped to the dataset level concepts that we defined earlier.
         </p>
         <div class="figure">
           <img src="img/concepts.png" alt="Mapping the study concepts" />
         </div>
-        <h3id="checklist-getting-to-analysis-ready">Checklist: getting to &quot;analysis ready&quot;</h3>
+        <h3 id="checklist-getting-to-analysis-ready">Checklist: getting to &quot;analysis ready&quot;</h3>
         <p>To ensure your studies are picked up for analysis in ADDIS, it is important
           that they are entered accurately and adhere to some best practices. Pay
           attention to the following:</p>
@@ -349,15 +346,15 @@
           <li>There are at least two arms</li>
           <li>The epochs have been defined, and a primary epoch has been chosen</li>
           <li>There is a measurement moment defined at 0 days before the end of the
-            primaryepoch (due to a limitation in how analyses are defined, only
-            measurementsat this measurement moment will be used in analyses)</li>
+            primary epoch (due to a limitation in how analyses are defined, only
+            measurements at this measurement moment will be used in analyses)</li>
           <li>The study design table is complete: there is an activity selected at
-            eachcell of the table</li>
+            each cell of the table</li>
           <li>In the primary epoch, a (different) treatment activity has been selected
             for each arm (these will be recognized as the treatments being compared)</li>
           <li>The outcomes of interest have measurement data at 0 days before the end
             of the primary epoch</li>
-          <li>The outcomes, drugs, and units of interest are mapped to dataset-level
+          <li>The outcomes, drugs, and units of interest are mapped to dataset level
             concepts
           </li>
           <li>The measurement data is specified using the attributes recognized for analysis:
@@ -398,15 +395,15 @@
           measurement moment for that outcome).</p>
         <h2 id="analysis-projects">Analysis projects</h2>
         <p>In ADDIS, a project consists of definitions and analyses, and is based
-          ona specific version of a specific dataset. Within a project, concepts
-          aredefined based on the concepts from the dataset, i.e. interventions,
-          outcomesand covariates. Using these concepts and the data from the dataset,
-          ADDISautomatically assembles analysis data tables. The project report tab gives
+          on a specific version of a specific dataset. Within a project, concepts
+          are defined based on the concepts from the dataset, i.e. interventions,
+          outcomes and covariates. Using these concepts and the data from the dataset,
+          ADDIS automatically assembles analysis data tables. The project report tab gives
           an overview of the project and analyses, while the details tab provides
           a detailed view that allows you to edit the project.</p>
         <h3 id="creating-a-project">Creating a project</h3>
         <p>All projects must be based on a dataset. We have highlighted a few high
-          qualitydatasets as 'Featured datasets' on the ADDIS home page. These are a good
+          quality datasets as 'Featured datasets' on the ADDIS home page. These are a good
           starting point to try out some of the analysis features in ADDIS without
           having to enter your own data. To create a project from a dataset, click
           a 'Create project' button and fill in in a name and description for your
@@ -417,39 +414,39 @@
         </div>
         <p>The 'Create project' button is available on the featured datasets, on the
           dataset overview for a specific user, and when looking at a specific
-          dataset.The created project will be based on the latest version of the
-          dataset,except when viewing an older version of a dataset, in which case the project
+          dataset. The created project will be based on the latest version of the
+          dataset, except when viewing an older version of a dataset, in which case the project
           will be based on that version.</p>
         <h3 id="defining-concepts">Defining concepts</h3>
         <p>It is necessary to define concepts within a project to determine precisely
           which concept from the dataset we are interested in. In several cases
-          hereit is also possible to restrict, refine and split out dataset concepts
+          it is also possible to restrict, refine and split out dataset concepts
           into precisely the project concepts we need. For example, you can create
           both the treatment concepts Paroxetine (high dose) and Paroxetine (low
           dose) based on the dataset concept of the drug Paroxetine, but with different
           dose restrictions. You may fill out a motivation explaining why you made
           this specific definition. Defining project concepts is done from the
-          'Details'view of the project.</p>
+          'Details' view of the project.</p>
         <h4 id="defining-outcomes">Defining outcomes</h4>
         <p>At the moment, outcome definition is simple: select an variable concept
-          fromthe dataset (population characteristic, adverse event or endpoint),
-          andchoose the name under which to use it in the project.</p>
+          from the dataset (population characteristic, adverse event or endpoint),
+          and choose the name under which to use it in the project.</p>
         <h4 id="defining-units"> Defining units</h4>
         <p>The definition of a unit is a combination of a metric multiplier and a
-          datasetlevel unit concept e.g., milli and gram.</p>
+          dataset level unit concept e.g., milli and gram.</p>
         <h4 id="defining-covariates">Defining covariates</h4>
         <p>Covariate definition is simple: select which covariate to use (either a
-          populationcharacteristic or a study characteristic), and choose the name under which
+          population characteristic or a study characteristic), and choose the name under which
           to use it in the project.</p>
         <h4 id="defining-interventions">Defining interventions</h4>
         <p>Intervention definition is potentially the most complex of the project
-          conceptdefinitions. Interventions can have dose-restrictions placed on them, or
+          concept definitions. Interventions can have dose-restrictions placed on them, or
           can be defined as combinations of previously-defined interventions.
-          Tocreate a simple intervention, select which drug concept from the dataset
+          To create a simple intervention, select which drug concept from the dataset
           to use, and choose the name under which to use it in the project. To
-          createa dose-restricted intervention, click the 'Dose-restricted' tab in the
+          create a dose-restricted intervention, click the 'Dose-restricted' tab in the
           intervention creation dialog. Here, besides choosing the desired
-          name,you can choose the type of dose the intervention should have, as well as
+          name, you can choose the type of dose the intervention should have, as well as
           set upper or lower bounds for the dosages.</p>
         <div class="figure">
           <img src="img/define-intervention.png" alt="Defining a dose-restricted intervention"
@@ -461,14 +458,14 @@
           is a combination.</p>
         <h3 id="project-report">Project report</h3>
         <p>The project report view shows an overview of the project's definitions,
-          andthe most important results of each analysis that has been performed
-          withinthe project. It lets you compare and contrast the results of analyses
-          withoutneeding to navigate to each analysis' model results individually.
-          First,an overview of the defined concepts is shown (outcomes, interventions,
+          and the most important results of each analysis that has been performed
+          within the project. It lets you compare and contrast the results of analyses
+          without needing to navigate to each analysis' model results individually.
+          First, an overview of the defined concepts is shown (outcomes, interventions,
           covariates). Second, for each evidence synthesis analysis the relative
           effects of the primary model are shown, as well as a list of the secondary
           models. Third, all benefit-risk analysis based on a single study are
-          shown,with their effects table and rank acceptability plot. Fourth, all benefit-risk
+          shown, with their effects table and rank acceptability plot. Fourth, all benefit-risk
           analysis based on evidence syntheses are similarly shown.</p>
 
           <h2 id="evidence-synthesis">Evidence synthesis</h2>
@@ -505,7 +502,7 @@
             for the <a href="https://www.r-project.org/">R statistical software</a>.</p>
           <h3 id="creating-an-evidence-synthesis">Creating an evidence synthesis</h3>
           <p>To create an evidence synthesis, first make sure you have defined the outcome,
-            interventions and covariates you wish to include in your analysis. Then,
+            interventions, and covariates you wish to include in your analysis. Then,
             on the analyses tab of the project overview, choose &quot;Add Analysis&quot;.
             In the pop-up dialog, enter a title for the new analysis, and choose
             &quot;evidence synthesis&quot; as the analysis type.</p>
@@ -527,7 +524,7 @@
 
           <h2 id="benefit-risk-analysis">Benefit-risk analysis</h2>
 
-          <p>Benefit-risk analysis in ADDIS is based on the <a href="http://drugis.org/software/r-packages/smaa">SMAA</a>            package for the <a href="https://www.r-project.org/">R statistical software</a>.</p>
+          <p>Benefit-risk analysis in ADDIS is based on the <a href="http://drugis.org/software/r-packages/smaa">SMAA</a> package for the <a href="https://www.r-project.org/">R statistical software</a>.</p>
           </p>
           <h3 id="creating-a-benefit-risk-analysis">Creating a benefit-risk analysis</h3>
           <p>In ADDIS, benefit-risk analyses can be based on either a single study,
