@@ -39,6 +39,7 @@ define([],
       }
 
       function resetConcepts() {
+        ConceptsService.conceptsSaved();
         $scope.$parent.loadConcepts().then(reloadConceptsFromScratch);
       }
 
