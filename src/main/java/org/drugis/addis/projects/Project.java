@@ -115,7 +115,7 @@ public class Project implements Serializable {
     if (!id.equals(project.id)) return false;
     if (!owner.equals(project.owner)) return false;
     if (!name.equals(project.name)) return false;
-    if (!description.equals(project.description)) return false;
+    if (description != null ? !description.equals(project.description) : project.description != null) return false;
     if (!namespaceUid.equals(project.namespaceUid)) return false;
     if (!datasetVersion.equals(project.datasetVersion)) return false;
     if (!isArchived.equals(project.isArchived)) return false;
@@ -127,7 +127,7 @@ public class Project implements Serializable {
     int result = id.hashCode();
     result = 31 * result + owner.hashCode();
     result = 31 * result + name.hashCode();
-    result = 31 * result + description.hashCode();
+    result = 31 * result + (description != null ? description.hashCode() : 0);
     result = 31 * result + namespaceUid.hashCode();
     result = 31 * result + datasetVersion.hashCode();
     result = 31 * result + isArchived.hashCode();
