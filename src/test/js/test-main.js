@@ -15,6 +15,7 @@ require.config({
   paths: {
     'angular': 'bower_components/angular/angular',
     'angular-cookies': 'bower_components/angular-cookies/angular-cookies.min',
+    'angularjs-slider' : 'bower_components/angularjs-slider/dist/rzslider',
     'angular-md5': 'bower_components/angular-md5/angular-md5',
     'angular-patavi-client': 'bower_components/angular-patavi-client/patavi',
     'angular-mocks': 'bower_components/angular-mocks/angular-mocks',
@@ -27,13 +28,13 @@ require.config({
     'd3': 'bower_components/d3/d3.min',
     'domReady': 'bower_components/requirejs-domready/domReady',
     'error-reporting': 'bower_components/error-reporting/errorReportingDirective',
+    'export-directive': 'bower_components/export-directive/export-directive',
     'foundation': 'bower_components/foundation/js/foundation',
     'gemtc-web': 'bower_components/gemtc-web/app/js',
     'help-popup': 'bower_components/help-popup/help-directive',
     'jasmine': 'bower_components/jasmine/lib/jasmine-core/jasmine',
     'jasmine-html': 'bower_components/jasmine/lib/jasmine-core/jasmine-html',
     'jQuery': 'bower_components/jquery/dist/jquery.min',
-    'jquery-slider': 'bower_components/jslider/dist/jquery.slider.min',
     'lodash': 'bower_components/lodash/dist/lodash.min',
     'MathJax': 'bower_components/MathJax/MathJax.js?config=TeX-MML-AM_HTMLorMML',
     'mcda': 'bower_components/mcda-web/app/js',
@@ -52,9 +53,6 @@ require.config({
     },
     'jQuery': {
       exports: 'jQuery'
-    },
-    'jquery-slider': {
-      deps: ['jQuery']
     },
     'foundation': {
       deps: ['jQuery']
