@@ -16,14 +16,13 @@ require.config({
     'd3': 'bower_components/d3/d3.min',
     'domReady': 'bower_components/requirejs-domready/domReady',
     'error-reporting': 'bower_components/error-reporting/errorReportingDirective',
+    'export-directive': 'bower_components/export-directive/export-directive',
     'gemtc-web': 'bower_components/gemtc-web/app/js',
     'help-popup': 'bower_components/help-popup/help-directive',
     'jQuery': 'bower_components/jquery/dist/jquery.min',
-    'jquery-slider': 'bower_components/jslider/dist/jquery.slider.min',
     'lodash': 'bower_components/lodash/dist/lodash.min',
     'MathJax': 'bower_components/MathJax/MathJax.js?config=TeX-MML-AM_HTMLorMML',
     'mcda': 'bower_components/mcda-web/app/js',
-    'mctad': 'bower_components/mctad/mctad.min',
     'mmfoundation': 'bower_components/angular-foundation-6/dist/angular-foundation.min',
     'modernizr': 'bower_components/modernizr/modernizr',
     'moment': 'bower_components/moment/min/moment.min',
@@ -35,9 +34,6 @@ require.config({
   shim: {
     'jQuery': {
       exports: 'jQuery'
-    },
-    'jquery-slider': {
-      deps: ['jQuery']
     },
     'angular': {
       deps: ['jQuery'],
@@ -84,9 +80,6 @@ require.config({
     },
     'd3': {
       exports: 'd3'
-    },
-    'mctad': {
-      exports: 'mctad'
     },
     'nvd3': {
       deps: ['d3'],

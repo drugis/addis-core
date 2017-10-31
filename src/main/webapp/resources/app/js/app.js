@@ -14,8 +14,10 @@ define(
     'angular-md5',
     'ngSanitize',
     'showdown',
+    'angularjs-slider',
     'angular-patavi-client',
     'error-reporting',
+    'export-directive',
     'controllers',
     'filters',
     'resources',
@@ -58,6 +60,7 @@ define(
     'mcda/services/effectsTableService',
     'mcda/controllers',
     'mcda/directives',
+    'mcda/evidence/evidence',
     'mcda/services/workspaceResource',
     'mcda/services/taskDependencies',
     'mcda/services/workspaceService',
@@ -68,7 +71,6 @@ define(
     'mcda/preferences/partialValueFunctionService',
     'mcda/results/results',
     'mcda/subProblem/subProblem',
-    'bower_components/angularjs-slider/dist/rzslider',
     'covariates/covariates',
     'home/home'
   ],
@@ -81,6 +83,7 @@ define(
       'elicit.taskDependencies',
       'elicit.directives',
       'elicit.controllers',
+      'elicit.evidence',
       'elicit.pvfService',
       'elicit.util',
       'elicit.routeFactory',
@@ -109,7 +112,8 @@ define(
       'addis.interventions',
       'addis.outcomes',
       'patavi',
-      'errorReporting'
+      'errorReporting',
+      'export-directive'
     ];
     var gemtcWebDependencies = [
       'gemtc.controllers',
