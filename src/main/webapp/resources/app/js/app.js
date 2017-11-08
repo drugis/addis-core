@@ -170,6 +170,7 @@ define(
     app.constant('mcdaRootPath', 'app/js/bower_components/mcda-web/app/');
     app.constant('gemtcRootPath', 'app/js/bower_components/gemtc-web/app/');
     app.constant('isGemtcStandAlone', false);
+    app.constant('isMcdaStandalone', true);
 
     app.config(['$locationProvider', function($locationProvider) {
       $locationProvider.hashPrefix('');
@@ -187,6 +188,7 @@ define(
         };
 
         HelpPopupService.loadLexicon($http.get('app/js/bower_components/gemtc-web/app/lexicon.json'));
+        HelpPopupService.loadLexicon($http.get('app/js/bower_components/mcda-elicitation-web/app/lexicon.json'));
         HelpPopupService.loadLexicon($http.get('addis-lexicon.json'));
 
         $transitions.onSuccess({}, function(transition) {
