@@ -1,37 +1,82 @@
 'use strict';
-define(function (require) {
-  var angular = require('angular');
+var requires = [
+  'dataset/datasetsController',
+  'dataset/datasetController',
+  'dataset/createStudyController',
+  'dataset/deleteStudyController',
+  'dataset/datasetHistoryController',
+  'dataset/studyHistoryController',
+  'dataset/editDatasetController',
+  'dataset/filterDatasetController',
+  'dataset/studiesWithDetailsService',
+  'dataset/datasetService',
+  'dataset/datasetVersionedResource',
+  'dataset/datasetResource',
+  'dataset/historyResource',
+  'dataset/studyHistoryResource',
+  'graph/graphResource',
+  'dataset/importStudyInfoResource',
+  'dataset/importStudyResource',
+  'dataset/historyItemDirective',
+  'dataset/versionInfoDirective',
+  'dataset/featuredDatasetsDirective',
+  'dataset/splitOnTokenFilter',
+  'dataset/dosingFilter'
+];
+define(requires.concat(['angular', 'angular-resource']), function(DatasetsController,
+  DatasetController,
+  CreateStudyController,
+  DeleteStudyController,
+  DatasetHistoryController,
+  StudyHistoryController,
+  EditDatasetController,
+  FilterDatasetController,
+  StudiesWithDetailsService,
+  DatasetService,
+  DatasetVersionedResource,
+  DatasetResource,
+  HistoryResource,
+  StudyHistoryResource,
+  GraphResource,
+  ImportStudyInfoResource,
+  ImportStudyResource,
+  historyItem,
+  versionInfo,
+  featuredDatasets,
+  splitOnTokenFilter,
+  dosingFilter,
+  angular
+) {
   return angular.module('trialverse.dataset', ['ngResource', 'trialverse.util'])
     //controllers
-    .controller('DatasetsController', require('dataset/datasetsController'))
-    .controller('DatasetController', require('dataset/datasetController'))
-    .controller('CreateStudyController', require('dataset/createStudyController'))
-    .controller('DeleteStudyController', require('dataset/deleteStudyController'))
-    .controller('DatasetHistoryController', require('dataset/datasetHistoryController'))
-    .controller('StudyHistoryController', require('dataset/studyHistoryController'))
-    .controller('EditDatasetController', require('dataset/editDatasetController'))
-    .controller('FilterDatasetController', require('dataset/filterDatasetController'))
+    .controller('DatasetsController', DatasetsController)
+    .controller('DatasetController', DatasetController)
+    .controller('CreateStudyController', CreateStudyController)
+    .controller('DeleteStudyController', DeleteStudyController)
+    .controller('DatasetHistoryController', DatasetHistoryController)
+    .controller('StudyHistoryController', StudyHistoryController)
+    .controller('EditDatasetController', EditDatasetController)
+    .controller('FilterDatasetController', FilterDatasetController)
 
     //services
-    .factory('StudiesWithDetailsService', require('dataset/studiesWithDetailsService'))
-    .factory('DatasetService', require('dataset/datasetService'))
+    .factory('StudiesWithDetailsService', StudiesWithDetailsService)
+    .factory('DatasetService', DatasetService)
 
     //resources
-    .factory('DatasetVersionedResource', require('dataset/datasetVersionedResource'))
-    .factory('DatasetResource', require('dataset/datasetResource'))
-    .factory('HistoryResource', require('dataset/historyResource'))
-    .factory('StudyHistoryResource', require('dataset/studyHistoryResource'))
-    .factory('GraphResource', require('graph/graphResource'))
-    .factory('ImportStudyInfoResource', require('dataset/importStudyInfoResource'))
-    .factory('ImportStudyResource', require('dataset/importStudyResource'))
+    .factory('DatasetVersionedResource', DatasetVersionedResource)
+    .factory('DatasetResource', DatasetResource)
+    .factory('HistoryResource', HistoryResource)
+    .factory('StudyHistoryResource', StudyHistoryResource)
+    .factory('GraphResource', GraphResource)
+    .factory('ImportStudyInfoResource', ImportStudyInfoResource)
+    .factory('ImportStudyResource', ImportStudyResource)
 
     //directives
-    .directive('historyItem', require('dataset/historyItemDirective'))
-    .directive('versionInfo', require('dataset/versionInfoDirective'))
-    .directive('featuredDatasets', require('dataset/featuredDatasetsDirective'))
+    .directive('historyItem', historyItem)
+    .directive('versionInfo', versionInfo)
+    .directive('featuredDatasets', featuredDatasets)
 
     //filters
-    .filter('splitOnTokenFilter', require('dataset/splitOnTokenFilter'))
-    .filter('dosingFilter', require('dataset/dosingFilter'))
-    ;
+    .filter('splitOnTokenFilter', splitOnTokenFilter)
+    .filter('dosingFilter', dosingFilter);
 });

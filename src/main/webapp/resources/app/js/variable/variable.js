@@ -1,12 +1,17 @@
 'use strict';
-
-define(function (require) {
-  var angular = require('angular');
-
+var requires = [
+  'variable/addVariableController',
+  'variable/editVariableController',
+  'variable/resultPropertiesDirective'
+];
+define(requires.concat(['angular', 'angular-resource']), function(
+  AddVariableController,
+  EditVariableController,
+  resultProperties,
+  angular) {
   return angular.module('trialverse.variable', ['ngResource', 'trialverse.util'])
-    .controller('AddVariableController', require('variable/addVariableController'))
-    .controller('EditVariableController', require('variable/editVariableController'))
+    .controller('AddVariableController', AddVariableController)
+    .controller('EditVariableController', EditVariableController)
 
-    .directive('resultProperties', require('variable/resultPropertiesDirective'))
-     ;
+    .directive('resultProperties', resultProperties);
 });

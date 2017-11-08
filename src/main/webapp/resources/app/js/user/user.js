@@ -1,15 +1,28 @@
 'use strict';
-define(function(require) {
-  var angular = require('angular');
+var requires = [
+  'user/userController',
+  'user/createDatasetController',
+  'user/userService',
+  'user/userResource',
+  'dataset/datasetResource'
+];
+define(requires.concat(['angular', 'angular-resource']), function(
+  UserController,
+  CreateDatasetController,
+  UserService,
+  UserResource,
+  DatasetResource,
+  angular
+) {
   return angular.module('trialverse.user', ['ngResource', 'trialverse.util', 'trialverse.dataset'])
     //controllers
-    .controller('UserController', require('user/userController'))
-    .controller('CreateDatasetController', require('user/createDatasetController'))
+    .controller('UserController', UserController)
+    .controller('CreateDatasetController', CreateDatasetController)
 
-  //services
-  .factory('UserService', require('user/userService'))
+    //services
+    .factory('UserService', UserService)
 
-  //resources
-  .factory('UserResource', require('user/userResource'))
-    .factory('DatasetResource', require('dataset/datasetResource'));
+    //resources
+    .factory('UserResource', UserResource)
+    .factory('DatasetResource', DatasetResource);
 });

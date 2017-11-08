@@ -1,13 +1,16 @@
 'use strict';
-
-define(function(require) {
-  var angular = require('angular');
-
+var requires = [
+  'home/homeController',
+  'user/userResource'
+];
+define(requires.concat(['angular', 'angular-resource']), function(
+  HomeController,
+  UserResource,
+  angular) {
   return angular.module('addis.home', ['ngResource', 'trialverse.util'])
+    // controllers
+    .controller('HomeController', HomeController)
 
-  // controllers
-  .controller('HomeController', require('home/homeController'))
-
-  //resources
-  .factory('UserResource', require('user/userResource'));
+    //resources
+    .factory('UserResource', UserResource);
 });

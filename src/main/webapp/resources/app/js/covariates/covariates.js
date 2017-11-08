@@ -1,21 +1,21 @@
 'use strict';
-
-define(function (require) {
-  var angular = require('angular');
+var requires = [
+  'covariates/addCovariateController',
+  'covariates/covariateResource',
+  'covariates/covariateOptionsResource'
+];
+define(requires.concat(['angular', 'angular-resource']), function(
+  AddCovariateController,
+  CovariateResource,
+  CovariateOptionsResource,
+  angular
+) {
   var dependencies = ['ngResource'];
-
   return angular.module('addis.covariates', dependencies)
     // controllers
-    .controller('AddCovariateController', require('covariates/addCovariateController'))
+    .controller('AddCovariateController', AddCovariateController)
 
     // resources
-    .factory('CovariateResource', require('covariates/covariateResource'))
-    .factory('CovariateOptionsResource', require('covariates/covariateOptionsResource'))
-
-    //services
-
-
-    //directives
-
-    ;
+    .factory('CovariateResource', CovariateResource)
+    .factory('CovariateOptionsResource', CovariateOptionsResource);
 });

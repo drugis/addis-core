@@ -1,17 +1,26 @@
 'use strict';
+var requires = [
+  'populationInformation/editPopulationInformationController',
+  'populationInformation/populationInformationService'
+];
+define(requires.concat(['angular', 'angular-resource']), function(
+  EditPopulationInformationController,
+  PopulationInformationService,
+  angular
+) {
 
-define(function(require) {
-  var angular = require('angular');
-
-  return angular.module('trialverse.populationInformation', [
+  var dependencies = [
     'ngResource',
     'trialverse.util',
     'trialverse.study'
-  ])
+  ];
+  return angular.module('trialverse.populationInformation', dependencies)
 
-  // controllers
-  .controller('EditPopulationInformationController', require('populationInformation/editPopulationInformationController'))
+    // controllers
+    .controller('EditPopulationInformationController', EditPopulationInformationController)
 
-  //services
-  .factory('PopulationInformationService', require('populationInformation/populationInformationService'));
+    //services
+    .factory('PopulationInformationService', PopulationInformationService)
+
+  ;
 });

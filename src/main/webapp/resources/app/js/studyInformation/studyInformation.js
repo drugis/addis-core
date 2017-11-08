@@ -1,13 +1,16 @@
 'use strict';
-
-define(function (require) {
-  var angular = require('angular');
-
+var requires = [
+  'studyInformation/editStudyInformationController',
+  'studyInformation/studyInformationService'
+];
+define(requires.concat(['angular', 'angular-resource']), function(
+  EditStudyInformationController,
+  StudyInformationService,
+  angular) {
   return angular.module('trialverse.studyInformation', ['ngResource', 'trialverse.util', 'trialverse.study'])
     // controllers
-    .controller('EditStudyInformationController', require('studyInformation/editStudyInformationController'))
+    .controller('EditStudyInformationController', EditStudyInformationController)
 
     //services
-    .factory('StudyInformationService', require('studyInformation/studyInformationService'))
-    ;
+    .factory('StudyInformationService', StudyInformationService);
 });

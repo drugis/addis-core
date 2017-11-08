@@ -1,21 +1,36 @@
 'use strict';
-
-define(function (require) {
-  var angular = require('angular');
+var requires = [
+  'analysis/addAnalysisController',
+  'analysis/benefitRiskStep1Controller',
+  'analysis/benefitRiskStep2Controller',
+  'analysis/benefitRiskController',
+  'analysis/abstractBenefitRiskController',
+  'analysis/benefitRiskService',
+  'analysis/directives/studySelectDirective'
+];
+define(requires.concat('angular', 'angular-resource'), function(
+  AddAnalysisController,
+  BenefitRiskStep1Controller,
+  BenefitRiskStep2Controller,
+  BenefitRiskController,
+  AbstractBenefitRiskController,
+  BenefitRiskService,
+  studySelect,
+  angular
+) {
   var dependencies = ['ngResource'];
-
   return angular.module('addis.analysis',
-    dependencies)
+      dependencies)
     // controllers
-    .controller('AddAnalysisController', require('analysis/addAnalysisController'))
-    .controller('BenefitRiskStep1Controller', require('analysis/benefitRiskStep1Controller'))
-    .controller('BenefitRiskStep2Controller', require('analysis/benefitRiskStep2Controller'))
-    .controller('BenefitRiskController', require('analysis/benefitRiskController'))
-    .controller('AbstractBenefitRiskController', require('analysis/abstractBenefitRiskController'))
+    .controller('AddAnalysisController', AddAnalysisController)
+    .controller('BenefitRiskStep1Controller', BenefitRiskStep1Controller)
+    .controller('BenefitRiskStep2Controller', BenefitRiskStep2Controller)
+    .controller('BenefitRiskController', BenefitRiskController)
+    .controller('AbstractBenefitRiskController', AbstractBenefitRiskController)
     //services
-    .factory('BenefitRiskService', require('analysis/benefitRiskService'))
+    .factory('BenefitRiskService', BenefitRiskService)
     //directives
-    .directive('studySelect', require('analysis/directives/studySelectDirective'))
+    .directive('studySelect', studySelect)
 
-    ;
+  ;
 });

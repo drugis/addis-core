@@ -1,10 +1,10 @@
 'use strict';
-
-define(function (require) {
+var requires = [
+  'adverseEvent/adverseEventService'
+];
+define(requires.concat(['angular', 'angular-resource']), function(AdverseEventService) {
   var angular = require('angular');
-
   return angular.module('trialverse.adverseEvent', ['ngResource', 'trialverse.util', 'trialverse.outcome'])
     // //services
-     .factory('AdverseEventService', require('adverseEvent/adverseEventService'))
-     ;
+    .factory('AdverseEventService', AdverseEventService);
 });

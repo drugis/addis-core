@@ -1,14 +1,19 @@
 'use strict';
-
-define(function (require) {
-  var angular = require('angular');
-
+var requires = [
+  'epoch/addEpochController',
+  'epoch/editEpochController',
+  'epoch/epochService'
+];
+define(requires.concat(['angular', 'angular-resource']), function(AddEpochController,
+  EditEpochController,
+  EpochService,
+  angular
+) {
   return angular.module('trialverse.epoch', ['ngResource', 'trialverse.util', 'trialverse.study'])
     // controllers
-    .controller('AddEpochController', require('epoch/addEpochController'))
-    .controller('EditEpochController', require('epoch/editEpochController'))
+    .controller('AddEpochController', AddEpochController)
+    .controller('EditEpochController', EditEpochController)
 
     //services
-    .factory('EpochService', require('epoch/epochService'))
-    ;
+    .factory('EpochService', EpochService);
 });
