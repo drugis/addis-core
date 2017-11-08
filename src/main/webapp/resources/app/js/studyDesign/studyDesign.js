@@ -1,21 +1,31 @@
 'use strict';
-
-define(function (require) {
-  var angular = require('angular');
+var requires = [
+  'studyDesign/studyDesignService',
+  'arm/armService',
+  'epoch/epochService',
+  'activity/activityService',
+  'studyDesign/studyDesignDirective'
+];
+define(requires.concat(['angular', 'angular-resource']), function(
+  StudyDesignService,
+  ArmService,
+  EpochService,
+  ActivityService,
+  studyDesign,
+  angular) {
   var dependencies = ['ngResource',
-  'trialverse.study',
-  'trialverse.util'];
-
+    'trialverse.study',
+    'trialverse.util'
+  ];
   return angular.module('trialverse.studyDesign', dependencies)
     // controllers
 
     //services
-    .factory('StudyDesignService', require('studyDesign/studyDesignService'))
-    .factory('ArmService', require('arm/armService'))
-    .factory('EpochService', require('epoch/epochService'))
-    .factory('ActivityService', require('activity/activityService'))
+    .factory('StudyDesignService', StudyDesignService)
+    .factory('ArmService', ArmService)
+    .factory('EpochService', EpochService)
+    .factory('ActivityService', ActivityService)
 
     //directives
-    .directive('studyDesign', require('studyDesign/studyDesignDirective'))
-    ;
+    .directive('studyDesign', studyDesign);
 });

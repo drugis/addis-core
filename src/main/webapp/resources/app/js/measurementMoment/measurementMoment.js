@@ -1,21 +1,28 @@
 'use strict';
-
-define(function (require) {
-  var angular = require('angular');
+var requires = [
+  'measurementMoment/measurementMomentController',
+  'measurementMoment/measurementMomentService',
+  'util/filters/anchorFilter'
+];
+define(requires.concat(['angular', 'angular-resource']), function(
+  MeasurementMomentController,
+  MeasurementMomentService,
+  anchorFilter,
+  angular) {
   var dependencies = ['ngResource',
-  'trialverse.study',
-  'trialverse.epoch',
-  'trialverse.util'];
+    'trialverse.study',
+    'trialverse.epoch',
+    'trialverse.util'
+  ];
 
   return angular.module('trialverse.measurementMoment',
-    dependencies)
+      dependencies)
     // controllers
-    .controller('MeasurementMomentController', require('measurementMoment/measurementMomentController'))
+    .controller('MeasurementMomentController', MeasurementMomentController)
 
     //services
-    .factory('MeasurementMomentService', require('measurementMoment/measurementMomentService'))
+    .factory('MeasurementMomentService', MeasurementMomentService)
 
     //filter
-    .filter('anchorFilter', require('util/filters/anchorFilter'))
-    ;
+    .filter('anchorFilter', anchorFilter);
 });

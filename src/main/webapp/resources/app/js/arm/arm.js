@@ -1,14 +1,20 @@
 'use strict';
-
-define(function (require) {
-  var angular = require('angular');
-
+var requires = [
+  'arm/editArmController',
+  'arm/createArmController',
+  'arm/armService'
+];
+define(requires.concat(['angular', 'angular-resource']), function(
+  EditArmController,
+  CreateArmController,
+  ArmService,
+  angular
+) {
   return angular.module('trialverse.arm', ['ngResource', 'trialverse.util', 'trialverse.study'])
     // controllers
-    .controller('EditArmController', require('arm/editArmController'))
-    .controller('CreateArmController', require('arm/createArmController'))
+    .controller('EditArmController', EditArmController)
+    .controller('CreateArmController', CreateArmController)
 
     //services
-    .factory('ArmService', require('arm/armService'))
-    ;
+    .factory('ArmService', ArmService);
 });

@@ -1,19 +1,29 @@
 'use strict';
-
-define(function (require) {
-  var angular = require('angular');
-
+var requires = [
+  'concept/conceptsService',
+  'concept/conceptsController',
+  'concept/createConceptController',
+  'dataset/datasetVersionedResource'
+];
+define(requires.concat('angular', 'angular-resource'), function(
+  ConceptsService,
+  ConceptsController,
+  CreateConceptController,
+  DatasetVersionedResource,
+  angular
+) {
   return angular.module('trialverse.concept', ['ngResource',
       'trialverse.graph',
-      'trialverse.util'])
+      'trialverse.util'
+    ])
     // services
-    .factory('ConceptsService', require('concept/conceptsService'))
+    .factory('ConceptsService', ConceptsService)
 
     //controllers
-    .controller('ConceptsController', require('concept/conceptsController'))
-    .controller('CreateConceptController', require('concept/createConceptController'))
+    .controller('ConceptsController', ConceptsController)
+    .controller('CreateConceptController', CreateConceptController)
 
-     //resources
-    .factory('DatasetVersionedResource', require('dataset/datasetVersionedResource')) // only need resource, not entire module
-    ;
+    //resources
+    .factory('DatasetVersionedResource', DatasetVersionedResource) // only need resource, not entire module
+  ;
 });

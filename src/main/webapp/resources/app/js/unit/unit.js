@@ -1,14 +1,18 @@
 'use strict';
-
-define(function(require) {
-  var angular = require('angular');
-
+var requires = [
+  'unit/repairUnitController',
+  'unit/unitService'
+];
+define(['angular'].concat(requires), function(
+  angular,
+  RepairUnitController,
+  UnitService) {
   return angular.module('trialverse.unit', [
       'trialverse.study'
     ])
     // controllers
-    .controller('RepairUnitController', require('unit/repairUnitController'))
+    .controller('RepairUnitController', RepairUnitController)
 
-  //services
-  .factory('UnitService', require('unit/unitService'));
+    //services
+    .factory('UnitService', UnitService);
 });

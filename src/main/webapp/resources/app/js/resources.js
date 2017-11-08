@@ -1,20 +1,50 @@
 'use strict';
-define(function(require) {
-  var angular = require('angular');
+var requires = [
+  'resources/evidenceTableResource',
+  'resources/projectResource',
+  'resources/trialverseResource',
+  'resources/semanticOutcomeResource',
+  'resources/semanticInterventionResource',
+  'resources/outcomeResource',
+  'resources/interventionResource',
+  'resources/analysisResource',
+  'resources/trialverseStudyResource',
+  'resources/projectStudiesResource',
+  'resources/trialverseStudiesWithDetailsResource',
+  'resources/scenarioResource',
+  'resources/scaledUnitResource',
+  'resources/subProblemResource'
+];
+define(requires.concat(['angular', 'angular-resource']), function(
+  EvidenceTableResource,
+  ProjectResource,
+  TrialverseResource,
+  SemanticOutcomeResource,
+  SemanticInterventionResource,
+  OutcomeResource,
+  InterventionResource,
+  AnalysisResource,
+  TrialverseStudyResource,
+  ProjectStudiesResource,
+  TrialverseStudiesWithDetailsResource,
+  ScenarioResource,
+  ScaledUnitResource,
+  SubProblemResource,
+  angular
+) {
   return angular.module('addis.resources', ['ngResource'])
-    .factory('EvidenceTableResource', require('resources/evidenceTableResource'))
-    .factory('ProjectResource', require('resources/projectResource'))
-    .factory('TrialverseResource', require('resources/trialverseResource'))
-    .factory('SemanticOutcomeResource', require('resources/semanticOutcomeResource'))
-    .factory('SemanticInterventionResource', require('resources/semanticInterventionResource'))
-    .factory('OutcomeResource', require('resources/outcomeResource'))
-    .factory('InterventionResource', require('resources/interventionResource'))
-    .factory('AnalysisResource', require('resources/analysisResource'))
-    .factory('TrialverseStudyResource', require('resources/trialverseStudyResource'))
-    .factory('ProjectStudiesResource', require('resources/projectStudiesResource'))
-    .factory('TrialverseStudiesWithDetailsResource', require('resources/trialverseStudiesWithDetailsResource'))
-    .factory('ScenarioResource', require('resources/scenarioResource'))
-    .factory('ScaledUnitResource', require('resources/scaledUnitResource'))
-    .factory('SubProblemResource', require('resources/subProblemResource'))
-    ;
+    .factory('EvidenceTableResource', EvidenceTableResource)
+    .factory('ProjectResource', ProjectResource)
+    .factory('TrialverseResource', TrialverseResource)
+    .factory('SemanticOutcomeResource', SemanticOutcomeResource)
+    .factory('SemanticInterventionResource', SemanticInterventionResource)
+    .factory('OutcomeResource', OutcomeResource)
+    .factory('InterventionResource', InterventionResource)
+    .factory('AnalysisResource', AnalysisResource)
+    .factory('TrialverseStudyResource', TrialverseStudyResource)
+    .factory('ProjectStudiesResource', ProjectStudiesResource)
+    .factory('TrialverseStudiesWithDetailsResource', TrialverseStudiesWithDetailsResource)
+    .factory('ScenarioResource', ScenarioResource)
+    .factory('ScaledUnitResource', ScaledUnitResource)
+    .factory('SubProblemResource', SubProblemResource);
 });

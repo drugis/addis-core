@@ -1,9 +1,15 @@
 'use strict';
-define(function(require) {
-  var angular = require('angular');
+var requires = [
+  'services/singleStudyBenefitRiskService',
+  'services/networkMetaAnalysisService',
+  'gemtc-web/analyses/networkPlotService'
+];
+define(['angular'].concat(requires), function(angular,
+  SingleStudyBenefitRiskService,
+  NetworkMetaAnalysisService,
+  NetworkPlotService) {
   return angular.module('addis.services', ['gemtc.services'])
-    .factory('SingleStudyBenefitRiskService', require('services/singleStudyBenefitRiskService'))
-    .factory('NetworkMetaAnalysisService', require('services/networkMetaAnalysisService'))
-    .factory('NetworkPlotService', require('gemtc-web/analyses/networkPlotService'))
-    ;
+    .factory('SingleStudyBenefitRiskService', SingleStudyBenefitRiskService)
+    .factory('NetworkMetaAnalysisService', NetworkMetaAnalysisService)
+    .factory('NetworkPlotService', NetworkPlotService);
 });

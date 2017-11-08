@@ -1,11 +1,10 @@
 'use strict';
-
-define(function (require) {
-  var angular = require('angular');
-
+var requires = ['endpoint/endpointService'];
+define(requires.concat(['angular', 'angular-resource']), function(
+  EndpointService,
+  angular
+) {
   return angular.module('trialverse.endpoint', ['ngResource', 'trialverse.util', 'trialverse.outcome'])
-
-    // //services
-     .factory('EndpointService', require('endpoint/endpointService'))
-     ;
+    //services
+    .factory('EndpointService', EndpointService);
 });

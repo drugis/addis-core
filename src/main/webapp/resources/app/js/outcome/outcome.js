@@ -1,23 +1,32 @@
 'use strict';
-
-define(function (require) {
-  var angular = require('angular');
-  var dependencies = ['ngResource',
-  'trialverse.measurementMoment',
-  'trialverse.study',
-  'trialverse.util'];
-
+var requires = [
+  'outcome/addOutcomeController',
+  'outcome/editOutcomeController',
+  'study/repair/repairService',
+  'outcome/outcomeService'
+];
+define(requires.concat(['angular', 'angular-resource']), function(
+  AddOutcomeController,
+  EditOutcomeController,
+  RepairService,
+  OutcomeService,
+  angular) {
+  var dependencies = [
+    'ngResource',
+    'trialverse.measurementMoment',
+    'trialverse.study',
+    'trialverse.util'
+  ];
   return angular.module('trialverse.outcome',
-    dependencies)
+      dependencies)
     // controllers
-    .controller('AddOutcomeController', require('outcome/addOutcomeController'))
-    .controller('EditOutcomeController', require('outcome/editOutcomeController'))
+    .controller('AddOutcomeController', AddOutcomeController)
+    .controller('EditOutcomeController', EditOutcomeController)
 
 
     //services
-    .factory('RepairService', require('study/repair/repairService'))
-    .factory('OutcomeService', require('outcome/outcomeService'))
+    .factory('RepairService', RepairService)
+    .factory('OutcomeService', OutcomeService)
 
-    //filter
-    ;
+  ;
 });

@@ -1,35 +1,74 @@
 'use strict';
-
-define(function(require) {
-  var angular = require('angular');
-
+var requires = [
+  'util/uuidService',
+  'util/durationService',
+  'util/directives/subsetSelect/subsetSelectService',
+  'util/sanitizeService',
+  'util/abstractGroupService',
+  'util/rdfListService',
+  'util/dataModelService',
+  'util/sparqlResource',
+  'util/filters/ontologyFilter',
+  'util/filters/durationFilter',
+  'util/filters/durationOffsetFilter',
+  'util/filters/stripFrontFilter',
+  'util/filters/exponentialFilter',
+  'util/directives/navbar/navbarDirective',
+  'util/directives/subsetSelect/subsetSelectDirective',
+  'util/directives/durationInput/durationInputDirective',
+  'util/directives/sessionExpired/sessionExpiredDirective',
+  'util/directives/enumOptions/enumOptionsDirective',
+  'util/interceptors/sessionExpiredInterceptor'
+];
+define(['angular'].concat(requires), function(
+  angular,
+  UUIDService,
+  DurationService,
+  SubsetSelectService,
+  SanitizeService,
+  AbstractGroupService,
+  RdfListService,
+  DataModelService,
+  SparqlResource,
+  ontologyFilter,
+  durationFilter,
+  durationOffsetFilter,
+  stripFrontFilter,
+  exponentialFilter,
+  navbarDirective,
+  subsetSelect,
+  durationInput,
+  sessionExpired,
+  enumOptions,
+  SessionExpiredInterceptor
+) {
   return angular.module('trialverse.util', [])
     // services
-    .factory('UUIDService', require('util/uuidService'))
-    .factory('DurationService', require('util/durationService'))
-    .factory('SubsetSelectService', require('util/directives/subsetSelect/subsetSelectService'))
-    .factory('SanitizeService', require('util/sanitizeService'))
-    .factory('AbstractGroupService', require('util/abstractGroupService'))
-    .factory('RdfListService', require('util/rdfListService'))
-    .factory('DataModelService', require('util/dataModelService'))
+    .factory('UUIDService', UUIDService)
+    .factory('DurationService', DurationService)
+    .factory('SubsetSelectService', SubsetSelectService)
+    .factory('SanitizeService', SanitizeService)
+    .factory('AbstractGroupService', AbstractGroupService)
+    .factory('RdfListService', RdfListService)
+    .factory('DataModelService', DataModelService)
 
-  // resources
-  .factory('SparqlResource', require('util/sparqlResource'))
+    // resources
+    .factory('SparqlResource', SparqlResource)
 
-  // filters
-  .filter('ontologyFilter', require('util/filters/ontologyFilter'))
-    .filter('durationFilter', require('util/filters/durationFilter'))
-    .filter('durationOffsetFilter', require('util/filters/durationOffsetFilter'))
-    .filter('stripFrontFilter', require('util/filters/stripFrontFilter'))
-    .filter('exponentialFilter', require('util/filters/exponentialFilter'))
+    // filters
+    .filter('ontologyFilter', ontologyFilter)
+    .filter('durationFilter', durationFilter)
+    .filter('durationOffsetFilter', durationOffsetFilter)
+    .filter('stripFrontFilter', stripFrontFilter)
+    .filter('exponentialFilter', exponentialFilter)
 
-  //directives
-  .directive('navbarDirective', require('util/directives/navbar/navbarDirective'))
-    .directive('subsetSelect', require('util/directives/subsetSelect/subsetSelectDirective'))
-    .directive('durationInput', require('util/directives/durationInput/durationInputDirective'))
-    .directive('sessionExpired', require('util/directives/sessionExpired/sessionExpiredDirective'))
-    .directive('enumOptions', require('util/directives/enumOptions/enumOptionsDirective'))
+    //directives
+    .directive('navbarDirective', navbarDirective)
+    .directive('subsetSelect', subsetSelect)
+    .directive('durationInput', durationInput)
+    .directive('sessionExpired', sessionExpired)
+    .directive('enumOptions', enumOptions)
 
-  //interceptors
-  .factory('SessionExpiredInterceptor', require('util/interceptors/sessionExpiredInterceptor'));
+    //interceptors
+    .factory('SessionExpiredInterceptor', SessionExpiredInterceptor);
 });

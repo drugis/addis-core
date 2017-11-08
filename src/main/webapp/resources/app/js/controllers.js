@@ -1,9 +1,19 @@
 'use strict';
-define(function (require) {
-  var angular = require('angular');
+var requires = [
+  'controllers/projectsController',
+  'controllers/singleProjectController',
+  'controllers/networkMetaAnalysisContainerController',
+  'controllers/networkMetaAnalysisModelContainerController'
+];
+define(['angular'].concat(requires), function(
+	angular,
+  ProjectsController,
+  SingleProjectController,
+  NetworkMetaAnalysisContainerController,
+  NetworkMetaAnalysisModelContainerController) {
   return angular.module('addis.controllers', [])
-    .controller('ProjectsController', require('controllers/projectsController'))
-    .controller('SingleProjectController', require('controllers/singleProjectController'))
-    .controller('NetworkMetaAnalysisContainerController', require('controllers/networkMetaAnalysisContainerController'))
-    .controller('NetworkMetaAnalysisModelContainerController', require('controllers/networkMetaAnalysisModelContainerController'));
+    .controller('ProjectsController', ProjectsController)
+    .controller('SingleProjectController', SingleProjectController)
+    .controller('NetworkMetaAnalysisContainerController', NetworkMetaAnalysisContainerController)
+    .controller('NetworkMetaAnalysisModelContainerController', NetworkMetaAnalysisModelContainerController);
 });

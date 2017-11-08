@@ -1,8 +1,34 @@
 'use strict';
-
-define(function(require) {
-  var angular = require('angular');
-
+var requires = [
+  'study/studyController',
+  'study/copyStudyController',
+  'study/editStudyController',
+  'study/unsavedChanges/unsavedChangesWarningModalController',
+  'study/d80TableController',
+  'study/studyService',
+  'study/d80TableService',
+  'study/copyStudyResource',
+  'dataset/datasetResource',
+  'study/estimatesResource',
+  'study/categoryDirective',
+  'study/categoryItemDirective',
+  'study/variableCategoryDirective'
+];
+define(requires.concat(['angular', 'angular-resource']), function(
+  StudyController,
+  CopyStudyController,
+  EditStudyController,
+  UnsavedChangesWarningModalController,
+  D80TableController,
+  StudyService,
+  D80TableService,
+  CopyStudyResource,
+  DatasetResource,
+  EstimatesResource,
+  studyCategory,
+  categoryItemDirective,
+  variableCategory,
+  angular) {
   return angular.module('trialverse.study', ['ngResource',
       'trialverse.util',
       'trialverse.arm',
@@ -16,22 +42,22 @@ define(function(require) {
       'trialverse.activity'
     ])
     // controllers
-    .controller('StudyController', require('study/studyController'))
-    .controller('CopyStudyController', require('study/copyStudyController'))
-    .controller('EditStudyController', require('study/editStudyController'))
-    .controller('UnsavedChangesWarningModalController', require('study/unsavedChanges/unsavedChangesWarningModalController'))
-    .controller('D80TableController', require('study/d80TableController'))
+    .controller('StudyController', StudyController)
+    .controller('CopyStudyController', CopyStudyController)
+    .controller('EditStudyController', EditStudyController)
+    .controller('UnsavedChangesWarningModalController', UnsavedChangesWarningModalController)
+    .controller('D80TableController', D80TableController)
 
-  //services
-  .factory('StudyService', require('study/studyService'))
-    .factory('D80TableService', require('study/d80TableService'))
+    //services
+    .factory('StudyService', StudyService)
+    .factory('D80TableService', D80TableService)
 
-  //resources
-  .factory('CopyStudyResource', require('study/copyStudyResource'))
-    .factory('DatasetResource', require('dataset/datasetResource'))
-    .factory('EstimatesResource', require('study/estimatesResource'))
+    //resources
+    .factory('CopyStudyResource', CopyStudyResource)
+    .factory('DatasetResource', DatasetResource)
+    .factory('EstimatesResource', EstimatesResource)
     //directives
-    .directive('studyCategory', require('study/categoryDirective'))
-    .directive('categoryItemDirective', require('study/categoryItemDirective'))
-    .directive('variableCategory', require('study/variableCategoryDirective'));
+    .directive('studyCategory', studyCategory)
+    .directive('categoryItemDirective', categoryItemDirective)
+    .directive('variableCategory', variableCategory);
 });

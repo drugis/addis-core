@@ -1,14 +1,23 @@
 'use strict';
-define(function (require) {
-  var angular = require('angular');
+var requires = [
+  'mapping/mappingService',
+  'mapping/conceptMappingListDirective',
+  'mapping/conceptMappingItemDirective'
+];
+define(requires.concat(['angular']), function(
+  MappingService,
+  conceptMappingList,
+  conceptMappingItem,
+  angular
+) {
   return angular.module('trialverse.mapping', ['trialverse.study'])
 
     //services
-  	.factory('MappingService', require('mapping/mappingService'))
+    .factory('MappingService', MappingService)
 
-  	//directives
-    .directive('conceptMappingList', require('mapping/conceptMappingListDirective'))
-    .directive('conceptMappingItem', require('mapping/conceptMappingItemDirective'))
+    //directives
+    .directive('conceptMappingList', conceptMappingList)
+    .directive('conceptMappingItem', conceptMappingItem)
 
-  	;
-  });
+  ;
+});
