@@ -170,7 +170,7 @@ define(
     app.constant('mcdaRootPath', 'app/js/bower_components/mcda-web/app/');
     app.constant('gemtcRootPath', 'app/js/bower_components/gemtc-web/app/');
     app.constant('isGemtcStandAlone', false);
-    app.constant('isMcdaStandalone', true);
+    app.constant('isMcdaStandalone', false);
 
     app.config(['$locationProvider', function($locationProvider) {
       $locationProvider.hashPrefix('');
