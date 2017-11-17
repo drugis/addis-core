@@ -53,11 +53,8 @@
   },
   "resolutions": {
     "d3": "3.5.6",
-    "font-awesome": "~4.3.0",
     "angular-patavi-client": "2.0.3",
-    "angular-animate": "~1.6.5",
     "angular": "~1.6.5",
-    "angular-resource": "~1.6.5",
     "jquery": "~3.2.1"
   }
 }
