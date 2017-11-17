@@ -56,7 +56,8 @@
                     <inline-help help-key="addis-outcome"></inline-help>
                   </h3>
                   <button id="show-create-outcome-modal-btn" ng-if="editMode.allowEditing" ng-disabled="!loading.loaded"
-                    class="button small" ng-click="openCreateOutcomeDialog()"><i class="fa fa-plus"></i> Add outcome
+                    class="button small" ng-click="openCreateOutcomeDialog()">
+                    <i class="fa fa-plus"></i> Add outcome
                   </button>
                   <table style="width: 100%;">
                     <thead>
@@ -98,7 +99,7 @@
                   <h3 class="subheader">Units
                     <inline-help help-key="unit"></inline-help>
                   </h3>
-                  <button id="show-create-unit-modal-btn" ng-if="editMode.allowEditing" ng-disabled="loading.loaded && !unitConcepts.length"
+                  <button id="show-create-unit-modal-btn" ng-if="editMode.allowEditing" ng-disabled="!loading.loaded || (loading.loaded && !unitConcepts.length)"
                     class="button small" ng-click="openCreateScaledUnitDialog()"><i class="fa fa-plus"></i> Add unit
                   </button>
                   <span ng-if="loading.loaded && !unitConcepts.length" class="alert">No unit concepts defined in dataset.</span>
