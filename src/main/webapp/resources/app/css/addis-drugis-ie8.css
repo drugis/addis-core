@@ -6254,7 +6254,7 @@ table.layout-table td {
 
 /* line 161, ../../drugis-css/_drugis.scss */
 .callout.primary {
-  background-color: #f2f2f2;
+  background-color: #F3F0FA;
   color: #333333;
 }
 
@@ -6486,7 +6486,7 @@ body {
 pre {
   margin-bottom: 1rem;
   border: 1px solid #434343;
-  background-color: #767676;
+  background-color: #e6e6e6;
   padding: 0.8em;
   font-size: 16px;
   overflow-x: auto;
@@ -6509,7 +6509,7 @@ code {
 /* -------- inline help directive---------*/
 /* line 386, ../../drugis-css/_drugis.scss */
 inline-help {
-  margin: 1rem;
+  margin: 0.1rem;
 }
 
 /* line 390, ../../drugis-css/_drugis.scss */
