@@ -66,7 +66,8 @@ define(['lodash'], function(_) {
           valueName: details.label,
           value: findResultValueByType(rowValueObjects, details.type),
           dataType: details.dataType,
-          isInValidValue: false
+          isInValidValue: false,
+          isAlwaysPositive: details.isAlwaysPositive
         };
       });
     }
@@ -170,9 +171,9 @@ define(['lodash'], function(_) {
       }
       if (inputColumn.value) {
         if (inputColumn.dataType === ResultsService.INTEGER_TYPE) {
-          return Number.isInteger(inputColumn.value);
+          return Number.isInteger(inputColumn.value) && (!inputColumn.isAlwaysPositive || inputColumn.value >= 0);
         } else if (inputColumn.dataType === ResultsService.DOUBLE_TYPE) {
-          return !isNaN(filterFloat(inputColumn.value));
+          return !isNaN(filterFloat(inputColumn.value)) && (!inputColumn.isAlwaysPositive || inputColumn.value >= 0);
         }
       } else {
         return true;

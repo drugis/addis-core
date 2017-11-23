@@ -41,7 +41,8 @@ define(['angular', 'lodash'], function(angular, _) {
         variableTypes: ['ontology:continuous', 'ontology:dichotomous'],
         category: 'Sample size',
         lexiconKey: 'sample-size',
-        analysisReady: true
+        analysisReady: true,
+        isAlwaysPositive: true
       },
       'mean': {
         type: 'mean',
@@ -93,7 +94,7 @@ define(['angular', 'lodash'], function(angular, _) {
         lexiconKey: 'least-squares-mean',
         analysisReady: false
       },
-      hazard_ratio: {
+      'hazard_ratio': {
         type: 'hazard_ratio',
         label: 'hazard ratio',
         uri: 'http://trials.drugis.org/ontology#hazard_ratio',
@@ -200,7 +201,8 @@ define(['angular', 'lodash'], function(angular, _) {
         variableTypes: ['ontology:continuous'],
         category: 'Dispersion',
         lexiconKey: 'standard-deviation',
-        analysisReady: true
+        analysisReady: true,
+        isAlwaysPositive: true
       },
       'standard_error': {
         type: 'standard_error',
@@ -210,7 +212,8 @@ define(['angular', 'lodash'], function(angular, _) {
         variableTypes: ['ontology:continuous'],
         category: 'Dispersion',
         lexiconKey: 'standard-error',
-        analysisReady: true
+        analysisReady: true,
+        isAlwaysPositive: true
       },
       'event_count': {
         type: 'event_count',
@@ -219,7 +222,8 @@ define(['angular', 'lodash'], function(angular, _) {
         dataType: INTEGER_TYPE,
         variableTypes: ['ontology:dichotomous'],
         lexiconKey: 'event-count',
-        analysisReady: false
+        analysisReady: false,
+        isAlwaysPositive: true
       },
       'count': {
         type: 'count',
@@ -228,7 +232,8 @@ define(['angular', 'lodash'], function(angular, _) {
         dataType: INTEGER_TYPE,
         variableTypes: ['ontology:dichotomous', 'ontology:survival'],
         lexiconKey: 'count',
-        analysisReady: true
+        analysisReady: true,
+        isAlwaysPositive: true
       },
       'percentage': {
         type: 'percentage',
@@ -237,7 +242,8 @@ define(['angular', 'lodash'], function(angular, _) {
         dataType: DOUBLE_TYPE,
         variableTypes: ['ontology:dichotomous'],
         lexiconKey: 'percentage',
-        analysisReady: false
+        analysisReady: false,
+        isAlwaysPositive: true
       },
       'proportion': {
         type: 'proportion',
@@ -246,7 +252,8 @@ define(['angular', 'lodash'], function(angular, _) {
         dataType: DOUBLE_TYPE,
         variableTypes: ['ontology:dichotomous'],
         lexiconKey: 'proportion',
-        analysisReady: false
+        analysisReady: false,
+        isAlwaysPositive: true
       },
       exposure: {
         type: 'exposure',

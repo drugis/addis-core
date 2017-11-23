@@ -15,7 +15,7 @@ define(['lodash'], function(_) {
         //init
         scope.properties = buildProperties();
         if (scope.variable.measurementType === 'ontology:continuous') {
-          scope.categories = ResultsService.buildPropertyCategories(scope.variable, scope.properties);
+          scope.categories = ResultsService.buildPropertyCategories(scope.variable);
         }
         scope.hasNotAnalysedProperty = _.find(scope.properties, function(property) {
           return !property.analysisReady;
@@ -49,7 +49,13 @@ define(['lodash'], function(_) {
 
 
         function updateSelection() {
-          scope.variable.selectedResultProperties = _.filter(scope.properties, function(property) {
+          var properties = scope.properties;
+          if (scope.variable.measurementType === 'ontology:continuous') {
+            properties = _.reduce(scope.categories, function(accum, category) {
+              return accum.concat(category.properties);
+            }, []);
+          }
+          scope.variable.selectedResultProperties = _.filter(properties, function(property) {
             return property.isSelected;
           });
         }

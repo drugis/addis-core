@@ -3,7 +3,7 @@
     <li ng-repeat="category in categories">
       {{category.categoryLabel}}
       <ul class="no-bullet">
-        <li ng-repeat="property in properties">
+        <li ng-repeat="property in category.properties">
           <label>
             <input type="checkbox" ng-model="property.isSelected" ng-change="updateSelection()"> {{property.label}}</input>
             <span class="alert" ng-show="{{!property.analysisReady}}">*</span>
