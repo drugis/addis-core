@@ -8,15 +8,22 @@ import javax.persistence.Id;
 @Entity
 public class Ordering {
   @Id
-  private Integer workspaceId;
+  private Integer analysisId;
 
-  @JsonRawValue
-  private String ordering;
+  String[] alternatives;
+
+  String[] criteria;
 
   public Ordering() {
   }
 
-  public String getOrdering() {
-    return ordering;
+  public Ordering(Integer analysisId, String[] alternatives, String[] criteria) {
+    this.analysisId = analysisId;
+    this.alternatives = alternatives;
+    this.criteria = criteria;
+  }
+
+  public void setAnalysisId(Integer analysisId) {
+    this.analysisId = analysisId;
   }
 }

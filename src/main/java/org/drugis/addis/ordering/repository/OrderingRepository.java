@@ -1,6 +1,9 @@
 package org.drugis.addis.ordering.repository;
 
-public interface OrderingRepository {
-  String get(Integer analysisId);
+import org.drugis.addis.ordering.Ordering;
 
+public interface OrderingRepository {
+  Ordering get(Integer analysisId);
+
+  void put(Integer analysisId, String[] criteria, String[] alternatives);
 }

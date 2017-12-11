@@ -15,9 +15,15 @@ public class OrderingRepositoryImpl implements OrderingRepository {
   private EntityManager em;
 
   @Override
-  public String get(Integer analysisId) {
-    Ordering ordering = em.find(Ordering.class, analysisId);
-    return ordering.getOrdering();
+  public Ordering get(Integer analysisId) {
+    return em.find(Ordering.class, analysisId);
+  }
+
+  @Override
+  public void put(Integer analysisId, String[] criteria, String[] alternatives) {
+    Ordering ordering = new Ordering(analysisId, criteria, alternatives);
+    ordering.setAnalysisId(analysisId);
+    em.persist(ordering);
   }
 
 }

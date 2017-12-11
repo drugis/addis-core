@@ -958,7 +958,8 @@ DROP TABLE effectsTableAlternativeInclusion;
 --changeset keijserj:77
 CREATE TABLE ordering(
   analysisId INT NOT NULL,
-  ordering JSONB NOT NULL,
+  alternatives VARCHAR NOT NULL,
+  criteria VARCHAR NOT NULL,
   PRIMARY KEY (analysisId),
   FOREIGN KEY(analysisId) REFERENCES benefitRiskAnalysis(id) ON DELETE CASCADE
 );
