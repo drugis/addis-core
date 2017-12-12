@@ -17,7 +17,7 @@ import java.util.Collection;
 public class ScenarioRepositoryImpl implements ScenarioRepository {
   @Qualifier("emAddisCore")
   @PersistenceContext(unitName = "addisCore")
-  EntityManager em;
+  private EntityManager em;
 
   @Override
   public Scenario get(Integer id) {
