@@ -7,28 +7,24 @@
       <form id="add-analysis-form" novalidate ng-submit="isAddingIntervention = true; addIntervention(newIntervention);">
         <div class="grid-x">
           <div class="cell large-10">
+            A simple intervention matches any single-treatment intervention, regardless of dosage.
             <label>Semantic intervention
+              <inline-help help-key="semantic-intervention"></inline-help>
               <select id="simple-intervention-select" ng-model="newIntervention.semanticIntervention"
                 ng-options="semanticIntervention as semanticIntervention.label for semanticIntervention in semanticInterventions | orderBy:'label'"
                 ng-change="newIntervention.name = newIntervention.semanticIntervention.label; checkForDuplicateInterventionName(newIntervention)"></select>
             </label>
           </div>
-        </div>
-        <div class="grid-x">
           <div class="cell large-10">
             <label>Name
               <input id="intervention-name-input" type="text" ng-model="newIntervention.name" ng-change="checkForDuplicateInterventionName(newIntervention)">
             </label>
           </div>
-        </div>
-        <div class="grid-x">
           <div class="cell large-10">
             <label>Motivation
               <textarea id="intervention-desc-txt" rows="4" ng-model="newIntervention.motivation"></textarea>
             </label>
           </div>
-        </div>
-        <div class="grid-x">
           <div class="cell">
             <button id="add-intervention-sumbit-btn" class="button small success" ng-disabled="!newIntervention.name || !newIntervention.semanticIntervention ||
            duplicateInterventionName.isDuplicate || isAddingIntervention" type="submit">Add intervention
@@ -46,30 +42,26 @@
       <form id="add-analysis-form" novalidate ng-submit="isAddingIntervention = true; addIntervention(newIntervention);">
         <div class="grid-x">
           <div class="cell large-10">
+            A dose-restricted intervention matches any single treatment whose dosage fits the criteria specified below.
             <label>Semantic intervention
+              <inline-help help-key="semantic-intervention"></inline-help>
               <select id="dose-restricted-intervention-select" ng-model="newIntervention.semanticIntervention"
                 ng-options="semanticIntervention as semanticIntervention.label for semanticIntervention in semanticInterventions | orderBy:'label'"
                 ng-change="newIntervention.name = newIntervention.semanticIntervention.label; checkForDuplicateInterventionName(newIntervention)"></select>
             </label>
           </div>
-        </div>
-        <div class="grid-x">
           <div class="cell large-10">
             <label>Name
               <input id="intervention-name-input" type="text" ng-model="newIntervention.name" ng-change="checkForDuplicateInterventionName(newIntervention)">
             </label>
           </div>
-        </div>
-        <div class="grid-x">
           <div class="cell large-10">
             <label>Motivation
               <textarea id="intervention-desc-txt" rows="4" ng-model="newIntervention.motivation"></textarea>
             </label>
           </div>
-        </div>
-        <div class="grid-x">
           <div class="cell">
-            <label class="form-item-header">Dose type</label>
+            <label class="form-item-header">Dose type <inline-help help-key="dose-type"></inline-help></label>
             <input id="add-intervention-fixed-dose-type-radio" type="radio" value="fixed" ng-model="newIntervention.type"
               id="fixed-dose-type-radio" ng-change="interventionTypeSwitched()">
             <label for="add-intervention-fixed-dose-type-radio">Fixed only</label>
@@ -119,8 +111,6 @@
               </div>
             </div>
           </div>
-        </div>
-        <div class="grid-x">
           <div class="cell">
             <button id="add-intervention-sumbit-btn" class="button small success" ng-disabled="!newIntervention.name || !newIntervention.semanticIntervention ||
            duplicateInterventionName.isDuplicate || hasIncorrectConstraints || isAddingIntervention"
@@ -138,19 +128,16 @@
       <form id="add-analysis-form" novalidate ng-submit="isAddingIntervention = true; addCombinedIntervention(newIntervention);">
         <div class="grid-x">
           <div class="cell large-10">
+            A combination intervention matches any treatment that is composed of exactly those single treatments selected below.
             <label>Name
               <input id="intervention-name-input" type="text" ng-model="newIntervention.name" ng-change="checkForDuplicateInterventionName(newIntervention)">
             </label>
           </div>
-        </div>
-        <div class="grid-x">
           <div class="cell large-10">
             <label>Motivation
               <textarea id="intervention-desc-txt" rows="4" ng-model="newIntervention.motivation"></textarea>
             </label>
           </div>
-        </div>
-        <div class="grid-x">
           <div class="cell large-10">
             <em ng-if="singleInterventions.length < 1">No interventions have been defined</em>
             <em ng-if="singleInterventions.length === 1" class="warning">At least two interventions are needed to create a combination intervention</em>
@@ -159,8 +146,6 @@
               <input type="checkbox" ng-model="newIntervention.interventionIds[intervention.id]"></input> {{intervention.name}}
             </label>
           </div>
-        </div>
-        <div class="grid-x">
           <div class="cell">
             <button id="add-intervention-sumbit-btn" class="button small success" ng-disabled="!newIntervention.name
           || duplicateInterventionName.isDuplicate || numberOfSelectedInterventions() < 2 || isAddingIntervention"
@@ -177,19 +162,16 @@
       <form id="add-analysis-form" novalidate ng-submit="isAddingIntervention = true; addInterventionClass(newIntervention);">
         <div class="grid-x">
           <div class="cell large-10">
+            An intervention class matches any treatment that matches at least one of those interventions selected below.
             <label>Name
               <input id="intervention-name-input" type="text" ng-model="newIntervention.name" ng-change="checkForDuplicateInterventionName(newIntervention)">
             </label>
           </div>
-        </div>
-        <div class="grid-x">
           <div class="cell large-10">
             <label>Motivation
               <textarea id="intervention-desc-txt" rows="4" ng-model="newIntervention.motivation"></textarea>
             </label>
           </div>
-        </div>
-        <div class="grid-x">
           <div class="cell large-10">
             <em ng-if="nonClassInterventions.length < 1">No interventions have been defined</em>
             <em ng-if="nonClassInterventions.length === 1" class="warning">At least two interventions are needed to create an intervention class</em>
@@ -198,8 +180,6 @@
               <input type="checkbox" ng-model="newIntervention.interventionIds[intervention.id]"></input> {{intervention.name}}
             </label>
           </div>
-        </div>
-        <div class="grid-x">
           <div class="cell">
             <button id="add-intervention-sumbit-btn" class="button small success" ng-disabled="!newIntervention.name
           || duplicateInterventionName.isDuplicate || numberOfSelectedInterventions() < 2 || isAddingIntervention"
