@@ -128,7 +128,7 @@ define(['angular', 'lodash'],
         epochs: {
           service: 'EpochService',
           anchorId: 'epochs',
-          helpId: 'time-period',
+          helpId: 'epoch',
           header: 'Epochs',
           addItemController: 'AddEpochController',
           categoryEmptyMessage: 'No epochs defined.',

@@ -4,6 +4,11 @@
     "text": "An activity describes what happened to a specific arm of the study during a specific time period. For example, during the \"treatment phase\", the \"aspirin arm\" might receive \"20 mg/day of aspirin\". In addition to interventions, activities include things such as placebo wash-out and randomization.",
     "link": "/manual.html#study-input"
   },
+  "activity-type": {
+    "title": "Activity type",
+    "text": "The type of the activity. May be an abstract activity such as randomization or screening, a no-intervention period such as wash-out, or a treatment activity in which one or more drugs are supplied.",
+    "link": "/manual.html#add-activity"
+  },
   "addis-analysis": {
     "title": "Analysis",
     "text": "Analyses can be performed based on the project dataset, for example a network meta-analysis on one of the outcomes of interest. An analysis can consist of multiple models, for example a primary comparative analysis and several models to investigate heterogeneity and inconsistency. Currently, an analysis can be an evidence synthesis (e.g. meta-analysis) or a benefit-risk analysis.",
@@ -28,6 +33,11 @@
     "title": "Adverse event",
     "text": "An adverse event is an unintended event observed during the study, which may or may not have been caused by the study interventions.",
     "link": "/manual.html#study-input"
+  },
+  "add-arm": {
+    "title": "Adding an arm",
+    "text": "These are abstract containers that divide the population into subpopulations, and correspond to that group's flow through the study protocol. You can give these any name you wish, but we recommend            to name them according to the treatment this subpopulation will receive.",
+    "link": "/manual.html#add-arm"
   },
   "arm": {
     "title": "Arm",
@@ -64,12 +74,17 @@
     "text": "The disease or health state being studied.",
     "link": "/manual.html#condition"
   },
+  "copy-study": {
+    "title": "Copy study",
+    "text": "You can copy studies (including those you don't own) from one dataset to another. Here you can specify which dataset the study should be copied to. Note that if the original study is changed in later versions, yours will not change. Similarly, changing your copy will not affect the original.",
+    "link": "/manual.html#dataset-management"
+  },
   "count": {
     "title": "Subjects with event",
     "text": "The total number of subjects that experienced the event of interest. May be an adverse event or a dichotomous outcome.",
     "link": "/manual.html#study-input"
   },
-  "d80-table":{
+  "d80-table": {
     "title": "Summary of efficacy table",
     "text": "Display the Summary of Efficacy Table according to the EMA D80 Clinical report template",
     "link": "http://www.ema.europa.eu/docs/en_GB/document_library/Regulatory_and_procedural_guideline/2009/10/WC500004800.pdf"
@@ -89,6 +104,11 @@
     "text": "Whenever changes are made to a dataset and are committed (saved), this creates a new version of the dataset. All previous versions of a dataset are kept in the dataset history.",
     "link": "/manual.html#dataset-version"
   },
+  "dose-type": {
+    "title": "Intervention dose",
+    "text": "Dosed interventions may be of either fixed or titrated dose type. Fixed doses allow you to specify the range that the fixed doses must lie on to match this intervention. In the case of a titrated dose, a range can be specified for both the upper and lower end of the dose. If the project lacks a desired unit to specify the dosage, it can be added from this screen. Matching exactly one dosage value is specified through the lower bound.,",
+    "link": "defining-interventions"
+  },
   "drug": {
     "title": "Drug",
     "text": "A drug is any substance or treatment that is given to a population in a study",
@@ -98,6 +118,16 @@
     "title": "Eligibility criteria",
     "text": "The criteria based on which participants were included into, or excluded from, the study.",
     "link": "/manual.html#eligibility-criteria"
+  },
+  "epoch": {
+    "title": "Epoch",
+    "text": "A period or phase of the study during which a certain activity (or group of activities) took place. For example, a drug study might consist of a placebo run-in period, a treatment period, and a follow-up period.",
+    "link": "/manual.html#study-input"
+  },
+  "epoch-duration": {
+    "title": "Epoch duration",
+    "text": "How long an epoch takes. May be instantaneous in the case of abstract epochs such as randomization. For concrete durations we only allow specification of durations in unambiguous units of time, i.e. hours, days, weeks.",
+    "link": "/manual.html#add-epoch"
   },
   "event-count": {
     "title": "Number of events",
@@ -169,6 +199,11 @@
     "text": "A measurement moment corresponds to the time when measurements were taken. Measurement moments are relative to certain anchor time points within the study, e.g. the start or the end of the treatment phase.",
     "link": "/manual.html#study-input"
   },
+  "measurement-moment-epoch": {
+    "title": "Epoch for measurement moment",
+    "text": "Measurement moment are defined relative to either the beginning or the end of a specific epoch. They may be either exactly at the end or beginning of the epoch, or take place a certain period after that point.",
+    "link": "/manual.html#add-measurement-moment"
+  },
   "median": {
     "title": "Median",
     "text": "The median (middle-most) value measured in the given group.",
@@ -193,6 +228,11 @@
     "title": "Population information",
     "text": "A description of how participants were enrolled in the study, including the health condition of interest and the eligibility (inclusion and exclusion) criteria.",
     "link": "/manual.html#study-input"
+  },
+  "primary-epoch": {
+    "title": "Primary epoch",
+    "text": "Whether an epoch is the primary (treatment) epoch. Also used by ADDIS to determine which data to select for analysis.",
+    "link": "/manual.html#add-epoch"
   },
   "project": {
     "title": "Project",
@@ -224,10 +264,25 @@
     "text": "The 97.5% quantile, or the upper end of a 95% confidence interval.",
     "link": "/manual.html#study-input"
   },
+  "result-properties": {
+    "title": "Result properties",
+    "text": "Which properties of this variable were measured, e.g. in the case of a continuous variable the mean and standard error may have been measured, or only certain quantiles may have been reported.",
+    "link": "/manual.html#add-variable"
+  },
   "sample-size": {
     "title": "N",
     "text": "The sample size, N. For dichotomous outcomes, this encodes the number of subjects at risk. For continuous outcomes, it is the number of subjects for which the outcome is measured (or intended to be measured).",
     "link": "/manual.html#study-input"
+  },
+  "semantic-outcome": {
+    "title": "Semantic outcome",
+    "text": "The dataset concept to which this outcome corresponds.",
+    "link": "/manual.html#defining-outcomes"
+  },
+  "semantic-intervention": {
+    "title": "Semantic intervention",
+    "text": "The dataset concept to which this intervention corresponds.",
+    "link": "/manual.html#defining-interventions"
   },
   "standard-deviation": {
     "title": "Standard deviation",
@@ -242,7 +297,7 @@
   "study": {
     "title": "Study",
     "text": "A study extraction is a detailed description of a comparative study, typically a randomized controlled trial or a comparative cohort design.",
-    "link": "/manual.html#study"
+    "link": "/manual.html#creating-a-study"
   },
   "study-design": {
     "title": "Study design",
@@ -264,10 +319,10 @@
     "text": "The 75% quantile, or the upper end of the inter-quartile range.",
     "link": "/manual.html#study-input"
   },
-  "time-period": {
-    "title": "Time period",
-    "text": "A period or phase of the study during which a certain activity (or group of activities) took place. For example, a drug study might consist of a placebo run-in period, a treatment period, and a follow-up period.",
-    "link": "/manual.html#study-input"
+  "treatment-drugs": {
+    "title": "Treatment drugs",
+    "text": "Which drugs are supplied in this treatment. NB: To indicate that different drugs are supplied to different arms, create multiple treatment activites, not a single activity with multiple drugis (that makes it a combination treatment).",
+    "link": "/manual.html#add-activity"
   },
   "trialverse-outcome": {
     "title": "Outcome",

@@ -1,37 +1,28 @@
 <form novalidate ng-submit="createProject(project)">
   <div class="grid-container">
-  <div class="grid-x">
-    <div class="cell">
-      <label>Dataset
-        <h4>{{dataset.title}}</h4>
-      </label>
+    <div class="grid-x">
+      <div class="cell">
+        <h3>Create a new project <inline-help help-key="project"></inline-help></h3>
+      </div>
+      <div class="cell">
+        <h4>Dataset:</h4>
+        {{dataset.title}}
+      </div>
+      <div class="cell">
+        <label>Name
+          <input autofocus type="text" ng-model="project.name">
+        </label>
+      </div>
+      <div class="cell">
+        <label>Description
+          <textarea grid-xs="8" ng-model="project.description"></textarea>
+        </label>
+      </div>
+      <div class="cell">
+        <button class="button success" type="submit" ng-disabled="!project.name">Create</button>
+      </div>
     </div>
   </div>
-  <div class="grid-x">
-    <div class="cell">
-      <h3>Create a new project</h3>
-    </div>
-  </div>
-  <div class="grid-x">
-    <div class="cell">
-      <label>Name
-        <input autofocus type="text" ng-model="project.name">
-      </label>
-    </div>
-  </div>
-  <div class="grid-x">
-    <div class="cell">
-      <label>Description
-        <textarea grid-xs="8" ng-model="project.description"></textarea>
-      </label>
-    </div>
-  </div>
-  <div class="grid-x">
-    <div class="cell">
-      <button class="button success" type="submit" ng-disabled="!project.name">Create</button>
-    </div>
-  </div>
-</div>
   <button ng-click="cancel()" class="close-button" aria-label="Close reveal" type="button">
     <span aria-hidden="true">&times;</span>
   </button>

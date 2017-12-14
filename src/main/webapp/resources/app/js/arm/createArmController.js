@@ -7,7 +7,6 @@ define([],
 
       $scope.createArm = function () {
         ArmService.addItem($scope.item, $scope.studyUuid).then(function() {
-          console.log('arm ' + $scope.item + 'create');
           callback();
           $modalInstance.close();
         },
