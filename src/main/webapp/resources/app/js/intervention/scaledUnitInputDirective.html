@@ -29,7 +29,7 @@
   <div class="cell large-3 button-group" style="padding-top: 1.48em;">
     <button class="button small" type="button" ng-disabled="isSavingUnit || !newScaledUnit.multiplier || !newScaledUnit.unit || !newScaledUnit.name || isDuplicateName(newScaledUnit.name)"
       ng-click="saveScaledUnit(newScaledUnit)">Save</button>
-    <button ng-hide="addScale.isAddingScaledUnit" class="button small" type="button"
+    <button ng-if="hasCancel" ng-hide="addScale.isAddingScaledUnit" class="button small" type="button"
       ng-click="cancelScaledUnit()">Cancel</button>
   </div>
 </div>
