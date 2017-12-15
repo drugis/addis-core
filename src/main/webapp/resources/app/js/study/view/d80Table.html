@@ -1,16 +1,20 @@
 <div class="grid-container">
-  <div class="grid-x">
+  <div class="grid-x" ng-if="isMissingPrimary">
     <div class="cell">
       <h3>Day 80 summary of efficacy table</h3>
     </div>
-  </div>
-  <div class="grid-x">
-      <div class="cell large-6">Select baseline:
-        <select ng-model="baseline" ng-options="arm as arm.label for arm in arms" ng-change="selectBaseLine(baseline)"
-          ng-init="measurements.baselineUri"></select>
-      </div>
-  </div>
-  <div class="grid-x">
+    <div class="cell">
+      To generate a D80 table, there must be a primary epoch selected, and data must be measured exactly at the end of that primary epoch.
+    </div>
+  </div>  
+  <div class="grid-x" ng-if="!isMissingPrimary">
+    <div class="cell">
+      <h3>Day 80 summary of efficacy table</h3>
+    </div>
+    <div class="cell large-6">Select baseline:
+      <select ng-model="baseline" ng-options="arm as arm.label for arm in arms" ng-change="selectBaseLine(baseline)"
+        ng-init="measurements.baselineUri"></select>
+    </div>
     <div class="cell">
       <table class="d-80" id="d-80-table">
         <tbody>
@@ -122,8 +126,6 @@
         </tbody>
       </table>
     </div>
-  </div>
-  <div class="grid-x">
     <div class="cell">
       <br>
       <button class="button clipboard-button" data-clipboard-target="#d-80-table">

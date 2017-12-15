@@ -11,9 +11,9 @@ define([],
         DatasetResource.getForJson($stateParams).$promise.then(function(response) {
           $scope.dataset = {
             datasetUri: $scope.datasetUuid,
-            label: response['http://purl.org/dc/terms/title'],
-            comment: response['http://purl.org/dc/terms/description'],
-            creator: response['http://purl.org/dc/terms/creator']
+            label: response['http://purl.org/dc/terms/title'] || response.title,
+            comment: response['http://purl.org/dc/terms/description'] || response.description,
+            creator: response['http://purl.org/dc/terms/creator'] || response.creator
           };
           $scope.dataset.uuid = $stateParams.datasetUuid;
         });

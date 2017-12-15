@@ -45,6 +45,10 @@ define(['lodash', 'clipboard'], function(_, Clipboard) {
           return measurementMoment.offset === 'PT0S' && measurementMoment.relativeToAnchor === 'ontology:anchorEpochEnd' &&
             measurementMoment.epochUri === $scope.primaryEpoch.uri;
         });
+        if (!primaryMeasurementMoment) {
+          $scope.isMissingPrimary = true;
+          return;
+        }
         var resultsPromises = _.map(_.map($scope.endpoints, 'uri'), ResultsService.queryResultsByOutcome);
         $q.all(resultsPromises).then(function(results) {
           $scope.measurements = D80TableService.buildMeasurements(results, primaryMeasurementMoment.uri, $scope.endpoints);
@@ -58,6 +62,8 @@ define(['lodash', 'clipboard'], function(_, Clipboard) {
             $scope.effectEstimateRows = D80TableService.buildEstimateRows(estimateResults, $scope.endpoints, $scope.arms);
           });
         });
+      } else {
+        $scope.isMissingPrimary = true;
       }
     });
 

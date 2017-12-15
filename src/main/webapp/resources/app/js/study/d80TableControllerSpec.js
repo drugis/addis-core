@@ -11,7 +11,7 @@ define(['angular-mocks'], function() {
       measurementMomentServiceMock = jasmine.createSpyObj('MeasurementMomentService', ['queryItems']),
       resultsServiceMock = jasmine.createSpyObj('ResultsService', ['queryResultsByOutcome']),
       estimatesResourceMock = jasmine.createSpyObj('EstimatesResource', ['getEstimates']),
-      d80TableServiceMock = jasmine.createSpyObj('D80TableService', ['buildMeasurements', 'buildResultLabel', 'buildResultsByEndpointAndArm', 'buildEstimateRows','buildArmTreatmentsLabel']),
+      d80TableServiceMock = jasmine.createSpyObj('D80TableService', ['buildMeasurements', 'buildResultLabel', 'buildResultsByEndpointAndArm', 'buildEstimateRows', 'buildArmTreatmentsLabel']),
       studyMock,
       epochs = [{
         uri: 'epochUri1'
@@ -120,26 +120,53 @@ define(['angular-mocks'], function() {
         study: studyMock
       });
     }));
-    describe('on load', function() {
+    describe('for data with a primary epoch and proper measurement moment', function() {
+      describe('on load', function() {
+        beforeEach(function() {
+          rootScope.$digest();
+        });
+        it('should query all the things', function() {
+          expect(armServiceMock.queryItems).toHaveBeenCalled();
+          expect(epochServiceMock.queryItems).toHaveBeenCalled();
+          expect(activityServiceMock.queryItems).toHaveBeenCalled();
+          expect(studyDesignServiceMock.queryItems).toHaveBeenCalled();
+          expect(endpointServiceMock.queryItems).toHaveBeenCalled();
+          expect(measurementMomentServiceMock.queryItems).toHaveBeenCalled();
+          expect(resultsServiceMock.queryResultsByOutcome).toHaveBeenCalled();
+
+          expect(d80TableServiceMock.buildMeasurements).toHaveBeenCalledWith([results], measurementMoments[0].uri, endpoints);
+          expect(rootScope.measurements).toEqual(builtMeasurements);
+          expect(estimatesResourceMock.getEstimates).toHaveBeenCalledWith({
+            measurements: toBackEndMeasurements,
+            baselineUri: 'armUri1'
+          });
+          expect(d80TableServiceMock.buildEstimateRows).toHaveBeenCalledWith(estimates, endpoints, arms);
+          expect(rootScope.isMissingPrimary).toBeFalsy();
+        });
+      });
+    });
+    describe('for data without a primary epoch', function() {
       beforeEach(function() {
+        delete epochs[1].isPrimary;
         rootScope.$digest();
       });
-      it('should query all the things', function() {
-        expect(armServiceMock.queryItems).toHaveBeenCalled();
-        expect(epochServiceMock.queryItems).toHaveBeenCalled();
-        expect(activityServiceMock.queryItems).toHaveBeenCalled();
-        expect(studyDesignServiceMock.queryItems).toHaveBeenCalled();
-        expect(endpointServiceMock.queryItems).toHaveBeenCalled();
-        expect(measurementMomentServiceMock.queryItems).toHaveBeenCalled();
-        expect(resultsServiceMock.queryResultsByOutcome).toHaveBeenCalled();
-
-        expect(d80TableServiceMock.buildMeasurements).toHaveBeenCalledWith([results], measurementMoments[0].uri, endpoints);
-        expect(rootScope.measurements).toEqual(builtMeasurements);
-        expect(estimatesResourceMock.getEstimates).toHaveBeenCalledWith({
-          measurements: toBackEndMeasurements,
-          baselineUri: 'armUri1'
-        });
-        expect(d80TableServiceMock.buildEstimateRows).toHaveBeenCalledWith(estimates,endpoints,arms);
+      it('should set scope.isMissingPrimary to true', function() {
+        expect(rootScope.isMissingPrimary).toBeTruthy();
+      });
+      afterEach(function(){
+        epochs[1].isPrimary = true;
+      });
+    });
+    describe('for data with a primary epoch but no measurement moment at the right time', function() {
+      beforeEach(function() {
+        measurementMoments[0].epochUri = epochs[0].uri;
+        rootScope.$digest();
+      });
+      it('should set scope.isMissingPrimary to true', function() {
+        expect(rootScope.isMissingPrimary).toBeTruthy();
+      });
+      afterEach(function(){
+        measurementMoments[0].epochUri = epochs[1].uri;
       });
     });
   });
