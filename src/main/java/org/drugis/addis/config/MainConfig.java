@@ -74,7 +74,8 @@ import java.util.concurrent.TimeUnit;
 @ComponentScan(excludeFilters = {@Filter(Configuration.class)}, basePackages = {
         "org.drugis.addis", "org.drugis.trialverse"}, lazyInit = true)
 @EnableTransactionManagement
-@EnableJpaRepositories(basePackages = {"org.drugis.addis.projects",
+@EnableJpaRepositories(basePackages = {
+        "org.drugis.addis.projects",
         "org.drugis.addis.security",
         "org.drugis.addis.covariates",
         "org.drugis.addis.interventions",
@@ -85,7 +86,8 @@ import java.util.concurrent.TimeUnit;
         "org.drugis.addis.trialverse",
         "org.drugis.trialverse",
         "org.drugis.addis.scaledUnits",
-        "org.drugis.addis.subProblems"
+        "org.drugis.addis.subProblems",
+        "org.drugis.addis.ordering"
 })
 @EnableCaching
 public class MainConfig {
@@ -229,7 +231,8 @@ public class MainConfig {
             "org.drugis.addis.covariates",
             "org.drugis.trialverse",
             "org.drugis.addis.scaledUnits",
-            "org.drugis.addis.subProblems");
+            "org.drugis.addis.subProblems",
+            "org.drugis.addis.ordering");
     em.setDataSource(dataSource());
     em.setPersistenceUnitName("addisCore");
     em.setLoadTimeWeaver(new InstrumentationLoadTimeWeaver());

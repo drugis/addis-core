@@ -953,5 +953,13 @@ DROP TABLE SingleStudyBenefitRiskAnalysis;
 
 --changeset keijserj:76
 DROP TABLE effectsTableAlternativeInclusion;
-
 --rollback CREATE TABLE effectsTableAlternativeInclusion;
+
+--changeset keijserj:77
+CREATE TABLE ordering(
+  analysisId INT NOT NULL,
+  ordering VARCHAR NOT NULL,
+  PRIMARY KEY (analysisId),
+  FOREIGN KEY(analysisId) REFERENCES benefitRiskAnalysis(id) ON DELETE CASCADE
+);
+--rollback DROP TABLE ordering

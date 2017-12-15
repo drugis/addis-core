@@ -21,7 +21,7 @@
     </div>
     <div class="grid-x">
       <div class="cell">
-        <label>Type
+        <label>Type <inline-help help-key="activity-type"></inline-help>
           <select ng-disabled="treatmentDirective.isVisible" ng-model="itemScratch.activityType"
             placeholder="select type" ng-options="activityType.label for activityType in activityTypeOptions"
             ng-change="showScrolbarIfNessesary()">
@@ -34,7 +34,7 @@
 
       <div class="grid-x">
         <div class="cell">
-          <label>Treatment drugs</label>
+          <label>Treatment drugs <inline-help help-key="treatment-drugs"></inline-help></label>
           <ul class="form-list">
             <li ng-repeat="treatment in itemScratch.treatments">
               <span ng-show="treatment.treatmentDoseType === 'ontology:FixedDoseDrugTreatment'">{{treatment.drug.label}}, {{treatment.fixedValue | exponentialFilter}}

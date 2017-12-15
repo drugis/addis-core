@@ -747,3 +747,11 @@ INSERT INTO BenefitRiskStudyOutcomeInclusion(analysisId, studyGraphUri, outcomeI
     FROM SingleStudyBenefitRiskAnalysis INNER JOIN SingleStudyBenefitRiskAnalysis_Outcome ON SingleStudyBenefitRiskAnalysis.id = SingleStudyBenefitRiskAnalysis_Outcome.analysisId;
 DROP TABLE SingleStudyBenefitRiskAnalysis_Outcome;
 DROP TABLE SingleStudyBenefitRiskAnalysis;
+
+--changeset keijserj:76
+CREATE TABLE ordering(
+    analysisId INT NOT NULL,
+    ordering VARCHAR NOT NULL,
+    PRIMARY KEY(analysisId),
+    FOREIGN KEY(analysisId) REFERENCES BenefitRiskAnalysis(id) ON DELETE CASCADE
+);

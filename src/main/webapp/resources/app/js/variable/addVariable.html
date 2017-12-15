@@ -52,13 +52,13 @@
 
     <div class="grid-x" ng-if="item.measurementType !== 'ontology:categorical'">
       <div class="cell">
-        <label>Included result properties:</label>
+        <label>Included result properties: <inline-help help-key="result-properties"></inline-help></label>
         <span ng-show="!changeResultProperties" ng-repeat="resultProperty in item.selectedResultProperties">
           <strong>{{resultProperty.label}}{{$last ? '' : ', '}}</strong>
         </span>
         <result-properties ng-show="changeResultProperties" variable="item"></result-properties>
         <br>
-        <button class="button small" type="button" ng-click="changeResultProperties = !changeResultProperties">{{changeResultProperties ? 'Hide result properties' : 'Change'}}</button>
+        <button class="button small" type="button" ng-click="changeResultProperties = !changeResultProperties">{{changeResultProperties ? 'Finish changing' : 'Change'}}</button>
       </div>
     </div>
 
@@ -74,6 +74,7 @@
 
     <div class="grid-x">
       <div class="cell">
+        <label>Measured at:</label>
         <subset-select target="item.measuredAtMoments" source="measurementMoments" equals="measurementMomentEquals"></subset-select>
       </div>
     </div>

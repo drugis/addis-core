@@ -50,7 +50,8 @@ import static org.mockito.Mockito.mock;
                 "org.drugis.addis.covariates",
                 "org.drugis.addis.remarks",
                 "org.drugis.addis.scaledUnits",
-                "org.drugis.addis.subProblems"
+                "org.drugis.addis.subProblems",
+                "org.drugis.addis.ordering"
         })
 @EnableTransactionManagement
 @EnableJpaRepositories(basePackages = {
@@ -66,7 +67,8 @@ import static org.mockito.Mockito.mock;
         "org.drugis.addis.security",
         "org.drugis.trialverse",
         "org.drugis.addis.scaledUnits",
-        "org.drugis.addis.subProblems"
+        "org.drugis.addis.subProblems",
+        "org.drugis.addis.ordering"
 })
 public class JpaRepositoryTestConfig {
 
@@ -131,7 +133,8 @@ public class JpaRepositoryTestConfig {
     vendorAdapter.setShowSql(true);
     LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
     em.setJpaVendorAdapter(vendorAdapter);
-    em.setPackagesToScan("org.drugis.addis.outcomes",
+    em.setPackagesToScan(
+            "org.drugis.addis.outcomes",
             "org.drugis.addis.interventions",
             "org.drugis.addis.projects",
             "org.drugis.addis.analyses",
@@ -144,7 +147,8 @@ public class JpaRepositoryTestConfig {
             "org.drugis.trialverse.dataset",
             "org.drugis.trialverse.graph",
             "org.drugis.addis.scaledUnits",
-            "org.drugis.addis.subProblems");
+            "org.drugis.addis.subProblems",
+            "org.drugis.addis.ordering");
     em.setDataSource(dataSource());
     em.setPersistenceUnitName("addisCore");
     em.setLoadTimeWeaver(new InstrumentationLoadTimeWeaver());

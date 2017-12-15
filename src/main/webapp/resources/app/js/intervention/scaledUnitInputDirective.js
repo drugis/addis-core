@@ -5,7 +5,8 @@ define(['lodash'], function(_) {
     return {
       scope: {
         unitConcepts: '=',
-        scaledUnits: '='
+        scaledUnits: '=',
+        noCancel: '='
       },
       link: function(scope) {
         scope.metricMultipliers = MappingService.METRIC_MULTIPLIERS;
@@ -14,6 +15,7 @@ define(['lodash'], function(_) {
           unit: scope.unitConcepts[0]
         };
         setDefaultName(scope.newScaledUnit);
+        scope.hasCancel = scope.noCancel ? false : true;
 
         //functions
         scope.saveScaledUnit = saveScaledUnit;

@@ -13,7 +13,8 @@ var requires = [
   'resources/trialverseStudiesWithDetailsResource',
   'resources/scenarioResource',
   'resources/scaledUnitResource',
-  'resources/subProblemResource'
+  'resources/subProblemResource',
+  'resources/orderingResource'
 ];
 define(requires.concat(['angular', 'angular-resource']), function(
   EvidenceTableResource,
@@ -30,6 +31,7 @@ define(requires.concat(['angular', 'angular-resource']), function(
   ScenarioResource,
   ScaledUnitResource,
   SubProblemResource,
+  OrderingResource,
   angular
 ) {
   return angular.module('addis.resources', ['ngResource'])
@@ -46,5 +48,7 @@ define(requires.concat(['angular', 'angular-resource']), function(
     .factory('TrialverseStudiesWithDetailsResource', TrialverseStudiesWithDetailsResource)
     .factory('ScenarioResource', ScenarioResource)
     .factory('ScaledUnitResource', ScaledUnitResource)
-    .factory('SubProblemResource', SubProblemResource);
+    .factory('SubProblemResource', SubProblemResource)
+    .factory('OrderingResource', OrderingResource)
+    ;
 });
