@@ -11,6 +11,7 @@ import org.drugis.addis.interventions.service.InterventionService;
 import org.drugis.addis.models.repository.FunnelPlotRepository;
 import org.drugis.addis.models.repository.ModelBaselineRepository;
 import org.drugis.addis.models.repository.ModelRepository;
+import org.drugis.addis.ordering.repository.OrderingRepository;
 import org.drugis.addis.outcomes.repository.OutcomeRepository;
 import org.drugis.addis.outcomes.service.OutcomeService;
 import org.drugis.addis.patavitask.repository.PataviTaskRepository;
@@ -49,7 +50,8 @@ import static org.mockito.Mockito.mock;
         "org.drugis.addis.scenarios.service",
         "org.drugis.addis.models.controller",
         "org.drugis.addis.models.service",
-        "org.drugis.addis.statistics.controller"
+        "org.drugis.addis.statistics.controller",
+        "org.drugis.addis.ordering.controller"
 })
 public class TestConfig {
   @Bean
@@ -185,6 +187,11 @@ public class TestConfig {
   @Bean
   public SubProblemRepository subProblemRepository() {
     return mock(SubProblemRepository.class);
+  }
+
+  @Bean
+  public OrderingRepository orderingRepository() {
+    return mock(OrderingRepository.class);
   }
 }
 

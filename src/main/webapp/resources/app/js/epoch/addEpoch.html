@@ -21,7 +21,7 @@
     </div>
     <div class="grid-x" ng-class="{'form-input-group': (item.durationType != 'period')}">
       <div class="cell">
-        <label>Duration</label>
+        <label>Duration <inline-help help-key="epoch-duration"></inline-help></label>
         <input ng-model="item.durationType" type="radio" name="durationType" value="instantaneous"
           id="instantaneousOption" ng-change="changeToInstantaneous()">
         <label for="instantaneousOption">instantaneous</label>
@@ -36,7 +36,7 @@
     </div>
     <div class="grid-x">
       <div class="cell">
-        <label for="isPrimaryCheckBox">Is primary epoch</label>
+        <label for="isPrimaryCheckBox">Is primary epoch <inline-help help-key="primary-epoch"></inline-help></label>
         <input id="isPrimaryCheckBox" ng-model="item.isPrimaryEpoch"
           type="checkbox">
       </div>

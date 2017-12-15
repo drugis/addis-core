@@ -7,7 +7,7 @@
     </div>
     <div class="grid-x">
       <div class="cell">
-        <label>Semantic outcome
+        <label>Semantic outcome <inline-help help-key="semantic-outcome"></inline-help>
           <select id="outcome-select" ng-model="newOutcome.semanticOutcome" ng-options="semanticOutcome as semanticOutcome.label for semanticOutcome in semanticOutcomes | orderBy:'label'"
             ng-change="newOutcome.name = newOutcome.semanticOutcome.label; checkForDuplicateOutcomeName(newOutcome.name)"></select>
         </label>

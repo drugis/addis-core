@@ -17,7 +17,7 @@ define([], function() {
 
 
     function cancel() {
-      $modalInstance.dismiss('cancel');
+      $modalInstance.close();
     }
 
   };

@@ -6215,66 +6215,97 @@ table tr td.input-cell input[type="number"].invalid-trialverse-number {
   background-color: #ed9090;
 }
 
-/* line 130, ../../drugis-css/_drugis.scss */
+/* line 131, ../../drugis-css/_drugis.scss */
+.legend-table tbody {
+  border: none;
+}
+
+/* line 135, ../../drugis-css/_drugis.scss */
+.legend-table td {
+  background: #333333;
+  border: none;
+}
+
+/* line 140, ../../drugis-css/_drugis.scss */
+table tr td.input-cell-leftpad {
+  margin: 0;
+  padding: 0;
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+}
+
+/* line 147, ../../drugis-css/_drugis.scss */
+table tr td.input-cell input[type="text"] {
+  margin: 0;
+  padding: 0;
+  padding-left: 0.5rem;
+}
+
+/* line 154, ../../drugis-css/_drugis.scss */
 tr.disabled-row td {
   background: lightgrey;
   color: #666;
 }
 
-/* line 135, ../../drugis-css/_drugis.scss */
+/* line 159, ../../drugis-css/_drugis.scss */
 tr.clickable td {
   color: #452F8C;
 }
 
-/* line 139, ../../drugis-css/_drugis.scss */
+/* line 163, ../../drugis-css/_drugis.scss */
 td.empty-cell {
   background-color: #cacaca;
 }
 
-/* line 144, ../../drugis-css/_drugis.scss */
+/* line 168, ../../drugis-css/_drugis.scss */
 tr.on-hover:hover {
   background: #757575;
   cursor: pointer;
   text-decoration: none;
 }
 
-/* line 150, ../../drugis-css/_drugis.scss */
+/* line 174, ../../drugis-css/_drugis.scss */
 table.layout-table {
   border: none;
   background-color: #F3F0FA;
 }
-/* line 153, ../../drugis-css/_drugis.scss */
+/* line 177, ../../drugis-css/_drugis.scss */
 table.layout-table tbody {
   background-color: #F3F0FA;
 }
-/* line 156, ../../drugis-css/_drugis.scss */
+/* line 180, ../../drugis-css/_drugis.scss */
 table.layout-table td {
   border: none;
 }
 
-/* line 161, ../../drugis-css/_drugis.scss */
+/* line 185, ../../drugis-css/_drugis.scss */
+.noborder {
+  border: none;
+}
+
+/* line 189, ../../drugis-css/_drugis.scss */
 .callout.primary {
   background-color: #F3F0FA;
   color: #333333;
 }
 
-/* line 166, ../../drugis-css/_drugis.scss */
+/* line 194, ../../drugis-css/_drugis.scss */
 .callout.alert {
   background-color: #e66464;
 }
 
-/* line 171, ../../drugis-css/_drugis.scss */
+/* line 199, ../../drugis-css/_drugis.scss */
 .error-message {
   display: block;
   color: #CC3333;
 }
 
-/* line 176, ../../drugis-css/_drugis.scss */
+/* line 204, ../../drugis-css/_drugis.scss */
 .application-link a {
   text-decoration: underline;
 }
 
-/* line 181, ../../drugis-css/_drugis.scss */
+/* line 209, ../../drugis-css/_drugis.scss */
 input[type="number"],
 input[type="text"],
 select,
@@ -6282,45 +6313,45 @@ select option {
   line-height: 1.1rem;
 }
 
-/* line 189, ../../drugis-css/_drugis.scss */
+/* line 217, ../../drugis-css/_drugis.scss */
 .menu a,
 .menu a:hover,
 .menu a:active {
   color: white;
 }
 
-/* line 195, ../../drugis-css/_drugis.scss */
+/* line 223, ../../drugis-css/_drugis.scss */
 .breadcrumbs {
   background: #f4f4f4;
   padding: 0.4rem 0.7rem;
 }
 
-/* line 200, ../../drugis-css/_drugis.scss */
+/* line 228, ../../drugis-css/_drugis.scss */
 .bar-padding {
   padding-top: 0.61rem;
   padding-bottom: 0.61rem;
 }
 
-/* line 204, ../../drugis-css/_drugis.scss */
+/* line 232, ../../drugis-css/_drugis.scss */
 select {
   -webkit-appearance: none;
   -moz-appearance: none;
 }
 
-/* line 209, ../../drugis-css/_drugis.scss */
+/* line 237, ../../drugis-css/_drugis.scss */
 button.info {
   background-color: #a0d3e8;
   border-color: #61b6d9;
   color: #333333;
 }
 
-/* line 215, ../../drugis-css/_drugis.scss */
+/* line 243, ../../drugis-css/_drugis.scss */
 button.info:hover {
   color: #FFFFFF;
   background-color: #61b6d9;
 }
 
-/* line 220, ../../drugis-css/_drugis.scss */
+/* line 248, ../../drugis-css/_drugis.scss */
 .breadcrumbs.fixed {
   margin-top: 57px;
   -webkit-box-shadow: 0 0 4px rgba(0, 0, 0, 0.14), 0 4px 8px rgba(0, 0, 0, 0.28);
@@ -6330,7 +6361,7 @@ button.info:hover {
   z-index: 50;
 }
 
-/* line 230, ../../drugis-css/_drugis.scss */
+/* line 258, ../../drugis-css/_drugis.scss */
 #hero h1 {
   font-size: 4em;
   color: white;
@@ -6339,19 +6370,19 @@ button.info:hover {
   line-height: 100%;
 }
 
-/* line 238, ../../drugis-css/_drugis.scss */
+/* line 266, ../../drugis-css/_drugis.scss */
 #hero h1 small {
   color: white;
 }
 
-/* line 242, ../../drugis-css/_drugis.scss */
+/* line 270, ../../drugis-css/_drugis.scss */
 #hero h4 {
   font-size: 1.35em;
   color: white;
   font-weight: 300;
 }
 
-/* line 248, ../../drugis-css/_drugis.scss */
+/* line 276, ../../drugis-css/_drugis.scss */
 header {
   background: #CC3333;
   text-align: left;
@@ -6359,7 +6390,7 @@ header {
   padding: 25px 20px 35px 0px;
 }
 
-/* line 255, ../../drugis-css/_drugis.scss */
+/* line 283, ../../drugis-css/_drugis.scss */
 header h2 {
   font-size: 3.5em;
   color: white;
@@ -6368,64 +6399,64 @@ header h2 {
   line-height: 100%;
 }
 
-/* line 263, ../../drugis-css/_drugis.scss */
+/* line 291, ../../drugis-css/_drugis.scss */
 header h4 {
   color: white;
 }
 
-/* line 267, ../../drugis-css/_drugis.scss */
+/* line 295, ../../drugis-css/_drugis.scss */
 header small {
   color: white;
 }
 
-/* line 271, ../../drugis-css/_drugis.scss */
+/* line 299, ../../drugis-css/_drugis.scss */
 .content {
   padding-top: 20px;
 }
 
-/* line 275, ../../drugis-css/_drugis.scss */
+/* line 303, ../../drugis-css/_drugis.scss */
 h3 img {
   float: right;
   margin-right: 10px;
 }
 
-/* line 280, ../../drugis-css/_drugis.scss */
+/* line 308, ../../drugis-css/_drugis.scss */
 .row-divider {
   margin: 2rem 0;
 }
 
-/* line 284, ../../drugis-css/_drugis.scss */
+/* line 312, ../../drugis-css/_drugis.scss */
 .screen-shot {
   border: 1px solid #dddddd;
   padding: 4px;
   margin: 0.5rem;
 }
 
-/* line 290, ../../drugis-css/_drugis.scss */
+/* line 318, ../../drugis-css/_drugis.scss */
 .footer {
   background: #333333;
   padding: 24px 0 10px;
 }
 
-/* line 295, ../../drugis-css/_drugis.scss */
+/* line 323, ../../drugis-css/_drugis.scss */
 .footer a,
 .footer h4,
 .footer p {
   color: #666666;
 }
 
-/* line 301, ../../drugis-css/_drugis.scss */
+/* line 329, ../../drugis-css/_drugis.scss */
 .footer a:hover {
   color: #777777;
 }
 
-/* line 305, ../../drugis-css/_drugis.scss */
+/* line 333, ../../drugis-css/_drugis.scss */
 .f-topbar-fixed {
   margin-top: 32px;
   padding-top: 4rem;
 }
 
-/* line 310, ../../drugis-css/_drugis.scss */
+/* line 338, ../../drugis-css/_drugis.scss */
 .fixed {
   width: 100%;
   left: 0;
@@ -6435,18 +6466,18 @@ h3 img {
 }
 
 /* ---------sticky footer --------------*/
-/* line 321, ../../drugis-css/_drugis.scss */
+/* line 349, ../../drugis-css/_drugis.scss */
 * {
   margin: 0;
 }
 
-/* line 325, ../../drugis-css/_drugis.scss */
+/* line 353, ../../drugis-css/_drugis.scss */
 html,
 body {
   height: 100%;
 }
 
-/* line 330, ../../drugis-css/_drugis.scss */
+/* line 358, ../../drugis-css/_drugis.scss */
 .wrapper {
   min-height: 100%;
   height: auto !important;
@@ -6454,35 +6485,35 @@ body {
   margin: 0 auto -4rem;
 }
 
-/* line 337, ../../drugis-css/_drugis.scss */
+/* line 365, ../../drugis-css/_drugis.scss */
 .push {
   height: 4.5rem;
 }
 
-/* line 341, ../../drugis-css/_drugis.scss */
+/* line 369, ../../drugis-css/_drugis.scss */
 .footer {
   height: 4.5rem;
 }
 
-/* line 345, ../../drugis-css/_drugis.scss */
+/* line 373, ../../drugis-css/_drugis.scss */
 .footer,
 .push {
   clear: both;
 }
 
-/* line 350, ../../drugis-css/_drugis.scss */
+/* line 378, ../../drugis-css/_drugis.scss */
 .copyright {
   display: inline;
 }
 
 /* -------- end sticky footer---------*/
-/* line 356, ../../drugis-css/_drugis.scss */
+/* line 384, ../../drugis-css/_drugis.scss */
 #map_canvas {
   height: 280px;
 }
 
 /* standard */
-/* line 362, ../../drugis-css/_drugis.scss */
+/* line 390, ../../drugis-css/_drugis.scss */
 pre {
   margin-bottom: 1rem;
   border: 1px solid #434343;
@@ -6492,14 +6523,14 @@ pre {
   overflow-x: auto;
 }
 
-/* line 371, ../../drugis-css/_drugis.scss */
+/* line 399, ../../drugis-css/_drugis.scss */
 pre code {
   border: none;
   background: none;
   padding: 0px;
 }
 
-/* line 377, ../../drugis-css/_drugis.scss */
+/* line 405, ../../drugis-css/_drugis.scss */
 code {
   border: 1px solid #434343;
   background-color: #767676;
@@ -6507,22 +6538,22 @@ code {
 }
 
 /* -------- inline help directive---------*/
-/* line 386, ../../drugis-css/_drugis.scss */
+/* line 414, ../../drugis-css/_drugis.scss */
 inline-help {
   margin: 0.1rem;
 }
 
-/* line 390, ../../drugis-css/_drugis.scss */
+/* line 418, ../../drugis-css/_drugis.scss */
 inline-help a {
   color: grey;
 }
 
-/* line 394, ../../drugis-css/_drugis.scss */
+/* line 422, ../../drugis-css/_drugis.scss */
 inline-help a:hover {
   color: #676767;
 }
 
-/* line 398, ../../drugis-css/_drugis.scss */
+/* line 426, ../../drugis-css/_drugis.scss */
 .tooltip {
   max-width: 300px;
   background-color: #333333;
@@ -6531,12 +6562,12 @@ inline-help a:hover {
   padding: 1.5rem;
 }
 
-/* line 405, ../../drugis-css/_drugis.scss */
+/* line 433, ../../drugis-css/_drugis.scss */
 .tooltip a {
   color: #008CBA;
 }
 
-/* line 408, ../../drugis-css/_drugis.scss */
+/* line 436, ../../drugis-css/_drugis.scss */
 .tooltip.bottom::before {
   border-top-style: solid;
   border-color: #333333;
@@ -6545,7 +6576,7 @@ inline-help a:hover {
   border-right-color: transparent !important;
 }
 
-/* line 415, ../../drugis-css/_drugis.scss */
+/* line 443, ../../drugis-css/_drugis.scss */
 .tooltip.top::before {
   border-top-style: solid;
   border-color: #333333;
@@ -6557,21 +6588,31 @@ inline-help a:hover {
 }
 
 /* -------- end inline help directive---------*/
-/* line 426, ../../drugis-css/_drugis.scss */
+/* line 454, ../../drugis-css/_drugis.scss */
 .reveal-modal {
   overflow-x: auto;
   min-width: 540px;
 }
 
-/* line 431, ../../drugis-css/_drugis.scss */
+/* line 459, ../../drugis-css/_drugis.scss */
 .tooltip-content {
   max-height: 300px;
   overflow-y: auto;
 }
 
-/* line 437, ../../drugis-css/_drugis.scss */
+/* line 464, ../../drugis-css/_drugis.scss */
 .has-tip {
   border-bottom: none;
+}
+
+/* line 468, ../../drugis-css/_drugis.scss */
+.tabs-title > a:focus, .tabs-title > a[aria-selected='true'] {
+  background: #fefefe;
+}
+
+/* line 472, ../../drugis-css/_drugis.scss */
+.tabs-title > a {
+  background: #e6e6e6;
 }
 
 /* line 3, ../../drugis-css/_drugis-ie8.scss */
