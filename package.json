@@ -1,6 +1,6 @@
 {
   "name": "addis-core",
-  "version": "0.10.1",
+  "version": "0.10.2",
   "description": "Addis",
   "main": "karma.conf.js",
   "directories": {
