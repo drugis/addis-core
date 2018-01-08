@@ -118,7 +118,7 @@ public class AnalysisServiceImpl implements AnalysisService {
   }
 
   @Override
-  public void checkProjectIdChange(AbstractAnalysis analysis) throws ResourceDoesNotExistException, MethodNotAllowedException {
+  public void checkProjectIdChange(AbstractAnalysis analysis) throws ResourceDoesNotExistException {
     // do not allow changing of project ID
     AbstractAnalysis oldAnalysis = analysisRepository.get(analysis.getId());
     if (!oldAnalysis.getProjectId().equals(analysis.getProjectId())) {
@@ -127,12 +127,7 @@ public class AnalysisServiceImpl implements AnalysisService {
   }
 
   @Override
-  public Map<URI, TrialDataStudy> matchInterventions(Map<URI, TrialDataStudy> studyData, List<AbstractSemanticIntervention> interventions) {
-    return null;
-  }
-
-  @Override
-  public Set<AbstractIntervention> getIncludedInterventions(AbstractAnalysis analysis) throws ResourceDoesNotExistException {
+  public Set<AbstractIntervention> getIncludedInterventions(AbstractAnalysis analysis) {
     List<Integer> interventionInclusionsIds = analysis.getInterventionInclusions().stream()
             .map(InterventionInclusion::getInterventionId)
             .collect(Collectors.toList());
@@ -141,7 +136,7 @@ public class AnalysisServiceImpl implements AnalysisService {
             .collect(Collectors.toSet());
   }
 
-  private List<Covariate> getIncludedCovariates(NetworkMetaAnalysis analysis) throws ResourceDoesNotExistException {
+  private List<Covariate> getIncludedCovariates(NetworkMetaAnalysis analysis) {
     List<Integer> includedCovariates = analysis.getCovariateInclusions().stream()
             .map(CovariateInclusion::getCovariateId)
             .collect(Collectors.toList());
@@ -151,7 +146,7 @@ public class AnalysisServiceImpl implements AnalysisService {
   }
 
   @Override
-  public List<TrialDataStudy> buildEvidenceTable(Integer projectId, Integer analysisId) throws ResourceDoesNotExistException, ReadValueException, URISyntaxException {
+  public List<TrialDataStudy> buildEvidenceTable(Integer projectId, Integer analysisId) throws ResourceDoesNotExistException, ReadValueException {
     Project project = projectRepository.get(projectId);
     AbstractAnalysis analysis = analysisRepository.get(analysisId);
 
