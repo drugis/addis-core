@@ -2,7 +2,7 @@
 # yarn lockfile v1
 
 
-"@bower_components/KaTeX@Khan/KaTeX#~0.6.0":
+"@bower_components/KaTeX@Khan/KaTeX#^0.6.0", "@bower_components/KaTeX@Khan/KaTeX#~0.6.0":
   version "0.6.0"
   resolved "https://codeload.github.com/Khan/KaTeX/tar.gz/b94fc6534d5c23f944906a52a592bee4e0090665"
   dependencies:
@@ -12,7 +12,7 @@
   version "0.0.0"
   resolved "https://codeload.github.com/mathjax/MathJax/tar.gz/1c54436ae6166a91495aba8a98cc18816b4789df"
 
-"@bower_components/angular-animate@angular/bower-angular-animate#~1.6.5":
+"@bower_components/angular-animate@angular/bower-angular-animate#~1.6.0", "@bower_components/angular-animate@angular/bower-angular-animate#~1.6.5":
   version "1.6.8"
   resolved "https://codeload.github.com/angular/bower-angular-animate/tar.gz/cb64242dbe2023fc1186a849387c17408ee4b1b0"
 
@@ -28,7 +28,7 @@
   version "0.1.10"
   resolved "https://codeload.github.com/gdi2290/angular-md5/tar.gz/f0c5d61f92a807b4d3a0b2be98890d8948e03fe7"
 
-"@bower_components/angular-mocks@angular/bower-angular-mocks#~1.6.5":
+"@bower_components/angular-mocks@angular/bower-angular-mocks#~1.6", "@bower_components/angular-mocks@angular/bower-angular-mocks#~1.6.5":
   version "1.6.8"
   resolved "https://codeload.github.com/angular/bower-angular-mocks/tar.gz/8ff5b5674fd5061aad798b468c41e50b8a054e75"
 
@@ -58,7 +58,7 @@
   version "0.19.8"
   resolved "https://codeload.github.com/angular-ui/ui-select/tar.gz/32829a39e8efe7f94de049c6b529c23fedfc6686"
 
-"@bower_components/angular@angular/bower-angular#~1.6.5":
+"@bower_components/angular@angular/bower-angular#>= 1.6.0", "@bower_components/angular@angular/bower-angular#~1.6.5":
   version "1.6.8"
   resolved "https://codeload.github.com/angular/bower-angular/tar.gz/f4be53fc72b2eb2c3c3d634aeacfc68673ea5e68"
 
@@ -66,7 +66,7 @@
   version "6.4.0"
   resolved "https://codeload.github.com/danielreid/angularjs-slider/tar.gz/53ddb8e074bb79e91e2af5391db178eb1f17b3b5"
 
-"@bower_components/bowser@ded/bowser#~0.7.3":
+"@bower_components/bowser@ded/bowser#0.7.3", "@bower_components/bowser@ded/bowser#~0.7.3":
   version "0.7.3"
   resolved "https://codeload.github.com/ded/bowser/tar.gz/e53c1db9ebfaab0081f35c8b6e23452495a7d813"
 
@@ -77,6 +77,10 @@
     good-listener "^1.2.2"
     select "^1.1.2"
     tiny-emitter "^2.0.0"
+
+"@bower_components/d3@mbostock-bower/d3-bower#3.5.5":
+  version "0.0.0"
+  resolved "https://codeload.github.com/mbostock-bower/d3-bower/tar.gz/b048d3869f38607e24d3e6e919a248fb828ac3db"
 
 "@bower_components/d3@mbostock-bower/d3-bower#3.5.6":
   version "0.0.0"
@@ -147,10 +151,41 @@
   version "4.2.1"
   resolved "https://codeload.github.com/lodash/lodash/tar.gz/1cd9dc49a93d2cfe9927db1a92d2cf7c839bf263"
 
-"@bower_components/mcda-web@drugis/mcda-elicitation-web#master":
+"@bower_components/mcda-web@drugis/mcda-elicitation-web#develop":
   version "0.14.2"
-  resolved "https://codeload.github.com/drugis/mcda-elicitation-web/tar.gz/acc672bc6607d3855907149120c05913c01fa958"
+  resolved "https://codeload.github.com/drugis/mcda-elicitation-web/tar.gz/40e0881eaa8c602df4705fd5814bae415c07c442"
   dependencies:
+    "@bower_components/KaTeX" Khan/KaTeX#^0.6.0
+    "@bower_components/MathJax" mathjax/MathJax#2.4.0
+    "@bower_components/angular" "angular/bower-angular#>= 1.6.0"
+    "@bower_components/angular-animate" angular/bower-angular-animate#~1.6.0
+    "@bower_components/angular-cookies" angular/bower-angular-cookies#~1.6.5
+    "@bower_components/angular-foundation-6" drugis/angular-foundation-6#master
+    "@bower_components/angular-mocks" angular/bower-angular-mocks#~1.6
+    "@bower_components/angular-patavi-client" drugis/angular-patavi-client#2.0.3
+    "@bower_components/angular-resource" angular/bower-angular-resource#~1.6.5
+    "@bower_components/angular-touch" angular/bower-angular-touch#^1.6.6
+    "@bower_components/angular-ui-router" angular-ui/angular-ui-router-bower#~1.0.5
+    "@bower_components/angularjs-slider" danielreid/angularjs-slider#feature/restrictedRange
+    "@bower_components/bowser" ded/bowser#0.7.3
+    "@bower_components/clipboard" zenorocha/clipboard.js#^1.6.0
+    "@bower_components/d3" mbostock-bower/d3-bower#3.5.5
+    "@bower_components/domready" ded/domready#~1.0.7
+    "@bower_components/error-reporting" drugis/error-reporting#1.2.1
+    "@bower_components/export-directive" drugis/export-directive#master
+    "@bower_components/font-awesome" FortAwesome/Font-Awesome#~4.3.0
+    "@bower_components/foundation-sites" zurb/foundation-sites#~6
+    "@bower_components/help-popup" drugis/help-popup#0.3.0
+    "@bower_components/jquery" jquery/jquery-dist#~3.2.1
+    "@bower_components/lodash" lodash/lodash#~4.2.0
+    "@bower_components/nprogress" rstacruz/nprogress#~0.2.0
+    "@bower_components/nvd3" novus/nvd3#1.8.5
+    "@bower_components/requirejs" jrburke/requirejs-bower#~2.1.15
+    "@bower_components/requirejs-domready" requirejs/domReady#~2.0.1
+    "@bower_components/scrollup" markgoodyear/scrollup#^2.4.1
+    "@bower_components/smooth-scroller" firstandthird/smooth-scroller#~0.1.0
+    "@bower_components/toc" jgallen23/toc#^0.3.2
+    "@bower_components/what-input" ten1seven/what-input#~4.1.3
     async "^2.6.0"
     body-parser "~1.3.1"
     cookie-parser "~1.1.0"
@@ -192,11 +227,11 @@
   version "2.0.1"
   resolved "https://codeload.github.com/requirejs/domReady/tar.gz/c74caaa6dac64f2f47093f4952b991390406adfb"
 
-"@bower_components/requirejs@jrburke/requirejs-bower#~2.1.10":
+"@bower_components/requirejs@jrburke/requirejs-bower#~2.1.10", "@bower_components/requirejs@jrburke/requirejs-bower#~2.1.15":
   version "0.0.0"
   resolved "https://codeload.github.com/jrburke/requirejs-bower/tar.gz/b295d2bb6d397cc34eea2bc38dbea5b519614035"
 
-"@bower_components/scrollup@markgoodyear/scrollup#~2.4.1":
+"@bower_components/scrollup@markgoodyear/scrollup#^2.4.1", "@bower_components/scrollup@markgoodyear/scrollup#~2.4.1":
   version "2.4.1"
   resolved "https://codeload.github.com/markgoodyear/scrollup/tar.gz/2167852df6d20548863a0786cb88abcff49f5261"
 
@@ -228,7 +263,7 @@
   version "0.0.0"
   resolved "https://codeload.github.com/firstandthird/smooth-scroller/tar.gz/793e338a537c878d4b50bfae2b54eca87cdca5dd"
 
-"@bower_components/toc@jgallen23/toc#~0.3.2":
+"@bower_components/toc@jgallen23/toc#^0.3.2", "@bower_components/toc@jgallen23/toc#~0.3.2":
   version "0.0.0"
   resolved "https://codeload.github.com/jgallen23/toc/tar.gz/ad29527a498a525dccbac24904496bef24469e56"
 

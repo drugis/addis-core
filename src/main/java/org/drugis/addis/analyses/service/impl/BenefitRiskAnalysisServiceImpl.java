@@ -76,14 +76,14 @@ public class BenefitRiskAnalysisServiceImpl implements BenefitRiskAnalysisServic
 
   @Override
   public BenefitRiskAnalysis update(Account user, Integer projectId,
-                                    BenefitRiskAnalysis analysis, String scenarioState) throws URISyntaxException, SQLException, IOException, ResourceDoesNotExistException, MethodNotAllowedException, ReadValueException, InvalidTypeForDoseCheckException, UnexpectedNumberOfResultsException, ProblemCreationException {
+                                    BenefitRiskAnalysis analysis, String scenarioState, String path) throws IOException, ResourceDoesNotExistException, MethodNotAllowedException, ProblemCreationException {
     BenefitRiskAnalysis storedAnalysis = benefitRiskAnalysisRepository.find(analysis.getId());
     if (storedAnalysis.isFinalized()) {
       throw new MethodNotAllowedException();
     }
     projectService.checkProjectExistsAndModifiable(user, analysis.getProjectId());
     if (analysis.isFinalized()) {
-      AbstractProblem problem = problemService.getProblem(projectId, analysis.getId());
+      AbstractProblem problem = problemService.getProblem(projectId, analysis.getId(), path);
       String problemString = objectMapper.writeValueAsString(problem);
       analysis.setProblem(problemString);
       subProblemService.createMCDADefaults(projectId, analysis.getId(), scenarioState);

@@ -463,8 +463,8 @@ public class ProjectServiceImpl implements ProjectService {
       // we already know covariates and interventions are alright, otherwise the analysis would not have been copied
     }
 
-    newProblem = (NetworkMetaAnalysisProblem) problemService.getProblem(newProject.getId(), newAnalysis.getId());
-    oldProblem = (NetworkMetaAnalysisProblem) problemService.getProblem(sourceProject.getId(), oldAnalysis.getId());
+    newProblem = (NetworkMetaAnalysisProblem) problemService.getProblem(newProject.getId(), newAnalysis.getId(), null);
+    oldProblem = (NetworkMetaAnalysisProblem) problemService.getProblem(sourceProject.getId(), oldAnalysis.getId(), null);
 
     return areEntriesIdenticalEnough(oldProblem.getEntries(), newProblem.getEntries(), oldToNewInterventionId);
   }

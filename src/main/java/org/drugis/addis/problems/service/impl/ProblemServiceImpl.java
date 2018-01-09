@@ -99,14 +99,14 @@ public class ProblemServiceImpl implements ProblemService {
   private ObjectMapper objectMapper = new ObjectMapper();
 
   @Override
-  public AbstractProblem getProblem(Integer projectId, Integer analysisId) throws ResourceDoesNotExistException, ProblemCreationException {
+  public AbstractProblem getProblem(Integer projectId, Integer analysisId, String path) throws ResourceDoesNotExistException, ProblemCreationException {
     Project project = projectRepository.get(projectId);
     AbstractAnalysis analysis = analysisRepository.get(analysisId);
     try {
       if (analysis instanceof NetworkMetaAnalysis) {
         return getNetworkMetaAnalysisProblem(project, (NetworkMetaAnalysis) analysis);
       } else if (analysis instanceof BenefitRiskAnalysis) {
-        return getBenefitRiskAnalysisProblem(project, (BenefitRiskAnalysis) analysis);
+        return getBenefitRiskAnalysisProblem(project, (BenefitRiskAnalysis) analysis, path);
       }
     } catch (URISyntaxException | SQLException | IOException | ReadValueException |
             UnexpectedNumberOfResultsException e) {
@@ -115,7 +115,7 @@ public class ProblemServiceImpl implements ProblemService {
     throw new RuntimeException("unknown analysis type");
   }
 
-  private BenefitRiskProblem getBenefitRiskAnalysisProblem(Project project, BenefitRiskAnalysis analysis) throws
+  private BenefitRiskProblem getBenefitRiskAnalysisProblem(Project project, BenefitRiskAnalysis analysis, String path) throws
           SQLException, IOException, UnexpectedNumberOfResultsException, URISyntaxException {
     final Set<Integer> networkModelIds = getInclusionIdsWithBaseline(analysis.getBenefitRiskNMAOutcomeInclusions(),
             BenefitRiskNMAOutcomeInclusion::getModelId);
@@ -167,7 +167,7 @@ public class ProblemServiceImpl implements ProblemService {
               .findFirst();
       if (outcomeInclusion.isPresent()) {
         Model model = modelMap.get(outcomeInclusion.get().getModelId());
-        URI modelURI = getModelUri(model, project);
+        URI modelURI = getModelUri(model, project, path);
         if (model.getLikelihood().equals("binom")) {
           criteriaWithBaseline.put(outcome.getSemanticOutcomeUri(), new CriterionEntry(outcome.getSemanticOutcomeUri().toString(),
                   outcome.getName(), Arrays.asList(0d, 1d), null, "proportion", "meta analysis", modelURI));
@@ -209,12 +209,16 @@ public class ProblemServiceImpl implements ProblemService {
     return new BenefitRiskProblem(criteriaWithBaseline, alternatives, performanceTable);
   }
 
-  private URI getModelUri(Model model, Project project) {
+  private URI getModelUri(Model model, Project project, String path) {
     Integer modelAnalysisId = model.getAnalysisId();
     Integer modelProjectId = project.getId();
     Integer modelOwnerId = project.getOwner().getId();
-
-    return URI.create("/#/users/" + modelOwnerId + "/projects/" + modelProjectId +
+    String hostPath = "";
+    if (path != null) {
+      String[] splitPath = path.split("/");
+      hostPath = splitPath[0] + "//" + splitPath[2];
+    }
+    return URI.create(hostPath + "/#/users/" + modelOwnerId + "/projects/" + modelProjectId +
             "/nma/" + modelAnalysisId + "/models/" + model.getId());
   }
 
@@ -322,7 +326,7 @@ public class ProblemServiceImpl implements ProblemService {
     String modelPerformanceType;
     if (Model.LINK_IDENTITY.equals(modelLinkType)) {
       modelPerformanceType = "relative-normal";
-    } else if(Model.LIKELIHOOD_POISSON.equals(modelMap.get(outcomeInclusion.getModelId()).getLikelihood())) {
+    } else if (Model.LIKELIHOOD_POISSON.equals(modelMap.get(outcomeInclusion.getModelId()).getLikelihood())) {
       modelPerformanceType = "relative-survival";
     } else {
       modelPerformanceType = "relative-" + modelLinkType + "-normal";
@@ -580,8 +584,8 @@ public class ProblemServiceImpl implements ProblemService {
             unitOfMeasurement, "study",
             URI.create("/#/users/" + ownerId +
                     "/datasets/" + project.getNamespaceUid() +
-                    "/versions/" + project.getDatasetVersion().toString().split("/versions/")[1]+
-                    "/studies/" + studyGraphUri.toString().split("/graphs/")[1] ));
+                    "/versions/" + project.getDatasetVersion().toString().split("/versions/")[1] +
+                    "/studies/" + studyGraphUri.toString().split("/graphs/")[1]));
   }
 
 }

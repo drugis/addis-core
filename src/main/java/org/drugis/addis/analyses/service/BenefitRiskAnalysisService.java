@@ -20,7 +20,7 @@ import java.util.List;
  * Created by connor on 9-3-16.
  */
 public interface BenefitRiskAnalysisService {
-  BenefitRiskAnalysis update(Account user, Integer projectId, BenefitRiskAnalysis analysis, String scenarioState) throws URISyntaxException, SQLException, IOException, ResourceDoesNotExistException, MethodNotAllowedException, ReadValueException, InvalidTypeForDoseCheckException, UnexpectedNumberOfResultsException, ProblemCreationException;
+  BenefitRiskAnalysis update(Account user, Integer projectId, BenefitRiskAnalysis analysis, String scenarioState, String path) throws URISyntaxException, SQLException, IOException, ResourceDoesNotExistException, MethodNotAllowedException, ReadValueException, InvalidTypeForDoseCheckException, UnexpectedNumberOfResultsException, ProblemCreationException;
 
   void updateBenefitRiskAnalysis(Account user, BenefitRiskAnalysis analysis) throws ResourceDoesNotExistException, MethodNotAllowedException;
 

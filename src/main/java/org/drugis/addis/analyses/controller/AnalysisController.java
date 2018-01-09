@@ -120,7 +120,7 @@ public class AnalysisController extends AbstractAddisCoreController {
   @RequestMapping(value = "/projects/{projectId}/analyses/{analysisId}", method = RequestMethod.POST)
   @ResponseBody
   public AbstractAnalysis update(Principal currentUser, @PathVariable Integer projectId,
-                                 @RequestBody AnalysisUpdateCommand analysisUpdateCommand) throws MethodNotAllowedException, ResourceDoesNotExistException, SQLException, IOException, URISyntaxException, ReadValueException, InvalidTypeForDoseCheckException, UnexpectedNumberOfResultsException, ProblemCreationException {
+                                 @RequestBody AnalysisUpdateCommand analysisUpdateCommand, HttpServletRequest request) throws MethodNotAllowedException, ResourceDoesNotExistException, SQLException, IOException, URISyntaxException, ReadValueException, InvalidTypeForDoseCheckException, UnexpectedNumberOfResultsException, ProblemCreationException {
     AbstractAnalysis analysis = analysisUpdateCommand.getAnalysis();
     Account user = accountRepository.findAccountByUsername(currentUser.getName());
     if (user != null) {
@@ -128,7 +128,7 @@ public class AnalysisController extends AbstractAddisCoreController {
         return analysisService.updateNetworkMetaAnalysis(user, (NetworkMetaAnalysis) analysis);
       } else if (analysis instanceof BenefitRiskAnalysis) {
         return benefitRiskAnalysisService.update(user, projectId, (BenefitRiskAnalysis) analysis,
-                analysisUpdateCommand.getScenarioState());
+                analysisUpdateCommand.getScenarioState(), request.getRequestURL().toString());
       }
       throw new ResourceDoesNotExistException();
     } else {

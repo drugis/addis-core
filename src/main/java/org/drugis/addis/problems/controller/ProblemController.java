@@ -33,7 +33,7 @@ public class ProblemController extends AbstractAddisCoreController {
 
   @RequestMapping(value = "/projects/{projectId}/analyses/{analysisId}/problem", method = RequestMethod.GET)
   @ResponseBody
-  public AbstractProblem get(@PathVariable Integer projectId, @PathVariable Integer analysisId, HttpServletRequest request) throws ResourceDoesNotExistException, URISyntaxException, SQLException, IOException, ReadValueException, InvalidTypeForDoseCheckException, UnexpectedNumberOfResultsException, ProblemCreationException {
-    return problemService.getProblem(projectId, analysisId);
+  public AbstractProblem get(@PathVariable Integer projectId, @PathVariable Integer analysisId, HttpServletRequest request) throws ResourceDoesNotExistException, ProblemCreationException {
+    return problemService.getProblem(projectId, analysisId,request.getRequestURL().toString());
   }
 }
