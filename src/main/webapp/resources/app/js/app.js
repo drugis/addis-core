@@ -297,7 +297,7 @@ define(
             }
           })
           .state('projectAnalyses', {
-            url: '/definitions',
+            url: '/analyses',
             templateUrl: baseTemplatePath + 'project.html',
             controller: 'SingleProjectController',
             parent: 'project',
