@@ -78,12 +78,12 @@ public class BenefitRiskAnalysisServiceTest {
     BenefitRiskAnalysis oldAnalysis = new BenefitRiskAnalysis(analysisId, projectId, "tittle");
 
     when(benefitRiskAnalysisRepository.find(analysis.getId())).thenReturn(oldAnalysis);
-    when(problemService.getProblem(projectId, analysisId, )).thenReturn(null);
+    when(problemService.getProblem(projectId, analysisId, null)).thenReturn(null);
 
-    benefitRiskAnalysisService.update(user, projectId, analysis, "");
+    benefitRiskAnalysisService.update(user, projectId, analysis, "", null);
 
     verify(benefitRiskAnalysisRepository).find(analysisId);
-    verify(problemService).getProblem(projectId, analysisId, );
+    verify(problemService).getProblem(projectId, analysisId, null);
     verify(subProblemService).createMCDADefaults(projectId, analysisId, "");
     verify(benefitRiskAnalysisRepository).update(user, analysis);
     verifyNoMoreInteractions(benefitRiskAnalysisRepository, scenarioRepository, problemService);
@@ -95,7 +95,7 @@ public class BenefitRiskAnalysisServiceTest {
     BenefitRiskAnalysis oldAnalysis = new BenefitRiskAnalysis(analysisId, projectId, "tittle");
 
     when(benefitRiskAnalysisRepository.find(analysis.getId())).thenReturn(oldAnalysis);
-    benefitRiskAnalysisService.update(user, projectId, analysis, "");
+    benefitRiskAnalysisService.update(user, projectId, analysis, "",null);
 
     verify(benefitRiskAnalysisRepository).find(analysisId);
     verify(benefitRiskAnalysisRepository).update(user, analysis);
@@ -110,7 +110,7 @@ public class BenefitRiskAnalysisServiceTest {
 
     when(benefitRiskAnalysisRepository.find(analysis.getId())).thenReturn(oldAnalysis);
 
-    benefitRiskAnalysisService.update(user, projectId, analysis, "");
+    benefitRiskAnalysisService.update(user, projectId, analysis, "",null);
   }
 
   @Test

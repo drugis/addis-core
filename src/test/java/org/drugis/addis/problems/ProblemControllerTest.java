@@ -54,7 +54,7 @@ public class ProblemControllerTest {
   }
 
   @Test
-  public void testGetSingleStudyBenefitRiskProblem() throws Exception, ReadValueException, InvalidTypeForDoseCheckException, ProblemCreationException {
+  public void testGetSingleStudyBenefitRiskProblem() throws Exception, ProblemCreationException {
     RatePerformance ratePerformance = new RatePerformance(new RatePerformanceParameters(10, 50));
     Integer alternative1 = 1;
     Integer alternative2 = 2;
@@ -65,7 +65,7 @@ public class ProblemControllerTest {
     SingleStudyBenefitRiskProblem problem = new SingleStudyBenefitRiskProblem(new HashMap<>(), new HashMap<>(), performanceTable);
     Integer projectId = 1;
     Integer analysisId = 1;
-    when(problemService.getProblem(projectId, analysisId, )).thenReturn(problem);
+    when(problemService.getProblem(projectId, analysisId, "http://localhost/projects/1/analyses/1/problem")).thenReturn(problem);
     mockMvc.perform(get("/projects/1/analyses/1/problem"))
       .andExpect(status().isOk())
       .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()))
@@ -73,11 +73,11 @@ public class ProblemControllerTest {
       .andExpect(jsonPath("$.performanceTable", hasSize(2)))
       .andExpect(jsonPath("$.performanceTable[0].performance.type", is(RatePerformance.DBETA)))
       .andExpect(jsonPath("$.performanceTable[1].performance.type", is(ContinuousPerformance.DNORM)));
-    verify(problemService).getProblem(projectId, analysisId, );
+    verify(problemService).getProblem(projectId, analysisId, "http://localhost/projects/1/analyses/1/problem");
   }
 
   @Test
-  public void testGetNetworkMetaAnalysisProblem() throws Exception, ReadValueException, InvalidTypeForDoseCheckException, ProblemCreationException {
+  public void testGetNetworkMetaAnalysisProblem() throws Exception, ProblemCreationException {
     int treatmentId1 = 1;
     int treatmentId2 = 2;
     AbstractNetworkMetaAnalysisProblemEntry entry1 = new RateNetworkMetaAnalysisProblemEntry("study", treatmentId1, 10, 5);
@@ -88,7 +88,7 @@ public class ProblemControllerTest {
     NetworkMetaAnalysisProblem networkMetaAnalysisProblem = new NetworkMetaAnalysisProblem(entries, treatments, studyCovariates);
     Integer projectId = 1;
     Integer analysisId = 2;
-    when(problemService.getProblem(projectId, analysisId, )).thenReturn(networkMetaAnalysisProblem);
+    when(problemService.getProblem(projectId, analysisId, "http://localhost/projects/1/analyses/2/problem")).thenReturn(networkMetaAnalysisProblem);
     mockMvc.perform(get("/projects/1/analyses/2/problem"))
       .andExpect(status().isOk())
       .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()))
@@ -98,11 +98,11 @@ public class ProblemControllerTest {
       .andExpect((jsonPath("$.entries[0].responders", is(((RateNetworkMetaAnalysisProblemEntry) entry1).getResponders()))))
             .andExpect((jsonPath("$.treatments[0].id", equalTo(treatmentId1))))
             .andExpect((jsonPath("$.studyLevelCovariates", equalTo(new JSONObject()))));
-    verify(problemService).getProblem(projectId, analysisId, );
+    verify(problemService).getProblem(projectId, analysisId, "http://localhost/projects/1/analyses/2/problem");
   }
 
   @Test
-  public void testGetNetworkMetaAnalysisNoCovariates() throws Exception, ReadValueException, InvalidTypeForDoseCheckException, ProblemCreationException {
+  public void testGetNetworkMetaAnalysisNoCovariates() throws Exception, ProblemCreationException {
     int treatmentId1 = 1;
     int treatmentId2 = 2;
     AbstractNetworkMetaAnalysisProblemEntry entry1 = new RateNetworkMetaAnalysisProblemEntry("study", treatmentId1, 10, 5);
@@ -113,7 +113,7 @@ public class ProblemControllerTest {
     NetworkMetaAnalysisProblem networkMetaAnalysisProblem = new NetworkMetaAnalysisProblem(entries, treatments);
     Integer projectId = 1;
     Integer analysisId = 2;
-    when(problemService.getProblem(projectId, analysisId, )).thenReturn(networkMetaAnalysisProblem);
+    when(problemService.getProblem(projectId, analysisId, "http://localhost/projects/1/analyses/2/problem")).thenReturn(networkMetaAnalysisProblem);
     mockMvc.perform(get("/projects/1/analyses/2/problem"))
             .andExpect(status().isOk())
             .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()))
@@ -123,7 +123,7 @@ public class ProblemControllerTest {
             .andExpect(jsonPath("$.entries[0].responders", is(((RateNetworkMetaAnalysisProblemEntry) entry1).getResponders())))
             .andExpect(jsonPath("$.treatments[0].id", equalTo(treatmentId1)))
             .andExpect(jsonPath("$.studyLevelCovariates").doesNotExist());
-    verify(problemService).getProblem(projectId, analysisId, );
+    verify(problemService).getProblem(projectId, analysisId, "http://localhost/projects/1/analyses/2/problem");
   }
 
 }

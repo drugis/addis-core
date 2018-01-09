@@ -266,7 +266,7 @@ public class ProblemServiceTest {
     when(owner.getId()).thenReturn(ownerId);
     when(mappingService.getVersionedUuidAndOwner(project.getNamespaceUid())).thenReturn(new TriplestoreUuidAndOwner("someversion", 37));
     // --------------- execute ---------------- //
-    BenefitRiskProblem actualProblem = (BenefitRiskProblem) problemService.getProblem(projectId, analysisId, );
+    BenefitRiskProblem actualProblem = (BenefitRiskProblem) problemService.getProblem(projectId, analysisId, null);
     // --------------- execute ---------------- //
 
     verify(mappingService, times(8)).getVersionedUuidAndOwner(project.getNamespaceUid());
@@ -336,7 +336,7 @@ public class ProblemServiceTest {
 
 
     // --------------- execute ---------------- //
-    final AbstractProblem problem = problemService.getProblem(project.getId(), networkMetaAnalysis.getId(), );
+    final AbstractProblem problem = problemService.getProblem(project.getId(), networkMetaAnalysis.getId(), null);
     // --------------- execute ---------------- //
 
 
@@ -396,7 +396,7 @@ public class ProblemServiceTest {
     when(analysisService.buildEvidenceTable(project.getId(), networkMetaAnalysis.getId())).thenReturn(trialDataStudies);
 
     // --------------- execute ---------------- //
-    final AbstractProblem problem = problemService.getProblem(project.getId(), networkMetaAnalysis.getId(), );
+    final AbstractProblem problem = problemService.getProblem(project.getId(), networkMetaAnalysis.getId(), null);
     // --------------- execute ---------------- //
 
 
@@ -445,7 +445,7 @@ public class ProblemServiceTest {
     when(analysisService.buildEvidenceTable(project.getId(), networkMetaAnalysis.getId())).thenReturn(trialDataStudies);
 
     // --------------- execute ---------------- //
-    final AbstractProblem problem = problemService.getProblem(project.getId(), networkMetaAnalysis.getId(), );
+    final AbstractProblem problem = problemService.getProblem(project.getId(), networkMetaAnalysis.getId(), null);
     // --------------- execute ---------------- //
 
     assertNotNull(problem);
@@ -694,7 +694,7 @@ public class ProblemServiceTest {
     when(pataviTaskRepository.getResults(taskIds)).thenReturn(results);
     when(interventionRepository.query(projectId)).thenReturn(interventions);
 
-    BenefitRiskProblem problem = (BenefitRiskProblem) problemService.getProblem(projectId, analysisId, );
+    BenefitRiskProblem problem = (BenefitRiskProblem) problemService.getProblem(projectId, analysisId, null);
 
     verify(projectRepository).get(projectId);
     verify(modelService).get(modelIds);
