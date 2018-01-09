@@ -19,9 +19,15 @@
             <version-info></version-info>
           </div>
         </div>
-        <a ng-if="versionUuid" ui-sref="versionedDataset.concepts({userUid: user.id, datasetUuid: stripFrontFilter(dataset.datasetUuid, 'http://trials.drugis.org/datasets/'), versionUuid: versionUuid})">Go to concepts</a>
-        <a ng-if="!versionUuid" ui-sref="dataset.concepts({userUid: user.id, datasetUuid: stripFrontFilter(dataset.datasetUuid, 'http://trials.drugis.org/datasets/')})">Go to concepts</a>
-        <inline-help help-key="concept"></inline-help>
+      </div>
+      <div class="cell">
+        <h3>
+          <button class="button" ng-if="versionUuid" ui-sref="versionedDataset.concepts({userUid: user.id, datasetUuid: stripFrontFilter(dataset.datasetUuid, 'http://trials.drugis.org/datasets/'), versionUuid: versionUuid})">Dataset concepts</button>
+        <button class="button" ng-if="!versionUuid" ui-sref="dataset.concepts({userUid: user.id, datasetUuid: stripFrontFilter(dataset.datasetUuid, 'http://trials.drugis.org/datasets/')})">Dataset concepts</button>
+        <inline-help style="margin-left: 0.5rem; vertical-align: text-bottom;" help-key="concept"></inline-help>
+      </h3>
+      </div>
+      <div class="cell">
         <hr>
       </div>
     </div>
@@ -29,9 +35,7 @@
       <div class="cell">
         <div class="button-label-container">
           <h3 style="display: inline;">Studies <inline-help help-key="study"></inline-help></h3>
-          <button ng-show="isEditingAllowed" class="button small" style="
-    margin-left: 0.5rem;
-    vertical-align: super;" ng-click="showStudyDialog()"><i class="fa fa-plus"></i></button>
+          <button ng-show="isEditingAllowed" class="button small" style="margin-left: 0.5rem; vertical-align: super;" ng-click="showStudyDialog()"><i class="fa fa-plus"></i></button>
         </div>
         <p style="margin-bottom: 0;" ng-if="studiesWithDetail.length">
           <button class="button small secondary" ng-click="showTableOptions()">
