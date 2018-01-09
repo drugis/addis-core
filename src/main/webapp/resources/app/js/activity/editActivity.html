@@ -24,7 +24,7 @@
         <label>Type <inline-help help-key="activity-type"></inline-help>
           <select ng-disabled="treatmentDirective.isVisible" ng-model="itemScratch.activityType"
             placeholder="select type" ng-options="activityType.label for activityType in activityTypeOptions"
-            ng-change="showScrolbarIfNessesary()">
+            ng-change="typeChanged()">
           </select>
         </label>
       </div>
@@ -55,10 +55,9 @@
       <treatment></treatment>
     </div>
 
-
     <div class="grid-x">
       <div class="cell">
-        <button class="button success" type="submit" ng-disabled="!itemScratch.label || !itemScratch.activityType || isAddTreatmentMode || treatmentDirective.isVisible || isEditing">{{actionType}}</button>
+        <button class="button success" type="submit" ng-disabled="!itemScratch.label || !itemScratch.activityType || isAddTreatmentMode || treatmentDirective.isVisible || isEditing || notEnoughtTreatments">{{actionType}}</button>
       </div>
     </div>
   </div>

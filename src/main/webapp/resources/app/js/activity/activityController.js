@@ -9,53 +9,27 @@ define(['lodash', 'angular'],
       'ActivityService'
     ];
     var ActivityController = function($scope, $modalInstance, callback, actionType, ActivityService) {
+      // functions
+      $scope.addDrugClicked = addDrugClicked;
+      $scope.treatmentAdded = treatmentAdded;
+      $scope.addItem = addItem;
+      $scope.editItem = editItem;
+      $scope.cancel = cancel;
+      $scope.typeChanged = typeChanged;
 
+      //init
       $scope.isEditing = false;
       $scope.actionType = actionType;
       $scope.activityTypeOptions = _.values(ActivityService.ACTIVITY_TYPE_OPTIONS);
-
       $scope.treatmentDirective = {
         isVisible: false
       };
 
-      $scope.addDrugClicked = function() {
-        $scope.treatmentDirective.isVisible = true;
-      };
-
-      $scope.treatmentAdded = function(treatment) {
-        $scope.itemScratch.treatments.push(treatment);
-        $scope.treatmentDirective.isVisible = false;
-      };
-
-      $scope.addItem = function() {
-        $scope.isEditing = true;
-        ActivityService.addItem($scope.itemScratch)
-          .then(function() {
-              callback();
-              $modalInstance.close();
-            },
-            function() {
-              console.error('failed to create activity');
-              $modalInstance.dismiss('cancel');
-            });
-      };
-
-      $scope.editItem = function() {
-        $scope.isEditing = true;
-        ActivityService.editItem($scope.itemScratch)
-          .then(function() {
-              callback();
-              $modalInstance.close();
-            },
-            function() {
-              console.error('failed to edit activity');
-              $modalInstance.dismiss('cancel');
-            });
-      };
-
-      $scope.cancel = function() {
-        $modalInstance.dismiss('cancel');
-      };
+      $scope.$watch(function() {
+        return angular.element('.scrollable-wrapper').parent().parent().height();
+      }, function() {
+        showScrolbarIfNessesary();
+      });
 
       if ($scope.actionType === 'Add') {
         $scope.itemScratch = {};
@@ -69,13 +43,53 @@ define(['lodash', 'angular'],
         $scope.commit = $scope.editItem;
       }
 
-      $scope.$watch(function() {
-        return angular.element('.scrollable-wrapper').parent().parent().height();
-      }, function() {
-        $scope.showScrolbarIfNessesary();
-      });
+      function addDrugClicked() {
+        $scope.treatmentDirective.isVisible = true;
+      }
 
-      $scope.showScrolbarIfNessesary = function() {
+      function treatmentAdded(treatment) {
+        $scope.itemScratch.treatments.push(treatment);
+        $scope.treatmentDirective.isVisible = false;
+        $scope.notEnoughtTreatments = $scope.itemScratch.activityType.uri === 'ontology:TreatmentActivity' && !$scope.itemScratch.treatments;
+      }
+
+      function addItem() {
+        $scope.isEditing = true;
+        ActivityService.addItem($scope.itemScratch)
+          .then(function() {
+              callback();
+              $modalInstance.close();
+            },
+            function() {
+              console.error('failed to create activity');
+              cancel();
+            });
+      }
+
+      function editItem() {
+        $scope.isEditing = true;
+        ActivityService.editItem($scope.itemScratch)
+          .then(function() {
+              callback();
+              $modalInstance.close();
+            },
+            function() {
+              console.error('failed to edit activity');
+              cancel();
+            });
+      }
+
+      function cancel() {
+        $modalInstance.close();
+      }
+
+      function typeChanged() {
+        showScrolbarIfNessesary();
+        $scope.notEnoughtTreatments = $scope.itemScratch.activityType.uri === 'ontology:TreatmentActivity' && !$scope.itemScratch.treatments;
+      }
+
+      // private
+      function showScrolbarIfNessesary() {
         var offsetString = angular.element('.reveal-modal').css('top');
         var offset = parseInt(offsetString, 10); // remove px part
         var viewPortHeight = angular.element('html').height();
@@ -88,7 +102,7 @@ define(['lodash', 'angular'],
         } else {
           scrollableWrapperElement.css('max-height', viewPortHeight + offset);
         }
-      };
+      }
 
     };
     return dependencies.concat(ActivityController);
