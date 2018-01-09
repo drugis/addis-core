@@ -24,9 +24,6 @@
   },
   "homepage": "https://github.com/drugis/addis-core#readme",
   "devDependencies": {
-    "gulp": "^3.9.0",
-    "gulp-jsbeautifier": "^1.0.1",
-    "gulp-jshint": "^2.0.0",
     "jasmine-core": "^2.6.4",
     "karma": "^1.7.0",
     "karma-chrome-launcher": "^0.2.3",
@@ -83,7 +80,7 @@
     "@bower_components/select2": "ivaynberg/select2#~3.4.5",
     "@bower_components/selectize": "selectize/selectize.js#~0.8.5",
     "@bower_components/showdown": "showdownjs/showdown#^1.5.0",
-    "@bower_components/sifter": "brianreavis/sifter.js#0.3.x",
+    "@bower_components/sifter": "brianreavis/sifter.js#0.5.x",
     "@bower_components/smooth-scroller": "firstandthird/smooth-scroller#~0.1.0",
     "@bower_components/toc": "jgallen23/toc#~0.3.2",
     "@bower_components/what-input": "ten1seven/what-input#~4.1.3"
