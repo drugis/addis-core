@@ -165,12 +165,15 @@ define(['lodash'], function(_) {
       if (evidenceSyntheses.length === 0) {
         return result + '*No evidence syntheses defined*\n';
       }
-      return _.reduce(evidenceSyntheses, _.partial(renderNma, project), result)  + '\n';
+      return _.reduce(evidenceSyntheses, _.partial(renderNma, project), result) + '\n';
     }
 
     function renderBr(project, accum, analysis) {
       var title = '\n####Analysis: ' + analysis.title + '\n';
-      var link = '[Details](#/users/' + project.owner.id + '/projects/' + project.id + '/br/' + analysis.id + ')  \n';
+      var link = 'Analysis not finalized \n<br>';
+      if (analysis.finalized) {
+        link = '[Details](#/users/' + project.owner.id + '/projects/' + project.id + '/br/' + analysis.id + ')  \n';
+      }
       return accum + title + link + '*further benefit-risk display functionality coming soon* \n';
     }
 
