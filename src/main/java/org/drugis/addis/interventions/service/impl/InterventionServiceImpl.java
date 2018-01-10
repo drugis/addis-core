@@ -11,6 +11,9 @@ import org.drugis.addis.trialverse.model.trialdata.AbstractSemanticIntervention;
 import org.drugis.addis.trialverse.model.trialdata.Dose;
 import org.drugis.addis.trialverse.model.trialdata.FixedSemanticIntervention;
 import org.drugis.addis.trialverse.model.trialdata.TitratedSemanticIntervention;
+import org.joda.time.Duration;
+import org.joda.time.Period;
+import org.joda.time.format.ISOPeriodFormat;
 import org.springframework.social.OperationNotPermittedException;
 import org.springframework.stereotype.Service;
 
@@ -234,23 +237,24 @@ public class InterventionServiceImpl implements InterventionService {
     }
 
     //check period
-    if (lowerBound != null && !dose.getPeriodicity().equals(lowerBound.getUnitPeriod())) {
-      return false;
+    if (lowerBound != null) {
+      Duration dosePeriod = ISOPeriodFormat.standard().parsePeriod(dose.getPeriodicity()).toStandardDuration(); // ensure there's no confusion between PxD and PxW
+      Duration constraintPeriod = ISOPeriodFormat.standard().parsePeriod(lowerBound.getUnitPeriod()).toStandardDuration();
+      if(!dosePeriod.equals(constraintPeriod)) {
+        return false;
+      }
     }
-    if (upperBound != null && !dose.getPeriodicity().equals(upperBound.getUnitPeriod())) {
-      return false;
+    if (upperBound != null) {
+      Duration dosePeriod = ISOPeriodFormat.standard().parsePeriod(dose.getPeriodicity()).toStandardDuration(); // ensure there's no confusion between PxD and PxW
+      Duration constraintPeriod = ISOPeriodFormat.standard().parsePeriod(upperBound.getUnitPeriod()).toStandardDuration();
+      if(!dosePeriod.equals(constraintPeriod)) {
+        return false;
+      }
     }
 
     //value
     BigDecimal scaledValue = dose.getScaledValue();
-    if (lowerBound != null && !isWithinConstraint(scaledValue, constraint)) {
-      return false;
-    }
-    if (upperBound != null && !isWithinConstraint(scaledValue, constraint)) {
-      return false;
-    }
-
-    return true;
+    return isWithinConstraint(scaledValue, constraint);
   }
 
   private boolean isWithinConstraint(BigDecimal scaledValue, DoseConstraint constraint) {
