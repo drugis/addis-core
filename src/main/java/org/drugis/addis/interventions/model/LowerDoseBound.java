@@ -7,6 +7,7 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import java.math.BigDecimal;
 import java.net.URI;
+import java.util.Objects;
 
 /**
  * Created by daan on 5-4-16.
@@ -76,25 +77,18 @@ public class LowerDoseBound {
   public boolean equals(Object o) {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
-
     LowerDoseBound that = (LowerDoseBound) o;
-
-    if (type != that.type) return false;
-    if (!value.equals(that.value)) return false;
-    if (!unitName.equals(that.unitName)) return false;
-    if (!unitPeriod.equals(that.unitPeriod)) return false;
-    if (!unitConcept.equals(that.unitConcept)) return false;
-    return conversionMultiplier != null ? conversionMultiplier.equals(that.conversionMultiplier) : that.conversionMultiplier == null;
+    return type == that.type &&
+            Objects.equals(value, that.value) &&
+            Objects.equals(unitName, that.unitName) &&
+            Objects.equals(unitPeriod, that.unitPeriod) &&
+            Objects.equals(unitConcept, that.unitConcept) &&
+            Objects.equals(conversionMultiplier, that.conversionMultiplier);
   }
 
   @Override
   public int hashCode() {
-    int result = type.hashCode();
-    result = 31 * result + value.hashCode();
-    result = 31 * result + unitName.hashCode();
-    result = 31 * result + unitPeriod.hashCode();
-    result = 31 * result + unitConcept.hashCode();
-    result = 31 * result + (conversionMultiplier != null ? conversionMultiplier.hashCode() : 0);
-    return result;
+
+    return Objects.hash(type, value, unitName, unitPeriod, unitConcept, conversionMultiplier);
   }
 }
