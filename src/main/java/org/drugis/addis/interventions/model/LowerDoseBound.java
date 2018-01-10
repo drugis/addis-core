@@ -31,7 +31,9 @@ public class LowerDoseBound {
     this.value = value;
     this.unitName = unitName;
     this.unitPeriod = unitPeriod;
-    this.unitConcept = unitConcept.toString();
+    if(unitConcept != null) {
+      this.unitConcept = unitConcept.toString();
+    }
     this.conversionMultiplier = conversionMultiplier;
   }
 
