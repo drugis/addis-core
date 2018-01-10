@@ -26,7 +26,11 @@ public class LowerDoseBound {
   public LowerDoseBound() {
   }
 
-  public LowerDoseBound(LowerBoundType type, Double value, String unitName, String unitPeriod, URI unitConcept, Double conversionMultiplier) {
+  public LowerDoseBound(LowerBoundType type, Double value, String unitName, String unitPeriod, URI unitConcept, Double conversionMultiplier) throws InvalidConstraintException {
+    if(type==null || value == null || unitName == null || unitPeriod == null){
+      throw new InvalidConstraintException("LowerBound contains null fields");
+    }
+
     this.type = type;
     this.value = value;
     this.unitName = unitName;

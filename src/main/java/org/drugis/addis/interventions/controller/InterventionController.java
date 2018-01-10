@@ -46,14 +46,14 @@ public class InterventionController extends AbstractAddisCoreController {
 
   @RequestMapping(value = "/projects/{projectId}/interventions", method = RequestMethod.GET)
   @ResponseBody
-  public List<AbstractInterventionViewAdapter> query(@PathVariable Integer projectId) throws MethodNotAllowedException, ResourceDoesNotExistException {
+  public List<AbstractInterventionViewAdapter> query(@PathVariable Integer projectId) {
     Set<AbstractIntervention> interventions = interventionRepository.query(projectId);
     return interventions.stream().map(AbstractIntervention::toViewAdapter).collect(Collectors.toList());
   }
 
   @RequestMapping(value = "/projects/{projectId}/interventions/{interventionId}", method = RequestMethod.GET)
   @ResponseBody
-  public AbstractInterventionViewAdapter get(@PathVariable Integer projectId, @PathVariable Integer interventionId) throws MethodNotAllowedException, ResourceDoesNotExistException {
+  public AbstractInterventionViewAdapter get(@PathVariable Integer projectId, @PathVariable Integer interventionId) throws ResourceDoesNotExistException {
     AbstractIntervention intervention = interventionRepository.get(interventionId);
     if (!intervention.getProject().equals(projectId)) {
       throw new ResourceDoesNotExistException();

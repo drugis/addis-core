@@ -68,14 +68,14 @@ public class InterventionRepositoryImpl implements InterventionRepository {
   }
 
   @Override
-  public AbstractIntervention create(Account user, AbstractInterventionCommand interventionCommand) throws MethodNotAllowedException, ResourceDoesNotExistException, InvalidConstraintException {
+  public AbstractIntervention create(Account user, AbstractInterventionCommand interventionCommand) throws InvalidConstraintException {
     AbstractIntervention newIntervention = interventionCommand.toIntervention();
     TypedQuery<AbstractIntervention> query = em.createQuery("FROM AbstractIntervention i WHERE i.name = :interventionName AND i.project = :projectId", AbstractIntervention.class);
     query.setParameter("interventionName", interventionCommand.getName());
     query.setParameter("projectId", interventionCommand.getProjectId());
     List<AbstractIntervention> results = query.getResultList();
     if (results.size() > 0) {
-      throw new IllegalArgumentException("Duplicate outcome name " + interventionCommand.getName());
+      throw new IllegalArgumentException("Duplicate intervention name " + interventionCommand.getName());
     }
     em.persist(newIntervention);
     return newIntervention;

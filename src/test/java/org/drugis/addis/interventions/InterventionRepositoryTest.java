@@ -34,7 +34,7 @@ public class InterventionRepositoryTest {
   private InterventionRepository interventionRepository;
 
   @PersistenceContext(unitName = "addisCore")
-  EntityManager em;
+  private EntityManager em;
 
   @Test
   public void testQuery() {
