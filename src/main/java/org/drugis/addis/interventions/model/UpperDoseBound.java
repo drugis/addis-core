@@ -52,6 +52,9 @@ public class UpperDoseBound {
   }
 
   public URI getUnitConcept() {
+    if(unitConcept == null){
+      return null;
+    }
     return URI.create(unitConcept);
   }
 

@@ -52,6 +52,9 @@ public class LowerDoseBound {
   }
 
   public URI getUnitConcept() {
+    if(unitConcept == null){
+      return null;
+    }
     return URI.create(unitConcept);
   }
 
