@@ -143,7 +143,7 @@ define(['lodash', 'angular'], function(_, angular) {
     }
 
     function cancel() {
-      $modalInstance.dismiss('cancel');
+      $modalInstance.close();
     }
 
     function interventionTypeSwitched() {

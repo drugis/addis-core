@@ -28,12 +28,12 @@ define([],
             $scope.copyComplete = true;
           },
           function() {
-            $modalInstance.dismiss('cancel');
+            $modalInstance.close();
           });
       }
 
       function cancel() {
-        $modalInstance.dismiss('cancel');
+        $modalInstance.close();
       }
 
     };

@@ -21,7 +21,7 @@ define([],
             $modalInstance.close();
           },
           function() {
-            $modalInstance.dismiss('cancel');
+            $modalInstance.close();
           });
       }
 
@@ -30,7 +30,7 @@ define([],
       }
 
       function cancel() {
-        $modalInstance.dismiss('cancel');
+        $modalInstance.close();
       }
     };
     return dependencies.concat(EditStudyInformationController);

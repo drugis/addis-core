@@ -13,11 +13,11 @@ define([], function() {
 
     function updateFilteredStudies() {
       callback($scope.filterSelections);
-      $modalInstance.dismiss('cancel');
+      $modalInstance.close();
     }
 
     function cancel() {
-      $modalInstance.dismiss('cancel');
+      $modalInstance.close();
     }
   };
   return dependencies.concat(FilterDatasetController);

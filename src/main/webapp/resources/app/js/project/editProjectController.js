@@ -32,7 +32,7 @@ define(['angular', 'lodash'],
       }
 
       function cancel() {
-        $modalInstance.dismiss('cancel');
+        $modalInstance.close();
       }
     };
     return dependencies.concat(EditProjectController);

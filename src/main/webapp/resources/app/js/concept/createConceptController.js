@@ -31,7 +31,7 @@ define(['lodash'], function(_) {
     }
 
     function cancel() {
-      $modalInstance.dismiss('cancel');
+      $modalInstance.close();
     }
   };
   return dependencies.concat(CreateConceptController);

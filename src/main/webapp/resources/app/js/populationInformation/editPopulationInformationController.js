@@ -20,12 +20,12 @@ define([],
             $modalInstance.close();
           },
           function() {
-            $modalInstance.dismiss('cancel');
+            $modalInstance.close();
           });
       }
 
       function cancel() {
-        $modalInstance.dismiss('cancel');
+        $modalInstance.close();
       }
     };
     return dependencies.concat(EditPopulationInformationController);

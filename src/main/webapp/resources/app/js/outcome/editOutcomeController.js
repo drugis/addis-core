@@ -27,7 +27,7 @@ define(['lodash'],
             $modalInstance.close();
           },
           function() {
-            $modalInstance.dismiss('cancel');
+            $modalInstance.close();
           });
       }
 
@@ -39,7 +39,7 @@ define(['lodash'],
       }
 
       function cancel() {
-        $modalInstance.dismiss('cancel');
+        $modalInstance.close();
       }
     };
     return dependencies.concat(EditOutcomeController);

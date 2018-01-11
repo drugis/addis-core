@@ -21,13 +21,13 @@ define([],
             },
             function() {
               console.error('failed to create populationCharacteristic');
-              $modalInstance.dismiss('cancel');
+              $modalInstance.close();
             });
 
       }
 
       function cancel() {
-        $modalInstance.dismiss('cancel');
+        $modalInstance.close();
       }
     };
     return dependencies.concat(CreatePopulationCharacteristicController);

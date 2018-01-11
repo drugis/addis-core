@@ -18,7 +18,7 @@ define([],
       }
 
       function cancel() {
-        $modalInstance.dismiss('cancel');
+        $modalInstance.close();
       }
     };
     return dependencies.concat(CreateDatasetController);

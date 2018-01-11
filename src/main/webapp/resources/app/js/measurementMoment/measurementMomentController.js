@@ -67,7 +67,7 @@ define(['lodash', 'angular'], function(_, angular) {
           },
           function() {
             console.error('failed to create measurement moment');
-            $modalInstance.dismiss('cancel');
+            $modalInstance.close();
           });
     }
 
@@ -80,7 +80,7 @@ define(['lodash', 'angular'], function(_, angular) {
           },
           function() {
             console.error('failed to edit measurement moment');
-            $modalInstance.dismiss('cancel');
+            $modalInstance.close();
           });
     }
 
@@ -91,7 +91,7 @@ define(['lodash', 'angular'], function(_, angular) {
           $modalInstance.close();
         },
         function() {
-          $modalInstance.dismiss('cancel');
+          $modalInstance.close();
         });
     }
 
@@ -106,7 +106,7 @@ define(['lodash', 'angular'], function(_, angular) {
     }
 
     function cancel() {
-      $modalInstance.dismiss('cancel');
+      $modalInstance.close();
     }
   };
   return dependencies.concat(MeasurementMomentController);

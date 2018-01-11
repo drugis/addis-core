@@ -87,7 +87,7 @@ define(['lodash', 'clipboard'], function(_, Clipboard) {
     }
 
     function cancel() {
-      $modalInstance.dismiss('cancel');
+      $modalInstance.close();
     }
   };
   return dependencies.concat(D80TableController);

@@ -40,12 +40,12 @@ define([],
             },
             function() {
               console.error('failed to create epoch');
-              $modalInstance.dismiss('cancel');
+              $modalInstance.close();
             });
       }
 
       function cancel() {
-        $modalInstance.dismiss('cancel');
+        $modalInstance.close();
       }
 
       function changeToInstantaneous() {

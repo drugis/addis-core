@@ -34,7 +34,7 @@ define(['lodash'], function(_) {
     }
 
     function cancel() {
-      $modalInstance.dismiss('cancel');
+      $modalInstance.close();
     }
 
   };

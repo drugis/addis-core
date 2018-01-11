@@ -17,7 +17,7 @@ define([],
       }
 
       function commitCancelled() {
-        $modalInstance.dismiss();
+        $modalInstance.close();
       }
     };
     return dependencies.concat(CommitController);

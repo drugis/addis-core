@@ -12,13 +12,13 @@ define([],
         },
         function() {
           console.error('failed to add arm');
-          $modalInstance.dismiss('cancel');
+          $modalInstance.close();
         });
 
       };
 
       $scope.cancel = function() {
-        $modalInstance.dismiss('cancel');
+        $modalInstance.close();
       };
     };
     return dependencies.concat(CreateArmController);
