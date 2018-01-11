@@ -112,8 +112,8 @@
   resolved "https://codeload.github.com/drugis/error-reporting/tar.gz/dc08775e674de116d86fc995321b1df3b1c2bc54"
 
 "@bower_components/export-directive@drugis/export-directive#master":
-  version ""
-  resolved "https://codeload.github.com/drugis/export-directive/tar.gz/104c9d1f51a2e1e84921cf17da10f5934efb6e50"
+  version "1.0.0"
+  resolved "https://codeload.github.com/drugis/export-directive/tar.gz/34951390699cd21e4b0e0f126490395c4f4d1081"
   dependencies:
     "@bower_components/angular" angular/bower-angular#~1.6.0
     "@bower_components/clipboard" zenorocha/clipboard.js#^1.6.0
