@@ -4,6 +4,7 @@
 
 "@bower_components/KaTeX@Khan/KaTeX#^0.6.0", "@bower_components/KaTeX@Khan/KaTeX#~0.6.0":
   version "0.6.0"
+  uid b94fc6534d5c23f944906a52a592bee4e0090665
   resolved "https://codeload.github.com/Khan/KaTeX/tar.gz/b94fc6534d5c23f944906a52a592bee4e0090665"
   dependencies:
     match-at "^0.1.0"
@@ -14,6 +15,7 @@
 
 "@bower_components/angular-animate@angular/bower-angular-animate#~1.6.0", "@bower_components/angular-animate@angular/bower-angular-animate#~1.6.5":
   version "1.6.8"
+  uid cb64242dbe2023fc1186a849387c17408ee4b1b0
   resolved "https://codeload.github.com/angular/bower-angular-animate/tar.gz/cb64242dbe2023fc1186a849387c17408ee4b1b0"
 
 "@bower_components/angular-cookies@angular/bower-angular-cookies#~1.6.5":
@@ -30,6 +32,7 @@
 
 "@bower_components/angular-mocks@angular/bower-angular-mocks#~1.6", "@bower_components/angular-mocks@angular/bower-angular-mocks#~1.6.5":
   version "1.6.8"
+  uid "8ff5b5674fd5061aad798b468c41e50b8a054e75"
   resolved "https://codeload.github.com/angular/bower-angular-mocks/tar.gz/8ff5b5674fd5061aad798b468c41e50b8a054e75"
 
 "@bower_components/angular-patavi-client@drugis/angular-patavi-client#2.0.2":
@@ -42,34 +45,33 @@
 
 "@bower_components/angular-resource@angular/bower-angular-resource#>=1.6.0", "@bower_components/angular-resource@angular/bower-angular-resource#~1.6.5":
   version "1.6.8"
+  uid "741671be0cc7172e4fd401f3630f8c9c4d7488c2"
   resolved "https://codeload.github.com/angular/bower-angular-resource/tar.gz/741671be0cc7172e4fd401f3630f8c9c4d7488c2"
 
 "@bower_components/angular-sanitize@angular/bower-angular-sanitize#>=1.6.0", "@bower_components/angular-sanitize@angular/bower-angular-sanitize#~1.6.0":
   version "1.6.8"
+  uid "555307c31ed28402d502d32f2858155d3c504030"
   resolved "https://codeload.github.com/angular/bower-angular-sanitize/tar.gz/555307c31ed28402d502d32f2858155d3c504030"
 
 "@bower_components/angular-touch@angular/bower-angular-touch#>=1.6.6", "@bower_components/angular-touch@angular/bower-angular-touch#^1.6.6":
   version "1.6.8"
+  uid "9274159da3a46212a7dd2b22730e87560eed8f4b"
   resolved "https://codeload.github.com/angular/bower-angular-touch/tar.gz/9274159da3a46212a7dd2b22730e87560eed8f4b"
 
-"@bower_components/angular-ui-router@angular-ui/angular-ui-router-bower#>=1.0.5":
+"@bower_components/angular-ui-router@angular-ui/angular-ui-router-bower#>=1.0.5", "@bower_components/angular-ui-router@angular-ui/angular-ui-router-bower#~1.0.5":
   version "1.0.13"
+  uid a323de41773c89b5c5b0ea586ed635b934790fb2
   resolved "https://codeload.github.com/angular-ui/angular-ui-router-bower/tar.gz/a323de41773c89b5c5b0ea586ed635b934790fb2"
   dependencies:
     "@uirouter/core" "5.0.14"
-
-"@bower_components/angular-ui-router@angular-ui/angular-ui-router-bower#~1.0.5":
-  version "1.0.12"
-  resolved "https://codeload.github.com/angular-ui/angular-ui-router-bower/tar.gz/15b68079fcad8260fdeb8c580478e6363f9d65d7"
-  dependencies:
-    "@uirouter/core" "5.0.13"
 
 "@bower_components/angular-ui-select@angular-ui/ui-select#~0.19.8":
   version "0.19.8"
   resolved "https://codeload.github.com/angular-ui/ui-select/tar.gz/32829a39e8efe7f94de049c6b529c23fedfc6686"
 
-"@bower_components/angular@angular/bower-angular#>= 1.6.0", "@bower_components/angular@angular/bower-angular#>=1.6.6", "@bower_components/angular@angular/bower-angular#~1.6.5":
+"@bower_components/angular@angular/bower-angular#>= 1.6.0", "@bower_components/angular@angular/bower-angular#>=1.6.6", "@bower_components/angular@angular/bower-angular#~1.6.0", "@bower_components/angular@angular/bower-angular#~1.6.5":
   version "1.6.8"
+  uid f4be53fc72b2eb2c3c3d634aeacfc68673ea5e68
   resolved "https://codeload.github.com/angular/bower-angular/tar.gz/f4be53fc72b2eb2c3c3d634aeacfc68673ea5e68"
 
 "@bower_components/angularjs-slider@danielreid/angularjs-slider#feature/restrictedRange":
@@ -78,6 +80,7 @@
 
 "@bower_components/bowser@ded/bowser#0.7.3", "@bower_components/bowser@ded/bowser#~0.7.3":
   version "0.7.3"
+  uid e53c1db9ebfaab0081f35c8b6e23452495a7d813
   resolved "https://codeload.github.com/ded/bowser/tar.gz/e53c1db9ebfaab0081f35c8b6e23452495a7d813"
 
 "@bower_components/clipboard@zenorocha/clipboard.js#^1.6.0":
@@ -96,7 +99,7 @@
   version "0.0.0"
   resolved "https://codeload.github.com/mbostock-bower/d3-bower/tar.gz/93ca06fa75792b2d7a843a33e43e53c615088fcf"
 
-"@bower_components/d3@mbostock-bower/d3-bower#~3.5.x":
+"@bower_components/d3@mbostock-bower/d3-bower#~3.5.5", "@bower_components/d3@mbostock-bower/d3-bower#~3.5.x":
   version "0.0.0"
   resolved "https://codeload.github.com/mbostock-bower/d3-bower/tar.gz/7a826d211d5067867debf9ce24a9987e0cb02b6e"
 
@@ -109,8 +112,14 @@
   resolved "https://codeload.github.com/drugis/error-reporting/tar.gz/dc08775e674de116d86fc995321b1df3b1c2bc54"
 
 "@bower_components/export-directive@drugis/export-directive#master":
-  version "0.0.0"
-  resolved "https://codeload.github.com/drugis/export-directive/tar.gz/864ef3a3ccab76316c25d9aa4a18343dc9253f26"
+  version ""
+  resolved "https://codeload.github.com/drugis/export-directive/tar.gz/104c9d1f51a2e1e84921cf17da10f5934efb6e50"
+  dependencies:
+    "@bower_components/angular" angular/bower-angular#~1.6.0
+    "@bower_components/clipboard" zenorocha/clipboard.js#^1.6.0
+    "@bower_components/d3" mbostock-bower/d3-bower#~3.5.5
+    "@bower_components/jquery" jquery/jquery-dist#~3.2.1
+    "@bower_components/nvd3" novus/nvd3#1.8.5
 
 "@bower_components/fastclick@ftlabs/fastclick#~0.6.11":
   version "0.6.12"
@@ -118,10 +127,12 @@
 
 "@bower_components/font-awesome@FortAwesome/Font-Awesome#~4.3", "@bower_components/font-awesome@FortAwesome/Font-Awesome#~4.3.0":
   version "4.3.0"
+  uid "41b9ed01103e6820c3cb043ba7ddab30ecd3f4c0"
   resolved "https://codeload.github.com/FortAwesome/Font-Awesome/tar.gz/41b9ed01103e6820c3cb043ba7ddab30ecd3f4c0"
 
 "@bower_components/foundation-sites@zurb/foundation-sites#^6.4.3", "@bower_components/foundation-sites@zurb/foundation-sites#~6":
   version "6.4.3"
+  uid "4e21634356da296edd2f1c3e65d91140f991008b"
   resolved "https://codeload.github.com/zurb/foundation-sites/tar.gz/4e21634356da296edd2f1c3e65d91140f991008b"
   dependencies:
     jquery ">=3.0.0"
@@ -129,7 +140,7 @@
 
 "@bower_components/gemtc-web@drugis/gemtc-web#develop":
   version "0.7.2"
-  resolved "https://codeload.github.com/drugis/gemtc-web/tar.gz/f39786dd17c336c6c9fd1812d36a650e9e6bc3a0"
+  resolved "https://codeload.github.com/drugis/gemtc-web/tar.gz/76ad0bc109ace74643b4b38f4203ba20c1073f09"
   dependencies:
     "@bower_components/KaTeX" Khan/KaTeX#~0.6.0
     "@bower_components/angular" angular/bower-angular#>=1.6.6
@@ -190,6 +201,7 @@
 
 "@bower_components/jquery@jquery/jquery-dist#>=3.2.1", "@bower_components/jquery@jquery/jquery-dist#~3.2.1":
   version "3.2.1"
+  uid "77d2a51d0520d2ee44173afdf4e40a9201f5964e"
   resolved "https://codeload.github.com/jquery/jquery-dist/tar.gz/77d2a51d0520d2ee44173afdf4e40a9201f5964e"
 
 "@bower_components/lodash@lodash/lodash#>=4.2.0":
@@ -202,8 +214,39 @@
 
 "@bower_components/mcda-web@drugis/mcda-elicitation-web#develop":
   version "0.14.2"
-  resolved "https://codeload.github.com/drugis/mcda-elicitation-web/tar.gz/40e0881eaa8c602df4705fd5814bae415c07c442"
+  resolved "https://codeload.github.com/drugis/mcda-elicitation-web/tar.gz/511d7950b43e6dd72c0ac332207271ed35e36f73"
   dependencies:
+    "@bower_components/KaTeX" Khan/KaTeX#^0.6.0
+    "@bower_components/MathJax" mathjax/MathJax#2.4.0
+    "@bower_components/angular" "angular/bower-angular#>= 1.6.0"
+    "@bower_components/angular-animate" angular/bower-angular-animate#~1.6.0
+    "@bower_components/angular-cookies" angular/bower-angular-cookies#~1.6.5
+    "@bower_components/angular-foundation-6" drugis/angular-foundation-6#master
+    "@bower_components/angular-mocks" angular/bower-angular-mocks#~1.6
+    "@bower_components/angular-patavi-client" drugis/angular-patavi-client#2.0.3
+    "@bower_components/angular-resource" angular/bower-angular-resource#~1.6.5
+    "@bower_components/angular-touch" angular/bower-angular-touch#^1.6.6
+    "@bower_components/angular-ui-router" angular-ui/angular-ui-router-bower#~1.0.5
+    "@bower_components/angularjs-slider" danielreid/angularjs-slider#feature/restrictedRange
+    "@bower_components/bowser" ded/bowser#0.7.3
+    "@bower_components/clipboard" zenorocha/clipboard.js#^1.6.0
+    "@bower_components/d3" mbostock-bower/d3-bower#3.5.5
+    "@bower_components/domready" ded/domready#~1.0.7
+    "@bower_components/error-reporting" drugis/error-reporting#1.2.1
+    "@bower_components/export-directive" drugis/export-directive#master
+    "@bower_components/font-awesome" FortAwesome/Font-Awesome#~4.3.0
+    "@bower_components/foundation-sites" zurb/foundation-sites#~6
+    "@bower_components/help-popup" drugis/help-popup#0.3.0
+    "@bower_components/jquery" jquery/jquery-dist#~3.2.1
+    "@bower_components/lodash" lodash/lodash#~4.2.0
+    "@bower_components/nprogress" rstacruz/nprogress#~0.2.0
+    "@bower_components/nvd3" novus/nvd3#1.8.5
+    "@bower_components/requirejs" jrburke/requirejs-bower#~2.1.15
+    "@bower_components/requirejs-domready" requirejs/domReady#~2.0.1
+    "@bower_components/scrollup" markgoodyear/scrollup#^2.4.1
+    "@bower_components/smooth-scroller" firstandthird/smooth-scroller#~0.1.0
+    "@bower_components/toc" jgallen23/toc#^0.3.2
+    "@bower_components/what-input" ten1seven/what-input#~4.1.3
     async "^2.6.0"
     body-parser "~1.3.1"
     cookie-parser "~1.1.0"
@@ -251,10 +294,12 @@
 
 "@bower_components/requirejs@jrburke/requirejs-bower#~2.1.10", "@bower_components/requirejs@jrburke/requirejs-bower#~2.1.15":
   version "0.0.0"
+  uid b295d2bb6d397cc34eea2bc38dbea5b519614035
   resolved "https://codeload.github.com/jrburke/requirejs-bower/tar.gz/b295d2bb6d397cc34eea2bc38dbea5b519614035"
 
 "@bower_components/scrollup@markgoodyear/scrollup#^2.4.1", "@bower_components/scrollup@markgoodyear/scrollup#~2.4.1":
   version "2.4.1"
+  uid "2167852df6d20548863a0786cb88abcff49f5261"
   resolved "https://codeload.github.com/markgoodyear/scrollup/tar.gz/2167852df6d20548863a0786cb88abcff49f5261"
 
 "@bower_components/select2@ivaynberg/select2#~3.4.5":
@@ -292,10 +337,6 @@
 "@bower_components/what-input@ten1seven/what-input#~4.1.3":
   version "4.1.6"
   resolved "https://codeload.github.com/ten1seven/what-input/tar.gz/dab188a752f9b0b847b050d7cb4e837e0d1bdcea"
-
-"@uirouter/core@5.0.13":
-  version "5.0.13"
-  resolved "https://registry.yarnpkg.com/@uirouter/core/-/core-5.0.13.tgz#e1b31626c393cbdd82651755ff1ce3fc55163fd0"
 
 "@uirouter/core@5.0.14":
   version "5.0.14"
