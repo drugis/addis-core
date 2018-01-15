@@ -755,3 +755,11 @@ CREATE TABLE ordering(
     PRIMARY KEY(analysisId),
     FOREIGN KEY(analysisId) REFERENCES BenefitRiskAnalysis(id) ON DELETE CASCADE
 );
+
+--changeset keijserj:77
+CREATE TABLE toggledColumns(
+    analysisId INT NOT NULL,
+    toggledColumns VARCHAR NOT NULL,
+    PRIMARY KEY(analysisId),
+    FOREIGN KEY(analysisId) REFERENCES BenefitRiskAnalysis(id) ON DELETE CASCADE
+);

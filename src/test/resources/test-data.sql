@@ -139,4 +139,6 @@ INSERT INTO public.effectsTableAlternativeInclusion(analysisId, alternativeId) V
 INSERT INTO public.scaledUnit(id, projectId, conceptUri, multiplier, name) VALUES(10, 1, 'http://concept10.bla', 0.1, 'gram');
 INSERT INTO public.scaledUnit(id, projectId, conceptUri, multiplier, name) VALUES(20, 2, 'http://concept20.bla', 0.01, 'liter');
 
-INSERT INTO public.ordering(analysisId, ordering) VALUES(-10, 'ordering: {alternatives:["intervention 1","intervention 2"], criteria:["outcome 2","outcome 2"]}')
+INSERT INTO public.ordering(analysisId, ordering) VALUES(-10, 'ordering: {alternatives:["intervention 1","intervention 2"], criteria:["outcome 2","outcome 2"]}');
+
+INSERT INTO public.toggledColumns(analysisId, toggledColumns) VALUES(-10, '{criteria: true, units: true, description: false, references: false}');

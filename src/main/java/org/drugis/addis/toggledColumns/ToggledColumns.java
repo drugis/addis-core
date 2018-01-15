@@ -48,4 +48,8 @@ public class ToggledColumns {
   public String getToggledColumns() {
     return toggledColumns;
   }
+
+  public Integer getAnalysisId() {
+    return analysisId;
+  }
 }

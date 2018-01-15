@@ -1,7 +1,5 @@
 package org.drugis.addis.toggledColumns.repository.impl;
 
-import org.drugis.addis.ordering.Ordering;
-import org.drugis.addis.ordering.repository.OrderingRepository;
 import org.drugis.addis.toggledColumns.ToggledColumns;
 import org.drugis.addis.toggledColumns.repository.ToggledColumnsRepository;
 import org.springframework.beans.factory.annotation.Qualifier;

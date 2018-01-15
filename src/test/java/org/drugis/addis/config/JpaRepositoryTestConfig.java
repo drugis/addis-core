@@ -51,7 +51,8 @@ import static org.mockito.Mockito.mock;
                 "org.drugis.addis.remarks",
                 "org.drugis.addis.scaledUnits",
                 "org.drugis.addis.subProblems",
-                "org.drugis.addis.ordering"
+                "org.drugis.addis.ordering",
+                "org.drugis.addis.toggledColumns"
         })
 @EnableTransactionManagement
 @EnableJpaRepositories(basePackages = {
@@ -68,7 +69,8 @@ import static org.mockito.Mockito.mock;
         "org.drugis.trialverse",
         "org.drugis.addis.scaledUnits",
         "org.drugis.addis.subProblems",
-        "org.drugis.addis.ordering"
+        "org.drugis.addis.ordering",
+        "org.drugis.addis.toggledColumns"
 })
 public class JpaRepositoryTestConfig {
 
@@ -148,7 +150,8 @@ public class JpaRepositoryTestConfig {
             "org.drugis.trialverse.graph",
             "org.drugis.addis.scaledUnits",
             "org.drugis.addis.subProblems",
-            "org.drugis.addis.ordering");
+            "org.drugis.addis.ordering",
+            "org.drugis.addis.toggledColumns");
     em.setDataSource(dataSource());
     em.setPersistenceUnitName("addisCore");
     em.setLoadTimeWeaver(new InstrumentationLoadTimeWeaver());
