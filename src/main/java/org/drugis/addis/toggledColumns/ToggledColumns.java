@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonRawValue;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import java.util.Objects;
 
 @Entity
 public class ToggledColumns {
@@ -30,4 +31,21 @@ public class ToggledColumns {
     this.toggledColumns = toggledColumns;
   }
 
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    ToggledColumns that = (ToggledColumns) o;
+    return Objects.equals(analysisId, that.analysisId) &&
+            Objects.equals(toggledColumns, that.toggledColumns);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(analysisId, toggledColumns);
+  }
+
+  public String getToggledColumns() {
+    return toggledColumns;
+  }
 }

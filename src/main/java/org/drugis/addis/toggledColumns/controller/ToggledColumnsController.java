@@ -22,8 +22,12 @@ public class ToggledColumnsController extends AbstractAddisCoreController {
 
   @RequestMapping(value = "/projects/{projectId}/analyses/{analysisId}/toggledColumns", method = RequestMethod.GET)
   @ResponseBody
-  public ToggledColumns get(@PathVariable Integer analysisId) {
-    return toggledColumnsRepository.get(analysisId);
+  public String get(@PathVariable Integer analysisId) {
+    ToggledColumns tc = toggledColumnsRepository.get(analysisId);
+    if(tc != null ){
+      return tc.getToggledColumns();
+    }
+    return null;
   }
 
   @RequestMapping(value = "/projects/{projectId}/analyses/{analysisId}/toggledColumns", method = RequestMethod.PUT)
