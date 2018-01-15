@@ -87,7 +87,8 @@ import java.util.concurrent.TimeUnit;
         "org.drugis.trialverse",
         "org.drugis.addis.scaledUnits",
         "org.drugis.addis.subProblems",
-        "org.drugis.addis.ordering"
+        "org.drugis.addis.ordering",
+        "org.drugis.addis.toggledColumns"
 })
 @EnableCaching
 public class MainConfig {
@@ -232,7 +233,8 @@ public class MainConfig {
             "org.drugis.trialverse",
             "org.drugis.addis.scaledUnits",
             "org.drugis.addis.subProblems",
-            "org.drugis.addis.ordering");
+            "org.drugis.addis.ordering",
+            "org.drugis.addis.toggledColumns");
     em.setDataSource(dataSource());
     em.setPersistenceUnitName("addisCore");
     em.setLoadTimeWeaver(new InstrumentationLoadTimeWeaver());

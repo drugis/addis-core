@@ -963,3 +963,12 @@ CREATE TABLE ordering(
   FOREIGN KEY(analysisId) REFERENCES benefitRiskAnalysis(id) ON DELETE CASCADE
 );
 --rollback DROP TABLE ordering
+
+--changeset keijserj:78
+CREATE TABLE toggledColumns(
+  analysisId INT NOT NULL,
+  toggledColumns VARCHAR NOT NULL,
+  PRIMARY KEY (analysisId),
+  FOREIGN KEY(analysisId) REFERENCES benefitRiskAnalysis(id) ON DELETE CASCADE
+);
+--rollback DROP TABLE toggledColumns

@@ -140,7 +140,7 @@
 
 "@bower_components/gemtc-web@drugis/gemtc-web#develop":
   version "0.7.2"
-  resolved "https://codeload.github.com/drugis/gemtc-web/tar.gz/76ad0bc109ace74643b4b38f4203ba20c1073f09"
+  resolved "https://codeload.github.com/drugis/gemtc-web/tar.gz/caa26b064041f499467e650439a6aa8d1c7a1b06"
   dependencies:
     "@bower_components/KaTeX" Khan/KaTeX#~0.6.0
     "@bower_components/angular" angular/bower-angular#>=1.6.6
@@ -214,7 +214,7 @@
 
 "@bower_components/mcda-web@drugis/mcda-elicitation-web#develop":
   version "0.14.2"
-  resolved "https://codeload.github.com/drugis/mcda-elicitation-web/tar.gz/511d7950b43e6dd72c0ac332207271ed35e36f73"
+  resolved "https://codeload.github.com/drugis/mcda-elicitation-web/tar.gz/955b050eec06c1e83964aa056651906d10591ebd"
   dependencies:
     "@bower_components/KaTeX" Khan/KaTeX#^0.6.0
     "@bower_components/MathJax" mathjax/MathJax#2.4.0
@@ -1052,13 +1052,17 @@ delegates@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/delegates/-/delegates-1.0.0.tgz#84c6e159b81904fdca59a0ef44cd870d31250f9a"
 
-depd@1.1.1, depd@~1.1.0, depd@~1.1.1:
+depd@1.1.1:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/depd/-/depd-1.1.1.tgz#5783b4e1c459f06fa5ca27f991f3d06e7a310359"
 
 depd@~1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/depd/-/depd-1.0.1.tgz#80aec64c9d6d97e65cc2a9caa93c0aa6abf73aaa"
+
+depd@~1.1.0, depd@~1.1.1:
+  version "1.1.2"
+  resolved "https://registry.yarnpkg.com/depd/-/depd-1.1.2.tgz#9bcd52e14c097763e749b274c4346ed2e560b5a9"
 
 destroy@1.0.3:
   version "1.0.3"

@@ -14,7 +14,8 @@ var requires = [
   'resources/scenarioResource',
   'resources/scaledUnitResource',
   'resources/subProblemResource',
-  'resources/orderingResource'
+  'resources/orderingResource',
+  'resources/toggleColumnsResource'
 ];
 define(requires.concat(['angular', 'angular-resource']), function(
   EvidenceTableResource,
@@ -32,6 +33,7 @@ define(requires.concat(['angular', 'angular-resource']), function(
   ScaledUnitResource,
   SubProblemResource,
   OrderingResource,
+  ToggleColumnsResource,
   angular
 ) {
   return angular.module('addis.resources', ['ngResource'])
@@ -50,5 +52,6 @@ define(requires.concat(['angular', 'angular-resource']), function(
     .factory('ScaledUnitResource', ScaledUnitResource)
     .factory('SubProblemResource', SubProblemResource)
     .factory('OrderingResource', OrderingResource)
+    .factory('ToggleColumnsResource',ToggleColumnsResource)
     ;
 });
