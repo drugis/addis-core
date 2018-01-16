@@ -61,4 +61,14 @@ public class SubProblemController extends AbstractAddisCoreController {
     return subProblemService.createSubProblem(analysisId, subProblemCommand.getDefinition(), subProblemCommand.getTitle(), subProblemCommand.getScenarioState());
   }
 
+  @RequestMapping(value = "/projects/{projectId}/analyses/{analysisId}/problems/{subProblemId}", method = RequestMethod.POST)
+  public void update(Principal principal, HttpServletResponse response, @PathVariable Integer projectId, @PathVariable Integer analysisId, @PathVariable Integer subProblemId,
+                           @RequestBody SubProblemCommand subProblemCommand) throws ResourceDoesNotExistException, MethodNotAllowedException {
+    projectService.checkOwnership(projectId, principal);
+    analysisService.checkCoordinates(projectId, analysisId);
+    subProblemRepository.update(analysisId, subProblemId, subProblemCommand.getDefinition(), subProblemCommand.getTitle());
+    response.setStatus(HttpStatus.SC_OK);
+
+  }
+
 }

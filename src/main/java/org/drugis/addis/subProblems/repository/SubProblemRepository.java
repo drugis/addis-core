@@ -16,4 +16,6 @@ public interface SubProblemRepository {
   Collection<SubProblem> queryByProjectAndAnalysis(Integer projectId, Integer workspaceId);
 
   SubProblem get(Integer subProblemId) throws ResourceDoesNotExistException;
+
+  void update(Integer analysisId, Integer subProblemId, String definition, String title) throws ResourceDoesNotExistException;
 }

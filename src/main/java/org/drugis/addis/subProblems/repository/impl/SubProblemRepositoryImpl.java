@@ -55,9 +55,22 @@ public class SubProblemRepositoryImpl implements SubProblemRepository {
   @Override
   public SubProblem get(Integer subProblemId) throws ResourceDoesNotExistException {
     SubProblem subProblem = em.find(SubProblem.class, subProblemId);
-    if(subProblem == null) {
+    if (subProblem == null) {
       throw new ResourceDoesNotExistException();
     }
     return subProblem;
+  }
+
+  @Override
+  public void update(Integer analysisId, Integer subProblemId, String definition, String title) throws ResourceDoesNotExistException {
+    SubProblem subProblem = get(subProblemId);
+    if (definition != null) {
+      subProblem.setDefinition(definition);
+    }
+    if (title != null) {
+      subProblem.setTitle(title);
+    }
+
+    em.merge(subProblem);
   }
 }

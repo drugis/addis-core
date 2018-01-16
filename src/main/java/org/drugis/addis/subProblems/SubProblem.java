@@ -74,4 +74,12 @@ public class SubProblem {
     result = 31 * result + title.hashCode();
     return result;
   }
+
+  public void setTitle(String title) {
+    this.title = title;
+  }
+
+  public void setDefinition(String definition) {
+    this.definition = definition;
+  }
 }

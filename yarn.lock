@@ -214,7 +214,7 @@
 
 "@bower_components/mcda-web@drugis/mcda-elicitation-web#develop":
   version "0.14.2"
-  resolved "https://codeload.github.com/drugis/mcda-elicitation-web/tar.gz/955b050eec06c1e83964aa056651906d10591ebd"
+  resolved "https://codeload.github.com/drugis/mcda-elicitation-web/tar.gz/253d09f5929f9fbbf313cee23955f918f5244bc9"
   dependencies:
     "@bower_components/KaTeX" Khan/KaTeX#^0.6.0
     "@bower_components/MathJax" mathjax/MathJax#2.4.0
