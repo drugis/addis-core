@@ -4,11 +4,13 @@ define(['angular', 'lodash'],
     var dependencies = ['$scope', '$q', '$state', '$stateParams', '$window', '$filter', '$transitions',
       'VersionedGraphResource', 'GraphResource', '$location', '$anchorScroll',
       '$modal', 'StudyService', 'ResultsService', 'StudyDesignService', 'DatasetResource',
+      'ExcelExportService',
       'UserService'
     ];
     var StudyController = function($scope, $q, $state, $stateParams, $window, $filter, $transitions,
       VersionedGraphResource, GraphResource, $location, $anchorScroll,
       $modal, StudyService, ResultsService, StudyDesignService, DatasetResource,
+      ExcelExportService,
       UserService) {
       // functions
       $scope.sideNavClick = sideNavClick;
@@ -344,6 +346,9 @@ define(['angular', 'lodash'],
 
         // place loaded data into frontend cache
         StudyService.loadJson(getStudyFromBackendDefer.$promise);
+        getStudyFromBackendDefer.$promise.then(function() {
+          $scope.exportStudy = ExcelExportService.exportStudy;
+        });
 
         // use the loaded data to fill the view and alert the subviews
         getStudyFromBackendDefer.$promise.then(function() {
