@@ -69,7 +69,7 @@
   version "0.19.8"
   resolved "https://codeload.github.com/angular-ui/ui-select/tar.gz/32829a39e8efe7f94de049c6b529c23fedfc6686"
 
-"@bower_components/angular@angular/bower-angular#>= 1.6.0", "@bower_components/angular@angular/bower-angular#>=1.6.6", "@bower_components/angular@angular/bower-angular#~1.6.0", "@bower_components/angular@angular/bower-angular#~1.6.5":
+"@bower_components/angular@angular/bower-angular#>= 1.6.0", "@bower_components/angular@angular/bower-angular#>=1.6.6", "@bower_components/angular@angular/bower-angular#~1.6.5":
   version "1.6.8"
   uid f4be53fc72b2eb2c3c3d634aeacfc68673ea5e68
   resolved "https://codeload.github.com/angular/bower-angular/tar.gz/f4be53fc72b2eb2c3c3d634aeacfc68673ea5e68"
@@ -113,9 +113,9 @@
 
 "@bower_components/export-directive@drugis/export-directive#master":
   version "1.0.0"
-  resolved "https://codeload.github.com/drugis/export-directive/tar.gz/34951390699cd21e4b0e0f126490395c4f4d1081"
+  resolved "https://codeload.github.com/drugis/export-directive/tar.gz/78820e3713a444a4f6f27c21682aa545ae6a7f9c"
   dependencies:
-    "@bower_components/angular" angular/bower-angular#~1.6.0
+    "@bower_components/angular" angular/bower-angular#~1.6.5
     "@bower_components/clipboard" zenorocha/clipboard.js#^1.6.0
     "@bower_components/d3" mbostock-bower/d3-bower#~3.5.5
     "@bower_components/jquery" jquery/jquery-dist#~3.2.1
@@ -218,7 +218,7 @@
 
 "@bower_components/mcda-web@drugis/mcda-elicitation-web#develop":
   version "0.14.2"
-  resolved "https://codeload.github.com/drugis/mcda-elicitation-web/tar.gz/253d09f5929f9fbbf313cee23955f918f5244bc9"
+  resolved "https://codeload.github.com/drugis/mcda-elicitation-web/tar.gz/86c470dff2e0f0a570015ff2a571af9da82f7c44"
   dependencies:
     "@bower_components/KaTeX" Khan/KaTeX#^0.6.0
     "@bower_components/MathJax" mathjax/MathJax#2.4.0
@@ -1211,13 +1211,13 @@ errorhandler@~1.4.2:
     escape-html "~1.0.3"
 
 es5-ext@^0.10.35, es5-ext@^0.10.9, es5-ext@~0.10.14, es5-ext@~0.10.37:
-  version "0.10.37"
-  resolved "https://registry.yarnpkg.com/es5-ext/-/es5-ext-0.10.37.tgz#0ee741d148b80069ba27d020393756af257defc3"
+  version "0.10.38"
+  resolved "https://registry.yarnpkg.com/es5-ext/-/es5-ext-0.10.38.tgz#fa7d40d65bbc9bb8a67e1d3f9cc656a00530eed3"
   dependencies:
-    es6-iterator "~2.0.1"
+    es6-iterator "~2.0.3"
     es6-symbol "~3.1.1"
 
-es6-iterator@~2.0.1:
+es6-iterator@~2.0.3:
   version "2.0.3"
   resolved "https://registry.yarnpkg.com/es6-iterator/-/es6-iterator-2.0.3.tgz#a7de889141a05a94b0854403b2d0a0fbfa98f3b7"
   dependencies:
@@ -1994,8 +1994,8 @@ isstream@0.1.x, isstream@~0.1.2:
   resolved "https://registry.yarnpkg.com/isstream/-/isstream-0.1.2.tgz#47e63f7af55afa6f92e1500e690eb8b8529c099a"
 
 jasmine-core@^2.6.4:
-  version "2.8.0"
-  resolved "https://registry.yarnpkg.com/jasmine-core/-/jasmine-core-2.8.0.tgz#bcc979ae1f9fd05701e45e52e65d3a5d63f1a24e"
+  version "2.9.0"
+  resolved "https://registry.yarnpkg.com/jasmine-core/-/jasmine-core-2.9.0.tgz#bfbb56defcd30789adec5a3fbba8504233289c72"
 
 jquery@>=3.0.0:
   version "3.2.1"
@@ -2801,8 +2801,8 @@ raw-body@~2.1.2:
     unpipe "1.0.0"
 
 rc@^1.1.7:
-  version "1.2.3"
-  resolved "https://registry.yarnpkg.com/rc/-/rc-1.2.3.tgz#51575a900f8dd68381c710b4712c2154c3e2035b"
+  version "1.2.4"
+  resolved "https://registry.yarnpkg.com/rc/-/rc-1.2.4.tgz#a0f606caae2a3b862bbd0ef85482c0125b315fa3"
   dependencies:
     deep-extend "~0.4.0"
     ini "~1.3.0"
@@ -2996,8 +2996,8 @@ semver@^4.1.0, semver@~4.3.3:
   resolved "https://registry.yarnpkg.com/semver/-/semver-4.3.6.tgz#300bc6e0e86374f7ba61068b5b1ecd57fc6532da"
 
 semver@^5.3.0:
-  version "5.4.1"
-  resolved "https://registry.yarnpkg.com/semver/-/semver-5.4.1.tgz#e059c09d8571f0540823733433505d3a2f00b18e"
+  version "5.5.0"
+  resolved "https://registry.yarnpkg.com/semver/-/semver-5.5.0.tgz#dc4bbc7a6ca9d916dee5d43516f0092b58f7b8ab"
 
 send@0.13.0:
   version "0.13.0"
@@ -3456,8 +3456,8 @@ utils-merge@1.0.1:
   resolved "https://registry.yarnpkg.com/utils-merge/-/utils-merge-1.0.1.tgz#9f95710f50a267947b2ccc124741c1028427e713"
 
 uuid@^3.0.0, uuid@^3.1.0:
-  version "3.1.0"
-  resolved "https://registry.yarnpkg.com/uuid/-/uuid-3.1.0.tgz#3dd3d3e790abc24d7b0d3a034ffababe28ebbc04"
+  version "3.2.1"
+  resolved "https://registry.yarnpkg.com/uuid/-/uuid-3.2.1.tgz#12c528bb9d58d0b9265d9a2f6f0fe8be17ff1f14"
 
 vary@0.1.0:
   version "0.1.0"
