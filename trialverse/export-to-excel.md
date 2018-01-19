@@ -43,7 +43,7 @@ Sheet 1: data
     - treatment (reference to activities worksheet, title of treatmentactivity of primary epoch for this arm)
   - **measurement data (repeat below for each variable)**
     - id (URI) (required for concept mapping)
-    - type (baseline characteristic, endpoint, adverse event)
+    - variable type (baseline characteristic, endpoint, adverse event)
     - measurement type (count, continuous, categorical, survival)
     - **repeat below once for each measurement moment**
       - measurement moment (reference to title of measurement moment on their worksheet (e.g. `=Sheet1!B2`))
