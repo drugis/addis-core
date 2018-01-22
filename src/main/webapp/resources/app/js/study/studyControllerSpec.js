@@ -19,6 +19,7 @@ define(['angular-mocks'], function(angularMocks) {
       studyService = jasmine.createSpyObj('StudyService', ['reset', 'loadJson', 'getStudy',
         'studySaved', 'isStudyModified'
       ]),
+      excelExportService = jasmine.createSpyObj('ExcelExportService',['exportStudy']),
       resultsServiceMock = jasmine.createSpyObj('ResultsService', ['cleanupMeasurements']),
       studyDesignServiceMock = jasmine.createSpyObj('StudyDesignService', ['cleanupCoordinates']),
       graphResource = jasmine.createSpyObj('GraphResource', ['getJson']),
@@ -84,6 +85,7 @@ define(['angular-mocks'], function(angularMocks) {
             innerHeight: 'innerHeightMock'
           },
           StudyService: studyService,
+          ExcelExportService: excelExportService,
           ResultsService: resultsServiceMock,
           StudyDesignService: studyDesignServiceMock,
           UserService: userService
