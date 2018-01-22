@@ -1,7 +1,7 @@
 'use strict';
 define(['lodash', 'xlsx-shim'], function(_, XLSX) {
-  var dependencies = ['$q', 'GROUP_ALLOCATION_OPTIONS', 'BLINDING_OPTIONS', 'STATUS_OPTIONS', 'ResultsService'];
-  var ExcelExportService = function($q, GROUP_ALLOCATION_OPTIONS, BLINDING_OPTIONS, STATUS_OPTIONS, ResultsService) {
+  var dependencies = ['$q', '$location', 'GROUP_ALLOCATION_OPTIONS', 'BLINDING_OPTIONS', 'STATUS_OPTIONS', 'ResultsService'];
+  var ExcelExportService = function($q, $location, GROUP_ALLOCATION_OPTIONS, BLINDING_OPTIONS, STATUS_OPTIONS, ResultsService) {
     var excelUtils = XLSX.utils;
 
     function getVariableResults(otherPromises, variableResults) {
@@ -125,15 +125,20 @@ define(['lodash', 'xlsx-shim'], function(_, XLSX) {
     function buildStudyDataSheet(study, studyInformation, arms, epochs, activities, studyDesign,
       populationInformation, variables, conceptsSheet, measurementMomentSheet) {
       var studyDataSheet = initStudyDataSheet();
+      var initialMerges = [
+        cellRange(0, 0, 7, 0),
+        cellRange(8, 0, 9, 0),
+        cellRange(10, 0, 12, 0)
+      ];
       var studyData = buildStudyInformation(study, studyInformation);
       var armData = buildArmData(arms);
       var treatmentLabels = buildTreatmentLabels(arms, epochs, activities, studyDesign);
       var populationInformationData = buildPopulationInformationData(populationInformation);
-      var variablesData = buildVariablesData(variables, conceptsSheet, measurementMomentSheet);
+      var variablesData = buildVariablesData(variables, arms, conceptsSheet, measurementMomentSheet);
       var armMerges = buildArmMerges(arms);
 
       _.merge(studyDataSheet, studyData, populationInformationData, armData, treatmentLabels, variablesData);
-      studyDataSheet['!merges'] = studyDataSheet['!merges'].concat(armMerges);
+      studyDataSheet['!merges'] = initialMerges.concat(armMerges, studyDataSheet['!merges']);
       var measurementCounter = 30; // placeholder FIXME once measurements are implemented
       studyDataSheet['!ref'] = 'A1:' +
         excelUtils.encode_col(11 + measurementCounter) +
@@ -141,35 +146,42 @@ define(['lodash', 'xlsx-shim'], function(_, XLSX) {
       return studyDataSheet;
     }
 
-    function buildVariablesData(variables, conceptsSheet, measurementMomentSheet) {
+    function buildVariablesData(variables, arms, conceptsSheet, measurementMomentSheet) {
       var column = excelUtils.decode_col('N');
+      var headerRow = 3;
       var variablesData = _.reduce(variables, function(accum, variable) {
         if (!variable.resultProperties) {
           return accum;
         } // FIXME: support categoricals
+
         var numberOfColumns = 3 + variable.measuredAtMoments.length + variable.resultProperties.length;
-        var variableReference = _.findKey(conceptsSheet, ['v', variable.uri]);
-        var conceptCell = excelUtils.decode_cell(variableReference);
-        conceptCell = excelUtils.encode_cell({
-          c: 1,
-          r: conceptCell.r
-        });
+
+        var variableReference = getTitleReference(conceptsSheet, variable.uri);
+
+        // fixed block (not dependent on measured at moments)
         var titleAddress = excelUtils.encode_col(column) + 2;
-        accum[titleAddress] = cellFormula('=Concepts!' + conceptCell);
-        accum[excelUtils.encode_col(column) + 3] = cellValue('id');
-        accum[excelUtils.encode_col(column + 1) + 3] = cellValue('variable type');
-        accum[excelUtils.encode_col(column + 2) + 3] = cellValue('measurement type');
-        var mmReduce = _.reduce(variable.measuredAtMoments, function(measuredAtMomentAccum, measuredAtMoment, index) {
-          var measurementMomentCell = excelUtils.decode_cell(_.findKey(measurementMomentSheet, ['v', measuredAtMoment.uri]));
-          measurementMomentCell = excelUtils.encode_cell({
-            c: 1,
-            r: measurementMomentCell.r
-          });
+        accum[titleAddress] = cellFormula('=Concepts!' + variableReference);
+        accum[excelUtils.encode_col(column) + headerRow] = cellValue('id');
+        accum[excelUtils.encode_col(column + 1) + headerRow] = cellValue('variable type');
+        accum[excelUtils.encode_col(column + 2) + headerRow] = cellValue('measurement type');
+        accum[excelUtils.encode_col(column) + (headerRow + 1)] = cellValue(variable.uri);
+        accum[excelUtils.encode_col(column + 1) + (headerRow + 1)] = cellValue(variable.type);
+        accum[excelUtils.encode_col(column + 2) + (headerRow + 1)] = cellValue(variable.measurementType);
+        accum['!merges'] = accum['!merges'].concat(_.map(_.range(0, 3), function(i) {
+          return cellRange(column + i, headerRow, column + i, headerRow + arms.length - 1);
+        }));
+
+        // FIXME: values + vertical merges
+
+        // variable block (dependent on measured at moments + result properties)
+        var measurementsBlock = _.reduce(variable.measuredAtMoments, function(measuredAtMomentAccum, measuredAtMoment, index) {
+          var measurementMomentCell = getTitleReference(measurementMomentSheet, measuredAtMoment.uri);
           var dataStartColumn = column + 3 + index * (variable.resultProperties.length + 1);
-          measuredAtMomentAccum[excelUtils.encode_col(dataStartColumn) + 3] = cellValue('measurement moment');
-          measuredAtMomentAccum[excelUtils.encode_col(dataStartColumn) + 4] = cellFormula('=\'Measurement moments\'!' + measurementMomentCell);
+          measuredAtMomentAccum[excelUtils.encode_col(dataStartColumn) + headerRow] = cellValue('measurement moment');
+          measuredAtMomentAccum[excelUtils.encode_col(dataStartColumn) + (headerRow + 1)] = cellFormula('=\'Measurement moments\'!' + measurementMomentCell);
           return measuredAtMomentAccum;
         }, {});
+
         var mergeEnd = excelUtils.decode_cell(titleAddress);
         mergeEnd.c += numberOfColumns - 1;
         accum['!merges'].push({
@@ -177,7 +189,7 @@ define(['lodash', 'xlsx-shim'], function(_, XLSX) {
           e: mergeEnd
         });
         column += numberOfColumns;
-        return _.merge(accum, mmReduce);
+        return _.merge(accum, measurementsBlock);
       }, {
         '!merges': []
       });
@@ -186,15 +198,11 @@ define(['lodash', 'xlsx-shim'], function(_, XLSX) {
 
     function initStudyDataSheet() {
       var studyDataSheet = {
-        A1: { //row 1
-          v: 'Study Information'
-        },
+        A1: cellValue('Study Information'),
         I1: cellValue('Population Information'),
         K1: cellValue('Arm Information'),
         N1: cellValue('Measurement Information'),
-        A3: { //row 3
-          v: 'id'
-        },
+        A3: cellValue('id'),
         B3: cellValue('addis url'),
         C3: cellValue('title'),
         D3: cellValue('group allocation'),
@@ -208,18 +216,13 @@ define(['lodash', 'xlsx-shim'], function(_, XLSX) {
         L3: cellValue('description'),
         M3: cellValue('treatment')
       };
-      studyDataSheet['!merges'] = [
-        cellRange(0, 0, 7, 0),
-        cellRange(8, 0, 9, 0),
-        cellRange(10, 0, 12, 0)
-      ];
       return studyDataSheet;
     }
 
     function buildStudyInformation(study, studyInformation) {
       return {
         A4: cellValue(study.label),
-        B4: cellValue(window.location.href),
+        B4: cellValue($location.absUrl()),
         C4: cellValue(study.comment),
         D4: cellValue(GROUP_ALLOCATION_OPTIONS[studyInformation.allocation].label),
         E4: cellValue(BLINDING_OPTIONS[studyInformation.blinding].label),
@@ -238,18 +241,9 @@ define(['lodash', 'xlsx-shim'], function(_, XLSX) {
       }, {});
     }
 
-    function buildArmMerges(arms) {
+    function buildArmMerges(arms) { // vertical merges for all study information across arms
       return _.map(_.range(0, 10), function(i) {
-        return {
-          s: {
-            c: i,
-            r: 3
-          },
-          e: {
-            c: i,
-            r: 3 + arms.length - 1
-          }
-        };
+        return cellRange(i, 3, i, 3 + arms.length - 1);
       });
     }
 
@@ -323,7 +317,7 @@ define(['lodash', 'xlsx-shim'], function(_, XLSX) {
             accum[excelUtils.encode_col(5 + index * 6) + row] = cellValue(doseTypes[treatment.treatmentDoseType]);
             accum[excelUtils.encode_col(6 + index * 6) + row] = cellValue(isFixedDose ? treatment.fixedValue : treatment.minValue);
             accum[excelUtils.encode_col(7 + index * 6) + row] = cellValue(isFixedDose ? undefined : treatment.maxValue);
-            accum[excelUtils.encode_col(8 + index * 6) + row] = cellValue(treatment.doseUnit.label);
+            accum[excelUtils.encode_col(8 + index * 6) + row] = cellFormula('=Concepts!' + getTitleReference(conceptsSheet, treatment.doseUnit.uri));
             accum[excelUtils.encode_col(9 + index * 6) + row] = cellValue(treatment.dosingPeriodicity);
           });
         }

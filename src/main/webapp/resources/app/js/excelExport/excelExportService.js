@@ -83,10 +83,10 @@ define(['lodash', 'xlsx-shim', 'file-saver'], function(_, XLSX, saveAs) {
           var conceptsSheet = ExcelExportUtilService.buildConceptsSheet(drugs.concat(populationCharacteristics, outcomes, adverseEvents, units));
           var epochSheet = ExcelExportUtilService.buildEpochSheet(epochs);
           var measurementMomentSheet = ExcelExportUtilService.buildMeasurementMomentSheet(measurementMoments, epochSheet);
-          var studyDataSheet = ExcelExportUtilService.buildStudyDataSheet(study, studyInformation, arms, epochs, studyDesign,
+          var studyDataSheet = ExcelExportUtilService.buildStudyDataSheet(study, studyInformation, arms, epochs, activities, studyDesign,
             populationInformation, variables, conceptsSheet, measurementMomentSheet);
           var activitiesSheet = ExcelExportUtilService.buildActivitiesSheet(activities, conceptsSheet);
-          var studyDesignSheet = ExcelExportUtilService.buildStudyDesignSheet(epochs, arms, activities, studyDesign, epochSheet, activitiesSheet, studyDataSheet);
+          var studyDesignSheet = ExcelExportUtilService.buildStudyDesignSheet(epochs, arms, studyDesign, epochSheet, activitiesSheet, studyDataSheet);
 
           excelUtils.book_append_sheet(workBook, studyDataSheet, 'Study data');
           excelUtils.book_append_sheet(workBook, activitiesSheet, 'Activities');
