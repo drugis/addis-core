@@ -32,6 +32,7 @@ define(['lodash', 'xlsx-shim', 'file-saver'], function(_, XLSX, saveAs) {
     UnitService,
     ResultsService
   ) {
+    var excelUtils = XLSX.utils;
 
     function exportStudy() {
       var populationCharacteristics, outcomes, adverseEvents;
@@ -81,28 +82,28 @@ define(['lodash', 'xlsx-shim', 'file-saver'], function(_, XLSX, saveAs) {
           var drugs = addConceptType(results[8], 'drug');
           var units = addConceptType(results[9], 'unit');
           var resultsByVariableUri = _.keyBy(results.slice(10), 'uri');
-          var variables = _.map([populationCharacteristics, outcomes, adverseEvents], function(variable) {
+          var variables = _.map(populationCharacteristics.concat(outcomes, adverseEvents), function(variable) {
             return _.merge({}, variable, {
               results: resultsByVariableUri[variable.uri].results
             });
           });
 
-          var workBook = XLSX.utils.book_new();
+          var workBook = excelUtils.book_new();
 
-          var studyDataSheet = buildStudyDataSheet(study, studyInformation, arms, epochs, activities, studyDesign,
-            populationInformation, variables);
-          var conceptSheet = buildConceptsSheet(drugs.concat(populationCharacteristics, outcomes, adverseEvents, units));
-          var activitiesSheet = buildActivitiesSheet(activities, conceptSheet);
+          var conceptsSheet = buildConceptsSheet(drugs.concat(populationCharacteristics, outcomes, adverseEvents, units));
           var epochSheet = buildEpochSheet(epochs);
-          var studyDesignSheet = buildStudyDesignSheet(epochs, arms, activities, studyDesign, epochSheet, activitiesSheet, studyDataSheet);
           var measurementMomentSheet = buildMeasurementMomentSheet(measurementMoments, epochSheet);
+          var studyDataSheet = buildStudyDataSheet(study, studyInformation, arms, epochs, activities, studyDesign,
+            populationInformation, variables, conceptsSheet, measurementMomentSheet);
+          var activitiesSheet = buildActivitiesSheet(activities, conceptsSheet);
+          var studyDesignSheet = buildStudyDesignSheet(epochs, arms, activities, studyDesign, epochSheet, activitiesSheet, studyDataSheet);
 
-          XLSX.utils.book_append_sheet(workBook, studyDataSheet, 'Study data');
-          XLSX.utils.book_append_sheet(workBook, activitiesSheet, 'Activities');
-          XLSX.utils.book_append_sheet(workBook, epochSheet, 'Epochs');
-          XLSX.utils.book_append_sheet(workBook, studyDesignSheet, 'Study design');
-          XLSX.utils.book_append_sheet(workBook, measurementMomentSheet, 'Measurement moments');
-          XLSX.utils.book_append_sheet(workBook, conceptSheet, 'Concepts');
+          excelUtils.book_append_sheet(workBook, studyDataSheet, 'Study data');
+          excelUtils.book_append_sheet(workBook, activitiesSheet, 'Activities');
+          excelUtils.book_append_sheet(workBook, epochSheet, 'Epochs');
+          excelUtils.book_append_sheet(workBook, studyDesignSheet, 'Study design');
+          excelUtils.book_append_sheet(workBook, measurementMomentSheet, 'Measurement moments');
+          excelUtils.book_append_sheet(workBook, conceptsSheet, 'Concepts');
           var workBookout = XLSX.write(workBook, {
             bookType: 'xlsx',
             type: 'array'
@@ -212,7 +213,7 @@ define(['lodash', 'xlsx-shim', 'file-saver'], function(_, XLSX, saveAs) {
       var armRowsByUri = {};
       var epochHeaders = _.reduce(epochs, function(accum, epoch, index) {
         var epochReference = _.findKey(epochSheet, ['v', epoch.label]);
-        var column = XLSX.utils.encode_col(index + 1);
+        var column = excelUtils.encode_col(index + 1);
         epochColumnsByUri[epoch.uri] = column;
         accum[column + 1] = {
           f: '=Epochs!' + epochReference
@@ -232,9 +233,9 @@ define(['lodash', 'xlsx-shim', 'file-saver'], function(_, XLSX, saveAs) {
       var activityReferences = _.reduce(studyDesign, function(accum, coordinate) {
         var activityReference = _.findKey(activitiesSheet, ['v', coordinate.activityUri]);
 
-        var activityTitleReference = XLSX.utils.decode_cell(activityReference);
+        var activityTitleReference = excelUtils.decode_cell(activityReference);
         activityTitleReference.c += 1;
-        activityTitleReference = XLSX.utils.encode_cell(activityTitleReference);
+        activityTitleReference = excelUtils.encode_cell(activityTitleReference);
 
         accum[epochColumnsByUri[coordinate.epochUri] + armRowsByUri[coordinate.armUri]] = {
           f: '=Activities!' + activityTitleReference
@@ -247,7 +248,7 @@ define(['lodash', 'xlsx-shim', 'file-saver'], function(_, XLSX, saveAs) {
           v: 'arm'
         }
       }, epochHeaders, armReferences, activityReferences);
-      var lastColumn = XLSX.utils.encode_col(1 + epochs.length);
+      var lastColumn = excelUtils.encode_col(1 + epochs.length);
       studyDesignSheet['!ref'] = 'A1:' + lastColumn + (arms.length + 1);
 
       return studyDesignSheet;
@@ -296,22 +297,77 @@ define(['lodash', 'xlsx-shim', 'file-saver'], function(_, XLSX, saveAs) {
       }, epochHeaders, epochData);
     }
 
-    function buildStudyDataSheet(study, studyInformation, arms, epochs, activities, studyDesign, populationInformation) {
+    function buildStudyDataSheet(study, studyInformation, arms, epochs, activities, studyDesign,
+      populationInformation, variables, conceptsSheet, measurementMomentSheet) {
       var studyDataSheet = initStudyDataSheet();
       var studyData = buildStudyInformation(study, studyInformation);
       var armData = buildArmData(arms);
       var treatmentLabels = buildTreatmentLabels(arms, epochs, activities, studyDesign);
       var populationInformationData = buildPopulationInformationData(populationInformation);
-
+      var variablesData = buildVariablesData(variables, conceptsSheet, measurementMomentSheet);
       var armMerges = buildArmMerges(arms);
 
-      _.merge(studyDataSheet, studyData, populationInformationData, armData, treatmentLabels);
+      _.merge(studyDataSheet, studyData, populationInformationData, armData, treatmentLabels, variablesData);
       studyDataSheet['!merges'] = studyDataSheet['!merges'].concat(armMerges);
       var measurementCounter = 30; // placeholder FIXME once measurements are implemented
       studyDataSheet['!ref'] = 'A1:' +
-        XLSX.utils.encode_col(11 + measurementCounter) +
+        excelUtils.encode_col(11 + measurementCounter) +
         (3 + arms.length);
       return studyDataSheet;
+    }
+
+    function buildVariablesData(variables, conceptsSheet, measurementMomentSheet) {
+      var column = excelUtils.decode_col('N');
+      var variablesData = _.reduce(variables, function(accum, variable) {
+        var numberOfColumns = 3 + variable.measuredAtMoments.length + variable.resultProperties.length;
+        var variableReference = _.findKey(conceptsSheet, function(conceptCell) {
+          return conceptCell.v === variable.uri;
+        });
+        var conceptCell = excelUtils.decode_cell(variableReference);
+        conceptCell = excelUtils.encode_cell({
+          c: 1,
+          r: conceptCell.r
+        });
+        var titleAddress = excelUtils.encode_col(column) + 2;
+        accum[titleAddress] = {
+          f: '=Concepts!' + conceptCell
+        };
+        accum[excelUtils.encode_col(column) + 3] = {
+          'v': 'id'
+        };
+        accum[excelUtils.encode_col(column + 1) + 3] = {
+          'v': 'variable type'
+        };
+        accum[excelUtils.encode_col(column + 2) + 3] = {
+          'v': 'measurement type'
+        };
+        var mmReduce = _.reduce(variable.measuredAtMoments, function(measuredAtMomentAccum, measuredAtMoment, index) {
+          var measurementMomentCell = excelUtils.decode_cell(_.findKey(measurementMomentSheet, ['v', measuredAtMoment.uri]));
+          measurementMomentCell = excelUtils.encode_cell({
+            c: 1,
+            r: measurementMomentCell.r
+          });
+          var dataStartColumn = column + 3 + index * (variable.resultProperties.length + 1);
+          measuredAtMomentAccum[excelUtils.encode_col(dataStartColumn) + 3] = {
+            v: 'measurement moment'
+          };
+          measuredAtMomentAccum[excelUtils.encode_col(dataStartColumn) + 4] = {
+            f: '=\'Measurement moments\'!' + measurementMomentCell
+          };
+          return measuredAtMomentAccum;
+        }, {});
+        var mergeEnd = excelUtils.decode_cell(titleAddress);
+        mergeEnd.c += numberOfColumns - 1;
+        accum['!merges'].push({
+          s: excelUtils.decode_cell(titleAddress),
+          e: mergeEnd
+        });
+        column += numberOfColumns;
+        return _.merge(accum, mmReduce);
+      }, {
+        '!merges': []
+      });
+      return variablesData;
     }
 
     function initStudyDataSheet() {
@@ -490,7 +546,7 @@ define(['lodash', 'xlsx-shim', 'file-saver'], function(_, XLSX, saveAs) {
       }, {});
     }
 
-    function buildActivitiesSheet(activities, conceptSheet) {
+    function buildActivitiesSheet(activities, conceptsSheet) {
       var doseTypes = {
         'ontology:FixedDoseDrugTreatment': 'fixed',
         'ontology:TitratedDoseDrugTreatment': 'titrated'
@@ -515,22 +571,22 @@ define(['lodash', 'xlsx-shim', 'file-saver'], function(_, XLSX, saveAs) {
         return activity.treatments ? activity.treatments.length : 0;
       }));
       var colHeaders = _.reduce(_.range(0, maxTreatments), function(accum, i) {
-        accum[XLSX.utils.encode_col(4 + i * 6) + 1] = {
+        accum[excelUtils.encode_col(4 + i * 6) + 1] = {
           v: 'drug label'
         };
-        accum[XLSX.utils.encode_col(5 + i * 6) + 1] = {
+        accum[excelUtils.encode_col(5 + i * 6) + 1] = {
           v: 'dose type'
         };
-        accum[XLSX.utils.encode_col(6 + i * 6) + 1] = {
+        accum[excelUtils.encode_col(6 + i * 6) + 1] = {
           v: 'dose'
         };
-        accum[XLSX.utils.encode_col(7 + i * 6) + 1] = {
+        accum[excelUtils.encode_col(7 + i * 6) + 1] = {
           v: 'max dose'
         };
-        accum[XLSX.utils.encode_col(8 + i * 6) + 1] = {
+        accum[excelUtils.encode_col(8 + i * 6) + 1] = {
           v: 'unit'
         };
-        accum[XLSX.utils.encode_col(9 + i * 6) + 1] = {
+        accum[excelUtils.encode_col(9 + i * 6) + 1] = {
           v: 'periodicity'
         };
         return accum;
@@ -538,38 +594,38 @@ define(['lodash', 'xlsx-shim', 'file-saver'], function(_, XLSX, saveAs) {
 
       var activityData = _.reduce(activities, function(accum, activity, index) {
         var row = index + 2;
-        accum[XLSX.utils.encode_col(0) + row] = {
+        accum[excelUtils.encode_col(0) + row] = {
           v: activity.activityUri
         };
-        accum[XLSX.utils.encode_col(1) + row] = {
+        accum[excelUtils.encode_col(1) + row] = {
           v: activity.label
         };
-        accum[XLSX.utils.encode_col(2) + row] = {
+        accum[excelUtils.encode_col(2) + row] = {
           v: activity.activityType.label
         };
-        accum[XLSX.utils.encode_col(3) + row] = {
+        accum[excelUtils.encode_col(3) + row] = {
           v: activity.activityDescription
         };
 
         if (activity.activityType.uri === 'ontology:TreatmentActivity') {
           _.forEach(activity.treatments, function(treatment, index) {
             var isFixedDose = treatment.treatmentDoseType === 'ontology:FixedDoseDrugTreatment';
-            accum[XLSX.utils.encode_col(4 + index * 6) + row] = {
-              f: '=Concepts!' + _.findKey(conceptSheet, ['v', treatment.drug.label])
+            accum[excelUtils.encode_col(4 + index * 6) + row] = {
+              f: '=Concepts!' + _.findKey(conceptsSheet, ['v', treatment.drug.label])
             };
-            accum[XLSX.utils.encode_col(5 + index * 6) + row] = {
+            accum[excelUtils.encode_col(5 + index * 6) + row] = {
               v: doseTypes[treatment.treatmentDoseType]
             };
-            accum[XLSX.utils.encode_col(6 + index * 6) + row] = {
+            accum[excelUtils.encode_col(6 + index * 6) + row] = {
               v: isFixedDose ? treatment.fixedValue : treatment.minValue
             };
-            accum[XLSX.utils.encode_col(7 + index * 6) + row] = {
+            accum[excelUtils.encode_col(7 + index * 6) + row] = {
               v: isFixedDose ? undefined : treatment.maxValue
             };
-            accum[XLSX.utils.encode_col(8 + index * 6) + row] = {
+            accum[excelUtils.encode_col(8 + index * 6) + row] = {
               v: treatment.doseUnit.label
             };
-            accum[XLSX.utils.encode_col(9 + index * 6) + row] = {
+            accum[excelUtils.encode_col(9 + index * 6) + row] = {
               v: treatment.dosingPeriodicity
             };
           });
@@ -578,7 +634,7 @@ define(['lodash', 'xlsx-shim', 'file-saver'], function(_, XLSX, saveAs) {
       }, {});
 
       return _.merge({
-        '!ref': 'A1:' + XLSX.utils.encode_col(4 + maxTreatments * 6) + '' + (activities.length + 1)
+        '!ref': 'A1:' + excelUtils.encode_col(4 + maxTreatments * 6) + '' + (activities.length + 1)
       }, sheet, colHeaders, activityData);
     }
 
