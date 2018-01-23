@@ -63,7 +63,7 @@ The activities are represented on a third worksheet.
   - drug label (reference to concepts worksheet (e.g. `=Sheet2!B2`))
   - dose type (fixed/titrated)
   - dose amount
-  - dose unit
+  - dose unit (reference to concepts worksheet (e.g. `=Sheet2!B2`))
   - dose periodicity (duration string)
 
 Epochs

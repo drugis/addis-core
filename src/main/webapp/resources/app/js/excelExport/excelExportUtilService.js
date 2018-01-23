@@ -138,62 +138,99 @@ define(['lodash', 'xlsx-shim'], function(_, XLSX) {
       var armMerges = buildArmMerges(arms);
 
       _.merge(studyDataSheet, studyData, populationInformationData, armData, treatmentLabels, variablesData);
-      studyDataSheet['!merges'] = initialMerges.concat(armMerges, studyDataSheet['!merges']);
-      var measurementCounter = 30; // placeholder FIXME once measurements are implemented
-      studyDataSheet['!ref'] = 'A1:' +
-        excelUtils.encode_col(11 + measurementCounter) +
-        (3 + arms.length);
+      studyDataSheet['!merges'] = initialMerges.concat(armMerges);
+      var lastColumn = _(variablesData)
+        .keys()
+        .map(excelUtils.decode_cell)
+        .map('c')
+        .max();
+      studyDataSheet['!ref'] = 'A1:' + a1Coordinate(lastColumn, 3 + arms.length);
       return studyDataSheet;
     }
 
     function buildVariablesData(variables, arms, conceptsSheet, measurementMomentSheet) {
-      var column = excelUtils.decode_col('N');
-      var headerRow = 3;
-      var variablesData = _.reduce(variables, function(accum, variable) {
-        if (!variable.resultProperties) {
-          return accum;
-        } // FIXME: support categoricals
+      var anchorCell = {
+        c: excelUtils.decode_col('N'),
+        r: 1
+      };
+      var context = {
+        arms: arms,
+        conceptsSheet: conceptsSheet,
+        measurementMomentSheet: measurementMomentSheet
+      };
+      var variableBlocks = _.flatten(_.map(variables, _.partial(buildVariableBlock, context)));
+      return arrayToA1FromCoordinate(anchorCell.c, anchorCell.r, variableBlocks);
+    }
 
-        var numberOfColumns = 3 + variable.measuredAtMoments.length + variable.resultProperties.length;
+    function buildVariableBlock(context, variable) {
+      // fixed block (not dependent on measured at moments)
+      var variableReference = getTitleReference(context.conceptsSheet, variable.uri);
+      var baseColumns = [
+        [cellFormula('=Concepts!' + variableReference), cellValue('id'), cellValue(variable.uri)],
+        [undefined, cellValue('variable type'), cellValue(variable.type)],
+        [undefined, cellValue('measurement type'), cellValue(variable.measurementType)]
+      ];
+      // FIXME
+      // accum['!merges'] = accum['!merges'].concat(_.map(_.range(0, 3), function(i) {
+      //   return cellRange(column + i, row, column + i, row + context.arms.length - 1);
+      // }));
 
-        var variableReference = getTitleReference(conceptsSheet, variable.uri);
+      // variable block (dependent on measured at moments + result properties)
+      var measuredAtContext = _.merge({
+        variable: variable
+      }, context);
+      var measurementsBlocks = _.flatten(_.map(variable.measuredAtMoments, _.partial(buildMeasurementMomentBlocks, measuredAtContext)));
 
-        // fixed block (not dependent on measured at moments)
-        var titleAddress = excelUtils.encode_col(column) + 2;
-        accum[titleAddress] = cellFormula('=Concepts!' + variableReference);
-        accum[excelUtils.encode_col(column) + headerRow] = cellValue('id');
-        accum[excelUtils.encode_col(column + 1) + headerRow] = cellValue('variable type');
-        accum[excelUtils.encode_col(column + 2) + headerRow] = cellValue('measurement type');
-        accum[excelUtils.encode_col(column) + (headerRow + 1)] = cellValue(variable.uri);
-        accum[excelUtils.encode_col(column + 1) + (headerRow + 1)] = cellValue(variable.type);
-        accum[excelUtils.encode_col(column + 2) + (headerRow + 1)] = cellValue(variable.measurementType);
-        accum['!merges'] = accum['!merges'].concat(_.map(_.range(0, 3), function(i) {
-          return cellRange(column + i, headerRow, column + i, headerRow + arms.length - 1);
-        }));
+      // var mergeEnd = excelUtils.decode_cell(titleAddress);
+      // mergeEnd.c += numberOfColumns - 1;
+      // accum['!merges'].push({
+      //   s: excelUtils.decode_cell(titleAddress),
+      //   e: mergeEnd
+      // });
+      // column += numberOfColumns;
+      return baseColumns.concat(measurementsBlocks);
+    }
 
-        // FIXME: values + vertical merges
+    function buildMeasurementMomentBlocks(context, measuredAtMoment) {
+      var measurementMomentTitleCoordinate = getTitleReference(context.measurementMomentSheet, measuredAtMoment.uri);
+      // FIXME accum['!merges'].push(cellRange(column, row + 1, column, row + context.arms.length));
+      var baseColumns = [
+        [undefined, cellValue('measurement moment'), cellFormula('=\'Measurement moments\'!' + measurementMomentTitleCoordinate)]
+      ];
+      var measuredAtContext = _.merge({
+        measurementMoment: measuredAtMoment
+      }, context);
+      var properties;
+      if (context.variable.resultProperties) {
+        measuredAtContext.labelExtractor = function(item) {
+          return item.split('#')[1];
+        };
+        measuredAtContext.isResultForThisProperty = function(result, item) {
+          return result.result_property === item.split('#')[1];
+        };
+        properties = context.variable.resultProperties;
+      } else {
+        measuredAtContext.labelExtractor = function(item) {
+          return item.label;
+        };
+        measuredAtContext.isResultForThisProperty = function(result, item) {
+          return result.result_property.category === item['@id'];
+        };
+        properties = context.variable.categoryList;
+      }
+      var resultColumns = _.map(properties, _.partial(buildResultColumn, measuredAtContext));
+      return baseColumns.concat(resultColumns);
+    }
 
-        // variable block (dependent on measured at moments + result properties)
-        var measurementsBlock = _.reduce(variable.measuredAtMoments, function(measuredAtMomentAccum, measuredAtMoment, index) {
-          var measurementMomentCell = getTitleReference(measurementMomentSheet, measuredAtMoment.uri);
-          var dataStartColumn = column + 3 + index * (variable.resultProperties.length + 1);
-          measuredAtMomentAccum[excelUtils.encode_col(dataStartColumn) + headerRow] = cellValue('measurement moment');
-          measuredAtMomentAccum[excelUtils.encode_col(dataStartColumn) + (headerRow + 1)] = cellFormula('=\'Measurement moments\'!' + measurementMomentCell);
-          return measuredAtMomentAccum;
-        }, {});
-
-        var mergeEnd = excelUtils.decode_cell(titleAddress);
-        mergeEnd.c += numberOfColumns - 1;
-        accum['!merges'].push({
-          s: excelUtils.decode_cell(titleAddress),
-          e: mergeEnd
+    function buildResultColumn(context, resultProperty) {
+      return [undefined, cellValue(context.labelExtractor(resultProperty))].concat(_.map(context.arms, function(arm) {
+        var result = _.find(context.variable.results, function(result) {
+          return result.momentUri === context.measurementMoment.uri &&
+            result.armUri === arm.armURI &&
+            context.isResultForThisProperty(result, resultProperty);
         });
-        column += numberOfColumns;
-        return _.merge(accum, measurementsBlock);
-      }, {
-        '!merges': []
-      });
-      return variablesData;
+        return result ? cellValue(result.value) : undefined;
+      }));
     }
 
     function initStudyDataSheet() {
@@ -294,37 +331,37 @@ define(['lodash', 'xlsx-shim'], function(_, XLSX) {
         return activity.treatments ? activity.treatments.length : 0;
       }));
       var colHeaders = _.reduce(_.range(0, maxTreatments), function(accum, i) {
-        accum[excelUtils.encode_col(4 + i * 6) + 1] = cellValue('drug label');
-        accum[excelUtils.encode_col(5 + i * 6) + 1] = cellValue('dose type');
-        accum[excelUtils.encode_col(6 + i * 6) + 1] = cellValue('dose');
-        accum[excelUtils.encode_col(7 + i * 6) + 1] = cellValue('max dose');
-        accum[excelUtils.encode_col(8 + i * 6) + 1] = cellValue('unit');
-        accum[excelUtils.encode_col(9 + i * 6) + 1] = cellValue('periodicity');
+        accum[a1Coordinate(4 + i * 6, 0)] = cellValue('drug label');
+        accum[a1Coordinate(5 + i * 6, 0)] = cellValue('dose type');
+        accum[a1Coordinate(6 + i * 6, 0)] = cellValue('dose');
+        accum[a1Coordinate(7 + i * 6, 0)] = cellValue('max dose');
+        accum[a1Coordinate(8 + i * 6, 0)] = cellValue('unit');
+        accum[a1Coordinate(9 + i * 6, 0)] = cellValue('periodicity');
         return accum;
       }, {});
 
       var activityData = _.reduce(activities, function(accum, activity, index) {
-        var row = index + 2;
-        accum[excelUtils.encode_col(0) + row] = cellValue(activity.activityUri);
-        accum[excelUtils.encode_col(1) + row] = cellValue(activity.label);
-        accum[excelUtils.encode_col(2) + row] = cellValue(activity.activityType.label);
-        accum[excelUtils.encode_col(3) + row] = cellValue(activity.activityDescription);
+        var row = index + 1;
+        accum[a1Coordinate(0, row)] = cellValue(activity.activityUri);
+        accum[a1Coordinate(1, row)] = cellValue(activity.label);
+        accum[a1Coordinate(2, row)] = cellValue(activity.activityType.label);
+        accum[a1Coordinate(3, row)] = cellValue(activity.activityDescription);
 
         if (activity.activityType.uri === 'ontology:TreatmentActivity') {
           _.forEach(activity.treatments, function(treatment, index) {
             var isFixedDose = treatment.treatmentDoseType === 'ontology:FixedDoseDrugTreatment';
-            accum[excelUtils.encode_col(4 + index * 6) + row] = cellFormula('=Concepts!' + _.findKey(conceptsSheet, ['v', treatment.drug.label]));
-            accum[excelUtils.encode_col(5 + index * 6) + row] = cellValue(doseTypes[treatment.treatmentDoseType]);
-            accum[excelUtils.encode_col(6 + index * 6) + row] = cellValue(isFixedDose ? treatment.fixedValue : treatment.minValue);
-            accum[excelUtils.encode_col(7 + index * 6) + row] = cellValue(isFixedDose ? undefined : treatment.maxValue);
-            accum[excelUtils.encode_col(8 + index * 6) + row] = cellFormula('=Concepts!' + getTitleReference(conceptsSheet, treatment.doseUnit.uri));
-            accum[excelUtils.encode_col(9 + index * 6) + row] = cellValue(treatment.dosingPeriodicity);
+            accum[a1Coordinate(4 + index * 6, row)] = cellFormula('=Concepts!' + _.findKey(conceptsSheet, ['v', treatment.drug.label]));
+            accum[a1Coordinate(5 + index * 6, row)] = cellValue(doseTypes[treatment.treatmentDoseType]);
+            accum[a1Coordinate(6 + index * 6, row)] = cellValue(isFixedDose ? treatment.fixedValue : treatment.minValue);
+            accum[a1Coordinate(7 + index * 6, row)] = cellValue(isFixedDose ? undefined : treatment.maxValue);
+            accum[a1Coordinate(8 + index * 6, row)] = cellFormula('=Concepts!' + getTitleReference(conceptsSheet, treatment.doseUnit.uri));
+            accum[a1Coordinate(9 + index * 6, row)] = cellValue(treatment.dosingPeriodicity);
           });
         }
         return accum;
       }, {});
 
-      return _.merge(cellReference('A1:' + excelUtils.encode_col(4 + maxTreatments * 6) + '' + (activities.length + 1)), sheet, colHeaders, activityData);
+      return _.merge(cellReference('A1:' + a1Coordinate(4 + maxTreatments * 6, activities.length)), sheet, colHeaders, activityData);
     }
 
     function addConceptType(concepts, type) {
@@ -373,6 +410,26 @@ define(['lodash', 'xlsx-shim'], function(_, XLSX) {
       };
     }
 
+    function a1Coordinate(column, row) {
+      return excelUtils.encode_cell({
+        c: column,
+        r: row
+      });
+    }
+
+    /*
+     * Create a A1-indexed object from the two-dimensional data-array.
+     * Columns will be created from the first index, rows from the second.
+     */
+    function arrayToA1FromCoordinate(anchorColumn, anchorRow, data) {
+      return _.reduce(data, function(accum, column, colIndex) {
+        return _.reduce(column, function(accum, cell, rowIndex) {
+          accum[a1Coordinate(anchorColumn + colIndex, anchorRow + rowIndex)] = cell;
+          return accum;
+        }, accum);
+      }, {});
+    }
+
     // interface
     return {
       getVariableResults: getVariableResults,
@@ -382,7 +439,8 @@ define(['lodash', 'xlsx-shim'], function(_, XLSX) {
       buildStudyDataSheet: buildStudyDataSheet,
       buildActivitiesSheet: buildActivitiesSheet,
       buildStudyDesignSheet: buildStudyDesignSheet,
-      addConceptType: addConceptType
+      addConceptType: addConceptType,
+      arrayToA1FromCoordinate: arrayToA1FromCoordinate
     };
 
   };

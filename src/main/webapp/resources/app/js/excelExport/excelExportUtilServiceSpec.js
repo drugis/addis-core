@@ -466,14 +466,18 @@ define(['lodash', 'angular', 'angular-mocks'], function(_) {
         };
         var measurementMomentSheet = {
           A1: cellValue('measurementMoment1Uri'),
-          A2: cellValue('measurement moment 1')
+          A2: cellValue('measurement moment 1'),
+          B1: cellValue('measurementMoment2Uri'),
+          B2: cellValue('measurement moment 2')
         };
         var variables = [{
           uri: 'variable1Uri',
           conceptMapping: 'variable1Uri',
           label: 'Age (years)',
           measuredAtMoments: [{
-            uri: 'measurementMoment1Uri'
+            uri: 'measurementMoment1Uri',
+          }, {
+            uri: 'measurementMoment2Uri'
           }],
           measurementType: 'ontology:continuous',
           resultProperties: [
@@ -481,7 +485,27 @@ define(['lodash', 'angular', 'angular-mocks'], function(_) {
             'http://trials.drugis.org/ontology#mean',
             'http://trials.drugis.org/ontology#standard_deviation'
           ],
-          results: [],
+          results: [{
+            armUri: 'arm1Uri',
+            momentUri: 'measurementMoment1Uri',
+            result_property: 'sample_size',
+            value: 123
+          },{
+            armUri: 'arm1Uri',
+            momentUri: 'measurementMoment1Uri',
+            result_property: 'count',
+            value: 37
+          },{
+            armUri: 'arm2Uri',
+            momentUri: 'measurementMoment1Uri',
+            result_property: 'sample_size',
+            value: 321
+          },{
+            armUri: 'arm2Uri',
+            momentUri: 'measurementMoment1Uri',
+            result_property: 'count',
+            value: 42
+          }],
           type: 'baseline characteristic'
         }];
 
@@ -548,6 +572,25 @@ define(['lodash', 'angular', 'angular-mocks'], function(_) {
       });
     });
 
+
+    describe('arrayToA1FromCoordinate', function() {
+      it('should create an A1-indexed data object from a 2D array, starting from the anchor coordinate', function() {
+        var data = [
+          [1, 2, 3],
+          [4, 5, 6]
+        ];
+        var expectedResult = {
+          D5: 1,
+          D6: 2,
+          D7: 3,
+          E5: 4,
+          E6: 5,
+          E7: 6
+        };
+        var result = excelExportUtilService.arrayToA1FromCoordinate(3, 4, data); // anchor D5
+        expect(result).toEqual(expectedResult);
+      });
+    });
 
     function cellFormula(formula) {
       return {
