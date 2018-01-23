@@ -490,17 +490,17 @@ define(['lodash', 'angular', 'angular-mocks'], function(_) {
             momentUri: 'measurementMoment1Uri',
             result_property: 'sample_size',
             value: 123
-          },{
+          }, {
             armUri: 'arm1Uri',
             momentUri: 'measurementMoment1Uri',
             result_property: 'count',
             value: 37
-          },{
+          }, {
             armUri: 'arm2Uri',
             momentUri: 'measurementMoment1Uri',
             result_property: 'sample_size',
             value: 321
-          },{
+          }, {
             armUri: 'arm2Uri',
             momentUri: 'measurementMoment1Uri',
             result_property: 'count',
@@ -513,12 +513,8 @@ define(['lodash', 'angular', 'angular-mocks'], function(_) {
           populationInformation, variables, conceptsSheet, measurementMomentSheet);
 
         var expectedResult = {
-          '!merges': [
-            cellRange(0, 0, 7, 0),
-            cellRange(8, 0, 9, 0),
-            cellRange(10, 0, 12, 0)
-          ],
-          '!ref': 'A1:AP5',
+          '!merges': [],
+          '!ref': 'A1:X6',
           A1: cellValue('Study Information'), //row 1
           I1: cellValue('Population Information'),
           K1: cellValue('Arm Information'),
@@ -541,6 +537,13 @@ define(['lodash', 'angular', 'angular-mocks'], function(_) {
           O3: cellValue('variable type'),
           P3: cellValue('measurement type'),
           Q3: cellValue('measurement moment'),
+          R3: cellValue('sample_size'),
+          S3: cellValue('mean'),
+          T3: cellValue('standard_deviation'),
+          U3: cellValue('measurement moment'),
+          V3: cellValue('sample_size'),
+          W3: cellValue('mean'),
+          X3: cellValue('standard_deviation'),
           A4: cellValue(study.label),
           B4: cellValue('studyUrl'),
           C4: cellValue(study.comment),
@@ -554,18 +557,29 @@ define(['lodash', 'angular', 'angular-mocks'], function(_) {
           K4: cellValue(arms[0].label),
           L4: cellValue(arms[0].comment),
           M4: cellValue('Fixed'),
-          N4: cellFormula('=Concepts!A2'),
+          N4: cellValue('variable1Uri'),
           K5: cellValue(arms[1].label),
           L5: cellValue(arms[1].comment),
           M5: cellValue('Combination'),
-          N5: cellFormula('=Concepts!A3'),
-          Q4: cellFormula('=\'Measurement moments\'!B1')
+          O4: cellValue('baseline characteristic'),
+          P4: cellValue('continuous'),
+          R4: cellValue(123),
+          R5: cellValue(321),
+          Q4: cellFormula('=\'Measurement moments\'!B1'),
+          U4: cellFormula('=\'Measurement moments\'!C1')
         };
+        expectedResult['!merges'].push(cellRange(13, 3, 13, 4));
+        expectedResult['!merges'].push(cellRange(14, 3, 14, 4));
+        expectedResult['!merges'].push(cellRange(15, 3, 15, 4));
+        expectedResult['!merges'].push(cellRange(16, 3, 16, 4));
+        expectedResult['!merges'].push(cellRange(20, 3, 20, 4));
+        expectedResult['!merges'].push(cellRange(0, 0, 7, 0));
+        expectedResult['!merges'].push(cellRange(8, 0, 9, 0));
+        expectedResult['!merges'].push(cellRange(10, 0, 12, 0));
 
         expectedResult['!merges'] = expectedResult['!merges'].concat(_.map(_.range(0, 10), function(i) {
           return cellRange(i, 3, i, 3 + arms.length - 1);
         }));
-        expectedResult['!merges'].push(cellRange(13, 1, 19, 1));
 
         expect(result).toEqual(expectedResult);
 

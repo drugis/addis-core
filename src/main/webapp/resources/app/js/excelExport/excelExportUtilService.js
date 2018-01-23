@@ -122,6 +122,56 @@ define(['lodash', 'xlsx-shim'], function(_, XLSX) {
       return _.merge(cellReference('A1:E' + (epochs.length + 1)), epochHeaders, epochData);
     }
 
+    function buildActivitiesSheet(activities, conceptsSheet) {
+      var doseTypes = {
+        'ontology:FixedDoseDrugTreatment': 'fixed',
+        'ontology:TitratedDoseDrugTreatment': 'titrated'
+      };
+
+      var sheet = {
+        A1: cellValue('id'),
+        B1: cellValue('title'),
+        C1: cellValue('type'),
+        D1: cellValue('description')
+      };
+
+      var maxTreatments = _.max(_.map(activities, function(activity) {
+        return activity.treatments ? activity.treatments.length : 0;
+      }));
+      var colHeaders = _.reduce(_.range(0, maxTreatments), function(accum, i) {
+        accum[a1Coordinate(4 + i * 6, 0)] = cellValue('drug label');
+        accum[a1Coordinate(5 + i * 6, 0)] = cellValue('dose type');
+        accum[a1Coordinate(6 + i * 6, 0)] = cellValue('dose');
+        accum[a1Coordinate(7 + i * 6, 0)] = cellValue('max dose');
+        accum[a1Coordinate(8 + i * 6, 0)] = cellValue('unit');
+        accum[a1Coordinate(9 + i * 6, 0)] = cellValue('periodicity');
+        return accum;
+      }, {});
+
+      var activityData = _.reduce(activities, function(accum, activity, index) {
+        var row = index + 1;
+        accum[a1Coordinate(0, row)] = cellValue(activity.activityUri);
+        accum[a1Coordinate(1, row)] = cellValue(activity.label);
+        accum[a1Coordinate(2, row)] = cellValue(activity.activityType.label);
+        accum[a1Coordinate(3, row)] = cellValue(activity.activityDescription);
+
+        if (activity.activityType.uri === 'ontology:TreatmentActivity') {
+          _.forEach(activity.treatments, function(treatment, index) {
+            var isFixedDose = treatment.treatmentDoseType === 'ontology:FixedDoseDrugTreatment';
+            accum[a1Coordinate(4 + index * 6, row)] = cellFormula('=Concepts!' + _.findKey(conceptsSheet, ['v', treatment.drug.label]));
+            accum[a1Coordinate(5 + index * 6, row)] = cellValue(doseTypes[treatment.treatmentDoseType]);
+            accum[a1Coordinate(6 + index * 6, row)] = cellValue(isFixedDose ? treatment.fixedValue : treatment.minValue);
+            accum[a1Coordinate(7 + index * 6, row)] = cellValue(isFixedDose ? undefined : treatment.maxValue);
+            accum[a1Coordinate(8 + index * 6, row)] = cellFormula('=Concepts!' + getTitleReference(conceptsSheet, treatment.doseUnit.uri));
+            accum[a1Coordinate(9 + index * 6, row)] = cellValue(treatment.dosingPeriodicity);
+          });
+        }
+        return accum;
+      }, {});
+
+      return _.merge(cellReference('A1:' + a1Coordinate(4 + maxTreatments * 6, activities.length)), sheet, colHeaders, activityData);
+    }
+
     function buildStudyDataSheet(study, studyInformation, arms, epochs, activities, studyDesign,
       populationInformation, variables, conceptsSheet, measurementMomentSheet) {
       var studyDataSheet = initStudyDataSheet();
@@ -138,7 +188,7 @@ define(['lodash', 'xlsx-shim'], function(_, XLSX) {
       var armMerges = buildArmMerges(arms);
 
       _.merge(studyDataSheet, studyData, populationInformationData, armData, treatmentLabels, variablesData);
-      studyDataSheet['!merges'] = initialMerges.concat(armMerges);
+      studyDataSheet['!merges'] = studyDataSheet['!merges'].concat(initialMerges, armMerges);
       var lastColumn = _(variablesData)
         .keys()
         .map(excelUtils.decode_cell)
@@ -159,35 +209,51 @@ define(['lodash', 'xlsx-shim'], function(_, XLSX) {
         measurementMomentSheet: measurementMomentSheet
       };
       var variableBlocks = _.flatten(_.map(variables, _.partial(buildVariableBlock, context)));
-      return arrayToA1FromCoordinate(anchorCell.c, anchorCell.r, variableBlocks);
+      var merges;
+      var numberofArms = arms.length;
+      merges = [];
+      var currentAnchorCol = anchorCell.c;
+      _.forEach(variables, function(variable) {
+        // first three columns are always merged
+        var firstDataRow = anchorCell.r + 2;
+        merges.push(cellRange(currentAnchorCol, firstDataRow, currentAnchorCol, firstDataRow + numberofArms - 1));
+        merges.push(cellRange(currentAnchorCol + 1, firstDataRow, currentAnchorCol + 1, firstDataRow + numberofArms - 1));
+        merges.push(cellRange(currentAnchorCol + 2, firstDataRow, currentAnchorCol + 2, firstDataRow + numberofArms - 1));
+
+        var numberOfPropertyColumns = variable.categoryList ? variable.categoryList.length : variable.resultProperties.length;
+        var numberOfMeasurementMoments = variable.measuredAtMoments.length;
+
+        // for every measurement moment we merge the first column
+        _.forEach(_.range(0, numberOfMeasurementMoments), function(index) {
+          var positionOfMeasurementMoment = currentAnchorCol + 3 + ((numberOfPropertyColumns + 1) * index);
+          merges.push(cellRange(positionOfMeasurementMoment, firstDataRow, positionOfMeasurementMoment, firstDataRow + numberofArms - 1));
+        });
+        currentAnchorCol = currentAnchorCol + 3 + (numberOfPropertyColumns + 1) * numberOfMeasurementMoments;
+      });
+      var variablesData = arrayToA1FromCoordinate(anchorCell.c, anchorCell.r, variableBlocks);
+      variablesData['!merges'] = merges;
+      return variablesData;
     }
 
     function buildVariableBlock(context, variable) {
       // fixed block (not dependent on measured at moments)
+      var measurementTypes = {
+        'ontology:dichotomous': 'dichotomous',
+        'ontology:continuous': 'continuous',
+        'ontology:survival': 'survival'
+      };
+
       var variableReference = getTitleReference(context.conceptsSheet, variable.uri);
       var baseColumns = [
         [cellFormula('=Concepts!' + variableReference), cellValue('id'), cellValue(variable.uri)],
         [undefined, cellValue('variable type'), cellValue(variable.type)],
-        [undefined, cellValue('measurement type'), cellValue(variable.measurementType)]
+        [undefined, cellValue('measurement type'), cellValue(measurementTypes[variable.measurementType])]
       ];
-      // FIXME
-      // accum['!merges'] = accum['!merges'].concat(_.map(_.range(0, 3), function(i) {
-      //   return cellRange(column + i, row, column + i, row + context.arms.length - 1);
-      // }));
-
-      // variable block (dependent on measured at moments + result properties)
       var measuredAtContext = _.merge({
         variable: variable
       }, context);
       var measurementsBlocks = _.flatten(_.map(variable.measuredAtMoments, _.partial(buildMeasurementMomentBlocks, measuredAtContext)));
 
-      // var mergeEnd = excelUtils.decode_cell(titleAddress);
-      // mergeEnd.c += numberOfColumns - 1;
-      // accum['!merges'].push({
-      //   s: excelUtils.decode_cell(titleAddress),
-      //   e: mergeEnd
-      // });
-      // column += numberOfColumns;
       return baseColumns.concat(measurementsBlocks);
     }
 
@@ -312,56 +378,6 @@ define(['lodash', 'xlsx-shim'], function(_, XLSX) {
         }
         return acc;
       }, {});
-    }
-
-    function buildActivitiesSheet(activities, conceptsSheet) {
-      var doseTypes = {
-        'ontology:FixedDoseDrugTreatment': 'fixed',
-        'ontology:TitratedDoseDrugTreatment': 'titrated'
-      };
-
-      var sheet = {
-        A1: cellValue('id'),
-        B1: cellValue('title'),
-        C1: cellValue('type'),
-        D1: cellValue('description')
-      };
-
-      var maxTreatments = _.max(_.map(activities, function(activity) {
-        return activity.treatments ? activity.treatments.length : 0;
-      }));
-      var colHeaders = _.reduce(_.range(0, maxTreatments), function(accum, i) {
-        accum[a1Coordinate(4 + i * 6, 0)] = cellValue('drug label');
-        accum[a1Coordinate(5 + i * 6, 0)] = cellValue('dose type');
-        accum[a1Coordinate(6 + i * 6, 0)] = cellValue('dose');
-        accum[a1Coordinate(7 + i * 6, 0)] = cellValue('max dose');
-        accum[a1Coordinate(8 + i * 6, 0)] = cellValue('unit');
-        accum[a1Coordinate(9 + i * 6, 0)] = cellValue('periodicity');
-        return accum;
-      }, {});
-
-      var activityData = _.reduce(activities, function(accum, activity, index) {
-        var row = index + 1;
-        accum[a1Coordinate(0, row)] = cellValue(activity.activityUri);
-        accum[a1Coordinate(1, row)] = cellValue(activity.label);
-        accum[a1Coordinate(2, row)] = cellValue(activity.activityType.label);
-        accum[a1Coordinate(3, row)] = cellValue(activity.activityDescription);
-
-        if (activity.activityType.uri === 'ontology:TreatmentActivity') {
-          _.forEach(activity.treatments, function(treatment, index) {
-            var isFixedDose = treatment.treatmentDoseType === 'ontology:FixedDoseDrugTreatment';
-            accum[a1Coordinate(4 + index * 6, row)] = cellFormula('=Concepts!' + _.findKey(conceptsSheet, ['v', treatment.drug.label]));
-            accum[a1Coordinate(5 + index * 6, row)] = cellValue(doseTypes[treatment.treatmentDoseType]);
-            accum[a1Coordinate(6 + index * 6, row)] = cellValue(isFixedDose ? treatment.fixedValue : treatment.minValue);
-            accum[a1Coordinate(7 + index * 6, row)] = cellValue(isFixedDose ? undefined : treatment.maxValue);
-            accum[a1Coordinate(8 + index * 6, row)] = cellFormula('=Concepts!' + getTitleReference(conceptsSheet, treatment.doseUnit.uri));
-            accum[a1Coordinate(9 + index * 6, row)] = cellValue(treatment.dosingPeriodicity);
-          });
-        }
-        return accum;
-      }, {});
-
-      return _.merge(cellReference('A1:' + a1Coordinate(4 + maxTreatments * 6, activities.length)), sheet, colHeaders, activityData);
     }
 
     function addConceptType(concepts, type) {
