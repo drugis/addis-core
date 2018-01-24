@@ -178,32 +178,33 @@ define(['lodash', 'xlsx-shim'], function(_, XLSX) {
       var initialMerges = [
         cellRange(0, 0, 7, 0),
         cellRange(8, 0, 9, 0),
-        cellRange(10, 0, 12, 0)
+        cellRange(10, 0, 11, 0)
       ];
       var armsPlusOverallPopulation = arms.concat({
         armURI: study.has_included_population[0]['@id']
       });
       var studyData = buildStudyInformation(study, studyInformation);
       var armData = buildArmData(arms);
-      var treatmentLabels = buildTreatmentLabels(arms, epochs, activities, studyDesign);
+      // var treatmentLabels = buildTreatmentLabels(arms, epochs, activities, studyDesign);
       var populationInformationData = buildPopulationInformationData(populationInformation);
       var variablesData = buildVariablesData(variables, armsPlusOverallPopulation, conceptsSheet, measurementMomentSheet);
       var armMerges = buildArmMerges(armsPlusOverallPopulation);
 
-      _.merge(studyDataSheet, studyData, populationInformationData, armData, treatmentLabels, variablesData);
-      studyDataSheet['!merges'] = studyDataSheet['!merges'].concat(initialMerges, armMerges);
+      _.merge(studyDataSheet, studyData, populationInformationData, armData, variablesData);
       var lastColumn = variables.length ? _(variablesData)
         .keys()
         .map(excelUtils.decode_cell)
         .map('c')
-        .max() : 13;
+        .max() : 12;
+
+      studyDataSheet['!merges'] = studyDataSheet['!merges'].concat(initialMerges,[cellRange(12,0,lastColumn,0)], armMerges);
       studyDataSheet['!ref'] = 'A1:' + a1Coordinate(lastColumn, 3 + arms.length);
       return studyDataSheet;
     }
 
     function buildVariablesData(variables, arms, conceptsSheet, measurementMomentSheet) {
       var anchorCell = {
-        c: excelUtils.decode_col('N'),
+        c: excelUtils.decode_col('M'),
         r: 1
       };
       var context = {
@@ -221,17 +222,16 @@ define(['lodash', 'xlsx-shim'], function(_, XLSX) {
         var firstDataRow = anchorCell.r + 2;
         merges.push(cellRange(currentAnchorCol, firstDataRow, currentAnchorCol, firstDataRow + numberofArms - 1));
         merges.push(cellRange(currentAnchorCol + 1, firstDataRow, currentAnchorCol + 1, firstDataRow + numberofArms - 1));
-        merges.push(cellRange(currentAnchorCol + 2, firstDataRow, currentAnchorCol + 2, firstDataRow + numberofArms - 1));
 
         var numberOfPropertyColumns = variable.categoryList ? variable.categoryList.length : variable.resultProperties.length;
         var numberOfMeasurementMoments = variable.measuredAtMoments.length;
 
         // for every measurement moment we merge the first column
         _.forEach(_.range(0, numberOfMeasurementMoments), function(index) {
-          var positionOfMeasurementMoment = currentAnchorCol + 3 + ((numberOfPropertyColumns + 1) * index);
+          var positionOfMeasurementMoment = currentAnchorCol + 2 + ((numberOfPropertyColumns + 1) * index);
           merges.push(cellRange(positionOfMeasurementMoment, firstDataRow, positionOfMeasurementMoment, firstDataRow + numberofArms - 1));
         });
-        var totalVariableLength = 3 + (numberOfPropertyColumns + 1) * numberOfMeasurementMoments;
+        var totalVariableLength = 2 + (numberOfPropertyColumns + 1) * numberOfMeasurementMoments;
         merges.push(cellRange(currentAnchorCol, anchorCell.r, currentAnchorCol + totalVariableLength - 1, anchorCell.r));
         currentAnchorCol = currentAnchorCol + totalVariableLength;
       });
@@ -251,8 +251,7 @@ define(['lodash', 'xlsx-shim'], function(_, XLSX) {
 
       var variableReference = getTitleReference(context.conceptsSheet, variable.uri);
       var baseColumns = [
-        [cellFormula('=Concepts!' + variableReference), cellValue('id'), cellValue(variable.uri)],
-        [undefined, cellValue('variable type'), cellValue(variable.type)],
+        [cellFormula('=Concepts!' + variableReference), cellValue('variable type'), cellValue(variable.type)],
         [undefined, cellValue('measurement type'), cellValue(measurementTypes[variable.measurementType])]
       ];
       var measuredAtContext = _.merge({
@@ -310,7 +309,7 @@ define(['lodash', 'xlsx-shim'], function(_, XLSX) {
         A1: cellValue('Study Information'),
         I1: cellValue('Population Information'),
         K1: cellValue('Arm Information'),
-        N1: cellValue('Measurement Information'),
+        M1: cellValue('Measurement Information'),
         A3: cellValue('id'),
         B3: cellValue('addis url'),
         C3: cellValue('title'),
@@ -322,8 +321,7 @@ define(['lodash', 'xlsx-shim'], function(_, XLSX) {
         I3: cellValue('indication'),
         J3: cellValue('eligibility criteria'),
         K3: cellValue('title'),
-        L3: cellValue('description'),
-        M3: cellValue('treatment')
+        L3: cellValue('description')
       };
       return studyDataSheet;
     }
@@ -366,28 +364,28 @@ define(['lodash', 'xlsx-shim'], function(_, XLSX) {
       };
     }
 
-    function buildTreatmentLabels(arms, epochs, activities, studyDesign) {
-      var primaryEpoch = _.find(epochs, 'isPrimary');
-      if (!primaryEpoch) {
-        return;
-      }
-      return _.reduce(arms, function(acc, arm, idx) {
-        var activity = _.find(activities, function(activity) {
-          var coordinate = _.find(studyDesign, function(coordinate) {
-            return coordinate.epochUri === primaryEpoch.uri && coordinate.armUri === arm.armURI;
-          });
-          return coordinate && coordinate.activityUri === activity.activityUri;
-        });
+    // function buildTreatmentLabels(arms, epochs, activities, studyDesign) {
+    //   var primaryEpoch = _.find(epochs, 'isPrimary');
+    //   if (!primaryEpoch) {
+    //     return;
+    //   }
+    //   return _.reduce(arms, function(acc, arm, idx) {
+    //     var activity = _.find(activities, function(activity) {
+    //       var coordinate = _.find(studyDesign, function(coordinate) {
+    //         return coordinate.epochUri === primaryEpoch.uri && coordinate.armUri === arm.armURI;
+    //       });
+    //       return coordinate && coordinate.activityUri === activity.activityUri;
+    //     });
 
-        if (activity) {
-          acc['M' + (4 + idx)] = {
-            v: activity.label
-          };
+    //     if (activity) {
+    //       acc['M' + (4 + idx)] = {
+    //         v: activity.label
+    //       };
 
-        }
-        return acc;
-      }, {});
-    }
+    //     }
+    //     return acc;
+    //   }, {});
+    // }
 
     function addConceptType(concepts, type) {
       return _.map(concepts, function(concept) {
