@@ -180,12 +180,15 @@ define(['lodash', 'xlsx-shim'], function(_, XLSX) {
         cellRange(8, 0, 9, 0),
         cellRange(10, 0, 12, 0)
       ];
+      var armsPlusOverallPopulation = arms.concat({
+        armURI: study.has_included_population[0]['@id']
+      });
       var studyData = buildStudyInformation(study, studyInformation);
       var armData = buildArmData(arms);
       var treatmentLabels = buildTreatmentLabels(arms, epochs, activities, studyDesign);
       var populationInformationData = buildPopulationInformationData(populationInformation);
-      var variablesData = buildVariablesData(variables, arms, conceptsSheet, measurementMomentSheet);
-      var armMerges = buildArmMerges(arms);
+      var variablesData = buildVariablesData(variables, armsPlusOverallPopulation, conceptsSheet, measurementMomentSheet);
+      var armMerges = buildArmMerges(armsPlusOverallPopulation);
 
       _.merge(studyDataSheet, studyData, populationInformationData, armData, treatmentLabels, variablesData);
       studyDataSheet['!merges'] = studyDataSheet['!merges'].concat(initialMerges, armMerges);
@@ -228,7 +231,9 @@ define(['lodash', 'xlsx-shim'], function(_, XLSX) {
           var positionOfMeasurementMoment = currentAnchorCol + 3 + ((numberOfPropertyColumns + 1) * index);
           merges.push(cellRange(positionOfMeasurementMoment, firstDataRow, positionOfMeasurementMoment, firstDataRow + numberofArms - 1));
         });
-        currentAnchorCol = currentAnchorCol + 3 + (numberOfPropertyColumns + 1) * numberOfMeasurementMoments;
+        var totalVariableLength = 3 + (numberOfPropertyColumns + 1) * numberOfMeasurementMoments;
+        merges.push(cellRange(currentAnchorCol, anchorCell.r, currentAnchorCol + totalVariableLength - 1, anchorCell.r));
+        currentAnchorCol = currentAnchorCol + totalVariableLength;
       });
       var variablesData = arrayToA1FromCoordinate(anchorCell.c, anchorCell.r, variableBlocks);
       variablesData['!merges'] = merges;
@@ -240,6 +245,7 @@ define(['lodash', 'xlsx-shim'], function(_, XLSX) {
       var measurementTypes = {
         'ontology:dichotomous': 'dichotomous',
         'ontology:continuous': 'continuous',
+        'ontology:categorical': 'categorical',
         'ontology:survival': 'survival'
       };
 
@@ -336,7 +342,10 @@ define(['lodash', 'xlsx-shim'], function(_, XLSX) {
     }
 
     function buildArmData(arms) {
-      return _.reduce(arms, function(acc, arm, idx) {
+      var overallPopulation = {
+        label: 'Overall population'
+      };
+      return _.reduce(arms.concat(overallPopulation), function(acc, arm, idx) {
         var rowNum = (4 + idx);
         acc['K' + rowNum] = cellValue(arm.label);
         acc['L' + rowNum] = cellValue(arm.comment);
