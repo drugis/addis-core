@@ -56,13 +56,17 @@
         <div class="grid-container">
           <div class="grid-x" style="margin-bottom: 1rem;">
             <div class="cell large-10">
-              <h3>{{study.label}}</h3>
+              <h3>
+                {{study.label}}
+                <a title="Export to Excel" ng-click="exportStudy()">
+                  <i class="fa fa-download"></i>
+                </a>
+                <a title="Edit title" ng-if="isEditingAllowed" ng-click="showEditStudyModal()">
+                  <i class="fa fa-edit"></i>
+                </a>
+              </h3>
               <p class="subheader">{{study.comment}}</p>
               <div ng-if="study.nctId"><a ng-href="{{study.nctUri}}" target="_blank">{{::study.nctId}}</a></div>
-            </div>
-            <div class="cell large-2">
-              <h1 title="export to excel"><a class="right" ng-click="exportStudy()"><i class="fa fa-save"></i></a></h1>
-              <h1 ng-if="isEditingAllowed" title="Edit title and description"><a class="right" ng-click="showEditStudyModal()"><i class="fa fa-edit"></i></a></h1>
             </div>
           </div>
           <version-info>
