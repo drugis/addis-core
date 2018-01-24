@@ -192,11 +192,11 @@ define(['lodash', 'xlsx-shim'], function(_, XLSX) {
 
       _.merge(studyDataSheet, studyData, populationInformationData, armData, treatmentLabels, variablesData);
       studyDataSheet['!merges'] = studyDataSheet['!merges'].concat(initialMerges, armMerges);
-      var lastColumn = _(variablesData)
+      var lastColumn = variables.length ? _(variablesData)
         .keys()
         .map(excelUtils.decode_cell)
         .map('c')
-        .max();
+        .max() : 13;
       studyDataSheet['!ref'] = 'A1:' + a1Coordinate(lastColumn, 3 + arms.length);
       return studyDataSheet;
     }
@@ -333,11 +333,11 @@ define(['lodash', 'xlsx-shim'], function(_, XLSX) {
         A4: cellValue(study.label),
         B4: cellValue($location.absUrl()),
         C4: cellValue(study.comment),
-        D4: cellValue(GROUP_ALLOCATION_OPTIONS[studyInformation.allocation].label),
-        E4: cellValue(BLINDING_OPTIONS[studyInformation.blinding].label),
-        F4: cellValue(STATUS_OPTIONS[studyInformation.status].label),
+        D4: cellValue(studyInformation.allocation ? GROUP_ALLOCATION_OPTIONS[studyInformation.allocation].label : undefined),
+        E4: cellValue(studyInformation.blinding ? BLINDING_OPTIONS[studyInformation.blinding].label : undefined),
+        F4: cellValue(studyInformation.status ? STATUS_OPTIONS[studyInformation.status].label : undefined),
         G4: cellValue(studyInformation.numberOfCenters),
-        H4: cellValue(studyInformation.objective.comment)
+        H4: cellValue(studyInformation.objective ? studyInformation.objective.comment : undefined)
       };
     }
 
@@ -361,8 +361,8 @@ define(['lodash', 'xlsx-shim'], function(_, XLSX) {
 
     function buildPopulationInformationData(populationInformation) {
       return {
-        I4: cellValue(populationInformation.indication.label),
-        J4: cellValue(populationInformation.eligibilityCriteria.label)
+        I4: cellValue(populationInformation.indication ? populationInformation.indication.label : undefined),
+        J4: cellValue(populationInformation.eligibilityCriteria ? populationInformation.eligibilityCriteria.label : undefined)
       };
     }
 
