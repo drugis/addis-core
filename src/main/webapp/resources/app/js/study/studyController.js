@@ -396,7 +396,6 @@ define(['angular', 'lodash'],
         if (!StudyService.isStudyModified()) {
           return;
         }
-
         $modal.open({
           templateUrl: 'app/js/commit/commit.html',
           controller: 'CommitController',

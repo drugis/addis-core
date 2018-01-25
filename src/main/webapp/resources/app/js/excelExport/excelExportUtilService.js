@@ -1,7 +1,17 @@
 'use strict';
 define(['lodash', 'xlsx-shim'], function(_, XLSX) {
-  var dependencies = ['$q', '$location', 'GROUP_ALLOCATION_OPTIONS', 'BLINDING_OPTIONS', 'STATUS_OPTIONS', 'ResultsService'];
-  var ExcelExportService = function($q, $location, GROUP_ALLOCATION_OPTIONS, BLINDING_OPTIONS, STATUS_OPTIONS, ResultsService) {
+  var dependencies = ['$q',
+    'GROUP_ALLOCATION_OPTIONS',
+    'BLINDING_OPTIONS',
+    'STATUS_OPTIONS',
+    'ResultsService'
+  ];
+  var ExcelExportService = function($q,
+    GROUP_ALLOCATION_OPTIONS,
+    BLINDING_OPTIONS,
+    STATUS_OPTIONS,
+    ResultsService
+  ) {
     var excelUtils = XLSX.utils;
 
     function getVariableResults(otherPromises, variableResults) {
@@ -172,7 +182,7 @@ define(['lodash', 'xlsx-shim'], function(_, XLSX) {
       return _.merge(cellReference('A1:' + a1Coordinate(4 + maxTreatments * 6, activities.length)), sheet, colHeaders, activityData);
     }
 
-    function buildStudyDataSheet(study, studyInformation, arms, epochs, activities, studyDesign,
+    function buildStudyDataSheet(study, studyInformation,studyUrl, arms, epochs, activities, studyDesign,
       populationInformation, variables, conceptsSheet, measurementMomentSheet) {
       var studyDataSheet = initStudyDataSheet();
       var initialMerges = [
@@ -183,7 +193,7 @@ define(['lodash', 'xlsx-shim'], function(_, XLSX) {
       var armsPlusOverallPopulation = arms.concat({
         armURI: study.has_included_population[0]['@id']
       });
-      var studyData = buildStudyInformation(study, studyInformation);
+      var studyData = buildStudyInformation(study, studyInformation, studyUrl);
       var armData = buildArmData(arms);
       // var treatmentLabels = buildTreatmentLabels(arms, epochs, activities, studyDesign);
       var populationInformationData = buildPopulationInformationData(populationInformation);
@@ -326,14 +336,14 @@ define(['lodash', 'xlsx-shim'], function(_, XLSX) {
       return studyDataSheet;
     }
 
-    function buildStudyInformation(study, studyInformation) {
+    function buildStudyInformation(study, studyInformation, studyUrl) {
       return {
         A4: cellValue(study.label),
         B4: {
           l: {
-            Target: $location.absUrl()
+            Target: studyUrl
           },
-          v: $location.absUrl()
+          v: studyUrl
         },
         C4: cellValue(study.comment),
         D4: cellValue(studyInformation.allocation ? GROUP_ALLOCATION_OPTIONS[studyInformation.allocation].label : undefined),
