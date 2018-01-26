@@ -1,7 +1,17 @@
 'use strict';
 define(['lodash', 'xlsx-shim'], function(_, XLSX) {
-  var dependencies = ['$q', '$location', 'GROUP_ALLOCATION_OPTIONS', 'BLINDING_OPTIONS', 'STATUS_OPTIONS', 'ResultsService'];
-  var ExcelExportService = function($q, $location, GROUP_ALLOCATION_OPTIONS, BLINDING_OPTIONS, STATUS_OPTIONS, ResultsService) {
+  var dependencies = ['$q',
+    'GROUP_ALLOCATION_OPTIONS',
+    'BLINDING_OPTIONS',
+    'STATUS_OPTIONS',
+    'ResultsService'
+  ];
+  var ExcelExportService = function($q,
+    GROUP_ALLOCATION_OPTIONS,
+    BLINDING_OPTIONS,
+    STATUS_OPTIONS,
+    ResultsService
+  ) {
     var excelUtils = XLSX.utils;
 
     function getVariableResults(otherPromises, variableResults) {
@@ -172,7 +182,7 @@ define(['lodash', 'xlsx-shim'], function(_, XLSX) {
       return _.merge(cellReference('A1:' + a1Coordinate(4 + maxTreatments * 6, activities.length)), sheet, colHeaders, activityData);
     }
 
-    function buildStudyDataSheet(study, studyInformation, arms, epochs, activities, studyDesign,
+    function buildStudyDataSheet(study, studyInformation,studyUrl, arms, epochs, activities, studyDesign,
       populationInformation, variables, conceptsSheet, measurementMomentSheet) {
       var studyDataSheet = initStudyDataSheet();
       var initialMerges = [
@@ -183,7 +193,7 @@ define(['lodash', 'xlsx-shim'], function(_, XLSX) {
       var armsPlusOverallPopulation = arms.concat({
         armURI: study.has_included_population[0]['@id']
       });
-      var studyData = buildStudyInformation(study, studyInformation);
+      var studyData = buildStudyInformation(study, studyInformation, studyUrl);
       var armData = buildArmData(arms);
       // var treatmentLabels = buildTreatmentLabels(arms, epochs, activities, studyDesign);
       var populationInformationData = buildPopulationInformationData(populationInformation);
@@ -197,7 +207,7 @@ define(['lodash', 'xlsx-shim'], function(_, XLSX) {
         .map('c')
         .max() : 12;
 
-      studyDataSheet['!merges'] = studyDataSheet['!merges'].concat(initialMerges,[cellRange(12,0,lastColumn,0)], armMerges);
+      studyDataSheet['!merges'] = studyDataSheet['!merges'].concat(initialMerges, [cellRange(12, 0, lastColumn, 0)], armMerges);
       studyDataSheet['!ref'] = 'A1:' + a1Coordinate(lastColumn, 3 + arms.length);
       return studyDataSheet;
     }
@@ -326,10 +336,15 @@ define(['lodash', 'xlsx-shim'], function(_, XLSX) {
       return studyDataSheet;
     }
 
-    function buildStudyInformation(study, studyInformation) {
+    function buildStudyInformation(study, studyInformation, studyUrl) {
       return {
         A4: cellValue(study.label),
-        B4: cellValue($location.absUrl()),
+        B4: {
+          l: {
+            Target: studyUrl
+          },
+          v: studyUrl
+        },
         C4: cellValue(study.comment),
         D4: cellValue(studyInformation.allocation ? GROUP_ALLOCATION_OPTIONS[studyInformation.allocation].label : undefined),
         E4: cellValue(studyInformation.blinding ? BLINDING_OPTIONS[studyInformation.blinding].label : undefined),
@@ -363,29 +378,6 @@ define(['lodash', 'xlsx-shim'], function(_, XLSX) {
         J4: cellValue(populationInformation.eligibilityCriteria ? populationInformation.eligibilityCriteria.label : undefined)
       };
     }
-
-    // function buildTreatmentLabels(arms, epochs, activities, studyDesign) {
-    //   var primaryEpoch = _.find(epochs, 'isPrimary');
-    //   if (!primaryEpoch) {
-    //     return;
-    //   }
-    //   return _.reduce(arms, function(acc, arm, idx) {
-    //     var activity = _.find(activities, function(activity) {
-    //       var coordinate = _.find(studyDesign, function(coordinate) {
-    //         return coordinate.epochUri === primaryEpoch.uri && coordinate.armUri === arm.armURI;
-    //       });
-    //       return coordinate && coordinate.activityUri === activity.activityUri;
-    //     });
-
-    //     if (activity) {
-    //       acc['M' + (4 + idx)] = {
-    //         v: activity.label
-    //       };
-
-    //     }
-    //     return acc;
-    //   }, {});
-    // }
 
     function addConceptType(concepts, type) {
       return _.map(concepts, function(concept) {

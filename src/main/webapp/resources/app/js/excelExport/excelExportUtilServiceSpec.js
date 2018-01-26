@@ -459,6 +459,7 @@ define(['lodash', 'angular', 'angular-mocks'], function(_) {
             comment: 'comment'
           }
         };
+        var studyUrl = 'http://some.study.url/';
         var populationInformation = {
           indication: {
             label: 'severe depression'
@@ -581,7 +582,7 @@ define(['lodash', 'angular', 'angular-mocks'], function(_) {
           type: 'baseline characteristic'
         }];
 
-        var result = excelExportUtilService.buildStudyDataSheet(study, studyInformation, arms, epochs, activities, studyDesign,
+        var result = excelExportUtilService.buildStudyDataSheet(study, studyInformation, studyUrl, arms, epochs, activities, studyDesign,
           populationInformation, variables, conceptsSheet, measurementMomentSheet);
 
         var expectedResult = {
@@ -626,7 +627,11 @@ define(['lodash', 'angular', 'angular-mocks'], function(_) {
           // data rows
           // arm 1
           A4: cellValue(study.label),
-          B4: cellValue('studyUrl'),
+          B4: _.merge(cellValue(studyUrl), {
+            l: {
+              Target: studyUrl
+            }
+          }),
           C4: cellValue(study.comment),
           D4: cellValue(GROUP_ALLOCATION_OPTIONS[studyInformation.allocation].label),
           E4: cellValue(BLINDING_OPTIONS[studyInformation.blinding].label),
