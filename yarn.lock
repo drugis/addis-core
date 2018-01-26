@@ -34,6 +34,7 @@
 
 "@bower_components/angular-patavi-client@drugis/angular-patavi-client#~2.0.3":
   version "0.0.0"
+  uid c9bdc6d7a1a7429491173fb645777020a3e55093
   resolved "https://codeload.github.com/drugis/angular-patavi-client/tar.gz/c9bdc6d7a1a7429491173fb645777020a3e55093"
 
 "@bower_components/angular-resource@angular/bower-angular-resource#~1.6.6":
