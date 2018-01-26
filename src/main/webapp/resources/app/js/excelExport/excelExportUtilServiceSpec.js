@@ -238,17 +238,17 @@ define(['lodash', 'angular', 'angular-mocks'], function(_) {
           B2: cellValue('drug'),
           C2: cellValue('drug'),
           D2: cellValue(undefined),
-          E2: cellValue(undefined),
+          E2: cellNumber(undefined),
           A3: cellValue('variableUri'),
           B3: cellValue('variable'),
           C3: cellValue('variable'),
           D3: cellValue('datasetVariableUri'),
-          E3: cellValue(undefined),
+          E3: cellNumber(undefined),
           A4: cellValue('unitUri'),
           B4: cellValue('mg'),
           C4: cellValue('unit'),
           D4: cellValue('datasetGramUri'),
-          E4: cellValue(0.001),
+          E4: cellNumber(0.001),
         };
 
         var result = excelExportUtilService.buildConceptsSheet(studyConcepts);
@@ -404,8 +404,8 @@ define(['lodash', 'angular', 'angular-mocks'], function(_) {
             f: '=Concepts!E4'
           },
           F3: cellValue('fixed'),
-          G3: cellValue(1),
-          H3: cellValue(undefined),
+          G3: cellNumber(1),
+          H3: cellNumber(undefined),
           I3: {
             f: '=Concepts!E5'
           },
@@ -418,8 +418,8 @@ define(['lodash', 'angular', 'angular-mocks'], function(_) {
             f: '=Concepts!E4'
           },
           F4: cellValue('fixed'),
-          G4: cellValue(2),
-          H4: cellValue(undefined),
+          G4: cellNumber(2),
+          H4: cellNumber(undefined),
           I4: {
             f: '=Concepts!E5'
           },
@@ -428,8 +428,8 @@ define(['lodash', 'angular', 'angular-mocks'], function(_) {
             f: '=Concepts!E6'
           },
           L4: cellValue('titrated'),
-          M4: cellValue(3),
-          N4: cellValue(4),
+          M4: cellNumber(3),
+          N4: cellNumber(4),
           O4: {
             f: '=Concepts!E5'
           },
@@ -631,7 +631,7 @@ define(['lodash', 'angular', 'angular-mocks'], function(_) {
           D4: cellValue(GROUP_ALLOCATION_OPTIONS[studyInformation.allocation].label),
           E4: cellValue(BLINDING_OPTIONS[studyInformation.blinding].label),
           F4: cellValue(STATUS_OPTIONS[studyInformation.status].label),
-          G4: cellValue(studyInformation.numberOfCenters),
+          G4: cellNumber(studyInformation.numberOfCenters),
           H4: cellValue(studyInformation.objective.comment),
           I4: cellValue(populationInformation.indication.label),
           J4: cellValue(populationInformation.eligibilityCriteria.label),
@@ -640,32 +640,32 @@ define(['lodash', 'angular', 'angular-mocks'], function(_) {
           M4: cellValue('baseline characteristic'),
           N4: cellValue('continuous'),
           O4: cellFormula('=\'Measurement moments\'!B1'),
-          P4: cellValue(123),
-          Q4: cellValue(37),
+          P4: cellNumber(123),
+          Q4: cellNumber(37),
           R4: cellFormula('=\'Measurement moments\'!C1'),
-          S4: cellValue(234),
-          T4: cellValue(73),
+          S4: cellNumber(234),
+          T4: cellNumber(73),
           U4: cellValue('baseline characteristic'),
           V4: cellValue('categorical'),
           W4: cellFormula('=\'Measurement moments\'!B1'),
-          X4: cellValue(119),
-          Y4: cellValue(201),
+          X4: cellNumber(119),
+          Y4: cellNumber(201),
 
 
           // arm 2
           K5: cellValue(arms[1].label),
           L5: cellValue(arms[1].comment),
-          P5: cellValue(321),
-          Q5: cellValue(42),
-          S5: cellValue(432),
-          T5: cellValue(24),
-          X5: cellValue(301),
-          Y5: cellValue(401),
+          P5: cellNumber(321),
+          Q5: cellNumber(42),
+          S5: cellNumber(432),
+          T5: cellNumber(24),
+          X5: cellNumber(301),
+          Y5: cellNumber(401),
 
           // overall population
           K6: cellValue('Overall population'),
           L6: cellValue(undefined),
-          Q6: cellValue(500)
+          Q6: cellNumber(500)
         };
         expectedResult['!merges'] = [
           cellRange(12, 3, 12, 5),
@@ -711,6 +711,13 @@ define(['lodash', 'angular', 'angular-mocks'], function(_) {
         expect(result).toEqual(expectedResult);
       });
     });
+
+    function cellNumber(value) {
+     return {
+        v: value,
+        t: 'n'
+      }; 
+    }
 
     function cellFormula(formula) {
       return {
