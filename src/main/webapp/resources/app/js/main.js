@@ -17,6 +17,7 @@ require.config({
     'domReady': 'bower_components/requirejs-domready/domReady',
     'error-reporting': 'bower_components/error-reporting/errorReportingDirective',
     'export-directive': 'bower_components/export-directive/export-directive',
+    'file-saver': 'bower_components/file-saver/FileSaver.min',
     'gemtc-web': 'bower_components/gemtc-web/app/js',
     'help-popup': 'bower_components/help-popup/help-directive',
     'jQuery': 'bower_components/jquery/dist/jquery.min',
@@ -28,7 +29,9 @@ require.config({
     'moment': 'bower_components/moment/min/moment.min',
     'ngSanitize': 'bower_components/angular-sanitize/angular-sanitize.min',
     'nvd3': 'bower_components/nvd3/build/nv.d3.min',
-    'showdown': 'bower_components/showdown/dist/showdown.min'
+    'showdown': 'bower_components/showdown/dist/showdown.min',
+    'xlsx': 'bower_components/xlsx/dist/xlsx.full.min',
+    'xlsx-shim': 'bower_components/xlsx/demos/requirejs/xlsx-shim'
   },
   baseUrl: 'app/js',
   shim: {
@@ -56,6 +59,9 @@ require.config({
     'angular-touch': {
       deps: ['angular'],
       exports: 'ngTouch'
+    },
+    'file-saver': {
+      exports: 'saveAs'
     },
     'help-popup': {
       deps: ['angular']
@@ -99,6 +105,11 @@ require.config({
     }
   },
   priority: ['angular']
+});
+
+require(['xlsx'], function (_XLSX) {
+  /* work around require.js */
+  return XLSX;
 });
 
 window.name = 'NG_DEFER_BOOTSTRAP!';

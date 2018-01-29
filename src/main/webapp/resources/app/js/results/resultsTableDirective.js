@@ -28,9 +28,9 @@ define(['lodash'], function(_) {
               scope.inputHeaders = ResultsTableService.createHeaders(scope.variable);
               scope.measurementMomentOptions = ResultsTableService.buildMeasurementMomentOptions(scope.variable.measuredAtMoments);
               scope.measurementMomentSelections = _.reduce(scope.inputRows, function(accum, inputRow) {
-                // for every inputRow, take the uri of its measurementMoment. Then get for this measurementMoment the first in its list of
-                // options avaiable when changing the measurementMoment of this row to another measurementMoment. Then store this option
-                // based on the uri of the measurement moment
+                // for every inputRow, take the uri of its measurementMoment. Then get for this measurementMoment the 
+                // first in its list of options available when changing the measurementMoment of this row to another
+                // measurementMoment. Then store this option based on the uri of the measurement moment
                 var measurementMomentUri = inputRow.measurementMoment.uri;
                 accum[measurementMomentUri] = scope.measurementMomentOptions[measurementMomentUri][0];
                 return accum;

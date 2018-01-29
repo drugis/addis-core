@@ -15,7 +15,7 @@ require.config({
   paths: {
     'angular': 'bower_components/angular/angular',
     'angular-cookies': 'bower_components/angular-cookies/angular-cookies.min',
-    'angularjs-slider' : 'bower_components/angularjs-slider/dist/rzslider',
+    'angularjs-slider': 'bower_components/angularjs-slider/dist/rzslider',
     'angular-md5': 'bower_components/angular-md5/angular-md5',
     'angular-patavi-client': 'bower_components/angular-patavi-client/patavi',
     'angular-mocks': 'bower_components/angular-mocks/angular-mocks',
@@ -29,6 +29,7 @@ require.config({
     'domReady': 'bower_components/requirejs-domready/domReady',
     'error-reporting': 'bower_components/error-reporting/errorReportingDirective',
     'export-directive': 'bower_components/export-directive/export-directive',
+    'file-saver': 'bower_components/file-saver/FileSaver.min',
     'foundation': 'bower_components/foundation/js/foundation',
     'gemtc-web': 'bower_components/gemtc-web/app/js',
     'help-popup': 'bower_components/help-popup/help-directive',
@@ -43,7 +44,9 @@ require.config({
     'moment': 'bower_components/moment/min/moment.min',
     'ngSanitize': 'bower_components/angular-sanitize/angular-sanitize',
     'nvd3': 'bower_components/nvd3/build/nv.d3.min',
-    'showdown': 'bower_components/showdown/dist/showdown.min'
+    'showdown': 'bower_components/showdown/dist/showdown.min',
+    'xlsx': 'bower_components/xlsx/dist/xlsx.full.min',
+    'xlsx-shim': 'bower_components/xlsx/demos/requirejs/xlsx-shim'
   },
   baseUrl: '/base/src/main/webapp/resources/app/js',
   shim: {
@@ -126,6 +129,11 @@ require.config({
 
   // start test run, once Require.js is done
   callback: window.__karma__.start
+});
+
+require(['xlsx'], function(_XLSX) {
+  /* work around require.js */
+  return XLSX;
 });
 
 window.name = "NG_DEFER_BOOTSTRAP!";
