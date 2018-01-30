@@ -31,6 +31,7 @@ define(
     'util/util',
     'study/study',
     'excelExport/excelExport',
+    'excelImport/excelImport',
     'unit/unit',
     'graph/graph',
     'populationInformation/populationInformation',
@@ -111,6 +112,7 @@ define(
       'addis.interventions',
       'addis.outcomes',
       'addis.excelExport',
+      'addis.excelImport',
       'patavi',
       'errorReporting',
       'export-directive'

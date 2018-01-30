@@ -15,7 +15,7 @@ define(['lodash', 'clipboard'], function(_, Clipboard) {
     $scope.study = study;
     $scope.buildResultLabel = D80TableService.buildResultLabel;
 
-    var clipboard = new Clipboard('.clipboard-button');
+    new Clipboard('.clipboard-button');
 
     var allThePromises = [
       queryItems(EpochService, 'epochs').then(function(epochs) {
