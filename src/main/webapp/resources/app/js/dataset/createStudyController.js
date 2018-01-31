@@ -1,8 +1,9 @@
 'use strict';
 define(['lodash', 'xlsx-shim'], function(_, XLSX) {
   var dependencies = [
-  '$scope',
+    '$scope',
     '$stateParams',
+    '$q',
     '$modalInstance',
     '$timeout',
     'successCallback',
@@ -16,6 +17,7 @@ define(['lodash', 'xlsx-shim'], function(_, XLSX) {
   var CreateStudyController = function(
     $scope,
     $stateParams,
+    $q,
     $modalInstance,
     $timeout,
     successCallback,
@@ -63,10 +65,11 @@ define(['lodash', 'xlsx-shim'], function(_, XLSX) {
       return;
     }
 
-    function importExcel(){
+    function importExcel() {
       $scope.isCreatingStudy = true;
-      var newStudyVersionPromise = ExcelImportService.createStudy($scope.excelUpload);
-      newStudyVersionPromise.then(function(newStudy){
+      var newStudyVersionPromises = ExcelImportService.createStudy($scope.excelUpload);
+      $q.all(newStudyVersionPromises).then(function(result) {
+        var newStudy = result[0];
         successCallback(newStudy);
         $scope.isCreatingStudy = false;
         $modalInstance.close();
@@ -82,8 +85,8 @@ define(['lodash', 'xlsx-shim'], function(_, XLSX) {
 
     function createStudy(study) {
       $scope.isCreatingStudy = true;
-      var newStudyVersionPromise = StudyService.createEmptyStudy(study, $stateParams.userUid, $stateParams.datasetUuid);
-      newStudyVersionPromise.then(function(newVersion) {
+      var newStudyVersionPromises = StudyService.createEmptyStudy(study, $stateParams.userUid, $stateParams.datasetUuid);
+      newStudyVersionPromises.then(function(newVersion) {
         successCallback(newVersion);
         $scope.isCreatingStudy = false;
         $modalInstance.close();

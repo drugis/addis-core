@@ -4,7 +4,10 @@ define(['lodash', 'util/context'], function(_, externalContext) {
     '$q',
     '$stateParams',
     'GraphResource',
+    'VersionedGraphResource',
     'UUIDService',
+    'StudyService',
+    'PopulationCharacteristicService',
     'BLINDING_OPTIONS',
     'STATUS_OPTIONS',
     'GROUP_ALLOCATION_OPTIONS'
@@ -13,7 +16,10 @@ define(['lodash', 'util/context'], function(_, externalContext) {
     $q,
     $stateParams,
     GraphResource,
+    VersionedGraphResource,
     UUIDService,
+    StudyService,
+    PopulationCharacteristicService,
     BLINDING_OPTIONS,
     STATUS_OPTIONS,
     GROUP_ALLOCATION_OPTIONS
@@ -43,12 +49,12 @@ define(['lodash', 'util/context'], function(_, externalContext) {
         '@graph': [],
         '@context': externalContext
       }; // = createEmptyStudy(uuid);
-      study['@graph'].push(addStudyDateSheet(studyDataSheet, uuid));
-      return commitStudy(study, uuid);
+      study['@graph'].push(addInitialStudyDateSheet(studyDataSheet, uuid));
+      return commitStudy(workbook, study, uuid);
     }
 
     //private
-    function addStudyDateSheet(studyDataSheet, uuid) {
+    function addInitialStudyDateSheet(studyDataSheet, uuid) {
       var study = {
         '@id': 'http://trials.drugis.org/studies/' + uuid,
         '@type': 'ontology:Study',
@@ -87,7 +93,7 @@ define(['lodash', 'util/context'], function(_, externalContext) {
       }] : undefined;
     }
 
-    function commitStudy(study, uuid) {
+    function commitStudy(workbook, study, uuid) {
       var newVersionDefer = $q.defer();
       GraphResource.putJson({
         userUid: $stateParams.userUid,
@@ -101,7 +107,26 @@ define(['lodash', 'util/context'], function(_, externalContext) {
       }, function(error) {
         console.error('error' + error);
       });
-      return newVersionDefer.promise;
+      var getStudyFromBackendDefer = $q.defer();
+      var allAddedPromise = newVersionDefer.promise.then(function(studyGraphUuid) {
+        getStudyFromBackendDefer = GraphResource.getJson({
+          userUid: $stateParams.userUid,
+          datasetUuid: $stateParams.datasetUuid,
+          graphUuid: studyGraphUuid
+        });
+        StudyService.loadJson(getStudyFromBackendDefer.$promise);
+        var studyDataSheet = workbook.Sheets['Study data'];
+				PopulationCharacteristicService.addItem({
+          indication: {
+            label: studyDataSheet.I4 ? studyDataSheet.I4.v : undefined
+          },
+          eligibilityCriteria: {
+            label: studyDataSheet.J4 ? studyDataSheet.J4.v : undefined
+          }
+        });
+      });
+      console.log('something');
+      return [newVersionDefer.promise, getStudyFromBackendDefer.promise];
     }
 
     function getOntology(options, inputCell) {

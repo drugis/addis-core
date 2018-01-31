@@ -44,7 +44,7 @@ public class GraphReadRepositoryImpl implements GraphReadRepository {
   private final Logger logger = LoggerFactory.getLogger(getClass());
 
   @Override
-  public byte[] getGraph(String versionedDatasetUrl, String versionUuid, String graphUUID, String contentType) throws IOException, ReadGraphException {
+  public byte[] getGraph(String versionedDatasetUrl, String versionUuid, String graphUUID, String contentType) throws ReadGraphException {
     UriComponents uriComponents = UriComponentsBuilder.fromHttpUrl(versionedDatasetUrl)
             .path(DATA_ENDPOINT)
             .queryParam(GRAPH, graphService.buildGraphUri(graphUUID))
