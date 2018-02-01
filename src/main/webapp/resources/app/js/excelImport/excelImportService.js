@@ -48,7 +48,7 @@ define(['lodash', 'util/context'], function(_, externalContext) {
       var study = {
         '@graph': [],
         '@context': externalContext
-      }; // = createEmptyStudy(uuid);
+      };
       study['@graph'].push(addInitialStudyDateSheet(studyDataSheet, uuid));
       return commitStudy(workbook, study, uuid);
     }
@@ -63,15 +63,15 @@ define(['lodash', 'util/context'], function(_, externalContext) {
         status: studyDataSheet.F4 ? getOntology(STATUS_OPTIONS, studyDataSheet.F4.v) : undefined,
         has_activity: [],
         has_allocation: studyDataSheet.D4 ? getOntology(GROUP_ALLOCATION_OPTIONS, studyDataSheet.D4.v) : undefined,
-        has_arm: [],
+        has_arm: getArms(studyDataSheet),
         has_blinding: studyDataSheet.E4 ? getOntology(BLINDING_OPTIONS, studyDataSheet.E4.v) : undefined,
-        has_eligibility_criteria: [],
+        has_eligibility_criteria: getCommented(studyDataSheet, 'J4'),
         // has_epochs: {},
         has_group: [],
         has_included_population: createIncludedPopulation(),
-        has_indication: [],
+        has_indication: getLabeled(studyDataSheet, 'I4'),
         has_number_of_centers: studyDataSheet.G4 ? studyDataSheet.G4.v : undefined,
-        has_objective: getObjective(studyDataSheet),
+        has_objective: getCommented(studyDataSheet, 'H4'),
         has_outcome: [],
         // has_primary_epoch: undefined,
         has_publication: []
@@ -86,11 +86,18 @@ define(['lodash', 'util/context'], function(_, externalContext) {
       }];
     }
 
-    function getObjective(studyDataSheet) {
-      return studyDataSheet.H4 ? [{
+    function getLabeled(studyDataSheet, cell) {
+      return studyDataSheet[cell] ? [{
         '@id': INSTANCE_PREFIX + UUIDService.generate(),
-        comment: studyDataSheet.H4.v
-      }] : undefined;
+        label: studyDataSheet[cell].v
+      }] : [];
+    }
+
+    function getCommented(studyDataSheet, cell) {
+      return studyDataSheet[cell] ? [{
+        '@id': INSTANCE_PREFIX + UUIDService.generate(),
+        comment: studyDataSheet[cell].v
+      }] : [];
     }
 
     function commitStudy(workbook, study, uuid) {
@@ -107,26 +114,39 @@ define(['lodash', 'util/context'], function(_, externalContext) {
       }, function(error) {
         console.error('error' + error);
       });
-      var getStudyFromBackendDefer = $q.defer();
-      var allAddedPromise = newVersionDefer.promise.then(function(studyGraphUuid) {
-        getStudyFromBackendDefer = GraphResource.getJson({
-          userUid: $stateParams.userUid,
-          datasetUuid: $stateParams.datasetUuid,
-          graphUuid: studyGraphUuid
-        });
-        StudyService.loadJson(getStudyFromBackendDefer.$promise);
-        var studyDataSheet = workbook.Sheets['Study data'];
-				PopulationCharacteristicService.addItem({
-          indication: {
-            label: studyDataSheet.I4 ? studyDataSheet.I4.v : undefined
-          },
-          eligibilityCriteria: {
-            label: studyDataSheet.J4 ? studyDataSheet.J4.v : undefined
-          }
-        });
-      });
-      console.log('something');
-      return [newVersionDefer.promise, getStudyFromBackendDefer.promise];
+      // var getStudyFromBackendDefer = $q.defer();
+      // newVersionDefer.promise.then(function(newUuid) {
+      //   var studyPromise = GraphResource.getJson({
+      //     userUid: $stateParams.userUid,
+      //     datasetUuid: $stateParams.datasetUuid,
+      //     graphUuid: uuid
+      //   });
+      //   StudyService.loadJson(studyPromise.$promise);
+
+      // add extra information
+      // var studyDataSheet = workbook.Sheets['Study data'];
+
+
+      // commit additional information
+      // var newStudyPromise = StudyService.getGraphAndContext();
+      // $q.all([newStudyPromise]).then(function(results) {
+      //   var graph = results[0];
+      //   GraphResource.putJson({
+      //     userUid: $stateParams.userUid,
+      //     datasetUuid: $stateParams.datasetUuid,
+      //     graphUuid: uuid,
+      //     commitTitle: 'Added additional information: ' + study['@graph'][0].label
+      //   }, graph, function(value, responseHeaders) {
+      //     var newVersion = responseHeaders('X-EventSource-Version');
+      //     newVersion = newVersion.split('/')[4];
+      //     getStudyFromBackendDefer.resolve(newVersion);
+      //   }, function(error) {
+      //     console.error('error' + error);
+      //   });
+
+      // });
+      // });
+      return [newVersionDefer.promise]; //, getStudyFromBackendDefer.promise];
     }
 
     function getOntology(options, inputCell) {
@@ -134,6 +154,23 @@ define(['lodash', 'util/context'], function(_, externalContext) {
         return inputCell === option.label;
       });
       return result ? result.uri : undefined;
+    }
+
+    function getArms(studyDataSheet) {
+      var index = 4;
+      var arms = [];
+      while (studyDataSheet['K' + index]) {
+        arms.push({
+          '@id': INSTANCE_PREFIX + UUIDService.generate(),
+          label: studyDataSheet['K' + index].v,
+          comment: studyDataSheet['L' + index] ? studyDataSheet['L' + index].v : undefined
+        });
+        index++;
+      }
+      _.remove(arms, function(arm) {
+        return arm.label === 'Overall population';
+      });
+      return arms;
     }
 
     // interface
