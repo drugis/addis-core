@@ -78,8 +78,8 @@ define(['angular', 'lodash'],
           label: item.label,
           of_variable: [{
             '@type': 'ontology:Variable',
-            'measurementType': item.measurementType,
-            'label': item.label,
+            measurementType: item.measurementType,
+            label: item.label,
           }],
           has_result_property: item.resultProperties
         };

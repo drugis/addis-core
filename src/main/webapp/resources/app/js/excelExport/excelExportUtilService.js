@@ -230,7 +230,7 @@ define(['lodash', 'xlsx-shim'], function(_, XLSX) {
       merges = [];
       var currentAnchorCol = anchorCell.c;
       _.forEach(variables, function(variable) {
-        // first three columns are always merged
+        // first two columns are always merged
         var firstDataRow = anchorCell.r + 2;
         merges.push(cellRange(currentAnchorCol, firstDataRow, currentAnchorCol, firstDataRow + numberofArms - 1));
         merges.push(cellRange(currentAnchorCol + 1, firstDataRow, currentAnchorCol + 1, firstDataRow + numberofArms - 1));

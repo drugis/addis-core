@@ -1,5 +1,5 @@
 'use strict';
-define(['lodash', 'util/context'], function(_, externalContext) {
+define(['lodash', 'util/context', 'xlsx-shim'], function(_, externalContext, XLSX) {
   var dependencies = [
     '$q',
     '$stateParams',
@@ -25,6 +25,24 @@ define(['lodash', 'util/context'], function(_, externalContext) {
     GROUP_ALLOCATION_OPTIONS
   ) {
     var INSTANCE_PREFIX = 'http://trials.drugis.org/instances/';
+    var excelUtils = XLSX.utils;
+    var MEASUREMENT_TYPES = [{
+        uri: 'ontology:dichotomous',
+        label: 'dichotomous'
+      },
+      {
+        uri: 'ontology:continuous',
+        label: 'continuous'
+      },
+      {
+        uri: 'ontology:categorical',
+        label: 'categorical'
+      },
+      {
+        uri: 'ontology:survival',
+        label: 'survival'
+      }
+    ];
 
     function checkWorkbook(workbook) {
       var errors = [];
@@ -49,12 +67,106 @@ define(['lodash', 'util/context'], function(_, externalContext) {
         '@graph': [],
         '@context': externalContext
       };
-      study['@graph'].push(addInitialStudyDateSheet(studyDataSheet, uuid));
+      var graph = initialStudyDateSheet(studyDataSheet, uuid);
+      var variables = splitVariables(studyDataSheet, graph.has_arm);
+      var measurementMoments = getMeasurementMoments(variables);
+      graph = addVariables(graph, variables, measurementMoments);
+      // graph = addVariables(graph, variables);
+
+      study['@graph'].push(graph);
       return commitStudy(workbook, study, uuid);
     }
 
     //private
-    function addInitialStudyDateSheet(studyDataSheet, uuid) {
+    function getMeasurementMoments(variables) {
+      return _.reduce(variables, function(accum, variable) {
+        _.forEach(variable.measurementMoments, function(measurementMoment) {
+          if (!accum[measurementMoment]) {
+            accum[measurementMoment] = INSTANCE_PREFIX + UUIDService.generate();
+          }
+        });
+        return accum;
+      }, {});
+
+    }
+
+
+    function addVariables(graph, variables, measurementMoments) {
+
+      var newGraph = _.cloneDeep(graph);
+      _.forEach(variables, function(variable) {
+        var newItem;
+        if (variable.measurementType === 'ontology:categorical') {
+          var bla;
+        } else if (variable.measurementType === 'ontology:survival') {
+          var bla;
+        } else {
+          newItem = {
+            id: INSTANCE_PREFIX + UUIDService.generate(),
+            type: 'ontology:Variable',
+            is_measured_at: variable.measurementMoments.length === 1 ? measurementMoments[variable.measurementMoments[0]] : _.map(variable.measurementMoments, function(measurementMoment) {
+              return measurementMoments[measurementMoment];
+            }),
+            label: variable.label,
+            has_result_property: [], // todo elk measurement label
+            of_variable: [{
+              '@type': 'ontology:Variable',
+              measurementType: variable.measurementType,
+              label: variable.label
+            }]
+          };
+          if (variable.timeScale) {
+            newItem.survival_time_scale = variable.timeScale;
+          }
+        }
+
+
+
+
+        newGraph.has_outcome.push(newItem);
+      });
+      return newGraph;
+    }
+
+    function splitVariables(studyDataSheet, arms) {
+      var currentColumn = 12; // =>'M'
+      var armsTitlesColumn = 10;
+      var variables = [];
+      var numberOfVariables = -1;
+      var measurementMoment;
+      while (studyDataSheet[a1Coordinate(currentColumn, 2)]) { // as long as there is a header
+        if (studyDataSheet[a1Coordinate(currentColumn, 2)].v === 'variable type' &&
+          studyDataSheet[a1Coordinate(currentColumn, 2)]) {
+          // new variable
+          ++numberOfVariables;
+          variables[numberOfVariables] = {
+            label: studyDataSheet[a1Coordinate(currentColumn, 1)].v,
+            variableType: studyDataSheet[a1Coordinate(currentColumn, 3)].v,
+            measurements: [],
+            measurementMoments: []
+          };
+        } else if (studyDataSheet[a1Coordinate(currentColumn, 2)].v === 'measurement type') {
+          variables[numberOfVariables].measurementType = getOntology(MEASUREMENT_TYPES, studyDataSheet[a1Coordinate(currentColumn, 3)].v);
+        } else if (studyDataSheet[a1Coordinate(currentColumn, 2)].v === 'measurement moment') {
+          measurementMoment = studyDataSheet[a1Coordinate(currentColumn, 3)].v;
+          variables[numberOfVariables].measurementMoments.push(measurementMoment);
+        } else {
+          // measurement
+          for (var i = 0; i <= arms.length; ++i) { //for every arm and overall population
+            variables[numberOfVariables].measurements.push({
+              label: studyDataSheet[a1Coordinate(currentColumn, 2)].v,
+              measurementMoment: measurementMoment,
+              arms: studyDataSheet[a1Coordinate(armsTitlesColumn, (3 + i))].v,
+              value: studyDataSheet[a1Coordinate(currentColumn, (3 + i))] ? studyDataSheet[a1Coordinate(currentColumn, (3 + i))].v : undefined
+            });
+          }
+        }
+        ++currentColumn;
+      }
+      return variables;
+    }
+
+    function initialStudyDateSheet(studyDataSheet, uuid) {
       var study = {
         '@id': 'http://trials.drugis.org/studies/' + uuid,
         '@type': 'ontology:Study',
@@ -114,39 +226,7 @@ define(['lodash', 'util/context'], function(_, externalContext) {
       }, function(error) {
         console.error('error' + error);
       });
-      // var getStudyFromBackendDefer = $q.defer();
-      // newVersionDefer.promise.then(function(newUuid) {
-      //   var studyPromise = GraphResource.getJson({
-      //     userUid: $stateParams.userUid,
-      //     datasetUuid: $stateParams.datasetUuid,
-      //     graphUuid: uuid
-      //   });
-      //   StudyService.loadJson(studyPromise.$promise);
-
-      // add extra information
-      // var studyDataSheet = workbook.Sheets['Study data'];
-
-
-      // commit additional information
-      // var newStudyPromise = StudyService.getGraphAndContext();
-      // $q.all([newStudyPromise]).then(function(results) {
-      //   var graph = results[0];
-      //   GraphResource.putJson({
-      //     userUid: $stateParams.userUid,
-      //     datasetUuid: $stateParams.datasetUuid,
-      //     graphUuid: uuid,
-      //     commitTitle: 'Added additional information: ' + study['@graph'][0].label
-      //   }, graph, function(value, responseHeaders) {
-      //     var newVersion = responseHeaders('X-EventSource-Version');
-      //     newVersion = newVersion.split('/')[4];
-      //     getStudyFromBackendDefer.resolve(newVersion);
-      //   }, function(error) {
-      //     console.error('error' + error);
-      //   });
-
-      // });
-      // });
-      return [newVersionDefer.promise]; //, getStudyFromBackendDefer.promise];
+      return [newVersionDefer.promise];
     }
 
     function getOntology(options, inputCell) {
@@ -165,7 +245,7 @@ define(['lodash', 'util/context'], function(_, externalContext) {
           label: studyDataSheet['K' + index].v,
           comment: studyDataSheet['L' + index] ? studyDataSheet['L' + index].v : undefined
         });
-        index++;
+        ++index;
       }
       _.remove(arms, function(arm) {
         return arm.label === 'Overall population';
@@ -173,6 +253,12 @@ define(['lodash', 'util/context'], function(_, externalContext) {
       return arms;
     }
 
+    function a1Coordinate(column, row) {
+      return excelUtils.encode_cell({
+        c: column,
+        r: row
+      });
+    }
     // interface
     return {
       checkWorkbook: checkWorkbook,
