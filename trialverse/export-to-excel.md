@@ -40,14 +40,12 @@ Sheet 1: data
   - **arm information**
     - title
     - description
-    - treatment (reference to activities worksheet, title of treatmentactivity of primary epoch for this arm)
   - **measurement data (repeat below for each variable)**
-    - id (URI) (required for concept mapping)
     - variable type (baseline characteristic, endpoint, adverse event)
     - measurement type (count, continuous, categorical, survival)
     - **repeat below once for each measurement moment**
       - measurement moment (reference to title of measurement moment on their worksheet (e.g. `=Sheet1!B2`))
-      - **one column per category (in case of categorical variable) or per measured result property, e.g. mean, std.err**
+      - **one column per category in case of categorical variable (e.g. 'male', 'female')) or per measured result property in all other cases, (e.g. mean, std.err)**
 
 Activities
 ----------

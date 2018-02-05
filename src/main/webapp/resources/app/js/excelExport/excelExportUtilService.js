@@ -82,7 +82,7 @@ define(['lodash', 'xlsx-shim'], function(_, XLSX) {
         accum[a1Coordinate(6 + i * 6, 0)] = cellValue('dose');
         accum[a1Coordinate(7 + i * 6, 0)] = cellValue('max dose');
         accum[a1Coordinate(8 + i * 6, 0)] = cellValue('unit');
-        accum[a1Coordinate(9 + i * 6, 0)] = cellValue('periodicity');
+        accum[a1Coordinate(9 + i * 6, 0)] = cellNumber('periodicity');
         return accum;
       }, {});
 
@@ -205,8 +205,8 @@ define(['lodash', 'xlsx-shim'], function(_, XLSX) {
         accum['A' + row] = cellValue(concept.uri);
         accum['B' + row] = cellValue(concept.label);
         accum['C' + row] = cellValue(concept.type);
-        accum['D' + row] = cellValue(concept.conceptMapping);
-        accum['E' + row] = cellValue(concept.conversionMultiplier);
+        accum['D' + row] = cellNumber(concept.conceptMapping);
+        accum['E' + row] = cellNumber(concept.conversionMultiplier);
         return accum;
       }, {});
       var ref = cellReference('A1:E' + (studyConcepts.length + 1));
@@ -312,7 +312,7 @@ define(['lodash', 'xlsx-shim'], function(_, XLSX) {
             result.armUri === arm.armURI &&
             context.isResultForThisProperty(result, resultProperty);
         });
-        return result ? cellValue(result.value) : undefined;
+        return result ? cellNumber(result.value) : undefined;
       }));
     }
 
@@ -351,7 +351,7 @@ define(['lodash', 'xlsx-shim'], function(_, XLSX) {
         D4: cellValue(studyInformation.allocation ? GROUP_ALLOCATION_OPTIONS[studyInformation.allocation].label : undefined),
         E4: cellValue(studyInformation.blinding ? BLINDING_OPTIONS[studyInformation.blinding].label : undefined),
         F4: cellValue(studyInformation.status ? STATUS_OPTIONS[studyInformation.status].label : undefined),
-        G4: cellValue(studyInformation.numberOfCenters),
+        G4: cellNumber(studyInformation.numberOfCenters),
         H4: cellValue(studyInformation.objective ? studyInformation.objective.comment : undefined)
       };
     }
@@ -399,6 +399,13 @@ define(['lodash', 'xlsx-shim'], function(_, XLSX) {
     function cellValue(value) {
       return {
         v: value
+      };
+    }
+
+    function cellNumber(value) {
+     return {
+        v: value,
+        t: 'n'
       };
     }
 
