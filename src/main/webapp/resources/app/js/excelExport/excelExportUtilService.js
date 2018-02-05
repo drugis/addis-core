@@ -44,7 +44,7 @@ define(['lodash', 'xlsx-shim'], function(_, XLSX) {
         accum['B' + row] = cellValue(concept.label);
         accum['C' + row] = cellValue(concept.type);
         accum['D' + row] = cellValue(concept.conceptMapping);
-        accum['E' + row] = cellValue(concept.conversionMultiplier);
+        accum['E' + row] = cellNumber(concept.conversionMultiplier);
         return accum;
       }, {});
       var ref = cellReference('A1:E' + (studyConcepts.length + 1));
@@ -170,8 +170,8 @@ define(['lodash', 'xlsx-shim'], function(_, XLSX) {
             var isFixedDose = treatment.treatmentDoseType === 'ontology:FixedDoseDrugTreatment';
             accum[a1Coordinate(4 + index * 6, row)] = cellFormula('=Concepts!' + _.findKey(conceptsSheet, ['v', treatment.drug.label]));
             accum[a1Coordinate(5 + index * 6, row)] = cellValue(doseTypes[treatment.treatmentDoseType]);
-            accum[a1Coordinate(6 + index * 6, row)] = cellValue(isFixedDose ? treatment.fixedValue : treatment.minValue);
-            accum[a1Coordinate(7 + index * 6, row)] = cellValue(isFixedDose ? undefined : treatment.maxValue);
+            accum[a1Coordinate(6 + index * 6, row)] = cellNumber(isFixedDose ? treatment.fixedValue : treatment.minValue);
+            accum[a1Coordinate(7 + index * 6, row)] = cellNumber(isFixedDose ? undefined : treatment.maxValue);
             accum[a1Coordinate(8 + index * 6, row)] = cellFormula('=Concepts!' + getTitleReference(conceptsSheet, treatment.doseUnit.uri));
             accum[a1Coordinate(9 + index * 6, row)] = cellValue(treatment.dosingPeriodicity);
           });
@@ -310,7 +310,7 @@ define(['lodash', 'xlsx-shim'], function(_, XLSX) {
             result.armUri === arm.armURI &&
             context.isResultForThisProperty(result, resultProperty);
         });
-        return result ? cellValue(result.value) : undefined;
+        return result ? cellNumber(result.value) : undefined;
       }));
     }
 
@@ -349,7 +349,7 @@ define(['lodash', 'xlsx-shim'], function(_, XLSX) {
         D4: cellValue(studyInformation.allocation ? GROUP_ALLOCATION_OPTIONS[studyInformation.allocation].label : undefined),
         E4: cellValue(studyInformation.blinding ? BLINDING_OPTIONS[studyInformation.blinding].label : undefined),
         F4: cellValue(studyInformation.status ? STATUS_OPTIONS[studyInformation.status].label : undefined),
-        G4: cellValue(studyInformation.numberOfCenters),
+        G4: cellNumber(studyInformation.numberOfCenters),
         H4: cellValue(studyInformation.objective ? studyInformation.objective.comment : undefined)
       };
     }
@@ -398,6 +398,13 @@ define(['lodash', 'xlsx-shim'], function(_, XLSX) {
       return {
         v: value
       };
+    }
+
+    function cellNumber(value) {
+     return {
+        v: value,
+        t: 'n'
+      }; 
     }
 
     function cellFormula(formula) {
