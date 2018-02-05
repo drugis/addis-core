@@ -65,7 +65,6 @@
     "@bower_components/gemtc-web": "drugis/gemtc-web#master",
     "@bower_components/help-popup": "drugis/help-popup#0.3.0",
     "@bower_components/install": "tombigel/detect-zoom#^1.0.4",
-    "@bower_components/jasmine": "pivotal/jasmine#~2.0.0",
     "@bower_components/jquery": "jquery/jquery-dist#~3.2.1",
     "@bower_components/lodash": "lodash/lodash#~4.2.0",
     "@bower_components/mcda-web": "drugis/mcda-elicitation-web#master",

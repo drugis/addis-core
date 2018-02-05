@@ -43,6 +43,16 @@ define(['lodash', 'util/context', 'xlsx-shim'], function(_, externalContext, XLS
         label: 'survival'
       }
     ];
+    var VARIABLE_TYPES = [{
+      uri: 'ontology:PopulationCharacteristic:',
+      label: 'baseline characteristic'
+    }, {
+      uri: 'ontology:AdverseEvent',
+      label: 'adverse event'
+    }, {
+      uri: 'ontology:Endpoint',
+      label: 'outcome'
+    }];
 
     function checkWorkbook(workbook) {
       var errors = [];
@@ -63,18 +73,19 @@ define(['lodash', 'util/context', 'xlsx-shim'], function(_, externalContext, XLS
       var studyDataSheet = workbook.Sheets['Study data'];
 
       var uuid = UUIDService.generate();
-      var study = {
+      var jenaGraph = {
         '@graph': [],
         '@context': externalContext
       };
-      var graph = initialStudyDateSheet(studyDataSheet, uuid);
-      var variables = splitVariables(studyDataSheet, graph.has_arm);
+      var studyNode = initialStudyDataSheet(studyDataSheet, uuid);
+      var variables = splitVariables(studyDataSheet, studyNode.has_arm);
       var measurementMoments = getMeasurementMoments(variables);
-      graph = addVariables(graph, variables, measurementMoments);
+      studyNode = addVariables(studyNode, variables, measurementMoments);
+      jenaGraph['@graph'] = addMeasurementMoments(jenaGraph['@graph'], measurementMoments);
       // graph = addVariables(graph, variables);
 
-      study['@graph'].push(graph);
-      return commitStudy(workbook, study, uuid);
+      jenaGraph['@graph'].push(studyNode);
+      return jenaGraph;
     }
 
     //private
@@ -90,20 +101,30 @@ define(['lodash', 'util/context', 'xlsx-shim'], function(_, externalContext, XLS
 
     }
 
+    function addMeasurementMoments(graph, measurementMoments) {
+      var newGraph = _.cloneDeep(graph);
+      var measurementMomentNodes = _.map(measurementMoments, function(uri, label) {
+        return {
+          '@id': uri,
+          '@type': 'ontology:MeasurementMoment',
+          label: label
+        };
+      });
+      return newGraph.concat(measurementMomentNodes);
+    }
 
     function addVariables(graph, variables, measurementMoments) {
-
       var newGraph = _.cloneDeep(graph);
       _.forEach(variables, function(variable) {
         var newItem;
         if (variable.measurementType === 'ontology:categorical') {
-          var bla;
+          var bla; // FIXME
         } else if (variable.measurementType === 'ontology:survival') {
-          var bla;
+          var bla; // FIXME
         } else {
           newItem = {
-            id: INSTANCE_PREFIX + UUIDService.generate(),
-            type: 'ontology:Variable',
+            '@id': INSTANCE_PREFIX + UUIDService.generate(),
+            '@type': getOntology(VARIABLE_TYPES, variable.variableType),
             is_measured_at: variable.measurementMoments.length === 1 ? measurementMoments[variable.measurementMoments[0]] : _.map(variable.measurementMoments, function(measurementMoment) {
               return measurementMoments[measurementMoment];
             }),
@@ -119,10 +140,6 @@ define(['lodash', 'util/context', 'xlsx-shim'], function(_, externalContext, XLS
             newItem.survival_time_scale = variable.timeScale;
           }
         }
-
-
-
-
         newGraph.has_outcome.push(newItem);
       });
       return newGraph;
@@ -166,7 +183,7 @@ define(['lodash', 'util/context', 'xlsx-shim'], function(_, externalContext, XLS
       return variables;
     }
 
-    function initialStudyDateSheet(studyDataSheet, uuid) {
+    function initialStudyDataSheet(studyDataSheet, uuid) {
       var study = {
         '@id': 'http://trials.drugis.org/studies/' + uuid,
         '@type': 'ontology:Study',
@@ -221,7 +238,7 @@ define(['lodash', 'util/context', 'xlsx-shim'], function(_, externalContext, XLS
         commitTitle: 'Initial study creation: ' + study['@graph'][0].label
       }, study, function(value, responseHeaders) {
         var newVersion = responseHeaders('X-EventSource-Version');
-        newVersion = newVersion.split('/')[4];
+        newVersion = newVersion.split('/versions/')[1];
         newVersionDefer.resolve(newVersion);
       }, function(error) {
         console.error('error' + error);
@@ -230,9 +247,7 @@ define(['lodash', 'util/context', 'xlsx-shim'], function(_, externalContext, XLS
     }
 
     function getOntology(options, inputCell) {
-      var result = _.find(options, function(option) {
-        return inputCell === option.label;
-      });
+      var result = _.find(options, ['label', inputCell]);
       return result ? result.uri : undefined;
     }
 
@@ -247,9 +262,7 @@ define(['lodash', 'util/context', 'xlsx-shim'], function(_, externalContext, XLS
         });
         ++index;
       }
-      _.remove(arms, function(arm) {
-        return arm.label === 'Overall population';
-      });
+      _.remove(arms, ['label', 'Overall population']);
       return arms;
     }
 

@@ -31,6 +31,9 @@ module.exports = function(config) {
       }, {
         pattern: 'src/test/**/*.js',
         included: false
+      }, {
+        pattern: 'src/test/resources/excelImport/teststudy.xlsx',
+        included: false
       }
     ],
 
