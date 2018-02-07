@@ -82,7 +82,7 @@ define(['lodash', 'xlsx-shim'], function(_, XLSX) {
         accum[a1Coordinate(6 + i * 6, 0)] = cellValue('dose');
         accum[a1Coordinate(7 + i * 6, 0)] = cellValue('max dose');
         accum[a1Coordinate(8 + i * 6, 0)] = cellValue('unit');
-        accum[a1Coordinate(9 + i * 6, 0)] = cellNumber('periodicity');
+        accum[a1Coordinate(9 + i * 6, 0)] = cellValue('periodicity');
         return accum;
       }, {});
 
@@ -98,8 +98,8 @@ define(['lodash', 'xlsx-shim'], function(_, XLSX) {
             var isFixedDose = treatment.treatmentDoseType === 'ontology:FixedDoseDrugTreatment';
             accum[a1Coordinate(4 + index * 6, row)] = cellFormula('=Concepts!' + _.findKey(conceptsSheet, ['v', treatment.drug.label]));
             accum[a1Coordinate(5 + index * 6, row)] = cellValue(doseTypes[treatment.treatmentDoseType]);
-            accum[a1Coordinate(6 + index * 6, row)] = cellValue(isFixedDose ? treatment.fixedValue : treatment.minValue);
-            accum[a1Coordinate(7 + index * 6, row)] = cellValue(isFixedDose ? undefined : treatment.maxValue);
+            accum[a1Coordinate(6 + index * 6, row)] = cellNumber(isFixedDose ? treatment.fixedValue : treatment.minValue);
+            accum[a1Coordinate(7 + index * 6, row)] = cellNumber(isFixedDose ? undefined : treatment.maxValue);
             accum[a1Coordinate(8 + index * 6, row)] = cellFormula('=Concepts!' + getTitleReference(conceptsSheet, treatment.doseUnit.uri));
             accum[a1Coordinate(9 + index * 6, row)] = cellValue(treatment.dosingPeriodicity);
           });
@@ -205,7 +205,7 @@ define(['lodash', 'xlsx-shim'], function(_, XLSX) {
         accum['A' + row] = cellValue(concept.uri);
         accum['B' + row] = cellValue(concept.label);
         accum['C' + row] = cellValue(concept.type);
-        accum['D' + row] = cellNumber(concept.conceptMapping);
+        accum['D' + row] = concept.conceptMapping ? cellValue(concept.conceptMapping) : undefined;
         accum['E' + row] = cellNumber(concept.conversionMultiplier);
         return accum;
       }, {});
@@ -270,13 +270,24 @@ define(['lodash', 'xlsx-shim'], function(_, XLSX) {
         variable: variable
       }, context);
       var measurementsBlocks = _.flatten(_.map(variable.measuredAtMoments, _.partial(buildMeasurementMomentBlocks, measuredAtContext)));
-
+      if (measuredAtContext.variable && !measurementsBlocks.length) {
+        var properties;
+        if (measuredAtContext.variable.resultProperties) {
+          properties = _.map(measuredAtContext.variable.resultProperties, function(item) {
+            return item.split('#')[1];
+          });
+        } else {
+          properties = _.map(measuredAtContext.variable.categoryList, 'label');
+        }
+        measurementsBlocks = _.map(properties, function(property) {
+          return [undefined, cellValue(property)];
+        });
+      }
       return baseColumns.concat(measurementsBlocks);
     }
 
     function buildMeasurementMomentBlocks(context, measuredAtMoment) {
       var measurementMomentTitleCoordinate = getTitleReference(context.measurementMomentSheet, measuredAtMoment.uri);
-      // FIXME accum['!merges'].push(cellRange(column, row + 1, column, row + context.arms.length));
       var baseColumns = [
         [undefined, cellValue('measurement moment'), cellFormula('=\'Measurement moments\'!' + measurementMomentTitleCoordinate)]
       ];
@@ -292,7 +303,7 @@ define(['lodash', 'xlsx-shim'], function(_, XLSX) {
           return result.result_property === item.split('#')[1];
         };
         properties = context.variable.resultProperties;
-      } else {
+      } else { // categorical
         measuredAtContext.labelExtractor = function(item) {
           return item.label;
         };
@@ -403,7 +414,7 @@ define(['lodash', 'xlsx-shim'], function(_, XLSX) {
     }
 
     function cellNumber(value) {
-     return {
+      return {
         v: value,
         t: 'n'
       };
