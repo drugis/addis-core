@@ -677,8 +677,6 @@ define(['lodash', 'angular', 'angular-mocks'], function(_) {
           Z4: cellValue('adverse event'),
           AA4: cellValue('continuous'),
 
-
-
           // arm 2
           K5: cellValue(arms[1].label),
           L5: cellValue(arms[1].comment),

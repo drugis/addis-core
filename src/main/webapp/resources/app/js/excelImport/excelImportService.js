@@ -8,6 +8,7 @@ define(['lodash', 'util/context', 'xlsx-shim'], function(_, externalContext, XLS
     'UUIDService',
     'StudyService',
     'PopulationCharacteristicService',
+    'RdfListService',
     'BLINDING_OPTIONS',
     'STATUS_OPTIONS',
     'GROUP_ALLOCATION_OPTIONS'
@@ -20,6 +21,7 @@ define(['lodash', 'util/context', 'xlsx-shim'], function(_, externalContext, XLS
     UUIDService,
     StudyService,
     PopulationCharacteristicService,
+    RdfListService,
     BLINDING_OPTIONS,
     STATUS_OPTIONS,
     GROUP_ALLOCATION_OPTIONS
@@ -67,34 +69,48 @@ define(['lodash', 'util/context', 'xlsx-shim'], function(_, externalContext, XLS
       if (!workbook.Sheets['Study data'].C4) {
         errors.push('Title is missing');
       }
+      var lastRow = excelUtils.decode_range(workbook.Sheets['Study data']['!ref']).e.r + 1;
+      if (workbook.Sheets['Study data']['K' + lastRow].v !== 'Overall population') {
+        errors.push('No overall population found');
+      }
       return errors;
     }
-
-    // - create main epoch
-    // - create 1 MM for each unique name found, all at end of main epoch
-    // - create 1 arm per arm row
 
     function createStudy(workbook) {
       var studyDataSheet = workbook.Sheets['Study data'];
 
-      var jenaGraph = {
-        '@graph': [],
-        '@context': externalContext
-      };
       var epochs = buildEpochs();
       var studyNode = readStudy(studyDataSheet, epochs);
-      var variables = readVariables(studyDataSheet, studyNode.has_arm);
+      var variableColumns = findVariableStartColumns(studyDataSheet);
+      var variables = readVariables(studyDataSheet, variableColumns);
       var measurementMoments = buildMeasurementMoments(variables, epochs);
       variables = measurementMomentLabelToUri(variables, measurementMoments);
+      // [ ] read measurements
+      var measurements = readMeasurements(studyDataSheet, variables, studyNode.has_arm.concat(studyNode.has_included_population), variableColumns);
       studyNode.has_outcome = variables;
-      jenaGraph['@graph'] = addMeasurementMoments(jenaGraph['@graph'], measurementMoments);
-      // graph = addVariables(graph, variables);
-
-      jenaGraph['@graph'].push(studyNode);
+      var jenaGraph = {
+        '@graph': [].concat(measurementMoments, measurements, studyNode),
+        '@context': externalContext
+      };
       return jenaGraph;
     }
 
     //private
+
+    function getValueIfPresent(dataSheet, column, row) {
+      var cell = dataSheet[a1Coordinate(column, row)];
+      return cell ? cell.v : undefined;
+    }
+
+    function findVariableStartColumns(studyDataSheet) {
+      var startColumn = 12; // =>'M'
+      var endColumn = XLSX.utils.decode_range(studyDataSheet['!ref']).e.c;
+      return _.filter(_.range(startColumn, endColumn), function(column) {
+        return getValueIfPresent(studyDataSheet, column, 1);
+      });
+
+    }
+
     function buildMeasurementMoments(variables, epochs) {
       var epochUri = epochs[0]['@id'];
       return _(variables)
@@ -123,106 +139,73 @@ define(['lodash', 'util/context', 'xlsx-shim'], function(_, externalContext, XLS
       }];
     }
 
-    function addMeasurementMoments(graph, measurementMoments) {
-      var newGraph = _.cloneDeep(graph);
-      var measurementMomentNodes = _.map(measurementMoments, function(uri, label) {
-        return {
-          '@id': uri,
-          '@type': 'ontology:MeasurementMoment',
-          label: label
-        };
-      });
-      return newGraph.concat(measurementMomentNodes);
-    }
-
     function measurementMomentLabelToUri(variables, measurementMoments) {
-      var measurementMomentsByLabel = _.indexBy(measurementMoments, 'label');
+      var measurementMomentsByLabel = _.keyBy(measurementMoments, 'label');
       return _.map(variables, function(variable) {
+        var measurementMomentUris;
+        if (variable.is_measured_at.length === 1) {
+          measurementMomentUris = measurementMomentsByLabel[variable.is_measured_at]['@id'];
+        } else {
+          measurementMomentUris = _.map(variable.is_measured_at, function(measurementLabel) {
+            return measurementMomentsByLabel[measurementLabel]['@id'];
+          });
+        }
         return _.extend({}, variable, {
-          is_measured_at: _.map(variables.is_measured_at, function(measurementLabel) {
-            return measurementMomentsByLabel[measurementLabel];
-          })
+          is_measured_at: measurementMomentUris
         });
       });
     }
 
-    // function addVariables(study, variables, measurementMoments) {
-    //   var newStudy = _.cloneDeep(study);
-    //   _.forEach(variables, function(variable) {
-    //     var newItem;
-    //     if (variable.measurementType === 'ontology:categorical') {
-    //       var bla; // FIXME
-    //     } else if (variable.measurementType === 'ontology:survival') {
-    //       var bla; // FIXME
-    //     } else {
-    //       newItem = {
-    //         '@id': INSTANCE_PREFIX + UUIDService.generate(),
-    //         '@type': findOntology(VARIABLE_TYPES, variable.variableType),
-    //         is_measured_at: variable.measurementMoments.length === 1 ? measurementMoments[variable.measurementMoments[0]] : _.map(variable.measurementMoments, function(measurementMoment) {
-    //           return measurementMoments[measurementMoment];
-    //         }),
-    //         label: variable.label,
-    //         has_result_property: variable.resultProperties, // todo elk measurement label
-    //         of_variable: [{
-    //           '@type': 'ontology:Variable',
-    //           measurementType: variable.measurementType,
-    //           label: variable.label
-    //         }]
-    //       };
-    //       if (variable.timeScale) {
-    //         newItem.survival_time_scale = variable.timeScale;
-    //       }
-    //     }
-    //     newStudy.has_outcome.push(newItem);
-    //   });
-    //   return newStudy;
-    // }
-
-    function readVariables(studyDataSheet, arms) {
-      var startColumn = 12; // =>'M'
-      var endColumn = XLSX.utils.decode_range(studyDataSheet['!ref']).e.c;
-      var variableColumns = _.filter(_.range(startColumn, endColumn), function(column) {
-        return studyDataSheet[a1Coordinate(column, 1)];
+    function readVariables(studyDataSheet, variableColumns) {
+      var endColumn = XLSX.utils.decode_range(studyDataSheet['!ref']).e.c + 1;
+      var variableColumnsPlusEnd = variableColumns.concat(endColumn); // add end column for last variable
+      var variableColumnBoundaries = _.map(variableColumnsPlusEnd.slice(0, variableColumnsPlusEnd.length - 1), function(n, index) {
+        return [n, variableColumnsPlusEnd[index + 1]];
       });
-      var foo = _.map(variableColumns.slice(0, variableColumns.length - 1), function(n, index) {
-        return [n, variableColumns[index + 1]];
-      });
-      var variables = _.map(foo, _.partial(readVariable, studyDataSheet, arms));
+      var variables = _.map(variableColumnBoundaries, _.partial(readVariable, studyDataSheet));
       return variables;
     }
 
-    function readVariable(studyDataSheet, arms, columns) {
+    function readVariable(studyDataSheet, columns) {
       var newVariable = {
         '@id': INSTANCE_PREFIX + UUIDService.generate(),
-        '@type': findOntology(VARIABLE_TYPES, studyDataSheet[a1Coordinate(columns[0], 3)].v),
-        label: studyDataSheet[a1Coordinate(columns[0], 1)].v
+        '@type': findOntology(VARIABLE_TYPES, getValueIfPresent(studyDataSheet, columns[0], 3)),
+        label: getValueIfPresent(studyDataSheet, columns[0], 1)
       };
-      var measurementType = MEASUREMENT_TYPES[studyDataSheet[a1Coordinate(columns[0] + 1, 3)].v].uri;
+      var measurementType = MEASUREMENT_TYPES[getValueIfPresent(studyDataSheet, columns[0] + 1, 3)].uri;
       var ofVariable = {
         '@type': 'ontology:Variable',
         measurementType: measurementType,
         label: newVariable.label
       };
       if (measurementType === MEASUREMENT_TYPES.categorical.uri) {
-        ofVariable.foo = 'bar'; // TODO
+        var categoryNames = readDataColumnNames(studyDataSheet, columns, _.identity);
+        var categories = _.map(categoryNames, function(categoryName) {
+          return {
+            '@id': INSTANCE_PREFIX + UUIDService.generate(),
+            '@type': 'ontology:Category',
+            label: categoryName
+          };
+        });
+        ofVariable.categoryList = RdfListService.unFlattenList(categories);
       } else {
-        newVariable.has_result_property = readResultProperties(studyDataSheet, columns);
+        newVariable.has_result_property = readDataColumnNames(studyDataSheet, columns, function(propertyName) {
+          return ONTOLOGY_PREFIX + propertyName;
+        });
       }
       newVariable.of_variable = [ofVariable];
       newVariable.is_measured_at = readMeasurementMoments(studyDataSheet, columns);
       return newVariable;
     }
 
-    function readResultProperties(studyDataSheet, columns) {
+    function readDataColumnNames(studyDataSheet, columns, prefixer) {
       return _(_.range(columns[0] + 2, columns[1]))
         .map(function(column) {
-          return studyDataSheet[a1Coordinate(column, 2)].v;
+          return getValueIfPresent(studyDataSheet, column, 2);
         })
-        .reject('measurement moment')
+        .without('measurement moment')
         .uniq()
-        .map(function(propertyName) {
-          return ONTOLOGY_PREFIX + propertyName;
-        })
+        .map(prefixer)
         .value();
     }
 
@@ -230,8 +213,9 @@ define(['lodash', 'util/context', 'xlsx-shim'], function(_, externalContext, XLS
       return _(_.range(columns[0] + 1, columns[1]))
         .map(function(column) {
           return {
-            header: studyDataSheet[a1Coordinate(column, 2)].v,
-            value: studyDataSheet[a1Coordinate(column, 3)].v
+            column: column,
+            header: getValueIfPresent(studyDataSheet, column, 2),
+            value: getValueIfPresent(studyDataSheet, column, 3)
           };
         })
         .filter(['header', 'measurement moment'])
@@ -240,19 +224,84 @@ define(['lodash', 'util/context', 'xlsx-shim'], function(_, externalContext, XLS
         .value();
     }
 
+    function readMeasurements(studyDataSheet, variables, arms, columns) {
+      var measurements = [];
+      _.forEach(variables, function(variable, variableIndex) {
+        var variableColumn = columns[variableIndex];
+        _.forEach(arms, function(arm, armIndex) {
+          var currentY = armIndex + 3;
+          var measuredAt = variable.is_measured_at;
+          if (!Array.isArray(variable.is_measured_at)) {
+            measuredAt = [variable.is_measured_at];
+          }
+          _.forEach(measuredAt, function(measurementMomentUri, measurementMomentIndex) {
+            var measurement = buildMeasurement(studyDataSheet, variable, measurementMomentUri, measurementMomentIndex, arm, variableColumn, currentY);
+            if (_.keys(measurement).length > 4) {
+              measurements.push(measurement);
+            }
+          });
+        });
+      });
+      return measurements;
+    }
+
+    function buildMeasurement(studyDataSheet, variable, measurementMomentUri, measurementMomentIndex, arm, variableColumn, currentY) {
+      var measurement = {
+        '@id': INSTANCE_PREFIX + UUIDService.generate(),
+        of_moment: measurementMomentUri,
+        of_group: arm['@id'],
+        of_outcome: variable['@id']
+      };
+      var resultColumns, readMeasurementValue;
+      if (variable.of_variable[0].measurementType === MEASUREMENT_TYPES.categorical.uri) {
+        resultColumns = RdfListService.flattenList(variable.of_variable[0].categoryList);
+        readMeasurementValue = function(measurement, resultColumn, value) {
+          var newMeasurement = _.cloneDeep(measurement);
+          if (!newMeasurement.category_count) {
+            newMeasurement.category_count = [];
+          }
+          newMeasurement.category_count.push({
+            '@id': INSTANCE_PREFIX + UUIDService.generate(),
+            category: resultColumn['@id'],
+            count: value
+          });
+          return newMeasurement;
+        };
+      } else {
+        resultColumns = _.map(variable.has_result_property, function(resultProperty) {
+          var splitProperty = resultProperty.split('#');
+          return splitProperty[1];
+        });
+        readMeasurementValue = function(measurement, resultColumn, value) {
+          var newMeasurement = _.cloneDeep(measurement);
+          newMeasurement[resultColumn] = value;
+          return newMeasurement;
+        };
+      }
+
+      _.forEach(resultColumns, function(resultColumn, propertyIndex) {
+        var currentX = variableColumn + 3 + measurementMomentIndex * (resultColumns.length + 1) + propertyIndex;
+        var currentValue = getValueIfPresent(studyDataSheet, currentX, currentY);
+        if (currentValue) {
+          measurement = readMeasurementValue(measurement, resultColumn, currentValue);
+        }
+      });
+      return measurement;
+    }
+
     function readStudy(studyDataSheet, epochs) {
       var study = {
-        '@id': 'http://trials.drugis.org/studies/' + UUIDService.generate,
+        '@id': 'http://trials.drugis.org/studies/' + UUIDService.generate(),
         '@type': 'ontology:Study',
         comment: studyDataSheet.C4.v,
         label: studyDataSheet.A4.v,
         status: studyDataSheet.F4 ? findOntology(STATUS_OPTIONS, studyDataSheet.F4.v) : undefined,
         has_activity: [],
         has_allocation: studyDataSheet.D4 ? findOntology(GROUP_ALLOCATION_OPTIONS, studyDataSheet.D4.v) : undefined,
-        has_arm: getArms(studyDataSheet),
+        has_arm: readArms(studyDataSheet),
         has_blinding: studyDataSheet.E4 ? findOntology(BLINDING_OPTIONS, studyDataSheet.E4.v) : undefined,
         has_eligibility_criteria: getCommented(studyDataSheet, 'J4'),
-        has_epochs: arrayToRDFList(epochs),
+        has_epochs: RdfListService.unFlattenList(epochs),
         has_group: [],
         has_included_population: createIncludedPopulation(),
         has_indication: getLabeled(studyDataSheet, 'I4'),
@@ -267,11 +316,12 @@ define(['lodash', 'util/context', 'xlsx-shim'], function(_, externalContext, XLS
 
     function createIncludedPopulation() {
       return [{
-        '@id': 'instance:' + UUIDService.generate(),
+        '@id': INSTANCE_PREFIX + UUIDService.generate(),
         '@type': 'ontology:StudyPopulation'
       }];
     }
 
+    // FIXME: refactor
     function getLabeled(studyDataSheet, cell) {
       return studyDataSheet[cell] ? [{
         '@id': INSTANCE_PREFIX + UUIDService.generate(),
@@ -279,6 +329,7 @@ define(['lodash', 'util/context', 'xlsx-shim'], function(_, externalContext, XLS
       }] : [];
     }
 
+    // FIXME: refactor
     function getCommented(studyDataSheet, cell) {
       return studyDataSheet[cell] ? [{
         '@id': INSTANCE_PREFIX + UUIDService.generate(),
@@ -286,12 +337,12 @@ define(['lodash', 'util/context', 'xlsx-shim'], function(_, externalContext, XLS
       }] : [];
     }
 
-    function commitStudy(workbook, study, uuid) {
+    function commitStudy(study) {
       var newVersionDefer = $q.defer();
       GraphResource.putJson({
         userUid: $stateParams.userUid,
         datasetUuid: $stateParams.datasetUuid,
-        graphUuid: uuid,
+        graphUuid: UUIDService.generate(),
         commitTitle: 'Initial study creation: ' + study['@graph'][0].label
       }, study, function(value, responseHeaders) {
         var newVersion = responseHeaders('X-EventSource-Version');
@@ -300,11 +351,7 @@ define(['lodash', 'util/context', 'xlsx-shim'], function(_, externalContext, XLS
       }, function(error) {
         console.error('error' + error);
       });
-      return [newVersionDefer.promise];
-    }
-
-    function arrayToRDFList(array) {
-      return array; // FIXME
+      return newVersionDefer.promise;
     }
 
     function findOntology(options, inputCell) {
@@ -312,7 +359,7 @@ define(['lodash', 'util/context', 'xlsx-shim'], function(_, externalContext, XLS
       return result ? result.uri : undefined;
     }
 
-    function getArms(studyDataSheet) {
+    function readArms(studyDataSheet) {
       var index = 4;
       var arms = [];
       while (studyDataSheet['K' + index]) {
@@ -336,7 +383,8 @@ define(['lodash', 'util/context', 'xlsx-shim'], function(_, externalContext, XLS
     // interface
     return {
       checkWorkbook: checkWorkbook,
-      createStudy: createStudy
+      createStudy: createStudy,
+      commitStudy: commitStudy
     };
 
   };

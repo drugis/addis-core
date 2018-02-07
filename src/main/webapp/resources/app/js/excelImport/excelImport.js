@@ -7,6 +7,7 @@ define(requires.concat(['angular', 'angular-resource']), function(
   angular
 ) {
   return angular.module('addis.excelImport', ['ngResource',
+      'trialverse.util',
       'trialverse.study'
     ])
     //services

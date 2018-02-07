@@ -32,7 +32,7 @@ module.exports = function(config) {
         pattern: 'src/test/**/*.js',
         included: false
       }, {
-        pattern: 'src/test/resources/excelImport/teststudy.xlsx',
+        pattern: 'src/test/resources/excelImport/*.xlsx',
         included: false
       }
     ],

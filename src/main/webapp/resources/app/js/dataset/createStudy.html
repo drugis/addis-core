@@ -7,9 +7,11 @@
         </div>
         <div class="cell">
           <label>Short Name (e.g. Hansen 2005)
-            <input autofocus type="text" ng-model="study.label">
+            <input autofocus type="text" ng-model="study.label" ng-change="checkUniqueShortName(study.label)">
           </label>
-          <label class="alert" ng-show="!isUniqueShortName(study.label)">Short name must be unique</label>
+        </div>
+        <div class="cell" ng-show="!isUniqueShortName">
+          <label class="alert">Short name must be unique</label>
         </div>
         <div class="cell">
           <label>Title
@@ -17,7 +19,7 @@
           </label>
         </div>
         <div class="cell">
-          <button class="button success" type="submit" ng-disabled="!study.comment || !isUniqueShortName(study.label) || isCreatingStudy">
+          <button class="button success" type="submit" ng-disabled="!study.comment || !isUniqueShortName || isCreatingStudy">
             create
           </button>
         </div>
@@ -34,7 +36,16 @@
           <input type="file" name="excelFile" accept=".xlsx" onchange="angular.element(this).scope().uploadExcel(this)">
         </div>
         <div class="cell">
-          <button class="button success" type="submit" ng-disabled="!excelUpload || isCreatingStudy || errors.length">
+          <label>Short Name (e.g. Hansen 2005)</label>
+        </div>
+        <div class="cell">
+          <input type="text" ng-disabled="!isValidUpload || isCreatingStudy" ng-model="excelUpload.Sheets['Study data'].A4.v" ng-change="checkUniqueShortName(excelUpload.Sheets['Study data'].A4.v)">
+        </div>
+        <div class="cell" ng-show="!isUniqueShortName">
+          <label class="alert">Short name must be unique</label>
+        </div>
+        <div class="cell">
+          <button class="button success" type="submit" ng-disabled="!excelUpload || isCreatingStudy || errors.length || !isUniqueShortName">
             create
           </button>
         </div>

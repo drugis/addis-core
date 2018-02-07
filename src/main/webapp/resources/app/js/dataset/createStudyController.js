@@ -27,9 +27,10 @@ define(['lodash', 'xlsx-shim'], function(_, XLSX) {
     UUIDService,
     ExcelImportService) {
     // functions 
-    $scope.isUniqueShortName = isUniqueShortName;
+    $scope.checkUniqueShortName = checkUniqueShortName;
     $scope.createStudy = createStudy;
     $scope.isValidNct = isValidNct;
+    $scope.isValidUpload = false;
     $scope.cancel = cancel;
     $scope.getInfo = getInfo;
     $scope.uploadExcel = uploadExcel;
@@ -38,14 +39,19 @@ define(['lodash', 'xlsx-shim'], function(_, XLSX) {
     // init
     $scope.isCreatingStudy = false;
     $scope.importing = false;
+    $scope.isUniqueShortName = true;
     $scope.studyImport = {};
     $scope.excelUpload = undefined;
 
     function uploadExcel(uploadedElement) {
       var file = uploadedElement.files[0];
-      var reader = new FileReader();
-      $scope.errors = [];
       var workbook;
+      $scope.excelUpload = undefined;
+      $scope.errors = [];
+      if (!file) {
+        return;
+      }
+      var reader = new FileReader();
       reader.onload = function(file) {
         var data = file.target.result;
         try {
@@ -54,43 +60,40 @@ define(['lodash', 'xlsx-shim'], function(_, XLSX) {
           });
           $scope.errors = ExcelImportService.checkWorkbook(workbook);
         } catch (error) {
-          $scope.errors.push('Invalid file');
+          $scope.errors.push('Cannot parse excel file: ' + error);
         }
         if (!$scope.errors.length) {
           $scope.excelUpload = workbook;
+          $scope.isValidUpload = true;
+          checkUniqueShortName(workbook.Sheets['Study data'].A4.v);
         }
         $timeout(function() {}, 0); // ensures errors are rendered in the html
       };
       reader.readAsBinaryString(file);
-      return;
     }
 
     function importExcel() {
       $scope.isCreatingStudy = true;
-      var newStudyVersionPromises = ExcelImportService.createStudy($scope.excelUpload);
-      $q.all(newStudyVersionPromises).then(function(result) {
-        var newStudy = result[0];
-        successCallback(newStudy);
+      var newStudy = ExcelImportService.createStudy($scope.excelUpload);
+      ExcelImportService.commitStudy(newStudy).then(function(newVersionUuid) {
+        successCallback(newVersionUuid);
         $scope.isCreatingStudy = false;
         $modalInstance.close();
       });
     }
 
-    function isUniqueShortName(shortName) {
-      var anyduplicateName = _.find($scope.studiesWithDetail, function(existingStudy) {
-        return existingStudy.label === shortName;
-      });
-      return !anyduplicateName;
+    function checkUniqueShortName(shortName) {
+      $scope.isUniqueShortName = !_.find($scope.studiesWithDetail, ['label', shortName]);
     }
 
     function createStudy(study) {
       $scope.isCreatingStudy = true;
-      var newStudyVersionPromises = StudyService.createEmptyStudy(study, $stateParams.userUid, $stateParams.datasetUuid);
-      newStudyVersionPromises.then(function(newVersion) {
-        successCallback(newVersion);
-        $scope.isCreatingStudy = false;
-        $modalInstance.close();
-      });
+      StudyService.createEmptyStudy(study, $stateParams.userUid, $stateParams.datasetUuid)
+        .then(function(newVersion) {
+          successCallback(newVersion);
+          $scope.isCreatingStudy = false;
+          $modalInstance.close();
+        });
     }
 
     function isValidNct(nctId) {
