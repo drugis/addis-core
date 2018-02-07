@@ -282,7 +282,7 @@ define(['lodash', 'util/context', 'xlsx-shim'], function(_, externalContext, XLS
       _.forEach(resultColumns, function(resultColumn, propertyIndex) {
         var currentX = variableColumn + 3 + measurementMomentIndex * (resultColumns.length + 1) + propertyIndex;
         var currentValue = getValueIfPresent(studyDataSheet, currentX, currentY);
-        if (currentValue) {
+        if (currentValue !== undefined && currentValue !== null) {
           measurement = readMeasurementValue(measurement, resultColumn, currentValue);
         }
       });
