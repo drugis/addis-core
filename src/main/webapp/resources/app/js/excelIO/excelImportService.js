@@ -56,6 +56,13 @@ define(['lodash', 'util/context', 'xlsx-shim'], function(_, externalContext, XLS
       uri: 'ontology:Endpoint',
       label: 'outcome'
     }];
+    var EPOCH_ANCHOR = _.keyBy([{
+      uri: 'ontology:anchorEpochEnd',
+      label: 'end'
+    }, {
+      uri: 'ontology:anchorEpochStart',
+      label: 'start'
+    }], 'label');
 
     function checkWorkbook(workbook) {
       var errors = [];
@@ -73,19 +80,23 @@ define(['lodash', 'util/context', 'xlsx-shim'], function(_, externalContext, XLS
       if (workbook.Sheets['Study data']['K' + lastRow].v !== 'Overall population') {
         errors.push('No overall population found');
       }
+      var sheetError = checkSheets(workbook);
+      if (sheetError) {
+        errors.push(sheetError);
+      }
       return errors;
     }
 
     function createStudy(workbook) {
       var studyDataSheet = workbook.Sheets['Study data'];
 
-      var epochs = buildEpochs();
+      var epochs = buildEpochs(workbook.Sheets.Epochs);
+
       var studyNode = readStudy(studyDataSheet, epochs);
       var variableColumns = findVariableStartColumns(studyDataSheet);
       var variables = readVariables(studyDataSheet, variableColumns);
-      var measurementMoments = buildMeasurementMoments(variables, epochs);
+      var measurementMoments = buildSingleSheetMeasurementMoments(variables, epochs);
       variables = measurementMomentLabelToUri(variables, measurementMoments);
-      // [ ] read measurements
       var measurements = readMeasurements(studyDataSheet, variables, studyNode.has_arm.concat(studyNode.has_included_population), variableColumns);
       studyNode.has_outcome = variables;
       var jenaGraph = {
@@ -96,6 +107,14 @@ define(['lodash', 'util/context', 'xlsx-shim'], function(_, externalContext, XLS
     }
 
     //private
+
+    function checkSheets(workbook) {
+      var allSheetNames = ['Study data', 'Activities', 'Epochs', 'Study design', 'Measurement moments', 'Concepts'];
+      var sheetNames = _.keys(workbook.Sheets);
+      if (_.difference(sheetNames, ['Study data']).length !== 0 && _.difference(sheetNames, allSheetNames).length !== 0) {
+        return 'Excel file should either only have a Study data worksheet, or all required worksheets.';
+      }
+    }
 
     function getValueIfPresent(dataSheet, column, row) {
       var cell = dataSheet[a1Coordinate(column, row)];
@@ -111,7 +130,23 @@ define(['lodash', 'util/context', 'xlsx-shim'], function(_, externalContext, XLS
 
     }
 
-    function buildMeasurementMoments(variables, epochs) {
+    function buildMultiSheetMeasurementMoments(measurementMomentSheet, epochSheet) {
+      var lastRow = excelUtils.decode_range(epochSheet['!ref']).e.r;
+      return _.map(_.range(1, lastRow + 2), _.partial(readMeasurementMoment, measurementMomentSheet, epochSheet)); // +2 because zero-indexed and range has open upper end
+    }
+
+    function readMeasurementMoment(measurementMomentSheet, epochSheet, row) {
+      return {
+        '@id': getValueIfPresent(measurementMomentSheet, 0, row),
+        '@type': 'ontology:MeasurementMoment',
+        label: getValueIfPresent(measurementMomentSheet, 1, row),
+        relative_to_epoch: getReferenceValue(measurementMomentSheet, 2, row, epochSheet),
+        relative_to_anchor: EPOCH_ANCHOR[getValueIfPresent(measurementMomentSheet, 3, row)],
+        time_offset: getValueIfPresent(measurementMomentSheet, 4, row)
+      };
+    }
+
+    function buildSingleSheetMeasurementMoments(variables, epochs) {
       var epochUri = epochs[0]['@id'];
       return _(variables)
         .map('is_measured_at')
@@ -130,14 +165,30 @@ define(['lodash', 'util/context', 'xlsx-shim'], function(_, externalContext, XLS
         .value();
     }
 
-    function buildEpochs() {
-      return [{
-        '@id': INSTANCE_PREFIX + UUIDService.generate(),
-        '@type': 'ontology:Epoch',
-        label: 'Automatically generated primary epoch',
-        duration: 'PT0S'
-      }];
+    function buildEpochs(epochSheet) {
+      if (!epochSheet) {
+        return [{
+          '@id': INSTANCE_PREFIX + UUIDService.generate(),
+          '@type': 'ontology:Epoch',
+          label: 'Automatically generated primary epoch',
+          duration: 'PT0S'
+        }];
+      } else {
+        var lastRow = excelUtils.decode_range(epochSheet['!ref']).e.r;
+        return _.map(_.range(1, lastRow + 2), _.partial(readEpoch, epochSheet)); // +2 because zero-indexed and range has open upper end
+      }
     }
+
+    function readEpoch(epochSheet, row) {
+      return {
+        '@id': getValueIfPresent(epochSheet, 0, row),
+        '@type': 'ontology:Epoch',
+        label: getValueIfPresent(epochSheet, 1, row),
+        comment: getValueIfPresent(epochSheet, 2, row),
+        duration: getValueIfPresent(epochSheet, 3, row),
+      };
+    }
+
 
     function measurementMomentLabelToUri(variables, measurementMoments) {
       var measurementMomentsByLabel = _.keyBy(measurementMoments, 'label');
@@ -380,6 +431,19 @@ define(['lodash', 'util/context', 'xlsx-shim'], function(_, externalContext, XLS
         r: row
       });
     }
+
+    function getReferenceValue(sourceSheet, column, row, targetSheet) {
+      var source = sourceSheet[a1Coordinate(column, row)];
+      if (source) {
+        var targetCell = source.f.split('!')[1];
+        if (targetSheet[targetCell]) {
+          return targetSheet[targetCell].v;
+        } else {
+          throw 'Broken reference: ' + source.f;
+        }
+      }
+    }
+
     // interface
     return {
       checkWorkbook: checkWorkbook,

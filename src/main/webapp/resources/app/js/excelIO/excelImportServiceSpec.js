@@ -27,7 +27,7 @@ define([
     };
 
     describe('the excel import service', function() {
-      beforeEach(module('addis.excelImport', function($provide) {
+      beforeEach(module('addis.excelIO', function($provide) {
         $provide.value('UUIDService', uuidServiceMock);
         $provide.value('$stateParams', stateParams);
         $provide.value('GROUP_ALLOCATION_OPTIONS', constants.GROUP_ALLOCATION_OPTIONS);

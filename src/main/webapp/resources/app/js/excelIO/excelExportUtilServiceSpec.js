@@ -135,7 +135,7 @@ define(['lodash', 'angular', 'angular-mocks'], function(_) {
     };
 
     beforeEach(function() {
-      module('addis.excelExport', function($provide) {
+      module('addis.excelIO', function($provide) {
         $provide.value('$location', {
           absUrl: function() {
             return 'studyUrl';
