@@ -4,7 +4,7 @@ define(
     'require',
     'jQuery',
     'mcda/config',
-    'lodash',
+    'util/constants',
     'mmfoundation',
     'angularanimate',
     'angular-cookies',
@@ -31,6 +31,7 @@ define(
     'util/util',
     'study/study',
     'excelExport/excelExport',
+    'excelImport/excelImport',
     'unit/unit',
     'graph/graph',
     'populationInformation/populationInformation',
@@ -74,7 +75,7 @@ define(
     'covariates/covariates',
     'home/home'
   ],
-  function(angular, require, $, Config, _) {
+  function(angular, require, $, Config, constants) {
     var mcdaDependencies = [
       'elicit.controllers',
       'elicit.directives',
@@ -111,6 +112,7 @@ define(
       'addis.interventions',
       'addis.outcomes',
       'addis.excelExport',
+      'addis.excelImport',
       'patavi',
       'errorReporting',
       'export-directive'
@@ -506,57 +508,9 @@ define(
       }
     ]);
     app.constant('CONCEPT_GRAPH_UUID', 'concepts');
-    app.constant('GROUP_ALLOCATION_OPTIONS', _.keyBy([{
-      uri: 'ontology:AllocationRandomized',
-      label: 'Randomized'
-    }, {
-      uri: 'ontology:AllocationNonRandomized',
-      label: 'Non-Randomized'
-    }, {
-      uri: 'unknown',
-      label: 'Unknown'
-    }], 'uri'));
-    app.constant('BLINDING_OPTIONS', _.keyBy([{
-      uri: 'ontology:OpenLabel',
-      label: 'Open'
-    }, {
-      uri: 'ontology:SingleBlind',
-      label: 'Single blind'
-    }, {
-      uri: 'ontology:DoubleBlind',
-      label: 'Double blind'
-    }, {
-      uri: 'ontology:TripleBlind',
-      label: 'Triple blind'
-    }, {
-      uri: 'unknown',
-      label: 'Unknown'
-    }], 'uri'));
-    app.constant('STATUS_OPTIONS', _.keyBy([{
-      uri: 'ontology:StatusRecruiting',
-      label: 'Recruiting'
-    }, {
-      uri: 'ontology:StatusEnrolling',
-      label: 'Enrolling'
-    }, {
-      uri: 'ontology:StatusActive',
-      label: 'Active'
-    }, {
-      uri: 'ontology:StatusCompleted',
-      label: 'Completed'
-    }, {
-      uri: 'ontology:StatusSuspended',
-      label: 'Suspended'
-    }, {
-      uri: 'ontology:StatusTerminated',
-      label: 'Terminated'
-    }, {
-      uri: 'ontology:StatusWithdrawn',
-      label: 'Withdrawn'
-    }, {
-      uri: 'unknown',
-      label: 'Unknown'
-    }], 'uri'));
+    app.constant('GROUP_ALLOCATION_OPTIONS', constants.GROUP_ALLOCATION_OPTIONS);
+    app.constant('BLINDING_OPTIONS', constants.BLINDING_OPTIONS);
+    app.constant('STATUS_OPTIONS', constants.STATUS_OPTIONS);
 
     return app;
   });

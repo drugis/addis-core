@@ -2,7 +2,7 @@
 define(['angular', 'angular-mocks'], function() {
   describe('the group service', function() {
 
-    var rootScope, q, httpBackend;
+    var rootScope, q;
     var studyService = jasmine.createSpyObj('StudyService', ['getStudy', 'save']);
     var groupService, armService;
     var studyDefer;
@@ -19,9 +19,8 @@ define(['angular', 'angular-mocks'], function() {
       });
     });
 
-    beforeEach(inject(function($q, $rootScope, $httpBackend, GroupService, ArmService) {
+    beforeEach(inject(function($q, $rootScope, GroupService, ArmService) {
       q = $q;
-      httpBackend = $httpBackend;
       rootScope = $rootScope;
 
       studyDefer = $q.defer();

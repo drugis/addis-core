@@ -29,107 +29,35 @@ define(['lodash', 'xlsx-shim'], function(_, XLSX) {
       return $q.all(otherPromises.concat([populationCharacteristics, outcomes, adverseEvents], resultsPromises));
     }
 
-    function buildConceptsSheet(studyConcepts) {
-      var conceptsHeaders = {
-        A1: cellValue('id'),
-        B1: cellValue('label'),
-        C1: cellValue('type'),
-        D1: cellValue('dataset concept uri'),
-        E1: cellValue('multiplier')
-      };
+    // build sheets
+    function buildStudyDataSheet(study, studyInformation, studyUrl, arms, epochs, activities, studyDesign,
+      populationInformation, variables, conceptsSheet, measurementMomentSheet) {
+      var studyDataSheet = initStudyDataSheet();
+      var initialMerges = [
+        cellRange(0, 0, 7, 0),
+        cellRange(8, 0, 9, 0),
+        cellRange(10, 0, 11, 0)
+      ];
+      var armsPlusOverallPopulation = arms.concat({
+        armURI: study.has_included_population[0]['@id']
+      });
+      var studyData = buildStudyInformation(study, studyInformation, studyUrl);
+      var armData = buildArmData(arms);
+      // var treatmentLabels = buildTreatmentLabels(arms, epochs, activities, studyDesign);
+      var populationInformationData = buildPopulationInformationData(populationInformation);
+      var variablesData = buildVariablesData(variables, armsPlusOverallPopulation, conceptsSheet, measurementMomentSheet);
+      var armMerges = buildArmMerges(armsPlusOverallPopulation);
 
-      var conceptsData = _.reduce(studyConcepts, function(accum, concept, index) {
-        var row = index + 2;
-        accum['A' + row] = cellValue(concept.uri);
-        accum['B' + row] = cellValue(concept.label);
-        accum['C' + row] = cellValue(concept.type);
-        accum['D' + row] = cellValue(concept.conceptMapping);
-        accum['E' + row] = cellNumber(concept.conversionMultiplier);
-        return accum;
-      }, {});
-      var ref = cellReference('A1:E' + (studyConcepts.length + 1));
-      return _.merge({}, ref, conceptsHeaders, conceptsData);
-    }
+      _.merge(studyDataSheet, studyData, populationInformationData, armData, variablesData);
+      var lastColumn = variables.length ? _(variablesData)
+        .keys()
+        .map(excelUtils.decode_cell)
+        .map('c')
+        .max() : 12;
 
-    function buildMeasurementMomentSheet(measurementMoments, epochSheet) {
-      var fromTypes = {
-        'ontology:anchorEpochStart': 'start',
-        'ontology:anchorEpochEnd': 'end'
-      };
-      var measurementMomentHeaders = {
-        A1: cellValue('id'),
-        B1: cellValue('name'),
-        C1: cellValue('epoch'),
-        D1: cellValue('from'),
-        E1: cellValue('offset')
-      };
-
-      var measurementMomentData = _.reduce(measurementMoments, function(accum, measurementMoment, index) {
-        var row = index + 2;
-        accum['A' + row] = cellValue(measurementMoment.uri);
-        accum['B' + row] = cellValue(measurementMoment.label);
-        accum['C' + row] = cellFormula('=Epochs!' + _.findKey(epochSheet, ['v', measurementMoment.epochUri]));
-        accum['D' + row] = cellValue(fromTypes[measurementMoment.relativeToAnchor]);
-        accum['E' + row] = cellValue(measurementMoment.offset);
-        return accum;
-      }, {});
-      return _.merge(cellReference('A1:E' + (measurementMoments.length + 1)), measurementMomentHeaders, measurementMomentData);
-    }
-
-    function buildStudyDesignSheet(epochs, arms, studyDesign, epochSheet, activitiesSheet, studyDataSheet) {
-      var epochColumnsByUri = {};
-      var armRowsByUri = {};
-      var epochHeaders = _.reduce(epochs, function(accum, epoch, index) {
-        var epochTitleReference = getTitleReference(epochSheet, epoch.uri);
-        var column = excelUtils.encode_col(index + 1);
-        epochColumnsByUri[epoch.uri] = column;
-        accum[column + 1] = cellFormula('=Epochs!' + epochTitleReference);
-        return accum;
-      }, {});
-      var armReferences = _.reduce(arms, function(accum, arm, index) {
-        var row = 2 + index;
-        var armReference = _.findKey(studyDataSheet, ['v', arm.label]);
-        armRowsByUri[arm.armURI] = row;
-        accum['A' + row] = cellFormula('=\'Study Data\'!' + armReference);
-        return accum;
-      }, {});
-
-      var activityReferences = _.reduce(studyDesign, function(accum, coordinate) {
-        var activityTitleReference = getTitleReference(activitiesSheet, coordinate.activityUri);
-
-        accum[epochColumnsByUri[coordinate.epochUri] + armRowsByUri[coordinate.armUri]] = cellFormula('=Activities!' + activityTitleReference);
-        return accum;
-      }, {});
-
-      var studyDesignSheet = _.merge({
-          A1: cellValue('arm')
-        },
-        epochHeaders, armReferences, activityReferences);
-      var lastColumn = excelUtils.encode_col(1 + epochs.length);
-      studyDesignSheet['!ref'] = 'A1:' + lastColumn + (arms.length + 1);
-
-      return studyDesignSheet;
-    }
-
-    function buildEpochSheet(epochs) {
-      var epochHeaders = {
-        A1: cellValue('id'),
-        B1: cellValue('name'),
-        C1: cellValue('description'),
-        D1: cellValue('duration'),
-        E1: cellValue('Is primary?')
-      };
-      var epochData = _.reduce(epochs, function(accum, epoch, index) {
-        var row = index + 2;
-        accum['A' + row] = cellValue(epoch.uri);
-        accum['B' + row] = cellValue(epoch.label);
-        accum['C' + row] = cellValue(epoch.comment);
-        accum['D' + row] = cellValue(epoch.duration);
-        accum['E' + row] = cellValue(epoch.isPrimary);
-        return accum;
-      }, {});
-
-      return _.merge(cellReference('A1:E' + (epochs.length + 1)), epochHeaders, epochData);
+      studyDataSheet['!merges'] = studyDataSheet['!merges'].concat(initialMerges, [cellRange(12, 0, lastColumn, 0)], armMerges);
+      studyDataSheet['!ref'] = 'A1:' + a1Coordinate(lastColumn, 3 + arms.length);
+      return studyDataSheet;
     }
 
     function buildActivitiesSheet(activities, conceptsSheet) {
@@ -182,36 +110,110 @@ define(['lodash', 'xlsx-shim'], function(_, XLSX) {
       return _.merge(cellReference('A1:' + a1Coordinate(4 + maxTreatments * 6, activities.length)), sheet, colHeaders, activityData);
     }
 
-    function buildStudyDataSheet(study, studyInformation,studyUrl, arms, epochs, activities, studyDesign,
-      populationInformation, variables, conceptsSheet, measurementMomentSheet) {
-      var studyDataSheet = initStudyDataSheet();
-      var initialMerges = [
-        cellRange(0, 0, 7, 0),
-        cellRange(8, 0, 9, 0),
-        cellRange(10, 0, 11, 0)
-      ];
-      var armsPlusOverallPopulation = arms.concat({
-        armURI: study.has_included_population[0]['@id']
-      });
-      var studyData = buildStudyInformation(study, studyInformation, studyUrl);
-      var armData = buildArmData(arms);
-      // var treatmentLabels = buildTreatmentLabels(arms, epochs, activities, studyDesign);
-      var populationInformationData = buildPopulationInformationData(populationInformation);
-      var variablesData = buildVariablesData(variables, armsPlusOverallPopulation, conceptsSheet, measurementMomentSheet);
-      var armMerges = buildArmMerges(armsPlusOverallPopulation);
+    function buildEpochSheet(epochs) {
+      var epochHeaders = {
+        A1: cellValue('id'),
+        B1: cellValue('name'),
+        C1: cellValue('description'),
+        D1: cellValue('duration'),
+        E1: cellValue('Is primary?')
+      };
+      var epochData = _.reduce(epochs, function(accum, epoch, index) {
+        var row = index + 2;
+        accum['A' + row] = cellValue(epoch.uri);
+        accum['B' + row] = cellValue(epoch.label);
+        accum['C' + row] = cellValue(epoch.comment);
+        accum['D' + row] = cellValue(epoch.duration);
+        accum['E' + row] = cellValue(epoch.isPrimary);
+        return accum;
+      }, {});
 
-      _.merge(studyDataSheet, studyData, populationInformationData, armData, variablesData);
-      var lastColumn = variables.length ? _(variablesData)
-        .keys()
-        .map(excelUtils.decode_cell)
-        .map('c')
-        .max() : 12;
-
-      studyDataSheet['!merges'] = studyDataSheet['!merges'].concat(initialMerges, [cellRange(12, 0, lastColumn, 0)], armMerges);
-      studyDataSheet['!ref'] = 'A1:' + a1Coordinate(lastColumn, 3 + arms.length);
-      return studyDataSheet;
+      return _.merge(cellReference('A1:E' + (epochs.length + 1)), epochHeaders, epochData);
     }
 
+    function buildStudyDesignSheet(epochs, arms, studyDesign, epochSheet, activitiesSheet, studyDataSheet) {
+      var epochColumnsByUri = {};
+      var armRowsByUri = {};
+      var epochHeaders = _.reduce(epochs, function(accum, epoch, index) {
+        var epochTitleReference = getTitleReference(epochSheet, epoch.uri);
+        var column = excelUtils.encode_col(index + 1);
+        epochColumnsByUri[epoch.uri] = column;
+        accum[column + 1] = cellFormula('=Epochs!' + epochTitleReference);
+        return accum;
+      }, {});
+      var armReferences = _.reduce(arms, function(accum, arm, index) {
+        var row = 2 + index;
+        var armReference = _.findKey(studyDataSheet, ['v', arm.label]);
+        armRowsByUri[arm.armURI] = row;
+        accum['A' + row] = cellFormula('=\'Study Data\'!' + armReference);
+        return accum;
+      }, {});
+
+      var activityReferences = _.reduce(studyDesign, function(accum, coordinate) {
+        var activityTitleReference = getTitleReference(activitiesSheet, coordinate.activityUri);
+
+        accum[epochColumnsByUri[coordinate.epochUri] + armRowsByUri[coordinate.armUri]] = cellFormula('=Activities!' + activityTitleReference);
+        return accum;
+      }, {});
+
+      var studyDesignSheet = _.merge({
+          A1: cellValue('arm')
+        },
+        epochHeaders, armReferences, activityReferences);
+      var lastColumn = excelUtils.encode_col(1 + epochs.length);
+      studyDesignSheet['!ref'] = 'A1:' + lastColumn + (arms.length + 1);
+
+      return studyDesignSheet;
+    }
+
+    function buildMeasurementMomentSheet(measurementMoments, epochSheet) {
+      var fromTypes = {
+        'ontology:anchorEpochStart': 'start',
+        'ontology:anchorEpochEnd': 'end'
+      };
+      var measurementMomentHeaders = {
+        A1: cellValue('id'),
+        B1: cellValue('name'),
+        C1: cellValue('epoch'),
+        D1: cellValue('from'),
+        E1: cellValue('offset')
+      };
+
+      var measurementMomentData = _.reduce(measurementMoments, function(accum, measurementMoment, index) {
+        var row = index + 2;
+        accum['A' + row] = cellValue(measurementMoment.uri);
+        accum['B' + row] = cellValue(measurementMoment.label);
+        accum['C' + row] = cellFormula('=Epochs!' + _.findKey(epochSheet, ['v', measurementMoment.epochUri]));
+        accum['D' + row] = cellValue(fromTypes[measurementMoment.relativeToAnchor]);
+        accum['E' + row] = cellValue(measurementMoment.offset);
+        return accum;
+      }, {});
+      return _.merge(cellReference('A1:E' + (measurementMoments.length + 1)), measurementMomentHeaders, measurementMomentData);
+    }
+
+    function buildConceptsSheet(studyConcepts) {
+      var conceptsHeaders = {
+        A1: cellValue('id'),
+        B1: cellValue('label'),
+        C1: cellValue('type'),
+        D1: cellValue('dataset concept uri'),
+        E1: cellValue('multiplier')
+      };
+
+      var conceptsData = _.reduce(studyConcepts, function(accum, concept, index) {
+        var row = index + 2;
+        accum['A' + row] = cellValue(concept.uri);
+        accum['B' + row] = cellValue(concept.label);
+        accum['C' + row] = cellValue(concept.type);
+        accum['D' + row] = concept.conceptMapping ? cellValue(concept.conceptMapping) : undefined;
+        accum['E' + row] = cellNumber(concept.conversionMultiplier);
+        return accum;
+      }, {});
+      var ref = cellReference('A1:E' + (studyConcepts.length + 1));
+      return _.merge({}, ref, conceptsHeaders, conceptsData);
+    }
+
+    // assist functions
     function buildVariablesData(variables, arms, conceptsSheet, measurementMomentSheet) {
       var anchorCell = {
         c: excelUtils.decode_col('M'),
@@ -228,7 +230,7 @@ define(['lodash', 'xlsx-shim'], function(_, XLSX) {
       merges = [];
       var currentAnchorCol = anchorCell.c;
       _.forEach(variables, function(variable) {
-        // first three columns are always merged
+        // first two columns are always merged
         var firstDataRow = anchorCell.r + 2;
         merges.push(cellRange(currentAnchorCol, firstDataRow, currentAnchorCol, firstDataRow + numberofArms - 1));
         merges.push(cellRange(currentAnchorCol + 1, firstDataRow, currentAnchorCol + 1, firstDataRow + numberofArms - 1));
@@ -268,13 +270,24 @@ define(['lodash', 'xlsx-shim'], function(_, XLSX) {
         variable: variable
       }, context);
       var measurementsBlocks = _.flatten(_.map(variable.measuredAtMoments, _.partial(buildMeasurementMomentBlocks, measuredAtContext)));
-
+      if (measuredAtContext.variable && !measurementsBlocks.length) {
+        var properties;
+        if (measuredAtContext.variable.resultProperties) {
+          properties = _.map(measuredAtContext.variable.resultProperties, function(item) {
+            return item.split('#')[1];
+          });
+        } else {
+          properties = _.map(measuredAtContext.variable.categoryList, 'label');
+        }
+        measurementsBlocks = _.map(properties, function(property) {
+          return [undefined, cellValue(property)];
+        });
+      }
       return baseColumns.concat(measurementsBlocks);
     }
 
     function buildMeasurementMomentBlocks(context, measuredAtMoment) {
       var measurementMomentTitleCoordinate = getTitleReference(context.measurementMomentSheet, measuredAtMoment.uri);
-      // FIXME accum['!merges'].push(cellRange(column, row + 1, column, row + context.arms.length));
       var baseColumns = [
         [undefined, cellValue('measurement moment'), cellFormula('=\'Measurement moments\'!' + measurementMomentTitleCoordinate)]
       ];
@@ -290,7 +303,7 @@ define(['lodash', 'xlsx-shim'], function(_, XLSX) {
           return result.result_property === item.split('#')[1];
         };
         properties = context.variable.resultProperties;
-      } else {
+      } else { // categorical
         measuredAtContext.labelExtractor = function(item) {
           return item.label;
         };
@@ -401,10 +414,10 @@ define(['lodash', 'xlsx-shim'], function(_, XLSX) {
     }
 
     function cellNumber(value) {
-     return {
+      return {
         v: value,
         t: 'n'
-      }; 
+      };
     }
 
     function cellFormula(formula) {

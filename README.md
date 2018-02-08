@@ -5,17 +5,24 @@ ADDIS 2.x core
 
 Before starting
 -----------------------
-The setup in this readme requires several compononts already being installed and running. Please refer to the OVERALL-README.md in this folder for more information on how to do so, and for other readmes that might be relevant.
+The setup in this readme requires several components to already be installed and running. Please refer to the OVERALL-README.md in this folder for more information on how to do so, and for other readmes that might be relevant.
 
-Make sure the SASS and Bower submodules are present:
+Required software: 
+
+ - yarn
+ - compass
+ - postgresql
+ - maven
+ - karma (for testing)
+
+Make sure the SASS submodule is present:
 
     git submodule init
     git submodule update
 
-Make sure you have the bower components needed by running `bower update` from the root of the repository
+Make sure you have the javascript libraries needed by running `yarn` from the root of the repository.
 
 Run 'compass compile' from the root of the repository. 
-
 
 Running
 -----------------------
@@ -27,22 +34,23 @@ sudo -u postgres psql -c "CREATE USER addiscore WITH PASSWORD 'develop'"
 sudo -u postgres psql -c "CREATE DATABASE addiscore ENCODING 'utf-8' OWNER addiscore"
 
 ```
-Next, you will need to insert an applicationkey into the addiscore database; when logged into the db do:
+
+If you wish to allow programmatic access via the API, you can insert an API key into the addiscore database:
+```
 INSERT INTO applicationkey (secretkey, accountid, applicationname, creationdate, revocationdate) values ('[yourkey]', [accountid], '[yourname]', 'mm/dd/yyyy', 'mm/dd/yyyy');
+```
 
+It is assumed in the example environment settings below that instances of [Patavi](https://github.com/drugis/patavi) and [Jena-ES](https://github.com/drugis/jena-es) are running on ports 3000 and 3030, respecively.
 
+To authenticate with Patavi, you need a client certificate signed by the Certificate Authority (CA) trusted by Patavi, in a JKS keystore. 
 
-In addition to this, you will need an instance of [Patavi](https://github.com/drugis/patavi) and [Jena-ES](https://github.com/drugis/jena-es) running. It is assumed here that Patavi is running on port 3000 and Jena-ES on port 3030.
+If Patavi presents a certificate signed by your own CA, you need to trust that CA. To do this, generate a JKS truststore. This needs to contain the certificate of your own CA and (for OAuth) Google's CA (GeoTrust). The drugis.org domains also depend on GeoTrust. Note that in most Java distributions this CA is trusted by default, in which case you do not need to generate and configure the trust store.
 
-To authenticate with Patavi, you need a client certificate signed by the Certificate Authority (CA) trusted by Patavi, in a JKS keystore.
-
-If Patavi presents a certificate signed by your own CA, you need to trust that CA. To do this, generate a JKS truststore. This needs to contain the certificate of your own CA and (for OAuth) Google's CA (GeoTrust). The drugis.org domains also depend on GeoTrust. In that case, the trust store should contain:
+To add the geotrust CA to your trustfile:
 
 ```
 keytool -importcert -file /etc/ssl/certs/GeoTrust_Global_CA.pem -alias geotrustCA -keystore <jks location>
 ```
-
-However, in most Java distributions this CA is trusted by default, so you do not need to generate and configure the trust store in that case.
 
 Set up the environment:
 

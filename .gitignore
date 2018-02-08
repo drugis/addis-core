@@ -21,5 +21,6 @@ src/test/Firefox*
 test-deploy.sh
 post-study.sh
 live-deploy.sh
-trialverse/addis-rdf/hypertension.trig
+trialverse/addis-rdf/*.trig
 src/test/Chrome*
+src/main/webapp/resources/app/js/bower_components
