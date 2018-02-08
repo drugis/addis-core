@@ -89,13 +89,20 @@ define(['lodash', 'util/context', 'xlsx-shim'], function(_, externalContext, XLS
 
     function createStudy(workbook) {
       var studyDataSheet = workbook.Sheets['Study data'];
-
+      var measurementMoments;
       var epochs = buildEpochs(workbook.Sheets.Epochs);
+      var concepts = buildConcepts(workbook.Sheets.Concepts);
+      var activities = buildActivities(workbook.Sheets.Activities, workbook);
+      if (!checkSheets(workbook)) {
+        var measurementMomentSheet = workbook.Sheets['Measurement moments'];
+        measurementMoments = buildMultiSheetMeasurementMoments(measurementMomentSheet, workbook);
+      } else{
+        measurementMoments = buildSingleSheetMeasurementMoments(variables, epochs);
+      }
 
       var studyNode = readStudy(studyDataSheet, epochs);
       var variableColumns = findVariableStartColumns(studyDataSheet);
       var variables = readVariables(studyDataSheet, variableColumns);
-      var measurementMoments = buildSingleSheetMeasurementMoments(variables, epochs);
       variables = measurementMomentLabelToUri(variables, measurementMoments);
       var measurements = readMeasurements(studyDataSheet, variables, studyNode.has_arm.concat(studyNode.has_included_population), variableColumns);
       studyNode.has_outcome = variables;
@@ -107,7 +114,6 @@ define(['lodash', 'util/context', 'xlsx-shim'], function(_, externalContext, XLS
     }
 
     //private
-
     function checkSheets(workbook) {
       var allSheetNames = ['Study data', 'Activities', 'Epochs', 'Study design', 'Measurement moments', 'Concepts'];
       var sheetNames = _.keys(workbook.Sheets);
@@ -116,9 +122,46 @@ define(['lodash', 'util/context', 'xlsx-shim'], function(_, externalContext, XLS
       }
     }
 
-    function getValueIfPresent(dataSheet, column, row) {
-      var cell = dataSheet[a1Coordinate(column, row)];
-      return cell ? cell.v : undefined;
+    function buildActivities(activitySheet, workbook){
+      var lastRow = excelUtils.decode_range(activitySheet['!ref']).e.r;
+      return _.map(_.range(1, lastRow + 2), _.partial(readActivity, activitySheet, workbook)); // +2 because zero-indexed and range has open upper end
+      
+    }
+
+    function readActivity(activitySheet, workbook, row){
+      var activityLabelToUri  = {
+        'drug treatment': 'ontology:TreatmentActivity'
+      };
+      var basicActivity =  {activityUri: getValueIfPresent(activitySheet, 0, row),
+        label: getValueIfPresent(activitySheet, 1, row),
+        activityType: {
+          label: getValueIfPresent(activitySheet, 2, row),
+          uri: activityLabelToUri[getValueIfPresent(activitySheet, 2, row)]
+        },
+        activityDescription: getValueIfPresent(activitySheet, 3, row)        
+      };
+      var hasDrug = getReferenceValue(activitySheet,4,row, workbook);
+      if(!hasDrug)     {
+        return basicActivity;
+      } else{
+        return _.merge({},basicActivity, {});
+      }
+
+    }
+
+    function buildConcepts(conceptSheet){
+      var lastRow = excelUtils.decode_range(conceptSheet['!ref']).e.r;
+      return _.map(_.range(1, lastRow + 2), _.partial(readConcept, conceptSheet)); // +2 because zero-indexed and range has open upper end
+    }
+
+    function readConcept(conceptSheet, row){
+      return {
+        uri: getValueIfPresent(conceptSheet, 0, row),
+        label: getValueIfPresent(conceptSheet, 1, row),
+        //type: getValueIfPresent(conceptSheet, 2, row),
+        conceptMapping: getValueIfPresent(conceptSheet, 3, row),
+        conversionMultiplier: getValueIfPresent(conceptSheet, 4, row)
+      };
     }
 
     function findVariableStartColumns(studyDataSheet) {
@@ -130,17 +173,17 @@ define(['lodash', 'util/context', 'xlsx-shim'], function(_, externalContext, XLS
 
     }
 
-    function buildMultiSheetMeasurementMoments(measurementMomentSheet, epochSheet) {
-      var lastRow = excelUtils.decode_range(epochSheet['!ref']).e.r;
-      return _.map(_.range(1, lastRow + 2), _.partial(readMeasurementMoment, measurementMomentSheet, epochSheet)); // +2 because zero-indexed and range has open upper end
+    function buildMultiSheetMeasurementMoments(measurementMomentSheet, workbook) {
+      var lastRow = excelUtils.decode_range(measurementMomentSheet['!ref']).e.r;
+      return _.map(_.range(1, lastRow + 2), _.partial(readMeasurementMoment, measurementMomentSheet, workbook)); // +2 because zero-indexed and range has open upper end
     }
 
-    function readMeasurementMoment(measurementMomentSheet, epochSheet, row) {
+    function readMeasurementMoment(measurementMomentSheet, workbook, row) {
       return {
         '@id': getValueIfPresent(measurementMomentSheet, 0, row),
         '@type': 'ontology:MeasurementMoment',
         label: getValueIfPresent(measurementMomentSheet, 1, row),
-        relative_to_epoch: getReferenceValue(measurementMomentSheet, 2, row, epochSheet),
+        relative_to_epoch: getReferenceValue(measurementMomentSheet, 2, row, workbook),
         relative_to_anchor: EPOCH_ANCHOR[getValueIfPresent(measurementMomentSheet, 3, row)],
         time_offset: getValueIfPresent(measurementMomentSheet, 4, row)
       };
@@ -432,16 +475,26 @@ define(['lodash', 'util/context', 'xlsx-shim'], function(_, externalContext, XLS
       });
     }
 
-    function getReferenceValue(sourceSheet, column, row, targetSheet) {
+    function getReferenceValue(sourceSheet, column, row, workbook) {
       var source = sourceSheet[a1Coordinate(column, row)];
       if (source) {
-        var targetCell = source.f.split('!')[1];
-        if (targetSheet[targetCell]) {
-          return targetSheet[targetCell].v;
+        var splittedFormula = source.f.split('!');
+        var targetSheet = splittedFormula[0];
+        if (targetSheet[0] === '=') {
+          targetSheet = targetSheet.split('=')[1];
+        }
+        var targetCell = splittedFormula[1];
+        if (workbook[targetSheet] && workbook[targetSheet][targetCell]) {
+          return workbook[targetSheet][targetCell].v;
         } else {
           throw 'Broken reference: ' + source.f;
         }
       }
+    }
+
+    function getValueIfPresent(dataSheet, column, row) {
+      var cell = dataSheet[a1Coordinate(column, row)];
+      return cell ? cell.v : undefined;
     }
 
     // interface
