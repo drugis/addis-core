@@ -14,7 +14,9 @@ define([
     constants
   ) {
     var ONTOLOGY_URI = 'http://trials.drugis.org/ontology#';
+    var INSTANCE_URI = 'http://trials.drugis.org/instances/uuid';
     var excelImportService;
+    var rdfListService;
     var uuidServiceMock = {
       generate: function() {
         return 'uuid';
@@ -35,11 +37,12 @@ define([
         $provide.value('STATUS_OPTIONS', constants.STATUS_OPTIONS);
       }));
 
-      beforeEach(inject(function(ExcelImportService) {
+      beforeEach(inject(function(ExcelImportService, RdfListService) {
         excelImportService = ExcelImportService;
+        rdfListService = RdfListService;
       }));
 
-      describe('for a valid upload', function() {
+      describe('for a valid simple upload', function() {
         var workbook;
         beforeEach(function(done) {
           loadExcel('teststudy.xlsx', function(loadedWorkbook) {
@@ -56,9 +59,9 @@ define([
         it('createStudy should create a valid study', function() {
           var result = excelImportService.createStudy(workbook);
           var age = {
-            '@id': 'http://trials.drugis.org/instances/uuid',
+            '@id': INSTANCE_URI,
             '@type': 'ontology:PopulationCharacteristic',
-            is_measured_at: 'http://trials.drugis.org/instances/uuid',
+            is_measured_at: INSTANCE_URI,
             label: 'Age (years)',
             has_result_property: [ONTOLOGY_URI + 'sample_size', ONTOLOGY_URI + 'mean', ONTOLOGY_URI + 'standard_deviation'],
             of_variable: [{
@@ -68,9 +71,9 @@ define([
             }]
           };
           var sex = {
-            '@id': 'http://trials.drugis.org/instances/uuid',
+            '@id': INSTANCE_URI,
             '@type': 'ontology:PopulationCharacteristic',
-            is_measured_at: 'http://trials.drugis.org/instances/uuid',
+            is_measured_at: INSTANCE_URI,
             label: 'Sex',
             of_variable: [{
               '@type': 'ontology:Variable',
@@ -78,13 +81,13 @@ define([
               label: 'Sex',
               categoryList: {
                 first: {
-                  '@id': 'http://trials.drugis.org/instances/uuid',
+                  '@id': INSTANCE_URI,
                   '@type': 'ontology:Category',
                   label: 'male'
                 },
                 rest: {
                   first: {
-                    '@id': 'http://trials.drugis.org/instances/uuid',
+                    '@id': INSTANCE_URI,
                     '@type': 'ontology:Category',
                     label: 'female'
                   },
@@ -94,9 +97,9 @@ define([
             }]
           };
           var hba1c = {
-            '@id': 'http://trials.drugis.org/instances/uuid',
+            '@id': INSTANCE_URI,
             '@type': 'ontology:Endpoint',
-            is_measured_at: 'http://trials.drugis.org/instances/uuid',
+            is_measured_at: INSTANCE_URI,
             label: 'HbA1c (%) change',
             has_result_property: [ONTOLOGY_URI + 'sample_size', ONTOLOGY_URI + 'mean', ONTOLOGY_URI + 'standard_deviation'],
             of_variable: [Object({
@@ -106,9 +109,9 @@ define([
             })]
           };
           var bursitis = {
-            '@id': 'http://trials.drugis.org/instances/uuid',
+            '@id': INSTANCE_URI,
             '@type': 'ontology:AdverseEvent',
-            is_measured_at: ['http://trials.drugis.org/instances/uuid', 'http://trials.drugis.org/instances/uuid'],
+            is_measured_at: [INSTANCE_URI, INSTANCE_URI],
             label: 'Bursitis',
             has_result_property: [ONTOLOGY_URI + 'count', ONTOLOGY_URI + 'sample_size'],
             of_variable: [Object({
@@ -119,68 +122,87 @@ define([
           };
           var outcomes = [age, sex, hba1c, bursitis];
 
-          var studyNode = {
-            '@id': 'http://trials.drugis.org/studies/uuid',
-            '@type': 'ontology:Study',
-            label: 'Ahrén 2004',
-            status: 'ontology:StatusCompleted',
-            comment: 'Twelve- and 52-Week Efficacy of the Dipeptidyl Peptidase IV Inhibitor LAF237 in Metformin-Treated Patients With Type 2 Diabetes',
-            has_activity: [],
-            has_allocation: 'ontology:AllocationRandomized',
-            has_arm: [{
-              '@id': 'http://trials.drugis.org/instances/uuid',
-              label: 'Placebo',
-              comment: undefined
-            }, {
-              '@id': 'http://trials.drugis.org/instances/uuid',
-              label: 'Vildagliptin',
-              comment: undefined
-            }],
-            has_blinding: 'ontology:DoubleBlind',
-            has_eligibility_criteria: [{
-              '@id': 'http://trials.drugis.org/instances/uuid',
-              comment: 'eligibility criteria'
-            }],
-            has_group: [],
-            has_included_population: [{
-              '@id': 'http://trials.drugis.org/instances/uuid',
-              '@type': 'ontology:StudyPopulation'
-            }],
-            has_indication: [{
-              '@id': 'http://trials.drugis.org/instances/uuid',
-              label: 'Type II diabetes mellitus'
-            }],
-            has_number_of_centers: 123,
-            has_objective: [{
-              '@id': 'http://trials.drugis.org/instances/uuid',
-              comment: 'To assess the 12- and 52-week efficacy of the dipeptidyl peptidase IV inhibitor LAF237 (Vildagliptin) versus Placebo in patients with type 2 diabetes continuing Metformin treatment.'
-            }],
-            has_outcome: outcomes,
-            has_publication: [],
-            has_epochs: {
-              first: {
-                '@id': 'http://trials.drugis.org/instances/uuid',
-                '@type': 'ontology:Epoch',
-                label: 'Automatically generated primary epoch',
-                duration: 'PT0S'
-              },
-              rest: 'http://www.w3.org/1999/02/22-rdf-syntax-ns#nil'
-            },
-            has_primary_epoch: 'http://trials.drugis.org/instances/uuid'
-          };
+          var studyNode = buildStudyNode();
+          studyNode.has_outcome = outcomes;
 
           var measurements = buildMeasurements();
 
           var expectedResult = {
             '@graph': [].concat(
-              buildMeasurementMoment('Baseline'),
-              buildMeasurementMoment('Week 52'),
-              buildMeasurementMoment('Week 12'),
+              buildBasicMeasurementMoment('Baseline'),
+              buildBasicMeasurementMoment('Week 52'),
+              buildBasicMeasurementMoment('Week 12'),
               measurements,
               studyNode
             ),
             '@context': externalContext
           };
+          expect(result).toEqual(expectedResult);
+        });
+      });
+
+      describe('for a valid structured upload', function() {
+        var workbook;
+        beforeEach(function(done) {
+          loadExcel('teststudyStructured.xlsx', function(loadedWorkbook) {
+            workbook = loadedWorkbook;
+            done();
+          });
+        });
+
+        it('checkWorkbook should not return errors', function() {
+          var result = excelImportService.checkWorkbook(workbook);
+          expect(result.length).toBe(0);
+        });
+        it('should create a valid study, including result properties', function() {
+          var result = excelImportService.createStudy(workbook);
+          var studyNode = buildStudyNode();
+          var outcomes = [];
+          studyNode.has_outcome = outcomes;
+          studyNode.has_epochs = buildEpochs();
+          studyNode.has_outcome = buildOutcome();
+
+          var measurements = [{
+            '@id': INSTANCE_URI,
+            of_moment: 'week12MeasurementMomentUri',
+            of_group: INSTANCE_URI,
+            of_outcome: 'bursitisConceptUri',
+            count: 1,
+            sample_size: 51
+          }, {
+            '@id': INSTANCE_URI,
+            of_moment: 'week12MeasurementMomentUri',
+            of_group: INSTANCE_URI,
+            of_outcome: 'bursitisConceptUri',
+            count: 3,
+            sample_size: 56
+          }, {
+            '@id': INSTANCE_URI,
+            of_moment: 'week52MeasurementMomentUri',
+            of_group: INSTANCE_URI,
+            of_outcome: 'bursitisConceptUri',
+            count: 2,
+            sample_size: 29
+          }, {
+            '@id': INSTANCE_URI,
+            of_moment: 'week52MeasurementMomentUri',
+            of_group: INSTANCE_URI,
+            of_outcome: 'bursitisConceptUri',
+            count: 4,
+            sample_size: 42
+          }];
+
+          var expectedResult = {
+            '@graph': [].concat(
+              buildMeasurementMoment('Baseline', 'baselineMeasurementMomentUri', 'randomisationEpochUri', 'End', 'PT0S'),
+              buildMeasurementMoment('Week 52', 'week52MeasurementMomentUri', 'treatmentPhaseEpochUri', 'End', 'PT0S'),
+              buildMeasurementMoment('Week 12', 'week12MeasurementMomentUri', 'treatmentPhaseEpochUri', 'Start', 'P84D'),
+              measurements,
+              studyNode
+            ),
+            '@context': externalContext
+          };
+          console.log(JSON.stringify(result['@graph'][3], null, 2));
           expect(result).toEqual(expectedResult);
         });
       });
@@ -199,14 +221,14 @@ define([
           var result = excelImportService.createStudy(workbook);
 
           var outcomes = [{
-            '@id': 'http://trials.drugis.org/instances/uuid',
+            '@id': INSTANCE_URI,
             '@type': 'ontology:Endpoint',
             is_measured_at: [],
             label: 'variable 1',
             has_result_property: [
               ONTOLOGY_URI + 'count',
               ONTOLOGY_URI + 'sample_size',
-              ONTOLOGY_URI + 'event_count', 
+              ONTOLOGY_URI + 'event_count',
               ONTOLOGY_URI + 'percentage',
             ],
             of_variable: [{
@@ -224,21 +246,21 @@ define([
             has_arm: [],
             has_group: [],
             has_included_population: [{
-              '@id': 'http://trials.drugis.org/instances/uuid',
+              '@id': INSTANCE_URI,
               '@type': 'ontology:StudyPopulation'
             }],
             has_outcome: outcomes,
             has_publication: [],
             has_epochs: {
               first: {
-                '@id': 'http://trials.drugis.org/instances/uuid',
+                '@id': INSTANCE_URI,
                 '@type': 'ontology:Epoch',
                 label: 'Automatically generated primary epoch',
                 duration: 'PT0S'
               },
               rest: 'http://www.w3.org/1999/02/22-rdf-syntax-ns#nil'
             },
-            has_primary_epoch: 'http://trials.drugis.org/instances/uuid',
+            has_primary_epoch: INSTANCE_URI,
             status: undefined,
             has_allocation: undefined,
             has_blinding: undefined,
@@ -256,10 +278,7 @@ define([
 
           expect(result).toEqual(expectedResult);
         });
-
       });
-
-
     });
 
     function loadExcel(fileName, callback) {
@@ -285,6 +304,96 @@ define([
       oReq.responseType = 'blob';
       oReq.addEventListener('load', reqListener);
       oReq.send();
+    }
+
+    function buildStudyNode() {
+      return {
+        '@id': 'http://trials.drugis.org/studies/uuid',
+        '@type': 'ontology:Study',
+        label: 'Ahrén 2004',
+        status: 'ontology:StatusCompleted',
+        comment: 'Twelve- and 52-Week Efficacy of the Dipeptidyl Peptidase IV Inhibitor LAF237 in Metformin-Treated Patients With Type 2 Diabetes',
+        has_activity: [],
+        has_allocation: 'ontology:AllocationRandomized',
+        has_arm: [{
+          '@id': INSTANCE_URI,
+          label: 'Placebo',
+          comment: undefined
+        }, {
+          '@id': INSTANCE_URI,
+          label: 'Vildagliptin',
+          comment: undefined
+        }],
+        has_blinding: 'ontology:DoubleBlind',
+        has_eligibility_criteria: [{
+          '@id': INSTANCE_URI,
+          comment: 'eligibility criteria'
+        }],
+        has_group: [],
+        has_included_population: [{
+          '@id': INSTANCE_URI,
+          '@type': 'ontology:StudyPopulation'
+        }],
+        has_indication: [{
+          '@id': INSTANCE_URI,
+          label: 'Type II diabetes mellitus'
+        }],
+        has_number_of_centers: 123,
+        has_objective: [{
+          '@id': INSTANCE_URI,
+          comment: 'To assess the 12- and 52-week efficacy of the dipeptidyl peptidase IV inhibitor LAF237 (Vildagliptin) versus Placebo in patients with type 2 diabetes continuing Metformin treatment.'
+        }],
+        has_publication: [],
+        has_epochs: {
+          first: {
+            '@id': INSTANCE_URI,
+            '@type': 'ontology:Epoch',
+            label: 'Automatically generated primary epoch',
+            duration: 'PT0S'
+          },
+          rest: 'http://www.w3.org/1999/02/22-rdf-syntax-ns#nil'
+        },
+        has_primary_epoch: INSTANCE_URI
+      };
+    }
+
+    function buildEpochs() {
+      var epochs = [{
+        '@id': 'randomisationEpochUri',
+        '@type': 'ontology:Epoch',
+        label: 'Randomisation',
+        duration: 'PT0S'
+      }, {
+        '@id': 'treatmentPhaseEpochUri',
+        '@type': 'ontology:Epoch',
+        label: 'treatment phase',
+        duration: 'P1W'
+      }, {
+        '@id': 'washoutEpochUri',
+        '@type': 'ontology:Epoch',
+        label: 'washout',
+        duration: 'P1W'
+      }];
+      return rdfListService.unFlattenList(epochs);
+    }
+
+
+    function buildOutcome() {
+      return [{
+        '@id': 'http://trials.drugis.org/instances/uuid',
+        '@type': 'ontology:AdverseEvent',
+        label: 'Bursitis',
+        has_result_property: [
+          'http://trials.drugis.org/ontology#count',
+          'http://trials.drugis.org/ontology#sample_size'
+        ],
+        of_variable: [{
+          '@type': 'ontology:Variable',
+          measurementType: 'ontology:dichotomous',
+          label: 'Bursitis'
+        }],
+        is_measured_at: ['week12MeasurementMomentUri', 'week52MeasurementMomentUri']
+      }];
     }
 
     function buildMeasurements() {
@@ -377,19 +486,19 @@ define([
         _.forEach(variable.results, function(armResults) {
           _.forEach(armResults, function(measurementMomentResults) {
             var measurement = {
-              '@id': 'http://trials.drugis.org/instances/uuid',
-              of_moment: 'http://trials.drugis.org/instances/uuid',
-              of_group: 'http://trials.drugis.org/instances/uuid',
-              of_outcome: 'http://trials.drugis.org/instances/uuid'
+              '@id': INSTANCE_URI,
+              of_moment: INSTANCE_URI,
+              of_group: INSTANCE_URI,
+              of_outcome: INSTANCE_URI
             };
             if (variable.label === 'Sex') {
               measurement.category_count = [{
-                '@id': 'http://trials.drugis.org/instances/uuid',
-                category: 'http://trials.drugis.org/instances/uuid',
+                '@id': INSTANCE_URI,
+                category: INSTANCE_URI,
                 count: measurementMomentResults.male
               }, {
-                '@id': 'http://trials.drugis.org/instances/uuid',
-                category: 'http://trials.drugis.org/instances/uuid',
+                '@id': INSTANCE_URI,
+                category: INSTANCE_URI,
                 count: measurementMomentResults.female
               }];
               measurements.push(measurement);
@@ -402,14 +511,18 @@ define([
       return measurements;
     }
 
-    function buildMeasurementMoment(label) {
+    function buildBasicMeasurementMoment(label) {
+      return buildMeasurementMoment(label, INSTANCE_URI, INSTANCE_URI, 'End', 'PT0S');
+    }
+
+    function buildMeasurementMoment(label, uri, epochUri, anchor, offset) {
       return {
-        '@id': 'http://trials.drugis.org/instances/uuid',
+        '@id': uri,
         '@type': 'ontology:MeasurementMoment',
         label: label,
-        relative_to_epoch: 'http://trials.drugis.org/instances/uuid',
-        relative_to_anchor: 'ontology:anchorEpochEnd',
-        time_offset: 'PT0S'
+        relative_to_epoch: epochUri,
+        relative_to_anchor: 'ontology:anchorEpoch' + anchor,
+        time_offset: offset
       };
     }
   });

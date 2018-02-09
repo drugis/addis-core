@@ -51,6 +51,25 @@ define(['lodash'], function(_) {
     }, {
       uri: 'unknown',
       label: 'Unknown'
-    }], 'uri')
+    }], 'uri'),
+    ACTIVITY_TYPE_OPTIONS: [{ //uri
+      label: 'screening',
+      uri: 'ontology:ScreeningActivity'
+    }, {
+      label: 'wash out',
+      uri: 'ontology:WashOutActivity'
+    }, {
+      label: 'randomization',
+      uri: 'ontology:RandomizationActivity'
+    }, {
+      label: 'drug treatment',
+      uri: 'ontology:TreatmentActivity'
+    }, {
+      label: 'follow up',
+      uri: 'ontology:FollowUpActivity'
+    }, {
+      label: 'other',
+      uri: 'ontology:StudyActivity'
+    }]
   };
 });
