@@ -173,18 +173,18 @@ define([
             sample_size: 51
           }, {
             '@id': INSTANCE_URI,
-            of_moment: 'week12MeasurementMomentUri',
-            of_group: INSTANCE_URI,
-            of_outcome: 'bursitisConceptUri',
-            count: 3,
-            sample_size: 56
-          }, {
-            '@id': INSTANCE_URI,
             of_moment: 'week52MeasurementMomentUri',
             of_group: INSTANCE_URI,
             of_outcome: 'bursitisConceptUri',
             count: 2,
             sample_size: 29
+          }, {
+            '@id': INSTANCE_URI,
+            of_moment: 'week12MeasurementMomentUri',
+            of_group: INSTANCE_URI,
+            of_outcome: 'bursitisConceptUri',
+            count: 3,
+            sample_size: 56
           }, {
             '@id': INSTANCE_URI,
             of_moment: 'week52MeasurementMomentUri',

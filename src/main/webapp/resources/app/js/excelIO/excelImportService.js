@@ -112,8 +112,9 @@ define(['lodash', 'util/context', 'util/constants', 'xlsx-shim'], function(_, ex
       var measurements = readMeasurements(studyDataSheet, variables,
         studyNode.has_arm.concat(studyNode.has_included_population), variableColumns);
       studyNode.has_outcome = variables;
+      studyNode.has_activity = addStudyDesign(studyNode, workbook);
       var jenaGraph = {
-        '@graph': [].concat(measurementMoments, measurements, studyNode),
+        '@graph': [].concat(measurementMoments, measurements, studyDesign, studyNode),
         '@context': externalContext
       };
       return jenaGraph;
@@ -157,7 +158,8 @@ define(['lodash', 'util/context', 'util/constants', 'xlsx-shim'], function(_, ex
       var activity = {
         '@id': getValue(activitySheet, 0, row),
         '@type': activityLabelToUri[getValue(activitySheet, 2, row)].uri,
-        label: getValue(activitySheet, 1, row)
+        label: getValue(activitySheet, 1, row),
+        has_activity_application: []
       };
       assignIfPresent(activity, 'comment', activitySheet, 3, row);
 
@@ -169,6 +171,24 @@ define(['lodash', 'util/context', 'util/constants', 'xlsx-shim'], function(_, ex
         activity.has_drug_treatment = [].concat(activity.has_drug_treatment, drugTreatment);
       }
       return activity;
+    }
+
+    function addStudyDesign(studyNode, workbook) {
+      var studyDesignSheet = workbook.Sheets['Study Design'];
+      return _.map(studyNode.has_activity, function(activity) {
+        var applicationsForActivity = _.filter(studyDesignSheet, function(cell) {
+          return cell.f && getReferenceValueColumnOffset(studyDesignSheet, cell.c, cell.r, -1, workbook) === activity['@id'];
+        });
+        return _.merge({}, activity, {
+          has_activity_application: _.map(applicationsForActivity, function(applicationCell) {
+            return {
+              '@id': INSTANCE_PREFIX + UUIDService.generate(),
+              applied_in_epoch: getReferenceValueColumnOffset(studyDesignSheet, applicationCell.c, 0, -1, workbook),
+              applied_to_arm: getReferenceValueColumnOffset(studyDesignSheet, 0, applicationCell.r, -1, workbook)
+            };
+          })
+        });
+      });
     }
 
 
@@ -378,7 +398,11 @@ define(['lodash', 'util/context', 'util/constants', 'xlsx-shim'], function(_, ex
       } else {
         newVariable.has_result_property = readDataColumnNames(studyDataSheet, columns, function(propertyName) {
           return ONTOLOGY_PREFIX + propertyName;
-        });console.log(excelUtils.encode_cell({c: columns[1], r: 1}) + ' ' + newVariable.has_result_property)
+        });
+        console.log(excelUtils.encode_cell({
+          c: columns[1],
+          r: 1
+        }) + ' ' + newVariable.has_result_property)
         if (newVariable.measurementType === 'ontology:survival' && newVariable.has_result_property.indexOf(ONTOLOGY_PREFIX + 'exposure') > -1) {
           newVariable.timeScale = getValue(studyDataSheet, columns[0] + 2, 3);
         }
