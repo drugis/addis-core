@@ -128,10 +128,12 @@ define(['lodash', 'angular', 'angular-mocks'], function(_) {
       B3: cellValue('variable 2'),
       A4: cellValue('variable3Uri'),
       B4: cellValue('variable 3'),
-      B5: cellValue('drug1'),
-      B6: cellValue('drug2'),
-      A7: cellValue('milligramUri'),
-      B7: cellValue('milligram')
+      A5: cellValue('variable4Uri'),
+      B5: cellValue('variable 4'),
+      B6: cellValue('drug1'),
+      B7: cellValue('drug2'),
+      A8: cellValue('milligramUri'),
+      B8: cellValue('milligram')
     };
 
     beforeEach(function() {
@@ -403,13 +405,13 @@ define(['lodash', 'angular', 'angular-mocks'], function(_) {
           C3: cellValue('fixed'),
           D3: cellValue(undefined),
           E3: {
-            f: '=Concepts!B5'
+            f: '=Concepts!B6'
           },
           F3: cellValue('fixed'),
           G3: cellNumber(1),
           H3: cellNumber(undefined),
           I3: {
-            f: '=Concepts!B7'
+            f: '=Concepts!B8'
           },
           J3: cellValue('P1D'), //
           A4: cellValue('combiTreatmentUri'),
@@ -417,23 +419,23 @@ define(['lodash', 'angular', 'angular-mocks'], function(_) {
           C4: cellValue('combination'),
           D4: cellValue(undefined),
           E4: {
-            f: '=Concepts!B5'
+            f: '=Concepts!B6'
           },
           F4: cellValue('fixed'),
           G4: cellNumber(2),
           H4: cellNumber(undefined),
           I4: {
-            f: '=Concepts!B7'
+            f: '=Concepts!B8'
           },
           J4: cellValue('P1D'), //
           K4: {
-            f: '=Concepts!B6'
+            f: '=Concepts!B7'
           },
           L4: cellValue('titrated'),
           M4: cellNumber(3),
           N4: cellNumber(4),
           O4: {
-            f: '=Concepts!B7'
+            f: '=Concepts!B8'
           },
           P4: cellValue('P1D')
         };
@@ -593,6 +595,40 @@ define(['lodash', 'angular', 'angular-mocks'], function(_) {
             'http://trials.drugis.org/ontology#standard_deviation'
           ],
           type: 'adverse event'
+        }, {
+          uri: 'variable4Uri',
+          label: 'survival variable',
+          measuredAtMoments: [{
+            uri: 'measurementMoment1Uri'
+          }],
+          measurementType: 'ontology:survival',
+          resultProperties: [
+            'http://trials.drugis.org/ontology#count',
+            'http://trials.drugis.org/ontology#exposure'
+          ],
+          results: [{
+            armUri: 'arm1Uri',
+            momentUri: 'measurementMoment1Uri',
+            result_property: 'count',
+            value: 123
+          }, {
+            armUri: 'arm1Uri',
+            momentUri: 'measurementMoment1Uri',
+            result_property: 'exposure',
+            value: 3789
+          }, {
+            armUri: 'arm2Uri',
+            momentUri: 'measurementMoment1Uri',
+            result_property: 'count',
+            value: 321
+          }, {
+            armUri: 'arm2Uri',
+            momentUri: 'measurementMoment1Uri',
+            result_property: 'exposure',
+            value: 45678
+          }],
+          timeScale: 'P1Y',
+          type: 'adverse event'
         }];
 
         var result = excelExportUtilService.buildStudyDataSheet(study, studyInformation, studyUrl, arms, epochs, activities, studyDesign,
@@ -600,7 +636,7 @@ define(['lodash', 'angular', 'angular-mocks'], function(_) {
 
         var expectedResult = {
           '!merges': [],
-          '!ref': 'A1:AD6',
+          '!ref': 'A1:AJ6',
           //headers
           //row 1 (data categories)
           A1: cellValue('Study Information'),
@@ -611,6 +647,7 @@ define(['lodash', 'angular', 'angular-mocks'], function(_) {
           M2: cellFormula('=Concepts!B2'),
           U2: cellFormula('=Concepts!B3'),
           Z2: cellFormula('=Concepts!B4'),
+          AE2: cellFormula('=Concepts!B5'),
           // row 3 )variable detail headers
           A3: cellValue('id'), //row 3
           B3: cellValue('addis url'),
@@ -642,7 +679,12 @@ define(['lodash', 'angular', 'angular-mocks'], function(_) {
           AB3: cellValue('sample_size'),
           AC3: cellValue('mean'),
           AD3: cellValue('standard_deviation'),
-
+          AE3: cellValue('variable type'),
+          AF3: cellValue('measurement type'),
+          AG3: cellValue('time scale'),
+          AH3: cellValue('measurement moment'),
+          AI3: cellValue('count'),
+          AJ3: cellValue('exposure'),
           // data rows
           // arm 1
           A4: cellValue(study.label),
@@ -676,6 +718,13 @@ define(['lodash', 'angular', 'angular-mocks'], function(_) {
           Y4: cellNumber(201),
           Z4: cellValue('adverse event'),
           AA4: cellValue('continuous'),
+          AE4: cellValue('adverse event'),
+          AF4: cellValue('survival'),
+          AG4: cellValue('P1Y'),
+          AH4: cellFormula('=\'Measurement moments\'!B1'),
+          AI4: cellNumber(123),
+          AJ4: cellNumber(3789),
+
 
           // arm 2
           K5: cellValue(arms[1].label),
@@ -686,6 +735,8 @@ define(['lodash', 'angular', 'angular-mocks'], function(_) {
           T5: cellNumber(24),
           X5: cellNumber(301),
           Y5: cellNumber(401),
+          AI5: cellNumber(321),
+          AJ5: cellNumber(45678),
 
           // overall population
           K6: cellValue('Overall population'),
@@ -693,8 +744,8 @@ define(['lodash', 'angular', 'angular-mocks'], function(_) {
           Q6: cellNumber(500)
         };
         expectedResult['!merges'] = [
-          cellRange(12, 3, 12, 5), 
-          cellRange(13, 3, 13, 5), 
+          cellRange(12, 3, 12, 5),
+          cellRange(13, 3, 13, 5),
           cellRange(14, 3, 14, 5),
           cellRange(17, 3, 17, 5),
           cellRange(12, 1, 19, 1),
@@ -705,10 +756,14 @@ define(['lodash', 'angular', 'angular-mocks'], function(_) {
           cellRange(25, 3, 25, 5),
           cellRange(26, 3, 26, 5),
           cellRange(25, 1, 26, 1),
+          cellRange(27, 3, 27, 5),
+          cellRange(28, 3, 28, 5),
+          cellRange(29, 3, 29, 5),
+          cellRange(27, 1, 32, 1),
           cellRange(0, 0, 7, 0),
           cellRange(8, 0, 9, 0),
           cellRange(10, 0, 11, 0),
-          cellRange(12, 0, 29, 0)
+          cellRange(12, 0, 35, 0)
         ];
 
         expectedResult['!merges'] = expectedResult['!merges'].concat(_.map(_.range(0, 10), function(i) {
@@ -741,10 +796,10 @@ define(['lodash', 'angular', 'angular-mocks'], function(_) {
     });
 
     function cellNumber(value) {
-     return {
+      return {
         v: value,
         t: 'n'
-      }; 
+      };
     }
 
     function cellFormula(formula) {

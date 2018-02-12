@@ -235,7 +235,7 @@ define(['lodash', 'xlsx-shim'], function(_, XLSX) {
         merges.push(cellRange(currentAnchorCol, firstDataRow, currentAnchorCol, firstDataRow + numberofArms - 1));
         merges.push(cellRange(currentAnchorCol + 1, firstDataRow, currentAnchorCol + 1, firstDataRow + numberofArms - 1));
 
-        var numberOfPropertyColumns = variable.categoryList ? variable.categoryList.length : variable.resultProperties.length;
+        var numberOfPropertyColumns = calcNumberOfPropertyColumns(variable);
         var numberOfMeasurementMoments = variable.measuredAtMoments.length;
 
         // for every measurement moment we merge the first column
@@ -266,6 +266,9 @@ define(['lodash', 'xlsx-shim'], function(_, XLSX) {
         [cellFormula('=Concepts!' + variableReference), cellValue('variable type'), cellValue(variable.type)],
         [undefined, cellValue('measurement type'), cellValue(measurementTypes[variable.measurementType])]
       ];
+      if(hasTimeScaleColumn(variable)) {
+        baseColumns.push([undefined, cellValue('time scale'), cellValue(variable.timeScale)]);
+      }
       var measuredAtContext = _.merge({
         variable: variable
       }, context);
@@ -390,6 +393,18 @@ define(['lodash', 'xlsx-shim'], function(_, XLSX) {
         I4: cellValue(populationInformation.indication ? populationInformation.indication.label : undefined),
         J4: cellValue(populationInformation.eligibilityCriteria ? populationInformation.eligibilityCriteria.label : undefined)
       };
+    }
+
+    function calcNumberOfPropertyColumns(variable) {
+      var numberOfColumns = variable.categoryList ? variable.categoryList.length : variable.resultProperties.length;
+      if(hasTimeScaleColumn(variable)) {
+        ++numberOfColumns;
+      }
+      return numberOfColumns;
+    }
+
+    function hasTimeScaleColumn(variable) {
+      return !!variable.timeScale;
     }
 
     function addConceptType(concepts, type) {
