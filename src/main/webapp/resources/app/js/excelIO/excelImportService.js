@@ -99,15 +99,18 @@ define(['lodash', 'util/context', 'util/constants', 'xlsx-shim'], function(_, ex
       var studyDataSheet = workbook.Sheets['Study data'];
       var measurementMomentSheet = workbook.Sheets['Measurement moments'];
       var epochs = buildEpochs(workbook.Sheets.Epochs);
+      var primaryEpoch = _.find(epochs, ['isPrimary', 'true']);
+      epochs = _(epochs).map(_.partialRight(_.omit, 'isPrimary')).value();
       // var concepts = buildConcepts(workbook.Sheets.Concepts);
       var measurementMoments = buildMultiSheetMeasurementMoments(measurementMomentSheet, workbook);
-      var activities = buildActivities(workbook.Sheets.Activities, workbook);
 
       var studyNode = readStudy(studyDataSheet, epochs);
+      studyNode.has_primary_epoch = primaryEpoch ? primaryEpoch['@id'] : undefined;
+      studyNode.has_activity = buildActivities(workbook.Sheets.Activities, workbook);
       var variableColumns = findVariableStartColumns(studyDataSheet);
-      var variables = readVariables(studyDataSheet, variableColumns);
-      variables = measurementMomentLabelToUri(variables, measurementMoments);
-      var measurements = readMeasurements(studyDataSheet, variables, studyNode.has_arm.concat(studyNode.has_included_population), variableColumns);
+      var variables = readVariables(studyDataSheet, variableColumns, workbook);
+      var measurements = readMeasurements(studyDataSheet, variables,
+        studyNode.has_arm.concat(studyNode.has_included_population), variableColumns);
       studyNode.has_outcome = variables;
       var jenaGraph = {
         '@graph': [].concat(measurementMoments, measurements, studyNode),
@@ -120,6 +123,7 @@ define(['lodash', 'util/context', 'util/constants', 'xlsx-shim'], function(_, ex
       var studyDataSheet = workbook.Sheets['Study data'];
       var epochs = buildEpochs(workbook.Sheets.Epochs);
       var studyNode = readStudy(studyDataSheet, epochs);
+      studyNode.has_primary_epoch = epochs[0]['@id'];
       var variableColumns = findVariableStartColumns(studyDataSheet);
       var variables = readVariables(studyDataSheet, variableColumns);
       var measurementMoments = buildSingleSheetMeasurementMoments(variables, epochs);
@@ -159,6 +163,7 @@ define(['lodash', 'util/context', 'util/constants', 'xlsx-shim'], function(_, ex
 
       var drugIndex = 0;
       while (activitySheet[a1Coordinate(4 + drugIndex * 6, row)]) {
+        activity.has_drug_treatment = activity.has_drug_treatment ? activity.has_drug_treatment : [];
         var drugTreatment = readDrugTreatment(activitySheet, drugIndex, row, workbook);
         ++drugIndex;
         activity.has_drug_treatment = [].concat(activity.has_drug_treatment, drugTreatment);
@@ -277,10 +282,11 @@ define(['lodash', 'util/context', 'util/constants', 'xlsx-shim'], function(_, ex
 
     function readEpoch(epochSheet, row) {
       var epoch = {
-        '@id': getValueIfPresent(epochSheet, 0, row),
+        '@id': getValue(epochSheet, 0, row),
         '@type': 'ontology:Epoch',
-        label: getValueIfPresent(epochSheet, 1, row),
-        duration: getValueIfPresent(epochSheet, 3, row),
+        label: getValue(epochSheet, 1, row),
+        duration: getValue(epochSheet, 3, row),
+        isPrimary: getValue(epochSheet, 4, row)
       };
       assignIfPresent('comment', epochSheet, 2, row);
       return epoch;
@@ -304,22 +310,55 @@ define(['lodash', 'util/context', 'util/constants', 'xlsx-shim'], function(_, ex
       });
     }
 
-    function readVariables(studyDataSheet, variableColumns) {
+    function readVariables(studyDataSheet, variableColumns, workbook) {
       var endColumn = XLSX.utils.decode_range(studyDataSheet['!ref']).e.c + 1;
       var variableColumnsPlusEnd = variableColumns.concat(endColumn); // add end column for last variable
       var variableColumnBoundaries = _.map(variableColumnsPlusEnd.slice(0, variableColumnsPlusEnd.length - 1), function(n, index) {
         return [n, variableColumnsPlusEnd[index + 1]];
       });
-      var variables = _.map(variableColumnBoundaries, _.partial(readVariable, studyDataSheet));
+      var variables = _.map(variableColumnBoundaries, function(columns) {
+        return readVariable(studyDataSheet, columns,
+          getVariableFactory(studyDataSheet, columns, workbook),
+          getMeasurementMomentReader(studyDataSheet, workbook));
+      });
       return variables;
     }
 
-    function readVariable(studyDataSheet, columns) {
-      var newVariable = {
-        '@id': INSTANCE_PREFIX + UUIDService.generate(),
-        '@type': findOntology(VARIABLE_TYPES, getValueIfPresent(studyDataSheet, columns[0], 3)),
-        label: getValueIfPresent(studyDataSheet, columns[0], 1)
-      };
+    function getVariableFactory(studyDataSheet, columns, workbook) {
+      if (workbook && workbook.Sheets.Concepts) {
+        return function() {
+          return {
+            '@id': getReferenceValueColumnOffset(studyDataSheet, columns[0], 1, -1, workbook),
+            '@type': findOntology(VARIABLE_TYPES, getValueIfPresent(studyDataSheet, columns[0], 3)),
+            label: getReferenceValue(studyDataSheet, columns[0], 1, workbook)
+          };
+        };
+      } else {
+        return function() {
+          return {
+            '@id': INSTANCE_PREFIX + UUIDService.generate(),
+            '@type': findOntology(VARIABLE_TYPES, getValueIfPresent(studyDataSheet, columns[0], 3)),
+            label: getValueIfPresent(studyDataSheet, columns[0], 1)
+          };
+        };
+      }
+    }
+
+    function getMeasurementMomentReader(studyDataSheet, workbook) {
+      if (workbook && workbook.Sheets.Concepts) {
+        return function(column) {
+          console.log(column);
+          return getReferenceValueColumnOffset(studyDataSheet, column, 3, -1, workbook);
+        };
+      } else {
+        return function(column) {
+          return getValueIfPresent(studyDataSheet, column, 3);
+        };
+      }
+    }
+
+    function readVariable(studyDataSheet, columns, variableFactory, measurementMomentReader) {
+      var newVariable = variableFactory();
       var measurementType = MEASUREMENT_TYPES[getValueIfPresent(studyDataSheet, columns[0] + 1, 3)].uri;
       var ofVariable = {
         '@type': 'ontology:Variable',
@@ -339,10 +378,13 @@ define(['lodash', 'util/context', 'util/constants', 'xlsx-shim'], function(_, ex
       } else {
         newVariable.has_result_property = readDataColumnNames(studyDataSheet, columns, function(propertyName) {
           return ONTOLOGY_PREFIX + propertyName;
-        });
+        });console.log(excelUtils.encode_cell({c: columns[1], r: 1}) + ' ' + newVariable.has_result_property)
+        if (newVariable.measurementType === 'ontology:survival' && newVariable.has_result_property.indexOf(ONTOLOGY_PREFIX + 'exposure') > -1) {
+          newVariable.timeScale = getValue(studyDataSheet, columns[0] + 2, 3);
+        }
       }
       newVariable.of_variable = [ofVariable];
-      newVariable.is_measured_at = readMeasurementMoments(studyDataSheet, columns);
+      newVariable.is_measured_at = readMeasurementMoments(studyDataSheet, columns, measurementMomentReader);
       return newVariable;
     }
 
@@ -352,22 +394,20 @@ define(['lodash', 'util/context', 'util/constants', 'xlsx-shim'], function(_, ex
           return getValueIfPresent(studyDataSheet, column, 2);
         })
         .without('measurement moment')
+        .without('time scale')
         .uniq()
         .map(prefixer)
         .value();
     }
 
-    function readMeasurementMoments(studyDataSheet, columns) {
+    function readMeasurementMoments(studyDataSheet, columns, measurementMomentReader) {
       return _(_.range(columns[0] + 1, columns[1]))
-        .map(function(column) {
-          return {
-            column: column,
-            header: getValueIfPresent(studyDataSheet, column, 2),
-            value: getValueIfPresent(studyDataSheet, column, 3)
-          };
+        .filter(function(column) {
+          return getValueIfPresent(studyDataSheet, column, 2) === 'measurement moment';
         })
-        .filter(['header', 'measurement moment'])
-        .map('value')
+        .map(function(column) {
+          return measurementMomentReader(column);
+        })
         .uniq()
         .value();
     }
@@ -456,7 +496,6 @@ define(['lodash', 'util/context', 'util/constants', 'xlsx-shim'], function(_, ex
         has_number_of_centers: studyDataSheet.G4 ? studyDataSheet.G4.v : undefined,
         has_objective: getCommented(studyDataSheet, 'H4'),
         has_outcome: [],
-        has_primary_epoch: epochs[0]['@id'],
         has_publication: []
       };
       return study;
@@ -544,10 +583,11 @@ define(['lodash', 'util/context', 'util/constants', 'xlsx-shim'], function(_, ex
         var targetCoordinates = excelUtils.decode_cell(splitFormula[1]);
         targetCoordinates.c += columnOffset;
         targetCoordinates = excelUtils.encode_cell(targetCoordinates);
+        targetSheet = targetSheet.replace(/\'/g, '');
         if (workbook.Sheets[targetSheet] && workbook.Sheets[targetSheet][targetCoordinates]) {
           return workbook.Sheets[targetSheet][targetCoordinates].v;
         } else {
-          throw 'Broken reference: ' + source.f ;
+          throw 'Broken reference: ' + source.f;
         }
       }
     }

@@ -102,11 +102,11 @@ define([
             is_measured_at: INSTANCE_URI,
             label: 'HbA1c (%) change',
             has_result_property: [ONTOLOGY_URI + 'sample_size', ONTOLOGY_URI + 'mean', ONTOLOGY_URI + 'standard_deviation'],
-            of_variable: [Object({
+            of_variable: [{
               '@type': 'ontology:Variable',
               measurementType: 'ontology:continuous',
               label: 'HbA1c (%) change'
-            })]
+            }]
           };
           var bursitis = {
             '@id': INSTANCE_URI,
@@ -114,11 +114,11 @@ define([
             is_measured_at: [INSTANCE_URI, INSTANCE_URI],
             label: 'Bursitis',
             has_result_property: [ONTOLOGY_URI + 'count', ONTOLOGY_URI + 'sample_size'],
-            of_variable: [Object({
+            of_variable: [{
               '@type': 'ontology:Variable',
               measurementType: 'ontology:dichotomous',
               label: 'Bursitis'
-            })]
+            }]
           };
           var outcomes = [age, sex, hba1c, bursitis];
 
@@ -161,6 +161,8 @@ define([
           studyNode.has_outcome = outcomes;
           studyNode.has_epochs = buildEpochs();
           studyNode.has_outcome = buildOutcome();
+          studyNode.has_activity = buildActivities();
+          studyNode.has_primary_epoch = 'treatmentPhaseEpochUri';
 
           var measurements = [{
             '@id': INSTANCE_URI,
@@ -377,10 +379,67 @@ define([
       return rdfListService.unFlattenList(epochs);
     }
 
+    function buildActivities() {
+      return [{
+        '@id': 'washoutActivityUri',
+        '@type': 'ontology:WashOutActivity',
+        label: 'washout'
+      }, {
+        '@id': 'vildaActivityUri',
+        '@type': 'ontology:TreatmentActivity',
+        label: 'Vildagliptin + placebo',
+        has_drug_treatment: [{
+          '@id': 'http://trials.drugis.org/instances/uuid',
+          treatment_has_drug: 'vildaConceptUri',
+          '@type': 'ontology:FixedDoseDrugTreatment',
+          treatment_dose: [{
+            '@id': 'uuid',
+            value: 10,
+            unit: 'milligramConceptUri',
+            dosingPeriodicity: 'P1D'
+          }]
+        }, {
+          '@id': 'http://trials.drugis.org/instances/uuid',
+          treatment_has_drug: 'placeboConceptUri',
+          '@type': 'ontology:FixedDoseDrugTreatment',
+          treatment_dose: [{
+            '@id': 'uuid',
+            value: 20,
+            unit: 'milligramConceptUri',
+            dosingPeriodicity: 'P1D'
+          }]
+        }]
+      }, {
+        '@id': 'placeboActivityUri',
+        '@type': 'ontology:TreatmentActivity',
+        label: 'placebo',
+        has_drug_treatment: [{
+          '@id': 'http://trials.drugis.org/instances/uuid',
+          treatment_has_drug: 'placeboConceptUri',
+          '@type': 'ontology:TitratedDoseDrugTreatment',
+          treatment_min_dose: [{
+            '@id': 'uuid',
+            value: 10,
+            unit: 'milligramConceptUri',
+            dosingPeriodicity: 'P1D'
+          }],
+          treatment_max_dose: [{
+            '@id': 'uuid',
+            value: 20,
+            unit: 'milligramConceptUri',
+            dosingPeriodicity: 'P1D'
+          }]
+        }]
+      }, {
+        '@id': 'randomisationActivityUri',
+        '@type': 'ontology:RandomizationActivity',
+        label: 'Randomisation'
+      }];
+    }
 
     function buildOutcome() {
       return [{
-        '@id': 'http://trials.drugis.org/instances/uuid',
+        '@id': 'bursitisConceptUri',
         '@type': 'ontology:AdverseEvent',
         label: 'Bursitis',
         has_result_property: [
