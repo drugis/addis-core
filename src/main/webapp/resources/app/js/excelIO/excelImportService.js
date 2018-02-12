@@ -128,8 +128,8 @@ define(['lodash', 'util/context', 'util/constants', 'xlsx-shim'], function(_, ex
       var variables = readVariables(studyDataSheet, variableColumns);
       var measurementMoments = buildSingleSheetMeasurementMoments(variables, epochs);
       variables = measurementMomentLabelToUri(variables, measurementMoments);
-      studyNode.has_outcome = variables;
       var measurements = readMeasurements(studyDataSheet, variables, studyNode.has_arm.concat(studyNode.has_included_population), variableColumns);
+      studyNode.has_outcome = variables;
       var jenaGraph = {
         '@graph': [].concat(measurementMoments, measurements, studyNode),
         '@context': externalContext
@@ -468,12 +468,7 @@ define(['lodash', 'util/context', 'util/constants', 'xlsx-shim'], function(_, ex
       }
 
       _.forEach(resultColumns, function(resultColumn, propertyIndex) {
-        var hasTimeScaleColumn = 0;
-        if(variable.of_variable[0].measurementType === MEASUREMENT_TYPES.survival.uri && resultColumn === 'exposure'){
-          hasTimeScaleColumn = 1;
-          measurement['timeScale'] = getValue(studyDataSheet, variableColumn+2,4);
-        }
-        var currentX = variableColumn + 3 + measurementMomentIndex * (resultColumns.length + 1 + hasTimeScaleColumn) + propertyIndex;
+        var currentX = variableColumn + 3 + measurementMomentIndex * (resultColumns.length + 1) + propertyIndex;
         var currentValue = getValueIfPresent(studyDataSheet, currentX, currentY);
         if (currentValue !== undefined && currentValue !== null) {
           measurement = readMeasurementValue(measurement, resultColumn, currentValue);
