@@ -114,7 +114,7 @@ define(['lodash', 'util/context', 'util/constants', 'xlsx-shim'], function(_, ex
       studyNode.has_outcome = variables;
       studyNode.has_activity = addStudyDesign(studyNode, workbook);
       var jenaGraph = {
-        '@graph': [].concat(measurementMoments, measurements, studyDesign, studyNode),
+        '@graph': [].concat(measurementMoments, measurements, studyNode),
         '@context': externalContext
       };
       return jenaGraph;
@@ -174,18 +174,25 @@ define(['lodash', 'util/context', 'util/constants', 'xlsx-shim'], function(_, ex
     }
 
     function addStudyDesign(studyNode, workbook) {
-      var studyDesignSheet = workbook.Sheets['Study Design'];
+      var studyDesignSheet = workbook.Sheets['Study design'];
       return _.map(studyNode.has_activity, function(activity) {
-        var applicationsForActivity = _.filter(studyDesignSheet, function(cell) {
-          return cell.f && getReferenceValueColumnOffset(studyDesignSheet, cell.c, cell.r, -1, workbook) === activity['@id'];
-        });
+        var applicationsForActivity = _.reduce(studyDesignSheet, function(accum, cell, cellKey) {
+          var decodedCell = excelUtils.decode_cell(cellKey);
+          var offset = decodedCell.c === 0 ? 0 : -1; // First row contains arms, they do not need an offset 
+          if (cell.f && getReferenceValueColumnOffset(studyDesignSheet, decodedCell.c, decodedCell.r, offset, workbook) === activity['@id']) {
+            accum.push(decodedCell);
+          }
+          return accum;
+        }, []);
+
+        console.log(JSON.stringify(studyNode.has_arm, null, 2))
         return _.merge({}, activity, {
           has_activity_application: _.map(applicationsForActivity, function(applicationCell) {
             return {
               '@id': INSTANCE_PREFIX + UUIDService.generate(),
               applied_in_epoch: getReferenceValueColumnOffset(studyDesignSheet, applicationCell.c, 0, -1, workbook),
-              applied_to_arm: getReferenceValueColumnOffset(studyDesignSheet, 0, applicationCell.r, -1, workbook)
-            };
+              applied_to_arm: _.find(studyNode.has_arm, ['label', getReferenceValueColumnOffset(studyDesignSheet, 0, applicationCell.r, 0, workbook)])['@id']
+            }
           })
         });
       });
@@ -227,20 +234,6 @@ define(['lodash', 'util/context', 'util/constants', 'xlsx-shim'], function(_, ex
         object[field] = value;
       }
     }
-    // function buildConcepts(conceptSheet) {
-    //   var lastRow = excelUtils.decode_range(conceptSheet['!ref']).e.r;
-    //   return _.map(_.range(1, lastRow + 2), _.partial(readConcept, conceptSheet)); // +2 because zero-indexed and range has open upper end
-    // }
-
-    // function readConcept(conceptSheet, row) {
-    //   return {
-    //     uri: getValueIfPresent(conceptSheet, 0, row),
-    //     label: getValueIfPresent(conceptSheet, 1, row),
-    //     //type: getValueIfPresent(conceptSheet, 2, row),
-    //     conceptMapping: getValueIfPresent(conceptSheet, 3, row),
-    //     conversionMultiplier: getValueIfPresent(conceptSheet, 4, row)
-    //   };
-    // }
 
     function findVariableStartColumns(studyDataSheet) {
       var startColumn = 12; // =>'M'
@@ -367,7 +360,6 @@ define(['lodash', 'util/context', 'util/constants', 'xlsx-shim'], function(_, ex
     function getMeasurementMomentReader(studyDataSheet, workbook) {
       if (workbook && workbook.Sheets.Concepts) {
         return function(column) {
-          console.log(column);
           return getReferenceValueColumnOffset(studyDataSheet, column, 3, -1, workbook);
         };
       } else {
@@ -399,10 +391,6 @@ define(['lodash', 'util/context', 'util/constants', 'xlsx-shim'], function(_, ex
         newVariable.has_result_property = readDataColumnNames(studyDataSheet, columns, function(propertyName) {
           return ONTOLOGY_PREFIX + propertyName;
         });
-        console.log(excelUtils.encode_cell({
-          c: columns[1],
-          r: 1
-        }) + ' ' + newVariable.has_result_property)
         if (newVariable.measurementType === 'ontology:survival' && newVariable.has_result_property.indexOf(ONTOLOGY_PREFIX + 'exposure') > -1) {
           newVariable.timeScale = getValue(studyDataSheet, columns[0] + 2, 3);
         }
@@ -622,7 +610,6 @@ define(['lodash', 'util/context', 'util/constants', 'xlsx-shim'], function(_, ex
     }
 
     function getValue(dataSheet, column, row) {
-      console.log('getting ' + dataSheet + ', ' + column + ',' + row);
       var cell = dataSheet[a1Coordinate(column, row)];
       return cell.v;
     }

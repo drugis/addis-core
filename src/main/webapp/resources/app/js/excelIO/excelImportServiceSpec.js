@@ -204,7 +204,6 @@ define([
             ),
             '@context': externalContext
           };
-          console.log(JSON.stringify(result['@graph'][3], null, 2));
           expect(result).toEqual(expectedResult);
         });
       });
@@ -383,7 +382,16 @@ define([
       return [{
         '@id': 'washoutActivityUri',
         '@type': 'ontology:WashOutActivity',
-        label: 'washout'
+        label: 'washout',
+        has_activity_application: [{
+          '@id': INSTANCE_URI,
+          applied_in_epoch: 'washoutEpochUri',
+          applied_to_arm: INSTANCE_URI
+        }, {
+          '@id': INSTANCE_URI,
+          applied_in_epoch: 'washoutEpochUri',
+          applied_to_arm: INSTANCE_URI
+        }]
       }, {
         '@id': 'vildaActivityUri',
         '@type': 'ontology:TreatmentActivity',
@@ -408,6 +416,11 @@ define([
             unit: 'milligramConceptUri',
             dosingPeriodicity: 'P1D'
           }]
+        }],
+        has_activity_application: [{
+          '@id': INSTANCE_URI,
+          applied_in_epoch: 'treatmentPhaseEpochUri',
+          applied_to_arm: INSTANCE_URI
         }]
       }, {
         '@id': 'placeboActivityUri',
@@ -429,11 +442,25 @@ define([
             unit: 'milligramConceptUri',
             dosingPeriodicity: 'P1D'
           }]
+        }],
+        has_activity_application: [{
+          '@id': INSTANCE_URI,
+          applied_in_epoch: 'treatmentPhaseEpochUri',
+          applied_to_arm: INSTANCE_URI
         }]
       }, {
         '@id': 'randomisationActivityUri',
         '@type': 'ontology:RandomizationActivity',
-        label: 'Randomisation'
+        label: 'Randomisation',
+        has_activity_application: [{
+          '@id': INSTANCE_URI,
+          applied_in_epoch: 'randomisationEpochUri',
+          applied_to_arm: INSTANCE_URI
+        }, {
+          '@id': INSTANCE_URI,
+          applied_in_epoch: 'randomisationEpochUri',
+          applied_to_arm: INSTANCE_URI
+        }]
       }];
     }
 
