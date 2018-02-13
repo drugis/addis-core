@@ -101,20 +101,20 @@ define(['lodash', 'util/context', 'util/constants', 'xlsx-shim'], function(_, ex
       var epochs = buildEpochs(workbook.Sheets.Epochs);
       var primaryEpoch = _.find(epochs, ['isPrimary', 'true']);
       epochs = _(epochs).map(_.partialRight(_.omit, 'isPrimary')).value();
-      // var concepts = buildConcepts(workbook.Sheets.Concepts);
       var measurementMoments = buildMultiSheetMeasurementMoments(measurementMomentSheet, workbook);
 
       var studyNode = readStudy(studyDataSheet, epochs);
       studyNode.has_primary_epoch = primaryEpoch ? primaryEpoch['@id'] : undefined;
       studyNode.has_activity = buildActivities(workbook.Sheets.Activities, workbook);
-      var variableColumns = findVariableStartColumns(studyDataSheet);
+      var variableColumns = findStructuredVariableStartColumns(studyDataSheet, workbook);
       var variables = readVariables(studyDataSheet, variableColumns, workbook);
       var measurements = readMeasurements(studyDataSheet, variables,
         studyNode.has_arm.concat(studyNode.has_included_population), variableColumns);
       studyNode.has_outcome = variables;
       studyNode.has_activity = addStudyDesign(studyNode, workbook);
+      var drugs = buildDrugsAndUnits(workbook.Sheets.Concepts, workbook);
       var jenaGraph = {
-        '@graph': [].concat(measurementMoments, measurements, studyNode),
+        '@graph': [].concat(measurementMoments, measurements, studyNode, drugs),
         '@context': externalContext
       };
       return jenaGraph;
@@ -147,6 +147,30 @@ define(['lodash', 'util/context', 'util/constants', 'xlsx-shim'], function(_, ex
       }
     }
 
+    function buildDrugsAndUnits(conceptSheet, workbook) {
+      var lastRow = excelUtils.decode_range(conceptSheet['!ref']).e.r;
+      return _.without(_.map(_.range(1, lastRow + 1), _.partial(readDrugOrUnit, conceptSheet, workbook)), undefined);
+    }
+
+    function readDrugOrUnit(conceptSheet, workbook, row) {
+      var type = getValue(conceptSheet, 2, row);
+      if (type === 'drug') {
+        return {
+          '@id': getValue(conceptSheet, 0, row),
+          '@type': 'ontology:Drug',
+          label: getValue(conceptSheet, 1, row)
+        };
+      } else if (type === 'unit') {
+        return {
+          '@id': getValue(conceptSheet, 0, row),
+          '@type': 'ontology:Unit',
+          label: getValue(conceptSheet, 1, row),
+          conversionMultiplier: getValue(conceptSheet, 4, row)
+        };
+      }
+      return;
+    }
+
     function buildActivities(activitySheet, workbook) {
       var lastRow = excelUtils.decode_range(activitySheet['!ref']).e.r;
       return _.map(_.range(1, lastRow + 1), _.partial(readActivity, activitySheet, workbook)); // +2 because zero-indexed and range has open upper end
@@ -172,32 +196,6 @@ define(['lodash', 'util/context', 'util/constants', 'xlsx-shim'], function(_, ex
       }
       return activity;
     }
-
-    function addStudyDesign(studyNode, workbook) {
-      var studyDesignSheet = workbook.Sheets['Study design'];
-      return _.map(studyNode.has_activity, function(activity) {
-        var applicationsForActivity = _.reduce(studyDesignSheet, function(accum, cell, cellKey) {
-          var decodedCell = excelUtils.decode_cell(cellKey);
-          var offset = decodedCell.c === 0 ? 0 : -1; // First row contains arms, they do not need an offset 
-          if (cell.f && getReferenceValueColumnOffset(studyDesignSheet, decodedCell.c, decodedCell.r, offset, workbook) === activity['@id']) {
-            accum.push(decodedCell);
-          }
-          return accum;
-        }, []);
-
-        console.log(JSON.stringify(studyNode.has_arm, null, 2))
-        return _.merge({}, activity, {
-          has_activity_application: _.map(applicationsForActivity, function(applicationCell) {
-            return {
-              '@id': INSTANCE_PREFIX + UUIDService.generate(),
-              applied_in_epoch: getReferenceValueColumnOffset(studyDesignSheet, applicationCell.c, 0, -1, workbook),
-              applied_to_arm: _.find(studyNode.has_arm, ['label', getReferenceValueColumnOffset(studyDesignSheet, 0, applicationCell.r, 0, workbook)])['@id']
-            }
-          })
-        });
-      });
-    }
-
 
     function readDrugTreatment(activitySheet, drugIndex, row, workbook) {
       var doseTypes = {
@@ -228,6 +226,30 @@ define(['lodash', 'util/context', 'util/constants', 'xlsx-shim'], function(_, ex
       }];
     }
 
+    function addStudyDesign(studyNode, workbook) {
+      var studyDesignSheet = workbook.Sheets['Study design'];
+      return _.map(studyNode.has_activity, function(activity) {
+        var applicationsForActivity = _.reduce(studyDesignSheet, function(accum, cell, cellKey) {
+          var decodedCell = excelUtils.decode_cell(cellKey);
+          var offset = decodedCell.c === 0 ? 0 : -1; // First row contains arms, they do not need an offset 
+          if (cell.f && getReferenceValueColumnOffset(studyDesignSheet, decodedCell.c, decodedCell.r, offset, workbook) === activity['@id']) {
+            accum.push(decodedCell);
+          }
+          return accum;
+        }, []);
+
+        return _.merge({}, activity, {
+          has_activity_application: _.map(applicationsForActivity, function(applicationCell) {
+            return {
+              '@id': INSTANCE_PREFIX + UUIDService.generate(),
+              applied_in_epoch: getReferenceValueColumnOffset(studyDesignSheet, applicationCell.c, 0, -1, workbook),
+              applied_to_arm: _.find(studyNode.has_arm, ['label', getReferenceValueColumnOffset(studyDesignSheet, 0, applicationCell.r, 0, workbook)])['@id']
+            };
+          })
+        });
+      });
+    }
+
     function assignIfPresent(object, field, sheet, column, row) {
       var value = getValueIfPresent(sheet, column, row);
       if (value) {
@@ -241,7 +263,16 @@ define(['lodash', 'util/context', 'util/constants', 'xlsx-shim'], function(_, ex
       return _.filter(_.range(startColumn, endColumn), function(column) {
         return getValueIfPresent(studyDataSheet, column, 1);
       });
+    }
 
+    function findStructuredVariableStartColumns(studyDataSheet, workbook) {
+      var startColumn = 12; // =>'M'
+      var endColumn = XLSX.utils.decode_range(studyDataSheet['!ref']).e.c;
+      return _.filter(_.range(startColumn, endColumn), function(column) {
+        if (studyDataSheet[a1Coordinate(column, 1)]) {
+          return getReferenceValue(studyDataSheet, column, 1, workbook);
+        }
+      });
     }
 
     function buildMultiSheetMeasurementMoments(measurementMomentSheet, workbook) {

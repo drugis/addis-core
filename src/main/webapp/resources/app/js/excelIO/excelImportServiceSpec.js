@@ -200,7 +200,8 @@ define([
               buildMeasurementMoment('Week 52', 'week52MeasurementMomentUri', 'treatmentPhaseEpochUri', 'End', 'PT0S'),
               buildMeasurementMoment('Week 12', 'week12MeasurementMomentUri', 'treatmentPhaseEpochUri', 'Start', 'P84D'),
               measurements,
-              studyNode
+              studyNode,
+              buildDrugs()
             ),
             '@context': externalContext
           };
@@ -610,5 +611,22 @@ define([
         relative_to_anchor: 'ontology:anchorEpoch' + anchor,
         time_offset: offset
       };
+    }
+
+    function buildDrugs() {
+      return [{
+        '@id': 'placeboConceptUri',
+        '@type': 'ontology:Drug',
+        label: 'Placebo'
+      },{
+        '@id': 'vildaConceptUri',
+        '@type': 'ontology:Drug',
+        label: 'Vildagliptin'
+      },{
+        '@id': 'milligramConceptUri',
+        '@type': 'ontology:Unit',
+        conversionMultiplier: 0.001,
+        label: 'milligram'
+      }];
     }
   });
