@@ -162,43 +162,43 @@ define([
           studyNode.has_epochs = buildEpochs();
           studyNode.has_outcome = buildOutcome();
           studyNode.has_activity = buildActivities();
-          studyNode.has_primary_epoch = 'treatmentPhaseEpochUri';
+          studyNode.has_primary_epoch = 'http://trials.drugis.org/instances/treatmentPhaseEpochUri';
 
           var measurements = [{
             '@id': INSTANCE_URI,
-            of_moment: 'week12MeasurementMomentUri',
+            of_moment: 'http://trials.drugis.org/instances/week12MeasurementMomentUri',
             of_group: INSTANCE_URI,
-            of_outcome: 'bursitisConceptUri',
+            of_outcome: 'http://trials.drugis.org/instances/bursitisConceptUri',
             count: 1,
             sample_size: 51
           }, {
             '@id': INSTANCE_URI,
-            of_moment: 'week52MeasurementMomentUri',
+            of_moment: 'http://trials.drugis.org/instances/week52MeasurementMomentUri',
             of_group: INSTANCE_URI,
-            of_outcome: 'bursitisConceptUri',
+            of_outcome: 'http://trials.drugis.org/instances/bursitisConceptUri',
             count: 2,
             sample_size: 29
           }, {
             '@id': INSTANCE_URI,
-            of_moment: 'week12MeasurementMomentUri',
+            of_moment: 'http://trials.drugis.org/instances/week12MeasurementMomentUri',
             of_group: INSTANCE_URI,
-            of_outcome: 'bursitisConceptUri',
+            of_outcome: 'http://trials.drugis.org/instances/bursitisConceptUri',
             count: 3,
             sample_size: 56
           }, {
             '@id': INSTANCE_URI,
-            of_moment: 'week52MeasurementMomentUri',
+            of_moment: 'http://trials.drugis.org/instances/week52MeasurementMomentUri',
             of_group: INSTANCE_URI,
-            of_outcome: 'bursitisConceptUri',
+            of_outcome: 'http://trials.drugis.org/instances/bursitisConceptUri',
             count: 4,
             sample_size: 42
           }];
 
           var expectedResult = {
             '@graph': [].concat(
-              buildMeasurementMoment('Baseline', 'baselineMeasurementMomentUri', 'randomisationEpochUri', 'End', 'PT0S'),
-              buildMeasurementMoment('Week 52', 'week52MeasurementMomentUri', 'treatmentPhaseEpochUri', 'End', 'PT0S'),
-              buildMeasurementMoment('Week 12', 'week12MeasurementMomentUri', 'treatmentPhaseEpochUri', 'Start', 'P84D'),
+              buildMeasurementMoment('Baseline', 'http://trials.drugis.org/instances/baselineMeasurementMomentUri', 'http://trials.drugis.org/instances/randomisationEpochUri', 'End', 'PT0S'),
+              buildMeasurementMoment('Week 52', 'http://trials.drugis.org/instances/week52MeasurementMomentUri', 'http://trials.drugis.org/instances/treatmentPhaseEpochUri', 'End', 'PT0S'),
+              buildMeasurementMoment('Week 12', 'http://trials.drugis.org/instances/week12MeasurementMomentUri', 'http://trials.drugis.org/instances/treatmentPhaseEpochUri', 'Start', 'P84D'),
               measurements,
               studyNode,
               buildDrugs()
@@ -361,17 +361,17 @@ define([
 
     function buildEpochs() {
       var epochs = [{
-        '@id': 'randomisationEpochUri',
+        '@id': 'http://trials.drugis.org/instances/randomisationEpochUri',
         '@type': 'ontology:Epoch',
         label: 'Randomisation',
         duration: 'PT0S'
       }, {
-        '@id': 'treatmentPhaseEpochUri',
+        '@id': 'http://trials.drugis.org/instances/treatmentPhaseEpochUri',
         '@type': 'ontology:Epoch',
         label: 'treatment phase',
         duration: 'P1W'
       }, {
-        '@id': 'washoutEpochUri',
+        '@id': 'http://trials.drugis.org/instances/washoutEpochUri',
         '@type': 'ontology:Epoch',
         label: 'washout',
         duration: 'P1W'
@@ -381,85 +381,85 @@ define([
 
     function buildActivities() {
       return [{
-        '@id': 'washoutActivityUri',
+        '@id': 'http://trials.drugis.org/instances/washoutActivityUri',
         '@type': 'ontology:WashOutActivity',
         label: 'washout',
         has_activity_application: [{
           '@id': INSTANCE_URI,
-          applied_in_epoch: 'washoutEpochUri',
+          applied_in_epoch: 'http://trials.drugis.org/instances/washoutEpochUri',
           applied_to_arm: INSTANCE_URI
         }, {
           '@id': INSTANCE_URI,
-          applied_in_epoch: 'washoutEpochUri',
+          applied_in_epoch: 'http://trials.drugis.org/instances/washoutEpochUri',
           applied_to_arm: INSTANCE_URI
         }]
       }, {
-        '@id': 'vildaActivityUri',
+        '@id': 'http://trials.drugis.org/instances/vildagliptinActivityUri',
         '@type': 'ontology:TreatmentActivity',
         label: 'Vildagliptin + placebo',
         has_drug_treatment: [{
           '@id': 'http://trials.drugis.org/instances/uuid',
-          treatment_has_drug: 'vildaConceptUri',
+          treatment_has_drug: 'http://trials.drugis.org/instances/vildaConceptUri',
           '@type': 'ontology:FixedDoseDrugTreatment',
           treatment_dose: [{
-            '@id': 'uuid',
+            '@id': INSTANCE_URI,
             value: 10,
-            unit: 'milligramConceptUri',
+            unit: 'http://trials.drugis.org/instances/milligramConceptUri',
             dosingPeriodicity: 'P1D'
           }]
         }, {
           '@id': 'http://trials.drugis.org/instances/uuid',
-          treatment_has_drug: 'placeboConceptUri',
+          treatment_has_drug: 'http://trials.drugis.org/instances/placeboConceptUri',
           '@type': 'ontology:FixedDoseDrugTreatment',
           treatment_dose: [{
-            '@id': 'uuid',
+            '@id': INSTANCE_URI,
             value: 20,
-            unit: 'milligramConceptUri',
+            unit: 'http://trials.drugis.org/instances/milligramConceptUri',
             dosingPeriodicity: 'P1D'
           }]
         }],
         has_activity_application: [{
           '@id': INSTANCE_URI,
-          applied_in_epoch: 'treatmentPhaseEpochUri',
+          applied_in_epoch: 'http://trials.drugis.org/instances/treatmentPhaseEpochUri',
           applied_to_arm: INSTANCE_URI
         }]
       }, {
-        '@id': 'placeboActivityUri',
+        '@id': 'http://trials.drugis.org/instances/placeboActivityUri',
         '@type': 'ontology:TreatmentActivity',
         label: 'placebo',
         has_drug_treatment: [{
           '@id': 'http://trials.drugis.org/instances/uuid',
-          treatment_has_drug: 'placeboConceptUri',
+          treatment_has_drug: 'http://trials.drugis.org/instances/placeboConceptUri',
           '@type': 'ontology:TitratedDoseDrugTreatment',
           treatment_min_dose: [{
-            '@id': 'uuid',
+            '@id': INSTANCE_URI,
             value: 10,
-            unit: 'milligramConceptUri',
+            unit: 'http://trials.drugis.org/instances/milligramConceptUri',
             dosingPeriodicity: 'P1D'
           }],
           treatment_max_dose: [{
-            '@id': 'uuid',
+            '@id': INSTANCE_URI,
             value: 20,
-            unit: 'milligramConceptUri',
+            unit: 'http://trials.drugis.org/instances/milligramConceptUri',
             dosingPeriodicity: 'P1D'
           }]
         }],
         has_activity_application: [{
           '@id': INSTANCE_URI,
-          applied_in_epoch: 'treatmentPhaseEpochUri',
+          applied_in_epoch: 'http://trials.drugis.org/instances/treatmentPhaseEpochUri',
           applied_to_arm: INSTANCE_URI
         }]
       }, {
-        '@id': 'randomisationActivityUri',
+        '@id': 'http://trials.drugis.org/instances/randomisationActivityUri',
         '@type': 'ontology:RandomizationActivity',
         label: 'Randomisation',
         has_activity_application: [{
           '@id': INSTANCE_URI,
-          applied_in_epoch: 'randomisationEpochUri',
+          applied_in_epoch: 'http://trials.drugis.org/instances/randomisationEpochUri',
           applied_to_arm: INSTANCE_URI
         }, {
           '@id': INSTANCE_URI,
-          applied_in_epoch: 'randomisationEpochUri',
+          applied_in_epoch: 'http://trials.drugis.org/instances/randomisationEpochUri',
           applied_to_arm: INSTANCE_URI
         }]
       }];
@@ -467,7 +467,7 @@ define([
 
     function buildOutcome() {
       return [{
-        '@id': 'bursitisConceptUri',
+        '@id': 'http://trials.drugis.org/instances/bursitisConceptUri',
         '@type': 'ontology:AdverseEvent',
         label: 'Bursitis',
         has_result_property: [
@@ -479,7 +479,7 @@ define([
           measurementType: 'ontology:dichotomous',
           label: 'Bursitis'
         }],
-        is_measured_at: ['week12MeasurementMomentUri', 'week52MeasurementMomentUri']
+        is_measured_at: ['http://trials.drugis.org/instances/week12MeasurementMomentUri', 'http://trials.drugis.org/instances/week52MeasurementMomentUri']
       }];
     }
 
@@ -615,15 +615,15 @@ define([
 
     function buildDrugs() {
       return [{
-        '@id': 'placeboConceptUri',
+        '@id': 'http://trials.drugis.org/instances/placeboConceptUri',
         '@type': 'ontology:Drug',
         label: 'Placebo'
       },{
-        '@id': 'vildaConceptUri',
+        '@id': 'http://trials.drugis.org/instances/vildaConceptUri',
         '@type': 'ontology:Drug',
         label: 'Vildagliptin'
       },{
-        '@id': 'milligramConceptUri',
+        '@id': 'http://trials.drugis.org/instances/milligramConceptUri',
         '@type': 'ontology:Unit',
         conversionMultiplier: 0.001,
         label: 'milligram'

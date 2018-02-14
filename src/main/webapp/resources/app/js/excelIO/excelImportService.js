@@ -101,12 +101,12 @@ define(['lodash', 'util/context', 'util/constants', 'xlsx-shim'], function(_, ex
       var epochs = buildEpochs(workbook.Sheets.Epochs);
       var primaryEpoch = _.find(epochs, ['isPrimary', 'true']);
       epochs = _(epochs).map(_.partialRight(_.omit, 'isPrimary')).value();
-      var measurementMoments = buildMultiSheetMeasurementMoments(measurementMomentSheet, workbook);
+      var measurementMoments = buildStructuredMeasurementMoments(measurementMomentSheet, workbook);
 
       var studyNode = readStudy(studyDataSheet, epochs);
       studyNode.has_primary_epoch = primaryEpoch ? primaryEpoch['@id'] : undefined;
       studyNode.has_activity = buildActivities(workbook.Sheets.Activities, workbook);
-      var variableColumns = findStructuredVariableStartColumns(studyDataSheet, workbook);
+      var variableColumns = findVariableStartColumns(studyDataSheet);
       var variables = readVariables(studyDataSheet, variableColumns, workbook);
       var measurements = readMeasurements(studyDataSheet, variables,
         studyNode.has_arm.concat(studyNode.has_included_population), variableColumns);
@@ -178,10 +178,10 @@ define(['lodash', 'util/context', 'util/constants', 'xlsx-shim'], function(_, ex
     }
 
     function readActivity(activitySheet, workbook, row) {
-      var activityLabelToUri = _.keyBy(constants.ACTIVITY_TYPE_OPTIONS, 'label');
+      var activityTypesByUri = _.keyBy(constants.ACTIVITY_TYPE_OPTIONS, 'label');
       var activity = {
         '@id': getValue(activitySheet, 0, row),
-        '@type': activityLabelToUri[getValue(activitySheet, 2, row)].uri,
+        '@type': activityTypesByUri[getValue(activitySheet, 2, row)].uri,
         label: getValue(activitySheet, 1, row),
         has_activity_application: []
       };
@@ -219,7 +219,7 @@ define(['lodash', 'util/context', 'util/constants', 'xlsx-shim'], function(_, ex
 
     function buildTreatmentDose(sheet, baseColumn, valueOffset, row, workbook) {
       return [{
-        '@id': UUIDService.generate(),
+        '@id': INSTANCE_PREFIX + UUIDService.generate(),
         value: getValue(sheet, baseColumn + valueOffset, row),
         unit: getReferenceValueColumnOffset(sheet, baseColumn + 2, row, -1, workbook),
         dosingPeriodicity: getValue(sheet, baseColumn + 3, row)
@@ -261,21 +261,11 @@ define(['lodash', 'util/context', 'util/constants', 'xlsx-shim'], function(_, ex
       var startColumn = 12; // =>'M'
       var endColumn = XLSX.utils.decode_range(studyDataSheet['!ref']).e.c;
       return _.filter(_.range(startColumn, endColumn), function(column) {
-        return getValueIfPresent(studyDataSheet, column, 1);
+        return studyDataSheet[a1Coordinate(column, 1)];
       });
     }
 
-    function findStructuredVariableStartColumns(studyDataSheet, workbook) {
-      var startColumn = 12; // =>'M'
-      var endColumn = XLSX.utils.decode_range(studyDataSheet['!ref']).e.c;
-      return _.filter(_.range(startColumn, endColumn), function(column) {
-        if (studyDataSheet[a1Coordinate(column, 1)]) {
-          return getReferenceValue(studyDataSheet, column, 1, workbook);
-        }
-      });
-    }
-
-    function buildMultiSheetMeasurementMoments(measurementMomentSheet, workbook) {
+    function buildStructuredMeasurementMoments(measurementMomentSheet, workbook) {
       var lastRow = excelUtils.decode_range(measurementMomentSheet['!ref']).e.r;
       return _.map(_.range(1, lastRow + 1), _.partial(readMeasurementMoment, measurementMomentSheet, workbook)); // +2 because zero-indexed and range has open upper end
     }
