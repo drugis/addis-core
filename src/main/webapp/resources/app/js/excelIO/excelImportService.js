@@ -112,9 +112,9 @@ define(['lodash', 'util/context', 'util/constants', 'xlsx-shim'], function(_, ex
         studyNode.has_arm.concat(studyNode.has_included_population), variableColumns);
       studyNode.has_outcome = variables;
       studyNode.has_activity = addStudyDesign(studyNode, workbook);
-      var drugs = buildDrugsAndUnits(workbook.Sheets.Concepts, workbook);
+      var drugsAndUnits = buildDrugsAndUnits(workbook.Sheets.Concepts, workbook);
       var jenaGraph = {
-        '@graph': [].concat(measurementMoments, measurements, studyNode, drugs),
+        '@graph': [].concat(measurementMoments, measurements, studyNode, drugsAndUnits),
         '@context': externalContext
       };
       return jenaGraph;
@@ -149,26 +149,37 @@ define(['lodash', 'util/context', 'util/constants', 'xlsx-shim'], function(_, ex
 
     function buildDrugsAndUnits(conceptSheet, workbook) {
       var lastRow = excelUtils.decode_range(conceptSheet['!ref']).e.r;
-      return _.without(_.map(_.range(1, lastRow + 1), _.partial(readDrugOrUnit, conceptSheet, workbook)), undefined);
+      return _(_.range(1, lastRow + 1))
+        .filter(function(row) {
+          var type = getValue(conceptSheet, 2, row);
+          return type === 'drug' || type == 'unit';
+        })
+        .map(_.partial(readDrugOrUnit, conceptSheet, workbook))
+        .value();
     }
 
     function readDrugOrUnit(conceptSheet, workbook, row) {
       var type = getValue(conceptSheet, 2, row);
+      var mapping = getValueIfPresent(conceptSheet, 3, row);
+      var concept = {};
+      if (mapping) {
+        concept.sameAs = mapping;
+      }
       if (type === 'drug') {
-        return {
+        _.extend(concept, {
           '@id': getValue(conceptSheet, 0, row),
           '@type': 'ontology:Drug',
           label: getValue(conceptSheet, 1, row)
-        };
+        });
       } else if (type === 'unit') {
-        return {
+        _.extend(concept, {
           '@id': getValue(conceptSheet, 0, row),
           '@type': 'ontology:Unit',
           label: getValue(conceptSheet, 1, row),
-          conversionMultiplier: getValue(conceptSheet, 4, row)
-        };
+          conversionMultiplier: getValueIfPresent(conceptSheet, 4, row)
+        });
       }
-      return;
+      return concept;
     }
 
     function buildActivities(activitySheet, workbook) {
@@ -351,9 +362,17 @@ define(['lodash', 'util/context', 'util/constants', 'xlsx-shim'], function(_, ex
         return [n, variableColumnsPlusEnd[index + 1]];
       });
       var variables = _.map(variableColumnBoundaries, function(columns) {
-        return readVariable(studyDataSheet, columns,
+        var variable = readVariable(studyDataSheet, columns,
           getVariableFactory(studyDataSheet, columns, workbook),
           getMeasurementMomentReader(studyDataSheet, workbook));
+        if (workbook && workbook.Sheets.Concepts) {
+          try {
+            variable.of_variable[0].sameAs = getReferenceValueColumnOffset(studyDataSheet, columns[0], 1, 2, workbook);
+          } catch (e) {
+            // no mapping
+          }
+        }
+        return variable;
       });
       return variables;
     }

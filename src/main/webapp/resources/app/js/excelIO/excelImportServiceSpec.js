@@ -477,7 +477,8 @@ define([
         of_variable: [{
           '@type': 'ontology:Variable',
           measurementType: 'ontology:dichotomous',
-          label: 'Bursitis'
+          label: 'Bursitis',
+          sameAs: 'http://trials.drugis.org/concepts/bursitisDatasetUri'
         }],
         is_measured_at: ['http://trials.drugis.org/instances/week12MeasurementMomentUri', 'http://trials.drugis.org/instances/week52MeasurementMomentUri']
       }];
@@ -617,16 +618,19 @@ define([
       return [{
         '@id': 'http://trials.drugis.org/instances/placeboConceptUri',
         '@type': 'ontology:Drug',
-        label: 'Placebo'
-      },{
+        label: 'Placebo',
+        sameAs: 'http://trials.drugis.org/concepts/placeboDatasetUri'
+      }, {
         '@id': 'http://trials.drugis.org/instances/vildaConceptUri',
         '@type': 'ontology:Drug',
-        label: 'Vildagliptin'
-      },{
+        label: 'Vildagliptin',
+        sameAs: 'http://trials.drugis.org/concepts/vildaDatasetUri'
+      }, {
         '@id': 'http://trials.drugis.org/instances/milligramConceptUri',
         '@type': 'ontology:Unit',
         conversionMultiplier: 0.001,
-        label: 'milligram'
+        label: 'milligram',
+        sameAs: 'http://trials.drugis.org/concepts/milligramDatasetUri'
       }];
     }
   });
