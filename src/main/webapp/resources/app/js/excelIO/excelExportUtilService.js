@@ -29,38 +29,56 @@ define(['lodash', 'xlsx-shim'], function(_, XLSX) {
       return $q.all(otherPromises.concat([populationCharacteristics, outcomes, adverseEvents], resultsPromises));
     }
 
-    // build sheets
-    function buildStudyDataSheet(study, studyInformation, studyUrl, arms, epochs, activities, studyDesign,
+    // NB: start of range is always assumed to be constant A1
+    function mergePreservingRange(targetSheet, sourceSheet) {
+      var sourceRange = excelUtils.decode_range(sourceSheet['!ref']);
+      var targetRange = excelUtils.decode_range(targetSheet['!ref']);
+      var maxRow = _.max([sourceRange.e.r, targetRange.e.r]);
+      var maxCol = _.max([sourceRange.e.c, targetRange.e.c]);
+      var resultRange = excelUtils.encode_range({
+        s: {
+          r: 0,
+          c: 0
+        },
+        e: {
+          r: maxRow,
+          c: maxCol
+        }
+      });
+      var ref = {
+        '!ref': resultRange
+      };
+      return _.merge({}, targetSheet, sourceSheet, ref);
+    }
+
+    // ----------- sheet building functions ------------
+    function buildStudyDataSheet(startRows, study, studyInformation, studyUrl, arms, epochs, activities, studyDesign,
       populationInformation, variables, conceptsSheet, measurementMomentSheet) {
+      var startRow = startRows['Study data'];
       var studyDataSheet = initStudyDataSheet();
-      var initialMerges = [
-        cellRange(0, 0, 7, 0),
-        cellRange(8, 0, 9, 0),
-        cellRange(10, 0, 11, 0)
-      ];
+      var studyHeaders = buildStudyHeaders(startRow);
       var armsPlusOverallPopulation = arms.concat({
         armURI: study.has_included_population[0]['@id']
       });
-      var studyData = buildStudyInformation(study, studyInformation, studyUrl);
-      var armData = buildArmData(arms);
-      // var treatmentLabels = buildTreatmentLabels(arms, epochs, activities, studyDesign);
-      var populationInformationData = buildPopulationInformationData(populationInformation);
-      var variablesData = buildVariablesData(variables, armsPlusOverallPopulation, conceptsSheet, measurementMomentSheet);
-      var armMerges = buildArmMerges(armsPlusOverallPopulation);
+      var studyData = buildStudyInformation(startRow, study, studyInformation, studyUrl);
+      var armData = buildArmData(startRow, arms);
+      var populationInformationData = buildPopulationInformationData(startRow, populationInformation);
+      var variablesData = buildVariablesData(startRow, variables, armsPlusOverallPopulation, conceptsSheet, measurementMomentSheet);
+      var armMerges = buildArmMerges(startRow, armsPlusOverallPopulation);
 
-      _.merge(studyDataSheet, studyData, populationInformationData, armData, variablesData);
-      var lastColumn = variables.length ? _(variablesData)
+      _.merge(studyDataSheet, studyHeaders, studyData, populationInformationData, armData, variablesData.data);
+      var lastColumn = variables.length ? _(variablesData.data)
         .keys()
         .map(excelUtils.decode_cell)
         .map('c')
         .max() : 12;
-
-      studyDataSheet['!merges'] = studyDataSheet['!merges'].concat(initialMerges, [cellRange(12, 0, lastColumn, 0)], armMerges);
-      studyDataSheet['!ref'] = 'A1:' + a1Coordinate(lastColumn, 3 + arms.length);
+      studyDataSheet['!merges'] = studyDataSheet['!merges'].concat([cellRange(12, 0, lastColumn, 0)], variablesData.merges, armMerges);
+      studyDataSheet['!ref'] = 'A1:' + a1Coordinate(lastColumn, startRow + 3 + arms.length);
       return studyDataSheet;
     }
 
-    function buildActivitiesSheet(activities, conceptsSheet) {
+    function buildActivitiesSheet(startRows, activities, conceptsSheet) {
+      var startRow = startRows.Activities;
       var doseTypes = {
         'ontology:FixedDoseDrugTreatment': 'fixed',
         'ontology:TitratedDoseDrugTreatment': 'titrated'
@@ -87,7 +105,7 @@ define(['lodash', 'xlsx-shim'], function(_, XLSX) {
       }, {});
 
       var activityData = _.reduce(activities, function(accum, activity, index) {
-        var row = index + 1;
+        var row = startRow + index + 1;
         accum[a1Coordinate(0, row)] = cellValue(activity.activityUri);
         accum[a1Coordinate(1, row)] = cellValue(activity.label);
         accum[a1Coordinate(2, row)] = cellValue(activity.activityType.label);
@@ -96,7 +114,7 @@ define(['lodash', 'xlsx-shim'], function(_, XLSX) {
         if (activity.activityType.uri === 'ontology:TreatmentActivity') {
           _.forEach(activity.treatments, function(treatment, index) {
             var isFixedDose = treatment.treatmentDoseType === 'ontology:FixedDoseDrugTreatment';
-            accum[a1Coordinate(4 + index * 6, row)] = cellFormula('=Concepts!' + _.findKey(conceptsSheet, ['v', treatment.drug.label]));
+            accum[a1Coordinate(4 + index * 6, row)] = cellFormula('=Concepts!' + getTitleReference(conceptsSheet, treatment.drug.uri));
             accum[a1Coordinate(5 + index * 6, row)] = cellValue(doseTypes[treatment.treatmentDoseType]);
             accum[a1Coordinate(6 + index * 6, row)] = cellNumber(isFixedDose ? treatment.fixedValue : treatment.minValue);
             accum[a1Coordinate(7 + index * 6, row)] = cellNumber(isFixedDose ? undefined : treatment.maxValue);
@@ -107,10 +125,11 @@ define(['lodash', 'xlsx-shim'], function(_, XLSX) {
         return accum;
       }, {});
 
-      return _.merge(cellReference('A1:' + a1Coordinate(4 + maxTreatments * 6, activities.length)), sheet, colHeaders, activityData);
+      return _.merge(cellReference('A1:' + a1Coordinate(4 + maxTreatments * 6, startRow + activities.length)), sheet, colHeaders, activityData);
     }
 
-    function buildEpochSheet(epochs) {
+    function buildEpochSheet(startRows, epochs) {
+      var startRow = startRows.Epochs;
       var epochHeaders = {
         A1: cellValue('id'),
         B1: cellValue('name'),
@@ -119,7 +138,7 @@ define(['lodash', 'xlsx-shim'], function(_, XLSX) {
         E1: cellValue('Is primary?')
       };
       var epochData = _.reduce(epochs, function(accum, epoch, index) {
-        var row = index + 2;
+        var row = startRow + index + 2;
         accum['A' + row] = cellValue(epoch.uri);
         accum['B' + row] = cellValue(epoch.label);
         accum['C' + row] = cellValue(epoch.comment);
@@ -128,22 +147,30 @@ define(['lodash', 'xlsx-shim'], function(_, XLSX) {
         return accum;
       }, {});
 
-      return _.merge(cellReference('A1:E' + (epochs.length + 1)), epochHeaders, epochData);
+      return _.merge(cellReference('A1:E' + (startRow + epochs.length + 1)), epochHeaders, epochData);
     }
 
-    function buildStudyDesignSheet(epochs, arms, studyDesign, epochSheet, activitiesSheet, studyDataSheet) {
+    function buildStudyDesignSheet(startRows, epochs, arms, studyDesign, epochSheet, activitiesSheet, studyDataSheet) {
+      var startRow = startRows['Study design'];
       var epochColumnsByUri = {};
       var armRowsByUri = {};
       var epochHeaders = _.reduce(epochs, function(accum, epoch, index) {
         var epochTitleReference = getTitleReference(epochSheet, epoch.uri);
         var column = excelUtils.encode_col(index + 1);
         epochColumnsByUri[epoch.uri] = column;
-        accum[column + 1] = cellFormula('=Epochs!' + epochTitleReference);
+        accum[column + (startRow + 1)] = cellFormula('=Epochs!' + epochTitleReference);
         return accum;
       }, {});
       var armReferences = _.reduce(arms, function(accum, arm, index) {
-        var row = 2 + index;
-        var armReference = _.findKey(studyDataSheet, ['v', arm.label]);
+        var row = startRow + 2 + index;
+        var armCoordinates = _.map(_.range(0, arms.length), function(studyRow) {
+          var datasheetRow = 3 + studyRow + startRows['Study data'];
+          return excelUtils.encode_cell({
+            r: datasheetRow,
+            c: 10 // K column
+          });
+        });
+        var armReference = _.findKey(_.pick(studyDataSheet, armCoordinates), ['v', arm.label]);
         armRowsByUri[arm.armURI] = row;
         accum['A' + row] = cellFormula('=\'Study Data\'!' + armReference);
         return accum;
@@ -156,17 +183,17 @@ define(['lodash', 'xlsx-shim'], function(_, XLSX) {
         return accum;
       }, {});
 
-      var studyDesignSheet = _.merge({
-          A1: cellValue('arm')
-        },
-        epochHeaders, armReferences, activityReferences);
+      var cornerCell = {};
+      cornerCell['A' + (1 + startRow)] = cellValue('arm');
+      var studyDesignSheet = _.merge(cornerCell, epochHeaders, armReferences, activityReferences);
       var lastColumn = excelUtils.encode_col(1 + epochs.length);
-      studyDesignSheet['!ref'] = 'A1:' + lastColumn + (arms.length + 1);
+      studyDesignSheet['!ref'] = 'A1:' + lastColumn + (startRow + arms.length + 1);
 
       return studyDesignSheet;
     }
 
-    function buildMeasurementMomentSheet(measurementMoments, epochSheet) {
+    function buildMeasurementMomentSheet(startRows, measurementMoments, epochSheet) {
+      var startRow = startRows['Measurement moments'];
       var fromTypes = {
         'ontology:anchorEpochStart': 'start',
         'ontology:anchorEpochEnd': 'end'
@@ -180,7 +207,7 @@ define(['lodash', 'xlsx-shim'], function(_, XLSX) {
       };
 
       var measurementMomentData = _.reduce(measurementMoments, function(accum, measurementMoment, index) {
-        var row = index + 2;
+        var row = startRow + index + 2;
         accum['A' + row] = cellValue(measurementMoment.uri);
         accum['B' + row] = cellValue(measurementMoment.label);
         accum['C' + row] = cellFormula('=Epochs!' + _.findKey(epochSheet, ['v', measurementMoment.epochUri]));
@@ -188,10 +215,11 @@ define(['lodash', 'xlsx-shim'], function(_, XLSX) {
         accum['E' + row] = cellValue(measurementMoment.offset);
         return accum;
       }, {});
-      return _.merge(cellReference('A1:E' + (measurementMoments.length + 1)), measurementMomentHeaders, measurementMomentData);
+      return _.merge(cellReference('A1:E' + (startRow + measurementMoments.length + 1)), measurementMomentHeaders, measurementMomentData);
     }
 
-    function buildConceptsSheet(studyConcepts) {
+    function buildConceptsSheet(startRows, studyConcepts) {
+      var startRow = startRows.Concepts;
       var conceptsHeaders = {
         A1: cellValue('id'),
         B1: cellValue('label'),
@@ -201,7 +229,7 @@ define(['lodash', 'xlsx-shim'], function(_, XLSX) {
       };
 
       var conceptsData = _.reduce(studyConcepts, function(accum, concept, index) {
-        var row = index + 2;
+        var row = startRow + index + 2;
         accum['A' + row] = cellValue(concept.uri);
         accum['B' + row] = cellValue(concept.label);
         accum['C' + row] = cellValue(concept.type);
@@ -209,15 +237,15 @@ define(['lodash', 'xlsx-shim'], function(_, XLSX) {
         accum['E' + row] = cellNumber(concept.conversionMultiplier);
         return accum;
       }, {});
-      var ref = cellReference('A1:E' + (studyConcepts.length + 1));
+      var ref = cellReference('A1:E' + (studyConcepts.length + startRow + 1));
       return _.merge({}, ref, conceptsHeaders, conceptsData);
     }
 
-    // assist functions
-    function buildVariablesData(variables, arms, conceptsSheet, measurementMomentSheet) {
+    // ----------- utility functions ----------------
+    function buildVariablesData(startRow, variables, arms, conceptsSheet, measurementMomentSheet) {
       var anchorCell = {
         c: excelUtils.decode_col('M'),
-        r: 1
+        r: 1 + startRow
       };
       var context = {
         arms: arms,
@@ -248,8 +276,10 @@ define(['lodash', 'xlsx-shim'], function(_, XLSX) {
         currentAnchorCol = currentAnchorCol + totalVariableLength;
       });
       var variablesData = arrayToA1FromCoordinate(anchorCell.c, anchorCell.r, variableBlocks);
-      variablesData['!merges'] = merges;
-      return variablesData;
+      return {
+        data: variablesData,
+        merges: merges
+      };
     }
 
     function buildVariableBlock(context, variable) {
@@ -266,7 +296,8 @@ define(['lodash', 'xlsx-shim'], function(_, XLSX) {
         [cellFormula('=Concepts!' + variableReference), cellValue('variable type'), cellValue(variable.type)],
         [undefined, cellValue('measurement type'), cellValue(measurementTypes[variable.measurementType])]
       ];
-      if(hasTimeScaleColumn(variable)) {
+
+      if (hasTimeScaleColumn(variable)) {
         baseColumns.push([undefined, cellValue('time scale'), cellValue(variable.timeScale)]);
       }
       var measuredAtContext = _.merge({
@@ -335,69 +366,79 @@ define(['lodash', 'xlsx-shim'], function(_, XLSX) {
         A1: cellValue('Study Information'),
         I1: cellValue('Population Information'),
         K1: cellValue('Arm Information'),
-        M1: cellValue('Measurement Information'),
-        A3: cellValue('id'),
-        B3: cellValue('addis url'),
-        C3: cellValue('title'),
-        D3: cellValue('group allocation'),
-        E3: cellValue('blinding'),
-        F3: cellValue('status'),
-        G3: cellValue('number of centers'),
-        H3: cellValue('objective'),
-        I3: cellValue('indication'),
-        J3: cellValue('eligibility criteria'),
-        K3: cellValue('title'),
-        L3: cellValue('description')
+        M1: cellValue('Measurement Information')
       };
+      studyDataSheet['!merges'] = [
+        cellRange(0, 0, 7, 0), // Study Information header
+        cellRange(8, 0, 9, 0), // Population information header
+        cellRange(10, 0, 11, 0) // arm information header
+      ];
       return studyDataSheet;
     }
 
-    function buildStudyInformation(study, studyInformation, studyUrl) {
-      return {
-        A4: cellValue(study.label),
-        B4: {
+    function buildStudyHeaders(startRow) {
+      return arrayToA1FromCoordinate(0, startRow + 2, [
+        [cellValue('id')],
+        [cellValue('addis url')],
+        [cellValue('title')],
+        [cellValue('group allocation')],
+        [cellValue('blinding')],
+        [cellValue('status')],
+        [cellValue('number of centers')],
+        [cellValue('objective')],
+        [cellValue('indication')],
+        [cellValue('eligibility criteria')],
+        [cellValue('title')],
+        [cellValue('description')]
+      ]);
+    }
+
+    function buildStudyInformation(startRow, study, studyInformation, studyUrl) {
+      return arrayToA1FromCoordinate(0, startRow + 3, [
+        [cellValue(study.label)],
+        [{
           l: {
             Target: studyUrl
           },
           v: studyUrl
-        },
-        C4: cellValue(study.comment),
-        D4: cellValue(studyInformation.allocation ? GROUP_ALLOCATION_OPTIONS[studyInformation.allocation].label : undefined),
-        E4: cellValue(studyInformation.blinding ? BLINDING_OPTIONS[studyInformation.blinding].label : undefined),
-        F4: cellValue(studyInformation.status ? STATUS_OPTIONS[studyInformation.status].label : undefined),
-        G4: cellNumber(studyInformation.numberOfCenters),
-        H4: cellValue(studyInformation.objective ? studyInformation.objective.comment : undefined)
-      };
+        }],
+        [cellValue(study.comment)],
+        [cellValue(studyInformation.allocation ? GROUP_ALLOCATION_OPTIONS[studyInformation.allocation].label : undefined)],
+        [cellValue(studyInformation.blinding ? BLINDING_OPTIONS[studyInformation.blinding].label : undefined)],
+        [cellValue(studyInformation.status ? STATUS_OPTIONS[studyInformation.status].label : undefined)],
+        [cellNumber(studyInformation.numberOfCenters)],
+        [cellValue(studyInformation.objective ? studyInformation.objective.comment : undefined)]
+      ]);
     }
 
-    function buildArmData(arms) {
+    function buildArmData(startRow, arms) {
       var overallPopulation = {
         label: 'Overall population'
       };
       return _.reduce(arms.concat(overallPopulation), function(acc, arm, idx) {
-        var rowNum = (4 + idx);
+        var rowNum = startRow + 4 + idx;
         acc['K' + rowNum] = cellValue(arm.label);
         acc['L' + rowNum] = cellValue(arm.comment);
         return acc;
       }, {});
     }
 
-    function buildArmMerges(arms) { // vertical merges for all study information across arms
+    function buildArmMerges(startRow, arms) { // vertical merges for all study information across arms
       return _.map(_.range(0, 10), function(i) {
-        return cellRange(i, 3, i, 3 + arms.length - 1);
+        return cellRange(i, startRow + 3, i, startRow + 3 + arms.length - 1);
       });
     }
 
-    function buildPopulationInformationData(populationInformation) {
-      return {
-        I4: cellValue(populationInformation.indication ? populationInformation.indication.label : undefined),
-        J4: cellValue(populationInformation.eligibilityCriteria ? populationInformation.eligibilityCriteria.label : undefined)
-      };
+    function buildPopulationInformationData(startRow, populationInformation) {
+      var populationInformationData = {};
+      populationInformationData['I' + (startRow + 4)] = cellValue(populationInformation.indication ? populationInformation.indication.label : undefined);
+      populationInformationData['J' + (startRow + 4)] = cellValue(populationInformation.eligibilityCriteria ? populationInformation.eligibilityCriteria.label : undefined);
+      return populationInformationData;
     }
 
     function calcNumberOfPropertyColumns(variable) {
       var numberOfColumns = variable.categoryList ? variable.categoryList.length : variable.resultProperties.length;
-      if(hasTimeScaleColumn(variable)) {
+      if (hasTimeScaleColumn(variable)) {
         ++numberOfColumns;
       }
       return numberOfColumns;
@@ -483,6 +524,7 @@ define(['lodash', 'xlsx-shim'], function(_, XLSX) {
     // interface
     return {
       getVariableResults: getVariableResults,
+      mergePreservingRange: mergePreservingRange,
       buildConceptsSheet: buildConceptsSheet,
       buildEpochSheet: buildEpochSheet,
       buildMeasurementMomentSheet: buildMeasurementMomentSheet,

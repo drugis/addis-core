@@ -1,6 +1,6 @@
 'use strict';
 define(['lodash', 'xlsx-shim', 'file-saver'], function(_, XLSX, saveAs) {
-  var dependencies = ['$q', '$stateParams', '$location',
+  var dependencies = ['$q', '$location',
     'GROUP_ALLOCATION_OPTIONS',
     'BLINDING_OPTIONS',
     'STATUS_OPTIONS',
@@ -18,9 +18,9 @@ define(['lodash', 'xlsx-shim', 'file-saver'], function(_, XLSX, saveAs) {
     'EndpointService',
     'AdverseEventService',
     'UnitService',
-    'HistoryResource'
+    'VersionedGraphResource'
   ];
-  var ExcelExportService = function($q, $stateParams, $location,
+  var ExcelExportService = function($q, $location,
     GROUP_ALLOCATION_OPTIONS,
     BLINDING_OPTIONS,
     STATUS_OPTIONS,
@@ -38,18 +38,83 @@ define(['lodash', 'xlsx-shim', 'file-saver'], function(_, XLSX, saveAs) {
     EndpointService,
     AdverseEventService,
     UnitService,
-    HistoryResource
+    VersionedGraphResource
   ) {
     var excelUtils = XLSX.utils;
 
-    function exportStudy() {
-      var promises = [StudyService.getJsonGraph(),
-        HistoryResource.query({
-          userUid: $stateParams.userUid,
-          datasetUuid: $stateParams.datasetUuid
-        }).$promise
-      ];
-      var variablePromises = [PopulationCharacteristicService.queryItems(),
+    function exportStudy(coordinates) {
+      var workBook = buildWorkBook();
+      var startRows = buildStartRows();
+      workBook = appendStudy(workBook, coordinates, startRows);
+      saveWorkBook(workBook, 'whatevrs');
+    }
+
+    function exportDataset(datasetCoordinates, datasetGraphCoordinates) {
+      var workBook = buildWorkBook();
+      var startRows = buildStartRows();
+      excelUtils.book_append_sheet(workBook, {}, 'Dataset information');
+      excelUtils.book_append_sheet(workBook, {}, 'Dataset concepts');
+
+      var studyExportPromises = _.map(datasetGraphCoordinates, function(coordinates) {
+        var studyPromise = VersionedGraphResource.getJson(coordinates).$promise;
+        StudyService.loadJson(studyPromise);
+        return studyPromise.then(function() {
+          workBook = appendStudy(workBook, coordinates, startRows);
+          startRows = updateStartRows(workBook);
+          return true;
+        });
+      });
+      $q.all(studyExportPromises).then(_.partial(saveWorkBook, workBook, datasetCoordinates.title));
+    }
+
+    //private
+    function getStudyUrl(coordinates) {
+      var root = $location.absUrl().split('/users/')[0];
+      return root + '/users/' + coordinates.userUid + '/datasets/' +
+        coordinates.datasetUuid + '/versions/' +
+        coordinates.versionUuid + '/studies/' +
+        coordinates.studyGraphUuid;
+    }
+
+    function buildWorkBook() {
+      var workBook = excelUtils.book_new();
+      excelUtils.book_append_sheet(workBook, {}, 'Study data');
+      excelUtils.book_append_sheet(workBook, {}, 'Activities');
+      excelUtils.book_append_sheet(workBook, {}, 'Epochs');
+      excelUtils.book_append_sheet(workBook, {}, 'Study design');
+      excelUtils.book_append_sheet(workBook, {}, 'Measurement moments');
+      excelUtils.book_append_sheet(workBook, {}, 'Concepts');
+      return workBook;
+    }
+
+    function buildStartRows() {
+      return {
+        'Study data': 0,
+        Activities: 0,
+        Epochs: 0,
+        'Study design': 0,
+        'Measurement moments': 0,
+        Concepts: 0
+      };
+    }
+
+    function updateStartRows(workBook) {
+      return _.reduce(workBook.Sheets, function(accum, sheet, key) {
+        accum[key] = nextStartRow(sheet);
+        return accum;
+      });
+    }
+
+    function nextStartRow(sheet) {
+      var ref = excelUtils.decodeRange(sheet['!ref']);
+      return ref.e.r + 2;
+    }
+
+    function appendStudy(workBook, coordinates, startRows) {
+      var newWorkBook = _.cloneDeep(workBook);
+      var promises = [StudyService.getJsonGraph()];
+      var variablePromises = [
+        PopulationCharacteristicService.queryItems(),
         EndpointService.queryItems(),
         AdverseEventService.queryItems()
       ];
@@ -70,20 +135,20 @@ define(['lodash', 'xlsx-shim', 'file-saver'], function(_, XLSX, saveAs) {
       return $q.all(variablePromises)
         .then(_.partial(ExcelExportUtilService.getVariableResults, promises))
         .then(function(results) {
+          var studyUrl = getStudyUrl(coordinates);
           var study = StudyService.findStudyNode(results[0]);
-          var studyUrl = getStudyUrl(results[1]);
-          var arms = results[2];
-          var studyInformation = results[3][0];
-          var populationInformation = results[4][0];
-          var epochs = results[5];
-          var activities = results[6];
-          var studyDesign = results[7];
-          var measurementMoments = results[8];
-          var drugs = ExcelExportUtilService.addConceptType(results[9], 'drug');
-          var units = ExcelExportUtilService.addConceptType(results[10], 'unit');
-          var populationCharacteristics = results[11];
-          var outcomes = results[12];
-          var adverseEvents = results[13];
+          var arms = results[1];
+          var studyInformation = results[2][0];
+          var populationInformation = results[3][0];
+          var epochs = results[4];
+          var activities = results[5];
+          var studyDesign = results[6];
+          var measurementMoments = results[7];
+          var drugs = ExcelExportUtilService.addConceptType(results[8], 'drug');
+          var units = ExcelExportUtilService.addConceptType(results[9], 'unit');
+          var populationCharacteristics = results[10];
+          var outcomes = results[11];
+          var adverseEvents = results[12];
 
           var resultsByVariableUri = _.keyBy(results.slice(13), 'uri');
           var variables = _.map(populationCharacteristics.concat(outcomes, adverseEvents), function(variable) {
@@ -92,47 +157,38 @@ define(['lodash', 'xlsx-shim', 'file-saver'], function(_, XLSX, saveAs) {
             });
           });
 
-          var workBook = excelUtils.book_new();
-
-          var conceptsSheet = ExcelExportUtilService.buildConceptsSheet(drugs.concat(populationCharacteristics, outcomes, adverseEvents, units));
-          var epochSheet = ExcelExportUtilService.buildEpochSheet(epochs);
-          var measurementMomentSheet = ExcelExportUtilService.buildMeasurementMomentSheet(measurementMoments, epochSheet);
-          var studyDataSheet = ExcelExportUtilService.buildStudyDataSheet(study, studyInformation, studyUrl, arms, epochs, activities, studyDesign,
+          var conceptsSheet = ExcelExportUtilService.buildConceptsSheet(startRows, drugs.concat(populationCharacteristics, outcomes, adverseEvents, units));
+          var epochSheet = ExcelExportUtilService.buildEpochSheet(startRows, epochs);
+          var measurementMomentSheet = ExcelExportUtilService.buildMeasurementMomentSheet(startRows, measurementMoments, epochSheet);
+          var studyDataSheet = ExcelExportUtilService.buildStudyDataSheet(startRows, study, studyInformation, studyUrl, arms, epochs, activities, studyDesign,
             populationInformation, variables, conceptsSheet, measurementMomentSheet);
-          var activitiesSheet = ExcelExportUtilService.buildActivitiesSheet(activities, conceptsSheet);
-          var studyDesignSheet = ExcelExportUtilService.buildStudyDesignSheet(epochs, arms, studyDesign, epochSheet, activitiesSheet, studyDataSheet);
+          var activitiesSheet = ExcelExportUtilService.buildActivitiesSheet(startRows, activities, conceptsSheet);
+          var studyDesignSheet = ExcelExportUtilService.buildStudyDesignSheet(startRows, epochs, arms, studyDesign, epochSheet, activitiesSheet, studyDataSheet);
 
-          excelUtils.book_append_sheet(workBook, studyDataSheet, 'Study data');
-          excelUtils.book_append_sheet(workBook, activitiesSheet, 'Activities');
-          excelUtils.book_append_sheet(workBook, epochSheet, 'Epochs');
-          excelUtils.book_append_sheet(workBook, studyDesignSheet, 'Study design');
-          excelUtils.book_append_sheet(workBook, measurementMomentSheet, 'Measurement moments');
-          excelUtils.book_append_sheet(workBook, conceptsSheet, 'Concepts');
-          var workBookout = XLSX.write(workBook, {
-            bookType: 'xlsx',
-            type: 'array'
-          });
-          saveAs(new Blob([workBookout], {
-            type: 'application/octet-stream'
-          }), study.label + '.xlsx');
+          newWorkBook['Study data'] = ExcelExportUtilService.mergePreservingRange(newWorkBook['Study data'], studyDataSheet);
+          newWorkBook.Activities = ExcelExportUtilService.mergePreservingRange(newWorkBook.Activities, activitiesSheet);
+          newWorkBook.Epochs = ExcelExportUtilService.mergePreservingRange(newWorkBook.Epochs, epochSheet);
+          newWorkBook['Study design'] = ExcelExportUtilService.mergePreservingRange(newWorkBook['Study design'], studyDesignSheet);
+          newWorkBook['Measurement moments'] = ExcelExportUtilService.mergePreservingRange(newWorkBook['Measurement moments'], measurementMomentSheet);
+          newWorkBook.Concepts = ExcelExportUtilService.mergePreservingRange(newWorkBook.Concepts, conceptsSheet);
+          return newWorkBook;
         });
     }
 
-    //private
-    function getStudyUrl(studyHistory) {
-      var studyUrl = $location.absUrl();
-      if ($stateParams.versionUuid) {
-        return studyUrl;
-      }
-      var currentRevisionUri = studyHistory[studyHistory.length - 1].uri;
-      var versionUuid = currentRevisionUri.substr(currentRevisionUri.lastIndexOf('/') + 1);
-      var splitUrl = studyUrl.split('studies/');
-      return splitUrl[0] + 'versions/' + versionUuid + '/studies/' + splitUrl[1];
+    function saveWorkBook(workBook, fileName) {
+      var workBookout = XLSX.write(workBook, {
+        bookType: 'xlsx',
+        type: 'array'
+      });
+      saveAs(new Blob([workBookout], {
+        type: 'application/octet-stream'
+      }), fileName + '.xlsx');
     }
 
     // interface
     return {
-      exportStudy: exportStudy
+      exportStudy: exportStudy,
+      exportDataset: exportDataset
     };
 
   };
