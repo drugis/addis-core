@@ -905,7 +905,7 @@ define(['lodash', 'xlsx-shim', 'angular', 'angular-mocks'], function(_, XLSX) {
           '!ref': 'A1:D5'
         };
 
-        var result = excelExportUtilService.mergePreservingRange(source, target);
+        var result = excelExportUtilService.mergePreservingRange(target,source);
 
         expect(result).toEqual(expectedResult);
       });

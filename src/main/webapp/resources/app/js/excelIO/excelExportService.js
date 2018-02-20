@@ -52,19 +52,40 @@ define(['lodash', 'xlsx-shim', 'file-saver'], function(_, XLSX, saveAs) {
     function exportDataset(datasetCoordinates, datasetGraphCoordinates) {
       var workBook = buildWorkBook();
       var startRows = buildStartRows();
-      excelUtils.book_append_sheet(workBook, {}, 'Dataset information');
-      excelUtils.book_append_sheet(workBook, {}, 'Dataset concepts');
+      // excelUtils.book_append_sheet(workBook, {}, 'Dataset information');
+      // excelUtils.book_append_sheet(workBook, {}, 'Dataset concepts');
 
-      var studyExportPromises = _.map(datasetGraphCoordinates, function(coordinates) {
+      var studyExportPromises = _.reduce(datasetGraphCoordinates, function(accum, studyGraphUri, index) {
+        var coordinates = {
+          userUid: datasetCoordinates.userUid,
+          datasetUuid: datasetCoordinates.datasetUuid,
+          graphUuid: studyGraphUri.graphUri.split('/graphs/')[1],
+          studyGraphUuid: studyGraphUri.graphUri.split('/graphs/')[1],
+          versionUuid: datasetCoordinates.versionUuid
+        };
         var studyPromise = VersionedGraphResource.getJson(coordinates).$promise;
         StudyService.loadJson(studyPromise);
-        return studyPromise.then(function() {
-          workBook = appendStudy(workBook, coordinates, startRows);
+        var studyAndPreviousStudyPromise = [studyPromise];
+        if (index > 0) { // if not the first study, wait for the previous one to finish
+          studyAndPreviousStudyPromise.push(accum[index - 1]);
+        }
+        var appendedWorkbookPromise = $q.all(studyAndPreviousStudyPromise).then(function() {
+          return appendStudy(workBook, coordinates, startRows);
+        });
+        var promises = [studyPromise, appendedWorkbookPromise];
+        if (index > 0) {
+          promises.push(accum[index - 1]);
+        }
+        accum.push($q.all(promises).then(function(result) {
+          workBook = result[1];
           startRows = updateStartRows(workBook);
           return true;
-        });
+        }));
+        return accum;
+      }, []);
+      $q.all(studyExportPromises).then(function() {
+        saveWorkBook(workBook, datasetCoordinates.title);
       });
-      $q.all(studyExportPromises).then(_.partial(saveWorkBook, workBook, datasetCoordinates.title));
     }
 
     //private
@@ -102,11 +123,11 @@ define(['lodash', 'xlsx-shim', 'file-saver'], function(_, XLSX, saveAs) {
       return _.reduce(workBook.Sheets, function(accum, sheet, key) {
         accum[key] = nextStartRow(sheet);
         return accum;
-      });
+      }, {});
     }
 
     function nextStartRow(sheet) {
-      var ref = excelUtils.decodeRange(sheet['!ref']);
+      var ref = excelUtils.decode_range(sheet['!ref']);
       return ref.e.r + 2;
     }
 
@@ -165,12 +186,12 @@ define(['lodash', 'xlsx-shim', 'file-saver'], function(_, XLSX, saveAs) {
           var activitiesSheet = ExcelExportUtilService.buildActivitiesSheet(startRows, activities, conceptsSheet);
           var studyDesignSheet = ExcelExportUtilService.buildStudyDesignSheet(startRows, epochs, arms, studyDesign, epochSheet, activitiesSheet, studyDataSheet);
 
-          newWorkBook['Study data'] = ExcelExportUtilService.mergePreservingRange(newWorkBook['Study data'], studyDataSheet);
-          newWorkBook.Activities = ExcelExportUtilService.mergePreservingRange(newWorkBook.Activities, activitiesSheet);
-          newWorkBook.Epochs = ExcelExportUtilService.mergePreservingRange(newWorkBook.Epochs, epochSheet);
-          newWorkBook['Study design'] = ExcelExportUtilService.mergePreservingRange(newWorkBook['Study design'], studyDesignSheet);
-          newWorkBook['Measurement moments'] = ExcelExportUtilService.mergePreservingRange(newWorkBook['Measurement moments'], measurementMomentSheet);
-          newWorkBook.Concepts = ExcelExportUtilService.mergePreservingRange(newWorkBook.Concepts, conceptsSheet);
+          newWorkBook.Sheets['Study data'] = ExcelExportUtilService.mergePreservingRange(newWorkBook.Sheets['Study data'], studyDataSheet);
+          newWorkBook.Sheets.Activities = ExcelExportUtilService.mergePreservingRange(newWorkBook.Sheets.Activities, activitiesSheet);
+          newWorkBook.Sheets.Epochs = ExcelExportUtilService.mergePreservingRange(newWorkBook.Sheets.Epochs, epochSheet);
+          newWorkBook.Sheets['Study design'] = ExcelExportUtilService.mergePreservingRange(newWorkBook.Sheets['Study design'], studyDesignSheet);
+          newWorkBook.Sheets['Measurement moments'] = ExcelExportUtilService.mergePreservingRange(newWorkBook.Sheets['Measurement moments'], measurementMomentSheet);
+          newWorkBook.Sheets.Concepts = ExcelExportUtilService.mergePreservingRange(newWorkBook.Sheets.Concepts, conceptsSheet);
           return newWorkBook;
         });
     }

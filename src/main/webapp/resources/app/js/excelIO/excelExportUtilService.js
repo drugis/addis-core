@@ -29,10 +29,21 @@ define(['lodash', 'xlsx-shim'], function(_, XLSX) {
       return $q.all(otherPromises.concat([populationCharacteristics, outcomes, adverseEvents], resultsPromises));
     }
 
-    // NB: start of range is always assumed to be constant A1
+    // NB: start of range is always assumed to be constant A1 
+    // targetSheet is the old sheet, sourceSheet is the newly made sheet
     function mergePreservingRange(targetSheet, sourceSheet) {
       var sourceRange = excelUtils.decode_range(sourceSheet['!ref']);
-      var targetRange = excelUtils.decode_range(targetSheet['!ref']);
+      var targetRange;
+      if (targetSheet && targetSheet['!ref']) {
+        targetRange = excelUtils.decode_range(targetSheet['!ref']);
+      } else {
+        targetRange = {
+          e: {
+            r: 0,
+            c: 0
+          }
+        };
+      }
       var maxRow = _.max([sourceRange.e.r, targetRange.e.r]);
       var maxCol = _.max([sourceRange.e.c, targetRange.e.c]);
       var resultRange = excelUtils.encode_range({
