@@ -1,12 +1,16 @@
 'use strict';
 define(['lodash', 'xlsx-shim'], function(_, XLSX) {
-  var dependencies = ['$q',
+  var dependencies = [
+    '$q',
+    '$location',
     'GROUP_ALLOCATION_OPTIONS',
     'BLINDING_OPTIONS',
     'STATUS_OPTIONS',
     'ResultsService'
   ];
-  var ExcelExportService = function($q,
+  var ExcelExportService = function(
+    $q,
+    $location,
     GROUP_ALLOCATION_OPTIONS,
     BLINDING_OPTIONS,
     STATUS_OPTIONS,
@@ -252,8 +256,105 @@ define(['lodash', 'xlsx-shim'], function(_, XLSX) {
       return _.merge({}, ref, conceptsHeaders, conceptsData);
     }
 
+    function buildDatasetInformationSheet(datasetWithCoordinates) {
+      var datasetInfomationHeaders = {
+        A1: cellValue('title'),
+        B1: cellValue('ADDIS url'),
+        C1: cellValue('description'),
+      };
+      var datasetInfomationData = {
+        A2: cellValue(datasetWithCoordinates.title),
+        B2: cellLink(datasetWithCoordinates.url),
+        C2: cellValue(datasetWithCoordinates.comment)
+      };
+      return _.merge({
+        '!ref': 'A1:C2'
+      }, datasetInfomationHeaders, datasetInfomationData);
+    }
+
+    function buildDatasetConceptsSheet(datasetConcepts) {
+      var datasetConceptsHeaders = {
+        A1: cellValue('id'),
+        B1: cellValue('label'),
+        C1: cellValue('type')
+      };
+      var datasetConceptsData = _.reduce(datasetConcepts, function(accum, datasetConcept, index) {
+        var row = index + 2;
+        accum['A' + row] = cellValue(datasetConcept.uri);
+        accum['B' + row] = cellValue(datasetConcept.label);
+        accum['C' + row] = cellValue(datasetConcept.type.label);
+        return accum;
+      }, {});
+      var ref = 'A1:C' + (datasetConcepts.length + 1);
+      return _.merge({
+        '!ref': ref
+      }, datasetConceptsHeaders, datasetConceptsData);
+    }
+
+    function getStudyUrl(root, coordinates) {
+      return root + '/users/' + coordinates.userUid + '/datasets/' +
+        coordinates.datasetUuid + '/versions/' +
+        coordinates.versionUuid + '/studies/' +
+        coordinates.graphUuid;
+    }
+
+    function buildWorkBook() {
+      var workBook = excelUtils.book_new();
+      excelUtils.book_append_sheet(workBook, {}, 'Study data');
+      excelUtils.book_append_sheet(workBook, {}, 'Activities');
+      excelUtils.book_append_sheet(workBook, {}, 'Epochs');
+      excelUtils.book_append_sheet(workBook, {}, 'Study design');
+      excelUtils.book_append_sheet(workBook, {}, 'Measurement moments');
+      excelUtils.book_append_sheet(workBook, {}, 'Concepts');
+      return workBook;
+    }
+
+    function buildStartRows(offset) {
+      return {
+        'Study data': 0,
+        Activities: offset,
+        Epochs: offset,
+        'Study design': offset,
+        'Measurement moments': offset,
+        Concepts: offset
+      };
+    }
+
+    function updateStartRows(workBook) {
+      return _.reduce(workBook.Sheets, function(accum, sheet, sheetName) {
+        accum[sheetName] = nextStartRow(sheet, sheetName);
+        return accum;
+      }, {});
+    }
+
+ 
+    function addStudyHeaders(workBook, startRows) {
+      var newWorkBook = _.cloneDeep(workBook);
+      newWorkBook.Sheets = _.reduce(workBook.Sheets, function(accum, sheet, sheetName) {
+        var newSheet = _.cloneDeep(sheet);
+        if (sheetName !== 'Study data') {
+          newSheet['A' + (startRows[sheetName] + (sheetName === 'Study design' ? 0 : 1))] = cellFormula('=\'Study data\'!A' + (startRows['Study data'] + 4));
+        }
+        accum[sheetName] = newSheet;
+        return accum;
+      }, {});
+      return newWorkBook;
+    }
+
+
     // ----------- utility functions ----------------
-    function buildVariablesData(startRow, variables, arms, conceptsSheet, measurementMomentSheet) {
+    function nextStartRow(sheet, sheetName) {
+      var ref = excelUtils.decode_range(sheet['!ref']);
+      var offset = 2;
+      if (sheetName === 'Study data') {
+        offset = 1;
+      } else if (sheetName === 'Study design') {
+        offset = 3;
+      }
+      return ref.e.r + offset;
+    }
+
+   function buildVariablesData(startRow, variables, arms, conceptsSheet, measurementMomentSheet) {
       var anchorCell = {
         c: excelUtils.decode_col('M'),
         r: 1 + startRow
@@ -407,12 +508,7 @@ define(['lodash', 'xlsx-shim'], function(_, XLSX) {
     function buildStudyInformation(startRow, study, studyInformation, studyUrl) {
       return arrayToA1FromCoordinate(0, startRow + 3, [
         [cellValue(study.label)],
-        [{
-          l: {
-            Target: studyUrl
-          },
-          v: studyUrl
-        }],
+        [cellLink(studyUrl)],
         [cellValue(study.comment)],
         [cellValue(studyInformation.allocation ? GROUP_ALLOCATION_OPTIONS[studyInformation.allocation].label : undefined)],
         [cellValue(studyInformation.blinding ? BLINDING_OPTIONS[studyInformation.blinding].label : undefined)],
@@ -499,6 +595,15 @@ define(['lodash', 'xlsx-shim'], function(_, XLSX) {
       };
     }
 
+    function cellLink(url) {
+      return {
+        v: url,
+        l: {
+          Target: url
+        }
+      };
+    }
+
     function cellRange(startCol, startRow, endCol, endRow) {
       return {
         s: {
@@ -542,8 +647,15 @@ define(['lodash', 'xlsx-shim'], function(_, XLSX) {
       buildStudyDataSheet: buildStudyDataSheet,
       buildActivitiesSheet: buildActivitiesSheet,
       buildStudyDesignSheet: buildStudyDesignSheet,
+      buildDatasetInformationSheet: buildDatasetInformationSheet,
+      buildDatasetConceptsSheet: buildDatasetConceptsSheet,
       addConceptType: addConceptType,
-      arrayToA1FromCoordinate: arrayToA1FromCoordinate
+      arrayToA1FromCoordinate: arrayToA1FromCoordinate,
+      addStudyHeaders: addStudyHeaders,
+      getStudyUrl: getStudyUrl,
+      buildWorkBook: buildWorkBook,
+      buildStartRows: buildStartRows,
+      updateStartRows: updateStartRows
     };
 
   };

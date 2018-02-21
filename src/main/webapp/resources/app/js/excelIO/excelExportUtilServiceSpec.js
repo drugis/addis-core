@@ -1,6 +1,6 @@
 'use strict';
 define(['lodash', 'xlsx-shim', 'angular', 'angular-mocks'], function(_, XLSX) {
-  fdescribe('the excel export util service', function() {
+  describe('the excel export util service', function() {
     var rootScope, q;
     var excelExportUtilService;
     var resultsService = jasmine.createSpyObj('ResultsService', ['queryResults']);
@@ -905,21 +905,181 @@ define(['lodash', 'xlsx-shim', 'angular', 'angular-mocks'], function(_, XLSX) {
           '!ref': 'A1:D5'
         };
 
-        var result = excelExportUtilService.mergePreservingRange(target,source);
+        var result = excelExportUtilService.mergePreservingRange(target, source);
 
         expect(result).toEqual(expectedResult);
       });
     });
 
-    // describe('buildDatasetConceptsSheet', function() {
-    //   it('should generate the activities sheet', function() {
-    //     var expectedResult = {
+    describe('buildDatasetInformationSheet', function() {
+      it('should build a dataset information sheet', function() {
+        var datasetWithCoordinates = {
+          title: 'testDataset',
+          comment: 'dataset for testing',
+          url: 'http://localhost/datasets/1'
+        };
 
-    //     };
-    //     var result = excelExportUtilService.buildDatasetConceptsSheet(startRows, concepts);
-    //     expect(result).toEqual(expectedResult);
-    //   });
-    // });
+        var expectedResult = {
+          A1: cellValue('title'),
+          B1: cellValue('ADDIS url'),
+          C1: cellValue('description'),
+          A2: cellValue(datasetWithCoordinates.title),
+          B2: cellLink(datasetWithCoordinates.url),
+          C2: cellValue(datasetWithCoordinates.comment),
+          '!ref': 'A1:C2'
+        };
+
+        var result = excelExportUtilService.buildDatasetInformationSheet(datasetWithCoordinates);
+        expect(result).toEqual(expectedResult);
+      });
+    });
+
+    describe('buildDatasetConceptsSheet', function() {
+      it('should generate the dataset concepts sheet', function() {
+        var concepts = [{
+          uri: 'http://unitConceptUri',
+          label: 'milligram',
+          type: {
+            label: 'Unit'
+          }
+        }, {
+          uri: 'http://drugConceptUri',
+          label: 'drug 1',
+          type: {
+            label: 'Drug'
+          }
+        }];
+
+        var expectedResult = {
+          A1: cellValue('id'),
+          B1: cellValue('label'),
+          C1: cellValue('type'),
+          A2: cellValue('http://unitConceptUri'),
+          B2: cellValue('milligram'),
+          C2: cellValue('Unit'),
+          A3: cellValue('http://drugConceptUri'),
+          B3: cellValue('drug 1'),
+          C3: cellValue('Drug'),
+          '!ref': 'A1:C3'
+        };
+        var result = excelExportUtilService.buildDatasetConceptsSheet(concepts);
+        expect(result).toEqual(expectedResult);
+      });
+    });
+
+    describe('addStudyHeaders', function() {
+      it('should add study headers to the sheets', function() {
+
+        var startRows = {
+          'Study data': 1,
+          'something': 33,
+          'Study design': 555
+        };
+        var workbook = {
+          Sheets: {
+            'Study data': {
+              foo: 'bar'
+            },
+            'something': {
+              goo: 'car'
+            },
+            'Study design': {
+              hoo: 'dar'
+            }
+          }
+        };
+
+        var expectedResult = {
+          Sheets: {
+            'Study data': {
+              foo: 'bar'
+            },
+            'something': {
+              goo: 'car',
+              A34: cellFormula('=\'Study data\'!A5')
+            },
+            'Study design': {
+              hoo: 'dar',
+              A555: cellFormula('=\'Study data\'!A5')
+            }
+          }
+        };
+
+        var result = excelExportUtilService.addStudyHeaders(workbook, startRows);
+        expect(result).toEqual(expectedResult);
+
+      });
+    });
+
+    describe('getStudyUrl', function() {
+      it('should return the url of the study', function() {
+        var root = 'http://root.com/';
+        var coordinates = {
+          userUid: 1,
+          datasetUuid: 'datasetUuid',
+          versionUuid: 'versionUuid',
+          graphUuid: 'graphUuid'
+        };
+        var result = excelExportUtilService.getStudyUrl(root, coordinates);
+        var expectedResult = 'http://root.com//users/1/datasets/datasetUuid/versions/versionUuid/studies/graphUuid';
+        expect(result).toEqual(expectedResult);
+      });
+    });
+
+    describe('buildStartRows', function() {
+      it('should return the starting rows considering a offset', function() {
+        var offset = 2;
+        var result = excelExportUtilService.buildStartRows(offset);
+        var expectedResult = {
+          'Study data': 0,
+          Activities: 2,
+          Epochs: 2,
+          'Study design': 2,
+          'Measurement moments': 2,
+          Concepts: 2
+        };
+        expect(result).toEqual(expectedResult);
+      });
+    });
+
+    describe('updateStartRows', function() {
+      it('should update the start rows to the last position of each sheet', function() {
+        var workbook = {
+          Sheets: {
+            'Study data': {
+              '!ref': 'A1:D7'
+            },
+            Activities: {
+              '!ref': 'A1:D4'
+            },
+            Epochs: {
+              '!ref': 'A1:D86'
+            },
+            'Study design': {
+              '!ref': 'A1:D31'
+            },
+            'Measurement moments': {
+              '!ref': 'A1:D1'
+            },
+            Concepts: {
+              '!ref': 'A1:D6'
+            }
+          }
+        };
+        var result = excelExportUtilService.updateStartRows(workbook);
+
+        var expectedResult = {
+          'Study data': 7,
+          Activities: 5,
+          Epochs: 87,
+          'Study design': 33,
+          'Measurement moments': 2,
+          Concepts: 7
+        };
+        expect(result).toEqual(expectedResult);
+      });
+    });
+
     function shiftExpectations(expectedResultNoOffset, offset, moveFirstRow) {
       return _(_.cloneDeep(expectedResultNoOffset))
         .toPairs()
@@ -964,6 +1124,15 @@ define(['lodash', 'xlsx-shim', 'angular', 'angular-mocks'], function(_, XLSX) {
         e: {
           c: endCol,
           r: endRow
+        }
+      };
+    }
+
+    function cellLink(url) {
+      return {
+        v: url,
+        l: {
+          Target: url
         }
       };
     }

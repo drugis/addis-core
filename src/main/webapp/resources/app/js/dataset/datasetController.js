@@ -1,15 +1,45 @@
 'use strict';
 define(['lodash'],
   function(_) {
-    var dependencies = ['$scope', '$window', '$stateParams', '$state', '$modal', '$filter', '$q',
-      'DatasetVersionedResource', 'StudiesWithDetailsService', 'HistoryResource', 'ConceptsService',
-      'VersionedGraphResource', 'DatasetResource', 'GraphResource', 'UserService', 'DataModelService',
-      'DatasetService', 'ExcelExportService'
+    var dependencies = [
+      '$scope',
+      '$location',
+      '$stateParams',
+      '$state',
+      '$modal',
+      '$filter',
+      '$q',
+      'DatasetVersionedResource',
+      'StudiesWithDetailsService',
+      'HistoryResource',
+      'ConceptsService',
+      'VersionedGraphResource',
+      'DatasetResource',
+      'GraphResource',
+      'UserService',
+      'DataModelService',
+      'DatasetService',
+      'ExcelExportService'
     ];
-    var DatasetController = function($scope, $window, $stateParams, $state, $modal, $filter, $q,
-      DatasetVersionedResource, StudiesWithDetailsService, HistoryResource, ConceptsService,
-      VersionedGraphResource, DatasetResource, GraphResource, UserService, DataModelService,
-      DatasetService, ExcelExportService
+    var DatasetController = function(
+      $scope,
+      $location,
+      $stateParams,
+      $state,
+      $modal,
+      $filter,
+      $q,
+      DatasetVersionedResource,
+      StudiesWithDetailsService,
+      HistoryResource,
+      ConceptsService,
+      VersionedGraphResource,
+      DatasetResource,
+      GraphResource,
+      UserService,
+      DataModelService,
+      DatasetService,
+      ExcelExportService
     ) {
       // functions
       $scope.createProjectDialog = createProjectDialog;
@@ -20,6 +50,7 @@ define(['lodash'],
       $scope.showTableOptions = showTableOptions;
       $scope.showStudyDialog = showStudyDialog;
       $scope.exportDataset = exportDataset;
+      $scope.loadConcepts = loadConcepts; // do not remove, child controller uses it
 
       // vars
       $scope.userUid = $stateParams.userUid;
@@ -35,7 +66,6 @@ define(['lodash'],
 
       // init
       var studiesWithDetailPromise = loadStudiesWithDetail();
-      $scope.loadConcepts = loadConcepts; // do not remove, child controller uses it
       $scope.datasetConcepts = loadConcepts(); // scope placement for child states
       $scope.datasetConcepts.then(function(concepts) {
         $scope.interventions = _.chain(concepts['@graph'])
@@ -132,20 +162,15 @@ define(['lodash'],
 
       function exportDataset() {
         studiesWithDetailPromise.then(function() {
-          var datasetGraphCoordinates = _.map($scope.studiesWithDetail, function(studyWithDetail) {
-            var graphInformation = {
-              graphUri: studyWithDetail.graphUri
-            };
-            if ($scope.versionUuid) {
-              graphInformation.versionUuid = $scope.versionUuid;
-            }
-            return graphInformation;
+          var graphUuids = _.map($scope.studiesWithDetail, function(studyWithDetail) {
+            return studyWithDetail.graphUri.split('/graphs/')[1];
           });
-          var datasetCoordinates = _.extend({}, $scope.dataset, {
+          var datasetWithCoordinates = _.extend({}, $scope.dataset, {
+            url: $location.absUrl(),
             userUid: $stateParams.userUid,
             versionUuid: $scope.currentRevision.uri.split('/versions/')[1]
           });
-          ExcelExportService.exportDataset(datasetCoordinates, datasetGraphCoordinates);
+          ExcelExportService.exportDataset(datasetWithCoordinates, graphUuids);
         });
       }
 

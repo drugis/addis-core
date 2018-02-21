@@ -20,6 +20,7 @@ define(['angular', 'lodash'],
       $scope.showEditStudyModal = showEditStudyModal;
       $scope.showD80Table = showD80Table;
       $scope.isStudyModified = isStudyModified;
+      $scope.exportStudy = exportStudy;
 
       // init
       $scope.datasetUuid = $stateParams.datasetUuid;
@@ -349,7 +350,6 @@ define(['angular', 'lodash'],
 
         // use the loaded data to fill the view and alert the subviews
         StudyService.getStudy().then(function(study) {
-          $scope.exportStudy = ExcelExportService.exportStudy;
           $scope.studyUuid = $filter('stripFrontFilter')(study['@id'], 'http://trials.drugis.org/studies/');
           $scope.study = {
             id: $scope.studyUuid,
@@ -418,6 +418,16 @@ define(['angular', 'lodash'],
             }
           }
         });
+      }
+
+      function exportStudy() {
+        var coordinates = {
+          userUid: $stateParams.userUid,
+          datasetUuid: $stateParams.datasetUuid,
+          versionUuid: $scope.currentRevision.uri.split('/versions/')[1],
+          graphUuid: $stateParams.studyGraphUuid
+        };
+        ExcelExportService.exportStudy(coordinates);
       }
 
       function calculateNavSettings() {
