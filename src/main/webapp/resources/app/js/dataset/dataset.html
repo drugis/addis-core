@@ -11,9 +11,10 @@
       <div class="cell">
         <button ng-show="hasLoggedInUser" class="button right" type="button" ng-click="createProjectDialog()">Create project</button>
         <h1>{{dataset.title}} 
-          <a title="Export to Excel" ng-click="exportDataset()">
+          <a ng-show="!isExporting" title="Export to Excel" ng-click="exportDataset()">
                   <i class="fa fa-download"></i>
           </a>
+          <i ng-show="isExporting" class="fa fa-spinner fa-spin"></i>
           <a ng-if="isEditingAllowed" title="Edit title and description"
             ng-click="showEditDatasetModal()"><i class="fa fa-edit"></i></a></h1>
         <p>{{dataset.comment}} <a ng-if="isEditingAllowed && dataset.comment" title="Edit title and description"

@@ -161,6 +161,7 @@ define(['lodash'],
       }
 
       function exportDataset() {
+        $scope.isExporting = true;
         studiesWithDetailPromise.then(function() {
           var graphUuids = _.map($scope.studiesWithDetail, function(studyWithDetail) {
             return studyWithDetail.graphUri.split('/graphs/')[1];
@@ -170,7 +171,10 @@ define(['lodash'],
             userUid: $stateParams.userUid,
             versionUuid: $scope.currentRevision.uri.split('/versions/')[1]
           });
-          ExcelExportService.exportDataset(datasetWithCoordinates, graphUuids);
+          return ExcelExportService.exportDataset(datasetWithCoordinates, graphUuids);
+        })
+        .then(function() {
+          $scope.isExporting = false;
         });
       }
 

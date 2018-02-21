@@ -77,11 +77,11 @@ define(['lodash', 'xlsx-shim', 'file-saver'], function(_, XLSX, saveAs) {
         });
       }, initialPromise);
 
-      overallPromise.then(function(workBook) {
+      return overallPromise.then(function(workBook) {
         var datasetInformationSheet = ExcelExportUtilService.buildDatasetInformationSheet(datasetWithCoordinates);
         excelUtils.book_append_sheet(workBook, datasetInformationSheet, 'Dataset information');
 
-        ConceptsService.queryItems().then(function(datasetConcepts) {
+        return ConceptsService.queryItems().then(function(datasetConcepts) {
           var datasetConceptsSheet = ExcelExportUtilService.buildDatasetConceptsSheet(datasetConcepts);
           excelUtils.book_append_sheet(workBook, datasetConceptsSheet, 'Dataset concepts');
           saveWorkBook(workBook, datasetWithCoordinates.title);
