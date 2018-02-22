@@ -6,9 +6,24 @@ define([],
       // functions
       $scope.createDataset = createDataset;
       $scope.cancel = cancel;
-
+      $scope.checkDatasetName = checkDatasetName;
+      $scope.uploadExcel = uploadExcel;
+      $scope.importDataset = importDataset;
+      
       // init
       $scope.dataset = {};
+
+      function checkDatasetName(newName){
+
+      }
+
+      function uploadExcel(){
+
+      }
+
+      function importDataset(){
+
+      }
 
       function createDataset() {
         DatasetResource.save($stateParams, $scope.dataset).$promise.then(function() {
