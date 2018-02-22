@@ -49,6 +49,9 @@ define(['lodash'], function(_) {
       uri: 'ontology:StatusWithdrawn',
       label: 'Withdrawn'
     }, {
+      uri: 'ontology:StatusUnknown',
+      label: 'Unknown'
+    }, {
       uri: 'unknown',
       label: 'Unknown'
     }], 'uri'),

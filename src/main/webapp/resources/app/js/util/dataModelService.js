@@ -38,7 +38,6 @@ define(['angular', 'lodash'], function(angular, _) {
 
       _.forEach(categoryLists, function(categoryList) {
         var currentNode = categoryList;
-
         while (currentNode && currentNode.first) {
           if (!_.startsWith(currentNode.first, INSTANCE_BASE)) {
             var newCategory = makeCategoryInstance(currentNode.first);
@@ -56,17 +55,13 @@ define(['angular', 'lodash'], function(angular, _) {
           currentNode = _.find(graph, ['@id', currentNode.rest]);
         }
       });
-
       data['@graph'] = graph = graph.concat(newCategoryInstances);
-
       graph = _.map(graph, function(node) {
         if (node.category && oldCategoriesByName[node.category]) {
           node.category = oldCategoriesByName[node.category]['@id'];
         }
         return node;
       });
-
-
       return data;
     }
 
@@ -96,7 +91,6 @@ define(['angular', 'lodash'], function(angular, _) {
         }
         return node;
       });
-
       return data;
     }
 
@@ -112,11 +106,44 @@ define(['angular', 'lodash'], function(angular, _) {
       return data;
     }
 
+    function addOverallPopulation(data) {
+      var newPopulationNode;
+      var newGraph = _.map(data['@graph'], function(node) {
+        if (node['@type'] === 'http://trials.drugis.org/ontology#Study' && !node.has_included_population) {
+          var newStudyNode = angular.copy(node);
+          var newPopulationNodeUri = INSTANCE_BASE + UUIDService.generate();
+          newPopulationNode = {
+            '@id': newPopulationNodeUri,
+            '@type': 'ontology:StudyPopulation'
+          };
+          newStudyNode.has_included_population = [newPopulationNodeUri];
+          return newStudyNode;
+        }
+        return node;
+      });
+      if(newPopulationNode) {
+        newGraph.push(newPopulationNode);
+      }
+      return _.extend({}, data, {
+        '@graph': newGraph
+      });
+    }
+
+    function applyOnLoadCorrections(data) {
+      var graphData = normalizeFirstAndRest(data);
+      graphData = updateCategories(graphData);
+      graphData = addTypeToUnits(graphData);
+      graphData = addOverallPopulation(graphData);
+      return graphData;
+    }
+
     return {
       updateCategories: updateCategories,
       normalizeFirstAndRest: normalizeFirstAndRest,
       addTypeToUnits: addTypeToUnits,
-      correctUnitConceptType: correctUnitConceptType
+      correctUnitConceptType: correctUnitConceptType,
+      addOverallPopulation: addOverallPopulation,
+      applyOnLoadCorrections: applyOnLoadCorrections
     };
   };
   return dependencies.concat(DataModelService);

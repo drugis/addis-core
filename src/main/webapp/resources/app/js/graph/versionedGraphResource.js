@@ -29,9 +29,7 @@ define(['util/transformJsonLd', 'util/transformConceptJsonLd'], function(transfo
           },
           transformResponse: function(data) {
             var graphData = JSON.parse(data);
-            graphData = DataModelService.normalizeFirstAndRest(graphData);
-            graphData = DataModelService.updateCategories(graphData);
-            graphData = DataModelService.addTypeToUnits(graphData);
+            graphData = DataModelService.applyOnLoadCorrections(graphData);
             return transformStudyJsonLd(graphData);
           },
           cache: true

@@ -213,5 +213,40 @@ define(['angular', 'angular-mocks', 'util/util'], function() {
         expect(dataModelService.correctUnitConceptType(oldStyleGraph)).toEqual(expectedGraph);
       });
     });
+
+    describe('addOverallPopulation', function() {
+      it('should add an overall population if it was not already on the study', function() {
+        var data = {
+          '@graph': [{
+            '@id': 'dontTouchThis'
+          }, {
+            '@id': 'dontTouchThisEither',
+            '@type': 'http://trials.drugis.org/ontology#Study',
+            has_included_population: 'something'
+          }, {
+            '@type': 'http://trials.drugis.org/ontology#Study'
+          }]
+        };
+        uuidServiceMock.generate.and.returnValue('populationNodeUri');
+        var result = dataModelService.addOverallPopulation(data);
+        var populationNodeUri = 'http://trials.drugis.org/instances/populationNodeUri';
+        var expectedResult = {
+          '@graph': [{
+            '@id': 'dontTouchThis'
+          }, {
+            '@id': 'dontTouchThisEither',
+            '@type': 'http://trials.drugis.org/ontology#Study',
+            has_included_population: 'something'
+          }, {
+            '@type': 'http://trials.drugis.org/ontology#Study',
+            has_included_population: [populationNodeUri]
+          }, {
+            '@id': populationNodeUri,
+            '@type': 'ontology:StudyPopulation'
+          }]
+        };
+        expect(result).toEqual(expectedResult);
+      });
+    });
   });
 });

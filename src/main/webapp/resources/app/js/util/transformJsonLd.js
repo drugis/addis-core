@@ -106,7 +106,7 @@ define(['lodash', 'util/context'], function(_, externalContext) {
         } else {
           listBlankNode = listBlankNode['@id'] ? findAndRemoveFromGraph(listBlankNode['@id']) : findAndRemoveFromGraph(listBlankNode);
           tail['@id'] = listBlankNode['@id'];
-          if (listBlankNode.first['@id']) {
+          if (listBlankNode.first && listBlankNode.first['@id']) {
             tail.first = findAndRemoveFromGraph(listBlankNode.first['@id']);
           } else if (_.isString(listBlankNode.first)) {
             tail.first = findAndRemoveFromGraph(listBlankNode.first);

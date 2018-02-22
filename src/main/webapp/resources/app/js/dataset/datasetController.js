@@ -162,20 +162,24 @@ define(['lodash'],
 
       function exportDataset() {
         $scope.isExporting = true;
-        studiesWithDetailPromise.then(function() {
-          var graphUuids = _.map($scope.studiesWithDetail, function(studyWithDetail) {
-            return studyWithDetail.graphUri.split('/graphs/')[1];
+        studiesWithDetailPromise
+          .then(function() {
+            var graphUuids = _($scope.studiesWithDetail)
+              .sortBy('label')
+              .map(function(studyWithDetail) {
+                return studyWithDetail.graphUri.split('/graphs/')[1];
+              })
+              .value();
+            var datasetWithCoordinates = _.extend({}, $scope.dataset, {
+              url: $location.absUrl(),
+              userUid: $stateParams.userUid,
+              versionUuid: $scope.currentRevision.uri.split('/versions/')[1]
+            });
+            return ExcelExportService.exportDataset(datasetWithCoordinates, graphUuids);
+          })
+          .then(function() {
+            $scope.isExporting = false;
           });
-          var datasetWithCoordinates = _.extend({}, $scope.dataset, {
-            url: $location.absUrl(),
-            userUid: $stateParams.userUid,
-            versionUuid: $scope.currentRevision.uri.split('/versions/')[1]
-          });
-          return ExcelExportService.exportDataset(datasetWithCoordinates, graphUuids);
-        })
-        .then(function() {
-          $scope.isExporting = false;
-        });
       }
 
       function loadStudiesWithDetail() {
