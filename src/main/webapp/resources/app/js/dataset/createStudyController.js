@@ -5,7 +5,6 @@ define(['lodash', 'xlsx-shim'], function(_, XLSX) {
     '$stateParams',
     '$q',
     '$modalInstance',
-    '$timeout',
     'successCallback',
     'StudyService',
     'ImportStudyResource',
@@ -19,7 +18,6 @@ define(['lodash', 'xlsx-shim'], function(_, XLSX) {
     $stateParams,
     $q,
     $modalInstance,
-    $timeout,
     successCallback,
     StudyService,
     ImportStudyResource,
@@ -39,37 +37,18 @@ define(['lodash', 'xlsx-shim'], function(_, XLSX) {
     // init
     $scope.isCreatingStudy = false;
     $scope.importing = false;
-    $scope.isUniqueShortName = true;
+    $scope.isUniqueIdentifier = true;
     $scope.studyImport = {};
     $scope.excelUpload = undefined;
 
     function uploadExcel(uploadedElement) {
-      var file = uploadedElement.files[0];
-      var workbook;
-      $scope.excelUpload = undefined;
-      $scope.errors = [];
-      if (!file) {
-        return;
-      }
-      var reader = new FileReader();
-      reader.onload = function(file) {
-        var data = file.target.result;
-        try {
-          workbook = XLSX.read(data, {
-            type: 'binary'
-          });
-          $scope.errors = ExcelImportService.checkWorkbook(workbook);
-        } catch (error) {
-          $scope.errors.push('Cannot parse excel file: ' + error);
-        }
-        if (!$scope.errors.length) {
-          $scope.excelUpload = workbook;
-          $scope.isValidUpload = true;
-          checkUniqueShortName(workbook.Sheets['Study data'].A4.v);
-        }
-        $timeout(function() {}, 0); // ensures errors are rendered in the html
-      };
-      reader.readAsBinaryString(file);
+      ExcelImportService.uploadExcel(uploadedElement, 
+        $scope, 
+        ExcelImportService.checkSingleStudyWorkbook,
+        function(workbook){
+          return workbook.Sheets['Study data'].A4.v;
+        },
+        _.map($scope.studiesWithDetail, 'label'));
     }
 
     function importExcel() {
@@ -83,7 +62,7 @@ define(['lodash', 'xlsx-shim'], function(_, XLSX) {
     }
 
     function checkUniqueShortName(shortName) {
-      $scope.isUniqueShortName = !_.find($scope.studiesWithDetail, ['label', shortName]);
+      $scope.isUniqueIdentifier = !_.find($scope.studiesWithDetail, ['label', shortName]);
     }
 
     function createStudy(study) {

@@ -1,5 +1,5 @@
 'use strict';
-define([], function() {
+define(['lodash'], function(_) {
   var dependencies = ['$scope', '$modal', '$filter', '$stateParams', '$state', 'DatasetResource', 'UserService'];
 
   var DatasetsController = function($scope, $modal, $filter, $stateParams, $state, DatasetResource, UserService) {
@@ -31,6 +31,9 @@ define([], function() {
         resolve: {
           callback: function() {
             return reloadDatasets;
+          },
+          datasetTitles: function(){
+            return _.map($scope.datasets, 'title');
           }
         }
       });

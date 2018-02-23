@@ -51,8 +51,8 @@ define([
           });
         });
 
-        it('checkWorkbook should not return errors', function() {
-          var result = excelImportService.checkWorkbook(workbook);
+        it('checkSingleStudyWorkbook should not return errors', function() {
+          var result = excelImportService.checkSingleStudyWorkbook(workbook);
           expect(result.length).toBe(0);
         });
 
@@ -150,8 +150,8 @@ define([
           });
         });
 
-        it('checkWorkbook should not return errors', function() {
-          var result = excelImportService.checkWorkbook(workbook);
+        it('checkSingleStudyWorkbook should not return errors', function() {
+          var result = excelImportService.checkSingleStudyWorkbook(workbook);
           expect(result.length).toBe(0);
         });
         it('should create a valid study, including result properties', function() {

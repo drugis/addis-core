@@ -46,11 +46,11 @@
             <input type="text" ng-disabled="!isValidUpload || isCreatingDataset" ng-model="excelUpload.Sheets['Dataset information'].A2.v"
               ng-change="checkDatasetName(excelUpload.Sheets['Dataset information'].A2.v)">
           </div>
-          <div class="cell" ng-show="!isUniqueDatasetName">
+          <div class="cell" ng-show="!isUniqueIdentifier">
             <label class="alert">Dataset name must be unique</label>
           </div>
           <div class="cell">
-            <button class="button success" type="submit" ng-disabled="!excelUpload || isCreatingDataset || errors.length || !isUniqueDatasetName">
+            <button class="button success" type="submit" ng-disabled="!excelUpload || isCreatingDataset || errors.length || !isUniqueIdentifier">
               create
             </button>
           </div>

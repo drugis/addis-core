@@ -3,6 +3,7 @@ define(['lodash', 'util/context', 'util/constants', 'xlsx-shim'], function(_, ex
   var dependencies = [
     '$q',
     '$stateParams',
+    '$timeout',
     'GraphResource',
     'VersionedGraphResource',
     'UUIDService',
@@ -16,6 +17,7 @@ define(['lodash', 'util/context', 'util/constants', 'xlsx-shim'], function(_, ex
   var ExcelImportService = function(
     $q,
     $stateParams,
+    $timeout,
     GraphResource,
     VersionedGraphResource,
     UUIDService,
@@ -63,8 +65,9 @@ define(['lodash', 'util/context', 'util/constants', 'xlsx-shim'], function(_, ex
       uri: 'ontology:anchorEpochStart',
       label: 'start'
     }], 'label');
+    var STUDY_SHEET_NAMES = ['Study data', 'Activities', 'Epochs', 'Study design', 'Measurement moments', 'Concepts'];
 
-    function checkWorkbook(workbook) {
+    function checkSingleStudyWorkbook(workbook) {
       var errors = [];
       if (!workbook.Sheets['Study data']) {
         errors.push('Study data sheet not found');
@@ -83,6 +86,18 @@ define(['lodash', 'util/context', 'util/constants', 'xlsx-shim'], function(_, ex
       var sheetError = checkSheets(workbook);
       if (sheetError) {
         errors.push(sheetError);
+      }
+      return errors;
+    }
+
+    function checkDatasetWorkbook(workbook) {
+      var errors = [];
+      var sheetError = checkDatasetSheets(workbook);
+      if (sheetError) {
+        errors.push(sheetError);
+      }
+      if (!workbook.Sheets['Dataset information'].A2) {
+        errors.push('No dataset title found');
       }
       return errors;
     }
@@ -138,13 +153,112 @@ define(['lodash', 'util/context', 'util/constants', 'xlsx-shim'], function(_, ex
       return jenaGraph;
     }
 
+    function uploadExcel(uploadedElement, scope, validityChecker, getIdentifier, names) {
+      var file = uploadedElement.files[0];
+      var workbook;
+      scope.excelUpload = undefined;
+      scope.errors = [];
+      if (!file) {
+        return;
+      }
+      var reader = new FileReader();
+      reader.onload = function(file) {
+        var data = file.target.result;
+        try {
+          workbook = XLSX.read(data, {
+            type: 'binary'
+          });
+          scope.errors = validityChecker(workbook);
+        } catch (error) {
+          scope.errors.push('Cannot parse excel file: ' + error);
+        }
+        if (!scope.errors.length) {
+          scope.excelUpload = workbook;
+          scope.isValidUpload = true;
+          var identifier = getIdentifier(workbook);
+          scope.isUniqueIdentifier = names.indexOf(identifier) === -1;
+
+        }
+        $timeout(function() {}, 0); // ensures errors are rendered in the html
+      };
+      reader.readAsBinaryString(file);
+    }
+
+    function createDataset(workbook) {
+      var description = workbook.Sheets['Dataset information'].C2 ? workbook.Sheets['Dataset information'].C2.v : undefined;
+      return {
+        title: workbook.Sheets['Dataset information'].A2.v,
+        description: description
+      };
+    }
+
+    function createDatasetStudies(workbook) {
+      // var studyDataSheet = workbook['Study data'];
+      var studyIdCells = getStudyIdCells(workbook);
+      var startRows = getStartRows(workbook, studyIdCells);
+      return _.map(studyIdCells, function(studyIdCell) {
+        return createStructuredStudy(workbook);
+      });
+    }
+
     //private
     function checkSheets(workbook) {
-      var allSheetNames = ['Study data', 'Activities', 'Epochs', 'Study design', 'Measurement moments', 'Concepts'];
       var sheetNames = _.keys(workbook.Sheets);
-      if (_.difference(sheetNames, ['Study data']).length !== 0 && _.difference(sheetNames, allSheetNames).length !== 0) {
-        return 'Excel file should either only have a Study data worksheet, or all required worksheets.';
+      if (_.difference(sheetNames, ['Study data']).length !== 0 && _.difference(sheetNames, STUDY_SHEET_NAMES).length !== 0) {
+        return 'Excel file should either only have a Study data worksheet, or all required worksheets';
       }
+    }
+
+    function checkDatasetSheets(workbook) {
+      var allSheetNames = STUDY_SHEET_NAMES.concat(
+        'Dataset information',
+        'Dataset concepts'
+      );
+      var sheetNames = _.keys(workbook.Sheets);
+      var missingSheets = _.difference(sheetNames, allSheetNames);
+      if (missingSheets.length !== 0) {
+        return 'Missing worksheets: ' + missingSheets.join(', ');
+      }
+    }
+
+    function getStudyIdCells(workbook) {
+      var studyDataSheet = workbook.Sheets['Study data'];
+      var lastRow = excelUtils.decode_range(studyDataSheet['!ref']).e.r;
+      return _(_.range(1, lastRow))
+        .map(function(row) {
+          return {
+            value: studyDataSheet[a1Coordinate(0, row)],
+            coords: {
+              c: 0,
+              r: row,
+              a1: excelUtils.encode_cell(0, row)
+            }
+          };
+        })
+        .filter('value')
+        .filter(function(val, index) {
+          return index % 2 === 1; // remove 'id' cells
+        })
+        .value();
+    }
+
+    function getStartRows(workbook, studyIdCells) {
+      return _.map(studyIdCells, function(studyIdCell) {
+        var startRows = _.reduce(STUDY_SHEET_NAMES.slice(1), function(accum, sheet) { // don't look in the Study data sheet
+          accum[sheet] = findStartRow(workbook.Sheets[sheet], studyIdCell);
+          return accum;
+        }, {
+          'Study data': studyIdCell.coords.r - 2
+        });
+        return startRows;
+      });
+    }
+
+    function findStartRow(sheet, studyIdCell) {
+      var lastRow = excelUtils.decode_range(sheet['!ref']).e.r;
+      return _.find(_.range(0, lastRow), function(row) {
+        return sheet[a1Coordinate(0, row)] && sheet[a1Coordinate(0, row)].f === '=\'Study data\'!' + studyIdCell.coords.a1;
+      });
     }
 
     function buildDrugsAndUnits(conceptSheet, workbook) {
@@ -152,7 +266,7 @@ define(['lodash', 'util/context', 'util/constants', 'xlsx-shim'], function(_, ex
       return _(_.range(1, lastRow + 1))
         .filter(function(row) {
           var type = getValue(conceptSheet, 2, row);
-          return type === 'drug' || type == 'unit';
+          return type === 'drug' || type === 'unit';
         })
         .map(_.partial(readDrugOrUnit, conceptSheet, workbook))
         .value();
@@ -656,9 +770,12 @@ define(['lodash', 'util/context', 'util/constants', 'xlsx-shim'], function(_, ex
 
     // interface
     return {
-      checkWorkbook: checkWorkbook,
+      checkSingleStudyWorkbook: checkSingleStudyWorkbook,
+      checkDatasetWorkbook: checkDatasetWorkbook,
       createStudy: createStudy,
-      commitStudy: commitStudy
+      commitStudy: commitStudy,
+      uploadExcel: uploadExcel,
+      createDataset: createDataset
     };
 
   };
