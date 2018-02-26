@@ -104,16 +104,24 @@ define(['lodash', 'util/context', 'util/constants', 'xlsx-shim'], function(_, ex
 
     function createStudy(workbook) {
       if (workbook.Sheets.Concepts) { //At this point we already know the workbook either has all sheets, or only study data
-        return createStructuredStudy(workbook);
+        var startRows = {
+          'Study data': 4,
+          'Activities': 1,
+          'Epochs': 1,
+          'Study design': 0,
+          'Measurement moments': 1,
+          'Concepts': 1
+        };
+        return createStructuredStudy(workbook, startRows);
       } else {
         return createSimpleStudy(workbook);
       }
     }
 
-    function createStructuredStudy(workbook) {
+    function createStructuredStudy(workbook, startRows) {
       var studyDataSheet = workbook.Sheets['Study data'];
       var measurementMomentSheet = workbook.Sheets['Measurement moments'];
-      var epochs = buildEpochs(workbook.Sheets.Epochs);
+      var epochs = buildEpochs(workbook.Sheets.Epochs, startRows.Epochs);
       var primaryEpoch = _.find(epochs, ['isPrimary', 'true']);
       epochs = _(epochs).map(_.partialRight(_.omit, 'isPrimary')).value();
       var measurementMoments = buildStructuredMeasurementMoments(measurementMomentSheet, workbook);
@@ -138,13 +146,13 @@ define(['lodash', 'util/context', 'util/constants', 'xlsx-shim'], function(_, ex
     function createSimpleStudy(workbook) {
       var studyDataSheet = workbook.Sheets['Study data'];
       var epochs = buildEpochs(workbook.Sheets.Epochs);
-      var studyNode = readStudy(studyDataSheet, epochs);
+      var studyNode = readStudy(studyDataSheet, epochs, 4);
       studyNode.has_primary_epoch = epochs[0]['@id'];
-      var variableColumns = findVariableStartColumns(studyDataSheet);
-      var variables = readVariables(studyDataSheet, variableColumns);
+      var variableColumns = findVariableStartColumns(studyDataSheet, 4);
+      var variables = readVariables(studyDataSheet, variableColumns, 4);
       var measurementMoments = buildSingleSheetMeasurementMoments(variables, epochs);
       variables = measurementMomentLabelToUri(variables, measurementMoments);
-      var measurements = readMeasurements(studyDataSheet, variables, studyNode.has_arm.concat(studyNode.has_included_population), variableColumns);
+      var measurements = readMeasurements(studyDataSheet, variables, studyNode.has_arm.concat(studyNode.has_included_population), variableColumns, 4);
       studyNode.has_outcome = variables;
       var jenaGraph = {
         '@graph': [].concat(measurementMoments, measurements, studyNode),
@@ -196,8 +204,8 @@ define(['lodash', 'util/context', 'util/constants', 'xlsx-shim'], function(_, ex
       // var studyDataSheet = workbook['Study data'];
       var studyIdCells = getStudyIdCells(workbook);
       var startRows = getStartRows(workbook, studyIdCells);
-      return _.map(studyIdCells, function(studyIdCell) {
-        return createStructuredStudy(workbook);
+      return _.map(startRows, function(startRow) {
+        return createStructuredStudy(workbook, startRow);
       });
     }
 
@@ -231,7 +239,7 @@ define(['lodash', 'util/context', 'util/constants', 'xlsx-shim'], function(_, ex
             coords: {
               c: 0,
               r: row,
-              a1: excelUtils.encode_cell(0, row)
+              a1: a1Coordinate(0, row)
             }
           };
         })
@@ -257,7 +265,14 @@ define(['lodash', 'util/context', 'util/constants', 'xlsx-shim'], function(_, ex
     function findStartRow(sheet, studyIdCell) {
       var lastRow = excelUtils.decode_range(sheet['!ref']).e.r;
       return _.find(_.range(0, lastRow), function(row) {
-        return sheet[a1Coordinate(0, row)] && sheet[a1Coordinate(0, row)].f === '=\'Study data\'!' + studyIdCell.coords.a1;
+        var targetFormula;
+        if (sheet[a1Coordinate(0, row)] && sheet[a1Coordinate(0, row)].f) {
+          targetFormula = sheet[a1Coordinate(0, row)].f;
+          if (targetFormula[0] === '=') {
+            targetFormula = targetFormula.split('=')[1];
+          }
+        }
+        return targetFormula === '\'Study data\'!' + studyIdCell.coords.a1;
       });
     }
 
@@ -425,7 +440,7 @@ define(['lodash', 'util/context', 'util/constants', 'xlsx-shim'], function(_, ex
         .value();
     }
 
-    function buildEpochs(epochSheet) {
+    function buildEpochs(epochSheet, startRow) {
       if (!epochSheet) {
         return [{
           '@id': INSTANCE_PREFIX + UUIDService.generate(),
@@ -434,8 +449,11 @@ define(['lodash', 'util/context', 'util/constants', 'xlsx-shim'], function(_, ex
           duration: 'PT0S'
         }];
       } else {
-        var lastRow = excelUtils.decode_range(epochSheet['!ref']).e.r;
-        return _.map(_.range(1, lastRow + 1), _.partial(readEpoch, epochSheet)); // +2 because zero-indexed and range has open upper end
+        var lastRow = startRow;
+        while (epochSheet[a1Coordinate(0, lastRow)]) {
+          lastRow++;
+        } // one more because _.range goes until, not including its second parameter 
+        return _.map(_.range(startRow+1, lastRow), _.partial(readEpoch, epochSheet)); //+1 as first row is study header
       }
     }
 
@@ -447,7 +465,7 @@ define(['lodash', 'util/context', 'util/constants', 'xlsx-shim'], function(_, ex
         duration: getValue(epochSheet, 3, row),
         isPrimary: getValue(epochSheet, 4, row)
       };
-      assignIfPresent('comment', epochSheet, 2, row);
+      assignIfPresent(epoch,'comment', epochSheet, 2, row);
       return epoch;
     }
 
@@ -775,7 +793,8 @@ define(['lodash', 'util/context', 'util/constants', 'xlsx-shim'], function(_, ex
       createStudy: createStudy,
       commitStudy: commitStudy,
       uploadExcel: uploadExcel,
-      createDataset: createDataset
+      createDataset: createDataset,
+      createDatasetStudies: createDatasetStudies
     };
 
   };

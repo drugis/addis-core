@@ -51,18 +51,22 @@ define(['lodash'],
         $scope.dataset = ExcelImportService.createDataset($scope.excelUpload);
         var studies = ExcelImportService.createDatasetStudies($scope.excelUpload);
         var concepts = ExcelImportService.createDatasetConcepts($scope.excelUpload);
-        DatasetResource.save($stateParams, $scope.dataset).$promise.then(function() {
-          var studiePromises = _.map(studies, function(study) {
-            return ExcelImportService.commitStudy(study);
-          });
-          var conceptPromise = ConceptService.commit(concepts); //FIXME
+        // DatasetResource.save($stateParams, $scope.dataset).$promise.then(function() {
+        //   var studiePromises = _.map(studies, function(study) {
+        //     return ExcelImportService.commitStudy(study);
+        //   });
+
+        //   _.forEach(concepts, function(concept){
+        //     ConceptService.addItem(concept);
+        //   });
+        //   var conceptPromise = ConceptService.commit(concepts); //FIXME
           
-          $q.all(studiePromises.concat(conceptPromise)).then(function() {
-            $scope.isCreatingDataset = false;
-            callback();
-            $modalInstance.close();
-          });
-        });
+        //   $q.all(studiePromises.concat(conceptPromise)).then(function() {
+        //     $scope.isCreatingDataset = false;
+        //     callback();
+        //     $modalInstance.close();
+        //   });
+        // });
       }
 
       function createDataset() {
