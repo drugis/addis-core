@@ -105,12 +105,12 @@ define(['lodash', 'util/context', 'util/constants', 'xlsx-shim'], function(_, ex
     function createStudy(workbook) {
       if (workbook.Sheets.Concepts) { //At this point we already know the workbook either has all sheets, or only study data
         var startRows = {
-          'Study data': 4,
-          'Activities': 1,
-          'Epochs': 1,
+          'Study data': 1,
+          'Activities': 0,
+          'Epochs': 0,
           'Study design': 0,
-          'Measurement moments': 1,
-          'Concepts': 1
+          'Measurement moments': 0,
+          'Concepts': 0
         };
         return createStructuredStudy(workbook, startRows);
       } else {
@@ -124,18 +124,18 @@ define(['lodash', 'util/context', 'util/constants', 'xlsx-shim'], function(_, ex
       var epochs = buildEpochs(workbook.Sheets.Epochs, startRows.Epochs);
       var primaryEpoch = _.find(epochs, ['isPrimary', 'true']);
       epochs = _(epochs).map(_.partialRight(_.omit, 'isPrimary')).value();
-      var measurementMoments = buildStructuredMeasurementMoments(measurementMomentSheet, workbook);
+      var measurementMoments = buildStructuredMeasurementMoments(measurementMomentSheet, workbook, startRows['Measurement moments']);
 
-      var studyNode = readStudy(studyDataSheet, epochs);
+      var studyNode = readStudy(studyDataSheet, epochs, startRows['Study data']);
       studyNode.has_primary_epoch = primaryEpoch ? primaryEpoch['@id'] : undefined;
-      studyNode.has_activity = buildActivities(workbook.Sheets.Activities, workbook);
-      var variableColumns = findVariableStartColumns(studyDataSheet);
-      var variables = readVariables(studyDataSheet, variableColumns, workbook);
+      studyNode.has_activity = buildActivities(workbook.Sheets.Activities, workbook, startRows.Activities);
+      var variableColumns = findVariableStartColumns(studyDataSheet, startRows['Study data']);
+      var variables = readVariables(studyDataSheet, variableColumns, workbook, startRows['Study data']);
       var measurements = readMeasurements(studyDataSheet, variables,
-        studyNode.has_arm.concat(studyNode.has_included_population), variableColumns);
+        studyNode.has_arm.concat(studyNode.has_included_population), variableColumns, startRows['Study data']);
       studyNode.has_outcome = variables;
-      studyNode.has_activity = addStudyDesign(studyNode, workbook);
-      var drugsAndUnits = buildDrugsAndUnits(workbook.Sheets.Concepts, workbook);
+      studyNode.has_activity = addStudyDesign(studyNode, workbook, startRows['Study design']);
+      var drugsAndUnits = buildDrugsAndUnits(workbook.Sheets.Concepts, workbook, startRows.Concepts);
       var jenaGraph = {
         '@graph': [].concat(measurementMoments, measurements, studyNode, drugsAndUnits),
         '@context': externalContext
@@ -145,15 +145,15 @@ define(['lodash', 'util/context', 'util/constants', 'xlsx-shim'], function(_, ex
 
     function createSimpleStudy(workbook) {
       var studyDataSheet = workbook.Sheets['Study data'];
-      var epochs = buildEpochs(workbook.Sheets.Epochs);
-      var studyNode = readStudy(studyDataSheet, epochs, 4);
+      var epochs = buildEpochs();
+      var studyNode = readStudy(studyDataSheet, epochs, 1);
       studyNode.has_primary_epoch = epochs[0]['@id'];
-      var variableColumns = findVariableStartColumns(studyDataSheet, 4);
-      var variables = readVariables(studyDataSheet, variableColumns, 4);
+      var variableColumns = findVariableStartColumns(studyDataSheet, 1);
+      var variables = readVariables(studyDataSheet, variableColumns, workbook, 1);
       var measurementMoments = buildSingleSheetMeasurementMoments(variables, epochs);
       variables = measurementMomentLabelToUri(variables, measurementMoments);
-      var measurements = readMeasurements(studyDataSheet, variables, studyNode.has_arm.concat(studyNode.has_included_population), variableColumns, 4);
       studyNode.has_outcome = variables;
+      var measurements = readMeasurements(studyDataSheet, variables, studyNode.has_arm.concat(studyNode.has_included_population), variableColumns, 1);
       var jenaGraph = {
         '@graph': [].concat(measurementMoments, measurements, studyNode),
         '@context': externalContext
@@ -207,6 +207,26 @@ define(['lodash', 'util/context', 'util/constants', 'xlsx-shim'], function(_, ex
       return _.map(startRows, function(startRow) {
         return createStructuredStudy(workbook, startRow);
       });
+    }
+
+    function createDatasetConcepts(workbook) {
+      var conceptTypes = {
+        Variable: 'ontology:Variable',
+        Unit: 'ontology:Unit',
+        Drug: 'ontology:Drug'
+      };
+      var datasetConceptsSheet = workbook.Sheets['Dataset concepts'];
+      var concepts = [];
+      var index = 1;
+      while (datasetConceptsSheet[a1Coordinate(0, index)]) {
+        concepts.push({
+          label: datasetConceptsSheet[a1Coordinate(1, index)].v,
+          '@id': datasetConceptsSheet[a1Coordinate(0, index)].v,
+          '@type': conceptTypes[datasetConceptsSheet[a1Coordinate(2, index)].v]
+        });
+        ++index;
+      }
+      return concepts;
     }
 
     //private
@@ -276,9 +296,12 @@ define(['lodash', 'util/context', 'util/constants', 'xlsx-shim'], function(_, ex
       });
     }
 
-    function buildDrugsAndUnits(conceptSheet, workbook) {
-      var lastRow = excelUtils.decode_range(conceptSheet['!ref']).e.r;
-      return _(_.range(1, lastRow + 1))
+    function buildDrugsAndUnits(conceptSheet, workbook, startRow) {
+      var lastRow = startRow;
+      while (conceptSheet[a1Coordinate(0, lastRow)]) {
+        lastRow++;
+      } // one more because _.range goes until, not including its second parameter 
+      return _(_.range(startRow + 1, lastRow))
         .filter(function(row) {
           var type = getValue(conceptSheet, 2, row);
           return type === 'drug' || type === 'unit';
@@ -311,10 +334,12 @@ define(['lodash', 'util/context', 'util/constants', 'xlsx-shim'], function(_, ex
       return concept;
     }
 
-    function buildActivities(activitySheet, workbook) {
-      var lastRow = excelUtils.decode_range(activitySheet['!ref']).e.r;
-      return _.map(_.range(1, lastRow + 1), _.partial(readActivity, activitySheet, workbook)); // +2 because zero-indexed and range has open upper end
-
+    function buildActivities(activitySheet, workbook, startRow) {
+      var lastRow = startRow;
+      while (activitySheet[a1Coordinate(0, lastRow)]) {
+        lastRow++;
+      } // one more because _.range goes until, not including its second parameter 
+      return _.map(_.range(startRow + 1, lastRow), _.partial(readActivity, activitySheet, workbook)); // +2 because zero-indexed and range has open upper end
     }
 
     function readActivity(activitySheet, workbook, row) {
@@ -366,48 +391,54 @@ define(['lodash', 'util/context', 'util/constants', 'xlsx-shim'], function(_, ex
       }];
     }
 
-    function addStudyDesign(studyNode, workbook) {
+    function addStudyDesign(studyNode, workbook, startRow) {
       var studyDesignSheet = workbook.Sheets['Study design'];
       return _.map(studyNode.has_activity, function(activity) {
-        var applicationsForActivity = _.reduce(studyDesignSheet, function(accum, cell, cellKey) {
-          var decodedCell = excelUtils.decode_cell(cellKey);
-          var offset = decodedCell.c === 0 ? 0 : -1; // First row contains arms, they do not need an offset 
-          if (cell.f && getReferenceValueColumnOffset(studyDesignSheet, decodedCell.c, decodedCell.r, offset, workbook) === activity['@id']) {
-            accum.push(decodedCell);
+        var rowOffset = workbook.Sheets['Dataset information'] ? 1 : 0; // Dataset or single study
+        var rowIndex = startRow + rowOffset;
+        var applicationsForActivity = [];
+        while (studyDesignSheet[a1Coordinate(0, rowIndex)]) {
+          var columnIndex = 0;
+          while (studyDesignSheet[a1Coordinate(columnIndex, rowIndex)]) {
+            var offset = columnIndex === 0 ? 0 : -1;
+            if (studyDesignSheet[a1Coordinate(columnIndex, rowIndex)].f &&
+              getReferenceValueColumnOffset(studyDesignSheet, columnIndex, rowIndex, offset, workbook) === activity['@id']) {
+              applicationsForActivity.push({
+                c: columnIndex,
+                r: rowIndex
+              });
+            }
+            columnIndex++;
           }
-          return accum;
-        }, []);
+          rowIndex++;
+        }
 
         return _.merge({}, activity, {
           has_activity_application: _.map(applicationsForActivity, function(applicationCell) {
             return {
               '@id': INSTANCE_PREFIX + UUIDService.generate(),
-              applied_in_epoch: getReferenceValueColumnOffset(studyDesignSheet, applicationCell.c, 0, -1, workbook),
-              applied_to_arm: _.find(studyNode.has_arm, ['label', getReferenceValueColumnOffset(studyDesignSheet, 0, applicationCell.r, 0, workbook)])['@id']
+              applied_in_epoch: getReferenceValueColumnOffset(studyDesignSheet, applicationCell.c, startRow + rowOffset, -1, workbook),
+              applied_to_arm: _.find(studyNode.has_arm, ['label', getReferenceValueColumnOffset(studyDesignSheet, startRow + rowOffset, applicationCell.r, 0, workbook)])['@id']
             };
           })
         });
       });
     }
 
-    function assignIfPresent(object, field, sheet, column, row) {
-      var value = getValueIfPresent(sheet, column, row);
-      if (value) {
-        object[field] = value;
-      }
-    }
-
-    function findVariableStartColumns(studyDataSheet) {
+    function findVariableStartColumns(studyDataSheet, startRow) {
       var startColumn = 12; // =>'M'
       var endColumn = XLSX.utils.decode_range(studyDataSheet['!ref']).e.c;
       return _.filter(_.range(startColumn, endColumn), function(column) {
-        return studyDataSheet[a1Coordinate(column, 1)];
+        return studyDataSheet[a1Coordinate(column, startRow)];
       });
     }
 
-    function buildStructuredMeasurementMoments(measurementMomentSheet, workbook) {
-      var lastRow = excelUtils.decode_range(measurementMomentSheet['!ref']).e.r;
-      return _.map(_.range(1, lastRow + 1), _.partial(readMeasurementMoment, measurementMomentSheet, workbook)); // +2 because zero-indexed and range has open upper end
+    function buildStructuredMeasurementMoments(measurementMomentSheet, workbook, startRow) {
+      var lastRow = startRow;
+      while (measurementMomentSheet[a1Coordinate(0, lastRow)]) {
+        lastRow++;
+      } // one more because _.range goes until, not including its second parameter 
+      return _.map(_.range(startRow + 1, lastRow), _.partial(readMeasurementMoment, measurementMomentSheet, workbook));
     }
 
     function readMeasurementMoment(measurementMomentSheet, workbook, row) {
@@ -453,7 +484,7 @@ define(['lodash', 'util/context', 'util/constants', 'xlsx-shim'], function(_, ex
         while (epochSheet[a1Coordinate(0, lastRow)]) {
           lastRow++;
         } // one more because _.range goes until, not including its second parameter 
-        return _.map(_.range(startRow+1, lastRow), _.partial(readEpoch, epochSheet)); //+1 as first row is study header
+        return _.map(_.range(startRow + 1, lastRow), _.partial(readEpoch, epochSheet)); //+1 as first row is study header
       }
     }
 
@@ -465,7 +496,7 @@ define(['lodash', 'util/context', 'util/constants', 'xlsx-shim'], function(_, ex
         duration: getValue(epochSheet, 3, row),
         isPrimary: getValue(epochSheet, 4, row)
       };
-      assignIfPresent(epoch,'comment', epochSheet, 2, row);
+      assignIfPresent(epoch, 'comment', epochSheet, 2, row);
       return epoch;
     }
 
@@ -487,19 +518,22 @@ define(['lodash', 'util/context', 'util/constants', 'xlsx-shim'], function(_, ex
       });
     }
 
-    function readVariables(studyDataSheet, variableColumns, workbook) {
+    function readVariables(studyDataSheet, variableColumns, workbook, startRow) {
       var endColumn = XLSX.utils.decode_range(studyDataSheet['!ref']).e.c + 1;
       var variableColumnsPlusEnd = variableColumns.concat(endColumn); // add end column for last variable
       var variableColumnBoundaries = _.map(variableColumnsPlusEnd.slice(0, variableColumnsPlusEnd.length - 1), function(n, index) {
         return [n, variableColumnsPlusEnd[index + 1]];
       });
       var variables = _.map(variableColumnBoundaries, function(columns) {
-        var variable = readVariable(studyDataSheet, columns,
-          getVariableFactory(studyDataSheet, columns, workbook),
-          getMeasurementMomentReader(studyDataSheet, workbook));
+        var variable = readVariable(
+          studyDataSheet,
+          columns,
+          getVariableFactory(studyDataSheet, columns, workbook, startRow),
+          getMeasurementMomentReader(studyDataSheet, workbook, startRow),
+          startRow);
         if (workbook && workbook.Sheets.Concepts) {
           try {
-            variable.of_variable[0].sameAs = getReferenceValueColumnOffset(studyDataSheet, columns[0], 1, 2, workbook);
+            variable.of_variable[0].sameAs = getReferenceValueColumnOffset(studyDataSheet, columns[0], startRow, 2, workbook);
           } catch (e) {
             // no mapping
           }
@@ -509,48 +543,48 @@ define(['lodash', 'util/context', 'util/constants', 'xlsx-shim'], function(_, ex
       return variables;
     }
 
-    function getVariableFactory(studyDataSheet, columns, workbook) {
+    function getVariableFactory(studyDataSheet, columns, workbook, startRow) {
       if (workbook && workbook.Sheets.Concepts) {
         return function() {
           return {
-            '@id': getReferenceValueColumnOffset(studyDataSheet, columns[0], 1, -1, workbook),
-            '@type': findOntology(VARIABLE_TYPES, getValueIfPresent(studyDataSheet, columns[0], 3)),
-            label: getReferenceValue(studyDataSheet, columns[0], 1, workbook)
+            '@id': getReferenceValueColumnOffset(studyDataSheet, columns[0], startRow, -1, workbook),
+            '@type': findOntology(VARIABLE_TYPES, getValueIfPresent(studyDataSheet, columns[0], startRow + 2)),
+            label: getReferenceValue(studyDataSheet, columns[0], startRow, workbook)
           };
         };
       } else {
         return function() {
           return {
             '@id': INSTANCE_PREFIX + UUIDService.generate(),
-            '@type': findOntology(VARIABLE_TYPES, getValueIfPresent(studyDataSheet, columns[0], 3)),
-            label: getValueIfPresent(studyDataSheet, columns[0], 1)
+            '@type': findOntology(VARIABLE_TYPES, getValueIfPresent(studyDataSheet, columns[0], startRow + 2)),
+            label: getValueIfPresent(studyDataSheet, columns[0], startRow)
           };
         };
       }
     }
 
-    function getMeasurementMomentReader(studyDataSheet, workbook) {
+    function getMeasurementMomentReader(studyDataSheet, workbook, startRow) {
       if (workbook && workbook.Sheets.Concepts) {
         return function(column) {
-          return getReferenceValueColumnOffset(studyDataSheet, column, 3, -1, workbook);
+          return getReferenceValueColumnOffset(studyDataSheet, column, startRow + 2, -1, workbook);
         };
       } else {
         return function(column) {
-          return getValueIfPresent(studyDataSheet, column, 3);
+          return getValueIfPresent(studyDataSheet, column, startRow + 2);
         };
       }
     }
 
-    function readVariable(studyDataSheet, columns, variableFactory, measurementMomentReader) {
+    function readVariable(studyDataSheet, columns, variableFactory, measurementMomentReader, startRow) {
       var newVariable = variableFactory();
-      var measurementType = MEASUREMENT_TYPES[getValueIfPresent(studyDataSheet, columns[0] + 1, 3)].uri;
+      var measurementType = MEASUREMENT_TYPES[getValueIfPresent(studyDataSheet, columns[0] + 1, startRow + 2)].uri;
       var ofVariable = {
         '@type': 'ontology:Variable',
         measurementType: measurementType,
         label: newVariable.label
       };
       if (measurementType === MEASUREMENT_TYPES.categorical.uri) {
-        var categoryNames = readDataColumnNames(studyDataSheet, columns, _.identity);
+        var categoryNames = readDataColumnNames(studyDataSheet, columns, _.identity, startRow);
         var categories = _.map(categoryNames, function(categoryName) {
           return {
             '@id': INSTANCE_PREFIX + UUIDService.generate(),
@@ -562,20 +596,20 @@ define(['lodash', 'util/context', 'util/constants', 'xlsx-shim'], function(_, ex
       } else {
         newVariable.has_result_property = readDataColumnNames(studyDataSheet, columns, function(propertyName) {
           return ONTOLOGY_PREFIX + propertyName;
-        });
+        }, startRow);
         if (newVariable.measurementType === 'ontology:survival' && newVariable.has_result_property.indexOf(ONTOLOGY_PREFIX + 'exposure') > -1) {
-          newVariable.timeScale = getValue(studyDataSheet, columns[0] + 2, 3);
+          newVariable.timeScale = getValue(studyDataSheet, columns[0] + 2, startRow + 2);
         }
       }
       newVariable.of_variable = [ofVariable];
-      newVariable.is_measured_at = readMeasurementMoments(studyDataSheet, columns, measurementMomentReader);
+      newVariable.is_measured_at = readMeasurementMoments(studyDataSheet, columns, measurementMomentReader, startRow);
       return newVariable;
     }
 
-    function readDataColumnNames(studyDataSheet, columns, prefixer) {
+    function readDataColumnNames(studyDataSheet, columns, prefixer, startRow) {
       return _(_.range(columns[0] + 2, columns[1]))
         .map(function(column) {
-          return getValueIfPresent(studyDataSheet, column, 2);
+          return getValueIfPresent(studyDataSheet, column, startRow + 1);
         })
         .without('measurement moment')
         .without('time scale')
@@ -584,10 +618,10 @@ define(['lodash', 'util/context', 'util/constants', 'xlsx-shim'], function(_, ex
         .value();
     }
 
-    function readMeasurementMoments(studyDataSheet, columns, measurementMomentReader) {
+    function readMeasurementMoments(studyDataSheet, columns, measurementMomentReader, startRow) {
       return _(_.range(columns[0] + 1, columns[1]))
         .filter(function(column) {
-          return getValueIfPresent(studyDataSheet, column, 2) === 'measurement moment';
+          return getValueIfPresent(studyDataSheet, column, startRow + 1) === 'measurement moment';
         })
         .map(function(column) {
           return measurementMomentReader(column);
@@ -596,12 +630,12 @@ define(['lodash', 'util/context', 'util/constants', 'xlsx-shim'], function(_, ex
         .value();
     }
 
-    function readMeasurements(studyDataSheet, variables, arms, columns) {
+    function readMeasurements(studyDataSheet, variables, arms, columns, startRow) {
       var measurements = [];
       _.forEach(variables, function(variable, variableIndex) {
         var variableColumn = columns[variableIndex];
         _.forEach(arms, function(arm, armIndex) {
-          var currentY = armIndex + 3;
+          var currentY = startRow + 2 + armIndex;
           var measuredAt = variable.is_measured_at;
           if (!Array.isArray(variable.is_measured_at)) {
             measuredAt = [variable.is_measured_at];
@@ -661,24 +695,25 @@ define(['lodash', 'util/context', 'util/constants', 'xlsx-shim'], function(_, ex
       return measurement;
     }
 
-    function readStudy(studyDataSheet, epochs) {
+    function readStudy(studyDataSheet, epochs, startRow) {
+      var thirthRow = startRow + 2;
       var study = {
         '@id': 'http://trials.drugis.org/studies/' + UUIDService.generate(),
         '@type': 'ontology:Study',
-        comment: studyDataSheet.C4.v,
-        label: studyDataSheet.A4.v,
-        status: studyDataSheet.F4 ? findOntology(STATUS_OPTIONS, studyDataSheet.F4.v) : undefined,
+        label: studyDataSheet[a1Coordinate(0, thirthRow)].v,
+        comment: studyDataSheet[a1Coordinate(2, thirthRow)].v,
+        has_allocation: studyDataSheet[a1Coordinate(3, thirthRow)] ? findOntology(GROUP_ALLOCATION_OPTIONS, studyDataSheet[a1Coordinate(3, thirthRow)].v) : undefined,
+        has_blinding: studyDataSheet[a1Coordinate(4, thirthRow)] ? findOntology(BLINDING_OPTIONS, studyDataSheet[a1Coordinate(4, thirthRow)].v) : undefined,
+        status: studyDataSheet[a1Coordinate(5, thirthRow)] ? findOntology(STATUS_OPTIONS, studyDataSheet[a1Coordinate(5, thirthRow)].v) : undefined,
+        has_number_of_centers: studyDataSheet[a1Coordinate(6, thirthRow)] ? studyDataSheet[a1Coordinate(6, thirthRow)].v : undefined,
+        has_objective: getCommented(studyDataSheet, a1Coordinate(7, thirthRow)),
+        has_indication: getLabeled(studyDataSheet, a1Coordinate(8, thirthRow)),
+        has_eligibility_criteria: getCommented(studyDataSheet, a1Coordinate(9, thirthRow)),
         has_activity: [],
-        has_allocation: studyDataSheet.D4 ? findOntology(GROUP_ALLOCATION_OPTIONS, studyDataSheet.D4.v) : undefined,
         has_arm: readArms(studyDataSheet),
-        has_blinding: studyDataSheet.E4 ? findOntology(BLINDING_OPTIONS, studyDataSheet.E4.v) : undefined,
-        has_eligibility_criteria: getCommented(studyDataSheet, 'J4'),
         has_epochs: RdfListService.unFlattenList(epochs),
         has_group: [],
         has_included_population: createIncludedPopulation(),
-        has_indication: getLabeled(studyDataSheet, 'I4'),
-        has_number_of_centers: studyDataSheet.G4 ? studyDataSheet.G4.v : undefined,
-        has_objective: getCommented(studyDataSheet, 'H4'),
         has_outcome: [],
         has_publication: []
       };
@@ -786,6 +821,13 @@ define(['lodash', 'util/context', 'util/constants', 'xlsx-shim'], function(_, ex
       return cell.v;
     }
 
+    function assignIfPresent(object, field, sheet, column, row) {
+      var value = getValueIfPresent(sheet, column, row);
+      if (value) {
+        object[field] = value;
+      }
+    }
+
     // interface
     return {
       checkSingleStudyWorkbook: checkSingleStudyWorkbook,
@@ -794,7 +836,8 @@ define(['lodash', 'util/context', 'util/constants', 'xlsx-shim'], function(_, ex
       commitStudy: commitStudy,
       uploadExcel: uploadExcel,
       createDataset: createDataset,
-      createDatasetStudies: createDatasetStudies
+      createDatasetStudies: createDatasetStudies,
+      createDatasetConcepts: createDatasetConcepts
     };
 
   };

@@ -1,5 +1,5 @@
 'use strict';
-define(['lodash', 'xlsx-shim'], function(_, XLSX) {
+define(['lodash'], function(_) {
   var dependencies = [
     '$scope',
     '$stateParams',

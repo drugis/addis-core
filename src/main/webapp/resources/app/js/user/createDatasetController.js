@@ -1,13 +1,15 @@
 'use strict';
-define(['lodash'],
-  function(_) {
+define(['lodash', 'util/constants'],
+  function(_, externalContext) {
     var dependencies = [
       '$scope',
       '$stateParams',
       '$modalInstance',
       '$q',
       'DatasetResource',
+      'GraphResource',
       'ExcelImportService',
+      'UUIDService',
       'datasetTitles',
       'callback'
     ];
@@ -17,7 +19,9 @@ define(['lodash'],
       $modalInstance,
       $q,
       DatasetResource,
+      GraphResource,
       ExcelImportService,
+      UUIDService,
       datasetTitles,
       callback) {
       // functions
@@ -51,22 +55,36 @@ define(['lodash'],
         $scope.dataset = ExcelImportService.createDataset($scope.excelUpload);
         var studies = ExcelImportService.createDatasetStudies($scope.excelUpload);
         var concepts = ExcelImportService.createDatasetConcepts($scope.excelUpload);
-        // DatasetResource.save($stateParams, $scope.dataset).$promise.then(function() {
-        //   var studiePromises = _.map(studies, function(study) {
-        //     return ExcelImportService.commitStudy(study);
-        //   });
-
-        //   _.forEach(concepts, function(concept){
-        //     ConceptService.addItem(concept);
-        //   });
-        //   var conceptPromise = ConceptService.commit(concepts); //FIXME
-          
-        //   $q.all(studiePromises.concat(conceptPromise)).then(function() {
-        //     $scope.isCreatingDataset = false;
-        //     callback();
-        //     $modalInstance.close();
-        //   });
-        // });
+        DatasetResource.save($stateParams, $scope.dataset).$promise.then(function(result) {
+          var datasetUuid = _(result)
+            .map(function(value, key) {
+              return {
+                key: key,
+                value: value
+              };
+            })
+            .sortBy('key')
+            .map('value')
+            .value()
+            .join('');
+          var studiePromises = _.map(studies, function(study) {
+            return ExcelImportService.commitStudy(study); // needs dataset uuid
+          });
+          var conceptsPromise = GraphResource.putJson({
+            userUid: $stateParams.userUid,
+            datasetUuid: datasetUuid,
+            commitTitle: 'Imported dataset from Excel',
+            commitDescription: ''
+          }, {
+            '@graph': concepts,
+            '@context': externalContext
+          });
+          $q.all(studiePromises.concat(conceptsPromise)).then(function() {
+            $scope.isCreatingDataset = false;
+            callback();
+            $modalInstance.close();
+          });
+        });
       }
 
       function createDataset() {

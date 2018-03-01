@@ -2,7 +2,6 @@
 'use strict';
 define(['angular', 'angular-mocks'], function() {
   describe('create study controller', function() {
-
     var scope,
       modalMock = jasmine.createSpyObj('$mock', ['dismiss', 'close']),
       datasetServiceMock = jasmine.createSpyObj('DatasetService', ['addStudyToDatasetGraph']),
@@ -41,12 +40,12 @@ define(['angular', 'angular-mocks'], function() {
       it('should be true if the shortname is not already in the list', function() {
         scope.studiesWithDetail = [];
         scope.checkUniqueShortName('connor');
-        expect(scope.isUniqueShortName).toBe(true);
+        expect(scope.isUniqueIdentifier).toBe(true);
         scope.studiesWithDetail = [{
           label: 'daan'
         }];
         scope.checkUniqueShortName('connor');
-        expect(scope.isUniqueShortName).toBe(true);
+        expect(scope.isUniqueIdentifier).toBe(true);
       });
       it('should be false if the shortname is already in the list', function() {
         scope.studiesWithDetail = [{
@@ -55,7 +54,7 @@ define(['angular', 'angular-mocks'], function() {
           label: 'connor'
         }];
         scope.checkUniqueShortName('connor');
-        expect(scope.isUniqueShortName).toBe(false);
+        expect(scope.isUniqueIdentifier).toBe(false);
       });
     });
 

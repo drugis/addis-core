@@ -75,7 +75,7 @@ public class DatasetController extends AbstractAddisCoreController {
 
   @RequestMapping(method = RequestMethod.POST)
   @ResponseBody
-  public void createDataset(HttpServletResponse response, Principal currentUser,
+  public URI createDataset(HttpServletResponse response, Principal currentUser,
                             @RequestBody DatasetCommand datasetCommand, @PathVariable Integer userId)
           throws URISyntaxException, CreateDatasetException, HttpException {
     logger.trace("createDataset");
@@ -86,11 +86,14 @@ public class DatasetController extends AbstractAddisCoreController {
               datasetCommand.getDescription(), trialversePrincipal);
       response.setStatus(HttpServletResponse.SC_CREATED);
       response.setHeader("Location", datasetUri.toString());
+      return datasetUri;
     } else {
       logger.error("attempted to created database for user that is not the login-user ");
       response.setStatus(HttpStatus.FORBIDDEN.value());
     }
+    return null;
   }
+
   @RequestMapping(path="/{datasetUuid}", method = RequestMethod.POST, consumes = WebContent.contentTypeJSON)
   public void editDataset(HttpServletResponse response, Principal currentUser,
                           @RequestBody DatasetCommand datasetCommand, @PathVariable Integer userId,
