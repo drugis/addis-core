@@ -281,6 +281,308 @@ define([
           expect(result).toEqual(expectedResult);
         });
       });
+
+      fdescribe('for a whole dataset,', function() {
+        var workbook;
+        beforeEach(function(done) {
+          loadExcel('testdataset.xlsx', function(loadedWorkbook) {
+            workbook = loadedWorkbook;
+            done();
+          });
+        });
+
+        describe('createDataset', function() {
+          it('should return the dataset title and comment', function() {
+            var result = excelImportService.createDataset(workbook);
+            var expectedResult = {
+              title: 'testdataset',
+              description: 'testset description'
+            };
+            expect(result).toEqual(expectedResult);
+          });
+        });
+
+        describe('createDatasetStudies', function() {
+          it('should create the studies which are to be added to the dataset', function() {
+            var result = excelImportService.createDatasetStudies(workbook);
+            var expectedResult = [{
+              '@graph': [{
+                  '@id': 'http://trials.drugis.org/instances/c8717007-89a8-4f5c-a81a-3d2fb6c61805',
+                  '@type': 'ontology:MeasurementMoment',
+                  label: 'At end of epoch 1',
+                  relative_to_epoch: 'http://trials.drugis.org/instances/15d94d89-2caa-4ae4-b2de-82e2951bfa93',
+                  relative_to_anchor: 'ontology:anchorEpochEnd',
+                  time_offset: 'PT0S'
+                }, {
+                  '@id': 'http://trials.drugis.org/instances/a4acc017-f387-40a8-8c01-dd7fc55d7a9e',
+                  '@type': 'ontology:MeasurementMoment',
+                  label: '7 day(s) from start of epoch 2',
+                  relative_to_epoch: 'http://trials.drugis.org/instances/30dbf1ab-d458-4398-8795-75c51fecebd4',
+                  relative_to_anchor: 'ontology:anchorEpochStart',
+                  time_offset: 'P1W'
+                }, {
+                  '@id': 'http://trials.drugis.org/instances/uuid',
+                  of_moment: 'http://trials.drugis.org/instances/c8717007-89a8-4f5c-a81a-3d2fb6c61805',
+                  of_group: 'http://trials.drugis.org/instances/uuid',
+                  of_outcome: 'http://trials.drugis.org/instances/5e7da5db-43e5-4201-af3c-d76c24e66ed2',
+                  sample_size: 12,
+                  count: 4
+                },
+                {
+                  '@id': 'http://trials.drugis.org/instances/uuid',
+                  of_moment: 'http://trials.drugis.org/instances/c8717007-89a8-4f5c-a81a-3d2fb6c61805',
+                  of_group: 'http://trials.drugis.org/instances/uuid',
+                  of_outcome: 'http://trials.drugis.org/instances/5e7da5db-43e5-4201-af3c-d76c24e66ed2',
+                  sample_size: 31,
+                  count: 4
+                },
+                {
+                  '@id': 'http://trials.drugis.org/instances/uuid',
+                  of_moment: 'http://trials.drugis.org/instances/c8717007-89a8-4f5c-a81a-3d2fb6c61805',
+                  of_group: 'http://trials.drugis.org/instances/uuid',
+                  of_outcome: 'http://trials.drugis.org/instances/5e7da5db-43e5-4201-af3c-d76c24e66ed2',
+                  sample_size: 46,
+                  count: 9
+                },
+                {
+                  '@id': 'http://trials.drugis.org/instances/uuid',
+                  of_moment: 'http://trials.drugis.org/instances/a4acc017-f387-40a8-8c01-dd7fc55d7a9e',
+                  of_group: 'http://trials.drugis.org/instances/uuid',
+                  of_outcome: 'http://trials.drugis.org/instances/6b440046-45f8-480b-88a3-e79830fa8329',
+                  category_count: [{
+                    '@id': 'http://trials.drugis.org/instances/uuid',
+                    category: 'http://trials.drugis.org/instances/uuid',
+                    count: 1
+                  }, {
+                    '@id': 'http://trials.drugis.org/instances/uuid',
+                    category: 'http://trials.drugis.org/instances/uuid',
+                    count: 3
+                  }]
+                },
+                {
+                  '@id': 'http://trials.drugis.org/instances/uuid',
+                  of_moment: 'http://trials.drugis.org/instances/a4acc017-f387-40a8-8c01-dd7fc55d7a9e',
+                  of_group: 'http://trials.drugis.org/instances/uuid',
+                  of_outcome: 'http://trials.drugis.org/instances/6b440046-45f8-480b-88a3-e79830fa8329',
+                  category_count: [{
+                    '@id': 'http://trials.drugis.org/instances/uuid',
+                    category: 'http://trials.drugis.org/instances/uuid',
+                    count: 2
+                  }, {
+                    '@id': 'http://trials.drugis.org/instances/uuid',
+                    category: 'http://trials.drugis.org/instances/uuid',
+                    count: 3
+                  }]
+                },
+                {
+                  '@id': 'http://trials.drugis.org/instances/uuid',
+                  of_moment: 'http://trials.drugis.org/instances/a4acc017-f387-40a8-8c01-dd7fc55d7a9e',
+                  of_group: 'http://trials.drugis.org/instances/uuid',
+                  of_outcome: 'http://trials.drugis.org/instances/6b440046-45f8-480b-88a3-e79830fa8329',
+                  category_count: [{
+                    '@id': 'http://trials.drugis.org/instances/uuid',
+                    category: 'http://trials.drugis.org/instances/uuid',
+                    count: 6
+                  }, {
+                    '@id': 'http://trials.drugis.org/instances/uuid',
+                    category: 'http://trials.drugis.org/instances/uuid',
+                    count: 9
+                  }]
+                },
+                {
+                  '@id': 'http://trials.drugis.org/instances/uuid',
+                  of_moment: 'http://trials.drugis.org/instances/c8717007-89a8-4f5c-a81a-3d2fb6c61805',
+                  of_group: 'http://trials.drugis.org/instances/uuid',
+                  of_outcome: 'http://trials.drugis.org/instances/dc438d81-712f-4b56-aed3-da03073edd74',
+                  exposure: 'At end of epoch 1',
+                  count: 5665
+                },
+                {
+                  '@id': 'http://trials.drugis.org/instances/uuid',
+                  of_moment: 'http://trials.drugis.org/instances/c8717007-89a8-4f5c-a81a-3d2fb6c61805',
+                  of_group: 'http://trials.drugis.org/instances/uuid',
+                  of_outcome: 'http://trials.drugis.org/instances/dc438d81-712f-4b56-aed3-da03073edd74',
+                  count: 657
+                },
+                {
+                  '@id': 'http://trials.drugis.org/instances/uuid',
+                  of_moment: 'http://trials.drugis.org/instances/c8717007-89a8-4f5c-a81a-3d2fb6c61805',
+                  of_group: 'http://trials.drugis.org/instances/uuid',
+                  of_outcome: 'http://trials.drugis.org/instances/dc438d81-712f-4b56-aed3-da03073edd74',
+                  count: 65655
+                },
+                {
+                  '@id': 'http://trials.drugis.org/studies/uuid',
+                  '@type': 'ontology:Study',
+                  label: 'Teststudy 1',
+                  comment: 'long test study title 1',
+                  has_allocation: 'ontology:AllocationRandomized',
+                  has_blinding: 'ontology:DoubleBlind',
+                  status: 'ontology:StatusRecruiting',
+                  has_number_of_centers: 5,
+                  has_objective: [{
+                    '@id': 'http://trials.drugis.org/instances/uuid',
+                    comment: 'objectief'
+                  }],
+                  has_indication: [{
+                    '@id': 'http://trials.drugis.org/instances/uuid',
+                    label: 'indication'
+                  }],
+                  has_eligibility_criteria: [{
+                    '@id': 'http://trials.drugis.org/instances/uuid',
+                    comment: 'eg crit'
+                  }],
+                  has_activity: [{
+                    '@id': 'http://trials.drugis.org/instances/906c7097-8bc8-4b53-949f-e5c237df73e0',
+                    '@type': 'ontology:TreatmentActivity',
+                    label: 'act 1',
+                    has_activity_application: [{
+                      '@id': 'http://trials.drugis.org/instances/uuid',
+                      applied_in_epoch: 'http://trials.drugis.org/instances/15d94d89-2caa-4ae4-b2de-82e2951bfa93',
+                      applied_to_arm: 'http://trials.drugis.org/instances/uuid'
+                    }, {
+                      '@id': 'http://trials.drugis.org/instances/uuid',
+                      applied_in_epoch: 'http://trials.drugis.org/instances/15d94d89-2caa-4ae4-b2de-82e2951bfa93',
+                      applied_to_arm: 'http://trials.drugis.org/instances/uuid'
+                    }],
+                    comment: 'act 1 desc',
+                    has_drug_treatment: [{
+                      '@id': 'http://trials.drugis.org/instances/uuid',
+                      treatment_has_drug: 'http://trials.drugis.org/instances/8dac60f3-fc6e-4155-82fe-2bdcb82da33b',
+                      '@type': 'ontology:FixedDoseDrugTreatment',
+                      treatment_dose: [{
+                        '@id': 'http://trials.drugis.org/instances/uuid',
+                        value: 55,
+                        unit: 'http://trials.drugis.org/instances/f1910de6-72a4-465f-901f-eb20dc8b1ecc',
+                        dosingPeriodicity: 'P1D'
+                      }]
+                    }]
+                  }, {
+                    '@id': 'http://trials.drugis.org/instances/c52831f4-4466-4c86-a8b3-6be91e0c6bba',
+                    '@type': 'ontology:RandomizationActivity',
+                    label: 'act 2',
+                    has_activity_application: [{
+                      '@id': 'http://trials.drugis.org/instances/uuid',
+                      applied_in_epoch: 'http://trials.drugis.org/instances/30dbf1ab-d458-4398-8795-75c51fecebd4',
+                      applied_to_arm: 'http://trials.drugis.org/instances/uuid'
+                    }, {
+                      '@id': 'http://trials.drugis.org/instances/uuid',
+                      applied_in_epoch: 'http://trials.drugis.org/instances/30dbf1ab-d458-4398-8795-75c51fecebd4',
+                      applied_to_arm: 'http://trials.drugis.org/instances/uuid'
+                    }],
+                    comment: 'act 2 desc'
+                  }],
+                  has_arm: [{
+                    '@id': 'http://trials.drugis.org/instances/uuid',
+                    label: 'arm 1',
+                    comment: 'arm 1 desc'
+                  }, {
+                    '@id': 'http://trials.drugis.org/instances/uuid',
+                    label: 'arm 2',
+                    comment: 'arm 2 desc'
+                  }],
+                  has_epochs: {
+                    first: {
+                      '@id': 'http://trials.drugis.org/instances/15d94d89-2caa-4ae4-b2de-82e2951bfa93',
+                      '@type': 'ontology:Epoch',
+                      label: 'epoch 1',
+                      duration: 'PT0S',
+                      comment: 'epoch 1 desc'
+                    },
+                    rest: {
+                      first: {
+                        '@id': 'http://trials.drugis.org/instances/30dbf1ab-d458-4398-8795-75c51fecebd4',
+                        '@type': 'ontology:Epoch',
+                        label: 'epoch 2',
+                        duration: 'P1W',
+                        comment: 'epoch 2 desc'
+                      },
+                      rest: 'http://www.w3.org/1999/02/22-rdf-syntax-ns#nil'
+                    }
+                  },
+                  has_group: [],
+                  has_included_population: [{
+                    '@id': 'http://trials.drugis.org/instances/uuid',
+                    '@type': 'ontology:StudyPopulation'
+                  }],
+                  has_outcome: [{
+                    '@id': 'http://trials.drugis.org/instances/5e7da5db-43e5-4201-af3c-d76c24e66ed2',
+                    '@type': 'ontology:PopulationCharacteristic',
+                    label: 'Baseline char',
+                    has_result_property: ['http://trials.drugis.org/ontology#sample_size', 'http://trials.drugis.org/ontology#count'],
+                    of_variable: [{
+                      '@type': 'ontology:Variable',
+                      measurementType: 'ontology:dichotomous',
+                      label: 'Baseline char',
+                      sameAs: 'http://trials.drugis.org/concepts/518cab3d-0d48-4b01-9c92-60aebba50080'
+                    }],
+                    is_measured_at: ['http://trials.drugis.org/instances/c8717007-89a8-4f5c-a81a-3d2fb6c61805']
+                  }, {
+                    '@id': 'http://trials.drugis.org/instances/6b440046-45f8-480b-88a3-e79830fa8329',
+                    '@type': 'ontology:Endpoint',
+                    label: 'outcome',
+                    of_variable: [{
+                      '@type': 'ontology:Variable',
+                      measurementType: 'ontology:categorical',
+                      label: 'outcome',
+                      categoryList: {
+                        first: {
+                          '@id': 'http://trials.drugis.org/instances/uuid',
+                          '@type': 'ontology:Category',
+                          label: 'male'
+                        },
+                        rest: {
+                          first: {
+                            '@id': 'http://trials.drugis.org/instances/uuid',
+                            '@type': 'ontology:Category',
+                            label: 'female'
+                          },
+                          rest: 'http://www.w3.org/1999/02/22-rdf-syntax-ns#nil'
+                        }
+                      },
+                      sameAs: 'http://trials.drugis.org/concepts/518cab3d-0d48-4b01-9c92-60aebba50080'
+                    }],
+                    is_measured_at: ['http://trials.drugis.org/instances/a4acc017-f387-40a8-8c01-dd7fc55d7a9e']
+                  }, {
+                    '@id': 'http://trials.drugis.org/instances/dc438d81-712f-4b56-aed3-da03073edd74',
+                    '@type': 'ontology:AdverseEvent',
+                    label: 'AE',
+                    has_result_property: ['http://trials.drugis.org/ontology#exposure', 'http://trials.drugis.org/ontology#count'],
+                    of_variable: [{
+                      '@type': 'ontology:Variable',
+                      measurementType: 'ontology:survival',
+                      label: 'AE',
+                      sameAs: 'http://trials.drugis.org/concepts/518cab3d-0d48-4b01-9c92-60aebba50080'
+                    }],
+                    is_measured_at: ['http://trials.drugis.org/instances/c8717007-89a8-4f5c-a81a-3d2fb6c61805']
+                  }],
+                  has_publication: [],
+                  has_primary_epoch: 'http://trials.drugis.org/instances/15d94d89-2caa-4ae4-b2de-82e2951bfa93'
+                }, {
+                  sameAs: 'http://trials.drugis.org/concepts/847c2382-1f70-4741-b383-ea0320510e97',
+                  '@id': 'http://trials.drugis.org/instances/8dac60f3-fc6e-4155-82fe-2bdcb82da33b',
+                  '@type': 'ontology:Drug',
+                  label: 'drug 1'
+                }, {
+                  sameAs: 'http://trials.drugis.org/concepts/b84e32d5-a3a5-4733-a978-4a23b223ef20',
+                  '@id': 'http://trials.drugis.org/instances/f1910de6-72a4-465f-901f-eb20dc8b1ecc',
+                  '@type': 'ontology:Unit',
+                  label: 'milligram',
+                  conversionMultiplier: 0.001
+                }
+              ],
+              '@context': externalContext
+            }];
+            expect(result).toEqual(expectedResult);
+          });
+        });
+
+        describe('createDatasetConcepts', function() {
+          it('should', function() {
+
+          });
+        });
+      });
     });
 
     function loadExcel(fileName, callback) {

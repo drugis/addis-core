@@ -56,19 +56,15 @@ define(['lodash', 'util/constants'],
         var studies = ExcelImportService.createDatasetStudies($scope.excelUpload);
         var concepts = ExcelImportService.createDatasetConcepts($scope.excelUpload);
         DatasetResource.save($stateParams, $scope.dataset).$promise.then(function(result) {
-          var datasetUuid = _(result)
-            .map(function(value, key) {
-              return {
-                key: key,
-                value: value
-              };
-            })
-            .sortBy('key')
-            .map('value')
-            .value()
-            .join('');
+          var datasetUri = '';
+          var index = 0;
+          while(result[index]){
+            datasetUri = datasetUri.concat(result[index]);
+            ++index;
+          }
+          var datasetUuid = datasetUri.split('/datasets/')[1];
           var studiePromises = _.map(studies, function(study) {
-            return ExcelImportService.commitStudy(study); // needs dataset uuid
+            return ExcelImportService.commitStudy(study, datasetUuid); // needs dataset uuid
           });
           var conceptsPromise = GraphResource.putJson({
             userUid: $stateParams.userUid,

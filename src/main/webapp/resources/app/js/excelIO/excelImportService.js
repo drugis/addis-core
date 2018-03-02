@@ -185,7 +185,6 @@ define(['lodash', 'util/context', 'util/constants', 'xlsx-shim'], function(_, ex
           scope.isValidUpload = true;
           var identifier = getIdentifier(workbook);
           scope.isUniqueIdentifier = names.indexOf(identifier) === -1;
-
         }
         $timeout(function() {}, 0); // ensures errors are rendered in the html
       };
@@ -201,7 +200,6 @@ define(['lodash', 'util/context', 'util/constants', 'xlsx-shim'], function(_, ex
     }
 
     function createDatasetStudies(workbook) {
-      // var studyDataSheet = workbook['Study data'];
       var studyIdCells = getStudyIdCells(workbook);
       var startRows = getStartRows(workbook, studyIdCells);
       return _.map(startRows, function(startRow) {
@@ -418,7 +416,7 @@ define(['lodash', 'util/context', 'util/constants', 'xlsx-shim'], function(_, ex
             return {
               '@id': INSTANCE_PREFIX + UUIDService.generate(),
               applied_in_epoch: getReferenceValueColumnOffset(studyDesignSheet, applicationCell.c, startRow + rowOffset, -1, workbook),
-              applied_to_arm: _.find(studyNode.has_arm, ['label', getReferenceValueColumnOffset(studyDesignSheet, startRow + rowOffset, applicationCell.r, 0, workbook)])['@id']
+              applied_to_arm: _.find(studyNode.has_arm, ['label', getReferenceValueColumnOffset(studyDesignSheet, 0, applicationCell.r, 0, workbook)])['@id']
             };
           })
         });
@@ -743,11 +741,11 @@ define(['lodash', 'util/context', 'util/constants', 'xlsx-shim'], function(_, ex
       }] : [];
     }
 
-    function commitStudy(study) {
+    function commitStudy(study, datasetUuid) {
       var newVersionDefer = $q.defer();
       GraphResource.putJson({
         userUid: $stateParams.userUid,
-        datasetUuid: $stateParams.datasetUuid,
+        datasetUuid: datasetUuid ? datasetUuid : $stateParams.datasetUuid,
         graphUuid: UUIDService.generate(),
         commitTitle: 'Initial study creation: ' + study['@graph'][0].label
       }, study, function(value, responseHeaders) {
