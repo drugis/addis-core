@@ -64,6 +64,9 @@ define(['angular', 'lodash'], function(angular, _) {
     }
 
     function unFlattenList(list) {
+      if(list.length === 0) {
+        return rdfListNil;
+      }
       return list.reverse().reduce(function(accum, listItem) {
         var newList = {
           first: listItem,

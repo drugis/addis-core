@@ -1,5 +1,5 @@
 'use strict';
-define(['lodash', 'util/constants'],
+define(['lodash', 'util/context'],
   function(_, externalContext) {
     var dependencies = [
       '$scope',
@@ -69,7 +69,8 @@ define(['lodash', 'util/constants'],
           var conceptsPromise = GraphResource.putJson({
             userUid: $stateParams.userUid,
             datasetUuid: datasetUuid,
-            commitTitle: 'Imported dataset from Excel',
+            graphUuid: 'concepts',
+            commitTitle: 'Import concepts',
             commitDescription: ''
           }, {
             '@graph': concepts,

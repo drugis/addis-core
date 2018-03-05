@@ -201,9 +201,9 @@ define(['lodash', 'util/context', 'util/constants', 'xlsx-shim'], function(_, ex
 
     function createDatasetStudies(workbook) {
       var studyIdCells = getStudyIdCells(workbook);
-      var startRows = getStartRows(workbook, studyIdCells);
-      return _.map(startRows, function(startRow) {
-        return createStructuredStudy(workbook, startRow);
+      var startRowsPerStudy = getStartRowsPerStudy(workbook, studyIdCells);
+      return _.map(startRowsPerStudy, function(startRows) {
+        return createStructuredStudy(workbook, startRows);
       });
     }
 
@@ -268,7 +268,7 @@ define(['lodash', 'util/context', 'util/constants', 'xlsx-shim'], function(_, ex
         .value();
     }
 
-    function getStartRows(workbook, studyIdCells) {
+    function getStartRowsPerStudy(workbook, studyIdCells) {
       return _.map(studyIdCells, function(studyIdCell) {
         var startRows = _.reduce(STUDY_SHEET_NAMES.slice(1), function(accum, sheet) { // don't look in the Study data sheet
           accum[sheet] = findStartRow(workbook.Sheets[sheet], studyIdCell);
@@ -335,7 +335,7 @@ define(['lodash', 'util/context', 'util/constants', 'xlsx-shim'], function(_, ex
     function buildActivities(activitySheet, workbook, startRow) {
       var lastRow = startRow;
       while (activitySheet[a1Coordinate(0, lastRow)]) {
-        lastRow++;
+        ++lastRow;
       } // one more because _.range goes until, not including its second parameter 
       return _.map(_.range(startRow + 1, lastRow), _.partial(readActivity, activitySheet, workbook)); // +2 because zero-indexed and range has open upper end
     }
@@ -364,7 +364,7 @@ define(['lodash', 'util/context', 'util/constants', 'xlsx-shim'], function(_, ex
       var doseTypes = {
         'fixed': 'ontology:FixedDoseDrugTreatment',
         'titrated': 'ontology:TitratedDoseDrugTreatment'
-      };
+      }; 
       var treatment = {
         '@id': INSTANCE_PREFIX + UUIDService.generate(),
         treatment_has_drug: getReferenceValueColumnOffset(activitySheet, 4 + drugIndex * 6, row, -1, workbook),
@@ -413,10 +413,12 @@ define(['lodash', 'util/context', 'util/constants', 'xlsx-shim'], function(_, ex
 
         return _.merge({}, activity, {
           has_activity_application: _.map(applicationsForActivity, function(applicationCell) {
+            var armLabel = getReferenceValueColumnOffset(studyDesignSheet, 0, applicationCell.r, 0, workbook);
+            var arm = _.find(studyNode.has_arm, ['label', armLabel]);
             return {
               '@id': INSTANCE_PREFIX + UUIDService.generate(),
               applied_in_epoch: getReferenceValueColumnOffset(studyDesignSheet, applicationCell.c, startRow + rowOffset, -1, workbook),
-              applied_to_arm: _.find(studyNode.has_arm, ['label', getReferenceValueColumnOffset(studyDesignSheet, 0, applicationCell.r, 0, workbook)])['@id']
+              applied_to_arm: arm['@id']
             };
           })
         });
@@ -434,7 +436,7 @@ define(['lodash', 'util/context', 'util/constants', 'xlsx-shim'], function(_, ex
     function buildStructuredMeasurementMoments(measurementMomentSheet, workbook, startRow) {
       var lastRow = startRow;
       while (measurementMomentSheet[a1Coordinate(0, lastRow)]) {
-        lastRow++;
+        ++lastRow;
       } // one more because _.range goes until, not including its second parameter 
       return _.map(_.range(startRow + 1, lastRow), _.partial(readMeasurementMoment, measurementMomentSheet, workbook));
     }
@@ -444,7 +446,7 @@ define(['lodash', 'util/context', 'util/constants', 'xlsx-shim'], function(_, ex
         '@id': getValue(measurementMomentSheet, 0, row),
         '@type': 'ontology:MeasurementMoment',
         label: getValue(measurementMomentSheet, 1, row),
-        relative_to_epoch: getReferenceValue(measurementMomentSheet, 2, row, workbook),
+        relative_to_epoch: getReferenceValueColumnOffset(measurementMomentSheet, 2, row, -1, workbook),
         relative_to_anchor: EPOCH_ANCHOR[getValue(measurementMomentSheet, 3, row)].uri,
         time_offset: getValue(measurementMomentSheet, 4, row)
       };
@@ -480,7 +482,7 @@ define(['lodash', 'util/context', 'util/constants', 'xlsx-shim'], function(_, ex
       } else {
         var lastRow = startRow;
         while (epochSheet[a1Coordinate(0, lastRow)]) {
-          lastRow++;
+          ++lastRow;
         } // one more because _.range goes until, not including its second parameter 
         return _.map(_.range(startRow + 1, lastRow), _.partial(readEpoch, epochSheet)); //+1 as first row is study header
       }
@@ -517,8 +519,11 @@ define(['lodash', 'util/context', 'util/constants', 'xlsx-shim'], function(_, ex
     }
 
     function readVariables(studyDataSheet, variableColumns, workbook, startRow) {
-      var endColumn = XLSX.utils.decode_range(studyDataSheet['!ref']).e.c + 1;
-      var variableColumnsPlusEnd = variableColumns.concat(endColumn); // add end column for last variable
+      var endColumn = XLSX.utils.decode_range(studyDataSheet['!ref']).e.c + 1; // +1 for _.range being open at upper end
+      var lastFilledColumn = _.max(_.filter(_.range(variableColumns[variableColumns.length - 1], endColumn), function(column) {
+        return studyDataSheet[a1Coordinate(column, startRow + 1)];
+      }));
+      var variableColumnsPlusEnd = variableColumns.concat(lastFilledColumn +  1); // add end column for last variable; +1 because we use [,) intervals for var boundaries
       var variableColumnBoundaries = _.map(variableColumnsPlusEnd.slice(0, variableColumnsPlusEnd.length - 1), function(n, index) {
         return [n, variableColumnsPlusEnd[index + 1]];
       });
@@ -694,21 +699,21 @@ define(['lodash', 'util/context', 'util/constants', 'xlsx-shim'], function(_, ex
     }
 
     function readStudy(studyDataSheet, epochs, startRow) {
-      var thirthRow = startRow + 2;
+      var firstDataRow = startRow + 2;
       var study = {
         '@id': 'http://trials.drugis.org/studies/' + UUIDService.generate(),
         '@type': 'ontology:Study',
-        label: studyDataSheet[a1Coordinate(0, thirthRow)].v,
-        comment: studyDataSheet[a1Coordinate(2, thirthRow)].v,
-        has_allocation: studyDataSheet[a1Coordinate(3, thirthRow)] ? findOntology(GROUP_ALLOCATION_OPTIONS, studyDataSheet[a1Coordinate(3, thirthRow)].v) : undefined,
-        has_blinding: studyDataSheet[a1Coordinate(4, thirthRow)] ? findOntology(BLINDING_OPTIONS, studyDataSheet[a1Coordinate(4, thirthRow)].v) : undefined,
-        status: studyDataSheet[a1Coordinate(5, thirthRow)] ? findOntology(STATUS_OPTIONS, studyDataSheet[a1Coordinate(5, thirthRow)].v) : undefined,
-        has_number_of_centers: studyDataSheet[a1Coordinate(6, thirthRow)] ? studyDataSheet[a1Coordinate(6, thirthRow)].v : undefined,
-        has_objective: getCommented(studyDataSheet, a1Coordinate(7, thirthRow)),
-        has_indication: getLabeled(studyDataSheet, a1Coordinate(8, thirthRow)),
-        has_eligibility_criteria: getCommented(studyDataSheet, a1Coordinate(9, thirthRow)),
+        label: studyDataSheet[a1Coordinate(0, firstDataRow)].v,
+        comment: studyDataSheet[a1Coordinate(2, firstDataRow)].v,
+        has_allocation: studyDataSheet[a1Coordinate(3, firstDataRow)] ? findOntology(GROUP_ALLOCATION_OPTIONS, studyDataSheet[a1Coordinate(3, firstDataRow)].v) : undefined,
+        has_blinding: studyDataSheet[a1Coordinate(4, firstDataRow)] ? findOntology(BLINDING_OPTIONS, studyDataSheet[a1Coordinate(4, firstDataRow)].v) : undefined,
+        status: studyDataSheet[a1Coordinate(5, firstDataRow)] ? findOntology(STATUS_OPTIONS, studyDataSheet[a1Coordinate(5, firstDataRow)].v) : undefined,
+        has_number_of_centers: studyDataSheet[a1Coordinate(6, firstDataRow)] ? studyDataSheet[a1Coordinate(6, firstDataRow)].v : undefined,
+        has_objective: getCommented(studyDataSheet, a1Coordinate(7, firstDataRow)),
+        has_indication: getLabeled(studyDataSheet, a1Coordinate(8, firstDataRow)),
+        has_eligibility_criteria: getCommented(studyDataSheet, a1Coordinate(9, firstDataRow)),
         has_activity: [],
-        has_arm: readArms(studyDataSheet),
+        has_arm: readArms(studyDataSheet, firstDataRow),
         has_epochs: RdfListService.unFlattenList(epochs),
         has_group: [],
         has_included_population: createIncludedPopulation(),
@@ -763,8 +768,8 @@ define(['lodash', 'util/context', 'util/constants', 'xlsx-shim'], function(_, ex
       return result ? result.uri : undefined;
     }
 
-    function readArms(studyDataSheet) {
-      var index = 4;
+    function readArms(studyDataSheet, headerRow) {
+      var index = headerRow + 1; // +1 because we're using A1 below
       var arms = [];
       while (studyDataSheet['K' + index]) {
         arms.push({
@@ -795,10 +800,13 @@ define(['lodash', 'util/context', 'util/constants', 'xlsx-shim'], function(_, ex
         var splitFormula = source.f.split('!');
         var targetSheet = splitFormula[0];
         if (targetSheet[0] === '=') {
-          targetSheet = targetSheet.split('=')[1];
+          targetSheet = targetSheet.slice(1);
         }
         var targetCoordinates = excelUtils.decode_cell(splitFormula[1]);
         targetCoordinates.c += columnOffset;
+        if(!isFinite(targetCoordinates.c) || !isFinite(targetCoordinates.r)) {
+          throw 'Broken reference: ' + source.f;
+        }
         targetCoordinates = excelUtils.encode_cell(targetCoordinates);
         targetSheet = targetSheet.replace(/\'/g, '');
         if (workbook.Sheets[targetSheet] && workbook.Sheets[targetSheet][targetCoordinates]) {
@@ -829,10 +837,12 @@ define(['lodash', 'util/context', 'util/constants', 'xlsx-shim'], function(_, ex
     // interface
     return {
       checkSingleStudyWorkbook: checkSingleStudyWorkbook,
-      checkDatasetWorkbook: checkDatasetWorkbook,
       createStudy: createStudy,
       commitStudy: commitStudy,
+      
       uploadExcel: uploadExcel,
+      
+      checkDatasetWorkbook: checkDatasetWorkbook,
       createDataset: createDataset,
       createDatasetStudies: createDatasetStudies,
       createDatasetConcepts: createDatasetConcepts

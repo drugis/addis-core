@@ -1,5 +1,7 @@
 'use strict';
 define(['angular', 'angular-mocks', 'util/util'], function() {
+  var RDF_NIL = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#nil';
+
   describe('rdfListServiceSpec', function() {
 
     var rdfListService;
@@ -20,7 +22,7 @@ define(['angular', 'angular-mocks', 'util/util'], function() {
             '@id': 'instanceUri3',
             label: 'list instance 3'
           },
-          rest: 'http://www.w3.org/1999/02/22-rdf-syntax-ns#nil'
+          rest: RDF_NIL
         }
       }
     };
@@ -56,7 +58,7 @@ define(['angular', 'angular-mocks', 'util/util'], function() {
             '@id': 'instanceUri1',
             label: 'list instance 1'
           },
-          rest: 'http://www.w3.org/1999/02/22-rdf-syntax-ns#nil'
+          rest: RDF_NIL
         };
         expect(rdfListService.flattenList(singleItemList)).toEqual([{
           '@id': 'instanceUri1',
@@ -71,9 +73,12 @@ define(['angular', 'angular-mocks', 'util/util'], function() {
       });
     });
 
-    describe('unflattenList', function() {
+    describe('unFlattenList', function() {
       it('should recreate the node tree from the array', function() {
         expect(rdfListService.unFlattenList(flatList)).toEqual(listTree);
+      });
+      it('should work for an empty list', function(){
+        expect(rdfListService.unFlattenList([])).toEqual(RDF_NIL);
       });
     });
 

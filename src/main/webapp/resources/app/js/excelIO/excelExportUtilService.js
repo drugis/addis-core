@@ -225,7 +225,7 @@ define(['lodash', 'xlsx-shim'], function(_, XLSX) {
         var row = startRow + index + 2;
         accum['A' + row] = cellValue(measurementMoment.uri);
         accum['B' + row] = cellValue(measurementMoment.label);
-        accum['C' + row] = cellFormula('=Epochs!' + _.findKey(epochSheet, ['v', measurementMoment.epochUri]));
+        accum['C' + row] = cellFormula('=Epochs!' + getTitleReference(epochSheet, measurementMoment.epochUri));
         accum['D' + row] = cellValue(fromTypes[measurementMoment.relativeToAnchor]);
         accum['E' + row] = cellValue(measurementMoment.offset);
         return accum;

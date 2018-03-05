@@ -306,7 +306,7 @@ define(['lodash', 'xlsx-shim', 'angular', 'angular-mocks'], function(_, XLSX) {
         A2: cellValue('measurementMoment1Uri'),
         B2: cellValue('name'),
         C2: {
-          f: '=Epochs!B2'
+          f: '=Epochs!C2'
         },
         D2: cellValue('start'),
         E2: cellValue('offset')
