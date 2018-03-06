@@ -337,15 +337,15 @@ define(['lodash', 'xlsx-shim'], function(_, XLSX) {
       newWorkBook.Sheets = _.reduce(workBook.Sheets, function(accum, sheet, sheetName) {
         var newSheet = _.cloneDeep(sheet);
         if (sheetName !== 'Study data') {
-          var location = 'A'+(startRows['Study data'] + 4);
-          newSheet['A' + (startRows[sheetName] + (sheetName === 'Study design' ? 0 : 1))] = cellFormula('\'Study data\'!'+location, workBook.Sheets['Study data'][location].v);
+          var location = 'A' + (startRows['Study data'] + 4);
+          newSheet['A' + (startRows[sheetName] + (sheetName === 'Study design' ? 0 : 1))] = cellFormula('\'Study data\'!' +
+            location, workBook.Sheets['Study data'][location].v);
         }
         accum[sheetName] = newSheet;
         return accum;
       }, {});
       return newWorkBook;
     }
-
 
     // ----------- utility functions ----------------
     function nextStartRow(sheet, sheetName) {
