@@ -292,9 +292,8 @@ define(['lodash', 'xlsx-shim', 'angular', 'angular-mocks'], function(_, XLSX) {
         offset: 'offset'
       }];
       var epochSheet = {
-        B2: {
-          v: 'epochRef'
-        }
+        B2: cellValue('epochRef'),
+        C2: cellValue('something')
       };
       var expectedResultNoOffset = {
         '!ref': 'A1:E2',
@@ -306,7 +305,8 @@ define(['lodash', 'xlsx-shim', 'angular', 'angular-mocks'], function(_, XLSX) {
         A2: cellValue('measurementMoment1Uri'),
         B2: cellValue('name'),
         C2: {
-          f: '=Epochs!C2'
+          v: epochSheet.C2.v,
+          f: 'Epochs!C2'
         },
         D2: cellValue('start'),
         E2: cellValue('offset')
@@ -331,12 +331,17 @@ define(['lodash', 'xlsx-shim', 'angular', 'angular-mocks'], function(_, XLSX) {
 
       var epochSheet = {
         A2: cellValue('epoch1Uri'),
-        A3: cellValue('epoch2Uri')
+        A3: cellValue('epoch2Uri'),
+        B2: cellValue('randomisation'),
+        B3: cellValue('treatment phase')
       };
       var activitiesSheet = {
         A2: cellValue('randomizationUri'),
         A3: cellValue('fixedSingleDoseUri'),
-        A4: cellValue('combiTreatmentUri')
+        A4: cellValue('combiTreatmentUri'),
+        B2: cellValue('randomisation'),
+        B3: cellValue('fixed treatment'),
+        B4: cellValue('combi TreatmentActivity')
       };
       var studyDataSheet = {
         K4: cellValue('arm 1'),
@@ -347,28 +352,36 @@ define(['lodash', 'xlsx-shim', 'angular', 'angular-mocks'], function(_, XLSX) {
         '!ref': 'A1:D3',
         A1: cellValue('arm'),
         B1: {
-          f: '=Epochs!B2'
+          v: epochSheet.B2.v,
+          f: 'Epochs!B2'
         },
         C1: {
-          f: '=Epochs!B3'
+          v: epochSheet.B3.v,
+          f: 'Epochs!B3'
         },
         A2: {
-          f: '=\'Study Data\'!K4'
+          v: studyDataSheet.K4.v,
+          f: '\'Study data\'!K4'
         },
         B2: {
-          f: '=Activities!B2'
+          v: activitiesSheet.B2.v,
+          f: 'Activities!B2'
         },
         C2: {
-          f: '=Activities!B3'
+          v: activitiesSheet.B3.v,
+          f: 'Activities!B3'
         },
         A3: {
-          f: '=\'Study Data\'!K5'
+          v: studyDataSheet.K5.v,
+          f: '\'Study data\'!K5'
         },
         B3: {
-          f: '=Activities!B2'
+          v: activitiesSheet.B2.v,
+          f: 'Activities!B2'
         },
         C3: {
-          f: '=Activities!B4'
+          v: activitiesSheet.B4.v,
+          f: 'Activities!B4'
         }
       };
       var offset = 9;
@@ -455,13 +468,15 @@ define(['lodash', 'xlsx-shim', 'angular', 'angular-mocks'], function(_, XLSX) {
         C3: cellValue('fixed'),
         D3: cellValue(undefined),
         E3: {
-          f: '=Concepts!B6'
+          v: 'drug1',
+          f: 'Concepts!B6'
         },
         F3: cellValue('fixed'),
         G3: cellNumber(1),
         H3: cellNumber(undefined),
         I3: {
-          f: '=Concepts!B8'
+          v: 'milligram',
+          f: 'Concepts!B8'
         },
         J3: cellValue('P1D'), //
         A4: cellValue('combiTreatmentUri'),
@@ -469,23 +484,27 @@ define(['lodash', 'xlsx-shim', 'angular', 'angular-mocks'], function(_, XLSX) {
         C4: cellValue('combination'),
         D4: cellValue(undefined),
         E4: {
-          f: '=Concepts!B6'
+          v: 'drug1',
+          f: 'Concepts!B6'
         },
         F4: cellValue('fixed'),
         G4: cellNumber(2),
         H4: cellNumber(undefined),
         I4: {
-          f: '=Concepts!B8'
+          v: 'milligram',
+          f: 'Concepts!B8'
         },
         J4: cellValue('P1D'), //
         K4: {
-          f: '=Concepts!B7'
+          v: 'drug2',
+          f: 'Concepts!B7'
         },
         L4: cellValue('titrated'),
         M4: cellNumber(3),
         N4: cellNumber(4),
         O4: {
-          f: '=Concepts!B8'
+          v: 'milligram',
+          f: 'Concepts!B8'
         },
         P4: cellValue('P1D')
       };
@@ -535,7 +554,8 @@ define(['lodash', 'xlsx-shim', 'angular', 'angular-mocks'], function(_, XLSX) {
         A1: cellValue('measurementMoment1Uri'),
         A2: cellValue('measurement moment 1'),
         B1: cellValue('measurementMoment2Uri'),
-        B2: cellValue('measurement moment 2')
+        B2: cellValue('measurement moment 2'),
+        C1: cellValue('measurementMoment3Uri')
       };
       var variables = [{
         uri: 'variable1Uri',
@@ -699,10 +719,10 @@ define(['lodash', 'xlsx-shim', 'angular', 'angular-mocks'], function(_, XLSX) {
         K1: cellValue('Arm Information'),
         M1: cellValue('Measurement Information'),
         //row 2 (variable names)
-        M2: cellFormula('=Concepts!B2'),
-        U2: cellFormula('=Concepts!B3'),
-        Z2: cellFormula('=Concepts!B4'),
-        AE2: cellFormula('=Concepts!B5'),
+        M2: cellFormula('Concepts!B2', conceptsSheet.B2.v),
+        U2: cellFormula('Concepts!B3', conceptsSheet.B3.v),
+        Z2: cellFormula('Concepts!B4', conceptsSheet.B4.v),
+        AE2: cellFormula('Concepts!B5', conceptsSheet.B5.v),
         // row 3 )variable detail headers
         A3: cellValue('id'), //row 3
         B3: cellValue('addis url'),
@@ -760,15 +780,15 @@ define(['lodash', 'xlsx-shim', 'angular', 'angular-mocks'], function(_, XLSX) {
         L4: cellValue(arms[0].comment),
         M4: cellValue('baseline characteristic'),
         N4: cellValue('dichotomous'),
-        O4: cellFormula('=\'Measurement moments\'!B1'),
+        O4: cellFormula('\'Measurement moments\'!B1', measurementMomentSheet.B1.v),
         P4: cellNumber(123),
         Q4: cellNumber(37),
-        R4: cellFormula('=\'Measurement moments\'!C1'),
+        R4: cellFormula('\'Measurement moments\'!C1', measurementMomentSheet.C1.v),
         S4: cellNumber(234),
         T4: cellNumber(73),
         U4: cellValue('baseline characteristic'),
         V4: cellValue('categorical'),
-        W4: cellFormula('=\'Measurement moments\'!B1'),
+        W4: cellFormula('\'Measurement moments\'!B1', measurementMomentSheet.B1.v),
         X4: cellNumber(119),
         Y4: cellNumber(201),
         Z4: cellValue('adverse event'),
@@ -776,7 +796,7 @@ define(['lodash', 'xlsx-shim', 'angular', 'angular-mocks'], function(_, XLSX) {
         AE4: cellValue('adverse event'),
         AF4: cellValue('survival'),
         AG4: cellValue('P1Y'),
-        AH4: cellFormula('=\'Measurement moments\'!B1'),
+        AH4: cellFormula('\'Measurement moments\'!B1', measurementMomentSheet.B1.v),
         AI4: cellNumber(123),
         AJ4: cellNumber(3789),
 
@@ -978,7 +998,10 @@ define(['lodash', 'xlsx-shim', 'angular', 'angular-mocks'], function(_, XLSX) {
         var workbook = {
           Sheets: {
             'Study data': {
-              foo: 'bar'
+              foo: 'bar',
+              A5: {
+                v: 'a5value'
+              }
             },
             'something': {
               goo: 'car'
@@ -992,15 +1015,18 @@ define(['lodash', 'xlsx-shim', 'angular', 'angular-mocks'], function(_, XLSX) {
         var expectedResult = {
           Sheets: {
             'Study data': {
-              foo: 'bar'
+              foo: 'bar',
+              A5: {
+                v: 'a5value'
+              }
             },
             'something': {
               goo: 'car',
-              A34: cellFormula('=\'Study data\'!A5')
+              A34: cellFormula('\'Study data\'!A5', workbook.Sheets['Study data'].A5.v)
             },
             'Study design': {
               hoo: 'dar',
-              A555: cellFormula('=\'Study data\'!A5')
+              A555: cellFormula('\'Study data\'!A5', workbook.Sheets['Study data'].A5.v)
             }
           }
         };
@@ -1103,9 +1129,10 @@ define(['lodash', 'xlsx-shim', 'angular', 'angular-mocks'], function(_, XLSX) {
       };
     }
 
-    function cellFormula(formula) {
+    function cellFormula(formula, value) {
       return {
-        f: formula
+        f: formula,
+        v: value
       };
     }
 

@@ -159,11 +159,11 @@ define(['lodash', 'xlsx-shim', 'file-saver'], function(_, XLSX, saveAs) {
     }
 
     function saveWorkBook(workBook, fileName) {
-      var workBookout = XLSX.write(workBook, {
+      var workBookOut = XLSX.write(workBook, {
         bookType: 'xlsx',
         type: 'array'
       });
-      saveAs(new Blob([workBookout], {
+      saveAs(new Blob([workBookOut], {
         type: 'application/octet-stream'
       }), fileName + '.xlsx');
     }
