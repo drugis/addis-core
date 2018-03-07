@@ -125,7 +125,7 @@ define(['angular-mocks'], function() {
                 sampleSize: 36,
                 standardDeviation: 3
               },
-              label: '3.6 ± 3 (36)'
+              label: '3.60 ± 3.00 (36)'
             },
             arm2Uri: {
               endpointUri: 'outcome1Uri',
@@ -136,7 +136,7 @@ define(['angular-mocks'], function() {
                 sampleSize: 136,
                 standardDeviation: 13
               },
-              label: '13.6 ± 13 (136)'
+              label: '13.60 ± 13.00 (136)'
             }
           },
           outcome2Uri: {
@@ -170,7 +170,7 @@ define(['angular-mocks'], function() {
               sampleSize: 36,
               standardDeviation: 3
             },
-            label: '3.6 ± 3 (36)'
+            label: '3.60 ± 3.00 (36)'
           }, {
             endpointUri: 'outcome1Uri',
             armUri: 'arm2Uri',
@@ -180,7 +180,7 @@ define(['angular-mocks'], function() {
               sampleSize: 136,
               standardDeviation: 13
             },
-            label: '13.6 ± 13 (136)'
+            label: '13.60 ± 13.00 (136)'
           }, {
             endpointUri: 'outcome2Uri',
             armUri: 'arm1Uri',
@@ -256,7 +256,7 @@ define(['angular-mocks'], function() {
         expect(result).toEqual(expectedResult);
       });
     });
-    
+
     describe('buildResultLabel', function() {
       it('should return an appropriate label for the given results', function() {
         var resultsObject = {
@@ -276,7 +276,7 @@ define(['angular-mocks'], function() {
             sampleSize: 20
           }
         };
-        expectedLabel = '5.5 ± 0.5 (20)';
+        expectedLabel = '5.50 ± 0.50 (20)';
         expect(expectedLabel).toEqual(d80tableservice.buildResultLabel(resultsObject));
         resultsObject = {
           type: 'wrong type',
@@ -285,6 +285,31 @@ define(['angular-mocks'], function() {
         expect(function() {
           d80tableservice.buildResultLabel(resultsObject);
         }).toThrow('unknown measurement type');
+      });
+      it('should be able to use percentage with event to fill in a missing count', function() {
+        var resultsObject = {
+          type: 'dichotomous',
+          resultProperties: {
+            percentage: 9.61,
+            sampleSize: 52
+          }
+        };
+        var expectedResult = '5/52';
+        var result = d80tableservice.buildResultLabel(resultsObject);
+        expect(result).toEqual(expectedResult);
+      });
+      it('should be able to calculate a missing standard deviation, using the standard error', function() {
+        var resultsObject = {
+          type: 'continuous',
+          resultProperties: {
+            mean: '10',
+            standardError: 2,
+            sampleSize: 100
+          }
+        };
+        var expectedResult = '10.00 ± 20.00 (100)';
+        var result = d80tableservice.buildResultLabel(resultsObject);
+        expect(result).toEqual(expectedResult);
       });
     });
 
