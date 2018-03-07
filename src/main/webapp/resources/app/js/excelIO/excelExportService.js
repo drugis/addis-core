@@ -90,8 +90,6 @@ define(['lodash', 'xlsx-shim', 'file-saver'], function(_, XLSX, saveAs) {
     }
 
     //private
-
-
     function appendStudy(workBook, coordinates, startRows) {
       var newWorkBook = _.cloneDeep(workBook);
       var promises = [StudyService.getJsonGraph()];

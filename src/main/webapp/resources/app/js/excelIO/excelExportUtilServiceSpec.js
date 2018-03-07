@@ -875,15 +875,12 @@ define(['lodash', 'xlsx-shim', 'angular', 'angular-mocks'], function(_, XLSX) {
           c: 'd',
           '!ref': 'A1:D5'
         };
-
         var expectedResult = {
           a: 'b',
           c: 'd',
           '!ref': 'A1:D5'
         };
-
         var result = excelExportUtilService.mergePreservingRange(source, target);
-
         expect(result).toEqual(expectedResult);
       });
       it('should set the ref so it contains the ranges of both sheets if both ranges stretch each other', function() {
@@ -895,15 +892,32 @@ define(['lodash', 'xlsx-shim', 'angular', 'angular-mocks'], function(_, XLSX) {
           c: 'd',
           '!ref': 'A1:B5'
         };
-
         var expectedResult = {
           a: 'b',
           c: 'd',
           '!ref': 'A1:D5'
         };
-
         var result = excelExportUtilService.mergePreservingRange(target, source);
-
+        expect(result).toEqual(expectedResult);
+      });
+      it('should concatenate the !merges property of sheets if any', function() {
+        var source = {
+          a: 'b',
+          '!ref': 'A1:D2',
+          '!merges': [IOU.cellRange(0, 1, 0, 3)]
+        };
+        var target = {
+          c: 'd',
+          '!ref': 'A1:B5',
+          '!merges': [IOU.cellRange(1, 1, 1, 3)]
+        };
+        var expectedResult = {
+          a: 'b',
+          c: 'd',
+          '!ref': 'A1:D5',
+          '!merges': [IOU.cellRange(1, 1, 1, 3), IOU.cellRange(0, 1, 0, 3)]
+        };
+        var result = excelExportUtilService.mergePreservingRange(target, source);
         expect(result).toEqual(expectedResult);
       });
     });

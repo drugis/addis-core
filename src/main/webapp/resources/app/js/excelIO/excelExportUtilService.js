@@ -65,7 +65,15 @@ define(['lodash', 'xlsx-shim'], function(_, XLSX) {
       var ref = {
         '!ref': resultRange
       };
-      return _.merge({}, targetSheet, sourceSheet, ref);
+      var targetMerges = targetSheet['!merges'] ? targetSheet['!merges'] : [];
+      var sourceMerges = sourceSheet['!merges'] ? sourceSheet['!merges'] : [];
+      var merges = {
+        '!merges': targetMerges.concat(sourceMerges)
+      };
+      if (!merges['!merges'].length) {
+        merges = {};
+      }
+      return _.merge({}, targetSheet, sourceSheet, ref, merges);
     }
 
     // ----------- sheet building functions ------------
