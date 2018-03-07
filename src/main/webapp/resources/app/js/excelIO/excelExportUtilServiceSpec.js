@@ -305,7 +305,6 @@ define(['lodash', 'xlsx-shim', 'angular', 'angular-mocks'], function(_, XLSX) {
         A2: cellValue('measurementMoment1Uri'),
         B2: cellValue('name'),
         C2: {
-          v: epochSheet.C2.v,
           f: 'Epochs!C2'
         },
         D2: cellValue('start'),
@@ -352,35 +351,27 @@ define(['lodash', 'xlsx-shim', 'angular', 'angular-mocks'], function(_, XLSX) {
         '!ref': 'A1:D3',
         A1: cellValue('arm'),
         B1: {
-          v: epochSheet.B2.v,
           f: 'Epochs!B2'
         },
         C1: {
-          v: epochSheet.B3.v,
           f: 'Epochs!B3'
         },
         A2: {
-          v: studyDataSheet.K4.v,
           f: '\'Study data\'!K4'
         },
         B2: {
-          v: activitiesSheet.B2.v,
           f: 'Activities!B2'
         },
         C2: {
-          v: activitiesSheet.B3.v,
           f: 'Activities!B3'
         },
         A3: {
-          v: studyDataSheet.K5.v,
           f: '\'Study data\'!K5'
         },
         B3: {
-          v: activitiesSheet.B2.v,
           f: 'Activities!B2'
         },
         C3: {
-          v: activitiesSheet.B4.v,
           f: 'Activities!B4'
         }
       };
@@ -468,14 +459,12 @@ define(['lodash', 'xlsx-shim', 'angular', 'angular-mocks'], function(_, XLSX) {
         C3: cellValue('fixed'),
         D3: cellValue(undefined),
         E3: {
-          v: 'drug1',
           f: 'Concepts!B6'
         },
         F3: cellValue('fixed'),
         G3: cellNumber(1),
         H3: cellNumber(undefined),
         I3: {
-          v: 'milligram',
           f: 'Concepts!B8'
         },
         J3: cellValue('P1D'), //
@@ -484,26 +473,22 @@ define(['lodash', 'xlsx-shim', 'angular', 'angular-mocks'], function(_, XLSX) {
         C4: cellValue('combination'),
         D4: cellValue(undefined),
         E4: {
-          v: 'drug1',
           f: 'Concepts!B6'
         },
         F4: cellValue('fixed'),
         G4: cellNumber(2),
         H4: cellNumber(undefined),
         I4: {
-          v: 'milligram',
           f: 'Concepts!B8'
         },
         J4: cellValue('P1D'), //
         K4: {
-          v: 'drug2',
           f: 'Concepts!B7'
         },
         L4: cellValue('titrated'),
         M4: cellNumber(3),
         N4: cellNumber(4),
         O4: {
-          v: 'milligram',
           f: 'Concepts!B8'
         },
         P4: cellValue('P1D')
@@ -719,10 +704,10 @@ define(['lodash', 'xlsx-shim', 'angular', 'angular-mocks'], function(_, XLSX) {
         K1: cellValue('Arm Information'),
         M1: cellValue('Measurement Information'),
         //row 2 (variable names)
-        M2: cellFormula('Concepts!B2', conceptsSheet.B2.v),
-        U2: cellFormula('Concepts!B3', conceptsSheet.B3.v),
-        Z2: cellFormula('Concepts!B4', conceptsSheet.B4.v),
-        AE2: cellFormula('Concepts!B5', conceptsSheet.B5.v),
+        M2: cellFormula('Concepts!B2'),
+        U2: cellFormula('Concepts!B3'),
+        Z2: cellFormula('Concepts!B4'),
+        AE2: cellFormula('Concepts!B5'),
         // row 3 )variable detail headers
         A3: cellValue('id'), //row 3
         B3: cellValue('addis url'),
@@ -780,15 +765,15 @@ define(['lodash', 'xlsx-shim', 'angular', 'angular-mocks'], function(_, XLSX) {
         L4: cellValue(arms[0].comment),
         M4: cellValue('baseline characteristic'),
         N4: cellValue('dichotomous'),
-        O4: cellFormula('\'Measurement moments\'!B1', measurementMomentSheet.B1.v),
+        O4: cellFormula('\'Measurement moments\'!B1'),
         P4: cellNumber(123),
         Q4: cellNumber(37),
-        R4: cellFormula('\'Measurement moments\'!C1', measurementMomentSheet.C1.v),
+        R4: cellFormula('\'Measurement moments\'!C1'),
         S4: cellNumber(234),
         T4: cellNumber(73),
         U4: cellValue('baseline characteristic'),
         V4: cellValue('categorical'),
-        W4: cellFormula('\'Measurement moments\'!B1', measurementMomentSheet.B1.v),
+        W4: cellFormula('\'Measurement moments\'!B1'),
         X4: cellNumber(119),
         Y4: cellNumber(201),
         Z4: cellValue('adverse event'),
@@ -796,7 +781,7 @@ define(['lodash', 'xlsx-shim', 'angular', 'angular-mocks'], function(_, XLSX) {
         AE4: cellValue('adverse event'),
         AF4: cellValue('survival'),
         AG4: cellValue('P1Y'),
-        AH4: cellFormula('\'Measurement moments\'!B1', measurementMomentSheet.B1.v),
+        AH4: cellFormula('\'Measurement moments\'!B1'),
         AI4: cellNumber(123),
         AJ4: cellNumber(3789),
 
@@ -1022,11 +1007,11 @@ define(['lodash', 'xlsx-shim', 'angular', 'angular-mocks'], function(_, XLSX) {
             },
             'something': {
               goo: 'car',
-              A34: cellFormula('\'Study data\'!A5', workbook.Sheets['Study data'].A5.v)
+              A34: cellFormula('\'Study data\'!A5')
             },
             'Study design': {
               hoo: 'dar',
-              A555: cellFormula('\'Study data\'!A5', workbook.Sheets['Study data'].A5.v)
+              A555: cellFormula('\'Study data\'!A5')
             }
           }
         };
@@ -1129,10 +1114,9 @@ define(['lodash', 'xlsx-shim', 'angular', 'angular-mocks'], function(_, XLSX) {
       };
     }
 
-    function cellFormula(formula, value) {
+    function cellFormula(formula) {
       return {
-        f: formula,
-        v: value
+        f: formula
       };
     }
 

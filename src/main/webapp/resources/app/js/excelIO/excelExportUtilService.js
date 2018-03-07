@@ -131,11 +131,11 @@ define(['lodash', 'xlsx-shim'], function(_, XLSX) {
             var isFixedDose = treatment.treatmentDoseType === 'ontology:FixedDoseDrugTreatment';
             var drugReference = getTitleReference(conceptsSheet, treatment.drug.uri);
             var unitReference = getTitleReference(conceptsSheet, treatment.doseUnit.uri);
-            accum[a1Coordinate(4 + index * 6, row)] = cellFormula('Concepts!' + drugReference.coords, drugReference.value);
+            accum[a1Coordinate(4 + index * 6, row)] = cellFormula('Concepts!' + drugReference);
             accum[a1Coordinate(5 + index * 6, row)] = cellValue(doseTypes[treatment.treatmentDoseType]);
             accum[a1Coordinate(6 + index * 6, row)] = cellNumber(isFixedDose ? treatment.fixedValue : treatment.minValue);
             accum[a1Coordinate(7 + index * 6, row)] = cellNumber(isFixedDose ? undefined : treatment.maxValue);
-            accum[a1Coordinate(8 + index * 6, row)] = cellFormula('Concepts!' + unitReference.coords, unitReference.value);
+            accum[a1Coordinate(8 + index * 6, row)] = cellFormula('Concepts!' + unitReference);
             accum[a1Coordinate(9 + index * 6, row)] = cellValue(treatment.dosingPeriodicity);
           });
         }
@@ -175,7 +175,7 @@ define(['lodash', 'xlsx-shim'], function(_, XLSX) {
         var epochTitleReference = getTitleReference(epochSheet, epoch.uri);
         var column = excelUtils.encode_col(index + 1);
         epochColumnsByUri[epoch.uri] = column;
-        accum[column + (startRow + 1)] = cellFormula('Epochs!' + epochTitleReference.coords, epochTitleReference.value);
+        accum[column + (startRow + 1)] = cellFormula('Epochs!' + epochTitleReference);
         return accum;
       }, {});
       var armReferences = _.reduce(arms, function(accum, arm, index) {
@@ -189,7 +189,7 @@ define(['lodash', 'xlsx-shim'], function(_, XLSX) {
         });
         var armReference = _.findKey(_.pick(studyDataSheet, armCoordinates), ['v', arm.label]);
         armRowsByUri[arm.armURI] = row;
-        accum['A' + row] = cellFormula('\'Study data\'!' + armReference, arm.label);
+        accum['A' + row] = cellFormula('\'Study data\'!' + armReference);
         return accum;
       }, {});
 
@@ -197,7 +197,7 @@ define(['lodash', 'xlsx-shim'], function(_, XLSX) {
         var activityTitleReference = getTitleReference(activitiesSheet, coordinate.activityUri);
 
         accum[epochColumnsByUri[coordinate.epochUri] + armRowsByUri[coordinate.armUri]] = cellFormula(
-          'Activities!' + activityTitleReference.coords, activityTitleReference.value);
+          'Activities!' + activityTitleReference);
         return accum;
       }, {});
 
@@ -229,7 +229,7 @@ define(['lodash', 'xlsx-shim'], function(_, XLSX) {
         var epochTitleReference = getTitleReference(epochSheet, measurementMoment.epochUri);
         accum['A' + row] = cellValue(measurementMoment.uri);
         accum['B' + row] = cellValue(measurementMoment.label);
-        accum['C' + row] = cellFormula('Epochs!' + epochTitleReference.coords, epochTitleReference.value);
+        accum['C' + row] = cellFormula('Epochs!' + epochTitleReference);
         accum['D' + row] = cellValue(fromTypes[measurementMoment.relativeToAnchor]);
         accum['E' + row] = cellValue(measurementMoment.offset);
         return accum;
@@ -338,8 +338,7 @@ define(['lodash', 'xlsx-shim'], function(_, XLSX) {
         var newSheet = _.cloneDeep(sheet);
         if (sheetName !== 'Study data') {
           var location = 'A' + (startRows['Study data'] + 4);
-          newSheet['A' + (startRows[sheetName] + (sheetName === 'Study design' ? 0 : 1))] = cellFormula('\'Study data\'!' +
-            location, workBook.Sheets['Study data'][location].v);
+          newSheet['A' + (startRows[sheetName] + (sheetName === 'Study design' ? 0 : 1))] = cellFormula('\'Study data\'!' + location);
         }
         accum[sheetName] = newSheet;
         return accum;
@@ -410,7 +409,7 @@ define(['lodash', 'xlsx-shim'], function(_, XLSX) {
 
       var variableReference = getTitleReference(context.conceptsSheet, variable.uri);
       var baseColumns = [
-        [cellFormula('Concepts!' + variableReference.coords, variableReference.value), cellValue('variable type'), cellValue(variable.type)],
+        [cellFormula('Concepts!' + variableReference), cellValue('variable type'), cellValue(variable.type)],
         [undefined, cellValue('measurement type'), cellValue(measurementTypes[variable.measurementType])]
       ];
 
@@ -440,7 +439,7 @@ define(['lodash', 'xlsx-shim'], function(_, XLSX) {
     function buildMeasurementMomentBlocks(context, measuredAtMoment) {
       var measurementMomentTitleReference = getTitleReference(context.measurementMomentSheet, measuredAtMoment.uri);
       var baseColumns = [
-        [undefined, cellValue('measurement moment'), cellFormula('\'Measurement moments\'!' + measurementMomentTitleReference.coords, measurementMomentTitleReference.value)]
+        [undefined, cellValue('measurement moment'), cellFormula('\'Measurement moments\'!' + measurementMomentTitleReference)]
       ];
       var measuredAtContext = _.merge({
         measurementMoment: measuredAtMoment
@@ -572,11 +571,7 @@ define(['lodash', 'xlsx-shim'], function(_, XLSX) {
       var uriReference = _.findKey(sheet, ['v', uri]);
       var titleReference = excelUtils.decode_cell(uriReference);
       titleReference.c += 1;
-      var a1Coordinate = excelUtils.encode_cell(titleReference);
-      return {
-        coords: a1Coordinate,
-        value: sheet[a1Coordinate].v
-      };
+      return excelUtils.encode_cell(titleReference);
     }
 
     function cellValue(value) {
@@ -592,10 +587,9 @@ define(['lodash', 'xlsx-shim'], function(_, XLSX) {
       };
     }
 
-    function cellFormula(formula, value) {
+    function cellFormula(formula) {
       return {
-        f: formula,
-        v: value
+        f: formula
       };
     }
 

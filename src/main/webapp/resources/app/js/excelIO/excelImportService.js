@@ -174,6 +174,7 @@ define(['lodash', 'util/context', 'util/constants', 'xlsx-shim'], function(_, ex
         var data = file.target.result;
         try {
           workbook = XLSX.read(data, {
+            sheetStubs: true,
             type: 'binary'
           });
           scope.errors = validityChecker(workbook);
