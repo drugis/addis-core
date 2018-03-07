@@ -2,12 +2,14 @@
 var requires = [
   'excelIO/excelImportService',
   'excelIO/excelExportService',
-  'excelIO/excelExportUtilService'
+  'excelIO/excelExportUtilService',
+  'excelIO/excelIOUtilService'
 ];
 define(requires.concat(['angular', 'angular-resource']), function(
   ExcelImportService,
   ExcelExportService,
   ExcelExportUtilService,
+  ExcelIOUtilService,
   angular
 ) {
   return angular.module('addis.excelIO', ['ngResource',
@@ -17,5 +19,6 @@ define(requires.concat(['angular', 'angular-resource']), function(
     //services
     .factory('ExcelImportService', ExcelImportService)
     .factory('ExcelExportService', ExcelExportService)
+    .factory('ExcelIOUtilService', ExcelIOUtilService)
     .factory('ExcelExportUtilService', ExcelExportUtilService);
 });

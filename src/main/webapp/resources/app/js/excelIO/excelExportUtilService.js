@@ -6,7 +6,8 @@ define(['lodash', 'xlsx-shim'], function(_, XLSX) {
     'GROUP_ALLOCATION_OPTIONS',
     'BLINDING_OPTIONS',
     'STATUS_OPTIONS',
-    'ResultsService'
+    'ResultsService',
+    'ExcelIOUtilService'
   ];
   var ExcelExportService = function(
     $q,
@@ -14,7 +15,8 @@ define(['lodash', 'xlsx-shim'], function(_, XLSX) {
     GROUP_ALLOCATION_OPTIONS,
     BLINDING_OPTIONS,
     STATUS_OPTIONS,
-    ResultsService
+    ResultsService,
+    IOU
   ) {
     var excelUtils = XLSX.utils;
 
@@ -87,8 +89,8 @@ define(['lodash', 'xlsx-shim'], function(_, XLSX) {
         .map(excelUtils.decode_cell)
         .map('c')
         .max() : 12;
-      studyDataSheet['!merges'] = studyDataSheet['!merges'].concat([cellRange(12, 0, lastColumn, 0)], variablesData.merges, armMerges);
-      studyDataSheet['!ref'] = 'A1:' + a1Coordinate(lastColumn, startRow + 3 + arms.length);
+      studyDataSheet['!merges'] = studyDataSheet['!merges'].concat([IOU.cellRange(12, 0, lastColumn, 0)], variablesData.merges, armMerges);
+      studyDataSheet['!ref'] = 'A1:' + IOU.a1Coordinate(lastColumn, startRow + 3 + arms.length);
       return studyDataSheet;
     }
 
@@ -100,71 +102,71 @@ define(['lodash', 'xlsx-shim'], function(_, XLSX) {
       };
 
       var sheet = {
-        A1: cellValue('id'),
-        B1: cellValue('title'),
-        C1: cellValue('type'),
-        D1: cellValue('description')
+        A1: IOU.cellValue('id'),
+        B1: IOU.cellValue('title'),
+        C1: IOU.cellValue('type'),
+        D1: IOU.cellValue('description')
       };
 
       var maxTreatments = _.max(_.map(activities, function(activity) {
         return activity.treatments ? activity.treatments.length : 0;
       }));
       var colHeaders = _.reduce(_.range(0, maxTreatments), function(accum, i) {
-        accum[a1Coordinate(4 + i * 6, 0)] = cellValue('drug label');
-        accum[a1Coordinate(5 + i * 6, 0)] = cellValue('dose type');
-        accum[a1Coordinate(6 + i * 6, 0)] = cellValue('dose');
-        accum[a1Coordinate(7 + i * 6, 0)] = cellValue('max dose');
-        accum[a1Coordinate(8 + i * 6, 0)] = cellValue('unit');
-        accum[a1Coordinate(9 + i * 6, 0)] = cellValue('periodicity');
+        accum[IOU.a1Coordinate(4 + i * 6, 0)] = IOU.cellValue('drug label');
+        accum[IOU.a1Coordinate(5 + i * 6, 0)] = IOU.cellValue('dose type');
+        accum[IOU.a1Coordinate(6 + i * 6, 0)] = IOU.cellValue('dose');
+        accum[IOU.a1Coordinate(7 + i * 6, 0)] = IOU.cellValue('max dose');
+        accum[IOU.a1Coordinate(8 + i * 6, 0)] = IOU.cellValue('unit');
+        accum[IOU.a1Coordinate(9 + i * 6, 0)] = IOU.cellValue('periodicity');
         return accum;
       }, {});
 
       var activityData = _.reduce(activities, function(accum, activity, index) {
         var row = startRow + index + 1;
-        accum[a1Coordinate(0, row)] = cellValue(activity.activityUri);
-        accum[a1Coordinate(1, row)] = cellValue(activity.label);
-        accum[a1Coordinate(2, row)] = cellValue(activity.activityType.label);
-        accum[a1Coordinate(3, row)] = cellValue(activity.activityDescription);
+        accum[IOU.a1Coordinate(0, row)] = IOU.cellValue(activity.activityUri);
+        accum[IOU.a1Coordinate(1, row)] = IOU.cellValue(activity.label);
+        accum[IOU.a1Coordinate(2, row)] = IOU.cellValue(activity.activityType.label);
+        accum[IOU.a1Coordinate(3, row)] = IOU.cellValue(activity.activityDescription);
 
         if (activity.activityType.uri === 'ontology:TreatmentActivity') {
           _.forEach(activity.treatments, function(treatment, index) {
             var isFixedDose = treatment.treatmentDoseType === 'ontology:FixedDoseDrugTreatment';
-            var drugReference = getTitleReference(conceptsSheet, treatment.drug.uri);
-            var unitReference = getTitleReference(conceptsSheet, treatment.doseUnit.uri);
-            accum[a1Coordinate(4 + index * 6, row)] = cellFormula('Concepts!' + drugReference);
-            accum[a1Coordinate(5 + index * 6, row)] = cellValue(doseTypes[treatment.treatmentDoseType]);
-            accum[a1Coordinate(6 + index * 6, row)] = cellNumber(isFixedDose ? treatment.fixedValue : treatment.minValue);
-            accum[a1Coordinate(7 + index * 6, row)] = cellNumber(isFixedDose ? undefined : treatment.maxValue);
-            accum[a1Coordinate(8 + index * 6, row)] = cellFormula('Concepts!' + unitReference);
-            accum[a1Coordinate(9 + index * 6, row)] = cellValue(treatment.dosingPeriodicity);
+            var drugReference = IOU.getTitleReference(conceptsSheet, treatment.drug.uri);
+            var unitReference = IOU.getTitleReference(conceptsSheet, treatment.doseUnit.uri);
+            accum[IOU.a1Coordinate(4 + index * 6, row)] = IOU.cellFormula('Concepts!' + drugReference);
+            accum[IOU.a1Coordinate(5 + index * 6, row)] = IOU.cellValue(doseTypes[treatment.treatmentDoseType]);
+            accum[IOU.a1Coordinate(6 + index * 6, row)] = IOU.cellNumber(isFixedDose ? treatment.fixedValue : treatment.minValue);
+            accum[IOU.a1Coordinate(7 + index * 6, row)] = IOU.cellNumber(isFixedDose ? undefined : treatment.maxValue);
+            accum[IOU.a1Coordinate(8 + index * 6, row)] = IOU.cellFormula('Concepts!' + unitReference);
+            accum[IOU.a1Coordinate(9 + index * 6, row)] = IOU.cellValue(treatment.dosingPeriodicity);
           });
         }
         return accum;
       }, {});
 
-      return _.merge(cellReference('A1:' + a1Coordinate(4 + maxTreatments * 6, startRow + activities.length)), sheet, colHeaders, activityData);
+      return _.merge(IOU.cellReference('A1:' + IOU.a1Coordinate(4 + maxTreatments * 6, startRow + activities.length)), sheet, colHeaders, activityData);
     }
 
     function buildEpochSheet(startRows, epochs) {
       var startRow = startRows.Epochs;
       var epochHeaders = {
-        A1: cellValue('id'),
-        B1: cellValue('name'),
-        C1: cellValue('description'),
-        D1: cellValue('duration'),
-        E1: cellValue('Is primary?')
+        A1: IOU.cellValue('id'),
+        B1: IOU.cellValue('name'),
+        C1: IOU.cellValue('description'),
+        D1: IOU.cellValue('duration'),
+        E1: IOU.cellValue('Is primary?')
       };
       var epochData = _.reduce(epochs, function(accum, epoch, index) {
         var row = startRow + index + 2;
-        accum['A' + row] = cellValue(epoch.uri);
-        accum['B' + row] = cellValue(epoch.label);
-        accum['C' + row] = cellValue(epoch.comment);
-        accum['D' + row] = cellValue(epoch.duration);
-        accum['E' + row] = cellValue(epoch.isPrimary);
+        accum['A' + row] = IOU.cellValue(epoch.uri);
+        accum['B' + row] = IOU.cellValue(epoch.label);
+        accum['C' + row] = IOU.cellValue(epoch.comment);
+        accum['D' + row] = IOU.cellValue(epoch.duration);
+        accum['E' + row] = IOU.cellValue(epoch.isPrimary);
         return accum;
       }, {});
 
-      return _.merge(cellReference('A1:E' + (startRow + epochs.length + 1)), epochHeaders, epochData);
+      return _.merge(IOU.cellReference('A1:E' + (startRow + epochs.length + 1)), epochHeaders, epochData);
     }
 
     function buildStudyDesignSheet(startRows, epochs, arms, studyDesign, epochSheet, activitiesSheet, studyDataSheet) {
@@ -172,10 +174,10 @@ define(['lodash', 'xlsx-shim'], function(_, XLSX) {
       var epochColumnsByUri = {};
       var armRowsByUri = {};
       var epochHeaders = _.reduce(epochs, function(accum, epoch, index) {
-        var epochTitleReference = getTitleReference(epochSheet, epoch.uri);
+        var epochTitleReference = IOU.getTitleReference(epochSheet, epoch.uri);
         var column = excelUtils.encode_col(index + 1);
         epochColumnsByUri[epoch.uri] = column;
-        accum[column + (startRow + 1)] = cellFormula('Epochs!' + epochTitleReference);
+        accum[column + (startRow + 1)] = IOU.cellFormula('Epochs!' + epochTitleReference);
         return accum;
       }, {});
       var armReferences = _.reduce(arms, function(accum, arm, index) {
@@ -189,20 +191,20 @@ define(['lodash', 'xlsx-shim'], function(_, XLSX) {
         });
         var armReference = _.findKey(_.pick(studyDataSheet, armCoordinates), ['v', arm.label]);
         armRowsByUri[arm.armURI] = row;
-        accum['A' + row] = cellFormula('\'Study data\'!' + armReference);
+        accum['A' + row] = IOU.cellFormula('\'Study data\'!' + armReference);
         return accum;
       }, {});
 
       var activityReferences = _.reduce(studyDesign, function(accum, coordinate) {
-        var activityTitleReference = getTitleReference(activitiesSheet, coordinate.activityUri);
+        var activityTitleReference = IOU.getTitleReference(activitiesSheet, coordinate.activityUri);
 
-        accum[epochColumnsByUri[coordinate.epochUri] + armRowsByUri[coordinate.armUri]] = cellFormula(
+        accum[epochColumnsByUri[coordinate.epochUri] + armRowsByUri[coordinate.armUri]] = IOU.cellFormula(
           'Activities!' + activityTitleReference);
         return accum;
       }, {});
 
       var cornerCell = {};
-      cornerCell['A' + (1 + startRow)] = cellValue('arm');
+      cornerCell['A' + (1 + startRow)] = IOU.cellValue('arm');
       var studyDesignSheet = _.merge(cornerCell, epochHeaders, armReferences, activityReferences);
       var lastColumn = excelUtils.encode_col(1 + epochs.length);
       studyDesignSheet['!ref'] = 'A1:' + lastColumn + (startRow + arms.length + 1);
@@ -217,59 +219,59 @@ define(['lodash', 'xlsx-shim'], function(_, XLSX) {
         'ontology:anchorEpochEnd': 'end'
       };
       var measurementMomentHeaders = {
-        A1: cellValue('id'),
-        B1: cellValue('name'),
-        C1: cellValue('epoch'),
-        D1: cellValue('from'),
-        E1: cellValue('offset')
+        A1: IOU.cellValue('id'),
+        B1: IOU.cellValue('name'),
+        C1: IOU.cellValue('epoch'),
+        D1: IOU.cellValue('from'),
+        E1: IOU.cellValue('offset')
       };
 
       var measurementMomentData = _.reduce(measurementMoments, function(accum, measurementMoment, index) {
         var row = startRow + index + 2;
-        var epochTitleReference = getTitleReference(epochSheet, measurementMoment.epochUri);
-        accum['A' + row] = cellValue(measurementMoment.uri);
-        accum['B' + row] = cellValue(measurementMoment.label);
-        accum['C' + row] = cellFormula('Epochs!' + epochTitleReference);
-        accum['D' + row] = cellValue(fromTypes[measurementMoment.relativeToAnchor]);
-        accum['E' + row] = cellValue(measurementMoment.offset);
+        var epochTitleReference = IOU.getTitleReference(epochSheet, measurementMoment.epochUri);
+        accum['A' + row] = IOU.cellValue(measurementMoment.uri);
+        accum['B' + row] = IOU.cellValue(measurementMoment.label);
+        accum['C' + row] = IOU.cellFormula('Epochs!' + epochTitleReference);
+        accum['D' + row] = IOU.cellValue(fromTypes[measurementMoment.relativeToAnchor]);
+        accum['E' + row] = IOU.cellValue(measurementMoment.offset);
         return accum;
       }, {});
-      return _.merge(cellReference('A1:E' + (startRow + measurementMoments.length + 1)), measurementMomentHeaders, measurementMomentData);
+      return _.merge(IOU.cellReference('A1:E' + (startRow + measurementMoments.length + 1)), measurementMomentHeaders, measurementMomentData);
     }
 
     function buildConceptsSheet(startRows, studyConcepts) {
       var startRow = startRows.Concepts;
       var conceptsHeaders = {
-        A1: cellValue('id'),
-        B1: cellValue('label'),
-        C1: cellValue('type'),
-        D1: cellValue('dataset concept uri'),
-        E1: cellValue('multiplier')
+        A1: IOU.cellValue('id'),
+        B1: IOU.cellValue('label'),
+        C1: IOU.cellValue('type'),
+        D1: IOU.cellValue('dataset concept uri'),
+        E1: IOU.cellValue('multiplier')
       };
 
       var conceptsData = _.reduce(studyConcepts, function(accum, concept, index) {
         var row = startRow + index + 2;
-        accum['A' + row] = cellValue(concept.uri);
-        accum['B' + row] = cellValue(concept.label);
-        accum['C' + row] = cellValue(concept.type);
-        accum['D' + row] = concept.conceptMapping ? cellValue(concept.conceptMapping) : undefined;
-        accum['E' + row] = cellNumber(concept.conversionMultiplier);
+        accum['A' + row] = IOU.cellValue(concept.uri);
+        accum['B' + row] = IOU.cellValue(concept.label);
+        accum['C' + row] = IOU.cellValue(concept.type);
+        accum['D' + row] = concept.conceptMapping ? IOU.cellValue(concept.conceptMapping) : undefined;
+        accum['E' + row] = IOU.cellNumber(concept.conversionMultiplier);
         return accum;
       }, {});
-      var ref = cellReference('A1:E' + (studyConcepts.length + startRow + 1));
+      var ref = IOU.cellReference('A1:E' + (studyConcepts.length + startRow + 1));
       return _.merge({}, ref, conceptsHeaders, conceptsData);
     }
 
     function buildDatasetInformationSheet(datasetWithCoordinates) {
       var datasetInfomationHeaders = {
-        A1: cellValue('title'),
-        B1: cellValue('ADDIS url'),
-        C1: cellValue('description'),
+        A1: IOU.cellValue('title'),
+        B1: IOU.cellValue('ADDIS url'),
+        C1: IOU.cellValue('description'),
       };
       var datasetInfomationData = {
-        A2: cellValue(datasetWithCoordinates.title),
-        B2: cellLink(datasetWithCoordinates.url),
-        C2: cellValue(datasetWithCoordinates.comment)
+        A2: IOU.cellValue(datasetWithCoordinates.title),
+        B2: IOU.cellLink(datasetWithCoordinates.url),
+        C2: IOU.cellValue(datasetWithCoordinates.comment)
       };
       return _.merge({
         '!ref': 'A1:C2'
@@ -278,15 +280,15 @@ define(['lodash', 'xlsx-shim'], function(_, XLSX) {
 
     function buildDatasetConceptsSheet(datasetConcepts) {
       var datasetConceptsHeaders = {
-        A1: cellValue('id'),
-        B1: cellValue('label'),
-        C1: cellValue('type')
+        A1: IOU.cellValue('id'),
+        B1: IOU.cellValue('label'),
+        C1: IOU.cellValue('type')
       };
       var datasetConceptsData = _.reduce(datasetConcepts, function(accum, datasetConcept, index) {
         var row = index + 2;
-        accum['A' + row] = cellValue(datasetConcept.uri);
-        accum['B' + row] = cellValue(datasetConcept.label);
-        accum['C' + row] = cellValue(datasetConcept.type.label);
+        accum['A' + row] = IOU.cellValue(datasetConcept.uri);
+        accum['B' + row] = IOU.cellValue(datasetConcept.label);
+        accum['C' + row] = IOU.cellValue(datasetConcept.type.label);
         return accum;
       }, {});
       var ref = 'A1:C' + (datasetConcepts.length + 1);
@@ -338,7 +340,7 @@ define(['lodash', 'xlsx-shim'], function(_, XLSX) {
         var newSheet = _.cloneDeep(sheet);
         if (sheetName !== 'Study data') {
           var location = 'A' + (startRows['Study data'] + 4);
-          newSheet['A' + (startRows[sheetName] + (sheetName === 'Study design' ? 0 : 1))] = cellFormula('\'Study data\'!' + location);
+          newSheet['A' + (startRows[sheetName] + (sheetName === 'Study design' ? 0 : 1))] = IOU.cellFormula('\'Study data\'!' + location);
         }
         accum[sheetName] = newSheet;
         return accum;
@@ -376,8 +378,8 @@ define(['lodash', 'xlsx-shim'], function(_, XLSX) {
       _.forEach(variables, function(variable) {
         // first two columns are always merged
         var firstDataRow = anchorCell.r + 2;
-        merges.push(cellRange(currentAnchorCol, firstDataRow, currentAnchorCol, firstDataRow + numberofArms - 1));
-        merges.push(cellRange(currentAnchorCol + 1, firstDataRow, currentAnchorCol + 1, firstDataRow + numberofArms - 1));
+        merges.push(IOU.cellRange(currentAnchorCol, firstDataRow, currentAnchorCol, firstDataRow + numberofArms - 1));
+        merges.push(IOU.cellRange(currentAnchorCol + 1, firstDataRow, currentAnchorCol + 1, firstDataRow + numberofArms - 1));
 
         var numberOfPropertyColumns = calcNumberOfPropertyColumns(variable);
         var numberOfMeasurementMoments = variable.measuredAtMoments.length;
@@ -385,13 +387,13 @@ define(['lodash', 'xlsx-shim'], function(_, XLSX) {
         // for every measurement moment we merge the first column
         _.forEach(_.range(0, numberOfMeasurementMoments), function(index) {
           var positionOfMeasurementMoment = currentAnchorCol + 2 + ((numberOfPropertyColumns + 1) * index);
-          merges.push(cellRange(positionOfMeasurementMoment, firstDataRow, positionOfMeasurementMoment, firstDataRow + numberofArms - 1));
+          merges.push(IOU.cellRange(positionOfMeasurementMoment, firstDataRow, positionOfMeasurementMoment, firstDataRow + numberofArms - 1));
         });
         var totalVariableLength = 2 + (numberOfPropertyColumns + 1) * numberOfMeasurementMoments;
-        merges.push(cellRange(currentAnchorCol, anchorCell.r, currentAnchorCol + totalVariableLength - 1, anchorCell.r));
+        merges.push(IOU.cellRange(currentAnchorCol, anchorCell.r, currentAnchorCol + totalVariableLength - 1, anchorCell.r));
         currentAnchorCol = currentAnchorCol + totalVariableLength;
       });
-      var variablesData = arrayToA1FromCoordinate(anchorCell.c, anchorCell.r, variableBlocks);
+      var variablesData = IOU.arrayToA1FromCoordinate(anchorCell.c, anchorCell.r, variableBlocks);
       return {
         data: variablesData,
         merges: merges
@@ -407,14 +409,14 @@ define(['lodash', 'xlsx-shim'], function(_, XLSX) {
         'ontology:survival': 'survival'
       };
 
-      var variableReference = getTitleReference(context.conceptsSheet, variable.uri);
+      var variableReference = IOU.getTitleReference(context.conceptsSheet, variable.uri);
       var baseColumns = [
-        [cellFormula('Concepts!' + variableReference), cellValue('variable type'), cellValue(variable.type)],
-        [undefined, cellValue('measurement type'), cellValue(measurementTypes[variable.measurementType])]
+        [IOU.cellFormula('Concepts!' + variableReference), IOU.cellValue('variable type'), IOU.cellValue(variable.type)],
+        [undefined, IOU.cellValue('measurement type'), IOU.cellValue(measurementTypes[variable.measurementType])]
       ];
 
       if (hasTimeScaleColumn(variable)) {
-        baseColumns.push([undefined, cellValue('time scale'), cellValue(variable.timeScale)]);
+        baseColumns.push([undefined, IOU.cellValue('time scale'), IOU.cellValue(variable.timeScale)]);
       }
       var measuredAtContext = _.merge({
         variable: variable
@@ -430,16 +432,16 @@ define(['lodash', 'xlsx-shim'], function(_, XLSX) {
           properties = _.map(measuredAtContext.variable.categoryList, 'label');
         }
         measurementsBlocks = _.map(properties, function(property) {
-          return [undefined, cellValue(property)];
+          return [undefined, IOU.cellValue(property)];
         });
       }
       return baseColumns.concat(measurementsBlocks);
     }
 
     function buildMeasurementMomentBlocks(context, measuredAtMoment) {
-      var measurementMomentTitleReference = getTitleReference(context.measurementMomentSheet, measuredAtMoment.uri);
+      var measurementMomentTitleReference = IOU.getTitleReference(context.measurementMomentSheet, measuredAtMoment.uri);
       var baseColumns = [
-        [undefined, cellValue('measurement moment'), cellFormula('\'Measurement moments\'!' + measurementMomentTitleReference)]
+        [undefined, IOU.cellValue('measurement moment'), IOU.cellFormula('\'Measurement moments\'!' + measurementMomentTitleReference)]
       ];
       var measuredAtContext = _.merge({
         measurementMoment: measuredAtMoment
@@ -467,58 +469,58 @@ define(['lodash', 'xlsx-shim'], function(_, XLSX) {
     }
 
     function buildResultColumn(context, resultProperty) {
-      return [undefined, cellValue(context.labelExtractor(resultProperty))].concat(_.map(context.arms, function(arm) {
+      return [undefined, IOU.cellValue(context.labelExtractor(resultProperty))].concat(_.map(context.arms, function(arm) {
         var result = _.find(context.variable.results, function(result) {
           return result.momentUri === context.measurementMoment.uri &&
             result.armUri === arm.armURI &&
             context.isResultForThisProperty(result, resultProperty);
         });
-        return result ? cellNumber(result.value) : undefined;
+        return result ? IOU.cellNumber(result.value) : undefined;
       }));
     }
 
     function initStudyDataSheet() {
       var studyDataSheet = {
-        A1: cellValue('Study Information'),
-        I1: cellValue('Population Information'),
-        K1: cellValue('Arm Information'),
-        M1: cellValue('Measurement Information')
+        A1: IOU.cellValue('Study Information'),
+        I1: IOU.cellValue('Population Information'),
+        K1: IOU.cellValue('Arm Information'),
+        M1: IOU.cellValue('Measurement Information')
       };
       studyDataSheet['!merges'] = [
-        cellRange(0, 0, 7, 0), // Study Information header
-        cellRange(8, 0, 9, 0), // Population information header
-        cellRange(10, 0, 11, 0) // arm information header
+        IOU.cellRange(0, 0, 7, 0), // Study Information header
+        IOU.cellRange(8, 0, 9, 0), // Population information header
+        IOU.cellRange(10, 0, 11, 0) // arm information header
       ];
       return studyDataSheet;
     }
 
     function buildStudyHeaders(startRow) {
-      return arrayToA1FromCoordinate(0, startRow + 2, [
-        [cellValue('id')],
-        [cellValue('addis url')],
-        [cellValue('title')],
-        [cellValue('group allocation')],
-        [cellValue('blinding')],
-        [cellValue('status')],
-        [cellValue('number of centers')],
-        [cellValue('objective')],
-        [cellValue('indication')],
-        [cellValue('eligibility criteria')],
-        [cellValue('title')],
-        [cellValue('description')]
+      return IOU.arrayToA1FromCoordinate(0, startRow + 2, [
+        [IOU.cellValue('id')],
+        [IOU.cellValue('addis url')],
+        [IOU.cellValue('title')],
+        [IOU.cellValue('group allocation')],
+        [IOU.cellValue('blinding')],
+        [IOU.cellValue('status')],
+        [IOU.cellValue('number of centers')],
+        [IOU.cellValue('objective')],
+        [IOU.cellValue('indication')],
+        [IOU.cellValue('eligibility criteria')],
+        [IOU.cellValue('title')],
+        [IOU.cellValue('description')]
       ]);
     }
 
     function buildStudyInformation(startRow, study, studyInformation, studyUrl) {
-      return arrayToA1FromCoordinate(0, startRow + 3, [
-        [cellValue(study.label)],
-        [cellLink(studyUrl)],
-        [cellValue(study.comment)],
-        [cellValue(studyInformation.allocation ? GROUP_ALLOCATION_OPTIONS[studyInformation.allocation].label : undefined)],
-        [cellValue(studyInformation.blinding ? BLINDING_OPTIONS[studyInformation.blinding].label : undefined)],
-        [cellValue(studyInformation.status ? STATUS_OPTIONS[studyInformation.status].label : undefined)],
-        [cellNumber(studyInformation.numberOfCenters)],
-        [cellValue(studyInformation.objective ? studyInformation.objective.comment : undefined)]
+      return IOU.arrayToA1FromCoordinate(0, startRow + 3, [
+        [IOU.cellValue(study.label)],
+        [IOU.cellLink(studyUrl)],
+        [IOU.cellValue(study.comment)],
+        [IOU.cellValue(studyInformation.allocation ? GROUP_ALLOCATION_OPTIONS[studyInformation.allocation].label : undefined)],
+        [IOU.cellValue(studyInformation.blinding ? BLINDING_OPTIONS[studyInformation.blinding].label : undefined)],
+        [IOU.cellValue(studyInformation.status ? STATUS_OPTIONS[studyInformation.status].label : undefined)],
+        [IOU.cellNumber(studyInformation.numberOfCenters)],
+        [IOU.cellValue(studyInformation.objective ? studyInformation.objective.comment : undefined)]
       ]);
     }
 
@@ -528,22 +530,22 @@ define(['lodash', 'xlsx-shim'], function(_, XLSX) {
       };
       return _.reduce(arms.concat(overallPopulation), function(acc, arm, idx) {
         var rowNum = startRow + 4 + idx;
-        acc['K' + rowNum] = cellValue(arm.label);
-        acc['L' + rowNum] = cellValue(arm.comment);
+        acc['K' + rowNum] = IOU.cellValue(arm.label);
+        acc['L' + rowNum] = IOU.cellValue(arm.comment);
         return acc;
       }, {});
     }
 
     function buildArmMerges(startRow, arms) { // vertical merges for all study information across arms
       return _.map(_.range(0, 10), function(i) {
-        return cellRange(i, startRow + 3, i, startRow + 3 + arms.length - 1);
+        return IOU.cellRange(i, startRow + 3, i, startRow + 3 + arms.length - 1);
       });
     }
 
     function buildPopulationInformationData(startRow, populationInformation) {
       var populationInformationData = {};
-      populationInformationData['I' + (startRow + 4)] = cellValue(populationInformation.indication ? populationInformation.indication.label : undefined);
-      populationInformationData['J' + (startRow + 4)] = cellValue(populationInformation.eligibilityCriteria ? populationInformation.eligibilityCriteria.label : undefined);
+      populationInformationData['I' + (startRow + 4)] = IOU.cellValue(populationInformation.indication ? populationInformation.indication.label : undefined);
+      populationInformationData['J' + (startRow + 4)] = IOU.cellValue(populationInformation.eligibilityCriteria ? populationInformation.eligibilityCriteria.label : undefined);
       return populationInformationData;
     }
 
@@ -567,80 +569,6 @@ define(['lodash', 'xlsx-shim'], function(_, XLSX) {
       });
     }
 
-    function getTitleReference(sheet, uri) {
-      var uriReference = _.findKey(sheet, ['v', uri]);
-      var titleReference = excelUtils.decode_cell(uriReference);
-      titleReference.c += 1;
-      return excelUtils.encode_cell(titleReference);
-    }
-
-    function cellValue(value) {
-      return {
-        v: value
-      };
-    }
-
-    function cellNumber(value) {
-      return {
-        v: value,
-        t: 'n'
-      };
-    }
-
-    function cellFormula(formula) {
-      return {
-        f: formula
-      };
-    }
-
-    function cellReference(reference) {
-      return {
-        '!ref': reference
-      };
-    }
-
-    function cellLink(url) {
-      return {
-        v: url,
-        l: {
-          Target: url
-        }
-      };
-    }
-
-    function cellRange(startCol, startRow, endCol, endRow) {
-      return {
-        s: {
-          c: startCol,
-          r: startRow
-        },
-        e: {
-          c: endCol,
-          r: endRow
-        }
-      };
-    }
-
-    function a1Coordinate(column, row) {
-      return excelUtils.encode_cell({
-        c: column,
-        r: row
-      });
-    }
-
-    /*
-     * Create a A1-indexed object from the two-dimensional data-array.
-     * Columns will be created from the first index, rows from the second.
-     */
-    function arrayToA1FromCoordinate(anchorColumn, anchorRow, data) {
-      return _.reduce(data, function(accum, column, colIndex) {
-        return _.reduce(column, function(accum, cell, rowIndex) {
-          accum[a1Coordinate(anchorColumn + colIndex, anchorRow + rowIndex)] = cell;
-          return accum;
-        }, accum);
-      }, {});
-    }
-
     // interface
     return {
       getVariableResults: getVariableResults,
@@ -654,7 +582,6 @@ define(['lodash', 'xlsx-shim'], function(_, XLSX) {
       buildDatasetInformationSheet: buildDatasetInformationSheet,
       buildDatasetConceptsSheet: buildDatasetConceptsSheet,
       addConceptType: addConceptType,
-      arrayToA1FromCoordinate: arrayToA1FromCoordinate,
       addStudyHeaders: addStudyHeaders,
       getStudyUrl: getStudyUrl,
       buildWorkBook: buildWorkBook,

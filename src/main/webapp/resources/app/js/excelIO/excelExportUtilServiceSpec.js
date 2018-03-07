@@ -3,6 +3,7 @@ define(['lodash', 'xlsx-shim', 'angular', 'angular-mocks'], function(_, XLSX) {
   describe('the excel export util service', function() {
     var rootScope, q;
     var excelExportUtilService;
+    var IOU;
     var resultsService = jasmine.createSpyObj('ResultsService', ['queryResults']);
     var GROUP_ALLOCATION_OPTIONS = {
       randomized: {
@@ -132,22 +133,7 @@ define(['lodash', 'xlsx-shim', 'angular', 'angular-mocks'], function(_, XLSX) {
         dosingPeriodicity: 'P1D'
       }]
     }];
-    var conceptsSheet = {
-      A2: cellValue('variable1Uri'),
-      B2: cellValue('variable 1'),
-      A3: cellValue('variable2Uri'),
-      B3: cellValue('variable 2'),
-      A4: cellValue('variable3Uri'),
-      B4: cellValue('variable 3'),
-      A5: cellValue('variable4Uri'),
-      B5: cellValue('variable 4'),
-      A6: cellValue('drug1Uri'),
-      B6: cellValue('drug1'),
-      A7: cellValue('drug2Uri'),
-      B7: cellValue('drug2'),
-      A8: cellValue('milligramUri'),
-      B8: cellValue('milligram')
-    };
+    var conceptsSheet;
 
     beforeEach(function() {
       module('addis.excelIO', function($provide) {
@@ -163,10 +149,11 @@ define(['lodash', 'xlsx-shim', 'angular', 'angular-mocks'], function(_, XLSX) {
       });
     });
 
-    beforeEach(inject(function($q, $rootScope, ExcelExportUtilService) {
+    beforeEach(inject(function($q, $rootScope, ExcelExportUtilService, ExcelIOUtilService) {
       q = $q;
       rootScope = $rootScope;
       excelExportUtilService = ExcelExportUtilService;
+      IOU = ExcelIOUtilService;
       promise1defer = q.defer();
       promise2defer = q.defer();
       promise3defer = q.defer();
@@ -177,6 +164,22 @@ define(['lodash', 'xlsx-shim', 'angular', 'angular-mocks'], function(_, XLSX) {
       promise2defer.resolve(2);
       promise3defer.resolve(3);
       resultsService.queryResults.and.returnValues(promise1, promise2, promise3);
+      conceptsSheet = {
+        A2: IOU.cellValue('variable1Uri'),
+        B2: IOU.cellValue('variable 1'),
+        A3: IOU.cellValue('variable2Uri'),
+        B3: IOU.cellValue('variable 2'),
+        A4: IOU.cellValue('variable3Uri'),
+        B4: IOU.cellValue('variable 3'),
+        A5: IOU.cellValue('variable4Uri'),
+        B5: IOU.cellValue('variable 4'),
+        A6: IOU.cellValue('drug1Uri'),
+        B6: IOU.cellValue('drug1'),
+        A7: IOU.cellValue('drug2Uri'),
+        B7: IOU.cellValue('drug2'),
+        A8: IOU.cellValue('milligramUri'),
+        B8: IOU.cellValue('milligram')
+      };
     }));
 
     describe('getVariableResults', function() {
@@ -243,32 +246,36 @@ define(['lodash', 'xlsx-shim', 'angular', 'angular-mocks'], function(_, XLSX) {
         conceptMapping: 'datasetGramUri',
         conversionMultiplier: 0.001
       }];
-
-      var expectedResultNoOffset = {
-        '!ref': 'A1:E4',
-        A1: cellValue('id'),
-        B1: cellValue('label'),
-        C1: cellValue('type'),
-        D1: cellValue('dataset concept uri'),
-        E1: cellValue('multiplier'),
-        A2: cellValue('drugUri'),
-        B2: cellValue('drug'),
-        C2: cellValue('drug'),
-        E2: cellNumber(undefined),
-        A3: cellValue('variableUri'),
-        B3: cellValue('variable'),
-        C3: cellValue('variable'),
-        D3: cellValue('datasetVariableUri'),
-        E3: cellNumber(undefined),
-        A4: cellValue('unitUri'),
-        B4: cellValue('mg'),
-        C4: cellValue('unit'),
-        D4: cellValue('datasetGramUri'),
-        E4: cellNumber(0.001),
-      };
       var offset = 4;
-      var expectedResultWithOffset = shiftExpectations(expectedResultNoOffset, offset);
-      expectedResultWithOffset['!ref'] = 'A1:E8';
+
+      var expectedResultNoOffset;
+      var expectedResultWithOffset;
+      beforeEach(function() {
+        expectedResultNoOffset = {
+          '!ref': 'A1:E4',
+          A1: IOU.cellValue('id'),
+          B1: IOU.cellValue('label'),
+          C1: IOU.cellValue('type'),
+          D1: IOU.cellValue('dataset concept uri'),
+          E1: IOU.cellValue('multiplier'),
+          A2: IOU.cellValue('drugUri'),
+          B2: IOU.cellValue('drug'),
+          C2: IOU.cellValue('drug'),
+          E2: IOU.cellNumber(undefined),
+          A3: IOU.cellValue('variableUri'),
+          B3: IOU.cellValue('variable'),
+          C3: IOU.cellValue('variable'),
+          D3: IOU.cellValue('datasetVariableUri'),
+          E3: IOU.cellNumber(undefined),
+          A4: IOU.cellValue('unitUri'),
+          B4: IOU.cellValue('mg'),
+          C4: IOU.cellValue('unit'),
+          D4: IOU.cellValue('datasetGramUri'),
+          E4: IOU.cellNumber(0.001),
+        };
+        expectedResultWithOffset = shiftExpectations(expectedResultNoOffset, offset);
+        expectedResultWithOffset['!ref'] = 'A1:E8';
+      });
 
       it('should generate the conceps sheet', function() {
         var result = excelExportUtilService.buildConceptsSheet(startRows, studyConcepts);
@@ -291,28 +298,35 @@ define(['lodash', 'xlsx-shim', 'angular', 'angular-mocks'], function(_, XLSX) {
         relativeToAnchor: 'ontology:anchorEpochStart',
         offset: 'offset'
       }];
-      var epochSheet = {
-        B2: cellValue('epochRef'),
-        C2: cellValue('something')
-      };
-      var expectedResultNoOffset = {
-        '!ref': 'A1:E2',
-        A1: cellValue('id'),
-        B1: cellValue('name'),
-        C1: cellValue('epoch'),
-        D1: cellValue('from'),
-        E1: cellValue('offset'),
-        A2: cellValue('measurementMoment1Uri'),
-        B2: cellValue('name'),
-        C2: {
-          f: 'Epochs!C2'
-        },
-        D2: cellValue('start'),
-        E2: cellValue('offset')
-      };
+      var epochSheet;
+      var expectedResultNoOffset;
       var offset = 7;
-      var expectedResultWithOffset = shiftExpectations(expectedResultNoOffset, offset);
-      expectedResultWithOffset['!ref'] = 'A1:E9';
+      var expectedResultWithOffset;
+
+      beforeEach(function() {
+        epochSheet = {
+          B2: IOU.cellValue('epochRef'),
+          C2: IOU.cellValue('something')
+        };
+        expectedResultNoOffset = {
+          '!ref': 'A1:E2',
+          A1: IOU.cellValue('id'),
+          B1: IOU.cellValue('name'),
+          C1: IOU.cellValue('epoch'),
+          D1: IOU.cellValue('from'),
+          E1: IOU.cellValue('offset'),
+          A2: IOU.cellValue('measurementMoment1Uri'),
+          B2: IOU.cellValue('name'),
+          C2: {
+            f: 'Epochs!C2'
+          },
+          D2: IOU.cellValue('start'),
+          E2: IOU.cellValue('offset')
+        };
+        expectedResultWithOffset = shiftExpectations(expectedResultNoOffset, offset);
+        expectedResultWithOffset['!ref'] = 'A1:E9';
+      });
+
       it('should generate the measurement moment sheet', function() {
         var result = excelExportUtilService.buildMeasurementMomentSheet(startRows, measurementMoments, epochSheet);
         expect(result).toEqual(expectedResultNoOffset);
@@ -328,56 +342,50 @@ define(['lodash', 'xlsx-shim', 'angular', 'angular-mocks'], function(_, XLSX) {
 
     describe('buildStudyDesignSheet', function() {
 
-      var epochSheet = {
-        A2: cellValue('epoch1Uri'),
-        A3: cellValue('epoch2Uri'),
-        B2: cellValue('randomisation'),
-        B3: cellValue('treatment phase')
-      };
-      var activitiesSheet = {
-        A2: cellValue('randomizationUri'),
-        A3: cellValue('fixedSingleDoseUri'),
-        A4: cellValue('combiTreatmentUri'),
-        B2: cellValue('randomisation'),
-        B3: cellValue('fixed treatment'),
-        B4: cellValue('combi TreatmentActivity')
-      };
-      var studyDataSheet = {
-        K4: cellValue('arm 1'),
-        K5: cellValue('arm 2')
-      };
+      var epochSheet;
+      var activitiesSheet;
+      var studyDataSheet;
 
-      var expectedResultNoOffset = {
-        '!ref': 'A1:D3',
-        A1: cellValue('arm'),
-        B1: {
-          f: 'Epochs!B2'
-        },
-        C1: {
-          f: 'Epochs!B3'
-        },
-        A2: {
-          f: '\'Study data\'!K4'
-        },
-        B2: {
-          f: 'Activities!B2'
-        },
-        C2: {
-          f: 'Activities!B3'
-        },
-        A3: {
-          f: '\'Study data\'!K5'
-        },
-        B3: {
-          f: 'Activities!B2'
-        },
-        C3: {
-          f: 'Activities!B4'
-        }
-      };
+      var expectedResultNoOffset;
       var offset = 9;
-      var expectedResultWithOffset = shiftExpectations(expectedResultNoOffset, offset, true);
-      expectedResultWithOffset['!ref'] = 'A1:D12';
+      var expectedResultWithOffset;
+
+      beforeEach(function() {
+        epochSheet = {
+          A2: IOU.cellValue('epoch1Uri'),
+          A3: IOU.cellValue('epoch2Uri'),
+          B2: IOU.cellValue('randomisation'),
+          B3: IOU.cellValue('treatment phase')
+        };
+        activitiesSheet = {
+          A2: IOU.cellValue('randomizationUri'),
+          A3: IOU.cellValue('fixedSingleDoseUri'),
+          A4: IOU.cellValue('combiTreatmentUri'),
+          B2: IOU.cellValue('randomisation'),
+          B3: IOU.cellValue('fixed treatment'),
+          B4: IOU.cellValue('combi TreatmentActivity')
+        };
+        studyDataSheet = {
+          K4: IOU.cellValue('arm 1'),
+          K5: IOU.cellValue('arm 2')
+        };
+
+        expectedResultNoOffset = {
+          '!ref': 'A1:D3',
+          A1: IOU.cellValue('arm'),
+          B1: IOU.cellFormula('Epochs!B2'),
+          C1: IOU.cellFormula('Epochs!B3'),
+          A2: IOU.cellFormula('\'Study data\'!K4'),
+          B2: IOU.cellFormula('Activities!B2'),
+          C2: IOU.cellFormula('Activities!B3'),
+          A3: IOU.cellFormula('\'Study data\'!K5'),
+          B3: IOU.cellFormula('Activities!B2'),
+          C3: IOU.cellFormula('Activities!B4')
+        };
+        expectedResultWithOffset = shiftExpectations(expectedResultNoOffset, offset, true);
+        expectedResultWithOffset['!ref'] = 'A1:D12';
+
+      });
 
       it('should build the study design table sheet', function() {
         var result = excelExportUtilService.buildStudyDesignSheet(startRows, epochs, arms, studyDesign, epochSheet, activitiesSheet,
@@ -397,27 +405,32 @@ define(['lodash', 'xlsx-shim', 'angular', 'angular-mocks'], function(_, XLSX) {
     });
 
     describe('buildEpochSheet', function() {
-      var expectedResultNoOffset = {
-        '!ref': 'A1:E3',
-        A1: cellValue('id'),
-        B1: cellValue('name'),
-        C1: cellValue('description'),
-        D1: cellValue('duration'),
-        E1: cellValue('Is primary?'),
-        A2: cellValue('epoch1Uri'),
-        B2: cellValue('epoch1label'),
-        C2: cellValue('epoch1comment'),
-        D2: cellValue('P1W'),
-        E2: cellValue(false),
-        A3: cellValue('epoch2Uri'),
-        B3: cellValue('epoch2label'),
-        C3: cellValue('epoch2comment'),
-        D3: cellValue('P1D'),
-        E3: cellValue(true)
-      };
+      var expectedResultNoOffset;
       var offset = 11;
-      var expectedResultWithOffset = shiftExpectations(expectedResultNoOffset, offset);
-      expectedResultWithOffset['!ref'] = 'A1:E14';
+      var expectedResultWithOffset;
+
+      beforeEach(function() {
+        expectedResultNoOffset = {
+          '!ref': 'A1:E3',
+          A1: IOU.cellValue('id'),
+          B1: IOU.cellValue('name'),
+          C1: IOU.cellValue('description'),
+          D1: IOU.cellValue('duration'),
+          E1: IOU.cellValue('Is primary?'),
+          A2: IOU.cellValue('epoch1Uri'),
+          B2: IOU.cellValue('epoch1label'),
+          C2: IOU.cellValue('epoch1comment'),
+          D2: IOU.cellValue('P1W'),
+          E2: IOU.cellValue(false),
+          A3: IOU.cellValue('epoch2Uri'),
+          B3: IOU.cellValue('epoch2label'),
+          C3: IOU.cellValue('epoch2comment'),
+          D3: IOU.cellValue('P1D'),
+          E3: IOU.cellValue(true)
+        };
+        expectedResultWithOffset = shiftExpectations(expectedResultNoOffset, offset);
+        expectedResultWithOffset['!ref'] = 'A1:E14';
+      });
       it('should generate the epoch worksheet', function() {
         var result = excelExportUtilService.buildEpochSheet(startRows, epochs);
         expect(result).toEqual(expectedResultNoOffset);
@@ -432,70 +445,63 @@ define(['lodash', 'xlsx-shim', 'angular', 'angular-mocks'], function(_, XLSX) {
     });
 
     describe('buildActivitiesSheet', function() {
-      var expectedResultNoOffset = {
-        '!ref': 'A1:Q4',
-        A1: cellValue('id'),
-        B1: cellValue('title'),
-        C1: cellValue('type'),
-        D1: cellValue('description'),
-        E1: cellValue('drug label'),
-        F1: cellValue('dose type'),
-        G1: cellValue('dose'),
-        H1: cellValue('max dose'),
-        I1: cellValue('unit'),
-        J1: cellValue('periodicity'),
-        K1: cellValue('drug label'),
-        L1: cellValue('dose type'),
-        M1: cellValue('dose'),
-        N1: cellValue('max dose'),
-        O1: cellValue('unit'),
-        P1: cellValue('periodicity'),
-        A2: cellValue('randomizationUri'),
-        B2: cellValue('Randomization'),
-        C2: cellValue('Randomization'),
-        D2: cellValue(undefined),
-        A3: cellValue('fixedSingleDoseUri'),
-        B3: cellValue('Fixed'),
-        C3: cellValue('fixed'),
-        D3: cellValue(undefined),
-        E3: {
-          f: 'Concepts!B6'
-        },
-        F3: cellValue('fixed'),
-        G3: cellNumber(1),
-        H3: cellNumber(undefined),
-        I3: {
-          f: 'Concepts!B8'
-        },
-        J3: cellValue('P1D'), //
-        A4: cellValue('combiTreatmentUri'),
-        B4: cellValue('Combination'),
-        C4: cellValue('combination'),
-        D4: cellValue(undefined),
-        E4: {
-          f: 'Concepts!B6'
-        },
-        F4: cellValue('fixed'),
-        G4: cellNumber(2),
-        H4: cellNumber(undefined),
-        I4: {
-          f: 'Concepts!B8'
-        },
-        J4: cellValue('P1D'), //
-        K4: {
-          f: 'Concepts!B7'
-        },
-        L4: cellValue('titrated'),
-        M4: cellNumber(3),
-        N4: cellNumber(4),
-        O4: {
-          f: 'Concepts!B8'
-        },
-        P4: cellValue('P1D')
-      };
+      var expectedResultNoOffset;
       var offset = 6;
-      var expectedResultWithOffset = shiftExpectations(expectedResultNoOffset, offset);
-      expectedResultWithOffset['!ref'] = 'A1:Q10';
+      var expectedResultWithOffset;
+
+      beforeEach(function() {
+        expectedResultNoOffset = {
+          '!ref': 'A1:Q4',
+          A1: IOU.cellValue('id'),
+          B1: IOU.cellValue('title'),
+          C1: IOU.cellValue('type'),
+          D1: IOU.cellValue('description'),
+          E1: IOU.cellValue('drug label'),
+          F1: IOU.cellValue('dose type'),
+          G1: IOU.cellValue('dose'),
+          H1: IOU.cellValue('max dose'),
+          I1: IOU.cellValue('unit'),
+          J1: IOU.cellValue('periodicity'),
+          K1: IOU.cellValue('drug label'),
+          L1: IOU.cellValue('dose type'),
+          M1: IOU.cellValue('dose'),
+          N1: IOU.cellValue('max dose'),
+          O1: IOU.cellValue('unit'),
+          P1: IOU.cellValue('periodicity'),
+          A2: IOU.cellValue('randomizationUri'),
+          B2: IOU.cellValue('Randomization'),
+          C2: IOU.cellValue('Randomization'),
+          D2: IOU.cellValue(undefined),
+          A3: IOU.cellValue('fixedSingleDoseUri'),
+          B3: IOU.cellValue('Fixed'),
+          C3: IOU.cellValue('fixed'),
+          D3: IOU.cellValue(undefined),
+          E3: IOU.cellFormula('Concepts!B6'),
+          F3: IOU.cellValue('fixed'),
+          G3: IOU.cellNumber(1),
+          H3: IOU.cellNumber(undefined),
+          I3: IOU.cellFormula('Concepts!B8'),
+          J3: IOU.cellValue('P1D'), //
+          A4: IOU.cellValue('combiTreatmentUri'),
+          B4: IOU.cellValue('Combination'),
+          C4: IOU.cellValue('combination'),
+          D4: IOU.cellValue(undefined),
+          E4: IOU.cellFormula('Concepts!B6'),
+          F4: IOU.cellValue('fixed'),
+          G4: IOU.cellNumber(2),
+          H4: IOU.cellNumber(undefined),
+          I4: IOU.cellFormula('Concepts!B8'),
+          J4: IOU.cellValue('P1D'), //
+          K4: IOU.cellFormula('Concepts!B7'),
+          L4: IOU.cellValue('titrated'),
+          M4: IOU.cellNumber(3),
+          N4: IOU.cellNumber(4),
+          O4: IOU.cellFormula('Concepts!B8'),
+          P4: IOU.cellValue('P1D')
+        };
+        expectedResultWithOffset = shiftExpectations(expectedResultNoOffset, offset);
+        expectedResultWithOffset['!ref'] = 'A1:Q10';
+      });
       it('should generate the activities sheet', function() {
         var result = excelExportUtilService.buildActivitiesSheet(startRows, activities, conceptsSheet);
         expect(result).toEqual(expectedResultNoOffset);
@@ -534,13 +540,6 @@ define(['lodash', 'xlsx-shim', 'angular', 'angular-mocks'], function(_, XLSX) {
         eligibilityCriteria: {
           label: 'inclusion: everyone; exclusion: everyone else'
         }
-      };
-      var measurementMomentSheet = {
-        A1: cellValue('measurementMoment1Uri'),
-        A2: cellValue('measurement moment 1'),
-        B1: cellValue('measurementMoment2Uri'),
-        B2: cellValue('measurement moment 2'),
-        C1: cellValue('measurementMoment3Uri')
       };
       var variables = [{
         uri: 'variable1Uri',
@@ -694,150 +693,162 @@ define(['lodash', 'xlsx-shim', 'angular', 'angular-mocks'], function(_, XLSX) {
         timeScale: 'P1Y',
         type: 'adverse event'
       }];
-      var expectedResultNoOffset = {
-        '!merges': [],
-        '!ref': 'A1:AJ6',
-        //headers
-        //row 1 (data categories)
-        A1: cellValue('Study Information'),
-        I1: cellValue('Population Information'),
-        K1: cellValue('Arm Information'),
-        M1: cellValue('Measurement Information'),
-        //row 2 (variable names)
-        M2: cellFormula('Concepts!B2'),
-        U2: cellFormula('Concepts!B3'),
-        Z2: cellFormula('Concepts!B4'),
-        AE2: cellFormula('Concepts!B5'),
-        // row 3 )variable detail headers
-        A3: cellValue('id'), //row 3
-        B3: cellValue('addis url'),
-        C3: cellValue('title'),
-        D3: cellValue('group allocation'),
-        E3: cellValue('blinding'),
-        F3: cellValue('status'),
-        G3: cellValue('number of centers'),
-        H3: cellValue('objective'),
-        I3: cellValue('indication'),
-        J3: cellValue('eligibility criteria'),
-        K3: cellValue('title'),
-        L3: cellValue('description'),
-        M3: cellValue('variable type'),
-        N3: cellValue('measurement type'),
-        O3: cellValue('measurement moment'),
-        P3: cellValue('sample_size'),
-        Q3: cellValue('count'),
-        R3: cellValue('measurement moment'),
-        S3: cellValue('sample_size'),
-        T3: cellValue('count'),
-        U3: cellValue('variable type'),
-        V3: cellValue('measurement type'),
-        W3: cellValue('measurement moment'),
-        X3: cellValue('male'),
-        Y3: cellValue('female'),
-        Z3: cellValue('variable type'),
-        AA3: cellValue('measurement type'),
-        AB3: cellValue('sample_size'),
-        AC3: cellValue('mean'),
-        AD3: cellValue('standard_deviation'),
-        AE3: cellValue('variable type'),
-        AF3: cellValue('measurement type'),
-        AG3: cellValue('time scale'),
-        AH3: cellValue('measurement moment'),
-        AI3: cellValue('count'),
-        AJ3: cellValue('exposure'),
-        // data rows
-        // arm 1
-        A4: cellValue(study.label),
-        B4: _.merge(cellValue(studyUrl), {
-          l: {
-            Target: studyUrl
-          }
-        }),
-        C4: cellValue(study.comment),
-        D4: cellValue(GROUP_ALLOCATION_OPTIONS[studyInformation.allocation].label),
-        E4: cellValue(BLINDING_OPTIONS[studyInformation.blinding].label),
-        F4: cellValue(STATUS_OPTIONS[studyInformation.status].label),
-        G4: cellNumber(studyInformation.numberOfCenters),
-        H4: cellValue(studyInformation.objective.comment),
-        I4: cellValue(populationInformation.indication.label),
-        J4: cellValue(populationInformation.eligibilityCriteria.label),
-        K4: cellValue(arms[0].label),
-        L4: cellValue(arms[0].comment),
-        M4: cellValue('baseline characteristic'),
-        N4: cellValue('dichotomous'),
-        O4: cellFormula('\'Measurement moments\'!B1'),
-        P4: cellNumber(123),
-        Q4: cellNumber(37),
-        R4: cellFormula('\'Measurement moments\'!C1'),
-        S4: cellNumber(234),
-        T4: cellNumber(73),
-        U4: cellValue('baseline characteristic'),
-        V4: cellValue('categorical'),
-        W4: cellFormula('\'Measurement moments\'!B1'),
-        X4: cellNumber(119),
-        Y4: cellNumber(201),
-        Z4: cellValue('adverse event'),
-        AA4: cellValue('continuous'),
-        AE4: cellValue('adverse event'),
-        AF4: cellValue('survival'),
-        AG4: cellValue('P1Y'),
-        AH4: cellFormula('\'Measurement moments\'!B1'),
-        AI4: cellNumber(123),
-        AJ4: cellNumber(3789),
-
-
-        // arm 2
-        K5: cellValue(arms[1].label),
-        L5: cellValue(arms[1].comment),
-        P5: cellNumber(321),
-        Q5: cellNumber(42),
-        S5: cellNumber(432),
-        T5: cellNumber(24),
-        X5: cellNumber(301),
-        Y5: cellNumber(401),
-        AI5: cellNumber(321),
-        AJ5: cellNumber(45678),
-
-        // overall population
-        K6: cellValue('Overall population'),
-        L6: cellValue(undefined),
-        Q6: cellNumber(500)
-      };
-      expectedResultNoOffset['!merges'] = [
-        cellRange(0, 0, 7, 0),
-        cellRange(8, 0, 9, 0),
-        cellRange(10, 0, 11, 0),
-        cellRange(12, 0, 35, 0),
-        cellRange(12, 3, 12, 5),
-        cellRange(13, 3, 13, 5),
-        cellRange(14, 3, 14, 5),
-        cellRange(17, 3, 17, 5),
-        cellRange(12, 1, 19, 1),
-        cellRange(20, 3, 20, 5),
-        cellRange(21, 3, 21, 5),
-        cellRange(22, 3, 22, 5),
-        cellRange(20, 1, 24, 1),
-        cellRange(25, 3, 25, 5),
-        cellRange(26, 3, 26, 5),
-        cellRange(25, 1, 26, 1),
-        cellRange(27, 3, 27, 5),
-        cellRange(28, 3, 28, 5),
-        cellRange(29, 3, 29, 5),
-        cellRange(27, 1, 32, 1),
-      ];
-
-      expectedResultNoOffset['!merges'] = expectedResultNoOffset['!merges'].concat(_.map(_.range(0, 10), function(i) {
-        return cellRange(i, 3, i, 3 + arms.length);
-      }));
+      var measurementMomentSheet;
+      var expectedResultNoOffset;
+      var expectedResultWithOffset;
 
       var offset = 5;
-      var expectedResultWithOffset = shiftExpectations(expectedResultNoOffset, offset);
 
-      for (var i = 4; i < expectedResultWithOffset['!merges'].length; ++i) {
-        expectedResultWithOffset['!merges'][i].s.r += offset;
-        expectedResultWithOffset['!merges'][i].e.r += offset;
-      }
-      expectedResultWithOffset['!ref'] = 'A1:AJ11';
+      beforeEach(function() {
+        measurementMomentSheet = {
+          A1: IOU.cellValue('measurementMoment1Uri'),
+          A2: IOU.cellValue('measurement moment 1'),
+          B1: IOU.cellValue('measurementMoment2Uri'),
+          B2: IOU.cellValue('measurement moment 2'),
+          C1: IOU.cellValue('measurementMoment3Uri')
+        };
+        expectedResultNoOffset = {
+          '!merges': [],
+          '!ref': 'A1:AJ6',
+          //headers
+          //row 1 (data categories)
+          A1: IOU.cellValue('Study Information'),
+          I1: IOU.cellValue('Population Information'),
+          K1: IOU.cellValue('Arm Information'),
+          M1: IOU.cellValue('Measurement Information'),
+          //row 2 (variable names)
+          M2: IOU.cellFormula('Concepts!B2'),
+          U2: IOU.cellFormula('Concepts!B3'),
+          Z2: IOU.cellFormula('Concepts!B4'),
+          AE2: IOU.cellFormula('Concepts!B5'),
+          // row 3 )variable detail headers
+          A3: IOU.cellValue('id'), //row 3
+          B3: IOU.cellValue('addis url'),
+          C3: IOU.cellValue('title'),
+          D3: IOU.cellValue('group allocation'),
+          E3: IOU.cellValue('blinding'),
+          F3: IOU.cellValue('status'),
+          G3: IOU.cellValue('number of centers'),
+          H3: IOU.cellValue('objective'),
+          I3: IOU.cellValue('indication'),
+          J3: IOU.cellValue('eligibility criteria'),
+          K3: IOU.cellValue('title'),
+          L3: IOU.cellValue('description'),
+          M3: IOU.cellValue('variable type'),
+          N3: IOU.cellValue('measurement type'),
+          O3: IOU.cellValue('measurement moment'),
+          P3: IOU.cellValue('sample_size'),
+          Q3: IOU.cellValue('count'),
+          R3: IOU.cellValue('measurement moment'),
+          S3: IOU.cellValue('sample_size'),
+          T3: IOU.cellValue('count'),
+          U3: IOU.cellValue('variable type'),
+          V3: IOU.cellValue('measurement type'),
+          W3: IOU.cellValue('measurement moment'),
+          X3: IOU.cellValue('male'),
+          Y3: IOU.cellValue('female'),
+          Z3: IOU.cellValue('variable type'),
+          AA3: IOU.cellValue('measurement type'),
+          AB3: IOU.cellValue('sample_size'),
+          AC3: IOU.cellValue('mean'),
+          AD3: IOU.cellValue('standard_deviation'),
+          AE3: IOU.cellValue('variable type'),
+          AF3: IOU.cellValue('measurement type'),
+          AG3: IOU.cellValue('time scale'),
+          AH3: IOU.cellValue('measurement moment'),
+          AI3: IOU.cellValue('count'),
+          AJ3: IOU.cellValue('exposure'),
+          // data rows
+          // arm 1
+          A4: IOU.cellValue(study.label),
+          B4: _.merge(IOU.cellValue(studyUrl), {
+            l: {
+              Target: studyUrl
+            }
+          }),
+          C4: IOU.cellValue(study.comment),
+          D4: IOU.cellValue(GROUP_ALLOCATION_OPTIONS[studyInformation.allocation].label),
+          E4: IOU.cellValue(BLINDING_OPTIONS[studyInformation.blinding].label),
+          F4: IOU.cellValue(STATUS_OPTIONS[studyInformation.status].label),
+          G4: IOU.cellNumber(studyInformation.numberOfCenters),
+          H4: IOU.cellValue(studyInformation.objective.comment),
+          I4: IOU.cellValue(populationInformation.indication.label),
+          J4: IOU.cellValue(populationInformation.eligibilityCriteria.label),
+          K4: IOU.cellValue(arms[0].label),
+          L4: IOU.cellValue(arms[0].comment),
+          M4: IOU.cellValue('baseline characteristic'),
+          N4: IOU.cellValue('dichotomous'),
+          O4: IOU.cellFormula('\'Measurement moments\'!B1'),
+          P4: IOU.cellNumber(123),
+          Q4: IOU.cellNumber(37),
+          R4: IOU.cellFormula('\'Measurement moments\'!C1'),
+          S4: IOU.cellNumber(234),
+          T4: IOU.cellNumber(73),
+          U4: IOU.cellValue('baseline characteristic'),
+          V4: IOU.cellValue('categorical'),
+          W4: IOU.cellFormula('\'Measurement moments\'!B1'),
+          X4: IOU.cellNumber(119),
+          Y4: IOU.cellNumber(201),
+          Z4: IOU.cellValue('adverse event'),
+          AA4: IOU.cellValue('continuous'),
+          AE4: IOU.cellValue('adverse event'),
+          AF4: IOU.cellValue('survival'),
+          AG4: IOU.cellValue('P1Y'),
+          AH4: IOU.cellFormula('\'Measurement moments\'!B1'),
+          AI4: IOU.cellNumber(123),
+          AJ4: IOU.cellNumber(3789),
+
+          // arm 2
+          K5: IOU.cellValue(arms[1].label),
+          L5: IOU.cellValue(arms[1].comment),
+          P5: IOU.cellNumber(321),
+          Q5: IOU.cellNumber(42),
+          S5: IOU.cellNumber(432),
+          T5: IOU.cellNumber(24),
+          X5: IOU.cellNumber(301),
+          Y5: IOU.cellNumber(401),
+          AI5: IOU.cellNumber(321),
+          AJ5: IOU.cellNumber(45678),
+
+          // overall population
+          K6: IOU.cellValue('Overall population'),
+          L6: IOU.cellValue(undefined),
+          Q6: IOU.cellNumber(500)
+        };
+        expectedResultNoOffset['!merges'] = [
+          IOU.cellRange(0, 0, 7, 0),
+          IOU.cellRange(8, 0, 9, 0),
+          IOU.cellRange(10, 0, 11, 0),
+          IOU.cellRange(12, 0, 35, 0),
+          IOU.cellRange(12, 3, 12, 5),
+          IOU.cellRange(13, 3, 13, 5),
+          IOU.cellRange(14, 3, 14, 5),
+          IOU.cellRange(17, 3, 17, 5),
+          IOU.cellRange(12, 1, 19, 1),
+          IOU.cellRange(20, 3, 20, 5),
+          IOU.cellRange(21, 3, 21, 5),
+          IOU.cellRange(22, 3, 22, 5),
+          IOU.cellRange(20, 1, 24, 1),
+          IOU.cellRange(25, 3, 25, 5),
+          IOU.cellRange(26, 3, 26, 5),
+          IOU.cellRange(25, 1, 26, 1),
+          IOU.cellRange(27, 3, 27, 5),
+          IOU.cellRange(28, 3, 28, 5),
+          IOU.cellRange(29, 3, 29, 5),
+          IOU.cellRange(27, 1, 32, 1),
+        ];
+
+        expectedResultNoOffset['!merges'] = expectedResultNoOffset['!merges'].concat(_.map(_.range(0, 10), function(i) {
+          return IOU.cellRange(i, 3, i, 3 + arms.length);
+        }));
+
+        expectedResultWithOffset = shiftExpectations(expectedResultNoOffset, offset);
+        for (var i = 4; i < expectedResultWithOffset['!merges'].length; ++i) {
+          expectedResultWithOffset['!merges'][i].s.r += offset;
+          expectedResultWithOffset['!merges'][i].e.r += offset;
+        }
+        expectedResultWithOffset['!ref'] = 'A1:AJ11';
+      });
 
       it('should generate the study data worksheet', function() {
         var result = excelExportUtilService.buildStudyDataSheet(startRows, study, studyInformation, studyUrl, arms, epochs, activities, studyDesign,
@@ -851,25 +862,6 @@ define(['lodash', 'xlsx-shim', 'angular', 'angular-mocks'], function(_, XLSX) {
         var result = excelExportUtilService.buildStudyDataSheet(offsetStartRows, study, studyInformation, studyUrl, arms, epochs, activities, studyDesign,
           populationInformation, variables, conceptsSheet, measurementMomentSheet);
         expect(result).toEqual(expectedResultWithOffset);
-      });
-    });
-
-    describe('arrayToA1FromCoordinate', function() {
-      it('should create an A1-indexed data object from a 2D array, starting from the anchor coordinate', function() {
-        var data = [
-          [1, 2, 3],
-          [4, 5, 6]
-        ];
-        var expectedResult = {
-          D5: 1,
-          D6: 2,
-          D7: 3,
-          E5: 4,
-          E6: 5,
-          E7: 6
-        };
-        var result = excelExportUtilService.arrayToA1FromCoordinate(3, 4, data); // anchor D5
-        expect(result).toEqual(expectedResult);
       });
     });
 
@@ -925,12 +917,12 @@ define(['lodash', 'xlsx-shim', 'angular', 'angular-mocks'], function(_, XLSX) {
         };
 
         var expectedResult = {
-          A1: cellValue('title'),
-          B1: cellValue('ADDIS url'),
-          C1: cellValue('description'),
-          A2: cellValue(datasetWithCoordinates.title),
-          B2: cellLink(datasetWithCoordinates.url),
-          C2: cellValue(datasetWithCoordinates.comment),
+          A1: IOU.cellValue('title'),
+          B1: IOU.cellValue('ADDIS url'),
+          C1: IOU.cellValue('description'),
+          A2: IOU.cellValue(datasetWithCoordinates.title),
+          B2: IOU.cellLink(datasetWithCoordinates.url),
+          C2: IOU.cellValue(datasetWithCoordinates.comment),
           '!ref': 'A1:C2'
         };
 
@@ -956,15 +948,15 @@ define(['lodash', 'xlsx-shim', 'angular', 'angular-mocks'], function(_, XLSX) {
         }];
 
         var expectedResult = {
-          A1: cellValue('id'),
-          B1: cellValue('label'),
-          C1: cellValue('type'),
-          A2: cellValue('http://unitConceptUri'),
-          B2: cellValue('milligram'),
-          C2: cellValue('Unit'),
-          A3: cellValue('http://drugConceptUri'),
-          B3: cellValue('drug 1'),
-          C3: cellValue('Drug'),
+          A1: IOU.cellValue('id'),
+          B1: IOU.cellValue('label'),
+          C1: IOU.cellValue('type'),
+          A2: IOU.cellValue('http://unitConceptUri'),
+          B2: IOU.cellValue('milligram'),
+          C2: IOU.cellValue('Unit'),
+          A3: IOU.cellValue('http://drugConceptUri'),
+          B3: IOU.cellValue('drug 1'),
+          C3: IOU.cellValue('Drug'),
           '!ref': 'A1:C3'
         };
         var result = excelExportUtilService.buildDatasetConceptsSheet(concepts);
@@ -1007,11 +999,11 @@ define(['lodash', 'xlsx-shim', 'angular', 'angular-mocks'], function(_, XLSX) {
             },
             'something': {
               goo: 'car',
-              A34: cellFormula('\'Study data\'!A5')
+              A34: IOU.cellFormula('\'Study data\'!A5')
             },
             'Study design': {
               hoo: 'dar',
-              A555: cellFormula('\'Study data\'!A5')
+              A555: IOU.cellFormula('\'Study data\'!A5')
             }
           }
         };
@@ -1107,45 +1099,5 @@ define(['lodash', 'xlsx-shim', 'angular', 'angular-mocks'], function(_, XLSX) {
         .value();
     }
 
-    function cellNumber(value) {
-      return {
-        v: value,
-        t: 'n'
-      };
-    }
-
-    function cellFormula(formula) {
-      return {
-        f: formula
-      };
-    }
-
-    function cellValue(value) {
-      return {
-        v: value
-      };
-    }
-
-    function cellRange(startCol, startRow, endCol, endRow) {
-      return {
-        s: {
-          c: startCol,
-          r: startRow
-        },
-        e: {
-          c: endCol,
-          r: endRow
-        }
-      };
-    }
-
-    function cellLink(url) {
-      return {
-        v: url,
-        l: {
-          Target: url
-        }
-      };
-    }
   });
 });

@@ -10,6 +10,7 @@ define(['lodash', 'util/context', 'util/constants', 'xlsx-shim'], function(_, ex
     'StudyService',
     'PopulationCharacteristicService',
     'RdfListService',
+    'ExcelIOUtilService',
     'BLINDING_OPTIONS',
     'STATUS_OPTIONS',
     'GROUP_ALLOCATION_OPTIONS'
@@ -24,6 +25,7 @@ define(['lodash', 'util/context', 'util/constants', 'xlsx-shim'], function(_, ex
     StudyService,
     PopulationCharacteristicService,
     RdfListService,
+    IOU,
     BLINDING_OPTIONS,
     STATUS_OPTIONS,
     GROUP_ALLOCATION_OPTIONS
@@ -217,11 +219,11 @@ define(['lodash', 'util/context', 'util/constants', 'xlsx-shim'], function(_, ex
       var datasetConceptsSheet = workbook.Sheets['Dataset concepts'];
       var concepts = [];
       var index = 1;
-      while (datasetConceptsSheet[a1Coordinate(0, index)]) {
+      while (datasetConceptsSheet[IOU.a1Coordinate(0, index)]) {
         concepts.push({
-          label: datasetConceptsSheet[a1Coordinate(1, index)].v,
-          '@id': datasetConceptsSheet[a1Coordinate(0, index)].v,
-          '@type': conceptTypes[datasetConceptsSheet[a1Coordinate(2, index)].v]
+          label: datasetConceptsSheet[IOU.a1Coordinate(1, index)].v,
+          '@id': datasetConceptsSheet[IOU.a1Coordinate(0, index)].v,
+          '@type': conceptTypes[datasetConceptsSheet[IOU.a1Coordinate(2, index)].v]
         });
         ++index;
       }
@@ -254,11 +256,11 @@ define(['lodash', 'util/context', 'util/constants', 'xlsx-shim'], function(_, ex
       return _(_.range(1, lastRow))
         .map(function(row) {
           return {
-            value: studyDataSheet[a1Coordinate(0, row)],
+            value: studyDataSheet[IOU.a1Coordinate(0, row)],
             coords: {
               c: 0,
               r: row,
-              a1: a1Coordinate(0, row)
+              a1: IOU.a1Coordinate(0, row)
             }
           };
         })
@@ -285,8 +287,8 @@ define(['lodash', 'util/context', 'util/constants', 'xlsx-shim'], function(_, ex
       var lastRow = excelUtils.decode_range(sheet['!ref']).e.r;
       return _.find(_.range(0, lastRow), function(row) {
         var targetFormula;
-        if (sheet[a1Coordinate(0, row)] && sheet[a1Coordinate(0, row)].f) {
-          targetFormula = sheet[a1Coordinate(0, row)].f;
+        if (sheet[IOU.a1Coordinate(0, row)] && sheet[IOU.a1Coordinate(0, row)].f) {
+          targetFormula = sheet[IOU.a1Coordinate(0, row)].f;
           if (targetFormula[0] === '=') {
             targetFormula = targetFormula.split('=')[1];
           }
@@ -297,12 +299,12 @@ define(['lodash', 'util/context', 'util/constants', 'xlsx-shim'], function(_, ex
 
     function buildDrugsAndUnits(conceptSheet, workbook, startRow) {
       var lastRow = startRow;
-      while (conceptSheet[a1Coordinate(0, lastRow)]) {
+      while (conceptSheet[IOU.a1Coordinate(0, lastRow)]) {
         lastRow++;
       } // one more because _.range goes until, not including its second parameter 
       return _(_.range(startRow + 1, lastRow))
         .filter(function(row) {
-          var type = getValue(conceptSheet, 2, row);
+          var type = IOU.getValue(conceptSheet, 2, row);
           return type === 'drug' || type === 'unit';
         })
         .map(_.partial(readDrugOrUnit, conceptSheet, workbook))
@@ -310,24 +312,24 @@ define(['lodash', 'util/context', 'util/constants', 'xlsx-shim'], function(_, ex
     }
 
     function readDrugOrUnit(conceptSheet, workbook, row) {
-      var type = getValue(conceptSheet, 2, row);
-      var mapping = getValueIfPresent(conceptSheet, 3, row);
+      var type = IOU.getValue(conceptSheet, 2, row);
+      var mapping = IOU.getValueIfPresent(conceptSheet, 3, row);
       var concept = {};
       if (mapping) {
         concept.sameAs = mapping;
       }
       if (type === 'drug') {
         _.extend(concept, {
-          '@id': getValue(conceptSheet, 0, row),
+          '@id': IOU.getValue(conceptSheet, 0, row),
           '@type': 'ontology:Drug',
-          label: getValue(conceptSheet, 1, row)
+          label: IOU.getValue(conceptSheet, 1, row)
         });
       } else if (type === 'unit') {
         _.extend(concept, {
-          '@id': getValue(conceptSheet, 0, row),
+          '@id': IOU.getValue(conceptSheet, 0, row),
           '@type': 'ontology:Unit',
-          label: getValue(conceptSheet, 1, row),
-          conversionMultiplier: getValueIfPresent(conceptSheet, 4, row)
+          label: IOU.getValue(conceptSheet, 1, row),
+          conversionMultiplier: IOU.getValueIfPresent(conceptSheet, 4, row)
         });
       }
       return concept;
@@ -335,24 +337,24 @@ define(['lodash', 'util/context', 'util/constants', 'xlsx-shim'], function(_, ex
 
     function buildActivities(activitySheet, workbook, startRow) {
       var lastRow = startRow;
-      while (activitySheet[a1Coordinate(0, lastRow)]) {
+      while (activitySheet[IOU.a1Coordinate(0, lastRow)]) {
         ++lastRow;
       } // one more because _.range goes until, not including its second parameter 
-      return _.map(_.range(startRow + 1, lastRow), _.partial(readActivity, activitySheet, workbook)); // +2 because zero-indexed and range has open upper end
+      return _.map(_.range(startRow + 1, lastRow), _.partial(readActivity, activitySheet, workbook)); // +1 because zero-indexed and range has open upper end
     }
 
     function readActivity(activitySheet, workbook, row) {
       var activityTypesByUri = _.keyBy(constants.ACTIVITY_TYPE_OPTIONS, 'label');
       var activity = {
-        '@id': getValue(activitySheet, 0, row),
-        '@type': activityTypesByUri[getValue(activitySheet, 2, row)].uri,
-        label: getValue(activitySheet, 1, row),
+        '@id': IOU.getValue(activitySheet, 0, row),
+        '@type': activityTypesByUri[IOU.getValue(activitySheet, 2, row)].uri,
+        label: IOU.getValue(activitySheet, 1, row),
         has_activity_application: []
       };
-      assignIfPresent(activity, 'comment', activitySheet, 3, row);
+      IOU.assignIfPresent(activity, 'comment', activitySheet, 3, row);
 
       var drugIndex = 0;
-      while (activitySheet[a1Coordinate(4 + drugIndex * 6, row)]) {
+      while (activitySheet[IOU.a1Coordinate(4 + drugIndex * 6, row)]) {
         activity.has_drug_treatment = activity.has_drug_treatment ? activity.has_drug_treatment : [];
         var drugTreatment = readDrugTreatment(activitySheet, drugIndex, row, workbook);
         ++drugIndex;
@@ -368,8 +370,8 @@ define(['lodash', 'util/context', 'util/constants', 'xlsx-shim'], function(_, ex
       }; 
       var treatment = {
         '@id': INSTANCE_PREFIX + UUIDService.generate(),
-        treatment_has_drug: getReferenceValueColumnOffset(activitySheet, 4 + drugIndex * 6, row, -1, workbook),
-        '@type': doseTypes[getValue(activitySheet, 5 + drugIndex * 6, row)]
+        treatment_has_drug: IOU.getReferenceValueColumnOffset(activitySheet, 4 + drugIndex * 6, row, -1, workbook),
+        '@type': doseTypes[IOU.getValue(activitySheet, 5 + drugIndex * 6, row)]
       };
       var treatmentType = treatment['@type'];
       if (treatmentType === doseTypes.fixed) {
@@ -384,9 +386,9 @@ define(['lodash', 'util/context', 'util/constants', 'xlsx-shim'], function(_, ex
     function buildTreatmentDose(sheet, baseColumn, valueOffset, row, workbook) {
       return [{
         '@id': INSTANCE_PREFIX + UUIDService.generate(),
-        value: getValue(sheet, baseColumn + valueOffset, row),
-        unit: getReferenceValueColumnOffset(sheet, baseColumn + 2, row, -1, workbook),
-        dosingPeriodicity: getValue(sheet, baseColumn + 3, row)
+        value: IOU.getValue(sheet, baseColumn + valueOffset, row),
+        unit: IOU.getReferenceValueColumnOffset(sheet, baseColumn + 2, row, -1, workbook),
+        dosingPeriodicity: IOU.getValue(sheet, baseColumn + 3, row)
       }];
     }
 
@@ -396,12 +398,12 @@ define(['lodash', 'util/context', 'util/constants', 'xlsx-shim'], function(_, ex
         var rowOffset = workbook.Sheets['Dataset information'] ? 1 : 0; // Dataset or single study
         var rowIndex = startRow + rowOffset;
         var applicationsForActivity = [];
-        while (studyDesignSheet[a1Coordinate(0, rowIndex)]) {
+        while (studyDesignSheet[IOU.a1Coordinate(0, rowIndex)]) {
           var columnIndex = 0;
-          while (studyDesignSheet[a1Coordinate(columnIndex, rowIndex)]) {
+          while (studyDesignSheet[IOU.a1Coordinate(columnIndex, rowIndex)]) {
             var offset = columnIndex === 0 ? 0 : -1;
-            if (studyDesignSheet[a1Coordinate(columnIndex, rowIndex)].f &&
-              getReferenceValueColumnOffset(studyDesignSheet, columnIndex, rowIndex, offset, workbook) === activity['@id']) {
+            if (studyDesignSheet[IOU.a1Coordinate(columnIndex, rowIndex)].f &&
+              IOU.getReferenceValueColumnOffset(studyDesignSheet, columnIndex, rowIndex, offset, workbook) === activity['@id']) {
               applicationsForActivity.push({
                 c: columnIndex,
                 r: rowIndex
@@ -414,11 +416,11 @@ define(['lodash', 'util/context', 'util/constants', 'xlsx-shim'], function(_, ex
 
         return _.merge({}, activity, {
           has_activity_application: _.map(applicationsForActivity, function(applicationCell) {
-            var armLabel = getReferenceValueColumnOffset(studyDesignSheet, 0, applicationCell.r, 0, workbook);
+            var armLabel = IOU.getReferenceValueColumnOffset(studyDesignSheet, 0, applicationCell.r, 0, workbook);
             var arm = _.find(studyNode.has_arm, ['label', armLabel]);
             return {
               '@id': INSTANCE_PREFIX + UUIDService.generate(),
-              applied_in_epoch: getReferenceValueColumnOffset(studyDesignSheet, applicationCell.c, startRow + rowOffset, -1, workbook),
+              applied_in_epoch: IOU.getReferenceValueColumnOffset(studyDesignSheet, applicationCell.c, startRow + rowOffset, -1, workbook),
               applied_to_arm: arm['@id']
             };
           })
@@ -430,13 +432,13 @@ define(['lodash', 'util/context', 'util/constants', 'xlsx-shim'], function(_, ex
       var startColumn = 12; // =>'M'
       var endColumn = XLSX.utils.decode_range(studyDataSheet['!ref']).e.c;
       return _.filter(_.range(startColumn, endColumn), function(column) {
-        return studyDataSheet[a1Coordinate(column, startRow)];
+        return studyDataSheet[IOU.a1Coordinate(column, startRow)];
       });
     }
 
     function buildStructuredMeasurementMoments(measurementMomentSheet, workbook, startRow) {
       var lastRow = startRow;
-      while (measurementMomentSheet[a1Coordinate(0, lastRow)]) {
+      while (measurementMomentSheet[IOU.a1Coordinate(0, lastRow)]) {
         ++lastRow;
       } // one more because _.range goes until, not including its second parameter 
       return _.map(_.range(startRow + 1, lastRow), _.partial(readMeasurementMoment, measurementMomentSheet, workbook));
@@ -444,12 +446,12 @@ define(['lodash', 'util/context', 'util/constants', 'xlsx-shim'], function(_, ex
 
     function readMeasurementMoment(measurementMomentSheet, workbook, row) {
       return {
-        '@id': getValue(measurementMomentSheet, 0, row),
+        '@id': IOU.getValue(measurementMomentSheet, 0, row),
         '@type': 'ontology:MeasurementMoment',
-        label: getValue(measurementMomentSheet, 1, row),
-        relative_to_epoch: getReferenceValueColumnOffset(measurementMomentSheet, 2, row, -1, workbook),
-        relative_to_anchor: EPOCH_ANCHOR[getValue(measurementMomentSheet, 3, row)].uri,
-        time_offset: getValue(measurementMomentSheet, 4, row)
+        label: IOU.getValue(measurementMomentSheet, 1, row),
+        relative_to_epoch: IOU.getReferenceValueColumnOffset(measurementMomentSheet, 2, row, -1, workbook),
+        relative_to_anchor: EPOCH_ANCHOR[IOU.getValue(measurementMomentSheet, 3, row)].uri,
+        time_offset: IOU.getValue(measurementMomentSheet, 4, row)
       };
     }
 
@@ -482,7 +484,7 @@ define(['lodash', 'util/context', 'util/constants', 'xlsx-shim'], function(_, ex
         }];
       } else {
         var lastRow = startRow;
-        while (epochSheet[a1Coordinate(0, lastRow)]) {
+        while (epochSheet[IOU.a1Coordinate(0, lastRow)]) {
           ++lastRow;
         } // one more because _.range goes until, not including its second parameter 
         return _.map(_.range(startRow + 1, lastRow), _.partial(readEpoch, epochSheet)); //+1 as first row is study header
@@ -491,13 +493,13 @@ define(['lodash', 'util/context', 'util/constants', 'xlsx-shim'], function(_, ex
 
     function readEpoch(epochSheet, row) {
       var epoch = {
-        '@id': getValue(epochSheet, 0, row),
+        '@id': IOU.getValue(epochSheet, 0, row),
         '@type': 'ontology:Epoch',
-        label: getValue(epochSheet, 1, row),
-        duration: getValue(epochSheet, 3, row),
-        isPrimary: getValue(epochSheet, 4, row)
+        label: IOU.getValue(epochSheet, 1, row),
+        duration: IOU.getValue(epochSheet, 3, row),
+        isPrimary: IOU.getValue(epochSheet, 4, row)
       };
-      assignIfPresent(epoch, 'comment', epochSheet, 2, row);
+      IOU.assignIfPresent(epoch, 'comment', epochSheet, 2, row);
       return epoch;
     }
 
@@ -522,7 +524,7 @@ define(['lodash', 'util/context', 'util/constants', 'xlsx-shim'], function(_, ex
     function readVariables(studyDataSheet, variableColumns, workbook, startRow) {
       var endColumn = XLSX.utils.decode_range(studyDataSheet['!ref']).e.c + 1; // +1 for _.range being open at upper end
       var lastFilledColumn = _.max(_.filter(_.range(variableColumns[variableColumns.length - 1], endColumn), function(column) {
-        return studyDataSheet[a1Coordinate(column, startRow + 1)];
+        return studyDataSheet[IOU.a1Coordinate(column, startRow + 1)];
       }));
       var variableColumnsPlusEnd = variableColumns.concat(lastFilledColumn +  1); // add end column for last variable; +1 because we use [,) intervals for var boundaries
       var variableColumnBoundaries = _.map(variableColumnsPlusEnd.slice(0, variableColumnsPlusEnd.length - 1), function(n, index) {
@@ -537,7 +539,7 @@ define(['lodash', 'util/context', 'util/constants', 'xlsx-shim'], function(_, ex
           startRow);
         if (workbook && workbook.Sheets.Concepts) {
           try {
-            variable.of_variable[0].sameAs = getReferenceValueColumnOffset(studyDataSheet, columns[0], startRow, 2, workbook);
+            variable.of_variable[0].sameAs = IOU.getReferenceValueColumnOffset(studyDataSheet, columns[0], startRow, 2, workbook);
           } catch (e) {
             // no mapping
           }
@@ -551,17 +553,17 @@ define(['lodash', 'util/context', 'util/constants', 'xlsx-shim'], function(_, ex
       if (workbook && workbook.Sheets.Concepts) {
         return function() {
           return {
-            '@id': getReferenceValueColumnOffset(studyDataSheet, columns[0], startRow, -1, workbook),
-            '@type': findOntology(VARIABLE_TYPES, getValueIfPresent(studyDataSheet, columns[0], startRow + 2)),
-            label: getReferenceValue(studyDataSheet, columns[0], startRow, workbook)
+            '@id': IOU.getReferenceValueColumnOffset(studyDataSheet, columns[0], startRow, -1, workbook),
+            '@type': findOntology(VARIABLE_TYPES, IOU.getValueIfPresent(studyDataSheet, columns[0], startRow + 2)),
+            label: IOU.getReferenceValue(studyDataSheet, columns[0], startRow, workbook)
           };
         };
       } else {
         return function() {
           return {
             '@id': INSTANCE_PREFIX + UUIDService.generate(),
-            '@type': findOntology(VARIABLE_TYPES, getValueIfPresent(studyDataSheet, columns[0], startRow + 2)),
-            label: getValueIfPresent(studyDataSheet, columns[0], startRow)
+            '@type': findOntology(VARIABLE_TYPES, IOU.getValueIfPresent(studyDataSheet, columns[0], startRow + 2)),
+            label: IOU.getValueIfPresent(studyDataSheet, columns[0], startRow)
           };
         };
       }
@@ -570,18 +572,18 @@ define(['lodash', 'util/context', 'util/constants', 'xlsx-shim'], function(_, ex
     function getMeasurementMomentReader(studyDataSheet, workbook, startRow) {
       if (workbook && workbook.Sheets.Concepts) {
         return function(column) {
-          return getReferenceValueColumnOffset(studyDataSheet, column, startRow + 2, -1, workbook);
+          return IOU.getReferenceValueColumnOffset(studyDataSheet, column, startRow + 2, -1, workbook);
         };
       } else {
         return function(column) {
-          return getValueIfPresent(studyDataSheet, column, startRow + 2);
+          return IOU.getValueIfPresent(studyDataSheet, column, startRow + 2);
         };
       }
     }
 
     function readVariable(studyDataSheet, columns, variableFactory, measurementMomentReader, startRow) {
       var newVariable = variableFactory();
-      var measurementType = MEASUREMENT_TYPES[getValueIfPresent(studyDataSheet, columns[0] + 1, startRow + 2)].uri;
+      var measurementType = MEASUREMENT_TYPES[IOU.getValueIfPresent(studyDataSheet, columns[0] + 1, startRow + 2)].uri;
       var ofVariable = {
         '@type': 'ontology:Variable',
         measurementType: measurementType,
@@ -602,7 +604,7 @@ define(['lodash', 'util/context', 'util/constants', 'xlsx-shim'], function(_, ex
           return ONTOLOGY_PREFIX + propertyName;
         }, startRow);
         if (newVariable.measurementType === 'ontology:survival' && newVariable.has_result_property.indexOf(ONTOLOGY_PREFIX + 'exposure') > -1) {
-          newVariable.timeScale = getValue(studyDataSheet, columns[0] + 2, startRow + 2);
+          newVariable.timeScale = IOU.getValue(studyDataSheet, columns[0] + 2, startRow + 2);
         }
       }
       newVariable.of_variable = [ofVariable];
@@ -613,7 +615,7 @@ define(['lodash', 'util/context', 'util/constants', 'xlsx-shim'], function(_, ex
     function readDataColumnNames(studyDataSheet, columns, prefixer, startRow) {
       return _(_.range(columns[0] + 2, columns[1]))
         .map(function(column) {
-          return getValueIfPresent(studyDataSheet, column, startRow + 1);
+          return IOU.getValueIfPresent(studyDataSheet, column, startRow + 1);
         })
         .without('measurement moment')
         .without('time scale')
@@ -625,7 +627,7 @@ define(['lodash', 'util/context', 'util/constants', 'xlsx-shim'], function(_, ex
     function readMeasurementMoments(studyDataSheet, columns, measurementMomentReader, startRow) {
       return _(_.range(columns[0] + 1, columns[1]))
         .filter(function(column) {
-          return getValueIfPresent(studyDataSheet, column, startRow + 1) === 'measurement moment';
+          return IOU.getValueIfPresent(studyDataSheet, column, startRow + 1) === 'measurement moment';
         })
         .map(function(column) {
           return measurementMomentReader(column);
@@ -691,7 +693,7 @@ define(['lodash', 'util/context', 'util/constants', 'xlsx-shim'], function(_, ex
 
       _.forEach(resultColumns, function(resultColumn, propertyIndex) {
         var currentX = variableColumn + 3 + measurementMomentIndex * (resultColumns.length + 1) + propertyIndex;
-        var currentValue = getValueIfPresent(studyDataSheet, currentX, currentY);
+        var currentValue = IOU.getValueIfPresent(studyDataSheet, currentX, currentY);
         if (currentValue !== undefined && currentValue !== null) {
           measurement = readMeasurementValue(measurement, resultColumn, currentValue);
         }
@@ -704,15 +706,15 @@ define(['lodash', 'util/context', 'util/constants', 'xlsx-shim'], function(_, ex
       var study = {
         '@id': 'http://trials.drugis.org/studies/' + UUIDService.generate(),
         '@type': 'ontology:Study',
-        label: studyDataSheet[a1Coordinate(0, firstDataRow)].v,
-        comment: studyDataSheet[a1Coordinate(2, firstDataRow)].v,
-        has_allocation: studyDataSheet[a1Coordinate(3, firstDataRow)] ? findOntology(GROUP_ALLOCATION_OPTIONS, studyDataSheet[a1Coordinate(3, firstDataRow)].v) : undefined,
-        has_blinding: studyDataSheet[a1Coordinate(4, firstDataRow)] ? findOntology(BLINDING_OPTIONS, studyDataSheet[a1Coordinate(4, firstDataRow)].v) : undefined,
-        status: studyDataSheet[a1Coordinate(5, firstDataRow)] ? findOntology(STATUS_OPTIONS, studyDataSheet[a1Coordinate(5, firstDataRow)].v) : undefined,
-        has_number_of_centers: studyDataSheet[a1Coordinate(6, firstDataRow)] ? studyDataSheet[a1Coordinate(6, firstDataRow)].v : undefined,
-        has_objective: getCommented(studyDataSheet, a1Coordinate(7, firstDataRow)),
-        has_indication: getLabeled(studyDataSheet, a1Coordinate(8, firstDataRow)),
-        has_eligibility_criteria: getCommented(studyDataSheet, a1Coordinate(9, firstDataRow)),
+        label: studyDataSheet[IOU.a1Coordinate(0, firstDataRow)].v,
+        comment: studyDataSheet[IOU.a1Coordinate(2, firstDataRow)].v,
+        has_allocation: studyDataSheet[IOU.a1Coordinate(3, firstDataRow)] ? findOntology(GROUP_ALLOCATION_OPTIONS, studyDataSheet[IOU.a1Coordinate(3, firstDataRow)].v) : undefined,
+        has_blinding: studyDataSheet[IOU.a1Coordinate(4, firstDataRow)] ? findOntology(BLINDING_OPTIONS, studyDataSheet[IOU.a1Coordinate(4, firstDataRow)].v) : undefined,
+        status: studyDataSheet[IOU.a1Coordinate(5, firstDataRow)] ? findOntology(STATUS_OPTIONS, studyDataSheet[IOU.a1Coordinate(5, firstDataRow)].v) : undefined,
+        has_number_of_centers: studyDataSheet[IOU.a1Coordinate(6, firstDataRow)] ? studyDataSheet[IOU.a1Coordinate(6, firstDataRow)].v : undefined,
+        has_objective: getCommented(studyDataSheet, IOU.a1Coordinate(7, firstDataRow)),
+        has_indication: getLabeled(studyDataSheet, IOU.a1Coordinate(8, firstDataRow)),
+        has_eligibility_criteria: getCommented(studyDataSheet, IOU.a1Coordinate(9, firstDataRow)),
         has_activity: [],
         has_arm: readArms(studyDataSheet, firstDataRow),
         has_epochs: RdfListService.unFlattenList(epochs),
@@ -782,57 +784,6 @@ define(['lodash', 'util/context', 'util/constants', 'xlsx-shim'], function(_, ex
       }
       _.remove(arms, ['label', 'Overall population']);
       return arms;
-    }
-
-    function a1Coordinate(column, row) {
-      return excelUtils.encode_cell({
-        c: column,
-        r: row
-      });
-    }
-
-    function getReferenceValue(sourceSheet, column, row, workbook) {
-      return getReferenceValueColumnOffset(sourceSheet, column, row, 0, workbook);
-    }
-
-    function getReferenceValueColumnOffset(sourceSheet, column, row, columnOffset, workbook) {
-      var source = sourceSheet[a1Coordinate(column, row)];
-      if (source) {
-        var splitFormula = source.f.split('!');
-        var targetSheet = splitFormula[0];
-        if (targetSheet[0] === '=') {
-          targetSheet = targetSheet.slice(1);
-        }
-        var targetCoordinates = excelUtils.decode_cell(splitFormula[1]);
-        targetCoordinates.c += columnOffset;
-        if(!isFinite(targetCoordinates.c) || !isFinite(targetCoordinates.r)) {
-          throw 'Broken reference: ' + source.f;
-        }
-        targetCoordinates = excelUtils.encode_cell(targetCoordinates);
-        targetSheet = targetSheet.replace(/\'/g, '');
-        if (workbook.Sheets[targetSheet] && workbook.Sheets[targetSheet][targetCoordinates]) {
-          return workbook.Sheets[targetSheet][targetCoordinates].v;
-        } else {
-          throw 'Broken reference: ' + source.f;
-        }
-      }
-    }
-
-    function getValueIfPresent(dataSheet, column, row) {
-      var cell = dataSheet[a1Coordinate(column, row)];
-      return cell ? cell.v : undefined;
-    }
-
-    function getValue(dataSheet, column, row) {
-      var cell = dataSheet[a1Coordinate(column, row)];
-      return cell.v;
-    }
-
-    function assignIfPresent(object, field, sheet, column, row) {
-      var value = getValueIfPresent(sheet, column, row);
-      if (value) {
-        object[field] = value;
-      }
     }
 
     // interface
