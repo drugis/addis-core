@@ -10428,3 +10428,29 @@ table.nested td.left {
 .no-margin {
   margin: 0px;
 }
+
+/* line 319, ../../sass/addis-drugis.scss */
+.angucomplete-row:before {
+  border: inset 6px;
+  content: "";
+  display: block;
+  height: 0;
+  width: 0;
+  border-color: transparent transparent #333333 transparent;
+  border-bottom-style: solid;
+  position: absolute;
+  top: -12px;
+  left: 10px;
+  z-index: 89;
+}
+
+/* line 333, ../../sass/addis-drugis.scss */
+.angucomplete-dropdown {
+  border-color: #333333 !important;
+}
+
+/* line 337, ../../sass/addis-drugis.scss */
+.angucomplete-selected-row {
+  background-color: lightgrey !important;
+  color: #333333 !important;
+}

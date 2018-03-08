@@ -18,6 +18,7 @@
     <link rel="stylesheet" type="text/css" href="app/js/bower_components/angular-ui-select/dist/select.min.css">
     <link rel="stylesheet" type="text/css" href="app/js/bower_components/select2/select2.css">
     <link rel="stylesheet" type="text/css" href="app/js/bower_components/angularjs-slider/dist/rzslider.css">
+    <link rel="stylesheet" type="text/css" href="app/js/bower_components/angucomplete-alt/angucomplete-alt.css">
 
     <script src="app/js/bower_components/requirejs/require.js" data-main="app/js/main.js"></script>
   </head>

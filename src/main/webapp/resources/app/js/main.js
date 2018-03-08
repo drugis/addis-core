@@ -31,7 +31,8 @@ require.config({
     'nvd3': 'bower_components/nvd3/build/nv.d3.min',
     'showdown': 'bower_components/showdown/dist/showdown.min',
     'xlsx': 'bower_components/xlsx/dist/xlsx.full.min',
-    'xlsx-shim': 'bower_components/xlsx/demos/requirejs/xlsx-shim'
+    'xlsx-shim': 'bower_components/xlsx/demos/requirejs/xlsx-shim',
+    'angucomplete-alt': 'bower_components/angucomplete-alt/dist/angucomplete-alt.min'
   },
   baseUrl: 'app/js',
   shim: {
