@@ -12,6 +12,10 @@
   version "0.0.0"
   resolved "https://codeload.github.com/mathjax/MathJax/tar.gz/1c54436ae6166a91495aba8a98cc18816b4789df"
 
+"@bower_components/angucomplete-alt@ghiden/angucomplete-alt#~3.0.0":
+  version "3.0.0"
+  resolved "https://codeload.github.com/ghiden/angucomplete-alt/tar.gz/922edc4f6fa1caeb1ebae23f009ff70c1a9602f6"
+
 "@bower_components/angular-animate@angular/bower-angular-animate#~1.6.6":
   version "1.6.8"
   resolved "https://codeload.github.com/angular/bower-angular-animate/tar.gz/cb64242dbe2023fc1186a849387c17408ee4b1b0"

@@ -12,6 +12,7 @@ define(['angular', 'lodash'], function(angular, _) {
         scope.treatment = {};
         scope.treatment.dosingPeriodicity = 'P1D';
         scope.treatment.treatmentDoseType = 'ontology:FixedDoseDrugTreatment';
+        scope.isValidTreatment = false;
 
         DrugService.queryItems($stateParams.studyUUID).then(function(result) {
           scope.drugs = result;
@@ -21,6 +22,12 @@ define(['angular', 'lodash'], function(angular, _) {
           scope.doseUnits = result;
         });
 
+        scope.drugChanged = drugChanged;
+        scope.doseUnitChanged = doseUnitChanged;
+        scope.cancelAddDrug = cancelAddDrug;
+        scope.checkIsValidTreatment = checkIsValidTreatment;
+        scope.addTreatment = addTreatment;
+
         function reset() {
           scope.treatment = {
             dosingPeriodicity: 'P1D',
@@ -28,10 +35,26 @@ define(['angular', 'lodash'], function(angular, _) {
           };
         }
 
-        scope.cancelAddDrug = function() {
+        function drugChanged(newValue) {
+          if (newValue) {
+            scope.treatment.drug = newValue.originalObject;
+          }
+          checkIsValidTreatment();
+        }
+
+        function doseUnitChanged(newValue) {
+          if (newValue) {
+            scope.treatment.doseUnit = newValue.originalObject;
+          }
+          checkIsValidTreatment();
+
+        }
+
+        function cancelAddDrug() {
           scope.treatment = {};
           scope.treatmentDirective.isVisible = false;
-        };
+          scope.$broadcast('angucomplete-alt:clearInput');
+        }
 
         function isDefinedNumber(number) {
           return typeof number === 'number';
@@ -42,17 +65,17 @@ define(['angular', 'lodash'], function(angular, _) {
           return (typeof obj === 'string' && obj.length > 0) || (obj && obj.label);
         }
 
-        scope.isValidTreatment = function() {
+        function checkIsValidTreatment() {
+          scope.isValidTreatment = false;
           var baseValid = isCompleteTypeaheadValue(scope.treatment.drug) &&
             isCompleteTypeaheadValue(scope.treatment.doseUnit) && scope.treatment.dosingPeriodicity &&
             scope.treatment.dosingPeriodicity !== 'PnullD';
           if (scope.treatment.treatmentDoseType === 'ontology:FixedDoseDrugTreatment') {
-            return baseValid && isDefinedNumber(scope.treatment.fixedValue);
+            scope.isValidTreatment = baseValid && isDefinedNumber(scope.treatment.fixedValue);
           } else if (scope.treatment.treatmentDoseType === 'ontology:TitratedDoseDrugTreatment') {
-            return baseValid && isDefinedNumber(scope.treatment.minValue) && isDefinedNumber(scope.treatment.maxValue);
+            scope.isValidTreatment = baseValid && isDefinedNumber(scope.treatment.minValue) && isDefinedNumber(scope.treatment.maxValue);
           }
-          return false;
-        };
+        }
 
         function createIfNotExists(newTreatment, propertyName) {
           if (angular.isString(newTreatment[propertyName])) {
@@ -70,21 +93,18 @@ define(['angular', 'lodash'], function(angular, _) {
             }
           }
         }
-        
-        scope.addTreatment = function(treatment) {
 
-          var newTreatment = angular.copy(treatment);
-
+        function addTreatment(treatment) {
+          var newTreatment = _.cloneDeep(treatment);
           if (!scope.itemScratch.treatments) {
             scope.itemScratch.treatments = [];
           }
-
           createIfNotExists(newTreatment, 'drug');
           createIfNotExists(newTreatment, 'doseUnit');
-
           reset();
-          scope.treatmentAdded(newTreatment);
-        };
+          scope.treatmentAdded(newTreatment); // function in activityController.js
+          scope.$broadcast('angucomplete-alt:clearInput');
+        }
 
       }
 
