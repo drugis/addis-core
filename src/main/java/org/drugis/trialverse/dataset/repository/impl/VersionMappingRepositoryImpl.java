@@ -59,7 +59,7 @@ public class VersionMappingRepositoryImpl implements VersionMappingRepository {
   @Override
   public List<VersionMapping> findMappingsByEmail(String email) {
     String sql = "SELECT * FROM VersionMapping WHERE ownerUuid = ?";
-    List<VersionMapping> queryResult = jdbcTemplate.query(sql, Arrays.asList(email).toArray(), rowMapper);
+    List<VersionMapping> queryResult = jdbcTemplate.query(sql, Collections.singletonList(email).toArray(), rowMapper);
     if (queryResult == null) {
       queryResult = new ArrayList<VersionMapping>();
     }

@@ -26,6 +26,7 @@ import org.drugis.trialverse.util.Namespaces;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -134,9 +135,11 @@ public class DatasetWriteRepositoryImpl implements DatasetWriteRepository {
     return datasetUri;
   }
 
-  @Override
-  @CacheEvict(cacheNames = "datasetHistory", key="#mapping.getVersionedDatasetUrl()")
-  public String editDataset(TrialversePrincipal owner, VersionMapping mapping, String title, String description) throws URISyntaxException, EditDatasetException {
+  @Caching(evict = {
+          @CacheEvict(cacheNames = "datasetHistory", key="#mapping.getVersionedDatasetUrl()"),
+          @CacheEvict(cacheNames = "versionedDataset", key = "#mapping.trialverseDatasetUrl+'headVersion'")
+  })
+  public String editDataset(TrialversePrincipal owner, VersionMapping mapping, String title, String description) throws EditDatasetException {
     String editDatasetQuery = EDIT_DATASET.replace("$newTitle", title)
             .replace("$datasetUri", mapping.getTrialverseDatasetUrl());
     if(description != null) {
