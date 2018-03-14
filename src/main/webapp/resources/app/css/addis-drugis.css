@@ -1494,6 +1494,12 @@ li.disabled {
   color: darkgray;
 }
 
+/* line 466, ../js/bower_components/mcda-web/sass/_mcda-drugis-base.scss */
+span.toggle-text {
+  position: relative;
+  bottom: 9px;
+}
+
 /**
  * Animations from mmfoundation
  */
