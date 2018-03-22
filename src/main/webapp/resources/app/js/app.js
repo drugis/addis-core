@@ -17,6 +17,7 @@ define(
     'angularjs-slider',
     'angucomplete-alt',
     'angular-patavi-client',
+    'core-js',
     'error-reporting',
     'export-directive',
     'controllers',
