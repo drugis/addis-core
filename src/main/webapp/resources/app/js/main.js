@@ -12,6 +12,7 @@ require.config({
     'angular-touch': 'bower_components/angular-touch/angular-touch',
     'angularanimate': 'bower_components/angular-animate/angular-animate.min',
     'angularjs-slider': 'bower_components/angularjs-slider/dist/rzslider.min',
+    'core-js': 'bower_components/core-js/client/shim.min',
     'clipboard': 'bower_components/clipboard/dist/clipboard.min',
     'd3': 'bower_components/d3/d3.min',
     'domReady': 'bower_components/requirejs-domready/domReady',

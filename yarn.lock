@@ -125,6 +125,10 @@
     select "^1.1.2"
     tiny-emitter "^1.0.0"
 
+"@bower_components/core-js@zloirock/core-js#^2.5.3":
+  version "2.5.3"
+  resolved "https://codeload.github.com/zloirock/core-js/tar.gz/f96b8d8afaebda5f49ac213627218f841c8692b4"
+
 "@bower_components/d3@mbostock-bower/d3-bower#~3.5.5", "@bower_components/d3@mbostock-bower/d3-bower#~3.5.6", "@bower_components/d3@mbostock-bower/d3-bower#~3.5.x":
   version "0.0.0"
   uid "7a826d211d5067867debf9ce24a9987e0cb02b6e"
@@ -242,7 +246,7 @@
 
 "@bower_components/mcda-web@drugis/mcda-elicitation-web#develop":
   version "0.14.3"
-  resolved "https://codeload.github.com/drugis/mcda-elicitation-web/tar.gz/de6210ffb5ace2aef852a3e3147c5f82b3fcc236"
+  resolved "https://codeload.github.com/drugis/mcda-elicitation-web/tar.gz/aef6720c5094b45d5c7c093d14767e89d8e2bf4b"
   dependencies:
     "@bower_components/KaTeX" Khan/KaTeX#~0.6.0
     "@bower_components/MathJax" mathjax/MathJax#2.4.0
@@ -258,6 +262,7 @@
     "@bower_components/angularjs-slider" danielreid/angularjs-slider#feature/restrictedRange
     "@bower_components/bowser" ded/bowser#~0.7.3
     "@bower_components/clipboard" zenorocha/clipboard.js#~1.6.0
+    "@bower_components/core-js" zloirock/core-js#^2.5.3
     "@bower_components/d3" mbostock-bower/d3-bower#~3.5.6
     "@bower_components/domready" ded/domready#~1.0.7
     "@bower_components/error-reporting" drugis/error-reporting#~1.2.1
