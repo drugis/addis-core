@@ -7,7 +7,8 @@
       <form ng-submit="search(searchTerm)">
         <div class="grid-x collapse">
           <div class="cell small-10">
-            <input type="text" autofocus="true" placeholder="Search for studies by title or description" ng-model="searchTerm" />
+            <input type="text" autofocus="true" placeholder="Search for studies by title or description"
+              ng-model="searchTerm" />
           </div>
           <div class="cell small-2">
             <button class="button postfix" type="submit" ng-disabled="!searchTerm">Search</button>
@@ -15,16 +16,16 @@
         </div>
       </form>
     </div>
-  </div>
-  <div class="grid-x" ng-show="searchResults">
     <div class="cell large-8 medium-10 small-12">
-      <h3>Results</h3>
-      <ul class="no-bullet">
-        <li ng-repeat="searchResult in searchResults" style="padding-top: 1rem; padding-bottom: 1rem">
-          <search-result result="searchResult"></search-result>
-        </li>
-        <li ng-show="!searchResults.length">No studies found for {{lastSearchTerm}}</li>
-      </ul>
+      <spinner promise="searchPromise" size="3" message="'Searching...'">
+        <h3>Results</h3>
+        <ul class="no-bullet">
+          <li ng-repeat="searchResult in searchResults" style="padding-top: 1rem; padding-bottom: 1rem">
+            <search-result result="searchResult"></search-result>
+          </li>
+          <li ng-show="!searchResults.length">No studies found for {{lastSearchTerm}}</li>
+        </ul>
+      </spinner>
     </div>
   </div>
 </div>

@@ -7,35 +7,32 @@
       </h2>
       <button ng-show="loginUser && (loginUser.id === userUid)" tabindex="0" class="button "
         ng-click="createDatasetDialog()"><i class="fa fa-plus"></i> Add new dataset</button>
-      <div ng-if="!datasetsLoaded" class="grid-x">
-        <div class="column center">
-          <i class="fa fa-spinner fa-spin fa-3x"></i>
-          <p>Loading datasets...</p>
-        </div>
-      </div>
-      <div class="grid-x" ng-show="datasetsLoaded">
-        <div style="margin-top: 2rem;" class="cell">
-          <em ng-show="datasets.length === 0">No datasets have been created</em>
-          <div style="margin-bottom: 3rem; border-bottom: 1px solid #DCDCDC" ng-repeat="dataset in datasets">
-            <div class="grid-x">
-              <div class="cell large-6">
-                <h5><a ui-sref="dataset({userUid: userUid, datasetUuid: stripFrontFilter(dataset.uri, 'http://trials.drugis.org/datasets/')})">{{dataset.title}}</a></h5>
+      <spinner promise="datasetsPromise" size="3" message="'Loading datasets...'">
+        <div class="grid-x">
+          <div style="margin-top: 2rem;" class="cell">
+            <em ng-show="datasets.length === 0">No datasets have been created</em>
+            <div style="margin-bottom: 3rem; border-bottom: 1px solid #DCDCDC" ng-repeat="dataset in datasets">
+              <div class="grid-x">
+                <div class="cell large-6">
+                  <h5><a ui-sref="dataset({userUid: userUid, datasetUuid: stripFrontFilter(dataset.uri, 'http://trials.drugis.org/datasets/')})">{{dataset.title}}</a></h5>
+                </div>
+                <div class="cell large-6 end">
+                  <button ng-if="showCreateProjectButton" style="margin-bottom: 1rem;" class="right button small radius"
+                    ng-click="createProjectDialog(dataset)">create project</button>
+                </div>
               </div>
-              <div class="cell large-6 end">
-                <button ng-if="showCreateProjectButton" style="margin-bottom: 1rem;" class="right button small radius"
-                  ng-click="createProjectDialog(dataset)">create project</button>
-              </div>
-            </div>
-            <div class="grid-x">
-              <div class="cell">
-                <p class="subheader">
-                  <em ng-if="!dataset.description">no description</em>{{dataset.description}}
-                </p>
+              <div class="grid-x">
+                <div class="cell">
+                  <p class="subheader">
+                    <em ng-if="!dataset.description">no description</em>{{dataset.description}}
+                  </p>
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
+      </spinner>
+
     </div>
     <div class="cell large-4">
       <h2>Other users</h2>

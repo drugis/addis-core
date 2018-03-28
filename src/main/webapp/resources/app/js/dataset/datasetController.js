@@ -52,7 +52,8 @@ define(['lodash'],
       $scope.exportDataset = exportDataset;
       $scope.loadConcepts = loadConcepts; // do not remove, child controller uses it
 
-      // vars
+      // init
+      loadStudiesWithDetail();
       $scope.userUid = $stateParams.userUid;
       $scope.datasetUuid = $stateParams.datasetUuid;
       // no version so this must be head view
@@ -185,14 +186,13 @@ define(['lodash'],
       function loadStudiesWithDetail() {
         var studiesWithDetailPromise = StudiesWithDetailsService.get($stateParams.userUid, $stateParams.datasetUuid, $stateParams.versionUuid);
         var treatmentActivitiesPromise = StudiesWithDetailsService.getTreatmentActivities($stateParams.userUid, $stateParams.datasetUuid, $stateParams.versionUuid);
-        return $q.all([studiesWithDetailPromise, treatmentActivitiesPromise]).then(function(result) {
+        $scope.studiesPromise = $q.all([studiesWithDetailPromise, treatmentActivitiesPromise]).then(function(result) {
           var studiesWithDetail = result[0] instanceof Array ? result[0] : [];
           var treatmentActivities = result[1] instanceof Array ? result[1] : [];
           StudiesWithDetailsService.addActivitiesToStudies(studiesWithDetail, treatmentActivities);
           $scope.studiesWithDetail = studiesWithDetail;
           $scope.filteredStudies = $scope.studiesWithDetail;
         });
-
       }
 
       function showTableOptions() {

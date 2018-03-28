@@ -1,6 +1,6 @@
 <div ui-view>
   <navbar-directive></navbar-directive>
-  <ul ng-show="loading.loaded" class="breadcrumbs fixed">
+  <ul class="breadcrumbs fixed">
     <li><a ui-sref="datasets({userUid: user.id})">{{::user.firstName}} {{::user.lastName}}</a></li>
     <li><a ui-sref="projects({userUid: userId})">Projects</a></li>
     <li><a ui-sref="projectReport({userUid: userId, projectId: project.id})">{{::project.name}}</a></li>
@@ -26,10 +26,7 @@
             ng-disabled="!editMode.allowEditing"><i class="fa fa-table"></i> Rank Probabilities Table</button>
           <button class="button small" ng-click="openInsertDialog('rank-probabilities-plot')"
             ng-disabled="!editMode.allowEditing"><i class="fa fa-bar-chart"></i> Rank Probabilities Plot</button>
-
-
           <button class="button small" ng-click="openInsertDialog('forest-plot')" ng-disabled="!editMode.allowEditing"><i class="fa fa-tree"></i> Pairwise Forest Plot</button>
-
         </div>
         <span ng-show="showSaving">Saving</span>
         <span style="color: green" ng-show="showSaved">Report saved</span>
