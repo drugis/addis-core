@@ -237,7 +237,6 @@ define(['angular-mocks', 'angular', 'lodash'], function(angularMocks, angular, _
         expect(scope.outcomes).toEqual(mockOutcomes);
         expect(scope.interventions).toEqual(mockInterventions);
         expect(scope.analyses).toEqual(mockAnalyses);
-        expect(scope.loading.loaded).toBeTruthy();
         expect(scope.unitConcepts).toEqual(mockUnitConcepts);
         expect(scope.units).toEqual([{
           conceptName: 'liter',
