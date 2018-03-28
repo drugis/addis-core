@@ -2,19 +2,20 @@
 define(['angular', 'lodash'], function(angular, _) {
   var dependencies = ['$scope', '$stateParams', 'ProjectResource', 'UserService'];
   var ProjectsController = function($scope, $stateParams, ProjectResource, UserService) {
-    $scope.loadedProjects = false;
-    $scope.userId = Number($stateParams.userUid);
-    $scope.showArchived = false;
-    $scope.numberOfProjectsArchived = 0;
-    $scope.editMode = {
-      allowEditing: false
-    };
-    loadProjects();
-
     // functions
     $scope.archiveProject = archiveProject;
     $scope.unarchiveProject = unarchiveProject;
     $scope.toggleShowArchived = toggleShowArchived;
+
+    //init
+    $scope.editMode = {
+      allowEditing: false
+    };
+    loadProjects();
+    $scope.userId = Number($stateParams.userUid);
+    $scope.showArchived = false;
+    $scope.numberOfProjectsArchived = 0;
+
 
     function archiveProject(project) {
       var params = {
@@ -47,7 +48,6 @@ define(['angular', 'lodash'], function(angular, _) {
         owner: $scope.userId
       });
       $scope.projects.$promise.then(function() {
-        $scope.loadedProjects = true;
         $scope.projects = _.sortBy($scope.projects, ['archived', 'id']);
         $scope.numberOfProjectsArchived = _.reduce($scope.projects, function(accum, project) {
           return project.archived ? ++accum : accum;

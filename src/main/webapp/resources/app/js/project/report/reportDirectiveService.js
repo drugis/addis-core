@@ -377,7 +377,7 @@ define(['lodash'], function(_) {
     function renderBr(project, accum, analysis) {
       var title = '####Analysis: ' + analysis.title + '\n';
       var link = '[Details](#/users/' + project.owner.id + '/projects/' + project.id + '/br/' + analysis.id + ')  \n';
-      return accum + title + link + '*further benefit-risk display functionality coming soon* \n';
+      return accum + title + link + '*Further benefit-risk display functionality coming in the future* \n';
     }
 
     function generateBrList(project, analyses) {

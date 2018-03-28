@@ -16,9 +16,14 @@ define([], function() {
         scope.loading = {
           loaded: false
         };
-        scope.promise.then(function() {
-          scope.loading.loaded = true;
-        });
+        scope.$watch('promise', checkPromise);
+        function checkPromise(){
+          if (scope.promise) {
+            scope.promise.then(function() {
+              scope.loading.loaded = true;
+            });
+          }
+        }
       }
     };
   };

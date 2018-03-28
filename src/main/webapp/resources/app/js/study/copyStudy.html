@@ -2,7 +2,9 @@
   <div class="grid-container">
     <div class="grid-x">
       <div class="cell">
-        <h3>Copy study <inline-help help-key="copy-study"></inline-help></h3>
+        <h3>Copy study
+          <inline-help help-key="copy-study"></inline-help>
+        </h3>
         <label>Choose target dataset
           <select ng-disabled="copyComplete" ng-options="dataset.title for dataset in datasets"
             ng-model="targetDataset">
@@ -13,6 +15,10 @@
     <div class="grid-x">
       <div class="cell" ng-if="!copyComplete">
         <button class="button success" ng-disabled="isCopying" type="submit">Copy</button>
+      </div>
+      <div ng-if="isCopying && !copyComplete">
+        <i class="fa fa-spinner fa-spin fa-3x"></i>
+        <p>Copying study...</p>
       </div>
       <div class="cell" ng-if="copyComplete">
         <button class="button" type="button" ng-click="cancel()">Close</button> <a ng-click="cancel()" style="margin-left:1rem; text-decoration: underline;"

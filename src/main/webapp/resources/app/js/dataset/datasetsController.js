@@ -9,19 +9,16 @@ define([], function() {
     $scope.createProjectDialog = createProjectDialog;
 
     // init
+    reloadDatasets();
     $scope.stripFrontFilter = $filter('stripFrontFilter');
-    $scope.datasetsLoaded = false;
     $scope.loginUser = UserService.getLoginUser();
     $scope.showCreateProjectButton = UserService.hasLoggedInUser();
 
-    reloadDatasets();
 
     function reloadDatasets() {
-      $scope.datasetsLoaded = false;
-      DatasetResource.queryForJson($stateParams, function(datasets) {
+      $scope.datasetsPromise = DatasetResource.queryForJson($stateParams, function(datasets) {
         $scope.datasets = datasets;
-        $scope.datasetsLoaded = true;
-      });
+      }).$promise;
     }
 
     function createDatasetDialog() {
