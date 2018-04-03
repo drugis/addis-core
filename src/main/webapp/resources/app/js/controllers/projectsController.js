@@ -11,10 +11,10 @@ define(['angular', 'lodash'], function(angular, _) {
     $scope.editMode = {
       allowEditing: false
     };
-    loadProjects();
     $scope.userId = Number($stateParams.userUid);
     $scope.showArchived = false;
     $scope.numberOfProjectsArchived = 0;
+    loadProjects();
 
 
     function archiveProject(project) {
