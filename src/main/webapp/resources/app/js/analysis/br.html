@@ -20,74 +20,70 @@
         <h3 class="subheader inline-header" title="Analysis type">/ {{analysis.analysisType}}
         </h3>
       </div>
-    </div>
 
-    <div class="grid-x">
-      <div class="cell">
-        <h3 class="subheader">Alternatives</h3>
-        <div class="checkbox-group">
-          <div class="alternative-item" ng-repeat="alternative in alternatives">
-            <ul>
-              <li ng-if="alternative.isIncluded"> {{alternative.name}}</li>
-            </ul>
+      <spinner promise="loadingPromise" size="3" message="'Loading analysis...'">
+        <div class="cell">
+          <h3 class="subheader">Alternatives</h3>
+          <div class="checkbox-group">
+            <div class="alternative-item" ng-repeat="alternative in alternatives">
+              <ul>
+                <li ng-if="alternative.isIncluded"> {{alternative.name}}</li>
+              </ul>
+            </div>
           </div>
         </div>
-      </div>
-    </div>
 
-    <div class="grid-x">
-      <div class="cell large-8">
-        <table>
-          <caption>Selected outcomes and their data sources</caption>
-          <thead>
-            <tr>
-              <th>Outcome</th>
-              <th colspan="3">Data source</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr ng-if="networkOWAs.length">
-              <td class="y-head"></td>
-              <td class="y-head">Analysis</td>
-              <td class="y-head">Model</td>
-              <td class="y-head">Baseline distribution</td>
-            </tr>
-            <tr ng-repeat="outcomeWithAnalysis in networkOWAs">
-              <td>{{outcomeWithAnalysis.outcome.name}}</td>
-              <td ng-if="outcomeWithAnalysis.selectedAnalysis">
-                <a ui-sref="networkMetaAnalysis({userUid: userId, projectId: project.id, analysisId: outcomeWithAnalysis.selectedAnalysis.id})">{{outcomeWithAnalysis.selectedAnalysis.title}}</a>
-                <span ng-if="outcomeWithAnalysis.selectedAnalysis.archived">(archived analysis)</span>
-              </td>
-              <td ng-if="outcomeWithAnalysis.selectedAnalysis">
-                <a ui-sref="model({userUid: userId, projectId: project.id, analysisId: outcomeWithAnalysis.selectedAnalysis.id, modelId: outcomeWithAnalysis.selectedModel.id})">{{outcomeWithAnalysis.selectedModel.title}}</a>
-                <button class="button small success" ng-if="outcomeWithAnalysis.selectedModel.runStatus !== 'done'"
-                  ng-click="goToModel(outcomeWithAnalysis.selectedModel)">Run model</button>
-                <span ng-if="outcomeWithAnalysis.selectedModel.archived">(archived model)</span>
-              </td>
-              <td ng-if="outcomeWithAnalysis.baselineDistribution">{{outcomeWithAnalysis.baselineDistribution | distributionToStringFilter}}</td>
-              <td ng-if="!outcomeWithAnalysis.baselineDistribution">
-                <em>Not defined.</em>
-              </td>
-            </tr>
-            <tr ng-if="studyOutcomes.length">
-              <td class="y-head"></td>
-              <td class="y-head" colspan="3">Study</td>
-            </tr>
-            <tr ng-repeat="studyOutcome in studyOutcomes">
-              <td>{{studyOutcome.outcome.name}}</td>
-              <td colspan="3">
-                <a ui-sref="versionedDataset.study({userUid: datasetOwnerId, datasetUuid: project.namespaceUid, versionUuid: projectVersionUuid, studyGraphUuid: studyOutcome.selectedStudy.uuid})">{{studyOutcome.selectedStudy.name}}</a>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
+        <div class="cell large-8">
+          <table>
+            <caption>Selected outcomes and their data sources</caption>
+            <thead>
+              <tr>
+                <th>Outcome</th>
+                <th colspan="3">Data source</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr ng-if="networkOWAs.length">
+                <td class="y-head"></td>
+                <td class="y-head">Analysis</td>
+                <td class="y-head">Model</td>
+                <td class="y-head">Baseline distribution</td>
+              </tr>
+              <tr ng-repeat="outcomeWithAnalysis in networkOWAs">
+                <td>{{outcomeWithAnalysis.outcome.name}}</td>
+                <td ng-if="outcomeWithAnalysis.selectedAnalysis">
+                  <a ui-sref="networkMetaAnalysis({userUid: userId, projectId: project.id, analysisId: outcomeWithAnalysis.selectedAnalysis.id})">{{outcomeWithAnalysis.selectedAnalysis.title}}</a>
+                  <span ng-if="outcomeWithAnalysis.selectedAnalysis.archived">(archived analysis)</span>
+                </td>
+                <td ng-if="outcomeWithAnalysis.selectedAnalysis">
+                  <a ui-sref="model({userUid: userId, projectId: project.id, analysisId: outcomeWithAnalysis.selectedAnalysis.id, modelId: outcomeWithAnalysis.selectedModel.id})">{{outcomeWithAnalysis.selectedModel.title}}</a>
+                  <button class="button small success" ng-if="outcomeWithAnalysis.selectedModel.runStatus !== 'done'"
+                    ng-click="goToModel(outcomeWithAnalysis.selectedModel)">Run model</button>
+                  <span ng-if="outcomeWithAnalysis.selectedModel.archived">(archived model)</span>
+                </td>
+                <td ng-if="outcomeWithAnalysis.baselineDistribution">{{outcomeWithAnalysis.baselineDistribution | distributionToStringFilter}}</td>
+                <td ng-if="!outcomeWithAnalysis.baselineDistribution">
+                  <em>Not defined.</em>
+                </td>
+              </tr>
+              <tr ng-if="studyOutcomes.length">
+                <td class="y-head"></td>
+                <td class="y-head" colspan="3">Study</td>
+              </tr>
+              <tr ng-repeat="studyOutcome in studyOutcomes">
+                <td>{{studyOutcome.outcome.name}}</td>
+                <td colspan="3">
+                  <a ui-sref="versionedDataset.study({userUid: datasetOwnerId, datasetUuid: project.namespaceUid, versionUuid: projectVersionUuid, studyGraphUuid: studyOutcome.selectedStudy.uuid})">{{studyOutcome.selectedStudy.name}}</a>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
 
-    <div class="grid-x">
-      <div class="cell">
-        <button class="button" ng-click="goToDefaultScenario()" ng-disabled="isMissingBaseline || !editMode.loaded">Go to MCDA</button>
-      </div>
+        <div class="cell">
+          <button class="button" ng-click="goToDefaultScenario()" ng-disabled="isMissingBaseline">Go to MCDA</button>
+        </div>
+      </spinner>
     </div>
   </div>
 </div>
