@@ -52,7 +52,7 @@ define(['lodash', 'xlsx-shim', 'file-saver'], function(_, XLSX, saveAs) {
       });
     }
 
-    function exportDataset(datasetWithCoordinates, graphUuids) {
+    function exportDataset(datasetWithCoordinates, graphUuids, percentageUpdate) {
       var workBook = ExcelExportUtilService.buildWorkBook();
       var startRows = ExcelExportUtilService.buildStartRows(1);
 
@@ -68,6 +68,7 @@ define(['lodash', 'xlsx-shim', 'file-saver'], function(_, XLSX, saveAs) {
         return accum.then(function(workBook) {
           return VersionedGraphResource.getJson(coordinates).$promise.then(function(graph) {
             StudyService.loadJson($q.resolve(graph));
+            percentageUpdate();
             return appendStudy(workBook, coordinates, startRows).then(function(workBook) {
               var newWorkBook = ExcelExportUtilService.addStudyHeaders(workBook, startRows);
               startRows = ExcelExportUtilService.updateStartRows(newWorkBook);
