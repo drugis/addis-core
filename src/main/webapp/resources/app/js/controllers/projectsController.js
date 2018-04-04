@@ -16,7 +16,6 @@ define(['angular', 'lodash'], function(angular, _) {
     $scope.numberOfProjectsArchived = 0;
     loadProjects();
 
-
     function archiveProject(project) {
       var params = {
         projectId: project.id
