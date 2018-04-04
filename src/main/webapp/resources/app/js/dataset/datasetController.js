@@ -53,7 +53,6 @@ define(['lodash'],
       $scope.loadConcepts = loadConcepts; // do not remove, child controller uses it
 
       // init
-      loadStudiesWithDetail();
       $scope.userUid = $stateParams.userUid;
       $scope.datasetUuid = $stateParams.datasetUuid;
       // no version so this must be head view
@@ -65,8 +64,7 @@ define(['lodash'],
       $scope.stripFrontFilter = $filter('stripFrontFilter');
       $scope.isEditingAllowed = false;
 
-      // init
-      var studiesWithDetailPromise = loadStudiesWithDetail();
+      loadStudiesWithDetail();
       $scope.datasetConcepts = loadConcepts(); // scope placement for child states
       $scope.datasetConcepts.then(function(concepts) {
         $scope.interventions = _.chain(concepts['@graph'])
@@ -163,7 +161,11 @@ define(['lodash'],
 
       function exportDataset() {
         $scope.isExporting = true;
-        studiesWithDetailPromise
+        $scope.progress = {
+          studiesDone: 0,
+          percentage: 0
+        };
+        $scope.studiesWithDetailPromise
           .then(function() {
             var graphUuids = _($scope.studiesWithDetail)
               .sortBy('label')
@@ -176,7 +178,10 @@ define(['lodash'],
               userUid: $stateParams.userUid,
               versionUuid: $scope.currentRevision.uri.split('/versions/')[1]
             });
-            return ExcelExportService.exportDataset(datasetWithCoordinates, graphUuids);
+            return ExcelExportService.exportDataset(datasetWithCoordinates, graphUuids, function(){
+              ++$scope.progress.studiesDone;
+              $scope.progress.percentage = $scope.progress.studiesDone*100/graphUuids.length;
+            });
           })
           .then(function() {
             $scope.isExporting = false;
@@ -184,9 +189,9 @@ define(['lodash'],
       }
 
       function loadStudiesWithDetail() {
-        var studiesWithDetailPromise = StudiesWithDetailsService.get($stateParams.userUid, $stateParams.datasetUuid, $stateParams.versionUuid);
+        $scope.studiesWithDetailPromise = StudiesWithDetailsService.get($stateParams.userUid, $stateParams.datasetUuid, $stateParams.versionUuid);
         var treatmentActivitiesPromise = StudiesWithDetailsService.getTreatmentActivities($stateParams.userUid, $stateParams.datasetUuid, $stateParams.versionUuid);
-        $scope.studiesPromise = $q.all([studiesWithDetailPromise, treatmentActivitiesPromise]).then(function(result) {
+        $scope.studiesPromise = $q.all([$scope.studiesWithDetailPromise, treatmentActivitiesPromise]).then(function(result) {
           var studiesWithDetail = result[0] instanceof Array ? result[0] : [];
           var treatmentActivities = result[1] instanceof Array ? result[1] : [];
           StudiesWithDetailsService.addActivitiesToStudies(studiesWithDetail, treatmentActivities);

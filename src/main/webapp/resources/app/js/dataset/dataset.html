@@ -10,13 +10,14 @@
     <div class="grid-x nav-bar-spacer">
       <div class="cell">
         <button ng-show="hasLoggedInUser" class="button right" type="button" ng-click="createProjectDialog()">Create project</button>
-        <h1>{{dataset.title}} 
+        <h1>{{dataset.title}}
           <a ng-show="!isExporting" title="Export to Excel" ng-click="exportDataset()">
-                  <i class="fa fa-download"></i>
+            <i class="fa fa-download"></i>
           </a>
           <i ng-show="isExporting" class="fa fa-spinner fa-spin"></i>
-          <a ng-if="isEditingAllowed" title="Edit title and description"
-            ng-click="showEditDatasetModal()"><i class="fa fa-edit"></i></a></h1>
+          <a ng-if="isEditingAllowed" title="Edit title and description" ng-click="showEditDatasetModal()"><i class="fa fa-edit"></i></a>
+        </h1>
+        <progressbar ng-hide="!isExporting" value="progress.percentage"></progressbar>
         <p>{{dataset.comment}} <a ng-if="isEditingAllowed && dataset.comment" title="Edit title and description"
             ng-click="showEditDatasetModal()"><i class="fa fa-edit"></i></a></p>
         <div class="grid-x nav-bar-spacer">
@@ -28,9 +29,9 @@
       <div class="cell">
         <h3>
           <button class="button" ng-if="versionUuid" ui-sref="versionedDataset.concepts({userUid: user.id, datasetUuid: stripFrontFilter(dataset.datasetUuid, 'http://trials.drugis.org/datasets/'), versionUuid: versionUuid})">Dataset concepts</button>
-          <button class="button" ng-if="!versionUuid" ui-sref="dataset.concepts({userUid: user.id, datasetUuid: stripFrontFilter(dataset.datasetUuid, 'http://trials.drugis.org/datasets/')})">Dataset concepts</button>
-          <inline-help style="margin-left: 0.5rem; vertical-align: text-bottom;" help-key="concept"></inline-help>
-        </h3>
+        <button class="button" ng-if="!versionUuid" ui-sref="dataset.concepts({userUid: user.id, datasetUuid: stripFrontFilter(dataset.datasetUuid, 'http://trials.drugis.org/datasets/')})">Dataset concepts</button>
+        <inline-help style="margin-left: 0.5rem; vertical-align: text-bottom;" help-key="concept"></inline-help>
+      </h3>
       </div>
       <div class="cell">
         <hr>
