@@ -103,7 +103,7 @@ define(['angular', 'lodash'], function (angular, _) {
         var saveCommand = analysisToSaveCommand($scope.analysis);
         return AnalysisResource.save(saveCommand).$promise.then(function () {
           $scope.outcomesWithAnalyses = BenefitRiskService.buildOutcomesWithAnalyses(analysis, outcomes, filteredNetworkMetaAnalyses);
-          ProjectStudiesResource.query({
+          return ProjectStudiesResource.query({
             projectId: $stateParams.projectId
           }).$promise.then(function (studies) {
             $scope.studiesWithUuid = _.map(studies, function (study) {
