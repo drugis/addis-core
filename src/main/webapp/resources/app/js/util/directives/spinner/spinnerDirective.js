@@ -18,6 +18,7 @@ define([], function() {
         };
         scope.$watch('promise', checkPromise);
         function checkPromise(){
+          scope.loading.loaded = false;
           if (scope.promise) {
             scope.promise.then(function() {
               scope.loading.loaded = true;

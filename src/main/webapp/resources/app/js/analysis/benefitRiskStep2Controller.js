@@ -220,12 +220,12 @@ define(['angular', 'lodash'], function (angular, _) {
                   }
                 });
                 var saveCommand = analysisToSaveCommand($scope.analysis);
-                AnalysisResource.save(saveCommand).$save().then(function () {
+                $scope.effectsTablePromise = AnalysisResource.save(saveCommand).$save().then(function () {
                   $scope.outcomesWithAnalyses = BenefitRiskService.buildOutcomesWithAnalyses(
                     $scope.analysis, $scope.outcomes, $scope.networkMetaAnalyses);
                   $scope.outcomesWithAnalyses = BenefitRiskService.addStudiesToOutcomes(
                     $scope.outcomesWithAnalyses, $scope.analysis.benefitRiskStudyOutcomeInclusions, $scope.studiesWithUuid);
-                  resetScales();
+                  return resetScales();
                 });
               };
             }
