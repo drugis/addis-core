@@ -43,8 +43,7 @@ define(['lodash', 'angular'], function(_, angular) {
     $scope.userId = $stateParams.userUid;
 
     $scope.editMode = {
-      allowEditing: false,
-      loaded: false
+      allowEditing: false
     };
     $scope.project.$promise.then(function() {
       if (UserService.isLoginUserId($scope.project.owner.id) && !$scope.analysis.archived && !$scope.analysis.finalized) {
@@ -59,7 +58,7 @@ define(['lodash', 'angular'], function(_, angular) {
       studiesPromise
     ];
 
-    $q.all(promises).then(function(result) {
+    $scope.step1Promise = $q.all(promises).then(function(result) {
       var analysis = result[0];
       var alternatives = result[1];
       var outcomes = result[2];
@@ -120,8 +119,6 @@ define(['lodash', 'angular'], function(_, angular) {
         outcome.isIncluded = !!outcome.inclusion;
         return outcome;
       });
-
-      $scope.editMode.loaded = true;
     });
 
     function goToStep2() {

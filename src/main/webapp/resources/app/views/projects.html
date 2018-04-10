@@ -4,49 +4,42 @@
       <h2>Projects
         <inline-help help-key="project"></inline-help>
       </h2>
-      <div ng-if="!loadedProjects">
-        <i class="fa fa-spinner fa-spin fa-3x"></i>
-        <p>Loading projects...</p>
-      </div>
-      <em ng-if="loadedProjects && !(projects | ownProjectsFilter:user.id).length">No projects have been created</em>
-      <div style="margin-bottom: 3rem; border-bottom: 1px solid #DCDCDC" ng-repeat="project in projects | ownProjectsFilter:user.id"
-        ng-show="project.archived===false || showArchived===true">
+      <spinner promise="projects.$promise" size="3" message="'Loading projects...'">
+        <em ng-if="!(projects | ownProjectsFilter:user.id).length">No projects have been created</em>
+        <div style="margin-bottom: 3rem; border-bottom: 1px solid #DCDCDC" ng-repeat="project in projects | ownProjectsFilter:user.id" ng-show="project.archived===false || showArchived===true">
+          <div class="grid-x">
+            <div class="cell large-6">
+              <h5>
+                <a ui-sref="project({userUid: user.id, projectId: project.id})">
+                  <span title="project name">{{project.name}}</span>
+                  <span ng-if=project.archived>(archived on {{project.archivedOn}})</span>
+                </a>
+              </h5>
+            </div>
+            <div class="cell large-6" ng-if="!project.archived && editMode.allowEditing">
+              <button ng-click="archiveProject(project)" type="button" class="button small right info"
+                style="margin-bottom:0;">archive</button>
+            </div>
+            <div class="cell large-6" ng-if="project.archived && editMode.allowEditing">
+              <button ng-click="unarchiveProject(project)" type="button" class="button small right alert"
+                style="margin-bottom:0;">unarchive</button>
+            </div>
+          </div>
+          <div class="grid-x">
+            <div class="cell large-8">
+              {{project.description}}
+            </div>
 
-        <div class="grid-x">
-          <div class="cell large-6">
-            <h5>
-              <a ui-sref="project({userUid: user.id, projectId: project.id})">
-                <span title="project name">{{project.name}}</span>
-                <span ng-if=project.archived>(archived on {{project.archivedOn}})</span>
-              </a>
-            </h5>
-          </div>
-          <div class="cell large-6" ng-if="!project.archived && editMode.allowEditing">
-            <button ng-click="archiveProject(project)"
-              type="button" class="button small right info" style="margin-bottom:0;">archive</button>
-          </div>
-          <div class="cell large-6" ng-if="project.archived && editMode.allowEditing">
-            <button ng-click="unarchiveProject(project)"
-              type="button" class="button small right alert" style="margin-bottom:0;">unarchive</button>
           </div>
         </div>
-
-        <div class="grid-x">
-          <div class="cell large-8">
-            {{project.description}}
-          </div>
-
-        </div>
-
-      </div>
-      <!-- end project item ng-repeat -->
-      <button ng-disabled="numberOfProjectsArchived === 0" ng-hide="showArchived || !loadedProjects"
-        class="button secondary small right ng-binding" ng-click="toggleShowArchived()"
-        style=""><i class="fa fa-eye"></i> Show archived ({{numberOfProjectsArchived}})
-      </button>
-      <button ng-disabled="false" ng-hide="!showArchived || !loadedProjects" class="button secondary small right ng-binding"
-        ng-click="toggleShowArchived()" style=""><i class="fa fa-eye"></i> Hide archived ({{numberOfProjectsArchived}})
-      </button>
+        <!-- end project item ng-repeat -->
+        <button ng-disabled="numberOfProjectsArchived === 0" ng-hide="showArchived" class="button secondary small right ng-binding"
+          ng-click="toggleShowArchived()" style=""><i class="fa fa-eye"></i> Show archived ({{numberOfProjectsArchived}})
+        </button>
+        <button ng-disabled="false" ng-hide="!showArchived" class="button secondary small right ng-binding"
+          ng-click="toggleShowArchived()" style=""><i class="fa fa-eye"></i> Hide archived ({{numberOfProjectsArchived}})
+        </button>
+      </spinner>
 
 
     </div>

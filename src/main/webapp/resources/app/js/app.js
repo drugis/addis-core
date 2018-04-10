@@ -15,7 +15,9 @@ define(
     'ngSanitize',
     'showdown',
     'angularjs-slider',
+    'angucomplete-alt',
     'angular-patavi-client',
+    'core-js',
     'error-reporting',
     'export-directive',
     'controllers',
@@ -113,7 +115,8 @@ define(
       'addis.excelExport',
       'patavi',
       'errorReporting',
-      'export-directive'
+      'export-directive', 
+      'angucomplete-alt'
     ];
     var gemtcWebDependencies = [
       'gemtc.controllers',

@@ -26,8 +26,8 @@ public class SigninController {
 
   final static Logger logger = LoggerFactory.getLogger(SigninController.class);
 
-	@RequestMapping(value="/signin", method=RequestMethod.GET)
-	public void signin() {
+  @RequestMapping(value = "/signin", method = RequestMethod.GET)
+  public void signin() {
     logger.debug("signin user");
-	}
+  }
 }

@@ -12,6 +12,7 @@ require.config({
     'angular-touch': 'bower_components/angular-touch/angular-touch',
     'angularanimate': 'bower_components/angular-animate/angular-animate.min',
     'angularjs-slider': 'bower_components/angularjs-slider/dist/rzslider.min',
+    'core-js': 'bower_components/core-js/client/shim.min',
     'clipboard': 'bower_components/clipboard/dist/clipboard.min',
     'd3': 'bower_components/d3/d3.min',
     'domReady': 'bower_components/requirejs-domready/domReady',
@@ -31,7 +32,8 @@ require.config({
     'nvd3': 'bower_components/nvd3/build/nv.d3.min',
     'showdown': 'bower_components/showdown/dist/showdown.min',
     'xlsx': 'bower_components/xlsx/dist/xlsx.full.min',
-    'xlsx-shim': 'bower_components/xlsx/demos/requirejs/xlsx-shim'
+    'xlsx-shim': 'bower_components/xlsx/demos/requirejs/xlsx-shim',
+    'angucomplete-alt': 'bower_components/angucomplete-alt/dist/angucomplete-alt.min'
   },
   baseUrl: 'app/js',
   shim: {

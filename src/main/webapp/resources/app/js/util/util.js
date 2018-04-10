@@ -17,6 +17,7 @@ var requires = [
   'util/directives/subsetSelect/subsetSelectDirective',
   'util/directives/durationInput/durationInputDirective',
   'util/directives/sessionExpired/sessionExpiredDirective',
+  'util/directives/spinner/spinnerDirective',
   'util/directives/enumOptions/enumOptionsDirective',
   'util/interceptors/sessionExpiredInterceptor'
 ];
@@ -39,6 +40,7 @@ define(['angular'].concat(requires), function(
   subsetSelect,
   durationInput,
   sessionExpired,
+  spinner,
   enumOptions,
   SessionExpiredInterceptor
 ) {
@@ -68,6 +70,7 @@ define(['angular'].concat(requires), function(
     .directive('durationInput', durationInput)
     .directive('sessionExpired', sessionExpired)
     .directive('enumOptions', enumOptions)
+    .directive('spinner', spinner)
 
     //interceptors
     .factory('SessionExpiredInterceptor', SessionExpiredInterceptor);

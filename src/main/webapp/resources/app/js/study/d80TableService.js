@@ -114,15 +114,31 @@ define(['lodash'], function(_) {
     }
 
     function buildResultLabel(resultsObject) {
+      var sampleSize;
       if (resultsObject.type === 'dichotomous') {
-        return resultsObject.resultProperties.count + '/' + resultsObject.resultProperties.sampleSize;
+        sampleSize = resultsObject.resultProperties.sampleSize;
+        var count = resultsObject.resultProperties.count;
+        var percentage = resultsObject.resultProperties.percentage;
+        if(!count && percentage){
+          count = ((percentage * sampleSize) / 100).toFixed(0);
+        }
+        return count && sampleSize ?
+          count + '/' + sampleSize :
+          '<count> <sample size>';
       } else if (resultsObject.type === 'continuous') {
-        return exponentialFilter(resultsObject.resultProperties.mean) + ' ± ' + exponentialFilter(resultsObject.resultProperties.standardDeviation) +
-          ' (' + resultsObject.resultProperties.sampleSize + ')';
+        sampleSize = resultsObject.resultProperties.sampleSize;
+        var mean = resultsObject.resultProperties.mean;
+        var standardDeviation = resultsObject.resultProperties.standardDeviation;
+        var standardError = resultsObject.resultProperties.standardError;
+        if (!standardDeviation && standardError) {
+          standardDeviation = standardError * Math.sqrt(sampleSize);
+        }
+        return mean && standardDeviation && sampleSize ?
+          exponentialFilter(mean).toFixed(2) + ' ± ' + exponentialFilter(standardDeviation).toFixed(2) + ' (' + sampleSize + ')' :
+          '<point estimate> <variability> <n>';
       } else {
         throw ('unknown measurement type');
       }
-
     }
 
     function buildArmTreatmentsLabel(treatments) {

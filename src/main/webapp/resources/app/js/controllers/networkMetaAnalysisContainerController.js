@@ -36,9 +36,7 @@ define(['angular', 'lodash'], function(angular, _) {
     $scope.trialData = {};
     $scope.treatmentOverlapMap = {};
     $scope.isModelCreationBlocked = checkCanNotCreateModel();
-    $scope.loading = {
-      loaded: false
-    };
+
     // make available for create model permission check in models.html (which is in gemtc subproject)
     $scope.userId = Number($stateParams.userUid);
     var isUserOwner = false;
@@ -176,7 +174,6 @@ define(['angular', 'lodash'], function(angular, _) {
     function reloadModel() {
       if (!$scope.analysis.outcome) {
         // can not get data without outcome
-        $scope.loading.loaded = true;
         return;
       }
       $scope.analysis.outcome = resolveOutcomeId($scope.analysis.outcome.id);
@@ -200,9 +197,8 @@ define(['angular', 'lodash'], function(angular, _) {
           $scope.containsMissingValue = _.find($scope.isMissingByStudyMap);
           $scope.measurementType = NetworkMetaAnalysisService.getMeasurementType($scope.trialverseData);
           $scope.showColumn = NetworkMetaAnalysisService.checkColumnsToShow($scope.trialData, $scope.measurementType);
-          updateNetwork().then(function() {
+          $scope.analysisPromise = updateNetwork().then(function() {
             $scope.isModelCreationBlocked = checkCanNotCreateModel();
-            $scope.loading.loaded = true;
           });
         });
     }

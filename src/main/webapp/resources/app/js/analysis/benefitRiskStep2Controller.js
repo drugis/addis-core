@@ -50,8 +50,7 @@ define(['angular', 'lodash'], function(angular, _) {
     $scope.userId = $stateParams.userUid;
 
     $scope.editMode = {
-      allowEditing: false,
-      loaded: false
+      allowEditing: false
     };
     $scope.project.$promise.then(function() {
       if (UserService.isLoginUserId($scope.project.owner.id) && !$scope.analysis.archived) {
@@ -67,7 +66,7 @@ define(['angular', 'lodash'], function(angular, _) {
     });
     var promises = [$scope.analysis.$promise, $scope.alternatives.$promise, $scope.outcomes.$promise, $scope.models.$promise];
 
-    $q.all(promises).then(function(result) {
+    $scope.step2Promise = $q.all(promises).then(function(result) {
       var analysis = result[0];
       var alternatives = result[1];
       var outcomes = result[2];
@@ -87,7 +86,7 @@ define(['angular', 'lodash'], function(angular, _) {
         return alternative;
       });
 
-      AnalysisResource.query({
+      $scope.effectsTablePromise = AnalysisResource.query({
         projectId: $stateParams.projectId,
         outcomeIds: outcomeIds
       }).$promise.then(function(networkMetaAnalyses) {
@@ -128,8 +127,6 @@ define(['angular', 'lodash'], function(angular, _) {
         }
         return outcome;
       });
-
-      $scope.editMode.loaded = true;
     });
 
     function addModelBaseline(analysis, models) {

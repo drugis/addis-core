@@ -60,17 +60,13 @@ define(['lodash', 'angular'], function(_, angular) {
     $scope.openDeleteDefinitionDialog = openDeleteDefinitionDialog;
     $scope.openUpdateDialog = openUpdateDialog;
 
+    // init
     $scope.tabSelection = {
       activeTab: activeTab
     };
 
-    $scope.analysesLoaded = false;
-    $scope.covariatesLoaded = true;
     $scope.showArchived = false;
     $scope.numberOfAnalysesArchived = 0;
-    $scope.loading = {
-      loaded: false
-    };
     $scope.editMode = {
       allowEditing: false
     };
@@ -133,11 +129,10 @@ define(['lodash', 'angular'], function(_, angular) {
     }
 
     function loadAnalyses() {
-      $scope.studies.$promise.then(function() {
+      $scope.analysesPromise = $scope.studies.$promise.then(function() {
         $scope.analyses = CacheService.getAnalyses({
           projectId: $scope.project.id
         }).then(function(analyses) {
-          $scope.analysesLoaded = true;
           $scope.numberOfAnalysesArchived = _.reduce(analyses, function(accum, analysis) {
             return analysis.archived ? ++accum : accum;
           }, 0);
@@ -161,7 +156,7 @@ define(['lodash', 'angular'], function(_, angular) {
     function loadUnits() {
       var unitsPromise = DosageService.get($stateParams.userUid, $scope.project.namespaceUid);
       var scaledUnitsPromise = ScaledUnitResource.query($stateParams).$promise;
-      $q.all([unitsPromise, scaledUnitsPromise]).then(function(results) {
+      $scope.unitsPromise = $q.all([unitsPromise, scaledUnitsPromise]).then(function(results) {
         $scope.unitConcepts = results[0];
         var scaledUnits = results[1];
 
@@ -171,7 +166,6 @@ define(['lodash', 'angular'], function(_, angular) {
             conceptName: unitConcepts[unit.conceptUri].unitName
           });
         });
-        $scope.loading.loaded = true;
       });
     }
 
@@ -197,7 +191,7 @@ define(['lodash', 'angular'], function(_, angular) {
 
     function loadCovariates() {
       // we need to get the options in order to display the definition label, as only the definition key is stored on the covariate
-      $q.all([CovariateOptionsResource.getProjectCovariates($stateParams).$promise,
+      $scope.covariatesPromise = $q.all([CovariateOptionsResource.getProjectCovariates($stateParams).$promise,
         CacheService.getCovariates({
           projectId: $scope.project.id
         })

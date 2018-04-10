@@ -13,9 +13,8 @@ define(['lodash', 'clipboard'], function(_, Clipboard) {
 
     // init
     $scope.study = study;
-    $scope.buildResultLabel = D80TableService.buildResultLabel;
 
-    var clipboard = new Clipboard('.clipboard-button');
+    new Clipboard('.clipboard-button');
 
     var allThePromises = [
       queryItems(EpochService, 'epochs').then(function(epochs) {
@@ -41,6 +40,7 @@ define(['lodash', 'clipboard'], function(_, Clipboard) {
           return arm;
         });
         $scope.baseline = $scope.arms[0];
+        
         var primaryMeasurementMoment = _.find($scope.measurementMoments, function(measurementMoment) {
           return measurementMoment.offset === 'PT0S' && measurementMoment.relativeToAnchor === 'ontology:anchorEpochEnd' &&
             measurementMoment.epochUri === $scope.primaryEpoch.uri;
@@ -50,14 +50,13 @@ define(['lodash', 'clipboard'], function(_, Clipboard) {
           return;
         }
         var resultsPromises = _.map(_.map($scope.endpoints, 'uri'), ResultsService.queryResultsByOutcome);
+        
         $q.all(resultsPromises).then(function(results) {
           $scope.measurements = D80TableService.buildMeasurements(results, primaryMeasurementMoment.uri, $scope.endpoints);
-
           var estimates = EstimatesResource.getEstimates({
             measurements: $scope.measurements.toBackEndMeasurements,
             baselineUri: $scope.baseline.armURI
           });
-
           estimates.$promise.then(function(estimateResults) {
             $scope.effectEstimateRows = D80TableService.buildEstimateRows(estimateResults, $scope.endpoints, $scope.arms);
           });
