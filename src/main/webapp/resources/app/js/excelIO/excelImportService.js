@@ -233,7 +233,7 @@ define(['lodash', 'util/context', 'util/constants', 'xlsx-shim'], function(_, ex
     //private
     function checkSheets(workbook) {
       var sheetNames = _.keys(workbook.Sheets);
-      if (_.difference(sheetNames, ['Study data']).length !== 0 && _.difference(sheetNames, STUDY_SHEET_NAMES).length !== 0) {
+      if (_.difference(sheetNames, ['Study data']).length !== 0 && _.difference(STUDY_SHEET_NAMES, sheetNames).length !== 0) {
         return 'Excel file should either only have a Study data worksheet, or all required worksheets';
       }
     }
@@ -244,7 +244,7 @@ define(['lodash', 'util/context', 'util/constants', 'xlsx-shim'], function(_, ex
         'Dataset concepts'
       );
       var sheetNames = _.keys(workbook.Sheets);
-      var missingSheets = _.difference(sheetNames, allSheetNames);
+      var missingSheets = _.difference(allSheetNames, sheetNames);
       if (missingSheets.length !== 0) {
         return 'Missing worksheets: ' + missingSheets.join(', ');
       }
