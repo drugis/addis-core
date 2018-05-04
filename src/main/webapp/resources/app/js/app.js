@@ -62,6 +62,7 @@ define(
     'gemtc-web/filters',
     'mcda/controllers',
     'mcda/directives',
+    'mcda/effectsTable/effectsTable',
     'mcda/evidence/evidence',
     'mcda/services/workspaceResource',
     'mcda/services/taskDependencies',
@@ -80,6 +81,7 @@ define(
     var mcdaDependencies = [
       'elicit.controllers',
       'elicit.directives',
+      'elicit.effectsTable',
       'elicit.evidence',
       'elicit.preferences',
       'elicit.results',
