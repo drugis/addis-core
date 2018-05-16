@@ -169,11 +169,10 @@ public class ProblemServiceImpl implements ProblemService {
         Model model = modelMap.get(outcomeInclusion.get().getModelId());
         URI modelURI = getModelUri(model, project, path);
         if (model.getLikelihood().equals("binom")) {
-          criteriaWithBaseline.put(outcome.getSemanticOutcomeUri(), new CriterionEntry(outcome.getSemanticOutcomeUri().toString(),
+          criteriaWithBaseline.put(outcome.getSemanticOutcomeUri(), new CriterionEntry(
                   outcome.getName(), Arrays.asList(0d, 1d), null, "proportion", "meta analysis", modelURI));
         } else {
-          criteriaWithBaseline.put(outcome.getSemanticOutcomeUri(), new CriterionEntry(outcome.getSemanticOutcomeUri().toString(),
-                  outcome.getName(), "meta analysis", modelURI));
+          criteriaWithBaseline.put(outcome.getSemanticOutcomeUri(), new CriterionEntry(outcome.getName(), "meta analysis", modelURI));
         }
       }
     });
@@ -580,7 +579,7 @@ public class ProblemServiceImpl implements ProblemService {
     }
     Integer ownerId = mappingService.getVersionedUuidAndOwner(project.getNamespaceUid()).getOwnerId();
     // NB: partialvaluefunctions to be filled in by MCDA component, left null here
-    return new CriterionEntry(measurement.getVariableUri().toString(), outcome.getName(), scale, null,
+    return new CriterionEntry(outcome.getName(), scale, null,
             unitOfMeasurement, "study",
             URI.create("/#/users/" + ownerId +
                     "/datasets/" + project.getNamespaceUid() +
