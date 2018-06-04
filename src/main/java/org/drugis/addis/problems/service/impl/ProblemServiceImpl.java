@@ -117,36 +117,16 @@ public class ProblemServiceImpl implements ProblemService {
 
   private BenefitRiskProblem getBenefitRiskAnalysisProblem(Project project, BenefitRiskAnalysis analysis, String path) throws
           SQLException, IOException, UnexpectedNumberOfResultsException, URISyntaxException {
-    final Set<Integer> networkModelIds = getInclusionIdsWithBaseline(analysis.getBenefitRiskNMAOutcomeInclusions(),
-            BenefitRiskNMAOutcomeInclusion::getModelId);
-    final Set<Integer> outcomeIds = getInclusionIdsWithBaseline(analysis.getBenefitRiskNMAOutcomeInclusions(),
-            BenefitRiskNMAOutcomeInclusion::getOutcomeId);
-    outcomeIds.addAll(analysis.getBenefitRiskStudyOutcomeInclusions().stream().map(
-            BenefitRiskStudyOutcomeInclusion::getOutcomeId).collect(Collectors.toList()));
 
-    final List<Model> models = modelService.get(networkModelIds);
-    final Map<Integer, Model> modelMap = models.stream()
-            .collect(Collectors.toMap(Model::getId, Function.identity()));
-    List<Outcome> outcomes = outcomeRepository.get(project.getId(), outcomeIds);
-    final Map<Integer, Outcome> outcomesById = outcomes.stream()
-            .collect(Collectors.toMap(Outcome::getId, Function.identity()));
-
-    List<URI> taskUris = models.stream().map(Model::getTaskUrl)
-            .filter(Objects::nonNull)
-            .collect(Collectors.toList());
-
-    final Map<URI, PataviTask> pataviTaskMap = pataviTaskRepository.findByUrls(taskUris)
-            .stream()
-            .collect(Collectors.toMap(PataviTask::getSelf, Function.identity()));
-    final Map<Integer, PataviTask> tasksByModelId = models.stream()
-            .filter(model -> model.getTaskUrl() != null)
-            .collect(Collectors.toMap(Model::getId, m -> pataviTaskMap.get(m.getTaskUrl())));
-
+    final Map<Integer, Model> modelsById = getModelsById(analysis);
+    final Map<Integer, Outcome> outcomesById = getOutcomesById(project.getId(), analysis);
+    final Map<Integer, PataviTask> tasksByModelId = getPataviTasksByModelId(modelsById.values());
     final Map<URI, JsonNode> resultsByTaskUrl = pataviTaskRepository.getResults(taskUris);
+
     final List<BenefitRiskNMAOutcomeInclusion> inclusionsWithBaselineAndModelResults = analysis.getBenefitRiskNMAOutcomeInclusions().stream()
             .filter(mbrOutcomeInclusion -> mbrOutcomeInclusion.getBaseline() != null)
             .filter(mbrOutcomeInclusion -> {
-              URI taskUrl = modelMap.get(mbrOutcomeInclusion.getModelId()).getTaskUrl();
+              URI taskUrl = modelsById.get(mbrOutcomeInclusion.getModelId()).getTaskUrl();
               return taskUrl != null && resultsByTaskUrl.get(taskUrl) != null;
             })
             .collect(Collectors.toList());
@@ -161,12 +141,12 @@ public class ProblemServiceImpl implements ProblemService {
 
     Map<URI, CriterionEntry> criteriaWithBaseline = new HashMap<>();
 
-    outcomes.forEach(outcome -> {
+    outcomesById.values().forEach(outcome -> {
       Optional<BenefitRiskNMAOutcomeInclusion> outcomeInclusion = inclusionsWithBaselineAndModelResults.stream()
               .filter(mbrOutcomeInclusion -> mbrOutcomeInclusion.getOutcomeId().equals(outcome.getId()))
               .findFirst();
       if (outcomeInclusion.isPresent()) {
-        Model model = modelMap.get(outcomeInclusion.get().getModelId());
+        Model model = modelsById.get(outcomeInclusion.get().getModelId());
         URI modelURI = getModelUri(model, project, path);
         if (model.getLikelihood().equals("binom")) {
           criteriaWithBaseline.put(outcome.getSemanticOutcomeUri(), new CriterionEntry(outcome.getSemanticOutcomeUri().toString(),
@@ -192,7 +172,7 @@ public class ProblemServiceImpl implements ProblemService {
 
     List<AbstractMeasurementEntry> performanceTable =
             inclusionsWithBaselineAndModelResults.stream()
-                    .map(outcomeInclusion -> getPerformanceTableEntry(modelMap,
+                    .map(outcomeInclusion -> getPerformanceTableEntry(modelsById,
                             outcomesById, tasksByModelId, resultsByTaskUrl, includedInterventionsById,
                             includedInterventionsByName, outcomeInclusion))
                     .collect(Collectors.toList());
@@ -207,6 +187,37 @@ public class ProblemServiceImpl implements ProblemService {
       performanceTable.addAll(problem.getPerformanceTable());
     });
     return new BenefitRiskProblem(criteriaWithBaseline, alternatives, performanceTable);
+  }
+
+  private Map<Integer,PataviTask> getPataviTasksByModelId(Collection<Model> models) throws IOException, SQLException {
+    List<URI> taskUris = models.stream().map(Model::getTaskUrl)
+            .filter(Objects::nonNull)
+            .collect(Collectors.toList());
+    final Map<URI, PataviTask> pataviTaskMap = pataviTaskRepository.findByUrls(taskUris)
+            .stream()
+            .collect(Collectors.toMap(PataviTask::getSelf, Function.identity()));
+    return models.stream()
+            .filter(model -> model.getTaskUrl() != null)
+            .collect(Collectors.toMap(Model::getId, m -> pataviTaskMap.get(m.getTaskUrl())));
+  }
+
+  private Map<Integer,Model> getModelsById(BenefitRiskAnalysis analysis) throws IOException, SQLException {
+    final Set<Integer> networkModelIds = getInclusionIdsWithBaseline(analysis.getBenefitRiskNMAOutcomeInclusions(),
+            BenefitRiskNMAOutcomeInclusion::getModelId);
+    final List<Model> models = modelService.get(networkModelIds);
+     return models.stream()
+            .collect(Collectors.toMap(Model::getId, Function.identity()));
+  }
+
+  private Map<Integer, Outcome> getOutcomesById(Integer projectId, BenefitRiskAnalysis analysis) {
+    final Set<Integer> outcomeIds = getInclusionIdsWithBaseline(analysis.getBenefitRiskNMAOutcomeInclusions(),
+            BenefitRiskNMAOutcomeInclusion::getOutcomeId);
+    outcomeIds.addAll(analysis.getBenefitRiskStudyOutcomeInclusions().stream().map(
+            BenefitRiskStudyOutcomeInclusion::getOutcomeId).collect(Collectors.toList()));
+
+    List<Outcome> outcomes = outcomeRepository.get(projectId, outcomeIds);
+    return outcomes.stream()
+            .collect(Collectors.toMap(Outcome::getId, Function.identity()));
   }
 
   private URI getModelUri(Model model, Project project, String path) {

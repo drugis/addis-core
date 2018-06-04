@@ -62,7 +62,7 @@ public class PataviTaskRepositoryImpl implements PataviTaskRepository {
     }
   }
   @Override
-  public JsonNode getResult(URI taskUri) throws URISyntaxException, IOException {
+  public JsonNode getResult(URI taskUri) throws URISyntaxException {
     URI resultsUri = new URIBuilder(taskUri + WebConstants.PATAVI_RESULTS_PATH)
             .build();
     HttpGet getRequest = new HttpGet(resultsUri);
@@ -76,7 +76,7 @@ public class PataviTaskRepositoryImpl implements PataviTaskRepository {
   }
 
   @Override
-  public Map<URI, JsonNode> getResults(List<URI> taskUris) throws URISyntaxException, IOException {
+  public Map<URI, JsonNode> getResults(List<URI> taskUris) throws URISyntaxException {
     List<URI> filteredUris = taskUris.stream()
             .filter(Objects::nonNull)
             .collect(Collectors.toList());

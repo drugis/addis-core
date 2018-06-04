@@ -14,6 +14,7 @@ public class CriterionEntry {
   private String unitOfMeasurement;
   private String source;
   private URI sourceLink;
+  private List<DataSourceEntry> dataSources;
 
   public CriterionEntry(String criterion, String title) {
     this(criterion, title, null, null, null, null, null);

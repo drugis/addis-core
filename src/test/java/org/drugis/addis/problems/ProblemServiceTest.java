@@ -265,6 +265,7 @@ public class ProblemServiceTest {
 
     when(owner.getId()).thenReturn(ownerId);
     when(mappingService.getVersionedUuidAndOwner(project.getNamespaceUid())).thenReturn(new TriplestoreUuidAndOwner("someversion", 37));
+
     // --------------- execute ---------------- //
     BenefitRiskProblem actualProblem = (BenefitRiskProblem) problemService.getProblem(projectId, analysisId, null);
     // --------------- execute ---------------- //
