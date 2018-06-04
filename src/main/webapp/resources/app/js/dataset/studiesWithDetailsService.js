@@ -31,7 +31,7 @@ define(['lodash'], function(_) {
             headers: {
               Accept: 'application/sparql-results+json'
             },
-            transformResponse: function(data) {
+          transformResponse: function(data) {
               return deFusekify(data);
             }
           });

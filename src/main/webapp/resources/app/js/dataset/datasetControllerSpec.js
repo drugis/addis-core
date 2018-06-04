@@ -12,6 +12,7 @@ define(['angular-mocks'], function(angularMocks) {
       datasetVersionedResource = jasmine.createSpyObj('DatasetVersionedResource', ['getForJson']),
       userService = jasmine.createSpyObj('UserService', ['isLoginUserEmail', 'hasLoggedInUser']),
       dataModelServiceMock = jasmine.createSpyObj('DataModelService', ['correctUnitConceptType']),
+      excelExportServiceMock = jasmine.createSpyObj('ExcelExportService', ['exportDataset']),
       datasetDeferred,
       queryHistoryDeferred,
       studiesWithDetailsGetDeferred,
@@ -30,7 +31,10 @@ define(['angular-mocks'], function(angularMocks) {
         versionUuid: versionUuid
       };
 
-    beforeEach(angularMocks.module('trialverse.dataset'));
+    beforeEach(angularMocks.module('trialverse.dataset', function($provide){
+      $provide.value('ExcelExportService', excelExportServiceMock);
+    }));
+
     beforeEach(angularMocks.module('trialverse.user'));
 
     beforeEach(angularMocks.inject(function($rootScope, $q, $controller, $httpBackend) {

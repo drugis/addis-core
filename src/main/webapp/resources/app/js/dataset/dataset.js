@@ -47,7 +47,7 @@ define(requires.concat(['angular', 'angular-resource']), function(DatasetsContro
   dosingFilter,
   angular
 ) {
-  return angular.module('trialverse.dataset', ['ngResource', 'trialverse.util'])
+  return angular.module('trialverse.dataset', ['ngResource', 'trialverse.util', 'addis.excelIO'])
     //controllers
     .controller('DatasetsController', DatasetsController)
     .controller('DatasetController', DatasetController)

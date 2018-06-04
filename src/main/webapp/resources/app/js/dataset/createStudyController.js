@@ -1,39 +1,78 @@
 'use strict';
 define(['lodash'], function(_) {
-  var dependencies = ['$scope', '$stateParams', '$modalInstance',
-    'successCallback', 'StudyService', 'ImportStudyResource',
-    'ImportStudyInfoResource', 'UUIDService'
+  var dependencies = [
+    '$scope',
+    '$stateParams',
+    '$q',
+    '$modalInstance',
+    'successCallback',
+    'StudyService',
+    'ImportStudyResource',
+    'ImportStudyInfoResource',
+    'UUIDService',
+    'ExcelImportService'
   ];
 
-  var CreateStudyController = function($scope, $stateParams, $modalInstance,
-    successCallback, StudyService, ImportStudyResource, ImportStudyInfoResource, UUIDService) {
+  var CreateStudyController = function(
+    $scope,
+    $stateParams,
+    $q,
+    $modalInstance,
+    successCallback,
+    StudyService,
+    ImportStudyResource,
+    ImportStudyInfoResource,
+    UUIDService,
+    ExcelImportService) {
     // functions 
-    $scope.isUniqueShortName = isUniqueShortName;
+    $scope.checkUniqueShortName = checkUniqueShortName;
     $scope.createStudy = createStudy;
     $scope.isValidNct = isValidNct;
+    $scope.isValidUpload = false;
     $scope.cancel = cancel;
     $scope.getInfo = getInfo;
+    $scope.uploadExcel = uploadExcel;
+    $scope.importExcel = importExcel;
 
-    // variables
+    // init
     $scope.isCreatingStudy = false;
     $scope.importing = false;
+    $scope.isUniqueIdentifier = true;
     $scope.studyImport = {};
+    $scope.excelUpload = undefined;
 
-    function isUniqueShortName(shortName) {
-      var anyduplicateName = _.find($scope.studiesWithDetail, function(existingStudy) {
-        return existingStudy.label === shortName;
+    function uploadExcel(uploadedElement) {
+      ExcelImportService.uploadExcel(uploadedElement, 
+        $scope, 
+        ExcelImportService.checkSingleStudyWorkbook,
+        function(workbook){
+          return workbook.Sheets['Study data'].A4.v;
+        },
+        _.map($scope.studiesWithDetail, 'label'));
+    }
+
+    function importExcel() {
+      $scope.isCreatingStudy = true;
+      var newStudy = ExcelImportService.createStudy($scope.excelUpload);
+      ExcelImportService.commitStudy(newStudy).then(function(newVersionUuid) {
+        successCallback(newVersionUuid);
+        $scope.isCreatingStudy = false;
+        $modalInstance.close();
       });
-      return !anyduplicateName;
+    }
+
+    function checkUniqueShortName(shortName) {
+      $scope.isUniqueIdentifier = !_.find($scope.studiesWithDetail, ['label', shortName]);
     }
 
     function createStudy(study) {
       $scope.isCreatingStudy = true;
-      var newStudyVersionPromise = StudyService.createEmptyStudy(study, $stateParams.userUid, $stateParams.datasetUuid);
-      newStudyVersionPromise.then(function(newVersion) {
-        successCallback(newVersion);
-        $scope.isCreatingStudy = false;
-        $modalInstance.close();
-      });
+      StudyService.createEmptyStudy(study, $stateParams.userUid, $stateParams.datasetUuid)
+        .then(function(newVersion) {
+          successCallback(newVersion);
+          $scope.isCreatingStudy = false;
+          $modalInstance.close();
+        });
     }
 
     function isValidNct(nctId) {
@@ -66,7 +105,7 @@ define(['lodash'], function(_) {
     }
 
     //putting it on the scope this style, because import is a reserved name
-    $scope.import = function(studyImport) {
+    $scope.import = function(studyImport) { // NCT import
       $scope.isCreatingStudy = true;
       var uuid = UUIDService.generate();
       var importStudyRef = studyImport.basicInfo.id;

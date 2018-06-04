@@ -2,7 +2,6 @@
 'use strict';
 define(['angular', 'angular-mocks'], function() {
   describe('create study controller', function() {
-
     var scope,
       modalMock = jasmine.createSpyObj('$mock', ['dismiss', 'close']),
       datasetServiceMock = jasmine.createSpyObj('DatasetService', ['addStudyToDatasetGraph']),
@@ -31,21 +30,22 @@ define(['angular', 'angular-mocks'], function() {
         successCallback: function() {},
         UUIDService: uuidServiceMock,
         StudyService: studyServiceMock,
-        GraphResource: graphResourceMock
+        GraphResource: graphResourceMock,
+        ExcelImportService: {}
       });
     }));
 
 
-    describe('isUniqueShortName', function() {
+    describe('checkUniqueShortName', function() {
       it('should be true if the shortname is not already in the list', function() {
-        scope.studiesWithDetail = {
-          $resolved: true
-        };
-        expect(scope.isUniqueShortName('connor')).toBe(true);
+        scope.studiesWithDetail = [];
+        scope.checkUniqueShortName('connor');
+        expect(scope.isUniqueIdentifier).toBe(true);
         scope.studiesWithDetail = [{
           label: 'daan'
         }];
-        expect(scope.isUniqueShortName('connor')).toBe(true);
+        scope.checkUniqueShortName('connor');
+        expect(scope.isUniqueIdentifier).toBe(true);
       });
       it('should be false if the shortname is already in the list', function() {
         scope.studiesWithDetail = [{
@@ -53,7 +53,8 @@ define(['angular', 'angular-mocks'], function() {
         }, {
           label: 'connor'
         }];
-        expect(scope.isUniqueShortName('connor')).toBe(false);
+        scope.checkUniqueShortName('connor');
+        expect(scope.isUniqueIdentifier).toBe(false);
       });
     });
 

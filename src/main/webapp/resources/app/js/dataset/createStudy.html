@@ -5,27 +5,52 @@
         <div class="cell">
           <h3>Create a new study</h3>
         </div>
-      </div>
-      <div class="grid-x">
         <div class="cell">
           <label>Short Name (e.g. Hansen 2005)
-            <input autofocus type="text" ng-model="study.label">
+            <input autofocus type="text" ng-model="study.label" ng-change="checkUniqueShortName(study.label)">
           </label>
-          <label class="alert" ng-show="!isUniqueShortName(study.label)">Short name must be unique</label>
         </div>
-      </div>
-      <div class="grid-x">
+        <div class="cell" ng-show="!isUniqueIdentifier">
+          <label class="alert">Short name must be unique</label>
+        </div>
         <div class="cell">
           <label>Title
             <textarea rows="8" ng-model="study.comment"></textarea>
           </label>
         </div>
-      </div>
-      <div class="grid-x">
         <div class="cell">
-          <button class="button success" type="submit" ng-disabled="!study.comment || !isUniqueShortName(study.label) || isCreatingStudy">
+          <button class="button success" type="submit" ng-disabled="!study.comment || !isUniqueIdentifier || isCreatingStudy">
             create
           </button>
+        </div>
+      </div>
+    </form>
+  </tab>
+  <tab heading="Import from Excel">
+    <form novalidate ng-submit="importExcel()">
+      <div class="grid-x">
+        <div class="cell">
+          <h3>Import study from Excel</h3>
+        </div>
+        <div class="cell">
+          <input type="file" name="excelFile" accept=".xlsx" onchange="angular.element(this).scope().uploadExcel(this)">
+        </div>
+        <div class="cell">
+          <label>Short Name (e.g. Hansen 2005)</label>
+        </div>
+        <div class="cell">
+          <input type="text" ng-disabled="!isValidUpload || isCreatingStudy" ng-model="excelUpload.Sheets['Study data'].A4.v" ng-change="checkUniqueShortName(excelUpload.Sheets['Study data'].A4.v)">
+        </div>
+        <div class="cell" ng-show="!isUniqueIdentifier">
+          <label class="alert">Short name must be unique</label>
+        </div>
+        <div class="cell">
+          <button class="button success" type="submit" ng-disabled="!excelUpload || isCreatingStudy || errors.length || !isUniqueIdentifier">
+            create
+          </button>
+        </div>
+        <div class="cell alert" ng-repeat="error in errors">
+          {{error}}
         </div>
       </div>
     </form>
@@ -36,15 +61,11 @@
         <div class="cell">
           <h3>Import study</h3>
         </div>
-      </div>
-      <div class="grid-x">
         <div class="cell">
           <label>NCT ID</label>
           <input autofocus type="text" ng-disabled="studyImport.loading" ng-model="studyImport.nctId"
             ng-model-options="{ debounce: 800 }" ng-change="getInfo(studyImport)">
         </div>
-      </div>
-      <div class="grid-x">
         <div class="cell">
           <style>
             .local-hide.ng-hide {

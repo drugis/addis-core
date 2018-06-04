@@ -1,5 +1,5 @@
 'use strict';
-define(['angular', 'lodash'], function(angular, _) {
+define(['angular', 'lodash', 'util/constants'], function(angular, _, constants) {
   var dependencies = ['$q', 'StudyService', 'UUIDService'];
   var ActivityService = function($q, StudyService, UUIDService) {
 
@@ -11,25 +11,7 @@ define(['angular', 'lodash'], function(angular, _) {
     var TITRATED_DOSE_TYPE = ONTOLOGY + 'TitratedDoseDrugTreatment';
 
     // public
-    var ACTIVITY_TYPE_OPTIONS = _.keyBy([{ //uri
-      label: 'screening',
-      uri: ONTOLOGY + 'ScreeningActivity'
-    }, {
-      label: 'wash out',
-      uri: ONTOLOGY + 'WashOutActivity'
-    }, {
-      label: 'randomization',
-      uri: ONTOLOGY + 'RandomizationActivity'
-    }, {
-      label: 'drug treatment',
-      uri: ONTOLOGY + 'TreatmentActivity'
-    }, {
-      label: 'follow up',
-      uri: ONTOLOGY + 'FollowUpActivity'
-    }, {
-      label: 'other',
-      uri: ONTOLOGY + 'StudyActivity'
-    }], 'uri');
+    var ACTIVITY_TYPE_OPTIONS = _.keyBy(constants.ACTIVITY_TYPE_OPTIONS, 'uri');
 
     function queryItems() {
       return StudyService.getJsonGraph().then(function(jsonGraph) {

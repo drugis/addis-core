@@ -1,15 +1,45 @@
 'use strict';
 define(['lodash'],
   function(_) {
-    var dependencies = ['$scope', '$window', '$stateParams', '$state', '$modal', '$filter', '$q',
-      'DatasetVersionedResource', 'StudiesWithDetailsService', 'HistoryResource', 'ConceptsService',
-      'VersionedGraphResource', 'DatasetResource', 'GraphResource', 'UserService', 'DataModelService',
-      'DatasetService'
+    var dependencies = [
+      '$scope',
+      '$location',
+      '$stateParams',
+      '$state',
+      '$modal',
+      '$filter',
+      '$q',
+      'DatasetVersionedResource',
+      'StudiesWithDetailsService',
+      'HistoryResource',
+      'ConceptsService',
+      'VersionedGraphResource',
+      'DatasetResource',
+      'GraphResource',
+      'UserService',
+      'DataModelService',
+      'DatasetService',
+      'ExcelExportService'
     ];
-    var DatasetController = function($scope, $window, $stateParams, $state, $modal, $filter, $q,
-      DatasetVersionedResource, StudiesWithDetailsService, HistoryResource, ConceptsService,
-      VersionedGraphResource, DatasetResource, GraphResource, UserService, DataModelService,
-      DatasetService
+    var DatasetController = function(
+      $scope,
+      $location,
+      $stateParams,
+      $state,
+      $modal,
+      $filter,
+      $q,
+      DatasetVersionedResource,
+      StudiesWithDetailsService,
+      HistoryResource,
+      ConceptsService,
+      VersionedGraphResource,
+      DatasetResource,
+      GraphResource,
+      UserService,
+      DataModelService,
+      DatasetService,
+      ExcelExportService
     ) {
       // functions
       $scope.createProjectDialog = createProjectDialog;
@@ -19,10 +49,10 @@ define(['lodash'],
       $scope.toggleFilterOptions = toggleFilterOptions;
       $scope.showTableOptions = showTableOptions;
       $scope.showStudyDialog = showStudyDialog;
+      $scope.exportDataset = exportDataset;
       $scope.loadConcepts = loadConcepts; // do not remove, child controller uses it
 
       // init
-      loadStudiesWithDetail();
       $scope.userUid = $stateParams.userUid;
       $scope.datasetUuid = $stateParams.datasetUuid;
       // no version so this must be head view
@@ -34,6 +64,7 @@ define(['lodash'],
       $scope.stripFrontFilter = $filter('stripFrontFilter');
       $scope.isEditingAllowed = false;
 
+      loadStudiesWithDetail();
       $scope.datasetConcepts = loadConcepts(); // scope placement for child states
       $scope.datasetConcepts.then(function(concepts) {
         $scope.interventions = _.chain(concepts['@graph'])
@@ -96,7 +127,7 @@ define(['lodash'],
             userUid: $stateParams.userUid,
             datasetUuid: $stateParams.datasetUuid,
             graphUuid: 'concepts',
-            versionUuid: $stateParams.versionUuid
+            versionUuid: $scope.versionUuid
           }).$promise;
         } else {
           conceptsPromise = GraphResource.getConceptJson({
@@ -128,11 +159,39 @@ define(['lodash'],
         });
       }
 
+      function exportDataset() {
+        $scope.isExporting = true;
+        $scope.progress = {
+          studiesDone: 0,
+          percentage: 0
+        };
+        $scope.studiesWithDetailPromise
+          .then(function() {
+            var graphUuids = _($scope.studiesWithDetail)
+              .sortBy('label')
+              .map(function(studyWithDetail) {
+                return studyWithDetail.graphUri.split('/graphs/')[1];
+              })
+              .value();
+            var datasetWithCoordinates = _.extend({}, $scope.dataset, {
+              url: $location.absUrl(),
+              userUid: $stateParams.userUid,
+              versionUuid: $scope.currentRevision.uri.split('/versions/')[1]
+            });
+            return ExcelExportService.exportDataset(datasetWithCoordinates, graphUuids, function(){
+              ++$scope.progress.studiesDone;
+              $scope.progress.percentage = $scope.progress.studiesDone*100/graphUuids.length;
+            });
+          })
+          .then(function() {
+            $scope.isExporting = false;
+          });
+      }
 
       function loadStudiesWithDetail() {
-        var studiesWithDetailPromise = StudiesWithDetailsService.get($stateParams.userUid, $stateParams.datasetUuid, $stateParams.versionUuid);
+        $scope.studiesWithDetailPromise = StudiesWithDetailsService.get($stateParams.userUid, $stateParams.datasetUuid, $stateParams.versionUuid);
         var treatmentActivitiesPromise = StudiesWithDetailsService.getTreatmentActivities($stateParams.userUid, $stateParams.datasetUuid, $stateParams.versionUuid);
-        $scope.studiesPromise = $q.all([studiesWithDetailPromise, treatmentActivitiesPromise]).then(function(result) {
+        $scope.studiesPromise = $q.all([$scope.studiesWithDetailPromise, treatmentActivitiesPromise]).then(function(result) {
           var studiesWithDetail = result[0] instanceof Array ? result[0] : [];
           var treatmentActivities = result[1] instanceof Array ? result[1] : [];
           StudiesWithDetailsService.addActivitiesToStudies(studiesWithDetail, treatmentActivities);

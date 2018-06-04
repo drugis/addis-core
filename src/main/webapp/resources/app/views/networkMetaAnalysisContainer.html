@@ -1,14 +1,13 @@
 <navbar-directive>
 </navbar-directive>
-<spinner promise="analysisPromise" size="3" message="'Loading analysis...'">
-  <ul class="breadcrumbs fixed">
-    <li><a ui-sref="datasets({userUid: user.id})">{{user.firstName}} {{user.lastName}}</a></li>
-    <li><a ui-sref="projects({userUid: userId})">Projects</a></li>
-    <li><a ui-sref="project({userUid: userId, projectId: project.id})">{{project.name}}</a></li>
-    <li class="current active">{{analysis.title}}</li>
-  </ul>
-  </spinner>
-  <div class=grid-container>
+<ul class="breadcrumbs fixed">
+  <li><a ui-sref="datasets({userUid: user.id})">{{user.firstName}} {{user.lastName}}</a></li>
+  <li><a ui-sref="projects({userUid: userId})">Projects</a></li>
+  <li><a ui-sref="project({userUid: userId, projectId: project.id})">{{project.name}}</a></li>
+  <li class="current active">{{analysis.title}}</li>
+</ul>
+<div class=grid-container>
+  <spinner promise="analysisPromise" size="3" message="'Loading analysis...'">
     <div class="grid-x project-header">
       <div class="cell">
         <h1 class="inline-header" title="Analysis title">{{analysis.title}}</h1>
@@ -26,4 +25,5 @@
       </div>
     </div>
     <div ui-view="evidenceTable"></div>
-  </div>
+  </spinner>
+</div>

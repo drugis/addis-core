@@ -1,7 +1,7 @@
 <div ui-view>
   <div class="grid-container">
     <navbar-directive></navbar-directive>
-    <spinner promise="unitsPromise" size="3" message="'Loading project...'">
+    <spinner promise="loadingPromise" size="3" message="'Loading project...'">
       <ul class="breadcrumbs fixed">
         <li><a ui-sref="datasets({userUid: user.id})">{{::user.firstName}} {{::user.lastName}}</a></li>
         <li><a ui-sref="projects({userUid: userId})">Projects</a></li>
@@ -51,7 +51,8 @@
                     <h3 class="subheader">Outcomes
                       <inline-help help-key="addis-outcome"></inline-help>
                     </h3>
-                    <button id="show-create-outcome-modal-btn" ng-if="editMode.allowEditing" class="button small" ng-click="openCreateOutcomeDialog()">
+                    <button id="show-create-outcome-modal-btn" ng-if="editMode.allowEditing" class="button small"
+                      ng-click="openCreateOutcomeDialog()">
                       <i class="fa fa-plus"></i> Add outcome
                     </button>
                     <table style="width: 100%;">
@@ -94,7 +95,8 @@
                     <h3 class="subheader">Units
                       <inline-help help-key="unit"></inline-help>
                     </h3>
-                    <button id="show-create-unit-modal-btn" ng-if="editMode.allowEditing" ng-disabled="!unitConcepts.length" class="button small" ng-click="openCreateScaledUnitDialog()">
+                    <button id="show-create-unit-modal-btn" ng-if="editMode.allowEditing" ng-disabled="!unitConcepts.length"
+                      class="button small" ng-click="openCreateScaledUnitDialog()">
                       <i class="fa fa-plus"></i> Add unit
                     </button>
                     <span ng-if="!unitConcepts.length" class="alert">No unit concepts defined in dataset.</span>
@@ -123,7 +125,8 @@
                     <h3 class="subheader">Interventions
                       <inline-help help-key="addis-intervention"></inline-help>
                     </h3>
-                    <button id="show-create-intervention-modal-btn" ng-if="editMode.allowEditing" class="button small" ng-click="openCreateInterventionDialog()">
+                    <button id="show-create-intervention-modal-btn" ng-if="editMode.allowEditing" class="button small"
+                      ng-click="openCreateInterventionDialog()">
                       <i class="fa fa-plus"></i> Add intervention
                     </button>
                     <table>
@@ -172,42 +175,37 @@
                     <h3 class="subheader">Covariates
                       <inline-help help-key="addis-covariate"></inline-help>
                     </h3>
-                    <button ng-if="editMode.allowEditing" class="button small"
-                      ng-click="addCovariate()"><i class="fa fa-plus"></i> Add Covariate
+                    <button ng-if="editMode.allowEditing" class="button small" ng-click="addCovariate()"><i class="fa fa-plus"></i> Add Covariate
                     </button>
                   </div>
                   <div class="cell">
-                    <spinner promise="covariatesPromise" size="3" message="'Loading covariates...'">
-                      <em ng-show="covariates.length === 0">No covariates have been defined</em>
-                      <table ng-show="covariates.length > 0">
-                        <thead>
-                          <tr>
-                            <th class="large-3">Name</th>
-                            <th class="large-6 end">Motivation</th>
-                            <th class="large-3">Definition</th>
-                            <th ng-if="editMode.allowEditing"></th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          <tr ng-repeat="covariate in covariates">
-                            <td>{{::covariate.name}}</td>
-                            <td>{{::covariate.motivation}}</td>
-                            <td>{{::covariate.definitionLabel}}</td>
-                            <td class="text-center" ng-if="editMode.allowEditing && !covariateUsage[covariate.id].length">
-                              <a ng-click="openDeleteDefinitionDialog(covariate,'covariate')"><i class="fa fa-trash  fa-2x" style="color:red"></i></a>
-                            </td>
-                            <td ng-if="editMode.allowEditing && covariateUsage[covariate.id].length">
-                              <a class="has-tip" tooltip-html-unsafe="<i class='fa fa-exclamation-triangle'></i> Covariate is used in analyses: {{covariateUsage[covariate.id].join(', ')}}"
-                                tooltip-placement="left">
+                    <em ng-show="covariates.length === 0">No covariates have been defined</em>
+                    <table ng-show="covariates.length > 0">
+                      <thead>
+                        <tr>
+                          <th class="large-3">Name</th>
+                          <th class="large-6 end">Motivation</th>
+                          <th class="large-3">Definition</th>
+                          <th ng-if="editMode.allowEditing"></th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr ng-repeat="covariate in covariates">
+                          <td>{{::covariate.name}}</td>
+                          <td>{{::covariate.motivation}}</td>
+                          <td>{{::covariate.definitionLabel}}</td>
+                          <td class="text-center" ng-if="editMode.allowEditing && !covariateUsage[covariate.id].length">
+                            <a ng-click="openDeleteDefinitionDialog(covariate,'covariate')"><i class="fa fa-trash  fa-2x" style="color:red"></i></a>
+                          </td>
+                          <td ng-if="editMode.allowEditing && covariateUsage[covariate.id].length">
+                            <a class="has-tip" tooltip-html-unsafe="<i class='fa fa-exclamation-triangle'></i> Covariate is used in analyses: {{covariateUsage[covariate.id].join(', ')}}"
+                              tooltip-placement="left">
                           <i class="fa fa-trash fa-2x" style="color: lightgrey;"></i>
                         </a>
-                            </td>
-                          </tr>
-                        </tbody>
-                      </table>
-
-                    </spinner>
-
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
                   </div>
                 </div>
               </div>
@@ -220,7 +218,8 @@
                     <h2>Analyses
                       <inline-help help-key="addis-analysis"></inline-help>
                     </h2>
-                    <button id="show-create-analysis-modal-btn" ng-if="editMode.allowEditing" class="button small" ng-click="openAddAnalysisDialog()">
+                    <button id="show-create-analysis-modal-btn" ng-if="editMode.allowEditing" class="button small"
+                      ng-click="openAddAnalysisDialog()">
                       <i class="fa fa-plus"></i> Add Analysis
                     </button>
                     <spinner promise="analysesPromise" size="3" message="'Loading analyses...'">

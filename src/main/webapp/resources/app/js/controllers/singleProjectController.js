@@ -121,11 +121,7 @@ define(['lodash', 'angular'], function(_, angular) {
     });
 
     function reloadDefinitions() {
-      //TODO make proper loading check that takes all loads into account
-      loadCovariates();
-      loadUnits();
-      loadInterventions();
-      loadOutcomes();
+      $scope.loadingPromise = $q.all([loadCovariates(), loadUnits(), loadInterventions(), loadOutcomes()]);
     }
 
     function loadAnalyses() {
@@ -156,7 +152,7 @@ define(['lodash', 'angular'], function(_, angular) {
     function loadUnits() {
       var unitsPromise = DosageService.get($stateParams.userUid, $scope.project.namespaceUid);
       var scaledUnitsPromise = ScaledUnitResource.query($stateParams).$promise;
-      $scope.unitsPromise = $q.all([unitsPromise, scaledUnitsPromise]).then(function(results) {
+      return $q.all([unitsPromise, scaledUnitsPromise]).then(function(results) {
         $scope.unitConcepts = results[0];
         var scaledUnits = results[1];
 
@@ -170,7 +166,7 @@ define(['lodash', 'angular'], function(_, angular) {
     }
 
     function loadInterventions() {
-      CacheService.getInterventions({
+      return CacheService.getInterventions({
           projectId: $scope.project.id
         })
         .then(generateInterventionDescriptions)
@@ -181,7 +177,7 @@ define(['lodash', 'angular'], function(_, angular) {
     }
 
     function loadOutcomes() {
-      CacheService.getOutcomes({
+      return CacheService.getOutcomes({
         projectId: $scope.project.id
       }).then(function(value) {
         $scope.outcomes = value;
@@ -191,7 +187,7 @@ define(['lodash', 'angular'], function(_, angular) {
 
     function loadCovariates() {
       // we need to get the options in order to display the definition label, as only the definition key is stored on the covariate
-      $scope.covariatesPromise = $q.all([CovariateOptionsResource.getProjectCovariates($stateParams).$promise,
+      return $q.all([CovariateOptionsResource.getProjectCovariates($stateParams).$promise,
         CacheService.getCovariates({
           projectId: $scope.project.id
         })

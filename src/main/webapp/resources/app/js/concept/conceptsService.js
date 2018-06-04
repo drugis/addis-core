@@ -46,8 +46,14 @@ define(['lodash'], function(_) {
     }
 
     function queryItems() {
+      var types = _.keys(typeOptions);
       return conceptJsonPromise.then(function(json) {
-        return _.map(json['@graph'], toFrontEnd);
+        return _(json['@graph'])
+        .filter(function(node) {
+          return _.includes(types, node['@type']);
+        })
+        .map(toFrontEnd)
+        .value();
       });
     }
 

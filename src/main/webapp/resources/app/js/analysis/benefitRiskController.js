@@ -21,8 +21,7 @@ define(['lodash'], function(_) {
     }).$promise;
 
     $scope.editMode = {
-      allowEditing: false,
-      loaded: false
+      allowEditing: false
     };
 
     var promises = [$scope.analysis.$promise,
@@ -33,7 +32,7 @@ define(['lodash'], function(_) {
       studiesPromise
     ];
 
-    $q.all(promises).then(function(result) {
+    $scope.loadingPromise = $q.all(promises).then(function(result) {
       var analysis = result[0];
       var alternatives = result[1];
       var outcomes = result[2];
@@ -97,8 +96,6 @@ define(['lodash'], function(_) {
         }
         return outcome;
       });
-
-      $scope.editMode.loaded = true;
     });
 
     function setIncludedAlternatives() {

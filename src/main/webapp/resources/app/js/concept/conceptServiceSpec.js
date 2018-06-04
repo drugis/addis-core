@@ -22,7 +22,12 @@ define(['angular', 'angular-mocks'], function() {
           '@graph': [{
             '@id': 'http://uris/concept1',
             '@type': 'ontology:Variable',
-            'label': 'Weight Loss'
+            label: 'Weight Loss',
+            categoryList: 'http://wellknown.blankNode'
+          }, {
+            '@id': 'http://wellknown.blankNode',
+            first: 'a lot',
+            rest: 'http://rdf.nil'
           }]
         });
       });

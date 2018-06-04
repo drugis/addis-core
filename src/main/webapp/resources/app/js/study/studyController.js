@@ -20,6 +20,7 @@ define(['angular', 'lodash'],
       $scope.showEditStudyModal = showEditStudyModal;
       $scope.showD80Table = showD80Table;
       $scope.isStudyModified = isStudyModified;
+      $scope.exportStudy = exportStudy;
 
       // init
       $scope.datasetUuid = $stateParams.datasetUuid;
@@ -328,45 +329,40 @@ define(['angular', 'lodash'],
 
       function reloadStudyModel() {
         // load the data from the backend
-        var getStudyFromBackendDefer;
+        var studyPromise;
         if ($stateParams.versionUuid) {
-          getStudyFromBackendDefer = VersionedGraphResource.getJson({
+          studyPromise = VersionedGraphResource.getJson({
             userUid: $stateParams.userUid,
             datasetUuid: $stateParams.datasetUuid,
             graphUuid: $stateParams.studyGraphUuid,
             versionUuid: $stateParams.versionUuid
-          });
+          }).$promise;
         } else {
-          getStudyFromBackendDefer = GraphResource.getJson({
+          studyPromise = GraphResource.getJson({
             userUid: $stateParams.userUid,
             datasetUuid: $stateParams.datasetUuid,
             graphUuid: $stateParams.studyGraphUuid
-          });
+          }).$promise;
         }
 
         // place loaded data into frontend cache
-        StudyService.loadJson(getStudyFromBackendDefer.$promise);
-        getStudyFromBackendDefer.$promise.then(function() {
-          $scope.exportStudy = ExcelExportService.exportStudy;
-        });
+        StudyService.loadJson(studyPromise);
 
         // use the loaded data to fill the view and alert the subviews
-        getStudyFromBackendDefer.$promise.then(function() {
-          StudyService.getStudy().then(function(study) {
-            $scope.studyUuid = $filter('stripFrontFilter')(study['@id'], 'http://trials.drugis.org/studies/');
-            $scope.study = {
-              id: $scope.studyUuid,
-              label: study.label,
-              comment: study.comment,
-            };
-            if (study.has_publication && study.has_publication.length === 1) {
-              $scope.study.nctId = study.has_publication[0].registration_id;
-              $scope.study.nctUri = study.has_publication[0].uri;
-            }
-            $scope.$broadcast('refreshStudyDesign');
-            $scope.$broadcast('refreshResults');
-            StudyService.studySaved();
-          });
+        StudyService.getStudy().then(function(study) {
+          $scope.studyUuid = $filter('stripFrontFilter')(study['@id'], 'http://trials.drugis.org/studies/');
+          $scope.study = {
+            id: $scope.studyUuid,
+            label: study.label,
+            comment: study.comment,
+          };
+          if (study.has_publication && study.has_publication.length === 1) {
+            $scope.study.nctId = study.has_publication[0].registration_id;
+            $scope.study.nctUri = study.has_publication[0].uri;
+          }
+          $scope.$broadcast('refreshStudyDesign');
+          $scope.$broadcast('refreshResults');
+          StudyService.studySaved();
         });
       }
 
@@ -422,6 +418,16 @@ define(['angular', 'lodash'],
             }
           }
         });
+      }
+
+      function exportStudy() {
+        var coordinates = {
+          userUid: $stateParams.userUid,
+          datasetUuid: $stateParams.datasetUuid,
+          versionUuid: $scope.currentRevision.uri.split('/versions/')[1],
+          graphUuid: $stateParams.studyGraphUuid
+        };
+        ExcelExportService.exportStudy(coordinates);
       }
 
       function calculateNavSettings() {

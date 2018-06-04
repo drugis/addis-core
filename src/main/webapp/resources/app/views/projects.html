@@ -6,7 +6,8 @@
       </h2>
       <spinner promise="projects.$promise" size="3" message="'Loading projects...'">
         <em ng-if="!(projects | ownProjectsFilter:user.id).length">No projects have been created</em>
-        <div style="margin-bottom: 3rem; border-bottom: 1px solid #DCDCDC" ng-repeat="project in projects | ownProjectsFilter:user.id" ng-show="project.archived===false || showArchived===true">
+        <div style="margin-bottom: 3rem; border-bottom: 1px solid #DCDCDC" ng-repeat="project in projects | ownProjectsFilter:user.id"
+          ng-show="project.archived===false || showArchived===true">
           <div class="grid-x">
             <div class="cell large-6">
               <h5>
@@ -29,7 +30,6 @@
             <div class="cell large-8">
               {{project.description}}
             </div>
-
           </div>
         </div>
         <!-- end project item ng-repeat -->
@@ -40,14 +40,12 @@
           ng-click="toggleShowArchived()" style=""><i class="fa fa-eye"></i> Hide archived ({{numberOfProjectsArchived}})
         </button>
       </spinner>
-
-
     </div>
     <!-- end projects cell -->
 
     <div class="cell large-4">
       <h2>Other users</h2>
-      <ul class="no-bullet">
+      <ul class="no-bullet" style="overflow:hidden; overflow-y:scroll; height:900px;">
         <li ng-cloak class="ng-cloak" ng-show="!otherUsers.length">
           <em>You are the only addis user</em>
         </li>

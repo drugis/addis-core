@@ -148,15 +148,15 @@ define(['lodash'], function(_) {
       });
     }
 
-    function addScales(owas, interventionInclusions, scaleResults) {
-      return owas.map(function(owa) {
-        owa.scales = interventionInclusions.reduce(function(accum, includedAlternative) {
-          if (scaleResults[owa.outcome.semanticOutcomeUri]) {
-            accum[includedAlternative.id] = scaleResults[owa.outcome.semanticOutcomeUri][includedAlternative.id];
+    function addScales(outcomesWithAnalyses, interventionInclusions, scaleResults) {
+      return outcomesWithAnalyses.map(function(outcomeWithAnalyses) {
+        outcomeWithAnalyses.scales = interventionInclusions.reduce(function(accum, includedAlternative) {
+          if (scaleResults[outcomeWithAnalyses.outcome.semanticOutcomeUri]) {
+            accum[includedAlternative.id] = scaleResults[outcomeWithAnalyses.outcome.semanticOutcomeUri][includedAlternative.id];
           }
           return accum;
         }, {});
-        return owa;
+        return outcomeWithAnalyses;
       });
     }
 

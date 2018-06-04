@@ -5,9 +5,11 @@ define(['angular', 'angular-mocks'], function() {
       mockDatasetResource = jasmine.createSpyObj('DatasetResource', ['save']),
       mockModalInstance = jasmine.createSpyObj('$modalInstance', ['close', 'dismiss']),
       mockcallback = jasmine.createSpy('callback'),
+      excelImportServiceMock = jasmine.createSpyObj('ExcelImportService', ['createDatasetStudies', 'createDatasetConcepts']),
       mockDataset = {
         title: 'title'
       },
+      datasetTitles = [],
       datasetDeferred = {},
       userUid = 'userUid',
       datasetUuid = 'uuid-1',
@@ -32,7 +34,9 @@ define(['angular', 'angular-mocks'], function() {
         $stateParams: stateParams,
         $modalInstance: mockModalInstance,
         DatasetResource: mockDatasetResource,
-        callback: mockcallback
+        ExcelImportService: excelImportServiceMock,
+        datasetTitles: datasetTitles,
+        callback: mockcallback,
       });
 
     }));

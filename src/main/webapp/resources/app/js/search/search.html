@@ -16,7 +16,7 @@
         </div>
       </form>
     </div>
-    <div class="cell large-8 medium-10 small-12">
+    <div ng-if="searchPromise" class="cell large-8 medium-10 small-12">
       <spinner promise="searchPromise" size="3" message="'Searching...'">
         <h3>Results</h3>
         <ul class="no-bullet">
