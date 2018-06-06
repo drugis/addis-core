@@ -16,6 +16,7 @@
 package org.drugis.addis.config;
 
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.config.RequestConfig;
 import org.apache.http.config.Registry;
 import org.apache.http.config.RegistryBuilder;
 import org.apache.http.conn.HttpClientConnectionManager;
@@ -135,6 +136,15 @@ public class MainConfig {
   }
 
   @Bean
+  public RequestConfig requestConfig() {
+    return RequestConfig.custom()
+            .setConnectionRequestTimeout(2000)
+            .setConnectTimeout(2000)
+            .setSocketTimeout(2000)
+            .build();
+  }
+
+  @Bean
   public RestTemplate restTemplate() throws CertificateException, UnrecoverableKeyException, NoSuchAlgorithmException, KeyStoreException, KeyManagementException, IOException {
     RestTemplate restTemplate = new RestTemplate(new HttpComponentsClientHttpRequestFactory(httpClient()));
     restTemplate.getMessageConverters().add(new JenaGraphMessageConverter());
@@ -142,7 +152,7 @@ public class MainConfig {
   }
 
   @Bean
-  public HttpClient httpClient() throws KeyStoreException, IOException, CertificateException, NoSuchAlgorithmException, UnrecoverableKeyException, KeyManagementException {
+  public HttpClient httpClient(RequestConfig requestConfig) throws KeyStoreException, IOException, CertificateException, NoSuchAlgorithmException, UnrecoverableKeyException, KeyManagementException {
     KeyStore keyStore = KeyStore.getInstance("JKS");
     keyStore.load(new FileInputStream(KEYSTORE_PATH), KEYSTORE_PASSWORD.toCharArray());
 
@@ -163,6 +173,7 @@ public class MainConfig {
             .setConnectionManager(clientConnectionManager)
             .setMaxConnTotal(20)
             .setMaxConnPerRoute(2)
+            .setDefaultRequestConfig(requestConfig)
             .build();
   }
 
