@@ -14,7 +14,6 @@ import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.util.EntityUtils;
 import org.drugis.addis.patavitask.PataviTask;
-import org.drugis.addis.patavitask.PataviTaskUriHolder;
 import org.drugis.addis.patavitask.repository.PataviTaskRepository;
 import org.drugis.addis.util.WebConstants;
 import org.json.JSONObject;
@@ -76,8 +75,9 @@ public class PataviTaskRepositoryImpl implements PataviTaskRepository {
   }
 
   @Override
-  public Map<URI, JsonNode> getResults(List<URI> taskUris) throws URISyntaxException {
-    List<URI> filteredUris = taskUris.stream()
+  public Map<URI, JsonNode> getResults(Collection<PataviTask> tasks) throws URISyntaxException {
+    List<URI> filteredUris = tasks.stream()
+            .map(PataviTask::getSelf)
             .filter(Objects::nonNull)
             .collect(Collectors.toList());
 
@@ -98,7 +98,7 @@ public class PataviTaskRepositoryImpl implements PataviTaskRepository {
   }
 
   @Override
-  public List<PataviTask> findByUrls(List<URI> taskUris) throws IOException {
+  public List<PataviTask> findByUrls(List<URI> taskUris) {
     return taskUris.stream().filter(Objects::nonNull).map(this::getTask).collect(Collectors.toList());
   }
 

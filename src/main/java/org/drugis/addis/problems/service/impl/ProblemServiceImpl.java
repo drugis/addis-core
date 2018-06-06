@@ -121,8 +121,7 @@ public class ProblemServiceImpl implements ProblemService {
     final Map<Integer, Model> modelsById = getModelsById(analysis);
     final Map<Integer, Outcome> outcomesById = getOutcomesById(project.getId(), analysis);
     final Map<Integer, PataviTask> tasksByModelId = getPataviTasksByModelId(modelsById.values());
-    List<URI> taskUris = tasksByModelId.values().stream().map(PataviTask::getSelf).collect(Collectors.toList());
-    final Map<URI, JsonNode> resultsByTaskUrl = pataviTaskRepository.getResults(taskUris);
+    final Map<URI, JsonNode> resultsByTaskUrl = pataviTaskRepository.getResults(tasksByModelId.values());
 
     final List<BenefitRiskNMAOutcomeInclusion> inclusionsWithBaselineAndModelResults = analysis.getBenefitRiskNMAOutcomeInclusions().stream()
             .filter(mbrOutcomeInclusion -> mbrOutcomeInclusion.getBaseline() != null)
@@ -597,13 +596,14 @@ public class ProblemServiceImpl implements ProblemService {
       throw new RuntimeException("Invalid measurement");
     }
     Integer ownerId = mappingService.getVersionedUuidAndOwner(project.getNamespaceUid()).getOwnerId();
+    URI sourceLink = URI.create("/#/users/" + ownerId +
+            "/datasets/" + project.getNamespaceUid() +
+            "/versions/" + project.getDatasetVersion().toString().split("/versions/")[1] +
+            "/studies/" + studyGraphUri.toString().split("/graphs/")[1]);
+
     // NB: partialvaluefunctions to be filled in by MCDA component, left null here
-    return new CriterionEntry(measurement.getVariableUri().toString(), outcome.getName(), scale, null,
-            unitOfMeasurement, "study",
-            URI.create("/#/users/" + ownerId +
-                    "/datasets/" + project.getNamespaceUid() +
-                    "/versions/" + project.getDatasetVersion().toString().split("/versions/")[1] +
-                    "/studies/" + studyGraphUri.toString().split("/graphs/")[1]));
+    DataSourceEntry dataSourceEntry = new DataSourceEntry(scale, null, "study", sourceLink);
+    return new CriterionEntry(measurement.getVariableUri().toString(), Collections.singletonList(dataSourceEntry), outcome.getName(),            unitOfMeasurement);
   }
 
 }

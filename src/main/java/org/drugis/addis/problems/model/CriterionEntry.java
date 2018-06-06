@@ -1,6 +1,7 @@
 package org.drugis.addis.problems.model;
 
 import java.net.URI;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -8,35 +9,38 @@ import java.util.List;
  */
 public class CriterionEntry {
   private String criterion;
-  private List<Double> scale;
-  private PartialValueFunction pvf;
   private String title;
   private String unitOfMeasurement;
-  private String source;
-  private URI sourceLink;
   private List<DataSourceEntry> dataSources;
 
   public CriterionEntry(String criterion, String title) {
-    this(criterion, title, null, null, null, null, null);
+    this(criterion, Collections.singletonList(new DataSourceEntry()), title, null);
   }
 
   public CriterionEntry(String criterion, String title, String source, URI sourceLink) {
-    this(criterion, title, null, null, null, source, sourceLink);
+    this(criterion, Collections.singletonList(new DataSourceEntry(source, sourceLink)), title, null);
   }
 
+  public CriterionEntry(String criterion, String title, List<Double> scale, PartialValueFunction partialValueFunction,
+                        String unitOfMeasurement, String source, URI sourceLink) {
+    this(criterion, Collections.singletonList(new DataSourceEntry(scale, partialValueFunction, source, sourceLink)), title,
+            unitOfMeasurement);
+  }
 
-  public CriterionEntry(String criterion, String title, List<Double> scale, PartialValueFunction partialValueFunction, String unitOfMeasurement, String source, URI sourceLink) {
+  public CriterionEntry(String criterion, List<DataSourceEntry> dataSources, String title,
+                        String unitOfMeasurement) {
     this.criterion = criterion;
+    this.dataSources = dataSources;
     this.title = title;
-    this.scale = scale;
-    this.pvf = partialValueFunction;
     this.unitOfMeasurement = unitOfMeasurement;
-    this.source = source;
-    this.sourceLink = sourceLink;
   }
 
   public String getCriterion() {
     return criterion;
+  }
+
+  public List<DataSourceEntry> getDataSources() {
+    return dataSources;
   }
 
   public String getTitle() {
