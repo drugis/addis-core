@@ -8,7 +8,7 @@ public class ContinuousMeasurementEntry extends AbstractMeasurementEntry {
   private Integer alternative;
 
   public ContinuousMeasurementEntry(Integer interventionId, String criterion, ContinuousPerformance performance) {
-    super(criterion);
+    super(criterion, dataSource);
     this.alternative = interventionId;
     this.performance = performance;
   }

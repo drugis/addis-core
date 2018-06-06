@@ -7,7 +7,7 @@ public class RelativePerformanceEntry extends AbstractMeasurementEntry {
   private RelativePerformance performance;
 
   public RelativePerformanceEntry(String criterion, RelativePerformance performance) {
-    super(criterion);
+    super(criterion, dataSource);
     this.performance = performance;
   }
 
