@@ -145,8 +145,8 @@ public class MainConfig {
   }
 
   @Bean
-  public RestTemplate restTemplate() throws CertificateException, UnrecoverableKeyException, NoSuchAlgorithmException, KeyStoreException, KeyManagementException, IOException {
-    RestTemplate restTemplate = new RestTemplate(new HttpComponentsClientHttpRequestFactory(httpClient()));
+  public RestTemplate restTemplate(RequestConfig requestConfig) throws CertificateException, UnrecoverableKeyException, NoSuchAlgorithmException, KeyStoreException, KeyManagementException, IOException {
+    RestTemplate restTemplate = new RestTemplate(new HttpComponentsClientHttpRequestFactory(httpClient(requestConfig)));
     restTemplate.getMessageConverters().add(new JenaGraphMessageConverter());
     return restTemplate;
   }
@@ -172,7 +172,7 @@ public class MainConfig {
     return httpClientBuilder
             .setConnectionManager(clientConnectionManager)
             .setMaxConnTotal(20)
-            .setMaxConnPerRoute(2)
+            .setMaxConnPerRoute(4)
             .setDefaultRequestConfig(requestConfig)
             .build();
   }

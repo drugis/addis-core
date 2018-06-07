@@ -7,7 +7,7 @@ public class RateMeasurementEntry extends AbstractMeasurementEntry {
   private RatePerformance performance;
   private Integer alternative;
 
-  public RateMeasurementEntry(Integer alternative, String criterion, RatePerformance performance) {
+  public RateMeasurementEntry(Integer alternative, String criterion, String dataSource, RatePerformance performance) {
     super(criterion, dataSource);
     this.alternative = alternative;
     this.performance = performance;

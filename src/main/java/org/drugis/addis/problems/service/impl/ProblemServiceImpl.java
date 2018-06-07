@@ -154,7 +154,7 @@ public class ProblemServiceImpl implements ProblemService {
                     .collect(Collectors.toList());
 
     List<SingleStudyBenefitRiskProblem> singleStudyProblems = analysis.getBenefitRiskStudyOutcomeInclusions().stream()
-            .map(inclusion -> getSingleStudyBenefitRiskProblem(project, inclusion.getStudyGraphUri(),
+            .map(inclusion -> getSingleStudySingleOutcomeBenefitRiskProblem(project, inclusion.getStudyGraphUri(),
                     outcomesById.get(inclusion.getOutcomeId()), includedAlternatives))
             .collect(Collectors.toList());
     singleStudyProblems.forEach(problem -> {
@@ -524,12 +524,13 @@ public class ProblemServiceImpl implements ProblemService {
         filter(intervention -> inclusionMap.get(intervention.getId()) != null).collect(Collectors.toSet());
   }
 
-  private SingleStudyBenefitRiskProblem getSingleStudyBenefitRiskProblem(Project project, URI studyGraphUri,
-                                                                         Outcome outcome,
-                                                                         Set<AbstractIntervention> includedInterventions) {
+  private SingleStudyBenefitRiskProblem getSingleStudySingleOutcomeBenefitRiskProblem(Project project, URI studyGraphUri,
+                                                                                      Outcome outcome,
+                                                                                      Set<AbstractIntervention> includedInterventions) {
     final Set<URI> outcomeUris = Sets.newHashSet(outcome.getSemanticOutcomeUri());
+    final Map<URI, URI> dataSetUrisByOutcomeUri = outcomeUris.stream().map()
     final Set<URI> alternativeUris = getSingleAlternativeUris(includedInterventions);
-    final Map<Integer, AbstractIntervention> alternativeToInterventionMap = includedInterventions.stream()
+    final Map<Integer, AbstractIntervention> interventionsById = includedInterventions.stream()
             .collect(Collectors.toMap(AbstractIntervention::getId, Function.identity()));
 
     final String versionedUuid = mappingService.getVersionedUuid(project.getNamespaceUid());
@@ -557,7 +558,7 @@ public class ProblemServiceImpl implements ProblemService {
         }
 
         arm.setMatchedProjectInterventionIds(ImmutableSet.of(matchedProjectInterventionId));
-        AbstractIntervention intervention = alternativeToInterventionMap.get(matchedProjectInterventionId);
+        AbstractIntervention intervention = interventionsById.get(matchedProjectInterventionId);
 
         alternatives.put(intervention.getId().toString(), new AlternativeEntry(matchedProjectInterventionId, intervention.getName()));
       } else if (matchingIncludedInterventions.size() > 1) {

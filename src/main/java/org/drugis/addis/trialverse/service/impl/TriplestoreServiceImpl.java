@@ -126,7 +126,6 @@ public class TriplestoreServiceImpl implements TriplestoreService {
 
       namespaces.add(getNamespaceHead(new TriplestoreUuidAndOwner(namespaceUri, null)));
     }
-
     return namespaces;
   }
 

@@ -1,6 +1,5 @@
 package org.drugis.addis.problems.service.model;
 
-import java.net.URI;
 import java.util.Objects;
 
 /**
@@ -8,9 +7,9 @@ import java.util.Objects;
  */
 public abstract class AbstractMeasurementEntry {
   private String criterion; // nb not necessarily an uri in other cases of br-problem
-  private URI dataSource;
+  private String dataSource;
 
-  protected AbstractMeasurementEntry(String criterion, URI dataSource) {
+  protected AbstractMeasurementEntry(String criterion, String dataSource) {
     this.criterion = criterion;
     this.dataSource = dataSource;
   }
@@ -19,7 +18,7 @@ public abstract class AbstractMeasurementEntry {
     return this.criterion;
   }
 
-  public URI getDataSource() {
+  public String getDataSource() {
     return dataSource;
   }
 

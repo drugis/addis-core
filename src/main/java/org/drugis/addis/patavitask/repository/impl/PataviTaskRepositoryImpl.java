@@ -9,6 +9,7 @@ import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.utils.HttpClientUtils;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.message.BasicHeader;
@@ -22,7 +23,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 
 import javax.inject.Inject;
-import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.*;
@@ -47,6 +47,7 @@ public class PataviTaskRepositoryImpl implements PataviTaskRepository {
     logger.trace("PataviTaskRepositoryImpl.createPataviTask");
 
     HttpPost postRequest = new HttpPost(pataviUri);
+    postRequest.addHeader("Connection", "close");
     postRequest.addHeader(new BasicHeader("Content-type", WebConstants.APPLICATION_JSON_UTF8_VALUE));
     HttpEntity postBody = new ByteArrayEntity(jsonProblem.toString().getBytes());
     postRequest.setEntity(postBody);
@@ -58,6 +59,8 @@ public class PataviTaskRepositoryImpl implements PataviTaskRepository {
       return newTaskUri;
     } catch (Exception e) {
       throw new RuntimeException("Error creating patavi task: " + e.toString());
+    } finally {
+      HttpClientUtils.closeQuietly(httpResponse);
     }
   }
   @Override
