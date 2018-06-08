@@ -9,13 +9,18 @@ Jena-es:
 
 Patavi:
 --------------
-For Patavi there are three readmes to go through. The only important thing in this file is how to get an instance of RabbitMQ running.<br>
+For Patavi there are three readmes to go through. The only important thing in this file is how to get an instance of RabbitMQ running.
+
 [/patavi/README.md](https://github.com/drugis/patavi/blob/master/README.md)
 
-Next you will need to get the Patavi server running.<br>
+Next you will need to get the Patavi server running.
+
+
 [/patavi/server/docker/README.md](https://github.com/drugis/patavi/blob/master/server/docker/README.md)
 
-And for the last Patavi readme, you will get a worker up and running. Please note that it is not necessary to build and run an example worker.<br>
+And for the last Patavi readme, you will get a worker up and running. Please note that it is not necessary to build and run an example worker.
+
+
 [/patavi/worker/docker/README.md](https://github.com/drugis/patavi/blob/master/worker/docker/README.md)
 
 Patavi workers
@@ -41,4 +46,4 @@ docker restart patavi-server-amqp
 (cd addis-core && tomcat7:run -Dmaven.tomcat.port=8090 -Djavax.net.ssl.trustStore=ssl/truststore.jks)
 ```
 
-It might be useful to link to gemtc-web or mcda-web from addis-core, so when you change something in gemtc-web you don't need to do a bower update. Use `bower link` for this.
+It might be useful to link to gemtc-web or mcda-web from addis-core, so when you change something in gemtc-web you don't need to do a bower update. Use `yarn link` for this.

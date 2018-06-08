@@ -25,7 +25,7 @@
                 <input type="checkbox" ng-model="intervention.isIncluded" ng-disabled="editMode.disableEditing || hasModel"
                   ng-change="changeInterventionInclusion(intervention)"> {{intervention.name}}
               </label>
-              <div class="alert animate-show" ng-if="loading.loaded && isOverlappingIntervention(intervention)">
+              <div class="alert animate-show" ng-if="isOverlappingIntervention(intervention)">
                 <em>Overlaps:
                   <span ng-repeat="overlap in treatmentOverlapMap[intervention.id]">
                     {{overlap.name}} {{$last ? '' : ', '}}
@@ -38,16 +38,16 @@
       </div>
       <div class="cell large-6">
         <label>Included covariates</label>
-        <em ng-if="loading.loaded && covariates.length === 0">No covariates have been defined.</em>
+        <em ng-if="covariates.length === 0">No covariates have been defined.</em>
 
-        <div ng-if="loading.loaded && covariates.length > 0" class="checkbox-group">
+        <div ng-if="covariates.length > 0" class="checkbox-group">
           <div ng-repeat="covariate in covariates">
             <label>
               <input type="checkbox" ng-model="covariate.isIncluded" ng-disabled="editMode.disableEditing || hasModel"
                 ng-change="changeCovariateInclusion(covariate)"> {{covariate.name}}
             </label>
           </div>
-          <div class="alert animate-show" ng-show="loading.loaded && hasInsufficientCovariateValues">
+          <div class="alert animate-show" ng-show="hasInsufficientCovariateValues">
             <em>Covariates should have more than one different value.</em>
           </div>
         </div>
@@ -55,15 +55,15 @@
     </div>
     <div class="grid-x">
       <div class="cell">
-        <span class="alert animate-show" ng-show="loading.loaded && analysis.outcome && isNetworkDisconnected">Network not connected.
+        <span class="alert animate-show" ng-show="analysis.outcome && isNetworkDisconnected">Network not connected.
         </span>
-        <span class="alert animate-show" ng-show="loading.loaded && interventions.length < 2">Fewer than two interventions defined.
+        <span class="alert animate-show" ng-show="interventions.length < 2">Fewer than two interventions defined.
         </span>
-        <span class="alert animate-show" ng-show="loading.loaded && tableHasAmbiguousArm && interventions.length > 1 && !hasLessThanTwoInterventions">Ambiguous arms: more than one arm selected for single intervention.
+        <span class="alert animate-show" ng-show="tableHasAmbiguousArm && interventions.length > 1 && !hasLessThanTwoInterventions">Ambiguous arms: more than one arm selected for single intervention.
         </span>
-        <span class="alert animate-show" ng-show="loading.loaded && hasLessThanTwoInterventions">A least two interventions are needed to perform the analysis.</span>
-        <span id="intervention-overlap-warning" class="alert animate-show" ng-show="loading.loaded && hasTreatmentOverlap">Overlapping interventions detected: please exclude interventions to fix this.</span>
-        <span class="alert animate-show" ng-show="loading.loaded && containsMissingValue">The evidence table contains missing values</span>
+        <span class="alert animate-show" ng-show="hasLessThanTwoInterventions">A least two interventions are needed to perform the analysis.</span>
+        <span id="intervention-overlap-warning" class="alert animate-show" ng-show="hasTreatmentOverlap">Overlapping interventions detected: please exclude interventions to fix this.</span>
+        <span class="alert animate-show" ng-show="containsMissingValue">The evidence table contains missing values</span>
       </div>
     </div>
   </div>
