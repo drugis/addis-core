@@ -14,22 +14,16 @@ public class CriterionEntry {
   private String unitOfMeasurement;
   private List<DataSourceEntry> dataSources;
 
-  public CriterionEntry(String criterion, String title, String source, URI sourceLink) {
-    this(criterion, Collections.singletonList(new DataSourceEntry(source, sourceLink)), title, null);
-  }
-
-  public CriterionEntry(String criterion, String title, List<Double> scale, PartialValueFunction partialValueFunction,
-                        String unitOfMeasurement, String source, URI sourceLink) {
-    this(criterion, Collections.singletonList(new DataSourceEntry(scale, partialValueFunction, source, sourceLink)), title,
-            unitOfMeasurement);
-  }
-
   public CriterionEntry(String criterion, List<DataSourceEntry> dataSources, String title,
                         String unitOfMeasurement) {
     this.criterion = criterion;
     this.dataSources = dataSources;
     this.title = title;
     this.unitOfMeasurement = unitOfMeasurement;
+  }
+
+  public CriterionEntry(String criterion, List<DataSourceEntry> dataSources, String title) {
+    this(criterion, dataSources, title, null);
   }
 
   public String getCriterion() {

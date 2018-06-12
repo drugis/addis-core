@@ -56,9 +56,9 @@ public class ProblemControllerTest {
     RatePerformance ratePerformance = new RatePerformance(new RatePerformanceParameters(10, 50));
     Integer alternative1 = 1;
     Integer alternative2 = 2;
-    AbstractMeasurementEntry rateMeasurementEntry = new RateMeasurementEntry(alternative1, "Crituri1", , ratePerformance);
+    AbstractMeasurementEntry rateMeasurementEntry = new RateMeasurementEntry(alternative1, "Crituri1", "dsUri1", ratePerformance);
     ContinuousPerformance continuousPerformance = new ContinuousPerformance(new ContinuousPerformanceParameters(7.5, 2.1));
-    AbstractMeasurementEntry continuousMeasurementEntry = new ContinuousMeasurementEntry(alternative2, "Crituri2", , continuousPerformance);
+    AbstractMeasurementEntry continuousMeasurementEntry = new ContinuousMeasurementEntry(alternative2, "Crituri2", "dsUri2", continuousPerformance);
     List<AbstractMeasurementEntry> performanceTable = Arrays.asList(rateMeasurementEntry, continuousMeasurementEntry);
     SingleStudyBenefitRiskProblem problem = new SingleStudyBenefitRiskProblem(new HashMap<>(), new HashMap<>(), performanceTable);
     Integer projectId = 1;

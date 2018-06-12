@@ -8,6 +8,7 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
+import org.apache.commons.lang3.tuple.Triple;
 import org.drugis.addis.analyses.model.*;
 import org.drugis.addis.analyses.repository.AnalysisRepository;
 import org.drugis.addis.analyses.service.AnalysisService;
@@ -122,40 +123,31 @@ public class ProblemServiceImpl implements ProblemService {
     final Map<Integer, Outcome> outcomesById = getOutcomesById(project.getId(), analysis);
     final Map<Integer, PataviTask> tasksByModelId = getPataviTasksByModelId(modelsById.values());
     final Map<URI, JsonNode> resultsByTaskUrl = pataviTaskRepository.getResults(tasksByModelId.values());
-
-    final List<BenefitRiskNMAOutcomeInclusion> inclusionsWithBaselineAndModelResults = analysis.getBenefitRiskNMAOutcomeInclusions().stream()
-            .filter(mbrOutcomeInclusion -> mbrOutcomeInclusion.getBaseline() != null)
-            .filter(mbrOutcomeInclusion -> {
-              URI taskUrl = modelsById.get(mbrOutcomeInclusion.getModelId()).getTaskUrl();
-              return taskUrl != null && resultsByTaskUrl.get(taskUrl) != null;
-            })
-            .collect(Collectors.toList());
-
-    Map<URI, CriterionEntry> criteriaWithBaseline = buildCriteriaWithBaseline(project, path, modelsById, outcomesById, inclusionsWithBaselineAndModelResults);
-
-    final Set<AbstractIntervention> includedAlternatives = getIncludedInterventions(analysis);
-    Map<String, AlternativeEntry> alternativesById = includedAlternatives
-            .stream()
-            .collect(Collectors.toMap(includedAlternative -> includedAlternative.getId().toString(),
-                    includedAlternative -> new AlternativeEntry(includedAlternative.getId(), includedAlternative.getName())));
-
-    final Map<String, AbstractIntervention> includedInterventionsByName = includedAlternatives
+    final Map<Integer, BenefitRiskNMAOutcomeInclusion> usableInclusionsByOutcomeId = findUsableInclusions(analysis, modelsById, resultsByTaskUrl);
+    final Map<URI, CriterionEntry> criteriaWithBaseline = buildCriteriaWithBaseline(project, path, modelsById, outcomesById, usableInclusionsByOutcomeId);
+    final Set<AbstractIntervention> includedInterventions = getIncludedInterventions(analysis);
+    final Map<String, AlternativeEntry> alternativesById = getAlternativesById(includedInterventions);
+    final Map<String, AbstractIntervention> includedInterventionsByName = includedInterventions
             .stream()
             .collect(Collectors.toMap(AbstractIntervention::getName, Function.identity()));
-    final Map<String, AbstractIntervention> includedInterventionsById = includedAlternatives
+    final Map<String, AbstractIntervention> includedInterventionsById = includedInterventions
             .stream()
             .collect(Collectors.toMap(i -> i.getId().toString(), Function.identity()));
 
+    Map<String, DataSourceEntry> dataSourcesByOutcomeId = getDataSourcesByOutcomeId(criteriaWithBaseline);
+    PerformanceTableEntryBuilder entryBuilder = new PerformanceTableEntryBuilder(modelsById,
+        outcomesById, dataSourcesByOutcomeId, tasksByModelId, resultsByTaskUrl, includedInterventionsById,
+        includedInterventionsByName);
+
+
     List<AbstractMeasurementEntry> performanceTable =
-            inclusionsWithBaselineAndModelResults.stream()
-                    .map(outcomeInclusion -> getPerformanceTableEntry(modelsById,
-                            outcomesById, tasksByModelId, resultsByTaskUrl, includedInterventionsById,
-                            includedInterventionsByName, outcomeInclusion))
+            usableInclusionsByOutcomeId.values().stream()
+                    .map(entryBuilder::build)
                     .collect(Collectors.toList());
 
     List<SingleStudyBenefitRiskProblem> singleStudyProblems = analysis.getBenefitRiskStudyOutcomeInclusions().stream()
             .map(inclusion -> getSingleStudySingleOutcomeBenefitRiskProblem(project, inclusion.getStudyGraphUri(),
-                    outcomesById.get(inclusion.getOutcomeId()), includedAlternatives))
+                    outcomesById.get(inclusion.getOutcomeId()), includedInterventions))
             .collect(Collectors.toList());
     singleStudyProblems.forEach(problem -> {
       criteriaWithBaseline.putAll(problem.getCriteria());
@@ -165,27 +157,51 @@ public class ProblemServiceImpl implements ProblemService {
     return new BenefitRiskProblem(criteriaWithBaseline, alternativesById, performanceTable);
   }
 
+  private Map<String,DataSourceEntry> getDataSourcesByOutcomeId(Map<URI,CriterionEntry> criteriaWithBaseline) {
+    return criteriaWithBaseline.values().stream()
+        .collect(Collectors.toMap(CriterionEntry::getCriterion, criterionEntry -> criterionEntry.getDataSources().get(0)));
+
+  }
+
+  private Map<String, AlternativeEntry> getAlternativesById(Set<AbstractIntervention> includedInterventions) {
+    return includedInterventions
+            .stream()
+            .collect(Collectors.toMap(includedAlternative -> includedAlternative.getId().toString(),
+                    includedAlternative -> new AlternativeEntry(includedAlternative.getId(), includedAlternative.getName())));
+  }
+
+  private Map<Integer, BenefitRiskNMAOutcomeInclusion> findUsableInclusions(BenefitRiskAnalysis analysis, Map<Integer, Model> modelsById, Map<URI, JsonNode> resultsByTaskUrl) {
+    return analysis.getBenefitRiskNMAOutcomeInclusions().stream()
+            .filter(mbrOutcomeInclusion -> mbrOutcomeInclusion.getBaseline() != null)
+            .filter(mbrOutcomeInclusion -> {
+              URI taskUrl = modelsById.get(mbrOutcomeInclusion.getModelId()).getTaskUrl();
+              return taskUrl != null && resultsByTaskUrl.get(taskUrl) != null;
+            })
+            .collect(Collectors.toMap(BenefitRiskNMAOutcomeInclusion::getOutcomeId, Function.identity()));
+  }
+
   private Map<URI, CriterionEntry> buildCriteriaWithBaseline(Project project,
                                                              String path,
                                                              Map<Integer, Model> modelsById,
                                                              Map<Integer, Outcome> outcomesById,
-                                                             List<BenefitRiskNMAOutcomeInclusion> inclusionsWithBaselineAndModelResults) {
+                                                             Map<Integer, BenefitRiskNMAOutcomeInclusion> inclusionsWithBaselineAndModelResults) {
     Map<URI, CriterionEntry> criteriaWithBaseline = new HashMap<>();
 
     outcomesById.values().forEach(outcome -> {
-      Optional<BenefitRiskNMAOutcomeInclusion> outcomeInclusion = inclusionsWithBaselineAndModelResults.stream()
-              .filter(mbrOutcomeInclusion -> mbrOutcomeInclusion.getOutcomeId().equals(outcome.getId()))
-              .findFirst();
-      if (outcomeInclusion.isPresent()) {
-        Model model = modelsById.get(outcomeInclusion.get().getModelId());
+      BenefitRiskNMAOutcomeInclusion outcomeInclusion = inclusionsWithBaselineAndModelResults.get(outcome.getId());
+      if (outcomeInclusion != null) {
+        Model model = modelsById.get(outcomeInclusion.getModelId());
         URI modelURI = getModelUri(model, project, path);
-        if (model.getLikelihood().equals("binom")) {
-          criteriaWithBaseline.put(outcome.getSemanticOutcomeUri(), new CriterionEntry(outcome.getSemanticOutcomeUri().toString(),
-                  outcome.getName(), Arrays.asList(0d, 1d), null, "proportion", "meta analysis", modelURI));
+        CriterionEntry criterionEntry;
+        if ("binom".equals(model.getLikelihood())) {
+          DataSourceEntry dataSource = new DataSourceEntry(Arrays.asList(0d, 1d), /* pvf */ null, "meta analysis", modelURI);
+          criterionEntry = new CriterionEntry(outcome.getSemanticOutcomeUri().toString(), Collections.singletonList(dataSource),
+                  outcome.getName(), "proportion");
         } else {
-          criteriaWithBaseline.put(outcome.getSemanticOutcomeUri(), new CriterionEntry(outcome.getSemanticOutcomeUri().toString(),
-                  outcome.getName(), "meta analysis", modelURI));
+          DataSourceEntry dataSource = new DataSourceEntry("meta analysis", modelURI);
+          criterionEntry = new CriterionEntry(outcome.getSemanticOutcomeUri().toString(), Collections.singletonList(dataSource), outcome.getName());
         }
+        criteriaWithBaseline.put(outcome.getSemanticOutcomeUri(), criterionEntry);
       }
     });
     return criteriaWithBaseline;
@@ -250,7 +266,7 @@ public class ProblemServiceImpl implements ProblemService {
   private AbstractMeasurementEntry getPerformanceTableEntry(
           Map<Integer, Model> modelMap,
           Map<Integer, Outcome> outcomesById,
-          Map<Integer, PataviTask> tasksByModelId,
+          Map<Integer, DataSourceEntry> dataSourcesByOutcomeId, Map<Integer, PataviTask> tasksByModelId,
           Map<URI, JsonNode> resultsByTaskUrl,
           Map<String, AbstractIntervention> interventionsByKey,
           Map<String, AbstractIntervention> includedInterventionsByName,
@@ -357,8 +373,9 @@ public class ProblemServiceImpl implements ProblemService {
 
     RelativePerformance performance = new RelativePerformance(modelPerformanceType, parameters);
 
-    return new RelativePerformanceEntry(outcomesById.get(outcomeInclusion.getOutcomeId()).
-            getSemanticOutcomeUri().toString(), performance);
+    String criterion = outcomesById.get(outcomeInclusion.getOutcomeId()).getSemanticOutcomeUri().toString();
+    String dataSource = dataSourcesByOutcomeId.get(outcomeInclusion.getOutcomeId()).getId().toString();
+    return new RelativePerformanceEntry(criterion, dataSource, performance);
   }
 
   @Override
@@ -528,8 +545,7 @@ public class ProblemServiceImpl implements ProblemService {
                                                                                       Outcome outcome,
                                                                                       Set<AbstractIntervention> includedInterventions) {
     final Set<URI> outcomeUris = Sets.newHashSet(outcome.getSemanticOutcomeUri());
-    final Map<URI, URI> dataSetUrisByOutcomeUri = outcomeUris.stream().map()
-    final Set<URI> alternativeUris = getSingleAlternativeUris(includedInterventions);
+    final Set<URI> interventionUris = getSingleInterventionUris(includedInterventions);
     final Map<Integer, AbstractIntervention> interventionsById = includedInterventions.stream()
             .collect(Collectors.toMap(AbstractIntervention::getId, Function.identity()));
 
@@ -537,7 +553,7 @@ public class ProblemServiceImpl implements ProblemService {
     List<TrialDataStudy> singleStudyMeasurements = null;
     try {
       singleStudyMeasurements = triplestoreService.getSingleStudyData(versionedUuid,
-              studyGraphUri, project.getDatasetVersion(), outcomeUris, alternativeUris);
+              studyGraphUri, project.getDatasetVersion(), outcomeUris, interventionUris);
     } catch (ReadValueException e) {
       e.printStackTrace();
     }
@@ -545,15 +561,15 @@ public class ProblemServiceImpl implements ProblemService {
     TrialDataStudy trialDataStudy = singleStudyMeasurements.get(0);
     Map<String, AlternativeEntry> alternatives = new HashMap<>();
     Map<URI, CriterionEntry> criteria = new HashMap<>();
-    Set<Pair<Measurement, Integer>> measurementDrugInstancePairs = new HashSet<>();
+    Set<Triple<Measurement, Integer, String>> measurementsWithCoordinates = new HashSet<>();
     for (TrialDataArm arm : trialDataStudy.getTrialDataArms()) {
       Set<Measurement> measurements = arm.getMeasurementsForMoment(trialDataStudy.getDefaultMeasurementMoment());
       Set<AbstractIntervention> matchingIncludedInterventions = triplestoreService.findMatchingIncludedInterventions(includedInterventions, arm);
       if (matchingIncludedInterventions.size() == 1) {
         Integer matchedProjectInterventionId = matchingIncludedInterventions.iterator().next().getId();
         for (Measurement measurement : measurements) {
-          measurementDrugInstancePairs.add(Pair.of(measurement, matchedProjectInterventionId));
           CriterionEntry criterionEntry = createCriterionEntry(project, measurement, outcome, studyGraphUri);
+          measurementsWithCoordinates.add(Triple.of(measurement, matchedProjectInterventionId, criterionEntry.getDataSources().get(0).getId()));
           criteria.put(measurement.getVariableConceptUri(), criterionEntry);
         }
 
@@ -566,11 +582,11 @@ public class ProblemServiceImpl implements ProblemService {
       }
 
     }
-    List<AbstractMeasurementEntry> performanceTable = performanceTableBuilder.build(measurementDrugInstancePairs);
+    List<AbstractMeasurementEntry> performanceTable = performanceTableBuilder.build(measurementsWithCoordinates);
     return new SingleStudyBenefitRiskProblem(alternatives, criteria, performanceTable);
   }
 
-  private Set<URI> getSingleAlternativeUris(Set<AbstractIntervention> includedInterventions) {
+  private Set<URI> getSingleInterventionUris(Set<AbstractIntervention> includedInterventions) {
     Set<SingleIntervention> singleIncludedInterventions = null;
     try {
       singleIncludedInterventions = analysisService.getSingleInterventions(includedInterventions);
@@ -602,8 +618,8 @@ public class ProblemServiceImpl implements ProblemService {
             "/versions/" + project.getDatasetVersion().toString().split("/versions/")[1] +
             "/studies/" + studyGraphUri.toString().split("/graphs/")[1]);
 
-    // NB: partialvaluefunctions to be filled in by MCDA component, left null here
-    DataSourceEntry dataSourceEntry = new DataSourceEntry(scale, null, "study", sourceLink);
+    // NB: partial value functions to be filled in by MCDA component, left null here
+    DataSourceEntry dataSourceEntry = new DataSourceEntry(scale, /*pvf*/ null, "study", sourceLink);
     return new CriterionEntry(measurement.getVariableUri().toString(), Collections.singletonList(dataSourceEntry), outcome.getName(),            unitOfMeasurement);
   }
 

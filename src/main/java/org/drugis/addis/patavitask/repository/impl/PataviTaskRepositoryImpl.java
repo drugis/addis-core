@@ -59,9 +59,7 @@ public class PataviTaskRepositoryImpl implements PataviTaskRepository {
       return newTaskUri;
     } catch (Exception e) {
       throw new RuntimeException("Error creating patavi task: " + e.toString());
-    } finally {
-      HttpClientUtils.closeQuietly(httpResponse);
-    }
+    } 
   }
   @Override
   public JsonNode getResult(URI taskUri) throws URISyntaxException {

@@ -1,6 +1,7 @@
 package org.drugis.addis.problems.service.impl;
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.apache.commons.lang3.tuple.Triple;
 import org.drugis.addis.problems.service.ProblemService;
 import org.drugis.addis.problems.service.model.*;
 import org.drugis.addis.trialverse.model.trialdata.Measurement;
@@ -17,16 +18,17 @@ import java.util.Set;
 @Service
 public class PerformanceTableBuilder {
 
-  public List<AbstractMeasurementEntry> build(Set<Pair<Measurement, Integer>> measurementDrugInstancePair) {
+  public List<AbstractMeasurementEntry> build(Set<Triple<Measurement, Integer, String>> measurementDrugInstancePairs) {
     ArrayList<AbstractMeasurementEntry> performanceTable = new ArrayList<>();
-    for (Pair<Measurement, Integer> pair: measurementDrugInstancePair) {
+    for (Triple<Measurement, Integer, String> pair: measurementDrugInstancePairs) {
       Measurement measurement = pair.getLeft();
-      Integer interventionId = pair.getRight();
+      Integer interventionId = pair.getMiddle();
+      String dataSource = pair.getRight();
       if (measurement.getMeasurementTypeURI().equals(ProblemService.DICHOTOMOUS_TYPE_URI)) {
-        performanceTable.add(createBetaDistributionEntry(interventionId, measurement.getVariableConceptUri(),
+        performanceTable.add(createBetaDistributionEntry(interventionId, measurement.getVariableConceptUri(), dataSource,
                 measurement.getRate(), measurement.getSampleSize()));
       } else if (measurement.getMeasurementTypeURI().equals(ProblemService.CONTINUOUS_TYPE_URI)) {
-        performanceTable.add(createNormalDistributionEntry(interventionId, measurement.getVariableConceptUri(),
+        performanceTable.add(createNormalDistributionEntry(interventionId, measurement.getVariableConceptUri(), dataSource,
                 measurement.getMean(), measurement.getStdDev(), measurement.getSampleSize(), measurement.getStdErr()));
       } else {
         throw new IllegalArgumentException("Unknown measurement type: " + measurement.getMeasurementTypeURI());
@@ -35,19 +37,19 @@ public class PerformanceTableBuilder {
     return performanceTable;
   }
 
-  private ContinuousMeasurementEntry createNormalDistributionEntry(Integer interventionId, URI criterionUri, URI dataSourceUri, Double mean, Double standardDeviation, Integer sampleSize, Double standardError) {
+  private ContinuousMeasurementEntry createNormalDistributionEntry(Integer interventionId, URI criterionUri, String dataSourceUri, Double mean, Double standardDeviation, Integer sampleSize, Double standardError) {
     Double sigma = standardError != null ? standardError : standardDeviation / Math.sqrt(sampleSize);
 
     ContinuousPerformance performance = new ContinuousPerformance(new ContinuousPerformanceParameters(mean, sigma));
-    return new ContinuousMeasurementEntry(interventionId, criterionUri.toString(), dataSourceUri.toString(), performance);
+    return new ContinuousMeasurementEntry(interventionId, criterionUri.toString(), dataSourceUri, performance);
   }
 
-  private RateMeasurementEntry createBetaDistributionEntry(Integer interventionId, URI criterionUri, URI dataSourceUri, Integer rate, Integer sampleSize) {
+  private RateMeasurementEntry createBetaDistributionEntry(Integer interventionId, URI criterionUri, String dataSourceUri, Integer rate, Integer sampleSize) {
     int alpha = rate + 1;
     int beta = sampleSize - rate + 1;
 
     RatePerformance performance = new RatePerformance(new RatePerformanceParameters(alpha, beta));
-    return new RateMeasurementEntry(interventionId, criterionUri.toString(), dataSourceUri.toString(), performance);
+    return new RateMeasurementEntry(interventionId, criterionUri.toString(), dataSourceUri, performance);
   }
 
 }
