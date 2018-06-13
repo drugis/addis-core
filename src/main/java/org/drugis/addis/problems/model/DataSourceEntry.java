@@ -20,12 +20,8 @@ public class DataSourceEntry {
     this.sourceLink = sourceLink;
   }
 
-  public DataSourceEntry(String source, URI sourceLink) {
-    this(UUID.randomUUID().toString(), null, null, source, sourceLink);
-  }
-
-  public DataSourceEntry(List<Double> scale, PartialValueFunction partialValueFunction, String source, URI sourceLink) {
-    this(UUID.randomUUID().toString(), scale, partialValueFunction, source, sourceLink);
+  public DataSourceEntry(String id, String source, URI sourceLink) {
+    this(id, null, null, source, sourceLink);
   }
 
   public String getSource() {

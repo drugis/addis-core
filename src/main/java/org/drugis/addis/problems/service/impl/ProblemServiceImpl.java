@@ -5,7 +5,6 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Sets;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
@@ -40,6 +39,7 @@ import org.drugis.addis.trialverse.service.MappingService;
 import org.drugis.addis.trialverse.service.TrialverseService;
 import org.drugis.addis.trialverse.service.TriplestoreService;
 import org.drugis.addis.trialverse.service.impl.ReadValueException;
+import org.drugis.trialverse.util.service.UuidService;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
@@ -97,6 +97,9 @@ public class ProblemServiceImpl implements ProblemService {
   @Inject
   private InterventionService interventionService;
 
+  @Inject
+  private UuidService uuidService;
+
   private ObjectMapper objectMapper = new ObjectMapper();
 
   @Override
@@ -123,8 +126,8 @@ public class ProblemServiceImpl implements ProblemService {
     final Map<Integer, Outcome> outcomesById = getOutcomesById(project.getId(), analysis);
     final Map<Integer, PataviTask> tasksByModelId = getPataviTasksByModelId(modelsById.values());
     final Map<URI, JsonNode> resultsByTaskUrl = pataviTaskRepository.getResults(tasksByModelId.values());
-    final Map<Integer, BenefitRiskNMAOutcomeInclusion> usableInclusionsByOutcomeId = findUsableInclusions(analysis, modelsById, resultsByTaskUrl);
-    final Map<URI, CriterionEntry> criteriaWithBaseline = buildCriteriaWithBaseline(project, path, modelsById, outcomesById, usableInclusionsByOutcomeId);
+    final Map<Integer, BenefitRiskNMAOutcomeInclusion> usableNMAInclusionsByOutcomeId = findUsableNMAInclusions(analysis, modelsById, resultsByTaskUrl);
+    final Map<URI, CriterionEntry> criteriaWithBaseline = buildCriteriaWithBaseline(project, path, modelsById, outcomesById, usableNMAInclusionsByOutcomeId);
     final Set<AbstractIntervention> includedInterventions = getIncludedInterventions(analysis);
     final Map<String, AlternativeEntry> alternativesById = getAlternativesById(includedInterventions);
     final Map<String, AbstractIntervention> includedInterventionsByName = includedInterventions
@@ -139,17 +142,22 @@ public class ProblemServiceImpl implements ProblemService {
         outcomesById, dataSourcesByOutcomeId, tasksByModelId, resultsByTaskUrl, includedInterventionsById,
         includedInterventionsByName);
 
-
-    List<AbstractMeasurementEntry> performanceTable =
-            usableInclusionsByOutcomeId.values().stream()
+    List<AbstractMeasurementEntry> performanceTable = usableNMAInclusionsByOutcomeId.values().stream()
                     .map(entryBuilder::build)
                     .collect(Collectors.toList());
 
-    List<SingleStudyBenefitRiskProblem> singleStudyProblems = analysis.getBenefitRiskStudyOutcomeInclusions().stream()
-            .map(inclusion -> getSingleStudySingleOutcomeBenefitRiskProblem(project, inclusion.getStudyGraphUri(),
-                    outcomesById.get(inclusion.getOutcomeId()), includedInterventions))
-            .collect(Collectors.toList());
-    singleStudyProblems.forEach(problem -> {
+    Map<URI, SingleStudyBenefitRiskProblem> singleStudyProblems = analysis.getBenefitRiskStudyOutcomeInclusions().stream()
+        .collect(Collectors.groupingBy(BenefitRiskStudyOutcomeInclusion::getStudyGraphUri))
+        .entrySet().stream()
+        .map(entry -> {
+          Set<Outcome> outcomes = entry.getValue().stream()
+              .map(inclusion -> outcomesById.get(inclusion.getOutcomeId()))
+              .collect(Collectors.toSet());
+          return Pair.of(entry.getKey(), getSingleStudyBenefitRiskProblem(project, entry.getKey(), outcomes, includedInterventions));
+        })
+        .collect(Collectors.toMap(Pair::getLeft, Pair::getRight));
+
+    singleStudyProblems.values().forEach(problem -> {
       criteriaWithBaseline.putAll(problem.getCriteria());
       alternativesById.putAll(problem.getAlternatives());
       performanceTable.addAll(problem.getPerformanceTable());
@@ -170,7 +178,7 @@ public class ProblemServiceImpl implements ProblemService {
                     includedAlternative -> new AlternativeEntry(includedAlternative.getId(), includedAlternative.getName())));
   }
 
-  private Map<Integer, BenefitRiskNMAOutcomeInclusion> findUsableInclusions(BenefitRiskAnalysis analysis, Map<Integer, Model> modelsById, Map<URI, JsonNode> resultsByTaskUrl) {
+  private Map<Integer, BenefitRiskNMAOutcomeInclusion> findUsableNMAInclusions(BenefitRiskAnalysis analysis, Map<Integer, Model> modelsById, Map<URI, JsonNode> resultsByTaskUrl) {
     return analysis.getBenefitRiskNMAOutcomeInclusions().stream()
             .filter(mbrOutcomeInclusion -> mbrOutcomeInclusion.getBaseline() != null)
             .filter(mbrOutcomeInclusion -> {
@@ -194,11 +202,11 @@ public class ProblemServiceImpl implements ProblemService {
         URI modelURI = getModelUri(model, project, path);
         CriterionEntry criterionEntry;
         if ("binom".equals(model.getLikelihood())) {
-          DataSourceEntry dataSource = new DataSourceEntry(Arrays.asList(0d, 1d), /* pvf */ null, "meta analysis", modelURI);
+          DataSourceEntry dataSource = new DataSourceEntry(uuidService.generate(), Arrays.asList(0d, 1d), /* pvf */ null, "meta analysis", modelURI);
           criterionEntry = new CriterionEntry(outcome.getSemanticOutcomeUri().toString(), Collections.singletonList(dataSource),
                   outcome.getName(), "proportion");
         } else {
-          DataSourceEntry dataSource = new DataSourceEntry("meta analysis", modelURI);
+          DataSourceEntry dataSource = new DataSourceEntry(uuidService.generate(), "meta analysis", modelURI);
           criterionEntry = new CriterionEntry(outcome.getSemanticOutcomeUri().toString(), Collections.singletonList(dataSource), outcome.getName());
         }
         criteriaWithBaseline.put(outcome.getSemanticOutcomeUri(), criterionEntry);
@@ -541,10 +549,10 @@ public class ProblemServiceImpl implements ProblemService {
         filter(intervention -> inclusionMap.get(intervention.getId()) != null).collect(Collectors.toSet());
   }
 
-  private SingleStudyBenefitRiskProblem getSingleStudySingleOutcomeBenefitRiskProblem(Project project, URI studyGraphUri,
-                                                                                      Outcome outcome,
-                                                                                      Set<AbstractIntervention> includedInterventions) {
-    final Set<URI> outcomeUris = Sets.newHashSet(outcome.getSemanticOutcomeUri());
+  private SingleStudyBenefitRiskProblem getSingleStudyBenefitRiskProblem(Project project, URI studyGraphUri,
+                                                                         Set<Outcome> outcomes,
+                                                                         Set<AbstractIntervention> includedInterventions) {
+    Map<URI, Outcome> outcomesByUri = outcomes.stream().collect(Collectors.toMap(Outcome::getSemanticOutcomeUri, Function.identity()));
     final Set<URI> interventionUris = getSingleInterventionUris(includedInterventions);
     final Map<Integer, AbstractIntervention> interventionsById = includedInterventions.stream()
             .collect(Collectors.toMap(AbstractIntervention::getId, Function.identity()));
@@ -553,7 +561,7 @@ public class ProblemServiceImpl implements ProblemService {
     List<TrialDataStudy> singleStudyMeasurements = null;
     try {
       singleStudyMeasurements = triplestoreService.getSingleStudyData(versionedUuid,
-              studyGraphUri, project.getDatasetVersion(), outcomeUris, interventionUris);
+              studyGraphUri, project.getDatasetVersion(), outcomesByUri.keySet(), interventionUris);
     } catch (ReadValueException e) {
       e.printStackTrace();
     }
@@ -562,13 +570,15 @@ public class ProblemServiceImpl implements ProblemService {
     Map<String, AlternativeEntry> alternatives = new HashMap<>();
     Map<URI, CriterionEntry> criteria = new HashMap<>();
     Set<Triple<Measurement, Integer, String>> measurementsWithCoordinates = new HashSet<>();
+    String dataSourceId = uuidService.generate();
     for (TrialDataArm arm : trialDataStudy.getTrialDataArms()) {
       Set<Measurement> measurements = arm.getMeasurementsForMoment(trialDataStudy.getDefaultMeasurementMoment());
       Set<AbstractIntervention> matchingIncludedInterventions = triplestoreService.findMatchingIncludedInterventions(includedInterventions, arm);
       if (matchingIncludedInterventions.size() == 1) {
         Integer matchedProjectInterventionId = matchingIncludedInterventions.iterator().next().getId();
         for (Measurement measurement : measurements) {
-          CriterionEntry criterionEntry = createCriterionEntry(project, measurement, outcome, studyGraphUri);
+          Outcome measuredOutcome = outcomesByUri.get(measurement.getVariableConceptUri());
+          CriterionEntry criterionEntry = createCriterionEntry(project, measurement, measuredOutcome, dataSourceId, studyGraphUri);
           measurementsWithCoordinates.add(Triple.of(measurement, matchedProjectInterventionId, criterionEntry.getDataSources().get(0).getId()));
           criteria.put(measurement.getVariableConceptUri(), criterionEntry);
         }
@@ -600,7 +610,7 @@ public class ProblemServiceImpl implements ProblemService {
             .collect(Collectors.toSet());
   }
 
-  private CriterionEntry createCriterionEntry(Project project, Measurement measurement, Outcome outcome, URI studyGraphUri) throws EnumConstantNotPresentException {
+  private CriterionEntry createCriterionEntry(Project project, Measurement measurement, Outcome outcome, String dataSourceId, URI studyGraphUri) throws EnumConstantNotPresentException {
     List<Double> scale;
     String unitOfMeasurement;
     if (measurement.getRate() != null) { // rate measurement
@@ -619,7 +629,7 @@ public class ProblemServiceImpl implements ProblemService {
             "/studies/" + studyGraphUri.toString().split("/graphs/")[1]);
 
     // NB: partial value functions to be filled in by MCDA component, left null here
-    DataSourceEntry dataSourceEntry = new DataSourceEntry(scale, /*pvf*/ null, "study", sourceLink);
+    DataSourceEntry dataSourceEntry = new DataSourceEntry(dataSourceId, scale, /*pvf*/ null, "study", sourceLink);
     return new CriterionEntry(measurement.getVariableUri().toString(), Collections.singletonList(dataSourceEntry), outcome.getName(),            unitOfMeasurement);
   }
 

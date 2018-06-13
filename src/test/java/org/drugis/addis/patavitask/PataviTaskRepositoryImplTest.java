@@ -71,7 +71,7 @@ public class PataviTaskRepositoryImplTest {
     URI task = URI.create("https://example.com");
     JsonNode results = pataviTaskRepository.getResult(task);
 
-    assertEquals("value", results.get("key").toString());
+    assertEquals("value", results.get("key").asText());
   }
 
 }

@@ -138,9 +138,9 @@ public class MainConfig {
   @Bean
   public RequestConfig requestConfig() {
     return RequestConfig.custom()
-            .setConnectionRequestTimeout(2000)
-            .setConnectTimeout(2000)
-            .setSocketTimeout(2000)
+            .setConnectionRequestTimeout(60000)
+            .setConnectTimeout(60000)
+            .setSocketTimeout(60000)
             .build();
   }
 
@@ -172,7 +172,7 @@ public class MainConfig {
     return httpClientBuilder
             .setConnectionManager(clientConnectionManager)
             .setMaxConnTotal(20)
-            .setMaxConnPerRoute(4)
+            .setMaxConnPerRoute(2)
             .setDefaultRequestConfig(requestConfig)
             .build();
   }

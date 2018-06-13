@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
 import net.minidev.json.JSONObject;
-import org.apache.commons.lang3.tuple.Pair;
+import org.apache.commons.lang3.tuple.Triple;
 import org.drugis.addis.TestUtils;
 import org.drugis.addis.analyses.model.*;
 import org.drugis.addis.analyses.repository.AnalysisRepository;
@@ -15,6 +15,7 @@ import org.drugis.addis.covariates.CovariateRepository;
 import org.drugis.addis.exception.ProblemCreationException;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.interventions.model.AbstractIntervention;
+import org.drugis.addis.interventions.model.CombinationIntervention;
 import org.drugis.addis.interventions.model.SimpleIntervention;
 import org.drugis.addis.interventions.model.SingleIntervention;
 import org.drugis.addis.interventions.repository.InterventionRepository;
@@ -48,6 +49,7 @@ import org.drugis.addis.trialverse.service.MappingService;
 import org.drugis.addis.trialverse.service.TrialverseService;
 import org.drugis.addis.trialverse.service.TriplestoreService;
 import org.drugis.addis.trialverse.service.impl.ReadValueException;
+import org.drugis.trialverse.util.service.UuidService;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -62,9 +64,7 @@ import java.sql.SQLException;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static org.drugis.addis.problems.service.ProblemService.CONTINUOUS_TYPE_URI;
-import static org.drugis.addis.problems.service.ProblemService.DICHOTOMOUS_TYPE_URI;
-import static org.drugis.addis.problems.service.ProblemService.SURVIVAL_TYPE_URI;
+import static org.drugis.addis.problems.service.ProblemService.*;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
@@ -113,6 +113,12 @@ public class ProblemServiceTest {
   @Mock
   private AnalysisService analysisService;
 
+  @Mock
+  private PerformanceTableEntryBuilder performanceTableEntryBuilder;
+
+  @Mock
+  private UuidService uuidService;
+
   @InjectMocks
   private ProblemService problemService;
 
@@ -151,26 +157,34 @@ public class ProblemServiceTest {
   }
 
   @Before
-  public void setUp() throws URISyntaxException, ResourceDoesNotExistException {
+  public void setUp() throws ResourceDoesNotExistException {
     problemService = new ProblemServiceImpl();
     MockitoAnnotations.initMocks(this);
     when(mappingService.getVersionedUuid(namespaceUid)).thenReturn(versionedUuid);
     when(projectRepository.get(projectId)).thenReturn(project);
     when(interventionRepository.query(project.getId())).thenReturn(allProjectInterventions);
-    when(interventionService.resolveCombinations(anyList())).thenReturn(Collections.emptyList());
+    when(interventionService.resolveCombinations(anyListOf(CombinationIntervention.class))).thenReturn(Collections.emptyList());
   }
 
   @After
-  public void cleanUp() throws URISyntaxException {
+  public void cleanUp() {
     verifyNoMoreInteractions(analysisRepository, projectRepository,
-            interventionRepository, trialverseService, triplestoreService, mappingService, modelService);
+            interventionRepository, trialverseService, triplestoreService, mappingService, modelService, performanceTablebuilder, uuidService);
   }
 
   @Test
-  public void testGetSingleStudyBenefitRiskProblem() throws Exception, ReadValueException, InvalidTypeForDoseCheckException, ProblemCreationException {
+  public void testGetSingleStudyBenefitRiskProblem() throws Exception, ReadValueException, ProblemCreationException {
+    String dataSourceUuid1 = "dataSourceUuid1";
+    String dataSourceUuid2 = "dataSourceUuid2";
+    when(uuidService.generate()).thenReturn(dataSourceUuid1, dataSourceUuid2);
+
     URI secondOutcomeUri = URI.create("http://secondSemantic");
     SemanticVariable secondSemanticOutcome = new SemanticVariable(secondOutcomeUri, "second semantic outcome");
     Outcome secondOutcome = new Outcome(-303, projectId, "second outcome", direction, "very", secondSemanticOutcome);
+
+    URI defaultMeasurementMoment = URI.create("defaultMeasurementMoment");
+
+
     //include interventions: fluox and sertra
     InterventionInclusion fluoxInclusion = new InterventionInclusion(analysisId, fluoxIntervention.getId());
     InterventionInclusion sertraInclusion = new InterventionInclusion(analysisId, sertraIntervention.getId());
@@ -180,7 +194,6 @@ public class ProblemServiceTest {
     when(analysisRepository.get(analysisId)).thenReturn(singleStudyAnalysis);
     when(outcomeRepository.get(projectId, Sets.newHashSet(outcome.getId(), secondOutcome.getId()))).thenReturn(Arrays.asList(outcome, secondOutcome));
 
-    URI defaultMeasurementMoment = URI.create("defaultMeasurementMoment");
     URI daanEtAlUri = URI.create("http://thiscomputer.com/graphs/DaanEtAlUri");
     URI daanEtAlFluoxInstance = URI.create("daanEtAlFluoxInstance");
     URI daanEtAlFluoxArmUri = URI.create("daanEtAlFluoxArm");
@@ -242,27 +255,27 @@ public class ProblemServiceTest {
     singleStudyAnalysis.setBenefitRiskStudyOutcomeInclusions(Arrays.asList(outcomeInclusion, secondOutcomeInclusion));
 
     List<TrialDataStudy> studyResult = Collections.singletonList(daanEtAl);
-    Set<URI> outcomeUris = new HashSet<>(Arrays.asList(outcome.getSemanticOutcomeUri(), secondOutcome.getSemanticOutcomeUri()));
     Set<URI> interventionUris = new HashSet<>(Arrays.asList(fluoxIntervention.getSemanticInterventionUri(), sertraIntervention.getSemanticInterventionUri()));
 
-    when(triplestoreService.getSingleStudyData(versionedUuid, daanEtAl.getStudyUri(), project.getDatasetVersion(), Sets.newHashSet(outcome.getSemanticOutcomeUri()), interventionUris)).thenReturn(studyResult);
-    when(triplestoreService.getSingleStudyData(versionedUuid, daanEtAl.getStudyUri(), project.getDatasetVersion(), Sets.newHashSet(secondOutcome.getSemanticOutcomeUri()), interventionUris)).thenReturn(studyResult);
-
-    AbstractMeasurementEntry measurementEntry = mock(ContinuousMeasurementEntry.class);
-    List<AbstractMeasurementEntry> performanceTable = Collections.singletonList(measurementEntry);
+    when(triplestoreService.getSingleStudyData(versionedUuid, daanEtAl.getStudyUri(), project.getDatasetVersion(), Sets.newHashSet(outcome.getSemanticOutcomeUri(), secondOutcome.getSemanticOutcomeUri()), interventionUris)).thenReturn(studyResult);
 
     Set<AbstractIntervention> includedInterventions = Sets.newHashSet(fluoxIntervention, sertraIntervention);
     Set<SingleIntervention> singleInterventions = Sets.newHashSet(fluoxIntervention, sertraIntervention);
     when(analysisService.getIncludedInterventions(singleStudyAnalysis)).thenReturn(includedInterventions);
     when(analysisService.getSingleInterventions(allProjectInterventions)).thenReturn(singleInterventions);
     when(analysisService.getSingleInterventions(includedInterventions)).thenReturn(singleInterventions);
-    when(triplestoreService.findMatchingIncludedInterventions(includedInterventions, daanEtAlFluoxArm)).thenReturn(ImmutableSet.of(fluoxIntervention));
-    when(triplestoreService.findMatchingIncludedInterventions(includedInterventions, daanEtAlSertraArm)).thenReturn(ImmutableSet.of(sertraIntervention));
-    when(triplestoreService.findMatchingIncludedInterventions(includedInterventions, unmatchedDaanEtAlParoxArm)).thenReturn(Collections.emptySet());
+    when(triplestoreService.findMatchingIncludedInterventions(includedInterventions, daanEtAlFluoxArm))
+        .thenReturn(ImmutableSet.of(fluoxIntervention));
+    when(triplestoreService.findMatchingIncludedInterventions(includedInterventions, daanEtAlSertraArm))
+        .thenReturn(ImmutableSet.of(sertraIntervention));
+    when(triplestoreService.findMatchingIncludedInterventions(includedInterventions, unmatchedDaanEtAlParoxArm))
+        .thenReturn(Collections.emptySet());
 
+    AbstractMeasurementEntry measurementEntry = mock(ContinuousMeasurementEntry.class);
+    List<AbstractMeasurementEntry> performanceTable = Collections.singletonList(measurementEntry);
     when(performanceTablebuilder.build(any())).thenReturn(performanceTable);
-    when(mappingService.getVersionedUuid(project.getNamespaceUid())).thenReturn(versionedUuid);
 
+    when(mappingService.getVersionedUuid(project.getNamespaceUid())).thenReturn(versionedUuid);
     when(owner.getId()).thenReturn(ownerId);
     when(mappingService.getVersionedUuidAndOwner(project.getNamespaceUid())).thenReturn(new TriplestoreUuidAndOwner("someversion", 37));
 
@@ -270,25 +283,29 @@ public class ProblemServiceTest {
     BenefitRiskProblem actualProblem = (BenefitRiskProblem) problemService.getProblem(projectId, analysisId, null);
     // --------------- execute ---------------- //
 
-    verify(mappingService, times(8)).getVersionedUuidAndOwner(project.getNamespaceUid());
+    verify(uuidService).generate();
+    verify(mappingService, times(4)).getVersionedUuidAndOwner(project.getNamespaceUid());
     verify(modelService).get(Collections.emptySet());
     verify(projectRepository).get(projectId);
     verify(analysisRepository).get(analysisId);
-    verify(triplestoreService).getSingleStudyData(versionedUuid, daanEtAl.getStudyUri(), project.getDatasetVersion(), Sets.newHashSet(outcome.getSemanticOutcomeUri()), interventionUris);
-    verify(triplestoreService).getSingleStudyData(versionedUuid, daanEtAl.getStudyUri(), project.getDatasetVersion(), Sets.newHashSet(secondOutcome.getSemanticOutcomeUri()), interventionUris);
-    verify(triplestoreService, times(2)).findMatchingIncludedInterventions(includedInterventions, daanEtAlFluoxArm);
-    verify(triplestoreService, times(2)).findMatchingIncludedInterventions(includedInterventions, daanEtAlSertraArm);
-    verify(triplestoreService, times(2)).findMatchingIncludedInterventions(includedInterventions, unmatchedDaanEtAlParoxArm);
-    verify(performanceTablebuilder, times(2)).build(any());
-    verify(mappingService, times(2)).getVersionedUuid(project.getNamespaceUid());
+    verify(triplestoreService).getSingleStudyData(versionedUuid, daanEtAl.getStudyUri(), project.getDatasetVersion(), Sets.newHashSet(outcome.getSemanticOutcomeUri(), secondOutcome.getSemanticOutcomeUri()), interventionUris);
+    verify(triplestoreService).findMatchingIncludedInterventions(includedInterventions, daanEtAlFluoxArm);
+    verify(triplestoreService).findMatchingIncludedInterventions(includedInterventions, daanEtAlSertraArm);
+    verify(triplestoreService).findMatchingIncludedInterventions(includedInterventions, unmatchedDaanEtAlParoxArm);
+    verify(performanceTablebuilder).build(any());
+    verify(mappingService).getVersionedUuid(project.getNamespaceUid());
     verify(interventionRepository).query(project.getId());
 
-    Pair<Measurement, Integer> pair1 = Pair.of(daanEtAlFluoxMeasurement1, daanEtAlFluoxArm.getMatchedProjectInterventionIds().iterator().next());
-    Pair<Measurement, Integer> pair2 = Pair.of(daanEtAlFluoxMeasurement2, daanEtAlFluoxArm.getMatchedProjectInterventionIds().iterator().next());
-    Pair<Measurement, Integer> pair3 = Pair.of(daanEtAlSertraMeasurement1, daanEtAlSertraArm.getMatchedProjectInterventionIds().iterator().next());
-    Pair<Measurement, Integer> pair4 = Pair.of(daanEtAlSertraMeasurement2, daanEtAlSertraArm.getMatchedProjectInterventionIds().iterator().next());
-    Set<Pair<Measurement, Integer>> instancePairs = ImmutableSet.of(pair1, pair2, pair3, pair4);
-    verify(performanceTablebuilder, times(2)).build(instancePairs);
+    Triple<Measurement, Integer, String> triple1 = Triple.of(daanEtAlFluoxMeasurement1,
+        daanEtAlFluoxArm.getMatchedProjectInterventionIds().iterator().next(), dataSourceUuid1);
+    Triple<Measurement, Integer, String> triple2 = Triple.of(daanEtAlFluoxMeasurement2,
+        daanEtAlFluoxArm.getMatchedProjectInterventionIds().iterator().next(), dataSourceUuid1);
+    Triple<Measurement, Integer, String> triple3 = Triple.of(daanEtAlSertraMeasurement1,
+        daanEtAlSertraArm.getMatchedProjectInterventionIds().iterator().next(), dataSourceUuid1);
+    Triple<Measurement, Integer, String> triple4 = Triple.of(daanEtAlSertraMeasurement2,
+        daanEtAlSertraArm.getMatchedProjectInterventionIds().iterator().next(), dataSourceUuid1);
+    Set<Triple<Measurement, Integer, String>> measurementsWithCoordinates = ImmutableSet.of(triple1, triple2, triple3, triple4);
+    verify(performanceTablebuilder).build(measurementsWithCoordinates);
 
     assertNotNull(actualProblem);
     assertNotNull(actualProblem.getAlternatives());
@@ -300,7 +317,7 @@ public class ProblemServiceTest {
   }
 
   @Test
-  public void testGetNmaProblemDichotomous() throws URISyntaxException, SQLException, IOException, ReadValueException, ResourceDoesNotExistException, InvalidTypeForDoseCheckException, UnexpectedNumberOfResultsException, ProblemCreationException {
+  public void testGetNmaProblemDichotomous() throws URISyntaxException, ReadValueException, ResourceDoesNotExistException, ProblemCreationException {
 
     // analysis
     NetworkMetaAnalysis networkMetaAnalysis = new NetworkMetaAnalysis(analysisId, project.getId(), "nma title", outcome);
@@ -378,7 +395,7 @@ public class ProblemServiceTest {
   }
 
   @Test
-  public void testGetNmaProblemContinuous() throws URISyntaxException, SQLException, IOException, ReadValueException, ResourceDoesNotExistException, InvalidTypeForDoseCheckException, UnexpectedNumberOfResultsException, ProblemCreationException {
+  public void testGetNmaProblemContinuous() throws URISyntaxException, ReadValueException, ResourceDoesNotExistException, ProblemCreationException {
 
     // analysis
     NetworkMetaAnalysis networkMetaAnalysis = new NetworkMetaAnalysis(analysisId, project.getId(), "nma title", outcome);
@@ -427,7 +444,7 @@ public class ProblemServiceTest {
   }
 
   @Test
-  public void testGetNmaProblemSurvival() throws URISyntaxException, SQLException, IOException, ReadValueException, ResourceDoesNotExistException, InvalidTypeForDoseCheckException, UnexpectedNumberOfResultsException, ProblemCreationException {
+  public void testGetNmaProblemSurvival() throws URISyntaxException, ReadValueException, ResourceDoesNotExistException, ProblemCreationException {
 
     // analysis
     NetworkMetaAnalysis networkMetaAnalysis = new NetworkMetaAnalysis(analysisId, project.getId(), "nma title", outcome);
@@ -584,7 +601,7 @@ public class ProblemServiceTest {
   }
 
   @Test
-  public void testGetMetaBRProblem() throws Exception, ReadValueException, InvalidTypeForDoseCheckException, ProblemCreationException {
+  public void testGetMetaBRProblem() throws Exception, ProblemCreationException {
 
     URI version = URI.create("http://versions.com/version");
     Integer projectId = 1;
@@ -692,7 +709,7 @@ public class ProblemServiceTest {
     when(analysisRepository.get(analysisId)).thenReturn(analysis);
     List<URI> taskIds = Arrays.asList(model1.getTaskUrl(), model2.getTaskUrl());
     when(pataviTaskRepository.findByUrls(taskIds)).thenReturn(pataviTasks);
-    when(pataviTaskRepository.getResults(taskIds)).thenReturn(results);
+    when(pataviTaskRepository.getResults(anyCollectionOf(PataviTask.class))).thenReturn(results);
     when(interventionRepository.query(projectId)).thenReturn(interventions);
 
     BenefitRiskProblem problem = (BenefitRiskProblem) problemService.getProblem(projectId, analysisId, null);
@@ -702,7 +719,7 @@ public class ProblemServiceTest {
     verify(outcomeRepository).get(projectId, outcomeIds);
     verify(analysisRepository).get(analysisId);
     verify(pataviTaskRepository).findByUrls(taskIds);
-    verify(pataviTaskRepository).getResults(taskIds);
+    verify(pataviTaskRepository).getResults(anyCollectionOf(PataviTask.class));
     verify(interventionRepository).query(projectId);
 
     assertEquals(3, problem.getAlternatives().size());

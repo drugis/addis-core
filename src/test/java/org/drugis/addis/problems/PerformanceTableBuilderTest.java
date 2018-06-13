@@ -1,6 +1,7 @@
 package org.drugis.addis.problems;
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.apache.commons.lang3.tuple.Triple;
 import org.apache.jena.ext.com.google.common.collect.ImmutableSet;
 import org.drugis.addis.problems.model.Arm;
 import org.drugis.addis.problems.model.MeasurementType;
@@ -72,22 +73,22 @@ public class PerformanceTableBuilderTest {
 
     URI studyUri = URI.create("itsastudio");
     Integer alternativeUri1 = 1;
-    Pair<Measurement, Integer> row1 = Pair.of(new Measurement(studyUri, criterionUri1, dichotomousMeasurement.getVariableConceptUri(), null,
-            arm1.getUri(), CONTINUOUS_TYPE_URI, sampleSize1, null, stdDev, null, mu, null), alternativeUri1);
+    Triple<Measurement, Integer, String> row1 = Triple.of(new Measurement(studyUri, criterionUri1, dichotomousMeasurement.getVariableConceptUri(), null,
+            arm1.getUri(), CONTINUOUS_TYPE_URI, sampleSize1, null, stdDev, null, mu, null), alternativeUri1, "");
     Integer alternativeUri2 = 2;
-    Pair<Measurement, Integer> row2 = Pair.of(new Measurement(studyUri, criterionUri2, continuousMeasurementStdDev.getVariableConceptUri(), null,
-            arm2.getUri(), DICHOTOMOUS_TYPE_URI, sampleSize2, rate, null, null, null, null), alternativeUri2);
-    Pair<Measurement, Integer> row3 = Pair.of(new Measurement(studyUri, criterionUri1, dichotomousMeasurement.getVariableConceptUri(), null,
-            arm2.getUri(), CONTINUOUS_TYPE_URI, sampleSize1, null, stdDev, null, mu, null), alternativeUri2);
-    Pair<Measurement, Integer> row4 = Pair.of(new Measurement(studyUri, criterionUri2, continuousMeasurementStdDev.getVariableConceptUri(), null,
-            arm1.getUri(), DICHOTOMOUS_TYPE_URI, sampleSize2, rate, null, null, null, null), alternativeUri1);
-    Pair<Measurement, Integer> row5 = Pair.of(new Measurement(studyUri, criterionUri1, continuousMeasurementStdErr.getVariableConceptUri(), null,
-            arm1.getUri(), CONTINUOUS_TYPE_URI, sampleSize3, null, null, stdErr, null, null), alternativeUri1);
-    Pair<Measurement, Integer> row6 = Pair.of(new Measurement(studyUri, criterionUri2, continuousMeasurementStdErr.getVariableConceptUri(), null,
-            arm1.getUri(), CONTINUOUS_TYPE_URI, sampleSize3, null, null, stdErr, null, null), alternativeUri2);
+    Triple<Measurement, Integer, String> row2 = Triple.of(new Measurement(studyUri, criterionUri2, continuousMeasurementStdDev.getVariableConceptUri(), null,
+            arm2.getUri(), DICHOTOMOUS_TYPE_URI, sampleSize2, rate, null, null, null, null), alternativeUri2, "");
+    Triple<Measurement, Integer, String> row3 = Triple.of(new Measurement(studyUri, criterionUri1, dichotomousMeasurement.getVariableConceptUri(), null,
+            arm2.getUri(), CONTINUOUS_TYPE_URI, sampleSize1, null, stdDev, null, mu, null), alternativeUri2, "");
+    Triple<Measurement, Integer, String> row4 = Triple.of(new Measurement(studyUri, criterionUri2, continuousMeasurementStdDev.getVariableConceptUri(), null,
+            arm1.getUri(), DICHOTOMOUS_TYPE_URI, sampleSize2, rate, null, null, null, null), alternativeUri1, "");
+    Triple<Measurement, Integer, String> row5 = Triple.of(new Measurement(studyUri, criterionUri1, continuousMeasurementStdErr.getVariableConceptUri(), null,
+            arm1.getUri(), CONTINUOUS_TYPE_URI, sampleSize3, null, null, stdErr, null, null), alternativeUri1, "");
+    Triple<Measurement, Integer, String> row6 = Triple.of(new Measurement(studyUri, criterionUri2, continuousMeasurementStdErr.getVariableConceptUri(), null,
+            arm1.getUri(), CONTINUOUS_TYPE_URI, sampleSize3, null, null, stdErr, null, null), alternativeUri2, "");
 
     // EXECUTE
-    Set<Pair<Measurement, Integer>> measurementPairs = ImmutableSet.of(row1, row2, row3, row4, row5, row6);
+    Set<Triple<Measurement, Integer, String>> measurementPairs = ImmutableSet.of(row1, row2, row3, row4, row5, row6);
     List<AbstractMeasurementEntry> performanceTable = builder.build(measurementPairs);
 
     assertEquals(6, performanceTable.size());
