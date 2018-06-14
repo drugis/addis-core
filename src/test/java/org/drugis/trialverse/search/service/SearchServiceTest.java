@@ -5,18 +5,17 @@ import net.minidev.json.parser.JSONParser;
 import net.minidev.json.parser.ParseException;
 import org.drugis.addis.security.Account;
 import org.drugis.addis.security.repository.AccountRepository;
+import org.drugis.addis.util.WebConstants;
 import org.drugis.trialverse.dataset.model.VersionMapping;
 import org.drugis.trialverse.dataset.repository.DatasetReadRepository;
 import org.drugis.trialverse.dataset.repository.VersionMappingRepository;
 import org.drugis.trialverse.search.model.SearchResult;
 import org.drugis.trialverse.search.service.impl.SearchServiceImpl;
-import org.drugis.addis.util.WebConstants;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.core.io.ClassPathResource;
-
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -24,7 +23,10 @@ import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.List;
 
+import static org.hamcrest.text.IsEqualIgnoringWhiteSpace.equalToIgnoringWhiteSpace;
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Matchers.argThat;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
@@ -85,7 +87,8 @@ public class SearchServiceTest {
     JSONObject result = (JSONObject) new JSONParser(JSONParser.MODE_JSON_SIMPLE).parse(inputStream);
     result.put(WebConstants.VERSION_UUID, "versionUri");
 
-    when(datasetReadRepository.executeHeadQuery(searchQuery, versionMapping)).thenReturn(result);
+
+    when(datasetReadRepository.executeHeadQuery(argThat(equalToIgnoringWhiteSpace(searchQuery)), eq(versionMapping))).thenReturn(result);
 
     List<SearchResult> searchResults = searchService.searchStudy("my term");
     assertEquals(2, searchResults.size());
