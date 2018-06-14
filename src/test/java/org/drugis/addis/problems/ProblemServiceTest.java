@@ -29,11 +29,11 @@ import org.drugis.addis.patavitask.PataviTask;
 import org.drugis.addis.patavitask.repository.PataviTaskRepository;
 import org.drugis.addis.problems.model.*;
 import org.drugis.addis.problems.service.ProblemService;
-import org.drugis.addis.problems.service.impl.SingleStudyPerformanceTableBuilder;
+import org.drugis.addis.problems.service.impl.NetworkPerformanceTableBuilder;
 import org.drugis.addis.problems.service.impl.ProblemServiceImpl;
+import org.drugis.addis.problems.service.impl.SingleStudyPerformanceTableBuilder;
 import org.drugis.addis.problems.service.model.AbstractMeasurementEntry;
 import org.drugis.addis.problems.service.model.ContinuousMeasurementEntry;
-import org.drugis.addis.problems.service.model.RelativePerformanceParameters;
 import org.drugis.addis.projects.Project;
 import org.drugis.addis.projects.repository.ProjectRepository;
 import org.drugis.addis.security.Account;
@@ -110,7 +110,7 @@ public class ProblemServiceTest {
   private AnalysisService analysisService;
 
   @Mock
-  private PerformanceTableEntryBuilder performanceTableEntryBuilder;
+  private NetworkPerformanceTableBuilder networkPerformanceTableBuilder;
 
   @Mock
   private UuidService uuidService;
@@ -644,7 +644,6 @@ public class ProblemServiceTest {
     Outcome outcome2 = new Outcome(22, projectId, "headache", direction, "", new SemanticVariable(URI.create("outUri2"), "headacheS"));
     List<Outcome> outcomes = Arrays.asList(outcome1, outcome2);
 
-
     BenefitRiskAnalysis analysis = new BenefitRiskAnalysis(analysisId, projectId, title, includedAlternatives);
     Integer nma1Id = 31;
     Integer nma2Id = 32;
@@ -708,6 +707,9 @@ public class ProblemServiceTest {
     when(pataviTaskRepository.findByUrls(taskIds)).thenReturn(pataviTasks);
     when(pataviTaskRepository.getResults(anyCollectionOf(PataviTask.class))).thenReturn(results);
     when(interventionRepository.query(projectId)).thenReturn(interventions);
+    List<AbstractMeasurementEntry> networkPerformance = Collections.singletonList(mock(AbstractMeasurementEntry.class));
+    when(networkPerformanceTableBuilder.build(outcomeInclusions,
+        any(), any(), any(), any(), any(), any(), any())).thenReturn(networkPerformance);
 
     BenefitRiskProblem problem = (BenefitRiskProblem) problemService.getProblem(projectId, analysisId, null);
 
@@ -718,18 +720,20 @@ public class ProblemServiceTest {
     verify(pataviTaskRepository).findByUrls(taskIds);
     verify(pataviTaskRepository).getResults(anyCollectionOf(PataviTask.class));
     verify(interventionRepository).query(projectId);
+    verify(uuidService, times(outcomeInclusions.size())).generate();
 
     assertEquals(3, problem.getAlternatives().size());
     assertEquals(2, problem.getCriteria().size());
-    assertEquals(2, problem.getPerformanceTable().size());
-    assertEquals("relative-normal", problem.getPerformanceTable().get(0).getPerformance().getType());
-    assertEquals("relative-cloglog-normal", problem.getPerformanceTable().get(1).getPerformance().getType());
-    List<List<Double>> expectedDataHam = Arrays.asList(Arrays.asList(0.0, 0.0, 0.0), Arrays.asList(0.0, 74.346, 1.9648), Arrays.asList(0.0, 1.9648, 74.837));
-    RelativePerformanceParameters parameters = (RelativePerformanceParameters) problem.getPerformanceTable().get(0).getPerformance().getParameters();
-    assertEquals(expectedDataHam, parameters.getRelative().getCov().getData());
-    List<List<Double>> expectedDataHeadache = Arrays.asList(Arrays.asList(0.0, 0.0, 0.0), Arrays.asList(0.0, 74.346, 1.9648), Arrays.asList(0.0, 1.9648, 74.837));
-    RelativePerformanceParameters otherParameters = (RelativePerformanceParameters) problem.getPerformanceTable().get(1).getPerformance().getParameters();
-    assertEquals(expectedDataHeadache, otherParameters.getRelative().getCov().getData());
+    assertEquals(1, problem.getPerformanceTable().size());
+  // move to performancetable builder test
+    //    assertEquals("relative-normal", problem.getPerformanceTable().get(0).getPerformance().getType());
+//    assertEquals("relative-cloglog-normal", problem.getPerformanceTable().get(1).getPerformance().getType());
+//    List<List<Double>> expectedDataHam = Arrays.asList(Arrays.asList(0.0, 0.0, 0.0), Arrays.asList(0.0, 74.346, 1.9648), Arrays.asList(0.0, 1.9648, 74.837));
+//    RelativePerformanceParameters parameters = (RelativePerformanceParameters) problem.getPerformanceTable().get(0).getPerformance().getParameters();
+//    assertEquals(expectedDataHam, parameters.getRelative().getCov().getData());
+//    List<List<Double>> expectedDataHeadache = Arrays.asList(Arrays.asList(0.0, 0.0, 0.0), Arrays.asList(0.0, 74.346, 1.9648), Arrays.asList(0.0, 1.9648, 74.837));
+//    RelativePerformanceParameters otherParameters = (RelativePerformanceParameters) problem.getPerformanceTable().get(1).getPerformance().getParameters();
+//    assertEquals(expectedDataHeadache, otherParameters.getRelative().getCov().getData());
   }
 
   @Test
