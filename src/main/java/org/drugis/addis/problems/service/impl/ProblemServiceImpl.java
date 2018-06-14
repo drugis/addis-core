@@ -1,11 +1,8 @@
 package org.drugis.addis.problems.service.impl;
 
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableSet;
-import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
 import org.drugis.addis.analyses.model.*;
@@ -62,7 +59,10 @@ public class ProblemServiceImpl implements ProblemService {
   private ProjectRepository projectRepository;
 
   @Inject
-  private PerformanceTableBuilder performanceTableBuilder;
+  private SingleStudyPerformanceTableBuilder singleStudyPerformanceTableBuilder;
+
+  @Inject
+  private NetworkPerformanceTableBuilder networkPerformanceTableBuilder;
 
   @Inject
   private AnalysisRepository analysisRepository;
@@ -100,8 +100,6 @@ public class ProblemServiceImpl implements ProblemService {
   @Inject
   private UuidService uuidService;
 
-  private ObjectMapper objectMapper = new ObjectMapper();
-
   @Override
   public AbstractProblem getProblem(Integer projectId, Integer analysisId, String path) throws ResourceDoesNotExistException, ProblemCreationException {
     Project project = projectRepository.get(projectId);
@@ -138,13 +136,10 @@ public class ProblemServiceImpl implements ProblemService {
             .collect(Collectors.toMap(i -> i.getId().toString(), Function.identity()));
 
     Map<String, DataSourceEntry> dataSourcesByOutcomeId = getDataSourcesByOutcomeId(criteriaWithBaseline);
-    PerformanceTableEntryBuilder entryBuilder = new PerformanceTableEntryBuilder(modelsById,
+    List<AbstractMeasurementEntry> performanceTable = networkPerformanceTableBuilder.build(usableNMAInclusionsByOutcomeId.values(),
+        modelsById,
         outcomesById, dataSourcesByOutcomeId, tasksByModelId, resultsByTaskUrl, includedInterventionsById,
         includedInterventionsByName);
-
-    List<AbstractMeasurementEntry> performanceTable = usableNMAInclusionsByOutcomeId.values().stream()
-                    .map(entryBuilder::build)
-                    .collect(Collectors.toList());
 
     Map<URI, SingleStudyBenefitRiskProblem> singleStudyProblems = analysis.getBenefitRiskStudyOutcomeInclusions().stream()
         .collect(Collectors.groupingBy(BenefitRiskStudyOutcomeInclusion::getStudyGraphUri))
@@ -168,7 +163,6 @@ public class ProblemServiceImpl implements ProblemService {
   private Map<String,DataSourceEntry> getDataSourcesByOutcomeId(Map<URI,CriterionEntry> criteriaWithBaseline) {
     return criteriaWithBaseline.values().stream()
         .collect(Collectors.toMap(CriterionEntry::getCriterion, criterionEntry -> criterionEntry.getDataSources().get(0)));
-
   }
 
   private Map<String, AlternativeEntry> getAlternativesById(Set<AbstractIntervention> includedInterventions) {
@@ -268,122 +262,6 @@ public class ProblemServiceImpl implements ProblemService {
     }
     return URI.create(hostPath + "/#/users/" + modelOwnerId + "/projects/" + modelProjectId +
             "/nma/" + modelAnalysisId + "/models/" + model.getId());
-  }
-
-  @SuppressWarnings("SuspiciousNameCombination")
-  private AbstractMeasurementEntry getPerformanceTableEntry(
-          Map<Integer, Model> modelMap,
-          Map<Integer, Outcome> outcomesById,
-          Map<Integer, DataSourceEntry> dataSourcesByOutcomeId, Map<Integer, PataviTask> tasksByModelId,
-          Map<URI, JsonNode> resultsByTaskUrl,
-          Map<String, AbstractIntervention> interventionsByKey,
-          Map<String, AbstractIntervention> includedInterventionsByName,
-          BenefitRiskNMAOutcomeInclusion outcomeInclusion) {
-    AbstractBaselineDistribution tempBaseline = null;
-    try {
-      tempBaseline = objectMapper.readValue(outcomeInclusion.getBaseline(), AbstractBaselineDistribution.class);
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
-    final AbstractBaselineDistribution baselineDistribution = tempBaseline;
-    assert baselineDistribution != null;
-
-    URI taskUrl = tasksByModelId.get(outcomeInclusion.getModelId()).getSelf();
-    JsonNode taskResults = resultsByTaskUrl.get(taskUrl);
-
-    Map<Integer, MultiVariateDistribution> distributionByInterventionId = null;
-    try {
-      distributionByInterventionId = objectMapper.readValue(
-              taskResults.get("multivariateSummary").toString(),
-              new TypeReference<Map<Integer, MultiVariateDistribution>>() {
-              });
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
-    assert distributionByInterventionId != null;
-
-    AbstractIntervention baselineIntervention = includedInterventionsByName.get(baselineDistribution.getName());
-    MultiVariateDistribution distribution = distributionByInterventionId.get(baselineIntervention.getId());
-
-    Map<String, Double> mu = distribution.getMu().entrySet().stream()
-            .collect(Collectors.toMap(
-                    e -> {
-                      String key = e.getKey();
-                      return key.substring(key.lastIndexOf('.') + 1);
-                    },
-                    Map.Entry::getValue));
-
-    // filter mu
-    mu = mu.entrySet().stream().filter(m -> interventionsByKey.containsKey(m.getKey()))
-            .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-
-    //add baseline to mu
-    String baselineInterventionId = baselineIntervention.getId().toString();
-    mu.put(baselineInterventionId, 0.0);
-
-    List<String> rowNames = new ArrayList<>(mu.keySet());
-
-    // place baseline at the front of the list
-    //noinspection ComparatorMethodParameterNotUsed
-    rowNames.sort((rn1, rn2) -> rn1.equals(includedInterventionsByName.get(baselineDistribution.getName()).getId().toString()) ? -1 : 0);
-
-    Map<Pair<String, String>, Double> dataMap = new HashMap<>();
-
-    final Map<String, Map<String, Double>> sigma = distribution.getSigma();
-    for (String interventionY : rowNames) {
-      rowNames
-              .stream()
-              .filter(interventionX ->
-                      !interventionX.equals(baselineInterventionId) && !interventionY.equals(baselineInterventionId))
-              .forEach(interventionX -> {
-                Double value = sigma
-                        .get("d." + baselineInterventionId + '.' + interventionX)
-                        .get("d." + baselineInterventionId + '.' + interventionY);
-                dataMap.put(new ImmutablePair<>(interventionX, interventionY), value);
-                dataMap.put(new ImmutablePair<>(interventionY, interventionX), value);
-              });
-    }
-
-    final List<List<Double>> data = new ArrayList<>(rowNames.size());
-
-    // setup data structure and init with null values
-    for (int i = 0; i < rowNames.size(); ++i) {
-      List<Double> row = new ArrayList<>(rowNames.size());
-      for (int j = 0; j < rowNames.size(); ++j) {
-        row.add(0.0);
-      }
-      data.add(row);
-    }
-
-    rowNames.forEach(rowName ->
-            rowNames
-                    .stream()
-                    .filter(colName -> !baselineInterventionId.equals(rowName) && !baselineInterventionId.equals(colName))
-                    .forEach(colName -> data
-                            .get(rowNames.indexOf(rowName))
-                            .set(rowNames.indexOf(colName), dataMap.get(ImmutablePair.of(rowName, colName))))
-    );
-
-    CovarianceMatrix cov = new CovarianceMatrix(rowNames, rowNames, data);
-    Relative relative = new Relative("dmnorm", mu, cov);
-    RelativePerformanceParameters parameters =
-            new RelativePerformanceParameters(outcomeInclusion.getBaseline(), relative);
-    String modelLinkType = modelMap.get(outcomeInclusion.getModelId()).getLink();
-
-    String modelPerformanceType;
-    if (Model.LINK_IDENTITY.equals(modelLinkType)) {
-      modelPerformanceType = "relative-normal";
-    } else if (Model.LIKELIHOOD_POISSON.equals(modelMap.get(outcomeInclusion.getModelId()).getLikelihood())) {
-      modelPerformanceType = "relative-survival";
-    } else {
-      modelPerformanceType = "relative-" + modelLinkType + "-normal";
-    }
-
-    RelativePerformance performance = new RelativePerformance(modelPerformanceType, parameters);
-
-    String criterion = outcomesById.get(outcomeInclusion.getOutcomeId()).getSemanticOutcomeUri().toString();
-    String dataSource = dataSourcesByOutcomeId.get(outcomeInclusion.getOutcomeId()).getId().toString();
-    return new RelativePerformanceEntry(criterion, dataSource, performance);
   }
 
   @Override
@@ -592,7 +470,7 @@ public class ProblemServiceImpl implements ProblemService {
       }
 
     }
-    List<AbstractMeasurementEntry> performanceTable = performanceTableBuilder.build(measurementsWithCoordinates);
+    List<AbstractMeasurementEntry> performanceTable = singleStudyPerformanceTableBuilder.build(measurementsWithCoordinates);
     return new SingleStudyBenefitRiskProblem(alternatives, criteria, performanceTable);
   }
 

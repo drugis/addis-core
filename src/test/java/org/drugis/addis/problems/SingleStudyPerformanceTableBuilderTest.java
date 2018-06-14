@@ -1,12 +1,11 @@
 package org.drugis.addis.problems;
 
-import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
 import org.apache.jena.ext.com.google.common.collect.ImmutableSet;
 import org.drugis.addis.problems.model.Arm;
 import org.drugis.addis.problems.model.MeasurementType;
 import org.drugis.addis.problems.model.Variable;
-import org.drugis.addis.problems.service.impl.PerformanceTableBuilder;
+import org.drugis.addis.problems.service.impl.SingleStudyPerformanceTableBuilder;
 import org.drugis.addis.problems.service.model.*;
 import org.drugis.addis.trialverse.model.trialdata.Measurement;
 import org.junit.Before;
@@ -25,10 +24,10 @@ import static org.junit.Assert.assertEquals;
 /**
  * Created by daan on 3/27/14.
  */
-public class PerformanceTableBuilderTest {
+public class SingleStudyPerformanceTableBuilderTest {
 
   @InjectMocks
-  private PerformanceTableBuilder builder;
+  private SingleStudyPerformanceTableBuilder builder;
 
   private String armName1 = "arm name 1";
   private String armName2 = "arm name 2";
@@ -54,7 +53,7 @@ public class PerformanceTableBuilderTest {
 
   @Before
   public void setUp() throws Exception {
-    builder = new PerformanceTableBuilder();
+    builder = new SingleStudyPerformanceTableBuilder();
     MockitoAnnotations.initMocks(this);
   }
 

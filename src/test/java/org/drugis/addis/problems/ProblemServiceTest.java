@@ -20,7 +20,6 @@ import org.drugis.addis.interventions.model.SimpleIntervention;
 import org.drugis.addis.interventions.model.SingleIntervention;
 import org.drugis.addis.interventions.repository.InterventionRepository;
 import org.drugis.addis.interventions.service.InterventionService;
-import org.drugis.addis.interventions.service.impl.InvalidTypeForDoseCheckException;
 import org.drugis.addis.models.Model;
 import org.drugis.addis.models.exceptions.InvalidModelException;
 import org.drugis.addis.models.service.ModelService;
@@ -28,10 +27,9 @@ import org.drugis.addis.outcomes.Outcome;
 import org.drugis.addis.outcomes.repository.OutcomeRepository;
 import org.drugis.addis.patavitask.PataviTask;
 import org.drugis.addis.patavitask.repository.PataviTaskRepository;
-import org.drugis.addis.patavitask.repository.UnexpectedNumberOfResultsException;
 import org.drugis.addis.problems.model.*;
 import org.drugis.addis.problems.service.ProblemService;
-import org.drugis.addis.problems.service.impl.PerformanceTableBuilder;
+import org.drugis.addis.problems.service.impl.SingleStudyPerformanceTableBuilder;
 import org.drugis.addis.problems.service.impl.ProblemServiceImpl;
 import org.drugis.addis.problems.service.model.AbstractMeasurementEntry;
 import org.drugis.addis.problems.service.model.ContinuousMeasurementEntry;
@@ -57,10 +55,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.sql.SQLException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -84,7 +80,7 @@ public class ProblemServiceTest {
   private CovariateRepository covariateRepository;
 
   @Mock
-  private PerformanceTableBuilder performanceTablebuilder;
+  private SingleStudyPerformanceTableBuilder singleStudyPerformanceTablebuilder;
 
   @Mock
   private InterventionRepository interventionRepository;
@@ -153,6 +149,7 @@ public class ProblemServiceTest {
   private final Set<AbstractIntervention> allProjectInterventions = Sets.newHashSet(fluoxIntervention, paroxIntervention, sertraIntervention);
   private final Integer ownerId = 37;
 
+  // empty constructor so exception from field initialisation can go somewhere
   public ProblemServiceTest() throws Exception {
   }
 
@@ -169,7 +166,7 @@ public class ProblemServiceTest {
   @After
   public void cleanUp() {
     verifyNoMoreInteractions(analysisRepository, projectRepository,
-            interventionRepository, trialverseService, triplestoreService, mappingService, modelService, performanceTablebuilder, uuidService);
+            interventionRepository, trialverseService, triplestoreService, mappingService, modelService, singleStudyPerformanceTablebuilder, uuidService);
   }
 
   @Test
@@ -273,7 +270,7 @@ public class ProblemServiceTest {
 
     AbstractMeasurementEntry measurementEntry = mock(ContinuousMeasurementEntry.class);
     List<AbstractMeasurementEntry> performanceTable = Collections.singletonList(measurementEntry);
-    when(performanceTablebuilder.build(any())).thenReturn(performanceTable);
+    when(singleStudyPerformanceTablebuilder.build(any())).thenReturn(performanceTable);
 
     when(mappingService.getVersionedUuid(project.getNamespaceUid())).thenReturn(versionedUuid);
     when(owner.getId()).thenReturn(ownerId);
@@ -292,7 +289,7 @@ public class ProblemServiceTest {
     verify(triplestoreService).findMatchingIncludedInterventions(includedInterventions, daanEtAlFluoxArm);
     verify(triplestoreService).findMatchingIncludedInterventions(includedInterventions, daanEtAlSertraArm);
     verify(triplestoreService).findMatchingIncludedInterventions(includedInterventions, unmatchedDaanEtAlParoxArm);
-    verify(performanceTablebuilder).build(any());
+    verify(singleStudyPerformanceTablebuilder).build(any());
     verify(mappingService).getVersionedUuid(project.getNamespaceUid());
     verify(interventionRepository).query(project.getId());
 
@@ -305,7 +302,7 @@ public class ProblemServiceTest {
     Triple<Measurement, Integer, String> triple4 = Triple.of(daanEtAlSertraMeasurement2,
         daanEtAlSertraArm.getMatchedProjectInterventionIds().iterator().next(), dataSourceUuid1);
     Set<Triple<Measurement, Integer, String>> measurementsWithCoordinates = ImmutableSet.of(triple1, triple2, triple3, triple4);
-    verify(performanceTablebuilder).build(measurementsWithCoordinates);
+    verify(singleStudyPerformanceTablebuilder).build(measurementsWithCoordinates);
 
     assertNotNull(actualProblem);
     assertNotNull(actualProblem.getAlternatives());

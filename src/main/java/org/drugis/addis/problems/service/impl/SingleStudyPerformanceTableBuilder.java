@@ -1,6 +1,5 @@
 package org.drugis.addis.problems.service.impl;
 
-import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
 import org.drugis.addis.problems.service.ProblemService;
 import org.drugis.addis.problems.service.model.*;
@@ -16,7 +15,7 @@ import java.util.Set;
  * Created by daan on 3/27/14.
  */
 @Service
-public class PerformanceTableBuilder {
+public class SingleStudyPerformanceTableBuilder {
 
   public List<AbstractMeasurementEntry> build(Set<Triple<Measurement, Integer, String>> measurementDrugInstancePairs) {
     ArrayList<AbstractMeasurementEntry> performanceTable = new ArrayList<>();
