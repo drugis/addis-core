@@ -156,7 +156,7 @@
     jquery ">=3.0.0"
     what-input "^4.1.3"
 
-"@bower_components/gemtc-web@drugis/gemtc-web#master":
+"@bower_components/gemtc-web@drugis/gemtc-web#develop":
   version "0.8.0"
   resolved "https://codeload.github.com/drugis/gemtc-web/tar.gz/e704312d094b099f33f4aa2e36ce49e56ee09b3c"
   dependencies:
@@ -221,9 +221,9 @@
   version "4.2.1"
   resolved "https://codeload.github.com/lodash/lodash/tar.gz/1cd9dc49a93d2cfe9927db1a92d2cf7c839bf263"
 
-"@bower_components/mcda-web@drugis/mcda-elicitation-web#master":
+"@bower_components/mcda-web@drugis/mcda-elicitation-web#develop":
   version "0.15.0"
-  resolved "https://codeload.github.com/drugis/mcda-elicitation-web/tar.gz/048fcb2193ad652d7d4da90b4c00166f3439ccc7"
+  resolved "https://codeload.github.com/drugis/mcda-elicitation-web/tar.gz/c9bacb951c2ec0588e689f77ceebda3c3af4c32a"
   dependencies:
     "@bower_components/KaTeX" Khan/KaTeX#~0.6.0
     "@bower_components/MathJax" mathjax/MathJax#2.4.0
