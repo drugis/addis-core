@@ -3,7 +3,10 @@ package org.drugis.addis.analyses;
 import org.drugis.addis.TestUtils;
 import org.drugis.addis.analyses.controller.AnalysisUpdateCommand;
 import org.drugis.addis.analyses.model.*;
-import org.drugis.addis.analyses.repository.*;
+import org.drugis.addis.analyses.repository.AnalysisRepository;
+import org.drugis.addis.analyses.repository.BenefitRiskAnalysisRepository;
+import org.drugis.addis.analyses.repository.CriteriaRepository;
+import org.drugis.addis.analyses.repository.NetworkMetaAnalysisRepository;
 import org.drugis.addis.analyses.service.AnalysisService;
 import org.drugis.addis.config.TestConfig;
 import org.drugis.addis.outcomes.Outcome;
@@ -77,7 +80,6 @@ public class AnalysisControllerTest {
   private URI uri = URI.create("uri");
   private Integer projectId = 1;
   private Integer analysisId = 1;
-  private Integer subProblemId = 100;
 
   @Before
   public void setUp() {
@@ -134,23 +136,6 @@ public class AnalysisControllerTest {
 
   }
 
-//  @Test
-//  public void testCreateSingleStudyBenefitRiskAnalysis() throws Exception {
-//    SingleStudyBenefitRiskAnalysis analysis = new SingleStudyBenefitRiskAnalysis(1, 1, "name", Collections.emptyList(), Collections.emptyList());
-//    AnalysisCommand analysisCommand = new AnalysisCommand(1, "name", AnalysisType.SINGLE_STUDY_BENEFIT_RISK_LABEL);
-//    when(analysisService.createSingleStudyBenefitRiskAnalysis(gert, analysisCommand)).thenReturn(analysis);
-//    String body = TestUtils.createJson(analysisCommand);
-//    mockMvc.perform(post("/projects/1/analyses")
-//            .content(body)
-//            .principal(user)
-//            .contentType(WebConstants.getApplicationJsonUtf8Value()))
-//            .andExpect(status().isCreated())
-//            .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()))
-//            .andExpect(jsonPath("$.id", notNullValue()));
-//    verify(accountRepository).findAccountByUsername("gert");
-//    verify(analysisService).createSingleStudyBenefitRiskAnalysis(gert, analysisCommand);
-//  }
-
   @Test
   public void testCreateMetaBenefitRiskAnalysis() throws Exception {
     BenefitRiskAnalysis analysis = new BenefitRiskAnalysis(1, 1, "title", Collections.emptySet());
@@ -204,41 +189,6 @@ public class AnalysisControllerTest {
             .andExpect(jsonPath("$.excludedArms", hasSize(0)));
     verify(analysisRepository).get(analysis.getId());
   }
-
-//  @Test
-//  public void testUpdateAnalysisWithoutProblem() throws Exception {
-//    Integer direction = 1;
-//    List<Outcome> selectedOutcomes = Arrays.asList(
-//            new Outcome(1, projectId, "name", direction, "motivation", new SemanticVariable(uri, "label")),
-//            new Outcome(2, projectId, "name", direction, "motivation", new SemanticVariable(uri, "label")),
-//            new Outcome(3, projectId, "name", direction, "motivation", new SemanticVariable(uri, "label"))
-//    );
-//    SimpleIntervention intervention1 = new SimpleIntervention(1, projectId, "name", "motivation", new SemanticInterventionUriAndName(URI.create("uri"), "label"));
-//    SimpleIntervention intervention2 = new SimpleIntervention(2, projectId, "name", "motivation", new SemanticInterventionUriAndName(URI.create("uri"), "label"));
-//    List<InterventionInclusion> interventionInclusions = Arrays.asList(
-//            new InterventionInclusion(analysisId, intervention1.getId()),
-//            new InterventionInclusion(analysisId, intervention2.getId())
-//    );
-//    SingleStudyBenefitRiskAnalysis oldAnalysis = new SingleStudyBenefitRiskAnalysis(1, projectId, "name", selectedOutcomes, interventionInclusions);
-//    ObjectMapper objectMapper = new ObjectMapper();
-//    SingleStudyBenefitRiskAnalysis newAnalysis = objectMapper.convertValue(objectMapper.readTree(exampleUpdateSingleStudyBenefitRiskRequestWithoutProblem()), SingleStudyBenefitRiskAnalysis.class);
-//    AnalysisUpdateCommand newAnalysisCommand = new AnalysisUpdateCommand(newAnalysis, null);
-//    String jsonCommand = TestUtils.createJson(newAnalysisCommand);
-//    when(analysisRepository.get(analysisId)).thenReturn(oldAnalysis);
-//    when(singleStudyBenefitRiskAnalysisRepository.update(gert, newAnalysis)).thenReturn(newAnalysis);
-//    mockMvc.perform(post("/projects/{projectId}/analyses/{analysisId}", projectId, analysisId)
-//            .content(jsonCommand)
-//            .principal(user)
-//            .contentType(WebConstants.getApplicationJsonUtf8Value()))
-//            .andExpect(status().isOk())
-//            .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()))
-//            .andExpect(jsonPath("$.selectedOutcomes", hasSize(3)))
-//            .andExpect(jsonPath("$.interventionInclusions", hasSize(2)));
-//    verify(projectService).checkProjectExistsAndModifiable(gert, projectId);
-//    verify(analysisRepository).get(analysisId);
-//    verify(accountRepository).findAccountByUsername("gert");
-//    verify(singleStudyBenefitRiskAnalysisRepository).update(gert, newAnalysis);
-//  }
 
   @Test
   public void testUpdateNetworkMetaAnalysis() throws Exception {

@@ -14,10 +14,8 @@ import org.drugis.addis.problems.service.model.*;
 
 import java.io.IOException;
 import java.net.URI;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class PerformanceTableEntryBuilder {
@@ -26,126 +24,173 @@ public class PerformanceTableEntryBuilder {
   private final Map<String, DataSourceEntry> dataSourcesByOutcomeId;
   private final Map<Integer, PataviTask> tasksByModelId;
   private final Map<URI, JsonNode> resultsByTaskUrl;
-  private final Map<String, AbstractIntervention> includedInterventionsById;
   private final Map<String, AbstractIntervention> includedInterventionsByName;
   private ObjectMapper objectMapper = new ObjectMapper();
 
-  public PerformanceTableEntryBuilder(Map<Integer,Model> modelsById, Map<Integer,Outcome> outcomesById, Map<String,DataSourceEntry> dataSourcesByOutcomeId, Map<Integer,PataviTask> tasksByModelId, Map<URI,JsonNode> resultsByTaskUrl, Map<String,AbstractIntervention> includedInterventionsById, Map<String,AbstractIntervention> includedInterventionsByName) {
+  public PerformanceTableEntryBuilder(Map<Integer, Model> modelsById, Map<Integer, Outcome> outcomesById, Map<String, DataSourceEntry> dataSourcesByOutcomeId, Map<Integer, PataviTask> tasksByModelId, Map<URI, JsonNode> resultsByTaskUrl, Map<String, AbstractIntervention> includedInterventionsByName) {
     this.modelsById = modelsById;
     this.outcomesById = outcomesById;
     this.dataSourcesByOutcomeId = dataSourcesByOutcomeId;
     this.tasksByModelId = tasksByModelId;
     this.resultsByTaskUrl = resultsByTaskUrl;
-    this.includedInterventionsById = includedInterventionsById;
     this.includedInterventionsByName = includedInterventionsByName;
   }
 
-  @SuppressWarnings("SuspiciousNameCombination")
   public AbstractMeasurementEntry build(BenefitRiskNMAOutcomeInclusion outcomeInclusion) {
-    AbstractBaselineDistribution tempBaseline = null;
-    try {
-      tempBaseline = objectMapper.readValue(outcomeInclusion.getBaseline(), AbstractBaselineDistribution.class);
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
-    final AbstractBaselineDistribution baselineDistribution = tempBaseline;
-    assert baselineDistribution != null;
+    String baselineInterventionId = getBaselineInterventionId(outcomeInclusion);
 
-    URI taskUrl = tasksByModelId.get(outcomeInclusion.getModelId()).getSelf();
-    JsonNode taskResults = resultsByTaskUrl.get(taskUrl);
+    MultiVariateDistribution baselineResults = getBaselineResults(outcomeInclusion, baselineInterventionId);
+    Map<String, Double> mu = getMu(baselineInterventionId, baselineResults);
 
-    Map<Integer, MultiVariateDistribution> distributionByInterventionId = null;
-    try {
-      distributionByInterventionId = objectMapper.readValue(
-          taskResults.get("multivariateSummary").toString(),
-          new TypeReference<Map<Integer, MultiVariateDistribution>>() {
-          });
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
-    assert distributionByInterventionId != null;
+    List<String> orderedInterventionIds = getOrderedInterventionIds(baselineInterventionId, mu);
 
-    AbstractIntervention baselineIntervention = includedInterventionsByName.get(baselineDistribution.getName());
-    MultiVariateDistribution distribution = distributionByInterventionId.get(baselineIntervention.getId());
+    final List<List<Double>> data = getData(orderedInterventionIds, baselineInterventionId, baselineResults);
 
+    RelativePerformance performance = getRelativePerformance(outcomeInclusion, mu, orderedInterventionIds, data);
+    String criterion = outcomesById.get(outcomeInclusion.getOutcomeId()).getSemanticOutcomeUri().toString();
+    String dataSource = dataSourcesByOutcomeId.get(criterion).getId();
+
+    return new RelativePerformanceEntry(criterion, dataSource, performance);
+  }
+
+  private String getBaselineInterventionId(BenefitRiskNMAOutcomeInclusion outcomeInclusion) {
+    AbstractIntervention baselineIntervention = getBaselineIntervention(outcomeInclusion);
+    return baselineIntervention.getId().toString();
+  }
+
+  private AbstractIntervention getBaselineIntervention(BenefitRiskNMAOutcomeInclusion outcomeInclusion) {
+    final AbstractBaselineDistribution baselineDistribution = getBaselineDistribution(outcomeInclusion);
+    return includedInterventionsByName.get(baselineDistribution.getName());
+  }
+
+  private List<String> getOrderedInterventionIds(String baselineInterventionId, Map<String, Double> mu) {
+    List<String> interventionIds = new ArrayList<>(mu.keySet());
+    Integer baselineIndex = interventionIds.indexOf(baselineInterventionId);
+    // place baseline at the front of the list
+    Collections.swap(interventionIds, 0, baselineIndex);
+    return interventionIds;
+  }
+
+  private RelativePerformance getRelativePerformance(BenefitRiskNMAOutcomeInclusion outcomeInclusion,
+                                                     Map<String, Double> mu, List<String> interventionIds,
+                                                     List<List<Double>> data) {
+    CovarianceMatrix cov = new CovarianceMatrix(interventionIds, interventionIds, data);
+    Relative relative = new Relative("dmnorm", mu, cov);
+    RelativePerformanceParameters parameters = new RelativePerformanceParameters(outcomeInclusion.getBaseline(), relative);
+    String modelLinkType = modelsById.get(outcomeInclusion.getModelId()).getLink();
+
+    return new RelativePerformance(getModelPerformanceType(modelLinkType), parameters);
+  }
+
+  private Map<String, Double> getMu(String baselineInterventionId, MultiVariateDistribution distribution) {
     Map<String, Double> mu = distribution.getMu().entrySet().stream()
-        .collect(Collectors.toMap(
-            e -> {
-              String key = e.getKey();
-              return key.substring(key.lastIndexOf('.') + 1);
-            },
-            Map.Entry::getValue));
+        .collect(Collectors.toMap(getTargetIntervention(), Map.Entry::getValue));
 
-    // filter mu
-    mu = mu.entrySet().stream().filter(m -> includedInterventionsById.containsKey(m.getKey()))
+    mu = mu.entrySet().stream().filter(m -> isIncluded(m.getKey()))
         .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
     //add baseline to mu
-    String baselineInterventionId = baselineIntervention.getId().toString();
     mu.put(baselineInterventionId, 0.0);
+    return mu;
+  }
 
-    List<String> rowNames = new ArrayList<>(mu.keySet());
+  private Function<Map.Entry<String, Double>, String> getTargetIntervention() {
+    return e -> {
+      String key = e.getKey();
+      return key.substring(key.lastIndexOf('.') + 1);
+    };
+  }
 
-    // place baseline at the front of the list
-    //noinspection ComparatorMethodParameterNotUsed
-    rowNames.sort((rn1, rn2) -> rn1.equals(includedInterventionsByName.get(baselineDistribution.getName()).getId().toString()) ? -1 : 0);
+  private List<List<Double>> getData(List<String> interventionIds, String baselineInterventionId, MultiVariateDistribution distribution) {
+    Map<Pair<String, String>, Double> effectsByInterventionId = getEffectsByInterventionId(distribution, baselineInterventionId, interventionIds);
 
-    Map<Pair<String, String>, Double> dataMap = new HashMap<>();
+    List<List<Double>> data = new ArrayList<>(interventionIds.size());
 
-    final Map<String, Map<String, Double>> sigma = distribution.getSigma();
-    for (String interventionY : rowNames) {
-      rowNames
-          .stream()
-          .filter(interventionX ->
-              !interventionX.equals(baselineInterventionId) && !interventionY.equals(baselineInterventionId))
-          .forEach(interventionX -> {
-            Double value = sigma
-                .get("d." + baselineInterventionId + '.' + interventionX)
-                .get("d." + baselineInterventionId + '.' + interventionY);
-            dataMap.put(new ImmutablePair<>(interventionX, interventionY), value);
-            dataMap.put(new ImmutablePair<>(interventionY, interventionX), value);
-          });
-    }
-
-    final List<List<Double>> data = new ArrayList<>(rowNames.size());
-
-    // setup data structure and init with null values
-    for (int i = 0; i < rowNames.size(); ++i) {
-      List<Double> row = new ArrayList<>(rowNames.size());
-      for (int j = 0; j < rowNames.size(); ++j) {
+    // setup data structure and init with zeroes
+    for (int i = 0; i < interventionIds.size(); ++i) {
+      List<Double> row = new ArrayList<>(interventionIds.size());
+      for (int j = 0; j < interventionIds.size(); ++j) {
         row.add(0.0);
       }
       data.add(row);
     }
 
-    rowNames.forEach(rowName ->
-        rowNames
+    interventionIds.forEach(rowName ->
+        interventionIds
             .stream()
             .filter(colName -> !baselineInterventionId.equals(rowName) && !baselineInterventionId.equals(colName))
             .forEach(colName -> data
-                .get(rowNames.indexOf(rowName))
-                .set(rowNames.indexOf(colName), dataMap.get(ImmutablePair.of(rowName, colName))))
+                .get(interventionIds.indexOf(rowName))
+                .set(interventionIds.indexOf(colName), effectsByInterventionId.get(ImmutablePair.of(rowName, colName))))
     );
+    return data;
+  }
 
-    CovarianceMatrix cov = new CovarianceMatrix(rowNames, rowNames, data);
-    Relative relative = new Relative("dmnorm", mu, cov);
-    RelativePerformanceParameters parameters =
-        new RelativePerformanceParameters(outcomeInclusion.getBaseline(), relative);
-    String modelLinkType = modelsById.get(outcomeInclusion.getModelId()).getLink();
+  private boolean isIncluded(String interventionId) {
+    return includedInterventionsByName.entrySet().stream().anyMatch(entry -> entry.getValue().getId().toString().equals(interventionId));
+  }
 
+  private Map<Pair<String, String>, Double> getEffectsByInterventionId(MultiVariateDistribution distribution, String baselineInterventionId, List<String> interventionIds) {
+    Map<Pair<String, String>, Double> dataMap = new HashMap<>();
+
+    final Map<String, Map<String, Double>> sigma = distribution.getSigma();
+    for (String rowName : interventionIds) {
+      interventionIds
+          .stream()
+          .filter(columnName ->
+              !columnName.equals(baselineInterventionId) && !rowName.equals(baselineInterventionId))
+          .forEach(columnName -> {
+            Double value = getSigmaValue(baselineInterventionId, sigma, rowName, columnName);
+            dataMap.put(new ImmutablePair<>(columnName, rowName), value);
+            dataMap.put(new ImmutablePair<>(rowName, columnName), value);
+          });
+    }
+    return dataMap;
+  }
+
+  private Double getSigmaValue(String baselineInterventionId, Map<String, Map<String, Double>> sigma, String interventionY, String interventionX) {
+    return sigma
+        .get("d." + baselineInterventionId + '.' + interventionX)
+        .get("d." + baselineInterventionId + '.' + interventionY);
+  }
+
+
+  private MultiVariateDistribution getBaselineResults(BenefitRiskNMAOutcomeInclusion outcomeInclusion, String baselineInterventionId) {
+    URI taskUrl = tasksByModelId.get(outcomeInclusion.getModelId()).getSelf();
+    JsonNode taskResults = resultsByTaskUrl.get(taskUrl);
+
+    Map<String, MultiVariateDistribution> distributionByInterventionId = null;
+    try {
+      distributionByInterventionId = objectMapper.readValue(
+          taskResults.get("multivariateSummary").toString(),
+          new TypeReference<Map<String, MultiVariateDistribution>>() {
+          });
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+    assert distributionByInterventionId != null;
+    return distributionByInterventionId.get(baselineInterventionId);
+  }
+
+  private AbstractBaselineDistribution getBaselineDistribution(BenefitRiskNMAOutcomeInclusion outcomeInclusion) {
+    AbstractBaselineDistribution baselineDistribution = null;
+    try {
+      baselineDistribution = objectMapper.readValue(outcomeInclusion.getBaseline(), AbstractBaselineDistribution.class);
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+    return baselineDistribution;
+  }
+
+  private String getModelPerformanceType(String modelLinkType) {
     String modelPerformanceType;
     if (Model.LINK_IDENTITY.equals(modelLinkType)) {
       modelPerformanceType = "relative-normal";
-    } else if (Model.LIKELIHOOD_POISSON.equals(modelsById.get(outcomeInclusion.getModelId()).getLikelihood())) {
+    } else if (Model.LIKELIHOOD_POISSON.equals(modelLinkType)) {
       modelPerformanceType = "relative-survival";
     } else {
       modelPerformanceType = "relative-" + modelLinkType + "-normal";
     }
-
-    RelativePerformance performance = new RelativePerformance(modelPerformanceType, parameters);
-
-    String criterion = outcomesById.get(outcomeInclusion.getOutcomeId()).getSemanticOutcomeUri().toString();
-    String dataSource = dataSourcesByOutcomeId.get(criterion).getId();
-    return new RelativePerformanceEntry(criterion, dataSource, performance);
+    return modelPerformanceType;
   }
 }

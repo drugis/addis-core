@@ -15,24 +15,19 @@ import org.drugis.addis.exception.ProblemCreationException;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.interventions.model.AbstractIntervention;
 import org.drugis.addis.interventions.repository.InterventionRepository;
-import org.drugis.addis.interventions.service.impl.InvalidTypeForDoseCheckException;
 import org.drugis.addis.outcomes.Outcome;
 import org.drugis.addis.outcomes.repository.OutcomeRepository;
-import org.drugis.addis.patavitask.repository.UnexpectedNumberOfResultsException;
 import org.drugis.addis.problems.model.AbstractProblem;
 import org.drugis.addis.problems.service.ProblemService;
 import org.drugis.addis.projects.service.ProjectService;
 import org.drugis.addis.scenarios.repository.ScenarioRepository;
 import org.drugis.addis.security.Account;
 import org.drugis.addis.subProblems.service.SubProblemService;
-import org.drugis.addis.trialverse.service.impl.ReadValueException;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
 import java.io.IOException;
-import java.net.URISyntaxException;
-import java.sql.SQLException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -83,7 +78,7 @@ public class BenefitRiskAnalysisServiceImpl implements BenefitRiskAnalysisServic
     }
     projectService.checkProjectExistsAndModifiable(user, analysis.getProjectId());
     if (analysis.isFinalized()) {
-      AbstractProblem problem = problemService.getProblem(projectId, analysis.getId(), path);
+      AbstractProblem problem = problemService.getProblem(projectId, analysis.getId());
       String problemString = objectMapper.writeValueAsString(problem);
       analysis.setProblem(problemString);
       subProblemService.createMCDADefaults(projectId, analysis.getId(), scenarioState);

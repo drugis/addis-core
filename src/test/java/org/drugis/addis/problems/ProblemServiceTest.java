@@ -28,6 +28,7 @@ import org.drugis.addis.outcomes.repository.OutcomeRepository;
 import org.drugis.addis.patavitask.PataviTask;
 import org.drugis.addis.patavitask.repository.PataviTaskRepository;
 import org.drugis.addis.problems.model.*;
+import org.drugis.addis.problems.service.HostURLCache;
 import org.drugis.addis.problems.service.ProblemService;
 import org.drugis.addis.problems.service.impl.NetworkPerformanceTableBuilder;
 import org.drugis.addis.problems.service.impl.ProblemServiceImpl;
@@ -115,6 +116,9 @@ public class ProblemServiceTest {
   @Mock
   private UuidService uuidService;
 
+  @Mock
+  private HostURLCache hostURLCache;
+
   @InjectMocks
   private ProblemService problemService;
 
@@ -161,6 +165,7 @@ public class ProblemServiceTest {
     when(projectRepository.get(projectId)).thenReturn(project);
     when(interventionRepository.query(project.getId())).thenReturn(allProjectInterventions);
     when(interventionService.resolveCombinations(anyListOf(CombinationIntervention.class))).thenReturn(Collections.emptyList());
+    when(hostURLCache.get()).thenReturn("https://host.com");
   }
 
   @After
@@ -178,6 +183,7 @@ public class ProblemServiceTest {
     URI secondOutcomeUri = URI.create("http://secondSemantic");
     SemanticVariable secondSemanticOutcome = new SemanticVariable(secondOutcomeUri, "second semantic outcome");
     Outcome secondOutcome = new Outcome(-303, projectId, "second outcome", direction, "very", secondSemanticOutcome);
+    List<Outcome> outcomes = Arrays.asList(outcome, secondOutcome);
 
     URI defaultMeasurementMoment = URI.create("defaultMeasurementMoment");
 
@@ -189,18 +195,18 @@ public class ProblemServiceTest {
     BenefitRiskAnalysis singleStudyAnalysis = new BenefitRiskAnalysis(analysisId, projectId, "single study analysis", interventionInclusions);
     when(projectRepository.get(projectId)).thenReturn(project);
     when(analysisRepository.get(analysisId)).thenReturn(singleStudyAnalysis);
-    when(outcomeRepository.get(projectId, Sets.newHashSet(outcome.getId(), secondOutcome.getId()))).thenReturn(Arrays.asList(outcome, secondOutcome));
+    when(outcomeRepository.get(projectId, Sets.newHashSet(outcome.getId(), secondOutcome.getId()))).thenReturn(outcomes);
 
     URI daanEtAlUri = URI.create("http://thiscomputer.com/graphs/DaanEtAlUri");
     URI daanEtAlFluoxInstance = URI.create("daanEtAlFluoxInstance");
     URI daanEtAlFluoxArmUri = URI.create("daanEtAlFluoxArm");
     int daanEtAlFluoxSampleSize = 20;
     int daanEtAlFluoxRate = 30;
-    URI variableUri = outcome.getSemanticOutcomeUri();
+    URI firstOutcomeUri = outcome.getSemanticOutcomeUri();
     URI variableConceptUri = outcome.getSemanticOutcomeUri();
-    Measurement daanEtAlFluoxMeasurement1 = new Measurement(daanEtAlUri, variableUri, variableConceptUri, null, daanEtAlFluoxArmUri,
+    Measurement daanEtAlFluoxMeasurement1 = new Measurement(daanEtAlUri, firstOutcomeUri, variableConceptUri, null, daanEtAlFluoxArmUri,
             DICHOTOMOUS_TYPE_URI, daanEtAlFluoxSampleSize, daanEtAlFluoxRate, null, null, null, null);
-    Measurement daanEtAlFluoxMeasurement2 = new Measurement(daanEtAlUri, secondOutcomeUri, variableConceptUri, null, daanEtAlFluoxArmUri,
+    Measurement daanEtAlFluoxMeasurement2 = new Measurement(daanEtAlUri, secondOutcomeUri, secondSemanticOutcome.getUri(), null, daanEtAlFluoxArmUri,
             DICHOTOMOUS_TYPE_URI, daanEtAlFluoxSampleSize, daanEtAlFluoxRate, null, null, null, null);
     AbstractSemanticIntervention simpleSemanticFluoxIntervention = new SimpleSemanticIntervention(daanEtAlFluoxInstance, fluoxConceptUri);
 
@@ -213,9 +219,9 @@ public class ProblemServiceTest {
     URI daanEtAlSertraArmUri = URI.create("daanEtAlSertraArm");
     int daanEtAlSertraSampleSize = 40;
     int daanEtAlSertraRate = 5;
-    Measurement daanEtAlSertraMeasurement1 = new Measurement(daanEtAlUri, variableUri, variableConceptUri, null, daanEtAlSertraArmUri,
+    Measurement daanEtAlSertraMeasurement1 = new Measurement(daanEtAlUri, firstOutcomeUri, variableConceptUri, null, daanEtAlSertraArmUri,
             DICHOTOMOUS_TYPE_URI, daanEtAlSertraSampleSize, daanEtAlSertraRate, null, null, null, null);
-    Measurement daanEtAlSertraMeasurement2 = new Measurement(daanEtAlUri, secondOutcomeUri, variableConceptUri, null, daanEtAlSertraArmUri,
+    Measurement daanEtAlSertraMeasurement2 = new Measurement(daanEtAlUri, secondOutcomeUri, secondSemanticOutcome.getUri(), null, daanEtAlSertraArmUri,
             DICHOTOMOUS_TYPE_URI, daanEtAlSertraSampleSize, daanEtAlSertraRate, null, null, null, null);
     AbstractSemanticIntervention simpleSemanticSertraIntervention = new SimpleSemanticIntervention(daanEtAlSertraInstance, sertraConceptUri);
 
@@ -228,7 +234,7 @@ public class ProblemServiceTest {
     URI daanEtAlParoxArmUri = URI.create("daanEtAlParoxArm");
     int daanEtAlParoxSampleSize = 40;
     int daanEtAlParoxRate = 5;
-    Measurement daanEtAlParoxMeasurement1 = new Measurement(daanEtAlUri, variableUri, variableConceptUri, null, daanEtAlParoxArmUri,
+    Measurement daanEtAlParoxMeasurement1 = new Measurement(daanEtAlUri, firstOutcomeUri, variableConceptUri, null, daanEtAlParoxArmUri,
             DICHOTOMOUS_TYPE_URI, daanEtAlParoxSampleSize, daanEtAlParoxRate, null, null, null, null);
     Measurement daanEtAlParoxMeasurement2 = new Measurement(daanEtAlUri, secondOutcomeUri, variableConceptUri, null, daanEtAlParoxArmUri,
             DICHOTOMOUS_TYPE_URI, daanEtAlParoxSampleSize, daanEtAlParoxRate, null, null, null, null);
@@ -277,10 +283,10 @@ public class ProblemServiceTest {
     when(mappingService.getVersionedUuidAndOwner(project.getNamespaceUid())).thenReturn(new TriplestoreUuidAndOwner("someversion", 37));
 
     // --------------- execute ---------------- //
-    BenefitRiskProblem actualProblem = (BenefitRiskProblem) problemService.getProblem(projectId, analysisId, null);
+    BenefitRiskProblem actualProblem = (BenefitRiskProblem) problemService.getProblem(projectId, analysisId);
     // --------------- execute ---------------- //
 
-    verify(uuidService).generate();
+    verify(uuidService, times(interventionInclusions.size())).generate();
     verify(mappingService, times(4)).getVersionedUuidAndOwner(project.getNamespaceUid());
     verify(modelService).get(Collections.emptySet());
     verify(projectRepository).get(projectId);
@@ -296,11 +302,11 @@ public class ProblemServiceTest {
     Triple<Measurement, Integer, String> triple1 = Triple.of(daanEtAlFluoxMeasurement1,
         daanEtAlFluoxArm.getMatchedProjectInterventionIds().iterator().next(), dataSourceUuid1);
     Triple<Measurement, Integer, String> triple2 = Triple.of(daanEtAlFluoxMeasurement2,
-        daanEtAlFluoxArm.getMatchedProjectInterventionIds().iterator().next(), dataSourceUuid1);
+        daanEtAlFluoxArm.getMatchedProjectInterventionIds().iterator().next(), dataSourceUuid2);
     Triple<Measurement, Integer, String> triple3 = Triple.of(daanEtAlSertraMeasurement1,
         daanEtAlSertraArm.getMatchedProjectInterventionIds().iterator().next(), dataSourceUuid1);
     Triple<Measurement, Integer, String> triple4 = Triple.of(daanEtAlSertraMeasurement2,
-        daanEtAlSertraArm.getMatchedProjectInterventionIds().iterator().next(), dataSourceUuid1);
+        daanEtAlSertraArm.getMatchedProjectInterventionIds().iterator().next(), dataSourceUuid2);
     Set<Triple<Measurement, Integer, String>> measurementsWithCoordinates = ImmutableSet.of(triple1, triple2, triple3, triple4);
     verify(singleStudyPerformanceTablebuilder).build(measurementsWithCoordinates);
 
@@ -309,7 +315,7 @@ public class ProblemServiceTest {
     assertNotNull(actualProblem.getCriteria());
 
     Map<URI, CriterionEntry> actualCriteria = actualProblem.getCriteria();
-    assertTrue(actualCriteria.keySet().contains(variableUri));
+    assertTrue(actualCriteria.keySet().contains(firstOutcomeUri));
     assertTrue(actualCriteria.keySet().contains(semanticOutcome.getUri()));
   }
 
@@ -351,7 +357,7 @@ public class ProblemServiceTest {
 
 
     // --------------- execute ---------------- //
-    final AbstractProblem problem = problemService.getProblem(project.getId(), networkMetaAnalysis.getId(), null);
+    final AbstractProblem problem = problemService.getProblem(project.getId(), networkMetaAnalysis.getId());
     // --------------- execute ---------------- //
 
 
@@ -411,7 +417,7 @@ public class ProblemServiceTest {
     when(analysisService.buildEvidenceTable(project.getId(), networkMetaAnalysis.getId())).thenReturn(trialDataStudies);
 
     // --------------- execute ---------------- //
-    final AbstractProblem problem = problemService.getProblem(project.getId(), networkMetaAnalysis.getId(), null);
+    final AbstractProblem problem = problemService.getProblem(project.getId(), networkMetaAnalysis.getId());
     // --------------- execute ---------------- //
 
 
@@ -460,7 +466,7 @@ public class ProblemServiceTest {
     when(analysisService.buildEvidenceTable(project.getId(), networkMetaAnalysis.getId())).thenReturn(trialDataStudies);
 
     // --------------- execute ---------------- //
-    final AbstractProblem problem = problemService.getProblem(project.getId(), networkMetaAnalysis.getId(), null);
+    final AbstractProblem problem = problemService.getProblem(project.getId(), networkMetaAnalysis.getId());
     // --------------- execute ---------------- //
 
     assertNotNull(problem);
@@ -708,10 +714,10 @@ public class ProblemServiceTest {
     when(pataviTaskRepository.getResults(anyCollectionOf(PataviTask.class))).thenReturn(results);
     when(interventionRepository.query(projectId)).thenReturn(interventions);
     List<AbstractMeasurementEntry> networkPerformance = Collections.singletonList(mock(AbstractMeasurementEntry.class));
-    when(networkPerformanceTableBuilder.build(outcomeInclusions,
-        any(), any(), any(), any(), any(), any(), any())).thenReturn(networkPerformance);
 
-    BenefitRiskProblem problem = (BenefitRiskProblem) problemService.getProblem(projectId, analysisId, null);
+    when(networkPerformanceTableBuilder.build(any(), any(), any(), any(), any(), any(), any())).thenReturn(networkPerformance);
+
+    BenefitRiskProblem problem = (BenefitRiskProblem) problemService.getProblem(projectId, analysisId);
 
     verify(projectRepository).get(projectId);
     verify(modelService).get(modelIds);
