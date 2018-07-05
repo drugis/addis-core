@@ -28,14 +28,13 @@ public class NetworkPerformanceTableBuilder {
                                               Map<Integer,Model> modelsById,
                                               Map<Integer,Outcome> outcomesById,
                                               Map<String,DataSourceEntry> dataSourcesByOutcomeId,
-                                              Map<Integer,PataviTask> tasksByModelId,
-                                              Map<URI,JsonNode> resultsByTaskUrl,
+                                              Map<Integer,JsonNode> resultsByModelId,
                                               Set<AbstractIntervention> includedInterventions) {
     final Map<String, AbstractIntervention> includedInterventionsByName = includedInterventions
         .stream()
         .collect(toMap(AbstractIntervention::getName, identity()));
     PerformanceTableEntryBuilder entryBuilder = new PerformanceTableEntryBuilder(modelsById,
-        outcomesById, dataSourcesByOutcomeId, tasksByModelId, resultsByTaskUrl,
+        outcomesById, dataSourcesByOutcomeId, resultsByModelId,
         includedInterventionsByName);
 
     return inclusions.stream()

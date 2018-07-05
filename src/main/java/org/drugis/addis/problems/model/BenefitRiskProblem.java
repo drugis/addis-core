@@ -32,4 +32,5 @@ public class BenefitRiskProblem extends AbstractProblem {
   public List<AbstractMeasurementEntry> getPerformanceTable() {
     return performanceTable;
   }
+
 }

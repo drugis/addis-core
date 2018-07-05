@@ -972,3 +972,7 @@ CREATE TABLE toggledColumns(
   FOREIGN KEY(analysisId) REFERENCES benefitRiskAnalysis(id) ON DELETE CASCADE
 );
 --rollback DROP TABLE toggledColumns
+
+--changeset keijserj:79
+ALTER TABLE benefitRiskAnalysis ADD COLUMN schemaVersion VARCHAR;
+--rollback ALTER TABLE benefitRiskAnalysis DROP COLUMN schemaVersion

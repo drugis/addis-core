@@ -16,6 +16,8 @@ import java.util.*;
 public class BenefitRiskAnalysis extends AbstractAnalysis implements Serializable {
   private boolean finalized = false;
 
+  private String schemaVersion = "1.1.0";
+
   @JsonRawValue
   private String problem;
 

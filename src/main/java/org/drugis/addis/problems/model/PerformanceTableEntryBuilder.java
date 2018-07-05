@@ -22,17 +22,15 @@ public class PerformanceTableEntryBuilder {
   private final Map<Integer, Model> modelsById;
   private final Map<Integer, Outcome> outcomesById;
   private final Map<String, DataSourceEntry> dataSourcesByOutcomeId;
-  private final Map<Integer, PataviTask> tasksByModelId;
-  private final Map<URI, JsonNode> resultsByTaskUrl;
+  private final Map<Integer, JsonNode> resultsByModelId;
   private final Map<String, AbstractIntervention> includedInterventionsByName;
   private ObjectMapper objectMapper = new ObjectMapper();
 
-  public PerformanceTableEntryBuilder(Map<Integer, Model> modelsById, Map<Integer, Outcome> outcomesById, Map<String, DataSourceEntry> dataSourcesByOutcomeId, Map<Integer, PataviTask> tasksByModelId, Map<URI, JsonNode> resultsByTaskUrl, Map<String, AbstractIntervention> includedInterventionsByName) {
+  public PerformanceTableEntryBuilder(Map<Integer, Model> modelsById, Map<Integer, Outcome> outcomesById, Map<String, DataSourceEntry> dataSourcesByOutcomeId, Map<Integer, JsonNode> resultsByModelId, Map<String, AbstractIntervention> includedInterventionsByName) {
     this.modelsById = modelsById;
     this.outcomesById = outcomesById;
     this.dataSourcesByOutcomeId = dataSourcesByOutcomeId;
-    this.tasksByModelId = tasksByModelId;
-    this.resultsByTaskUrl = resultsByTaskUrl;
+    this.resultsByModelId = resultsByModelId;
     this.includedInterventionsByName = includedInterventionsByName;
   }
 
@@ -156,8 +154,7 @@ public class PerformanceTableEntryBuilder {
 
 
   private MultiVariateDistribution getBaselineResults(BenefitRiskNMAOutcomeInclusion outcomeInclusion, String baselineInterventionId) {
-    URI taskUrl = tasksByModelId.get(outcomeInclusion.getModelId()).getSelf();
-    JsonNode taskResults = resultsByTaskUrl.get(taskUrl);
+    JsonNode taskResults = resultsByModelId.get(outcomeInclusion.getModelId());
 
     Map<String, MultiVariateDistribution> distributionByInterventionId = null;
     try {

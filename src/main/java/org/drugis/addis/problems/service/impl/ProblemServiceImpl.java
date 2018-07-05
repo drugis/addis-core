@@ -129,8 +129,8 @@ public class ProblemServiceImpl implements ProblemService {
     final Map<Integer, Model> modelsById = getModelsById(analysis);
     final Map<Integer, Outcome> outcomesById = getOutcomesById(project.getId(), analysis);
     final Map<Integer, JsonNode> resultsByModelId = getPataviResultsByModelId(modelsById.values());
-    final Map<Integer, BenefitRiskNMAOutcomeInclusion> usableNMAInclusionsByOutcomeId = findUsableNMAInclusions(analysis, modelsById, resultsByTaskUrl);
     final Set<AbstractIntervention> includedInterventions = getIncludedInterventions(analysis);
+    final Map<Integer, BenefitRiskNMAOutcomeInclusion> usableNMAInclusionsByOutcomeId = findUsableNMAInclusions(analysis, resultsByModelId);
 
     // output
     final Map<URI, CriterionEntry> criteriaWithBaseline = buildNMACriteriaWithBaseline(project, modelsById, outcomesById, usableNMAInclusionsByOutcomeId);
@@ -140,7 +140,7 @@ public class ProblemServiceImpl implements ProblemService {
 
     // output
     List<AbstractMeasurementEntry> performanceTable = networkPerformanceTableBuilder.build(usableNMAInclusionsByOutcomeId.values(),
-        modelsById, outcomesById, dataSourcesByOutcomeId, tasksByModelId, resultsByTaskUrl, includedInterventions);
+        modelsById, outcomesById, dataSourcesByOutcomeId, resultsByModelId, includedInterventions);
 
     List<SingleStudyBenefitRiskProblem> singleStudyProblems = getSingleStudyProblems(project, analysis, outcomesById, includedInterventions);
 
@@ -179,12 +179,12 @@ public class ProblemServiceImpl implements ProblemService {
             includedAlternative -> new AlternativeEntry(includedAlternative.getId(), includedAlternative.getName())));
   }
 
-  private Map<Integer, BenefitRiskNMAOutcomeInclusion> findUsableNMAInclusions(BenefitRiskAnalysis analysis, Map<Integer, Model> modelsById, Map<URI, JsonNode> resultsByTaskUrl) {
+  private Map<Integer, BenefitRiskNMAOutcomeInclusion> findUsableNMAInclusions(BenefitRiskAnalysis analysis, Map<Integer, JsonNode> resultsByModelId) {
     return analysis.getBenefitRiskNMAOutcomeInclusions().stream()
         .filter(mbrOutcomeInclusion -> mbrOutcomeInclusion.getBaseline() != null)
         .filter(mbrOutcomeInclusion -> {
-          URI taskUrl = modelsById.get(mbrOutcomeInclusion.getModelId()).getTaskUrl();
-          return taskUrl != null && resultsByTaskUrl.get(taskUrl) != null;
+          Integer modelId = mbrOutcomeInclusion.getModelId();
+          return modelId != null && resultsByModelId.get(modelId) != null;
         })
         .collect(toMap(BenefitRiskNMAOutcomeInclusion::getOutcomeId, identity()));
   }

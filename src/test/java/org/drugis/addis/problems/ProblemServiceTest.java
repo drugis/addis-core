@@ -715,7 +715,7 @@ public class ProblemServiceTest {
     when(interventionRepository.query(projectId)).thenReturn(interventions);
     List<AbstractMeasurementEntry> networkPerformance = Collections.singletonList(mock(AbstractMeasurementEntry.class));
 
-    when(networkPerformanceTableBuilder.build(any(), any(), any(), any(), any(), any(), any())).thenReturn(networkPerformance);
+    when(networkPerformanceTableBuilder.build(any(), any(), any(), any(), any(), any())).thenReturn(networkPerformance);
 
     BenefitRiskProblem problem = (BenefitRiskProblem) problemService.getProblem(projectId, analysisId);
 
