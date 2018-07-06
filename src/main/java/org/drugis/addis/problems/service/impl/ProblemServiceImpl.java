@@ -4,7 +4,6 @@ package org.drugis.addis.problems.service.impl;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.collect.ImmutableSet;
 import org.apache.commons.lang3.tuple.Pair;
-import org.apache.commons.lang3.tuple.Triple;
 import org.drugis.addis.analyses.model.*;
 import org.drugis.addis.analyses.repository.AnalysisRepository;
 import org.drugis.addis.analyses.service.AnalysisService;
@@ -199,7 +198,7 @@ public class ProblemServiceImpl implements ProblemService {
       BenefitRiskNMAOutcomeInclusion outcomeInclusion = inclusionsWithBaselineAndModelResults.get(outcome.getId());
       if (outcomeInclusion != null) {
         Model model = modelsById.get(outcomeInclusion.getModelId());
-        URI modelURI = getModelUri(project, model);
+        URI modelURI = getModelSourceLink(project, model);
         CriterionEntry criterionEntry;
         if ("binom".equals(model.getLikelihood())) {
           DataSourceEntry dataSource = new DataSourceEntry(uuidService.generate(), Arrays.asList(0d, 1d),
@@ -271,15 +270,6 @@ public class ProblemServiceImpl implements ProblemService {
     List<Outcome> outcomes = outcomeRepository.get(projectId, outcomeIds);
     return outcomes.stream()
         .collect(toMap(Outcome::getId, identity()));
-  }
-
-  private URI getModelUri(Project project, Model model) {
-    Integer modelAnalysisId = model.getAnalysisId();
-    Integer modelProjectId = project.getId();
-    Integer modelOwnerId = project.getOwner().getId();
-    String hostURL = hostURLCache.get();
-    return URI.create(hostURL + "/#/users/" + modelOwnerId + "/projects/" + modelProjectId +
-        "/nma/" + modelAnalysisId + "/models/" + model.getId());
   }
 
   @Override
@@ -463,11 +453,14 @@ public class ProblemServiceImpl implements ProblemService {
     } catch (ReadValueException e) {
       e.printStackTrace();
     }
+
+    URI sourceLink = getStudySourceLink(project, studyGraphUri);
+
     assert singleStudyMeasurements != null;
     TrialDataStudy trialDataStudy = singleStudyMeasurements.get(0);
     Map<String, AlternativeEntry> alternatives = new HashMap<>();
     Map<URI, CriterionEntry> criteria = new HashMap<>();
-    Set<Triple<Measurement, Integer, String>> measurementsWithCoordinates = new HashSet<>();
+    Set<MeasurementWithCoordinates> measurementsWithCoordinates = new HashSet<>();
     for (TrialDataArm arm : trialDataStudy.getTrialDataArms()) {
       Set<Measurement> measurements = arm.getMeasurementsForMoment(trialDataStudy.getDefaultMeasurementMoment());
       Set<AbstractIntervention> matchingIncludedInterventions = triplestoreService.findMatchingIncludedInterventions(includedInterventions, arm);
@@ -476,8 +469,8 @@ public class ProblemServiceImpl implements ProblemService {
         for (Measurement measurement : measurements) {
           Outcome measuredOutcome = outcomesByUri.get(measurement.getVariableConceptUri());
           String dataSourceId = dataSourceIdsByOutcomeUri.get(measuredOutcome.getSemanticOutcomeUri());
-          CriterionEntry criterionEntry = createCriterionEntry(project, measurement, measuredOutcome, dataSourceId, studyGraphUri);
-          measurementsWithCoordinates.add(Triple.of(measurement, matchedProjectInterventionId, criterionEntry.getDataSources().get(0).getId()));
+          CriterionEntry criterionEntry = CriterionEntryFactory.create(measurement, measuredOutcome.getName(), dataSourceId, sourceLink);
+          measurementsWithCoordinates.add(new MeasurementWithCoordinates(measurement, matchedProjectInterventionId, dataSourceId));
           criteria.put(measurement.getVariableConceptUri(), criterionEntry);
         }
 
@@ -494,6 +487,30 @@ public class ProblemServiceImpl implements ProblemService {
     return new SingleStudyBenefitRiskProblem(alternatives, criteria, performanceTable);
   }
 
+  private URI getModelSourceLink(Project project, Model model) {
+    Integer modelAnalysisId = model.getAnalysisId();
+    Integer modelProjectId = project.getId();
+    Integer ownerId = project.getOwner().getId();
+    String hostURL = hostURLCache.get();
+    return URI.create(hostURL +
+            "/#/users/" + ownerId +
+            "/projects/" + modelProjectId +
+            "/nma/" + modelAnalysisId +
+            "/models/" + model.getId());
+  }
+
+  private URI getStudySourceLink(Project project, URI studyGraphUri) {
+    Integer ownerId = mappingService.getVersionedUuidAndOwner(project.getNamespaceUid()).getOwnerId();
+    String hostURL = hostURLCache.get();
+    String versionUuid = project.getDatasetVersion().toString().split("/versions/")[1]; // https://trials.drugis.org/versions/aaaa-bbb-ccc
+    String studyGraphUuid = studyGraphUri.toString().split("/graphs/")[1];
+    return URI.create(hostURL +
+            "/#/users/" + ownerId +
+            "/datasets/" + project.getNamespaceUid() +
+            "/versions/" + versionUuid +
+            "/studies/" + studyGraphUuid);
+  }
+
   private Set<URI> getSingleInterventionUris(Set<AbstractIntervention> includedInterventions) {
     Set<SingleIntervention> singleIncludedInterventions = null;
     try {
@@ -507,28 +524,4 @@ public class ProblemServiceImpl implements ProblemService {
         .map(SingleIntervention::getSemanticInterventionUri)
         .collect(toSet());
   }
-
-  private CriterionEntry createCriterionEntry(Project project, Measurement measurement, Outcome outcome, String dataSourceId, URI studyGraphUri) throws EnumConstantNotPresentException {
-    List<Double> scale;
-    String unitOfMeasurement;
-    if (measurement.getRate() != null) { // rate measurement
-      scale = Arrays.asList(0.0, 1.0);
-      unitOfMeasurement = "probability";
-    } else if (measurement.getMean() != null) { // continuous measurement
-      scale = Arrays.asList(null, null);
-      unitOfMeasurement = null;
-    } else {
-      throw new RuntimeException("Invalid measurement");
-    }
-    Integer ownerId = mappingService.getVersionedUuidAndOwner(project.getNamespaceUid()).getOwnerId();
-    URI sourceLink = URI.create("/#/users/" + ownerId +
-        "/datasets/" + project.getNamespaceUid() +
-        "/versions/" + project.getDatasetVersion().toString().split("/versions/")[1] +
-        "/studies/" + studyGraphUri.toString().split("/graphs/")[1]);
-
-    // NB: partial value functions to be filled in by MCDA component, left null here
-    DataSourceEntry dataSourceEntry = new DataSourceEntry(dataSourceId, scale, /*pvf*/ null, "study", sourceLink);
-    return new CriterionEntry(measurement.getVariableUri().toString(), Collections.singletonList(dataSourceEntry), outcome.getName(), unitOfMeasurement);
-  }
-
 }

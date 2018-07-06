@@ -105,7 +105,15 @@ public class QueryResultMappingServiceImpl implements QueryResultMappingService 
     URI variableUri = readValue(row, "outcomeInstance");
     URI variableConceptUri = readValue(row, "outcomeTypeUri");
     URI measurementTypeUri = readValue(row, "measurementType");
-    return new Measurement(studyUri, variableUri, variableConceptUri, survivalTimeScale, armUri, measurementTypeUri, sampleSize, rate, stdDev, stdErr, mean, exposure);
+    return new MeasurementBuilder(studyUri, variableUri, variableConceptUri, armUri, measurementTypeUri)
+            .setSampleSize(sampleSize)
+            .setRate(rate)
+            .setStdDev(stdDev)
+            .setStdErr(stdErr)
+            .setMean(mean)
+            .setExposure(exposure)
+            .setSurvivalTimeScale(survivalTimeScale)
+            .createMeasurement();
   }
 
   @Override

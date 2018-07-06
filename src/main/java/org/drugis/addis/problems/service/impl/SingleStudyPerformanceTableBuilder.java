@@ -1,6 +1,6 @@
 package org.drugis.addis.problems.service.impl;
 
-import org.apache.commons.lang3.tuple.Triple;
+import org.drugis.addis.problems.model.MeasurementWithCoordinates;
 import org.drugis.addis.problems.service.ProblemService;
 import org.drugis.addis.problems.service.model.*;
 import org.drugis.addis.trialverse.model.trialdata.Measurement;
@@ -17,12 +17,12 @@ import java.util.Set;
 @Service
 public class SingleStudyPerformanceTableBuilder {
 
-  public List<AbstractMeasurementEntry> build(Set<Triple<Measurement, Integer, String>> measurementDrugInstancePairs) {
+  public List<AbstractMeasurementEntry> build(Set<MeasurementWithCoordinates> measurementDrugInstancePairs) {
     ArrayList<AbstractMeasurementEntry> performanceTable = new ArrayList<>();
-    for (Triple<Measurement, Integer, String> pair: measurementDrugInstancePairs) {
-      Measurement measurement = pair.getLeft();
-      Integer interventionId = pair.getMiddle();
-      String dataSource = pair.getRight();
+    for (MeasurementWithCoordinates measurementWithCoordinates: measurementDrugInstancePairs) {
+      Measurement measurement = measurementWithCoordinates.getMeasurement();
+      Integer interventionId = measurementWithCoordinates.getInterventionId();
+      String dataSource = measurementWithCoordinates.getDataSource();
       if (measurement.getMeasurementTypeURI().equals(ProblemService.DICHOTOMOUS_TYPE_URI)) {
         performanceTable.add(createBetaDistributionEntry(interventionId, measurement.getVariableConceptUri(), dataSource,
                 measurement.getRate(), measurement.getSampleSize()));
