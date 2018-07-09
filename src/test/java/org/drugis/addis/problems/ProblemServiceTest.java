@@ -31,7 +31,7 @@ import org.drugis.addis.problems.service.HostURLCache;
 import org.drugis.addis.problems.service.ProblemService;
 import org.drugis.addis.problems.service.impl.NetworkPerformanceTableBuilder;
 import org.drugis.addis.problems.service.impl.ProblemServiceImpl;
-import org.drugis.addis.problems.service.impl.SingleStudyPerformanceTableBuilder;
+import org.drugis.addis.problems.service.impl.SingleStudyBenefitRiskServiceImpl;
 import org.drugis.addis.problems.service.model.AbstractMeasurementEntry;
 import org.drugis.addis.problems.service.model.ContinuousMeasurementEntry;
 import org.drugis.addis.projects.Project;
@@ -80,7 +80,7 @@ public class ProblemServiceTest {
   private CovariateRepository covariateRepository;
 
   @Mock
-  private SingleStudyPerformanceTableBuilder singleStudyPerformanceTablebuilder;
+  private SingleStudyBenefitRiskServiceImpl singleStudyPerformanceTablebuilder;
 
   @Mock
   private InterventionRepository interventionRepository;
@@ -268,7 +268,7 @@ public class ProblemServiceTest {
 
     AbstractMeasurementEntry measurementEntry = mock(ContinuousMeasurementEntry.class);
     List<AbstractMeasurementEntry> performanceTable = Collections.singletonList(measurementEntry);
-    when(singleStudyPerformanceTablebuilder.build(any())).thenReturn(performanceTable);
+    when(singleStudyPerformanceTablebuilder.buildPerformanceTable(any())).thenReturn(performanceTable);
 
     when(mappingService.getVersionedUuid(project.getNamespaceUid())).thenReturn(versionedUuid);
     Integer ownerId = 37;
@@ -288,7 +288,7 @@ public class ProblemServiceTest {
     verify(triplestoreService).findMatchingIncludedInterventions(includedInterventions, daanEtAlFluoxArm);
     verify(triplestoreService).findMatchingIncludedInterventions(includedInterventions, daanEtAlSertraArm);
     verify(triplestoreService).findMatchingIncludedInterventions(includedInterventions, unmatchedDaanEtAlParoxArm);
-    verify(singleStudyPerformanceTablebuilder).build(any());
+    verify(singleStudyPerformanceTablebuilder).buildPerformanceTable(any());
     verify(mappingService).getVersionedUuid(project.getNamespaceUid());
     verify(interventionRepository).query(project.getId());
 
@@ -302,7 +302,7 @@ public class ProblemServiceTest {
             daanEtAlSertraArm.getMatchedProjectInterventionIds().iterator().next(), dataSourceUuid2);
     Set<MeasurementWithCoordinates> measurementsWithCoordinates = ImmutableSet.of(fluoxDataSource1, fluoxDataSource2, sertraDataSource1, sertraDataSource2);
 
-    verify(singleStudyPerformanceTablebuilder).build(measurementsWithCoordinates);
+    verify(singleStudyPerformanceTablebuilder).buildPerformanceTable(measurementsWithCoordinates);
 
     assertNotNull(actualProblem);
     assertNotNull(actualProblem.getAlternatives());

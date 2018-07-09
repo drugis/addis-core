@@ -12,7 +12,6 @@ import org.drugis.addis.covariates.CovariateRepository;
 import org.drugis.addis.exception.ProblemCreationException;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.interventions.model.AbstractIntervention;
-import org.drugis.addis.interventions.model.SingleIntervention;
 import org.drugis.addis.interventions.repository.InterventionRepository;
 import org.drugis.addis.interventions.service.InterventionService;
 import org.drugis.addis.models.Model;
@@ -25,6 +24,7 @@ import org.drugis.addis.patavitask.repository.UnexpectedNumberOfResultsException
 import org.drugis.addis.problems.model.*;
 import org.drugis.addis.problems.service.HostURLCache;
 import org.drugis.addis.problems.service.ProblemService;
+import org.drugis.addis.problems.service.SingleStudyBenefitRiskService;
 import org.drugis.addis.problems.service.model.AbstractMeasurementEntry;
 import org.drugis.addis.projects.Project;
 import org.drugis.addis.projects.repository.ProjectRepository;
@@ -61,7 +61,7 @@ public class ProblemServiceImpl implements ProblemService {
   private ProjectRepository projectRepository;
 
   @Inject
-  private SingleStudyPerformanceTableBuilder singleStudyPerformanceTableBuilder;
+  private SingleStudyBenefitRiskService singleStudyBenefitRiskService;
 
   @Inject
   private NetworkPerformanceTableBuilder networkPerformanceTableBuilder;
@@ -105,6 +105,9 @@ public class ProblemServiceImpl implements ProblemService {
   @Inject
   private HostURLCache hostURLCache;
 
+  @Inject
+  private CriterionEntryFactory criterionEntryFactory;
+
   @Override
   public AbstractProblem getProblem(Integer projectId, Integer analysisId) throws ResourceDoesNotExistException, ProblemCreationException {
     Project project = projectRepository.get(projectId);
@@ -116,14 +119,14 @@ public class ProblemServiceImpl implements ProblemService {
         return getBenefitRiskAnalysisProblem(project, (BenefitRiskAnalysis) analysis);
       }
     } catch (URISyntaxException | SQLException | IOException | ReadValueException |
-        UnexpectedNumberOfResultsException e) {
+            UnexpectedNumberOfResultsException e) {
       throw new ProblemCreationException(e);
     }
     throw new RuntimeException("unknown analysis type");
   }
 
   private BenefitRiskProblem getBenefitRiskAnalysisProblem(Project project, BenefitRiskAnalysis analysis) throws
-      SQLException, IOException, UnexpectedNumberOfResultsException, URISyntaxException {
+          SQLException, IOException, UnexpectedNumberOfResultsException, URISyntaxException {
 
     final Map<Integer, Model> modelsById = getModelsById(analysis);
     final Map<Integer, Outcome> outcomesById = getOutcomesById(project.getId(), analysis);
@@ -139,7 +142,7 @@ public class ProblemServiceImpl implements ProblemService {
 
     // output
     List<AbstractMeasurementEntry> performanceTable = networkPerformanceTableBuilder.build(usableNMAInclusionsByOutcomeId.values(),
-        modelsById, outcomesById, dataSourcesByOutcomeId, resultsByModelId, includedInterventions);
+            modelsById, outcomesById, dataSourcesByOutcomeId, resultsByModelId, includedInterventions);
 
     List<SingleStudyBenefitRiskProblem> singleStudyProblems = getSingleStudyProblems(project, analysis, outcomesById, includedInterventions);
 
@@ -153,39 +156,39 @@ public class ProblemServiceImpl implements ProblemService {
 
   private List<SingleStudyBenefitRiskProblem> getSingleStudyProblems(Project project, BenefitRiskAnalysis analysis, Map<Integer, Outcome> outcomesById, Set<AbstractIntervention> includedInterventions) {
     return analysis.getBenefitRiskStudyOutcomeInclusions().stream()
-        .collect(groupingBy(BenefitRiskStudyOutcomeInclusion::getStudyGraphUri))
-        .entrySet().stream()
-        .map(entry -> {
-          URI studyURI = entry.getKey();
-          List<BenefitRiskStudyOutcomeInclusion> studyInclusions = entry.getValue();
-          Set<Outcome> outcomes = studyInclusions.stream()
-              .map(inclusion -> outcomesById.get(inclusion.getOutcomeId()))
-              .collect(toSet());
-          return getSingleStudyBenefitRiskProblem(project, studyURI, outcomes, includedInterventions);
-        })
-        .collect(toList());
+            .collect(groupingBy(BenefitRiskStudyOutcomeInclusion::getStudyGraphUri))
+            .entrySet().stream()
+            .map(entry -> {
+              URI studyURI = entry.getKey();
+              List<BenefitRiskStudyOutcomeInclusion> studyInclusions = entry.getValue();
+              Set<Outcome> outcomes = studyInclusions.stream()
+                      .map(inclusion -> outcomesById.get(inclusion.getOutcomeId()))
+                      .collect(toSet());
+              return getSingleStudyBenefitRiskProblem(project, studyURI, outcomes, includedInterventions);
+            })
+            .collect(toList());
   }
 
   private Map<String, DataSourceEntry> getDataSourcesByOutcomeId(Map<URI, CriterionEntry> criteriaWithBaseline) {
     return criteriaWithBaseline.values().stream()
-        .collect(toMap(CriterionEntry::getCriterion, criterionEntry -> criterionEntry.getDataSources().get(0)));
+            .collect(toMap(CriterionEntry::getCriterion, criterionEntry -> criterionEntry.getDataSources().get(0)));
   }
 
   private Map<String, AlternativeEntry> getAlternativesById(Set<AbstractIntervention> includedInterventions) {
     return includedInterventions
-        .stream()
-        .collect(toMap(includedAlternative -> includedAlternative.getId().toString(),
-            includedAlternative -> new AlternativeEntry(includedAlternative.getId(), includedAlternative.getName())));
+            .stream()
+            .collect(toMap(includedAlternative -> includedAlternative.getId().toString(),
+                    includedAlternative -> new AlternativeEntry(includedAlternative.getId(), includedAlternative.getName())));
   }
 
   private Map<Integer, BenefitRiskNMAOutcomeInclusion> findUsableNMAInclusions(BenefitRiskAnalysis analysis, Map<Integer, JsonNode> resultsByModelId) {
     return analysis.getBenefitRiskNMAOutcomeInclusions().stream()
-        .filter(mbrOutcomeInclusion -> mbrOutcomeInclusion.getBaseline() != null)
-        .filter(mbrOutcomeInclusion -> {
-          Integer modelId = mbrOutcomeInclusion.getModelId();
-          return modelId != null && resultsByModelId.get(modelId) != null;
-        })
-        .collect(toMap(BenefitRiskNMAOutcomeInclusion::getOutcomeId, identity()));
+            .filter(mbrOutcomeInclusion -> mbrOutcomeInclusion.getBaseline() != null)
+            .filter(mbrOutcomeInclusion -> {
+              Integer modelId = mbrOutcomeInclusion.getModelId();
+              return modelId != null && resultsByModelId.get(modelId) != null;
+            })
+            .collect(toMap(BenefitRiskNMAOutcomeInclusion::getOutcomeId, identity()));
   }
 
   private Map<URI, CriterionEntry> buildNMACriteriaWithBaseline(Project project,
@@ -202,9 +205,9 @@ public class ProblemServiceImpl implements ProblemService {
         CriterionEntry criterionEntry;
         if ("binom".equals(model.getLikelihood())) {
           DataSourceEntry dataSource = new DataSourceEntry(uuidService.generate(), Arrays.asList(0d, 1d),
-              /* pvf */ null, "meta analysis", modelURI);
+                  /* pvf */ null, "meta analysis", modelURI);
           criterionEntry = new CriterionEntry(outcome.getSemanticOutcomeUri().toString(), Collections.singletonList(dataSource),
-              outcome.getName(), "proportion");
+                  outcome.getName(), "proportion");
         } else {
           DataSourceEntry dataSource = new DataSourceEntry(uuidService.generate(), "meta analysis", modelURI);
           criterionEntry = new CriterionEntry(outcome.getSemanticOutcomeUri().toString(), Collections.singletonList(dataSource), outcome.getName());
@@ -219,34 +222,34 @@ public class ProblemServiceImpl implements ProblemService {
     final List<InterventionInclusion> interventionInclusions = analysis.getInterventionInclusions();
     final Set<AbstractIntervention> interventions = interventionRepository.query(analysis.getProjectId());
     final Map<Integer, AbstractIntervention> interventionMap = interventions.stream()
-        .collect(toMap(AbstractIntervention::getId, identity()));
+            .collect(toMap(AbstractIntervention::getId, identity()));
     return interventionInclusions
-        .stream()
-        .map(inclusion -> interventionMap.get(inclusion.getInterventionId()))
-        .collect(toSet());
+            .stream()
+            .map(inclusion -> interventionMap.get(inclusion.getInterventionId()))
+            .collect(toSet());
   }
 
   private Map<Integer, JsonNode> getPataviResultsByModelId(Collection<Model> models) throws IOException, SQLException, UnexpectedNumberOfResultsException, URISyntaxException {
     List<URI> taskUris = models.stream()
-        .map(Model::getTaskUrl)
-        .filter(Objects::nonNull)
-        .collect(toList());
+            .map(Model::getTaskUrl)
+            .filter(Objects::nonNull)
+            .collect(toList());
     final Map<URI, PataviTask> pataviTaskMap = pataviTaskRepository.findByUrls(taskUris).stream()
-        .collect(toMap(PataviTask::getSelf, identity()));
+            .collect(toMap(PataviTask::getSelf, identity()));
     Map<Integer, PataviTask> tasksByModelId = models.stream()
-        .filter(model -> model.getTaskUrl() != null)
-        .collect(toMap(Model::getId, m -> pataviTaskMap.get(m.getTaskUrl())));
+            .filter(model -> model.getTaskUrl() != null)
+            .collect(toMap(Model::getId, m -> pataviTaskMap.get(m.getTaskUrl())));
     Map<URI, JsonNode> resultsByUrl = pataviTaskRepository.getResults(tasksByModelId.values());
     Set<Map.Entry<URI, JsonNode>> entries = resultsByUrl.entrySet();
     return entries.stream()
-        .map(e -> Pair.of(findModelIDForTaskUrl(e.getKey(), models), e.getValue()))
-        .collect(Collectors.toMap(Pair::getLeft, Pair::getRight));
+            .map(e -> Pair.of(findModelIDForTaskUrl(e.getKey(), models), e.getValue()))
+            .collect(Collectors.toMap(Pair::getLeft, Pair::getRight));
   }
 
   private Integer findModelIDForTaskUrl(URI taskUri, Collection<Model> models) {
     Optional<Model> model = models.stream()
-        .filter(m -> m.getTaskUrl().equals(taskUri))
-        .findFirst();
+            .filter(m -> m.getTaskUrl().equals(taskUri))
+            .findFirst();
     if (!model.isPresent()) {
       throw new RuntimeException("missing model for taskUrl");
     }
@@ -255,21 +258,21 @@ public class ProblemServiceImpl implements ProblemService {
 
   private Map<Integer, Model> getModelsById(BenefitRiskAnalysis analysis) throws IOException, SQLException {
     final Set<Integer> networkModelIds = getInclusionIdsWithBaseline(analysis.getBenefitRiskNMAOutcomeInclusions(),
-        BenefitRiskNMAOutcomeInclusion::getModelId);
+            BenefitRiskNMAOutcomeInclusion::getModelId);
     final List<Model> models = modelService.get(networkModelIds);
     return models.stream()
-        .collect(toMap(Model::getId, identity()));
+            .collect(toMap(Model::getId, identity()));
   }
 
   private Map<Integer, Outcome> getOutcomesById(Integer projectId, BenefitRiskAnalysis analysis) {
     final Set<Integer> outcomeIds = getInclusionIdsWithBaseline(analysis.getBenefitRiskNMAOutcomeInclusions(),
-        BenefitRiskNMAOutcomeInclusion::getOutcomeId);
+            BenefitRiskNMAOutcomeInclusion::getOutcomeId);
     outcomeIds.addAll(analysis.getBenefitRiskStudyOutcomeInclusions().stream().map(
-        BenefitRiskStudyOutcomeInclusion::getOutcomeId).collect(toList()));
+            BenefitRiskStudyOutcomeInclusion::getOutcomeId).collect(toList()));
 
     List<Outcome> outcomes = outcomeRepository.get(projectId, outcomeIds);
     return outcomes.stream()
-        .collect(toMap(Outcome::getId, identity()));
+            .collect(toMap(Outcome::getId, identity()));
   }
 
   @Override
@@ -278,10 +281,10 @@ public class ProblemServiceImpl implements ProblemService {
     if (model.getSensitivity() != null && model.getSensitivity().get("omittedStudy") != null) {
       String study = (String) model.getSensitivity().get("omittedStudy");
       entries = problem
-          .getEntries()
-          .stream()
-          .filter(e -> !Objects.equals(e.getStudy(), study)) // remove omitted studies
-          .collect(toList());
+              .getEntries()
+              .stream()
+              .filter(e -> !Objects.equals(e.getStudy(), study)) // remove omitted studies
+              .collect(toList());
     }
     return new NetworkMetaAnalysisProblem(entries, problem.getTreatments(), problem.getStudyLevelCovariates());
   }
@@ -292,21 +295,21 @@ public class ProblemServiceImpl implements ProblemService {
   }
 
   private NetworkMetaAnalysisProblem getNetworkMetaAnalysisProblem(Project project, NetworkMetaAnalysis analysis) throws
-      URISyntaxException, ReadValueException, ResourceDoesNotExistException {
+          URISyntaxException, ReadValueException, ResourceDoesNotExistException {
     // create treatment entries based only on included interventions
     Set<AbstractIntervention> allProjectInterventions = interventionRepository.query(project.getId());
     Set<AbstractIntervention> includedInterventions = onlyIncludedInterventions(allProjectInterventions, analysis.getInterventionInclusions());
     List<TreatmentEntry> treatments = includedInterventions.stream()
-        .map(intervention -> new TreatmentEntry(intervention.getId(), intervention.getName()))
-        .collect(toList());
+            .map(intervention -> new TreatmentEntry(intervention.getId(), intervention.getName()))
+            .collect(toList());
 
     Map<Integer, Covariate> projectCovariatesById = covariateRepository.findByProject(project.getId())
-        .stream()
-        .collect(toMap(Covariate::getId, identity()));
+            .stream()
+            .collect(toMap(Covariate::getId, identity()));
     List<String> includedCovariateKeys = analysis.getCovariateInclusions().stream()
-        .map(covariateInclusion -> projectCovariatesById.get(covariateInclusion.getCovariateId()).getDefinitionKey())
-        .sorted()
-        .collect(toList());
+            .map(covariateInclusion -> projectCovariatesById.get(covariateInclusion.getCovariateId()).getDefinitionKey())
+            .sorted()
+            .collect(toList());
 
     List<TrialDataStudy> trialDataStudies = analysisService.buildEvidenceTable(project.getId(), analysis.getId());
 
@@ -314,26 +317,26 @@ public class ProblemServiceImpl implements ProblemService {
 
     // create map of (non-default) measurement moment inclusions for the analysis
     final Map<URI, URI> measurementMomentsByStudy = analysis.getIncludedMeasurementMoments()
-        .stream().collect(toMap(MeasurementMomentInclusion::getStudy, MeasurementMomentInclusion::getMeasurementMoment));
+            .stream().collect(toMap(MeasurementMomentInclusion::getStudy, MeasurementMomentInclusion::getMeasurementMoment));
 
     for (TrialDataStudy trialDataStudy : trialDataStudies) {
       List<TrialDataArm> filteredArms = filterUnmatchedArms(trialDataStudy);
       filteredArms = filterExcludedArms(filteredArms, analysis);
       final URI selectedMeasurementMoment = measurementMomentsByStudy.get(trialDataStudy.getStudyUri()) == null
-          ? trialDataStudy.getDefaultMeasurementMoment()
-          : measurementMomentsByStudy.get(trialDataStudy.getStudyUri());
+              ? trialDataStudy.getDefaultMeasurementMoment()
+              : measurementMomentsByStudy.get(trialDataStudy.getStudyUri());
       filteredArms = filterArmsWithoutDataAtMM(filteredArms, selectedMeasurementMoment);
 
       // do not include studies with fewer than two included and matched arms
       if (filteredArms.size() >= 2) {
         entries.addAll(filteredArms.stream()
-            .map(trialDataArm -> {
-              Set<Measurement> measurements = trialDataArm.getMeasurementsForMoment(selectedMeasurementMoment);
-              return buildEntry(trialDataStudy.getName(),
-                  trialDataArm.getMatchedProjectInterventionIds().iterator().next(), // safe because we filter unmatched arms
-                  measurements.iterator().next()); // nma has exactly one measurement
-            })
-            .collect(toList()));
+                .map(trialDataArm -> {
+                  Set<Measurement> measurements = trialDataArm.getMeasurementsForMoment(selectedMeasurementMoment);
+                  return buildEntry(trialDataStudy.getName(),
+                          trialDataArm.getMatchedProjectInterventionIds().iterator().next(), // safe because we filter unmatched arms
+                          measurements.iterator().next()); // nma has exactly one measurement
+                })
+                .collect(toList()));
       }
     }
 
@@ -354,16 +357,16 @@ public class ProblemServiceImpl implements ProblemService {
     Map<String, Boolean> studyHasEntries = new HashMap<>();
     entries.forEach(entry -> studyHasEntries.put(entry.getStudy(), true));
     List<TrialDataStudy> studiesWithEntries = trialDataStudies.stream()
-        .filter(study -> studyHasEntries.get(study.getName()) != null)
-        .collect(toList());
+            .filter(study -> studyHasEntries.get(study.getName()) != null)
+            .collect(toList());
 
     // add covariate values to problem
     Map<String, Map<String, Double>> studyLevelCovariates = null;
     if (includedCovariateKeys.size() > 0) {
       studyLevelCovariates = new HashMap<>(trialDataStudies.size());
       Map<String, Covariate> covariatesByKey = covariateRepository.findByProject(project.getId())
-          .stream()
-          .collect(toMap(Covariate::getDefinitionKey, identity()));
+              .stream()
+              .collect(toMap(Covariate::getDefinitionKey, identity()));
       for (TrialDataStudy trialDataStudy : studiesWithEntries) {
         Map<String, Double> covariateNodes = new HashMap<>();
         for (CovariateStudyValue covariateStudyValue : trialDataStudy.getCovariateValues()) {
@@ -379,15 +382,15 @@ public class ProblemServiceImpl implements ProblemService {
 
   private List<TrialDataArm> filterArmsWithoutDataAtMM(List<TrialDataArm> filteredArms, URI selectedMeasurementMoment) {
     return filteredArms.stream()
-        .filter(arm -> arm.getMeasurementsForMoment(selectedMeasurementMoment) != null)
-        .collect(toList());
+            .filter(arm -> arm.getMeasurementsForMoment(selectedMeasurementMoment) != null)
+            .collect(toList());
   }
 
   private List<TrialDataArm> filterUnmatchedArms(TrialDataStudy trialDataStudy) {
     return trialDataStudy.getTrialDataArms()
-        .stream()
-        .filter(a -> a.getMatchedProjectInterventionIds().size() > 0)
-        .collect(toList());
+            .stream()
+            .filter(a -> a.getMatchedProjectInterventionIds().size() > 0)
+            .collect(toList());
   }
 
   private List<TrialDataArm> filterExcludedArms(List<TrialDataArm> trialDataArms, NetworkMetaAnalysis analysis) {
@@ -395,10 +398,10 @@ public class ProblemServiceImpl implements ProblemService {
     List<URI> armExclusionTrialverseIds = new ArrayList<>(armExclusions.size());
 
     armExclusionTrialverseIds.addAll(armExclusions.stream()
-        .map(ArmExclusion::getTrialverseUid).collect(toList()));
+            .map(ArmExclusion::getTrialverseUid).collect(toList()));
 
     return trialDataArms.stream()
-        .filter(trialDataArm -> !armExclusionTrialverseIds.contains(trialDataArm.getUri())).collect(toList());
+            .filter(trialDataArm -> !armExclusionTrialverseIds.contains(trialDataArm.getUri())).collect(toList());
   }
 
   private AbstractNetworkMetaAnalysisProblemEntry buildEntry(String studyName, Integer treatmentId, Measurement measurement) {
@@ -432,59 +435,61 @@ public class ProblemServiceImpl implements ProblemService {
     }
 
     return interventions.stream().
-        filter(intervention -> inclusionMap.get(intervention.getId()) != null).collect(toSet());
+            filter(intervention -> inclusionMap.get(intervention.getId()) != null).collect(toSet());
   }
 
   private SingleStudyBenefitRiskProblem getSingleStudyBenefitRiskProblem(Project project, URI studyGraphUri,
                                                                          Set<Outcome> outcomes,
                                                                          Set<AbstractIntervention> includedInterventions) {
-    Map<URI, Outcome> outcomesByUri = outcomes.stream().collect(toMap(Outcome::getSemanticOutcomeUri, identity()));
+    // - fetch single study data
+    // - build criteria, alternatives, performanceTable
+    // - create problem with these
+
+    SingleStudyContext context = buildContext(project, studyGraphUri, outcomes, includedInterventions);
+
+    TrialDataStudy trialDataStudy = singleStudyBenefitRiskService.getSingleStudyMeasurements(project, studyGraphUri, context);
+    List<TrialDataArm> armsWithMatching = getArmsWithMatching(includedInterventions, trialDataStudy);
+
+    URI defaultMeasurementMoment = trialDataStudy.getDefaultMeasurementMoment();
+
+    Map<URI, CriterionEntry> criteria = singleStudyBenefitRiskService.getCriteria(
+            armsWithMatching, defaultMeasurementMoment, context);
+    Map<String, AlternativeEntry> alternatives = singleStudyBenefitRiskService.getAlternatives(
+            armsWithMatching, context);
+    Set<MeasurementWithCoordinates> measurementsWithCoordinates = singleStudyBenefitRiskService.getMeasurementsWithCoordinates(
+            armsWithMatching, defaultMeasurementMoment, context);
+
+    List<AbstractMeasurementEntry> performanceTable = singleStudyBenefitRiskService.buildPerformanceTable(measurementsWithCoordinates);
+    return new SingleStudyBenefitRiskProblem(alternatives, criteria, performanceTable);
+
+  }
+
+  private SingleStudyContext buildContext(Project project, URI studyGraphUri, Set<Outcome> outcomes, Set<AbstractIntervention> includedInterventions) {
     Map<URI, String> dataSourceIdsByOutcomeUri = outcomes.stream()
-        .collect(Collectors.toMap(Outcome::getSemanticOutcomeUri, o -> uuidService.generate()));
-    final Set<URI> interventionUris = getSingleInterventionUris(includedInterventions);
+            .collect(Collectors.toMap(Outcome::getSemanticOutcomeUri, o -> uuidService.generate()));
     final Map<Integer, AbstractIntervention> interventionsById = includedInterventions.stream()
-        .collect(toMap(AbstractIntervention::getId, identity()));
-
-    final String versionedUuid = mappingService.getVersionedUuid(project.getNamespaceUid());
-    List<TrialDataStudy> singleStudyMeasurements = null;
-    try {
-      singleStudyMeasurements = triplestoreService.getSingleStudyData(versionedUuid,
-          studyGraphUri, project.getDatasetVersion(), outcomesByUri.keySet(), interventionUris);
-    } catch (ReadValueException e) {
-      e.printStackTrace();
-    }
-
+            .collect(toMap(AbstractIntervention::getId, identity()));
+    Map<URI, Outcome> outcomesByUri = outcomes.stream().collect(toMap(Outcome::getSemanticOutcomeUri, identity()));
     URI sourceLink = getStudySourceLink(project, studyGraphUri);
 
-    assert singleStudyMeasurements != null;
-    TrialDataStudy trialDataStudy = singleStudyMeasurements.get(0);
-    Map<String, AlternativeEntry> alternatives = new HashMap<>();
-    Map<URI, CriterionEntry> criteria = new HashMap<>();
-    Set<MeasurementWithCoordinates> measurementsWithCoordinates = new HashSet<>();
-    for (TrialDataArm arm : trialDataStudy.getTrialDataArms()) {
-      Set<Measurement> measurements = arm.getMeasurementsForMoment(trialDataStudy.getDefaultMeasurementMoment());
-      Set<AbstractIntervention> matchingIncludedInterventions = triplestoreService.findMatchingIncludedInterventions(includedInterventions, arm);
-      if (matchingIncludedInterventions.size() == 1) {
-        Integer matchedProjectInterventionId = matchingIncludedInterventions.iterator().next().getId();
-        for (Measurement measurement : measurements) {
-          Outcome measuredOutcome = outcomesByUri.get(measurement.getVariableConceptUri());
-          String dataSourceId = dataSourceIdsByOutcomeUri.get(measuredOutcome.getSemanticOutcomeUri());
-          CriterionEntry criterionEntry = CriterionEntryFactory.create(measurement, measuredOutcome.getName(), dataSourceId, sourceLink);
-          measurementsWithCoordinates.add(new MeasurementWithCoordinates(measurement, matchedProjectInterventionId, dataSourceId));
-          criteria.put(measurement.getVariableConceptUri(), criterionEntry);
-        }
+    return new SingleStudyContext(outcomesByUri, interventionsById, dataSourceIdsByOutcomeUri, sourceLink);
+  }
 
-        arm.setMatchedProjectInterventionIds(ImmutableSet.of(matchedProjectInterventionId));
-        AbstractIntervention intervention = interventionsById.get(matchedProjectInterventionId);
-
-        alternatives.put(intervention.getId().toString(), new AlternativeEntry(matchedProjectInterventionId, intervention.getName()));
-      } else if (matchingIncludedInterventions.size() > 1) {
-        throw new RuntimeException("too many matched interventions for arm when creating problem");
-      }
-
+  private List<TrialDataArm> getArmsWithMatching(Set<AbstractIntervention> includedInterventions, TrialDataStudy trialDataStudy) {
+    List<TrialDataArm> armsWithMatching = trialDataStudy.getTrialDataArms().stream()
+            .map(arm -> {
+              Set<AbstractIntervention> matchingIncludedInterventions = triplestoreService.findMatchingIncludedInterventions(includedInterventions, arm);
+              Set<Integer> matchedInterventionIds = matchingIncludedInterventions.stream().map(AbstractIntervention::getId).collect(toSet());
+              arm.setMatchedProjectInterventionIds(ImmutableSet.copyOf(matchedInterventionIds));
+              return arm;
+            })
+            .collect(Collectors.toList());
+    Boolean isArmWithTooManyMatches = armsWithMatching.stream()
+            .anyMatch(arm -> arm.getMatchedProjectInterventionIds().size() > 1);
+    if (isArmWithTooManyMatches) {
+      throw new RuntimeException("too many matched interventions for arm when creating problem");
     }
-    List<AbstractMeasurementEntry> performanceTable = singleStudyPerformanceTableBuilder.build(measurementsWithCoordinates);
-    return new SingleStudyBenefitRiskProblem(alternatives, criteria, performanceTable);
+    return armsWithMatching;
   }
 
   private URI getModelSourceLink(Project project, Model model) {
@@ -509,19 +514,5 @@ public class ProblemServiceImpl implements ProblemService {
             "/datasets/" + project.getNamespaceUid() +
             "/versions/" + versionUuid +
             "/studies/" + studyGraphUuid);
-  }
-
-  private Set<URI> getSingleInterventionUris(Set<AbstractIntervention> includedInterventions) {
-    Set<SingleIntervention> singleIncludedInterventions = null;
-    try {
-      singleIncludedInterventions = analysisService.getSingleInterventions(includedInterventions);
-    } catch (ResourceDoesNotExistException e) {
-      e.printStackTrace();
-    }
-
-    assert singleIncludedInterventions != null;
-    return singleIncludedInterventions.stream()
-        .map(SingleIntervention::getSemanticInterventionUri)
-        .collect(toSet());
   }
 }

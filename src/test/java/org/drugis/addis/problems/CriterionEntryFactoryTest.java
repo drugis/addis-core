@@ -1,25 +1,21 @@
 package org.drugis.addis.problems;
 
-import org.drugis.addis.outcomes.Outcome;
 import org.drugis.addis.problems.model.CriterionEntry;
 import org.drugis.addis.problems.model.DataSourceEntry;
 import org.drugis.addis.problems.service.impl.CriterionEntryFactory;
-import org.drugis.addis.trialverse.model.SemanticVariable;
 import org.drugis.addis.trialverse.model.trialdata.Measurement;
+import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mock;
 
-import java.lang.reflect.Array;
 import java.net.URI;
 import java.util.Arrays;
 import java.util.Collections;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
 import static org.drugis.addis.problems.service.ProblemService.CONTINUOUS_TYPE_URI;
 import static org.drugis.addis.problems.service.ProblemService.DICHOTOMOUS_TYPE_URI;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class CriterionEntryFactoryTest {
 
@@ -28,6 +24,13 @@ public class CriterionEntryFactoryTest {
   private String dataSourceId = "dataSource1";
   private URI variableUri = URI.create("variableUri");
 
+  private CriterionEntryFactory criterionEntryFactory;
+
+  @Before
+  public void setUp() {
+    criterionEntryFactory = new CriterionEntryFactory();
+  }
+
   @Test
   public void testCreateDichotomous() {
     Measurement measurement = mock(Measurement.class);
@@ -35,7 +38,7 @@ public class CriterionEntryFactoryTest {
     when(measurement.getVariableUri()).thenReturn(variableUri);
 
     // Execute
-    CriterionEntry criterionEntry = CriterionEntryFactory.create(measurement, "outcomeName", dataSourceId, sourceLink);
+    CriterionEntry criterionEntry = criterionEntryFactory.create(measurement, "outcomeName", dataSourceId, sourceLink);
 
     // Asserts
     DataSourceEntry dataSourceEntry = new DataSourceEntry(dataSourceId, Arrays.asList(0.0, 1.0), null, "study", sourceLink);
@@ -50,7 +53,7 @@ public class CriterionEntryFactoryTest {
     when(measurement.getVariableUri()).thenReturn(variableUri);
 
     // Execute
-    CriterionEntry criterionEntry = CriterionEntryFactory.create(measurement, "outcomeName", dataSourceId, sourceLink);
+    CriterionEntry criterionEntry = criterionEntryFactory.create(measurement, "outcomeName", dataSourceId, sourceLink);
 
     // Asserts
     DataSourceEntry dataSourceEntry = new DataSourceEntry(dataSourceId, Arrays.asList(null,null), null, "study", sourceLink);
@@ -65,6 +68,6 @@ public class CriterionEntryFactoryTest {
     when(measurement.getVariableUri()).thenReturn(variableUri);
 
     // Execute
-    CriterionEntryFactory.create(measurement, "outcomeName", dataSourceId, sourceLink);
+    criterionEntryFactory.create(measurement, "outcomeName", dataSourceId, sourceLink);
   }
 }
