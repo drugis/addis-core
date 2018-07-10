@@ -225,6 +225,8 @@ public class SingleStudyBenefitRiskServiceImplTest {
 
   @Test
   public void testGetCriteria() {
+    Map<URI, CriterionEntry> expectedResult = new HashMap<>();
+
     URI defaultMeasurementMoment = URI.create("defaultMM");
 
     TrialDataArm trialDataArm1 = buildTrialDataArm(defaultMeasurementMoment);
@@ -233,18 +235,28 @@ public class SingleStudyBenefitRiskServiceImplTest {
 
     arms.forEach(arm -> arm.getMeasurementsForMoment(defaultMeasurementMoment)
             .forEach(measurement -> {
-              CriterionEntry criterionEntry1 = mock(CriterionEntry.class);
-              Outcome measuredOutcome = context.getOutcomesByUri().get(measurement.getVariableConceptUri());
+              CriterionEntry criterionEntry = mock(CriterionEntry.class);
+              URI variableConceptUri = measurement.getVariableConceptUri();
+              Outcome measuredOutcome = context.getOutcomesByUri().get(variableConceptUri);
               String dataSourceId = context.getDataSourceIdsByOutcomeUri().get(measurement.getVariableConceptUri());
               when(criterionEntryFactory.create(measurement,
-                      measuredOutcome.getName(), dataSourceId, context.getSourceLink())).thenReturn(criterionEntry1);
+                      measuredOutcome.getName(), dataSourceId, context.getSourceLink())).thenReturn(criterionEntry);
+              expectedResult.put(variableConceptUri, criterionEntry);
             }));
 
     // EXECUTE
     Map<URI, CriterionEntry> result = singleStudyBenefitRiskService.getCriteria(arms, defaultMeasurementMoment, context);
-    Map<URI, CriterionEntry> expectedResult = new HashMap<>();
     assertEquals(expectedResult, result);
 
+    arms.forEach((arm -> arm.getMeasurementsForMoment(defaultMeasurementMoment)
+      .forEach(measurement -> {
+        URI variableConceptUri = measurement.getVariableConceptUri();
+        Outcome measuredOutcome = context.getOutcomesByUri().get(variableConceptUri);
+        String dataSourceId = context.getDataSourceIdsByOutcomeUri().get(measuredOutcome.getSemanticOutcomeUri());
+        verify(criterionEntryFactory).create(measurement, measuredOutcome.getName(), dataSourceId,context.getSourceLink());
+
+      })
+    ));
   }
 
   private TrialDataArm buildTrialDataArm(URI defaultMeasurementMoment) {
