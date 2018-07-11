@@ -1,5 +1,7 @@
 package org.drugis.addis.problems.service;
 
+import org.drugis.addis.interventions.model.AbstractIntervention;
+import org.drugis.addis.outcomes.Outcome;
 import org.drugis.addis.problems.model.AlternativeEntry;
 import org.drugis.addis.problems.model.CriterionEntry;
 import org.drugis.addis.problems.model.SingleStudyContext;
@@ -24,4 +26,8 @@ public interface SingleStudyBenefitRiskService {
   Map<URI,CriterionEntry> getCriteria(List<TrialDataArm> armsWithMatching, URI defaultMeasurementMoment, SingleStudyContext context);
 
   Map<String,AlternativeEntry> getAlternatives(List<TrialDataArm> armsWithMatching, SingleStudyContext context);
+
+  List<TrialDataArm> getArmsWithMatching(Set<AbstractIntervention> includedInterventions, TrialDataStudy trialDataStudy);
+
+  SingleStudyContext buildContext(Project project, URI studyGraphUri, Set<Outcome> outcomes, Set<AbstractIntervention> includedInterventions);
 }

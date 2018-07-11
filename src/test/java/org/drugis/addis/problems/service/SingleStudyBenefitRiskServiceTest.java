@@ -1,4 +1,4 @@
-package org.drugis.addis.problems;
+package org.drugis.addis.problems.service;
 
 import com.google.common.collect.Sets;
 import org.apache.jena.ext.com.google.common.collect.ImmutableSet;
@@ -28,6 +28,7 @@ import org.mockito.MockitoAnnotations;
 
 import java.net.URI;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static org.drugis.addis.problems.service.ProblemService.CONTINUOUS_TYPE_URI;
 import static org.drugis.addis.problems.service.ProblemService.DICHOTOMOUS_TYPE_URI;
@@ -37,8 +38,10 @@ import static org.mockito.Mockito.*;
 /**
  * Created by daan on 3/27/14.
  */
-public class SingleStudyBenefitRiskServiceImplTest {
+public class SingleStudyBenefitRiskServiceTest {
 
+  private final String alternative1Name = "alternative1Name";
+  private final String alternative2Name = "alternative2Name";
   @Mock
   private CriterionEntryFactory criterionEntryFactory;
 
@@ -57,6 +60,9 @@ public class SingleStudyBenefitRiskServiceImplTest {
 
   private String armName1 = "arm name 1";
   private String armName2 = "arm name 2";
+  private final Integer interventionId1 = 1;
+  private final Integer interventionId2 = 2;
+
   private Arm arm1 = new Arm(URI.create("armUri1"), "drugUuid1", armName1);
   private Arm arm2 = new Arm(URI.create("armUri2"), "drugUuid2", armName2);
 
@@ -79,9 +85,8 @@ public class SingleStudyBenefitRiskServiceImplTest {
           .setSampleSize(222).setStdDev(0.2).setMean(7.56).createMeasurement();
   private Measurement continuousMeasurementStdErr = new MeasurementBuilder(studyUri, continuousVariable.getUri(), continuousVariable.getVariableConceptUri(), arm1.getUri(), CONTINUOUS_TYPE_URI)
           .setSampleSize(333).setStdErr(0.3).setMean(7.56).createMeasurement();
-  private URI outcomeUri1 = URI.create("outcome1");
-  private URI outcomeUri2 = URI.create("outcome2");
   private final SingleStudyContext context = buildContext();
+  private final URI defaultMeasurementMoment = URI.create("defaultMM");
 
   @Before
   public void setUp() {
@@ -227,11 +232,7 @@ public class SingleStudyBenefitRiskServiceImplTest {
   public void testGetCriteria() {
     Map<URI, CriterionEntry> expectedResult = new HashMap<>();
 
-    URI defaultMeasurementMoment = URI.create("defaultMM");
-
-    TrialDataArm trialDataArm1 = buildTrialDataArm(defaultMeasurementMoment);
-    TrialDataArm trialDataArm2 = buildTrialDataArm(defaultMeasurementMoment);
-    List<TrialDataArm> arms = Arrays.asList(trialDataArm1, trialDataArm2);
+    List<TrialDataArm> arms = buildTrialDataArms();
 
     arms.forEach(arm -> arm.getMeasurementsForMoment(defaultMeasurementMoment)
             .forEach(measurement -> {
@@ -241,6 +242,7 @@ public class SingleStudyBenefitRiskServiceImplTest {
               String dataSourceId = context.getDataSourceIdsByOutcomeUri().get(measurement.getVariableConceptUri());
               when(criterionEntryFactory.create(measurement,
                       measuredOutcome.getName(), dataSourceId, context.getSourceLink())).thenReturn(criterionEntry);
+
               expectedResult.put(variableConceptUri, criterionEntry);
             }));
 
@@ -249,22 +251,17 @@ public class SingleStudyBenefitRiskServiceImplTest {
     assertEquals(expectedResult, result);
 
     arms.forEach((arm -> arm.getMeasurementsForMoment(defaultMeasurementMoment)
-      .forEach(measurement -> {
-        URI variableConceptUri = measurement.getVariableConceptUri();
-        Outcome measuredOutcome = context.getOutcomesByUri().get(variableConceptUri);
-        String dataSourceId = context.getDataSourceIdsByOutcomeUri().get(measuredOutcome.getSemanticOutcomeUri());
-        verify(criterionEntryFactory).create(measurement, measuredOutcome.getName(), dataSourceId,context.getSourceLink());
-
-      })
+            .forEach(this::verifyCriterionCreation)
     ));
   }
 
-  private TrialDataArm buildTrialDataArm(URI defaultMeasurementMoment) {
+  private TrialDataArm buildTrialDataArm(URI defaultMeasurementMoment, Integer interventionId) {
     TrialDataArm trialDataArm = mock(TrialDataArm.class);
     Measurement measurement1 = buildMeasurementMock(dichotomousVariable.getVariableConceptUri());
     Measurement measurement2 = buildMeasurementMock(continuousMeasurementStdDev.getVariableConceptUri());
     Set<Measurement> measurements = Sets.newHashSet(measurement1, measurement2);
     when(trialDataArm.getMeasurementsForMoment(defaultMeasurementMoment)).thenReturn(measurements);
+    when(trialDataArm.getMatchedProjectInterventionIds()).thenReturn(Sets.newHashSet(interventionId));
     return trialDataArm;
   }
 
@@ -272,6 +269,55 @@ public class SingleStudyBenefitRiskServiceImplTest {
     Measurement measurement1a = mock(Measurement.class);
     when(measurement1a.getVariableConceptUri()).thenReturn(variableConceptUri);
     return measurement1a;
+  }
+
+  private void verifyCriterionCreation(Measurement measurement) {
+    URI variableConceptUri = measurement.getVariableConceptUri();
+    Outcome measuredOutcome = context.getOutcomesByUri().get(variableConceptUri);
+    String dataSourceId = context.getDataSourceIdsByOutcomeUri().get(measuredOutcome.getSemanticOutcomeUri());
+    verify(criterionEntryFactory).create(measurement, measuredOutcome.getName(), dataSourceId, context.getSourceLink());
+  }
+
+  @Test
+  public void testGetAlternatives() {
+    List<TrialDataArm> arms = buildTrialDataArms();
+
+    // exEcUte
+    Map<String, AlternativeEntry> result = singleStudyBenefitRiskService.getAlternatives(arms, context);
+
+    Map<String, AlternativeEntry> expectedResult = new HashMap<>();
+    expectedResult.put(interventionId1.toString(), new AlternativeEntry(interventionId1, alternative1Name));
+    expectedResult.put(interventionId2.toString(), new AlternativeEntry(interventionId2, alternative2Name));
+    assertEquals(expectedResult, result);
+  }
+
+  private List<TrialDataArm> buildTrialDataArms() {
+    TrialDataArm arm1 = buildTrialDataArm(defaultMeasurementMoment, interventionId1);
+    TrialDataArm arm2 = buildTrialDataArm(defaultMeasurementMoment, interventionId2);
+    return Arrays.asList(arm1, arm2);
+  }
+
+
+  @Test
+  public void testGetMeasurementsWithCoordinates() {
+    List<TrialDataArm> arms = buildTrialDataArms();
+
+    // Executor
+    Set<MeasurementWithCoordinates> result = singleStudyBenefitRiskService.getMeasurementsWithCoordinates(arms, defaultMeasurementMoment, context);
+
+    Set<MeasurementWithCoordinates> expectedResult = arms.stream().
+            map(arm -> arm.getMeasurementsForMoment(defaultMeasurementMoment).stream()
+                    .map(measurement -> buildMeasurementWithCoordinates(arm, measurement))
+                    .collect(Collectors.toSet()))
+            .reduce(new HashSet<>(), Sets::union);
+    assertEquals(expectedResult, result);
+  }
+
+  private MeasurementWithCoordinates buildMeasurementWithCoordinates(TrialDataArm arm, Measurement measurement) {
+    Integer interventionId = arm.getMatchedProjectInterventionIds().iterator().next();
+    Outcome measuredOutcome = context.getOutcomesByUri().get(measurement.getVariableConceptUri());
+    String dataSourceId = context.getDataSourceIdsByOutcomeUri().get(measuredOutcome.getSemanticOutcomeUri());
+    return new MeasurementWithCoordinates(measurement, interventionId, dataSourceId);
   }
 
   private SingleStudyContext buildContext() {
@@ -288,8 +334,15 @@ public class SingleStudyBenefitRiskServiceImplTest {
     outcomesByUri.put(continuousMeasurementStdDev.getVariableConceptUri(), mockOutcome2);
 
     Map<Integer, AbstractIntervention> interventionsById = new HashMap<>();
-    interventionsById.put(1, mock(AbstractIntervention.class));
-    interventionsById.put(2, mock(AbstractIntervention.class));
+    AbstractIntervention interventionMock1 = mock(AbstractIntervention.class);
+    when(interventionMock1.getId()).thenReturn(interventionId1);
+    when(interventionMock1.getName()).thenReturn(alternative1Name);
+    interventionsById.put(interventionId1, interventionMock1);
+
+    AbstractIntervention interventionMock2 = mock(AbstractIntervention.class);
+    when(interventionMock2.getId()).thenReturn(interventionId2);
+    when(interventionMock2.getName()).thenReturn(alternative2Name);
+    interventionsById.put(interventionId2, interventionMock2);
 
     Map<URI, String> dataSourcesIdsByOutcomeUri = new HashMap<>();
     dataSourcesIdsByOutcomeUri.put(dichotomousVariable.getVariableConceptUri(), "dataSource1");

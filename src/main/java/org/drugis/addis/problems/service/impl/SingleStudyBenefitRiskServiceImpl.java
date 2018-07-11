@@ -1,6 +1,7 @@
 package org.drugis.addis.problems.service.impl;
 
 import com.google.common.collect.ImmutableSet;
+import jdk.internal.dynalink.linker.LinkerServices;
 import org.apache.commons.lang3.tuple.Pair;
 import org.drugis.addis.analyses.service.AnalysisService;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
@@ -8,6 +9,7 @@ import org.drugis.addis.interventions.model.AbstractIntervention;
 import org.drugis.addis.interventions.model.SingleIntervention;
 import org.drugis.addis.outcomes.Outcome;
 import org.drugis.addis.problems.model.*;
+import org.drugis.addis.problems.service.LinkService;
 import org.drugis.addis.problems.service.ProblemService;
 import org.drugis.addis.problems.service.SingleStudyBenefitRiskService;
 import org.drugis.addis.problems.service.model.*;
@@ -18,12 +20,15 @@ import org.drugis.addis.trialverse.model.trialdata.TrialDataStudy;
 import org.drugis.addis.trialverse.service.MappingService;
 import org.drugis.addis.trialverse.service.TriplestoreService;
 import org.drugis.addis.trialverse.service.impl.ReadValueException;
+import org.drugis.trialverse.util.service.UuidService;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
 import java.net.URI;
 import java.util.*;
+import java.util.stream.Collectors;
 
+import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 import static java.util.stream.Collectors.toSet;
@@ -45,6 +50,12 @@ public class SingleStudyBenefitRiskServiceImpl implements SingleStudyBenefitRisk
 
   @Inject
   private AnalysisService analysisService;
+
+  @Inject
+  private UuidService uuidService;
+
+  @Inject
+  private LinkService linkService;
 
   @Override
   public List<AbstractMeasurementEntry> buildPerformanceTable(Set<MeasurementWithCoordinates> measurementDrugInstancePairs) {
@@ -123,7 +134,7 @@ public class SingleStudyBenefitRiskServiceImpl implements SingleStudyBenefitRisk
               Outcome measuredOutcome = context.getOutcomesByUri().get(measurement.getVariableConceptUri());
               String dataSourceId = context.getDataSourceIdsByOutcomeUri().get(measuredOutcome.getSemanticOutcomeUri());
               CriterionEntry criterionEntry = criterionEntryFactory.create(measurement, measuredOutcome.getName(), dataSourceId, context.getSourceLink());
-              System.out.println(measurement + " " + measuredOutcome.getName() + " ; "  +measuredOutcome.getSemanticOutcomeUri());
+              System.out.println(measurement + " " + measuredOutcome.getName() + " ; " + measuredOutcome.getSemanticOutcomeUri());
               return Pair.of(measurement.getVariableConceptUri(), criterionEntry);
             })
             .collect(toMap(Pair::getLeft, Pair::getRight));
@@ -165,5 +176,34 @@ public class SingleStudyBenefitRiskServiceImpl implements SingleStudyBenefitRisk
     Outcome measuredOutcome = context.getOutcomesByUri().get(measurement.getVariableConceptUri());
     String dataSourceId = context.getDataSourceIdsByOutcomeUri().get(measuredOutcome.getSemanticOutcomeUri());
     return new MeasurementWithCoordinates(measurement, interventionId, dataSourceId);
+  }
+
+  @Override
+  public List<TrialDataArm> getArmsWithMatching(Set<AbstractIntervention> includedInterventions, TrialDataStudy trialDataStudy) {
+    List<TrialDataArm> armsWithMatching = trialDataStudy.getTrialDataArms().stream()
+            .peek(arm -> {
+              Set<AbstractIntervention> matchingIncludedInterventions = triplestoreService.findMatchingIncludedInterventions(includedInterventions, arm);
+              Set<Integer> matchedInterventionIds = matchingIncludedInterventions.stream().map(AbstractIntervention::getId).collect(toSet());
+              arm.setMatchedProjectInterventionIds(ImmutableSet.copyOf(matchedInterventionIds));
+            })
+            .collect(Collectors.toList());
+    Boolean isArmWithTooManyMatches = armsWithMatching.stream()
+            .anyMatch(arm -> arm.getMatchedProjectInterventionIds().size() > 1);
+    if (isArmWithTooManyMatches) {
+      throw new RuntimeException("too many matched interventions for arm when creating problem");
+    }
+    return armsWithMatching;
+  }
+
+  @Override
+  public SingleStudyContext buildContext(Project project, URI studyGraphUri, Set<Outcome> outcomes, Set<AbstractIntervention> includedInterventions) {
+    Map<URI, String> dataSourceIdsByOutcomeUri = outcomes.stream()
+            .collect(Collectors.toMap(Outcome::getSemanticOutcomeUri, o -> uuidService.generate()));
+    final Map<Integer, AbstractIntervention> interventionsById = includedInterventions.stream()
+            .collect(toMap(AbstractIntervention::getId, identity()));
+    Map<URI, Outcome> outcomesByUri = outcomes.stream().collect(toMap(Outcome::getSemanticOutcomeUri, identity()));
+    URI sourceLink = linkService.getStudySourceLink(project, studyGraphUri);
+
+    return new SingleStudyContext(outcomesByUri, interventionsById, dataSourceIdsByOutcomeUri, sourceLink);
   }
 }

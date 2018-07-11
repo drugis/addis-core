@@ -1,8 +1,7 @@
-package org.drugis.addis.problems;
+package org.drugis.addis.problems.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
 import net.minidev.json.JSONObject;
 import org.drugis.addis.TestUtils;
@@ -27,13 +26,9 @@ import org.drugis.addis.outcomes.repository.OutcomeRepository;
 import org.drugis.addis.patavitask.PataviTask;
 import org.drugis.addis.patavitask.repository.PataviTaskRepository;
 import org.drugis.addis.problems.model.*;
-import org.drugis.addis.problems.service.HostURLCache;
-import org.drugis.addis.problems.service.ProblemService;
 import org.drugis.addis.problems.service.impl.NetworkPerformanceTableBuilder;
 import org.drugis.addis.problems.service.impl.ProblemServiceImpl;
-import org.drugis.addis.problems.service.impl.SingleStudyBenefitRiskServiceImpl;
 import org.drugis.addis.problems.service.model.AbstractMeasurementEntry;
-import org.drugis.addis.problems.service.model.ContinuousMeasurementEntry;
 import org.drugis.addis.projects.Project;
 import org.drugis.addis.projects.repository.ProjectRepository;
 import org.drugis.addis.security.Account;
@@ -41,12 +36,11 @@ import org.drugis.addis.trialverse.model.SemanticInterventionUriAndName;
 import org.drugis.addis.trialverse.model.SemanticVariable;
 import org.drugis.addis.trialverse.model.emun.CovariateOption;
 import org.drugis.addis.trialverse.model.emun.CovariateOptionType;
-import org.drugis.addis.trialverse.model.mapping.TriplestoreUuidAndOwner;
 import org.drugis.addis.trialverse.model.trialdata.*;
-import org.drugis.addis.trialverse.service.MappingService;
 import org.drugis.addis.trialverse.service.TrialverseService;
 import org.drugis.addis.trialverse.service.TriplestoreService;
 import org.drugis.addis.trialverse.service.impl.ReadValueException;
+import org.drugis.addis.util.WebConstants;
 import org.drugis.trialverse.util.service.UuidService;
 import org.junit.After;
 import org.junit.Before;
@@ -80,7 +74,7 @@ public class ProblemServiceTest {
   private CovariateRepository covariateRepository;
 
   @Mock
-  private SingleStudyBenefitRiskServiceImpl singleStudyPerformanceTablebuilder;
+  private SingleStudyBenefitRiskService singleStudyBenefitRiskService;
 
   @Mock
   private InterventionRepository interventionRepository;
@@ -96,9 +90,6 @@ public class ProblemServiceTest {
 
   @Mock
   private PataviTaskRepository pataviTaskRepository;
-
-  @Mock
-  private MappingService mappingService;
 
   @Mock
   private TrialverseService trialverseService;
@@ -118,11 +109,13 @@ public class ProblemServiceTest {
   @Mock
   private HostURLCache hostURLCache;
 
+  @Mock
+  private LinkService linkService;
+
   @InjectMocks
   private ProblemService problemService;
 
   private final String namespaceUid = "UID 1";
-  private final String versionedUuid = "versionedUuid";
   private final Integer projectId = 101;
   private final Integer analysisId = 202;
   private final String projectDatasetUid = "projectDatasetUid";
@@ -159,7 +152,6 @@ public class ProblemServiceTest {
   public void setUp() throws ResourceDoesNotExistException {
     problemService = new ProblemServiceImpl();
     MockitoAnnotations.initMocks(this);
-    when(mappingService.getVersionedUuid(namespaceUid)).thenReturn(versionedUuid);
     when(projectRepository.get(projectId)).thenReturn(project);
     when(interventionRepository.query(project.getId())).thenReturn(allProjectInterventions);
     when(interventionService.resolveCombinations(anyListOf(CombinationIntervention.class))).thenReturn(Collections.emptyList());
@@ -169,148 +161,86 @@ public class ProblemServiceTest {
   @After
   public void cleanUp() {
     verifyNoMoreInteractions(analysisRepository, projectRepository,
-            interventionRepository, trialverseService, triplestoreService, mappingService, modelService, singleStudyPerformanceTablebuilder, uuidService);
+            interventionRepository, trialverseService, triplestoreService,
+            modelService, singleStudyBenefitRiskService, uuidService, linkService
+      );
   }
 
   @Test
-  public void testGetSingleStudyBenefitRiskProblem() throws Exception, ReadValueException, ProblemCreationException {
-    String dataSourceUuid1 = "dataSourceUuid1";
-    String dataSourceUuid2 = "dataSourceUuid2";
-    when(uuidService.generate()).thenReturn(dataSourceUuid1, dataSourceUuid2);
+  public void testGetSingleStudyBenefitRiskProblem() throws Exception, ProblemCreationException {
+    when(projectRepository.get(projectId)).thenReturn(project);
 
+    // prepare outcomes
     URI secondOutcomeUri = URI.create("http://secondSemantic");
     SemanticVariable secondSemanticOutcome = new SemanticVariable(secondOutcomeUri, "second semantic outcome");
     Outcome secondOutcome = new Outcome(-303, projectId, "second outcome", direction, "very", secondSemanticOutcome);
     List<Outcome> outcomes = Arrays.asList(outcome, secondOutcome);
+    when(outcomeRepository.get(projectId, Sets.newHashSet(outcome.getId(), secondOutcome.getId()))).thenReturn(outcomes);
+
 
     URI defaultMeasurementMoment = URI.create("defaultMeasurementMoment");
-
+    TrialDataStudy studyMock = mock(TrialDataStudy.class);
+    when(studyMock.getDefaultMeasurementMoment()).thenReturn(defaultMeasurementMoment);
+    URI daanEtAlUri = URI.create("daanEtAl");
+    SingleStudyContext context = mock(SingleStudyContext.class);
 
     //include interventions: fluox and sertra
     InterventionInclusion fluoxInclusion = new InterventionInclusion(analysisId, fluoxIntervention.getId());
     InterventionInclusion sertraInclusion = new InterventionInclusion(analysisId, sertraIntervention.getId());
     Set<InterventionInclusion> interventionInclusions = Sets.newHashSet(fluoxInclusion, sertraInclusion);
+
+    // build analysis & return it
     BenefitRiskAnalysis singleStudyAnalysis = new BenefitRiskAnalysis(analysisId, projectId, "single study analysis", interventionInclusions);
-    when(projectRepository.get(projectId)).thenReturn(project);
-    when(analysisRepository.get(analysisId)).thenReturn(singleStudyAnalysis);
-    when(outcomeRepository.get(projectId, Sets.newHashSet(outcome.getId(), secondOutcome.getId()))).thenReturn(outcomes);
-
-    URI daanEtAlUri = URI.create("http://thiscomputer.com/graphs/DaanEtAlUri");
-    URI daanEtAlFluoxInstance = URI.create("daanEtAlFluoxInstance");
-    URI daanEtAlFluoxArmUri = URI.create("daanEtAlFluoxArm");
-    URI firstOutcomeUri = outcome.getSemanticOutcomeUri();
-    URI variableConceptUri = outcome.getSemanticOutcomeUri();
-    Measurement daanEtAlFluoxMeasurement1 = new MeasurementBuilder(daanEtAlUri, firstOutcomeUri, variableConceptUri, daanEtAlFluoxArmUri, DICHOTOMOUS_TYPE_URI)
-            .createMeasurement();
-    Measurement daanEtAlFluoxMeasurement2 = new MeasurementBuilder(daanEtAlUri, secondOutcomeUri, secondSemanticOutcome.getUri(), daanEtAlFluoxArmUri, DICHOTOMOUS_TYPE_URI)
-            .createMeasurement();
-    AbstractSemanticIntervention simpleSemanticFluoxIntervention = new SimpleSemanticIntervention(daanEtAlFluoxInstance, fluoxConceptUri);
-
-    TrialDataArm daanEtAlFluoxArm = new TrialDataArm(daanEtAlFluoxArmUri, "daanEtAlFluoxArm");
-    daanEtAlFluoxArm.addMeasurement(defaultMeasurementMoment, daanEtAlFluoxMeasurement1);
-    daanEtAlFluoxArm.addMeasurement(defaultMeasurementMoment, daanEtAlFluoxMeasurement2);
-    daanEtAlFluoxArm.addSemanticIntervention(simpleSemanticFluoxIntervention);
-
-    URI daanEtAlSertraInstance = URI.create("daanEtAlSertraInstance");
-    URI daanEtAlSertraArmUri = URI.create("daanEtAlSertraArm");
-    Measurement daanEtAlSertraMeasurement1 = new MeasurementBuilder(daanEtAlUri, firstOutcomeUri, variableConceptUri, daanEtAlSertraArmUri, DICHOTOMOUS_TYPE_URI)
-            .createMeasurement();
-    Measurement daanEtAlSertraMeasurement2 = new MeasurementBuilder(daanEtAlUri, secondOutcomeUri, secondSemanticOutcome.getUri(), daanEtAlSertraArmUri, DICHOTOMOUS_TYPE_URI)
-            .createMeasurement();
-    AbstractSemanticIntervention simpleSemanticSertraIntervention = new SimpleSemanticIntervention(daanEtAlSertraInstance, sertraConceptUri);
-
-    TrialDataArm daanEtAlSertraArm = new TrialDataArm(daanEtAlSertraArmUri, "daanEtAlSertraArm");
-    daanEtAlSertraArm.addMeasurement(defaultMeasurementMoment, daanEtAlSertraMeasurement1);
-    daanEtAlSertraArm.addMeasurement(defaultMeasurementMoment, daanEtAlSertraMeasurement2);
-    daanEtAlSertraArm.addSemanticIntervention(simpleSemanticSertraIntervention);
-
-    URI daanEtAlParoxInstance = URI.create("daanEtAlParoxInstance");
-    URI daanEtAlParoxArmUri = URI.create("daanEtAlParoxArm");
-    Measurement daanEtAlParoxMeasurement1 = new MeasurementBuilder(daanEtAlUri, firstOutcomeUri, variableConceptUri, daanEtAlParoxArmUri, DICHOTOMOUS_TYPE_URI)
-            .createMeasurement();
-    Measurement daanEtAlParoxMeasurement2 = new MeasurementBuilder(daanEtAlUri, secondOutcomeUri, variableConceptUri, daanEtAlParoxArmUri, DICHOTOMOUS_TYPE_URI)
-            .createMeasurement();
-    AbstractSemanticIntervention simpleSemanticParoxIntervention = new SimpleSemanticIntervention(daanEtAlParoxInstance, paroxConceptUri);
-
-    TrialDataArm unmatchedDaanEtAlParoxArm = new TrialDataArm(daanEtAlParoxArmUri, "daanEtAlParoxArm");
-    unmatchedDaanEtAlParoxArm.addMeasurement(defaultMeasurementMoment, daanEtAlParoxMeasurement1);
-    unmatchedDaanEtAlParoxArm.addMeasurement(defaultMeasurementMoment, daanEtAlParoxMeasurement2);
-    unmatchedDaanEtAlParoxArm.addSemanticIntervention(simpleSemanticParoxIntervention);
-
-    // add matching result to arms
-    daanEtAlFluoxArm.setMatchedProjectInterventionIds(Collections.singleton(fluoxIntervention.getId()));
-    daanEtAlSertraArm.setMatchedProjectInterventionIds(Collections.singleton(sertraIntervention.getId()));
-    List<TrialDataArm> daanEtAlArms = Arrays.asList(daanEtAlFluoxArm, daanEtAlSertraArm, unmatchedDaanEtAlParoxArm);
-    TrialDataStudy daanEtAl = new TrialDataStudy(daanEtAlUri, "Daan et al", daanEtAlArms);
-    daanEtAl.setDefaultMeasurementMoment(defaultMeasurementMoment);
-
-    // actually set study in analysis
     BenefitRiskStudyOutcomeInclusion outcomeInclusion = new BenefitRiskStudyOutcomeInclusion(analysisId, outcome.getId(), daanEtAlUri);
     BenefitRiskStudyOutcomeInclusion secondOutcomeInclusion = new BenefitRiskStudyOutcomeInclusion(analysisId, secondOutcome.getId(), daanEtAlUri);
     singleStudyAnalysis.setBenefitRiskStudyOutcomeInclusions(Arrays.asList(outcomeInclusion, secondOutcomeInclusion));
+    when(analysisRepository.get(analysisId)).thenReturn(singleStudyAnalysis);
 
-    List<TrialDataStudy> studyResult = Collections.singletonList(daanEtAl);
-    Set<URI> interventionUris = new HashSet<>(Arrays.asList(fluoxIntervention.getSemanticInterventionUri(), sertraIntervention.getSemanticInterventionUri()));
-
-    when(triplestoreService.getSingleStudyData(versionedUuid, daanEtAl.getStudyUri(), project.getDatasetVersion(), Sets.newHashSet(outcome.getSemanticOutcomeUri(), secondOutcome.getSemanticOutcomeUri()), interventionUris)).thenReturn(studyResult);
-
+    // prepare interventions for retrieval
     Set<AbstractIntervention> includedInterventions = Sets.newHashSet(fluoxIntervention, sertraIntervention);
     Set<SingleIntervention> singleInterventions = Sets.newHashSet(fluoxIntervention, sertraIntervention);
     when(analysisService.getIncludedInterventions(singleStudyAnalysis)).thenReturn(includedInterventions);
     when(analysisService.getSingleInterventions(allProjectInterventions)).thenReturn(singleInterventions);
     when(analysisService.getSingleInterventions(includedInterventions)).thenReturn(singleInterventions);
-    when(triplestoreService.findMatchingIncludedInterventions(includedInterventions, daanEtAlFluoxArm))
-        .thenReturn(ImmutableSet.of(fluoxIntervention));
-    when(triplestoreService.findMatchingIncludedInterventions(includedInterventions, daanEtAlSertraArm))
-        .thenReturn(ImmutableSet.of(sertraIntervention));
-    when(triplestoreService.findMatchingIncludedInterventions(includedInterventions, unmatchedDaanEtAlParoxArm))
-        .thenReturn(Collections.emptySet());
 
-    AbstractMeasurementEntry measurementEntry = mock(ContinuousMeasurementEntry.class);
-    List<AbstractMeasurementEntry> performanceTable = Collections.singletonList(measurementEntry);
-    when(singleStudyPerformanceTablebuilder.buildPerformanceTable(any())).thenReturn(performanceTable);
+    // prepare single study BR service
+    when(singleStudyBenefitRiskService.buildContext(project, daanEtAlUri, Sets.newHashSet(outcomes), includedInterventions)).thenReturn(context);
+    when(singleStudyBenefitRiskService.getSingleStudyMeasurements(project, daanEtAlUri, context)).thenReturn(studyMock);
+    List<TrialDataArm> armsMock = Arrays.asList(mock(TrialDataArm.class), mock(TrialDataArm.class));
+    when(singleStudyBenefitRiskService.getArmsWithMatching(includedInterventions, studyMock)).thenReturn(armsMock);
+    Map<URI, CriterionEntry> criteriaMock = new HashMap<>();
+    criteriaMock.put(URI.create("criterion1"), mock(CriterionEntry.class));
+    when(singleStudyBenefitRiskService.getCriteria(armsMock, defaultMeasurementMoment, context)).thenReturn(criteriaMock);
+    Map<String, AlternativeEntry> alternativesMock = new HashMap<>();
+    alternativesMock.put(String.valueOf(fluoxInterventionId), mock(AlternativeEntry.class));
+    alternativesMock.put(String.valueOf(sertraInterventionId), mock(AlternativeEntry.class));
+    when(singleStudyBenefitRiskService.getAlternatives(armsMock, context)).thenReturn(alternativesMock);
+    Set<MeasurementWithCoordinates> measurementsMock = new HashSet<>();
+    when(singleStudyBenefitRiskService.getMeasurementsWithCoordinates(armsMock, defaultMeasurementMoment, context)).thenReturn(measurementsMock);
+    List<AbstractMeasurementEntry> performanceMock = Collections.singletonList(mock(AbstractMeasurementEntry.class));
+    when(singleStudyBenefitRiskService.buildPerformanceTable(measurementsMock)).thenReturn(performanceMock);
 
-    when(mappingService.getVersionedUuid(project.getNamespaceUid())).thenReturn(versionedUuid);
-    Integer ownerId = 37;
-    when(owner.getId()).thenReturn(ownerId);
-    when(mappingService.getVersionedUuidAndOwner(project.getNamespaceUid())).thenReturn(new TriplestoreUuidAndOwner("someversion", 37));
 
     // --------------- execute ---------------- //
     BenefitRiskProblem actualProblem = (BenefitRiskProblem) problemService.getProblem(projectId, analysisId);
     // --------------- execute ---------------- //
 
-    verify(uuidService, times(interventionInclusions.size())).generate();
-    verify(mappingService, times(4)).getVersionedUuidAndOwner(project.getNamespaceUid());
+    BenefitRiskProblem expectedProblem = new BenefitRiskProblem(WebConstants.SCHEMA_VERSION, criteriaMock, alternativesMock, performanceMock);
+
+    assertEquals(expectedProblem, actualProblem);
+
     verify(modelService).get(Collections.emptySet());
     verify(projectRepository).get(projectId);
     verify(analysisRepository).get(analysisId);
-    verify(triplestoreService).getSingleStudyData(versionedUuid, daanEtAl.getStudyUri(), project.getDatasetVersion(), Sets.newHashSet(outcome.getSemanticOutcomeUri(), secondOutcome.getSemanticOutcomeUri()), interventionUris);
-    verify(triplestoreService).findMatchingIncludedInterventions(includedInterventions, daanEtAlFluoxArm);
-    verify(triplestoreService).findMatchingIncludedInterventions(includedInterventions, daanEtAlSertraArm);
-    verify(triplestoreService).findMatchingIncludedInterventions(includedInterventions, unmatchedDaanEtAlParoxArm);
-    verify(singleStudyPerformanceTablebuilder).buildPerformanceTable(any());
-    verify(mappingService).getVersionedUuid(project.getNamespaceUid());
     verify(interventionRepository).query(project.getId());
 
-    MeasurementWithCoordinates fluoxDataSource1 = new MeasurementWithCoordinates(daanEtAlFluoxMeasurement1,
-            daanEtAlFluoxArm.getMatchedProjectInterventionIds().iterator().next(), dataSourceUuid1);
-    MeasurementWithCoordinates fluoxDataSource2 = new MeasurementWithCoordinates(daanEtAlFluoxMeasurement2,
-            daanEtAlFluoxArm.getMatchedProjectInterventionIds().iterator().next(), dataSourceUuid2);
-    MeasurementWithCoordinates sertraDataSource1 = new MeasurementWithCoordinates(daanEtAlSertraMeasurement1,
-            daanEtAlSertraArm.getMatchedProjectInterventionIds().iterator().next(), dataSourceUuid1);
-    MeasurementWithCoordinates sertraDataSource2 = new MeasurementWithCoordinates(daanEtAlSertraMeasurement2,
-            daanEtAlSertraArm.getMatchedProjectInterventionIds().iterator().next(), dataSourceUuid2);
-    Set<MeasurementWithCoordinates> measurementsWithCoordinates = ImmutableSet.of(fluoxDataSource1, fluoxDataSource2, sertraDataSource1, sertraDataSource2);
-
-    verify(singleStudyPerformanceTablebuilder).buildPerformanceTable(measurementsWithCoordinates);
-
-    assertNotNull(actualProblem);
-    assertNotNull(actualProblem.getAlternatives());
-    assertNotNull(actualProblem.getCriteria());
-
-    Map<URI, CriterionEntry> actualCriteria = actualProblem.getCriteria();
-    assertTrue(actualCriteria.keySet().contains(firstOutcomeUri));
-    assertTrue(actualCriteria.keySet().contains(semanticOutcome.getUri()));
+    verify(singleStudyBenefitRiskService).buildContext(project, daanEtAlUri, Sets.newHashSet(outcomes), includedInterventions);
+    verify(singleStudyBenefitRiskService).getSingleStudyMeasurements(project, daanEtAlUri, context);
+    verify(singleStudyBenefitRiskService).getArmsWithMatching(includedInterventions, studyMock);
+    verify(singleStudyBenefitRiskService).getCriteria(armsMock, defaultMeasurementMoment, context);
+    verify(singleStudyBenefitRiskService).getAlternatives(armsMock, context);
+    verify(singleStudyBenefitRiskService).getMeasurementsWithCoordinates(armsMock, defaultMeasurementMoment, context);
+    verify(singleStudyBenefitRiskService).buildPerformanceTable(measurementsMock);
   }
 
   @Test
@@ -739,6 +669,8 @@ public class ProblemServiceTest {
     verify(pataviTaskRepository).getResults(anyCollectionOf(PataviTask.class));
     verify(interventionRepository).query(projectId);
     verify(uuidService, times(outcomeInclusions.size())).generate();
+    verify(linkService).getModelSourceLink(project, model1);
+    verify(linkService).getModelSourceLink(project, model2);
 
     assertEquals(3, problem.getAlternatives().size());
     assertEquals(2, problem.getCriteria().size());

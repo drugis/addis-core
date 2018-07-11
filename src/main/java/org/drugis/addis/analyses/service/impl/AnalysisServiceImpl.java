@@ -128,9 +128,9 @@ public class AnalysisServiceImpl implements AnalysisService {
 
   @Override
   public Set<AbstractIntervention> getIncludedInterventions(AbstractAnalysis analysis) {
-    List<Integer> interventionInclusionsIds = analysis.getInterventionInclusions().stream()
+    Set<Integer> interventionInclusionsIds = analysis.getInterventionInclusions().stream()
             .map(InterventionInclusion::getInterventionId)
-            .collect(Collectors.toList());
+            .collect(Collectors.toSet());
     return interventionRepository.query(analysis.getProjectId()).stream()
             .filter(i -> interventionInclusionsIds.contains(i.getId()))
             .collect(Collectors.toSet());
