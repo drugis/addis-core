@@ -34,6 +34,7 @@ import java.util.stream.Collectors;
 
 import static org.drugis.addis.problems.service.ProblemService.DICHOTOMOUS_TYPE_URI;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
 
@@ -92,7 +93,7 @@ public class NetworkMetaAnalysisServiceTest {
 
   @After
   public void tearDown() {
-    verifyNoMoreInteractions(analysisService, covariateRepository);
+    verifyNoMoreInteractions(analysisService, covariateRepository, networkMetaAnalysisEntryBuilder);
   }
 
   @Test
@@ -121,21 +122,6 @@ public class NetworkMetaAnalysisServiceTest {
   @Test
   public void testBuildPerformanceEntries() {
     NetworkMetaAnalysis networkMetaAnalysis = new NetworkMetaAnalysis(analysisId, project.getId(), "nma title", outcome);
-
-//    HashSet<InterventionInclusion> interventionInclusions = includeFluoxAndSertra(networkMetaAnalysis);
-
-//    // covariates
-//    Integer includedCovariateId = -1;
-//    Integer excludedCovariateId = -2;
-//    String includedCovariateDefinitionKey = CovariateOption.ALLOCATION_RANDOMIZED.toString();
-//    Covariate includedCovariate = new Covariate(includedCovariateId, project.getId(), "isRandomised", "mot",
-//            includedCovariateDefinitionKey, CovariateOptionType.STUDY_CHARACTERISTIC);
-//    Covariate notIncludedCovariate = new Covariate(excludedCovariateId, project.getId(), "age", "mot", "ageUri", CovariateOptionType.POPULATION_CHARACTERISTIC);
-//    Collection<Covariate> allProjectCovariates = Arrays.asList(includedCovariate, notIncludedCovariate);
-//    when(covariateRepository.findByProject(project.getId())).thenReturn(allProjectCovariates);
-//
-//    Set<CovariateInclusion> covariateInclusions = new HashSet<>(Collections.singletonList(new CovariateInclusion(networkMetaAnalysis.getId(), includedCovariateId)));
-//    networkMetaAnalysis.updateIncludedCovariates(covariateInclusions);
 
     // add study with excluded arms to check whether it's excluded from covariate entries
     String tooFewStudyName = "DaanEtAlUri";
@@ -239,6 +225,8 @@ public class NetworkMetaAnalysisServiceTest {
 
     verify(networkMetaAnalysisEntryBuilder).build(normalStudyName, fluoxInterventionId, fluoxMeasurement);
     verify(networkMetaAnalysisEntryBuilder).build(normalStudyName, paroxInterventionId, paroxMeasurement);
+    verify(networkMetaAnalysisEntryBuilder).build(nonDefaultStudyName, fluoxInterventionId, fluoxMeasurement);
+    verify(networkMetaAnalysisEntryBuilder).build(nonDefaultStudyName, paroxInterventionId, paroxMeasurement);
   }
 
   private TrialDataArm buildArmMock(URI armUri, Set<Integer> matchedInterventionIds, Set<Measurement> measurements) {
@@ -254,83 +242,78 @@ public class NetworkMetaAnalysisServiceTest {
     return arm;
   }
 
-  private HashSet<InterventionInclusion> includeFluoxAndSertra(NetworkMetaAnalysis networkMetaAnalysis) {
-    //include interventions: fluox and sertra
-    InterventionInclusion fluoxInclusion = new InterventionInclusion(networkMetaAnalysis.getId(), fluoxIntervention.getId());
-    InterventionInclusion sertraInclusion = new InterventionInclusion(networkMetaAnalysis.getId(), sertraIntervention.getId());
-    HashSet<InterventionInclusion> interventionInclusions = new HashSet<>(Arrays.asList(fluoxInclusion, sertraInclusion));
-    networkMetaAnalysis.updateIncludedInterventions(interventionInclusions);
-    return interventionInclusions;
-  }
+  @Test
+  public void testGetStudiesWithEntries() {
+    URI someStudyUri = URI.create("someURi.com");
 
-  private TrialDataStudy createStudyMock(NetworkMetaAnalysis networkMetaAnalysis, Covariate includedCovariate, URI uri, String title) {
-    return createStudyMock(networkMetaAnalysis, includedCovariate, uri, title, null);
-  }
+    String studyWithEntriesName = "studyWithEntries";
+    TrialDataStudy studyWithEntries = new TrialDataStudy(someStudyUri, studyWithEntriesName, null);
+    TrialDataStudy studyWithoutEntries = new TrialDataStudy(someStudyUri, "studyWithoutEntries", null);
+    List<TrialDataStudy> studies = Arrays.asList(studyWithEntries, studyWithoutEntries);
 
-  private TrialDataStudy createStudyMock(NetworkMetaAnalysis networkMetaAnalysis, Covariate includedCovariate, URI uri, String title, URI nonDefaultMeasurementMoment) {
-    URI measurementMoment = (nonDefaultMeasurementMoment == null) ? URI.create("defaultMeasurementMoment") : nonDefaultMeasurementMoment;
-    URI variableUri = outcome.getSemanticOutcomeUri();
-    URI variableConceptUri = outcome.getSemanticOutcomeUri();
+    AbstractNetworkMetaAnalysisProblemEntry entry = mock(AbstractNetworkMetaAnalysisProblemEntry.class);
+    when(entry.getStudy()).thenReturn(studyWithEntriesName);
+    List<AbstractNetworkMetaAnalysisProblemEntry> entries = Collections.singletonList(entry);
 
-    URI daanEtAlFluoxInstance = URI.create(title + "FluoxInstance");
-    URI daanEtAlFluoxArmUri = URI.create(title + "FluoxArm");
-    int daanEtAlFluoxSampleSize = 20;
-    int daanEtAlFluoxRate = 30;
-    Measurement defaultDaanEtAlFluoxMeasurement = new MeasurementBuilder(uri, variableUri, variableConceptUri, daanEtAlFluoxArmUri, DICHOTOMOUS_TYPE_URI)
-            .setSampleSize(daanEtAlFluoxSampleSize)
-            .setRate(daanEtAlFluoxRate)
-            .createMeasurement();
-    AbstractSemanticIntervention simpleSemanticFluoxIntervention = new SimpleSemanticIntervention(daanEtAlFluoxInstance, fluoxConceptUri);
+    List<TrialDataStudy> expectedResult = Collections.singletonList(studyWithEntries);
 
-    TrialDataArm daanEtAlFluoxArm = new TrialDataArm(daanEtAlFluoxArmUri, "daanEtAlFluoxArm");
-    daanEtAlFluoxArm.addMeasurement(measurementMoment, defaultDaanEtAlFluoxMeasurement);
-    daanEtAlFluoxArm.addSemanticIntervention(simpleSemanticFluoxIntervention);
-
-    URI daanEtAlSertraInstance = URI.create(title + "SertraInstance");
-    URI daanEtAlSertraArmUri = URI.create(title + "SertraArm");
-    int daanEtAlSertraSampleSize = 40;
-    int daanEtAlSertraRate = 5;
-    Measurement daanEtAlSertraMeasurement = new MeasurementBuilder(uri, variableUri, variableConceptUri, daanEtAlSertraArmUri, DICHOTOMOUS_TYPE_URI)
-            .setSampleSize(daanEtAlSertraSampleSize)
-            .setRate(daanEtAlSertraRate)
-            .createMeasurement();
-    AbstractSemanticIntervention simpleSemanticSertraIntervention = new SimpleSemanticIntervention(daanEtAlSertraInstance, sertraConceptUri);
-
-    TrialDataArm daanEtAlSertraArm = new TrialDataArm(daanEtAlSertraArmUri, title + "SertraArm");
-    daanEtAlSertraArm.addMeasurement(measurementMoment, daanEtAlSertraMeasurement);
-    daanEtAlFluoxArm.addSemanticIntervention(simpleSemanticSertraIntervention);
-
-    URI daanEtAlExcludedArmUri = URI.create(title + "excludeme");
-    Measurement daanEtAlExcludedMeasurement = new MeasurementBuilder(uri, variableUri, variableConceptUri, daanEtAlExcludedArmUri, DICHOTOMOUS_TYPE_URI)
-            .setSampleSize(daanEtAlSertraSampleSize)
-            .setRate(daanEtAlSertraRate)
-            .createMeasurement();
-    TrialDataArm excludedArm = new TrialDataArm(daanEtAlSertraArmUri, title + "excludedArm");
-    excludedArm.addMeasurement(measurementMoment, daanEtAlExcludedMeasurement);
-    excludedArm.addSemanticIntervention(simpleSemanticSertraIntervention);
-
-    // exclude arms
-    Set<ArmExclusion> excludedArms = new HashSet<>(Collections.singletonList(new ArmExclusion(networkMetaAnalysis.getId(), daanEtAlExcludedArmUri)));
-    networkMetaAnalysis.updateArmExclusions(excludedArms);
-
-    // add matching result to arms
-    daanEtAlFluoxArm.setMatchedProjectInterventionIds(new HashSet<>(Collections.singletonList(fluoxIntervention.getId())));
-    daanEtAlSertraArm.setMatchedProjectInterventionIds(new HashSet<>(Collections.singletonList(sertraIntervention.getId())));
-    List<TrialDataArm> daanEtAlArms = Arrays.asList(daanEtAlFluoxArm, daanEtAlSertraArm, excludedArm);
-    TrialDataStudy daanEtAl = new TrialDataStudy(uri, title, daanEtAlArms);
-    Double randomisedValue = 30d;
-    if (includedCovariate != null) {
-      daanEtAl.addCovariateValue(new CovariateStudyValue(uri, includedCovariate.getDefinitionKey(), randomisedValue));
-    }
-    daanEtAl.setDefaultMeasurementMoment(measurementMoment);
-    return daanEtAl;
+    //issocute
+    List<TrialDataStudy> result = networkMetaAnalysisService.getStudiesWithEntries(studies, entries);
+    assertEquals(expectedResult, result);
   }
 
   @Test
-  public void getStudiesWithEntries() {
+  public void testGetCovariatesIfNoInclusions() {
+    NetworkMetaAnalysis analysis = mock(NetworkMetaAnalysis.class);
+    when(analysis.getCovariateInclusions()).thenReturn(Collections.emptyList());
+    List<TrialDataStudy> studies = Collections.singletonList(mock(TrialDataStudy.class));
+
+    // overconfidence is a slow and insidious killer
+    Map<String, Map<String, Double>> result = networkMetaAnalysisService.getStudyLevelCovariates(project, analysis, studies);
+    assertNull(result);
   }
 
   @Test
   public void getStudyLevelCovariates() {
+    String analysisTitle = "analysis";
+    NetworkMetaAnalysis analysis = new NetworkMetaAnalysis(analysisId, projectId, analysisTitle);
+    Integer includedCovariateId = 1;
+    Integer excludedCovariateId = -1;
+    CovariateInclusion inclusion = new CovariateInclusion(analysisId, includedCovariateId);
+    List<CovariateInclusion> covariateInclusions = Collections.singletonList(inclusion);
+    analysis.updateCovariateInclusions(covariateInclusions);
+
+    String includedKey = "includedKey";
+    URI studyUri = URI.create("someRandomURI");
+    CovariateStudyValue includedCovariateStudyValue = new CovariateStudyValue(studyUri, includedKey, -300.);
+    CovariateStudyValue excludedCovariateStudyValue = new CovariateStudyValue(studyUri, "excludedKey", 300.);
+    List<CovariateStudyValue> covariateStudyValues = Arrays.asList(includedCovariateStudyValue, excludedCovariateStudyValue);
+
+    TrialDataStudy study = mock(TrialDataStudy.class);
+    String studyName = "study";
+    when(study.getName()).thenReturn(studyName);
+    when(study.getCovariateValues()).thenReturn(covariateStudyValues);
+    List<TrialDataStudy> studies = Collections.singletonList(study);
+
+    Covariate includedCovariate= mock(Covariate.class);
+    Covariate excludedCovariate = mock(Covariate.class);
+    when(includedCovariate.getId()).thenReturn(includedCovariateId);
+    when(excludedCovariate.getId()).thenReturn(excludedCovariateId);
+    when(includedCovariate.getDefinitionKey()).thenReturn(includedKey);
+    String includedCovariateName = "includedName";
+    when(includedCovariate.getName()).thenReturn(includedCovariateName);
+
+    Collection<Covariate> projectCovariates = Arrays.asList(includedCovariate, excludedCovariate);
+    when(covariateRepository.findByProject(projectId)).thenReturn(projectCovariates);
+
+    Map<String, Map<String, Double>> expectedResult = new HashMap<>();
+    Map<String, Double> nodeMap = new HashMap<>();
+    nodeMap.put(includedCovariate.getName(), includedCovariateStudyValue.getValue());
+    expectedResult.put(studyName, nodeMap);
+    // execute
+    Map<String, Map<String, Double>> result = networkMetaAnalysisService.getStudyLevelCovariates(project, analysis, studies);
+    assertEquals(expectedResult, result);
+
+    verify(covariateRepository).findByProject(projectId);
   }
 }

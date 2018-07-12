@@ -50,10 +50,16 @@ import static java.util.stream.Collectors.*;
 public class ProblemServiceImpl implements ProblemService {
 
   @Inject
-  private ProjectRepository projectRepository;
+  private AnalysisRepository analysisRepository;
 
   @Inject
-  private SingleStudyBenefitRiskService singleStudyBenefitRiskService;
+  private AnalysisService analysisService;
+
+  @Inject
+  private LinkService linkService;
+
+  @Inject
+  private ModelService modelService;
 
   @Inject
   private NetworkMetaAnalysisService networkMetaAnalysisService;
@@ -62,25 +68,19 @@ public class ProblemServiceImpl implements ProblemService {
   private NetworkPerformanceTableBuilder networkPerformanceTableBuilder;
 
   @Inject
-  private AnalysisRepository analysisRepository;
-
-  @Inject
-  private ModelService modelService;
-
-  @Inject
   private OutcomeRepository outcomeRepository;
 
   @Inject
   private PataviTaskRepository pataviTaskRepository;
 
   @Inject
-  private AnalysisService analysisService;
+  private ProjectRepository projectRepository;
+
+  @Inject
+  private SingleStudyBenefitRiskService singleStudyBenefitRiskService;
 
   @Inject
   private UuidService uuidService;
-
-  @Inject
-  private LinkService linkService;
 
 
   @Override
@@ -182,11 +182,13 @@ public class ProblemServiceImpl implements ProblemService {
         if ("binom".equals(model.getLikelihood())) {
           DataSourceEntry dataSource = new DataSourceEntry(uuidService.generate(), Arrays.asList(0d, 1d),
                   /* pvf */ null, "meta analysis", modelURI);
-          criterionEntry = new CriterionEntry(outcome.getSemanticOutcomeUri().toString(), Collections.singletonList(dataSource),
+          criterionEntry = new CriterionEntry(outcome.getSemanticOutcomeUri().toString(),
+                  Collections.singletonList(dataSource),
                   outcome.getName(), "proportion");
         } else {
           DataSourceEntry dataSource = new DataSourceEntry(uuidService.generate(), "meta analysis", modelURI);
-          criterionEntry = new CriterionEntry(outcome.getSemanticOutcomeUri().toString(), Collections.singletonList(dataSource), outcome.getName());
+          criterionEntry = new CriterionEntry(outcome.getSemanticOutcomeUri().toString(),
+                  Collections.singletonList(dataSource), outcome.getName());
         }
         criteriaWithBaseline.put(outcome.getSemanticOutcomeUri(), criterionEntry);
       }

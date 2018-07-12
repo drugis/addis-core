@@ -20,10 +20,7 @@ import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
 import java.net.URI;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static java.util.function.Function.identity;
@@ -125,36 +122,52 @@ public class NetworkMetaAnalysisServiceImpl implements NetworkMetaAnalysisServic
 
   @Override
   public Map<String, Map<String, Double>> getStudyLevelCovariates(Project project, NetworkMetaAnalysis analysis, List<TrialDataStudy> studiesWithEntries) {
-    List<String> includedCovariateKeys = getIncludedCovariateKeys(project, analysis);
-    if (includedCovariateKeys.size() == 0) {
+    if (analysis.getCovariateInclusions().size() == 0) {
       return null;
     }
 
-    Map<String, Covariate> covariatesByKey = covariateRepository.findByProject(project.getId())
+    Collection<Covariate> projectCovariates = covariateRepository.findByProject(project.getId());
+    Map<String, Covariate> includedCovariatesByKey = projectCovariates
             .stream()
+            .filter(covariate -> isIncluded(analysis, covariate))
             .collect(toMap(Covariate::getDefinitionKey, identity()));
+
     return studiesWithEntries.stream()
-            .map(trialDataStudy -> getCovariateNodes(trialDataStudy, covariatesByKey))
-            .collect(Collectors.toMap(Pair::getLeft, Pair::getRight));
+            .map(trialDataStudy -> getStudyValuesByCovariate(trialDataStudy, includedCovariatesByKey))
+            .collect(Collectors.toMap(StudyNameAndCovariateNodes::getName, StudyNameAndCovariateNodes::getNodes));
   }
 
-  private Pair<String, Map<String, Double>> getCovariateNodes(TrialDataStudy trialDataStudy, Map<String, Covariate> covariatesByKey) {
+  private boolean isIncluded(NetworkMetaAnalysis analysis, Covariate covariate) {
+    return analysis.getCovariateInclusions().stream()
+            .anyMatch(inclusion -> inclusion.getCovariateId().equals(covariate.getId()));
+  }
+
+  private StudyNameAndCovariateNodes getStudyValuesByCovariate(TrialDataStudy trialDataStudy, Map<String, Covariate> includedCovariatesByKey) {
     Map<String, Double> covariateNodes = trialDataStudy.getCovariateValues().stream()
+            .filter(covariateStudyValue -> includedCovariatesByKey.containsKey(covariateStudyValue.getCovariateKey()))
             .map(covariateStudyValue -> {
-              String covariateName = covariatesByKey.get(covariateStudyValue.getCovariateKey()).getName();
+              String covariateName = includedCovariatesByKey.get(covariateStudyValue.getCovariateKey()).getName();
               return Pair.of(covariateName, covariateStudyValue.getValue());
             })
             .collect(Collectors.toMap(Pair::getLeft, Pair::getRight));
-    return Pair.of(trialDataStudy.getName(), covariateNodes);
+    return new StudyNameAndCovariateNodes(trialDataStudy.getName(), covariateNodes);
   }
 
-  private List<String> getIncludedCovariateKeys(Project project, NetworkMetaAnalysis analysis) {
-    Map<Integer, Covariate> projectCovariatesById = covariateRepository.findByProject(project.getId())
-            .stream()
-            .collect(toMap(Covariate::getId, identity()));
-    return analysis.getCovariateInclusions().stream()
-            .map(covariateInclusion -> projectCovariatesById.get(covariateInclusion.getCovariateId()).getDefinitionKey())
-            .sorted()
-            .collect(toList());
+  private class StudyNameAndCovariateNodes {
+    final String name;
+    final Map<String, Double> nodes;
+
+    StudyNameAndCovariateNodes(String name, Map<String, Double> nodes) {
+      this.name = name;
+      this.nodes = nodes;
+    }
+
+    public String getName() {
+      return name;
+    }
+
+    public Map<String, Double> getNodes() {
+      return nodes;
+    }
   }
 }
