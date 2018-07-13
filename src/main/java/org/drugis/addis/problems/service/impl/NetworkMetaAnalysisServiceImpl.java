@@ -1,5 +1,6 @@
 package org.drugis.addis.problems.service.impl;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import org.apache.commons.collections.ListUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.drugis.addis.analyses.model.ArmExclusion;
@@ -10,16 +11,25 @@ import org.drugis.addis.covariates.Covariate;
 import org.drugis.addis.covariates.CovariateRepository;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.interventions.model.AbstractIntervention;
+import org.drugis.addis.models.Model;
+import org.drugis.addis.outcomes.Outcome;
+import org.drugis.addis.patavitask.PataviTask;
+import org.drugis.addis.patavitask.repository.PataviTaskRepository;
+import org.drugis.addis.patavitask.repository.UnexpectedNumberOfResultsException;
 import org.drugis.addis.problems.model.*;
 import org.drugis.addis.problems.service.NetworkMetaAnalysisService;
 import org.drugis.addis.projects.Project;
 import org.drugis.addis.trialverse.model.trialdata.Measurement;
 import org.drugis.addis.trialverse.model.trialdata.TrialDataArm;
 import org.drugis.addis.trialverse.model.trialdata.TrialDataStudy;
+import org.drugis.trialverse.util.service.UuidService;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
+import java.io.IOException;
 import java.net.URI;
+import java.net.URISyntaxException;
+import java.sql.SQLException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -37,7 +47,14 @@ public class NetworkMetaAnalysisServiceImpl implements NetworkMetaAnalysisServic
   private CovariateRepository covariateRepository;
 
   @Inject
-  private NetworkMetaAnalysisEntryBuilder networkMetaAnalysisEntryBuilder;
+  private PataviTaskRepository pataviTaskRepository;
+
+  @Inject
+  private UuidService uuidService;
+
+  @Inject
+  private NetworkMetaAnalysisEntryBuilder networkPerformanceTableBuilder;
+
 
   @Override
   public List<TreatmentEntry> getTreatments(NetworkMetaAnalysis analysis) throws ResourceDoesNotExistException {
@@ -80,7 +97,7 @@ public class NetworkMetaAnalysisServiceImpl implements NetworkMetaAnalysisServic
       return filteredArms.stream()
               .map(arm -> {
                 Set<Measurement> measurements = arm.getMeasurementsForMoment(selectedMeasurementMoment);
-                return networkMetaAnalysisEntryBuilder.build(trialDataStudy.getName(),
+                return networkPerformanceTableBuilder.build(trialDataStudy.getName(),
                         arm.getMatchedProjectInterventionIds().iterator().next(), // safe because we filter unmatched arms
                         measurements.iterator().next()); // nma has exactly one measurement
               })
@@ -169,5 +186,45 @@ public class NetworkMetaAnalysisServiceImpl implements NetworkMetaAnalysisServic
     public Map<String, Double> getNodes() {
       return nodes;
     }
+  }
+
+  @Override
+  public Map<URI, CriterionEntry> buildCriteriaForInclusion(NMAInclusionWithResults inclusionWithResults, URI modelURI) {
+    final Map<URI, CriterionEntry> criteria = new HashMap<>();
+    CriterionEntry criterionEntry;
+
+    Outcome outcome = inclusionWithResults.getOutcome();
+    if ("binom".equals(inclusionWithResults.getModel().getLikelihood())) {
+      DataSourceEntry dataSource = new DataSourceEntry(uuidService.generate(), Arrays.asList(0d, 1d),
+          /* pvf */ null, "meta analysis", modelURI);
+      criterionEntry = new CriterionEntry(outcome.getSemanticOutcomeUri().toString(),
+          Collections.singletonList(dataSource),
+          outcome.getName(), "proportion");
+    } else {
+      DataSourceEntry dataSource = new DataSourceEntry(uuidService.generate(), "meta analysis", modelURI);
+      criterionEntry = new CriterionEntry(outcome.getSemanticOutcomeUri().toString(),
+          Collections.singletonList(dataSource), outcome.getName());
+    }
+    criteria.put(outcome.getSemanticOutcomeUri(), criterionEntry);
+    return criteria;
+  }
+
+  @Override
+  public Map<String, AlternativeEntry> buildAlternativesForInclusion(NMAInclusionWithResults inclusionWithResults) {
+    return inclusionWithResults.getInterventions().stream()
+        .collect(Collectors.toMap(
+            intervention -> intervention.getId().toString(),
+            intervention -> new AlternativeEntry(intervention.getId(), intervention.getName())));
+  }
+
+  @Override
+  public Map<Integer, JsonNode> getPataviResultsByModelId(Collection<Model> models) throws IOException, SQLException, UnexpectedNumberOfResultsException, URISyntaxException {
+    Map<URI, Model> modelsByTaskUrl = models.stream()
+        .filter(model -> model.getTaskUrl() != null)
+        .collect(Collectors.toMap(Model::getTaskUrl, identity()));
+    List<PataviTask> pataviTasks = pataviTaskRepository.findByUrls(new ArrayList<>(modelsByTaskUrl.keySet()));
+    Map<URI, JsonNode> resultsByUrl = pataviTaskRepository.getResults(pataviTasks);
+    return resultsByUrl.entrySet().stream()
+        .collect(Collectors.toMap(e -> modelsByTaskUrl.get(e.getKey()).getId(), Map.Entry::getValue));
   }
 }

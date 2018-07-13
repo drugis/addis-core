@@ -21,7 +21,6 @@ import org.drugis.addis.outcomes.repository.OutcomeRepository;
 import org.drugis.addis.patavitask.PataviTask;
 import org.drugis.addis.patavitask.repository.PataviTaskRepository;
 import org.drugis.addis.problems.model.*;
-import org.drugis.addis.problems.service.impl.NetworkPerformanceTableBuilder;
 import org.drugis.addis.problems.service.impl.ProblemServiceImpl;
 import org.drugis.addis.problems.service.model.AbstractMeasurementEntry;
 import org.drugis.addis.projects.Project;
@@ -68,9 +67,6 @@ public class ProblemServiceTest {
 
   @Mock
   private NetworkMetaAnalysisService networkMetaAnalysisService;
-
-  @Mock
-  private NetworkPerformanceTableBuilder networkPerformanceTableBuilder;
 
   @Mock
   private OutcomeRepository outcomeRepository;

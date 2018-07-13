@@ -2,6 +2,7 @@ package org.drugis.addis.problems.model;
 
 import com.fasterxml.jackson.core.Version;
 import org.drugis.addis.problems.service.model.AbstractMeasurementEntry;
+import org.drugis.addis.util.WebConstants;
 
 import java.net.URI;
 import java.util.List;
@@ -25,8 +26,12 @@ public class BenefitRiskProblem extends AbstractProblem {
     this.performanceTable = performanceTable;
   }
 
+  public BenefitRiskProblem(Map<URI, CriterionEntry> criteria, Map<String, AlternativeEntry> alternatives, List<AbstractMeasurementEntry> performanceTable) {
+    this(WebConstants.SCHEMA_VERSION, criteria, alternatives, performanceTable);
+  }
+
   public String getSchemaVersion() {
-    return schemaVersion.toString();
+    return schemaVersion.toString(); // want to only get string when serialising to JSON
   }
 
   public Map<URI, CriterionEntry> getCriteria() {
@@ -54,7 +59,6 @@ public class BenefitRiskProblem extends AbstractProblem {
 
   @Override
   public int hashCode() {
-
     return Objects.hash(schemaVersion, criteria, alternatives, performanceTable);
   }
 }
