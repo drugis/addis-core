@@ -19,6 +19,7 @@ import org.drugis.addis.trialverse.model.trialdata.TrialDataStudy;
 import org.drugis.addis.trialverse.service.MappingService;
 import org.drugis.addis.trialverse.service.TriplestoreService;
 import org.drugis.addis.trialverse.service.impl.ReadValueException;
+import org.drugis.trialverse.util.service.UuidService;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -30,9 +31,13 @@ import java.net.URI;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static java.util.Collections.emptySet;
+import static java.util.Collections.singleton;
+import static java.util.Collections.singletonList;
 import static org.drugis.addis.problems.service.ProblemService.CONTINUOUS_TYPE_URI;
 import static org.drugis.addis.problems.service.ProblemService.DICHOTOMOUS_TYPE_URI;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.*;
 
 /**
@@ -54,6 +59,11 @@ public class SingleStudyBenefitRiskServiceTest {
   @Mock
   private AnalysisService analysisService;
 
+  @Mock
+  private LinkService linkService;
+
+  @Mock
+  private UuidService uuidService;
 
   @InjectMocks
   private SingleStudyBenefitRiskServiceImpl singleStudyBenefitRiskService;
@@ -96,7 +106,9 @@ public class SingleStudyBenefitRiskServiceTest {
 
   @After
   public void tearDown() {
-    verifyNoMoreInteractions(criterionEntryFactory, triplestoreService, mappingService, analysisService);
+    verifyNoMoreInteractions(criterionEntryFactory, triplestoreService, mappingService,
+        analysisService, linkService,
+        uuidService);
   }
 
   @SuppressWarnings("unchecked")
@@ -215,7 +227,7 @@ public class SingleStudyBenefitRiskServiceTest {
     Set<URI> outcomeUris = Sets.newHashSet(dichotomousVariable.getVariableConceptUri(), continuousVariable.getVariableConceptUri());
     Set<URI> interventionUris = Sets.newHashSet(interventionUri1);
     TrialDataStudy mockStudy = mock(TrialDataStudy.class);
-    List<TrialDataStudy> mockStudies = Collections.singletonList(mockStudy);
+    List<TrialDataStudy> mockStudies = singletonList(mockStudy);
     when(triplestoreService.getSingleStudyData(versionedUuid, studyGraphUri, datasetVersion, outcomeUris, interventionUris))
             .thenReturn(mockStudies);
 
@@ -350,5 +362,106 @@ public class SingleStudyBenefitRiskServiceTest {
 
     URI sourceLink = URI.create("sourceLink");
     return new SingleStudyContext(outcomesByUri, interventionsById, dataSourcesIdsByOutcomeUri, sourceLink);
+  }
+
+  @Test
+  public void testGetArmsWithMatching() {
+    AbstractIntervention intervention1 = mock(AbstractIntervention.class);
+    when(intervention1.getId()).thenReturn(interventionId1);
+    AbstractIntervention intervention2 = mock(AbstractIntervention.class);
+    when(intervention2.getId()).thenReturn(interventionId2);
+    HashSet<AbstractIntervention> interventions = Sets.newHashSet(intervention1, intervention2);
+
+    TrialDataArm arm1 = buildTrialDataArm(defaultMeasurementMoment, interventionId1);
+    TrialDataArm arm2 = buildTrialDataArm(defaultMeasurementMoment, interventionId2);
+    List<TrialDataArm> arms = Arrays.asList(arm1, arm2);
+
+    when(triplestoreService.findMatchingIncludedInterventions(interventions, arm1)).thenReturn(singleton(intervention1));
+    when(triplestoreService.findMatchingIncludedInterventions(interventions, arm2)).thenReturn(singleton(intervention2));
+
+    // execute
+    List<TrialDataArm> result = singleStudyBenefitRiskService.getArmsWithMatching(interventions, arms);
+
+    assertEquals(arms, result);
+
+    verify(arm1).setMatchedProjectInterventionIds(singleton(interventionId1));
+    verify(arm2).setMatchedProjectInterventionIds(singleton(interventionId2));
+
+    verify(triplestoreService).findMatchingIncludedInterventions(interventions, arm1);
+    verify(triplestoreService).findMatchingIncludedInterventions(interventions, arm2);
+  }
+
+  @Test
+  public void testGetArmsWithMatchingTooManyMatchesThrows() {
+    Set<AbstractIntervention> interventions = buildInterventions();
+
+    TrialDataArm arm1 = buildTrialDataArm(defaultMeasurementMoment, interventionId1);
+    List<TrialDataArm> arms = singletonList(arm1);
+    Set<AbstractIntervention> matches = emptySet(); // doesn't matter, because arm is mock
+
+    when(triplestoreService.findMatchingIncludedInterventions(interventions, arm1)).thenReturn(matches);
+    when(arm1.getMatchedProjectInterventionIds()).thenReturn(Sets.newHashSet(interventionId1, interventionId2));
+
+    Boolean thrown = false;
+    try {
+      singleStudyBenefitRiskService.getArmsWithMatching(interventions, arms);
+    } catch (RuntimeException e) {
+      assertEquals("too many matched interventions for arm when creating problem", e.getMessage());
+      thrown = true;
+    }
+    assertTrue(thrown);
+    verify(triplestoreService).findMatchingIncludedInterventions(interventions, arm1);
+  }
+
+  private Set<AbstractIntervention> buildInterventions() {
+    AbstractIntervention intervention1 = mock(AbstractIntervention.class);
+    when(intervention1.getId()).thenReturn(interventionId1);
+    AbstractIntervention intervention2 = mock(AbstractIntervention.class);
+    when(intervention2.getId()).thenReturn(interventionId2);
+    return Sets.newHashSet(intervention1, intervention2);
+  }
+
+  @Test
+  public void testBuildContext() {
+    String uuid1 = "uuid1";
+    String uuid2 = "uuid2";
+    when(uuidService.generate()).thenReturn(uuid1, uuid2);
+
+    URI sourceLink = URI.create("sourceLink");
+    Project project = mock(Project.class);
+    when(linkService.getStudySourceLink(project, studyUri)).thenReturn(sourceLink);
+
+    URI outcome1Uri = URI.create("outcome1Uri");
+    URI outcome2Uri = URI.create("outcome2Uri");
+    Outcome outcome1 = mock(Outcome.class);
+    when(outcome1.getSemanticOutcomeUri()).thenReturn(outcome1Uri);
+    Outcome outcome2 = mock(Outcome.class);
+    Set<Outcome> outcomes = Sets.newHashSet(outcome1, outcome2);
+    when(outcome2.getSemanticOutcomeUri()).thenReturn(outcome2Uri);
+
+    AbstractIntervention intervention1 = mock(AbstractIntervention.class);
+    when(intervention1.getId()).thenReturn(interventionId1);
+    AbstractIntervention intervention2 = mock(AbstractIntervention.class);
+    when(intervention2.getId()).thenReturn(interventionId2);
+    HashSet<AbstractIntervention> interventions = Sets.newHashSet(intervention1, intervention2);
+
+    SingleStudyContext result = singleStudyBenefitRiskService.buildContext(project, studyUri, outcomes, interventions);
+
+    Map<URI, Outcome> outcomesByUri = new HashMap<>();
+    outcomesByUri.put(outcome1Uri, outcome1);
+    outcomesByUri.put(outcome2Uri, outcome2);
+
+    Map<Integer, AbstractIntervention> interventionsById = new HashMap<>();
+    interventionsById.put(interventionId1, intervention1);
+    interventionsById.put(interventionId2, intervention2);
+    Map<URI, String> dataSourceIdsByOutcome = new HashMap<>();
+    dataSourceIdsByOutcome.put(outcome1Uri, uuid1);
+    dataSourceIdsByOutcome.put(outcome2Uri, uuid2);
+    SingleStudyContext expectedResult = new SingleStudyContext(outcomesByUri, interventionsById, dataSourceIdsByOutcome, sourceLink);
+
+    assertEquals(expectedResult, result);
+
+    verify(uuidService, times(2)).generate();
+    verify(linkService).getStudySourceLink(project, studyUri);
   }
 }

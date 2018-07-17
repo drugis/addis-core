@@ -2,6 +2,7 @@ package org.drugis.addis.problems.service.impl;
 
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.google.common.collect.Sets;
 import org.drugis.addis.analyses.model.*;
 import org.drugis.addis.analyses.repository.AnalysisRepository;
 import org.drugis.addis.analyses.service.AnalysisService;
@@ -14,10 +15,7 @@ import org.drugis.addis.outcomes.Outcome;
 import org.drugis.addis.outcomes.repository.OutcomeRepository;
 import org.drugis.addis.patavitask.repository.UnexpectedNumberOfResultsException;
 import org.drugis.addis.problems.model.*;
-import org.drugis.addis.problems.service.LinkService;
-import org.drugis.addis.problems.service.NetworkMetaAnalysisService;
-import org.drugis.addis.problems.service.ProblemService;
-import org.drugis.addis.problems.service.SingleStudyBenefitRiskService;
+import org.drugis.addis.problems.service.*;
 import org.drugis.addis.problems.service.model.AbstractMeasurementEntry;
 import org.drugis.addis.projects.Project;
 import org.drugis.addis.projects.repository.ProjectRepository;
@@ -33,7 +31,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.sql.SQLException;
 import java.util.*;
-import java.util.function.ToIntFunction;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static java.util.function.Function.identity;
@@ -128,8 +126,19 @@ public class ProblemServiceImpl implements ProblemService {
     return new BenefitRiskProblem(WebConstants.SCHEMA_VERSION, criteriaWithBaseline, alternativesById, performanceTable);
   }
 
+  private Map<Integer, Outcome> getOutcomesById(Integer projectId, BenefitRiskAnalysis analysis) {
+    final Set<Integer> outcomeIds = getIdsFromInclusions(analysis.getBenefitRiskNMAOutcomeInclusions(),
+        BenefitRiskNMAOutcomeInclusion::getOutcomeId);
+    outcomeIds.addAll(analysis.getBenefitRiskStudyOutcomeInclusions().stream().map(
+        BenefitRiskStudyOutcomeInclusion::getOutcomeId).collect(toList()));
+
+    List<Outcome> outcomes = outcomeRepository.get(projectId, outcomeIds);
+    return outcomes.stream()
+        .collect(toMap(Outcome::getId, identity()));
+  }
+
   private Map<Integer, Model> getModelsById(BenefitRiskAnalysis analysis) throws IOException, SQLException {
-    final Set<Integer> networkModelIds = getInclusionIdsWithBaseline(analysis.getBenefitRiskNMAOutcomeInclusions(),
+    final Set<Integer> networkModelIds = getIdsFromInclusions(analysis.getBenefitRiskNMAOutcomeInclusions(),
         BenefitRiskNMAOutcomeInclusion::getModelId);
     final List<Model> models = modelService.get(networkModelIds);
     return models.stream()
@@ -137,8 +146,12 @@ public class ProblemServiceImpl implements ProblemService {
   }
 
   private List<BenefitRiskProblem> getNetworkProblems(Project project, BenefitRiskAnalysis analysis, Map<Integer, Outcome> outcomesById, Set<AbstractIntervention> includedInterventions) throws IOException, SQLException, UnexpectedNumberOfResultsException, URISyntaxException {
+    if (analysis.getBenefitRiskNMAOutcomeInclusions().size() == 0) {
+      return new ArrayList<>();
+    }
     final Map<Integer, Model> modelsById = getModelsById(analysis);
-    final Map<Integer, JsonNode> resultsByModelId = networkMetaAnalysisService.getPataviResultsByModelId(modelsById.values());
+    Collection<Model> models = Sets.newHashSet(modelsById.values());
+    final Map<Integer, JsonNode> resultsByModelId = networkMetaAnalysisService.getPataviResultsByModelId(models);
     return analysis.getBenefitRiskNMAOutcomeInclusions().stream()
         .filter(inclusion -> inclusion.getBaseline() != null)
         .filter(inclusion -> inclusion.getModelId() != null && resultsByModelId.get(inclusion.getModelId()) != null)
@@ -160,9 +173,9 @@ public class ProblemServiceImpl implements ProblemService {
 
     final Map<String, AlternativeEntry> alternatives = networkMetaAnalysisService.buildAlternativesForInclusion(inclusionWithResults);
 
-    DataSourceEntry dataSourceEntry = criteria.values().iterator().next().getDataSources().get(0);
-    List<AbstractMeasurementEntry> performance = Collections.singletonList(networkBenefitRiskPerformanceEntryBuilder.build(inclusionWithResults, dataSourceEntry));
-    return new BenefitRiskProblem(criteria, alternatives, performance);
+    DataSourceEntry dataSourceEntry = criteria.values().iterator().next().getDataSources().get(0); // one criterion -> one datasource per NMA
+    AbstractMeasurementEntry relativePerformance = networkBenefitRiskPerformanceEntryBuilder.build(inclusionWithResults, dataSourceEntry);
+    return new BenefitRiskProblem(criteria, alternatives, Collections.singletonList(relativePerformance));
   }
 
   private List<BenefitRiskProblem> getSingleStudyProblems(Project project, BenefitRiskAnalysis analysis, Map<Integer, Outcome> outcomesById, Set<AbstractIntervention> includedInterventions) {
@@ -181,17 +194,6 @@ public class ProblemServiceImpl implements ProblemService {
         .collect(toList());
   }
 
-  private Map<Integer, Outcome> getOutcomesById(Integer projectId, BenefitRiskAnalysis analysis) {
-    final Set<Integer> outcomeIds = getInclusionIdsWithBaseline(analysis.getBenefitRiskNMAOutcomeInclusions(),
-        BenefitRiskNMAOutcomeInclusion::getOutcomeId);
-    outcomeIds.addAll(analysis.getBenefitRiskStudyOutcomeInclusions().stream().map(
-        BenefitRiskStudyOutcomeInclusion::getOutcomeId).collect(toList()));
-
-    List<Outcome> outcomes = outcomeRepository.get(projectId, outcomeIds);
-    return outcomes.stream()
-        .collect(toMap(Outcome::getId, identity()));
-  }
-
   @Override
   public NetworkMetaAnalysisProblem applyModelSettings(NetworkMetaAnalysisProblem problem, Model model) {
     List<AbstractNetworkMetaAnalysisProblemEntry> entries = problem.getEntries();
@@ -206,9 +208,12 @@ public class ProblemServiceImpl implements ProblemService {
     return new NetworkMetaAnalysisProblem(entries, problem.getTreatments(), problem.getStudyLevelCovariates());
   }
 
-  private Set<Integer> getInclusionIdsWithBaseline(List<BenefitRiskNMAOutcomeInclusion> outcomeInclusions,
-                                                   ToIntFunction<BenefitRiskNMAOutcomeInclusion> idSelector) {
-    return outcomeInclusions.stream().mapToInt(idSelector).boxed().collect(toSet());
+  private Set<Integer> getIdsFromInclusions(List<BenefitRiskNMAOutcomeInclusion> outcomeInclusions,
+                                            Function<BenefitRiskNMAOutcomeInclusion, Integer> idSelector) {
+    return outcomeInclusions.stream()
+        .map(idSelector)
+        .filter(Objects::nonNull)
+        .collect(toSet());
   }
 
 
@@ -218,7 +223,7 @@ public class ProblemServiceImpl implements ProblemService {
     SingleStudyContext context = singleStudyBenefitRiskService.buildContext(project, studyGraphUri, outcomes, includedInterventions);
 
     TrialDataStudy trialDataStudy = singleStudyBenefitRiskService.getSingleStudyMeasurements(project, studyGraphUri, context);
-    List<TrialDataArm> armsWithMatching = singleStudyBenefitRiskService.getArmsWithMatching(includedInterventions, trialDataStudy);
+    List<TrialDataArm> armsWithMatching = singleStudyBenefitRiskService.getArmsWithMatching(includedInterventions, trialDataStudy.getTrialDataArms());
 
     URI defaultMeasurementMoment = trialDataStudy.getDefaultMeasurementMoment();
 

@@ -27,7 +27,7 @@ public interface SingleStudyBenefitRiskService {
 
   Map<String,AlternativeEntry> getAlternatives(List<TrialDataArm> armsWithMatching, SingleStudyContext context);
 
-  List<TrialDataArm> getArmsWithMatching(Set<AbstractIntervention> includedInterventions, TrialDataStudy trialDataStudy);
+  List<TrialDataArm> getArmsWithMatching(Set<AbstractIntervention> includedInterventions, List<TrialDataArm> arms);
 
   SingleStudyContext buildContext(Project project, URI studyGraphUri, Set<Outcome> outcomes, Set<AbstractIntervention> includedInterventions);
 }

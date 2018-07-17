@@ -1,4 +1,4 @@
-package org.drugis.addis.problems.model;
+package org.drugis.addis.problems.service;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -7,6 +7,10 @@ import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.drugis.addis.interventions.model.AbstractIntervention;
 import org.drugis.addis.models.Model;
+import org.drugis.addis.problems.model.AbstractBaselineDistribution;
+import org.drugis.addis.problems.model.DataSourceEntry;
+import org.drugis.addis.problems.model.MultiVariateDistribution;
+import org.drugis.addis.problems.model.NMAInclusionWithResults;
 import org.drugis.addis.problems.service.model.*;
 import org.springframework.stereotype.Service;
 
@@ -18,9 +22,6 @@ import java.util.stream.Collectors;
 @Service
 public class NetworkBenefitRiskPerformanceEntryBuilder {
   private ObjectMapper objectMapper = new ObjectMapper();
-
-  public NetworkBenefitRiskPerformanceEntryBuilder() {
-  }
 
   public AbstractMeasurementEntry build(NMAInclusionWithResults inclusion, DataSourceEntry dataSource) {
     RelativePerformance performance = getPerformance(inclusion);
@@ -35,23 +36,29 @@ public class NetworkBenefitRiskPerformanceEntryBuilder {
 
     MultiVariateDistribution baselineResults = getBaselineResults(inclusion, baselineInterventionId);
     Set<String> interventionIds = inclusion.getInterventions().stream()
-        .map(i -> i.getId().toString())
+        .map(AbstractIntervention::getId)
+        .map(Object::toString)
         .collect(Collectors.toSet());
     Map<String, Double> mu = getMu(baselineInterventionId, baselineResults, interventionIds);
 
     List<String> interventionIdsWithBaselineFirst = new ArrayList<>(interventionIds);
     // place baseline at the front of the list
     Collections.swap(interventionIdsWithBaselineFirst, 0, interventionIdsWithBaselineFirst.indexOf(baselineInterventionId));
+
     final List<List<Double>> data = getData(interventionIdsWithBaselineFirst, baselineInterventionId, baselineResults);
     return getRelativePerformance(inclusion, mu, interventionIdsWithBaselineFirst, data);
   }
 
   private AbstractIntervention getBaselineIntervention(NMAInclusionWithResults outcomeInclusion) {
+    AbstractBaselineDistribution baselineDistribution = getBaselineDistribution(outcomeInclusion);
+    return outcomeInclusion.getInterventions().stream()
+        .filter(intervention -> baselineDistribution.getName().equalsIgnoreCase(intervention.getName()))
+        .findFirst().orElse(null);
+  }
+
+  private AbstractBaselineDistribution getBaselineDistribution(NMAInclusionWithResults outcomeInclusion) {
     try {
-      AbstractBaselineDistribution baselineDistribution = objectMapper.readValue(outcomeInclusion.getBaseline(), AbstractBaselineDistribution.class);
-      return outcomeInclusion.getInterventions().stream()
-          .filter(intervention -> baselineDistribution.getName().equalsIgnoreCase(intervention.getName()))
-          .findFirst().orElse(null);
+      return objectMapper.readValue(outcomeInclusion.getBaseline(), AbstractBaselineDistribution.class);
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
@@ -85,14 +92,6 @@ public class NetworkBenefitRiskPerformanceEntryBuilder {
     //add baseline to mu
     mu.put(baselineInterventionId, 0.0);
     return mu;
-  }
-
-  private List<String> getInterventionIdsWithBaselineFirst(Map<String, Double> mu, String baselineInterventionId) {
-    List<String> interventionIds = new ArrayList<>(mu.keySet());
-    Integer baselineIndex = interventionIds.indexOf(baselineInterventionId);
-    // place baseline at the front of the list
-    Collections.swap(interventionIds, 0, baselineIndex);
-    return interventionIds;
   }
 
   private RelativePerformance getRelativePerformance(NMAInclusionWithResults outcomeInclusion,
@@ -135,10 +134,6 @@ public class NetworkBenefitRiskPerformanceEntryBuilder {
                 .set(interventionIds.indexOf(colName), effectsByInterventionId.get(ImmutablePair.of(rowName, colName))))
     );
     return data;
-  }
-
-  private boolean isIncluded(String interventionId, Set<String> includedInterventionIds) {
-    return includedInterventionIds.contains(interventionId);
   }
 
   private Map<Pair<String, String>, Double> getEffectsByInterventionId(MultiVariateDistribution distribution, String baselineInterventionId, List<String> interventionIds) {

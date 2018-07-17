@@ -1,6 +1,8 @@
 package org.drugis.addis.problems.service;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.collect.Sets;
+import com.sun.org.apache.xpath.internal.operations.Mod;
 import org.apache.jena.ext.com.google.common.collect.Lists;
 import org.drugis.addis.analyses.model.*;
 import org.drugis.addis.analyses.service.AnalysisService;
@@ -10,9 +12,12 @@ import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.interventions.model.AbstractIntervention;
 import org.drugis.addis.interventions.model.SimpleIntervention;
 import org.drugis.addis.interventions.model.SingleIntervention;
+import org.drugis.addis.models.Model;
 import org.drugis.addis.outcomes.Outcome;
-import org.drugis.addis.problems.model.AbstractNetworkMetaAnalysisProblemEntry;
-import org.drugis.addis.problems.model.TreatmentEntry;
+import org.drugis.addis.patavitask.PataviTask;
+import org.drugis.addis.patavitask.repository.PataviTaskRepository;
+import org.drugis.addis.patavitask.repository.UnexpectedNumberOfResultsException;
+import org.drugis.addis.problems.model.*;
 import org.drugis.addis.problems.service.impl.NetworkMetaAnalysisEntryBuilder;
 import org.drugis.addis.problems.service.impl.NetworkMetaAnalysisServiceImpl;
 import org.drugis.addis.projects.Project;
@@ -22,16 +27,22 @@ import org.drugis.addis.trialverse.model.SemanticVariable;
 import org.drugis.addis.trialverse.model.emun.CovariateOption;
 import org.drugis.addis.trialverse.model.emun.CovariateOptionType;
 import org.drugis.addis.trialverse.model.trialdata.*;
+import org.drugis.trialverse.util.service.UuidService;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
+import java.io.IOException;
 import java.net.URI;
+import java.net.URISyntaxException;
+import java.sql.SQLException;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static java.util.Collections.singleton;
+import static java.util.Collections.singletonList;
 import static org.drugis.addis.problems.service.ProblemService.DICHOTOMOUS_TYPE_URI;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
@@ -48,6 +59,12 @@ public class NetworkMetaAnalysisServiceTest {
 
   @Mock
   private NetworkMetaAnalysisEntryBuilder networkMetaAnalysisEntryBuilder;
+
+  @Mock
+  private PataviTaskRepository pataviTaskRepository;
+
+  @Mock
+  private UuidService uuidService;
 
   @InjectMocks
   private NetworkMetaAnalysisService networkMetaAnalysisService;
@@ -93,7 +110,7 @@ public class NetworkMetaAnalysisServiceTest {
 
   @After
   public void tearDown() {
-    verifyNoMoreInteractions(analysisService, covariateRepository, networkMetaAnalysisEntryBuilder);
+    verifyNoMoreInteractions(analysisService, covariateRepository, networkMetaAnalysisEntryBuilder, pataviTaskRepository, uuidService);
   }
 
   @Test
@@ -153,7 +170,7 @@ public class NetworkMetaAnalysisServiceTest {
     String nonDefaultStudyName = "nonDefaultStudyName";
     URI studyUri = URI.create(nonDefaultStudyName);
     URI nonDefaultMeasurementMomentUri = URI.create("nonDefaultMeasurementMoment");
-    URI defaultMeasurementmomentUri = URI.create("defaultMeasurementMoment");
+    URI defaultMeasurementMomentUri = URI.create("defaultMeasurementMoment");
 
     URI nonDefaultArmUri1 = URI.create("nonDefaultArmUri1");
     Set<Integer> matchedInterventionIds1 = Sets.newHashSet(fluoxInterventionId);
@@ -207,11 +224,11 @@ public class NetworkMetaAnalysisServiceTest {
             , new MeasurementMomentInclusion(
                     analysisId,
                     normalStudy.getStudyUri(),
-                    defaultMeasurementmomentUri))
+                    defaultMeasurementMomentUri))
     );
 
-    AbstractNetworkMetaAnalysisProblemEntry fluoxEntry = mock(AbstractNetworkMetaAnalysisProblemEntry.class);
-    AbstractNetworkMetaAnalysisProblemEntry paroxEntry = mock(AbstractNetworkMetaAnalysisProblemEntry.class);
+    AbstractNetworkMetaAnalysisProblemEntry fluoxEntry = mock(ContinuousStdErrEntry.class);
+    AbstractNetworkMetaAnalysisProblemEntry paroxEntry = new ContinuousNetworkMetaAnalysisProblemEntry("study", 1, 2, 3.0, 4.0);
     when(networkMetaAnalysisEntryBuilder.build(normalStudyName, fluoxInterventionId, fluoxMeasurement)).thenReturn(fluoxEntry);
     when(networkMetaAnalysisEntryBuilder.build(normalStudyName, paroxInterventionId, paroxMeasurement)).thenReturn(paroxEntry);
     when(networkMetaAnalysisEntryBuilder.build(nonDefaultStudyName, fluoxInterventionId, fluoxMeasurement)).thenReturn(fluoxEntry);
@@ -220,7 +237,9 @@ public class NetworkMetaAnalysisServiceTest {
     // eggsecutor
     List<AbstractNetworkMetaAnalysisProblemEntry> results = networkMetaAnalysisService.buildPerformanceEntries(networkMetaAnalysis, trialDataStudies);
 
-    List<AbstractNetworkMetaAnalysisProblemEntry> expectedResult = Arrays.asList(fluoxEntry, paroxEntry, fluoxEntry, paroxEntry);
+    Double stdErr = 4.0 / Math.sqrt(2.0);
+    AbstractNetworkMetaAnalysisProblemEntry stdErrParoxEntry = new ContinuousStdErrEntry("study", 1, 3.0, stdErr);
+    List<AbstractNetworkMetaAnalysisProblemEntry> expectedResult = Arrays.asList(fluoxEntry, stdErrParoxEntry, fluoxEntry, stdErrParoxEntry);
     assertEquals(expectedResult, results);
 
     verify(networkMetaAnalysisEntryBuilder).build(normalStudyName, fluoxInterventionId, fluoxMeasurement);
@@ -253,9 +272,9 @@ public class NetworkMetaAnalysisServiceTest {
 
     AbstractNetworkMetaAnalysisProblemEntry entry = mock(AbstractNetworkMetaAnalysisProblemEntry.class);
     when(entry.getStudy()).thenReturn(studyWithEntriesName);
-    List<AbstractNetworkMetaAnalysisProblemEntry> entries = Collections.singletonList(entry);
+    List<AbstractNetworkMetaAnalysisProblemEntry> entries = singletonList(entry);
 
-    List<TrialDataStudy> expectedResult = Collections.singletonList(studyWithEntries);
+    List<TrialDataStudy> expectedResult = singletonList(studyWithEntries);
 
     //issocute
     List<TrialDataStudy> result = networkMetaAnalysisService.getStudiesWithEntries(studies, entries);
@@ -266,7 +285,7 @@ public class NetworkMetaAnalysisServiceTest {
   public void testGetCovariatesIfNoInclusions() {
     NetworkMetaAnalysis analysis = mock(NetworkMetaAnalysis.class);
     when(analysis.getCovariateInclusions()).thenReturn(Collections.emptyList());
-    List<TrialDataStudy> studies = Collections.singletonList(mock(TrialDataStudy.class));
+    List<TrialDataStudy> studies = singletonList(mock(TrialDataStudy.class));
 
     // overconfidence is a slow and insidious killer
     Map<String, Map<String, Double>> result = networkMetaAnalysisService.getStudyLevelCovariates(project, analysis, studies);
@@ -280,7 +299,7 @@ public class NetworkMetaAnalysisServiceTest {
     Integer includedCovariateId = 1;
     Integer excludedCovariateId = -1;
     CovariateInclusion inclusion = new CovariateInclusion(analysisId, includedCovariateId);
-    List<CovariateInclusion> covariateInclusions = Collections.singletonList(inclusion);
+    List<CovariateInclusion> covariateInclusions = singletonList(inclusion);
     analysis.updateCovariateInclusions(covariateInclusions);
 
     String includedKey = "includedKey";
@@ -293,7 +312,7 @@ public class NetworkMetaAnalysisServiceTest {
     String studyName = "study";
     when(study.getName()).thenReturn(studyName);
     when(study.getCovariateValues()).thenReturn(covariateStudyValues);
-    List<TrialDataStudy> studies = Collections.singletonList(study);
+    List<TrialDataStudy> studies = singletonList(study);
 
     Covariate includedCovariate= mock(Covariate.class);
     Covariate excludedCovariate = mock(Covariate.class);
@@ -315,5 +334,100 @@ public class NetworkMetaAnalysisServiceTest {
     assertEquals(expectedResult, result);
 
     verify(covariateRepository).findByProject(projectId);
+  }
+
+  @Test
+  public void testBuildCriteriaForInclusionBinom() {
+    String dataSourceUuid = "dataSourceUuid";
+    when(uuidService.generate()).thenReturn(dataSourceUuid);
+
+    NMAInclusionWithResults inclusionWithResults = buildNmaInclusionMock("binom");
+    URI modelUri = URI.create("modelUri");
+
+    // execute
+    Map<URI, CriterionEntry> result = networkMetaAnalysisService.buildCriteriaForInclusion(inclusionWithResults, modelUri);
+
+    Map<URI, CriterionEntry> expectedResult = new HashMap<>();
+    DataSourceEntry expectedDataSource = new DataSourceEntry(dataSourceUuid, Arrays.asList(0d, 1d), null, "meta analysis", modelUri);
+    CriterionEntry expectedEntry = new CriterionEntry(outcome.getSemanticOutcomeUri().toString(), singletonList(expectedDataSource), outcome.getName(), "proportion");
+    expectedResult.put(outcome.getSemanticOutcomeUri(), expectedEntry);
+    assertEquals(expectedResult, result);
+
+    verify(uuidService).generate();
+  }
+
+  @Test
+  public void testBuildCriteriaForInclusionNonBinom() {
+    String dataSourceUuid = "dataSourceUuid";
+    when(uuidService.generate()).thenReturn(dataSourceUuid);
+
+    URI modelUri = URI.create("modelUri");
+    NMAInclusionWithResults inclusionWithResults = buildNmaInclusionMock("not binom");
+
+    // execute
+    Map<URI, CriterionEntry> result = networkMetaAnalysisService.buildCriteriaForInclusion(inclusionWithResults, modelUri);
+
+    Map<URI, CriterionEntry> expectedResult = new HashMap<>();
+    DataSourceEntry expectedDataSource = new DataSourceEntry(dataSourceUuid, "meta analysis", modelUri);
+    CriterionEntry expectedEntry = new CriterionEntry(outcome.getSemanticOutcomeUri().toString(), singletonList(expectedDataSource), outcome.getName());
+    expectedResult.put(outcome.getSemanticOutcomeUri(), expectedEntry);
+    assertEquals(expectedResult, result);
+
+    verify(uuidService).generate();
+  }
+
+  private NMAInclusionWithResults buildNmaInclusionMock(String isBinomString) {
+    NMAInclusionWithResults inclusionWithResults = mock(NMAInclusionWithResults.class);
+    when(inclusionWithResults.getOutcome()).thenReturn(outcome);
+    Model model = mock(Model.class);
+    when(model.getLikelihood()).thenReturn(isBinomString);
+    when(inclusionWithResults.getModel()).thenReturn(model);
+    return inclusionWithResults;
+  }
+
+  @Test
+  public void testBuildAlternativesForInclusion() {
+    NMAInclusionWithResults inclusionWithResults = mock(NMAInclusionWithResults.class);
+    when(inclusionWithResults.getInterventions()).thenReturn(singleton(fluoxIntervention));
+
+    Map<String, AlternativeEntry> result = networkMetaAnalysisService.buildAlternativesForInclusion(inclusionWithResults);
+
+    Map<String, AlternativeEntry> expectedResult = new HashMap<>();
+    AlternativeEntry expectedEntry = new AlternativeEntry(fluoxInterventionId, fluoxIntervention.getName());
+    expectedResult.put(fluoxInterventionId.toString(), expectedEntry);
+
+    assertEquals(expectedResult, result);
+  }
+
+  @Test
+  public void testGetPataviResultsByModelId() throws IOException, SQLException, UnexpectedNumberOfResultsException, URISyntaxException {
+    URI taskUri = URI.create("taskUri");
+    Integer modelId = 321;
+
+    Model modelWithoutTask = mock(Model.class);
+    Model modelWithTask= mock(Model.class);
+    when(modelWithTask.getTaskUrl()).thenReturn(taskUri);
+    when(modelWithTask.getId()).thenReturn(modelId);
+    Collection<Model> models = Arrays.asList(modelWithTask, modelWithoutTask);
+
+    List<URI> taskUris = singletonList(taskUri);
+    PataviTask task = mock(PataviTask.class);
+    List<PataviTask> tasks = singletonList(task);
+    when(pataviTaskRepository.findByUrls(taskUris)).thenReturn(tasks);
+    Map<URI, JsonNode> results = new HashMap<>();
+    JsonNode taskResult = mock(JsonNode.class);
+    results.put(taskUri, taskResult);
+    when(pataviTaskRepository.getResults(tasks)).thenReturn(results);
+
+    // execute
+    Map<Integer, JsonNode> result = networkMetaAnalysisService.getPataviResultsByModelId(models);
+
+    Map<Integer, JsonNode> expectedResult = new HashMap<>();
+    expectedResult.put(modelId, taskResult);
+
+    assertEquals(expectedResult, result);
+
+    verify(pataviTaskRepository).findByUrls(taskUris);
+    verify(pataviTaskRepository).getResults(tasks);
   }
 }

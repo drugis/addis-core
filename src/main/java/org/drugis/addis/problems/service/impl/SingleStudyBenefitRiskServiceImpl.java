@@ -1,7 +1,6 @@
 package org.drugis.addis.problems.service.impl;
 
 import com.google.common.collect.ImmutableSet;
-import jdk.internal.dynalink.linker.LinkerServices;
 import org.apache.commons.lang3.tuple.Pair;
 import org.drugis.addis.analyses.service.AnalysisService;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
@@ -179,11 +178,14 @@ public class SingleStudyBenefitRiskServiceImpl implements SingleStudyBenefitRisk
   }
 
   @Override
-  public List<TrialDataArm> getArmsWithMatching(Set<AbstractIntervention> includedInterventions, TrialDataStudy trialDataStudy) {
-    List<TrialDataArm> armsWithMatching = trialDataStudy.getTrialDataArms().stream()
+  public List<TrialDataArm> getArmsWithMatching(Set<AbstractIntervention> includedInterventions, List<TrialDataArm> arms) {
+    List<TrialDataArm> armsWithMatching = arms.stream()
             .peek(arm -> {
-              Set<AbstractIntervention> matchingIncludedInterventions = triplestoreService.findMatchingIncludedInterventions(includedInterventions, arm);
-              Set<Integer> matchedInterventionIds = matchingIncludedInterventions.stream().map(AbstractIntervention::getId).collect(toSet());
+              Set<AbstractIntervention> matchingInterventions =
+                  triplestoreService.findMatchingIncludedInterventions(includedInterventions, arm);
+              Set<Integer> matchedInterventionIds = matchingInterventions.stream()
+                  .map(AbstractIntervention::getId)
+                  .collect(toSet());
               arm.setMatchedProjectInterventionIds(ImmutableSet.copyOf(matchedInterventionIds));
             })
             .collect(Collectors.toList());
