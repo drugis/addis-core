@@ -35,7 +35,7 @@ sudo -u postgres psql -c "CREATE DATABASE addiscore ENCODING 'utf-8' OWNER addis
 
 ```
 
-If you wish to allow programmatic access via the API, you can insert an API key into the addiscore database:
+If you wish to allow programmatic access via the API, you can insert an API key into the addiscore database (note that an account to link the key to should already be present):
 ```
 INSERT INTO applicationkey (secretkey, accountid, applicationname, creationdate, revocationdate) values ('[yourkey]', [accountid], '[yourname]', 'mm/dd/yyyy', 'mm/dd/yyyy');
 ```
@@ -80,7 +80,7 @@ export CLINICALTRIALS_IMPORTER_URL=[importservicelocation]
 Run the Tomcat server:
 
 ```
-mvn tomcat7:run -Djavax.net.ssl.trustStore=/path/to/trust/store
+mvn tomcat7:run
 ```
 
 To run integration tests:
