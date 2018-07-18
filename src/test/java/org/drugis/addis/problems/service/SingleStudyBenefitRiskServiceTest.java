@@ -267,13 +267,13 @@ public class SingleStudyBenefitRiskServiceTest {
     ));
   }
 
-  private TrialDataArm buildTrialDataArm(URI defaultMeasurementMoment, Integer interventionId) {
+  private TrialDataArm buildTrialDataArm(URI defaultMeasurementMoment, Set<Integer> matchedInterventionIds) {
     TrialDataArm trialDataArm = mock(TrialDataArm.class);
     Measurement measurement1 = buildMeasurementMock(dichotomousVariable.getVariableConceptUri());
     Measurement measurement2 = buildMeasurementMock(continuousMeasurementStdDev.getVariableConceptUri());
     Set<Measurement> measurements = Sets.newHashSet(measurement1, measurement2);
     when(trialDataArm.getMeasurementsForMoment(defaultMeasurementMoment)).thenReturn(measurements);
-    when(trialDataArm.getMatchedProjectInterventionIds()).thenReturn(Sets.newHashSet(interventionId));
+    when(trialDataArm.getMatchedProjectInterventionIds()).thenReturn(matchedInterventionIds);
     return trialDataArm;
   }
 
@@ -304,8 +304,8 @@ public class SingleStudyBenefitRiskServiceTest {
   }
 
   private List<TrialDataArm> buildTrialDataArms() {
-    TrialDataArm arm1 = buildTrialDataArm(defaultMeasurementMoment, interventionId1);
-    TrialDataArm arm2 = buildTrialDataArm(defaultMeasurementMoment, interventionId2);
+    TrialDataArm arm1 = buildTrialDataArm(defaultMeasurementMoment, Sets.newHashSet(interventionId1));
+    TrialDataArm arm2 = buildTrialDataArm(defaultMeasurementMoment, Sets.newHashSet(interventionId2));
     return Arrays.asList(arm1, arm2);
   }
 
@@ -372,30 +372,35 @@ public class SingleStudyBenefitRiskServiceTest {
     when(intervention2.getId()).thenReturn(interventionId2);
     HashSet<AbstractIntervention> interventions = Sets.newHashSet(intervention1, intervention2);
 
-    TrialDataArm arm1 = buildTrialDataArm(defaultMeasurementMoment, interventionId1);
-    TrialDataArm arm2 = buildTrialDataArm(defaultMeasurementMoment, interventionId2);
-    List<TrialDataArm> arms = Arrays.asList(arm1, arm2);
+    TrialDataArm arm1 = buildTrialDataArm(defaultMeasurementMoment, singleton(interventionId1));
+    TrialDataArm arm2 = buildTrialDataArm(defaultMeasurementMoment, singleton(interventionId2));
+    TrialDataArm unMatchedArm = buildTrialDataArm(defaultMeasurementMoment, emptySet());
+    List<TrialDataArm> arms = Arrays.asList(arm1, arm2, unMatchedArm);
 
     when(triplestoreService.findMatchingIncludedInterventions(interventions, arm1)).thenReturn(singleton(intervention1));
     when(triplestoreService.findMatchingIncludedInterventions(interventions, arm2)).thenReturn(singleton(intervention2));
+    when(triplestoreService.findMatchingIncludedInterventions(interventions, unMatchedArm)).thenReturn(emptySet());
 
     // execute
     List<TrialDataArm> result = singleStudyBenefitRiskService.getArmsWithMatching(interventions, arms);
 
-    assertEquals(arms, result);
+    List<TrialDataArm> matchedArms = Arrays.asList(arm1, arm2);
+    assertEquals(matchedArms, result);
 
     verify(arm1).setMatchedProjectInterventionIds(singleton(interventionId1));
     verify(arm2).setMatchedProjectInterventionIds(singleton(interventionId2));
+    verify(unMatchedArm).setMatchedProjectInterventionIds(emptySet());
 
     verify(triplestoreService).findMatchingIncludedInterventions(interventions, arm1);
     verify(triplestoreService).findMatchingIncludedInterventions(interventions, arm2);
+    verify(triplestoreService).findMatchingIncludedInterventions(interventions, unMatchedArm);
   }
 
   @Test
   public void testGetArmsWithMatchingTooManyMatchesThrows() {
     Set<AbstractIntervention> interventions = buildInterventions();
 
-    TrialDataArm arm1 = buildTrialDataArm(defaultMeasurementMoment, interventionId1);
+    TrialDataArm arm1 = buildTrialDataArm(defaultMeasurementMoment, Sets.newHashSet(interventionId1));
     List<TrialDataArm> arms = singletonList(arm1);
     Set<AbstractIntervention> matches = emptySet(); // doesn't matter, because arm is mock
 

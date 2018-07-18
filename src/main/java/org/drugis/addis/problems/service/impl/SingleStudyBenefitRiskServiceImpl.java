@@ -188,6 +188,7 @@ public class SingleStudyBenefitRiskServiceImpl implements SingleStudyBenefitRisk
                   .collect(toSet());
               arm.setMatchedProjectInterventionIds(ImmutableSet.copyOf(matchedInterventionIds));
             })
+            .filter(arm -> arm.getMatchedProjectInterventionIds().size() != 0)
             .collect(Collectors.toList());
     Boolean isArmWithTooManyMatches = armsWithMatching.stream()
             .anyMatch(arm -> arm.getMatchedProjectInterventionIds().size() > 1);
