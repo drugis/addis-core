@@ -24,6 +24,7 @@ require.config({
     'angular-touch': 'bower_components/angular-touch/angular-touch',
     'angular-ui-router': 'bower_components/angular-ui-router/release/angular-ui-router',
     'angularanimate': 'bower_components/angular-animate/angular-animate',
+    'c3': 'bower_components/c3/c3',
     'clipboard': 'bower_components/clipboard/dist/clipboard.min',
     'core-js': 'bower_components/core-js/client/shim.min',
     'd3': 'bower_components/d3/d3.min',
