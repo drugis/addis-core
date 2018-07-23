@@ -162,6 +162,7 @@ define(
 
     app.constant('Tasks', Config.tasks);
     app.constant('DEFAULT_VIEW', 'evidence');
+    app.constant('currentSchemaVersion', '1.1.0');
     app.constant('ANALYSIS_TYPES', [{
       label: 'Evidence synthesis',
       stateName: 'networkMetaAnalysis'

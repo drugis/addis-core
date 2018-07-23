@@ -355,8 +355,8 @@ public class TriplestoreServiceImpl implements TriplestoreService {
         return interventionService.isMatched(intervention, arm.getSemanticInterventions());
       } catch (InvalidTypeForDoseCheckException | ResourceDoesNotExistException e) {
         e.printStackTrace();
+        return false;
       }
-      return false;
     }).collect(Collectors.toSet());
   }
 

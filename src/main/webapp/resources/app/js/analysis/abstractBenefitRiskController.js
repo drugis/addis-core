@@ -1,7 +1,9 @@
 'use strict';
 define([], function() {
-  var dependencies = ['$scope', 'currentAnalysis', 'currentProject', 'UserService', 'SchemaService'];
-  var AbstractBenefitRiskController = function($scope, currentAnalysis, currentProject, UserService, SchemaService) {
+  var dependencies = ['$scope', 'currentAnalysis', 'currentProject', 'currentSchemaVersion', 
+    'UserService', 'SchemaService'];
+  var AbstractBenefitRiskController = function($scope, currentAnalysis, currentProject, 
+    currentSchemaVersion, UserService, SchemaService) {
     if(currentAnalysis.problem.schemaVersion !== currentSchemaVersion){
       $scope.workspace = SchemaService.updateWorkspaceToCurrentSchema(currentAnalysis);
     } else {
