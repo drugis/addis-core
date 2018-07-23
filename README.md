@@ -5,7 +5,7 @@ ADDIS 2.x core
 
 Before starting
 -----------------------
-The setup in this readme requires several components to already be installed and running. Please refer to the OVERALL-README.md in this folder for more information on how to do so, and for other readmes that might be relevant.
+The setup in this readme requires several components to already be installed and running. Please refer to the [OVERALL-README.md](./OVERALL-README.md) in this folder for more information on how to do so, and for other readmes that might be relevant.
 
 Required software: 
 
@@ -32,10 +32,11 @@ Set up the database:
 ```
 sudo -u postgres psql -c "CREATE USER addiscore WITH PASSWORD 'develop'"
 sudo -u postgres psql -c "CREATE DATABASE addiscore ENCODING 'utf-8' OWNER addiscore"
-
 ```
 
-If you wish to allow programmatic access via the API, you can insert an API key into the addiscore database:
+The database structure is automatically created via liquibase maven plugin.
+
+If you wish to allow programmatic access via the API, you can insert an API key into the addiscore database (note there should already be an account present to link the key to):
 ```
 INSERT INTO applicationkey (secretkey, accountid, applicationname, creationdate, revocationdate) values ('[yourkey]', [accountid], '[yourname]', 'mm/dd/yyyy', 'mm/dd/yyyy');
 ```
@@ -56,7 +57,7 @@ Set up the environment:
 
 ```
 export KEYSTORE_PATH=/path/to/keyStore
-export KEYSTORE_PASSWORD="develop"
+export KEYSTORE_PASSWORD=develop
 export TRIPLESTORE_BASE_URI=http://localhost:3030
 export PATAVI_URI=http://localhost:3000
 
@@ -72,9 +73,9 @@ export ADDIS_CORE_DB_HOST=localhost
 export ADDIS_CORE_DB=addiscore
 export ADDIS_CORE_DB_USERNAME=addiscore
 export ADDIS_CORE_DB_PASSWORD=develop
-export ADDIS_CORE_OAUTH_GOOGLE_SECRET=HU_-JxoYUvMbvk4vVRMhHibI
-export ADDIS_CORE_OAUTH_GOOGLE_KEY=201346854981-3pcdhh96orc3lcdr8k4i1u58pvepjme4.apps.googleusercontent.com
-export CLINICALTRIALS_IMPORTER_URL=[importservicelocation]
+export ADDIS_CORE_OAUTH_GOOGLE_SECRET=googleSecret
+export ADDIS_CORE_OAUTH_GOOGLE_KEY=googleKey
+export CLINICALTRIALS_IMPORTER_URL=importservicelocation
 ```
 
 Run the Tomcat server:
