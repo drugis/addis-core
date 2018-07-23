@@ -16,12 +16,14 @@
 package org.drugis.addis.config;
 
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.config.RequestConfig;
 import org.apache.http.config.Registry;
 import org.apache.http.config.RegistryBuilder;
 import org.apache.http.conn.HttpClientConnectionManager;
 import org.apache.http.conn.socket.ConnectionSocketFactory;
 import org.apache.http.conn.socket.PlainConnectionSocketFactory;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
+import org.apache.http.conn.ssl.TrustSelfSignedStrategy;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.ssl.SSLContexts;
@@ -59,6 +61,7 @@ import org.springframework.web.client.RestTemplate;
 
 import javax.cache.Caching;
 import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManagerFactory;
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 import java.io.FileInputStream;
@@ -135,20 +138,31 @@ public class MainConfig {
   }
 
   @Bean
-  public RestTemplate restTemplate() throws CertificateException, UnrecoverableKeyException, NoSuchAlgorithmException, KeyStoreException, KeyManagementException, IOException {
-    RestTemplate restTemplate = new RestTemplate(new HttpComponentsClientHttpRequestFactory(httpClient()));
+  public RequestConfig requestConfig() {
+    return RequestConfig.custom()
+            .setConnectionRequestTimeout(60000)
+            .setConnectTimeout(60000)
+            .setSocketTimeout(60000)
+            .build();
+  }
+
+  @Bean
+  public RestTemplate restTemplate(RequestConfig requestConfig) throws CertificateException, UnrecoverableKeyException, NoSuchAlgorithmException, KeyStoreException, KeyManagementException, IOException {
+    RestTemplate restTemplate = new RestTemplate(new HttpComponentsClientHttpRequestFactory(httpClient(requestConfig)));
     restTemplate.getMessageConverters().add(new JenaGraphMessageConverter());
     return restTemplate;
   }
 
   @Bean
-  public HttpClient httpClient() throws KeyStoreException, IOException, CertificateException, NoSuchAlgorithmException, UnrecoverableKeyException, KeyManagementException {
+  public HttpClient httpClient(RequestConfig requestConfig) throws KeyStoreException, IOException, CertificateException, NoSuchAlgorithmException, UnrecoverableKeyException, KeyManagementException {
     KeyStore keyStore = KeyStore.getInstance("JKS");
-    keyStore.load(new FileInputStream(KEYSTORE_PATH), KEYSTORE_PASSWORD.toCharArray());
+    char[] keyStorePassword = KEYSTORE_PASSWORD.toCharArray();
+    keyStore.load(new FileInputStream(KEYSTORE_PATH), keyStorePassword);
 
     SSLContext sslContext = SSLContexts
             .custom()
-            .loadKeyMaterial(keyStore, KEYSTORE_PASSWORD.toCharArray())
+            .loadKeyMaterial(keyStore, keyStorePassword)
+            .loadTrustMaterial(keyStore, new TrustSelfSignedStrategy())
             .build();
     SSLConnectionSocketFactory connectionSocketFactory = new SSLConnectionSocketFactory(sslContext);
 
@@ -163,6 +177,7 @@ public class MainConfig {
             .setConnectionManager(clientConnectionManager)
             .setMaxConnTotal(20)
             .setMaxConnPerRoute(2)
+            .setDefaultRequestConfig(requestConfig)
             .build();
   }
 

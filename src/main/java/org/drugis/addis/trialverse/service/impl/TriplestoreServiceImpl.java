@@ -126,7 +126,6 @@ public class TriplestoreServiceImpl implements TriplestoreService {
 
       namespaces.add(getNamespaceHead(new TriplestoreUuidAndOwner(namespaceUri, null)));
     }
-
     return namespaces;
   }
 
@@ -376,7 +375,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
   }
 
   private Predicate<String> isStudyLevelCovariate(List<CovariateOption> covariateOptions) {
-    return key -> covariateOptions.stream().filter(option -> key.equals(option.toString())).findFirst().isPresent();
+    return key -> covariateOptions.stream().anyMatch(option -> key.equals(option.toString()));
   }
 
   @Override

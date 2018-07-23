@@ -9,6 +9,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import java.io.Serializable;
 import java.net.URI;
+import java.util.Objects;
 
 /**
  * Created by daan on 2/20/14.
@@ -36,7 +37,7 @@ public class Outcome implements Serializable{
     this.id = id;
     this.project = project;
     this.name = name;
-    if(direction.intValue() != HIGHER_IS_BETTER && direction.intValue() != LOWER_IS_BETTER) {
+    if(direction != HIGHER_IS_BETTER && direction != LOWER_IS_BETTER) {
       throw new Exception("invalid direction value, must be 1 either or -1");
     }
     this.direction = direction;
@@ -109,29 +110,18 @@ public class Outcome implements Serializable{
   public boolean equals(Object o) {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
-
     Outcome outcome = (Outcome) o;
-
-    if (!id.equals(outcome.id)) return false;
-    if (!project.equals(outcome.project)) return false;
-    if (!name.equals(outcome.name)) return false;
-    if (!direction.equals(outcome.direction)) return false;
-    if (motivation != null ? !motivation.equals(outcome.motivation) : outcome.motivation != null) return false;
-    if (semanticOutcomeLabel != null ? !semanticOutcomeLabel.equals(outcome.semanticOutcomeLabel) : outcome.semanticOutcomeLabel != null)
-      return false;
-    return semanticOutcomeUri != null ? semanticOutcomeUri.equals(outcome.semanticOutcomeUri) : outcome.semanticOutcomeUri == null;
-
+    return Objects.equals(id, outcome.id) &&
+        Objects.equals(project, outcome.project) &&
+        Objects.equals(name, outcome.name) &&
+        Objects.equals(direction, outcome.direction) &&
+        Objects.equals(motivation, outcome.motivation) &&
+        Objects.equals(semanticOutcomeLabel, outcome.semanticOutcomeLabel) &&
+        Objects.equals(semanticOutcomeUri, outcome.semanticOutcomeUri);
   }
 
   @Override
   public int hashCode() {
-    int result = id.hashCode();
-    result = 31 * result + project.hashCode();
-    result = 31 * result + name.hashCode();
-    result = 31 * result + direction.hashCode();
-    result = 31 * result + (motivation != null ? motivation.hashCode() : 0);
-    result = 31 * result + (semanticOutcomeLabel != null ? semanticOutcomeLabel.hashCode() : 0);
-    result = 31 * result + (semanticOutcomeUri != null ? semanticOutcomeUri.hashCode() : 0);
-    return result;
+    return Objects.hash(id, project, name, direction, motivation, semanticOutcomeLabel, semanticOutcomeUri);
   }
 }

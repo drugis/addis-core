@@ -9,12 +9,12 @@ import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.utils.HttpClientUtils;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.util.EntityUtils;
 import org.drugis.addis.patavitask.PataviTask;
-import org.drugis.addis.patavitask.PataviTaskUriHolder;
 import org.drugis.addis.patavitask.repository.PataviTaskRepository;
 import org.drugis.addis.util.WebConstants;
 import org.json.JSONObject;
@@ -23,7 +23,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 
 import javax.inject.Inject;
-import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.*;
@@ -48,6 +47,7 @@ public class PataviTaskRepositoryImpl implements PataviTaskRepository {
     logger.trace("PataviTaskRepositoryImpl.createPataviTask");
 
     HttpPost postRequest = new HttpPost(pataviUri);
+    postRequest.addHeader("Connection", "close");
     postRequest.addHeader(new BasicHeader("Content-type", WebConstants.APPLICATION_JSON_UTF8_VALUE));
     HttpEntity postBody = new ByteArrayEntity(jsonProblem.toString().getBytes());
     postRequest.setEntity(postBody);
@@ -59,10 +59,10 @@ public class PataviTaskRepositoryImpl implements PataviTaskRepository {
       return newTaskUri;
     } catch (Exception e) {
       throw new RuntimeException("Error creating patavi task: " + e.toString());
-    }
+    } 
   }
   @Override
-  public JsonNode getResult(URI taskUri) throws URISyntaxException, IOException {
+  public JsonNode getResult(URI taskUri) throws URISyntaxException {
     URI resultsUri = new URIBuilder(taskUri + WebConstants.PATAVI_RESULTS_PATH)
             .build();
     HttpGet getRequest = new HttpGet(resultsUri);
@@ -76,8 +76,9 @@ public class PataviTaskRepositoryImpl implements PataviTaskRepository {
   }
 
   @Override
-  public Map<URI, JsonNode> getResults(List<URI> taskUris) throws URISyntaxException, IOException {
-    List<URI> filteredUris = taskUris.stream()
+  public Map<URI, JsonNode> getResults(Collection<PataviTask> tasks) throws URISyntaxException {
+    List<URI> filteredUris = tasks.stream()
+            .map(PataviTask::getSelf)
             .filter(Objects::nonNull)
             .collect(Collectors.toList());
 
@@ -98,7 +99,7 @@ public class PataviTaskRepositoryImpl implements PataviTaskRepository {
   }
 
   @Override
-  public List<PataviTask> findByUrls(List<URI> taskUris) throws IOException {
+  public List<PataviTask> findByUrls(List<URI> taskUris) {
     return taskUris.stream().filter(Objects::nonNull).map(this::getTask).collect(Collectors.toList());
   }
 

@@ -1,7 +1,5 @@
 package org.drugis.addis.problems.service.model;
 
-import java.net.URI;
-
 /**
  * Created by daan on 3/26/14.
  */
@@ -9,8 +7,8 @@ public class RateMeasurementEntry extends AbstractMeasurementEntry {
   private RatePerformance performance;
   private Integer alternative;
 
-  public RateMeasurementEntry(Integer alternative, String criterion, RatePerformance performance) {
-    super(criterion);
+  public RateMeasurementEntry(Integer alternative, String criterion, String dataSource, RatePerformance performance) {
+    super(criterion, dataSource);
     this.alternative = alternative;
     this.performance = performance;
   }

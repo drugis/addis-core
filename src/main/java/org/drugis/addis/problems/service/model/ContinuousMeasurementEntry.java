@@ -1,5 +1,7 @@
 package org.drugis.addis.problems.service.model;
 
+import java.util.Objects;
+
 /**
  * Created by daan on 3/27/14.
  */
@@ -7,8 +9,8 @@ public class ContinuousMeasurementEntry extends AbstractMeasurementEntry {
   private ContinuousPerformance performance;
   private Integer alternative;
 
-  public ContinuousMeasurementEntry(Integer interventionId, String criterion, ContinuousPerformance performance) {
-    super(criterion);
+  public ContinuousMeasurementEntry(Integer interventionId, String criterion, String dataSource, ContinuousPerformance performance) {
+    super(criterion, dataSource);
     this.alternative = interventionId;
     this.performance = performance;
   }
@@ -27,18 +29,14 @@ public class ContinuousMeasurementEntry extends AbstractMeasurementEntry {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
     if (!super.equals(o)) return false;
-
     ContinuousMeasurementEntry that = (ContinuousMeasurementEntry) o;
-
-    if (!performance.equals(that.performance)) return false;
-    return alternative.equals(that.alternative);
+    return Objects.equals(performance, that.performance) &&
+        Objects.equals(alternative, that.alternative);
   }
 
   @Override
   public int hashCode() {
-    int result = super.hashCode();
-    result = 31 * result + performance.hashCode();
-    result = 31 * result + alternative.hashCode();
-    return result;
+
+    return Objects.hash(super.hashCode(), performance, alternative);
   }
 }

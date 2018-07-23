@@ -12,8 +12,6 @@ import javax.persistence.Converter;
  */
 @Converter
 public class JSONObjectConverter implements AttributeConverter<JSONObject, String> {
-
-
   @Override
   public String convertToDatabaseColumn(JSONObject attribute) {
     return attribute == null ? null : attribute.toJSONString();

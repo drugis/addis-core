@@ -14,7 +14,9 @@ import org.springframework.mock.web.MockHttpServletResponse;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 
+import static org.hamcrest.text.IsEqualIgnoringWhiteSpace.equalToIgnoringWhiteSpace;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 
 /**
  * Created by connor on 12-11-14.
@@ -73,6 +75,6 @@ public class TrialverseIOUtilsServiceTest {
             "  }\n" +
             "}";
 
-    assertEquals(expected.trim(), httpServletResponse.getContentAsString().trim());
+    assertThat(httpServletResponse.getContentAsString().trim(), equalToIgnoringWhiteSpace(expected));
   }
 }

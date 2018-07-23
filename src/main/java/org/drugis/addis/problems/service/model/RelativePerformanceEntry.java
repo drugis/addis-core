@@ -6,8 +6,8 @@ package org.drugis.addis.problems.service.model;
 public class RelativePerformanceEntry extends AbstractMeasurementEntry {
   private RelativePerformance performance;
 
-  public RelativePerformanceEntry(String criterion, RelativePerformance performance) {
-    super(criterion);
+  public RelativePerformanceEntry(String criterion, String dataSource, RelativePerformance performance) {
+    super(criterion, dataSource);
     this.performance = performance;
   }
 

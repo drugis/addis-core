@@ -86,7 +86,7 @@ public class PataviTaskServiceTest {
             .build();
     NetworkMetaAnalysisProblem networkMetaAnalysisProblem = mock(NetworkMetaAnalysisProblem.class);
     when(networkMetaAnalysisProblem.toString()).thenReturn(problem);
-    when(problemService.getProblem(projectId, analysisId, null)).thenReturn(networkMetaAnalysisProblem);
+    when(problemService.getProblem(projectId, analysisId)).thenReturn(networkMetaAnalysisProblem);
     when(modelService.find(modelId)).thenReturn(model);
     when(webConstants.getPataviGemtcUri()).thenReturn(pataviGemtcUri);
     URI createdURI = URI.create("new.task.com");
@@ -98,7 +98,7 @@ public class PataviTaskServiceTest {
     assertNotNull(result.getUri());
     verify(analysisRepository).get(analysisId);
     verify(modelService).find(modelId);
-    verify(problemService).getProblem(projectId, analysisId, null);
+    verify(problemService).getProblem(projectId, analysisId);
     verify(problemService).applyModelSettings(networkMetaAnalysisProblem, model);
     verify(pataviTaskRepository).createPataviTask(pataviGemtcUri, networkMetaAnalysisProblem.buildProblemWithModelSettings(model, outcomeDirection));
   }

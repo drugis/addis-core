@@ -15,6 +15,7 @@ import org.drugis.addis.ordering.repository.OrderingRepository;
 import org.drugis.addis.outcomes.repository.OutcomeRepository;
 import org.drugis.addis.outcomes.service.OutcomeService;
 import org.drugis.addis.patavitask.repository.PataviTaskRepository;
+import org.drugis.addis.problems.service.HostURLCache;
 import org.drugis.addis.problems.service.ProblemService;
 import org.drugis.addis.projects.repository.ProjectRepository;
 import org.drugis.addis.projects.repository.ReportRepository;
@@ -124,6 +125,11 @@ public class TestConfig {
   @Bean
   public ProblemService mockProblemService() {
     return mock(ProblemService.class);
+  }
+
+  @Bean
+  public HostURLCache mockHostUrlCache() {
+    return mock(HostURLCache.class);
   }
 
   @Bean
