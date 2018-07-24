@@ -14,7 +14,8 @@ public class InterventionSetViewAdapter extends AbstractInterventionViewAdapter 
 
   public InterventionSetViewAdapter(InterventionSet interventionSet) {
     super(interventionSet);
-    interventionIds = interventionSet.getInterventionIds();
+    interventionIds = new HashSet<>(interventionSet.getInterventionIds());
+    // new hashset in to prevent lazy fetching of the ids, needed to prevent fetching them after DB connection is closed
   }
 
   public Set<Integer> getInterventionIds() {
