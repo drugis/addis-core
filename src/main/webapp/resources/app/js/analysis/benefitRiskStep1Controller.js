@@ -1,26 +1,47 @@
 'use strict';
 define(['lodash', 'angular'], function(_, angular) {
-  var dependencies = ['$scope', '$q', '$stateParams', '$state',
-    'ProjectStudiesResource',
-    'AnalysisResource', 'InterventionResource',
-    'OutcomeResource', 'BenefitRiskService',
-    'ModelResource', 'ProjectResource',
+  var dependencies = [
+    '$scope',
+    '$q',
+    '$stateParams',
+    '$state',
+    'AnalysisResource',
+    'BenefitRiskService',
+    'InterventionResource',
+    'ModelResource',
+    'OutcomeResource',
+    'PageTitleService',
     'ProjectResource',
-    'ScenarioResource', 'SubProblemResource',
-    'UserService', 'SingleStudyBenefitRiskService',
+    'ProjectResource',
+    'ProjectStudiesResource',
+    'ScenarioResource',
+    'SingleStudyBenefitRiskService',
+    'SubProblemResource',
+    'UserService',
     'WorkspaceService',
     'DEFAULT_VIEW'
   ];
-  var BenefitRiskStep1Controller = function($scope, $q, $stateParams, $state,
-    ProjectStudiesResource,
-    AnalysisResource, InterventionResource,
-    OutcomeResource, BenefitRiskService,
-    ModelResource, ProblemResource,
+  var BenefitRiskStep1Controller = function(
+    $scope,
+    $q,
+    $stateParams,
+    $state,
+    AnalysisResource,
+    BenefitRiskService,
+    InterventionResource,
+    ModelResource,
+    OutcomeResource,
+    PageTitleService,
+    ProblemResource,
     ProjectResource,
-    ScenarioResource, SubProblemResource,
-    UserService, SingleStudyBenefitRiskService,
+    ProjectStudiesResource,
+    ScenarioResource,
+    SingleStudyBenefitRiskService,
+    SubProblemResource,
+    UserService,
     WorkspaceService,
-    DEFAULT_VIEW) {
+    DEFAULT_VIEW
+  ) {
     // functions
     $scope.addedAlternative = addedAlternative;
     $scope.removedAlternative = removedAlternative;
@@ -52,9 +73,9 @@ define(['lodash', 'angular'], function(_, angular) {
     });
 
     var promises = [$scope.analysis.$promise,
-      $scope.alternatives.$promise,
-      $scope.outcomes.$promise,
-      $scope.models.$promise,
+    $scope.alternatives.$promise,
+    $scope.outcomes.$promise,
+    $scope.models.$promise,
       studiesPromise
     ];
 
@@ -63,11 +84,13 @@ define(['lodash', 'angular'], function(_, angular) {
       var alternatives = result[1];
       var outcomes = result[2];
       var models = _.reject(_.reject(result[3], 'archived'), function(model) {
-        return model.likelihood === 'binom' && model.link === 'log' ;
+        return model.likelihood === 'binom' && model.link === 'log';
       });
       var studies = result[4];
 
       var outcomeIds = _.map(outcomes, 'id');
+
+      PageTitleService.setPageTitle('BenefitRiskStep1Controller', analysis.title+ ' step 1');
 
       $scope.studies = studies;
       $scope.studyArrayLength = studies.length;
@@ -78,12 +101,12 @@ define(['lodash', 'angular'], function(_, angular) {
       }).$promise.then(function(networkMetaAnalyses) {
         networkMetaAnalyses =
           _.chain(networkMetaAnalyses)
-          .reject(function(analysis) {
-            return analysis.archived;
-          })
-          .map(_.partial(BenefitRiskService.joinModelsWithAnalysis, models))
-          .map(BenefitRiskService.addModelsGroup)
-          .value();
+            .reject(function(analysis) {
+              return analysis.archived;
+            })
+            .map(_.partial(BenefitRiskService.joinModelsWithAnalysis, models))
+            .map(BenefitRiskService.addModelsGroup)
+            .value();
         var outcomesWithAnalyses = _.chain(outcomes)
           .map(_.partial(BenefitRiskService.buildOutcomeWithAnalyses, analysis, networkMetaAnalyses))
           .map(function(owa) {

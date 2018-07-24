@@ -19,7 +19,8 @@ var requires = [
   'util/directives/sessionExpired/sessionExpiredDirective',
   'util/directives/spinner/spinnerDirective',
   'util/directives/enumOptions/enumOptionsDirective',
-  'util/interceptors/sessionExpiredInterceptor'
+  'util/interceptors/sessionExpiredInterceptor',
+  'util/pageTitleService'
 ];
 define(['angular'].concat(requires), function(
   angular,
@@ -42,7 +43,8 @@ define(['angular'].concat(requires), function(
   sessionExpired,
   spinner,
   enumOptions,
-  SessionExpiredInterceptor
+  SessionExpiredInterceptor,
+  PageTitleService
 ) {
   return angular.module('trialverse.util', [])
     // services
@@ -52,8 +54,9 @@ define(['angular'].concat(requires), function(
     .factory('SanitizeService', SanitizeService)
     .factory('AbstractGroupService', AbstractGroupService)
     .factory('RdfListService', RdfListService)
-    .factory('DataModelService', DataModelService)
-
+    .factory('DataModelService', DataModelService)  
+    .factory('PageTitleService', PageTitleService)
+   
     // resources
     .factory('SparqlResource', SparqlResource)
 

@@ -1,17 +1,26 @@
 'use strict';
 define(['angular', 'lodash', 'jQuery'],
   function(angular, _, $) {
-    var dependencies = ['$transitions', '$scope', '$stateParams', '$modal',
-      'ProjectResource',
+    var dependencies = [
+      '$transitions', 
+      '$scope', 
+      '$stateParams', 
+      '$modal',
+      '$timeout',
       'ReportResource',
       'DefaultReportService',
-      '$timeout'
+      'PageTitleService'
     ];
-    var EditReportcontroller = function($transitions, $scope, $stateParams, $modal,
-      ProjectResource,
+    var EditReportcontroller = function(
+      $transitions, 
+      $scope, 
+      $stateParams, 
+      $modal,
+      $timeout,
       ReportResource,
       DefaultReportService,
-      $timeout) {
+      PageTitleService
+    ) {
       $scope.reportText = {
         text: '',
         changed: false
@@ -38,6 +47,8 @@ define(['angular', 'lodash', 'jQuery'],
           }
         }
       });
+
+      PageTitleService.setPageTitle('EditReportController', 'Edit ' + $scope.project.name + '\'s report');
 
       function insertTextAtCursor(text) {
         var input = $('#report-input');

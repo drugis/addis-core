@@ -1,14 +1,29 @@
 'use strict';
 define(['lodash'], function(_) {
-  var dependencies = ['$scope', '$modal', '$filter', '$stateParams', '$state', 'DatasetResource', 'UserService'];
+  var dependencies = [
+    '$scope', '$modal', '$filter', '$stateParams', '$state',
+    'DatasetResource',
+    'UserService',
+    'PageTitleService'
+  ];
 
-  var DatasetsController = function($scope, $modal, $filter, $stateParams, $state, DatasetResource, UserService) {
+  var DatasetsController = function(
+    $scope, $modal, $filter, $stateParams, $state,
+    DatasetResource,
+    UserService,
+    PageTitleService
+  ) {
     // functions
     $scope.reloadDatasets = reloadDatasets;
     $scope.createDatasetDialog = createDatasetDialog;
     $scope.createProjectDialog = createProjectDialog;
 
     // init
+    $scope.$watch('user', function(user) {
+      if (user && user.id) {
+        PageTitleService.setPageTitle('DatasetsController', user.firstName + ' ' + user.lastName + '\'s datasets');
+      }
+    });
     reloadDatasets();
     $scope.stripFrontFilter = $filter('stripFrontFilter');
     $scope.loginUser = UserService.getLoginUser();
@@ -29,7 +44,7 @@ define(['lodash'], function(_) {
           callback: function() {
             return reloadDatasets;
           },
-          datasetTitles: function(){
+          datasetTitles: function() {
             return _.map($scope.datasets, 'title');
           }
         }

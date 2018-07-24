@@ -1,13 +1,44 @@
 'use strict';
 define(['angular', 'lodash'], function(angular, _) {
-  var dependencies = ['$scope', '$timeout', '$q', '$state', '$stateParams', 'currentAnalysis', 'currentProject', 'OutcomeResource',
-    'InterventionResource', 'CovariateResource', 'ModelResource', 'NetworkMetaAnalysisService', 'AnalysisService',
-    'EvidenceTableResource', 'UserService', 'AnalysisResource'
+  var dependencies = [
+    '$scope',
+    '$timeout',
+    '$q',
+    '$state',
+    '$stateParams',
+    'AnalysisResource',
+    'AnalysisService',
+    'CovariateResource',
+    'EvidenceTableResource',
+    'InterventionResource',
+    'ModelResource',
+    'NetworkMetaAnalysisService',
+    'OutcomeResource',
+    'PageTitleService',
+    'UserService',
+    'currentAnalysis',
+    'currentProject'
   ];
 
-  var NetworkMetaAnalysisContainerController = function($scope, $timeout, $q, $state, $stateParams, currentAnalysis, currentProject,
-    OutcomeResource, InterventionResource, CovariateResource, ModelResource, NetworkMetaAnalysisService, AnalysisService,
-    EvidenceTableResource, UserService, AnalysisResource) {
+  var NetworkMetaAnalysisContainerController = function(
+    $scope,
+    $timeout,
+    $q,
+    $state,
+    $stateParams,
+    AnalysisResource,
+    AnalysisService,
+    CovariateResource,
+    EvidenceTableResource,
+    InterventionResource,
+    ModelResource,
+    NetworkMetaAnalysisService,
+    OutcomeResource,
+    PageTitleService,
+    UserService,
+    currentAnalysis,
+    currentProject
+  ) {
     // functions
     $scope.selectAllInterventions = selectAllInterventions;
     $scope.deselectAllInterventions = deselectAllInterventions;
@@ -23,7 +54,7 @@ define(['angular', 'lodash'], function(angular, _) {
     $scope.gotoCreateModel = gotoCreateModel;
     $scope.lessThanTwoInterventionArms = lessThanTwoInterventionArms;
 
-    // vars
+    // init
     $scope.isAnalysisLocked = true;
     $scope.isNetworkDisconnected = true;
     $scope.hasModel = true;
@@ -37,43 +68,38 @@ define(['angular', 'lodash'], function(angular, _) {
     $scope.treatmentOverlapMap = {};
     $scope.isModelCreationBlocked = checkCanNotCreateModel();
 
+    PageTitleService.setPageTitle('NetworkMetaAnalysisContainerController', currentAnalysis.title);
+
     // make available for create model permission check in models.html (which is in gemtc subproject)
     $scope.userId = Number($stateParams.userUid);
     var isUserOwner = false;
 
     $scope.columns = [{
-        label: 'subject with event',
-        helpKey: 'count',
-        dataKey:'rate'
-      },
-      {
-        label: 'mean',
-        helpKey: 'mean',
-        dataKey:'mu'
-      },
-      {
-        label: 'standard deviation',
-        helpKey: 'standard-deviation',
-        dataKey:'sigma'
-      },
-      {
-        label: 'N',
-        helpKey: 'sample-size',
-        dataKey:'sampleSize'
-      },
-      {
-        label: 'standard error',
-        helpKey: 'standard-error',
-        dataKey:'stdErr'
-      },
-      {
-        label: 'exposure',
-        helpKey: 'exposure',
-        dataKey:'exposure'
-      }
-    ];
+      label: 'subject with event',
+      helpKey: 'count',
+      dataKey: 'rate'
+    }, {
+      label: 'mean',
+      helpKey: 'mean',
+      dataKey: 'mu'
+    }, {
+      label: 'standard deviation',
+      helpKey: 'standard-deviation',
+      dataKey: 'sigma'
+    }, {
+      label: 'N',
+      helpKey: 'sample-size',
+      dataKey: 'sampleSize'
+    }, {
+      label: 'standard error',
+      helpKey: 'standard-error',
+      dataKey: 'stdErr'
+    }, {
+      label: 'exposure',
+      helpKey: 'exposure',
+      dataKey: 'exposure'
+    }];
 
-    // init
     if (UserService.hasLoggedInUser()) {
       $scope.loginUserId = (UserService.getLoginUser()).id;
       isUserOwner = UserService.isLoginUserId($scope.project.owner.id);
@@ -114,13 +140,13 @@ define(['angular', 'lodash'], function(angular, _) {
     });
 
     $q.all([
-        $scope.analysis.$promise,
-        $scope.project.$promise,
-        $scope.models.$promise,
-        outcomesPromise,
-        $scope.interventions.$promise,
-        $scope.covariates.$promise,
-      ])
+      $scope.analysis.$promise,
+      $scope.project.$promise,
+      $scope.models.$promise,
+      outcomesPromise,
+      $scope.interventions.$promise,
+      $scope.covariates.$promise,
+    ])
       .then(function() {
         $scope.hasModel = $scope.models.length > 0;
         $scope.interventions = _.orderBy($scope.interventions, function(intervention) {

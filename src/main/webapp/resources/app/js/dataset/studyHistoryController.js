@@ -1,8 +1,21 @@
 'use strict';
 define([],
   function() {
-    var dependencies = ['$scope', '$stateParams', 'StudyHistoryResource', 'DatasetResource', 'StudiesWithDetailsService'];
-    var StudyHistoryController = function($scope, $stateParams, StudyHistoryResource, DatasetResource, StudiesWithDetailsService) {
+    var dependencies = [
+      '$scope',
+      '$stateParams',
+      'StudyHistoryResource',
+      'DatasetResource',
+      'StudiesWithDetailsService',
+      'PageTitleService'];
+    var StudyHistoryController = function(
+      $scope,
+      $stateParams,
+      StudyHistoryResource,
+      DatasetResource,
+      StudiesWithDetailsService,
+      PageTitleService
+    ) {
 
       $scope.userUid = $stateParams.userUid;
       $scope.datasetUuid = $stateParams.datasetUuid;
@@ -34,9 +47,10 @@ define([],
       }
 
       function getStudyTitle() {
-        StudiesWithDetailsService.getWithoutDetails($scope.userUid, $scope.datasetUuid, null /* version */ , $scope.studyGraphUuid)
+        StudiesWithDetailsService.getWithoutDetails($scope.userUid, $scope.datasetUuid, null /* version */, $scope.studyGraphUuid)
           .then(function(response) {
             $scope.studyTitle = response[0].label;
+            PageTitleService.setPageTitle('StudyHistoryController', $scope.studyTitle + '\'s history');
           });
       }
     };

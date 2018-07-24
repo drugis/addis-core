@@ -9,17 +9,18 @@ define(['lodash'],
       '$modal',
       '$filter',
       '$q',
-      'DatasetVersionedResource',
-      'StudiesWithDetailsService',
-      'HistoryResource',
       'ConceptsService',
-      'VersionedGraphResource',
-      'DatasetResource',
-      'GraphResource',
-      'UserService',
       'DataModelService',
+      'DatasetResource',
       'DatasetService',
-      'ExcelExportService'
+      'DatasetVersionedResource',
+      'ExcelExportService',
+      'GraphResource',
+      'HistoryResource',
+      'PageTitleService',
+      'StudiesWithDetailsService',
+      'UserService',
+      'VersionedGraphResource'
     ];
     var DatasetController = function(
       $scope,
@@ -29,17 +30,18 @@ define(['lodash'],
       $modal,
       $filter,
       $q,
-      DatasetVersionedResource,
-      StudiesWithDetailsService,
-      HistoryResource,
       ConceptsService,
-      VersionedGraphResource,
-      DatasetResource,
-      GraphResource,
-      UserService,
       DataModelService,
+      DatasetResource,
       DatasetService,
-      ExcelExportService
+      DatasetVersionedResource,
+      ExcelExportService,
+      GraphResource,
+      HistoryResource,
+      PageTitleService,
+      StudiesWithDetailsService,
+      UserService,
+      VersionedGraphResource
     ) {
       // functions
       $scope.createProjectDialog = createProjectDialog;
@@ -156,6 +158,7 @@ define(['lodash'],
             creator: getPurlProperty(dsResponse, 'creator')
           };
           $scope.isEditingAllowed = isEditingAllowed();
+          PageTitleService.setPageTitle('DatasetController', $scope.dataset.title);
         });
       }
 
@@ -178,9 +181,9 @@ define(['lodash'],
               userUid: $stateParams.userUid,
               versionUuid: $scope.currentRevision.uri.split('/versions/')[1]
             });
-            return ExcelExportService.exportDataset(datasetWithCoordinates, graphUuids, function(){
+            return ExcelExportService.exportDataset(datasetWithCoordinates, graphUuids, function() {
               ++$scope.progress.studiesDone;
-              $scope.progress.percentage = $scope.progress.studiesDone*100/graphUuids.length;
+              $scope.progress.percentage = $scope.progress.studiesDone * 100 / graphUuids.length;
             });
           })
           .then(function() {
