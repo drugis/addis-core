@@ -1,8 +1,7 @@
 prefix es:    <http://drugis.org/eventSourcing/es#>
 
 <http://trials.drugis.org/datasets/65f9e23d-6e8d-4ccd-aacd-95b672520ce2>
-        a       <http://trials.drugis.org/ontology#Dataset> ;
-        es:head  <http://trialverseDatasetUrl/versions/5413bdb4-a2d9-4fe1-b4ca-428c635842b9> ;
+        a       <http://trials.drugis.org/ontology#Datase:head  <http://trialverseDatasetUrl/versions/5413bdb4-a2d9-4fe1-b4ca-428c635842b9> ;
         <http://purl.org/dc/elements/1.1/source>
                 <http://pubs.drugis.org/documents/1> ;
         <http://trials.drugis.org/ontology#contains_study>

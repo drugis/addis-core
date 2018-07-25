@@ -43,6 +43,7 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter {
     registry.addResourceHandler("/trialverse/**").addResourceLocations("/resources/trialverse/");
     registry.addResourceHandler("/manual.html").addResourceLocations("/resources/manual.html");
     registry.addResourceHandler("/addis-lexicon.json").addResourceLocations("/resources/addis-lexicon.json");
+    registry.addResourceHandler("/addis-page-titles.json").addResourceLocations("/resources/addis-page-titles.json");
     registry.addResourceHandler("/template/**").addResourceLocations("/resources/app/js/bower_components/angular-foundation-assets/template/"); // hack for angular-foundation
   }
 }

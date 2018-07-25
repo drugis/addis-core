@@ -25,6 +25,7 @@ define(
     'resources',
     'services',
     'help-popup',
+    'page-title-service',
     'search/search',
     'user/user',
     'dataset/dataset',
@@ -113,6 +114,7 @@ define(
       'addis.outcomes',
       'addis.excelIO',
       'patavi',
+      'page-title-service',
       'errorReporting',
       'export-directive', 
       'angucomplete-alt'
@@ -179,8 +181,8 @@ define(
       $locationProvider.hashPrefix('');
     }]);
 
-    app.run(['$rootScope', '$window', '$http', '$location', '$transitions', '$cookies', 'HelpPopupService', 'CacheService',
-      function($rootScope, $window, $http, $location, $transitions, $cookies, HelpPopupService, CacheService) {
+    app.run(['$rootScope', '$window', '$http', '$location', '$transitions', '$cookies', 'HelpPopupService', 'CacheService', 'PageTitleService',
+      function($rootScope, $window, $http, $location, $transitions, $cookies, HelpPopupService, CacheService, PageTitleService) {
         $rootScope.$safeApply = function($scope, fn) {
           var phase = $scope.$root.$$phase;
           if (phase === '$apply' || phase === '$digest') {
@@ -193,6 +195,9 @@ define(
         HelpPopupService.loadLexicon($http.get('app/js/bower_components/gemtc-web/app/lexicon.json'));
         HelpPopupService.loadLexicon($http.get('app/js/bower_components/mcda-web/app/lexicon.json'));
         HelpPopupService.loadLexicon($http.get('addis-lexicon.json'));
+
+        PageTitleService.loadLexicon($http.get('app/js/bower_components/mcda-web/app/mcda-page-titles.json'));
+        PageTitleService.loadLexicon($http.get('addis-page-titles.json'));
 
         $transitions.onSuccess({}, function(transition) {
           var redirectUrl = $cookies.get('returnToPage');

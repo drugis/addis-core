@@ -31,6 +31,7 @@ require.config({
     'moment': 'bower_components/moment/min/moment.min',
     'ngSanitize': 'bower_components/angular-sanitize/angular-sanitize.min',
     'nvd3': 'bower_components/nvd3/build/nv.d3.min',
+    'page-title-service': 'bower_components/page-title-service/pageTitleService',
     'showdown': 'bower_components/showdown/dist/showdown.min',
     'xlsx': 'bower_components/xlsx/dist/xlsx.full.min',
     'xlsx-shim': 'bower_components/xlsx/demos/requirejs/xlsx-shim',
