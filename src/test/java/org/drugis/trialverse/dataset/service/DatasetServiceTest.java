@@ -62,7 +62,7 @@ public class DatasetServiceTest {
     Model datasetsModel = getModel("mockDatasetsModel.ttl");
 
     VersionMapping versionMapping = new VersionMapping("versionDatasetUrl", "ownerUid", "http://trialverseDatasetUrl");
-    List<VersionMapping> versionMappings = Arrays.asList(versionMapping);
+    List<VersionMapping> versionMappings = Collections.singletonList(versionMapping);
     when(versionMappingRepository.findMappingsByEmail(account.getEmail())).thenReturn(versionMappings);
     when(datasetReadRepository.queryDataset(versionMapping)).thenReturn(datasetsModel);
 
