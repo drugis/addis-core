@@ -20,8 +20,10 @@ import org.springframework.core.io.ClassPathResource;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
+import static java.util.Collections.singletonList;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
@@ -57,11 +59,9 @@ public class DatasetServiceTest {
   @Test
   public void testFindDatasetsByUser() throws IOException {
 
-    InputStream datasetsModelStream = new ClassPathResource("mockDatasetsModel.ttl").getInputStream();
-    Model datasetsModel = ModelFactory.createDefaultModel();
-    datasetsModel.read(datasetsModelStream, null, "TTL");
+    Model datasetsModel = getModel("mockDatasetsModel.ttl");
 
-    VersionMapping versionMapping = new VersionMapping("versionDatadetUrl", "ownerUid", "http://trialverseDatasetUrl");
+    VersionMapping versionMapping = new VersionMapping("versionDatasetUrl", "ownerUid", "http://trialverseDatasetUrl");
     List<VersionMapping> versionMappings = Arrays.asList(versionMapping);
     when(versionMappingRepository.findMappingsByEmail(account.getEmail())).thenReturn(versionMappings);
     when(datasetReadRepository.queryDataset(versionMapping)).thenReturn(datasetsModel);
@@ -72,19 +72,31 @@ public class DatasetServiceTest {
     assertEquals("dataset 1", datasets.get(0).getTitle());
   }
 
+
+  @Test
+  public void testDatasetsByUserMixedCase() throws IOException {
+    Model datasetsModel = getModel("mockDatasetImported.ttl");
+
+    VersionMapping versionMapping = new VersionMapping("versionDatasetUrl", "ownerUid", "http://trialverseDatasetUrl");
+    List<VersionMapping> versionMappings = singletonList(versionMapping);
+    when(versionMappingRepository.findMappingsByEmail(account.getEmail())).thenReturn(versionMappings);
+    when(datasetReadRepository.queryDataset(versionMapping)).thenReturn(datasetsModel);
+
+    List<Dataset> datasets = datasetService.findDatasets(account);
+
+    assertEquals(1, datasets.size());
+    assertEquals("Hansen (2005) anti-depressants review", datasets.get(0).getTitle());
+  }
+
+
   @Test
   public void testFindFeatured() throws IOException {
 
-    InputStream datasetsModelStream = new ClassPathResource("mockDatasetsModel.ttl").getInputStream();
-    Model datasetsModel = ModelFactory.createDefaultModel();
-    datasetsModel.read(datasetsModelStream, null, "TTL");
+    Model datasetsModel = getModel("mockDatasetsModel.ttl");
+    Model datasetsModel2 = getModel("mockDatasetsModel2.ttl");
 
-    InputStream datasetsModelStream2 = new ClassPathResource("mockDatasetsModel2.ttl").getInputStream();
-    Model datasetsModel2 = ModelFactory.createDefaultModel();
-    datasetsModel2.read(datasetsModelStream2, null, "TTL");
-
-    VersionMapping versionMapping1 = new VersionMapping("versionDatadetUrl", "ownerUid", "http://trialverseDatasetUrl");
-    VersionMapping versionMapping2 = new VersionMapping("versionDatadetUrl", "ownerUid", "http://trialverseDatasetUrl2");
+    VersionMapping versionMapping1 = new VersionMapping("versionDatasetUrl", "ownerUid", "http://trialverseDatasetUrl");
+    VersionMapping versionMapping2 = new VersionMapping("versionDatasetUrl", "ownerUid", "http://trialverseDatasetUrl2");
     List<VersionMapping> versionMappings = Arrays.asList(versionMapping1, versionMapping2);
     when(featuredDatasetRepository.findAll()).thenReturn(Arrays.asList(new FeaturedDataset("http://trialverseDatasetUrl"), new FeaturedDataset("http://trialverseDatasetUrl2")));
     when(versionMappingRepository.findMappingsByTrialverseDatasetUrls(Arrays.asList(versionMapping1.getTrialverseDatasetUrl(), versionMapping2.getTrialverseDatasetUrl()))).thenReturn(versionMappings);
@@ -95,4 +107,12 @@ public class DatasetServiceTest {
     List<Dataset> datasets = datasetService.findFeatured();
     assertEquals(2, datasets.size());
   }
+
+  private Model getModel(String ttlFileName) throws IOException {
+    InputStream datasetsModelStream = new ClassPathResource(ttlFileName).getInputStream();
+    Model datasetsModel = ModelFactory.createDefaultModel();
+    datasetsModel.read(datasetsModelStream, null, "TTL");
+    return datasetsModel;
+  }
+
 }

@@ -1,8 +1,7 @@
 package org.drugis.trialverse.dataset.service.impl;
 
-import org.apache.jena.rdf.model.Model;
-import org.apache.jena.rdf.model.Statement;
-import org.apache.jena.rdf.model.StmtIterator;
+import org.apache.jena.graph.Node;
+import org.apache.jena.rdf.model.*;
 import org.drugis.addis.security.Account;
 import org.drugis.addis.security.repository.AccountRepository;
 import org.drugis.trialverse.dataset.model.Dataset;
@@ -62,14 +61,15 @@ public class DatasetServiceImpl implements DatasetService {
   }
 
   private Dataset buildDataset(Model model, Account user, String jenaUrl) {
-    StmtIterator stmtIterator = model.listStatements(null, JenaProperties.TYPE_PROPERTY, JenaProperties.DATASET_PROPERTY);
-    String trialverseDatasetUrl = stmtIterator.next().getSubject().getURI();
-    Statement titleTriple = model.getProperty(model.getResource(trialverseDatasetUrl), JenaProperties.TITLE_PROPERTY);
-    Statement descriptionTriple = model.getProperty(model.getResource(trialverseDatasetUrl), JenaProperties.DESCRIPTION_PROPERTY);
-    Statement headVersionTriple = model.getProperty(model.getResource(trialverseDatasetUrl), JenaProperties.headVersionProperty);
-    String description = descriptionTriple != null ? descriptionTriple.getObject().toString() : null;
-    String title = titleTriple != null ? titleTriple.getObject().toString() : null;
-    String headVersion = headVersionTriple.getObject().toString();
+    NodeIterator titleIterator = model.listObjectsOfProperty(JenaProperties.TITLE_PROPERTY);
+    String title = titleIterator.next().toString();
+
+    NodeIterator headVersions = model.listObjectsOfProperty(JenaProperties.headVersionProperty);
+    String headVersion = headVersions.next().toString();
+
+    NodeIterator descriptionIterator = model.listObjectsOfProperty(JenaProperties.DESCRIPTION_PROPERTY);
+    String description = descriptionIterator.hasNext() ? descriptionIterator.next().toString() : null;
+
     return new Dataset(jenaUrl, user, title, description, headVersion);
   }
 }
