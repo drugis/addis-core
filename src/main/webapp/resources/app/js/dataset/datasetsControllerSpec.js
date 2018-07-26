@@ -4,6 +4,7 @@ define(['angular-mocks'], function(angularMocks) {
 
     var scope,
       mockModal = jasmine.createSpyObj('$mock', ['open']),
+      pageTitleServiceMock = jasmine.createSpyObj('PageTitleService', ['setPageTitle']),
       mockState = {
         params: {}
       };
@@ -18,7 +19,8 @@ define(['angular-mocks'], function(angularMocks) {
         $modal: mockModal,
         $state: mockState,
         $stateParams: {userUid: 1},
-        DatasetResource: DatasetResource
+        DatasetResource: DatasetResource, 
+        PageTitleService: pageTitleServiceMock
       });
 
     }));

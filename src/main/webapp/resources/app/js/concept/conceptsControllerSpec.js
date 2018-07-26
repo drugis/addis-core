@@ -14,6 +14,7 @@ define(['angular', 'angular-mocks'], function() {
       queryItemsDefer,
       modalMock = jasmine.createSpyObj('$modal', ['open']),
       conceptsServiceMock = jasmine.createSpyObj('ConceptsService', ['loadStore', 'queryItems']),
+      pageTitleServiceMock = jasmine.createSpyObj('PageTitleService', ['setPageTitle']),
       datasetConceptDefer;
 
     beforeEach(module('trialverse.concept'));
@@ -38,7 +39,8 @@ define(['angular', 'angular-mocks'], function() {
         $stateParams: stateParamsMock,
         ConceptsService: conceptsServiceMock,
         VersionedGraphResource: VersionedGraphResource,
-        CONCEPT_GRAPH_UUID: 'CONCEPT_GRAPH_UUID'
+        CONCEPT_GRAPH_UUID: 'CONCEPT_GRAPH_UUID',
+        PageTitleService: pageTitleServiceMock
       });
 
       scope.$apply();
