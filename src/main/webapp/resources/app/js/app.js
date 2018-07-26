@@ -197,6 +197,7 @@ define(
         HelpPopupService.loadLexicon($http.get('addis-lexicon.json'));
 
         PageTitleService.loadLexicon($http.get('app/js/bower_components/mcda-web/app/mcda-page-titles.json'));
+        PageTitleService.loadLexicon($http.get('app/js/bower_components/gemtc-web/app/gemtc-page-titles.json'));
         PageTitleService.loadLexicon($http.get('addis-page-titles.json'));
 
         $transitions.onSuccess({}, function(transition) {
