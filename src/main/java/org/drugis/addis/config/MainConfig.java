@@ -162,7 +162,7 @@ public class MainConfig {
     SSLContext sslContext = SSLContexts
             .custom()
             .loadKeyMaterial(keyStore, keyStorePassword)
-            .loadTrustMaterial(keyStore, new TrustSelfSignedStrategy())
+//            .loadTrustMaterial(keyStore, new TrustSelfSignedStrategy())
             .build();
     SSLConnectionSocketFactory connectionSocketFactory = new SSLConnectionSocketFactory(sslContext);
 

@@ -1,12 +1,42 @@
 'use strict';
 define(['lodash'], function(_) {
-  var dependencies = ['$scope', '$q', '$stateParams', '$state', 'AnalysisResource', 'InterventionResource',
-    'OutcomeResource', 'BenefitRiskService', 'ModelResource', 'ScenarioResource', 'UserService', 'ProjectResource',
-    'ProjectStudiesResource', 'SubProblemResource', 'TrialverseResource', 'DEFAULT_VIEW'
+  var dependencies = [
+    '$scope',
+    '$q',
+    '$stateParams',
+    '$state',
+    'AnalysisResource',
+    'BenefitRiskService', 
+    'InterventionResource',
+    'ModelResource', 
+    'OutcomeResource', 
+    'PageTitleService',
+    'ProjectResource',  
+    'ProjectStudiesResource', 
+    'ScenarioResource', 
+    'SubProblemResource', 
+    'TrialverseResource', 
+    'UserService', 
+    'DEFAULT_VIEW'
   ];
-  var BenefitRiskController = function($scope, $q, $stateParams, $state, AnalysisResource, InterventionResource,
-    OutcomeResource, BenefitRiskService, ModelResource, ScenarioResource, UserService, ProjectResource,
-    ProjectStudiesResource, SubProblemResource, TrialverseResource, DEFAULT_VIEW) {
+  var BenefitRiskController = function(
+    $scope,
+    $q,
+    $stateParams,
+    $state,
+    AnalysisResource,
+    BenefitRiskService, 
+    InterventionResource,
+    ModelResource, 
+    OutcomeResource, 
+    PageTitleService,
+    ProjectResource,
+    ProjectStudiesResource, 
+    ScenarioResource, 
+    SubProblemResource, 
+    TrialverseResource, 
+    UserService, 
+    DEFAULT_VIEW) {
 
     $scope.analysis = AnalysisResource.get($stateParams);
     $scope.alternatives = InterventionResource.query($stateParams);
@@ -25,10 +55,10 @@ define(['lodash'], function(_) {
     };
 
     var promises = [$scope.analysis.$promise,
-      $scope.alternatives.$promise,
-      $scope.outcomes.$promise,
-      $scope.models.$promise,
-      $scope.project.$promise,
+    $scope.alternatives.$promise,
+    $scope.outcomes.$promise,
+    $scope.models.$promise,
+    $scope.project.$promise,
       studiesPromise
     ];
 
@@ -43,6 +73,8 @@ define(['lodash'], function(_) {
           uuid: study.studyUri.split('/graphs/')[1]
         });
       });
+
+      PageTitleService.setPageTitle('BenefitRiskController', analysis.title);
 
       if (UserService.isLoginUserId(project.owner.id) && !analysis.archived) {
         $scope.editMode.allowEditing = true;

@@ -1,13 +1,13 @@
 'use strict';
 define(['angular', 'lodash'], function(angular, _) {
-  var dependencies = ['$scope', '$q', '$stateParams', '$state', '$modal',
+  var dependencies = [
+    '$scope', '$q', '$stateParams', '$state', '$modal',
     'AnalysisResource',
     'BenefitRiskService',
-    'DEFAULT_VIEW',
-    'gemtcRootPath',
     'InterventionResource',
     'ModelResource',
     'OutcomeResource',
+    'PageTitleService',
     'ProblemResource',
     'ProjectResource',
     'ProjectStudiesResource',
@@ -15,16 +15,18 @@ define(['angular', 'lodash'], function(angular, _) {
     'SubProblemResource',
     'TrialverseResource',
     'UserService',
-    'WorkspaceService'
+    'WorkspaceService',
+    'DEFAULT_VIEW',
+    'gemtcRootPath'
   ];
-  var BenefitRiskStep2Controller = function($scope, $q, $stateParams, $state, $modal,
+  var BenefitRiskStep2Controller = function(
+    $scope, $q, $stateParams, $state, $modal,
     AnalysisResource,
     BenefitRiskService,
-    DEFAULT_VIEW,
-    gemtcRootPath,
     InterventionResource,
     ModelResource,
     OutcomeResource,
+    PageTitleService,
     ProblemResource,
     ProjectResource,
     ProjectStudiesResource,
@@ -32,7 +34,9 @@ define(['angular', 'lodash'], function(angular, _) {
     SubProblemResource,
     TrialverseResource,
     UserService,
-    WorkspaceService
+    WorkspaceService,
+    DEFAULT_VIEW,
+    gemtcRootPath
   ) {
 
     $scope.goToStep1 = goToStep1;
@@ -70,6 +74,8 @@ define(['angular', 'lodash'], function(angular, _) {
       var alternatives = result[1];
       var outcomes = result[2];
       var models = _.reject(result[3], 'archived');
+
+      PageTitleService.setPageTitle('BenefitRiskStep2Controller', analysis.title+ ' step 2');
 
       var outcomeIds = outcomes.map(function(outcome) {
         return outcome.id;

@@ -52,8 +52,8 @@ define(['angular'].concat(requires), function(
     .factory('SanitizeService', SanitizeService)
     .factory('AbstractGroupService', AbstractGroupService)
     .factory('RdfListService', RdfListService)
-    .factory('DataModelService', DataModelService)
-
+    .factory('DataModelService', DataModelService) 
+   
     // resources
     .factory('SparqlResource', SparqlResource)
 
