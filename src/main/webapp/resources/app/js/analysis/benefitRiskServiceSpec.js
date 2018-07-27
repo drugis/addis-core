@@ -476,7 +476,7 @@ define(['angular-mocks'], function(angularMocks) {
           id: 2
         }];
         var scaleResults = {
-          'http://outcomes/hamd': {
+          'dataSource1': {
             1: {
               result: {
                 '2.5%': 1,
@@ -492,7 +492,7 @@ define(['angular-mocks'], function(angularMocks) {
               }
             }
           },
-          'http://outcomes/headache': {
+          'dataSource2': {
             1: {
               result: {
                 '2.5%': 7,
@@ -507,6 +507,15 @@ define(['angular-mocks'], function(angularMocks) {
                 '97.5%': 12
               }
             }
+          }
+        };
+
+        var criteria = {
+          'http://outcomes/hamd':{
+            dataSources: [{id: 'dataSource1'}]
+          },
+          'http://outcomes/headache':{
+            dataSources: [{id: 'dataSource2'}]
           }
         };
 
@@ -554,7 +563,7 @@ define(['angular-mocks'], function(angularMocks) {
           }
         }];
 
-        var result = benefitRiskService.addScales(owas, alternatives, scaleResults);
+        var result = benefitRiskService.addScales(owas, alternatives, scaleResults, criteria);
         expect(result.length).toBe(owas.length);
         expect(result[0].scales).not.toBeNull();
         expect(result).toEqual(expected);
