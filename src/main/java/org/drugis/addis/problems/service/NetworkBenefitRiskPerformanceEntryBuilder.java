@@ -100,8 +100,8 @@ public class NetworkBenefitRiskPerformanceEntryBuilder {
     CovarianceMatrix cov = new CovarianceMatrix(interventionIds, interventionIds, data);
     Relative relative = new Relative("dmnorm", mu, cov);
     RelativePerformanceParameters parameters = new RelativePerformanceParameters(outcomeInclusion.getBaseline(), relative);
-
-    return new RelativePerformance(getModelPerformanceType(outcomeInclusion.getModel().getLink()), parameters);
+    Model outComeInclusionModel = outcomeInclusion.getModel();
+    return new RelativePerformance(getModelPerformanceType(outComeInclusionModel.getLink(), outComeInclusionModel.getLikelihood()), parameters);
   }
 
   private Function<Map.Entry<String, Double>, String> getTargetIntervention() {
@@ -161,11 +161,11 @@ public class NetworkBenefitRiskPerformanceEntryBuilder {
   }
 
 
-  private String getModelPerformanceType(String modelLinkType) {
+  private String getModelPerformanceType(String modelLinkType, String modelLikelyHoodType) {
     String modelPerformanceType;
     if (Model.LINK_IDENTITY.equals(modelLinkType)) {
       modelPerformanceType = "relative-normal";
-    } else if (Model.LIKELIHOOD_POISSON.equals(modelLinkType)) {
+    } else if (Model.LIKELIHOOD_POISSON.equals(modelLikelyHoodType) && Model.LINK_LOG.equals(modelLinkType)) {
       modelPerformanceType = "relative-survival";
     } else {
       modelPerformanceType = "relative-" + modelLinkType + "-normal";
