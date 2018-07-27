@@ -237,11 +237,12 @@ define(['angular', 'lodash'], function(angular, _) {
           }
         });
       });
-
     }
 
     function resetScales() {
-      return ProblemResource.get($stateParams).$promise.then(function(problem) {
+      var problem;
+      return ProblemResource.get($stateParams).$promise.then(function(problemResult) {
+        problem = problemResult;
         if (problem.performanceTable.length > 0) {
           return WorkspaceService.getObservedScales(problem).then(function(result) {
             var includedAlternatives = _.filter($scope.alternatives, function(alternative) {
@@ -249,7 +250,7 @@ define(['angular', 'lodash'], function(angular, _) {
             });
             $scope.isMissingBaseline = hasMissingBaseLine();
             $scope.outcomesWithAnalyses = BenefitRiskService.addScales($scope.outcomesWithAnalyses,
-              includedAlternatives, result);
+              includedAlternatives, result, problem.criteria);
           }, function() {
             console.log('WorkspaceService.getObservedScales error');
           });
