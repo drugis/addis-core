@@ -1,6 +1,7 @@
 package org.drugis.addis.projects;
 
 import java.net.URI;
+import java.util.Objects;
 
 /**
  * Created by daan on 3/5/14.
@@ -55,23 +56,16 @@ public class ProjectCommand {
   public boolean equals(Object o) {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
-
     ProjectCommand that = (ProjectCommand) o;
-
-    if (!datasetVersion.equals(that.datasetVersion)) return false;
-    if (description != null ? !description.equals(that.description) : that.description != null) return false;
-    if (!name.equals(that.name)) return false;
-    if (!namespaceUid.equals(that.namespaceUid)) return false;
-
-    return true;
+    return Objects.equals(name, that.name) &&
+            Objects.equals(description, that.description) &&
+            Objects.equals(namespaceUid, that.namespaceUid) &&
+            Objects.equals(datasetVersion, that.datasetVersion);
   }
 
   @Override
   public int hashCode() {
-    int result = name.hashCode();
-    result = 31 * result + (description != null ? description.hashCode() : 0);
-    result = 31 * result + namespaceUid.hashCode();
-    result = 31 * result + datasetVersion.hashCode();
-    return result;
+
+    return Objects.hash(name, description, namespaceUid, datasetVersion);
   }
 }

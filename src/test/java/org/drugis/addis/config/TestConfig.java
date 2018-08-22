@@ -25,10 +25,10 @@ import org.drugis.addis.security.repository.AccountRepository;
 import org.drugis.addis.statistics.service.StatisticsService;
 import org.drugis.addis.subProblems.repository.SubProblemRepository;
 import org.drugis.addis.subProblems.service.SubProblemService;
-import org.drugis.addis.toggledColumns.repository.ToggledColumnsRepository;
 import org.drugis.addis.trialverse.service.ClinicalTrialsImportService;
 import org.drugis.addis.trialverse.service.MappingService;
 import org.drugis.addis.trialverse.service.TriplestoreService;
+import org.drugis.addis.workspaceSettings.repository.WorkspaceSettingsRepository;
 import org.drugis.trialverse.dataset.repository.VersionMappingRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -54,7 +54,7 @@ import static org.mockito.Mockito.mock;
         "org.drugis.addis.models.service",
         "org.drugis.addis.statistics.controller",
         "org.drugis.addis.ordering.controller",
-        "org.drugis.addis.toggledColumns.controller"
+        "org.drugis.addis.workspaceSettings.controller"
 })
 public class TestConfig {
   @Bean
@@ -203,8 +203,8 @@ public class TestConfig {
   }
 
   @Bean
-  public ToggledColumnsRepository toggledColumnsRepository() {
-    return mock(ToggledColumnsRepository.class);
+  public WorkspaceSettingsRepository  workspaceSettingsRepository() {
+    return mock(WorkspaceSettingsRepository.class);
   }
 }
 

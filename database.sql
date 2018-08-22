@@ -972,3 +972,19 @@ CREATE TABLE toggledColumns(
   FOREIGN KEY(analysisId) REFERENCES benefitRiskAnalysis(id) ON DELETE CASCADE
 );
 --rollback DROP TABLE toggledColumns
+
+--changeset keijserj:79
+CREATE TABLE workspaceSettings(
+  analysisId INT NOT NULL,
+  settings VARCHAR NOT NULL,
+  PRIMARY KEY (analysisId),
+  FOREIGN KEY (analysisId) REFERENCES benefitRiskAnalysis(id) ON DELETE CASCADE
+);
+DROP TABLE toggledColumns;
+--rollback DROP TABLE workspaceSettings
+--rollback CREATE TABLE toggledColumns(
+--rollback   analysisId INT NOT NULL,
+--rollback   toggledColumns VARCHAR NOT NULL,
+--rollback   PRIMARY KEY (analysisId),
+--rollback   FOREIGN KEY(analysisId) REFERENCES benefitRiskAnalysis(id) ON DELETE CASCADE
+--rollback );

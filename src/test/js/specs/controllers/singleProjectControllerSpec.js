@@ -1,5 +1,5 @@
 'use strict';
-define(['angular-mocks', 'angular', 'lodash'], function(angularMocks, angular, _) {
+define(['angular-mocks'], function(angularMocks) {
   describe('the SingleProjectController', function() {
     var
       covariateOptionsResource = jasmine.createSpyObj('CovariateOptionsResource', ['query', 'getProjectCovariates']),
