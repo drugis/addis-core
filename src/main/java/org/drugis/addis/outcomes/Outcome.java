@@ -15,7 +15,7 @@ import java.util.Objects;
  * Created by daan on 2/20/14.
  */
 @Entity
-public class Outcome implements Serializable{
+public class Outcome implements Serializable {
 
   private final static int HIGHER_IS_BETTER = 1;
   private final static int LOWER_IS_BETTER = -1;
@@ -37,7 +37,7 @@ public class Outcome implements Serializable{
     this.id = id;
     this.project = project;
     this.name = name;
-    if(direction != HIGHER_IS_BETTER && direction != LOWER_IS_BETTER) {
+    if (direction != HIGHER_IS_BETTER && direction != LOWER_IS_BETTER) {
       throw new Exception("invalid direction value, must be 1 either or -1");
     }
     this.direction = direction;
@@ -88,11 +88,12 @@ public class Outcome implements Serializable{
   }
 
   public void setDirection(Integer direction) throws Exception {
-    if(direction.intValue() != HIGHER_IS_BETTER && direction.intValue() != LOWER_IS_BETTER) {
+    if (direction.intValue() != HIGHER_IS_BETTER && direction.intValue() != LOWER_IS_BETTER) {
       throw new Exception("invalid direction value, must be 1 either or -1");
     }
     this.direction = direction;
   }
+
   public String getSemanticOutcomeLabel() {
     return semanticOutcomeLabel;
   }
@@ -112,12 +113,12 @@ public class Outcome implements Serializable{
     if (o == null || getClass() != o.getClass()) return false;
     Outcome outcome = (Outcome) o;
     return Objects.equals(id, outcome.id) &&
-        Objects.equals(project, outcome.project) &&
-        Objects.equals(name, outcome.name) &&
-        Objects.equals(direction, outcome.direction) &&
-        Objects.equals(motivation, outcome.motivation) &&
-        Objects.equals(semanticOutcomeLabel, outcome.semanticOutcomeLabel) &&
-        Objects.equals(semanticOutcomeUri, outcome.semanticOutcomeUri);
+            Objects.equals(project, outcome.project) &&
+            Objects.equals(name, outcome.name) &&
+            Objects.equals(direction, outcome.direction) &&
+            Objects.equals(motivation, outcome.motivation) &&
+            Objects.equals(semanticOutcomeLabel, outcome.semanticOutcomeLabel) &&
+            Objects.equals(semanticOutcomeUri, outcome.semanticOutcomeUri);
   }
 
   @Override

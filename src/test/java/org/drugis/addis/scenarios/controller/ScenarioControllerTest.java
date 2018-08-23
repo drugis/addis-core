@@ -120,7 +120,6 @@ public class ScenarioControllerTest {
   public void testUpdate() throws Exception {
     Scenario scenario = new Scenario(1, 1, subProblemId, "Default", "{\"key\":\"value\"}");
     String content = TestUtils.createJson(scenario);
-    System.out.println(content);
     when(scenarioRepository.update(scenario.getId(), scenario.getTitle(), scenario.getState())).thenReturn(scenario);
     mockMvc.perform(post("/projects/" + projectId + "/analyses/" + analysisId + "/problems/" + subProblemId + "/scenarios/" + scenario.getId())
             .content(content)
