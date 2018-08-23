@@ -69,7 +69,7 @@
     "@bower_components/install": "tombigel/detect-zoom#~1.0.4",
     "@bower_components/jquery": "jquery/jquery-dist#~3.2.1",
     "@bower_components/lodash": "lodash/lodash#~4.2.0",
-    "@bower_components/mcda-web": "drugis/mcda-elicitation-web#0.16.2",
+    "@bower_components/mcda-web": "drugis/mcda-elicitation-web#0.16.3",
     "@bower_components/microplugin": "brianreavis/microplugin.js#0.0.x",
     "@bower_components/modernizr": "Modernizr/Modernizr#~2.8.0",
     "@bower_components/moment": "moment/moment#~2.10.0",

@@ -213,9 +213,9 @@
   version "4.2.1"
   resolved "https://codeload.github.com/lodash/lodash/tar.gz/1cd9dc49a93d2cfe9927db1a92d2cf7c839bf263"
 
-"@bower_components/mcda-web@drugis/mcda-elicitation-web#0.16.2":
-  version "0.16.1"
-  resolved "https://codeload.github.com/drugis/mcda-elicitation-web/tar.gz/6834907b811825d9c39677b9d719d27b52aa6b25"
+"@bower_components/mcda-web@drugis/mcda-elicitation-web#0.16.3":
+  version "0.16.3"
+  resolved "https://codeload.github.com/drugis/mcda-elicitation-web/tar.gz/12e0d79ad0d572b25925f64fdcb54e357cc7ef48"
   dependencies:
     "@bower_components/KaTeX" Khan/KaTeX#~0.6.0
     "@bower_components/MathJax" mathjax/MathJax#2.4.0
