@@ -51,11 +51,9 @@ define(['lodash'], function(_) {
         function cancelScaledUnit(){
           scope.$emit('scaledUnitCancelled');
         }
-
-
       },
       restrict: 'E',
-      templateUrl: '/app/js/intervention/scaledUnitInputDirective.html'
+      templateUrl: './scaledUnitInputDirective.html'
     };
   };
 

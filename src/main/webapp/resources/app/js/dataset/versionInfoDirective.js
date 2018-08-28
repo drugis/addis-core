@@ -5,7 +5,7 @@ define([], function() {
     return {
       restrict: 'E',
       transclude: true,
-      templateUrl: 'app/js/dataset/versionInfoDirective.html'
+      templateUrl: './versionInfoDirective.html'
     };
   };
   return depencencies.concat(VersionInfoDirective);

@@ -1,15 +1,15 @@
 'use strict';
-var requires = [
-  'results/resultsTableService',
-  'results/resultsService',
-  'results/nonConformantMeasurementTableService',
-  'results/splitOutcomeController',
-  'results/resultsTableDirective',
-  'results/resultsTableListDirective',
-  'results/resultInputDirective',
-  'results/nonConformantMeasurementTableDirective'
-];
-define(requires.concat(['angular']), function(
+define([
+  './resultsTableService',
+  './resultsService',
+  './nonConformantMeasurementTableService',
+  './splitOutcomeController',
+  './resultsTableDirective',
+  './resultsTableListDirective',
+  './resultInputDirective',
+  './nonConformantMeasurementTableDirective',
+  'angular'
+], function(
   ResultsTableService,
   ResultsService,
   NonConformantMeasurementTableService,
@@ -34,4 +34,5 @@ define(requires.concat(['angular']), function(
     .directive('resultsTableList', resultsTableList)
     .directive('resultInputDirective', resultInputDirective)
     .directive('nonConformantMeasurementTable', nonConformantMeasurementTable);
-});
+}
+);

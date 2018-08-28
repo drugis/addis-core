@@ -9,7 +9,7 @@ define(['lodash'], function(_) {
     PataviTaskIdResource, PataviService, ProblemResource) {
     return {
       restrict: 'E',
-      templateUrl: 'app/js/project/nmaReportView.html',
+      templateUrl: './nmaReportView.html',
       scope: {
         user: '=',
         project: '=',

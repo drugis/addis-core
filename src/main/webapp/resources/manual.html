@@ -7,19 +7,6 @@
   <link rel="shortcut icon" href="app/img/favicon.ico" type="image/x-icon" />
   <title>ADDIS user manual</title>
 
-  <link rel="stylesheet" type="text/css" href="app/js/bower_components/font-awesome/css/font-awesome.min.css">
-  <link rel="stylesheet" type="text/css" href="app/js/bower_components/gemtc-web/app/css/gemtc-drugis.css">
-  <link rel="stylesheet" type="text/css" href="app/js/bower_components/mcda-web/app/css/mcda-drugis.css">
-  <link rel="stylesheet" type="text/css" href="app/css/addis-drugis.css">
-  <script src="app/js/bower_components/foundation/js/vendor/modernizr.js"></script>
-  <script src="app/js/bower_components/bowser/bowser.min.js"></script>
-  <link rel="stylesheet" href="app/js/bower_components/KaTeX/dist/katex.min.css">
-  <script src="app/js/bower_components/KaTeX/dist/katex.min.js"></script>
-  <script src="app/js/bower_components/KaTeX/dist/contrib/auto-render.min.js"></script>
-  <script src="app/js/bower_components/jquery/dist/jquery.min.js"></script>
-  <script src="app/js/bower_components/smooth-scroller/dist/smooth-scroller.bower.min.js"></script>
-  <script src="app/js/bower_components/toc/dist/toc.bower.min.js"></script>
-  <script src="app/js/bower_components/scrollup/dist/jquery.scrollUp.min.js"></script>
   <style type="text/css">
     #scrollUp {
       bottom: 20px;
@@ -138,7 +125,7 @@
             terms,which when clicked will show a brief explanation as well as a link
             to further information in this manual.</p>
           <div class="figure">
-            <img src="app/js/bower_components/gemtc-web/app/img/glossary_popover.png" alt="glossary popover"
+            <img src="gemtc-web/app/img/glossary_popover.png" alt="glossary popover"
             />
           </div>
           <h2 id="your-account">Your account</h2>
@@ -150,7 +137,8 @@
           <h3 id="creating-an-account">Creating an account</h3>
           <p>You can create an ADDIS account simply by signing in to ADDIS using your
             existing Google account. If you do not yet have a Google account,
-            <a href="https://accounts.google.com/signup">create your Google account</a>            before signing in to ADDIS. After you sign in for the first time, basic
+            <a href="https://accounts.google.com/signup">create your Google account</a>
+            before signing in to ADDIS. After you sign in for the first time, basic
             personal information (e.g. your name) is retrieved from Google and stored
             in ADDIS. It is currently not possible to change this information in
             ADDIS.
@@ -678,11 +666,11 @@
     var gemtcDeferred = $.Deferred(),
       gemtcToCDeferred = $.Deferred();
     $("#gemtc-shared-content").load(
-      "app/js/bower_components/gemtc-web/app/manual/shared.html",
+      "gemtc-web/app/manual/shared.html",
       function() {
         $('img', this).each(function() {
           $img = $(this);
-          $img.attr('src', 'app/js/bower_components/gemtc-web/app/' +
+          $img.attr('src', 'gemtc-web/app/' +
             $img.attr('src'));
         });
         gemtcDeferred.resolve();
@@ -691,11 +679,11 @@
     var mcdaDeferred = $.Deferred(),
       mcdaToCDeferred = $.Deferred();
     $("#mcda-shared-content").load(
-      "app/js/bower_components/mcda-web/app/manual/shared.html",
+      "mcda-web/app/manual/shared.html",
       function() {
         $('img', this).each(function() {
           $img = $(this);
-          $img.attr('src', 'app/js/bower_components/mcda-web/app/' +
+          $img.attr('src', 'mcda-web/app/' +
             $img.attr('src'));
         });
         mcdaDeferred.resolve();

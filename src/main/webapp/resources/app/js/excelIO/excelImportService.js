@@ -1,5 +1,5 @@
 'use strict';
-define(['lodash', 'util/context', 'util/constants', 'xlsx-shim'], function(_, externalContext, constants, XLSX) {
+define(['lodash', '../util/context', '../util/constants', 'xlsx'], function(_, externalContext, constants, XLSX) {
   var dependencies = [
     '$q',
     '$stateParams',

@@ -5,7 +5,7 @@ define([], function() {
   var nonConformantMeasurementTableDirective = function($q, $modal, ResultsTableService, ResultsService, NonConformantMeasurementTableService) {
     return {
       restrict: 'E',
-      templateUrl: 'app/js/results/nonConformantMeasurementTableDirective.html',
+      templateUrl: './nonConformantMeasurementTableDirective.html',
       scope: {
         variableType: '=',
         variable: '=',
@@ -54,7 +54,7 @@ define([], function() {
 
           scope.repairNonConformantMeasurements = function() {
             $modal.open({
-              templateUrl: 'app/js/results/splitOutcomeTemplate.html',
+              templateUrl: './splitOutcomeTemplate.html',
               controller: 'SplitOutcomeController',
               resolve: {
                 callback: function() {

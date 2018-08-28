@@ -1,5 +1,5 @@
 'use strict';
-define(['lodash', 'xlsx-shim', 'file-saver'], function(_, XLSX, saveAs) {
+define(['lodash', 'xlsx', 'file-saver'], function(_, XLSX, saveAs) {
   var dependencies = ['$q', '$location',
     'GROUP_ALLOCATION_OPTIONS',
     'BLINDING_OPTIONS',

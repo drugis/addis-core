@@ -1,5 +1,5 @@
 'use strict';
-define(['lodash', 'util/context'], function(_, externalContext) {
+define(['lodash', './context'], function(_, externalContext) {
   function propertyValuePredicate(property, value) {
     return function(subjectWithTriples) {
       return subjectWithTriples[property] === value;

@@ -1,10 +1,10 @@
 'use strict';
 define([], function() {
-  var dependencies = ['$injector', '$stateParams', 'VersionedGraphResource', 'MappingService'];
-  var ConceptMappingListDirective = function($injector, $stateParams, VersionedGraphResource, MappingService) {
+  var dependencies = ['$injector', '$stateParams', 'MappingService'];
+  var ConceptMappingListDirective = function($injector, $stateParams, MappingService) {
     return {
       restrict: 'E',
-      templateUrl: 'app/js/mapping/conceptMappingListDirective.html',
+      templateUrl: './conceptMappingListDirective.html',
       scope: {
         settings: '=',
         datasetConcepts: '=',

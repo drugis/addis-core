@@ -1,5 +1,5 @@
 'use strict';
-define(['lodash', 'util/context'], function(_, externalContext) {
+define(['lodash', '../util/context'], function(_, externalContext) {
   var dependencies = ['$q', 'UUIDService', 'GraphResource'];
   var StudyService = function($q, UUIDService, GraphResource) {
 

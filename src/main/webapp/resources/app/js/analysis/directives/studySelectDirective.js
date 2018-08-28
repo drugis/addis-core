@@ -13,7 +13,7 @@ define(['lodash'], function(_) {
 
     return {
       restrict: 'E',
-      templateUrl: 'app/js/analysis/directives/studySelectDirective.html',
+      templateUrl: './studySelectDirective.html',
       scope: {
         studies: '=',
         outcome: '=',

@@ -5,7 +5,7 @@ define(['lodash'], function(_) {
   var StudyDesignDirective = function($stateParams, $q, ArmService, EpochService, ActivityService, StudyDesignService) {
     return {
       restrict: 'E',
-      templateUrl: 'app/js/studyDesign/studyDesignDirective.html',
+      templateUrl: './studyDesignDirective.html',
       scope: {
         isEditingAllowed: '='
       },

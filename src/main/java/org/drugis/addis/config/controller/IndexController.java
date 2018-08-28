@@ -16,15 +16,12 @@ package org.drugis.addis.config.controller;
  * limitations under the License.
  */
 
-import org.apache.commons.lang.StringUtils;
-import org.drugis.addis.security.Account;
 import org.drugis.addis.security.repository.AccountRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.social.connect.ConnectionRepository;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.util.DigestUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.inject.Inject;
@@ -37,51 +34,23 @@ public class IndexController {
 
   final static Logger logger = LoggerFactory.getLogger(IndexController.class);
 
-  private final static String DEFAULT_PATAVI_MCDA_WS_URI = "wss://patavi.drugis.org/ws";
-  private final static String ADDIS_CORE_PATAVI_MCDA_WS_URI = getPataviMcdaWsUri();
-
   @Inject
   private Provider<ConnectionRepository> connectionRepositoryProvider;
 
   @Inject
   private AccountRepository accountRepository;
 
-  private static String getPataviMcdaWsUri() {
-    try {
-      String uri;
-      String envUri = System.getenv("ADDIS_CORE_PATAVI_MCDA_WS_URI");
-      if (envUri != null && !envUri.isEmpty()) {
-        uri = envUri;
-      } else {
-        uri = DEFAULT_PATAVI_MCDA_WS_URI;
-      }
-      logger.info("PATAVI_MCDA_WS_URI: " + uri);
-      return uri;
-    } catch (Exception e) {
-      logger.error("can not find env variable PATAVI_MCDA_WS_URI fallback to using DEFAULT_PATAVI_MCDA_WS_URI: " + DEFAULT_PATAVI_MCDA_WS_URI);
-      return DEFAULT_PATAVI_MCDA_WS_URI;
-    }
-  }
-
   @RequestMapping("/")
   public String index(Principal currentUser, Model model, HttpServletRequest request) {
     model.addAttribute("connectionsToProviders", getConnectionRepository().findAllConnections());
-    model.addAttribute("pataviMcdaWsUri", ADDIS_CORE_PATAVI_MCDA_WS_URI);
     try {
       if (currentUser != null)  {
-        Account account = accountRepository.findAccountByUsername(currentUser.getName());
-        model.addAttribute(account);
-        if (StringUtils.isNotEmpty(account.getEmail())) {
-          model.addAttribute("userEmail", account.getEmail());
-          model.addAttribute("id", account.getId());
-          String md5String = DigestUtils.md5DigestAsHex(account.getEmail().getBytes());
-          model.addAttribute("userNameHash", md5String); // user email MD5 hash needed to retrieve gravatar image
-        }
+        accountRepository.findAccountByUsername(currentUser.getName());
       }
     } catch (org.springframework.dao.EmptyResultDataAccessException e) {
       request.getSession().invalidate();
     }
-    return "index";
+    return "index.html";
   }
 
   private ConnectionRepository getConnectionRepository() {

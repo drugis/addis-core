@@ -202,7 +202,7 @@ define(['lodash'],
 
       function showTableOptions() {
         $modal.open({
-          templateUrl: 'app/js/dataset/tableOptions.html',
+          templateUrl: './tableOptions.html',
           scope: $scope,
           controller: function($scope, $modalInstance) {
             $scope.cancel = function() {
@@ -223,7 +223,7 @@ define(['lodash'],
 
       function showStudyDialog() {
         $modal.open({
-          templateUrl: 'app/js/dataset/createStudy.html',
+          templateUrl: './createStudy.html',
           scope: $scope,
           controller: 'CreateStudyController',
           resolve: {
@@ -242,7 +242,7 @@ define(['lodash'],
 
       function showDeleteStudyDialog(study) {
         $modal.open({
-          templateUrl: 'app/js/dataset/deleteStudy.html',
+          templateUrl: './deleteStudy.html',
           scope: $scope,
           controller: 'DeleteStudyController',
           windowClass: 'small',
@@ -265,7 +265,7 @@ define(['lodash'],
 
       function createProjectDialog() {
         $modal.open({
-          templateUrl: 'app/js/project/createProjectModal.html',
+          templateUrl: '../project/createProjectModal.html',
           controller: 'CreateProjectModalController',
           resolve: {
             callback: function() {
@@ -289,7 +289,7 @@ define(['lodash'],
 
       function showEditDatasetModal() {
         $modal.open({
-          templateUrl: 'app/js/dataset/editDataset.html',
+          templateUrl: './editDataset.html',
           controller: 'EditDatasetController',
           resolve: {
             dataset: function() {

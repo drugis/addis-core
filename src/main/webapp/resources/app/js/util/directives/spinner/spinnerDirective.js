@@ -4,7 +4,7 @@ define([], function() {
   var SpinnerDirective = function() {
     return {
       restrict: 'E',
-      templateUrl: 'app/js/util/directives/spinner/spinnerDirective.html',
+      templateUrl: './spinnerDirective.html',
       transclude: true,
       scope: {
         promise: '=',

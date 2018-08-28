@@ -4,7 +4,7 @@ define([], function() {
   var FeaturedDatasetsDirective = function(DatasetResource, $filter, UserService) {
     return {
       restrict: 'E',
-      templateUrl: 'app/js/dataset/featuredDatasetsDirective.html',
+      templateUrl: './featuredDatasetsDirective.html',
       scope: {
         createProjectDialog: '&'
       },

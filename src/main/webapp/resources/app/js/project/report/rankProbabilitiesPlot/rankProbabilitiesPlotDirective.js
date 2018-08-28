@@ -14,7 +14,7 @@ define(['lodash'], function(_) {
         baselineTreatmentId: '=',
         regressionLevel: '='
       },
-      templateUrl: 'app/js/project/report/rankProbabilitiesPlot/rankProbabilitiesPlotTemplate.html',
+      templateUrl: './rankProbabilitiesPlotTemplate.html',
       link: function(scope) {
         scope.resultsMessage = {};
 

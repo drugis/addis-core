@@ -6,7 +6,7 @@ define(['lodash'], function(_) {
     MeasurementMomentService) {
     return {
       restrict: 'E',
-      templateUrl: 'app/js/study/variableCategoryDirective.html',
+      templateUrl: './variableCategoryDirective.html',
       scope: {
         studyUuid: '=',
         settings: '=',

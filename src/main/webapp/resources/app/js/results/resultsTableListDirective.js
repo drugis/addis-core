@@ -5,7 +5,7 @@ define(['lodash'], function(_) {
   var resultsTableListDirective = function($q, $injector, $stateParams, ArmService, MeasurementMomentService, GroupService) {
     return {
       restrict: 'E',
-      templateUrl: 'app/js/results/resultsTableListDirective.html',
+      templateUrl: './resultsTableListDirective.html',
       scope: {
         variableType: '=',
         variableName: '=',

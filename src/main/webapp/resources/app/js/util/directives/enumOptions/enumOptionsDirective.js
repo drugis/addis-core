@@ -4,7 +4,7 @@ define(['lodash'], function(_) {
   var EnumOptionsDirective = function($injector) {
     return {
       restrict: 'E',
-      templateUrl: 'app/js/util/directives/enumOptions/enumOptionsDirective.html',
+      templateUrl: './enumOptionsDirective.html',
       scope: {
         editMode: '=',
         optionsConstantName: '=',

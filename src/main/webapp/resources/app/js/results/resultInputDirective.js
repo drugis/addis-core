@@ -5,7 +5,7 @@ define([], function() {
   var resultInputDirective = function(ResultsTableService, ResultsService) {
     return {
       restrict: 'E',
-      templateUrl: 'app/js/results/resultInputDirective.html',
+      templateUrl: './resultInputDirective.html',
       scope: {
         row: '=',
         column: '=',

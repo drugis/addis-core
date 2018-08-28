@@ -1,18 +1,14 @@
 'use strict';
 define(
   ['angular',
-    'require',
-    'jQuery',
-    'mcda/config',
-    'util/constants',
-    'mmfoundation',
-    'angularanimate',
+    'jquery',
+    'angular-foundation-6',
+    'angular-animate',
     'angular-cookies',
-    'angular-select',
     'angular-touch',
     'angular-ui-router',
-    'angular-md5',
-    'ngSanitize',
+    'angular-sanitize',
+    'ui-select',
     'showdown',
     'angularjs-slider',
     'angucomplete-alt',
@@ -20,73 +16,71 @@ define(
     'core-js',
     'error-reporting',
     'export-directive',
-    'controllers',
-    'filters',
-    'resources',
-    'services',
     'help-popup',
-    'search/search',
-    'user/user',
-    'dataset/dataset',
-    'project/project',
-    'analysis/analysis',
-    'util/util',
-    'study/study',
-    'excelIO/excelIO',
-    'unit/unit',
-    'graph/graph',
-    'populationInformation/populationInformation',
-    'arm/arm',
-    'group/group',
-    'outcome/outcome',
-    'intervention/intervention',
-    'outcome/addisOutcomes',
-    'variable/variable',
-    'populationCharacteristic/populationCharacteristic',
-    'endpoint/endpoint',
-    'adverseEvent/adverseEvent',
-    'epoch/epoch',
-    'results/results',
-    'measurementMoment/measurementMoment',
-    'activity/activity',
-    'studyDesign/studyDesign',
-    'concept/concept',
-    'commit/commit',
-    'mapping/mapping',
-    'studyInformation/studyInformation',
+    './util/constants',
+    './controllers',
+    './filters',
+    './resources',
+    './services',
+    './search/search',
+    './user/user',
+    './dataset/dataset',
+    './project/project',
+    './analysis/analysis',
+    './util/util',
+    './study/study',
+    './excelIO/excelIO',
+    './unit/unit',
+    './graph/graph',
+    './populationInformation/populationInformation',
+    './arm/arm',
+    './group/group',
+    './outcome/outcome',
+    './intervention/intervention',
+    './outcome/addisOutcomes',
+    './variable/variable',
+    './populationCharacteristic/populationCharacteristic',
+    './endpoint/endpoint',
+    './adverseEvent/adverseEvent',
+    './epoch/epoch',
+    './results/results',
+    './measurementMoment/measurementMoment',
+    './activity/activity',
+    './studyDesign/studyDesign',
+    './concept/concept',
+    './commit/commit',
+    './mapping/mapping',
+    './studyInformation/studyInformation',
     'gemtc-web/controllers',
     'gemtc-web/resources',
     'gemtc-web/constants',
     'gemtc-web/services',
     'gemtc-web/directives',
     'gemtc-web/filters',
-    'mcda/controllers',
-    'mcda/directives',
-    'mcda/effectsTable/effectsTable',
-    'mcda/evidence/evidence',
-    'mcda/services/workspaceResource',
-    'mcda/services/taskDependencies',
-    'mcda/services/scalesService',
-    'mcda/services/routeFactory',
-    'mcda/services/hashCodeService',
-    'mcda/services/util',
-    'mcda/preferences/preferences',
-    'mcda/results/results',
-    'mcda/subProblem/subProblem',
-    'mcda/workspace/workspace',
-    'covariates/covariates',
-    'home/home'
+    'mcda-web/config',
+    'mcda-web/benefitRisk/benefitRisk',
+    'mcda-web/directives',
+    'mcda-web/effectsTable/effectsTable',
+    'mcda-web/evidence/evidence',
+    'mcda-web/services/workspaceResource',
+    'mcda-web/services/taskDependencies',
+    'mcda-web/services/routeFactory',
+    'mcda-web/services/util',
+    'mcda-web/preferences/preferences',
+    'mcda-web/results/results',
+    'mcda-web/subProblem/subProblem',
+    'mcda-web/workspace/workspace',
+    './covariates/covariates',
+    './home/home'
   ],
   function(angular, require, $, Config, constants) {
     var mcdaDependencies = [
-      'elicit.controllers',
       'elicit.directives',
       'elicit.effectsTable',
       'elicit.evidence',
       'elicit.preferences',
       'elicit.results',
       'elicit.routeFactory',
-      'elicit.scalesService',
       'elicit.subProblem',
       'elicit.taskDependencies',
       'elicit.util',
@@ -99,7 +93,6 @@ define(
       'ui.router',
       'ngSanitize',
       'ui.select',
-      'angular-md5',
       'ngCookies',
       'mm.foundation.modal',
       'mm.foundation.tabs',
@@ -117,7 +110,7 @@ define(
       'addis.excelIO',
       'patavi',
       'errorReporting',
-      'export-directive', 
+      'export-directive',
       'angucomplete-alt'
     ];
     var gemtcWebDependencies = [
@@ -247,13 +240,13 @@ define(
         $stateProvider
           .state('home', {
             url: '/',
-            templateUrl: 'app/js/home/home.html',
+            templateUrl: './home/home.html',
             controller: 'HomeController',
           })
           .state('user', {
             abstract: true,
             url: '/users/:userUid',
-            templateUrl: 'app/js/user/user.html',
+            templateUrl: './user/user.html',
             controller: 'UserController',
           })
           .state('projects', {
@@ -265,13 +258,13 @@ define(
           .state('datasets', {
             url: '/datasets',
             parent: 'user',
-            templateUrl: 'app/js/dataset/datasets.html',
+            templateUrl: './dataset/datasets.html',
             controller: 'DatasetsController'
           })
           .state('search', {
             url: '/search?searchTerm',
             parent: 'user',
-            templateUrl: 'app/js/search/search.html',
+            templateUrl: './search/search.html',
             controller: 'SearchController'
           })
           .state('create-project', {
@@ -316,7 +309,7 @@ define(
           })
           .state('editReport', {
             url: '/editReport',
-            templateUrl: 'app/js/project/report/editReport.html',
+            templateUrl: './project/report/editReport.html',
             controller: 'EditReportController',
             parent: 'project'
           })
@@ -432,58 +425,58 @@ define(
           // meta-benefit-risk states
           .state('BenefitRiskCreationStep-1', {
             url: '/users/:userUid/projects/:projectId/br/:analysisId/step-1',
-            templateUrl: 'app/js/analysis/brStep-1.html',
+            templateUrl: './analysis/brStep-1.html',
             controller: 'BenefitRiskStep1Controller'
           })
           .state('BenefitRiskCreationStep-2', {
             url: '/users/:userUid/projects/:projectId/br/:analysisId/step-2',
-            templateUrl: 'app/js/analysis/brStep-2.html',
+            templateUrl: './analysis/brStep-2.html',
             controller: 'BenefitRiskStep2Controller'
           })
           .state('BenefitRisk', {
             url: '/users/:userUid/projects/:projectId/br/:analysisId',
-            templateUrl: 'app/js/analysis/br.html',
+            templateUrl: './analysis/br.html',
             controller: 'BenefitRiskController'
           })
           // trialverse states
           .state('dataset', {
             url: '/users/:userUid/datasets/:datasetUuid',
-            templateUrl: 'app/js/dataset/dataset.html',
+            templateUrl: './dataset/dataset.html',
             controller: 'DatasetController'
           })
           .state('dataset.concepts', {
             url: '/concepts',
-            templateUrl: 'app/js/concept/concepts.html',
+            templateUrl: './concept/concepts.html',
             controller: 'ConceptsController'
           })
           .state('dataset.study', {
             url: '/studies/:studyGraphUuid',
-            templateUrl: 'app/js/study/view/study.html',
+            templateUrl: './study/view/study.html',
             controller: 'StudyController'
           })
           .state('datasetHistory', {
             url: '/users/:userUid/datasets/:datasetUuid/history',
-            templateUrl: 'app/js/dataset/datasetHistory.html',
+            templateUrl: './dataset/datasetHistory.html',
             controller: 'DatasetHistoryController'
           })
           .state('studyHistory', {
             url: '/users/:userUid/datasets/:datasetUuid/studies/:studyGraphUuid/history',
-            templateUrl: 'app/js/dataset/studyHistory.html',
+            templateUrl: './dataset/studyHistory.html',
             controller: 'StudyHistoryController'
           })
           .state('versionedDataset', {
             url: '/users/:userUid/datasets/:datasetUuid/versions/:versionUuid',
-            templateUrl: 'app/js/dataset/dataset.html',
+            templateUrl: './dataset/dataset.html',
             controller: 'DatasetController'
           })
           .state('versionedDataset.concepts', {
             url: '/concepts',
-            templateUrl: 'app/js/concept/concepts.html',
+            templateUrl: './concept/concepts.html',
             controller: 'ConceptsController'
           })
           .state('versionedDataset.study', {
             url: '/studies/:studyGraphUuid',
-            templateUrl: 'app/js/study/view/study.html',
+            templateUrl: './study/view/study.html',
             controller: 'StudyController'
           })
           // mcda states
@@ -491,7 +484,7 @@ define(
             abstract: true,
             controller: 'AbstractBenefitRiskController',
             url: '/users/:userUid/projects/:projectId/benefitRisk/:analysisId',
-            templateUrl: 'app/js/analysis/benefitRiskContainer.html',
+            templateUrl: './analysis/benefitRiskContainer.html',
             resolve: {
               currentAnalysis: ['$stateParams', 'AnalysisResource',
                 function($stateParams, AnalysisResource) {

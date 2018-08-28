@@ -1,5 +1,5 @@
 'use strict';
-define(['util/transformJsonLd', 'util/transformConceptJsonLd'], function(transformStudyJsonLd, transformConceptJsonLd) {
+define(['../util/transformJsonLd', '../util/transformConceptJsonLd'], function(transformStudyJsonLd, transformConceptJsonLd) {
 
   var dependencies = ['$resource', 'DataModelService'];
   var VersionedGraphResource = function($resource, DataModelService) {

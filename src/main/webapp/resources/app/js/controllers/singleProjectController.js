@@ -244,7 +244,7 @@ define(['lodash', 'angular'], function(_, angular) {
 
     function openEditProjectDialog() {
       $modal.open({
-        templateUrl: './app/js/project/editProject.html',
+        templateUrl: '../project/editProject.html',
         controller: 'EditProjectController',
         resolve: {
           project: function() {
@@ -272,7 +272,7 @@ define(['lodash', 'angular'], function(_, angular) {
 
     function openAddAnalysisDialog() {
       $modal.open({
-        templateUrl: './app/js/analysis/addAnalysis.html',
+        templateUrl: '../analysis/addAnalysis.html',
         scope: $scope,
         controller: 'AddAnalysisController'
       });
@@ -280,7 +280,7 @@ define(['lodash', 'angular'], function(_, angular) {
 
     function openCreateOutcomeDialog() {
       $modal.open({
-        templateUrl: './app/js/outcome/addOutcome.html',
+        templateUrl: '../outcome/addOutcome.html',
         scope: $scope,
         controller: 'AddOutcomeController',
         resolve: {
@@ -296,7 +296,7 @@ define(['lodash', 'angular'], function(_, angular) {
 
     function openCreateScaledUnitDialog() {
       $modal.open({
-        templateUrl: './app/js/project/addScaledUnit.html',
+        templateUrl: '../project/addScaledUnit.html',
         controller: 'AddScaledUnitController',
         resolve: {
           callback: function() {
@@ -314,7 +314,7 @@ define(['lodash', 'angular'], function(_, angular) {
 
     function openCreateInterventionDialog() {
       $modal.open({
-        templateUrl: './app/js/intervention/addIntervention.html',
+        templateUrl: '../intervention/addIntervention.html',
         scope: $scope,
         controller: 'AddInterventionController',
         size: 'large',
@@ -331,7 +331,7 @@ define(['lodash', 'angular'], function(_, angular) {
 
     function openEditOutcomeDialog(outcome) {
       $modal.open({
-        templateUrl: './app/js/outcome/editOutcome.html',
+        templateUrl: '../outcome/editOutcome.html',
         controller: 'EditAddisOutcomeController',
         resolve: {
           outcome: function() {
@@ -355,7 +355,7 @@ define(['lodash', 'angular'], function(_, angular) {
 
     function openEditInterventionDialog(intervention) {
       $modal.open({
-        templateUrl: './app/js/intervention/editIntervention.html',
+        templateUrl: '../intervention/editIntervention.html',
         controller: 'EditInterventionController',
         resolve: {
           intervention: function() {
@@ -376,7 +376,7 @@ define(['lodash', 'angular'], function(_, angular) {
 
     function addCovariate() {
       $modal.open({
-        templateUrl: './app/js/covariates/addCovariate.html',
+        templateUrl: '../covariates/addCovariate.html',
         scope: $scope,
         controller: 'AddCovariateController',
         resolve: {
@@ -414,7 +414,7 @@ define(['lodash', 'angular'], function(_, angular) {
 
     function openDeleteDefinitionDialog(definition, type) {
       $modal.open({
-        templateUrl: './app/js/project/deleteDefinition.html',
+        templateUrl: '../project/deleteDefinition.html',
         scope: $scope,
         controller: 'DeleteDefinitionController',
         resolve: {
@@ -437,7 +437,7 @@ define(['lodash', 'angular'], function(_, angular) {
 
     function openUpdateDialog() {
       $modal.open({
-        templateUrl: './app/js/project/updateProject.html',
+        templateUrl: '../project/updateProject.html',
         scope: $scope,
         controller: 'UpdateProjectController',
         resolve: {
@@ -460,7 +460,7 @@ define(['lodash', 'angular'], function(_, angular) {
 
     function openCopyDialog() {
       $modal.open({
-        templateUrl: './app/js/project/copyProject.html',
+        templateUrl: '../project/copyProject.html',
         scope: $scope,
         controller: 'CopyProjectController',
         resolve: {
@@ -478,7 +478,7 @@ define(['lodash', 'angular'], function(_, angular) {
 
     function openRepairInterventionDialog(intervention) {
       $modal.open({
-        templateUrl: './app/js/project/repairIntervention.html',
+        templateUrl: '../project/repairIntervention.html',
         scope: $scope,
         controller: 'RepairInterventionController',
         resolve: {

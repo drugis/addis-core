@@ -25,7 +25,7 @@ define([],
 
       function openAddConceptDialog() {
         $modal.open({
-          templateUrl: 'app/js/concept/createConcept.html',
+          templateUrl: './createConcept.html',
           controller: 'CreateConceptController',
           resolve: {
             callback: function() {
@@ -49,7 +49,7 @@ define([],
 
       function saveConcepts() {
         $modal.open({
-          templateUrl: 'app/js/commit/commit.html',
+          templateUrl: '../commit/commit.html',
           controller: 'CommitController',
           resolve: {
             callback: function() {

@@ -1,5 +1,5 @@
 'use strict';
-define(['angular', 'lodash', 'util/constants'], function(angular, _, constants) {
+define(['angular', 'lodash', '../util/constants'], function(angular, _, constants) {
   var dependencies = ['$q', 'StudyService', 'UUIDService'];
   var ActivityService = function($q, StudyService, UUIDService) {
 

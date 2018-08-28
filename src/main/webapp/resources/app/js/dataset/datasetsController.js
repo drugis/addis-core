@@ -23,7 +23,7 @@ define(['lodash'], function(_) {
 
     function createDatasetDialog() {
       $modal.open({
-        templateUrl: 'app/js/user/createDataset.html',
+        templateUrl: '../user/createDataset.html',
         controller: 'CreateDatasetController',
         resolve: {
           callback: function() {
@@ -38,7 +38,7 @@ define(['lodash'], function(_) {
 
     function createProjectDialog(dataset) {
       $modal.open({
-        templateUrl: 'app/js/project/createProjectModal.html',
+        templateUrl: '../project/createProjectModal.html',
         controller: 'CreateProjectModalController',
         resolve: {
           callback: function() {

@@ -12,7 +12,7 @@ define(['lodash'], function(_) {
         modelId: '=',
         regressionLevel: '='
       },
-      templateUrl: 'app/js/project/report/rankProbabilitiesTable/rankProbabilitiesTableTemplate.html',
+      templateUrl: './rankProbabilitiesTableTemplate.html',
 
       link: function(scope) {
         scope.resultsMessage = {};

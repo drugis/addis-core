@@ -70,7 +70,7 @@ define(['angular', 'lodash', 'jQuery'],
 
       function openInsertDialog(directiveName) {
         $modal.open({
-          templateUrl: './app/js/project/report/insertDirectiveDialog.html',
+          templateUrl: './insertDirectiveDialog.html',
           controller: 'InsertDirectiveController',
           resolve: {
             callback: function() {

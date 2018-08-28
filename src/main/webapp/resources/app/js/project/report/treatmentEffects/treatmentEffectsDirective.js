@@ -14,7 +14,7 @@ define(['lodash'], function(_) {
         sortingType: '=',
         regressionLevel: '='
       },
-      templateUrl: 'app/js/project/report/treatmentEffects/treatmentEffectsTemplate.html',
+      templateUrl: './treatmentEffectsTemplate.html',
 
       link: function(scope) {
         scope.resultsMessage = {};

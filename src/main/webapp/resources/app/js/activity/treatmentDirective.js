@@ -6,7 +6,7 @@ define(['angular', 'lodash'], function(angular, _) {
   var TreatmentDirective = function($stateParams, DrugService, UnitService, UUIDService) {
     return {
       restrict: 'E',
-      templateUrl: 'app/js/activity/treatmentDirective.html',
+      templateUrl: './treatmentDirective.html',
       link: function(scope) {
 
         scope.treatment = {};

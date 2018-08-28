@@ -8,7 +8,7 @@ define([], function() {
         scaledUnits: '='
       },
       restrict: 'E',
-      templateUrl: '/app/js/intervention/constraintDirective.html'
+      templateUrl: './constraintDirective.html'
     };
   };
 

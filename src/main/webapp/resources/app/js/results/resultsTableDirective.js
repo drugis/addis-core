@@ -5,7 +5,7 @@ define(['lodash'], function(_) {
   var resultsTableDirective = function($q, ResultsTableService, ResultsService) {
     return {
       restrict: 'E',
-      templateUrl: 'app/js/results/resultsTableDirective.html',
+      templateUrl: './resultsTableDirective.html',
       scope: {
         variable: '=',
         arms: '=',

@@ -81,7 +81,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
   @Override
   protected void configure(HttpSecurity http) throws Exception {
-    String[] whitelist = {"/", "/trialverse", "/trialverse/**",
+    String[] whitelist = {
+            "/",
+            "/trialverse",
+            "/trialverse/**",
             "/patavi", // allow POST mcda models anonymously
             "/statistics/**", // allow calculation of estimations for d80 table
             "/favicon.ico", "/favicon.png", "/app/**", "/auth/**",

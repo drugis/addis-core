@@ -5,7 +5,7 @@ define(['angular'], function(angular) {
   var CategoryItemDirective = function($modal, $injector) {
     return {
       restrict: 'E',
-      templateUrl: 'app/js/study/categoryItemDirective.html',
+      templateUrl: './categoryItemDirective.html',
       scope: {
         item: '=',
         reloadItems: '=',

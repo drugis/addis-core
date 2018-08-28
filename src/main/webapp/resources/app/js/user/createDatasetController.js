@@ -1,5 +1,5 @@
 'use strict';
-define(['lodash', 'util/context'],
+define(['lodash', '../util/context'],
   function(_, externalContext) {
     var dependencies = [
       '$scope',
@@ -41,7 +41,8 @@ define(['lodash', 'util/context'],
       }
 
       function uploadExcel(uploadedElement) {
-        ExcelImportService.uploadExcel(uploadedElement,
+        ExcelImportService.uploadExcel(
+          uploadedElement,
           $scope,
           ExcelImportService.checkDatasetWorkbook,
           function(workbook) {
@@ -58,7 +59,7 @@ define(['lodash', 'util/context'],
         DatasetResource.save($stateParams, $scope.dataset).$promise.then(function(result) {
           var datasetUri = '';
           var index = 0;
-          while(result[index]){
+          while (result[index]) {
             datasetUri = datasetUri.concat(result[index]);
             ++index;
           }
@@ -73,9 +74,9 @@ define(['lodash', 'util/context'],
             commitTitle: 'Import concepts',
             commitDescription: ''
           }, {
-            '@graph': concepts,
-            '@context': externalContext
-          });
+              '@graph': concepts,
+              '@context': externalContext
+            });
           $q.all(studiePromises.concat(conceptsPromise)).then(function() {
             $scope.isCreatingDataset = false;
             callback();

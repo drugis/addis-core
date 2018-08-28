@@ -39,8 +39,8 @@ define(['angular', 'lodash'],
           helpId: 'study-information',
           header: 'Study Information',
           itemName: 'Study Information',
-          itemTemplateUrl: 'app/js/studyInformation/studyInformation.html',
-          editItemTemplateUrl: 'app/js/studyInformation/editStudyInformation.html',
+          itemtemplateUrl: '../studyInformation/studyInformation.html',
+          editItemtemplateUrl: '../studyInformation/editStudyInformation.html',
           editItemController: 'EditStudyInformationController'
         },
         populationInformation: {
@@ -49,8 +49,8 @@ define(['angular', 'lodash'],
           header: 'Population Information',
           helpId: 'population-information',
           itemName: 'Population Information',
-          itemTemplateUrl: 'app/js/populationInformation/populationInformation.html',
-          editItemTemplateUrl: 'app/js/populationInformation/editPopulationInformation.html',
+          itemtemplateUrl: '../populationInformation/populationInformation.html',
+          editItemtemplateUrl: '../populationInformation/editPopulationInformation.html',
           editItemController: 'EditPopulationInformationController',
         },
         arms: {
@@ -61,11 +61,11 @@ define(['angular', 'lodash'],
           addItemController: 'CreateArmController',
           categoryEmptyMessage: 'No arms defined.',
           itemName: 'arm',
-          itemTemplateUrl: 'app/js/arm/arm.html',
-          addItemTemplateUrl: 'app/js/arm/addArm.html',
-          editItemTemplateUrl: 'app/js/arm/editArm.html',
+          itemtemplateUrl: '../arm/arm.html',
+          addItemtemplateUrl: '../arm/addArm.html',
+          editItemtemplateUrl: '../arm/editArm.html',
           editItemController: 'EditArmController',
-          repairItemTemplateUrl: 'app/js/arm/repairArm.html',
+          repairItemtemplateUrl: '../arm/repairArm.html',
           repairItemController: 'EditArmController'
         },
         groups: {
@@ -76,11 +76,11 @@ define(['angular', 'lodash'],
           addItemController: 'CreateGroupController',
           categoryEmptyMessage: 'No other groups defined.',
           itemName: 'group',
-          itemTemplateUrl: 'app/js/arm/arm.html',
-          addItemTemplateUrl: 'app/js/group/addGroup.html',
-          editItemTemplateUrl: 'app/js/group/editGroup.html',
+          itemtemplateUrl: '../arm/arm.html',
+          addItemtemplateUrl: '../group/addGroup.html',
+          editItemtemplateUrl: '../group/editGroup.html',
           editItemController: 'EditGroupController',
-          repairItemTemplateUrl: 'app/js/group/repairGroup.html',
+          repairItemtemplateUrl: '../group/repairGroup.html',
           repairItemController: 'EditGroupController'
         },
         baselineCharacteristics: {
@@ -88,14 +88,14 @@ define(['angular', 'lodash'],
           anchorId: 'baselineCharacteristics',
           helpId: 'baseline-characteristic',
           header: 'Baseline characteristics',
-          addItemTemplateUrl: 'app/js/variable/addVariable.html',
+          addItemtemplateUrl: '../variable/addVariable.html',
           addItemController: 'AddVariableController',
           categoryEmptyMessage: 'No baseline characteristics defined.',
           itemName: 'baseline characteristic',
-          itemTemplateUrl: 'app/js/variable/variable.html',
-          editItemTemplateUrl: 'app/js/variable/editVariable.html',
+          itemtemplateUrl: '../variable/variable.html',
+          editItemtemplateUrl: '../variable/editVariable.html',
           editItemController: 'EditVariableController',
-          repairItemTemplateUrl: 'app/js/outcome/repairOutcome.html',
+          repairItemtemplateUrl: '../outcome/repairOutcome.html',
           repairItemController: 'EditOutcomeController'
         },
         outcomes: {
@@ -105,12 +105,12 @@ define(['angular', 'lodash'],
           header: 'Outcomes',
           categoryEmptyMessage: 'No outcomes defined.',
           itemName: 'outcome',
-          itemTemplateUrl: 'app/js/variable/variable.html',
+          itemtemplateUrl: '../variable/variable.html',
           addItemController: 'AddVariableController',
-          addItemTemplateUrl: 'app/js/variable/addVariable.html',
-          editItemTemplateUrl: 'app/js/variable/editVariable.html',
+          addItemtemplateUrl: '../variable/addVariable.html',
+          editItemtemplateUrl: '../variable/editVariable.html',
           editItemController: 'EditVariableController',
-          repairItemTemplateUrl: 'app/js/outcome/repairOutcome.html',
+          repairItemtemplateUrl: '../outcome/repairOutcome.html',
           repairItemController: 'EditOutcomeController'
         },
         adverseEvents: {
@@ -119,13 +119,13 @@ define(['angular', 'lodash'],
           helpId: 'adverse-event',
           header: 'Adverse events',
           addItemController: 'AddVariableController',
-          addItemTemplateUrl: 'app/js/variable/addVariable.html',
+          addItemtemplateUrl: '../variable/addVariable.html',
           categoryEmptyMessage: 'No adverse events defined.',
           itemName: 'adverse event',
-          itemTemplateUrl: 'app/js/variable/variable.html',
-          editItemTemplateUrl: 'app/js/variable/editVariable.html',
+          itemtemplateUrl: '../variable/variable.html',
+          editItemtemplateUrl: '../variable/editVariable.html',
           editItemController: 'EditVariableController',
-          repairItemTemplateUrl: 'app/js/outcome/repairOutcome.html',
+          repairItemtemplateUrl: '../outcome/repairOutcome.html',
           repairItemController: 'EditOutcomeController'
         },
         epochs: {
@@ -136,9 +136,9 @@ define(['angular', 'lodash'],
           addItemController: 'AddEpochController',
           categoryEmptyMessage: 'No epochs defined.',
           itemName: 'epoch',
-          itemTemplateUrl: 'app/js/epoch/epoch.html',
-          addItemTemplateUrl: 'app/js/epoch/addEpoch.html',
-          editItemTemplateUrl: 'app/js/epoch/editEpoch.html',
+          itemtemplateUrl: '../epoch/epoch.html',
+          addItemtemplateUrl: '../epoch/addEpoch.html',
+          editItemtemplateUrl: '../epoch/editEpoch.html',
           editItemController: 'EditEpochController',
         },
         measurementMoments: {
@@ -149,11 +149,11 @@ define(['angular', 'lodash'],
           addItemController: 'MeasurementMomentController',
           categoryEmptyMessage: 'No measurement moments defined.',
           itemName: 'measurement moment',
-          itemTemplateUrl: 'app/js/measurementMoment/measurementMoment.html',
-          addItemTemplateUrl: 'app/js/measurementMoment/editMeasurementMoment.html',
-          editItemTemplateUrl: 'app/js/measurementMoment/editMeasurementMoment.html',
+          itemtemplateUrl: '../measurementMoment/measurementMoment.html',
+          addItemtemplateUrl: '../measurementMoment/editMeasurementMoment.html',
+          editItemtemplateUrl: '../measurementMoment/editMeasurementMoment.html',
           editItemController: 'MeasurementMomentController',
-          repairItemTemplateUrl: 'app/js/measurementMoment/repairMeasurementMoment.html',
+          repairItemtemplateUrl: '../measurementMoment/repairMeasurementMoment.html',
           repairItemController: 'MeasurementMomentController'
         },
         activities: {
@@ -164,9 +164,9 @@ define(['angular', 'lodash'],
           addItemController: 'ActivityController',
           categoryEmptyMessage: 'No activities defined.',
           itemName: 'activity',
-          itemTemplateUrl: 'app/js/activity/activity.html',
-          addItemTemplateUrl: 'app/js/activity/editActivity.html',
-          editItemTemplateUrl: 'app/js/activity/editActivity.html',
+          itemtemplateUrl: '../activity/activity.html',
+          addItemtemplateUrl: '../activity/editActivity.html',
+          editItemtemplateUrl: '../activity/editActivity.html',
           editItemController: 'ActivityController',
         }
       };
@@ -223,7 +223,7 @@ define(['angular', 'lodash'],
         }
         var stateChangeDeferred = $q.defer();
         $modal.open({
-          templateUrl: 'app/js/study/unsavedChanges/unsavedWarningModal.html',
+          templateUrl: './unsavedChanges/unsavedWarningModal.html',
           controller: 'UnsavedChangesWarningModalController',
           windowClass: 'small',
           resolve: {
@@ -265,7 +265,7 @@ define(['angular', 'lodash'],
 
       function showEditStudyModal() {
         $modal.open({
-          templateUrl: 'app/js/study/editStudy.html',
+          templateUrl: './editStudy.html',
           controller: 'EditStudyController',
           resolve: {
             study: function() {
@@ -283,7 +283,7 @@ define(['angular', 'lodash'],
 
       function showD80Table() {
         $modal.open({
-          templateUrl: 'app/js/study/view/d80Table.html',
+          templateUrl: './view/d80Table.html',
           controller: 'D80TableController',
           size: 'large',
           resolve: {
@@ -296,7 +296,7 @@ define(['angular', 'lodash'],
 
       function openCopyDialog() {
         $modal.open({
-          templateUrl: 'app/js/study/copyStudy.html',
+          templateUrl: './copyStudy.html',
           controller: 'CopyStudyController',
           resolve: {
             datasets: function() {
@@ -393,7 +393,7 @@ define(['angular', 'lodash'],
           return;
         }
         $modal.open({
-          templateUrl: 'app/js/commit/commit.html',
+          templateUrl: '../commit/commit.html',
           controller: 'CommitController',
           resolve: {
             callback: function() {

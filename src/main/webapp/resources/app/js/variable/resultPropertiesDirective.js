@@ -5,7 +5,7 @@ define(['lodash'], function(_) {
   var ResultPropertiesDirective = function(ResultsService) {
     return {
       restrict: 'E',
-      templateUrl: 'app/js/variable/resultPropertiesDirective.html',
+      templateUrl: './resultPropertiesDirective.html',
       scope: {
         variable: '='
       },

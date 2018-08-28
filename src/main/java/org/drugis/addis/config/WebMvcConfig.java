@@ -15,34 +15,60 @@
  */
 package org.drugis.addis.config;
 
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
-import org.springframework.web.servlet.view.InternalResourceViewResolver;
-import org.springframework.web.servlet.view.JstlView;
-import org.springframework.web.servlet.view.UrlBasedViewResolver;
+import org.thymeleaf.spring4.SpringTemplateEngine;
+import org.thymeleaf.spring4.templateresolver.SpringResourceTemplateResolver;
+import org.thymeleaf.spring4.view.ThymeleafViewResolver;
+import org.thymeleaf.templatemode.TemplateMode;
+
+import javax.inject.Inject;
 
 @Configuration
 @EnableWebMvc
 public class WebMvcConfig extends WebMvcConfigurerAdapter {
+
+  @Inject
+  private ApplicationContext applicationContext;
+
   @Bean
-  public ViewResolver viewResolver() {
-    UrlBasedViewResolver viewResolver = new InternalResourceViewResolver();
-    viewResolver.setViewClass(JstlView.class);
-    viewResolver.setPrefix("/WEB-INF/views/");
-    viewResolver.setSuffix(".jsp");
+  public SpringResourceTemplateResolver templateResolver() {
+    // see https://www.thymeleaf.org/doc/tutorials/3.0/thymeleafspring.html
+    SpringResourceTemplateResolver templateResolver = new SpringResourceTemplateResolver();
+    templateResolver.setApplicationContext(this.applicationContext);
+    templateResolver.setPrefix("/WEB-INF/views/");
+    templateResolver.setSuffix(".html");
+    templateResolver.setTemplateMode(TemplateMode.HTML);
+
+    templateResolver.setCacheable(false); // FIXME configurable deployed vs dev
+    return templateResolver;
+  }
+
+  @Bean
+  public SpringTemplateEngine templateEngine() {
+    SpringTemplateEngine templateEngine = new SpringTemplateEngine();
+    templateEngine.setTemplateResolver(templateResolver());
+    templateEngine.setEnableSpringELCompiler(true);
+    return templateEngine;
+  }
+
+  @Bean
+  public ThymeleafViewResolver viewResolver() {
+    ThymeleafViewResolver viewResolver = new ThymeleafViewResolver();
+    viewResolver.setTemplateEngine(templateEngine());
+    viewResolver.setOrder(1);
+    viewResolver.setViewNames(new String[]{".html", ".xhtml"});
     return viewResolver;
   }
 
   public void addResourceHandlers(ResourceHandlerRegistry registry) {
-    registry.addResourceHandler("/app/**").addResourceLocations("/resources/app/");
+    registry.addResourceHandler("/**").addResourceLocations("/WEB-INF/views/dist/");
     registry.addResourceHandler("/img/**").addResourceLocations("/resources/img/");
-    registry.addResourceHandler("/trialverse/**").addResourceLocations("/resources/trialverse/");
     registry.addResourceHandler("/manual.html").addResourceLocations("/resources/manual.html");
     registry.addResourceHandler("/addis-lexicon.json").addResourceLocations("/resources/addis-lexicon.json");
-    registry.addResourceHandler("/template/**").addResourceLocations("/resources/app/js/bower_components/angular-foundation-assets/template/"); // hack for angular-foundation
   }
 }

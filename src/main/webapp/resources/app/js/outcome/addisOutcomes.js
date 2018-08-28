@@ -1,17 +1,20 @@
 'use strict';
+define([
+  './editAddisOutcomeController',
+  'angular'
+], function(
+  EditAddisOutcomeController,
+  angular
+) {
+    var dependencies = [];
 
-define(function (require) {
-  var angular = require('angular');
-  var dependencies = [];
+    return angular.module('addis.outcomes', dependencies)
+      // controllers
+      .controller('EditAddisOutcomeController', EditAddisOutcomeController)
 
-  return angular.module('addis.outcomes',
-    dependencies)
-    // controllers
-    .controller('EditAddisOutcomeController', require('outcome/editAddisOutcomeController'))
+      //services
 
-    //services
-
-
-    //filter
-    ;
-});
+      //filter
+      ;
+  }
+);

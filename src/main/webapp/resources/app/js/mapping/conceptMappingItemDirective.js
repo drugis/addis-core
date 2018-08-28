@@ -4,7 +4,7 @@ define(['lodash'], function(_) {
   var ConceptMappingItemDirective = function(MappingService, $modal) {
     return {
       restrict: 'E',
-      templateUrl: 'app/js/mapping/conceptMappingItemDirective.html',
+      templateUrl: './conceptMappingItemDirective.html',
       scope: {
         settings: '=',
         studyConcept: '=',
@@ -38,7 +38,7 @@ define(['lodash'], function(_) {
 
         scope.openRepairModal = function() {
           $modal.open({
-            templateUrl: 'app/js/unit/repairUnit.html',
+            templateUrl: '../unit/repairUnit.html',
             scope: scope,
             controller: 'RepairUnitController',
             resolve: {

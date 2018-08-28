@@ -1,23 +1,25 @@
 'use strict';
-var requires = [
-  'mapping/mappingService',
-  'mapping/conceptMappingListDirective',
-  'mapping/conceptMappingItemDirective'
-];
-define(requires.concat(['angular']), function(
-  MappingService,
-  conceptMappingList,
-  conceptMappingItem,
-  angular
-) {
-  return angular.module('trialverse.mapping', ['trialverse.study'])
+define([
+  './mappingService',
+  './conceptMappingListDirective',
+  './conceptMappingItemDirective',
+  'angular'
+],
+  function(
+    MappingService,
+    conceptMappingList,
+    conceptMappingItem,
+    angular
+  ) {
+    return angular.module('trialverse.mapping', ['trialverse.study'])
 
-    //services
-    .factory('MappingService', MappingService)
+      //services
+      .factory('MappingService', MappingService)
 
-    //directives
-    .directive('conceptMappingList', conceptMappingList)
-    .directive('conceptMappingItem', conceptMappingItem)
+      //directives
+      .directive('conceptMappingList', conceptMappingList)
+      .directive('conceptMappingItem', conceptMappingItem)
 
-  ;
-});
+      ;
+  }
+);
