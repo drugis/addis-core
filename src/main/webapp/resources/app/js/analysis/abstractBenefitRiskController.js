@@ -4,10 +4,10 @@ define([], function() {
   var AbstractBenefitRiskController = function($scope, currentAnalysis, currentProject, UserService) {
     $scope.workspace = currentAnalysis;
     $scope.project = currentProject;
-    var isUserOwner = UserService.isLoginUserId(currentProject.owner.id);
-    $scope.editMode = {
-      isUserOwner: isUserOwner
-    };
+    $scope.editMode = {};
+    UserService.isLoginUserId(currentProject.owner.id).then(function(isLoginUser) {
+      $scope.editMode.isUserOwner = isLoginUser;
+    });
   };
   return dependencies.concat(AbstractBenefitRiskController);
 });

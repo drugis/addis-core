@@ -1,7 +1,7 @@
 'use strict';
 define([], function() {
-  var dependencies = ['$state', '$stateParams', 'md5', 'UserResource', 'UserService', '$cookies', '$location'];
-  var NavbarDirective = function($state, $stateParams, md5, UserResource, UserService, $cookies, $location) {
+  var dependencies = ['$state', '$stateParams', 'UserResource', 'UserService', '$cookies', '$location'];
+  var NavbarDirective = function($state, $stateParams, UserResource, UserService, $cookies, $location) {
     return {
       restrict: 'E',
       templateUrl: './navbarDirective.html',
@@ -12,14 +12,15 @@ define([], function() {
 
         if (UserService.hasLoggedInUser()) {
           scope.isAnonymous = false;
-          var loggedInUser = UserService.getLoginUser();
-          scope.loginUserInfo = {
-            imageUrl: 'https://secure.gravatar.com/avatar/' + md5.createHash(loggedInUser.userEmail) + '?s=43&d=mm',
-            name: loggedInUser.firstName + ' ' + loggedInUser.lastName,
-            userNameHash: loggedInUser.userNameHash,
-            id: loggedInUser.id
-          };
-          scope.isOwnUserPage = $state.current.name === 'user' && loggedInUser.id === $stateParams.userUid;
+          UserService.getLoginUser().then(function(loggedInUser) {
+            scope.loginUserInfo = {
+              imageUrl: loggedInUser.imageUrl,
+              name: loggedInUser.firstName + ' ' + loggedInUser.lastName,
+              userNameHash: loggedInUser.userNameHash,
+              id: loggedInUser.id
+            };
+            scope.isOwnUserPage = $state.current.name === 'user' && loggedInUser.id === $stateParams.userUid;
+          });
         }
 
         if ($stateParams.userUid) {
@@ -27,6 +28,7 @@ define([], function() {
         }
 
         scope.signin = function() {
+          UserService.logOut();
           $cookies.put('returnToPage', $location.path());
         };
       }

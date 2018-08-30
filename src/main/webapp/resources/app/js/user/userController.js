@@ -2,10 +2,10 @@
 define(['lodash'],
   function(_) {
     var dependencies = ['$scope', '$filter', 'UserService',
-      '$stateParams', '$state', 'UserResource', 'md5'
+      '$stateParams', '$state', 'UserResource'
     ];
     var UserController = function($scope, $filter, UserService,
-      $stateParams, $state, UserResource, md5) {
+      $stateParams, $state, UserResource) {
       // functions
       $scope.selectTab = selectTab;
 
@@ -14,17 +14,12 @@ define(['lodash'],
       $scope.otherUsers = [];
       $scope.userUid = Number($stateParams.userUid);
 
-      if (UserService.hasLoggedInUser()) {
-        $scope.loginUser = UserService.getLoginUser;
-      }
-
       if (!$scope.activetab) {
         $scope.activetab = $state.current.name;
       }
 
       UserResource.query(function(users) {
         _.each(users, function(user) {
-          user.md5 = md5.createHash(user.email);
           if ($scope.userUid === user.id) {
             $scope.user = user;
           } else {

@@ -1,7 +1,11 @@
 'use strict';
 define(
-  ['angular',
-    'jquery',
+  [
+    'angular',
+    'mcda-web/js/config',
+    './util/constants',
+    'mcda-web/lexicon',
+    'gemtc-web/lexicon',
     'angular-foundation-6',
     'angular-animate',
     'angular-cookies',
@@ -17,7 +21,6 @@ define(
     'error-reporting',
     'export-directive',
     'help-popup',
-    './util/constants',
     './controllers',
     './filters',
     './resources',
@@ -51,29 +54,34 @@ define(
     './commit/commit',
     './mapping/mapping',
     './studyInformation/studyInformation',
-    'gemtc-web/controllers',
-    'gemtc-web/resources',
-    'gemtc-web/constants',
-    'gemtc-web/services',
-    'gemtc-web/directives',
-    'gemtc-web/filters',
-    'mcda-web/config',
-    'mcda-web/benefitRisk/benefitRisk',
-    'mcda-web/directives',
-    'mcda-web/effectsTable/effectsTable',
-    'mcda-web/evidence/evidence',
-    'mcda-web/services/workspaceResource',
-    'mcda-web/services/taskDependencies',
-    'mcda-web/services/routeFactory',
-    'mcda-web/services/util',
-    'mcda-web/preferences/preferences',
-    'mcda-web/results/results',
-    'mcda-web/subProblem/subProblem',
-    'mcda-web/workspace/workspace',
+    'gemtc-web/js/controllers',
+    'gemtc-web/js/resources',
+    'gemtc-web/js/constants',
+    'gemtc-web/js/services',
+    'gemtc-web/js/directives',
+    'gemtc-web/js/filters',
+    'mcda-web/js/benefitRisk/benefitRisk',
+    'mcda-web/js/directives',
+    'mcda-web/js/effectsTable/effectsTable',
+    'mcda-web/js/evidence/evidence',
+    'mcda-web/js/services/workspaceResource',
+    'mcda-web/js/services/taskDependencies',
+    'mcda-web/js/services/routeFactory',
+    'mcda-web/js/services/util',
+    'mcda-web/js/preferences/preferences',
+    'mcda-web/js/results/results',
+    'mcda-web/js/subProblem/subProblem',
+    'mcda-web/js/workspace/workspace',
     './covariates/covariates',
     './home/home'
   ],
-  function(angular, require, $, Config, constants) {
+  function(
+    angular,
+    Config,
+    constants,
+    mcdaLexicon,
+    gemtcLexicon
+    ) {
     var mcdaDependencies = [
       'elicit.directives',
       'elicit.effectsTable',
@@ -166,7 +174,7 @@ define(
       stateName: 'BenefitRiskCreationStep-1'
     }]);
     app.constant('mcdaRootPath', 'app/js/bower_components/mcda-web/app/');
-    app.constant('gemtcRootPath', 'app/js/bower_components/gemtc-web/app/');
+    app.constant('gemtcRootPath', 'app/js/bower_components/gemtc-web/js/app/');
     app.constant('isGemtcStandAlone', false);
     app.constant('isMcdaStandalone', false);
 
@@ -185,8 +193,8 @@ define(
           }
         };
 
-        HelpPopupService.loadLexicon($http.get('app/js/bower_components/gemtc-web/app/lexicon.json'));
-        HelpPopupService.loadLexicon($http.get('app/js/bower_components/mcda-web/app/lexicon.json'));
+        HelpPopupService.loadLexicon(mcdaLexicon);
+        HelpPopupService.loadLexicon(gemtcLexicon);
         HelpPopupService.loadLexicon($http.get('addis-lexicon.json'));
 
         $transitions.onSuccess({}, function(transition) {
@@ -217,9 +225,6 @@ define(
 
     app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', 'MCDARouteProvider',
       function($stateProvider, $urlRouterProvider, $httpProvider, MCDARouteProvider) {
-        var baseTemplatePath = 'app/views/';
-        var mcdaBaseTemplatePath = 'app/js/bower_components/mcda-web/app/views/';
-        var gemtcWebBaseTemplatePath = 'app/js/bower_components/gemtc-web/app/';
 
         $httpProvider.interceptors.push('SessionExpiredInterceptor');
 
@@ -252,7 +257,7 @@ define(
           .state('projects', {
             url: '/projects',
             parent: 'user',
-            templateUrl: baseTemplatePath + 'projects.html',
+            templateUrl: '../views/projects.html',
             controller: 'ProjectsController'
           })
           .state('datasets', {
@@ -267,14 +272,9 @@ define(
             templateUrl: './search/search.html',
             controller: 'SearchController'
           })
-          .state('create-project', {
-            url: '/users/:userUid/projects/create-project',
-            templateUrl: baseTemplatePath + 'createProject.html',
-            controller: 'CreateProjectController'
-          })
           .state('project', {
             url: '/users/:userUid/projects/:projectId',
-            templateUrl: baseTemplatePath + 'project.html',
+            templateUrl: '../views/project.html',
             controller: 'SingleProjectController',
             resolve: {
               activeTab: function() {
@@ -287,7 +287,7 @@ define(
           })
           .state('projectReport', {
             url: '/report',
-            templateUrl: baseTemplatePath + 'project.html',
+            templateUrl: '../views/project.html',
             controller: 'SingleProjectController',
             parent: 'project',
             resolve: {
@@ -298,7 +298,7 @@ define(
           })
           .state('projectAnalyses', {
             url: '/analyses',
-            templateUrl: baseTemplatePath + 'project.html',
+            templateUrl: '../views/project.html',
             controller: 'SingleProjectController',
             parent: 'project',
             resolve: {
@@ -314,7 +314,7 @@ define(
             parent: 'project'
           })
           .state('networkMetaAnalysisContainer', {
-            templateUrl: baseTemplatePath + 'networkMetaAnalysisContainer.html',
+            templateUrl: '../views/networkMetaAnalysisContainer.html',
             controller: 'NetworkMetaAnalysisContainerController',
             url: '/users/:userUid/projects/:projectId/nma/:analysisId',
             resolve: {
@@ -339,35 +339,35 @@ define(
             url: '',
             views: {
               'networkMetaAnalysis': {
-                templateUrl: baseTemplatePath + 'networkMetaAnalysisView.html'
+                templateUrl: '../views/networkMetaAnalysisView.html'
               },
               'models': {
-                templateUrl: gemtcWebBaseTemplatePath + '/js/models/models.html',
+                templateUrl: 'gemtc-web/js/models/models.html',
                 controller: 'ModelsController'
               },
               'network': {
-                templateUrl: baseTemplatePath + 'network.html'
+                templateUrl: '../views/network.html'
               },
               'evidenceTable': {
-                templateUrl: baseTemplatePath + 'evidenceTable.html'
+                templateUrl: '../views/evidenceTable.html'
               }
             }
           })
           .state('nmaModelContainer', {
-            templateUrl: baseTemplatePath + 'networkMetaAnalysisModelContainerView.html',
+            templateUrl: '../views/networkMetaAnalysisModelContainerView.html',
             controller: 'NetworkMetaAnalysisModelContainerController',
             abstract: true,
           })
           .state('createModel', {
             parent: 'nmaModelContainer',
             url: '/users/:userUid/projects/:projectId/nma/:analysisId/models/createModel',
-            templateUrl: gemtcWebBaseTemplatePath + 'js/models/createModel.html',
+            templateUrl: 'gemtc-web/js/models/createModel.html',
             controller: 'CreateModelController'
           })
           .state('refineModel', {
             parent: 'nmaModelContainer',
             url: '/users/:userUid/projects/:projectId/nma/:analysisId/models/:modelId/refineModel',
-            templateUrl: gemtcWebBaseTemplatePath + 'js/models/createModel.html',
+            templateUrl: 'gemtc-web/js/models/createModel.html',
             controller: 'CreateModelController',
             resolve: {
               model: ['$stateParams', 'RefineModelService',
@@ -380,7 +380,7 @@ define(
           .state('model', {
             url: '/users/:userUid/projects/:projectId/nma/:analysisId/models/:modelId',
             parent: 'nmaModelContainer',
-            templateUrl: gemtcWebBaseTemplatePath + 'views/modelView.html',
+            templateUrl: 'gemtc-web/views/modelView.html',
             controller: 'ModelController',
             resolve: {
               currentAnalysis: ['$stateParams', 'AnalysisResource',
@@ -400,7 +400,7 @@ define(
           .state('nodeSplitOverview', {
             parent: 'model',
             url: '/nodeSplitOverview',
-            templateUrl: gemtcWebBaseTemplatePath + 'js/models/nodeSplitOverview.html',
+            templateUrl: 'gemtc-web/js/models/nodeSplitOverview.html',
             controller: 'NodeSplitOverviewController',
             resolve: {
               models: ['$stateParams', 'ModelResource',
@@ -499,7 +499,7 @@ define(
             }
           });
 
-        MCDARouteProvider.buildRoutes($stateProvider, 'benefitRisk', mcdaBaseTemplatePath);
+        MCDARouteProvider.buildRoutes($stateProvider, 'benefitRisk', 'mcda-web');
 
       }
     ]);

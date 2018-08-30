@@ -40,8 +40,7 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter {
     // see https://www.thymeleaf.org/doc/tutorials/3.0/thymeleafspring.html
     SpringResourceTemplateResolver templateResolver = new SpringResourceTemplateResolver();
     templateResolver.setApplicationContext(this.applicationContext);
-    templateResolver.setPrefix("/WEB-INF/views/");
-    templateResolver.setSuffix(".html");
+    templateResolver.setPrefix("/WEB-INF/views/dist/");
     templateResolver.setTemplateMode(TemplateMode.HTML);
 
     templateResolver.setCacheable(false); // FIXME configurable deployed vs dev
@@ -61,7 +60,6 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter {
     ThymeleafViewResolver viewResolver = new ThymeleafViewResolver();
     viewResolver.setTemplateEngine(templateEngine());
     viewResolver.setOrder(1);
-    viewResolver.setViewNames(new String[]{".html", ".xhtml"});
     return viewResolver;
   }
 

@@ -1,13 +1,13 @@
 'use strict';
-define(['angular', 'lodash', 'jQuery'],
-  function(angular, _, $) {
-    var dependencies = ['$transitions', '$scope', '$stateParams', '$modal',
+define(['angular', 'lodash'],
+  function(angular, _) {
+    var dependencies = ['$', '$transitions', '$scope', '$stateParams', '$modal',
       'ProjectResource',
       'ReportResource',
       'DefaultReportService',
       '$timeout'
     ];
-    var EditReportcontroller = function($transitions, $scope, $stateParams, $modal,
+    var EditReportcontroller = function($, $transitions, $scope, $stateParams, $modal,
       ProjectResource,
       ReportResource,
       DefaultReportService,

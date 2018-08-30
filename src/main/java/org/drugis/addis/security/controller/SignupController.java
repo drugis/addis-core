@@ -58,7 +58,9 @@ public class SignupController {
     if (connection != null) {
       logger.info(" C o N n e c t i o n  NOT null");
       UserProfile profile = connection.fetchUserProfile();
-      logger.info("profile fetched. name: " + profile.getName() + " username: " + profile.getUsername() + " email: " + profile.getEmail());
+      logger.info("profile fetched. name: " + profile.getName() +
+          " username: " + profile.getUsername() +
+          " email: " + profile.getEmail());
       Account account = createAccount(profile);
       if (account != null) {
         signInUtilService.signin(connection, account.getUsername());

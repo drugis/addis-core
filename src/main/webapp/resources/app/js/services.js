@@ -4,7 +4,7 @@ define(
     'angular',
     './services/singleStudyBenefitRiskService',
     './services/networkMetaAnalysisService',
-    'gemtc-web/analyses/networkPlotService'
+    'gemtc-web/js/analyses/networkPlotService'
   ],
   function(
     angular,

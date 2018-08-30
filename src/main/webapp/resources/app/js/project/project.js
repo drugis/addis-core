@@ -3,7 +3,7 @@
 define([
   './report/reportResource',
   '../resources/analysisResource',
-  'gemtc-web/analyses/problemResource',
+  'gemtc-web/js/analyses/problemResource',
   './createProjectModalController',
   './editProjectController',
   './report/editReportController',

@@ -24,14 +24,6 @@
           <p>The information we retrieve from Google is only used to ensure that you continue to have access to the
             projects you create.</p>
         </form>
-
-        <form id="hiddenSignInForm" action="<c:url value='/signin/authenticate'/>" tabindex="1000" method="POST"
-              style="display: none;">
-          <input type="hidden" name="_csrf" value="<c:out value=" ${_csrf.token}" />" />
-          <input type='text' name='username'/>
-          <input type='password' name='password'>
-          <input name="submit" type="submit">
-        </form>
         <hr/>
       </div>
     </div>

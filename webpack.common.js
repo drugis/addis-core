@@ -25,9 +25,6 @@ let config = {
       }],
       exclude: [/(.*)\/angular-foundation-6\/(.*)/] // uses $templatecache so dont replace 
     }, {
-      test: /\.json$/,
-      loader: 'json-loader'
-    }, {
       test: /\.html$/,
       loader: 'raw-loader'
     }, {
@@ -54,10 +51,9 @@ let config = {
 
   resolve: {
     alias: {
-      'gemtc-web': 'gemtc-web/app/js',
-      'mcda-web': 'mcda-web/app/js',
+      'gemtc-web': 'gemtc-web/app',
+      'mcda-web': 'mcda-web/app',
       'app': basePath + 'resources/app/js/app',
-      'jQuery': 'jquery',
       'angular-patavi-client': 'angular-patavi-client/patavi',
       'error-reporting': 'error-reporting/errorReportingDirective',
       'export-directive': 'export-directive/export-directive',
@@ -68,7 +64,7 @@ let config = {
       'node_modules',
       basePath + 'resources/app'
     ],
-    extensions: ['.css', 'html', '.js'] // File types
+    extensions: ['.css', 'html', '.js', '.json'] // File types
   },
 
   plugins: [
