@@ -173,8 +173,6 @@ define(
       label: 'Benefit-risk analysis',
       stateName: 'BenefitRiskCreationStep-1'
     }]);
-    app.constant('mcdaRootPath', 'app/js/bower_components/mcda-web/app/');
-    app.constant('gemtcRootPath', 'app/js/bower_components/gemtc-web/js/app/');
     app.constant('isGemtcStandAlone', false);
     app.constant('isMcdaStandalone', false);
 
@@ -230,15 +228,17 @@ define(
 
         // Default route
         $urlRouterProvider.otherwise(function($injector) {
-          var $window = $injector.get('$window');
+          var UserService = $injector.get('UserService');
           var $state = $injector.get('$state');
-          if ($window.config && $window.config.user) {
-            $state.go('datasets', {
-              userUid: $window.config.user.id
-            });
-          } else {
-            $state.go('home');
-          }
+          UserService.getLoginUser().then(function(user) {
+            if (user) {
+              $state.go('datasets', {
+                userUid: user.id
+              });
+            } else {
+              $state.go('home');
+            }
+          });
 
         });
 

@@ -12,7 +12,6 @@ define(['angular', 'lodash'], function (angular, _) {
     'DEFAULT_VIEW',
     'ProjectResource',
     'UserService',
-    'gemtcRootPath',
     'WorkspaceService',
     'SubProblemResource',
     'ProjectStudiesResource',
@@ -30,7 +29,6 @@ define(['angular', 'lodash'], function (angular, _) {
     DEFAULT_VIEW,
     ProjectResource,
     UserService,
-    gemtcRootPath,
     WorkspaceService,
     SubProblemResource,
     ProjectStudiesResource,
@@ -192,7 +190,7 @@ define(['angular', 'lodash'], function (angular, _) {
       }).$promise.then(function (result) {
         problem = result;
         $modal.open({
-          templateUrl: gemtcRootPath + 'js/models/setBaselineDistribution.html',
+          templateUrl: 'gemtc-web/js/models/setBaselineDistribution.html',
           controller: 'SetBaselineDistributionController',
           windowClass: 'small',
           resolve: {

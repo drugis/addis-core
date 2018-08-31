@@ -140,7 +140,7 @@ public class DatasetReadRepositoryImpl implements DatasetReadRepository {
     Model resultModel = ModelFactory.createDefaultModel();
     mappings.stream()
             .map(this::queryDataset)
-            .forEach((model) -> resultModel.add(model));
+            .forEach(resultModel::add);
 
     return resultModel;
   }

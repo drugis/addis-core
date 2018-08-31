@@ -29,7 +29,6 @@ define(['angular', 'lodash'],
         $scope.versionUuid = $stateParams.versionUuid;
       }
       $scope.studyGraphUuid = $stateParams.studyGraphUuid;
-      $scope.hasLoggedInUser = UserService.hasLoggedInUser();
       $scope.study = {};
       StudyService.reset();
       $scope.categorySettings = {
