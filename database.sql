@@ -981,7 +981,7 @@ CREATE TABLE workspaceSettings(
   FOREIGN KEY (analysisId) REFERENCES benefitRiskAnalysis(id) ON DELETE CASCADE
 );
 DROP TABLE toggledColumns;
---rollback DROP TABLE workspaceSettings
+--rollback DROP TABLE workspaceSettings;
 --rollback CREATE TABLE toggledColumns(
 --rollback   analysisId INT NOT NULL,
 --rollback   toggledColumns VARCHAR NOT NULL,
