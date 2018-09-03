@@ -4,7 +4,8 @@ define([
   './measurementMomentService',
   '../util/filters/anchorFilter',
   'angular',
-  'angular-resource'
+  'angular-resource',
+  '../epoch/epoch'
 ],
   function(
     MeasurementMomentController,

@@ -3,7 +3,6 @@ define(
   [
     'angular',
     'mcda-web/js/config',
-    './util/constants',
     'mcda-web/lexicon',
     'gemtc-web/lexicon',
     'angular-foundation-6',
@@ -21,6 +20,7 @@ define(
     'error-reporting',
     'export-directive',
     'help-popup',
+    './util/constants',
     './controllers',
     './filters',
     './resources',
@@ -78,7 +78,6 @@ define(
   function(
     angular,
     Config,
-    constants,
     mcdaLexicon,
     gemtcLexicon
     ) {
@@ -105,6 +104,7 @@ define(
       'mm.foundation.modal',
       'mm.foundation.tabs',
       'help-directive',
+      'addis.constants',
       'addis.home',
       'addis.project',
       'addis.analysis',
@@ -504,9 +504,6 @@ define(
       }
     ]);
     app.constant('CONCEPT_GRAPH_UUID', 'concepts');
-    app.constant('GROUP_ALLOCATION_OPTIONS', constants.GROUP_ALLOCATION_OPTIONS);
-    app.constant('BLINDING_OPTIONS', constants.BLINDING_OPTIONS);
-    app.constant('STATUS_OPTIONS', constants.STATUS_OPTIONS);
 
     return app;
   });

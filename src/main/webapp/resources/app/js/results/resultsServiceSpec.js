@@ -15,7 +15,7 @@ define(['angular-mocks', 'lodash'], function(angularMocks, _) {
       });
     });
 
-    beforeEach(angularMocks.inject(function($q, $rootScope, ResultsService) {
+    beforeEach(inject(function($q, $rootScope, ResultsService) {
       q = $q;
       rootScope = $rootScope;
       resultsService = ResultsService;

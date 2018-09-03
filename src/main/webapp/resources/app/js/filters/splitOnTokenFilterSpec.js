@@ -1,4 +1,4 @@
-define(['angular', 'angular-mocks', 'filters'], function () {
+define(['angular', 'angular-mocks', '../filters'], function () {
   describe("The splitOnToken filter", function () {
     var splitOnTokenFilter;
 

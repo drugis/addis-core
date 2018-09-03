@@ -27,7 +27,7 @@ define(['angular-mocks'], function() {
       outcomeResourceMock = jasmine.createSpyObj('OutcomeResource', ['query']),
       covariateResourceMock = jasmine.createSpyObj('CovariateResource', ['query']);
 
-    beforeEach(module('addis.project', function($provide) {
+    beforeEach(angular.mock.module('addis.project', function($provide) {
       $provide.value('ProjectResource', projectResourceMock);
       $provide.value('AnalysisResource', analysisResourceMock);
       $provide.value('ProblemResource', problemResourceMock);

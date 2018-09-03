@@ -28,7 +28,7 @@ define(['angular-mocks'], function(angularMocks) {
       }]
     };
 
-    beforeEach(module('trialverse.populationInformation'));
+    beforeEach(angular.mock.module('trialverse.populationInformation'));
     beforeEach(function() {
       module('trialverse.util', function($provide) {
         uUIDServiceStub = jasmine.createSpyObj('UUIDService', [
@@ -40,7 +40,7 @@ define(['angular-mocks'], function(angularMocks) {
       });
     });
 
-    beforeEach(angularMocks.inject(function($q, $rootScope, PopulationInformationService) {
+    beforeEach(inject(function($q, $rootScope, PopulationInformationService) {
 
       q = $q;
       rootScope = $rootScope;
@@ -58,7 +58,7 @@ define(['angular-mocks'], function(angularMocks) {
 
       var result;
 
-      beforeEach(angularMocks.inject(function($q, $rootScope) {
+      beforeEach(inject(function($q, $rootScope) {
         q = $q;
         rootScope = $rootScope;
         var studyDefer = $q.defer();
@@ -90,7 +90,7 @@ define(['angular-mocks'], function(angularMocks) {
       var studyDefer;
       var getStudyPromise;
 
-      beforeEach(angularMocks.inject(function($q, $rootScope) {
+      beforeEach(inject(function($q, $rootScope) {
         q = $q;
         rootScope = $rootScope;
         studyDefer = $q.defer();
@@ -121,7 +121,7 @@ define(['angular-mocks'], function(angularMocks) {
       var newInformation;
 
 
-      beforeEach(angularMocks.inject(function($q, $rootScope) {
+      beforeEach(inject(function($q, $rootScope) {
         q = $q;
         rootScope = $rootScope;
         studyDefer = $q.defer();
@@ -174,7 +174,7 @@ define(['angular-mocks'], function(angularMocks) {
       var newInformation;
 
 
-      beforeEach(angularMocks.inject(function($q, $rootScope) {
+      beforeEach(inject(function($q, $rootScope) {
         q = $q;
         rootScope = $rootScope;
         studyDefer = $q.defer();

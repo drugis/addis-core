@@ -1,12 +1,12 @@
 'use strict';
-define(['angular', 'angular-mocks', 'controllers'],
+define(['angular', 'angular-mocks', '../controllers'],
   function() {
     describe('The projectsController', function() {
       var scope,
         projectResourceMock = jasmine.createSpyObj('ProjectResource', ['query', 'save', 'setArchived']),
         userServiceMock = jasmine.createSpyObj('UserService', ['isLoginUserId']),
         projectsDefer;
-      beforeEach(module('addis.controllers'));
+      beforeEach(angular.mock.module('addis.controllers'));
 
       beforeEach(inject(function($rootScope, $controller, $q) {
         projectsDefer = $q.defer();

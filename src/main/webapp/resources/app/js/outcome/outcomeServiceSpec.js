@@ -29,9 +29,9 @@ define(['angular-mocks'], function(angularMocks) {
         $provide.value('ResultsService', resultsServiceMock);
       });
     });
-    beforeEach(module('trialverse.outcome'));
+    beforeEach(angular.mock.module('trialverse.outcome'));
 
-    beforeEach(angularMocks.inject(function($q, $rootScope, OutcomeService) {
+    beforeEach(inject(function($q, $rootScope, OutcomeService) {
       q = $q;
       rootScope = $rootScope;
       outcomeService = OutcomeService;

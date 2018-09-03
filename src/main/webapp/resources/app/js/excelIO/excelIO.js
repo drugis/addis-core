@@ -4,7 +4,9 @@ define([
   './excelExportService',
   './excelExportUtilService',
   './excelIOUtilService',
-  'angular', 'angular-resource'],
+  'angular',
+  'angular-resource',
+   '../study/study'],
   function(
     ExcelImportService,
     ExcelExportService,

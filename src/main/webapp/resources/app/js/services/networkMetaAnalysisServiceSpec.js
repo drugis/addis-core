@@ -1,4 +1,4 @@
-define(['angular', 'angular-mocks', 'services'], function(angular) {
+define(['angular', 'angular-mocks', './../services'], function(angular) {
 
   var CONTINUOUS_TYPE = 'http://trials.drugis.org/ontology#continuous';
 
@@ -445,7 +445,7 @@ define(['angular', 'angular-mocks', 'services'], function(angular) {
   describe('The networkMetaAnalysisService', function() {
 
     describe('transformTrialDataToNetwork', function() {
-      beforeEach(module('addis.services'));
+      beforeEach(angular.mock.module('addis.services'));
 
       it('should construct the evidence network from the list of trialDataStudies', inject(function(NetworkMetaAnalysisService) {
         var trialVerseStudyData = exampleNetworkStudies;
@@ -476,7 +476,7 @@ define(['angular', 'angular-mocks', 'services'], function(angular) {
 
     describe('transformTrialDataToTableRows', function() {
 
-      beforeEach(module('addis.services'));
+      beforeEach(angular.mock.module('addis.services'));
 
       it('should construct table rows from the list of trialDataStudies',
         inject(function(NetworkMetaAnalysisService) {
@@ -608,7 +608,7 @@ define(['angular', 'angular-mocks', 'services'], function(angular) {
 
     describe('changeArmExclusion', function() {
 
-      beforeEach(module('addis.services'));
+      beforeEach(angular.mock.module('addis.services'));
 
       it('should add an excluded arm if dataRow.included is false', inject(function(NetworkMetaAnalysisService) {
         var dataRow = {
@@ -651,7 +651,7 @@ define(['angular', 'angular-mocks', 'services'], function(angular) {
     });
 
     describe('doesInterventionHaveAmbiguousArms', function() {
-      beforeEach(module('addis.services'));
+      beforeEach(angular.mock.module('addis.services'));
 
       it('should return true if there are ambiguous arms for the intervention', inject(function(NetworkMetaAnalysisService) {
         var drugConceptUid = 1;
@@ -712,7 +712,7 @@ define(['angular', 'angular-mocks', 'services'], function(angular) {
     });
 
     describe('doesModelHaveAmbiguousArms', function() {
-      beforeEach(module('addis.services'));
+      beforeEach(angular.mock.module('addis.services'));
 
       it('should return true if there are ambiguous arms for the model', inject(function(NetworkMetaAnalysisService) {
         var interventions = [{
@@ -749,7 +749,7 @@ define(['angular', 'angular-mocks', 'services'], function(angular) {
     });
 
     describe('addInclusionsToInterventions', function() {
-      beforeEach(module('addis.services'));
+      beforeEach(angular.mock.module('addis.services'));
 
       it('should add inclusions to interventions', inject(function(NetworkMetaAnalysisService) {
         var inclusions = [{
@@ -763,7 +763,7 @@ define(['angular', 'angular-mocks', 'services'], function(angular) {
     });
 
     describe('buildInterventionInclusions', function() {
-      beforeEach(module('addis.services'));
+      beforeEach(angular.mock.module('addis.services'));
 
       it('should create a new list of intervention inclusions', inject(function(NetworkMetaAnalysisService) {
         var interventions = [{
@@ -791,7 +791,7 @@ define(['angular', 'angular-mocks', 'services'], function(angular) {
     });
 
     describe('buildMomentSelections', function() {
-      beforeEach(module('addis.services'));
+      beforeEach(angular.mock.module('addis.services'));
 
       it('should create a map where for each study the default moment is selected except in cases where there is a selection on the analysis', inject(function(NetworkMetaAnalysisService) {
         var study1 = {
@@ -837,7 +837,7 @@ define(['angular', 'angular-mocks', 'services'], function(angular) {
     });
 
     describe('cleanUpExcludedArms', function() {
-      beforeEach(module('addis.services'));
+      beforeEach(angular.mock.module('addis.services'));
 
       it('should remove armExclusions that match the intervention', inject(function(NetworkMetaAnalysisService) {
         var study1 = {
@@ -889,7 +889,7 @@ define(['angular', 'angular-mocks', 'services'], function(angular) {
     });
 
     describe('buildOverlappingTreatmentMap', function() {
-      beforeEach(module('addis.services'));
+      beforeEach(angular.mock.module('addis.services'));
 
       it('should create an empty object if there is no overlap', inject(function(NetworkMetaAnalysisService) {
         var interventions = [{
@@ -947,7 +947,7 @@ define(['angular', 'angular-mocks', 'services'], function(angular) {
     });
 
     describe('buildMissingValueByStudyMap', function() {
-      beforeEach(module('addis.services'));
+      beforeEach(angular.mock.module('addis.services'));
 
       it('should build a map indexed by study uri where studies with missing values are truthy',
         inject(function(NetworkMetaAnalysisService) {
@@ -1077,7 +1077,7 @@ define(['angular', 'angular-mocks', 'services'], function(angular) {
     });
 
     describe('doesModelHaveInsufficientCovariateValues', function() {
-      beforeEach(module('addis.services'));
+      beforeEach(angular.mock.module('addis.services'));
       it('should find covariates with only one level', inject(function(NetworkMetaAnalysisService) {
         var goodTrialData = [{
           covariatesColumns: [{
@@ -1101,7 +1101,7 @@ define(['angular', 'angular-mocks', 'services'], function(angular) {
     describe('checkColumnsToShow', function() {
       describe('for continuous outcomes', function() {
 
-        beforeEach(module('addis.services'));
+        beforeEach(angular.mock.module('addis.services'));
 
         it('should be correct for some missing values', inject(function(NetworkMetaAnalysisService) {
           var dataRows = [{
@@ -1173,7 +1173,7 @@ define(['angular', 'angular-mocks', 'services'], function(angular) {
     });
 
     describe('getMeasurementType', function() {
-      beforeEach(module('addis.services'));
+      beforeEach(angular.mock.module('addis.services'));
       it('should get the measurement type from the trial data', inject(function(NetworkMetaAnalysisService) {
         var dichotomousData = [{
           trialDataArms: [{

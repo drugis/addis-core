@@ -1,8 +1,8 @@
-define(['angular', 'angular-mocks', 'filters'], function () {
+define(['angular-mocks', '../../filters'], function (angularMocks) {
   describe("The duration offset filter", function () {
     var durationOffsetFilter;
 
-    beforeEach(module('trialverse.util'));
+    beforeEach(angular.mock.module('trialverse.util'));
 
     beforeEach(inject(function($filter) {
       durationOffsetFilter = $filter('durationOffsetFilter');

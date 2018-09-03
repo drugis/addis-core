@@ -2,7 +2,7 @@ define(['angular', 'angular-mocks'], function() {
   describe('The splitOnToken filter', function() {
     var splitOnTokenFilter;
 
-    beforeEach(module('trialverse.dataset'));
+    beforeEach(angular.mock.module('trialverse.dataset'));
 
     beforeEach(inject(function($filter) {
       splitOnTokenFilter = $filter('splitOnTokenFilter');

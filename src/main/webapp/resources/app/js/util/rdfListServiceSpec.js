@@ -1,5 +1,5 @@
 'use strict';
-define(['angular', 'angular-mocks', 'util/util'], function() {
+define(['angular-mocks', './util'], function(angularMocks) {
   var RDF_NIL = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#nil';
 
   describe('rdfListServiceSpec', function() {
@@ -40,7 +40,7 @@ define(['angular', 'angular-mocks', 'util/util'], function() {
     }];
 
     beforeEach(function() {
-      module('trialverse.util');
+      angular.mock.module('trialverse.util');
     });
 
     beforeEach(inject(function(RdfListService) {

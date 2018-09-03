@@ -13,7 +13,7 @@ define(['angular-mocks'], function(angularMocks) {
 
 
     beforeEach(function() {
-      module('trialverse.measurementMoment', function($provide) {
+      angular.mock.module('trialverse.measurementMoment', function($provide) {
         $provide.value('StudyService', studyService);
         $provide.value('EpochService', epochServiceStub);
         $provide.value('UUIDService', uuidServiceMock);
@@ -22,9 +22,9 @@ define(['angular-mocks'], function(angularMocks) {
       });
     });
 
-    beforeEach(module('trialverse.util'));
+    beforeEach(angular.mock.module('trialverse.util'));
 
-    beforeEach(angularMocks.inject(function($q, $rootScope, MeasurementMomentService) {
+    beforeEach(inject(function($q, $rootScope, MeasurementMomentService) {
       q = $q;
       rootScope = $rootScope;
       measurementMomentService = MeasurementMomentService;

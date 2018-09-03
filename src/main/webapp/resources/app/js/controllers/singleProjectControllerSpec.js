@@ -1,5 +1,5 @@
 'use strict';
-define(['angular-mocks', 'angular', 'lodash'], function(angularMocks, angular, _) {
+define(['angular-mocks'], function(angularMocks) {
   describe('the SingleProjectController', function() {
     var
       covariateOptionsResource = jasmine.createSpyObj('CovariateOptionsResource', ['query', 'getProjectCovariates']),
@@ -112,7 +112,7 @@ define(['angular-mocks', 'angular', 'lodash'], function(angularMocks, angular, _
         unitUri: 'unitUri2'
       }];
 
-    beforeEach(angularMocks.module('addis.controllers'));
+    beforeEach(angular.mock.module('addis.controllers'));
 
     beforeEach(inject(function($controller, $q, $rootScope) {
       covariateOptionsDeferred = $q.defer();

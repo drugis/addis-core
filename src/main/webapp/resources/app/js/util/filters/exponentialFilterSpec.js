@@ -1,8 +1,8 @@
-define(['angular', 'angular-mocks'], function () {
+define(['angular-mocks'], function (angularMocks) {
   describe('The exponential filter', function () {
     var exponentialFilter;
 
-    beforeEach(module('trialverse.util'));
+    beforeEach(angular.mock.module('trialverse.util'));
 
     beforeEach(inject(function($filter) {
       exponentialFilter = $filter('exponentialFilter');

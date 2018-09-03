@@ -1,17 +1,17 @@
 'use strict';
 define([
+    'angular-mocks',
     'lodash',
-    'xlsx-shim',
-    'util/context',
-    'util/constants',
-    'angular',
-    'angular-mocks'
+    'xlsx',
+    './../util/context',
+    './../util/constants',
   ],
   function(
+    angularMocks,
     _,
     XLSX,
     externalContext,
-    constants
+    constants,
   ) {
     var ONTOLOGY_URI = 'http://trials.drugis.org/ontology#';
     var INSTANCE_URI = 'http://trials.drugis.org/instances/uuid';
@@ -29,7 +29,7 @@ define([
     };
 
     describe('the excel import service', function() {
-      beforeEach(module('addis.excelIO', function($provide) {
+      beforeEach(angular.mock.module('addis.excelIO', function($provide) {
         $provide.value('UUIDService', uuidServiceMock);
         $provide.value('$stateParams', stateParams);
         $provide.value('GROUP_ALLOCATION_OPTIONS', constants.GROUP_ALLOCATION_OPTIONS);

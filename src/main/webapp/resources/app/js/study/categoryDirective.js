@@ -42,7 +42,7 @@ define([], function() {
 
         scope.addItem = function() {
           $modal.open({
-            templateUrl: scope.settings.addItemTemplateUrl,
+            template: scope.settings.addItemTemplate,
             scope: scope,
             controller: scope.settings.addItemController,
             resolve: {

@@ -1,11 +1,11 @@
 'use strict';
-define(['angular', 'angular-mocks', 'util/util'], function() {
+define(['angular-mocks', './util'], function(angularMocks) {
   describe('the data model service', function() {
     var dataModelService,
       uuidServiceMock = jasmine.createSpyObj('UUIDService', ['generate']);
 
     beforeEach(function() {
-      module('trialverse.util', function($provide) {
+      angular.mock.module('trialverse.util', function($provide) {
         $provide.value('UUIDService', uuidServiceMock);
       });
     });

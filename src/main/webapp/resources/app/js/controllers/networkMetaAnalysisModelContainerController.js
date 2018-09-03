@@ -14,10 +14,11 @@ define([], function() {
     };
     var isUserOwner = false;
 
-    $q.all([$scope.project.$promise, $scope.analysis.$promise]).then(function() {
-      if (UserService.hasLoggedInUser()) {
-        $scope.loginUserId = (UserService.getLoginUser()).id;
-        isUserOwner = UserService.isLoginUserId($scope.project.owner.id);
+    $q.all([UserService.getLoginUser(), $scope.project.$promise, $scope.analysis.$promise]).then(function(results) {
+      var user = results[0];
+      if (!!user) {
+        $scope.loginUserId = user.id;
+        isUserOwner = $scope.project.owner.id === user.id;
       }
 
       $scope.editMode = {

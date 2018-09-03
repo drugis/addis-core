@@ -14,7 +14,15 @@ define([
   './categoryItemDirective',
   './variableCategoryDirective',
   'angular',
-  'angular-resource'
+  'angular-resource',
+  '../variable/variable',
+  '../populationCharacteristic/populationCharacteristic',
+  '../endpoint/endpoint',
+  '../adverseEvent/adverseEvent',
+  '../measurementMoment/measurementMoment',
+  '../results/results',
+  '../graph/graph',
+  '../activity/activity'
 ],
   function(
     StudyController,
@@ -30,7 +38,7 @@ define([
     studyCategory,
     categoryItemDirective,
     variableCategory,
-    angular
+    angular,
   ) {
     return angular.module('trialverse.study', ['ngResource',
       'trialverse.util',

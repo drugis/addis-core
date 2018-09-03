@@ -1,5 +1,5 @@
 'use strict';
-define(['lodash', '../util/context', '../util/constants', 'xlsx'], function(_, externalContext, constants, XLSX) {
+define(['lodash', '../util/context', 'xlsx'], function(_, externalContext, XLSX) {
   var dependencies = [
     '$q',
     '$stateParams',
@@ -11,6 +11,7 @@ define(['lodash', '../util/context', '../util/constants', 'xlsx'], function(_, e
     'PopulationCharacteristicService',
     'RdfListService',
     'ExcelIOUtilService',
+    'ACTIVITY_TYPE_OPTIONS',
     'BLINDING_OPTIONS',
     'STATUS_OPTIONS',
     'GROUP_ALLOCATION_OPTIONS'
@@ -26,6 +27,7 @@ define(['lodash', '../util/context', '../util/constants', 'xlsx'], function(_, e
     PopulationCharacteristicService,
     RdfListService,
     IOU,
+    ACTIVITY_TYPE_OPTIONS,
     BLINDING_OPTIONS,
     STATUS_OPTIONS,
     GROUP_ALLOCATION_OPTIONS
@@ -344,7 +346,7 @@ define(['lodash', '../util/context', '../util/constants', 'xlsx'], function(_, e
     }
 
     function readActivity(activitySheet, workbook, row) {
-      var activityTypesByUri = _.keyBy(constants.ACTIVITY_TYPE_OPTIONS, 'label');
+      var activityTypesByUri = _.keyBy(ACTIVITY_TYPE_OPTIONS, 'label');
       var activity = {
         '@id': IOU.getValue(activitySheet, 0, row),
         '@type': activityTypesByUri[IOU.getValue(activitySheet, 2, row)].uri,

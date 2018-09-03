@@ -1,5 +1,5 @@
 'use strict';
-define(['angular', 'angular-mocks', 'lodash'], function(angular, angularMocks, _) {
+define(['angular', 'lodash', './activity', 'angular-mocks'], function(angular, _) {
   describe('the activity service', function() {
 
     var rootScope, q,
@@ -14,7 +14,7 @@ define(['angular', 'angular-mocks', 'lodash'], function(angular, angularMocks, _
       unitServiceMock;
 
     beforeEach(function() {
-      module('trialverse.activity', function($provide) {
+      angular.mock.module('trialverse.activity', function($provide) {
         $provide.value('DrugService', drugServiceMock);
         $provide.value('UnitService', unitServiceMock);
         $provide.value('StudyService', studyServiceMock);
@@ -22,7 +22,7 @@ define(['angular', 'angular-mocks', 'lodash'], function(angular, angularMocks, _
       });
     });
 
-    beforeEach(module('trialverse.activity'));
+    beforeEach(angular.mock.module('trialverse.activity'));
 
     beforeEach(inject(function($q, $rootScope, ActivityService) {
       q = $q;

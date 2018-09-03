@@ -15,9 +15,9 @@ define(['angular-mocks'], function(angularMocks) {
         $provide.value('OutcomeService', outcomeServiceMock);
       });
     });
-    beforeEach(module('trialverse.populationCharacteristic'));
+    beforeEach(angular.mock.module('trialverse.populationCharacteristic'));
 
-    beforeEach(angularMocks.inject(function($q, $rootScope, PopulationCharacteristicService) {
+    beforeEach(inject(function($q, $rootScope, PopulationCharacteristicService) {
       q = $q;
       rootScope = $rootScope;
       populationCharacteristicService = PopulationCharacteristicService;

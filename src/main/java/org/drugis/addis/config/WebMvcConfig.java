@@ -65,6 +65,7 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter {
 
   public void addResourceHandlers(ResourceHandlerRegistry registry) {
     registry.addResourceHandler("/**").addResourceLocations("/WEB-INF/views/dist/");
+    registry.addResourceHandler("/app/sparql/*").addResourceLocations("/resources/app/sparql/");
     registry.addResourceHandler("/img/**").addResourceLocations("/resources/img/");
     registry.addResourceHandler("/manual.html").addResourceLocations("/resources/manual.html");
     registry.addResourceHandler("/addis-lexicon.json").addResourceLocations("/resources/addis-lexicon.json");

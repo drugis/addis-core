@@ -1,5 +1,5 @@
 'use strict';
-define(['util/transformConceptJsonLd'], function(transformConceptJsonLd) {
+define(['./transformConceptJsonLd'], function(transformConceptJsonLd) {
   describe('transformConceptJsonLd', function() {
     it('should work for an empty concepts graph', function() {
       var emptyData = {

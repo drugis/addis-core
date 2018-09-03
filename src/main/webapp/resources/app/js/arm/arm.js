@@ -3,7 +3,7 @@ define(['./editArmController',
   './createArmController',
   './armService',
   'angular', 
-  'angular-resource'
+  'angular-resource',
 ],
   function(
     EditArmController,

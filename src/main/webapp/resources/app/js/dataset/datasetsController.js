@@ -12,7 +12,9 @@ define(['lodash'], function(_) {
     reloadDatasets();
     $scope.stripFrontFilter = $filter('stripFrontFilter');
     $scope.loginUser = UserService.getLoginUser();
-    $scope.showCreateProjectButton = UserService.hasLoggedInUser();
+    UserService.hasLoggedInUser(function(user) {
+      $scope.showCreateProjectButton = !!user;
+    });
 
 
     function reloadDatasets() {

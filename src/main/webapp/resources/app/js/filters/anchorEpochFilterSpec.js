@@ -1,9 +1,9 @@
 'use strict';
-define(['angular', 'angular-mocks', 'filters'], function () {
+define(['angular-mocks', '../filters'], function (angularMocks) {
   describe("The anchorEpoch filter", function () {
     var anchorEpochFilter;
 
-    beforeEach(module('addis.filters'));
+    beforeEach(angular.mock.module('addis.filters'));
 
     beforeEach(inject(function($filter) {
       anchorEpochFilter = $filter('anchorEpochFilter');

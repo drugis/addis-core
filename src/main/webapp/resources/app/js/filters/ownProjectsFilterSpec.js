@@ -1,5 +1,5 @@
 'use strict';
-define(['angular', 'angular-mocks', 'filters'], function () {
+define(['angular', 'angular-mocks', '../filters'], function () {
   describe('Filter: ownProjectsFilter', function () {
     var mockProjects = [
       {owner: {id: 1}, name: 'testName1'},
@@ -11,7 +11,7 @@ define(['angular', 'angular-mocks', 'filters'], function () {
     ownProjectsFilter;
 
 
-    beforeEach(module('addis.filters'));
+    beforeEach(angular.mock.module('addis.filters'));
 
     beforeEach(inject(function($filter) {
       ownProjectsFilter = $filter('ownProjectsFilter');

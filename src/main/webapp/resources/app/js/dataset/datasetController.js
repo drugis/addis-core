@@ -61,6 +61,7 @@ define(['lodash'],
         $scope.versionUuid = $stateParams.versionUuid;
       }
       UserService.hasLoggedInUser(function(user) {
+        $scope.loggedInUser = user;
         $scope.hasLoggedInUser = !!user;
       });
       $scope.stripFrontFilter = $filter('stripFrontFilter');

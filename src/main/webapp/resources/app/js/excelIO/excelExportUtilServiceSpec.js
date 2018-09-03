@@ -1,5 +1,5 @@
 'use strict';
-define(['lodash', 'xlsx-shim', 'angular', 'angular-mocks'], function(_, XLSX) {
+define(['lodash', 'xlsx', 'angular', 'angular-mocks'], function(_, XLSX) {
   describe('the excel export util service', function() {
     var rootScope, q;
     var excelExportUtilService;

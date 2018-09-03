@@ -1,5 +1,5 @@
 'use strict';
-define(['angular-mocks'], function(angularMocks) {
+define(['angular-mocks', 'angular'], function(angularMocks) {
   describe('the drug service', function() {
 
     var rootScope, q,
@@ -8,14 +8,14 @@ define(['angular-mocks'], function(angularMocks) {
       graphDefer;
 
     beforeEach(function() {
-      module('trialverse.activity', function($provide) {
+      angular.mock.module('trialverse.activity', function($provide) {
         $provide.value('StudyService', studyServiceMock);
       });
     });
 
-    beforeEach(angularMocks.module('trialverse.activity'));
+    beforeEach(angular.mock.module('trialverse.activity'));
 
-    beforeEach(angularMocks.inject(function($q, $rootScope, DrugService) {
+    beforeEach(inject(function($q, $rootScope, DrugService) {
       q = $q;
       rootScope = $rootScope;
 

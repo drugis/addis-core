@@ -114,12 +114,12 @@ define(['angular-mocks', 'angular'], function(angularMocks, angular) {
           }]
         };
 
-    beforeEach(angularMocks.module('trialverse.studyDesign', function($provide) {
+    beforeEach(angular.mock.module('trialverse.studyDesign', function($provide) {
       $provide.value('StudyService', studyService);
       $provide.value('EpochService', epochService);
     }));
 
-    beforeEach(angularMocks.inject(function($q, $rootScope, $httpBackend, StudyDesignService) {
+    beforeEach(inject(function($q, $rootScope, $httpBackend, StudyDesignService) {
       q = $q;
       httpBackend = $httpBackend;
       rootScope = $rootScope;

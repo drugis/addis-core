@@ -1,5 +1,5 @@
 'use strict';
-define(['angular', 'lodash', 'util/transformJsonLd', 'util/context'], function(angular, _, transformJsonLd, context) {
+define(['angular', 'lodash', './transformJsonLd', './context'], function(angular, _, transformJsonLd, context) {
   describe('transformJsonLd', function() {
 
     var emptyStudy = {

@@ -5,9 +5,9 @@ define(['angular-mocks'], function(angularMocks) {
     var userService;
     var mockWindow;
 
-    beforeEach(module('trialverse.user'));
+    beforeEach(angular.mock.module('trialverse.user'));
 
-    beforeEach(angularMocks.inject(function($window, UserService) {
+    beforeEach(inject(function($window, UserService) {
       mockWindow = $window;
       mockWindow.config = {};
       userService = UserService;

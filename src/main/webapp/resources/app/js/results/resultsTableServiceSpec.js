@@ -8,7 +8,7 @@ define(['angular', 'angular-mocks'], function() {
     var resultsTableService,
       armService = jasmine.createSpyObj('ArmService', ['queryItems']),
       measurementMomentService = jasmine.createSpyObj('MeasurementMomentService', ['queryItems']);
-    beforeEach(module('trialverse.util'));
+    beforeEach(angular.mock.module('trialverse.util'));
 
     beforeEach(function() {
       module('trialverse.arm', function($provide) {

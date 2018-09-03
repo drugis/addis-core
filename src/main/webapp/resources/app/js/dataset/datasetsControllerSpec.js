@@ -8,9 +8,9 @@ define(['angular-mocks'], function(angularMocks) {
         params: {}
       };
 
-    beforeEach(module('trialverse.user'));
+    beforeEach(angular.mock.module('trialverse.user'));
 
-    beforeEach(angularMocks.inject(function($rootScope, $q, $controller, DatasetResource) {
+    beforeEach(inject(function($rootScope, $q, $controller, DatasetResource) {
       scope = $rootScope;
 
       $controller('DatasetsController', {

@@ -2,7 +2,7 @@ define(['angular', 'angular-mocks'], function () {
   describe("The dosing filter", function () {
     var dosingFilter;
 
-    beforeEach(module('trialverse.dataset'));
+    beforeEach(angular.mock.module('trialverse.dataset'));
 
     beforeEach(inject(function($filter) {
       dosingFilter = $filter('dosingFilter');

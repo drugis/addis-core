@@ -1,5 +1,5 @@
 'use strict';
-define(['angular-mocks'], function() {
+define(['angular-mocks'], function(angularMocks) {
   describe('the epoch service', function() {
 
     var rootScope, q, epochService,
@@ -10,7 +10,7 @@ define(['angular-mocks'], function() {
     var studyJsonGraphObject;
     var flattenResult = [];
 
-    beforeEach(module('trialverse.epoch'));
+    beforeEach(angular.mock.module('trialverse.epoch'));
 
     beforeEach(function() {
       module('trialverse.util', function($provide) {

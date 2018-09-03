@@ -34,10 +34,10 @@ define(['angular-mocks'], function(angularMocks) {
       getJsonDeferred;
 
 
-    beforeEach(module('trialverse.study'));
-    beforeEach(module('trialverse.user'));
+    beforeEach(angular.mock.module('trialverse.study'));
+    beforeEach(angular.mock.module('trialverse.user'));
 
-    beforeEach(angularMocks.inject(function($rootScope, $q) {
+    beforeEach(inject(function($rootScope, $q) {
 
       scope = $rootScope;
       spyOn(scope, '$broadcast');
@@ -58,7 +58,7 @@ define(['angular-mocks'], function(angularMocks) {
       var getJsonResult;
       var getStudyResult;
 
-      beforeEach(angularMocks.inject(function($q, $controller) {
+      beforeEach(inject(function($q, $controller) {
 
         jsonResultDefer = $q.defer();
         getJsonResult = {

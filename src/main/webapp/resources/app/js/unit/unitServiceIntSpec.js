@@ -1,5 +1,5 @@
 'use strict';
-define(['angular', 'angular-mocks', 'unit/unit'], function() {
+define(['angular-mocks', './unit'], function(angularMocks) {
   describe('the unit service service', function() {
 
     var rootScope, q,
@@ -9,7 +9,7 @@ define(['angular', 'angular-mocks', 'unit/unit'], function() {
 
 
     beforeEach(function() {
-      module('trialverse.unit', function($provide) {
+      angular.mock.module('trialverse.unit', function($provide) {
         $provide.value('StudyService', studyServiceMock);
       });
     });

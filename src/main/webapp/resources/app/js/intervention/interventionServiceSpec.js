@@ -60,7 +60,7 @@ define(['angular', 'angular-mocks'], function() {
       interventionIds: [1, 2]
     };
 
-    beforeEach(module('addis.interventions'));
+    beforeEach(angular.mock.module('addis.interventions'));
 
     beforeEach(inject(function(InterventionService) {
       interventionService = InterventionService;

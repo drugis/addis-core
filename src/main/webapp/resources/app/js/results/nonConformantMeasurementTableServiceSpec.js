@@ -5,7 +5,7 @@ define(['angular', 'angular-mocks'], function() {
     var nonConformantMeasurementTableService;
     var resultsTableService = jasmine.createSpyObj('ResultsTableService', ['createInputColumns']);
 
-    beforeEach(module('trialverse.results', function($provide) {
+    beforeEach(angular.mock.module('trialverse.results', function($provide) {
       $provide.value('ResultsTableService', resultsTableService);
     }));
 

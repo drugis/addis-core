@@ -3,7 +3,7 @@ define(['angular-mocks'], function(angularMocks) {
   describe('benefit-risk service', function() {
     var benefitRiskService;
 
-    beforeEach(angularMocks.module('addis.analysis'));
+    beforeEach(angular.mock.module('addis.analysis'));
 
     beforeEach(inject(function(BenefitRiskService) {
       benefitRiskService = BenefitRiskService;

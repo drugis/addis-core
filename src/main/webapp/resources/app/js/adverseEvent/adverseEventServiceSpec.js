@@ -1,5 +1,5 @@
 'use strict';
-define(['angular-mocks'], function(angularMocks) {
+define(['angular-mocks', './adverseEvent'], function() {
   describe('the adverse event service', function() {
 
     var rootScope, q,
@@ -15,9 +15,9 @@ define(['angular-mocks'], function(angularMocks) {
         $provide.value('OutcomeService', outcomeServiceMock);
       });
     });
-    beforeEach(module('trialverse.adverseEvent'));
+    beforeEach(angular.mock.module('trialverse.adverseEvent'));
 
-    beforeEach(angularMocks.inject(function($q, $rootScope, AdverseEventService) {
+    beforeEach(inject(function($q, $rootScope, AdverseEventService) {
       q = $q;
       rootScope = $rootScope;
       adverseEventService = AdverseEventService;
