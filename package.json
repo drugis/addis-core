@@ -8,7 +8,8 @@
   },
   "scripts": {
     "test": "karma start --singleRun=true",
-    "build-dev": "webpack --config webpack.dev.js"
+    "build-dev": "webpack --config webpack.dev.js",
+    "dev": "webpack --config webpack.dev.js --watch"
   },
   "repository": {
     "type": "git",
@@ -38,6 +39,7 @@
     "angular1-templateurl-loader": "^1.0.0",
     "angularjs-slider": "danielreid/angularjs-slider#feature/restrictedRange",
     "bowser": "~0.7.3",
+    "c3": "~0.4.23",
     "clean-webpack-plugin": "^0.1.19",
     "clipboard": "~1.6.0",
     "css-loader": "^1.0.0",

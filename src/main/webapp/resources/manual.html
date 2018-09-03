@@ -8,14 +8,6 @@
   <title>ADDIS user manual</title>
 
   <style type="text/css">
-    #scrollUp {
-      bottom: 20px;
-      right: 20px;
-      padding: 10px 20px;
-      background-color: #555;
-      color: #fff;
-    }
-
     .figure {
       text-align: center;
       margin-bottom: 1em;
@@ -26,41 +18,32 @@
       border: 1px solid gray;
     }
 
-    #toc ul {
+    #addis-toc ol {
       list-style-type: none;
       margin-top: -20px;
       padding: 2rem 1rem;
       background-color: #f4f4f4;
     }
 
-    #toc li {
+    #addis-toc li {
       font-size: 0.875rem;
     }
 
-    #toc li a {
+    #addis-toc li a {
       display: block;
       margin: 0;
       padding: 0.4375rem 0.875rem;
     }
 
-    #toc li a:hover,
-    #toc li a:focus {
+    #addis-toc li a:hover,
+    #addis-toc li a:focus {
       background: rgba(0, 0, 0, 0.025);
       color: #7056c6;
     }
 
-    #toc .toc-h2 {
+    #addis-toc .node-name--H2 {
       text-transform: uppercase;
-      color: #008CBA;
       font-weight: bold;
-    }
-
-    #toc .toc-h3 a {
-      padding-left: 1.225rem;
-    }
-
-    #toc .toc-h4 a {
-      padding-left: 1.675rem;
     }
   </style>
 </head>
@@ -77,16 +60,6 @@
     using it. Proceed at your own risk, or <a href="http://browser-update.org/update-browser.html#drugis.org">download a
     well-known browser</a> before continuing.
   </div>
-  <script type="text/javascript">
-    if (bowser.c || (bowser.msie && bowser.version <= 8)) {
-      document.getElementById('browserVersion1').innerHTML = bowser.name + ' ' +
-        bowser.version;
-      document.getElementById('browserCheck').style.display = 'block';
-    }
-    if (bowser.x) {
-      document.getElementById('browserUnknown').style.display = 'block';
-    }
-  </script>
 
   <div class="top-bar" data-topbar>
     <div class="top-bar-left bar-padding">
@@ -109,9 +82,10 @@
   <section class="content">
     <div class="grid-container">
       <div class="grid-x grid-margin-x">
-        <div class="cell large-3" id="toc">
+        <div class="cell large-3">
+          <div class="toc" id="addis-toc" data-toc="h2, h3, h4"></div>
         </div>
-        <div class="cell large-8 medium-12">
+        <div class="js-toc-content cell large-8 medium-12 js-">
 
           <p>Aggregate Data Drug Information System (ADDIS) is an evidence-based decision
             support system for health care policy decision making that concerns alternative
@@ -661,63 +635,6 @@
       </div>
     </div>
   </section>
-
-  <script>
-    var gemtcDeferred = $.Deferred(),
-      gemtcToCDeferred = $.Deferred();
-    $("#gemtc-shared-content").load(
-      "gemtc-web/app/manual/shared.html",
-      function() {
-        $('img', this).each(function() {
-          $img = $(this);
-          $img.attr('src', 'gemtc-web/app/' +
-            $img.attr('src'));
-        });
-        gemtcDeferred.resolve();
-      });
-
-    var mcdaDeferred = $.Deferred(),
-      mcdaToCDeferred = $.Deferred();
-    $("#mcda-shared-content").load(
-      "mcda-web/app/manual/shared.html",
-      function() {
-        $('img', this).each(function() {
-          $img = $(this);
-          $img.attr('src', 'mcda-web/app/' +
-            $img.attr('src'));
-        });
-        mcdaDeferred.resolve();
-      });
-    $.when(gemtcDeferred, mcdaDeferred).then(function() {
-      $('h4', this).replaceWith(function() {
-        return '<h5 id="' + $(this).attr('id') + '">' + $(this).text() +
-          '</h5>';
-      });
-      $('h3', this).replaceWith(function() {
-        return '<h4 id="' + $(this).attr('id') + '">' + $(this).text() +
-          '</h4>';
-      });
-      $('h2', this).replaceWith(function() {
-        return '<h3 id="' + $(this).attr('id') + '">' + $(this).text() +
-          '</h3>';
-      });
-
-      renderMathInElement(document.body);
-      $("#toc").toc({
-        'selectors': 'h2,h3,h4'
-      });
-      $(function() {
-        $.scrollUp();
-      });
-      if (window.location.hash) {
-        setTimeout(function() { // wait for reflows to finish
-          $('html, body').animate({
-            scrollTop: $(window.location.hash).offset().top
-          }, 1000);
-        }, 1);
-      }
-    });
-  </script>
 </body>
 
 </html>

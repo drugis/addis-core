@@ -70,22 +70,22 @@ let config = {
   plugins: [
     new HtmlWebpackPlugin({
       filename: 'index.html',
-      template: __dirname + '/src/main/webapp/WEB-INF/templates/index.html',
+      template: basePath + 'WEB-INF/templates/index.html',
       inject: 'head',
       chunks: ['main']
     }),
-//    new HtmlWebpackPlugin({
-//      filename: 'signin.html',
-//      template: 'app/signin.html',
-//      inject: 'head',
-//      chunks: ['signin']
-//    }),
-//    new HtmlWebpackPlugin({
-//      filename: 'manual.html',
-//      template: 'app/manual.html',
-//      inject: 'head',
-//      chunks: ['manual']
-//    }),
+    //    new HtmlWebpackPlugin({
+    //      filename: 'signin.html',
+    //      template: 'app/signin.html',
+    //      inject: 'head',
+    //      chunks: ['signin']
+    //    }),
+    new HtmlWebpackPlugin({
+      filename: 'manual.html',
+      template: basePath + 'resources/manual.html',
+      inject: 'head',
+      chunks: ['manual']
+    }),
     new CleanWebpackPlugin(['WEB-INF/views/dist'])
   ],
 
