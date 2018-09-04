@@ -7,9 +7,8 @@ let basePath = path.join(__dirname, '/src/main/webapp/');
 
 let config = {
   entry: {
-    'main': basePath + 'resources/app/js/main.js'
-//    ,
-//    'manual': basePath + 'resources/app/js/manual.js'
+    'main': basePath + 'resources/app/js/main.js',
+   'manual': basePath + 'resources/app/js/manual.js'
   },
 
   output: {

@@ -1,7 +1,8 @@
 'use strict';
 define([
-  'bowser',
+  'lodash',
   'jquery',
+  'bowser',
   'katex/dist/contrib/auto-render.min.js',
   'vanilla-back-to-top',
   'tocbot',
@@ -12,32 +13,32 @@ define([
   'css/addis-drugis.css',
   'katex/dist/katex.min.css'
 ],
-  function(bowser, $, renderMathInElement, scrollToTop, tocbot) {
+  function(
+    _,
+    $,
+    bowser,
+    renderMathInElement,
+    scrollToTop,
+    tocbot
+  ) {
     document.addEventListener('DOMContentLoaded', function() {
       doBowserChecks();
-      
-      var gemtcShared = require('gemtc-web/app/manual/shared.html');
-      increaseHeaderDepth(gemtcShared);
-      document.getElementById('gemtc-shared-content').innerHTML = gemtcShared;
-      
-      var mcdaShared = require('mcda-web/app/manual/shared.html');
-      increaseHeaderDepth(mcdaShared);
-      document.getElementById('mcda-shared-content').innerHTML = mcdaShared;
-      
+      loadGemtcManual();
+      loadMcdaManual();
       initTocbot();
       renderMathInElement(document.body);
       scrollToTop.addBackToTop();
 
-      function initTocbot() {
-        tocbot.init({
-          // Where to render the table of contents.
-          tocSelector: '#addis-toc',
-          // Where to grab the headings to build the table of contents.
-          contentSelector: '.js-toc-content',
-          // Which headings to grab inside of the contentSelector element.
-          headingSelector: 'h2, h3, h4, h5',
-          collapseDepth: 5
-        });
+      function loadGemtcManual() {
+        var gemtcShared = require('gemtc-web/app/manual/shared.html');
+        var gemtcSharedWithIncreasedHeaderDepth = increaseHeaderDepths(gemtcShared);
+        document.getElementById('gemtc-shared-content').innerHTML = gemtcSharedWithIncreasedHeaderDepth;
+      }
+
+      function loadMcdaManual() {
+        var mcdaShared = require('mcda-web/app/manual/shared.html');
+        var mcdaSharedWithIncreasedHeaderDepth = increaseHeaderDepths(mcdaShared);
+        document.getElementById('mcda-shared-content').innerHTML = mcdaSharedWithIncreasedHeaderDepth;
       }
 
       function doBowserChecks() {
@@ -51,18 +52,31 @@ define([
         }
       }
 
-      function increaseHeaderDepth(sharedText) {
-        $('h4', sharedText).replaceWith(function() {
-          return '<h5 id="' + $(this).attr('id') + '">' + $(this).text() +
-            '</h5>';
+      function increaseHeaderDepths(sharedText) {
+        var newSharedText = _.cloneDeep(sharedText);
+        for (var headerNumber = 4; headerNumber > 2; --headerNumber) {
+          increaseHeader(newSharedText, headerNumber);
+        }
+        return newSharedText;
+      }
+
+      function increaseHeader(text, headerNumber) {
+        var nextHeader = ++headerNumber;
+        $('h' + headerNumber, text).replaceWith(function() {
+          return '<h' + nextHeader + ' id="' + $(this).attr('id') + '">' + $(this).text() +
+            '</h' + nextHeader + '>';
         });
-        $('h3', sharedText).replaceWith(function() {
-          return '<h4 id="' + $(this).attr('id') + '">' + $(this).text() +
-            '</h4>';
-        });
-        $('h2', sharedText).replaceWith(function() {
-          return '<h3 id="' + $(this).attr('id') + '">' + $(this).text() +
-            '</h3>';
+      }
+
+      function initTocbot() {
+        tocbot.init({
+          // Where to render the table of contents.
+          tocSelector: '#addis-toc',
+          // Where to grab the headings to build the table of contents.
+          contentSelector: '.js-toc-content',
+          // Which headings to grab inside of the contentSelector element.
+          headingSelector: 'h2, h3, h4, h5',
+          collapseDepth: 5
         });
       }
     });
