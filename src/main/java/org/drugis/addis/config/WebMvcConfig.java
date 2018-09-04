@@ -65,9 +65,10 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter {
 
   public void addResourceHandlers(ResourceHandlerRegistry registry) {
     registry.addResourceHandler("/**").addResourceLocations("/WEB-INF/views/dist/");
-    registry.addResourceHandler("/img/**").addResourceLocations("/resources/img/");
-    registry.addResourceHandler("/gemtc-web/public/img/**").addResourceLocations("../../../node_modules/mcda-elicitation-web/public/img/");
-    registry.addResourceHandler("/mcda-web/public/img/**").addResourceLocations("../../../node_modules/gemtc-web/public/img/");
+    registry.addResourceHandler("/img/**").addResourceLocations(
+            "/resources/img/",
+            "/WEB-INF/views/dist/images/gemtc-web/",
+            "/WEB-INF/views/dist/images/mcda-web/");
     registry.addResourceHandler("/addis-lexicon.json").addResourceLocations("/resources/addis-lexicon.json");
   }
 }

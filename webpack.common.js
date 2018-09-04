@@ -2,6 +2,7 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 let basePath = path.join(__dirname, '/src/main/webapp/');
 
 let config = {
@@ -86,7 +87,11 @@ let config = {
       inject: 'head',
       chunks: ['manual']
     }),
-    new CleanWebpackPlugin(['WEB-INF/views/dist'])
+    new CleanWebpackPlugin(['WEB-INF/views/dist']),
+    new CopyWebpackPlugin([
+      {from :'node_modules/gemtc-web/public/img', to:'images/gemtc-web'},
+      {from :'node_modules/mcda-web/public/img', to:'images/mcda-web'}
+    ])
   ],
 
   optimization: {
