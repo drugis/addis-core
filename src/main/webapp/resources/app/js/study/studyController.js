@@ -9,7 +9,7 @@ define(['angular', 'lodash'],
     var StudyController = function($scope, $q, $state, $stateParams, $window, $filter, $transitions,
       VersionedGraphResource, GraphResource, $location, $anchorScroll,
       $modal, StudyService, ResultsService, StudyDesignService, DatasetResource,
-      ExcelExportService) {
+      ExcelExportService, STUDY_CATEGORY_SETTINGS) {
       // functions
       $scope.sideNavClick = sideNavClick;
       $scope.saveStudy = saveStudy;

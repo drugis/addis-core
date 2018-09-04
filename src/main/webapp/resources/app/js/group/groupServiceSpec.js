@@ -8,7 +8,7 @@ define(['angular', 'angular-mocks', './group'], function(angular) {
     var studyDefer;
 
     beforeEach(function() {
-      angular.module('trialverse.group', function($provide) {
+      angular.mock.module('trialverse.group', function($provide) {
         $provide.value('StudyService', studyService);
       });
     });

@@ -1,5 +1,5 @@
 'use strict';
-define(['angular', 'angular-mocks'], function(angular, angularMocks) {
+define(['angular-mocks', './util'], function() {
   describe('the duration service', function() {
     var durationService;
 

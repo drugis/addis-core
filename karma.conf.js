@@ -7,6 +7,8 @@ webpackConfig.optimization = {
     splitChunks: false,
     runtimeChunk: false
   };
+webpackConfig.resolve.alias['test-resources'] = __dirname + '/src/test'
+webpackConfig.module.rules.push({ test: /\.xlsx$/, loader: 'webpack-xlsx-loader' });
 
 module.exports = function(config) {
   config.set({

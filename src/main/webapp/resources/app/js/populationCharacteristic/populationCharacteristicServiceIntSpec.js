@@ -1,5 +1,5 @@
 'use strict';
-define(['angular-mocks'], function(angularMocks) {
+define(['angular-mocks', './populationCharacteristic'], function() {
   describe('the population characteristic service', function() {
 
     var rootScope, q,
@@ -11,7 +11,7 @@ define(['angular-mocks'], function(angularMocks) {
       outcomeDeleteDefer;
 
     beforeEach(function() {
-      module('trialverse.populationCharacteristic', function($provide) {
+      angular.mock.module('trialverse.populationCharacteristic', function($provide) {
         $provide.value('OutcomeService', outcomeServiceMock);
       });
     });

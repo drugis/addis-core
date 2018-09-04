@@ -1,5 +1,5 @@
 'use strict';
-define(['angular-mocks'], function(angularMocks) {
+define(['angular-mocks', './util'], function(angularMocks) {
 
   describe('the sanitize service', function() {
 

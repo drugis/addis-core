@@ -1,5 +1,5 @@
 'use strict';
-define(['angular-mocks'], function(angularMocks) {
+define(['angular-mocks', './measurementMoment'], function() {
   describe('the measurement moment service', function() {
 
     var rootScope, q;
@@ -63,6 +63,9 @@ define(['angular-mocks'], function(angularMocks) {
       rootScope.$digest();
     }));
 
+    afterEach(function() {
+      resultsServiceMock.queryResultsByMeasurementMoment.calls.reset();
+    });
 
     describe('query measurement moments', function() {
       beforeEach(function() {
@@ -410,9 +413,6 @@ define(['angular-mocks'], function(angularMocks) {
         expect(repairServiceMock.mergeResults.calls.count()).toBe(1);
         expect(studyService.saveJsonGraph.calls.mostRecent().args).toEqual([expectedSave]);
 
-      });
-      afterEach(function() {
-        resultsServiceMock.queryResultsByMeasurementMoment.calls.reset();
       });
     });
 

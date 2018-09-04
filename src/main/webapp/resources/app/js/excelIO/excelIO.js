@@ -6,7 +6,8 @@ define([
   './excelIOUtilService',
   'angular',
   'angular-resource',
-   '../study/study'],
+  '../util/constants',
+  '../study/study'],
   function(
     ExcelImportService,
     ExcelExportService,
@@ -16,7 +17,7 @@ define([
   ) {
     return angular.module('addis.excelIO', [
       'ngResource',
-      'trialverse.util',
+      'addis.constants',
       'trialverse.study'
     ])
       //services

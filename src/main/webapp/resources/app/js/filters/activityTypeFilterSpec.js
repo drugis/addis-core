@@ -1,4 +1,4 @@
-define([, '../filters'], function () {
+define(['../filters'], function () {
   describe("The activity type filter", function () {
     var activityTypeFilter;
 

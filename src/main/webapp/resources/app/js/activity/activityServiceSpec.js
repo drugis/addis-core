@@ -1,5 +1,5 @@
 'use strict';
-define(['angular', 'lodash', './activity', 'angular-mocks'], function(angular, _) {
+define(['lodash', 'angular', 'angular-mocks', './activity'], function(_) {
   describe('the activity service', function() {
 
     var rootScope, q,

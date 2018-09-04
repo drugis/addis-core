@@ -1,5 +1,5 @@
 'use strict';
-define(['angular', 'angular-mocks'], function() {
+define(['angular-mocks', './intervention'], function() {
   describe('intervention service', function() {
 
     var interventionService;

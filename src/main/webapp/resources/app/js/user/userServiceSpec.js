@@ -1,6 +1,6 @@
 'use strict';
 define(['angular-mocks'], function(angularMocks) {
-  describe('the user  service', function() {
+  xdescribe('the user  service', function() {
 
     var userService;
     var mockWindow;

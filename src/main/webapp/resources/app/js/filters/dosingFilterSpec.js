@@ -1,8 +1,8 @@
-define(['angular', 'angular-mocks'], function () {
+define(['angular-mocks', '../filters'], function () {
   describe("The dosing filter", function () {
     var dosingFilter;
 
-    beforeEach(angular.mock.module('trialverse.dataset'));
+    beforeEach(angular.mock.module('addis.filters'));
 
     beforeEach(inject(function($filter) {
       dosingFilter = $filter('dosingFilter');

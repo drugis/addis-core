@@ -1,5 +1,5 @@
 'use strict';
-define(['angular-mocks'], function(angularMocks) {
+define(['angular-mocks', './dataset'], function() {
   describe('the dataset controller', function() {
 
     var scope, httpBackend,
@@ -35,7 +35,7 @@ define(['angular-mocks'], function(angularMocks) {
       $provide.value('ExcelExportService', excelExportServiceMock);
     }));
 
-    beforeEach(angular.mock.module('trialverse.user'));
+    beforeEach(angular.mock.module('trialverse.dataset'));
 
     beforeEach(inject(function($rootScope, $q, $controller, $httpBackend) {
       scope = $rootScope;

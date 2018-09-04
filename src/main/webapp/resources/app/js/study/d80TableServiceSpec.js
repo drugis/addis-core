@@ -1,5 +1,5 @@
 'use strict';
-define(['angular-mocks'], function(angularMocks) {
+define(['angular-mocks', './study'], function(angularMocks) {
   var d80tableservice;
   describe('the d80tableservice', function() {
     var results = [

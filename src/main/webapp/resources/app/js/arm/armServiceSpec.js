@@ -1,5 +1,5 @@
 'use strict';
-define(['angular-mocks', './arm', './group'], function(angularMocks) {
+define(['angular-mocks', './arm', '../group/group'], function() {
   describe('the arm service', function() {
 
     var rootScope, q;

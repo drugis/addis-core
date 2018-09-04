@@ -1,6 +1,6 @@
 
 'use strict';
-define(['angular-mocks', './study'], function() {
+define(['angular-mocks', './dataset'], function() {
   describe('create study controller', function() {
     var scope,
       modalMock = jasmine.createSpyObj('$mock', ['dismiss', 'close']),

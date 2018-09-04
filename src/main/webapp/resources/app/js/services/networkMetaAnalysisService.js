@@ -474,8 +474,9 @@ define(['lodash', 'angular'], function(_, angular) {
       }));
 
       return interventions.map(function(intervention) {
-        intervention.isIncluded = inclusionMap[intervention.id];
-        return intervention;
+        var withInclusion = angular.copy(intervention);
+        withInclusion.isIncluded = inclusionMap[intervention.id];
+        return withInclusion;
       });
     }
 
@@ -485,8 +486,9 @@ define(['lodash', 'angular'], function(_, angular) {
       }));
 
       return covariates.map(function(covariate) {
-        covariate.isIncluded = inclusionMap[covariate.id];
-        return covariate;
+        var withInclusion = angular.copy(covariate);
+        withInclusion.isIncluded = inclusionMap[covariate.id];
+        return withInclusion;
       });
     }
 

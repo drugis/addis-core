@@ -1,5 +1,5 @@
 'use strict';
-define(['angular-mocks'], function(angularMocks) {
+define(['angular-mocks'], function() {
   describe('the epoch service', function() {
 
     var rootScope, q, epochService,
@@ -13,12 +13,12 @@ define(['angular-mocks'], function(angularMocks) {
     beforeEach(angular.mock.module('trialverse.epoch'));
 
     beforeEach(function() {
-      module('trialverse.util', function($provide) {
+      angular.mock.module('trialverse.util', function($provide) {
         var uUIDServiceStub = jasmine.createSpyObj('UUIDService', ['generate']);
         uUIDServiceStub.generate.and.returnValue('newUuid');
         $provide.value('UUIDService', uUIDServiceStub);
       });
-      module('trialverse.study', function($provide) {
+      angular.mock.module('trialverse.study', function($provide) {
         $provide.value('StudyService', studyService);
         $provide.value('RdfListService', rdfListService);
       });

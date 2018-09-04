@@ -1,5 +1,5 @@
 'use strict';
-define(['angular', 'angular-mocks'], function() {
+define(['angular-mocks', './mapping'], function() {
   describe('the mapping service', function() {
 
     var rootScope, q,
@@ -11,7 +11,7 @@ define(['angular', 'angular-mocks'], function() {
       studyGraphDefer;
 
     beforeEach(function() {
-      module('trialverse.mapping', function($provide) {
+      angular.mock.module('trialverse.mapping', function($provide) {
         $provide.value('StudyService', studyServiceMock);
       });
     });

@@ -4,17 +4,15 @@ define(
     'angular',
     './services/singleStudyBenefitRiskService',
     './services/networkMetaAnalysisService',
-    'gemtc-web/js/analyses/networkPlotService'
+    'gemtc-web/js/services'
   ],
   function(
     angular,
     SingleStudyBenefitRiskService,
-    NetworkMetaAnalysisService,
-    NetworkPlotService
+    NetworkMetaAnalysisService
   ) {
     return angular.module('addis.services', ['gemtc.services'])
       .factory('SingleStudyBenefitRiskService', SingleStudyBenefitRiskService)
       .factory('NetworkMetaAnalysisService', NetworkMetaAnalysisService)
-      .factory('NetworkPlotService', NetworkPlotService);
   }
 );

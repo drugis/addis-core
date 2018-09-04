@@ -22,7 +22,8 @@ define([
   '../measurementMoment/measurementMoment',
   '../results/results',
   '../graph/graph',
-  '../activity/activity'
+  '../activity/activity',
+  '../util/constants'
 ],
   function(
     StudyController,
@@ -50,7 +51,8 @@ define([
       'trialverse.measurementMoment',
       'trialverse.results',
       'trialverse.graph',
-      'trialverse.activity'
+      'trialverse.activity',
+      'addis.constants'
     ])
       // controllers
       .controller('StudyController', StudyController)

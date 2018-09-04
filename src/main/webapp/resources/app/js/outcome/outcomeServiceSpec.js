@@ -1,5 +1,5 @@
 'use strict';
-define(['angular-mocks'], function(angularMocks) {
+define(['angular-mocks', './outcome'], function() {
   describe('the outcome service', function() {
     var rootScope, q,
       uUIDServiceMock,
@@ -19,7 +19,7 @@ define(['angular-mocks'], function(angularMocks) {
       measurementMomentsDefer;
 
     beforeEach(function() {
-      module('trialverse.outcome', function($provide) {
+      angular.mock.module('trialverse.outcome', function($provide) {
         uUIDServiceMock = jasmine.createSpyObj('UUIDService', ['generate']);
         uUIDServiceMock.generate.and.returnValue('newUuid');
         $provide.value('UUIDService', uUIDServiceMock);

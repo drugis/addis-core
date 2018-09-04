@@ -1,6 +1,6 @@
 'use strict';
-define(['angular', 'angular-mocks'],
-  function(angular, angularMocks) {
+define(['angular-mocks'],
+  function() {
     describe('study service', function() {
 
       var studyService,
@@ -9,11 +9,11 @@ define(['angular', 'angular-mocks'],
         rootScope;
 
       beforeEach(function() {
-        module('trialverse.study');
-        module('trialverse.util', function($provide) {
+        angular.mock.module('trialverse.study');
+        angular.mock.module('trialverse.util', function($provide) {
           $provide.value('UUIDService', uuidServiceMock);
         });
-        module('trialverse.graph', function($provide) {
+        angular.mock.module('trialverse.graph', function($provide) {
           $provide.value('GraphResource', graphResource);
         });
       });

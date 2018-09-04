@@ -1,4 +1,4 @@
-define(['angular', 'angular-mocks', './../services'], function(angular) {
+define(['angular-mocks', './../services'], function() {
 
   var CONTINUOUS_TYPE = 'http://trials.drugis.org/ontology#continuous';
 

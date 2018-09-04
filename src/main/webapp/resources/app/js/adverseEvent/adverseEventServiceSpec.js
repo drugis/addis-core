@@ -11,7 +11,7 @@ define(['angular-mocks', './adverseEvent'], function() {
       outcomeDeleteDefer;
 
     beforeEach(function() {
-      module('trialverse.adverseEvent', function($provide) {
+      angular.mock.module('trialverse.adverseEvent', function($provide) {
         $provide.value('OutcomeService', outcomeServiceMock);
       });
     });
