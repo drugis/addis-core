@@ -1,5 +1,5 @@
 'use strict';
-define(['angular-mocks'], function(angularMocks) {
+define(['angular-mocks', './dataset'], function() {
   describe('the dataset controller', function() {
 
     var scope, httpBackend,
@@ -31,13 +31,13 @@ define(['angular-mocks'], function(angularMocks) {
         versionUuid: versionUuid
       };
 
-    beforeEach(angularMocks.module('trialverse.dataset', function($provide){
+    beforeEach(angular.mock.module('trialverse.dataset', function($provide){
       $provide.value('ExcelExportService', excelExportServiceMock);
     }));
 
-    beforeEach(angularMocks.module('trialverse.user'));
+    beforeEach(angular.mock.module('trialverse.dataset'));
 
-    beforeEach(angularMocks.inject(function($rootScope, $q, $controller, $httpBackend) {
+    beforeEach(inject(function($rootScope, $q, $controller, $httpBackend) {
       scope = $rootScope;
       httpBackend = $httpBackend;
 
@@ -136,7 +136,7 @@ define(['angular-mocks'], function(angularMocks) {
     });
 
     describe('on load for a head view', function() {
-      beforeEach(angularMocks.inject(function($controller) {
+      beforeEach(inject(function($controller) {
         $controller('DatasetController', {
           $scope: scope,
           $window: {},

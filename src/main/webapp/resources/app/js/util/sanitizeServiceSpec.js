@@ -1,9 +1,9 @@
 'use strict';
-define(['angular', 'angular-mocks'], function() {
+define(['angular-mocks', './util'], function(angularMocks) {
 
   describe('the sanitize service', function() {
 
-    beforeEach(module('trialverse.util'));
+    beforeEach(angular.mock.module('trialverse.util'));
 
     it('should escape linefeeds', inject(function(SanitizeService) {
       var testStr = 'hello\ni am cool[]';

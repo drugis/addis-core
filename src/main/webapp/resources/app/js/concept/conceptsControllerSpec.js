@@ -1,5 +1,5 @@
 'use strict';
-define(['angular', 'angular-mocks'], function() {
+define(['angular-mocks', './concept'], function() {
   describe('the concepts controller', function() {
 
     var
@@ -16,7 +16,7 @@ define(['angular', 'angular-mocks'], function() {
       conceptsServiceMock = jasmine.createSpyObj('ConceptsService', ['loadStore', 'queryItems']),
       datasetConceptDefer;
 
-    beforeEach(module('trialverse.concept'));
+    beforeEach(angular.mock.module('trialverse.concept'));
 
     beforeEach(inject(function($rootScope, $q, $controller, VersionedGraphResource) {
       scope = $rootScope;

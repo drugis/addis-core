@@ -1,6 +1,6 @@
 'use strict';
-define(['angular', 'angular-mocks'],
-  function(angular, angularMocks) {
+define(['angular-mocks'],
+  function() {
     describe('study service', function() {
 
       var studyService,
@@ -9,18 +9,18 @@ define(['angular', 'angular-mocks'],
         rootScope;
 
       beforeEach(function() {
-        module('trialverse.study');
-        module('trialverse.util', function($provide) {
+        angular.mock.module('trialverse.study');
+        angular.mock.module('trialverse.util', function($provide) {
           $provide.value('UUIDService', uuidServiceMock);
         });
-        module('trialverse.graph', function($provide) {
+        angular.mock.module('trialverse.graph', function($provide) {
           $provide.value('GraphResource', graphResource);
         });
       });
 
       describe('createEmptyStudy', function() {
 
-        beforeEach(angularMocks.inject(function($rootScope, StudyService) {
+        beforeEach(inject(function($rootScope, StudyService) {
           rootScope = $rootScope;
           studyService = StudyService;
         }));
@@ -38,7 +38,7 @@ define(['angular', 'angular-mocks'],
       });
 
       describe('reset', function() {
-        beforeEach(angularMocks.inject(function($rootScope, $q, StudyService) {
+        beforeEach(inject(function($rootScope, $q, StudyService) {
           rootScope = $rootScope;
           studyService = StudyService;
 
@@ -59,7 +59,7 @@ define(['angular', 'angular-mocks'],
       });
 
       describe('isStudyModified', function() {
-        beforeEach(angularMocks.inject(function($rootScope, $q, StudyService) {
+        beforeEach(inject(function($rootScope, $q, StudyService) {
           rootScope = $rootScope;
           studyService = StudyService;
 
@@ -82,7 +82,7 @@ define(['angular', 'angular-mocks'],
       });
 
       describe('studySaved', function() {
-        beforeEach(angularMocks.inject(function($rootScope, $q, StudyService) {
+        beforeEach(inject(function($rootScope, $q, StudyService) {
           rootScope = $rootScope;
           studyService = StudyService;
 
@@ -104,7 +104,7 @@ define(['angular', 'angular-mocks'],
 
       describe('loadJson', function() {
         var jsonPromise;
-        beforeEach(angularMocks.inject(function($rootScope, $q, StudyService) {
+        beforeEach(inject(function($rootScope, $q, StudyService) {
           rootScope = $rootScope;
           studyService = StudyService;
           var defer = $q.defer();
@@ -135,7 +135,7 @@ define(['angular', 'angular-mocks'],
         var graphPlusContext = {
           '@graph': ['graphItem']
         };
-        beforeEach(angularMocks.inject(function($rootScope, $q, StudyService) {
+        beforeEach(inject(function($rootScope, $q, StudyService) {
           studyService = StudyService;
           var loadDefer = $q.defer();
           var loadPromise = loadDefer.promise;
@@ -157,7 +157,7 @@ define(['angular', 'angular-mocks'],
         var graphPlusContext = {
           '@graph': ['graphItem']
         };
-        beforeEach(angularMocks.inject(function($rootScope, $q, StudyService) {
+        beforeEach(inject(function($rootScope, $q, StudyService) {
           studyService = StudyService;
           var loadDefer = $q.defer();
           var loadPromise = loadDefer.promise;
@@ -179,7 +179,7 @@ define(['angular', 'angular-mocks'],
         var graphPlusContext = {
           '@graph': ['graphItem']
         };
-        beforeEach(angularMocks.inject(function($rootScope, $q, StudyService) {
+        beforeEach(inject(function($rootScope, $q, StudyService) {
           studyService = StudyService;
           var loadDefer = $q.defer();
           var loadPromise = loadDefer.promise;
@@ -211,7 +211,7 @@ define(['angular', 'angular-mocks'],
             has_included_population: []
           }]
         };
-        beforeEach(angularMocks.inject(function($rootScope, $q, StudyService) {
+        beforeEach(inject(function($rootScope, $q, StudyService) {
           studyService = StudyService;
           var loadDefer = $q.defer();
           var loadPromise = loadDefer.promise;
@@ -239,7 +239,7 @@ define(['angular', 'angular-mocks'],
           }]
         };
         var copy = angular.copy(graphPlusContext);
-        beforeEach(angularMocks.inject(function($rootScope, $q, StudyService) {
+        beforeEach(inject(function($rootScope, $q, StudyService) {
           studyService = StudyService;
           var loadDefer = $q.defer();
           var loadPromise = loadDefer.promise;

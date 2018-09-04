@@ -1,9 +1,9 @@
 'use strict';
-define(['angular', 'angular-mocks', 'filters'], function() {
+define(['angular', 'angular-mocks', '../filters'], function() {
   describe("The categorical measurement filter", function() {
     var categoricalFilter;
 
-    beforeEach(module('addis.filters'));
+    beforeEach(angular.mock.module('addis.filters'));
 
     beforeEach(inject(function($filter) {
       categoricalFilter = $filter('categoricalFilter');

@@ -4,14 +4,12 @@ define(['angular', 'lodash'],
     var dependencies = ['$scope', '$q', '$state', '$stateParams', '$window', '$filter', '$transitions',
       'VersionedGraphResource', 'GraphResource', '$location', '$anchorScroll',
       '$modal', 'StudyService', 'ResultsService', 'StudyDesignService', 'DatasetResource',
-      'ExcelExportService',
-      'UserService'
+      'ExcelExportService', 'STUDY_CATEGORY_SETTINGS'
     ];
     var StudyController = function($scope, $q, $state, $stateParams, $window, $filter, $transitions,
       VersionedGraphResource, GraphResource, $location, $anchorScroll,
       $modal, StudyService, ResultsService, StudyDesignService, DatasetResource,
-      ExcelExportService,
-      UserService) {
+      ExcelExportService, STUDY_CATEGORY_SETTINGS) {
       // functions
       $scope.sideNavClick = sideNavClick;
       $scope.saveStudy = saveStudy;
@@ -29,147 +27,9 @@ define(['angular', 'lodash'],
         $scope.versionUuid = $stateParams.versionUuid;
       }
       $scope.studyGraphUuid = $stateParams.studyGraphUuid;
-      $scope.hasLoggedInUser = UserService.hasLoggedInUser();
       $scope.study = {};
       StudyService.reset();
-      $scope.categorySettings = {
-        studyInformation: {
-          service: 'StudyInformationService',
-          anchorId: 'study-information',
-          helpId: 'study-information',
-          header: 'Study Information',
-          itemName: 'Study Information',
-          itemtemplateUrl: '../studyInformation/studyInformation.html',
-          editItemtemplateUrl: '../studyInformation/editStudyInformation.html',
-          editItemController: 'EditStudyInformationController'
-        },
-        populationInformation: {
-          service: 'PopulationInformationService',
-          anchorId: 'population-information',
-          header: 'Population Information',
-          helpId: 'population-information',
-          itemName: 'Population Information',
-          itemtemplateUrl: '../populationInformation/populationInformation.html',
-          editItemtemplateUrl: '../populationInformation/editPopulationInformation.html',
-          editItemController: 'EditPopulationInformationController',
-        },
-        arms: {
-          service: 'ArmService',
-          anchorId: 'arms',
-          helpId: 'arm',
-          header: 'Arms',
-          addItemController: 'CreateArmController',
-          categoryEmptyMessage: 'No arms defined.',
-          itemName: 'arm',
-          itemtemplateUrl: '../arm/arm.html',
-          addItemtemplateUrl: '../arm/addArm.html',
-          editItemtemplateUrl: '../arm/editArm.html',
-          editItemController: 'EditArmController',
-          repairItemtemplateUrl: '../arm/repairArm.html',
-          repairItemController: 'EditArmController'
-        },
-        groups: {
-          service: 'GroupService',
-          anchorId: 'groups',
-          helpId: 'other-group',
-          header: 'Other groups',
-          addItemController: 'CreateGroupController',
-          categoryEmptyMessage: 'No other groups defined.',
-          itemName: 'group',
-          itemtemplateUrl: '../arm/arm.html',
-          addItemtemplateUrl: '../group/addGroup.html',
-          editItemtemplateUrl: '../group/editGroup.html',
-          editItemController: 'EditGroupController',
-          repairItemtemplateUrl: '../group/repairGroup.html',
-          repairItemController: 'EditGroupController'
-        },
-        baselineCharacteristics: {
-          service: 'PopulationCharacteristicService',
-          anchorId: 'baselineCharacteristics',
-          helpId: 'baseline-characteristic',
-          header: 'Baseline characteristics',
-          addItemtemplateUrl: '../variable/addVariable.html',
-          addItemController: 'AddVariableController',
-          categoryEmptyMessage: 'No baseline characteristics defined.',
-          itemName: 'baseline characteristic',
-          itemtemplateUrl: '../variable/variable.html',
-          editItemtemplateUrl: '../variable/editVariable.html',
-          editItemController: 'EditVariableController',
-          repairItemtemplateUrl: '../outcome/repairOutcome.html',
-          repairItemController: 'EditOutcomeController'
-        },
-        outcomes: {
-          service: 'EndpointService',
-          anchorId: 'outcomes',
-          helpId: 'trialverse-outcome',
-          header: 'Outcomes',
-          categoryEmptyMessage: 'No outcomes defined.',
-          itemName: 'outcome',
-          itemtemplateUrl: '../variable/variable.html',
-          addItemController: 'AddVariableController',
-          addItemtemplateUrl: '../variable/addVariable.html',
-          editItemtemplateUrl: '../variable/editVariable.html',
-          editItemController: 'EditVariableController',
-          repairItemtemplateUrl: '../outcome/repairOutcome.html',
-          repairItemController: 'EditOutcomeController'
-        },
-        adverseEvents: {
-          service: 'AdverseEventService',
-          anchorId: 'adverseEvents',
-          helpId: 'adverse-event',
-          header: 'Adverse events',
-          addItemController: 'AddVariableController',
-          addItemtemplateUrl: '../variable/addVariable.html',
-          categoryEmptyMessage: 'No adverse events defined.',
-          itemName: 'adverse event',
-          itemtemplateUrl: '../variable/variable.html',
-          editItemtemplateUrl: '../variable/editVariable.html',
-          editItemController: 'EditVariableController',
-          repairItemtemplateUrl: '../outcome/repairOutcome.html',
-          repairItemController: 'EditOutcomeController'
-        },
-        epochs: {
-          service: 'EpochService',
-          anchorId: 'epochs',
-          helpId: 'epoch',
-          header: 'Epochs',
-          addItemController: 'AddEpochController',
-          categoryEmptyMessage: 'No epochs defined.',
-          itemName: 'epoch',
-          itemtemplateUrl: '../epoch/epoch.html',
-          addItemtemplateUrl: '../epoch/addEpoch.html',
-          editItemtemplateUrl: '../epoch/editEpoch.html',
-          editItemController: 'EditEpochController',
-        },
-        measurementMoments: {
-          service: 'MeasurementMomentService',
-          anchorId: 'measurementMoments',
-          helpId: 'measurement-moment',
-          header: 'Measurement moments',
-          addItemController: 'MeasurementMomentController',
-          categoryEmptyMessage: 'No measurement moments defined.',
-          itemName: 'measurement moment',
-          itemtemplateUrl: '../measurementMoment/measurementMoment.html',
-          addItemtemplateUrl: '../measurementMoment/editMeasurementMoment.html',
-          editItemtemplateUrl: '../measurementMoment/editMeasurementMoment.html',
-          editItemController: 'MeasurementMomentController',
-          repairItemtemplateUrl: '../measurementMoment/repairMeasurementMoment.html',
-          repairItemController: 'MeasurementMomentController'
-        },
-        activities: {
-          service: 'ActivityService',
-          anchorId: 'activities',
-          helpId: 'activity',
-          header: 'Activities',
-          addItemController: 'ActivityController',
-          categoryEmptyMessage: 'No activities defined.',
-          itemName: 'activity',
-          itemtemplateUrl: '../activity/activity.html',
-          addItemtemplateUrl: '../activity/editActivity.html',
-          editItemtemplateUrl: '../activity/editActivity.html',
-          editItemController: 'ActivityController',
-        }
-      };
+      $scope.categorySettings = STUDY_CATEGORY_SETTINGS;
 
       $scope.conceptSettings = {
         drugs: {
@@ -247,7 +107,7 @@ define(['angular', 'lodash'],
 
       var navbar = document.getElementsByClassName('side-nav');
       angular.element($window).bind('scroll', function() {
-        $(navbar[0]).css('margin-top', this.pageYOffset - 20);
+        angular.element(navbar[0]).css('margin-top', (this.pageYOffset - 20) + 'px');
         $scope.$apply();
       });
 
@@ -301,7 +161,7 @@ define(['angular', 'lodash'],
           resolve: {
             datasets: function() {
               return DatasetResource.queryForJson({
-                userUid: UserService.getLoginUser().id
+                userUid: $scope.loggedInUser.id
               }).$promise.then(function(result) {
                 return _.filter(result, function(dataset) {
                   return dataset.uri !== 'http://trials.drugis.org/datasets/' + $scope.datasetUuid;

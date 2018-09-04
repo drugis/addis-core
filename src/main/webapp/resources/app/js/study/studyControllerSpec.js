@@ -1,5 +1,5 @@
 'use strict';
-define(['angular-mocks'], function(angularMocks) {
+define(['angular-mocks', './study'], function() {
   describe('the study controller', function() {
 
     var scope,
@@ -31,13 +31,14 @@ define(['angular-mocks'], function(angularMocks) {
       getGraphDeferred,
       loadJsonDefferd,
       getJsonResultDefferd,
-      getJsonDeferred;
+      getJsonDeferred,
+      studyCategorySettings = {};
 
 
-    beforeEach(module('trialverse.study'));
-    beforeEach(module('trialverse.user'));
+    beforeEach(angular.mock.module('trialverse.study'));
+//    beforeEach(angular.mock.module('trialverse.user'));
 
-    beforeEach(angularMocks.inject(function($rootScope, $q) {
+    beforeEach(inject(function($rootScope, $q) {
 
       scope = $rootScope;
       spyOn(scope, '$broadcast');
@@ -58,7 +59,7 @@ define(['angular-mocks'], function(angularMocks) {
       var getJsonResult;
       var getStudyResult;
 
-      beforeEach(angularMocks.inject(function($q, $controller) {
+      beforeEach(inject(function($q, $controller) {
 
         jsonResultDefer = $q.defer();
         getJsonResult = {
@@ -80,15 +81,13 @@ define(['angular-mocks'], function(angularMocks) {
           $location: locationMock,
           $anchorScroll: anchorScrollMock,
           $modal: modalMock,
-          $window: {
-            bind: 'mockBind',
-            innerHeight: 'innerHeightMock'
-          },
+          $window: angular.element('<div>')[0],
           StudyService: studyService,
           ExcelExportService: excelExportService,
           ResultsService: resultsServiceMock,
           StudyDesignService: studyDesignServiceMock,
-          UserService: userService
+          UserService: userService,
+          STUDY_CATEGORY_SETTINGS: studyCategorySettings
         });
       }));
 

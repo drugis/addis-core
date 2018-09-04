@@ -1,5 +1,5 @@
 'use strict';
-define(['angular-mocks'], function(angularMocks) {
+define(['angular-mocks', './populationInformation'], function() {
   describe('the population information service', function() {
 
     var rootScope, q;
@@ -28,9 +28,9 @@ define(['angular-mocks'], function(angularMocks) {
       }]
     };
 
-    beforeEach(module('trialverse.populationInformation'));
+    beforeEach(angular.mock.module('trialverse.populationInformation'));
     beforeEach(function() {
-      module('trialverse.util', function($provide) {
+      angular.mock.module('trialverse.util', function($provide) {
         uUIDServiceStub = jasmine.createSpyObj('UUIDService', [
           'generate'
         ]);
@@ -40,7 +40,7 @@ define(['angular-mocks'], function(angularMocks) {
       });
     });
 
-    beforeEach(angularMocks.inject(function($q, $rootScope, PopulationInformationService) {
+    beforeEach(inject(function($q, $rootScope, PopulationInformationService) {
 
       q = $q;
       rootScope = $rootScope;
@@ -58,20 +58,21 @@ define(['angular-mocks'], function(angularMocks) {
 
       var result;
 
-      beforeEach(angularMocks.inject(function($q, $rootScope) {
+      beforeEach(inject(function($q, $rootScope) {
         q = $q;
         rootScope = $rootScope;
         var studyDefer = $q.defer();
         var getStudyPromise = studyDefer.promise;
-        studyDefer.resolve(studyJsonObject);
+        studyDefer.resolve(angular.copy(studyJsonObject));
         studyService.getStudy.and.returnValue(getStudyPromise);
 
         rootScope.$digest();
       }));
 
-      beforeEach(function() {
+      beforeEach(function(done) {
         populationInformationService.queryItems().then(function(info) {
           result = info;
+          done()
         });
         rootScope.$digest();
       });
@@ -85,25 +86,25 @@ define(['angular-mocks'], function(angularMocks) {
     });
 
     describe('query population information on study without a indication', function() {
-
       var result;
       var studyDefer;
       var getStudyPromise;
 
-      beforeEach(angularMocks.inject(function($q, $rootScope) {
+      beforeEach(inject(function($q, $rootScope) {
         q = $q;
         rootScope = $rootScope;
         studyDefer = $q.defer();
         getStudyPromise = studyDefer.promise;
-        studyDefer.resolve(studyWithoutIndicationJsonObject);
+        studyDefer.resolve(angular.copy(studyWithoutIndicationJsonObject));
         studyService.getStudy.and.returnValue(getStudyPromise);
 
         rootScope.$digest();
       }));
 
-      beforeEach(function() {
+      beforeEach(function(done) {
         populationInformationService.queryItems().then(function(info) {
           result = info;
+          done();
         });
         rootScope.$digest();
       });
@@ -115,25 +116,24 @@ define(['angular-mocks'], function(angularMocks) {
 
     });
 
-    describe('edit population information when indication was precent on study', function() {
+    describe('edit population information when indication was present on study', function() {
 
       var studyDefer, getStudyPromise;
       var newInformation;
 
 
-      beforeEach(angularMocks.inject(function($q, $rootScope) {
+      beforeEach(inject(function($q, $rootScope) {
         q = $q;
         rootScope = $rootScope;
         studyDefer = $q.defer();
         getStudyPromise = studyDefer.promise;
-        studyDefer.resolve(studyJsonObject);
+        studyDefer.resolve(angular.copy(studyJsonObject));
         studyService.getStudy.and.returnValue(getStudyPromise);
 
         rootScope.$digest();
       }));
 
-      beforeEach(function() {
-
+      beforeEach(function(done) {
         newInformation = {
           indication: {
             label: 'new label'
@@ -143,7 +143,7 @@ define(['angular-mocks'], function(angularMocks) {
           }
         };
 
-        populationInformationService.editItem(newInformation);
+        populationInformationService.editItem(newInformation).then(done);
         rootScope.$digest();
       });
 
@@ -174,18 +174,18 @@ define(['angular-mocks'], function(angularMocks) {
       var newInformation;
 
 
-      beforeEach(angularMocks.inject(function($q, $rootScope) {
+      beforeEach(inject(function($q, $rootScope) {
         q = $q;
         rootScope = $rootScope;
         studyDefer = $q.defer();
         getStudyPromise = studyDefer.promise;
-        studyDefer.resolve(studyWithoutIndicationJsonObject);
+        studyDefer.resolve(angular.copy(studyWithoutIndicationJsonObject));
         studyService.getStudy.and.returnValue(getStudyPromise);
 
         rootScope.$digest();
       }));
 
-      beforeEach(function() {
+      beforeEach(function(done) {
 
         newInformation = {
           indication: {
@@ -196,7 +196,7 @@ define(['angular-mocks'], function(angularMocks) {
           }
         };
 
-        populationInformationService.editItem(newInformation);
+        populationInformationService.editItem(newInformation).then(done);
         rootScope.$digest();
       });
 

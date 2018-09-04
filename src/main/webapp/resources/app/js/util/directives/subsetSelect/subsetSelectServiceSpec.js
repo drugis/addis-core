@@ -1,12 +1,12 @@
 'use strict';
-define(['angular', 'angular-mocks'], function() {
-  describe('the duration service', function() {
+define(['angular', 'angular-mocks'], function(angular, angularMocks) {
+  describe('the subset-select service', function() {
     var subsetSelectService;
     var equals = function(item1, item2) {
       return item1.uri === item2.uri;
     }
 
-    beforeEach(module('trialverse.util'));
+    beforeEach(angular.mock.module('trialverse.util'));
 
     beforeEach(inject(function(SubsetSelectService) {
       subsetSelectService = SubsetSelectService;

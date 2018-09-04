@@ -5,7 +5,9 @@ define([
   '../drug/drugService',
   './treatmentDirective',
   'angular',
-  'angular-resource'],
+  'angular-resource',
+  '../study/study',
+  '../util/util'],
   function(
     ActivityController,
     ActivityService,

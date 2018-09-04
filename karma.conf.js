@@ -1,6 +1,5 @@
 'use strict';
-// Karma configuration
-// Generated on Sun Jan 12 2014 11:41:44 GMT+0100 (CET)
+
 const webpackConfig = require("./webpack.dev");
 delete webpackConfig.entry;
 webpackConfig.plugins = [];
@@ -8,24 +7,29 @@ webpackConfig.optimization = {
     splitChunks: false,
     runtimeChunk: false
   };
+webpackConfig.resolve.alias['test-resources'] = __dirname + '/src/test'
+webpackConfig.module.rules.push({ test: /\.xlsx$/, loader: 'webpack-xlsx-loader' });
 
 module.exports = function(config) {
   config.set({
 
+    webpack: webpackConfig,
+
     // base path, that will be used to resolve files and exclude
-    basePath: '',
+    basePath: '.',
 
     // plugins to load
     plugins: [
       'karma-firefox-launcher',
       'karma-chrome-launcher',
       'karma-junit-reporter',
+      'karma-jasmine',
       'karma-webpack'
     ],
 
     preprocessors: {
       // add webpack as preprocessor
-      'app/js/test-main.js' : ['webpack']
+      'src/test-main.js' : ['webpack']
     },
 
     // frameworks to use
@@ -34,15 +38,15 @@ module.exports = function(config) {
 
     // list of files / patterns to load in the browser
     files: [
-      'src/test/js/test-main.js'
+      'src/test-main.js'
     ],
 
     // test results reporter to use
     // possible values: 'dots', 'progress', 'junit', 'growl', 'coverage'
     reporters: ['progress', 'junit'],
     junitReporter: {
-      outputFile: 'src/test/karma-test-results.xml',
-      outputDir: 'src/test'
+      outputFile: '/karma-test-results.xml',
+      outputDir: '/'
     },
 
     // web server port

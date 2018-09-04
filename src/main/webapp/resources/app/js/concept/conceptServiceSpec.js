@@ -1,12 +1,12 @@
 'use strict';
-define(['angular', 'angular-mocks'], function() {
+define(['angular-mocks'], function(angularMocks) {
   describe('concept service', function() {
 
     var scope, q,
       conceptsService,
       jsonPromiseDefer;
 
-    beforeEach(module('trialverse.concept'));
+    beforeEach(angular.mock.module('trialverse.concept'));
 
     beforeEach(inject(function($rootScope, $q, ConceptsService) {
       scope = $rootScope;

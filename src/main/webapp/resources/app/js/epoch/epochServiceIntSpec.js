@@ -10,15 +10,15 @@ define(['angular-mocks'], function() {
     var studyJsonGraphObject;
     var flattenResult = [];
 
-    beforeEach(module('trialverse.epoch'));
+    beforeEach(angular.mock.module('trialverse.epoch'));
 
     beforeEach(function() {
-      module('trialverse.util', function($provide) {
+      angular.mock.module('trialverse.util', function($provide) {
         var uUIDServiceStub = jasmine.createSpyObj('UUIDService', ['generate']);
         uUIDServiceStub.generate.and.returnValue('newUuid');
         $provide.value('UUIDService', uUIDServiceStub);
       });
-      module('trialverse.study', function($provide) {
+      angular.mock.module('trialverse.study', function($provide) {
         $provide.value('StudyService', studyService);
         $provide.value('RdfListService', rdfListService);
       });

@@ -1,6 +1,7 @@
 'use strict';
 
 define([
+  'angular',
   './datasetsController',
   './datasetController',
   './createStudyController',
@@ -21,10 +22,11 @@ define([
   './historyItemDirective',
   './versionInfoDirective',
   './featuredDatasetsDirective',
-  './splitOnTokenFilter',
-  './dosingFilter',
-  'angular',
-  'angular-resource'], function(
+  '../util/util',
+  '../excelIO/excelIO',
+  '../user/user'
+  ], function(
+    angular,
     DatasetsController,
     DatasetController,
     CreateStudyController,
@@ -44,12 +46,9 @@ define([
     ImportStudyResource,
     historyItem,
     versionInfo,
-    featuredDatasets,
-    splitOnTokenFilter,
-    dosingFilter,
-    angular
+    featuredDatasets
   ) {
-    return angular.module('trialverse.dataset', ['ngResource', 'trialverse.util', 'addis.excelIO'])
+    return angular.module('trialverse.dataset', ['ngResource', 'trialverse.util', 'trialverse.user', 'addis.excelIO'])
       //controllers
       .controller('DatasetsController', DatasetsController)
       .controller('DatasetController', DatasetController)
@@ -79,6 +78,4 @@ define([
       .directive('featuredDatasets', featuredDatasets)
 
       //filters
-      .filter('splitOnTokenFilter', splitOnTokenFilter)
-      .filter('dosingFilter', dosingFilter);
   });

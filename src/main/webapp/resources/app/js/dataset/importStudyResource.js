@@ -12,8 +12,8 @@ define([], function() {
         importStudyRef: '@importStudyRef',
         commitTitle: '@commitTitle',
         commitDescription: '@commitDescription'
-      },{
-        'import': {
+      }, {
+        import: {
           method: 'post',
         },
       }

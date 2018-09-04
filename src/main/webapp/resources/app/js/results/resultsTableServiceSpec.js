@@ -1,5 +1,5 @@
 'use strict';
-define(['angular', 'angular-mocks'], function() {
+define(['angular-mocks', './results'], function() {
   describe('the results table service', function() {
 
     var INTEGER_TYPE = '<http://www.w3.org/2001/XMLSchema#integer>';
@@ -8,14 +8,14 @@ define(['angular', 'angular-mocks'], function() {
     var resultsTableService,
       armService = jasmine.createSpyObj('ArmService', ['queryItems']),
       measurementMomentService = jasmine.createSpyObj('MeasurementMomentService', ['queryItems']);
-    beforeEach(module('trialverse.util'));
+    beforeEach(angular.mock.module('trialverse.util'));
 
     beforeEach(function() {
-      module('trialverse.arm', function($provide) {
+      angular.mock.module('trialverse.arm', function($provide) {
         $provide.value('ArmService', armService);
 
       });
-      module('trialverse.measurementMoment', function($provide) {
+      angular.mock.module('trialverse.measurementMoment', function($provide) {
         $provide.value('MeasurementMomentService', measurementMomentService);
       });
     });

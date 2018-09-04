@@ -9,10 +9,11 @@ define([], function() {
       link: function(scope) {
 
         scope.isAnonymous = true;
+        scope.signOut = UserService.logOut;
 
-        if (UserService.hasLoggedInUser()) {
-          scope.isAnonymous = false;
-          UserService.getLoginUser().then(function(loggedInUser) {
+        UserService.getLoginUser().then(function(loggedInUser) {
+          if(loggedInUser) {
+            scope.isAnonymous = false;
             scope.loginUserInfo = {
               imageUrl: loggedInUser.imageUrl,
               name: loggedInUser.firstName + ' ' + loggedInUser.lastName,
@@ -20,8 +21,8 @@ define([], function() {
               id: loggedInUser.id
             };
             scope.isOwnUserPage = $state.current.name === 'user' && loggedInUser.id === $stateParams.userUid;
-          });
-        }
+          }
+        });
 
         if ($stateParams.userUid) {
           scope.user = UserResource.get($stateParams);

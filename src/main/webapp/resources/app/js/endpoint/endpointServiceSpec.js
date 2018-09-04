@@ -1,5 +1,5 @@
 'use strict';
-define(['angular-mocks'], function(angularMocks) {
+define(['angular-mocks', './endpoint'], function() {
   describe('the endpoint service', function() {
 
     var rootScope, q,
@@ -11,13 +11,13 @@ define(['angular-mocks'], function(angularMocks) {
       outcomeDeleteDefer;
 
     beforeEach(function() {
-      module('trialverse.endpoint', function($provide) {
+      angular.mock.module('trialverse.endpoint', function($provide) {
         $provide.value('OutcomeService', outcomeServiceMock);
       });
     });
-    beforeEach(module('trialverse.endpoint'));
+    beforeEach(angular.mock.module('trialverse.endpoint'));
 
-    beforeEach(angularMocks.inject(function($q, $rootScope, EndpointService) {
+    beforeEach(inject(function($q, $rootScope, EndpointService) {
       q = $q;
       rootScope = $rootScope;
       endpointService = EndpointService;

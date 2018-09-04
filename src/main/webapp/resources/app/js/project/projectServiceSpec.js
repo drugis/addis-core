@@ -3,7 +3,7 @@ define(['lodash', 'angular-mocks'], function(_) {
   describe('the project service', function() {
     var projectService;
 
-    beforeEach(module('addis.project'));
+    beforeEach(angular.mock.module('addis.project'));
 
     beforeEach(inject(function(ProjectService) {
       projectService = ProjectService;

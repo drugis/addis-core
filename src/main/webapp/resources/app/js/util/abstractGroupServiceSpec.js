@@ -1,5 +1,5 @@
 'use strict';
-define(['angular', 'angular-mocks'], function() {
+define(['angular-mocks', './util'], function() {
   describe('the abstract group service', function() {
 
     var rootScope, q;
@@ -12,7 +12,7 @@ define(['angular', 'angular-mocks'], function() {
       targetNonConformantResultsDefer, getStudyDefer, saveStudyDefer, mergeResultsDefer;
 
     beforeEach(function() {
-      module('trialverse.util', function($provide) {
+      angular.mock.module('trialverse.util', function($provide) {
         $provide.value('ResultsService', resultsService);
         $provide.value('RepairService', repairService);
         $provide.value('StudyService', studyService);

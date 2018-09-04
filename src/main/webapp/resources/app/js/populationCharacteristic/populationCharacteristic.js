@@ -1,5 +1,5 @@
 'use strict';
-define(['./populationCharacteristicService', 'angular'],
+define(['./populationCharacteristicService', 'angular', '../outcome/outcome'],
   function(
     PopulationCharacteristicService,
     angular

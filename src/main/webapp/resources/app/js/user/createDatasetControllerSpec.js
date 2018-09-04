@@ -1,10 +1,10 @@
 'use strict';
-define(['angular', 'angular-mocks'], function() {
+define(['angular', './user'], function(angular) {
   describe('create dataset controller', function() {
-    var scope,
+    var scope = {},
       mockDatasetResource = jasmine.createSpyObj('DatasetResource', ['save']),
       mockModalInstance = jasmine.createSpyObj('$modalInstance', ['close', 'dismiss']),
-      mockcallback = jasmine.createSpy('callback'),
+      mockCallback = jasmine.createSpy('callback'),
       excelImportServiceMock = jasmine.createSpyObj('ExcelImportService', ['createDatasetStudies', 'createDatasetConcepts']),
       mockDataset = {
         title: 'title'
@@ -21,9 +21,11 @@ define(['angular', 'angular-mocks'], function() {
       };
     mockDatasetResource.save.and.returnValue(mockDataset);
 
-    beforeEach(module('trialverse.user'));
 
-    beforeEach(inject(function($rootScope, $controller, $q) {
+
+    beforeEach(angular.mock.module('trialverse.user'));
+
+    beforeEach(angular.mock.inject(function($rootScope, $controller, $q) {
       scope = $rootScope;
 
       datasetDeferred = $q.defer();
@@ -36,10 +38,11 @@ define(['angular', 'angular-mocks'], function() {
         DatasetResource: mockDatasetResource,
         ExcelImportService: excelImportServiceMock,
         datasetTitles: datasetTitles,
-        callback: mockcallback,
+        callback: mockCallback,
       });
 
     }));
+
     it('should place createDataset on the scope', function() {
       expect(scope.createDataset).not.toBe(null);
     });
@@ -61,7 +64,7 @@ define(['angular', 'angular-mocks'], function() {
           scope.$apply();
         });
         it('should call the callback', function() {
-          expect(mockcallback).toHaveBeenCalled();
+          expect(mockCallback).toHaveBeenCalled();
         });
       });
     });

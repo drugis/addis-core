@@ -1,5 +1,5 @@
 'use strict';
-define(['angular', 'angular-mocks', 'controllers'], function() {
+define(['angular', 'angular-mocks', '../controllers'], function() {
   describe('the network meta-analysis controller', function() {
     var scope,
       state,
@@ -83,7 +83,7 @@ define(['angular', 'angular-mocks', 'controllers'], function() {
       },
       modelResource,
       modelDeferred;
-    beforeEach(module('addis.controllers'));
+    beforeEach(angular.mock.module('addis.controllers'));
     beforeEach(inject(function($rootScope, $controller, $q) {
       q = $q;
       analysisDeferred = $q.defer();

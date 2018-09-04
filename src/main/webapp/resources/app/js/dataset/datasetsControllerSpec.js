@@ -1,5 +1,5 @@
 'use strict';
-define(['angular-mocks'], function(angularMocks) {
+define(['angular-mocks', './dataset', '../user/user'], function(angularMocks) {
   describe('datasets controller', function() {
 
     var scope,
@@ -8,9 +8,9 @@ define(['angular-mocks'], function(angularMocks) {
         params: {}
       };
 
-    beforeEach(module('trialverse.user'));
+    beforeEach(angular.mock.module('trialverse.dataset'));
 
-    beforeEach(angularMocks.inject(function($rootScope, $q, $controller, DatasetResource) {
+    beforeEach(inject(function($rootScope, $q, $controller, DatasetResource) {
       scope = $rootScope;
 
       $controller('DatasetsController', {

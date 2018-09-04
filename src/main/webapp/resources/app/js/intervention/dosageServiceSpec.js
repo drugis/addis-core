@@ -5,7 +5,7 @@ define(['angular', 'angular-mocks'], function() {
       scope,
       httpBackend,
       dosageService;
-    beforeEach(module('addis.interventions'));
+    beforeEach(angular.mock.module('addis.interventions'));
 
     beforeEach(inject(function($rootScope, $httpBackend, DosageService) {
       scope = $rootScope;

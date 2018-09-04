@@ -20,7 +20,8 @@ define([
   './directives/sessionExpired/sessionExpiredDirective',
   './directives/spinner/spinnerDirective',
   './directives/enumOptions/enumOptionsDirective',
-  './interceptors/sessionExpiredInterceptor'
+  './interceptors/sessionExpiredInterceptor',
+  '../measurementMoment/measurementMoment'
 ], function(
   angular,
   UUIDService,
@@ -44,7 +45,7 @@ define([
   enumOptions,
   SessionExpiredInterceptor
 ) {
-    return angular.module('trialverse.util', [])
+    return angular.module('trialverse.util', ['trialverse.measurementMoment'])
       // services
       .factory('UUIDService', UUIDService)
       .factory('DurationService', DurationService)

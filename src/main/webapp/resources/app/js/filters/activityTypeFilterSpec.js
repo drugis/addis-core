@@ -1,8 +1,8 @@
-define(['angular', 'angular-mocks', 'filters'], function () {
+define(['../filters'], function () {
   describe("The activity type filter", function () {
     var activityTypeFilter;
 
-    beforeEach(module('addis.filters'));
+    beforeEach(angular.mock.module('addis.filters'));
 
     beforeEach(inject(function($filter) {
       activityTypeFilter = $filter('activityTypeFilter');

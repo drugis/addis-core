@@ -1,7 +1,7 @@
 'use strict';
-define(['angular', 'angular-mocks'], function () {
+define(['angular-mocks'], function (angularMocks) {
   describe('uuid service', function () {
-    beforeEach(module('trialverse.util'));
+    beforeEach(angular.mock.module('trialverse.util'));
 
     describe('generate', function() {
       it('should exist', inject(function(UUIDService) {

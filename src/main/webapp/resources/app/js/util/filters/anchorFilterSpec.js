@@ -1,11 +1,10 @@
 'use strict';
-define(['angular', 'angular-mocks'], function() {
+define(['angular-mocks', '../../filters'], function(angularMocks) {
   describe('The anchor filter', function() {
     var anchorFilter;
     var measurementMomentService;
 
-    beforeEach(module('trialverse.util'));
-    beforeEach(module('trialverse.measurementMoment'));
+    beforeEach(angular.mock.module('trialverse.util'));
 
     beforeEach(inject(function($filter, MeasurementMomentService) {
       measurementMomentService = MeasurementMomentService;

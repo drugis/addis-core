@@ -65,6 +65,7 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter {
 
   public void addResourceHandlers(ResourceHandlerRegistry registry) {
     registry.addResourceHandler("/**").addResourceLocations("/WEB-INF/views/dist/");
+    registry.addResourceHandler("/app/sparql/*").addResourceLocations("/resources/app/sparql/");
     registry.addResourceHandler("/img/**").addResourceLocations(
             "/resources/img/",
             "/WEB-INF/views/dist/images/gemtc-web/",

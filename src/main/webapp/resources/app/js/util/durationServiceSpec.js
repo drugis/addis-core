@@ -1,9 +1,9 @@
 'use strict';
-define(['angular', 'angular-mocks'], function() {
+define(['angular-mocks', './util'], function() {
   describe('the duration service', function() {
     var durationService;
 
-    beforeEach(module('trialverse.util'));
+    beforeEach(angular.mock.module('trialverse.util'));
 
     beforeEach(inject(function(DurationService) {
       durationService = DurationService;

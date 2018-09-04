@@ -1,5 +1,5 @@
 'use strict';
-define(['angular-mocks'], function() {
+define(['angular-mocks', '../../outcome/outcome'], function() {
   describe('the repair service', function() {
     var repairService, q, rootScope;
     var studyService = jasmine.createSpyObj('StudyService', ['getJsonGraph', 'saveJsonGraph']);
@@ -56,7 +56,7 @@ define(['angular-mocks'], function() {
     };
 
     beforeEach(function(){
-      module('trialverse.outcome', function($provide){
+      angular.mock.module('trialverse.outcome', function($provide){
         $provide.value('StudyService', studyService);
       });
     });

@@ -14,7 +14,16 @@ define([
   './categoryItemDirective',
   './variableCategoryDirective',
   'angular',
-  'angular-resource'
+  'angular-resource',
+  '../variable/variable',
+  '../populationCharacteristic/populationCharacteristic',
+  '../endpoint/endpoint',
+  '../adverseEvent/adverseEvent',
+  '../measurementMoment/measurementMoment',
+  '../results/results',
+  '../graph/graph',
+  '../activity/activity',
+  '../util/constants'
 ],
   function(
     StudyController,
@@ -30,7 +39,7 @@ define([
     studyCategory,
     categoryItemDirective,
     variableCategory,
-    angular
+    angular,
   ) {
     return angular.module('trialverse.study', ['ngResource',
       'trialverse.util',
@@ -42,7 +51,8 @@ define([
       'trialverse.measurementMoment',
       'trialverse.results',
       'trialverse.graph',
-      'trialverse.activity'
+      'trialverse.activity',
+      'addis.constants'
     ])
       // controllers
       .controller('StudyController', StudyController)

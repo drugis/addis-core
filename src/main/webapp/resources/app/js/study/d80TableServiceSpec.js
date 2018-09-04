@@ -1,5 +1,5 @@
 'use strict';
-define(['angular-mocks'], function() {
+define(['angular-mocks', './study'], function(angularMocks) {
   var d80tableservice;
   describe('the d80tableservice', function() {
     var results = [
@@ -78,7 +78,7 @@ define(['angular-mocks'], function() {
         value: 336
       }]
     ];
-    beforeEach(module('trialverse.study'));
+    beforeEach(angular.mock.module('trialverse.study'));
     beforeEach(inject(function(D80TableService) {
       d80tableservice = D80TableService;
     }));

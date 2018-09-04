@@ -1,5 +1,5 @@
 'use strict';
-define(['angular-mocks'], function(angularMocks) {
+define(['angular-mocks', './analysis'], function() {
   describe('benefit-risk step 1 controller', function() {
 
     var scope, q,
@@ -49,10 +49,10 @@ define(['angular-mocks'], function(angularMocks) {
         'addStudiesToOutcomes'
       ]);
 
-    beforeEach(module('addis.analysis'));
+    beforeEach(angular.mock.module('addis.analysis'));
 
 
-    beforeEach(angularMocks.inject(function($rootScope, $q, $controller) {
+    beforeEach(inject(function($rootScope, $q, $controller) {
       scope = $rootScope;
       q = $q;
       analysisDefer = q.defer();

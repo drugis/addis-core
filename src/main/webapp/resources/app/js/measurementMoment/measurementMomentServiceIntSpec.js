@@ -1,5 +1,5 @@
 'use strict';
-define(['angular-mocks'], function(angularMocks) {
+define(['angular-mocks', './measurementMoment'], function() {
   describe('the measurement moment service', function() {
 
     var rootScope, q;
@@ -13,7 +13,7 @@ define(['angular-mocks'], function(angularMocks) {
 
 
     beforeEach(function() {
-      module('trialverse.measurementMoment', function($provide) {
+      angular.mock.module('trialverse.measurementMoment', function($provide) {
         $provide.value('StudyService', studyService);
         $provide.value('EpochService', epochServiceStub);
         $provide.value('UUIDService', uuidServiceMock);
@@ -22,9 +22,9 @@ define(['angular-mocks'], function(angularMocks) {
       });
     });
 
-    beforeEach(module('trialverse.util'));
+    beforeEach(angular.mock.module('trialverse.util'));
 
-    beforeEach(angularMocks.inject(function($q, $rootScope, MeasurementMomentService) {
+    beforeEach(inject(function($q, $rootScope, MeasurementMomentService) {
       q = $q;
       rootScope = $rootScope;
       measurementMomentService = MeasurementMomentService;
@@ -63,6 +63,9 @@ define(['angular-mocks'], function(angularMocks) {
       rootScope.$digest();
     }));
 
+    afterEach(function() {
+      resultsServiceMock.queryResultsByMeasurementMoment.calls.reset();
+    });
 
     describe('query measurement moments', function() {
       beforeEach(function() {
@@ -410,9 +413,6 @@ define(['angular-mocks'], function(angularMocks) {
         expect(repairServiceMock.mergeResults.calls.count()).toBe(1);
         expect(studyService.saveJsonGraph.calls.mostRecent().args).toEqual([expectedSave]);
 
-      });
-      afterEach(function() {
-        resultsServiceMock.queryResultsByMeasurementMoment.calls.reset();
       });
     });
 

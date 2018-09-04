@@ -3,7 +3,6 @@ define(
   [
     'angular',
     'mcda-web/js/config',
-    './util/constants',
     'mcda-web/lexicon',
     'gemtc-web/lexicon',
     'angular-foundation-6',
@@ -21,6 +20,7 @@ define(
     'error-reporting',
     'export-directive',
     'help-popup',
+    './util/constants',
     './controllers',
     './filters',
     './resources',
@@ -78,7 +78,6 @@ define(
   function(
     angular,
     Config,
-    constants,
     mcdaLexicon,
     gemtcLexicon
     ) {
@@ -105,6 +104,7 @@ define(
       'mm.foundation.modal',
       'mm.foundation.tabs',
       'help-directive',
+      'addis.constants',
       'addis.home',
       'addis.project',
       'addis.analysis',
@@ -173,8 +173,6 @@ define(
       label: 'Benefit-risk analysis',
       stateName: 'BenefitRiskCreationStep-1'
     }]);
-    app.constant('mcdaRootPath', 'app/js/bower_components/mcda-web/app/');
-    app.constant('gemtcRootPath', 'app/js/bower_components/gemtc-web/js/app/');
     app.constant('isGemtcStandAlone', false);
     app.constant('isMcdaStandalone', false);
 
@@ -230,15 +228,17 @@ define(
 
         // Default route
         $urlRouterProvider.otherwise(function($injector) {
-          var $window = $injector.get('$window');
+          var UserService = $injector.get('UserService');
           var $state = $injector.get('$state');
-          if ($window.config && $window.config.user) {
-            $state.go('datasets', {
-              userUid: $window.config.user.id
-            });
-          } else {
-            $state.go('home');
-          }
+          UserService.getLoginUser().then(function(user) {
+            if (user) {
+              $state.go('datasets', {
+                userUid: user.id
+              });
+            } else {
+              $state.go('home');
+            }
+          });
 
         });
 
@@ -504,9 +504,6 @@ define(
       }
     ]);
     app.constant('CONCEPT_GRAPH_UUID', 'concepts');
-    app.constant('GROUP_ALLOCATION_OPTIONS', constants.GROUP_ALLOCATION_OPTIONS);
-    app.constant('BLINDING_OPTIONS', constants.BLINDING_OPTIONS);
-    app.constant('STATUS_OPTIONS', constants.STATUS_OPTIONS);
 
     return app;
   });

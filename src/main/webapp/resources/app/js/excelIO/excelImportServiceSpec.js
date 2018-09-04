@@ -1,17 +1,16 @@
 'use strict';
 define([
+    'angular-mocks',
     'lodash',
-    'xlsx-shim',
-    'util/context',
-    'util/constants',
-    'angular',
-    'angular-mocks'
+    'xlsx',
+    './../util/context',
+    './../util/constants',
   ],
   function(
+    angularMocks,
     _,
     XLSX,
-    externalContext,
-    constants
+    externalContext
   ) {
     var ONTOLOGY_URI = 'http://trials.drugis.org/ontology#';
     var INSTANCE_URI = 'http://trials.drugis.org/instances/uuid';
@@ -29,12 +28,9 @@ define([
     };
 
     describe('the excel import service', function() {
-      beforeEach(module('addis.excelIO', function($provide) {
+      beforeEach(angular.mock.module('addis.excelIO', function($provide) {
         $provide.value('UUIDService', uuidServiceMock);
         $provide.value('$stateParams', stateParams);
-        $provide.value('GROUP_ALLOCATION_OPTIONS', constants.GROUP_ALLOCATION_OPTIONS);
-        $provide.value('BLINDING_OPTIONS', constants.BLINDING_OPTIONS);
-        $provide.value('STATUS_OPTIONS', constants.STATUS_OPTIONS);
       }));
 
       beforeEach(inject(function(ExcelImportService, RdfListService) {
@@ -44,11 +40,8 @@ define([
 
       describe('for a valid simple upload', function() {
         var workbook;
-        beforeEach(function(done) {
-          loadExcel('teststudy.xlsx', function(loadedWorkbook) {
-            workbook = loadedWorkbook;
-            done();
-          });
+        beforeEach(function() {
+          workbook = require('test-resources/resources/excelIO/teststudy.xlsx');
         });
 
         it('checkSingleStudyWorkbook should not return errors', function() {
@@ -143,11 +136,8 @@ define([
 
       describe('for a valid structured upload', function() {
         var workbook;
-        beforeEach(function(done) {
-          loadExcel('teststudyStructured.xlsx', function(loadedWorkbook) {
-            workbook = loadedWorkbook;
-            done();
-          });
+        beforeEach(function() {
+          workbook = require('test-resources/resources/excelIO/teststudyStructured.xlsx');
         });
 
         it('checkSingleStudyWorkbook should not return errors', function() {
@@ -163,11 +153,8 @@ define([
 
       describe('for a minimal unstructured case with no variables', function() {
         var workbook;
-        beforeEach(function(done) {
-          loadExcel('minimalCaseAbsolutelyNothing.xlsx', function(loadedWorkbook) {
-            workbook = loadedWorkbook;
-            done();
-          });
+        beforeEach(function() {
+          workbook = require('test-resources/resources/excelIO/minimalCaseAbsolutelyNothing.xlsx');
         });
 
         it('should create a valid study, including result properties', function() {
@@ -217,11 +204,8 @@ define([
 
       describe('for a minimal structured case with no variables', function() {
         var workbook;
-        beforeEach(function(done) {
-          loadExcel('minimalStructuredCaseAbsolutelyNothing.xlsx', function(loadedWorkbook) {
-            workbook = loadedWorkbook;
-            done();
-          });
+        beforeEach(function() {
+          workbook = require('test-resources/resources/excelIO/minimalStructuredCaseAbsolutelyNothing.xlsx');
         });
 
         it('should create a valid study, including result properties', function() {
@@ -264,11 +248,8 @@ define([
       describe('for a minimal case with no measurement moments for a variable', function() {
         // minimalCaseNoMeasurementMoment.xslx
         var workbook;
-        beforeEach(function(done) {
-          loadExcel('minimalCaseNoMeasurementMoment.xlsx', function(loadedWorkbook) {
-            workbook = loadedWorkbook;
-            done();
-          });
+        beforeEach(function() {
+          workbook = require('test-resources/resources/excelIO/minimalCaseNoMeasurementMoment.xlsx');
         });
 
         it('should create a valid study, including result properties', function() {
@@ -336,11 +317,8 @@ define([
 
       describe('for a whole dataset,', function() {
         var workbook;
-        beforeEach(function(done) {
-          loadExcel('testdataset.xlsx', function(loadedWorkbook) {
-            workbook = loadedWorkbook;
-            done();
-          });
+        beforeEach(function() {
+          workbook = require('test-resources/resources/excelIO/testdataset.xlsx');
         });
 
         describe('createDataset', function() {
@@ -394,31 +372,6 @@ define([
         });
       });
     });
-
-    function loadExcel(fileName, callback) {
-      var oReq = new XMLHttpRequest();
-
-      function reqListener() {
-        var response = oReq.response;
-        var reader = new FileReader();
-        reader.onloadend = function(file) {
-          var data = file.target.result;
-          try {
-            var workbook = XLSX.read(data, {
-              type: 'binary'
-            });
-            callback(workbook);
-          } catch (error) {
-            console.log(error);
-          }
-        };
-        reader.readAsBinaryString(response);
-      }
-      oReq.open('GET', '/base/src/test/resources/excelImport/' + fileName);
-      oReq.responseType = 'blob';
-      oReq.addEventListener('load', reqListener);
-      oReq.send();
-    }
 
     function buildExpectedStructuredStudyResult() {
       var studyNode = buildStudyNode();

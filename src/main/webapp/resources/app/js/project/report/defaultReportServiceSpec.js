@@ -11,7 +11,7 @@ define(['angular-mocks'], function() {
         'getModelsByProject'
       ]);
 
-    beforeEach(module('addis.project', function($provide) {
+    beforeEach(angular.mock.module('addis.project', function($provide) {
       $provide.value('CacheService', cacheServiceMock);
       $provide.value('AnalysisService', analysisServiceMock);
     }));

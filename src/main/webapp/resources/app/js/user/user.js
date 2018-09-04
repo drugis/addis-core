@@ -5,7 +5,7 @@ define([
   './createDatasetController',
   './userService',
   './userResource',
-  '../dataset/datasetResource',
+  '../dataset/dataset',
   'angular',
   'angular-resource'
 ],
@@ -17,7 +17,7 @@ define([
     DatasetResource,
     angular
   ) {
-    return angular.module('trialverse.user', ['ngResource', 'trialverse.util', 'trialverse.dataset'])
+    return angular.module('trialverse.user', ['ngResource', 'trialverse.dataset'])
       //controllers
       .controller('UserController', UserController)
       .controller('CreateDatasetController', CreateDatasetController)

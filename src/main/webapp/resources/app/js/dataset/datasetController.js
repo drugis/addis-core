@@ -60,7 +60,10 @@ define(['lodash'],
       if (!$scope.isHeadView) {
         $scope.versionUuid = $stateParams.versionUuid;
       }
-      $scope.hasLoggedInUser = UserService.hasLoggedInUser();
+      UserService.hasLoggedInUser(function(user) {
+        $scope.loggedInUser = user;
+        $scope.hasLoggedInUser = !!user;
+      });
       $scope.stripFrontFilter = $filter('stripFrontFilter');
       $scope.isEditingAllowed = false;
 

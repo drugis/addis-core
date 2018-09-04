@@ -1,8 +1,8 @@
-define(['angular', 'angular-mocks', 'services'], function() {
+define(['angular', 'angular-mocks', '../services'], function() {
   describe('The single Study Benefit-Risk Analysis service', function() {
     var singleStudyBenefitRiskService;
     
-    beforeEach(module('addis.services'));
+    beforeEach(angular.mock.module('addis.services'));
   
 
     beforeEach(inject(function(SingleStudyBenefitRiskService){

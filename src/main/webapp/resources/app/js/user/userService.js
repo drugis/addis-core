@@ -1,38 +1,46 @@
 'use strict';
-define([],
-  function() {
+define(['lodash'],
+  function(_) {
     var dependencies = ['$q', 'UserResource'];
     var UserService = function($q, UserResource) {
 
       function hasLoggedInUser(callback) {
-        return getLoginUser.then(callback);
+        return getLoginUser().then(callback);
       }
 
       function getLoginUser() {
-        if (window.sessionStorage.user) {
-          return $q.resolve(window.sessionStorage.user);
+        if (window.sessionStorage.getItem('user')) {
+          return $q.resolve(JSON.parse(window.sessionStorage.user));
         } else {
           return UserResource.get({'userUid': 'me'}).$promise.then(function(user) {
-            window.sessionStorage.user = user ? user : undefined;
-            return user;
+            var loggedInUser = unResource(user);
+            var userFound = loggedInUser.id;
+            if(userFound) {
+              window.sessionStorage.setItem('user', JSON.stringify(loggedInUser));
+            }
+            return userFound ? loggedInUser : undefined;
           });
         }
       }
 
+      function unResource(result) {
+        return _.pick(result, ['id', 'firstName', 'lastName', 'email', 'imageUrl']);
+      }
+
       function isLoginUserId(id) {
         return getLoginUser().then(function(user) {
-            return user && user.id === id;
+          return user && user.id === id;
         });
       }
 
       function isLoginUserEmail(email) {
         return getLoginUser().then(function(user) {
-            return user && user.userEmail === email;
+          return user && user.userEmail === email;
         });
       }
 
       function logOut() {
-        delete window.sessionStorage.user;
+        window.sessionStorage.removeItem('user');
       }
 
       return {

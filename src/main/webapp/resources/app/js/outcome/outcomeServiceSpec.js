@@ -1,5 +1,5 @@
 'use strict';
-define(['angular-mocks'], function(angularMocks) {
+define(['angular-mocks', './outcome'], function() {
   describe('the outcome service', function() {
     var rootScope, q,
       uUIDServiceMock,
@@ -19,7 +19,7 @@ define(['angular-mocks'], function(angularMocks) {
       measurementMomentsDefer;
 
     beforeEach(function() {
-      module('trialverse.outcome', function($provide) {
+      angular.mock.module('trialverse.outcome', function($provide) {
         uUIDServiceMock = jasmine.createSpyObj('UUIDService', ['generate']);
         uUIDServiceMock.generate.and.returnValue('newUuid');
         $provide.value('UUIDService', uUIDServiceMock);
@@ -29,9 +29,9 @@ define(['angular-mocks'], function(angularMocks) {
         $provide.value('ResultsService', resultsServiceMock);
       });
     });
-    beforeEach(module('trialverse.outcome'));
+    beforeEach(angular.mock.module('trialverse.outcome'));
 
-    beforeEach(angularMocks.inject(function($q, $rootScope, OutcomeService) {
+    beforeEach(inject(function($q, $rootScope, OutcomeService) {
       q = $q;
       rootScope = $rootScope;
       outcomeService = OutcomeService;
