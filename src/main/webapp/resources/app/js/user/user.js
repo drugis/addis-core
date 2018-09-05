@@ -4,6 +4,7 @@ define([
   './userController',
   './userService',
   './userResource',
+
   'angular',
   'angular-resource',
   '../dataset/dataset'

@@ -67,7 +67,7 @@ define(
     'mcda-web/js/services/workspaceResource',
     'mcda-web/js/services/taskDependencies',
     'mcda-web/js/services/routeFactory',
-    'mcda-web/js/services/util',
+    'mcda-web/js/util',
     'mcda-web/js/preferences/preferences',
     'mcda-web/js/results/results',
     'mcda-web/js/subProblem/subProblem',

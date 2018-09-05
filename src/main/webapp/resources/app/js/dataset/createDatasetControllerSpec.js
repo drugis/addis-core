@@ -1,5 +1,5 @@
 'use strict';
-define(['angular', './user'], function(angular) {
+define(['angular-mocks', './dataset'], function() {
   describe('create dataset controller', function() {
     var scope = {},
       mockDatasetResource = jasmine.createSpyObj('DatasetResource', ['save']),

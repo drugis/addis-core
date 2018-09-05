@@ -240,7 +240,7 @@ define(['angular', 'lodash'], function (angular, _) {
             });
             $scope.isMissingBaseline = hasMissingBaseLine();
             $scope.outcomesWithAnalyses = BenefitRiskService.addScales($scope.outcomesWithAnalyses,
-              includedAlternatives, result);
+              includedAlternatives, problem, result);
           }, function () {
             console.log('WorkspaceService.getObservedScales error');
           });

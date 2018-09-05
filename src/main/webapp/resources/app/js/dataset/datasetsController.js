@@ -25,7 +25,7 @@ define(['lodash'], function(_) {
 
     function createDatasetDialog() {
       $modal.open({
-        templateUrl: '../user/createDataset.html',
+        templateUrl: './createDataset.html',
         controller: 'CreateDatasetController',
         resolve: {
           callback: function() {

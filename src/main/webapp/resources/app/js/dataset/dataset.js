@@ -4,6 +4,7 @@ define([
   'angular',
   './datasetsController',
   './datasetController',
+  './createDatasetController',
   './createStudyController',
   './deleteStudyController',
   './datasetHistoryController',
@@ -29,6 +30,7 @@ define([
     angular,
     DatasetsController,
     DatasetController,
+    CreateDatasetController,
     CreateStudyController,
     DeleteStudyController,
     DatasetHistoryController,
@@ -52,6 +54,7 @@ define([
       //controllers
       .controller('DatasetsController', DatasetsController)
       .controller('DatasetController', DatasetController)
+      .controller('CreateDatasetController', CreateDatasetController)
       .controller('CreateStudyController', CreateStudyController)
       .controller('DeleteStudyController', DeleteStudyController)
       .controller('DatasetHistoryController', DatasetHistoryController)

@@ -148,11 +148,13 @@ define(['lodash'], function(_) {
       });
     }
 
-    function addScales(outcomesWithAnalyses, interventionInclusions, scaleResults) {
+    function addScales(outcomesWithAnalyses, interventionInclusions, problem, scaleResults) {
       return outcomesWithAnalyses.map(function(outcomeWithAnalyses) {
         outcomeWithAnalyses.scales = interventionInclusions.reduce(function(accum, includedAlternative) {
-          if (scaleResults[outcomeWithAnalyses.outcome.semanticOutcomeUri]) {
-            accum[includedAlternative.id] = scaleResults[outcomeWithAnalyses.outcome.semanticOutcomeUri][includedAlternative.id];
+          var outcomeUri = outcomeWithAnalyses.outcome.semanticOutcomeUri;
+          var dataSourceId = problem.criteria[outcomeUri].dataSources[0].id;
+          if (scaleResults[dataSourceId]) {
+            accum[includedAlternative.id] = scaleResults[dataSourceId][includedAlternative.id];
           }
           return accum;
         }, {});
