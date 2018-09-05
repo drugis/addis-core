@@ -48,7 +48,7 @@ define(['angular', 'lodash'], function(angular, _) {
       if (_.isEmpty(rootNode) || rootNode['@id'] === rdfListNil) {
         return list;
       }
-      var currentNode = rootNode;
+      var currentNode = angular.copy(rootNode);
 
       while (true) {
         var node = angular.copy(currentNode.first);
@@ -59,7 +59,7 @@ define(['angular', 'lodash'], function(angular, _) {
         if (currentNode.rest === rdfListNil || currentNode.rest['@id'] === rdfListNil) {
           return list;
         }
-        currentNode = currentNode.rest;
+        currentNode = angular.copy(currentNode.rest);
       }
     }
 
@@ -67,9 +67,9 @@ define(['angular', 'lodash'], function(angular, _) {
       if(list.length === 0) {
         return rdfListNil;
       }
-      return list.reverse().reduce(function(accum, listItem) {
+      return list.slice().reverse().reduce(function(accum, listItem) {  // slice necessary because reverse mutates
         var newList = {
-          first: listItem,
+          first: angular.copy(listItem),
           rest: _.isEmpty(accum) ? rdfListNil : accum
         };
         if (listItem.blankNodeId) {

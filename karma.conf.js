@@ -45,8 +45,8 @@ module.exports = function(config) {
     // possible values: 'dots', 'progress', 'junit', 'growl', 'coverage'
     reporters: ['progress', 'junit'],
     junitReporter: {
-      outputFile: '/karma-test-results.xml',
-      outputDir: '/'
+      outputFile: './karma-test-results.xml',
+      outputDir: '.'
     },
 
     // web server port
