@@ -70,6 +70,6 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter {
             "/resources/img/",
             "/WEB-INF/views/dist/images/gemtc-web/",
             "/WEB-INF/views/dist/images/mcda-web/");
-    registry.addResourceHandler("/addis-lexicon.json").addResourceLocations("/resources/addis-lexicon.json");
+    registry.addResourceHandler("/template/**").addResourceLocations("/resources/app/js/bower_components/angular-foundation-assets/template/"); // hack for angular-foundation
   }
 }

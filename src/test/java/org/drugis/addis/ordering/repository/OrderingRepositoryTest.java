@@ -30,7 +30,7 @@ public class OrderingRepositoryTest {
   @Test
   public void testGet() {
     Ordering ordering = orderingRepository.get(workspaceId);
-    Ordering expectedOrdering = new Ordering(-10,
+    Ordering expectedOrdering = new Ordering(workspaceId,
             "ordering: {alternatives:[\"intervention 1\",\"intervention 2\"]," +
                     " criteria:[\"outcome 2\",\"outcome 2\"]}");
     assertEquals(ordering.getAnalysisId(),expectedOrdering.getAnalysisId());

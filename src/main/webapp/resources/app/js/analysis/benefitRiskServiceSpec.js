@@ -1,5 +1,5 @@
 'use strict';
-define(['angular-mocks'], function(angularMocks) {
+define(['angular-mocks', './analysis'], function() {
   describe('benefit-risk service', function() {
     var benefitRiskService;
 
@@ -475,20 +475,18 @@ define(['angular-mocks'], function(angularMocks) {
           name: 'sertra',
           id: 2
         }];
-        var problem = {
-          criteria: {
-            'http://outcomes/hamd': {
-               dataSources: [{
-                 id: 'hamdDataSource'
-               }]
-            },
-            'http://outcomes/headache': {
-               dataSources: [{
-                 id: 'headacheDataSource'
-               }]
-            }
+        var criteria = {
+          'http://outcomes/hamd': {
+             dataSources: [{
+               id: 'hamdDataSource'
+             }]
+          },
+          'http://outcomes/headache': {
+             dataSources: [{
+               id: 'headacheDataSource'
+             }]
           }
-        }
+        };
         var scaleResults = {
           hamdDataSource: {
             1: {
@@ -568,7 +566,7 @@ define(['angular-mocks'], function(angularMocks) {
           }
         }];
 
-        var result = benefitRiskService.addScales(owas, alternatives, problem, scaleResults);
+        var result = benefitRiskService.addScales(owas, alternatives, criteria, scaleResults);
         expect(result.length).toBe(owas.length);
         expect(result[0].scales).not.toBeNull();
         expect(result).toEqual(expected);

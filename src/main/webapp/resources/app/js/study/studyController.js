@@ -1,15 +1,48 @@
 'use strict';
 define(['angular', 'lodash'],
   function(angular, _) {
-    var dependencies = ['$scope', '$q', '$state', '$stateParams', '$window', '$filter', '$transitions',
-      'VersionedGraphResource', 'GraphResource', '$location', '$anchorScroll',
-      '$modal', 'StudyService', 'ResultsService', 'StudyDesignService', 'DatasetResource',
-      'ExcelExportService', 'STUDY_CATEGORY_SETTINGS'
+    var dependencies = [
+      '$scope',
+      '$q',
+      '$stateParams',
+      '$filter',
+      '$location',
+      '$modal',
+      '$anchorScroll',
+      '$transitions',
+      '$window',
+      'DatasetResource',
+      'ExcelExportService',
+      'GraphResource',
+      'PageTitleService',
+      'ResultsService',
+      'StudyDesignService',
+      'StudyService',
+      'UserService',
+      'VersionedGraphResource',
+      'STUDY_CATEGORY_SETTINGS'
     ];
-    var StudyController = function($scope, $q, $state, $stateParams, $window, $filter, $transitions,
-      VersionedGraphResource, GraphResource, $location, $anchorScroll,
-      $modal, StudyService, ResultsService, StudyDesignService, DatasetResource,
-      ExcelExportService, STUDY_CATEGORY_SETTINGS) {
+    var StudyController = function(
+      $scope,
+      $q,
+      $stateParams,
+      $filter,
+      $location,
+      $modal,
+      $anchorScroll,
+      $transitions,
+      $window,
+      DatasetResource,
+      ExcelExportService,
+      GraphResource,
+      PageTitleService,
+      ResultsService,
+      StudyDesignService,
+      StudyService,
+      UserService,
+      VersionedGraphResource,
+      STUDY_CATEGORY_SETTINGS
+    ) {
       // functions
       $scope.sideNavClick = sideNavClick;
       $scope.saveStudy = saveStudy;
@@ -223,6 +256,7 @@ define(['angular', 'lodash'],
           $scope.$broadcast('refreshStudyDesign');
           $scope.$broadcast('refreshResults');
           StudyService.studySaved();
+          PageTitleService.setPageTitle('StudyController', $scope.study.label);
         });
       }
 

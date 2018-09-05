@@ -1,4 +1,4 @@
-package org.drugis.addis.ordering;
+package org.drugis.addis.workspaceSettings;
 
 import com.fasterxml.jackson.annotation.JsonRawValue;
 
@@ -7,41 +7,41 @@ import javax.persistence.Id;
 import java.util.Objects;
 
 @Entity
-public class Ordering {
+public class WorkspaceSettings {
   @Id
   private Integer analysisId;
 
   @JsonRawValue
-  private String ordering;
+  private String settings;
 
-  public Ordering() {
+  public WorkspaceSettings() {
   }
 
-  public Ordering(Integer analysisId, String ordering) {
+  public WorkspaceSettings(Integer analysisId, String settings) {
     this.analysisId = analysisId;
-    this.ordering = ordering;
+    this.settings = settings;
   }
 
   public Integer getAnalysisId() {
     return analysisId;
   }
 
-  public String getOrdering() {
-    return ordering;
+  public String getSettings() {
+    return settings;
   }
 
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
-    Ordering ordering1 = (Ordering) o;
-    return Objects.equals(analysisId, ordering1.analysisId) &&
-            Objects.equals(ordering, ordering1.ordering);
+    WorkspaceSettings that = (WorkspaceSettings) o;
+    return Objects.equals(analysisId, that.analysisId) &&
+            Objects.equals(settings, that.settings);
   }
 
   @Override
   public int hashCode() {
 
-    return Objects.hash(analysisId, ordering);
+    return Objects.hash(analysisId, settings);
   }
 }

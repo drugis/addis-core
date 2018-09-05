@@ -17,6 +17,7 @@ define(['angular-mocks'], function(angularMocks) {
       scaledUnitResource = jasmine.createSpyObj('ScaledUnitResource', ['query']),
       cacheServiceMock = jasmine.createSpyObj('CacheService', ['getOutcomes',
         'getInterventions', 'getCovariates', 'getAnalyses', 'getModelsByProject', 'evict']),
+      pageTitleServiceMock = jasmine.createSpyObj('PageTitleService', ['setPageTitle']),
       covariateOptions = [{
         key: 'COV_OPTION_KEY',
         label: 'covariate option label'
@@ -223,7 +224,8 @@ define(['angular-mocks'], function(angularMocks) {
         project: mockProject,
         DosageService: dosageService,
         ScaledUnitResource: scaledUnitResource,
-        CacheService: cacheServiceMock
+        CacheService: cacheServiceMock,
+        PageTitleService: pageTitleServiceMock
       });
     }));
     describe('after loading the project', function() {

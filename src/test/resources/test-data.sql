@@ -141,4 +141,4 @@ INSERT INTO public.scaledUnit(id, projectId, conceptUri, multiplier, name) VALUE
 
 INSERT INTO public.ordering(analysisId, ordering) VALUES(-10, 'ordering: {alternatives:["intervention 1","intervention 2"], criteria:["outcome 2","outcome 2"]}');
 
-INSERT INTO public.toggledColumns(analysisId, toggledColumns) VALUES(-10, '{criteria: true, units: true, description: false, references: false}');
+INSERT INTO public.workspaceSettings(analysisId, settings) VALUES(-10, '{settings: {some: "setting"}, toggledColumns: {criteria: true, units: true, description: false, references: false}}');

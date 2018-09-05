@@ -15,7 +15,7 @@ define([
   './resources/scaledUnitResource',
   './resources/subProblemResource',
   './resources/orderingResource',
-  './resources/toggleColumnsResource',
+  './resources/workspaceSettingsResource',
   'angular',
   'angular-resource'
 ], function(
@@ -34,25 +34,25 @@ define([
   ScaledUnitResource,
   SubProblemResource,
   OrderingResource,
-  ToggleColumnsResource,
+  WorkspaceSettingsResource,
   angular
 ) {
-    return angular.module('addis.resources', ['ngResource'])
-      .factory('EvidenceTableResource', EvidenceTableResource)
-      .factory('ProjectResource', ProjectResource)
-      .factory('TrialverseResource', TrialverseResource)
-      .factory('SemanticOutcomeResource', SemanticOutcomeResource)
-      .factory('SemanticInterventionResource', SemanticInterventionResource)
-      .factory('OutcomeResource', OutcomeResource)
-      .factory('InterventionResource', InterventionResource)
-      .factory('AnalysisResource', AnalysisResource)
-      .factory('TrialverseStudyResource', TrialverseStudyResource)
-      .factory('ProjectStudiesResource', ProjectStudiesResource)
-      .factory('TrialverseStudiesWithDetailsResource', TrialverseStudiesWithDetailsResource)
-      .factory('ScenarioResource', ScenarioResource)
-      .factory('ScaledUnitResource', ScaledUnitResource)
-      .factory('SubProblemResource', SubProblemResource)
-      .factory('OrderingResource', OrderingResource)
-      .factory('ToggleColumnsResource', ToggleColumnsResource)
-      ;
-  });
+  return angular.module('addis.resources', ['ngResource'])
+    .factory('EvidenceTableResource', EvidenceTableResource)
+    .factory('ProjectResource', ProjectResource)
+    .factory('TrialverseResource', TrialverseResource)
+    .factory('SemanticOutcomeResource', SemanticOutcomeResource)
+    .factory('SemanticInterventionResource', SemanticInterventionResource)
+    .factory('OutcomeResource', OutcomeResource)
+    .factory('InterventionResource', InterventionResource)
+    .factory('AnalysisResource', AnalysisResource)
+    .factory('TrialverseStudyResource', TrialverseStudyResource)
+    .factory('ProjectStudiesResource', ProjectStudiesResource)
+    .factory('TrialverseStudiesWithDetailsResource', TrialverseStudiesWithDetailsResource)
+    .factory('ScenarioResource', ScenarioResource)
+    .factory('ScaledUnitResource', ScaledUnitResource)
+    .factory('SubProblemResource', SubProblemResource)
+    .factory('OrderingResource', OrderingResource)
+    .factory('WorkspaceSettingsResource', WorkspaceSettingsResource)
+    ;
+});

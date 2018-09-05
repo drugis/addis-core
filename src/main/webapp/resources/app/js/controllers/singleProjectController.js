@@ -1,6 +1,7 @@
 'use strict';
 define(['lodash', 'angular'], function(_, angular) {
-  var dependencies = ['$scope', '$q', '$state', '$stateParams', '$location', '$modal',
+  var dependencies = [
+    '$scope', '$q', '$state', '$stateParams', '$modal',
     'ProjectResource',
     'ProjectService',
     'TrialverseResource',
@@ -18,9 +19,11 @@ define(['lodash', 'angular'], function(_, angular) {
     'DosageService',
     'ScaledUnitResource',
     'CacheService',
+    'PageTitleService',
     'project'
   ];
-  var SingleProjectController = function($scope, $q, $state, $stateParams, $location, $modal,
+  var SingleProjectController = function(
+    $scope, $q, $state, $stateParams, $modal,
     ProjectResource,
     ProjectService,
     TrialverseResource,
@@ -38,7 +41,9 @@ define(['lodash', 'angular'], function(_, angular) {
     DosageService,
     ScaledUnitResource,
     CacheService,
-    project) {
+    PageTitleService,
+    project
+  ) {
     // functions
     $scope.toggleShowArchived = toggleShowArchived;
     $scope.unarchiveAnalysis = unarchiveAnalysis;
@@ -79,6 +84,7 @@ define(['lodash', 'angular'], function(_, angular) {
     $scope.userId = $stateParams.userUid;
 
     $scope.project = project;
+    setPageTitle(activeTab);
     $scope.projects = ProjectResource.query();
 
     $scope.editMode.allowEditing = !project.archived && UserService.isLoginUserId($scope.project.owner.id);
@@ -167,8 +173,8 @@ define(['lodash', 'angular'], function(_, angular) {
 
     function loadInterventions() {
       return CacheService.getInterventions({
-          projectId: $scope.project.id
-        })
+        projectId: $scope.project.id
+      })
         .then(generateInterventionDescriptions)
         .then(checkUnitMultipliers)
         .then(function() {
@@ -188,9 +194,9 @@ define(['lodash', 'angular'], function(_, angular) {
     function loadCovariates() {
       // we need to get the options in order to display the definition label, as only the definition key is stored on the covariate
       return $q.all([CovariateOptionsResource.getProjectCovariates($stateParams).$promise,
-        CacheService.getCovariates({
-          projectId: $scope.project.id
-        })
+      CacheService.getCovariates({
+        projectId: $scope.project.id
+      })
       ]).then(function(result) {
         var optionsMap = _.keyBy(result[0], 'key');
         $scope.covariates = result[1].map(function(covariate) {
@@ -394,18 +400,22 @@ define(['lodash', 'angular'], function(_, angular) {
     }
 
     function setActiveTab(tab) {
-      if (tab === $scope.tabSelection.activeTab) {
-        return;
+      switch (tab) {
+        case $scope.tabSelection.activeTab:
+          return;
+        case 'report':
+          $state.go('projectReport', $stateParams);
+          break;
+        case 'definitions':
+          $state.go('project', $stateParams);
+          break;
+        case 'analyses':
+          $state.go('projectAnalyses', $stateParams, {
+            reload: true
+          });
+          break;
       }
-      if (tab === 'report') {
-        $state.go('projectReport', $stateParams);
-      } else if (tab === 'definitions') {
-        $state.go('project', $stateParams);
-      } else if (tab === 'analyses') {
-        $state.go('projectAnalyses', $stateParams, {
-          reload: true
-        });
-      }
+      setPageTitle(tab);
     }
 
     function goToEditView() {
@@ -446,8 +456,8 @@ define(['lodash', 'angular'], function(_, angular) {
               ProjectResource.setArchived({
                 projectId: $scope.project.id
               }, {
-                isArchived: true
-              });
+                  isArchived: true
+                });
               $state.go('project', {
                 userUid: $stateParams.userUid,
                 projectId: newProjectId
@@ -530,6 +540,22 @@ define(['lodash', 'angular'], function(_, angular) {
 
     function toggleShowArchived() {
       $scope.showArchived = !$scope.showArchived;
+    }
+
+    function setPageTitle(tab) {
+      var title = $scope.project.name;
+      switch (tab) {
+        case 'definitions':
+          title = title.concat('\'s definitions');
+          break;
+        case 'analyses':
+          title = title.concat('\'s analyses');
+          break;
+        case 'report':
+          title = title.concat('\'s report');
+          break;
+      }
+      PageTitleService.setPageTitle('SingleProjectController', title);
     }
 
   };

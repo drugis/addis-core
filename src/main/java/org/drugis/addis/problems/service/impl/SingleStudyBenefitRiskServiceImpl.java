@@ -133,7 +133,6 @@ public class SingleStudyBenefitRiskServiceImpl implements SingleStudyBenefitRisk
               Outcome measuredOutcome = context.getOutcomesByUri().get(measurement.getVariableConceptUri());
               String dataSourceId = context.getDataSourceIdsByOutcomeUri().get(measuredOutcome.getSemanticOutcomeUri());
               CriterionEntry criterionEntry = criterionEntryFactory.create(measurement, measuredOutcome.getName(), dataSourceId, context.getSourceLink());
-              System.out.println(measurement + " " + measuredOutcome.getName() + " ; " + measuredOutcome.getSemanticOutcomeUri());
               return Pair.of(measurement.getVariableConceptUri(), criterionEntry);
             })
             .collect(toMap(Pair::getLeft, Pair::getRight));

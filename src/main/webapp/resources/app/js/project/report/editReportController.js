@@ -5,13 +5,18 @@ define(['angular', 'lodash'],
       'ProjectResource',
       'ReportResource',
       'DefaultReportService',
-      '$timeout'
+      'PageTitleService'
     ];
-    var EditReportcontroller = function($transitions, $scope, $stateParams, $modal,
-      ProjectResource,
+    var EditReportcontroller = function(
+      $transitions,
+      $scope,
+      $stateParams,
+      $modal,
+      $timeout,
       ReportResource,
       DefaultReportService,
-      $timeout) {
+      PageTitleService
+    ) {
       $scope.reportText = {
         text: '',
         changed: false
@@ -38,6 +43,8 @@ define(['angular', 'lodash'],
           }
         }
       });
+
+      PageTitleService.setPageTitle('EditReportController', 'Edit ' + $scope.project.name + '\'s report');
 
       function insertTextAtCursor(text) {
         var input = angular.element(document.querySelector('#report-input'));

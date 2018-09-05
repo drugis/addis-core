@@ -13,6 +13,7 @@ define(['angular-mocks', './dataset'], function() {
       userService = jasmine.createSpyObj('UserService', ['isLoginUserEmail', 'hasLoggedInUser']),
       dataModelServiceMock = jasmine.createSpyObj('DataModelService', ['correctUnitConceptType']),
       excelExportServiceMock = jasmine.createSpyObj('ExcelExportService', ['exportDataset']),
+      pageTitleServiceMock = jasmine.createSpyObj('PageTitleService', ['setPageTitle']),
       datasetDeferred,
       queryHistoryDeferred,
       studiesWithDetailsGetDeferred,
@@ -76,7 +77,8 @@ define(['angular-mocks', './dataset'], function() {
         ConceptsService: conceptsService,
         VersionedGraphResource: versionedGraphResource,
         UserService: userService,
-        DataModelService: dataModelServiceMock
+        DataModelService: dataModelServiceMock,
+        PageTitleService: pageTitleServiceMock
       });
 
     }));
@@ -149,7 +151,8 @@ define(['angular-mocks', './dataset'], function() {
           HistoryResource: historyResource,
           ConceptsService: conceptsService,
           VersionedGraphResource: versionedGraphResource,
-          UserService: userService
+          UserService: userService,
+          PageTitleService: pageTitleServiceMock
         });
       }));
       it('should get the datasetusing the non versioned resource ', function() {

@@ -20,6 +20,7 @@ define(
     'error-reporting',
     'export-directive',
     'help-popup',
+    'page-title-service',
     './util/constants',
     './controllers',
     './filters',
@@ -118,6 +119,7 @@ define(
       'addis.outcomes',
       'addis.excelIO',
       'patavi',
+      'page-title-service',
       'errorReporting',
       'export-directive',
       'angucomplete-alt'
@@ -182,8 +184,10 @@ define(
       $locationProvider.hashPrefix('');
     }]);
 
-    app.run(['$rootScope', '$window', '$http', '$location', '$templateCache', '$transitions', '$cookies', 'HelpPopupService', 'CacheService',
-      function($rootScope, $window, $http, $location, $templateCache, $transitions, $cookies, HelpPopupService, CacheService) {
+    app.run(['$rootScope', '$window', '$http', '$location', '$templateCache', '$transitions', '$cookies',
+        'HelpPopupService', 'CacheService', 'PageTitleService',
+      function($rootScope, $window, $http, $location, $templateCache, $transitions, $cookies,
+        HelpPopupService, CacheService, PageTitleService) {
         $rootScope.$safeApply = function($scope, fn) {
           var phase = $scope.$root.$$phase;
           if (phase === '$apply' || phase === '$digest') {
@@ -195,7 +199,11 @@ define(
 
         HelpPopupService.loadLexicon(mcdaLexicon);
         HelpPopupService.loadLexicon(gemtcLexicon);
-        HelpPopupService.loadLexicon($http.get('addis-lexicon.json'));
+        HelpPopupService.loadLexicon(require('../../addis-lexicon.json'));
+
+        PageTitleService.loadLexicon(require('mcda-web/app/mcda-page-titles.json'));
+        PageTitleService.loadLexicon(require('gemtc-web/app/gemtc-page-titles.json'));
+        PageTitleService.loadLexicon(require('../addis-page-titles.json'));
 
         $transitions.onSuccess({}, function(transition) {
           var redirectUrl = $cookies.get('returnToPage');

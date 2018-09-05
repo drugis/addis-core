@@ -82,6 +82,7 @@ define(['angular', 'angular-mocks', '../controllers'], function() {
         analysisId: 600
       },
       modelResource,
+      pageTitleServiceMock,
       modelDeferred;
     beforeEach(angular.mock.module('addis.controllers'));
     beforeEach(inject(function($rootScope, $controller, $q) {
@@ -101,6 +102,7 @@ define(['angular', 'angular-mocks', '../controllers'], function() {
       scope.analysis = mockAnalysis;
       scope.project = mockProject;
       userService = jasmine.createSpyObj('UserService', ['hasLoggedInUser']);
+      pageTitleServiceMock = jasmine.createSpyObj('PageTitleService', ['setPageTitle']),
       outcomeResource = jasmine.createSpyObj('OutcomeResource', ['query']);
       outcomeResource.query.and.returnValue(mockOutcomes);
       interventionResource = jasmine.createSpyObj('InterventionResource', ['query']);
@@ -167,7 +169,8 @@ define(['angular', 'angular-mocks', '../controllers'], function() {
         AnalysisService: analysisService,
         AnalysisResource: analysisResource,
         ModelResource: modelResource,
-        UserService: userService
+        UserService: userService,
+        PageTitleService: pageTitleServiceMock
       });
     }));
     describe('when first initialised', function() {

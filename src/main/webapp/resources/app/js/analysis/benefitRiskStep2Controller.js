@@ -1,36 +1,33 @@
 'use strict';
-define(['angular', 'lodash'], function (angular, _) {
-  var dependencies = ['$scope', '$q', '$stateParams', '$state', '$modal',
+define(['angular', 'lodash'], function(angular, _) {
+  var dependencies = [
+    '$scope', '$q', '$stateParams', '$state', '$modal',
     'AnalysisResource',
+    'BenefitRiskService',
     'InterventionResource',
     'OutcomeResource',
-    'BenefitRiskService',
-    'ModelResource',
+    'PageTitleService',
     'ProblemResource',
     'ScenarioResource',
-    'DEFAULT_VIEW',
     'ProjectResource',
     'UserService',
     'WorkspaceService',
-    'SubProblemResource',
-    'ProjectStudiesResource',
-    'TrialverseResource'
+    'DEFAULT_VIEW'
   ];
-  var BenefitRiskStep2Controller = function ($scope, $q, $stateParams, $state, $modal,
+  var BenefitRiskStep2Controller = function(
+    $scope, $q, $stateParams, $state, $modal,
     AnalysisResource,
+    BenefitRiskService,
     InterventionResource,
     OutcomeResource,
-    BenefitRiskService,
-    ModelResource,
+    PageTitleService,
     ProblemResource,
     ScenarioResource,
-    DEFAULT_VIEW,
     ProjectResource,
     UserService,
     WorkspaceService,
-    SubProblemResource,
-    ProjectStudiesResource,
-    TrialverseResource) {
+    DEFAULT_VIEW
+  ) {
 
     $scope.goToStep1 = goToStep1;
     $scope.openDistributionModal = openDistributionModal;
@@ -67,6 +64,8 @@ define(['angular', 'lodash'], function (angular, _) {
       var alternatives = result[1];
       var outcomes = result[2];
       var models = _.reject(result[3], 'archived');
+
+      PageTitleService.setPageTitle('BenefitRiskStep2Controller', analysis.title+ ' step 2');
 
       var outcomeIds = outcomes.map(function(outcome) {
         return outcome.id;
@@ -228,11 +227,12 @@ define(['angular', 'lodash'], function (angular, _) {
           }
         });
       });
-
     }
 
     function resetScales() {
-      return ProblemResource.get($stateParams).$promise.then(function(problem) {
+      var problem;
+      return ProblemResource.get($stateParams).$promise.then(function(problemResult) {
+        problem = problemResult;
         if (problem.performanceTable.length > 0) {
           return WorkspaceService.getObservedScales(problem).then(function (result) {
             var includedAlternatives = _.filter($scope.alternatives, function (alternative) {
@@ -240,7 +240,7 @@ define(['angular', 'lodash'], function (angular, _) {
             });
             $scope.isMissingBaseline = hasMissingBaseLine();
             $scope.outcomesWithAnalyses = BenefitRiskService.addScales($scope.outcomesWithAnalyses,
-              includedAlternatives, problem, result);
+              includedAlternatives, problem.criteria, result);
           }, function () {
             console.log('WorkspaceService.getObservedScales error');
           });

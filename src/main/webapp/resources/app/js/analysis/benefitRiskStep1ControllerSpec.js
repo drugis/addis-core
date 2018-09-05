@@ -18,11 +18,12 @@ define(['angular-mocks', './analysis'], function() {
         'addHasMatchedMixedTreatmentArm',
         'addOverlappingInterventionsToStudies'
       ]),
-      scenarioResourceMock = jasmine.createSpyObj('ScenarioResource',['query']),
+      scenarioResourceMock = jasmine.createSpyObj('ScenarioResource', ['query']),
       subProblemResourceMock = jasmine.createSpyObj('SubProblemResource', ['query']),
       problemResourceMock = jasmine.createSpyObj('ProblemResource', ['get']),
-      workspaceServiceMock = jasmine.createSpyObj('WorkspaceService',['reduceProblem']),
-      DEFAULT_VIEW= 'default view',
+      workspaceServiceMock = jasmine.createSpyObj('WorkspaceService', ['reduceProblem']),
+      pageTitleServiceMock = jasmine.createSpyObj('PageTitleService', ['setPageTitle']),
+      DEFAULT_VIEW = 'default view',
       analysisDefer,
       analysisQueryDefer,
       interventionDefer,
@@ -97,7 +98,7 @@ define(['angular-mocks', './analysis'], function() {
         $q: q,
         $stateParams: stateParamsMock,
         $state: {
-          go: function() {}
+          go: function() { }
         },
         ProjectStudiesResource: projectStudiesResourceMock,
         AnalysisResource: analysisResourceMock,
@@ -112,7 +113,8 @@ define(['angular-mocks', './analysis'], function() {
         SubProblemResource: subProblemResourceMock,
         ProblemResource: problemResourceMock,
         WorkspaceService: workspaceServiceMock,
-        DEFAULT_VIEW: DEFAULT_VIEW
+        DEFAULT_VIEW: DEFAULT_VIEW,
+        PageTitleService: pageTitleServiceMock
       });
 
     }));
@@ -179,7 +181,7 @@ define(['angular-mocks', './analysis'], function() {
             outcomeId: 3,
             studyGraphUri: 'http://ryfari.com'
           }],
-          $save: function() {},
+          $save: function() { },
           interventionInclusions: []
         };
         scope.outcomesWithAnalyses = [outcomeWithAnalysis];
@@ -232,7 +234,7 @@ define(['angular-mocks', './analysis'], function() {
             outcomeId: 3,
             studyGraphUri: 'http://ryfari.com'
           }],
-          $save: function() {},
+          $save: function() { },
           interventionInclusions: []
         };
         scope.outcomesWithAnalyses = [outcomeWithAnalysis];

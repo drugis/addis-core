@@ -142,7 +142,7 @@
   version "1.8.6"
   resolved "https://codeload.github.com/novus/nvd3/tar.gz/d273ea52d91b482d044f8cef1e921256f2bfddcd"
 
-"@bower_components/page-title-service@chinook25/page-title-service#master":
+"@bower_components/page-title-service@chinook25/page-title-service#master", page-title-service@chinook25/page-title-service#1.0.1:
   version "1.0.1"
   resolved "https://codeload.github.com/chinook25/page-title-service/tar.gz/cf443795f069c0f58a4988187077ec8de40583fe"
   dependencies:

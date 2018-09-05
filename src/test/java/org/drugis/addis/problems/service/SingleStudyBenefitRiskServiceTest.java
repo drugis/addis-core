@@ -441,9 +441,10 @@ public class SingleStudyBenefitRiskServiceTest {
     Outcome outcome1 = mock(Outcome.class);
     when(outcome1.getSemanticOutcomeUri()).thenReturn(outcome1Uri);
     Outcome outcome2 = mock(Outcome.class);
-    Set<Outcome> outcomes = Sets.newHashSet(outcome1, outcome2);
     when(outcome2.getSemanticOutcomeUri()).thenReturn(outcome2Uri);
-
+    // Use sorted set to guarantee order so that the uuids are paired correctly
+    Set<Outcome> outcomes = new TreeSet<>(Comparator.comparing(Outcome::getSemanticOutcomeUri));
+    outcomes.addAll(Sets.newHashSet(outcome1, outcome2));
     AbstractIntervention intervention1 = mock(AbstractIntervention.class);
     when(intervention1.getId()).thenReturn(interventionId1);
     AbstractIntervention intervention2 = mock(AbstractIntervention.class);
@@ -463,6 +464,16 @@ public class SingleStudyBenefitRiskServiceTest {
     dataSourceIdsByOutcome.put(outcome1Uri, uuid1);
     dataSourceIdsByOutcome.put(outcome2Uri, uuid2);
     SingleStudyContext expectedResult = new SingleStudyContext(outcomesByUri, interventionsById, dataSourceIdsByOutcome, sourceLink);
+
+    System.out.println(expectedResult.getOutcomesByUri());
+    System.out.println(result.getOutcomesByUri());
+    System.out.println(expectedResult.getInterventionsById());
+    System.out.println(result.getInterventionsById());
+    System.out.println(expectedResult.getDataSourceIdsByOutcomeUri());
+    System.out.println(result.getDataSourceIdsByOutcomeUri());
+    System.out.println(expectedResult.getSourceLink());
+    System.out.println(result.getSourceLink());
+
 
     assertEquals(expectedResult, result);
 

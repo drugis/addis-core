@@ -5,6 +5,7 @@ define(['angular', 'angular-mocks', '../controllers'],
       var scope,
         projectResourceMock = jasmine.createSpyObj('ProjectResource', ['query', 'save', 'setArchived']),
         userServiceMock = jasmine.createSpyObj('UserService', ['isLoginUserId']),
+        pageTitleServiceMock = jasmine.createSpyObj('PageTitleService', ['setPageTitle']),
         projectsDefer;
       beforeEach(angular.mock.module('addis.controllers'));
 
@@ -40,8 +41,9 @@ define(['angular', 'angular-mocks', '../controllers'],
         $controller('ProjectsController', {
           $scope: scope,
           $stateParams: stateParams,
-          'ProjectResource': projectResourceMock,
-          'UserService': userServiceMock
+          ProjectResource: projectResourceMock,
+          UserService: userServiceMock,
+          PageTitleService: pageTitleServiceMock
         });
       }));
 

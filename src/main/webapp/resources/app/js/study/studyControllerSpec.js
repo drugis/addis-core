@@ -26,6 +26,7 @@ define(['angular-mocks', './study'], function() {
       versionedGraphResource = jasmine.createSpyObj('VersionedGraphResource', ['getJson']),
       userService = jasmine.createSpyObj('UserService', ['hasLoggedInUser']),
       transitionMock = jasmine.createSpyObj('$transitions', ['onStart']),
+      pageTitleServiceMock = jasmine.createSpyObj('PageTitleService', ['setPageTitle']),
       queryStudyDataDeferred,
       queryArmDataDeferred,
       getGraphDeferred,
@@ -87,7 +88,8 @@ define(['angular-mocks', './study'], function() {
           ResultsService: resultsServiceMock,
           StudyDesignService: studyDesignServiceMock,
           UserService: userService,
-          STUDY_CATEGORY_SETTINGS: studyCategorySettings
+          STUDY_CATEGORY_SETTINGS: studyCategorySettings,
+          PageTitleService: pageTitleServiceMock
         });
       }));
 
