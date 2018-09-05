@@ -126,7 +126,6 @@ public class TriplestoreServiceImpl implements TriplestoreService {
 
       namespaces.add(getNamespaceHead(new TriplestoreUuidAndOwner(namespaceUri, null)));
     }
-
     return namespaces;
   }
 
@@ -356,8 +355,8 @@ public class TriplestoreServiceImpl implements TriplestoreService {
         return interventionService.isMatched(intervention, arm.getSemanticInterventions());
       } catch (InvalidTypeForDoseCheckException | ResourceDoesNotExistException e) {
         e.printStackTrace();
+        return false;
       }
-      return false;
     }).collect(Collectors.toSet());
   }
 
@@ -376,7 +375,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
   }
 
   private Predicate<String> isStudyLevelCovariate(List<CovariateOption> covariateOptions) {
-    return key -> covariateOptions.stream().filter(option -> key.equals(option.toString())).findFirst().isPresent();
+    return key -> covariateOptions.stream().anyMatch(option -> key.equals(option.toString()));
   }
 
   @Override

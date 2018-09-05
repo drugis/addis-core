@@ -24,16 +24,15 @@ import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.riot.RDFLanguages;
 import org.apache.jena.riot.WebContent;
 import org.apache.jena.sparql.graph.GraphFactory;
+import org.drugis.addis.security.Account;
 import org.drugis.addis.security.ApiKey;
 import org.drugis.addis.security.repository.AccountRepository;
+import org.drugis.addis.util.WebConstants;
 import org.drugis.trialverse.dataset.factory.JenaFactory;
 import org.drugis.trialverse.dataset.model.VersionMapping;
 import org.drugis.trialverse.dataset.repository.impl.DatasetReadRepositoryImpl;
-import org.drugis.addis.security.Account;
 import org.drugis.trialverse.util.JenaGraphMessageConverter;
-import org.drugis.trialverse.util.JenaProperties;
 import org.drugis.trialverse.util.Namespaces;
-import org.drugis.addis.util.WebConstants;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -58,6 +57,7 @@ import java.util.List;
 import java.util.zip.GZIPInputStream;
 
 import static org.apache.http.HttpHeaders.ACCEPT;
+import static org.hamcrest.text.IsEqualIgnoringWhiteSpace.equalToIgnoringWhiteSpace;
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
@@ -161,7 +161,7 @@ public class DatasetReadRepositoryTest {
             "    <rdf:type rdf:resource=\"http://rdfs.org/ns/void#Dataset\"/>\n" +
             "  </j.1:Dataset>\n" +
             "</rdf:RDF>\n";
-    assertEquals(expectedGraph, writer.toString());
+    assertThat(writer.toString(), equalToIgnoringWhiteSpace(expectedGraph));
   }
 
   @Test

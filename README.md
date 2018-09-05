@@ -81,7 +81,7 @@ export CLINICALTRIALS_IMPORTER_URL=importservicelocation
 Run the Tomcat server:
 
 ```
-mvn tomcat7:run -Djavax.net.ssl.trustStore=/path/to/trust/store
+mvn tomcat7:run
 ```
 
 To run integration tests:

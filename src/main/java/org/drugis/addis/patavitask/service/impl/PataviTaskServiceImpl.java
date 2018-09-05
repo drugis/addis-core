@@ -63,7 +63,7 @@ public class PataviTaskServiceImpl implements PataviTaskService {
 
     URI pataviTaskUrl = model.getTaskUrl();
     if(pataviTaskUrl == null) {
-      NetworkMetaAnalysisProblem problem = (NetworkMetaAnalysisProblem) problemService.getProblem(projectId, analysisId, null);
+      NetworkMetaAnalysisProblem problem = (NetworkMetaAnalysisProblem) problemService.getProblem(projectId, analysisId);
 
       NetworkMetaAnalysisProblem problemWithModelApplied = problemService.applyModelSettings(problem, model);
 

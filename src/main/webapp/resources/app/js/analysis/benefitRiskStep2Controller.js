@@ -48,7 +48,7 @@ define(['angular', 'lodash'], function (angular, _) {
     $scope.editMode = {
       allowEditing: false
     };
-    $scope.project.$promise.then(function () {
+    $scope.project.$promise.then(function() {
       if (UserService.isLoginUserId($scope.project.owner.id) && !$scope.analysis.archived) {
         $scope.editMode.allowEditing = true;
       }
@@ -56,24 +56,24 @@ define(['angular', 'lodash'], function (angular, _) {
       TrialverseResource.get({
         namespaceUid: $scope.project.namespaceUid,
         version: $scope.project.datasetVersion
-      }).$promise.then(function (dataset) {
+      }).$promise.then(function(dataset) {
         $scope.datasetOwnerId = dataset.ownerId;
       });
     });
     var promises = [$scope.analysis.$promise, $scope.alternatives.$promise, $scope.outcomes.$promise, $scope.models.$promise];
 
-    $scope.step2Promise = $q.all(promises).then(function (result) {
+    $scope.step2Promise = $q.all(promises).then(function(result) {
       var analysis = result[0];
       var alternatives = result[1];
       var outcomes = result[2];
       var models = _.reject(result[3], 'archived');
 
-      var outcomeIds = outcomes.map(function (outcome) {
+      var outcomeIds = outcomes.map(function(outcome) {
         return outcome.id;
       });
 
-      $scope.alternatives = alternatives.map(function (alternative) {
-        var isAlternativeInInclusions = _.find(analysis.interventionInclusions, function (includedIntervention) {
+      $scope.alternatives = alternatives.map(function(alternative) {
+        var isAlternativeInInclusions = _.find(analysis.interventionInclusions, function(includedIntervention) {
           return includedIntervention.interventionId === alternative.id;
         });
         if (isAlternativeInInclusions) {
@@ -85,9 +85,9 @@ define(['angular', 'lodash'], function (angular, _) {
       $scope.effectsTablePromise = AnalysisResource.query({
         projectId: $stateParams.projectId,
         outcomeIds: outcomeIds
-      }).$promise.then(function (networkMetaAnalyses) {
+      }).$promise.then(function(networkMetaAnalyses) {
         var filteredNetworkMetaAnalyses = _.chain(networkMetaAnalyses)
-          .reject(function (analysis) {
+          .reject(function(analysis) {
             return analysis.archived;
           })
           .map(_.partial(BenefitRiskService.joinModelsWithAnalysis, models))
@@ -97,12 +97,12 @@ define(['angular', 'lodash'], function (angular, _) {
 
         analysis = addModelBaseline(analysis, models);
         var saveCommand = analysisToSaveCommand($scope.analysis);
-        return AnalysisResource.save(saveCommand).$promise.then(function () {
+        return AnalysisResource.save(saveCommand).$promise.then(function() {
           $scope.outcomesWithAnalyses = BenefitRiskService.buildOutcomesWithAnalyses(analysis, outcomes, filteredNetworkMetaAnalyses);
           return ProjectStudiesResource.query({
             projectId: $stateParams.projectId
-          }).$promise.then(function (studies) {
-            $scope.studiesWithUuid = _.map(studies, function (study) {
+          }).$promise.then(function(studies) {
+            $scope.studiesWithUuid = _.map(studies, function(study) {
               return _.extend({}, study, {
                 uuid: study.studyUri.split('/graphs/')[1]
               });
@@ -114,8 +114,8 @@ define(['angular', 'lodash'], function (angular, _) {
         });
       });
 
-      $scope.outcomes = outcomes.map(function (outcome) {
-        var isOutcomeInInclusions = _.find(analysis.benefitRiskNMAOutcomeInclusions, function (benefitRiskNMAOutcomeInclusion) {
+      $scope.outcomes = outcomes.map(function(outcome) {
+        var isOutcomeInInclusions = _.find(analysis.benefitRiskNMAOutcomeInclusions, function(benefitRiskNMAOutcomeInclusion) {
           return benefitRiskNMAOutcomeInclusion.outcomeId === outcome.id;
         });
         if (isOutcomeInInclusions) {
@@ -130,7 +130,7 @@ define(['angular', 'lodash'], function (angular, _) {
     }
 
     function hasMissingBaseLine() {
-      return _.find($scope.outcomesWithAnalyses, function (outcomeWithAnalysis) {
+      return _.find($scope.outcomesWithAnalyses, function(outcomeWithAnalysis) {
         return outcomeWithAnalysis.dataType === 'network' && !outcomeWithAnalysis.baselineDistribution;
       });
     }
@@ -147,11 +147,11 @@ define(['angular', 'lodash'], function (angular, _) {
 
     function finalizeAndGoToDefaultScenario() {
       $scope.analysis.finalized = true;
-      ProblemResource.get($stateParams).$promise.then(function (problem) {
+      ProblemResource.get($stateParams).$promise.then(function(problem) {
         var saveCommand = analysisToSaveCommand($scope.analysis, {
           problem: WorkspaceService.reduceProblem(problem)
         });
-        AnalysisResource.save(saveCommand, function () {
+        AnalysisResource.save(saveCommand, function() {
           goToDefaultScenario();
         });
       });
@@ -159,12 +159,12 @@ define(['angular', 'lodash'], function (angular, _) {
 
     function goToDefaultScenario() {
       var params = $stateParams;
-      SubProblemResource.query(params).$promise.then(function (subProblems) {
+      SubProblemResource.query(params).$promise.then(function(subProblems) {
         var subProblem = subProblems[0];
         params = _.extend({}, params, {
           problemId: subProblem.id
         });
-        ScenarioResource.query(params).$promise.then(function (scenarios) {
+        ScenarioResource.query(params).$promise.then(function(scenarios) {
           $state.go(DEFAULT_VIEW, {
             userUid: $scope.userId,
             projectId: params.projectId,
@@ -185,28 +185,28 @@ define(['angular', 'lodash'], function (angular, _) {
       ProblemResource.get({
         analysisId: outcomeWithAnalysis.selectedAnalysis.id,
         projectId: $stateParams.projectId
-      }).$promise.then(function (result) {
+      }).$promise.then(function(result) {
         problem = result;
         $modal.open({
           templateUrl: 'gemtc-web/js/models/setBaselineDistribution.html',
           controller: 'SetBaselineDistributionController',
           windowClass: 'small',
           resolve: {
-            outcomeWithAnalysis: function () {
+            outcomeWithAnalysis: function() {
               return outcomeWithAnalysis;
             },
-            alternatives: function () {
+            alternatives: function() {
               return $scope.alternatives;
             },
-            interventionInclusions: function () {
+            interventionInclusions: function() {
               return $scope.analysis.interventionInclusions;
             },
-            problem: function () {
+            problem: function() {
               return problem;
             },
-            setBaselineDistribution: function () {
-              return function (baseline) {
-                $scope.analysis.benefitRiskNMAOutcomeInclusions = $scope.analysis.benefitRiskNMAOutcomeInclusions.map(function (benefitRiskNMAOutcomeInclusion) {
+            setBaselineDistribution: function() {
+              return function(baseline) {
+                $scope.analysis.benefitRiskNMAOutcomeInclusions = $scope.analysis.benefitRiskNMAOutcomeInclusions.map(function(benefitRiskNMAOutcomeInclusion) {
                   if (benefitRiskNMAOutcomeInclusion.outcomeId === outcomeWithAnalysis.outcome.id) {
                     return _.extend(benefitRiskNMAOutcomeInclusion, {
                       baseline: baseline
@@ -216,7 +216,7 @@ define(['angular', 'lodash'], function (angular, _) {
                   }
                 });
                 var saveCommand = analysisToSaveCommand($scope.analysis);
-                $scope.effectsTablePromise = AnalysisResource.save(saveCommand).$save().then(function () {
+                $scope.effectsTablePromise = AnalysisResource.save(saveCommand).$save().then(function() {
                   $scope.outcomesWithAnalyses = BenefitRiskService.buildOutcomesWithAnalyses(
                     $scope.analysis, $scope.outcomes, $scope.networkMetaAnalyses);
                   $scope.outcomesWithAnalyses = BenefitRiskService.addStudiesToOutcomes(
@@ -232,7 +232,7 @@ define(['angular', 'lodash'], function (angular, _) {
     }
 
     function resetScales() {
-      return ProblemResource.get($stateParams).$promise.then(function (problem) {
+      return ProblemResource.get($stateParams).$promise.then(function(problem) {
         if (problem.performanceTable.length > 0) {
           return WorkspaceService.getObservedScales(problem).then(function (result) {
             var includedAlternatives = _.filter($scope.alternatives, function (alternative) {
