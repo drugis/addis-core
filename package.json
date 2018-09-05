@@ -71,6 +71,7 @@
     "moment": "^2.22.2",
     "nvd3": "~1.8.6",
     "raw-loader": "^0.5.1",
+    "select2": "~3.4.5",
     "selectize": "~0.12.6",
     "showdown": "~1.8.6",
     "style-loader": "^0.22.1",

@@ -39,7 +39,7 @@ let config = {
         }
       }]
     }, {
-      test: /\.(png|jp(e*)g|svg)$/,
+      test: /\.(png|jp(e*)g|svg|gif)$/,
       use: [{
         loader: 'url-loader',
         options: {
@@ -75,12 +75,6 @@ let config = {
       inject: 'head',
       chunks: ['main']
     }),
-    //    new HtmlWebpackPlugin({
-    //      filename: 'signin.html',
-    //      template: 'app/signin.html',
-    //      inject: 'head',
-    //      chunks: ['signin']
-    //    }),
     new HtmlWebpackPlugin({
       filename: 'manual.html',
       template: basePath + 'resources/manual.html',

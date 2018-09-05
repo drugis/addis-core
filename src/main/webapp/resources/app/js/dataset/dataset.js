@@ -77,5 +77,5 @@ define([
       .directive('versionInfo', versionInfo)
       .directive('featuredDatasets', featuredDatasets)
 
-      //filters
+      ;
   });

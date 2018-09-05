@@ -180,8 +180,8 @@ define(
       $locationProvider.hashPrefix('');
     }]);
 
-    app.run(['$rootScope', '$window', '$http', '$location', '$transitions', '$cookies', 'HelpPopupService', 'CacheService',
-      function($rootScope, $window, $http, $location, $transitions, $cookies, HelpPopupService, CacheService) {
+    app.run(['$rootScope', '$window', '$http', '$location', '$templateCache', '$transitions', '$cookies', 'HelpPopupService', 'CacheService',
+      function($rootScope, $window, $http, $location, $templateCache, $transitions, $cookies, HelpPopupService, CacheService) {
         $rootScope.$safeApply = function($scope, fn) {
           var phase = $scope.$root.$$phase;
           if (phase === '$apply' || phase === '$digest') {
@@ -214,12 +214,19 @@ define(
           CacheService.evict('analysisPromises', ids.analysisId);
           CacheService.evict('analysesPromises', ids.projectId);
         });
+
+        $templateCache.put('model-settings-section.html', require('gemtc-web/views/model-settings-section.html'));
+        $templateCache.put('convergence-diagnostics-section.html', require('gemtc-web/views/convergence-diagnostics-section.html'));
+        $templateCache.put('meta-regression-section.html', require('gemtc-web/views/meta-regression-section.html'));
+        $templateCache.put('results-section.html', require('gemtc-web/views/results-section.html'));
+        $templateCache.put('model-fit-section.html', require('gemtc-web/views/model-fit-section.html'));
+
       }
     ]);
 
-    app.config(function(uiSelectConfig) {
+    app.config(['uiSelectConfig', function(uiSelectConfig) {
       uiSelectConfig.theme = 'select2';
-    });
+    }]);
 
     app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', 'MCDARouteProvider',
       function($stateProvider, $urlRouterProvider, $httpProvider, MCDARouteProvider) {

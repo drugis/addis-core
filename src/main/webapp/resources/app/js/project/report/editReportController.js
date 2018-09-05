@@ -1,13 +1,13 @@
 'use strict';
 define(['angular', 'lodash'],
   function(angular, _) {
-    var dependencies = ['$', '$transitions', '$scope', '$stateParams', '$modal',
+    var dependencies = ['$transitions', '$scope', '$stateParams', '$modal',
       'ProjectResource',
       'ReportResource',
       'DefaultReportService',
       '$timeout'
     ];
-    var EditReportcontroller = function($, $transitions, $scope, $stateParams, $modal,
+    var EditReportcontroller = function($transitions, $scope, $stateParams, $modal,
       ProjectResource,
       ReportResource,
       DefaultReportService,
@@ -40,7 +40,7 @@ define(['angular', 'lodash'],
       });
 
       function insertTextAtCursor(text) {
-        var input = $('#report-input');
+        var input = angular.element(document.querySelector('#report-input'));
         var cursorPos = input.prop('selectionStart');
         var textBefore = $scope.reportText.text.substring(0, cursorPos);
         var textAfter = $scope.reportText.text.substring(cursorPos);

@@ -7,7 +7,6 @@ define(['angular', 'lodash'], function (angular, _) {
     'BenefitRiskService',
     'ModelResource',
     'ProblemResource',
-    'ScalesService',
     'ScenarioResource',
     'DEFAULT_VIEW',
     'ProjectResource',
@@ -24,7 +23,6 @@ define(['angular', 'lodash'], function (angular, _) {
     BenefitRiskService,
     ModelResource,
     ProblemResource,
-    ScalesService,
     ScenarioResource,
     DEFAULT_VIEW,
     ProjectResource,
@@ -236,7 +234,7 @@ define(['angular', 'lodash'], function (angular, _) {
     function resetScales() {
       return ProblemResource.get($stateParams).$promise.then(function (problem) {
         if (problem.performanceTable.length > 0) {
-          return ScalesService.getObservedScales($scope, problem).then(function (result) {
+          return WorkspaceService.getObservedScales(problem).then(function (result) {
             var includedAlternatives = _.filter($scope.alternatives, function (alternative) {
               return alternative.isIncluded;
             });
@@ -244,7 +242,7 @@ define(['angular', 'lodash'], function (angular, _) {
             $scope.outcomesWithAnalyses = BenefitRiskService.addScales($scope.outcomesWithAnalyses,
               includedAlternatives, result);
           }, function () {
-            console.log('ScalesService.getObservedScales error');
+            console.log('WorkspaceService.getObservedScales error');
           });
         }
       });

@@ -17,7 +17,7 @@
       <div class="grid-x">
         <div class="cell large-6 medium-8">
           <h3 class="subheader">Alternatives</h3>
-          <ui-select class="addis-select2" style="width:100%;" multiple theme="select2" ng-model="includedAlternatives"
+          <ui-select class="addis-select2" style="width:100%;" multiple ng-model="includedAlternatives"
             data-placeholder="no alternative selected" ng-disabled="!editMode.allowEditing"
             on-select="addedAlternative($item)" on-remove="removedAlternative($item)">
             <ui-select-match>{{$item.name}}</ui-select-match>

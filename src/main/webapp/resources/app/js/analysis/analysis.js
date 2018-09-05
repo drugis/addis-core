@@ -8,7 +8,8 @@ define([
   './benefitRiskService',
   './directives/studySelectDirective',
   'angular',
-  'angular-resource'
+  'angular-resource',
+  'mcda-web/js/workspace/workspace'
 ], function(
   AddAnalysisController,
   BenefitRiskStep1Controller,
@@ -19,7 +20,7 @@ define([
   studySelect,
   angular
 ) {
-    var dependencies = ['ngResource'];
+    var dependencies = ['ngResource', 'elicit.workspace'];
     return angular.module('addis.analysis',
       dependencies)
       // controllers

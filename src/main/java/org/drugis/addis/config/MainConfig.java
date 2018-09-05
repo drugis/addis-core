@@ -23,6 +23,7 @@ import org.apache.http.conn.HttpClientConnectionManager;
 import org.apache.http.conn.socket.ConnectionSocketFactory;
 import org.apache.http.conn.socket.PlainConnectionSocketFactory;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
+import org.apache.http.conn.ssl.TrustSelfSignedStrategy;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.ssl.SSLContexts;
@@ -62,6 +63,7 @@ import javax.cache.Caching;
 import javax.net.ssl.SSLContext;
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.security.*;
@@ -159,6 +161,7 @@ public class MainConfig {
     SSLContext sslContext = SSLContexts
             .custom()
             .loadKeyMaterial(keyStore, KEYSTORE_PASSWORD.toCharArray())
+            .loadTrustMaterial(new File(KEYSTORE_PATH))
             .build();
     SSLConnectionSocketFactory connectionSocketFactory = new SSLConnectionSocketFactory(sslContext);
 

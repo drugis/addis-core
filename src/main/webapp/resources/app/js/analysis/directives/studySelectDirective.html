@@ -3,7 +3,7 @@
     <label>
       Selected Study
     </label>
-    <ui-select class="addis-select2" style="width:100%;" theme="select2" ng-model="selection.selectedStudy"
+    <ui-select class="addis-select2" style="width:100%;" ng-model="selection.selectedStudy"
       on-select="onStudySelect($item)" ng-disabled="!editMode.allowEditing">
       <ui-select-match>{{$select.selected.name}}
         <i ng-if="$select.selected.group === 1" class="fa fa-exclamation-triangle"></i>

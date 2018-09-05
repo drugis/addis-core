@@ -2,6 +2,176 @@
 # yarn lockfile v1
 
 
+"@bower_components/KaTeX@Khan/KaTeX#~0.6.0":
+  version "0.6.0"
+  resolved "https://codeload.github.com/Khan/KaTeX/tar.gz/b94fc6534d5c23f944906a52a592bee4e0090665"
+  dependencies:
+    match-at "^0.1.0"
+
+"@bower_components/MathJax@mathjax/MathJax#2.4.0":
+  version "0.0.0"
+  resolved "https://codeload.github.com/mathjax/MathJax/tar.gz/1c54436ae6166a91495aba8a98cc18816b4789df"
+
+"@bower_components/angular-animate@angular/bower-angular-animate#~1.6.6":
+  version "1.6.10"
+  resolved "https://codeload.github.com/angular/bower-angular-animate/tar.gz/531f49c338d8eb95e87e8a369684d8a5069a4aba"
+
+"@bower_components/angular-cookies@angular/bower-angular-cookies#~1.6.6":
+  version "1.6.10"
+  resolved "https://codeload.github.com/angular/bower-angular-cookies/tar.gz/a2675d6a6f5176fe7252cbbba3fb1fbbf5e5f757"
+
+"@bower_components/angular-foundation-6@drugis/angular-foundation-6#master", angular-foundation-6@drugis/angular-foundation-6#master:
+  version "0.11.16"
+  resolved "https://codeload.github.com/drugis/angular-foundation-6/tar.gz/6ddb6a90f17a7263020cea5ef3b9bc14be84a569"
+
+"@bower_components/angular-mocks@angular/bower-angular-mocks#~1.6.6":
+  version "1.6.10"
+  resolved "https://codeload.github.com/angular/bower-angular-mocks/tar.gz/ca366bd8f81416e73641340b8e06cf19b1942e6b"
+
+"@bower_components/angular-patavi-client@drugis/angular-patavi-client#~2.0.3":
+  version "2.0.4"
+  resolved "https://codeload.github.com/drugis/angular-patavi-client/tar.gz/ad747174f3211d24b32d8e1c98db02a0d90ad84b"
+  dependencies:
+    "@bower_components/angular" angular/bower-angular#~1.x.x
+
+"@bower_components/angular-resource@angular/bower-angular-resource#~1.6.6":
+  version "1.6.10"
+  resolved "https://codeload.github.com/angular/bower-angular-resource/tar.gz/9c2935a6ea0d54540f7f8411185197e354768236"
+
+"@bower_components/angular-touch@angular/bower-angular-touch#~1.6.6":
+  version "1.6.10"
+  resolved "https://codeload.github.com/angular/bower-angular-touch/tar.gz/63aebaa62e2347a453ff0a1109b629d2c685607f"
+
+"@bower_components/angular-ui-router@angular-ui/angular-ui-router-bower#~1.0.5":
+  version "1.0.20"
+  resolved "https://codeload.github.com/angular-ui/angular-ui-router-bower/tar.gz/9df2d5baa8e2ace23700d031cd5cd7b029f6ca35"
+  dependencies:
+    "@uirouter/core" "5.0.21"
+
+"@bower_components/angular@angular/bower-angular#~1.6.6":
+  version "1.6.10"
+  resolved "https://codeload.github.com/angular/bower-angular/tar.gz/309e7f82ecc9098e1f93870eb33083b84dead289"
+
+"@bower_components/angular@angular/bower-angular#~1.x.x":
+  version "1.7.3"
+  resolved "https://codeload.github.com/angular/bower-angular/tar.gz/dbf96678470a684d972c44adce8a4b5c45351e4a"
+
+"@bower_components/angularjs-slider@danielreid/angularjs-slider#feature/restrictedRange", angularjs-slider@danielreid/angularjs-slider#feature/restrictedRange:
+  version "6.5.1"
+  resolved "https://codeload.github.com/danielreid/angularjs-slider/tar.gz/1ac0e2f36affedbba208961a8f2037a83912cbdd"
+
+"@bower_components/bowser@ded/bowser#~0.7.3":
+  version "0.7.3"
+  resolved "https://codeload.github.com/ded/bowser/tar.gz/e53c1db9ebfaab0081f35c8b6e23452495a7d813"
+
+"@bower_components/c3@c3js/c3#~0.4.23":
+  version "0.4.24"
+  resolved "https://codeload.github.com/c3js/c3/tar.gz/2b7f8d96f8215f949061ba14253904b0881f0ebb"
+  dependencies:
+    d3 "~3.5.0"
+
+"@bower_components/clipboard@zenorocha/clipboard.js#^1.6.0":
+  version "1.7.1"
+  resolved "https://codeload.github.com/zenorocha/clipboard.js/tar.gz/b6e6b80ab07eab03ce0d277515b3ed540773a330"
+  dependencies:
+    good-listener "^1.2.2"
+    select "^1.1.2"
+    tiny-emitter "^2.0.0"
+
+"@bower_components/clipboard@zenorocha/clipboard.js#~1.6.0":
+  version "1.6.1"
+  resolved "https://codeload.github.com/zenorocha/clipboard.js/tar.gz/f59d4e6b4db55b0f462eeb96fb74db3469e0765d"
+  dependencies:
+    good-listener "^1.2.0"
+    select "^1.1.2"
+    tiny-emitter "^1.0.0"
+
+"@bower_components/core-js@zloirock/core-js#^2.5.3":
+  version "2.5.7"
+  resolved "https://codeload.github.com/zloirock/core-js/tar.gz/5bbe230036de55b7f969487da9f3b15e5839359f"
+
+"@bower_components/d3@mbostock-bower/d3-bower#~3.5.6":
+  version "0.0.0"
+  resolved "https://codeload.github.com/mbostock-bower/d3-bower/tar.gz/7a826d211d5067867debf9ce24a9987e0cb02b6e"
+
+"@bower_components/domready@ded/domready#~1.0.7":
+  version "1.0.8"
+  resolved "https://codeload.github.com/ded/domready/tar.gz/bddb9f9374d699289953c813961b7121bd040ce7"
+
+"@bower_components/error-reporting@drugis/error-reporting#~1.2.1":
+  version "0.0.0"
+  resolved "https://codeload.github.com/drugis/error-reporting/tar.gz/dc08775e674de116d86fc995321b1df3b1c2bc54"
+
+"@bower_components/export-directive@drugis/export-directive#1.0.1":
+  version "1.0.0"
+  resolved "https://codeload.github.com/drugis/export-directive/tar.gz/26751b0ae7e943aa2fd389ec81ef04a25158b39a"
+  dependencies:
+    "@bower_components/angular" angular/bower-angular#~1.6.6
+    "@bower_components/clipboard" zenorocha/clipboard.js#^1.6.0
+    "@bower_components/d3" mbostock-bower/d3-bower#~3.5.6
+    "@bower_components/jquery" jquery/jquery-dist#~3.2.1
+
+"@bower_components/font-awesome@FortAwesome/Font-Awesome#~4.3.0":
+  version "4.3.0"
+  resolved "https://codeload.github.com/FortAwesome/Font-Awesome/tar.gz/41b9ed01103e6820c3cb043ba7ddab30ecd3f4c0"
+
+"@bower_components/foundation-sites@zurb/foundation-sites#~6":
+  version "6.4.3"
+  resolved "https://codeload.github.com/zurb/foundation-sites/tar.gz/4e21634356da296edd2f1c3e65d91140f991008b"
+  dependencies:
+    jquery ">=3.0.0"
+    what-input "^4.1.3"
+
+"@bower_components/help-popup@drugis/help-popup#~0.3.0":
+  version "0.0.0"
+  resolved "https://codeload.github.com/drugis/help-popup/tar.gz/9443f9e9fd28d09de0c03e1f511cdb983e6399f3"
+
+"@bower_components/jquery@jquery/jquery-dist#~3.2.1":
+  version "3.2.1"
+  resolved "https://codeload.github.com/jquery/jquery-dist/tar.gz/77d2a51d0520d2ee44173afdf4e40a9201f5964e"
+
+"@bower_components/lodash@lodash/lodash#~4.2.0":
+  version "4.2.1"
+  resolved "https://codeload.github.com/lodash/lodash/tar.gz/1cd9dc49a93d2cfe9927db1a92d2cf7c839bf263"
+
+"@bower_components/nprogress@rstacruz/nprogress#~0.2.0":
+  version "0.2.0"
+  resolved "https://codeload.github.com/rstacruz/nprogress/tar.gz/254266ea50c220f6507fa3f2978fc530147c7f06"
+
+"@bower_components/nvd3@novus/nvd3#~1.8.6":
+  version "1.8.6"
+  resolved "https://codeload.github.com/novus/nvd3/tar.gz/d273ea52d91b482d044f8cef1e921256f2bfddcd"
+
+"@bower_components/page-title-service@chinook25/page-title-service#master":
+  version "1.0.1"
+  resolved "https://codeload.github.com/chinook25/page-title-service/tar.gz/cf443795f069c0f58a4988187077ec8de40583fe"
+  dependencies:
+    angular "~1.7.2"
+
+"@bower_components/requirejs-domready@requirejs/domReady#~2.0.1":
+  version "2.0.1"
+  resolved "https://codeload.github.com/requirejs/domReady/tar.gz/c74caaa6dac64f2f47093f4952b991390406adfb"
+
+"@bower_components/requirejs@jrburke/requirejs-bower#~2.1.15":
+  version "0.0.0"
+  resolved "https://codeload.github.com/jrburke/requirejs-bower/tar.gz/b295d2bb6d397cc34eea2bc38dbea5b519614035"
+
+"@bower_components/scrollup@markgoodyear/scrollup#~2.4.1":
+  version "2.4.1"
+  resolved "https://codeload.github.com/markgoodyear/scrollup/tar.gz/2167852df6d20548863a0786cb88abcff49f5261"
+
+"@bower_components/smooth-scroller@firstandthird/smooth-scroller#~0.1.0":
+  version "0.0.0"
+  resolved "https://codeload.github.com/firstandthird/smooth-scroller/tar.gz/793e338a537c878d4b50bfae2b54eca87cdca5dd"
+
+"@bower_components/toc@jgallen23/toc#~0.3.2":
+  version "0.0.0"
+  resolved "https://codeload.github.com/jgallen23/toc/tar.gz/ad29527a498a525dccbac24904496bef24469e56"
+
+"@bower_components/what-input@ten1seven/what-input#~4.1.3":
+  version "4.1.6"
+  resolved "https://codeload.github.com/ten1seven/what-input/tar.gz/dab188a752f9b0b847b050d7cb4e837e0d1bdcea"
+
 "@types/tapable@1.0.2":
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/@types/tapable/-/tapable-1.0.2.tgz#e13182e1b69871a422d7863e11a4a6f5b814a4bd"
@@ -211,10 +381,6 @@ angular-cookies@~1.6.6:
   version "1.6.10"
   resolved "https://registry.yarnpkg.com/angular-cookies/-/angular-cookies-1.6.10.tgz#20a014d501242e2edacd21397c0e5480e08dee00"
 
-angular-foundation-6@drugis/angular-foundation-6#master:
-  version "0.11.16"
-  resolved "https://codeload.github.com/drugis/angular-foundation-6/tar.gz/6ddb6a90f17a7263020cea5ef3b9bc14be84a569"
-
 angular-mocks@~1.6.6:
   version "1.6.10"
   resolved "https://registry.yarnpkg.com/angular-mocks/-/angular-mocks-1.6.10.tgz#6a139e43c461d0c9a5a1acebc91e63db16031176"
@@ -253,9 +419,9 @@ angular@~1.6.6:
   version "1.6.10"
   resolved "https://registry.yarnpkg.com/angular/-/angular-1.6.10.tgz#eed3080a34d29d0f681ff119b18ce294e3f74826"
 
-angularjs-slider@danielreid/angularjs-slider#feature/restrictedRange:
-  version "6.5.1"
-  resolved "https://codeload.github.com/danielreid/angularjs-slider/tar.gz/1ac0e2f36affedbba208961a8f2037a83912cbdd"
+angular@~1.7.2:
+  version "1.7.3"
+  resolved "https://registry.yarnpkg.com/angular/-/angular-1.7.3.tgz#0f25a661d079fc84d5ccc877a2ef9d7178575ddb"
 
 ansi-escapes@^3.0.0:
   version "3.1.0"
@@ -383,11 +549,15 @@ async-limiter@~1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/async-limiter/-/async-limiter-1.0.0.tgz#78faed8c3d074ab81f22b4e985d79e8738f720f8"
 
-async@^2.0.0, async@^2.6.0, async@~2.6.1:
+async@^2.0.0, async@^2.6.0, async@~2.6.0:
   version "2.6.1"
   resolved "https://registry.yarnpkg.com/async/-/async-2.6.1.tgz#b245a23ca71930044ec53fa46aa00a3e87c6a610"
   dependencies:
     lodash "^4.17.10"
+
+async@~1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/async/-/async-1.0.0.tgz#f8fc04ca3a13784ade9e1641af98578cfbd647a9"
 
 async@~1.2.1:
   version "1.2.1"
@@ -485,7 +655,7 @@ body-parser@1.18.2:
     raw-body "2.3.2"
     type-is "~1.6.15"
 
-body-parser@^1.16.1, body-parser@^1.18.3, body-parser@~1.18.3:
+body-parser@^1.16.1, body-parser@^1.18.3, body-parser@~1.18.2:
   version "1.18.3"
   resolved "https://registry.yarnpkg.com/body-parser/-/body-parser-1.18.3.tgz#5b292198ffdd553b3a0f20ded0592b956955c8b4"
   dependencies:
@@ -885,31 +1055,24 @@ color-string@^1.5.2:
     color-name "^1.0.0"
     simple-swizzle "^0.2.2"
 
-color@3.0.x, color@^3.0.0:
+color@^3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/color/-/color-3.0.0.tgz#d920b4328d534a3ac8295d68f7bd4ba6c427be9a"
   dependencies:
     color-convert "^1.9.1"
     color-string "^1.5.2"
 
-colornames@^1.1.1:
-  version "1.1.1"
-  resolved "https://registry.yarnpkg.com/colornames/-/colornames-1.1.1.tgz#f8889030685c7c4ff9e2a559f5077eb76a816f96"
+colors@1.0.x:
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/colors/-/colors-1.0.3.tgz#0433f44d809680fdeb60ed260f1b0c262e82a40b"
 
-colors@^1.1.0, colors@^1.2.1:
+colors@^1.1.0:
   version "1.3.2"
   resolved "https://registry.yarnpkg.com/colors/-/colors-1.3.2.tgz#2df8ff573dfbf255af562f8ce7181d6b971a359b"
 
 colors@~1.1.2:
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/colors/-/colors-1.1.2.tgz#168a4701756b6a7f51a12ce0c97bfa28c084ed63"
-
-colorspace@1.1.x:
-  version "1.1.1"
-  resolved "https://registry.yarnpkg.com/colorspace/-/colorspace-1.1.1.tgz#9ac2491e1bc6f8fb690e2176814f8d091636d972"
-  dependencies:
-    color "3.0.x"
-    text-hex "1.0.x"
 
 combine-lists@^1.0.0:
   version "1.0.1"
@@ -961,6 +1124,12 @@ concat-stream@^1.5.0:
     inherits "^2.0.3"
     readable-stream "^2.2.2"
     typedarray "^0.0.6"
+
+connect-pg-simple@^4.2.1:
+  version "4.2.1"
+  resolved "https://registry.yarnpkg.com/connect-pg-simple/-/connect-pg-simple-4.2.1.tgz#bd7eb68d98326ddb01abb963cd3016f7ec1e2926"
+  dependencies:
+    pg ">=6.0.0-0 <7.0.0-0"
 
 connect-pg-simple@^5.0.0:
   version "5.0.0"
@@ -1335,6 +1504,10 @@ custom-event@~1.0.0:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/custom-event/-/custom-event-1.0.1.tgz#5d02a46850adf1b4a317946a3928fccb5bfd0425"
 
+cycle@1.0.x:
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/cycle/-/cycle-1.0.3.tgz#21e80b2be8580f98b468f379430662b046c34ad2"
+
 cyclist@~0.2.2:
   version "0.2.2"
   resolved "https://registry.yarnpkg.com/cyclist/-/cyclist-0.2.2.tgz#1b33792e11e914a2fd6d6ed6447464444e5fa640"
@@ -1391,7 +1564,7 @@ deep-extend@^0.6.0:
   version "0.6.0"
   resolved "https://registry.yarnpkg.com/deep-extend/-/deep-extend-0.6.0.tgz#c4fa7c95404a17a9c3e8ca7e1537312b736330ac"
 
-deferred@~0.7.9:
+deferred@~0.7.8:
   version "0.7.9"
   resolved "https://registry.yarnpkg.com/deferred/-/deferred-0.7.9.tgz#fb62ae0aa0dba05ca91fed201c2f501367a360a2"
   dependencies:
@@ -1460,14 +1633,6 @@ detect-libc@^1.0.2:
 di@^0.0.1:
   version "0.0.1"
   resolved "https://registry.yarnpkg.com/di/-/di-0.0.1.tgz#806649326ceaa7caa3306d75d985ea2748ba913c"
-
-diagnostics@^1.0.1:
-  version "1.1.1"
-  resolved "https://registry.yarnpkg.com/diagnostics/-/diagnostics-1.1.1.tgz#cab6ac33df70c9d9a727490ae43ac995a769b22a"
-  dependencies:
-    colorspace "1.1.x"
-    enabled "1.0.x"
-    kuler "1.0.x"
 
 diffie-hellman@^5.0.0:
   version "5.0.3"
@@ -1588,12 +1753,6 @@ emojis-list@^2.0.0:
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/emojis-list/-/emojis-list-2.1.0.tgz#4daa4d9db00f9819880c79fa457ae5b09a1fd389"
 
-enabled@1.0.x:
-  version "1.0.2"
-  resolved "https://registry.yarnpkg.com/enabled/-/enabled-1.0.2.tgz#965f6513d2c2d1c5f4652b64a2e3396467fc2f93"
-  dependencies:
-    env-variable "0.0.x"
-
 encodeurl@~1.0.1, encodeurl@~1.0.2:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/encodeurl/-/encodeurl-1.0.2.tgz#ad3ff4c86ec2d029322f5a02c3a9a606c95b3f59"
@@ -1656,10 +1815,6 @@ ent@~2.2.0:
 entities@~1.1.1:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/entities/-/entities-1.1.1.tgz#6e5c2d0a5621b5dadaecef80b90edfb5cd7772f0"
-
-env-variable@0.0.x:
-  version "0.0.4"
-  resolved "https://registry.yarnpkg.com/env-variable/-/env-variable-0.0.4.tgz#0d6280cf507d84242befe35a512b5ae4be77c54e"
 
 errno@^0.1.3, errno@~0.1.7:
   version "0.1.7"
@@ -1924,6 +2079,10 @@ extglob@^2.0.4:
     snapdragon "^0.8.1"
     to-regex "^3.0.1"
 
+eyes@0.1.x:
+  version "0.1.8"
+  resolved "https://registry.yarnpkg.com/eyes/-/eyes-0.1.8.tgz#62cf120234c683785d902348a800ef3e0cc20bc0"
+
 fast-deep-equal@^2.0.1:
   version "2.0.1"
   resolved "https://registry.yarnpkg.com/fast-deep-equal/-/fast-deep-equal-2.0.1.tgz#7b05218ddf9667bf7f370bf7fdb2cb15fdd0aa49"
@@ -1932,17 +2091,9 @@ fast-json-stable-stringify@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/fast-json-stable-stringify/-/fast-json-stable-stringify-2.0.0.tgz#d5142c0caee6b1189f87d3a76111064f86c8bbf2"
 
-fast-safe-stringify@^2.0.4:
-  version "2.0.6"
-  resolved "https://registry.yarnpkg.com/fast-safe-stringify/-/fast-safe-stringify-2.0.6.tgz#04b26106cc56681f51a044cfc0d76cf0008ac2c2"
-
 fastparse@^1.1.1:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/fastparse/-/fastparse-1.1.1.tgz#d1e2643b38a94d7583b479060e6c4affc94071f8"
-
-fecha@^2.3.3:
-  version "2.3.3"
-  resolved "https://registry.yarnpkg.com/fecha/-/fecha-2.3.3.tgz#948e74157df1a32fd1b12c3a3c3cdcb6ec9d96cd"
 
 figures@^2.0.0:
   version "2.0.0"
@@ -2147,7 +2298,14 @@ gemtc-web@drugis/gemtc-web#develop:
     passport-google-oauth20 "^1.0.0"
     pg "~7.4.3"
     uglifyjs-webpack-plugin "^1.3.0"
-    winston "~3.0.0"
+
+generic-pool@2.4.2:
+  version "2.4.2"
+  resolved "https://registry.yarnpkg.com/generic-pool/-/generic-pool-2.4.2.tgz#886bc5bf0beb7db96e81bcbba078818de5a62683"
+
+generic-pool@2.4.3:
+  version "2.4.3"
+  resolved "https://registry.yarnpkg.com/generic-pool/-/generic-pool-2.4.3.tgz#780c36f69dfad05a5a045dd37be7adca11a4f6ff"
 
 get-caller-file@^1.0.1:
   version "1.0.3"
@@ -2194,7 +2352,7 @@ globby@^7.1.1:
     pify "^3.0.0"
     slash "^1.0.0"
 
-good-listener@^1.2.0:
+good-listener@^1.2.0, good-listener@^1.2.2:
   version "1.2.2"
   resolved "https://registry.yarnpkg.com/good-listener/-/good-listener-1.2.2.tgz#d53b30cdf9313dffb7dc9a0d477096aa6d145c50"
   dependencies:
@@ -2296,7 +2454,7 @@ helmet-csp@2.7.1:
     dasherize "2.0.0"
     platform "1.3.5"
 
-helmet@^3.13.0:
+helmet@^3.12.0, helmet@^3.13.0:
   version "3.13.0"
   resolved "https://registry.yarnpkg.com/helmet/-/helmet-3.13.0.tgz#d6d46763538f77b437be77f06d0af42078b2c656"
   dependencies:
@@ -2770,6 +2928,10 @@ isobject@^3.0.0, isobject@^3.0.1:
   version "3.0.1"
   resolved "https://registry.yarnpkg.com/isobject/-/isobject-3.0.1.tgz#4e431e92b11a9731636aa1f9c8d1ccbcfdab78df"
 
+isstream@0.1.x:
+  version "0.1.2"
+  resolved "https://registry.yarnpkg.com/isstream/-/isstream-0.1.2.tgz#47e63f7af55afa6f92e1500e690eb8b8529c099a"
+
 jasmine-core@~3.2.0, jasmine-core@~3.2.1:
   version "3.2.1"
   resolved "https://registry.yarnpkg.com/jasmine-core/-/jasmine-core-3.2.1.tgz#8e4ff5b861603ee83343f2b49eee6a0ffe9650ce"
@@ -2788,6 +2950,10 @@ jquery@>=3.0.0:
 jquery@~3.2.1:
   version "3.2.1"
   resolved "https://registry.yarnpkg.com/jquery/-/jquery-3.2.1.tgz#5c4d9de652af6cd0a770154a631bba12b015c787"
+
+js-string-escape@1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/js-string-escape/-/js-string-escape-1.0.1.tgz#e2625badbc0d67c7533e9edc1068c587ae4137ef"
 
 js-tokens@^3.0.2:
   version "3.0.2"
@@ -2914,12 +3080,6 @@ kind-of@^6.0.0, kind-of@^6.0.2:
   version "6.0.2"
   resolved "https://registry.yarnpkg.com/kind-of/-/kind-of-6.0.2.tgz#01146b36a6218e64e58f3a8d66de5d7fc6f6d051"
 
-kuler@1.0.x:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/kuler/-/kuler-1.0.0.tgz#904ad31c373b781695854d32be33818bf1d60250"
-  dependencies:
-    colornames "^1.1.1"
-
 last-call-webpack-plugin@^3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/last-call-webpack-plugin/-/last-call-webpack-plugin-3.0.0.tgz#9742df0e10e3cf46e5c0381c2de90d3a7a2d7555"
@@ -2975,7 +3135,7 @@ lodash.uniq@^4.5.0:
   version "4.5.0"
   resolved "https://registry.yarnpkg.com/lodash.uniq/-/lodash.uniq-4.5.0.tgz#d0225373aeb652adc1bc82e4945339a842754773"
 
-lodash@^4.0.0, lodash@^4.17.10, lodash@^4.17.4, lodash@^4.17.5, lodash@^4.5.0, lodash@~4.17.10:
+lodash@^4.0.0, lodash@^4.17.10, lodash@^4.17.4, lodash@^4.17.5, lodash@^4.5.0, lodash@~4.17.4:
   version "4.17.10"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.10.tgz#1b7793cf7259ea38fb3661d4d38b3260af8ae4e7"
 
@@ -2994,16 +3154,6 @@ log4js@^3.0.0:
     debug "^3.1.0"
     rfdc "^1.1.2"
     streamroller "0.7.0"
-
-logform@^1.9.0:
-  version "1.9.1"
-  resolved "https://registry.yarnpkg.com/logform/-/logform-1.9.1.tgz#58b29d7b11c332456d7a217e17b48a13ad69d60a"
-  dependencies:
-    colors "^1.2.1"
-    fast-safe-stringify "^2.0.4"
-    fecha "^2.3.3"
-    ms "^2.1.1"
-    triple-beam "^1.2.0"
 
 loglevelnext@^1.0.1:
   version "1.0.5"
@@ -3062,24 +3212,62 @@ map-visit@^1.0.0:
   dependencies:
     object-visit "^1.0.0"
 
+match-at@^0.1.0:
+  version "0.1.1"
+  resolved "https://registry.yarnpkg.com/match-at/-/match-at-0.1.1.tgz#25d040d291777704d5e6556bbb79230ec2de0540"
+
 mcda-web@drugis/mcda-elicitation-web#develop:
   version "0.16.3"
   resolved "https://codeload.github.com/drugis/mcda-elicitation-web/tar.gz/a858df1803976d1a9f5e92b363aee0f6bf4411de"
   dependencies:
-    async "~2.6.1"
-    body-parser "~1.18.3"
-    connect-pg-simple "^5.0.0"
+    "@bower_components/KaTeX" Khan/KaTeX#~0.6.0
+    "@bower_components/MathJax" mathjax/MathJax#2.4.0
+    "@bower_components/angular" angular/bower-angular#~1.6.6
+    "@bower_components/angular-animate" angular/bower-angular-animate#~1.6.6
+    "@bower_components/angular-cookies" angular/bower-angular-cookies#~1.6.6
+    "@bower_components/angular-foundation-6" drugis/angular-foundation-6#master
+    "@bower_components/angular-mocks" angular/bower-angular-mocks#~1.6.6
+    "@bower_components/angular-patavi-client" drugis/angular-patavi-client#~2.0.3
+    "@bower_components/angular-resource" angular/bower-angular-resource#~1.6.6
+    "@bower_components/angular-touch" angular/bower-angular-touch#~1.6.6
+    "@bower_components/angular-ui-router" angular-ui/angular-ui-router-bower#~1.0.5
+    "@bower_components/angularjs-slider" danielreid/angularjs-slider#feature/restrictedRange
+    "@bower_components/bowser" ded/bowser#~0.7.3
+    "@bower_components/c3" c3js/c3#~0.4.23
+    "@bower_components/clipboard" zenorocha/clipboard.js#~1.6.0
+    "@bower_components/core-js" zloirock/core-js#^2.5.3
+    "@bower_components/d3" mbostock-bower/d3-bower#~3.5.6
+    "@bower_components/domready" ded/domready#~1.0.7
+    "@bower_components/error-reporting" drugis/error-reporting#~1.2.1
+    "@bower_components/export-directive" drugis/export-directive#1.0.1
+    "@bower_components/font-awesome" FortAwesome/Font-Awesome#~4.3.0
+    "@bower_components/foundation-sites" zurb/foundation-sites#~6
+    "@bower_components/help-popup" drugis/help-popup#~0.3.0
+    "@bower_components/jquery" jquery/jquery-dist#~3.2.1
+    "@bower_components/lodash" lodash/lodash#~4.2.0
+    "@bower_components/nprogress" rstacruz/nprogress#~0.2.0
+    "@bower_components/nvd3" novus/nvd3#~1.8.6
+    "@bower_components/page-title-service" chinook25/page-title-service#master
+    "@bower_components/requirejs" jrburke/requirejs-bower#~2.1.15
+    "@bower_components/requirejs-domready" requirejs/domReady#~2.0.1
+    "@bower_components/scrollup" markgoodyear/scrollup#~2.4.1
+    "@bower_components/smooth-scroller" firstandthird/smooth-scroller#~0.1.0
+    "@bower_components/toc" jgallen23/toc#~0.3.2
+    "@bower_components/what-input" ten1seven/what-input#~4.1.3
+    async "~2.6.0"
+    body-parser "~1.18.2"
+    connect-pg-simple "^4.2.1"
     csurf "~1.9.0"
-    deferred "~0.7.9"
+    deferred "~0.7.8"
     express "~4.16.3"
     express-session "~1.15.6"
-    helmet "^3.13.0"
+    helmet "^3.12.0"
     http-status-codes "~1.3.0"
-    lodash "~4.17.10"
+    lodash "~4.17.4"
     passport "^0.4.0"
     passport-google-oauth20 "^1.0.0"
-    pg "~7.4.3"
-    winston "~3.0.0"
+    pg "~4.5.7"
+    winston "~1.0.0"
 
 md5.js@^1.3.4:
   version "1.3.4"
@@ -3266,10 +3454,6 @@ ms@2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/ms/-/ms-2.0.0.tgz#5608aeadfc00be6c2901df5f9861788de0d597c8"
 
-ms@^2.1.1:
-  version "2.1.1"
-  resolved "https://registry.yarnpkg.com/ms/-/ms-2.1.1.tgz#30a5864eb3ebb0a66f2ebe6d727af06a09d86e0a"
-
 mute-stream@0.0.7:
   version "0.0.7"
   resolved "https://registry.yarnpkg.com/mute-stream/-/mute-stream-0.0.7.tgz#3075ce93bc21b8fab43e1bc4da7e8115ed1e7bab"
@@ -3442,6 +3626,10 @@ oauth@0.9.x:
   version "0.9.15"
   resolved "https://registry.yarnpkg.com/oauth/-/oauth-0.9.15.tgz#bd1fefaf686c96b75475aed5196412ff60cfb9c1"
 
+object-assign@4.1.0:
+  version "4.1.0"
+  resolved "https://registry.yarnpkg.com/object-assign/-/object-assign-4.1.0.tgz#7a3b3d0e98063d43f4c03f2e8ae6cd51a86883a0"
+
 object-assign@^4.1.0:
   version "4.1.1"
   resolved "https://registry.yarnpkg.com/object-assign/-/object-assign-4.1.1.tgz#2109adc7965887cfc05cbbd442cac8bfbb360863"
@@ -3514,10 +3702,6 @@ once@^1.3.0, once@^1.3.1, once@^1.4.0:
   resolved "https://registry.yarnpkg.com/once/-/once-1.4.0.tgz#583b1aa775961d4b113ac17d9c50baef9dd76bd1"
   dependencies:
     wrappy "1"
-
-one-time@0.0.4:
-  version "0.0.4"
-  resolved "https://registry.yarnpkg.com/one-time/-/one-time-0.0.4.tgz#f8cdf77884826fe4dff93e3a9cc37b1e4480742e"
 
 onetime@^2.0.0:
   version "2.0.1"
@@ -3601,6 +3785,10 @@ p-try@^1.0.0:
 p-try@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/p-try/-/p-try-2.0.0.tgz#85080bb87c64688fa47996fe8f7dfbe8211760b1"
+
+packet-reader@0.2.0:
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/packet-reader/-/packet-reader-0.2.0.tgz#819df4d010b82d5ea5671f8a1a3acf039bcd7700"
 
 packet-reader@0.3.1:
   version "0.3.1"
@@ -3735,9 +3923,30 @@ pg-connection-string@0.1.3:
   version "0.1.3"
   resolved "https://registry.yarnpkg.com/pg-connection-string/-/pg-connection-string-0.1.3.tgz#da1847b20940e42ee1492beaf65d49d91b245df7"
 
+pg-int8@1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/pg-int8/-/pg-int8-1.0.1.tgz#943bd463bf5b71b4170115f80f8efc9a0c0eb78c"
+
+pg-pool@1.*:
+  version "1.8.0"
+  resolved "https://registry.yarnpkg.com/pg-pool/-/pg-pool-1.8.0.tgz#f7ec73824c37a03f076f51bfdf70e340147c4f37"
+  dependencies:
+    generic-pool "2.4.3"
+    object-assign "4.1.0"
+
 pg-pool@~2.0.3:
   version "2.0.3"
   resolved "https://registry.yarnpkg.com/pg-pool/-/pg-pool-2.0.3.tgz#c022032c8949f312a4f91fb6409ce04076be3257"
+
+pg-types@1.*:
+  version "1.13.0"
+  resolved "https://registry.yarnpkg.com/pg-types/-/pg-types-1.13.0.tgz#75f490b8a8abf75f1386ef5ec4455ecf6b345c63"
+  dependencies:
+    pg-int8 "1.0.1"
+    postgres-array "~1.0.0"
+    postgres-bytea "~1.0.0"
+    postgres-date "~1.0.0"
+    postgres-interval "^1.1.0"
 
 pg-types@~1.12.1:
   version "1.12.1"
@@ -3747,6 +3956,19 @@ pg-types@~1.12.1:
     postgres-bytea "~1.0.0"
     postgres-date "~1.0.0"
     postgres-interval "^1.1.0"
+
+"pg@>=6.0.0-0 <7.0.0-0":
+  version "6.4.2"
+  resolved "https://registry.yarnpkg.com/pg/-/pg-6.4.2.tgz#c364011060eac7a507a2ae063eb857ece910e27f"
+  dependencies:
+    buffer-writer "1.0.1"
+    js-string-escape "1.0.1"
+    packet-reader "0.3.1"
+    pg-connection-string "0.1.3"
+    pg-pool "1.*"
+    pg-types "1.*"
+    pgpass "1.*"
+    semver "4.3.2"
 
 pg@^7.4.3, pg@~7.4.3:
   version "7.4.3"
@@ -3760,7 +3982,26 @@ pg@^7.4.3, pg@~7.4.3:
     pgpass "1.x"
     semver "4.3.2"
 
-pgpass@1.x:
+pg@~4.5.7:
+  version "4.5.7"
+  resolved "https://registry.yarnpkg.com/pg/-/pg-4.5.7.tgz#45ae16b23706a6345a03279decc6af795c16d29b"
+  dependencies:
+    buffer-writer "1.0.1"
+    generic-pool "2.4.2"
+    js-string-escape "1.0.1"
+    packet-reader "0.2.0"
+    pg-connection-string "0.1.3"
+    pg-types "1.*"
+    pgpass "0.0.3"
+    semver "^4.1.0"
+
+pgpass@0.0.3:
+  version "0.0.3"
+  resolved "https://registry.yarnpkg.com/pgpass/-/pgpass-0.0.3.tgz#12e67e343b3189c2f31206ebc9cc0befffcf9140"
+  dependencies:
+    split "~0.3"
+
+pgpass@1.*, pgpass@1.x:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/pgpass/-/pgpass-1.0.2.tgz#2a7bb41b6065b67907e91da1b07c1847c877b306"
   dependencies:
@@ -3775,6 +4016,10 @@ pkg-dir@^2.0.0:
   resolved "https://registry.yarnpkg.com/pkg-dir/-/pkg-dir-2.0.0.tgz#f6d5d1109e19d63edf428e0bd57e12777615334b"
   dependencies:
     find-up "^2.1.0"
+
+pkginfo@0.3.x:
+  version "0.3.1"
+  resolved "https://registry.yarnpkg.com/pkginfo/-/pkginfo-0.3.1.tgz#5b29f6a81f70717142e09e765bbeab97b4f81e21"
 
 platform@1.3.5:
   version "1.3.5"
@@ -4458,6 +4703,10 @@ schema-utils@^1.0.0:
     ajv-errors "^1.0.0"
     ajv-keywords "^3.1.0"
 
+select2@~3.4.5:
+  version "3.4.5"
+  resolved "https://registry.yarnpkg.com/select2/-/select2-3.4.5.tgz#c0555ed77da22b1d402ec9e1a69687abc15e747a"
+
 select@^1.1.2:
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/select/-/select-1.1.2.tgz#0e7350acdec80b1108528786ec1d4418d11b396d"
@@ -4472,6 +4721,10 @@ selectize@~0.12.6:
 semver@4.3.2:
   version "4.3.2"
   resolved "https://registry.yarnpkg.com/semver/-/semver-4.3.2.tgz#c7a07158a80bedd052355b770d82d6640f803be7"
+
+semver@^4.1.0:
+  version "4.3.6"
+  resolved "https://registry.yarnpkg.com/semver/-/semver-4.3.6.tgz#300bc6e0e86374f7ba61068b5b1ecd57fc6532da"
 
 semver@^5.3.0, semver@^5.5.0:
   version "5.5.1"
@@ -4704,6 +4957,12 @@ split@^1.0.0:
   dependencies:
     through "2"
 
+split@~0.3:
+  version "0.3.3"
+  resolved "https://registry.yarnpkg.com/split/-/split-0.3.3.tgz#cd0eea5e63a211dfff7eb0f091c4133e2d0dd28f"
+  dependencies:
+    through "2"
+
 sprintf-js@~1.0.2:
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/sprintf-js/-/sprintf-js-1.0.3.tgz#04e6926f662895354f3dd015203633b857297e2c"
@@ -4889,10 +5148,6 @@ tar@^4:
     safe-buffer "^5.1.2"
     yallist "^3.0.2"
 
-text-hex@1.0.x:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/text-hex/-/text-hex-1.0.0.tgz#69dc9c1b17446ee79a92bf5b884bb4b9127506f5"
-
 through2@^2.0.0:
   version "2.0.3"
   resolved "https://registry.yarnpkg.com/through2/-/through2-2.0.3.tgz#0004569b37c7c74ba39c43f3ced78d1ad94140be"
@@ -4924,6 +5179,10 @@ timsort@^0.3.0:
 tiny-emitter@^1.0.0:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/tiny-emitter/-/tiny-emitter-1.2.0.tgz#6dc845052cb08ebefc1874723b58f24a648c3b6f"
+
+tiny-emitter@^2.0.0:
+  version "2.0.2"
+  resolved "https://registry.yarnpkg.com/tiny-emitter/-/tiny-emitter-2.0.2.tgz#82d27468aca5ade8e5fd1e6d22b57dd43ebdfb7c"
 
 tmp@0.0.33, tmp@0.0.x, tmp@^0.0.33:
   version "0.0.33"
@@ -4964,10 +5223,6 @@ to-regex@^3.0.1, to-regex@^3.0.2:
 tocbot@^4.3.2:
   version "4.4.0"
   resolved "https://registry.yarnpkg.com/tocbot/-/tocbot-4.4.0.tgz#92707614c228c0d84a0ee641741e3835ea3b3920"
-
-triple-beam@^1.2.0, triple-beam@^1.3.0:
-  version "1.3.0"
-  resolved "https://registry.yarnpkg.com/triple-beam/-/triple-beam-1.3.0.tgz#a595214c7298db8339eeeee083e4d10bd8cb8dd9"
 
 tslib@^1.9.0:
   version "1.9.3"
@@ -5315,26 +5570,17 @@ wide-align@^1.1.0:
   dependencies:
     string-width "^1.0.2 || 2"
 
-winston-transport@^4.2.0:
-  version "4.2.0"
-  resolved "https://registry.yarnpkg.com/winston-transport/-/winston-transport-4.2.0.tgz#a20be89edf2ea2ca39ba25f3e50344d73e6520e5"
+winston@~1.0.0:
+  version "1.0.2"
+  resolved "http://registry.npmjs.org/winston/-/winston-1.0.2.tgz#351c58e2323f8a4ca29a45195aa9aa3b4c35d76f"
   dependencies:
-    readable-stream "^2.3.6"
-    triple-beam "^1.2.0"
-
-winston@~3.0.0:
-  version "3.0.0"
-  resolved "https://registry.yarnpkg.com/winston/-/winston-3.0.0.tgz#1f0b24a96586798bcf0cd149fb07ed47cb01a1b2"
-  dependencies:
-    async "^2.6.0"
-    diagnostics "^1.0.1"
-    is-stream "^1.1.0"
-    logform "^1.9.0"
-    one-time "0.0.4"
-    readable-stream "^2.3.6"
+    async "~1.0.0"
+    colors "1.0.x"
+    cycle "1.0.x"
+    eyes "0.1.x"
+    isstream "0.1.x"
+    pkginfo "0.3.x"
     stack-trace "0.0.x"
-    triple-beam "^1.3.0"
-    winston-transport "^4.2.0"
 
 wordwrap@~0.0.2:
   version "0.0.3"
