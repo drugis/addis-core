@@ -1,10 +1,10 @@
 @import "addis-settings";
 @import "settings";
-@import "../app/js/bower_components/foundation-sites/scss/foundation";
-@import "../app/js/bower_components/gemtc-web/app/sass/_gemtc-drugis-base.scss";
+@import "foundation";
+@import "_gemtc-drugis-base.scss";
 @import "addis-base";
-@import "../app/js/bower_components/mcda-web/sass/_mcda-drugis-base.scss";
-@import "../app/js/bower_components/gemtc-web/app/sass/mmfoundation-animations";
+@import "_mcda-drugis-base.scss";
+@import "mmfoundation-animations";
 @include foundation-global-styles;
 @include foundation-xy-grid-classes;
 @include foundation-typography;

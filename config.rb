@@ -8,8 +8,11 @@ sass_dir = "src/main/webapp/resources/sass"
 images_dir = "src/main/webapp/resources/app/img"
 javascripts_dir = "src/main/webapp/resources/app/js"
 
-add_import_path "src/main/webapp/resources/app/js/bower_components/foundation-sites/scss"
+add_import_path "node_modules/foundation-sites/scss"
 add_import_path "src/main/webapp/resources/drugis-css"
+add_import_path "node_modules/gemtc-web/app/sass"
+add_import_path "node_modules/mcda-web/sass"
+
 # You can select your preferred output style here (can be overridden via the command line):
 # output_style = :expanded or :nested or :compact or :compressed
 

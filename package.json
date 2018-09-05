@@ -70,7 +70,7 @@
     "mini-css-extract-plugin": "^0.4.2",
     "moment": "^2.22.2",
     "nvd3": "~1.8.6",
-    "page-title-service": "chinook25/page-title-service#1.0.1",
+    "page-title-service": "chinook25/page-title-service#1.0.2",
     "raw-loader": "^0.5.1",
     "select2": "~3.4.5",
     "selectize": "~0.12.6",
