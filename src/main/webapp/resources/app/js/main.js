@@ -7,4 +7,5 @@ define(['angular', 'app'], function(angular, app) {
   require('nvd3/build/nv.d3.min.css');
   require('angularjs-slider/dist/rzslider.css')
   require('c3/c3.css');
+  require('angucomplete-alt/angucomplete-alt.css')
 });

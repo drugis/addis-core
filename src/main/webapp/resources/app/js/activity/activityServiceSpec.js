@@ -152,10 +152,10 @@ define(['lodash', 'angular', 'angular-mocks', './activity'], function(_) {
           expect(activities[1].label).toEqual(jsonStudy.has_activity[1].label);
           expect(activities[2].label).toEqual(jsonStudy.has_activity[2].label);
           expect(activities[3].label).toEqual(jsonStudy.has_activity[3].label);
-          expect(activities[0].activityType).toEqual(activityService.ACTIVITY_TYPE_OPTIONS['ontology:WashOutActivity']);
-          expect(activities[1].activityType).toEqual(activityService.ACTIVITY_TYPE_OPTIONS['ontology:TreatmentActivity']);
-          expect(activities[2].activityType).toEqual(activityService.ACTIVITY_TYPE_OPTIONS['ontology:RandomizationActivity']);
-          expect(activities[3].activityType).toEqual(activityService.ACTIVITY_TYPE_OPTIONS['ontology:TreatmentActivity']);
+          expect(activities[0].activityType.label).toEqual('wash out');
+          expect(activities[1].activityType.label).toEqual('drug treatment');
+          expect(activities[2].activityType.label).toEqual('randomization');
+          expect(activities[3].activityType.label).toEqual('drug treatment');
           expect(activities[0].activityDescription).not.toBeDefined();
           expect(activities[1].activityDescription).not.toBeDefined();
           expect(activities[2].activityDescription).not.toBeDefined();

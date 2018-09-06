@@ -9,6 +9,7 @@
   "scripts": {
     "test": "karma start --singleRun=true",
     "build-dev": "webpack --config webpack.dev.js",
+    "build-prod": "webpack --config webpack.prod.js",
     "dev": "webpack --config webpack.dev.js --watch"
   },
   "repository": {
@@ -81,6 +82,7 @@
     "url-loader": "^1.1.1",
     "vanilla-back-to-top": "^7.1.14",
     "webpack": "^4.17.1",
+    "webpack-bundle-analyzer": "^2.13.1",
     "webpack-cli": "^3.1.0",
     "webpack-merge": "^4.1.4",
     "webpack-xlsx-loader": "^1.0.0",

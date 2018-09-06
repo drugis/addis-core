@@ -3,6 +3,9 @@ const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
+
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+
 let basePath = path.join(__dirname, '/src/main/webapp/');
 
 let config = {
@@ -85,7 +88,8 @@ let config = {
     new CopyWebpackPlugin([
       {from :'node_modules/gemtc-web/public/img', to:'images/gemtc-web'},
       {from :'node_modules/mcda-web/public/img', to:'images/mcda-web'}
-    ])
+    ]),
+    new BundleAnalyzerPlugin()
   ],
 
   optimization: {

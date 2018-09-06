@@ -2,6 +2,7 @@
 define(
   [
     'angular',
+    'lodash',
     'mcda-web/js/config',
     'mcda-web/lexicon',
     'gemtc-web/lexicon',
@@ -78,6 +79,7 @@ define(
   ],
   function(
     angular,
+    _,
     Config,
     mcdaLexicon,
     gemtcLexicon
@@ -185,9 +187,9 @@ define(
     }]);
 
     app.run(['$rootScope', '$q', '$window', '$http', '$location', '$templateCache', '$transitions', '$cookies',
-        'HelpPopupService', 'CacheService', 'PageTitleService',
+        'HelpPopupService', 'CacheService', 'PageTitleService', 'STUDY_CATEGORY_SETTINGS',
       function($rootScope, $q, $window, $http, $location, $templateCache, $transitions, $cookies,
-        HelpPopupService, CacheService, PageTitleService) {
+        HelpPopupService, CacheService, PageTitleService, STUDY_CATEGORY_SETTINGS) {
         $rootScope.$safeApply = function($scope, fn) {
           var phase = $scope.$root.$$phase;
           if (phase === '$apply' || phase === '$digest') {
@@ -196,6 +198,17 @@ define(
             this.$apply(fn);
           }
         };
+
+        $templateCache.put('studyInformation.html', require('./studyInformation/studyInformation.html'));
+        $templateCache.put('populationInformation.html', require('./populationInformation/populationInformation.html'));
+        $templateCache.put('arm.html', require('./arm/arm.html'));
+        $templateCache.put('variable.html', require('./variable/variable.html'));
+        $templateCache.put('epoch.html', require('./epoch/epoch.html'));
+        $templateCache.put('measurementMoment.html', require('./measurementMoment/measurementMoment.html'));
+        $templateCache.put('activity.html', require('./activity/activity.html'));
+        $templateCache.put('activityDosingPeriodicityDirective.html', require('./activity/activityDosingPeriodicityDirective.html'));
+        $templateCache.put('interventionDosingPeriodicityDirective.html', require('./intervention/interventionDosingPeriodicityDirective.html'));
+        $templateCache.put('durationInputDirective.html', require('./util/directives/durationInput/durationInputDirective.html'));
 
         HelpPopupService.loadLexicon(mcdaLexicon);
         HelpPopupService.loadLexicon(gemtcLexicon);
