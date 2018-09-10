@@ -24,7 +24,9 @@ import org.springframework.web.util.UriComponentsBuilder;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.charset.Charset;
 
+import static java.nio.charset.Charset.defaultCharset;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 
@@ -45,13 +47,13 @@ public class GraphReadRepositoryTest {
   GraphReadRepository graphReadRepository;
 
   @Before
-  public void init() throws IOException {
+  public void init() {
     graphReadRepository = new GraphReadRepositoryImpl();
     MockitoAnnotations.initMocks(this);
   }
 
   @Test
-  public void testGetGraph() throws IOException, URISyntaxException, ReadGraphException {
+  public void testGetGraph() throws IOException, ReadGraphException {
     String graphUUID = "graphUuid";
     String versionUuid = "versionUuid";
     String versionedDatasetUrl = "http://myversiondDatasetUrl";
@@ -59,7 +61,7 @@ public class GraphReadRepositoryTest {
     org.apache.http.HttpEntity entity = mock(org.apache.http.HttpEntity.class);
     when(mockResponse.getStatusLine()).thenReturn(new BasicStatusLine(HttpVersion.HTTP_1_1, org.apache.http.HttpStatus.SC_OK, "FINE!"));
     String responseString = "check me out";
-    when(entity.getContent()).thenReturn(IOUtils.toInputStream(responseString));
+    when(entity.getContent()).thenReturn(IOUtils.toInputStream(responseString, defaultCharset()));
     when(mockResponse.getEntity()).thenReturn(entity);
     when(graphService.buildGraphUri(graphUUID)).thenReturn(URI.create(Namespaces.GRAPH_NAMESPACE + graphUUID));
     when(httpClient.execute(any(HttpPut.class))).thenReturn(mockResponse);

@@ -23,7 +23,6 @@ import org.apache.http.conn.HttpClientConnectionManager;
 import org.apache.http.conn.socket.ConnectionSocketFactory;
 import org.apache.http.conn.socket.PlainConnectionSocketFactory;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
-import org.apache.http.conn.ssl.TrustSelfSignedStrategy;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.ssl.SSLContexts;
@@ -31,10 +30,10 @@ import org.drugis.addis.util.WebConstants;
 import org.drugis.trialverse.util.JenaGraphMessageConverter;
 import org.ehcache.config.CacheConfiguration;
 import org.ehcache.config.builders.CacheConfigurationBuilder;
+import org.ehcache.config.builders.ExpiryPolicyBuilder;
 import org.ehcache.config.builders.ResourcePoolsBuilder;
 import org.ehcache.core.config.DefaultConfiguration;
-import org.ehcache.expiry.Duration;
-import org.ehcache.expiry.Expirations;
+
 import org.ehcache.jsr107.EhcacheCachingProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -68,6 +67,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.security.*;
 import java.security.cert.CertificateException;
+import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -115,7 +115,7 @@ public class MainConfig {
     CacheConfiguration<Object, Object> cacheConfiguration = CacheConfigurationBuilder
             .newCacheConfigurationBuilder(Object.class, Object.class, ResourcePoolsBuilder
                     .heap(numberOfCacheItems))
-            .withExpiry(Expirations.timeToLiveExpiration(new Duration(fourHours, TimeUnit.SECONDS)))
+            .withExpiry(ExpiryPolicyBuilder.timeToLiveExpiration(Duration.ofSeconds(fourHours)))
             .build();
 
     Map<String, CacheConfiguration<?, ?>> caches = createCacheConfigurations(cacheConfiguration);
@@ -161,6 +161,7 @@ public class MainConfig {
     SSLContext sslContext = SSLContexts
             .custom()
             .loadKeyMaterial(keyStore, KEYSTORE_PASSWORD.toCharArray())
+            .loadTrustMaterial(new File(KEYSTORE_PATH))
             .build();
     SSLConnectionSocketFactory connectionSocketFactory = new SSLConnectionSocketFactory(sslContext);
 
@@ -257,7 +258,7 @@ public class MainConfig {
     return em;
   }
 
-  Properties additionalProperties() {
+  private Properties additionalProperties() {
     return new Properties() {
       {
         setProperty("hibernate.hbm2ddl.auto", "validate");

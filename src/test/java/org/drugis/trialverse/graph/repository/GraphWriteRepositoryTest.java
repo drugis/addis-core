@@ -36,15 +36,15 @@ import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 
+import static java.nio.charset.Charset.defaultCharset;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 public class GraphWriteRepositoryTest {
 
-  HttpClient mockHttpClient = mock(HttpClient.class);
-  HttpResponse mockResponse = mock(HttpResponse.class);
-  BasicHeader versionHeader = new BasicHeader(WebConstants.X_EVENT_SOURCE_VERSION, "version 37");
+  private HttpClient mockHttpClient = mock(HttpClient.class);
+  private BasicHeader versionHeader = new BasicHeader(WebConstants.X_EVENT_SOURCE_VERSION, "version 37");
 
   @Mock
   private HttpClientFactory httpClientFactory;
@@ -85,7 +85,7 @@ public class GraphWriteRepositoryTest {
     PreAuthenticatedAuthenticationToken principal = new PreAuthenticatedAuthenticationToken(account, new ApiKey());
     TrialversePrincipal authentication = new TrialversePrincipal(principal);
     when(authenticationService.getAuthentication()).thenReturn(authentication);
-    mockResponse = mock(CloseableHttpResponse.class);
+    HttpResponse mockResponse = mock(CloseableHttpResponse.class);
     HttpEntity entity = mock(HttpEntity.class);
     when(mockResponse.getStatusLine()).thenReturn(new BasicStatusLine(HttpVersion.HTTP_1_1, HttpStatus.SC_OK, "FINE!"));
     when(entity.getContent()).thenReturn(getClass().getClassLoader().getResourceAsStream("result.txt"));
@@ -106,7 +106,7 @@ public class GraphWriteRepositoryTest {
     String datasetUuid = "datasetuuid";
     String graphUuid = "graphUuid";
     HttpServletRequest mockHttpServletRequest = mock(HttpServletRequest.class);
-    InputStream inputStream = IOUtils.toInputStream("content");
+    InputStream inputStream = IOUtils.toInputStream("content", defaultCharset());
     DelegatingServletInputStream delegatingServletInputStream = new DelegatingServletInputStream(inputStream);
     when(mockHttpServletRequest.getInputStream()).thenReturn(delegatingServletInputStream);
     String titleValue = "test title header";
@@ -128,7 +128,7 @@ public class GraphWriteRepositoryTest {
     String datasetUuid = "datasetuuid";
     String graphUuid = "graphUuid";
     HttpServletRequest mockHttpServletRequest = mock(HttpServletRequest.class);
-    InputStream inputStream = IOUtils.toInputStream("content");
+    InputStream inputStream = IOUtils.toInputStream("content", defaultCharset());
     DelegatingServletInputStream delegatingServletInputStream = new DelegatingServletInputStream(inputStream);
     when(mockHttpServletRequest.getInputStream()).thenReturn(delegatingServletInputStream);
     String titleValue = "test title header";

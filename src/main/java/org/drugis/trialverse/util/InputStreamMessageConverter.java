@@ -1,12 +1,8 @@
 package org.drugis.trialverse.util;
 
-/**
+/*
  * Created by connor on 12-3-15.
  */
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Arrays;
-import java.util.List;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.NotImplementedException;
@@ -16,6 +12,11 @@ import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.http.converter.HttpMessageNotWritableException;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Arrays;
+import java.util.List;
 
 public class InputStreamMessageConverter  implements HttpMessageConverter<InputStream> {
 
@@ -35,8 +36,8 @@ public class InputStreamMessageConverter  implements HttpMessageConverter<InputS
   }
 
   @Override
-  public InputStream read(Class<? extends InputStream> clazz, HttpInputMessage inputMessage) throws IOException,
-          HttpMessageNotReadableException {
+  public InputStream read(Class<? extends InputStream> clazz, HttpInputMessage inputMessage) throws
+      HttpMessageNotReadableException {
     throw new NotImplementedException("no read implementation");
   }
 
@@ -47,7 +48,7 @@ public class InputStreamMessageConverter  implements HttpMessageConverter<InputS
     try {
       IOUtils.copy(t, outputMessage.getBody());
     } finally {
-      IOUtils.closeQuietly(t);
+      t.close();
     }
 
   }

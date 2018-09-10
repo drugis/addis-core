@@ -31,6 +31,7 @@ import java.io.InputStream;
 import java.io.StringWriter;
 import java.net.URI;
 
+import static java.nio.charset.Charset.defaultCharset;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -59,7 +60,7 @@ public class GraphServiceTest {
   @Mock
   RestTemplate restTemplate;
 
-  String testHost = "http://localhost:8080";
+  private String testHost = "http://localhost:8080";
 
   @Before
   public void setUp() {
@@ -137,7 +138,7 @@ public class GraphServiceTest {
     InputStream is = new ByteArrayInputStream(source.getBytes());
     InputStream resultStream = graphService.jsonGraphInputStreamToTurtleInputStream(is);
     StringWriter writer = new StringWriter();
-    IOUtils.copy(resultStream, writer);
+    IOUtils.copy(resultStream, writer, defaultCharset());
     String result = writer.toString();
     assertEquals("@prefix ontology: <http://trials.drugis.org/ontology#> .\n" +
             "\n" +

@@ -1,7 +1,5 @@
 package org.drugis.addis.models;
 
-import org.apache.commons.collections.list.UnmodifiableList;
-
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.Collections;

@@ -56,6 +56,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.zip.GZIPInputStream;
 
+import static java.nio.charset.Charset.defaultCharset;
 import static org.apache.http.HttpHeaders.ACCEPT;
 import static org.hamcrest.text.IsEqualIgnoringWhiteSpace.equalToIgnoringWhiteSpace;
 import static org.junit.Assert.*;
@@ -83,7 +84,7 @@ public class DatasetReadRepositoryTest {
   private DatasetReadRepository datasetReadRepository;
 
   @Before
-  public void init() throws IOException {
+  public void init() {
     datasetReadRepository = new DatasetReadRepositoryImpl();
     MockitoAnnotations.initMocks(this);
   }
@@ -95,7 +96,7 @@ public class DatasetReadRepositoryTest {
 
 
   @Test
-  public void testQueryDatasets() throws Exception {
+  public void testQueryDatasets() {
     Account account = new Account(1, "username", "firstName", "lastName", "foo@bar.com");
     String datasetLocation = "loc1";
     String versionKey = "version1";
@@ -165,7 +166,7 @@ public class DatasetReadRepositoryTest {
   }
 
   @Test
-  public void testIsOwnerWhenQuerySaysFalse() throws IOException, URISyntaxException {
+  public void testIsOwnerWhenQuerySaysFalse() throws URISyntaxException {
     URI datasetUrl = new URI("datasetUuid");
     String user1 = "other user";
     Account account = new Account(user1, "piet", "klaassen", "foo@bar.com");
@@ -184,7 +185,7 @@ public class DatasetReadRepositoryTest {
   }
 
   @Test
-  public void testIsOwnerWhenQuerySaysTrue() throws IOException, URISyntaxException {
+  public void testIsOwnerWhenQuerySaysTrue() throws URISyntaxException {
     String user1 = "user1";
     URI datasetUrl = new URI(Namespaces.DATASET_NAMESPACE + "datasetUuid");
     Account account = new Account(user1, "piet", "klaassen", "foo@bar.com");
@@ -261,7 +262,7 @@ public class DatasetReadRepositoryTest {
     org.apache.http.HttpEntity entity = mock(org.apache.http.HttpEntity.class);
     when(mockResponse.getStatusLine()).thenReturn(new BasicStatusLine(HttpVersion.HTTP_1_1, org.apache.http.HttpStatus.SC_OK, "FINE!"));
     String responceString = "check me out";
-    when(entity.getContent()).thenReturn(IOUtils.toInputStream(responceString));
+    when(entity.getContent()).thenReturn(IOUtils.toInputStream(responceString, defaultCharset()));
     when(mockResponse.getEntity()).thenReturn(entity);
     when(httpClient.execute(any(HttpPut.class))).thenReturn(mockResponse);
     when(versionMappingRepository.getVersionMappingByDatasetUrl(datasetUrl)).thenReturn(versionMapping);
@@ -285,7 +286,7 @@ public class DatasetReadRepositoryTest {
     org.apache.http.HttpEntity entity = mock(org.apache.http.HttpEntity.class);
     when(mockResponse.getStatusLine()).thenReturn(new BasicStatusLine(HttpVersion.HTTP_1_1, org.apache.http.HttpStatus.SC_OK, "FINE!"));
     String responceString = "check me out";
-    when(entity.getContent()).thenReturn(IOUtils.toInputStream(responceString));
+    when(entity.getContent()).thenReturn(IOUtils.toInputStream(responceString, defaultCharset()));
     when(mockResponse.getEntity()).thenReturn(entity);
     when(httpClient.execute(any(HttpPut.class))).thenReturn(mockResponse);
     when(httpClient.execute(any(HttpGet.class))).thenReturn(mockResponse);
@@ -350,38 +351,5 @@ public class DatasetReadRepositoryTest {
 
     JSONObject object = datasetReadRepository.executeHeadQuery(sparqlQuery, versionMapping);
     assertNotNull(object);
-  }
-
-
-
-  /**
-   * parses the response from the HttpResponse, use for debugging only !!!
-   *
-   * @param response
-   * @return
-   * @throws Exception
-   */
-  private static String parseResponse(HttpResponse response) throws Exception {
-    String result = null;
-    BufferedReader reader = null;
-    try {
-      Header contentEncoding = response.getFirstHeader("Content-Encoding");
-      if (contentEncoding != null && contentEncoding.getValue().equalsIgnoreCase("gzip")) {
-        reader = new BufferedReader(new InputStreamReader(new GZIPInputStream(response.getEntity().getContent())));
-      } else {
-        reader = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
-      }
-      StringBuilder sb = new StringBuilder();
-      String line = null;
-      while ((line = reader.readLine()) != null) {
-        sb.append(line + "\n");
-      }
-      result = sb.toString();
-    } finally {
-      if (reader != null) {
-        reader.close();
-      }
-    }
-    return result;
   }
 }
