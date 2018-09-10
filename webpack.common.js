@@ -57,10 +57,7 @@ let config = {
     alias: {
       'gemtc-web': 'gemtc-web/app',
       'mcda-web': 'mcda-web/app',
-      'app': basePath + 'resources/app/js/app',
-      'angular-patavi-client': 'angular-patavi-client/patavi',
-      'error-reporting': 'error-reporting/errorReportingDirective',
-      'export-directive': 'export-directive/export-directive'
+      'app': basePath + 'resources/app/js/app'
     },
     modules: [
       // Files path which will be referenced while bundling

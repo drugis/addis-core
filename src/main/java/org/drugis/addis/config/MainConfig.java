@@ -161,7 +161,6 @@ public class MainConfig {
     SSLContext sslContext = SSLContexts
             .custom()
             .loadKeyMaterial(keyStore, KEYSTORE_PASSWORD.toCharArray())
-            .loadTrustMaterial(new File(KEYSTORE_PATH))
             .build();
     SSLConnectionSocketFactory connectionSocketFactory = new SSLConnectionSocketFactory(sslContext);
 
