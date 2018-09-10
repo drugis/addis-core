@@ -2,7 +2,7 @@ package org.drugis.trialverse.dataset.repository.impl;
 
 import net.minidev.json.JSONObject;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
@@ -45,6 +45,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URLEncoder;
 import java.security.Principal;
 import java.util.List;
 
@@ -196,8 +197,9 @@ public class DatasetReadRepositoryImpl implements DatasetReadRepository {
     VersionMapping versionMapping = versionMappingRepository.getVersionMappingByDatasetUrl(trialverseDatasetUri);
     UriComponents uriComponents = UriComponentsBuilder.fromHttpUrl(versionMapping.getVersionedDatasetUrl())
             .path(WebConstants.QUERY_ENDPOINT)
-            .queryParam(WebConstants.QUERY_PARAM_QUERY, query)
-            .build();
+            .queryParam(WebConstants.QUERY_PARAM_QUERY, URLEncoder.encode(query, "UTF-8")) // built-in encoding is too permissive
+            .build(true);
+
     HttpGet request = new HttpGet(uriComponents.toUri());
     if(versionUri != null) {
       request.addHeader(WebConstants.X_ACCEPT_EVENT_SOURCE_VERSION, versionUri.toString());

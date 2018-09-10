@@ -32,7 +32,7 @@ public class QueryResultMappingServiceImpl implements QueryResultMappingService 
     Set<Pair<URI, URI>> seenArmTreatmentCombinations = new HashSet<>();
 
     for (Object binding : bindings) {
-      JSONObject row = (JSONObject) binding;
+      JSONObject row = new JSONObject((LinkedHashMap) binding);
       URI studyUri = readValue(row, "graph");
       TrialDataStudy trialDataStudy = trialDataStudies.get(studyUri);
       if (trialDataStudy == null) {

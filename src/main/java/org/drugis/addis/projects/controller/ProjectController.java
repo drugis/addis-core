@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.net.URISyntaxException;
 import java.security.Principal;
 import java.sql.SQLException;
@@ -74,7 +75,7 @@ public class ProjectController extends AbstractAddisCoreController {
 
   @RequestMapping(value = "/projects/{projectId}/studies", method = RequestMethod.GET)
   @ResponseBody
-  public List<TrialDataStudy> queryStudies(@PathVariable Integer projectId) throws URISyntaxException, ResourceDoesNotExistException, ReadValueException {
+  public List<TrialDataStudy> queryStudies(@PathVariable Integer projectId) throws URISyntaxException, ResourceDoesNotExistException, ReadValueException, IOException {
     return projectService.queryMatchedStudies(projectId);
   }
 
@@ -125,7 +126,7 @@ public class ProjectController extends AbstractAddisCoreController {
 
   @RequestMapping(value = "/projects/{projectId}/update", method = RequestMethod.POST)
   @ResponseBody
-  public Integer update(Principal principal, @PathVariable Integer projectId) throws ResourceDoesNotExistException, MethodNotAllowedException, ReadValueException, URISyntaxException, SQLException {
+  public Integer update(Principal principal, @PathVariable Integer projectId) throws ResourceDoesNotExistException, MethodNotAllowedException, ReadValueException, URISyntaxException, SQLException, IOException {
     Account user = accountRepository.findAccountByUsername(principal.getName());
     return projectService.createUpdated(user, projectId);
   }

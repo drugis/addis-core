@@ -149,7 +149,7 @@ public class ProjectServiceImpl implements ProjectService {
   }
 
   @Override
-  public List<TrialDataStudy> queryMatchedStudies(Integer projectId) throws ResourceDoesNotExistException, ReadValueException, URISyntaxException {
+  public List<TrialDataStudy> queryMatchedStudies(Integer projectId) throws ResourceDoesNotExistException, ReadValueException, URISyntaxException, IOException {
     Project project = projectRepository.get(projectId);
     Set<AbstractIntervention> interventions = interventionRepository.query(projectId);
     Set<URI> singleInterventionUris = interventions.stream()
@@ -378,7 +378,7 @@ public class ProjectServiceImpl implements ProjectService {
 
   @Override
   public Integer createUpdated(Account user, Integer sourceProjectId) throws ResourceDoesNotExistException,
-          ReadValueException, URISyntaxException, SQLException {
+      ReadValueException, URISyntaxException, SQLException, IOException {
     Project sourceProject = projectRepository.get(sourceProjectId);
     ProjectCommand command = sourceProject.getCommand();
     URI datasetUri = URI.create(Namespaces.DATASET_NAMESPACE + sourceProject.getNamespaceUid());
@@ -540,7 +540,7 @@ public class ProjectServiceImpl implements ProjectService {
         newAnalysis.updateArmExclusions(updatedArmExclusions);
 
         oldToNewAnalysisId.put(oldAnalysis.getId(), newAnalysis.getId());
-      } catch (ResourceDoesNotExistException | MethodNotAllowedException | ReadValueException | URISyntaxException e) {
+      } catch (ResourceDoesNotExistException | MethodNotAllowedException | ReadValueException | URISyntaxException | IOException e) {
         e.printStackTrace();
       }
     };
@@ -566,7 +566,7 @@ public class ProjectServiceImpl implements ProjectService {
     return true;
   }
 
-  private void createOutcomes(Account user, Integer sourceProjectId, String trialverseDatasetUuid, URI headVersion, Project newProject, Map<Integer, Integer> oldIdToNewCovariateId) throws ReadValueException {
+  private void createOutcomes(Account user, Integer sourceProjectId, String trialverseDatasetUuid, URI headVersion, Project newProject, Map<Integer, Integer> oldIdToNewCovariateId) throws ReadValueException, IOException {
     Collection<Outcome> sourceOutcomes = outcomeRepository.query(sourceProjectId);
     // List of target outcomes
     List<SemanticVariable> semanticOutcomes = triplestoreService.getOutcomes(trialverseDatasetUuid, headVersion);
@@ -589,7 +589,7 @@ public class ProjectServiceImpl implements ProjectService {
     };
   }
 
-  private void createCovariates(Integer sourceProjectId, String trialverseDatasetUuid, URI headVersion, Project newProject, Map<Integer, Integer> oldToNewCovariateId) throws ReadValueException {
+  private void createCovariates(Integer sourceProjectId, String trialverseDatasetUuid, URI headVersion, Project newProject, Map<Integer, Integer> oldToNewCovariateId) throws ReadValueException, IOException {
     Collection<Covariate> sourceCovariates = covariateRepository.findByProject(sourceProjectId);
     List<SemanticVariable> semanticCovariates = triplestoreService.getPopulationCharacteristics(trialverseDatasetUuid, headVersion);
 
@@ -608,7 +608,7 @@ public class ProjectServiceImpl implements ProjectService {
     };
   }
 
-  private void createInterventions(Account user, Integer sourceProjectId, String trialverseDatasetUuid, URI headVersion, Project newProject, Map<Integer, Integer> oldToNewInterventionId) {
+  private void createInterventions(Account user, Integer sourceProjectId, String trialverseDatasetUuid, URI headVersion, Project newProject, Map<Integer, Integer> oldToNewInterventionId) throws IOException {
     Set<AbstractIntervention> sourceInterventions = interventionRepository.query(sourceProjectId);
     List<SemanticInterventionUriAndName> semanticInterventions = triplestoreService.getInterventions(trialverseDatasetUuid, headVersion);
     List<URI> unitConcepts = triplestoreService.getUnitUris(trialverseDatasetUuid, headVersion);

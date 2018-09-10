@@ -1,6 +1,6 @@
 package org.drugis.addis.analyses.service.impl;
 
-import org.apache.commons.lang.NotImplementedException;
+import org.apache.commons.lang3.NotImplementedException;
 import org.drugis.addis.analyses.model.*;
 import org.drugis.addis.analyses.repository.AnalysisRepository;
 import org.drugis.addis.analyses.repository.BenefitRiskAnalysisRepository;
@@ -146,7 +146,7 @@ public class AnalysisServiceImpl implements AnalysisService {
   }
 
   @Override
-  public List<TrialDataStudy> buildEvidenceTable(Integer projectId, Integer analysisId) throws ResourceDoesNotExistException, ReadValueException {
+  public List<TrialDataStudy> buildEvidenceTable(Integer projectId, Integer analysisId) throws ResourceDoesNotExistException, ReadValueException, IOException {
     Project project = projectRepository.get(projectId);
     AbstractAnalysis analysis = analysisRepository.get(analysisId);
 
@@ -184,7 +184,7 @@ public class AnalysisServiceImpl implements AnalysisService {
 
     // filter studies that don't have any matched interventions on any arms
     trialData = trialData.stream().filter(trialDataStudy -> {
-      Integer nMatchedInterventions = trialDataStudy.getTrialDataArms().stream()
+      int nMatchedInterventions = trialDataStudy.getTrialDataArms().stream()
               .mapToInt(a -> a.getMatchedProjectInterventionIds().size())
               .sum();
       return nMatchedInterventions > 0;

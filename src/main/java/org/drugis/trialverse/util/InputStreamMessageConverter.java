@@ -9,7 +9,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.NotImplementedException;
+import org.apache.commons.lang3.NotImplementedException;
 import org.springframework.http.HttpInputMessage;
 import org.springframework.http.HttpOutputMessage;
 import org.springframework.http.MediaType;
@@ -37,7 +37,7 @@ public class InputStreamMessageConverter  implements HttpMessageConverter<InputS
   @Override
   public InputStream read(Class<? extends InputStream> clazz, HttpInputMessage inputMessage) throws IOException,
           HttpMessageNotReadableException {
-    throw new NotImplementedException();
+    throw new NotImplementedException("no read implementation");
   }
 
   @Override

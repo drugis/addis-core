@@ -23,6 +23,7 @@ import org.drugis.trialverse.util.service.UuidService;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
+import java.io.IOException;
 import java.net.URI;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -100,7 +101,7 @@ public class SingleStudyBenefitRiskServiceImpl implements SingleStudyBenefitRisk
       List<TrialDataStudy> singleStudyMeasurements = triplestoreService.getSingleStudyData(versionedUuid,
               studyGraphUri, project.getDatasetVersion(), context.getOutcomesByUri().keySet(), interventionUris);
       return singleStudyMeasurements.iterator().next();
-    } catch (ReadValueException e) {
+    } catch (ReadValueException | IOException e) {
       throw new RuntimeException(e);
     }
   }

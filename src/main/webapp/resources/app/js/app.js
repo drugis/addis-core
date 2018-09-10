@@ -2,7 +2,6 @@
 define(
   [
     'angular',
-    'lodash',
     'mcda-web/js/config',
     'mcda-web/lexicon',
     'gemtc-web/lexicon',
@@ -79,7 +78,6 @@ define(
   ],
   function(
     angular,
-    _,
     Config,
     mcdaLexicon,
     gemtcLexicon

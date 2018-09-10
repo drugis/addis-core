@@ -1,5 +1,6 @@
 package org.drugis.addis.trialverse;
 
+import com.jayway.jsonpath.JsonPath;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import net.minidev.json.JSONValue;
@@ -38,8 +39,8 @@ public class QueryResultMappingServiceTest {
   }
 
   @Test
-  public void testMapResultRowToTrialDataStudy() throws ParseException, ReadValueException, URISyntaxException {
-    JSONArray bindings = (JSONArray) JSONValue.parseWithException(combinationTreatmentRows);
+  public void testMapResultRowToTrialDataStudy() throws ReadValueException, URISyntaxException {
+    JSONArray bindings = JsonPath.read(combinationTreatmentRows, "$");
     Map<URI, TrialDataStudy> trialDataMap = queryResultMappingService.mapResultRowsToTrialDataStudy(bindings);
     assertEquals(5, trialDataMap.size());
 
@@ -77,8 +78,8 @@ public class QueryResultMappingServiceTest {
   }
 
   @Test
-  public void testCombinationTreatment() throws ParseException, ReadValueException {
-    JSONArray bindings = (JSONArray) JSONValue.parseWithException(combinationTreatmentRows);
+  public void testCombinationTreatment() throws ReadValueException {
+    JSONArray bindings = JsonPath.read(combinationTreatmentRows, "$");
     Map<URI, TrialDataStudy> trialDataMap = queryResultMappingService.mapResultRowsToTrialDataStudy(bindings);
 
     final TrialDataStudy combiTreatmentStudy = trialDataMap.get(URI.create("http://trials.drugis.org/graphs/f1d76e55-b04d-4d34-82bd-0e7dd0a8cad0"));

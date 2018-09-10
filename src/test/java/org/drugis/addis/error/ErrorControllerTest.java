@@ -38,31 +38,31 @@ public class ErrorControllerTest {
   public void testGetErrorView() throws Exception {
     mockMvc.perform(get("/error/404"))
       .andExpect(status().isOk())
-      .andExpect(view().name("error/errorPage"))
+      .andExpect(view().name("../error/errorPage.html"))
       .andExpect(model().attribute("errorCode", is(404)))
       .andExpect(model().attribute("reasonPhrase", HttpStatus.NOT_FOUND.getReasonPhrase()));
 
     mockMvc.perform(get("/error/401"))
       .andExpect(status().isOk())
-      .andExpect(view().name("error/errorPage"))
+      .andExpect(view().name("../error/errorPage.html"))
       .andExpect(model().attribute("errorCode", is(401)))
       .andExpect(model().attribute("reasonPhrase", HttpStatus.UNAUTHORIZED.getReasonPhrase()));
 
     mockMvc.perform(get("/error/403"))
       .andExpect(status().isOk())
-      .andExpect(view().name("error/errorPage"))
+      .andExpect(view().name("../error/errorPage.html"))
       .andExpect(model().attribute("errorCode", is(403)))
       .andExpect(model().attribute("reasonPhrase", HttpStatus.FORBIDDEN.getReasonPhrase()));
 
     mockMvc.perform(get("/error/500"))
       .andExpect(status().isOk())
-      .andExpect(view().name("error/errorPage"))
+      .andExpect(view().name("../error/errorPage.html"))
       .andExpect(model().attribute("errorCode", is(500)))
       .andExpect(model().attribute("reasonPhrase", HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase()));
 
     mockMvc.perform(get("/error/503"))
       .andExpect(status().isOk())
-      .andExpect(view().name("error/errorPage"))
+      .andExpect(view().name("../error/errorPage.html"))
       .andExpect(model().attribute("errorCode", is(503)))
       .andExpect(model().attribute("reasonPhrase", HttpStatus.SERVICE_UNAVAILABLE.getReasonPhrase()));
   }

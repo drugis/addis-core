@@ -27,6 +27,7 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.io.IOException;
 import java.net.URI;
 import java.util.Collection;
 import java.util.Collections;
@@ -103,7 +104,7 @@ public class TriplestoreServiceTest {
   }
 
   @Test
-  public void testGetOutcomes() throws ReadValueException {
+  public void testGetOutcomes() throws ReadValueException, IOException {
     String mockResult = TestUtils.loadResource(this.getClass(), "/triplestoreService/exampleOutcomeResult.json");
     createMockTrialverseService(mockResult);
     List<SemanticVariable> result = triplestoreService.getOutcomes("abc", version);
@@ -112,7 +113,7 @@ public class TriplestoreServiceTest {
   }
 
   @Test
-  public void testGetPopulationCharacteristics() throws ReadValueException {
+  public void testGetPopulationCharacteristics() throws ReadValueException, IOException {
     String mockResult = TestUtils.loadResource(this.getClass(), "/triplestoreService/exampleOutcomeResult.json");
     createMockTrialverseService(mockResult);
     List<SemanticVariable> result = triplestoreService.getOutcomes("abc", version);
@@ -121,7 +122,7 @@ public class TriplestoreServiceTest {
   }
 
   @Test
-  public void testGetInterventions() {
+  public void testGetInterventions() throws IOException {
     String mockResult = TestUtils.loadResource(this.getClass(), "/triplestoreService/exampleInterventionResult.json");
     createMockTrialverseService(mockResult);
 
@@ -132,7 +133,7 @@ public class TriplestoreServiceTest {
   }
 
   @Test
-  public void testGetUnits() {
+  public void testGetUnits() throws IOException {
     String mockResult = TestUtils.loadResource(this.getClass(), "/triplestoreService/exampleUnitsResult.json");
     createMockTrialverseService(mockResult);
     List<URI> unitUris = triplestoreService.getUnitUris("abc", version);
@@ -141,7 +142,7 @@ public class TriplestoreServiceTest {
   }
 
   @Test
-  public void testQueryStudies() {
+  public void testQueryStudies() throws IOException {
     String namespaceUid = "namespaceUid";
     String mockResult = TestUtils.loadResource(this.getClass(), "/triplestoreService/exampleQueryStudiesResult.json");
     createMockTrialverseService(mockResult);
@@ -163,7 +164,7 @@ public class TriplestoreServiceTest {
   }
 
   @Test
-  public void getCovariateTestData() throws ReadValueException {
+  public void getCovariateTestData() throws ReadValueException, IOException {
     String namespaceUid = "namespaceUid";
     String mockResult = TestUtils.loadResource(this.getClass(), "/triplestoreService/covariateDataExample.json");
     createMockTrialverseService(mockResult);

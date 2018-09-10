@@ -27,6 +27,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import java.io.IOException;
 import java.net.URI;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -207,7 +208,7 @@ public class SingleStudyBenefitRiskServiceTest {
 
 
   @Test
-  public void testGetSingleStudyMeasurements() throws ReadValueException, ResourceDoesNotExistException {
+  public void testGetSingleStudyMeasurements() throws ReadValueException, ResourceDoesNotExistException, IOException {
     URI datasetVersion = URI.create("datasetVersion");
     Project project = mock(Project.class);
     when(project.getNamespaceUid()).thenReturn("namespaceUuid");

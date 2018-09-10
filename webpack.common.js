@@ -27,7 +27,7 @@ let config = {
       use: [{
         loader: 'angular1-templateurl-loader'
       }],
-      exclude: [/(.*)\/angular-foundation-6\/(.*)/] // uses $templatecache so dont replace 
+      exclude: [/(.*)\/angular-foundation-6\/(.*)/] // uses $templatecache so don't replace
     }, {
       test: /\.html$/,
       loader: 'raw-loader'
@@ -37,8 +37,8 @@ let config = {
         loader: 'file-loader',
         options: {
           name: '[name].[ext]',
-          outputPath: 'fonts/', // where the fonts will go
-          publicPath: 'fonts/' // override the default path
+          outputPath: '/fonts/', // where the fonts will go
+          publicPath: '/fonts/' // override the default path
         }
       }]
     }, {
@@ -60,8 +60,7 @@ let config = {
       'app': basePath + 'resources/app/js/app',
       'angular-patavi-client': 'angular-patavi-client/patavi',
       'error-reporting': 'error-reporting/errorReportingDirective',
-      'export-directive': 'export-directive/export-directive',
-      'help-popup': 'help-popup/help-directive'
+      'export-directive': 'export-directive/export-directive'
     },
     modules: [
       // Files path which will be referenced while bundling
@@ -84,7 +83,7 @@ let config = {
       inject: 'head',
       chunks: ['manual']
     }),
-    new CleanWebpackPlugin(['WEB-INF/views/dist']),
+    new CleanWebpackPlugin([basePath + '/WEB-INF/views/dist']),
     new CopyWebpackPlugin([
       {from :'node_modules/gemtc-web/public/img', to:'images/gemtc-web'},
       {from :'node_modules/mcda-web/public/img', to:'images/mcda-web'}
