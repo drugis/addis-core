@@ -75,7 +75,7 @@ define(['angular', 'angular-mocks', '../controllers'], function() {
         id: 3,
         name: 'intervention-name3',
         semanticInterventionUri: 'semanticInterventionUri3'
-      }, ],
+      },],
       EvidenceTableResource,
       mockModel = {
         id: 512,
@@ -83,7 +83,8 @@ define(['angular', 'angular-mocks', '../controllers'], function() {
       },
       modelResource,
       pageTitleServiceMock,
-      modelDeferred;
+      modelDeferred,
+      userDefer;
     beforeEach(angular.mock.module('addis.controllers'));
     beforeEach(inject(function($rootScope, $controller, $q) {
       q = $q;
@@ -101,8 +102,8 @@ define(['angular', 'angular-mocks', '../controllers'], function() {
       scope = $rootScope;
       scope.analysis = mockAnalysis;
       scope.project = mockProject;
-      userService = jasmine.createSpyObj('UserService', ['hasLoggedInUser']);
-      pageTitleServiceMock = jasmine.createSpyObj('PageTitleService', ['setPageTitle']),
+      userService = jasmine.createSpyObj('UserService', ['getLoginUser']);
+      pageTitleServiceMock = jasmine.createSpyObj('PageTitleService', ['setPageTitle']);
       outcomeResource = jasmine.createSpyObj('OutcomeResource', ['query']);
       outcomeResource.query.and.returnValue(mockOutcomes);
       interventionResource = jasmine.createSpyObj('InterventionResource', ['query']);
@@ -152,6 +153,9 @@ define(['angular', 'angular-mocks', '../controllers'], function() {
       modelResource.save.and.returnValue(mockModel);
       modelResource.query.and.returnValue([mockModel]);
       state = jasmine.createSpyObj('$state', ['go']);
+
+      userDefer = $q.defer();
+      userService.getLoginUser.and.returnValue(userDefer.promise);
       $controller('NetworkMetaAnalysisContainerController', {
         $window: mockWindow,
         $scope: scope,
@@ -173,6 +177,7 @@ define(['angular', 'angular-mocks', '../controllers'], function() {
         PageTitleService: pageTitleServiceMock
       });
     }));
+
     describe('when first initialised', function() {
       it('should place the list of selectable outcomes on the scope', function() {
         expect(outcomeResource.query).toHaveBeenCalledWith({

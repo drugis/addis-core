@@ -62,7 +62,7 @@ define(['lodash'],
       if (!$scope.isHeadView) {
         $scope.versionUuid = $stateParams.versionUuid;
       }
-      UserService.hasLoggedInUser(function(user) {
+      UserService.getLoginUser().then(function(user) {
         $scope.loggedInUser = user;
         $scope.hasLoggedInUser = !!user;
       });

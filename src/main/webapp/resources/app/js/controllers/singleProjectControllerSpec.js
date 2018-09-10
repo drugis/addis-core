@@ -6,7 +6,7 @@ define(['angular-mocks'], function(angularMocks) {
       interventionService = jasmine.createSpyObj('InterventionService', ['generateDescriptionLabel']),
       projectServiceMock = jasmine.createSpyObj('ProjectService', ['buildCovariateUsage', 'buildOutcomeUsage', 'buildInterventionUsage', 'addMissingMultiplierInfo']),
       analysisResourceMock = jasmine.createSpyObj('analysisResource', ['query', 'save']),
-      userServiceMock = jasmine.createSpyObj('UserService', ['isLoginUserId', 'hasLoggedInUser']),
+      userServiceMock = jasmine.createSpyObj('UserService', ['isLoginUserId', 'getLoginUser']),
       historyResourceMock = jasmine.createSpyObj('historyResource', ['get']),
       projectResource = jasmine.createSpyObj('projectResource', ['get', 'save', 'query']),
       semanticOutcomeResource = jasmine.createSpyObj('semanticOutcomeResource', ['query']),
@@ -63,7 +63,7 @@ define(['angular-mocks'], function(angularMocks) {
         description: 'testDescription',
         namespace: 'testNamespace',
         namespaceUid: 'aa2a-20a9g-205968',
-        $save: function() {}
+        $save: function() { }
       },
       mockTrialverse = {
         id: 1,
@@ -71,7 +71,6 @@ define(['angular-mocks'], function(angularMocks) {
         description: 'trialverseDescription'
       },
       mockOutcomes = [1, 2, 3],
-      mockOutcome,
       outcomeDeferred,
       mockInterventions = [{
         name: 'a',
@@ -83,7 +82,6 @@ define(['angular-mocks'], function(angularMocks) {
         name: 'c',
         val: 6
       }],
-      mockIntervention,
       interventionDeferred,
       mockAnalysis = {
         projectId: 1,
@@ -111,7 +109,8 @@ define(['angular-mocks'], function(angularMocks) {
       }, {
         unitName: 'liter',
         unitUri: 'unitUri2'
-      }];
+      }],
+      userDefer;
 
     beforeEach(angular.mock.module('addis.controllers'));
 
@@ -173,13 +172,7 @@ define(['angular-mocks'], function(angularMocks) {
       studiesDeferred = $q.defer();
       mockStudies.$promise = studiesDeferred.promise;
       outcomeDeferred = $q.defer();
-      mockOutcome = {
-        $promise: outcomeDeferred.promise
-      };
       interventionDeferred = $q.defer();
-      mockIntervention = {
-        $promise: interventionDeferred.promise
-      };
       trialverseDeferred = $q.defer();
       mockTrialverse.$promise = trialverseDeferred.promise;
 
@@ -189,7 +182,8 @@ define(['angular-mocks'], function(angularMocks) {
       mockReport.$promise = reportDeferred.promise;
 
       state = jasmine.createSpyObj('state', ['go']);
-      userServiceMock.hasLoggedInUser.and.returnValue(true);
+      userDefer = $q.defer();
+      userServiceMock.getLoginUser.and.returnValue(userDefer.promise);
 
 
       var mockHistory = {
@@ -205,7 +199,7 @@ define(['angular-mocks'], function(angularMocks) {
         $stateParams: stateParams,
         $location: location,
         $modal: {
-          open: function() {}
+          open: function() { }
         },
         ProjectResource: projectResource,
         ProjectService: projectServiceMock,

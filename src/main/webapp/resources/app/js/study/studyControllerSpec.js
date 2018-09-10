@@ -24,7 +24,7 @@ define(['angular-mocks', './study'], function() {
       studyDesignServiceMock = jasmine.createSpyObj('StudyDesignService', ['cleanupCoordinates']),
       graphResource = jasmine.createSpyObj('GraphResource', ['getJson']),
       versionedGraphResource = jasmine.createSpyObj('VersionedGraphResource', ['getJson']),
-      userService = jasmine.createSpyObj('UserService', ['hasLoggedInUser']),
+      userService = jasmine.createSpyObj('UserService', ['getLoginUser']),
       transitionMock = jasmine.createSpyObj('$transitions', ['onStart']),
       pageTitleServiceMock = jasmine.createSpyObj('PageTitleService', ['setPageTitle']),
       queryStudyDataDeferred,

@@ -2,7 +2,7 @@
 define(['angular-mocks', './dataset'], function() {
   describe('the dataset controller', function() {
 
-    var scope, httpBackend,
+    var scope, 
       mockModal = jasmine.createSpyObj('$mock', ['open']),
       studiesWithDetailsService = jasmine.createSpyObj('StudiesWithDetailsService', ['get', 'getTreatmentActivities', 'addActivitiesToStudies']),
       historyResource = jasmine.createSpyObj('HistoryResource', ['query']),
@@ -10,15 +10,15 @@ define(['angular-mocks', './dataset'], function() {
       versionedGraphResource = jasmine.createSpyObj('VersionedGraphResource', ['get', 'getConceptJson']),
       datasetResource = jasmine.createSpyObj('DatasetResource', ['getForJson']),
       datasetVersionedResource = jasmine.createSpyObj('DatasetVersionedResource', ['getForJson']),
-      userService = jasmine.createSpyObj('UserService', ['isLoginUserEmail', 'hasLoggedInUser']),
+      userService = jasmine.createSpyObj('UserService', ['isLoginUserEmail', 'getLoginUser']),
       dataModelServiceMock = jasmine.createSpyObj('DataModelService', ['correctUnitConceptType']),
       excelExportServiceMock = jasmine.createSpyObj('ExcelExportService', ['exportDataset']),
       pageTitleServiceMock = jasmine.createSpyObj('PageTitleService', ['setPageTitle']),
       datasetDeferred,
       queryHistoryDeferred,
       studiesWithDetailsGetDeferred,
-      mockQueryDatasetDeferred,
       conceptsJsonDefer,
+      userDefer,
       mockStudiesWithDetail = [{
         id: 'study 1'
       }],
@@ -38,18 +38,18 @@ define(['angular-mocks', './dataset'], function() {
 
     beforeEach(angular.mock.module('trialverse.dataset'));
 
-    beforeEach(inject(function($rootScope, $q, $controller, $httpBackend) {
+    beforeEach(inject(function($rootScope, $q, $controller) {
       scope = $rootScope;
-      httpBackend = $httpBackend;
 
-      mockQueryDatasetDeferred = $q.defer();
       studiesWithDetailsGetDeferred = $q.defer();
       queryHistoryDeferred = $q.defer();
       conceptsJsonDefer = $q.defer();
       datasetDeferred = $q.defer();
+      userDefer = $q.defer();
 
       studiesWithDetailsService.get.and.returnValue(studiesWithDetailsGetDeferred.promise);
       conceptsService.loadJson.and.returnValue(conceptsJsonDefer.promise);
+      userService.getLoginUser.and.returnValue(userDefer.promise);
       versionedGraphResource.getConceptJson.and.returnValue({
         $promise: conceptsJsonDefer.promise
       });

@@ -88,7 +88,9 @@ define(['lodash', 'angular'], function(_, angular) {
     $scope.projects = ProjectResource.query();
 
     $scope.editMode.allowEditing = !project.archived && UserService.isLoginUserId($scope.project.owner.id);
-    $scope.editMode.allowCopying = UserService.hasLoggedInUser();
+    UserService.getLoginUser().then(function(user) {
+      $scope.editMode.allowCopying = !!user;
+    });
 
     $scope.trialverse = TrialverseResource.get({
       namespaceUid: $scope.project.namespaceUid,

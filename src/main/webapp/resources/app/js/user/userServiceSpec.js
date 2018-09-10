@@ -1,27 +1,35 @@
 'use strict';
-define(['angular-mocks'], function(angularMocks) {
-  xdescribe('the user  service', function() {
+define(['angular-mocks', './user'], function() {
+  describe('the user  service', function() {
 
     var userService;
     var mockWindow;
 
-    beforeEach(angular.mock.module('trialverse.user'));
+    beforeEach(angular.mock.module('trialverse.user', function($provide){
+      $provide.value('$window', mockWindow);
+      $provide.value('UserResource', userResourceMock);
+    }));
+
 
     beforeEach(inject(function($window, UserService) {
       mockWindow = $window;
-      mockWindow.config = {};
+      mockWindow.sessionStorage = {};
       userService = UserService;
     }));
 
 
-    describe('hasLoggedInUser', function() {
-      it('should return false if no user in LoggedIn', function() {
-        mockWindow.config.user = {
-          id: 1
+    describe('getLoginUser', function() {
+      it('should return the user if one is logged in and cached', function(done) {
+        mockWindow.sessionStorage.getItem = function() {
+          return 'cachedUser';
         };
-        expect(userService.hasLoggedInUser()).toBe(true);
+        var userPromise = userService.getLoginUser();
+        userPromise.then(function(user) {
+          expect(user).toEqual('cachedUser');
+          done();
+        });
       });
-      it('should return false if no user in LoggedIn', function() {
+      it('should retrieve and return the user if one is logged in but not cached', function() {
         mockWindow.configs = {};
         expect(userService.hasLoggedInUser()).toBe(false);
       });

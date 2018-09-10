@@ -1,22 +1,18 @@
 'use strict';
 define(['lodash'],
   function(_) {
-    var dependencies = ['$q', 'UserResource'];
-    var UserService = function($q, UserResource) {
-
-      function hasLoggedInUser(callback) {
-        return getLoginUser().then(callback);
-      }
+    var dependencies = ['$q', '$window', 'UserResource'];
+    var UserService = function($q, $window, UserResource) {
 
       function getLoginUser() {
-        if (window.sessionStorage.getItem('user')) {
-          return $q.resolve(JSON.parse(window.sessionStorage.user));
+        if ($window.sessionStorage.getItem('user')) {
+          return $q.resolve(JSON.parse($window.sessionStorage.getItem('user')));
         } else {
-          return UserResource.get({'userUid': 'me'}).$promise.then(function(user) {
+          return UserResource.get({ 'userUid': 'me' }).$promise.then(function(user) {
             var loggedInUser = unResource(user);
             var userFound = loggedInUser.id;
-            if(userFound) {
-              window.sessionStorage.setItem('user', JSON.stringify(loggedInUser));
+            if (userFound) {
+              $window.sessionStorage.setItem('user', JSON.stringify(loggedInUser));
             }
             return userFound ? loggedInUser : undefined;
           });
@@ -40,11 +36,10 @@ define(['lodash'],
       }
 
       function logOut() {
-        window.sessionStorage.removeItem('user');
+        $window.sessionStorage.removeItem('user');
       }
 
       return {
-        hasLoggedInUser: hasLoggedInUser,
         getLoginUser: getLoginUser,
         isLoginUserId: isLoginUserId,
         isLoginUserEmail: isLoginUserEmail,

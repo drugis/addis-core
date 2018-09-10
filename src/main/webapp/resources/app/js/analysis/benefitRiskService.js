@@ -152,6 +152,7 @@ define(['lodash'], function(_) {
       return outcomesWithAnalyses.map(function(outcomeWithAnalyses) {
         outcomeWithAnalyses.scales = interventionInclusions.reduce(function(accum, includedAlternative) {
           var outcomeUri = outcomeWithAnalyses.outcome.semanticOutcomeUri;
+          if(!criteria[outcomeUri]) { return accum; }
           var dataSourceId = criteria[outcomeUri].dataSources[0].id;
           if (scaleResults[dataSourceId]) {
             accum[includedAlternative.id] = scaleResults[dataSourceId][includedAlternative.id];

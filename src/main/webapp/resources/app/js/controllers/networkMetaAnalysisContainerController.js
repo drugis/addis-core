@@ -100,15 +100,16 @@ define(['angular', 'lodash'], function(angular, _) {
       dataKey: 'exposure'
     }];
 
-    if (UserService.hasLoggedInUser()) {
-      $scope.loginUserId = (UserService.getLoginUser()).id;
-      isUserOwner = UserService.isLoginUserId($scope.project.owner.id);
-    }
-
-    $scope.editMode = {
-      isUserOwner: isUserOwner,
-      disableEditing: !isUserOwner || $scope.project.archived || $scope.analysis.archived
-    };
+    UserService.getLoginUser().then(function(user) {
+      if(user){
+        $scope.loginUserId = user.id;
+        isUserOwner = UserService.isLoginUserId($scope.project.owner.id);
+      }
+      $scope.editMode = {
+        isUserOwner: isUserOwner,
+        disableEditing: !isUserOwner || $scope.project.archived || $scope.analysis.archived
+      };
+    });
 
     $scope.models = ModelResource.query({
       projectId: $stateParams.projectId,
@@ -223,7 +224,9 @@ define(['angular', 'lodash'], function(angular, _) {
           $scope.containsMissingValue = _.find($scope.isMissingByStudyMap);
           $scope.measurementType = NetworkMetaAnalysisService.getMeasurementType($scope.trialverseData);
           $scope.showColumn = NetworkMetaAnalysisService.checkColumnsToShow($scope.trialData, $scope.measurementType);
-          $scope.analysisPromise = updateNetwork().then(function() {
+
+          $scope.analysisPromise = updateNetwork()
+          $q.all([$scope.analysisPromise, UserService.getLoginUser()]).then(function() {
             $scope.isModelCreationBlocked = checkCanNotCreateModel();
           });
         });

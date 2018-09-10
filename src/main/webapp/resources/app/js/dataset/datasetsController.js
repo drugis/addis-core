@@ -27,7 +27,7 @@ define(['lodash'], function(_) {
     reloadDatasets();
     $scope.stripFrontFilter = $filter('stripFrontFilter');
     $scope.loginUser = UserService.getLoginUser();
-    UserService.hasLoggedInUser(function(user) {
+    UserService.getLoginUser().then(function(user) {
       $scope.showCreateProjectButton = !!user;
     });
 
