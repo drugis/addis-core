@@ -42,7 +42,7 @@ public class CriterionEntryFactoryTest {
 
     // Asserts
     DataSourceEntry dataSourceEntry = new DataSourceEntry(dataSourceId, Arrays.asList(0.0, 1.0), null, "study", sourceLink);
-    CriterionEntry expectedEntry = new CriterionEntry(variableUri.toString(), Collections.singletonList(dataSourceEntry), "outcomeName", "probability");
+    CriterionEntry expectedEntry = new CriterionEntry(Collections.singletonList(dataSourceEntry), "outcomeName", "probability");
     assertEquals(expectedEntry, criterionEntry);
   }
 
@@ -57,7 +57,7 @@ public class CriterionEntryFactoryTest {
 
     // Asserts
     DataSourceEntry dataSourceEntry = new DataSourceEntry(dataSourceId, Arrays.asList(null,null), null, "study", sourceLink);
-    CriterionEntry expectedEntry = new CriterionEntry(variableUri.toString(), Collections.singletonList(dataSourceEntry), "outcomeName", null);
+    CriterionEntry expectedEntry = new CriterionEntry(Collections.singletonList(dataSourceEntry), "outcomeName", null);
     assertEquals(expectedEntry, criterionEntry);
   }
 

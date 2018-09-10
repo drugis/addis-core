@@ -30,7 +30,7 @@ public class CriterionEntryFactory {
 
     // NB: partial value functions to be filled in by MCDA component, left null here
     DataSourceEntry dataSourceEntry = new DataSourceEntry(dataSourceId, scale, /*pvf*/ null, "study", sourceLink);
-    return new CriterionEntry(measurement.getVariableUri().toString(),
+    return new CriterionEntry(
             Collections.singletonList(dataSourceEntry),
             outcomeName,
             unitOfMeasurement);

@@ -7,25 +7,19 @@ import java.util.Objects;
  * Created by connor on 25-3-14.
  */
 public class CriterionEntry {
-  private String criterion;
   private String title;
   private String unitOfMeasurement;
   private List<DataSourceEntry> dataSources;
 
-  public CriterionEntry(String criterion, List<DataSourceEntry> dataSources, String title,
+  public CriterionEntry(List<DataSourceEntry> dataSources, String title,
                         String unitOfMeasurement) {
-    this.criterion = criterion;
     this.dataSources = dataSources;
     this.title = title;
     this.unitOfMeasurement = unitOfMeasurement;
   }
 
-  public CriterionEntry(String criterion, List<DataSourceEntry> dataSources, String title) {
-    this(criterion, dataSources, title, null);
-  }
-
-  public String getCriterion() {
-    return criterion;
+  public CriterionEntry(List<DataSourceEntry> dataSources, String title) {
+    this(dataSources, title, null);
   }
 
   public List<DataSourceEntry> getDataSources() {
@@ -45,14 +39,13 @@ public class CriterionEntry {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
     CriterionEntry that = (CriterionEntry) o;
-    return Objects.equals(criterion, that.criterion) &&
-        Objects.equals(title, that.title) &&
+    return Objects.equals(title, that.title) &&
         Objects.equals(unitOfMeasurement, that.unitOfMeasurement) &&
         Objects.equals(dataSources, that.dataSources);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(criterion, title, unitOfMeasurement, dataSources);
+    return Objects.hash(title, unitOfMeasurement, dataSources);
   }
 }

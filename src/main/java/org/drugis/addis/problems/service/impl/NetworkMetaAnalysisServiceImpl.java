@@ -1,7 +1,6 @@
 package org.drugis.addis.problems.service.impl;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import org.apache.commons.collections.ListUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.drugis.addis.analyses.model.ArmExclusion;
 import org.drugis.addis.analyses.model.MeasurementMomentInclusion;
@@ -76,10 +75,15 @@ public class NetworkMetaAnalysisServiceImpl implements NetworkMetaAnalysisServic
 
     List<AbstractNetworkMetaAnalysisProblemEntry> entries = trialDataStudies.stream()
             .map(trialDataStudy -> armsToEntries(selectedMeasurementMomentsByStudy, armExclusionTrialverseIds, trialDataStudy))
-            .reduce(new ArrayList<>(), ListUtils::union);
+            .reduce(new ArrayList<>(), this::listUnion);
 
-    entries = changeToStdErrEntriesIfNeeded(entries);
-    return entries;
+    return changeToStdErrEntriesIfNeeded(entries);
+  }
+
+  private <T> List<T> listUnion(List<T> list1, List<T> list2) {
+    final ArrayList<T> result = new ArrayList<>(list1);
+    result.addAll(list2);
+    return result;
   }
 
   private List<AbstractNetworkMetaAnalysisProblemEntry> armsToEntries(Map<URI, URI> selectedMeasurementMomentsByStudy, List<URI> armExclusionTrialverseIds, TrialDataStudy trialDataStudy) {
@@ -114,7 +118,7 @@ public class NetworkMetaAnalysisServiceImpl implements NetworkMetaAnalysisServic
 
   private List<AbstractNetworkMetaAnalysisProblemEntry> changeToStdErrEntriesIfNeeded(List<AbstractNetworkMetaAnalysisProblemEntry> entries) {
     // if there's an entry with missing standard deviation or sample size, move everything to standard error
-    Boolean isStdErrEntry = entries.stream().anyMatch(entry -> entry instanceof ContinuousStdErrEntry);
+    boolean isStdErrEntry = entries.stream().anyMatch(entry -> entry instanceof ContinuousStdErrEntry);
     if (isStdErrEntry) {
       entries = entries.stream().map(entry -> {
         if (entry instanceof ContinuousStdErrEntry) {
@@ -197,13 +201,12 @@ public class NetworkMetaAnalysisServiceImpl implements NetworkMetaAnalysisServic
     if ("binom".equals(inclusionWithResults.getModel().getLikelihood())) {
       DataSourceEntry dataSource = new DataSourceEntry(uuidService.generate(), Arrays.asList(0d, 1d),
           /* pvf */ null, "meta analysis", modelURI);
-      criterionEntry = new CriterionEntry(outcome.getSemanticOutcomeUri().toString(),
+      criterionEntry = new CriterionEntry(
           Collections.singletonList(dataSource),
           outcome.getName(), "proportion");
     } else {
       DataSourceEntry dataSource = new DataSourceEntry(uuidService.generate(), "meta analysis", modelURI);
-      criterionEntry = new CriterionEntry(outcome.getSemanticOutcomeUri().toString(),
-          Collections.singletonList(dataSource), outcome.getName());
+      criterionEntry = new CriterionEntry(Collections.singletonList(dataSource), outcome.getName());
     }
     criteria.put(outcome.getSemanticOutcomeUri(), criterionEntry);
     return criteria;
