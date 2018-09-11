@@ -4,14 +4,12 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 
-const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
-
 let basePath = path.join(__dirname, '/src/main/webapp/');
 
 let config = {
   entry: {
     'main': basePath + 'resources/app/js/main.js',
-   'manual': basePath + 'resources/app/js/manual.js'
+    'manual': basePath + 'resources/app/js/manual.js'
   },
 
   output: {
@@ -82,10 +80,9 @@ let config = {
     }),
     new CleanWebpackPlugin([basePath + '/WEB-INF/views/dist']),
     new CopyWebpackPlugin([
-      {from :'node_modules/gemtc-web/public/img', to:'images/gemtc-web'},
-      {from :'node_modules/mcda-web/public/img', to:'images/mcda-web'}
-    ]),
-    new BundleAnalyzerPlugin()
+      { from: 'node_modules/gemtc-web/public/img', to: 'images/gemtc-web' },
+      { from: 'node_modules/mcda-web/public/img', to: 'images/mcda-web' }
+    ])
   ],
 
   optimization: {
