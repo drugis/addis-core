@@ -2,12 +2,13 @@
 define(['angular-mocks', './dataset'], function() {
   describe('the dataset controller', function() {
 
-    var scope, 
+    var scope,
       mockModal = jasmine.createSpyObj('$mock', ['open']),
       studiesWithDetailsService = jasmine.createSpyObj('StudiesWithDetailsService', ['get', 'getTreatmentActivities', 'addActivitiesToStudies']),
       historyResource = jasmine.createSpyObj('HistoryResource', ['query']),
       conceptsService = jasmine.createSpyObj('ConceptsService', ['loadJson', 'queryItems']),
-      versionedGraphResource = jasmine.createSpyObj('VersionedGraphResource', ['get', 'getConceptJson']),
+      graphResource = jasmine.createSpyObj('GraphResource', ['getConceptJson']),
+      versionedGraphResource = jasmine.createSpyObj('VersionedGraphResource', ['getConceptJson']),
       datasetResource = jasmine.createSpyObj('DatasetResource', ['getForJson']),
       datasetVersionedResource = jasmine.createSpyObj('DatasetVersionedResource', ['getForJson']),
       userService = jasmine.createSpyObj('UserService', ['isLoginUserEmail', 'getLoginUser']),
@@ -32,13 +33,13 @@ define(['angular-mocks', './dataset'], function() {
         versionUuid: versionUuid
       };
 
-    beforeEach(angular.mock.module('trialverse.dataset', function($provide){
+    beforeEach(angular.mock.module('trialverse.dataset', function($provide) {
       $provide.value('ExcelExportService', excelExportServiceMock);
     }));
 
     beforeEach(angular.mock.module('trialverse.dataset'));
 
-    beforeEach(inject(function($rootScope, $q, $controller) {
+    beforeEach(inject(function($rootScope, $q) {
       scope = $rootScope;
 
       studiesWithDetailsGetDeferred = $q.defer();
@@ -47,10 +48,25 @@ define(['angular-mocks', './dataset'], function() {
       datasetDeferred = $q.defer();
       userDefer = $q.defer();
 
+      var historyItems = [{
+        'uri': 'http://uri/' + versionUuid,
+        historyOrder: 1
+      }];
+      queryHistoryDeferred.resolve(historyItems);
+      datasetDeferred.resolve({
+        'http://purl.org/dc/terms/title': 'title',
+        'http://purl.org/dc/terms/description': 'description',
+        'http://purl.org/dc/terms/creator': 'creator'
+      });
+
       studiesWithDetailsService.get.and.returnValue(studiesWithDetailsGetDeferred.promise);
       conceptsService.loadJson.and.returnValue(conceptsJsonDefer.promise);
       userService.getLoginUser.and.returnValue(userDefer.promise);
+      userService.isLoginUserEmail.and.returnValue($q.resolve(true));
       versionedGraphResource.getConceptJson.and.returnValue({
+        $promise: conceptsJsonDefer.promise
+      });
+      graphResource.getConceptJson.and.returnValue({
         $promise: conceptsJsonDefer.promise
       });
       historyResource.query.and.returnValue({
@@ -64,37 +80,31 @@ define(['angular-mocks', './dataset'], function() {
       });
 
       mockModal.open.calls.reset();
-
-      $controller('DatasetController', {
-        $scope: scope,
-        $stateParams: stateParams,
-        $state: state,
-        $modal: mockModal,
-        DatasetVersionedResource: datasetVersionedResource,
-        DatasetResource: datasetResource,
-        StudiesWithDetailsService: studiesWithDetailsService,
-        HistoryResource: historyResource,
-        ConceptsService: conceptsService,
-        VersionedGraphResource: versionedGraphResource,
-        UserService: userService,
-        DataModelService: dataModelServiceMock,
-        PageTitleService: pageTitleServiceMock
-      });
-
     }));
 
-    describe('on load', function() {
+    describe('on load for a versioned view', function() {
 
-      beforeEach(function() {
-        datasetDeferred.resolve({
-          'http://purl.org/dc/terms/title': 'title',
-          'http://purl.org/dc/terms/description': 'description',
-          'http://purl.org/dc/terms/creator': 'creator'
+      beforeEach(inject(function($controller) {
+        $controller('DatasetController', {
+          $scope: scope,
+          $stateParams: stateParams,
+          $state: state,
+          $modal: mockModal,
+          DatasetVersionedResource: datasetVersionedResource,
+          DatasetResource: datasetResource,
+          StudiesWithDetailsService: studiesWithDetailsService,
+          HistoryResource: historyResource,
+          ConceptsService: conceptsService,
+          GraphResource: graphResource,
+          VersionedGraphResource: versionedGraphResource,
+          UserService: userService,
+          DataModelService: dataModelServiceMock,
+          PageTitleService: pageTitleServiceMock
         });
-      });
+        scope.$apply();
+      }));
 
       it('should get the dataset and place its properties on the scope', function() {
-        scope.$digest();
         expect(datasetVersionedResource.getForJson).toHaveBeenCalled();
         expect(scope.dataset).toEqual({
           datasetUuid: 'uuid-1',
@@ -115,13 +125,11 @@ define(['angular-mocks', './dataset'], function() {
       });
 
       it('should place the current revision on the scope', function() {
-        var historyItems = [{
-          'uri': 'http://uri/version-1',
-          i: 0
-        }];
-        queryHistoryDeferred.resolve(historyItems);
-        scope.$digest();
-        expect(scope.currentRevision).toBeDefined();
+        expect(scope.currentRevision).toEqual({
+          'uri': 'http://uri/' + versionUuid,
+          historyOrder: 1,
+          isHead: false
+        });
       });
 
       it('should place the concepts on the scope', function() {
@@ -134,7 +142,9 @@ define(['angular-mocks', './dataset'], function() {
         expect(versionedGraphResource.getConceptJson).toHaveBeenCalled();
         expect(conceptsService.loadJson).toHaveBeenCalled();
       });
-
+      it('should not allow editing', function() {
+        expect(scope.isEditingAllowed).toBe(false);
+      });
     });
 
     describe('on load for a head view', function() {
@@ -150,35 +160,42 @@ define(['angular-mocks', './dataset'], function() {
           StudiesWithDetailsService: studiesWithDetailsService,
           HistoryResource: historyResource,
           ConceptsService: conceptsService,
+          GraphResource: graphResource,
           VersionedGraphResource: versionedGraphResource,
           UserService: userService,
           PageTitleService: pageTitleServiceMock
         });
+        scope.$apply();
       }));
-      it('should get the datasetusing the non versioned resource ', function() {
+
+      afterEach(datasetResource.getForJson.calls.reset);
+
+      it('should get the dataset using the non versioned resource ', function() {
         expect(datasetResource.getForJson).toHaveBeenCalled();
       });
-    });
-
-    describe('showTableOptions', function() {
-      it('should open a modal', function() {
-        scope.showTableOptions();
-
-        expect(mockModal.open).toHaveBeenCalled();
+      it('should allow editing', function() {
+        expect(scope.isEditingAllowed).toBe(true);
       });
-    });
+      describe('showTableOptions', function() {
+        it('should open a modal', function() {
+          scope.showTableOptions();
 
-    describe('showStudyDialog', function() {
-      it('should open a modal', function() {
-        scope.showStudyDialog();
-        expect(mockModal.open).toHaveBeenCalled();
+          expect(mockModal.open).toHaveBeenCalled();
+        });
       });
-    });
 
-    describe('showCreateProjectDialog', function() {
-      it('should open a modal', function() {
-        scope.createProjectDialog();
-        expect(mockModal.open).toHaveBeenCalled();
+      describe('showStudyDialog', function() {
+        it('should open a modal', function() {
+          scope.showStudyDialog();
+          expect(mockModal.open).toHaveBeenCalled();
+        });
+      });
+
+      describe('showCreateProjectDialog', function() {
+        it('should open a modal', function() {
+          scope.createProjectDialog();
+          expect(mockModal.open).toHaveBeenCalled();
+        });
       });
     });
 

@@ -31,7 +31,7 @@ define(['lodash'],
 
       function isLoginUserEmail(email) {
         return getLoginUser().then(function(user) {
-          return user && user.userEmail === email;
+          return user && user.email === email;
         });
       }
 

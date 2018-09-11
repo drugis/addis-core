@@ -72,11 +72,11 @@ define(['lodash'],
       loadStudiesWithDetail();
       $scope.datasetConcepts = loadConcepts(); // scope placement for child states
       $scope.datasetConcepts.then(function(concepts) {
-        $scope.interventions = _.chain(concepts['@graph'])
+        $scope.interventions = _(concepts['@graph'])
           .filter(['@type', 'ontology:Drug'])
           .sortBy(['label'])
           .value();
-        $scope.variables = _.chain(concepts['@graph'])
+        $scope.variables = _(concepts['@graph'])
           .filter(['@type', 'ontology:Variable'])
           .sortBy(['label'])
           .value();
@@ -112,7 +112,7 @@ define(['lodash'],
             }
           }
 
-          $scope.isEditingAllowed = isEditingAllowed();
+          checkEditingAllowed();
         });
       }
 
@@ -120,8 +120,10 @@ define(['lodash'],
         return $scope.currentRevision && $scope.currentRevision.isHead;
       }
 
-      function isEditingAllowed() {
-        return !!($scope.dataset && UserService.isLoginUserEmail($scope.dataset.creator) && isEditAllowedOnVersion());
+      function checkEditingAllowed() {
+        UserService.isLoginUserEmail($scope.dataset.creator).then(function(isOwner) {
+          $scope.isEditingAllowed = !!($scope.dataset && isOwner && isEditAllowedOnVersion());
+        });
       }
 
       function loadConcepts() {
@@ -160,7 +162,7 @@ define(['lodash'],
             comment: getPurlProperty(dsResponse, 'description'),
             creator: getPurlProperty(dsResponse, 'creator')
           };
-          $scope.isEditingAllowed = isEditingAllowed();
+          checkEditingAllowed();
           PageTitleService.setPageTitle('DatasetController', $scope.dataset.title);
         });
       }
