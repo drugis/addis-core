@@ -1,7 +1,7 @@
+'use strict';
 define(['angular', 'app'], function() {
-  'use strict';
-  require('select2/select2.css');
   require('ui-select/dist/select.min.css');
+  require('select2/select2.css'); // load after ui-select because of multiselect css
   require('css/addis-drugis.css');
   require('font-awesome/css/font-awesome.min.css');
   require('nvd3/build/nv.d3.min.css');
