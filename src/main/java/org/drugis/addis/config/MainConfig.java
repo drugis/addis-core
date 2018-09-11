@@ -33,7 +33,6 @@ import org.ehcache.config.builders.CacheConfigurationBuilder;
 import org.ehcache.config.builders.ExpiryPolicyBuilder;
 import org.ehcache.config.builders.ResourcePoolsBuilder;
 import org.ehcache.core.config.DefaultConfiguration;
-
 import org.ehcache.jsr107.EhcacheCachingProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -71,7 +70,6 @@ import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
-import java.util.concurrent.TimeUnit;
 
 @Configuration
 @ComponentScan(excludeFilters = {@Filter(Configuration.class)}, basePackages = {
