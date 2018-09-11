@@ -36,8 +36,8 @@ define(['lodash'], function(_) {
     SubProblemResource, 
     TrialverseResource, 
     UserService, 
-    DEFAULT_VIEW) {
-
+    DEFAULT_VIEW
+  ) {
     $scope.analysis = AnalysisResource.get($stateParams);
     $scope.alternatives = InterventionResource.query($stateParams);
     $scope.outcomes = OutcomeResource.query($stateParams);
