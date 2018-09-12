@@ -12,14 +12,9 @@ define(['lodash', 'angular'], function(_, angular) {
     'OutcomeResource',
     'PageTitleService',
     'ProjectResource',
-    'ProjectResource',
     'ProjectStudiesResource',
-    'ScenarioResource',
     'SingleStudyBenefitRiskService',
-    'SubProblemResource',
-    'UserService',
-    'WorkspaceService',
-    'DEFAULT_VIEW'
+    'UserService'
   ];
   var BenefitRiskStep1Controller = function(
     $scope,
@@ -32,15 +27,10 @@ define(['lodash', 'angular'], function(_, angular) {
     ModelResource,
     OutcomeResource,
     PageTitleService,
-    ProblemResource,
     ProjectResource,
     ProjectStudiesResource,
-    ScenarioResource,
     SingleStudyBenefitRiskService,
-    SubProblemResource,
-    UserService,
-    WorkspaceService,
-    DEFAULT_VIEW
+    UserService
   ) {
     // functions
     $scope.addedAlternative = addedAlternative;
@@ -66,9 +56,11 @@ define(['lodash', 'angular'], function(_, angular) {
     $scope.editMode = {
       allowEditing: false
     };
-    $scope.project.$promise.then(function() {
-      if (UserService.isLoginUserId($scope.project.owner.id) && !$scope.analysis.archived && !$scope.analysis.finalized) {
-        $scope.editMode.allowEditing = true;
+    $q.all([$scope.project.$promise, $scope.analysis.$promise]).then(function() {
+      if (!$scope.analysis.archived && !$scope.analysis.finalized) {
+        UserService.isLoginUserId($scope.project.owner.id).then(function(isOwner) {
+          $scope.editMode.allowEditing = isOwner;
+        });
       }
     });
 
@@ -100,14 +92,12 @@ define(['lodash', 'angular'], function(_, angular) {
         outcomeIds: outcomeIds
       }).$promise.then(function(networkMetaAnalyses) {
         networkMetaAnalyses =
-          _.chain(networkMetaAnalyses)
-            .reject(function(analysis) {
-              return analysis.archived;
-            })
+          _(networkMetaAnalyses)
+            .reject('archived')
             .map(_.partial(BenefitRiskService.joinModelsWithAnalysis, models))
             .map(BenefitRiskService.addModelsGroup)
             .value();
-        var outcomesWithAnalyses = _.chain(outcomes)
+        var outcomesWithAnalyses = _(outcomes)
           .map(_.partial(BenefitRiskService.buildOutcomeWithAnalyses, analysis, networkMetaAnalyses))
           .map(function(owa) {
             owa.networkMetaAnalyses = owa.networkMetaAnalyses.sort(BenefitRiskService.compareAnalysesByModels);
@@ -128,9 +118,7 @@ define(['lodash', 'angular'], function(_, angular) {
       $scope.alternatives = alternatives;
 
       $scope.includedAlternatives = alternatives.filter(function(alternative) {
-        return analysis.interventionInclusions.find(function(includedAlternative) {
-          return includedAlternative.interventionId === alternative.id;
-        });
+        return analysis.interventionInclusions.find('interventionId', alternative.id);
       });
 
       $scope.outcomes = outcomes.map(function(outcome) {
@@ -330,50 +318,13 @@ define(['lodash', 'angular'], function(_, angular) {
       });
       checkStep1Validity();
       updateStudyMissingStuff();
-      var saveCommand = analysisToSaveCommand($scope.analysis);
+      var saveCommand = BenefitRiskService.analysisToSaveCommand($scope.analysis);
       AnalysisResource.save(saveCommand);
-    }
-
-    function finalizedAnalysisToSaveCommand(analysis, problem) {
-      var analysisToSave = angular.copy(analysis);
-      return {
-        id: analysis.id,
-        projectId: analysis.projectId,
-        analysis: analysisToSave,
-        scenarioState: JSON.stringify(problem, null, 2)
-      };
     }
 
     function finalizeAndGoToDefaultScenario() {
       $scope.analysis.finalized = true;
-      ProblemResource.get($stateParams).$promise.then(function(problem) {
-        var saveCommand = finalizedAnalysisToSaveCommand($scope.analysis, {
-          problem: WorkspaceService.reduceProblem(problem)
-        });
-        AnalysisResource.save(saveCommand, function() {
-          goToDefaultScenario();
-        });
-      });
-
-    }
-
-    function goToDefaultScenario() {
-      var params = $stateParams;
-      SubProblemResource.query(params).$promise.then(function(subProblems) {
-        var subProblem = subProblems[0];
-        params = _.extend({}, params, {
-          problemId: subProblem.id
-        });
-        ScenarioResource.query(params).$promise.then(function(scenarios) {
-          $state.go(DEFAULT_VIEW, {
-            userUid: $scope.userId,
-            projectId: params.projectId,
-            analysisId: params.analysisId,
-            problemId: subProblem.id,
-            id: scenarios[0].id
-          });
-        });
-      });
+      BenefitRiskService.finalizeAndGoToDefaultScenario($scope.analysis);
     }
 
   };

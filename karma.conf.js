@@ -7,7 +7,7 @@ webpackConfig.optimization = {
     splitChunks: false,
     runtimeChunk: false
   };
-webpackConfig.resolve.alias['test-resources'] = __dirname + '/src/test'
+webpackConfig.resolve.alias['test-resources'] = __dirname + '/src/test';
 webpackConfig.module.rules.push({ test: /\.xlsx$/, loader: 'webpack-xlsx-loader' });
 
 module.exports = function(config) {
@@ -24,12 +24,13 @@ module.exports = function(config) {
       'karma-chrome-launcher',
       'karma-junit-reporter',
       'karma-jasmine',
-      'karma-webpack'
+      'karma-webpack',
+      'karma-sourcemap-loader'
     ],
 
     preprocessors: {
       // add webpack as preprocessor
-      'src/test-main.js' : ['webpack']
+      'src/test-main.js' : ['webpack', 'sourcemap']
     },
 
     // frameworks to use

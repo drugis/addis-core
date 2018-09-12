@@ -15,6 +15,8 @@ import org.drugis.addis.security.Account;
 import org.drugis.addis.security.repository.AccountRepository;
 import org.drugis.addis.subProblems.service.SubProblemService;
 import org.drugis.addis.trialverse.model.SemanticVariable;
+import org.drugis.addis.trialverse.model.trialdata.TrialDataStudy;
+import org.drugis.addis.trialverse.service.impl.ReadValueException;
 import org.drugis.addis.util.WebConstants;
 import org.hamcrest.Matchers;
 import org.junit.After;
@@ -84,7 +86,7 @@ public class AnalysisControllerTest {
   @Before
   public void setUp() {
     reset(accountRepository, analysisRepository,
-            networkMetaAnalysisRepository, subProblemService, criteriaRepository, analysisService, projectService);
+        networkMetaAnalysisRepository, subProblemService, criteriaRepository, analysisService, projectService);
     mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
     user = mock(Principal.class);
     when(user.getName()).thenReturn("gert");
@@ -94,7 +96,7 @@ public class AnalysisControllerTest {
   @After
   public void tearDown() {
     verifyNoMoreInteractions(accountRepository, analysisRepository,
-            networkMetaAnalysisRepository, analysisService, criteriaRepository, subProblemService, projectService);
+        networkMetaAnalysisRepository, analysisService, criteriaRepository, subProblemService, projectService);
   }
 
   @Test
@@ -106,10 +108,10 @@ public class AnalysisControllerTest {
 
     ResultActions result = mockMvc.perform(get("/projects/1/analyses"));
     result
-            .andExpect(status().isOk())
-            .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()))
-            .andExpect(jsonPath("$", hasSize(2)))
-            .andExpect(jsonPath("$[0].analysisType", Matchers.notNullValue()));
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()))
+        .andExpect(jsonPath("$", hasSize(2)))
+        .andExpect(jsonPath("$[0].analysisType", Matchers.notNullValue()));
 
     verify(analysisRepository).query(projectId);
   }
@@ -124,13 +126,13 @@ public class AnalysisControllerTest {
     when(networkMetaAnalysisRepository.queryByOutcomes(projectId, outcomeIds)).thenReturn(analyses);
 
     ResultActions result = mockMvc
-            .perform(get("/projects/{projectId}/analyses", projectId)
-                    .param("outcomeIds", "1"));
+        .perform(get("/projects/{projectId}/analyses", projectId)
+            .param("outcomeIds", "1"));
     result
-            .andExpect(status().isOk())
-            .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()))
-            .andExpect(jsonPath("$", hasSize(1)))
-            .andExpect(jsonPath("$[0].analysisType", Matchers.equalTo(AnalysisType.EVIDENCE_SYNTHESIS)));
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()))
+        .andExpect(jsonPath("$", hasSize(1)))
+        .andExpect(jsonPath("$[0].analysisType", Matchers.equalTo(AnalysisType.EVIDENCE_SYNTHESIS)));
 
     verify(networkMetaAnalysisRepository).queryByOutcomes(projectId, outcomeIds);
 
@@ -143,9 +145,9 @@ public class AnalysisControllerTest {
     when(analysisService.createBenefitRiskAnalysis(gert, analysisCommand)).thenReturn(analysis);
     String body = TestUtils.createJson(analysisCommand);
     mockMvc.perform(post("/projects/1/analyses").content(body).principal(user).contentType(WebConstants.getApplicationJsonUtf8Value()))
-            .andExpect(status().isCreated())
-            .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()))
-            .andExpect(jsonPath("$.id", notNullValue()));
+        .andExpect(status().isCreated())
+        .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()))
+        .andExpect(jsonPath("$.id", notNullValue()));
     verify(accountRepository).findAccountByUsername("gert");
     verify(analysisService).createBenefitRiskAnalysis(gert, analysisCommand);
   }
@@ -157,9 +159,9 @@ public class AnalysisControllerTest {
     when(analysisService.createNetworkMetaAnalysis(gert, analysisCommand)).thenReturn(analysis);
     String body = TestUtils.createJson(analysisCommand);
     mockMvc.perform(post("/projects/1/analyses").content(body).principal(user).contentType(WebConstants.getApplicationJsonUtf8Value()))
-            .andExpect(status().isCreated())
-            .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()))
-            .andExpect(jsonPath("$.id", notNullValue()));
+        .andExpect(status().isCreated())
+        .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()))
+        .andExpect(jsonPath("$.id", notNullValue()));
     verify(accountRepository).findAccountByUsername("gert");
     verify(analysisService).createNetworkMetaAnalysis(gert, analysisCommand);
   }
@@ -183,10 +185,10 @@ public class AnalysisControllerTest {
     ResultActions result = mockMvc.perform(get("/projects/1/analyses/1").principal(user));
 
     result.andExpect(status().isOk())
-            .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()))
-            .andExpect(jsonPath("$.id", is(analysis.getId())))
-            .andExpect(jsonPath("$.analysisType", is(AnalysisType.EVIDENCE_SYNTHESIS)))
-            .andExpect(jsonPath("$.excludedArms", hasSize(0)));
+        .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()))
+        .andExpect(jsonPath("$.id", is(analysis.getId())))
+        .andExpect(jsonPath("$.analysisType", is(AnalysisType.EVIDENCE_SYNTHESIS)))
+        .andExpect(jsonPath("$.excludedArms", hasSize(0)));
     verify(analysisRepository).get(analysis.getId());
   }
 
@@ -202,10 +204,10 @@ public class AnalysisControllerTest {
     AnalysisUpdateCommand newAnalysisCommand = new AnalysisUpdateCommand(newAnalysis, null);
     String jsonCommand = TestUtils.createJson(newAnalysisCommand);
     mockMvc.perform(post("/projects/{projectId}/analyses/{analysisId}", projectId, analysisId)
-            .content(jsonCommand)
-            .principal(user)
-            .contentType(WebConstants.getApplicationJsonUtf8Value()))
-            .andExpect(status().isOk());
+        .content(jsonCommand)
+        .principal(user)
+        .contentType(WebConstants.getApplicationJsonUtf8Value()))
+        .andExpect(status().isOk());
     verify(accountRepository).findAccountByUsername("gert");
     verify(analysisService).updateNetworkMetaAnalysis(gert, newAnalysis);
   }
@@ -220,10 +222,10 @@ public class AnalysisControllerTest {
     AnalysisUpdateCommand newAnalysisCommand = new AnalysisUpdateCommand(newAnalysis, null);
     String jsonCommand = TestUtils.createJson(newAnalysisCommand);
     mockMvc.perform(post("/projects/{projectId}/analyses/{analysisId}", projectId, analysisId)
-            .content(jsonCommand)
-            .principal(user)
-            .contentType(WebConstants.getApplicationJsonUtf8Value()))
-            .andExpect(status().isOk());
+        .content(jsonCommand)
+        .principal(user)
+        .contentType(WebConstants.getApplicationJsonUtf8Value()))
+        .andExpect(status().isOk());
     verify(accountRepository).findAccountByUsername("gert");
     verify(analysisService).updateNetworkMetaAnalysis(gert, newAnalysis);
   }
@@ -239,10 +241,10 @@ public class AnalysisControllerTest {
     AnalysisUpdateCommand newAnalysisCommand = new AnalysisUpdateCommand(newAnalysis, null);
     String jsonCommand = TestUtils.createJson(newAnalysisCommand);
     mockMvc.perform(post("/projects/{projectId}/analyses/{analysisId}", projectId, analysisId)
-            .content(jsonCommand)
-            .principal(user)
-            .contentType(WebConstants.getApplicationJsonUtf8Value()))
-            .andExpect(status().isOk());
+        .content(jsonCommand)
+        .principal(user)
+        .contentType(WebConstants.getApplicationJsonUtf8Value()))
+        .andExpect(status().isOk());
     verify(accountRepository).findAccountByUsername("gert");
     verify(analysisService).updateNetworkMetaAnalysis(gert, newAnalysis);
   }
@@ -258,10 +260,10 @@ public class AnalysisControllerTest {
     String jsonCommand = TestUtils.createJson(newAnalysisCommand);
 
     mockMvc.perform(post("/projects/{projectId}/analyses/{analysisId}", projectId, analysisId)
-            .content(jsonCommand)
-            .principal(user)
-            .contentType(WebConstants.getApplicationJsonUtf8Value()))
-            .andExpect(status().isOk());
+        .content(jsonCommand)
+        .principal(user)
+        .contentType(WebConstants.getApplicationJsonUtf8Value()))
+        .andExpect(status().isOk());
     verify(accountRepository).findAccountByUsername("gert");
     verify(analysisService).updateNetworkMetaAnalysis(gert, newAnalysis);
   }
@@ -270,9 +272,9 @@ public class AnalysisControllerTest {
   public void testSetPrimaryModel() throws Exception {
     String modelId = "5";
     mockMvc.perform((post("/projects/{projectId}/analyses/{analysisId}/setPrimaryModel", projectId, analysisId)
-            .param("modelId", modelId))
-            .principal(user))
-            .andExpect(status().isOk());
+        .param("modelId", modelId))
+        .principal(user))
+        .andExpect(status().isOk());
     verify(projectService).checkOwnership(projectId, user);
     verify(networkMetaAnalysisRepository).setPrimaryModel(analysisId, Integer.parseInt(modelId));
   }
@@ -281,8 +283,8 @@ public class AnalysisControllerTest {
   @Test
   public void testUnsetPrimaryModel() throws Exception {
     mockMvc.perform(post("/projects/{projectId}/analyses/{analysisId}/setPrimaryModel", projectId, analysisId)
-            .principal(user))
-            .andExpect(status().isOk());
+        .principal(user))
+        .andExpect(status().isOk());
     verify(projectService).checkOwnership(projectId, user);
     verify(networkMetaAnalysisRepository).setPrimaryModel(analysisId, null);
   }
@@ -291,10 +293,10 @@ public class AnalysisControllerTest {
   public void testArchiveProject() throws Exception {
     String postBodyStr = "{ \"isArchived\": true }";
     mockMvc.perform(post("/projects/{projectId}/analyses/{analysisId}/setArchivedStatus", projectId, analysisId)
-            .content(postBodyStr)
-            .principal(user)
-            .contentType(WebConstants.getApplicationJsonUtf8Value()))
-            .andExpect(status().isOk());
+        .content(postBodyStr)
+        .principal(user)
+        .contentType(WebConstants.getApplicationJsonUtf8Value()))
+        .andExpect(status().isOk());
     verify(projectService).checkOwnership(1, user);
     verify(analysisRepository).setArchived(1, true);
   }
@@ -303,12 +305,26 @@ public class AnalysisControllerTest {
   public void testUnArchiveProject() throws Exception {
     String postBodyStr = "{ \"isArchived\": false }";
     mockMvc.perform(post("/projects/{projectId}/analyses/{analysisId}/setArchivedStatus", projectId, analysisId)
-            .content(postBodyStr)
-            .principal(user)
-            .contentType(WebConstants.getApplicationJsonUtf8Value()))
-            .andExpect(status().isOk());
+        .content(postBodyStr)
+        .principal(user)
+        .contentType(WebConstants.getApplicationJsonUtf8Value()))
+        .andExpect(status().isOk());
     verify(projectService).checkOwnership(1, user);
     verify(analysisRepository).setArchived(1, false);
+  }
+
+  @Test
+  public void testGetEvidenceTable() throws Exception, ReadValueException {
+    TrialDataStudy study1 = new TrialDataStudy();
+    TrialDataStudy study2 = new TrialDataStudy();
+    List<TrialDataStudy> studies = Arrays.asList(study1, study2);
+    when(analysisService.buildEvidenceTable(projectId, analysisId)).thenReturn(studies);
+
+    mockMvc.perform(get("/projects/{projectId}/analyses/{analysisId}/evidenceTable", projectId, analysisId))
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()))
+        .andExpect(jsonPath("$", hasSize(2)));
+    verify(analysisService).buildEvidenceTable(projectId, analysisId);
   }
 
 }

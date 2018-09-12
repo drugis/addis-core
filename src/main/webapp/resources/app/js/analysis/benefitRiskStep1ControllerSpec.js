@@ -47,7 +47,10 @@ define(['angular-mocks', './analysis'], function() {
         'isInvalidStudySelected',
         'hasMissingStudy',
         'findOverlappingOutcomes',
-        'addStudiesToOutcomes'
+        'addStudiesToOutcomes',
+        'addModelBaseline',
+        'analysisToSaveCommand',
+        'finalizeAndGoToDefaultScenario'
       ]);
 
     beforeEach(angular.mock.module('addis.analysis'));
@@ -80,12 +83,15 @@ define(['angular-mocks', './analysis'], function() {
         $promise: modelsDefer.promise
       });
       projectResourceMock.get.and.returnValue({
+        owner: {
+          id: 1
+        },
         $promise: projectDefer.promise
       });
       projectStudiesResourceMock.query.and.returnValue({
         $promise: studiesDefer.promise
       });
-      userServiceMock.isLoginUserId.and.returnValue(true);
+      userServiceMock.isLoginUserId.and.returnValue($q.resolve(true));
 
       benefitRiskService.compareAnalysesByModels.and.returnValue(0);
       benefitRiskService.joinModelsWithAnalysis.and.returnValue([]);
@@ -127,7 +133,11 @@ define(['angular-mocks', './analysis'], function() {
             id: 1
           }
         });
-
+        projectDefer.resolve({
+          owner: {
+            id: 1
+          }
+        });
         analysisDefer.resolve({
           benefitRiskNMAOutcomeInclusions: [],
           benefitRiskStudyOutcomeInclusions: []

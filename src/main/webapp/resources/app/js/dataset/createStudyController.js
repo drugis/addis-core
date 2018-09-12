@@ -3,7 +3,6 @@ define(['lodash'], function(_) {
   var dependencies = [
     '$scope',
     '$stateParams',
-    '$q',
     '$modalInstance',
     'successCallback',
     'StudyService',
@@ -16,7 +15,6 @@ define(['lodash'], function(_) {
   var CreateStudyController = function(
     $scope,
     $stateParams,
-    $q,
     $modalInstance,
     successCallback,
     StudyService,

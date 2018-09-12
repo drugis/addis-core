@@ -3,7 +3,10 @@ define(['angular-mocks', './analysis'], function() {
   describe('benefit-risk service', function() {
     var benefitRiskService;
 
-    beforeEach(angular.mock.module('addis.analysis'));
+    beforeEach(angular.mock.module('addis.analysis', function($provide) {
+      $provide.value('$state', {});
+      $provide.constant('DEFAULT_VIEW', 'foo');
+    }));
 
     beforeEach(inject(function(BenefitRiskService) {
       benefitRiskService = BenefitRiskService;

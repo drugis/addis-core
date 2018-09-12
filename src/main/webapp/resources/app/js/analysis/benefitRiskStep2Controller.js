@@ -9,13 +9,11 @@ define(['angular', 'lodash'], function(angular, _) {
     'OutcomeResource',
     'PageTitleService',
     'ProblemResource',
-    'ScenarioResource',
     'ProjectResource',
     'ProjectStudiesResource',
     'TrialverseResource',
     'UserService',
-    'WorkspaceService',
-    'DEFAULT_VIEW'
+    'WorkspaceService'
   ];
   var BenefitRiskStep2Controller = function(
     $scope, $q, $stateParams, $state, $modal,
@@ -26,13 +24,11 @@ define(['angular', 'lodash'], function(angular, _) {
     OutcomeResource,
     PageTitleService,
     ProblemResource,
-    ScenarioResource,
     ProjectResource,
     ProjectStudiesResource,
     TrialverseResource,
     UserService,
-    WorkspaceService,
-    DEFAULT_VIEW
+    WorkspaceService
   ) {
 
     $scope.goToStep1 = goToStep1;
@@ -44,16 +40,18 @@ define(['angular', 'lodash'], function(angular, _) {
     $scope.models = ModelResource.getConsistencyModels($stateParams);
     $scope.hasMissingBaseLine = hasMissingBaseLine;
     $scope.finalizeAndGoToDefaultScenario = finalizeAndGoToDefaultScenario;
-    $scope.goToDefaultScenario = goToDefaultScenario;
+    $scope.goToDefaultScenario = BenefitRiskService.goToDefaultScenario;
     $scope.project = ProjectResource.get($stateParams);
     $scope.userId = $stateParams.userUid;
 
     $scope.editMode = {
       allowEditing: false
     };
-    $scope.project.$promise.then(function() {
-      if (UserService.isLoginUserId($scope.project.owner.id) && !$scope.analysis.archived) {
-        $scope.editMode.allowEditing = true;
+    $q.all([$scope.project.$promise, $scope.analysis.$promise]).then(function() {
+      if (!$scope.analysis.archived) {
+        UserService.isLoginUserId($scope.project.owner.id).then(function(isOwner) {
+          $scope.editMode.allowEditing = isOwner;
+        });
       }
       $scope.projectVersionUuid = $scope.project.datasetVersion.split('/versions/')[1];
       TrialverseResource.get({
@@ -63,75 +61,64 @@ define(['angular', 'lodash'], function(angular, _) {
         $scope.datasetOwnerId = dataset.ownerId;
       });
     });
-    var promises = [$scope.analysis.$promise, $scope.alternatives.$promise, $scope.outcomes.$promise, $scope.models.$promise];
+    var promises = [
+      $scope.analysis.$promise,
+      $scope.alternatives.$promise,
+      $scope.outcomes.$promise,
+      $scope.models.$promise,
+      ProjectStudiesResource.query({
+        projectId: $stateParams.projectId
+      }).$promise
+    ];
 
     $scope.step2Promise = $q.all(promises).then(function(result) {
       var analysis = result[0];
       var alternatives = result[1];
       var outcomes = result[2];
       var models = _.reject(result[3], 'archived');
-
-      PageTitleService.setPageTitle('BenefitRiskStep2Controller', analysis.title+ ' step 2');
-
-      var outcomeIds = outcomes.map(function(outcome) {
-        return outcome.id;
-      });
-
-      $scope.alternatives = alternatives.map(function(alternative) {
-        var isAlternativeInInclusions = _.find(analysis.interventionInclusions, function(includedIntervention) {
-          return includedIntervention.interventionId === alternative.id;
+      var studies = result[4];
+      $scope.studiesWithUuid = _.map(studies, function(study) {
+        return _.extend({}, study, {
+          uuid: study.studyUri.split('/graphs/')[1]
         });
-        if (isAlternativeInInclusions) {
-          alternative.isIncluded = true;
-        }
-        return alternative;
       });
+      PageTitleService.setPageTitle('BenefitRiskStep2Controller', analysis.title + ' step 2');
 
+      $scope.alternatives = addInclusionStatus(alternatives, analysis.interventionInclusions, 'interventionId');
+      $scope.outcomes = addInclusionStatus(outcomes, analysis.benefitRiskNMAOutcomeInclusions, 'outcomeId');
+
+      prepareEffectsTable(analysis, models);
+    });
+
+    function prepareEffectsTable(analysis, models) {
+      var outcomeIds = _($scope.outcomes).filter('isIncluded').map('id').value();
       $scope.effectsTablePromise = AnalysisResource.query({
         projectId: $stateParams.projectId,
         outcomeIds: outcomeIds
       }).$promise.then(function(networkMetaAnalyses) {
-        var filteredNetworkMetaAnalyses = _.chain(networkMetaAnalyses)
-          .reject(function(analysis) {
-            return analysis.archived;
-          })
-          .map(_.partial(BenefitRiskService.joinModelsWithAnalysis, models))
-          .map(BenefitRiskService.addModelsGroup)
-          .value();
-        $scope.networkMetaAnalyses = filteredNetworkMetaAnalyses;
+        $scope.networkMetaAnalyses = filterArchivedAndAddModels(networkMetaAnalyses, models);
 
-        analysis = addModelBaseline(analysis, models);
-        var saveCommand = analysisToSaveCommand($scope.analysis);
+        analysis = BenefitRiskService.addModelBaseline(analysis, models, $scope.alternatives);
+        var saveCommand = BenefitRiskService.analysisToSaveCommand($scope.analysis);
         return AnalysisResource.save(saveCommand).$promise.then(function() {
-          $scope.outcomesWithAnalyses = BenefitRiskService.buildOutcomesWithAnalyses(analysis, outcomes, filteredNetworkMetaAnalyses);
-          return ProjectStudiesResource.query({
-            projectId: $stateParams.projectId
-          }).$promise.then(function(studies) {
-            $scope.studiesWithUuid = _.map(studies, function(study) {
-              return _.extend({}, study, {
-                uuid: study.studyUri.split('/graphs/')[1]
-              });
-            });
-            $scope.outcomesWithAnalyses = BenefitRiskService.addStudiesToOutcomes(
-              $scope.outcomesWithAnalyses, analysis.benefitRiskStudyOutcomeInclusions, $scope.studiesWithUuid);
-            return resetScales();
-          });
+          return updateOutcomesWithAnalyses(analysis, $scope.outcomes);
         });
       });
+    }
 
-      $scope.outcomes = outcomes.map(function(outcome) {
-        var isOutcomeInInclusions = _.find(analysis.benefitRiskNMAOutcomeInclusions, function(benefitRiskNMAOutcomeInclusion) {
-          return benefitRiskNMAOutcomeInclusion.outcomeId === outcome.id;
-        });
-        if (isOutcomeInInclusions) {
-          outcome.isIncluded = true;
-        }
-        return outcome;
-      });
-    });
+    function filterArchivedAndAddModels(networkMetaAnalyses, models) {
+      return _(networkMetaAnalyses)
+        .reject('archived')
+        .map(_.partial(BenefitRiskService.joinModelsWithAnalysis, models))
+        .map(BenefitRiskService.addModelsGroup)
+        .value();
+    }
 
-    function addModelBaseline(analysis, models) {
-      return BenefitRiskService.addModelBaseline(analysis, models, $scope.alternatives);
+    function updateOutcomesWithAnalyses(analysis, outcomes) {
+      var outcomesWithAnalyses = BenefitRiskService.buildOutcomesWithAnalyses(analysis, outcomes, $scope.networkMetaAnalyses);
+      $scope.outcomesWithAnalyses = BenefitRiskService.addStudiesToOutcomes(
+        outcomesWithAnalyses, analysis.benefitRiskStudyOutcomeInclusions, $scope.studiesWithUuid);
+      return resetScales();
     }
 
     function hasMissingBaseLine() {
@@ -140,45 +127,17 @@ define(['angular', 'lodash'], function(angular, _) {
       });
     }
 
-    function analysisToSaveCommand(analysis, problem) {
-      var analysisToSave = angular.copy(analysis);
-      return {
-        id: analysis.id,
-        projectId: analysis.projectId,
-        analysis: analysisToSave,
-        scenarioState: JSON.stringify(problem, null, 2)
-      };
+    function addInclusionStatus(itemsToCheck, inclusions, property) {
+      return itemsToCheck.map(function(item) {
+        return _.extend({}, item, {
+          isIncluded: !!_.find(inclusions, [property, item.id])
+        });
+      });
     }
 
     function finalizeAndGoToDefaultScenario() {
       $scope.analysis.finalized = true;
-      ProblemResource.get($stateParams).$promise.then(function(problem) {
-        var saveCommand = analysisToSaveCommand($scope.analysis, {
-          problem: WorkspaceService.reduceProblem(problem)
-        });
-        AnalysisResource.save(saveCommand, function() {
-          goToDefaultScenario();
-        });
-      });
-    }
-
-    function goToDefaultScenario() {
-      var params = $stateParams;
-      SubProblemResource.query(params).$promise.then(function(subProblems) {
-        var subProblem = subProblems[0];
-        params = _.extend({}, params, {
-          problemId: subProblem.id
-        });
-        ScenarioResource.query(params).$promise.then(function(scenarios) {
-          $state.go(DEFAULT_VIEW, {
-            userUid: $scope.userId,
-            projectId: params.projectId,
-            analysisId: params.analysisId,
-            problemId: subProblem.id,
-            id: scenarios[0].id
-          });
-        });
-      });
+      BenefitRiskService.finalizeAndGoToDefaultScenario($scope.analysis);
     }
 
     function goToStep1() {
@@ -210,44 +169,44 @@ define(['angular', 'lodash'], function(angular, _) {
               return problem;
             },
             setBaselineDistribution: function() {
-              return function(baseline) {
-                $scope.analysis.benefitRiskNMAOutcomeInclusions = $scope.analysis.benefitRiskNMAOutcomeInclusions.map(function(benefitRiskNMAOutcomeInclusion) {
-                  if (benefitRiskNMAOutcomeInclusion.outcomeId === outcomeWithAnalysis.outcome.id) {
-                    return _.extend(benefitRiskNMAOutcomeInclusion, {
-                      baseline: baseline
-                    });
-                  } else {
-                    return benefitRiskNMAOutcomeInclusion;
-                  }
-                });
-                var saveCommand = analysisToSaveCommand($scope.analysis);
-                $scope.effectsTablePromise = AnalysisResource.save(saveCommand).$save().then(function() {
-                  $scope.outcomesWithAnalyses = BenefitRiskService.buildOutcomesWithAnalyses(
-                    $scope.analysis, $scope.outcomes, $scope.networkMetaAnalyses);
-                  $scope.outcomesWithAnalyses = BenefitRiskService.addStudiesToOutcomes(
-                    $scope.outcomesWithAnalyses, $scope.analysis.benefitRiskStudyOutcomeInclusions, $scope.studiesWithUuid);
-                  return resetScales();
-                });
-              };
+              return _.partial(setBaseline, outcomeWithAnalysis);
             }
           }
         });
       });
     }
 
+    function setBaseline(outcomeWithAnalysis, baseline) {
+      $scope.analysis.benefitRiskNMAOutcomeInclusions = $scope.analysis.benefitRiskNMAOutcomeInclusions.map(function(benefitRiskNMAOutcomeInclusion) {
+        if (benefitRiskNMAOutcomeInclusion.outcomeId === outcomeWithAnalysis.outcome.id) {
+          return _.extend(benefitRiskNMAOutcomeInclusion, {
+            baseline: baseline
+          });
+        } else {
+          return benefitRiskNMAOutcomeInclusion;
+        }
+      });
+      var saveCommand = BenefitRiskService.analysisToSaveCommand($scope.analysis);
+      $scope.effectsTablePromise = AnalysisResource.save(saveCommand).$promise.then(function() {
+        $scope.outcomesWithAnalyses = BenefitRiskService.buildOutcomesWithAnalyses(
+          $scope.analysis, $scope.outcomes, $scope.networkMetaAnalyses);
+        $scope.outcomesWithAnalyses = BenefitRiskService.addStudiesToOutcomes(
+          $scope.outcomesWithAnalyses, $scope.analysis.benefitRiskStudyOutcomeInclusions, $scope.studiesWithUuid);
+        return resetScales();
+      });
+    }
+
     function resetScales() {
-      var problem;
-      return ProblemResource.get($stateParams).$promise.then(function(problemResult) {
-        problem = problemResult;
+      return ProblemResource.get($stateParams).$promise.then(function(problem) {
         if (problem.performanceTable.length > 0) {
-          return WorkspaceService.getObservedScales(problem).then(function (result) {
-            var includedAlternatives = _.filter($scope.alternatives, function (alternative) {
+          return WorkspaceService.getObservedScales(problem).then(function(result) {
+            var includedAlternatives = _.filter($scope.alternatives, function(alternative) {
               return alternative.isIncluded;
             });
             $scope.isMissingBaseline = hasMissingBaseLine();
             $scope.outcomesWithAnalyses = BenefitRiskService.addScales($scope.outcomesWithAnalyses,
               includedAlternatives, problem.criteria, result);
-          }, function () {
+          }, function() {
             console.log('WorkspaceService.getObservedScales error');
           });
         }

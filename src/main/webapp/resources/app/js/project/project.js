@@ -3,7 +3,6 @@
 define([
   './report/reportResource',
   '../resources/analysisResource',
-  'gemtc-web/js/analyses/problemResource',
   './createProjectModalController',
   './editProjectController',
   './report/editReportController',
@@ -33,7 +32,6 @@ define([
   function(
     ReportResource,
     AnalysisResource,
-    ProblemResource,
     CreateProjectModalController,
     EditProjectController,
     EditReportController,
@@ -63,7 +61,6 @@ define([
       // resources
       .factory('ReportResource', ReportResource)
       .factory('AnalysisResource', AnalysisResource)
-      .factory('ProblemResource', ProblemResource)
 
       // controllers
       .controller('CreateProjectModalController', CreateProjectModalController)

@@ -1,7 +1,23 @@
 'use strict';
 define(['lodash'], function(_) {
-  var dependencies = [];
-  var BenefitRiskAnalysisService = function() {
+  var dependencies = [
+    '$state',
+    'ProblemResource',
+    'AnalysisResource',
+    'SubProblemResource',
+    'ScenarioResource',
+    'WorkspaceService',
+    'DEFAULT_VIEW'
+  ];
+  var BenefitRiskAnalysisService = function(
+    $state,
+    ProblemResource,
+    AnalysisResource,
+    SubProblemResource,
+    ScenarioResource,
+    WorkspaceService,
+    DEFAULT_VIEW
+  ) {
 
     function isMissingDataType(outcomesWithAnalyses) {
       return _(outcomesWithAnalyses).filter('outcome.isIncluded').reject('dataType').value().length;
@@ -152,7 +168,7 @@ define(['lodash'], function(_) {
       return outcomesWithAnalyses.map(function(outcomeWithAnalyses) {
         outcomeWithAnalyses.scales = interventionInclusions.reduce(function(accum, includedAlternative) {
           var outcomeUri = outcomeWithAnalyses.outcome.semanticOutcomeUri;
-          if(!criteria[outcomeUri]) { return accum; }
+          if (!criteria[outcomeUri]) { return accum; }
           var dataSourceId = criteria[outcomeUri].dataSources[0].id;
           if (scaleResults[dataSourceId]) {
             accum[includedAlternative.id] = scaleResults[dataSourceId][includedAlternative.id];
@@ -207,19 +223,59 @@ define(['lodash'], function(_) {
             return model.id === benefitRiskNMAOutcomeInclusion.modelId;
           });
           if (baselineModel && baselineModel.baseline) {
-            // there is a model with a baseline, yay
+            // there is a model with a baseline
             if (_.find(analysis.interventionInclusions, function(interventionInclusion) {
-                //there is an intervention with the right name!
-                return _.find(alternatives, function(alternative) {
-                  return interventionInclusion.interventionId === alternative.id;
-                }).name.localeCompare(baselineModel.baseline.baseline.name) === 0;
-              })) {
+              //there is an intervention with the right name
+              return _.find(alternatives, function(alternative) {
+                return interventionInclusion.interventionId === alternative.id;
+              }).name.localeCompare(baselineModel.baseline.baseline.name) === 0;
+            })) {
               benefitRiskNMAOutcomeInclusion.baseline = baselineModel.baseline.baseline;
             }
           }
         }
       });
       return analysis;
+    }
+
+    function analysisToSaveCommand(analysis, problem) {
+      var analysisToSave = angular.copy(analysis);
+      return {
+        id: analysis.id,
+        projectId: analysis.projectId,
+        analysis: analysisToSave,
+        scenarioState: JSON.stringify(problem, null, 2)
+      };
+    }
+
+    function finalizeAndGoToDefaultScenario(analysis) {
+      ProblemResource.get($state.params).$promise.then(function(problem) {
+        var saveCommand = analysisToSaveCommand(analysis, {
+          problem: WorkspaceService.reduceProblem(problem)
+        });
+        AnalysisResource.save(saveCommand, function() {
+          goToDefaultScenario();
+        });
+      });
+    }
+
+    function goToDefaultScenario() {
+      var params = $state.params;
+      SubProblemResource.query(params).$promise.then(function(subProblems) {
+        var subProblem = subProblems[0];
+        params = _.extend({}, params, {
+          problemId: subProblem.id
+        });
+        ScenarioResource.query(params).$promise.then(function(scenarios) {
+          $state.go(DEFAULT_VIEW, {
+            userUid: params.userId,
+            projectId: params.projectId,
+            analysisId: params.analysisId,
+            problemId: subProblem.id,
+            id: scenarios[0].id
+          });
+        });
+      });
     }
 
     return {
@@ -240,7 +296,10 @@ define(['lodash'], function(_) {
       hasMissingStudy: hasMissingStudy,
       findOverlappingInterventions: findOverlappingInterventions,
       findOverlappingOutcomes: findOverlappingOutcomes,
-      addModelBaseline: addModelBaseline
+      addModelBaseline: addModelBaseline,
+      analysisToSaveCommand: analysisToSaveCommand,
+      finalizeAndGoToDefaultScenario: finalizeAndGoToDefaultScenario,
+      goToDefaultScenario: goToDefaultScenario
     };
   };
 

@@ -9,7 +9,10 @@ define([
   './directives/studySelectDirective',
   'angular',
   'angular-resource',
-  'mcda-web/js/workspace/workspace'
+  'mcda-web/js/workspace/workspace',
+  '../project/project',
+  'gemtc-web/js/resources',
+  '../resources'
 ], function(
   AddAnalysisController,
   BenefitRiskStep1Controller,
@@ -20,7 +23,7 @@ define([
   studySelect,
   angular
 ) {
-    var dependencies = ['ngResource', 'elicit.workspace'];
+    var dependencies = ['ngResource', 'elicit.workspace', 'gemtc.resources', 'addis.resources', 'addis.project'];
     return angular.module('addis.analysis',
       dependencies)
       // controllers
@@ -31,6 +34,7 @@ define([
       .controller('AbstractBenefitRiskController', AbstractBenefitRiskController)
       //services
       .factory('BenefitRiskService', BenefitRiskService)
+
       //directives
       .directive('studySelect', studySelect)
 
