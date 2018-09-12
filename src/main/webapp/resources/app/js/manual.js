@@ -8,9 +8,9 @@ define([
   'tocbot',
   'katex',
   'font-awesome/css/font-awesome.min.css',
-  'gemtc-web/app/css/gemtc-drugis.css',
-  'mcda-web/app/css/mcda-drugis.css',
-  'css/addis-drugis.css',
+  'gemtc-web/../public/css/gemtc-drugis.css',
+  'mcda-web/../public/css/mcda-drugis.css',
+  '../../public/css/addis-drugis.css',
   'katex/dist/katex.min.css'
 ],
   function(

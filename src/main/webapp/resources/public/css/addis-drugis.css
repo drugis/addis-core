@@ -1500,6 +1500,11 @@ span.toggle-text {
   bottom: 9px;
 }
 
+/* line 471, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
+.dropdown.menu a {
+  background: #333;
+}
+
 /**
  * Animations from mmfoundation
  */

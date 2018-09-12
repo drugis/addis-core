@@ -2173,7 +2173,7 @@ gauge@~2.7.3:
 
 gemtc-web@drugis/gemtc-web#develop:
   version "0.8.0"
-  resolved "https://codeload.github.com/drugis/gemtc-web/tar.gz/d08c24484815d8c155c5fef5efe6de2ba9f86efa"
+  resolved "https://codeload.github.com/drugis/gemtc-web/tar.gz/175482c6cdf8a9bbf74e156c558b0195018b099a"
   dependencies:
     async "~1.2.1"
     body-parser "^1.18.3"
@@ -3136,7 +3136,7 @@ map-visit@^1.0.0:
 
 mcda-web@drugis/mcda-elicitation-web#develop:
   version "0.16.3"
-  resolved "https://codeload.github.com/drugis/mcda-elicitation-web/tar.gz/54a3f395f0e4bca811c660ff5f67407ba334ecca"
+  resolved "https://codeload.github.com/drugis/mcda-elicitation-web/tar.gz/2568b741979e7f6ed27496b5cddd348cfa33a646"
   dependencies:
     async "~2.6.1"
     body-parser "~1.18.3"

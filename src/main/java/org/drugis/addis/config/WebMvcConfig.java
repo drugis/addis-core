@@ -64,11 +64,12 @@ public class WebMvcConfig implements WebMvcConfigurer {
   }
 
   public void addResourceHandlers(ResourceHandlerRegistry registry) {
-    registry.addResourceHandler("/**").addResourceLocations("/WEB-INF/views/dist/");
+    registry.addResourceHandler("/**/*").addResourceLocations("/WEB-INF/views/dist/");
+    registry.addResourceHandler("/css/*").addResourceLocations("/resources/public/css/");
     registry.addResourceHandler("/app/sparql/*").addResourceLocations("/resources/app/sparql/");
     registry.addResourceHandler("/img/**").addResourceLocations(
-            "/resources/img/",
-            "/WEB-INF/views/dist/images/gemtc-web/",
-            "/WEB-INF/views/dist/images/mcda-web/");
+        "/resources/public/img/",
+        "/WEB-INF/views/dist/images/gemtc-web/",
+        "/WEB-INF/views/dist/images/mcda-web/");
   }
 }

@@ -17,7 +17,7 @@
     ]
   }, 
   plugins: [
-    new BundleAnalyzerPlugin()
+//    new BundleAnalyzerPlugin()
   ]
  });
 module.exports = config;

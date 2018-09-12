@@ -3,10 +3,9 @@
 # Set this to the root of your project when deployed:
 http_path = "/"
 
-css_dir = "src/main/webapp/resources/app/css"
+css_dir = "src/main/webapp/resources/public/css"
 sass_dir = "src/main/webapp/resources/sass"
-images_dir = "src/main/webapp/resources/app/img"
-javascripts_dir = "src/main/webapp/resources/app/js"
+images_dir = "src/main/webapp/resources/public/img"
 
 add_import_path "node_modules/foundation-sites/scss"
 add_import_path "src/main/webapp/resources/drugis-css"
