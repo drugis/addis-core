@@ -25,6 +25,7 @@ import org.apache.http.conn.socket.PlainConnectionSocketFactory;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
+import org.apache.http.ssl.SSLContextBuilder;
 import org.apache.http.ssl.SSLContexts;
 import org.drugis.addis.util.WebConstants;
 import org.drugis.trialverse.util.JenaGraphMessageConverter;
@@ -73,23 +74,23 @@ import java.util.Properties;
 
 @Configuration
 @ComponentScan(excludeFilters = {@Filter(Configuration.class)}, basePackages = {
-        "org.drugis.addis", "org.drugis.trialverse"}, lazyInit = true)
+    "org.drugis.addis", "org.drugis.trialverse"}, lazyInit = true)
 @EnableTransactionManagement
 @EnableJpaRepositories(basePackages = {
-        "org.drugis.addis.projects",
-        "org.drugis.addis.security",
-        "org.drugis.addis.covariates",
-        "org.drugis.addis.interventions",
-        "org.drugis.addis.outcomes",
-        "org.drugis.addis.scenarios",
-        "org.drugis.addis.models",
-        "org.drugis.addis.remarks",
-        "org.drugis.addis.trialverse",
-        "org.drugis.trialverse",
-        "org.drugis.addis.scaledUnits",
-        "org.drugis.addis.subProblems",
-        "org.drugis.addis.ordering",
-        "org.drugis.addis.workspaceSettings"
+    "org.drugis.addis.projects",
+    "org.drugis.addis.security",
+    "org.drugis.addis.covariates",
+    "org.drugis.addis.interventions",
+    "org.drugis.addis.outcomes",
+    "org.drugis.addis.scenarios",
+    "org.drugis.addis.models",
+    "org.drugis.addis.remarks",
+    "org.drugis.addis.trialverse",
+    "org.drugis.trialverse",
+    "org.drugis.addis.scaledUnits",
+    "org.drugis.addis.subProblems",
+    "org.drugis.addis.ordering",
+    "org.drugis.addis.workspaceSettings"
 })
 @EnableCaching
 public class MainConfig {
@@ -108,13 +109,13 @@ public class MainConfig {
   @Bean
   public CacheManager cacheManager() {
     long numberOfCacheItems = 100;
-    long fourHours = 60*60*4;
+    long fourHours = 60 * 60 * 4;
 
     CacheConfiguration<Object, Object> cacheConfiguration = CacheConfigurationBuilder
-            .newCacheConfigurationBuilder(Object.class, Object.class, ResourcePoolsBuilder
-                    .heap(numberOfCacheItems))
-            .withExpiry(ExpiryPolicyBuilder.timeToLiveExpiration(Duration.ofSeconds(fourHours)))
-            .build();
+        .newCacheConfigurationBuilder(Object.class, Object.class, ResourcePoolsBuilder
+            .heap(numberOfCacheItems))
+        .withExpiry(ExpiryPolicyBuilder.timeToLiveExpiration(Duration.ofSeconds(fourHours)))
+        .build();
 
     Map<String, CacheConfiguration<?, ?>> caches = createCacheConfigurations(cacheConfiguration);
 
@@ -138,10 +139,10 @@ public class MainConfig {
   @Bean
   public RequestConfig requestConfig() {
     return RequestConfig.custom()
-            .setConnectionRequestTimeout(60000)
-            .setConnectTimeout(60000)
-            .setSocketTimeout(60000)
-            .build();
+        .setConnectionRequestTimeout(60000)
+        .setConnectTimeout(60000)
+        .setSocketTimeout(60000)
+        .build();
   }
 
   @Bean
@@ -155,26 +156,30 @@ public class MainConfig {
   public HttpClient httpClient(RequestConfig requestConfig) throws KeyStoreException, IOException, CertificateException, NoSuchAlgorithmException, UnrecoverableKeyException, KeyManagementException {
     KeyStore keyStore = KeyStore.getInstance("JKS");
     keyStore.load(new FileInputStream(KEYSTORE_PATH), KEYSTORE_PASSWORD.toCharArray());
+    String ADDIS_LOCAL = System.getenv("ADDIS_LOCAL");
 
-    SSLContext sslContext = SSLContexts
-            .custom()
-            .loadKeyMaterial(keyStore, KEYSTORE_PASSWORD.toCharArray())
-            .build();
-    SSLConnectionSocketFactory connectionSocketFactory = new SSLConnectionSocketFactory(sslContext);
+    SSLContextBuilder sslContextBuilder = SSLContexts
+        .custom()
+        .loadKeyMaterial(keyStore, KEYSTORE_PASSWORD.toCharArray());
+    if (ADDIS_LOCAL != null) {
+      sslContextBuilder.loadTrustMaterial(new File(KEYSTORE_PATH));
+    }
+    sslContextBuilder.build();
+    SSLConnectionSocketFactory connectionSocketFactory = new SSLConnectionSocketFactory(sslContextBuilder.build());
 
     Registry<ConnectionSocketFactory> registry = RegistryBuilder.<ConnectionSocketFactory>create()
-            .register("https", connectionSocketFactory)
-            .register("http", new PlainConnectionSocketFactory())
-            .build();
+        .register("https", connectionSocketFactory)
+        .register("http", new PlainConnectionSocketFactory())
+        .build();
     HttpClientConnectionManager clientConnectionManager = new PoolingHttpClientConnectionManager(registry);
 
     HttpClientBuilder httpClientBuilder = HttpClientBuilder.create();
     return httpClientBuilder
-            .setConnectionManager(clientConnectionManager)
-            .setMaxConnTotal(20)
-            .setMaxConnPerRoute(2)
-            .setDefaultRequestConfig(requestConfig)
-            .build();
+        .setConnectionManager(clientConnectionManager)
+        .setMaxConnTotal(20)
+        .setMaxConnPerRoute(2)
+        .setDefaultRequestConfig(requestConfig)
+        .build();
   }
 
   @Bean(name = "dsAddisCore")
@@ -232,20 +237,20 @@ public class MainConfig {
     em.setJpaProperties(additionalProperties());
     em.setJpaVendorAdapter(vendorAdapter);
     em.setPackagesToScan(
-            "org.drugis.addis.projects",
-            "org.drugis.addis.outcomes",
-            "org.drugis.addis.interventions",
-            "org.drugis.addis.security",
-            "org.drugis.addis.analyses",
-            "org.drugis.addis.scenarios",
-            "org.drugis.addis.models",
-            "org.drugis.addis.problems",
-            "org.drugis.addis.covariates",
-            "org.drugis.trialverse",
-            "org.drugis.addis.scaledUnits",
-            "org.drugis.addis.subProblems",
-            "org.drugis.addis.ordering",
-            "org.drugis.addis.workspaceSettings"
+        "org.drugis.addis.projects",
+        "org.drugis.addis.outcomes",
+        "org.drugis.addis.interventions",
+        "org.drugis.addis.security",
+        "org.drugis.addis.analyses",
+        "org.drugis.addis.scenarios",
+        "org.drugis.addis.models",
+        "org.drugis.addis.problems",
+        "org.drugis.addis.covariates",
+        "org.drugis.trialverse",
+        "org.drugis.addis.scaledUnits",
+        "org.drugis.addis.subProblems",
+        "org.drugis.addis.ordering",
+        "org.drugis.addis.workspaceSettings"
     );
     em.setDataSource(dataSource());
     em.setPersistenceUnitName("addisCore");
