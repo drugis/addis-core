@@ -498,6 +498,7 @@
               </execution>
             </executions>
             <configuration>
+              <karmaExecutable>${basedir}/node_modules/.bin/karma</karmaExecutable>
               <configFile>karma.conf.js</configFile>
               <junitReportFile>src/test/karma-test-results.xml</junitReportFile>
               <autoWatch>false</autoWatch>

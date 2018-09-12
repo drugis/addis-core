@@ -118,7 +118,7 @@ define(['lodash', 'angular'], function(_, angular) {
       $scope.alternatives = alternatives;
 
       $scope.includedAlternatives = alternatives.filter(function(alternative) {
-        return analysis.interventionInclusions.find('interventionId', alternative.id);
+        return _.find(analysis.interventionInclusions, ['interventionId', alternative.id]);
       });
 
       $scope.outcomes = outcomes.map(function(outcome) {

@@ -128,7 +128,7 @@ define(['angular-mocks', './analysis'], function() {
     describe('when the analysis, outcomes, models, studies and alternatives are loaded', function() {
       beforeEach(function() {
         benefitRiskService.buildOutcomeWithAnalyses.and.returnValue({
-          networkMetaAnalyses: [],
+          networkMetaAnalyses: [{}],
           outcome: {
             id: 1
           }
@@ -139,15 +139,15 @@ define(['angular-mocks', './analysis'], function() {
           }
         });
         analysisDefer.resolve({
-          benefitRiskNMAOutcomeInclusions: [],
-          benefitRiskStudyOutcomeInclusions: []
+          benefitRiskNMAOutcomeInclusions: [{}],
+          benefitRiskStudyOutcomeInclusions: [{}]
         });
-        interventionDefer.resolve([]);
+        interventionDefer.resolve([{}]);
         outcomeDefer.resolve([{
         }]);
         analysisQueryDefer.resolve([{}]);
-        modelsDefer.resolve([]);
-        studiesDefer.resolve([]);
+        modelsDefer.resolve([{}]);
+        studiesDefer.resolve([{}]);
         scope.$digest();
       });
 
