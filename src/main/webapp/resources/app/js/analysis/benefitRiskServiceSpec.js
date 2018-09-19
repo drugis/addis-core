@@ -3,12 +3,26 @@ define(['angular-mocks', './analysis'], function() {
   describe('benefit-risk service', function() {
     var benefitRiskService;
 
+    var workspaceServiceMock = jasmine.createSpyObj('WorkspaceService', ['reduceProblem']);
+    var problemResourceMock = jasmine.createSpyObj('ProblemResource', ['get']);
+    var analysisResourceMock = jasmine.createSpyObj('AnalysisResource', ['save']);
+    var scope;
+
     beforeEach(angular.mock.module('addis.analysis', function($provide) {
-      $provide.value('$state', {});
+      $provide.value('$state', {
+        params: { id: 'params'}
+      });
       $provide.constant('DEFAULT_VIEW', 'foo');
+      $provide.value('WorkspaceService', workspaceServiceMock);
+      $provide.value('ProblemResource', problemResourceMock);
+      $provide.value('AnalysisResource', analysisResourceMock);
     }));
 
-    beforeEach(inject(function(BenefitRiskService) {
+    beforeEach(inject(function($rootScope, $q, BenefitRiskService) {
+      scope = $rootScope;
+      problemResourceMock.get.and.returnValue({
+        $promise: $q.resolve({ problemId: 3 })
+      });
       benefitRiskService = BenefitRiskService;
     }));
 
@@ -789,6 +803,26 @@ define(['angular-mocks', './analysis'], function() {
           }]
         };
         expect(result).toEqual(expectedResult);
+      });
+    });
+
+    describe('finalizeAndGoToDefaultScenario', function() {
+      var analysis = {
+        id: -3,
+        projectId: -30
+      };
+      var mockProblem = { id: 'reducedProblem' };
+      beforeEach(function() {
+        workspaceServiceMock.reduceProblem.and.returnValue(mockProblem);
+        benefitRiskService.finalizeAndGoToDefaultScenario(analysis)
+        scope.$apply();
+      });
+      it('should get the problem and save the analysis', function() {
+        var saveCommand = angular.copy(analysis);
+        saveCommand.analysis = analysis;
+        saveCommand.scenarioState = JSON.stringify({problem: mockProblem}, null, 2);
+        expect(problemResourceMock.get).toHaveBeenCalledWith({id: 'params'});
+        expect(analysisResourceMock.save).toHaveBeenCalledWith(saveCommand, jasmine.any(Function));
       });
     });
   });

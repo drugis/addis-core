@@ -249,7 +249,7 @@ define(['lodash'], function(_) {
     }
 
     function finalizeAndGoToDefaultScenario(analysis) {
-      ProblemResource.get($state.params).$promise.then(function(problem) {
+      return ProblemResource.get($state.params).$promise.then(function(problem) {
         var saveCommand = analysisToSaveCommand(analysis, {
           problem: WorkspaceService.reduceProblem(problem)
         });
