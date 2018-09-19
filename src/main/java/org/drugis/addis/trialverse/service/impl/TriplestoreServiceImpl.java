@@ -8,6 +8,7 @@ import net.minidev.json.parser.ParseException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.jena.graph.Graph;
+import org.apache.jena.graph.NodeFactory;
 import org.apache.jena.rdf.model.*;
 import org.apache.jena.riot.RDFDataMgr;
 import org.apache.jena.riot.RDFLanguages;
@@ -97,6 +98,9 @@ public class TriplestoreServiceImpl implements TriplestoreService {
   @Inject
   private QueryResultMappingService queryResultMappingService;
 
+  @Inject
+  private WebConstants webConstants;
+
   private static HttpHeaders createGetJsonHeader() {
     HttpHeaders headers = new HttpHeaders();
     headers.add(ACCEPT_HEADER, WebConstants.getApplicationJsonUtf8Value());
@@ -112,7 +116,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
   @Override
   public Collection<Namespace> queryNameSpaces() throws ParseException {
     UriComponents uriComponents = UriComponentsBuilder
-        .fromHttpUrl(WebConstants.getTriplestoreBaseUri())
+        .fromHttpUrl(webConstants.getTriplestoreBaseUri())
         .path("datasets/")
         .build();
 
@@ -147,7 +151,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
     JSONArray bindings = JsonPath.read(response.getBody(), "$.results.bindings");
     JSONObject binding = new JSONObject((LinkedHashMap) bindings.get(0));
     String name = JsonPath.read(binding, "$.label.value");
-    URI headVersion = URI.create(getHeadVersion(WebConstants.buildDatasetUri(triplestoreUuidAndOwner.getTriplestoreUuid())));
+    URI headVersion = URI.create(getHeadVersion(webConstants.buildDatasetUri(triplestoreUuidAndOwner.getTriplestoreUuid())));
     String description = binding.containsKey("comment") ? (String) JsonPath.read(binding, "$.comment.value") : "";
     Integer numberOfStudies = Integer.parseInt(JsonPath.read(binding, "$.numberOfStudies.value"));
     URI version = URI.create(response.getHeaders().get(X_EVENT_SOURCE_VERSION).get(0));
@@ -163,10 +167,10 @@ public class TriplestoreServiceImpl implements TriplestoreService {
     StringReader reader = new StringReader(response.getBody());
     RDFDataMgr.read(graph, reader, "http://example.com", RDFLanguages.TURTLE);
     Model datasetModel = ModelFactory.createModelForGraph(graph);
-    Resource resource = datasetModel.getResource(datasetUri.toString());
-    Statement headVersion = resource.getProperty(JenaProperties.headVersionProperty);
-    RDFNode headObject = headVersion.getObject();
-    return headObject.toString();
+    Selector selector = new SimpleSelector(null, JenaProperties.headVersionProperty, (Object)null);
+    StmtIterator stmtIterator = datasetModel.listStatements(selector);
+    Statement statement = stmtIterator.nextStatement();
+    return statement.getObject().toString();
   }
 
   @Override
@@ -421,11 +425,11 @@ public class TriplestoreServiceImpl implements TriplestoreService {
   private ResponseEntity<String> queryTripleStoreHead(String datasetUri, String query) {
     String datasetUuid = subStringAfterLastSymbol(datasetUri, '/');
 
-    logger.debug("Triplestore uri = " + WebConstants.getTriplestoreBaseUri());
+    logger.debug("Triplestore uri = " + webConstants.getTriplestoreBaseUri());
     logger.debug("sparql query = " + query);
     logger.debug("dataset uuid = " + datasetUuid);
 
-    UriComponents uriComponents = UriComponentsBuilder.fromHttpUrl(WebConstants.getTriplestoreBaseUri())
+    UriComponents uriComponents = UriComponentsBuilder.fromHttpUrl(webConstants.getTriplestoreBaseUri())
         .path("datasets/" + datasetUuid)
         .path(QUERY_ENDPOINT)
         .queryParam(QUERY_PARAM_QUERY, query)
@@ -436,12 +440,12 @@ public class TriplestoreServiceImpl implements TriplestoreService {
 
   @Cacheable(cacheNames = "versionedDatasetQuery", key = "#namespaceUid+(#versionUri != null?#versionUri.toString():'headVersion')+#query.hashCode()")
   private ResponseEntity<String> queryTripleStoreVersion(String namespaceUid, String query, URI versionUri) throws IOException {
-    logger.debug("Triplestore uri = " + WebConstants.getTriplestoreBaseUri());
+    logger.debug("Triplestore uri = " + webConstants.getTriplestoreBaseUri());
     logger.debug("namespaceUid = " + namespaceUid);
     logger.debug("versionUri = " + versionUri);
     logger.debug("sparql query = " + query);
 
-    UriComponents uriComponents = UriComponentsBuilder.fromHttpUrl(WebConstants.getTriplestoreBaseUri())
+    UriComponents uriComponents = UriComponentsBuilder.fromHttpUrl(webConstants.getTriplestoreBaseUri())
         .path("datasets/" + namespaceUid)
         .path(QUERY_ENDPOINT)
         .queryParam(QUERY_PARAM_QUERY, URLEncoder.encode(query, "UTF-8"))

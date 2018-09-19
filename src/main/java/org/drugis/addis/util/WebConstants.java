@@ -103,11 +103,11 @@ public class WebConstants {
     }
   }
 
-  public static String getTriplestoreBaseUri() {
+  public String getTriplestoreBaseUri() {
     return TRIPLESTORE_BASE_URI;
   }
 
-  public static String getEventSourceUriPrefix() {
+  private static String getEventSourceUriPrefix() {
     return EVENT_SOURCE_URI_PREFIX;
   }
 
@@ -134,7 +134,7 @@ public class WebConstants {
             .toUri();
   }
 
-  public static URI buildDatasetUri(String datasetUuid) {
+  public URI buildDatasetUri(String datasetUuid) {
     return UriComponentsBuilder.fromHttpUrl(getTriplestoreBaseUri())
             .path(DATASET_PATH)
             .path(datasetUuid)
