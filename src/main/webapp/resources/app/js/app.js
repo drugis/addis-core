@@ -525,6 +525,11 @@ define(
                 function($stateParams, ProjectResource) {
                   return ProjectResource.get($stateParams).$promise;
                 }
+              ],
+              workspaceSettings: ['WorkspaceSettingsService', '$stateParams',
+                function(WorkspaceSettingsService, $stateParams) {
+                  return WorkspaceSettingsService.loadWorkspaceSettings($stateParams);
+                }
               ]
             }
           });

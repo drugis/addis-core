@@ -203,7 +203,7 @@ public class NetworkMetaAnalysisServiceImpl implements NetworkMetaAnalysisServic
           /* pvf */ null, "meta analysis", modelURI);
       criterionEntry = new CriterionEntry(
           Collections.singletonList(dataSource),
-          outcome.getName(), "proportion");
+          outcome.getName());
     } else {
       DataSourceEntry dataSource = new DataSourceEntry(uuidService.generate(), "meta analysis", modelURI);
       criterionEntry = new CriterionEntry(Collections.singletonList(dataSource), outcome.getName());

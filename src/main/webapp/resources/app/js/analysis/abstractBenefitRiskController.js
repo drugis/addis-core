@@ -6,8 +6,7 @@ define([], function() {
     'currentProject',
     'currentSchemaVersion',
     'UserService', 
-    'SchemaService',
-    'WorkspaceSettingsService'
+    'SchemaService'
   ];
   var AbstractBenefitRiskController = function(
     $scope,
@@ -15,10 +14,8 @@ define([], function() {
     currentProject,
     currentSchemaVersion,
     UserService,
-    SchemaService,
-    WorkspaceSettingsService
+    SchemaService
   ) {
-    WorkspaceSettingsService.loadWorkspaceSettings();
     if (currentAnalysis.problem.schemaVersion !== currentSchemaVersion) {
       $scope.workspace = SchemaService.updateWorkspaceToCurrentSchema(currentAnalysis);
     } else {
