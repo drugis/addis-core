@@ -5,8 +5,9 @@ define([], function() {
     'currentAnalysis',
     'currentProject',
     'currentSchemaVersion',
-    'UserService', 
-    'SchemaService'
+    'UserService',
+    'SchemaService',
+    'WorkspaceSettingsService'
   ];
   var AbstractBenefitRiskController = function(
     $scope,
@@ -14,7 +15,8 @@ define([], function() {
     currentProject,
     currentSchemaVersion,
     UserService,
-    SchemaService
+    SchemaService,
+    WorkspaceSettingsService
   ) {
     if (currentAnalysis.problem.schemaVersion !== currentSchemaVersion) {
       $scope.workspace = SchemaService.updateWorkspaceToCurrentSchema(currentAnalysis);
@@ -27,6 +29,15 @@ define([], function() {
     UserService.isLoginUserId(currentProject.owner.id).then(function(isLoginUser) {
       $scope.editMode.isUserOwner = isLoginUser;
     });
+
+    getWorkspaceSettings();
+    $scope.$on('elicit.settingsChanged', getWorkspaceSettings);
+    
+    function getWorkspaceSettings() {
+      $scope.toggledColumns = WorkspaceSettingsService.getToggledColumns();
+      $scope.workspaceSettings = WorkspaceSettingsService.getWorkspaceSettings();
+    }
+
   };
   return dependencies.concat(AbstractBenefitRiskController);
 });
