@@ -48,7 +48,7 @@ import java.util.regex.Pattern;
 @Service
 public class GraphServiceImpl implements GraphService {
 
-  public static final String REVISION = "revision";
+  private static final String REVISION = "revision";
   private static final String COPY_MESSAGE = "Study copied from other dataset";
 
   @Inject
@@ -66,6 +66,9 @@ public class GraphServiceImpl implements GraphService {
   @Inject
   private RestTemplate restTemplate;
 
+  @Inject
+  private WebConstants webConstants;
+
   private Pattern graphUriPattern = Pattern.compile("/datasets/([a-zA-z0-9\\.\\-]*)/versions/([a-zA-z0-9\\.\\-]*)/graphs/([a-zA-z0-9\\.\\-]*)");
 
   @Override
@@ -81,13 +84,7 @@ public class GraphServiceImpl implements GraphService {
     Matcher matcher = graphUriPattern.matcher(sourceGraphUri.getPath());
     matcher.matches();
     String versionUuid = matcher.group(2);
-    try {
-      URIBuilder builder = new URIBuilder(WebConstants.getTriplestoreBaseUri());
-      builder.setPath("/versions/" + versionUuid);
-      return builder.build();
-    } catch (URISyntaxException e) {
-      throw new RuntimeException("failed to build uri" + e.getMessage());
-    }
+    return WebConstants.buildVersionUri(versionUuid);
   }
 
   @Override

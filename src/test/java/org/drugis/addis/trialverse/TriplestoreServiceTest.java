@@ -59,13 +59,18 @@ public class TriplestoreServiceTest {
   @Mock
   QueryResultMappingService queryResultMappingService;
 
+  @Mock
+  WebConstants webConstants;
+
   @InjectMocks
   private TriplestoreService triplestoreService;
+  private final String TRIPLESTORE_BASE_URI = "http://jena-es:8080";
 
   @Before
   public void setUp() {
     triplestoreService = new TriplestoreServiceImpl();
     MockitoAnnotations.initMocks(this);
+    when(webConstants.getTriplestoreBaseUri()).thenReturn(TRIPLESTORE_BASE_URI);
   }
 
   @Test
@@ -74,13 +79,13 @@ public class TriplestoreServiceTest {
     ResponseEntity<String> resultEntity = new ResponseEntity<>(mockResult, HttpStatus.OK);
 
     UriComponents uriComponents = UriComponentsBuilder
-            .fromHttpUrl(WebConstants.getTriplestoreBaseUri())
+            .fromHttpUrl(webConstants.getTriplestoreBaseUri())
             .path("datasets/")
             .build();
 
     String datasetUuid = "d1";
     String query = TriplestoreServiceImpl.NAMESPACE;
-    UriComponents uriComponents2 = UriComponentsBuilder.fromHttpUrl(WebConstants.getTriplestoreBaseUri())
+    UriComponents uriComponents2 = UriComponentsBuilder.fromHttpUrl(webConstants.getTriplestoreBaseUri())
             .path("datasets/" + datasetUuid)
             .path(TriplestoreServiceImpl.QUERY_ENDPOINT)
             .queryParam(TriplestoreServiceImpl.QUERY_PARAM_QUERY, query)
@@ -96,9 +101,12 @@ public class TriplestoreServiceTest {
     when(restTemplate.exchange(uriComponents2.toUri(), HttpMethod.GET, TriplestoreServiceImpl.acceptSparqlResultsRequest, String.class)).thenReturn(resultEntity2);
     HttpHeaders headers = new HttpHeaders();
     headers.set(WebConstants.ACCEPT_HEADER, "text/turtle,text/html");
-    when(restTemplate.exchange(URI.create("http://localhost:8080/datasets/d1"), HttpMethod.GET, new HttpEntity<String>(headers), String.class)).thenReturn(resultEntity3);
+    URI datasetUrl = URI.create(TRIPLESTORE_BASE_URI + "/datasets/ds1");
+    when(webConstants.buildDatasetUri(datasetUuid)).thenReturn(datasetUrl);
+    when(restTemplate.exchange(datasetUrl, HttpMethod.GET, new HttpEntity<String>(headers), String.class)).thenReturn(resultEntity3);
 
     Collection<Namespace> namespaces = triplestoreService.queryNameSpaces();
+
 
     assertEquals(1, namespaces.size());
   }
