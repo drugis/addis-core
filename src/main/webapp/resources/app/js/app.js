@@ -8,6 +8,7 @@ define(
     'angular-foundation-6',
     'angular-animate',
     'angular-cookies',
+    'angularjs-slider',
     'angular-touch',
     'angular-ui-router',
     'angular-sanitize',
@@ -81,7 +82,7 @@ define(
     Config,
     mcdaLexicon,
     gemtcLexicon
-    ) {
+  ) {
     var mcdaDependencies = [
       'elicit.benefitRisk',
       'elicit.directives',
@@ -122,7 +123,8 @@ define(
       'page-title-service',
       'errorReporting',
       'export-directive',
-      'angucomplete-alt'
+      'angucomplete-alt',
+      'rzModule'
     ];
     var gemtcWebDependencies = [
       'gemtc.controllers',
@@ -185,7 +187,7 @@ define(
     }]);
 
     app.run(['$rootScope', '$q', '$window', '$http', '$location', '$templateCache', '$transitions', '$cookies',
-        'HelpPopupService', 'CacheService', 'PageTitleService', 'STUDY_CATEGORY_SETTINGS',
+      'HelpPopupService', 'CacheService', 'PageTitleService', 'STUDY_CATEGORY_SETTINGS',
       function($rootScope, $q, $window, $http, $location, $templateCache, $transitions, $cookies,
         HelpPopupService, CacheService, PageTitleService, STUDY_CATEGORY_SETTINGS) {
         $rootScope.$safeApply = function($scope, fn) {
@@ -522,6 +524,11 @@ define(
               currentProject: ['$stateParams', 'ProjectResource',
                 function($stateParams, ProjectResource) {
                   return ProjectResource.get($stateParams).$promise;
+                }
+              ],
+              workspaceSettings: ['WorkspaceSettingsService', '$stateParams',
+                function(WorkspaceSettingsService, $stateParams) {
+                  return WorkspaceSettingsService.loadWorkspaceSettings($stateParams);
                 }
               ]
             }
