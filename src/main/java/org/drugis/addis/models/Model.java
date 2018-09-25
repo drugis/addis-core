@@ -1,5 +1,6 @@
 package org.drugis.addis.models;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -16,6 +17,7 @@ import java.net.URI;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Created by daan on 22-5-14.
@@ -39,7 +41,7 @@ public class Model {
   public final static String LINK_LOG = "log";
   public final static String LINK_CLOGLOG = "cloglog";
 
-  public final static List<String> LINK_OPTIONS = Arrays.asList(LINK_IDENTITY, LINK_LOGIT, LINK_LOG, LINK_CLOGLOG);
+  private final static List<String> LINK_OPTIONS = Arrays.asList(LINK_IDENTITY, LINK_LOGIT, LINK_LOG, LINK_CLOGLOG);
 
   public final static String STD_DEV_HETEROGENEITY_PRIOR_TYPE = "standard-deviation";
   public final static String VARIANCE_HETEROGENEITY_PRIOR_TYPE = "variance";
@@ -67,8 +69,10 @@ public class Model {
   private JSONObject sensitivity;
 
   private Boolean archived;
+
   @Column(name = "archived_on")
   @Type(type = "date")
+  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
   private Date archivedOn;
 
   @OneToOne
@@ -313,61 +317,6 @@ public class Model {
     }
   }
 
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
-
-    Model model = (Model) o;
-
-    if (runStatus != null ? !runStatus.equals(model.runStatus) : model.runStatus != null) return false;
-    if (id != null ? !id.equals(model.id) : model.id != null) return false;
-    if (taskUrl != null ? !taskUrl.equals(model.taskUrl) : model.taskUrl != null) return false;
-    if (!analysisId.equals(model.analysisId)) return false;
-    if (!title.equals(model.title)) return false;
-    if (linearModel != null ? !linearModel.equals(model.linearModel) : model.linearModel != null) return false;
-    if (modelType != null ? !modelType.equals(model.modelType) : model.modelType != null) return false;
-    if (heterogeneityPrior != null ? !heterogeneityPrior.equals(model.heterogeneityPrior) : model.heterogeneityPrior != null)
-      return false;
-    if (burnInIterations != null ? !burnInIterations.equals(model.burnInIterations) : model.burnInIterations != null)
-      return false;
-    if (inferenceIterations != null ? !inferenceIterations.equals(model.inferenceIterations) : model.inferenceIterations != null)
-      return false;
-    if (thinningFactor != null ? !thinningFactor.equals(model.thinningFactor) : model.thinningFactor != null)
-      return false;
-    if (likelihood != null ? !likelihood.equals(model.likelihood) : model.likelihood != null) return false;
-    if (link != null ? !link.equals(model.link) : model.link != null) return false;
-    if (outcomeScale != null ? !outcomeScale.equals(model.outcomeScale) : model.outcomeScale != null) return false;
-    if (regressor != null ? !regressor.equals(model.regressor) : model.regressor != null) return false;
-    if (sensitivity != null ? !sensitivity.equals(model.sensitivity) : model.sensitivity != null) return false;
-    if (archived != null ? !archived.equals(model.archived) : model.archived != null) return false;
-    return archivedOn != null ? archivedOn.equals(model.archivedOn) : model.archivedOn == null;
-
-  }
-
-  @Override
-  public int hashCode() {
-    int result = runStatus != null ? runStatus.hashCode() : 0;
-    result = 31 * result + (id != null ? id.hashCode() : 0);
-    result = 31 * result + (taskUrl != null ? taskUrl.hashCode() : 0);
-    result = 31 * result + analysisId.hashCode();
-    result = 31 * result + title.hashCode();
-    result = 31 * result + (linearModel != null ? linearModel.hashCode() : 0);
-    result = 31 * result + (modelType != null ? modelType.hashCode() : 0);
-    result = 31 * result + (heterogeneityPrior != null ? heterogeneityPrior.hashCode() : 0);
-    result = 31 * result + (burnInIterations != null ? burnInIterations.hashCode() : 0);
-    result = 31 * result + (inferenceIterations != null ? inferenceIterations.hashCode() : 0);
-    result = 31 * result + (thinningFactor != null ? thinningFactor.hashCode() : 0);
-    result = 31 * result + (likelihood != null ? likelihood.hashCode() : 0);
-    result = 31 * result + (link != null ? link.hashCode() : 0);
-    result = 31 * result + (outcomeScale != null ? outcomeScale.hashCode() : 0);
-    result = 31 * result + (regressor != null ? regressor.hashCode() : 0);
-    result = 31 * result + (sensitivity != null ? sensitivity.hashCode() : 0);
-    result = 31 * result + (archived != null ? archived.hashCode() : 0);
-    result = 31 * result + (archivedOn != null ? archivedOn.hashCode() : 0);
-    return result;
-  }
-
   public void updateTypeDetails(Integer newFromId, Integer newToId) throws OperationNotPermittedException {
     if (!getModelTypeTypeAsString().equals("pairwise") && !getModelTypeTypeAsString().equals("node-split")) {
       throw new OperationNotPermittedException("Can only update typedetails for pairwise and node split models.");
@@ -383,6 +332,39 @@ public class Model {
     } catch (JsonProcessingException e) {
       throw new OperationNotPermittedException(e.getMessage());
     }
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    Model model = (Model) o;
+    return Objects.equals(runStatus, model.runStatus) &&
+        Objects.equals(id, model.id) &&
+        Objects.equals(taskUrl, model.taskUrl) &&
+        Objects.equals(analysisId, model.analysisId) &&
+        Objects.equals(title, model.title) &&
+        Objects.equals(linearModel, model.linearModel) &&
+        Objects.equals(modelType, model.modelType) &&
+        Objects.equals(heterogeneityPrior, model.heterogeneityPrior) &&
+        Objects.equals(burnInIterations, model.burnInIterations) &&
+        Objects.equals(inferenceIterations, model.inferenceIterations) &&
+        Objects.equals(thinningFactor, model.thinningFactor) &&
+        Objects.equals(likelihood, model.likelihood) &&
+        Objects.equals(link, model.link) &&
+        Objects.equals(outcomeScale, model.outcomeScale) &&
+        Objects.equals(regressor, model.regressor) &&
+        Objects.equals(sensitivity, model.sensitivity) &&
+        Objects.equals(archived, model.archived) &&
+        Objects.equals(archivedOn, model.archivedOn) &&
+        Objects.equals(baseline, model.baseline);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(runStatus, id, taskUrl, analysisId, title, linearModel, modelType,
+        heterogeneityPrior, burnInIterations, inferenceIterations, thinningFactor,
+        likelihood, link, outcomeScale, regressor, sensitivity, archived, archivedOn, baseline);
   }
 
   public static class DetailNode {
@@ -554,7 +536,7 @@ public class Model {
     public HeterogeneityPrior() {
     }
 
-    public HeterogeneityPrior(String type, HeterogeneityValues values) {
+    HeterogeneityPrior(String type, HeterogeneityValues values) {
       this.type = type;
       this.values = values;
     }

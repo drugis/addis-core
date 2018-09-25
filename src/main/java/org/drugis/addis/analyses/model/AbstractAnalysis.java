@@ -1,5 +1,6 @@
 package org.drugis.addis.analyses.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
@@ -12,7 +13,7 @@ import java.util.*;
 /**
  * Created by connor on 6-5-14.
  */
-@JsonTypeInfo(use = com.fasterxml.jackson.annotation.JsonTypeInfo.Id.NAME, include = As.PROPERTY, property = "analysisType")
+@JsonTypeInfo(use = com.fasterxml.jackson.annotation.JsonTypeInfo.Id.NAME, property = "analysisType")
 @JsonSubTypes({@Type(value = NetworkMetaAnalysis.class, name = AnalysisType.EVIDENCE_SYNTHESIS),
         @Type(value = BenefitRiskAnalysis.class, name = AnalysisType.BENEFIT_RISK_ANALYSIS_LABEL)})
 @Inheritance(strategy = InheritanceType.JOINED)
@@ -34,6 +35,7 @@ public abstract class AbstractAnalysis {
 
   @Column(name = "archived_on")
   @org.hibernate.annotations.Type(type = "date")
+  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
   private Date archivedOn;
 
   public Integer getId() {
