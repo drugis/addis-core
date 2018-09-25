@@ -87,7 +87,11 @@ define(['lodash', 'angular'], function(_, angular) {
     setPageTitle(activeTab);
     $scope.projects = ProjectResource.query();
 
-    $scope.editMode.allowEditing = !project.archived && UserService.isLoginUserId($scope.project.owner.id);
+
+    UserService.isLoginUserId($scope.project.owner.id).then(function(isLoginUserId) {
+      $scope.editMode.allowEditing = !project.archived && isLoginUserId;
+    });
+
     UserService.getLoginUser().then(function(user) {
       $scope.editMode.allowCopying = !!user;
     });
@@ -478,9 +482,11 @@ define(['lodash', 'angular'], function(_, angular) {
         resolve: {
           callback: function() {
             return function(newProjectId) {
-              $state.go('project', {
-                userUid: UserService.getLoginUser().id,
-                projectId: newProjectId
+              UserService.getLoginUser().then(function(user) {
+                $state.go('project', {
+                  userUid: user.id,
+                  projectId: newProjectId
+                });
               });
             };
           }

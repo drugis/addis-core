@@ -60,7 +60,7 @@ public class AnalysisController extends AbstractAddisCoreController {
 
   @RequestMapping(value = "/projects/{projectId}/analyses", method = RequestMethod.GET, params = {"outcomeIds"})
   @ResponseBody
-  public NetworkMetaAnalysis[] queryNetworkMetaAnalysisByOutcomes(@PathVariable Integer projectId, @RequestParam(name = "outcomeIds", required = false) List<Integer> outcomeIds) throws MethodNotAllowedException, ResourceDoesNotExistException {
+  public NetworkMetaAnalysis[] queryNetworkMetaAnalysisByOutcomes(@PathVariable Integer projectId, @RequestParam(name = "outcomeIds", required = false) List<Integer> outcomeIds) {
     Collection<NetworkMetaAnalysis> networkMetaAnalyses = networkMetaAnalysisRepository.queryByOutcomes(projectId, outcomeIds);
     NetworkMetaAnalysis[] networkMetaAnalysesArray = new NetworkMetaAnalysis[networkMetaAnalyses.size()];
     return networkMetaAnalyses.toArray(networkMetaAnalysesArray);
@@ -69,7 +69,7 @@ public class AnalysisController extends AbstractAddisCoreController {
 
   @RequestMapping(value = "/projects/{projectId}/analyses", method = RequestMethod.GET)
   @ResponseBody
-  public AbstractAnalysis[] query(@PathVariable Integer projectId) throws MethodNotAllowedException, ResourceDoesNotExistException {
+  public AbstractAnalysis[] query(@PathVariable Integer projectId) {
     List<AbstractAnalysis> abstractAnalysisList = analysisRepository.query(projectId);
     AbstractAnalysis[] abstractAnalysesArray = new AbstractAnalysis[abstractAnalysisList.size()];
     return abstractAnalysisList.toArray(abstractAnalysesArray);
@@ -77,7 +77,7 @@ public class AnalysisController extends AbstractAddisCoreController {
 
   @RequestMapping(value = "/projects/{projectId}/analyses/{analysisId}", method = RequestMethod.GET)
   @ResponseBody
-  public AbstractAnalysis get(@PathVariable Integer analysisId) throws MethodNotAllowedException, ResourceDoesNotExistException {
+  public AbstractAnalysis get(@PathVariable Integer analysisId) throws ResourceDoesNotExistException {
     return analysisRepository.get(analysisId);
   }
 

@@ -54,11 +54,12 @@ define(['lodash'], function(_) {
       allowEditing: false
     };
 
-    var promises = [$scope.analysis.$promise,
-    $scope.alternatives.$promise,
-    $scope.outcomes.$promise,
-    $scope.models.$promise,
-    $scope.project.$promise,
+    var promises = [
+      $scope.analysis.$promise,
+      $scope.alternatives.$promise,
+      $scope.outcomes.$promise,
+      $scope.models.$promise,
+      $scope.project.$promise,
       studiesPromise
     ];
 
@@ -76,9 +77,9 @@ define(['lodash'], function(_) {
 
       PageTitleService.setPageTitle('BenefitRiskController', analysis.title);
 
-      if (UserService.isLoginUserId(project.owner.id) && !analysis.archived) {
-        $scope.editMode.allowEditing = true;
-      }
+      UserService.isLoginUserId($scope.project.owner.id).then(function(isLoginUserId) {
+        $scope.editMode.allowEditing = !analysis.archived && isLoginUserId;
+      });
 
       $scope.projectVersionUuid = project.datasetVersion.split('/versions/')[1];
       TrialverseResource.get({
@@ -105,6 +106,9 @@ define(['lodash'], function(_) {
         $scope.studyOutcomes = outcomesWithAnalyses[1];
         $scope.isMissingBaseline = _.find($scope.networkOWAs, function(outcomeWithAnalysis) {
           return !outcomeWithAnalysis.baselineDistribution;
+        });
+        $scope.isMissingModelResults = _.find($scope.networkOWAs, function(outcomeWithAnalyses) {
+          return outcomeWithAnalyses.selectedModel.runStatus !== 'done'
         });
       });
 

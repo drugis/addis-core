@@ -103,7 +103,7 @@ define(['angular', 'lodash'], function(angular, _) {
     UserService.getLoginUser().then(function(user) {
       if(user){
         $scope.loginUserId = user.id;
-        isUserOwner = UserService.isLoginUserId($scope.project.owner.id);
+        isUserOwner = user && user.id === $scope.project.owner.id;
       }
       $scope.editMode = {
         isUserOwner: isUserOwner,

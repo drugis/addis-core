@@ -110,7 +110,8 @@ define(['angular-mocks'], function(angularMocks) {
         unitName: 'liter',
         unitUri: 'unitUri2'
       }],
-      userDefer;
+      userDefer,
+      isLoginUserDefer;
 
     beforeEach(angular.mock.module('addis.controllers'));
 
@@ -184,7 +185,8 @@ define(['angular-mocks'], function(angularMocks) {
       state = jasmine.createSpyObj('state', ['go']);
       userDefer = $q.defer();
       userServiceMock.getLoginUser.and.returnValue(userDefer.promise);
-
+      isLoginUserDefer = $q.defer();
+      userServiceMock.isLoginUserId.and.returnValue(isLoginUserDefer.promise);
 
       var mockHistory = {
         creator: 'Jan',
@@ -265,11 +267,13 @@ define(['angular-mocks'], function(angularMocks) {
       });
 
       it('isOwnProject should be true if the project is owned by the logged-in user', function() {
-        expect(scope.editMode.allowEditing).toEqual(userServiceMock.isLoginUserId());
+        isLoginUserDefer.resolve(true);
+        scope.$apply();
+        expect(scope.editMode.allowEditing).toEqual(true);
       });
 
       it('isOwnProject should be false if the project is not owned by the logged-in user', function() {
-        userServiceMock.isLoginUserId.and.returnValue(false);
+        isLoginUserDefer.resolve(false);
         projectDeferred.resolve();
         scope.$apply();
         expect(scope.editMode.allowEditing).toBeFalsy();
