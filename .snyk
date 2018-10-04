@@ -1,0 +1,160 @@
+# Snyk (https://snyk.io) policy file, patches or ignores known vulnerabilities.
+version: v1.12.0
+ignore: {}
+# patches apply the minimum changes required to fix a vulnerability
+patch:
+  'npm:debug:20170905':
+    - gemtc-web > everyauth > connect > serve-static > send > debug:
+        patched: '2018-10-04T00:39:09.469Z'
+    - gemtc-web > body-parser > debug:
+        patched: '2018-10-04T00:39:09.469Z'
+    - gemtc-web > express > send > debug:
+        patched: '2018-10-04T00:39:09.469Z'
+    - gemtc-web > everyauth > connect > debug:
+        patched: '2018-10-04T00:39:09.469Z'
+    - gemtc-web > everyauth > express > debug:
+        patched: '2018-10-04T00:39:09.469Z'
+    - gemtc-web > express > finalhandler > debug:
+        patched: '2018-10-04T00:39:09.469Z'
+    - gemtc-web > everyauth > connect > finalhandler > debug:
+        patched: '2018-10-04T00:39:09.469Z'
+    - gemtc-web > everyauth > connect > compression > debug:
+        patched: '2018-10-04T00:39:09.469Z'
+    - gemtc-web > everyauth > connect > serve-index > debug:
+        patched: '2018-10-04T00:39:09.469Z'
+    - gemtc-web > everyauth > connect > connect-timeout > debug:
+        patched: '2018-10-04T00:39:09.469Z'
+    - gemtc-web > everyauth > express > connect > debug:
+        patched: '2018-10-04T00:39:09.469Z'
+    - gemtc-web > everyauth > connect > morgan > debug:
+        patched: '2018-10-04T00:39:09.469Z'
+    - gemtc-web > everyauth > express > send > debug:
+        patched: '2018-10-04T00:39:09.469Z'
+    - gemtc-web > everyauth > connect > express-session > debug:
+        patched: '2018-10-04T00:39:09.469Z'
+    - gemtc-web > everyauth > connect > body-parser > debug:
+        patched: '2018-10-04T00:39:09.469Z'
+    - gemtc-web > express > serve-static > send > debug:
+        patched: '2018-10-04T00:39:09.469Z'
+    - gemtc-web > express-session > debug:
+        patched: '2018-10-04T00:39:09.469Z'
+    - gemtc-web > everyauth > express > connect > express-session > debug:
+        patched: '2018-10-04T00:39:09.469Z'
+    - gemtc-web > everyauth > express > connect > morgan > debug:
+        patched: '2018-10-04T00:39:09.469Z'
+    - gemtc-web > everyauth > express > connect > body-parser > debug:
+        patched: '2018-10-04T00:39:09.469Z'
+    - gemtc-web > everyauth > express > connect > connect-timeout > debug:
+        patched: '2018-10-04T00:39:09.469Z'
+    - gemtc-web > everyauth > express > connect > compression > debug:
+        patched: '2018-10-04T00:39:09.469Z'
+    - gemtc-web > everyauth > express > connect > finalhandler > debug:
+        patched: '2018-10-04T00:39:09.469Z'
+    - gemtc-web > everyauth > express > connect > serve-index > debug:
+        patched: '2018-10-04T00:39:09.469Z'
+    - gemtc-web > everyauth > express > connect > serve-static > send > debug:
+        patched: '2018-10-04T00:39:09.469Z'
+    - gemtc-web > connect > debug:
+        patched: '2018-10-04T00:39:09.469Z'
+    - gemtc-web > connect > finalhandler > debug:
+        patched: '2018-10-04T00:39:09.469Z'
+    - gemtc-web > express > debug:
+        patched: '2018-10-04T00:39:09.469Z'
+  'npm:mime:20170907':
+    - gemtc-web > express > send > mime:
+        patched: '2018-10-04T00:39:09.469Z'
+    - gemtc-web > everyauth > express > send > mime:
+        patched: '2018-10-04T00:39:09.469Z'
+    - gemtc-web > express > serve-static > send > mime:
+        patched: '2018-10-04T00:39:09.469Z'
+    - gemtc-web > everyauth > connect > serve-static > send > mime:
+        patched: '2018-10-04T00:39:09.469Z'
+    - gemtc-web > everyauth > express > connect > serve-static > send > mime:
+        patched: '2018-10-04T00:39:09.469Z'
+  'npm:ms:20170412':
+    - gemtc-web > everyauth > express > connect > serve-favicon > ms:
+        patched: '2018-10-04T00:39:09.469Z'
+    - gemtc-web > everyauth > connect > serve-favicon > ms:
+        patched: '2018-10-04T00:39:09.469Z'
+    - gemtc-web > body-parser > debug > ms:
+        patched: '2018-10-04T00:39:09.469Z'
+    - gemtc-web > express > send > ms:
+        patched: '2018-10-04T00:39:09.469Z'
+    - gemtc-web > express > debug > ms:
+        patched: '2018-10-04T00:39:09.469Z'
+    - gemtc-web > express-session > debug > ms:
+        patched: '2018-10-04T00:39:09.469Z'
+    - gemtc-web > express > serve-static > send > ms:
+        patched: '2018-10-04T00:39:09.469Z'
+    - gemtc-web > everyauth > express > send > ms:
+        patched: '2018-10-04T00:39:09.469Z'
+    - gemtc-web > everyauth > connect > connect-timeout > ms:
+        patched: '2018-10-04T00:39:09.469Z'
+    - gemtc-web > express > send > debug > ms:
+        patched: '2018-10-04T00:39:09.469Z'
+    - gemtc-web > everyauth > connect > debug > ms:
+        patched: '2018-10-04T00:39:09.469Z'
+    - gemtc-web > everyauth > express > debug > ms:
+        patched: '2018-10-04T00:39:09.469Z'
+    - gemtc-web > express > finalhandler > debug > ms:
+        patched: '2018-10-04T00:39:09.469Z'
+    - gemtc-web > everyauth > express > connect > debug > ms:
+        patched: '2018-10-04T00:39:09.469Z'
+    - gemtc-web > everyauth > connect > compression > debug > ms:
+        patched: '2018-10-04T00:39:09.469Z'
+    - gemtc-web > everyauth > connect > morgan > debug > ms:
+        patched: '2018-10-04T00:39:09.469Z'
+    - gemtc-web > everyauth > express > connect > connect-timeout > ms:
+        patched: '2018-10-04T00:39:09.469Z'
+    - gemtc-web > everyauth > connect > serve-index > debug > ms:
+        patched: '2018-10-04T00:39:09.469Z'
+    - gemtc-web > everyauth > connect > body-parser > debug > ms:
+        patched: '2018-10-04T00:39:09.469Z'
+    - gemtc-web > everyauth > connect > express-session > debug > ms:
+        patched: '2018-10-04T00:39:09.469Z'
+    - gemtc-web > express > serve-static > send > debug > ms:
+        patched: '2018-10-04T00:39:09.469Z'
+    - gemtc-web > everyauth > connect > connect-timeout > debug > ms:
+        patched: '2018-10-04T00:39:09.469Z'
+    - gemtc-web > everyauth > express > send > debug > ms:
+        patched: '2018-10-04T00:39:09.469Z'
+    - gemtc-web > everyauth > connect > serve-static > send > ms:
+        patched: '2018-10-04T00:39:09.469Z'
+    - gemtc-web > everyauth > connect > finalhandler > debug > ms:
+        patched: '2018-10-04T00:39:09.469Z'
+    - gemtc-web > everyauth > express > connect > connect-timeout > debug > ms:
+        patched: '2018-10-04T00:39:09.469Z'
+    - gemtc-web > everyauth > connect > serve-static > send > debug > ms:
+        patched: '2018-10-04T00:39:09.469Z'
+    - gemtc-web > everyauth > express > connect > body-parser > debug > ms:
+        patched: '2018-10-04T00:39:09.469Z'
+    - gemtc-web > everyauth > express > connect > serve-index > debug > ms:
+        patched: '2018-10-04T00:39:09.469Z'
+    - gemtc-web > everyauth > express > connect > morgan > debug > ms:
+        patched: '2018-10-04T00:39:09.469Z'
+    - gemtc-web > everyauth > express > connect > serve-static > send > ms:
+        patched: '2018-10-04T00:39:09.469Z'
+    - gemtc-web > everyauth > express > connect > finalhandler > debug > ms:
+        patched: '2018-10-04T00:39:09.469Z'
+    - gemtc-web > everyauth > express > connect > compression > debug > ms:
+        patched: '2018-10-04T00:39:09.469Z'
+    - gemtc-web > everyauth > express > connect > express-session > debug > ms:
+        patched: '2018-10-04T00:39:09.469Z'
+    - gemtc-web > everyauth > express > connect > serve-static > send > debug > ms:
+        patched: '2018-10-04T00:39:09.469Z'
+  'npm:ms:20151024':
+    - gemtc-web > connect > finalhandler > debug > ms:
+        patched: '2018-10-04T00:39:09.469Z'
+    - gemtc-web > connect > debug > ms:
+        patched: '2018-10-04T00:39:09.469Z'
+  'npm:negotiator:20160616':
+    - gemtc-web > express > accepts > negotiator:
+        patched: '2018-10-04T00:39:09.469Z'
+    - gemtc-web > everyauth > connect > compression > accepts > negotiator:
+        patched: '2018-10-04T00:39:09.469Z'
+    - gemtc-web > everyauth > connect > serve-index > accepts > negotiator:
+        patched: '2018-10-04T00:39:09.469Z'
+    - gemtc-web > everyauth > express > connect > compression > accepts > negotiator:
+        patched: '2018-10-04T00:39:09.469Z'
+    - gemtc-web > everyauth > express > connect > serve-index > accepts > negotiator:
+        patched: '2018-10-04T00:39:09.469Z'
