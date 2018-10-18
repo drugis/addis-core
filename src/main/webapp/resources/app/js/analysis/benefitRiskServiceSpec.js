@@ -10,7 +10,7 @@ define(['angular-mocks', './analysis'], function() {
 
     beforeEach(angular.mock.module('addis.analysis', function($provide) {
       $provide.value('$state', {
-        params: { id: 'params'}
+        params: { id: 'params' }
       });
       $provide.constant('DEFAULT_VIEW', 'foo');
       $provide.value('WorkspaceService', workspaceServiceMock);
@@ -494,14 +494,14 @@ define(['angular-mocks', './analysis'], function() {
         }];
         var criteria = {
           'http://outcomes/hamd': {
-             dataSources: [{
-               id: 'hamdDataSource'
-             }]
+            dataSources: [{
+              id: 'hamdDataSource'
+            }]
           },
           'http://outcomes/headache': {
-             dataSources: [{
-               id: 'headacheDataSource'
-             }]
+            dataSources: [{
+              id: 'headacheDataSource'
+            }]
           }
         };
         var scaleResults = {
@@ -747,30 +747,30 @@ define(['angular-mocks', './analysis'], function() {
           }]
         };
         var models = [{
-            id: 'modelId1',
+          id: 'modelId1',
+          baseline: {
+            baseline: {
+              name: 'interventionName1'
+            }
+          }
+        }, {
+          id: 'modelId2',
+          baseline: {
             baseline: {
               baseline: {
                 name: 'interventionName1'
               }
             }
-          }, {
-            id: 'modelId2',
+          }
+        },
+        {
+          id: 'modelId3',
+          baseline: {
             baseline: {
-              baseline: {
-                baseline: {
-                  name: 'interventionName1'
-                }
-              }
-            }
-          },
-          {
-            id: 'modelId3',
-            baseline: {
-              baseline: {
-                name: 'interventionName2'
-              }
+              name: 'interventionName2'
             }
           }
+        }
         ];
 
         var alternatives = [{
@@ -820,9 +820,33 @@ define(['angular-mocks', './analysis'], function() {
       it('should get the problem and save the analysis', function() {
         var saveCommand = angular.copy(analysis);
         saveCommand.analysis = analysis;
-        saveCommand.scenarioState = JSON.stringify({problem: mockProblem}, null, 2);
-        expect(problemResourceMock.get).toHaveBeenCalledWith({id: 'params'});
+        saveCommand.scenarioState = JSON.stringify({ problem: mockProblem }, null, 2);
+        expect(problemResourceMock.get).toHaveBeenCalledWith({ id: 'params' });
         expect(analysisResourceMock.save).toHaveBeenCalledWith(saveCommand, jasmine.any(Function));
+      });
+    });
+
+    describe('analysisUpdateCommand', function() {
+      it('should turn the analysis and selected interventions into a command for the server', function() {
+        var analysis = {
+          id: 1,
+          projectId: 2
+        };
+        var includedAlternatives = [{ id: 3 }];
+        var result = benefitRiskService.analysisUpdateCommand(analysis, includedAlternatives);
+        var expectedResult = {
+          id: 1,
+          projectId: 2,
+          analysis: {
+            id: 1,
+            projectId: 2,
+            interventionInclusions: [{
+              interventionId: 3,
+              analysisId: 1
+            }]
+          }
+        };
+        expect(result).toEqual(expectedResult);
       });
     });
   });

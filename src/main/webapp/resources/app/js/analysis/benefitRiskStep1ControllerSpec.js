@@ -50,7 +50,8 @@ define(['angular-mocks', './analysis'], function() {
         'addStudiesToOutcomes',
         'addModelBaseline',
         'analysisToSaveCommand',
-        'finalizeAndGoToDefaultScenario'
+        'finalizeAndGoToDefaultScenario',
+        'analysisUpdateCommand'
       ]);
 
     beforeEach(angular.mock.module('addis.analysis'));

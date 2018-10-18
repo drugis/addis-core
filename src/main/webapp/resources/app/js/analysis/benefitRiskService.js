@@ -234,7 +234,7 @@ define(['lodash'], function(_) {
             }
           }
         }
-      });
+      });scpe
       return analysis;
     }
 
@@ -259,6 +259,21 @@ define(['lodash'], function(_) {
       });
     }
 
+    function analysisUpdateCommand(analysis, includedAlternatives) {
+      var analysisToSave = angular.copy(analysis);
+      analysisToSave.interventionInclusions = includedAlternatives.map(function(intervention) {
+        return {
+          interventionId: intervention.id,
+          analysisId: analysisToSave.id
+        };
+      });
+      return {
+        id: analysis.id,
+        projectId: analysis.projectId,
+        analysis: analysisToSave
+      };
+    }
+
     function goToDefaultScenario() {
       var params = $state.params;
       SubProblemResource.query(params).$promise.then(function(subProblems) {
@@ -268,7 +283,7 @@ define(['lodash'], function(_) {
         });
         ScenarioResource.query(params).$promise.then(function(scenarios) {
           $state.go(DEFAULT_VIEW, {
-            userUid: params.userId,
+            userUid: params.userUid,
             projectId: params.projectId,
             analysisId: params.analysisId,
             problemId: subProblem.id,
@@ -298,6 +313,7 @@ define(['lodash'], function(_) {
       findOverlappingOutcomes: findOverlappingOutcomes,
       addModelBaseline: addModelBaseline,
       analysisToSaveCommand: analysisToSaveCommand,
+      analysisUpdateCommand: analysisUpdateCommand,
       finalizeAndGoToDefaultScenario: finalizeAndGoToDefaultScenario,
       goToDefaultScenario: goToDefaultScenario
     };
