@@ -234,7 +234,7 @@ define(['lodash'], function(_) {
             }
           }
         }
-      });scpe
+      });
       return analysis;
     }
 

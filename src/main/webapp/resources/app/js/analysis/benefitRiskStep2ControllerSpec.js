@@ -164,7 +164,7 @@ define(['angular-mocks', './analysis'], function() {
         });
         scope.$apply();
       });
-      it('should check whether editing is allowed, place the versionuuid on the scpe and set the datasetOwnerId', function() {
+      it('should check whether editing is allowed, place the versionuuid on the scope and set the datasetOwnerId', function() {
         expect(scope.editMode.allowEditing).toBe(true);
         expect(scope.projectVersionUuid).toEqual(versionUuid);
         expect(scope.datasetOwnerId).toEqual(datasetOwnerId);
