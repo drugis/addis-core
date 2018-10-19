@@ -1,24 +1,35 @@
 'use strict';
-define(['angular-mocks', './analysis'], function() {
+define(['lodash', 'angular-mocks', './analysis'], function(_) {
   describe('benefit-risk service', function() {
     var benefitRiskService;
 
     var workspaceServiceMock = jasmine.createSpyObj('WorkspaceService', ['reduceProblem']);
     var problemResourceMock = jasmine.createSpyObj('ProblemResource', ['get']);
     var analysisResourceMock = jasmine.createSpyObj('AnalysisResource', ['save']);
+    var subProblemResourceMock = jasmine.createSpyObj('SubProblemResource', ['query']);
+    var scenarioResourceMock = jasmine.createSpyObj('ScenarioResource', ['query']);
+
     var scope;
+    var q;
+    var state = {
+      params: { id: 'params' },
+      go: function() {
+        return;
+      }
+    };
 
     beforeEach(angular.mock.module('addis.analysis', function($provide) {
-      $provide.value('$state', {
-        params: { id: 'params' }
-      });
+      $provide.value('$state', state);
       $provide.constant('DEFAULT_VIEW', 'foo');
       $provide.value('WorkspaceService', workspaceServiceMock);
       $provide.value('ProblemResource', problemResourceMock);
       $provide.value('AnalysisResource', analysisResourceMock);
+      $provide.value('SubProblemResource', subProblemResourceMock);
+      $provide.value('ScenarioResource', scenarioResourceMock);
     }));
 
     beforeEach(inject(function($rootScope, $q, BenefitRiskService) {
+      q = $q;
       scope = $rootScope;
       problemResourceMock.get.and.returnValue({
         $promise: $q.resolve({ problemId: 3 })
@@ -814,7 +825,7 @@ define(['angular-mocks', './analysis'], function() {
       var mockProblem = { id: 'reducedProblem' };
       beforeEach(function() {
         workspaceServiceMock.reduceProblem.and.returnValue(mockProblem);
-        benefitRiskService.finalizeAndGoToDefaultScenario(analysis)
+        benefitRiskService.finalizeAndGoToDefaultScenario(analysis);
         scope.$apply();
       });
       it('should get the problem and save the analysis', function() {
@@ -846,6 +857,83 @@ define(['angular-mocks', './analysis'], function() {
             }]
           }
         };
+        expect(result).toEqual(expectedResult);
+      });
+    });
+
+    describe('goToDefaultScenario', function() {
+      var scenarioPromise;
+      var subProblemPromise;
+      beforeEach(function() {
+        var subProblemDefer = q.defer();
+        subProblemPromise = subProblemDefer.promise;
+        subProblemDefer.resolve([{ id: 1 }]);
+        subProblemResourceMock.query.and.returnValue({ $promise: subProblemPromise });
+
+        var scenarioDefer = q.defer();
+        scenarioPromise = scenarioDefer.promise;
+        scenarioDefer.resolve([{ id: 2 }]);
+        scenarioResourceMock.query.and.returnValue({ $promise: scenarioPromise });
+
+        spyOn(state, 'go');
+
+        scope.$digest();
+      });
+
+      it('should query then subproblem for the analysis and navigate to the analysis', function(done) {
+        benefitRiskService.goToDefaultScenario().then(function() {
+          expect(subProblemResourceMock.query).toHaveBeenCalledWith(state.params);
+          expect(scenarioResourceMock.query).toHaveBeenCalledWith(
+            _.extend({}, state.params, { problemId: 1 })
+          );
+          expect(state.go).toHaveBeenCalledWith('foo',
+            _.extend({}, state.params, {
+              problemId: 1,
+              id: 2
+            })
+          );
+          done();
+        });
+        scope.$digest();
+      });
+    });
+
+    describe('analysisToSaveCommand', function() {
+      it('should turn the analysis into a save command', function() {
+        var analysis = {
+          id: 1,
+          projectId: 2,
+          some: 'thing'
+        };
+        var problem = {
+          id: 3
+        };
+        var result = benefitRiskService.analysisToSaveCommand(analysis, problem);
+        var expectedResult = {
+          id: 1,
+          projectId: 2,
+          analysis: analysis,
+          scenarioState: '{\n  "id": 3\n}'
+        };
+        expect(result).toEqual(expectedResult);
+      });
+    });
+
+    describe('buildOutcomes', function() {
+      it('should return a list of all outcomes with an nma and together with all outcomes with a single study', function() {
+        var networkMetaAnalyses = {};
+        var outcomes = [
+          { id: 'studyOutcomeId' },
+          { id: 'notIncludedStudyOutcome' }
+        ];
+        var analysis = {
+          benefitRiskNMAOutcomeInclusions: [],
+          benefitRiskStudyOutcomeInclusions: [{ outcomeId: 'studyOutcomeId' }]
+        };
+        var result = benefitRiskService.buildOutcomes(analysis, outcomes, networkMetaAnalyses);
+        var expectedResult = [{
+          outcome: { id: 'studyOutcomeId' }
+        }];
         expect(result).toEqual(expectedResult);
       });
     });

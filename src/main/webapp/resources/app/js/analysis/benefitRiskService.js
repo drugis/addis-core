@@ -20,7 +20,11 @@ define(['lodash'], function(_) {
   ) {
 
     function isMissingDataType(outcomesWithAnalyses) {
-      return _(outcomesWithAnalyses).filter('outcome.isIncluded').reject('dataType').value().length;
+      return _(outcomesWithAnalyses)
+        .filter('outcome.isIncluded')
+        .reject('dataType')
+        .value()
+        .length;
     }
 
     function isMissingAnalysis(outcomesWithAnalyses) {
@@ -45,21 +49,25 @@ define(['lodash'], function(_) {
       });
     }
 
-    function buildOutcomesWithAnalyses(analysis, outcomes, networkMetaAnalyses) {
+    function buildOutcomes(analysis, outcomes, nmas) {
       var outcomesById = _.keyBy(outcomes, 'id');
-      var outcomesWithAnalysis = _.map(analysis.benefitRiskNMAOutcomeInclusions, function(benefitRiskNMAOutcomeInclusion) {
-        return buildOutcomeWithAnalyses(analysis, networkMetaAnalyses, outcomesById[benefitRiskNMAOutcomeInclusion.outcomeId]);
-      });
-      var outcomesWithStudy = _.map(analysis.benefitRiskStudyOutcomeInclusions, function(benefitRiskStudyOutcomeInclusion) {
-        return buildOutcomeWithStudy(analysis, benefitRiskStudyOutcomeInclusion.studyGraphUri, outcomesById[benefitRiskStudyOutcomeInclusion.outcomeId]);
-      });
+      var outcomesWithAnalysis = getIncludedNmaOutcomes(analysis, nmas, outcomesById);
+      var outcomesWithStudy = getIncludedStudyOutcomes(analysis.benefitRiskStudyOutcomeInclusions, outcomesById);
       return outcomesWithAnalysis.concat(outcomesWithStudy);
     }
 
-    function buildOutcomeWithStudy(analysis, studyGraphUri, outcome) {
-      return {
-        outcome: outcome
-      };
+    function getIncludedNmaOutcomes(analysis, nmas, outcomes) {
+      return _.map(analysis.benefitRiskNMAOutcomeInclusions, function(inclusion) {
+        return buildOutcomeWithAnalyses(analysis, nmas, outcomes[inclusion.outcomeId]);
+      });
+    }
+
+    function getIncludedStudyOutcomes(inclusions, outcomes) {
+      return _.map(inclusions, function(inclusion) {
+        return {
+          outcome: outcomes[inclusion.outcomeId]
+        };
+      });
     }
 
     function buildOutcomeWithAnalyses(analysis, networkMetaAnalyses, outcome) {
@@ -80,7 +88,7 @@ define(['lodash'], function(_) {
       }) || nmasForOutcome[0];
       var selectedModel = !selectedAnalysis ? undefined : _.find(selectedAnalysis.models, ['id', benefitRiskNMAOutcomeInclusion.modelId]);
 
-      var owa = {
+      var outcomeWithAnalysis = {
         outcome: outcome,
         networkMetaAnalyses: nmasForOutcome,
         selectedAnalysis: selectedAnalysis,
@@ -88,9 +96,9 @@ define(['lodash'], function(_) {
         dataType: 'network',
       };
       if (benefitRiskNMAOutcomeInclusion.baseline) {
-        owa.baselineDistribution = benefitRiskNMAOutcomeInclusion.baseline;
+        outcomeWithAnalysis.baselineDistribution = benefitRiskNMAOutcomeInclusion.baseline;
       }
-      return owa;
+      return outcomeWithAnalysis;
     }
 
     function joinModelsWithAnalysis(models, networkMetaAnalysis) {
@@ -124,7 +132,7 @@ define(['lodash'], function(_) {
     }
 
     function numberOfSelectedOutcomes(outcomeInclusions) {
-      var goodOutcomes = _.filter(outcomeInclusions, function(inclusion) {
+      var validOutcomes = _.filter(outcomeInclusions, function(inclusion) {
         if (!inclusion.outcome.isIncluded) {
           return false;
         } else {
@@ -135,7 +143,7 @@ define(['lodash'], function(_) {
           }
         }
       });
-      return goodOutcomes.length;
+      return validOutcomes.length;
     }
 
     function isModelWithMissingAlternatives(outcomesWithAnalyses) {
@@ -216,26 +224,36 @@ define(['lodash'], function(_) {
     }
 
     function addModelBaseline(analysis, models, alternatives) {
-      _.forEach(analysis.benefitRiskNMAOutcomeInclusions, function(benefitRiskNMAOutcomeInclusion) {
-        if (!benefitRiskNMAOutcomeInclusion.baseline) {
-          // there is no baseline set yet, check if you can use the modelBaseline
-          var baselineModel = _.find(models, function(model) {
-            return model.id === benefitRiskNMAOutcomeInclusion.modelId;
-          });
-          if (baselineModel && baselineModel.baseline) {
-            // there is a model with a baseline
-            if (_.find(analysis.interventionInclusions, function(interventionInclusion) {
-              //there is an intervention with the right name
-              return _.find(alternatives, function(alternative) {
-                return interventionInclusion.interventionId === alternative.id;
-              }).name.localeCompare(baselineModel.baseline.baseline.name) === 0;
-            })) {
-              benefitRiskNMAOutcomeInclusion.baseline = baselineModel.baseline.baseline;
-            }
-          }
-        }
+      var newAnalysis = angular.copy(analysis);
+      newAnalysis.benefitRiskNMAOutcomeInclusions = _.map(
+        newAnalysis.benefitRiskNMAOutcomeInclusions, _.partial(addBaselineIfNeeded, newAnalysis, models, alternatives)
+      );
+      return newAnalysis;
+
+    }
+    function addBaselineIfNeeded(newAnalysis, models, alternatives, outcome) {
+      if (outcome.baseline) { return outcome; }
+      var baselineModel = findModelForBaseline(models, outcome);
+      if (baselineModel && baselineModel.baseline &&
+        hasIncludedIntervention(newAnalysis.interventionInclusions, alternatives, baselineModel)
+      ) {
+        outcome.baseline = baselineModel.baseline.baseline;
+      }
+      return outcome;
+    }
+
+    function findModelForBaseline(models, outcome) {
+      return _.find(models, function(model) {
+        return model.id === outcome.modelId;
       });
-      return analysis;
+    }
+
+    function hasIncludedIntervention(interventionInclusions, alternatives, baselineModel) {
+      return _.find(interventionInclusions, function(interventionInclusion) {
+        return _.find(alternatives, function(alternative) {
+          return interventionInclusion.interventionId === alternative.id;
+        }).name.localeCompare(baselineModel.baseline.baseline.name) === 0;
+      });
     }
 
     function analysisToSaveCommand(analysis, problem) {
@@ -276,21 +294,29 @@ define(['lodash'], function(_) {
 
     function goToDefaultScenario() {
       var params = $state.params;
-      SubProblemResource.query(params).$promise.then(function(subProblems) {
-        var subProblem = subProblems[0];
-        params = _.extend({}, params, {
-          problemId: subProblem.id
-        });
-        ScenarioResource.query(params).$promise.then(function(scenarios) {
-          $state.go(DEFAULT_VIEW, {
-            userUid: params.userUid,
-            projectId: params.projectId,
-            analysisId: params.analysisId,
-            problemId: subProblem.id,
-            id: scenarios[0].id
-          });
+      return getSubProblems(params)
+        .then(_.partial(getExtendedParams, params))
+        .then(goToScenario);
+    }
+
+    function getSubProblems(params) {
+      return SubProblemResource.query(params).$promise;
+    }
+
+    function getExtendedParams(params, subProblems) {
+      var subProblem = subProblems[0];
+      params = _.extend({}, params, {
+        problemId: subProblem.id
+      });
+      return ScenarioResource.query(params).$promise.then(function(scenarios) {
+        return _.extend({}, params, {
+          id: scenarios[0].id
         });
       });
+    }
+
+    function goToScenario(params) {
+      $state.go(DEFAULT_VIEW, params);
     }
 
     return {
@@ -300,7 +326,7 @@ define(['lodash'], function(_) {
       addStudiesToOutcomes: addStudiesToOutcomes,
       compareAnalysesByModels: compareAnalysesByModels,
       buildOutcomeWithAnalyses: buildOutcomeWithAnalyses,
-      buildOutcomesWithAnalyses: buildOutcomesWithAnalyses,
+      buildOutcomes: buildOutcomes,
       joinModelsWithAnalysis: joinModelsWithAnalysis,
       numberOfSelectedOutcomes: numberOfSelectedOutcomes,
       isModelWithMissingAlternatives: isModelWithMissingAlternatives,

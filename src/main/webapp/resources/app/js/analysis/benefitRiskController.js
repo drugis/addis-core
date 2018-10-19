@@ -97,7 +97,7 @@ define(['lodash'], function(_) {
         networkMetaAnalyses = networkMetaAnalyses
           .map(_.partial(BenefitRiskService.joinModelsWithAnalysis, models))
           .map(BenefitRiskService.addModelsGroup);
-        var outcomesWithAnalyses = BenefitRiskService.buildOutcomesWithAnalyses(analysis, outcomes, networkMetaAnalyses);
+        var outcomesWithAnalyses = BenefitRiskService.buildOutcomes(analysis, outcomes, networkMetaAnalyses);
         outcomesWithAnalyses = BenefitRiskService.addStudiesToOutcomes(
           outcomesWithAnalyses, analysis.benefitRiskStudyOutcomeInclusions, studies);
         outcomesWithAnalyses = _.partition(outcomesWithAnalyses, ['dataType', 'network']);

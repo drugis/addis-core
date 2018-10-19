@@ -237,10 +237,7 @@ define(['angular', 'lodash'], function(angular, _) {
       if ($scope.trialverseData && !intervention.isIncluded) {
         $scope.analysis.excludedArms = NetworkMetaAnalysisService.cleanUpExcludedArms(intervention, $scope.analysis, $scope.trialverseData, $scope.interventions);
       }
-      var saveCommand = analysisToSaveCommand($scope.analysis);
-      AnalysisResource.save(saveCommand, function() {
-        $scope.reloadModel();
-      });
+      saveAnalysisAndReload();
     }
 
     function selectAllInterventions() {
@@ -248,10 +245,7 @@ define(['angular', 'lodash'], function(angular, _) {
         intervention.isIncluded = true;
       });
       $scope.analysis.interventionInclusions = NetworkMetaAnalysisService.buildInterventionInclusions($scope.interventions, $scope.analysis);
-      var saveCommand = analysisToSaveCommand($scope.analysis);
-      AnalysisResource.save(saveCommand, function() {
-        $scope.reloadModel();
-      });
+      saveAnalysisAndReload();
     }
 
     function deselectAllInterventions() {
@@ -260,19 +254,13 @@ define(['angular', 'lodash'], function(angular, _) {
       });
       $scope.analysis.excludedArms = [];
       $scope.analysis.interventionInclusions = NetworkMetaAnalysisService.buildInterventionInclusions($scope.interventions, $scope.analysis);
-      var saveCommand = analysisToSaveCommand($scope.analysis);
-      AnalysisResource.save(saveCommand, function() {
-        $scope.reloadModel();
-      });
+      saveAnalysisAndReload();
     }
 
     function changeSelectedOutcome() {
       $scope.tableHasAmbiguousArm = false;
       $scope.analysis.excludedArms = [];
-      var saveCommand = analysisToSaveCommand($scope.analysis);
-      AnalysisResource.save(saveCommand, function() {
-        $scope.reloadModel();
-      });
+      saveAnalysisAndReload();
     }
 
     function isOverlappingIntervention(intervention) {
@@ -300,7 +288,6 @@ define(['angular', 'lodash'], function(angular, _) {
       });
     }
 
-
     function checkCanNotCreateModel() {
       return ($scope.editMode && $scope.editMode.disableEditing) ||
         $scope.tableHasAmbiguousArm ||
@@ -317,10 +304,7 @@ define(['angular', 'lodash'], function(angular, _) {
       $scope.tableHasAmbiguousArm = false;
       $scope.analysis = NetworkMetaAnalysisService.changeArmExclusion(dataRow, $scope.analysis);
       updateNetwork();
-      var saveCommand = analysisToSaveCommand($scope.analysis);
-      AnalysisResource.save(saveCommand, function() {
-        $scope.reloadModel();
-      });
+      saveAnalysisAndReload();
     }
 
     function changeCovariateInclusion(covariate) {
@@ -344,13 +328,15 @@ define(['angular', 'lodash'], function(angular, _) {
         };
         $scope.analysis.includedMeasurementMoments.push(newInclusion);
       }
+      saveAnalysisAndReload();
+    }
 
+    function saveAnalysisAndReload(){
       var saveCommand = analysisToSaveCommand($scope.analysis);
       AnalysisResource.save(saveCommand, function() {
         $scope.reloadModel();
       });
     }
-
   };
 
   return dependencies.concat(NetworkMetaAnalysisContainerController);

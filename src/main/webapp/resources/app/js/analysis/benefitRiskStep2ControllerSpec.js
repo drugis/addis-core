@@ -55,7 +55,7 @@ define(['angular-mocks', './analysis'], function() {
         'compareAnalysesByModels',
         'joinModelsWithAnalysis',
         'buildOutcomeWithAnalyses',
-        'buildOutcomesWithAnalyses',
+        'buildOutcomes',
         'numberOfSelectedInterventions',
         'numberOfSelectedOutcomes',
         'isModelWithMissingAlternatives',
@@ -238,7 +238,7 @@ define(['angular-mocks', './analysis'], function() {
       it('should set the effects table promise, query the NMAs for the ', function() {
         expect(benefitRiskService.joinModelsWithAnalysis).toHaveBeenCalled();
         expect(benefitRiskService.addModelsGroup).toHaveBeenCalled();
-        expect(benefitRiskService.buildOutcomesWithAnalyses).toHaveBeenCalled();
+        expect(benefitRiskService.buildOutcomes).toHaveBeenCalled();
       });
       it('should set the page title', function() {
         expect(pageTitleServiceMock.setPageTitle).toHaveBeenCalledWith('BenefitRiskStep2Controller', analysis.title + ' step 2');
