@@ -4,15 +4,11 @@
       <div class="cell">
         <h3>Add a new {{settings.itemName}}</h3>
       </div>
-    </div>
-    <div class="grid-x">
       <div class="cell">
         <label>Name
           <input autofocus type="text" ng-model="item.label">
         </label>
       </div>
-    </div>
-    <div class="grid-x">
       <div class="cell">
         <label>Measurement type</label>
         <input ng-model="item.measurementType" type="radio" name="measurementType" ng-change="resetResultProperties()"
@@ -34,7 +30,8 @@
       <div class="cell">
         <label>Categories</label>
         <ul class="no-bullet" ng-if="item.categoryList.length">
-          <li ng-repeat="category in item.categoryList"><a><i class="fa fa-trash-o" style="color: red;" ng-click="deleteCategory(category)"></i></a>            {{category}}</li>
+          <li ng-repeat="category in item.categoryList"><a><i class="fa fa-trash-o" style="color: red;" ng-click="deleteCategory(category)"></i></a>
+            {{category}}</li>
         </ul>
       </div>
       <div class="cell" ng-if="!item.categoryList.length">
@@ -44,42 +41,51 @@
         <input ng-model="newCategory.categoryLabel" ng-keypress="addCategoryEnterKey($event, newCategory)">
       </div>
       <div class="cell">
-        <button class="button small" ng-disabled="cannotAddCategory(newCategory)" type="button"
-          ng-click="addCategory(newCategory)">Add category</button>
+        <button class="button small" ng-disabled="cannotAddCategory(newCategory)" type="button" ng-click="addCategory(newCategory)">Add
+          category</button>
         <span class="alert" ng-if="isDuplicateCategory(newCategory)">Duplicate category name</span>
       </div>
     </div>
 
     <div class="grid-x" ng-if="item.measurementType !== 'ontology:categorical'">
       <div class="cell">
+        <label>Arm level or contrast data</label>
+        <input ng-model="item.armOrContrast" type="radio" name="armOrContrast" ng-change=armOrContrastChanged() id="arm"
+          value="ontology:arm_level_data">
+        <label for="arm">Arm level data</label>
+        <input ng-model="item.armOrContrast" type="radio" name="armOrContrast" ng-change=armOrContrastChanged() id="contrast"
+          value="ontology:contrast_data">
+        <label for="contrast">Contrast data</label>
+      </div>
+      <div class="cell" ng-if="item.armOrContrast === 'ontology:arm_level_data'">
         <label>Included result properties: <inline-help help-key="result-properties"></inline-help></label>
         <span ng-show="!changeResultProperties" ng-repeat="resultProperty in item.selectedResultProperties">
           <strong>{{resultProperty.label}}{{$last ? '' : ', '}}</strong>
         </span>
         <result-properties ng-show="changeResultProperties" variable="item"></result-properties>
         <br>
-        <button class="button small" type="button" ng-click="changeResultProperties = !changeResultProperties">{{changeResultProperties ? 'Finish changing' : 'Change'}}</button>
+        <button class="button small" type="button" ng-click="changeResultProperties = !changeResultProperties">{{changeResultProperties
+          ? 'Finish changing' : 'Change'}}</button>
+      </div>
+      <div class="cell" ng-if="item.armOrContrast === 'ontology:contrast_data'">
+        
       </div>
     </div>
 
-    <div class="grid-x" ng-if="showTimeScaleInput">
-      <div class="cell">
+    <div class="grid-x">
+      <div class="cell" ng-if="showTimeScaleInput">
         <label>
           Time scale
           <select ng-options="timeScaleOption.duration as timeScaleOption.label for timeScaleOption in timeScaleOptions"
             ng-model="item.timeScale"></select>
         </label>
       </div>
-    </div>
 
-    <div class="grid-x">
       <div class="cell">
         <label>Measured at:</label>
         <subset-select target="item.measuredAtMoments" source="measurementMoments" equals="measurementMomentEquals"></subset-select>
       </div>
-    </div>
 
-    <div class="grid-x">
       <div class="cell">
         <button class="button success" type="button" ng-click="addItem()" ng-disabled="!item.label || !item.measurementType">Add</button>
       </div>

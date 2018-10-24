@@ -38,7 +38,6 @@ define(['lodash'], function(_) {
           scope.properties = buildProperties();
         });
 
-
         function buildProperties() {
           var variableTypeDetails = _.keyBy(ResultsService.getResultPropertiesForType(scope.variable.measurementType), 'type');
           scope.variable.selectedResultProperties.forEach(function(property) {
@@ -46,7 +45,6 @@ define(['lodash'], function(_) {
           });
           return variableTypeDetails;
         }
-
 
         function updateSelection() {
           var properties = scope.properties;

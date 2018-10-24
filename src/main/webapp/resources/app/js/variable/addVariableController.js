@@ -1,10 +1,23 @@
 'use strict';
 define(['lodash'], function(_) {
-  var dependencies = ['$scope', '$injector', '$modalInstance', 'MeasurementMomentService',
-    'ResultsService', 'callback', 'settings'
+  var dependencies = [
+    '$scope',
+    '$injector',
+    '$modalInstance',
+    'MeasurementMomentService',
+    'ResultsService',
+    'callback',
+    'settings'
   ];
-  var addVariableController = function($scope, $injector, $modalInstance, MeasurementMomentService,
-    ResultsService, callback, settings) {
+  var addVariableController = function(
+    $scope,
+    $injector,
+    $modalInstance,
+    MeasurementMomentService,
+    ResultsService,
+    callback,
+    settings
+  ) {
     // functions
     $scope.addItem = addItem;
     $scope.resetResultProperties = resetResultProperties;
@@ -15,6 +28,7 @@ define(['lodash'], function(_) {
     $scope.addCategoryEnterKey = addCategoryEnterKey;
     $scope.measurementMomentEquals = measurementMomentEquals;
     $scope.cancel = cancel;
+    $scope.armOrContrastChanged = armOrContrastChanged;
 
     // init
     var service = $injector.get(settings.service);
@@ -25,7 +39,6 @@ define(['lodash'], function(_) {
       measurementType: 'ontology:dichotomous'
     };
     $scope.measurementMoments = MeasurementMomentService.queryItems();
-    $scope.resultProperties = ResultsService.VARIABLE_TYPE_DETAILS;
     $scope.timeScaleOptions = ResultsService.TIME_SCALE_OPTIONS;
 
     resetResultProperties();
@@ -34,10 +47,10 @@ define(['lodash'], function(_) {
 
     function checkTimeScaleInput() {
       $scope.showTimeScaleInput = _.find($scope.item.selectedResultProperties, ['uri', 'http://trials.drugis.org/ontology#exposure']);
-      if(!$scope.showTimeScaleInput) {
+      if (!$scope.showTimeScaleInput) {
         delete $scope.item.timeScale;
       } else {
-        if(!$scope.item.timeScale) {
+        if (!$scope.item.timeScale) {
           $scope.item.timeScale = 'P1W';
         }
       }
@@ -48,7 +61,8 @@ define(['lodash'], function(_) {
     }
 
     function resetResultProperties() {
-      $scope.item.selectedResultProperties = ResultsService.getDefaultResultProperties($scope.item.measurementType);
+      $scope.item.armOrContrast = 'ontology:arm_level_data';
+      armOrContrastChanged();
       if ($scope.item.measurementType === 'ontology:categorical') {
         $scope.item.categoryList = [];
         $scope.newCategory = {};
@@ -62,9 +76,9 @@ define(['lodash'], function(_) {
       $scope.item.resultProperties = _.map($scope.item.selectedResultProperties, 'uri');
       service.addItem($scope.item)
         .then(function() {
-            callback();
-            $modalInstance.close();
-          },
+          callback();
+          $modalInstance.close();
+        },
           function() {
             console.error('failed to create ' + settings.itemName);
             $modalInstance.close('cancel');
@@ -98,6 +112,11 @@ define(['lodash'], function(_) {
 
     function cancel() {
       $modalInstance.close('cancel');
+    }
+
+    function armOrContrastChanged(){
+      $scope.resultProperties = ResultsService.VARIABLE_TYPE_DETAILS[$scope.item.armOrContrast];
+      $scope.item.selectedResultProperties = ResultsService.getDefaultResultProperties($scope.item.measurementType, $scope.item.armOrContrast);
     }
   };
   return dependencies.concat(addVariableController);

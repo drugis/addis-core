@@ -1036,30 +1036,65 @@ define(['lodash', 'angular-mocks', './results'], function(_) {
     });
 
     describe('getDefaultResultProperties', function() {
-      it('should return the correct default resultproperties for dichotomous and continuous variables', function() {
-        var continuousProperties = [
-          resultsService.VARIABLE_TYPE_DETAILS.sample_size,
-          resultsService.VARIABLE_TYPE_DETAILS.mean,
-          resultsService.VARIABLE_TYPE_DETAILS.standard_deviation
+      it('should return the correct default resultproperties for continuous variables of arm level data', function() {
+        var continuousArmLevelProperties = [
+          resultsService.ARM_VARIABLE_TYPE_DETAILS.sample_size,
+          resultsService.ARM_VARIABLE_TYPE_DETAILS.mean,
+          resultsService.ARM_VARIABLE_TYPE_DETAILS.standard_deviation
         ];
-        var dichotomousProperties = [
-          resultsService.VARIABLE_TYPE_DETAILS.sample_size,
-          resultsService.VARIABLE_TYPE_DETAILS.count
-        ];
-        var survivalProperties = [
-          resultsService.VARIABLE_TYPE_DETAILS.count,
-          resultsService.VARIABLE_TYPE_DETAILS.exposure
-        ];
+        var result = resultsService.getDefaultResultProperties('ontology:continuous', 'ontology:arm_level_data');
+        expect(result).toEqual(continuousArmLevelProperties);
+      });
 
-        expect(resultsService.getDefaultResultProperties('ontology:dichotomous')).toEqual(dichotomousProperties);
-        expect(resultsService.getDefaultResultProperties('ontology:continuous')).toEqual(continuousProperties);
-        expect(resultsService.getDefaultResultProperties('ontology:survival')).toEqual(survivalProperties);
+      it('should return the correct default resultproperties for dichotomous variables of arm level data', function() {
+        var dichotomousArmLevelProperties = [
+          resultsService.ARM_VARIABLE_TYPE_DETAILS.sample_size,
+          resultsService.ARM_VARIABLE_TYPE_DETAILS.count
+        ];
+        var result = resultsService.getDefaultResultProperties('ontology:dichotomous', 'ontology:arm_level_data');
+        expect(result).toEqual(dichotomousArmLevelProperties);
+      });
+
+      it('should return the correct default resultproperties for survival variables of arm level data', function() {
+        var survivalArmLevelProperties = [
+          resultsService.ARM_VARIABLE_TYPE_DETAILS.count,
+          resultsService.ARM_VARIABLE_TYPE_DETAILS.exposure
+        ];
+        var result = resultsService.getDefaultResultProperties('ontology:survival', 'ontology:arm_level_data');
+        expect(result).toEqual(survivalArmLevelProperties);
+      });
+
+      it('should return the correct default resultproperties for continuous variables of contrast data', function() {
+        var continuousContrastProperties = [
+          resultsService.CONTRAST_VARIABLE_TYPE_DETAILS.log_odds_ratio,
+          resultsService.CONTRAST_VARIABLE_TYPE_DETAILS.standard_error
+        ];
+        var result = resultsService.getDefaultResultProperties('ontology:continuous', 'ontology:contrast_data');
+        expect(result).toEqual(continuousContrastProperties);
+      });
+
+      it('should return the correct default resultproperties for dichotomous variables of contrast data', function() {
+        var dichotomousContrastProperties = [
+          resultsService.CONTRAST_VARIABLE_TYPE_DETAILS.mean_difference,
+          resultsService.CONTRAST_VARIABLE_TYPE_DETAILS.standard_error
+        ];
+        var result = resultsService.getDefaultResultProperties('ontology:dichotomous', 'ontology:contrast_data');
+        expect(result).toEqual(dichotomousContrastProperties);
+      });
+
+      it('should return the correct default resultproperties for survival variables of contrast data', function() {
+        var survivalContrastProperties = [
+          resultsService.CONTRAST_VARIABLE_TYPE_DETAILS.log_hazard_ratio,
+          resultsService.CONTRAST_VARIABLE_TYPE_DETAILS.standard_error
+        ];
+        var result = resultsService.getDefaultResultProperties('ontology:survival', 'ontology:contrast_data');
+        expect(result).toEqual(survivalContrastProperties);
       });
     });
 
     describe('buildPropertyCategories', function() {
       it('should build the categories for a continuous variable', function() {
-        var varDetails = _.reduce(resultsService.VARIABLE_TYPE_DETAILS, function(accum, varType) {
+        var varDetails = _.reduce(resultsService.ARM_VARIABLE_TYPE_DETAILS, function(accum, varType) {
           accum[varType.type] = _.extend({}, varType, {
             isSelected: false
           });
@@ -1080,10 +1115,10 @@ define(['lodash', 'angular-mocks', './results'], function(_) {
           'Central tendency': {
             categoryLabel: 'Central tendency',
             properties: [varDetails.mean,
-              varDetails.median,
-              varDetails.geometric_mean,
-              varDetails.log_mean,
-              varDetails.least_squares_mean
+            varDetails.median,
+            varDetails.geometric_mean,
+            varDetails.log_mean,
+            varDetails.least_squares_mean
             ]
           },
           'Quantiles': {
@@ -1115,7 +1150,7 @@ define(['lodash', 'angular-mocks', './results'], function(_) {
 
     describe('getResultPropertiesForType', function() {
       it('should get the right variable details for each specific type', function() {
-        var varTypes = resultsService.VARIABLE_TYPE_DETAILS;
+        var varTypes = resultsService.ARM_VARIABLE_TYPE_DETAILS;
         var dichotomousResult = resultsService.getResultPropertiesForType('ontology:dichotomous');
         var continuousResult = resultsService.getResultPropertiesForType('ontology:continuous');
         var survivalResult = resultsService.getResultPropertiesForType('ontology:survival');
