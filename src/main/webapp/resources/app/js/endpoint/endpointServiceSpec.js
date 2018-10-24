@@ -48,10 +48,12 @@ define(['angular-mocks', './endpoint'], function() {
         rootScope.$digest();
       });
     });
+
     describe('add endpoint', function() {
       beforeEach(function(){
         outcomeAddDefer.resolve({});
       });
+
       it('should add the endpoint', function(done) {
         endpointService.addItem({}).then(function() {
           expect(outcomeServiceMock.addItem).toHaveBeenCalled();
@@ -60,10 +62,12 @@ define(['angular-mocks', './endpoint'], function() {
         rootScope.$digest();
       });
     });
+
     describe('edit endpoint', function() {
       beforeEach(function(){
         outcomeEditDefer.resolve({});
       });
+
       it('should edit the endpoint', function(done) {
         endpointService.editItem({}).then(function() {
           expect(outcomeServiceMock.editItem).toHaveBeenCalled();
@@ -72,10 +76,12 @@ define(['angular-mocks', './endpoint'], function() {
         rootScope.$digest();
       });
     });
+
     describe('delete endpoint', function() {
       beforeEach(function(){
         outcomeDeleteDefer.resolve({});
       });
+
       it('should delete the endpoint', function(done) {
         endpointService.deleteItem({}).then(function() {
           expect(outcomeServiceMock.deleteItem).toHaveBeenCalled();
@@ -84,6 +90,5 @@ define(['angular-mocks', './endpoint'], function() {
         rootScope.$digest();
       });
     });
-
   });
 });

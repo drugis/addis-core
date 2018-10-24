@@ -1,7 +1,15 @@
 'use strict';
 define(['lodash'], function(_) {
-  var dependencies = ['$q', 'StudyService', 'UUIDService', 'AbstractGroupService'];
-  var GroupService = function($q, StudyService, UUIDService, AbstractGroupService) {
+  var dependencies = [
+    'StudyService',
+    'UUIDService',
+    'AbstractGroupService'
+  ];
+  var GroupService = function(
+    StudyService,
+    UUIDService,
+    AbstractGroupService
+  ) {
 
     function toFrontEnd(backEndGroup) {
       var frontEndGroup = {
@@ -50,7 +58,7 @@ define(['lodash'], function(_) {
         // https://trello.com/c/owLPPtoX/1578-trialverse-support-for-non-arm-groups-3
         var studyWithPopulation = addStudyPopulationIfMissing(study);
         var groups = [];
-        if(studyWithPopulation.has_group) {
+        if (studyWithPopulation.has_group) {
           groups = _.sortBy(studyWithPopulation.has_group, 'label');
         }
         return groups.concat(studyWithPopulation.has_included_population).map(toFrontEnd);

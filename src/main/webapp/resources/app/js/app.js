@@ -23,6 +23,7 @@ define(
     'help-popup',
     'page-title-service',
     './util/constants',
+    './util/resultsConstants',
     './controllers',
     './filters',
     './resources',
@@ -108,6 +109,7 @@ define(
       'mm.foundation.tabs',
       'help-directive',
       'addis.constants',
+      'addis.resultsConstants',
       'addis.home',
       'addis.project',
       'addis.analysis',
@@ -186,10 +188,10 @@ define(
       $locationProvider.hashPrefix('');
     }]);
 
-    app.run(['$rootScope', '$q', '$window', '$http', '$location', '$templateCache', '$transitions', '$cookies',
-      'HelpPopupService', 'CacheService', 'PageTitleService', 'STUDY_CATEGORY_SETTINGS',
-      function($rootScope, $q, $window, $http, $location, $templateCache, $transitions, $cookies,
-        HelpPopupService, CacheService, PageTitleService, STUDY_CATEGORY_SETTINGS) {
+    app.run(['$rootScope', '$q', '$window', '$location', '$templateCache', '$transitions', '$cookies',
+      'HelpPopupService', 'CacheService', 'PageTitleService',
+      function($rootScope, $q, $window, $location, $templateCache, $transitions, $cookies,
+        HelpPopupService, CacheService, PageTitleService) {
         $rootScope.$safeApply = function($scope, fn) {
           var phase = $scope.$root.$$phase;
           if (phase === '$apply' || phase === '$digest') {

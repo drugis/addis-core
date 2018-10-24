@@ -1,8 +1,10 @@
-<input 
-  ng-show="isEditingAllowed" 
-  type="number" 
-  ng-change="updateValue(row, column)" 
-  ng-model="column.value" 
-  ng-class="{ 'invalid-trialverse-number' : column.isInValidValue }" 
-  ng-model-options="{ updateOn: 'default blur', debounce: {'default': 500, 'blur': 0} }" />
+<div class="grid-x" ng-show="isEditingAllowed">
+  <div class="cell">
+    <input 
+      type="number" 
+      ng-change="updateValue(row, column)" 
+      ng-model="column.value" 
+      ng-model-options="{ updateOn: 'default blur', debounce: {'default': 500, 'blur': 0} }">
+  </div>
+</div>
 <div ng-show="!isEditingAllowed" style="text-align: center;">{{column.value}}</div>

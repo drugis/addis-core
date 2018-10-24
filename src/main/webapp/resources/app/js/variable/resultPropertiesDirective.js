@@ -1,8 +1,13 @@
 'use strict';
 define(['lodash'], function(_) {
-  var dependencies = ['ResultsService'];
-
-  var ResultPropertiesDirective = function(ResultsService) {
+  var dependencies = [
+    'ResultPropertiesService',
+    'ARM_LEVEL_TYPE'
+  ];
+  var ResultPropertiesDirective = function(
+    ResultPropertiesService,
+    ARM_LEVEL_TYPE
+  ) {
     return {
       restrict: 'E',
       templateUrl: './resultPropertiesDirective.html',
@@ -12,52 +17,64 @@ define(['lodash'], function(_) {
       link: function(scope) {
         //functions
         scope.updateSelection = updateSelection;
+
         //init
-        scope.properties = buildProperties();
-        if (scope.variable.measurementType === 'ontology:continuous') {
-          scope.categories = ResultsService.buildPropertyCategories(scope.variable);
-        }
-        scope.hasNotAnalysedProperty = _.find(scope.properties, function(property) {
-          return !property.analysisReady;
-        });
+        buildProperties();
+        scope.hasNotAnalysedProperty = _.some(scope.properties, ['analysisReady', false]);
 
         // watches
-        scope.$watch('variable.measurementType', function(newValue, oldValue) {
+        scope.$watch('variable.measurementType', rebuildIfNecessary);
+        scope.$watch('variable.resultProperties', rebuildIfNecessary, true);
+
+        function rebuildIfNecessary(newValue, oldValue) {
           if (!oldValue || !newValue || oldValue === newValue) {
             return;
           }
-          scope.properties = buildProperties();
-          if (newValue === 'ontology:continuous') {
-            scope.categories = ResultsService.buildPropertyCategories(scope.variable, scope.properties);
-          }
-        });
-        scope.$watch('variable.resultProperties', function(newValue, oldValue) {
-          if (!oldValue || !newValue) {
-            return;
-          }
-          scope.properties = buildProperties();
-        });
-
-
-        function buildProperties() {
-          var variableTypeDetails = _.keyBy(ResultsService.getResultPropertiesForType(scope.variable.measurementType), 'type');
-          scope.variable.selectedResultProperties.forEach(function(property) {
-            variableTypeDetails[property.type].isSelected = true;
-          });
-          return variableTypeDetails;
+          buildProperties();
         }
 
+        function buildProperties() {
+          var resultPropertiesForType = ResultPropertiesService.getResultPropertiesForType(scope.variable.measurementType, scope.variable.armOrContrast);
+          scope.properties = _(resultPropertiesForType)
+            .map(setSelected)
+            .keyBy('type')
+            .value();
+          setCategories();
+        }
+
+        function setSelected(property) {
+          property.isSelected = isPropertySelected(property);
+          return property;
+        }
+
+        function isPropertySelected(property) {
+          return _.some(scope.variable.selectedResultProperties, function(selectedProperty) {
+            return selectedProperty.type === property.type;
+          });
+        }
+
+        function setCategories() {
+          scope.showCategories = false;
+          if (scope.variable.measurementType === 'ontology:continuous' && scope.variable.armOrContrast === ARM_LEVEL_TYPE) {
+            scope.categories = ResultPropertiesService.buildPropertyCategories(scope.variable);
+            scope.showCategories = true;
+          }
+        }
 
         function updateSelection() {
           var properties = scope.properties;
-          if (scope.variable.measurementType === 'ontology:continuous') {
-            properties = _.reduce(scope.categories, function(accum, category) {
-              return accum.concat(category.properties);
-            }, []);
+          if (scope.variable.measurementType === 'ontology:continuous' && scope.variable.armOrContrast === ARM_LEVEL_TYPE) {
+            properties = _(scope.categories).map('properties').flatten().value();
           }
-          scope.variable.selectedResultProperties = _.filter(properties, function(property) {
-            return property.isSelected;
+          setConfidenceIntervalWidth(properties);
+          scope.variable.selectedResultProperties = _.filter(properties, 'isSelected');
+        }
+
+        function setConfidenceIntervalWidth(properties) {
+          var hasConfidenceIntervalWidth = _.some(properties, function(property) {
+            return property.type === 'confidence_interval';
           });
+          scope.variable.confidenceIntervalWidth = hasConfidenceIntervalWidth ? 95 : null;
         }
       }
     };

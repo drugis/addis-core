@@ -1,8 +1,22 @@
 'use strict';
 define(['lodash'],
   function(_) {
-    var dependencies = ['$scope', '$state', '$modalInstance', 'itemService', 'callback', 'item', '$injector', 'OutcomeService'];
-    var EditOutcomeController = function($scope, $state, $modalInstance, itemService, callback, item, $injector, OutcomeService) {
+    var dependencies = [
+      '$scope',
+      '$modalInstance',
+      '$injector',
+      'OutcomeService',
+      'callback',
+      'item'
+    ];
+    var EditOutcomeController = function(
+      $scope,
+      $modalInstance,
+      $injector,
+      OutcomeService,
+      callback,
+      item
+    ) {
       // functions
       $scope.merge = merge;
       $scope.updateMergeWarning = updateMergeWarning;
@@ -22,13 +36,13 @@ define(['lodash'],
 
       function merge(targetOutcome) {
         $scope.isEditing = true;
-        OutcomeService.merge(item, targetOutcome, ItemService.TYPE).then(function() {
-            callback();
-            $modalInstance.close();
-          },
-          function() {
-            $modalInstance.close();
-          });
+        OutcomeService.merge(item, targetOutcome, ItemService.TYPE)
+          .then(succesCallback, $modalInstance.close);
+      }
+
+      function succesCallback() {
+        callback();
+        $modalInstance.close();
       }
 
       function updateMergeWarning(targetOutcome) {

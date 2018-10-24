@@ -12,17 +12,18 @@ define([], function() {
         isEditingAllowed: '='
       },
       link: function(scope) {
-        scope.updateValue = function(row, column) {
+        scope.updateValue = updateValue;
+
+        function updateValue(row, column) {
           if (ResultsTableService.isValidValue(column)) {
             column.isInValidValue = false;
-            ResultsService.updateResultValue(row, column).then(function(result){
+            ResultsService.updateResultValue(row, column).then(function(result) {
               row.uri = result;
             });
           } else {
             column.isInValidValue = true;
           }
-        };
-
+        }
       }
     };
   };

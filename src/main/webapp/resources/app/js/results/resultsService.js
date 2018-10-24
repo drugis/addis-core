@@ -1,387 +1,146 @@
 'use strict';
 define(['angular', 'lodash'], function(angular, _) {
-  var dependencies = ['StudyService', 'RdfListService', 'UUIDService'];
-  var ResultsService = function(StudyService, RdfListService, UUIDService) {
+  var dependencies = [
+    'StudyService',
+    'RdfListService',
+    'UUIDService',
+    'ARM_LEVEL_TYPE',
+    'ONTOLOGY_BASE',
+    'VARIABLE_TYPES',
+    'VARIABLE_TYPE_DETAILS'
+  ];
+  var ResultsService = function(
+    StudyService,
+    RdfListService,
+    UUIDService,
+    ARM_LEVEL_TYPE,
+    ONTOLOGY_BASE,
+    VARIABLE_TYPES,
+    VARIABLE_TYPE_DETAILS
+  ) {
 
-    var INTEGER_TYPE = '<http://www.w3.org/2001/XMLSchema#integer>';
-    var DOUBLE_TYPE = '<http://www.w3.org/2001/XMLSchema#double>';
-    var ONTOLOGY_BASE = 'http://trials.drugis.org/ontology#';
+    function getVariableDetails(variableTypeUri, armOrContrast) {
+      armOrContrast = armOrContrast ? armOrContrast : ARM_LEVEL_TYPE;
+      var uri = buildVariableUri(variableTypeUri);
+      var details = VARIABLE_TYPE_DETAILS[armOrContrast];
+      return _.find(details, ['uri', uri]);
+    }
 
-    var VARIABLE_TYPES = ['sample_size',
-      'mean',
-      'median',
-      'geometric_mean',
-      'log_mean',
-      'least_squares_mean',
-      'quantile_0.05',
-      'quantile_0.95',
-      'quantile_0.025',
-      'quantile_0.975',
-      'min',
-      'max',
-      'geometric_coefficient_of_variation',
-      'first_quartile',
-      'third_quartile',
-      'standard_deviation',
-      'standard_error',
-      'count',
-      'event_count',
-      'percentage',
-      'proportion',
-      'exposure',
-      'hazard_ratio'
-    ];
-
-    var VARIABLE_TYPE_DETAILS = {
-      'sample_size': {
-        type: 'sample_size',
-        label: 'N',
-        uri: 'http://trials.drugis.org/ontology#sample_size',
-        dataType: INTEGER_TYPE,
-        variableTypes: ['ontology:continuous', 'ontology:dichotomous'],
-        category: 'Sample size',
-        lexiconKey: 'sample-size',
-        analysisReady: true,
-        isAlwaysPositive: true
-      },
-      'mean': {
-        type: 'mean',
-        label: 'mean',
-        uri: 'http://trials.drugis.org/ontology#mean',
-        dataType: DOUBLE_TYPE,
-        variableTypes: ['ontology:continuous'],
-        category: 'Central tendency',
-        lexiconKey: 'mean',
-        analysisReady: true
-      },
-      'median': {
-        type: 'median',
-        label: 'median',
-        uri: 'http://trials.drugis.org/ontology#median',
-        dataType: DOUBLE_TYPE,
-        variableTypes: ['ontology:continuous'],
-        category: 'Central tendency',
-        lexiconKey: 'median',
-        analysisReady: false
-      },
-      'geometric_mean': {
-        type: 'geometric_mean',
-        label: 'geometric mean',
-        uri: 'http://trials.drugis.org/ontology#geometric_mean',
-        dataType: DOUBLE_TYPE,
-        variableTypes: ['ontology:continuous'],
-        category: 'Central tendency',
-        lexiconKey: 'geometric-mean',
-        analysisReady: false
-      },
-      'log_mean': {
-        type: 'log_mean',
-        label: 'log mean',
-        uri: 'http://trials.drugis.org/ontology#log_mean',
-        dataType: DOUBLE_TYPE,
-        variableTypes: ['ontology:continuous'],
-        category: 'Central tendency',
-        lexiconKey: 'log-mean',
-        analysisReady: false
-      },
-      'least_squares_mean': {
-        type: 'least_squares_mean',
-        label: 'least squares mean',
-        uri: 'http://trials.drugis.org/ontology#least_squares_mean',
-        dataType: DOUBLE_TYPE,
-        variableTypes: ['ontology:continuous'],
-        category: 'Central tendency',
-        lexiconKey: 'least-squares-mean',
-        analysisReady: false
-      },
-      'hazard_ratio': {
-        type: 'hazard_ratio',
-        label: 'hazard ratio',
-        uri: 'http://trials.drugis.org/ontology#hazard_ratio',
-        dataType: DOUBLE_TYPE,
-        variableTypes: ['ontology:survival'],
-        lexiconKey: 'hazard-ratio',
-        analysisReady: false
-      },
-      'quantile_0.05': {
-        type: 'quantile_0.05',
-        label: '5% quantile',
-        uri: 'http://trials.drugis.org/ontology#quantile_0.05',
-        dataType: DOUBLE_TYPE,
-        variableTypes: ['ontology:continuous'],
-        category: 'Quantiles',
-        lexiconKey: 'quantile-0.05',
-        analysisReady: false
-      },
-      'quantile_0.95': {
-        type: 'quantile_0.95',
-        label: '95% quantile',
-        uri: 'http://trials.drugis.org/ontology#quantile_0.95',
-        dataType: DOUBLE_TYPE,
-        variableTypes: ['ontology:continuous'],
-        category: 'Quantiles',
-        lexiconKey: 'quantile-0.95',
-        analysisReady: false
-      },
-      'quantile_0.025': {
-        type: 'quantile_0.025',
-        label: '2.5% quantile',
-        uri: 'http://trials.drugis.org/ontology#quantile_0.025',
-        dataType: DOUBLE_TYPE,
-        variableTypes: ['ontology:continuous', 'ontology:survival'],
-        category: 'Quantiles',
-        lexiconKey: 'quantile-0.025',
-        analysisReady: false
-      },
-      'quantile_0.975': {
-        type: 'quantile_0.975',
-        label: '97.5% quantile',
-        uri: 'http://trials.drugis.org/ontology#quantile_0.975',
-        dataType: DOUBLE_TYPE,
-        variableTypes: ['ontology:continuous', 'ontology:survival'],
-        category: 'Quantiles',
-        lexiconKey: 'quantile-0.975',
-        analysisReady: false
-      },
-      'min': {
-        type: 'min',
-        label: 'min',
-        uri: 'http://trials.drugis.org/ontology#min',
-        dataType: DOUBLE_TYPE,
-        variableTypes: ['ontology:continuous'],
-        category: 'Dispersion',
-        lexiconKey: 'min',
-        analysisReady: false
-      },
-      'max': {
-        type: 'max',
-        label: 'max',
-        uri: 'http://trials.drugis.org/ontology#max',
-        dataType: DOUBLE_TYPE,
-        variableTypes: ['ontology:continuous'],
-        category: 'Dispersion',
-        lexiconKey: 'max',
-        analysisReady: false
-      },
-      'geometric_coefficient_of_variation': {
-        type: 'geometric_coefficient_of_variation',
-        label: 'geometric coefficient of variation',
-        uri: 'http://trials.drugis.org/ontology#geometric_coefficient_of_variation',
-        dataType: DOUBLE_TYPE,
-        variableTypes: ['ontology:continuous'],
-        category: 'Dispersion',
-        lexiconKey: 'geometric-coefficient-of-variation',
-        analysisReady: false
-      },
-      'first_quartile': {
-        type: 'first_quartile',
-        label: 'first quartile',
-        uri: 'http://trials.drugis.org/ontology#first_quartile',
-        dataType: DOUBLE_TYPE,
-        variableTypes: ['ontology:continuous'],
-        category: 'Quantiles',
-        lexiconKey: 'first-quartile',
-        analysisReady: false
-      },
-      'third_quartile': {
-        type: 'third_quartile',
-        label: 'third quartile',
-        uri: 'http://trials.drugis.org/ontology#third_quartile',
-        dataType: DOUBLE_TYPE,
-        variableTypes: ['ontology:continuous'],
-        category: 'Quantiles',
-        lexiconKey: 'third-quartile',
-        analysisReady: false
-      },
-      'standard_deviation': {
-        type: 'standard_deviation',
-        label: 'standard deviation',
-        uri: 'http://trials.drugis.org/ontology#standard_deviation',
-        dataType: DOUBLE_TYPE,
-        variableTypes: ['ontology:continuous'],
-        category: 'Dispersion',
-        lexiconKey: 'standard-deviation',
-        analysisReady: true,
-        isAlwaysPositive: true
-      },
-      'standard_error': {
-        type: 'standard_error',
-        label: 'standard error',
-        uri: 'http://trials.drugis.org/ontology#standard_error',
-        dataType: DOUBLE_TYPE,
-        variableTypes: ['ontology:continuous'],
-        category: 'Dispersion',
-        lexiconKey: 'standard-error',
-        analysisReady: true,
-        isAlwaysPositive: true
-      },
-      'event_count': {
-        type: 'event_count',
-        label: 'number of events',
-        uri: 'http://trials.drugis.org/ontology#event_count',
-        dataType: INTEGER_TYPE,
-        variableTypes: ['ontology:dichotomous'],
-        lexiconKey: 'event-count',
-        analysisReady: false,
-        isAlwaysPositive: true
-      },
-      'count': {
-        type: 'count',
-        label: 'subjects with event',
-        uri: 'http://trials.drugis.org/ontology#count',
-        dataType: INTEGER_TYPE,
-        variableTypes: ['ontology:dichotomous', 'ontology:survival'],
-        lexiconKey: 'count',
-        analysisReady: true,
-        isAlwaysPositive: true
-      },
-      'percentage': {
-        type: 'percentage',
-        label: 'percentage with event',
-        uri: 'http://trials.drugis.org/ontology#percentage',
-        dataType: DOUBLE_TYPE,
-        variableTypes: ['ontology:dichotomous'],
-        lexiconKey: 'percentage',
-        analysisReady: false,
-        isAlwaysPositive: true
-      },
-      'proportion': {
-        type: 'proportion',
-        label: 'proportion with event',
-        uri: 'http://trials.drugis.org/ontology#proportion',
-        dataType: DOUBLE_TYPE,
-        variableTypes: ['ontology:dichotomous'],
-        lexiconKey: 'proportion',
-        analysisReady: false,
-        isAlwaysPositive: true
-      },
-      exposure: {
-        type: 'exposure',
-        label: 'total observation time',
-        uri: 'http://trials.drugis.org/ontology#exposure',
-        dataType: DOUBLE_TYPE,
-        variableTypes: ['ontology:survival'],
-        lexiconKey: 'exposure',
-        analysisReady: true
-      }
-    };
-
-    var TIME_SCALE_OPTIONS = [{
-      label: 'Days',
-      duration: 'P1D'
-    }, {
-      label: 'Weeks',
-      duration: 'P1W'
-    }, {
-      label: 'Months',
-      duration: 'P1M'
-    }, {
-      label: 'Years',
-      duration: 'P1Y'
-    }];
-
-    function getVariableDetails(variableTypeUri) {
-      var normalisedUri = variableTypeUri;
+    function buildVariableUri(variableTypeUri) {
       if (!_.startsWith(variableTypeUri, ONTOLOGY_BASE)) {
-        normalisedUri = _.replace(normalisedUri, 'ontology:', ONTOLOGY_BASE);
+        return _.replace(variableTypeUri, 'ontology:', ONTOLOGY_BASE);
       }
-      return _.find(VARIABLE_TYPE_DETAILS, ['uri', normalisedUri]);
+      return variableTypeUri;
     }
 
     function updateValue(row, inputColumn) {
-      var inputColumnVariableDetails = getVariableDetails(inputColumn.resultProperty);
+      var inputColumnVariableDetails = getVariableDetails(inputColumn.resultProperty, inputColumn.armOrContrast);
       return StudyService.getJsonGraph().then(function(graph) {
-        if (!row.uri) { // create branch
-          if (inputColumn.value !== null && inputColumn.value !== undefined) {
-            var addItem = {
-              '@id': 'http://trials.drugis.org/instances/' + UUIDService.generate(),
-              of_group: row.group.armURI || row.group.groupUri,
-              of_moment: row.measurementMoment.uri,
-              of_outcome: row.variable.uri
-            };
-            addItem[inputColumnVariableDetails.type] = inputColumn.value;
-            StudyService.saveJsonGraph(graph.concat(addItem));
-            return addItem['@id'];
-          } else {
-            return undefined;
-          }
+        if (!row.uri) {
+          return createValueBranch(row, inputColumn, inputColumnVariableDetails.type, graph);
         } else {
-          // update branch
-          var editItem = _.remove(graph, function(node) {
-            return row.uri === node['@id'];
-          })[0];
-
-          if (inputColumn.value === null) {
-            delete editItem[inputColumnVariableDetails.type];
-          } else {
-            editItem[inputColumnVariableDetails.type] = inputColumn.value;
-          }
-
-          if (!isEmptyResult(editItem)) {
-            graph.push(editItem);
-          } else {
-            delete row.uri;
-          }
+          return updateValueBranch(row, inputColumn, inputColumnVariableDetails.type, graph);
         }
-        StudyService.saveJsonGraph(graph);
-        return row.uri;
       });
+    }
+
+    function createValueBranch(row, inputColumn, columnType, graph) {
+      if (inputColumn.value !== null && inputColumn.value !== undefined) {
+        var addItem = {
+          '@id': 'http://trials.drugis.org/instances/' + UUIDService.generate(),
+          of_group: row.group.armURI || row.group.groupUri,
+          of_moment: row.measurementMoment.uri,
+          of_outcome: row.variable.uri,
+          arm_or_contrast: inputColumn.armOrContrast ? inputColumn.armOrContrast : ARM_LEVEL_TYPE
+        };
+        addItem[columnType] = inputColumn.value;
+        StudyService.saveJsonGraph(graph.concat(addItem));
+        return addItem['@id'];
+      } else {
+        return undefined;
+      }
+    }
+
+    function updateValueBranch(row, inputColumn, columnType, graph) {
+      var editItem = _.remove(graph, function(node) {
+        return row.uri === node['@id'];
+      })[0];
+
+      if (inputColumn.value === null) {
+        delete editItem[columnType];
+      } else {
+        editItem[columnType] = inputColumn.value;
+      }
+
+      if (!isEmptyResult(editItem, row.variable.armOrContrast)) {
+        graph.push(editItem);
+      } else {
+        delete row.uri;
+      }
+      StudyService.saveJsonGraph(graph);
+      return row.uri;
     }
 
     function updateCategoricalValue(row, inputColumn) {
       return StudyService.getJsonGraph().then(function(graph) {
         if (!row.uri) {
-          if (inputColumn.value !== null && inputColumn.value !== undefined) {
-            // create branch
-            var addItem = {
-              '@id': 'http://trials.drugis.org/instances/' + UUIDService.generate(),
-              of_group: row.group.armURI || row.group.groupUri,
-              of_moment: row.measurementMoment.uri,
-              of_outcome: row.variable.uri,
-              category_count: [{
-                count: inputColumn.value,
-                category: inputColumn.resultProperty['@id']
-              }]
-            };
-            StudyService.saveJsonGraph(graph.concat(addItem));
-            return addItem['@id'];
-          } else {
-            return undefined;
-          }
+          return createCategoricalBranch(row, inputColumn, graph);
         } else {
-          // update branch
-          var editItem = _.remove(graph, function(node) {
-            return row.uri === node['@id'];
-          })[0];
-
-          var countItem = _.find(editItem.category_count, function(countItem) {
-            return countItem.category === inputColumn.resultProperty['@id'];
-          });
-          if (countItem) {
-            if (inputColumn.value === null) {
-              editItem.category_count = _.reject(editItem.category_count, function(count) {
-                return count.category === inputColumn.resultProperty['@id'];
-              });
-            } else {
-              countItem.count = inputColumn.value;
-            }
-          } else {
-            countItem = {
-              count: inputColumn.value,
-              category: inputColumn.resultProperty['@id']
-            };
-            editItem.category_count.push(countItem);
-          }
-
-          if (!isEmptyCategoricalResult(editItem)) {
-            graph.push(editItem);
-          } else {
-            delete row.uri;
-          }
+          return updateCategoricalBranch(row, inputColumn, graph);
         }
-        StudyService.saveJsonGraph(graph);
-        return row.uri;
       });
+    }
+
+    function updateCategoricalBranch(row, inputColumn, graph) {
+      var editItem = _.remove(graph, function(node) {
+        return row.uri === node['@id'];
+      })[0];
+
+      var countItem = _.find(editItem.category_count, function(countItem) {
+        return countItem.category === inputColumn.resultProperty['@id'];
+      });
+      if (countItem) {
+        if (inputColumn.value === null) {
+          editItem.category_count = _.reject(editItem.category_count, function(count) {
+            return count.category === inputColumn.resultProperty['@id'];
+          });
+        } else {
+          countItem.count = inputColumn.value;
+        }
+      } else {
+        countItem = {
+          count: inputColumn.value,
+          category: inputColumn.resultProperty['@id']
+        };
+        editItem.category_count.push(countItem);
+      }
+
+      if (!isEmptyCategoricalResult(editItem)) {
+        graph.push(editItem);
+      } else {
+        delete row.uri;
+      }
+      StudyService.saveJsonGraph(graph);
+      return row.uri;
+    }
+
+    function createCategoricalBranch(row, inputColumn, graph) {
+      if (inputColumn.value !== null && inputColumn.value !== undefined) {
+        var addItem = {
+          '@id': 'http://trials.drugis.org/instances/' + UUIDService.generate(),
+          of_group: row.group.armURI || row.group.groupUri,
+          of_moment: row.measurementMoment.uri,
+          of_outcome: row.variable.uri,
+          category_count: [{
+            count: inputColumn.value,
+            category: inputColumn.resultProperty['@id']
+          }]
+        };
+        StudyService.saveJsonGraph(graph.concat(addItem));
+        return addItem['@id'];
+      } else {
+        return undefined;
+      }
     }
 
     function updateResultValue(row, inputColumn) {
@@ -398,53 +157,10 @@ define(['angular', 'lodash'], function(angular, _) {
       });
     }
 
-    function isEmptyResult(item) {
-      return !_.some(VARIABLE_TYPES, function(type) {
+    function isEmptyResult(item, armOrContrast) {
+      return !_.some(VARIABLE_TYPES[armOrContrast], function(type) {
         return item[type] !== undefined;
       });
-    }
-
-    function createValueItem(baseItem, backEndItem, type) {
-      var valueItem = angular.copy(baseItem);
-      valueItem.result_property = type;
-      valueItem.value = backEndItem[type];
-      return valueItem;
-    }
-
-    function createCategoryItem(baseItem, backEndItem, categoryItem) {
-      var valueItem = angular.copy(baseItem);
-      valueItem.isCategorical = true;
-      valueItem.result_property = categoryItem.category && categoryItem.category.label ? categoryItem.label : categoryItem;
-      valueItem.value = categoryItem.count;
-      return valueItem;
-    }
-
-    function toFrontend(accum, backEndItem) {
-      // ?instance ?armUri ?momentUri ?result_property ?value
-      var baseItem = {
-        instance: backEndItem['@id'],
-        armUri: backEndItem.of_group,
-        momentUri: backEndItem.of_moment,
-        outcomeUri: backEndItem.of_outcome,
-      };
-
-      if (isNonConformantMeasurementResult(backEndItem)) {
-        baseItem.comment = backEndItem.comment;
-      }
-
-      _.each(VARIABLE_TYPES, function(variableType) {
-        if (backEndItem[variableType] !== undefined) {
-          accum.push(createValueItem(baseItem, backEndItem, variableType));
-        }
-      });
-
-      if (backEndItem.category_count) {
-        _.each(backEndItem.category_count, function(categoryCount) {
-          accum.push(createCategoryItem(baseItem, backEndItem, categoryCount));
-        });
-      }
-
-      return accum;
     }
 
     function isResultForVariable(variableUri, item) {
@@ -489,7 +205,7 @@ define(['angular', 'lodash'], function(angular, _) {
 
     function hasValues(node) {
       if (!node.category_count) {
-        return _.keys(_.pick(node, VARIABLE_TYPES)).length > 0;
+        return _.keys(_.pick(node, VARIABLE_TYPES[getArmOrContrast(node)])).length > 0;
       } else {
         return node.category_count.length && _.find(node.category_count, function(countNode) {
           return countNode.count !== null && countNode.count !== undefined;
@@ -497,105 +213,103 @@ define(['angular', 'lodash'], function(angular, _) {
       }
     }
 
-
     function cleanupMeasurements() {
       return StudyService.getJsonGraph().then(function(graph) {
-        // first get all the info we need
-        var study;
-        var hasArmMap;
-        var hasGroupMap;
-        var isMomentMap = {};
-        var outcomeMap;
-        var isMeasurementOnOutcome = {};
-
-        _.each(graph, function(node) {
-          if (isStudyNode(node)) {
-            study = node;
-          }
-
-          if (isMoment(node)) {
-            isMomentMap[node['@id']] = true;
-          }
-        });
-
-        hasArmMap = study.has_arm.reduce(function(accum, item) {
-          accum[item['@id']] = true;
-          return accum;
-        }, {});
-
-        hasGroupMap = study.has_group.reduce(function(accum, item) {
-          accum[item['@id']] = true;
-          return accum;
-        }, {});
-
-        if (study.has_included_population) {
-          hasGroupMap[study.has_included_population[0]['@id']] = true;
-        }
-
-        outcomeMap = _.keyBy(study.has_outcome, '@id');
-
-        // add all measurements that are selected on at least one outcome to the isMeasurementOnOutcome map
-        isMeasurementOnOutcome = _.reduce(study.has_outcome, function(accum, outcome) {
-          var measuredAtList;
-          if (!Array.isArray(outcome.is_measured_at)) {
-            measuredAtList = [outcome.is_measured_at];
-          } else {
-            measuredAtList = outcome.is_measured_at || [];
-          }
-          _.forEach(measuredAtList, function(measurementMomentUri) {
-            isMeasurementOnOutcome[measurementMomentUri] = true;
-          });
-          return accum;
-        }, isMeasurementOnOutcome);
-
-        // remove properties that are no longer measured by the outcome
-        var filteredGraph = _.map(graph, function(node) {
-          if (isResult(node) && outcomeMap[node.of_outcome]) {
-            if (node.category_count) {
-              var categoryIds = _.reduce(study.has_outcome, function(accum, outcome) {
-                var categories = RdfListService.flattenList(outcome.of_variable[0].categoryList);
-                return accum.concat(_.map(categories, '@id'));
-              }, []);
-              node.category_count = _.filter(node.category_count, function(countObject) {
-                return _.includes(categoryIds, countObject.category);
-              });
-            } else {
-              var resultProperties = _.keys(_.pick(node, VARIABLE_TYPES));
-              resultProperties = _.map(resultProperties, function(resultProperty) {
-                return VARIABLE_TYPE_DETAILS[resultProperty];
-              });
-              var missingProperties = _.filter(resultProperties, function(resultProperty) {
-                return !_.includes(outcomeMap[node.of_outcome].has_result_property, resultProperty.uri);
-              });
-              return _.omit(node, _.map(missingProperties, 'type'));
-            }
-            return node;
-          } else {
-            return node;
-          }
-        });
-
-        // now it's time for cleaning
-        filteredGraph = _.filter(filteredGraph, function(node) {
-          if (isResult(node)) {
-            return (hasArmMap[node.of_group] || hasGroupMap[node.of_group]) &&
-              isMomentMap[node.of_moment] &&
-              outcomeMap[node.of_outcome] &&
-              isMeasurementOnOutcome[node.of_moment] &&
-              hasValues(node);
-          } else {
-            return true;
-          }
-        });
-
-
+        var filteredGraph = filterGraph(graph);
         return StudyService.saveJsonGraph(filteredGraph);
       });
     }
 
+    function filterGraph(graph) {
+      var study = _.find(graph, isStudyNode);
+      var hasGroupMap = createHasPropertyByIdMap(study.has_group);
+      if (study.has_included_population) {
+        hasGroupMap[study.has_included_population[0]['@id']] = true;
+      }
+      var hasArmMap = createHasPropertyByIdMap(study.has_arm);
+      var hasMomentMap = createHasPropertyByIdMap(_.filter(graph, isMoment));
+      var hasOutcomeMap = _.keyBy(study.has_outcome, '@id');
+      var hasMeasurementsMap = getMeasurementsForOutcomes(study);
+      var filteredGraph = removeNoLongerMeasuredProperties(graph, hasOutcomeMap, study);
+
+      return _.filter(filteredGraph, function(node) {
+        if (isResult(node)) {
+          return (hasArmMap[node.of_group] || hasGroupMap[node.of_group]) &&
+            hasMomentMap[node.of_moment] &&
+            hasOutcomeMap[node.of_outcome] &&
+            hasMeasurementsMap[node.of_moment] &&
+            hasValues(node);
+        } else {
+          return true;
+        }
+      });
+    }
+
+    function createHasPropertyByIdMap(propertyList) {
+      return _(propertyList)
+        .keyBy('@id')
+        .mapValues(function() {
+          return true;
+        })
+        .value();
+    }
+
+    function getMeasurementsForOutcomes(study) {
+      return _.reduce(study.has_outcome, function(accum, outcome) {
+        var measurementMomentUris;
+        if (!Array.isArray(outcome.is_measured_at)) {
+          accum[outcome.is_measured_at] = true;
+        } else {
+          measurementMomentUris = outcome.is_measured_at || [];
+          _.forEach(measurementMomentUris, function(measurementMomentUri) {
+            accum[measurementMomentUri] = true;
+          });
+        }
+        return accum;
+      }, {});
+    }
+
+    function removeNoLongerMeasuredProperties(graph, outcomeMap, study) {
+      return _.map(graph, function(node) {
+        if (isResult(node) && outcomeMap[node.of_outcome]) {
+          if (node.category_count) {
+            var categoryIds = _.reduce(study.has_outcome, function(accum, outcome) {
+              var categories = RdfListService.flattenList(outcome.of_variable[0].categoryList);
+              return accum.concat(_.map(categories, '@id'));
+            }, []);
+            node.category_count = _.filter(node.category_count, function(countObject) {
+              return _.includes(categoryIds, countObject.category);
+            });
+          } else {
+            var resultProperties = getResultPropertiesFor(node);
+            var missingProperties = _.filter(resultProperties, function(resultProperty) {
+              return !_.includes(outcomeMap[node.of_outcome].has_result_property, resultProperty.uri);
+            });
+            return _.omit(node, _.map(missingProperties, 'type'));
+          }
+          return node;
+        } else {
+          return node;
+        }
+      });
+    }
+
+    function getResultPropertiesFor(node) {
+      var variableTypes = VARIABLE_TYPES[getArmOrContrast(node)];
+      var resultProperties = _.keys(_.pick(node, variableTypes));
+      return _.map(resultProperties, function(resultProperty) {
+        return VARIABLE_TYPE_DETAILS[getArmOrContrast(node)][resultProperty];
+      });
+
+    }
+
+    function getArmOrContrast(node) {
+      return node.arm_or_contrast ? node.arm_or_contrast : ARM_LEVEL_TYPE;
+    }
+
     function setToMeasurementMoment(measurementMomentUri, measurementInstanceList) {
       return StudyService.getJsonGraph().then(function(graph) {
-        _.each(graph, function(node) {
+        _.forEach(graph, function(node) {
           if (_.includes(measurementInstanceList, node['@id'])) {
             node.of_moment = measurementMomentUri;
             delete node.comment;
@@ -650,67 +364,71 @@ define(['angular', 'lodash'], function(angular, _) {
       });
     }
 
-    function getDefaultResultProperties(measurementType) {
-      if (measurementType === 'ontology:continuous') {
-        return [
-          VARIABLE_TYPE_DETAILS.sample_size,
-          VARIABLE_TYPE_DETAILS.mean,
-          VARIABLE_TYPE_DETAILS.standard_deviation
-        ];
-      } else if (measurementType === 'ontology:dichotomous') {
-        return [
-          VARIABLE_TYPE_DETAILS.sample_size,
-          VARIABLE_TYPE_DETAILS.count
-        ];
-      } else if (measurementType === 'ontology:categorical') {
-        return [];
-      } else if (measurementType === 'ontology:survival') {
-        return [
-          VARIABLE_TYPE_DETAILS.count,
-          VARIABLE_TYPE_DETAILS.exposure
-        ]
-      } else {
-        console.error('unknown measurement type ' + measurementType);
-      }
-    }
-
-    function getResultPropertiesForType(measurementType) {
-      return _.filter(VARIABLE_TYPE_DETAILS, function(varType) {
-        return varType.variableTypes === 'all' || varType.variableTypes.indexOf(measurementType) > -1;
-      });
-    }
-
-    function buildPropertyCategories(variable) {
-      var properties = getResultPropertiesForType(variable.measurementType);
-      var categories = _(properties)
-        .keyBy('category')
-        .reduce(function(accum, resultProperty, categoryName) {
-          var categoryProperties = _(properties)
-            .filter(['category', categoryName])
-            .map(function(property) {
-              return _.extend({}, property, {
-                isSelected: !!_.find(variable.selectedResultProperties, ['type', property.type])
-              });
-            }).value();
-          accum[categoryName] = {
-            categoryLabel: categoryName,
-            properties: categoryProperties
-          };
-          return accum;
-        }, {});
-      return categories;
-    }
-
-
     function _queryResults(uri, typeFunction) {
       return StudyService.getJsonGraph().then(function(graph) {
         var resultJsonItems = graph.filter(typeFunction.bind(this, uri));
-        return resultJsonItems.reduce(toFrontend, []);
+        return _(resultJsonItems)
+          .map(toFrontend)
+          .flatten()
+          .value();
       });
     }
 
     function queryResults(variableUri) {
       return _queryResults(variableUri, isResultForVariable);
+    }
+
+    function toFrontend(backEndItem) {
+      var baseItem = {
+        instance: backEndItem['@id'],
+        armUri: backEndItem.of_group,
+        momentUri: backEndItem.of_moment,
+        outcomeUri: backEndItem.of_outcome,
+        armOrContrast: backEndItem.arm_or_contrast || ARM_LEVEL_TYPE
+      };
+      if (isNonConformantMeasurementResult(backEndItem)) {
+        baseItem.comment = backEndItem.comment;
+      }
+
+      var valueItems = createValueItems(baseItem, backEndItem);
+      var categoryItems = createCategoryItems(baseItem, backEndItem);
+      return valueItems.concat(categoryItems);
+    }
+
+    function createCategoryItems(baseItem, backEndItem) {
+      if (backEndItem.category_count) {
+        return _.map(backEndItem.category_count, function(categoryCount) {
+          return createCategoryItem(baseItem, categoryCount);
+        });
+      } else {
+        return [];
+      }
+    }
+
+    function createValueItems(baseItem, backEndItem) {
+      return _(VARIABLE_TYPES[baseItem.armOrContrast])
+        .map(function(variableType) {
+          if (backEndItem[variableType] !== undefined) {
+            return createValueItem(baseItem, backEndItem, variableType);
+          }
+        })
+        .compact()
+        .value();
+    }
+
+    function createValueItem(baseItem, backEndItem, type) {
+      var valueItem = angular.copy(baseItem);
+      valueItem.result_property = type;
+      valueItem.value = backEndItem[type];
+      return valueItem;
+    }
+
+    function createCategoryItem(baseItem, categoryItem) {
+      var valueItem = angular.copy(baseItem);
+      valueItem.isCategorical = true;
+      valueItem.result_property = categoryItem.category && categoryItem.category.label ? categoryItem.label : categoryItem;
+      valueItem.value = categoryItem.count;
+      return valueItem;
     }
 
     function queryResultsByGroup(armUri) {
@@ -746,14 +464,7 @@ define(['angular', 'lodash'], function(angular, _) {
       moveMeasurementMoment: moveMeasurementMoment,
       isExistingMeasurement: isExistingMeasurement,
       isStudyNode: isStudyNode,
-      getVariableDetails: getVariableDetails,
-      getDefaultResultProperties: getDefaultResultProperties,
-      getResultPropertiesForType: getResultPropertiesForType,
-      buildPropertyCategories: buildPropertyCategories,
-      VARIABLE_TYPE_DETAILS: VARIABLE_TYPE_DETAILS,
-      INTEGER_TYPE: INTEGER_TYPE,
-      DOUBLE_TYPE: DOUBLE_TYPE,
-      TIME_SCALE_OPTIONS: TIME_SCALE_OPTIONS
+      getVariableDetails: getVariableDetails
     };
   };
   return dependencies.concat(ResultsService);

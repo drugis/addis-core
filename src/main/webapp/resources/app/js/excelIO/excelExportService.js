@@ -1,9 +1,6 @@
 'use strict';
 define(['lodash', 'xlsx', 'file-saver'], function(_, XLSX, saveAs) {
   var dependencies = ['$q', '$location',
-    'GROUP_ALLOCATION_OPTIONS',
-    'BLINDING_OPTIONS',
-    'STATUS_OPTIONS',
     'ExcelExportUtilService',
     'StudyService',
     'ArmService',
@@ -22,9 +19,6 @@ define(['lodash', 'xlsx', 'file-saver'], function(_, XLSX, saveAs) {
     'ConceptsService'
   ];
   var ExcelExportService = function($q, $location,
-    GROUP_ALLOCATION_OPTIONS,
-    BLINDING_OPTIONS,
-    STATUS_OPTIONS,
     ExcelExportUtilService,
     StudyService,
     ArmService,

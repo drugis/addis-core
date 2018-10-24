@@ -74,6 +74,11 @@
     "text": "The disease or health state being studied.",
     "link": "/manual.html#condition"
   },
+  "confidence-interval": {
+    "title": "Confidence interval",
+    "text": "The interval of within which a certain percentage of the measured outcomes lie.",
+    "link": "/manual.html#study-input"
+  },
   "copy-study": {
     "title": "Copy study",
     "text": "You can copy studies (including those you don't own) from one dataset to another. Here you can specify which dataset the study should be copied to. Note that if the original study is changed in later versions, yours will not change. Similarly, changing your copy will not affect the original.",
@@ -189,6 +194,11 @@
     "text": "The mean (average) value measured in the given group.",
     "link": "/manual.html#study-input"
   },
+  "mean-difference": {
+    "title": "Mean",
+    "text": "The mean difference.",
+    "link": "/manual.html#study-input"
+  },
   "measurement": {
     "title": "Measurement",
     "text": "A measurement captures the outcome for the participants of each treatment group in the study. Measurements are described at the group (aggregate) level, for example the mean outcome observed in the group or the count of participants for whom an event occurred.",
@@ -212,6 +222,11 @@
   "min": {
     "title": "Min",
     "text": "The lowest value measured in the given group.",
+    "link": "/manual.html#study-input"
+  }, 
+   "odds-ratio": {
+    "title": "Odds ratio",
+    "text": "The odds ratio",
     "link": "/manual.html#study-input"
   },
   "other-group": {
@@ -264,10 +279,20 @@
     "text": "The 97.5% quantile, or the upper end of a 95% confidence interval.",
     "link": "/manual.html#study-input"
   },
+  "reference-row":{
+    "title": "Reference row",
+    "text": "The row that is the reference for the contrast data",
+    "link": "/manual.html#study-input"
+  },
   "result-properties": {
     "title": "Result properties",
     "text": "Which properties of this variable were measured, e.g. in the case of a continuous variable the mean and standard error may have been measured, or only certain quantiles may have been reported.",
     "link": "/manual.html#add-variable"
+  },
+  "risk-ratio": {
+    "title": "Risk ratio",
+    "text": "The risk ratio.",
+    "link": "/manual.html#study-input"
   },
   "sample-size": {
     "title": "N",
@@ -293,6 +318,11 @@
     "title": "Standard error",
     "text": "The standard error of the mean describes the residual uncertainty around the mean. It is the standard deviation divided by the square root of the sample size.",
     "link": "/manual.html#study-input"
+  },
+  "standardized-mean-difference":{
+    "title": "Standardized mean difference",
+    "text": "The standardized mean difference",
+    "link": "/manual.html##study-input"
   },
   "study": {
     "title": "Study",

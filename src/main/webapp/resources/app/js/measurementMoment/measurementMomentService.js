@@ -1,8 +1,26 @@
 'use strict';
 define(['lodash'],
   function(_) {
-    var dependencies = ['$q', '$filter', 'StudyService', 'UUIDService', 'EpochService', 'DurationService', 'ResultsService', 'RepairService'];
-    var MeasurementMomentService = function($q, $filter, StudyService, UUIDService, EpochService, DurationService, ResultsService, RepairService) {
+    var dependencies = [
+      '$q',
+      '$filter',
+      'StudyService',
+      'UUIDService',
+      'EpochService',
+      'DurationService',
+      'ResultsService',
+      'RepairService'
+    ];
+    var MeasurementMomentService = function(
+      $q,
+      $filter,
+      StudyService,
+      UUIDService,
+      EpochService,
+      DurationService,
+      ResultsService,
+      RepairService
+    ) {
 
       function toFrontend(backendItem) {
         var frontendItem = {

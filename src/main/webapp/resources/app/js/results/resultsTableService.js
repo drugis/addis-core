@@ -1,156 +1,251 @@
 'use strict';
 define(['lodash'], function(_) {
-  var dependencies = ['ResultsService'];
-  var ResultsTableService = function(ResultsService) {
-
-    var CONTINUOUS_TYPE = 'ontology:continuous';
-    var DICHOTOMOUS_TYPE = 'ontology:dichotomous';
-    var CATEGORICAL_TYPE = 'ontology:categorical';
-
+  var dependencies = [
+    'ResultsService',
+    'INTEGER_TYPE',
+    'DOUBLE_TYPE',
+    'ONTOLOGY_BASE',
+    'CONTRAST_TYPE'
+  ];
+  var ResultsTableService = function(
+    ResultsService,
+    INTEGER_TYPE,
+    DOUBLE_TYPE,
+    ONTOLOGY_BASE,
+    CONTRAST_TYPE
+  ) {
     function findResultValueByType(resultValueObjects, type) {
-      var resultValueObjectFound = _.find(resultValueObjects, function(resultValueObject) {
+      var resultValueObject = _.find(resultValueObjects, function(resultValueObject) {
         return resultValueObject.result_property === type;
       });
-
-      if (resultValueObjectFound) {
-        return Number(resultValueObjectFound.value);
+      if (resultValueObject) {
+        return Number(resultValueObject.value);
       }
     }
 
     function findCategoricalResult(resultValueObjects, category) {
-      var resultValueObjectFound = _.find(resultValueObjects, function(resultValueObject) {
+      var resultValueObject = _.find(resultValueObjects, function(resultValueObject) {
         return resultValueObject.result_property.category === category['@id'];
       });
-      if (resultValueObjectFound) {
-        if (resultValueObjectFound.value === undefined) {
+      if (resultValueObject) {
+        if (resultValueObject.value === undefined) {
           return undefined;
         } else {
-          return Number(resultValueObjectFound.value);
+          return Number(resultValueObject.value);
         }
       }
-    }
-
-    function createInputColumns(variable, rowValueObjects) {
-      if (!variable.resultProperties) {
-        if (variable.categoryList) {
-          return variable.categoryList.map(function(category) {
-            var resultProperty;
-            var value;
-            var valueName;
-            if (category.label) { // new format
-              resultProperty = null;
-              valueName = category.label;
-              value = findCategoricalResult(rowValueObjects, category);
-            } else { // old format
-              resultProperty = category;
-              valueName = category;
-              value = findResultValueByType(rowValueObjects, category);
-            }
-            return {
-              resultProperty: category,
-              valueName: category,
-              value: value,
-              dataType: ResultsService.INTEGER_TYPE,
-              isCategory: true,
-              isInValidValue: false
-            };
-          });
-        } else {
-          return [];
-        }
-      }
-      return variable.resultProperties.map(function(type) {
-        var details = ResultsService.getVariableDetails(type);
-        return {
-          resultProperty: type,
-          valueName: details.label,
-          value: findResultValueByType(rowValueObjects, details.type),
-          dataType: details.dataType,
-          isInValidValue: false,
-          isAlwaysPositive: details.isAlwaysPositive
-        };
-      });
     }
 
     function createHeaders(variable) {
       if (!variable.resultProperties) {
-        if (!variable.categoryList) {
-          return [];
-        } else {
-          //Categorical measurement
-          if (variable.categoryList[0] && variable.categoryList[0].label) {
-            return _.map(variable.categoryList, function(list) {
-              return {
-                'label': list.label
-              };
-            });
-          } else {
-            return variable.categoryList;
-          }
-        }
+        return createCategoricalHeader(variable);
+      } else {
+        return createNonCategoricalHeaders(variable);
       }
-
-      function createHeader(resultProperty) {
-        var scaleStrings = {
-          P1D: ' (days)',
-          P1W: ' (weeks)',
-          P1M: ' (months)',
-          P1Y: ' (years)'
-        };
-        var variableDetails = ResultsService.getVariableDetails(resultProperty);
-        return {
-          'label': variableDetails.label + (variableDetails.type === 'exposure' ? scaleStrings[variable.timeScale] : ''),
-          'lexiconKey': variableDetails.lexiconKey,
-          'analysisReady': variableDetails.analysisReady
-        };
-      }
-
-      if (!variable.resultProperties.map) { // there is only one resultproperty
-        return [createHeader(variable.resultProperties)];
-      }
-      return _.map(variable.resultProperties, createHeader);
     }
 
-    function createRow(variable, group, numberOfGroups, measurementMoment, rowValueObjects) {
+    function createNonCategoricalHeaders(variable) {
+      return _.flatten(_.map(variable.resultProperties, function(property) {
+        var propertyDetails = getPropertyDetails(property, variable);
+        if (propertyDetails.type === 'confidence_interval') {
+          return createConfidenceIntervalHeaders(propertyDetails, variable);
+        } else {
+          return createHeader(propertyDetails, variable);
+        }
+      }));
+    }
+
+    function createConfidenceIntervalHeaders(details, variable) {
+      return [
+        createBoundHeader(details, variable, 'lower bound'),
+        createBoundHeader(details, variable, 'upper bound')
+      ];
+    }
+
+    function createBoundHeader(details, variable, bound) {
+      return {
+        label: variable.confidenceIntervalWidth + '% confidence interval ' + bound,
+        lexiconKey: details.lexiconKey,
+        analysisReady: details.analysisReady
+      };
+    }
+
+    function createCategoricalHeader(variable) {
+      if (!variable.categoryList) {
+        return [];
+      } else {
+        //Categorical measurement
+        if (variable.categoryList[0] && variable.categoryList[0].label) {
+          return createCategoricalHeaderLabel(variable);
+        } else {
+          return variable.categoryList;
+        }
+      }
+    }
+
+    function createCategoricalHeaderLabel(variable) {
+      return _.map(variable.categoryList, function(list) {
+        return {
+          'label': list.label
+        };
+      });
+    }
+
+    function createHeader(propertyDetails, variable) {
+      var label = createHeaderLabel(propertyDetails, variable);
+      return {
+        label: label,
+        lexiconKey: propertyDetails.lexiconKey,
+        analysisReady: propertyDetails.analysisReady
+      };
+    }
+
+    function getPropertyDetails(resultProperty, variable) {
+      var propertyUri = _.isString(resultProperty) ? resultProperty : resultProperty.uri;
+      return ResultsService.getVariableDetails(propertyUri, variable.armOrContrast);
+    }
+
+    function createHeaderLabel(propertyDetails, variable) {
+      var scaleStrings = {
+        P1D: ' (days)',
+        P1W: ' (weeks)',
+        P1M: ' (months)',
+        P1Y: ' (years)'
+      };
+      var addition = (propertyDetails.type === 'exposure' ? scaleStrings[variable.timeScale] : '');
+      return propertyDetails.label + addition;
+    }
+
+    function createInputRows(variable, arms, groups, measurementMoments, resultValuesObjects) {
+      if (isContrastData(variable)) {
+        groups = [];
+        arms = rejectReferenceArm(arms, variable);
+      }
+      var rows = _(variable.measuredAtMoments)
+        .reduce(function(accum, measuredAtMoment) {
+          var measurementMoment = findMeasurementMoment(measurementMoments, measuredAtMoment);
+          var armRows = createArmRows(variable, arms, groups, measurementMoment, resultValuesObjects);
+          var groupRows = createGroupRows(variable, arms, groups, measurementMoment, resultValuesObjects);
+          return accum.concat(armRows, groupRows);
+        }, []);
+      var sortedRows = sortRows(rows);
+      return sortedRows;
+    }
+
+    function createGroupRows(variable, arms, groups, measurementMoment, resultValuesObjects) {
+      return _.map(groups, function(group) {
+        var valueObjects = filterRowValuesObjects(resultValuesObjects, measurementMoment.uri, group.groupUri);
+        return createRow(variable, group, arms.length + groups.length, measurementMoment, valueObjects);
+      });
+    }
+
+    function createArmRows(variable, arms, groups, measurementMoment, resultValuesObjects) {
+      return _.map(arms, function(arm) {
+        var valueObjects = filterRowValuesObjects(resultValuesObjects, measurementMoment.uri, arm.armURI);
+        return createRow(variable, arm, arms.length + groups.length, measurementMoment, valueObjects);
+      });
+    }
+
+    function isContrastData(variable) {
+      return variable.armOrContrast === CONTRAST_TYPE;
+    }
+
+    function rejectReferenceArm(arms, variable) {
+      return _.reject(arms, ['armURI', variable.referenceArm]);
+    }
+
+    function filterRowValuesObjects(resultValuesObjects, measurementMomentUri, uri) {
+      return _.filter(resultValuesObjects, function(resultValueObject) {
+        return (resultValueObject.momentUri === measurementMomentUri && resultValueObject.armUri === uri);
+      });
+    }
+
+    function findMeasurementMoment(measurementMoments, measuredAtMoment) {
+      return _.find(measurementMoments, function(measurementMoment) {
+        return measurementMoment.uri === measuredAtMoment.uri;
+      });
+    }
+
+    function createRow(variable, group, numberOfGroups, measurementMoment, valueObjects) {
       var row = {
         variable: variable,
         group: group,
         measurementMoment: measurementMoment,
         numberOfGroups: numberOfGroups,
-        inputColumns: createInputColumns(variable, rowValueObjects)
+        inputColumns: createInputColumns(variable, valueObjects)
       };
 
       // if this row has any values set we need to save the instance uri on the row to use for update or delete
-      if (rowValueObjects && rowValueObjects.length > 0) {
-        row.uri = rowValueObjects[0].instance;
+      if (valueObjects && valueObjects.length > 0) {
+        row.uri = valueObjects[0].instance;
       }
-
       return row;
     }
 
-    function createInputRows(variable, arms, groups, measurementMoments, resultValuesObjects) {
-      var rows = [];
-      _.forEach(variable.measuredAtMoments, function(measuredAtMoment) {
+    function createInputColumns(variable, valueObjects) {
+      if (!variable.resultProperties) {
+        if (variable.categoryList) {
+          return createCategoryInputColumn(variable, valueObjects);
+        } else {
+          return [];
+        }
+      }
+      return createNonCategoricalInputColumn(variable, valueObjects);
+    }
 
-        var measurementMoment = _.find(measurementMoments, function(measurementMoment) {
-          return measurementMoment.uri === measuredAtMoment.uri;
-        });
+    function createNonCategoricalInputColumn(variable, valueObjects) {
+      return _(variable.resultProperties)
+        .reduce(function(accum, property) {
+          var details = ResultsService.getVariableDetails(property, variable.armOrContrast);
+          if (details.type === 'confidence_interval') {
+            return accum.concat(createConfidenceIntervalColumns(variable, valueObjects));
+          } else {
+            return accum.concat(createColumn(property, details, valueObjects));
+          }
+        }, []);
+    }
 
-        _.forEach(arms, function(arm) {
-          var rowValueObjects = _.filter(resultValuesObjects, function(resultValueObject) {
-            return (resultValueObject.momentUri === measurementMoment.uri && resultValueObject.armUri === arm.armURI);
-          });
-          rows = rows.concat(createRow(variable, arm, arms.length + groups.length, measurementMoment, rowValueObjects));
-        });
+    function createConfidenceIntervalColumns(variable, valueObjects) {
+      var lowerboundDetails = ResultsService.getVariableDetails('ontology:confidence_interval_lower_bound', variable.armOrContrast);
+      var upperboundDetails = ResultsService.getVariableDetails('ontology:confidence_interval_upper_bound', variable.armOrContrast);
+      return [
+        createColumn(ONTOLOGY_BASE + 'confidence_interval_lower_bound', lowerboundDetails, valueObjects),
+        createColumn(ONTOLOGY_BASE + 'confidence_interval_upper_bound', upperboundDetails, valueObjects)
+      ];
+    }
 
-        _.forEach(groups, function(group) {
-          var rowValueObjects = _.filter(resultValuesObjects, function(resultValueObject) {
-            return (resultValueObject.momentUri === measurementMoment.uri && resultValueObject.armUri === group.groupUri);
-          });
-          rows = rows.concat(createRow(variable, group, arms.length + groups.length, measurementMoment, rowValueObjects));
-        });
+    function createColumn(property, details, valueObjects) {
+      return {
+        resultProperty: property,
+        valueName: details.label,
+        value: findResultValueByType(valueObjects, details.type),
+        dataType: details.dataType,
+        isInValidValue: false,
+        isAlwaysPositive: details.isAlwaysPositive,
+        armOrContrast: details.armOrContrast
+      };
+    }
+
+    function createCategoryInputColumn(variable, valueObjects) {
+      return _.map(variable.categoryList, function(category) {
+        var value;
+        if (category.label) { // new format
+          value = findCategoricalResult(valueObjects, category);
+        } else { // old format
+          value = findResultValueByType(valueObjects, category);
+        }
+        return {
+          resultProperty: category,
+          valueName: category,
+          value: value,
+          dataType: INTEGER_TYPE,
+          isCategory: true,
+          isInValidValue: false
+        };
       });
+    }
 
+    function sortRows(rows) {
       return rows.sort(function(row1, row2) {
         if (row1.measurementMoment.label.localeCompare(row2.measurementMoment.label) !== 0) {
           return row1.measurementMoment.label.localeCompare(row2.measurementMoment.label);
@@ -169,10 +264,11 @@ define(['lodash'], function(_) {
       if (inputColumn.value === undefined) {
         return false;
       }
+
       if (inputColumn.value) {
-        if (inputColumn.dataType === ResultsService.INTEGER_TYPE) {
+        if (inputColumn.dataType === INTEGER_TYPE) {
           return Number.isInteger(inputColumn.value) && (!inputColumn.isAlwaysPositive || inputColumn.value >= 0);
-        } else if (inputColumn.dataType === ResultsService.DOUBLE_TYPE) {
+        } else if (inputColumn.dataType === DOUBLE_TYPE) {
           return !isNaN(filterFloat(inputColumn.value)) && (!inputColumn.isAlwaysPositive || inputColumn.value >= 0);
         }
       } else {
@@ -202,12 +298,33 @@ define(['lodash'], function(_) {
       }, {});
     }
 
-    function findOverlappingMeasurements(targetMMUri, inputRows) {
-      return _.find(inputRows, function(inputRow) {
-        return targetMMUri === inputRow.measurementMoment.uri && _.find(inputRow.inputColumns, function(inputColumn) {
-          return inputColumn.value !== undefined;
-        });
+    function findMeasurementOverlap(momentSelections, inputRows) {
+      return _.mapValues(momentSelections, function(selection) {
+        return findOverlappingMeasurements(selection.uri, inputRows);
       });
+    }
+
+    function findOverlappingMeasurements(targetMomentUri, inputRows) {
+      return _.some(inputRows, function(inputRow) {
+        return targetMomentUri === inputRow.measurementMoment.uri &&
+        _.some(inputRow.inputColumns, function(inputColumn) {
+            return inputColumn.value !== undefined;
+          });
+      });
+    }
+
+    function findNotAnalysedProperty(inputHeaders) {
+      return _.some(inputHeaders, function(header) {
+        return header.lexiconKey && !header.analysisReady; // only check if not categorical
+      });
+    }
+
+    function buildMeasurementMomentSelections(inputRows, measurementMomentOptions) {
+      return _.reduce(inputRows, function(accum, inputRow) {
+        var momentUri = inputRow.measurementMoment.uri;
+        accum[momentUri] = measurementMomentOptions[momentUri][0];
+        return accum;
+      }, {});
     }
 
     return {
@@ -216,10 +333,9 @@ define(['lodash'], function(_) {
       isValidValue: isValidValue,
       createInputColumns: createInputColumns,
       buildMeasurementMomentOptions: buildMeasurementMomentOptions,
-      findOverlappingMeasurements: findOverlappingMeasurements,
-      CONTINUOUS_TYPE: CONTINUOUS_TYPE,
-      DICHOTOMOUS_TYPE: DICHOTOMOUS_TYPE,
-      CATEGORICAL_TYPE: CATEGORICAL_TYPE
+      findNotAnalysedProperty: findNotAnalysedProperty,
+      buildMeasurementMomentSelections: buildMeasurementMomentSelections,
+      findMeasurementOverlap: findMeasurementOverlap
     };
   };
   return dependencies.concat(ResultsTableService);
