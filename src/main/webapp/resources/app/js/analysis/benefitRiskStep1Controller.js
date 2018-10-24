@@ -276,24 +276,9 @@ define(['lodash', 'angular'], function(_, angular) {
     function updateAlternatives() {
       updateMissingAlternativesForAllOutcomes();
       updateStudyMissingStuff();
-      var saveCommand = analysisToSaveCommand($scope.analysis);
-      AnalysisResource.save(saveCommand);
+      var updateCommand = BenefitRiskService.analysisUpdateCommand($scope.analysis, $scope.includedAlternatives);
+      AnalysisResource.save(updateCommand);
       checkStep1Validity();
-    }
-
-    function analysisToSaveCommand(analysis) {
-      var analysisToSave = angular.copy(analysis);
-      analysisToSave.interventionInclusions = $scope.includedAlternatives.map(function(intervention) {
-        return {
-          interventionId: intervention.id,
-          analysisId: analysisToSave.id
-        };
-      });
-      return {
-        id: analysis.id,
-        projectId: analysis.projectId,
-        analysis: analysisToSave
-      };
     }
 
     function saveInclusions() {
@@ -318,8 +303,8 @@ define(['lodash', 'angular'], function(_, angular) {
       });
       checkStep1Validity();
       updateStudyMissingStuff();
-      var saveCommand = BenefitRiskService.analysisToSaveCommand($scope.analysis);
-      AnalysisResource.save(saveCommand);
+      var updateCommand = BenefitRiskService.analysisUpdateCommand($scope.analysis, $scope.includedAlternatives);
+      AnalysisResource.save(updateCommand);
     }
 
     function finalizeAndGoToDefaultScenario() {

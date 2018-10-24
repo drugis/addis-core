@@ -115,7 +115,7 @@ define(['angular', 'lodash'], function(angular, _) {
     }
 
     function updateOutcomesWithAnalyses(analysis, outcomes) {
-      var outcomesWithAnalyses = BenefitRiskService.buildOutcomesWithAnalyses(analysis, outcomes, $scope.networkMetaAnalyses);
+      var outcomesWithAnalyses = BenefitRiskService.buildOutcomes(analysis, outcomes, $scope.networkMetaAnalyses);
       $scope.outcomesWithAnalyses = BenefitRiskService.addStudiesToOutcomes(
         outcomesWithAnalyses, analysis.benefitRiskStudyOutcomeInclusions, $scope.studiesWithUuid);
       return resetScales();
@@ -188,7 +188,7 @@ define(['angular', 'lodash'], function(angular, _) {
       });
       var saveCommand = BenefitRiskService.analysisToSaveCommand($scope.analysis);
       $scope.effectsTablePromise = AnalysisResource.save(saveCommand).$promise.then(function() {
-        $scope.outcomesWithAnalyses = BenefitRiskService.buildOutcomesWithAnalyses(
+        $scope.outcomesWithAnalyses = BenefitRiskService.buildOutcomes(
           $scope.analysis, $scope.outcomes, $scope.networkMetaAnalyses);
         $scope.outcomesWithAnalyses = BenefitRiskService.addStudiesToOutcomes(
           $scope.outcomesWithAnalyses, $scope.analysis.benefitRiskStudyOutcomeInclusions, $scope.studiesWithUuid);
