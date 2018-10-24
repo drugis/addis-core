@@ -225,9 +225,8 @@ define(['lodash'], function(_) {
 
     function addModelBaseline(analysis, models, alternatives) {
       var newAnalysis = angular.copy(analysis);
-      newAnalysis.benefitRiskNMAOutcomeInclusions = _.map(
-        newAnalysis.benefitRiskNMAOutcomeInclusions, _.partial(addBaselineIfNeeded, newAnalysis, models, alternatives)
-      );
+      newAnalysis.benefitRiskNMAOutcomeInclusions = _.map(newAnalysis.benefitRiskNMAOutcomeInclusions,
+        _.partial(addBaselineIfNeeded, newAnalysis, models, alternatives));
       return newAnalysis;
 
     }
