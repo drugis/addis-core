@@ -8,6 +8,9 @@ define(['lodash', 'angular-mocks', './results'], function(_) {
     uuidServiceMock.generate.and.returnValue('newUuid');
     var resultsService;
 
+    var ARM_LEVEL = 'ontology:arm_level_data';
+    var CONTRAST = 'ontology:contrast_data';
+
     beforeEach(function() {
       angular.mock.module('trialverse.results', function($provide) {
         $provide.value('StudyService', studyServiceMock);
@@ -85,7 +88,6 @@ define(['lodash', 'angular-mocks', './results'], function(_) {
     });
 
     describe('query results by group', function() {
-
       var graphJsonObject = [{
         '@id': 'http://trials.drugis.org/instances/result1',
         'count': 24,
@@ -146,7 +148,6 @@ define(['lodash', 'angular-mocks', './results'], function(_) {
 
     describe('updateResultValue', function() {
       describe('when there is not yet data in the graph', function() {
-
         beforeEach(function() {
           var graphDefer = q.defer();
           var getGraphPromise = graphDefer.promise;
@@ -155,7 +156,6 @@ define(['lodash', 'angular-mocks', './results'], function(_) {
         });
 
         it('should add the value to the graph', function(done) {
-
           var row = {
             variable: {
               uri: 'http://trials.drugis.org/instances/outcome1'
@@ -545,7 +545,6 @@ define(['lodash', 'angular-mocks', './results'], function(_) {
     }); // end describe updateResultValue
 
     describe('cleanupMeasurements for noncategoricals', function() {
-
       var arm1 = {
         '@id': 'http://trials.drugis.org/instances/a1',
         '@type': 'ontology:Arm',
@@ -718,7 +717,6 @@ define(['lodash', 'angular-mocks', './results'], function(_) {
     });
 
     describe('cleanupMeasurements for categoricals', function() {
-
       var arm1 = {
         '@id': 'http://trials.drugis.org/instances/a1',
         '@type': 'ontology:Arm',
@@ -905,8 +903,8 @@ define(['lodash', 'angular-mocks', './results'], function(_) {
         rootScope.$digest();
       });
     });
-    describe('isExistingMeasurement', function() {
 
+    describe('isExistingMeasurement', function() {
       var graphJsonObject = [{
         '@id': 'nonConfInstance1',
         'of_group': 'http://trials.drugis.org/instances/arm1',
@@ -942,7 +940,6 @@ define(['lodash', 'angular-mocks', './results'], function(_) {
     });
 
     describe('isExistingMeasurement', function() {
-
       var graphJsonObject = [{
         '@id': 'nonConfInstance1',
         'of_group': 'http://trials.drugis.org/instances/arm1',
@@ -1042,7 +1039,7 @@ define(['lodash', 'angular-mocks', './results'], function(_) {
           resultsService.ARM_VARIABLE_TYPE_DETAILS.mean,
           resultsService.ARM_VARIABLE_TYPE_DETAILS.standard_deviation
         ];
-        var result = resultsService.getDefaultResultProperties('ontology:continuous', 'ontology:arm_level_data');
+        var result = resultsService.getDefaultResultProperties('ontology:continuous', ARM_LEVEL);
         expect(result).toEqual(continuousArmLevelProperties);
       });
 
@@ -1051,7 +1048,7 @@ define(['lodash', 'angular-mocks', './results'], function(_) {
           resultsService.ARM_VARIABLE_TYPE_DETAILS.sample_size,
           resultsService.ARM_VARIABLE_TYPE_DETAILS.count
         ];
-        var result = resultsService.getDefaultResultProperties('ontology:dichotomous', 'ontology:arm_level_data');
+        var result = resultsService.getDefaultResultProperties('ontology:dichotomous', ARM_LEVEL);
         expect(result).toEqual(dichotomousArmLevelProperties);
       });
 
@@ -1060,25 +1057,25 @@ define(['lodash', 'angular-mocks', './results'], function(_) {
           resultsService.ARM_VARIABLE_TYPE_DETAILS.count,
           resultsService.ARM_VARIABLE_TYPE_DETAILS.exposure
         ];
-        var result = resultsService.getDefaultResultProperties('ontology:survival', 'ontology:arm_level_data');
+        var result = resultsService.getDefaultResultProperties('ontology:survival', ARM_LEVEL);
         expect(result).toEqual(survivalArmLevelProperties);
       });
 
-      it('should return the correct default resultproperties for continuous variables of contrast data', function() {
+      it('should return the correct default resultproperties for dichotomous variables of contrast data', function() {
         var continuousContrastProperties = [
           resultsService.CONTRAST_VARIABLE_TYPE_DETAILS.log_odds_ratio,
           resultsService.CONTRAST_VARIABLE_TYPE_DETAILS.standard_error
         ];
-        var result = resultsService.getDefaultResultProperties('ontology:continuous', 'ontology:contrast_data');
+        var result = resultsService.getDefaultResultProperties('ontology:dichotomous', CONTRAST);
         expect(result).toEqual(continuousContrastProperties);
       });
 
-      it('should return the correct default resultproperties for dichotomous variables of contrast data', function() {
+      it('should return the correct default resultproperties for continuous variables of contrast data', function() {
         var dichotomousContrastProperties = [
           resultsService.CONTRAST_VARIABLE_TYPE_DETAILS.mean_difference,
           resultsService.CONTRAST_VARIABLE_TYPE_DETAILS.standard_error
         ];
-        var result = resultsService.getDefaultResultProperties('ontology:dichotomous', 'ontology:contrast_data');
+        var result = resultsService.getDefaultResultProperties('ontology:continuous', CONTRAST);
         expect(result).toEqual(dichotomousContrastProperties);
       });
 
@@ -1087,8 +1084,14 @@ define(['lodash', 'angular-mocks', './results'], function(_) {
           resultsService.CONTRAST_VARIABLE_TYPE_DETAILS.log_hazard_ratio,
           resultsService.CONTRAST_VARIABLE_TYPE_DETAILS.standard_error
         ];
-        var result = resultsService.getDefaultResultProperties('ontology:survival', 'ontology:contrast_data');
+        var result = resultsService.getDefaultResultProperties('ontology:survival', CONTRAST);
         expect(result).toEqual(survivalContrastProperties);
+      });
+
+      it('should send an error to the console if the measurement type is unknown', function() {
+        spyOn(console, 'error');
+        resultsService.getDefaultResultProperties('ontology:something', ARM_LEVEL);
+        expect(console.error).toHaveBeenCalledWith('unknown measurement type ontology:something');
       });
     });
 
@@ -1102,11 +1105,11 @@ define(['lodash', 'angular-mocks', './results'], function(_) {
         }, {});
         var variable = {
           measurementType: 'ontology:continuous',
-          selectedProperties: []
+          selectedProperties: [],
+          armOrContrast: ARM_LEVEL
         };
 
         var result = resultsService.buildPropertyCategories(variable);
-
         var expectedResult = {
           'Sample size': {
             categoryLabel: 'Sample size',
@@ -1151,9 +1154,9 @@ define(['lodash', 'angular-mocks', './results'], function(_) {
     describe('getResultPropertiesForType', function() {
       it('should get the right variable details for each specific type', function() {
         var varTypes = resultsService.ARM_VARIABLE_TYPE_DETAILS;
-        var dichotomousResult = resultsService.getResultPropertiesForType('ontology:dichotomous');
-        var continuousResult = resultsService.getResultPropertiesForType('ontology:continuous');
-        var survivalResult = resultsService.getResultPropertiesForType('ontology:survival');
+        var dichotomousResult = resultsService.getResultPropertiesForType('ontology:dichotomous', ARM_LEVEL);
+        var continuousResult = resultsService.getResultPropertiesForType('ontology:continuous', ARM_LEVEL);
+        var survivalResult = resultsService.getResultPropertiesForType('ontology:survival', ARM_LEVEL);
 
         var expectedDichotomousResult = [
           varTypes.sample_size,

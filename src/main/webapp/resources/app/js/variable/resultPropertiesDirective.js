@@ -14,48 +14,39 @@ define(['lodash'], function(_) {
         scope.updateSelection = updateSelection;
         //init
         scope.properties = buildProperties();
-        if (scope.variable.measurementType === 'ontology:continuous') {
-          scope.categories = ResultsService.buildPropertyCategories(scope.variable);
-        }
-        scope.hasNotAnalysedProperty = _.find(scope.properties, function(property) {
-          return !property.analysisReady;
-        });
-
+        scope.hasNotAnalysedProperty = _.some(scope.properties, ['analysisReady', false]);
+        var ARM_LEVEL = 'ontology:arm_level_data';
         // watches
-        scope.$watch('variable.measurementType', function(newValue, oldValue) {
+        scope.$watch('variable.measurementType', rebuildIfNecessary);
+        scope.$watch('variable.resultProperties', rebuildIfNecessary, true);
+
+        function rebuildIfNecessary(newValue, oldValue) {
           if (!oldValue || !newValue || oldValue === newValue) {
             return;
           }
-          scope.properties = buildProperties();
-          if (newValue === 'ontology:continuous') {
-            scope.categories = ResultsService.buildPropertyCategories(scope.variable, scope.properties);
-          }
-        });
-        scope.$watch('variable.resultProperties', function(newValue, oldValue) {
-          if (!oldValue || !newValue) {
-            return;
-          }
-          scope.properties = buildProperties();
-        });
+          buildProperties();
+        }
 
         function buildProperties() {
-          var variableTypeDetails = _.keyBy(ResultsService.getResultPropertiesForType(scope.variable.measurementType), 'type');
-          scope.variable.selectedResultProperties.forEach(function(property) {
-            variableTypeDetails[property.type].isSelected = true;
+          var resultPropertiesForType = ResultsService.getResultPropertiesForType(scope.variable.measurementType, scope.variable.armOrContrast);
+          var resultPropertiesByType = _.keyBy(resultPropertiesForType, 'type');
+          _.forEach(scope.variable.selectedResultProperties, function(property) {
+            resultPropertiesByType[property.type].isSelected = true;
           });
-          return variableTypeDetails;
+          scope.properties = resultPropertiesByType;
+          scope.showCategories = false;
+          if (scope.variable.measurementType === 'ontology:continuous' && scope.variable.armOrContrast === ARM_LEVEL) {
+            scope.categories = ResultsService.buildPropertyCategories(scope.variable);
+            scope.showCategories = true;
+          }
         }
 
         function updateSelection() {
           var properties = scope.properties;
-          if (scope.variable.measurementType === 'ontology:continuous') {
-            properties = _.reduce(scope.categories, function(accum, category) {
-              return accum.concat(category.properties);
-            }, []);
+          if (scope.variable.measurementType === 'ontology:continuous' && scope.variable.armOrContrast === ARM_LEVEL) {
+            properties = _(scope.categories).map('properties').flatten().value();
           }
-          scope.variable.selectedResultProperties = _.filter(properties, function(property) {
-            return property.isSelected;
-          });
+          scope.variable.selectedResultProperties = _.filter(properties, 'isSelected');
         }
       }
     };

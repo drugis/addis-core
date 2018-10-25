@@ -19,7 +19,7 @@ define(['lodash'], function(_) {
     settings
   ) {
     // functions
-    $scope.addItem = addItem;
+    $scope.addVariable = addVariable;
     $scope.resetResultProperties = resetResultProperties;
     $scope.addCategory = addCategory;
     $scope.cannotAddCategory = cannotAddCategory;
@@ -33,7 +33,7 @@ define(['lodash'], function(_) {
     // init
     var service = $injector.get(settings.service);
     $scope.settings = settings;
-    $scope.item = {
+    $scope.variable = {
       measuredAtMoments: [],
       resultProperties: [],
       measurementType: 'ontology:dichotomous'
@@ -46,12 +46,12 @@ define(['lodash'], function(_) {
     $scope.$watch('item.selectedResultProperties', checkTimeScaleInput);
 
     function checkTimeScaleInput() {
-      $scope.showTimeScaleInput = _.find($scope.item.selectedResultProperties, ['uri', 'http://trials.drugis.org/ontology#exposure']);
+      $scope.showTimeScaleInput = _.find($scope.variable.selectedResultProperties, ['uri', 'http://trials.drugis.org/ontology#exposure']);
       if (!$scope.showTimeScaleInput) {
-        delete $scope.item.timeScale;
+        delete $scope.variable.timeScale;
       } else {
-        if (!$scope.item.timeScale) {
-          $scope.item.timeScale = 'P1W';
+        if (!$scope.variable.timeScale) {
+          $scope.variable.timeScale = 'P1W';
         }
       }
     }
@@ -61,20 +61,20 @@ define(['lodash'], function(_) {
     }
 
     function resetResultProperties() {
-      $scope.item.armOrContrast = 'ontology:arm_level_data';
+      $scope.variable.armOrContrast = 'ontology:arm_level_data';
       armOrContrastChanged();
-      if ($scope.item.measurementType === 'ontology:categorical') {
-        $scope.item.categoryList = [];
+      if ($scope.variable.measurementType === 'ontology:categorical') {
+        $scope.variable.categoryList = [];
         $scope.newCategory = {};
       } else {
-        delete $scope.item.categoryList;
+        delete $scope.variable.categoryList;
         delete $scope.newCategory;
       }
     }
 
-    function addItem() {
-      $scope.item.resultProperties = _.map($scope.item.selectedResultProperties, 'uri');
-      service.addItem($scope.item)
+    function addVariable() {
+      $scope.variable.resultProperties = _.map($scope.variable.selectedResultProperties, 'uri');
+      service.addItem($scope.variable)
         .then(function() {
           callback();
           $modalInstance.close();
@@ -93,13 +93,13 @@ define(['lodash'], function(_) {
 
     function addCategory(newCategory) {
       if (!cannotAddCategory(newCategory)) {
-        $scope.item.categoryList.push(_.trim(newCategory.categoryLabel));
+        $scope.variable.categoryList.push(_.trim(newCategory.categoryLabel));
         newCategory.categoryLabel = '';
       }
     }
 
     function isDuplicateCategory(newCategory) {
-      return _.includes($scope.item.categoryList, _.trim(newCategory.categoryLabel));
+      return _.includes($scope.variable.categoryList, _.trim(newCategory.categoryLabel));
     }
 
     function cannotAddCategory(newCategory) {
@@ -107,7 +107,7 @@ define(['lodash'], function(_) {
     }
 
     function deleteCategory(category) {
-      $scope.item.categoryList.splice($scope.item.categoryList.indexOf(category), 1);
+      $scope.variable.categoryList.splice($scope.variable.categoryList.indexOf(category), 1);
     }
 
     function cancel() {
@@ -115,8 +115,8 @@ define(['lodash'], function(_) {
     }
 
     function armOrContrastChanged(){
-      $scope.resultProperties = ResultsService.VARIABLE_TYPE_DETAILS[$scope.item.armOrContrast];
-      $scope.item.selectedResultProperties = ResultsService.getDefaultResultProperties($scope.item.measurementType, $scope.item.armOrContrast);
+      $scope.variable.resultProperties = ResultsService.VARIABLE_TYPE_DETAILS[$scope.variable.armOrContrast];
+      $scope.variable.selectedResultProperties = ResultsService.getDefaultResultProperties($scope.variable.measurementType, $scope.variable.armOrContrast);
     }
   };
   return dependencies.concat(addVariableController);

@@ -6,6 +6,8 @@ define(['angular', 'lodash'], function(angular, _) {
     var INTEGER_TYPE = '<http://www.w3.org/2001/XMLSchema#integer>';
     var DOUBLE_TYPE = '<http://www.w3.org/2001/XMLSchema#double>';
     var ONTOLOGY_BASE = 'http://trials.drugis.org/ontology#';
+    var ARM_LEVEL = 'ontology:arm_level_data';
+    var CONTRAST = 'ontology:contrast_data';
 
     var ARM_VARIABLE_TYPES = [
       'sample_size',
@@ -37,7 +39,7 @@ define(['angular', 'lodash'], function(angular, _) {
       sample_size: {
         type: 'sample_size',
         label: 'N',
-        armOrContrast: 'ontology:arm_level_data',
+        armOrContrast: ARM_LEVEL,
         uri: 'http://trials.drugis.org/ontology#sample_size',
         dataType: INTEGER_TYPE,
         variableTypes: ['ontology:continuous', 'ontology:dichotomous'],
@@ -49,7 +51,7 @@ define(['angular', 'lodash'], function(angular, _) {
       mean: {
         type: 'mean',
         label: 'mean',
-        armOrContrast: 'ontology:arm_level_data',
+        armOrContrast: ARM_LEVEL,
         uri: 'http://trials.drugis.org/ontology#mean',
         dataType: DOUBLE_TYPE,
         variableTypes: ['ontology:continuous'],
@@ -60,7 +62,7 @@ define(['angular', 'lodash'], function(angular, _) {
       median: {
         type: 'median',
         label: 'median',
-        armOrContrast: 'ontology:arm_level_data',
+        armOrContrast: ARM_LEVEL,
         uri: 'http://trials.drugis.org/ontology#median',
         dataType: DOUBLE_TYPE,
         variableTypes: ['ontology:continuous'],
@@ -71,7 +73,7 @@ define(['angular', 'lodash'], function(angular, _) {
       geometric_mean: {
         type: 'geometric_mean',
         label: 'geometric mean',
-        armOrContrast: 'ontology:arm_level_data',
+        armOrContrast: ARM_LEVEL,
         uri: 'http://trials.drugis.org/ontology#geometric_mean',
         dataType: DOUBLE_TYPE,
         variableTypes: ['ontology:continuous'],
@@ -82,7 +84,7 @@ define(['angular', 'lodash'], function(angular, _) {
       log_mean: {
         type: 'log_mean',
         label: 'log mean',
-        armOrContrast: 'ontology:arm_level_data',
+        armOrContrast: ARM_LEVEL,
         uri: 'http://trials.drugis.org/ontology#log_mean',
         dataType: DOUBLE_TYPE,
         variableTypes: ['ontology:continuous'],
@@ -93,7 +95,7 @@ define(['angular', 'lodash'], function(angular, _) {
       least_squares_mean: {
         type: 'least_squares_mean',
         label: 'least squares mean',
-        armOrContrast: 'ontology:arm_level_data',
+        armOrContrast: ARM_LEVEL,
         uri: 'http://trials.drugis.org/ontology#least_squares_mean',
         dataType: DOUBLE_TYPE,
         variableTypes: ['ontology:continuous'],
@@ -104,7 +106,7 @@ define(['angular', 'lodash'], function(angular, _) {
       hazard_ratio: {
         type: 'hazard_ratio',
         label: 'hazard ratio',
-        armOrContrast: 'ontology:arm_level_data',
+        armOrContrast: ARM_LEVEL,
         uri: 'http://trials.drugis.org/ontology#hazard_ratio',
         dataType: DOUBLE_TYPE,
         variableTypes: ['ontology:survival'],
@@ -114,7 +116,7 @@ define(['angular', 'lodash'], function(angular, _) {
       'quantile_0.05': {
         type: 'quantile_0.05',
         label: '5% quantile',
-        armOrContrast: 'ontology:arm_level_data',
+        armOrContrast: ARM_LEVEL,
         uri: 'http://trials.drugis.org/ontology#quantile_0.05',
         dataType: DOUBLE_TYPE,
         variableTypes: ['ontology:continuous'],
@@ -125,7 +127,7 @@ define(['angular', 'lodash'], function(angular, _) {
       'quantile_0.95': {
         type: 'quantile_0.95',
         label: '95% quantile',
-        armOrContrast: 'ontology:arm_level_data',
+        armOrContrast: ARM_LEVEL,
         uri: 'http://trials.drugis.org/ontology#quantile_0.95',
         dataType: DOUBLE_TYPE,
         variableTypes: ['ontology:continuous'],
@@ -136,7 +138,7 @@ define(['angular', 'lodash'], function(angular, _) {
       'quantile_0.025': {
         type: 'quantile_0.025',
         label: '2.5% quantile',
-        armOrContrast: 'ontology:arm_level_data',
+        armOrContrast: ARM_LEVEL,
         uri: 'http://trials.drugis.org/ontology#quantile_0.025',
         dataType: DOUBLE_TYPE,
         variableTypes: ['ontology:continuous', 'ontology:survival'],
@@ -147,7 +149,7 @@ define(['angular', 'lodash'], function(angular, _) {
       'quantile_0.975': {
         type: 'quantile_0.975',
         label: '97.5% quantile',
-        armOrContrast: 'ontology:arm_level_data',
+        armOrContrast: ARM_LEVEL,
         uri: 'http://trials.drugis.org/ontology#quantile_0.975',
         dataType: DOUBLE_TYPE,
         variableTypes: ['ontology:continuous', 'ontology:survival'],
@@ -158,7 +160,7 @@ define(['angular', 'lodash'], function(angular, _) {
       min: {
         type: 'min',
         label: 'min',
-        armOrContrast: 'ontology:arm_level_data',
+        armOrContrast: ARM_LEVEL,
         uri: 'http://trials.drugis.org/ontology#min',
         dataType: DOUBLE_TYPE,
         variableTypes: ['ontology:continuous'],
@@ -169,7 +171,7 @@ define(['angular', 'lodash'], function(angular, _) {
       max: {
         type: 'max',
         label: 'max',
-        armOrContrast: 'ontology:arm_level_data',
+        armOrContrast: ARM_LEVEL,
         uri: 'http://trials.drugis.org/ontology#max',
         dataType: DOUBLE_TYPE,
         variableTypes: ['ontology:continuous'],
@@ -180,7 +182,7 @@ define(['angular', 'lodash'], function(angular, _) {
       geometric_coefficient_of_variation: {
         type: 'geometric_coefficient_of_variation',
         label: 'geometric coefficient of variation',
-        armOrContrast: 'ontology:arm_level_data',
+        armOrContrast: ARM_LEVEL,
         uri: 'http://trials.drugis.org/ontology#geometric_coefficient_of_variation',
         dataType: DOUBLE_TYPE,
         variableTypes: ['ontology:continuous'],
@@ -191,7 +193,7 @@ define(['angular', 'lodash'], function(angular, _) {
       first_quartile: {
         type: 'first_quartile',
         label: 'first quartile',
-        armOrContrast: 'ontology:arm_level_data',
+        armOrContrast: ARM_LEVEL,
         uri: 'http://trials.drugis.org/ontology#first_quartile',
         dataType: DOUBLE_TYPE,
         variableTypes: ['ontology:continuous'],
@@ -202,7 +204,7 @@ define(['angular', 'lodash'], function(angular, _) {
       third_quartile: {
         type: 'third_quartile',
         label: 'third quartile',
-        armOrContrast: 'ontology:arm_level_data',
+        armOrContrast: ARM_LEVEL,
         uri: 'http://trials.drugis.org/ontology#third_quartile',
         dataType: DOUBLE_TYPE,
         variableTypes: ['ontology:continuous'],
@@ -213,7 +215,7 @@ define(['angular', 'lodash'], function(angular, _) {
       standard_deviation: {
         type: 'standard_deviation',
         label: 'standard deviation',
-        armOrContrast: 'ontology:arm_level_data',
+        armOrContrast: ARM_LEVEL,
         uri: 'http://trials.drugis.org/ontology#standard_deviation',
         dataType: DOUBLE_TYPE,
         variableTypes: ['ontology:continuous'],
@@ -225,7 +227,7 @@ define(['angular', 'lodash'], function(angular, _) {
       standard_error: {
         type: 'standard_error',
         label: 'standard error',
-        armOrContrast: 'ontology:arm_level_data',
+        armOrContrast: ARM_LEVEL,
         uri: 'http://trials.drugis.org/ontology#standard_error',
         dataType: DOUBLE_TYPE,
         variableTypes: ['ontology:continuous'],
@@ -237,7 +239,7 @@ define(['angular', 'lodash'], function(angular, _) {
       event_count: {
         type: 'event_count',
         label: 'number of events',
-        armOrContrast: 'ontology:arm_level_data',
+        armOrContrast: ARM_LEVEL,
         uri: 'http://trials.drugis.org/ontology#event_count',
         dataType: INTEGER_TYPE,
         variableTypes: ['ontology:dichotomous'],
@@ -248,7 +250,7 @@ define(['angular', 'lodash'], function(angular, _) {
       count: {
         type: 'count',
         label: 'subjects with event',
-        armOrContrast: 'ontology:arm_level_data',
+        armOrContrast: ARM_LEVEL,
         uri: 'http://trials.drugis.org/ontology#count',
         dataType: INTEGER_TYPE,
         variableTypes: ['ontology:dichotomous', 'ontology:survival'],
@@ -259,7 +261,7 @@ define(['angular', 'lodash'], function(angular, _) {
       percentage: {
         type: 'percentage',
         label: 'percentage with event',
-        armOrContrast: 'ontology:arm_level_data',
+        armOrContrast: ARM_LEVEL,
         uri: 'http://trials.drugis.org/ontology#percentage',
         dataType: DOUBLE_TYPE,
         variableTypes: ['ontology:dichotomous'],
@@ -270,7 +272,7 @@ define(['angular', 'lodash'], function(angular, _) {
       proportion: {
         type: 'proportion',
         label: 'proportion with event',
-        armOrContrast: 'ontology:arm_level_data',
+        armOrContrast: ARM_LEVEL,
         uri: 'http://trials.drugis.org/ontology#proportion',
         dataType: DOUBLE_TYPE,
         variableTypes: ['ontology:dichotomous'],
@@ -281,7 +283,7 @@ define(['angular', 'lodash'], function(angular, _) {
       exposure: {
         type: 'exposure',
         label: 'total observation time',
-        armOrContrast: 'ontology:arm_level_data',
+        armOrContrast: ARM_LEVEL,
         uri: 'http://trials.drugis.org/ontology#exposure',
         dataType: DOUBLE_TYPE,
         variableTypes: ['ontology:survival'],
@@ -316,29 +318,32 @@ define(['angular', 'lodash'], function(angular, _) {
       log_odds_ratio: {
         type: 'log_odds_ratio',
         label: 'log odds ratio',
-        armOrContrast: 'ontology:contrast_data',
+        armOrContrast: CONTRAST,
         isLog: true,
+        category: 'Central tendency',
         uri: 'http://trials.drugis.org/ontology#odds_ratio',
         dataType: DOUBLE_TYPE,
         variableTypes: ['ontology:dichotomous'],
-        lexiconKey: 'log-odds-ratio',
+        lexiconKey: 'odds-ratio',
         analysisReady: false
       },
       log_risk_ratio: {
         type: 'log_risk_ratio',
         label: 'log risk ratio',
-        armOrContrast: 'ontology:contrast_data',
+        armOrContrast: CONTRAST,
         isLog: true,
+        category: 'Central tendency',
         uri: 'http://trials.drugis.org/ontology#risk_ratio',
         dataType: DOUBLE_TYPE,
         variableTypes: ['ontology:dichotomous'],
-        lexiconKey: 'log-risk-ratio',
+        lexiconKey: 'risk-ratio',
         analysisReady: false
       },
       mean_difference: {
         type: 'mean_difference',
         label: 'mean difference',
-        armOrContrast: 'ontology:contrast_data',
+        armOrContrast: CONTRAST,
+        category: 'Central tendency',
         uri: 'http://trials.drugis.org/ontology#mean_difference',
         dataType: DOUBLE_TYPE,
         variableTypes: ['ontology:continuous'],
@@ -348,7 +353,8 @@ define(['angular', 'lodash'], function(angular, _) {
       standardized_mean_difference: {
         type: 'standardized_mean_difference',
         label: 'standardized mean difference',
-        armOrContrast: 'ontology:contrast_data',
+        armOrContrast: CONTRAST,
+        category: 'Central tendency',
         uri: 'http://trials.drugis.org/ontology#standardized_mean_difference',
         dataType: DOUBLE_TYPE,
         variableTypes: ['ontology:continuous'],
@@ -358,12 +364,13 @@ define(['angular', 'lodash'], function(angular, _) {
       log_hazard_ratio: {
         type: 'log_hazard_ratio',
         label: 'log hazard ratio',
-        armOrContrast: 'ontology:contrast_data',
+        armOrContrast: CONTRAST,
         isLog: true,
+        category: 'Central tendency',
         uri: 'http://trials.drugis.org/ontology#hazard_ratio',
         dataType: DOUBLE_TYPE,
-        variableTypes: ['ontology:dichotomous'],
-        lexiconKey: 'log-hazard-ratio',
+        variableTypes: ['ontology:survival'],
+        lexiconKey: 'hazard-ratio',
         analysisReady: false
       },
       standard_error: {
@@ -371,12 +378,27 @@ define(['angular', 'lodash'], function(angular, _) {
         label: 'standard error',
         uri: 'http://trials.drugis.org/ontology#standard_error',
         dataType: DOUBLE_TYPE,
-        variableTypes: ['ontology:continuous'],
+        variableTypes: ['ontology:continuous', 'ontology:dichotomous', 'ontology:survival'],
         category: 'Dispersion',
         lexiconKey: 'standard-error',
         analysisReady: true,
         isAlwaysPositive: true
+      },
+      confidence_interval: {
+        type: 'confidence interval',
+        label: 'confidence interval',
+        uri: 'http://trials.drugis.org/ontology#confidence_interval',
+        dataType: INTEGER_TYPE,
+        variableTypes: ['ontology:continuous', 'ontology:dichotomous', 'ontology:survival'],
+        category: 'Dispersion',
+        lexiconKey: 'confidence-interval',
+        analysisReady: false
       }
+    };
+
+    var VARIABLE_TYPE_DETAILS = {
+      'ontology:arm_level_data': ARM_VARIABLE_TYPE_DETAILS,
+      'ontology:contrast_data': CONTRAST_VARIABLE_TYPE_DETAILS
     };
 
     var DEFAULT_ARM_RESULT_PROPERTIES = {
@@ -397,11 +419,11 @@ define(['angular', 'lodash'], function(angular, _) {
     };
 
     var DEFAULT_CONTRAST_RESULT_PROPERTIES = {
-      'ontology:continuous': [
+      'ontology:dichotomous': [
         CONTRAST_VARIABLE_TYPE_DETAILS.log_odds_ratio,
         CONTRAST_VARIABLE_TYPE_DETAILS.standard_error
       ],
-      'ontology:dichotomous': [
+      'ontology:continuous': [
         CONTRAST_VARIABLE_TYPE_DETAILS.mean_difference,
         CONTRAST_VARIABLE_TYPE_DETAILS.standard_error
       ],
@@ -428,97 +450,110 @@ define(['angular', 'lodash'], function(angular, _) {
     function updateValue(row, inputColumn) {
       var inputColumnVariableDetails = getVariableDetails(inputColumn.resultProperty);
       return StudyService.getJsonGraph().then(function(graph) {
-        if (!row.uri) { // create branch
-          if (inputColumn.value !== null && inputColumn.value !== undefined) {
-            var addItem = {
-              '@id': 'http://trials.drugis.org/instances/' + UUIDService.generate(),
-              of_group: row.group.armURI || row.group.groupUri,
-              of_moment: row.measurementMoment.uri,
-              of_outcome: row.variable.uri
-            };
-            addItem[inputColumnVariableDetails.type] = inputColumn.value;
-            StudyService.saveJsonGraph(graph.concat(addItem));
-            return addItem['@id'];
-          } else {
-            return undefined;
-          }
+        if (!row.uri) {
+          return createValueBranch(row, inputColumn, inputColumnVariableDetails, graph);
         } else {
-          // update branch
-          var editItem = _.remove(graph, function(node) {
-            return row.uri === node['@id'];
-          })[0];
-
-          if (inputColumn.value === null) {
-            delete editItem[inputColumnVariableDetails.type];
-          } else {
-            editItem[inputColumnVariableDetails.type] = inputColumn.value;
-          }
-
-          if (!isEmptyResult(editItem)) {
-            graph.push(editItem);
-          } else {
-            delete row.uri;
-          }
+          return updateValueBranch(row, inputColumn, inputColumnVariableDetails, graph);
         }
-        StudyService.saveJsonGraph(graph);
-        return row.uri;
       });
+    }
+
+    function createValueBranch(row, inputColumn, inputColumnVariableDetails, graph) {
+      if (inputColumn.value !== null && inputColumn.value !== undefined) {
+        var addItem = {
+          '@id': 'http://trials.drugis.org/instances/' + UUIDService.generate(),
+          of_group: row.group.armURI || row.group.groupUri,
+          of_moment: row.measurementMoment.uri,
+          of_outcome: row.variable.uri
+        };
+        addItem[inputColumnVariableDetails.type] = inputColumn.value;
+        StudyService.saveJsonGraph(graph.concat(addItem));
+        return addItem['@id'];
+      } else {
+        return undefined;
+      }
+    }
+
+    function updateValueBranch(row, inputColumn, inputColumnVariableDetails, graph) {
+      var editItem = _.remove(graph, function(node) {
+        return row.uri === node['@id'];
+      })[0];
+
+      if (inputColumn.value === null) {
+        delete editItem[inputColumnVariableDetails.type];
+      } else {
+        editItem[inputColumnVariableDetails.type] = inputColumn.value;
+      }
+
+      if (!isEmptyResult(editItem)) {
+        graph.push(editItem);
+      } else {
+        delete row.uri;
+      }
+      StudyService.saveJsonGraph(graph);
+      return row.uri;
     }
 
     function updateCategoricalValue(row, inputColumn) {
       return StudyService.getJsonGraph().then(function(graph) {
         if (!row.uri) {
-          if (inputColumn.value !== null && inputColumn.value !== undefined) {
-            // create branch
-            var addItem = {
-              '@id': 'http://trials.drugis.org/instances/' + UUIDService.generate(),
-              of_group: row.group.armURI || row.group.groupUri,
-              of_moment: row.measurementMoment.uri,
-              of_outcome: row.variable.uri,
-              category_count: [{
-                count: inputColumn.value,
-                category: inputColumn.resultProperty['@id']
-              }]
-            };
-            StudyService.saveJsonGraph(graph.concat(addItem));
-            return addItem['@id'];
-          } else {
-            return undefined;
-          }
+          return createCategoricalBranch(row, inputColumn, graph);
         } else {
-          // update branch
-          var editItem = _.remove(graph, function(node) {
-            return row.uri === node['@id'];
-          })[0];
-
-          var countItem = _.find(editItem.category_count, function(countItem) {
-            return countItem.category === inputColumn.resultProperty['@id'];
-          });
-          if (countItem) {
-            if (inputColumn.value === null) {
-              editItem.category_count = _.reject(editItem.category_count, function(count) {
-                return count.category === inputColumn.resultProperty['@id'];
-              });
-            } else {
-              countItem.count = inputColumn.value;
-            }
-          } else {
-            countItem = {
-              count: inputColumn.value,
-              category: inputColumn.resultProperty['@id']
-            };
-            editItem.category_count.push(countItem);
-          }
-
-          if (!isEmptyCategoricalResult(editItem)) {
-            graph.push(editItem);
-          } else {
-            delete row.uri;
-          }
+          return updateCategoricalBranch(row, inputColumn, graph);
         }
-        StudyService.saveJsonGraph(graph);
-        return row.uri;
       });
+    }
+
+    function updateCategoricalBranch(row, inputColumn, graph) {
+      var editItem = _.remove(graph, function(node) {
+        return row.uri === node['@id'];
+      })[0];
+
+      var countItem = _.find(editItem.category_count, function(countItem) {
+        return countItem.category === inputColumn.resultProperty['@id'];
+      });
+      if (countItem) {
+        if (inputColumn.value === null) {
+          editItem.category_count = _.reject(editItem.category_count, function(count) {
+            return count.category === inputColumn.resultProperty['@id'];
+          });
+        } else {
+          countItem.count = inputColumn.value;
+        }
+      } else {
+        countItem = {
+          count: inputColumn.value,
+          category: inputColumn.resultProperty['@id']
+        };
+        editItem.category_count.push(countItem);
+      }
+
+      if (!isEmptyCategoricalResult(editItem)) {
+        graph.push(editItem);
+      } else {
+        delete row.uri;
+      }
+      StudyService.saveJsonGraph(graph);
+      return row.uri;
+    }
+
+    function createCategoricalBranch(row, inputColumn, graph) {
+      if (inputColumn.value !== null && inputColumn.value !== undefined) {
+        var addItem = {
+          '@id': 'http://trials.drugis.org/instances/' + UUIDService.generate(),
+          of_group: row.group.armURI || row.group.groupUri,
+          of_moment: row.measurementMoment.uri,
+          of_outcome: row.variable.uri,
+          category_count: [{
+            count: inputColumn.value,
+            category: inputColumn.resultProperty['@id']
+          }]
+        };
+        StudyService.saveJsonGraph(graph.concat(addItem));
+        return addItem['@id'];
+      } else {
+        return undefined;
+      }
     }
 
     function updateResultValue(row, inputColumn) {
@@ -671,46 +706,8 @@ define(['angular', 'lodash'], function(angular, _) {
 
         outcomeMap = _.keyBy(study.has_outcome, '@id');
 
-        // add all measurements that are selected on at least one outcome to the isMeasurementOnOutcome map
-        isMeasurementOnOutcome = _.reduce(study.has_outcome, function(accum, outcome) {
-          var measuredAtList;
-          if (!Array.isArray(outcome.is_measured_at)) {
-            measuredAtList = [outcome.is_measured_at];
-          } else {
-            measuredAtList = outcome.is_measured_at || [];
-          }
-          _.forEach(measuredAtList, function(measurementMomentUri) {
-            isMeasurementOnOutcome[measurementMomentUri] = true;
-          });
-          return accum;
-        }, isMeasurementOnOutcome);
-
-        // remove properties that are no longer measured by the outcome
-        var filteredGraph = _.map(graph, function(node) {
-          if (isResult(node) && outcomeMap[node.of_outcome]) {
-            if (node.category_count) {
-              var categoryIds = _.reduce(study.has_outcome, function(accum, outcome) {
-                var categories = RdfListService.flattenList(outcome.of_variable[0].categoryList);
-                return accum.concat(_.map(categories, '@id'));
-              }, []);
-              node.category_count = _.filter(node.category_count, function(countObject) {
-                return _.includes(categoryIds, countObject.category);
-              });
-            } else {
-              var resultProperties = _.keys(_.pick(node, ARM_VARIABLE_TYPES));
-              resultProperties = _.map(resultProperties, function(resultProperty) {
-                return ARM_VARIABLE_TYPE_DETAILS[resultProperty];
-              });
-              var missingProperties = _.filter(resultProperties, function(resultProperty) {
-                return !_.includes(outcomeMap[node.of_outcome].has_result_property, resultProperty.uri);
-              });
-              return _.omit(node, _.map(missingProperties, 'type'));
-            }
-            return node;
-          } else {
-            return node;
-          }
-        });
+        var measurementsForOutcomes = getMeasurementsForOutcomes(study, isMeasurementOnOutcome);
+        var filteredGraph = removeNoLongerMeasuredProperties(graph, outcomeMap, study);
 
         // now it's time for cleaning
         filteredGraph = _.filter(filteredGraph, function(node) {
@@ -718,15 +715,57 @@ define(['angular', 'lodash'], function(angular, _) {
             return (hasArmMap[node.of_group] || hasGroupMap[node.of_group]) &&
               isMomentMap[node.of_moment] &&
               outcomeMap[node.of_outcome] &&
-              isMeasurementOnOutcome[node.of_moment] &&
+              measurementsForOutcomes[node.of_moment] &&
               hasValues(node);
           } else {
             return true;
           }
         });
-
-
         return StudyService.saveJsonGraph(filteredGraph);
+      });
+    }
+
+    function getMeasurementsForOutcomes(study, isMeasurementOnOutcome) {
+      return _.reduce(study.has_outcome, function(accum, outcome) {
+        var measuredAtList;
+        if (!Array.isArray(outcome.is_measured_at)) {
+          measuredAtList = [outcome.is_measured_at];
+        } else {
+          measuredAtList = outcome.is_measured_at || [];
+        }
+        _.forEach(measuredAtList, function(measurementMomentUri) {
+          isMeasurementOnOutcome[measurementMomentUri] = true;
+        });
+        return accum;
+      }, isMeasurementOnOutcome);
+
+    }
+
+    function removeNoLongerMeasuredProperties(graph, outcomeMap, study) {
+      return _.map(graph, function(node) {
+        if (isResult(node) && outcomeMap[node.of_outcome]) {
+          if (node.category_count) {
+            var categoryIds = _.reduce(study.has_outcome, function(accum, outcome) {
+              var categories = RdfListService.flattenList(outcome.of_variable[0].categoryList);
+              return accum.concat(_.map(categories, '@id'));
+            }, []);
+            node.category_count = _.filter(node.category_count, function(countObject) {
+              return _.includes(categoryIds, countObject.category);
+            });
+          } else {
+            var resultProperties = _.keys(_.pick(node, ARM_VARIABLE_TYPES));
+            resultProperties = _.map(resultProperties, function(resultProperty) {
+              return ARM_VARIABLE_TYPE_DETAILS[resultProperty];
+            });
+            var missingProperties = _.filter(resultProperties, function(resultProperty) {
+              return !_.includes(outcomeMap[node.of_outcome].has_result_property, resultProperty.uri);
+            });
+            return _.omit(node, _.map(missingProperties, 'type'));
+          }
+          return node;
+        } else {
+          return node;
+        }
       });
     }
 
@@ -796,14 +835,18 @@ define(['angular', 'lodash'], function(angular, _) {
       }
     }
 
-    function getResultPropertiesForType(measurementType) {
-      return _.filter(ARM_VARIABLE_TYPE_DETAILS, function(varType) {
+    function getResultPropertiesForType(measurementType, armOrContrast) {
+      return getResultProperties(measurementType, VARIABLE_TYPE_DETAILS[armOrContrast]);
+    }
+
+    function getResultProperties(measurementType, typedetails) {
+      return _.filter(typedetails, function(varType) {
         return varType.variableTypes === 'all' || varType.variableTypes.indexOf(measurementType) > -1;
       });
     }
 
     function buildPropertyCategories(variable) {
-      var properties = getResultPropertiesForType(variable.measurementType);
+      var properties = getResultPropertiesForType(variable.measurementType, variable.armOrContrast);
       var categories = _(properties)
         .keyBy('category')
         .reduce(function(accum, resultProperty, categoryName) {
@@ -874,6 +917,7 @@ define(['angular', 'lodash'], function(angular, _) {
       buildPropertyCategories: buildPropertyCategories,
       ARM_VARIABLE_TYPE_DETAILS: ARM_VARIABLE_TYPE_DETAILS,
       CONTRAST_VARIABLE_TYPE_DETAILS: CONTRAST_VARIABLE_TYPE_DETAILS,
+      VARIABLE_TYPE_DETAILS: VARIABLE_TYPE_DETAILS,
       INTEGER_TYPE: INTEGER_TYPE,
       DOUBLE_TYPE: DOUBLE_TYPE,
       TIME_SCALE_OPTIONS: TIME_SCALE_OPTIONS
