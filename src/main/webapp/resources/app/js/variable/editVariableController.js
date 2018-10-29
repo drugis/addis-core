@@ -1,82 +1,114 @@
 'use strict';
 define(['lodash'], function(_) {
-  var dependencies = ['$scope', '$state', '$modalInstance',
-    'OutcomeService', 'itemService', 'MeasurementMomentService',
-    'ResultsService', 'callback', 'item', 'itemType'
+  var dependencies = [
+    '$scope',
+    '$modalInstance',
+    'OutcomeService',
+    'itemService',
+    'MeasurementMomentService',
+    'ResultsService',
+    'callback',
+    'item',
+    'itemType'
   ];
-  var EditItemController = function($scope, $state, $modalInstance,
-    OutcomeService, itemService, MeasurementMomentService,
-    ResultsService, callback, item, itemType) {
+  var EditVariableController = function(
+    $scope,
+    $modalInstance,
+    OutcomeService,
+    itemService,
+    MeasurementMomentService,
+    ResultsService,
+    callback,
+    item,
+    itemType
+  ) {
     // functions
     $scope.measurementMomentEquals = measurementMomentEquals;
     $scope.deleteCategory = deleteCategory;
     $scope.addCategory = addCategory;
     $scope.addCategoryEnterKey = addCategoryEnterKey;
-    $scope.editItem = editItem;
+    $scope.editVariable = editVariable;
     $scope.resetResultProperties = resetResultProperties;
     $scope.cancel = cancel;
+    $scope.armOrContrastChanged = armOrContrastChanged;
 
     // init
     $scope.isEditing = false;
-    $scope.item = item;
+    $scope.variable = item;
     $scope.itemType = itemType;
+    setArmOrContrast();
     $scope.measurementMoments = MeasurementMomentService.queryItems();
-    $scope.resultProperties = _.values(ResultsService.VARIABLE_TYPE_DETAILS);
+    $scope.resultProperties = _.values(ResultsService.VARIABLE_TYPE_DETAILS[$scope.variable.armOrContrast]);
     $scope.timeScaleOptions = ResultsService.TIME_SCALE_OPTIONS;
 
-    $scope.$watch('item.selectedResultProperties', checkTimeScaleInput);
+    $scope.$watch('variable.selectedResultProperties', checkTimeScaleInput);
+
+    $scope.variable.selectedResultProperties = getSelectedResultProperties();
+
+    function setArmOrContrast() {
+      if (!$scope.variable.armOrContrast) {
+        $scope.variable.armOrContrast = 'ontology:arm_level_data';
+      }
+    }
+
+    function getSelectedResultProperties() {
+      return _.filter($scope.resultProperties, function(resultProperty) {
+        return _.includes($scope.variable.resultProperties, resultProperty.uri);
+      });
+    }
 
     function checkTimeScaleInput() {
-      $scope.showTimeScaleInput = _.find($scope.item.selectedResultProperties, ['uri', 'http://trials.drugis.org/ontology#exposure']);
-      if(!$scope.showTimeScaleInput) {
-        delete $scope.item.timeScale;
+      $scope.showTimeScaleInput = _.find($scope.variable.selectedResultProperties, ['uri', 'http://trials.drugis.org/ontology#exposure']);
+      if (!$scope.showTimeScaleInput) {
+        delete $scope.variable.timeScale;
       } else {
-        if(!$scope.item.timeScale) {
-          $scope.item.timeScale = 'P1W';
+        if (!$scope.variable.timeScale) {
+          $scope.variable.timeScale = 'P1W';
         }
       }
     }
-    item.selectedResultProperties = _.filter($scope.resultProperties, function(resultProperty) {
-      return _.includes(item.resultProperties, resultProperty.uri);
-    });
 
     function measurementMomentEquals(moment1, moment2) {
       return moment1.uri === moment2.uri;
     }
 
     function resetResultProperties() {
-      item.selectedResultProperties = ResultsService.getDefaultResultProperties($scope.item.measurementType);
-      if ($scope.item.measurementType === 'ontology:categorical') {
-        $scope.item.categoryList = [];
+      $scope.variable.selectedResultProperties = ResultsService.getDefaultResultProperties($scope.variable.measurementType, $scope.variable.armOrContrast);
+      armOrContrastChanged();
+      if ($scope.variable.measurementType === 'ontology:categorical') {
+        $scope.variable.categoryList = [];
         $scope.newCategory = {};
       } else {
-        delete $scope.item.categoryList;
+        delete $scope.variable.categoryList;
         delete $scope.newCategory;
       }
     }
 
-    function editItem() {
+    function editVariable() {
       $scope.isEditing = false;
-      item.resultProperties = _.map(item.selectedResultProperties, 'uri');
-      delete item.selectedResultProperties;
-      itemService.editItem($scope.item).then(function() {
-          callback();
-          $modalInstance.close();
-        },
-        function() {
-          $modalInstance.close('cancel');
-        });
+      $scope.resultProperties = _.map($scope.variable.selectedResultProperties, 'uri');
+      delete $scope.variable.selectedResultProperties;
+      itemService.editItem($scope.variable).then(succesCallback, errorCallback);
+    }
+
+    function succesCallback() {
+      callback();
+      $modalInstance.close();
+    }
+
+    function errorCallback() {
+      $modalInstance.close('cancel');
     }
 
     function deleteCategory(toDelete) {
-      $scope.item.categoryList = _.reject($scope.item.categoryList, function(category) {
+      $scope.variable.categoryList = _.reject($scope.variable.categoryList, function(category) {
         return toDelete['@id'] === category['@id'];
       });
     }
 
     function isDuplicateCategory(newCategory) {
       return _.includes(
-        _.map($scope.item.categoryList, 'label'),
+        _.map($scope.variable.categoryList, 'label'),
         _.trim(newCategory.categoryLabel));
     }
 
@@ -93,7 +125,7 @@ define(['lodash'], function(_) {
     function addCategory(newCategory) {
       if (!cannotAddCategory(newCategory)) {
         var newCategoryObj = OutcomeService.makeCategoryIfNeeded(_.trim(newCategory.categoryLabel));
-        $scope.item.categoryList.push(newCategoryObj);
+        $scope.variable.categoryList.push(newCategoryObj);
         newCategory.categoryLabel = '';
       }
     }
@@ -101,6 +133,11 @@ define(['lodash'], function(_) {
     function cancel() {
       $modalInstance.close('cancel');
     }
+
+    function armOrContrastChanged() {
+      $scope.variable.resultProperties = ResultsService.VARIABLE_TYPE_DETAILS[$scope.variable.armOrContrast];
+      $scope.variable.selectedResultProperties = ResultsService.getDefaultResultProperties($scope.variable.measurementType, $scope.variable.armOrContrast);
+    }
   };
-  return dependencies.concat(EditItemController);
+  return dependencies.concat(EditVariableController);
 });

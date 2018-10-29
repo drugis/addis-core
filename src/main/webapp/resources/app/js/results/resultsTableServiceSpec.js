@@ -1,9 +1,10 @@
 'use strict';
 define(['angular-mocks', './results'], function() {
-  describe('the results table service', function() {
+  describe('the resultsTableService', function() {
 
     var INTEGER_TYPE = '<http://www.w3.org/2001/XMLSchema#integer>';
     var DOUBLE_TYPE = '<http://www.w3.org/2001/XMLSchema#double>';
+    var CONTRAST = 'ontology:contrast_data';
 
     var resultsTableService,
       armService = jasmine.createSpyObj('ArmService', ['queryItems']),
@@ -25,7 +26,7 @@ define(['angular-mocks', './results'], function() {
     }));
 
     describe('createHeaders', function() {
-      it('should return a list containting objects which contain "Mean, ± sd and N " labels, their respective lexicon key and wether they are implemented for use during analysis when the type is continuous', function() {
+      it('should return a list containting objects appropriate when the type is continous and the data is arm level', function() {
         var testType = {
           resultProperties: [
             'http://trials.drugis.org/ontology#mean',
@@ -48,7 +49,8 @@ define(['angular-mocks', './results'], function() {
         }];
         expect(resultsTableService.createHeaders(testType)).toEqual(expectedResult);
       });
-      it('should return a list containting objects which contain "subjects with event and N" labels, their respective lexicon key and wether they are implemented for use during analysiswhen the type is dichotomous', function() {
+
+      it('should return a list containting objects appropriate when the type is dichotomous and the data is arm level', function() {
         var testType = {
           resultProperties: [
             'http://trials.drugis.org/ontology#count',
@@ -64,10 +66,9 @@ define(['angular-mocks', './results'], function() {
           lexiconKey: 'sample-size',
           analysisReady: true
         }];
-
-
         expect(resultsTableService.createHeaders(testType)).toEqual(expectedResult);
       });
+
       it('should return a list of the categories for a categorical variable', function() {
         var testType = {
           categoryList: [
@@ -76,6 +77,101 @@ define(['angular-mocks', './results'], function() {
           ]
         };
         expect(resultsTableService.createHeaders(testType)).toEqual(['Male', 'Female']);
+      });
+
+      it('should return a list containting objects appropriate when the type is survival and the data is arm level', function() {
+        var testType = {
+          resultProperties: [
+            'http://trials.drugis.org/ontology#hazard_ratio',
+            'http://trials.drugis.org/ontology#exposure'
+          ],
+          timeScale: 'P1M'
+        };
+        var expectedResult = [{
+          label: 'hazard ratio',
+          lexiconKey: 'hazard-ratio',
+          analysisReady: false
+        }, {
+          label: 'total observation time (months)',
+          lexiconKey: 'exposure',
+          analysisReady: true
+        }];
+        expect(resultsTableService.createHeaders(testType)).toEqual(expectedResult);
+      });
+
+      it('should return a list containting objects appropriate when the type is dichotomous and the data is contrast', function() {
+        var testType = {
+          resultProperties: [
+            'http://trials.drugis.org/ontology#odds_ratio',
+            'http://trials.drugis.org/ontology#standard_error',
+            'http://trials.drugis.org/ontology#is_reference'
+          ],
+          armOrContrast: CONTRAST
+        };
+        var expectedResult = [{
+          label: 'log odds ratio',
+          lexiconKey: 'odds-ratio',
+          analysisReady: false
+        }, {
+          label: 'standard error',
+          lexiconKey: 'standard-error',
+          analysisReady: true
+        }, {
+          label: 'is reference?',
+          lexiconKey: 'reference-row',
+          analysisReady: false
+        }];
+        expect(resultsTableService.createHeaders(testType)).toEqual(expectedResult);
+      });
+
+      it('should return a list containting objects appropriate when the type is continuous and the data is contrast', function() {
+        var testType = {
+          resultProperties: [
+            'http://trials.drugis.org/ontology#standardized_mean_difference',
+            'http://trials.drugis.org/ontology#confidence_interval',
+            'http://trials.drugis.org/ontology#is_reference'
+          ],
+          armOrContrast: CONTRAST
+        };
+        var expectedResult = [{
+          label: 'standardized mean difference',
+          lexiconKey: 'standardized-mean-difference',
+          analysisReady: false
+        }, {
+          label: 'confidence interval',
+          lexiconKey: 'confidence-interval',
+          analysisReady: false
+        }, {
+          label: 'is reference?',
+          lexiconKey: 'reference-row',
+          analysisReady: false
+        }];
+        expect(resultsTableService.createHeaders(testType)).toEqual(expectedResult);
+      });
+
+      it('should return a list containting objects appropriate when the type is survival and the data is contrast', function() {
+        var testType = {
+          resultProperties: [
+            'http://trials.drugis.org/ontology#hazard_ratio',
+            'http://trials.drugis.org/ontology#standard_error',
+            'http://trials.drugis.org/ontology#is_reference'
+          ],
+          armOrContrast: CONTRAST
+        };
+        var expectedResult = [{
+          label: 'log hazard ratio',
+          lexiconKey: 'hazard-ratio',
+          analysisReady: false
+        }, {
+          label: 'standard error',
+          lexiconKey: 'standard-error',
+          analysisReady: true
+        }, {
+          label: 'is reference?',
+          lexiconKey: 'reference-row',
+          analysisReady: false
+        }];
+        expect(resultsTableService.createHeaders(testType)).toEqual(expectedResult);
       });
     });
 

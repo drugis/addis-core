@@ -5,9 +5,13 @@ define(['angular', 'lodash'], function(angular, _) {
 
     var INTEGER_TYPE = '<http://www.w3.org/2001/XMLSchema#integer>';
     var DOUBLE_TYPE = '<http://www.w3.org/2001/XMLSchema#double>';
+    var BOOLEAN_TYPE = '<http://www.w3.org/2001/XMLSchema#booelan>';
     var ONTOLOGY_BASE = 'http://trials.drugis.org/ontology#';
     var ARM_LEVEL = 'ontology:arm_level_data';
     var CONTRAST = 'ontology:contrast_data';
+    var DICHOTOMOUS = 'ontology:dichotomous';
+    var CONTINUOUS = 'ontology:continuous';
+    var SURVIVAL = 'ontology:survival';
 
     var ARM_VARIABLE_TYPES = [
       'sample_size',
@@ -42,7 +46,7 @@ define(['angular', 'lodash'], function(angular, _) {
         armOrContrast: ARM_LEVEL,
         uri: 'http://trials.drugis.org/ontology#sample_size',
         dataType: INTEGER_TYPE,
-        variableTypes: ['ontology:continuous', 'ontology:dichotomous'],
+        variableTypes: [CONTINUOUS, DICHOTOMOUS],
         category: 'Sample size',
         lexiconKey: 'sample-size',
         analysisReady: true,
@@ -54,7 +58,7 @@ define(['angular', 'lodash'], function(angular, _) {
         armOrContrast: ARM_LEVEL,
         uri: 'http://trials.drugis.org/ontology#mean',
         dataType: DOUBLE_TYPE,
-        variableTypes: ['ontology:continuous'],
+        variableTypes: [CONTINUOUS],
         category: 'Central tendency',
         lexiconKey: 'mean',
         analysisReady: true
@@ -65,7 +69,7 @@ define(['angular', 'lodash'], function(angular, _) {
         armOrContrast: ARM_LEVEL,
         uri: 'http://trials.drugis.org/ontology#median',
         dataType: DOUBLE_TYPE,
-        variableTypes: ['ontology:continuous'],
+        variableTypes: [CONTINUOUS],
         category: 'Central tendency',
         lexiconKey: 'median',
         analysisReady: false
@@ -76,7 +80,7 @@ define(['angular', 'lodash'], function(angular, _) {
         armOrContrast: ARM_LEVEL,
         uri: 'http://trials.drugis.org/ontology#geometric_mean',
         dataType: DOUBLE_TYPE,
-        variableTypes: ['ontology:continuous'],
+        variableTypes: [CONTINUOUS],
         category: 'Central tendency',
         lexiconKey: 'geometric-mean',
         analysisReady: false
@@ -87,7 +91,7 @@ define(['angular', 'lodash'], function(angular, _) {
         armOrContrast: ARM_LEVEL,
         uri: 'http://trials.drugis.org/ontology#log_mean',
         dataType: DOUBLE_TYPE,
-        variableTypes: ['ontology:continuous'],
+        variableTypes: [CONTINUOUS],
         category: 'Central tendency',
         lexiconKey: 'log-mean',
         analysisReady: false
@@ -98,7 +102,7 @@ define(['angular', 'lodash'], function(angular, _) {
         armOrContrast: ARM_LEVEL,
         uri: 'http://trials.drugis.org/ontology#least_squares_mean',
         dataType: DOUBLE_TYPE,
-        variableTypes: ['ontology:continuous'],
+        variableTypes: [CONTINUOUS],
         category: 'Central tendency',
         lexiconKey: 'least-squares-mean',
         analysisReady: false
@@ -109,7 +113,7 @@ define(['angular', 'lodash'], function(angular, _) {
         armOrContrast: ARM_LEVEL,
         uri: 'http://trials.drugis.org/ontology#hazard_ratio',
         dataType: DOUBLE_TYPE,
-        variableTypes: ['ontology:survival'],
+        variableTypes: [SURVIVAL],
         lexiconKey: 'hazard-ratio',
         analysisReady: false
       },
@@ -119,7 +123,7 @@ define(['angular', 'lodash'], function(angular, _) {
         armOrContrast: ARM_LEVEL,
         uri: 'http://trials.drugis.org/ontology#quantile_0.05',
         dataType: DOUBLE_TYPE,
-        variableTypes: ['ontology:continuous'],
+        variableTypes: [CONTINUOUS],
         category: 'Quantiles',
         lexiconKey: 'quantile-0.05',
         analysisReady: false
@@ -130,7 +134,7 @@ define(['angular', 'lodash'], function(angular, _) {
         armOrContrast: ARM_LEVEL,
         uri: 'http://trials.drugis.org/ontology#quantile_0.95',
         dataType: DOUBLE_TYPE,
-        variableTypes: ['ontology:continuous'],
+        variableTypes: [CONTINUOUS],
         category: 'Quantiles',
         lexiconKey: 'quantile-0.95',
         analysisReady: false
@@ -141,7 +145,7 @@ define(['angular', 'lodash'], function(angular, _) {
         armOrContrast: ARM_LEVEL,
         uri: 'http://trials.drugis.org/ontology#quantile_0.025',
         dataType: DOUBLE_TYPE,
-        variableTypes: ['ontology:continuous', 'ontology:survival'],
+        variableTypes: [CONTINUOUS, SURVIVAL],
         category: 'Quantiles',
         lexiconKey: 'quantile-0.025',
         analysisReady: false
@@ -152,7 +156,7 @@ define(['angular', 'lodash'], function(angular, _) {
         armOrContrast: ARM_LEVEL,
         uri: 'http://trials.drugis.org/ontology#quantile_0.975',
         dataType: DOUBLE_TYPE,
-        variableTypes: ['ontology:continuous', 'ontology:survival'],
+        variableTypes: [CONTINUOUS, SURVIVAL],
         category: 'Quantiles',
         lexiconKey: 'quantile-0.975',
         analysisReady: false
@@ -163,7 +167,7 @@ define(['angular', 'lodash'], function(angular, _) {
         armOrContrast: ARM_LEVEL,
         uri: 'http://trials.drugis.org/ontology#min',
         dataType: DOUBLE_TYPE,
-        variableTypes: ['ontology:continuous'],
+        variableTypes: [CONTINUOUS],
         category: 'Dispersion',
         lexiconKey: 'min',
         analysisReady: false
@@ -174,7 +178,7 @@ define(['angular', 'lodash'], function(angular, _) {
         armOrContrast: ARM_LEVEL,
         uri: 'http://trials.drugis.org/ontology#max',
         dataType: DOUBLE_TYPE,
-        variableTypes: ['ontology:continuous'],
+        variableTypes: [CONTINUOUS],
         category: 'Dispersion',
         lexiconKey: 'max',
         analysisReady: false
@@ -185,7 +189,7 @@ define(['angular', 'lodash'], function(angular, _) {
         armOrContrast: ARM_LEVEL,
         uri: 'http://trials.drugis.org/ontology#geometric_coefficient_of_variation',
         dataType: DOUBLE_TYPE,
-        variableTypes: ['ontology:continuous'],
+        variableTypes: [CONTINUOUS],
         category: 'Dispersion',
         lexiconKey: 'geometric-coefficient-of-variation',
         analysisReady: false
@@ -196,7 +200,7 @@ define(['angular', 'lodash'], function(angular, _) {
         armOrContrast: ARM_LEVEL,
         uri: 'http://trials.drugis.org/ontology#first_quartile',
         dataType: DOUBLE_TYPE,
-        variableTypes: ['ontology:continuous'],
+        variableTypes: [CONTINUOUS],
         category: 'Quantiles',
         lexiconKey: 'first-quartile',
         analysisReady: false
@@ -207,7 +211,7 @@ define(['angular', 'lodash'], function(angular, _) {
         armOrContrast: ARM_LEVEL,
         uri: 'http://trials.drugis.org/ontology#third_quartile',
         dataType: DOUBLE_TYPE,
-        variableTypes: ['ontology:continuous'],
+        variableTypes: [CONTINUOUS],
         category: 'Quantiles',
         lexiconKey: 'third-quartile',
         analysisReady: false
@@ -218,7 +222,7 @@ define(['angular', 'lodash'], function(angular, _) {
         armOrContrast: ARM_LEVEL,
         uri: 'http://trials.drugis.org/ontology#standard_deviation',
         dataType: DOUBLE_TYPE,
-        variableTypes: ['ontology:continuous'],
+        variableTypes: [CONTINUOUS],
         category: 'Dispersion',
         lexiconKey: 'standard-deviation',
         analysisReady: true,
@@ -230,7 +234,7 @@ define(['angular', 'lodash'], function(angular, _) {
         armOrContrast: ARM_LEVEL,
         uri: 'http://trials.drugis.org/ontology#standard_error',
         dataType: DOUBLE_TYPE,
-        variableTypes: ['ontology:continuous'],
+        variableTypes: [CONTINUOUS],
         category: 'Dispersion',
         lexiconKey: 'standard-error',
         analysisReady: true,
@@ -242,7 +246,7 @@ define(['angular', 'lodash'], function(angular, _) {
         armOrContrast: ARM_LEVEL,
         uri: 'http://trials.drugis.org/ontology#event_count',
         dataType: INTEGER_TYPE,
-        variableTypes: ['ontology:dichotomous'],
+        variableTypes: [DICHOTOMOUS],
         lexiconKey: 'event-count',
         analysisReady: false,
         isAlwaysPositive: true
@@ -253,7 +257,7 @@ define(['angular', 'lodash'], function(angular, _) {
         armOrContrast: ARM_LEVEL,
         uri: 'http://trials.drugis.org/ontology#count',
         dataType: INTEGER_TYPE,
-        variableTypes: ['ontology:dichotomous', 'ontology:survival'],
+        variableTypes: [DICHOTOMOUS, SURVIVAL],
         lexiconKey: 'count',
         analysisReady: true,
         isAlwaysPositive: true
@@ -264,7 +268,7 @@ define(['angular', 'lodash'], function(angular, _) {
         armOrContrast: ARM_LEVEL,
         uri: 'http://trials.drugis.org/ontology#percentage',
         dataType: DOUBLE_TYPE,
-        variableTypes: ['ontology:dichotomous'],
+        variableTypes: [DICHOTOMOUS],
         lexiconKey: 'percentage',
         analysisReady: false,
         isAlwaysPositive: true
@@ -275,7 +279,7 @@ define(['angular', 'lodash'], function(angular, _) {
         armOrContrast: ARM_LEVEL,
         uri: 'http://trials.drugis.org/ontology#proportion',
         dataType: DOUBLE_TYPE,
-        variableTypes: ['ontology:dichotomous'],
+        variableTypes: [DICHOTOMOUS],
         lexiconKey: 'proportion',
         analysisReady: false,
         isAlwaysPositive: true
@@ -286,7 +290,7 @@ define(['angular', 'lodash'], function(angular, _) {
         armOrContrast: ARM_LEVEL,
         uri: 'http://trials.drugis.org/ontology#exposure',
         dataType: DOUBLE_TYPE,
-        variableTypes: ['ontology:survival'],
+        variableTypes: [SURVIVAL],
         lexiconKey: 'exposure',
         analysisReady: true
       }
@@ -306,14 +310,6 @@ define(['angular', 'lodash'], function(angular, _) {
       duration: 'P1Y'
     }];
 
-    var CONTRAST_VARIABLE_TYPES = [
-      'log_odds_ratio',
-      'log_risk_ratio',
-      'mean_difference',
-      'standardized_mean_difference',
-      'log_hazard_ratio'
-    ];
-
     var CONTRAST_VARIABLE_TYPE_DETAILS = {
       log_odds_ratio: {
         type: 'log_odds_ratio',
@@ -323,7 +319,7 @@ define(['angular', 'lodash'], function(angular, _) {
         category: 'Central tendency',
         uri: 'http://trials.drugis.org/ontology#odds_ratio',
         dataType: DOUBLE_TYPE,
-        variableTypes: ['ontology:dichotomous'],
+        variableTypes: [DICHOTOMOUS],
         lexiconKey: 'odds-ratio',
         analysisReady: false
       },
@@ -335,7 +331,7 @@ define(['angular', 'lodash'], function(angular, _) {
         category: 'Central tendency',
         uri: 'http://trials.drugis.org/ontology#risk_ratio',
         dataType: DOUBLE_TYPE,
-        variableTypes: ['ontology:dichotomous'],
+        variableTypes: [DICHOTOMOUS],
         lexiconKey: 'risk-ratio',
         analysisReady: false
       },
@@ -346,7 +342,7 @@ define(['angular', 'lodash'], function(angular, _) {
         category: 'Central tendency',
         uri: 'http://trials.drugis.org/ontology#mean_difference',
         dataType: DOUBLE_TYPE,
-        variableTypes: ['ontology:continuous'],
+        variableTypes: [CONTINUOUS],
         lexiconKey: 'mean-difference',
         analysisReady: false
       },
@@ -357,7 +353,7 @@ define(['angular', 'lodash'], function(angular, _) {
         category: 'Central tendency',
         uri: 'http://trials.drugis.org/ontology#standardized_mean_difference',
         dataType: DOUBLE_TYPE,
-        variableTypes: ['ontology:continuous'],
+        variableTypes: [CONTINUOUS],
         lexiconKey: 'standardized-mean-difference',
         analysisReady: false
       },
@@ -369,7 +365,7 @@ define(['angular', 'lodash'], function(angular, _) {
         category: 'Central tendency',
         uri: 'http://trials.drugis.org/ontology#hazard_ratio',
         dataType: DOUBLE_TYPE,
-        variableTypes: ['ontology:survival'],
+        variableTypes: [SURVIVAL],
         lexiconKey: 'hazard-ratio',
         analysisReady: false
       },
@@ -378,7 +374,7 @@ define(['angular', 'lodash'], function(angular, _) {
         label: 'standard error',
         uri: 'http://trials.drugis.org/ontology#standard_error',
         dataType: DOUBLE_TYPE,
-        variableTypes: ['ontology:continuous', 'ontology:dichotomous', 'ontology:survival'],
+        variableTypes: [CONTINUOUS, DICHOTOMOUS, SURVIVAL],
         category: 'Dispersion',
         lexiconKey: 'standard-error',
         analysisReady: true,
@@ -389,9 +385,18 @@ define(['angular', 'lodash'], function(angular, _) {
         label: 'confidence interval',
         uri: 'http://trials.drugis.org/ontology#confidence_interval',
         dataType: INTEGER_TYPE,
-        variableTypes: ['ontology:continuous', 'ontology:dichotomous', 'ontology:survival'],
+        variableTypes: [CONTINUOUS, DICHOTOMOUS, SURVIVAL],
         category: 'Dispersion',
         lexiconKey: 'confidence-interval',
+        analysisReady: false
+      },
+      is_reference: {
+        type: 'is reference?',
+        label: 'is reference?',
+        uri: 'http://trials.drugis.org/ontology#is_reference',
+        dataType: BOOLEAN_TYPE,
+        variableTypes: [CONTINUOUS, DICHOTOMOUS, SURVIVAL],
+        lexiconKey: 'reference-row',
         analysisReady: false
       }
     };
@@ -421,16 +426,19 @@ define(['angular', 'lodash'], function(angular, _) {
     var DEFAULT_CONTRAST_RESULT_PROPERTIES = {
       'ontology:dichotomous': [
         CONTRAST_VARIABLE_TYPE_DETAILS.log_odds_ratio,
-        CONTRAST_VARIABLE_TYPE_DETAILS.standard_error
+        CONTRAST_VARIABLE_TYPE_DETAILS.standard_error,
+        CONTRAST_VARIABLE_TYPE_DETAILS.is_reference
       ],
       'ontology:continuous': [
         CONTRAST_VARIABLE_TYPE_DETAILS.mean_difference,
-        CONTRAST_VARIABLE_TYPE_DETAILS.standard_error
+        CONTRAST_VARIABLE_TYPE_DETAILS.standard_error,
+        CONTRAST_VARIABLE_TYPE_DETAILS.is_reference
       ],
       'ontology:categorical': [],
       'ontology:survival': [
         CONTRAST_VARIABLE_TYPE_DETAILS.log_hazard_ratio,
-        CONTRAST_VARIABLE_TYPE_DETAILS.standard_error
+        CONTRAST_VARIABLE_TYPE_DETAILS.standard_error,
+        CONTRAST_VARIABLE_TYPE_DETAILS.is_reference
       ]
     };
 
@@ -439,16 +447,22 @@ define(['angular', 'lodash'], function(angular, _) {
       'ontology:contrast_data': DEFAULT_CONTRAST_RESULT_PROPERTIES
     };
 
-    function getVariableDetails(variableTypeUri) {
-      var normalisedUri = variableTypeUri;
+    function getVariableDetails(variableTypeUri, armOrContrast) {
+      armOrContrast = armOrContrast ? armOrContrast : ARM_LEVEL;
+      var uri = buildVariableUri(variableTypeUri);
+      var details = VARIABLE_TYPE_DETAILS[armOrContrast];
+      return _.find(details, ['uri', uri]);
+    }
+
+    function buildVariableUri(variableTypeUri) {
       if (!_.startsWith(variableTypeUri, ONTOLOGY_BASE)) {
-        normalisedUri = _.replace(normalisedUri, 'ontology:', ONTOLOGY_BASE);
+        return _.replace(variableTypeUri, 'ontology:', ONTOLOGY_BASE);
       }
-      return _.find(ARM_VARIABLE_TYPE_DETAILS, ['uri', normalisedUri]);
+      return variableTypeUri;
     }
 
     function updateValue(row, inputColumn) {
-      var inputColumnVariableDetails = getVariableDetails(inputColumn.resultProperty);
+      var inputColumnVariableDetails = getVariableDetails(inputColumn.resultProperty, row.armOrContrast);
       return StudyService.getJsonGraph().then(function(graph) {
         if (!row.uri) {
           return createValueBranch(row, inputColumn, inputColumnVariableDetails, graph);
@@ -915,8 +929,6 @@ define(['angular', 'lodash'], function(angular, _) {
       getDefaultResultProperties: getDefaultResultProperties,
       getResultPropertiesForType: getResultPropertiesForType,
       buildPropertyCategories: buildPropertyCategories,
-      ARM_VARIABLE_TYPE_DETAILS: ARM_VARIABLE_TYPE_DETAILS,
-      CONTRAST_VARIABLE_TYPE_DETAILS: CONTRAST_VARIABLE_TYPE_DETAILS,
       VARIABLE_TYPE_DETAILS: VARIABLE_TYPE_DETAILS,
       INTEGER_TYPE: INTEGER_TYPE,
       DOUBLE_TYPE: DOUBLE_TYPE,

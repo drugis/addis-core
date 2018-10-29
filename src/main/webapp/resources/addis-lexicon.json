@@ -279,6 +279,11 @@
     "text": "The 97.5% quantile, or the upper end of a 95% confidence interval.",
     "link": "/manual.html#study-input"
   },
+  "reference-row":{
+    "title": "Reference row",
+    "text": "The row that is the reference for the contrast data",
+    "link": "/manual.html#study-input"
+  },
   "result-properties": {
     "title": "Result properties",
     "text": "Which properties of this variable were measured, e.g. in the case of a continuous variable the mean and standard error may have been measured, or only certain quantiles may have been reported.",

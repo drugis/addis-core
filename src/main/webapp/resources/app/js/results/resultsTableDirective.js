@@ -14,15 +14,27 @@ define(['lodash'], function(_) {
         isEditingAllowed: '='
       },
       link: function(scope) {
+        // functions
+        // scope.show = show;
+        // scope.hide = hide;
+        scope.toggle = toggle;
+        scope.editMeasurementMoment = editMeasurementMoment;
+        scope.checkMeasurementOverlap = checkMeasurementOverlap;
+        scope.showEditMeasurementMoment = showEditMeasurementMoment;
+
+        // init
+        scope.$on('refreshResultsTable', reloadResults);
+        scope.isExpanded = false;
+
         function reloadResults() {
           if (scope.isExpanded) {
             var resultsPromise = ResultsService.queryResults(scope.variable.uri);
 
             return $q.all([scope.arms, scope.measurementMoments, scope.groups, resultsPromise]).then(function(values) {
               var arms = values[0],
-               measurementMoments = values[1],
-               groups = values[2],
-               results = values[3];
+                measurementMoments = values[1],
+                groups = values[2],
+                results = values[3];
               scope.inputRows = ResultsTableService.createInputRows(scope.variable, arms, groups,
                 measurementMoments, results);
               scope.inputHeaders = ResultsTableService.createHeaders(scope.variable);
@@ -35,7 +47,7 @@ define(['lodash'], function(_) {
                 accum[measurementMomentUri] = scope.measurementMomentOptions[measurementMomentUri][0];
                 return accum;
               }, {});
-              scope.checkMeasurementOverlap();
+              checkMeasurementOverlap();
               scope.isEditingMM = _.reduce(scope.measurementMoments, function(accum, measurementMoment) {
                 accum[measurementMoment.uri] = false;
                 return accum;
@@ -47,51 +59,47 @@ define(['lodash'], function(_) {
           }
         }
 
-        scope.$on('refreshResultsTable', reloadResults);
-
-        scope.isExpanded = false;
-
-        scope.show = function() {
+        function show() {
           scope.isExpanded = true;
           reloadResults();
-        };
+        }
 
-        scope.hide = function() {
+        function hide() {
           scope.isExpanded = false;
           delete scope.results;
-        };
+        }
 
-        scope.toggle = function() {
+        function toggle() {
           if (scope.isExpanded) {
-            scope.hide();
+            hide();
           } else {
-            scope.show();
+            show();
           }
-        };
+        }
 
-        scope.editMeasurementMoment = function(measurementMomentUri, rowLabel) {
+        function editMeasurementMoment(measurementMomentUri, rowLabel) {
           ResultsService.moveMeasurementMoment(measurementMomentUri,
-              scope.measurementMomentSelections[measurementMomentUri].uri,
-              scope.variable.uri,
-              rowLabel)
-            .then(function() {
-              scope.$emit('refreshResults');
-              scope.isEditingMM[measurementMomentUri] = false;
-            });
-        };
+            scope.measurementMomentSelections[measurementMomentUri].uri,
+            scope.variable.uri,
+            rowLabel
+          ).then(function() {
+            scope.$emit('refreshResults');
+            scope.isEditingMM[measurementMomentUri] = false;
+          });
+        }
 
-        scope.checkMeasurementOverlap = function() {
+        function checkMeasurementOverlap() {
           scope.overlapMap = _.reduce(scope.measurementMomentSelections, function(accum, selection, measurementMomentUri) {
             accum[measurementMomentUri] = ResultsTableService.findOverlappingMeasurements(selection.uri, scope.inputRows);
             return accum;
           }, {});
-        };
+        }
 
-        scope.showEditMeasurementMoment = function(measurementMomentUri) {
+        function showEditMeasurementMoment(measurementMomentUri) {
           reloadResults().then(function() {
             scope.isEditingMM[measurementMomentUri] = true;
           });
-        };
+        }
       }
     };
   };

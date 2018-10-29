@@ -74,15 +74,17 @@ define(['lodash'], function(_) {
 
     function addVariable() {
       $scope.variable.resultProperties = _.map($scope.variable.selectedResultProperties, 'uri');
-      service.addItem($scope.variable)
-        .then(function() {
-          callback();
-          $modalInstance.close();
-        },
-          function() {
-            console.error('failed to create ' + settings.itemName);
-            $modalInstance.close('cancel');
-          });
+      service.addItem($scope.variable).then(succesCallback, errorCallback);
+    }
+
+    function succesCallback() {
+      callback();
+      $modalInstance.close();
+    }
+
+    function errorCallback() {
+      console.error('failed to create ' + settings.itemName);
+      $modalInstance.close();
     }
 
     function addCategoryEnterKey($event, newCategory) {
@@ -114,7 +116,7 @@ define(['lodash'], function(_) {
       $modalInstance.close('cancel');
     }
 
-    function armOrContrastChanged(){
+    function armOrContrastChanged() {
       $scope.variable.resultProperties = ResultsService.VARIABLE_TYPE_DETAILS[$scope.variable.armOrContrast];
       $scope.variable.selectedResultProperties = ResultsService.getDefaultResultProperties($scope.variable.measurementType, $scope.variable.armOrContrast);
     }

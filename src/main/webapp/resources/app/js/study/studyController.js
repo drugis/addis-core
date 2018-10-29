@@ -18,7 +18,6 @@ define(['angular', 'lodash'],
       'ResultsService',
       'StudyDesignService',
       'StudyService',
-      'UserService',
       'VersionedGraphResource',
       'STUDY_CATEGORY_SETTINGS'
     ];
@@ -39,7 +38,6 @@ define(['angular', 'lodash'],
       ResultsService,
       StudyDesignService,
       StudyService,
-      UserService,
       VersionedGraphResource,
       STUDY_CATEGORY_SETTINGS
     ) {

@@ -19,9 +19,11 @@ define(['angular'], function(angular) {
         measurementMoments: '='
       },
       link: function(scope) {
+        scope.deleteItem = deleteItem;
+        scope.repairItem = repairItem;
+        scope.editItem = editItem;
 
         var service = $injector.get(scope.settings.service);
-
         scope.$watch('item', function() {
           scope.isEditingAllowed = scope.isEditingAllowed && !scope.item.disableEditing;
         }, true);
@@ -31,13 +33,13 @@ define(['angular'], function(angular) {
           scope.reloadItems();
         }
 
-        scope.editItem = function() {
+        function editItem() {
           $modal.open({
             scope: scope,
             template: scope.settings.editItemtemplate,  // small t due to webpack templateurl module
             controller: scope.settings.editItemController,
             resolve: {
-              callback: function () {
+              callback: function() {
                 return onEdit;
               },
               itemType: function() {
@@ -54,15 +56,15 @@ define(['angular'], function(angular) {
               }
             }
           });
-        };
+        }
 
-        scope.repairItem = function() {
+        function repairItem() {
           $modal.open({
             scope: scope,
             template: scope.settings.repairItemtemplate,
             controller: scope.settings.repairItemController,
             resolve: {
-              callback: function () {
+              callback: function() {
                 return onEdit;
               },
               itemService: function() {
@@ -76,14 +78,14 @@ define(['angular'], function(angular) {
               }
             }
           });
-        };
+        }
 
-        scope.deleteItem = function() {
+        function deleteItem() {
           service.deleteItem(scope.item, scope.studyUuid).then(function() {
             scope.$emit('updateStudyDesign');
             scope.reloadItems();
           });
-        };
+        }
       }
 
 

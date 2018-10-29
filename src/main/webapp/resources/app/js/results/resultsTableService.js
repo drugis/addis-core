@@ -6,6 +6,7 @@ define(['lodash'], function(_) {
     var CONTINUOUS_TYPE = 'ontology:continuous';
     var DICHOTOMOUS_TYPE = 'ontology:dichotomous';
     var CATEGORICAL_TYPE = 'ontology:categorical';
+    var CONTRAST = 'ontology:contrast_data';
 
     function findResultValueByType(resultValueObjects, type) {
       var resultValueObjectFound = _.find(resultValueObjects, function(resultValueObject) {
@@ -33,34 +34,17 @@ define(['lodash'], function(_) {
     function createInputColumns(variable, rowValueObjects) {
       if (!variable.resultProperties) {
         if (variable.categoryList) {
-          return variable.categoryList.map(function(category) {
-            var resultProperty;
-            var value;
-            var valueName;
-            if (category.label) { // new format
-              resultProperty = null;
-              valueName = category.label;
-              value = findCategoricalResult(rowValueObjects, category);
-            } else { // old format
-              resultProperty = category;
-              valueName = category;
-              value = findResultValueByType(rowValueObjects, category);
-            }
-            return {
-              resultProperty: category,
-              valueName: category,
-              value: value,
-              dataType: ResultsService.INTEGER_TYPE,
-              isCategory: true,
-              isInValidValue: false
-            };
-          });
+          return createCategoryInputColumn(variable, rowValueObjects);
         } else {
           return [];
         }
       }
-      return variable.resultProperties.map(function(type) {
-        var details = ResultsService.getVariableDetails(type);
+      return createNonCategoricalInputColumn(variable, rowValueObjects);
+    }
+
+    function createNonCategoricalInputColumn(variable, rowValueObjects) {
+      return _.map(variable.resultProperties, function(type) {
+        var details = ResultsService.getVariableDetails(type, variable.armOrContrast);
         return {
           resultProperty: type,
           valueName: details.label,
@@ -72,60 +56,71 @@ define(['lodash'], function(_) {
       });
     }
 
-    function createHeaders(variable) {
-      if (!variable.resultProperties) {
-        if (!variable.categoryList) {
-          return [];
-        } else {
-          //Categorical measurement
-          if (variable.categoryList[0] && variable.categoryList[0].label) {
-            return _.map(variable.categoryList, function(list) {
-              return {
-                'label': list.label
-              };
-            });
-          } else {
-            return variable.categoryList;
-          }
+    function createCategoryInputColumn(variable, rowValueObjects) {
+      return _.map(variable.categoryList, function(category) {
+        var resultProperty;
+        var value;
+        var valueName;
+        if (category.label) { // new format
+          resultProperty = null;
+          valueName = category.label;
+          value = findCategoricalResult(rowValueObjects, category);
+        } else { // old format
+          resultProperty = category;
+          valueName = category;
+          value = findResultValueByType(rowValueObjects, category);
         }
-      }
-
-      function createHeader(resultProperty) {
-        var scaleStrings = {
-          P1D: ' (days)',
-          P1W: ' (weeks)',
-          P1M: ' (months)',
-          P1Y: ' (years)'
-        };
-        var variableDetails = ResultsService.getVariableDetails(resultProperty);
         return {
-          'label': variableDetails.label + (variableDetails.type === 'exposure' ? scaleStrings[variable.timeScale] : ''),
-          'lexiconKey': variableDetails.lexiconKey,
-          'analysisReady': variableDetails.analysisReady
+          resultProperty: category,
+          valueName: category,
+          value: value,
+          dataType: ResultsService.INTEGER_TYPE,
+          isCategory: true,
+          isInValidValue: false
         };
-      }
-
-      if (!variable.resultProperties.map) { // there is only one resultproperty
-        return [createHeader(variable.resultProperties)];
-      }
-      return _.map(variable.resultProperties, createHeader);
+      });
     }
 
-    function createRow(variable, group, numberOfGroups, measurementMoment, rowValueObjects) {
-      var row = {
-        variable: variable,
-        group: group,
-        measurementMoment: measurementMoment,
-        numberOfGroups: numberOfGroups,
-        inputColumns: createInputColumns(variable, rowValueObjects)
-      };
-
-      // if this row has any values set we need to save the instance uri on the row to use for update or delete
-      if (rowValueObjects && rowValueObjects.length > 0) {
-        row.uri = rowValueObjects[0].instance;
+    function createHeaders(variable) {
+      if (!variable.resultProperties) {
+        return createCategoricalHeader(variable);
       }
+      return  _.map(variable.resultProperties, function(property) {
+        return createHeader(property, variable);
+      });
+    }
 
-      return row;
+    function createCategoricalHeader(variable) {
+      if (!variable.categoryList) {
+        return [];
+      } else {
+        //Categorical measurement
+        if (variable.categoryList[0] && variable.categoryList[0].label) {
+          return _.map(variable.categoryList, function(list) {
+            return {
+              'label': list.label
+            };
+          });
+        } else {
+          return variable.categoryList;
+        }
+      }
+    }
+
+    function createHeader(resultProperty, variable) {
+      var scaleStrings = {
+        P1D: ' (days)',
+        P1W: ' (weeks)',
+        P1M: ' (months)',
+        P1Y: ' (years)'
+      };
+      var propertyUri = _.isString(resultProperty) ? resultProperty : resultProperty.uri;
+      var propertyDetails = ResultsService.getVariableDetails(propertyUri, variable.armOrContrast);
+      return {
+        label: propertyDetails.label + (propertyDetails.type === 'exposure' ? scaleStrings[variable.timeScale] : ''),
+        lexiconKey: propertyDetails.lexiconKey,
+        analysisReady: propertyDetails.analysisReady
+      };
     }
 
     function createInputRows(variable, arms, groups, measurementMoments, resultValuesObjects) {
@@ -151,6 +146,28 @@ define(['lodash'], function(_) {
         });
       });
 
+      var sortedRows = sortRows(rows);
+      return sortedRows;
+    }
+
+    function createRow(variable, group, numberOfGroups, measurementMoment, rowValueObjects) {
+      var row = {
+        variable: variable,
+        group: group,
+        measurementMoment: measurementMoment,
+        numberOfGroups: numberOfGroups,
+        inputColumns: createInputColumns(variable, rowValueObjects)
+      };
+
+      // if this row has any values set we need to save the instance uri on the row to use for update or delete
+      if (rowValueObjects && rowValueObjects.length > 0) {
+        row.uri = rowValueObjects[0].instance;
+      }
+
+      return row;
+    }
+
+    function sortRows(rows) {
       return rows.sort(function(row1, row2) {
         if (row1.measurementMoment.label.localeCompare(row2.measurementMoment.label) !== 0) {
           return row1.measurementMoment.label.localeCompare(row2.measurementMoment.label);

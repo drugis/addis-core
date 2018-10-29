@@ -4,42 +4,36 @@
       <div class="cell">
         <h3>Edit {{itemType}}</h3>
       </div>
-    </div>
-
-    <div class="grid-x">
       <div class="cell">
         <label>Name
-          <input autofocus type="text" ng-model="item.label">
+          <input autofocus type="text" ng-model="variable.label">
         </label>
       </div>
-    </div>
-
-    <div class="grid-x">
       <div class="cell">
         <label>Measurement type</label>
-        <input ng-model="item.measurementType" type="radio" name="measurementType" ng-change="resetResultProperties()"
+        <input ng-model="variable.measurementType" type="radio" name="measurementType" ng-change="resetResultProperties()"
           value="ontology:dichotomous" id="rateOption">
         <label for="rateOption">count</label>
-        <input ng-model="item.measurementType" type="radio" name="measurementType" ng-change="resetResultProperties()"
+        <input ng-model="variable.measurementType" type="radio" name="measurementType" ng-change="resetResultProperties()"
           value="ontology:continuous" id="continuousOption">
         <label for="continuousOption">continuous</label>
-        <input ng-model="item.measurementType" type="radio" name="measurementType" ng-change="resetResultProperties()"
+        <input ng-model="variable.measurementType" type="radio" name="measurementType" ng-change="resetResultProperties()"
           value="ontology:categorical" id="categoricalOption">
         <label for="categoricalOption">categorical</label>
-        <input ng-model="item.measurementType" type="radio" name="measurementType" ng-change="resetResultProperties()"
+        <input ng-model="variable.measurementType" type="radio" name="measurementType" ng-change="resetResultProperties()"
           value="ontology:survival" id="survivalOption">
         <label for="survivalOption">survival</label>
       </div>
     </div>
 
-    <div class="grid-x" ng-if="item.measurementType === 'ontology:categorical'">
+    <div class="grid-x" ng-if="variable.measurementType === 'ontology:categorical'">
       <div class="cell">
         <label>Categories</label>
-        <ul class="no-bullet" ng-if="item.categoryList.length">
-          <li ng-repeat="category in item.categoryList"><a><i class="fa fa-trash-o" style="color: red;" ng-click="deleteCategory(category)"></i></a>{{category.label}}</li>
+        <ul class="no-bullet" ng-if="variable.categoryList.length">
+          <li ng-repeat="category in variable.categoryList"><a><i class="fa fa-trash-o" style="color: red;" ng-click="deleteCategory(category)"></i></a>{{category.label}}</li>
         </ul>
       </div>
-      <div class="cell" ng-if="!item.categoryList.length">
+      <div class="cell" ng-if="!variable.categoryList.length">
         (no categories defined yet)
       </div>
       <div class="cell">
@@ -47,50 +41,57 @@
         newCategory)">
       </div>
       <div class="cell">
-        <button class="button small" ng-disabled="cannotAddCategory(newCategory)" type="button"
-          ng-click="addCategory(newCategory)">Add category</button>
+        <button class="button small" ng-disabled="cannotAddCategory(newCategory)" type="button" ng-click="addCategory(newCategory)">Add
+          category</button>
         <span class="alert" ng-if="isDuplicateCategory(newCategory)">Duplicate category name</span>
       </div>
     </div>
 
-    <div class="grid-x" ng-if="item.measurementType !=='ontology:categorical'">
+    <div class="grid-x" ng-if="variable.measurementType !=='ontology:categorical'">
+      <div class="cell">
+        <label>Arm level or contrast data</label>
+        <input ng-model="variable.armOrContrast" type="radio" name="armOrContrast" ng-change=armOrContrastChanged() id="arm"
+          value="ontology:arm_level_data">
+        <label for="arm">Arm level data</label>
+        <input ng-model="variable.armOrContrast" type="radio" name="armOrContrast" ng-change=armOrContrastChanged() id="contrast"
+          value="ontology:contrast_data">
+        <label for="contrast">Contrast data</label>
+      </div>
       <div class="cell">
         <label>Included result properties:</label>
-        <span ng-show="!changeResultProperties" ng-repeat="resultProperty in item.selectedResultProperties">
-          <strong>{{resultProperty.label}}{{$last ? '' : ', '}}</strong>
+        <span ng-show="!changeResultProperties" ng-repeat="property in variable.selectedResultProperties">
+          <strong ng-hide="property.type === 'is reference?'">{{property.label}}{{$last ? '' : ', '}}</strong>
         </span>
-        <result-properties ng-show="changeResultProperties" variable="item"></result-properties>
-        <br>
-        <button class="button small" type="button" ng-click="changeResultProperties=!
-        changeResultProperties">{{changeResultProperties ? 'Hide result properties' : 'Change'}}</button>
+        <result-properties ng-show="changeResultProperties" variable="variable"></result-properties>
       </div>
-    </div>
-
-    <div class="grid-x" ng-if="showTimeScaleInput">
       <div class="cell">
-        <label>
-          Time scale
-          <select ng-options="timeScaleOption.duration as timeScaleOption.label
-        for timeScaleOption in timeScaleOptions" ng-model="item.timeScale"></select>
-        </label>
-      </div>
-    </div>
-
-    <div class="grid-x">
-      <div class="cell">
-        <label>Measurement moments</label>
-        <subset-select target="item.measuredAtMoments" source="measurementMoments" equals="measurementMomentEquals"></subset-select>
-      </div>
-    </div>
-
-    <div class="grid-x">
-      <div class="cell">
-        <button class="button success" type="button" ng-disabled="!item.label
-        || !item.measurementType || isEditing" ng-click="editItem()">Edit
+        <button class="button small" type="button" ng-click="changeResultProperties =! changeResultProperties">
+          {{changeResultProperties ? 'Hide result properties' : 'Change'}}
         </button>
       </div>
     </div>
 
+    <div class="grid-x">
+      <div class="cell" ng-if="showTimeScaleInput">
+        <label>
+          Time scale
+          <select ng-options="timeScaleOption.duration as timeScaleOption.label for timeScaleOption in timeScaleOptions"
+            ng-model="variable.timeScale"></select>
+        </label>
+      </div>
+
+      <div class="cell">
+        <label>Measurement moments</label>
+        <subset-select target="variable.measuredAtMoments" source="measurementMoments" equals="measurementMomentEquals"></subset-select>
+      </div>
+
+      <div class="cell">
+        <button class="button success" type="button" ng-disabled="!variable.label
+        || !variable.measurementType || isEditing"
+          ng-click="editVariable()">Edit
+        </button>
+      </div>
+    </div>
   </div>
   <button ng-click="cancel()" class="close-button" aria-label="Close reveal" type="button">
     <span aria-hidden="true">&times;</span>

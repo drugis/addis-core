@@ -1,10 +1,27 @@
 'use strict';
 define(['angular', 'lodash'],
   function(angular, _) {
-    var dependencies = ['$q', 'StudyService', 'UUIDService', 'MeasurementMomentService', 'ResultsService', 'RepairService', 'RdfListService'];
-    var OutcomeServiceService = function($q, StudyService, UUIDService, MeasurementMomentService, ResultsService, RepairService, RdfListService) {
+    var dependencies = [
+      '$q',
+      'StudyService',
+      'UUIDService',
+      'MeasurementMomentService',
+      'ResultsService',
+      'RepairService',
+      'RdfListService'
+    ];
+    var OutcomeServiceService = function(
+      $q,
+      StudyService,
+      UUIDService,
+      MeasurementMomentService,
+      ResultsService,
+      RepairService,
+      RdfListService
+    ) {
 
       var INSTANCE_BASE = 'http://trials.drugis.org/instances/';
+      var ARM_LEVEL = 'ontology:arm_level_data';
 
       function isOverlappingResultFunction(a, b) {
         return a.armUri === b.armUri &&
@@ -29,8 +46,12 @@ define(['angular', 'lodash'],
           timeScale: item.survival_time_scale,
           measurementType: item.of_variable[0].measurementType,
           measuredAtMoments: [],
-          conceptMapping: item.of_variable[0].sameAs
+          conceptMapping: item.of_variable[0].sameAs,
+          armOrContrast: item.arm_or_contrast
         };
+        if (item.confidence_interval) {
+          frontEndItem.confidenceInterval = item.confidence_interval;
+        }
 
         if (frontEndItem.measurementType === 'ontology:categorical') {
           if (item.of_variable[0].categoryList.first) {
@@ -71,7 +92,27 @@ define(['angular', 'lodash'],
       }
 
       function toBackEnd(item, type) {
-        var newItem = {
+        return _.merge({}, createBasicItem(item, type), createOptionalProperties(item));
+      }
+
+      function createOptionalProperties(item) {
+        var optionalProperties = {};
+        if (item.timeScale) {
+          optionalProperties.survival_time_scale = item.timeScale;
+        }
+        if (item.conceptMapping) {
+          optionalProperties.of_variable[0].sameAs = item.conceptMapping;
+        }
+        if (item.measurementType === 'ontology:categorical') {
+          optionalProperties.of_variable[0].categoryList = RdfListService.unFlattenList(_.map(item.categoryList, makeCategoryIfNeeded));
+        }
+        if (item.confidenceInterval) {
+          optionalProperties.confidence_interval = item.confidenceInterval;
+        }
+      }
+
+      function createBasicItem(item, type) {
+        return {
           '@type': type,
           '@id': item.uri,
           is_measured_at: item.measuredAtMoments.length === 1 ? item.measuredAtMoments[0].uri : _.map(item.measuredAtMoments, 'uri'),
@@ -81,18 +122,9 @@ define(['angular', 'lodash'],
             measurementType: item.measurementType,
             label: item.label,
           }],
-          has_result_property: item.resultProperties
+          has_result_property: item.resultProperties,
+          arm_or_contrast: item.armOrContrast ? item.armOrContrast : ARM_LEVEL
         };
-        if(item.timeScale){
-          newItem.survival_time_scale = item.timeScale;
-        }
-        if(item.conceptMapping) {
-          newItem.of_variable[0].sameAs = item.conceptMapping;
-        }
-        if (item.measurementType === 'ontology:categorical') {
-          newItem.of_variable[0].categoryList = RdfListService.unFlattenList(_.map(item.categoryList, makeCategoryIfNeeded));
-        }
-        return newItem;
       }
 
       function sortByLabel(a, b) {
@@ -138,18 +170,13 @@ define(['angular', 'lodash'],
         return StudyService.getStudy().then(function(study) {
           var backEndEditItem = toBackEnd(item, type);
           study.has_outcome = _.map(study.has_outcome, function(node) {
-            if (node['@id'] === item.uri) {
-              return backEndEditItem;
-            } else {
-              return node;
-            }
+            return node['@id'] === item.uri ? backEndEditItem : node;
           });
           return StudyService.save(study);
         });
       }
 
       function moveToNewOutcome(variableType, newOutcomeName, baseOutcome, nonConformantMeasurementUrisToMove) {
-
         var newUri = 'http://trials.drugis.org/instances/' + UUIDService.generate();
         var newOutcome = angular.copy(baseOutcome);
         newOutcome.uri = newUri;

@@ -16,24 +16,16 @@
     </ul>
     <ul ng-if="!showCategories" class="no-bullet">
       <li ng-repeat="property in properties">
-        <label>
+        <label ng-hide="property.type=== 'is reference?'">
           <input type="checkbox" ng-model="property.isSelected" ng-change="updateSelection()"> {{property.label}}</input>
           <span class="alert" ng-show="{{!property.analysisReady}}">*</span>
           <inline-help help-key='{{property.lexiconKey}}'></inline-help>
         </label>
+        <div ng-if="variable.armOrContrast === 'ontology:contrast_data' && property.type === 'confidence interval' && property.isSelected">
+          <input type="number" step="1" min="0" max="100" ng-model="variable.confidenceInterval">
+        </div>
       </li>
     </ul>
-  </div>
-  <div class="cell" ng-if="variable.armOrContrast === 'ontology:contrast_data'">
-    <input type="radio" name="dispersion" ng-model="" id="standardError" ng-change="dispersionChanged('ontology:standard_error')"
-      ng-value="'ontology:standard_error'">
-    <label for="standardError">Standard error</label>
-    <input type="radio" name="dispersion" ng-model="" id="confidenceInterval" ng-change="dispersionChanged('ontology:confidence_interval')"
-      ng-value="'ontology:confidence_interval'">
-    <label for="confidenceInterval">Confidence Interval</label>
-  </div>
-  <div class="cell" ng-if="variable.armOrContrast === 'ontology:contrast_data' && confidence interval">
-    <input type="number" step="1" min="0" max="100">
   </div>
   <div class="cell alert" ng-if="hasNotAnalysedProperty">*These measurements are currently not supported for analysis.</div>
 </div>

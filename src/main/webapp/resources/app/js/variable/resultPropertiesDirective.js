@@ -12,10 +12,12 @@ define(['lodash'], function(_) {
       link: function(scope) {
         //functions
         scope.updateSelection = updateSelection;
+
         //init
-        scope.properties = buildProperties();
+        buildProperties();
         scope.hasNotAnalysedProperty = _.some(scope.properties, ['analysisReady', false]);
         var ARM_LEVEL = 'ontology:arm_level_data';
+
         // watches
         scope.$watch('variable.measurementType', rebuildIfNecessary);
         scope.$watch('variable.resultProperties', rebuildIfNecessary, true);
@@ -33,7 +35,11 @@ define(['lodash'], function(_) {
           _.forEach(scope.variable.selectedResultProperties, function(property) {
             resultPropertiesByType[property.type].isSelected = true;
           });
+          setCategories();
           scope.properties = resultPropertiesByType;
+        }
+
+        function setCategories() {
           scope.showCategories = false;
           if (scope.variable.measurementType === 'ontology:continuous' && scope.variable.armOrContrast === ARM_LEVEL) {
             scope.categories = ResultsService.buildPropertyCategories(scope.variable);
@@ -46,7 +52,15 @@ define(['lodash'], function(_) {
           if (scope.variable.measurementType === 'ontology:continuous' && scope.variable.armOrContrast === ARM_LEVEL) {
             properties = _(scope.categories).map('properties').flatten().value();
           }
+          setConfidenceInterval(properties);
           scope.variable.selectedResultProperties = _.filter(properties, 'isSelected');
+        }
+
+        function setConfidenceInterval(properties) {
+          var hasConfidenceInterval = _.some(properties, function(property) {
+            return property.type === 'confidence interval';
+          });
+          scope.variable.confidenceInterval = hasConfidenceInterval ? 95 : null;
         }
       }
     };

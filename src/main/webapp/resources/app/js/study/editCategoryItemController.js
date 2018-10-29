@@ -1,19 +1,33 @@
 'use strict';
 define([],
   function() {
-    var dependencies = ['$scope', '$state', '$modalInstance', 'itemService', 'callback'];
-    var EditCategoryItemController = function($scope, $state, $modalInstance, itemService, callback) {
+    var dependencies = [
+      '$scope',
+      '$modalInstance',
+      'itemService',
+      'callback'
+    ];
+    var EditCategoryItemController = function(
+      $scope,
+      $modalInstance,
+      itemService,
+      callback
+    ) {
       $scope.editItem = editItem;
       $scope.cancel = cancel;
 
       function editItem() {
-        itemService.editItem($scope.item).then(function() {
-            callback();
-            $modalInstance.close();
-          },
-          function() {
-            $modalInstance.close();
-          });
+        itemService.editItem($scope.item)
+          .then(succesCallback, errorCallback);
+      }
+
+      function succesCallback() {
+        callback();
+        $modalInstance.close();
+      }
+
+      function errorCallback() {
+        $modalInstance.close();
       }
 
       function cancel() {

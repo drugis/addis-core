@@ -10,6 +10,9 @@ define(['lodash', 'angular-mocks', './results'], function(_) {
 
     var ARM_LEVEL = 'ontology:arm_level_data';
     var CONTRAST = 'ontology:contrast_data';
+    var DICHOTOMOUS = 'ontology:dichotomous';
+    var CONTINUOUS = 'ontology:continuous';
+    var SURVIVAL = 'ontology:survival';
 
     beforeEach(function() {
       angular.mock.module('trialverse.results', function($provide) {
@@ -31,26 +34,26 @@ define(['lodash', 'angular-mocks', './results'], function(_) {
 
       var graphJsonObject = [{
         '@id': 'http://trials.drugis.org/instances/result1',
-        'count': 24,
-        'of_group': 'http://trials.drugis.org/instances/arm1',
-        'of_moment': 'http://trials.drugis.org/instances/moment1',
-        'of_outcome': 'http://trials.drugis.org/instances/outcome1',
-        'sample_size': 70
+        count: 24,
+        of_group: 'http://trials.drugis.org/instances/arm1',
+        of_moment: 'http://trials.drugis.org/instances/moment1',
+        of_outcome: 'http://trials.drugis.org/instances/outcome1',
+        sample_size: 70
       }, {
         '@id': 'http://trials.drugis.org/instances/result2',
-        'standard_deviation': 2,
-        'mean': 5,
-        'of_group': 'http://trials.drugis.org/instances/arm2',
-        'of_moment': 'http://trials.drugis.org/instances/moment1',
-        'of_outcome': 'http://trials.drugis.org/instances/outcome1',
-        'sample_size': 33
+        standard_deviation: 2,
+        mean: 5,
+        of_group: 'http://trials.drugis.org/instances/arm2',
+        of_moment: 'http://trials.drugis.org/instances/moment1',
+        of_outcome: 'http://trials.drugis.org/instances/outcome1',
+        sample_size: 33
       }, {
         '@id': 'http://trials.drugis.org/instances/result3',
-        'count': 3,
-        'of_group': 'http://trials.drugis.org/instances/arm2',
-        'of_moment': 'http://trials.drugis.org/instances/moment1',
-        'of_outcome': 'http://trials.drugis.org/instances/outcome2',
-        'sample_size': 33
+        count: 3,
+        of_group: 'http://trials.drugis.org/instances/arm2',
+        of_moment: 'http://trials.drugis.org/instances/moment1',
+        of_outcome: 'http://trials.drugis.org/instances/outcome2',
+        sample_size: 33
       }];
 
       var queryOutcome = 'http://trials.drugis.org/instances/outcome1';
@@ -90,26 +93,26 @@ define(['lodash', 'angular-mocks', './results'], function(_) {
     describe('query results by group', function() {
       var graphJsonObject = [{
         '@id': 'http://trials.drugis.org/instances/result1',
-        'count': 24,
-        'of_group': 'http://trials.drugis.org/instances/arm1',
-        'of_moment': 'http://trials.drugis.org/instances/moment1',
-        'of_outcome': 'http://trials.drugis.org/instances/outcome1',
-        'sample_size': 70
+        count: 24,
+        of_group: 'http://trials.drugis.org/instances/arm1',
+        of_moment: 'http://trials.drugis.org/instances/moment1',
+        of_outcome: 'http://trials.drugis.org/instances/outcome1',
+        sample_size: 70
       }, {
         '@id': 'http://trials.drugis.org/instances/result2',
-        'standard_deviation': 2,
-        'mean': 5,
-        'of_group': 'http://trials.drugis.org/instances/arm2',
-        'of_moment': 'http://trials.drugis.org/instances/moment1',
-        'of_outcome': 'http://trials.drugis.org/instances/outcome1',
-        'sample_size': 33
+        standard_deviation: 2,
+        mean: 5,
+        of_group: 'http://trials.drugis.org/instances/arm2',
+        of_moment: 'http://trials.drugis.org/instances/moment1',
+        of_outcome: 'http://trials.drugis.org/instances/outcome1',
+        sample_size: 33
       }, {
         '@id': 'http://trials.drugis.org/instances/result3',
-        'count': 3,
-        'of_group': 'http://trials.drugis.org/instances/arm2',
-        'of_moment': 'http://trials.drugis.org/instances/moment1',
-        'of_outcome': 'http://trials.drugis.org/instances/outcome2',
-        'sample_size': 33
+        count: 3,
+        of_group: 'http://trials.drugis.org/instances/arm2',
+        of_moment: 'http://trials.drugis.org/instances/moment1',
+        of_outcome: 'http://trials.drugis.org/instances/outcome2',
+        sample_size: 33
       }];
 
       var groupUri = 'http://trials.drugis.org/instances/arm2';
@@ -177,10 +180,10 @@ define(['lodash', 'angular-mocks', './results'], function(_) {
           resultsService.updateResultValue(row, inputColumn).then(function(result) {
             var expextedGraph = [{
               '@id': 'http://trials.drugis.org/instances/newUuid',
-              'count': 123,
-              'of_group': 'http://trials.drugis.org/instances/arm1',
-              'of_moment': 'http://trials.drugis.org/instances/moment1',
-              'of_outcome': 'http://trials.drugis.org/instances/outcome1',
+              count: 123,
+              of_group: 'http://trials.drugis.org/instances/arm1',
+              of_moment: 'http://trials.drugis.org/instances/moment1',
+              of_outcome: 'http://trials.drugis.org/instances/outcome1',
             }];
             expect(result).toBeTruthy();
             expect(result).toEqual(expextedGraph[0]['@id']);
@@ -194,7 +197,6 @@ define(['lodash', 'angular-mocks', './results'], function(_) {
         });
 
         it('should add the value to the graph (categorical)', function(done) {
-
           var row = {
             variable: {
               uri: 'http://trials.drugis.org/instances/outcome1'
@@ -222,13 +224,13 @@ define(['lodash', 'angular-mocks', './results'], function(_) {
           resultsService.updateResultValue(row, inputColumn).then(function(result) {
             var expextedGraph = [{
               '@id': 'http://trials.drugis.org/instances/newUuid',
-              'category_count': [{
+              category_count: [{
                 category: maleCategory['@id'],
                 count: 123
               }],
-              'of_group': 'http://trials.drugis.org/instances/arm1',
-              'of_moment': 'http://trials.drugis.org/instances/moment1',
-              'of_outcome': 'http://trials.drugis.org/instances/outcome1',
+              of_group: 'http://trials.drugis.org/instances/arm1',
+              of_moment: 'http://trials.drugis.org/instances/moment1',
+              of_outcome: 'http://trials.drugis.org/instances/outcome1',
             }];
             expect(result).toBeTruthy();
             expect(result).toEqual(expextedGraph[0]['@id']);
@@ -245,11 +247,11 @@ define(['lodash', 'angular-mocks', './results'], function(_) {
       describe('if there already is data in the graph, and the new value is a value', function() {
         var graphJsonObject = [{
           '@id': 'http://trials.drugis.org/instances/result1',
-          'count': 24,
-          'of_group': 'http://trials.drugis.org/instances/arm1',
-          'of_moment': 'http://trials.drugis.org/instances/moment1',
-          'of_outcome': 'http://trials.drugis.org/instances/outcome1',
-          'sample_size': 70
+          count: 24,
+          of_group: 'http://trials.drugis.org/instances/arm1',
+          of_moment: 'http://trials.drugis.org/instances/moment1',
+          of_outcome: 'http://trials.drugis.org/instances/outcome1',
+          sample_size: 70
         }];
 
         beforeEach(function() {
@@ -282,11 +284,11 @@ define(['lodash', 'angular-mocks', './results'], function(_) {
           resultsService.updateResultValue(row, inputColumn).then(function(result) {
             var expextedGraph = [{
               '@id': 'http://trials.drugis.org/instances/result1',
-              'count': 24,
-              'of_group': 'http://trials.drugis.org/instances/arm1',
-              'of_moment': 'http://trials.drugis.org/instances/moment1',
-              'of_outcome': 'http://trials.drugis.org/instances/outcome1',
-              'sample_size': 789
+              count: 24,
+              of_group: 'http://trials.drugis.org/instances/arm1',
+              of_moment: 'http://trials.drugis.org/instances/moment1',
+              of_outcome: 'http://trials.drugis.org/instances/outcome1',
+              sample_size: 789
             }];
             expect(result).toBeTruthy();
             expect(result).toEqual(expextedGraph[0]['@id']);
@@ -315,9 +317,9 @@ define(['lodash', 'angular-mocks', './results'], function(_) {
               category: femaleCategory['@id'],
               count: 24
             }],
-            'of_group': 'http://trials.drugis.org/instances/arm1',
-            'of_moment': 'http://trials.drugis.org/instances/moment1',
-            'of_outcome': 'http://trials.drugis.org/instances/outcome1'
+            of_group: 'http://trials.drugis.org/instances/arm1',
+            of_moment: 'http://trials.drugis.org/instances/moment1',
+            of_outcome: 'http://trials.drugis.org/instances/outcome1'
           }];
 
           var graphDefer = q.defer();
@@ -508,11 +510,11 @@ define(['lodash', 'angular-mocks', './results'], function(_) {
 
         var graphJsonObject = [{
           '@id': 'http://trials.drugis.org/instances/result1',
-          'count': 24,
-          'of_group': 'http://trials.drugis.org/instances/arm1',
-          'of_moment': 'http://trials.drugis.org/instances/moment1',
-          'of_outcome': 'http://trials.drugis.org/instances/outcome1',
-          'sample_size': 70
+          count: 24,
+          of_group: 'http://trials.drugis.org/instances/arm1',
+          of_moment: 'http://trials.drugis.org/instances/moment1',
+          of_outcome: 'http://trials.drugis.org/instances/outcome1',
+          sample_size: 70
         }];
 
         beforeEach(function() {
@@ -527,10 +529,10 @@ define(['lodash', 'angular-mocks', './results'], function(_) {
           resultsService.updateResultValue(row, inputColumn).then(function(result) {
             var expextedGraph = [{
               '@id': 'http://trials.drugis.org/instances/result1',
-              'count': 24,
-              'of_group': 'http://trials.drugis.org/instances/arm1',
-              'of_moment': 'http://trials.drugis.org/instances/moment1',
-              'of_outcome': 'http://trials.drugis.org/instances/outcome1',
+              count: 24,
+              of_group: 'http://trials.drugis.org/instances/arm1',
+              of_moment: 'http://trials.drugis.org/instances/moment1',
+              of_outcome: 'http://trials.drugis.org/instances/outcome1',
             }];
             expect(result).toBeTruthy();
             expect(studyServiceMock.saveJsonGraph).toHaveBeenCalledWith(expextedGraph);
@@ -548,13 +550,13 @@ define(['lodash', 'angular-mocks', './results'], function(_) {
       var arm1 = {
         '@id': 'http://trials.drugis.org/instances/a1',
         '@type': 'ontology:Arm',
-        'label': 'arm label'
+        label: 'arm label'
       };
 
       var arm2 = {
         '@id': 'http://trials.drugis.org/instances/a2',
         '@type': 'ontology:Arm',
-        'label': 'arm label'
+        label: 'arm label'
       };
 
       var outcome1 = {
@@ -565,19 +567,19 @@ define(['lodash', 'angular-mocks', './results'], function(_) {
           'http://trials.drugis.org/ontology#mean',
           'http://trials.drugis.org/ontology#sample_size'
         ],
-        'is_measured_at': 'http://trials.drugis.org/instances/mm1',
-        'of_variable': [{
+        is_measured_at: 'http://trials.drugis.org/instances/mm1',
+        of_variable: [{
           '@id': 'http://fuseki-test.drugis.org:3030/.well-known/genid/var1',
           '@type': 'ontology:Variable',
-          'measurementType': 'ontology:continuous',
-          'comment': [
+          measurementType: CONTINUOUS,
+          comment: [
             '',
             'years'
           ],
-          'label': 'Age'
+          label: 'Age'
         }],
-        'comment': '',
-        'label': 'Age'
+        comment: '',
+        label: 'Age'
       };
 
       var outcome2 = {
@@ -587,19 +589,19 @@ define(['lodash', 'angular-mocks', './results'], function(_) {
           'http://trials.drugis.org/ontology#count',
           'http://trials.drugis.org/ontology#sample_size'
         ],
-        'is_measured_at': 'http://trials.drugis.org/instances/mm1',
-        'of_variable': [{
+        is_measured_at: 'http://trials.drugis.org/instances/mm1',
+        of_variable: [{
           '@id': 'http://fuseki-test.drugis.org:3030/.well-known/genid/var2',
           '@type': 'ontology:Variable',
-          'measurementType': 'ontology:continuous',
-          'comment': [
+          measurementType: CONTINUOUS,
+          comment: [
             '',
             'years'
           ],
-          'label': 'My variable'
+          label: 'My variable'
         }],
-        'comment': '',
-        'label': 'My outcome'
+        comment: '',
+        label: 'My outcome'
       };
 
       var measurementMoment1 = {
@@ -608,7 +610,7 @@ define(['lodash', 'angular-mocks', './results'], function(_) {
         'relative_to_anchor': 'ontology:anchorEpochStart',
         'relative_to_epoch': 'http://trials.drugis.org/instances/e1',
         'time_offset': 'PT0S',
-        'label': 'At start of epoch 1'
+        label: 'At start of epoch 1'
       };
 
       var measurementMoment2 = {
@@ -617,62 +619,62 @@ define(['lodash', 'angular-mocks', './results'], function(_) {
         'relative_to_anchor': 'ontology:anchorEpochStart',
         'relative_to_epoch': 'http://trials.drugis.org/instances/e2',
         'time_offset': 'PT0S',
-        'label': 'At start of epoch 1'
+        label: 'At start of epoch 1'
       };
 
       var result1 = {
         '@id': 'http://trials.drugis.org/instances/result1',
-        'of_group': arm1['@id'],
-        'of_moment': measurementMoment1['@id'],
-        'of_outcome': outcome1['@id'],
-        'sample_size': 70
+        of_group: arm1['@id'],
+        of_moment: measurementMoment1['@id'],
+        of_outcome: outcome1['@id'],
+        sample_size: 70
       };
 
       var result2 = {
         '@id': 'http://trials.drugis.org/instances/result1',
-        'of_group': arm2['@id'],
-        'of_moment': measurementMoment2['@id'],
-        'of_outcome': outcome2['@id'],
-        'count': 3
+        of_group: arm2['@id'],
+        of_moment: measurementMoment2['@id'],
+        of_outcome: outcome2['@id'],
+        count: 3
       };
 
       var resultNonConformant = {
         '@id': 'http://trials.drugis.org/instances/resultNonConformant',
-        'of_group': arm2['@id'],
-        'of_outcome': outcome2['@id'],
-        'count': 3,
-        'comment': 'comment'
+        of_group: arm2['@id'],
+        of_outcome: outcome2['@id'],
+        count: 3,
+        comment: 'comment'
       };
 
       var result3 = {
         '@id': 'http://trials.drugis.org/instances/result1',
-        'of_group': 'non existent arm id',
-        'of_moment': measurementMoment2['@id'],
-        'of_outcome': outcome2['@id'],
-        'count': 6
+        of_group: 'non existent arm id',
+        of_moment: measurementMoment2['@id'],
+        of_outcome: outcome2['@id'],
+        count: 6
       };
 
       var result4 = {
         '@id': 'http://trials.drugis.org/instances/result1',
-        'of_group': arm1['@id'],
-        'of_moment': 'non existent moment id',
-        'of_outcome': outcome1['@id'],
-        'sample_size': 140
+        of_group: arm1['@id'],
+        of_moment: 'non existent moment id',
+        of_outcome: outcome1['@id'],
+        sample_size: 140
       };
 
       var result5 = {
         '@id': 'http://trials.drugis.org/instances/result1',
-        'of_group': arm2['@id'],
-        'of_moment': measurementMoment2['@id'],
-        'of_outcome': 'non existent outcome id',
-        'count': 6
+        of_group: arm2['@id'],
+        of_moment: measurementMoment2['@id'],
+        of_outcome: 'non existent outcome id',
+        count: 6
       };
 
       var result6 = {
         '@id': 'http://trials.drugis.org/instances/result1',
-        'of_group': arm2['@id'],
-        'of_moment': measurementMoment1['@id'],
-        'of_outcome': outcome1['@id'],
+        of_group: arm2['@id'],
+        of_moment: measurementMoment1['@id'],
+        of_outcome: outcome1['@id'],
         'standard_error': 6
       };
 
@@ -720,13 +722,13 @@ define(['lodash', 'angular-mocks', './results'], function(_) {
       var arm1 = {
         '@id': 'http://trials.drugis.org/instances/a1',
         '@type': 'ontology:Arm',
-        'label': 'arm label'
+        label: 'arm label'
       };
 
       var arm2 = {
         '@id': 'http://trials.drugis.org/instances/a2',
         '@type': 'ontology:Arm',
-        'label': 'arm label'
+        label: 'arm label'
       };
 
       var category1 = {
@@ -744,16 +746,16 @@ define(['lodash', 'angular-mocks', './results'], function(_) {
       var outcome1 = {
         '@id': 'http://trials.drugis.org/instances/out1',
         '@type': 'ontology:OutcomeType',
-        'is_measured_at': ['http://trials.drugis.org/instances/mm1', 'http://trials.drugis.org/instances/mm2'],
-        'of_variable': [{
+        is_measured_at: ['http://trials.drugis.org/instances/mm1', 'http://trials.drugis.org/instances/mm2'],
+        of_variable: [{
           '@id': 'http://fuseki-test.drugis.org:3030/.well-known/genid/var1',
           '@type': 'ontology:Variable',
-          'measurementType': 'ontology:categorical',
+          measurementType: 'ontology:categorical',
           categoryList: categoryNode1,
-          'label': 'Age'
+          label: 'Age'
         }],
-        'comment': '',
-        'label': 'Age'
+        comment: '',
+        label: 'Age'
       };
 
       var measurementMoment1 = {
@@ -762,7 +764,7 @@ define(['lodash', 'angular-mocks', './results'], function(_) {
         'relative_to_anchor': 'ontology:anchorEpochStart',
         'relative_to_epoch': 'http://trials.drugis.org/instances/e1',
         'time_offset': 'PT0S',
-        'label': 'At start of epoch 1'
+        label: 'At start of epoch 1'
       };
 
       var measurementMoment2 = {
@@ -771,14 +773,14 @@ define(['lodash', 'angular-mocks', './results'], function(_) {
         'relative_to_anchor': 'ontology:anchorEpochStart',
         'relative_to_epoch': 'http://trials.drugis.org/instances/e2',
         'time_offset': 'PT0S',
-        'label': 'At start of epoch 1'
+        label: 'At start of epoch 1'
       };
 
       var result1 = {
         '@id': 'http://trials.drugis.org/instances/result1',
-        'of_group': arm1['@id'],
-        'of_moment': measurementMoment1['@id'],
-        'of_outcome': outcome1['@id'],
+        of_group: arm1['@id'],
+        of_moment: measurementMoment1['@id'],
+        of_outcome: outcome1['@id'],
         category_count: [{
           category: category1['@id'],
           count: 1
@@ -789,9 +791,9 @@ define(['lodash', 'angular-mocks', './results'], function(_) {
       };
       var result2 = {
         '@id': 'http://trials.drugis.org/instances/result2',
-        'of_group': arm1['@id'],
-        'of_moment': measurementMoment2['@id'],
-        'of_outcome': outcome1['@id'],
+        of_group: arm1['@id'],
+        of_moment: measurementMoment2['@id'],
+        of_outcome: outcome1['@id'],
         category_count: [{
           category: category1['@id'],
           count: 3
@@ -802,9 +804,9 @@ define(['lodash', 'angular-mocks', './results'], function(_) {
       };
       var result3 = {
         '@id': 'http://trials.drugis.org/instances/result3',
-        'of_group': arm2['@id'],
-        'of_moment': measurementMoment1['@id'],
-        'of_outcome': outcome1['@id'],
+        of_group: arm2['@id'],
+        of_moment: measurementMoment1['@id'],
+        of_outcome: outcome1['@id'],
         category_count: [{
           category: category1['@id'],
           count: 4
@@ -815,9 +817,9 @@ define(['lodash', 'angular-mocks', './results'], function(_) {
       };
       var result4 = {
         '@id': 'http://trials.drugis.org/instances/result4',
-        'of_group': arm2['@id'],
-        'of_moment': measurementMoment2['@id'],
-        'of_outcome': outcome1['@id'],
+        of_group: arm2['@id'],
+        of_moment: measurementMoment2['@id'],
+        of_outcome: outcome1['@id'],
         category_count: [{
           category: category1['@id'],
           count: 7
@@ -829,9 +831,9 @@ define(['lodash', 'angular-mocks', './results'], function(_) {
 
       var cleanedResult1 = {
         '@id': 'http://trials.drugis.org/instances/result1',
-        'of_group': arm1['@id'],
-        'of_moment': measurementMoment1['@id'],
-        'of_outcome': outcome1['@id'],
+        of_group: arm1['@id'],
+        of_moment: measurementMoment1['@id'],
+        of_outcome: outcome1['@id'],
         category_count: [{
           category: category1['@id'],
           count: 1
@@ -839,9 +841,9 @@ define(['lodash', 'angular-mocks', './results'], function(_) {
       };
       var cleanedResult2 = {
         '@id': 'http://trials.drugis.org/instances/result2',
-        'of_group': arm1['@id'],
-        'of_moment': measurementMoment2['@id'],
-        'of_outcome': outcome1['@id'],
+        of_group: arm1['@id'],
+        of_moment: measurementMoment2['@id'],
+        of_outcome: outcome1['@id'],
         category_count: [{
           category: category1['@id'],
           count: 3
@@ -849,9 +851,9 @@ define(['lodash', 'angular-mocks', './results'], function(_) {
       };
       var cleanedResult3 = {
         '@id': 'http://trials.drugis.org/instances/result3',
-        'of_group': arm2['@id'],
-        'of_moment': measurementMoment1['@id'],
-        'of_outcome': outcome1['@id'],
+        of_group: arm2['@id'],
+        of_moment: measurementMoment1['@id'],
+        of_outcome: outcome1['@id'],
         category_count: [{
           category: category1['@id'],
           count: 4
@@ -859,9 +861,9 @@ define(['lodash', 'angular-mocks', './results'], function(_) {
       };
       var cleanedResult4 = {
         '@id': 'http://trials.drugis.org/instances/result4',
-        'of_group': arm2['@id'],
-        'of_moment': measurementMoment2['@id'],
-        'of_outcome': outcome1['@id'],
+        of_group: arm2['@id'],
+        of_moment: measurementMoment2['@id'],
+        of_outcome: outcome1['@id'],
         category_count: [{
           category: category1['@id'],
           count: 7
@@ -899,7 +901,6 @@ define(['lodash', 'angular-mocks', './results'], function(_) {
           studyServiceMock.saveJsonGraph.calls.reset();
           done();
         });
-        // fire in the hole !
         rootScope.$digest();
       });
     });
@@ -907,13 +908,13 @@ define(['lodash', 'angular-mocks', './results'], function(_) {
     describe('isExistingMeasurement', function() {
       var graphJsonObject = [{
         '@id': 'nonConfInstance1',
-        'of_group': 'http://trials.drugis.org/instances/arm1',
-        'of_outcome': 'http://trials.drugis.org/instances/outcome1',
+        of_group: 'http://trials.drugis.org/instances/arm1',
+        of_outcome: 'http://trials.drugis.org/instances/outcome1',
       }, {
         '@id': 'http://trials.drugis.org/instances/result1',
-        'of_group': 'http://trials.drugis.org/instances/arm1',
-        'of_moment': 'mommentInstanceUri',
-        'of_outcome': 'http://trials.drugis.org/instances/outcome1',
+        of_group: 'http://trials.drugis.org/instances/arm1',
+        of_moment: 'mommentInstanceUri',
+        of_outcome: 'http://trials.drugis.org/instances/outcome1',
       }];
 
       var measurementMomentUri = 'mommentInstanceUri';
@@ -942,18 +943,18 @@ define(['lodash', 'angular-mocks', './results'], function(_) {
     describe('isExistingMeasurement', function() {
       var graphJsonObject = [{
         '@id': 'nonConfInstance1',
-        'of_group': 'http://trials.drugis.org/instances/arm1',
-        'of_outcome': 'http://trials.drugis.org/instances/outcome1',
+        of_group: 'http://trials.drugis.org/instances/arm1',
+        of_outcome: 'http://trials.drugis.org/instances/outcome1',
       }, {
         '@id': 'http://trials.drugis.org/instances/result1',
-        'of_group': 'http://trials.drugis.org/instances/arm2',
-        'of_moment': 'http://trials.drugis.org/instances/moment1',
-        'of_outcome': 'http://trials.drugis.org/instances/outcome2',
+        of_group: 'http://trials.drugis.org/instances/arm2',
+        of_moment: 'http://trials.drugis.org/instances/moment1',
+        of_outcome: 'http://trials.drugis.org/instances/outcome2',
       }, {
         '@id': 'http://trials.drugis.org/instances/result1',
-        'of_group': 'http://trials.drugis.org/instances/arm1',
-        'of_moment': 'otherMoment',
-        'of_outcome': 'http://trials.drugis.org/instances/outcome1',
+        of_group: 'http://trials.drugis.org/instances/arm1',
+        of_moment: 'otherMoment',
+        of_outcome: 'http://trials.drugis.org/instances/outcome1',
       }];
 
       var measurementMomentUri = 'mommentInstanceUri';
@@ -982,34 +983,34 @@ define(['lodash', 'angular-mocks', './results'], function(_) {
     describe('setToMeasurementMoment', function() {
       var graphJsonObject = [{
         '@id': 'nonConfInstance1',
-        'of_group': 'http://trials.drugis.org/instances/arm1',
-        'of_outcome': 'http://trials.drugis.org/instances/outcome1',
-        'comment': 'comment'
+        of_group: 'http://trials.drugis.org/instances/arm1',
+        of_outcome: 'http://trials.drugis.org/instances/outcome1',
+        comment: 'comment'
       }, {
         '@id': 'otherNode',
-        'of_group': 'http://trials.drugis.org/instances/arm2',
-        'of_outcome': 'http://trials.drugis.org/instances/outcome2'
+        of_group: 'http://trials.drugis.org/instances/arm2',
+        of_outcome: 'http://trials.drugis.org/instances/outcome2'
       }, {
         '@id': 'nonConfInstance2',
-        'of_group': 'http://trials.drugis.org/instances/arm2',
-        'of_outcome': 'http://trials.drugis.org/instances/outcome2',
-        'comment': 'comment'
+        of_group: 'http://trials.drugis.org/instances/arm2',
+        of_outcome: 'http://trials.drugis.org/instances/outcome2',
+        comment: 'comment'
       }];
 
       var expectedSaveGraph = [{
         '@id': 'nonConfInstance1',
-        'of_group': 'http://trials.drugis.org/instances/arm1',
-        'of_moment': 'mommentInstanceUri',
-        'of_outcome': 'http://trials.drugis.org/instances/outcome1',
+        of_group: 'http://trials.drugis.org/instances/arm1',
+        of_moment: 'mommentInstanceUri',
+        of_outcome: 'http://trials.drugis.org/instances/outcome1',
       }, {
         '@id': 'otherNode',
-        'of_group': 'http://trials.drugis.org/instances/arm2',
-        'of_outcome': 'http://trials.drugis.org/instances/outcome2',
+        of_group: 'http://trials.drugis.org/instances/arm2',
+        of_outcome: 'http://trials.drugis.org/instances/outcome2',
       }, {
         '@id': 'nonConfInstance2',
-        'of_group': 'http://trials.drugis.org/instances/arm2',
-        'of_moment': 'mommentInstanceUri',
-        'of_outcome': 'http://trials.drugis.org/instances/outcome2',
+        of_group: 'http://trials.drugis.org/instances/arm2',
+        of_moment: 'mommentInstanceUri',
+        of_outcome: 'http://trials.drugis.org/instances/outcome2',
       }];
 
       var measurementMomentUri = 'mommentInstanceUri';
@@ -1035,27 +1036,27 @@ define(['lodash', 'angular-mocks', './results'], function(_) {
     describe('getDefaultResultProperties', function() {
       it('should return the correct default resultproperties for continuous variables of arm level data', function() {
         var continuousArmLevelProperties = [
-          resultsService.ARM_VARIABLE_TYPE_DETAILS.sample_size,
-          resultsService.ARM_VARIABLE_TYPE_DETAILS.mean,
-          resultsService.ARM_VARIABLE_TYPE_DETAILS.standard_deviation
+          resultsService.VARIABLE_TYPE_DETAILS[ARM_LEVEL].sample_size,
+          resultsService.VARIABLE_TYPE_DETAILS[ARM_LEVEL].mean,
+          resultsService.VARIABLE_TYPE_DETAILS[ARM_LEVEL].standard_deviation
         ];
-        var result = resultsService.getDefaultResultProperties('ontology:continuous', ARM_LEVEL);
+        var result = resultsService.getDefaultResultProperties(CONTINUOUS, ARM_LEVEL);
         expect(result).toEqual(continuousArmLevelProperties);
       });
 
       it('should return the correct default resultproperties for dichotomous variables of arm level data', function() {
         var dichotomousArmLevelProperties = [
-          resultsService.ARM_VARIABLE_TYPE_DETAILS.sample_size,
-          resultsService.ARM_VARIABLE_TYPE_DETAILS.count
+          resultsService.VARIABLE_TYPE_DETAILS[ARM_LEVEL].sample_size,
+          resultsService.VARIABLE_TYPE_DETAILS[ARM_LEVEL].count
         ];
-        var result = resultsService.getDefaultResultProperties('ontology:dichotomous', ARM_LEVEL);
+        var result = resultsService.getDefaultResultProperties(DICHOTOMOUS, ARM_LEVEL);
         expect(result).toEqual(dichotomousArmLevelProperties);
       });
 
       it('should return the correct default resultproperties for survival variables of arm level data', function() {
         var survivalArmLevelProperties = [
-          resultsService.ARM_VARIABLE_TYPE_DETAILS.count,
-          resultsService.ARM_VARIABLE_TYPE_DETAILS.exposure
+          resultsService.VARIABLE_TYPE_DETAILS[ARM_LEVEL].count,
+          resultsService.VARIABLE_TYPE_DETAILS[ARM_LEVEL].exposure
         ];
         var result = resultsService.getDefaultResultProperties('ontology:survival', ARM_LEVEL);
         expect(result).toEqual(survivalArmLevelProperties);
@@ -1063,26 +1064,26 @@ define(['lodash', 'angular-mocks', './results'], function(_) {
 
       it('should return the correct default resultproperties for dichotomous variables of contrast data', function() {
         var continuousContrastProperties = [
-          resultsService.CONTRAST_VARIABLE_TYPE_DETAILS.log_odds_ratio,
-          resultsService.CONTRAST_VARIABLE_TYPE_DETAILS.standard_error
+          resultsService.VARIABLE_TYPE_DETAILS[CONTRAST].log_odds_ratio,
+          resultsService.VARIABLE_TYPE_DETAILS[CONTRAST].standard_error
         ];
-        var result = resultsService.getDefaultResultProperties('ontology:dichotomous', CONTRAST);
+        var result = resultsService.getDefaultResultProperties(DICHOTOMOUS, CONTRAST);
         expect(result).toEqual(continuousContrastProperties);
       });
 
       it('should return the correct default resultproperties for continuous variables of contrast data', function() {
         var dichotomousContrastProperties = [
-          resultsService.CONTRAST_VARIABLE_TYPE_DETAILS.mean_difference,
-          resultsService.CONTRAST_VARIABLE_TYPE_DETAILS.standard_error
+          resultsService.VARIABLE_TYPE_DETAILS[CONTRAST].mean_difference,
+          resultsService.VARIABLE_TYPE_DETAILS[CONTRAST].standard_error
         ];
-        var result = resultsService.getDefaultResultProperties('ontology:continuous', CONTRAST);
+        var result = resultsService.getDefaultResultProperties(CONTINUOUS, CONTRAST);
         expect(result).toEqual(dichotomousContrastProperties);
       });
 
       it('should return the correct default resultproperties for survival variables of contrast data', function() {
         var survivalContrastProperties = [
-          resultsService.CONTRAST_VARIABLE_TYPE_DETAILS.log_hazard_ratio,
-          resultsService.CONTRAST_VARIABLE_TYPE_DETAILS.standard_error
+          resultsService.VARIABLE_TYPE_DETAILS[CONTRAST].log_hazard_ratio,
+          resultsService.VARIABLE_TYPE_DETAILS[CONTRAST].standard_error
         ];
         var result = resultsService.getDefaultResultProperties('ontology:survival', CONTRAST);
         expect(result).toEqual(survivalContrastProperties);
@@ -1097,14 +1098,14 @@ define(['lodash', 'angular-mocks', './results'], function(_) {
 
     describe('buildPropertyCategories', function() {
       it('should build the categories for a continuous variable', function() {
-        var varDetails = _.reduce(resultsService.ARM_VARIABLE_TYPE_DETAILS, function(accum, varType) {
+        var varDetails = _.reduce(resultsService.VARIABLE_TYPE_DETAILS[ARM_LEVEL], function(accum, varType) {
           accum[varType.type] = _.extend({}, varType, {
             isSelected: false
           });
           return accum;
         }, {});
         var variable = {
-          measurementType: 'ontology:continuous',
+          measurementType: CONTINUOUS,
           selectedProperties: [],
           armOrContrast: ARM_LEVEL
         };
@@ -1124,7 +1125,7 @@ define(['lodash', 'angular-mocks', './results'], function(_) {
             varDetails.least_squares_mean
             ]
           },
-          'Quantiles': {
+          Quantiles: {
             categoryLabel: 'Quantiles',
             properties: [
               varDetails['quantile_0.05'],
@@ -1136,7 +1137,7 @@ define(['lodash', 'angular-mocks', './results'], function(_) {
 
             ]
           },
-          'Dispersion': {
+          Dispersion: {
             categoryLabel: 'Dispersion',
             properties: [
               varDetails.min,
@@ -1152,19 +1153,9 @@ define(['lodash', 'angular-mocks', './results'], function(_) {
     });
 
     describe('getResultPropertiesForType', function() {
-      it('should get the right variable details for each specific type', function() {
-        var varTypes = resultsService.ARM_VARIABLE_TYPE_DETAILS;
-        var dichotomousResult = resultsService.getResultPropertiesForType('ontology:dichotomous', ARM_LEVEL);
-        var continuousResult = resultsService.getResultPropertiesForType('ontology:continuous', ARM_LEVEL);
-        var survivalResult = resultsService.getResultPropertiesForType('ontology:survival', ARM_LEVEL);
-
-        var expectedDichotomousResult = [
-          varTypes.sample_size,
-          varTypes.event_count,
-          varTypes.count,
-          varTypes.percentage,
-          varTypes.proportion
-        ];
+      it('should get the right variable details for continuous type for arm level data', function() {
+        var varTypes = resultsService.VARIABLE_TYPE_DETAILS[ARM_LEVEL];
+        var continuousResult = resultsService.getResultPropertiesForType(CONTINUOUS, ARM_LEVEL);
         var expectedContinuousResult = [
           varTypes.sample_size,
           varTypes.mean,
@@ -1184,6 +1175,25 @@ define(['lodash', 'angular-mocks', './results'], function(_) {
           varTypes.standard_deviation,
           varTypes.standard_error
         ];
+        expect(continuousResult).toEqual(expectedContinuousResult);
+      });
+
+      it('should get the right variable details for dichotomous type for arm level data', function() {
+        var varTypes = resultsService.VARIABLE_TYPE_DETAILS[ARM_LEVEL];
+        var dichotomousResult = resultsService.getResultPropertiesForType(DICHOTOMOUS, ARM_LEVEL);
+        var expectedDichotomousResult = [
+          varTypes.sample_size,
+          varTypes.event_count,
+          varTypes.count,
+          varTypes.percentage,
+          varTypes.proportion
+        ];
+        expect(dichotomousResult).toEqual(expectedDichotomousResult);
+      });
+
+      it('should get the right variable details for survival type for arm level data', function() {
+        var varTypes = resultsService.VARIABLE_TYPE_DETAILS[ARM_LEVEL];
+        var survivalResult = resultsService.getResultPropertiesForType(SURVIVAL, ARM_LEVEL);
         var expectedSurvivalResult = [
           varTypes.hazard_ratio,
           varTypes['quantile_0.025'],
@@ -1191,8 +1201,44 @@ define(['lodash', 'angular-mocks', './results'], function(_) {
           varTypes.count,
           varTypes.exposure
         ];
+        expect(survivalResult).toEqual(expectedSurvivalResult);
+      });
+
+      it('should get the right variable details for dichotomous contrast data', function(){
+        var dichotomousResult = resultsService.getResultPropertiesForType(DICHOTOMOUS, CONTRAST);
+        var varTypes = resultsService.VARIABLE_TYPE_DETAILS[CONTRAST];
+        var expectedDichotomousResult  = [
+          varTypes.log_odds_ratio,
+          varTypes.log_risk_ratio,
+          varTypes.standard_error,
+          varTypes.confidence_interval,
+          varTypes.is_reference
+        ];
         expect(dichotomousResult).toEqual(expectedDichotomousResult);
+      });
+
+      it('should get the right variable details for continuous contrast data', function(){
+        var continuousResult = resultsService.getResultPropertiesForType(CONTINUOUS, CONTRAST);
+        var varTypes = resultsService.VARIABLE_TYPE_DETAILS[CONTRAST];
+        var expectedContinuousResult =[
+          varTypes.mean_difference,
+          varTypes.standardized_mean_difference,
+          varTypes.standard_error,
+          varTypes.confidence_interval,
+          varTypes.is_reference
+        ];
         expect(continuousResult).toEqual(expectedContinuousResult);
+      });
+
+      it('should get the right variable details for survival contrast data', function(){
+        var survivalResult = resultsService.getResultPropertiesForType(SURVIVAL, CONTRAST);
+        var varTypes =  resultsService.VARIABLE_TYPE_DETAILS[CONTRAST];
+        var expectedSurvivalResult = [
+          varTypes.log_hazard_ratio,
+          varTypes.standard_error,
+          varTypes.confidence_interval,
+          varTypes.is_reference
+        ];
         expect(survivalResult).toEqual(expectedSurvivalResult);
       });
     });
@@ -1200,6 +1246,9 @@ define(['lodash', 'angular-mocks', './results'], function(_) {
     describe('getVariableDetails', function() {
       it('should also work for shortened urls', function() {
         expect(resultsService.getVariableDetails('ontology:sample_size')).toBeDefined();
+        expect(resultsService.getVariableDetails('ontology:sample_size', CONTRAST)).not.toBeDefined();
+        expect(resultsService.getVariableDetails('ontology:odds_ratio', CONTRAST)).toBeDefined();
+        expect(resultsService.getVariableDetails('ontology:mean', ARM_LEVEL)).toBeDefined();
       });
     });
 

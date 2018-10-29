@@ -1,6 +1,6 @@
 'use strict';
 define(['angular-mocks', './outcome'], function() {
-  describe('the outcome service', function() {
+  describe('the outcomeService', function() {
     var rootScope, q,
       uUIDServiceMock,
       outcomeService,
@@ -65,41 +65,41 @@ define(['angular-mocks', './outcome'], function() {
         has_outcome: [{
           '@id': 'http://trials.drugis.org/instances/popchar1',
           '@type': 'ontology:OutcomeType',
-          'has_result_property': [
+          has_result_property: [
             'ontology:standard_deviation',
             'ontology:mean',
             'ontology:sample_size'
           ],
-          'is_measured_at': 'http://instance/moment1',
-          'of_variable': [{
+          is_measured_at: 'http://instance/moment1',
+          of_variable: [{
             '@id': 'http://fuseki-test.drugis.org:3030/.well-known/genid/0000014fdfac194dac11005900000003',
             '@type': 'ontology:Variable',
-            'measurementType': 'ontology:continuous',
-            'comment': [
+            measurementType: 'ontology:continuous',
+            comment: [
               '',
               'years'
             ],
-            'label': 'Age'
+            label: 'Age'
           }],
-          'comment': '',
-          'label': 'Age'
+          comment: '',
+          label: 'Age'
         }, {
           '@id': 'http://trials.drugis.org/instances/9bb96077-a8e0-4da1-bee2-011db8b7e560',
           '@type': 'ontology:OutcomeType',
-          'has_result_property': [
+          has_result_property: [
             'ontology:sample_size',
             'ontology:count'
           ],
-          'is_measured_at': ['http://instance/moment1', 'http://instance/moment2'],
-          'of_variable': [{
+          is_measured_at: ['http://instance/moment1', 'http://instance/moment2'],
+          of_variable: [{
             '@id': 'http://fuseki-test.drugis.org:3030/.well-known/genid/0000014fdfac194eac1100590000000b',
             '@type': 'ontology:Variable',
-            'measurementType': 'ontology:dichotomous',
-            'comment': '',
-            'label': 'is stupid'
+            measurementType: 'ontology:dichotomous',
+            comment: '',
+            label: 'is stupid'
           }],
-          'comment': '',
-          'label': 'is stupid'
+          comment: '',
+          label: 'is stupid'
         }]
       };
       var jsonStudyGraph = [jsonStudy];
@@ -131,29 +131,29 @@ define(['angular-mocks', './outcome'], function() {
       });
     });
 
-    describe('query outcomes that are not measured', function() {
+    describe('queryItems; query outcomes that are not measured', function() {
       var jsonStudy = {
         has_outcome: [{
           '@id': 'http://trials.drugis.org/instances/popchar1',
           '@type': 'ontology:OutcomeType',
-          'has_result_property': [
+          has_result_property: [
             'ontology:standard_deviation',
             'ontology:mean',
             'ontology:sample_size'
           ],
 
-          'of_variable': [{
+          of_variable: [{
             '@id': 'http://fuseki-test.drugis.org:3030/.well-known/genid/0000014fdfac194dac11005900000003',
             '@type': 'ontology:Variable',
-            'measurementType': 'ontology:continuous',
-            'comment': [
+            measurementType: 'ontology:continuous',
+            comment: [
               '',
               'years'
             ],
-            'label': 'Age'
+            label: 'Age'
           }],
-          'comment': '',
-          'label': 'Age'
+          comment: '',
+          label: 'Age'
         }]
       };
 
@@ -176,14 +176,12 @@ define(['angular-mocks', './outcome'], function() {
       });
     });
 
-    describe('add outcome of type', function() {
+    describe('queryItems; add outcome of type', function() {
       var outcomeUri = 'http://trials.drugis.org/instances/newUuid';
       var moment = 'http://mm/uri';
-
       var measuredAtMoment = {
         uri: moment
       };
-
       var newPopulationChar = {
         uri: outcomeUri,
         label: 'label',
@@ -219,7 +217,8 @@ define(['angular-mocks', './outcome'], function() {
               measurementType: 'ontology:dichotomous',
               label: 'label'
             }],
-            label: 'label'
+            label: 'label',
+            arm_or_contrast: 'ontology:arm_level_data'
           }]
         };
 
@@ -233,43 +232,42 @@ define(['angular-mocks', './outcome'], function() {
       });
     });
 
-    describe('edit outcome', function() {
-
+    describe('queryItems; edit outcome', function() {
       var moment1 = 'http://instance/moment1';
       var moment2 = 'http://instance/moment2';
       var jsonStudy = {
         has_outcome: [{
           '@id': 'http://trials.drugis.org/instances/popchar1',
           '@type': 'ontology:OutcomeType',
-          'has_result_property': [
+          has_result_property: [
             'ontology:standard_deviation',
             'ontology:mean',
             'ontology:sample_size'
           ],
-          'is_measured_at': moment1,
-          'of_variable': [{
+          is_measured_at: moment1,
+          of_variable: [{
             '@id': 'http://fuseki-test.drugis.org:3030/.well-known/genid/0000014fdfac194dac11005900000003',
             '@type': 'ontology:Variable',
-            'measurementType': 'ontology:continuous',
-            'label': 'Age'
+            measurementType: 'ontology:continuous',
+            label: 'Age'
           }],
-          'comment': '',
-          'label': 'Age'
+          comment: '',
+          label: 'Age'
         }, {
           '@id': 'http://trials.drugis.org/instances/var2',
           '@type': 'ontology:OutcomeType',
-          'has_result_property': [
+          has_result_property: [
             'ontology:sample_size',
             'ontology:count'
           ],
-          'is_measured_at': [moment1, moment2],
-          'of_variable': [{
+          is_measured_at: [moment1, moment2],
+          of_variable: [{
             '@id': 'http://fuseki-test.drugis.org:3030/.well-known/genid/0000014fdfac194eac1100590000000b',
             '@type': 'ontology:Variable',
-            'measurementType': 'ontology:dichotomous',
-            'label': 'is stupid'
+            measurementType: 'ontology:dichotomous',
+            label: 'is stupid'
           }],
-          'label': 'is stupid'
+          label: 'is stupid'
         }]
       };
 
@@ -310,40 +308,40 @@ define(['angular-mocks', './outcome'], function() {
       });
     });
 
-    describe('delete outcome', function() {
+    describe('queryItems; delete outcome', function() {
       var jsonStudy = {
         has_outcome: [{
           '@id': 'http://trials.drugis.org/instances/popchar1',
           '@type': 'ontology:OutcomeType',
-          'has_result_property': [
+          has_result_property: [
             'ontology:standard_deviation',
             'ontology:mean',
             'ontology:sample_size'
           ],
-          'is_measured_at': 'http://instance/moment1',
-          'of_variable': [{
+          is_measured_at: 'http://instance/moment1',
+          of_variable: [{
             '@id': 'http://fuseki-test.drugis.org:3030/.well-known/genid/0000014fdfac194dac11005900000003',
             '@type': 'ontology:Variable',
-            'measurementType': 'ontology:continuous',
-            'label': 'Age'
+            measurementType: 'ontology:continuous',
+            label: 'Age'
           }],
-          'comment': '',
-          'label': 'Age'
+          comment: '',
+          label: 'Age'
         }, {
           '@id': 'http://trials.drugis.org/instances/9bb96077-a8e0-4da1-bee2-011db8b7e560',
           '@type': 'ontology:OutcomeType',
-          'has_result_property': [
+          has_result_property: [
             'ontology:sample_size',
             'ontology:count'
           ],
-          'is_measured_at': ['http://instance/moment1', 'http://instance/moment2'],
-          'of_variable': [{
+          is_measured_at: ['http://instance/moment1', 'http://instance/moment2'],
+          of_variable: [{
             '@id': 'http://fuseki-test.drugis.org:3030/.well-known/genid/0000014fdfac194eac1100590000000b',
             '@type': 'ontology:Variable',
-            'measurementType': 'ontology:dichotomous',
-            'label': 'is stupid'
+            measurementType: 'ontology:dichotomous',
+            label: 'is stupid'
           }],
-          'label': 'is stupid'
+          label: 'is stupid'
         }]
       };
 
@@ -415,7 +413,8 @@ define(['angular-mocks', './outcome'], function() {
             measurementType: undefined,
             label: undefined
           }],
-          has_result_property: undefined
+          has_result_property: undefined,
+          arm_or_contrast: 'ontology:arm_level_data'
         }]
       };
 
