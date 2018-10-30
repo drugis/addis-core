@@ -16,7 +16,7 @@
     </ul>
     <ul ng-if="!showCategories" class="no-bullet">
       <li ng-repeat="property in properties">
-        <label ng-hide="property.type=== 'is reference?'">
+        <label ng-hide="property.type === 'is reference'">
           <input type="checkbox" ng-model="property.isSelected" ng-change="updateSelection()"> {{property.label}}</input>
           <span class="alert" ng-show="{{!property.analysisReady}}">*</span>
           <inline-help help-key='{{property.lexiconKey}}'></inline-help>

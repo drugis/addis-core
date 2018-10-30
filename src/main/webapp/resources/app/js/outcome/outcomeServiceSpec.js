@@ -176,18 +176,24 @@ define(['angular-mocks', './outcome'], function() {
       });
     });
 
-    describe('queryItems; add outcome of type', function() {
+    describe('queryItems; addItem outcome of type', function() {
       var outcomeUri = 'http://trials.drugis.org/instances/newUuid';
       var moment = 'http://mm/uri';
       var measuredAtMoment = {
         uri: moment
       };
-      var newPopulationChar = {
+      var newContrastOutcome = {
         uri: outcomeUri,
-        label: 'label',
+        label: 'contrast',
         measurementType: 'ontology:dichotomous',
         measuredAtMoments: [measuredAtMoment],
-        resultProperties: ['http://trials.drugis.org/ontology#sample_size', 'http://trials.drugis.org/ontology#count']
+        resultProperties: [
+          'http://trials.drugis.org/ontology#odds_ratio',
+          'http://trials.drugis.org/ontology#confidence_interval',
+          'http://trials.drugis.org/ontology#is_reference'
+        ],
+        armOrContrast: 'ontology:contrast_data',
+        confidenceInterval: 95
       };
 
       beforeEach(function(done) {
@@ -200,7 +206,7 @@ define(['angular-mocks', './outcome'], function() {
         getStudyDefer.resolve(jsonStudy);
         getStudyGraphDefer.resolve([jsonStudy]);
         studyServiceMock.findStudyNode.and.returnValue(jsonStudy);
-        outcomeService.addItem(newPopulationChar, 'ontology:OutcomeType').then(done);
+        outcomeService.addItem(newContrastOutcome, 'ontology:OutcomeType').then(done);
         saveStudyDefer.resolve();
         rootScope.$digest();
       });
@@ -208,24 +214,29 @@ define(['angular-mocks', './outcome'], function() {
       it('should add the outcomes', function(done) {
         var expectedStudy = {
           has_outcome: [{
-            '@id': outcomeUri,
             '@type': 'ontology:OutcomeType',
+            '@id': outcomeUri,
             is_measured_at: moment,
-            has_result_property: ['http://trials.drugis.org/ontology#sample_size', 'http://trials.drugis.org/ontology#count'],
+            label: 'contrast',
             of_variable: [{
               '@type': 'ontology:Variable',
               measurementType: 'ontology:dichotomous',
-              label: 'label'
+              label: 'contrast'
             }],
-            label: 'label',
-            arm_or_contrast: 'ontology:arm_level_data'
+            has_result_property: [
+              'http://trials.drugis.org/ontology#odds_ratio',
+              'http://trials.drugis.org/ontology#confidence_interval',
+              'http://trials.drugis.org/ontology#is_reference'
+            ],
+            arm_or_contrast: 'ontology:contrast_data',
+            confidence_interval: 95
           }]
         };
 
         outcomeService.queryItems().then(function(queryResult) {
           expect(studyServiceMock.save).toHaveBeenCalledWith(expectedStudy);
           expect(queryResult.length).toEqual(1);
-          expect(queryResult[0].label).toEqual(newPopulationChar.label);
+          expect(queryResult[0].label).toEqual(newContrastOutcome.label);
           done();
         });
         rootScope.$digest();

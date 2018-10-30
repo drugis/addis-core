@@ -1,7 +1,11 @@
 'use strict';
 define(['lodash'], function(_) {
-  var dependencies = ['ResultsService'];
-  var ResultsTableService = function(ResultsService) {
+  var dependencies = [
+    'ResultsService'
+  ];
+  var ResultsTableService = function(
+    ResultsService
+  ) {
 
     var CONTINUOUS_TYPE = 'ontology:continuous';
     var DICHOTOMOUS_TYPE = 'ontology:dichotomous';
@@ -58,16 +62,10 @@ define(['lodash'], function(_) {
 
     function createCategoryInputColumn(variable, rowValueObjects) {
       return _.map(variable.categoryList, function(category) {
-        var resultProperty;
         var value;
-        var valueName;
         if (category.label) { // new format
-          resultProperty = null;
-          valueName = category.label;
           value = findCategoricalResult(rowValueObjects, category);
         } else { // old format
-          resultProperty = category;
-          valueName = category;
           value = findResultValueByType(rowValueObjects, category);
         }
         return {
@@ -85,7 +83,7 @@ define(['lodash'], function(_) {
       if (!variable.resultProperties) {
         return createCategoricalHeader(variable);
       }
-      return  _.map(variable.resultProperties, function(property) {
+      return _.map(variable.resultProperties, function(property) {
         return createHeader(property, variable);
       });
     }
@@ -108,19 +106,26 @@ define(['lodash'], function(_) {
     }
 
     function createHeader(resultProperty, variable) {
+      var propertyUri = _.isString(resultProperty) ? resultProperty : resultProperty.uri;
+      var propertyDetails = ResultsService.getVariableDetails(propertyUri, variable.armOrContrast);
+      var label = createHeaderLabel(propertyDetails, variable);
+      return {
+        label: label,
+        lexiconKey: propertyDetails.lexiconKey,
+        analysisReady: propertyDetails.analysisReady
+      };
+    }
+
+    function createHeaderLabel(propertyDetails, variable) {
       var scaleStrings = {
         P1D: ' (days)',
         P1W: ' (weeks)',
         P1M: ' (months)',
         P1Y: ' (years)'
       };
-      var propertyUri = _.isString(resultProperty) ? resultProperty : resultProperty.uri;
-      var propertyDetails = ResultsService.getVariableDetails(propertyUri, variable.armOrContrast);
-      return {
-        label: propertyDetails.label + (propertyDetails.type === 'exposure' ? scaleStrings[variable.timeScale] : ''),
-        lexiconKey: propertyDetails.lexiconKey,
-        analysisReady: propertyDetails.analysisReady
-      };
+      var addition = (propertyDetails.type === 'exposure' ? scaleStrings[variable.timeScale] : '');
+      addition += (propertyDetails.type === 'confidence interval' ? ' (' + variable.confidenceInterval + '%)' : '');
+      return propertyDetails.label + addition;
     }
 
     function createInputRows(variable, arms, groups, measurementMoments, resultValuesObjects) {

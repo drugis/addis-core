@@ -131,14 +131,15 @@ define(['angular-mocks', './results'], function() {
             'http://trials.drugis.org/ontology#confidence_interval',
             'http://trials.drugis.org/ontology#is_reference'
           ],
-          armOrContrast: CONTRAST
+          armOrContrast: CONTRAST,
+          confidenceInterval: 70
         };
         var expectedResult = [{
           label: 'standardized mean difference',
           lexiconKey: 'standardized-mean-difference',
           analysisReady: false
         }, {
-          label: 'confidence interval',
+          label: 'confidence interval (70%)',
           lexiconKey: 'confidence-interval',
           analysisReady: false
         }, {
@@ -215,18 +216,21 @@ define(['angular-mocks', './results'], function() {
           uri: 'uri 3',
           label: 'moment ac'
         }];
-
         resultRows = resultsTableService.createInputRows(variable, arms, [], measurementMoments);
       });
+
       it('overal population should be last, always', function() {
         expect(resultRows[3].group.label).toEqual(arms[1].label);
       });
+
       it('should set the number of arms', function() {
         expect(resultRows[0].numberOfGroups).toEqual(4);
       });
+
       it('should return one row for each combination of arm and measurement moment at which the variable is measured', function() {
         expect(resultRows.length).toEqual(8);
       });
+
       it('should apply some sort of sane sorting to the arms', function() {
         expect(resultRows[0].group.label).toEqual(arms[3].label);
         expect(resultRows[1].group.label).toEqual(arms[2].label);
@@ -235,6 +239,7 @@ define(['angular-mocks', './results'], function() {
         expect(resultRows[4].group.label).toEqual(arms[3].label);
         expect(resultRows[5].group.label).toEqual(arms[2].label);
       });
+
       it('should place the appropriate measurement moment and arm on each row', function() {
         expect(resultRows[0].measurementMoment).toEqual(measurementMoments[0]);
         expect(resultRows[0].group).toEqual(arms[3]);

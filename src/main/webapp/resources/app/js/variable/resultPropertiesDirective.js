@@ -21,6 +21,7 @@ define(['lodash'], function(_) {
         // watches
         scope.$watch('variable.measurementType', rebuildIfNecessary);
         scope.$watch('variable.resultProperties', rebuildIfNecessary, true);
+        scope.$watch('variable.armOrContrast', rebuildIfNecessary);
 
         function rebuildIfNecessary(newValue, oldValue) {
           if (!oldValue || !newValue || oldValue === newValue) {
@@ -31,12 +32,22 @@ define(['lodash'], function(_) {
 
         function buildProperties() {
           var resultPropertiesForType = ResultsService.getResultPropertiesForType(scope.variable.measurementType, scope.variable.armOrContrast);
-          var resultPropertiesByType = _.keyBy(resultPropertiesForType, 'type');
-          _.forEach(scope.variable.selectedResultProperties, function(property) {
-            resultPropertiesByType[property.type].isSelected = true;
-          });
+          scope.properties = _(resultPropertiesForType)
+            .map(setSelected)
+            .keyBy('type')
+            .value();
           setCategories();
-          scope.properties = resultPropertiesByType;
+        }
+
+        function setSelected(property) {
+          property.isSelected = isPropertySelected(property);
+          return property;
+        }
+
+        function isPropertySelected(property) {
+          return _.some(scope.variable.selectedResultProperties, function(selectedProperty) {
+            return selectedProperty.type === property.type;
+          });
         }
 
         function setCategories() {

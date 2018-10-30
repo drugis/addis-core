@@ -47,7 +47,7 @@ define(['angular', 'lodash'],
           measurementType: item.of_variable[0].measurementType,
           measuredAtMoments: [],
           conceptMapping: item.of_variable[0].sameAs,
-          armOrContrast: item.arm_or_contrast
+          armOrContrast: item.arm_or_contrast ? item.arm_or_contrast : ARM_LEVEL
         };
         if (item.confidence_interval) {
           frontEndItem.confidenceInterval = item.confidence_interval;
@@ -109,6 +109,7 @@ define(['angular', 'lodash'],
         if (item.confidenceInterval) {
           optionalProperties.confidence_interval = item.confidenceInterval;
         }
+        return optionalProperties;
       }
 
       function createBasicItem(item, type) {
@@ -262,7 +263,6 @@ define(['angular', 'lodash'],
         addItem: addItem,
         deleteItem: deleteItem,
         editItem: editItem,
-        toBackEnd: toBackEnd,
         moveToNewOutcome: moveToNewOutcome,
         hasOverlap: hasOverlap,
         hasDifferentType: hasDifferentType,

@@ -372,6 +372,7 @@ define(['angular', 'lodash'], function(angular, _) {
       standard_error: {
         type: 'standard_error',
         label: 'standard error',
+        armOrContrast: CONTRAST,
         uri: 'http://trials.drugis.org/ontology#standard_error',
         dataType: DOUBLE_TYPE,
         variableTypes: [CONTINUOUS, DICHOTOMOUS, SURVIVAL],
@@ -383,6 +384,7 @@ define(['angular', 'lodash'], function(angular, _) {
       confidence_interval: {
         type: 'confidence interval',
         label: 'confidence interval',
+        armOrContrast: CONTRAST,
         uri: 'http://trials.drugis.org/ontology#confidence_interval',
         dataType: INTEGER_TYPE,
         variableTypes: [CONTINUOUS, DICHOTOMOUS, SURVIVAL],
@@ -391,8 +393,9 @@ define(['angular', 'lodash'], function(angular, _) {
         analysisReady: false
       },
       is_reference: {
-        type: 'is reference?',
+        type: 'is reference',
         label: 'is reference?',
+        armOrContrast: CONTRAST,
         uri: 'http://trials.drugis.org/ontology#is_reference',
         dataType: BOOLEAN_TYPE,
         variableTypes: [CONTINUOUS, DICHOTOMOUS, SURVIVAL],

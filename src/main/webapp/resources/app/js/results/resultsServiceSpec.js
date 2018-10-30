@@ -1065,7 +1065,8 @@ define(['lodash', 'angular-mocks', './results'], function(_) {
       it('should return the correct default resultproperties for dichotomous variables of contrast data', function() {
         var continuousContrastProperties = [
           resultsService.VARIABLE_TYPE_DETAILS[CONTRAST].log_odds_ratio,
-          resultsService.VARIABLE_TYPE_DETAILS[CONTRAST].standard_error
+          resultsService.VARIABLE_TYPE_DETAILS[CONTRAST].standard_error,
+          resultsService.VARIABLE_TYPE_DETAILS[CONTRAST].is_reference
         ];
         var result = resultsService.getDefaultResultProperties(DICHOTOMOUS, CONTRAST);
         expect(result).toEqual(continuousContrastProperties);
@@ -1074,7 +1075,8 @@ define(['lodash', 'angular-mocks', './results'], function(_) {
       it('should return the correct default resultproperties for continuous variables of contrast data', function() {
         var dichotomousContrastProperties = [
           resultsService.VARIABLE_TYPE_DETAILS[CONTRAST].mean_difference,
-          resultsService.VARIABLE_TYPE_DETAILS[CONTRAST].standard_error
+          resultsService.VARIABLE_TYPE_DETAILS[CONTRAST].standard_error,
+          resultsService.VARIABLE_TYPE_DETAILS[CONTRAST].is_reference
         ];
         var result = resultsService.getDefaultResultProperties(CONTINUOUS, CONTRAST);
         expect(result).toEqual(dichotomousContrastProperties);
@@ -1083,7 +1085,8 @@ define(['lodash', 'angular-mocks', './results'], function(_) {
       it('should return the correct default resultproperties for survival variables of contrast data', function() {
         var survivalContrastProperties = [
           resultsService.VARIABLE_TYPE_DETAILS[CONTRAST].log_hazard_ratio,
-          resultsService.VARIABLE_TYPE_DETAILS[CONTRAST].standard_error
+          resultsService.VARIABLE_TYPE_DETAILS[CONTRAST].standard_error,
+          resultsService.VARIABLE_TYPE_DETAILS[CONTRAST].is_reference
         ];
         var result = resultsService.getDefaultResultProperties('ontology:survival', CONTRAST);
         expect(result).toEqual(survivalContrastProperties);

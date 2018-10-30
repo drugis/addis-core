@@ -219,43 +219,56 @@ define(['angular', 'lodash'],
       }
 
       function reloadStudyModel() {
-        // load the data from the backend
-        var studyPromise;
-        if ($stateParams.versionUuid) {
-          studyPromise = VersionedGraphResource.getJson({
-            userUid: $stateParams.userUid,
-            datasetUuid: $stateParams.datasetUuid,
-            graphUuid: $stateParams.studyGraphUuid,
-            versionUuid: $stateParams.versionUuid
-          }).$promise;
-        } else {
-          studyPromise = GraphResource.getJson({
-            userUid: $stateParams.userUid,
-            datasetUuid: $stateParams.datasetUuid,
-            graphUuid: $stateParams.studyGraphUuid
-          }).$promise;
-        }
-
-        // place loaded data into frontend cache
-        StudyService.loadJson(studyPromise);
-
-        // use the loaded data to fill the view and alert the subviews
+        loadStudy();
         StudyService.getStudy().then(function(study) {
-          $scope.studyUuid = $filter('stripFrontFilter')(study['@id'], 'http://trials.drugis.org/studies/');
-          $scope.study = {
-            id: $scope.studyUuid,
-            label: study.label,
-            comment: study.comment,
-          };
-          if (study.has_publication && study.has_publication.length === 1) {
-            $scope.study.nctId = study.has_publication[0].registration_id;
-            $scope.study.nctUri = study.has_publication[0].uri;
-          }
-          $scope.$broadcast('refreshStudyDesign');
-          $scope.$broadcast('refreshResults');
-          StudyService.studySaved();
-          PageTitleService.setPageTitle('StudyController', $scope.study.label);
+          fillView(study);
+          alertSubviews();
         });
+      }
+
+      function fillView(study) {
+        $scope.studyUuid = $filter('stripFrontFilter')(study['@id'], 'http://trials.drugis.org/studies/');
+        $scope.study = {
+          id: $scope.studyUuid,
+          label: study.label,
+          comment: study.comment,
+        };
+        if (study.has_publication && study.has_publication.length === 1) {
+          $scope.study.nctId = study.has_publication[0].registration_id;
+          $scope.study.nctUri = study.has_publication[0].uri;
+        }
+      }
+
+      function alertSubviews() {
+        $scope.$broadcast('refreshStudyDesign');
+        $scope.$broadcast('refreshResults');
+        StudyService.studySaved();
+        PageTitleService.setPageTitle('StudyController', $scope.study.label);
+      }
+
+      function loadStudy() {
+        StudyService.loadJson(getStudyGraphPromise());
+      }
+
+      function getStudyGraphPromise() {
+        return $stateParams.versionUuid ? getVersionedGraph() : getHeadGraph();
+      }
+
+      function getVersionedGraph() {
+        return VersionedGraphResource.getJson({
+          userUid: $stateParams.userUid,
+          datasetUuid: $stateParams.datasetUuid,
+          graphUuid: $stateParams.studyGraphUuid,
+          versionUuid: $stateParams.versionUuid
+        }).$promise;
+      }
+
+      function getHeadGraph() {
+        return GraphResource.getJson({
+          userUid: $stateParams.userUid,
+          datasetUuid: $stateParams.datasetUuid,
+          graphUuid: $stateParams.studyGraphUuid
+        }).$promise;
       }
 
       function resetStudy() {
