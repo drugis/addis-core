@@ -128,18 +128,22 @@ define(['angular-mocks', './results'], function() {
         var testType = {
           resultProperties: [
             'http://trials.drugis.org/ontology#standardized_mean_difference',
-            'http://trials.drugis.org/ontology#confidence_interval',
+            'http://trials.drugis.org/ontology#confidence_interval_width',
             'http://trials.drugis.org/ontology#is_reference'
           ],
           armOrContrast: CONTRAST,
-          confidenceInterval: 70
+          confidenceIntervalWidth: 70
         };
         var expectedResult = [{
           label: 'standardized mean difference',
           lexiconKey: 'standardized-mean-difference',
           analysisReady: false
         }, {
-          label: 'confidence interval (70%)',
+          label: 'confidence interval (70%) lowerbound',
+          lexiconKey: 'confidence-interval',
+          analysisReady: false
+        }, {
+          label: 'confidence interval (70%) upperbound',
           lexiconKey: 'confidence-interval',
           analysisReady: false
         }, {
@@ -298,6 +302,7 @@ define(['angular-mocks', './results'], function() {
             'http://trials.drugis.org/ontology#count',
             'http://trials.drugis.org/ontology#sample_size'
           ];
+          variable.armOrContrast = 'ontology:arm_level_data';
           resultRows = resultsTableService.createInputRows(variable, arms, [], measurementMoments, results);
         });
 

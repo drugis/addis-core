@@ -5,7 +5,7 @@ define(['angular', 'lodash'], function(angular, _) {
 
     var INTEGER_TYPE = '<http://www.w3.org/2001/XMLSchema#integer>';
     var DOUBLE_TYPE = '<http://www.w3.org/2001/XMLSchema#double>';
-    var BOOLEAN_TYPE = '<http://www.w3.org/2001/XMLSchema#booelan>';
+    var BOOLEAN_TYPE = '<http://www.w3.org/2001/XMLSchema#boolean>';
     var ONTOLOGY_BASE = 'http://trials.drugis.org/ontology#';
     var ARM_LEVEL = 'ontology:arm_level_data';
     var CONTRAST = 'ontology:contrast_data';
@@ -38,6 +38,21 @@ define(['angular', 'lodash'], function(angular, _) {
       'exposure',
       'hazard_ratio'
     ];
+
+    var CONTRAST_VARIABLE_TYPES = [
+      'standard_error',
+      'hazard_ratio',
+      'log_odds_ratio',
+      'log_risk_ratio',
+      'mean_difference',
+      'standardized_mean_difference',
+      'log_hazard_ratio',
+    ];
+
+    var VARIABLE_TYPES = {
+      'ontology:arm_level_data': ARM_VARIABLE_TYPES,
+      'ontology:contrast_data': CONTRAST_VARIABLE_TYPES
+    };
 
     var ARM_VARIABLE_TYPE_DETAILS = {
       sample_size: {
@@ -381,16 +396,17 @@ define(['angular', 'lodash'], function(angular, _) {
         analysisReady: true,
         isAlwaysPositive: true
       },
-      confidence_interval: {
-        type: 'confidence interval',
+      confidence_interval_width: {
+        type: 'confidence_interval',
         label: 'confidence interval',
         armOrContrast: CONTRAST,
-        uri: 'http://trials.drugis.org/ontology#confidence_interval',
-        dataType: INTEGER_TYPE,
+        uri: 'http://trials.drugis.org/ontology#confidence_interval_width',
+        dataType: DOUBLE_TYPE,
         variableTypes: [CONTINUOUS, DICHOTOMOUS, SURVIVAL],
         category: 'Dispersion',
         lexiconKey: 'confidence-interval',
-        analysisReady: false
+        analysisReady: false,
+        isAlwaysPositive: true
       },
       is_reference: {
         type: 'is reference',
@@ -465,17 +481,17 @@ define(['angular', 'lodash'], function(angular, _) {
     }
 
     function updateValue(row, inputColumn) {
-      var inputColumnVariableDetails = getVariableDetails(inputColumn.resultProperty, row.armOrContrast);
+      var inputColumnVariableDetails = getVariableDetails(inputColumn.resultProperty, inputColumn.armOrContrast);
       return StudyService.getJsonGraph().then(function(graph) {
         if (!row.uri) {
-          return createValueBranch(row, inputColumn, inputColumnVariableDetails, graph);
+          return createValueBranch(row, inputColumn, inputColumnVariableDetails.type, graph);
         } else {
-          return updateValueBranch(row, inputColumn, inputColumnVariableDetails, graph);
+          return updateValueBranch(row, inputColumn, inputColumnVariableDetails.type, graph);
         }
       });
     }
 
-    function createValueBranch(row, inputColumn, inputColumnVariableDetails, graph) {
+    function createValueBranch(row, inputColumn, columnType, graph) {
       if (inputColumn.value !== null && inputColumn.value !== undefined) {
         var addItem = {
           '@id': 'http://trials.drugis.org/instances/' + UUIDService.generate(),
@@ -483,7 +499,7 @@ define(['angular', 'lodash'], function(angular, _) {
           of_moment: row.measurementMoment.uri,
           of_outcome: row.variable.uri
         };
-        addItem[inputColumnVariableDetails.type] = inputColumn.value;
+        addItem[columnType] = inputColumn.value;
         StudyService.saveJsonGraph(graph.concat(addItem));
         return addItem['@id'];
       } else {
@@ -491,18 +507,18 @@ define(['angular', 'lodash'], function(angular, _) {
       }
     }
 
-    function updateValueBranch(row, inputColumn, inputColumnVariableDetails, graph) {
+    function updateValueBranch(row, inputColumn, columnType, graph) {
       var editItem = _.remove(graph, function(node) {
         return row.uri === node['@id'];
       })[0];
 
       if (inputColumn.value === null) {
-        delete editItem[inputColumnVariableDetails.type];
+        delete editItem[columnType];
       } else {
-        editItem[inputColumnVariableDetails.type] = inputColumn.value;
+        editItem[columnType] = inputColumn.value;
       }
 
-      if (!isEmptyResult(editItem)) {
+      if (!isEmptyResult(editItem, row.variable.armOrContrast)) {
         graph.push(editItem);
       } else {
         delete row.uri;
@@ -587,8 +603,8 @@ define(['angular', 'lodash'], function(angular, _) {
       });
     }
 
-    function isEmptyResult(item) {
-      return !_.some(ARM_VARIABLE_TYPES, function(type) {
+    function isEmptyResult(item, armOrContrast) {
+      return !_.some(VARIABLE_TYPES[armOrContrast], function(type) {
         return item[type] !== undefined;
       });
     }
@@ -621,14 +637,14 @@ define(['angular', 'lodash'], function(angular, _) {
         baseItem.comment = backEndItem.comment;
       }
 
-      _.each(ARM_VARIABLE_TYPES, function(variableType) {
+      _.forEach(VARIABLE_TYPES[backEndItem.arm_or_contrast], function(variableType) {
         if (backEndItem[variableType] !== undefined) {
           accum.push(createValueItem(baseItem, backEndItem, variableType));
         }
       });
 
       if (backEndItem.category_count) {
-        _.each(backEndItem.category_count, function(categoryCount) {
+        _.forEach(backEndItem.category_count, function(categoryCount) {
           accum.push(createCategoryItem(baseItem, backEndItem, categoryCount));
         });
       }
@@ -686,42 +702,19 @@ define(['angular', 'lodash'], function(angular, _) {
       }
     }
 
-
     function cleanupMeasurements() {
       return StudyService.getJsonGraph().then(function(graph) {
         // first get all the info we need
-        var study;
-        var hasArmMap;
-        var hasGroupMap;
-        var isMomentMap = {};
-        var outcomeMap;
+        var study = _.find(graph, isStudyNode);
+        var hasArmMap = createHasPropertyByIdMap(study.has_arm);
+        var isMomentMap = createHasPropertyByIdMap(_.filter(graph, isMoment));
+        var outcomeMap = _.keyBy(study.has_outcome, '@id');
         var isMeasurementOnOutcome = {};
 
-        _.each(graph, function(node) {
-          if (isStudyNode(node)) {
-            study = node;
-          }
-
-          if (isMoment(node)) {
-            isMomentMap[node['@id']] = true;
-          }
-        });
-
-        hasArmMap = study.has_arm.reduce(function(accum, item) {
-          accum[item['@id']] = true;
-          return accum;
-        }, {});
-
-        hasGroupMap = study.has_group.reduce(function(accum, item) {
-          accum[item['@id']] = true;
-          return accum;
-        }, {});
-
+        var hasGroupMap = createHasPropertyByIdMap(study.has_group);
         if (study.has_included_population) {
           hasGroupMap[study.has_included_population[0]['@id']] = true;
         }
-
-        outcomeMap = _.keyBy(study.has_outcome, '@id');
 
         var measurementsForOutcomes = getMeasurementsForOutcomes(study, isMeasurementOnOutcome);
         var filteredGraph = removeNoLongerMeasuredProperties(graph, outcomeMap, study);
@@ -742,20 +735,28 @@ define(['angular', 'lodash'], function(angular, _) {
       });
     }
 
+    function createHasPropertyByIdMap(propertyList) {
+      return _(propertyList)
+        .keyBy('@id')
+        .mapValues(function() {
+          return true;
+        })
+        .value();
+    }
+
     function getMeasurementsForOutcomes(study, isMeasurementOnOutcome) {
       return _.reduce(study.has_outcome, function(accum, outcome) {
-        var measuredAtList;
+        var measurementMomentUris;
         if (!Array.isArray(outcome.is_measured_at)) {
-          measuredAtList = [outcome.is_measured_at];
+          measurementMomentUris = [outcome.is_measured_at];
         } else {
-          measuredAtList = outcome.is_measured_at || [];
+          measurementMomentUris = outcome.is_measured_at || [];
         }
-        _.forEach(measuredAtList, function(measurementMomentUri) {
+        _.forEach(measurementMomentUris, function(measurementMomentUri) {
           isMeasurementOnOutcome[measurementMomentUri] = true;
         });
         return accum;
       }, isMeasurementOnOutcome);
-
     }
 
     function removeNoLongerMeasuredProperties(graph, outcomeMap, study) {
@@ -788,7 +789,7 @@ define(['angular', 'lodash'], function(angular, _) {
 
     function setToMeasurementMoment(measurementMomentUri, measurementInstanceList) {
       return StudyService.getJsonGraph().then(function(graph) {
-        _.each(graph, function(node) {
+        _.forEach(graph, function(node) {
           if (_.includes(measurementInstanceList, node['@id'])) {
             node.of_moment = measurementMomentUri;
             delete node.comment;
@@ -866,7 +867,7 @@ define(['angular', 'lodash'], function(angular, _) {
       var properties = getResultPropertiesForType(variable.measurementType, variable.armOrContrast);
       var categories = _(properties)
         .keyBy('category')
-        .reduce(function(accum, resultProperty, categoryName) {
+        .mapValues(function(property, categoryName) {
           var categoryProperties = _(properties)
             .filter(['category', categoryName])
             .map(function(property) {
@@ -874,12 +875,12 @@ define(['angular', 'lodash'], function(angular, _) {
                 isSelected: !!_.find(variable.selectedResultProperties, ['type', property.type])
               });
             }).value();
-          accum[categoryName] = {
+          return {
             categoryLabel: categoryName,
             properties: categoryProperties
           };
-          return accum;
-        }, {});
+        })
+        .value();
       return categories;
     }
 
@@ -935,6 +936,7 @@ define(['angular', 'lodash'], function(angular, _) {
       VARIABLE_TYPE_DETAILS: VARIABLE_TYPE_DETAILS,
       INTEGER_TYPE: INTEGER_TYPE,
       DOUBLE_TYPE: DOUBLE_TYPE,
+      BOOLEAN_TYPE: BOOLEAN_TYPE,
       TIME_SCALE_OPTIONS: TIME_SCALE_OPTIONS
     };
   };

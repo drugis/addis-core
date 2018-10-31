@@ -13,7 +13,7 @@
       <span ng-if="!isEditingMM[inputRow.measurementMoment.uri]">{{inputRow.measurementMoment.label}}</span>
       <div class="grid-x collapse" ng-if="isEditingMM[inputRow.measurementMoment.uri]">
         <div class="cell large-6 medium-6 small-6">
-          <select ng-options="mm.label for mm in measurementMomentOptions[inputRow.measurementMoment.uri]" ng-model="measurementMomentSelections[inputRow.measurementMoment.uri]"
+          <select ng-options="moment.label for moment in measurementMomentOptions[inputRow.measurementMoment.uri]" ng-model="measurementMomentSelections[inputRow.measurementMoment.uri]"
             ng-change="checkMeasurementOverlap()"></select>
         </div>
         <div class="cell button-group expanded large-6 medium-6 small-6">

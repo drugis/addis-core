@@ -49,8 +49,8 @@ define(['angular', 'lodash'],
           conceptMapping: item.of_variable[0].sameAs,
           armOrContrast: item.arm_or_contrast ? item.arm_or_contrast : ARM_LEVEL
         };
-        if (item.confidence_interval) {
-          frontEndItem.confidenceInterval = item.confidence_interval;
+        if (item.confidence_interval_width) {
+          frontEndItem.confidenceIntervalWidth = item.confidence_interval_width;
         }
 
         if (frontEndItem.measurementType === 'ontology:categorical') {
@@ -106,8 +106,8 @@ define(['angular', 'lodash'],
         if (item.measurementType === 'ontology:categorical') {
           optionalProperties.of_variable[0].categoryList = RdfListService.unFlattenList(_.map(item.categoryList, makeCategoryIfNeeded));
         }
-        if (item.confidenceInterval) {
-          optionalProperties.confidence_interval = item.confidenceInterval;
+        if (item.confidenceIntervalWidth) {
+          optionalProperties.confidence_interval_width = item.confidenceIntervalWidth;
         }
         return optionalProperties;
       }

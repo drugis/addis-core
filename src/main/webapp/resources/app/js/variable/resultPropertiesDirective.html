@@ -21,8 +21,8 @@
           <span class="alert" ng-show="{{!property.analysisReady}}">*</span>
           <inline-help help-key='{{property.lexiconKey}}'></inline-help>
         </label>
-        <div ng-if="variable.armOrContrast === 'ontology:contrast_data' && property.type === 'confidence interval' && property.isSelected">
-          <input type="number" step="1" min="0" max="100" ng-model="variable.confidenceInterval">
+        <div ng-if="variable.armOrContrast === 'ontology:contrast_data' && property.type === 'confidence_interval' && property.isSelected">
+          <input type="number" step="1" min="0" max="100" ng-model="variable.confidenceIntervalWidth">
         </div>
       </li>
     </ul>

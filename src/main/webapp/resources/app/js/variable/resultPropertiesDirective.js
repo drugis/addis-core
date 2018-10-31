@@ -63,15 +63,15 @@ define(['lodash'], function(_) {
           if (scope.variable.measurementType === 'ontology:continuous' && scope.variable.armOrContrast === ARM_LEVEL) {
             properties = _(scope.categories).map('properties').flatten().value();
           }
-          setConfidenceInterval(properties);
+          setConfidenceIntervalWidth(properties);
           scope.variable.selectedResultProperties = _.filter(properties, 'isSelected');
         }
 
-        function setConfidenceInterval(properties) {
-          var hasConfidenceInterval = _.some(properties, function(property) {
-            return property.type === 'confidence interval';
+        function setConfidenceIntervalWidth(properties) {
+          var hasConfidenceIntervalWidth = _.some(properties, function(property) {
+            return property.type === 'confidence_interval';
           });
-          scope.variable.confidenceInterval = hasConfidenceInterval ? 95 : null;
+          scope.variable.confidenceIntervalWidth = hasConfidenceIntervalWidth ? 95 : null;
         }
       }
     };

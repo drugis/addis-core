@@ -38,7 +38,8 @@ define(['lodash', 'angular-mocks', './results'], function(_) {
         of_group: 'http://trials.drugis.org/instances/arm1',
         of_moment: 'http://trials.drugis.org/instances/moment1',
         of_outcome: 'http://trials.drugis.org/instances/outcome1',
-        sample_size: 70
+        sample_size: 70,
+        arm_or_contrast: ARM_LEVEL
       }, {
         '@id': 'http://trials.drugis.org/instances/result2',
         standard_deviation: 2,
@@ -46,14 +47,16 @@ define(['lodash', 'angular-mocks', './results'], function(_) {
         of_group: 'http://trials.drugis.org/instances/arm2',
         of_moment: 'http://trials.drugis.org/instances/moment1',
         of_outcome: 'http://trials.drugis.org/instances/outcome1',
-        sample_size: 33
+        sample_size: 33,
+        arm_or_contrast: ARM_LEVEL
       }, {
         '@id': 'http://trials.drugis.org/instances/result3',
         count: 3,
         of_group: 'http://trials.drugis.org/instances/arm2',
         of_moment: 'http://trials.drugis.org/instances/moment1',
         of_outcome: 'http://trials.drugis.org/instances/outcome2',
-        sample_size: 33
+        sample_size: 33,
+        arm_or_contrast: ARM_LEVEL
       }];
 
       var queryOutcome = 'http://trials.drugis.org/instances/outcome1';
@@ -97,7 +100,8 @@ define(['lodash', 'angular-mocks', './results'], function(_) {
         of_group: 'http://trials.drugis.org/instances/arm1',
         of_moment: 'http://trials.drugis.org/instances/moment1',
         of_outcome: 'http://trials.drugis.org/instances/outcome1',
-        sample_size: 70
+        sample_size: 70,
+        arm_or_contrast: ARM_LEVEL
       }, {
         '@id': 'http://trials.drugis.org/instances/result2',
         standard_deviation: 2,
@@ -105,14 +109,16 @@ define(['lodash', 'angular-mocks', './results'], function(_) {
         of_group: 'http://trials.drugis.org/instances/arm2',
         of_moment: 'http://trials.drugis.org/instances/moment1',
         of_outcome: 'http://trials.drugis.org/instances/outcome1',
-        sample_size: 33
+        sample_size: 33,
+        arm_or_contrast: ARM_LEVEL
       }, {
         '@id': 'http://trials.drugis.org/instances/result3',
         count: 3,
         of_group: 'http://trials.drugis.org/instances/arm2',
         of_moment: 'http://trials.drugis.org/instances/moment1',
         of_outcome: 'http://trials.drugis.org/instances/outcome2',
-        sample_size: 33
+        sample_size: 33,
+        arm_or_contrast: ARM_LEVEL
       }];
 
       var groupUri = 'http://trials.drugis.org/instances/arm2';
@@ -178,7 +184,7 @@ define(['lodash', 'angular-mocks', './results'], function(_) {
           };
 
           resultsService.updateResultValue(row, inputColumn).then(function(result) {
-            var expextedGraph = [{
+            var expectedGraph = [{
               '@id': 'http://trials.drugis.org/instances/newUuid',
               count: 123,
               of_group: 'http://trials.drugis.org/instances/arm1',
@@ -186,8 +192,8 @@ define(['lodash', 'angular-mocks', './results'], function(_) {
               of_outcome: 'http://trials.drugis.org/instances/outcome1',
             }];
             expect(result).toBeTruthy();
-            expect(result).toEqual(expextedGraph[0]['@id']);
-            expect(studyServiceMock.saveJsonGraph).toHaveBeenCalledWith(expextedGraph);
+            expect(result).toEqual(expectedGraph[0]['@id']);
+            expect(studyServiceMock.saveJsonGraph).toHaveBeenCalledWith(expectedGraph);
             studyServiceMock.saveJsonGraph.calls.reset();
             studyServiceMock.getJsonGraph.calls.reset();
             done();
@@ -222,7 +228,7 @@ define(['lodash', 'angular-mocks', './results'], function(_) {
           };
 
           resultsService.updateResultValue(row, inputColumn).then(function(result) {
-            var expextedGraph = [{
+            var expectedGraph = [{
               '@id': 'http://trials.drugis.org/instances/newUuid',
               category_count: [{
                 category: maleCategory['@id'],
@@ -233,8 +239,8 @@ define(['lodash', 'angular-mocks', './results'], function(_) {
               of_outcome: 'http://trials.drugis.org/instances/outcome1',
             }];
             expect(result).toBeTruthy();
-            expect(result).toEqual(expextedGraph[0]['@id']);
-            expect(studyServiceMock.saveJsonGraph).toHaveBeenCalledWith(expextedGraph);
+            expect(result).toEqual(expectedGraph[0]['@id']);
+            expect(studyServiceMock.saveJsonGraph).toHaveBeenCalledWith(expectedGraph);
             studyServiceMock.saveJsonGraph.calls.reset();
             studyServiceMock.getJsonGraph.calls.reset();
             done();
@@ -264,7 +270,8 @@ define(['lodash', 'angular-mocks', './results'], function(_) {
         it('should save the value to the graph', function(done) {
           var row = {
             variable: {
-              uri: 'http://trials.drugis.org/instances/outcome1'
+              uri: 'http://trials.drugis.org/instances/outcome1',
+              armOrContrast: ARM_LEVEL
             },
             arm: {
               armURI: 'http://trials.drugis.org/instances/arm1'
@@ -278,11 +285,12 @@ define(['lodash', 'angular-mocks', './results'], function(_) {
           var inputColumn = {
             value: 789,
             valueName: 'sample_size',
-            resultProperty: 'http://trials.drugis.org/ontology#sample_size'
+            resultProperty: 'http://trials.drugis.org/ontology#sample_size',
+            armOrContrast: ARM_LEVEL
           };
 
           resultsService.updateResultValue(row, inputColumn).then(function(result) {
-            var expextedGraph = [{
+            var expectedGraph = [{
               '@id': 'http://trials.drugis.org/instances/result1',
               count: 24,
               of_group: 'http://trials.drugis.org/instances/arm1',
@@ -291,14 +299,13 @@ define(['lodash', 'angular-mocks', './results'], function(_) {
               sample_size: 789
             }];
             expect(result).toBeTruthy();
-            expect(result).toEqual(expextedGraph[0]['@id']);
+            expect(result).toEqual(expectedGraph[0]['@id']);
             expect(result).toEqual(row.uri);
-            expect(studyServiceMock.saveJsonGraph).toHaveBeenCalledWith(expextedGraph);
+            expect(studyServiceMock.saveJsonGraph).toHaveBeenCalledWith(expectedGraph);
             studyServiceMock.saveJsonGraph.calls.reset();
             studyServiceMock.getJsonGraph.calls.reset();
             done();
           });
-          // fire in the hole !
           rootScope.$digest();
         });
       });
@@ -352,7 +359,7 @@ define(['lodash', 'angular-mocks', './results'], function(_) {
             uri: 'http://trials.drugis.org/instances/result1'
           };
           resultsService.updateResultValue(row, inputColumn).then(function(result) {
-            var expextedGraph = [{
+            var expectedGraph = [{
               '@id': 'http://trials.drugis.org/instances/result1',
               category_count: [{
                 '@id': 'http://trials.drugis.org/blanknodes/1',
@@ -367,15 +374,15 @@ define(['lodash', 'angular-mocks', './results'], function(_) {
               of_outcome: 'http://trials.drugis.org/instances/outcome1'
             }];
             expect(result).toBeTruthy();
-            expect(studyServiceMock.saveJsonGraph).toHaveBeenCalledWith(expextedGraph);
+            expect(studyServiceMock.saveJsonGraph).toHaveBeenCalledWith(expectedGraph);
             studyServiceMock.saveJsonGraph.calls.reset();
             studyServiceMock.getJsonGraph.calls.reset();
             done();
           });
           rootScope.$digest();
         });
-        it('if the new value is of an existing category the category_count value should be updated', function(done) {
 
+        it('if the new value is of an existing category the category_count value should be updated', function(done) {
           var inputColumn = {
             isCategory: true,
             valueName: 'Female',
@@ -395,7 +402,7 @@ define(['lodash', 'angular-mocks', './results'], function(_) {
             uri: 'http://trials.drugis.org/instances/result1'
           };
           resultsService.updateResultValue(row, inputColumn).then(function(result) {
-            var expextedGraph = [{
+            var expectedGraph = [{
               '@id': 'http://trials.drugis.org/instances/result1',
               category_count: [{
                 '@id': 'http://trials.drugis.org/blanknodes/1',
@@ -407,7 +414,7 @@ define(['lodash', 'angular-mocks', './results'], function(_) {
               of_outcome: 'http://trials.drugis.org/instances/outcome1'
             }];
             expect(result).toBeTruthy();
-            expect(studyServiceMock.saveJsonGraph).toHaveBeenCalledWith(expextedGraph);
+            expect(studyServiceMock.saveJsonGraph).toHaveBeenCalledWith(expectedGraph);
             studyServiceMock.saveJsonGraph.calls.reset();
             studyServiceMock.getJsonGraph.calls.reset();
             done();
@@ -434,9 +441,9 @@ define(['lodash', 'angular-mocks', './results'], function(_) {
             uri: 'http://trials.drugis.org/instances/result1'
           };
           resultsService.updateResultValue(row, inputColumn).then(function(result) {
-            var expextedGraph = [];
+            var expectedGraph = [];
             expect(result).toBeFalsy();
-            expect(studyServiceMock.saveJsonGraph).toHaveBeenCalledWith(expextedGraph);
+            expect(studyServiceMock.saveJsonGraph).toHaveBeenCalledWith(expectedGraph);
             studyServiceMock.saveJsonGraph.calls.reset();
             studyServiceMock.getJsonGraph.calls.reset();
             done();
@@ -459,7 +466,8 @@ define(['lodash', 'angular-mocks', './results'], function(_) {
         it('should not save the value to the graph', function(done) {
           var row = {
             variable: {
-              uri: 'http://trials.drugis.org/instances/outcome1'
+              uri: 'http://trials.drugis.org/instances/outcome1',
+              armOrContrast: ARM_LEVEL
             },
             arm: {
               armURI: 'http://trials.drugis.org/instances/arm1'
@@ -471,7 +479,9 @@ define(['lodash', 'angular-mocks', './results'], function(_) {
 
           var inputColumn = {
             value: null,
-            valueName: 'sample_size'
+            valueName: 'sample_size',
+            resultProperty: 'http://trials.drugis.org/ontology#sample_size',
+            armOrContrast: ARM_LEVEL
           };
 
           studyServiceMock.saveJsonGraph.calls.reset();
@@ -488,10 +498,10 @@ define(['lodash', 'angular-mocks', './results'], function(_) {
       });
 
       describe('if the new value is null and there is already a value there', function() {
-
         var row = {
           variable: {
-            uri: 'http://trials.drugis.org/instances/outcome1'
+            uri: 'http://trials.drugis.org/instances/outcome1',
+            armOrContrast: ARM_LEVEL
           },
           arm: {
             armURI: 'http://trials.drugis.org/instances/arm1'
@@ -505,7 +515,8 @@ define(['lodash', 'angular-mocks', './results'], function(_) {
         var inputColumn = {
           value: null,
           valueName: 'sample_size',
-          resultProperty: 'http://trials.drugis.org/ontology#sample_size'
+          resultProperty: 'http://trials.drugis.org/ontology#sample_size',
+          armOrContrast: ARM_LEVEL
         };
 
         var graphJsonObject = [{
@@ -525,9 +536,8 @@ define(['lodash', 'angular-mocks', './results'], function(_) {
         });
 
         it('should delete the old value from the graph', function(done) {
-
           resultsService.updateResultValue(row, inputColumn).then(function(result) {
-            var expextedGraph = [{
+            var expectedGraph = [{
               '@id': 'http://trials.drugis.org/instances/result1',
               count: 24,
               of_group: 'http://trials.drugis.org/instances/arm1',
@@ -535,7 +545,7 @@ define(['lodash', 'angular-mocks', './results'], function(_) {
               of_outcome: 'http://trials.drugis.org/instances/outcome1',
             }];
             expect(result).toBeTruthy();
-            expect(studyServiceMock.saveJsonGraph).toHaveBeenCalledWith(expextedGraph);
+            expect(studyServiceMock.saveJsonGraph).toHaveBeenCalledWith(expectedGraph);
             studyServiceMock.saveJsonGraph.calls.reset();
             studyServiceMock.getJsonGraph.calls.reset();
             done();
@@ -681,7 +691,6 @@ define(['lodash', 'angular-mocks', './results'], function(_) {
       var resultsToLeave = [result1, resultNonConformant];
       var resultsToBeCleaned = [result2, result3, result4, result5, result6];
 
-
       var study = {
         '@id': 'http://trials.drugis.org/studies/s1',
         '@type': 'ontology:Study',
@@ -698,7 +707,7 @@ define(['lodash', 'angular-mocks', './results'], function(_) {
       };
 
       var graphJsonObject = [study, measurementMoment1, measurementMoment2].concat(resultsToLeave).concat(resultsToBeCleaned);
-      var expextedGraph = [study, measurementMoment1, measurementMoment2].concat(resultsToLeave);
+      var expectedGraph = [study, measurementMoment1, measurementMoment2].concat(resultsToLeave);
 
       beforeEach(function() {
         var graphDefer = q.defer();
@@ -709,7 +718,7 @@ define(['lodash', 'angular-mocks', './results'], function(_) {
 
       it('should clean the graph', function(done) {
         resultsService.cleanupMeasurements().then(function() {
-          expect(studyServiceMock.saveJsonGraph).toHaveBeenCalledWith(expextedGraph);
+          expect(studyServiceMock.saveJsonGraph).toHaveBeenCalledWith(expectedGraph);
           studyServiceMock.saveJsonGraph.calls.reset();
           done();
         });
@@ -886,7 +895,7 @@ define(['lodash', 'angular-mocks', './results'], function(_) {
       };
 
       var graphJsonObject = [study, measurementMoment1, measurementMoment2, result1, result2, result3, result4];
-      var expextedGraph = [study, measurementMoment1, measurementMoment2, cleanedResult1, cleanedResult2, cleanedResult3, cleanedResult4];
+      var expectedGraph = [study, measurementMoment1, measurementMoment2, cleanedResult1, cleanedResult2, cleanedResult3, cleanedResult4];
 
       beforeEach(function() {
         var graphDefer = q.defer();
@@ -897,7 +906,7 @@ define(['lodash', 'angular-mocks', './results'], function(_) {
 
       it('should clean the graph', function(done) {
         resultsService.cleanupMeasurements().then(function() {
-          expect(studyServiceMock.saveJsonGraph).toHaveBeenCalledWith(expextedGraph);
+          expect(studyServiceMock.saveJsonGraph).toHaveBeenCalledWith(expectedGraph);
           studyServiceMock.saveJsonGraph.calls.reset();
           done();
         });
@@ -1207,39 +1216,39 @@ define(['lodash', 'angular-mocks', './results'], function(_) {
         expect(survivalResult).toEqual(expectedSurvivalResult);
       });
 
-      it('should get the right variable details for dichotomous contrast data', function(){
+      it('should get the right variable details for dichotomous contrast data', function() {
         var dichotomousResult = resultsService.getResultPropertiesForType(DICHOTOMOUS, CONTRAST);
         var varTypes = resultsService.VARIABLE_TYPE_DETAILS[CONTRAST];
-        var expectedDichotomousResult  = [
+        var expectedDichotomousResult = [
           varTypes.log_odds_ratio,
           varTypes.log_risk_ratio,
           varTypes.standard_error,
-          varTypes.confidence_interval,
+          varTypes.confidence_interval_width,
           varTypes.is_reference
         ];
         expect(dichotomousResult).toEqual(expectedDichotomousResult);
       });
 
-      it('should get the right variable details for continuous contrast data', function(){
+      it('should get the right variable details for continuous contrast data', function() {
         var continuousResult = resultsService.getResultPropertiesForType(CONTINUOUS, CONTRAST);
         var varTypes = resultsService.VARIABLE_TYPE_DETAILS[CONTRAST];
-        var expectedContinuousResult =[
+        var expectedContinuousResult = [
           varTypes.mean_difference,
           varTypes.standardized_mean_difference,
           varTypes.standard_error,
-          varTypes.confidence_interval,
+          varTypes.confidence_interval_width,
           varTypes.is_reference
         ];
         expect(continuousResult).toEqual(expectedContinuousResult);
       });
 
-      it('should get the right variable details for survival contrast data', function(){
+      it('should get the right variable details for survival contrast data', function() {
         var survivalResult = resultsService.getResultPropertiesForType(SURVIVAL, CONTRAST);
-        var varTypes =  resultsService.VARIABLE_TYPE_DETAILS[CONTRAST];
+        var varTypes = resultsService.VARIABLE_TYPE_DETAILS[CONTRAST];
         var expectedSurvivalResult = [
           varTypes.log_hazard_ratio,
           varTypes.standard_error,
-          varTypes.confidence_interval,
+          varTypes.confidence_interval_width,
           varTypes.is_reference
         ];
         expect(survivalResult).toEqual(expectedSurvivalResult);
