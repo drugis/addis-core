@@ -1,24 +1,24 @@
 <ul class="no-bullet">
   <li>
-    <h4>{{::item.label}}</h4>
+    <h4>{{item.label}}</h4>
   </li>
   <li>
     <span>
       Measurement type:
     </span>
     <span>
-      <strong ng-if="::item.measurementType === 'ontology:continuous'">continuous</strong>
-      <strong ng-if="::item.measurementType === 'ontology:dichotomous'">count</strong>
-      <strong ng-if="::item.measurementType === 'ontology:categorical'">categorical</strong>
-      <strong ng-if="::item.measurementType === 'ontology:survival'">survival</strong>
+      <strong ng-if="item.measurementType === 'ontology:continuous'">continuous</strong>
+      <strong ng-if="item.measurementType === 'ontology:dichotomous'">count</strong>
+      <strong ng-if="item.measurementType === 'ontology:categorical'">categorical</strong>
+      <strong ng-if="item.measurementType === 'ontology:survival'">survival</strong>
     </span>
   </li>
-  <li ng-if="::item.measurementType === 'ontology:categorical'">
+  <li ng-if="item.measurementType === 'ontology:categorical'">
     <span>
       Categories:
     </span>
     <ul>
-      <li ng-repeat="category in item.categoryList">{{::category.label ? category.label : category}}</li>
+      <li ng-repeat="category in item.categoryList">{{category.label ? category.label : category}}</li>
     </ul>
   </li>
   <li ng-if="item.measuredAtMoments.length > 0">
@@ -26,7 +26,12 @@
       Measured at:
     </span>
     <ul>
-      <li ng-repeat="measuredAt in item.measuredAtMoments"><strong>{{::measuredAt.label}}</strong></li>
+      <li ng-repeat="measuredAt in item.measuredAtMoments"><strong>{{measuredAt.label}}</strong></li>
     </ul>
+  </li>
+  <li ng-if="item.referenceArm">
+    <span>Reference arm:</span>
+    <span>{{item.referenceArm}}</span>
+    <span><input type="number" ng-model="item.referenceStandardError"></span>
   </li>
 </ul>

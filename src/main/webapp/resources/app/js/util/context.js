@@ -160,10 +160,6 @@ define([], function() {
       '@id': 'http://trials.drugis.org/ontology#in_epoch',
       '@type': '@id'
     },
-    'is_reference': {
-      '@id': 'http://trials.drugis.org/ontology#is_reference',
-      '@type': 'http://www.w3.org/2001/XMLSchema#boolean'
-    },
     'least_squares_mean': {
       '@id': 'http://trials.drugis.org/ontology#least_squares_mean',
       '@type': 'http://www.w3.org/2001/XMLSchema#double'
@@ -268,9 +264,9 @@ define([], function() {
       '@id': 'http://trials.drugis.org/ontology#registry',
       '@type': '@id'
     },
-    'risk_ratio': {
-      '@id': 'http://trials.drugis.org/ontology#risk_ratio',
-      '@type': 'http://www.w3.org/2001/XMLSchema#double'
+    'reference_arm': {
+      '@id': 'http://trials.drugis.org/ontology#reference_arm',
+      '@type': 'http://www.w3.org/2001/XMLSchema#string'
     },
     'rest': {
       '@id': 'http://www.w3.org/1999/02/22-rdf-syntax-ns#rest',
@@ -283,6 +279,10 @@ define([], function() {
     'relative_to_anchor': {
       '@id': 'http://trials.drugis.org/ontology#relative_to_anchor',
       '@type': '@id'
+    },
+    'risk_ratio': {
+      '@id': 'http://trials.drugis.org/ontology#risk_ratio',
+      '@type': 'http://www.w3.org/2001/XMLSchema#double'
     },
     'sameAs': {
       '@id': 'http://www.w3.org/2002/07/owl#sameAs',

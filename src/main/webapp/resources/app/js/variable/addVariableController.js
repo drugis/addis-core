@@ -6,10 +6,13 @@ define(['lodash'], function(_) {
     '$modalInstance',
     'MeasurementMomentService',
     'ResultsService',
+    'arms',
     'callback',
     'settings',
     'TIME_SCALE_OPTIONS',
-    'VARIABLE_TYPE_DETAILS'
+    'VARIABLE_TYPE_DETAILS',
+    'ARM_LEVEL_TYPE',
+    'CONTRAST_TYPE'
   ];
   var addVariableController = function(
     $scope,
@@ -17,10 +20,13 @@ define(['lodash'], function(_) {
     $modalInstance,
     MeasurementMomentService,
     ResultsService,
+    arms,
     callback,
     settings,
     TIME_SCALE_OPTIONS,
-    VARIABLE_TYPE_DETAILS
+    VARIABLE_TYPE_DETAILS,
+    ARM_LEVEL_TYPE,
+    CONTRAST_TYPE
   ) {
     // functions
     $scope.addVariable = addVariable;
@@ -35,7 +41,7 @@ define(['lodash'], function(_) {
     $scope.armOrContrastChanged = armOrContrastChanged;
 
     // init
-    var EndPointService = $injector.get(settings.service);
+    var Service = $injector.get(settings.service);
     $scope.settings = settings;
     $scope.variable = {
       measuredAtMoments: [],
@@ -44,6 +50,7 @@ define(['lodash'], function(_) {
     };
     $scope.measurementMoments = MeasurementMomentService.queryItems();
     $scope.timeScaleOptions = TIME_SCALE_OPTIONS;
+    $scope.arms = arms;
 
     resetResultProperties();
 
@@ -65,7 +72,7 @@ define(['lodash'], function(_) {
     }
 
     function resetResultProperties() {
-      $scope.variable.armOrContrast = 'ontology:arm_level_data';
+      $scope.variable.armOrContrast = ARM_LEVEL_TYPE;
       armOrContrastChanged();
       if ($scope.variable.measurementType === 'ontology:categorical') {
         $scope.variable.categoryList = [];
@@ -78,7 +85,7 @@ define(['lodash'], function(_) {
 
     function addVariable() {
       $scope.variable.resultProperties = _.map($scope.variable.selectedResultProperties, 'uri');
-      EndPointService.addItem($scope.variable).then(succesCallback, errorCallback);
+      Service.addItem($scope.variable).then(succesCallback, errorCallback);
     }
 
     function succesCallback() {
@@ -123,6 +130,9 @@ define(['lodash'], function(_) {
     function armOrContrastChanged() {
       $scope.variable.resultProperties = VARIABLE_TYPE_DETAILS[$scope.variable.armOrContrast];
       $scope.variable.selectedResultProperties = ResultsService.getDefaultResultProperties($scope.variable.measurementType, $scope.variable.armOrContrast);
+      if($scope.variable.armOrContrast === CONTRAST_TYPE){
+        $scope.variable.referenceArm = $scope.arms[0];
+      }
     }
   };
   return dependencies.concat(addVariableController);

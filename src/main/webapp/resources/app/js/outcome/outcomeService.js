@@ -110,6 +110,9 @@ define(['angular', 'lodash'],
         if (item.confidenceIntervalWidth) {
           optionalProperties.confidence_interval_width = item.confidenceIntervalWidth;
         }
+        if(item.referenceArm){
+          optionalProperties.reference_arm = item.referenceArm;
+        }
         return optionalProperties;
       }
 
