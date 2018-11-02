@@ -447,5 +447,16 @@ define(['angular-mocks', './results'], function() {
       expect(result).toBeFalsy();
     });
 
+    describe('updateNonReferenceRows', function(){
+      it('should mark all rows that are not the new reference as non reference', function(){
+        fail();
+      });
+    }); 
+    
+    describe('updateReferenceColumns', function(){
+      it('should wipe all values except for the is_reference property which should be set to true', function(){
+        fail();
+      });
+    });
   });
 });

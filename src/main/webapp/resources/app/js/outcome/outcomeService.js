@@ -8,7 +8,8 @@ define(['angular', 'lodash'],
       'MeasurementMomentService',
       'ResultsService',
       'RepairService',
-      'RdfListService'
+      'RdfListService',
+      'ARM_LEVEL_TYPE'
     ];
     var OutcomeServiceService = function(
       $q,
@@ -17,11 +18,11 @@ define(['angular', 'lodash'],
       MeasurementMomentService,
       ResultsService,
       RepairService,
-      RdfListService
+      RdfListService,
+      ARM_LEVEL_TYPE
     ) {
 
       var INSTANCE_BASE = 'http://trials.drugis.org/instances/';
-      var ARM_LEVEL = 'ontology:arm_level_data';
 
       function isOverlappingResultFunction(a, b) {
         return a.armUri === b.armUri &&
@@ -47,7 +48,7 @@ define(['angular', 'lodash'],
           measurementType: item.of_variable[0].measurementType,
           measuredAtMoments: [],
           conceptMapping: item.of_variable[0].sameAs,
-          armOrContrast: item.arm_or_contrast ? item.arm_or_contrast : ARM_LEVEL
+          armOrContrast: item.arm_or_contrast ? item.arm_or_contrast : ARM_LEVEL_TYPE
         };
         if (item.confidence_interval_width) {
           frontEndItem.confidenceIntervalWidth = item.confidence_interval_width;
@@ -124,7 +125,7 @@ define(['angular', 'lodash'],
             label: item.label,
           }],
           has_result_property: item.resultProperties,
-          arm_or_contrast: item.armOrContrast ? item.armOrContrast : ARM_LEVEL
+          arm_or_contrast: item.armOrContrast ? item.armOrContrast : ARM_LEVEL_TYPE
         };
       }
 

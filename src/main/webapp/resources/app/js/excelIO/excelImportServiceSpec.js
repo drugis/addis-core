@@ -1,17 +1,6 @@
 'use strict';
-define([
-    'angular-mocks',
-    'lodash',
-    'xlsx',
-    './../util/context',
-    './../util/constants',
-  ],
-  function(
-    angularMocks,
-    _,
-    XLSX,
-    externalContext
-  ) {
+define(['./../util/context'],
+  function(externalContext) {
     var ONTOLOGY_URI = 'http://trials.drugis.org/ontology#';
     var INSTANCE_URI = 'http://trials.drugis.org/instances/uuid';
     var excelImportService;

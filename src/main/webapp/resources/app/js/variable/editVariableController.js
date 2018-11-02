@@ -9,7 +9,9 @@ define(['lodash'], function(_) {
     'ResultsService',
     'callback',
     'item',
-    'itemType'
+    'itemType',
+    'TIME_SCALE_OPTIONS',
+    'VARIABLE_TYPE_DETAILS'
   ];
   var EditVariableController = function(
     $scope,
@@ -20,7 +22,9 @@ define(['lodash'], function(_) {
     ResultsService,
     callback,
     item,
-    itemType
+    itemType,
+    TIME_SCALE_OPTIONS,
+    VARIABLE_TYPE_DETAILS
   ) {
     // functions
     $scope.measurementMomentEquals = measurementMomentEquals;
@@ -38,8 +42,8 @@ define(['lodash'], function(_) {
     $scope.itemType = itemType;
     setArmOrContrast();
     $scope.measurementMoments = MeasurementMomentService.queryItems();
-    $scope.resultProperties = _.values(ResultsService.VARIABLE_TYPE_DETAILS[$scope.variable.armOrContrast]);
-    $scope.timeScaleOptions = ResultsService.TIME_SCALE_OPTIONS;
+    $scope.resultProperties = _.values(VARIABLE_TYPE_DETAILS[$scope.variable.armOrContrast]);
+    $scope.timeScaleOptions = TIME_SCALE_OPTIONS;
 
     $scope.$watch('variable.selectedResultProperties', checkTimeScaleInput);
 
@@ -73,7 +77,7 @@ define(['lodash'], function(_) {
     }
 
     function resetResultProperties() {
-      $scope.variable.selectedResultProperties = ResultsService.getDefaultResultProperties($scope.variable.measurementType, $scope.variable.armOrContrast);
+      $scope.variable.armOrContrast = 'ontology:arm_level_data';
       armOrContrastChanged();
       if ($scope.variable.measurementType === 'ontology:categorical') {
         $scope.variable.categoryList = [];
@@ -135,7 +139,7 @@ define(['lodash'], function(_) {
     }
 
     function armOrContrastChanged() {
-      $scope.variable.resultProperties = ResultsService.VARIABLE_TYPE_DETAILS[$scope.variable.armOrContrast];
+      $scope.variable.resultProperties = VARIABLE_TYPE_DETAILS[$scope.variable.armOrContrast];
       $scope.variable.selectedResultProperties = ResultsService.getDefaultResultProperties($scope.variable.measurementType, $scope.variable.armOrContrast);
     }
   };

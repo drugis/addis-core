@@ -5,10 +5,7 @@ define(['lodash', '../util/context', 'xlsx'], function(_, externalContext, XLSX)
     '$stateParams',
     '$timeout',
     'GraphResource',
-    'VersionedGraphResource',
     'UUIDService',
-    'StudyService',
-    'PopulationCharacteristicService',
     'RdfListService',
     'ExcelIOUtilService',
     'ACTIVITY_TYPE_OPTIONS',
@@ -21,10 +18,7 @@ define(['lodash', '../util/context', 'xlsx'], function(_, externalContext, XLSX)
     $stateParams,
     $timeout,
     GraphResource,
-    VersionedGraphResource,
     UUIDService,
-    StudyService,
-    PopulationCharacteristicService,
     RdfListService,
     IOU,
     ACTIVITY_TYPE_OPTIONS,
@@ -36,22 +30,18 @@ define(['lodash', '../util/context', 'xlsx'], function(_, externalContext, XLSX)
     var ONTOLOGY_PREFIX = 'http://trials.drugis.org/ontology#';
     var excelUtils = XLSX.utils;
     var MEASUREMENT_TYPES = _.keyBy([{
-        uri: 'ontology:dichotomous',
-        label: 'dichotomous'
-      },
-      {
-        uri: 'ontology:continuous',
-        label: 'continuous'
-      },
-      {
-        uri: 'ontology:categorical',
-        label: 'categorical'
-      },
-      {
-        uri: 'ontology:survival',
-        label: 'survival'
-      }
-    ], 'label');
+      uri: 'ontology:dichotomous',
+      label: 'dichotomous'
+    }, {
+      uri: 'ontology:continuous',
+      label: 'continuous'
+    }, {
+      uri: 'ontology:categorical',
+      label: 'categorical'
+    }, {
+      uri: 'ontology:survival',
+      label: 'survival'
+    }], 'label');
     var VARIABLE_TYPES = [{
       uri: 'ontology:PopulationCharacteristic',
       label: 'baseline characteristic'
@@ -191,7 +181,7 @@ define(['lodash', '../util/context', 'xlsx'], function(_, externalContext, XLSX)
           var identifier = getIdentifier(workbook);
           scope.isUniqueIdentifier = names.indexOf(identifier) === -1;
         }
-        $timeout(function() {}, 0); // ensures errors are rendered in the html
+        $timeout(function() { }, 0); // ensures errors are rendered in the html
       };
       reader.readAsBinaryString(file);
     }
@@ -279,8 +269,8 @@ define(['lodash', '../util/context', 'xlsx'], function(_, externalContext, XLSX)
           accum[sheet] = findStartRow(workbook.Sheets[sheet], studyIdCell);
           return accum;
         }, {
-          'Study data': studyIdCell.coords.r - 2
-        });
+            'Study data': studyIdCell.coords.r - 2
+          });
         return startRows;
       });
     }
@@ -369,7 +359,7 @@ define(['lodash', '../util/context', 'xlsx'], function(_, externalContext, XLSX)
       var doseTypes = {
         'fixed': 'ontology:FixedDoseDrugTreatment',
         'titrated': 'ontology:TitratedDoseDrugTreatment'
-      }; 
+      };
       var treatment = {
         '@id': INSTANCE_PREFIX + UUIDService.generate(),
         treatment_has_drug: IOU.getReferenceValueColumnOffset(activitySheet, 4 + drugIndex * 6, row, -1, workbook),
@@ -528,7 +518,7 @@ define(['lodash', '../util/context', 'xlsx'], function(_, externalContext, XLSX)
       var lastFilledColumn = _.max(_.filter(_.range(variableColumns[variableColumns.length - 1], endColumn), function(column) {
         return studyDataSheet[IOU.a1Coordinate(column, startRow + 1)];
       }));
-      var variableColumnsPlusEnd = variableColumns.concat(lastFilledColumn +  1); // add end column for last variable; +1 because we use [,) intervals for var boundaries
+      var variableColumnsPlusEnd = variableColumns.concat(lastFilledColumn + 1); // add end column for last variable; +1 because we use [,) intervals for var boundaries
       var variableColumnBoundaries = _.map(variableColumnsPlusEnd.slice(0, variableColumnsPlusEnd.length - 1), function(n, index) {
         return [n, variableColumnsPlusEnd[index + 1]];
       });
@@ -793,9 +783,9 @@ define(['lodash', '../util/context', 'xlsx'], function(_, externalContext, XLSX)
       checkSingleStudyWorkbook: checkSingleStudyWorkbook,
       createStudy: createStudy,
       commitStudy: commitStudy,
-      
+
       uploadExcel: uploadExcel,
-      
+
       checkDatasetWorkbook: checkDatasetWorkbook,
       createDataset: createDataset,
       createDatasetStudies: createDatasetStudies,

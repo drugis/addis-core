@@ -1,8 +1,16 @@
 'use strict';
 define(['lodash'], function(_) {
-  var dependencies = ['$q', 'ResultsTableService', 'ResultsService'];
+  var dependencies = [
+    '$q',
+    'ResultsTableService',
+    'ResultsService'
+  ];
 
-  var resultsTableDirective = function($q, ResultsTableService, ResultsService) {
+  var resultsTableDirective = function(
+    $q,
+    ResultsTableService,
+    ResultsService
+  ) {
     return {
       restrict: 'E',
       templateUrl: './resultsTableDirective.html',
@@ -21,13 +29,15 @@ define(['lodash'], function(_) {
         scope.showEditMeasurementMoment = showEditMeasurementMoment;
 
         // init
-        scope.$on('refreshResultsTable', reloadResults);
-        scope.$on('referenceRowChanged', function(newRow) {
-          var newReferenceRow = _.find($scope.inputRows, function(row){
-            return row.isReference;
-          });
-        });
         scope.isExpanded = false;
+        scope.$on('refreshResultsTable', reloadResults);
+        scope.$on('referenceRowChanged', function(event, reference) {
+          var newReferenceRow = _.find(scope.inputRows, function(row) {
+            return row.group.armURI === reference.uri || row.group.groupUri === reference.uri;
+          });
+          newReferenceRow.inputColumns = ResultsTableService.updateReferenceColumns(newReferenceRow);
+          scope.inputRows = ResultsTableService.updateNonReferenceRows(scope.inputRows, reference.uri);
+        });
 
         function reloadResults() {
           if (scope.isExpanded) {

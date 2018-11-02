@@ -1,105 +1,43 @@
 'use strict';
 define(['lodash'], function(_) {
   var dependencies = [
-    'ResultsService'
+    'ResultsService',
+    'INTEGER_TYPE',
+    'BOOLEAN_TYPE',
+    'DOUBLE_TYPE',
+    'ONTOLOGY_BASE'
   ];
   var ResultsTableService = function(
-    ResultsService
+    ResultsService,
+    INTEGER_TYPE,
+    BOOLEAN_TYPE,
+    DOUBLE_TYPE,
+    ONTOLOGY_BASE
   ) {
-
-    var CONTINUOUS_TYPE = 'ontology:continuous';
-    var DICHOTOMOUS_TYPE = 'ontology:dichotomous';
-    var CATEGORICAL_TYPE = 'ontology:categorical';
-
     function findResultValueByType(resultValueObjects, type) {
-      var resultValueObjectFound = _.find(resultValueObjects, function(resultValueObject) {
+      var resultValueObject = _.find(resultValueObjects, function(resultValueObject) {
         return resultValueObject.result_property === type;
       });
 
-      if (resultValueObjectFound) {
-        return Number(resultValueObjectFound.value);
+      if (resultValueObject) {
+        if (type === 'is_reference') {
+          return Boolean(resultValueObject.value);
+        }
+        return Number(resultValueObject.value);
       }
     }
 
     function findCategoricalResult(resultValueObjects, category) {
-      var resultValueObjectFound = _.find(resultValueObjects, function(resultValueObject) {
+      var resultValueObject = _.find(resultValueObjects, function(resultValueObject) {
         return resultValueObject.result_property.category === category['@id'];
       });
-      if (resultValueObjectFound) {
-        if (resultValueObjectFound.value === undefined) {
+      if (resultValueObject) {
+        if (resultValueObject.value === undefined) {
           return undefined;
         } else {
-          return Number(resultValueObjectFound.value);
+          return Number(resultValueObject.value);
         }
       }
-    }
-
-    function createInputColumns(variable, valueObjects) {
-      if (!variable.resultProperties) {
-        if (variable.categoryList) {
-          return createCategoryInputColumn(variable, valueObjects);
-        } else {
-          return [];
-        }
-      }
-      return createNonCategoricalInputColumn(variable, valueObjects);
-    }
-
-    function createNonCategoricalInputColumn(variable, valueObjects) {
-      return _(variable.resultProperties)
-        .reduce(function(accum, property) {
-          var details = ResultsService.getVariableDetails(property, variable.armOrContrast);
-          if (details.type === 'confidence_interval') {
-            return accum.concat(createConfidenceIntervalColumns(property, details, valueObjects));
-          } else {
-            return accum.concat({
-              resultProperty: property,
-              valueName: details.label,
-              value: findResultValueByType(valueObjects, details.type),
-              dataType: details.dataType,
-              isInValidValue: false,
-              isAlwaysPositive: details.isAlwaysPositive,
-              armOrContrast: details.armOrContrast
-            });
-          }
-        }, []);
-    }
-
-    function createConfidenceIntervalColumns(property, details, valueObjects) {
-      return [{
-        resultProperty: property,
-        valueName: details.label + ' lowerbound',
-        value: findResultValueByType(valueObjects, details.type + ' lowerbound'),
-        dataType: details.dataType,
-        isInValidValue: false,
-        armOrContrast: details.armOrContrast
-      }, {
-        resultProperty: property,
-        valueName: details.label + ' upperbound',
-        value: findResultValueByType(valueObjects, details.type + ' upperbound'),
-        dataType: details.dataType,
-        isInValidValue: false,
-        armOrContrast: details.armOrContrast
-      }];
-    }
-
-    function createCategoryInputColumn(variable, valueObjects) {
-      return _.map(variable.categoryList, function(category) {
-        var value;
-        if (category.label) { // new format
-          value = findCategoricalResult(valueObjects, category);
-        } else { // old format
-          value = findResultValueByType(valueObjects, category);
-        }
-        return {
-          resultProperty: category,
-          valueName: category,
-          value: value,
-          dataType: ResultsService.INTEGER_TYPE,
-          isCategory: true,
-          isInValidValue: false
-        };
-      });
     }
 
     function createHeaders(variable) {
@@ -122,15 +60,18 @@ define(['lodash'], function(_) {
     }
 
     function createConfidenceIntervalHeaders(details, variable) {
-      return [{
-        label: 'confidence interval (' + variable.confidenceIntervalWidth + '%) lowerbound',
+      return [
+        createBoundHeader(details, variable, 'lowerbound'),
+        createBoundHeader(details, variable, 'upperbound')
+      ];
+    }
+
+    function createBoundHeader(details, variable, bound) {
+      return {
+        label: 'confidence interval (' + variable.confidenceIntervalWidth + '%) ' + bound,
         lexiconKey: details.lexiconKey,
         analysisReady: details.analysisReady
-      }, {
-        label: 'confidence interval (' + variable.confidenceIntervalWidth + '%) upperbound',
-        lexiconKey: details.lexiconKey,
-        analysisReady: details.analysisReady
-      }];
+      };
     }
 
     function createCategoricalHeader(variable) {
@@ -139,15 +80,19 @@ define(['lodash'], function(_) {
       } else {
         //Categorical measurement
         if (variable.categoryList[0] && variable.categoryList[0].label) {
-          return _.map(variable.categoryList, function(list) {
-            return {
-              'label': list.label
-            };
-          });
+          return createCategoricalHeaderLabel(variable);
         } else {
           return variable.categoryList;
         }
       }
+    }
+
+    function createCategoricalHeaderLabel(variable) {
+      return _.map(variable.categoryList, function(list) {
+        return {
+          'label': list.label
+        };
+      });
     }
 
     function createHeader(propertyDetails, variable) {
@@ -184,7 +129,21 @@ define(['lodash'], function(_) {
           return accum.concat(armRows, groupRows);
         }, []);
       var sortedRows = sortRows(rows);
-      return sortedRows;
+      var sortedRowsWithReference = setDefaultReferenceRow(variable, sortedRows);
+      return sortedRowsWithReference;
+    }
+
+    function setDefaultReferenceRow(variable, rows) {
+      if (variable.armOrContrast === 'ontology:contrast_data' && !_.some(rows, function(row) {
+        return row.isReference;
+      })) {
+        rows[0].isReference = true;
+        var referenceColumn = _.find(rows[0].inputColumns, function(column) {
+          return column.resultProperty === ONTOLOGY_BASE + 'is_reference';
+        });
+        referenceColumn.value = true;
+      }
+      return rows;
     }
 
     function createGroupRows(arms, resultValuesObjects, measurementMoment, variable, groups) {
@@ -221,11 +180,89 @@ define(['lodash'], function(_) {
         numberOfGroups: numberOfGroups,
         inputColumns: createInputColumns(variable, valueObjects)
       };
+      setReferenceOnRow(row);
+
       // if this row has any values set we need to save the instance uri on the row to use for update or delete
       if (valueObjects && valueObjects.length > 0) {
         row.uri = valueObjects[0].instance;
       }
       return row;
+    }
+
+    function setReferenceOnRow(row) {
+      if (isReferenceRow(row)) {
+        row.isReference = true;
+      }
+    }
+
+    function isReferenceRow(row) {
+      return _.some(row.inputColumns, function(column) {
+        return column.resultProperty === 'http://trials.drugis.org/ontology#is_reference' &&
+          column.value;
+      });
+    }
+
+    function createInputColumns(variable, valueObjects) {
+      if (!variable.resultProperties) {
+        if (variable.categoryList) {
+          return createCategoryInputColumn(variable, valueObjects);
+        } else {
+          return [];
+        }
+      }
+      return createNonCategoricalInputColumn(variable, valueObjects);
+    }
+
+    function createNonCategoricalInputColumn(variable, valueObjects) {
+      return _(variable.resultProperties)
+        .reduce(function(accum, property) {
+          var details = ResultsService.getVariableDetails(property, variable.armOrContrast);
+          if (details.type === 'confidence_interval') {
+            return accum.concat(createConfidenceIntervalColumns(variable, valueObjects));
+          } else {
+            return accum.concat(createColumn(property, details, valueObjects));
+          }
+        }, []);
+    }
+
+    function createConfidenceIntervalColumns(variable, valueObjects) {
+      var lowerboundDetails = ResultsService.getVariableDetails('ontology:confidence_interval_lowerbound', variable.armOrContrast);
+      var upperboundDetails = ResultsService.getVariableDetails('ontology:confidence_interval_upperbound', variable.armOrContrast);
+      return [
+        createColumn(ONTOLOGY_BASE + 'confidence_interval_lowerbound', lowerboundDetails, valueObjects),
+        createColumn(ONTOLOGY_BASE + 'confidence_interval_upperbound', upperboundDetails, valueObjects)
+      ];
+    }
+
+    function createColumn(property, details, valueObjects) {
+      return {
+        resultProperty: property,
+        valueName: details.label,
+        value: findResultValueByType(valueObjects, details.type),
+        dataType: details.dataType,
+        isInValidValue: false,
+        isAlwaysPositive: details.isAlwaysPositive,
+        armOrContrast: details.armOrContrast
+      };
+    }
+
+    function createCategoryInputColumn(variable, valueObjects) {
+      return _.map(variable.categoryList, function(category) {
+        var value;
+        if (category.label) { // new format
+          value = findCategoricalResult(valueObjects, category);
+        } else { // old format
+          value = findResultValueByType(valueObjects, category);
+        }
+        return {
+          resultProperty: category,
+          valueName: category,
+          value: value,
+          dataType: INTEGER_TYPE,
+          isCategory: true,
+          isInValidValue: false
+        };
+      });
     }
 
     function sortRows(rows) {
@@ -247,14 +284,14 @@ define(['lodash'], function(_) {
       if (inputColumn.value === undefined) {
         return false;
       }
-      if (inputColumn.dataType === ResultsService.BOOLEAN_TYPE) {
+      if (inputColumn.dataType === BOOLEAN_TYPE) {
         return typeof (inputColumn.value) === typeof (true);
       }
 
       if (inputColumn.value) {
-        if (inputColumn.dataType === ResultsService.INTEGER_TYPE) {
+        if (inputColumn.dataType === INTEGER_TYPE) {
           return Number.isInteger(inputColumn.value) && (!inputColumn.isAlwaysPositive || inputColumn.value >= 0);
-        } else if (inputColumn.dataType === ResultsService.DOUBLE_TYPE) {
+        } else if (inputColumn.dataType === DOUBLE_TYPE) {
           return !isNaN(filterFloat(inputColumn.value)) && (!inputColumn.isAlwaysPositive || inputColumn.value >= 0);
         }
       } else {
@@ -292,6 +329,33 @@ define(['lodash'], function(_) {
       });
     }
 
+    function updateNonReferenceRows(inputRows, referenceUri) {
+      return _.map(inputRows, function(row) {
+        var rowUri = row.group.armURI || row.group.groupUri;
+        if (rowUri !== referenceUri && row.isReference) {
+          delete row.isReference;
+          var column = _.find(row.inputColumns, function(column) {
+            return column.resultProperty === ONTOLOGY_BASE + 'is_reference';
+          });
+          column.value = false;
+          ResultsService.updateResultValue(row, column);
+        }
+        return row;
+      });
+    }
+
+    function updateReferenceColumns(row) {
+      return _.map(row.inputColumns, function(column) {
+        if (column.resultProperty !== ONTOLOGY_BASE + 'is_reference') {
+          column.value = undefined;
+          ResultsService.updateResultValue(row, column);
+        } else {
+          column.value = true;
+        }
+        return column;
+      });
+    }
+
     return {
       createInputRows: createInputRows,
       createHeaders: createHeaders,
@@ -299,9 +363,8 @@ define(['lodash'], function(_) {
       createInputColumns: createInputColumns,
       buildMeasurementMomentOptions: buildMeasurementMomentOptions,
       findOverlappingMeasurements: findOverlappingMeasurements,
-      CONTINUOUS_TYPE: CONTINUOUS_TYPE,
-      DICHOTOMOUS_TYPE: DICHOTOMOUS_TYPE,
-      CATEGORICAL_TYPE: CATEGORICAL_TYPE
+      updateNonReferenceRows: updateNonReferenceRows,
+      updateReferenceColumns: updateReferenceColumns
     };
   };
   return dependencies.concat(ResultsTableService);

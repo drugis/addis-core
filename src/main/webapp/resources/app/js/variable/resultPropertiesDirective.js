@@ -1,8 +1,13 @@
 'use strict';
 define(['lodash'], function(_) {
-  var dependencies = ['ResultsService'];
-
-  var ResultPropertiesDirective = function(ResultsService) {
+  var dependencies = [
+    'ResultsService',
+    'ARM_LEVEL_TYPE'
+  ];
+  var ResultPropertiesDirective = function(
+    ResultsService,
+    ARM_LEVEL_TYPE
+  ) {
     return {
       restrict: 'E',
       templateUrl: './resultPropertiesDirective.html',
@@ -16,12 +21,10 @@ define(['lodash'], function(_) {
         //init
         buildProperties();
         scope.hasNotAnalysedProperty = _.some(scope.properties, ['analysisReady', false]);
-        var ARM_LEVEL = 'ontology:arm_level_data';
 
         // watches
         scope.$watch('variable.measurementType', rebuildIfNecessary);
         scope.$watch('variable.resultProperties', rebuildIfNecessary, true);
-        scope.$watch('variable.armOrContrast', rebuildIfNecessary);
 
         function rebuildIfNecessary(newValue, oldValue) {
           if (!oldValue || !newValue || oldValue === newValue) {
@@ -52,7 +55,7 @@ define(['lodash'], function(_) {
 
         function setCategories() {
           scope.showCategories = false;
-          if (scope.variable.measurementType === 'ontology:continuous' && scope.variable.armOrContrast === ARM_LEVEL) {
+          if (scope.variable.measurementType === 'ontology:continuous' && scope.variable.armOrContrast === ARM_LEVEL_TYPE) {
             scope.categories = ResultsService.buildPropertyCategories(scope.variable);
             scope.showCategories = true;
           }
@@ -60,7 +63,7 @@ define(['lodash'], function(_) {
 
         function updateSelection() {
           var properties = scope.properties;
-          if (scope.variable.measurementType === 'ontology:continuous' && scope.variable.armOrContrast === ARM_LEVEL) {
+          if (scope.variable.measurementType === 'ontology:continuous' && scope.variable.armOrContrast === ARM_LEVEL_TYPE) {
             properties = _(scope.categories).map('properties').flatten().value();
           }
           setConfidenceIntervalWidth(properties);

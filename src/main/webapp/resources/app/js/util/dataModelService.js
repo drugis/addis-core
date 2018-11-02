@@ -1,11 +1,16 @@
 'use strict';
 define(['angular', 'lodash'], function(angular, _) {
-  var dependencies = ['UUIDService'];
-  var DataModelService = function(UUIDService) {
+  var dependencies = [
+    'UUIDService',
+    'ONTOLOGY_BASE'
+  ];
+  var DataModelService = function(
+    UUIDService,
+    ONTOLOGY_BASE
+  ) {
     var INSTANCE_BASE = 'http://trials.drugis.org/instances/';
     var RDF_FIRST = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#first';
     var RDF_REST = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#rest';
-    var ONTOLOGY_BASE = 'http://trials.drugis.org/ontology#';
 
     function makeCategoryInstance(categoryName) {
       return {
@@ -121,7 +126,7 @@ define(['angular', 'lodash'], function(angular, _) {
         }
         return node;
       });
-      if(newPopulationNode) {
+      if (newPopulationNode) {
         newGraph.push(newPopulationNode);
       }
       return _.extend({}, data, {

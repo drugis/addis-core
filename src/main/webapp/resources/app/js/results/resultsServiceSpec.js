@@ -1,7 +1,11 @@
 'use strict';
-define(['lodash', 'angular-mocks', './results'], function(_) {
+define([
+  'lodash',
+  'angular-mocks',
+  './results',
+  '../util/resultsConstants'
+], function(_) {
   describe('the resultsService service', function() {
-
     var rootScope, q;
     var studyServiceMock = jasmine.createSpyObj('StudyServiceMock', ['getJsonGraph', 'saveJsonGraph']);
     var uuidServiceMock = jasmine.createSpyObj('UUIDService', ['generate']);
@@ -13,6 +17,7 @@ define(['lodash', 'angular-mocks', './results'], function(_) {
     var DICHOTOMOUS = 'ontology:dichotomous';
     var CONTINUOUS = 'ontology:continuous';
     var SURVIVAL = 'ontology:survival';
+    var variableTypeDetails;
 
     beforeEach(function() {
       angular.mock.module('trialverse.results', function($provide) {
@@ -21,10 +26,16 @@ define(['lodash', 'angular-mocks', './results'], function(_) {
       });
     });
 
-    beforeEach(inject(function($q, $rootScope, ResultsService) {
+    beforeEach(inject(function(
+      $q,
+      $rootScope,
+      ResultsService,
+      VARIABLE_TYPE_DETAILS
+    ) {
       q = $q;
       rootScope = $rootScope;
       resultsService = ResultsService;
+      variableTypeDetails = VARIABLE_TYPE_DETAILS;
 
       rootScope.$digest();
 
@@ -190,6 +201,7 @@ define(['lodash', 'angular-mocks', './results'], function(_) {
               of_group: 'http://trials.drugis.org/instances/arm1',
               of_moment: 'http://trials.drugis.org/instances/moment1',
               of_outcome: 'http://trials.drugis.org/instances/outcome1',
+              arm_or_contrast: ARM_LEVEL
             }];
             expect(result).toBeTruthy();
             expect(result).toEqual(expectedGraph[0]['@id']);
@@ -1045,9 +1057,9 @@ define(['lodash', 'angular-mocks', './results'], function(_) {
     describe('getDefaultResultProperties', function() {
       it('should return the correct default resultproperties for continuous variables of arm level data', function() {
         var continuousArmLevelProperties = [
-          resultsService.VARIABLE_TYPE_DETAILS[ARM_LEVEL].sample_size,
-          resultsService.VARIABLE_TYPE_DETAILS[ARM_LEVEL].mean,
-          resultsService.VARIABLE_TYPE_DETAILS[ARM_LEVEL].standard_deviation
+          variableTypeDetails[ARM_LEVEL].sample_size,
+          variableTypeDetails[ARM_LEVEL].mean,
+          variableTypeDetails[ARM_LEVEL].standard_deviation
         ];
         var result = resultsService.getDefaultResultProperties(CONTINUOUS, ARM_LEVEL);
         expect(result).toEqual(continuousArmLevelProperties);
@@ -1055,8 +1067,8 @@ define(['lodash', 'angular-mocks', './results'], function(_) {
 
       it('should return the correct default resultproperties for dichotomous variables of arm level data', function() {
         var dichotomousArmLevelProperties = [
-          resultsService.VARIABLE_TYPE_DETAILS[ARM_LEVEL].sample_size,
-          resultsService.VARIABLE_TYPE_DETAILS[ARM_LEVEL].count
+          variableTypeDetails[ARM_LEVEL].sample_size,
+          variableTypeDetails[ARM_LEVEL].count
         ];
         var result = resultsService.getDefaultResultProperties(DICHOTOMOUS, ARM_LEVEL);
         expect(result).toEqual(dichotomousArmLevelProperties);
@@ -1064,8 +1076,8 @@ define(['lodash', 'angular-mocks', './results'], function(_) {
 
       it('should return the correct default resultproperties for survival variables of arm level data', function() {
         var survivalArmLevelProperties = [
-          resultsService.VARIABLE_TYPE_DETAILS[ARM_LEVEL].count,
-          resultsService.VARIABLE_TYPE_DETAILS[ARM_LEVEL].exposure
+          variableTypeDetails[ARM_LEVEL].count,
+          variableTypeDetails[ARM_LEVEL].exposure
         ];
         var result = resultsService.getDefaultResultProperties('ontology:survival', ARM_LEVEL);
         expect(result).toEqual(survivalArmLevelProperties);
@@ -1073,9 +1085,9 @@ define(['lodash', 'angular-mocks', './results'], function(_) {
 
       it('should return the correct default resultproperties for dichotomous variables of contrast data', function() {
         var continuousContrastProperties = [
-          resultsService.VARIABLE_TYPE_DETAILS[CONTRAST].log_odds_ratio,
-          resultsService.VARIABLE_TYPE_DETAILS[CONTRAST].standard_error,
-          resultsService.VARIABLE_TYPE_DETAILS[CONTRAST].is_reference
+          variableTypeDetails[CONTRAST].log_odds_ratio,
+          variableTypeDetails[CONTRAST].standard_error,
+          variableTypeDetails[CONTRAST].is_reference
         ];
         var result = resultsService.getDefaultResultProperties(DICHOTOMOUS, CONTRAST);
         expect(result).toEqual(continuousContrastProperties);
@@ -1083,9 +1095,9 @@ define(['lodash', 'angular-mocks', './results'], function(_) {
 
       it('should return the correct default resultproperties for continuous variables of contrast data', function() {
         var dichotomousContrastProperties = [
-          resultsService.VARIABLE_TYPE_DETAILS[CONTRAST].mean_difference,
-          resultsService.VARIABLE_TYPE_DETAILS[CONTRAST].standard_error,
-          resultsService.VARIABLE_TYPE_DETAILS[CONTRAST].is_reference
+          variableTypeDetails[CONTRAST].mean_difference,
+          variableTypeDetails[CONTRAST].standard_error,
+          variableTypeDetails[CONTRAST].is_reference
         ];
         var result = resultsService.getDefaultResultProperties(CONTINUOUS, CONTRAST);
         expect(result).toEqual(dichotomousContrastProperties);
@@ -1093,9 +1105,9 @@ define(['lodash', 'angular-mocks', './results'], function(_) {
 
       it('should return the correct default resultproperties for survival variables of contrast data', function() {
         var survivalContrastProperties = [
-          resultsService.VARIABLE_TYPE_DETAILS[CONTRAST].log_hazard_ratio,
-          resultsService.VARIABLE_TYPE_DETAILS[CONTRAST].standard_error,
-          resultsService.VARIABLE_TYPE_DETAILS[CONTRAST].is_reference
+          variableTypeDetails[CONTRAST].log_hazard_ratio,
+          variableTypeDetails[CONTRAST].standard_error,
+          variableTypeDetails[CONTRAST].is_reference
         ];
         var result = resultsService.getDefaultResultProperties('ontology:survival', CONTRAST);
         expect(result).toEqual(survivalContrastProperties);
@@ -1110,7 +1122,7 @@ define(['lodash', 'angular-mocks', './results'], function(_) {
 
     describe('buildPropertyCategories', function() {
       it('should build the categories for a continuous variable', function() {
-        var varDetails = _.reduce(resultsService.VARIABLE_TYPE_DETAILS[ARM_LEVEL], function(accum, varType) {
+        var varDetails = _.reduce(variableTypeDetails[ARM_LEVEL], function(accum, varType) {
           accum[varType.type] = _.extend({}, varType, {
             isSelected: false
           });
@@ -1166,7 +1178,7 @@ define(['lodash', 'angular-mocks', './results'], function(_) {
 
     describe('getResultPropertiesForType', function() {
       it('should get the right variable details for continuous type for arm level data', function() {
-        var varTypes = resultsService.VARIABLE_TYPE_DETAILS[ARM_LEVEL];
+        var varTypes = variableTypeDetails[ARM_LEVEL];
         var continuousResult = resultsService.getResultPropertiesForType(CONTINUOUS, ARM_LEVEL);
         var expectedContinuousResult = [
           varTypes.sample_size,
@@ -1191,7 +1203,7 @@ define(['lodash', 'angular-mocks', './results'], function(_) {
       });
 
       it('should get the right variable details for dichotomous type for arm level data', function() {
-        var varTypes = resultsService.VARIABLE_TYPE_DETAILS[ARM_LEVEL];
+        var varTypes = variableTypeDetails[ARM_LEVEL];
         var dichotomousResult = resultsService.getResultPropertiesForType(DICHOTOMOUS, ARM_LEVEL);
         var expectedDichotomousResult = [
           varTypes.sample_size,
@@ -1204,7 +1216,7 @@ define(['lodash', 'angular-mocks', './results'], function(_) {
       });
 
       it('should get the right variable details for survival type for arm level data', function() {
-        var varTypes = resultsService.VARIABLE_TYPE_DETAILS[ARM_LEVEL];
+        var varTypes = variableTypeDetails[ARM_LEVEL];
         var survivalResult = resultsService.getResultPropertiesForType(SURVIVAL, ARM_LEVEL);
         var expectedSurvivalResult = [
           varTypes.hazard_ratio,
@@ -1218,12 +1230,14 @@ define(['lodash', 'angular-mocks', './results'], function(_) {
 
       it('should get the right variable details for dichotomous contrast data', function() {
         var dichotomousResult = resultsService.getResultPropertiesForType(DICHOTOMOUS, CONTRAST);
-        var varTypes = resultsService.VARIABLE_TYPE_DETAILS[CONTRAST];
+        var varTypes = variableTypeDetails[CONTRAST];
         var expectedDichotomousResult = [
           varTypes.log_odds_ratio,
           varTypes.log_risk_ratio,
           varTypes.standard_error,
           varTypes.confidence_interval_width,
+          varTypes.confidence_interval_lowerbound,
+          varTypes.confidence_interval_upperbound,
           varTypes.is_reference
         ];
         expect(dichotomousResult).toEqual(expectedDichotomousResult);
@@ -1231,12 +1245,14 @@ define(['lodash', 'angular-mocks', './results'], function(_) {
 
       it('should get the right variable details for continuous contrast data', function() {
         var continuousResult = resultsService.getResultPropertiesForType(CONTINUOUS, CONTRAST);
-        var varTypes = resultsService.VARIABLE_TYPE_DETAILS[CONTRAST];
+        var varTypes = variableTypeDetails[CONTRAST];
         var expectedContinuousResult = [
           varTypes.mean_difference,
           varTypes.standardized_mean_difference,
           varTypes.standard_error,
           varTypes.confidence_interval_width,
+          varTypes.confidence_interval_lowerbound,
+          varTypes.confidence_interval_upperbound,
           varTypes.is_reference
         ];
         expect(continuousResult).toEqual(expectedContinuousResult);
@@ -1244,11 +1260,13 @@ define(['lodash', 'angular-mocks', './results'], function(_) {
 
       it('should get the right variable details for survival contrast data', function() {
         var survivalResult = resultsService.getResultPropertiesForType(SURVIVAL, CONTRAST);
-        var varTypes = resultsService.VARIABLE_TYPE_DETAILS[CONTRAST];
+        var varTypes = variableTypeDetails[CONTRAST];
         var expectedSurvivalResult = [
           varTypes.log_hazard_ratio,
           varTypes.standard_error,
           varTypes.confidence_interval_width,
+          varTypes.confidence_interval_lowerbound,
+          varTypes.confidence_interval_upperbound,
           varTypes.is_reference
         ];
         expect(survivalResult).toEqual(expectedSurvivalResult);

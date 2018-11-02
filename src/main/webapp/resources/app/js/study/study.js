@@ -39,9 +39,10 @@ define([
     studyCategory,
     categoryItemDirective,
     variableCategory,
-    angular,
+    angular
   ) {
-    return angular.module('trialverse.study', ['ngResource',
+    return angular.module('trialverse.study', [
+      'ngResource',
       'trialverse.util',
       'trialverse.arm',
       'trialverse.variable',

@@ -7,7 +7,9 @@ define(['lodash'], function(_) {
     'MeasurementMomentService',
     'ResultsService',
     'callback',
-    'settings'
+    'settings',
+    'TIME_SCALE_OPTIONS',
+    'VARIABLE_TYPE_DETAILS'
   ];
   var addVariableController = function(
     $scope,
@@ -16,7 +18,9 @@ define(['lodash'], function(_) {
     MeasurementMomentService,
     ResultsService,
     callback,
-    settings
+    settings,
+    TIME_SCALE_OPTIONS,
+    VARIABLE_TYPE_DETAILS
   ) {
     // functions
     $scope.addVariable = addVariable;
@@ -31,7 +35,7 @@ define(['lodash'], function(_) {
     $scope.armOrContrastChanged = armOrContrastChanged;
 
     // init
-    var service = $injector.get(settings.service);
+    var EndPointService = $injector.get(settings.service);
     $scope.settings = settings;
     $scope.variable = {
       measuredAtMoments: [],
@@ -39,7 +43,7 @@ define(['lodash'], function(_) {
       measurementType: 'ontology:dichotomous'
     };
     $scope.measurementMoments = MeasurementMomentService.queryItems();
-    $scope.timeScaleOptions = ResultsService.TIME_SCALE_OPTIONS;
+    $scope.timeScaleOptions = TIME_SCALE_OPTIONS;
 
     resetResultProperties();
 
@@ -74,7 +78,7 @@ define(['lodash'], function(_) {
 
     function addVariable() {
       $scope.variable.resultProperties = _.map($scope.variable.selectedResultProperties, 'uri');
-      service.addItem($scope.variable).then(succesCallback, errorCallback);
+      EndPointService.addItem($scope.variable).then(succesCallback, errorCallback);
     }
 
     function succesCallback() {
@@ -117,7 +121,7 @@ define(['lodash'], function(_) {
     }
 
     function armOrContrastChanged() {
-      $scope.variable.resultProperties = ResultsService.VARIABLE_TYPE_DETAILS[$scope.variable.armOrContrast];
+      $scope.variable.resultProperties = VARIABLE_TYPE_DETAILS[$scope.variable.armOrContrast];
       $scope.variable.selectedResultProperties = ResultsService.getDefaultResultProperties($scope.variable.measurementType, $scope.variable.armOrContrast);
     }
   };

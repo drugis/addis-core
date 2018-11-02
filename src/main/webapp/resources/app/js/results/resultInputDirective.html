@@ -1,7 +1,7 @@
-<div class="grid-x">
+<div class="grid-x" ng-show="isEditingAllowed">
   <div class="cell" ng-if="inputType === 'number'">
     <input 
-      ng-show="isEditingAllowed" 
+      ng-disabled="row.isReference"
       type="number" 
       ng-change="updateValue(row, column)" 
       ng-model="column.value" 
@@ -11,13 +11,11 @@
 
   <div class="cell" ng-if="inputType === 'reference'">
     <input
-    ng-show="isEditingAllowed"
-    type="radio"
-    ng-value="true"
-    ng-change="referenceChanged(row)"
-    ng-model="row.isReference">
+      type="radio"
+      ng-value="true"
+      ng-change="referenceChanged(row, column)"
+      ng-model="column.value">
   </div>  
-
 </div>
 
 <div ng-show="!isEditingAllowed" style="text-align: center;">{{column.value}}</div>

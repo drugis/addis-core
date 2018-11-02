@@ -60,7 +60,7 @@
       <div class="cell">
         <label>Included result properties: <inline-help help-key="result-properties"></inline-help></label>
         <span ng-show="!changeResultProperties" ng-repeat="property in variable.selectedResultProperties">
-          <strong ng-hide="property.type === 'is reference'">{{property.label}}{{$last ? '' : ', '}}</strong>
+          <strong ng-hide="property.type === 'is_reference'">{{property.label}}{{$last ? '' : ', '}}</strong>
         </span>
         <result-properties ng-show="changeResultProperties" variable="variable"></result-properties>
       </div>
@@ -86,7 +86,9 @@
       </div>
 
       <div class="cell">
-        <button class="button success" type="button" ng-click="addVariable()" ng-disabled="!variable.label || !variable.measurementType">Add</button>
+        <button class="button success" type="button" ng-click="addVariable()" ng-disabled="!variable.label || !variable.measurementType">
+          Add
+        </button>
       </div>
     </div>
   </div>

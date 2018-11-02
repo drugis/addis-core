@@ -28,16 +28,16 @@ define([], function() {
       '@id': 'http://www.w3.org/2000/01/rdf-schema#comment',
       '@type': 'http://www.w3.org/2001/XMLSchema#string'
     },
-    'confidence_interval_width': {
-      '@id': 'http://trials.drugis.org/ontology#confidence_interval_width',
-      '@type': 'http://www.w3.org/2001/XMLSchema#double'
-    },
     'confidence_interval_lowerbound': {
       '@id': 'http://trials.drugis.org/ontology#confidence_interval_lowerbound',
       '@type': 'http://www.w3.org/2001/XMLSchema#double'
     },
     'confidence_interval_upperbound': {
       '@id': 'http://trials.drugis.org/ontology#confidence_interval_upperbound',
+      '@type': 'http://www.w3.org/2001/XMLSchema#double'
+    },
+    'confidence_interval_width': {
+      '@id': 'http://trials.drugis.org/ontology#confidence_interval_width',
       '@type': 'http://www.w3.org/2001/XMLSchema#double'
     },
     'conversionMultiplier': {
@@ -59,6 +59,10 @@ define([], function() {
     'exposure': {
       '@id': 'http://trials.drugis.org/ontology#exposure',
       '@type': 'http://www.w3.org/2001/XMLSchema#double'
+    },
+    'first': {
+      '@id': 'http://www.w3.org/1999/02/22-rdf-syntax-ns#first',
+      '@type': '@id'
     },
     'first_quartile': {
       '@id': 'http://trials.drugis.org/ontology#first_quartile',
@@ -148,13 +152,17 @@ define([], function() {
       '@id': 'http://trials.drugis.org/ontology#hazard_ratio',
       '@type': 'http://www.w3.org/2001/XMLSchema#double'
     },
+    'is_measured_at': {
+      '@id': 'http://trials.drugis.org/ontology#is_measured_at',
+      '@type': '@id'
+    },
     'in_epoch': {
       '@id': 'http://trials.drugis.org/ontology#in_epoch',
       '@type': '@id'
     },
     'is_reference': {
       '@id': 'http://trials.drugis.org/ontology#is_reference',
-      '@type': '<http://www.w3.org/2001/XMLSchema#boolean>'
+      '@type': 'http://www.w3.org/2001/XMLSchema#boolean'
     },
     'least_squares_mean': {
       '@id': 'http://trials.drugis.org/ontology#least_squares_mean',
@@ -162,6 +170,18 @@ define([], function() {
     },
     'log_mean': {
       '@id': 'http://trials.drugis.org/ontology#log_mean',
+      '@type': 'http://www.w3.org/2001/XMLSchema#double'
+    },
+    'log_hazard_ratio': {
+      '@id': 'http://trials.drugis.org/ontology#log_hazard_ratio',
+      '@type': 'http://www.w3.org/2001/XMLSchema#double'
+    },
+    'log_odds_ratio': {
+      '@id': 'http://trials.drugis.org/ontology#log_odds_ratio',
+      '@type': 'http://www.w3.org/2001/XMLSchema#double'
+    },
+    'log_risk_ratio': {
+      '@id': 'http://trials.drugis.org/ontology#log_risk_ratio',
       '@type': 'http://www.w3.org/2001/XMLSchema#double'
     },
     'label': {
@@ -192,6 +212,14 @@ define([], function() {
       '@id': 'http://trials.drugis.org/ontology#median',
       '@type': 'http://www.w3.org/2001/XMLSchema#double'
     },
+    'nil': {
+      '@id': 'http://www.w3.org/1999/02/22-rdf-syntax-ns#nil'
+    },
+    'of_variable': {
+      '@id': 'http://trials.drugis.org/ontology#of_variable',
+      '@type': '@id'
+    },
+    'ontology': 'http://trials.drugis.org/ontology#',
     'odds_ratio': {
       '@id': 'http://trials.drugis.org/ontology#odds_ratio',
       '@type': 'http://www.w3.org/2001/XMLSchema#double'
@@ -207,6 +235,10 @@ define([], function() {
     'of_group': {
       '@id': 'http://trials.drugis.org/ontology#of_group',
       '@type': '@id'
+    },
+    'participants_starting': {
+      '@id': 'http://trials.drugis.org/ontology#participants_starting',
+      '@type': 'http://www.w3.org/2001/XMLSchema#integer'
     },
     'percentage': {
       '@id': 'http://trials.drugis.org/ontology#percentage',
@@ -231,6 +263,10 @@ define([], function() {
     'quantile_0.975': {
       '@id': 'http://trials.drugis.org/ontology#quantile_0.975',
       '@type': 'http://www.w3.org/2001/XMLSchema#double'
+    },
+    'registry': {
+      '@id': 'http://trials.drugis.org/ontology#registry',
+      '@type': '@id'
     },
     'risk_ratio': {
       '@id': 'http://trials.drugis.org/ontology#risk_ratio',
@@ -280,41 +316,9 @@ define([], function() {
       '@id': 'http://trials.drugis.org/ontology#third_quartile',
       '@type': 'http://www.w3.org/2001/XMLSchema#double'
     },
-    'nil': {
-      '@id': 'http://www.w3.org/1999/02/22-rdf-syntax-ns#nil'
-    },
-    'first': {
-      '@id': 'http://www.w3.org/1999/02/22-rdf-syntax-ns#first',
-      '@type': '@id'
-    },
-    'of_variable': {
-      '@id': 'http://trials.drugis.org/ontology#of_variable',
-      '@type': '@id'
-    },
-    'ontology': 'http://trials.drugis.org/ontology#',
-    'registry': {
-      '@id': 'http://trials.drugis.org/ontology#registry',
-      '@type': '@id'
-    },
-    'is_measured_at': {
-      '@id': 'http://trials.drugis.org/ontology#is_measured_at',
-      '@type': '@id'
-    },
-    'unit': {
-      '@id': 'http://trials.drugis.org/ontology#unit',
-      '@type': '@id'
-    },
-    'value': {
-      '@id': 'http://www.w3.org/1999/02/22-rdf-syntax-ns#value',
-      '@type': 'http://www.w3.org/2001/XMLSchema#double'
-    },
     'time_offset': {
       '@id': 'http://trials.drugis.org/ontology#time_offset',
       '@type': 'http://www.w3.org/2001/XMLSchema#duration'
-    },
-    'participants_starting': {
-      '@id': 'http://trials.drugis.org/ontology#participants_starting',
-      '@type': 'http://www.w3.org/2001/XMLSchema#integer'
     },
     'treatment_dose': {
       '@id': 'http://trials.drugis.org/ontology#treatment_dose',
@@ -331,6 +335,14 @@ define([], function() {
     'treatment_has_drug': {
       '@id': 'http://trials.drugis.org/ontology#treatment_has_drug',
       '@type': '@id'
+    },
+    'unit': {
+      '@id': 'http://trials.drugis.org/ontology#unit',
+      '@type': '@id'
+    },
+    'value': {
+      '@id': 'http://www.w3.org/1999/02/22-rdf-syntax-ns#value',
+      '@type': 'http://www.w3.org/2001/XMLSchema#double'
     },
     'registration_id': 'http://trials.drugis.org/ontology#registration_id',
     'uri': 'http://purl.org/ontology/bibo/uri'

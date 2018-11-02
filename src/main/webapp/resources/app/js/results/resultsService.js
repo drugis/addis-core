@@ -1,473 +1,32 @@
 'use strict';
 define(['angular', 'lodash'], function(angular, _) {
-  var dependencies = ['StudyService', 'RdfListService', 'UUIDService'];
-  var ResultsService = function(StudyService, RdfListService, UUIDService) {
-
-    var INTEGER_TYPE = '<http://www.w3.org/2001/XMLSchema#integer>';
-    var DOUBLE_TYPE = '<http://www.w3.org/2001/XMLSchema#double>';
-    var BOOLEAN_TYPE = '<http://www.w3.org/2001/XMLSchema#boolean>';
-    var ONTOLOGY_BASE = 'http://trials.drugis.org/ontology#';
-    var ARM_LEVEL = 'ontology:arm_level_data';
-    var CONTRAST = 'ontology:contrast_data';
-    var DICHOTOMOUS = 'ontology:dichotomous';
-    var CONTINUOUS = 'ontology:continuous';
-    var SURVIVAL = 'ontology:survival';
-
-    var ARM_VARIABLE_TYPES = [
-      'sample_size',
-      'mean',
-      'median',
-      'geometric_mean',
-      'log_mean',
-      'least_squares_mean',
-      'quantile_0.05',
-      'quantile_0.95',
-      'quantile_0.025',
-      'quantile_0.975',
-      'min',
-      'max',
-      'geometric_coefficient_of_variation',
-      'first_quartile',
-      'third_quartile',
-      'standard_deviation',
-      'standard_error',
-      'count',
-      'event_count',
-      'percentage',
-      'proportion',
-      'exposure',
-      'hazard_ratio'
-    ];
-
-    var CONTRAST_VARIABLE_TYPES = [
-      'standard_error',
-      'hazard_ratio',
-      'log_odds_ratio',
-      'log_risk_ratio',
-      'mean_difference',
-      'standardized_mean_difference',
-      'log_hazard_ratio',
-    ];
-
-    var VARIABLE_TYPES = {
-      'ontology:arm_level_data': ARM_VARIABLE_TYPES,
-      'ontology:contrast_data': CONTRAST_VARIABLE_TYPES
-    };
-
-    var ARM_VARIABLE_TYPE_DETAILS = {
-      sample_size: {
-        type: 'sample_size',
-        label: 'N',
-        armOrContrast: ARM_LEVEL,
-        uri: 'http://trials.drugis.org/ontology#sample_size',
-        dataType: INTEGER_TYPE,
-        variableTypes: [CONTINUOUS, DICHOTOMOUS],
-        category: 'Sample size',
-        lexiconKey: 'sample-size',
-        analysisReady: true,
-        isAlwaysPositive: true
-      },
-      mean: {
-        type: 'mean',
-        label: 'mean',
-        armOrContrast: ARM_LEVEL,
-        uri: 'http://trials.drugis.org/ontology#mean',
-        dataType: DOUBLE_TYPE,
-        variableTypes: [CONTINUOUS],
-        category: 'Central tendency',
-        lexiconKey: 'mean',
-        analysisReady: true
-      },
-      median: {
-        type: 'median',
-        label: 'median',
-        armOrContrast: ARM_LEVEL,
-        uri: 'http://trials.drugis.org/ontology#median',
-        dataType: DOUBLE_TYPE,
-        variableTypes: [CONTINUOUS],
-        category: 'Central tendency',
-        lexiconKey: 'median',
-        analysisReady: false
-      },
-      geometric_mean: {
-        type: 'geometric_mean',
-        label: 'geometric mean',
-        armOrContrast: ARM_LEVEL,
-        uri: 'http://trials.drugis.org/ontology#geometric_mean',
-        dataType: DOUBLE_TYPE,
-        variableTypes: [CONTINUOUS],
-        category: 'Central tendency',
-        lexiconKey: 'geometric-mean',
-        analysisReady: false
-      },
-      log_mean: {
-        type: 'log_mean',
-        label: 'log mean',
-        armOrContrast: ARM_LEVEL,
-        uri: 'http://trials.drugis.org/ontology#log_mean',
-        dataType: DOUBLE_TYPE,
-        variableTypes: [CONTINUOUS],
-        category: 'Central tendency',
-        lexiconKey: 'log-mean',
-        analysisReady: false
-      },
-      least_squares_mean: {
-        type: 'least_squares_mean',
-        label: 'least squares mean',
-        armOrContrast: ARM_LEVEL,
-        uri: 'http://trials.drugis.org/ontology#least_squares_mean',
-        dataType: DOUBLE_TYPE,
-        variableTypes: [CONTINUOUS],
-        category: 'Central tendency',
-        lexiconKey: 'least-squares-mean',
-        analysisReady: false
-      },
-      hazard_ratio: {
-        type: 'hazard_ratio',
-        label: 'hazard ratio',
-        armOrContrast: ARM_LEVEL,
-        uri: 'http://trials.drugis.org/ontology#hazard_ratio',
-        dataType: DOUBLE_TYPE,
-        variableTypes: [SURVIVAL],
-        lexiconKey: 'hazard-ratio',
-        analysisReady: false
-      },
-      'quantile_0.05': {
-        type: 'quantile_0.05',
-        label: '5% quantile',
-        armOrContrast: ARM_LEVEL,
-        uri: 'http://trials.drugis.org/ontology#quantile_0.05',
-        dataType: DOUBLE_TYPE,
-        variableTypes: [CONTINUOUS],
-        category: 'Quantiles',
-        lexiconKey: 'quantile-0.05',
-        analysisReady: false
-      },
-      'quantile_0.95': {
-        type: 'quantile_0.95',
-        label: '95% quantile',
-        armOrContrast: ARM_LEVEL,
-        uri: 'http://trials.drugis.org/ontology#quantile_0.95',
-        dataType: DOUBLE_TYPE,
-        variableTypes: [CONTINUOUS],
-        category: 'Quantiles',
-        lexiconKey: 'quantile-0.95',
-        analysisReady: false
-      },
-      'quantile_0.025': {
-        type: 'quantile_0.025',
-        label: '2.5% quantile',
-        armOrContrast: ARM_LEVEL,
-        uri: 'http://trials.drugis.org/ontology#quantile_0.025',
-        dataType: DOUBLE_TYPE,
-        variableTypes: [CONTINUOUS, SURVIVAL],
-        category: 'Quantiles',
-        lexiconKey: 'quantile-0.025',
-        analysisReady: false
-      },
-      'quantile_0.975': {
-        type: 'quantile_0.975',
-        label: '97.5% quantile',
-        armOrContrast: ARM_LEVEL,
-        uri: 'http://trials.drugis.org/ontology#quantile_0.975',
-        dataType: DOUBLE_TYPE,
-        variableTypes: [CONTINUOUS, SURVIVAL],
-        category: 'Quantiles',
-        lexiconKey: 'quantile-0.975',
-        analysisReady: false
-      },
-      min: {
-        type: 'min',
-        label: 'min',
-        armOrContrast: ARM_LEVEL,
-        uri: 'http://trials.drugis.org/ontology#min',
-        dataType: DOUBLE_TYPE,
-        variableTypes: [CONTINUOUS],
-        category: 'Dispersion',
-        lexiconKey: 'min',
-        analysisReady: false
-      },
-      max: {
-        type: 'max',
-        label: 'max',
-        armOrContrast: ARM_LEVEL,
-        uri: 'http://trials.drugis.org/ontology#max',
-        dataType: DOUBLE_TYPE,
-        variableTypes: [CONTINUOUS],
-        category: 'Dispersion',
-        lexiconKey: 'max',
-        analysisReady: false
-      },
-      geometric_coefficient_of_variation: {
-        type: 'geometric_coefficient_of_variation',
-        label: 'geometric coefficient of variation',
-        armOrContrast: ARM_LEVEL,
-        uri: 'http://trials.drugis.org/ontology#geometric_coefficient_of_variation',
-        dataType: DOUBLE_TYPE,
-        variableTypes: [CONTINUOUS],
-        category: 'Dispersion',
-        lexiconKey: 'geometric-coefficient-of-variation',
-        analysisReady: false
-      },
-      first_quartile: {
-        type: 'first_quartile',
-        label: 'first quartile',
-        armOrContrast: ARM_LEVEL,
-        uri: 'http://trials.drugis.org/ontology#first_quartile',
-        dataType: DOUBLE_TYPE,
-        variableTypes: [CONTINUOUS],
-        category: 'Quantiles',
-        lexiconKey: 'first-quartile',
-        analysisReady: false
-      },
-      third_quartile: {
-        type: 'third_quartile',
-        label: 'third quartile',
-        armOrContrast: ARM_LEVEL,
-        uri: 'http://trials.drugis.org/ontology#third_quartile',
-        dataType: DOUBLE_TYPE,
-        variableTypes: [CONTINUOUS],
-        category: 'Quantiles',
-        lexiconKey: 'third-quartile',
-        analysisReady: false
-      },
-      standard_deviation: {
-        type: 'standard_deviation',
-        label: 'standard deviation',
-        armOrContrast: ARM_LEVEL,
-        uri: 'http://trials.drugis.org/ontology#standard_deviation',
-        dataType: DOUBLE_TYPE,
-        variableTypes: [CONTINUOUS],
-        category: 'Dispersion',
-        lexiconKey: 'standard-deviation',
-        analysisReady: true,
-        isAlwaysPositive: true
-      },
-      standard_error: {
-        type: 'standard_error',
-        label: 'standard error',
-        armOrContrast: ARM_LEVEL,
-        uri: 'http://trials.drugis.org/ontology#standard_error',
-        dataType: DOUBLE_TYPE,
-        variableTypes: [CONTINUOUS],
-        category: 'Dispersion',
-        lexiconKey: 'standard-error',
-        analysisReady: true,
-        isAlwaysPositive: true
-      },
-      event_count: {
-        type: 'event_count',
-        label: 'number of events',
-        armOrContrast: ARM_LEVEL,
-        uri: 'http://trials.drugis.org/ontology#event_count',
-        dataType: INTEGER_TYPE,
-        variableTypes: [DICHOTOMOUS],
-        lexiconKey: 'event-count',
-        analysisReady: false,
-        isAlwaysPositive: true
-      },
-      count: {
-        type: 'count',
-        label: 'subjects with event',
-        armOrContrast: ARM_LEVEL,
-        uri: 'http://trials.drugis.org/ontology#count',
-        dataType: INTEGER_TYPE,
-        variableTypes: [DICHOTOMOUS, SURVIVAL],
-        lexiconKey: 'count',
-        analysisReady: true,
-        isAlwaysPositive: true
-      },
-      percentage: {
-        type: 'percentage',
-        label: 'percentage with event',
-        armOrContrast: ARM_LEVEL,
-        uri: 'http://trials.drugis.org/ontology#percentage',
-        dataType: DOUBLE_TYPE,
-        variableTypes: [DICHOTOMOUS],
-        lexiconKey: 'percentage',
-        analysisReady: false,
-        isAlwaysPositive: true
-      },
-      proportion: {
-        type: 'proportion',
-        label: 'proportion with event',
-        armOrContrast: ARM_LEVEL,
-        uri: 'http://trials.drugis.org/ontology#proportion',
-        dataType: DOUBLE_TYPE,
-        variableTypes: [DICHOTOMOUS],
-        lexiconKey: 'proportion',
-        analysisReady: false,
-        isAlwaysPositive: true
-      },
-      exposure: {
-        type: 'exposure',
-        label: 'total observation time',
-        armOrContrast: ARM_LEVEL,
-        uri: 'http://trials.drugis.org/ontology#exposure',
-        dataType: DOUBLE_TYPE,
-        variableTypes: [SURVIVAL],
-        lexiconKey: 'exposure',
-        analysisReady: true
-      }
-    };
-
-    var TIME_SCALE_OPTIONS = [{
-      label: 'Days',
-      duration: 'P1D'
-    }, {
-      label: 'Weeks',
-      duration: 'P1W'
-    }, {
-      label: 'Months',
-      duration: 'P1M'
-    }, {
-      label: 'Years',
-      duration: 'P1Y'
-    }];
-
-    var CONTRAST_VARIABLE_TYPE_DETAILS = {
-      log_odds_ratio: {
-        type: 'log_odds_ratio',
-        label: 'log odds ratio',
-        armOrContrast: CONTRAST,
-        isLog: true,
-        category: 'Central tendency',
-        uri: 'http://trials.drugis.org/ontology#odds_ratio',
-        dataType: DOUBLE_TYPE,
-        variableTypes: [DICHOTOMOUS],
-        lexiconKey: 'odds-ratio',
-        analysisReady: false
-      },
-      log_risk_ratio: {
-        type: 'log_risk_ratio',
-        label: 'log risk ratio',
-        armOrContrast: CONTRAST,
-        isLog: true,
-        category: 'Central tendency',
-        uri: 'http://trials.drugis.org/ontology#risk_ratio',
-        dataType: DOUBLE_TYPE,
-        variableTypes: [DICHOTOMOUS],
-        lexiconKey: 'risk-ratio',
-        analysisReady: false
-      },
-      mean_difference: {
-        type: 'mean_difference',
-        label: 'mean difference',
-        armOrContrast: CONTRAST,
-        category: 'Central tendency',
-        uri: 'http://trials.drugis.org/ontology#mean_difference',
-        dataType: DOUBLE_TYPE,
-        variableTypes: [CONTINUOUS],
-        lexiconKey: 'mean-difference',
-        analysisReady: false
-      },
-      standardized_mean_difference: {
-        type: 'standardized_mean_difference',
-        label: 'standardized mean difference',
-        armOrContrast: CONTRAST,
-        category: 'Central tendency',
-        uri: 'http://trials.drugis.org/ontology#standardized_mean_difference',
-        dataType: DOUBLE_TYPE,
-        variableTypes: [CONTINUOUS],
-        lexiconKey: 'standardized-mean-difference',
-        analysisReady: false
-      },
-      log_hazard_ratio: {
-        type: 'log_hazard_ratio',
-        label: 'log hazard ratio',
-        armOrContrast: CONTRAST,
-        isLog: true,
-        category: 'Central tendency',
-        uri: 'http://trials.drugis.org/ontology#hazard_ratio',
-        dataType: DOUBLE_TYPE,
-        variableTypes: [SURVIVAL],
-        lexiconKey: 'hazard-ratio',
-        analysisReady: false
-      },
-      standard_error: {
-        type: 'standard_error',
-        label: 'standard error',
-        armOrContrast: CONTRAST,
-        uri: 'http://trials.drugis.org/ontology#standard_error',
-        dataType: DOUBLE_TYPE,
-        variableTypes: [CONTINUOUS, DICHOTOMOUS, SURVIVAL],
-        category: 'Dispersion',
-        lexiconKey: 'standard-error',
-        analysisReady: true,
-        isAlwaysPositive: true
-      },
-      confidence_interval_width: {
-        type: 'confidence_interval',
-        label: 'confidence interval',
-        armOrContrast: CONTRAST,
-        uri: 'http://trials.drugis.org/ontology#confidence_interval_width',
-        dataType: DOUBLE_TYPE,
-        variableTypes: [CONTINUOUS, DICHOTOMOUS, SURVIVAL],
-        category: 'Dispersion',
-        lexiconKey: 'confidence-interval',
-        analysisReady: false,
-        isAlwaysPositive: true
-      },
-      is_reference: {
-        type: 'is reference',
-        label: 'is reference?',
-        armOrContrast: CONTRAST,
-        uri: 'http://trials.drugis.org/ontology#is_reference',
-        dataType: BOOLEAN_TYPE,
-        variableTypes: [CONTINUOUS, DICHOTOMOUS, SURVIVAL],
-        lexiconKey: 'reference-row',
-        analysisReady: false
-      }
-    };
-
-    var VARIABLE_TYPE_DETAILS = {
-      'ontology:arm_level_data': ARM_VARIABLE_TYPE_DETAILS,
-      'ontology:contrast_data': CONTRAST_VARIABLE_TYPE_DETAILS
-    };
-
-    var DEFAULT_ARM_RESULT_PROPERTIES = {
-      'ontology:continuous': [
-        ARM_VARIABLE_TYPE_DETAILS.sample_size,
-        ARM_VARIABLE_TYPE_DETAILS.mean,
-        ARM_VARIABLE_TYPE_DETAILS.standard_deviation
-      ],
-      'ontology:dichotomous': [
-        ARM_VARIABLE_TYPE_DETAILS.sample_size,
-        ARM_VARIABLE_TYPE_DETAILS.count
-      ],
-      'ontology:categorical': [],
-      'ontology:survival': [
-        ARM_VARIABLE_TYPE_DETAILS.count,
-        ARM_VARIABLE_TYPE_DETAILS.exposure
-      ]
-    };
-
-    var DEFAULT_CONTRAST_RESULT_PROPERTIES = {
-      'ontology:dichotomous': [
-        CONTRAST_VARIABLE_TYPE_DETAILS.log_odds_ratio,
-        CONTRAST_VARIABLE_TYPE_DETAILS.standard_error,
-        CONTRAST_VARIABLE_TYPE_DETAILS.is_reference
-      ],
-      'ontology:continuous': [
-        CONTRAST_VARIABLE_TYPE_DETAILS.mean_difference,
-        CONTRAST_VARIABLE_TYPE_DETAILS.standard_error,
-        CONTRAST_VARIABLE_TYPE_DETAILS.is_reference
-      ],
-      'ontology:categorical': [],
-      'ontology:survival': [
-        CONTRAST_VARIABLE_TYPE_DETAILS.log_hazard_ratio,
-        CONTRAST_VARIABLE_TYPE_DETAILS.standard_error,
-        CONTRAST_VARIABLE_TYPE_DETAILS.is_reference
-      ]
-    };
-
-    var DEFAULT_RESULT_PROPERTIES = {
-      'ontology:arm_level_data': DEFAULT_ARM_RESULT_PROPERTIES,
-      'ontology:contrast_data': DEFAULT_CONTRAST_RESULT_PROPERTIES
-    };
+  var dependencies = [
+    'StudyService',
+    'RdfListService',
+    'UUIDService',
+    'ARM_LEVEL_TYPE',
+    'ONTOLOGY_BASE',
+    'VARIABLE_TYPES',
+    'VARIABLE_TYPE_DETAILS',
+    'ARM_VARIABLE_TYPES',
+    'ARM_VARIABLE_TYPE_DETAILS',
+    'DEFAULT_RESULT_PROPERTIES'
+  ];
+  var ResultsService = function(
+    StudyService,
+    RdfListService,
+    UUIDService,
+    ARM_LEVEL_TYPE,
+    ONTOLOGY_BASE,
+    VARIABLE_TYPES,
+    VARIABLE_TYPE_DETAILS,
+    ARM_VARIABLE_TYPES,
+    ARM_VARIABLE_TYPE_DETAILS,
+    DEFAULT_RESULT_PROPERTIES
+  ) {
 
     function getVariableDetails(variableTypeUri, armOrContrast) {
-      armOrContrast = armOrContrast ? armOrContrast : ARM_LEVEL;
+      armOrContrast = armOrContrast ? armOrContrast : ARM_LEVEL_TYPE;
       var uri = buildVariableUri(variableTypeUri);
       var details = VARIABLE_TYPE_DETAILS[armOrContrast];
       return _.find(details, ['uri', uri]);
@@ -497,7 +56,8 @@ define(['angular', 'lodash'], function(angular, _) {
           '@id': 'http://trials.drugis.org/instances/' + UUIDService.generate(),
           of_group: row.group.armURI || row.group.groupUri,
           of_moment: row.measurementMoment.uri,
-          of_outcome: row.variable.uri
+          of_outcome: row.variable.uri,
+          arm_or_contrast: inputColumn.armOrContrast ? inputColumn.armOrContrast : ARM_LEVEL_TYPE
         };
         addItem[columnType] = inputColumn.value;
         StudyService.saveJsonGraph(graph.concat(addItem));
@@ -607,49 +167,6 @@ define(['angular', 'lodash'], function(angular, _) {
       return !_.some(VARIABLE_TYPES[armOrContrast], function(type) {
         return item[type] !== undefined;
       });
-    }
-
-    function createValueItem(baseItem, backEndItem, type) {
-      var valueItem = angular.copy(baseItem);
-      valueItem.result_property = type;
-      valueItem.value = backEndItem[type];
-      return valueItem;
-    }
-
-    function createCategoryItem(baseItem, backEndItem, categoryItem) {
-      var valueItem = angular.copy(baseItem);
-      valueItem.isCategorical = true;
-      valueItem.result_property = categoryItem.category && categoryItem.category.label ? categoryItem.label : categoryItem;
-      valueItem.value = categoryItem.count;
-      return valueItem;
-    }
-
-    function toFrontend(accum, backEndItem) {
-      // ?instance ?armUri ?momentUri ?result_property ?value
-      var baseItem = {
-        instance: backEndItem['@id'],
-        armUri: backEndItem.of_group,
-        momentUri: backEndItem.of_moment,
-        outcomeUri: backEndItem.of_outcome,
-      };
-
-      if (isNonConformantMeasurementResult(backEndItem)) {
-        baseItem.comment = backEndItem.comment;
-      }
-
-      _.forEach(VARIABLE_TYPES[backEndItem.arm_or_contrast], function(variableType) {
-        if (backEndItem[variableType] !== undefined) {
-          accum.push(createValueItem(baseItem, backEndItem, variableType));
-        }
-      });
-
-      if (backEndItem.category_count) {
-        _.forEach(backEndItem.category_count, function(categoryCount) {
-          accum.push(createCategoryItem(baseItem, backEndItem, categoryCount));
-        });
-      }
-
-      return accum;
     }
 
     function isResultForVariable(variableUri, item) {
@@ -884,16 +401,71 @@ define(['angular', 'lodash'], function(angular, _) {
       return categories;
     }
 
-
     function _queryResults(uri, typeFunction) {
       return StudyService.getJsonGraph().then(function(graph) {
         var resultJsonItems = graph.filter(typeFunction.bind(this, uri));
-        return resultJsonItems.reduce(toFrontend, []);
+        return _(resultJsonItems)
+          .map(toFrontend)
+          .flatten()
+          .value();
       });
     }
 
     function queryResults(variableUri) {
       return _queryResults(variableUri, isResultForVariable);
+    }
+
+    function toFrontend(backEndItem) {
+      var baseItem = {
+        instance: backEndItem['@id'],
+        armUri: backEndItem.of_group,
+        momentUri: backEndItem.of_moment,
+        outcomeUri: backEndItem.of_outcome,
+        armOrContrast: backEndItem.arm_or_contrast || ARM_LEVEL_TYPE
+      };
+      if (isNonConformantMeasurementResult(backEndItem)) {
+        baseItem.comment = backEndItem.comment;
+      }
+
+      var valueItems = createValueItems(baseItem, backEndItem);
+      var categoryItems = createCategoryItems(baseItem, backEndItem);
+      return valueItems.concat(categoryItems);
+    }
+
+    function createCategoryItems(baseItem, backEndItem) {
+      if (backEndItem.category_count) {
+        return _.map(backEndItem.category_count, function(categoryCount) {
+          return createCategoryItem(baseItem, categoryCount);
+        });
+      } else {
+        return [];
+      }
+    }
+
+    function createValueItems(baseItem, backEndItem) {
+      return _(VARIABLE_TYPES[baseItem.armOrContrast])
+        .map(function(variableType) {
+          if (backEndItem[variableType] !== undefined) {
+            return createValueItem(baseItem, backEndItem, variableType);
+          }
+        })
+        .compact()
+        .value();
+    }
+
+    function createValueItem(baseItem, backEndItem, type) {
+      var valueItem = angular.copy(baseItem);
+      valueItem.result_property = type;
+      valueItem.value = backEndItem[type];
+      return valueItem;
+    }
+
+    function createCategoryItem(baseItem, categoryItem) {
+      var valueItem = angular.copy(baseItem);
+      valueItem.isCategorical = true;
+      valueItem.result_property = categoryItem.category && categoryItem.category.label ? categoryItem.label : categoryItem;
+      valueItem.value = categoryItem.count;
+      return valueItem;
     }
 
     function queryResultsByGroup(armUri) {
@@ -932,12 +504,7 @@ define(['angular', 'lodash'], function(angular, _) {
       getVariableDetails: getVariableDetails,
       getDefaultResultProperties: getDefaultResultProperties,
       getResultPropertiesForType: getResultPropertiesForType,
-      buildPropertyCategories: buildPropertyCategories,
-      VARIABLE_TYPE_DETAILS: VARIABLE_TYPE_DETAILS,
-      INTEGER_TYPE: INTEGER_TYPE,
-      DOUBLE_TYPE: DOUBLE_TYPE,
-      BOOLEAN_TYPE: BOOLEAN_TYPE,
-      TIME_SCALE_OPTIONS: TIME_SCALE_OPTIONS
+      buildPropertyCategories: buildPropertyCategories
     };
   };
   return dependencies.concat(ResultsService);

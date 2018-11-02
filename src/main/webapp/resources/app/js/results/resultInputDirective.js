@@ -25,11 +25,14 @@ define([], function() {
           };
           return inputTypes[scope.column.dataType];
         }
-        
-        function referenceChanged(row){
+
+        function referenceChanged(row, column) {
           row.isReference = true;
-          var activityUri = row.armUri ? row.armUri : row.groupUri;
-          scope.$emit('referenceRowChanged', activityUri);
+          var activityUri = row.group.armURI ? row.group.armURI : row.group.groupUri;
+          ResultsService.updateResultValue(row, column).then(function(result) {
+            row.uri = result;
+            scope.$emit('referenceRowChanged', { uri: activityUri });
+          });
         }
 
         function updateValue(row, column) {
