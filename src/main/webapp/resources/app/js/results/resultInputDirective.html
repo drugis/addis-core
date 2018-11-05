@@ -1,21 +1,10 @@
 <div class="grid-x" ng-show="isEditingAllowed">
-  <div class="cell" ng-if="inputType === 'number'">
+  <div class="cell">
     <input 
-      ng-disabled="row.isReference"
       type="number" 
       ng-change="updateValue(row, column)" 
       ng-model="column.value" 
-      ng-class="{ 'invalid-trialverse-number' : column.isInValidValue }" 
       ng-model-options="{ updateOn: 'default blur', debounce: {'default': 500, 'blur': 0} }">
   </div>
-
-  <div class="cell" ng-if="inputType === 'reference'">
-    <input
-      type="radio"
-      ng-value="true"
-      ng-change="referenceChanged(row, column)"
-      ng-model="column.value">
-  </div>  
 </div>
-
 <div ng-show="!isEditingAllowed" style="text-align: center;">{{column.value}}</div>

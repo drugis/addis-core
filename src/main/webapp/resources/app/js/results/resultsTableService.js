@@ -5,14 +5,16 @@ define(['lodash'], function(_) {
     'INTEGER_TYPE',
     'BOOLEAN_TYPE',
     'DOUBLE_TYPE',
-    'ONTOLOGY_BASE'
+    'ONTOLOGY_BASE',
+    'CONTRAST_TYPE'
   ];
   var ResultsTableService = function(
     ResultsService,
     INTEGER_TYPE,
     BOOLEAN_TYPE,
     DOUBLE_TYPE,
-    ONTOLOGY_BASE
+    ONTOLOGY_BASE,
+    CONTRAST_TYPE
   ) {
     function findResultValueByType(resultValueObjects, type) {
       var resultValueObject = _.find(resultValueObjects, function(resultValueObject) {
@@ -20,9 +22,6 @@ define(['lodash'], function(_) {
       });
 
       if (resultValueObject) {
-        if (type === 'is_reference') {
-          return Boolean(resultValueObject.value);
-        }
         return Number(resultValueObject.value);
       }
     }
@@ -61,14 +60,14 @@ define(['lodash'], function(_) {
 
     function createConfidenceIntervalHeaders(details, variable) {
       return [
-        createBoundHeader(details, variable, 'lowerbound'),
-        createBoundHeader(details, variable, 'upperbound')
+        createBoundHeader(details, variable, 'lower bound'),
+        createBoundHeader(details, variable, 'upper bound')
       ];
     }
 
     function createBoundHeader(details, variable, bound) {
       return {
-        label: 'confidence interval (' + variable.confidenceIntervalWidth + '%) ' + bound,
+        label: variable.confidenceIntervalWidth + '% confidence interval ' + bound,
         lexiconKey: details.lexiconKey,
         analysisReady: details.analysisReady
       };
@@ -123,41 +122,39 @@ define(['lodash'], function(_) {
     function createInputRows(variable, arms, groups, measurementMoments, resultValuesObjects) {
       var rows = _(variable.measuredAtMoments)
         .reduce(function(accum, measuredAtMoment) {
+          if (isContrastData(variable)) {
+            groups = [];
+            arms = rejectReferenceArm(arms, variable);
+          }
           var measurementMoment = findMeasurementMoment(measurementMoments, measuredAtMoment);
-          var armRows = createArmRows(arms, resultValuesObjects, measurementMoment, variable, groups);
-          var groupRows = createGroupRows(arms, resultValuesObjects, measurementMoment, variable, groups);
+          var armRows = createArmRows(variable, arms, groups, measurementMoment, resultValuesObjects);
+          var groupRows = createGroupRows(variable, arms, groups, measurementMoment, resultValuesObjects);
           return accum.concat(armRows, groupRows);
         }, []);
       var sortedRows = sortRows(rows);
-      var sortedRowsWithReference = setDefaultReferenceRow(variable, sortedRows);
-      return sortedRowsWithReference;
+      return sortedRows;
     }
 
-    function setDefaultReferenceRow(variable, rows) {
-      if (variable.armOrContrast === 'ontology:contrast_data' && !_.some(rows, function(row) {
-        return row.isReference;
-      })) {
-        rows[0].isReference = true;
-        var referenceColumn = _.find(rows[0].inputColumns, function(column) {
-          return column.resultProperty === ONTOLOGY_BASE + 'is_reference';
-        });
-        referenceColumn.value = true;
-      }
-      return rows;
-    }
-
-    function createGroupRows(arms, resultValuesObjects, measurementMoment, variable, groups) {
+    function createGroupRows(variable, arms, groups, measurementMoment, resultValuesObjects) {
       return _.map(groups, function(group) {
         var valueObjects = filterRowValuesObjects(resultValuesObjects, measurementMoment.uri, group.groupUri);
         return createRow(variable, group, arms.length + groups.length, measurementMoment, valueObjects);
       });
     }
 
-    function createArmRows(arms, resultValuesObjects, measurementMoment, variable, groups) {
+    function createArmRows(variable, arms, groups, measurementMoment, resultValuesObjects) {
       return _.map(arms, function(arm) {
         var valueObjects = filterRowValuesObjects(resultValuesObjects, measurementMoment.uri, arm.armURI);
         return createRow(variable, arm, arms.length + groups.length, measurementMoment, valueObjects);
       });
+    }
+
+    function isContrastData(variable) {
+      return variable.armOrContrast === CONTRAST_TYPE;
+    }
+
+    function rejectReferenceArm(arms, variable) {
+      return _.reject(arms, ['armURI', variable.referenceArm]);
     }
 
     function filterRowValuesObjects(resultValuesObjects, measurementMomentUri, uri) {
@@ -180,26 +177,12 @@ define(['lodash'], function(_) {
         numberOfGroups: numberOfGroups,
         inputColumns: createInputColumns(variable, valueObjects)
       };
-      setReferenceOnRow(row);
 
       // if this row has any values set we need to save the instance uri on the row to use for update or delete
       if (valueObjects && valueObjects.length > 0) {
         row.uri = valueObjects[0].instance;
       }
       return row;
-    }
-
-    function setReferenceOnRow(row) {
-      if (isReferenceRow(row)) {
-        row.isReference = true;
-      }
-    }
-
-    function isReferenceRow(row) {
-      return _.some(row.inputColumns, function(column) {
-        return column.resultProperty === 'http://trials.drugis.org/ontology#is_reference' &&
-          column.value;
-      });
     }
 
     function createInputColumns(variable, valueObjects) {
@@ -329,42 +312,13 @@ define(['lodash'], function(_) {
       });
     }
 
-    function updateNonReferenceRows(inputRows, referenceUri) {
-      return _.map(inputRows, function(row) {
-        var rowUri = row.group.armURI || row.group.groupUri;
-        if (rowUri !== referenceUri && row.isReference) {
-          delete row.isReference;
-          var column = _.find(row.inputColumns, function(column) {
-            return column.resultProperty === ONTOLOGY_BASE + 'is_reference';
-          });
-          column.value = false;
-          ResultsService.updateResultValue(row, column);
-        }
-        return row;
-      });
-    }
-
-    function updateReferenceColumns(row) {
-      return _.map(row.inputColumns, function(column) {
-        if (column.resultProperty !== ONTOLOGY_BASE + 'is_reference') {
-          column.value = undefined;
-          ResultsService.updateResultValue(row, column);
-        } else {
-          column.value = true;
-        }
-        return column;
-      });
-    }
-
     return {
       createInputRows: createInputRows,
       createHeaders: createHeaders,
       isValidValue: isValidValue,
       createInputColumns: createInputColumns,
       buildMeasurementMomentOptions: buildMeasurementMomentOptions,
-      findOverlappingMeasurements: findOverlappingMeasurements,
-      updateNonReferenceRows: updateNonReferenceRows,
-      updateReferenceColumns: updateReferenceColumns
+      findOverlappingMeasurements: findOverlappingMeasurements
     };
   };
   return dependencies.concat(ResultsTableService);

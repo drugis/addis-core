@@ -58,9 +58,9 @@
         <label for="contrast">Contrast data</label>
       </div>
 
-      <div class="cell" ng-if="armOrContrast === 'ontology:contrast_data'">
+      <div class="cell large-6" ng-if="variable.armOrContrast === 'ontology:contrast_data'">
         <label>Reference arm</label>
-        <select ng-model=variable.referenceArm ng-options="arms"></select>
+        <select ng-model="variable.referenceArm" ng-options="arm.armURI as arm.label for arm in arms"></select>
       </div>
 
       <div class="cell">
@@ -70,7 +70,7 @@
         </span>
         <result-properties ng-show="changeResultProperties" variable="variable"></result-properties>
       </div>
-      
+
       <div class="cell">
         <button class="button small" type="button" ng-click="changeResultProperties = !changeResultProperties">
           {{changeResultProperties ? 'Finish changing' : 'Change'}}

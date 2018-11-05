@@ -31,13 +31,6 @@ define(['lodash'], function(_) {
         // init
         scope.isExpanded = false;
         scope.$on('refreshResultsTable', reloadResults);
-        scope.$on('referenceRowChanged', function(event, reference) {
-          var newReferenceRow = _.find(scope.inputRows, function(row) {
-            return row.group.armURI === reference.uri || row.group.groupUri === reference.uri;
-          });
-          newReferenceRow.inputColumns = ResultsTableService.updateReferenceColumns(newReferenceRow);
-          scope.inputRows = ResultsTableService.updateNonReferenceRows(scope.inputRows, reference.uri);
-        });
 
         function reloadResults() {
           if (scope.isExpanded) {
@@ -70,11 +63,8 @@ define(['lodash'], function(_) {
 
         function buildMeasurementMomentSelections() {
           return _.reduce(scope.inputRows, function(accum, inputRow) {
-            // for every inputRow, take the uri of its measurementMoment. Then get for this measurementMoment the 
-            // first in its list of options available when changing the measurementMoment of this row to another
-            // measurementMoment. Then store this option based on the uri of the measurement moment
-            var measurementMomentUri = inputRow.measurementMoment.uri;
-            accum[measurementMomentUri] = scope.measurementMomentOptions[measurementMomentUri][0];
+            var momentUri = inputRow.measurementMoment.uri;
+            accum[momentUri] = scope.measurementMomentOptions[momentUri][0];
             return accum;
           }, {});
         }

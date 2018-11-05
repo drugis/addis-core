@@ -103,8 +103,7 @@ define(['angular-mocks', './results'], function() {
         var testType = {
           resultProperties: [
             'http://trials.drugis.org/ontology#odds_ratio',
-            'http://trials.drugis.org/ontology#standard_error',
-            'http://trials.drugis.org/ontology#is_reference'
+            'http://trials.drugis.org/ontology#standard_error'
           ],
           armOrContrast: CONTRAST
         };
@@ -116,10 +115,6 @@ define(['angular-mocks', './results'], function() {
           label: 'standard error',
           lexiconKey: 'standard-error',
           analysisReady: true
-        }, {
-          label: 'is reference?',
-          lexiconKey: 'reference-row',
-          analysisReady: false
         }];
         expect(resultsTableService.createHeaders(testType)).toEqual(expectedResult);
       });
@@ -128,8 +123,7 @@ define(['angular-mocks', './results'], function() {
         var testType = {
           resultProperties: [
             'http://trials.drugis.org/ontology#standardized_mean_difference',
-            'http://trials.drugis.org/ontology#confidence_interval_width',
-            'http://trials.drugis.org/ontology#is_reference'
+            'http://trials.drugis.org/ontology#confidence_interval_width'
           ],
           armOrContrast: CONTRAST,
           confidenceIntervalWidth: 70
@@ -146,10 +140,6 @@ define(['angular-mocks', './results'], function() {
           label: 'confidence interval (70%) upperbound',
           lexiconKey: 'confidence-interval',
           analysisReady: false
-        }, {
-          label: 'is reference?',
-          lexiconKey: 'reference-row',
-          analysisReady: false
         }];
         expect(resultsTableService.createHeaders(testType)).toEqual(expectedResult);
       });
@@ -158,8 +148,7 @@ define(['angular-mocks', './results'], function() {
         var testType = {
           resultProperties: [
             'http://trials.drugis.org/ontology#hazard_ratio',
-            'http://trials.drugis.org/ontology#standard_error',
-            'http://trials.drugis.org/ontology#is_reference'
+            'http://trials.drugis.org/ontology#standard_error'
           ],
           armOrContrast: CONTRAST
         };
@@ -171,10 +160,6 @@ define(['angular-mocks', './results'], function() {
           label: 'standard error',
           lexiconKey: 'standard-error',
           analysisReady: true
-        }, {
-          label: 'is reference?',
-          lexiconKey: 'reference-row',
-          analysisReady: false
         }];
         expect(resultsTableService.createHeaders(testType)).toEqual(expectedResult);
       });
@@ -445,18 +430,6 @@ define(['angular-mocks', './results'], function() {
       }];
       var result = resultsTableService.findOverlappingMeasurements(targetMMUri, inputRows);
       expect(result).toBeFalsy();
-    });
-
-    describe('updateNonReferenceRows', function(){
-      it('should mark all rows that are not the new reference as non reference', function(){
-        fail();
-      });
-    }); 
-    
-    describe('updateReferenceColumns', function(){
-      it('should wipe all values except for the is_reference property which should be set to true', function(){
-        fail();
-      });
     });
   });
 });

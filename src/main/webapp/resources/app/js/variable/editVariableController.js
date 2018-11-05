@@ -3,6 +3,8 @@ define(['lodash'], function(_) {
   var dependencies = [
     '$scope',
     '$modalInstance',
+    '$stateParams',
+    'ArmService',
     'OutcomeService',
     'itemService',
     'MeasurementMomentService',
@@ -11,11 +13,15 @@ define(['lodash'], function(_) {
     'item',
     'itemType',
     'TIME_SCALE_OPTIONS',
-    'VARIABLE_TYPE_DETAILS'
+    'VARIABLE_TYPE_DETAILS',
+    'ARM_LEVEL_TYPE',
+    'CONTRAST_TYPE'
   ];
   var EditVariableController = function(
     $scope,
     $modalInstance,
+    $stateParams,
+    ArmService,
     OutcomeService,
     itemService,
     MeasurementMomentService,
@@ -24,7 +30,9 @@ define(['lodash'], function(_) {
     item,
     itemType,
     TIME_SCALE_OPTIONS,
-    VARIABLE_TYPE_DETAILS
+    VARIABLE_TYPE_DETAILS,
+    ARM_LEVEL_TYPE,
+    CONTRAST_TYPE
   ) {
     // functions
     $scope.measurementMomentEquals = measurementMomentEquals;
@@ -43,15 +51,17 @@ define(['lodash'], function(_) {
     setArmOrContrast();
     $scope.measurementMoments = MeasurementMomentService.queryItems();
     $scope.resultProperties = _.values(VARIABLE_TYPE_DETAILS[$scope.variable.armOrContrast]);
+    
     $scope.timeScaleOptions = TIME_SCALE_OPTIONS;
-
     $scope.$watch('variable.selectedResultProperties', checkTimeScaleInput);
 
     $scope.variable.selectedResultProperties = getSelectedResultProperties();
 
+    getArms();
+
     function setArmOrContrast() {
       if (!$scope.variable.armOrContrast) {
-        $scope.variable.armOrContrast = 'ontology:arm_level_data';
+        $scope.variable.armOrContrast = ARM_LEVEL_TYPE;
       }
     }
 
@@ -62,7 +72,7 @@ define(['lodash'], function(_) {
     }
 
     function checkTimeScaleInput() {
-      $scope.showTimeScaleInput = _.find($scope.variable.selectedResultProperties, ['uri', 'http://trials.drugis.org/ontology#exposure']);
+      $scope.showTimeScaleInput = hasExposure();
       if (!$scope.showTimeScaleInput) {
         delete $scope.variable.timeScale;
       } else {
@@ -72,12 +82,16 @@ define(['lodash'], function(_) {
       }
     }
 
+    function hasExposure(){
+      return _.some($scope.variable.selectedResultProperties, ['uri', 'http://trials.drugis.org/ontology#exposure']);
+    }
+
     function measurementMomentEquals(moment1, moment2) {
       return moment1.uri === moment2.uri;
     }
 
     function resetResultProperties() {
-      $scope.variable.armOrContrast = 'ontology:arm_level_data';
+      $scope.variable.armOrContrast = ARM_LEVEL_TYPE;
       armOrContrastChanged();
       if ($scope.variable.measurementType === 'ontology:categorical') {
         $scope.variable.categoryList = [];
@@ -90,7 +104,7 @@ define(['lodash'], function(_) {
 
     function editVariable() {
       $scope.isEditing = false;
-      $scope.resultProperties = _.map($scope.variable.selectedResultProperties, 'uri');
+      $scope.variable.resultProperties = _.map($scope.variable.selectedResultProperties, 'uri');
       delete $scope.variable.selectedResultProperties;
       itemService.editItem($scope.variable).then(succesCallback, errorCallback);
     }
@@ -113,7 +127,8 @@ define(['lodash'], function(_) {
     function isDuplicateCategory(newCategory) {
       return _.includes(
         _.map($scope.variable.categoryList, 'label'),
-        _.trim(newCategory.categoryLabel));
+        _.trim(newCategory.categoryLabel)
+      );
     }
 
     function cannotAddCategory(newCategory) {
@@ -141,6 +156,15 @@ define(['lodash'], function(_) {
     function armOrContrastChanged() {
       $scope.variable.resultProperties = VARIABLE_TYPE_DETAILS[$scope.variable.armOrContrast];
       $scope.variable.selectedResultProperties = ResultsService.getDefaultResultProperties($scope.variable.measurementType, $scope.variable.armOrContrast);
+      if ($scope.variable.armOrContrast === CONTRAST_TYPE) {
+        $scope.variable.referenceArm = $scope.arms[0].armURI;
+      }
+    }
+
+    function getArms() {
+      return ArmService.queryItems($stateParams.studyUUID).then(function(result) {
+        $scope.arms = result;
+      });
     }
   };
   return dependencies.concat(EditVariableController);

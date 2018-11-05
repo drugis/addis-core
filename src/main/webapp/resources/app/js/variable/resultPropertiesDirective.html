@@ -1,31 +1,29 @@
-<div class="grid-x">
+<div class="grid-x" ng-if="showCategories" ng-repeat="category in categories">
   <div class="cell">
-    <ul class="inline-list" ng-if="showCategories">
-      <li ng-repeat="category in categories">
-        {{category.categoryLabel}}
-        <ul class="no-bullet">
-          <li ng-repeat="property in category.properties">
-            <label>
-              <input type="checkbox" ng-model="property.isSelected" ng-change="updateSelection()"> {{property.label}}</input>
-              <span class="alert" ng-show="{{!property.analysisReady}}">*</span>
-              <inline-help help-key="{{property.lexiconKey}}"></inline-help>
-            </label>
-          </li>
-        </ul>
-      </li>
-    </ul>
-    <ul ng-if="!showCategories" class="no-bullet">
-      <li ng-repeat="property in properties">
-        <label ng-show="!property.hiddenSelection">
-          <input type="checkbox" ng-model="property.isSelected" ng-change="updateSelection()"> {{property.label}}</input>
-          <span class="alert" ng-show="{{!property.analysisReady}}">*</span>
-          <inline-help help-key='{{property.lexiconKey}}'></inline-help>
-        </label>
-        <div ng-if="variable.armOrContrast === 'ontology:contrast_data' && property.type === 'confidence_interval' && property.isSelected">
-          <input type="number" step="1" min="0" max="100" ng-model="variable.confidenceIntervalWidth">
-        </div>
-      </li>
-    </ul>
+    {{category.categoryLabel}}
   </div>
-  <div class="cell alert" ng-if="hasNotAnalysedProperty">*These measurements are currently not supported for analysis.</div>
+  <div class="cell" ng-repeat="property in category.properties">
+    <label>
+      <input type="checkbox" ng-model="property.isSelected" ng-change="updateSelection()"> {{property.label}}</input>
+      <span class="alert" ng-show="{{!property.analysisReady}}">*</span>
+      <inline-help help-key="{{property.lexiconKey}}"></inline-help>
+    </label>
+  </div>
+</div>
+<div class="grid-x" ng-if="!showCategories" ng-repeat="property in properties">
+  <div class="cell">
+    <label ng-show="!property.hiddenSelection">
+      <input type="checkbox" ng-model="property.isSelected" ng-change="updateSelection()"> {{property.label}}</input>
+      <span class="alert" ng-show="{{!property.analysisReady}}">*</span>
+      <inline-help help-key='{{property.lexiconKey}}'></inline-help>
+    </label>
+  </div>
+  <div class="cell" ng-if="variable.armOrContrast === 'ontology:contrast_data' && property.type === 'confidence_interval' && property.isSelected">
+    <input type="number" step="1" min="0" max="100" ng-model="variable.confidenceIntervalWidth">
+  </div>
+</div>
+<div class="grid-x">
+  <div class="cell alert" ng-if="hasNotAnalysedProperty">*These measurements are currently not supported for
+    analysis.
+  </div>
 </div>

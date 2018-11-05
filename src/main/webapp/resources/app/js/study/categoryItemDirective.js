@@ -1,5 +1,5 @@
 'use strict';
-define(['angular'], function(angular) {
+define(['angular', 'lodash'], function(angular, _) {
   var dependencies = ['$modal', '$injector'];
 
   var CategoryItemDirective = function($modal, $injector) {
@@ -15,13 +15,19 @@ define(['angular'], function(angular) {
         isSingleItem: '=',
         isRepairable: '=',
         arms: '=',
-        groups: '=',
         measurementMoments: '='
       },
       link: function(scope) {
+        //functions 
         scope.deleteItem = deleteItem;
         scope.repairItem = repairItem;
         scope.editItem = editItem;
+        scope.referenceStandardErrorChanged = referenceStandardErrorChanged;
+
+        //init
+        if (scope.item.referenceArm) {
+          scope.referenceArm = _.find(scope.arms, ['armURI', scope.item.referenceArm]);
+        }
 
         var service = $injector.get(scope.settings.service);
         scope.$watch('item', function() {
@@ -31,6 +37,10 @@ define(['angular'], function(angular) {
         function onEdit() {
           scope.$emit('updateStudyDesign');
           scope.reloadItems();
+        }
+
+        function referenceStandardErrorChanged() {
+          service.editItem(scope.item);
         }
 
         function editItem() {

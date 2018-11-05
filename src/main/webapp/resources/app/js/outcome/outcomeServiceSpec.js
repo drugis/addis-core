@@ -189,10 +189,11 @@ define(['angular-mocks', './outcome'], function() {
         measuredAtMoments: [measuredAtMoment],
         resultProperties: [
           'http://trials.drugis.org/ontology#odds_ratio',
-          'http://trials.drugis.org/ontology#confidence_interval_width',
-          'http://trials.drugis.org/ontology#is_reference'
+          'http://trials.drugis.org/ontology#confidence_interval_width'
         ],
         armOrContrast: 'ontology:contrast_data',
+        referenceArm: 'referenceArmUri',
+        referenceStandardError: 0.5,
         confidenceIntervalWidth: 95
       };
 
@@ -225,10 +226,11 @@ define(['angular-mocks', './outcome'], function() {
             }],
             has_result_property: [
               'http://trials.drugis.org/ontology#odds_ratio',
-              'http://trials.drugis.org/ontology#confidence_interval_width',
-              'http://trials.drugis.org/ontology#is_reference'
+              'http://trials.drugis.org/ontology#confidence_interval_width'
             ],
             arm_or_contrast: 'ontology:contrast_data',
+            reference_arm: 'referenceArmUri',
+            reference_standard_error: 0.5,
             confidence_interval_width: 95
           }]
         };

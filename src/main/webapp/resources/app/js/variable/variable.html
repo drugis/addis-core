@@ -1,37 +1,38 @@
-<ul class="no-bullet">
-  <li>
+<div class="grid-x">
+  <div class="cell">
     <h4>{{item.label}}</h4>
-  </li>
-  <li>
-    <span>
-      Measurement type:
-    </span>
-    <span>
-      <strong ng-if="item.measurementType === 'ontology:continuous'">continuous</strong>
-      <strong ng-if="item.measurementType === 'ontology:dichotomous'">count</strong>
-      <strong ng-if="item.measurementType === 'ontology:categorical'">categorical</strong>
-      <strong ng-if="item.measurementType === 'ontology:survival'">survival</strong>
-    </span>
-  </li>
-  <li ng-if="item.measurementType === 'ontology:categorical'">
-    <span>
-      Categories:
-    </span>
-    <ul>
-      <li ng-repeat="category in item.categoryList">{{category.label ? category.label : category}}</li>
+  </div>
+  <div class="cell">
+    Measurement type:
+    <strong ng-if="item.measurementType === 'ontology:continuous'">continuous</strong>
+    <strong ng-if="item.measurementType === 'ontology:dichotomous'">count</strong>
+    <strong ng-if="item.measurementType === 'ontology:categorical'">categorical</strong>
+    <strong ng-if="item.measurementType === 'ontology:survival'">survival</strong>
+  </div>
+  <div class="cell" ng-if="item.measurementType === 'ontology:categorical'">
+    Categories:
+    <ul ng-repeat="category in item.categoryList">
+      <li>
+        {{category.label ? category.label : category}}
+      </li>
     </ul>
-  </li>
-  <li ng-if="item.measuredAtMoments.length > 0">
-    <span>
-      Measured at:
-    </span>
+  </div>
+  <div class="cell" ng-if="item.measuredAtMoments.length > 0">
+    Measured at:
     <ul>
-      <li ng-repeat="measuredAt in item.measuredAtMoments"><strong>{{measuredAt.label}}</strong></li>
+      <li ng-repeat="measuredAt in item.measuredAtMoments">
+        <strong>{{measuredAt.label}}</strong>
+      </li>
     </ul>
-  </li>
-  <li ng-if="item.referenceArm">
-    <span>Reference arm:</span>
-    <span>{{item.referenceArm}}</span>
-    <span><input type="number" ng-model="item.referenceStandardError"></span>
-  </li>
-</ul>
+  </div>
+  <div class="cell" ng-if="item.referenceArm">
+    Reference arm: <strong>{{referenceArm.label}}</strong>
+  </div>
+  <div class="cell" ng-if="item.referenceArm">
+    Reference standard error:
+  </div>
+  <div class="cell large-2" ng-if="item.referenceArm && isEditingAllowed">
+    <input type="number" ng-change="referenceStandardErrorChanged()" ng-model="item.referenceStandardError"
+      ng-model-options="{ updateOn: 'default blur', debounce: {'default': 500, 'blur': 0} }" ng-class="{ 'invalid-trialverse-number' : item.referenceStandardError < 0 }">
+  </div>
+</div>

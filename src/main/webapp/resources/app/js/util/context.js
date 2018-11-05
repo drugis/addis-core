@@ -152,6 +152,10 @@ define([], function() {
       '@id': 'http://trials.drugis.org/ontology#hazard_ratio',
       '@type': 'http://www.w3.org/2001/XMLSchema#double'
     },
+    'is_log': {
+      '@id': 'http://trials.drugis.org/ontology#is_log',
+      '@type': 'http://www.w3.org/2001/XMLSchema#boolean'
+    },
     'is_measured_at': {
       '@id': 'http://trials.drugis.org/ontology#is_measured_at',
       '@type': '@id'
@@ -168,18 +172,6 @@ define([], function() {
       '@id': 'http://trials.drugis.org/ontology#log_mean',
       '@type': 'http://www.w3.org/2001/XMLSchema#double'
     },
-    'log_hazard_ratio': {
-      '@id': 'http://trials.drugis.org/ontology#log_hazard_ratio',
-      '@type': 'http://www.w3.org/2001/XMLSchema#double'
-    },
-    'log_odds_ratio': {
-      '@id': 'http://trials.drugis.org/ontology#log_odds_ratio',
-      '@type': 'http://www.w3.org/2001/XMLSchema#double'
-    },
-    'log_risk_ratio': {
-      '@id': 'http://trials.drugis.org/ontology#log_risk_ratio',
-      '@type': 'http://www.w3.org/2001/XMLSchema#double'
-    },
     'label': {
       '@id': 'http://www.w3.org/2000/01/rdf-schema#label',
       '@type': 'http://www.w3.org/2001/XMLSchema#string'
@@ -188,8 +180,8 @@ define([], function() {
       '@id': 'http://trials.drugis.org/ontology#mean',
       '@type': 'http://www.w3.org/2001/XMLSchema#double'
     },
-    'mean_difference': {
-      '@id': 'http://trials.drugis.org/ontology#mean_difference',
+    'continuous_mean_difference': {
+      '@id': 'http://trials.drugis.org/ontology#continuous_mean_difference',
       '@type': 'http://www.w3.org/2001/XMLSchema#double'
     },
     'measurementType': {
@@ -267,6 +259,10 @@ define([], function() {
     'reference_arm': {
       '@id': 'http://trials.drugis.org/ontology#reference_arm',
       '@type': 'http://www.w3.org/2001/XMLSchema#string'
+    },
+    'reference_standard_error': {
+      '@id': 'http://trials.drugis.org/ontology#reference_standard_error',
+      '@type': 'http://www.w3.org/2001/XMLSchema#double'
     },
     'rest': {
       '@id': 'http://www.w3.org/1999/02/22-rdf-syntax-ns#rest',

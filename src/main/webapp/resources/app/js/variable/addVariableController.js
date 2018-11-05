@@ -1,32 +1,36 @@
 'use strict';
 define(['lodash'], function(_) {
   var dependencies = [
+    '$stateParams',
     '$scope',
     '$injector',
     '$modalInstance',
     'MeasurementMomentService',
     'ResultsService',
-    'arms',
+    'ArmService',
     'callback',
     'settings',
     'TIME_SCALE_OPTIONS',
     'VARIABLE_TYPE_DETAILS',
     'ARM_LEVEL_TYPE',
-    'CONTRAST_TYPE'
+    'CONTRAST_TYPE',
+    'DICHOTOMOUS_TYPE'
   ];
   var addVariableController = function(
+    $stateParams,
     $scope,
     $injector,
     $modalInstance,
     MeasurementMomentService,
     ResultsService,
-    arms,
+    ArmService,
     callback,
     settings,
     TIME_SCALE_OPTIONS,
     VARIABLE_TYPE_DETAILS,
     ARM_LEVEL_TYPE,
-    CONTRAST_TYPE
+    CONTRAST_TYPE,
+    DICHOTOMOUS_TYPE
   ) {
     // functions
     $scope.addVariable = addVariable;
@@ -46,18 +50,18 @@ define(['lodash'], function(_) {
     $scope.variable = {
       measuredAtMoments: [],
       resultProperties: [],
-      measurementType: 'ontology:dichotomous'
+      measurementType: DICHOTOMOUS_TYPE
     };
     $scope.measurementMoments = MeasurementMomentService.queryItems();
     $scope.timeScaleOptions = TIME_SCALE_OPTIONS;
-    $scope.arms = arms;
+    getArms();
 
     resetResultProperties();
 
     $scope.$watch('item.selectedResultProperties', checkTimeScaleInput);
 
     function checkTimeScaleInput() {
-      $scope.showTimeScaleInput = _.find($scope.variable.selectedResultProperties, ['uri', 'http://trials.drugis.org/ontology#exposure']);
+      $scope.showTimeScaleInput = hasExposure();
       if (!$scope.showTimeScaleInput) {
         delete $scope.variable.timeScale;
       } else {
@@ -67,6 +71,10 @@ define(['lodash'], function(_) {
       }
     }
 
+    function hasExposure(){
+      return _.some($scope.variable.selectedResultProperties, ['uri', 'http://trials.drugis.org/ontology#exposure']);
+    }
+    
     function measurementMomentEquals(moment1, moment2) {
       return moment1.uri === moment2.uri;
     }
@@ -131,8 +139,14 @@ define(['lodash'], function(_) {
       $scope.variable.resultProperties = VARIABLE_TYPE_DETAILS[$scope.variable.armOrContrast];
       $scope.variable.selectedResultProperties = ResultsService.getDefaultResultProperties($scope.variable.measurementType, $scope.variable.armOrContrast);
       if($scope.variable.armOrContrast === CONTRAST_TYPE){
-        $scope.variable.referenceArm = $scope.arms[0];
+        $scope.variable.referenceArm = $scope.arms[0].armURI;
       }
+    }
+
+    function getArms() {
+      return ArmService.queryItems($stateParams.studyUUID).then(function(result) {
+        $scope.arms = result;
+      });
     }
   };
   return dependencies.concat(addVariableController);

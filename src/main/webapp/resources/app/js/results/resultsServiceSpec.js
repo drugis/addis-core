@@ -1086,8 +1086,7 @@ define([
       it('should return the correct default resultproperties for dichotomous variables of contrast data', function() {
         var continuousContrastProperties = [
           variableTypeDetails[CONTRAST].log_odds_ratio,
-          variableTypeDetails[CONTRAST].standard_error,
-          variableTypeDetails[CONTRAST].is_reference
+          variableTypeDetails[CONTRAST].standard_error
         ];
         var result = resultsService.getDefaultResultProperties(DICHOTOMOUS, CONTRAST);
         expect(result).toEqual(continuousContrastProperties);
@@ -1095,9 +1094,8 @@ define([
 
       it('should return the correct default resultproperties for continuous variables of contrast data', function() {
         var dichotomousContrastProperties = [
-          variableTypeDetails[CONTRAST].mean_difference,
-          variableTypeDetails[CONTRAST].standard_error,
-          variableTypeDetails[CONTRAST].is_reference
+          variableTypeDetails[CONTRAST].continuous_mean_difference,
+          variableTypeDetails[CONTRAST].standard_error
         ];
         var result = resultsService.getDefaultResultProperties(CONTINUOUS, CONTRAST);
         expect(result).toEqual(dichotomousContrastProperties);
@@ -1106,8 +1104,7 @@ define([
       it('should return the correct default resultproperties for survival variables of contrast data', function() {
         var survivalContrastProperties = [
           variableTypeDetails[CONTRAST].log_hazard_ratio,
-          variableTypeDetails[CONTRAST].standard_error,
-          variableTypeDetails[CONTRAST].is_reference
+          variableTypeDetails[CONTRAST].standard_error
         ];
         var result = resultsService.getDefaultResultProperties('ontology:survival', CONTRAST);
         expect(result).toEqual(survivalContrastProperties);
@@ -1237,8 +1234,7 @@ define([
           varTypes.standard_error,
           varTypes.confidence_interval_width,
           varTypes.confidence_interval_lowerbound,
-          varTypes.confidence_interval_upperbound,
-          varTypes.is_reference
+          varTypes.confidence_interval_upperbound
         ];
         expect(dichotomousResult).toEqual(expectedDichotomousResult);
       });
@@ -1247,13 +1243,12 @@ define([
         var continuousResult = resultsService.getResultPropertiesForType(CONTINUOUS, CONTRAST);
         var varTypes = variableTypeDetails[CONTRAST];
         var expectedContinuousResult = [
-          varTypes.mean_difference,
+          varTypes.continuous_mean_difference,
           varTypes.standardized_mean_difference,
           varTypes.standard_error,
           varTypes.confidence_interval_width,
           varTypes.confidence_interval_lowerbound,
-          varTypes.confidence_interval_upperbound,
-          varTypes.is_reference
+          varTypes.confidence_interval_upperbound
         ];
         expect(continuousResult).toEqual(expectedContinuousResult);
       });
@@ -1266,8 +1261,7 @@ define([
           varTypes.standard_error,
           varTypes.confidence_interval_width,
           varTypes.confidence_interval_lowerbound,
-          varTypes.confidence_interval_upperbound,
-          varTypes.is_reference
+          varTypes.confidence_interval_upperbound
         ];
         expect(survivalResult).toEqual(expectedSurvivalResult);
       });
