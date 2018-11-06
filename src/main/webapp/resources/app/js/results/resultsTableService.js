@@ -3,7 +3,6 @@ define(['lodash'], function(_) {
   var dependencies = [
     'ResultsService',
     'INTEGER_TYPE',
-    'BOOLEAN_TYPE',
     'DOUBLE_TYPE',
     'ONTOLOGY_BASE',
     'CONTRAST_TYPE'
@@ -11,7 +10,6 @@ define(['lodash'], function(_) {
   var ResultsTableService = function(
     ResultsService,
     INTEGER_TYPE,
-    BOOLEAN_TYPE,
     DOUBLE_TYPE,
     ONTOLOGY_BASE,
     CONTRAST_TYPE
@@ -20,7 +18,6 @@ define(['lodash'], function(_) {
       var resultValueObject = _.find(resultValueObjects, function(resultValueObject) {
         return resultValueObject.result_property === type;
       });
-
       if (resultValueObject) {
         return Number(resultValueObject.value);
       }
@@ -120,12 +117,12 @@ define(['lodash'], function(_) {
     }
 
     function createInputRows(variable, arms, groups, measurementMoments, resultValuesObjects) {
+      if (isContrastData(variable)) {
+        groups = [];
+        arms = rejectReferenceArm(arms, variable);
+      }
       var rows = _(variable.measuredAtMoments)
         .reduce(function(accum, measuredAtMoment) {
-          if (isContrastData(variable)) {
-            groups = [];
-            arms = rejectReferenceArm(arms, variable);
-          }
           var measurementMoment = findMeasurementMoment(measurementMoments, measuredAtMoment);
           var armRows = createArmRows(variable, arms, groups, measurementMoment, resultValuesObjects);
           var groupRows = createGroupRows(variable, arms, groups, measurementMoment, resultValuesObjects);
@@ -209,11 +206,11 @@ define(['lodash'], function(_) {
     }
 
     function createConfidenceIntervalColumns(variable, valueObjects) {
-      var lowerboundDetails = ResultsService.getVariableDetails('ontology:confidence_interval_lowerbound', variable.armOrContrast);
-      var upperboundDetails = ResultsService.getVariableDetails('ontology:confidence_interval_upperbound', variable.armOrContrast);
+      var lowerboundDetails = ResultsService.getVariableDetails('ontology:confidence_interval_lower_bound', variable.armOrContrast);
+      var upperboundDetails = ResultsService.getVariableDetails('ontology:confidence_interval_upper_bound', variable.armOrContrast);
       return [
-        createColumn(ONTOLOGY_BASE + 'confidence_interval_lowerbound', lowerboundDetails, valueObjects),
-        createColumn(ONTOLOGY_BASE + 'confidence_interval_upperbound', upperboundDetails, valueObjects)
+        createColumn(ONTOLOGY_BASE + 'confidence_interval_lower_bound', lowerboundDetails, valueObjects),
+        createColumn(ONTOLOGY_BASE + 'confidence_interval_upper_bound', upperboundDetails, valueObjects)
       ];
     }
 
@@ -266,9 +263,6 @@ define(['lodash'], function(_) {
     function isValidValue(inputColumn) {
       if (inputColumn.value === undefined) {
         return false;
-      }
-      if (inputColumn.dataType === BOOLEAN_TYPE) {
-        return typeof (inputColumn.value) === typeof (true);
       }
 
       if (inputColumn.value) {

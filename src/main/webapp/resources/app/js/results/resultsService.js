@@ -5,24 +5,20 @@ define(['angular', 'lodash'], function(angular, _) {
     'RdfListService',
     'UUIDService',
     'ARM_LEVEL_TYPE',
+    'CONTRAST_TYPE',
     'ONTOLOGY_BASE',
     'VARIABLE_TYPES',
-    'VARIABLE_TYPE_DETAILS',
-    'ARM_VARIABLE_TYPES',
-    'ARM_VARIABLE_TYPE_DETAILS',
-    'DEFAULT_RESULT_PROPERTIES'
+    'VARIABLE_TYPE_DETAILS'
   ];
   var ResultsService = function(
     StudyService,
     RdfListService,
     UUIDService,
     ARM_LEVEL_TYPE,
+    CONTRAST_TYPE,
     ONTOLOGY_BASE,
     VARIABLE_TYPES,
-    VARIABLE_TYPE_DETAILS,
-    ARM_VARIABLE_TYPES,
-    ARM_VARIABLE_TYPE_DETAILS,
-    DEFAULT_RESULT_PROPERTIES
+    VARIABLE_TYPE_DETAILS
   ) {
 
     function getVariableDetails(variableTypeUri, armOrContrast) {
@@ -211,7 +207,7 @@ define(['angular', 'lodash'], function(angular, _) {
 
     function hasValues(node) {
       if (!node.category_count) {
-        return _.keys(_.pick(node, ARM_VARIABLE_TYPES)).length > 0;
+        return _.keys(_.pick(node, VARIABLE_TYPES[getArmOrContrast(node)])).length > 0;
       } else {
         return node.category_count.length && _.find(node.category_count, function(countNode) {
           return countNode.count !== null && countNode.count !== undefined;
@@ -226,17 +222,14 @@ define(['angular', 'lodash'], function(angular, _) {
         var hasArmMap = createHasPropertyByIdMap(study.has_arm);
         var isMomentMap = createHasPropertyByIdMap(_.filter(graph, isMoment));
         var outcomeMap = _.keyBy(study.has_outcome, '@id');
-        var isMeasurementOnOutcome = {};
-
         var hasGroupMap = createHasPropertyByIdMap(study.has_group);
         if (study.has_included_population) {
           hasGroupMap[study.has_included_population[0]['@id']] = true;
         }
 
-        var measurementsForOutcomes = getMeasurementsForOutcomes(study, isMeasurementOnOutcome);
+        var measurementsForOutcomes = getMeasurementsForOutcomes(study);
         var filteredGraph = removeNoLongerMeasuredProperties(graph, outcomeMap, study);
 
-        // now it's time for cleaning
         filteredGraph = _.filter(filteredGraph, function(node) {
           if (isResult(node)) {
             return (hasArmMap[node.of_group] || hasGroupMap[node.of_group]) &&
@@ -261,19 +254,19 @@ define(['angular', 'lodash'], function(angular, _) {
         .value();
     }
 
-    function getMeasurementsForOutcomes(study, isMeasurementOnOutcome) {
+    function getMeasurementsForOutcomes(study) {
       return _.reduce(study.has_outcome, function(accum, outcome) {
         var measurementMomentUris;
         if (!Array.isArray(outcome.is_measured_at)) {
-          measurementMomentUris = [outcome.is_measured_at];
+          accum[outcome.is_measured_at] = true;
         } else {
           measurementMomentUris = outcome.is_measured_at || [];
+          _.forEach(measurementMomentUris, function(measurementMomentUri) {
+            accum[measurementMomentUri] = true;
+          });
         }
-        _.forEach(measurementMomentUris, function(measurementMomentUri) {
-          isMeasurementOnOutcome[measurementMomentUri] = true;
-        });
         return accum;
-      }, isMeasurementOnOutcome);
+      }, {});
     }
 
     function removeNoLongerMeasuredProperties(graph, outcomeMap, study) {
@@ -288,10 +281,7 @@ define(['angular', 'lodash'], function(angular, _) {
               return _.includes(categoryIds, countObject.category);
             });
           } else {
-            var resultProperties = _.keys(_.pick(node, ARM_VARIABLE_TYPES));
-            resultProperties = _.map(resultProperties, function(resultProperty) {
-              return ARM_VARIABLE_TYPE_DETAILS[resultProperty];
-            });
+            var resultProperties = getResultPropertiesFor(node);
             var missingProperties = _.filter(resultProperties, function(resultProperty) {
               return !_.includes(outcomeMap[node.of_outcome].has_result_property, resultProperty.uri);
             });
@@ -302,6 +292,19 @@ define(['angular', 'lodash'], function(angular, _) {
           return node;
         }
       });
+    }
+
+    function getResultPropertiesFor(node) {
+      var variableTypes = VARIABLE_TYPES[getArmOrContrast(node)];
+      var resultProperties = _.keys(_.pick(node, variableTypes));
+      return _.map(resultProperties, function(resultProperty) {
+        return VARIABLE_TYPE_DETAILS[getArmOrContrast(node)][resultProperty];
+      });
+
+    }
+
+    function getArmOrContrast(node) {
+      return node.arm_or_contrast ? node.arm_or_contrast : ARM_LEVEL_TYPE;
     }
 
     function setToMeasurementMoment(measurementMomentUri, measurementInstanceList) {
@@ -359,46 +362,6 @@ define(['angular', 'lodash'], function(angular, _) {
             nonConformantMeasurement.of_outcome === node.of_outcome;
         });
       });
-    }
-
-    function getDefaultResultProperties(measurementType, armOrContrast) {
-      var returnProperties = DEFAULT_RESULT_PROPERTIES[armOrContrast][measurementType];
-      if (returnProperties) {
-        return returnProperties;
-      } else {
-        console.error('unknown measurement type ' + measurementType);
-      }
-    }
-
-    function getResultPropertiesForType(measurementType, armOrContrast) {
-      return getResultProperties(measurementType, VARIABLE_TYPE_DETAILS[armOrContrast]);
-    }
-
-    function getResultProperties(measurementType, typedetails) {
-      return _.filter(typedetails, function(varType) {
-        return varType.variableTypes === 'all' || varType.variableTypes.indexOf(measurementType) > -1;
-      });
-    }
-
-    function buildPropertyCategories(variable) {
-      var properties = getResultPropertiesForType(variable.measurementType, variable.armOrContrast);
-      var categories = _(properties)
-        .keyBy('category')
-        .mapValues(function(property, categoryName) {
-          var categoryProperties = _(properties)
-            .filter(['category', categoryName])
-            .map(function(property) {
-              return _.extend({}, property, {
-                isSelected: !!_.find(variable.selectedResultProperties, ['type', property.type])
-              });
-            }).value();
-          return {
-            categoryLabel: categoryName,
-            properties: categoryProperties
-          };
-        })
-        .value();
-      return categories;
     }
 
     function _queryResults(uri, typeFunction) {
@@ -501,10 +464,7 @@ define(['angular', 'lodash'], function(angular, _) {
       moveMeasurementMoment: moveMeasurementMoment,
       isExistingMeasurement: isExistingMeasurement,
       isStudyNode: isStudyNode,
-      getVariableDetails: getVariableDetails,
-      getDefaultResultProperties: getDefaultResultProperties,
-      getResultPropertiesForType: getResultPropertiesForType,
-      buildPropertyCategories: buildPropertyCategories
+      getVariableDetails: getVariableDetails
     };
   };
   return dependencies.concat(ResultsService);

@@ -1,5 +1,5 @@
 'use strict';
-define(['angular-mocks', './results'], function() {
+define(['lodash', 'angular-mocks', './results'], function(_) {
   describe('the resultsTableService', function() {
 
     var INTEGER_TYPE = '<http://www.w3.org/2001/XMLSchema#integer>';
@@ -133,11 +133,11 @@ define(['angular-mocks', './results'], function() {
           lexiconKey: 'standardized-mean-difference',
           analysisReady: false
         }, {
-          label: 'confidence interval (70%) lowerbound',
+          label: '70% confidence interval lower bound',
           lexiconKey: 'confidence-interval',
           analysisReady: false
         }, {
-          label: 'confidence interval (70%) upperbound',
+          label: '70% confidence interval upper bound',
           lexiconKey: 'confidence-interval',
           analysisReady: false
         }];
@@ -165,7 +165,7 @@ define(['angular-mocks', './results'], function() {
       });
     });
 
-    describe('createInputRows', function() {
+    describe('createInputRows for arm level data', function() {
       var resultRows, variable, arms, measurementMoments;
 
       beforeEach(function() {
@@ -303,6 +303,246 @@ define(['angular-mocks', './results'], function() {
           expect(resultRows[2].inputColumns[1].isInValidValue).toEqual(false);
         });
       });
+
+      describe('for a categorical type', function() {
+        beforeEach(function() {
+          delete variable.resultProperties;
+        });
+        
+        it('should return input columns for current style categories', function() {
+          var valueObjects = [{
+            momentUri: measurementMoments[0].uri,
+            result_property: {
+              category: 'id1'
+            },
+            value: 5
+          }];
+          variable.categoryList = [{
+            '@id': 'id1',
+            label: 'cat1'
+          }];
+          var result = resultsTableService.createInputRows(variable, arms, [], measurementMoments, valueObjects);
+          expect(result.length).toBe(8);
+          expect(result[3].group.label).toEqual('Overall population');
+          expect(result[3].numberOfGroups).toBe(4);
+          expect(result[3].inputColumns[0].value).toBe(5);
+          expect(result[3].inputColumns[0].dataType).toEqual(INTEGER_TYPE);
+          expect(result[3].inputColumns[0].isCategory).toBeTruthy();
+          expect(result[3].inputColumns[0].isInValidValue).toBeFalsy();
+        });
+
+        it('should return input columns for legacy style categories', function() {
+          var valueObjects = [{
+            momentUri: measurementMoments[0].uri,
+            result_property: 'cat1',
+            value: 5
+          }];
+          variable.categoryList = ['cat1'];
+           var result = resultsTableService.createInputRows(variable, arms, [], measurementMoments, valueObjects);
+          expect(result.length).toBe(8);
+          expect(result[3].group.label).toEqual('Overall population');
+          expect(result[3].numberOfGroups).toBe(4);
+          expect(result[3].inputColumns[0].value).toBe(5);
+          expect(result[3].inputColumns[0].dataType).toEqual(INTEGER_TYPE);
+          expect(result[3].inputColumns[0].isCategory).toBeTruthy();
+          expect(result[3].inputColumns[0].isInValidValue).toBeFalsy();
+        });
+      });
+
+      describe('for a survival type', function() {
+        beforeEach(function() {
+          var results = [{
+            armUri: arms[0].armURI,
+            instance: 'http://instance/2',
+            momentUri: measurementMoments[0].uri,
+            result_property: 'exposure',
+            value: '66'
+          }];
+          variable.measurementType = resultsTableService.DICHOTOMOUS_TYPE;
+          variable.resultProperties = [
+            'http://trials.drugis.org/ontology#exposure'
+          ];
+          variable.armOrContrast = 'ontology:arm_level_data';
+          resultRows = resultsTableService.createInputRows(variable, arms, [], measurementMoments, results);
+        });
+
+        it('should create input columns', function() {
+          expect(resultRows[2].inputColumns).toBeDefined();
+          expect(resultRows[2].inputColumns.length).toBe(1);
+          expect(resultRows[2].inputColumns[0].valueName).toEqual('total observation time');
+          expect(resultRows[2].inputColumns[0].dataType).toEqual(DOUBLE_TYPE);
+          expect(resultRows[2].inputColumns[0].isInValidValue).toEqual(false);
+          expect(resultRows[2].inputColumns[0].value).toEqual(66);
+        });
+      });
+    });
+
+    describe('createInputRows for contrast data', function() {
+      var resultRows, variable, arms, groups, measurementMoments;
+
+      beforeEach(function() {
+        variable = {
+          measuredAtMoments: [{
+            uri: 'uri 1'
+          }, {
+            uri: 'uri 3'
+          }],
+          measurementType: {},
+          resultProperties: [
+            'http://trials.drugis.org/ontology#continuous_mean_difference',
+            'http://trials.drugis.org/ontology#standard_error',
+            'http://trials.drugis.org/ontology#confidence_interval_width'
+          ],
+          armOrContrast: CONTRAST,
+          confidenceIntervalWidth: 90,
+          referenceArm: 'http://arms/arm1'
+        };
+        arms = [{
+          label: 'reference arm 1',
+          armURI: 'http://arms/arm1'
+        }, {
+          label: 'arm 2 20 mg',
+          armURI: 'http://arms/arm2'
+        }, {
+          label: 'aab arm 3',
+          armURI: 'http://arms/arm3'
+        }];
+        measurementMoments = [{
+          uri: 'uri 1',
+          label: 'moment 1'
+        }, {
+          uri: 'uri 2',
+          label: 'moment 2'
+        }, {
+          uri: 'uri 3',
+          label: 'moment 3'
+        }];
+        groups = [{
+          label: 'xyz group 1',
+          groupUri: 'http://groups/group'
+        }];
+        resultRows = resultsTableService.createInputRows(variable, arms, groups, measurementMoments);
+      });
+
+      it('should not add reference arm', function() {
+        expect(_.some(resultRows, function(row) {
+          return row.group.label === arms[0].label;
+        })).toBeFalsy();
+      });
+
+      it('should set the number of arms, not including the reference arm and groups', function() {
+        expect(resultRows[0].numberOfGroups).toEqual(2);
+      });
+
+      it('shoul, for each combination of non-reference arm and measurement moment at which the variable is measured return one row, except for the confidence interval which should return 2', function() {
+        expect(resultRows.length).toEqual(4);
+      });
+
+      it('should apply some sort of sane sorting to the arms', function() {
+        expect(resultRows[0].group.label).toEqual(arms[2].label);
+        expect(resultRows[1].group.label).toEqual(arms[1].label);
+        expect(resultRows[2].group.label).toEqual(arms[2].label);
+        expect(resultRows[3].group.label).toEqual(arms[1].label);
+      });
+
+      it('should place the appropriate measurement moment and arm on each row', function() {
+        expect(resultRows[0].measurementMoment).toEqual(measurementMoments[0]);
+        expect(resultRows[0].group).toEqual(arms[2]);
+        expect(resultRows[1].measurementMoment).toEqual(measurementMoments[0]);
+        expect(resultRows[1].group).toEqual(arms[1]);
+        expect(resultRows[2].measurementMoment).toEqual(measurementMoments[2]);
+        expect(resultRows[2].group).toEqual(arms[2]);
+        expect(resultRows[3].measurementMoment).toEqual(measurementMoments[2]);
+        expect(resultRows[3].group).toEqual(arms[1]);
+      });
+
+      describe('for a continuous type', function() {
+        beforeEach(function() {
+          var results = [{
+            armUri: arms[2].armURI,
+            instance: 'http://instance/1',
+            momentUri: measurementMoments[2].uri,
+            result_property: 'continuous_mean_difference',
+            value: '2'
+          }];
+          variable.measurementType = resultsTableService.CONTINUOUS_TYPE;
+          resultRows = resultsTableService.createInputRows(variable, arms, groups, measurementMoments, results);
+        });
+
+        it('should create input columns', function() {
+          expect(resultRows[2].inputColumns).toBeDefined();
+          expect(resultRows[2].inputColumns.length).toBe(4);
+          expect(resultRows[2].inputColumns[0].valueName).toEqual('mean difference');
+          expect(resultRows[2].inputColumns[0].dataType).toEqual(DOUBLE_TYPE);
+          expect(resultRows[2].inputColumns[0].value).toEqual(2);
+          expect(resultRows[2].inputColumns[0].isInValidValue).toEqual(false);
+          expect(resultRows[2].inputColumns[1].valueName).toEqual('standard error');
+          expect(resultRows[2].inputColumns[1].dataType).toEqual(DOUBLE_TYPE);
+          expect(resultRows[2].inputColumns[0].isInValidValue).toEqual(false);
+          expect(resultRows[2].inputColumns[2].valueName).toEqual('confidence interval lower bound');
+          expect(resultRows[2].inputColumns[2].dataType).toEqual(DOUBLE_TYPE);
+          expect(resultRows[2].inputColumns[3].valueName).toEqual('confidence interval upper bound');
+          expect(resultRows[2].inputColumns[3].dataType).toEqual(DOUBLE_TYPE);
+          expect(resultRows[2].inputColumns[0].isInValidValue).toEqual(false);
+        });
+      });
+
+      describe('for a dichotomous type', function() {
+        beforeEach(function() {
+          var results = [{
+            armUri: arms[2].armURI,
+            instance: 'http://instance/2',
+            momentUri: measurementMoments[2].uri,
+            result_property: 'odds_ratio',
+            value: '66'
+          }];
+          variable.measurementType = resultsTableService.DICHOTOMOUS_TYPE;
+          variable.resultProperties = [
+            'http://trials.drugis.org/ontology#odds_ratio',
+            'http://trials.drugis.org/ontology#standard_error'
+          ];
+          variable.armOrContrast = CONTRAST;
+          resultRows = resultsTableService.createInputRows(variable, arms, groups, measurementMoments, results);
+        });
+
+        it('should create input columns', function() {
+          expect(resultRows[2].inputColumns).toBeDefined();
+          expect(resultRows[2].inputColumns.length).toBe(2);
+          expect(resultRows[2].inputColumns[0].valueName).toEqual('log odds ratio');
+          expect(resultRows[2].inputColumns[0].dataType).toEqual(DOUBLE_TYPE);
+          expect(resultRows[2].inputColumns[0].isInValidValue).toEqual(false);
+          expect(resultRows[2].inputColumns[0].value).toEqual(66);
+          expect(resultRows[2].inputColumns[1].valueName).toEqual('standard error');
+          expect(resultRows[2].inputColumns[1].dataType).toEqual(DOUBLE_TYPE);
+          expect(resultRows[2].inputColumns[1].isInValidValue).toEqual(false);
+        });
+      });
+
+      describe('for a survival type', function() {
+        beforeEach(function() {
+          var results = [{
+            armUri: arms[2].armURI,
+            instance: 'http://instance/2',
+            momentUri: measurementMoments[2].uri,
+            result_property: 'hazard_ratio',
+            value: '66'
+          }];
+          variable.measurementType = resultsTableService.DICHOTOMOUS_TYPE;
+          variable.resultProperties = [
+            'http://trials.drugis.org/ontology#hazard_ratio'
+          ];
+          variable.armOrContrast = CONTRAST;
+          resultRows = resultsTableService.createInputRows(variable, arms, groups, measurementMoments, results);
+          it('should create input columns', function() {
+            expect(resultRows[2].inputColumns).toBeDefined();
+            expect(resultRows[2].inputColumns.length).toBe(2);
+            expect(resultRows[2].inputColumns[0].valueName).toEqual('log odds ratio');
+            expect(resultRows[2].inputColumns[0].dataType).toEqual(DOUBLE_TYPE);
+            expect(resultRows[2].inputColumns[0].isInValidValue).toEqual(false);
+            expect(resultRows[2].inputColumns[0].value).toEqual(66);
+          });
+        });
+      });
     });
 
     describe('isValidValue', function() {
@@ -409,6 +649,7 @@ define(['angular-mocks', './results'], function() {
         expect(result).toBeTruthy();
       });
     });
+    
     it('should return false if there is no data at a certain measurement moment', function() {
       var targetMMUri = 'targetMMUri';
       var mm1 = {

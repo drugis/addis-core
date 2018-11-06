@@ -28,12 +28,12 @@ define([], function() {
       '@id': 'http://www.w3.org/2000/01/rdf-schema#comment',
       '@type': 'http://www.w3.org/2001/XMLSchema#string'
     },
-    'confidence_interval_lowerbound': {
-      '@id': 'http://trials.drugis.org/ontology#confidence_interval_lowerbound',
+    'confidence_interval_lower_bound': {
+      '@id': 'http://trials.drugis.org/ontology#confidence_interval_lower_bound',
       '@type': 'http://www.w3.org/2001/XMLSchema#double'
     },
-    'confidence_interval_upperbound': {
-      '@id': 'http://trials.drugis.org/ontology#confidence_interval_upperbound',
+    'confidence_interval_upper_bound': {
+      '@id': 'http://trials.drugis.org/ontology#confidence_interval_upper_bound',
       '@type': 'http://www.w3.org/2001/XMLSchema#double'
     },
     'confidence_interval_width': {

@@ -6,14 +6,11 @@ define(['lodash'], function(_) {
     '$injector',
     '$modalInstance',
     'MeasurementMomentService',
-    'ResultsService',
+    'ResultPropertiesService',
     'ArmService',
     'callback',
     'settings',
     'TIME_SCALE_OPTIONS',
-    'VARIABLE_TYPE_DETAILS',
-    'ARM_LEVEL_TYPE',
-    'CONTRAST_TYPE',
     'DICHOTOMOUS_TYPE'
   ];
   var addVariableController = function(
@@ -22,14 +19,11 @@ define(['lodash'], function(_) {
     $injector,
     $modalInstance,
     MeasurementMomentService,
-    ResultsService,
+    ResultPropertiesService,
     ArmService,
     callback,
     settings,
     TIME_SCALE_OPTIONS,
-    VARIABLE_TYPE_DETAILS,
-    ARM_LEVEL_TYPE,
-    CONTRAST_TYPE,
     DICHOTOMOUS_TYPE
   ) {
     // functions
@@ -60,33 +54,20 @@ define(['lodash'], function(_) {
 
     $scope.$watch('item.selectedResultProperties', checkTimeScaleInput);
 
-    function checkTimeScaleInput() {
-      $scope.showTimeScaleInput = hasExposure();
-      if (!$scope.showTimeScaleInput) {
-        delete $scope.variable.timeScale;
-      } else {
-        if (!$scope.variable.timeScale) {
-          $scope.variable.timeScale = 'P1W';
-        }
-      }
-    }
-
-    function hasExposure(){
-      return _.some($scope.variable.selectedResultProperties, ['uri', 'http://trials.drugis.org/ontology#exposure']);
-    }
-    
     function measurementMomentEquals(moment1, moment2) {
       return moment1.uri === moment2.uri;
     }
 
+    function checkTimeScaleInput() {
+      $scope.variable = ResultPropertiesService.setTimeScaleInput($scope.variable);
+      $scope.showTimeScaleInput = !!$scope.variable.timeScale;
+    }
+
     function resetResultProperties() {
-      $scope.variable.armOrContrast = ARM_LEVEL_TYPE;
-      armOrContrastChanged();
+      $scope.variable = ResultPropertiesService.resetResultProperties($scope.variable, $scope.arms);
       if ($scope.variable.measurementType === 'ontology:categorical') {
-        $scope.variable.categoryList = [];
         $scope.newCategory = {};
       } else {
-        delete $scope.variable.categoryList;
         delete $scope.newCategory;
       }
     }
@@ -136,11 +117,7 @@ define(['lodash'], function(_) {
     }
 
     function armOrContrastChanged() {
-      $scope.variable.resultProperties = VARIABLE_TYPE_DETAILS[$scope.variable.armOrContrast];
-      $scope.variable.selectedResultProperties = ResultsService.getDefaultResultProperties($scope.variable.measurementType, $scope.variable.armOrContrast);
-      if($scope.variable.armOrContrast === CONTRAST_TYPE){
-        $scope.variable.referenceArm = $scope.arms[0].armURI;
-      }
+      $scope.variable = ResultPropertiesService.armOrContrastChanged($scope.variable, $scope.arms);
     }
 
     function getArms() {

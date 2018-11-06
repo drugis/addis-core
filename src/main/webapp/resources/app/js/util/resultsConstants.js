@@ -3,7 +3,6 @@
 define(['angular'], function(angular) {
   var INTEGER_TYPE = '<http://www.w3.org/2001/XMLSchema#integer>';
   var DOUBLE_TYPE = '<http://www.w3.org/2001/XMLSchema#double>';
-  var BOOLEAN_TYPE = '<http://www.w3.org/2001/XMLSchema#boolean>';
   var ONTOLOGY_BASE = 'http://trials.drugis.org/ontology#';
   var ARM_LEVEL_TYPE = 'ontology:arm_level_data';
   var CONTRAST_TYPE = 'ontology:contrast_data';
@@ -40,13 +39,13 @@ define(['angular'], function(angular) {
   var CONTRAST_VARIABLE_TYPES = [
     'standard_error',
     'hazard_ratio',
-    'log_odds_ratio',
-    'log_risk_ratio',
+    'odds_ratio',
+    'risk_ratio',
     'continuous_mean_difference',
     'standardized_mean_difference',
-    'log_hazard_ratio',
-    'confidence_interval_lowerbound',
-    'confidence_interval_upperbound'
+    'hazard_ratio',
+    'confidence_interval_lower_bound',
+    'confidence_interval_upper_bound'
   ];
 
   var VARIABLE_TYPES = {
@@ -350,7 +349,7 @@ define(['angular'], function(angular) {
       lexiconKey: 'risk-ratio',
       analysisReady: false
     },
-    continuous_mean_difference: {
+    continuous_mean_difference: { //continuous as prefix because of JSON-ld tranform replacing mean with the arm based mean.
       type: 'continuous_mean_difference',
       label: 'mean difference',
       armOrContrast: CONTRAST_TYPE,
@@ -408,11 +407,11 @@ define(['angular'], function(angular) {
       analysisReady: false,
       isAlwaysPositive: true
     },
-    confidence_interval_lowerbound: {
-      type: 'confidence_interval_lowerbound',
-      label: 'confidence interval lowerbound',
+    confidence_interval_lower_bound: {
+      type: 'confidence_interval_lower_bound',
+      label: 'confidence interval lower bound',
       armOrContrast: CONTRAST_TYPE,
-      uri: ONTOLOGY_BASE + 'confidence_interval_lowerbound',
+      uri: ONTOLOGY_BASE + 'confidence_interval_lower_bound',
       dataType: DOUBLE_TYPE,
       variableTypes: [CONTINUOUS_TYPE, DICHOTOMOUS_TYPE, SURVIVAL_TYPE],
       category: 'Dispersion',
@@ -420,11 +419,11 @@ define(['angular'], function(angular) {
       analysisReady: false,
       hiddenSelection: true
     },
-    confidence_interval_upperbound: {
-      type: 'confidence_interval_upperbound',
-      label: 'confidence interval upperbound',
+    confidence_interval_upper_bound: {
+      type: 'confidence_interval_upper_bound',
+      label: 'confidence interval upper bound',
       armOrContrast: CONTRAST_TYPE,
-      uri: ONTOLOGY_BASE + 'confidence_interval_upperbound',
+      uri: ONTOLOGY_BASE + 'confidence_interval_upper_bound',
       dataType: DOUBLE_TYPE,
       variableTypes: [CONTINUOUS_TYPE, DICHOTOMOUS_TYPE, SURVIVAL_TYPE],
       category: 'Dispersion',
@@ -480,7 +479,6 @@ define(['angular'], function(angular) {
   return angular.module('addis.resultsConstants', [])
     .constant('DOUBLE_TYPE', DOUBLE_TYPE)
     .constant('INTEGER_TYPE', INTEGER_TYPE)
-    .constant('BOOLEAN_TYPE', BOOLEAN_TYPE)
 
     .constant('ONTOLOGY_BASE', ONTOLOGY_BASE)
     .constant('ARM_LEVEL_TYPE', ARM_LEVEL_TYPE)

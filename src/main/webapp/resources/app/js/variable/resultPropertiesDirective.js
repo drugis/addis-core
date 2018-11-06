@@ -1,11 +1,11 @@
 'use strict';
 define(['lodash'], function(_) {
   var dependencies = [
-    'ResultsService',
+    'ResultPropertiesService',
     'ARM_LEVEL_TYPE'
   ];
   var ResultPropertiesDirective = function(
-    ResultsService,
+    ResultPropertiesService,
     ARM_LEVEL_TYPE
   ) {
     return {
@@ -34,7 +34,7 @@ define(['lodash'], function(_) {
         }
 
         function buildProperties() {
-          var resultPropertiesForType = ResultsService.getResultPropertiesForType(scope.variable.measurementType, scope.variable.armOrContrast);
+          var resultPropertiesForType = ResultPropertiesService.getResultPropertiesForType(scope.variable.measurementType, scope.variable.armOrContrast);
           scope.properties = _(resultPropertiesForType)
             .map(setSelected)
             .keyBy('type')
@@ -56,7 +56,7 @@ define(['lodash'], function(_) {
         function setCategories() {
           scope.showCategories = false;
           if (scope.variable.measurementType === 'ontology:continuous' && scope.variable.armOrContrast === ARM_LEVEL_TYPE) {
-            scope.categories = ResultsService.buildPropertyCategories(scope.variable);
+            scope.categories = ResultPropertiesService.buildPropertyCategories(scope.variable);
             scope.showCategories = true;
           }
         }
