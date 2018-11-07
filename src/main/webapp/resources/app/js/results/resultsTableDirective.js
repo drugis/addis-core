@@ -41,33 +41,21 @@ define(['lodash'], function(_) {
               var measurementMoments = values[1];
               var groups = values[2];
               var results = values[3];
+
               scope.inputRows = ResultsTableService.createInputRows(scope.variable, arms, groups, measurementMoments, results);
               scope.inputHeaders = ResultsTableService.createHeaders(scope.variable);
               scope.measurementMomentOptions = ResultsTableService.buildMeasurementMomentOptions(scope.variable.measuredAtMoments);
-              scope.measurementMomentSelections = buildMeasurementMomentSelections();
+              scope.measurementMomentSelections = ResultsTableService.buildMeasurementMomentSelections(scope.inputRows, scope.measurementMomentOptions);
               checkMeasurementOverlap();
               scope.isEditingMM = _.reduce(scope.measurementMoments, function(accum, measurementMoment) {
                 accum[measurementMoment.uri] = false;
                 return accum;
               }, {});
-              scope.hasNotAnalysedProperty = findNotAnalysedProperty();
+              scope.hasNotAnalysedProperty = ResultsTableService.findNotAnalysedProperty(scope.inputHeaders);
             });
           }
         }
 
-        function findNotAnalysedProperty() {
-          return _.find(scope.inputHeaders, function(header) {
-            return header.lexiconKey && !header.analysisReady; // only check if not categorical
-          });
-        }
-
-        function buildMeasurementMomentSelections() {
-          return _.reduce(scope.inputRows, function(accum, inputRow) {
-            var momentUri = inputRow.measurementMoment.uri;
-            accum[momentUri] = scope.measurementMomentOptions[momentUri][0];
-            return accum;
-          }, {});
-        }
         function show() {
           scope.isExpanded = true;
           reloadResults();
@@ -89,8 +77,7 @@ define(['lodash'], function(_) {
         function editMeasurementMoment(measurementMomentUri, rowLabel) {
           ResultsService.moveMeasurementMoment(measurementMomentUri,
             scope.measurementMomentSelections[measurementMomentUri].uri,
-            scope.variable.uri,
-            rowLabel
+            scope.variable.uri, rowLabel
           ).then(function() {
             scope.$emit('refreshResults');
             scope.isEditingMM[measurementMomentUri] = false;
@@ -98,10 +85,7 @@ define(['lodash'], function(_) {
         }
 
         function checkMeasurementOverlap() {
-          scope.overlapMap = _.reduce(scope.measurementMomentSelections, function(accum, selection, measurementMomentUri) {
-            accum[measurementMomentUri] = ResultsTableService.findOverlappingMeasurements(selection.uri, scope.inputRows);
-            return accum;
-          }, {});
+          scope.overlapMap = ResultsTableService.findMeasurementOverlap(scope.measurementMomentSelections, scope.inputRows);
         }
 
         function showEditMeasurementMoment(measurementMomentUri) {

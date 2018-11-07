@@ -298,12 +298,33 @@ define(['lodash'], function(_) {
       }, {});
     }
 
-    function findOverlappingMeasurements(targetMMUri, inputRows) {
-      return _.find(inputRows, function(inputRow) {
-        return targetMMUri === inputRow.measurementMoment.uri && _.find(inputRow.inputColumns, function(inputColumn) {
-          return inputColumn.value !== undefined;
-        });
+    function findMeasurementOverlap(momentSelections, inputRows) {
+      return _.mapValues(momentSelections, function(selection) {
+        return findOverlappingMeasurements(selection.uri, inputRows);
       });
+    }
+
+    function findOverlappingMeasurements(targetMomentUri, inputRows) {
+      return _.some(inputRows, function(inputRow) {
+        return targetMomentUri === inputRow.measurementMoment.uri &&
+        _.some(inputRow.inputColumns, function(inputColumn) {
+            return inputColumn.value !== undefined;
+          });
+      });
+    }
+
+    function findNotAnalysedProperty(inputHeaders) {
+      return _.some(inputHeaders, function(header) {
+        return header.lexiconKey && !header.analysisReady; // only check if not categorical
+      });
+    }
+
+    function buildMeasurementMomentSelections(inputRows, measurementMomentOptions) {
+      return _.reduce(inputRows, function(accum, inputRow) {
+        var momentUri = inputRow.measurementMoment.uri;
+        accum[momentUri] = measurementMomentOptions[momentUri][0];
+        return accum;
+      }, {});
     }
 
     return {
@@ -312,7 +333,9 @@ define(['lodash'], function(_) {
       isValidValue: isValidValue,
       createInputColumns: createInputColumns,
       buildMeasurementMomentOptions: buildMeasurementMomentOptions,
-      findOverlappingMeasurements: findOverlappingMeasurements
+      findNotAnalysedProperty: findNotAnalysedProperty,
+      buildMeasurementMomentSelections: buildMeasurementMomentSelections,
+      findMeasurementOverlap: findMeasurementOverlap
     };
   };
   return dependencies.concat(ResultsTableService);

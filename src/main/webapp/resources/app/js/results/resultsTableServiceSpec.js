@@ -308,7 +308,7 @@ define(['lodash', 'angular-mocks', './results'], function(_) {
         beforeEach(function() {
           delete variable.resultProperties;
         });
-        
+
         it('should return input columns for current style categories', function() {
           var valueObjects = [{
             momentUri: measurementMoments[0].uri,
@@ -338,7 +338,7 @@ define(['lodash', 'angular-mocks', './results'], function(_) {
             value: 5
           }];
           variable.categoryList = ['cat1'];
-           var result = resultsTableService.createInputRows(variable, arms, [], measurementMoments, valueObjects);
+          var result = resultsTableService.createInputRows(variable, arms, [], measurementMoments, valueObjects);
           expect(result.length).toBe(8);
           expect(result[3].group.label).toEqual('Overall population');
           expect(result[3].numberOfGroups).toBe(4);
@@ -625,15 +625,25 @@ define(['lodash', 'angular-mocks', './results'], function(_) {
       });
     });
 
-    describe('findOverlappingMeasurements', function() {
-      it('should find where there is already data at a certain measurement moment', function() {
-        var targetMMUri = 'targetMMUri';
-        var mm1 = {
-          uri: 'measurementMoment1Uri'
-        };
-        var mm2 = {
+    describe('findMeasurementOverlap', function() {
+      var targetMMUri = 'targetMMUri';
+      var measurementMoment1Uri = 'measurementMoment1Uri';
+      var momentSelections = {
+        targetMMUri: {
           uri: targetMMUri
-        };
+        },
+        measurementMoment1Uri: {
+          uri: measurementMoment1Uri
+        }
+      };
+      var mm1 = {
+        uri: measurementMoment1Uri
+      };
+      var mm2 = {
+        uri: targetMMUri
+      };
+
+      it('should find where there is already data at a certain measurement moment', function() {
         var inputRows = [{
           measurementMoment: mm1,
           inputColumns: [{
@@ -645,32 +655,94 @@ define(['lodash', 'angular-mocks', './results'], function(_) {
             value: 3
           }]
         }];
-        var result = resultsTableService.findOverlappingMeasurements(targetMMUri, inputRows);
-        expect(result).toBeTruthy();
+        var result = resultsTableService.findMeasurementOverlap(momentSelections, inputRows);
+        var expectedResult = {
+          targetMMUri: true,
+          measurementMoment1Uri: true
+        };
+        expect(result).toEqual(expectedResult);
+      });
+
+      it('should return false if there is no data at a certain measurement moment', function() {
+        var inputRows = [{
+          measurementMoment: mm1,
+          inputColumns: [{
+            value: 3
+          }]
+        }, {
+          measurementMoment: mm2,
+          inputColumns: [{
+            value: undefined
+          }]
+        }];
+        var result = resultsTableService.findMeasurementOverlap(momentSelections, inputRows);
+        var expectedResult = {
+          targetMMUri: false,
+          measurementMoment1Uri: true
+        };
+        expect(result).toEqual(expectedResult);
       });
     });
-    
-    it('should return false if there is no data at a certain measurement moment', function() {
-      var targetMMUri = 'targetMMUri';
-      var mm1 = {
-        uri: 'measurementMoment1Uri'
-      };
-      var targetMM = {
-        uri: targetMMUri
-      };
-      var inputRows = [{
-        measurementMoment: mm1,
-        inputColumns: [{
-          value: 3
-        }]
-      }, {
-        measurementMoment: targetMM,
-        inputColumns: [{
-          value: undefined
-        }]
-      }];
-      var result = resultsTableService.findOverlappingMeasurements(targetMMUri, inputRows);
-      expect(result).toBeFalsy();
+
+    describe('findNotAnalysedProperty', function() {
+      it('should find an input header which is not analysis ready if there is one', function() {
+        var inputHeaders = [{
+          lexiconKey: 'some-key',
+          analysisReady: true
+        }, {
+          lexiconKey: 'another-key',
+          analysisReady: true
+        }, {
+          lexiconKey: 'yet-another-key',
+          analysisReady: false
+        }];
+        var result = resultsTableService.findNotAnalysedProperty(inputHeaders);
+        expect(result).toBeTruthy();
+      });
+
+      it('should return falsy if all headers are analysis ready', function() {
+        var inputHeaders = [{
+          lexiconKey: 'some-key',
+          analysisReady: true
+        }, {
+          lexiconKey: 'another-key',
+          analysisReady: true
+        }];
+        var result = resultsTableService.findNotAnalysedProperty(inputHeaders);
+        expect(result).toBeFalsy();
+      });
+    });
+
+    describe('buildMeasurementMomentSelections', function() {
+      it('should return the possible measurement moment selections', function() {
+        var inputRows = [{
+          measurementMoment: {
+            uri: 'moment1uri'
+          }
+        }, {
+          measurementMoment: {
+            uri: 'moment2uri'
+          }
+        }];
+        var measurementMomentOptions = {
+          moment1uri: [{
+            some: 'property'
+          }],
+          moment2uri: [{
+            another: 'property'
+          }]
+        };
+        var result = resultsTableService.buildMeasurementMomentSelections(inputRows, measurementMomentOptions);
+        var expectedResult = {
+          moment1uri: {
+            some: 'property'
+          },
+          moment2uri: {
+            another: 'property'
+          }
+        };
+        expect(result).toEqual(expectedResult);
+      });
     });
   });
 });

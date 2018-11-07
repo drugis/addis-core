@@ -1,8 +1,20 @@
 'use strict';
 define([], function() {
-  var dependencies = ['$q', '$modal', 'ResultsTableService', 'ResultsService', 'NonConformantMeasurementTableService'];
+  var dependencies = [
+    '$q',
+    '$modal',
+    'ResultsTableService',
+    'ResultsService',
+    'NonConformantMeasurementTableService'
+  ];
 
-  var nonConformantMeasurementTableDirective = function($q, $modal, ResultsTableService, ResultsService, NonConformantMeasurementTableService) {
+  var nonConformantMeasurementTableDirective = function(
+    $q,
+    $modal,
+    ResultsTableService,
+    ResultsService,
+    NonConformantMeasurementTableService
+  ) {
     return {
       restrict: 'E',
       templateUrl: './nonConformantMeasurementTableDirective.html',

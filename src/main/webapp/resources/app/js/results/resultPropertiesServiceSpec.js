@@ -243,22 +243,23 @@ define([
     describe('setTimeScaleInput', function() {
       it('should add the default timescale if the variable has exposure, but no time scale set', function() {
         var variable = {
-          resultProperties: [{
+          selectedResultProperties: [{
             uri: 'http://trials.drugis.org/ontology#exposure'
           }]
         };
         var result = resultPropertiesService.setTimeScaleInput(variable);
         var expectedResult = {
-          resultProperties: [{
+          selectedResultProperties: [{
             uri: 'http://trials.drugis.org/ontology#exposure'
           }],
           timeScale: 'P1W'
         };
         expect(result).toEqual(expectedResult);
       });
+
       it('should return the variable if the variable has exposure, but already has time scale set', function() {
         var variable = {
-          resultProperties: [{
+          selectedResultProperties: [{
             uri: 'http://trials.drugis.org/ontology#exposure'
           }],
           timeScale: 'P12W'
@@ -266,14 +267,15 @@ define([
         var result = resultPropertiesService.setTimeScaleInput(variable);
         expect(result).toEqual(variable);
       });
+      
       it('should delete time scale for variables without exposure ', function() {
         var variable = {
-          resultProperties: [],
+          selectedResultProperties: [],
           timeScale: 'P12W'
         };
         var result = resultPropertiesService.setTimeScaleInput(variable);
         var expectedResult = {
-          resultProperties: []
+          selectedResultProperties: []
         };
         expect(result).toEqual(expectedResult);
       });

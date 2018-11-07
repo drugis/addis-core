@@ -51,9 +51,9 @@ define(['lodash'], function(_) {
     setArmOrContrast();
     $scope.measurementMoments = MeasurementMomentService.queryItems();
     $scope.resultProperties = _.values(VARIABLE_TYPE_DETAILS[$scope.variable.armOrContrast]);
-    
+
     $scope.timeScaleOptions = TIME_SCALE_OPTIONS;
-    $scope.$watch('variable.selectedResultProperties', checkTimeScaleInput);
+    $scope.$watch('variable.selectedResultProperties', checkTimeScaleInput, true);
 
     $scope.variable.selectedResultProperties = getSelectedResultProperties();
 
@@ -71,7 +71,8 @@ define(['lodash'], function(_) {
       });
     }
 
-    function checkTimeScaleInput(){
+    function checkTimeScaleInput(newVal, oldVal) {
+      if (_.isEqual(newVal, oldVal)) { return; }
       $scope.variable = ResultPropertiesService.setTimeScaleInput($scope.variable);
       $scope.showTimeScaleInput = !!$scope.variable.timeScale;
     }
@@ -79,7 +80,7 @@ define(['lodash'], function(_) {
     function measurementMomentEquals(moment1, moment2) {
       return moment1.uri === moment2.uri;
     }
-    
+
     function resetResultProperties() {
       $scope.variable = ResultPropertiesService.resetResultProperties($scope.variable, $scope.arms);
       if ($scope.variable.measurementType === 'ontology:categorical') {

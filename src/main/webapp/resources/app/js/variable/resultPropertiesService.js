@@ -55,7 +55,7 @@ define(['angular', 'lodash'], function(angular, _) {
 
     function setTimeScaleInput(variable) {
       var newVariable = angular.copy(variable);
-      if (hasExposure(variable.resultProperties)) {
+      if (hasExposure(newVariable.selectedResultProperties)) {
         if (!newVariable.timeScale) {
           newVariable.timeScale = 'P1W';
         }

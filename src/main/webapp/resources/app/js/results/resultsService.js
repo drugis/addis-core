@@ -5,7 +5,6 @@ define(['angular', 'lodash'], function(angular, _) {
     'RdfListService',
     'UUIDService',
     'ARM_LEVEL_TYPE',
-    'CONTRAST_TYPE',
     'ONTOLOGY_BASE',
     'VARIABLE_TYPES',
     'VARIABLE_TYPE_DETAILS'
@@ -15,7 +14,6 @@ define(['angular', 'lodash'], function(angular, _) {
     RdfListService,
     UUIDService,
     ARM_LEVEL_TYPE,
-    CONTRAST_TYPE,
     ONTOLOGY_BASE,
     VARIABLE_TYPES,
     VARIABLE_TYPE_DETAILS
@@ -217,31 +215,33 @@ define(['angular', 'lodash'], function(angular, _) {
 
     function cleanupMeasurements() {
       return StudyService.getJsonGraph().then(function(graph) {
-        // first get all the info we need
-        var study = _.find(graph, isStudyNode);
-        var hasArmMap = createHasPropertyByIdMap(study.has_arm);
-        var isMomentMap = createHasPropertyByIdMap(_.filter(graph, isMoment));
-        var outcomeMap = _.keyBy(study.has_outcome, '@id');
-        var hasGroupMap = createHasPropertyByIdMap(study.has_group);
-        if (study.has_included_population) {
-          hasGroupMap[study.has_included_population[0]['@id']] = true;
-        }
-
-        var measurementsForOutcomes = getMeasurementsForOutcomes(study);
-        var filteredGraph = removeNoLongerMeasuredProperties(graph, outcomeMap, study);
-
-        filteredGraph = _.filter(filteredGraph, function(node) {
-          if (isResult(node)) {
-            return (hasArmMap[node.of_group] || hasGroupMap[node.of_group]) &&
-              isMomentMap[node.of_moment] &&
-              outcomeMap[node.of_outcome] &&
-              measurementsForOutcomes[node.of_moment] &&
-              hasValues(node);
-          } else {
-            return true;
-          }
-        });
+        var filteredGraph = filterGraph(graph);
         return StudyService.saveJsonGraph(filteredGraph);
+      });
+    }
+
+    function filterGraph(graph) {
+      var study = _.find(graph, isStudyNode);
+      var hasGroupMap = createHasPropertyByIdMap(study.has_group);
+      if (study.has_included_population) {
+        hasGroupMap[study.has_included_population[0]['@id']] = true;
+      }
+      var hasArmMap = createHasPropertyByIdMap(study.has_arm);
+      var hasMomentMap = createHasPropertyByIdMap(_.filter(graph, isMoment));
+      var hasOutcomeMap = _.keyBy(study.has_outcome, '@id');
+      var hasMeasurementsMap = getMeasurementsForOutcomes(study);
+      var filteredGraph = removeNoLongerMeasuredProperties(graph, hasOutcomeMap, study);
+
+      return _.filter(filteredGraph, function(node) {
+        if (isResult(node)) {
+          return (hasArmMap[node.of_group] || hasGroupMap[node.of_group]) &&
+            hasMomentMap[node.of_moment] &&
+            hasOutcomeMap[node.of_outcome] &&
+            hasMeasurementsMap[node.of_moment] &&
+            hasValues(node);
+        } else {
+          return true;
+        }
       });
     }
 

@@ -58,7 +58,8 @@ define(['lodash'], function(_) {
       return moment1.uri === moment2.uri;
     }
 
-    function checkTimeScaleInput() {
+    function checkTimeScaleInput(newVal, oldVal) {
+      if (_.isEqual(newVal, oldVal)) { return; }
       $scope.variable = ResultPropertiesService.setTimeScaleInput($scope.variable);
       $scope.showTimeScaleInput = !!$scope.variable.timeScale;
     }
