@@ -20,7 +20,7 @@ define(['angular', 'lodash'], function(angular, _) {
   ) {
 
     function getVariableDetails(variableTypeUri, armOrContrast) {
-      armOrContrast = armOrContrast ? armOrContrast : ARM_LEVEL_TYPE;
+      armOrContrast = getDataTypeOrDefault(armOrContrast);
       var uri = buildVariableUri(variableTypeUri);
       var details = VARIABLE_TYPE_DETAILS[armOrContrast];
       return _.find(details, ['uri', uri]);
@@ -33,18 +33,18 @@ define(['angular', 'lodash'], function(angular, _) {
       return variableTypeUri;
     }
 
-    function updateValue(row, inputColumn) {
+    function setValue(row, inputColumn) {
       var inputColumnVariableDetails = getVariableDetails(inputColumn.resultProperty, inputColumn.armOrContrast);
       return StudyService.getJsonGraph().then(function(graph) {
         if (!row.uri) {
-          return createValueBranch(row, inputColumn, inputColumnVariableDetails.type, graph);
+          return createValue(row, inputColumn, inputColumnVariableDetails.type, graph);
         } else {
-          return updateValueBranch(row, inputColumn, inputColumnVariableDetails.type, graph);
+          return updateValue(row, inputColumn, inputColumnVariableDetails.type, graph);
         }
       });
     }
 
-    function createValueBranch(row, inputColumn, columnType, graph) {
+    function createValue(row, inputColumn, columnType, graph) {
       if (inputColumn.value !== null && inputColumn.value !== undefined) {
         var addItem = {
           '@id': 'http://trials.drugis.org/instances/' + UUIDService.generate(),
@@ -61,7 +61,7 @@ define(['angular', 'lodash'], function(angular, _) {
       }
     }
 
-    function updateValueBranch(row, inputColumn, columnType, graph) {
+    function updateValue(row, inputColumn, columnType, graph) {
       var editItem = _.remove(graph, function(node) {
         return row.uri === node['@id'];
       })[0];
@@ -81,17 +81,17 @@ define(['angular', 'lodash'], function(angular, _) {
       return row.uri;
     }
 
-    function updateCategoricalValue(row, inputColumn) {
+    function setCategoricalValue(row, inputColumn) {
       return StudyService.getJsonGraph().then(function(graph) {
         if (!row.uri) {
-          return createCategoricalBranch(row, inputColumn, graph);
+          return createCategoricalValue(row, inputColumn, graph);
         } else {
-          return updateCategoricalBranch(row, inputColumn, graph);
+          return updateCategoricalValue(row, inputColumn, graph);
         }
       });
     }
 
-    function updateCategoricalBranch(row, inputColumn, graph) {
+    function updateCategoricalValue(row, inputColumn, graph) {
       var editItem = _.remove(graph, function(node) {
         return row.uri === node['@id'];
       })[0];
@@ -124,7 +124,7 @@ define(['angular', 'lodash'], function(angular, _) {
       return row.uri;
     }
 
-    function createCategoricalBranch(row, inputColumn, graph) {
+    function createCategoricalValue(row, inputColumn, graph) {
       if (inputColumn.value !== null && inputColumn.value !== undefined) {
         var addItem = {
           '@id': 'http://trials.drugis.org/instances/' + UUIDService.generate(),
@@ -145,9 +145,9 @@ define(['angular', 'lodash'], function(angular, _) {
 
     function updateResultValue(row, inputColumn) {
       if (!inputColumn.isCategory) {
-        return updateValue(row, inputColumn);
+        return setValue(row, inputColumn);
       } else {
-        return updateCategoricalValue(row, inputColumn);
+        return setCategoricalValue(row, inputColumn);
       }
     }
 
@@ -205,7 +205,7 @@ define(['angular', 'lodash'], function(angular, _) {
 
     function hasValues(node) {
       if (!node.category_count) {
-        return _.keys(_.pick(node, VARIABLE_TYPES[getArmOrContrast(node)])).length > 0;
+        return _.keys(_.pick(node, VARIABLE_TYPES[getDataTypeOrDefault(node.arm_or_contrast)])).length > 0;
       } else {
         return node.category_count.length && _.find(node.category_count, function(countNode) {
           return countNode.count !== null && countNode.count !== undefined;
@@ -295,16 +295,15 @@ define(['angular', 'lodash'], function(angular, _) {
     }
 
     function getResultPropertiesFor(node) {
-      var variableTypes = VARIABLE_TYPES[getArmOrContrast(node)];
+      var variableTypes = VARIABLE_TYPES[getDataTypeOrDefault(node.arm_or_contrast)];
       var resultProperties = _.keys(_.pick(node, variableTypes));
       return _.map(resultProperties, function(resultProperty) {
-        return VARIABLE_TYPE_DETAILS[getArmOrContrast(node)][resultProperty];
+        return VARIABLE_TYPE_DETAILS[getDataTypeOrDefault(node.arm_or_contrast)][resultProperty];
       });
-
     }
 
-    function getArmOrContrast(node) {
-      return node.arm_or_contrast ? node.arm_or_contrast : ARM_LEVEL_TYPE;
+    function getDataTypeOrDefault(armOrContrast) {
+      return armOrContrast ? armOrContrast : ARM_LEVEL_TYPE;
     }
 
     function setToMeasurementMoment(measurementMomentUri, measurementInstanceList) {

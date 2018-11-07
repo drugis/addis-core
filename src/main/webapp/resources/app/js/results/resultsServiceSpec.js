@@ -60,38 +60,93 @@ define([
         of_outcome: 'http://trials.drugis.org/instances/outcome2',
         sample_size: 33,
         arm_or_contrast: ARM_LEVEL
+      }, {
+        '@id': 'http://trials.drugis.org/instances/result4',
+        standard_error: 37.2,
+        of_group: 'http://trials.drugis.org/instances/arm1',
+        of_moment: 'http://trials.drugis.org/instances/moment1',
+        of_outcome: 'http://trials.drugis.org/instances/outcome3',
+        odds_ratio: 0.5,
+        arm_or_contrast: CONTRAST
+      }, {
+        '@id': 'http://trials.drugis.org/instances/result5',
+        standard_error: 15.2,
+        of_group: 'http://trials.drugis.org/instances/arm2',
+        of_moment: 'http://trials.drugis.org/instances/moment1',
+        of_outcome: 'http://trials.drugis.org/instances/outcome3',
+        odds_ratio: 2.2,
+        arm_or_contrast: CONTRAST
       }];
 
-      var queryOutcome = 'http://trials.drugis.org/instances/outcome1';
+      describe('for an arm-level variable', () => {
+        var queryOutcome = 'http://trials.drugis.org/instances/outcome1';
 
-      beforeEach(function() {
-        var graphDefer = q.defer();
-        var getGraphPromise = graphDefer.promise;
-        graphDefer.resolve(graphJsonObject);
-        studyServiceMock.getJsonGraph.and.returnValue(getGraphPromise);
-      });
-
-      it('should return the results for a given variable', function(done) {
-        resultsService.queryResults(queryOutcome).then(function(actualResults) {
-          expect(actualResults.length).toEqual(5);
-          expect(actualResults[0].instance).toEqual('http://trials.drugis.org/instances/result1');
-          expect(actualResults[0].armUri).toEqual('http://trials.drugis.org/instances/arm1');
-          expect(actualResults[0].momentUri).toEqual('http://trials.drugis.org/instances/moment1');
-          expect(actualResults[0].outcomeUri).toEqual('http://trials.drugis.org/instances/outcome1');
-          expect(actualResults[0].result_property).toEqual('sample_size');
-          expect(actualResults[0].value).toEqual(70);
-
-          expect(actualResults[1].instance).toEqual('http://trials.drugis.org/instances/result1');
-          expect(actualResults[1].armUri).toEqual('http://trials.drugis.org/instances/arm1');
-          expect(actualResults[1].momentUri).toEqual('http://trials.drugis.org/instances/moment1');
-          expect(actualResults[1].outcomeUri).toEqual('http://trials.drugis.org/instances/outcome1');
-          expect(actualResults[1].result_property).toEqual('count');
-          expect(actualResults[1].value).toEqual(24);
-
-          expect(actualResults[4].value).toEqual(2);
-          done();
+        beforeEach(function() {
+          var graphDefer = q.defer();
+          var getGraphPromise = graphDefer.promise;
+          graphDefer.resolve(graphJsonObject);
+          studyServiceMock.getJsonGraph.and.returnValue(getGraphPromise);
         });
-        rootScope.$digest();
+
+        it('should return the results for a given arm-level variable', function(done) {
+          resultsService.queryResults(queryOutcome).then(function(actualResults) {
+            expect(actualResults.length).toEqual(5);
+            expect(actualResults[0].instance).toEqual('http://trials.drugis.org/instances/result1');
+            expect(actualResults[0].armUri).toEqual('http://trials.drugis.org/instances/arm1');
+            expect(actualResults[0].momentUri).toEqual('http://trials.drugis.org/instances/moment1');
+            expect(actualResults[0].outcomeUri).toEqual('http://trials.drugis.org/instances/outcome1');
+            expect(actualResults[0].result_property).toEqual('sample_size');
+            expect(actualResults[0].value).toEqual(70);
+
+            expect(actualResults[1].instance).toEqual('http://trials.drugis.org/instances/result1');
+            expect(actualResults[1].armUri).toEqual('http://trials.drugis.org/instances/arm1');
+            expect(actualResults[1].momentUri).toEqual('http://trials.drugis.org/instances/moment1');
+            expect(actualResults[1].outcomeUri).toEqual('http://trials.drugis.org/instances/outcome1');
+            expect(actualResults[1].result_property).toEqual('count');
+            expect(actualResults[1].value).toEqual(24);
+
+            expect(actualResults[4].value).toEqual(2);
+            done();
+          });
+          rootScope.$digest();
+        });
+      });
+      describe('for a contrast variable', () => {
+        var queryOutcome = 'http://trials.drugis.org/instances/outcome3';
+
+        beforeEach(function() {
+          var graphDefer = q.defer();
+          var getGraphPromise = graphDefer.promise;
+          graphDefer.resolve(graphJsonObject);
+          studyServiceMock.getJsonGraph.and.returnValue(getGraphPromise);
+        });
+
+        it('should return the results for a given arm-level variable', function(done) {
+          resultsService.queryResults(queryOutcome).then(function(actualResults) {
+            expect(actualResults.length).toEqual(4);
+            expect(actualResults[0]).toEqual({
+              instance: 'http://trials.drugis.org/instances/result4',
+              armUri: 'http://trials.drugis.org/instances/arm1',
+              momentUri: 'http://trials.drugis.org/instances/moment1',
+              outcomeUri: queryOutcome,
+              armOrContrast: CONTRAST,
+              result_property: 'standard_error',
+              value: 37.2
+            });
+
+            expect(actualResults[1]).toEqual({
+              instance: 'http://trials.drugis.org/instances/result4',
+              armUri: 'http://trials.drugis.org/instances/arm1',
+              momentUri: 'http://trials.drugis.org/instances/moment1',
+              outcomeUri: queryOutcome,
+              armOrContrast: CONTRAST,
+              result_property: 'odds_ratio',
+              value: 0.5
+            });
+            done();
+          });
+          rootScope.$digest();
+        });
       });
     });
 
