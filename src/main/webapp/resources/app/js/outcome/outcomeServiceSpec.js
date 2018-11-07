@@ -116,7 +116,7 @@ define(['angular-mocks', './outcome'], function() {
         studyServiceMock.findStudyNode.and.returnValue(jsonStudy);
       });
 
-      it('should query the characteristics', function(done) {
+      it('should result in outcomes of that type', function(done) {
         outcomeService.queryItems(function(outcome) {
           return outcome['@type'] === 'ontology:OutcomeType';
         }).then(function(items) {
@@ -131,7 +131,7 @@ define(['angular-mocks', './outcome'], function() {
       });
     });
 
-    describe('queryItems; query outcomes that are not measured', function() {
+    describe('querying outcomes that are not measured', function() {
       var jsonStudy = {
         has_outcome: [{
           '@id': 'http://trials.drugis.org/instances/popchar1',
@@ -163,7 +163,7 @@ define(['angular-mocks', './outcome'], function() {
         measurementMomentsDefer.resolve([]);
       });
 
-      it('should query the characteristics', function(done) {
+      it('should result in outcomes that are not measured at moments', function(done) {
         outcomeService.queryItems(function(outcome) {
           return outcome['@type'] === 'ontology:OutcomeType';
         }).then(function(items) {
@@ -176,7 +176,7 @@ define(['angular-mocks', './outcome'], function() {
       });
     });
 
-    describe('queryItems; addItem outcome of type', function() {
+    describe('adding an outcome of a specific type', function() {
       var outcomeUri = 'http://trials.drugis.org/instances/newUuid';
       var moment = 'http://mm/uri';
       var measuredAtMoment = {
@@ -212,7 +212,7 @@ define(['angular-mocks', './outcome'], function() {
         rootScope.$digest();
       });
 
-      it('should add the outcomes', function(done) {
+      it('should add the outcome, which should then be found in queries', function(done) {
         var expectedStudy = {
           has_outcome: [{
             '@type': 'ontology:OutcomeType',
@@ -245,7 +245,7 @@ define(['angular-mocks', './outcome'], function() {
       });
     });
 
-    describe('queryItems; edit outcome', function() {
+    describe('editing an outcome', function() {
       var moment1 = 'http://instance/moment1';
       var moment2 = 'http://instance/moment2';
       var jsonStudy = {
@@ -308,7 +308,7 @@ define(['angular-mocks', './outcome'], function() {
         rootScope.$digest();
       });
 
-      it('should have changed the outcomes', function(done) {
+      it('should have changed the outcome', function(done) {
         outcomeService.queryItems().then(function(queryResult) {
           expect(queryResult.length).toEqual(2);
           expect(queryResult[1].uri).toEqual(newPopulationChar.uri);
@@ -321,7 +321,7 @@ define(['angular-mocks', './outcome'], function() {
       });
     });
 
-    describe('queryItems; delete outcome', function() {
+    describe('deleting an outcome', function() {
       var jsonStudy = {
         has_outcome: [{
           '@id': 'http://trials.drugis.org/instances/popchar1',
@@ -374,7 +374,7 @@ define(['angular-mocks', './outcome'], function() {
       });
 
 
-      it('should have removed the outcomes', function(done) {
+      it('should remove the outcomes', function(done) {
         outcomeService.queryItems().then(function(queryResult) {
           expect(queryResult.length).toEqual(1);
           done();
