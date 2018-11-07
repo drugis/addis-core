@@ -98,7 +98,6 @@ public class MainConfig {
   private final static Logger logger = LoggerFactory.getLogger(MainConfig.class);
   private final static String KEYSTORE_PATH = WebConstants.loadSystemEnv("KEYSTORE_PATH");
   private final static String KEYSTORE_PASSWORD = WebConstants.loadSystemEnv("KEYSTORE_PASSWORD");
-  private final static String TRUSTSTORE_PATH = WebConstants.loadSystemEnv("TRUSTSTORE_PATH");
 
   public MainConfig() {
     String trustStoreLocation = System.getProperty("javax.net.ssl.trustStore");
@@ -163,6 +162,7 @@ public class MainConfig {
         .custom()
         .loadKeyMaterial(keyStore, KEYSTORE_PASSWORD.toCharArray());
     if (ADDIS_LOCAL != null) {
+      String TRUSTSTORE_PATH = WebConstants.loadSystemEnv("TRUSTSTORE_PATH");
       sslContextBuilder.loadTrustMaterial(new File(TRUSTSTORE_PATH));
     }
     sslContextBuilder.build();
