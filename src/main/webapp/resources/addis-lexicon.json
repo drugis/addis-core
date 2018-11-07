@@ -226,7 +226,7 @@
   }, 
    "odds-ratio": {
     "title": "Odds ratio",
-    "text": "The odds ratio",
+    "text": "The ratio of odds that an event occurs, compared to the odds of that event not occuring.",
     "link": "/manual.html#study-input"
   },
   "other-group": {
@@ -291,7 +291,7 @@
   },
   "risk-ratio": {
     "title": "Risk ratio",
-    "text": "The risk ratio.",
+    "text": "The risk ratio describes by which factor a group is more (or less) at risk of an event compared to another group.",
     "link": "/manual.html#study-input"
   },
   "sample-size": {
@@ -321,7 +321,7 @@
   },
   "standardized-mean-difference":{
     "title": "Standardized mean difference",
-    "text": "The standardized mean difference",
+    "text": "The standardized mean difference is the mean divided by the standard deviation of a difference between two random values, each from one of two groups. ",
     "link": "/manual.html##study-input"
   },
   "study": {
