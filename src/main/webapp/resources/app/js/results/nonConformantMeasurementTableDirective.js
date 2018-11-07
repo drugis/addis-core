@@ -38,6 +38,19 @@ define([], function() {
         reloadData();
         scope.$on('refreshResultsTable', reloadData);
 
+        function reloadData() {
+          scope.nonConformantMeasurementsPromise = ResultsService.queryNonConformantMeasurementsByOutcomeUri(scope.variable.uri);
+
+          $q.all([scope.arms, scope.measurementMoments, scope.groups, scope.nonConformantMeasurementsPromise]).then(function(result) {
+            scope.nonConformantMeasurements = result[3];
+            scope.nonConformantMeasurementsMap = NonConformantMeasurementTableService.mapResultsByLabelAndGroup(scope.arms, scope.groups, scope.nonConformantMeasurements);
+            scope.inputRows = NonConformantMeasurementTableService.createInputRows(scope.variable, scope.nonConformantMeasurementsMap);
+          });
+
+          scope.inputHeaders = ResultsTableService.createHeaders(scope.variable);
+        }
+
+        //scope functions
         function toggle() {
           if (scope.isExpanded) {
             scope.isExpanded = false;
@@ -82,17 +95,6 @@ define([], function() {
           });
         }
 
-        function reloadData() {
-          scope.nonConformantMeasurementsPromise = ResultsService.queryNonConformantMeasurementsByOutcomeUri(scope.variable.uri);
-
-          $q.all([scope.arms, scope.measurementMoments, scope.groups, scope.nonConformantMeasurementsPromise]).then(function(result) {
-            scope.nonConformantMeasurements = result[3];
-            scope.nonConformantMeasurementsMap = NonConformantMeasurementTableService.mapResultsByLabelAndGroup(scope.arms, scope.groups, scope.nonConformantMeasurements);
-            scope.inputRows = NonConformantMeasurementTableService.createInputRows(scope.variable, scope.nonConformantMeasurementsMap);
-          });
-
-          scope.inputHeaders = ResultsTableService.createHeaders(scope.variable);
-        }
       }
     };
   };
