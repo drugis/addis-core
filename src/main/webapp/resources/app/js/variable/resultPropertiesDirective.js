@@ -17,6 +17,7 @@ define(['lodash'], function(_) {
       link: function(scope) {
         //functions
         scope.updateSelection = updateSelection;
+        scope.checkConfidenceInterval = checkConfidenceInterval;
 
         //init
         buildProperties();
@@ -75,6 +76,13 @@ define(['lodash'], function(_) {
             return property.type === 'confidence_interval';
           });
           scope.variable.confidenceIntervalWidth = hasConfidenceIntervalWidth ? 95 : null;
+        }
+
+        function checkConfidenceInterval() {
+          var value = scope.variable.confidenceIntervalWidth;
+          if (value > 100 || value < 0 || value === undefined) {
+            scope.variable.confidenceIntervalWidth = 95;
+          }
         }
       }
     };

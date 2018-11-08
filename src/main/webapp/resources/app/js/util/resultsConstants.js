@@ -10,7 +10,7 @@ define(['angular'], function(angular) {
   var CONTINUOUS_TYPE = 'ontology:continuous';
   var SURVIVAL_TYPE = 'ontology:survival';
 
-  var ARM_VARIABLE_TYPES = [
+  var ARM_RESULT_PROPERTY_TYPES = [
     'sample_size',
     'mean',
     'median',
@@ -36,24 +36,24 @@ define(['angular'], function(angular) {
     'hazard_ratio'
   ];
 
-  var CONTRAST_VARIABLE_TYPES = [
-    'standard_error',
+  var CONTRAST_RESULT_PROPERTY_TYPES = [
     'hazard_ratio',
     'odds_ratio',
     'risk_ratio',
     'continuous_mean_difference',
     'standardized_mean_difference',
     'hazard_ratio',
+    'standard_error',
     'confidence_interval_lower_bound',
     'confidence_interval_upper_bound'
   ];
 
-  var VARIABLE_TYPES = {
-    'ontology:arm_level_data': ARM_VARIABLE_TYPES,
-    'ontology:contrast_data': CONTRAST_VARIABLE_TYPES
+  var RESULT_PROPERTY_TYPES = {
+    'ontology:arm_level_data': ARM_RESULT_PROPERTY_TYPES,
+    'ontology:contrast_data': CONTRAST_RESULT_PROPERTY_TYPES
   };
 
-  var ARM_VARIABLE_TYPE_DETAILS = {
+  var ARM_RESULT_PROPERTY_TYPE_DETAILS = {
     sample_size: {
       type: 'sample_size',
       label: 'N',
@@ -324,7 +324,58 @@ define(['angular'], function(angular) {
     duration: 'P1Y'
   }];
 
-  var CONTRAST_VARIABLE_TYPE_DETAILS = {
+  var CONTRAST_RESULT_PROPERTY_TYPE_DETAILS = {
+    standard_error: {
+      type: 'standard_error',
+      label: 'standard error',
+      armOrContrast: CONTRAST_TYPE,
+      uri: ONTOLOGY_BASE + 'standard_error',
+      dataType: DOUBLE_TYPE,
+      variableTypes: [CONTINUOUS_TYPE, DICHOTOMOUS_TYPE, SURVIVAL_TYPE],
+      category: 'Dispersion',
+      lexiconKey: 'standard-error',
+      analysisReady: true,
+      isAlwaysPositive: true
+    },
+    confidence_interval_width: {
+      type: 'confidence_interval',
+      label: 'confidence interval',
+      armOrContrast: CONTRAST_TYPE,
+      uri: ONTOLOGY_BASE + 'confidence_interval_width',
+      dataType: DOUBLE_TYPE,
+      variableTypes: [CONTINUOUS_TYPE, DICHOTOMOUS_TYPE, SURVIVAL_TYPE],
+      category: 'Dispersion',
+      lexiconKey: 'confidence-interval',
+      analysisReady: false,
+      isAlwaysPositive: true
+    },
+    confidence_interval_lower_bound: {
+      type: 'confidence_interval_lower_bound',
+      label: 'confidence interval lower bound',
+      armOrContrast: CONTRAST_TYPE,
+      uri: ONTOLOGY_BASE + 'confidence_interval_lower_bound',
+      dataType: DOUBLE_TYPE,
+      variableTypes: [CONTINUOUS_TYPE, DICHOTOMOUS_TYPE, SURVIVAL_TYPE],
+      category: 'Dispersion',
+      lexiconKey: 'confidence-interval',
+      analysisReady: false,
+      hiddenSelection: true
+    },
+    confidence_interval_upper_bound: {
+      type: 'confidence_interval_upper_bound',
+      label: 'confidence interval upper bound',
+      armOrContrast: CONTRAST_TYPE,
+      uri: ONTOLOGY_BASE + 'confidence_interval_upper_bound',
+      dataType: DOUBLE_TYPE,
+      variableTypes: [CONTINUOUS_TYPE, DICHOTOMOUS_TYPE, SURVIVAL_TYPE],
+      category: 'Dispersion',
+      lexiconKey: 'confidence-interval',
+      analysisReady: false,
+      hiddenSelection: true
+    }
+  };
+
+  var CONTRAST_OPTIONS_DETAILS = {
     odds_ratio: {
       type: 'odds_ratio',
       label: 'log odds ratio',
@@ -383,91 +434,40 @@ define(['angular'], function(angular) {
       lexiconKey: 'hazard-ratio',
       analysisReady: false
     },
-    standard_error: {
-      type: 'standard_error',
-      label: 'standard error',
-      armOrContrast: CONTRAST_TYPE,
-      uri: ONTOLOGY_BASE + 'standard_error',
-      dataType: DOUBLE_TYPE,
-      variableTypes: [CONTINUOUS_TYPE, DICHOTOMOUS_TYPE, SURVIVAL_TYPE],
-      category: 'Dispersion',
-      lexiconKey: 'standard-error',
-      analysisReady: true,
-      isAlwaysPositive: true
-    },
-    confidence_interval_width: {
-      type: 'confidence_interval',
-      label: 'confidence interval',
-      armOrContrast: CONTRAST_TYPE,
-      uri: ONTOLOGY_BASE + 'confidence_interval_width',
-      dataType: DOUBLE_TYPE,
-      variableTypes: [CONTINUOUS_TYPE, DICHOTOMOUS_TYPE, SURVIVAL_TYPE],
-      category: 'Dispersion',
-      lexiconKey: 'confidence-interval',
-      analysisReady: false,
-      isAlwaysPositive: true
-    },
-    confidence_interval_lower_bound: {
-      type: 'confidence_interval_lower_bound',
-      label: 'confidence interval lower bound',
-      armOrContrast: CONTRAST_TYPE,
-      uri: ONTOLOGY_BASE + 'confidence_interval_lower_bound',
-      dataType: DOUBLE_TYPE,
-      variableTypes: [CONTINUOUS_TYPE, DICHOTOMOUS_TYPE, SURVIVAL_TYPE],
-      category: 'Dispersion',
-      lexiconKey: 'confidence-interval',
-      analysisReady: false,
-      hiddenSelection: true
-    },
-    confidence_interval_upper_bound: {
-      type: 'confidence_interval_upper_bound',
-      label: 'confidence interval upper bound',
-      armOrContrast: CONTRAST_TYPE,
-      uri: ONTOLOGY_BASE + 'confidence_interval_upper_bound',
-      dataType: DOUBLE_TYPE,
-      variableTypes: [CONTINUOUS_TYPE, DICHOTOMOUS_TYPE, SURVIVAL_TYPE],
-      category: 'Dispersion',
-      lexiconKey: 'confidence-interval',
-      analysisReady: false,
-      hiddenSelection: true
-    }
   };
 
-  var VARIABLE_TYPE_DETAILS = {
-    'ontology:arm_level_data': ARM_VARIABLE_TYPE_DETAILS,
-    'ontology:contrast_data': CONTRAST_VARIABLE_TYPE_DETAILS
+  var RESULT_PROPERTY_TYPE_DETAILS = {
+    'ontology:arm_level_data': ARM_RESULT_PROPERTY_TYPE_DETAILS,
+    'ontology:contrast_data': CONTRAST_RESULT_PROPERTY_TYPE_DETAILS
   };
 
   var DEFAULT_ARM_RESULT_PROPERTIES = {
     'ontology:continuous': [
-      ARM_VARIABLE_TYPE_DETAILS.sample_size,
-      ARM_VARIABLE_TYPE_DETAILS.mean,
-      ARM_VARIABLE_TYPE_DETAILS.standard_deviation
+      ARM_RESULT_PROPERTY_TYPE_DETAILS.sample_size,
+      ARM_RESULT_PROPERTY_TYPE_DETAILS.mean,
+      ARM_RESULT_PROPERTY_TYPE_DETAILS.standard_deviation
     ],
     'ontology:dichotomous': [
-      ARM_VARIABLE_TYPE_DETAILS.sample_size,
-      ARM_VARIABLE_TYPE_DETAILS.count
+      ARM_RESULT_PROPERTY_TYPE_DETAILS.sample_size,
+      ARM_RESULT_PROPERTY_TYPE_DETAILS.count
     ],
     'ontology:categorical': [],
     'ontology:survival': [
-      ARM_VARIABLE_TYPE_DETAILS.count,
-      ARM_VARIABLE_TYPE_DETAILS.exposure
+      ARM_RESULT_PROPERTY_TYPE_DETAILS.count,
+      ARM_RESULT_PROPERTY_TYPE_DETAILS.exposure
     ]
   };
 
   var DEFAULT_CONTRAST_RESULT_PROPERTIES = {
     'ontology:dichotomous': [
-      CONTRAST_VARIABLE_TYPE_DETAILS.odds_ratio,
-      CONTRAST_VARIABLE_TYPE_DETAILS.standard_error
+      CONTRAST_RESULT_PROPERTY_TYPE_DETAILS.standard_error
     ],
     'ontology:continuous': [
-      CONTRAST_VARIABLE_TYPE_DETAILS.continuous_mean_difference,
-      CONTRAST_VARIABLE_TYPE_DETAILS.standard_error
+      CONTRAST_RESULT_PROPERTY_TYPE_DETAILS.standard_error
     ],
     'ontology:categorical': [],
     'ontology:survival': [
-      CONTRAST_VARIABLE_TYPE_DETAILS.hazard_ratio,
-      CONTRAST_VARIABLE_TYPE_DETAILS.standard_error
+      CONTRAST_RESULT_PROPERTY_TYPE_DETAILS.standard_error
     ]
   };
 
@@ -488,11 +488,10 @@ define(['angular'], function(angular) {
     .constant('CONTINUOUS_TYPE', CONTINUOUS_TYPE)
     .constant('SURVIVAL_TYPE', SURVIVAL_TYPE)
 
-    .constant('VARIABLE_TYPES', VARIABLE_TYPES)
-    .constant('VARIABLE_TYPE_DETAILS', VARIABLE_TYPE_DETAILS)
+    .constant('RESULT_PROPERTY_TYPES', RESULT_PROPERTY_TYPES)
+    .constant('RESULT_PROPERTY_TYPE_DETAILS', RESULT_PROPERTY_TYPE_DETAILS)
+    .constant('CONTRAST_OPTIONS_DETAILS', CONTRAST_OPTIONS_DETAILS)
     .constant('DEFAULT_RESULT_PROPERTIES', DEFAULT_RESULT_PROPERTIES)
-    .constant('ARM_VARIABLE_TYPES', ARM_VARIABLE_TYPES)
-    .constant('ARM_VARIABLE_TYPE_DETAILS', ARM_VARIABLE_TYPE_DETAILS)
     .constant('TIME_SCALE_OPTIONS', TIME_SCALE_OPTIONS)
     ;
 });

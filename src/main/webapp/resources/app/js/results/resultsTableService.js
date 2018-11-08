@@ -102,7 +102,7 @@ define(['lodash'], function(_) {
 
     function getPropertyDetails(resultProperty, variable) {
       var propertyUri = _.isString(resultProperty) ? resultProperty : resultProperty.uri;
-      return ResultsService.getVariableDetails(propertyUri, variable.armOrContrast);
+      return ResultsService.getResultPropertyDetails(propertyUri, variable.armOrContrast);
     }
 
     function createHeaderLabel(propertyDetails, variable) {
@@ -196,7 +196,7 @@ define(['lodash'], function(_) {
     function createNonCategoricalInputColumn(variable, valueObjects) {
       return _(variable.resultProperties)
         .reduce(function(accum, property) {
-          var details = ResultsService.getVariableDetails(property, variable.armOrContrast);
+          var details = ResultsService.getResultPropertyDetails(property, variable.armOrContrast);
           if (details.type === 'confidence_interval') {
             return accum.concat(createConfidenceIntervalColumns(variable, valueObjects));
           } else {
@@ -206,8 +206,8 @@ define(['lodash'], function(_) {
     }
 
     function createConfidenceIntervalColumns(variable, valueObjects) {
-      var lowerboundDetails = ResultsService.getVariableDetails('ontology:confidence_interval_lower_bound', variable.armOrContrast);
-      var upperboundDetails = ResultsService.getVariableDetails('ontology:confidence_interval_upper_bound', variable.armOrContrast);
+      var lowerboundDetails = ResultsService.getResultPropertyDetails('ontology:confidence_interval_lower_bound', variable.armOrContrast);
+      var upperboundDetails = ResultsService.getResultPropertyDetails('ontology:confidence_interval_upper_bound', variable.armOrContrast);
       return [
         createColumn(ONTOLOGY_BASE + 'confidence_interval_lower_bound', lowerboundDetails, valueObjects),
         createColumn(ONTOLOGY_BASE + 'confidence_interval_upper_bound', upperboundDetails, valueObjects)
@@ -307,7 +307,7 @@ define(['lodash'], function(_) {
     function findOverlappingMeasurements(targetMomentUri, inputRows) {
       return _.some(inputRows, function(inputRow) {
         return targetMomentUri === inputRow.measurementMoment.uri &&
-        _.some(inputRow.inputColumns, function(inputColumn) {
+          _.some(inputRow.inputColumns, function(inputColumn) {
             return inputColumn.value !== undefined;
           });
       });

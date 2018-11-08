@@ -11,7 +11,8 @@ define(['lodash'], function(_) {
     'callback',
     'settings',
     'TIME_SCALE_OPTIONS',
-    'DICHOTOMOUS_TYPE'
+    'DICHOTOMOUS_TYPE',
+    'CONTRAST_TYPE'
   ];
   var addVariableController = function(
     $stateParams,
@@ -24,7 +25,8 @@ define(['lodash'], function(_) {
     callback,
     settings,
     TIME_SCALE_OPTIONS,
-    DICHOTOMOUS_TYPE
+    DICHOTOMOUS_TYPE,
+    CONTRAST_TYPE
   ) {
     // functions
     $scope.addVariable = addVariable;
@@ -74,6 +76,9 @@ define(['lodash'], function(_) {
     }
 
     function addVariable() {
+      if($scope.variable.armOrContrast === CONTRAST_TYPE){
+        $scope.variable.selectedResultProperties.push($scope.variable.contrastOption);
+      }
       $scope.variable.resultProperties = _.map($scope.variable.selectedResultProperties, 'uri');
       Service.addItem($scope.variable).then(succesCallback, errorCallback);
     }

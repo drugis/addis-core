@@ -5,36 +5,42 @@ define(['angular', 'lodash'], function(angular, _) {
     'RdfListService',
     'UUIDService',
     'ARM_LEVEL_TYPE',
+    'CONTRAST_TYPE',
     'ONTOLOGY_BASE',
-    'VARIABLE_TYPES',
-    'VARIABLE_TYPE_DETAILS'
+    'RESULT_PROPERTY_TYPES',
+    'RESULT_PROPERTY_TYPE_DETAILS',
+    'CONTRAST_OPTIONS_DETAILS'
   ];
   var ResultsService = function(
     StudyService,
     RdfListService,
     UUIDService,
     ARM_LEVEL_TYPE,
+    CONTRAST_TYPE,
     ONTOLOGY_BASE,
-    VARIABLE_TYPES,
-    VARIABLE_TYPE_DETAILS
+    RESULT_PROPERTY_TYPES,
+    RESULT_PROPERTY_TYPE_DETAILS,
+    CONTRAST_OPTIONS_DETAILS
   ) {
 
-    function getVariableDetails(variableTypeUri, armOrContrast) {
+    function getResultPropertyDetails(resultPropertyUri, armOrContrast) {
       armOrContrast = getDataTypeOrDefault(armOrContrast);
-      var uri = buildVariableUri(variableTypeUri);
-      var details = VARIABLE_TYPE_DETAILS[armOrContrast];
+      var uri = normaliseUri(resultPropertyUri);
+      var details = _.merge({},
+        CONTRAST_OPTIONS_DETAILS,
+        RESULT_PROPERTY_TYPE_DETAILS[armOrContrast]);
       return _.find(details, ['uri', uri]);
     }
 
-    function buildVariableUri(variableTypeUri) {
-      if (!_.startsWith(variableTypeUri, ONTOLOGY_BASE)) {
-        return _.replace(variableTypeUri, 'ontology:', ONTOLOGY_BASE);
+    function normaliseUri(resultPropertyDetails) {
+      if (!_.startsWith(resultPropertyDetails, ONTOLOGY_BASE)) {
+        return _.replace(resultPropertyDetails, 'ontology:', ONTOLOGY_BASE);
       }
-      return variableTypeUri;
+      return resultPropertyDetails;
     }
 
     function setValue(row, inputColumn) {
-      var inputColumnVariableDetails = getVariableDetails(inputColumn.resultProperty, inputColumn.armOrContrast);
+      var inputColumnVariableDetails = getResultPropertyDetails(inputColumn.resultProperty, inputColumn.armOrContrast);
       return StudyService.getJsonGraph().then(function(graph) {
         if (!row.uri) {
           return createValue(row, inputColumn, inputColumnVariableDetails.type, graph);
@@ -158,7 +164,7 @@ define(['angular', 'lodash'], function(angular, _) {
     }
 
     function isEmptyResult(item, armOrContrast) {
-      return !_.some(VARIABLE_TYPES[armOrContrast], function(type) {
+      return !_.some(RESULT_PROPERTY_TYPES[armOrContrast], function(type) {
         return item[type] !== undefined;
       });
     }
@@ -205,7 +211,7 @@ define(['angular', 'lodash'], function(angular, _) {
 
     function hasValues(node) {
       if (!node.category_count) {
-        return _.keys(_.pick(node, VARIABLE_TYPES[getDataTypeOrDefault(node.arm_or_contrast)])).length > 0;
+        return _.keys(_.pick(node, RESULT_PROPERTY_TYPES[getDataTypeOrDefault(node.arm_or_contrast)])).length > 0;
       } else {
         return node.category_count.length && _.find(node.category_count, function(countNode) {
           return countNode.count !== null && countNode.count !== undefined;
@@ -273,32 +279,67 @@ define(['angular', 'lodash'], function(angular, _) {
       return _.map(graph, function(node) {
         if (isResult(node) && outcomeMap[node.of_outcome]) {
           if (node.category_count) {
-            var categoryIds = _.reduce(study.has_outcome, function(accum, outcome) {
-              var categories = RdfListService.flattenList(outcome.of_variable[0].categoryList);
-              return accum.concat(_.map(categories, '@id'));
-            }, []);
-            node.category_count = _.filter(node.category_count, function(countObject) {
-              return _.includes(categoryIds, countObject.category);
-            });
+            node.category_count = getCategoryCount(study, node);
           } else {
-            var resultProperties = getResultPropertiesFor(node);
-            var missingProperties = _.filter(resultProperties, function(resultProperty) {
-              return !_.includes(outcomeMap[node.of_outcome].has_result_property, resultProperty.uri);
-            });
-            return _.omit(node, _.map(missingProperties, 'type'));
+            return removeMissingPropertiesFromNode(node, outcomeMap);
           }
-          return node;
-        } else {
-          return node;
         }
+        return node;
       });
     }
 
+    function removeMissingPropertiesFromNode(node, outcomeMap) {
+      var missingProperties = getMissingProperties(outcomeMap, node);
+      return _.omit(node, _.map(missingProperties, 'type'));
+    }
+
+    function getMissingProperties(outcomeMap, node) {
+      var resultProperties = getResultPropertiesFor(node);
+      return filterResultProperties(resultProperties, outcomeMap, node);
+    }
+
+    function filterResultProperties(resultProperties, outcomeMap, node) {
+      return _.filter(resultProperties, function(resultProperty) {
+        return isResultPropertyStillIncludedForNode(resultProperty, outcomeMap, node);
+      });
+    }
+
+    function isResultPropertyStillIncludedForNode(resultProperty, outcomeMap, node) {
+      if (isConfidenceIntervalUri(resultProperty.uri)) {
+        return !_.includes(outcomeMap[node.of_outcome].has_result_property, ONTOLOGY_BASE + 'confidence_interval_width');
+      }
+      return !_.includes(outcomeMap[node.of_outcome].has_result_property, resultProperty.uri);
+    }
+
+    function isConfidenceIntervalUri(uri) {
+      return uri === (ONTOLOGY_BASE + 'confidence_interval_upper_bound') ||
+        uri === (ONTOLOGY_BASE + 'confidence_interval_lower_bound');
+    }
+
+    function getCategoryCount(study, node) {
+      var categoryIds = getCategoryIds(study);
+      return _.filter(node.category_count, function(countObject) {
+        return _.includes(categoryIds, countObject.category);
+      });
+    }
+
+    function getCategoryIds(study) {
+      return _.reduce(study.has_outcome, function(accum, outcome) {
+        var categories = RdfListService.flattenList(outcome.of_variable[0].categoryList);
+        return accum.concat(_.map(categories, '@id'));
+      }, []);
+    }
+
     function getResultPropertiesFor(node) {
-      var variableTypes = VARIABLE_TYPES[getDataTypeOrDefault(node.arm_or_contrast)];
+      var armOrContrast = getDataTypeOrDefault(node.arm_or_contrast);
+      var variableTypes = RESULT_PROPERTY_TYPES[armOrContrast];
       var resultProperties = _.keys(_.pick(node, variableTypes));
+      var details = RESULT_PROPERTY_TYPE_DETAILS[armOrContrast];
+      if (armOrContrast === CONTRAST_TYPE) {
+        details = _.merge({}, details, CONTRAST_OPTIONS_DETAILS);
+      }
       return _.map(resultProperties, function(resultProperty) {
-        return VARIABLE_TYPE_DETAILS[getDataTypeOrDefault(node.arm_or_contrast)][resultProperty];
+        return details[resultProperty];
       });
     }
 
@@ -405,7 +446,7 @@ define(['angular', 'lodash'], function(angular, _) {
     }
 
     function createValueItems(baseItem, backEndItem) {
-      return _(VARIABLE_TYPES[baseItem.armOrContrast])
+      return _(RESULT_PROPERTY_TYPES[baseItem.armOrContrast])
         .map(function(variableType) {
           if (backEndItem[variableType] !== undefined) {
             return createValueItem(baseItem, backEndItem, variableType);
@@ -463,7 +504,7 @@ define(['angular', 'lodash'], function(angular, _) {
       moveMeasurementMoment: moveMeasurementMoment,
       isExistingMeasurement: isExistingMeasurement,
       isStudyNode: isStudyNode,
-      getVariableDetails: getVariableDetails
+      getResultPropertyDetails: getResultPropertyDetails
     };
   };
   return dependencies.concat(ResultsService);

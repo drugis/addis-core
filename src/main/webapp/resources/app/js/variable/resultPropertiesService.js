@@ -1,14 +1,16 @@
 'use strict';
 define(['angular', 'lodash'], function(angular, _) {
   var dependencies = [
-    'VARIABLE_TYPE_DETAILS',
+    'RESULT_PROPERTY_TYPE_DETAILS',
     'DEFAULT_RESULT_PROPERTIES',
+    'CONTRAST_OPTIONS_DETAILS',
     'ARM_LEVEL_TYPE',
     'CONTRAST_TYPE'
   ];
   var ResultPropertiesService = function(
-    VARIABLE_TYPE_DETAILS,
+    RESULT_PROPERTY_TYPE_DETAILS,
     DEFAULT_RESULT_PROPERTIES,
+    CONTRAST_OPTIONS_DETAILS,
     ARM_LEVEL_TYPE,
     CONTRAST_TYPE
   ) {
@@ -23,7 +25,7 @@ define(['angular', 'lodash'], function(angular, _) {
     }
 
     function getResultPropertiesForType(measurementType, armOrContrast) {
-      return getResultProperties(measurementType, VARIABLE_TYPE_DETAILS[armOrContrast]);
+      return getResultProperties(measurementType, RESULT_PROPERTY_TYPE_DETAILS[armOrContrast]);
     }
 
     function getResultProperties(measurementType, typedetails) {
@@ -83,12 +85,20 @@ define(['angular', 'lodash'], function(angular, _) {
 
     function armOrContrastChanged(variable, arms) {
       var newVariable = angular.copy(variable);
-      newVariable.resultProperties = VARIABLE_TYPE_DETAILS[newVariable.armOrContrast];
+      newVariable.resultProperties = RESULT_PROPERTY_TYPE_DETAILS[newVariable.armOrContrast];
       newVariable.selectedResultProperties = getDefaultResultProperties(newVariable.measurementType, newVariable.armOrContrast);
       if (newVariable.armOrContrast === CONTRAST_TYPE) {
         newVariable.referenceArm = arms[0].armURI;
+        newVariable.contrastOptions = getContrastOptions(variable.measurementType);
+        newVariable.contrastOption = newVariable.contrastOptions[0];
       }
       return newVariable;
+    }
+
+    function getContrastOptions(measurementType) {
+      return _.filter(CONTRAST_OPTIONS_DETAILS, function(option) {
+        return _.includes(option.variableTypes, measurementType);
+      });
     }
 
     return {
@@ -97,7 +107,8 @@ define(['angular', 'lodash'], function(angular, _) {
       buildPropertyCategories: buildPropertyCategories,
       setTimeScaleInput: setTimeScaleInput,
       resetResultProperties: resetResultProperties,
-      armOrContrastChanged: armOrContrastChanged
+      armOrContrastChanged: armOrContrastChanged,
+      getContrastOptions: getContrastOptions
     };
   };
   return dependencies.concat(ResultPropertiesService);

@@ -14,6 +14,7 @@ define([
     var CONTINUOUS = 'ontology:continuous';
     var SURVIVAL = 'ontology:survival';
     var variableTypeDetails;
+    var contrastOptions;
 
     beforeEach(function() {
       angular.mock.module('trialverse.variable');
@@ -21,10 +22,12 @@ define([
 
     beforeEach(inject(function(
       ResultPropertiesService,
-      VARIABLE_TYPE_DETAILS
+      RESULT_PROPERTY_TYPE_DETAILS,
+      CONTRAST_OPTIONS_DETAILS
     ) {
       resultPropertiesService = ResultPropertiesService;
-      variableTypeDetails = VARIABLE_TYPE_DETAILS;
+      variableTypeDetails = RESULT_PROPERTY_TYPE_DETAILS;
+      contrastOptions = CONTRAST_OPTIONS_DETAILS;
     }));
 
     describe('getDefaultResultProperties', function() {
@@ -58,7 +61,6 @@ define([
 
       it('should return the correct default resultproperties for dichotomous variables of contrast data', function() {
         var dichotomousContrastProperties = [
-          variableTypeDetails[CONTRAST].odds_ratio,
           variableTypeDetails[CONTRAST].standard_error
         ];
         var result = resultPropertiesService.getDefaultResultProperties(DICHOTOMOUS, CONTRAST);
@@ -67,7 +69,6 @@ define([
 
       it('should return the correct default resultproperties for continuous variables of contrast data', function() {
         var continuousContrastProperties = [
-          variableTypeDetails[CONTRAST].continuous_mean_difference,
           variableTypeDetails[CONTRAST].standard_error
         ];
         var result = resultPropertiesService.getDefaultResultProperties(CONTINUOUS, CONTRAST);
@@ -76,7 +77,6 @@ define([
 
       it('should return the correct default resultproperties for survival variables of contrast data', function() {
         var survivalContrastProperties = [
-          variableTypeDetails[CONTRAST].hazard_ratio,
           variableTypeDetails[CONTRAST].standard_error
         ];
         var result = resultPropertiesService.getDefaultResultProperties('ontology:survival', CONTRAST);
@@ -202,8 +202,6 @@ define([
         var dichotomousResult = resultPropertiesService.getResultPropertiesForType(DICHOTOMOUS, CONTRAST);
         var varTypes = variableTypeDetails[CONTRAST];
         var expectedDichotomousResult = [
-          varTypes.odds_ratio,
-          varTypes.risk_ratio,
           varTypes.standard_error,
           varTypes.confidence_interval_width,
           varTypes.confidence_interval_lower_bound,
@@ -216,8 +214,6 @@ define([
         var continuousResult = resultPropertiesService.getResultPropertiesForType(CONTINUOUS, CONTRAST);
         var varTypes = variableTypeDetails[CONTRAST];
         var expectedContinuousResult = [
-          varTypes.continuous_mean_difference,
-          varTypes.standardized_mean_difference,
           varTypes.standard_error,
           varTypes.confidence_interval_width,
           varTypes.confidence_interval_lower_bound,
@@ -230,7 +226,6 @@ define([
         var survivalResult = resultPropertiesService.getResultPropertiesForType(SURVIVAL, CONTRAST);
         var varTypes = variableTypeDetails[CONTRAST];
         var expectedSurvivalResult = [
-          varTypes.hazard_ratio,
           varTypes.standard_error,
           varTypes.confidence_interval_width,
           varTypes.confidence_interval_lower_bound,
@@ -267,7 +262,7 @@ define([
         var result = resultPropertiesService.setTimeScaleInput(variable);
         expect(result).toEqual(variable);
       });
-      
+
       it('should delete time scale for variables without exposure ', function() {
         var variable = {
           selectedResultProperties: [],
@@ -304,9 +299,9 @@ define([
         expect(result).toEqual(expectedResult);
       });
     });
-    
+
     describe('armOrContrastChanged', function() {
-      it('should return the result properties to their default values, and if the variable is contrast set the default reference arm ', function() {
+      it('should return the result properties to their default values, and if the variable is contrast, set the default reference arm ', function() {
         var varTypes = variableTypeDetails[CONTRAST];
         var variable = {
           armOrContrast: CONTRAST,
@@ -318,12 +313,41 @@ define([
           armOrContrast: CONTRAST,
           measurementType: 'ontology:survival',
           selectedResultProperties: [
-            varTypes.hazard_ratio,
             varTypes.standard_error
           ],
           resultProperties: varTypes,
+          contrastOptions: [contrastOptions.hazard_ratio],
+          contrastOption: contrastOptions.hazard_ratio,
           referenceArm: 'arm1'
         };
+        expect(result).toEqual(expectedResult);
+      });
+    });
+
+    describe('getContrastOptions', function() {
+        it('should return the contrast options for continuous', function() {
+        var result = resultPropertiesService.getContrastOptions(CONTINUOUS);
+        var expectedResult= [
+          contrastOptions.continuous_mean_difference,
+          contrastOptions.standardized_mean_difference
+        ];
+        expect(result).toEqual(expectedResult);
+      });
+
+      it('should return the contrast options for dichotomous', function() {
+        var result = resultPropertiesService.getContrastOptions(DICHOTOMOUS);
+        var expectedResult= [
+          contrastOptions.odds_ratio,
+          contrastOptions.risk_ratio
+        ];
+        expect(result).toEqual(expectedResult);
+      });
+
+      it('should return the contrast options for survival', function() {
+        var result = resultPropertiesService.getContrastOptions(SURVIVAL);
+        var expectedResult= [
+          contrastOptions.hazard_ratio
+        ];
         expect(result).toEqual(expectedResult);
       });
     });

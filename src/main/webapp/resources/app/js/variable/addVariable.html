@@ -54,13 +54,30 @@
           value="ontology:arm_level_data">
         <label for="arm">Arm level data</label>
         <input ng-model="variable.armOrContrast" type="radio" name="armOrContrast" ng-change=armOrContrastChanged() id="contrast"
-          value="ontology:contrast_data">
+          value="ontology:contrast_data" ng-disabled="arms.length < 2">
         <label for="contrast">Contrast data</label>
+      </div>
+
+      <div class="cell alert" ng-if="arms.length < 2">
+        contrast data is disabled because there are less than two arms defined
       </div>
 
       <div class="cell large-6" ng-if="variable.armOrContrast === 'ontology:contrast_data'">
         <label>Reference arm</label>
         <select ng-model="variable.referenceArm" ng-options="arm.armURI as arm.label for arm in arms"></select>
+      </div>
+
+      <div class="cell" ng-if="variable.armOrContrast === 'ontology:contrast_data'">
+        <div class="grid-x" ng-if="variable.armOrContrast === 'ontology:contrast_data'">
+          <div class="cell">
+            <label>
+              Scale of measurement
+            </label>
+          </div>
+          <div class="cell large-6">
+            <select ng-options="option as option.label for option in variable.contrastOptions" ng-model="variable.contrastOption"></select>
+          </div>
+        </div>
       </div>
 
       <div class="cell">

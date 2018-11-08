@@ -13,7 +13,7 @@ define(['lodash'], function(_) {
     'item',
     'itemType',
     'TIME_SCALE_OPTIONS',
-    'VARIABLE_TYPE_DETAILS',
+    'RESULT_PROPERTY_TYPE_DETAILS',
     'ARM_LEVEL_TYPE',
     'CONTRAST_TYPE'
   ];
@@ -30,7 +30,7 @@ define(['lodash'], function(_) {
     item,
     itemType,
     TIME_SCALE_OPTIONS,
-    VARIABLE_TYPE_DETAILS,
+    RESULT_PROPERTY_TYPE_DETAILS,
     ARM_LEVEL_TYPE,
     CONTRAST_TYPE
   ) {
@@ -47,22 +47,31 @@ define(['lodash'], function(_) {
     // init
     $scope.isEditing = false;
     $scope.variable = item;
+    $scope.variable = initVariable(item);
     $scope.itemType = itemType;
-    setArmOrContrast();
     $scope.measurementMoments = MeasurementMomentService.queryItems();
-    $scope.resultProperties = _.values(VARIABLE_TYPE_DETAILS[$scope.variable.armOrContrast]);
-
+    
     $scope.timeScaleOptions = TIME_SCALE_OPTIONS;
     $scope.$watch('variable.selectedResultProperties', checkTimeScaleInput, true);
-
-    $scope.variable.selectedResultProperties = getSelectedResultProperties();
-
+    
+    
     getArms();
-
-    function setArmOrContrast() {
-      if (!$scope.variable.armOrContrast) {
-        $scope.variable.armOrContrast = ARM_LEVEL_TYPE;
+    
+    function initVariable(variable) {
+      variable.armOrContrast = getArmOrContrast(variable);
+      $scope.resultProperties = _.values(RESULT_PROPERTY_TYPE_DETAILS[$scope.variable.armOrContrast]);
+      $scope.variable.selectedResultProperties = getSelectedResultProperties();
+      if (variable.armOrContrast === CONTRAST_TYPE) {
+        variable.contrastOptions = ResultPropertiesService.getContrastOptions(variable.measurementType);
+        variable.contrastOption = _.find(variable.contrastOptions, function(option) {
+          return _.includes(variable.resultProperties, option.uri);
+        });
       }
+      return variable;
+    }
+
+    function getArmOrContrast(variable) {
+      return variable.armOrContrast ? variable.armOrContrast : ARM_LEVEL_TYPE;
     }
 
     function getSelectedResultProperties() {
@@ -92,6 +101,9 @@ define(['lodash'], function(_) {
 
     function editVariable() {
       $scope.isEditing = false;
+      if ($scope.variable.armOrContrast === CONTRAST_TYPE) {
+        $scope.variable.selectedResultProperties.push($scope.variable.contrastOption);
+      }
       $scope.variable.resultProperties = _.map($scope.variable.selectedResultProperties, 'uri');
       delete $scope.variable.selectedResultProperties;
       itemService.editItem($scope.variable).then(succesCallback, errorCallback);

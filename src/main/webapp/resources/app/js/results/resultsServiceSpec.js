@@ -121,7 +121,7 @@ define([
           studyServiceMock.getJsonGraph.and.returnValue(getGraphPromise);
         });
 
-        it('should return the results for a given arm-level variable', function(done) {
+        it('should return the results', function(done) {
           resultsService.queryResults(queryOutcome).then(function(actualResults) {
             expect(actualResults.length).toEqual(4);
             expect(actualResults[0]).toEqual({
@@ -130,8 +130,8 @@ define([
               momentUri: 'http://trials.drugis.org/instances/moment1',
               outcomeUri: queryOutcome,
               armOrContrast: CONTRAST,
-              result_property: 'standard_error',
-              value: 37.2
+              result_property: 'odds_ratio',
+              value: 0.5
             });
 
             expect(actualResults[1]).toEqual({
@@ -140,8 +140,8 @@ define([
               momentUri: 'http://trials.drugis.org/instances/moment1',
               outcomeUri: queryOutcome,
               armOrContrast: CONTRAST,
-              result_property: 'odds_ratio',
-              value: 0.5
+              result_property: 'standard_error',
+              value: 37.2
             });
             done();
           });
@@ -1094,12 +1094,12 @@ define([
       });
     });
 
-    describe('getVariableDetails', function() {
+    describe('getResultPropertyDetails', function() {
       it('should also work for shortened urls', function() {
-        expect(resultsService.getVariableDetails('ontology:sample_size')).toBeDefined();
-        expect(resultsService.getVariableDetails('ontology:sample_size', CONTRAST)).not.toBeDefined();
-        expect(resultsService.getVariableDetails('ontology:odds_ratio', CONTRAST)).toBeDefined();
-        expect(resultsService.getVariableDetails('ontology:mean', ARM_LEVEL)).toBeDefined();
+        expect(resultsService.getResultPropertyDetails('ontology:sample_size')).toBeDefined();
+        expect(resultsService.getResultPropertyDetails('ontology:sample_size', CONTRAST)).not.toBeDefined();
+        expect(resultsService.getResultPropertyDetails('ontology:odds_ratio', CONTRAST)).toBeDefined();
+        expect(resultsService.getResultPropertyDetails('ontology:mean', ARM_LEVEL)).toBeDefined();
       });
     });
 

@@ -196,7 +196,7 @@
   },
   "mean-difference": {
     "title": "Mean",
-    "text": "The mean difference.",
+    "text": "The mean difference compared to the reference arm.",
     "link": "/manual.html#study-input"
   },
   "measurement": {

@@ -18,8 +18,8 @@
       <inline-help help-key='{{property.lexiconKey}}'></inline-help>
     </label>
   </div>
-  <div class="cell" ng-if="variable.armOrContrast === 'ontology:contrast_data' && property.type === 'confidence_interval' && property.isSelected">
-    <input type="number" step="1" min="0" max="100" ng-model="variable.confidenceIntervalWidth">
+  <div class="cell large-6" ng-if="variable.armOrContrast === 'ontology:contrast_data' && property.type === 'confidence_interval' && property.isSelected">
+    <input type="number" step="1" min="0" max="100" ng-model="variable.confidenceIntervalWidth" ng-change="checkConfidenceInterval()">
   </div>
 </div>
 <div class="grid-x">
