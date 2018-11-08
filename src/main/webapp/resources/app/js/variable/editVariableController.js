@@ -102,7 +102,7 @@ define(['lodash'], function(_) {
     function editVariable() {
       $scope.isEditing = false;
       if ($scope.variable.armOrContrast === CONTRAST_TYPE) {
-        $scope.variable.selectedResultProperties.push($scope.variable.contrastOption);
+        $scope.variable.selectedResultProperties = [$scope.variable.contrastOption].concat($scope.variable.selectedResultProperties);
       }
       $scope.variable.resultProperties = _.map($scope.variable.selectedResultProperties, 'uri');
       delete $scope.variable.selectedResultProperties;
