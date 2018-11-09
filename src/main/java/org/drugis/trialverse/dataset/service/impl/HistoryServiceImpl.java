@@ -221,7 +221,7 @@ public class HistoryServiceImpl implements HistoryService {
     String query = template.replace("$graphUri", graph);
     VersionMapping mapping = versionMappingRepository.getVersionMappingByVersionedURl(URI.create(sourceDatasetUri));
     byte[] response = datasetReadRepository.executeQuery(query, mapping.getTrialverseDatasetUri(), version, WebConstants.APPLICATION_SPARQL_RESULTS_JSON);
-    return JsonPath.read(new String(response), "$.results.bindings[0].$title.$value");
+    return JsonPath.read(new String(response), "$.results.bindings[0].title.value");
   }
 
   private Pair<String, String> getVersionAndGraph(Model historyModel, String revisionUri) throws URISyntaxException,
