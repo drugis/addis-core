@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 /**
  * Created by daan on 16-3-16.
@@ -54,7 +55,7 @@ public class PopulationCharacteristicDataQueryTest {
     List<QuerySolution> studyResults = resultsToList(results);
     assertEquals(1, studyResults.size());
     Object value = studyResults.get(0).getLiteral("value");
-    assertEquals(null, value);
+    assertNull(value);
   }
 
   private List<QuerySolution> resultsToList(ResultSet results) {

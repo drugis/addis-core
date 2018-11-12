@@ -149,64 +149,65 @@ public class AnalysisServiceImpl implements AnalysisService {
   public List<TrialDataStudy> buildEvidenceTable(Integer projectId, Integer analysisId) throws ResourceDoesNotExistException, ReadValueException, IOException {
     Project project = projectRepository.get(projectId);
     AbstractAnalysis analysis = analysisRepository.get(analysisId);
+    if (!(analysis instanceof NetworkMetaAnalysis)) {
+      throw new NotImplementedException("not yet implemented for other analysis types");
+    }
+    NetworkMetaAnalysis networkMetaAnalysis = (NetworkMetaAnalysis) analysis;
+    if (networkMetaAnalysis.getOutcome() == null) {
+      // no outcome set, therefore no need to build a evidence table
+      return Collections.emptyList();
+    }
 
-    // Interventions
     Set<AbstractIntervention> includedInterventions = getIncludedInterventions(analysis);
     Set<SingleIntervention> singleInterventions = getSingleInterventions(includedInterventions);
     Set<URI> includedInterventionUris = singleInterventions.stream()
             .map(SingleIntervention::getSemanticInterventionUri)
             .collect(Collectors.toSet());
 
-    List<TrialDataStudy> trialData = Collections.emptyList();
     String namespaceUid = mappingService.getVersionedUuid(project.getNamespaceUid());
     URI datasetVersion = project.getDatasetVersion();
 
-    if (analysis instanceof NetworkMetaAnalysis) {
-      NetworkMetaAnalysis networkMetaAnalysis = (NetworkMetaAnalysis) analysis;
-      if (networkMetaAnalysis.getOutcome() == null) {
-        // no outcome set, therefore no need to build a evidence table
-        return trialData;
-      }
+    Set<String> includedCovariates = getIncludedCovariates(networkMetaAnalysis).stream()
+            .map(Covariate::getDefinitionKey)
+            .collect(Collectors.toSet());
 
-      // Covariates
-      Set<String> includedCovariates = getIncludedCovariates(networkMetaAnalysis).stream()
-              .map(Covariate::getDefinitionKey)
-              .collect(Collectors.toSet());
+    return getTrialData(networkMetaAnalysis, includedInterventions, includedInterventionUris, namespaceUid, datasetVersion, includedCovariates);
+  }
 
-      trialData = triplestoreService.getNetworkData(namespaceUid, datasetVersion,
-              networkMetaAnalysis.getOutcome().getSemanticOutcomeUri(), includedInterventionUris, includedCovariates);
-    } else {
-      throw new NotImplementedException("not yet implemented for other analysis types");
-    }
+  private List<TrialDataStudy> getTrialData(NetworkMetaAnalysis networkMetaAnalysis, Set<AbstractIntervention> includedInterventions, Set<URI> includedInterventionUris, String namespaceUid, URI datasetVersion, Set<String> includedCovariates) throws ReadValueException, IOException {
+    List<TrialDataStudy> trialData = triplestoreService.getNetworkData(namespaceUid, datasetVersion,
+            networkMetaAnalysis.getOutcome().getSemanticOutcomeUri(), includedInterventionUris, includedCovariates);
 
-    // add matching data;
+
     trialData = triplestoreService.addMatchingInformation(includedInterventions, trialData);
+    trialData = filterUnmatchedArms(trialData);
+    return trialData;
+  }
 
-    // filter studies that don't have any matched interventions on any arms
-    trialData = trialData.stream().filter(trialDataStudy -> {
+  private List<TrialDataStudy> filterUnmatchedArms(List<TrialDataStudy> trialData) {
+    return trialData.stream().filter(trialDataStudy -> {
       int nMatchedInterventions = trialDataStudy.getTrialDataArms().stream()
               .mapToInt(a -> a.getMatchedProjectInterventionIds().size())
               .sum();
       return nMatchedInterventions > 0;
     }).collect(Collectors.toList());
-    return trialData;
   }
 
   @Override
   public Set<SingleIntervention> getSingleInterventions(Set<AbstractIntervention> includedInterventions) throws ResourceDoesNotExistException {
     Set<SingleIntervention> singleInterventions = includedInterventions.stream()
-            .filter(ai -> ai instanceof SingleIntervention)
-            .map(ai -> (SingleIntervention) ai)
+            .filter(abstractIntervention -> abstractIntervention instanceof SingleIntervention)
+            .map(abstractIntervention -> (SingleIntervention) abstractIntervention)
             .collect(Collectors.toSet());
 
     List<CombinationIntervention> combinationInterventions = includedInterventions.stream()
-            .filter(ai -> ai instanceof CombinationIntervention)
-            .map(ai -> (CombinationIntervention) ai)
+            .filter(abstractIntervention -> abstractIntervention instanceof CombinationIntervention)
+            .map(abstractIntervention -> (CombinationIntervention) abstractIntervention)
             .collect(Collectors.toList());
 
     List<InterventionSet> interventionSets = includedInterventions.stream()
-            .filter(ai -> ai instanceof InterventionSet)
-            .map(ai -> (InterventionSet) ai)
+            .filter(abstractIntervention -> abstractIntervention instanceof InterventionSet)
+            .map(abstractIntervention -> (InterventionSet) abstractIntervention)
             .collect(Collectors.toList());
 
     singleInterventions.addAll(interventionService.resolveCombinations(combinationInterventions));

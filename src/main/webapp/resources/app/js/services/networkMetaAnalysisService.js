@@ -84,80 +84,94 @@ define(['lodash', 'angular'], function(_, angular) {
     }
 
     function buildTableFromTrialData(trialDataStudies, interventions, analysis, covariates, treatmentOverlapMap) {
-      var dataRows = [];
       if (interventions.length < 1) {
-        return dataRows;
+        return [];
       }
       var exclusionMap = buildExcludedArmsMap(analysis.excludedArms);
-      angular.forEach(trialDataStudies, function(study) {
+      return buildDataRows(trialDataStudies, covariates, interventions, treatmentOverlapMap, exclusionMap, analysis);
+    }
 
-        var numberOfMatchedInterventions = 0;
-        var numberOfIncludedInterventions = 0;
-        var studyRows = [];
+    function buildDataRows(trialDataStudies, covariates, interventions, treatmentOverlapMap, exclusionMap, analysis) {
+      return _.reduce(trialDataStudies, function(accum, study) {
 
-        _.forEach(study.trialDataArms, function(trialDataArm) {
-          var dataRow = {};
-          dataRow.measurementMoments = study.measurementMoments;
-          dataRow.covariatesColumns = [];
-          dataRow.study = study.name;
-          dataRow.studyUri = study.studyUri;
-          dataRow.studyUuid = dataRow.studyUri.slice(dataRow.studyUri.lastIndexOf('/') + 1);
-          dataRow.studyRowSpan = study.trialDataArms.length;
+        var studyRows = _.map(study.trialDataArms, _.partial(
+          createDataRow, study, covariates, interventions, treatmentOverlapMap, exclusionMap, analysis));
 
-          _.forEach(covariates, function(covariate) {
-            if (covariate.isIncluded) {
-              var covariateValue = _.find(study.covariateValues, function(covariateValue) {
-                return covariateValue.covariateKey === covariate.definitionKey;
-              }).value;
-              var covariateColumn = {
-                headerTitle: covariate.name,
-                data: covariateValue === null ? 'NA' : covariateValue
-              };
-              dataRow.covariatesColumns.push(covariateColumn);
-            }
-          });
-          dataRow.arm = trialDataArm.name;
-          dataRow.trialverseUid = trialDataArm.uri;
-
-          var overlappingTreatments;
-          var intervention = _.find(interventions, function(intervention) {
-            return _.find(trialDataArm.matchedProjectInterventionIds, function(id) {
-              return id === intervention.id;
-            });
-          });
-
-          if (intervention) {
-            overlappingTreatments = treatmentOverlapMap[intervention.id];
-            dataRow.intervention = intervention.name;
-            dataRow.interventionId = intervention.id;
-            ++numberOfMatchedInterventions;
-          } else {
-            dataRow.intervention = 'unmatched';
-          }
-
-          dataRow.included = !exclusionMap[trialDataArm.uri] && dataRow.intervention !== 'unmatched';
-          if (dataRow.included) {
-            ++numberOfIncludedInterventions;
-          }
-
-          if (dataRow.included && overlappingTreatments) {
-            overlappingTreatments = [intervention].concat(overlappingTreatments);
-            dataRow.overlappingInterventionWarning = _.map(overlappingTreatments, 'name').join(', ');
-          }
-
-          dataRow.measurements = measurementsByMM(analysis, trialDataArm, study.measurementMoments);
-
-          studyRows.push(dataRow);
-        });
+        var numberOfMatchedInterventions = countMatchedInterventionsForRows(studyRows);
+        var numberOfIncludedInterventions = countIncludedInterventions(studyRows);
         studyRows = studyRows.map(function(studyRow) {
           studyRow.numberOfMatchedInterventions = numberOfMatchedInterventions;
           studyRow.numberOfIncludedInterventions = numberOfIncludedInterventions;
           return studyRow;
         });
 
-        dataRows = dataRows.concat(studyRows);
+        return accum.concat(studyRows);
+      }, []);
+    }
+
+    function createDataRow(study, covariates, interventions, treatmentOverlapMap, exclusionMap, analysis, trialDataArm) {
+      var dataRow = {};
+      dataRow.measurementMoments = study.measurementMoments;
+      dataRow.covariatesColumns = [];
+      dataRow.study = study.name;
+      dataRow.studyUri = study.studyUri;
+      dataRow.studyUuid = dataRow.studyUri.slice(dataRow.studyUri.lastIndexOf('/') + 1);
+      dataRow.studyRowSpan = study.trialDataArms.length;
+      dataRow.covariatesColumns = _(covariates).map(_.partial(createCovariateColumn, study)).compact().value();
+      dataRow.arm = trialDataArm.name;
+      dataRow.trialverseUid = trialDataArm.uri;
+
+      var overlappingTreatments;
+      var intervention = _.find(interventions, function(intervention) {
+        return _.find(trialDataArm.matchedProjectInterventionIds, function(id) {
+          return id === intervention.id;
+        });
       });
-      return dataRows;
+      if (intervention) {
+        overlappingTreatments = treatmentOverlapMap[intervention.id];
+        dataRow.intervention = intervention.name;
+        dataRow.interventionId = intervention.id;
+      } else {
+        dataRow.intervention = 'unmatched';
+      }
+      dataRow.included = !exclusionMap[trialDataArm.uri] && dataRow.intervention !== 'unmatched';
+      if (dataRow.included && overlappingTreatments) {
+        overlappingTreatments = [intervention].concat(overlappingTreatments);
+        dataRow.overlappingInterventionWarning = _.map(overlappingTreatments, 'name').join(', ');
+      }
+      dataRow.measurements = measurementsByMM(analysis, trialDataArm, study.measurementMoments);
+      return dataRow;
+    }
+
+    function countIncludedInterventions(studyRows) {
+      return _.reduce(studyRows, function(accum, row) {
+        if (row.included) {
+          return ++accum;
+        }
+        return accum;
+      }, 0);
+    }
+
+    function countMatchedInterventionsForRows(studyRows) {
+      return studyRows.length - _.reduce(studyRows, function(accum, row) {
+        if (row.intervention === 'unmatched') {
+          return ++accum;
+        }
+        return accum;
+      }, 0);
+    }
+
+    function createCovariateColumn(study, covariate) {
+      if (covariate.isIncluded) {
+        var covariateValue = _.find(study.covariateValues, function(covariateValue) {
+          return covariateValue.covariateKey === covariate.definitionKey;
+        }).value;
+        var covariateColumn = {
+          headerTitle: covariate.name,
+          data: covariateValue === null ? 'NA' : covariateValue
+        };
+        return covariateColumn;
+      }
     }
 
     function checkColumnsToShow(dataRows, measurementType) {
@@ -166,7 +180,7 @@ define(['lodash', 'angular'], function(_, angular) {
         mu: measurementType === 'continuous',
         sigma: shouldShowSigma(dataRows, measurementType),
         sampleSize: shouldShowN(dataRows, measurementType),
-        stdErr: shouldShowStandardError(dataRows,measurementType),
+        stdErr: shouldShowStandardError(dataRows, measurementType),
         exposure: measurementType === 'survival'
       };
       return columnsToShow;
@@ -194,7 +208,7 @@ define(['lodash', 'angular'], function(_, angular) {
       });
     }
 
-    function shouldShowStandardError(dataRows, measurementType){
+    function shouldShowStandardError(dataRows, measurementType) {
       if (measurementType !== 'continuous') {
         return false;
       }
@@ -232,7 +246,7 @@ define(['lodash', 'angular'], function(_, angular) {
           sigma: sigma,
           sampleSize: toTableLabel(outcomeMeasurement, 'sampleSize'),
           stdErr: toTableLabel(outcomeMeasurement, 'stdErr'),
-          exposure: toTableLabel(outcomeMeasurement,'exposure'),
+          exposure: toTableLabel(outcomeMeasurement, 'exposure'),
           type: getRowMeasurementType(outcomeMeasurement)
         };
         return accum;
@@ -274,7 +288,7 @@ define(['lodash', 'angular'], function(_, angular) {
         }
       }
       if (type === SURVIVAL_TYPE) {
-        if(field ==='exposure') {
+        if (field === 'exposure') {
           return true;
         }
       }

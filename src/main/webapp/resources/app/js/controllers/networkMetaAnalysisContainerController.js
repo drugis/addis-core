@@ -101,7 +101,7 @@ define(['angular', 'lodash'], function(angular, _) {
     }];
 
     UserService.getLoginUser().then(function(user) {
-      if(user){
+      if (user) {
         $scope.loginUserId = user.id;
         isUserOwner = UserService.isLoginUserId($scope.project.owner.id);
       }
@@ -225,7 +225,7 @@ define(['angular', 'lodash'], function(angular, _) {
           $scope.measurementType = NetworkMetaAnalysisService.getMeasurementType($scope.trialverseData);
           $scope.showColumn = NetworkMetaAnalysisService.checkColumnsToShow($scope.trialData, $scope.measurementType);
 
-          $scope.analysisPromise = updateNetwork()
+          $scope.analysisPromise = updateNetwork();
           $q.all([$scope.analysisPromise, UserService.getLoginUser()]).then(function() {
             $scope.isModelCreationBlocked = checkCanNotCreateModel();
           });
@@ -331,7 +331,7 @@ define(['angular', 'lodash'], function(angular, _) {
       saveAnalysisAndReload();
     }
 
-    function saveAnalysisAndReload(){
+    function saveAnalysisAndReload() {
       var saveCommand = analysisToSaveCommand($scope.analysis);
       AnalysisResource.save(saveCommand, function() {
         $scope.reloadModel();

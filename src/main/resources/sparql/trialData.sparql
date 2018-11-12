@@ -32,6 +32,14 @@ SELECT DISTINCT
 ?sampleSize
 ?exposure
 ?survivalTimeScale
+?continuousMeanDifference 
+?confidenceIntervalWidth 
+?confidenceIntervalLowerBound 
+?confidenceIntervalUpperBound 
+?hazardRatio 
+?oddRatio 
+?riskRatio 
+?standardizedMeanDifference 
 ?fixedDoseValue
 ?fixedDoseDosingPeriodicity
 ?fixedDoseUnitConcept
@@ -49,7 +57,9 @@ SELECT DISTINCT
 ?minDoseDosingPeriodicity
 ?minDoseUnitConcept
 ?minDoseUnitLabel
-?minDoseUnitMultiplier
+?minDoseUnitMultiplier    
+?referenceArm
+?referenceStandardError
 (COALESCE(?treatmentTypeOptional, "http://trials.drugis.org/ontology#SimpleDrugTreatment") AS ?treatmentType)
 WHERE {
   BIND ($graphSelector AS ?graph) .
@@ -65,7 +75,16 @@ WHERE {
         owl:sameAs ?outcomeTypeUri ;
         ontology:measurementType ?measurementType
       ] .
-    $interventionUnionString .
+    OPTIONAL {
+      ?outcomeInstance ontology:reference_arm ?referenceArm . 
+    } 
+    OPTIONAL {
+      ?outcomeInstance ontology:reference_standard_error ?referenceStandardError . 
+    }  
+    OPTIONAL {
+      ?outcomeInstance ontology:confidence_interval_width ?confidenceIntervalWidth .
+    }  
+    $interventionUnionString 
   }
   GRAPH $graphSelector {
     ?drugInstance owl:sameAs ?drug .
@@ -116,7 +135,28 @@ WHERE {
       ?measurement ontology:exposure ?exposure .
       ?outcomeInstance ontology:survival_time_scale ?survivalTimeScale .
     }
-
+    OPTIONAL {
+      ?measurement ontology:odd_ratio ?oddRatio .
+    }    
+    OPTIONAL {
+      ?measurement ontology:risk_ratio ?riskRatio .
+    }    
+    OPTIONAL {
+      ?measurement ontology:continuous_mean_difference ?continuousMeanDifference .
+    }    
+    OPTIONAL {
+      ?measurement ontology:standardized_mean_difference ?standardizedMeanDifference .
+    }    
+    OPTIONAL {
+      ?measurement ontology:hazard_ratio ?hazardRatio .
+    } 
+    OPTIONAL {
+      ?measurement ontology:confidence_interval_lower_bound ?confidenceIntervalLowerBound .
+    }    
+    OPTIONAL {
+      ?measurement ontology:confidence_interval_upper_bound ?confidenceIntervalUpperBound .
+    }
+    
     OPTIONAL {
         ?treatmentNode
           a ontology:FixedDoseDrugTreatment ;

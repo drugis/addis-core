@@ -60,6 +60,7 @@ public class TriplestoreServiceTest {
   QueryResultMappingService queryResultMappingService;
 
   @Mock
+  private
   WebConstants webConstants;
 
   @InjectMocks
@@ -122,10 +123,10 @@ public class TriplestoreServiceTest {
 
   @Test
   public void testGetPopulationCharacteristics() throws ReadValueException, IOException {
-    String mockResult = TestUtils.loadResource(this.getClass(), "/triplestoreService/exampleOutcomeResult.json");
+    String mockResult = TestUtils.loadResource(this.getClass(), "/triplestoreService/examplePopulationCharacteristicResult.json");
     createMockTrialverseService(mockResult);
-    List<SemanticVariable> result = triplestoreService.getOutcomes("abc", version);
-    SemanticVariable result1 = new SemanticVariable(URI.create("http://trials.drugis.org/namespace/1/endpoint/fdszgs-adsfd-1"), "DBP 24-hour mean");
+    List<SemanticVariable> result = triplestoreService.getPopulationCharacteristics("abc", version);
+    SemanticVariable result1 = new SemanticVariable(URI.create("http://trials.drugis.org/namespace/1/populationCharacteristic/fdszgs-adsfd-1"), "Age");
     assertEquals(result.get(0), result1);
   }
 
@@ -202,5 +203,47 @@ public class TriplestoreServiceTest {
     ResponseEntity resultEntity = new ResponseEntity<>(result, HttpStatus.OK);
     when(restTemplate.exchange(any(URI.class), any(HttpMethod.class), any(HttpEntity.class), any(Class.class))).thenReturn(resultEntity);
   }
+
+  @Test
+  public void testGetNamespaceVersioned(){
+    assert(false);
+  }
+
+  @Test
+  public void testBuildInterventionUnionString(){
+    assert(false);
+//    String result = triplestoreService.
+  }
+
+  @Test
+  public void testBuildOutcomeUnionString(){
+    assert(false);
+  }
+
+  @Test
+  public void testGetNetworkData(){
+    assert(false);
+  }
+
+  @Test
+  public void testGetSingleStudyData(){
+    assert(false);
+  }
+
+  @Test
+  public void testAllGetTrialData(){
+    assert(false);
+  }
+
+  @Test
+  public void testFindMatchingIncludedInterventions(){
+    assert(false);
+  }
+
+  @Test
+  public void testAddMatchingInformation(){
+    assert(false);
+  }
+
 
 }
