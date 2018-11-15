@@ -1,8 +1,14 @@
 'use strict';
 define(['lodash', 'angular'], function(_, angular) {
-  var dependencies = ['$filter', 'AnalysisService'];
+  var dependencies = [
+    '$filter',
+    'AnalysisService'
+  ];
 
-  var NetworkMetaAnalysisService = function($filter, AnalysisService) {
+  var NetworkMetaAnalysisService = function(
+    $filter,
+    AnalysisService
+  ) {
 
     var CONTINUOUS_TYPE = 'http://trials.drugis.org/ontology#continuous';
     var DICHOTOMOUS_TYPE = 'http://trials.drugis.org/ontology#dichotomous';
@@ -10,33 +16,31 @@ define(['lodash', 'angular'], function(_, angular) {
     var SURVIVAL_TYPE = 'http://trials.drugis.org/ontology#survival';
 
     function sortTableByStudyAndIntervention(table) {
-      // sort table by studies and interventions
-      var tableRowComparator = function(left, right) {
-        if (left.study > right.study) {
-          return 1;
-        } else if (left.study < right.study) {
-          return -1;
-        }
-        //studies equal then order by intervention, placing unmapped interventions last
-        if (left.intervention === 'unmatched') {
-          return 1;
-        }
-        if (right.intervention === 'unmatched') {
-          return -1;
-        }
-        if (left.intervention > right.intervention) {
-          return 1;
-        } else if (left.intervention < right.intervention) {
-          return -1;
-        }
-        return 0;
-      };
-
-      table.sort(tableRowComparator);
+      table.sort(sortByStudiesAndInterventions);
       return table;
     }
 
-    // add information to render the table
+    function sortByStudiesAndInterventions(left, right) {
+      if (left.study > right.study) {
+        return 1;
+      } else if (left.study < right.study) {
+        return -1;
+      }
+      //studies equal then order by intervention, placing unmapped interventions last
+      if (left.intervention === 'unmatched') {
+        return 1;
+      }
+      if (right.intervention === 'unmatched') {
+        return -1;
+      }
+      if (left.intervention > right.intervention) {
+        return 1;
+      } else if (left.intervention < right.intervention) {
+        return -1;
+      }
+      return 0;
+    }
+
     function addRenderingHintsToTable(table) {
       var currentStudy = 'null',
         currentInterventionRow = {
@@ -190,8 +194,8 @@ define(['lodash', 'angular'], function(_, angular) {
       if (measurementType !== 'continuous') {
         return false;
       }
-      return !!_.find(dataRows, function(dataRow) {
-        return _.find(dataRow.measurements, function(measurement) {
+      return _.some(dataRows, function(dataRow) {
+        return _.some(dataRow.measurements, function(measurement) {
           return measurement.sigma !== 'NA';
         });
       });
@@ -201,8 +205,8 @@ define(['lodash', 'angular'], function(_, angular) {
       if (measurementType !== 'continuous' && measurementType !== 'dichotomous') {
         return false;
       }
-      return !!_.find(dataRows, function(dataRow) {
-        return _.find(dataRow.measurements, function(measurement) {
+      return _.some(dataRows, function(dataRow) {
+        return _.some(dataRow.measurements, function(measurement) {
           return measurement.sampleSize !== 'NA';
         });
       });
@@ -212,8 +216,8 @@ define(['lodash', 'angular'], function(_, angular) {
       if (measurementType !== 'continuous') {
         return false;
       }
-      return !!_.find(dataRows, function(dataRow) {
-        return _.find(dataRow.measurements, function(measurement) {
+      return _.some(dataRows, function(dataRow) {
+        return _.some(dataRow.measurements, function(measurement) {
           return measurement.stdErr !== 'NA' && measurement.stdErr !== null;
         });
       });
@@ -221,10 +225,9 @@ define(['lodash', 'angular'], function(_, angular) {
 
     function getMeasurementType(trialData) {
       var studyWithMeasurement = _.find(trialData, function(study) {
-
-        return _.find(study.trialDataArms, function(trialDataArm) {
-          return _.find(trialDataArm.measurements, function(measurementsForMoment) {
-            return _.find(measurementsForMoment, function(measurement) {
+        return _.some(study.trialDataArms, function(trialDataArm) {
+          return _.some(trialDataArm.measurements, function(measurementsForMoment) {
+            return _.some(measurementsForMoment, function(measurement) {
               return measurement.measurementTypeURI;
             });
           });
@@ -388,7 +391,7 @@ define(['lodash', 'angular'], function(_, angular) {
 
     function findArmForIntervention(trialdataArms, trialDataIntervention) {
       return _.find(trialdataArms, function(trialdataArm) {
-        return _.find(trialdataArm.matchedProjectInterventionIds, function(id) {
+        return _.some(trialdataArm.matchedProjectInterventionIds, function(id) {
           return id === trialDataIntervention.id;
         });
       });
@@ -452,7 +455,7 @@ define(['lodash', 'angular'], function(_, angular) {
 
     function doesModelHaveAmbiguousArms(trialDataStudies, analysis) {
       return _.find(trialDataStudies, function(study) {
-        return _.find(analysis.interventionInclusions, function(inclusion) {
+        return _.some(analysis.interventionInclusions, function(inclusion) {
           return doesInterventionHaveAmbiguousArms(inclusion.interventionId, study.studyUri, trialDataStudies, analysis);
         });
       });
@@ -464,7 +467,7 @@ define(['lodash', 'angular'], function(_, angular) {
       }
 
       function isArmIncluded(trialDataArm) {
-        return !_.find(analysis.excludedArms, function(exclusion) {
+        return !_.some(analysis.excludedArms, function(exclusion) {
           return exclusion.trialverseUid === trialDataArm.uri;
         });
       }
@@ -508,7 +511,7 @@ define(['lodash', 'angular'], function(_, angular) {
 
     function cleanUpExcludedArms(excludedIntervention, analysis, trialDataStudies) {
       return _.reject(analysis.excludedArms, function(armExclusion) {
-        return _.find(trialDataStudies, function(study) {
+        return _.some(trialDataStudies, function(study) {
           var armsMatchingExcludedIntervention = _.find(study.trialDataArms, function(arm) {
             return arm.uri === armExclusion.trialverseUid &&
               (arm.matchedProjectInterventionIds.lastIndexOf(excludedIntervention.id) > -1);

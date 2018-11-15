@@ -84,7 +84,7 @@ public class MeasurementBuilder {
     return this;
   }
 
-  public Measurement createMeasurement() {
-    return new Measurement(studyUuid, variableUri, variableConceptUri, survivalTimeScale, armUri, measurementTypeURI, sampleSize, rate, stdDev, stdErr, mean, exposure);
+  public AbsoluteMeasurement createMeasurement() {
+    return new AbsoluteMeasurement(studyUuid, variableUri, variableConceptUri, survivalTimeScale, armUri, measurementTypeURI, sampleSize, rate, stdDev, stdErr, mean, exposure);
   }
 }

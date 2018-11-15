@@ -64,7 +64,7 @@ define(['angular', 'lodash'], function(angular, _) {
     $scope.analysis = currentAnalysis;
     $scope.project = currentProject;
     $scope.networkGraph = {};
-    $scope.trialData = {};
+    $scope.evidenceTableRows = {};
     $scope.treatmentOverlapMap = {};
     $scope.isModelCreationBlocked = checkCanNotCreateModel();
 
@@ -189,7 +189,7 @@ define(['angular', 'lodash'], function(angular, _) {
     }
 
     function hasIncludedStudies() {
-      return _.find($scope.trialData, function(dataRow) {
+      return _.find($scope.evidenceTableRows, function(dataRow) {
         return !$scope.lessThanTwoInterventionArms(dataRow);
       });
     }
@@ -214,16 +214,16 @@ define(['angular', 'lodash'], function(angular, _) {
           $scope.momentSelections = NetworkMetaAnalysisService.buildMomentSelections(trialverseData, $scope.analysis);
           var includedInterventions = NetworkMetaAnalysisService.getIncludedInterventions($scope.interventions);
           $scope.treatmentOverlapMap = NetworkMetaAnalysisService.buildOverlappingTreatmentMap($scope.interventions, trialverseData);
-          $scope.trialData = NetworkMetaAnalysisService.transformTrialDataToTableRows(
+          $scope.evidenceTableRows = NetworkMetaAnalysisService.transformTrialDataToTableRows(
             trialverseData, includedInterventions, $scope.analysis, $scope.covariates, $scope.treatmentOverlapMap);
           $scope.tableHasAmbiguousArm = NetworkMetaAnalysisService.doesModelHaveAmbiguousArms(trialverseData, $scope.analysis);
-          $scope.hasInsufficientCovariateValues = NetworkMetaAnalysisService.doesModelHaveInsufficientCovariateValues($scope.trialData);
+          $scope.hasInsufficientCovariateValues = NetworkMetaAnalysisService.doesModelHaveInsufficientCovariateValues($scope.evidenceTableRows);
           $scope.hasLessThanTwoInterventions = includedInterventions.length < 2;
           $scope.hasTreatmentOverlap = hasTreatmentOverlap();
           $scope.isMissingByStudyMap = NetworkMetaAnalysisService.buildMissingValueByStudyMap(trialverseData, $scope.analysis, $scope.momentSelections);
           $scope.containsMissingValue = _.find($scope.isMissingByStudyMap);
           $scope.measurementType = NetworkMetaAnalysisService.getMeasurementType($scope.trialverseData);
-          $scope.showColumn = NetworkMetaAnalysisService.checkColumnsToShow($scope.trialData, $scope.measurementType);
+          $scope.showColumn = NetworkMetaAnalysisService.checkColumnsToShow($scope.evidenceTableRows, $scope.measurementType);
 
           $scope.analysisPromise = updateNetwork();
           $q.all([$scope.analysisPromise, UserService.getLoginUser()]).then(function() {

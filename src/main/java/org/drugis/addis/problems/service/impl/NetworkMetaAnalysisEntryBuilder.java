@@ -1,7 +1,7 @@
 package org.drugis.addis.problems.service.impl;
 
 import org.drugis.addis.problems.model.*;
-import org.drugis.addis.trialverse.model.trialdata.Measurement;
+import org.drugis.addis.trialverse.model.trialdata.AbsoluteMeasurement;
 import org.springframework.stereotype.Service;
 
 import static org.drugis.addis.problems.service.ProblemService.CONTINUOUS_TYPE_URI;
@@ -11,7 +11,7 @@ import static org.drugis.addis.problems.service.ProblemService.SURVIVAL_TYPE_URI
 @Service
 public class NetworkMetaAnalysisEntryBuilder {
 
-  public AbstractNetworkMetaAnalysisProblemEntry build(String studyName, Integer treatmentId, Measurement measurement) {
+  public AbstractNetworkMetaAnalysisProblemEntry build(String studyName, Integer treatmentId, AbsoluteMeasurement measurement) {
     Integer sampleSize = measurement.getSampleSize();
     if (measurement.getMeasurementTypeURI().equals(CONTINUOUS_TYPE_URI)) {
       Double mu = measurement.getMean();

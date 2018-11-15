@@ -1,21 +1,21 @@
 package org.drugis.addis.problems.model;
 
-import org.drugis.addis.trialverse.model.trialdata.Measurement;
+import org.drugis.addis.trialverse.model.trialdata.AbsoluteMeasurement;
 
 import java.util.Objects;
 
 public class MeasurementWithCoordinates {
-  private final Measurement measurement;
+  private final AbsoluteMeasurement measurement;
   private final Integer interventionId;
   private final String dataSource;
 
-  public MeasurementWithCoordinates(Measurement measurement, Integer interventionId, String dataSource) {
+  public MeasurementWithCoordinates(AbsoluteMeasurement measurement, Integer interventionId, String dataSource) {
     this.measurement = measurement;
     this.interventionId = interventionId;
     this.dataSource = dataSource;
   }
 
-  public Measurement getMeasurement() {
+  public AbsoluteMeasurement getMeasurement() {
     return measurement;
   }
 

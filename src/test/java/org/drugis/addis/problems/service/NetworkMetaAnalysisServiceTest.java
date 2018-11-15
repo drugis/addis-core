@@ -2,7 +2,6 @@ package org.drugis.addis.problems.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.collect.Sets;
-import com.sun.org.apache.xpath.internal.operations.Mod;
 import org.apache.jena.ext.com.google.common.collect.Lists;
 import org.drugis.addis.analyses.model.*;
 import org.drugis.addis.analyses.service.AnalysisService;
@@ -24,8 +23,6 @@ import org.drugis.addis.projects.Project;
 import org.drugis.addis.security.Account;
 import org.drugis.addis.trialverse.model.SemanticInterventionUriAndName;
 import org.drugis.addis.trialverse.model.SemanticVariable;
-import org.drugis.addis.trialverse.model.emun.CovariateOption;
-import org.drugis.addis.trialverse.model.emun.CovariateOptionType;
 import org.drugis.addis.trialverse.model.trialdata.*;
 import org.drugis.trialverse.util.service.UuidService;
 import org.junit.After;
@@ -39,11 +36,9 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.sql.SQLException;
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static java.util.Collections.singleton;
 import static java.util.Collections.singletonList;
-import static org.drugis.addis.problems.service.ProblemService.DICHOTOMOUS_TYPE_URI;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.*;
@@ -174,8 +169,8 @@ public class NetworkMetaAnalysisServiceTest {
 
     URI nonDefaultArmUri1 = URI.create("nonDefaultArmUri1");
     Set<Integer> matchedInterventionIds1 = Sets.newHashSet(fluoxInterventionId);
-    Measurement fluoxMeasurement = mock(Measurement.class);
-    Set<Measurement> measurements1 = Sets.newHashSet(fluoxMeasurement);
+    AbsoluteMeasurement fluoxMeasurement = mock(AbsoluteMeasurement.class);
+    Set<AbsoluteMeasurement> measurements1 = Sets.newHashSet(fluoxMeasurement);
     TrialDataArm defaultMMArm = buildArmMock(
             nonDefaultArmUri1,
             matchedInterventionIds1,
@@ -184,8 +179,8 @@ public class NetworkMetaAnalysisServiceTest {
 
     URI nonDefaultArmUri2 = URI.create("nonDefaultArmUri2");
     Set<Integer> matchedInterventionIds2 = Sets.newHashSet(paroxInterventionId);
-    Measurement paroxMeasurement = mock(Measurement.class);
-    Set<Measurement> measurements2 = Sets.newHashSet(paroxMeasurement);
+    AbsoluteMeasurement paroxMeasurement = mock(AbsoluteMeasurement.class);
+    Set<AbsoluteMeasurement> measurements2 = Sets.newHashSet(paroxMeasurement);
     TrialDataArm nonDefaultMMArm = buildArmMock(
             nonDefaultArmUri2,
             matchedInterventionIds2,
@@ -248,11 +243,11 @@ public class NetworkMetaAnalysisServiceTest {
     verify(networkMetaAnalysisEntryBuilder).build(nonDefaultStudyName, paroxInterventionId, paroxMeasurement);
   }
 
-  private TrialDataArm buildArmMock(URI armUri, Set<Integer> matchedInterventionIds, Set<Measurement> measurements) {
+  private TrialDataArm buildArmMock(URI armUri, Set<Integer> matchedInterventionIds, Set<AbsoluteMeasurement> measurements) {
     return buildArmMock(armUri, matchedInterventionIds, measurements, null);
   }
 
-  private TrialDataArm buildArmMock(URI armUri, Set<Integer> matchedInterventionIds, Set<Measurement> measurements, URI nonDefaultMeasurementMoment) {
+  private TrialDataArm buildArmMock(URI armUri, Set<Integer> matchedInterventionIds, Set<AbsoluteMeasurement> measurements, URI nonDefaultMeasurementMoment) {
     URI measurementMoment = (nonDefaultMeasurementMoment == null) ? URI.create("defaultMeasurementMoment") : nonDefaultMeasurementMoment;
     TrialDataArm arm = mock(TrialDataArm.class);
     when(arm.getMatchedProjectInterventionIds()).thenReturn(matchedInterventionIds);

@@ -6,7 +6,7 @@
         <tr>
           <th rowspan="2">Studies</th>
           <th rowspan="2">Measurement Moment</th>
-          <th ng-show="trialData[0].covariatesColumns.length > 0" colspan="{{trialData[0].covariatesColumns.length}}">Covariates
+          <th ng-show="evidenceTableRows[0].covariatesColumns.length > 0" colspan="{{evidenceTableRows[0].covariatesColumns.length}}">Covariates
           </th>
           <th rowspan="2">Interventions</th>
           <th rowspan="2">Arms</th>
@@ -17,7 +17,7 @@
 
         </tr>
         <tr>
-          <th ng-repeat="covariate in trialData[0].covariatesColumns">{{covariate.headerTitle}}</th>
+          <th ng-repeat="covariate in evidenceTableRows[0].covariatesColumns">{{covariate.headerTitle}}</th>
         </tr>
       </thead>
       <tbody>
@@ -25,10 +25,10 @@
           <td colspan="7">No outcome selected.</td>
         </tr>
         <spinner promise="analysisPromise" size="3" message="'Loading studies...'">
-          <tr ng-show="analysis.outcome && !trialData.length">
+          <tr ng-show="analysis.outcome && !evidenceTableRows.length">
             <td colspan="7">No studies found for selected outcome and intervention(s).</td>
           </tr>
-          <tr ng-repeat="dataRow in trialData" ng-class="{topborder: dataRow.firstStudyRow}">
+          <tr ng-repeat="dataRow in evidenceTableRows" ng-class="{topborder: dataRow.firstStudyRow}">
             <td ng-show="dataRow.firstStudyRow" rowspan="{{dataRow.studyRowSpan}}">
               <a ui-sref="versionedDataset.study({userUid: userId, datasetUuid: project.namespaceUid, versionUuid: project.datasetVersionUuid, studyGraphUuid: dataRow.studyUuid})">{{dataRow.study}}</a>
               <div class="info" ng-show="dataRow.numberOfMatchedInterventions < 2 || dataRow.numberOfIncludedInterventions < 2">Excluded; Fewer than two included interventions.

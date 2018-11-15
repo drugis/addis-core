@@ -3,7 +3,7 @@ package org.drugis.addis.problems;
 import org.drugis.addis.problems.model.CriterionEntry;
 import org.drugis.addis.problems.model.DataSourceEntry;
 import org.drugis.addis.problems.service.impl.CriterionEntryFactory;
-import org.drugis.addis.trialverse.model.trialdata.Measurement;
+import org.drugis.addis.trialverse.model.trialdata.AbsoluteMeasurement;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -33,7 +33,7 @@ public class CriterionEntryFactoryTest {
 
   @Test
   public void testCreateDichotomous() {
-    Measurement measurement = mock(Measurement.class);
+    AbsoluteMeasurement measurement = mock(AbsoluteMeasurement.class);
     when(measurement.getMeasurementTypeURI()).thenReturn(DICHOTOMOUS_TYPE_URI);
     when(measurement.getVariableUri()).thenReturn(variableUri);
 
@@ -48,7 +48,7 @@ public class CriterionEntryFactoryTest {
 
   @Test
   public void testCreateContinuous() {
-    Measurement measurement = mock(Measurement.class);
+    AbsoluteMeasurement measurement = mock(AbsoluteMeasurement.class);
     when(measurement.getMeasurementTypeURI()).thenReturn(CONTINUOUS_TYPE_URI);
     when(measurement.getVariableUri()).thenReturn(variableUri);
 
@@ -63,7 +63,7 @@ public class CriterionEntryFactoryTest {
 
   @Test(expected = IllegalArgumentException.class)
   public void testCreateUnknown() {
-    Measurement measurement = mock(Measurement.class);
+    AbsoluteMeasurement measurement = mock(AbsoluteMeasurement.class);
     when(measurement.getMeasurementTypeURI()).thenReturn(URI.create("unknown"));
     when(measurement.getVariableUri()).thenReturn(variableUri);
 
