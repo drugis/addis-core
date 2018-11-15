@@ -269,18 +269,11 @@ define(['lodash'], function(_) {
         if (inputColumn.dataType === INTEGER_TYPE) {
           return Number.isInteger(inputColumn.value) && (!inputColumn.isAlwaysPositive || inputColumn.value >= 0);
         } else if (inputColumn.dataType === DOUBLE_TYPE) {
-          return !isNaN(filterFloat(inputColumn.value)) && (!inputColumn.isAlwaysPositive || inputColumn.value >= 0);
+          return !isNaN(Number(inputColumn.value)) && (!inputColumn.isAlwaysPositive || inputColumn.value >= 0);
         }
       } else {
         return true;
       }
-    }
-
-    function filterFloat(value) {
-      if (/^(\-|\+)?([0-9]+(\.[0-9]+)?|Infinity)$/.test(value)) {
-        return Number(value);
-      }
-      return NaN;
     }
 
     function buildMeasurementMomentOptions(measurementMoments) {
