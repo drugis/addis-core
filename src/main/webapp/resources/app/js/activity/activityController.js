@@ -8,7 +8,13 @@ define(['lodash', 'angular'],
       'actionType',
       'ActivityService'
     ];
-    var ActivityController = function($scope, $modalInstance, callback, actionType, ActivityService) {
+    var ActivityController = function(
+      $scope,
+      $modalInstance,
+      callback,
+      actionType,
+      ActivityService
+    ) {
       // functions
       $scope.addDrugClicked = addDrugClicked;
       $scope.treatmentAdded = treatmentAdded;
@@ -29,14 +35,14 @@ define(['lodash', 'angular'],
 
       function scrollableWrapperHeight() {
         var scrollableWrappers = document.getElementsByClassName('scrollable-wrapper');
-        if(!scrollableWrappers.length) { return ; }
+        if (!scrollableWrappers.length) { return; }
         return angular.element(scrollableWrappers[0]).parent().parent()[0].clientHeight;
       }
 
       function showScrollbarIfNecessary(oldValue, newValue) {
-        if (oldValue === newValue) { return ; }
+        if (oldValue === newValue) { return; }
         var revealModal = document.getElementsByClassName('reveal-modal');
-        if (!revealModal.length) { return ; }
+        if (!revealModal.length) { return; }
         var offsetString = angular.element(revealModal).css('top');
         var offset = parseInt(offsetString, 10); // remove px part
         var viewPortHeight = angular.element('html')[0].clientHeight;
@@ -76,9 +82,9 @@ define(['lodash', 'angular'],
         $scope.isEditing = true;
         ActivityService.addItem($scope.itemScratch)
           .then(function() {
-              callback();
-              $modalInstance.close();
-            },
+            callback();
+            $modalInstance.close();
+          },
             function() {
               console.error('failed to create activity');
               cancel();
@@ -89,9 +95,9 @@ define(['lodash', 'angular'],
         $scope.isEditing = true;
         ActivityService.editItem($scope.itemScratch)
           .then(function() {
-              callback();
-              $modalInstance.close();
-            },
+            callback();
+            $modalInstance.close();
+          },
             function() {
               console.error('failed to edit activity');
               cancel();
@@ -106,10 +112,6 @@ define(['lodash', 'angular'],
         showScrollbarIfNecessary();
         $scope.notEnoughTreatments = $scope.itemScratch.activityType.uri === 'ontology:TreatmentActivity' && !$scope.itemScratch.treatments;
       }
-
-      // private
-
-
     };
     return dependencies.concat(ActivityController);
   });
