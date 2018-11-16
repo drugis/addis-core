@@ -58,7 +58,7 @@ public class QueryResultMappingServiceImpl implements QueryResultMappingService 
         trialDataStudy.getTrialDataArms().add(trialDataArm);
       }
 
-      AbsoluteMeasurement measurement = readMeasurement(row, studyUri, armUri);
+      Measurement measurement = readMeasurement(row, studyUri, armUri);
       Pair<URI, URI> armPlusTreatment = Pair.of(armUri, readValue(row, "treatmentNode"));
       Boolean isPrimaryEpochTreatment = readValue(row, "isPrimaryEpoch");
       if (isPrimaryEpochTreatment && !seenArmTreatmentCombinations.contains(armPlusTreatment)) {
@@ -71,7 +71,7 @@ public class QueryResultMappingServiceImpl implements QueryResultMappingService 
     return trialDataStudies;
   }
 
-  private AbsoluteMeasurement readMeasurement(JSONObject row, URI studyUri, URI armUri) throws ReadValueException {
+  private Measurement readMeasurement(JSONObject row, URI studyUri, URI armUri) throws ReadValueException {
     String survivalTimeScale = null;
     Double mean = null;
     Double stdDev = null;

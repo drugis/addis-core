@@ -2,7 +2,7 @@ package org.drugis.addis.problems.service;
 
 import org.drugis.addis.problems.model.*;
 import org.drugis.addis.problems.service.impl.NetworkMetaAnalysisEntryBuilder;
-import org.drugis.addis.trialverse.model.trialdata.AbsoluteMeasurement;
+import org.drugis.addis.trialverse.model.trialdata.Measurement;
 import org.junit.Test;
 
 import java.net.URI;
@@ -23,7 +23,7 @@ public class NetworkMetaAnalysisEntryBuilderTest {
 
   @Test
   public void testBuildContinuousStdErrEntry() {
-    AbsoluteMeasurement measurement = mock(AbsoluteMeasurement.class);
+    Measurement measurement = mock(Measurement.class);
     Double mean = 1.0;
     Double stdErr = 0.5;
 
@@ -39,7 +39,7 @@ public class NetworkMetaAnalysisEntryBuilderTest {
 
   @Test
   public void testBuildContinuousStdDevEntry(){
-    AbsoluteMeasurement measurement = mock(AbsoluteMeasurement.class);
+    Measurement measurement = mock(Measurement.class);
     Double mean = 1.0;
     Double stdDev= 0.5;
 
@@ -55,7 +55,7 @@ public class NetworkMetaAnalysisEntryBuilderTest {
 
   @Test
   public void testBuildDichotomousEntry(){
-    AbsoluteMeasurement measurement = mock(AbsoluteMeasurement.class);
+    Measurement measurement = mock(Measurement.class);
     Integer rate = 10;
 
     when(measurement.getSampleSize()).thenReturn(sampleSize);
@@ -69,7 +69,7 @@ public class NetworkMetaAnalysisEntryBuilderTest {
 
   @Test
   public void testBuildSurvivalEntry(){
-    AbsoluteMeasurement measurement = mock(AbsoluteMeasurement.class);
+    Measurement measurement = mock(Measurement.class);
     Integer rate = 10;
     Double exposure = 0.7;
     String timeScale = "days";
@@ -86,7 +86,7 @@ public class NetworkMetaAnalysisEntryBuilderTest {
 
   @Test(expected = RuntimeException.class)
   public void testUnknownMeasurementTypeThrows() {
-    AbsoluteMeasurement measurement = mock(AbsoluteMeasurement.class);
+    Measurement measurement = mock(Measurement.class);
     when(measurement.getMeasurementTypeURI()).thenReturn(URI.create("eatAtJoes"));
     builder.build(studyName, treatmentId, measurement);
   }

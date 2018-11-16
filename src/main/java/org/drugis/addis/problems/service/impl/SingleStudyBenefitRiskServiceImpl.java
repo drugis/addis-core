@@ -13,7 +13,7 @@ import org.drugis.addis.problems.service.ProblemService;
 import org.drugis.addis.problems.service.SingleStudyBenefitRiskService;
 import org.drugis.addis.problems.service.model.*;
 import org.drugis.addis.projects.Project;
-import org.drugis.addis.trialverse.model.trialdata.AbsoluteMeasurement;
+import org.drugis.addis.trialverse.model.trialdata.Measurement;
 import org.drugis.addis.trialverse.model.trialdata.TrialDataArm;
 import org.drugis.addis.trialverse.model.trialdata.TrialDataStudy;
 import org.drugis.addis.trialverse.service.MappingService;
@@ -61,7 +61,7 @@ public class SingleStudyBenefitRiskServiceImpl implements SingleStudyBenefitRisk
   public List<AbstractMeasurementEntry> buildPerformanceTable(Set<MeasurementWithCoordinates> measurementDrugInstancePairs) {
     ArrayList<AbstractMeasurementEntry> performanceTable = new ArrayList<>();
     for (MeasurementWithCoordinates measurementWithCoordinates : measurementDrugInstancePairs) {
-      AbsoluteMeasurement measurement = measurementWithCoordinates.getMeasurement();
+      Measurement measurement = measurementWithCoordinates.getMeasurement();
       Integer interventionId = measurementWithCoordinates.getInterventionId();
       String dataSource = measurementWithCoordinates.getDataSource();
       if (measurement.getMeasurementTypeURI().equals(ProblemService.DICHOTOMOUS_TYPE_URI)) {
@@ -122,13 +122,13 @@ public class SingleStudyBenefitRiskServiceImpl implements SingleStudyBenefitRisk
                                               URI defaultMeasurementMoment, SingleStudyContext context) {
     Map<URI, CriterionEntry> criteria = new HashMap<>();
     for (TrialDataArm arm : arms) {
-      Set<AbsoluteMeasurement> measurements = arm.getMeasurementsForMoment(defaultMeasurementMoment);
+      Set<Measurement> measurements = arm.getMeasurementsForMoment(defaultMeasurementMoment);
       criteria.putAll(getCriterionEntries(measurements, context));
     }
     return criteria;
   }
 
-  private Map<URI, CriterionEntry> getCriterionEntries(Set<AbsoluteMeasurement> measurements, SingleStudyContext context) {
+  private Map<URI, CriterionEntry> getCriterionEntries(Set<Measurement> measurements, SingleStudyContext context) {
     return measurements.stream()
             .map(measurement -> {
               Outcome measuredOutcome = context.getOutcomesByUri().get(measurement.getVariableConceptUri());
@@ -155,7 +155,7 @@ public class SingleStudyBenefitRiskServiceImpl implements SingleStudyBenefitRisk
   public Set<MeasurementWithCoordinates> getMeasurementsWithCoordinates(List<TrialDataArm> arms, URI defaultMeasurementMoment, SingleStudyContext context) {
     Set<MeasurementWithCoordinates> measurementsWithCoordinates = new HashSet<>();
     for (TrialDataArm arm : arms) {
-      Set<AbsoluteMeasurement> measurements = arm.getMeasurementsForMoment(defaultMeasurementMoment);
+      Set<Measurement> measurements = arm.getMeasurementsForMoment(defaultMeasurementMoment);
       Integer interventionId = arm.getMatchedProjectInterventionIds().iterator().next();
 
       Collection<MeasurementWithCoordinates> armMeasurements = getMeasurementEntries(measurements, interventionId, context);
@@ -165,13 +165,13 @@ public class SingleStudyBenefitRiskServiceImpl implements SingleStudyBenefitRisk
     return measurementsWithCoordinates;
   }
 
-  private Collection<MeasurementWithCoordinates> getMeasurementEntries(Set<AbsoluteMeasurement> measurements, Integer interventionId, SingleStudyContext context) {
+  private Collection<MeasurementWithCoordinates> getMeasurementEntries(Set<Measurement> measurements, Integer interventionId, SingleStudyContext context) {
     return measurements.stream()
             .map(measurement -> getMeasurementWithCoordinates(measurement, context, interventionId))
             .collect(toList());
   }
 
-  private MeasurementWithCoordinates getMeasurementWithCoordinates(AbsoluteMeasurement measurement, SingleStudyContext context, Integer interventionId) {
+  private MeasurementWithCoordinates getMeasurementWithCoordinates(Measurement measurement, SingleStudyContext context, Integer interventionId) {
     Outcome measuredOutcome = context.getOutcomesByUri().get(measurement.getVariableConceptUri());
     String dataSourceId = context.getDataSourceIdsByOutcomeUri().get(measuredOutcome.getSemanticOutcomeUri());
     return new MeasurementWithCoordinates(measurement, interventionId, dataSourceId);

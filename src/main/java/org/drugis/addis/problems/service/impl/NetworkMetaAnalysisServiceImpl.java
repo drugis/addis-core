@@ -18,7 +18,7 @@ import org.drugis.addis.patavitask.repository.UnexpectedNumberOfResultsException
 import org.drugis.addis.problems.model.*;
 import org.drugis.addis.problems.service.NetworkMetaAnalysisService;
 import org.drugis.addis.projects.Project;
-import org.drugis.addis.trialverse.model.trialdata.AbsoluteMeasurement;
+import org.drugis.addis.trialverse.model.trialdata.Measurement;
 import org.drugis.addis.trialverse.model.trialdata.TrialDataArm;
 import org.drugis.addis.trialverse.model.trialdata.TrialDataStudy;
 import org.drugis.trialverse.util.service.UuidService;
@@ -100,7 +100,7 @@ public class NetworkMetaAnalysisServiceImpl implements NetworkMetaAnalysisServic
     if (filteredArms.size() > 1) {
       return filteredArms.stream()
               .map(arm -> {
-                Set<AbsoluteMeasurement> measurements = arm.getMeasurementsForMoment(selectedMeasurementMoment);
+                Set<Measurement> measurements = arm.getMeasurementsForMoment(selectedMeasurementMoment);
                 return networkPerformanceTableBuilder.build(trialDataStudy.getName(),
                         arm.getMatchedProjectInterventionIds().iterator().next(), // safe because we filter unmatched arms
                         measurements.iterator().next()); // nma has exactly one measurement

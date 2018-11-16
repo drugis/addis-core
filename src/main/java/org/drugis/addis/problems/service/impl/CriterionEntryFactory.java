@@ -2,7 +2,7 @@ package org.drugis.addis.problems.service.impl;
 
 import org.drugis.addis.problems.model.CriterionEntry;
 import org.drugis.addis.problems.model.DataSourceEntry;
-import org.drugis.addis.trialverse.model.trialdata.AbsoluteMeasurement;
+import org.drugis.addis.trialverse.model.trialdata.Measurement;
 import org.springframework.stereotype.Service;
 
 import java.net.URI;
@@ -15,7 +15,7 @@ import static org.drugis.addis.problems.service.ProblemService.DICHOTOMOUS_TYPE_
 
 @Service
 public class CriterionEntryFactory {
-  public CriterionEntry create(AbsoluteMeasurement measurement, String outcomeName, String dataSourceId, URI sourceLink)  {
+  public CriterionEntry create(Measurement measurement, String outcomeName, String dataSourceId, URI sourceLink)  {
     List<Double> scale;
     String unitOfMeasurement;
     if (DICHOTOMOUS_TYPE_URI.equals(measurement.getMeasurementTypeURI())) {

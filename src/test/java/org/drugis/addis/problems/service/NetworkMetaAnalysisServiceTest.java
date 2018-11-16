@@ -169,8 +169,8 @@ public class NetworkMetaAnalysisServiceTest {
 
     URI nonDefaultArmUri1 = URI.create("nonDefaultArmUri1");
     Set<Integer> matchedInterventionIds1 = Sets.newHashSet(fluoxInterventionId);
-    AbsoluteMeasurement fluoxMeasurement = mock(AbsoluteMeasurement.class);
-    Set<AbsoluteMeasurement> measurements1 = Sets.newHashSet(fluoxMeasurement);
+    Measurement fluoxMeasurement = mock(Measurement.class);
+    Set<Measurement> measurements1 = Sets.newHashSet(fluoxMeasurement);
     TrialDataArm defaultMMArm = buildArmMock(
             nonDefaultArmUri1,
             matchedInterventionIds1,
@@ -179,8 +179,8 @@ public class NetworkMetaAnalysisServiceTest {
 
     URI nonDefaultArmUri2 = URI.create("nonDefaultArmUri2");
     Set<Integer> matchedInterventionIds2 = Sets.newHashSet(paroxInterventionId);
-    AbsoluteMeasurement paroxMeasurement = mock(AbsoluteMeasurement.class);
-    Set<AbsoluteMeasurement> measurements2 = Sets.newHashSet(paroxMeasurement);
+    Measurement paroxMeasurement = mock(Measurement.class);
+    Set<Measurement> measurements2 = Sets.newHashSet(paroxMeasurement);
     TrialDataArm nonDefaultMMArm = buildArmMock(
             nonDefaultArmUri2,
             matchedInterventionIds2,
@@ -243,11 +243,11 @@ public class NetworkMetaAnalysisServiceTest {
     verify(networkMetaAnalysisEntryBuilder).build(nonDefaultStudyName, paroxInterventionId, paroxMeasurement);
   }
 
-  private TrialDataArm buildArmMock(URI armUri, Set<Integer> matchedInterventionIds, Set<AbsoluteMeasurement> measurements) {
+  private TrialDataArm buildArmMock(URI armUri, Set<Integer> matchedInterventionIds, Set<Measurement> measurements) {
     return buildArmMock(armUri, matchedInterventionIds, measurements, null);
   }
 
-  private TrialDataArm buildArmMock(URI armUri, Set<Integer> matchedInterventionIds, Set<AbsoluteMeasurement> measurements, URI nonDefaultMeasurementMoment) {
+  private TrialDataArm buildArmMock(URI armUri, Set<Integer> matchedInterventionIds, Set<Measurement> measurements, URI nonDefaultMeasurementMoment) {
     URI measurementMoment = (nonDefaultMeasurementMoment == null) ? URI.create("defaultMeasurementMoment") : nonDefaultMeasurementMoment;
     TrialDataArm arm = mock(TrialDataArm.class);
     when(arm.getMatchedProjectInterventionIds()).thenReturn(matchedInterventionIds);

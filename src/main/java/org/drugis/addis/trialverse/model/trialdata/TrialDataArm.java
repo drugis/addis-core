@@ -9,7 +9,7 @@ import java.util.*;
 public class TrialDataArm {
   private URI uri;
   private String name;
-  private Map<URI, Set<AbsoluteMeasurement>> measurements = new HashMap<>();
+  private Map<URI, Set<Measurement>> measurements = new HashMap<>();
   private List<AbstractSemanticIntervention> semanticInterventions = new ArrayList<>();
 
   private Set<Integer> matchedProjectInterventionIds = new HashSet<>();
@@ -30,15 +30,15 @@ public class TrialDataArm {
     return name;
   }
 
-  public Map<URI, Set<AbsoluteMeasurement>> getMeasurements() {
+  public Map<URI, Set<Measurement>> getMeasurements() {
     return measurements;
   }
 
-  public Set<AbsoluteMeasurement> getMeasurementsForMoment(URI measurementMomentUri) {
+  public Set<Measurement> getMeasurementsForMoment(URI measurementMomentUri) {
     return measurements.get(measurementMomentUri);
   }
 
-  public void addMeasurement(URI measurementMomentUri, AbsoluteMeasurement measurement) {
+  public void addMeasurement(URI measurementMomentUri, Measurement measurement) {
     if(measurements.get(measurementMomentUri) == null){
       this.measurements.put(measurementMomentUri,new HashSet<>());
     }
