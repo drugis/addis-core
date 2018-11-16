@@ -162,7 +162,7 @@ public class GraphController extends AbstractAddisCoreController {
                           @PathVariable String importStudyRef,
                           @RequestParam(WebConstants.COMMIT_TITLE_PARAM) String commitTitle,
                           @RequestParam(value = WebConstants.COMMIT_DESCRIPTION_PARAM, required = false) String commitDescription)
-          throws MethodNotAllowedException, ClinicalTrialsImportError, URISyntaxException, UnsupportedEncodingException {
+          throws MethodNotAllowedException, ClinicalTrialsImportError, URISyntaxException {
     logger.trace("import graph");
     URI trialverseDatasetUri = new URI(Namespaces.DATASET_NAMESPACE + datasetUuid);
     VersionMapping mapping = versionMappingRepository.getVersionMappingByDatasetUrl(trialverseDatasetUri);
@@ -207,7 +207,7 @@ public class GraphController extends AbstractAddisCoreController {
   public void copyGraph(HttpServletResponse trialverseResponse, Principal currentUser,
                         @RequestParam(WebConstants.COPY_OF_QUERY_PARAM) String copyOfUri,
                         @PathVariable String datasetUuid, @PathVariable String graphUuid)
-          throws IOException, MethodNotAllowedException, URISyntaxException, UpdateGraphException, RevisionNotFoundException {
+          throws IOException, MethodNotAllowedException, URISyntaxException, RevisionNotFoundException {
     logger.trace("copy graph");
     URI trialverseDatasetUri = new URI(Namespaces.DATASET_NAMESPACE + datasetUuid);
     if (datasetReadRepository.isOwner(trialverseDatasetUri, currentUser)) {

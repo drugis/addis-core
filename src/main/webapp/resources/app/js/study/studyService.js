@@ -31,9 +31,9 @@ define(['lodash', '../util/context'], function(_, externalContext) {
     function createEmptyStudy(study, userUid, datasetUid) {
       var uuid = UUIDService.generate();
       var emptyStudy = EMPTY_STUDY;
-      emptyStudy['@id'] = 'http://trials.drugis.org/studies/' + uuid;
-      emptyStudy.comment = study.comment;
-      emptyStudy.label = study.label;
+      emptyStudy['@graph'][0]['@id'] = 'http://trials.drugis.org/studies/' + uuid;
+      emptyStudy['@graph'][0].comment = study.comment;
+      emptyStudy['@graph'][0].label = study.label;
       var newVersionDefer = $q.defer();
 
       GraphResource.putJson({
@@ -50,6 +50,13 @@ define(['lodash', '../util/context'], function(_, externalContext) {
       return newVersionDefer.promise;
     }
 
+    function createIncludedPopulation() {
+      return [{
+        '@id': 'instance:' + UUIDService.generate(),
+        '@type': 'ontology:StudyPopulation'
+      }];
+    }
+
     function errorCallback(error) {
       console.error('error' + error);
     }
@@ -64,13 +71,6 @@ define(['lodash', '../util/context'], function(_, externalContext) {
 
     function reset() {
       modified = false;
-    }
-
-    function createIncludedPopulation() {
-      return [{
-        '@id': 'instance:' + UUIDService.generate(),
-        '@type': 'ontology:StudyPopulation'
-      }];
     }
 
     function findStudyNode(graph) {
