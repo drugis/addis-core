@@ -114,12 +114,13 @@ public class TriplestoreServiceImpl implements TriplestoreService {
 
   @Override
   public Collection<Namespace> queryNameSpaces() throws ParseException {
-    UriComponents uriComponents = UriComponentsBuilder
+    UriComponents namespacesQueryUriComponents = UriComponentsBuilder
             .fromHttpUrl(webConstants.getTriplestoreBaseUri())
             .path("datasets/")
             .build();
 
-    final ResponseEntity<String> response = restTemplate.exchange(uriComponents.toUri(), HttpMethod.GET, acceptJsonRequest, String.class);
+    final ResponseEntity<String> response = restTemplate.exchange(namespacesQueryUriComponents.toUri(),
+            HttpMethod.GET, acceptJsonRequest, String.class);
     List<Namespace> namespaces = new ArrayList<>();
 
     JSONArray namespacesResponse = (JSONArray) new JSONParser(JSONParser.MODE_PERMISSIVE).parse(response.getBody());
@@ -370,6 +371,19 @@ public class TriplestoreServiceImpl implements TriplestoreService {
   }
 
   @Override
+  public List<TrialDataStudy> addMatchingInformation(Set<AbstractIntervention> includedInterventions, List<TrialDataStudy> studies) {
+    for (TrialDataStudy study : studies) {
+      study.getArms().forEach(arm -> {
+        Set<AbstractIntervention> matchingInterventions = findMatchingIncludedInterventions(includedInterventions, arm);
+        Set<Integer> matchingInterventionIds = matchingInterventions.stream()
+                .map(AbstractIntervention::getId).collect(Collectors.toSet());
+        arm.setMatchedProjectInterventionIds(matchingInterventionIds);
+      });
+    }
+    return studies;
+  }
+
+  @Override
   public Set<AbstractIntervention> findMatchingIncludedInterventions(Set<AbstractIntervention> includedInterventions, TrialDataArm arm) {
     return includedInterventions.stream().filter(intervention -> {
       try {
@@ -379,18 +393,6 @@ public class TriplestoreServiceImpl implements TriplestoreService {
         return false;
       }
     }).collect(Collectors.toSet());
-  }
-
-  @Override
-  public List<TrialDataStudy> addMatchingInformation(Set<AbstractIntervention> includedInterventions, List<TrialDataStudy> trialData) {
-    for (TrialDataStudy study : trialData) {
-      study.getTrialDataArms().forEach(arm -> {
-        Set<AbstractIntervention> matchingInterventions = findMatchingIncludedInterventions(includedInterventions, arm);
-        Set<Integer> matchingInterventionIds = matchingInterventions.stream().map(AbstractIntervention::getId).collect(Collectors.toSet());
-        arm.setMatchedProjectInterventionIds(matchingInterventionIds);
-      });
-    }
-    return trialData;
   }
 
   private Predicate<String> isStudyLevelCovariate(List<CovariateOption> covariateOptions) {

@@ -12,6 +12,9 @@ public class TrialDataArm {
   private Map<URI, Set<Measurement>> measurements = new HashMap<>();
   private List<AbstractSemanticIntervention> semanticInterventions = new ArrayList<>();
 
+  private URI referenceArm;
+  private Double referenceStdErr;
+
   private Set<Integer> matchedProjectInterventionIds = new HashSet<>();
 
   public TrialDataArm() {
@@ -22,12 +25,27 @@ public class TrialDataArm {
     this.name = name;
   }
 
+  public TrialDataArm(URI uri, String name, URI referenceArm, Double referenceStdErr) {
+    this.uri = uri;
+    this.name = name;
+    this.referenceArm = referenceArm;
+    this.referenceStdErr = referenceStdErr;
+  }
+
   public URI getUri() {
     return uri;
   }
 
   public String getName() {
     return name;
+  }
+
+  public URI getReferenceArm() {
+    return referenceArm;
+  }
+
+  public Double getReferenceStdErr() {
+    return referenceStdErr;
   }
 
   public Map<URI, Set<Measurement>> getMeasurements() {
@@ -65,24 +83,19 @@ public class TrialDataArm {
   public boolean equals(Object o) {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
-
-    TrialDataArm arm = (TrialDataArm) o;
-
-    if (!uri.equals(arm.uri)) return false;
-    if (!name.equals(arm.name)) return false;
-    if (!measurements.equals(arm.measurements)) return false;
-    if (!semanticInterventions.equals(arm.semanticInterventions)) return false;
-    return matchedProjectInterventionIds.equals(arm.matchedProjectInterventionIds);
-
+    TrialDataArm that = (TrialDataArm) o;
+    return Objects.equals(uri, that.uri) &&
+            Objects.equals(name, that.name) &&
+            Objects.equals(measurements, that.measurements) &&
+            Objects.equals(semanticInterventions, that.semanticInterventions) &&
+            Objects.equals(referenceArm, that.referenceArm) &&
+            Objects.equals(referenceStdErr, that.referenceStdErr) &&
+            Objects.equals(matchedProjectInterventionIds, that.matchedProjectInterventionIds);
   }
 
   @Override
   public int hashCode() {
-    int result = uri.hashCode();
-    result = 31 * result + name.hashCode();
-    result = 31 * result + measurements.hashCode();
-    result = 31 * result + semanticInterventions.hashCode();
-    result = 31 * result + matchedProjectInterventionIds.hashCode();
-    return result;
+
+    return Objects.hash(uri, name, measurements, semanticInterventions, referenceArm, referenceStdErr, matchedProjectInterventionIds);
   }
 }

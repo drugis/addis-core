@@ -23,12 +23,12 @@ public class TrialDataStudy {
   public TrialDataStudy() {
   }
 
-  public TrialDataStudy(URI studyUri, String name, List<TrialDataArm> trialDataArms) {
+  public TrialDataStudy(URI studyUri, String name, List<TrialDataArm> arms) {
     this.studyUri = studyUri;
     this.name = name;
 
-    if (trialDataArms != null) {
-      this.trialDataArms = trialDataArms;
+    if (arms != null) {
+      this.trialDataArms = arms;
     }
   }
 
@@ -40,7 +40,7 @@ public class TrialDataStudy {
     return name;
   }
 
-  public List<TrialDataArm> getTrialDataArms() {
+  public List<TrialDataArm> getArms() {
     return trialDataArms;
   }
 

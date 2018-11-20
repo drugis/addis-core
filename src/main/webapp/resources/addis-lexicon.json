@@ -279,8 +279,8 @@
     "text": "The 97.5% quantile, or the upper end of a 95% confidence interval.",
     "link": "/manual.html#study-input"
   },
-  "reference-row":{
-    "title": "Reference row",
+  "reference-arm":{
+    "title": "Reference arm",
     "text": "The arm that serves as the reference in the comparison of two or more treatments.",
     "link": "/manual.html#study-input"
   },

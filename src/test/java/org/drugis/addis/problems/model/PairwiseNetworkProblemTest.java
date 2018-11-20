@@ -2,6 +2,8 @@ package org.drugis.addis.problems.model;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.drugis.addis.models.Model;
+import org.drugis.addis.problems.model.problemEntry.AbsoluteContinuousProblemEntry;
+import org.drugis.addis.problems.model.problemEntry.AbstractProblemEntry;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -32,11 +34,11 @@ public class PairwiseNetworkProblemTest {
         Integer treatment2 = 102;
         Integer treatment3 = 103;
 
-        AbstractNetworkMetaAnalysisProblemEntry entry1 = new ContinuousNetworkMetaAnalysisProblemEntry(study1, treatment1, sampleSize, mean, stdDev);
-        AbstractNetworkMetaAnalysisProblemEntry entry2 = new ContinuousNetworkMetaAnalysisProblemEntry(study2, treatment2, sampleSize, mean, stdDev);
-        AbstractNetworkMetaAnalysisProblemEntry entry3 = new ContinuousNetworkMetaAnalysisProblemEntry(study3, treatment3, sampleSize, mean, stdDev);
-        AbstractNetworkMetaAnalysisProblemEntry entry4 = new ContinuousNetworkMetaAnalysisProblemEntry(study4, treatment1, sampleSize, mean, stdDev);
-        List<AbstractNetworkMetaAnalysisProblemEntry> entries = Arrays.asList(entry1, entry2, entry3, entry4);
+        AbstractProblemEntry entry1 = new AbsoluteContinuousProblemEntry(study1, treatment1, sampleSize, mean, stdDev);
+        AbstractProblemEntry entry2 = new AbsoluteContinuousProblemEntry(study2, treatment2, sampleSize, mean, stdDev);
+        AbstractProblemEntry entry3 = new AbsoluteContinuousProblemEntry(study3, treatment3, sampleSize, mean, stdDev);
+        AbstractProblemEntry entry4 = new AbsoluteContinuousProblemEntry(study4, treatment1, sampleSize, mean, stdDev);
+        List<AbstractProblemEntry> entries = Arrays.asList(entry1, entry2, entry3, entry4);
 
         TreatmentEntry treatmentEntry1 = new TreatmentEntry(treatment1, "treatment1");
         TreatmentEntry treatmentEntry2 = new TreatmentEntry(treatment2, "treatment2");

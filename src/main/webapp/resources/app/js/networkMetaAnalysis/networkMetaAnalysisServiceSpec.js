@@ -1,6 +1,6 @@
 define([
-  'angular-mocks', 
-  '../services',
+  'angular-mocks',
+  './networkMetaAnalysis',
   '../util/resultsConstants'
 ], function() {
 
@@ -13,7 +13,7 @@ define([
     measurementMoments: [{
       uri: 'defaultMMUri'
     }],
-    trialDataArms: [{
+    arms: [{
       uri: 'http://trials.drugis.org/instances/fava-parox-arm',
       name: 'Paroxetine',
       drugInstance: 'http://trials.drugis.org/instances/parox-instance',
@@ -96,8 +96,8 @@ define([
     covariateValues: [{
       covariateKey: 'COVARIATE_KEY',
       value: 123
-    }, ],
-    trialDataArms: [{
+    },],
+    arms: [{
       uri: '144',
       name: 'Azilsartan Medoxomil 40 mg QD',
       drugInstance: '98',
@@ -206,7 +206,7 @@ define([
     studyUri: '45',
     name: 'TAK491-011 / NCT00591253',
     defaultMeasurementMoment: 'defaultMMUri',
-    trialDataArms: [{
+    arms: [{
       uri: '149',
       name: 'Azilsartan Medoxomil 40 mg QD',
       drugInstance: '101',
@@ -273,7 +273,7 @@ define([
     studyUri: '46',
     name: 'TAK491-019 / NCT00696436',
     defaultMeasurementMoment: 'defaultMMUri',
-    trialDataArms: [{
+    arms: [{
       uri: '156',
       name: 'Olmesartan 40 mg QD',
       drugInstance: '105',
@@ -446,12 +446,17 @@ define([
     'semanticInterventionUri': 'http://trials.drugis.org/concepts/a977e3a6fa4dc0a34fcf9fb351bc0a0e'
   }];
 
+  var networkMetaAnalysisService;
   describe('The networkMetaAnalysisService', function() {
+    beforeEach(angular.mock.module('addis.networkMetaAnalysis'));
+    beforeEach(angular.mock.module('addis.services'));
 
-    describe('transformTrialDataToNetwork', function() {
-      beforeEach(angular.mock.module('addis.services'));
+    beforeEach(inject(function(NetworkMetaAnalysisService) {
+      networkMetaAnalysisService = NetworkMetaAnalysisService;
+    }));
 
-      it('should construct the evidence network from the list of trialDataStudies', inject(function(NetworkMetaAnalysisService) {
+    describe('transformStudiesToNetwork', function() {
+      it('should construct the evidence network from the list of trialDataStudies', function() {
         var trialVerseStudyData = exampleNetworkStudies;
         var analysis = {
           excludedArms: [],
@@ -460,7 +465,6 @@ define([
           }
         };
         var momentSelections = {};
-
         momentSelections[trialVerseStudyData[0].studyUri] = {
           uri: 'defaultMMUri'
         };
@@ -470,255 +474,238 @@ define([
         momentSelections[trialVerseStudyData[2].studyUri] = {
           uri: 'defaultMMUri'
         };
-
-        var network = NetworkMetaAnalysisService.transformTrialDataToNetwork(trialVerseStudyData, networkInterventions, analysis, momentSelections);
-
+        var network = networkMetaAnalysisService.transformStudiesToNetwork(trialVerseStudyData, networkInterventions, analysis, momentSelections);
         expect(network).toEqual(expectedNetwork);
-      }));
+      });
 
     });
 
-    describe('transformTrialDataToTableRows', function() {
+    describe('transformStudiesToTableRows', function() {
+      it('should construct table rows from the list of trialDataStudies', function() {
+        var treatmentOverlapMap = {};
+        var interventions = exampleInterventions();
+        var excludedArms = [];
+        var analysis = {
+          excludedArms: excludedArms,
+          outcome: {
+            semanticOutcomeUri: 'variableConceptUri'
+          }
+        };
 
-      beforeEach(angular.mock.module('addis.services'));
+        var covariates = [{
+          isIncluded: false
+        }, {
+          isIncluded: true,
+          name: 'covariate name',
+          definitionKey: 'COVARIATE_KEY'
+        }, {
+          isIncluded: false
+        }];
 
-      it('should construct table rows from the list of trialDataStudies',
-        inject(function(NetworkMetaAnalysisService) {
-
-          var trialVerseStudyData = exampleStudies;
-          var treatmentOverlapMap = {};
-          var interventions = exampleInterventions();
-          var excludedArms = [];
-          var analysis = {
-            excludedArms: excludedArms,
-            outcome: {
-              semanticOutcomeUri: 'variableConceptUri'
+        var result = networkMetaAnalysisService.transformStudiesToTableRows(exampleStudies, interventions, analysis, covariates, treatmentOverlapMap);
+        var study1 = {
+          covariatesColumns: [{
+            headerTitle: 'covariate name',
+            data: 123
+          }],
+          study: 'Fava et al, 2002',
+          studyUri: 'http://trials.drugis.org/graphs/favaUuid',
+          studyUuid: 'favaUuid',
+          studyRowSpan: 3,
+          arm: 'Fluoxetine',
+          trialverseUid: 'http://trials.drugis.org/instances/fava-arm-1-uri',
+          included: true,
+          intervention: 'intervention 1',
+          interventionId: 1,
+          interventionRowSpan: 1,
+          measurements: {
+            defaultMMUri: {
+              type: 'continuous',
+              rate: 'NA',
+              mu: 5.5,
+              sigma: 'NA',
+              sampleSize: 92,
+              stdErr: 'NA',
+              exposure: 'NA'
             }
-          };
+          },
+          firstInterventionRow: true,
+          firstStudyRow: true,
+          measurementMoments: exampleStudies[0].measurementMoments,
+          numberOfMatchedInterventions: 3,
+          numberOfIncludedInterventions: 3,
+        };
+        var study2 = {
+          covariatesColumns: [{
+            headerTitle: 'covariate name',
+            data: 123
+          }],
+          study: 'Fava et al, 2002',
+          studyUri: 'http://trials.drugis.org/graphs/favaUuid',
+          studyUuid: 'favaUuid',
+          studyRowSpan: 3,
+          arm: 'Paroxetine',
+          trialverseUid: 'http://trials.drugis.org/instances/fava-parox-arm',
+          included: true,
+          intervention: 'intervention 2',
+          interventionId: 2,
+          measurements: {
+            defaultMMUri: {
+              type: 'continuous',
+              rate: 'NA',
+              mu: 3.5,
+              sigma: 'NA',
+              sampleSize: 96,
+              stdErr: 'NA',
+              exposure: 'NA'
+            }
+          },
+          measurementMoments: exampleStudies[0].measurementMoments,
+          numberOfMatchedInterventions: 3,
+          numberOfIncludedInterventions: 3,
+          firstInterventionRow: true,
+          interventionRowSpan: 1
+        };
+        var study3 = {
+          covariatesColumns: [{
+            headerTitle: 'covariate name',
+            data: 123
+          }],
+          study: 'Fava et al, 2002',
+          studyUri: 'http://trials.drugis.org/graphs/favaUuid',
+          studyUuid: 'favaUuid',
+          studyRowSpan: 3,
+          arm: 'Sertraline',
+          trialverseUid: 'http://trials.drugis.org/instances/fava-sertra-arm',
+          included: true,
+          intervention: 'intervention 3',
+          interventionId: 3,
+          measurements: {
+            defaultMMUri: {
+              type: 'continuous',
+              rate: 'NA',
+              mu: 4.5,
+              sigma: 'NA',
+              sampleSize: 96,
+              stdErr: 'NA',
+              exposure: 'NA'
+            }
+          },
+          measurementMoments: exampleStudies[0].measurementMoments,
+          numberOfMatchedInterventions: 3,
+          numberOfIncludedInterventions: 3,
+          firstInterventionRow: true,
+          interventionRowSpan: 1
+        };
 
-          var covariates = [{
-            isIncluded: false
-          }, {
-            isIncluded: true,
-            name: 'covariate name',
-            definitionKey: 'COVARIATE_KEY'
-          }, {
-            isIncluded: false
-          }];
-
-          // Execute
-          var resultRows = NetworkMetaAnalysisService.transformTrialDataToTableRows(trialVerseStudyData, interventions, analysis, covariates, treatmentOverlapMap);
-
-          expect(resultRows[1]).toEqual({
-            covariatesColumns: [{
-              headerTitle: 'covariate name',
-              data: 123
-            }],
-            study: 'Fava et al, 2002',
-            studyUri: 'http://trials.drugis.org/graphs/favaUuid',
-            studyUuid: 'favaUuid',
-            studyRowSpan: 3,
-            arm: 'Paroxetine',
-            trialverseUid: 'http://trials.drugis.org/instances/fava-parox-arm',
-            included: true,
-            intervention: 'intervention 2',
-            interventionId: 2,
-            measurements: {
-              defaultMMUri: {
-                type: 'continuous',
-                rate: null,
-                mu: 3.5,
-                sigma: 'NA',
-                sampleSize: 96,
-                stdErr: 'NA',
-                exposure: null
-              }
-            },
-            measurementMoments: trialVerseStudyData[0].measurementMoments,
-            numberOfMatchedInterventions: 3,
-            numberOfIncludedInterventions: 3,
-            firstInterventionRow: true,
-            interventionRowSpan: 1
-          });
-
-
-          expect(resultRows[2]).toEqual({
-            covariatesColumns: [{
-              headerTitle: 'covariate name',
-              data: 123
-            }],
-            study: 'Fava et al, 2002',
-            studyUri: 'http://trials.drugis.org/graphs/favaUuid',
-            studyUuid: 'favaUuid',
-            studyRowSpan: 3,
-            arm: 'Sertraline',
-            trialverseUid: 'http://trials.drugis.org/instances/fava-sertra-arm',
-            included: true,
-            intervention: 'intervention 3',
-            interventionId: 3,
-            measurements: {
-              defaultMMUri: {
-                type: 'continuous',
-                rate: null,
-                mu: 4.5,
-                sigma: 'NA',
-                sampleSize: 96,
-                stdErr: 'NA',
-                exposure: null
-              }
-            },
-            measurementMoments: trialVerseStudyData[0].measurementMoments,
-            numberOfMatchedInterventions: 3,
-            numberOfIncludedInterventions: 3,
-            firstInterventionRow: true,
-            interventionRowSpan: 1
-          });
-
-          expect(resultRows[0]).toEqual({
-            covariatesColumns: [{
-              headerTitle: 'covariate name',
-              data: 123
-            }],
-            study: 'Fava et al, 2002',
-            studyUri: 'http://trials.drugis.org/graphs/favaUuid',
-            studyUuid: 'favaUuid',
-            studyRowSpan: 3,
-            arm: 'Fluoxetine',
-            trialverseUid: 'http://trials.drugis.org/instances/fava-arm-1-uri',
-            included: true,
-            intervention: 'intervention 1',
-            interventionId: 1,
-            interventionRowSpan: 1,
-            measurements: {
-              defaultMMUri: {
-                type: 'continuous',
-                rate: null,
-                mu: 5.5,
-                sigma: 'NA',
-                sampleSize: 92,
-                stdErr: 'NA',
-                exposure: null
-              }
-            },
-            firstInterventionRow: true,
-            firstStudyRow: true,
-            measurementMoments: trialVerseStudyData[0].measurementMoments,
-            numberOfMatchedInterventions: 3,
-            numberOfIncludedInterventions: 3,
-          });
-        })
-      );
+        expect(result.absolute[0]).toEqual(study1);
+        expect(result.absolute[1]).toEqual(study2);
+        expect(result.absolute[2]).toEqual(study3);
+      });
     });
 
     describe('changeArmExclusion', function() {
-
-      beforeEach(angular.mock.module('addis.services'));
-
-      it('should add an excluded arm if dataRow.included is false', inject(function(NetworkMetaAnalysisService) {
+      it('should add an excluded arm if dataRow.included is false', function() {
         var dataRow = {
           included: false,
-          trialverseId: -1
+          trialverseUid: -1
         };
 
         var analysis = {
           id: 1,
           excludedArms: [{
-            trialverseId: -2,
+            trialverseUid: -2,
             analysisId: 1
           }],
         };
 
-        analysis = NetworkMetaAnalysisService.changeArmExclusion(dataRow, analysis);
+        analysis = networkMetaAnalysisService.changeArmExclusion(dataRow, analysis);
         expect(analysis.excludedArms.length).toBe(2);
-      }));
+      });
 
-      it('should remove an excluded arm if datarow.included = true for the corresponding arm', inject(function(NetworkMetaAnalysisService) {
-        var dataRow = {
+      it('should remove an excluded arm if datarow.included = true for the corresponding arm', function() {
+        var row = {
           included: true,
-          trialverseId: -2
+          trialverseUid: -2
         };
-
         var analysis = {
           id: 1,
           excludedArms: [{
-            trialverseId: -2,
+            trialverseUid: -2,
             analysisId: 1
           }, {
-            trialverseId: -3,
+            trialverseUid: -3,
             analysisId: 1
           }],
         };
-        analysis = NetworkMetaAnalysisService.changeArmExclusion(dataRow, analysis);
-        expect(analysis.excludedArms.length).toBe(1);
-        expect(analysis.excludedArms[0].trialverseId).toBe(-3);
-      }));
+        var result = networkMetaAnalysisService.changeArmExclusion(row, analysis);
+        expect(result.excludedArms.length).toBe(1);
+        expect(result.excludedArms[0].trialverseUid).toBe(-3);
+      });
     });
 
     describe('doesInterventionHaveAmbiguousArms', function() {
-      beforeEach(angular.mock.module('addis.services'));
-
-      it('should return true if there are ambiguous arms for the intervention', inject(function(NetworkMetaAnalysisService) {
-        var drugConceptUid = 1;
+      it('should return true if there are ambiguous arms for the intervention', function() {
+        var interventionId = 1;
         var studyUri = '27';
-        var trialverseData = [{
+        var studies = [{
           studyUri: studyUri,
-          trialDataArms: [{
+          arms: [{
             matchedProjectInterventionIds: [1],
-            drugConceptUid: '1'
+            interventionId: '1'
           }, {
             matchedProjectInterventionIds: [1],
-            drugConceptUid: '1'
+            interventionId: '1'
           }]
         }];
         var analysis = {
           excludedArms: []
         };
-        expect(NetworkMetaAnalysisService.doesInterventionHaveAmbiguousArms(drugConceptUid, studyUri, trialverseData, analysis)).toBeTruthy();
-      }));
+        var result = networkMetaAnalysisService.doesInterventionHaveAmbiguousArms(interventionId, studyUri, studies, analysis);
+        expect(result).toBeTruthy();
+      });
 
-      it('should return false if there are no ambiguous arms for the intervention', inject(function(NetworkMetaAnalysisService) {
-        var drugConceptUid = 1;
+      it('should return false if there are no ambiguous arms for the intervention', function() {
+        var interventionId = 1;
         var studyUri = '27';
         var trialverseData = [{
           studyUri: studyUri,
-          trialDataArms: [{
-            drugConceptUid: 1
+          arms: [{
+            interventionId: 1
           }, {
-            drugConceptUid: 2
+            interventionId: 2
           }]
         }];
         var analysis = {
           excludedArms: []
         };
-        expect(NetworkMetaAnalysisService.doesInterventionHaveAmbiguousArms(drugConceptUid, studyUri, trialverseData, analysis)).toBeFalsy();
-      }));
+        expect(networkMetaAnalysisService.doesInterventionHaveAmbiguousArms(interventionId, studyUri, trialverseData, analysis)).toBeFalsy();
+      });
 
-      it('should return false if the ambiguity has been resolved through exclusion', inject(function(NetworkMetaAnalysisService) {
-        var drugConceptUid = 1;
+      it('should return false if the ambiguity has been resolved through exclusion', function() {
+        var interventionId = 1;
         var studyUri = '27';
         var trialverseData = [{
           studyUri: studyUri,
-          trialDataArms: [{
+          arms: [{
             id: 3,
-            drugConceptUid: 1
+            interventionId: 1
           }, {
             id: 4,
-            drugConceptUid: 1
+            interventionId: 1
           }]
         }];
         var analysis = {
           excludedArms: [{
-            trialverseId: 3
+            trialverseUid: 3
           }]
         };
-        expect(NetworkMetaAnalysisService.doesInterventionHaveAmbiguousArms(drugConceptUid, studyUri, trialverseData, analysis)).toBeFalsy();
-      }));
+        expect(networkMetaAnalysisService.doesInterventionHaveAmbiguousArms(interventionId, studyUri, trialverseData, analysis)).toBeFalsy();
+      });
     });
 
     describe('doesModelHaveAmbiguousArms', function() {
-      beforeEach(angular.mock.module('addis.services'));
-
-      it('should return true if there are ambiguous arms for the model', inject(function(NetworkMetaAnalysisService) {
+      it('should return true if there are ambiguous arms for the model', function() {
         var interventions = [{
           interventionId: 1,
           semanticInterventionUri: 'uri1'
@@ -729,18 +716,19 @@ define([
           interventionId: 3,
           semanticInterventionUri: 'uri3'
         }];
-        var trialverseData = [{
-          trialDataArms: [{
+        var studies = [{
+          studyUri: 'studyUri',
+          arms: [{
             drugInstance: 1,
-            drugConceptUid: 'uri1',
+            interventionId: 'uri1',
             matchedProjectInterventionIds: [1, 2, 3]
           }, {
             drugInstance: 2,
-            drugConceptUid: 'uri1',
+            interventionId: 'uri1',
             matchedProjectInterventionIds: [1, 2, 3]
           }, {
             drugInstance: 3,
-            drugConceptUid: 'uri1',
+            interventionId: 'uri1',
             matchedProjectInterventionIds: [1, 2, 3]
           }]
         }];
@@ -748,28 +736,25 @@ define([
           excludedArms: [],
           interventionInclusions: interventions
         };
-        expect(NetworkMetaAnalysisService.doesModelHaveAmbiguousArms(trialverseData, analysis)).toBeTruthy();
-      }));
+        var result = networkMetaAnalysisService.doesModelHaveAmbiguousArms(studies, analysis);
+        expect(result).toBeTruthy();
+      });
     });
 
     describe('addInclusionsToInterventions', function() {
-      beforeEach(angular.mock.module('addis.services'));
-
-      it('should add inclusions to interventions', inject(function(NetworkMetaAnalysisService) {
+      it('should add inclusions to interventions', function() {
         var inclusions = [{
           interventionId: 43
         }];
-        var includedInterventions = NetworkMetaAnalysisService.addInclusionsToInterventions(networkInterventions, inclusions);
+        var includedInterventions = networkMetaAnalysisService.addInclusionsToInterventions(networkInterventions, inclusions);
         expect(includedInterventions[0].isIncluded).toBeTruthy();
         expect(includedInterventions[1].isIncluded).toBeFalsy();
         expect(includedInterventions[2].isIncluded).toBeFalsy();
-      }));
+      });
     });
 
     describe('buildInterventionInclusions', function() {
-      beforeEach(angular.mock.module('addis.services'));
-
-      it('should create a new list of intervention inclusions', inject(function(NetworkMetaAnalysisService) {
+      it('should create a new list of intervention inclusions', function() {
         var interventions = [{
           id: 1,
           isIncluded: true
@@ -783,7 +768,7 @@ define([
         var analysis = {
           id: 4
         };
-        var interventionExclusions = NetworkMetaAnalysisService.buildInterventionInclusions(interventions, analysis);
+        var interventionExclusions = networkMetaAnalysisService.buildInterventionInclusions(interventions, analysis);
         expect(interventionExclusions).toEqual([{
           analysisId: 4,
           interventionId: 1
@@ -791,13 +776,11 @@ define([
           analysisId: 4,
           interventionId: 3
         }]);
-      }));
+      });
     });
 
     describe('buildMomentSelections', function() {
-      beforeEach(angular.mock.module('addis.services'));
-
-      it('should create a map where for each study the default moment is selected except in cases where there is a selection on the analysis', inject(function(NetworkMetaAnalysisService) {
+      it('should create a map where for each study the default moment is selected except in cases where there is a selection on the analysis', function() {
         var study1 = {
           studyUri: 'studyUri1',
           defaultMeasurementMoment: 'defaultMoment1',
@@ -835,17 +818,15 @@ define([
           studyUri2: study2.measurementMoments[1],
           studyUri3: undefined
         };
-        var result = NetworkMetaAnalysisService.buildMomentSelections(trialData, analysis);
+        var result = networkMetaAnalysisService.buildMomentSelections(trialData, analysis);
         expect(result).toEqual(expectedResult);
-      }));
+      });
     });
 
     describe('cleanUpExcludedArms', function() {
-      beforeEach(angular.mock.module('addis.services'));
-
-      it('should remove armExclusions that match the intervention', inject(function(NetworkMetaAnalysisService) {
+      it('should remove armExclusions that match the intervention', function() {
         var study1 = {
-          trialDataArms: [{
+          arms: [{
             drugInstance: 1,
             uri: 10,
             semanticIntervention: {
@@ -887,15 +868,13 @@ define([
           trialverseUid: 21
         }];
 
-        expect(NetworkMetaAnalysisService.cleanUpExcludedArms(intervention, analysis, trialDataStudies)).toEqual(expectedArmExclusions);
+        expect(networkMetaAnalysisService.cleanUpExcludedArms(intervention, analysis, trialDataStudies)).toEqual(expectedArmExclusions);
 
-      }));
+      });
     });
 
     describe('buildOverlappingTreatmentMap', function() {
-      beforeEach(angular.mock.module('addis.services'));
-
-      it('should create an empty object if there is no overlap', inject(function(NetworkMetaAnalysisService) {
+      it('should create an empty object if there is no overlap', function() {
         var interventions = [{
           id: 1,
           semanticInterventionUri: 'drugUri1',
@@ -903,20 +882,20 @@ define([
         }];
         var trialData = [{
           studyUuid: 'studyUuid',
-          trialDataArms: [{
-            drugConceptUid: 'drugUri1',
+          arms: [{
+            interventionId: 'drugUri1',
             matchedProjectInterventionIds: [1]
           }, {
-            drugConceptUid: 'druguri2',
+            interventionId: 'druguri2',
             matchedProjectInterventionIds: [2]
           }]
         }];
 
-        var overlapMap = NetworkMetaAnalysisService.buildOverlappingTreatmentMap(interventions, trialData);
+        var overlapMap = networkMetaAnalysisService.buildOverlappingTreatmentMap(interventions, trialData);
         expect(overlapMap).toEqual({});
-      }));
+      });
 
-      it('should create a list of overlapping interventions for each intervention if they overlap', inject(function(NetworkMetaAnalysisService) {
+      it('should create a list of overlapping interventions for each intervention if they overlap', function() {
         var intervention1 = {
           id: 1,
           isIncluded: true
@@ -933,7 +912,7 @@ define([
         var interventions = [intervention1, intervention2, intervention3];
         var trialData = [{
           studyUuid: 'studyUuid',
-          trialDataArms: [{
+          arms: [{
             matchedProjectInterventionIds: [1, 2]
           }, {
             matchedProjectInterventionIds: [2, 3]
@@ -945,144 +924,82 @@ define([
           3: [intervention2]
         };
 
-        var overlapMap = NetworkMetaAnalysisService.buildOverlappingTreatmentMap(interventions, trialData);
+        var overlapMap = networkMetaAnalysisService.buildOverlappingTreatmentMap(interventions, trialData);
         expect(overlapMap).toEqual(expectedMap);
-      }));
+      });
     });
 
-    describe('buildMissingValueByStudyMap', function() {
-      beforeEach(angular.mock.module('addis.services'));
-
-      it('should build a map indexed by study uri where studies with missing values are truthy',
-        inject(function(NetworkMetaAnalysisService) {
-          var outcome = {
-            semanticOutcomeUri: 'semanticOutcomeUri'
-          };
-
-          var study1Arm1 = {
-            trialverseUid: 'trialverseUid1'
-          };
-
-          var study1Arm2 = {
-            trialverseUid: 'trialverseUid2'
-          };
-
-          var analysis1 = {
-            outcome: outcome,
-            excludedArms: [study1Arm2]
-          };
-
-          var trialDataArm1 = { // excluded due to no matching interventions
-            uri: study1Arm1.trialverseUid,
-            studyUri: 'study1uri',
-            matchedProjectInterventionIds: []
-          };
-
-          var trialDataArm2 = { // excluded due to arm exclusion
-            uri: study1Arm2.trialverseUid,
-            matchedProjectInterventionIds: [1],
-            studyUri: 'study1uri',
-            measurements: {
-              defaultMMUri: [{
-                variableConceptUri: outcome.semanticOutcomeUri,
-                measurementTypeURI: 'http://trials.drugis.org/ontology#continuous',
-                mean: 1.1,
-                stdDev: 0.5,
-                sampleSize: null, // it's missing !
-                stdErr: 4
-              }]
+    describe('buildMissingValueByStudy', function() {
+      it('should build a map indexed by study uri where studies with missing values are truthy', function() {
+        var row1 = {
+          referenceArm: 'referenceArmUri',
+          trialverseUid: 'referenceArmUri',
+          studyUri: 'study1Uri',
+          included: true
+        };
+        var row2 = {
+          referenceArm: 'referenceArmUri',
+          trialverseUid: 'nonRefArmUri',
+          studyUri: 'study1Uri',
+          measurements: {
+            defaultMMUri: {
+              referenceArm: 'referenceArmUri',
+              stdErr: 1,
+              meanDifference: 2,
+              measurementTypeURI: 'continuous'
             }
-          };
-
-          var trialDataArm3 = { // excluded due to no matching interventions
-            uri: 'trialverseUid3',
-            matchedProjectInterventionIds: [2],
-            studyUri: 'study1uri',
-            measurements: {
-              defaultMMUri: [{
-                variableConceptUri: outcome.semanticOutcomeUri,
-                measurementTypeURI: 'http://trials.drugis.org/ontology#continuous',
-                mean: 1.1,
-                stdDev: 0.5,
-                sampleSize: null, // it's missing !
-                stdErr: 4
-
-              }]
+          },
+          included: true
+        };
+        var row3 = {
+          referenceArm: 'referenceArmUri',
+          trialverseUid: 'nonRefArmUri',
+          studyUri: 'study2Uri',
+          measurements: {
+            defaultMMUri: {
+              referenceArm: 'referenceArmUri',
+              stdErr: 1,
+              measurementTypeURI: 'continuous'
             }
-          };
-
-          var trialDataArm4 = { // excluded due to no matching interventions
-            studyUri: 'study2uri',
-            matchedProjectInterventionIds: []
-          };
-
-          var trialDataArm5 = {
-            uri: 'study2arm2',
-            studyUri: 'study2uri',
-            matchedProjectInterventionIds: [1],
-            measurements: {
-              defaultMMUri: [{
-                variableConceptUri: outcome.semanticOutcomeUri,
-                measurementTypeURI: 'http://trials.drugis.org/ontology#continuous',
-                mean: 1.1,
-                stdDev: 0.5,
-                sampleSize: null, // it's missing !
-                stdErr: 4
-
-              }]
+          },
+          included: true
+        };
+        var row4 = {
+          trialverseUid: 'nonRefArmUri',
+          studyUri: 'study3Uri',
+          measurements: {
+            defaultMMUri: {
+              stdErr: 1,
+              measurementTypeURI: 'continuous'
             }
-          };
+          },
+          included: true
+        };
+        var momentSelections = {
+          study1Uri: {
+            uri: 'defaultMMUri'
+          },
+          study2Uri: {
+            uri: 'defaultMMUri'
+          },
+          study3Uri: {
+            uri: 'defaultMMUri'
+          }
+        };
+        var rows = [row1, row2, row3, row4];
+        var result = networkMetaAnalysisService.buildMissingValueByStudy(rows, momentSelections);
 
-          var trialDataArm6 = {
-            uri: 'study2arm3',
-            matchedProjectInterventionIds: [2],
-            studyUri: 'study2uri',
-            measurements: {
-              defaultMMUri: [{
-                variableConceptUri: outcome.semanticOutcomeUri,
-                measurementTypeURI: 'http://trials.drugis.org/ontology#continuous',
-                mean: 1.1,
-                stdDev: 0.5,
-                sampleSize: null, // it's missing !
-                stdErr: null
-              }]
-            }
-          };
-
-          var study1 = {
-            studyUri: 'study1uri',
-            defaultMeasurementMoment: 'defaultMMUri',
-            trialDataArms: [trialDataArm1, trialDataArm2, trialDataArm3]
-          };
-
-          var study2 = {
-            studyUri: 'study2uri',
-            defaultMeasurementMoment: 'defaultMMUri',
-            trialDataArms: [trialDataArm4, trialDataArm5, trialDataArm6]
-          };
-
-          var momentSelections = {
-            study1uri: {
-              uri: 'defaultMMUri'
-            },
-            study2uri: {
-              uri: 'defaultMMUri'
-            }
-          };
-
-          var trialDataStudies = [study1, study2];
-
-
-          var result = NetworkMetaAnalysisService.buildMissingValueByStudyMap(trialDataStudies, analysis1, momentSelections);
-
-          expect(result[study1.studyUri]).toBeFalsy();
-          expect(result[study2.studyUri]).toBeTruthy();
-        }));
+        var expectedResult = {
+          study1Uri: false,
+          study2Uri: true,
+          study3Uri: true
+        };
+        expect(result).toEqual(expectedResult);
+      });
     });
 
     describe('doesModelHaveInsufficientCovariateValues', function() {
-      beforeEach(angular.mock.module('addis.services'));
-      it('should find covariates with only one level', inject(function(NetworkMetaAnalysisService) {
+      it('should find covariates with only one level', function() {
         var goodTrialData = [{
           covariatesColumns: [{
             headerTitle: 'cov 1',
@@ -1097,26 +1014,25 @@ define([
         var badtrialData = angular.copy(goodTrialData);
         badtrialData[1].covariatesColumns[0].data = 1;
 
-        expect(NetworkMetaAnalysisService.doesModelHaveInsufficientCovariateValues(goodTrialData)).toBeFalsy();
-        expect(NetworkMetaAnalysisService.doesModelHaveInsufficientCovariateValues(badtrialData)).toBeTruthy();
-      }));
+        expect(networkMetaAnalysisService.doesModelHaveInsufficientCovariateValues(goodTrialData)).toBeFalsy();
+        expect(networkMetaAnalysisService.doesModelHaveInsufficientCovariateValues(badtrialData)).toBeTruthy();
+      });
     });
 
-    describe('checkColumnsToShow', function() {
+    describe('getAbsoluteColumnsToShow', function() {
       describe('for continuous outcomes', function() {
-
-        beforeEach(angular.mock.module('addis.services'));
-
-        it('should be correct for some missing values', inject(function(NetworkMetaAnalysisService) {
-          var dataRows = [{
+        it('should be correct for some missing values', function() {
+          var rows = [{
             measurements: [{
               sigma: 0.3,
               sampleSize: 0.4,
-              stdErr: 'NA'
+              stdErr: 'NA',
+              type: 'continuous'
             }, {
               sigma: 0.3,
               sampleSize: 'NA',
-              stdErr: 4
+              stdErr: 4,
+              type: 'continuous'
             }]
           }];
           var expectedResult = {
@@ -1127,18 +1043,20 @@ define([
             stdErr: true,
             exposure: false
           };
-          expect(NetworkMetaAnalysisService.checkColumnsToShow(dataRows, 'continuous')).toEqual(expectedResult);
-        }));
-        it('should not show sigma if it has no values', inject(function(NetworkMetaAnalysisService) {
-          var dataRows = [{
+          expect(networkMetaAnalysisService.getAbsoluteColumnsToShow(rows)).toEqual(expectedResult);
+        });
+        it('should not show sigma if it has no values', function() {
+          var rows = [{
             measurements: [{
               sigma: 'NA',
               sampleSize: 'NA',
-              stdErr: 1.3
+              stdErr: 1.3,
+              type: 'continuous'
             }, {
               sigma: 'NA',
               sampleSize: 31,
-              stdErr: 4
+              stdErr: 4,
+              type: 'continuous'
             }]
           }];
           var expectedResult = {
@@ -1149,18 +1067,20 @@ define([
             stdErr: true,
             exposure: false
           };
-          expect(NetworkMetaAnalysisService.checkColumnsToShow(dataRows, 'continuous')).toEqual(expectedResult);
-        }));
-        it('should no show N if there is no data', inject(function(NetworkMetaAnalysisService) {
-          var dataRows = [{
+          expect(networkMetaAnalysisService.getAbsoluteColumnsToShow(rows)).toEqual(expectedResult);
+        });
+        it('should not show N if there is no data', function() {
+          var rows = [{
             measurements: [{
               sigma: 'NA',
               sampleSize: 'NA',
-              stdErr: 1.3
+              stdErr: 1.3,
+              type: 'continuous'
             }, {
               sigma: 'NA',
               sampleSize: 'NA',
-              stdErr: 4
+              stdErr: 4,
+              type: 'continuous'
             }]
           }];
           var expectedResult = {
@@ -1171,38 +1091,45 @@ define([
             stdErr: true,
             exposure: false
           };
-          expect(NetworkMetaAnalysisService.checkColumnsToShow(dataRows, 'continuous')).toEqual(expectedResult);
-        }));
+          expect(networkMetaAnalysisService.getAbsoluteColumnsToShow(rows)).toEqual(expectedResult);
+        });
       });
     });
 
-    describe('getMeasurementType', function() {
-      beforeEach(angular.mock.module('addis.services'));
-      it('should get the measurement type from the trial data', inject(function(NetworkMetaAnalysisService) {
-        var dichotomousData = [{
-          trialDataArms: [{
-            measurements: {
-              'http://measurementMoment.uri/1': [{
-                measurementTypeURI: 'http://trials.drugis.org/ontology#dichotomous'
-              }]
-            }
-          }]
+    describe('hasInterventionOverlap', () => {
+      it('should return true if there are interventions in the overlap map', () => {
+        var interventionOverlapMap = {
+          intervention1: {},
+          intervention2: {}
+        };
+        expect(networkMetaAnalysisService.hasInterventionOverlap(interventionOverlapMap)).toBeTruthy();
+      });
+
+      it('should return false if there are no interventions in the overlap map', () => {
+        var interventionOverlapMap = {
+        };
+        expect(networkMetaAnalysisService.hasInterventionOverlap(interventionOverlapMap)).toBeFalsy();
+      });
+    });
+
+    describe('getReferenceArms', () => {
+      it('should return the arms which are reference arms of given rows', () => {
+        var rows = [{
+          trialverseUid: 'refUri',
+          referenceArm: 'refUri'
+        }, {
+          trialverseUid: 'OtherUri',
+          referenceArm: 'refUri'
         }];
-        var continuousData = [{
-          trialDataArms: [{
-            measurements: {
-              'http://measurementMoment.uri/1': [{
-                measurementTypeURI: 'http://trials.drugis.org/ontology#continuous'
-              }]
-            }
-          }]
-        }];
-        expect(NetworkMetaAnalysisService.getMeasurementType(dichotomousData)).toEqual('dichotomous');
-        expect(NetworkMetaAnalysisService.getMeasurementType(continuousData)).toEqual('continuous');
-      }));
-      it('should work for empty trialdata', inject(function(NetworkMetaAnalysisService) {
-        expect(NetworkMetaAnalysisService.getMeasurementType([])).not.toBeDefined();
-      }));
+        var result = networkMetaAnalysisService.getReferenceArms(rows);
+        var expectedResult = {
+          refUri: {
+            trialverseUid: 'refUri',
+            referenceArm: 'refUri'
+          }
+        };
+        expect(result).toEqual(expectedResult);
+      });
     });
   });
 });

@@ -56,13 +56,15 @@ define(
     './concept/concept',
     './commit/commit',
     './mapping/mapping',
+    './networkMetaAnalysis/networkMetaAnalysis',
     './studyInformation/studyInformation',
-    'gemtc-web/js/controllers',
-    'gemtc-web/js/resources',
+    'gemtc-web/js/createModel/createModel',
     'gemtc-web/js/constants',
-    'gemtc-web/js/services',
+    'gemtc-web/js/controllers',
     'gemtc-web/js/directives',
     'gemtc-web/js/filters',
+    'gemtc-web/js/resources',
+    'gemtc-web/js/services',
     'mcda-web/js/benefitRisk/benefitRisk',
     'mcda-web/js/directives',
     'mcda-web/js/effectsTable/effectsTable',
@@ -121,6 +123,7 @@ define(
       'addis.interventions',
       'addis.outcomes',
       'addis.excelIO',
+      'addis.networkMetaAnalysis',
       'patavi',
       'page-title-service',
       'errorReporting',
@@ -129,12 +132,13 @@ define(
       'rzModule'
     ];
     var gemtcWebDependencies = [
-      'gemtc.controllers',
-      'gemtc.resources',
+      'gemtc.createModel',
       'gemtc.constants',
-      'gemtc.services',
+      'gemtc.controllers',
       'gemtc.directives',
-      'gemtc.filters'
+      'gemtc.filters',
+      'gemtc.resources',
+      'gemtc.services'
     ];
     var trialverseDependencies = [
       'trialverse.search',
@@ -181,7 +185,6 @@ define(
       label: 'Benefit-risk analysis',
       stateName: 'BenefitRiskCreationStep-1'
     }]);
-    app.constant('isGemtcStandAlone', false);
     app.constant('isMcdaStandalone', false);
 
     app.config(['$locationProvider', function($locationProvider) {
@@ -379,9 +382,6 @@ define(
               },
               'network': {
                 templateUrl: '../views/network.html'
-              },
-              'evidenceTable': {
-                templateUrl: '../views/evidenceTable.html'
               }
             }
           })

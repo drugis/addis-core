@@ -258,7 +258,7 @@ define([], function() {
     },
     'reference_arm': {
       '@id': 'http://trials.drugis.org/ontology#reference_arm',
-      '@type': 'http://www.w3.org/2001/XMLSchema#string'
+      '@type': '@id'
     },
     'reference_standard_error': {
       '@id': 'http://trials.drugis.org/ontology#reference_standard_error',

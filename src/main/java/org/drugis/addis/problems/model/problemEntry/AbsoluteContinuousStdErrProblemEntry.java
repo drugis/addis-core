@@ -1,15 +1,15 @@
-package org.drugis.addis.problems.model;
+package org.drugis.addis.problems.model.problemEntry;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * Created by joris on 18-11-16.
  */
-public class ContinuousStdErrEntry extends AbstractNetworkMetaAnalysisProblemEntry {
+public class AbsoluteContinuousStdErrProblemEntry extends AbstractProblemEntry {
   private final Double mean;
   private final Double stdErr;
 
-  public ContinuousStdErrEntry(String studyName, Integer treatmentId, Double mean, Double stdErr) {
+  public AbsoluteContinuousStdErrProblemEntry(String studyName, Integer treatmentId, Double mean, Double stdErr) {
     super(studyName, treatmentId);
     this.mean = mean;
     this.stdErr = stdErr;
@@ -35,7 +35,7 @@ public class ContinuousStdErrEntry extends AbstractNetworkMetaAnalysisProblemEnt
     if (o == null || getClass() != o.getClass()) return false;
     if (!super.equals(o)) return false;
 
-    ContinuousStdErrEntry that = (ContinuousStdErrEntry) o;
+    AbsoluteContinuousStdErrProblemEntry that = (AbsoluteContinuousStdErrProblemEntry) o;
 
     if (!mean.equals(that.mean)) return false;
     return stdErr.equals(that.stdErr);

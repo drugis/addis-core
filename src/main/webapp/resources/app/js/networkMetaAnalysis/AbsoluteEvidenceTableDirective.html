@@ -1,0 +1,72 @@
+<div class="grid-x">
+  <div class="cell">
+    <div class="table-title">Evidence table</div>
+    <table class="network-meta-analysis-table" ng-show=rows.length>
+      <thead>
+        <tr>
+          <th rowspan="2">Studies</th>
+          <th rowspan="2">Measurement Moment</th>
+          <th ng-show="rows[0].covariatesColumns.length > 0" colspan="{{rows[0].covariatesColumns.length}}">Covariates
+          </th>
+          <th rowspan="2">Interventions</th>
+          <th rowspan="2">Arms</th>
+          <th rowspan="2" ng-repeat="column in columns" ng-if="showColumn[column.dataKey]">
+            {{column.label}}
+            <inline-help help-key="{{column.helpKey}}"></inline-help>
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr ng-repeat="row in rows">
+          <td ng-show="row.firstStudyRow" rowspan="{{row.studyRowSpan}}">
+            <a ui-sref="versionedDataset.study({userUid: userId, datasetUuid: project.namespaceUid, versionUuid: project.datasetVersionUuid, studyGraphUuid: row.studyUuid})">
+              {{row.study}}
+            </a>
+            <div class="info" ng-show="row.numberOfMatchedInterventions < 2 || row.numberOfIncludedInterventions < 2">
+              Excluded; Fewer than two included interventions.
+            </div>
+            <div ng-show="row.numberOfIncludedInterventions > 1 && missingValuesByStudy[row.studyUri]" class="alert-message">
+              Study has missing values.
+            </div>
+          </td>
+
+          <td ng-show="row.firstStudyRow" rowspan="{{row.studyRowSpan}}">
+            <select ng-if="!editMode.disableEditing && !editMode.hasModel" ng-options="measurementMoment.label for measurementMoment in row.measurementMoments"
+              ng-model="momentSelections[row.studyUri]" ng-change="changeMeasurementMoment(momentSelections[row.studyUri], row)">
+            </select>
+            <span ng-if="editMode.disableEditing || editMode.hasModel">{{momentSelections[row.studyUri].label}}</span>
+          </td>
+
+          <td ng-repeat="covariate in row.covariatesColumns" ng-show="row.firstStudyRow" rowspan="{{row.studyRowSpan}}"
+            class="text-center">
+            {{covariate.data}}
+          </td>
+
+          <td ng-show="row.firstInterventionRow" class="text-center" ng-class="{undefined:row.intervention === 'unmatched'}"
+            rowspan="{{row.interventionRowSpan}}">
+            {{row.intervention}}
+            <div ng-show="row.intervention !== 'unmatched' && doesInterventionHaveAmbiguousArms(row.interventionId, row.studyUri)"
+              class="alert-message">
+              Ambiguous arms, please choose a single arm for inclusion
+            </div>
+            <div ng-show="row.numberOfMatchedInterventions > 1 && row.overlappingInterventionWarning" class="alert-message">
+              Ambiguous: {{row.overlappingInterventionWarning}}
+            </div>
+          </td>
+
+          <td>
+            <label>
+              <input type="checkbox" ng-disabled="editMode.disableEditing || row.intervention === 'unmatched' || editMode.hasModel"
+                ng-model="row.included" ng-change="changeArmExclusion(row)"> {{row.arm}}
+            </label>
+          </td>
+
+          <td ng-repeat="column in columns" ng-if="showColumn[column.dataKey]" ng-class="{undefined:row.intervention === 'unmatched'}"
+            class="text-center">
+            {{row.measurements[momentSelections[row.studyUri].uri][column.dataKey]}}
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

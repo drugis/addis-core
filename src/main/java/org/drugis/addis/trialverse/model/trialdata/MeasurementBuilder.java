@@ -73,7 +73,7 @@ public class MeasurementBuilder {
     return this;
   }
 
-  public MeasurementBuilder setRate(Integer rate) {
+  public MeasurementBuilder setCount(Integer rate) {
     this.rate = rate;
     return this;
   }
@@ -153,10 +153,10 @@ public class MeasurementBuilder {
     return this;
   }
 
-  public Measurement createMeasurement() {
+  public Measurement build() {
     return new Measurement(studyUuid, variableUri, variableConceptUri, armUri, measurementTypeURI,
             survivalTimeScale, sampleSize, rate, stdDev, stdErr, mean, exposure, confidenceIntervalWidth,
-            confidenceIntervalLowerBound, confidenceIntervalUpperBound, meanDifference,
+            confidenceIntervalUpperBound, confidenceIntervalLowerBound, meanDifference,
             standardizedMeanDifference, oddsRatio, riskRatio, hazardRatio, isLog, referenceArm, referenceStdErr);
   }
 }

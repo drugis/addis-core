@@ -122,7 +122,7 @@ define(['lodash', 'angular-mocks', './results'], function(_) {
             var expectedResult = [{
               label: 'log odds ratio',
               lexiconKey: 'odds-ratio',
-              analysisReady: false
+              analysisReady: true
             }, {
               label: 'standard error',
               lexiconKey: 'standard-error',
@@ -145,15 +145,15 @@ define(['lodash', 'angular-mocks', './results'], function(_) {
             var expectedResult = [{
               label: 'standardized mean difference',
               lexiconKey: 'standardized-mean-difference',
-              analysisReady: false
+              analysisReady: true
             }, {
               label: '70% confidence interval lower bound',
               lexiconKey: 'confidence-interval',
-              analysisReady: false
+              analysisReady: true
             }, {
               label: '70% confidence interval upper bound',
               lexiconKey: 'confidence-interval',
-              analysisReady: false
+              analysisReady: true
             }];
             expect(resultsTableService.createHeaders(testType)).toEqual(expectedResult);
           });
@@ -171,7 +171,7 @@ define(['lodash', 'angular-mocks', './results'], function(_) {
             var expectedResult = [{
               label: 'log hazard ratio',
               lexiconKey: 'hazard-ratio',
-              analysisReady: false
+              analysisReady: true
             }, {
               label: 'standard error',
               lexiconKey: 'standard-error',
@@ -709,10 +709,10 @@ define(['lodash', 'angular-mocks', './results'], function(_) {
           analysisReady: true
         }, {
           lexiconKey: 'another-key',
-          analysisReady: true
+          analysisReady: false
         }, {
           lexiconKey: 'yet-another-key',
-          analysisReady: false
+          analysisReady: true
         }];
         var result = resultsTableService.findNotAnalysedProperty(inputHeaders);
         expect(result).toBeTruthy();

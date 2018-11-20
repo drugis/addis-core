@@ -91,11 +91,11 @@ public class SingleStudyBenefitRiskServiceTest {
   private Variable dichotomousVariable = new Variable(URI.create("dichotomousUri"), studyUuid, variableName2, "desc", null, false, MeasurementType.CONTINUOUS, URI.create("continuousVarConcept"));
 
   private Measurement dichotomousMeasurement = new MeasurementBuilder(studyUri, dichotomousVariable.getUri(), dichotomousVariable.getVariableConceptUri(), arm1.getUri(), DICHOTOMOUS_TYPE_URI)
-          .setSampleSize(111).setRate(42).createMeasurement();
+          .setSampleSize(111).setCount(42).build();
   private Measurement continuousMeasurementStdDev = new MeasurementBuilder(studyUri, continuousVariable.getUri(), continuousVariable.getVariableConceptUri(), arm1.getUri(), CONTINUOUS_TYPE_URI)
-          .setSampleSize(222).setStdDev(0.2).setMean(7.56).createMeasurement();
+          .setSampleSize(222).setStdDev(0.2).setMean(7.56).build();
   private Measurement continuousMeasurementStdErr = new MeasurementBuilder(studyUri, continuousVariable.getUri(), continuousVariable.getVariableConceptUri(), arm1.getUri(), CONTINUOUS_TYPE_URI)
-          .setSampleSize(333).setStdErr(0.3).setMean(7.56).createMeasurement();
+          .setSampleSize(333).setStdErr(0.3).setMean(7.56).build();
   private final SingleStudyContext context = buildContext();
   private final URI defaultMeasurementMoment = URI.create("defaultMM");
 
@@ -132,27 +132,27 @@ public class SingleStudyBenefitRiskServiceTest {
             .setMean(mu);
     MeasurementBuilder dichotomousBuilder = new MeasurementBuilder(studyUri, criterionUri2, dichotomousMeasurement.getVariableConceptUri(), arm2.getUri(), DICHOTOMOUS_TYPE_URI)
             .setSampleSize(dichotomousMeasurement.getSampleSize())
-            .setRate(rate);
+            .setCount(rate);
 
-    Measurement arm1ContinuousStdDev = continuousStdDevBuilder.createMeasurement();
+    Measurement arm1ContinuousStdDev = continuousStdDevBuilder.build();
     continuousStdDevBuilder.setArmUri(arm2.getUri());
-    Measurement arm2ContinuousStdDev = continuousStdDevBuilder.createMeasurement();
+    Measurement arm2ContinuousStdDev = continuousStdDevBuilder.build();
 
     MeasurementWithCoordinates continuousStdDevRow1 = new MeasurementWithCoordinates(arm1ContinuousStdDev, alternativeId1, dataSourceUuid);
     MeasurementWithCoordinates continuousStdDevRow2 = new MeasurementWithCoordinates(arm2ContinuousStdDev, alternativeId2, dataSourceUuid);
 
-    Measurement arm1Dichotomous = dichotomousBuilder.createMeasurement();
+    Measurement arm1Dichotomous = dichotomousBuilder.build();
     dichotomousBuilder.setArmUri(arm2.getUri());
-    Measurement arm2Dichotomous = dichotomousBuilder.createMeasurement();
+    Measurement arm2Dichotomous = dichotomousBuilder.build();
     MeasurementWithCoordinates dichotomousRow1 = new MeasurementWithCoordinates(arm1Dichotomous, alternativeId1, dataSourceUuid);
     MeasurementWithCoordinates dichotomousRow2 = new MeasurementWithCoordinates(arm2Dichotomous, alternativeId2, dataSourceUuid);
 
     MeasurementBuilder continuousStdErrBuilder = new MeasurementBuilder(studyUri, criterionUri1, continuousMeasurementStdErr.getVariableConceptUri(), arm1.getUri(), CONTINUOUS_TYPE_URI)
             .setSampleSize(continuousMeasurementStdErr.getSampleSize())
             .setStdErr(stdErr);
-    Measurement arm1ContinuousStdErr = continuousStdErrBuilder.createMeasurement();
+    Measurement arm1ContinuousStdErr = continuousStdErrBuilder.build();
     continuousStdErrBuilder.setArmUri(arm2.getUri());
-    Measurement arm2ContinuousStdErr = continuousStdErrBuilder.createMeasurement();
+    Measurement arm2ContinuousStdErr = continuousStdErrBuilder.build();
     MeasurementWithCoordinates continuousStdErrRow1 = new MeasurementWithCoordinates(arm1ContinuousStdErr, alternativeId1, dataSourceUuid);
     MeasurementWithCoordinates continuousStdErrRow2 = new MeasurementWithCoordinates(arm2ContinuousStdErr, alternativeId2, dataSourceUuid);
 
@@ -200,7 +200,7 @@ public class SingleStudyBenefitRiskServiceTest {
     Integer alternativeId1 = 1;
     URI UNKNOWN_TYPE = URI.create("unknown");
     MeasurementBuilder unknownBuilder = new MeasurementBuilder(studyUri, continuousVariable.getUri(), continuousVariable.getVariableConceptUri(), arm1.getUri(), UNKNOWN_TYPE);
-    Measurement arm1Unknown = unknownBuilder.createMeasurement();
+    Measurement arm1Unknown = unknownBuilder.build();
     MeasurementWithCoordinates unknownRow1 = new MeasurementWithCoordinates(arm1Unknown, alternativeId1, dataSourceUuid);
     Set<MeasurementWithCoordinates> measurementsWithUnknownType = ImmutableSet.of(unknownRow1);
     singleStudyBenefitRiskService.buildPerformanceTable(measurementsWithUnknownType);

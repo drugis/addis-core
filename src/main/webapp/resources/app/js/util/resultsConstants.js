@@ -346,7 +346,7 @@ define(['angular'], function(angular) {
       variableTypes: [CONTINUOUS_TYPE, DICHOTOMOUS_TYPE, SURVIVAL_TYPE],
       category: 'Dispersion',
       lexiconKey: 'confidence-interval',
-      analysisReady: false,
+      analysisReady: true,
       isAlwaysPositive: true
     },
     confidence_interval_lower_bound: {
@@ -358,7 +358,7 @@ define(['angular'], function(angular) {
       variableTypes: [CONTINUOUS_TYPE, DICHOTOMOUS_TYPE, SURVIVAL_TYPE],
       category: 'Dispersion',
       lexiconKey: 'confidence-interval',
-      analysisReady: false,
+      analysisReady: true,
       hiddenSelection: true
     },
     confidence_interval_upper_bound: {
@@ -370,7 +370,7 @@ define(['angular'], function(angular) {
       variableTypes: [CONTINUOUS_TYPE, DICHOTOMOUS_TYPE, SURVIVAL_TYPE],
       category: 'Dispersion',
       lexiconKey: 'confidence-interval',
-      analysisReady: false,
+      analysisReady: true,
       hiddenSelection: true
     }
   };
@@ -386,7 +386,7 @@ define(['angular'], function(angular) {
       dataType: DOUBLE_TYPE,
       variableTypes: [DICHOTOMOUS_TYPE],
       lexiconKey: 'odds-ratio',
-      analysisReady: false
+      analysisReady: true
     },
     risk_ratio: {
       type: 'risk_ratio',
@@ -398,7 +398,7 @@ define(['angular'], function(angular) {
       dataType: DOUBLE_TYPE,
       variableTypes: [DICHOTOMOUS_TYPE],
       lexiconKey: 'risk-ratio',
-      analysisReady: false
+      analysisReady: true
     },
     continuous_mean_difference: { //continuous as prefix because of JSON-ld tranform replacing mean with the arm based mean.
       type: 'continuous_mean_difference',
@@ -409,7 +409,7 @@ define(['angular'], function(angular) {
       dataType: DOUBLE_TYPE,
       variableTypes: [CONTINUOUS_TYPE],
       lexiconKey: 'mean-difference',
-      analysisReady: false
+      analysisReady: true
     },
     standardized_mean_difference: {
       type: 'standardized_mean_difference',
@@ -420,7 +420,7 @@ define(['angular'], function(angular) {
       dataType: DOUBLE_TYPE,
       variableTypes: [CONTINUOUS_TYPE],
       lexiconKey: 'standardized-mean-difference',
-      analysisReady: false
+      analysisReady: true
     },
     hazard_ratio: {
       type: 'hazard_ratio',
@@ -432,7 +432,7 @@ define(['angular'], function(angular) {
       dataType: DOUBLE_TYPE,
       variableTypes: [SURVIVAL_TYPE],
       lexiconKey: 'hazard-ratio',
-      analysisReady: false
+      analysisReady: true
     },
   };
 

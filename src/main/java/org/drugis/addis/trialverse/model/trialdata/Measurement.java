@@ -1,5 +1,7 @@
 package org.drugis.addis.trialverse.model.trialdata;
 
+import org.apache.commons.math3.distribution.NormalDistribution;
+
 import java.net.URI;
 import java.util.Objects;
 
@@ -96,7 +98,34 @@ public class Measurement {
   }
 
   public Double getStdErr() {
-    return stdErr;
+    if (stdErr != null) {
+      return stdErr;
+    } else if (confidenceIntervalWidth != null &&
+            confidenceIntervalLowerBound != null &&
+            confidenceIntervalUpperBound != null) {
+      return getStdErrFromCI(confidenceIntervalLowerBound, confidenceIntervalWidth / 100, confidenceIntervalUpperBound);
+    }
+    return null;
+  }
+
+  private double getStdErrFromCI(Double lowerBound, Double width, Double upperBound) {
+    //  If se and b% CI are on the log scale:
+    //          (log(upper) - log(lower))/(2*zvalue(p))
+    //  p = 1 - (1-b)/2
+    //  Example:
+    //          95% CI => b=0.95 => p = 1 - 0.05/2 = 0.975
+    //  zValue(0.975) = 1.96
+    double upperQuantile = 1 - (1 - width) / 2;
+    if(true){ // TODO: let depend on this.isLog on future patch
+      return (upperBound-lowerBound) / (2* zValue(upperQuantile));
+    } else {
+      return (Math.log(upperBound) - Math.log(lowerBound)) / // FIXME: log(0) = infinite ; how to deal?
+              (2 * zValue(upperQuantile));
+    }
+  }
+
+  private Double zValue(double upperQuantile) {
+    return new NormalDistribution().inverseCumulativeProbability(upperQuantile);
   }
 
   public Double getMean() {

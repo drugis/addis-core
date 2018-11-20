@@ -17,6 +17,8 @@ import org.drugis.addis.models.service.ModelService;
 import org.drugis.addis.outcomes.Outcome;
 import org.drugis.addis.outcomes.repository.OutcomeRepository;
 import org.drugis.addis.problems.model.*;
+import org.drugis.addis.problems.model.problemEntry.AbsoluteDichotomousProblemEntry;
+import org.drugis.addis.problems.model.problemEntry.AbstractProblemEntry;
 import org.drugis.addis.problems.service.impl.ProblemServiceImpl;
 import org.drugis.addis.problems.service.model.AbstractMeasurementEntry;
 import org.drugis.addis.projects.Project;
@@ -97,17 +99,17 @@ public class ProblemServiceTest {
   private final SemanticInterventionUriAndName fluoxConcept = new SemanticInterventionUriAndName(fluoxConceptUri, "fluox concept");
   private final Integer fluoxInterventionId = 401;
   private final SingleIntervention fluoxIntervention = new SimpleIntervention(fluoxInterventionId, project.getId(),
-      "fluoxetine", "motivation", fluoxConcept.getUri(), fluoxConcept.getLabel());
+          "fluoxetine", "motivation", fluoxConcept.getUri(), fluoxConcept.getLabel());
   private final URI paroxConceptUri = URI.create("paroxConceptUri");
   private final SemanticInterventionUriAndName paroxConcept = new SemanticInterventionUriAndName(paroxConceptUri, "parox concept");
   private final Integer paroxInterventionId = 402;
   private final SingleIntervention paroxIntervention = new SimpleIntervention(paroxInterventionId, project.getId(),
-      "paroxetine", "motivation", paroxConcept.getUri(), paroxConcept.getLabel());
+          "paroxetine", "motivation", paroxConcept.getUri(), paroxConcept.getLabel());
   private final URI sertraConceptUri = URI.create("sertraConceptUri");
   private final SemanticInterventionUriAndName sertraConcept = new SemanticInterventionUriAndName(sertraConceptUri, "sertra concept");
   private final Integer sertraInterventionId = 403;
   private final SingleIntervention sertraIntervention = new SimpleIntervention(sertraInterventionId, project.getId(),
-      "sertraline", "motivation", sertraConcept.getUri(), sertraConcept.getLabel());
+          "sertraline", "motivation", sertraConcept.getUri(), sertraConcept.getLabel());
   private final Set<AbstractIntervention> allProjectInterventions = newHashSet(fluoxIntervention, paroxIntervention, sertraIntervention);
 
   // empty constructor so exception from field initialisation can go somewhere
@@ -124,9 +126,9 @@ public class ProblemServiceTest {
   @After
   public void cleanUp() {
     verifyNoMoreInteractions(analysisRepository, projectRepository,
-        modelService, singleStudyBenefitRiskService,
-        networkMetaAnalysisService, linkService,
-        networkBenefitRiskPerformanceEntryBuilder
+            modelService, singleStudyBenefitRiskService,
+            networkMetaAnalysisService, linkService,
+            networkBenefitRiskPerformanceEntryBuilder
     );
   }
 
@@ -165,7 +167,7 @@ public class ProblemServiceTest {
     when(singleStudyBenefitRiskService.buildContext(project, daanEtAlUri, newHashSet(outcomes), includedInterventions)).thenReturn(context);
     when(singleStudyBenefitRiskService.getSingleStudyMeasurements(project, daanEtAlUri, context)).thenReturn(studyMock);
     List<TrialDataArm> armsMock = Arrays.asList(mock(TrialDataArm.class), mock(TrialDataArm.class));
-    when(singleStudyBenefitRiskService.getArmsWithMatching(includedInterventions, studyMock.getTrialDataArms())).thenReturn(armsMock);
+    when(singleStudyBenefitRiskService.getArmsWithMatching(includedInterventions, studyMock.getArms())).thenReturn(armsMock);
     Map<URI, CriterionEntry> criteriaMock = new HashMap<>();
     criteriaMock.put(URI.create("criterion1"), mock(CriterionEntry.class));
     when(singleStudyBenefitRiskService.getCriteria(armsMock, defaultMeasurementMoment, context)).thenReturn(criteriaMock);
@@ -192,7 +194,7 @@ public class ProblemServiceTest {
 
     verify(singleStudyBenefitRiskService).buildContext(project, daanEtAlUri, newHashSet(outcomes), includedInterventions);
     verify(singleStudyBenefitRiskService).getSingleStudyMeasurements(project, daanEtAlUri, context);
-    verify(singleStudyBenefitRiskService).getArmsWithMatching(includedInterventions, studyMock.getTrialDataArms());
+    verify(singleStudyBenefitRiskService).getArmsWithMatching(includedInterventions, studyMock.getArms());
     verify(singleStudyBenefitRiskService).getCriteria(armsMock, defaultMeasurementMoment, context);
     verify(singleStudyBenefitRiskService).getAlternatives(armsMock, context);
     verify(singleStudyBenefitRiskService).getMeasurementsWithCoordinates(armsMock, defaultMeasurementMoment, context);
@@ -214,7 +216,7 @@ public class ProblemServiceTest {
 
     List<TreatmentEntry> treatments = singletonList(mock(TreatmentEntry.class));
     List<TrialDataStudy> studies = singletonList(mock(TrialDataStudy.class));
-    List<AbstractNetworkMetaAnalysisProblemEntry> entries = singletonList(mock(AbstractNetworkMetaAnalysisProblemEntry.class));
+    List<AbstractProblemEntry> entries = singletonList(mock(AbstractProblemEntry.class));
     List<TrialDataStudy> studiesWithEntries = singletonList(mock(TrialDataStudy.class));
 
     Map<String, Map<String, Double>> studyLevelCovariates = new HashMap<>();
@@ -224,7 +226,8 @@ public class ProblemServiceTest {
 
     when(networkMetaAnalysisService.getTreatments(analysis)).thenReturn(treatments);
     when(analysisService.buildEvidenceTable(project.getId(), analysis.getId())).thenReturn(studies);
-    when(networkMetaAnalysisService.buildPerformanceEntries(analysis, studies)).thenReturn(entries);
+    when(networkMetaAnalysisService.buildAbsolutePerformanceEntries(analysis, studies)).thenReturn(entries);
+    when(networkMetaAnalysisService.buildRelativeEffectData(analysis, studies)).thenReturn(new RelativeEffectData());
 
     // remove studies without entries from final list
     when(networkMetaAnalysisService.getStudiesWithEntries(studies, entries)).thenReturn(studiesWithEntries);
@@ -243,7 +246,8 @@ public class ProblemServiceTest {
     verify(analysisRepository).get(analysisId);
     verify(networkMetaAnalysisService).getTreatments(analysis);
     verify(analysisService).buildEvidenceTable(project.getId(), analysis.getId());
-    verify(networkMetaAnalysisService).buildPerformanceEntries(analysis, studies);
+    verify(networkMetaAnalysisService).buildAbsolutePerformanceEntries(analysis, studies);
+    verify(networkMetaAnalysisService).buildRelativeEffectData(analysis, studies);
     verify(networkMetaAnalysisService).getStudiesWithEntries(studies, entries);
     verify(networkMetaAnalysisService).getStudyLevelCovariates(project, analysis, studiesWithEntries);
   }
@@ -295,7 +299,7 @@ public class ProblemServiceTest {
     when(linkService.getModelSourceLink(project, model)).thenReturn(modelSourceLink);
 
     NMAInclusionWithResults inclusionWithResults = new NMAInclusionWithResults(outcome, model,
-        resultsByModelId.get(modelId), interventions, "");
+            resultsByModelId.get(modelId), interventions, "");
     Map<URI, CriterionEntry> criteria = new HashMap<>();
     CriterionEntry criterionEntry = mock(CriterionEntry.class);
     DataSourceEntry dataSourceEntry = new DataSourceEntry("1", "source", modelSourceLink);
@@ -332,20 +336,20 @@ public class ProblemServiceTest {
   public void applyModelSettingsSensitivity() throws InvalidModelException {
     String studyToOmit = "studyToOmit";
     String studyToLeave = "studyToLeave";
-    AbstractNetworkMetaAnalysisProblemEntry toOmit1 = new RateNetworkMetaAnalysisProblemEntry(studyToOmit, 1, 1, 1);
-    AbstractNetworkMetaAnalysisProblemEntry toOmit2 = new RateNetworkMetaAnalysisProblemEntry(studyToOmit, 2, 2, 2);
-    AbstractNetworkMetaAnalysisProblemEntry toLeave = new RateNetworkMetaAnalysisProblemEntry(studyToLeave, 3, 3, 3);
-    List<AbstractNetworkMetaAnalysisProblemEntry> entries = Arrays.asList(toOmit1, toOmit2, toLeave);
+    AbstractProblemEntry toOmit1 = new AbsoluteDichotomousProblemEntry(studyToOmit, 1, 1, 1);
+    AbstractProblemEntry toOmit2 = new AbsoluteDichotomousProblemEntry(studyToOmit, 2, 2, 2);
+    AbstractProblemEntry toLeave = new AbsoluteDichotomousProblemEntry(studyToLeave, 3, 3, 3);
+    List<AbstractProblemEntry> entries = Arrays.asList(toOmit1, toOmit2, toLeave);
     List<TreatmentEntry> treatments = Collections.emptyList();
     Map<String, Map<String, Double>> covariates = Collections.emptyMap();
     NetworkMetaAnalysisProblem problem = new NetworkMetaAnalysisProblem(entries, treatments, covariates);
     JSONObject sensitivity = new JSONObject();
     sensitivity.put("omittedStudy", studyToOmit);
     Model model = new Model.ModelBuilder(1, "model")
-        .link(Model.LINK_IDENTITY)
-        .modelType(Model.NETWORK_MODEL_TYPE)
-        .sensitivity(sensitivity)
-        .build();
+            .link(Model.LINK_IDENTITY)
+            .modelType(Model.NETWORK_MODEL_TYPE)
+            .sensitivity(sensitivity)
+            .build();
     NetworkMetaAnalysisProblem result = problemService.applyModelSettings(problem, model);
     assertEquals(1, result.getEntries().size());
     assertFalse(result.getEntries().contains(toOmit1));
@@ -356,19 +360,19 @@ public class ProblemServiceTest {
   @Test
   public void applyModelSettingsNoSensitivity() throws InvalidModelException {
     String studyToOmit = "studyToOmit";
-    AbstractNetworkMetaAnalysisProblemEntry entry1 = new RateNetworkMetaAnalysisProblemEntry(studyToOmit, 1, 1, 1);
-    AbstractNetworkMetaAnalysisProblemEntry entry2 = new RateNetworkMetaAnalysisProblemEntry(studyToOmit, 2, 2, 2);
-    List<AbstractNetworkMetaAnalysisProblemEntry> entries = Arrays.asList(entry1, entry2);
+    AbstractProblemEntry entry1 = new AbsoluteDichotomousProblemEntry(studyToOmit, 1, 1, 1);
+    AbstractProblemEntry entry2 = new AbsoluteDichotomousProblemEntry(studyToOmit, 2, 2, 2);
+    List<AbstractProblemEntry> entries = Arrays.asList(entry1, entry2);
     List<TreatmentEntry> treatments = Collections.emptyList();
     Map<String, Map<String, Double>> covariates = Collections.emptyMap();
     NetworkMetaAnalysisProblem problem = new NetworkMetaAnalysisProblem(entries, treatments, covariates);
     JSONObject sensitivity = new JSONObject();
     sensitivity.put("omittedStudy", studyToOmit);
     Model model = new Model.ModelBuilder(1, "model")
-        .link(Model.LINK_IDENTITY)
-        .modelType(Model.NETWORK_MODEL_TYPE)
-        .sensitivity(sensitivity)
-        .build();
+            .link(Model.LINK_IDENTITY)
+            .modelType(Model.NETWORK_MODEL_TYPE)
+            .sensitivity(sensitivity)
+            .build();
     NetworkMetaAnalysisProblem result = problemService.applyModelSettings(problem, model);
     assertEquals(Collections.emptyList(), result.getEntries());
   }
