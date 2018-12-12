@@ -14,7 +14,7 @@ define(['angular', 'angular-mocks', '../services'], function() {
       it('should find find 2 missing outcomes', function() {
         var studies = [{
           defaultMeasurementMoment: 'measurementMoment1',
-          trialDataArms: [{
+          arms: [{
             measurements: {
               measurementMoment1: [{
                 variableConceptUri: 'semanticOutcomeUri1'
@@ -29,7 +29,7 @@ define(['angular', 'angular-mocks', '../services'], function() {
           }]
         }, {
           defaultMeasurementMoment: 'measurementMoment1',
-          trialDataArms: [{
+          arms: [{
             measurements: {
               measurementMoment1: [{
                 variableConceptUri: 'variableConceptUri3'
@@ -44,7 +44,7 @@ define(['angular', 'angular-mocks', '../services'], function() {
           }]
         }, {
           defaultMeasurementMoment: 'measurementMoment1',
-          trialDataArms: [{
+          arms: [{
             measurements: {
               measurementMoment1: [{
                 variableConceptUri: 'semanticOutcomeUri1'
@@ -114,7 +114,7 @@ define(['angular', 'angular-mocks', '../services'], function() {
         };
 
         var studies = [{
-          trialDataArms: [trialDataArm]
+          arms: [trialDataArm]
         }];
 
         var selectedInterventions = [{
@@ -126,7 +126,7 @@ define(['angular', 'angular-mocks', '../services'], function() {
         var result = singleStudyBenefitRiskService.addOverlappingInterventionsToStudies(studies, selectedInterventions);
 
         expect(result).toEqual([{
-          trialDataArms: [trialDataArm],
+          arms: [trialDataArm],
           overlappingInterventions: selectedInterventions
         }]);
 
