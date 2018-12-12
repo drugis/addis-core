@@ -3,14 +3,6 @@ define(['lodash'], function(_) {
   var dependencies = ['SingleStudyBenefitRiskService'];
 
   var StudySelectDirective = function(SingleStudyBenefitRiskService) {
-
-    function isValidStudy(study) {
-      return study &&
-        (!study.missingInterventions || study.missingInterventions.length === 0) &&
-        (!study.missingOutcomes || study.missingOutcomes.length === 0) &&
-        !study.hasMatchedMixedTreatmentArm;
-    }
-
     return {
       restrict: 'E',
       templateUrl: './studySelectDirective.html',
@@ -23,6 +15,8 @@ define(['lodash'], function(_) {
         editMode: '='
       },
       link: function(scope) {
+        scope.onStudySelect = onStudySelect;
+
         if (!scope.selection) {
           scope.selection = {};
         }
@@ -34,13 +28,22 @@ define(['lodash'], function(_) {
             scope.selection.selectedStudy = _.find(scope.studyOptions, ['studyUri', oldSelection.studyUri]);
           }
         });
-        scope.onStudySelect = function(newSelection) {
+
+        function onStudySelect(newSelection) {
           if (isValidStudy(newSelection)) {
             scope.onChange(newSelection);
           } else {
             scope.onChange();
           }
-        };
+        }
+
+        function isValidStudy(study) {
+          return study &&
+            (!study.missingInterventions || study.missingInterventions.length === 0) &&
+            (!study.missingOutcomes || study.missingOutcomes.length === 0) &&
+            !study.hasMatchedMixedTreatmentArm;
+        }
+
       }
     };
 

@@ -3,22 +3,15 @@ define(['lodash'], function(_) {
   var dependencies = [];
   var SingleStudyBenefitRiskService = function() {
 
-    function isValidStudyOption(study) {
-      var noMissingOutcomes = study.missingOutcomes ? study.missingOutcomes.length === 0 : true;
-      var noMissingInterventions = study.missingInterventions ? study.missingInterventions.length === 0 : true;
-      var noMixedTreatmentArm = !study.hasMatchedMixedTreatmentArm;
-      return noMissingOutcomes && noMissingInterventions && noMixedTreatmentArm;
-    }
-
     function isSameIntervention(studyInterventionUri, selectedIntervention) {
       return selectedIntervention.semanticInterventionUri === studyInterventionUri;
     }
 
-    function noArmMatchingOutcome(selectedOutcome, study) {
-      return !_.find(study.trialDataArms, function(arm) {
-        return _.find(arm.measurements[study.defaultMeasurementMoment], function(measurement) {
-          return measurement.variableConceptUri === selectedOutcome.outcome.semanticOutcomeUri;
-        });
+    function addMissingOutcomesToStudies(studies, selectedOutcomes) {
+      return studies.map(function(study) {
+        var updatedStudy = _.cloneDeep(study);
+        updatedStudy.missingOutcomes = findMissingOutcomes(updatedStudy, selectedOutcomes);
+        return updatedStudy;
       });
     }
 
@@ -28,30 +21,30 @@ define(['lodash'], function(_) {
       });
     }
 
-    var addMissingOutcomesToStudies = function(studies, selectedOutcomes) {
-      return studies.map(function(study) {
-        var updatedStudy = _.cloneDeep(study);
-        updatedStudy.missingOutcomes = findMissingOutcomes(updatedStudy, selectedOutcomes);
-        return updatedStudy;
-      });
-    };
-
-    function noArmMatchingIntervention(intervention, trialDataArms) {
-      return !_.find(trialDataArms, function(arm) {
-        return arm.matchedProjectInterventionIds.indexOf(intervention.id) > -1;
-      });
-    }
-
-    function findMissingInterventions(selectedInterventions, trialDataArms) {
-      return _.filter(selectedInterventions, function(selectedIntervention) {
-        return noArmMatchingIntervention(selectedIntervention, trialDataArms);
+    function noArmMatchingOutcome(selectedOutcome, study) {
+      return !_.some(study.arms, function(arm) {
+        return _.some(arm.measurements[study.defaultMeasurementMoment], function(measurement) {
+          return measurement.variableConceptUri === selectedOutcome.outcome.semanticOutcomeUri;
+        });
       });
     }
 
     function addMissingInterventionsToStudies(studies, selectedInterventions) {
       return studies.map(function(study) {
-        study.missingInterventions = findMissingInterventions(selectedInterventions, study.trialDataArms);
+        study.missingInterventions = findMissingInterventions(selectedInterventions, study.arms);
         return study;
+      });
+    }
+
+    function findMissingInterventions(selectedInterventions, arms) {
+      return _.filter(selectedInterventions, function(selectedIntervention) {
+        return noArmMatchingIntervention(selectedIntervention, arms);
+      });
+    }
+
+    function noArmMatchingIntervention(intervention, arms) {
+      return !_.some(arms, function(arm) {
+        return arm.matchedProjectInterventionIds.indexOf(intervention.id) > -1;
       });
     }
 
@@ -77,8 +70,15 @@ define(['lodash'], function(_) {
       });
     }
 
+    function isValidStudyOption(study) {
+      var noMissingOutcomes = study.missingOutcomes ? study.missingOutcomes.length === 0 : true;
+      var noMissingInterventions = study.missingInterventions ? study.missingInterventions.length === 0 : true;
+      var noMixedTreatmentArm = !study.hasMatchedMixedTreatmentArm;
+      return noMissingOutcomes && noMissingInterventions && noMixedTreatmentArm;
+    }
+
     function findOverlappingIntervention(selectedInterventions, study) {
-      return _.reduce(study.trialDataArms, function(accum, arm) {
+      return _.reduce(study.arms, function(accum, arm) {
         if (arm.matchedProjectInterventionIds.length > 1) {
           var matching = _.filter(selectedInterventions, function(intervention) {
             return arm.matchedProjectInterventionIds.indexOf(intervention.id) > -1;

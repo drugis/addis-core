@@ -147,25 +147,25 @@ define(['lodash'], function(_) {
     }
 
     function isModelWithMissingAlternatives(outcomesWithAnalyses) {
-      return _.find(outcomesWithAnalyses, function(owa) {
-        return owa.outcome.isIncluded && owa.selectedModel && owa.selectedModel.missingAlternatives.length;
+      return _.find(outcomesWithAnalyses, function(outcomeWithAnalysis) {
+        return outcomeWithAnalysis.outcome.isIncluded && outcomeWithAnalysis.selectedModel && outcomeWithAnalysis.selectedModel.missingAlternatives.length;
       });
     }
 
     function isModelWithoutResults(outcomesWithAnalyses) {
-      return _.find(outcomesWithAnalyses, function(owa) {
-        return owa.outcome.isIncluded && owa.selectedModel && owa.selectedModel.runStatus !== 'done';
+      return _.find(outcomesWithAnalyses, function(outcomeWithAnalysis) {
+        return outcomeWithAnalysis.outcome.isIncluded && outcomeWithAnalysis.selectedModel && outcomeWithAnalysis.selectedModel.runStatus !== 'done';
       });
     }
 
-    function findMissingAlternatives(interventionInclusions, owa) {
+    function findMissingAlternatives(interventionInclusions, outcomeWithAnalysis) {
       return interventionInclusions.filter(function(alternative) {
-        var modelType = owa.selectedModel.modelType;
+        var modelType = outcomeWithAnalysis.selectedModel.modelType;
         if (modelType.type === 'pairwise') {
           return alternative.id !== modelType.details.from.id &&
             alternative.id !== modelType.details.to.id;
         } else {
-          return !_.find(owa.selectedAnalysis.interventionInclusions, function(includedIntervention) {
+          return !_.find(outcomeWithAnalysis.selectedAnalysis.interventionInclusions, function(includedIntervention) {
             return alternative.id === includedIntervention.interventionId;
           });
         }

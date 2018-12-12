@@ -1,5 +1,5 @@
 'use strict';
-define(['lodash', 'angular'], function(_, angular) {
+define(['lodash', 'angular'], function(_) {
   var dependencies = [
     '$scope',
     '$q',
@@ -82,7 +82,7 @@ define(['lodash', 'angular'], function(_, angular) {
 
       var outcomeIds = _.map(outcomes, 'id');
 
-      PageTitleService.setPageTitle('BenefitRiskStep1Controller', analysis.title+ ' step 1');
+      PageTitleService.setPageTitle('BenefitRiskStep1Controller', analysis.title + ' step 1');
 
       $scope.studies = studies;
       $scope.studyArrayLength = studies.length;
