@@ -53,7 +53,7 @@ public class TrialDataArm {
   }
 
   public Set<Measurement> getMeasurementsForMoment(URI measurementMomentUri) {
-    return measurements.get(measurementMomentUri);
+    return measurements.isEmpty() ? Collections.emptySet() : measurements.get(measurementMomentUri);
   }
 
   public void addMeasurement(URI measurementMomentUri, Measurement measurement) {

@@ -64,10 +64,11 @@ define(['lodash', 'angular'], function(_) {
       }
     });
 
-    var promises = [$scope.analysis.$promise,
-    $scope.alternatives.$promise,
-    $scope.outcomes.$promise,
-    $scope.models.$promise,
+    var promises = [
+      $scope.analysis.$promise,
+      $scope.alternatives.$promise,
+      $scope.outcomes.$promise,
+      $scope.models.$promise,
       studiesPromise
     ];
 
@@ -99,15 +100,25 @@ define(['lodash', 'angular'], function(_) {
             .value();
         var outcomesWithAnalyses = _(outcomes)
           .map(_.partial(BenefitRiskService.buildOutcomeWithAnalyses, analysis, networkMetaAnalyses))
-          .map(function(owa) {
-            owa.networkMetaAnalyses = owa.networkMetaAnalyses.sort(BenefitRiskService.compareAnalysesByModels);
-            return owa;
+          .map(function(outcomeWithAnalysis) {
+            outcomeWithAnalysis.networkMetaAnalyses = outcomeWithAnalysis.networkMetaAnalyses.sort(BenefitRiskService.compareAnalysesByModels);
+            return outcomeWithAnalysis;
           })
           .value();
 
         $scope.outcomesWithAnalyses = BenefitRiskService.addStudiesToOutcomes(
           outcomesWithAnalyses, analysis.benefitRiskStudyOutcomeInclusions, $scope.studies);
 
+        $scope.$watch('outcomesWithAnalyses', function(){
+          $scope.contrastStudySelected = _.find($scope.analysis.benefitRiskStudyOutcomeInclusions, function(studyInclusion){
+            return _.find($scope.studies, function(study){
+              return studyInclusion.studyGraphUri === study.studyUri && _.find(study.arms, function(arm){
+                return arm.referenceArm;
+              });
+            }); 
+          });
+          var vlaa = 5;
+        }, true);
         updateMissingAlternativesForAllOutcomes();
 
         updateStudyMissingStuff();

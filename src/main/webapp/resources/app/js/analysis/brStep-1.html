@@ -104,10 +104,10 @@
 
       <div class="grid-x">
         <div class="cell">
-          <button class="button" ng-show="analysis.benefitRiskNMAOutcomeInclusions.length > 0"
+          <button class="button" ng-show="analysis.benefitRiskNMAOutcomeInclusions.length > 0 || contrastStudySelected"
             ng-disabled="step1AlertMessages.length || !editMode.allowEditing" type="button"
             class="primary" ng-click="goToStep2()">Set baselines</button>
-          <button class="button" ng-show="analysis.benefitRiskNMAOutcomeInclusions.length === 0"
+          <button class="button" ng-show="analysis.benefitRiskNMAOutcomeInclusions.length === 0 && !contrastStudySelected"
             ng-disabled="step1AlertMessages.length || !editMode.allowEditing" type="button"
             class="primary" ng-click="finalizeAndGoToDefaultScenario()">Perform MCDA</button>
           <div ng-repeat="message in step1AlertMessages">
