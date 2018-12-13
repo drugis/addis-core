@@ -369,8 +369,8 @@ define(['lodash', 'angular'], function(_, angular) {
         case 'dichotomous':
           return !hasValue(measurement.rate) || !hasValue(measurement.sampleSize);
         case 'continuous':
-          return !hasValue(measurement.mean) ||
-            (!hasValue(measurement.stdDev) && !hasValue(measurement.stdErr)) ||
+          return !hasValue(measurement.mu) || 
+            (!hasValue(measurement.sigma) && !hasValue(measurement.stdErr)) ||
             (!hasValue(measurement.sampleSize) && !hasValue(measurement.stdErr));
         case 'survival':
           return !hasValue(measurement.rate) || !hasValue(measurement.exposure);
