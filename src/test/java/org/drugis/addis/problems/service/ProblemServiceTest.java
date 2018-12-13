@@ -165,9 +165,9 @@ public class ProblemServiceTest {
 
     // prepare single study BR service
     when(singleStudyBenefitRiskService.buildContext(project, daanEtAlUri, newHashSet(outcomes), includedInterventions)).thenReturn(context);
-    when(singleStudyBenefitRiskService.getSingleStudyMeasurements(project, daanEtAlUri, context)).thenReturn(studyMock);
+    when(singleStudyBenefitRiskService.getStudy(project, daanEtAlUri, context)).thenReturn(studyMock);
     List<TrialDataArm> armsMock = Arrays.asList(mock(TrialDataArm.class), mock(TrialDataArm.class));
-    when(singleStudyBenefitRiskService.getArmsWithMatching(includedInterventions, studyMock.getArms())).thenReturn(armsMock);
+    when(singleStudyBenefitRiskService.getMatchedArms(includedInterventions, studyMock.getArms())).thenReturn(armsMock);
     Map<URI, CriterionEntry> criteriaMock = new HashMap<>();
     criteriaMock.put(URI.create("criterion1"), mock(CriterionEntry.class));
     when(singleStudyBenefitRiskService.getCriteria(armsMock, defaultMeasurementMoment, context)).thenReturn(criteriaMock);
@@ -193,8 +193,8 @@ public class ProblemServiceTest {
     verify(analysisRepository).get(analysisId);
 
     verify(singleStudyBenefitRiskService).buildContext(project, daanEtAlUri, newHashSet(outcomes), includedInterventions);
-    verify(singleStudyBenefitRiskService).getSingleStudyMeasurements(project, daanEtAlUri, context);
-    verify(singleStudyBenefitRiskService).getArmsWithMatching(includedInterventions, studyMock.getArms());
+    verify(singleStudyBenefitRiskService).getStudy(project, daanEtAlUri, context);
+    verify(singleStudyBenefitRiskService).getMatchedArms(includedInterventions, studyMock.getArms());
     verify(singleStudyBenefitRiskService).getCriteria(armsMock, defaultMeasurementMoment, context);
     verify(singleStudyBenefitRiskService).getAlternatives(armsMock, context);
     verify(singleStudyBenefitRiskService).getMeasurementsWithCoordinates(armsMock, defaultMeasurementMoment, context);

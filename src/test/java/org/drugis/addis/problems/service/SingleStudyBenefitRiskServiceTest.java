@@ -233,7 +233,7 @@ public class SingleStudyBenefitRiskServiceTest {
             .thenReturn(mockStudies);
 
     // EXECUTE
-    TrialDataStudy result = singleStudyBenefitRiskService.getSingleStudyMeasurements(project, studyGraphUri, context);
+    TrialDataStudy result = singleStudyBenefitRiskService.getStudy(project, studyGraphUri, context);
 
     assertEquals(mockStudy, result);
     verify(mappingService).getVersionedUuid(project.getNamespaceUid());
@@ -383,7 +383,7 @@ public class SingleStudyBenefitRiskServiceTest {
     when(triplestoreService.findMatchingIncludedInterventions(interventions, unMatchedArm)).thenReturn(emptySet());
 
     // execute
-    List<TrialDataArm> result = singleStudyBenefitRiskService.getArmsWithMatching(interventions, arms);
+    List<TrialDataArm> result = singleStudyBenefitRiskService.getMatchedArms(interventions, arms);
 
     List<TrialDataArm> matchedArms = Arrays.asList(arm1, arm2);
     assertEquals(matchedArms, result);
@@ -410,7 +410,7 @@ public class SingleStudyBenefitRiskServiceTest {
 
     Boolean thrown = false;
     try {
-      singleStudyBenefitRiskService.getArmsWithMatching(interventions, arms);
+      singleStudyBenefitRiskService.getMatchedArms(interventions, arms);
     } catch (RuntimeException e) {
       assertEquals("too many matched interventions for arm when creating problem", e.getMessage());
       thrown = true;

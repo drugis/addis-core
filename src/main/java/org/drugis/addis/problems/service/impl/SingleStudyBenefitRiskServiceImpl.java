@@ -60,7 +60,25 @@ public class SingleStudyBenefitRiskServiceImpl implements SingleStudyBenefitRisk
   @Override
   public List<AbstractMeasurementEntry> buildPerformanceTable(Set<MeasurementWithCoordinates> measurementDrugInstancePairs) {
     ArrayList<AbstractMeasurementEntry> performanceTable = new ArrayList<>();
-    for (MeasurementWithCoordinates measurementWithCoordinates : measurementDrugInstancePairs) {
+    Set<MeasurementWithCoordinates> absoluteMeasurements = getAbsoluteMeasurements(measurementDrugInstancePairs);
+    Set<MeasurementWithCoordinates> contrastMeasurements = getContrastMeasurements(measurementDrugInstancePairs);
+    addAbsolutePerformanceEntries(performanceTable, absoluteMeasurements);
+    addContrastPerformanceEntries(performanceTable, contrastMeasurements);
+    return performanceTable;
+  }
+
+  private void addContrastPerformanceEntries(ArrayList<AbstractMeasurementEntry> performanceTable, Set<MeasurementWithCoordinates> contrastMeasurements) {
+    MeasurementWithCoordinates firstMeasurement = contrastMeasurements.iterator().next();
+    Integer interventionId = firstMeasurement.getInterventionId();
+    String dataSource = firstMeasurement.getDataSource();
+    Relative relative = new Relative("relative-something-logit", );
+    RelativePerformanceParameters parameter = new RelativePerformanceParameters(firstMeasurement.getMeasurement().getReferenceArm(), relative) ;
+    RelativePerformance performance = new RelativePerformance("dmnorm", parameter);
+
+  }
+
+  private void addAbsolutePerformanceEntries(ArrayList<AbstractMeasurementEntry> performanceTable, Set<MeasurementWithCoordinates> absoluteMeasurements) {
+    for (MeasurementWithCoordinates measurementWithCoordinates : absoluteMeasurements) {
       Measurement measurement = measurementWithCoordinates.getMeasurement();
       Integer interventionId = measurementWithCoordinates.getInterventionId();
       String dataSource = measurementWithCoordinates.getDataSource();
@@ -74,7 +92,14 @@ public class SingleStudyBenefitRiskServiceImpl implements SingleStudyBenefitRisk
         throw new IllegalArgumentException("Unknown measurement type: " + measurement.getMeasurementTypeURI());
       }
     }
-    return performanceTable;
+  }
+
+  private Set<MeasurementWithCoordinates> getContrastMeasurements(Set<MeasurementWithCoordinates> measurementDrugInstancePairs) {
+    return measurementDrugInstancePairs.stream().filter(measurement -> measurement.getMeasurement().getReferenceArm() != null).collect(Collectors.toSet());
+  }
+
+  private Set<MeasurementWithCoordinates> getAbsoluteMeasurements(Set<MeasurementWithCoordinates> measurementDrugInstancePairs) {
+    return measurementDrugInstancePairs.stream().filter(measurement -> measurement.getMeasurement().getReferenceArm() == null).collect(Collectors.toSet());
   }
 
   private ContinuousMeasurementEntry createNormalDistributionEntry(Integer interventionId, URI criterionUri, String dataSourceUri, Double mean, Double standardDeviation, Integer sampleSize, Double standardError) {
@@ -93,14 +118,14 @@ public class SingleStudyBenefitRiskServiceImpl implements SingleStudyBenefitRisk
   }
 
   @Override
-  public TrialDataStudy getSingleStudyMeasurements(Project project, URI studyGraphUri, SingleStudyContext context) {
+  public TrialDataStudy getStudy(Project project, URI studyGraphUri, SingleStudyContext context) {
     Set<AbstractIntervention> interventions = ImmutableSet.copyOf(context.getInterventionsById().values());
     final Set<URI> interventionUris = getSingleInterventionUris(interventions);
     final String versionedUuid = mappingService.getVersionedUuid(project.getNamespaceUid());
     try {
-      List<TrialDataStudy> singleStudyMeasurements = triplestoreService.getSingleStudyData(versionedUuid,
+      List<TrialDataStudy> studies = triplestoreService.getSingleStudyData(versionedUuid,
               studyGraphUri, project.getDatasetVersion(), context.getOutcomesByUri().keySet(), interventionUris);
-      return singleStudyMeasurements.iterator().next();
+      return studies.iterator().next();
     } catch (ReadValueException | IOException e) {
       throw new RuntimeException(e);
     }
@@ -178,14 +203,14 @@ public class SingleStudyBenefitRiskServiceImpl implements SingleStudyBenefitRisk
   }
 
   @Override
-  public List<TrialDataArm> getArmsWithMatching(Set<AbstractIntervention> includedInterventions, List<TrialDataArm> arms) {
+  public List<TrialDataArm> getMatchedArms(Set<AbstractIntervention> includedInterventions, List<TrialDataArm> arms) {
     List<TrialDataArm> armsWithMatching = arms.stream()
             .peek(arm -> {
               Set<AbstractIntervention> matchingInterventions =
-                  triplestoreService.findMatchingIncludedInterventions(includedInterventions, arm);
+                      triplestoreService.findMatchingIncludedInterventions(includedInterventions, arm);
               Set<Integer> matchedInterventionIds = matchingInterventions.stream()
-                  .map(AbstractIntervention::getId)
-                  .collect(toSet());
+                      .map(AbstractIntervention::getId)
+                      .collect(toSet());
               arm.setMatchedProjectInterventionIds(ImmutableSet.copyOf(matchedInterventionIds));
             })
             .filter(arm -> arm.getMatchedProjectInterventionIds().size() != 0)

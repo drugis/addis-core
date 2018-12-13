@@ -110,7 +110,8 @@ public class ProblemServiceImpl implements ProblemService {
     final Set<AbstractIntervention> includedInterventions = analysisService.getIncludedInterventions(analysis);
 
     List<BenefitRiskProblem> problems = getNetworkProblems(project, analysis, outcomesById, includedInterventions);
-    problems.addAll(getSingleStudyProblems(project, analysis, outcomesById, includedInterventions));
+    List<BenefitRiskProblem> singleStudyProblems = getSingleStudyProblems(project, analysis, outcomesById, includedInterventions);
+    problems.addAll(singleStudyProblems);
 
     Map<URI, CriterionEntry> criteriaWithBaseline = new HashMap<>();
     Map<String, AlternativeEntry> alternativesById = new HashMap<>();
@@ -168,10 +169,9 @@ public class ProblemServiceImpl implements ProblemService {
     URI modelURI = linkService.getModelSourceLink(project, inclusionWithResults.getModel());
 
     final Map<URI, CriterionEntry> criteria = networkMetaAnalysisService.buildCriteriaForInclusion(inclusionWithResults, modelURI);
-
     final Map<String, AlternativeEntry> alternatives = networkMetaAnalysisService.buildAlternativesForInclusion(inclusionWithResults);
+    final DataSourceEntry dataSourceEntry = criteria.values().iterator().next().getDataSources().get(0); // one criterion -> one datasource per NMA
 
-    DataSourceEntry dataSourceEntry = criteria.values().iterator().next().getDataSources().get(0); // one criterion -> one datasource per NMA
     AbstractMeasurementEntry relativePerformance = networkBenefitRiskPerformanceEntryBuilder.build(inclusionWithResults, dataSourceEntry);
     return new BenefitRiskProblem(criteria, alternatives, Collections.singletonList(relativePerformance));
   }
@@ -219,17 +219,17 @@ public class ProblemServiceImpl implements ProblemService {
                                                                          Set<AbstractIntervention> includedInterventions) {
     SingleStudyContext context = singleStudyBenefitRiskService.buildContext(project, studyGraphUri, outcomes, includedInterventions);
 
-    TrialDataStudy trialDataStudy = singleStudyBenefitRiskService.getSingleStudyMeasurements(project, studyGraphUri, context);
-    List<TrialDataArm> armsWithMatching = singleStudyBenefitRiskService.getArmsWithMatching(includedInterventions, trialDataStudy.getArms());
+    TrialDataStudy study = singleStudyBenefitRiskService.getStudy(project, studyGraphUri, context);
+    List<TrialDataArm> matchedArms = singleStudyBenefitRiskService.getMatchedArms(includedInterventions, study.getArms());
 
-    URI defaultMeasurementMoment = trialDataStudy.getDefaultMeasurementMoment();
+    URI defaultMeasurementMoment = study.getDefaultMeasurementMoment();
 
     Map<URI, CriterionEntry> criteria = singleStudyBenefitRiskService.getCriteria(
-            armsWithMatching, defaultMeasurementMoment, context);
+            matchedArms, defaultMeasurementMoment, context);
     Map<String, AlternativeEntry> alternatives = singleStudyBenefitRiskService.getAlternatives(
-            armsWithMatching, context);
+            matchedArms, context);
     Set<MeasurementWithCoordinates> measurementsWithCoordinates = singleStudyBenefitRiskService.getMeasurementsWithCoordinates(
-            armsWithMatching, defaultMeasurementMoment, context);
+            matchedArms, defaultMeasurementMoment, context);
 
     List<AbstractMeasurementEntry> performanceTable = singleStudyBenefitRiskService.buildPerformanceTable(measurementsWithCoordinates);
     return new SingleStudyBenefitRiskProblem(alternatives, criteria, performanceTable);

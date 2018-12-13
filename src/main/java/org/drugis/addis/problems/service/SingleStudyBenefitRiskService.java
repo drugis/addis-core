@@ -21,13 +21,13 @@ public interface SingleStudyBenefitRiskService {
 
   Set<MeasurementWithCoordinates> getMeasurementsWithCoordinates(List<TrialDataArm> armsWithMatching, URI defaultMeasurementMoment, SingleStudyContext context);
 
-  TrialDataStudy getSingleStudyMeasurements(Project project, URI studyGraphUri, SingleStudyContext context);
+  TrialDataStudy getStudy(Project project, URI studyGraphUri, SingleStudyContext context);
 
   Map<URI,CriterionEntry> getCriteria(List<TrialDataArm> armsWithMatching, URI defaultMeasurementMoment, SingleStudyContext context);
 
   Map<String,AlternativeEntry> getAlternatives(List<TrialDataArm> armsWithMatching, SingleStudyContext context);
 
-  List<TrialDataArm> getArmsWithMatching(Set<AbstractIntervention> includedInterventions, List<TrialDataArm> arms);
+  List<TrialDataArm> getMatchedArms(Set<AbstractIntervention> includedInterventions, List<TrialDataArm> arms);
 
   SingleStudyContext buildContext(Project project, URI studyGraphUri, Set<Outcome> outcomes, Set<AbstractIntervention> includedInterventions);
 }
