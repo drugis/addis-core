@@ -47,9 +47,9 @@ public class NetworkBenefitRiskPerformanceEntryBuilder {
     return getRelativePerformance(inclusion, mu, interventionIdsWithBaselineFirst, cov);
   }
 
-  private AbstractIntervention getBaselineIntervention(NMAInclusionWithResults outcomeInclusion) {
-    AbstractBaselineDistribution baselineDistribution = getBaselineDistribution(outcomeInclusion);
-    return outcomeInclusion.getInterventions().stream()
+  private AbstractIntervention getBaselineIntervention(NMAInclusionWithResults inclusion) {
+    AbstractBaselineDistribution baselineDistribution = getBaselineDistribution(inclusion);
+    return inclusion.getInterventions().stream()
         .filter(intervention -> baselineDistribution.getName().equalsIgnoreCase(intervention.getName()))
         .findFirst().orElse(null);
   }

@@ -58,23 +58,123 @@ public class SingleStudyBenefitRiskServiceImpl implements SingleStudyBenefitRisk
   private LinkService linkService;
 
   @Override
-  public List<AbstractMeasurementEntry> buildPerformanceTable(Set<MeasurementWithCoordinates> measurementDrugInstancePairs) {
+  public List<AbstractMeasurementEntry> buildPerformanceTable(
+          List<TrialDataArm> matchedArms,
+          URI defaultMeasurementMoment,
+          SingleStudyContext context) {
+    Set<MeasurementWithCoordinates> measurementDrugInstancePairs = getMeasurementsWithCoordinates(
+            matchedArms, defaultMeasurementMoment, context);
+
     ArrayList<AbstractMeasurementEntry> performanceTable = new ArrayList<>();
-    Set<MeasurementWithCoordinates> absoluteMeasurements = getAbsoluteMeasurements(measurementDrugInstancePairs);
-    Set<MeasurementWithCoordinates> contrastMeasurements = getContrastMeasurements(measurementDrugInstancePairs);
+    Set<MeasurementWithCoordinates> absoluteMeasurements = filterAbsoluteMeasurements(measurementDrugInstancePairs);
     addAbsolutePerformanceEntries(performanceTable, absoluteMeasurements);
-    addContrastPerformanceEntries(performanceTable, contrastMeasurements);
+    addContrastPerformanceEntries(performanceTable, matchedArms, defaultMeasurementMoment, context);
     return performanceTable;
   }
 
-  private void addContrastPerformanceEntries(ArrayList<AbstractMeasurementEntry> performanceTable, Set<MeasurementWithCoordinates> contrastMeasurements) {
-    MeasurementWithCoordinates firstMeasurement = contrastMeasurements.iterator().next();
-    Integer interventionId = firstMeasurement.getInterventionId();
-    String dataSource = firstMeasurement.getDataSource();
-    Relative relative = new Relative("relative-something-logit", );
-    RelativePerformanceParameters parameter = new RelativePerformanceParameters(firstMeasurement.getMeasurement().getReferenceArm(), relative) ;
-    RelativePerformance performance = new RelativePerformance("dmnorm", parameter);
+  private void addContrastPerformanceEntries(
+          ArrayList<AbstractMeasurementEntry> performanceTable,
+          List<TrialDataArm> arms,
+          URI defaultMoment,
+          SingleStudyContext context) {
+    List<AbstractMeasurementEntry> contrastEntries = arms.stream().map(
+            arm -> createContrastPerformanceEntry(arm, defaultMoment, context)).collect(Collectors.toList());
+    performanceTable.addAll(contrastEntries);
 
+
+//    MeasurementWithCoordinates firstMeasurement = measurements.iterator().next();
+//    String dataSource = firstMeasurement.getDataSource();
+//    String criterionUri = getCriterion(context, dataSource);
+//
+//    Map<String, Double> mu = getMu(measurements);
+//    List<List<Double>> covarianceData;
+//    List<String> rowIds = getRowIds(measurements, context);
+//    Integer referenceArmId = getReferenceArmId(rowIds, firstMeasurement.getMeasurement().getReferenceArm(), context);
+//    List<String> colNames;
+//    CovarianceMatrix cov = new CovarianceMatrix(rowIds, colNames, covarianceData);
+//    String type = getMeasurementType(firstMeasurement.getMeasurement());
+//    Relative relative = new Relative(type, mu, cov);
+//
+//    URI referenceArmUri = firstMeasurement.getMeasurement().getReferenceArm();
+//    RelativePerformanceParameters parameter = new RelativePerformanceParameters(referenceArmUri.toString(), relative);
+//
+//    RelativePerformance performance = new RelativePerformance("dmnorm", parameter);
+//    performanceTable.add(new RelativePerformanceEntry(criterionUri, dataSource, performance));
+  }
+
+  private AbstractMeasurementEntry createContrastPerformanceEntry(TrialDataArm arm,
+          URI defaultMoment,
+          SingleStudyContext context) {
+    arm.getMeasurementsForMoment(defaultMoment);
+    RelativePerformance performance = new RelativePerformance("dmnorm", parameter);
+    String criterionUri;
+    String dataSource;
+    return new RelativePerformanceEntry(criterionUri, dataSource, performance);
+  }
+
+
+  private List<String> getRowIds(Set<MeasurementWithCoordinates> measurements, SingleStudyContext context) {
+    List<String> interventions = measurements.stream().map(
+            measurement -> measurement.getInterventionId().toString())
+            .collect(Collectors.toList());
+
+    context.getInterventionsById()
+    return interventions;
+  }
+
+  private Map<String, Double> getMu(Set<MeasurementWithCoordinates> measurements) {
+    Map<String, Double> mu = new HashMap<>();
+    measurements.forEach(measurement ->
+            mu.put(measurement.getInterventionId().toString(), getValue(measurement.getMeasurement())));
+    return mu;
+  }
+
+  private Double getValue(Measurement measurement) {
+    if (measurement.getOddsRatio() != null) {
+      return measurement.getOddsRatio();
+    }
+    if (measurement.getHazardRatio() != null) {
+      return measurement.getHazardRatio();
+    }
+    if (measurement.getRiskRatio() != null) {
+      return measurement.getRiskRatio();
+    }
+    if (measurement.getMeanDifference() != null) {
+      return measurement.getMeanDifference();
+    }
+    if (measurement.getStandardizedMeanDifference() != null) {
+      return measurement.getStandardizedMeanDifference();
+    }
+    return null;
+  }
+
+
+  private String getMeasurementType(Measurement measurement) {
+    if (measurement.getOddsRatio() != null) {
+      return "relative-logit-normal";
+    }
+    if (measurement.getHazardRatio() != null) {
+      return "relative-survival";
+    }
+    if (measurement.getRiskRatio() != null) {
+      return "relative-log-normal";
+    }
+    if (measurement.getMeanDifference() != null) {
+      return "relative-normal";
+    }
+    if (measurement.getStandardizedMeanDifference() != null) {
+      return "relative-smd-normal";
+    }
+    return "relative-normal";
+  }
+
+  private String getCriterion(SingleStudyContext context, String dataSource) {
+    for (Map.Entry<URI, String> entry : context.getDataSourceIdsByOutcomeUri().entrySet()) {
+      if (entry.getValue().equals(dataSource)) {
+        return entry.getKey().toString();
+      }
+    }
+    return "";
   }
 
   private void addAbsolutePerformanceEntries(ArrayList<AbstractMeasurementEntry> performanceTable, Set<MeasurementWithCoordinates> absoluteMeasurements) {
@@ -98,7 +198,7 @@ public class SingleStudyBenefitRiskServiceImpl implements SingleStudyBenefitRisk
     return measurementDrugInstancePairs.stream().filter(measurement -> measurement.getMeasurement().getReferenceArm() != null).collect(Collectors.toSet());
   }
 
-  private Set<MeasurementWithCoordinates> getAbsoluteMeasurements(Set<MeasurementWithCoordinates> measurementDrugInstancePairs) {
+  private Set<MeasurementWithCoordinates> filterAbsoluteMeasurements(Set<MeasurementWithCoordinates> measurementDrugInstancePairs) {
     return measurementDrugInstancePairs.stream().filter(measurement -> measurement.getMeasurement().getReferenceArm() == null).collect(Collectors.toSet());
   }
 
@@ -176,8 +276,7 @@ public class SingleStudyBenefitRiskServiceImpl implements SingleStudyBenefitRisk
     return alternatives;
   }
 
-  @Override
-  public Set<MeasurementWithCoordinates> getMeasurementsWithCoordinates(List<TrialDataArm> arms, URI defaultMeasurementMoment, SingleStudyContext context) {
+  private Set<MeasurementWithCoordinates> getMeasurementsWithCoordinates(List<TrialDataArm> arms, URI defaultMeasurementMoment, SingleStudyContext context) {
     Set<MeasurementWithCoordinates> measurementsWithCoordinates = new HashSet<>();
     for (TrialDataArm arm : arms) {
       Set<Measurement> measurements = arm.getMeasurementsForMoment(defaultMeasurementMoment);

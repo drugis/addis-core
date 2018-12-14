@@ -159,7 +159,7 @@ public class SingleStudyBenefitRiskServiceTest {
     Set<MeasurementWithCoordinates> measurementsWithCoordinates = ImmutableSet.of(continuousStdDevRow1, continuousStdDevRow2, dichotomousRow1, dichotomousRow2, continuousStdErrRow1, continuousStdErrRow2);
 
     // EXECUTE
-    List<AbstractMeasurementEntry> performanceTable = singleStudyBenefitRiskService.buildPerformanceTable(measurementsWithCoordinates);
+    List<AbstractMeasurementEntry> performanceTable = singleStudyBenefitRiskService.buildPerformanceTable(measurementsWithCoordinates, );
 
     // ASSERTS
     assertEquals(6, performanceTable.size());
@@ -203,7 +203,7 @@ public class SingleStudyBenefitRiskServiceTest {
     Measurement arm1Unknown = unknownBuilder.build();
     MeasurementWithCoordinates unknownRow1 = new MeasurementWithCoordinates(arm1Unknown, alternativeId1, dataSourceUuid);
     Set<MeasurementWithCoordinates> measurementsWithUnknownType = ImmutableSet.of(unknownRow1);
-    singleStudyBenefitRiskService.buildPerformanceTable(measurementsWithUnknownType);
+    singleStudyBenefitRiskService.buildPerformanceTable(measurementsWithUnknownType, );
   }
 
 

@@ -4,10 +4,7 @@ import com.google.common.collect.ImmutableSet;
 import org.drugis.addis.trialverse.model.MeasurementMoment;
 
 import java.net.URI;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Created by connor on 15-5-14.
@@ -72,24 +69,18 @@ public class TrialDataStudy {
   public boolean equals(Object o) {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
-
     TrialDataStudy that = (TrialDataStudy) o;
-
-    if (!studyUri.equals(that.studyUri)) return false;
-    if (!name.equals(that.name)) return false;
-    if (!trialDataArms.equals(that.trialDataArms)) return false;
-    if (!covariateValues.equals(that.covariateValues)) return false;
-    return defaultMeasurementMoment != null ? defaultMeasurementMoment.equals(that.defaultMeasurementMoment) : that.defaultMeasurementMoment == null;
-
+    return Objects.equals(studyUri, that.studyUri) &&
+            Objects.equals(name, that.name) &&
+            Objects.equals(trialDataArms, that.trialDataArms) &&
+            Objects.equals(covariateValues, that.covariateValues) &&
+            Objects.equals(defaultMeasurementMoment, that.defaultMeasurementMoment) &&
+            Objects.equals(measurementMoments, that.measurementMoments);
   }
 
   @Override
   public int hashCode() {
-    int result = studyUri.hashCode();
-    result = 31 * result + name.hashCode();
-    result = 31 * result + trialDataArms.hashCode();
-    result = 31 * result + covariateValues.hashCode();
-    result = 31 * result + (defaultMeasurementMoment != null ? defaultMeasurementMoment.hashCode() : 0);
-    return result;
+
+    return Objects.hash(studyUri, name, trialDataArms, covariateValues, defaultMeasurementMoment, measurementMoments);
   }
 }

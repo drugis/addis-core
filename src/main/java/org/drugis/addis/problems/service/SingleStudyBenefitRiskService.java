@@ -17,15 +17,13 @@ import java.util.Map;
 import java.util.Set;
 
 public interface SingleStudyBenefitRiskService {
-  List<AbstractMeasurementEntry> buildPerformanceTable(Set<MeasurementWithCoordinates> measurementDrugInstancePairs);
-
-  Set<MeasurementWithCoordinates> getMeasurementsWithCoordinates(List<TrialDataArm> armsWithMatching, URI defaultMeasurementMoment, SingleStudyContext context);
+  List<AbstractMeasurementEntry> buildPerformanceTable(List<TrialDataArm> matchedArms, URI defaultMeasurementMoment, SingleStudyContext context);
 
   TrialDataStudy getStudy(Project project, URI studyGraphUri, SingleStudyContext context);
 
-  Map<URI,CriterionEntry> getCriteria(List<TrialDataArm> armsWithMatching, URI defaultMeasurementMoment, SingleStudyContext context);
+  Map<URI, CriterionEntry> getCriteria(List<TrialDataArm> armsWithMatching, URI defaultMeasurementMoment, SingleStudyContext context);
 
-  Map<String,AlternativeEntry> getAlternatives(List<TrialDataArm> armsWithMatching, SingleStudyContext context);
+  Map<String, AlternativeEntry> getAlternatives(List<TrialDataArm> armsWithMatching, SingleStudyContext context);
 
   List<TrialDataArm> getMatchedArms(Set<AbstractIntervention> includedInterventions, List<TrialDataArm> arms);
 

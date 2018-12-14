@@ -228,10 +228,8 @@ public class ProblemServiceImpl implements ProblemService {
             matchedArms, defaultMeasurementMoment, context);
     Map<String, AlternativeEntry> alternatives = singleStudyBenefitRiskService.getAlternatives(
             matchedArms, context);
-    Set<MeasurementWithCoordinates> measurementsWithCoordinates = singleStudyBenefitRiskService.getMeasurementsWithCoordinates(
-            matchedArms, defaultMeasurementMoment, context);
 
-    List<AbstractMeasurementEntry> performanceTable = singleStudyBenefitRiskService.buildPerformanceTable(measurementsWithCoordinates);
+    List<AbstractMeasurementEntry> performanceTable = singleStudyBenefitRiskService.buildPerformanceTable(matchedArms, defaultMeasurementMoment, context);
     return new SingleStudyBenefitRiskProblem(alternatives, criteria, performanceTable);
 
   }
