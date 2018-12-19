@@ -178,7 +178,7 @@ public class ProblemServiceTest {
     Set<MeasurementWithCoordinates> measurementsMock = new HashSet<>();
     when(singleStudyBenefitRiskService.getMeasurementsWithCoordinates(armsMock, defaultMeasurementMoment, context)).thenReturn(measurementsMock);
     List<AbstractMeasurementEntry> performanceMock = singletonList(mock(AbstractMeasurementEntry.class));
-    when(singleStudyBenefitRiskService.buildPerformanceTable(measurementsMock, )).thenReturn(performanceMock);
+    when(singleStudyBenefitRiskService.buildPerformanceTable(measurementsMock, , )).thenReturn(performanceMock);
 
 
     // --------------- execute ---------------- //
@@ -198,7 +198,7 @@ public class ProblemServiceTest {
     verify(singleStudyBenefitRiskService).getCriteria(armsMock, defaultMeasurementMoment, context);
     verify(singleStudyBenefitRiskService).getAlternatives(armsMock, context);
     verify(singleStudyBenefitRiskService).getMeasurementsWithCoordinates(armsMock, defaultMeasurementMoment, context);
-    verify(singleStudyBenefitRiskService).buildPerformanceTable(measurementsMock, );
+    verify(singleStudyBenefitRiskService).buildPerformanceTable(measurementsMock, , );
   }
 
   private Set<InterventionInclusion> buildInterventionInclusions() {
@@ -304,7 +304,7 @@ public class ProblemServiceTest {
     CriterionEntry criterionEntry = mock(CriterionEntry.class);
     DataSourceEntry dataSourceEntry = new DataSourceEntry("1", "source", modelSourceLink);
     when(criterionEntry.getDataSources()).thenReturn(singletonList(dataSourceEntry));
-    criteria.put(outcome.getSemanticOutcomeUri(), criterionEntry);
+    criteria.put(outcome.getConceptOutcomeUri(), criterionEntry);
     when(networkMetaAnalysisService.buildCriteriaForInclusion(inclusionWithResults, modelSourceLink)).thenReturn(criteria);
 
     Map<String, AlternativeEntry> alternatives = new HashMap<>();

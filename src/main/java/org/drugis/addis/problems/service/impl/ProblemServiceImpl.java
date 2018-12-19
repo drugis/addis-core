@@ -100,7 +100,7 @@ public class ProblemServiceImpl implements ProblemService {
     // add covariate values to problem
     Map<String, Map<String, Double>> studyLevelCovariates = networkMetaAnalysisService.getStudyLevelCovariates(project, analysis, studiesWithEntries);
 
-    return new NetworkMetaAnalysisProblem(entries,relativeEffectData, treatments, studyLevelCovariates);
+    return new NetworkMetaAnalysisProblem(entries, relativeEffectData, treatments, studyLevelCovariates);
   }
 
   private BenefitRiskProblem getBenefitRiskAnalysisProblem(Project project, BenefitRiskAnalysis analysis) throws
@@ -206,7 +206,8 @@ public class ProblemServiceImpl implements ProblemService {
   }
 
   private Set<Integer> getIdsFromInclusions(List<BenefitRiskNMAOutcomeInclusion> outcomeInclusions,
-                                            Function<BenefitRiskNMAOutcomeInclusion, Integer> idSelector) {
+                                            Function<BenefitRiskNMAOutcomeInclusion, Integer> idSelector
+  ) {
     return outcomeInclusions.stream()
             .map(idSelector)
             .filter(Objects::nonNull)
@@ -229,7 +230,7 @@ public class ProblemServiceImpl implements ProblemService {
     Map<String, AlternativeEntry> alternatives = singleStudyBenefitRiskService.getAlternatives(
             matchedArms, context);
 
-    List<AbstractMeasurementEntry> performanceTable = singleStudyBenefitRiskService.buildPerformanceTable(matchedArms, defaultMeasurementMoment, context);
+    List<AbstractMeasurementEntry> performanceTable = singleStudyBenefitRiskService.buildPerformanceTable(context, study, includedInterventions);
     return new SingleStudyBenefitRiskProblem(alternatives, criteria, performanceTable);
 
   }

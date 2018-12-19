@@ -5,7 +5,6 @@ import org.drugis.addis.outcomes.Outcome;
 import org.drugis.addis.problems.model.AlternativeEntry;
 import org.drugis.addis.problems.model.CriterionEntry;
 import org.drugis.addis.problems.model.SingleStudyContext;
-import org.drugis.addis.problems.model.MeasurementWithCoordinates;
 import org.drugis.addis.problems.service.model.AbstractMeasurementEntry;
 import org.drugis.addis.projects.Project;
 import org.drugis.addis.trialverse.model.trialdata.TrialDataArm;
@@ -17,7 +16,7 @@ import java.util.Map;
 import java.util.Set;
 
 public interface SingleStudyBenefitRiskService {
-  List<AbstractMeasurementEntry> buildPerformanceTable(List<TrialDataArm> matchedArms, URI defaultMeasurementMoment, SingleStudyContext context);
+  List<AbstractMeasurementEntry> buildPerformanceTable(SingleStudyContext context, TrialDataStudy study, Set<AbstractIntervention> includedInterventions);
 
   TrialDataStudy getStudy(Project project, URI studyGraphUri, SingleStudyContext context);
 

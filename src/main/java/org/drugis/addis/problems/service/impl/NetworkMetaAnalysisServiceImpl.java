@@ -94,10 +94,8 @@ public class NetworkMetaAnalysisServiceImpl implements NetworkMetaAnalysisServic
     List<URI> excludedArmUris = analysis.getExcludedArms().stream()
             .map(ArmExclusion::getTrialverseUid).collect(toList());
 
-
     Map<URI, RelativeDataEntry> data = buildRelativeDataEntries(studies, selectedMeasurementMomentsByStudy, excludedArmUris);
     return new RelativeEffectData(data);
-
   }
 
   private Map<URI, RelativeDataEntry> buildRelativeDataEntries(List<TrialDataStudy> studies, Map<URI, URI> selectedMeasurementMomentsByStudy, List<URI> excludedArmUris) {
@@ -307,7 +305,7 @@ public class NetworkMetaAnalysisServiceImpl implements NetworkMetaAnalysisServic
       DataSourceEntry dataSource = new DataSourceEntry(uuidService.generate(), "meta analysis", modelURI);
       criterionEntry = new CriterionEntry(Collections.singletonList(dataSource), outcome.getName());
     }
-    criteria.put(outcome.getSemanticOutcomeUri(), criterionEntry);
+    criteria.put(outcome.getConceptOutcomeUri(), criterionEntry);
     return criteria;
   }
 

@@ -159,7 +159,7 @@ public class SingleStudyBenefitRiskServiceTest {
     Set<MeasurementWithCoordinates> measurementsWithCoordinates = ImmutableSet.of(continuousStdDevRow1, continuousStdDevRow2, dichotomousRow1, dichotomousRow2, continuousStdErrRow1, continuousStdErrRow2);
 
     // EXECUTE
-    List<AbstractMeasurementEntry> performanceTable = singleStudyBenefitRiskService.buildPerformanceTable(measurementsWithCoordinates, );
+    List<AbstractMeasurementEntry> performanceTable = singleStudyBenefitRiskService.buildPerformanceTable(measurementsWithCoordinates, , );
 
     // ASSERTS
     assertEquals(6, performanceTable.size());
@@ -203,7 +203,7 @@ public class SingleStudyBenefitRiskServiceTest {
     Measurement arm1Unknown = unknownBuilder.build();
     MeasurementWithCoordinates unknownRow1 = new MeasurementWithCoordinates(arm1Unknown, alternativeId1, dataSourceUuid);
     Set<MeasurementWithCoordinates> measurementsWithUnknownType = ImmutableSet.of(unknownRow1);
-    singleStudyBenefitRiskService.buildPerformanceTable(measurementsWithUnknownType, );
+    singleStudyBenefitRiskService.buildPerformanceTable(measurementsWithUnknownType, , );
   }
 
 
@@ -287,7 +287,7 @@ public class SingleStudyBenefitRiskServiceTest {
   private void verifyCriterionCreation(Measurement measurement) {
     URI variableConceptUri = measurement.getVariableConceptUri();
     Outcome measuredOutcome = context.getOutcomesByUri().get(variableConceptUri);
-    String dataSourceId = context.getDataSourceIdsByOutcomeUri().get(measuredOutcome.getSemanticOutcomeUri());
+    String dataSourceId = context.getDataSourceIdsByOutcomeUri().get(measuredOutcome.getConceptOutcomeUri());
     verify(criterionEntryFactory).create(measurement, measuredOutcome.getName(), dataSourceId, context.getSourceLink());
   }
 
@@ -329,7 +329,7 @@ public class SingleStudyBenefitRiskServiceTest {
   private MeasurementWithCoordinates buildMeasurementWithCoordinates(TrialDataArm arm, Measurement measurement) {
     Integer interventionId = arm.getMatchedProjectInterventionIds().iterator().next();
     Outcome measuredOutcome = context.getOutcomesByUri().get(measurement.getVariableConceptUri());
-    String dataSourceId = context.getDataSourceIdsByOutcomeUri().get(measuredOutcome.getSemanticOutcomeUri());
+    String dataSourceId = context.getDataSourceIdsByOutcomeUri().get(measuredOutcome.getConceptOutcomeUri());
     return new MeasurementWithCoordinates(measurement, interventionId, dataSourceId);
   }
 
@@ -337,12 +337,12 @@ public class SingleStudyBenefitRiskServiceTest {
     Map<URI, Outcome> outcomesByUri = new HashMap<>();
 
     Outcome mockOutcome1 = mock(Outcome.class);
-    when(mockOutcome1.getSemanticOutcomeUri()).thenReturn(dichotomousVariable.getVariableConceptUri());
+    when(mockOutcome1.getConceptOutcomeUri()).thenReturn(dichotomousVariable.getVariableConceptUri());
     when(mockOutcome1.getName()).thenReturn("outcome1Name");
     outcomesByUri.put(dichotomousVariable.getVariableConceptUri(), mockOutcome1);
 
     Outcome mockOutcome2 = mock(Outcome.class);
-    when(mockOutcome2.getSemanticOutcomeUri()).thenReturn(continuousMeasurementStdDev.getVariableConceptUri());
+    when(mockOutcome2.getConceptOutcomeUri()).thenReturn(continuousMeasurementStdDev.getVariableConceptUri());
     when(mockOutcome2.getName()).thenReturn("outcome2Name");
     outcomesByUri.put(continuousMeasurementStdDev.getVariableConceptUri(), mockOutcome2);
 
@@ -440,11 +440,11 @@ public class SingleStudyBenefitRiskServiceTest {
     URI outcome1Uri = URI.create("outcome1Uri");
     URI outcome2Uri = URI.create("outcome2Uri");
     Outcome outcome1 = mock(Outcome.class);
-    when(outcome1.getSemanticOutcomeUri()).thenReturn(outcome1Uri);
+    when(outcome1.getConceptOutcomeUri()).thenReturn(outcome1Uri);
     Outcome outcome2 = mock(Outcome.class);
-    when(outcome2.getSemanticOutcomeUri()).thenReturn(outcome2Uri);
+    when(outcome2.getConceptOutcomeUri()).thenReturn(outcome2Uri);
     // Use sorted set to guarantee order so that the uuids are paired correctly
-    Set<Outcome> outcomes = new TreeSet<>(Comparator.comparing(Outcome::getSemanticOutcomeUri));
+    Set<Outcome> outcomes = new TreeSet<>(Comparator.comparing(Outcome::getConceptOutcomeUri));
     outcomes.addAll(Sets.newHashSet(outcome1, outcome2));
     AbstractIntervention intervention1 = mock(AbstractIntervention.class);
     when(intervention1.getId()).thenReturn(interventionId1);

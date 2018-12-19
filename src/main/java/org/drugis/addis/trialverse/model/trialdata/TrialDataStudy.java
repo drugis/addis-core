@@ -12,11 +12,11 @@ import java.util.*;
 public class TrialDataStudy {
   private URI studyUri;
   private String name;
-
   private List<TrialDataArm> trialDataArms = new ArrayList<>();
   private List<CovariateStudyValue> covariateValues = new ArrayList<>();
   private URI defaultMeasurementMoment;
   private Set<MeasurementMoment> measurementMoments = new HashSet<>();
+
   public TrialDataStudy() {
   }
 

@@ -405,7 +405,7 @@ public class NetworkMetaAnalysisServiceTest {
     Map<URI, CriterionEntry> expectedResult = new HashMap<>();
     DataSourceEntry expectedDataSource = new DataSourceEntry(dataSourceUuid, Arrays.asList(0d, 1d), null, "meta analysis", modelUri);
     CriterionEntry expectedEntry = new CriterionEntry(singletonList(expectedDataSource), outcome.getName());
-    expectedResult.put(outcome.getSemanticOutcomeUri(), expectedEntry);
+    expectedResult.put(outcome.getConceptOutcomeUri(), expectedEntry);
     assertEquals(expectedResult, result);
 
     verify(uuidService).generate();
@@ -425,7 +425,7 @@ public class NetworkMetaAnalysisServiceTest {
     Map<URI, CriterionEntry> expectedResult = new HashMap<>();
     DataSourceEntry expectedDataSource = new DataSourceEntry(dataSourceUuid, "meta analysis", modelUri);
     CriterionEntry expectedEntry = new CriterionEntry(singletonList(expectedDataSource), outcome.getName());
-    expectedResult.put(outcome.getSemanticOutcomeUri(), expectedEntry);
+    expectedResult.put(outcome.getConceptOutcomeUri(), expectedEntry);
     assertEquals(expectedResult, result);
 
     verify(uuidService).generate();

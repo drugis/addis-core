@@ -176,7 +176,7 @@ public class AnalysisServiceImpl implements AnalysisService {
     List<TrialDataStudy> studies = triplestoreService.getNetworkData(
             namespaceUid,
             datasetVersion,
-            networkMetaAnalysis.getOutcome().getSemanticOutcomeUri(),
+            networkMetaAnalysis.getOutcome().getConceptOutcomeUri(),
             includedInterventionUris,
             includedCovariates);
 

@@ -59,57 +59,50 @@ public class SingleStudyBenefitRiskServiceImpl implements SingleStudyBenefitRisk
 
   @Override
   public List<AbstractMeasurementEntry> buildPerformanceTable(
-          List<TrialDataArm> matchedArms,
-          URI defaultMeasurementMoment,
-          SingleStudyContext context) {
+          SingleStudyContext context,
+          TrialDataStudy study,
+          Set<AbstractIntervention> includedInterventions) {
+    List<TrialDataArm> matchedArms = getMatchedArms(includedInterventions, study.getArms());
+    URI defaultMoment = study.getDefaultMeasurementMoment();
     Set<MeasurementWithCoordinates> measurementDrugInstancePairs = getMeasurementsWithCoordinates(
-            matchedArms, defaultMeasurementMoment, context);
+            matchedArms, defaultMoment, context);
 
     ArrayList<AbstractMeasurementEntry> performanceTable = new ArrayList<>();
     Set<MeasurementWithCoordinates> absoluteMeasurements = filterAbsoluteMeasurements(measurementDrugInstancePairs);
     addAbsolutePerformanceEntries(performanceTable, absoluteMeasurements);
-    addContrastPerformanceEntries(performanceTable, matchedArms, defaultMeasurementMoment, context);
+    addContrastPerformanceEntries(performanceTable, study, matchedArms, context);
     return performanceTable;
   }
 
   private void addContrastPerformanceEntries(
           ArrayList<AbstractMeasurementEntry> performanceTable,
-          List<TrialDataArm> arms,
-          URI defaultMoment,
-          SingleStudyContext context) {
+          TrialDataStudy study,
+          List<TrialDataArm> arms
+          , SingleStudyContext context) {
+    URI defaultMoment = study.getDefaultMeasurementMoment();
     List<AbstractMeasurementEntry> contrastEntries = arms.stream().map(
             arm -> createContrastPerformanceEntry(arm, defaultMoment, context)).collect(Collectors.toList());
     performanceTable.addAll(contrastEntries);
-
-
-//    MeasurementWithCoordinates firstMeasurement = measurements.iterator().next();
-//    String dataSource = firstMeasurement.getDataSource();
-//    String criterionUri = getCriterion(context, dataSource);
-//
-//    Map<String, Double> mu = getMu(measurements);
-//    List<List<Double>> covarianceData;
-//    List<String> rowIds = getRowIds(measurements, context);
-//    Integer referenceArmId = getReferenceArmId(rowIds, firstMeasurement.getMeasurement().getReferenceArm(), context);
-//    List<String> colNames;
-//    CovarianceMatrix cov = new CovarianceMatrix(rowIds, colNames, covarianceData);
-//    String type = getMeasurementType(firstMeasurement.getMeasurement());
-//    Relative relative = new Relative(type, mu, cov);
-//
-//    URI referenceArmUri = firstMeasurement.getMeasurement().getReferenceArm();
-//    RelativePerformanceParameters parameter = new RelativePerformanceParameters(referenceArmUri.toString(), relative);
-//
-//    RelativePerformance performance = new RelativePerformance("dmnorm", parameter);
-//    performanceTable.add(new RelativePerformanceEntry(criterionUri, dataSource, performance));
   }
 
   private AbstractMeasurementEntry createContrastPerformanceEntry(TrialDataArm arm,
-          URI defaultMoment,
-          SingleStudyContext context) {
-    arm.getMeasurementsForMoment(defaultMoment);
+                                                                  URI defaultMoment,
+                                                                  SingleStudyContext context) {
+    Set<Measurement> measurementsForMoment = arm.getMeasurementsForMoment(defaultMoment);
+    Measurement firstMeasurement = measurementsForMoment.iterator().next();
+    String baselineUri = firstMeasurement.getReferenceArm().toString();
+
+    Map<String, Double> mu = getMu(baselineId, 0.0);
+    List<String> rowIds = getRowIds();
+    CovarianceMatrix cov = new CovarianceMatrix(rowIds, rowIds, data);
+
+    Relative relative = new Relative(getMeasurementType(firstMeasurement), mu, cov);
+    RelativePerformanceParameters parameter = new RelativePerformanceParameters(baselineUri, relative);
     RelativePerformance performance = new RelativePerformance("dmnorm", parameter);
-    String criterionUri;
-    String dataSource;
-    return new RelativePerformanceEntry(criterionUri, dataSource, performance);
+
+    String criterionUri = firstMeasurement.getVariableConceptUri().toString();//klopt
+    String dataSourceId = context.getDataSourceIdsByOutcomeUri().get(firstMeasurement.getVariableConceptUri());
+    return new RelativePerformanceEntry(criterionUri, dataSourceId, performance);
   }
 
 
@@ -117,8 +110,8 @@ public class SingleStudyBenefitRiskServiceImpl implements SingleStudyBenefitRisk
     List<String> interventions = measurements.stream().map(
             measurement -> measurement.getInterventionId().toString())
             .collect(Collectors.toList());
+    Map<Integer, AbstractIntervention> interventionsById = context.getInterventionsById();
 
-    context.getInterventionsById()
     return interventions;
   }
 
@@ -166,15 +159,6 @@ public class SingleStudyBenefitRiskServiceImpl implements SingleStudyBenefitRisk
       return "relative-smd-normal";
     }
     return "relative-normal";
-  }
-
-  private String getCriterion(SingleStudyContext context, String dataSource) {
-    for (Map.Entry<URI, String> entry : context.getDataSourceIdsByOutcomeUri().entrySet()) {
-      if (entry.getValue().equals(dataSource)) {
-        return entry.getKey().toString();
-      }
-    }
-    return "";
   }
 
   private void addAbsolutePerformanceEntries(ArrayList<AbstractMeasurementEntry> performanceTable, Set<MeasurementWithCoordinates> absoluteMeasurements) {
@@ -257,7 +241,7 @@ public class SingleStudyBenefitRiskServiceImpl implements SingleStudyBenefitRisk
     return measurements.stream()
             .map(measurement -> {
               Outcome measuredOutcome = context.getOutcomesByUri().get(measurement.getVariableConceptUri());
-              String dataSourceId = context.getDataSourceIdsByOutcomeUri().get(measuredOutcome.getSemanticOutcomeUri());
+              String dataSourceId = context.getDataSourceIdsByOutcomeUri().get(measuredOutcome.getConceptOutcomeUri());
               CriterionEntry criterionEntry = criterionEntryFactory.create(measurement, measuredOutcome.getName(), dataSourceId, context.getSourceLink());
               return Pair.of(measurement.getVariableConceptUri(), criterionEntry);
             })
@@ -297,8 +281,8 @@ public class SingleStudyBenefitRiskServiceImpl implements SingleStudyBenefitRisk
 
   private MeasurementWithCoordinates getMeasurementWithCoordinates(Measurement measurement, SingleStudyContext context, Integer interventionId) {
     Outcome measuredOutcome = context.getOutcomesByUri().get(measurement.getVariableConceptUri());
-    String dataSourceId = context.getDataSourceIdsByOutcomeUri().get(measuredOutcome.getSemanticOutcomeUri());
-    return new MeasurementWithCoordinates(measurement, interventionId, dataSourceId);
+    String dataSourceId = context.getDataSourceIdsByOutcomeUri().get(measuredOutcome.getConceptOutcomeUri());
+    return new MeasurementWithCoordinates(measurement, interventionId, dataSourceId, measuredOutcome.getConceptOutcomeUri());
   }
 
   @Override
@@ -325,10 +309,10 @@ public class SingleStudyBenefitRiskServiceImpl implements SingleStudyBenefitRisk
   @Override
   public SingleStudyContext buildContext(Project project, URI studyGraphUri, Set<Outcome> outcomes, Set<AbstractIntervention> includedInterventions) {
     Map<URI, String> dataSourceIdsByOutcomeUri = outcomes.stream()
-            .collect(Collectors.toMap(Outcome::getSemanticOutcomeUri, o -> uuidService.generate()));
+            .collect(Collectors.toMap(Outcome::getConceptOutcomeUri, o -> uuidService.generate()));
     final Map<Integer, AbstractIntervention> interventionsById = includedInterventions.stream()
             .collect(toMap(AbstractIntervention::getId, identity()));
-    Map<URI, Outcome> outcomesByUri = outcomes.stream().collect(toMap(Outcome::getSemanticOutcomeUri, identity()));
+    Map<URI, Outcome> outcomesByUri = outcomes.stream().collect(toMap(Outcome::getConceptOutcomeUri, identity()));
     URI sourceLink = linkService.getStudySourceLink(project, studyGraphUri);
 
     return new SingleStudyContext(outcomesByUri, interventionsById, dataSourceIdsByOutcomeUri, sourceLink);

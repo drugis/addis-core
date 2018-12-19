@@ -222,14 +222,14 @@ public class AnalysisServiceTest {
     Set<AbstractIntervention> inclSet = new HashSet<>();
     inclSet.add(includedIntervention);
     when(triplestoreService.addMatchingInformation(inclSet, trialData)).thenReturn(trialData);
-    when(triplestoreService.getNetworkData(project.getNamespaceUid(), project.getDatasetVersion(), outcome.getSemanticOutcomeUri(), includedInterventionUids, includedCovariateUids))
+    when(triplestoreService.getNetworkData(project.getNamespaceUid(), project.getDatasetVersion(), outcome.getConceptOutcomeUri(), includedInterventionUids, includedCovariateUids))
             .thenReturn(trialData);
     when(mappingService.getVersionedUuid(project.getNamespaceUid())).thenReturn(project.getNamespaceUid());
 
     //EXEC
     List<TrialDataStudy> trialDataStudies = analysisService.buildEvidenceTable(projectId, analysisId);
 
-    verify(triplestoreService).getNetworkData(project.getNamespaceUid(), project.getDatasetVersion(), outcome.getSemanticOutcomeUri(), includedInterventionUids, includedCovariateUids);
+    verify(triplestoreService).getNetworkData(project.getNamespaceUid(), project.getDatasetVersion(), outcome.getConceptOutcomeUri(), includedInterventionUids, includedCovariateUids);
 
     assertNotNull(trialDataStudies);
     assertEquals(1, trialDataStudies.size());

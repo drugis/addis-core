@@ -98,7 +98,7 @@ public class Outcome implements Serializable {
     return semanticOutcomeLabel;
   }
 
-  public URI getSemanticOutcomeUri() {
+  public URI getConceptOutcomeUri() {
     return URI.create(semanticOutcomeUri);
   }
 

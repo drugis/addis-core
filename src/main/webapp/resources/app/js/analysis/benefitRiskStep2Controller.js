@@ -1,7 +1,11 @@
 'use strict';
 define(['angular', 'lodash'], function(angular, _) {
   var dependencies = [
-    '$scope', '$q', '$stateParams', '$state', '$modal',
+    '$scope', 
+    '$q', 
+    '$stateParams', 
+    '$state', 
+    '$modal',
     'AnalysisResource',
     'BenefitRiskService',
     'InterventionResource',
@@ -16,7 +20,11 @@ define(['angular', 'lodash'], function(angular, _) {
     'WorkspaceService'
   ];
   var BenefitRiskStep2Controller = function(
-    $scope, $q, $stateParams, $state, $modal,
+    $scope, 
+    $q, 
+    $stateParams, 
+    $state, 
+    $modal,
     AnalysisResource,
     BenefitRiskService,
     InterventionResource,
@@ -30,10 +38,11 @@ define(['angular', 'lodash'], function(angular, _) {
     UserService,
     WorkspaceService
   ) {
-
+    // functions
     $scope.goToStep1 = goToStep1;
     $scope.openDistributionModal = openDistributionModal;
 
+    // init
     $scope.analysis = AnalysisResource.get($stateParams);
     $scope.alternatives = InterventionResource.query($stateParams);
     $scope.outcomes = OutcomeResource.query($stateParams);
