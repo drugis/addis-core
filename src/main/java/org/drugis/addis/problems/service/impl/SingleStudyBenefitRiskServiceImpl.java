@@ -69,31 +69,39 @@ public class SingleStudyBenefitRiskServiceImpl implements SingleStudyBenefitRisk
 
     ArrayList<AbstractMeasurementEntry> performanceTable = new ArrayList<>();
     Set<MeasurementWithCoordinates> absoluteMeasurements = filterAbsoluteMeasurements(measurementDrugInstancePairs);
+    Set<MeasurementWithCoordinates> contrastMeasurements = filterContrastMeasurements(measurementDrugInstancePairs);
     addAbsolutePerformanceEntries(performanceTable, absoluteMeasurements);
-    addContrastPerformanceEntries(performanceTable, study, matchedArms, context);
+    addContrastPerformanceEntries(performanceTable, study, matchedArms, context, contrastMeasurements);
     return performanceTable;
   }
 
   private void addContrastPerformanceEntries(
           ArrayList<AbstractMeasurementEntry> performanceTable,
           TrialDataStudy study,
-          List<TrialDataArm> arms
-          , SingleStudyContext context) {
+          List<TrialDataArm> arms,
+          SingleStudyContext context,
+          Set<MeasurementWithCoordinates> contrastMeasurements
+  ) {
     URI defaultMoment = study.getDefaultMeasurementMoment();
     List<AbstractMeasurementEntry> contrastEntries = arms.stream().map(
-            arm -> createContrastPerformanceEntry(arm, defaultMoment, context)).collect(Collectors.toList());
+            arm -> createContrastPerformanceEntry(arm, defaultMoment, context, contrastMeasurements)).collect(Collectors.toList());
     performanceTable.addAll(contrastEntries);
   }
 
-  private AbstractMeasurementEntry createContrastPerformanceEntry(TrialDataArm arm,
-                                                                  URI defaultMoment,
-                                                                  SingleStudyContext context) {
+  private AbstractMeasurementEntry createContrastPerformanceEntry(
+          TrialDataArm arm,
+          URI defaultMoment,
+          SingleStudyContext context,
+          Set<MeasurementWithCoordinates> contrastMeasurements
+  ) {
     Set<Measurement> measurementsForMoment = arm.getMeasurementsForMoment(defaultMoment);
     Measurement firstMeasurement = measurementsForMoment.iterator().next();
     String baselineUri = firstMeasurement.getReferenceArm().toString();
 
-    Map<String, Double> mu = getMu(baselineId, 0.0);
-    List<String> rowIds = getRowIds();
+    String baseline = getBaseline();
+    Map<String, Double> mu = getMu(contrastMeasurements);
+    List<String> rowIds = getRowIds(contrastMeasurements);
+    List<List<Double>> data = createCovData(contrastMeasurements, rowIds);
     CovarianceMatrix cov = new CovarianceMatrix(rowIds, rowIds, data);
 
     Relative relative = new Relative(getMeasurementType(firstMeasurement), mu, cov);
@@ -105,14 +113,22 @@ public class SingleStudyBenefitRiskServiceImpl implements SingleStudyBenefitRisk
     return new RelativePerformanceEntry(criterionUri, dataSourceId, performance);
   }
 
+  private List<List<Double>> createCovData(
+          Set<MeasurementWithCoordinates> contrastMeasurements,
+          List<String> rowIds
+  ) {
+    return null;
+  }
 
-  private List<String> getRowIds(Set<MeasurementWithCoordinates> measurements, SingleStudyContext context) {
-    List<String> interventions = measurements.stream().map(
+  private String getBaseline() {
+    return "";
+  }
+
+
+  private List<String> getRowIds(Set<MeasurementWithCoordinates> measurements) {
+    return measurements.stream().map(
             measurement -> measurement.getInterventionId().toString())
             .collect(Collectors.toList());
-    Map<Integer, AbstractIntervention> interventionsById = context.getInterventionsById();
-
-    return interventions;
   }
 
   private Map<String, Double> getMu(Set<MeasurementWithCoordinates> measurements) {
@@ -138,7 +154,7 @@ public class SingleStudyBenefitRiskServiceImpl implements SingleStudyBenefitRisk
     if (measurement.getStandardizedMeanDifference() != null) {
       return measurement.getStandardizedMeanDifference();
     }
-    return null;
+    return 0.0;//baseline
   }
 
 
@@ -178,7 +194,7 @@ public class SingleStudyBenefitRiskServiceImpl implements SingleStudyBenefitRisk
     }
   }
 
-  private Set<MeasurementWithCoordinates> getContrastMeasurements(Set<MeasurementWithCoordinates> measurementDrugInstancePairs) {
+  private Set<MeasurementWithCoordinates> filterContrastMeasurements(Set<MeasurementWithCoordinates> measurementDrugInstancePairs) {
     return measurementDrugInstancePairs.stream().filter(measurement -> measurement.getMeasurement().getReferenceArm() != null).collect(Collectors.toSet());
   }
 
