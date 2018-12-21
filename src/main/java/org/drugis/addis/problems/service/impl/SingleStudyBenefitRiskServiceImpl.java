@@ -58,6 +58,17 @@ public class SingleStudyBenefitRiskServiceImpl implements SingleStudyBenefitRisk
   private LinkService linkService;
 
   @Override
+  public List<AbstractMeasurementEntry> buildContrastPerformanceTable(
+          TrialDataStudy study,
+          Set<AbstractIntervention> includedInterventions
+  ) {
+    List<TrialDataArm> matchedArms = getMatchedArms(includedInterventions, study.getArms());
+    List<TrialDataArm> filteredArms = filteredArms.stream().filter(arm-> arm.);
+    List<AbstractMeasurementEntry> performanceTable = ;
+    return performanceTable;
+  }
+
+  @Override
   public List<AbstractMeasurementEntry> buildPerformanceTable(
           SingleStudyContext context,
           TrialDataStudy study,
@@ -303,7 +314,18 @@ public class SingleStudyBenefitRiskServiceImpl implements SingleStudyBenefitRisk
 
   @Override
   public List<TrialDataArm> getMatchedArms(Set<AbstractIntervention> includedInterventions, List<TrialDataArm> arms) {
-    List<TrialDataArm> armsWithMatching = arms.stream()
+    List<TrialDataArm> armsWithMatching = getArmsWithMatching(includedInterventions, arms);
+
+    Boolean isArmWithTooManyMatches = armsWithMatching.stream()
+            .anyMatch(arm -> arm.getMatchedProjectInterventionIds().size() > 1);
+    if (isArmWithTooManyMatches) {
+      throw new RuntimeException("too many matched interventions for arm when creating problem");
+    }
+    return armsWithMatching;
+  }
+
+  private List<TrialDataArm> getArmsWithMatching(Set<AbstractIntervention> includedInterventions, List<TrialDataArm> arms) {
+    return arms.stream()
             .peek(arm -> {
               Set<AbstractIntervention> matchingInterventions =
                       triplestoreService.findMatchingIncludedInterventions(includedInterventions, arm);
@@ -314,12 +336,6 @@ public class SingleStudyBenefitRiskServiceImpl implements SingleStudyBenefitRisk
             })
             .filter(arm -> arm.getMatchedProjectInterventionIds().size() != 0)
             .collect(Collectors.toList());
-    Boolean isArmWithTooManyMatches = armsWithMatching.stream()
-            .anyMatch(arm -> arm.getMatchedProjectInterventionIds().size() > 1);
-    if (isArmWithTooManyMatches) {
-      throw new RuntimeException("too many matched interventions for arm when creating problem");
-    }
-    return armsWithMatching;
   }
 
   @Override

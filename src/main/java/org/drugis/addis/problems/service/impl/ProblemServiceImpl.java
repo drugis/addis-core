@@ -215,9 +215,12 @@ public class ProblemServiceImpl implements ProblemService {
   }
 
 
-  private SingleStudyBenefitRiskProblem getSingleStudyBenefitRiskProblem(Project project, URI studyGraphUri,
-                                                                         Set<Outcome> outcomes,
-                                                                         Set<AbstractIntervention> includedInterventions) {
+  private SingleStudyBenefitRiskProblem getSingleStudyBenefitRiskProblem(
+          Project project,
+          URI studyGraphUri,
+          Set<Outcome> outcomes,
+          Set<AbstractIntervention> includedInterventions
+  ) {
     SingleStudyContext context = singleStudyBenefitRiskService.buildContext(project, studyGraphUri, outcomes, includedInterventions);
 
     TrialDataStudy study = singleStudyBenefitRiskService.getStudy(project, studyGraphUri, context);
@@ -231,6 +234,7 @@ public class ProblemServiceImpl implements ProblemService {
             matchedArms, context);
 
     List<AbstractMeasurementEntry> performanceTable = singleStudyBenefitRiskService.buildPerformanceTable(context, study, includedInterventions);
+    List<AbstractMeasurementEntry> contrastPerformanceTable = singleStudyBenefitRiskService.buildContrastPerformanceTable();
     return new SingleStudyBenefitRiskProblem(alternatives, criteria, performanceTable);
 
   }

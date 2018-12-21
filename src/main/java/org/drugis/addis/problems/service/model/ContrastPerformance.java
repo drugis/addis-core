@@ -2,14 +2,12 @@ package org.drugis.addis.problems.service.model;
 
 import java.util.Objects;
 
-/**
- * Created by joris on 14-6-17.
- */
-public class RelativePerformance extends AbstractPerformance{
-  private String type;
-  private RelativePerformanceParameters parameters;
+public class ContrastPerformance extends AbstractPerformance {
 
-  public RelativePerformance(String type, RelativePerformanceParameters parameters) {
+  private String type;
+  private ContrastPerformanceParameters parameters;
+
+  public ContrastPerformance(String type, ContrastPerformanceParameters parameters) {
     this.type = type;
     this.parameters = parameters;
   }
@@ -20,7 +18,7 @@ public class RelativePerformance extends AbstractPerformance{
   }
 
   @Override
-  public PerformanceParameters getParameters() {
+  public ContrastPerformanceParameters getParameters() {
     return parameters;
   }
 
@@ -28,7 +26,7 @@ public class RelativePerformance extends AbstractPerformance{
   public boolean equals(Object o) {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
-    RelativePerformance that = (RelativePerformance) o;
+    ContrastPerformance that = (ContrastPerformance) o;
     return Objects.equals(type, that.type) &&
             Objects.equals(parameters, that.parameters);
   }

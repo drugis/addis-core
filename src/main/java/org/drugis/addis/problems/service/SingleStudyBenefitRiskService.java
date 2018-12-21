@@ -27,4 +27,6 @@ public interface SingleStudyBenefitRiskService {
   List<TrialDataArm> getMatchedArms(Set<AbstractIntervention> includedInterventions, List<TrialDataArm> arms);
 
   SingleStudyContext buildContext(Project project, URI studyGraphUri, Set<Outcome> outcomes, Set<AbstractIntervention> includedInterventions);
+
+  List<AbstractMeasurementEntry> buildContrastPerformanceTable();
 }
