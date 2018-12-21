@@ -29,10 +29,14 @@
     Reference arm: <strong>{{referenceArm.label}}</strong>
   </div>
   <div class="cell" ng-if="item.referenceArm">
-    Reference standard error:
+    Reference standard error: <span ng-if="item.referenceArm && !isEditingAllowed">
+      <strong>{{item.referenceStandardError}}</strong>
+    </span>
   </div>
   <div class="cell large-2" ng-if="item.referenceArm && isEditingAllowed">
     <input type="number" ng-change="referenceStandardErrorChanged()" ng-model="item.referenceStandardError"
       ng-model-options="{ updateOn: 'default blur', debounce: {'default': 500, 'blur': 0} }" ng-class="{ 'invalid-trialverse-number' : item.referenceStandardError < 0 }">
+  </div>
+  <div class="cell large-2" ng-if="item.referenceArm && !isEditingAllowed">
   </div>
 </div>
