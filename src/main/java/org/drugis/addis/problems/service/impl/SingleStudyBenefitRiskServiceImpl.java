@@ -2,6 +2,7 @@ package org.drugis.addis.problems.service.impl;
 
 import com.google.common.collect.ImmutableSet;
 import org.apache.commons.lang3.tuple.Pair;
+import org.drugis.addis.analyses.model.BenefitRiskStudyOutcomeInclusion;
 import org.drugis.addis.analyses.service.AnalysisService;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.interventions.model.AbstractIntervention;
@@ -56,18 +57,50 @@ public class SingleStudyBenefitRiskServiceImpl implements SingleStudyBenefitRisk
 
   @Override
   public List<AbstractMeasurementEntry> buildContrastPerformanceTable(
+          List<BenefitRiskStudyOutcomeInclusion> inclusions,
           TrialDataStudy study,
           Set<AbstractIntervention> includedInterventions
   ) {
     List<TrialDataArm> matchedArms = getMatchedArms(includedInterventions, study.getArms());
-    List<TrialDataArm> filteredArms = filteredArms.stream().filter(arm -> arm.);
-    List<AbstractMeasurementEntry> performanceTable = createContrastEntries();
-    return performanceTable;
+    List<TrialDataArm> contrastArms =
+            matchedArms.stream().filter(arm ->
+                    arm.getMeasurements()
+                            .get(study.getDefaultMeasurementMoment())
+                            .stream().iterator().next().getReferenceArm() != null
+            ).collect(toList());
+
+    return createContrastEntries(inclusions, contrastArms);
   }
 
-  private List<AbstractMeasurementEntry> createContrastEntries() {
-    
+  private List<AbstractMeasurementEntry> createContrastEntries(
+          List<BenefitRiskStudyOutcomeInclusion> inclusions,
+          List<TrialDataArm> filteredArms) {
+    return inclusions.stream()
+            .map(inclusion -> createContrastEntry(inclusion, filteredArms))
+            .collect(toList());
 
+  }
+
+  private AbstractMeasurementEntry createContrastEntry(BenefitRiskStudyOutcomeInclusion inclusion, List<TrialDataArm> arms) {
+    String criterion = "";
+    String dataSource = "";
+    String type = "";
+    String baseline = inclusion.getBaseline();
+    Map<String, Double> mu = new HashMap<>();
+
+    List<String> rowNames;
+    List<String> colNames;
+    List<List<Double>> data = new ArrayList<>();
+
+    TrialDataArm referenceArm = arms.stream().filter(arm -> arm.getReferenceArm() == null).;
+    arms.forEach(arm -> {
+      ;
+    });
+    CovarianceMatrix cov = new CovarianceMatrix(rowNames, colNames, data);
+    Relative relative = new Relative("dmnorm", mu, cov);
+    RelativePerformanceParameters parameters = new RelativePerformanceParameters(baseline, relative);
+    RelativePerformance performance = new RelativePerformance(type, parameters);
+    return new RelativePerformanceEntry(criterion, dataSource, performance);
   }
 
   @Override
@@ -82,67 +115,10 @@ public class SingleStudyBenefitRiskServiceImpl implements SingleStudyBenefitRisk
 
     ArrayList<AbstractMeasurementEntry> performanceTable = new ArrayList<>();
     Set<MeasurementWithCoordinates> absoluteMeasurements = filterAbsoluteMeasurements(measurementDrugInstancePairs);
-    Set<MeasurementWithCoordinates> contrastMeasurements = filterContrastMeasurements(measurementDrugInstancePairs);
     addAbsolutePerformanceEntries(performanceTable, absoluteMeasurements);
-    addContrastPerformanceEntries(performanceTable, study, matchedArms, context, contrastMeasurements);
     return performanceTable;
   }
 
-  private void addContrastPerformanceEntries(
-          ArrayList<AbstractMeasurementEntry> performanceTable,
-          TrialDataStudy study,
-          List<TrialDataArm> arms,
-          SingleStudyContext context,
-          Set<MeasurementWithCoordinates> contrastMeasurements
-  ) {
-    URI defaultMoment = study.getDefaultMeasurementMoment();
-    List<AbstractMeasurementEntry> contrastEntries = arms.stream().map(
-            arm -> createContrastPerformanceEntry(arm, defaultMoment, context, contrastMeasurements)).collect(Collectors.toList());
-    performanceTable.addAll(contrastEntries);
-  }
-
-  private AbstractMeasurementEntry createContrastPerformanceEntry(
-          TrialDataArm arm,
-          URI defaultMoment,
-          SingleStudyContext context,
-          Set<MeasurementWithCoordinates> contrastMeasurements
-  ) {
-    Set<Measurement> measurementsForMoment = arm.getMeasurementsForMoment(defaultMoment);
-    Measurement firstMeasurement = measurementsForMoment.iterator().next();
-    String baselineUri = firstMeasurement.getReferenceArm().toString();
-
-    String baseline = getBaseline();
-    Map<String, Double> mu = getMu(contrastMeasurements);
-    List<String> rowIds = getRowIds(contrastMeasurements);
-    List<List<Double>> data = createCovData(contrastMeasurements, rowIds);
-    CovarianceMatrix cov = new CovarianceMatrix(rowIds, rowIds, data);
-
-    Relative relative = new Relative(getMeasurementType(firstMeasurement), mu, cov);
-    RelativePerformanceParameters parameter = new RelativePerformanceParameters(baselineUri, relative);
-    RelativePerformance performance = new RelativePerformance("dmnorm", parameter);
-
-    String criterionUri = firstMeasurement.getVariableConceptUri().toString();//klopt
-    String dataSourceId = context.getDataSourceIdsByOutcomeUri().get(firstMeasurement.getVariableConceptUri());
-    return new RelativePerformanceEntry(criterionUri, dataSourceId, performance);
-  }
-
-  private List<List<Double>> createCovData(
-          Set<MeasurementWithCoordinates> contrastMeasurements,
-          List<String> rowIds
-  ) {
-    return null;
-  }
-
-  private String getBaseline() {
-    return "";
-  }
-
-
-  private List<String> getRowIds(Set<MeasurementWithCoordinates> measurements) {
-    return measurements.stream().map(
-            measurement -> measurement.getInterventionId().toString())
-            .collect(Collectors.toList());
-  }
 
   private Map<String, Double> getMu(Set<MeasurementWithCoordinates> measurements) {
     Map<String, Double> mu = new HashMap<>();

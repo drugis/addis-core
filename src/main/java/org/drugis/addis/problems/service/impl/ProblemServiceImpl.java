@@ -187,7 +187,7 @@ public class ProblemServiceImpl implements ProblemService {
                       .map(BenefitRiskStudyOutcomeInclusion::getOutcomeId)
                       .map(outcomesById::get)
                       .collect(toSet());
-              return getSingleStudyBenefitRiskProblem(project, studyURI, outcomes, includedInterventions);
+              return getSingleStudyBenefitRiskProblem(project, analysis, studyURI, outcomes, includedInterventions);
             })
             .collect(toList());
   }
@@ -217,6 +217,7 @@ public class ProblemServiceImpl implements ProblemService {
 
   private SingleStudyBenefitRiskProblem getSingleStudyBenefitRiskProblem(
           Project project,
+          BenefitRiskAnalysis analysis,
           URI studyGraphUri,
           Set<Outcome> outcomes,
           Set<AbstractIntervention> includedInterventions
@@ -233,8 +234,12 @@ public class ProblemServiceImpl implements ProblemService {
     Map<String, AlternativeEntry> alternatives = singleStudyBenefitRiskService.getAlternatives(
             matchedArms, context);
 
-    List<AbstractMeasurementEntry> performanceTable = singleStudyBenefitRiskService.buildPerformanceTable(context, study, includedInterventions);
-    List<AbstractMeasurementEntry> contrastPerformanceTable = singleStudyBenefitRiskService.buildContrastPerformanceTable();
+    List<AbstractMeasurementEntry> performanceTable =
+            singleStudyBenefitRiskService.buildPerformanceTable(context, study, includedInterventions);
+    List<AbstractMeasurementEntry> contrastPerformanceTable =
+            singleStudyBenefitRiskService.buildContrastPerformanceTable(analysis.getBenefitRiskStudyOutcomeInclusions(), study, includedInterventions);
+    performanceTable.addAll(contrastPerformanceTable);
+
     return new SingleStudyBenefitRiskProblem(alternatives, criteria, performanceTable);
 
   }

@@ -1,5 +1,6 @@
 package org.drugis.addis.analyses.model;
 
+import com.fasterxml.jackson.annotation.JsonRawValue;
 import org.hibernate.annotations.Type;
 
 import javax.persistence.Entity;
@@ -7,6 +8,7 @@ import javax.persistence.Id;
 import javax.persistence.IdClass;
 import java.io.Serializable;
 import java.net.URI;
+import java.util.Objects;
 
 /**
  * Created by joris on 13-6-17.
@@ -53,6 +55,9 @@ public class BenefitRiskStudyOutcomeInclusion {
   @Type(type = "org.drugis.addis.util.UriUserType")
   private URI studyGraphUri;
 
+  @JsonRawValue
+  private String baseline;
+
   public BenefitRiskStudyOutcomeInclusion() {
   }
 
@@ -60,6 +65,14 @@ public class BenefitRiskStudyOutcomeInclusion {
     this.analysisId = analysisId;
     this.outcomeId = outcomeId;
     this.studyGraphUri = studyGraphUri;
+    this.baseline = "";
+  }
+
+  public BenefitRiskStudyOutcomeInclusion(Integer analysisId, Integer outcomeId, URI studyGraphUri, String baseline) {
+    this.analysisId = analysisId;
+    this.outcomeId = outcomeId;
+    this.studyGraphUri = studyGraphUri;
+    this.baseline = baseline;
   }
 
   public Integer getAnalysisId() {
@@ -74,23 +87,24 @@ public class BenefitRiskStudyOutcomeInclusion {
     return studyGraphUri;
   }
 
+  public String getBaseline() {
+    return baseline;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
-
     BenefitRiskStudyOutcomeInclusion that = (BenefitRiskStudyOutcomeInclusion) o;
-
-    if (!analysisId.equals(that.analysisId)) return false;
-    if (!outcomeId.equals(that.outcomeId)) return false;
-    return studyGraphUri != null ? studyGraphUri.equals(that.studyGraphUri) : that.studyGraphUri == null;
+    return Objects.equals(analysisId, that.analysisId) &&
+            Objects.equals(outcomeId, that.outcomeId) &&
+            Objects.equals(studyGraphUri, that.studyGraphUri) &&
+            Objects.equals(baseline, that.baseline);
   }
 
   @Override
   public int hashCode() {
-    int result = analysisId.hashCode();
-    result = 31 * result + outcomeId.hashCode();
-    result = 31 * result + (studyGraphUri != null ? studyGraphUri.hashCode() : 0);
-    return result;
+
+    return Objects.hash(analysisId, outcomeId, studyGraphUri, baseline);
   }
 }

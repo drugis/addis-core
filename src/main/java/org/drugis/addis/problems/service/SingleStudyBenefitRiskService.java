@@ -1,5 +1,6 @@
 package org.drugis.addis.problems.service;
 
+import org.drugis.addis.analyses.model.BenefitRiskStudyOutcomeInclusion;
 import org.drugis.addis.interventions.model.AbstractIntervention;
 import org.drugis.addis.outcomes.Outcome;
 import org.drugis.addis.problems.model.AlternativeEntry;
@@ -33,5 +34,5 @@ public interface SingleStudyBenefitRiskService {
 
   SingleStudyContext buildContext(Project project, URI studyGraphUri, Set<Outcome> outcomes, Set<AbstractIntervention> includedInterventions);
 
-  List<AbstractMeasurementEntry> buildContrastPerformanceTable();
+  List<AbstractMeasurementEntry> buildContrastPerformanceTable(List<BenefitRiskStudyOutcomeInclusion> benefitRiskStudyOutcomeInclusions, TrialDataStudy study, Set<AbstractIntervention> includedInterventions);
 }

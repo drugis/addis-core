@@ -166,13 +166,8 @@ define(['lodash', 'angular'], function(_) {
     }
 
     function setBaseline(outcomeWithAnalysis, baseline) {
-      $scope.analysis.benefitRiskNMAOutcomeInclusions = $scope.analysis.benefitRiskNMAOutcomeInclusions.map(function(inclusion) {
-        if (inclusion.outcomeId === outcomeWithAnalysis.outcome.id) {
-          return _.extend(inclusion, { baseline: baseline });
-        } else {
-          return inclusion;
-        }
-      });
+      $scope.analysis.benefitRiskNMAOutcomeInclusions =
+        addBaseline(outcomeWithAnalysis, $scope.analysis.benefitRiskNMAOutcomeInclusions, baseline)
       var saveCommand = BenefitRiskService.analysisToSaveCommand($scope.analysis);
       $scope.effectsTablePromise = AnalysisResource.save(saveCommand).$promise.then(function() {
         return updateAnalysisOutcomes($scope.analysis, $scope.outcomes);
@@ -195,24 +190,31 @@ define(['lodash', 'angular'], function(_) {
             return getReferenceAlternativeName(outcome);
           },
           callback: function() {
-            return function(outcome, baseline) {
-              $scope.analysis.benefitRiskStudyOutcomeInclusions = _.map(
-                $scope.analysis.benefitRiskStudyOutcomeInclusions, function(inclusion) {
-                  if (inclusion.outcomeId === outcome.outcome.id) {
-                    return _.extend(inclusion, { baseline: baseline });
-                  } else {
-                    return inclusion;
-                  }
-                }
-              );
-              var saveCommand = BenefitRiskService.analysisToSaveCommand($scope.analysis);
-              $scope.effectsTablePromise = AnalysisResource.save(saveCommand).$promise.then(function() {
-                return updateAnalysisOutcomes($scope.analysis, $scope.outcomes);
-              });
-            };
+            return _.partial(addStudyBaseline, outcome);
           }
         }
       });
+    }
+
+    function addStudyBaseline(outcome, baseline) {
+      $scope.analysis.benefitRiskStudyOutcomeInclusions =
+        addBaseline(outcome, $scope.analysis.benefitRiskStudyOutcomeInclusions, baseline);
+      var saveCommand = BenefitRiskService.analysisToSaveCommand($scope.analysis);
+      $scope.effectsTablePromise = AnalysisResource.save(saveCommand).$promise.then(function() {
+        return updateAnalysisOutcomes($scope.analysis, $scope.outcomes);
+      });
+    }
+
+    function addBaseline(outcome, inclusions, baseline) {
+      return _.map(
+        inclusions, function(inclusion) {
+          if (inclusion.outcomeId === outcome.outcome.id) {
+            return _.extend(inclusion, { baseline: baseline });
+          } else {
+            return inclusion;
+          }
+        }
+      );
     }
 
     function getReferenceAlternativeName(outcome) {
