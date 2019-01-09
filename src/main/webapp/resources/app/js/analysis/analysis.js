@@ -6,6 +6,7 @@ define([
   './benefitRiskController',
   './abstractBenefitRiskController',
   './benefitRiskService',
+  './benefitRiskErrorService',
   './directives/studySelectDirective',
   'angular',
   'angular-resource',
@@ -20,6 +21,7 @@ define([
   BenefitRiskController,
   AbstractBenefitRiskController,
   BenefitRiskService,
+  BenefitRiskErrorService,
   studySelect,
   angular
 ) {
@@ -34,6 +36,7 @@ define([
       .controller('AbstractBenefitRiskController', AbstractBenefitRiskController)
       //services
       .factory('BenefitRiskService', BenefitRiskService)
+      .factory('BenefitRiskErrorService', BenefitRiskErrorService)
 
       //directives
       .directive('studySelect', studySelect)

@@ -16,6 +16,11 @@ import java.util.Map;
 import java.util.Set;
 
 public interface SingleStudyBenefitRiskService {
+  List<AbstractMeasurementEntry> buildContrastPerformanceTable(
+          TrialDataStudy study,
+          Set<AbstractIntervention> includedInterventions
+  );
+
   List<AbstractMeasurementEntry> buildPerformanceTable(SingleStudyContext context, TrialDataStudy study, Set<AbstractIntervention> includedInterventions);
 
   TrialDataStudy getStudy(Project project, URI studyGraphUri, SingleStudyContext context);

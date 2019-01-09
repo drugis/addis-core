@@ -1,8 +1,22 @@
 'use strict';
 define(['angular', 'lodash'],
   function(angular, _) {
-    var dependencies = ['$scope', '$modalInstance', 'ProjectResource', 'project', 'otherProjectNames', 'callback'];
-    var EditProjectController = function($scope, $modalInstance, ProjectResource, project, otherProjectNames, callback) {
+    var dependencies = [
+      '$scope',
+      '$modalInstance',
+      'ProjectResource',
+      'project',
+      'otherProjectNames',
+      'callback'
+    ];
+    var EditProjectController = function(
+      $scope,
+      $modalInstance,
+      ProjectResource,
+      project,
+      otherProjectNames,
+      callback
+    ) {
       // functions
       $scope.isNameTaken = isNameTaken;
       $scope.editProject = editProject;
@@ -12,7 +26,7 @@ define(['angular', 'lodash'],
       $scope.project = angular.copy(project);
 
       function isNameTaken(proposedName) {
-        return !!_.find(otherProjectNames, function(name) {
+        return _.some(otherProjectNames, function(name) {
           return name === proposedName;
         });
       }

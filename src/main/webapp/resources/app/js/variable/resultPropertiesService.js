@@ -43,7 +43,7 @@ define(['angular', 'lodash'], function(angular, _) {
             .filter(['category', categoryName])
             .map(function(property) {
               return _.extend({}, property, {
-                isSelected: !!_.find(variable.selectedResultProperties, ['type', property.type])
+                isSelected: _.some(variable.selectedResultProperties, ['type', property.type])
               });
             }).value();
           return {

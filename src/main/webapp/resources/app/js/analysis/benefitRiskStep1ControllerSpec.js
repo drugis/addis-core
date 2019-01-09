@@ -32,26 +32,15 @@ define(['angular-mocks', './analysis'], function() {
       modelsDefer,
       projectDefer,
       benefitRiskService = jasmine.createSpyObj('BenefitRiskService', [
-        'addModelsGroup',
-        'compareAnalysesByModels',
-        'joinModelsWithAnalysis',
-        'buildOutcomeWithAnalyses',
-        'numberOfSelectedInterventions',
-        'numberOfSelectedOutcomes',
-        'isModelWithMissingAlternatives',
-        'isModelWithoutResults',
-        'isMissingAnalysis',
-        'isMissingDataType',
         'findMissingAlternatives',
         'findOverlappingInterventions',
-        'isInvalidStudySelected',
-        'hasMissingStudy',
-        'findOverlappingOutcomes',
-        'addStudiesToOutcomes',
-        'addModelBaseline',
         'analysisToSaveCommand',
         'finalizeAndGoToDefaultScenario',
-        'analysisUpdateCommand'
+        'analysisUpdateCommand',
+        'isContrastStudySelected',
+        'getOutcomesWithInclusions',
+        'getStep1Errors',
+        'buildOutcomesWithAnalyses'
       ]);
 
     beforeEach(angular.mock.module('addis.analysis'));
@@ -94,12 +83,10 @@ define(['angular-mocks', './analysis'], function() {
       });
       userServiceMock.isLoginUserId.and.returnValue($q.resolve(true));
 
-      benefitRiskService.compareAnalysesByModels.and.returnValue(0);
-      benefitRiskService.joinModelsWithAnalysis.and.returnValue([]);
       benefitRiskService.findOverlappingInterventions.and.returnValue([]);
-      benefitRiskService.findOverlappingOutcomes.and.returnValue([]);
-      benefitRiskService.addStudiesToOutcomes.and.returnValue([]);
-
+      benefitRiskService.getStep1Errors.and.returnValue([]);
+      benefitRiskService.buildOutcomesWithAnalyses.and.returnValue([]);
+      
       $controller('BenefitRiskStep1Controller', {
         $scope: scope,
         $q: q,
@@ -128,12 +115,6 @@ define(['angular-mocks', './analysis'], function() {
 
     describe('when the analysis, outcomes, models, studies and alternatives are loaded', function() {
       beforeEach(function() {
-        benefitRiskService.buildOutcomeWithAnalyses.and.returnValue({
-          networkMetaAnalyses: [{}],
-          outcome: {
-            id: 1
-          }
-        });
         projectDefer.resolve({
           owner: {
             id: 1
@@ -153,9 +134,7 @@ define(['angular-mocks', './analysis'], function() {
       });
 
       it('should build the outcomesWithAnalyses', function() {
-        expect(benefitRiskService.joinModelsWithAnalysis).toHaveBeenCalled();
-        expect(benefitRiskService.addModelsGroup).toHaveBeenCalled();
-        expect(benefitRiskService.buildOutcomeWithAnalyses).toHaveBeenCalled();
+        expect(benefitRiskService.getOutcomesWithInclusions).toHaveBeenCalled();
       });
 
     });

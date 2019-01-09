@@ -94,9 +94,7 @@ define(['lodash'], function(_) {
         projectId: $stateParams.projectId,
         outcomeIds: outcomeIds
       }).$promise.then(function(networkMetaAnalyses) {
-        networkMetaAnalyses = networkMetaAnalyses
-          .map(_.partial(BenefitRiskService.joinModelsWithAnalysis, models))
-          .map(BenefitRiskService.addModelsGroup);
+        networkMetaAnalyses =BenefitRiskService.addModels(networkMetaAnalyses, models);
         var outcomesWithAnalyses = BenefitRiskService.buildOutcomes(analysis, outcomes, networkMetaAnalyses);
         outcomesWithAnalyses = BenefitRiskService.addStudiesToOutcomes(
           outcomesWithAnalyses, analysis.benefitRiskStudyOutcomeInclusions, studies);

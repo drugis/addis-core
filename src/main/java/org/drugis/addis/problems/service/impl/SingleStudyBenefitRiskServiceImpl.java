@@ -33,9 +33,6 @@ import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 import static java.util.stream.Collectors.toSet;
 
-/**
- * Created by daan on 3/27/14.
- */
 @Service
 public class SingleStudyBenefitRiskServiceImpl implements SingleStudyBenefitRiskService {
 
@@ -63,9 +60,14 @@ public class SingleStudyBenefitRiskServiceImpl implements SingleStudyBenefitRisk
           Set<AbstractIntervention> includedInterventions
   ) {
     List<TrialDataArm> matchedArms = getMatchedArms(includedInterventions, study.getArms());
-    List<TrialDataArm> filteredArms = filteredArms.stream().filter(arm-> arm.);
-    List<AbstractMeasurementEntry> performanceTable = ;
+    List<TrialDataArm> filteredArms = filteredArms.stream().filter(arm -> arm.);
+    List<AbstractMeasurementEntry> performanceTable = createContrastEntries();
     return performanceTable;
+  }
+
+  private List<AbstractMeasurementEntry> createContrastEntries() {
+    
+
   }
 
   @Override
