@@ -165,6 +165,20 @@ define(['lodash', 'angular'], function(_) {
       });
     }
 
+    function setBaseline(outcomeWithAnalysis, baseline) {
+      $scope.analysis.benefitRiskNMAOutcomeInclusions = $scope.analysis.benefitRiskNMAOutcomeInclusions.map(function(inclusion) {
+        if (inclusion.outcomeId === outcomeWithAnalysis.outcome.id) {
+          return _.extend(inclusion, { baseline: baseline });
+        } else {
+          return inclusion;
+        }
+      });
+      var saveCommand = BenefitRiskService.analysisToSaveCommand($scope.analysis);
+      $scope.effectsTablePromise = AnalysisResource.save(saveCommand).$promise.then(function() {
+        return updateAnalysisOutcomes($scope.analysis, $scope.outcomes);
+      });
+    }
+
     function openStudyDistributionModal(outcome) {
       $modal.open({
         templateUrl: './setStudyBaselineDistribution.html',
@@ -174,31 +188,60 @@ define(['lodash', 'angular'], function(_) {
           outcome: function() {
             return outcome;
           },
-          linkLikelihood: function(){
-            return {
-              link: 'normal',
-              likelihood: 'identity'
+          measurementType: function() {
+            return getMeasurementType(outcome);
+          },
+          referenceAlternativeName: function() {
+            return getReferenceAlternativeName(outcome);
+          },
+          callback: function() {
+            return function(outcome, baseline) {
+              $scope.analysis.benefitRiskStudyOutcomeInclusions = _.map(
+                $scope.analysis.benefitRiskStudyOutcomeInclusions, function(inclusion) {
+                  if (inclusion.outcomeId === outcome.outcome.id) {
+                    return _.extend(inclusion, { baseline: baseline });
+                  } else {
+                    return inclusion;
+                  }
+                }
+              );
+              var saveCommand = BenefitRiskService.analysisToSaveCommand($scope.analysis);
+              $scope.effectsTablePromise = AnalysisResource.save(saveCommand).$promise.then(function() {
+                return updateAnalysisOutcomes($scope.analysis, $scope.outcomes);
+              });
             };
           }
         }
       });
     }
 
+    function getReferenceAlternativeName(outcome) {
+      var referenceArm = _.find(outcome.selectedStudy.arms, function(arm) {
+        return arm.referenceArm === arm.uri;
+      });
+      var referenceAlternativeId = referenceArm.matchedProjectInterventionIds[0];
+      var referenceAlternative = _.find($scope.alternatives, function(alternative) {
+        return alternative.id === referenceAlternativeId;
+      });
+      return referenceAlternative.name;
+    }
 
-    function setBaseline(outcomeWithAnalysis, baseline) {
-      $scope.analysis.benefitRiskNMAOutcomeInclusions = $scope.analysis.benefitRiskNMAOutcomeInclusions.map(function(benefitRiskNMAOutcomeInclusion) {
-        if (benefitRiskNMAOutcomeInclusion.outcomeId === outcomeWithAnalysis.outcome.id) {
-          return _.extend(benefitRiskNMAOutcomeInclusion, {
-            baseline: baseline
-          });
-        } else {
-          return benefitRiskNMAOutcomeInclusion;
-        }
+    function getMeasurementType(outcome) {
+      var nonReferenceArm = _.find(outcome.selectedStudy.arms, function(arm) {
+        return arm.referenceArm !== arm.uri;
       });
-      var saveCommand = BenefitRiskService.analysisToSaveCommand($scope.analysis);
-      $scope.effectsTablePromise = AnalysisResource.save(saveCommand).$promise.then(function() {
-        return updateAnalysisOutcomes($scope.analysis, $scope.outcomes);
-      });
+      var measurement = nonReferenceArm.measurements[0];
+      if (measurement.oddsRatio !== undefined) {
+        return 'oddsRatio';
+      } else if (measurement.riskRatio !== undefined) {
+        return 'riskRatio';
+      } else if (measurement.meanDifference !== undefined) {
+        return 'meanDifference';
+      } else if (measurement.standardizedMeanDifference !== undefined) {
+        return 'standardizedMeanDifference';
+      } else if (measurement.hazardRatio !== undefined) {
+        return 'hazardRatio';
+      }
     }
 
     function resetScales() {
