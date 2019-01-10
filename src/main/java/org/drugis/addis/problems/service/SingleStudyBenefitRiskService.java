@@ -17,10 +17,6 @@ import java.util.Map;
 import java.util.Set;
 
 public interface SingleStudyBenefitRiskService {
-  List<AbstractMeasurementEntry> buildContrastPerformanceTable(
-          TrialDataStudy study,
-          Set<AbstractIntervention> includedInterventions
-  );
 
   List<AbstractMeasurementEntry> buildPerformanceTable(SingleStudyContext context, TrialDataStudy study, Set<AbstractIntervention> includedInterventions);
 
@@ -34,5 +30,9 @@ public interface SingleStudyBenefitRiskService {
 
   SingleStudyContext buildContext(Project project, URI studyGraphUri, Set<Outcome> outcomes, Set<AbstractIntervention> includedInterventions);
 
-  List<AbstractMeasurementEntry> buildContrastPerformanceTable(List<BenefitRiskStudyOutcomeInclusion> benefitRiskStudyOutcomeInclusions, TrialDataStudy study, Set<AbstractIntervention> includedInterventions);
+  List<AbstractMeasurementEntry> buildContrastPerformanceTable(
+          List<BenefitRiskStudyOutcomeInclusion> benefitRiskStudyOutcomeInclusions,
+          TrialDataStudy study,
+          Set<AbstractIntervention> includedInterventions,
+          SingleStudyContext context);
 }

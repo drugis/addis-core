@@ -165,7 +165,6 @@ public class ProblemServiceImpl implements ProblemService {
   }
 
   private BenefitRiskProblem getNetworkProblem(Project project, NMAInclusionWithResults inclusionWithResults) {
-    // output
     URI modelURI = linkService.getModelSourceLink(project, inclusionWithResults.getModel());
 
     final Map<URI, CriterionEntry> criteria = networkMetaAnalysisService.buildCriteriaForInclusion(inclusionWithResults, modelURI);
@@ -237,7 +236,11 @@ public class ProblemServiceImpl implements ProblemService {
     List<AbstractMeasurementEntry> performanceTable =
             singleStudyBenefitRiskService.buildPerformanceTable(context, study, includedInterventions);
     List<AbstractMeasurementEntry> contrastPerformanceTable =
-            singleStudyBenefitRiskService.buildContrastPerformanceTable(analysis.getBenefitRiskStudyOutcomeInclusions(), study, includedInterventions);
+            singleStudyBenefitRiskService.buildContrastPerformanceTable(
+                    analysis.getBenefitRiskStudyOutcomeInclusions(),
+                    study,
+                    includedInterventions,
+                    context);
     performanceTable.addAll(contrastPerformanceTable);
 
     return new SingleStudyBenefitRiskProblem(alternatives, criteria, performanceTable);

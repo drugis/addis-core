@@ -86,7 +86,6 @@ public class NetworkBenefitRiskPerformanceEntryBuilder {
 
     mu = mu.entrySet().stream().filter(m -> interventionIds.contains(m.getKey()))
         .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-
     //add baseline to mu
     mu.put(baselineInterventionId, 0.0);
     return mu;
