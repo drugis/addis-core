@@ -87,7 +87,12 @@ define(['lodash', 'angular'], function(_) {
 
       $scope.studies = studies;
       $scope.studyArrayLength = studies.length;
-
+      $scope.alternatives = alternatives;
+      $scope.includedAlternatives = alternatives.filter(function(alternative) {
+        return _.find(analysis.interventionInclusions, ['interventionId', alternative.id]);
+      });
+      $scope.outcomes = BenefitRiskService.getOutcomesWithInclusions(outcomes, analysis);
+     
       AnalysisResource.query({
         projectId: $stateParams.projectId,
         outcomeIds: outcomeIds
@@ -102,17 +107,8 @@ define(['lodash', 'angular'], function(_) {
 
         updateMissingAlternativesForAllOutcomes();
         updateStudyMissingStuff();
-        // when view setup is completed
         checkStep1Validity();
       });
-
-      $scope.alternatives = alternatives;
-
-      $scope.includedAlternatives = alternatives.filter(function(alternative) {
-        return _.find(analysis.interventionInclusions, ['interventionId', alternative.id]);
-      });
-
-      $scope.outcomes = BenefitRiskService.getOutcomesWithInclusions(outcomes, analysis);
     });
 
     function goToStep2() {

@@ -989,6 +989,6 @@ DROP TABLE toggledColumns;
 --rollback   FOREIGN KEY(analysisId) REFERENCES benefitRiskAnalysis(id) ON DELETE CASCADE
 --rollback );
 
---changeset kejserj:80
+--changeset keijserj:80
 ALTER TABLE BenefitRiskStudyOutcomeInclusion ADD COLUMN baseline VARCHAR;
 --rollback ALTER TABLE BenefitRiskStudyOutcomeInclusion DROP COLUMN baseline;
