@@ -1,7 +1,6 @@
 'use strict';
 define(['angular-mocks', './analysis'], function() {
   describe('benefit-risk step 1 controller', function() {
-
     var scope, q,
       stateParamsMock = {
         projectId: 1
@@ -14,9 +13,7 @@ define(['angular-mocks', './analysis'], function() {
       projectStudiesResourceMock = jasmine.createSpyObj('ProjectStudiesResource', ['query']),
       userServiceMock = jasmine.createSpyObj('UserService', ['isLoginUserId']),
       singleStudyBenefitRiskServiceMock = jasmine.createSpyObj('SingleStudyBenefitRiskService', [
-        'addMissingInterventionsToStudies',
-        'addHasMatchedMixedTreatmentArm',
-        'addOverlappingInterventionsToStudies'
+        'getStudiesWithErrors'
       ]),
       scenarioResourceMock = jasmine.createSpyObj('ScenarioResource', ['query']),
       subProblemResourceMock = jasmine.createSpyObj('SubProblemResource', ['query']),
@@ -40,11 +37,12 @@ define(['angular-mocks', './analysis'], function() {
         'isContrastStudySelected',
         'getOutcomesWithInclusions',
         'getStep1Errors',
-        'buildOutcomesWithAnalyses'
+        'buildOutcomesWithAnalyses',
+        'getNMAOutcomeInclusions',
+        'getStudyOutcomeInclusions'
       ]);
 
     beforeEach(angular.mock.module('addis.analysis'));
-
 
     beforeEach(inject(function($rootScope, $q, $controller) {
       scope = $rootScope;
@@ -86,7 +84,9 @@ define(['angular-mocks', './analysis'], function() {
       benefitRiskService.findOverlappingInterventions.and.returnValue([]);
       benefitRiskService.getStep1Errors.and.returnValue([]);
       benefitRiskService.buildOutcomesWithAnalyses.and.returnValue([]);
-      
+      benefitRiskService.getStudyOutcomeInclusions.and.returnValue([]);
+      benefitRiskService.getNMAOutcomeInclusions.and.returnValue([]);
+
       $controller('BenefitRiskStep1Controller', {
         $scope: scope,
         $q: q,
@@ -185,12 +185,8 @@ define(['angular-mocks', './analysis'], function() {
       });
 
       it('should build the benefitrisk analysis inclusions', function() {
-        expect(scope.analysis.benefitRiskNMAOutcomeInclusions).toEqual([{
-          analysisId: 1,
-          outcomeId: 3,
-          networkMetaAnalysisId: 5,
-          modelId: 1
-        }]);
+        expect(benefitRiskService.getNMAOutcomeInclusions).toHaveBeenCalled();
+        expect(benefitRiskService.getStudyOutcomeInclusions).toHaveBeenCalled();
       });
     });
 

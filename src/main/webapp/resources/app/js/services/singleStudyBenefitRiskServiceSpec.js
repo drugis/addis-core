@@ -1,14 +1,13 @@
-define(['angular', 'angular-mocks', '../services'], function() {
-  describe('The single Study Benefit-Risk Analysis service', function() {
+'use strict';
+define(['angular', 'angular-mocks', './services'], function() {
+  fdescribe('The single Study Benefit-Risk Analysis service', function() {
     var singleStudyBenefitRiskService;
-    
-    beforeEach(angular.mock.module('addis.services'));
-  
 
-    beforeEach(inject(function(SingleStudyBenefitRiskService){
+    beforeEach(angular.mock.module('addis.services'));
+
+    beforeEach(inject(function(SingleStudyBenefitRiskService) {
       singleStudyBenefitRiskService = SingleStudyBenefitRiskService;
     }));
-
 
     describe('addMissingOutcomesToStudies', function() {
       it('should find find 2 missing outcomes', function() {
@@ -58,11 +57,15 @@ define(['angular', 'angular-mocks', '../services'], function() {
             }
           }]
         }];
-        var selectedOutcomes = [{outcome:{
-          semanticOutcomeUri: 'semanticOutcomeUri1'
-        }}, {outcome:{
-          semanticOutcomeUri: 'semanticOutcomeUri2'
-        }}];
+        var selectedOutcomes = [{
+          outcome: {
+            semanticOutcomeUri: 'semanticOutcomeUri1'
+          }
+        }, {
+          outcome: {
+            semanticOutcomeUri: 'semanticOutcomeUri2'
+          }
+        }];
 
         var result = singleStudyBenefitRiskService.addMissingOutcomesToStudies(studies, selectedOutcomes);
         expect(result[0].missingOutcomes).toEqual([selectedOutcomes[1]]);
@@ -133,5 +136,28 @@ define(['angular', 'angular-mocks', '../services'], function() {
       });
     });
 
+    describe('addMissingInterventionsToStudies', function() {
+      it('should fail!', function() {
+        fail();
+      });
+    });
+
+    describe('recalculateGroup', function() {
+      it('should fail!', function() {
+        fail();
+      });
+    });
+
+    describe('findMissingOutcomes', function() {
+      it('should fail!', function() {
+        fail();
+      });
+    });
+
+    describe('getStudiesWithErrors', function() {
+      it('should fail!', function() {
+        fail();
+      });
+    });
   });
 });

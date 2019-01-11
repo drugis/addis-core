@@ -1,6 +1,6 @@
 'use strict';
 define(['lodash', 'angular-mocks', './analysis'], function(_) {
-  describe('benefit-risk service', function() {
+  xdescribe('benefit-risk service', function() {
     var benefitRiskService;
 
     var workspaceServiceMock = jasmine.createSpyObj('WorkspaceService', ['reduceProblem']);

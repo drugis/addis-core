@@ -1,9 +1,9 @@
 define([
   'angular-mocks',
   './networkMetaAnalysis',
-  '../util/resultsConstants'
+  '../util/resultsConstants',
+  '../services/services'
 ], function() {
-
   var CONTINUOUS_TYPE = 'http://trials.drugis.org/ontology#continuous';
 
   var exampleStudies = [{

@@ -347,6 +347,35 @@ define(['lodash'], function(_) {
       }).$promise;
     }
 
+    function getStudyOutcomeInclusions(outcomes, analysisId) {
+      return _(outcomes)
+        .filter(function(outcome) {
+          return outcome.outcome.isIncluded && outcome.dataType === 'single-study';
+        })
+        .map(function(outcome) {
+          return {
+            analysisId: analysisId,
+            outcomeId: outcome.outcome.id,
+            studyGraphUri: outcome.selectedStudy ? outcome.selectedStudy.studyUri : undefined
+          };
+        });
+    }
+
+    function getNMAOutcomeInclusions(outcomes, analysisId) {
+      return _(outcomes)
+        .filter(function(outcome) {
+          return outcome.outcome.isIncluded && outcome.dataType === 'network' && outcome.selectedAnalysis;
+        })
+        .map(function(outcome) {
+          return {
+            analysisId: analysisId,
+            outcomeId: outcome.outcome.id,
+            networkMetaAnalysisId: outcome.selectedAnalysis.id,
+            modelId: outcome.selectedModel ? outcome.selectedModel.id : undefined
+          };
+        });
+    }
+
     return {
       addModelsGroup: addModelsGroup,//public for test
       joinModelsWithAnalysis: joinModelsWithAnalysis,//public for test
@@ -368,7 +397,9 @@ define(['lodash'], function(_) {
       filterArchivedAndAddModels: filterArchivedAndAddModels,
       addModels: addModels,
       buildOutcomesWithAnalyses: buildOutcomesWithAnalyses,
-      prepareEffectsTable: prepareEffectsTable
+      prepareEffectsTable: prepareEffectsTable,
+      getStudyOutcomeInclusions:getStudyOutcomeInclusions,
+      getNMAOutcomeInclusions:getNMAOutcomeInclusions
     };
   };
 

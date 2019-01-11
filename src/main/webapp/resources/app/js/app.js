@@ -27,7 +27,7 @@ define(
     './controllers',
     './filters',
     './resources',
-    './services',
+    './services/services',
     './search/search',
     './user/user',
     './dataset/dataset',

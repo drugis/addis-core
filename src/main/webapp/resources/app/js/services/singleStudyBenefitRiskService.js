@@ -1,4 +1,7 @@
 'use strict';
+
+import { get } from "https";
+
 define(['lodash'], function(_) {
   var dependencies = [];
   var SingleStudyBenefitRiskService = function() {
@@ -110,13 +113,20 @@ define(['lodash'], function(_) {
       });
     }
 
+    function getStudiesWithErrors(studies, alternatives) {
+      var tempStudies = addMissingInterventionsToStudies(studies, alternatives);
+      tempStudies = addHasMatchedMixedTreatmentArm(tempStudies, alternatives);
+      return addOverlappingInterventionsToStudies(tempStudies, alternatives);
+    }
+
     return {
-      addMissingInterventionsToStudies: addMissingInterventionsToStudies,
-      addOverlappingInterventionsToStudies: addOverlappingInterventionsToStudies,
-      addHasMatchedMixedTreatmentArm: addHasMatchedMixedTreatmentArm,
+      addMissingInterventionsToStudies: addMissingInterventionsToStudies,//
+      addOverlappingInterventionsToStudies: addOverlappingInterventionsToStudies,//
+      addHasMatchedMixedTreatmentArm: addHasMatchedMixedTreatmentArm,//
       addMissingOutcomesToStudies: addMissingOutcomesToStudies,
       recalculateGroup: recalculateGroup,
-      findMissingOutcomes: findMissingOutcomes
+      findMissingOutcomes: findMissingOutcomes,
+      getStudiesWithErrors: getStudiesWithErrors
     };
   };
   return dependencies.concat(SingleStudyBenefitRiskService);
