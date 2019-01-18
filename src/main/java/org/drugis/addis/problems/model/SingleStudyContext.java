@@ -8,48 +8,61 @@ import java.util.Map;
 import java.util.Objects;
 
 public class SingleStudyContext {
-  private final Map<URI, Outcome> outcomesByUri;
-  private final Map<Integer, AbstractIntervention> interventionsById;
-  private final Map<URI, String> dataSourceIdsByOutcomeUri;
-  private final URI sourceLink;
+  private Map<URI, Outcome> outcomesByUri;
+  private Map<Integer, AbstractIntervention> interventionsById;
+  private Map<URI, String> dataSourceIdsByOutcomeUri;
+  private URI sourceLink;
+  private Map<Integer, Outcome> outcomesById;
 
-  public SingleStudyContext(Map<URI,Outcome> outcomesByUri, Map<Integer,AbstractIntervention> interventionsById, Map<URI,String> dataSourceIdsByOutcomeUri, URI sourceLink) {
-    this.outcomesByUri = outcomesByUri;
-    this.interventionsById = interventionsById;
-    this.dataSourceIdsByOutcomeUri = dataSourceIdsByOutcomeUri;
-    this.sourceLink = sourceLink;
+  public SingleStudyContext() {
+
   }
 
   public Map<URI, Outcome> getOutcomesByUri() {
     return outcomesByUri;
   }
 
+  public void setOutcomesByUri(Map<URI, Outcome> outcomesByUri) {
+    this.outcomesByUri = outcomesByUri;
+  }
+
   public Map<Integer, AbstractIntervention> getInterventionsById() {
     return interventionsById;
+  }
+
+  public void setInterventionsById(Map<Integer, AbstractIntervention> interventionsById) {
+    this.interventionsById = interventionsById;
   }
 
   public Map<URI, String> getDataSourceIdsByOutcomeUri() {
     return dataSourceIdsByOutcomeUri;
   }
 
+  public String getDataSourceId(URI outcomeUri){
+    return dataSourceIdsByOutcomeUri.get(outcomeUri);
+  }
+
+  public void setDataSourceIdsByOutcomeUri(Map<URI, String> dataSourceIdsByOutcomeUri) {
+    this.dataSourceIdsByOutcomeUri = dataSourceIdsByOutcomeUri;
+  }
+
   public URI getSourceLink() {
     return sourceLink;
   }
 
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
-    SingleStudyContext that = (SingleStudyContext) o;
-    return Objects.equals(outcomesByUri, that.outcomesByUri) &&
-            Objects.equals(interventionsById, that.interventionsById) &&
-            Objects.equals(dataSourceIdsByOutcomeUri, that.dataSourceIdsByOutcomeUri) &&
-            Objects.equals(sourceLink, that.sourceLink);
+  public void setSourceLink(URI sourceLink) {
+    this.sourceLink = sourceLink;
   }
 
-  @Override
-  public int hashCode() {
+  public Map<Integer, Outcome> getOutcomesById() {
+    return outcomesById;
+  }
 
-    return Objects.hash(outcomesByUri, interventionsById, dataSourceIdsByOutcomeUri, sourceLink);
+  public Outcome getOutcome(Integer id){
+    return outcomesById.get(id);
+  }
+
+  public void setOutcomesById(Map<Integer, Outcome> outcomesById) {
+    this.outcomesById = outcomesById;
   }
 }

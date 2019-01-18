@@ -426,30 +426,6 @@ define(['lodash', 'angular'], function(_, angular) {
       return interventionSum;
     }
 
-    function findArmForIntervention(arms, trialDataIntervention) {
-      return _.find(arms, function(arm) {
-        return _.some(arm.matchedProjectInterventionIds, function(id) {
-          return id === trialDataIntervention.id;
-        });
-      });
-    }
-
-    function studyMeasuresBothInterventions(study, fromIntervention, toIntervention) {
-      return fromIntervention && toIntervention &&
-        findArmForIntervention(study.arms, fromIntervention) &&
-        findArmForIntervention(study.arms, toIntervention);
-    }
-
-    function attachStudiesForEdges(edges, studies) {
-      return _.map(edges, function(edge) {
-        edge.studies = _.filter(studies, function(study) {
-          return studyMeasuresBothInterventions(study, edge.from, edge.to);
-        });
-        return edge;
-      });
-    }
-
-
     function transformStudiesToNetwork(studies, interventions, analysis, momentSelections) {
       var network = {
         interventions: [],
@@ -469,6 +445,29 @@ define(['lodash', 'angular'], function(_, angular) {
         return edge.studies.length > 0;
       });
       return network;
+    }
+
+    function attachStudiesForEdges(edges, studies) {
+      return _.map(edges, function(edge) {
+        edge.studies = _.filter(studies, function(study) {
+          return studyMeasuresBothInterventions(study, edge.from, edge.to);
+        });
+        return edge;
+      });
+    }
+
+    function studyMeasuresBothInterventions(study, fromIntervention, toIntervention) {
+      return fromIntervention && toIntervention &&
+        findArmForIntervention(study.arms, fromIntervention) &&
+        findArmForIntervention(study.arms, toIntervention);
+    }
+
+    function findArmForIntervention(arms, trialDataIntervention) {
+      return _.find(arms, function(arm) {
+        return _.some(arm.matchedProjectInterventionIds, function(id) {
+          return id === trialDataIntervention.id;
+        });
+      });
     }
 
     function buildInterventionInclusions(interventions, analysis) {

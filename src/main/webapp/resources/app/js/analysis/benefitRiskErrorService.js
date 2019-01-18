@@ -63,7 +63,7 @@ define(['lodash'], function(_) {
     }
 
     function findOverlappingOutcomes(outcomeInclusions) {
-      return _.chain(outcomeInclusions)
+      return _(outcomeInclusions)
         .map('outcome')
         .filter('isIncluded')
         .groupBy('semanticOutcomeUri')

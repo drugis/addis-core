@@ -241,7 +241,5 @@ define(['angular-mocks', './analysis'], function() {
         expect(scope.analysis.benefitRiskStudyOutcomeInclusions).toEqual([]);
       });
     });
-
-
   });
 });

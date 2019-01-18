@@ -160,7 +160,7 @@ public class ProjectServiceImpl implements ProjectService {
 
     Set<URI> outcomeUris = outcomeRepository.query(projectId)
             .stream()
-            .map(Outcome::getConceptOutcomeUri)
+            .map(Outcome::getSemanticOutcomeUri)
             .collect(Collectors.toSet());
     List<TrialDataStudy> studies = triplestoreService.getAllTrialData(mappingService.getVersionedUuid(project.getNamespaceUid()), project.getDatasetVersion(), outcomeUris, singleInterventionUris);
     studies = triplestoreService.addMatchingInformation(interventions, studies);
@@ -576,13 +576,13 @@ public class ProjectServiceImpl implements ProjectService {
 
     sourceOutcomes.stream()
             .filter(sourceOutcome ->
-                    semanticOutcomes.stream().anyMatch(semanticOutcome -> semanticOutcome.getUri().equals(sourceOutcome.getConceptOutcomeUri())))
+                    semanticOutcomes.stream().anyMatch(semanticOutcome -> semanticOutcome.getUri().equals(sourceOutcome.getSemanticOutcomeUri())))
             .forEach(outcomeCreator(user, newProject, oldIdToNewCovariateId));
   }
 
   private Consumer<Outcome> outcomeCreator(Account user, Project newProject, Map<Integer, Integer> oldToNewOutcomeId) {
     return outcome -> {
-      SemanticVariable semanticVariable = new SemanticVariable(outcome.getConceptOutcomeUri(), outcome.getSemanticOutcomeLabel());
+      SemanticVariable semanticVariable = new SemanticVariable(outcome.getSemanticOutcomeUri(), outcome.getSemanticOutcomeLabel());
       try {
         Outcome newOutcome = outcomeRepository.create(user, newProject.getId(), outcome.getName(), outcome.getDirection(), outcome.getMotivation(), semanticVariable);
         oldToNewOutcomeId.put(outcome.getId(), newOutcome.getId());

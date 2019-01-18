@@ -94,15 +94,13 @@ define(['lodash'], function(_) {
         projectId: $stateParams.projectId,
         outcomeIds: outcomeIds
       }).$promise.then(function(networkMetaAnalyses) {
-        networkMetaAnalyses =BenefitRiskService.addModels(networkMetaAnalyses, models);
-        var outcomesWithAnalyses = BenefitRiskService.buildOutcomes(analysis, outcomes, networkMetaAnalyses);
-        outcomesWithAnalyses = BenefitRiskService.addStudiesToOutcomes(
-          outcomesWithAnalyses, analysis.benefitRiskStudyOutcomeInclusions, studies);
+        networkMetaAnalyses =BenefitRiskService.addModels(networkMetaAnalyses, models, studies);
+        var outcomesWithAnalyses = BenefitRiskService.buildOutcomes(analysis, outcomes, networkMetaAnalyses, studies);
         outcomesWithAnalyses = _.partition(outcomesWithAnalyses, ['dataType', 'network']);
         $scope.networkOWAs = outcomesWithAnalyses[0];
         $scope.studyOutcomes = outcomesWithAnalyses[1];
         $scope.isMissingBaseline = _.find($scope.networkOWAs, function(outcomeWithAnalysis) {
-          return !outcomeWithAnalysis.baselineDistribution;
+          return !outcomeWithAnalysis.baseline;
         });
       });
 

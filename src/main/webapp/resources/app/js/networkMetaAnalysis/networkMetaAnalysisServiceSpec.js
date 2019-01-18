@@ -2,7 +2,6 @@ define([
   'angular-mocks',
   './networkMetaAnalysis',
   '../util/resultsConstants',
-  '../services/services'
 ], function() {
   var CONTINUOUS_TYPE = 'http://trials.drugis.org/ontology#continuous';
 
@@ -376,34 +375,34 @@ define([
   }];
 
   var expectedNetwork = {
-    'interventions': [{
-      'name': 'placebo',
+    interventions: [{
+      name: 'placebo',
       sampleSize: 559
     }, {
-      'name': 'Olmes',
+      name: 'Olmes',
       sampleSize: 563
     }, {
-      'name': 'Chlora',
+      name: 'Chlora',
       sampleSize: 0
     }],
-    'edges': [{
-      'from': {
-        'id': 43,
-        'project': 13,
-        'name': 'placebo',
-        'motivation': '',
-        'semanticInterventionLabel': 'Placebo',
-        'semanticInterventionUri': 'http://trials.drugis.org/concepts/placebo-concept'
+    edges: [{
+      from: {
+        id: 43,
+        project: 13,
+        name: 'placebo',
+        motivation: '',
+        semanticInterventionLabel: 'Placebo',
+        semanticInterventionUri: 'http://trials.drugis.org/concepts/placebo-concept'
       },
-      'to': {
-        'id': 44,
-        'project': 13,
-        'name': 'Olmes',
-        'motivation': '',
-        'semanticInterventionLabel': 'Olmesartan',
-        'semanticInterventionUri': 'http://trials.drugis.org/concepts/olme-concept'
+      to: {
+        id: 44,
+        project: 13,
+        name: 'Olmes',
+        motivation: '',
+        semanticInterventionLabel: 'Olmesartan',
+        semanticInterventionUri: 'http://trials.drugis.org/concepts/olme-concept'
       },
-      'studies': [exampleNetworkStudies[0], exampleNetworkStudies[2]]
+      studies: [exampleNetworkStudies[0], exampleNetworkStudies[2]]
     }]
   };
 
@@ -448,16 +447,23 @@ define([
 
   var networkMetaAnalysisService;
   describe('The networkMetaAnalysisService', function() {
-    beforeEach(angular.mock.module('addis.networkMetaAnalysis'));
-    beforeEach(angular.mock.module('addis.services'));
+    var analysisServiceMock = jasmine.createSpyObj('AnalysisService', ['generateEdges']);
+
+    beforeEach(angular.mock.module('addis.networkMetaAnalysis', function($provide){
+      $provide.value('AnalysisService', analysisServiceMock);
+    }));
 
     beforeEach(inject(function(NetworkMetaAnalysisService) {
       networkMetaAnalysisService = NetworkMetaAnalysisService;
     }));
 
     describe('transformStudiesToNetwork', function() {
+      beforeEach(function(){
+        analysisServiceMock.generateEdges.and.returnValue(expectedNetwork.edges);
+      });
+
       it('should construct the evidence network from the list of trialDataStudies', function() {
-        var trialVerseStudyData = exampleNetworkStudies;
+        var studies = exampleNetworkStudies;
         var analysis = {
           excludedArms: [],
           outcome: {
@@ -465,16 +471,16 @@ define([
           }
         };
         var momentSelections = {};
-        momentSelections[trialVerseStudyData[0].studyUri] = {
+        momentSelections[studies[0].studyUri] = {
           uri: 'defaultMMUri'
         };
-        momentSelections[trialVerseStudyData[1].studyUri] = {
+        momentSelections[studies[1].studyUri] = {
           uri: 'defaultMMUri'
         };
-        momentSelections[trialVerseStudyData[2].studyUri] = {
+        momentSelections[studies[2].studyUri] = {
           uri: 'defaultMMUri'
         };
-        var network = networkMetaAnalysisService.transformStudiesToNetwork(trialVerseStudyData, networkInterventions, analysis, momentSelections);
+        var network = networkMetaAnalysisService.transformStudiesToNetwork(studies, networkInterventions, analysis, momentSelections);
         expect(network).toEqual(expectedNetwork);
       });
 

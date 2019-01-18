@@ -41,7 +41,7 @@ define(['lodash', 'angular'], function(_) {
     // functions
     $scope.goToStep1 = goToStep1;
     $scope.openDistributionModal = openDistributionModal;
-    $scope.openStudyDistributionModal = openStudyDistributionModal;
+    $scope.openStudyBaselineModal = openStudyBaselineModal;
 
     // init
     $scope.analysis = AnalysisResource.get($stateParams);
@@ -106,13 +106,13 @@ define(['lodash', 'angular'], function(_) {
           var analysisWithBaselines = BenefitRiskService.addBaseline(analysis, models, $scope.alternatives);
           var saveCommand = BenefitRiskService.analysisToSaveCommand(analysisWithBaselines);
           return AnalysisResource.save(saveCommand).$promise.then(function() {
-            return updateAnalysisOutcomes(analysisWithBaselines, $scope.outcomes);
+            return updateTableOutcomes(analysisWithBaselines, $scope.outcomes);
           });
         });
     }
 
-    function updateAnalysisOutcomes(analysis, outcomes) {
-      $scope.analysisOutcomes = BenefitRiskService.buildOutcomes(analysis, outcomes, $scope.networkMetaAnalyses, $scope.studiesWithUuid);
+    function updateTableOutcomes(analysis, outcomes) {
+      $scope.tableOutcomes = BenefitRiskService.buildOutcomes(analysis, outcomes, $scope.networkMetaAnalyses, $scope.studiesWithUuid);
       return resetScales();
     }
 
@@ -167,17 +167,17 @@ define(['lodash', 'angular'], function(_) {
 
     function setBaseline(outcomeWithAnalysis, baseline) {
       $scope.analysis.benefitRiskNMAOutcomeInclusions =
-        addBaseline(outcomeWithAnalysis, $scope.analysis.benefitRiskNMAOutcomeInclusions, baseline)
+        addBaseline(outcomeWithAnalysis, $scope.analysis.benefitRiskNMAOutcomeInclusions, baseline);
       var saveCommand = BenefitRiskService.analysisToSaveCommand($scope.analysis);
       $scope.effectsTablePromise = AnalysisResource.save(saveCommand).$promise.then(function() {
-        return updateAnalysisOutcomes($scope.analysis, $scope.outcomes);
+        return updateTableOutcomes($scope.analysis, $scope.outcomes);
       });
     }
 
-    function openStudyDistributionModal(outcome) {
+    function openStudyBaselineModal(outcome) {
       $modal.open({
-        templateUrl: './setStudyBaselineDistribution.html',
-        controller: 'SetStudyBaselineDistributionController',
+        templateUrl: './setStudyBaseline.html',
+        controller: 'SetStudyBaselineController',
         windowClass: 'small',
         resolve: {
           outcome: function() {
@@ -201,7 +201,7 @@ define(['lodash', 'angular'], function(_) {
         addBaseline(outcome, $scope.analysis.benefitRiskStudyOutcomeInclusions, baseline);
       var saveCommand = BenefitRiskService.analysisToSaveCommand($scope.analysis);
       $scope.effectsTablePromise = AnalysisResource.save(saveCommand).$promise.then(function() {
-        return updateAnalysisOutcomes($scope.analysis, $scope.outcomes);
+        return updateTableOutcomes($scope.analysis, $scope.outcomes);
       });
     }
 
@@ -229,10 +229,11 @@ define(['lodash', 'angular'], function(_) {
     }
 
     function getMeasurementType(outcome) {
-      var nonReferenceArm = _.find(outcome.selectedStudy.arms, function(arm) {
+      var study = outcome.selectedStudy;
+      var nonReferenceArm = _.find(study.arms, function(arm) {
         return arm.referenceArm !== arm.uri;
       });
-      var measurement = nonReferenceArm.measurements[0];
+      var measurement = nonReferenceArm.measurements[study.defaultMeasurementMoment][0];
       if (measurement.oddsRatio !== undefined) {
         return 'oddsRatio';
       } else if (measurement.riskRatio !== undefined) {
@@ -251,7 +252,7 @@ define(['lodash', 'angular'], function(_) {
         if (problem.performanceTable.length > 0) {
           return WorkspaceService.getObservedScales(problem).then(function(result) {
             $scope.isMissingBaseline = hasMissingBaseLine();
-            $scope.analysisOutcomes = BenefitRiskService.addScales($scope.analysisOutcomes,
+            $scope.tableOutcomes = BenefitRiskService.addScales($scope.tableOutcomes,
               $scope.alternatives, problem.criteria, result);
           }, function() {
             console.log('WorkspaceService.getObservedScales error');
@@ -261,9 +262,9 @@ define(['lodash', 'angular'], function(_) {
     }
 
     function hasMissingBaseLine() {
-      return _.some($scope.analysisOutcomes, function(outcome) {
-        return outcome.dataType === 'network' && !outcome.baselineDistribution ||
-          outcome.dataType === 'single-study' && outcome.isContrastOutcome && !outcome.baselineDistribution;
+      return _.some($scope.updateTableOutcomes, function(outcome) {
+        return outcome.dataType === 'network' && !outcome.baseline ||
+          outcome.dataType === 'single-study' && outcome.isContrastOutcome && !outcome.baseline;
       });
     }
   };

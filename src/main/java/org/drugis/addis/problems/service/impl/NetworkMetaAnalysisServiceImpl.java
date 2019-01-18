@@ -86,6 +86,25 @@ public class NetworkMetaAnalysisServiceImpl implements NetworkMetaAnalysisServic
     return changeToStdErrEntriesIfNeeded(entries);
   }
 
+  private List<AbstractProblemEntry> armsToAbsoluteEntries(Map<URI, URI> selectedMeasurementMomentsByStudy, List<URI> excludedArmUris, TrialDataStudy study) {
+    final URI selectedMeasurementMoment = getSelectedMeasurementMoment(selectedMeasurementMomentsByStudy, study);
+
+    List<TrialDataArm> filteredArms = filterAbsoluteArms(excludedArmUris, study, selectedMeasurementMoment);
+
+    // do not include studies with fewer than two included and matched arms
+    if (filteredArms.size() > 1) {
+      return filteredArms.stream()
+              .map(arm -> {
+                Set<Measurement> measurements = arm.getMeasurementsForMoment(selectedMeasurementMoment);
+                return networkMetaAnalysisEntryBuilder.buildAbsoluteEntry(study.getName(),
+                        getProjectInterventionId(arm), // safe because we filter unmatched arms
+                        measurements.iterator().next()); // nma has exactly one measurement
+              })
+              .collect(toList());
+    }
+    return new ArrayList<>();
+  }
+
   @Override
   public RelativeEffectData buildRelativeEffectData(NetworkMetaAnalysis analysis, List<TrialDataStudy> studies) {
     final Map<URI, URI> selectedMeasurementMomentsByStudy = analysis.getIncludedMeasurementMoments()
@@ -171,25 +190,6 @@ public class NetworkMetaAnalysisServiceImpl implements NetworkMetaAnalysisServic
     final ArrayList<T> result = new ArrayList<>(list1);
     result.addAll(list2);
     return result;
-  }
-
-  private List<AbstractProblemEntry> armsToAbsoluteEntries(Map<URI, URI> selectedMeasurementMomentsByStudy, List<URI> excludedArmUris, TrialDataStudy study) {
-    final URI selectedMeasurementMoment = getSelectedMeasurementMoment(selectedMeasurementMomentsByStudy, study);
-
-    List<TrialDataArm> filteredArms = filterAbsoluteArms(excludedArmUris, study, selectedMeasurementMoment);
-
-    // do not include studies with fewer than two included and matched arms
-    if (filteredArms.size() > 1) {
-      return filteredArms.stream()
-              .map(arm -> {
-                Set<Measurement> measurements = arm.getMeasurementsForMoment(selectedMeasurementMoment);
-                return networkMetaAnalysisEntryBuilder.buildAbsoluteEntry(study.getName(),
-                        getProjectInterventionId(arm), // safe because we filter unmatched arms
-                        measurements.iterator().next()); // nma has exactly one measurement
-              })
-              .collect(toList());
-    }
-    return new ArrayList<>();
   }
 
   private List<TrialDataArm> filterAbsoluteArms(List<URI> excludedArmUris, TrialDataStudy study, URI selectedMeasurementMoment) {
@@ -305,7 +305,7 @@ public class NetworkMetaAnalysisServiceImpl implements NetworkMetaAnalysisServic
       DataSourceEntry dataSource = new DataSourceEntry(uuidService.generate(), "meta analysis", modelURI);
       criterionEntry = new CriterionEntry(Collections.singletonList(dataSource), outcome.getName());
     }
-    criteria.put(outcome.getConceptOutcomeUri(), criterionEntry);
+    criteria.put(outcome.getSemanticOutcomeUri(), criterionEntry);
     return criteria;
   }
 

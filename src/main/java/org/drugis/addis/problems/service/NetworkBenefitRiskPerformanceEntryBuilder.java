@@ -25,7 +25,7 @@ public class NetworkBenefitRiskPerformanceEntryBuilder {
 
   public AbstractMeasurementEntry build(NMAInclusionWithResults inclusion, DataSourceEntry dataSource) {
     RelativePerformance performance = getPerformance(inclusion);
-    String criterion = inclusion.getOutcome().getConceptOutcomeUri().toString();
+    String criterion = inclusion.getOutcome().getSemanticOutcomeUri().toString();
     return new RelativePerformanceEntry(criterion, dataSource.getId(), performance);
   }
 

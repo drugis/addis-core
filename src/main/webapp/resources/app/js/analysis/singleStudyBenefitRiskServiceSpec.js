@@ -1,9 +1,9 @@
 'use strict';
-define(['angular', 'angular-mocks', './services'], function() {
-  fdescribe('The single Study Benefit-Risk Analysis service', function() {
+define(['angular', 'angular-mocks', './analysis'], function() {
+  describe('The single Study Benefit-Risk Analysis service', function() {
     var singleStudyBenefitRiskService;
 
-    beforeEach(angular.mock.module('addis.services'));
+    beforeEach(angular.mock.module('addis.analysis'));
 
     beforeEach(inject(function(SingleStudyBenefitRiskService) {
       singleStudyBenefitRiskService = SingleStudyBenefitRiskService;
@@ -136,27 +136,91 @@ define(['angular', 'angular-mocks', './services'], function() {
       });
     });
 
-    describe('addMissingInterventionsToStudies', function() {
-      it('should fail!', function() {
-        fail();
-      });
-    });
-
     describe('recalculateGroup', function() {
-      it('should fail!', function() {
-        fail();
+      it('add group validity and sort the studies on this validity', function() {
+        var studies = [{
+          missingOutcomes: [],
+          missingInterventions: [],
+          hasMatchedMixedTreatmentArm: false
+        }, {
+          missingOutcomes: [],
+          missingInterventions: [],
+          hasMatchedMixedTreatmentArm: true
+        }];
+        var result = singleStudyBenefitRiskService.recalculateGroup(studies);
+        var expectedResult = [{
+          missingOutcomes: [],
+          missingInterventions: [],
+          hasMatchedMixedTreatmentArm: false,
+          group: 0,
+          groupLabel: 'Compatible studies'
+        }, {
+          missingOutcomes: [],
+          missingInterventions: [],
+          hasMatchedMixedTreatmentArm: true,
+          group: 1,
+          groupLabel: 'Incompatible studies'
+        }];
+        expect(result).toEqual(expectedResult);
       });
     });
 
     describe('findMissingOutcomes', function() {
-      it('should fail!', function() {
-        fail();
+      it('Find the missing outcomes for a given study', function() {
+        var selectedOutcomes = [{
+          outcome: {
+            semanticOutcomeUri: 'notMissingUri'
+          }
+        }, {
+          outcome: {
+            semanticOutcomeUri: 'missingUri'
+          }
+        }];
+        var study = {
+          defaultMeasurementMoment: 'defmom',
+          arms: [{
+            measurements: {
+              defmom: [{
+                variableConceptUri: 'notMissingUri'
+              }]
+            }
+          }]
+        };
+        var result = singleStudyBenefitRiskService.findMissingOutcomes(study, selectedOutcomes);
+        var expectedResult = [{
+          outcome: {
+            semanticOutcomeUri: 'missingUri'
+          }
+        }];
+        expect(result).toEqual(expectedResult);
       });
     });
 
     describe('getStudiesWithErrors', function() {
-      it('should fail!', function() {
-        fail();
+      it('should add any errors to studies if found', function() {
+        var studies = [{
+          defaultMeasurementMoment: 'defmom',
+          arms: [{
+            matchedProjectInterventionIds: []
+          }]
+        }];
+        var alternatives = [{
+          id: 1
+        }];
+        var result = singleStudyBenefitRiskService.getStudiesWithErrors(studies, alternatives);
+        var expectedResult = [{
+          defaultMeasurementMoment: 'defmom',
+          arms: [{
+            matchedProjectInterventionIds: []
+          }],
+          missingInterventions: [
+            alternatives[0]
+          ],
+          overlappingInterventions: [],
+          hasMatchedMixedTreatmentArm: false
+        }];
+        expect(result).toEqual(expectedResult);
+
       });
     });
   });

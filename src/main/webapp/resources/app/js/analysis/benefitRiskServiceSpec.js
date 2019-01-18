@@ -1,6 +1,6 @@
 'use strict';
 define(['lodash', 'angular-mocks', './analysis'], function(_) {
-  xdescribe('benefit-risk service', function() {
+  describe('benefit-risk service', function() {
     var benefitRiskService;
 
     var workspaceServiceMock = jasmine.createSpyObj('WorkspaceService', ['reduceProblem']);
@@ -671,11 +671,9 @@ define(['lodash', 'angular-mocks', './analysis'], function(_) {
     describe('getOutcomesWithInclusions', function() {
       it('return the outcomes with their inclusion and isIncluded set', function() {
         var outcomes = [{
-          id: 1,
-          dataType: 'network'
+          id: 1
         }, {
-          id: 2,
-          isContrastOutcome: true
+          id: 2
         }];
         var analysis = {
           benefitRiskNMAOutcomeInclusions: [{ outcomeId: 1 }],
@@ -685,13 +683,11 @@ define(['lodash', 'angular-mocks', './analysis'], function(_) {
         var expectedResult = [
           {
             id: 1,
-            isIncluded: true,
-            dataType: 'network'
+            isIncluded: true
           },
           {
             id: 2,
-            isIncluded: true,
-            isContrastOutcome: true
+            isIncluded: true
           }
         ];
         expect(result).toEqual(expectedResult);
@@ -741,6 +737,17 @@ define(['lodash', 'angular-mocks', './analysis'], function(_) {
           outcomeIds: [1, 2]
         };
         expect(analysisResourceMock.query).toHaveBeenCalledWith(expectedCall);
+      });
+    });
+
+    describe('getStudyOutcomeInclusions', function(){
+      it('should fail!', function(){
+        fail();
+      });
+    });
+    describe('getNMAOutcomeInclusions', function(){
+      it('should fail!', function(){
+        fail();
       });
     });
   });

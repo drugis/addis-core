@@ -1,7 +1,4 @@
 'use strict';
-
-import { get } from "https";
-
 define(['lodash'], function(_) {
   var dependencies = [];
   var SingleStudyBenefitRiskService = function() {
@@ -67,7 +64,7 @@ define(['lodash'], function(_) {
           modifiedStudy.groupLabel = 'Compatible studies';
         } else {
           modifiedStudy.group = 1;
-          modifiedStudy.groupLabel = 'Incompatible Studies';
+          modifiedStudy.groupLabel = 'Incompatible studies';
         }
         return _.merge({}, study, modifiedStudy);
       });
@@ -120,9 +117,8 @@ define(['lodash'], function(_) {
     }
 
     return {
-      addMissingInterventionsToStudies: addMissingInterventionsToStudies,//
-      addOverlappingInterventionsToStudies: addOverlappingInterventionsToStudies,//
-      addHasMatchedMixedTreatmentArm: addHasMatchedMixedTreatmentArm,//
+      addOverlappingInterventionsToStudies: addOverlappingInterventionsToStudies,
+      addHasMatchedMixedTreatmentArm: addHasMatchedMixedTreatmentArm,
       addMissingOutcomesToStudies: addMissingOutcomesToStudies,
       recalculateGroup: recalculateGroup,
       findMissingOutcomes: findMissingOutcomes,

@@ -1,7 +1,6 @@
 'use strict';
 define(['angular-mocks', './analysis'], function() {
   describe('benefit-risk step 2 controller', function() {
-
     var scope, q,
       stateParamsMock = {
         projectId: 37

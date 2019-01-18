@@ -37,7 +37,7 @@ public class NetworkBenefitRiskPerformanceEntryBuilderTest {
   public void testBuildPerformance() throws IOException {
     Outcome outcome = mock(Outcome.class);
     String outcomeUri = "outcomeUri";
-    when(outcome.getConceptOutcomeUri()).thenReturn(URI.create(outcomeUri));
+    when(outcome.getSemanticOutcomeUri()).thenReturn(URI.create(outcomeUri));
     Model model = mock(Model.class);
     when(model.getLink()).thenReturn(Model.LINK_LOGIT);
     JsonNode pataviResults = buildPataviResults();

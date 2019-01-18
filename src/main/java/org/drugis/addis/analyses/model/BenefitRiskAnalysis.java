@@ -7,9 +7,6 @@ import javax.persistence.*;
 import java.io.Serializable;
 import java.util.*;
 
-/**
- * Created by daan on 24-2-16.
- */
 @Entity
 @JsonIgnoreProperties(ignoreUnknown = true)
 @PrimaryKeyJoinColumn(name = "id", referencedColumnName = "id")

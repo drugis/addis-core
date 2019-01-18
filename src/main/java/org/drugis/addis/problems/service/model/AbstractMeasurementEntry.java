@@ -6,7 +6,7 @@ import java.util.Objects;
  * Created by daan on 3/26/14.
  */
 public abstract class AbstractMeasurementEntry {
-  private String criterion; // nb not necessarily an uri in other cases of br-problem
+  private String criterion;
   private String dataSource;
 
   protected AbstractMeasurementEntry(String criterion, String dataSource) {

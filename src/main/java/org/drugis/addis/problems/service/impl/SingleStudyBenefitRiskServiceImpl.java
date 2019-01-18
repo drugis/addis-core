@@ -1,7 +1,6 @@
 package org.drugis.addis.problems.service.impl;
 
 import com.google.common.collect.ImmutableSet;
-import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.drugis.addis.analyses.model.BenefitRiskStudyOutcomeInclusion;
 import org.drugis.addis.analyses.service.AnalysisService;
@@ -10,9 +9,7 @@ import org.drugis.addis.interventions.model.AbstractIntervention;
 import org.drugis.addis.interventions.model.SingleIntervention;
 import org.drugis.addis.outcomes.Outcome;
 import org.drugis.addis.problems.model.*;
-import org.drugis.addis.problems.service.LinkService;
-import org.drugis.addis.problems.service.ProblemService;
-import org.drugis.addis.problems.service.SingleStudyBenefitRiskService;
+import org.drugis.addis.problems.service.*;
 import org.drugis.addis.problems.service.model.*;
 import org.drugis.addis.projects.Project;
 import org.drugis.addis.trialverse.model.trialdata.Measurement;
@@ -29,7 +26,6 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.toList;
@@ -57,220 +53,47 @@ public class SingleStudyBenefitRiskServiceImpl implements SingleStudyBenefitRisk
   @Inject
   private LinkService linkService;
 
+  @Inject
+  private ContrastStudyBenefitRiskService contrastStudyBenefitRiskService;
+
+  @Inject
+  private AbsoluteStudyBenefitRiskService absoluteStudyBenefitRiskService;
+
   @Override
-  public List<AbstractMeasurementEntry> buildContrastPerformanceTable(
-          List<BenefitRiskStudyOutcomeInclusion> inclusions,
-          TrialDataStudy study,
-          Set<AbstractIntervention> includedInterventions,
-          SingleStudyContext context
+  public SingleStudyBenefitRiskProblem getSingleStudyBenefitRiskProblem(
+          Project project,
+          List<BenefitRiskStudyOutcomeInclusion> outcomeInclusions,
+          URI studyGraphUri,
+          Map<Integer, Outcome> outcomesById,
+          Set<AbstractIntervention> includedInterventions
   ) {
+    SingleStudyContext context = buildContext(project, studyGraphUri, outcomesById, includedInterventions);
+    TrialDataStudy study = getStudy(project, studyGraphUri, context);
+
     List<TrialDataArm> matchedArms = getMatchedArms(includedInterventions, study.getArms());
-    List<TrialDataArm> contrastArms =
-            matchedArms.stream().filter(arm ->
-                    arm.getMeasurements()
-                            .get(study.getDefaultMeasurementMoment())
-                            .stream().iterator().next().getReferenceArm() != null
-            ).collect(toList());
-
-    return createContrastEntries(inclusions, contrastArms, study, context);
-  }
-
-  private List<AbstractMeasurementEntry> createContrastEntries(
-          List<BenefitRiskStudyOutcomeInclusion> inclusions,
-          List<TrialDataArm> filteredArms,
-          TrialDataStudy study,
-          SingleStudyContext context) {
-    return inclusions.stream()
-            .map(inclusion -> createContrastEntry(inclusion, filteredArms, study, context))
-            .collect(toList());
-
-  }
-
-  private AbstractMeasurementEntry createContrastEntry(
-          BenefitRiskStudyOutcomeInclusion inclusion,
-          List<TrialDataArm> arms,
-          TrialDataStudy study,
-          SingleStudyContext context) {
     URI defaultMeasurementMoment = study.getDefaultMeasurementMoment();
-//    String dataSourceId = context.getDataSourceIdsByOutcomeUri().get(measuredOutcome.getConceptOutcomeUri());
 
-    String criterion = "";
-    String dataSource = "";
-    String type = "";
-    String baseline = inclusion.getBaseline();
-    Map<String, Double> mu = new HashMap<>();
+    List<BenefitRiskStudyOutcomeInclusion> contrastInclusions =
+            contrastStudyBenefitRiskService.getContrastInclusionsWithBaseline(outcomeInclusions, context);
 
-    List<List<Double>> data = new ArrayList<>();
+    Map<URI, CriterionEntry> criteria =
+            getCriteria(matchedArms, defaultMeasurementMoment, context, contrastInclusions);
+    Map<String, AlternativeEntry> alternatives =
+            getAlternatives(matchedArms, context);
 
-    TrialDataArm referenceArm = arms.stream().filter(arm -> arm.getReferenceArm() == null).collect(toList()).get(0);
-    String referenceId = referenceArm.getMatchedProjectInterventionIds().iterator().next().toString();
-    Double referenceStdErr = arms.stream().filter(arm -> arm.getReferenceArm() != null).collect(toList()).get(0).getReferenceStdErr();
-    Map<URI, Outcome> outcomesByUri = context.getOutcomesByUri();
-    mu.put(referenceId, 0.0);
+    List<AbstractMeasurementEntry> allEntries = new ArrayList<>();
+    List<AbstractMeasurementEntry> absoluteEntries =
+            absoluteStudyBenefitRiskService.buildAbsolutePerformanceEntries(context, study, matchedArms);
+    List<AbstractMeasurementEntry> contrastEntries =
+            contrastStudyBenefitRiskService.buildContrastPerformanceTable(
+                    contrastInclusions,
+                    defaultMeasurementMoment,
+                    context,
+                    matchedArms);
+    allEntries.addAll(absoluteEntries);
+    allEntries.addAll(contrastEntries);
 
-    List<String> rowNames = new ArrayList<>();
-    arms.forEach(arm -> {
-      String interventionId = arm.getMatchedProjectInterventionIds().iterator().next().toString();
-      rowNames.add(interventionId);
-      if (!interventionId.equals(referenceId)) {
-        Measurement measurement = getMeasurement(inclusion, defaultMeasurementMoment, outcomesByUri, arm);
-        mu.put(interventionId, getValue(measurement));
-      }
-    });
-    Collections.swap(rowNames, 0, rowNames.indexOf(referenceId));
-
-    for (int i = 0; i < rowNames.size(); ++i) {
-      List<Double> row = new ArrayList<>(rowNames.size());
-      for (int j = 0; j < rowNames.size(); ++j) {
-        row.add(0.0);
-      }
-      data.add(row);
-    }
-    rowNames.forEach(rowId ->
-            rowNames.stream()
-                    .filter(colId -> !referenceId.equals(rowId) && !referenceId.equals(colId))
-                    .forEach(colId -> {
-                      Double value;
-                      if (rowId.equals(colId)) {
-                        TrialDataArm arm = findArm(arms, rowId);
-                        Measurement measurement = getMeasurement(inclusion, defaultMeasurementMoment, outcomesByUri, arm);
-                        value = measurement.getStdErr() * measurement.getStdErr();
-                      } else {
-                        value = referenceStdErr * referenceStdErr;
-                      }
-                      data.get(rowNames.indexOf(rowId))
-                              .set(rowNames.indexOf(colId), value);
-                    })
-    );
-
-    CovarianceMatrix cov = new CovarianceMatrix(rowNames, rowNames, data);
-    Relative relative = new Relative("dmnorm", mu, cov);
-    RelativePerformanceParameters parameters = new RelativePerformanceParameters(baseline, relative);
-    RelativePerformance performance = new RelativePerformance(type, parameters);
-    return new RelativePerformanceEntry(criterion, dataSource, performance);
-  }
-
-  private TrialDataArm findArm(List<TrialDataArm> arms, String rowId) {
-    return arms
-            .stream()
-            .filter(arm -> arm.getMatchedProjectInterventionIds().iterator().next().toString().equals(rowId))
-            .iterator()
-            .next();
-  }
-
-  private Measurement getMeasurement(BenefitRiskStudyOutcomeInclusion inclusion, URI defaultMeasurementMoment, Map<URI, Outcome> outcomesByUri, TrialDataArm arm) {
-    Set<Measurement> measurements = arm.getMeasurementsForMoment(defaultMeasurementMoment);
-    Outcome currentOutcome = outcomesByUri
-            .values()
-            .stream()
-            .filter(outcome -> outcome.getId().equals(inclusion.getOutcomeId()))
-            .iterator()
-            .next();
-    List<Measurement> measurementsForOutcome = measurements
-            .stream()
-            .filter(meas ->
-                    meas.getVariableConceptUri().equals(currentOutcome.getConceptOutcomeUri()))
-            .collect(toList());
-    return measurementsForOutcome.iterator().next();
-  }
-
-  @Override
-  public List<AbstractMeasurementEntry> buildPerformanceTable(
-          SingleStudyContext context,
-          TrialDataStudy study,
-          Set<AbstractIntervention> includedInterventions) {
-    List<TrialDataArm> matchedArms = getMatchedArms(includedInterventions, study.getArms());
-    URI defaultMoment = study.getDefaultMeasurementMoment();
-    Set<MeasurementWithCoordinates> measurementDrugInstancePairs = getMeasurementsWithCoordinates(
-            matchedArms, defaultMoment, context);
-
-    ArrayList<AbstractMeasurementEntry> performanceTable = new ArrayList<>();
-    Set<MeasurementWithCoordinates> absoluteMeasurements = filterAbsoluteMeasurements(measurementDrugInstancePairs);
-    addAbsolutePerformanceEntries(performanceTable, absoluteMeasurements);
-    return performanceTable;
-  }
-
-
-  private Map<String, Double> getMu(Set<MeasurementWithCoordinates> measurements) {
-    Map<String, Double> mu = new HashMap<>();
-    measurements.forEach(measurement ->
-            mu.put(measurement.getInterventionId().toString(), getValue(measurement.getMeasurement())));
-    return mu;
-  }
-
-  private Double getValue(Measurement measurement) {
-    if (measurement.getOddsRatio() != null) {
-      return measurement.getOddsRatio();
-    }
-    if (measurement.getHazardRatio() != null) {
-      return measurement.getHazardRatio();
-    }
-    if (measurement.getRiskRatio() != null) {
-      return measurement.getRiskRatio();
-    }
-    if (measurement.getMeanDifference() != null) {
-      return measurement.getMeanDifference();
-    }
-    if (measurement.getStandardizedMeanDifference() != null) {
-      return measurement.getStandardizedMeanDifference();
-    }
-    return 0.0;//baseline
-  }
-
-
-  private String getMeasurementType(Measurement measurement) {
-    if (measurement.getOddsRatio() != null) {
-      return "relative-logit-normal";
-    }
-    if (measurement.getHazardRatio() != null) {
-      return "relative-survival";
-    }
-    if (measurement.getRiskRatio() != null) {
-      return "relative-log-normal";
-    }
-    if (measurement.getMeanDifference() != null) {
-      return "relative-normal";
-    }
-    if (measurement.getStandardizedMeanDifference() != null) {
-      return "relative-smd-normal";
-    }
-    return "relative-normal";
-  }
-
-  private void addAbsolutePerformanceEntries(ArrayList<AbstractMeasurementEntry> performanceTable, Set<MeasurementWithCoordinates> absoluteMeasurements) {
-    for (MeasurementWithCoordinates measurementWithCoordinates : absoluteMeasurements) {
-      Measurement measurement = measurementWithCoordinates.getMeasurement();
-      Integer interventionId = measurementWithCoordinates.getInterventionId();
-      String dataSource = measurementWithCoordinates.getDataSource();
-      if (measurement.getMeasurementTypeURI().equals(ProblemService.DICHOTOMOUS_TYPE_URI)) {
-        performanceTable.add(createBetaDistributionEntry(interventionId, measurement.getVariableConceptUri(), dataSource,
-                measurement.getRate(), measurement.getSampleSize()));
-      } else if (measurement.getMeasurementTypeURI().equals(ProblemService.CONTINUOUS_TYPE_URI)) {
-        performanceTable.add(createNormalDistributionEntry(interventionId, measurement.getVariableConceptUri(), dataSource,
-                measurement.getMean(), measurement.getStdDev(), measurement.getSampleSize(), measurement.getStdErr()));
-      } else {
-        throw new IllegalArgumentException("Unknown measurement type: " + measurement.getMeasurementTypeURI());
-      }
-    }
-  }
-
-  private Set<MeasurementWithCoordinates> filterAbsoluteMeasurements(Set<MeasurementWithCoordinates> measurementDrugInstancePairs) {
-    return measurementDrugInstancePairs.stream().filter(measurement -> measurement.getMeasurement().getReferenceArm() == null).collect(Collectors.toSet());
-  }
-
-  private ContinuousMeasurementEntry createNormalDistributionEntry(Integer interventionId, URI criterionUri, String dataSourceUri, Double mean, Double standardDeviation, Integer sampleSize, Double standardError) {
-    Double sigma = standardError != null ? standardError : standardDeviation / Math.sqrt(sampleSize);
-
-    ContinuousPerformance performance = new ContinuousPerformance(new ContinuousPerformanceParameters(mean, sigma));
-    return new ContinuousMeasurementEntry(interventionId, criterionUri.toString(), dataSourceUri, performance);
-  }
-
-  private RateMeasurementEntry createBetaDistributionEntry(Integer interventionId, URI criterionUri, String dataSourceUri, Integer rate, Integer sampleSize) {
-    int alpha = rate + 1;
-    int beta = sampleSize - rate + 1;
-
-    RatePerformance performance = new RatePerformance(new RatePerformanceParameters(alpha, beta));
-    return new RateMeasurementEntry(interventionId, criterionUri.toString(), dataSourceUri, performance);
+    return new SingleStudyBenefitRiskProblem(alternatives, criteria, allEntries);
   }
 
   @Override
@@ -299,21 +122,64 @@ public class SingleStudyBenefitRiskServiceImpl implements SingleStudyBenefitRisk
   }
 
   @Override
-  public Map<URI, CriterionEntry> getCriteria(List<TrialDataArm> arms,
-                                              URI defaultMeasurementMoment, SingleStudyContext context) {
+  public Map<URI, CriterionEntry> getCriteria(
+          List<TrialDataArm> arms,
+          URI defaultMeasurementMoment, SingleStudyContext context,
+          List<BenefitRiskStudyOutcomeInclusion> contrastInclusions
+  ) {
     Map<URI, CriterionEntry> criteria = new HashMap<>();
     for (TrialDataArm arm : arms) {
       Set<Measurement> measurements = arm.getMeasurementsForMoment(defaultMeasurementMoment);
-      criteria.putAll(getCriterionEntries(measurements, context));
+      if (arm.getReferenceArm() != null) {
+        criteria.putAll(getContrastCriterionEntries(measurements, context, contrastInclusions));
+      } else {
+        criteria.putAll(getCriterionEntries(measurements, context));
+      }
     }
     return criteria;
   }
 
-  private Map<URI, CriterionEntry> getCriterionEntries(Set<Measurement> measurements, SingleStudyContext context) {
+  private Map<URI, CriterionEntry> getContrastCriterionEntries(
+          Set<Measurement> measurements, SingleStudyContext context,
+          List<BenefitRiskStudyOutcomeInclusion> contrastInclusions
+  ) {
+    return measurements.stream()
+            .map(measurement -> getContrastCriterionEntry(context, contrastInclusions, measurement))
+            .filter(Objects::nonNull)
+            .collect(toMap(Pair::getLeft, Pair::getRight));
+  }
+
+  private Pair<URI, CriterionEntry> getContrastCriterionEntry(SingleStudyContext context, List<BenefitRiskStudyOutcomeInclusion> contrastInclusions, Measurement measurement) {
+    Outcome measuredOutcome = context.getOutcomesByUri().get(measurement.getVariableConceptUri());
+    BenefitRiskStudyOutcomeInclusion inclusion = findContrastInclusion(measuredOutcome, contrastInclusions);
+    if (inclusion != null) {
+      String dataSourceId = context.getDataSourceIdsByOutcomeUri().get(measuredOutcome.getSemanticOutcomeUri());
+      CriterionEntry criterionEntry = criterionEntryFactory.create(measurement, measuredOutcome.getName(), dataSourceId, context.getSourceLink());
+      return Pair.of(measurement.getVariableConceptUri(), criterionEntry);
+    }
+    return null;
+  }
+
+  private BenefitRiskStudyOutcomeInclusion findContrastInclusion(
+          Outcome measuredOutcome,
+          List<BenefitRiskStudyOutcomeInclusion> contrastInclusions
+  ) {
+    Iterator<BenefitRiskStudyOutcomeInclusion> iterator = contrastInclusions.stream().filter(inclusion -> inclusion.getOutcomeId().equals(measuredOutcome.getId())).collect(toList()).iterator();
+    if (iterator.hasNext()) {
+      BenefitRiskStudyOutcomeInclusion inclusion = iterator.next();
+      if (inclusion.getBaseline() != null) {
+        return inclusion;
+      }
+    }
+    return null;
+  }
+
+  private Map<URI, CriterionEntry> getCriterionEntries(Set<Measurement> measurements,
+                                                       SingleStudyContext context) {
     return measurements.stream()
             .map(measurement -> {
               Outcome measuredOutcome = context.getOutcomesByUri().get(measurement.getVariableConceptUri());
-              String dataSourceId = context.getDataSourceIdsByOutcomeUri().get(measuredOutcome.getConceptOutcomeUri());
+              String dataSourceId = context.getDataSourceIdsByOutcomeUri().get(measuredOutcome.getSemanticOutcomeUri());
               CriterionEntry criterionEntry = criterionEntryFactory.create(measurement, measuredOutcome.getName(), dataSourceId, context.getSourceLink());
               return Pair.of(measurement.getVariableConceptUri(), criterionEntry);
             })
@@ -332,32 +198,10 @@ public class SingleStudyBenefitRiskServiceImpl implements SingleStudyBenefitRisk
     return alternatives;
   }
 
-  private Set<MeasurementWithCoordinates> getMeasurementsWithCoordinates(List<TrialDataArm> arms, URI defaultMeasurementMoment, SingleStudyContext context) {
-    Set<MeasurementWithCoordinates> measurementsWithCoordinates = new HashSet<>();
-    for (TrialDataArm arm : arms) {
-      Set<Measurement> measurements = arm.getMeasurementsForMoment(defaultMeasurementMoment);
-      Integer interventionId = arm.getMatchedProjectInterventionIds().iterator().next();
-      Collection<MeasurementWithCoordinates> armMeasurements = getMeasurementEntries(measurements, interventionId, context);
-
-      measurementsWithCoordinates.addAll(armMeasurements);
-    }
-    return measurementsWithCoordinates;
-  }
-
-  private Collection<MeasurementWithCoordinates> getMeasurementEntries(Set<Measurement> measurements, Integer interventionId, SingleStudyContext context) {
-    return measurements.stream()
-            .map(measurement -> getMeasurementWithCoordinates(measurement, context, interventionId))
-            .collect(toList());
-  }
-
-  private MeasurementWithCoordinates getMeasurementWithCoordinates(Measurement measurement, SingleStudyContext context, Integer interventionId) {
-    Outcome measuredOutcome = context.getOutcomesByUri().get(measurement.getVariableConceptUri());
-    String dataSourceId = context.getDataSourceIdsByOutcomeUri().get(measuredOutcome.getConceptOutcomeUri());
-    return new MeasurementWithCoordinates(measurement, interventionId, dataSourceId, measuredOutcome.getConceptOutcomeUri());
-  }
 
   @Override
-  public List<TrialDataArm> getMatchedArms(Set<AbstractIntervention> includedInterventions, List<TrialDataArm> arms) {
+  public List<TrialDataArm> getMatchedArms(Set<AbstractIntervention> includedInterventions,
+                                           List<TrialDataArm> arms) {
     List<TrialDataArm> armsWithMatching = getArmsWithMatching(includedInterventions, arms);
 
     Boolean isArmWithTooManyMatches = armsWithMatching.stream()
@@ -383,14 +227,21 @@ public class SingleStudyBenefitRiskServiceImpl implements SingleStudyBenefitRisk
   }
 
   @Override
-  public SingleStudyContext buildContext(Project project, URI studyGraphUri, Set<Outcome> outcomes, Set<AbstractIntervention> includedInterventions) {
-    Map<URI, String> dataSourceIdsByOutcomeUri = outcomes.stream()
-            .collect(Collectors.toMap(Outcome::getConceptOutcomeUri, o -> uuidService.generate()));
+  public SingleStudyContext buildContext(Project project, URI studyGraphUri, Map<Integer, Outcome> outcomesById, Set<AbstractIntervention> includedInterventions) {
+    Map<URI, String> dataSourceIdsByOutcomeUri = outcomesById.values().stream()
+            .collect(Collectors.toMap(Outcome::getSemanticOutcomeUri, o -> uuidService.generate()));
     final Map<Integer, AbstractIntervention> interventionsById = includedInterventions.stream()
             .collect(toMap(AbstractIntervention::getId, identity()));
-    Map<URI, Outcome> outcomesByUri = outcomes.stream().collect(toMap(Outcome::getConceptOutcomeUri, identity()));
+    Map<URI, Outcome> outcomesByUri = outcomesById.values().stream().collect(toMap(Outcome::getSemanticOutcomeUri, identity()));
     URI sourceLink = linkService.getStudySourceLink(project, studyGraphUri);
 
-    return new SingleStudyContext(outcomesByUri, interventionsById, dataSourceIdsByOutcomeUri, sourceLink);
+    SingleStudyContext context = new SingleStudyContext();
+    context.setDataSourceIdsByOutcomeUri(dataSourceIdsByOutcomeUri);
+    context.setInterventionsById(interventionsById);
+    context.setOutcomesByUri(outcomesByUri);
+    context.setOutcomesById(outcomesById);
+    context.setSourceLink(sourceLink);
+
+    return context;
   }
 }

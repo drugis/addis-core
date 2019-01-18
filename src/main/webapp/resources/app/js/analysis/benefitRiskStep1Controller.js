@@ -86,7 +86,6 @@ define(['lodash', 'angular'], function(_) {
       PageTitleService.setPageTitle('BenefitRiskStep1Controller', analysis.title + ' step 1');
 
       $scope.studies = studies;
-      $scope.studyArrayLength = studies.length;
       $scope.alternatives = alternatives;
       $scope.includedAlternatives = alternatives.filter(function(alternative) {
         return _.find(analysis.interventionInclusions, ['interventionId', alternative.id]);
@@ -98,7 +97,7 @@ define(['lodash', 'angular'], function(_) {
         outcomeIds: outcomeIds
       }).$promise.then(function(networkMetaAnalyses) {
         $scope.outcomesWithAnalyses = BenefitRiskService.buildOutcomesWithAnalyses(
-          analysis, studies, networkMetaAnalyses, models, outcomes
+          analysis, studies, networkMetaAnalyses, models, $scope.outcomes
         );
         $scope.$watch('outcomesWithAnalyses', function() {
           $scope.contrastStudySelected = BenefitRiskService.isContrastStudySelected(
@@ -189,15 +188,15 @@ define(['lodash', 'angular'], function(_) {
       saveInclusions();
     }
 
-    function updateMissingAlternatives(outcomeWithAnalyses) {
-      outcomeWithAnalyses.selectedModel.missingAlternatives = BenefitRiskService.findMissingAlternatives($scope.includedAlternatives, outcomeWithAnalyses);
-      outcomeWithAnalyses.selectedModel.missingAlternativesNames = _.map(outcomeWithAnalyses.selectedModel.missingAlternatives, 'name');
-    }
-
     function updateMissingAlternativesForAllOutcomes() {
       $scope.outcomesWithAnalyses.filter(function(outcome) {
         return outcome.selectedModel;
       }).forEach(updateMissingAlternatives);
+    }
+
+    function updateMissingAlternatives(outcomeWithAnalyses) {
+      outcomeWithAnalyses.selectedModel.missingAlternatives = BenefitRiskService.findMissingAlternatives($scope.includedAlternatives, outcomeWithAnalyses);
+      outcomeWithAnalyses.selectedModel.missingAlternativesNames = _.map(outcomeWithAnalyses.selectedModel.missingAlternatives, 'name');
     }
 
     function updateStudyMissingStuff() {

@@ -15,8 +15,8 @@ import org.drugis.addis.ordering.repository.OrderingRepository;
 import org.drugis.addis.outcomes.repository.OutcomeRepository;
 import org.drugis.addis.outcomes.service.OutcomeService;
 import org.drugis.addis.patavitask.repository.PataviTaskRepository;
-import org.drugis.addis.problems.service.HostURLCache;
-import org.drugis.addis.problems.service.ProblemService;
+import org.drugis.addis.problems.model.SingleStudyBenefitRiskProblem;
+import org.drugis.addis.problems.service.*;
 import org.drugis.addis.projects.repository.ProjectRepository;
 import org.drugis.addis.projects.repository.ReportRepository;
 import org.drugis.addis.projects.service.ProjectService;
@@ -203,8 +203,23 @@ public class TestConfig {
   }
 
   @Bean
-  public WorkspaceSettingsRepository  workspaceSettingsRepository() {
+  public WorkspaceSettingsRepository workspaceSettingsRepository() {
     return mock(WorkspaceSettingsRepository.class);
+  }
+
+  @Bean
+  public SingleStudyBenefitRiskService singleStudyBenefitRiskService() {
+    return mock(SingleStudyBenefitRiskService.class);
+  }
+
+  @Bean
+  public ContrastStudyBenefitRiskService contrastStudyBenefitRiskService() {
+    return mock(ContrastStudyBenefitRiskService.class);
+  }
+
+  @Bean
+  public AbsoluteStudyBenefitRiskService absoluteStudyBenefirRiskService() {
+    return mock(AbsoluteStudyBenefitRiskService.class);
   }
 }
 

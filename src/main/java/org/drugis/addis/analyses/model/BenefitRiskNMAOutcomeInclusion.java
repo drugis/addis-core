@@ -4,15 +4,10 @@ import com.fasterxml.jackson.annotation.JsonRawValue;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import org.drugis.addis.util.ObjectToStringDeserializer;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.IdClass;
+import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Objects;
 
-/**
- * Created by connor on 26-2-16.
- */
 @Entity
 @IdClass(BenefitRiskNMAOutcomeInclusion.BrOutcomeInclusionPK.class)
 public class BenefitRiskNMAOutcomeInclusion {

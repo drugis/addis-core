@@ -54,9 +54,9 @@ define(['lodash'], function(_) {
     function buildOutcomes(analysis, outcomes, networkMetaAnalyses, studies) {
       var outcomesById = _.keyBy(outcomes, 'id');
       var outcomesWithAnalysis = getIncludedNmaOutcomes(analysis, networkMetaAnalyses, outcomesById);
-      var outcomesWithStudy = getIncludedStudyOutcomes(analysis.benefitRiskStudyOutcomeInclusions, outcomesById);
-      var outcomesForAnalysis = outcomesWithAnalysis.concat(outcomesWithStudy);
-      return addStudiesToOutcomes(outcomesForAnalysis, analysis.benefitRiskStudyOutcomeInclusions, studies);
+      var includedStudyOutcomes = getIncludedStudyOutcomes(analysis.benefitRiskStudyOutcomeInclusions, outcomesById);
+      var studyOutcomes = addStudiesToOutcomes(includedStudyOutcomes, analysis.benefitRiskStudyOutcomeInclusions, studies);
+      return outcomesWithAnalysis.concat(studyOutcomes);
     }
 
     function addStudiesToOutcomes(outcomes, studyInclusions, studies) {
@@ -66,9 +66,12 @@ define(['lodash'], function(_) {
         if (inclusion) {
           outcomeCopy.dataType = 'single-study';
           if (inclusion.studyGraphUri) {
-            outcomeCopy.selectedStudy = _.find(studies, ['studyUri', inclusion.studyGraphUri]);
-            outcomeCopy.isContrastOutcome = _.some(outcomeCopy.selectedStudy.arms, function(arm) {
-              return arm.referenceArm;
+            var study = _.find(studies, ['studyUri', inclusion.studyGraphUri]);
+            outcomeCopy.selectedStudy = study;
+            outcomeCopy.isContrastOutcome = _.some(study.arms, function(arm) {
+              return _.some(arm.measurements[study.defaultMeasurementMoment], function(measurement) {
+                return measurement.referenceArm;
+              });
             });
           } else {
             outcomeCopy.selectedStudy = {};
@@ -87,9 +90,13 @@ define(['lodash'], function(_) {
 
     function getIncludedStudyOutcomes(inclusions, outcomes) {
       return _.map(inclusions, function(inclusion) {
-        return {
+        var outcome = {
           outcome: outcomes[inclusion.outcomeId]
         };
+        if (inclusion.baseline) {
+          outcome.baseline = inclusion.baseline;
+        }
+        return outcome;
       });
     }
 
@@ -119,7 +126,7 @@ define(['lodash'], function(_) {
         dataType: 'network',
       };
       if (benefitRiskNMAOutcomeInclusion.baseline) {
-        outcomeWithAnalysis.baselineDistribution = benefitRiskNMAOutcomeInclusion.baseline;
+        outcomeWithAnalysis.baseline = benefitRiskNMAOutcomeInclusion.baseline;
       }
       return outcomeWithAnalysis;
     }
@@ -169,12 +176,11 @@ define(['lodash'], function(_) {
       });
     }
 
-    function addScales(outcomesWithAnalyses, alternatives, criteria, scaleResults) {
-      var includedAlternatives = _.filter(alternatives, function(alternative) {
-        return alternative.isIncluded;
-      }); return outcomesWithAnalyses.map(function(outcomeWithAnalyses) {
-        outcomeWithAnalyses.scales = includedAlternatives.reduce(function(accum, includedAlternative) {
-          var outcomeUri = outcomeWithAnalyses.outcome.semanticOutcomeUri;
+    function addScales(outcomes, alternatives, criteria, scaleResults) {
+      var includedAlternatives = getIncludedAlternatives(alternatives);
+      return outcomes.map(function(outcome) {
+        outcome.scales = includedAlternatives.reduce(function(accum, includedAlternative) {
+          var outcomeUri = outcome.outcome.semanticOutcomeUri;
           if (!criteria[outcomeUri]) { return accum; }
           var dataSourceId = criteria[outcomeUri].dataSources[0].id;
           if (scaleResults[dataSourceId]) {
@@ -182,7 +188,13 @@ define(['lodash'], function(_) {
           }
           return accum;
         }, {});
-        return outcomeWithAnalyses;
+        return outcome;
+      });
+    }
+
+    function getIncludedAlternatives(alternatives) {
+      return _.filter(alternatives, function(alternative) {
+        return alternative.isIncluded;
       });
     }
 
@@ -304,7 +316,7 @@ define(['lodash'], function(_) {
       var inclusions = analysis.benefitRiskNMAOutcomeInclusions.concat(analysis.benefitRiskStudyOutcomeInclusions);
       return _.map(outcomes, function(outcome) {
         outcome.isIncluded = _.some(inclusions, function(outcomeInclusion) {
-          return outcomeInclusion.outcomeId === outcome.id && (outcome.dataType === 'network' || outcome.isContrastOutcome);
+          return outcomeInclusion.outcomeId === outcome.id;
         });
         return outcome;
       });
@@ -358,7 +370,8 @@ define(['lodash'], function(_) {
             outcomeId: outcome.outcome.id,
             studyGraphUri: outcome.selectedStudy ? outcome.selectedStudy.studyUri : undefined
           };
-        });
+        })
+        .value();
     }
 
     function getNMAOutcomeInclusions(outcomes, analysisId) {
@@ -373,7 +386,8 @@ define(['lodash'], function(_) {
             networkMetaAnalysisId: outcome.selectedAnalysis.id,
             modelId: outcome.selectedModel ? outcome.selectedModel.id : undefined
           };
-        });
+        })
+        .value();
     }
 
     return {
@@ -398,8 +412,8 @@ define(['lodash'], function(_) {
       addModels: addModels,
       buildOutcomesWithAnalyses: buildOutcomesWithAnalyses,
       prepareEffectsTable: prepareEffectsTable,
-      getStudyOutcomeInclusions:getStudyOutcomeInclusions,
-      getNMAOutcomeInclusions:getNMAOutcomeInclusions
+      getStudyOutcomeInclusions: getStudyOutcomeInclusions,
+      getNMAOutcomeInclusions: getNMAOutcomeInclusions
     };
   };
 

@@ -21,20 +21,23 @@
           <table>
             <caption>Baseline distributions</caption>
             <tbody>
-              <tr ng-repeat="outcome in analysisOutcomes | filter: { outcome: { isIncluded : true }}">
-                <td class="table-head">{{outcome.outcome.name}}</td>
-                <td ng-show="outcome.baselineDistribution">{{outcome.baselineDistribution |
-                  distributionToStringFilter}}</td>
-                <td ng-show="!outcome.baselineDistribution">
+              <tr ng-repeat="outcome in tableOutcomes">
+                <td ng-if="(outcome.isContrastOutcome || outcome.dataType==='network')" class="table-head">
+                  {{outcome.outcome.name}}
+                </td>
+                <td ng-if="(outcome.isContrastOutcome || outcome.dataType==='network')" ng-show="outcome.baseline">
+                  {{outcome.baseline | distributionToStringFilter}}
+                </td>
+                <td ng-if="(outcome.isContrastOutcome || outcome.dataType==='network')" ng-show="!outcome.baseline">
                   <em>Not defined.</em>
                 </td>
-                <td class="button-cell" ng-if="!outcome.isContrastOutcome">
+                <td ng-if="(outcome.isContrastOutcome || outcome.dataType==='network') && !outcome.isContrastOutcome">
                   <button ng-disabled="!editMode.allowEditing" class="button small" ng-click="openDistributionModal(outcome)">
                     Set
                   </button>
                 </td>
-                <td class="button-cell" ng-if="outcome.isContrastOutcome">
-                  <button ng-disabled="!editMode.allowEditing" class="button small" ng-click="openStudyDistributionModal(outcome)">
+                <td ng-if="(outcome.isContrastOutcome || outcome.dataType==='network') && outcome.isContrastOutcome">
+                  <button ng-disabled="!editMode.allowEditing" class="button small" ng-click="openStudyBaselineModal(outcome)">
                     Set
                   </button>
                 </td>
@@ -58,7 +61,7 @@
               </tr>
             </thead>
             <tbody>
-              <tr ng-repeat="outcome in analysisOutcomes">
+              <tr ng-repeat="outcome in tableOutcomes">
                 <td class="table-head">{{outcome.outcome.name}}</td>
                 <td ng-if="outcome.selectedModel">
                   <a ui-sref="model({userUid: userId, projectId: project.id, analysisId: outcome.selectedAnalysis.id, modelId: outcome.selectedModel.id})">
@@ -88,8 +91,8 @@
       <div class="cell">
         <button ng-disabled="!editMode.allowEditing" type="button" class="button primary" ng-click="goToStep1()">Previous
           step </button>
-        <button ng-disabled="!editMode.allowEditing || isMissingBaseline ||analysis.finalized"
-          ng-cloak ng-click="finalizeAndGoToDefaultScenario()" type="button" class="button success">Finalize</button>
+        <button ng-disabled="!editMode.allowEditing || isMissingBaseline ||analysis.finalized" ng-cloak ng-click="finalizeAndGoToDefaultScenario()"
+          type="button" class="button success">Finalize</button>
         <div ng-if="analysis.finalized"><i class="fa fa-spinner fa-spin fa-3x"></i></div>
         <span ng-if="analysis.finalized">Finalizing analysis</span>
         <div ng-repeat="message in step1AlertMessages">
