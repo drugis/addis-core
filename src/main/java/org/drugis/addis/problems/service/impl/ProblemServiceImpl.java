@@ -37,9 +37,6 @@ import java.util.stream.Collectors;
 import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.*;
 
-/**
- * Created by daan on 3/21/14.
- */
 @Service
 public class ProblemServiceImpl implements ProblemService {
 

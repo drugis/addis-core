@@ -26,10 +26,10 @@ public class AbsoluteStudyBenefitRiskServiceImpl implements AbsoluteStudyBenefit
           TrialDataStudy study,
           List<TrialDataArm> matchedArms) {
     URI defaultMoment = study.getDefaultMeasurementMoment();
-    Set<MeasurementWithCoordinates> measurementDrugInstancePairs = getMeasurementsWithCoordinates(
+    Set<MeasurementWithCoordinates> measurementsWithCoordinates = getMeasurementsWithCoordinates(
             matchedArms, defaultMoment, context);
 
-    Set<MeasurementWithCoordinates> absoluteMeasurements = filterAbsoluteMeasurements(measurementDrugInstancePairs);
+    Set<MeasurementWithCoordinates> absoluteMeasurements = filterAbsoluteMeasurements(measurementsWithCoordinates);
     ArrayList<AbstractMeasurementEntry> performanceTable = new ArrayList<>();
     addAbsolutePerformanceEntries(performanceTable, absoluteMeasurements);
     return performanceTable;
@@ -76,7 +76,7 @@ public class AbsoluteStudyBenefitRiskServiceImpl implements AbsoluteStudyBenefit
 
  private MeasurementWithCoordinates getMeasurementWithCoordinates(Measurement measurement, SingleStudyContext context, Integer interventionId) {
     Outcome measuredOutcome = context.getOutcomesByUri().get(measurement.getVariableConceptUri());
-    String dataSourceId = context.getDataSourceIdsByOutcomeUri().get(measuredOutcome.getSemanticOutcomeUri());
+    String dataSourceId = context.getDataSourceId(measuredOutcome.getSemanticOutcomeUri());
     return new MeasurementWithCoordinates(measurement, interventionId, dataSourceId, measuredOutcome.getSemanticOutcomeUri());
   }
 

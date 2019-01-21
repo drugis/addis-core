@@ -740,14 +740,65 @@ define(['lodash', 'angular-mocks', './analysis'], function(_) {
       });
     });
 
-    describe('getStudyOutcomeInclusions', function(){
-      it('should fail!', function(){
-        fail();
+    describe('getStudyOutcomeInclusions', function() {
+      it('should return all studyoutcome inclusions', function() {
+        var outcomes = [{
+          outcome: {
+            isIncluded: true,
+            id: 1
+          },
+          dataType: 'single-study',
+          selectedStudy: {
+            studyUri: 'someStudyUri'
+          }
+        }, {
+          outcome: {
+            isIncluded: true,
+            id: 2
+          },
+          dataType: 'network'
+        }];
+        var analysisId = 1337;
+        var result = benefitRiskService.getStudyOutcomeInclusions(outcomes, analysisId);
+        var expectedResult = [{
+          analysisId: analysisId,
+          outcomeId: 1,
+          studyGraphUri: 'someStudyUri'
+        }];
+        expect(result).toEqual(expectedResult);
       });
     });
-    describe('getNMAOutcomeInclusions', function(){
-      it('should fail!', function(){
-        fail();
+
+    describe('getNMAOutcomeInclusions', function() {
+      it('should return all nmaoutcome inclusions', function() {
+        var outcomes = [{
+          outcome: {
+            isIncluded: true,
+            id: 1
+          },
+          dataType: 'single-study'
+        }, {
+          outcome: {
+            isIncluded: true,
+            id: 2
+          },
+          dataType: 'network',
+          selectedAnalysis: {
+            id: 3
+          },
+          selectedModel: {
+            id: 4
+          }
+        }];
+        var analysisId = 1337;
+        var result = benefitRiskService.getNMAOutcomeInclusions(outcomes, analysisId);
+        var expectedResult = [{
+          analysisId: analysisId,
+          outcomeId: 2,
+          networkMetaAnalysisId:3,
+          modelId: 4
+        }];
+        expect(result).toEqual(expectedResult);
       });
     });
   });

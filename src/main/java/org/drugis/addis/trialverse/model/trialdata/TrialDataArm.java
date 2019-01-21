@@ -3,9 +3,6 @@ package org.drugis.addis.trialverse.model.trialdata;
 import java.net.URI;
 import java.util.*;
 
-/**
- * Created by connor on 9-5-14.
- */
 public class TrialDataArm {
   private URI uri;
   private String name;

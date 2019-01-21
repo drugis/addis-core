@@ -65,4 +65,22 @@ public class SingleStudyContext {
   public void setOutcomesById(Map<Integer, Outcome> outcomesById) {
     this.outcomesById = outcomesById;
   }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    SingleStudyContext that = (SingleStudyContext) o;
+    return Objects.equals(outcomesByUri, that.outcomesByUri) &&
+            Objects.equals(interventionsById, that.interventionsById) &&
+            Objects.equals(dataSourceIdsByOutcomeUri, that.dataSourceIdsByOutcomeUri) &&
+            Objects.equals(sourceLink, that.sourceLink) &&
+            Objects.equals(outcomesById, that.outcomesById);
+  }
+
+  @Override
+  public int hashCode() {
+
+    return Objects.hash(outcomesByUri, interventionsById, dataSourceIdsByOutcomeUri, sourceLink, outcomesById);
+  }
 }

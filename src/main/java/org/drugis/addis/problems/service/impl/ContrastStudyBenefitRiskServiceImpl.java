@@ -1,6 +1,5 @@
 package org.drugis.addis.problems.service.impl;
 
-import com.sun.jndi.toolkit.url.Uri;
 import org.drugis.addis.analyses.model.BenefitRiskStudyOutcomeInclusion;
 import org.drugis.addis.outcomes.Outcome;
 import org.drugis.addis.problems.model.SingleStudyContext;
@@ -151,7 +150,9 @@ public class ContrastStudyBenefitRiskServiceImpl implements ContrastStudyBenefit
   }
 
   private TrialDataArm getNonReferenceArm(List<TrialDataArm> arms) {
-    return arms.stream().filter(arm -> arm.getReferenceArm() != null).collect(toList()).get(0);
+    return arms.stream()
+            .filter(arm -> !arm.getReferenceArm().equals(arm.getUri()))
+            .collect(toList()).get(0);
   }
 
   private Map<String, Double> getMu(List<TrialDataArm> arms, Outcome currentOutcome, URI defaultMeasurementMoment) {
@@ -199,8 +200,8 @@ public class ContrastStudyBenefitRiskServiceImpl implements ContrastStudyBenefit
             .next();
   }
 
-  private String getArmId(TrialDataArm referenceArm) {
-    return referenceArm.getMatchedProjectInterventionIds().iterator().next().toString();
+  private String getArmId(TrialDataArm arm) {
+    return arm.getMatchedProjectInterventionIds().iterator().next().toString();
   }
 
   private Measurement getMeasurement(URI defaultMeasurementMoment, TrialDataArm arm, Outcome outcome) {
@@ -247,8 +248,8 @@ public class ContrastStudyBenefitRiskServiceImpl implements ContrastStudyBenefit
   }
 
   @Override
-  public List<BenefitRiskStudyOutcomeInclusion> getContrastInclusionsWithBaseline(List<BenefitRiskStudyOutcomeInclusion> benefitRiskStudyOutcomeInclusions, SingleStudyContext context) {
-    return benefitRiskStudyOutcomeInclusions
+  public List<BenefitRiskStudyOutcomeInclusion> getContrastInclusionsWithBaseline(List<BenefitRiskStudyOutcomeInclusion> inclusions, SingleStudyContext context) {
+    return inclusions
             .stream()
             .filter(inclusion -> isContrastInclusion(inclusion, context.getOutcomesByUri()))
             .filter(inclusion -> inclusion.getBaseline() != null)
