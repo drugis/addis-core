@@ -35,7 +35,7 @@ define(['lodash', 'angular'], function(_) {
     // functions
     $scope.addedAlternative = addedAlternative;
     $scope.removedAlternative = removedAlternative;
-    $scope.updateBenefitRiskOutcomeInclusions = updateBenefitRiskOutcomeInclusions;
+    $scope.updateBenefitRiskOutcomeInclusion = updateBenefitRiskOutcomeInclusion;
     $scope.updateAnalysesInclusions = updateAnalysesInclusions;
     $scope.updateModelSelection = updateModelSelection;
     $scope.goToStep2 = goToStep2;
@@ -90,7 +90,8 @@ define(['lodash', 'angular'], function(_) {
       $scope.includedAlternatives = alternatives.filter(function(alternative) {
         return _.find(analysis.interventionInclusions, ['interventionId', alternative.id]);
       });
-      $scope.outcomes = BenefitRiskService.getOutcomesWithInclusions(outcomes, analysis);
+      var allInclusions = analysis.benefitRiskNMAOutcomeInclusions.concat(analysis.benefitRiskStudyOutcomeInclusions);
+      $scope.outcomes = BenefitRiskService.getOutcomesWithInclusions(outcomes, allInclusions);
 
       AnalysisResource.query({
         projectId: $stateParams.projectId,
@@ -128,75 +129,31 @@ define(['lodash', 'angular'], function(_) {
     }
 
     function updateAnalysesInclusions(changedOutcome) {
-      changeModelSelection(changedOutcome);
+      changedOutcome.selectedModel = BenefitRiskService.getModelSelection(changedOutcome.selectedAnalysis);
       if (changedOutcome.selectedModel) {
-        updateMissingAlternatives(changedOutcome);
+        BenefitRiskService.updateMissingAlternatives(changedOutcome, $scope.includedAlternatives);
       }
       saveInclusions();
     }
 
-    function updateBenefitRiskOutcomeInclusions(changedOutcome) {
-      if (!changedOutcome.outcome.isIncluded) {
-        changedOutcome.selectedAnalysis = undefined;
-        changedOutcome.selectedStudy = undefined;
-        changedOutcome.selectedModel = undefined;
-        changedOutcome.dataType = undefined;
-      } else {
-        if (changedOutcome.dataType === 'network') {
-          changedOutcome.selectedStudy = undefined;
-          var selectedAnalysis = findSelectableAnalysis(changedOutcome);
-          if (selectedAnalysis) {
-            changedOutcome.selectedAnalysis = selectedAnalysis;
-            changeModelSelection(changedOutcome);
-            if (changedOutcome.selectedModel) {
-              updateMissingAlternatives(changedOutcome);
-            }
-          }
-        } else if (changedOutcome.dataType === 'single-study') {
-          changedOutcome.selectedAnalysis = undefined;
-          changedOutcome.selectedModel = undefined;
-          changedOutcome.selectedStudy = {};
-        }
-      }
+    function updateBenefitRiskOutcomeInclusion(changedOutcome) {
+      changedOutcome = BenefitRiskService.updateOutcomeInclusion(changedOutcome, $scope.includedAlternatives);
       saveInclusions();
-    }
-
-    function findSelectableAnalysis(outcome) {
-      return _.find(outcome.networkMetaAnalyses, 'models.length');
-    }
-
-    function changeModelSelection(changedOutcome) {
-      var selectedNma = changedOutcome.selectedAnalysis;
-      if (selectedNma !== undefined) {
-        var primaryModel = selectedNma.models.find(function(model) {
-          return model.id === selectedNma.primaryModel;
-        });
-        if (primaryModel) {
-          changedOutcome.selectedModel = primaryModel;
-        } else {
-          changedOutcome.selectedModel = selectedNma.models[0];
-        }
-      } else {
-        changedOutcome.selectedModel = undefined;
-      }
     }
 
     function updateModelSelection(outcomeWithAnalyses) {
       if (outcomeWithAnalyses.selectedModel) {
-        updateMissingAlternatives(outcomeWithAnalyses);
+        BenefitRiskService.updateMissingAlternatives(outcomeWithAnalyses, $scope.includedAlternatives);
       }
       saveInclusions();
     }
 
     function updateMissingAlternativesForAllOutcomes() {
-      $scope.outcomesWithAnalyses.filter(function(outcome) {
-        return outcome.selectedModel;
-      }).forEach(updateMissingAlternatives);
-    }
-
-    function updateMissingAlternatives(outcomeWithAnalyses) {
-      outcomeWithAnalyses.selectedModel.missingAlternatives = BenefitRiskService.findMissingAlternatives($scope.includedAlternatives, outcomeWithAnalyses);
-      outcomeWithAnalyses.selectedModel.missingAlternativesNames = _.map(outcomeWithAnalyses.selectedModel.missingAlternatives, 'name');
+      _($scope.outcomesWithAnalyses)
+        .filter(function(outcome) {
+          return outcome.selectedModel;
+        })
+        .forEach(_.partial(BenefitRiskService.updateMissingAlternatives, $scope.includedAlternatives));
     }
 
     function updateStudyMissingStuff() {

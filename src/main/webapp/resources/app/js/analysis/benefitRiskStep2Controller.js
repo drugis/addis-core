@@ -48,7 +48,6 @@ define(['lodash', 'angular'], function(_) {
     $scope.alternatives = InterventionResource.query($stateParams);
     $scope.outcomes = OutcomeResource.query($stateParams);
     $scope.models = ModelResource.getConsistencyModels($stateParams);
-    $scope.hasMissingBaseLine = hasMissingBaseLine;
     $scope.finalizeAndGoToDefaultScenario = finalizeAndGoToDefaultScenario;
     $scope.goToDefaultScenario = BenefitRiskService.goToDefaultScenario;
     $scope.project = ProjectResource.get($stateParams);
@@ -95,7 +94,8 @@ define(['lodash', 'angular'], function(_) {
       PageTitleService.setPageTitle('BenefitRiskStep2Controller', analysis.title + ' step 2');
 
       $scope.alternatives = addAlternativeInclusionStatus(alternatives, analysis.interventionInclusions);
-      $scope.outcomes = BenefitRiskService.getOutcomesWithInclusions(outcomes, analysis);
+      var allInclusions = analysis.benefitRiskNMAOutcomeInclusions.concat(analysis.benefitRiskStudyOutcomeInclusions);
+      $scope.outcomes = BenefitRiskService.getOutcomesWithInclusions(outcomes, allInclusions);
       $scope.effectsTablePromise = prepareEffectsTable(analysis, models);
     });
 
@@ -167,7 +167,7 @@ define(['lodash', 'angular'], function(_) {
 
     function setBaseline(outcomeWithAnalysis, baseline) {
       $scope.analysis.benefitRiskNMAOutcomeInclusions =
-        addBaseline(outcomeWithAnalysis, $scope.analysis.benefitRiskNMAOutcomeInclusions, baseline);
+      BenefitRiskService.addBaselineToInclusion(outcomeWithAnalysis, $scope.analysis.benefitRiskNMAOutcomeInclusions, baseline);
       var saveCommand = BenefitRiskService.analysisToSaveCommand($scope.analysis);
       $scope.effectsTablePromise = AnalysisResource.save(saveCommand).$promise.then(function() {
         return updateTableOutcomes($scope.analysis, $scope.outcomes);
@@ -184,10 +184,10 @@ define(['lodash', 'angular'], function(_) {
             return outcome;
           },
           measurementType: function() {
-            return getMeasurementType(outcome);
+            return BenefitRiskService.getMeasurementType(outcome);
           },
           referenceAlternativeName: function() {
-            return getReferenceAlternativeName(outcome);
+            return BenefitRiskService.getReferenceAlternativeName(outcome, $scope.alternatives);
           },
           callback: function() {
             return _.partial(addStudyBaseline, outcome);
@@ -197,61 +197,19 @@ define(['lodash', 'angular'], function(_) {
     }
 
     function addStudyBaseline(outcome, baseline) {
-      $scope.analysis.benefitRiskStudyOutcomeInclusions =
-        addBaseline(outcome, $scope.analysis.benefitRiskStudyOutcomeInclusions, baseline);
+      $scope.analysis.benefitRiskStudyOutcomeInclusions = BenefitRiskService.addBaselineToInclusion(
+        outcome, $scope.analysis.benefitRiskStudyOutcomeInclusions, baseline);
       var saveCommand = BenefitRiskService.analysisToSaveCommand($scope.analysis);
       $scope.effectsTablePromise = AnalysisResource.save(saveCommand).$promise.then(function() {
         return updateTableOutcomes($scope.analysis, $scope.outcomes);
       });
     }
 
-    function addBaseline(outcome, inclusions, baseline) {
-      return _.map(
-        inclusions, function(inclusion) {
-          if (inclusion.outcomeId === outcome.outcome.id) {
-            return _.extend(inclusion, { baseline: baseline });
-          } else {
-            return inclusion;
-          }
-        }
-      );
-    }
-
-    function getReferenceAlternativeName(outcome) {
-      var referenceArm = _.find(outcome.selectedStudy.arms, function(arm) {
-        return arm.referenceArm === arm.uri;
-      });
-      var referenceAlternativeId = referenceArm.matchedProjectInterventionIds[0];
-      var referenceAlternative = _.find($scope.alternatives, function(alternative) {
-        return alternative.id === referenceAlternativeId;
-      });
-      return referenceAlternative.name;
-    }
-
-    function getMeasurementType(outcome) {
-      var study = outcome.selectedStudy;
-      var nonReferenceArm = _.find(study.arms, function(arm) {
-        return arm.referenceArm !== arm.uri;
-      });
-      var measurement = nonReferenceArm.measurements[study.defaultMeasurementMoment][0];
-      if (measurement.oddsRatio !== undefined) {
-        return 'oddsRatio';
-      } else if (measurement.riskRatio !== undefined) {
-        return 'riskRatio';
-      } else if (measurement.meanDifference !== undefined) {
-        return 'meanDifference';
-      } else if (measurement.standardizedMeanDifference !== undefined) {
-        return 'standardizedMeanDifference';
-      } else if (measurement.hazardRatio !== undefined) {
-        return 'hazardRatio';
-      }
-    }
-
     function resetScales() {
       return ProblemResource.get($stateParams).$promise.then(function(problem) {
         if (problem.performanceTable.length > 0) {
           return WorkspaceService.getObservedScales(problem).then(function(result) {
-            $scope.isMissingBaseline = hasMissingBaseLine();
+            $scope.isMissingBaseline = BenefitRiskService.hasMissingBaseline($scope.tableOutcomes);
             $scope.tableOutcomes = BenefitRiskService.addScales($scope.tableOutcomes,
               $scope.alternatives, problem.criteria, result);
           }, function() {
@@ -261,12 +219,6 @@ define(['lodash', 'angular'], function(_) {
       });
     }
 
-    function hasMissingBaseLine() {
-      return _.some($scope.updateTableOutcomes, function(outcome) {
-        return outcome.dataType === 'network' && !outcome.baseline ||
-          outcome.dataType === 'single-study' && outcome.isContrastOutcome && !outcome.baseline;
-      });
-    }
   };
   return dependencies.concat(BenefitRiskStep2Controller);
 });

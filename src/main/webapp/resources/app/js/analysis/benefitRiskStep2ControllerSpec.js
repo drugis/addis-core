@@ -53,13 +53,16 @@ define(['angular-mocks', './analysis'], function() {
       benefitRiskService = jasmine.createSpyObj('BenefitRiskService', [
         'filterArchivedAndAddModels',
         'buildOutcomes',
-        'findOverlappingInterventions',
         'addBaseline',
         'analysisToSaveCommand',
         'finalizeAndGoToDefaultScenario',
         'analysisWithBaselines',
         'prepareEffectsTable',
-        'getOutcomesWithInclusions'
+        'getOutcomesWithInclusions',
+        'hasMissingBaseline',
+        'addBaselineToInclusion',
+        'getMeasurementType',
+        'getReferenceAlternativeName'
       ]);
 
     beforeEach(angular.mock.module('addis.analysis'));
@@ -117,8 +120,6 @@ define(['angular-mocks', './analysis'], function() {
       benefitRiskService.filterArchivedAndAddModels.and.returnValue([{
         withModel: true
       }]);
-      benefitRiskService.findOverlappingInterventions.and.returnValue([]);
-
 
       $controller('BenefitRiskStep2Controller', {
         $scope: scope,

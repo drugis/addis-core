@@ -1,6 +1,5 @@
 package org.drugis.addis.problems.service;
 
-import com.sun.xml.internal.messaging.saaj.packaging.mime.util.BEncoderStream;
 import org.drugis.addis.analyses.model.BenefitRiskStudyOutcomeInclusion;
 import org.drugis.addis.outcomes.Outcome;
 import org.drugis.addis.problems.model.SingleStudyContext;

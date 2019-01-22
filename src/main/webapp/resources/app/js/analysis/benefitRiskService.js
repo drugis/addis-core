@@ -7,48 +7,30 @@ define(['lodash'], function(_) {
     'SubProblemResource',
     'ScenarioResource',
     'WorkspaceService',
-    'BenefitRiskErrorService',
     'DEFAULT_VIEW'
   ];
-  var BenefitRiskAnalysisService = function(
+  var BenefitRiskService = function(
     $state,
     ProblemResource,
     AnalysisResource,
     SubProblemResource,
     ScenarioResource,
     WorkspaceService,
-    BenefitRiskErrorService,
     DEFAULT_VIEW
   ) {
-
-    function buildOutcomesWithAnalyses(analysis, studies, networkMetaAnalyses, models, outcomes) {
-      var filtered = filterArchivedAndAddModels(networkMetaAnalyses, models);
-      var outcomesWithAnalyses = _(outcomes)
-        .map(_.partial(buildOutcomeWithAnalyses, analysis, filtered))
-        .map(function(outcomeWithAnalysis) {
-          outcomeWithAnalysis.networkMetaAnalyses = outcomeWithAnalysis.networkMetaAnalyses.sort(
-            compareAnalysesByModels
-          );
-          return outcomeWithAnalysis;
-        })
-        .value();
-      return addStudiesToOutcomes(outcomesWithAnalyses, analysis.benefitRiskStudyOutcomeInclusions, studies);
-    }
-
-    function filterArchivedAndAddModels(networkMetaAnalyses, models) {
-      var nonArchived = filterArchived(networkMetaAnalyses);
-      return addModels(nonArchived, models);
-    }
-
-    function filterArchived(networkMetaAnalyses) {
-      return _.reject(networkMetaAnalyses, 'archived');
-    }
-
     function addModels(networkMetaAnalyses, models) {
       return _(networkMetaAnalyses)
         .map(_.partial(joinModelsWithAnalysis, models))
         .map(addModelsGroup)
         .value();
+    }
+
+    function addModelsGroup(analysis) {
+      analysis.models = analysis.models.map(function(model) {
+        model.group = analysis.primaryModel === model.id ? 'Primary model' : 'Other models';
+        return model;
+      });
+      return analysis;
     }
 
     function buildOutcomes(analysis, outcomes, networkMetaAnalyses, studies) {
@@ -80,7 +62,6 @@ define(['lodash'], function(_) {
         return outcomeCopy;
       });
     }
-
 
     function getIncludedNmaOutcomes(analysis, nmas, outcomes) {
       return _.map(analysis.benefitRiskNMAOutcomeInclusions, function(inclusion) {
@@ -138,107 +119,6 @@ define(['lodash'], function(_) {
       return networkMetaAnalysis;
     }
 
-    function compareAnalysesByModels(a, b) {
-      if (a.models.length > 0) {
-        if (!b.models.length) {
-          return -1;
-        } else {
-          return 0;
-        }
-      } else {
-        if (b.models.length > 0) {
-          return 1;
-        }
-      }
-      return 0;
-    }
-
-    function addModelsGroup(analysis) {
-      analysis.models = analysis.models.map(function(model) {
-        model.group = analysis.primaryModel === model.id ? 'Primary model' : 'Other models';
-        return model;
-      });
-      return analysis;
-    }
-
-
-    function findMissingAlternatives(interventionInclusions, outcomeWithAnalysis) {
-      return interventionInclusions.filter(function(alternative) {
-        var modelType = outcomeWithAnalysis.selectedModel.modelType;
-        if (modelType.type === 'pairwise') {
-          return alternative.id !== modelType.details.from.id &&
-            alternative.id !== modelType.details.to.id;
-        } else {
-          return !_.find(outcomeWithAnalysis.selectedAnalysis.interventionInclusions, function(includedIntervention) {
-            return alternative.id === includedIntervention.interventionId;
-          });
-        }
-      });
-    }
-
-    function addScales(outcomes, alternatives, criteria, scaleResults) {
-      var includedAlternatives = getIncludedAlternatives(alternatives);
-      return outcomes.map(function(outcome) {
-        outcome.scales = includedAlternatives.reduce(function(accum, includedAlternative) {
-          var outcomeUri = outcome.outcome.semanticOutcomeUri;
-          if (!criteria[outcomeUri]) { return accum; }
-          var dataSourceId = criteria[outcomeUri].dataSources[0].id;
-          if (scaleResults[dataSourceId]) {
-            accum[includedAlternative.id] = scaleResults[dataSourceId][includedAlternative.id];
-          }
-          return accum;
-        }, {});
-        return outcome;
-      });
-    }
-
-    function getIncludedAlternatives(alternatives) {
-      return _.filter(alternatives, function(alternative) {
-        return alternative.isIncluded;
-      });
-    }
-
-    function findOverlappingInterventions(studies) {
-      var overlappingInterventionsList = _.reduce(studies, function(accum, study) {
-        return accum.concat(study.overlappingInterventions);
-      }, []);
-      return _.uniqBy(overlappingInterventionsList, 'id');
-    }
-
-    function addBaseline(analysis, models, alternatives) {
-      var newAnalysis = angular.copy(analysis);
-      newAnalysis.benefitRiskNMAOutcomeInclusions = _.map(
-        newAnalysis.benefitRiskNMAOutcomeInclusions,
-        _.partial(addBaselineIfNeeded, newAnalysis, models, alternatives)
-      );
-      return newAnalysis;
-    }
-
-    function addBaselineIfNeeded(newAnalysis, models, alternatives, outcome) {
-      if (outcome.baseline) { return outcome; }
-      var baselineModel = findModelForBaseline(models, outcome);
-      if (baselineModel && baselineModel.baseline &&
-        hasIncludedIntervention(newAnalysis.interventionInclusions, alternatives, baselineModel)
-      ) {
-        outcome.baseline = baselineModel.baseline.baseline;
-      }
-      return outcome;
-    }
-
-    function findModelForBaseline(models, outcome) {
-      return _.find(models, function(model) {
-        return model.id === outcome.modelId;
-      });
-    }
-
-    function hasIncludedIntervention(interventionInclusions, alternatives, baselineModel) {
-      return _.find(interventionInclusions, function(interventionInclusion) {
-        return _.find(alternatives, function(alternative) {
-          return interventionInclusion.interventionId === alternative.id;
-        }).name.localeCompare(baselineModel.baseline.baseline.name) === 0;
-      });
-    }
-
     function analysisToSaveCommand(analysis, problem) {
       var analysisToSave = angular.copy(analysis);
       return {
@@ -258,21 +138,6 @@ define(['lodash'], function(_) {
           goToDefaultScenario();
         });
       });
-    }
-
-    function analysisUpdateCommand(analysis, includedAlternatives) {
-      var analysisToSave = angular.copy(analysis);
-      analysisToSave.interventionInclusions = includedAlternatives.map(function(intervention) {
-        return {
-          interventionId: intervention.id,
-          analysisId: analysisToSave.id
-        };
-      });
-      return {
-        id: analysis.id,
-        projectId: analysis.projectId,
-        analysis: analysisToSave
-      };
     }
 
     function goToDefaultScenario() {
@@ -302,120 +167,56 @@ define(['lodash'], function(_) {
       $state.go(DEFAULT_VIEW, params);
     }
 
-    function isContrastStudySelected(includedOutcomes, studies) {
-      return _.some(includedOutcomes, function(includedStudyOutcome) {
-        return _.some(studies, function(study) {
-          return includedStudyOutcome.studyGraphUri === study.studyUri && _.some(study.arms, function(arm) {
-            return arm.referenceArm;
-          });
-        });
-      });
-    }
-
-    function getOutcomesWithInclusions(outcomes, analysis) {
-      var inclusions = analysis.benefitRiskNMAOutcomeInclusions.concat(analysis.benefitRiskStudyOutcomeInclusions);
+    function getOutcomesWithInclusions(outcomes, inclusions) {
       return _.map(outcomes, function(outcome) {
-        outcome.isIncluded = _.some(inclusions, function(outcomeInclusion) {
-          return outcomeInclusion.outcomeId === outcome.id;
-        });
+        outcome.isIncluded = isOutcomeIncluded(outcome, inclusions);
         return outcome;
       });
     }
 
-    function getStep1Errors(outcomesWithAnalyses) {
-      var errors = [];
-      if (BenefitRiskErrorService.isInvalidStudySelected(outcomesWithAnalyses)) {
-        errors.push('An invalid study is selected');
-      }
-      if (BenefitRiskErrorService.numberOfSelectedOutcomes(outcomesWithAnalyses) < 2) {
-        errors.push('At least two outcomes must be selected');
-      }
-      if (BenefitRiskErrorService.isMissingAnalysis(outcomesWithAnalyses)) {
-        errors.push('An outcome with missing network model is selected');
-      }
-      if (BenefitRiskErrorService.isMissingDataType(outcomesWithAnalyses)) {
-        errors.push('The data source type of an outcome has not been chosen');
-      }
-      if (BenefitRiskErrorService.isModelWithMissingAlternatives(outcomesWithAnalyses)) {
-        errors.push('A model with missing alternatives is selected');
-      }
-      if (BenefitRiskErrorService.isModelWithoutResults(outcomesWithAnalyses)) {
-        errors.push('A model that has not yet run is selected');
-      }
-      if (BenefitRiskErrorService.hasMissingStudy(outcomesWithAnalyses)) {
-        errors.push('A study still needs to be selected');
-      }
-      if (BenefitRiskErrorService.findOverlappingOutcomes(outcomesWithAnalyses).length > 0) {
-        errors.push('There are overlapping outcomes');
-      }
-      return errors;
+    function getAlternativesWithInclusion(alternatives, inclusions) {
+      return _.map(alternatives, function(alternative) {
+        alternative.isIncluded = isAlternativeIncluded(alternative, inclusions);
+        return alternative;
+      });
     }
 
-    function prepareEffectsTable(outcomes) {
-      var outcomeIds = _(outcomes).filter('isIncluded').map('id').value();
-      return AnalysisResource.query({
-        projectId: $state.params.projectId,
-        outcomeIds: outcomeIds
-      }).$promise;
+    function isAlternativeIncluded(alternative, inclusions) {
+      return _.some(inclusions, ['id', alternative.id]);
     }
 
-    function getStudyOutcomeInclusions(outcomes, analysisId) {
-      return _(outcomes)
-        .filter(function(outcome) {
-          return outcome.outcome.isIncluded && outcome.dataType === 'single-study';
-        })
-        .map(function(outcome) {
-          return {
-            analysisId: analysisId,
-            outcomeId: outcome.outcome.id,
-            studyGraphUri: outcome.selectedStudy ? outcome.selectedStudy.studyUri : undefined
-          };
-        })
-        .value();
+    function isOutcomeIncluded(outcome, inclusions) {
+      return _.some(inclusions, ['outcomeId', outcome.id]);
     }
 
-    function getNMAOutcomeInclusions(outcomes, analysisId) {
-      return _(outcomes)
-        .filter(function(outcome) {
-          return outcome.outcome.isIncluded && outcome.dataType === 'network' && outcome.selectedAnalysis;
-        })
-        .map(function(outcome) {
-          return {
-            analysisId: analysisId,
-            outcomeId: outcome.outcome.id,
-            networkMetaAnalysisId: outcome.selectedAnalysis.id,
-            modelId: outcome.selectedModel ? outcome.selectedModel.id : undefined
-          };
-        })
-        .value();
+    function getIncludedAlternatives(alternatives) {
+      return _.filter(alternatives, 'isIncluded');
+    }
+
+    function hasMissingBaseline(outcomes) {
+      return _.some(outcomes, function(outcome) {
+        return outcome.dataType === 'network' && !outcome.baseline ||
+          outcome.dataType === 'single-study' && outcome.isContrastOutcome && !outcome.baseline;
+      });
     }
 
     return {
-      addModelsGroup: addModelsGroup,//public for test
+      addModelsGroup: addModelsGroup, //1
+      analysisToSaveCommand: analysisToSaveCommand, // 2
       joinModelsWithAnalysis: joinModelsWithAnalysis,//public for test
-      compareAnalysesByModels: compareAnalysesByModels,//public for test
-      addStudiesToOutcomes: addStudiesToOutcomes,//public for test
-      buildOutcomeWithAnalyses: buildOutcomeWithAnalyses,//public for test
-      buildOutcomes: buildOutcomes,
-      findMissingAlternatives: findMissingAlternatives,
-      addScales: addScales,
-      findOverlappingInterventions: findOverlappingInterventions,
-      addBaseline: addBaseline,
-      analysisToSaveCommand: analysisToSaveCommand,
-      analysisUpdateCommand: analysisUpdateCommand,
-      finalizeAndGoToDefaultScenario: finalizeAndGoToDefaultScenario,
-      goToDefaultScenario: goToDefaultScenario,
-      isContrastStudySelected: isContrastStudySelected,
-      getOutcomesWithInclusions: getOutcomesWithInclusions,
-      getStep1Errors: getStep1Errors,
-      filterArchivedAndAddModels: filterArchivedAndAddModels,
-      addModels: addModels,
-      buildOutcomesWithAnalyses: buildOutcomesWithAnalyses,
-      prepareEffectsTable: prepareEffectsTable,
-      getStudyOutcomeInclusions: getStudyOutcomeInclusions,
-      getNMAOutcomeInclusions: getNMAOutcomeInclusions
+      addStudiesToOutcomes: addStudiesToOutcomes, //1 
+      buildOutcomeWithAnalyses: buildOutcomeWithAnalyses, //1
+      goToDefaultScenario: goToDefaultScenario, // 0 1 2
+      getOutcomesWithInclusions: getOutcomesWithInclusions, // 1 2
+      buildOutcomes: buildOutcomes, // 0 1 2 
+      finalizeAndGoToDefaultScenario: finalizeAndGoToDefaultScenario, // 1 2
+      addModels: addModels, // 0 2
+      getAlternativesWithInclusion: getAlternativesWithInclusion,
+      getIncludedAlternatives: getIncludedAlternatives,
+      hasMissingBaseline: hasMissingBaseline,// 0 2
+
     };
   };
 
-  return dependencies.concat(BenefitRiskAnalysisService);
+  return dependencies.concat(BenefitRiskService);
 });
