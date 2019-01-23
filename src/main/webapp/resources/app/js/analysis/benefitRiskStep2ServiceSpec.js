@@ -242,8 +242,7 @@ define(['lodash', 'angular-mocks', './analysis'], function(_) {
     });
 
     describe('filterArchivedAndAddModels', function() {
-
-      it('should fail', function() {
+      it('should filter all archived analyses, and ask the benefitrisk service to add models', function() {
         var analyses = [{
           archived: true
         }, {

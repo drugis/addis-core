@@ -51,20 +51,22 @@ define(['angular-mocks', './analysis'], function() {
       datasetDefer,
       effectsTableDefer,
       benefitRiskService = jasmine.createSpyObj('BenefitRiskService', [
-        'filterArchivedAndAddModels',
         'buildOutcomes',
-        'addBaseline',
         'analysisToSaveCommand',
         'finalizeAndGoToDefaultScenario',
         'analysisWithBaselines',
-        'prepareEffectsTable',
         'getOutcomesWithInclusions',
         'hasMissingBaseline',
-        'addBaselineToInclusion',
-        'getMeasurementType',
         'getReferenceAlternativeName'
       ]);
-
+      var benefitRiskStep2ServiceMock = jasmine.createSpyObj('BenefitRiskStep2Service', [
+        'addBaseline',
+        'addBaselineToInclusion',
+        'addScales',
+        'filterArchivedAndAddModels',
+        'getMeasurementType',
+        'prepareEffectsTable'
+      ]);
     beforeEach(angular.mock.module('addis.analysis'));
 
     beforeEach(inject(function($rootScope, $q, $controller) {
@@ -95,7 +97,7 @@ define(['angular-mocks', './analysis'], function() {
       modelResourceMock.getConsistencyModels.and.returnValue({
         $promise: modelsDefer.promise
       });
-      benefitRiskService.prepareEffectsTable.and.returnValue(effectsTableDefer.promise);
+      benefitRiskStep2ServiceMock.prepareEffectsTable.and.returnValue(effectsTableDefer.promise);
       effectsTableDefer.resolve({});
       project.$promise = projectDefer.promise;
       projectResourceMock.get.and.returnValue(project);
@@ -117,7 +119,7 @@ define(['angular-mocks', './analysis'], function() {
 
       userServiceMock.isLoginUserId.and.returnValue($q.resolve(true));
 
-      benefitRiskService.filterArchivedAndAddModels.and.returnValue([{
+      benefitRiskStep2ServiceMock.filterArchivedAndAddModels.and.returnValue([{
         withModel: true
       }]);
 
@@ -131,6 +133,7 @@ define(['angular-mocks', './analysis'], function() {
         $modal: modalMock,
         AnalysisResource: analysisResourceMock,
         BenefitRiskService: benefitRiskService,
+        BenefitRiskStep2Service: benefitRiskStep2ServiceMock,
         InterventionResource: interventionResourceMock,
         ModelResource: modelResourceMock,
         OutcomeResource: outcomeResourceMock,
@@ -163,7 +166,7 @@ define(['angular-mocks', './analysis'], function() {
 
     describe('when the analysis, outcomes, models, studies and alternatives are loaded', function() {
       beforeEach(function() {
-        benefitRiskService.addBaseline.and.returnValue({
+        benefitRiskStep2ServiceMock.addBaseline.and.returnValue({
           benefitRiskStudyOutcomeInclusions: []
         });
         benefitRiskService.getOutcomesWithInclusions.and.returnValue([{
@@ -225,14 +228,14 @@ define(['angular-mocks', './analysis'], function() {
       });
 
       it('should set the effects table promise, query the NMAs for the ', function() {
-        expect(benefitRiskService.filterArchivedAndAddModels).toHaveBeenCalled();
+        expect(benefitRiskStep2ServiceMock.filterArchivedAndAddModels).toHaveBeenCalled();
         expect(benefitRiskService.buildOutcomes).toHaveBeenCalled();
       });
       it('should set the page title', function() {
         expect(pageTitleServiceMock.setPageTitle).toHaveBeenCalledWith('BenefitRiskStep2Controller', analysis.title + ' step 2');
       });
       it('should query for analysis about included outcomes', function() {
-        expect(benefitRiskService.prepareEffectsTable).toHaveBeenCalledWith(scope.outcomes);
+        expect(benefitRiskStep2ServiceMock.prepareEffectsTable).toHaveBeenCalledWith(scope.outcomes);
       });
       it('should set non-archived NMAs on the scope, with models added', function() {
         expect(scope.networkMetaAnalyses).toEqual([{

@@ -77,11 +77,11 @@ define(['lodash'], function(_) {
         return alternative.isIncluded;
       });
     }
+    
     function filterArchivedAndAddModels(networkMetaAnalyses, models) {
       var nonArchived = filterArchived(networkMetaAnalyses);
       return BenefitRiskService.addModels(nonArchived, models);
     }
-
 
     function filterArchived(networkMetaAnalyses) {
       return _.reject(networkMetaAnalyses, 'archived');

@@ -82,7 +82,7 @@ define(['lodash'], function(_) {
     }
 
     function buildOutcomeWithAnalyses(analysis, networkMetaAnalyses, outcome) {
-      var nmasForOutcome = networkMetaAnalyses.filter(function(nma) {
+      var nmasForOutcome = _.filter(networkMetaAnalyses, function(nma) {
         return nma.outcome.id === outcome.id;
       });
 

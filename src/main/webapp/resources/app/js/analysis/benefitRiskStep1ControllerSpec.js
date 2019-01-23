@@ -29,17 +29,20 @@ define(['angular-mocks', './analysis'], function() {
       modelsDefer,
       projectDefer,
       benefitRiskService = jasmine.createSpyObj('BenefitRiskService', [
-        'findOverlappingInterventions',
         'finalizeAndGoToDefaultScenario',
+        'getOutcomesWithInclusions'
+        
+      ]);
+      var benefitRiskStep1ServiceMock = jasmine.createSpyObj('BenefitRiskStep1Service',[
         'analysisUpdateCommand',
-        'isContrastStudySelected',
-        'getOutcomesWithInclusions',
-        'getStep1Errors',
         'buildOutcomesWithAnalyses',
+        'findOverlappingInterventions',
         'getNMAOutcomeInclusions',
+        'getStep1Errors',
         'getStudyOutcomeInclusions',
-        'updateMissingAlternatives',
-        'updateOutcomeInclusion'
+        'isContrastStudySelected',
+        'updateOutcomeInclusion',
+        'updateMissingAlternatives'
       ]);
 
     beforeEach(angular.mock.module('addis.analysis'));
@@ -81,11 +84,11 @@ define(['angular-mocks', './analysis'], function() {
       });
       userServiceMock.isLoginUserId.and.returnValue($q.resolve(true));
 
-      benefitRiskService.findOverlappingInterventions.and.returnValue([]);
-      benefitRiskService.getStep1Errors.and.returnValue([]);
-      benefitRiskService.buildOutcomesWithAnalyses.and.returnValue([]);
-      benefitRiskService.getStudyOutcomeInclusions.and.returnValue([]);
-      benefitRiskService.getNMAOutcomeInclusions.and.returnValue([]);
+      benefitRiskStep1ServiceMock.findOverlappingInterventions.and.returnValue([]);
+      benefitRiskStep1ServiceMock.getStep1Errors.and.returnValue([]);
+      benefitRiskStep1ServiceMock.buildOutcomesWithAnalyses.and.returnValue([]);
+      benefitRiskStep1ServiceMock.getStudyOutcomeInclusions.and.returnValue([]);
+      benefitRiskStep1ServiceMock.getNMAOutcomeInclusions.and.returnValue([]);
 
       $controller('BenefitRiskStep1Controller', {
         $scope: scope,
@@ -99,6 +102,7 @@ define(['angular-mocks', './analysis'], function() {
         InterventionResource: interventionResourceMock,
         OutcomeResource: outcomeResourceMock,
         BenefitRiskService: benefitRiskService,
+        BenefitRiskStep1Service: benefitRiskStep1ServiceMock,
         ModelResource: modelResourceMock,
         ProjectResource: projectResourceMock,
         UserService: userServiceMock,
@@ -180,7 +184,7 @@ define(['angular-mocks', './analysis'], function() {
       });
 
       it('should call the benefitriskservice', function() {
-        expect(benefitRiskService.updateOutcomeInclusion).toHaveBeenCalled();
+        expect(benefitRiskStep1ServiceMock.updateOutcomeInclusion).toHaveBeenCalled();
       });
     });
   });

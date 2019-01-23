@@ -7,7 +7,8 @@ define(['lodash', 'angular-mocks', './analysis'], function(_) {
       'addStudiesToOutcomes',
       'buildOutcomeWithAnalyses',
       'filterArchivedAndAddModels',
-      'findMissingAlternatives'
+      'findMissingAlternatives',
+      'addModels'
     ]);
     var benefitRiskErrorServiceMock = jasmine.createSpyObj('BenefitRiskErrorService', [
       'hasMissingStudy',
@@ -54,8 +55,24 @@ define(['lodash', 'angular-mocks', './analysis'], function(_) {
     });
 
     describe('buildOutcomesWithAnalyses', function() {
-      it('fails', function() { 
-        fail();
+      it('should build the outcomes with analyses and studies', function() {
+        var analysis = {
+          benefitRiskStudyOutcomeInclusions: []
+        };
+        var studies = [];
+        var networkMetaAnalyses = [];
+        var outcome = {};
+        var outcomes = [outcome];
+        var models = [];
+        var filtered = [];
+        benefitRiskServiceMock.addModels.and.returnValue(filtered);
+        var outcomesWithAnalyses = [{ networkMetaAnalyses: [] }];
+        benefitRiskServiceMock.buildOutcomeWithAnalyses.and.returnValue({});
+        benefitRiskStep1Service.buildOutcomesWithAnalyses(analysis, studies, networkMetaAnalyses, models, outcomes);
+        expect(benefitRiskServiceMock.addModels).toHaveBeenCalledWith(networkMetaAnalyses, models);
+        expect(benefitRiskServiceMock.buildOutcomeWithAnalyses).toHaveBeenCalledWith(analysis, filtered, outcome);
+        expect(benefitRiskServiceMock.addStudiesToOutcomes).toHaveBeenCalledWith(
+          outcomesWithAnalyses, analysis.benefitRiskStudyOutcomeInclusions, studies);
       });
     });
 
@@ -351,6 +368,85 @@ define(['lodash', 'angular-mocks', './analysis'], function(_) {
         expect(result).toBeFalsy();
       });
 
+    });
+
+    describe('updateMissingAlternatives', function() {
+      var alternatives = [{
+        id: 1
+      }, {
+        id: 3,
+        name: 'alt3'
+      }];
+
+      it('should add the missing alternatives and their names to the pairwise outcome', function() {
+        var outcome = {
+          selectedModel: {
+            foo: 'bar',
+            modelType: {
+              type: 'pairwise',
+              details: {
+                to: {
+                  id: 1
+                },
+                from: {
+                  id: 2
+                }
+              }
+            }
+          }
+        };
+        var result = benefitRiskStep1Service.updateMissingAlternatives(outcome, alternatives);
+        var expectedResult = {
+          foo: 'bar',
+          missingAlternatives: [{
+            id: 3,
+            name: 'alt3'
+          }],
+          missingAlternativesNames: [],
+          modelType: {
+            type: 'pairwise',
+            details: {
+              to: {
+                id: 1
+              },
+              from: {
+                id: 2
+              }
+            }
+          }
+        };
+        expect(result).toEqual(expectedResult);
+      });
+
+      it('should add the missing alternatives and their names to the non-pairwise outcome', function() {
+        var outcome = {
+          selectedModel: {
+            foo: 'bar',
+            modelType: {
+              type: 'not pairwise'
+            }
+          },
+          selectedAnalysis: {
+            interventionInclusions: [{
+              interventionId: 1
+            }]
+          }
+        };
+
+        var result = benefitRiskStep1Service.updateMissingAlternatives(outcome, alternatives);
+        var expectedResult = {
+          foo: 'bar',
+          missingAlternatives: [{
+            id: 3,
+            name: 'alt3'
+          }],
+          missingAlternativesNames: [],
+          modelType: {
+            type: 'not pairwise'
+          }
+        };
+        expect(result).toEqual(expectedResult);
+      });
     });
 
     describe('updateOutcomeInclusion', function() {

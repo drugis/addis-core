@@ -32,7 +32,7 @@ define(['lodash'], function(_) {
           newInclusion.selectedAnalysis = findSelectableAnalysis(newInclusion);
           newInclusion.selectedModel = getModelSelection(newInclusion.selectedAnalysis);
           if (newInclusion.selectedModel) {
-            updateMissingAlternatives(newInclusion, alternatives);
+            newInclusion.selectedModel = updateMissingAlternatives(newInclusion, alternatives);
           }
         } else if (newInclusion.dataType === 'single-study') {
           newInclusion.selectedAnalysis = undefined;
@@ -63,18 +63,20 @@ define(['lodash'], function(_) {
     }
 
     function updateMissingAlternatives(outcome, alternatives) {
-      outcome.selectedModel.missingAlternatives = findMissingAlternatives(alternatives, outcome);
-      outcome.selectedModel.missingAlternativesNames = _.map(outcome.selectedModel.missingAlternatives, 'name');
+      return _.merge({}, outcome.selectedModel, {
+        missingAlternatives: findMissingAlternatives(alternatives, outcome),
+        missingAlternativesNames: _.map(outcome.selectedModel.missingAlternatives, 'name')
+      });
     }
 
-    function findMissingAlternatives(interventionInclusions, outcomeWithAnalysis) {
+    function findMissingAlternatives(interventionInclusions, outcome) {
       return interventionInclusions.filter(function(alternative) {
-        var modelType = outcomeWithAnalysis.selectedModel.modelType;
+        var modelType = outcome.selectedModel.modelType;
         if (modelType.type === 'pairwise') {
           return alternative.id !== modelType.details.from.id &&
             alternative.id !== modelType.details.to.id;
         } else {
-          return !_.find(outcomeWithAnalysis.selectedAnalysis.interventionInclusions, function(includedIntervention) {
+          return !_.find(outcome.selectedAnalysis.interventionInclusions, function(includedIntervention) {
             return alternative.id === includedIntervention.interventionId;
           });
         }
@@ -174,25 +176,25 @@ define(['lodash'], function(_) {
     }
 
     function buildOutcomesWithAnalyses(analysis, studies, networkMetaAnalyses, models, outcomes) {
-      var filtered = BenefitRiskService.filterArchivedAndAddModels(networkMetaAnalyses, models);
-      var outcomesWithAnalyses = _(outcomes)
-        .map(_.partial(BenefitRiskService.buildOutcomeWithAnalyses, analysis, filtered))
-        .forEach(function(outcomeWithAnalysis) {
-          outcomeWithAnalysis.networkMetaAnalyses = _.sort(outcomeWithAnalysis.networkMetaAnalyses, compareAnalysesByModels);
-        })
-        .value();
+      var filteredNmas = _.reject(networkMetaAnalyses, 'archived');
+      var nmasWithModels = BenefitRiskService.addModels(filteredNmas, models);
+      var outcomesWithAnalyses = _.map(outcomes, function(outcome) {
+        var outcomeWithAnalysis = BenefitRiskService.buildOutcomeWithAnalyses(analysis, nmasWithModels, outcome);
+        outcomeWithAnalysis.networkMetaAnalyses = _.sortBy(outcomeWithAnalysis.networkMetaAnalyses, compareAnalysesByModels);
+        return outcomeWithAnalysis;
+      });
       return BenefitRiskService.addStudiesToOutcomes(outcomesWithAnalyses, analysis.benefitRiskStudyOutcomeInclusions, studies);
     }
-    
+
     function compareAnalysesByModels(a, b) {
-      if (a.models.length > 0) {
-        if (!b.models.length) {
+      if (a && a.models && a.models.length > 0) {
+        if (!b || !b.models || !b.models.length) {
           return -1;
         } else {
           return 0;
         }
       } else {
-        if (b.models.length > 0) {
+        if (b && b.models && b.models.length > 0) {
           return 1;
         }
       }
@@ -201,17 +203,18 @@ define(['lodash'], function(_) {
 
     return {
       analysisUpdateCommand: analysisUpdateCommand,
-      compareAnalysesByModels: compareAnalysesByModels,//
-      findMissingAlternatives: findMissingAlternatives,//
+      compareAnalysesByModels: compareAnalysesByModels, // exposed for testing
+      findMissingAlternatives: findMissingAlternatives, // exposed for testing
       findOverlappingInterventions: findOverlappingInterventions,
       getModelSelection: getModelSelection,
       getNMAOutcomeInclusions: getNMAOutcomeInclusions,
-      getReferenceAlternativeName: getReferenceAlternativeName, 
+      getReferenceAlternativeName: getReferenceAlternativeName,
       getStep1Errors: getStep1Errors,
       getStudyOutcomeInclusions: getStudyOutcomeInclusions,
       isContrastStudySelected: isContrastStudySelected,
-      updateOutcomeInclusion: updateOutcomeInclusion, 
-      buildOutcomesWithAnalyses: buildOutcomesWithAnalyses, 
+      updateMissingAlternatives: updateMissingAlternatives,
+      updateOutcomeInclusion: updateOutcomeInclusion,
+      buildOutcomesWithAnalyses: buildOutcomesWithAnalyses
     };
   };
   return dependencies.concat(BenefitRiskStep1Service);

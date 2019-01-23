@@ -168,10 +168,14 @@ public class ProblemServiceImpl implements ProblemService {
 
     final Map<URI, CriterionEntry> criteria = networkMetaAnalysisService.buildCriteriaForInclusion(inclusionWithResults, modelURI);
     final Map<String, AlternativeEntry> alternatives = networkMetaAnalysisService.buildAlternativesForInclusion(inclusionWithResults);
-    final DataSourceEntry dataSourceEntry = criteria.values().iterator().next().getDataSources().get(0); // one criterion -> one datasource per NMA
+    final DataSourceEntry dataSourceEntry = getDataSourceEntry(criteria); // one criterion -> one datasource per NMA
 
     AbstractMeasurementEntry relativePerformance = networkBenefitRiskPerformanceEntryBuilder.build(inclusionWithResults, dataSourceEntry);
     return new BenefitRiskProblem(criteria, alternatives, Collections.singletonList(relativePerformance));
+  }
+
+  private DataSourceEntry getDataSourceEntry(Map<URI, CriterionEntry> criteria) {
+    return criteria.values().iterator().next().getDataSources().get(0);
   }
 
   private List<BenefitRiskProblem> getSingleStudyProblems(

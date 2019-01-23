@@ -8,6 +8,7 @@ define(['lodash', 'angular'], function(_) {
     '$modal',
     'AnalysisResource',
     'BenefitRiskService',
+    'BenefitRiskStep2Service',
     'InterventionResource',
     'ModelResource',
     'OutcomeResource',
@@ -27,6 +28,7 @@ define(['lodash', 'angular'], function(_) {
     $modal,
     AnalysisResource,
     BenefitRiskService,
+    BenefitRiskStep2Service,
     InterventionResource,
     ModelResource,
     OutcomeResource,
@@ -100,10 +102,10 @@ define(['lodash', 'angular'], function(_) {
     });
 
     function prepareEffectsTable(analysis, models) {
-      return BenefitRiskService.prepareEffectsTable($scope.outcomes)
+      return BenefitRiskStep2Service.prepareEffectsTable($scope.outcomes)
         .then(function(networkMetaAnalyses) {
-          $scope.networkMetaAnalyses = BenefitRiskService.filterArchivedAndAddModels(networkMetaAnalyses, models);
-          var analysisWithBaselines = BenefitRiskService.addBaseline(analysis, models, $scope.alternatives);
+          $scope.networkMetaAnalyses = BenefitRiskStep2Service.filterArchivedAndAddModels(networkMetaAnalyses, models);
+          var analysisWithBaselines = BenefitRiskStep2Service.addBaseline(analysis, models, $scope.alternatives);
           var saveCommand = BenefitRiskService.analysisToSaveCommand(analysisWithBaselines);
           return AnalysisResource.save(saveCommand).$promise.then(function() {
             return updateTableOutcomes(analysisWithBaselines, $scope.outcomes);
@@ -167,7 +169,7 @@ define(['lodash', 'angular'], function(_) {
 
     function setBaseline(outcomeWithAnalysis, baseline) {
       $scope.analysis.benefitRiskNMAOutcomeInclusions =
-      BenefitRiskService.addBaselineToInclusion(outcomeWithAnalysis, $scope.analysis.benefitRiskNMAOutcomeInclusions, baseline);
+      BenefitRiskStep2Service.addBaselineToInclusion(outcomeWithAnalysis, $scope.analysis.benefitRiskNMAOutcomeInclusions, baseline);
       var saveCommand = BenefitRiskService.analysisToSaveCommand($scope.analysis);
       $scope.effectsTablePromise = AnalysisResource.save(saveCommand).$promise.then(function() {
         return updateTableOutcomes($scope.analysis, $scope.outcomes);
@@ -197,7 +199,7 @@ define(['lodash', 'angular'], function(_) {
     }
 
     function addStudyBaseline(outcome, baseline) {
-      $scope.analysis.benefitRiskStudyOutcomeInclusions = BenefitRiskService.addBaselineToInclusion(
+      $scope.analysis.benefitRiskStudyOutcomeInclusions = BenefitRiskStep2Service.addBaselineToInclusion(
         outcome, $scope.analysis.benefitRiskStudyOutcomeInclusions, baseline);
       var saveCommand = BenefitRiskService.analysisToSaveCommand($scope.analysis);
       $scope.effectsTablePromise = AnalysisResource.save(saveCommand).$promise.then(function() {
@@ -210,7 +212,7 @@ define(['lodash', 'angular'], function(_) {
         if (problem.performanceTable.length > 0) {
           return WorkspaceService.getObservedScales(problem).then(function(result) {
             $scope.isMissingBaseline = BenefitRiskService.hasMissingBaseline($scope.tableOutcomes);
-            $scope.tableOutcomes = BenefitRiskService.addScales($scope.tableOutcomes,
+            $scope.tableOutcomes = BenefitRiskStep2Service.addScales($scope.tableOutcomes,
               $scope.alternatives, problem.criteria, result);
           }, function() {
             console.log('WorkspaceService.getObservedScales error');

@@ -63,7 +63,6 @@ public class SingleStudyBenefitRiskServiceTest {
   private SingleStudyBenefitRiskServiceImpl singleStudyBenefitRiskService;
 
   private String armName1 = "arm name 1";
-  private String armName2 = "arm name 2";
   private final Integer interventionId1 = 1;
   private final Integer interventionId2 = 2;
 
