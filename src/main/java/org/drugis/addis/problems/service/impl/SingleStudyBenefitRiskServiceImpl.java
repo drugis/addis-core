@@ -73,20 +73,20 @@ public class SingleStudyBenefitRiskServiceImpl implements SingleStudyBenefitRisk
     List<TrialDataArm> matchedArms = getMatchedArms(includedInterventions, study.getArms());
     URI defaultMeasurementMoment = study.getDefaultMeasurementMoment();
 
-    List<BenefitRiskStudyOutcomeInclusion> contrastInclusions =
-            contrastStudyBenefitRiskService.getContrastInclusionsWithBaseline(outcomeInclusions, context);
-
     Map<URI, CriterionEntry> criteria =
-            getCriteria(matchedArms, defaultMeasurementMoment, context, contrastInclusions);
+            getCriteria(matchedArms, defaultMeasurementMoment, context, outcomeInclusions);
     Map<String, AlternativeEntry> alternatives =
             getAlternatives(matchedArms, context);
 
     List<AbstractMeasurementEntry> allEntries = new ArrayList<>();
     List<AbstractMeasurementEntry> absoluteEntries =
-            absoluteStudyBenefitRiskService.buildAbsolutePerformanceEntries(context, study, matchedArms);
+            absoluteStudyBenefitRiskService.buildAbsolutePerformanceEntries(
+                    context,
+                    study,
+                    matchedArms);
     List<AbstractMeasurementEntry> contrastEntries =
             contrastStudyBenefitRiskService.buildContrastPerformanceTable(
-                    contrastInclusions,
+                    outcomeInclusions,
                     defaultMeasurementMoment,
                     context,
                     matchedArms);
@@ -125,65 +125,57 @@ public class SingleStudyBenefitRiskServiceImpl implements SingleStudyBenefitRisk
   public Map<URI, CriterionEntry> getCriteria(
           List<TrialDataArm> arms,
           URI defaultMeasurementMoment, SingleStudyContext context,
-          List<BenefitRiskStudyOutcomeInclusion> contrastInclusions
+          List<BenefitRiskStudyOutcomeInclusion> inclusions
   ) {
     Map<URI, CriterionEntry> criteria = new HashMap<>();
     for (TrialDataArm arm : arms) {
       Set<Measurement> measurements = arm.getMeasurementsForMoment(defaultMeasurementMoment);
-      if (arm.getReferenceArm() != null) {
-        criteria.putAll(getContrastCriterionEntries(measurements, context, contrastInclusions));
-      } else {
-        criteria.putAll(getCriterionEntries(measurements, context));
-      }
+      criteria.putAll(getCriterionEntries(measurements, context, inclusions));
     }
     return criteria;
   }
 
-  private Map<URI, CriterionEntry> getContrastCriterionEntries(
-          Set<Measurement> measurements, SingleStudyContext context,
-          List<BenefitRiskStudyOutcomeInclusion> contrastInclusions
+  private Map<URI, CriterionEntry> getCriterionEntries(
+          Set<Measurement> measurements,
+          SingleStudyContext context,
+          List<BenefitRiskStudyOutcomeInclusion> inclusions
   ) {
-    return measurements.stream()
-            .map(measurement -> getContrastCriterionEntry(context, contrastInclusions, measurement))
+    return measurements
+            .stream()
+            .map(measurement -> {
+              Outcome outcome = context.getOutcome(measurement.getVariableConceptUri());
+              if (isContrastMeasurement(measurement)) {
+                BenefitRiskStudyOutcomeInclusion inclusion = getInclusion(inclusions, outcome.getId());
+                if (hasMissingBaseline(inclusion)) {
+                  return null;
+                }
+              }
+              String dataSourceId = context.getDataSourceId(outcome.getSemanticOutcomeUri());
+              CriterionEntry criterionEntry = criterionEntryFactory.create(measurement, outcome.getName(), dataSourceId, context.getSourceLink());
+              return Pair.of(measurement.getVariableConceptUri(), criterionEntry);
+            })
             .filter(Objects::nonNull)
             .collect(toMap(Pair::getLeft, Pair::getRight));
   }
 
-  private Pair<URI, CriterionEntry> getContrastCriterionEntry(SingleStudyContext context, List<BenefitRiskStudyOutcomeInclusion> contrastInclusions, Measurement measurement) {
-    Outcome measuredOutcome = context.getOutcomesByUri().get(measurement.getVariableConceptUri());
-    BenefitRiskStudyOutcomeInclusion inclusion = findContrastInclusion(measuredOutcome, contrastInclusions);
-    if (inclusion != null) {
-      String dataSourceId = context.getDataSourceIdsByOutcomeUri().get(measuredOutcome.getSemanticOutcomeUri());
-      CriterionEntry criterionEntry = criterionEntryFactory.create(measurement, measuredOutcome.getName(), dataSourceId, context.getSourceLink());
-      return Pair.of(measurement.getVariableConceptUri(), criterionEntry);
-    }
-    return null;
+  private boolean hasMissingBaseline(BenefitRiskStudyOutcomeInclusion inclusion) {
+    return inclusion.getBaseline() == null;
   }
 
-  private BenefitRiskStudyOutcomeInclusion findContrastInclusion(
-          Outcome measuredOutcome,
-          List<BenefitRiskStudyOutcomeInclusion> contrastInclusions
+  private boolean isContrastMeasurement(Measurement measurement) {
+    return measurement.getReferenceArm() != null;
+  }
+
+  private BenefitRiskStudyOutcomeInclusion getInclusion(
+          List<BenefitRiskStudyOutcomeInclusion> inclusions,
+          Integer outcomeId
   ) {
-    Iterator<BenefitRiskStudyOutcomeInclusion> iterator = contrastInclusions.stream().filter(inclusion -> inclusion.getOutcomeId().equals(measuredOutcome.getId())).collect(toList()).iterator();
-    if (iterator.hasNext()) {
-      BenefitRiskStudyOutcomeInclusion inclusion = iterator.next();
-      if (inclusion.getBaseline() != null) {
+    for (BenefitRiskStudyOutcomeInclusion inclusion : inclusions) {
+      if (inclusion.getOutcomeId().equals(outcomeId)) {
         return inclusion;
       }
     }
     return null;
-  }
-
-  private Map<URI, CriterionEntry> getCriterionEntries(Set<Measurement> measurements,
-                                                       SingleStudyContext context) {
-    return measurements.stream()
-            .map(measurement -> {
-              Outcome measuredOutcome = context.getOutcomesByUri().get(measurement.getVariableConceptUri());
-              String dataSourceId = context.getDataSourceIdsByOutcomeUri().get(measuredOutcome.getSemanticOutcomeUri());
-              CriterionEntry criterionEntry = criterionEntryFactory.create(measurement, measuredOutcome.getName(), dataSourceId, context.getSourceLink());
-              return Pair.of(measurement.getVariableConceptUri(), criterionEntry);
-            })
-            .collect(toMap(Pair::getLeft, Pair::getRight));
   }
 
   @Override

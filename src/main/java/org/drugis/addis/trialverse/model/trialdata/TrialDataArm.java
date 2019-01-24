@@ -9,9 +9,6 @@ public class TrialDataArm {
   private Map<URI, Set<Measurement>> measurements = new HashMap<>();
   private List<AbstractSemanticIntervention> semanticInterventions = new ArrayList<>();
 
-  private URI referenceArm;
-  private Double referenceStdErr;
-
   private Set<Integer> matchedProjectInterventionIds = new HashSet<>();
 
   public TrialDataArm() {
@@ -22,27 +19,12 @@ public class TrialDataArm {
     this.name = name;
   }
 
-  public TrialDataArm(URI uri, String name, URI referenceArm, Double referenceStdErr) {
-    this.uri = uri;
-    this.name = name;
-    this.referenceArm = referenceArm;
-    this.referenceStdErr = referenceStdErr;
-  }
-
   public URI getUri() {
     return uri;
   }
 
   public String getName() {
     return name;
-  }
-
-  public URI getReferenceArm() {
-    return referenceArm;
-  }
-
-  public Double getReferenceStdErr() {
-    return referenceStdErr;
   }
 
   public Map<URI, Set<Measurement>> getMeasurements() {
@@ -85,14 +67,12 @@ public class TrialDataArm {
             Objects.equals(name, that.name) &&
             Objects.equals(measurements, that.measurements) &&
             Objects.equals(semanticInterventions, that.semanticInterventions) &&
-            Objects.equals(referenceArm, that.referenceArm) &&
-            Objects.equals(referenceStdErr, that.referenceStdErr) &&
             Objects.equals(matchedProjectInterventionIds, that.matchedProjectInterventionIds);
   }
 
   @Override
   public int hashCode() {
 
-    return Objects.hash(uri, name, measurements, semanticInterventions, referenceArm, referenceStdErr, matchedProjectInterventionIds);
+    return Objects.hash(uri, name, measurements, semanticInterventions, matchedProjectInterventionIds);
   }
 }

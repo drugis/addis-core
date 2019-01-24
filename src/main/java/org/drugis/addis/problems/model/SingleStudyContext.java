@@ -62,6 +62,10 @@ public class SingleStudyContext {
     return outcomesById.get(id);
   }
 
+  public Outcome getOutcome(URI uri){
+    return outcomesByUri.get(uri);
+  }
+
   public void setOutcomesById(Map<Integer, Outcome> outcomesById) {
     this.outcomesById = outcomesById;
   }

@@ -72,6 +72,7 @@ define(['lodash', 'angular'], function(_) {
         $scope.datasetOwnerId = dataset.ownerId;
       });
     });
+
     var promises = [
       $scope.analysis.$promise,
       $scope.alternatives.$promise,
@@ -87,12 +88,7 @@ define(['lodash', 'angular'], function(_) {
       var alternatives = result[1];
       var outcomes = result[2];
       var models = _.reject(result[3], 'archived');
-      var studies = result[4];
-      $scope.studiesWithUuid = _.map(studies, function(study) {
-        return _.extend({}, study, {
-          uuid: study.studyUri.split('/graphs/')[1]
-        });
-      });
+      $scope.studiesWithUuid = getStudiesWithUuid(result[4]);
       PageTitleService.setPageTitle('BenefitRiskStep2Controller', analysis.title + ' step 2');
 
       $scope.alternatives = addAlternativeInclusionStatus(alternatives, analysis.interventionInclusions);
@@ -100,6 +96,14 @@ define(['lodash', 'angular'], function(_) {
       $scope.outcomes = BenefitRiskService.getOutcomesWithInclusions(outcomes, allInclusions);
       $scope.effectsTablePromise = prepareEffectsTable(analysis, models);
     });
+
+    function getStudiesWithUuid(studies){
+      return _.map(studies, function(study) {
+        return _.extend({}, study, {
+          uuid: study.studyUri.split('/graphs/')[1]
+        });
+      });
+    }
 
     function prepareEffectsTable(analysis, models) {
       return BenefitRiskStep2Service.prepareEffectsTable($scope.outcomes)
