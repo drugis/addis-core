@@ -2,9 +2,6 @@ package org.drugis.addis.trialverse.model;
 
 import java.net.URI;
 
-/**
- * Created by connor on 2/28/14.
- */
 public class SemanticVariable {
   private URI uri;
   private String label;

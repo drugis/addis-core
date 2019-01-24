@@ -5,9 +5,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-/**
- * Created by daan on 3/19/14.
- */
 public class Study {
 
   private String studyUuid;
