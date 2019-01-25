@@ -44,18 +44,11 @@ public class ContrastStudyBenefitRiskServiceImpl implements ContrastStudyBenefit
           URI defaultMoment,
           SingleStudyContext context) {
     Outcome currentOutcome = context.getOutcome(inclusion.getOutcomeId());
-    List<TrialDataArm> contrastArms = getContrastArms(arms, defaultMoment, currentOutcome);
 
     String criterion = currentOutcome.getSemanticOutcomeUri().toString();
     String dataSource = context.getDataSourceId(currentOutcome.getSemanticOutcomeUri());
-    RelativePerformance performance = getRelativePerformance(inclusion, contrastArms, defaultMoment, currentOutcome);
+    RelativePerformance performance = getRelativePerformance(inclusion, arms, defaultMoment, currentOutcome);
     return new RelativePerformanceEntry(criterion, dataSource, performance);
-  }
-
-  private List<TrialDataArm> getContrastArms(List<TrialDataArm> arms, URI defaultMoment, Outcome outcome) {
-    return arms.stream()
-            .filter(arm -> hasContrastMeasurementsForOutcome(arm.getMeasurementsForMoment(defaultMoment), outcome))
-            .collect(toList());
   }
 
   private boolean hasContrastMeasurementsForOutcome(Set<Measurement> measurements, Outcome outcome) {
@@ -107,11 +100,16 @@ public class ContrastStudyBenefitRiskServiceImpl implements ContrastStudyBenefit
           Outcome outcome,
           URI defaultMoment) {
     Measurement nonReferenceArmMeasurement = findNonReferenceArmMeasurement(arms, defaultMoment, outcome);
+    List<TrialDataArm> contrastArms = arms
+            .stream()
+            .filter(arm -> arm.getUri().equals(nonReferenceArmMeasurement.getReferenceArm()) ||
+                    hasContrastMeasurementsForOutcome(arm.getMeasurementsForMoment(defaultMoment), outcome))
+            .collect(toList());
     String referenceId = getReferenceId(arms, nonReferenceArmMeasurement.getReferenceArm());
 
-    List<String> rowNames = getRowNames(arms, referenceId);
+    List<String> rowNames = getRowNames(contrastArms, referenceId);
     Map<String, Double> mu = getMu(arms, outcome, defaultMoment, referenceId);
-    CovarianceMatrix cov = getCovarianceMatrix(arms, outcome, defaultMoment, rowNames);
+    CovarianceMatrix cov = getCovarianceMatrix(contrastArms, outcome, defaultMoment, rowNames, referenceId);
     return new Relative("dmnorm", mu, cov);
   }
 
@@ -119,9 +117,9 @@ public class ContrastStudyBenefitRiskServiceImpl implements ContrastStudyBenefit
           List<TrialDataArm> arms,
           Outcome outcome,
           URI defaultMoment,
-          List<String> rowNames
-  ) {
-    List<List<Double>> data = getCovarianceData(arms, defaultMoment, outcome, rowNames);
+          List<String> rowNames,
+          String referenceId) {
+    List<List<Double>> data = getCovarianceData(arms, defaultMoment, outcome, rowNames, referenceId);
     return new CovarianceMatrix(rowNames, rowNames, data);
   }
 
@@ -152,12 +150,13 @@ public class ContrastStudyBenefitRiskServiceImpl implements ContrastStudyBenefit
           List<TrialDataArm> arms,
           URI defaultMeasurementMoment,
           Outcome currentOutcome,
-          List<String> rowNames) {
+          List<String> rowNames,
+          String referenceId) {
     List<List<Double>> data = createNewMatrix(rowNames);
     rowNames.forEach(rowId ->
             rowNames
                     .forEach(columnId -> {
-                      Double value = getCovarianceValue(arms, defaultMeasurementMoment, currentOutcome, rowId, columnId);
+                      Double value = getCovarianceValue(arms, defaultMeasurementMoment, currentOutcome, rowId, columnId, referenceId);
                       data.get(rowNames.indexOf(rowId)).set(rowNames.indexOf(columnId), value);
                     })
     );
@@ -169,14 +168,14 @@ public class ContrastStudyBenefitRiskServiceImpl implements ContrastStudyBenefit
           URI defaultMeasurementMoment,
           Outcome currentOutcome,
           String rowId,
-          String columnId
+          String columnId,
+          String referenceId
   ) {
-    TrialDataArm arm = findArm(arms, rowId);
-    Measurement measurement = getMeasurement(defaultMeasurementMoment, arm, currentOutcome);
-    String referenceId = getReferenceId(arms, measurement.getReferenceArm());
     if (referenceId.equals(rowId) || referenceId.equals(columnId)) {
       return 0.0;
     } else {
+      TrialDataArm arm = findArm(arms, rowId);
+      Measurement measurement = getMeasurement(defaultMeasurementMoment, arm, currentOutcome);
       return getMatrixValueForCoordinate(measurement, rowId, columnId);
     }
   }
@@ -253,8 +252,8 @@ public class ContrastStudyBenefitRiskServiceImpl implements ContrastStudyBenefit
     Set<Measurement> measurements = arm.getMeasurementsForMoment(defaultMeasurementMoment);
     List<Measurement> measurementsForOutcome = measurements
             .stream()
-            .filter(meas ->
-                    meas.getVariableConceptUri().equals(outcome.getSemanticOutcomeUri()))
+            .filter(measurement ->
+                    measurement.getVariableConceptUri().equals(outcome.getSemanticOutcomeUri()))
             .collect(toList());
     return measurementsForOutcome.iterator().next();
   }
@@ -280,20 +279,12 @@ public class ContrastStudyBenefitRiskServiceImpl implements ContrastStudyBenefit
 
 
   @Override
-  public List<BenefitRiskStudyOutcomeInclusion> getContrastInclusionsWithBaseline(List<BenefitRiskStudyOutcomeInclusion> inclusions, SingleStudyContext context) {
+  public List<BenefitRiskStudyOutcomeInclusion> getContrastInclusionsWithBaseline(
+          List<BenefitRiskStudyOutcomeInclusion> inclusions, SingleStudyContext context) {
     return inclusions
             .stream()
-            .filter(inclusion -> isContrastInclusion(inclusion, context.getOutcomesByUri()))
+            .filter(inclusion -> context.getOutcome(inclusion.getOutcomeId()) != null)
             .filter(inclusion -> inclusion.getBaseline() != null)
             .collect(toList());
   }
-
-  private boolean isContrastInclusion(BenefitRiskStudyOutcomeInclusion inclusion, Map<URI, Outcome> outcomesByUri) {
-    return outcomesByUri
-            .values()
-            .stream()
-            .anyMatch(outcome -> outcome.getId().equals(inclusion.getOutcomeId()));
-  }
-
-
 }

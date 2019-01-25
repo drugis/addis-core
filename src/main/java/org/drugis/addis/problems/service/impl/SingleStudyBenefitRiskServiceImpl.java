@@ -28,7 +28,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static java.util.function.Function.identity;
-import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 import static java.util.stream.Collectors.toSet;
 
@@ -62,19 +61,19 @@ public class SingleStudyBenefitRiskServiceImpl implements SingleStudyBenefitRisk
   @Override
   public SingleStudyBenefitRiskProblem getSingleStudyBenefitRiskProblem(
           Project project,
-          List<BenefitRiskStudyOutcomeInclusion> outcomeInclusions,
-          URI studyGraphUri,
-          Map<Integer, Outcome> outcomesById,
+          BenefitRiskStudyOutcomeInclusion outcomeInclusion,
+          Outcome outcome,
           Set<AbstractIntervention> includedInterventions
   ) {
-    SingleStudyContext context = buildContext(project, studyGraphUri, outcomesById, includedInterventions);
+    URI studyGraphUri = outcomeInclusion.getStudyGraphUri();
+    SingleStudyContext context = buildContext(project, studyGraphUri, outcome, includedInterventions);
     TrialDataStudy study = getStudy(project, studyGraphUri, context);
 
     List<TrialDataArm> matchedArms = getMatchedArms(includedInterventions, study.getArms());
     URI defaultMeasurementMoment = study.getDefaultMeasurementMoment();
 
     Map<URI, CriterionEntry> criteria =
-            getCriteria(matchedArms, defaultMeasurementMoment, context, outcomeInclusions);
+            getCriteria(matchedArms, defaultMeasurementMoment, context, outcomeInclusion);
     Map<String, AlternativeEntry> alternatives =
             getAlternatives(matchedArms, context);
 
@@ -86,7 +85,7 @@ public class SingleStudyBenefitRiskServiceImpl implements SingleStudyBenefitRisk
                     matchedArms);
     List<AbstractMeasurementEntry> contrastEntries =
             contrastStudyBenefitRiskService.buildContrastPerformanceTable(
-                    outcomeInclusions,
+                    outcomeInclusion,
                     defaultMeasurementMoment,
                     context,
                     matchedArms);
@@ -219,21 +218,20 @@ public class SingleStudyBenefitRiskServiceImpl implements SingleStudyBenefitRisk
   }
 
   @Override
-  public SingleStudyContext buildContext(Project project, URI studyGraphUri, Map<Integer, Outcome> outcomesById, Set<AbstractIntervention> includedInterventions) {
-    Map<URI, String> dataSourceIdsByOutcomeUri = outcomesById.values().stream()
-            .collect(Collectors.toMap(Outcome::getSemanticOutcomeUri, o -> uuidService.generate()));
+  public SingleStudyContext buildContext(
+          Project project,
+          URI studyGraphUri,
+          Outcome outcome,
+          Set<AbstractIntervention> includedInterventions) {
+    String dataSourceUri = uuidService.generate();
     final Map<Integer, AbstractIntervention> interventionsById = includedInterventions.stream()
             .collect(toMap(AbstractIntervention::getId, identity()));
-    Map<URI, Outcome> outcomesByUri = outcomesById.values().stream().collect(toMap(Outcome::getSemanticOutcomeUri, identity()));
     URI sourceLink = linkService.getStudySourceLink(project, studyGraphUri);
-
     SingleStudyContext context = new SingleStudyContext();
-    context.setDataSourceIdsByOutcomeUri(dataSourceIdsByOutcomeUri);
     context.setInterventionsById(interventionsById);
-    context.setOutcomesByUri(outcomesByUri);
-    context.setOutcomesById(outcomesById);
     context.setSourceLink(sourceLink);
-
+    context.setDataSourceUuid(dataSourceUri);
+    context.setOutcome(outcome);
     return context;
   }
 }

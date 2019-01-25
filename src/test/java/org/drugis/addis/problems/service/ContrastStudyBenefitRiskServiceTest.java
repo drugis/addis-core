@@ -15,6 +15,7 @@ import org.mockito.MockitoAnnotations;
 import java.net.URI;
 import java.util.*;
 
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -33,7 +34,7 @@ public class ContrastStudyBenefitRiskServiceTest {
     URI defaultMoment = URI.create("defaultMoment");
 
     List<TrialDataArm> matchedArms = new ArrayList<>();
-    TrialDataArm arm1 = mock(TrialDataArm.class);
+    TrialDataArm nonReferenceArm = mock(TrialDataArm.class);
     TrialDataArm referenceArm = mock(TrialDataArm.class);
     URI armUri1 = URI.create("armUri1");
     URI referenceArmUri = URI.create("referenceArmUri");
@@ -41,7 +42,7 @@ public class ContrastStudyBenefitRiskServiceTest {
     Measurement measurement = mock(Measurement.class);
     measurements.add(measurement);
 
-    matchedArms.add(arm1);
+    matchedArms.add(nonReferenceArm);
     matchedArms.add(referenceArm);
 
     SingleStudyContext context = new SingleStudyContext();
@@ -61,15 +62,15 @@ public class ContrastStudyBenefitRiskServiceTest {
     Integer referenceInterventionId = 2;
     matchedReferenceProjectInterventionIds.add(referenceInterventionId);
 
-    when(arm1.getUri()).thenReturn(armUri1);
-    when(arm1.getReferenceArm()).thenReturn(referenceArmUri);
-    when(arm1.getMeasurementsForMoment(defaultMoment)).thenReturn(measurements);
-    when(arm1.getMatchedProjectInterventionIds()).thenReturn(matchedProjectInterventionIds);
+    when(nonReferenceArm.getUri()).thenReturn(armUri1);
+    when(nonReferenceArm.getMeasurementsForMoment(defaultMoment)).thenReturn(measurements);
+    when(nonReferenceArm.getMatchedProjectInterventionIds()).thenReturn(matchedProjectInterventionIds);
     when(referenceArm.getUri()).thenReturn(referenceArmUri);
-    when(referenceArm.getReferenceArm()).thenReturn(referenceArmUri);
     when(referenceArm.getMatchedProjectInterventionIds()).thenReturn(matchedReferenceProjectInterventionIds);
     when(measurement.getOddsRatio()).thenReturn(5.0);
     when(measurement.getVariableConceptUri()).thenReturn(semanticOutcomeUri);
+    when(measurement.getReferenceArm()).thenReturn(referenceArmUri);
+    when(measurement.getArmUri()).thenReturn(armUri1);
     when(outcome.getId()).thenReturn(outcomeId);
     when(outcome.getSemanticOutcomeUri()).thenReturn(semanticOutcomeUri);
 
@@ -109,29 +110,33 @@ public class ContrastStudyBenefitRiskServiceTest {
     RelativePerformance performance = new RelativePerformance(type, parameters);
     AbstractMeasurementEntry expectedEntry = new RelativePerformanceEntry(semanticOutcomeUri.toString(), dataSourceId, performance);
     expectedResult.add(expectedEntry);
-    assert (result.equals(expectedResult));
+    assertEquals(expectedResult, result);
   }
 
   @Test
   public void getContrastInclusionsWithBaselineTest(){
     SingleStudyContext context = new SingleStudyContext();
-    Map<URI, Outcome> outcomesByUri = new HashMap<>();
+    Map<Integer, Outcome> outcomesById = new HashMap<>();
     Outcome outcome = mock(Outcome.class);
     Integer outcomeId = 6;
     when(outcome.getId()).thenReturn(outcomeId);
+    outcomesById.put(outcomeId, outcome);
+    context.setOutcomesById(outcomesById);
 
-    URI outcomeUri = URI.create("outcomeUri");
-    outcomesByUri.put(outcomeUri, outcome);
-    context.setOutcomesByUri(outcomesByUri);
     List<BenefitRiskStudyOutcomeInclusion> inclusions = new ArrayList<>();
     BenefitRiskStudyOutcomeInclusion inclusion = mock(BenefitRiskStudyOutcomeInclusion.class);
     when(inclusion.getOutcomeId()).thenReturn(outcomeId);
+    String baseline = "baseline";
+    when(inclusion.getBaseline()).thenReturn(baseline);
+
     BenefitRiskStudyOutcomeInclusion nonContrastInclusion = mock(BenefitRiskStudyOutcomeInclusion.class);
     when(nonContrastInclusion.getOutcomeId()).thenReturn(8);
+
     inclusions.add(inclusion);
     inclusions.add(nonContrastInclusion);
     List<BenefitRiskStudyOutcomeInclusion> result = contrastStudyBenefitRiskService.getContrastInclusionsWithBaseline(inclusions, context);
     List<BenefitRiskStudyOutcomeInclusion> expectedResult = new ArrayList<>();
     expectedResult.add(inclusion);
+    assertEquals(expectedResult, result);
   }
 }

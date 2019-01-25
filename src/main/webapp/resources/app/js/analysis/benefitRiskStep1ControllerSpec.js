@@ -142,7 +142,7 @@ define(['angular-mocks', './analysis'], function() {
       });
     });
 
-    describe('when updateBenefitRiskOutcomeInclusion is called by (un-)checking the outcome', function() {
+    describe('when updateOutcomeInclusion is called by (un-)checking the outcome', function() {
       var outcomeWithAnalysis;
       beforeEach(function() {
         outcomeWithAnalysis = {
@@ -180,7 +180,7 @@ define(['angular-mocks', './analysis'], function() {
         scope.outcomesWithAnalyses = [outcomeWithAnalysis];
         scope.includedAlternatives = [];
         scope.overlappingInterventions = [];
-        scope.updateBenefitRiskOutcomeInclusion({});
+        scope.updateOutcomeInclusion({});
       });
 
       it('should call the benefitriskservice', function() {

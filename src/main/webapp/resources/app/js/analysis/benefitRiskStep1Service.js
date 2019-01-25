@@ -8,15 +8,24 @@ define(['lodash'], function(_) {
     BenefitRiskErrorService,
     BenefitRiskService
   ) {
-    function getReferenceAlternativeName(outcome, alternatives) {
-      var referenceArm = _.find(outcome.selectedStudy.arms, function(arm) {
-        return arm.referenceArm === arm.uri;
+    function getReferenceAlternativeName(inclusion, alternatives) {
+      var arms = inclusion.selectedStudy.arms;
+      var referenceArm = _.find(arms, function(arm) {
+        return arm.uri === getReferenceUri(arms, inclusion);
       });
       var referenceAlternativeId = referenceArm.matchedProjectInterventionIds[0];
       var referenceAlternative = _.find(alternatives, function(alternative) {
         return alternative.id === referenceAlternativeId;
       });
       return referenceAlternative.name;
+    }
+
+    function getReferenceUri(arms, inclusion) {
+      return _.find(arms, function(arm) {
+        return _.some(arm.measurements[inclusion.selectedStudy.defaultMeasurementMoment], function(measurement) {
+          return measurement.variableConceptUri === inclusion.outcome.semanticOutcomeUri;
+        });
+      });
     }
 
     function updateOutcomeInclusion(inclusion, alternatives) {
@@ -143,11 +152,13 @@ define(['lodash'], function(_) {
       return errors;
     }
 
-    function isContrastStudySelected(includedOutcomes, studies) {
-      return _.some(includedOutcomes, function(includedStudyOutcome) {
-        return _.some(studies, function(study) {
-          return includedStudyOutcome.studyGraphUri === study.studyUri && _.some(study.arms, function(arm) {
-            return arm.referenceArm;
+    function isContrastStudySelected(outcomes, studies) {
+      return _.some(outcomes, function(outcome) {
+        return outcome.outcome.isIncluded && _.some(studies, function(study) {
+          return _.some(study.arms, function(arm) {
+            return _.some(arm.measurements[study.defaultMeasurementMoment], function(measurement) {
+              return measurement.variableConceptUri === outcome.outcome.semanticOutcomeUri && measurement.referenceArm;
+            });
           });
         });
       });

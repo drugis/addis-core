@@ -13,12 +13,10 @@ import java.util.Map;
 import java.util.Set;
 
 public interface SingleStudyBenefitRiskService {
-
   SingleStudyBenefitRiskProblem getSingleStudyBenefitRiskProblem(
           Project project,
-          List<BenefitRiskStudyOutcomeInclusion> outcomeInclusions,
-          URI studyGraphUri,
-          Map<Integer, Outcome> outcomesById,
+          BenefitRiskStudyOutcomeInclusion outcomeInclusion,
+          Outcome outcome,
           Set<AbstractIntervention> includedInterventions
   );
 
@@ -30,6 +28,10 @@ public interface SingleStudyBenefitRiskService {
 
   List<TrialDataArm> getMatchedArms(Set<AbstractIntervention> includedInterventions, List<TrialDataArm> arms);
 
-  SingleStudyContext buildContext(Project project, URI studyGraphUri, Map<Integer, Outcome> outcomes, Set<AbstractIntervention> includedInterventions);
 
+  SingleStudyContext buildContext(
+          Project project,
+          URI studyGraphUri,
+          Outcome outcome,
+          Set<AbstractIntervention> includedInterventions);
 }

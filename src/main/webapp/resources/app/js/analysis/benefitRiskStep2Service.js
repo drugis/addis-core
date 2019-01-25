@@ -77,7 +77,7 @@ define(['lodash'], function(_) {
         return alternative.isIncluded;
       });
     }
-    
+
     function filterArchivedAndAddModels(networkMetaAnalyses, models) {
       var nonArchived = filterArchived(networkMetaAnalyses);
       return BenefitRiskService.addModels(nonArchived, models);
@@ -89,10 +89,8 @@ define(['lodash'], function(_) {
 
     function getMeasurementType(outcome) {
       var study = outcome.selectedStudy;
-      var nonReferenceArm = _.find(study.arms, function(arm) {
-        return arm.referenceArm !== arm.uri;
-      });
-      var measurement = nonReferenceArm.measurements[study.defaultMeasurementMoment][0];
+      var nonReferenceArm = findNonReferenceArm(study);
+      var measurement = findNonReferenceMeasurement(nonReferenceArm, study.defaultMeasurementMoment, outcome);
       var measurementTypes = [
         'oddsRatio',
         'riskRatio',
@@ -102,6 +100,20 @@ define(['lodash'], function(_) {
       ];
       return _.find(measurementTypes, function(propertyName) {
         return measurement[propertyName];
+      });
+    }
+
+    function findNonReferenceMeasurement(nonReferenceArm, defaultMoment, outcome) {
+      return _.find(nonReferenceArm.measurements[defaultMoment], function(measurement) {
+        return measurement.variableConceptUri === outcome.outcome.semanticOutcomeUri;
+      });
+    }
+
+    function findNonReferenceArm(study) {
+      return _.find(study.arms, function(arm) {
+        return !_.some(arm.measurements[study.defaultMeasurementMoment], function(measurement) {
+          return measurement.referenceArm === arm.armUri;
+        });
       });
     }
 

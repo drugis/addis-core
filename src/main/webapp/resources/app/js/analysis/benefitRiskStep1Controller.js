@@ -102,11 +102,6 @@ define(['lodash', 'angular'], function(_) {
         $scope.outcomesWithAnalyses = BenefitRiskStep1Service.buildOutcomesWithAnalyses(
           analysis, studies, networkMetaAnalyses, models, $scope.outcomes
         );
-        $scope.$watch('outcomesWithAnalyses', function() {
-          $scope.contrastStudySelected = BenefitRiskStep1Service.isContrastStudySelected(
-            $scope.analysis.benefitRiskStudyOutcomeInclusions, $scope.studies);
-        });
-
         $scope.outcomesWithAnalyses = updateMissingAlternativesForAllOutcomes();
         updateStudyMissingStuff();
         checkStep1Validity();
@@ -151,25 +146,25 @@ define(['lodash', 'angular'], function(_) {
     }
 
     function updateMissingAlternativesForAllOutcomes() {
-      return _($scope.outcomesWithAnalyses)
-        .map(function(outcome) {
-          if (outcome.selectedModel) {
-            outcome.selectedModel = BenefitRiskStep1Service.updateMissingAlternatives(outcome, $scope.includedAlternatives);
-          }
-          return outcome;
-        })
-        .value();
+      return _.map($scope.outcomesWithAnalyses, function(outcome) {
+        if (outcome.selectedModel) {
+          outcome.selectedModel = BenefitRiskStep1Service.updateMissingAlternatives(outcome, $scope.includedAlternatives);
+        }
+        return outcome;
+      });
     }
 
     function updateStudyMissingStuff() {
       $scope.studies = SingleStudyBenefitRiskService.getStudiesWithErrors($scope.studies, $scope.includedAlternatives);
       $scope.overlappingInterventions = BenefitRiskStep1Service.findOverlappingInterventions($scope.studies);
-      _.forEach($scope.outcomesWithAnalyses, function(outcomeWithAnalyses) {
+      $scope.outcomesWithAnalyses =_.map($scope.outcomesWithAnalyses, function(outcomeWithAnalyses) {
         if (!_.isEmpty(outcomeWithAnalyses.selectedStudy)) {
           outcomeWithAnalyses.selectedStudy = _.find($scope.studies, ['studyUri', outcomeWithAnalyses.selectedStudy.studyUri]);
           outcomeWithAnalyses.selectedStudy.missingOutcomes = SingleStudyBenefitRiskService.findMissingOutcomes(outcomeWithAnalyses.selectedStudy, [outcomeWithAnalyses]);
         }
+        return outcomeWithAnalyses;
       });
+      $scope.contrastStudySelected = BenefitRiskStep1Service.isContrastStudySelected($scope.outcomesWithAnalyses, $scope.studies);
     }
 
     function addedAlternative(alternative) {

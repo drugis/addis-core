@@ -99,7 +99,8 @@ public class ProblemServiceImpl implements ProblemService {
     return new NetworkMetaAnalysisProblem(entries, relativeEffectData, treatments, studyLevelCovariates);
   }
 
-  private BenefitRiskProblem getBenefitRiskAnalysisProblem(Project project, BenefitRiskAnalysis analysis) throws
+  private BenefitRiskProblem getBenefitRiskAnalysisProblem(
+          Project project, BenefitRiskAnalysis analysis) throws
           SQLException, IOException, UnexpectedNumberOfResultsException, URISyntaxException, ResourceDoesNotExistException {
 
     final Map<Integer, Outcome> outcomesById = getOutcomesById(project.getId(), analysis);
@@ -185,25 +186,12 @@ public class ProblemServiceImpl implements ProblemService {
           Set<AbstractIntervention> includedInterventions
   ) {
     return benefitRiskStudyOutcomeInclusions.stream()
-            .collect(groupingBy(BenefitRiskStudyOutcomeInclusion::getStudyGraphUri))
-            .entrySet().stream()
-            .map(outcomeInclusionEntry -> getSingleStudyProblem(project, outcomesById, includedInterventions, outcomeInclusionEntry))
+            .map(inclusion -> {
+              Outcome outcome = outcomesById.get(inclusion.getOutcomeId());
+              return singleStudyBenefitRiskService.getSingleStudyBenefitRiskProblem(
+                      project,inclusion, outcome, includedInterventions);
+            })
             .collect(toList());
-  }
-
-  private SingleStudyBenefitRiskProblem getSingleStudyProblem(
-          Project project,
-          Map<Integer, Outcome> outcomesById,
-          Set<AbstractIntervention> includedInterventions,
-          Map.Entry<URI, List<BenefitRiskStudyOutcomeInclusion>> outcomeInclusionEntry) {
-    URI studyURI = outcomeInclusionEntry.getKey();
-    List<BenefitRiskStudyOutcomeInclusion> studyOutcomeInclusions = outcomeInclusionEntry.getValue();
-    return singleStudyBenefitRiskService.getSingleStudyBenefitRiskProblem(
-            project,
-            studyOutcomeInclusions,
-            studyURI,
-            outcomesById,
-            includedInterventions);
   }
 
   @Override

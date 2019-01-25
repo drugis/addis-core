@@ -8,22 +8,34 @@ import java.util.Map;
 import java.util.Objects;
 
 public class SingleStudyContext {
-  private Map<URI, Outcome> outcomesByUri;
   private Map<Integer, AbstractIntervention> interventionsById;
-  private Map<URI, String> dataSourceIdsByOutcomeUri;
   private URI sourceLink;
-  private Map<Integer, Outcome> outcomesById;
+  private Outcome outcome;
+  private String dataSourceUuid;
+  private Outcome outcome;
 
   public SingleStudyContext() {
 
   }
 
-  public Map<URI, Outcome> getOutcomesByUri() {
-    return outcomesByUri;
+  public Outcome getOutcome() {
+    return outcome;
   }
 
-  public void setOutcomesByUri(Map<URI, Outcome> outcomesByUri) {
-    this.outcomesByUri = outcomesByUri;
+  public void setOutcome(Outcome outcome) {
+    this.outcome = outcome;
+  }
+
+  public String dataSourceUuid() {
+    return dataSourceUuid;
+  }
+
+  public void setDataSourceUuid(String dataSourceUri) {
+    this.dataSourceUuid = dataSourceUri;
+  }
+
+  public String getDataSourceUuid() {
+    return dataSourceUuid;
   }
 
   public Map<Integer, AbstractIntervention> getInterventionsById() {
@@ -34,18 +46,6 @@ public class SingleStudyContext {
     this.interventionsById = interventionsById;
   }
 
-  public Map<URI, String> getDataSourceIdsByOutcomeUri() {
-    return dataSourceIdsByOutcomeUri;
-  }
-
-  public String getDataSourceId(URI outcomeUri){
-    return dataSourceIdsByOutcomeUri.get(outcomeUri);
-  }
-
-  public void setDataSourceIdsByOutcomeUri(Map<URI, String> dataSourceIdsByOutcomeUri) {
-    this.dataSourceIdsByOutcomeUri = dataSourceIdsByOutcomeUri;
-  }
-
   public URI getSourceLink() {
     return sourceLink;
   }
@@ -54,37 +54,21 @@ public class SingleStudyContext {
     this.sourceLink = sourceLink;
   }
 
-  public Map<Integer, Outcome> getOutcomesById() {
-    return outcomesById;
-  }
-
-  public Outcome getOutcome(Integer id){
-    return outcomesById.get(id);
-  }
-
-  public Outcome getOutcome(URI uri){
-    return outcomesByUri.get(uri);
-  }
-
-  public void setOutcomesById(Map<Integer, Outcome> outcomesById) {
-    this.outcomesById = outcomesById;
-  }
-
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
     SingleStudyContext that = (SingleStudyContext) o;
-    return Objects.equals(outcomesByUri, that.outcomesByUri) &&
-            Objects.equals(interventionsById, that.interventionsById) &&
-            Objects.equals(dataSourceIdsByOutcomeUri, that.dataSourceIdsByOutcomeUri) &&
+    return Objects.equals(interventionsById, that.interventionsById) &&
             Objects.equals(sourceLink, that.sourceLink) &&
-            Objects.equals(outcomesById, that.outcomesById);
+            Objects.equals(outcome, that.outcome) &&
+            Objects.equals(dataSourceUuid, that.dataSourceUuid) &&
+            Objects.equals(outcome, that.outcome);
   }
 
   @Override
   public int hashCode() {
 
-    return Objects.hash(outcomesByUri, interventionsById, dataSourceIdsByOutcomeUri, sourceLink, outcomesById);
+    return Objects.hash(interventionsById, sourceLink, outcome, dataSourceUuid, outcome);
   }
 }

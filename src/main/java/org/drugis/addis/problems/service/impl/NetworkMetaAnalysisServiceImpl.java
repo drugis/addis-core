@@ -165,26 +165,52 @@ public class NetworkMetaAnalysisServiceImpl implements NetworkMetaAnalysisServic
     if (relativeArms.size() == 0) {
       return null;
     }
-    TrialDataArm referenceArm = getReferenceArm(getReferenceArmUri(relativeArms), study);
+    URI referenceArmUri = getReferenceArmUri(relativeArms, selectedMoment, outcome);
+    TrialDataArm referenceArm = getReferenceArm(referenceArmUri, study);
 
     List<AbstractProblemEntry> otherArms = buildOtherArms(relativeArms, study, selectedMoment);
-    Double referenceArmStdErr = referenceArm.getReferenceStdErr();
+    Double referenceArmStdErr = getReferenceStdErr(outcome, selectedMoment, relativeArms);
     Integer referenceArmId = getProjectInterventionId(referenceArm);
     return new RelativeDataEntry(referenceArmId, referenceArmStdErr, otherArms);
+  }
+
+  private Double getReferenceStdErr(Outcome outcome, URI selectedMoment, List<TrialDataArm> relativeArms) {
+    Double referenceArmStdErr = 0.0;
+    Set<Measurement> measurements = relativeArms.get(0).getMeasurementsForMoment(selectedMoment);
+    for (Measurement measurement : measurements) {
+      if (isMeasurementForOutcome(outcome, measurement)) {
+        referenceArmStdErr = measurement.getReferenceStdErr();
+        break;
+      }
+    }
+    return referenceArmStdErr;
+  }
+
+  private boolean isMeasurementForOutcome(Outcome outcome, Measurement measurement) {
+    return measurement.getVariableConceptUri().equals(outcome.getSemanticOutcomeUri());
   }
 
   private Integer getProjectInterventionId(TrialDataArm referenceArm) {
     return referenceArm.getMatchedProjectInterventionIds().iterator().next();
   }
 
-  private URI getReferenceArmUri(List<TrialDataArm> arms) {
-    return arms.get(0).getReferenceArm();
+  private URI getReferenceArmUri(List<TrialDataArm> arms, URI defaultMoment, Outcome outcome) {
+    Set<Measurement> measurements = arms.get(0).getMeasurementsForMoment(defaultMoment);
+    if (measurements.isEmpty()) {
+      measurements = arms.get(1).getMeasurementsForMoment(defaultMoment);
+    }
+    for (Measurement measurement : measurements) {
+      if (isMeasurementForOutcome(outcome, measurement)) {
+        return measurement.getReferenceArm();
+      }
+    }
+    return null;
   }
 
-  private TrialDataArm getReferenceArm(URI nonReferenceArm, TrialDataStudy study) {
+  private TrialDataArm getReferenceArm(URI referenceArm, TrialDataStudy study) {
     return study.getArms()
             .stream()
-            .filter(a -> a.getUri().equals(nonReferenceArm))
+            .filter(arm -> arm.getUri().equals(referenceArm))
             .collect(Collectors.toList())
             .get(0);
   }
@@ -214,7 +240,7 @@ public class NetworkMetaAnalysisServiceImpl implements NetworkMetaAnalysisServic
     List<TrialDataArm> relativeArms = trialDataStudy.getArms()
             .stream()
             .filter(arm -> !isAbsoluteEffectArm(arm, outcome, selectedMoment))
-            .filter(arm -> isNotReferenceArm(arm, selectedMoment))
+            .filter(arm -> isNonReferenceArm(arm, selectedMoment))
             .collect(toList());
     return filterArms(excludedArmUris, selectedMoment, relativeArms);
   }
@@ -240,8 +266,8 @@ public class NetworkMetaAnalysisServiceImpl implements NetworkMetaAnalysisServic
     return !excludedArmUris.contains(arm.getUri());
   }
 
-  private boolean isNotReferenceArm(TrialDataArm arm, URI selectedMoment) {
-    return !arm.getMeasurementsForMoment(selectedMoment).isEmpty();
+  private boolean isNonReferenceArm(TrialDataArm arm, URI selectedMoment) {
+    return arm.getMeasurementsForMoment(selectedMoment) != null;
   }
 
   private <T> List<T> listUnion(List<T> list1, List<T> list2) {
@@ -259,25 +285,27 @@ public class NetworkMetaAnalysisServiceImpl implements NetworkMetaAnalysisServic
             .stream()
             .filter(arm -> isAbsoluteEffectArm(arm, outcome, selectedMoment))
             .collect(toList());
-    return filterArms(excludedArmUris, selectedMoment,absoluteArms);
+    return filterArms(excludedArmUris, selectedMoment, absoluteArms);
   }
 
   private boolean isAbsoluteEffectArm(TrialDataArm arm, Outcome outcome, URI selectedMoment) {
     Set<Measurement> measurements = arm.getMeasurementsForMoment(selectedMoment);
+    if (measurements == null) {
+      return false;
+    }
     for (Measurement measurement : measurements) {
-      Boolean isMeasurementForOutcome = measurement.getVariableConceptUri().equals(outcome.getSemanticOutcomeUri());
       Boolean isContrastMeasurement = measurement.getReferenceArm() != null && !measurement.getArmUri().equals(measurement.getReferenceArm());
-      if (isMeasurementForOutcome && isContrastMeasurement) {
+      if (isMeasurementForOutcome(outcome, measurement) && isContrastMeasurement) {
         return false;
       }
     }
     return true;
   }
 
-  private URI getSelectedMeasurementMoment(Map<URI, URI> selectedMeasurementMomentsByStudy, TrialDataStudy trialDataStudy) {
-    return selectedMeasurementMomentsByStudy.get(trialDataStudy.getStudyUri()) == null
-            ? trialDataStudy.getDefaultMeasurementMoment()
-            : selectedMeasurementMomentsByStudy.get(trialDataStudy.getStudyUri());
+  private URI getSelectedMeasurementMoment(Map<URI, URI> momentsByStudy, TrialDataStudy study) {
+    return momentsByStudy.get(study.getStudyUri()) == null
+            ? study.getDefaultMeasurementMoment()
+            : momentsByStudy.get(study.getStudyUri());
   }
 
   private List<AbstractProblemEntry> changeToStdErrEntriesIfNeeded(List<AbstractProblemEntry> entries) {
@@ -395,5 +423,4 @@ public class NetworkMetaAnalysisServiceImpl implements NetworkMetaAnalysisServic
     return resultsByUrl.entrySet().stream()
             .collect(Collectors.toMap(e -> modelsByTaskUrl.get(e.getKey()).getId(), Map.Entry::getValue));
   }
-
 }

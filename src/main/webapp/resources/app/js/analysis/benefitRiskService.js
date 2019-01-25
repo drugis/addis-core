@@ -50,16 +50,20 @@ define(['lodash'], function(_) {
           if (inclusion.studyGraphUri) {
             var study = _.find(studies, ['studyUri', inclusion.studyGraphUri]);
             outcomeCopy.selectedStudy = study;
-            outcomeCopy.isContrastOutcome = _.some(study.arms, function(arm) {
-              return _.some(arm.measurements[study.defaultMeasurementMoment], function(measurement) {
-                return measurement.referenceArm;
-              });
-            });
+            outcomeCopy.isContrastOutcome = isContrastOutcome(study, outcome);
           } else {
             outcomeCopy.selectedStudy = {};
           }
         }
         return outcomeCopy;
+      });
+    }
+
+    function isContrastOutcome(study, outcome){
+      return _.some(study.arms, function(arm) {
+        return _.some(arm.measurements[study.defaultMeasurementMoment], function(measurement) {
+          return measurement.referenceArm && measurement.variableConceptUri === outcome.outcome.semanticOutcomeUri;
+        });
       });
     }
 
