@@ -260,14 +260,16 @@ define(['lodash', 'angular-mocks', './analysis'], function(_) {
 
       beforeEach(function() {
         outcome = {
+          outcome: {
+            semanticOutcomeUri: 'varcon'
+          },
           selectedStudy: {
             defaultMeasurementMoment: 'defaultMomentUri',
             arms: [{
-              referenceArm: 'referenceArmUri',
               uri: 'nonReferenceArmUri',
               measurements: {
                 defaultMomentUri: [{
-
+                  variableConceptUri: 'varcon'
                 }]
               }
             }]
@@ -330,5 +332,39 @@ define(['lodash', 'angular-mocks', './analysis'], function(_) {
       });
     });
 
+    describe('getReferenceAlternativeName', function() {
+      it('should return the name of the reference alternative', function() {
+        var outcome = {
+          outcome: {
+            semanticOutcomeUri: 'varcon'
+          },
+          selectedStudy: {
+            defaultMeasurementMoment: 'defmom',
+            arms: [{
+              measurements: {
+                defmom: [{
+                  referenceArm: 'referenceUri',
+                  variableConceptUri: 'varcon'
+                }]
+              },
+              uri: 'nonReferenceUri'
+            }, {
+              uri: 'referenceUri',
+              matchedProjectInterventionIds: [1],
+              measurements: undefined
+            }]
+          }
+        };
+        var alternatives = [{
+          id: 1,
+          name: 'referenceAlternativeName'
+        }, {
+          id: 2
+        }];
+        var result = benefitRiskStep2Service.getReferenceAlternativeName(outcome, alternatives);
+        var expectedResult = 'referenceAlternativeName';
+        expect(result).toEqual(expectedResult);
+      });
+    });
   });
 });

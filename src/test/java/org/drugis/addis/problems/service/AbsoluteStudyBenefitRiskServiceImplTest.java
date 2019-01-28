@@ -41,7 +41,7 @@ public class AbsoluteStudyBenefitRiskServiceImplTest {
 
     TrialDataStudy study = getTrialDataStudy(defaultMeasurementMomentUri);
 
-    SingleStudyContext context = getSingleStudyContext(measurementVariableConceptUri);
+    SingleStudyContext context = getSingleStudyContext();
 
     absoluteStudyBenefitRiskService.buildAbsolutePerformanceEntries(context, study, matchedArms);
   }
@@ -63,15 +63,12 @@ public class AbsoluteStudyBenefitRiskServiceImplTest {
     return study;
   }
 
-  private SingleStudyContext getSingleStudyContext(URI measurementVariableConceptUri) {
+  private SingleStudyContext getSingleStudyContext() {
     SingleStudyContext context = mock(SingleStudyContext.class);
-    Map<URI, Outcome> outcomesByUri = new HashMap<>();
     Outcome outcome1 = mock(Outcome.class);
-    outcomesByUri.put(measurementVariableConceptUri, outcome1);
-    when(context.getOutcomesByUri()).thenReturn(outcomesByUri);
-    URI outcomeUri1 = URI.create("outcome1");
+    when(context.getOutcome()).thenReturn(outcome1);
     String dataSourceId1 = "dataSource1";
-    when(context.getDataSourceId(outcomeUri1)).thenReturn(dataSourceId1);
+    when(context.getDataSourceUuid()).thenReturn(dataSourceId1);
     return context;
   }
 
@@ -89,7 +86,7 @@ public class AbsoluteStudyBenefitRiskServiceImplTest {
     URI defaultMeasurementMomentUri = URI.create("defaultMoment");
     URI measurementVariableConceptUri = URI.create("measurementVariableConceptUri");
 
-    SingleStudyContext context = getSingleStudyContext(measurementVariableConceptUri);
+    SingleStudyContext context = getSingleStudyContext();
     TrialDataStudy study = getTrialDataStudy(defaultMeasurementMomentUri);
     TrialDataArm arm = getTrialDataArm(defaultMeasurementMomentUri, UNKNOWN_TYPE, measurementVariableConceptUri);
     List<TrialDataArm> matchedArms = new ArrayList<>();

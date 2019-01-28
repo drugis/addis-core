@@ -1,5 +1,5 @@
 'use strict';
-define(['angular', 'lodash'], function(angular, _) {
+define(['lodash'], function(_) {
   var dependencies = [
     '$scope',
     '$timeout',

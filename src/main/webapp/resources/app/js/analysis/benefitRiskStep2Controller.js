@@ -190,10 +190,10 @@ define(['lodash', 'angular'], function(_) {
             return outcome;
           },
           measurementType: function() {
-            return BenefitRiskService.getMeasurementType(outcome);
+            return BenefitRiskStep2Service.getMeasurementType(outcome);
           },
           referenceAlternativeName: function() {
-            return BenefitRiskService.getReferenceAlternativeName(outcome, $scope.alternatives);
+            return BenefitRiskStep2Service.getReferenceAlternativeName(outcome, $scope.alternatives);
           },
           callback: function() {
             return _.partial(addStudyBaseline, outcome);

@@ -22,7 +22,7 @@ public interface SingleStudyBenefitRiskService {
 
   TrialDataStudy getStudy(Project project, URI studyGraphUri, SingleStudyContext context);
 
-  Map<URI, CriterionEntry> getCriteria(List<TrialDataArm> armsWithMatching, URI defaultMeasurementMoment, SingleStudyContext context, List<BenefitRiskStudyOutcomeInclusion> contrastInclusions);
+  Map<URI, CriterionEntry> getCriteria(List<TrialDataArm> armsWithMatching, URI defaultMeasurementMoment, SingleStudyContext context);
 
   Map<String, AlternativeEntry> getAlternatives(List<TrialDataArm> armsWithMatching, SingleStudyContext context);
 
@@ -33,5 +33,5 @@ public interface SingleStudyBenefitRiskService {
           Project project,
           URI studyGraphUri,
           Outcome outcome,
-          Set<AbstractIntervention> includedInterventions);
+          Set<AbstractIntervention> includedInterventions, BenefitRiskStudyOutcomeInclusion inclusion);
 }

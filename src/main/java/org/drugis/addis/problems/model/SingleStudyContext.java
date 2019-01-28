@@ -1,5 +1,6 @@
 package org.drugis.addis.problems.model;
 
+import org.drugis.addis.analyses.model.BenefitRiskStudyOutcomeInclusion;
 import org.drugis.addis.interventions.model.AbstractIntervention;
 import org.drugis.addis.outcomes.Outcome;
 
@@ -12,7 +13,7 @@ public class SingleStudyContext {
   private URI sourceLink;
   private Outcome outcome;
   private String dataSourceUuid;
-  private Outcome outcome;
+  private BenefitRiskStudyOutcomeInclusion inclusion;
 
   public SingleStudyContext() {
 
@@ -24,10 +25,6 @@ public class SingleStudyContext {
 
   public void setOutcome(Outcome outcome) {
     this.outcome = outcome;
-  }
-
-  public String dataSourceUuid() {
-    return dataSourceUuid;
   }
 
   public void setDataSourceUuid(String dataSourceUri) {
@@ -54,6 +51,14 @@ public class SingleStudyContext {
     this.sourceLink = sourceLink;
   }
 
+  public BenefitRiskStudyOutcomeInclusion getInclusion() {
+    return inclusion;
+  }
+
+  public void setInclusion(BenefitRiskStudyOutcomeInclusion inclusion) {
+    this.inclusion = inclusion;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
@@ -63,12 +68,12 @@ public class SingleStudyContext {
             Objects.equals(sourceLink, that.sourceLink) &&
             Objects.equals(outcome, that.outcome) &&
             Objects.equals(dataSourceUuid, that.dataSourceUuid) &&
-            Objects.equals(outcome, that.outcome);
+            Objects.equals(inclusion, that.inclusion);
   }
 
   @Override
   public int hashCode() {
 
-    return Objects.hash(interventionsById, sourceLink, outcome, dataSourceUuid, outcome);
+    return Objects.hash(interventionsById, sourceLink, outcome, dataSourceUuid, inclusion);
   }
 }

@@ -135,73 +135,82 @@ public class ProblemServiceTest {
 
   @Test
   public void testGetProblemSingleStudyBenefitRisk() throws Exception, ProblemCreationException {
-    Integer secondOutcomeId = 1337;
-    Map<Integer, Outcome> outcomesById = getOutcomesById(secondOutcomeId);
+    Set<InterventionInclusion> interventionInclusions = buildInterventionInclusions();
+    BenefitRiskAnalysis analysis =
+            new BenefitRiskAnalysis(analysisId, projectId, "single study analysis", interventionInclusions);
+    when(analysisRepository.get(analysisId)).thenReturn(analysis);
 
+    Integer secondOutcomeId = 1337;
     URI defaultMeasurementMoment = URI.create("defaultMeasurementMoment");
     TrialDataStudy studyMock = mock(TrialDataStudy.class);
     URI studyUri = URI.create("daanEtAl");
-
-    Set<InterventionInclusion> interventionInclusions = buildInterventionInclusions();
-    BenefitRiskAnalysis singleStudyAnalysis =
-            new BenefitRiskAnalysis(analysisId, projectId, "single study analysis", interventionInclusions);
-
-    List<BenefitRiskStudyOutcomeInclusion> benefitRiskStudyOutcomeInclusions =
-            getBenefitRiskStudyOutcomeInclusions(secondOutcomeId, studyUri);
-    singleStudyAnalysis.setBenefitRiskStudyOutcomeInclusions(benefitRiskStudyOutcomeInclusions);
-
-    Set<AbstractIntervention> includedInterventions = newHashSet(fluoxIntervention, sertraIntervention);
-    Map<URI, CriterionEntry> criteriaMock = getCriteriaMock();
-    Map<String, AlternativeEntry> alternativesMock = getAlternativesMock();
-    List<AbstractMeasurementEntry> performanceMock = singletonList(mock(AbstractMeasurementEntry.class));
-
     when(studyMock.getDefaultMeasurementMoment()).thenReturn(defaultMeasurementMoment);
-    when(analysisRepository.get(analysisId)).thenReturn(singleStudyAnalysis);
-    when(analysisService.getIncludedInterventions(singleStudyAnalysis)).thenReturn(includedInterventions);
 
-    SingleStudyBenefitRiskProblem singleStudyProblemMock = mock(SingleStudyBenefitRiskProblem.class);
-    when(singleStudyBenefitRiskService.getSingleStudyBenefitRiskProblem(
-            project,
-            benefitRiskStudyOutcomeInclusions,
-            studyUri,
-            outcomesById,
-            includedInterventions)).thenReturn(singleStudyProblemMock);
-    when(singleStudyProblemMock.getCriteria()).thenReturn(criteriaMock);
-    when(singleStudyProblemMock.getAlternatives()).thenReturn(alternativesMock);
-    when(singleStudyProblemMock.getPerformanceTable()).thenReturn(performanceMock);
-
-    // --------------- execute ---------------- //
-    BenefitRiskProblem result = (BenefitRiskProblem) problemService.getProblem(projectId, analysisId);
-    // --------------- execute ---------------- //
-
-    BenefitRiskProblem expectedResult = new BenefitRiskProblem(
-            WebConstants.SCHEMA_VERSION, criteriaMock, alternativesMock, performanceMock);
-
-    assertEquals(expectedResult, result);
-
-    verify(projectRepository).get(projectId);
-    verify(analysisRepository).get(analysisId);
-    verify(analysisService).getIncludedInterventions(singleStudyAnalysis);
-    verify(singleStudyBenefitRiskService).getSingleStudyBenefitRiskProblem(
-            project,
-            singleStudyAnalysis.getBenefitRiskStudyOutcomeInclusions(),
-            studyUri,
-            outcomesById,
-            includedInterventions
-    );
-  }
-
-  private Map<Integer, Outcome> getOutcomesById(Integer secondOutcomeId) throws Exception {
     URI secondOutcomeUri = URI.create("http://secondSemantic");
     SemanticVariable secondSemanticOutcome = new SemanticVariable(secondOutcomeUri, "second semantic outcome");
     Outcome secondOutcome = new Outcome(secondOutcomeId, projectId, "second outcome", direction, "very", secondSemanticOutcome);
     List<Outcome> outcomes = Arrays.asList(secondOutcome, outcome);
     when(outcomeRepository.get(projectId, newHashSet(outcome.getId(), secondOutcome.getId()))).thenReturn(outcomes);
-    return outcomes.stream()
-            .collect(toMap(Outcome::getId, identity()));
+
+    List<BenefitRiskStudyOutcomeInclusion> benefitRiskStudyOutcomeInclusions =
+            getBenefitRiskStudyOutcomeInclusions(secondOutcomeId, studyUri);
+    analysis.setBenefitRiskStudyOutcomeInclusions(benefitRiskStudyOutcomeInclusions);
+    Set<AbstractIntervention> includedInterventions = newHashSet(fluoxIntervention, sertraIntervention);
+    when(analysisService.getIncludedInterventions(analysis)).thenReturn(includedInterventions);
+
+    Map<URI, CriterionEntry> criteriaMock = getCriteriaMock();
+    Map<String, AlternativeEntry> alternativesMock = getAlternativesMock();
+    List<AbstractMeasurementEntry> performanceMock = singletonList(mock(AbstractMeasurementEntry.class));
+
+    SingleStudyBenefitRiskProblem singleStudyProblemMock1 = mock(SingleStudyBenefitRiskProblem.class);
+    SingleStudyBenefitRiskProblem singleStudyProblemMock2 = mock(SingleStudyBenefitRiskProblem.class);
+    when(singleStudyBenefitRiskService.getSingleStudyBenefitRiskProblem(
+            project,
+            benefitRiskStudyOutcomeInclusions.get(0),
+            secondOutcome,
+            includedInterventions)).thenReturn(singleStudyProblemMock1);
+    when(singleStudyBenefitRiskService.getSingleStudyBenefitRiskProblem(
+            project,
+            benefitRiskStudyOutcomeInclusions.get(1),
+            outcome,
+            includedInterventions)).thenReturn(singleStudyProblemMock2);
+    when(singleStudyProblemMock1.getCriteria()).thenReturn(criteriaMock);
+    when(singleStudyProblemMock1.getAlternatives()).thenReturn(alternativesMock);
+    when(singleStudyProblemMock1.getPerformanceTable()).thenReturn(performanceMock);
+    when(singleStudyProblemMock2.getCriteria()).thenReturn(criteriaMock);
+    when(singleStudyProblemMock2.getAlternatives()).thenReturn(alternativesMock);
+    when(singleStudyProblemMock2.getPerformanceTable()).thenReturn(performanceMock);
+
+    // --------------- execute ---------------- //
+    BenefitRiskProblem result = (BenefitRiskProblem) problemService.getProblem(projectId, analysisId);
+    // --------------- execute ---------------- //
+
+    List<AbstractMeasurementEntry> performanceTable = new ArrayList<>();
+    performanceTable.addAll(performanceMock);
+    performanceTable.addAll(performanceMock);
+    BenefitRiskProblem expectedResult = new BenefitRiskProblem(
+            WebConstants.SCHEMA_VERSION, criteriaMock, alternativesMock, performanceTable);
+
+    assertEquals(expectedResult, result);
+
+    verify(projectRepository).get(projectId);
+    verify(analysisRepository).get(analysisId);
+    verify(analysisService).getIncludedInterventions(analysis);
+    verify(singleStudyBenefitRiskService).getSingleStudyBenefitRiskProblem(
+            project,
+            benefitRiskStudyOutcomeInclusions.get(0),
+            secondOutcome,
+            includedInterventions
+    );
+    verify(singleStudyBenefitRiskService).getSingleStudyBenefitRiskProblem(
+            project,
+            benefitRiskStudyOutcomeInclusions.get(1),
+            outcome,
+            includedInterventions
+    );
   }
 
-  private Map<String, AlternativeEntry> getAlternativesMock() {
+    private Map<String, AlternativeEntry> getAlternativesMock() {
     Map<String, AlternativeEntry> alternativesMock = new HashMap<>();
     alternativesMock.put(String.valueOf(fluoxInterventionId), mock(AlternativeEntry.class));
     alternativesMock.put(String.valueOf(sertraInterventionId), mock(AlternativeEntry.class));
@@ -279,58 +288,59 @@ public class ProblemServiceTest {
     Integer analysisId = 2;
     String title = "title";
     Project project = mock(Project.class);
-    when(project.getId()).thenReturn(projectId);
     String namespaceUuid = "UUID 1";
-    when(project.getNamespaceUid()).thenReturn(namespaceUuid);
-    when(project.getDatasetVersion()).thenReturn(version);
-    when(project.getOwner()).thenReturn(owner);
-    when(projectRepository.get(projectId)).thenReturn(project);
 
     Set<InterventionInclusion> interventionInclusions = buildInterventionInclusions();
 
     Set<Integer> outcomeIds = singleton(outcome.getId());
-    when(outcomeRepository.get(projectId, outcomeIds)).thenReturn(singletonList(outcome));
 
     BenefitRiskAnalysis analysis = new BenefitRiskAnalysis(analysisId, projectId, title, interventionInclusions);
     Integer nmaId = 3;
     Integer modelId = 15;
     BenefitRiskNMAOutcomeInclusion nmaInclusion = new BenefitRiskNMAOutcomeInclusion(analysisId, outcome.getId(), nmaId, modelId);
-    nmaInclusion.setBaseline("");
+    String baseline = "baseline";
+    nmaInclusion.setBaseline(baseline);
     int notIncludedModelId = 823;
     BenefitRiskNMAOutcomeInclusion nmaInclusionNoBaseline = new BenefitRiskNMAOutcomeInclusion(analysisId, outcome.getId(), nmaId, notIncludedModelId);
     BenefitRiskNMAOutcomeInclusion nmaInclusionNoModel = new BenefitRiskNMAOutcomeInclusion(analysisId, outcome.getId(), nmaId, null);
     analysis.setBenefitRiskNMAOutcomeInclusions(Arrays.asList(nmaInclusion, nmaInclusionNoBaseline, nmaInclusionNoModel));
-    when(analysisRepository.get(analysisId)).thenReturn(analysis);
 
     Model model = mock(Model.class);
-    when(model.getId()).thenReturn(modelId);
     Set<Integer> modelIds = newHashSet(modelId, notIncludedModelId);
-    when(modelService.get(modelIds)).thenReturn(singletonList(model));
 
     Set<AbstractIntervention> interventions = newHashSet(fluoxIntervention, paroxIntervention);
-    when(analysisService.getIncludedInterventions(analysis)).thenReturn(interventions);
 
     Map<Integer, JsonNode> resultsByModelId = new HashMap<>();
     resultsByModelId.put(modelId, mock(JsonNode.class));
-    when(networkMetaAnalysisService.getPataviResultsByModelId(Sets.newHashSet(model))).thenReturn(resultsByModelId);
 
     URI modelSourceLink = URI.create("modelSourceLink");
-    when(linkService.getModelSourceLink(project, model)).thenReturn(modelSourceLink);
 
     NMAInclusionWithResults inclusionWithResults = new NMAInclusionWithResults(outcome, model,
-            resultsByModelId.get(modelId), interventions, "");
+            resultsByModelId.get(modelId), interventions, baseline);
     Map<URI, CriterionEntry> criteria = new HashMap<>();
     CriterionEntry criterionEntry = mock(CriterionEntry.class);
     DataSourceEntry dataSourceEntry = new DataSourceEntry("1", "source", modelSourceLink);
-    when(criterionEntry.getDataSources()).thenReturn(singletonList(dataSourceEntry));
     criteria.put(outcome.getSemanticOutcomeUri(), criterionEntry);
-    when(networkMetaAnalysisService.buildCriteriaForInclusion(inclusionWithResults, modelSourceLink)).thenReturn(criteria);
 
     Map<String, AlternativeEntry> alternatives = new HashMap<>();
     alternatives.put(fluoxConceptUri.toString(), mock(AlternativeEntry.class));
-    when(networkMetaAnalysisService.buildAlternativesForInclusion(inclusionWithResults)).thenReturn(alternatives);
-
     AbstractMeasurementEntry measurementEntry = mock(AbstractMeasurementEntry.class);
+
+    when(project.getId()).thenReturn(projectId);
+    when(project.getNamespaceUid()).thenReturn(namespaceUuid);
+    when(project.getDatasetVersion()).thenReturn(version);
+    when(project.getOwner()).thenReturn(owner);
+    when(model.getId()).thenReturn(modelId);
+    when(criterionEntry.getDataSources()).thenReturn(singletonList(dataSourceEntry));
+    when(outcomeRepository.get(projectId, outcomeIds)).thenReturn(singletonList(outcome));
+    when(networkMetaAnalysisService.getPataviResultsByModelId(Sets.newHashSet(model))).thenReturn(resultsByModelId);
+    when(projectRepository.get(projectId)).thenReturn(project);
+    when(analysisRepository.get(analysisId)).thenReturn(analysis);
+    when(modelService.get(modelIds)).thenReturn(singletonList(model));
+    when(analysisService.getIncludedInterventions(analysis)).thenReturn(interventions);
+    when(linkService.getModelSourceLink(project, model)).thenReturn(modelSourceLink);
+    when(networkMetaAnalysisService.buildCriteriaForInclusion(inclusionWithResults, modelSourceLink)).thenReturn(criteria);
+    when(networkMetaAnalysisService.buildAlternativesForInclusion(inclusionWithResults)).thenReturn(alternatives);
     when(networkBenefitRiskPerformanceEntryBuilder.build(inclusionWithResults, dataSourceEntry)).thenReturn(measurementEntry);
 
     //execute

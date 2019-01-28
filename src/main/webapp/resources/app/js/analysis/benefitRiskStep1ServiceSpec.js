@@ -267,32 +267,6 @@ define(['lodash', 'angular-mocks', './analysis'], function(_) {
       });
     });
 
-    describe('getReferenceAlternativeName', function() {
-      it('should return the name of the reference alternative', function() {
-        var outcome = {
-          selectedStudy: {
-            arms: [{
-              referenceArm: 'referenceUri',
-              uri: 'nonReferenceUri'
-            }, {
-              referenceArm: 'referenceUri',
-              uri: 'referenceUri',
-              matchedProjectInterventionIds: [1]
-            }]
-          }
-        };
-        var alternatives = [{
-          id: 1,
-          name: 'referenceAlternativeName'
-        }, {
-          id: 2
-        }];
-        var result = benefitRiskStep1Service.getReferenceAlternativeName(outcome, alternatives);
-        var expectedResult = 'referenceAlternativeName';
-        expect(result).toEqual(expectedResult);
-      });
-    });
-
     describe('getStep1Errors', function() {
       var outcomes = [
         { outcome: { isIncluded: true } },
@@ -346,25 +320,44 @@ define(['lodash', 'angular-mocks', './analysis'], function(_) {
 
     describe('isContrastStudySelected', function() {
       it('should return true if atleast one study with contrast data for the outcome is selected', function() {
-        var inclusions = [{ studyGraphUri: 'graphUri' }];
+        var outcomes = [{
+          studyGraphUri: 'graphUri',
+            outcome: {
+              isIncluded: true,
+              semanticOutcomeUri: 'varcon'
+            }
+        }];
         var studies = [{
           studyUri: 'graphUri',
+          defaultMeasurementMoment: 'defmom',
           arms: [{
-            referenceArm: {}
+            measurements: {
+              defmom: [{
+                variableConceptUri: 'varcon',
+                referenceArm: 'refarm'
+              }]
+            }
           }]
         }];
-        var result = benefitRiskStep1Service.isContrastStudySelected(inclusions, studies);
+        var result = benefitRiskStep1Service.isContrastStudySelected(outcomes, studies);
         expect(result).toBeTruthy();
       });
 
       it('should return false if there is no study with contrast data', function() {
-        var inclusions = [{ studyGraphUri: 'graphUri' }];
+        var outcomes = [{
+          studyGraphUri: 'graphUri',
+          outcome: {
+            outcome: {
+              isIncluded: true
+            }
+          }
+        }];
         var studies = [{
           studyUri: 'graphUri',
           arms: [{
           }]
         }];
-        var result = benefitRiskStep1Service.isContrastStudySelected(inclusions, studies);
+        var result = benefitRiskStep1Service.isContrastStudySelected(outcomes, studies);
         expect(result).toBeFalsy();
       });
 

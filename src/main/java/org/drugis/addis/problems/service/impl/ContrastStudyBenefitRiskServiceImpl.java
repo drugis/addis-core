@@ -17,37 +17,24 @@ import static java.util.stream.Collectors.toList;
 public class ContrastStudyBenefitRiskServiceImpl implements ContrastStudyBenefitRiskService {
   @Override
   public List<AbstractMeasurementEntry> buildContrastPerformanceTable(
-          List<BenefitRiskStudyOutcomeInclusion> inclusions,
           URI defaultMoment,
           SingleStudyContext context,
           List<TrialDataArm> matchedArms
   ) {
-    List<BenefitRiskStudyOutcomeInclusion> contrastInclusions = getContrastInclusionsWithBaseline(inclusions, context);
-    return createContrastEntries(contrastInclusions, matchedArms, defaultMoment, context);
-
-  }
-
-  private List<AbstractMeasurementEntry> createContrastEntries(
-          List<BenefitRiskStudyOutcomeInclusion> inclusions,
-          List<TrialDataArm> arms,
-          URI defaultMoment,
-          SingleStudyContext context
-  ) {
-    return inclusions.stream()
-            .map(inclusion -> createContrastEntry(inclusion, arms, defaultMoment, context))
-            .collect(toList());
+    if (context.getInclusion().getBaseline() == null) {
+      return Collections.emptyList();
+    }
+    return Collections.singletonList(createContrastEntry(matchedArms, defaultMoment, context));
   }
 
   private AbstractMeasurementEntry createContrastEntry(
-          BenefitRiskStudyOutcomeInclusion inclusion,
           List<TrialDataArm> arms,
           URI defaultMoment,
           SingleStudyContext context) {
-    Outcome currentOutcome = context.getOutcome(inclusion.getOutcomeId());
-
-    String criterion = currentOutcome.getSemanticOutcomeUri().toString();
-    String dataSource = context.getDataSourceId(currentOutcome.getSemanticOutcomeUri());
-    RelativePerformance performance = getRelativePerformance(inclusion, arms, defaultMoment, currentOutcome);
+    Outcome outcome = context.getOutcome();
+    String criterion = outcome.getSemanticOutcomeUri().toString();
+    String dataSource = context.getDataSourceUuid();
+    RelativePerformance performance = getRelativePerformance(context.getInclusion(), arms, defaultMoment, outcome);
     return new RelativePerformanceEntry(criterion, dataSource, performance);
   }
 
@@ -275,16 +262,5 @@ public class ContrastStudyBenefitRiskServiceImpl implements ContrastStudyBenefit
       return measurement.getStandardizedMeanDifference();
     }
     return 0.0;//baseline
-  }
-
-
-  @Override
-  public List<BenefitRiskStudyOutcomeInclusion> getContrastInclusionsWithBaseline(
-          List<BenefitRiskStudyOutcomeInclusion> inclusions, SingleStudyContext context) {
-    return inclusions
-            .stream()
-            .filter(inclusion -> context.getOutcome(inclusion.getOutcomeId()) != null)
-            .filter(inclusion -> inclusion.getBaseline() != null)
-            .collect(toList());
   }
 }

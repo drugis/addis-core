@@ -46,13 +46,10 @@ public class ContrastStudyBenefitRiskServiceTest {
     matchedArms.add(referenceArm);
 
     SingleStudyContext context = new SingleStudyContext();
-    Map<Integer, Outcome> outcomesById = new HashMap<>();
     Outcome outcome = mock(Outcome.class);
     Integer outcomeId = 37;
     URI semanticOutcomeUri = URI.create("semanticOutcomeUri");
-    Map<URI, String> dataSourceIdsByOutcomeUri = new HashMap<>();
-    String dataSourceId = "dataSourceId";
-    dataSourceIdsByOutcomeUri.put(semanticOutcomeUri, dataSourceId);
+    String dataSourceUuid = "dataSourceUuid";
 
     Set<Integer> matchedProjectInterventionIds = new HashSet<>();
     Integer interventionId = 1;
@@ -74,17 +71,16 @@ public class ContrastStudyBenefitRiskServiceTest {
     when(outcome.getId()).thenReturn(outcomeId);
     when(outcome.getSemanticOutcomeUri()).thenReturn(semanticOutcomeUri);
 
-    outcomesById.put(outcomeId, outcome);
-    context.setOutcomesById(outcomesById);
-    context.setDataSourceIdsByOutcomeUri(dataSourceIdsByOutcomeUri);
-
-    List<BenefitRiskStudyOutcomeInclusion> inclusions = new ArrayList<>();
     String baseline = "baselineString";
     URI studyGraphUri = URI.create("studyGraphUri");
     Integer analysisId = 42;
     BenefitRiskStudyOutcomeInclusion inclusion = new BenefitRiskStudyOutcomeInclusion(analysisId, outcomeId, studyGraphUri, baseline);
-    inclusions.add(inclusion);
-    List<AbstractMeasurementEntry> result = contrastStudyBenefitRiskService.buildContrastPerformanceTable(inclusions, defaultMoment, context, matchedArms);
+
+    context.setOutcome(outcome);
+    context.setInclusion(inclusion);
+    context.setDataSourceUuid(dataSourceUuid);
+
+    List<AbstractMeasurementEntry> result = contrastStudyBenefitRiskService.buildContrastPerformanceTable(defaultMoment, context, matchedArms);
 
     List<AbstractMeasurementEntry> expectedResult = new ArrayList<>();
     String type = "relative-logit-normal";
@@ -108,35 +104,8 @@ public class ContrastStudyBenefitRiskServiceTest {
     Relative relative = new Relative("dmnorm", mu, cov);
     RelativePerformanceParameters parameters = new RelativePerformanceParameters(baseline, relative);
     RelativePerformance performance = new RelativePerformance(type, parameters);
-    AbstractMeasurementEntry expectedEntry = new RelativePerformanceEntry(semanticOutcomeUri.toString(), dataSourceId, performance);
+    AbstractMeasurementEntry expectedEntry = new RelativePerformanceEntry(semanticOutcomeUri.toString(), dataSourceUuid, performance);
     expectedResult.add(expectedEntry);
-    assertEquals(expectedResult, result);
-  }
-
-  @Test
-  public void getContrastInclusionsWithBaselineTest(){
-    SingleStudyContext context = new SingleStudyContext();
-    Map<Integer, Outcome> outcomesById = new HashMap<>();
-    Outcome outcome = mock(Outcome.class);
-    Integer outcomeId = 6;
-    when(outcome.getId()).thenReturn(outcomeId);
-    outcomesById.put(outcomeId, outcome);
-    context.setOutcomesById(outcomesById);
-
-    List<BenefitRiskStudyOutcomeInclusion> inclusions = new ArrayList<>();
-    BenefitRiskStudyOutcomeInclusion inclusion = mock(BenefitRiskStudyOutcomeInclusion.class);
-    when(inclusion.getOutcomeId()).thenReturn(outcomeId);
-    String baseline = "baseline";
-    when(inclusion.getBaseline()).thenReturn(baseline);
-
-    BenefitRiskStudyOutcomeInclusion nonContrastInclusion = mock(BenefitRiskStudyOutcomeInclusion.class);
-    when(nonContrastInclusion.getOutcomeId()).thenReturn(8);
-
-    inclusions.add(inclusion);
-    inclusions.add(nonContrastInclusion);
-    List<BenefitRiskStudyOutcomeInclusion> result = contrastStudyBenefitRiskService.getContrastInclusionsWithBaseline(inclusions, context);
-    List<BenefitRiskStudyOutcomeInclusion> expectedResult = new ArrayList<>();
-    expectedResult.add(inclusion);
     assertEquals(expectedResult, result);
   }
 }

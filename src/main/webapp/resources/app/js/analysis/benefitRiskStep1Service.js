@@ -8,26 +8,6 @@ define(['lodash'], function(_) {
     BenefitRiskErrorService,
     BenefitRiskService
   ) {
-    function getReferenceAlternativeName(inclusion, alternatives) {
-      var arms = inclusion.selectedStudy.arms;
-      var referenceArm = _.find(arms, function(arm) {
-        return arm.uri === getReferenceUri(arms, inclusion);
-      });
-      var referenceAlternativeId = referenceArm.matchedProjectInterventionIds[0];
-      var referenceAlternative = _.find(alternatives, function(alternative) {
-        return alternative.id === referenceAlternativeId;
-      });
-      return referenceAlternative.name;
-    }
-
-    function getReferenceUri(arms, inclusion) {
-      return _.find(arms, function(arm) {
-        return _.some(arm.measurements[inclusion.selectedStudy.defaultMeasurementMoment], function(measurement) {
-          return measurement.variableConceptUri === inclusion.outcome.semanticOutcomeUri;
-        });
-      });
-    }
-
     function updateOutcomeInclusion(inclusion, alternatives) {
       var newInclusion = angular.copy(inclusion);
       if (!newInclusion.outcome.isIncluded) {
@@ -219,7 +199,6 @@ define(['lodash'], function(_) {
       findOverlappingInterventions: findOverlappingInterventions,
       getModelSelection: getModelSelection,
       getNMAOutcomeInclusions: getNMAOutcomeInclusions,
-      getReferenceAlternativeName: getReferenceAlternativeName,
       getStep1Errors: getStep1Errors,
       getStudyOutcomeInclusions: getStudyOutcomeInclusions,
       isContrastStudySelected: isContrastStudySelected,

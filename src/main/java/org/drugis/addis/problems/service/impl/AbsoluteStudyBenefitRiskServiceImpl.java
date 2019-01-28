@@ -28,32 +28,39 @@ public class AbsoluteStudyBenefitRiskServiceImpl implements AbsoluteStudyBenefit
     URI defaultMoment = study.getDefaultMeasurementMoment();
     Set<MeasurementWithCoordinates> measurementsWithCoordinates = getMeasurementsWithCoordinates(
             matchedArms, defaultMoment, context);
-
     Set<MeasurementWithCoordinates> absoluteMeasurements = filterAbsoluteMeasurements(measurementsWithCoordinates);
-    ArrayList<AbstractMeasurementEntry> performanceTable = new ArrayList<>();
-    addAbsolutePerformanceEntries(performanceTable, absoluteMeasurements);
-    return performanceTable;
+    return createAbsolutePerformanceEntries(absoluteMeasurements);
   }
 
   private Set<MeasurementWithCoordinates> filterAbsoluteMeasurements(Set<MeasurementWithCoordinates> measurementDrugInstancePairs) {
     return measurementDrugInstancePairs.stream().filter(measurement -> measurement.getMeasurement().getReferenceArm() == null).collect(Collectors.toSet());
   }
 
-  private void addAbsolutePerformanceEntries(ArrayList<AbstractMeasurementEntry> performanceTable, Set<MeasurementWithCoordinates> absoluteMeasurements) {
+  private ArrayList<AbstractMeasurementEntry> createAbsolutePerformanceEntries(
+          Set<MeasurementWithCoordinates> absoluteMeasurements) {
+    ArrayList<AbstractMeasurementEntry> performanceTable = new ArrayList<>();
     for (MeasurementWithCoordinates measurementWithCoordinates : absoluteMeasurements) {
-      Measurement measurement = measurementWithCoordinates.getMeasurement();
-      Integer interventionId = measurementWithCoordinates.getInterventionId();
-      String dataSource = measurementWithCoordinates.getDataSource();
-      if (measurement.getMeasurementTypeURI().equals(ProblemService.DICHOTOMOUS_TYPE_URI)) {
-        performanceTable.add(createBetaDistributionEntry(interventionId, measurement.getVariableConceptUri(), dataSource,
-                measurement.getRate(), measurement.getSampleSize()));
-      } else if (measurement.getMeasurementTypeURI().equals(ProblemService.CONTINUOUS_TYPE_URI)) {
-        performanceTable.add(createNormalDistributionEntry(interventionId, measurement.getVariableConceptUri(), dataSource,
-                measurement.getMean(), measurement.getStdDev(), measurement.getSampleSize(), measurement.getStdErr()));
-      } else {
-        throw new IllegalArgumentException("Unknown measurement type: " + measurement.getMeasurementTypeURI());
-      }
+      AbstractMeasurementEntry entry = createEntry(measurementWithCoordinates);
+      performanceTable.add(entry);
     }
+    return performanceTable;
+  }
+
+  private AbstractMeasurementEntry createEntry(MeasurementWithCoordinates measurementWithCoordinates) {
+    AbstractMeasurementEntry entry;
+    Measurement measurement = measurementWithCoordinates.getMeasurement();
+    Integer interventionId = measurementWithCoordinates.getInterventionId();
+    String dataSource = measurementWithCoordinates.getDataSource();
+    if (measurement.getMeasurementTypeURI().equals(ProblemService.DICHOTOMOUS_TYPE_URI)) {
+      entry = createBetaDistributionEntry(interventionId, measurement.getVariableConceptUri(), dataSource,
+              measurement.getRate(), measurement.getSampleSize());
+    } else if (measurement.getMeasurementTypeURI().equals(ProblemService.CONTINUOUS_TYPE_URI)) {
+      entry = createNormalDistributionEntry(interventionId, measurement.getVariableConceptUri(), dataSource,
+              measurement.getMean(), measurement.getStdDev(), measurement.getSampleSize(), measurement.getStdErr());
+    } else {
+      throw new IllegalArgumentException("Unknown measurement type: " + measurement.getMeasurementTypeURI());
+    }
+    return entry;
   }
 
   private Set<MeasurementWithCoordinates> getMeasurementsWithCoordinates(List<TrialDataArm> arms, URI defaultMeasurementMoment, SingleStudyContext context) {
@@ -75,9 +82,9 @@ public class AbsoluteStudyBenefitRiskServiceImpl implements AbsoluteStudyBenefit
   }
 
  private MeasurementWithCoordinates getMeasurementWithCoordinates(Measurement measurement, SingleStudyContext context, Integer interventionId) {
-    Outcome measuredOutcome = context.getOutcomesByUri().get(measurement.getVariableConceptUri());
-    String dataSourceId = context.getDataSourceId(measuredOutcome.getSemanticOutcomeUri());
-    return new MeasurementWithCoordinates(measurement, interventionId, dataSourceId, measuredOutcome.getSemanticOutcomeUri());
+    Outcome measuredOutcome = context.getOutcome();
+    String dataSourceUuid = context.getDataSourceUuid();
+    return new MeasurementWithCoordinates(measurement, interventionId, dataSourceUuid, measuredOutcome.getSemanticOutcomeUri());
   }
 
   private ContinuousMeasurementEntry createNormalDistributionEntry(Integer interventionId, URI criterionUri, String dataSourceUri, Double mean, Double standardDeviation, Integer sampleSize, Double standardError) {

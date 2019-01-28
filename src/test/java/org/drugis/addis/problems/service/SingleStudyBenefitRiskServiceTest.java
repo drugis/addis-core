@@ -99,26 +99,26 @@ public class SingleStudyBenefitRiskServiceTest {
   public void testGetSingleStudyMeasurements() throws ReadValueException, ResourceDoesNotExistException, IOException {
     URI datasetVersion = URI.create("datasetVersion");
     Project project = mock(Project.class);
-    when(project.getNamespaceUid()).thenReturn("namespaceUuid");
-    when(project.getDatasetVersion()).thenReturn(datasetVersion);
     URI studyGraphUri = URI.create("studyGraph");
-
     URI interventionUri1 = URI.create("intervention1");
-
     String versionedUuid = "versionedUuid";
-    when(mappingService.getVersionedUuid(project.getNamespaceUid())).thenReturn(versionedUuid);
 
     Set<AbstractIntervention> interventions = ImmutableSet.copyOf(context.getInterventionsById().values());
     SingleIntervention singleInterventionMock = mock(SingleIntervention.class);
-    when(singleInterventionMock.getSemanticInterventionUri()).thenReturn(interventionUri1);
-    when(analysisService.getSingleInterventions(interventions)).thenReturn(Sets.newHashSet(singleInterventionMock));
 
     Set<URI> outcomeUris = Sets.newHashSet(dichotomousVariable.getVariableConceptUri(), continuousVariable.getVariableConceptUri());
     Set<URI> interventionUris = Sets.newHashSet(interventionUri1);
     TrialDataStudy mockStudy = mock(TrialDataStudy.class);
     List<TrialDataStudy> mockStudies = singletonList(mockStudy);
-    when(triplestoreService.getSingleStudyData(versionedUuid, studyGraphUri, datasetVersion, outcomeUris, interventionUris))
-            .thenReturn(mockStudies);
+
+    when(project.getNamespaceUid()).thenReturn("namespaceUuid");
+    when(project.getDatasetVersion()).thenReturn(datasetVersion);
+    when(mappingService.getVersionedUuid(project.getNamespaceUid())).thenReturn(versionedUuid);
+    when(singleInterventionMock.getSemanticInterventionUri()).thenReturn(interventionUri1);
+    when(analysisService.getSingleInterventions(interventions)).thenReturn(Sets.newHashSet(singleInterventionMock));
+    when(triplestoreService.getSingleStudyData(
+            versionedUuid, studyGraphUri, datasetVersion, outcomeUris, interventionUris
+    )).thenReturn(mockStudies);
 
     // EXECUTE
     TrialDataStudy result = singleStudyBenefitRiskService.getStudy(project, studyGraphUri, context);
@@ -139,16 +139,15 @@ public class SingleStudyBenefitRiskServiceTest {
             .forEach(measurement -> {
               CriterionEntry criterionEntry = mock(CriterionEntry.class);
               URI variableConceptUri = measurement.getVariableConceptUri();
-              Outcome measuredOutcome = context.getOutcomesByUri().get(variableConceptUri);
-              String dataSourceId = context.getDataSourceIdsByOutcomeUri().get(measurement.getVariableConceptUri());
+              Outcome measuredOutcome = context.getOutcome();
+              String dataSourceId = context.getDataSourceUuid();
               when(criterionEntryFactory.create(measurement,
                       measuredOutcome.getName(), dataSourceId, context.getSourceLink())).thenReturn(criterionEntry);
 
               expectedResult.put(variableConceptUri, criterionEntry);
             }));
 
-    List<BenefitRiskStudyOutcomeInclusion> contrastInclusions= new ArrayList<>();
-    Map<URI, CriterionEntry> result = singleStudyBenefitRiskService.getCriteria(arms, defaultMeasurementMoment, context, contrastInclusions);
+    Map<URI, CriterionEntry> result = singleStudyBenefitRiskService.getCriteria(arms, defaultMeasurementMoment, context);
     assertEquals(expectedResult, result);
 
     arms.forEach((arm -> arm.getMeasurementsForMoment(defaultMeasurementMoment)
@@ -173,9 +172,8 @@ public class SingleStudyBenefitRiskServiceTest {
   }
 
   private void verifyCriterionCreation(Measurement measurement) {
-    URI variableConceptUri = measurement.getVariableConceptUri();
-    Outcome measuredOutcome = context.getOutcomesByUri().get(variableConceptUri);
-    String dataSourceId = context.getDataSourceIdsByOutcomeUri().get(measuredOutcome.getSemanticOutcomeUri());
+    Outcome measuredOutcome = context.getOutcome();
+    String dataSourceId = context.getDataSourceUuid();
     verify(criterionEntryFactory).create(measurement, measuredOutcome.getName(), dataSourceId, context.getSourceLink());
   }
 
@@ -198,24 +196,11 @@ public class SingleStudyBenefitRiskServiceTest {
   }
 
   private SingleStudyContext buildContext() {
-    Map<URI, Outcome> outcomesByUri = new HashMap<>();
-    Map<Integer, Outcome> outcomesById = new HashMap<>();
-
-    Outcome mockOutcome1 = mock(Outcome.class);
+        Outcome mockOutcome1 = mock(Outcome.class);
     Integer outcomeId1 = 1;
     when(mockOutcome1.getSemanticOutcomeUri()).thenReturn(dichotomousVariable.getVariableConceptUri());
     when(mockOutcome1.getName()).thenReturn("outcome1Name");
     when(mockOutcome1.getId()).thenReturn(outcomeId1);
-    outcomesByUri.put(dichotomousVariable.getVariableConceptUri(), mockOutcome1);
-    outcomesById.put(outcomeId1, mockOutcome1);
-
-    Outcome mockOutcome2 = mock(Outcome.class);
-    Integer outcomeId2 = 2;
-    when(mockOutcome2.getSemanticOutcomeUri()).thenReturn(continuousMeasurementStdDev.getVariableConceptUri());
-    when(mockOutcome2.getName()).thenReturn("outcome2Name");
-    when(mockOutcome2.getId()).thenReturn(outcomeId2);
-    outcomesByUri.put(continuousMeasurementStdDev.getVariableConceptUri(), mockOutcome2);
-    outcomesById.put(outcomeId2, mockOutcome2);
 
     Map<Integer, AbstractIntervention> interventionsById = new HashMap<>();
     AbstractIntervention interventionMock1 = mock(AbstractIntervention.class);
@@ -228,18 +213,13 @@ public class SingleStudyBenefitRiskServiceTest {
     when(interventionMock2.getName()).thenReturn(alternative2Name);
     interventionsById.put(interventionId2, interventionMock2);
 
-    Map<URI, String> dataSourcesIdsByOutcomeUri = new HashMap<>();
-    dataSourcesIdsByOutcomeUri.put(dichotomousVariable.getVariableConceptUri(), "dataSource1");
-    dataSourcesIdsByOutcomeUri.put(continuousMeasurementStdDev.getVariableConceptUri(), "dataSource2");
-
     URI sourceLink = URI.create("sourceLink");
 
     SingleStudyContext context = new SingleStudyContext();
     context.setSourceLink(sourceLink);
-    context.setOutcomesByUri(outcomesByUri);
+    context.setOutcome(mockOutcome1);
     context.setInterventionsById(interventionsById);
-    context.setDataSourceIdsByOutcomeUri(dataSourcesIdsByOutcomeUri);
-    context.setOutcomesById(outcomesById);
+    context.setDataSourceUuid("dataSource1");
 
     return context;
   }
@@ -309,28 +289,17 @@ public class SingleStudyBenefitRiskServiceTest {
   @Test
   public void testBuildContext() {
     String uuid1 = "uuid1";
-    String uuid2 = "uuid2";
-    Integer outcomeId1 = 1;
-    Integer outcomeId2 = 2;
 
-    when(uuidService.generate()).thenReturn(uuid1, uuid2);
+    when(uuidService.generate()).thenReturn(uuid1);
 
     URI sourceLink = URI.create("sourceLink");
     Project project = mock(Project.class);
     when(linkService.getStudySourceLink(project, studyUri)).thenReturn(sourceLink);
 
     URI outcome1Uri = URI.create("outcome1Uri");
-    URI outcome2Uri = URI.create("outcome2Uri");
     Outcome outcome1 = mock(Outcome.class);
     when(outcome1.getSemanticOutcomeUri()).thenReturn(outcome1Uri);
-    Outcome outcome2 = mock(Outcome.class);
-    when(outcome2.getSemanticOutcomeUri()).thenReturn(outcome2Uri);
     // Use sorted set to guarantee order so that the uuids are paired correctly
-    Set<Outcome> outcomes = new TreeSet<>(Comparator.comparing(Outcome::getSemanticOutcomeUri));
-    outcomes.addAll(Sets.newHashSet(outcome1, outcome2));
-    Map<Integer, Outcome> outcomesById = new HashMap<>();
-    outcomesById.put(outcomeId1, outcome1);
-    outcomesById.put(outcomeId2, outcome2);
 
     AbstractIntervention intervention1 = mock(AbstractIntervention.class);
     when(intervention1.getId()).thenReturn(interventionId1);
@@ -338,29 +307,24 @@ public class SingleStudyBenefitRiskServiceTest {
     when(intervention2.getId()).thenReturn(interventionId2);
     HashSet<AbstractIntervention> interventions = Sets.newHashSet(intervention1, intervention2);
 
-    SingleStudyContext result = singleStudyBenefitRiskService.buildContext(project, studyUri, outcomesById, interventions);
+    BenefitRiskStudyOutcomeInclusion inclusion = mock(BenefitRiskStudyOutcomeInclusion.class);
 
-    Map<URI, Outcome> outcomesByUri = new HashMap<>();
-    outcomesByUri.put(outcome1Uri, outcome1);
-    outcomesByUri.put(outcome2Uri, outcome2);
+    SingleStudyContext result = singleStudyBenefitRiskService.buildContext(project, studyUri, outcome1, interventions, inclusion);
 
     Map<Integer, AbstractIntervention> interventionsById = new HashMap<>();
     interventionsById.put(interventionId1, intervention1);
     interventionsById.put(interventionId2, intervention2);
-    Map<URI, String> dataSourceIdsByOutcome = new HashMap<>();
-    dataSourceIdsByOutcome.put(outcome1Uri, uuid1);
-    dataSourceIdsByOutcome.put(outcome2Uri, uuid2);
 
     SingleStudyContext expectedResult = new SingleStudyContext();
-    expectedResult.setOutcomesByUri(outcomesByUri);
-    expectedResult.setDataSourceIdsByOutcomeUri(dataSourceIdsByOutcome);
+    expectedResult.setOutcome(outcome1);
+    expectedResult.setDataSourceUuid(uuid1);
     expectedResult.setInterventionsById(interventionsById);
     expectedResult.setSourceLink(sourceLink);
-    expectedResult.setOutcomesById(outcomesById);
+    expectedResult.setInclusion(inclusion);
 
     assertEquals(expectedResult, result);
 
-    verify(uuidService, times(2)).generate();
+    verify(uuidService).generate();
     verify(linkService).getStudySourceLink(project, studyUri);
   }
 }

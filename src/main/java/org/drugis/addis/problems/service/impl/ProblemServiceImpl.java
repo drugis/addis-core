@@ -100,9 +100,8 @@ public class ProblemServiceImpl implements ProblemService {
   }
 
   private BenefitRiskProblem getBenefitRiskAnalysisProblem(
-          Project project, BenefitRiskAnalysis analysis) throws
-          SQLException, IOException, UnexpectedNumberOfResultsException, URISyntaxException, ResourceDoesNotExistException {
-
+          Project project, BenefitRiskAnalysis analysis
+  ) throws SQLException, IOException, UnexpectedNumberOfResultsException, URISyntaxException, ResourceDoesNotExistException {
     final Map<Integer, Outcome> outcomesById = getOutcomesById(project.getId(), analysis);
     final Set<AbstractIntervention> includedInterventions = analysisService.getIncludedInterventions(analysis);
 
@@ -152,8 +151,9 @@ public class ProblemServiceImpl implements ProblemService {
     Collection<Model> models = Sets.newHashSet(modelsById.values());
     final Map<Integer, JsonNode> resultsByModelId = networkMetaAnalysisService.getPataviResultsByModelId(models);
     return analysis.getBenefitRiskNMAOutcomeInclusions().stream()
-            .filter(inclusion -> inclusion.getBaseline() != null)
-            .filter(inclusion -> inclusion.getModelId() != null && resultsByModelId.get(inclusion.getModelId()) != null)
+            .filter(this::hasBaseline)
+            .filter(this::hasModel)
+            .filter(inclusion -> hasResults(resultsByModelId, inclusion))
             .map(inclusion -> {
               Outcome outcome = outcomesById.get(inclusion.getOutcomeId());
               Model model = modelsById.get(inclusion.getModelId());
@@ -162,6 +162,18 @@ public class ProblemServiceImpl implements ProblemService {
             })
             .map(inclusion -> getNetworkProblem(project, inclusion))
             .collect(Collectors.toList());
+  }
+
+  private boolean hasResults(Map<Integer, JsonNode> resultsByModelId, BenefitRiskNMAOutcomeInclusion inclusion) {
+    return resultsByModelId.get(inclusion.getModelId()) != null;
+  }
+
+  private boolean hasBaseline(BenefitRiskNMAOutcomeInclusion inclusion) {
+    return inclusion.getBaseline() != null;
+  }
+
+  private boolean hasModel(BenefitRiskNMAOutcomeInclusion inclusion) {
+    return inclusion.getModelId() != null;
   }
 
   private BenefitRiskProblem getNetworkProblem(Project project, NMAInclusionWithResults inclusionWithResults) {
@@ -189,7 +201,7 @@ public class ProblemServiceImpl implements ProblemService {
             .map(inclusion -> {
               Outcome outcome = outcomesById.get(inclusion.getOutcomeId());
               return singleStudyBenefitRiskService.getSingleStudyBenefitRiskProblem(
-                      project,inclusion, outcome, includedInterventions);
+                      project, inclusion, outcome, includedInterventions);
             })
             .collect(toList());
   }

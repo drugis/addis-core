@@ -56,8 +56,7 @@ define(['angular-mocks', './analysis'], function() {
         'finalizeAndGoToDefaultScenario',
         'analysisWithBaselines',
         'getOutcomesWithInclusions',
-        'hasMissingBaseline',
-        'getReferenceAlternativeName'
+        'hasMissingBaseline'
       ]);
       var benefitRiskStep2ServiceMock = jasmine.createSpyObj('BenefitRiskStep2Service', [
         'addBaseline',
@@ -65,7 +64,8 @@ define(['angular-mocks', './analysis'], function() {
         'addScales',
         'filterArchivedAndAddModels',
         'getMeasurementType',
-        'prepareEffectsTable'
+        'prepareEffectsTable',
+        'getReferenceAlternativeName'
       ]);
     beforeEach(angular.mock.module('addis.analysis'));
 

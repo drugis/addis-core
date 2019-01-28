@@ -61,21 +61,16 @@ define(['lodash', 'angular'], function(_, angular) {
     }
 
     function createDataRow(study, covariates, interventions, treatmentOverlapMap, exclusionMap, analysis, arm) {
-      var dataRow = {};
-      dataRow.measurementMoments = study.measurementMoments;
-      dataRow.covariatesColumns = [];
-      dataRow.study = study.name;
-      dataRow.studyUri = study.studyUri;
-      dataRow.studyUuid = dataRow.studyUri.slice(dataRow.studyUri.lastIndexOf('/') + 1);
-      dataRow.studyRowSpan = study.arms.length;
-      dataRow.covariatesColumns = _(covariates).map(_.partial(createCovariateColumn, study)).compact().value();
-      dataRow.arm = arm.name;
-      dataRow.trialverseUid = arm.uri;
-      if (arm.referenceArm) {
-        dataRow.referenceArm = arm.referenceArm;
-        dataRow.referenceStdErr = arm.referenceStdErr;
-      }
-
+      var row = {};
+      row.measurementMoments = study.measurementMoments;
+      row.covariatesColumns = [];
+      row.study = study.name;
+      row.studyUri = study.studyUri;
+      row.studyUuid = row.studyUri.slice(row.studyUri.lastIndexOf('/') + 1);
+      row.studyRowSpan = study.arms.length;
+      row.covariatesColumns = _(covariates).map(_.partial(createCovariateColumn, study)).compact().value();
+      row.arm = arm.name;
+      row.trialverseUid = arm.uri;
       var overlappingTreatments;
       var intervention = _.find(interventions, function(intervention) {
         return _.find(arm.matchedProjectInterventionIds, function(id) {
@@ -84,27 +79,33 @@ define(['lodash', 'angular'], function(_, angular) {
       });
       if (intervention) {
         overlappingTreatments = treatmentOverlapMap[intervention.id];
-        dataRow.intervention = intervention.name;
-        dataRow.interventionId = intervention.id;
+        row.intervention = intervention.name;
+        row.interventionId = intervention.id;
       } else {
-        dataRow.intervention = 'unmatched';
+        row.intervention = 'unmatched';
       }
-      dataRow.included = !exclusionMap[arm.uri] && dataRow.intervention !== 'unmatched';
-      if (dataRow.included && overlappingTreatments) {
+      row.included = !exclusionMap[arm.uri] && row.intervention !== 'unmatched';
+      if (row.included && overlappingTreatments) {
         overlappingTreatments = [intervention].concat(overlappingTreatments);
-        dataRow.overlappingInterventionWarning = _.map(overlappingTreatments, 'name').join(', ');
+        row.overlappingInterventionWarning = _.map(overlappingTreatments, 'name').join(', ');
       }
-      dataRow.measurements = measurementsByMM(analysis, arm, study.measurementMoments);
-      return dataRow;
+      row.measurements = measurementsByMM(analysis, arm, study.measurementMoments);
+      var random = row.measurements[row.measurementMoments[0].uri];
+        if (random.referenceArm) {
+          row.referenceArm = random.referenceArm;
+          row.referenceStdErr = random.referenceStdErr;
+        }
+  ;
+      return row;
     }
 
     function measurementsByMM(analysis, arm, measurementMoments) {
       return _.reduce(measurementMoments, function(accum, measurementMoment) {
-        var outcomeMeasurement = getOutcomeMeasurement(analysis, arm, measurementMoment);
-        if (arm.referenceArm) {
-          accum[measurementMoment.uri] = getContrastMeasurement(outcomeMeasurement);
+        var measurementForOutcome = getMeasurementForOutcome(analysis, arm, measurementMoment);
+        if (measurementForOutcome && measurementForOutcome.referenceArm) {
+          accum[measurementMoment.uri] = getContrastMeasurement(measurementForOutcome);
         } else {
-          accum[measurementMoment.uri] = getAbsoluteMeasurement(outcomeMeasurement);
+          accum[measurementMoment.uri] = getAbsoluteMeasurement(measurementForOutcome);
         }
         return accum;
       }, {});
@@ -134,6 +135,15 @@ define(['lodash', 'angular'], function(_, angular) {
         meanDifference: toMeanDifferenceLabel(measurement),
         type: getRowMeasurementType(measurement)
       };
+    }
+
+    function getMeasurementForOutcome(analysis, arm, measurementMoment) {
+      if (measurementMoment) {
+        return _.find(arm.measurements[measurementMoment.uri], function(measurement) {
+          return analysis.outcome.semanticOutcomeUri === measurement.variableConceptUri;
+        });
+      }
+      return null;
     }
 
     function toMeanDifferenceLabel(measurement) {
@@ -342,15 +352,6 @@ define(['lodash', 'angular'], function(_, angular) {
       return row.referenceArm === row.trialverseUid;
     }
 
-    function getOutcomeMeasurement(analysis, arm, measurementMoment) {
-      if (measurementMoment) {
-        return _.find(arm.measurements[measurementMoment.uri], function(measurement) {
-          return analysis.outcome.semanticOutcomeUri === measurement.variableConceptUri;
-        });
-      }
-      return null;
-    }
-
     function hasMissingValue(measurement) {
       if (measurement.referenceArm) {
         return hasMissingContrastValue(measurement);
@@ -369,7 +370,7 @@ define(['lodash', 'angular'], function(_, angular) {
         case 'dichotomous':
           return !hasValue(measurement.rate) || !hasValue(measurement.sampleSize);
         case 'continuous':
-          return !hasValue(measurement.mu) || 
+          return !hasValue(measurement.mu) ||
             (!hasValue(measurement.sigma) && !hasValue(measurement.stdErr)) ||
             (!hasValue(measurement.sampleSize) && !hasValue(measurement.stdErr));
         case 'survival':
@@ -417,8 +418,8 @@ define(['lodash', 'angular'], function(_, angular) {
           });
 
           if (matchedIntervention) {
-            var outcomeMeasurement = getOutcomeMeasurement(analysis, arm, selectedMM);
-            sum += outcomeMeasurement ? outcomeMeasurement.sampleSize : 0;
+            var measurementForOutcome = getMeasurementForOutcome(analysis, arm, selectedMM);
+            sum += measurementForOutcome ? measurementForOutcome.sampleSize : 0;
           }
         });
         return sum;

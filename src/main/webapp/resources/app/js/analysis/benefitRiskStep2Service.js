@@ -111,9 +111,7 @@ define(['lodash'], function(_) {
 
     function findNonReferenceArm(study) {
       return _.find(study.arms, function(arm) {
-        return !_.some(arm.measurements[study.defaultMeasurementMoment], function(measurement) {
-          return measurement.referenceArm === arm.armUri;
-        });
+        return arm.measurements && arm.measurements[study.defaultMeasurementMoment].length; 
       });
     }
 
@@ -125,12 +123,39 @@ define(['lodash'], function(_) {
       }).$promise;
     }
 
+    function getReferenceAlternativeName(inclusion, alternatives) {
+      var arms = inclusion.selectedStudy.arms;
+      var referenceArm = _.find(arms, function(arm) {
+        return arm.uri === getReferenceUri(arms, inclusion);
+      });
+      var referenceAlternativeId = referenceArm.matchedProjectInterventionIds[0];
+      var referenceAlternative = _.find(alternatives, function(alternative) {
+        return alternative.id === referenceAlternativeId;
+      });
+      return referenceAlternative.name;
+    }
+
+    function getReferenceUri(arms, inclusion) {
+      var referenceArmUri;
+      _.forEach(arms, function(arm) {
+        if (arm.measurements) {
+          _.forEach(arm.measurements[inclusion.selectedStudy.defaultMeasurementMoment], function(measurement) {
+            if (measurement.variableConceptUri === inclusion.outcome.semanticOutcomeUri) {
+              referenceArmUri = measurement.referenceArm;
+            }
+          });
+        }
+      });
+      return referenceArmUri;
+    }
+
     return {
       addBaseline: addBaseline,
       addBaselineToInclusion: addBaselineToInclusion,
       addScales: addScales,
       filterArchivedAndAddModels: filterArchivedAndAddModels,
       getMeasurementType: getMeasurementType,
+      getReferenceAlternativeName: getReferenceAlternativeName,
       prepareEffectsTable: prepareEffectsTable,
     };
   };

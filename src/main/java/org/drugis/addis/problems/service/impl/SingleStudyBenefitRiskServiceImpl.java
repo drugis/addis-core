@@ -61,19 +61,19 @@ public class SingleStudyBenefitRiskServiceImpl implements SingleStudyBenefitRisk
   @Override
   public SingleStudyBenefitRiskProblem getSingleStudyBenefitRiskProblem(
           Project project,
-          BenefitRiskStudyOutcomeInclusion outcomeInclusion,
+          BenefitRiskStudyOutcomeInclusion inclusion,
           Outcome outcome,
           Set<AbstractIntervention> includedInterventions
   ) {
-    URI studyGraphUri = outcomeInclusion.getStudyGraphUri();
-    SingleStudyContext context = buildContext(project, studyGraphUri, outcome, includedInterventions);
+    URI studyGraphUri = inclusion.getStudyGraphUri();
+    SingleStudyContext context = buildContext(project, studyGraphUri, outcome, includedInterventions, inclusion);
     TrialDataStudy study = getStudy(project, studyGraphUri, context);
 
     List<TrialDataArm> matchedArms = getMatchedArms(includedInterventions, study.getArms());
     URI defaultMeasurementMoment = study.getDefaultMeasurementMoment();
 
     Map<URI, CriterionEntry> criteria =
-            getCriteria(matchedArms, defaultMeasurementMoment, context, outcomeInclusion);
+            getCriteria(matchedArms, defaultMeasurementMoment, context);
     Map<String, AlternativeEntry> alternatives =
             getAlternatives(matchedArms, context);
 
@@ -85,7 +85,6 @@ public class SingleStudyBenefitRiskServiceImpl implements SingleStudyBenefitRisk
                     matchedArms);
     List<AbstractMeasurementEntry> contrastEntries =
             contrastStudyBenefitRiskService.buildContrastPerformanceTable(
-                    outcomeInclusion,
                     defaultMeasurementMoment,
                     context,
                     matchedArms);
@@ -101,8 +100,10 @@ public class SingleStudyBenefitRiskServiceImpl implements SingleStudyBenefitRisk
     final Set<URI> interventionUris = getSingleInterventionUris(interventions);
     final String versionedUuid = mappingService.getVersionedUuid(project.getNamespaceUid());
     try {
+      Set<URI> outcomeUriSet = new HashSet<>();
+      outcomeUriSet.add(context.getOutcome().getSemanticOutcomeUri());
       List<TrialDataStudy> studies = triplestoreService.getSingleStudyData(versionedUuid,
-              studyGraphUri, project.getDatasetVersion(), context.getOutcomesByUri().keySet(), interventionUris);
+              studyGraphUri, project.getDatasetVersion(), outcomeUriSet, interventionUris);
       return studies.iterator().next();
     } catch (ReadValueException | IOException e) {
       throw new RuntimeException(e);
@@ -120,36 +121,34 @@ public class SingleStudyBenefitRiskServiceImpl implements SingleStudyBenefitRisk
     }
   }
 
-  @Override
   public Map<URI, CriterionEntry> getCriteria(
           List<TrialDataArm> arms,
-          URI defaultMeasurementMoment, SingleStudyContext context,
-          List<BenefitRiskStudyOutcomeInclusion> inclusions
+          URI defaultMeasurementMoment,
+          SingleStudyContext context
   ) {
     Map<URI, CriterionEntry> criteria = new HashMap<>();
     for (TrialDataArm arm : arms) {
       Set<Measurement> measurements = arm.getMeasurementsForMoment(defaultMeasurementMoment);
-      criteria.putAll(getCriterionEntries(measurements, context, inclusions));
+      criteria.putAll(getCriterionEntries(measurements, context));
     }
     return criteria;
   }
 
   private Map<URI, CriterionEntry> getCriterionEntries(
           Set<Measurement> measurements,
-          SingleStudyContext context,
-          List<BenefitRiskStudyOutcomeInclusion> inclusions
+          SingleStudyContext context
   ) {
     return measurements
             .stream()
             .map(measurement -> {
-              Outcome outcome = context.getOutcome(measurement.getVariableConceptUri());
-              if (isContrastMeasurement(measurement)) {
-                BenefitRiskStudyOutcomeInclusion inclusion = getInclusion(inclusions, outcome.getId());
+              Outcome outcome = context.getOutcome();
+              if (isContrastMeasurementForOutcome(measurement, outcome.getSemanticOutcomeUri())) {
+                BenefitRiskStudyOutcomeInclusion inclusion = context.getInclusion();
                 if (hasMissingBaseline(inclusion)) {
                   return null;
                 }
               }
-              String dataSourceId = context.getDataSourceId(outcome.getSemanticOutcomeUri());
+              String dataSourceId = context.getDataSourceUuid();
               CriterionEntry criterionEntry = criterionEntryFactory.create(measurement, outcome.getName(), dataSourceId, context.getSourceLink());
               return Pair.of(measurement.getVariableConceptUri(), criterionEntry);
             })
@@ -161,20 +160,8 @@ public class SingleStudyBenefitRiskServiceImpl implements SingleStudyBenefitRisk
     return inclusion.getBaseline() == null;
   }
 
-  private boolean isContrastMeasurement(Measurement measurement) {
-    return measurement.getReferenceArm() != null;
-  }
-
-  private BenefitRiskStudyOutcomeInclusion getInclusion(
-          List<BenefitRiskStudyOutcomeInclusion> inclusions,
-          Integer outcomeId
-  ) {
-    for (BenefitRiskStudyOutcomeInclusion inclusion : inclusions) {
-      if (inclusion.getOutcomeId().equals(outcomeId)) {
-        return inclusion;
-      }
-    }
-    return null;
+  private boolean isContrastMeasurementForOutcome(Measurement measurement, URI outcomeUri) {
+    return measurement.getVariableConceptUri().equals(outcomeUri) && measurement.getReferenceArm() != null;
   }
 
   @Override
@@ -222,16 +209,17 @@ public class SingleStudyBenefitRiskServiceImpl implements SingleStudyBenefitRisk
           Project project,
           URI studyGraphUri,
           Outcome outcome,
-          Set<AbstractIntervention> includedInterventions) {
-    String dataSourceUri = uuidService.generate();
+          Set<AbstractIntervention> includedInterventions, BenefitRiskStudyOutcomeInclusion inclusion) {
+    String dataSourceUuid = uuidService.generate();
     final Map<Integer, AbstractIntervention> interventionsById = includedInterventions.stream()
             .collect(toMap(AbstractIntervention::getId, identity()));
     URI sourceLink = linkService.getStudySourceLink(project, studyGraphUri);
     SingleStudyContext context = new SingleStudyContext();
     context.setInterventionsById(interventionsById);
     context.setSourceLink(sourceLink);
-    context.setDataSourceUuid(dataSourceUri);
+    context.setDataSourceUuid(dataSourceUuid);
     context.setOutcome(outcome);
+    context.setInclusion(inclusion);
     return context;
   }
 }
