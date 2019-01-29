@@ -74,21 +74,15 @@ define(['lodash'], function(_) {
       }
 
       $scope.projectVersionUuid = project.datasetVersion.split('/versions/')[1];
-      TrialverseResource.get({
-        namespaceUid: $scope.project.namespaceUid,
-        version: $scope.project.datasetVersion
-      }).$promise.then(function(dataset) {
-        $scope.datasetOwnerId = dataset.ownerId;
-      });
+      setDataSetOwner();
 
       var outcomeIds = _.map(outcomes, 'id');
-
       AnalysisResource.query({
         projectId: $stateParams.projectId,
         outcomeIds: outcomeIds
       }).$promise.then(function(networkMetaAnalyses) {
         networkMetaAnalyses = BenefitRiskService.addModels(networkMetaAnalyses, models, studies);
-        var outcomes = BenefitRiskService.buildOutcomes(analysis, outcomes, networkMetaAnalyses, studies);
+        outcomes = BenefitRiskService.buildOutcomes(analysis, outcomes, networkMetaAnalyses, studies);
         $scope.isMissingBaseline = BenefitRiskService.hasMissingBaseline(outcomes);
         outcomes = _.partition(outcomes, ['dataType', 'network']);
         $scope.networkOWAs = outcomes[0];
@@ -109,6 +103,14 @@ define(['lodash'], function(_) {
       });
     }
 
+    function setDataSetOwner() {
+      TrialverseResource.get({
+        namespaceUid: $scope.project.namespaceUid,
+        version: $scope.project.datasetVersion
+      }).$promise.then(function(dataset) {
+        $scope.datasetOwnerId = dataset.ownerId;
+      });
+    }
   };
   return dependencies.concat(BenefitRiskController);
 });

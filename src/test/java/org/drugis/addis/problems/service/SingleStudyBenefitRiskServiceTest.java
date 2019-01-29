@@ -106,8 +106,6 @@ public class SingleStudyBenefitRiskServiceTest {
     Set<AbstractIntervention> interventions = ImmutableSet.copyOf(context.getInterventionsById().values());
     SingleIntervention singleInterventionMock = mock(SingleIntervention.class);
 
-    Set<URI> outcomeUris = Sets.newHashSet(dichotomousVariable.getVariableConceptUri(), continuousVariable.getVariableConceptUri());
-    Set<URI> interventionUris = Sets.newHashSet(interventionUri1);
     TrialDataStudy mockStudy = mock(TrialDataStudy.class);
     List<TrialDataStudy> mockStudies = singletonList(mockStudy);
 
@@ -117,7 +115,7 @@ public class SingleStudyBenefitRiskServiceTest {
     when(singleInterventionMock.getSemanticInterventionUri()).thenReturn(interventionUri1);
     when(analysisService.getSingleInterventions(interventions)).thenReturn(Sets.newHashSet(singleInterventionMock));
     when(triplestoreService.getSingleStudyData(
-            versionedUuid, studyGraphUri, datasetVersion, outcomeUris, interventionUris
+            anyString() , any(URI.class), any(URI.class), anySet(), anySet()
     )).thenReturn(mockStudies);
 
     // EXECUTE
@@ -126,7 +124,7 @@ public class SingleStudyBenefitRiskServiceTest {
     assertEquals(mockStudy, result);
     verify(mappingService).getVersionedUuid(project.getNamespaceUid());
     verify(analysisService).getSingleInterventions(interventions);
-    verify(triplestoreService).getSingleStudyData(versionedUuid, studyGraphUri, datasetVersion, outcomeUris, interventionUris);
+    verify(triplestoreService).getSingleStudyData(anyString() , any(URI.class), any(URI.class), anySet(), anySet());
   }
 
   @Test

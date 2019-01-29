@@ -540,6 +540,7 @@ define([
           measurementMoments: exampleStudies[0].measurementMoments,
           numberOfMatchedInterventions: 3,
           numberOfIncludedInterventions: 3,
+          isContrastArm: false
         };
         var study2 = {
           covariatesColumns: [{
@@ -570,7 +571,8 @@ define([
           numberOfMatchedInterventions: 3,
           numberOfIncludedInterventions: 3,
           firstInterventionRow: true,
-          interventionRowSpan: 1
+          interventionRowSpan: 1,
+          isContrastArm: false
         };
         var study3 = {
           covariatesColumns: [{
@@ -601,7 +603,8 @@ define([
           numberOfMatchedInterventions: 3,
           numberOfIncludedInterventions: 3,
           firstInterventionRow: true,
-          interventionRowSpan: 1
+          interventionRowSpan: 1,
+          isContrastArm: false
         };
 
         expect(result.absolute[0]).toEqual(study1);
@@ -941,7 +944,8 @@ define([
           referenceArm: 'referenceArmUri',
           trialverseUid: 'referenceArmUri',
           studyUri: 'study1Uri',
-          included: true
+          included: true,
+          isContrastArm: true
         };
         var row2 = {
           referenceArm: 'referenceArmUri',
@@ -955,7 +959,8 @@ define([
               measurementTypeURI: 'continuous'
             }
           },
-          included: true
+          included: true,
+          isContrastArm: true
         };
         var row3 = {
           referenceArm: 'referenceArmUri',
@@ -968,7 +973,8 @@ define([
               measurementTypeURI: 'continuous'
             }
           },
-          included: true
+          included: true,
+          isContrastArm: true
         };
         var row4 = {
           trialverseUid: 'nonRefArmUri',

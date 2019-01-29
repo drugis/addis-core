@@ -23,16 +23,20 @@ define(['lodash', 'angular'], function(_, angular) {
     ];
 
     function transformStudiesToTableRows(studies, interventions, analysis, covariates, treatmentOverlap) {
-      var tableRows = buildTableRowsFromStudies(studies, interventions, analysis, covariates, treatmentOverlap);
-      var rowPartitioning = _.partition(tableRows, function(row) {
-        return row.referenceArm;
-      });
+      var rows = buildTableRowsFromStudies(studies, interventions, analysis, covariates, treatmentOverlap);
+      var partitionedRows = partitionTableRows(rows);
 
-      var absoluteRows = sortTableByStudyAndIntervention(rowPartitioning[1]);
-      var contrastRows = sortTableByStudyAndIntervention(rowPartitioning[0]);
+      var absoluteRows = sortTableByStudyAndIntervention(partitionedRows[1]);
+      var contrastRows = sortTableByStudyAndIntervention(partitionedRows[0]);
       absoluteRows = addRenderingHintsToTable(absoluteRows);
       contrastRows = addRenderingHintsToTable(contrastRows);
       return { contrast: contrastRows, absolute: absoluteRows };
+    }
+
+    function partitionTableRows(rows) {
+      return _.partition(rows, function(row) {
+        return row.isContrastArm;
+      });
     }
 
     function buildTableRowsFromStudies(studies, interventions, analysis, covariates, treatmentOverlap) {
@@ -89,14 +93,37 @@ define(['lodash', 'angular'], function(_, angular) {
         overlappingTreatments = [intervention].concat(overlappingTreatments);
         row.overlappingInterventionWarning = _.map(overlappingTreatments, 'name').join(', ');
       }
-      row.measurements = measurementsByMM(analysis, arm, study.measurementMoments);
-      var random = row.measurements[row.measurementMoments[0].uri];
-        if (random.referenceArm) {
-          row.referenceArm = random.referenceArm;
-          row.referenceStdErr = random.referenceStdErr;
-        }
-  ;
+      _.merge(row, getReferenceParameters(analysis, arm, study.measurementMoments));
+      var isReference = isReferenceRow(row, study);
+      row.isContrastArm = !!row.referenceArm || isReference;
+      if (!isReference) {
+        row.measurements = measurementsByMM(analysis, arm, study.measurementMoments);
+      }
       return row;
+    }
+
+    function isReferenceRow(row, study) {
+      return _.some(study.arms, function(arm) {
+        return _.some(study.measurementMoments, function(moment) {
+          return _.some(arm.measurements[moment.uri], function(measurement) {
+            return measurement.referenceArm && measurement.referenceArm === row.trialverseUid;
+          });
+        });
+      });
+    }
+
+    function getReferenceParameters(analysis, arm, measurementMoments) {
+      var returnValue = {};
+      _.forEach(measurementMoments, function(measurementMoment) {
+        var measurementForOutcome = getMeasurementForOutcome(analysis, arm, measurementMoment);
+        if (measurementForOutcome && measurementForOutcome.referenceArm) {
+          returnValue = {
+            referenceArm: measurementForOutcome.referenceArm,
+            referenceStdErr: measurementForOutcome.referenceStdErr
+          };
+        }
+      });
+      return returnValue;
     }
 
     function measurementsByMM(analysis, arm, measurementMoments) {
@@ -206,15 +233,15 @@ define(['lodash', 'angular'], function(_, angular) {
       return 0;
     }
 
-    function addRenderingHintsToTable(table) {
+    function addRenderingHintsToTable(rows) {
       var currentStudy = 'null';
       var currentInterventionRow = {
         intervention: null
       };
       var row;
 
-      for (var i = 0; i < table.length; i++) {
-        row = table[i];
+      for (var i = 0; i < rows.length; i++) {
+        row = rows[i];
         if (row.intervention !== currentInterventionRow.intervention || row.intervention === 'unmatched') {
           row.firstInterventionRow = true;
           currentInterventionRow = row;
@@ -228,12 +255,11 @@ define(['lodash', 'angular'], function(_, angular) {
           currentInterventionRow = row;
           currentInterventionRow.interventionRowSpan = 0;
         }
-
         ++currentInterventionRow.interventionRowSpan;
-        table[i] = row;
+        rows[i] = row;
       }
 
-      return table;
+      return rows;
     }
 
     function buildExcludedArmsMap(excludedArms) {
@@ -349,7 +375,7 @@ define(['lodash', 'angular'], function(_, angular) {
     }
 
     function isReferenceArm(row) {
-      return row.referenceArm === row.trialverseUid;
+      return row.isContrastArm && !row.measurements;
     }
 
     function hasMissingValue(measurement) {
@@ -697,7 +723,7 @@ define(['lodash', 'angular'], function(_, angular) {
     function findPropertyInRows(rows, momentSelections, property) {
       return _.some(rows, function(row) {
         var moment = momentSelections[row.studyUri];
-        return row.included && hasValue(row.measurements[moment.uri][property]);
+        return row.included && row.measurements && hasValue(row.measurements[moment.uri][property]);
       });
     }
 
