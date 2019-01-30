@@ -223,5 +223,112 @@ define(['angular', 'angular-mocks', './analysis'], function() {
 
       });
     });
+
+    describe('isValidStudyOption', function() {
+      it('should return true if a study is a valid option for the outcome', function() {
+        var study = {
+          missingOutcomes: [],
+          missingInterventions: [],
+          arms: [{
+            measurements: {
+              defmom: [{
+                matchedProjectInterventionIds: [160],
+                variableConceptUri: 'defmom',
+                meanDifference: 5.0,
+                stdErr: 2.0,
+                referenceArm: 'refarm'
+              }]
+            }
+          }],
+          defaultMeasurementMoment: 'defmom'
+        };
+        var interventions = [];
+        var outcome = {};
+        var result = singleStudyBenefitRiskService.isValidStudyOption(study, interventions, outcome);
+        expect(result).toBeTruthy();
+      });
+
+      it('should return false if the study has missing outcomes', function() {
+        var study = {
+          missingOutcomes: ['missingOutcome'],
+          missingInterventions: [],
+          arms: [{
+            measurements: {
+              defmom: []
+            }
+          }],
+          defaultMeasurementMoment: 'defmom'
+        };
+        var interventions = [];
+        var outcome = {};
+        var result = singleStudyBenefitRiskService.isValidStudyOption(study, interventions, outcome);
+        expect(result).toBeFalsy();
+      });
+
+      it('should return false if the study has missing interventions', function() {
+        var study = {
+          missingOutcomes: [],
+          missingInterventions: ['missingIntervention'],
+          arms: [{
+            measurements: {
+              defmom: []
+            }
+          }],
+          defaultMeasurementMoment: 'defmom'
+        };
+        var interventions = [];
+        var outcome = {};
+        var result = singleStudyBenefitRiskService.isValidStudyOption(study, interventions, outcome);
+        expect(result).toBeFalsy();
+      });
+
+      it('should return false if the study has mixed-treatment arms', function() {
+        var study = {
+          missingOutcomes: [],
+          missingInterventions: [],
+          arms: [{
+            measurements: {
+              defmom: []
+            }
+          }],
+          defaultMeasurementMoment: 'defmom',
+          hasMatchedMixedTreatmentArm: true
+        };
+        var interventions = [];
+        var outcome = {};
+        var result = singleStudyBenefitRiskService.isValidStudyOption(study, interventions, outcome);
+        expect(result).toBeFalsy();
+      });
+
+      it('should return false if the study has missing value for the outcome+inventions combination', function() {
+        var study = {
+          missingOutcomes: [],
+          missingInterventions: [],
+          arms: [{
+            matchedProjectInterventionIds: [160],
+            measurements: {
+              defmom: [{
+                variableConceptUri: 'outcome1',
+                mean: 5.0,
+                stdErr: 2.0
+              }, {
+                variableConceptUri: 'outcome1'
+              }]
+            }
+          }],
+          defaultMeasurementMoment: 'defmom'
+        };
+        var interventions = [{
+          id: 160
+        }];
+        var outcome = {
+          outcome: {
+            semanticOutcomeUri: 'outcome1'
+          }
+        };
+        var result = singleStudyBenefitRiskService.isValidStudyOption(study, interventions, outcome);
+        expect(result).toBeFalsy();
+      });
+    });
   });
 });

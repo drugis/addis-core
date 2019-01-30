@@ -22,7 +22,7 @@ define(['lodash'], function(_) {
         }
         scope.$watch('studies', function() {
           var studyOptions = SingleStudyBenefitRiskService.addMissingOutcomesToStudies(scope.studies, [scope.outcome]);
-          scope.studyOptions = SingleStudyBenefitRiskService.recalculateGroup(studyOptions);
+          scope.studyOptions = SingleStudyBenefitRiskService.recalculateGroup(studyOptions, scope.interventions, scope.outcome);
           var oldSelection = scope.selection.selectedStudy;
           if (oldSelection) {
             scope.selection.selectedStudy = _.find(scope.studyOptions, ['studyUri', oldSelection.studyUri]);
@@ -30,20 +30,12 @@ define(['lodash'], function(_) {
         });
 
         function onStudySelect(newSelection) {
-          if (isValidStudy(newSelection)) {
+          if (SingleStudyBenefitRiskService.isValidStudyOption(newSelection, scope.interventions, scope.outcome)) {
             scope.onChange(newSelection);
           } else {
             scope.onChange();
           }
         }
-
-        function isValidStudy(study) {
-          return study &&
-            (!study.missingInterventions || study.missingInterventions.length === 0) &&
-            (!study.missingOutcomes || study.missingOutcomes.length === 0) &&
-            !study.hasMatchedMixedTreatmentArm;
-        }
-
       }
     };
 

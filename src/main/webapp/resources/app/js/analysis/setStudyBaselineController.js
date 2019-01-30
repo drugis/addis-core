@@ -40,7 +40,9 @@ define(['lodash', 'angular'], function(_) {
         title: 'Odds Ratio',
         type: 'dbeta-logit',
         alpha: undefined,
-        beta: undefined
+        beta: undefined,
+        property: 'Log odds ratio',
+        distribution: 'Beta'
       },
       meanDifference: {
         title: 'Mean Difference',
@@ -48,7 +50,8 @@ define(['lodash', 'angular'], function(_) {
         mean: undefined,
         'std.err': undefined,
         dof: undefined,
-        scale: 'Normal'
+        property: 'Mean Difference',
+        distribution: 'Normal'
       },
       hazardRatio: {
         title: 'Hazard Ratio',
@@ -56,7 +59,8 @@ define(['lodash', 'angular'], function(_) {
         responders: undefined,
         exposure: undefined,
         summaryMeasure: 'none',
-        scale: 'Gamma'
+        property: 'Log hazard ratio',
+        distribution: 'Gamma'
       }
     };
     $scope.propertyName = properties[measurementType].title;
