@@ -111,7 +111,9 @@ define(['lodash'], function(_) {
 
     function findNonReferenceArm(study) {
       return _.find(study.arms, function(arm) {
-        return arm.measurements && arm.measurements[study.defaultMeasurementMoment].length; 
+        return arm.measurements &&
+          arm.measurements[study.defaultMeasurementMoment] &&
+          arm.measurements[study.defaultMeasurementMoment].length;
       });
     }
 
