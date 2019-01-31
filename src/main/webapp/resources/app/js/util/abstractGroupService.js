@@ -1,7 +1,17 @@
 'use strict';
 define(['lodash'], function(_) {
-  var dependencies = ['$q', 'StudyService', 'ResultsService', 'RepairService'];
-  var AbstractGroupService = function($q, StudyService, ResultsService, RepairService) {
+  var dependencies = [
+    '$q',
+    'StudyService',
+    'ResultsService',
+    'RepairService'
+  ];
+  var AbstractGroupService = function(
+    $q,
+    StudyService,
+    ResultsService,
+    RepairService
+  ) {
 
     function merge(source, target) {
       var sourceUri = source.armURI || source.groupUri;

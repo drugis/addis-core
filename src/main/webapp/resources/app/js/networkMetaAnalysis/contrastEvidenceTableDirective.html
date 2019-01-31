@@ -1,0 +1,109 @@
+<div class="grid-x">
+  <div class="cell">
+    <table class="network-meta-analysis-table" ng-show="rows.length">
+      <thead>
+        <tr>
+          <th rowspan="2">Studies</th>
+          <th rowspan="2">Measurement Moment</th>
+          <th ng-show="rows[0].covariatesColumns.length > 0" colspan="{{rows[0].covariatesColumns.length}}">Covariates
+          </th>
+          <th rowspan="2">Interventions</th>
+          <th rowspan="2">Arms</th>
+          <th rowspan="2">Reference arm</th>
+          <th rowspan="2">Reference standard error</th>
+          <th rowspan="2">
+            Mean difference
+            <inline-help help-key="mean-difference"></inline-help>
+          </th>
+          <th rowspan="2">
+            Standard error
+            <inline-help help-key="standard-error"></inline-help>
+          </th>
+        </tr>
+        <tr>
+          <th ng-repeat="covariate in rows[0].covariatesColumns">{{covariate.headerTitle}}</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr ng-repeat="row in rows">
+          <td ng-show="row.firstStudyRow" rowspan="{{row.studyRowSpan}}">
+            <a ui-sref="versionedDataset.study({userUid: userId, datasetUuid: project.namespaceUid, versionUuid: project.datasetVersionUuid, studyGraphUuid: row.studyUuid})">
+              {{row.study}}
+            </a>
+            <div ng-show="row.numberOfIncludedInterventions > 1 && missingValuesByStudy[row.studyUri]" class="alert-message">
+              Study has missing values.
+            </div>
+            <div class="info" ng-show="row.numberOfMatchedInterventions < 2 || row.numberOfIncludedInterventions < 2">
+              Excluded; Fewer than two included interventions.
+            </div>
+            <div ng-show="referenceArms[row.referenceArm].intervention === 'unmatched'" class="info">
+              Excluded; Reference arm is unmatched
+            </div>
+          </td>
+
+          <td ng-show="row.firstStudyRow" rowspan="{{row.studyRowSpan}}">
+            <select ng-if="!editMode.disableEditing && !editMode.hasModel" ng-options="measurementMoment.label for measurementMoment in row.measurementMoments"
+              ng-model="momentSelections[row.studyUri]" ng-change="changeMeasurementMoment(momentSelections[row.studyUri], row)">
+            </select>
+            <span ng-if="editMode.disableEditing || editMode.hasModel">{{momentSelections[row.studyUri].label}}</span>
+          </td>
+
+          <td ng-repeat="covariate in row.covariatesColumns" ng-show="row.firstStudyRow" rowspan="{{row.studyRowSpan}}"
+            class="text-center">
+            {{covariate.data}}
+          </td>
+
+          <td ng-show="row.firstInterventionRow" class="text-center" ng-class="{undefined:row.intervention === 'unmatched'}"
+            rowspan="{{row.interventionRowSpan}}">
+            {{row.intervention}}
+            <div ng-show="row.intervention !== 'unmatched' && doesInterventionHaveAmbiguousArms(row.interventionId, row.studyUri)"
+              class="alert-message">
+              Ambiguous arms, please choose a single arm for inclusion
+            </div>
+            <div ng-show="row.numberOfMatchedInterventions > 1 && row.overlappingInterventionWarning" class="alert-message">
+              Ambiguous: {{row.overlappingInterventionWarning}}
+            </div>
+          </td>
+
+          <td>
+            <label>
+              <input type="checkbox" ng-disabled="
+                  editMode.disableEditing || 
+                  row.intervention === 'unmatched' || 
+                  editMode.hasModel || 
+                  row.referenceArm === row.trialverseUid"
+                ng-model="row.included" ng-change="changeArmExclusion(row)">
+              {{row.arm}}
+            </label>
+          </td>
+
+          <td>
+            <div ng-if="row.referenceArm === row.trialverseUid && row.intervention === 'unmatched'" class="alert-message">
+              Reference arm is unmatched
+            </div>
+            <div>
+              {{row.referenceArm === row.trialverseUid || row.studyRowSpan < 3 ? '' : referenceArms[row.referenceArm].arm}}
+            </div>
+          </td>
+
+          <td>
+            <div>
+              {{row.referenceArm === row.trialverseUid  || row.studyRowSpan < 3 ? '' : row.referenceStdErr}}
+            </div>
+          </td>
+
+          <td ng-class="{undefined:row.intervention === 'unmatched'}" class="text-center">
+            {{row.referenceArm === row.trialverseUid ? '' :
+            row.measurements[momentSelections[row.studyUri].uri].meanDifference}}
+          </td>
+
+          <td ng-class="{undefined:row.intervention === 'unmatched'}" class="text-center">
+            {{row.referenceArm === row.trialverseUid ? '' :
+            row.measurements[momentSelections[row.studyUri].uri].stdErr}}
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

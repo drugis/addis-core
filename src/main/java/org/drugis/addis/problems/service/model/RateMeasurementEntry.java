@@ -1,5 +1,7 @@
 package org.drugis.addis.problems.service.model;
 
+import java.util.Objects;
+
 /**
  * Created by daan on 3/26/14.
  */
@@ -27,18 +29,14 @@ public class RateMeasurementEntry extends AbstractMeasurementEntry {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
     if (!super.equals(o)) return false;
-
     RateMeasurementEntry that = (RateMeasurementEntry) o;
-
-    if (!performance.equals(that.performance)) return false;
-    return alternative.equals(that.alternative);
+    return Objects.equals(performance, that.performance) &&
+            Objects.equals(alternative, that.alternative);
   }
 
   @Override
   public int hashCode() {
-    int result = super.hashCode();
-    result = 31 * result + performance.hashCode();
-    result = 31 * result + alternative.hashCode();
-    return result;
+
+    return Objects.hash(super.hashCode(), performance, alternative);
   }
 }

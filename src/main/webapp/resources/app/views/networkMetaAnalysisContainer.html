@@ -23,7 +23,15 @@
       <div class="cell large-6">
         <div ui-view="network"></div>
       </div>
+      <div class="cell" ng-if="!analysis.outcome">
+        No outcome selected.
+      </div>
     </div>
-    <div ui-view="evidenceTable"></div>
+    <div ng-if="analysis.outcome">
+      <absolute-evidence-table ng-if="absoluteEvidenceTableRows.length" rows="absoluteEvidenceTableRows" edit-mode="editMode"
+        analysis="analysis" studies="studies" project="project"></absolute-evidence-table>
+      <contrast-evidence-table ng-if="contrastEvidenceTableRows.length" rows="contrastEvidenceTableRows" edit-mode="editMode"
+        analysis="analysis" studies="studies" project="project"></contrast-evidence-table>
+    </div>
   </spinner>
 </div>

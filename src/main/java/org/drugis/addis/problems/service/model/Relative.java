@@ -3,9 +3,6 @@ package org.drugis.addis.problems.service.model;
 import java.util.Map;
 import java.util.Objects;
 
-/**
- * Created by joris on 14-6-17.
- */
 public class Relative {
   private String type;
   private Map<String, Double> mu;

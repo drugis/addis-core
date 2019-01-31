@@ -1,7 +1,15 @@
 'use strict';
 define(['lodash'], function(_) {
-  var dependencies = ['$http', '$filter', 'SparqlResource'];
-  var StudiesWithDetailsService = function($http, $filter, SparqlResource) {
+  var dependencies = [
+    '$http',
+    '$filter',
+    'SparqlResource'
+  ];
+  var StudiesWithDetailsService = function(
+    $http,
+    $filter,
+    SparqlResource
+  ) {
 
     var queryStudiesWithDetails = SparqlResource.get('queryStudiesWithDetails.sparql');
     var queryTreatmentActivities = SparqlResource.get('queryTreatmentActivities.sparql');
@@ -31,7 +39,7 @@ define(['lodash'], function(_) {
             headers: {
               Accept: 'application/sparql-results+json'
             },
-          transformResponse: function(data) {
+            transformResponse: function(data) {
               return deFusekify(data);
             }
           });

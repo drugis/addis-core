@@ -1,33 +1,39 @@
 'use strict';
 define(['lodash', '../util/context'], function(_, externalContext) {
-  var dependencies = ['$q', 'UUIDService', 'GraphResource'];
-  var StudyService = function($q, UUIDService, GraphResource) {
-
-    var loadDefer = $q.defer();
+  var dependencies = [
+    '$q',
+    'UUIDService',
+    'GraphResource'
+  ];
+  var StudyService = function(
+    $q,
+    UUIDService,
+    GraphResource
+  ) {
     var modified = false;
     var studyJsonPromise;
+    var EMPTY_STUDY = {
+      '@graph': [{
+        '@type': 'ontology:Study',
+        has_activity: [],
+        has_arm: [],
+        has_group: [],
+        has_included_population: createIncludedPopulation(),
+        has_eligibility_criteria: [],
+        has_indication: [],
+        has_objective: [],
+        has_outcome: [],
+        has_publication: []
+      }],
+      '@context': externalContext
+    };
 
     function createEmptyStudy(study, userUid, datasetUid) {
       var uuid = UUIDService.generate();
-      var emptyStudy = {
-        '@graph': [{
-          '@id': 'http://trials.drugis.org/studies/' + uuid,
-          '@type': 'ontology:Study',
-          comment: study.comment,
-          label: study.label,
-          has_activity: [],
-          has_arm: [],
-          has_group: [],
-          has_included_population: createIncludedPopulation(),
-          has_eligibility_criteria: [],
-          has_indication: [],
-          has_objective: [],
-          has_outcome: [],
-          has_publication: []
-        }],
-        '@context': externalContext
-      };
-
+      var emptyStudy = EMPTY_STUDY;
+      emptyStudy['@graph'][0]['@id'] = 'http://trials.drugis.org/studies/' + uuid;
+      emptyStudy['@graph'][0].comment = study.comment;
+      emptyStudy['@graph'][0].label = study.label;
       var newVersionDefer = $q.defer();
 
       GraphResource.putJson({
@@ -39,11 +45,20 @@ define(['lodash', '../util/context'], function(_, externalContext) {
         var newVersion = responseHeaders('X-EventSource-Version');
         newVersion = newVersion.split('/')[4];
         newVersionDefer.resolve(newVersion);
-      }, function(error) {
-        console.error('error' + error);
-      });
+      }, errorCallback);
 
       return newVersionDefer.promise;
+    }
+
+    function createIncludedPopulation() {
+      return [{
+        '@id': 'instance:' + UUIDService.generate(),
+        '@type': 'ontology:StudyPopulation'
+      }];
+    }
+
+    function errorCallback(error) {
+      console.error('error' + error);
     }
 
     function isStudyModified() {
@@ -55,15 +70,7 @@ define(['lodash', '../util/context'], function(_, externalContext) {
     }
 
     function reset() {
-      loadDefer = $q.defer();
       modified = false;
-    }
-
-    function createIncludedPopulation() {
-      return [{
-        '@id': 'instance:' + UUIDService.generate(),
-        '@type': 'ontology:StudyPopulation'
-      }];
     }
 
     function findStudyNode(graph) {

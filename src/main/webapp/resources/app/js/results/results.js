@@ -8,7 +8,8 @@ define([
   './resultsTableListDirective',
   './resultInputDirective',
   './nonConformantMeasurementTableDirective',
-  'angular'
+  'angular',
+  '../util/resultsConstants'
 ], function(
   ResultsTableService,
   ResultsService,
@@ -20,19 +21,22 @@ define([
   nonConformantMeasurementTable,
   angular
 ) {
-  return angular.module('trialverse.results', ['trialverse.study'])
-    //services
-    .factory('ResultsTableService', ResultsTableService)
-    .factory('ResultsService', ResultsService)
-    .factory('NonConformantMeasurementTableService', NonConformantMeasurementTableService)
+    return angular.module('trialverse.results', [
+      'addis.resultsConstants',
+      'trialverse.study'
+    ])
+      //services
+      .factory('ResultsTableService', ResultsTableService)
+      .factory('ResultsService', ResultsService)
+      .factory('NonConformantMeasurementTableService', NonConformantMeasurementTableService)
 
-    // controllers
-    .controller('SplitOutcomeController', SplitOutcomeController)
+      // controllers
+      .controller('SplitOutcomeController', SplitOutcomeController)
 
-    //directives
-    .directive('resultsTable', resultsTable)
-    .directive('resultsTableList', resultsTableList)
-    .directive('resultInputDirective', resultInputDirective)
-    .directive('nonConformantMeasurementTable', nonConformantMeasurementTable);
-}
+      //directives
+      .directive('resultsTable', resultsTable)
+      .directive('resultsTableList', resultsTableList)
+      .directive('resultInputDirective', resultInputDirective)
+      .directive('nonConformantMeasurementTable', nonConformantMeasurementTable);
+  }
 );

@@ -2,6 +2,8 @@ package org.drugis.addis.analyses.controller;
 
 import org.drugis.addis.analyses.model.AbstractAnalysis;
 
+import java.util.Objects;
+
 /**
  * Created by joris on 3-5-17.
  */
@@ -29,17 +31,14 @@ public class AnalysisUpdateCommand {
   public boolean equals(Object o) {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
-
     AnalysisUpdateCommand that = (AnalysisUpdateCommand) o;
-
-    if (!analysis.equals(that.analysis)) return false;
-    return scenarioState != null ? scenarioState.equals(that.scenarioState) : that.scenarioState == null;
+    return Objects.equals(analysis, that.analysis) &&
+            Objects.equals(scenarioState, that.scenarioState);
   }
 
   @Override
   public int hashCode() {
-    int result = analysis.hashCode();
-    result = 31 * result + (scenarioState != null ? scenarioState.hashCode() : 0);
-    return result;
+
+    return Objects.hash(analysis, scenarioState);
   }
 }

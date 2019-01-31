@@ -1,0 +1,7 @@
+@prefix es:    <http://drugis.org/eventSourcing/es#> .
+
+<http://localhost:8080/versions/sourceHeadVersion>
+    es:graph_revision [
+        es:graph    <http://trials.drugis.org/graphs/sourceGraph>;
+        es:revision <http://localhost:8080/revisions/mergedRevision>;
+    ] .

@@ -162,7 +162,8 @@ public class MainConfig {
         .custom()
         .loadKeyMaterial(keyStore, KEYSTORE_PASSWORD.toCharArray());
     if (ADDIS_LOCAL != null) {
-      sslContextBuilder.loadTrustMaterial(new File(KEYSTORE_PATH));
+      String TRUSTSTORE_PATH = WebConstants.loadSystemEnv("TRUSTSTORE_PATH");
+      sslContextBuilder.loadTrustMaterial(new File(TRUSTSTORE_PATH));
     }
     sslContextBuilder.build();
     SSLConnectionSocketFactory connectionSocketFactory = new SSLConnectionSocketFactory(sslContextBuilder.build());

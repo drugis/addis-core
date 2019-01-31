@@ -68,6 +68,17 @@ public class JsonLDTest {
   }
 
   @Test
+  public void testsubstr() throws IOException {
+    String exampleJsonLd = loadResource(this.getClass(), "/prefixbug.json");
+    Model model = ModelFactory.createDefaultModel();
+    model.read(new StringReader(exampleJsonLd), "http://example.com", RDFLanguages.strLangJSONLD);
+    ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+    RDFDataMgr.write(outputStream, model, Lang.JSONLD);
+    String modelStr = outputStream.toString();
+    assertTrue(true);
+  }
+
+  @Test
   public void testTransformIsomorphy() throws IOException, ScriptException {
     String exampleJsonLd = loadResource(this.getClass(), "/jenaEsExampleJsonLd.json");
     String underscoreLoc = "src/test/java/org/drugis/trialverse/jsonLd/scripts/lodash-4.2.1.js";

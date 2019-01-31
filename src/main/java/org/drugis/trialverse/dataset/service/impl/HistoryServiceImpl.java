@@ -22,19 +22,12 @@ import org.drugis.trialverse.dataset.service.HistoryService;
 import org.drugis.trialverse.graph.repository.GraphReadRepository;
 import org.drugis.trialverse.util.JenaProperties;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.util.UriComponents;
-import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.inject.Inject;
 import java.io.IOException;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -63,22 +56,111 @@ public class HistoryServiceImpl implements HistoryService {
   private RestTemplate restTemplate;
 
   @Override
-  public List<VersionNode> createHistory(URI trialverseDatasetUri) throws URISyntaxException, IOException, RevisionNotFoundException {
+  public List<VersionNode> createHistory(URI trialverseDatasetUri) throws IOException, RevisionNotFoundException {
     return createHistory(trialverseDatasetUri, null);
   }
 
   @Override
-  public List<VersionNode> createHistory(URI trialverseDatasetUri, URI trialverseGraphUri) throws URISyntaxException, IOException, RevisionNotFoundException {
+  public List<VersionNode> createHistory(URI trialverseDatasetUri, URI trialverseGraphUri) throws IOException, RevisionNotFoundException {
+    List<AdvancedVersionNode> advancedHistory = getDatasetHistory(trialverseDatasetUri, trialverseGraphUri);
+    return advancedHistory.stream()
+            .map(AdvancedVersionNode::simplify)
+            .collect(Collectors.toList());
+  }
+
+  private List<AdvancedVersionNode> getDatasetHistory(URI trialverseDatasetUri, URI onlyForThisStudy) throws IOException, RevisionNotFoundException {
+    List<AdvancedVersionNode> allHistory = getAllHistory(trialverseDatasetUri);
+    if (onlyForThisStudy != null) {
+      allHistory = filterHistoryForStudy(onlyForThisStudy, allHistory);
+    }
+    return allHistory;
+  }
+
+  private List<AdvancedVersionNode> getAllHistory(URI trialverseDatasetUri) throws IOException, RevisionNotFoundException {
+    Model datasetHistoryModel = getHistoryModel(trialverseDatasetUri);
+    List<AdvancedVersionNode> sortedDatasetVersionNodes = createSortedVersionList(datasetHistoryModel);
+
+    for (AdvancedVersionNode version : sortedDatasetVersionNodes) {
+      buildDatasetVersionHistory(datasetHistoryModel, version);
+    }
+    return sortedDatasetVersionNodes;
+  }
+
+  private void buildDatasetVersionHistory(Model datasetHistoryModel, AdvancedVersionNode version) throws IOException, RevisionNotFoundException {
+    Set<RDFNode> seenRevisions = new HashSet<>();
+    StmtIterator graphRevisionBlankNodes = datasetHistoryModel.listStatements(datasetHistoryModel.getResource(version.getUri()),
+            JenaProperties.graphRevisionProperty, (RDFNode) null);
+
+    while (graphRevisionBlankNodes.hasNext()) {
+      Resource revisionSubject = addRevisionAndGetSubject(datasetHistoryModel, version, graphRevisionBlankNodes);
+      addMergeIfNeeded(datasetHistoryModel, version, seenRevisions, revisionSubject);
+    }
+  }
+
+  private void addMergeIfNeeded(Model datasetHistoryModel, AdvancedVersionNode version, Set<RDFNode> seenRevisions, Resource revisionSubject) throws IOException, RevisionNotFoundException {
+    StmtIterator mergedRevisionIterator = datasetHistoryModel.listStatements(revisionSubject,
+            JenaProperties.mergedRevisionProperty, (RDFNode) null);
+    if (mergedRevisionIterator.hasNext()) { // it's a merge revision
+      Statement mergedRevision = mergedRevisionIterator.next();
+      if (!seenRevisions.contains(mergedRevision.getObject())) { // that hasn't been seen before
+        addMergeToDatasetVersion(datasetHistoryModel, seenRevisions, version, mergedRevision);
+      }
+    }
+  }
+
+  private Resource addRevisionAndGetSubject(Model datasetHistoryModel, AdvancedVersionNode version, StmtIterator graphRevisionBlankNodes) {
+    Resource graphRevisionBlankNode = graphRevisionBlankNodes.nextStatement().getObject().asResource();
+    Resource revisionSubject = getResourceForProperty(datasetHistoryModel, graphRevisionBlankNode, JenaProperties.revisionProperty);
+    Resource graphUri = getResourceForProperty(datasetHistoryModel, graphRevisionBlankNode, JenaProperties.graphProperty);
+    version.addGraphRevisionPair(URI.create(graphUri.getURI()), URI.create(revisionSubject.getURI()));
+    return revisionSubject;
+  }
+
+  private Resource getResourceForProperty(Model datasetHistoryModel, Resource graphRevisionBlankNode, Property revisionProperty) {
+    StmtIterator revisionIterator = datasetHistoryModel.listStatements(graphRevisionBlankNode,
+            revisionProperty, (RDFNode) null);
+    return revisionIterator.next().getObject().asResource();
+  }
+
+  private void addMergeToDatasetVersion(Model datasetHistoryModel, Set<RDFNode> seenRevisions, AdvancedVersionNode version, Statement mergedRevision) throws IOException, RevisionNotFoundException {
+    seenRevisions.add(mergedRevision.getObject());
+    StmtIterator datasetReference = datasetHistoryModel.listStatements(mergedRevision.getResource(), JenaProperties.datasetProperty, (RDFNode) null);
+    RDFNode sourceDataset = datasetReference.next().getObject();
+    Merge merge = resolveMerge(mergedRevision.getObject().toString(), sourceDataset.toString());
+    version.setMerge(merge);
+  }
+
+  private List<AdvancedVersionNode> filterHistoryForStudy(URI trialverseGraphUri, List<AdvancedVersionNode> sortedDatasetVersionNodes) {
+    Map<String, Set<Pair<URI, URI>>> changesByDatasetUri = createChangeSetPerDatasetUri(sortedDatasetVersionNodes);
+    sortedDatasetVersionNodes = sortedDatasetVersionNodes.stream()
+            .filter(version ->
+                    changesByDatasetUri.get(version.getUri()).stream()
+                            .anyMatch(graphRevisionPair -> graphRevisionPair.getLeft().equals(trialverseGraphUri)))
+            .collect(Collectors.toList());
+    return sortedDatasetVersionNodes;
+  }
+
+  private Map<String, Set<Pair<URI, URI>>> createChangeSetPerDatasetUri(List<AdvancedVersionNode> sortedDatasetVersionNodes) {
+    Map<String, Set<Pair<URI, URI>>> changesByUri = new HashMap<>();
+
+    AdvancedVersionNode previousDatasetVersion = null;
+    for (AdvancedVersionNode currentDatasetVersion : sortedDatasetVersionNodes) {
+      if (previousDatasetVersion == null) {
+        changesByUri.put(currentDatasetVersion.getUri(), currentDatasetVersion.getGraphRevisions());
+      } else {
+        changesByUri.put(currentDatasetVersion.getUri(), Sets.difference(currentDatasetVersion.getGraphRevisions(), previousDatasetVersion.getGraphRevisions()));
+      }
+      previousDatasetVersion = currentDatasetVersion;
+    }
+    return changesByUri;
+  }
+
+  private Model getHistoryModel(URI trialverseDatasetUri) throws IOException {
     VersionMapping versionMapping = versionMappingRepository.getVersionMappingByDatasetUrl(trialverseDatasetUri);
-    Model historyModel = datasetReadRepository.getHistory(versionMapping.getVersionedDatasetUri());
+    return datasetReadRepository.getHistory(versionMapping.getVersionedDatasetUri());
+  }
 
-    ResIterator stmtIterator = historyModel.listSubjectsWithProperty(JenaProperties.TYPE_PROPERTY, JenaProperties.datasetVersionObject);
-
-    Map<String, Resource> versionMap = new HashMap<>();
-    Map<String, Boolean> referencedMap = new HashMap<>();
-    // create version map
-    populateVersionMaps(stmtIterator, versionMap, referencedMap);
-
+  private Resource getHeadVersion(Map<String, Resource> versionMap, Map<String, Boolean> referencedMap) {
     // find head version
     Resource headVersion = null;
     for (String key : versionMap.keySet()) {
@@ -86,84 +168,40 @@ public class HistoryServiceImpl implements HistoryService {
         headVersion = versionMap.get(key);
       }
     }
-
-    // sort the versions
-    List<AdvancedVersionNode> sortedVersions = createSortedVersionList(versionMap, headVersion);
-
-    Set<RDFNode> seenRevisions = new HashSet<>();
-    for (AdvancedVersionNode version : sortedVersions) {
-      StmtIterator graphRevisionBlankNodes = historyModel.listStatements(historyModel.getResource(version.getUri()),
-              JenaProperties.graphRevisionProperty, (RDFNode) null);
-
-      while (graphRevisionBlankNodes.hasNext()) {
-        Resource graphRevisionBlankNode = graphRevisionBlankNodes.nextStatement().getObject().asResource();
-        StmtIterator revisionItr = historyModel.listStatements(graphRevisionBlankNode, JenaProperties.revisionProperty, (RDFNode) null);
-        Resource revisionSubject = revisionItr.next().getObject().asResource();
-        StmtIterator graphItr = historyModel.listStatements(graphRevisionBlankNode, JenaProperties.graphProperty, (RDFNode) null);
-        Resource graphSubject = graphItr.next().getObject().asResource();
-        version.addGraphRevisionPair(URI.create(graphSubject.toString()), URI.create(revisionSubject.toString()));
-        StmtIterator stmtIterator1 = historyModel.listStatements(revisionSubject, JenaProperties.mergedRevisionProperty, (RDFNode) null);
-        if (stmtIterator1.hasNext()) { // it's a merge revision
-          Statement mergedRevision = stmtIterator1.next();
-          if (!seenRevisions.contains(mergedRevision.getObject())) { // that hasn't been seen before
-            seenRevisions.add(mergedRevision.getObject());
-            StmtIterator datasetReference = historyModel.listStatements(mergedRevision.getResource(), JenaProperties.datasetProperty, (RDFNode) null);
-            RDFNode sourceDataset = datasetReference.next().getObject();
-            Merge merge = resolveMerge(mergedRevision.getObject().toString(), sourceDataset.toString());
-            version.setMerge(merge);
-          }
-        }
-      }
-    }
-    if (trialverseGraphUri != null) {
-      Map<String, Set<Pair<URI, URI>>> changesByUri = new HashMap<>();
-
-      AdvancedVersionNode previousNode = null;
-      for (AdvancedVersionNode currentNode : sortedVersions) {
-        if (previousNode == null) {
-          changesByUri.put(currentNode.getUri(), currentNode.getGraphRevisions());
-        } else {
-          changesByUri.put(currentNode.getUri(), Sets.difference(currentNode.getGraphRevisions(), previousNode.getGraphRevisions()));
-        }
-        previousNode = currentNode;
-      }
-      sortedVersions = sortedVersions.stream()
-              .filter(version ->
-                      changesByUri.get(version.getUri()).stream()
-                              .anyMatch(graphRevisionPair -> graphRevisionPair.getLeft().equals(trialverseGraphUri)))
-              .collect(Collectors.toList());
-    }
-    return sortedVersions.stream()
-            .map(AdvancedVersionNode::simplify)
-            .collect(Collectors.toList());
+    return headVersion;
   }
 
   @Override
-  public VersionNode getVersionInfo(URI trialverseDatasetUri, URI versionUri) throws URISyntaxException, IOException {
-    VersionMapping versionMapping = versionMappingRepository.getVersionMappingByDatasetUrl(trialverseDatasetUri);
-    Model historyModel = datasetReadRepository.getHistory(versionMapping.getVersionedDatasetUri());
+  public VersionNode getVersionInfo(URI trialverseDatasetUri, URI versionUri) throws IOException {
+    Model historyModel = getHistoryModel(trialverseDatasetUri);
     Resource versionSubject = historyModel.getResource(versionUri.toString());
     AdvancedVersionNode advancedVersionNode = buildAdvancedNewVersionNode(versionSubject, 0);
 
     return advancedVersionNode.simplify();
   }
 
-  private List<AdvancedVersionNode> createSortedVersionList(Map<String, Resource> versionMap, Resource headVersion) throws URISyntaxException {
+  private List<AdvancedVersionNode> createSortedVersionList(Model historyModel) {
+    ResIterator datasetVersionIterator = historyModel.listSubjectsWithProperty(JenaProperties.TYPE_PROPERTY,
+            JenaProperties.datasetVersionObject);
+
+    Map<String, Resource> versionMap = new HashMap<>();
+    Map<String, Boolean> referencedMap = new HashMap<>();
+    populateVersionMaps(datasetVersionIterator, versionMap, referencedMap);
+
     List<AdvancedVersionNode> sortedVersions = new ArrayList<>();
-    Resource current = headVersion;
+    Resource current = getHeadVersion(versionMap, referencedMap);
     for (int historyOrder = 0; historyOrder < versionMap.size(); ++historyOrder) {
       sortedVersions.add(buildAdvancedNewVersionNode(current, historyOrder));
-      Resource next = current.getPropertyResourceValue(JenaProperties.previousProperty);
-      current = next;
+      current = current.getPropertyResourceValue(JenaProperties.previousProperty);
     }
     sortedVersions = Lists.reverse(sortedVersions);
     return sortedVersions;
   }
 
-  private AdvancedVersionNode buildAdvancedNewVersionNode(Resource current, int historyOrder) throws URISyntaxException {
+  private AdvancedVersionNode buildAdvancedNewVersionNode(Resource current, int historyOrder) {
     Statement title = current.getProperty(JenaProperties.TITLE_PROPERTY);
-    Resource creatorProp = current.getPropertyResourceValue(JenaProperties.creatorProperty);
-    String creator = creatorProp == null ? "unknown creator" : creatorProp.toString();
+    Resource creatorProperty = current.getPropertyResourceValue(JenaProperties.creatorProperty);
+    String creator = creatorProperty == null ? "unknown creator" : creatorProperty.toString();
     ApiKey apiKey = null;
     Account account;
     if (creator.equals("unknown creator")) {
@@ -177,6 +215,10 @@ public class HistoryServiceImpl implements HistoryService {
       }
       creator = account.getFirstName() + " " + account.getLastName();
     }
+    return buildAdvancedVersionNode(current, historyOrder, title, creator, apiKey, account);
+  }
+
+  private AdvancedVersionNode buildAdvancedVersionNode(Resource current, int historyOrder, Statement title, String creator, ApiKey apiKey, Account account) {
     Statement descriptionStatement = current.getProperty(JenaProperties.DESCRIPTION_PROPERTY);
     Statement dateProp = current.getProperty(JenaProperties.DATE_PROPERTY);
     return new AdvancedVersionNodeBuilder()
@@ -191,9 +233,9 @@ public class HistoryServiceImpl implements HistoryService {
             .build();
   }
 
-  private void populateVersionMaps(ResIterator stmtIterator, Map<String, Resource> versionMap, Map<String, Boolean> referencedMap) {
-    while (stmtIterator.hasNext()) {
-      Resource resource = stmtIterator.nextResource();
+  private void populateVersionMaps(ResIterator datasetVersionIterator, Map<String, Resource> versionMap, Map<String, Boolean> referencedMap) {
+    while (datasetVersionIterator.hasNext()) {
+      Resource resource = datasetVersionIterator.nextResource();
       versionMap.put(resource.getURI(), resource);
 
       Resource previous = resource.getPropertyResourceValue(JenaProperties.previousProperty);
@@ -203,28 +245,27 @@ public class HistoryServiceImpl implements HistoryService {
     }
   }
 
-  private Merge resolveMerge(String revisionUri, String sourceDatasetUri) throws IOException, URISyntaxException, RevisionNotFoundException {
+  private Merge resolveMerge(String revisionUri, String sourceDatasetUri) throws IOException, RevisionNotFoundException {
     VersionMapping mapping = versionMappingRepository.getVersionMappingByVersionedURl(URI.create(sourceDatasetUri));
     Model history = datasetReadRepository.getHistory(URI.create(sourceDatasetUri));
     Pair<String, String> versionAndGraph = getVersionAndGraph(history, revisionUri);
     String userUuid = DigestUtils.sha256Hex(mapping.getOwnerUuid());
     String version = versionAndGraph.getLeft();
     String graph = versionAndGraph.getRight();
-    String title = getStudyTitle(sourceDatasetUri, URI.create(version), graph);
-    // find graph and version for the merge revision
+    String title = getStudyTitle(mapping, URI.create(version), graph);
     return new Merge(revisionUri, mapping.getTrialverseDatasetUrl(), version, graph, title, userUuid);
   }
 
-  private String getStudyTitle(String sourceDatasetUri, URI version, String graph) throws IOException {
+  private String getStudyTitle(VersionMapping mapping, URI version, String graph) throws IOException {
     String template = IOUtils.toString(new ClassPathResource("getGraphTitle.sparql")
             .getInputStream(), "UTF-8");
     String query = template.replace("$graphUri", graph);
-    VersionMapping mapping = versionMappingRepository.getVersionMappingByVersionedURl(URI.create(sourceDatasetUri));
-    byte[] response = datasetReadRepository.executeQuery(query, mapping.getTrialverseDatasetUri(), version, WebConstants.APPLICATION_SPARQL_RESULTS_JSON);
-    return JsonPath.read(new String(response), "$.results.bindings[0].$title.$value");
+    byte[] response = datasetReadRepository.executeQuery(query,
+            mapping.getTrialverseDatasetUri(), version, WebConstants.APPLICATION_SPARQL_RESULTS_JSON);
+    return JsonPath.read(new String(response), "$.results.bindings[0].title.value");
   }
 
-  private Pair<String, String> getVersionAndGraph(Model historyModel, String revisionUri) throws URISyntaxException,
+  private Pair<String, String> getVersionAndGraph(Model historyModel, String revisionUri) throws
           RevisionNotFoundException, IOException {
     String template = IOUtils.toString(new ClassPathResource("getGraphAndVersionByRevision.sparql")
             .getInputStream(), "UTF-8");

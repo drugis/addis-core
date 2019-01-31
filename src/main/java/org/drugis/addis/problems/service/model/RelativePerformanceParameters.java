@@ -2,6 +2,8 @@ package org.drugis.addis.problems.service.model;
 
 import com.fasterxml.jackson.annotation.JsonRawValue;
 
+import java.util.Objects;
+
 /**
  * Created by joris on 14-6-17.
  */
@@ -28,17 +30,14 @@ public class RelativePerformanceParameters extends PerformanceParameters{
   public boolean equals(Object o) {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
-
     RelativePerformanceParameters that = (RelativePerformanceParameters) o;
-
-    if (!baseline.equals(that.baseline)) return false;
-    return relative.equals(that.relative);
+    return Objects.equals(baseline, that.baseline) &&
+            Objects.equals(relative, that.relative);
   }
 
   @Override
   public int hashCode() {
-    int result = baseline.hashCode();
-    result = 31 * result + relative.hashCode();
-    return result;
+
+    return Objects.hash(baseline, relative);
   }
 }

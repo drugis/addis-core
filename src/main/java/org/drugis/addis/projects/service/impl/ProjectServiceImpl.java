@@ -25,7 +25,7 @@ import org.drugis.addis.models.repository.ModelRepository;
 import org.drugis.addis.outcomes.Outcome;
 import org.drugis.addis.outcomes.repository.OutcomeRepository;
 import org.drugis.addis.patavitask.repository.UnexpectedNumberOfResultsException;
-import org.drugis.addis.problems.model.AbstractNetworkMetaAnalysisProblemEntry;
+import org.drugis.addis.problems.model.problemEntry.AbstractProblemEntry;
 import org.drugis.addis.problems.model.NetworkMetaAnalysisProblem;
 import org.drugis.addis.problems.service.ProblemService;
 import org.drugis.addis.projects.Project;
@@ -194,8 +194,7 @@ public class ProjectServiceImpl implements ProjectService {
     sourceCovariates.forEach(covariateCreator(newProject, oldToNewCovariateId));
 
     //units
-    scaledUnitRepository.query(sourceProjectId).forEach(oldUnit -> scaledUnitRepository
-            .create(newProject.getId(), oldUnit.getConceptUri(), oldUnit.getMultiplier(), oldUnit.getName()));
+    createAndSaveUnits(sourceProjectId, newProject);
 
     //interventions
     Map<Integer, Integer> oldToNewInterventionId = new HashMap<>();
@@ -262,6 +261,11 @@ public class ProjectServiceImpl implements ProjectService {
             oldToNewSubProblemId.get(scenario.getSubProblemId()), scenario.getTitle(), scenario.getState()));
 
     return newProject.getId();
+  }
+
+  private void createAndSaveUnits(Integer sourceProjectId, Project newProject) {
+    scaledUnitRepository.query(sourceProjectId).forEach(oldUnit -> scaledUnitRepository
+            .create(newProject.getId(), oldUnit.getConceptUri(), oldUnit.getMultiplier(), oldUnit.getName()));
   }
 
   private Consumer<BenefitRiskAnalysis> benefitRiskCreator(Account user, Project newProject, Map<Integer, Integer> oldToNewOutcomeId, Map<Integer, Integer> oldToNewInterventionId, Map<Integer, Integer> oldToNewAnalysisId, Map<Integer, Integer> oldToNewModelId) {
@@ -398,8 +402,7 @@ public class ProjectServiceImpl implements ProjectService {
     createCovariates(sourceProjectId, trialverseDatasetUuid, headVersion, newProject, oldToNewCovariateId);
 
     //units
-    scaledUnitRepository.query(sourceProjectId).forEach(oldUnit -> scaledUnitRepository
-            .create(newProject.getId(), oldUnit.getConceptUri(), oldUnit.getMultiplier(), oldUnit.getName()));
+    createAndSaveUnits(sourceProjectId, newProject);
 
     //Interventions
     Map<Integer, Integer> oldToNewInterventionId = new HashMap<>();
@@ -469,22 +472,22 @@ public class ProjectServiceImpl implements ProjectService {
     return areEntriesIdenticalEnough(oldProblem.getEntries(), newProblem.getEntries(), oldToNewInterventionId);
   }
 
-  private boolean isSameEntry(AbstractNetworkMetaAnalysisProblemEntry oldEntry,
-                              AbstractNetworkMetaAnalysisProblemEntry newEntry,
+  private boolean isSameEntry(AbstractProblemEntry oldEntry,
+                              AbstractProblemEntry newEntry,
                               Map<Integer, Integer> oldToNewInterventionId) {
     return oldToNewInterventionId.get(oldEntry.getTreatment()).equals(newEntry.getTreatment())
             && oldEntry.getStudy().equals(newEntry.getStudy()) && !newEntry.hasMissingValues();
   }
 
-  private boolean areEntriesIdenticalEnough(List<AbstractNetworkMetaAnalysisProblemEntry> oldEntries,
-                                            List<AbstractNetworkMetaAnalysisProblemEntry> newEntries,
+  private boolean areEntriesIdenticalEnough(List<AbstractProblemEntry> oldEntries,
+                                            List<AbstractProblemEntry> newEntries,
                                             Map<Integer, Integer> oldToNewInterventionId) {
     // Number of entries must be the same
     if (oldEntries.size() != newEntries.size()) {
       return false;
     }
     // For every old entry a new one must exist.
-    for (AbstractNetworkMetaAnalysisProblemEntry oldEntry : oldEntries) {
+    for (AbstractProblemEntry oldEntry : oldEntries) {
       if (newEntries.stream().noneMatch(newEntry -> isSameEntry(oldEntry, newEntry, oldToNewInterventionId))) {
         return false;
       }
@@ -533,7 +536,7 @@ public class ProjectServiceImpl implements ProjectService {
         // update arm exclusions
         Set<ArmExclusion> updatedArmExclusions = oldAnalysis.getExcludedArms().stream()
                 .filter(exclusion -> studiesForNewProject.stream()
-                        .anyMatch(study -> study.getTrialDataArms().stream()
+                        .anyMatch(study -> study.getArms().stream()
                                 .anyMatch(trialDataArm -> trialDataArm.getUri().equals(exclusion.getTrialverseUid()))))
                 .map(exclusion -> new ArmExclusion(newAnalysis.getId(), exclusion.getTrialverseUid()))
                 .collect(Collectors.toSet());

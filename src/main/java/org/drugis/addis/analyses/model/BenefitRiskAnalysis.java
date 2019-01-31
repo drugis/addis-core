@@ -7,9 +7,6 @@ import javax.persistence.*;
 import java.io.Serializable;
 import java.util.*;
 
-/**
- * Created by daan on 24-2-16.
- */
 @Entity
 @JsonIgnoreProperties(ignoreUnknown = true)
 @PrimaryKeyJoinColumn(name = "id", referencedColumnName = "id")
@@ -99,22 +96,16 @@ public class BenefitRiskAnalysis extends AbstractAnalysis implements Serializabl
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
     if (!super.equals(o)) return false;
-
     BenefitRiskAnalysis that = (BenefitRiskAnalysis) o;
-
-    if (finalized != that.finalized) return false;
-    if (problem != null ? !problem.equals(that.problem) : that.problem != null) return false;
-    if (!benefitRiskNMAOutcomeInclusions.equals(that.benefitRiskNMAOutcomeInclusions)) return false;
-    return benefitRiskStudyOutcomeInclusions.equals(that.benefitRiskStudyOutcomeInclusions);
+    return finalized == that.finalized &&
+            Objects.equals(problem, that.problem) &&
+            Objects.equals(benefitRiskNMAOutcomeInclusions, that.benefitRiskNMAOutcomeInclusions) &&
+            Objects.equals(benefitRiskStudyOutcomeInclusions, that.benefitRiskStudyOutcomeInclusions);
   }
 
   @Override
   public int hashCode() {
-    int result = super.hashCode();
-    result = 31 * result + (finalized ? 1 : 0);
-    result = 31 * result + (problem != null ? problem.hashCode() : 0);
-    result = 31 * result + benefitRiskNMAOutcomeInclusions.hashCode();
-    result = 31 * result + benefitRiskStudyOutcomeInclusions.hashCode();
-    return result;
+
+    return Objects.hash(super.hashCode(), finalized, problem, benefitRiskNMAOutcomeInclusions, benefitRiskStudyOutcomeInclusions);
   }
 }

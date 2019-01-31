@@ -7,6 +7,8 @@ package org.drugis.addis.problems.model;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
+import java.util.Objects;
+
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
 @JsonSubTypes({@JsonSubTypes.Type(value = NormalBaselineDistribution.class, name = "dnorm"),
         @JsonSubTypes.Type(value = BetaLogitBaselineDistribution.class, name="dbeta-logit"),
@@ -43,19 +45,15 @@ public abstract class AbstractBaselineDistribution {
   public boolean equals(Object o) {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
-
     AbstractBaselineDistribution that = (AbstractBaselineDistribution) o;
-
-    if (!name.equals(that.name)) return false;
-    if (!type.equals(that.type)) return false;
-    return scale.equals(that.scale);
+    return Objects.equals(name, that.name) &&
+            Objects.equals(type, that.type) &&
+            Objects.equals(scale, that.scale);
   }
 
   @Override
   public int hashCode() {
-    int result = name.hashCode();
-    result = 31 * result + type.hashCode();
-    result = 31 * result + scale.hashCode();
-    return result;
+
+    return Objects.hash(name, type, scale);
   }
 }

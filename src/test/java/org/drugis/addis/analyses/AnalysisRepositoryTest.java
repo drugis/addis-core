@@ -32,7 +32,7 @@ public class AnalysisRepositoryTest {
   private AnalysisRepository analysisRepository;
 
   @PersistenceContext(unitName = "addisCore")
-  EntityManager em;
+  private EntityManager em;
 
   @Test
   public void testGetNetworkMetaAnalysis() throws ResourceDoesNotExistException {

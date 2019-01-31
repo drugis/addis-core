@@ -1,10 +1,26 @@
 'use strict';
 define([],
   function() {
-    var dependencies = ['$scope', '$injector', '$stateParams', '$modalInstance', 'userUid', 'datasetUuid', 'graphUuid', 'callback', 'itemServiceName'];
-    var CommitController = function($scope, $injector, $stateParams, $modalInstance, userUid, datasetUuid, graphUuid, callback, itemServiceName) {
+    var dependencies = [
+      '$scope',
+      '$modalInstance',
+      'userUid',
+      'datasetUuid',
+      'graphUuid',
+      'callback',
+      'itemServiceName'
+    ];
+    var CommitController = function(
+      $scope,
+      $modalInstance,
+      userUid,
+      datasetUuid,
+      graphUuid,
+      callback,
+      itemServiceName
+    ) {
       $scope.changesCommited = changesCommited;
-      $scope.commitCancelled = commitCancelled; 
+      $scope.commitCancelled = commitCancelled;
 
       $scope.userUid = userUid;
       $scope.datasetUuid = datasetUuid;

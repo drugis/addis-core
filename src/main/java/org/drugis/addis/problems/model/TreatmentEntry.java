@@ -1,5 +1,7 @@
 package org.drugis.addis.problems.model;
 
+import java.util.Objects;
+
 /**
  * Created by daan on 9-7-14.
  */
@@ -27,19 +29,14 @@ public class TreatmentEntry {
   public boolean equals(Object o) {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
-
     TreatmentEntry that = (TreatmentEntry) o;
-
-    if (!id.equals(that.id)) return false;
-    if (!name.equals(that.name)) return false;
-
-    return true;
+    return Objects.equals(id, that.id) &&
+            Objects.equals(name, that.name);
   }
 
   @Override
   public int hashCode() {
-    int result = id.hashCode();
-    result = 31 * result + name.hashCode();
-    return result;
+
+    return Objects.hash(id, name);
   }
 }

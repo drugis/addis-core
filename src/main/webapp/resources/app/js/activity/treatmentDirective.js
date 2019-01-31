@@ -1,18 +1,32 @@
 'use strict';
 define(['angular', 'lodash'], function(angular, _) {
-  var dependencies = ['$stateParams', 'DrugService', 'UnitService', 'UUIDService'];
+  var dependencies = [
+    '$stateParams',
+    'DrugService',
+    'UnitService',
+    'UUIDService'
+  ];
   var INSTANCE_PREFIX = 'http://trials.drugis.org/instances/';
 
-  var TreatmentDirective = function($stateParams, DrugService, UnitService, UUIDService) {
+  var TreatmentDirective = function(
+    $stateParams,
+    DrugService,
+    UnitService,
+    UUIDService
+  ) {
     return {
       restrict: 'E',
       templateUrl: './treatmentDirective.html',
       link: function(scope) {
+        // functions
+        scope.drugChanged = drugChanged;
+        scope.doseUnitChanged = doseUnitChanged;
+        scope.cancelAddDrug = cancelAddDrug;
+        scope.checkIsValidTreatment = checkIsValidTreatment;
+        scope.addTreatment = addTreatment;
 
-        scope.treatment = {};
-        scope.treatment.dosingPeriodicity = 'P1D';
-        scope.treatment.treatmentDoseType = 'ontology:FixedDoseDrugTreatment';
-        scope.isValidTreatment = false;
+        // init
+        reset();
 
         DrugService.queryItems($stateParams.studyUUID).then(function(result) {
           scope.drugs = result;
@@ -22,17 +36,12 @@ define(['angular', 'lodash'], function(angular, _) {
           scope.doseUnits = result;
         });
 
-        scope.drugChanged = drugChanged;
-        scope.doseUnitChanged = doseUnitChanged;
-        scope.cancelAddDrug = cancelAddDrug;
-        scope.checkIsValidTreatment = checkIsValidTreatment;
-        scope.addTreatment = addTreatment;
-
         function reset() {
           scope.treatment = {
             dosingPeriodicity: 'P1D',
             treatmentDoseType: 'ontology:FixedDoseDrugTreatment'
           };
+          scope.isValidTreatment = false;
         }
 
         function drugChanged(newValue) {
@@ -47,11 +56,10 @@ define(['angular', 'lodash'], function(angular, _) {
             scope.treatment.doseUnit = newValue.originalObject;
           }
           checkIsValidTreatment();
-
         }
 
         function cancelAddDrug() {
-          scope.treatment = {};
+          reset();
           scope.treatmentDirective.isVisible = false;
           scope.$broadcast('angucomplete-alt:clearInput');
         }

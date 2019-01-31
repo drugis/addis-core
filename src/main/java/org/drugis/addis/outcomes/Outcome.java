@@ -58,7 +58,6 @@ public class Outcome implements Serializable {
     this(null, project, name, HIGHER_IS_BETTER, motivation, semanticOutcome);
   }
 
-
   public Integer getId() {
     return id;
   }
@@ -88,7 +87,7 @@ public class Outcome implements Serializable {
   }
 
   public void setDirection(Integer direction) throws Exception {
-    if (direction.intValue() != HIGHER_IS_BETTER && direction.intValue() != LOWER_IS_BETTER) {
+    if (direction != HIGHER_IS_BETTER && direction != LOWER_IS_BETTER) {
       throw new Exception("invalid direction value, must be 1 either or -1");
     }
     this.direction = direction;
@@ -123,6 +122,7 @@ public class Outcome implements Serializable {
 
   @Override
   public int hashCode() {
+
     return Objects.hash(id, project, name, direction, motivation, semanticOutcomeLabel, semanticOutcomeUri);
   }
 }

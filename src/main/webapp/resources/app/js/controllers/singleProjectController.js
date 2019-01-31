@@ -478,9 +478,11 @@ define(['lodash', 'angular'], function(_, angular) {
         resolve: {
           callback: function() {
             return function(newProjectId) {
-              $state.go('project', {
-                userUid: UserService.getLoginUser().id,
-                projectId: newProjectId
+              UserService.getLoginUser().then(function(user) {
+                $state.go('project', {
+                  userUid: user.id,
+                  projectId: newProjectId
+                });
               });
             };
           }

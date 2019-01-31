@@ -1,6 +1,7 @@
 package org.drugis.addis.trialverse.model;
 
 import java.net.URI;
+import java.util.Objects;
 
 /**
  * Created by connor on 3/6/14.
@@ -29,19 +30,14 @@ public class SemanticInterventionUriAndName {
   public boolean equals(Object o) {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
-
     SemanticInterventionUriAndName that = (SemanticInterventionUriAndName) o;
-
-    if (!label.equals(that.label)) return false;
-    if (!uri.equals(that.uri)) return false;
-
-    return true;
+    return Objects.equals(uri, that.uri) &&
+            Objects.equals(label, that.label);
   }
 
   @Override
   public int hashCode() {
-    int result = uri.hashCode();
-    result = 31 * result + label.hashCode();
-    return result;
+
+    return Objects.hash(uri, label);
   }
 }

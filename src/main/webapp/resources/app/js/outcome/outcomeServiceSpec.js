@@ -1,6 +1,6 @@
 'use strict';
 define(['angular-mocks', './outcome'], function() {
-  describe('the outcome service', function() {
+  describe('the outcomeService', function() {
     var rootScope, q,
       uUIDServiceMock,
       outcomeService,
@@ -65,41 +65,41 @@ define(['angular-mocks', './outcome'], function() {
         has_outcome: [{
           '@id': 'http://trials.drugis.org/instances/popchar1',
           '@type': 'ontology:OutcomeType',
-          'has_result_property': [
+          has_result_property: [
             'ontology:standard_deviation',
             'ontology:mean',
             'ontology:sample_size'
           ],
-          'is_measured_at': 'http://instance/moment1',
-          'of_variable': [{
+          is_measured_at: 'http://instance/moment1',
+          of_variable: [{
             '@id': 'http://fuseki-test.drugis.org:3030/.well-known/genid/0000014fdfac194dac11005900000003',
             '@type': 'ontology:Variable',
-            'measurementType': 'ontology:continuous',
-            'comment': [
+            measurementType: 'ontology:continuous',
+            comment: [
               '',
               'years'
             ],
-            'label': 'Age'
+            label: 'Age'
           }],
-          'comment': '',
-          'label': 'Age'
+          comment: '',
+          label: 'Age'
         }, {
           '@id': 'http://trials.drugis.org/instances/9bb96077-a8e0-4da1-bee2-011db8b7e560',
           '@type': 'ontology:OutcomeType',
-          'has_result_property': [
+          has_result_property: [
             'ontology:sample_size',
             'ontology:count'
           ],
-          'is_measured_at': ['http://instance/moment1', 'http://instance/moment2'],
-          'of_variable': [{
+          is_measured_at: ['http://instance/moment1', 'http://instance/moment2'],
+          of_variable: [{
             '@id': 'http://fuseki-test.drugis.org:3030/.well-known/genid/0000014fdfac194eac1100590000000b',
             '@type': 'ontology:Variable',
-            'measurementType': 'ontology:dichotomous',
-            'comment': '',
-            'label': 'is stupid'
+            measurementType: 'ontology:dichotomous',
+            comment: '',
+            label: 'is stupid'
           }],
-          'comment': '',
-          'label': 'is stupid'
+          comment: '',
+          label: 'is stupid'
         }]
       };
       var jsonStudyGraph = [jsonStudy];
@@ -116,7 +116,7 @@ define(['angular-mocks', './outcome'], function() {
         studyServiceMock.findStudyNode.and.returnValue(jsonStudy);
       });
 
-      it('should query the characteristics', function(done) {
+      it('should result in outcomes of that type', function(done) {
         outcomeService.queryItems(function(outcome) {
           return outcome['@type'] === 'ontology:OutcomeType';
         }).then(function(items) {
@@ -131,29 +131,29 @@ define(['angular-mocks', './outcome'], function() {
       });
     });
 
-    describe('query outcomes that are not measured', function() {
+    describe('querying outcomes that are not measured', function() {
       var jsonStudy = {
         has_outcome: [{
           '@id': 'http://trials.drugis.org/instances/popchar1',
           '@type': 'ontology:OutcomeType',
-          'has_result_property': [
+          has_result_property: [
             'ontology:standard_deviation',
             'ontology:mean',
             'ontology:sample_size'
           ],
 
-          'of_variable': [{
+          of_variable: [{
             '@id': 'http://fuseki-test.drugis.org:3030/.well-known/genid/0000014fdfac194dac11005900000003',
             '@type': 'ontology:Variable',
-            'measurementType': 'ontology:continuous',
-            'comment': [
+            measurementType: 'ontology:continuous',
+            comment: [
               '',
               'years'
             ],
-            'label': 'Age'
+            label: 'Age'
           }],
-          'comment': '',
-          'label': 'Age'
+          comment: '',
+          label: 'Age'
         }]
       };
 
@@ -163,7 +163,7 @@ define(['angular-mocks', './outcome'], function() {
         measurementMomentsDefer.resolve([]);
       });
 
-      it('should query the characteristics', function(done) {
+      it('should result in outcomes that are not measured at moments', function(done) {
         outcomeService.queryItems(function(outcome) {
           return outcome['@type'] === 'ontology:OutcomeType';
         }).then(function(items) {
@@ -176,20 +176,25 @@ define(['angular-mocks', './outcome'], function() {
       });
     });
 
-    describe('add outcome of type', function() {
+    describe('adding an outcome of a specific type', function() {
       var outcomeUri = 'http://trials.drugis.org/instances/newUuid';
       var moment = 'http://mm/uri';
-
       var measuredAtMoment = {
         uri: moment
       };
-
-      var newPopulationChar = {
+      var newContrastOutcome = {
         uri: outcomeUri,
-        label: 'label',
+        label: 'contrast',
         measurementType: 'ontology:dichotomous',
         measuredAtMoments: [measuredAtMoment],
-        resultProperties: ['http://trials.drugis.org/ontology#sample_size', 'http://trials.drugis.org/ontology#count']
+        resultProperties: [
+          'http://trials.drugis.org/ontology#odds_ratio',
+          'http://trials.drugis.org/ontology#confidence_interval_width'
+        ],
+        armOrContrast: 'ontology:contrast_data',
+        referenceArm: 'referenceArmUri',
+        referenceStandardError: 0.5,
+        confidenceIntervalWidth: 95
       };
 
       beforeEach(function(done) {
@@ -202,74 +207,80 @@ define(['angular-mocks', './outcome'], function() {
         getStudyDefer.resolve(jsonStudy);
         getStudyGraphDefer.resolve([jsonStudy]);
         studyServiceMock.findStudyNode.and.returnValue(jsonStudy);
-        outcomeService.addItem(newPopulationChar, 'ontology:OutcomeType').then(done);
+        outcomeService.addItem(newContrastOutcome, 'ontology:OutcomeType').then(done);
         saveStudyDefer.resolve();
         rootScope.$digest();
       });
 
-      it('should add the outcomes', function(done) {
+      it('should add the outcome, which should then be found in queries', function(done) {
         var expectedStudy = {
           has_outcome: [{
-            '@id': outcomeUri,
             '@type': 'ontology:OutcomeType',
+            '@id': outcomeUri,
             is_measured_at: moment,
-            has_result_property: ['http://trials.drugis.org/ontology#sample_size', 'http://trials.drugis.org/ontology#count'],
+            label: 'contrast',
             of_variable: [{
               '@type': 'ontology:Variable',
               measurementType: 'ontology:dichotomous',
-              label: 'label'
+              label: 'contrast'
             }],
-            label: 'label'
+            has_result_property: [
+              'http://trials.drugis.org/ontology#odds_ratio',
+              'http://trials.drugis.org/ontology#confidence_interval_width'
+            ],
+            arm_or_contrast: 'ontology:contrast_data',
+            reference_arm: 'referenceArmUri',
+            reference_standard_error: 0.5,
+            confidence_interval_width: 95
           }]
         };
 
         outcomeService.queryItems().then(function(queryResult) {
           expect(studyServiceMock.save).toHaveBeenCalledWith(expectedStudy);
           expect(queryResult.length).toEqual(1);
-          expect(queryResult[0].label).toEqual(newPopulationChar.label);
+          expect(queryResult[0].label).toEqual(newContrastOutcome.label);
           done();
         });
         rootScope.$digest();
       });
     });
 
-    describe('edit outcome', function() {
-
+    describe('editing an outcome', function() {
       var moment1 = 'http://instance/moment1';
       var moment2 = 'http://instance/moment2';
       var jsonStudy = {
         has_outcome: [{
           '@id': 'http://trials.drugis.org/instances/popchar1',
           '@type': 'ontology:OutcomeType',
-          'has_result_property': [
+          has_result_property: [
             'ontology:standard_deviation',
             'ontology:mean',
             'ontology:sample_size'
           ],
-          'is_measured_at': moment1,
-          'of_variable': [{
+          is_measured_at: moment1,
+          of_variable: [{
             '@id': 'http://fuseki-test.drugis.org:3030/.well-known/genid/0000014fdfac194dac11005900000003',
             '@type': 'ontology:Variable',
-            'measurementType': 'ontology:continuous',
-            'label': 'Age'
+            measurementType: 'ontology:continuous',
+            label: 'Age'
           }],
-          'comment': '',
-          'label': 'Age'
+          comment: '',
+          label: 'Age'
         }, {
           '@id': 'http://trials.drugis.org/instances/var2',
           '@type': 'ontology:OutcomeType',
-          'has_result_property': [
+          has_result_property: [
             'ontology:sample_size',
             'ontology:count'
           ],
-          'is_measured_at': [moment1, moment2],
-          'of_variable': [{
+          is_measured_at: [moment1, moment2],
+          of_variable: [{
             '@id': 'http://fuseki-test.drugis.org:3030/.well-known/genid/0000014fdfac194eac1100590000000b',
             '@type': 'ontology:Variable',
-            'measurementType': 'ontology:dichotomous',
-            'label': 'is stupid'
+            measurementType: 'ontology:dichotomous',
+            label: 'is stupid'
           }],
-          'label': 'is stupid'
+          label: 'is stupid'
         }]
       };
 
@@ -297,7 +308,7 @@ define(['angular-mocks', './outcome'], function() {
         rootScope.$digest();
       });
 
-      it('should have changed the outcomes', function(done) {
+      it('should have changed the outcome', function(done) {
         outcomeService.queryItems().then(function(queryResult) {
           expect(queryResult.length).toEqual(2);
           expect(queryResult[1].uri).toEqual(newPopulationChar.uri);
@@ -310,40 +321,40 @@ define(['angular-mocks', './outcome'], function() {
       });
     });
 
-    describe('delete outcome', function() {
+    describe('deleting an outcome', function() {
       var jsonStudy = {
         has_outcome: [{
           '@id': 'http://trials.drugis.org/instances/popchar1',
           '@type': 'ontology:OutcomeType',
-          'has_result_property': [
+          has_result_property: [
             'ontology:standard_deviation',
             'ontology:mean',
             'ontology:sample_size'
           ],
-          'is_measured_at': 'http://instance/moment1',
-          'of_variable': [{
+          is_measured_at: 'http://instance/moment1',
+          of_variable: [{
             '@id': 'http://fuseki-test.drugis.org:3030/.well-known/genid/0000014fdfac194dac11005900000003',
             '@type': 'ontology:Variable',
-            'measurementType': 'ontology:continuous',
-            'label': 'Age'
+            measurementType: 'ontology:continuous',
+            label: 'Age'
           }],
-          'comment': '',
-          'label': 'Age'
+          comment: '',
+          label: 'Age'
         }, {
           '@id': 'http://trials.drugis.org/instances/9bb96077-a8e0-4da1-bee2-011db8b7e560',
           '@type': 'ontology:OutcomeType',
-          'has_result_property': [
+          has_result_property: [
             'ontology:sample_size',
             'ontology:count'
           ],
-          'is_measured_at': ['http://instance/moment1', 'http://instance/moment2'],
-          'of_variable': [{
+          is_measured_at: ['http://instance/moment1', 'http://instance/moment2'],
+          of_variable: [{
             '@id': 'http://fuseki-test.drugis.org:3030/.well-known/genid/0000014fdfac194eac1100590000000b',
             '@type': 'ontology:Variable',
-            'measurementType': 'ontology:dichotomous',
-            'label': 'is stupid'
+            measurementType: 'ontology:dichotomous',
+            label: 'is stupid'
           }],
-          'label': 'is stupid'
+          label: 'is stupid'
         }]
       };
 
@@ -363,7 +374,7 @@ define(['angular-mocks', './outcome'], function() {
       });
 
 
-      it('should have removed the outcomes', function(done) {
+      it('should remove the outcomes', function(done) {
         outcomeService.queryItems().then(function(queryResult) {
           expect(queryResult.length).toEqual(1);
           done();
@@ -415,7 +426,8 @@ define(['angular-mocks', './outcome'], function() {
             measurementType: undefined,
             label: undefined
           }],
-          has_result_property: undefined
+          has_result_property: undefined,
+          arm_or_contrast: 'ontology:arm_level_data'
         }]
       };
 

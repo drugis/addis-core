@@ -88,8 +88,6 @@ define(['lodash'],
         getDataset(DatasetVersionedResource);
       }
 
-      loadHistory();
-
       function loadHistory() {
         var historyCoords = {
           userUid: $stateParams.userUid,
@@ -151,9 +149,6 @@ define(['lodash'],
       }
 
       function getDataset(resource) {
-        function getPurlProperty(response, propertyName) {
-          return response[propertyName] ? response[propertyName] : response['http://purl.org/dc/terms/' + propertyName];
-        }
         resource.getForJson($stateParams).$promise.then(function(response) {
           var dsResponse = response['@graph'] ? _.reduce(response['@graph'], _.merge) : response;
           $scope.dataset = {
@@ -162,9 +157,13 @@ define(['lodash'],
             comment: getPurlProperty(dsResponse, 'description'),
             creator: getPurlProperty(dsResponse, 'creator')
           };
-          checkEditingAllowed();
           PageTitleService.setPageTitle('DatasetController', $scope.dataset.title);
+          loadHistory();
         });
+      }
+
+      function getPurlProperty(response, propertyName) {
+        return response[propertyName] ? response[propertyName] : response['http://purl.org/dc/terms/' + propertyName];
       }
 
       function exportDataset() {

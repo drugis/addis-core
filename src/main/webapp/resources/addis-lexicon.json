@@ -74,6 +74,11 @@
     "text": "The disease or health state being studied.",
     "link": "/manual.html#condition"
   },
+  "confidence-interval": {
+    "title": "Confidence interval",
+    "text": "The range of estimated values for a treatment effect that covers the true value of this effect with a coverage probability that is set by the user (95% by default).",
+    "link": "/manual.html#study-input"
+  },
   "copy-study": {
     "title": "Copy study",
     "text": "You can copy studies (including those you don't own) from one dataset to another. Here you can specify which dataset the study should be copied to. Note that if the original study is changed in later versions, yours will not change. Similarly, changing your copy will not affect the original.",
@@ -166,7 +171,7 @@
   },
   "hazard-ratio": {
     "title": "Hazard ratio",
-    "text": "The hazard ratio describes by which factor being in one group is more (or less) hazardous another group. For example a treated population may die at twice the rate per unit time as the control population, yielding a  hazard ratio of 2.",
+    "text": "The ratio of the hazard in a comparator arm to the hazard in the reference arm.",
     "link": "/manual.html#study-input"
   },
   "least-squares-mean": {
@@ -187,6 +192,11 @@
   "mean": {
     "title": "Mean",
     "text": "The mean (average) value measured in the given group.",
+    "link": "/manual.html#study-input"
+  },
+  "mean-difference": {
+    "title": "Mean",
+    "text": "The difference between the mean outcome in a comparator arm and the mean outcome in the reference arm.",
     "link": "/manual.html#study-input"
   },
   "measurement": {
@@ -212,6 +222,11 @@
   "min": {
     "title": "Min",
     "text": "The lowest value measured in the given group.",
+    "link": "/manual.html#study-input"
+  }, 
+   "odds-ratio": {
+    "title": "Odds ratio",
+    "text": "The ratio of the odds in a comparator arm to the odds in the reference arm.",
     "link": "/manual.html#study-input"
   },
   "other-group": {
@@ -264,10 +279,20 @@
     "text": "The 97.5% quantile, or the upper end of a 95% confidence interval.",
     "link": "/manual.html#study-input"
   },
+  "reference-arm":{
+    "title": "Reference arm",
+    "text": "The arm that serves as the reference in the comparison of two or more treatments.",
+    "link": "/manual.html#study-input"
+  },
   "result-properties": {
     "title": "Result properties",
     "text": "Which properties of this variable were measured, e.g. in the case of a continuous variable the mean and standard error may have been measured, or only certain quantiles may have been reported.",
     "link": "/manual.html#add-variable"
+  },
+  "risk-ratio": {
+    "title": "Risk ratio",
+    "text": "The ratio of the risk in a comparator arm to the risk in the reference arm.",
+    "link": "/manual.html#study-input"
   },
   "sample-size": {
     "title": "N",
@@ -291,8 +316,13 @@
   },
   "standard-error": {
     "title": "Standard error",
-    "text": "The standard error of the mean describes the residual uncertainty around the mean. It is the standard deviation divided by the square root of the sample size.",
+    "text": "The standard error is the average deviation of an estimated parameter value from its true value in the population.",
     "link": "/manual.html#study-input"
+  },
+  "standardized-mean-difference":{
+    "title": "Standardized mean difference",
+    "text": "The mean difference divided by the standard deviation of the difference in means.",
+    "link": "/manual.html##study-input"
   },
   "study": {
     "title": "Study",

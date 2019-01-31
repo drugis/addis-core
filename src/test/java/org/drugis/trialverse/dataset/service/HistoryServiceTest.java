@@ -1,24 +1,24 @@
 package org.drugis.trialverse.dataset.service;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.drugis.addis.security.Account;
 import org.drugis.addis.security.ApiKey;
 import org.drugis.addis.security.repository.AccountRepository;
 import org.drugis.addis.security.repository.ApiKeyRepository;
+import org.drugis.addis.util.WebConstants;
 import org.drugis.trialverse.dataset.exception.RevisionNotFoundException;
 import org.drugis.trialverse.dataset.model.VersionMapping;
 import org.drugis.trialverse.dataset.model.VersionNode;
 import org.drugis.trialverse.dataset.repository.DatasetReadRepository;
 import org.drugis.trialverse.dataset.repository.VersionMappingRepository;
 import org.drugis.trialverse.dataset.service.impl.HistoryServiceImpl;
-import org.drugis.trialverse.graph.repository.GraphReadRepository;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -49,19 +49,14 @@ public class HistoryServiceTest {
   private VersionMappingRepository versionMappingRepository;
 
   @Mock
-  private GraphReadRepository graphReadRepository;
-
-  @Mock
   private DatasetReadRepository datasetReadRepository;
-
-  @Mock
-  private RestTemplate restTemplate;
 
   @InjectMocks
   private HistoryService historyService;
   private final URI trialverseDatasetUri = URI.create("http://anyUri");
   private final URI coolGraphUri = URI.create("http://trials.drugis.org/graphs/totallyCoolGraph");
   private final URI uncoolGraphUri = URI.create("http://trials.drugis.org/graphs/uncoolGraph");
+  private final URI sourceDatasetHeadVersion = URI.create("http://localhost:8080/versions/sourceHeadVersion");
   private final String versionedDatasetUri = "http://anyVersionedUri";
   private final VersionMapping mapping = new VersionMapping(versionedDatasetUri, null, trialverseDatasetUri.toString());
   private final InputStream historyStream = new ClassPathResource("mockHistory.ttl").getInputStream();
@@ -70,21 +65,41 @@ public class HistoryServiceTest {
   private final ApiKey apiKey = mock(ApiKey.class);
   private final String email = "flutadres@gmail.com";
   private final Account account = new Account("userName", "firstName", "lastName", email);
+  private URI sourceDatasetUri = URI.create("http://localhost:8080/datasets/sourceDataset");
+  private String versionedSourceDatasetUri = "http://versionedSourceDatasetUri";
+  private final VersionMapping sourceMapping = new VersionMapping(versionedSourceDatasetUri, "sourceOwnerId", sourceDatasetUri.toString());
+  private final Model sourceHistoryModel = ModelFactory.createDefaultModel();
+  private final InputStream sourceHistoryStream = new ClassPathResource("mockMergeSourceHistory.ttl").getInputStream();
+  private final byte[] response = ("{\"results\": { \"bindings\": [ { \"title\": { \"value\": \"sourceTitle\"}}]}}").getBytes();
 
   public HistoryServiceTest() throws IOException {
   }
 
   @Before
-  public void setUp() throws URISyntaxException, IOException {
+  public void setUp() throws IOException {
     historyService = new HistoryServiceImpl();
     initMocks(this);
 
     historyModel.read(historyStream, null, "TTL");
-
+    sourceHistoryModel.read(sourceHistoryStream, null, "TTL");
     when(versionMappingRepository.getVersionMappingByDatasetUrl(trialverseDatasetUri)).thenReturn(mapping);
     when(datasetReadRepository.getHistory(mapping.getVersionedDatasetUri())).thenReturn(historyModel);
     when(apiKeyRepository.get(apiKeyId)).thenReturn(apiKey);
     when(accountRepository.findAccountByEmail(email)).thenReturn(account);
+
+    when(versionMappingRepository.getVersionMappingByVersionedURl(sourceDatasetUri)).thenReturn(sourceMapping);
+    when(datasetReadRepository.getHistory(sourceDatasetUri)).thenReturn(sourceHistoryModel);
+    String query = createQuery();
+    when(datasetReadRepository.executeQuery(query,
+            sourceMapping.getTrialverseDatasetUri(),
+            sourceDatasetHeadVersion,
+            WebConstants.APPLICATION_SPARQL_RESULTS_JSON)).thenReturn(response);
+  }
+
+  private String createQuery() throws IOException {
+    String template = IOUtils.toString(new ClassPathResource("getGraphTitle.sparql")
+            .getInputStream(), "UTF-8");
+    return template.replace("$graphUri", "http://trials.drugis.org/graphs/sourceGraph");
   }
 
   @Test

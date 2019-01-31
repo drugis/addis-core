@@ -61,8 +61,8 @@
                     ng-click="goToModel(outcomeWithAnalysis.selectedModel)">Run model</button>
                   <span ng-if="outcomeWithAnalysis.selectedModel.archived">(archived model)</span>
                 </td>
-                <td ng-if="outcomeWithAnalysis.baselineDistribution">{{outcomeWithAnalysis.baselineDistribution | distributionToStringFilter}}</td>
-                <td ng-if="!outcomeWithAnalysis.baselineDistribution">
+                <td ng-if="outcomeWithAnalysis.baseline">{{outcomeWithAnalysis.baseline | distributionToStringFilter}}</td>
+                <td ng-if="!outcomeWithAnalysis.baseline">
                   <em>Not defined.</em>
                 </td>
               </tr>

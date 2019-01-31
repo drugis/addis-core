@@ -19,6 +19,15 @@
         <http://purl.org/dc/terms/title>
                 "Edit both graphs somehow" .
 
+<http://localhost:8080/revisions/headRevisionOfTotallyCoolGraph>
+        a                   es:Revision ;
+        es:merge_type       es:MergeTypeCopyTheirs ;
+        es:merged_revision  <http://localhost:8080/revisions/mergedRevision> .
+
+<http://localhost:8080/revisions/mergedRevision>
+        es:dataset  <http://localhost:8080/datasets/sourceDataset> .
+
+
 <http://localhost:8080/versions/oneBeforeHeadVersion>
         a                          es:DatasetVersion ;
         es:dataset                 <http://localhost:8080/datasets/dataset> ;

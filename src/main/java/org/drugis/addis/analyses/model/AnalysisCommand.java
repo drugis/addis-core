@@ -3,6 +3,7 @@ package org.drugis.addis.analyses.model;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Created by connor on 3/11/14.
@@ -52,23 +53,16 @@ public class AnalysisCommand {
   public boolean equals(Object o) {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
-
     AnalysisCommand that = (AnalysisCommand) o;
-
-    if (!title.equals(that.title)) return false;
-    if (!projectId.equals(that.projectId)) return false;
-    if (!selectedOutcomeIds.equals(that.selectedOutcomeIds)) return false;
-    if (!type.equals(that.type)) return false;
-
-    return true;
+    return Objects.equals(projectId, that.projectId) &&
+            Objects.equals(title, that.title) &&
+            Objects.equals(type, that.type) &&
+            Objects.equals(selectedOutcomeIds, that.selectedOutcomeIds);
   }
 
   @Override
   public int hashCode() {
-    int result = projectId.hashCode();
-    result = 31 * result + title.hashCode();
-    result = 31 * result + type.hashCode();
-    result = 31 * result + selectedOutcomeIds.hashCode();
-    return result;
+
+    return Objects.hash(projectId, title, type, selectedOutcomeIds);
   }
 }

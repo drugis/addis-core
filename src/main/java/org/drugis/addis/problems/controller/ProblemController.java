@@ -28,7 +28,7 @@ public class ProblemController extends AbstractAddisCoreController {
   private ProblemService problemService;
 
   @Inject
-  HostURLCache hostURLCache;
+  private HostURLCache hostURLCache;
 
   @RequestMapping(value = "/projects/{projectId}/analyses/{analysisId}/problem", method = RequestMethod.GET)
   @ResponseBody

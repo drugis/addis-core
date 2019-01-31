@@ -139,24 +139,17 @@ public class NetworkMetaAnalysis extends AbstractAnalysis implements Serializabl
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
     if (!super.equals(o)) return false;
-
     NetworkMetaAnalysis that = (NetworkMetaAnalysis) o;
-
-    if (primaryModel != null ? !primaryModel.equals(that.primaryModel) : that.primaryModel != null) return false;
-    if (!excludedArms.equals(that.excludedArms)) return false;
-    if (!includedCovariates.equals(that.includedCovariates)) return false;
-    if (!includedMeasurementMoments.equals(that.includedMeasurementMoments)) return false;
-    return outcome != null ? outcome.equals(that.outcome) : that.outcome == null;
+    return Objects.equals(primaryModel, that.primaryModel) &&
+            Objects.equals(excludedArms, that.excludedArms) &&
+            Objects.equals(includedCovariates, that.includedCovariates) &&
+            Objects.equals(includedMeasurementMoments, that.includedMeasurementMoments) &&
+            Objects.equals(outcome, that.outcome);
   }
 
   @Override
   public int hashCode() {
-    int result = super.hashCode();
-    result = 31 * result + (primaryModel != null ? primaryModel.hashCode() : 0);
-    result = 31 * result + excludedArms.hashCode();
-    result = 31 * result + includedCovariates.hashCode();
-    result = 31 * result + includedMeasurementMoments.hashCode();
-    result = 31 * result + (outcome != null ? outcome.hashCode() : 0);
-    return result;
+
+    return Objects.hash(super.hashCode(), primaryModel, excludedArms, includedCovariates, includedMeasurementMoments, outcome);
   }
 }

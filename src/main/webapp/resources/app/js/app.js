@@ -8,6 +8,7 @@ define(
     'angular-foundation-6',
     'angular-animate',
     'angular-cookies',
+    'angularjs-slider',
     'angular-touch',
     'angular-ui-router',
     'angular-sanitize',
@@ -22,10 +23,10 @@ define(
     'help-popup',
     'page-title-service',
     './util/constants',
+    './util/resultsConstants',
     './controllers',
     './filters',
     './resources',
-    './services',
     './search/search',
     './user/user',
     './dataset/dataset',
@@ -54,13 +55,15 @@ define(
     './concept/concept',
     './commit/commit',
     './mapping/mapping',
+    './networkMetaAnalysis/networkMetaAnalysis',
     './studyInformation/studyInformation',
-    'gemtc-web/js/controllers',
-    'gemtc-web/js/resources',
+    'gemtc-web/js/createModel/createModel',
     'gemtc-web/js/constants',
-    'gemtc-web/js/services',
+    'gemtc-web/js/controllers',
     'gemtc-web/js/directives',
     'gemtc-web/js/filters',
+    'gemtc-web/js/resources',
+    'gemtc-web/js/services',
     'mcda-web/js/benefitRisk/benefitRisk',
     'mcda-web/js/directives',
     'mcda-web/js/effectsTable/effectsTable',
@@ -81,7 +84,7 @@ define(
     Config,
     mcdaLexicon,
     gemtcLexicon
-    ) {
+  ) {
     var mcdaDependencies = [
       'elicit.benefitRisk',
       'elicit.directives',
@@ -107,30 +110,33 @@ define(
       'mm.foundation.tabs',
       'help-directive',
       'addis.constants',
+      'addis.resultsConstants',
       'addis.home',
       'addis.project',
       'addis.analysis',
       'addis.controllers',
       'addis.resources',
-      'addis.services',
       'addis.filters',
       'addis.covariates',
       'addis.interventions',
       'addis.outcomes',
       'addis.excelIO',
+      'addis.networkMetaAnalysis',
       'patavi',
       'page-title-service',
       'errorReporting',
       'export-directive',
-      'angucomplete-alt'
+      'angucomplete-alt',
+      'rzModule'
     ];
     var gemtcWebDependencies = [
-      'gemtc.controllers',
-      'gemtc.resources',
+      'gemtc.createModel',
       'gemtc.constants',
-      'gemtc.services',
+      'gemtc.controllers',
       'gemtc.directives',
-      'gemtc.filters'
+      'gemtc.filters',
+      'gemtc.resources',
+      'gemtc.services'
     ];
     var trialverseDependencies = [
       'trialverse.search',
@@ -177,17 +183,16 @@ define(
       label: 'Benefit-risk analysis',
       stateName: 'BenefitRiskCreationStep-1'
     }]);
-    app.constant('isGemtcStandAlone', false);
     app.constant('isMcdaStandalone', false);
 
     app.config(['$locationProvider', function($locationProvider) {
       $locationProvider.hashPrefix('');
     }]);
 
-    app.run(['$rootScope', '$q', '$window', '$http', '$location', '$templateCache', '$transitions', '$cookies',
-        'HelpPopupService', 'CacheService', 'PageTitleService', 'STUDY_CATEGORY_SETTINGS',
-      function($rootScope, $q, $window, $http, $location, $templateCache, $transitions, $cookies,
-        HelpPopupService, CacheService, PageTitleService, STUDY_CATEGORY_SETTINGS) {
+    app.run(['$rootScope', '$q', '$window', '$location', '$templateCache', '$transitions', '$cookies',
+      'HelpPopupService', 'CacheService', 'PageTitleService',
+      function($rootScope, $q, $window, $location, $templateCache, $transitions, $cookies,
+        HelpPopupService, CacheService, PageTitleService) {
         $rootScope.$safeApply = function($scope, fn) {
           var phase = $scope.$root.$$phase;
           if (phase === '$apply' || phase === '$digest') {
@@ -375,9 +380,6 @@ define(
               },
               'network': {
                 templateUrl: '../views/network.html'
-              },
-              'evidenceTable': {
-                templateUrl: '../views/evidenceTable.html'
               }
             }
           })
@@ -522,6 +524,11 @@ define(
               currentProject: ['$stateParams', 'ProjectResource',
                 function($stateParams, ProjectResource) {
                   return ProjectResource.get($stateParams).$promise;
+                }
+              ],
+              workspaceSettings: ['WorkspaceSettingsService', '$stateParams',
+                function(WorkspaceSettingsService, $stateParams) {
+                  return WorkspaceSettingsService.loadWorkspaceSettings($stateParams);
                 }
               ]
             }

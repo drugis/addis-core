@@ -1,12 +1,10 @@
 package org.drugis.addis.trialverse.controller;
 
-import net.minidev.json.JSONArray;
 import net.minidev.json.parser.ParseException;
 import org.drugis.addis.exception.MethodNotAllowedException;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.security.repository.AccountRepository;
 import org.drugis.addis.trialverse.model.*;
-import org.drugis.addis.trialverse.model.emun.StudyDataSection;
 import org.drugis.addis.trialverse.model.mapping.TriplestoreUuidAndOwner;
 import org.drugis.addis.trialverse.service.MappingService;
 import org.drugis.addis.trialverse.service.TriplestoreService;
@@ -23,11 +21,6 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Collection;
-import java.util.List;
-
-/**
- * Created by connor on 2/12/14.
- */
 
 @Controller
 @RequestMapping("/namespaces")

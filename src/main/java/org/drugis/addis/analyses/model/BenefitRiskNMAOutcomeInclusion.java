@@ -4,14 +4,10 @@ import com.fasterxml.jackson.annotation.JsonRawValue;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import org.drugis.addis.util.ObjectToStringDeserializer;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.IdClass;
+import javax.persistence.*;
 import java.io.Serializable;
+import java.util.Objects;
 
-/**
- * Created by connor on 26-2-16.
- */
 @Entity
 @IdClass(BenefitRiskNMAOutcomeInclusion.BrOutcomeInclusionPK.class)
 public class BenefitRiskNMAOutcomeInclusion {
@@ -36,23 +32,17 @@ public class BenefitRiskNMAOutcomeInclusion {
     public boolean equals(Object o) {
       if (this == o) return true;
       if (o == null || getClass() != o.getClass()) return false;
-
       BrOutcomeInclusionPK that = (BrOutcomeInclusionPK) o;
-
-      if (!analysisId.equals(that.analysisId)) return false;
-      if (!outcomeId.equals(that.outcomeId)) return false;
-      if (networkMetaAnalysisId != null ? !networkMetaAnalysisId.equals(that.networkMetaAnalysisId) : that.networkMetaAnalysisId != null)
-        return false;
-      return modelId != null ? modelId.equals(that.modelId) : that.modelId == null;
+      return Objects.equals(analysisId, that.analysisId) &&
+              Objects.equals(outcomeId, that.outcomeId) &&
+              Objects.equals(networkMetaAnalysisId, that.networkMetaAnalysisId) &&
+              Objects.equals(modelId, that.modelId);
     }
 
     @Override
     public int hashCode() {
-      int result = analysisId.hashCode();
-      result = 31 * result + outcomeId.hashCode();
-      result = 31 * result + (networkMetaAnalysisId != null ? networkMetaAnalysisId.hashCode() : 0);
-      result = 31 * result + (modelId != null ? modelId.hashCode() : 0);
-      return result;
+
+      return Objects.hash(analysisId, outcomeId, networkMetaAnalysisId, modelId);
     }
   }
 
@@ -108,24 +98,17 @@ public class BenefitRiskNMAOutcomeInclusion {
   public boolean equals(Object o) {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
-
     BenefitRiskNMAOutcomeInclusion that = (BenefitRiskNMAOutcomeInclusion) o;
-
-    if (!analysisId.equals(that.analysisId)) return false;
-    if (!outcomeId.equals(that.outcomeId)) return false;
-    if (networkMetaAnalysisId != null ? !networkMetaAnalysisId.equals(that.networkMetaAnalysisId) : that.networkMetaAnalysisId != null)
-      return false;
-    if (modelId != null ? !modelId.equals(that.modelId) : that.modelId != null) return false;
-    return baseline != null ? baseline.equals(that.baseline) : that.baseline == null;
+    return Objects.equals(analysisId, that.analysisId) &&
+            Objects.equals(outcomeId, that.outcomeId) &&
+            Objects.equals(networkMetaAnalysisId, that.networkMetaAnalysisId) &&
+            Objects.equals(modelId, that.modelId) &&
+            Objects.equals(baseline, that.baseline);
   }
 
   @Override
   public int hashCode() {
-    int result = analysisId.hashCode();
-    result = 31 * result + outcomeId.hashCode();
-    result = 31 * result + (networkMetaAnalysisId != null ? networkMetaAnalysisId.hashCode() : 0);
-    result = 31 * result + (modelId != null ? modelId.hashCode() : 0);
-    result = 31 * result + (baseline != null ? baseline.hashCode() : 0);
-    return result;
+
+    return Objects.hash(analysisId, outcomeId, networkMetaAnalysisId, modelId, baseline);
   }
 }

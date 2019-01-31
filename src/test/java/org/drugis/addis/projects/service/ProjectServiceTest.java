@@ -18,9 +18,9 @@ import org.drugis.addis.models.Model;
 import org.drugis.addis.models.repository.ModelRepository;
 import org.drugis.addis.outcomes.Outcome;
 import org.drugis.addis.outcomes.repository.OutcomeRepository;
-import org.drugis.addis.problems.model.AbstractNetworkMetaAnalysisProblemEntry;
+import org.drugis.addis.problems.model.problemEntry.AbstractProblemEntry;
 import org.drugis.addis.problems.model.AbstractProblem;
-import org.drugis.addis.problems.model.ContinuousNetworkMetaAnalysisProblemEntry;
+import org.drugis.addis.problems.model.problemEntry.AbsoluteContinuousProblemEntry;
 import org.drugis.addis.problems.model.NetworkMetaAnalysisProblem;
 import org.drugis.addis.problems.service.ProblemService;
 import org.drugis.addis.projects.Project;
@@ -227,7 +227,7 @@ public class ProjectServiceTest {
             covariateStudyLevel.getMotivation(), covariateStudyLevel.getType())).thenReturn(covariateStudyLevel);
 
     //units
-    ScaledUnit scaledUnit = new ScaledUnit(1,projectId, URI.create("gram"),0.001,"milligram");
+    ScaledUnit scaledUnit = new ScaledUnit(1, projectId, URI.create("gram"), 0.001, "milligram");
     when(scaledUnitRepository.query(projectId)).thenReturn(Collections.singletonList(scaledUnit));
 
     // Interventions - getting old interventions
@@ -449,7 +449,7 @@ public class ProjectServiceTest {
     when(triplestoreService.getPopulationCharacteristics(datasetUuid, headVersion)).thenReturn(populationCharacteristics);
 
     //units
-    ScaledUnit scaledUnit = new ScaledUnit(1,projectId, URI.create("gram"),0.001,"milligram");
+    ScaledUnit scaledUnit = new ScaledUnit(1, projectId, URI.create("gram"), 0.001, "milligram");
     when(scaledUnitRepository.query(projectId)).thenReturn(Collections.singletonList(scaledUnit));
 
     // Interventions
@@ -573,10 +573,10 @@ public class ProjectServiceTest {
 
     when(analysisRepository.get(newNma1.getId())).thenReturn(newNma1);
     when(analysisRepository.get(model1.getAnalysisId())).thenReturn(nma1);
-    AbstractNetworkMetaAnalysisProblemEntry newEntry1 = new ContinuousNetworkMetaAnalysisProblemEntry("study", 1, 1234, 6., 0.4);
-    AbstractNetworkMetaAnalysisProblemEntry oldEntry1 = new ContinuousNetworkMetaAnalysisProblemEntry("study", 1, 12, 3., 0.2);
-    List<AbstractNetworkMetaAnalysisProblemEntry> newEntries1 = Collections.singletonList(newEntry1);
-    List<AbstractNetworkMetaAnalysisProblemEntry> oldEntries1 = Collections.singletonList(oldEntry1);
+    AbstractProblemEntry newEntry1 = new AbsoluteContinuousProblemEntry("study", 1, 1234, 6., 0.4);
+    AbstractProblemEntry oldEntry1 = new AbsoluteContinuousProblemEntry("study", 1, 12, 3., 0.2);
+    List<AbstractProblemEntry> newEntries1 = Collections.singletonList(newEntry1);
+    List<AbstractProblemEntry> oldEntries1 = Collections.singletonList(oldEntry1);
     AbstractProblem newProblem1 = new NetworkMetaAnalysisProblem(newEntries1, null, null);
     AbstractProblem oldProblem1 = new NetworkMetaAnalysisProblem(oldEntries1, null, null);
     when(mockNewProject.getId()).thenReturn(newProjectId);

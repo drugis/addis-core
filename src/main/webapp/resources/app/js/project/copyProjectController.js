@@ -1,10 +1,21 @@
 'use strict';
 define([], function() {
-  var dependencies = ['$scope', '$stateParams', '$modalInstance', 'ProjectResource', 'callback'];
-  var CopyProjectController = function($scope, $stateParams, $modalInstance, ProjectResource, callback) {
+  var dependencies = [
+    '$scope',
+    '$modalInstance',
+    'ProjectResource',
+    'callback'
+  ];
+  var CopyProjectController = function(
+    $scope,
+    $modalInstance,
+    ProjectResource, callback
+  ) {
+    //functions
     $scope.copyProject = copyProject;
     $scope.cancel = cancel;
 
+    //init
     $scope.isCopying = false;
 
     function copyProject(newTitle) {
@@ -12,11 +23,11 @@ define([], function() {
       ProjectResource.copy({
         projectId: $scope.project.id
       }, {
-        newTitle: newTitle
-      }, function(response) {
-        callback(response.newProjectId);
-        $modalInstance.close();
-      });
+          newTitle: newTitle
+        }, function(response) {
+          callback(response.newProjectId);
+          $modalInstance.close();
+        });
     }
 
     function cancel() {
