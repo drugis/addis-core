@@ -194,8 +194,7 @@ public class ProjectServiceImpl implements ProjectService {
     sourceCovariates.forEach(covariateCreator(newProject, oldToNewCovariateId));
 
     //units
-    scaledUnitRepository.query(sourceProjectId).forEach(oldUnit -> scaledUnitRepository
-            .create(newProject.getId(), oldUnit.getConceptUri(), oldUnit.getMultiplier(), oldUnit.getName()));
+    createAndSaveUnits(sourceProjectId, newProject);
 
     //interventions
     Map<Integer, Integer> oldToNewInterventionId = new HashMap<>();
@@ -262,6 +261,11 @@ public class ProjectServiceImpl implements ProjectService {
             oldToNewSubProblemId.get(scenario.getSubProblemId()), scenario.getTitle(), scenario.getState()));
 
     return newProject.getId();
+  }
+
+  private void createAndSaveUnits(Integer sourceProjectId, Project newProject) {
+    scaledUnitRepository.query(sourceProjectId).forEach(oldUnit -> scaledUnitRepository
+            .create(newProject.getId(), oldUnit.getConceptUri(), oldUnit.getMultiplier(), oldUnit.getName()));
   }
 
   private Consumer<BenefitRiskAnalysis> benefitRiskCreator(Account user, Project newProject, Map<Integer, Integer> oldToNewOutcomeId, Map<Integer, Integer> oldToNewInterventionId, Map<Integer, Integer> oldToNewAnalysisId, Map<Integer, Integer> oldToNewModelId) {
@@ -398,8 +402,7 @@ public class ProjectServiceImpl implements ProjectService {
     createCovariates(sourceProjectId, trialverseDatasetUuid, headVersion, newProject, oldToNewCovariateId);
 
     //units
-    scaledUnitRepository.query(sourceProjectId).forEach(oldUnit -> scaledUnitRepository
-            .create(newProject.getId(), oldUnit.getConceptUri(), oldUnit.getMultiplier(), oldUnit.getName()));
+    createAndSaveUnits(sourceProjectId, newProject);
 
     //Interventions
     Map<Integer, Integer> oldToNewInterventionId = new HashMap<>();

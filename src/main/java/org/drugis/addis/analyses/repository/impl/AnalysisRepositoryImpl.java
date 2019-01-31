@@ -19,7 +19,7 @@ import java.util.List;
 public class AnalysisRepositoryImpl implements AnalysisRepository {
   @Qualifier("emAddisCore")
   @PersistenceContext(unitName = "addisCore")
-  EntityManager em;
+  private EntityManager em;
 
   @Override
   public AbstractAnalysis get(Integer analysisId) throws ResourceDoesNotExistException {

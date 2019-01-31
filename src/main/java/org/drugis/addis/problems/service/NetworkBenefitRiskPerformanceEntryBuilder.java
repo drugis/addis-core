@@ -25,9 +25,7 @@ public class NetworkBenefitRiskPerformanceEntryBuilder {
 
   public AbstractMeasurementEntry build(NMAInclusionWithResults inclusion, DataSourceEntry dataSource) {
     RelativePerformance performance = getPerformance(inclusion);
-
     String criterion = inclusion.getOutcome().getSemanticOutcomeUri().toString();
-
     return new RelativePerformanceEntry(criterion, dataSource.getId(), performance);
   }
 
@@ -45,13 +43,13 @@ public class NetworkBenefitRiskPerformanceEntryBuilder {
     // place baseline at the front of the list
     Collections.swap(interventionIdsWithBaselineFirst, 0, interventionIdsWithBaselineFirst.indexOf(baselineInterventionId));
 
-    final List<List<Double>> data = getData(interventionIdsWithBaselineFirst, baselineInterventionId, baselineResults);
-    return getRelativePerformance(inclusion, mu, interventionIdsWithBaselineFirst, data);
+    final List<List<Double>> cov = getCov(interventionIdsWithBaselineFirst, baselineInterventionId, baselineResults);
+    return getRelativePerformance(inclusion, mu, interventionIdsWithBaselineFirst, cov);
   }
 
-  private AbstractIntervention getBaselineIntervention(NMAInclusionWithResults outcomeInclusion) {
-    AbstractBaselineDistribution baselineDistribution = getBaselineDistribution(outcomeInclusion);
-    return outcomeInclusion.getInterventions().stream()
+  private AbstractIntervention getBaselineIntervention(NMAInclusionWithResults inclusion) {
+    AbstractBaselineDistribution baselineDistribution = getBaselineDistribution(inclusion);
+    return inclusion.getInterventions().stream()
         .filter(intervention -> baselineDistribution.getName().equalsIgnoreCase(intervention.getName()))
         .findFirst().orElse(null);
   }
@@ -88,7 +86,6 @@ public class NetworkBenefitRiskPerformanceEntryBuilder {
 
     mu = mu.entrySet().stream().filter(m -> interventionIds.contains(m.getKey()))
         .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-
     //add baseline to mu
     mu.put(baselineInterventionId, 0.0);
     return mu;
@@ -111,10 +108,9 @@ public class NetworkBenefitRiskPerformanceEntryBuilder {
     };
   }
 
-  private List<List<Double>> getData(List<String> interventionIds, String baselineInterventionId, MultiVariateDistribution distribution) {
+  private List<List<Double>> getCov(List<String> interventionIds, String baselineInterventionId, MultiVariateDistribution distribution) {
     Map<Pair<String, String>, Double> effectsByInterventionId = getEffectsByInterventionId(distribution, baselineInterventionId, interventionIds);
-
-    List<List<Double>> data = new ArrayList<>(interventionIds.size());
+    List<List<Double>> cov = new ArrayList<>(interventionIds.size());
 
     // setup data structure and init with zeroes
     for (int i = 0; i < interventionIds.size(); ++i) {
@@ -122,18 +118,18 @@ public class NetworkBenefitRiskPerformanceEntryBuilder {
       for (int j = 0; j < interventionIds.size(); ++j) {
         row.add(0.0);
       }
-      data.add(row);
+      cov.add(row);
     }
 
     interventionIds.forEach(rowName ->
         interventionIds
             .stream()
             .filter(colName -> !baselineInterventionId.equals(rowName) && !baselineInterventionId.equals(colName))
-            .forEach(colName -> data
+            .forEach(colName -> cov
                 .get(interventionIds.indexOf(rowName))
                 .set(interventionIds.indexOf(colName), effectsByInterventionId.get(ImmutablePair.of(rowName, colName))))
     );
-    return data;
+    return cov;
   }
 
   private Map<Pair<String, String>, Double> getEffectsByInterventionId(MultiVariateDistribution distribution, String baselineInterventionId, List<String> interventionIds) {

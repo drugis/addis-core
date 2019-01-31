@@ -3,17 +3,11 @@ package org.drugis.addis.trialverse.model.trialdata;
 import java.net.URI;
 import java.util.*;
 
-/**
- * Created by connor on 9-5-14.
- */
 public class TrialDataArm {
   private URI uri;
   private String name;
   private Map<URI, Set<Measurement>> measurements = new HashMap<>();
   private List<AbstractSemanticIntervention> semanticInterventions = new ArrayList<>();
-
-  private URI referenceArm;
-  private Double referenceStdErr;
 
   private Set<Integer> matchedProjectInterventionIds = new HashSet<>();
 
@@ -25,13 +19,6 @@ public class TrialDataArm {
     this.name = name;
   }
 
-  public TrialDataArm(URI uri, String name, URI referenceArm, Double referenceStdErr) {
-    this.uri = uri;
-    this.name = name;
-    this.referenceArm = referenceArm;
-    this.referenceStdErr = referenceStdErr;
-  }
-
   public URI getUri() {
     return uri;
   }
@@ -40,20 +27,12 @@ public class TrialDataArm {
     return name;
   }
 
-  public URI getReferenceArm() {
-    return referenceArm;
-  }
-
-  public Double getReferenceStdErr() {
-    return referenceStdErr;
-  }
-
   public Map<URI, Set<Measurement>> getMeasurements() {
     return measurements;
   }
 
   public Set<Measurement> getMeasurementsForMoment(URI measurementMomentUri) {
-    return measurements.get(measurementMomentUri);
+    return measurements.isEmpty() ? Collections.emptySet() : measurements.get(measurementMomentUri);
   }
 
   public void addMeasurement(URI measurementMomentUri, Measurement measurement) {
@@ -88,14 +67,12 @@ public class TrialDataArm {
             Objects.equals(name, that.name) &&
             Objects.equals(measurements, that.measurements) &&
             Objects.equals(semanticInterventions, that.semanticInterventions) &&
-            Objects.equals(referenceArm, that.referenceArm) &&
-            Objects.equals(referenceStdErr, that.referenceStdErr) &&
             Objects.equals(matchedProjectInterventionIds, that.matchedProjectInterventionIds);
   }
 
   @Override
   public int hashCode() {
 
-    return Objects.hash(uri, name, measurements, semanticInterventions, referenceArm, referenceStdErr, matchedProjectInterventionIds);
+    return Objects.hash(uri, name, measurements, semanticInterventions, matchedProjectInterventionIds);
   }
 }

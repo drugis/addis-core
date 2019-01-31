@@ -299,8 +299,9 @@ public class TriplestoreServiceImpl implements TriplestoreService {
     return getTrialData(namespaceUid, datasetVersion, "?graph", outcomeUris, interventionUris, Collections.emptySet());
   }
 
-  private List<TrialDataStudy> getTrialData(String namespaceUid, URI version, String graphSelector, Set<URI> outcomeUris,
-                                            Set<URI> interventionUris, Set<String> covariateKeys) throws ReadValueException, IOException {
+  private List<TrialDataStudy> getTrialData(
+          String namespaceUid, URI version, String graphSelector, Set<URI> outcomeUris,
+          Set<URI> interventionUris, Set<String> covariateKeys) throws ReadValueException, IOException {
     if (interventionUris.isEmpty() || outcomeUris.isEmpty() || graphSelector == null) {
       return Collections.emptyList();
     }

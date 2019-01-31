@@ -2,6 +2,7 @@ package org.drugis.addis.problems.service;
 
 import com.google.common.collect.Sets;
 import org.apache.jena.ext.com.google.common.collect.ImmutableSet;
+import org.drugis.addis.analyses.model.BenefitRiskStudyOutcomeInclusion;
 import org.drugis.addis.analyses.service.AnalysisService;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.interventions.model.AbstractIntervention;
@@ -10,40 +11,26 @@ import org.drugis.addis.outcomes.Outcome;
 import org.drugis.addis.problems.model.*;
 import org.drugis.addis.problems.service.impl.CriterionEntryFactory;
 import org.drugis.addis.problems.service.impl.SingleStudyBenefitRiskServiceImpl;
-import org.drugis.addis.problems.service.model.*;
 import org.drugis.addis.projects.Project;
-import org.drugis.addis.trialverse.model.trialdata.Measurement;
-import org.drugis.addis.trialverse.model.trialdata.MeasurementBuilder;
-import org.drugis.addis.trialverse.model.trialdata.TrialDataArm;
-import org.drugis.addis.trialverse.model.trialdata.TrialDataStudy;
+import org.drugis.addis.trialverse.model.trialdata.*;
 import org.drugis.addis.trialverse.service.MappingService;
 import org.drugis.addis.trialverse.service.TriplestoreService;
 import org.drugis.addis.trialverse.service.impl.ReadValueException;
 import org.drugis.trialverse.util.service.UuidService;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.junit.*;
+import org.mockito.*;
 
 import java.io.IOException;
 import java.net.URI;
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static java.util.Collections.emptySet;
 import static java.util.Collections.singleton;
 import static java.util.Collections.singletonList;
 import static org.drugis.addis.problems.service.ProblemService.CONTINUOUS_TYPE_URI;
-import static org.drugis.addis.problems.service.ProblemService.DICHOTOMOUS_TYPE_URI;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
-/**
- * Created by daan on 3/27/14.
- */
 public class SingleStudyBenefitRiskServiceTest {
 
   private final String alternative1Name = "alternative1Name";
@@ -66,36 +53,32 @@ public class SingleStudyBenefitRiskServiceTest {
   @Mock
   private UuidService uuidService;
 
+  @Mock
+  private ContrastStudyBenefitRiskService contrastStudyBenefitRiskServiceMock;
+
+  @Mock
+  private AbsoluteStudyBenefitRiskService absoluteStudyBenefitRiskServiceMock;
+
   @InjectMocks
   private SingleStudyBenefitRiskServiceImpl singleStudyBenefitRiskService;
 
   private String armName1 = "arm name 1";
-  private String armName2 = "arm name 2";
   private final Integer interventionId1 = 1;
   private final Integer interventionId2 = 2;
 
   private Arm arm1 = new Arm(URI.create("armUri1"), "drugUuid1", armName1);
-  private Arm arm2 = new Arm(URI.create("armUri2"), "drugUuid2", armName2);
-
-  private URI criterionUri1 = URI.create("critUri1");
-  private URI criterionUri2 = URI.create("critUri2");
 
   private String variableName1 = "variable name 1";
   private String variableName2 = "variable name 2";
 
   private String studyUuid = "aa-bb";
   private URI studyUri = URI.create(studyUuid);
-  private String dataSourceUuid = "dataSource1";
 
   private Variable continuousVariable = new Variable(URI.create("continuousUri"), studyUuid, variableName1, "desc", null, false, MeasurementType.RATE, URI.create("dichotomousVarConcept"));
   private Variable dichotomousVariable = new Variable(URI.create("dichotomousUri"), studyUuid, variableName2, "desc", null, false, MeasurementType.CONTINUOUS, URI.create("continuousVarConcept"));
 
-  private Measurement dichotomousMeasurement = new MeasurementBuilder(studyUri, dichotomousVariable.getUri(), dichotomousVariable.getVariableConceptUri(), arm1.getUri(), DICHOTOMOUS_TYPE_URI)
-          .setSampleSize(111).setCount(42).build();
   private Measurement continuousMeasurementStdDev = new MeasurementBuilder(studyUri, continuousVariable.getUri(), continuousVariable.getVariableConceptUri(), arm1.getUri(), CONTINUOUS_TYPE_URI)
           .setSampleSize(222).setStdDev(0.2).setMean(7.56).build();
-  private Measurement continuousMeasurementStdErr = new MeasurementBuilder(studyUri, continuousVariable.getUri(), continuousVariable.getVariableConceptUri(), arm1.getUri(), CONTINUOUS_TYPE_URI)
-          .setSampleSize(333).setStdErr(0.3).setMean(7.56).build();
   private final SingleStudyContext context = buildContext();
   private final URI defaultMeasurementMoment = URI.create("defaultMM");
 
@@ -108,137 +91,40 @@ public class SingleStudyBenefitRiskServiceTest {
   @After
   public void tearDown() {
     verifyNoMoreInteractions(criterionEntryFactory, triplestoreService, mappingService,
-        analysisService, linkService,
-        uuidService);
+            analysisService, linkService,
+            uuidService);
   }
-
-  @SuppressWarnings("unchecked")
-  @Test
-  public void testBuildPerformanceTable() {
-
-    Integer rate = dichotomousMeasurement.getRate();
-
-    Double mu = continuousMeasurementStdDev.getMean();
-    Double stdDev = continuousMeasurementStdDev.getStdDev();
-    Double stdErr = continuousMeasurementStdErr.getStdErr();
-
-    URI studyUri = URI.create("itsastudio");
-    Integer alternativeId1 = 1;
-    Integer alternativeId2 = 2;
-
-    MeasurementBuilder continuousStdDevBuilder = new MeasurementBuilder(studyUri, criterionUri1, continuousMeasurementStdDev.getVariableConceptUri(), arm1.getUri(), CONTINUOUS_TYPE_URI)
-            .setSampleSize(continuousMeasurementStdDev.getSampleSize())
-            .setStdDev(stdDev)
-            .setMean(mu);
-    MeasurementBuilder dichotomousBuilder = new MeasurementBuilder(studyUri, criterionUri2, dichotomousMeasurement.getVariableConceptUri(), arm2.getUri(), DICHOTOMOUS_TYPE_URI)
-            .setSampleSize(dichotomousMeasurement.getSampleSize())
-            .setCount(rate);
-
-    Measurement arm1ContinuousStdDev = continuousStdDevBuilder.build();
-    continuousStdDevBuilder.setArmUri(arm2.getUri());
-    Measurement arm2ContinuousStdDev = continuousStdDevBuilder.build();
-
-    MeasurementWithCoordinates continuousStdDevRow1 = new MeasurementWithCoordinates(arm1ContinuousStdDev, alternativeId1, dataSourceUuid);
-    MeasurementWithCoordinates continuousStdDevRow2 = new MeasurementWithCoordinates(arm2ContinuousStdDev, alternativeId2, dataSourceUuid);
-
-    Measurement arm1Dichotomous = dichotomousBuilder.build();
-    dichotomousBuilder.setArmUri(arm2.getUri());
-    Measurement arm2Dichotomous = dichotomousBuilder.build();
-    MeasurementWithCoordinates dichotomousRow1 = new MeasurementWithCoordinates(arm1Dichotomous, alternativeId1, dataSourceUuid);
-    MeasurementWithCoordinates dichotomousRow2 = new MeasurementWithCoordinates(arm2Dichotomous, alternativeId2, dataSourceUuid);
-
-    MeasurementBuilder continuousStdErrBuilder = new MeasurementBuilder(studyUri, criterionUri1, continuousMeasurementStdErr.getVariableConceptUri(), arm1.getUri(), CONTINUOUS_TYPE_URI)
-            .setSampleSize(continuousMeasurementStdErr.getSampleSize())
-            .setStdErr(stdErr);
-    Measurement arm1ContinuousStdErr = continuousStdErrBuilder.build();
-    continuousStdErrBuilder.setArmUri(arm2.getUri());
-    Measurement arm2ContinuousStdErr = continuousStdErrBuilder.build();
-    MeasurementWithCoordinates continuousStdErrRow1 = new MeasurementWithCoordinates(arm1ContinuousStdErr, alternativeId1, dataSourceUuid);
-    MeasurementWithCoordinates continuousStdErrRow2 = new MeasurementWithCoordinates(arm2ContinuousStdErr, alternativeId2, dataSourceUuid);
-
-    Set<MeasurementWithCoordinates> measurementsWithCoordinates = ImmutableSet.of(continuousStdDevRow1, continuousStdDevRow2, dichotomousRow1, dichotomousRow2, continuousStdErrRow1, continuousStdErrRow2);
-
-    // EXECUTE
-    List<AbstractMeasurementEntry> performanceTable = singleStudyBenefitRiskService.buildPerformanceTable(measurementsWithCoordinates);
-
-    // ASSERTS
-    assertEquals(6, performanceTable.size());
-
-    ContinuousMeasurementEntry continuousMeasurementEntry = (ContinuousMeasurementEntry) performanceTable.get(0);
-    assertEquals(alternativeId1.toString(), continuousMeasurementEntry.getAlternative());
-    assertEquals(continuousVariable.getVariableConceptUri().toString(), continuousMeasurementEntry.getCriterion());
-    assertEquals(ContinuousPerformance.DNORM, continuousMeasurementEntry.getPerformance().getType());
-    assertEquals(dataSourceUuid, continuousMeasurementEntry.getDataSource());
-
-    Double expectedMu = continuousMeasurementStdDev.getMean();
-    Integer expectedSampleSize = continuousMeasurementStdDev.getSampleSize();
-    Double expectedSigma = continuousMeasurementStdDev.getStdDev() / Math.sqrt(expectedSampleSize);
-
-    ContinuousPerformanceParameters parameters = continuousMeasurementEntry.getPerformance().getParameters();
-    assertEquals(expectedMu, parameters.getMu());
-    assertEquals(expectedSigma, parameters.getSigma());
-    assertEquals(ContinuousPerformance.DNORM, continuousMeasurementEntry.getPerformance().getType());
-
-    RateMeasurementEntry rateMeasurementEntry = (RateMeasurementEntry) performanceTable.get(2);
-    assertEquals(alternativeId1.toString(), rateMeasurementEntry.getAlternative());
-    assertEquals(dichotomousVariable.getVariableConceptUri().toString(), rateMeasurementEntry.getCriterion());
-    assertEquals(RatePerformance.DBETA, rateMeasurementEntry.getPerformance().getType());
-
-    Integer expectedAlpha = dichotomousMeasurement.getRate() + 1;
-    Integer expectedBeta = dichotomousMeasurement.getSampleSize() - dichotomousMeasurement.getRate() + 1;
-    assertEquals(expectedAlpha, rateMeasurementEntry.getPerformance().getParameters().getAlpha());
-    assertEquals(expectedBeta, rateMeasurementEntry.getPerformance().getParameters().getBeta());
-    assertEquals(RatePerformance.DBETA, rateMeasurementEntry.getPerformance().getType());
-
-    ContinuousMeasurementEntry stdErrBasedEntry = (ContinuousMeasurementEntry) performanceTable.get(4);
-    assertEquals(ContinuousPerformance.DNORM, stdErrBasedEntry.getPerformance().getType());
-    assertEquals(continuousMeasurementStdErr.getStdErr(), stdErrBasedEntry.getPerformance().getParameters().getSigma());
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void testUnknownMeasurementTypeThrows() {
-    Integer alternativeId1 = 1;
-    URI UNKNOWN_TYPE = URI.create("unknown");
-    MeasurementBuilder unknownBuilder = new MeasurementBuilder(studyUri, continuousVariable.getUri(), continuousVariable.getVariableConceptUri(), arm1.getUri(), UNKNOWN_TYPE);
-    Measurement arm1Unknown = unknownBuilder.build();
-    MeasurementWithCoordinates unknownRow1 = new MeasurementWithCoordinates(arm1Unknown, alternativeId1, dataSourceUuid);
-    Set<MeasurementWithCoordinates> measurementsWithUnknownType = ImmutableSet.of(unknownRow1);
-    singleStudyBenefitRiskService.buildPerformanceTable(measurementsWithUnknownType);
-  }
-
 
   @Test
   public void testGetSingleStudyMeasurements() throws ReadValueException, ResourceDoesNotExistException, IOException {
     URI datasetVersion = URI.create("datasetVersion");
     Project project = mock(Project.class);
-    when(project.getNamespaceUid()).thenReturn("namespaceUuid");
-    when(project.getDatasetVersion()).thenReturn(datasetVersion);
     URI studyGraphUri = URI.create("studyGraph");
-
     URI interventionUri1 = URI.create("intervention1");
-
     String versionedUuid = "versionedUuid";
-    when(mappingService.getVersionedUuid(project.getNamespaceUid())).thenReturn(versionedUuid);
 
     Set<AbstractIntervention> interventions = ImmutableSet.copyOf(context.getInterventionsById().values());
     SingleIntervention singleInterventionMock = mock(SingleIntervention.class);
-    when(singleInterventionMock.getSemanticInterventionUri()).thenReturn(interventionUri1);
-    when(analysisService.getSingleInterventions(interventions)).thenReturn(Sets.newHashSet(singleInterventionMock));
 
-    Set<URI> outcomeUris = Sets.newHashSet(dichotomousVariable.getVariableConceptUri(), continuousVariable.getVariableConceptUri());
-    Set<URI> interventionUris = Sets.newHashSet(interventionUri1);
     TrialDataStudy mockStudy = mock(TrialDataStudy.class);
     List<TrialDataStudy> mockStudies = singletonList(mockStudy);
-    when(triplestoreService.getSingleStudyData(versionedUuid, studyGraphUri, datasetVersion, outcomeUris, interventionUris))
-            .thenReturn(mockStudies);
+
+    when(project.getNamespaceUid()).thenReturn("namespaceUuid");
+    when(project.getDatasetVersion()).thenReturn(datasetVersion);
+    when(mappingService.getVersionedUuid(project.getNamespaceUid())).thenReturn(versionedUuid);
+    when(singleInterventionMock.getSemanticInterventionUri()).thenReturn(interventionUri1);
+    when(analysisService.getSingleInterventions(interventions)).thenReturn(Sets.newHashSet(singleInterventionMock));
+    when(triplestoreService.getSingleStudyData(
+            anyString() , any(URI.class), any(URI.class), anySet(), anySet()
+    )).thenReturn(mockStudies);
 
     // EXECUTE
-    TrialDataStudy result = singleStudyBenefitRiskService.getSingleStudyMeasurements(project, studyGraphUri, context);
+    TrialDataStudy result = singleStudyBenefitRiskService.getStudy(project, studyGraphUri, context);
 
     assertEquals(mockStudy, result);
     verify(mappingService).getVersionedUuid(project.getNamespaceUid());
     verify(analysisService).getSingleInterventions(interventions);
-    verify(triplestoreService).getSingleStudyData(versionedUuid, studyGraphUri, datasetVersion, outcomeUris, interventionUris);
+    verify(triplestoreService).getSingleStudyData(anyString() , any(URI.class), any(URI.class), anySet(), anySet());
   }
 
   @Test
@@ -251,15 +137,14 @@ public class SingleStudyBenefitRiskServiceTest {
             .forEach(measurement -> {
               CriterionEntry criterionEntry = mock(CriterionEntry.class);
               URI variableConceptUri = measurement.getVariableConceptUri();
-              Outcome measuredOutcome = context.getOutcomesByUri().get(variableConceptUri);
-              String dataSourceId = context.getDataSourceIdsByOutcomeUri().get(measurement.getVariableConceptUri());
+              Outcome measuredOutcome = context.getOutcome();
+              String dataSourceId = context.getDataSourceUuid();
               when(criterionEntryFactory.create(measurement,
                       measuredOutcome.getName(), dataSourceId, context.getSourceLink())).thenReturn(criterionEntry);
 
               expectedResult.put(variableConceptUri, criterionEntry);
             }));
 
-    // EXECUTE
     Map<URI, CriterionEntry> result = singleStudyBenefitRiskService.getCriteria(arms, defaultMeasurementMoment, context);
     assertEquals(expectedResult, result);
 
@@ -285,9 +170,8 @@ public class SingleStudyBenefitRiskServiceTest {
   }
 
   private void verifyCriterionCreation(Measurement measurement) {
-    URI variableConceptUri = measurement.getVariableConceptUri();
-    Outcome measuredOutcome = context.getOutcomesByUri().get(variableConceptUri);
-    String dataSourceId = context.getDataSourceIdsByOutcomeUri().get(measuredOutcome.getSemanticOutcomeUri());
+    Outcome measuredOutcome = context.getOutcome();
+    String dataSourceId = context.getDataSourceUuid();
     verify(criterionEntryFactory).create(measurement, measuredOutcome.getName(), dataSourceId, context.getSourceLink());
   }
 
@@ -295,7 +179,6 @@ public class SingleStudyBenefitRiskServiceTest {
   public void testGetAlternatives() {
     List<TrialDataArm> arms = buildTrialDataArms();
 
-    // exEcUte
     Map<String, AlternativeEntry> result = singleStudyBenefitRiskService.getAlternatives(arms, context);
 
     Map<String, AlternativeEntry> expectedResult = new HashMap<>();
@@ -310,41 +193,12 @@ public class SingleStudyBenefitRiskServiceTest {
     return Arrays.asList(arm1, arm2);
   }
 
-
-  @Test
-  public void testGetMeasurementsWithCoordinates() {
-    List<TrialDataArm> arms = buildTrialDataArms();
-
-    // Executor
-    Set<MeasurementWithCoordinates> result = singleStudyBenefitRiskService.getMeasurementsWithCoordinates(arms, defaultMeasurementMoment, context);
-
-    Set<MeasurementWithCoordinates> expectedResult = arms.stream().
-            map(arm -> arm.getMeasurementsForMoment(defaultMeasurementMoment).stream()
-                    .map(measurement -> buildMeasurementWithCoordinates(arm, measurement))
-                    .collect(Collectors.toSet()))
-            .reduce(new HashSet<>(), Sets::union);
-    assertEquals(expectedResult, result);
-  }
-
-  private MeasurementWithCoordinates buildMeasurementWithCoordinates(TrialDataArm arm, Measurement measurement) {
-    Integer interventionId = arm.getMatchedProjectInterventionIds().iterator().next();
-    Outcome measuredOutcome = context.getOutcomesByUri().get(measurement.getVariableConceptUri());
-    String dataSourceId = context.getDataSourceIdsByOutcomeUri().get(measuredOutcome.getSemanticOutcomeUri());
-    return new MeasurementWithCoordinates(measurement, interventionId, dataSourceId);
-  }
-
   private SingleStudyContext buildContext() {
-    Map<URI, Outcome> outcomesByUri = new HashMap<>();
-
-    Outcome mockOutcome1 = mock(Outcome.class);
+        Outcome mockOutcome1 = mock(Outcome.class);
+    Integer outcomeId1 = 1;
     when(mockOutcome1.getSemanticOutcomeUri()).thenReturn(dichotomousVariable.getVariableConceptUri());
     when(mockOutcome1.getName()).thenReturn("outcome1Name");
-    outcomesByUri.put(dichotomousVariable.getVariableConceptUri(), mockOutcome1);
-
-    Outcome mockOutcome2 = mock(Outcome.class);
-    when(mockOutcome2.getSemanticOutcomeUri()).thenReturn(continuousMeasurementStdDev.getVariableConceptUri());
-    when(mockOutcome2.getName()).thenReturn("outcome2Name");
-    outcomesByUri.put(continuousMeasurementStdDev.getVariableConceptUri(), mockOutcome2);
+    when(mockOutcome1.getId()).thenReturn(outcomeId1);
 
     Map<Integer, AbstractIntervention> interventionsById = new HashMap<>();
     AbstractIntervention interventionMock1 = mock(AbstractIntervention.class);
@@ -357,12 +211,15 @@ public class SingleStudyBenefitRiskServiceTest {
     when(interventionMock2.getName()).thenReturn(alternative2Name);
     interventionsById.put(interventionId2, interventionMock2);
 
-    Map<URI, String> dataSourcesIdsByOutcomeUri = new HashMap<>();
-    dataSourcesIdsByOutcomeUri.put(dichotomousVariable.getVariableConceptUri(), "dataSource1");
-    dataSourcesIdsByOutcomeUri.put(continuousMeasurementStdDev.getVariableConceptUri(), "dataSource2");
-
     URI sourceLink = URI.create("sourceLink");
-    return new SingleStudyContext(outcomesByUri, interventionsById, dataSourcesIdsByOutcomeUri, sourceLink);
+
+    SingleStudyContext context = new SingleStudyContext();
+    context.setSourceLink(sourceLink);
+    context.setOutcome(mockOutcome1);
+    context.setInterventionsById(interventionsById);
+    context.setDataSourceUuid("dataSource1");
+
+    return context;
   }
 
   @Test
@@ -383,7 +240,7 @@ public class SingleStudyBenefitRiskServiceTest {
     when(triplestoreService.findMatchingIncludedInterventions(interventions, unMatchedArm)).thenReturn(emptySet());
 
     // execute
-    List<TrialDataArm> result = singleStudyBenefitRiskService.getArmsWithMatching(interventions, arms);
+    List<TrialDataArm> result = singleStudyBenefitRiskService.getMatchedArms(interventions, arms);
 
     List<TrialDataArm> matchedArms = Arrays.asList(arm1, arm2);
     assertEquals(matchedArms, result);
@@ -410,7 +267,7 @@ public class SingleStudyBenefitRiskServiceTest {
 
     Boolean thrown = false;
     try {
-      singleStudyBenefitRiskService.getArmsWithMatching(interventions, arms);
+      singleStudyBenefitRiskService.getMatchedArms(interventions, arms);
     } catch (RuntimeException e) {
       assertEquals("too many matched interventions for arm when creating problem", e.getMessage());
       thrown = true;
@@ -430,55 +287,42 @@ public class SingleStudyBenefitRiskServiceTest {
   @Test
   public void testBuildContext() {
     String uuid1 = "uuid1";
-    String uuid2 = "uuid2";
-    when(uuidService.generate()).thenReturn(uuid1, uuid2);
+
+    when(uuidService.generate()).thenReturn(uuid1);
 
     URI sourceLink = URI.create("sourceLink");
     Project project = mock(Project.class);
     when(linkService.getStudySourceLink(project, studyUri)).thenReturn(sourceLink);
 
     URI outcome1Uri = URI.create("outcome1Uri");
-    URI outcome2Uri = URI.create("outcome2Uri");
     Outcome outcome1 = mock(Outcome.class);
     when(outcome1.getSemanticOutcomeUri()).thenReturn(outcome1Uri);
-    Outcome outcome2 = mock(Outcome.class);
-    when(outcome2.getSemanticOutcomeUri()).thenReturn(outcome2Uri);
     // Use sorted set to guarantee order so that the uuids are paired correctly
-    Set<Outcome> outcomes = new TreeSet<>(Comparator.comparing(Outcome::getSemanticOutcomeUri));
-    outcomes.addAll(Sets.newHashSet(outcome1, outcome2));
+
     AbstractIntervention intervention1 = mock(AbstractIntervention.class);
     when(intervention1.getId()).thenReturn(interventionId1);
     AbstractIntervention intervention2 = mock(AbstractIntervention.class);
     when(intervention2.getId()).thenReturn(interventionId2);
     HashSet<AbstractIntervention> interventions = Sets.newHashSet(intervention1, intervention2);
 
-    SingleStudyContext result = singleStudyBenefitRiskService.buildContext(project, studyUri, outcomes, interventions);
+    BenefitRiskStudyOutcomeInclusion inclusion = mock(BenefitRiskStudyOutcomeInclusion.class);
 
-    Map<URI, Outcome> outcomesByUri = new HashMap<>();
-    outcomesByUri.put(outcome1Uri, outcome1);
-    outcomesByUri.put(outcome2Uri, outcome2);
+    SingleStudyContext result = singleStudyBenefitRiskService.buildContext(project, studyUri, outcome1, interventions, inclusion);
 
     Map<Integer, AbstractIntervention> interventionsById = new HashMap<>();
     interventionsById.put(interventionId1, intervention1);
     interventionsById.put(interventionId2, intervention2);
-    Map<URI, String> dataSourceIdsByOutcome = new HashMap<>();
-    dataSourceIdsByOutcome.put(outcome1Uri, uuid1);
-    dataSourceIdsByOutcome.put(outcome2Uri, uuid2);
-    SingleStudyContext expectedResult = new SingleStudyContext(outcomesByUri, interventionsById, dataSourceIdsByOutcome, sourceLink);
 
-    System.out.println(expectedResult.getOutcomesByUri());
-    System.out.println(result.getOutcomesByUri());
-    System.out.println(expectedResult.getInterventionsById());
-    System.out.println(result.getInterventionsById());
-    System.out.println(expectedResult.getDataSourceIdsByOutcomeUri());
-    System.out.println(result.getDataSourceIdsByOutcomeUri());
-    System.out.println(expectedResult.getSourceLink());
-    System.out.println(result.getSourceLink());
-
+    SingleStudyContext expectedResult = new SingleStudyContext();
+    expectedResult.setOutcome(outcome1);
+    expectedResult.setDataSourceUuid(uuid1);
+    expectedResult.setInterventionsById(interventionsById);
+    expectedResult.setSourceLink(sourceLink);
+    expectedResult.setInclusion(inclusion);
 
     assertEquals(expectedResult, result);
 
-    verify(uuidService, times(2)).generate();
+    verify(uuidService).generate();
     verify(linkService).getStudySourceLink(project, studyUri);
   }
 }

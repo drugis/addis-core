@@ -1,5 +1,7 @@
 package org.drugis.addis.problems.service.model;
 
+import java.util.Objects;
+
 /**
  * Created by joris on 14-6-17.
  */
@@ -26,17 +28,14 @@ public class RelativePerformance extends AbstractPerformance{
   public boolean equals(Object o) {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
-
     RelativePerformance that = (RelativePerformance) o;
-
-    if (!type.equals(that.type)) return false;
-    return parameters.equals(that.parameters);
+    return Objects.equals(type, that.type) &&
+            Objects.equals(parameters, that.parameters);
   }
 
   @Override
   public int hashCode() {
-    int result = type.hashCode();
-    result = 31 * result + parameters.hashCode();
-    return result;
+
+    return Objects.hash(type, parameters);
   }
 }

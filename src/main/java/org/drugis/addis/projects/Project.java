@@ -8,6 +8,7 @@ import javax.persistence.*;
 import java.io.Serializable;
 import java.net.URI;
 import java.util.Date;
+import java.util.Objects;
 
 /**
  * Created by daan on 2/6/14.
@@ -109,30 +110,21 @@ public class Project implements Serializable {
   public boolean equals(Object o) {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
-
     Project project = (Project) o;
-
-    if (!id.equals(project.id)) return false;
-    if (!owner.equals(project.owner)) return false;
-    if (!name.equals(project.name)) return false;
-    if (description != null ? !description.equals(project.description) : project.description != null) return false;
-    if (!namespaceUid.equals(project.namespaceUid)) return false;
-    if (!datasetVersion.equals(project.datasetVersion)) return false;
-    if (!isArchived.equals(project.isArchived)) return false;
-    return archivedOn != null ? archivedOn.equals(project.archivedOn) : project.archivedOn == null;
+    return Objects.equals(id, project.id) &&
+            Objects.equals(owner, project.owner) &&
+            Objects.equals(name, project.name) &&
+            Objects.equals(description, project.description) &&
+            Objects.equals(namespaceUid, project.namespaceUid) &&
+            Objects.equals(datasetVersion, project.datasetVersion) &&
+            Objects.equals(isArchived, project.isArchived) &&
+            Objects.equals(archivedOn, project.archivedOn);
   }
 
   @Override
   public int hashCode() {
-    int result = id.hashCode();
-    result = 31 * result + owner.hashCode();
-    result = 31 * result + name.hashCode();
-    result = 31 * result + (description != null ? description.hashCode() : 0);
-    result = 31 * result + namespaceUid.hashCode();
-    result = 31 * result + datasetVersion.hashCode();
-    result = 31 * result + isArchived.hashCode();
-    result = 31 * result + (archivedOn != null ? archivedOn.hashCode() : 0);
-    return result;
+
+    return Objects.hash(id, owner, name, description, namespaceUid, datasetVersion, isArchived, archivedOn);
   }
 
   public ProjectCommand getCommand() {

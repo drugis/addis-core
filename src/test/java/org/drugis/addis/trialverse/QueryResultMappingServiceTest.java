@@ -96,7 +96,6 @@ public class QueryResultMappingServiceTest {
     TrialDataStudy study = studies.get(studyUri);
     MeasurementMoment measurementMoment = study.getMeasurementMoments().iterator().next();
     TrialDataArm arm = study.getArms().get(0);
-    assertEquals(arm.getReferenceArm(), referenceArmUri);
     Set<Measurement> measurements = arm.getMeasurements().get(measurementMoment.getUri());
 
     Measurement measurement = new MeasurementBuilder(studyUri, variableUri, variableConceptUri, armUri, ProblemService.DICHOTOMOUS_TYPE_URI)

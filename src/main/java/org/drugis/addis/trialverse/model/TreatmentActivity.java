@@ -1,9 +1,6 @@
 package org.drugis.addis.trialverse.model;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Created by connor on 14-8-14.
@@ -38,24 +35,17 @@ public class TreatmentActivity {
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
-    if (!(o instanceof TreatmentActivity)) return false;
-
+    if (o == null || getClass() != o.getClass()) return false;
     TreatmentActivity that = (TreatmentActivity) o;
-
-    if (!activityApplications.equals(that.activityApplications)) return false;
-    if (!administeredDrugs.equals(that.administeredDrugs)) return false;
-    if (!treatmentActivityType.equals(that.treatmentActivityType)) return false;
-    if (!treatmentActivityUri.equals(that.treatmentActivityUri)) return false;
-
-    return true;
+    return Objects.equals(treatmentActivityUri, that.treatmentActivityUri) &&
+            Objects.equals(treatmentActivityType, that.treatmentActivityType) &&
+            Objects.equals(activityApplications, that.activityApplications) &&
+            Objects.equals(administeredDrugs, that.administeredDrugs);
   }
 
   @Override
   public int hashCode() {
-    int result = treatmentActivityUri.hashCode();
-    result = 31 * result + treatmentActivityType.hashCode();
-    result = 31 * result + activityApplications.hashCode();
-    result = 31 * result + administeredDrugs.hashCode();
-    return result;
+
+    return Objects.hash(treatmentActivityUri, treatmentActivityType, activityApplications, administeredDrugs);
   }
 }

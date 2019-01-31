@@ -23,16 +23,20 @@ define(['lodash', 'angular'], function(_, angular) {
     ];
 
     function transformStudiesToTableRows(studies, interventions, analysis, covariates, treatmentOverlap) {
-      var tableRows = buildTableRowsFromStudies(studies, interventions, analysis, covariates, treatmentOverlap);
-      var rowPartitioning = _.partition(tableRows, function(row) {
-        return row.referenceArm;
-      });
+      var rows = buildTableRowsFromStudies(studies, interventions, analysis, covariates, treatmentOverlap);
+      var partitionedRows = partitionTableRows(rows);
 
-      var absoluteRows = sortTableByStudyAndIntervention(rowPartitioning[1]);
-      var contrastRows = sortTableByStudyAndIntervention(rowPartitioning[0]);
+      var absoluteRows = sortTableByStudyAndIntervention(partitionedRows[1]);
+      var contrastRows = sortTableByStudyAndIntervention(partitionedRows[0]);
       absoluteRows = addRenderingHintsToTable(absoluteRows);
       contrastRows = addRenderingHintsToTable(contrastRows);
       return { contrast: contrastRows, absolute: absoluteRows };
+    }
+
+    function partitionTableRows(rows) {
+      return _.partition(rows, function(row) {
+        return row.isContrastArm;
+      });
     }
 
     function buildTableRowsFromStudies(studies, interventions, analysis, covariates, treatmentOverlap) {
@@ -61,21 +65,16 @@ define(['lodash', 'angular'], function(_, angular) {
     }
 
     function createDataRow(study, covariates, interventions, treatmentOverlapMap, exclusionMap, analysis, arm) {
-      var dataRow = {};
-      dataRow.measurementMoments = study.measurementMoments;
-      dataRow.covariatesColumns = [];
-      dataRow.study = study.name;
-      dataRow.studyUri = study.studyUri;
-      dataRow.studyUuid = dataRow.studyUri.slice(dataRow.studyUri.lastIndexOf('/') + 1);
-      dataRow.studyRowSpan = study.arms.length;
-      dataRow.covariatesColumns = _(covariates).map(_.partial(createCovariateColumn, study)).compact().value();
-      dataRow.arm = arm.name;
-      dataRow.trialverseUid = arm.uri;
-      if (arm.referenceArm) {
-        dataRow.referenceArm = arm.referenceArm;
-        dataRow.referenceStdErr = arm.referenceStdErr;
-      }
-
+      var row = {};
+      row.measurementMoments = study.measurementMoments;
+      row.covariatesColumns = [];
+      row.study = study.name;
+      row.studyUri = study.studyUri;
+      row.studyUuid = row.studyUri.slice(row.studyUri.lastIndexOf('/') + 1);
+      row.studyRowSpan = study.arms.length;
+      row.covariatesColumns = _(covariates).map(_.partial(createCovariateColumn, study)).compact().value();
+      row.arm = arm.name;
+      row.trialverseUid = arm.uri;
       var overlappingTreatments;
       var intervention = _.find(interventions, function(intervention) {
         return _.find(arm.matchedProjectInterventionIds, function(id) {
@@ -84,27 +83,56 @@ define(['lodash', 'angular'], function(_, angular) {
       });
       if (intervention) {
         overlappingTreatments = treatmentOverlapMap[intervention.id];
-        dataRow.intervention = intervention.name;
-        dataRow.interventionId = intervention.id;
+        row.intervention = intervention.name;
+        row.interventionId = intervention.id;
       } else {
-        dataRow.intervention = 'unmatched';
+        row.intervention = 'unmatched';
       }
-      dataRow.included = !exclusionMap[arm.uri] && dataRow.intervention !== 'unmatched';
-      if (dataRow.included && overlappingTreatments) {
+      row.included = !exclusionMap[arm.uri] && row.intervention !== 'unmatched';
+      if (row.included && overlappingTreatments) {
         overlappingTreatments = [intervention].concat(overlappingTreatments);
-        dataRow.overlappingInterventionWarning = _.map(overlappingTreatments, 'name').join(', ');
+        row.overlappingInterventionWarning = _.map(overlappingTreatments, 'name').join(', ');
       }
-      dataRow.measurements = measurementsByMM(analysis, arm, study.measurementMoments);
-      return dataRow;
+      _.merge(row, getReferenceParameters(analysis, arm, study.measurementMoments));
+      var isReference = isReferenceRow(row, study);
+      row.isContrastArm = !!row.referenceArm || isReference;
+      if (!isReference) {
+        row.measurements = measurementsByMM(analysis, arm, study.measurementMoments);
+      }
+      return row;
+    }
+
+    function isReferenceRow(row, study) {
+      return _.some(study.arms, function(arm) {
+        return _.some(study.measurementMoments, function(moment) {
+          return _.some(arm.measurements[moment.uri], function(measurement) {
+            return measurement.referenceArm && measurement.referenceArm === row.trialverseUid;
+          });
+        });
+      });
+    }
+
+    function getReferenceParameters(analysis, arm, measurementMoments) {
+      var returnValue = {};
+      _.forEach(measurementMoments, function(measurementMoment) {
+        var measurementForOutcome = getMeasurementForOutcome(analysis, arm, measurementMoment);
+        if (measurementForOutcome && measurementForOutcome.referenceArm) {
+          returnValue = {
+            referenceArm: measurementForOutcome.referenceArm,
+            referenceStdErr: measurementForOutcome.referenceStdErr
+          };
+        }
+      });
+      return returnValue;
     }
 
     function measurementsByMM(analysis, arm, measurementMoments) {
       return _.reduce(measurementMoments, function(accum, measurementMoment) {
-        var outcomeMeasurement = getOutcomeMeasurement(analysis, arm, measurementMoment);
-        if (arm.referenceArm) {
-          accum[measurementMoment.uri] = getContrastMeasurement(outcomeMeasurement);
+        var measurementForOutcome = getMeasurementForOutcome(analysis, arm, measurementMoment);
+        if (measurementForOutcome && measurementForOutcome.referenceArm) {
+          accum[measurementMoment.uri] = getContrastMeasurement(measurementForOutcome);
         } else {
-          accum[measurementMoment.uri] = getAbsoluteMeasurement(outcomeMeasurement);
+          accum[measurementMoment.uri] = getAbsoluteMeasurement(measurementForOutcome);
         }
         return accum;
       }, {});
@@ -134,6 +162,15 @@ define(['lodash', 'angular'], function(_, angular) {
         meanDifference: toMeanDifferenceLabel(measurement),
         type: getRowMeasurementType(measurement)
       };
+    }
+
+    function getMeasurementForOutcome(analysis, arm, measurementMoment) {
+      if (measurementMoment) {
+        return _.find(arm.measurements[measurementMoment.uri], function(measurement) {
+          return analysis.outcome.semanticOutcomeUri === measurement.variableConceptUri;
+        });
+      }
+      return null;
     }
 
     function toMeanDifferenceLabel(measurement) {
@@ -196,15 +233,15 @@ define(['lodash', 'angular'], function(_, angular) {
       return 0;
     }
 
-    function addRenderingHintsToTable(table) {
+    function addRenderingHintsToTable(rows) {
       var currentStudy = 'null';
       var currentInterventionRow = {
         intervention: null
       };
       var row;
 
-      for (var i = 0; i < table.length; i++) {
-        row = table[i];
+      for (var i = 0; i < rows.length; i++) {
+        row = rows[i];
         if (row.intervention !== currentInterventionRow.intervention || row.intervention === 'unmatched') {
           row.firstInterventionRow = true;
           currentInterventionRow = row;
@@ -218,12 +255,11 @@ define(['lodash', 'angular'], function(_, angular) {
           currentInterventionRow = row;
           currentInterventionRow.interventionRowSpan = 0;
         }
-
         ++currentInterventionRow.interventionRowSpan;
-        table[i] = row;
+        rows[i] = row;
       }
 
-      return table;
+      return rows;
     }
 
     function buildExcludedArmsMap(excludedArms) {
@@ -339,16 +375,7 @@ define(['lodash', 'angular'], function(_, angular) {
     }
 
     function isReferenceArm(row) {
-      return row.referenceArm === row.trialverseUid;
-    }
-
-    function getOutcomeMeasurement(analysis, arm, measurementMoment) {
-      if (measurementMoment) {
-        return _.find(arm.measurements[measurementMoment.uri], function(measurement) {
-          return analysis.outcome.semanticOutcomeUri === measurement.variableConceptUri;
-        });
-      }
-      return null;
+      return row.isContrastArm && !row.measurements;
     }
 
     function hasMissingValue(measurement) {
@@ -369,7 +396,7 @@ define(['lodash', 'angular'], function(_, angular) {
         case 'dichotomous':
           return !hasValue(measurement.rate) || !hasValue(measurement.sampleSize);
         case 'continuous':
-          return !hasValue(measurement.mu) || 
+          return !hasValue(measurement.mu) ||
             (!hasValue(measurement.sigma) && !hasValue(measurement.stdErr)) ||
             (!hasValue(measurement.sampleSize) && !hasValue(measurement.stdErr));
         case 'survival':
@@ -417,38 +444,14 @@ define(['lodash', 'angular'], function(_, angular) {
           });
 
           if (matchedIntervention) {
-            var outcomeMeasurement = getOutcomeMeasurement(analysis, arm, selectedMM);
-            sum += outcomeMeasurement ? outcomeMeasurement.sampleSize : 0;
+            var measurementForOutcome = getMeasurementForOutcome(analysis, arm, selectedMM);
+            sum += measurementForOutcome ? measurementForOutcome.sampleSize : 0;
           }
         });
         return sum;
       }, 0);
       return interventionSum;
     }
-
-    function findArmForIntervention(arms, trialDataIntervention) {
-      return _.find(arms, function(arm) {
-        return _.some(arm.matchedProjectInterventionIds, function(id) {
-          return id === trialDataIntervention.id;
-        });
-      });
-    }
-
-    function studyMeasuresBothInterventions(study, fromIntervention, toIntervention) {
-      return fromIntervention && toIntervention &&
-        findArmForIntervention(study.arms, fromIntervention) &&
-        findArmForIntervention(study.arms, toIntervention);
-    }
-
-    function attachStudiesForEdges(edges, studies) {
-      return _.map(edges, function(edge) {
-        edge.studies = _.filter(studies, function(study) {
-          return studyMeasuresBothInterventions(study, edge.from, edge.to);
-        });
-        return edge;
-      });
-    }
-
 
     function transformStudiesToNetwork(studies, interventions, analysis, momentSelections) {
       var network = {
@@ -469,6 +472,29 @@ define(['lodash', 'angular'], function(_, angular) {
         return edge.studies.length > 0;
       });
       return network;
+    }
+
+    function attachStudiesForEdges(edges, studies) {
+      return _.map(edges, function(edge) {
+        edge.studies = _.filter(studies, function(study) {
+          return studyMeasuresBothInterventions(study, edge.from, edge.to);
+        });
+        return edge;
+      });
+    }
+
+    function studyMeasuresBothInterventions(study, fromIntervention, toIntervention) {
+      return fromIntervention && toIntervention &&
+        findArmForIntervention(study.arms, fromIntervention) &&
+        findArmForIntervention(study.arms, toIntervention);
+    }
+
+    function findArmForIntervention(arms, trialDataIntervention) {
+      return _.find(arms, function(arm) {
+        return _.some(arm.matchedProjectInterventionIds, function(id) {
+          return id === trialDataIntervention.id;
+        });
+      });
     }
 
     function buildInterventionInclusions(interventions, analysis) {
@@ -697,7 +723,7 @@ define(['lodash', 'angular'], function(_, angular) {
     function findPropertyInRows(rows, momentSelections, property) {
       return _.some(rows, function(row) {
         var moment = momentSelections[row.studyUri];
-        return row.included && hasValue(row.measurements[moment.uri][property]);
+        return row.included && row.measurements && hasValue(row.measurements[moment.uri][property]);
       });
     }
 

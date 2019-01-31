@@ -69,41 +69,83 @@ public class NetworkMetaAnalysisServiceImpl implements NetworkMetaAnalysisServic
   }
 
   @Override
-  public List<AbstractProblemEntry> buildAbsolutePerformanceEntries(NetworkMetaAnalysis analysis, List<TrialDataStudy> studies) {
-    final Map<URI, URI> selectedMeasurementMomentsByStudy = analysis.getIncludedMeasurementMoments()
-            .stream().collect(toMap(MeasurementMomentInclusion::getStudy, MeasurementMomentInclusion::getMeasurementMoment));
-
-    List<URI> excludedArmUris = analysis.getExcludedArms().stream()
-            .map(ArmExclusion::getTrialverseUid).collect(toList());
-
-    return buildAbsoluteEffectData(studies, selectedMeasurementMomentsByStudy, excludedArmUris);
+  public List<AbstractProblemEntry> buildAbsolutePerformanceEntries(
+          NetworkMetaAnalysis analysis,
+          List<TrialDataStudy> studies
+  ) {
+    final Map<URI, URI> selectedMeasurementMomentsByStudy = getIncludedMeasurementMomentsByStudy(analysis);
+    List<URI> excludedArmUris = getExcludedArmUris(analysis);
+    Outcome outcome = analysis.getOutcome();
+    List<AbstractProblemEntry> entries = getAbsoluteEntries(studies, selectedMeasurementMomentsByStudy, excludedArmUris, outcome);
+    return changeToStdErrEntriesIfNeeded(entries);
   }
 
-  private List<AbstractProblemEntry> buildAbsoluteEffectData(List<TrialDataStudy> studies, Map<URI, URI> selectedMeasurementMomentsByStudy, List<URI> excludedArmUris) {
-    List<AbstractProblemEntry> entries = studies.stream()
-            .map(study -> armsToAbsoluteEntries(selectedMeasurementMomentsByStudy, excludedArmUris, study))
+  private List<AbstractProblemEntry> getAbsoluteEntries(
+          List<TrialDataStudy> studies,
+          Map<URI, URI> selectedMeasurementMomentsByStudy,
+          List<URI> excludedArmUris,
+          Outcome outcome
+  ) {
+    return studies
+            .stream()
+            .map(study -> armsToAbsoluteEntries(selectedMeasurementMomentsByStudy, excludedArmUris, study, outcome))
             .reduce(new ArrayList<>(), this::listUnion);
-    return changeToStdErrEntriesIfNeeded(entries);
+  }
+
+  private List<URI> getExcludedArmUris(NetworkMetaAnalysis analysis) {
+    return analysis
+            .getExcludedArms()
+            .stream()
+            .map(ArmExclusion::getTrialverseUid)
+            .collect(toList());
+  }
+
+  private Map<URI, URI> getIncludedMeasurementMomentsByStudy(NetworkMetaAnalysis analysis) {
+    return analysis.getIncludedMeasurementMoments()
+            .stream()
+            .collect(toMap(MeasurementMomentInclusion::getStudy, MeasurementMomentInclusion::getMeasurementMoment));
+  }
+
+  private List<AbstractProblemEntry> armsToAbsoluteEntries(
+          Map<URI, URI> selectedMeasurementMomentsByStudy,
+          List<URI> excludedArmUris,
+          TrialDataStudy study,
+          Outcome outcome
+  ) {
+    final URI selectedMeasurementMoment = getSelectedMeasurementMoment(
+            selectedMeasurementMomentsByStudy, study);
+
+    List<TrialDataArm> filteredArms = filterAbsoluteArms(excludedArmUris, study, selectedMeasurementMoment, outcome);
+
+    // do not include studies with fewer than two included and matched arms
+    if (filteredArms.size() > 1) {
+      return filteredArms.stream()
+              .map(arm -> {
+                Set<Measurement> measurements = arm.getMeasurementsForMoment(selectedMeasurementMoment);
+                return networkMetaAnalysisEntryBuilder.buildAbsoluteEntry(study.getName(),
+                        getProjectInterventionId(arm), // safe because we filter unmatched arms
+                        measurements.iterator().next()); // nma has exactly one measurement
+              })
+              .collect(toList());
+    }
+    return new ArrayList<>();
   }
 
   @Override
   public RelativeEffectData buildRelativeEffectData(NetworkMetaAnalysis analysis, List<TrialDataStudy> studies) {
-    final Map<URI, URI> selectedMeasurementMomentsByStudy = analysis.getIncludedMeasurementMoments()
-            .stream().collect(toMap(MeasurementMomentInclusion::getStudy, MeasurementMomentInclusion::getMeasurementMoment));
-
-    List<URI> excludedArmUris = analysis.getExcludedArms().stream()
-            .map(ArmExclusion::getTrialverseUid).collect(toList());
-
-
-    Map<URI, RelativeDataEntry> data = buildRelativeDataEntries(studies, selectedMeasurementMomentsByStudy, excludedArmUris);
+    Map<URI, RelativeDataEntry> data = buildRelativeDataEntries(studies, analysis);
     return new RelativeEffectData(data);
-
   }
 
-  private Map<URI, RelativeDataEntry> buildRelativeDataEntries(List<TrialDataStudy> studies, Map<URI, URI> selectedMeasurementMomentsByStudy, List<URI> excludedArmUris) {
+  private Map<URI, RelativeDataEntry> buildRelativeDataEntries(
+          List<TrialDataStudy> studies,
+          NetworkMetaAnalysis analysis
+
+  ) {
     Map<URI, RelativeDataEntry> entries = new HashMap<>();
     studies.forEach(study -> {
-      RelativeDataEntry entry = buildRelativeDataEntry(selectedMeasurementMomentsByStudy, excludedArmUris, study);
+      RelativeDataEntry entry = buildRelativeDataEntry(
+              study, analysis);
       if (entry != null) {
         entries.put(study.getStudyUri(), entry);
       }
@@ -111,36 +153,67 @@ public class NetworkMetaAnalysisServiceImpl implements NetworkMetaAnalysisServic
     return entries;
   }
 
-  private RelativeDataEntry buildRelativeDataEntry(Map<URI, URI> momentsByStudy, List<URI> excludedArms, TrialDataStudy study) {
+  private RelativeDataEntry buildRelativeDataEntry(
+          TrialDataStudy study,
+          NetworkMetaAnalysis analysis
+  ) {
+    final Map<URI, URI> momentsByStudy = getIncludedMeasurementMomentsByStudy(analysis);
+    List<URI> excludedArms = getExcludedArmUris(analysis);
+    Outcome outcome = analysis.getOutcome();
     final URI selectedMoment = getSelectedMeasurementMoment(momentsByStudy, study);
-    List<TrialDataArm> filteredArms = filterRelativeArms(study, excludedArms, selectedMoment);
-    if (filteredArms.size() == 0) {
+    List<TrialDataArm> relativeArms = filterRelativeArms(study, excludedArms, selectedMoment, outcome);
+    if (relativeArms.size() == 0) {
       return null;
     }
-    TrialDataArm referenceArm = getReferenceArm(getReferenceArmUri(filteredArms), study);
+    URI referenceArmUri = getReferenceArmUri(relativeArms, selectedMoment, outcome);
+    TrialDataArm referenceArm = getReferenceArm(referenceArmUri, study);
 
-    List<AbstractProblemEntry> otherArms = buildOtherArms(filteredArms, study, selectedMoment);
-    Double baseArmStandardError = referenceArm.getReferenceStdErr();
-    Integer baseArmTreatment = getProjectInterventionId(referenceArm);
-    return new RelativeDataEntry(baseArmTreatment, baseArmStandardError, otherArms);
+    List<AbstractProblemEntry> otherArms = buildOtherArms(relativeArms, study, selectedMoment);
+    Double referenceArmStdErr = getReferenceStdErr(outcome, selectedMoment, relativeArms);
+    Integer referenceArmId = getProjectInterventionId(referenceArm);
+    return new RelativeDataEntry(referenceArmId, referenceArmStdErr, otherArms);
+  }
+
+  private Double getReferenceStdErr(Outcome outcome, URI selectedMoment, List<TrialDataArm> relativeArms) {
+    Double referenceArmStdErr = 0.0;
+    Set<Measurement> measurements = relativeArms.get(0).getMeasurementsForMoment(selectedMoment);
+    for (Measurement measurement : measurements) {
+      if (isMeasurementForOutcome(outcome, measurement)) {
+        referenceArmStdErr = measurement.getReferenceStdErr();
+        break;
+      }
+    }
+    return referenceArmStdErr;
+  }
+
+  private boolean isMeasurementForOutcome(Outcome outcome, Measurement measurement) {
+    return measurement.getVariableConceptUri().equals(outcome.getSemanticOutcomeUri());
   }
 
   private Integer getProjectInterventionId(TrialDataArm referenceArm) {
     return referenceArm.getMatchedProjectInterventionIds().iterator().next();
   }
 
-  private URI getReferenceArmUri(List<TrialDataArm> arms) {
-    return arms.get(0).getReferenceArm();
+  private URI getReferenceArmUri(List<TrialDataArm> arms, URI defaultMoment, Outcome outcome) {
+    Set<Measurement> measurements = arms.get(0).getMeasurementsForMoment(defaultMoment);
+    if (measurements.isEmpty()) {
+      measurements = arms.get(1).getMeasurementsForMoment(defaultMoment);
+    }
+    for (Measurement measurement : measurements) {
+      if (isMeasurementForOutcome(outcome, measurement)) {
+        return measurement.getReferenceArm();
+      }
+    }
+    return null;
   }
 
-  private TrialDataArm getReferenceArm(URI nonReferenceArm, TrialDataStudy study) {
+  private TrialDataArm getReferenceArm(URI referenceArm, TrialDataStudy study) {
     return study.getArms()
             .stream()
-            .filter(a -> a.getUri().equals(nonReferenceArm))
+            .filter(arm -> arm.getUri().equals(referenceArm))
             .collect(Collectors.toList())
             .get(0);
   }
-
 
   private List<AbstractProblemEntry> buildOtherArms(List<TrialDataArm> filteredArms, TrialDataStudy study, URI selectMoment) {
     if (filteredArms.size() > 0) {
@@ -158,15 +231,43 @@ public class NetworkMetaAnalysisServiceImpl implements NetworkMetaAnalysisServic
     return new ArrayList<>();
   }
 
-  private List<TrialDataArm> filterRelativeArms(TrialDataStudy trialDataStudy, List<URI> excludedArmUris, URI selectedMeasurementMoment) {
-    return trialDataStudy.getArms()
+  private List<TrialDataArm> filterRelativeArms(
+          TrialDataStudy trialDataStudy,
+          List<URI> excludedArmUris,
+          URI selectedMoment,
+          Outcome outcome
+  ) {
+    List<TrialDataArm> relativeArms = trialDataStudy.getArms()
             .stream()
-            .filter(arm -> !isAbsoluteEffectArm(arm))
-            .filter(arm -> !arm.getUri().equals(arm.getReferenceArm()))
-            .filter(arm -> arm.getMatchedProjectInterventionIds().size() == 1)
-            .filter(arm -> !excludedArmUris.contains(arm.getUri()))
-            .filter(arm -> arm.getMeasurementsForMoment(selectedMeasurementMoment) != null)
+            .filter(arm -> !isAbsoluteEffectArm(arm, outcome, selectedMoment))
+            .filter(arm -> isNonReferenceArm(arm, selectedMoment))
             .collect(toList());
+    return filterArms(excludedArmUris, selectedMoment, relativeArms);
+  }
+
+  private List<TrialDataArm> filterArms(
+          List<URI> excludedArmUris, URI selectedMoment, List<TrialDataArm> relativeArms) {
+    return relativeArms.stream()
+            .filter(arm -> hasMeasurements(selectedMoment, arm))
+            .filter(arm -> isArmExcluded(excludedArmUris, arm))
+            .filter(this::isArmUnambiguous)
+            .collect(toList());
+  }
+
+  private boolean hasMeasurements(URI selectedMoment, TrialDataArm arm) {
+    return arm.getMeasurementsForMoment(selectedMoment) != null;
+  }
+
+  private boolean isArmUnambiguous(TrialDataArm arm) {
+    return arm.getMatchedProjectInterventionIds().size() == 1;
+  }
+
+  private boolean isArmExcluded(List<URI> excludedArmUris, TrialDataArm arm) {
+    return !excludedArmUris.contains(arm.getUri());
+  }
+
+  private boolean isNonReferenceArm(TrialDataArm arm, URI selectedMoment) {
+    return arm.getMeasurementsForMoment(selectedMoment) != null;
   }
 
   private <T> List<T> listUnion(List<T> list1, List<T> list2) {
@@ -175,43 +276,36 @@ public class NetworkMetaAnalysisServiceImpl implements NetworkMetaAnalysisServic
     return result;
   }
 
-  private List<AbstractProblemEntry> armsToAbsoluteEntries(Map<URI, URI> selectedMeasurementMomentsByStudy, List<URI> excludedArmUris, TrialDataStudy study) {
-    final URI selectedMeasurementMoment = getSelectedMeasurementMoment(selectedMeasurementMomentsByStudy, study);
-
-    List<TrialDataArm> filteredArms = filterAbsoluteArms(excludedArmUris, study, selectedMeasurementMoment);
-
-    // do not include studies with fewer than two included and matched arms
-    if (filteredArms.size() > 1) {
-      return filteredArms.stream()
-              .map(arm -> {
-                Set<Measurement> measurements = arm.getMeasurementsForMoment(selectedMeasurementMoment);
-                return networkMetaAnalysisEntryBuilder.buildAbsoluteEntry(study.getName(),
-                        getProjectInterventionId(arm), // safe because we filter unmatched arms
-                        measurements.iterator().next()); // nma has exactly one measurement
-              })
-              .collect(toList());
-    }
-    return new ArrayList<>();
-  }
-
-  private List<TrialDataArm> filterAbsoluteArms(List<URI> excludedArmUris, TrialDataStudy study, URI selectedMeasurementMoment) {
-    return study.getArms()
+  private List<TrialDataArm> filterAbsoluteArms(
+          List<URI> excludedArmUris,
+          TrialDataStudy study,
+          URI selectedMoment,
+          Outcome outcome) {
+    List<TrialDataArm> absoluteArms = study.getArms()
             .stream()
-            .filter(this::isAbsoluteEffectArm)
-            .filter(arm -> arm.getMatchedProjectInterventionIds().size() == 1)
-            .filter(arm -> !excludedArmUris.contains(arm.getUri()))
-            .filter(arm -> arm.getMeasurementsForMoment(selectedMeasurementMoment) != null)
+            .filter(arm -> isAbsoluteEffectArm(arm, outcome, selectedMoment))
             .collect(toList());
+    return filterArms(excludedArmUris, selectedMoment, absoluteArms);
   }
 
-  private boolean isAbsoluteEffectArm(TrialDataArm arm) {
-    return arm.getReferenceArm() == null;
+  private boolean isAbsoluteEffectArm(TrialDataArm arm, Outcome outcome, URI selectedMoment) {
+    Set<Measurement> measurements = arm.getMeasurementsForMoment(selectedMoment);
+    if (measurements == null) {
+      return false;
+    }
+    for (Measurement measurement : measurements) {
+      Boolean isContrastMeasurement = measurement.getReferenceArm() != null && !measurement.getArmUri().equals(measurement.getReferenceArm());
+      if (isMeasurementForOutcome(outcome, measurement) && isContrastMeasurement) {
+        return false;
+      }
+    }
+    return true;
   }
 
-  private URI getSelectedMeasurementMoment(Map<URI, URI> selectedMeasurementMomentsByStudy, TrialDataStudy trialDataStudy) {
-    return selectedMeasurementMomentsByStudy.get(trialDataStudy.getStudyUri()) == null
-            ? trialDataStudy.getDefaultMeasurementMoment()
-            : selectedMeasurementMomentsByStudy.get(trialDataStudy.getStudyUri());
+  private URI getSelectedMeasurementMoment(Map<URI, URI> momentsByStudy, TrialDataStudy study) {
+    return momentsByStudy.get(study.getStudyUri()) == null
+            ? study.getDefaultMeasurementMoment()
+            : momentsByStudy.get(study.getStudyUri());
   }
 
   private List<AbstractProblemEntry> changeToStdErrEntriesIfNeeded(List<AbstractProblemEntry> entries) {
@@ -329,5 +423,4 @@ public class NetworkMetaAnalysisServiceImpl implements NetworkMetaAnalysisServic
     return resultsByUrl.entrySet().stream()
             .collect(Collectors.toMap(e -> modelsByTaskUrl.get(e.getKey()).getId(), Map.Entry::getValue));
   }
-
 }

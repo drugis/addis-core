@@ -395,7 +395,7 @@ define(['angular', 'lodash'], function(angular, _) {
           return node['@id'] === nonConformantMeasurementInstance;
         });
 
-        return !!_.find(graph, function(node) {
+        return _.some(graph, function(node) {
           return isResult(node) &&
             node.of_moment === measurementMomentUri &&
             nonConformantMeasurement.of_group === node.of_group &&

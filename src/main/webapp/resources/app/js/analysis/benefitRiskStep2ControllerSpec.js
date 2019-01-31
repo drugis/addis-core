@@ -1,7 +1,6 @@
 'use strict';
 define(['angular-mocks', './analysis'], function() {
   describe('benefit-risk step 2 controller', function() {
-
     var scope, q,
       stateParamsMock = {
         projectId: 37
@@ -30,7 +29,7 @@ define(['angular-mocks', './analysis'], function() {
         }],
         benefitRiskStudyOutcomeInclusions: []
       },
-      analysisResourceMock = jasmine.createSpyObj('AnalysisResource', ['get', 'query', 'save']),
+      analysisResourceMock = jasmine.createSpyObj('AnalysisResource', ['get', 'save']),
       interventionResourceMock = jasmine.createSpyObj('InterventionResource', ['query']),
       outcomeResourceMock = jasmine.createSpyObj('OutcomeResource', ['query']),
       modelResourceMock = jasmine.createSpyObj('OutcomeResource', ['getConsistencyModels']),
@@ -50,29 +49,24 @@ define(['angular-mocks', './analysis'], function() {
       modelsDefer,
       projectDefer,
       datasetDefer,
+      effectsTableDefer,
       benefitRiskService = jasmine.createSpyObj('BenefitRiskService', [
-        'addModelsGroup',
-        'compareAnalysesByModels',
-        'joinModelsWithAnalysis',
-        'buildOutcomeWithAnalyses',
         'buildOutcomes',
-        'numberOfSelectedInterventions',
-        'numberOfSelectedOutcomes',
-        'isModelWithMissingAlternatives',
-        'isModelWithoutResults',
-        'isMissingAnalysis',
-        'isMissingDataType',
-        'findMissingAlternatives',
-        'findOverlappingInterventions',
-        'isInvalidStudySelected',
-        'hasMissingStudy',
-        'findOverlappingOutcomes',
-        'addStudiesToOutcomes',
-        'addModelBaseline',
         'analysisToSaveCommand',
-        'finalizeAndGoToDefaultScenario'
+        'finalizeAndGoToDefaultScenario',
+        'analysisWithBaselines',
+        'getOutcomesWithInclusions',
+        'hasMissingBaseline'
       ]);
-
+      var benefitRiskStep2ServiceMock = jasmine.createSpyObj('BenefitRiskStep2Service', [
+        'addBaseline',
+        'addBaselineToInclusion',
+        'addScales',
+        'filterArchivedAndAddModels',
+        'getMeasurementType',
+        'prepareEffectsTable',
+        'getReferenceAlternativeName'
+      ]);
     beforeEach(angular.mock.module('addis.analysis'));
 
     beforeEach(inject(function($rootScope, $q, $controller) {
@@ -86,12 +80,10 @@ define(['angular-mocks', './analysis'], function() {
       projectDefer = q.defer();
       studiesDefer = q.defer();
       datasetDefer = q.defer();
+      effectsTableDefer = $q.defer();
 
       analysisResourceMock.get.and.returnValue({
         $promise: analysisDefer.promise
-      });
-      analysisResourceMock.query.and.returnValue({
-        $promise: analysisQueryDefer.promise
       });
       analysisResourceMock.save.and.returnValue({
         $promise: $q.resolve({})
@@ -105,6 +97,8 @@ define(['angular-mocks', './analysis'], function() {
       modelResourceMock.getConsistencyModels.and.returnValue({
         $promise: modelsDefer.promise
       });
+      benefitRiskStep2ServiceMock.prepareEffectsTable.and.returnValue(effectsTableDefer.promise);
+      effectsTableDefer.resolve({});
       project.$promise = projectDefer.promise;
       projectResourceMock.get.and.returnValue(project);
       projectStudiesResourceMock.query.and.returnValue({
@@ -125,11 +119,9 @@ define(['angular-mocks', './analysis'], function() {
 
       userServiceMock.isLoginUserId.and.returnValue($q.resolve(true));
 
-      benefitRiskService.compareAnalysesByModels.and.returnValue(0);
-      benefitRiskService.joinModelsWithAnalysis.and.returnValue([]);
-      benefitRiskService.findOverlappingInterventions.and.returnValue([]);
-      benefitRiskService.findOverlappingOutcomes.and.returnValue([]);
-      benefitRiskService.addStudiesToOutcomes.and.returnValue([]);
+      benefitRiskStep2ServiceMock.filterArchivedAndAddModels.and.returnValue([{
+        withModel: true
+      }]);
 
       $controller('BenefitRiskStep2Controller', {
         $scope: scope,
@@ -141,6 +133,7 @@ define(['angular-mocks', './analysis'], function() {
         $modal: modalMock,
         AnalysisResource: analysisResourceMock,
         BenefitRiskService: benefitRiskService,
+        BenefitRiskStep2Service: benefitRiskStep2ServiceMock,
         InterventionResource: interventionResourceMock,
         ModelResource: modelResourceMock,
         OutcomeResource: outcomeResourceMock,
@@ -173,15 +166,17 @@ define(['angular-mocks', './analysis'], function() {
 
     describe('when the analysis, outcomes, models, studies and alternatives are loaded', function() {
       beforeEach(function() {
-        benefitRiskService.buildOutcomeWithAnalyses.and.returnValue({
-          networkMetaAnalyses: [],
-          outcome: {
-            id: 1
-          }
-        });
-        benefitRiskService.addModelBaseline.and.returnValue({
+        benefitRiskStep2ServiceMock.addBaseline.and.returnValue({
           benefitRiskStudyOutcomeInclusions: []
         });
+        benefitRiskService.getOutcomesWithInclusions.and.returnValue([{
+          id: 2, isIncluded: true
+        }, {
+          id: 20, isIncluded: true
+        }, {
+          id: 200, isIncluded: false
+        }
+        ]);
         analysisDefer.resolve(analysis);
 
         interventionDefer.resolve([{
@@ -205,9 +200,6 @@ define(['angular-mocks', './analysis'], function() {
         }]);
         modelsDefer.resolve([]);
         studiesDefer.resolve([]);
-        benefitRiskService.addModelsGroup.and.returnValue({
-          withModel: true
-        });
         scope.$digest();
       });
       it('should determine which alternatives are included', function() {
@@ -236,18 +228,14 @@ define(['angular-mocks', './analysis'], function() {
       });
 
       it('should set the effects table promise, query the NMAs for the ', function() {
-        expect(benefitRiskService.joinModelsWithAnalysis).toHaveBeenCalled();
-        expect(benefitRiskService.addModelsGroup).toHaveBeenCalled();
+        expect(benefitRiskStep2ServiceMock.filterArchivedAndAddModels).toHaveBeenCalled();
         expect(benefitRiskService.buildOutcomes).toHaveBeenCalled();
       });
       it('should set the page title', function() {
         expect(pageTitleServiceMock.setPageTitle).toHaveBeenCalledWith('BenefitRiskStep2Controller', analysis.title + ' step 2');
       });
       it('should query for analysis about included outcomes', function() {
-        expect(analysisResourceMock.query).toHaveBeenCalledWith({
-          projectId: project.id,
-          outcomeIds: [2, 20]
-        });
+        expect(benefitRiskStep2ServiceMock.prepareEffectsTable).toHaveBeenCalledWith(scope.outcomes);
       });
       it('should set non-archived NMAs on the scope, with models added', function() {
         expect(scope.networkMetaAnalyses).toEqual([{

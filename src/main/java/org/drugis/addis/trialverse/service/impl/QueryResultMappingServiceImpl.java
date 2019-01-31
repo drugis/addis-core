@@ -56,13 +56,7 @@ public class QueryResultMappingServiceImpl implements QueryResultMappingService 
       TrialDataArm trialDataArm = armCache.get(armUri);
       if (trialDataArm == null) {
         String armLabel = readValue(row, "armLabel");
-        URI referenceArm = getValueFor(row, "referenceArm");
-        Double referenceStdErr = getValueFor(row, "referenceStandardError");
-        if (referenceArm != null) {
-          trialDataArm = new TrialDataArm(armUri, armLabel, referenceArm, referenceStdErr);
-        } else {
-          trialDataArm = new TrialDataArm(armUri, armLabel);
-        }
+        trialDataArm = new TrialDataArm(armUri, armLabel);
         armCache.put(armUri, trialDataArm);
         trialDataStudy.getArms().add(trialDataArm);
       }

@@ -3,9 +3,6 @@ package org.drugis.addis.trialverse.model.trialdata;
 import java.net.URI;
 import java.util.Objects;
 
-/**
- * Created by connor on 8-4-16.
- */
 public class AbstractSemanticIntervention {
   private URI drugInstance;
   private URI drugConcept;

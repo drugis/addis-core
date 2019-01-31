@@ -1,5 +1,7 @@
 package org.drugis.addis.trialverse.model;
 
+import java.util.Objects;
+
 /**
  * Created by connor on 19-8-14.
  */
@@ -24,20 +26,15 @@ public abstract class AdministeredDrug {
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
-    if (!(o instanceof AdministeredDrug)) return false;
-
+    if (o == null || getClass() != o.getClass()) return false;
     AdministeredDrug that = (AdministeredDrug) o;
-
-    if (!drugLabel.equals(that.drugLabel)) return false;
-    if (!drugUid.equals(that.drugUid)) return false;
-
-    return true;
+    return Objects.equals(drugUid, that.drugUid) &&
+            Objects.equals(drugLabel, that.drugLabel);
   }
 
   @Override
   public int hashCode() {
-    int result = drugUid.hashCode();
-    result = 31 * result + drugLabel.hashCode();
-    return result;
+
+    return Objects.hash(drugUid, drugLabel);
   }
 }
