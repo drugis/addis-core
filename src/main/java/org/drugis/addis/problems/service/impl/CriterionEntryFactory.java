@@ -12,20 +12,25 @@ import java.util.List;
 
 import static org.drugis.addis.problems.service.ProblemService.CONTINUOUS_TYPE_URI;
 import static org.drugis.addis.problems.service.ProblemService.DICHOTOMOUS_TYPE_URI;
+import static org.drugis.addis.problems.service.ProblemService.SURVIVAL_TYPE_URI;
 
 @Service
 public class CriterionEntryFactory {
   public CriterionEntry create(Measurement measurement, String outcomeName, String dataSourceId, URI sourceLink)  {
     List<Double> scale;
     String unitOfMeasurement;
-    if (DICHOTOMOUS_TYPE_URI.equals(measurement.getMeasurementTypeURI())) {
+    URI measurementTypeURI = measurement.getMeasurementTypeURI();
+    if (DICHOTOMOUS_TYPE_URI.equals(measurementTypeURI)) {
       scale = Arrays.asList(0.0, 1.0);
       unitOfMeasurement = "probability";
-    } else if (CONTINUOUS_TYPE_URI.equals(measurement.getMeasurementTypeURI())) { // continuous measurement
+    } else if (CONTINUOUS_TYPE_URI.equals(measurementTypeURI)) {
+      scale = Arrays.asList(null, null);
+      unitOfMeasurement = null;
+    }else if(SURVIVAL_TYPE_URI.equals(measurementTypeURI)){
       scale = Arrays.asList(null, null);
       unitOfMeasurement = null;
     } else {
-      throw new IllegalArgumentException("Unknown measurement type: " + measurement.getMeasurementTypeURI());
+      throw new IllegalArgumentException("Unknown measurement type: " + measurementTypeURI);
     }
 
     // NB: partial value functions to be filled in by MCDA component, left null here

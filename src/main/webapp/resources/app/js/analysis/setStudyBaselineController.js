@@ -17,6 +17,7 @@ define(['lodash', 'angular'], function(_) {
     callback
   ) {
     $scope.setBaseline = setBaseline;
+    $scope.cancel = $modalInstance.close;
 
     $scope.outcome = outcome;
     $scope.alternativeName = referenceAlternativeName;
@@ -41,7 +42,7 @@ define(['lodash', 'angular'], function(_) {
         type: 'dbeta-logit',
         alpha: undefined,
         beta: undefined,
-        property: 'Log odds ratio',
+        property: 'log odds ratio',
         distribution: 'Beta'
       },
       meanDifference: {
@@ -50,17 +51,18 @@ define(['lodash', 'angular'], function(_) {
         mean: undefined,
         'std.err': undefined,
         dof: undefined,
-        property: 'Mean Difference',
+        property: 'mean difference',
         distribution: 'Normal'
       },
       hazardRatio: {
         title: 'Hazard Ratio',
         type: 'dsurv',
-        responders: undefined,
-        exposure: undefined,
+        alpha: undefined,
+        beta: undefined,
         summaryMeasure: 'none',
-        property: 'Log hazard ratio',
-        distribution: 'Gamma'
+        property: 'log hazard ratio',
+        distribution: 'Gamma', 
+        scale: 'hazard ratio'
       }
     };
     $scope.propertyName = properties[measurementType].title;
