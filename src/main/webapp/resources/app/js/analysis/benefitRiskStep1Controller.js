@@ -134,7 +134,7 @@ define(['lodash', 'angular'], function(_) {
     }
 
     function updateOutcomeInclusion(inclusion) {
-      inclusion = BenefitRiskStep1Service.updateOutcomeInclusion(inclusion, $scope.includedAlternatives);
+      BenefitRiskStep1Service.updateOutcomeInclusion(inclusion, $scope.includedAlternatives);
       saveInclusions();
     }
 

@@ -9,27 +9,25 @@ define(['lodash'], function(_) {
     BenefitRiskService
   ) {
     function updateOutcomeInclusion(inclusion, alternatives) {
-      var newInclusion = angular.copy(inclusion);
-      if (!newInclusion.outcome.isIncluded) {
-        newInclusion.selectedAnalysis = undefined;
-        newInclusion.selectedStudy = undefined;
-        newInclusion.selectedModel = undefined;
-        newInclusion.dataType = undefined;
+      if (!inclusion.outcome.isIncluded) {
+        inclusion.selectedAnalysis = undefined;
+        inclusion.selectedStudy = undefined;
+        inclusion.selectedModel = undefined;
+        inclusion.dataType = undefined;
       } else {
-        if (newInclusion.dataType === 'network') {
-          newInclusion.selectedStudy = undefined;
-          newInclusion.selectedAnalysis = findSelectableAnalysis(newInclusion);
-          newInclusion.selectedModel = getModelSelection(newInclusion.selectedAnalysis);
-          if (newInclusion.selectedModel) {
-            newInclusion.selectedModel = updateMissingAlternatives(newInclusion, alternatives);
+        if (inclusion.dataType === 'network') {
+          inclusion.selectedStudy = undefined;
+          inclusion.selectedAnalysis = findSelectableAnalysis(inclusion);
+          inclusion.selectedModel = getModelSelection(inclusion.selectedAnalysis);
+          if (inclusion.selectedModel) {
+            inclusion.selectedModel = updateMissingAlternatives(inclusion, alternatives);
           }
-        } else if (newInclusion.dataType === 'single-study') {
-          newInclusion.selectedAnalysis = undefined;
-          newInclusion.selectedModel = undefined;
-          newInclusion.selectedStudy = {};
+        } else if (inclusion.dataType === 'single-study') {
+          inclusion.selectedAnalysis = undefined;
+          inclusion.selectedModel = undefined;
+          inclusion.selectedStudy = {};
         }
       }
-      return newInclusion;
     }
 
     function getModelSelection(analysis) {
