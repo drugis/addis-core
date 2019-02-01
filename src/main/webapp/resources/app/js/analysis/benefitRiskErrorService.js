@@ -50,7 +50,8 @@ define(['lodash'], function(_) {
         .find(function(inclusion) {
           return (
             (inclusion.selectedStudy && inclusion.selectedStudy.missingInterventions && inclusion.selectedStudy.missingInterventions.length > 0) ||
-            (inclusion.selectedStudy && inclusion.selectedStudy.missingOutcomes && inclusion.selectedStudy.missingOutcomes.length > 0)
+            (inclusion.selectedStudy && inclusion.selectedStudy.missingOutcomes && inclusion.selectedStudy.missingOutcomes.length > 0) ||
+            (inclusion.selectedStudy && inclusion.selectedStudy.hasMissingValues)
           );
         }).value();
       return invalidStudy;

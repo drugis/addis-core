@@ -8,7 +8,7 @@ define(['lodash'], function(_) {
       templateUrl: './studySelectDirective.html',
       scope: {
         studies: '=',
-        outcome: '=',
+        checkErrors: '=',
         interventions: '=',
         selection: '=',
         onChange: '=',
@@ -21,16 +21,22 @@ define(['lodash'], function(_) {
           scope.selection = {};
         }
         scope.$watch('studies', function() {
-          var studyOptions = SingleStudyBenefitRiskService.addMissingOutcomesToStudies(scope.studies, [scope.outcome]);
-          scope.studyOptions = SingleStudyBenefitRiskService.recalculateGroup(studyOptions, scope.interventions, scope.outcome);
+          scope.studyOptions = createStudyOptions();
           var oldSelection = scope.selection.selectedStudy;
           if (oldSelection) {
             scope.selection.selectedStudy = _.find(scope.studyOptions, ['studyUri', oldSelection.studyUri]);
+            scope.checkErrors();
           }
         });
 
+        function createStudyOptions(){
+          var studyOptions = SingleStudyBenefitRiskService.addMissingOutcomesToStudies(scope.studies, [scope.selection]);
+          studyOptions = SingleStudyBenefitRiskService.addMissingValuesToStudies(scope.studies, scope.interventions, scope.selection);
+          return SingleStudyBenefitRiskService.recalculateGroup(studyOptions, scope.interventions, scope.selection);
+        }
+
         function onStudySelect(newSelection) {
-          if (SingleStudyBenefitRiskService.isValidStudyOption(newSelection, scope.interventions, scope.outcome)) {
+          if (SingleStudyBenefitRiskService.isValidStudyOption(newSelection, scope.interventions, scope.selection)) {
             scope.onChange(newSelection);
           } else {
             scope.onChange();

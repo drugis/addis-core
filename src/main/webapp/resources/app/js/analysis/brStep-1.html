@@ -86,7 +86,7 @@
                   </div>
 
                   <div ng-if="outcome.dataType === 'single-study'" class="cell large-4 medium-4 small-8 indent-one">
-                    <study-select studies="studies" outcome="outcome" interventions="includedAlternatives" selection="outcome"
+                    <study-select studies="studies" check-errors="checkStep1Validity" interventions="includedAlternatives" selection="outcome"
                       on-change="saveInclusions" edit-mode="editMode"></study-select>
                   </div>
                 </div>

@@ -43,6 +43,7 @@ define(['lodash', 'angular'], function(_) {
     $scope.goToStep2 = goToStep2;
     $scope.saveInclusions = saveInclusions;
     $scope.finalizeAndGoToDefaultScenario = finalizeAndGoToDefaultScenario;
+    $scope.checkStep1Validity = checkStep1Validity;
 
     // init
     $scope.analysis = AnalysisResource.get($stateParams);
@@ -157,7 +158,7 @@ define(['lodash', 'angular'], function(_) {
     function updateStudyMissingStuff() {
       $scope.studies = SingleStudyBenefitRiskService.getStudiesWithErrors($scope.studies, $scope.includedAlternatives);
       $scope.overlappingInterventions = BenefitRiskStep1Service.findOverlappingInterventions($scope.studies);
-      $scope.outcomesWithAnalyses =_.map($scope.outcomesWithAnalyses, function(outcomeWithAnalyses) {
+      $scope.outcomesWithAnalyses = _.map($scope.outcomesWithAnalyses, function(outcomeWithAnalyses) {
         if (!_.isEmpty(outcomeWithAnalyses.selectedStudy)) {
           outcomeWithAnalyses.selectedStudy = _.find($scope.studies, ['studyUri', outcomeWithAnalyses.selectedStudy.studyUri]);
           outcomeWithAnalyses.selectedStudy.missingOutcomes = SingleStudyBenefitRiskService.findMissingOutcomes(outcomeWithAnalyses.selectedStudy, [outcomeWithAnalyses]);
