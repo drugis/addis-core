@@ -1,12 +1,16 @@
 'use strict';
 define(['lodash'], function(_) {
   var dependencies = [
-    'MappingService',
-    '$modal'
+    '$rootScope',
+    '$modal',
+    '$timeout',
+    'MappingService'
   ];
   var ConceptMappingItemDirective = function(
-    MappingService,
-    $modal
+    $rootScope,
+    $modal,
+    $timeout,
+    MappingService
   ) {
     return {
       restrict: 'E',
@@ -34,6 +38,13 @@ define(['lodash'], function(_) {
           if (scope.selectedDatasetConcept && scope.settings.label === 'Units') {
             scope.selections.selectedMultiplier = findMultiplier();
           }
+        });
+
+        $rootScope.$on('doubleMapping', function(event, data) {
+          if (!scope.selectedDatasetConcept || scope.studyConcept.uri === data.uri) { return; }
+          MappingService.hasDoubleMapping(scope.studyConcept, scope.selectedDatasetConcept).then(function(result) {
+            scope.doubleMapping = result;
+          });
         });
 
         function findMultiplier() {
@@ -65,13 +76,20 @@ define(['lodash'], function(_) {
           } else {
             scope.studyConcept.conversionMultiplier = 1e00;
           }
-          MappingService.updateMapping(scope.studyConcept, scope.selectedDatasetConcept);
+          MappingService.updateMapping(scope.studyConcept, scope.selectedDatasetConcept).then(function() {
+            MappingService.hasDoubleMapping(scope.studyConcept, scope.selectedDatasetConcept).then(function(result) {
+              scope.doubleMapping = result;
+              $rootScope.$broadcast('doubleMapping', scope.studyConcept);
+            });
+          });
         }
 
         function removeMapping() {
           MappingService.removeMapping(scope.studyConcept, scope.selectedDatasetConcept);
           scope.selections.selectedMultiplier = undefined;
           scope.selectedDatasetConcept = undefined;
+          scope.doubleMapping = false;
+          $rootScope.$broadcast('doubleMapping', scope.studyConcept);
         }
 
         function openRepairModal() {

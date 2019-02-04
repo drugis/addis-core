@@ -3,8 +3,12 @@ define(['angular-mocks', './mapping'], function() {
   describe('the mapping service', function() {
 
     var rootScope, q,
-      studyServiceMock = jasmine.createSpyObj('StudyService', ['getJsonGraph',
-        'saveGraph', 'getStudy', 'save', 'saveJsonGraph'
+      studyServiceMock = jasmine.createSpyObj('StudyService', [
+        'getJsonGraph',
+        'saveGraph',
+        'getStudy',
+        'save',
+        'saveJsonGraph'
       ]),
       mappingService,
       studyDefer,
@@ -29,19 +33,19 @@ define(['angular-mocks', './mapping'], function() {
 
 
     describe('set drug mapping where none existed', function() {
-
       var studyConcept = {
-          uri: 'http://testuri/1'
-        },
+        uri: 'http://testuri/1'
+      },
         datasetConcept = {
           '@id': 'http://testuri/2',
           '@type': 'ontology:Drug'
         };
+
       beforeEach(function(done) {
         studyGraphDefer.resolve([{
           '@id': 'http://testuri/1',
           '@type': 'ontology:Drug',
-          'label': 'Sertraline'
+          label: 'Sertraline'
         }]);
         mappingService.updateMapping(studyConcept, datasetConcept).then(done);
         rootScope.$digest();
@@ -51,7 +55,7 @@ define(['angular-mocks', './mapping'], function() {
         expect(studyServiceMock.saveJsonGraph).toHaveBeenCalledWith([{
           '@id': 'http://testuri/1',
           '@type': 'ontology:Drug',
-          'label': 'Sertraline',
+          label: 'Sertraline',
           'sameAs': datasetConcept['@id']
         }]);
         done();
@@ -61,8 +65,8 @@ define(['angular-mocks', './mapping'], function() {
     describe('set drug mapping where one existed', function() {
 
       var studyConcept = {
-          uri: 'http://testuri/1'
-        },
+        uri: 'http://testuri/1'
+      },
         datasetConcept1 = {
           '@id': 'http://testuri/dataset/1',
           '@type': 'ontology:Drug'
@@ -100,9 +104,9 @@ define(['angular-mocks', './mapping'], function() {
     describe('remove drug mapping', function() {
 
       var studyConcept = {
-          uri: 'http://testuri/1',
-          type: 'ontology:Drug'
-        },
+        uri: 'http://testuri/1',
+        type: 'ontology:Drug'
+      },
         datasetConcept = {
           '@id': 'http://testuri/dataset/1',
           '@type': 'ontology:Drug'
@@ -133,8 +137,8 @@ define(['angular-mocks', './mapping'], function() {
 
     describe('set variable mapping where none existed', function() {
       var studyConcept = {
-          uri: 'http://testuri/1'
-        },
+        uri: 'http://testuri/1'
+      },
         datasetConcept = {
           '@id': 'http://testuri/2',
           '@type': 'ontology:Variable'
@@ -147,7 +151,7 @@ define(['angular-mocks', './mapping'], function() {
             '@id': studyConcept.uri,
             '@type': 'ontology:AdverseEvent',
             'of_variable': [{
-              'label': 'Agitation'
+              label: 'Agitation'
             }]
           }]
         });
@@ -162,7 +166,7 @@ define(['angular-mocks', './mapping'], function() {
             '@id': studyConcept.uri,
             '@type': 'ontology:AdverseEvent',
             'of_variable': [{
-              'label': 'Agitation',
+              label: 'Agitation',
               'sameAs': datasetConcept['@id']
             }]
           }]
@@ -172,8 +176,8 @@ define(['angular-mocks', './mapping'], function() {
 
     describe('set variable mapping where one existed', function() {
       var studyConcept = {
-          uri: 'http://trials.drugis.org/instances/instance1'
-        },
+        uri: 'http://trials.drugis.org/instances/instance1'
+      },
         datasetConcept1 = {
           '@id': 'http://trials.drugis.org/entities/entities1',
           '@type': 'ontology:Variable'
@@ -189,7 +193,7 @@ define(['angular-mocks', './mapping'], function() {
             '@id': studyConcept.uri,
             '@type': 'ontology:AdverseEvent',
             'of_variable': [{
-              'label': 'Agitation',
+              label: 'Agitation',
               sameAs: datasetConcept1['@id']
             }]
           }]
@@ -205,7 +209,7 @@ define(['angular-mocks', './mapping'], function() {
             '@id': studyConcept.uri,
             '@type': 'ontology:AdverseEvent',
             'of_variable': [{
-              'label': 'Agitation',
+              label: 'Agitation',
               'sameAs': datasetConcept2['@id']
             }]
           }]
@@ -215,8 +219,8 @@ define(['angular-mocks', './mapping'], function() {
 
     describe('remove variable mapping', function() {
       var studyConcept = {
-          uri: 'http://testuri/1'
-        },
+        uri: 'http://testuri/1'
+      },
         datasetConcept = {
           '@id': 'http://testuri/2',
           '@type': 'ontology:Variable'
@@ -229,7 +233,7 @@ define(['angular-mocks', './mapping'], function() {
             '@id': studyConcept.uri,
             '@type': 'ontology:AdverseEvent',
             'of_variable': [{
-              'label': 'Agitation',
+              label: 'Agitation',
               'sameAs': datasetConcept['@id']
             }]
           }]
@@ -245,7 +249,7 @@ define(['angular-mocks', './mapping'], function() {
             '@id': studyConcept.uri,
             '@type': 'ontology:AdverseEvent',
             'of_variable': [{
-              'label': 'Agitation'
+              label: 'Agitation'
             }]
           }]
         });
@@ -393,6 +397,86 @@ define(['angular-mocks', './mapping'], function() {
           unitConcept: 'http://literConcept'
         }];
         expect(resultNoMin).toEqual(expectedResultNoMin);
+      });
+    });
+
+    describe('hasDoubleMapping', function() {
+      beforeEach(function() {
+        studyDefer.resolve({
+          '@type': 'ontology:Study',
+          'has_outcome': [{
+            '@id': 'studyConceptUri',
+            'of_variable': [{
+              label: 'Agitation',
+              sameAs: 'datasetConceptId'
+            }]
+          }, {
+            '@id': 'otherStudyConceptUri',
+            'of_variable': [{
+              label: 'Severe hairloss',
+              sameAs: 'datasetConceptId'
+            }]
+          }]
+        });
+        studyGraphDefer.resolve([{
+          '@id': 'http://testuri/1',
+          '@type': 'ontology:Drug', 
+          sameAs: 'datasetConceptId'
+        }]);
+      });
+
+      it('should return falsy if there is no double mapping', function() {
+        var studyConcept = {
+          uri: 'studyConceptUri'
+        };
+        var datasetConcept = {
+          '@id': 'datasetConceptId',
+          '@type': 'ontology:Variable'
+        };
+        mappingService.hasDoubleMapping(studyConcept, datasetConcept).then(function(result) {
+          expect(result).toBeFalsy();
+        });
+      });
+
+      it('should return falsy if it is the mapping of a unit', function() {
+        var studyConcept = {
+          uri: 'studyConceptUri'
+        };
+        var datasetConcept = {
+          '@id': 'datasetConceptId',
+          '@type': 'ontology:Unit'
+        };
+        mappingService.hasDoubleMapping(studyConcept, datasetConcept).then(function(result) {
+          expect(result).toBeFalsy();
+        });
+      });
+
+      it('should return an outcome mapped to the same concept if there is one', function() {
+        var studyConcept = {
+          uri: 'studyConceptUri'
+        };
+        var datasetConcept = {
+          '@id': 'datasetConceptId',
+          '@type': 'ontology:Variable'
+        };
+        var expectedResult = {};
+        mappingService.hasDoubleMapping(studyConcept, datasetConcept).then(function(result) {
+          expect(result).toEqual(expectedResult);
+        });
+      });
+
+      it('should return a drug mapped to the same concept if there is one', function() {
+        var studyConcept = {
+          uri: 'studyConceptUri'
+        };
+        var datasetConcept = {
+          '@id': 'datasetConceptId',
+          '@type': 'ontology:Drug'
+        };
+        var expectedResult = {};
+        mappingService.hasDoubleMapping(studyConcept, datasetConcept).then(function(result) {
+          expect(result).toEqual(expectedResult);
+        });
       });
     });
   });

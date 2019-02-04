@@ -14,6 +14,7 @@
   <button ng-show="settings.label === 'Units' && studyConcepts.length > 1" class="button small secondary"
     ng-click="openRepairModal()">merge
   </button>
+  <span ng-show="doubleMapping" class="alert">Concept is also mapped to: {{doubleMapping.label}}</span>
 </span>
 <span ng-show="!isEditingAllowed">
   <span ng-show="selectedDatasetConcept">{{selectedDatasetConcept.label}}</span>
