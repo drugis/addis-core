@@ -54,6 +54,7 @@ define(['lodash', 'angular'], function(_) {
     $scope.goToDefaultScenario = BenefitRiskService.goToDefaultScenario;
     $scope.project = ProjectResource.get($stateParams);
     $scope.userId = $stateParams.userUid;
+    $scope.isMissingBaseline = true;
 
     $scope.editMode = {
       allowEditing: false
