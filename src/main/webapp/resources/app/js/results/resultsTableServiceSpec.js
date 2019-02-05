@@ -32,8 +32,8 @@ define(['lodash', 'angular-mocks', './results'], function(_) {
             var testType = {
               resultProperties: [
                 'http://trials.drugis.org/ontology#mean',
-                'http://trials.drugis.org/ontology#standard_deviation',
-                'http://trials.drugis.org/ontology#sample_size'
+                'http://trials.drugis.org/ontology#sample_size',
+                'http://trials.drugis.org/ontology#standard_deviation'
               ]
             };
             var expectedResult = [{
@@ -196,8 +196,8 @@ define(['lodash', 'angular-mocks', './results'], function(_) {
           measurementType: {},
           resultProperties: [
             'http://trials.drugis.org/ontology#mean',
-            'http://trials.drugis.org/ontology#standard_deviation',
-            'http://trials.drugis.org/ontology#sample_size'
+            'http://trials.drugis.org/ontology#sample_size',
+            'http://trials.drugis.org/ontology#standard_deviation'
           ]
         };
         arms = [{

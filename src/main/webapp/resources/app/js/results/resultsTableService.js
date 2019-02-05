@@ -45,7 +45,7 @@ define(['lodash'], function(_) {
     }
 
     function createNonCategoricalHeaders(variable) {
-      return _.flatten(_.map(variable.resultProperties, function(property) {
+      var headers = _.flatten(_.map(variable.resultProperties, function(property) {
         var propertyDetails = getPropertyDetails(property, variable);
         if (propertyDetails.type === 'confidence_interval') {
           return createConfidenceIntervalHeaders(propertyDetails, variable);
@@ -53,6 +53,7 @@ define(['lodash'], function(_) {
           return createHeader(propertyDetails, variable);
         }
       }));
+      return putSampleSizeLast(headers, 'label');
     }
 
     function createConfidenceIntervalHeaders(details, variable) {
@@ -190,11 +191,11 @@ define(['lodash'], function(_) {
           return [];
         }
       }
-      return createNonCategoricalInputColumn(variable, valueObjects);
+      return createNonCategoricalInputColumns(variable, valueObjects);
     }
 
-    function createNonCategoricalInputColumn(variable, valueObjects) {
-      return _(variable.resultProperties)
+    function createNonCategoricalInputColumns(variable, valueObjects) {
+      var columns =  _(variable.resultProperties)
         .reduce(function(accum, property) {
           var details = ResultsService.getResultPropertyDetails(property, variable.armOrContrast);
           if (details.type === 'confidence_interval') {
@@ -203,6 +204,18 @@ define(['lodash'], function(_) {
             return accum.concat(createColumn(property, details, valueObjects));
           }
         }, []);
+        return putSampleSizeLast(columns, 'valueName');
+    }
+
+    function putSampleSizeLast(columns, nameProperty) {
+      var sampleSizeIndex = _.findIndex(columns, function(column) {
+        return column[nameProperty] === 'N';
+      });
+      if (sampleSizeIndex !== -1) {
+        var sampleSizeColumn = columns[sampleSizeIndex];
+        columns = _.without(columns, sampleSizeColumn).concat([sampleSizeColumn]);
+      }
+      return columns;
     }
 
     function createConfidenceIntervalColumns(variable, valueObjects) {

@@ -8,7 +8,7 @@ define(['lodash'], function(_) {
     }
 
     function addMissingOutcomesToStudies(studies, outcomes) {
-      return studies.map(function(study) {
+      return _.map(studies, function(study) {
         var updatedStudy = _.cloneDeep(study);
         updatedStudy.missingOutcomes = findMissingOutcomes(updatedStudy, outcomes);
         return updatedStudy;
