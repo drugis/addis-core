@@ -68,10 +68,9 @@ define(['lodash'], function(_) {
       });
 
       PageTitleService.setPageTitle('BenefitRiskController', analysis.title);
-
-      if (UserService.isLoginUserId(project.owner.id) && !analysis.archived) {
-        $scope.editMode.allowEditing = true;
-      }
+      UserService.isLoginUserId(project.owner.id).then(function(isUserOwner) {
+        $scope.editMode.allowEditing = isUserOwner && !analysis.archived;
+      });
 
       $scope.projectVersionUuid = project.datasetVersion.split('/versions/')[1];
       setDataSetOwner();

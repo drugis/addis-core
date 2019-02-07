@@ -87,7 +87,10 @@ define(['lodash', 'angular'], function(_, angular) {
     setPageTitle(activeTab);
     $scope.projects = ProjectResource.query();
 
-    $scope.editMode.allowEditing = !project.archived && UserService.isLoginUserId($scope.project.owner.id);
+    UserService.isLoginUserId($scope.project.owner.id).then(function(isUserOwner) {
+      $scope.editMode.allowEditing = !project.archived && isUserOwner;
+    });
+
     UserService.getLoginUser().then(function(user) {
       $scope.editMode.allowCopying = !!user;
     });

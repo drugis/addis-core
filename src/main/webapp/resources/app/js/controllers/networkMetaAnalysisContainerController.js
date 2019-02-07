@@ -65,20 +65,17 @@ define(['lodash'], function(_) {
     $scope.treatmentOverlapMap = {};
     $scope.isModelCreationBlocked = setErrorsTexts();
     $scope.editMode = {
-      hasModel: true
+      hasModel: true,
+      isUserOwner: false,
+      disableEditing: true
     };
 
     PageTitleService.setPageTitle('NetworkMetaAnalysisContainerController', currentAnalysis.title);
 
     // make available for create model permission check in models.html (which is in gemtc subproject)
     $scope.userId = Number($stateParams.userUid);
-    var isUserOwner = false;
 
-    UserService.getLoginUser().then(function(user) {
-      if (user) {
-        $scope.loginUserId = user.id;
-        isUserOwner = UserService.isLoginUserId($scope.project.owner.id);
-      }
+    UserService.isLoginUserId($scope.project.owner.id).then(function(isUserOwner) {
       $scope.editMode.isUserOwner = isUserOwner;
       $scope.editMode.disableEditing = !isUserOwner || $scope.project.archived || $scope.analysis.archived;
     });
@@ -266,7 +263,7 @@ define(['lodash'], function(_) {
       if ($scope.errors.containsMissingValue) {
         $scope.errorTexts.push('The evidence table contains missing values');
       }
-      if($scope.errors.containsMultipleResultProperties){
+      if ($scope.errors.containsMultipleResultProperties) {
         $scope.errorTexts.push('The evidence table contains studies with conflicting result properties');
       }
       return blockModelCreation();

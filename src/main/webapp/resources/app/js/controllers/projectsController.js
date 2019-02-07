@@ -70,7 +70,9 @@ define(['angular', 'lodash'], function(angular, _) {
           $scope.showArchived = false;
         }
       });
-      $scope.editMode.allowEditing = UserService.isLoginUserId($scope.userId);
+      UserService.isLoginUserId($scope.userId).then(function(isUserOwner){
+        $scope.editMode.allowEditing = isUserOwner;
+      });
     }
   };
   return dependencies.concat(ProjectsController);
