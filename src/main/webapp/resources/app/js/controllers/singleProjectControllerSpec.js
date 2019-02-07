@@ -71,7 +71,6 @@ define(['angular-mocks'], function(angularMocks) {
         description: 'trialverseDescription'
       },
       mockOutcomes = [1, 2, 3],
-      outcomeDeferred,
       mockInterventions = [{
         name: 'a',
         val: 4
@@ -82,7 +81,6 @@ define(['angular-mocks'], function(angularMocks) {
         name: 'c',
         val: 6
       }],
-      interventionDeferred,
       mockAnalysis = {
         projectId: 1,
         id: 2,
@@ -111,6 +109,7 @@ define(['angular-mocks'], function(angularMocks) {
         unitUri: 'unitUri2'
       }],
       userDefer;
+    var isLoginUserDefer;
 
     beforeEach(angular.mock.module('addis.controllers'));
 
@@ -171,8 +170,6 @@ define(['angular-mocks'], function(angularMocks) {
       mockAnalysis.$promise = analysisDeferred.promise;
       studiesDeferred = $q.defer();
       mockStudies.$promise = studiesDeferred.promise;
-      outcomeDeferred = $q.defer();
-      interventionDeferred = $q.defer();
       trialverseDeferred = $q.defer();
       mockTrialverse.$promise = trialverseDeferred.promise;
 
@@ -184,7 +181,8 @@ define(['angular-mocks'], function(angularMocks) {
       state = jasmine.createSpyObj('state', ['go']);
       userDefer = $q.defer();
       userServiceMock.getLoginUser.and.returnValue(userDefer.promise);
-
+      isLoginUserDefer = $q.defer();
+      userServiceMock.isLoginUserId.and.returnValue(isLoginUserDefer.promise);
 
       var mockHistory = {
         creator: 'Jan',
@@ -265,12 +263,13 @@ define(['angular-mocks'], function(angularMocks) {
       });
 
       it('isOwnProject should be true if the project is owned by the logged-in user', function() {
-        expect(scope.editMode.allowEditing).toEqual(userServiceMock.isLoginUserId());
+        isLoginUserDefer.resolve(true);
+        scope.$apply();
+        expect(scope.editMode.allowEditing).toBeTruthy();
       });
 
       it('isOwnProject should be false if the project is not owned by the logged-in user', function() {
-        userServiceMock.isLoginUserId.and.returnValue(false);
-        projectDeferred.resolve();
+        projectDeferred.resolve(false);
         scope.$apply();
         expect(scope.editMode.allowEditing).toBeFalsy();
       });
