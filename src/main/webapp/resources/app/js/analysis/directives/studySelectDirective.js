@@ -31,7 +31,7 @@ define(['lodash'], function(_) {
 
         function createStudyOptions(){
           var studyOptions = SingleStudyBenefitRiskService.addMissingOutcomesToStudies(scope.studies, [scope.selection]);
-          studyOptions = SingleStudyBenefitRiskService.addMissingValuesToStudies(scope.studies, scope.interventions, scope.selection);
+          studyOptions = SingleStudyBenefitRiskService.addMissingValuesToStudies(studyOptions, scope.interventions, scope.selection);
           return SingleStudyBenefitRiskService.recalculateGroup(studyOptions, scope.interventions, scope.selection);
         }
 
@@ -44,7 +44,6 @@ define(['lodash'], function(_) {
         }
       }
     };
-
   };
 
   return dependencies.concat(StudySelectDirective);

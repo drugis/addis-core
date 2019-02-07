@@ -36,8 +36,9 @@ define(['lodash'], function(_) {
 
     function addMissingInterventionsToStudies(studies, selectedInterventions) {
       return studies.map(function(study) {
-        study.missingInterventions = findMissingInterventions(selectedInterventions, study.arms);
-        return study;
+        var newStudy = angular.copy(study);
+        newStudy.missingInterventions = findMissingInterventions(selectedInterventions, study.arms);
+        return newStudy;
       });
     }
 
