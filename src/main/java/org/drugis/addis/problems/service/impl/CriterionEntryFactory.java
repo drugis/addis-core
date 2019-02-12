@@ -2,6 +2,7 @@ package org.drugis.addis.problems.service.impl;
 
 import org.drugis.addis.problems.model.CriterionEntry;
 import org.drugis.addis.problems.model.DataSourceEntry;
+import org.drugis.addis.problems.model.PartialValueFunction;
 import org.drugis.addis.trialverse.model.trialdata.Measurement;
 import org.springframework.stereotype.Service;
 
@@ -16,7 +17,7 @@ import static org.drugis.addis.problems.service.ProblemService.SURVIVAL_TYPE_URI
 
 @Service
 public class CriterionEntryFactory {
-  public CriterionEntry create(Measurement measurement, String outcomeName, String dataSourceId, URI sourceLink)  {
+  public CriterionEntry create(Measurement measurement, String outcomeName, String dataSourceId, URI referenceLink)  {
     List<Double> scale;
     String unitOfMeasurement;
     URI measurementTypeURI = measurement.getMeasurementTypeURI();
@@ -33,8 +34,9 @@ public class CriterionEntryFactory {
       throw new IllegalArgumentException("Unknown measurement type: " + measurementTypeURI);
     }
 
-    // NB: partial value functions to be filled in by MCDA component, left null here
-    DataSourceEntry dataSourceEntry = new DataSourceEntry(dataSourceId, scale, /*pvf*/ null, "study", sourceLink);
+    PartialValueFunction pvf = null;
+    String reference = "study";
+    DataSourceEntry dataSourceEntry = new DataSourceEntry(dataSourceId, scale, pvf, reference, referenceLink);
     return new CriterionEntry(
             Collections.singletonList(dataSourceEntry),
             outcomeName,

@@ -63,6 +63,7 @@ SELECT DISTINCT
 ?referenceStandardError
 ?isReferenceArm
 ?armOrContrast
+?isLog
 (COALESCE(?treatmentTypeOptional, "http://trials.drugis.org/ontology#SimpleDrugTreatment") AS ?treatmentType)
 WHERE {
   BIND ($graphSelector AS ?graph) .
@@ -164,6 +165,9 @@ WHERE {
       }
       OPTIONAL {
         ?measurement ontology:confidence_interval_upper_bound ?confidenceIntervalUpperBound .
+      }
+      OPTIONAL {
+        ?measurement ontology:is_log ?isLog .
       }
     }
 

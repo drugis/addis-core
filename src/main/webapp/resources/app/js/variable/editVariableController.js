@@ -66,6 +66,7 @@ define(['lodash'], function(_) {
         variable.contrastOption = _.find(variable.contrastOptions, function(option) {
           return _.includes(variable.resultProperties, option.uri);
         });
+        variable.isLog = !!variable.isLog;
       }
       return variable;
     }

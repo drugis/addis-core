@@ -378,7 +378,7 @@ define(['angular'], function(angular) {
   var CONTRAST_OPTIONS_DETAILS = {
     odds_ratio: {
       type: 'odds_ratio',
-      label: 'log odds ratio',
+      label: 'odds ratio',
       armOrContrast: CONTRAST_TYPE,
       isLog: true,
       category: 'Central tendency',
@@ -390,7 +390,7 @@ define(['angular'], function(angular) {
     },
     risk_ratio: {
       type: 'risk_ratio',
-      label: 'log risk ratio',
+      label: 'risk ratio',
       armOrContrast: CONTRAST_TYPE,
       isLog: true,
       category: 'Central tendency',
@@ -424,7 +424,7 @@ define(['angular'], function(angular) {
     },
     hazard_ratio: {
       type: 'hazard_ratio',
-      label: 'log hazard ratio',
+      label: 'hazard ratio',
       armOrContrast: CONTRAST_TYPE,
       isLog: true,
       category: 'Central tendency',

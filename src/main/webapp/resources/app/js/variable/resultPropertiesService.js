@@ -91,6 +91,7 @@ define(['angular', 'lodash'], function(angular, _) {
         newVariable.referenceArm = arms[0].armURI;
         newVariable.contrastOptions = getContrastOptions(variable.measurementType);
         newVariable.contrastOption = newVariable.contrastOptions[0];
+        newVariable.isLog = newVariable.contrastOption.isLog;
       }
       return newVariable;
     }
