@@ -74,9 +74,11 @@ define(['lodash'], function(_) {
 
     // make available for create model permission check in models.html (which is in gemtc subproject)
     $scope.userId = Number($stateParams.userUid);
-    $scope.loginUserId = $scope.project.owner.id;
+    UserService.getLoginUser().then(function(result){
+      $scope.loginUserId = result? result.id : undefined;
+    });
 
-    UserService.isLoginUserId($scope.loginUserId).then(function(isUserOwner) {
+    UserService.isLoginUserId($scope.userId).then(function(isUserOwner) {
       $scope.editMode.isUserOwner = isUserOwner;
       $scope.editMode.disableEditing = !isUserOwner || $scope.project.archived || $scope.analysis.archived;
     });
