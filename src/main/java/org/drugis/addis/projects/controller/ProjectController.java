@@ -118,8 +118,7 @@ public class ProjectController extends AbstractAddisCoreController {
   @RequestMapping(value = "/projects/{projectId}/copy", method = RequestMethod.POST)
   @ResponseBody
   public Integer copy(Principal principal, @PathVariable Integer projectId,
-                      @RequestBody CopyCommand copyCommand) throws ResourceDoesNotExistException,
-          MethodNotAllowedException, SQLException {
+                      @RequestBody CopyCommand copyCommand) throws ResourceDoesNotExistException, SQLException {
     Account user = accountRepository.findAccountByUsername(principal.getName());
     return projectService.copy(user, projectId, copyCommand.getNewTitle());
   }
