@@ -318,7 +318,8 @@ define([
           resultProperties: varTypes,
           contrastOptions: [contrastOptions.hazard_ratio],
           contrastOption: contrastOptions.hazard_ratio,
-          referenceArm: 'arm1'
+          referenceArm: 'arm1',
+          isLog: true
         };
         expect(result).toEqual(expectedResult);
       });

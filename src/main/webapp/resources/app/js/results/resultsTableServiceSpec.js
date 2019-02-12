@@ -120,7 +120,7 @@ define(['lodash', 'angular-mocks', './results'], function(_) {
               armOrContrast: CONTRAST
             };
             var expectedResult = [{
-              label: 'log odds ratio',
+              label: 'odds ratio',
               lexiconKey: 'odds-ratio',
               analysisReady: true
             }, {
@@ -169,7 +169,7 @@ define(['lodash', 'angular-mocks', './results'], function(_) {
               armOrContrast: CONTRAST
             };
             var expectedResult = [{
-              label: 'log hazard ratio',
+              label: 'hazard ratio',
               lexiconKey: 'hazard-ratio',
               analysisReady: true
             }, {
@@ -526,7 +526,7 @@ define(['lodash', 'angular-mocks', './results'], function(_) {
         it('should create input columns', function() {
           expect(resultRows[2].inputColumns).toBeDefined();
           expect(resultRows[2].inputColumns.length).toBe(2);
-          expect(resultRows[2].inputColumns[0].valueName).toEqual('log odds ratio');
+          expect(resultRows[2].inputColumns[0].valueName).toEqual('odds ratio');
           expect(resultRows[2].inputColumns[0].dataType).toEqual(DOUBLE_TYPE);
           expect(resultRows[2].inputColumns[0].isInValidValue).toEqual(false);
           expect(resultRows[2].inputColumns[0].value).toEqual(66);
@@ -554,7 +554,7 @@ define(['lodash', 'angular-mocks', './results'], function(_) {
           it('should create input columns', function() {
             expect(resultRows[2].inputColumns).toBeDefined();
             expect(resultRows[2].inputColumns.length).toBe(2);
-            expect(resultRows[2].inputColumns[0].valueName).toEqual('log odds ratio');
+            expect(resultRows[2].inputColumns[0].valueName).toEqual('odds ratio');
             expect(resultRows[2].inputColumns[0].dataType).toEqual(DOUBLE_TYPE);
             expect(resultRows[2].inputColumns[0].isInValidValue).toEqual(false);
             expect(resultRows[2].inputColumns[0].value).toEqual(66);
