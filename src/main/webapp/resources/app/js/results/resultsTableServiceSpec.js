@@ -110,74 +110,123 @@ define(['lodash', 'angular-mocks', './results'], function(_) {
       });
 
       describe('for contrast', function() {
-        describe('for continuous data', function() {
-          it('should return a list containting odds ratio and standard error the result properties', function() {
-            var testType = {
-              resultProperties: [
-                'http://trials.drugis.org/ontology#odds_ratio',
-                'http://trials.drugis.org/ontology#standard_error'
-              ],
-              armOrContrast: CONTRAST
-            };
-            var expectedResult = [{
-              label: 'odds ratio',
-              lexiconKey: 'odds-ratio',
-              analysisReady: true
-            }, {
-              label: 'standard error',
-              lexiconKey: 'standard-error',
-              analysisReady: true
-            }];
-            expect(resultsTableService.createHeaders(testType)).toEqual(expectedResult);
+        describe('for non-log', function() {
+          describe('continuous data', function() {
+            it('should return a list containting odds ratio and standard error the result properties', function() {
+              var testType = {
+                resultProperties: [
+                  'http://trials.drugis.org/ontology#odds_ratio',
+                  'http://trials.drugis.org/ontology#standard_error'
+                ],
+                armOrContrast: CONTRAST
+              };
+              var expectedResult = [{
+                label: 'odds ratio',
+                lexiconKey: 'odds-ratio',
+                analysisReady: true
+              }, {
+                label: 'standard error',
+                lexiconKey: 'standard-error',
+                analysisReady: true
+              }];
+              expect(resultsTableService.createHeaders(testType)).toEqual(expectedResult);
+            });
+          });
+
+          describe('dichotomous data', function() {
+            it('should return a list containting the standardized mean difference and confidence interval width result properties', function() {
+              var testType = {
+                resultProperties: [
+                  'http://trials.drugis.org/ontology#standardized_mean_difference',
+                  'http://trials.drugis.org/ontology#confidence_interval_width'
+                ],
+                armOrContrast: CONTRAST,
+                confidenceIntervalWidth: 70
+              };
+              var expectedResult = [{
+                label: 'standardized mean difference',
+                lexiconKey: 'standardized-mean-difference',
+                analysisReady: true
+              }, {
+                label: '70% confidence interval lower bound',
+                lexiconKey: 'confidence-interval',
+                analysisReady: true
+              }, {
+                label: '70% confidence interval upper bound',
+                lexiconKey: 'confidence-interval',
+                analysisReady: true
+              }];
+              expect(resultsTableService.createHeaders(testType)).toEqual(expectedResult);
+            });
+          });
+
+          describe(' survival data ', function() {
+            it('should return a list containting the hazard ratio and standard error result properties', function() {
+              var testType = {
+                resultProperties: [
+                  'http://trials.drugis.org/ontology#hazard_ratio',
+                  'http://trials.drugis.org/ontology#standard_error'
+                ],
+                armOrContrast: CONTRAST
+              };
+              var expectedResult = [{
+                label: 'hazard ratio',
+                lexiconKey: 'hazard-ratio',
+                analysisReady: true
+              }, {
+                label: 'standard error',
+                lexiconKey: 'standard-error',
+                analysisReady: true
+              }];
+              expect(resultsTableService.createHeaders(testType)).toEqual(expectedResult);
+            });
           });
         });
-
-        describe('for dichotomous data', function() {
-          it('should return a list containting the standardized mean difference and confidence interval width result properties', function() {
-            var testType = {
-              resultProperties: [
-                'http://trials.drugis.org/ontology#standardized_mean_difference',
-                'http://trials.drugis.org/ontology#confidence_interval_width'
-              ],
-              armOrContrast: CONTRAST,
-              confidenceIntervalWidth: 70
-            };
-            var expectedResult = [{
-              label: 'standardized mean difference',
-              lexiconKey: 'standardized-mean-difference',
-              analysisReady: true
-            }, {
-              label: '70% confidence interval lower bound',
-              lexiconKey: 'confidence-interval',
-              analysisReady: true
-            }, {
-              label: '70% confidence interval upper bound',
-              lexiconKey: 'confidence-interval',
-              analysisReady: true
-            }];
-            expect(resultsTableService.createHeaders(testType)).toEqual(expectedResult);
+        describe('for log', function() {
+          describe('continuous data', function() {
+            it('should return a list containting odds ratio and standard error the result properties', function() {
+              var testType = {
+                resultProperties: [
+                  'http://trials.drugis.org/ontology#odds_ratio',
+                  'http://trials.drugis.org/ontology#standard_error'
+                ],
+                armOrContrast: CONTRAST,
+                isLog: true
+              };
+              var expectedResult = [{
+                label: 'log odds ratio',
+                lexiconKey: 'odds-ratio',
+                analysisReady: true
+              }, {
+                label: 'standard error',
+                lexiconKey: 'standard-error',
+                analysisReady: true
+              }];
+              expect(resultsTableService.createHeaders(testType)).toEqual(expectedResult);
+            });
           });
-        });
 
-        describe('for survival data ', function() {
-          it('should return a list containting the hazard ratio and standard error result properties', function() {
-            var testType = {
-              resultProperties: [
-                'http://trials.drugis.org/ontology#hazard_ratio',
-                'http://trials.drugis.org/ontology#standard_error'
-              ],
-              armOrContrast: CONTRAST
-            };
-            var expectedResult = [{
-              label: 'hazard ratio',
-              lexiconKey: 'hazard-ratio',
-              analysisReady: true
-            }, {
-              label: 'standard error',
-              lexiconKey: 'standard-error',
-              analysisReady: true
-            }];
-            expect(resultsTableService.createHeaders(testType)).toEqual(expectedResult);
+          describe(' survival data ', function() {
+            it('should return a list containting the hazard ratio and standard error result properties', function() {
+              var testType = {
+                resultProperties: [
+                  'http://trials.drugis.org/ontology#hazard_ratio',
+                  'http://trials.drugis.org/ontology#standard_error'
+                ],
+                armOrContrast: CONTRAST,
+                isLog: true
+              };
+              var expectedResult = [{
+                label: 'log hazard ratio',
+                lexiconKey: 'hazard-ratio',
+                analysisReady: true
+              }, {
+                label: 'standard error',
+                lexiconKey: 'standard-error',
+                analysisReady: true
+              }];
+              expect(resultsTableService.createHeaders(testType)).toEqual(expectedResult);
+            });
           });
         });
       });

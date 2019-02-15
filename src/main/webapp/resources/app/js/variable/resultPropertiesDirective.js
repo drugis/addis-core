@@ -2,11 +2,13 @@
 define(['lodash'], function(_) {
   var dependencies = [
     'ResultPropertiesService',
-    'ARM_LEVEL_TYPE'
+    'ARM_LEVEL_TYPE',
+    'CONTRAST_TYPE'
   ];
   var ResultPropertiesDirective = function(
     ResultPropertiesService,
-    ARM_LEVEL_TYPE
+    ARM_LEVEL_TYPE,
+    CONTRAST_TYPE
   ) {
     return {
       restrict: 'E',
@@ -28,7 +30,7 @@ define(['lodash'], function(_) {
         scope.$watch('variable.resultProperties', rebuildIfNecessary, true);
 
         function rebuildIfNecessary(newValue, oldValue) {
-          if (!oldValue || !newValue || oldValue === newValue) {
+          if (!oldValue || !newValue || _.isEqual(oldValue, newValue)) {
             return;
           }
           buildProperties();
@@ -38,9 +40,18 @@ define(['lodash'], function(_) {
           var resultPropertiesForType = ResultPropertiesService.getResultPropertiesForType(scope.variable.measurementType, scope.variable.armOrContrast);
           scope.properties = _(resultPropertiesForType)
             .map(setSelected)
+            .filter(filterNonLogContrastStandardError)
             .keyBy('type')
             .value();
           setCategories();
+        }
+
+        function filterNonLogContrastStandardError(property){
+          return property.armOrContrast !== CONTRAST_TYPE || 
+          scope.variable.type === 'mean_difference' ||
+          scope.variable.type === 'standardized_mean_difference' ||
+          scope.variable.isLog ||
+          property.type !== 'standard_error';
         }
 
         function setSelected(property) {

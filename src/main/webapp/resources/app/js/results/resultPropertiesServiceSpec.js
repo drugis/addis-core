@@ -326,9 +326,9 @@ define([
     });
 
     describe('getContrastOptions', function() {
-        it('should return the contrast options for continuous', function() {
+      it('should return the contrast options for continuous', function() {
         var result = resultPropertiesService.getContrastOptions(CONTINUOUS);
-        var expectedResult= [
+        var expectedResult = [
           contrastOptions.continuous_mean_difference,
           contrastOptions.standardized_mean_difference
         ];
@@ -337,7 +337,7 @@ define([
 
       it('should return the contrast options for dichotomous', function() {
         var result = resultPropertiesService.getContrastOptions(DICHOTOMOUS);
-        var expectedResult= [
+        var expectedResult = [
           contrastOptions.odds_ratio,
           contrastOptions.risk_ratio
         ];
@@ -346,9 +346,50 @@ define([
 
       it('should return the contrast options for survival', function() {
         var result = resultPropertiesService.getContrastOptions(SURVIVAL);
-        var expectedResult= [
+        var expectedResult = [
           contrastOptions.hazard_ratio
         ];
+        expect(result).toEqual(expectedResult);
+      });
+    });
+
+    describe('logChanged', function() {
+      it('should (re-)add the default result properties', function() {
+        var variable = {
+          isLog: true,
+          armOrContrast: CONTRAST
+        };
+        var result = resultPropertiesService.logChanged(variable);
+        var expectedResult = {
+          isLog: true,
+          armOrContrast: CONTRAST,
+          resultProperties: variableTypeDetails[CONTRAST]
+        };
+        expect(result).toEqual(expectedResult);
+      });
+
+      it('should remove the standard error as an option and mark the confidence interval as included at 95%.', function() {
+        var variable = {
+          isLog: false,
+          armOrContrast: CONTRAST,
+          resultProperties: variableTypeDetails[CONTRAST]
+        };
+        var result = resultPropertiesService.logChanged(variable);
+        var expectedResult = {
+          isLog: false,
+          armOrContrast: CONTRAST,
+          resultProperties: [
+            variableTypeDetails[CONTRAST].confidence_interval_width,
+            variableTypeDetails[CONTRAST].confidence_interval_lower_bound,
+            variableTypeDetails[CONTRAST].confidence_interval_upper_bound
+          ],
+          selectedResultProperties: [variableTypeDetails[CONTRAST].confidence_interval_width],
+          confidenceIntervalWidth: 95
+        };
+        expectedResult.resultProperties[0].isSelected = true;
+        expectedResult.resultProperties[1].isSelected = false;
+        expectedResult.resultProperties[2].isSelected = false;
+        expectedResult.selectedResultProperties[0].isSelected = true;
         expect(result).toEqual(expectedResult);
       });
     });

@@ -86,7 +86,8 @@ define(['angular', 'lodash'], function(angular, _) {
     function armOrContrastChanged(variable, arms) {
       var newVariable = angular.copy(variable);
       newVariable.resultProperties = RESULT_PROPERTY_TYPE_DETAILS[newVariable.armOrContrast];
-      newVariable.selectedResultProperties = getDefaultResultProperties(newVariable.measurementType, newVariable.armOrContrast);
+      newVariable.selectedResultProperties = getDefaultResultProperties(
+        newVariable.measurementType, newVariable.armOrContrast);
       if (newVariable.armOrContrast === CONTRAST_TYPE) {
         newVariable.referenceArm = arms[0].armURI;
         newVariable.contrastOptions = getContrastOptions(variable.measurementType);
@@ -102,6 +103,30 @@ define(['angular', 'lodash'], function(angular, _) {
       });
     }
 
+    function logChanged(variable) {
+      var newVariable = angular.copy(variable);
+      if (variable.isLog || variable.type === 'mean_difference' || variable.type === 'standardized_mean_difference') {
+        newVariable.resultProperties = RESULT_PROPERTY_TYPE_DETAILS[variable.armOrContrast];
+      } else {
+        newVariable.resultProperties = getNonLogContrastResultProperties(newVariable);
+        newVariable.selectedResultProperties = _.filter(newVariable.resultProperties, 'isSelected');
+        newVariable.confidenceIntervalWidth = 95;
+      }
+      return newVariable;
+    }
+
+    function getNonLogContrastResultProperties(variable) {
+      return _(variable.resultProperties)
+        .reject(['type', 'standard_error'])
+        .map(selectConfidenceIntervalProperty)
+        .value();
+    }
+
+    function selectConfidenceIntervalProperty(property) {
+      property.isSelected = !property.hiddenSelection;
+      return property;
+    }
+
     return {
       getDefaultResultProperties: getDefaultResultProperties,
       getResultPropertiesForType: getResultPropertiesForType,
@@ -109,7 +134,8 @@ define(['angular', 'lodash'], function(angular, _) {
       setTimeScaleInput: setTimeScaleInput,
       resetResultProperties: resetResultProperties,
       armOrContrastChanged: armOrContrastChanged,
-      getContrastOptions: getContrastOptions
+      getContrastOptions: getContrastOptions,
+      logChanged: logChanged
     };
   };
   return dependencies.concat(ResultPropertiesService);

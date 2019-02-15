@@ -43,6 +43,7 @@ define(['lodash'], function(_) {
     $scope.resetResultProperties = resetResultProperties;
     $scope.cancel = cancel;
     $scope.armOrContrastChanged = armOrContrastChanged;
+    $scope.logChanged = logChanged;
 
     // init
     $scope.isEditing = false;
@@ -50,11 +51,8 @@ define(['lodash'], function(_) {
     $scope.variable = initVariable(item);
     $scope.itemType = itemType;
     $scope.measurementMoments = MeasurementMomentService.queryItems();
-    
     $scope.timeScaleOptions = TIME_SCALE_OPTIONS;
     $scope.$watch('variable.selectedResultProperties', checkTimeScaleInput, true);
-    
-    
     getArms();
     
     function initVariable(variable) {
@@ -162,6 +160,10 @@ define(['lodash'], function(_) {
       return ArmService.queryItems($stateParams.studyUUID).then(function(result) {
         $scope.arms = result;
       });
+    }
+
+    function logChanged() {
+      $scope.variable = ResultPropertiesService.logChanged($scope.variable);
     }
   };
   return dependencies.concat(EditVariableController);

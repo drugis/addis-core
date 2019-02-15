@@ -113,8 +113,14 @@ define(['lodash'], function(_) {
         P1M: ' (months)',
         P1Y: ' (years)'
       };
+      var log = '';
+      if (variable.isLog && (propertyDetails.type === 'odds_ratio' ||
+        propertyDetails.type === 'risk_ratio' ||
+        propertyDetails.type === 'hazard_ratio')) {
+        log = 'log ';
+      }
       var addition = (propertyDetails.type === 'exposure' ? scaleStrings[variable.timeScale] : '');
-      return propertyDetails.label + addition;
+      return log + propertyDetails.label + addition;
     }
 
     function createInputRows(variable, arms, groups, measurementMoments, resultValuesObjects) {
@@ -195,16 +201,16 @@ define(['lodash'], function(_) {
     }
 
     function createNonCategoricalInputColumns(variable, valueObjects) {
-      var columns =  _(variable.resultProperties)
+      var columns = _(variable.resultProperties)
         .reduce(function(accum, property) {
           var details = ResultsService.getResultPropertyDetails(property, variable.armOrContrast);
           if (details.type === 'confidence_interval') {
             return accum.concat(createConfidenceIntervalColumns(variable, valueObjects));
           } else {
-            return accum.concat(createColumn(property, details, valueObjects));
+            return accum.concat(createColumn(property, details, valueObjects, variable.isLog));
           }
         }, []);
-        return putSampleSizeLast(columns, 'valueName');
+      return putSampleSizeLast(columns, 'valueName');
     }
 
     function putSampleSizeLast(columns, nameProperty) {
@@ -222,12 +228,12 @@ define(['lodash'], function(_) {
       var lowerboundDetails = ResultsService.getResultPropertyDetails('ontology:confidence_interval_lower_bound', variable.armOrContrast);
       var upperboundDetails = ResultsService.getResultPropertyDetails('ontology:confidence_interval_upper_bound', variable.armOrContrast);
       return [
-        createColumn(ONTOLOGY_BASE + 'confidence_interval_lower_bound', lowerboundDetails, valueObjects),
-        createColumn(ONTOLOGY_BASE + 'confidence_interval_upper_bound', upperboundDetails, valueObjects)
+        createColumn(ONTOLOGY_BASE + 'confidence_interval_lower_bound', lowerboundDetails, valueObjects, variable.isLog),
+        createColumn(ONTOLOGY_BASE + 'confidence_interval_upper_bound', upperboundDetails, valueObjects, variable.isLog)
       ];
     }
 
-    function createColumn(property, details, valueObjects) {
+    function createColumn(property, details, valueObjects, isLog) {
       return {
         resultProperty: property,
         valueName: details.label,
@@ -235,7 +241,9 @@ define(['lodash'], function(_) {
         dataType: details.dataType,
         isInValidValue: false,
         isAlwaysPositive: details.isAlwaysPositive,
-        armOrContrast: details.armOrContrast
+        armOrContrast: details.armOrContrast,
+        isPositiveWithoutLog: details.isPositiveWithoutLog,
+        isLog: isLog
       };
     }
 
@@ -273,16 +281,20 @@ define(['lodash'], function(_) {
       });
     }
 
-    function isValidValue(inputColumn) {
-      if (inputColumn.value === undefined) {
+    function isValidValue(cell) {
+      if (cell.value === undefined) {
         return false;
       }
 
-      if (inputColumn.value) {
-        if (inputColumn.dataType === INTEGER_TYPE) {
-          return Number.isInteger(inputColumn.value) && (!inputColumn.isAlwaysPositive || inputColumn.value >= 0);
-        } else if (inputColumn.dataType === DOUBLE_TYPE) {
-          return !isNaN(Number(inputColumn.value)) && (!inputColumn.isAlwaysPositive || inputColumn.value >= 0);
+      if (cell.value) {
+        if (cell.dataType === INTEGER_TYPE) {
+          return Number.isInteger(cell.value) &&
+            (!cell.isAlwaysPositive || cell.value > 0) &&
+            (!cell.isPositiveWithoutLog || cell.isLog || cell.value > 0);
+        } else if (cell.dataType === DOUBLE_TYPE) {
+          return !isNaN(Number(cell.value)) &&
+            (!cell.isAlwaysPositive || cell.value > 0) &&
+            (!cell.isPositiveWithoutLog || cell.isLog || cell.value > 0);
         }
       } else {
         return true;

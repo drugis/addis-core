@@ -282,13 +282,24 @@ public class TriplestoreServiceImpl implements TriplestoreService {
   }
 
   @Override
-  public List<TrialDataStudy> getNetworkData(String namespaceUid, URI version, URI outcomeUri,
-                                             Set<URI> interventionUris, Set<String> covariateKeys) throws ReadValueException, IOException {
+  public List<TrialDataStudy> getNetworkData(
+          String namespaceUid,
+          URI version,
+          URI outcomeUri,
+          Set<URI> interventionUris,
+          Set<String> covariateKeys
+  ) throws ReadValueException, IOException {
     return getTrialData(namespaceUid, version, "?graph", Collections.singleton(outcomeUri), interventionUris, covariateKeys);
   }
 
   @Override
-  public List<TrialDataStudy> getSingleStudyData(String namespaceUid, URI studyUri, URI version, Set<URI> outcomeUris, Set<URI> interventionUris) throws ReadValueException, IOException {
+  public List<TrialDataStudy> getSingleStudyData(
+          String namespaceUid,
+          URI studyUri,
+          URI version,
+          Set<URI> outcomeUris,
+          Set<URI> interventionUris
+  ) throws ReadValueException, IOException {
     String graphSelector = studyUri == null ? null : "<" + studyUri.toString() + ">";
     return getTrialData(namespaceUid, version, graphSelector, outcomeUris, interventionUris, Collections.emptySet());
   }
@@ -300,8 +311,13 @@ public class TriplestoreServiceImpl implements TriplestoreService {
   }
 
   private List<TrialDataStudy> getTrialData(
-          String namespaceUid, URI version, String graphSelector, Set<URI> outcomeUris,
-          Set<URI> interventionUris, Set<String> covariateKeys) throws ReadValueException, IOException {
+          String namespaceUid,
+          URI version,
+          String graphSelector,
+          Set<URI> outcomeUris,
+          Set<URI> interventionUris,
+          Set<String> covariateKeys
+  ) throws ReadValueException, IOException {
     if (interventionUris.isEmpty() || outcomeUris.isEmpty() || graphSelector == null) {
       return Collections.emptyList();
     }

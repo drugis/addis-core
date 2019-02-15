@@ -184,13 +184,13 @@ define(['lodash', 'angular'], function(_, angular) {
         return measurement.standardizedMeanDifference;
       }
       if (hasValue(measurement.oddsRatio)) {
-        return measurement.oddsRatio;
+        return $filter('number')(measurement.oddsRatio, 3);
       }
       if (hasValue(measurement.riskRatio)) {
-        return measurement.riskRatio;
+        return $filter('number')(measurement.riskRatio, 3);
       }
       if (hasValue(measurement.hazardRatio)) {
-        return measurement.hazardRatio;
+        return $filter('number')(measurement.hazardRatio, 3);
       }
       return 'NA';
     }

@@ -99,7 +99,7 @@ public class Measurement {
 
   public Double getStdErr() {
     if (stdErr != null) {
-      return isLog ? stdErr : Math.log(stdErr);
+      return isLog == null || !isLog ? stdErr : Math.log(stdErr);
     } else if (confidenceIntervalWidth != null &&
             confidenceIntervalLowerBound != null &&
             confidenceIntervalUpperBound != null) {
@@ -116,7 +116,7 @@ public class Measurement {
     //          95% CI => b=0.95 => p = 1 - 0.05/2 = 0.975
     //  zValue(0.975) = 1.96
     double upperQuantile = 1 - (1 - width) / 2;
-    if (isLog) {
+    if (isLog != null && isLog) {
       return (upperBound - lowerBound) / (2 * zValue(upperQuantile));
     } else {
       return (Math.log(upperBound) - Math.log(lowerBound)) / // FIXME: log(0) = infinite ; how to deal?
@@ -157,15 +157,24 @@ public class Measurement {
   }
 
   public Double getOddsRatio() {
-    return isLog ? oddsRatio : Math.log(oddsRatio);
+    if((isLog !=null && isLog) || oddsRatio == null){
+      return oddsRatio;
+    }
+    return Math.log(oddsRatio);
   }
 
   public Double getRiskRatio() {
-    return isLog ? riskRatio : Math.log(riskRatio);
+    if((isLog !=null && isLog) || riskRatio == null){
+      return riskRatio;
+    }
+    return Math.log(riskRatio);
   }
 
   public Double getHazardRatio() {
-    return isLog ? hazardRatio : Math.log(hazardRatio);
+    if((isLog !=null && isLog) || hazardRatio == null){
+      return hazardRatio;
+    }
+    return Math.log(hazardRatio);
   }
 
   public Boolean getLog() {

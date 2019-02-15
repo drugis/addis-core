@@ -2,7 +2,7 @@
   <div class="grid-container">
     <div class="grid-x">
       <div class="cell">
-        <h3>Add a new {{settings.itemName}}</h3>
+        <h3>{{adding ? 'Add a new' : 'Edit'}} {{itemType}}</h3>
       </div>
       <div class="cell">
         <label>Name
@@ -89,9 +89,9 @@
             <label>Log</label>
           </div>
           <div class="cell">
-            <input type="radio" name="on" ng-model="variable.isLog" ng-value="true" id="on">
+            <input type="radio" name="on" ng-model="variable.isLog" ng-value="true" id="on" ng-change="logChanged()">
             <label for="on">On</label>
-            <input type="radio" name="off" ng-model="variable.isLog" ng-value="false" id="off">
+            <input type="radio" name="off" ng-model="variable.isLog" ng-value="false" id="off" ng-change="logChanged()">
             <label for="off">Off</label>
           </div>
         </div>
@@ -130,7 +130,7 @@
       <div class="cell">
         <button class="button success" type="button" ng-click="addVariable()"
           ng-disabled="!variable.label || !variable.measurementType">
-          Add
+          {{adding ? 'Add' : 'Edit'}}
         </button>
       </div>
     </div>

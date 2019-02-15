@@ -141,7 +141,7 @@ define(['angular', 'lodash'], function(angular, _) {
       categoryEmptyMessage: 'No baseline characteristics defined.',
       itemName: 'baseline characteristic',
       itemTemplateName: 'variable.html',
-      editItemtemplateUrl: '../variable/editVariable.html',
+      editItemtemplateUrl: '../variable/addVariable.html',
       editItemController: 'EditVariableController',
       repairItemtemplateUrl: '../outcome/repairOutcome.html',
       repairItemController: 'EditOutcomeController'
@@ -156,7 +156,7 @@ define(['angular', 'lodash'], function(angular, _) {
       itemTemplateName: 'variable.html',
       addItemController: 'AddVariableController',
       addItemtemplateUrl: '../variable/addVariable.html',
-      editItemtemplateUrl: '../variable/editVariable.html',
+      editItemtemplateUrl: '../variable/addVariable.html',
       editItemController: 'EditVariableController',
       repairItemtemplateUrl: '../outcome/repairOutcome.html',
       repairItemController: 'EditOutcomeController'
@@ -171,7 +171,7 @@ define(['angular', 'lodash'], function(angular, _) {
       categoryEmptyMessage: 'No adverse events defined.',
       itemName: 'adverse event',
       itemTemplateName: 'variable.html',
-      editItemtemplateUrl: '../variable/editVariable.html',
+      editItemtemplateUrl: '../variable/addVariable.html',
       editItemController: 'EditVariableController',
       repairItemtemplateUrl: '../outcome/repairOutcome.html',
       repairItemController: 'EditOutcomeController'
