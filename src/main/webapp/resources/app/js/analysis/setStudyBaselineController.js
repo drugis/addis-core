@@ -52,7 +52,8 @@ define(['lodash', 'angular'], function(_) {
         'std.err': undefined,
         dof: undefined,
         property: 'mean difference',
-        distribution: 'Normal'
+        distribution: 'Normal',
+        scale: 'mean difference'
       },
       hazardRatio: {
         title: 'Hazard Ratio',

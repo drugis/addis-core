@@ -79,9 +79,7 @@ define(['lodash', 'angular'], function(_) {
       var analysis = result[0];
       var alternatives = result[1];
       var outcomes = result[2];
-      var models = _.reject(_.reject(result[3], 'archived'), function(model) {
-        return model.likelihood === 'binom' && model.link === 'log';
-      });
+      var models = filterModels(result[3]);
       var studies = result[4];
 
       var outcomeIds = _.map(outcomes, 'id');
@@ -108,6 +106,22 @@ define(['lodash', 'angular'], function(_) {
         checkStep1Validity();
       });
     });
+
+    function filterModels(models) {
+      return _(models)
+        .reject('archived')
+        .reject(rejectRiskRatioModels)
+        .reject(rejectStandardizedMeanDifferenceModels)
+        .value();
+    }
+
+    function rejectRiskRatioModels(model) {
+      return model.likelihood === 'binom' && model.link === 'log';
+    }
+
+    function rejectStandardizedMeanDifferenceModels(model) {
+      return model.likelihood === 'normal' && model.link === 'smd';
+    }
 
     function goToStep2() {
       $state.go('BenefitRiskCreationStep-2', $stateParams);
