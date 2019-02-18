@@ -39,7 +39,7 @@ define(['lodash'], function(_) {
     $scope.deleteCategory = deleteCategory;
     $scope.addCategory = addCategory;
     $scope.addCategoryEnterKey = addCategoryEnterKey;
-    $scope.editVariable = editVariable;
+    $scope.addVariable = addVariable;
     $scope.resetResultProperties = resetResultProperties;
     $scope.cancel = cancel;
     $scope.armOrContrastChanged = armOrContrastChanged;
@@ -98,7 +98,7 @@ define(['lodash'], function(_) {
       }
     }
 
-    function editVariable() {
+    function addVariable() {
       $scope.isEditing = false;
       if ($scope.variable.armOrContrast === CONTRAST_TYPE) {
         $scope.variable.selectedResultProperties = [$scope.variable.contrastOption].concat($scope.variable.selectedResultProperties);
