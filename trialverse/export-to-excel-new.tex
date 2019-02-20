@@ -1,0 +1,67 @@
+\documentclass[a4paper,10pt]{article}
+\usepackage[empty]{fullpage}
+\usepackage[english]{babel}
+\usepackage{listings}
+
+\title{ADDIS excel/table study data export}
+\begin{document}
+\maketitle
+\section*{ADDIS study export}
+
+Headers are shown in \textbf{bold}.\\
+References are shown in \textit{italic} e.g. `=Concepts!B2'.
+\subsection*{Study data}
+
+\begin{table}[]
+  \caption{Study information}
+  \begin{tabular}{|l|l|l|l|l|l|l|l|}
+    \hline
+    \multicolumn{8}{|l|}{Study Information} \\ \hline
+    \multicolumn{8}{|l|}{}                  \\ \hline
+    ID & addis url & title & group allocation & blinding & status & number of centers & objective \\ \hline
+    text & URL & text & text & text & text & number & text \\ \hline
+  \end{tabular}
+\end{table}
+
+\begin{table}[]
+  \caption{Population information}
+  \begin{tabular}{|l|l|}
+    \hline
+    \multicolumn{2}{|l|}{Population information}  \\ \hline
+    \multicolumn{2}{|l|}{}                        \\ \hline
+    indication & eligibility criteria             \\ \hline
+    text & text                                   \\ \hline
+  \end{tabular}
+\end{table}
+
+\begin{table}[]
+  \caption{Arm information}
+  \begin{tabular}{|l|l|}
+    \hline
+    \multicolumn{2}{|l|}{Arm information}  \\ \hline
+    \multicolumn{2}{|l|}{}                 \\ \hline
+    title & description                    \\ \hline
+    text & text                            \\ \hline
+    ... & ...                            \\ \hline
+  \end{tabular}
+\end{table}
+
+\begin{table}[]
+  \caption{Measurement data}
+  \begin{tabular}{|l|l|l|l|l|l|}
+    \hline
+    \multicolumn{6}{|l}{\textbf{Measurement data}}  \\ \hline
+    \multicolumn{6}{|l|}{\textit{variable name}}                 \\ \hline
+    \textbf{variable type} &\textbf{ measurement type} & \textbf{measurement moment} & result property & result property & ... \\ \hline
+    text & text & text & value & value & ...  \\  \cline{4-6} 
+         &      &      & & &  \\ \hline
+  \end{tabular}
+\end{table}
+
+\subsection*{Activities}
+\subsection*{Epochs}
+\subsection*{Study design}
+\subsection*{Measurement moments}
+\subsection*{concepts}
+
+\end{document}          
