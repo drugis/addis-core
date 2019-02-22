@@ -4,63 +4,126 @@
 \usepackage{listings}
 
 \title{ADDIS excel/table study data export}
+\author{J.J. de Keijser}
 \begin{document}
 \maketitle
 \section*{ADDIS study export}
-
-Headers are shown in \textbf{bold}.\\
+Also the example Excel sheet.
+Fixed headers are shown in \textbf{bold}.\\
 References are shown in \textit{italic} e.g. `=Concepts!B2'.
-\subsection*{Study data}
+\subsection*{Study Data}
+To easier grasp the \texttt{Study data} sheet the sheet is explained in bloks. Each blok corresponds to a header in the first row of the sheet.
 
-\begin{table}[]
+\subsubsection*{Study Information}
+The \texttt{Study information} blok contains global information about the study. See table \ref{table:Study Information}.
+\begin{table}[h]
+  \small
+  \centering
   \caption{Study information}
+  \label{table:Study Information}
   \begin{tabular}{|l|l|l|l|l|l|l|l|}
     \hline
     \multicolumn{8}{|l|}{Study Information} \\ \hline
     \multicolumn{8}{|l|}{}                  \\ \hline
-    ID & addis url & title & group allocation & blinding & status & number of centers & objective \\ \hline
+    \textbf{ID} & \textbf{addis url} & \textbf{title} & \textbf{group allocation} & \textbf{blinding} & \textbf{status} & \textbf{number of centers} & \textbf{objective} \\ \hline
     text & URL & text & text & text & text & number & text \\ \hline
   \end{tabular}
 \end{table}
 
-\begin{table}[]
+\subsubsection*{Population information}
+The \texttt{Population information} blok contains then indication and eligibility criteria of the study. See table \ref{table:Population information}.
+\begin{table}[h]
+  \centering
   \caption{Population information}
+  \label{table:Population information}
   \begin{tabular}{|l|l|}
     \hline
-    \multicolumn{2}{|l|}{Population information}  \\ \hline
-    \multicolumn{2}{|l|}{}                        \\ \hline
-    indication & eligibility criteria             \\ \hline
-    text & text                                   \\ \hline
+    \multicolumn{2}{|l|}{\textbf{Population information}} \\ \hline
+    \multicolumn{2}{|l|}{}                                \\ \hline
+    \textbf{indication} & \textbf{eligibility criteria}   \\ \hline
+    text & text                                           \\ \hline
   \end{tabular}
 \end{table}
 
-\begin{table}[]
+\subsubsection*{Arm information}
+The \texttt{Arm information} blok contains the title and description of each arm in the study. See table \ref{table:Arm information}.
+\begin{table}[h]
+  \centering
   \caption{Arm information}
+  \label{table:Arm information}
   \begin{tabular}{|l|l|}
     \hline
-    \multicolumn{2}{|l|}{Arm information}  \\ \hline
-    \multicolumn{2}{|l|}{}                 \\ \hline
-    title & description                    \\ \hline
-    text & text                            \\ \hline
-    ... & ...                            \\ \hline
+    \multicolumn{2}{|l|}{\textbf{Arm information}}  \\ \hline
+    \multicolumn{2}{|l|}{}                          \\ \hline
+    \textbf{title} & \textbf{description}           \\ \hline
+    text (arm 1)& text                              \\ \hline
+    ... & ...                                       \\ \hline
+    text (arm n)& text                              \\ \hline
   \end{tabular}
 \end{table}
 
-\begin{table}[]
+\subsubsection*{Measurement data}
+The \texttt{Measurement data} blok contains the measurements for each outcome measured in the study. The \textit{variable name} cell contains a reference to the study concept of that variable. The \textit{variable name} blok is repeated for every variable measured in the study. Below each \textit{variable name} column, there is the \textbf{variable type} field, \textbf{measurement type} field, and a \textbf{measurment moment} blok. The \textbf{measurment moment} blok is repeated for every measurement moment in the study. It contains the moment itself, and columns with values for each measured \texttt{result property-arm} combination.
+See table \ref{table:Measurement data}.
+\begin{table}[h]
+  \centering
   \caption{Measurement data}
+  \small
+  \label{table:Measurement data}
   \begin{tabular}{|l|l|l|l|l|l|}
     \hline
     \multicolumn{6}{|l}{\textbf{Measurement data}}  \\ \hline
-    \multicolumn{6}{|l|}{\textit{variable name}}                 \\ \hline
-    \textbf{variable type} &\textbf{ measurement type} & \textbf{measurement moment} & result property & result property & ... \\ \hline
-    text & text & text & value & value & ...  \\  \cline{4-6} 
-         &      &      & & &  \\ \hline
+    \multicolumn{6}{|l|}{\textit{variable name}}    \\ \hline
+    \textbf{variable type} &\textbf{ measurement type} & \textbf{measurement moment} & result property 1 &  ... & result property n \\ \hline
+    text & text & text & value & ... & value        \\  \cline{4-6} 
+         &      &      & ...   & ... & ...          \\  \cline{4-6} 
+         &      &      & value & ... & value        \\ \hline
   \end{tabular}
 \end{table}
 
 \subsection*{Activities}
+\begin{table}[h]
+  \centering
+  \caption{Activities}
+  \small
+  \label{table:Activities}
+  \begin{tabular}{|l|l|l|l|l|l|l|l|l|l|}
+    \hline
+    \textbf{id}      & \textbf{title} & \textbf{type} & \textbf{description} & \textbf{drug label}   & \textbf{dose type} & \textbf{dose} & \textbf{max dose} & \textbf{unit} & \textbf{periodicity} \\ \hline
+    URI (activity 1) & text           & text          & value                & \textit{drug concept} & text               & value         & value             & text          & duration             \\ \hline
+    ...              & ...            & ...           & ...                  & ...                   & ...                & ...           & ...               & ...           & ...                  \\ \hline
+    URI (activity n) & text           & text          & value                & \textit{drug concept} & text               & value         & value             & text          & duration             \\ \hline
+  \end{tabular}
+\end{table}
+
 \subsection*{Epochs}
+\begin{table}[h]
+  \centering
+  \caption{Epochs}
+  \label{table:Epochs}
+  \begin{tabular}{|l|l|l|l|l|}
+    \hline
+    \textbf{id} & \textbf{name} & \textbf{description} & \textbf{duration} & \textbf{isPrimary} \\ \hline
+    URI (epoch 1)& text           & text                 & duration                & boolean  \\ \hline
+    ...         & ...          & ...                 & ...                & ...  \\ \hline
+    URI (epoch n)& text           & text                 & duration                & boolean  \\ \hline
+  \end{tabular}
+\end{table}
+
 \subsection*{Study design}
+\begin{table}[h]
+  \centering
+  \label{table:Study design}
+  \caption{Study design}
+  \begin{tabular}{|l|l|l|l|}
+    \hline
+    \textbf{arm}   & \textit{arm 1}    & ...               & \textit{arm n}    \\ \hline
+    \textit{arm 1} & \textit{activity} & \textit{activity} & \textit{activity} \\ \hline
+    ...            & \textit{activity} & \textit{activity} & \textit{activity} \\ \hline
+    \textit{arm m} & \textit{activity} & \textit{activity} & \textit{activity} \\ \hline
+  \end{tabular}
+\end{table}
+
 \subsection*{Measurement moments}
 \subsection*{concepts}
 
