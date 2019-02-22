@@ -231,7 +231,8 @@ define(['angular-mocks', './outcome'], function() {
             arm_or_contrast: 'ontology:contrast_data',
             reference_arm: 'referenceArmUri',
             reference_standard_error: 0.5,
-            confidence_interval_width: 95
+            confidence_interval_width: 95,
+            is_log: false
           }]
         };
 

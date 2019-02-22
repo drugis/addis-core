@@ -100,11 +100,9 @@ define(['angular', 'lodash'],
         if (item.arm_or_contrast === CONTRAST_TYPE) {
           contrastProperties.referenceArm = item.reference_arm;
           contrastProperties.referenceStandardError = item.reference_standard_error;
+          contrastProperties.isLog = !!item.is_log;
           if (item.confidence_interval_width) {
             contrastProperties.confidenceIntervalWidth = item.confidence_interval_width;
-          }
-          if(item.is_log){
-            contrastProperties.isLog = item.is_log;
           }
         }
         return contrastProperties;
@@ -132,7 +130,7 @@ define(['angular', 'lodash'],
           optionalProperties.survival_time_scale = item.timeScale;
         }
         if (item.conceptMapping) {
-          optionalProperties.of_variable = [{sameAs: item.conceptMapping}];
+          optionalProperties.of_variable = [{ sameAs: item.conceptMapping }];
         }
         if (item.measurementType === 'ontology:categorical') {
           optionalProperties.of_variable[0].categoryList = RdfListService.unFlattenList(_.map(item.categoryList, makeCategoryIfNeeded));
@@ -140,11 +138,9 @@ define(['angular', 'lodash'],
         if (item.armOrContrast === CONTRAST_TYPE) {
           optionalProperties.reference_arm = item.referenceArm;
           optionalProperties.reference_standard_error = item.referenceStandardError;
+          optionalProperties.is_log = !!item.isLog;
           if (item.confidenceIntervalWidth) {
             optionalProperties.confidence_interval_width = item.confidenceIntervalWidth;
-          }
-          if(item.isLog){
-            optionalProperties.is_log = item.isLog;
           }
         }
         return optionalProperties;
