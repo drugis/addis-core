@@ -137,7 +137,7 @@ define(['lodash'], function(_) {
               }
             }
           });
-        };
+        }
       }
     };
   };

@@ -40,6 +40,7 @@ SELECT DISTINCT
 ?oddsRatio
 ?riskRatio 
 ?standardizedMeanDifference 
+?isLog
 ?fixedDoseValue
 ?fixedDoseDosingPeriodicity
 ?fixedDoseUnitConcept
@@ -63,7 +64,6 @@ SELECT DISTINCT
 ?referenceStandardError
 ?isReferenceArm
 ?armOrContrast
-?isLog
 (COALESCE(?treatmentTypeOptional, "http://trials.drugis.org/ontology#SimpleDrugTreatment") AS ?treatmentType)
 WHERE {
   BIND ($graphSelector AS ?graph) .
@@ -89,6 +89,9 @@ WHERE {
       }
       OPTIONAL {
         ?outcomeInstance ontology:reference_standard_error ?referenceStandardError .
+      }
+      OPTIONAL {
+        ?outcomeInstance ontology:is_log ?isLog .
       }
     }
 
@@ -165,9 +168,6 @@ WHERE {
       }
       OPTIONAL {
         ?measurement ontology:confidence_interval_upper_bound ?confidenceIntervalUpperBound .
-      }
-      OPTIONAL {
-        ?measurement ontology:is_log ?isLog .
       }
     }
 

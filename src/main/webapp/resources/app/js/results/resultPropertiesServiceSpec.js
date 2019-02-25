@@ -372,7 +372,10 @@ define([
         var variable = {
           isLog: false,
           armOrContrast: CONTRAST,
-          resultProperties: variableTypeDetails[CONTRAST]
+          resultProperties: variableTypeDetails[CONTRAST],
+          contrastOption: {
+            type: 'risk_ratio'
+          }
         };
         var result = resultPropertiesService.logChanged(variable);
         var expectedResult = {
@@ -384,7 +387,10 @@ define([
             variableTypeDetails[CONTRAST].confidence_interval_upper_bound
           ],
           selectedResultProperties: [variableTypeDetails[CONTRAST].confidence_interval_width],
-          confidenceIntervalWidth: 95
+          confidenceIntervalWidth: 95,
+          contrastOption: {
+            type: 'risk_ratio'
+          }
         };
         expectedResult.resultProperties[0].isSelected = true;
         expectedResult.resultProperties[1].isSelected = false;

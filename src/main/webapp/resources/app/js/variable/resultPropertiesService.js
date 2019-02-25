@@ -105,18 +105,21 @@ define(['angular', 'lodash'], function(angular, _) {
 
     function logChanged(variable) {
       var newVariable = angular.copy(variable);
-      if (variable.isLog || variable.type === 'mean_difference' || variable.type === 'standardized_mean_difference') {
+      if (variable.isLog ||
+        variable.contrastOption.type === 'continuous_mean_difference' ||
+        variable.contrastOption.type === 'continuous_standardized_mean_difference'
+      ) {
         newVariable.resultProperties = RESULT_PROPERTY_TYPE_DETAILS[variable.armOrContrast];
       } else {
-        newVariable.resultProperties = getNonLogContrastResultProperties(newVariable);
+        newVariable.resultProperties = getNonLogContrastResultProperties(newVariable.resultProperties);
         newVariable.selectedResultProperties = _.filter(newVariable.resultProperties, 'isSelected');
         newVariable.confidenceIntervalWidth = 95;
       }
       return newVariable;
     }
 
-    function getNonLogContrastResultProperties(variable) {
-      return _(variable.resultProperties)
+    function getNonLogContrastResultProperties(properties) {
+      return _(properties)
         .reject(['type', 'standard_error'])
         .map(selectConfidenceIntervalProperty)
         .value();
