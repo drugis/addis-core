@@ -8,9 +8,10 @@
 \begin{document}
 \maketitle
 \section*{ADDIS study export}
-Also the example Excel sheet.
+Also the example Excel \texttt{excelExportExample.xlsx} sheet.\\
 Fixed headers are shown in \textbf{bold}.\\
 References are shown in \textit{italic} e.g. `=Concepts!B2'.
+
 \subsection*{Study Data}
 To easier grasp the \texttt{Study data} sheet the sheet is explained in bloks. Each blok corresponds to a header in the first row of the sheet.
 
@@ -63,7 +64,7 @@ The \texttt{Arm information} blok contains the title and description of each arm
 \end{table}
 
 \subsubsection*{Measurement data}
-The \texttt{Measurement data} blok contains the measurements for each outcome measured in the study. The \textit{variable name} cell contains a reference to the study concept of that variable. The \textit{variable name} blok is repeated for every variable measured in the study. Below each \textit{variable name} column, there is the \textbf{variable type} field, \textbf{measurement type} field, and a \textbf{measurment moment} blok. The \textbf{measurment moment} blok is repeated for every measurement moment in the study. It contains the moment itself, and columns with values for each measured \texttt{result property-arm} combination.
+The \texttt{Measurement data} blok contains the measurements for each outcome measured in the study. The \textit{variable name} cell contains a reference to the study concept of that variable. The \textit{variable name} blok is repeated for every variable measured in the study. Below each \textit{variable name} column, there is the \textbf{variable type} field, \textbf{measurement type} field, and a \textbf{measurement moment} blok. The \textbf{measurement moment} blok is repeated for every measurement moment in the study. It contains the moment itself, and columns with values for each measured result property-arm combination.
 See table \ref{table:Measurement data}.
 \begin{table}[h]
   \centering
@@ -82,6 +83,7 @@ See table \ref{table:Measurement data}.
 \end{table}
 
 \subsection*{Activities}
+The layout of the \texttt{Activities} worksheet can be seen in table \ref{table:Activities}.
 \begin{table}[h]
   \centering
   \caption{Activities}
@@ -97,6 +99,7 @@ See table \ref{table:Measurement data}.
 \end{table}
 
 \subsection*{Epochs}
+The layout of the \texttt{Epochs} worksheet can be seen in table \ref{table:Epochs}.
 \begin{table}[h]
   \centering
   \caption{Epochs}
@@ -111,10 +114,11 @@ See table \ref{table:Measurement data}.
 \end{table}
 
 \subsection*{Study design}
-\begin{table}[h]
+The layout of the \texttt{Study design} worksheet can be seen in table \ref{table:Study design}.
+\begin{table}[!h]
   \centering
-  \label{table:Study design}
   \caption{Study design}
+  \label{table:Study design}
   \begin{tabular}{|l|l|l|l|}
     \hline
     \textbf{arm}   & \textit{arm 1}    & ...               & \textit{arm n}    \\ \hline
@@ -125,6 +129,65 @@ See table \ref{table:Measurement data}.
 \end{table}
 
 \subsection*{Measurement moments}
-\subsection*{concepts}
+The layout of the \texttt{Measurement moment} worksheet can be seen in table \ref{table:Measurement moments}.
+\begin{table}[!h]
+  \centering
+  \caption{Measurement moments}
+  \label{table:Measurement moments}
+  \begin{tabular}{|l|l|l|l|l|}
+    \hline
+    \textbf{id} & \textbf{name} & \textbf{epoch} & \textbf{from} & \textbf{offset} \\ \hline
+    URI         & text          & \textit{epoch} & end/start     & duration        \\ \hline
+    ...         & ...           & ...            &  ...          & ...             \\ \hline
+    URI         & text          & \textit{epoch} & end/start     & duration        \\ \hline
+  \end{tabular}
+\end{table}
+
+\subsection*{Concepts}
+The layout of the \texttt{Concepts} worksheet can be seen in table \ref{table:Concepts}. Note that the \textbf{dataset concept uri} and \textbf{multiplier} columns are only relevant for dataset exports.
+\begin{table}[!h]
+  \centering
+  \caption{Concepts}
+  \label{table:Concepts}
+  \begin{tabular}{|l|l|l|l|l|}
+    \hline
+    \textbf{id} & \textbf{label} & \textbf{type} & \textbf{dataset concept uri} & \textbf{multiplier} \\ \hline
+    URI         & text           & text          & URI                          & value               \\ \hline
+    ...         & ...            & ...           & ...                          & ...                 \\ \hline
+    URI         & text           & text          & URI                          & value               \\ \hline
+  \end{tabular}
+\end{table}
+
+\section*{Dataset export}
+The dataset export file has the same structure as that of the study export. However, there is data for multiple studies per worksheet, and there are two extra worksheets with additional dataset information, \texttt{Dataset information} and \texttt{Dataset concepts}. In each original sheet, each study is separated by a row of white space. In all sheets but the \texttt{Study data} sheet, the data for a study is preceeded by a \textit{reference} to the id of the corresponding study.\\
+In order to handle studies that measure difference variable we let each study have its own variables. We currently do not harmonise across the entire dataset. In the future options such as concept selection might considered.
+
+\subsection*{Dataset information}
+The layout of the \texttt{Dataset information} worksheet can be seen in table \ref{table:Dataset information}.
+\begin{table}[!h]
+  \centering
+  \caption{Dataset information}
+  \label{table:Dataset information}
+  \begin{tabular}{|l|l|l|}
+    \hline
+    \textbf{title} & \textbf{ADDIS url} & \textbf{description} \\ \hline
+    text           & URL                & text                 \\ \hline
+  \end{tabular}
+\end{table}
+
+\subsection*{Dataset concepts}
+The layout of the \texttt{Dataset concepts} worksheet can be seen in table \ref{table:Dataset concepts}.
+\begin{table}[!h]
+  \centering
+  \caption{Dataset concepts}
+  \label{table:Dataset concepts}
+  \begin{tabular}{|l|l|l|}
+    \hline
+    \textbf{id} & \textbf{label} & \textbf{type} \\ \hline
+    URI         & text           & text          \\ \hline
+    ...         & ...            & ...           \\ \hline
+    URI         & text           & text          \\ \hline
+  \end{tabular}
+\end{table}
 
 \end{document}          
