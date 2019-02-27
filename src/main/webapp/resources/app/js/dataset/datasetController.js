@@ -211,11 +211,11 @@ define(['lodash'],
         $modal.open({
           templateUrl: './tableOptions.html',
           scope: $scope,
-          controller: function($scope, $modalInstance) {
+          controller: ['$scope', '$modalInstance', function($scope, $modalInstance) {
             $scope.cancel = function() {
               $modalInstance.close();
             };
-          }
+          }]
         });
       }
 
