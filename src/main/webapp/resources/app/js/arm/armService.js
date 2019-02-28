@@ -27,7 +27,8 @@ define(['lodash'], function(_) {
     function toBackEnd(frontEndArm) {
       var backEndArm = {
         '@id': frontEndArm.armURI,
-        label: frontEndArm.label,
+        '@type': 'ontology:Arm',
+        label: frontEndArm.label
       };
 
       if (frontEndArm.comment) {

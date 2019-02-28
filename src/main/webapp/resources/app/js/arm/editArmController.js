@@ -1,14 +1,26 @@
 'use strict';
 define(['lodash'],
   function(_) {
-    var dependencies = ['$scope', '$state', '$modalInstance', 'itemService', 'callback', 'item'];
-    var EditArmController = function($scope, $state, $modalInstance, itemService, callback, item) {
+    var dependencies = [
+      '$scope',
+      '$modalInstance',
+      'itemService',
+      'callback',
+      'item'
+    ];
+    var EditArmController = function(
+      $scope,
+      $modalInstance,
+      itemService,
+      callback,
+      item
+    ) {
       // functions
       $scope.editItem = editItem;
       $scope.reclassifyAsGroup = reclassifyAsGroup;
       $scope.merge = merge;
-      $scope.updateMergeWarning = updateMergeWarning; 
-      $scope.cancel = cancel; 
+      $scope.updateMergeWarning = updateMergeWarning;
+      $scope.cancel = cancel;
 
       // init
       $scope.isEditing = false;
@@ -23,9 +35,9 @@ define(['lodash'],
       function editItem() {
         $scope.isEditing = true;
         itemService.editItem(item).then(function() {
-            callback();
-            $modalInstance.close();
-          },
+          callback();
+          $modalInstance.close();
+        },
           function() {
             $modalInstance.close();
           });
@@ -34,9 +46,9 @@ define(['lodash'],
       function reclassifyAsGroup() {
         $scope.isEditing = true;
         itemService.reclassifyAsGroup(item).then(function() {
-            callback();
-            $modalInstance.close();
-          },
+          callback();
+          $modalInstance.close();
+        },
           function() {
             $modalInstance.close();
           });
@@ -45,9 +57,9 @@ define(['lodash'],
       function merge(targetArm) {
         $scope.isEditing = true;
         itemService.merge(item, targetArm).then(function() {
-            callback();
-            $modalInstance.close();
-          },
+          callback();
+          $modalInstance.close();
+        },
           function() {
             $modalInstance.close();
           });
