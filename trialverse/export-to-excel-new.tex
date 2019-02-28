@@ -8,7 +8,7 @@
 \begin{document}
 \maketitle
 \section*{ADDIS study export}
-Also the example Excel \texttt{excelExportExample.xlsx} sheet.\\
+Also have a look at \texttt{excelExportExample.xlsx}. This Excel file contains an example of a study export. Having a look at it while reading this document might give greater insight into the format.\\
 Fixed headers are shown in \textbf{bold}.\\
 References are shown in \textit{italic} e.g. `=Concepts!B2'.
 
@@ -100,7 +100,7 @@ The layout of the \texttt{Activities} worksheet can be seen in table \ref{table:
 
 \subsection*{Epochs}
 The layout of the \texttt{Epochs} worksheet can be seen in table \ref{table:Epochs}.
-\begin{table}[h]
+\begin{table}[!h]
   \centering
   \caption{Epochs}
   \label{table:Epochs}
@@ -159,7 +159,7 @@ The layout of the \texttt{Concepts} worksheet can be seen in table \ref{table:Co
 \end{table}
 
 \section*{Dataset export}
-The dataset export file has the same structure as that of the study export. However, there is data for multiple studies per worksheet, and there are two extra worksheets with additional dataset information, \texttt{Dataset information} and \texttt{Dataset concepts}. In each original sheet, each study is separated by a row of white space. In all sheets but the \texttt{Study data} sheet, the data for a study is preceeded by a \textit{reference} to the id of the corresponding study.\\
+The dataset export file has the same structure as that of the study export. However, there is data for multiple studies per worksheet, and there are two extra worksheets with additional dataset information, \texttt{Dataset information} and \texttt{Dataset concepts}. In each original sheet, each study is separated by a row of white space. In all but the \texttt{Study data} sheet, the data for a study is preceeded by a \textit{reference} to the id of the corresponding study.\\
 In order to handle studies that measure difference variable we let each study have its own variables. We currently do not harmonise across the entire dataset. In the future options such as concept selection might considered.
 
 \subsection*{Dataset information}
