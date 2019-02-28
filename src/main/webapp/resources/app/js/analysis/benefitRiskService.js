@@ -204,6 +204,12 @@ define(['lodash'], function(_) {
       });
     }
 
+    function hasNotRunModel(outcomesWithAnalysis) {
+      return _.some(outcomesWithAnalysis, function(outcomeWithAnalysis) {
+        return outcomeWithAnalysis.selectedModel.runStatus !== 'done';
+      });
+    }
+
     return {
       addModelsGroup: addModelsGroup, //1
       analysisToSaveCommand: analysisToSaveCommand, // 2
@@ -218,7 +224,7 @@ define(['lodash'], function(_) {
       getAlternativesWithInclusion: getAlternativesWithInclusion, // 0 
       getIncludedAlternatives: getIncludedAlternatives, // 0
       hasMissingBaseline: hasMissingBaseline,// 0 2
-
+      hasNotRunModel: hasNotRunModel //0
     };
   };
 

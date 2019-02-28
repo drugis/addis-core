@@ -291,7 +291,7 @@ define(['lodash', 'angular-mocks', './analysis'], function(_) {
         }, {
           id: 2
         }];
-        var inclusions = [{ outcomeId: 2 },{ outcomeId: 1 }];
+        var inclusions = [{ outcomeId: 2 }, { outcomeId: 1 }];
         var result = benefitRiskService.getOutcomesWithInclusions(outcomes, inclusions);
         var expectedResult = [
           {
@@ -342,6 +342,31 @@ define(['lodash', 'angular-mocks', './analysis'], function(_) {
         }];
         var result = benefitRiskService.hasMissingBaseline(outcomes);
         expect(result).toBeFalsy();
+      });
+    });
+
+    describe('hasNotRunModel', function() {
+      it('should return falsy if all models have been run', function() {
+        var outcomesWithAnalyses = [{
+          selectedModel: {
+            runStatus: 'done'
+          }
+        }];
+        var result = benefitRiskService.hasNotRunModel(outcomesWithAnalyses);
+        expect(result).toBeFalsy();
+      });
+      it('should return truthy a model does not have the status "done"', function() {
+        var outcomesWithAnalyses = [{
+          selectedModel: {
+            runStatus: 'done'
+          }
+        }, {
+          selectedModel: {
+            runStatus: 'failed'
+          }
+        }];
+        var result = benefitRiskService.hasNotRunModel(outcomesWithAnalyses);
+        expect(result).toBeTruthy();
       });
     });
   });
