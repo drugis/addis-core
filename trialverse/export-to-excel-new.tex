@@ -10,7 +10,8 @@
 \section*{ADDIS study export}
 Also have a look at \texttt{excelExportExample.xlsx}. This Excel file contains an example of a study export. Having a look at it while reading this document might give greater insight into the format.\\
 Fixed headers are shown in \textbf{bold}.\\
-References are shown in \textit{italic} e.g. `=Concepts!B2'.
+References are shown in \textit{italic} e.g. `=Concepts!B2'.\\
+Fields marked by a * will not be used when importing a study.
 
 \subsection*{Study Data}
 To easier grasp the \texttt{Study data} sheet the sheet is explained in bloks. Each blok corresponds to a header in the first row of the sheet.
@@ -27,7 +28,7 @@ The \texttt{Study information} blok contains global information about the study.
     \multicolumn{8}{|l|}{Study Information} \\ \hline
     \multicolumn{8}{|l|}{}                  \\ \hline
     \textbf{ID} & \textbf{addis url} & \textbf{title} & \textbf{group allocation} & \textbf{blinding} & \textbf{status} & \textbf{number of centers} & \textbf{objective} \\ \hline
-    text & URL & text & text & text & text & number & text \\ \hline
+    text* & URL* & text & text & text & text & number & text \\ \hline
   \end{tabular}
 \end{table}
 
