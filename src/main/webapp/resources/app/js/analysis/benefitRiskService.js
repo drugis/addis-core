@@ -205,7 +205,7 @@ define(['lodash'], function(_) {
     }
 
     function hasNotRunModel(outcomesWithAnalysis) {
-      return _.some(outcomesWithAnalysis, function(outcomeWithAnalysis) {
+      return outcomesWithAnalysis.length && _.some(outcomesWithAnalysis, function(outcomeWithAnalysis) {
         return outcomeWithAnalysis.selectedModel.runStatus !== 'done';
       });
     }

@@ -355,6 +355,7 @@ define(['lodash', 'angular-mocks', './analysis'], function(_) {
         var result = benefitRiskService.hasNotRunModel(outcomesWithAnalyses);
         expect(result).toBeFalsy();
       });
+
       it('should return truthy a model does not have the status "done"', function() {
         var outcomesWithAnalyses = [{
           selectedModel: {
@@ -367,6 +368,12 @@ define(['lodash', 'angular-mocks', './analysis'], function(_) {
         }];
         var result = benefitRiskService.hasNotRunModel(outcomesWithAnalyses);
         expect(result).toBeTruthy();
+      });
+
+      it('should return falsy if there are no outcomes with models', function(){
+        var outcomesWithAnalyses = [];
+        var result = benefitRiskService.hasNotRunModel(outcomesWithAnalyses);
+        expect(result).toBeFalsy();
       });
     });
   });
