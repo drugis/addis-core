@@ -1,0 +1,51 @@
+{
+  "@graph": [
+    {
+      "@id": "http://trials.drugis.org/studies/17eff8c6-ea91-49a9-bd05-fcd8de9308ba",
+      "@type": "ontology:Study",
+      "has_outcome": [
+        {
+          "@id": "http://trials.drugis.org/instances/df24529b-2671-44c4-82f3-80e80806bfe5",
+          "@type": "ontology:Endpoint",
+          "has_result_property": [
+            "http://trials.drugis.org/ontology#mean_difference"
+          ],
+          "label": "test3"
+        }
+      ],
+      "label": "Ahrén 2004"
+    },
+    {
+      "@id": "http://trials.drugis.org/instances/a65cb868-1ac2-4676-96f9-8d7681171f12",
+      "mean": 55.7,
+      "of_group": "http://trials.drugis.org/instances/8e7587f3-7620-482f-86b6-3e69565e097a",
+      "of_moment": "http://trials.drugis.org/instances/8e47d92a-0dde-45f5-9e73-62ec694cf87c",
+      "of_outcome": "http://trials.drugis.org/instances/c79a26f0-71d8-425b-ba98-d1a0dbb080ee",
+      "sample_size": 51,
+      "standard_deviation": 11,
+      "mean_difference": 3.0
+    }
+  ],
+  "@context": {
+    "has_outcome": {
+      "@id": "http://trials.drugis.org/ontology#has_outcome",
+      "@type": "@id"
+    },
+    "has_result_property": {
+      "@id": "http://trials.drugis.org/ontology#has_result_property",
+      "@type": "@id"
+    },
+    "label": {
+      "@id": "http://www.w3.org/2000/01/rdf-schema#label",
+      "@type": "http://www.w3.org/2001/XMLSchema#string"
+    },
+    "mean_difference": {
+      "@id": "http://trials.drugis.org/ontology#mean_difference",
+      "@type": "http://www.w3.org/2001/XMLSchema#double"
+    },
+    "mean": {
+      "@id": "http://trials.drugis.org/ontology#mean",
+      "@type": "http://www.w3.org/2001/XMLSchema#double"
+    }
+  }
+}

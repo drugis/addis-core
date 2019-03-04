@@ -86,6 +86,7 @@ define(['lodash'], function(_) {
         $scope.networkOWAs = outcomes[0];
         $scope.studyOutcomes = outcomes[1];
         $scope.isMissingBaseline = BenefitRiskService.hasMissingBaseline($scope.networkOWAs);
+        $scope.hasNotRunModel = BenefitRiskService.hasNotRunModel($scope.networkOWAs);
       });
 
       $scope.alternatives = BenefitRiskService.getAlternativesWithInclusion(alternatives, analysis.interventionInclusions);
