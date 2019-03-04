@@ -29,7 +29,7 @@ define(['angular-mocks'], function() {
     pataviResultsDefer;
 
   describe('the insert directive controller for directives other than comparison result', function() {
-    beforeEach(module('addis.project'));
+    beforeEach(angular.mock.module('addis.project'));
     beforeEach(inject(function($rootScope, $controller, $q) {
       initController($rootScope, $controller, $q, 'relative-effects-table');
     }));
@@ -144,7 +144,7 @@ define(['angular-mocks'], function() {
   });
 
   describe('the insert directive controller for the comparison result directive', function() {
-    beforeEach(module('addis.project'));
+    beforeEach(angular.mock.module('addis.project'));
     beforeEach(inject(function($rootScope, $controller, $q) {
       initController($rootScope, $controller, $q, 'comparison-result');
     }));

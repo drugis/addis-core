@@ -1,11 +1,25 @@
 'use strict';
 define(['lodash'], function(_) {
-  var dependencies = ['$q', '$injector', '$stateParams', 'ArmService', 'MeasurementMomentService', 'GroupService'];
+  var dependencies = [
+    '$q',
+    '$injector',
+    '$stateParams',
+    'ArmService',
+    'MeasurementMomentService',
+    'GroupService'
+  ];
 
-  var resultsTableListDirective = function($q, $injector, $stateParams, ArmService, MeasurementMomentService, GroupService) {
+  var resultsTableListDirective = function(
+    $q,
+    $injector,
+    $stateParams,
+    ArmService,
+    MeasurementMomentService,
+    GroupService
+  ) {
     return {
       restrict: 'E',
-      templateUrl: 'app/js/results/resultsTableListDirective.html',
+      templateUrl: './resultsTableListDirective.html',
       scope: {
         variableType: '=',
         variableName: '=',
@@ -16,32 +30,18 @@ define(['lodash'], function(_) {
         var variableService = $injector.get(scope.variableType + 'Service');
         var variablesPromise, armsPromise, groupsPromise, measurementMomentsPromise;
         scope.showResults = false;
+        reloadResultTables();
 
         function reloadResultTables() {
-
-          if(deregisterRefreshListener) {
+          if (deregisterRefreshListener) {
             // stop listening while loading to prevent race conditions
             deregisterRefreshListener();
           }
 
-          armsPromise = ArmService.queryItems($stateParams.studyUUID).then(function(result) {
-            scope.arms = result;
-            return result;
-          });
-
-          groupsPromise = GroupService.queryItems($stateParams.studyUUID).then(function(result) {
-            scope.groups = result;
-            return result;
-          });
-
-          measurementMomentsPromise = MeasurementMomentService.queryItems($stateParams.studyUUID).then(function(result) {
-            scope.measurementMoments = result;
-            return result;
-          });
-
-          variablesPromise = variableService.queryItems($stateParams.studyUUID).then(function(result) {
-            scope.variables = result;
-          });
+          armsPromise = getArmsPromise();
+          groupsPromise = getGroupsPromise();
+          measurementMomentsPromise = getMeasurementMomentsPromise();
+          variablesPromise = getVariablesPromise();
 
           $q.all([armsPromise, groupsPromise, variablesPromise]).then(function() {
             var isAnyMeasuredVariable = _.find(scope.variables, function(variable) {
@@ -58,8 +58,32 @@ define(['lodash'], function(_) {
           });
         }
 
-        // initialize the directive
-        reloadResultTables();
+        function getVariablesPromise() {
+          return variableService.queryItems($stateParams.studyUUID).then(function(result) {
+            scope.variables = result;
+          });
+        }
+
+        function getMeasurementMomentsPromise() {
+          return MeasurementMomentService.queryItems($stateParams.studyUUID).then(function(result) {
+            scope.measurementMoments = result;
+            return result;
+          });
+        }
+
+        function getGroupsPromise() {
+          return GroupService.queryItems($stateParams.studyUUID).then(function(result) {
+            scope.groups = result;
+            return result;
+          });
+        }
+
+        function getArmsPromise() {
+          return ArmService.queryItems($stateParams.studyUUID).then(function(result) {
+            scope.arms = result;
+            return result;
+          });
+        }
 
       }
     };

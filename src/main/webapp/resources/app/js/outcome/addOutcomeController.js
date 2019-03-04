@@ -1,7 +1,17 @@
 'use strict';
 define(['lodash'], function(_) {
-  var dependencies = ['$scope', '$modalInstance', 'callback', 'OutcomeResource'];
-  var AddOutcomeController = function($scope, $modalInstance, callback, OutcomeResource) {
+  var dependencies = [
+    '$scope',
+    '$modalInstance',
+    'callback',
+    'OutcomeResource'
+  ];
+  var AddOutcomeController = function(
+    $scope,
+    $modalInstance,
+    callback,
+    OutcomeResource
+  ) {
     // functions
     $scope.checkForDuplicateOutcomeName = checkForDuplicateOutcomeName;
     $scope.cancel = cancel;

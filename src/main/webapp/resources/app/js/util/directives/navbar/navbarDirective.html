@@ -26,12 +26,12 @@
           </a>
           <ul class="menu vertical">
             <li>
-              <a href="signout">Sign out</a>
+              <a ng-click="signOut()" href="signout">Sign out</a>
             </li>
           </ul>
         </li>
         <li ng-if="!isAnonymous && isOwnUserPage">
-          <a href="signout">Sign out</a>
+          <a href="signout" >Sign out</a>
         </li>
         <li ng-if="isAnonymous">
           <a class="manual" href="/auth/google?scope=openid+email+profile" ng-click="signin()">Sign in</a>

@@ -3,7 +3,7 @@ define(['angular', 'angular-mocks'], function() {
 
   describe('the excel io util service', function() {
     var excelIOUtilService;
-    beforeEach(module('addis.excelIO'));
+    beforeEach(angular.mock.module('addis.excelIO'));
     beforeEach(inject(function(ExcelIOUtilService) {
       excelIOUtilService = ExcelIOUtilService;
     }));

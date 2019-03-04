@@ -3,10 +3,10 @@ package org.drugis.addis.analyses.service.impl;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Sets;
+import org.drugis.addis.analyses.model.BenefitRiskAnalysis;
+import org.drugis.addis.analyses.model.BenefitRiskNMAOutcomeInclusion;
 import org.drugis.addis.analyses.model.BenefitRiskStudyOutcomeInclusion;
 import org.drugis.addis.analyses.model.InterventionInclusion;
-import org.drugis.addis.analyses.model.BenefitRiskNMAOutcomeInclusion;
-import org.drugis.addis.analyses.model.BenefitRiskAnalysis;
 import org.drugis.addis.analyses.repository.BenefitRiskAnalysisRepository;
 import org.drugis.addis.analyses.service.AnalysisService;
 import org.drugis.addis.analyses.service.BenefitRiskAnalysisService;
@@ -15,32 +15,25 @@ import org.drugis.addis.exception.ProblemCreationException;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.interventions.model.AbstractIntervention;
 import org.drugis.addis.interventions.repository.InterventionRepository;
-import org.drugis.addis.interventions.service.impl.InvalidTypeForDoseCheckException;
 import org.drugis.addis.outcomes.Outcome;
 import org.drugis.addis.outcomes.repository.OutcomeRepository;
-import org.drugis.addis.patavitask.repository.UnexpectedNumberOfResultsException;
 import org.drugis.addis.problems.model.AbstractProblem;
 import org.drugis.addis.problems.service.ProblemService;
 import org.drugis.addis.projects.service.ProjectService;
 import org.drugis.addis.scenarios.repository.ScenarioRepository;
 import org.drugis.addis.security.Account;
 import org.drugis.addis.subProblems.service.SubProblemService;
-import org.drugis.addis.trialverse.service.impl.ReadValueException;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
 import java.io.IOException;
-import java.net.URISyntaxException;
-import java.sql.SQLException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-
-import static org.apache.commons.collections.CollectionUtils.isNotEmpty;
 
 /**
  * Created by connor on 9-3-16.
@@ -83,7 +76,7 @@ public class BenefitRiskAnalysisServiceImpl implements BenefitRiskAnalysisServic
     }
     projectService.checkProjectExistsAndModifiable(user, analysis.getProjectId());
     if (analysis.isFinalized()) {
-      AbstractProblem problem = problemService.getProblem(projectId, analysis.getId(), path);
+      AbstractProblem problem = problemService.getProblem(projectId, analysis.getId());
       String problemString = objectMapper.writeValueAsString(problem);
       analysis.setProblem(problemString);
       subProblemService.createMCDADefaults(projectId, analysis.getId(), scenarioState);
@@ -98,9 +91,9 @@ public class BenefitRiskAnalysisServiceImpl implements BenefitRiskAnalysisServic
 
     Set<AbstractIntervention> interventions = interventionRepository.query(analysis.getProjectId());
     Map<Integer, AbstractIntervention> interventionMap = interventions.stream()
-            .collect(Collectors.toMap(AbstractIntervention::getId, Function.identity()));
+        .collect(Collectors.toMap(AbstractIntervention::getId, Function.identity()));
 
-    if (isNotEmpty(analysis.getInterventionInclusions())) {
+    if (!analysis.getInterventionInclusions().isEmpty()) {
       // do not allow selection of interventions that are not in the project
       for (InterventionInclusion interventionInclusion : analysis.getInterventionInclusions()) {
         if (!interventionMap.get(interventionInclusion.getInterventionId()).getProject().equals(analysis.getProjectId())) {
@@ -108,7 +101,7 @@ public class BenefitRiskAnalysisServiceImpl implements BenefitRiskAnalysisServic
         }
       }
     }
-    if (isNotEmpty(analysis.getBenefitRiskNMAOutcomeInclusions())) {
+    if (!analysis.getBenefitRiskNMAOutcomeInclusions().isEmpty()) {
       // do not allow selection of outcomes that are not in the project
       for (BenefitRiskNMAOutcomeInclusion benefitRiskNMAOutcomeInclusion : analysis.getBenefitRiskNMAOutcomeInclusions()) {
         Integer outcomeId = benefitRiskNMAOutcomeInclusion.getOutcomeId();
@@ -118,7 +111,7 @@ public class BenefitRiskAnalysisServiceImpl implements BenefitRiskAnalysisServic
         }
       }
     }
-    if (isNotEmpty(analysis.getBenefitRiskStudyOutcomeInclusions())) {
+    if (!analysis.getBenefitRiskStudyOutcomeInclusions().isEmpty()) {
       // do not allow selection of outcomes that are not in the project
       for (BenefitRiskStudyOutcomeInclusion benefitRiskStudyOutcomeInclusion : analysis.getBenefitRiskStudyOutcomeInclusions()) {
         Integer outcomeId = benefitRiskStudyOutcomeInclusion.getOutcomeId();

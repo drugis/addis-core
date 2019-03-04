@@ -5,7 +5,7 @@ define([], function() {
   var SubsetSelectDirective = function(SubsetSelectService) {
     return {
       restrict: 'E',
-      templateUrl: 'app/js/util/directives/subsetSelect/subsetSelectDirective.html',
+      templateUrl: './subsetSelectDirective.html',
       scope: {
         target: '=',
         source: '=',

@@ -1,53 +1,92 @@
 'use strict';
 define(['lodash'], function(_) {
-  var dependencies = [];
-  var BenefitRiskAnalysisService = function() {
-
-    function isMissingDataType(outcomesWithAnalyses) {
-      return _(outcomesWithAnalyses).filter('outcome.isIncluded').reject('dataType').value().length;
+  var dependencies = [
+    '$state',
+    'ProblemResource',
+    'AnalysisResource',
+    'SubProblemResource',
+    'ScenarioResource',
+    'WorkspaceService',
+    'DEFAULT_VIEW'
+  ];
+  var BenefitRiskService = function(
+    $state,
+    ProblemResource,
+    AnalysisResource,
+    SubProblemResource,
+    ScenarioResource,
+    WorkspaceService,
+    DEFAULT_VIEW
+  ) {
+    function addModels(networkMetaAnalyses, models) {
+      return _(networkMetaAnalyses)
+        .map(_.partial(joinModelsWithAnalysis, models))
+        .map(addModelsGroup)
+        .value();
     }
 
-    function isMissingAnalysis(outcomesWithAnalyses) {
-      return _.find(outcomesWithAnalyses, function(outcomeWithAnalyses) {
-        return outcomeWithAnalyses.dataType === 'network' && !outcomeWithAnalyses.selectedAnalysis;
+    function addModelsGroup(analysis) {
+      analysis.models = analysis.models.map(function(model) {
+        model.group = analysis.primaryModel === model.id ? 'Primary model' : 'Other models';
+        return model;
       });
+      return analysis;
     }
 
-    function addStudiesToOutcomes(outcomesWithAnalyses, studyInclusions, studies) {
-      return _.map(outcomesWithAnalyses, function(outcomeWithAnalyses) {
-        var outcomeWithAnalysesCopy = _.cloneDeep(outcomeWithAnalyses);
-        var inclusion = _.find(studyInclusions, ['outcomeId', outcomeWithAnalysesCopy.outcome.id]);
+    function buildOutcomes(analysis, outcomes, networkMetaAnalyses, studies) {
+      var outcomesById = _.keyBy(outcomes, 'id');
+      var outcomesWithAnalysis = getIncludedNmaOutcomes(analysis, networkMetaAnalyses, outcomesById);
+      var includedStudyOutcomes = getIncludedStudyOutcomes(analysis.benefitRiskStudyOutcomeInclusions, outcomesById);
+      var studyOutcomes = addStudiesToOutcomes(includedStudyOutcomes, analysis.benefitRiskStudyOutcomeInclusions, studies);
+      return outcomesWithAnalysis.concat(studyOutcomes);
+    }
+
+    function addStudiesToOutcomes(outcomes, studyInclusions, studies) {
+      return _.map(outcomes, function(outcome) {
+        var outcomeCopy = _.cloneDeep(outcome);
+        var inclusion = _.find(studyInclusions, ['outcomeId', outcomeCopy.outcome.id]);
         if (inclusion) {
-          outcomeWithAnalysesCopy.dataType = 'single-study';
+          outcomeCopy.dataType = 'single-study';
           if (inclusion.studyGraphUri) {
-            outcomeWithAnalysesCopy.selectedStudy = _.find(studies, ['studyUri', inclusion.studyGraphUri]);
+            var study = _.find(studies, ['studyUri', inclusion.studyGraphUri]);
+            outcomeCopy.selectedStudy = study;
+            outcomeCopy.isContrastOutcome = isContrastOutcome(study, outcome);
           } else {
-            outcomeWithAnalysesCopy.selectedStudy = {};
+            outcomeCopy.selectedStudy = {};
           }
         }
-        return outcomeWithAnalysesCopy;
+        return outcomeCopy;
       });
     }
 
-    function buildOutcomesWithAnalyses(analysis, outcomes, networkMetaAnalyses) {
-      var outcomesById = _.keyBy(outcomes, 'id');
-      var outcomesWithAnalysis = _.map(analysis.benefitRiskNMAOutcomeInclusions, function(benefitRiskNMAOutcomeInclusion) {
-        return buildOutcomeWithAnalyses(analysis, networkMetaAnalyses, outcomesById[benefitRiskNMAOutcomeInclusion.outcomeId]);
+    function isContrastOutcome(study, outcome) {
+      return _.some(study.arms, function(arm) {
+        return _.some(arm.measurements[study.defaultMeasurementMoment], function(measurement) {
+          return measurement.referenceArm && measurement.variableConceptUri === outcome.outcome.semanticOutcomeUri;
+        });
       });
-      var outcomesWithStudy = _.map(analysis.benefitRiskStudyOutcomeInclusions, function(benefitRiskStudyOutcomeInclusion) {
-        return buildOutcomeWithStudy(analysis, benefitRiskStudyOutcomeInclusion.studyGraphUri, outcomesById[benefitRiskStudyOutcomeInclusion.outcomeId]);
-      });
-      return outcomesWithAnalysis.concat(outcomesWithStudy);
     }
 
-    function buildOutcomeWithStudy(analysis, studyGraphUri, outcome) {
-      return {
-        outcome: outcome
-      };
+    function getIncludedNmaOutcomes(analysis, nmas, outcomes) {
+      return _.map(analysis.benefitRiskNMAOutcomeInclusions, function(inclusion) {
+        return buildOutcomeWithAnalyses(analysis, nmas, outcomes[inclusion.outcomeId]);
+      });
+    }
+
+    function getIncludedStudyOutcomes(inclusions, outcomes) {
+      return _.map(inclusions, function(inclusion) {
+        var outcome = {
+          outcome: outcomes[inclusion.outcomeId]
+        };
+        if (inclusion.baseline) {
+          outcome.baseline = inclusion.baseline;
+        }
+        return outcome;
+      });
     }
 
     function buildOutcomeWithAnalyses(analysis, networkMetaAnalyses, outcome) {
-      var nmasForOutcome = networkMetaAnalyses.filter(function(nma) {
+      var nmasForOutcome = _.filter(networkMetaAnalyses, function(nma) {
         return nma.outcome.id === outcome.id;
       });
 
@@ -64,7 +103,7 @@ define(['lodash'], function(_) {
       }) || nmasForOutcome[0];
       var selectedModel = !selectedAnalysis ? undefined : _.find(selectedAnalysis.models, ['id', benefitRiskNMAOutcomeInclusion.modelId]);
 
-      var owa = {
+      var outcomeWithAnalysis = {
         outcome: outcome,
         networkMetaAnalyses: nmasForOutcome,
         selectedAnalysis: selectedAnalysis,
@@ -72,9 +111,9 @@ define(['lodash'], function(_) {
         dataType: 'network',
       };
       if (benefitRiskNMAOutcomeInclusion.baseline) {
-        owa.baselineDistribution = benefitRiskNMAOutcomeInclusion.baseline;
+        outcomeWithAnalysis.baseline = benefitRiskNMAOutcomeInclusion.baseline;
       }
-      return owa;
+      return outcomeWithAnalysis;
     }
 
     function joinModelsWithAnalysis(models, networkMetaAnalysis) {
@@ -84,162 +123,104 @@ define(['lodash'], function(_) {
       return networkMetaAnalysis;
     }
 
-    function compareAnalysesByModels(a, b) {
-      if (a.models.length > 0) {
-        if (!b.models.length) {
-          return -1;
-        } else {
-          return 0;
-        }
-      } else {
-        if (b.models.length > 0) {
-          return 1;
-        }
-      }
-      return 0;
+    function analysisToSaveCommand(analysis, problem) {
+      var analysisToSave = angular.copy(analysis);
+      return {
+        id: analysis.id,
+        projectId: analysis.projectId,
+        analysis: analysisToSave,
+        scenarioState: JSON.stringify(problem, null, 2)
+      };
     }
 
-    function addModelsGroup(analysis) {
-      analysis.models = analysis.models.map(function(model) {
-        model.group = analysis.primaryModel === model.id ? 'Primary model' : 'Other models';
-        return model;
-      });
-      return analysis;
-    }
-
-    function numberOfSelectedOutcomes(outcomeInclusions) {
-      var goodOutcomes = _.filter(outcomeInclusions, function(inclusion) {
-        if (!inclusion.outcome.isIncluded) {
-          return false;
-        } else {
-          if (inclusion.selectedAnalysis) {
-            return !inclusion.selectedAnalysis.archived && inclusion.selectedModel && !inclusion.selectedModel.archived;
-          } else {
-            return inclusion.selectedStudy;
-          }
-        }
-      });
-      return goodOutcomes.length;
-    }
-
-    function isModelWithMissingAlternatives(outcomesWithAnalyses) {
-      return _.find(outcomesWithAnalyses, function(owa) {
-        return owa.outcome.isIncluded && owa.selectedModel && owa.selectedModel.missingAlternatives.length;
+    function finalizeAndGoToDefaultScenario(analysis) {
+      return ProblemResource.get($state.params).$promise.then(function(problem) {
+        var saveCommand = analysisToSaveCommand(analysis, {
+          problem: WorkspaceService.reduceProblem(problem)
+        });
+        AnalysisResource.save(saveCommand, function() {
+          goToDefaultScenario();
+        });
       });
     }
 
-    function isModelWithoutResults(outcomesWithAnalyses) {
-      return _.find(outcomesWithAnalyses, function(owa) {
-        return owa.outcome.isIncluded && owa.selectedModel && owa.selectedModel.runStatus !== 'done';
+    function goToDefaultScenario() {
+      var params = $state.params;
+      return getSubProblems(params)
+        .then(_.partial(getExtendedParams, params))
+        .then(goToScenario);
+    }
+
+    function getSubProblems(params) {
+      return SubProblemResource.query(params).$promise;
+    }
+
+    function getExtendedParams(params, subProblems) {
+      var subProblem = subProblems[0];
+      params = _.extend({}, params, {
+        problemId: subProblem.id
+      });
+      return ScenarioResource.query(params).$promise.then(function(scenarios) {
+        return _.extend({}, params, {
+          id: scenarios[0].id
+        });
       });
     }
 
-    function findMissingAlternatives(interventionInclusions, owa) {
-      return interventionInclusions.filter(function(alternative) {
-        var modelType = owa.selectedModel.modelType;
-        if (modelType.type === 'pairwise') {
-          return alternative.id !== modelType.details.from.id &&
-            alternative.id !== modelType.details.to.id;
-        } else {
-          return !_.find(owa.selectedAnalysis.interventionInclusions, function(includedIntervention) {
-            return alternative.id === includedIntervention.interventionId;
-          });
-        }
+    function goToScenario(params) {
+      $state.go(DEFAULT_VIEW, params);
+    }
+
+    function getOutcomesWithInclusions(outcomes, inclusions) {
+      return _.map(outcomes, function(outcome) {
+        outcome.isIncluded = isOutcomeIncluded(outcome, inclusions);
+        return outcome;
       });
     }
 
-    function addScales(outcomesWithAnalyses, interventionInclusions, scaleResults) {
-      return outcomesWithAnalyses.map(function(outcomeWithAnalyses) {
-        outcomeWithAnalyses.scales = interventionInclusions.reduce(function(accum, includedAlternative) {
-          if (scaleResults[outcomeWithAnalyses.outcome.semanticOutcomeUri]) {
-            accum[includedAlternative.id] = scaleResults[outcomeWithAnalyses.outcome.semanticOutcomeUri][includedAlternative.id];
-          }
-          return accum;
-        }, {});
-        return outcomeWithAnalyses;
+    function getAlternativesWithInclusion(alternatives, inclusions) {
+      return _.map(alternatives, function(alternative) {
+        alternative.isIncluded = isAlternativeIncluded(alternative, inclusions);
+        return alternative;
       });
     }
 
-    function isInvalidStudySelected(outcomeInclusions) {
-      var invalidStudy = _.chain(outcomeInclusions)
-        .filter(['dataType', 'single-study'])
-        .find(function(inclusion) {
-          return (
-            (inclusion.selectedStudy && inclusion.selectedStudy.missingInterventions && inclusion.selectedStudy.missingInterventions.length > 0) ||
-            (inclusion.selectedStudy && inclusion.selectedStudy.missingOutcomes && inclusion.selectedStudy.missingOutcomes.length > 0)
-          );
-        }).value();
-      return invalidStudy;
+    function isAlternativeIncluded(alternative, inclusions) {
+      return _.some(inclusions, ['interventionId', alternative.id]);
     }
 
-    function hasMissingStudy(outcomeInclusions) {
-      return _.find(outcomeInclusions, function(inclusion) {
-        return inclusion.dataType === 'single-study' && _.isEmpty(inclusion.selectedStudy);
+    function isOutcomeIncluded(outcome, inclusions) {
+      return _.some(inclusions, ['outcomeId', outcome.id]);
+    }
+
+    function getIncludedAlternatives(alternatives) {
+      return _.filter(alternatives, 'isIncluded');
+    }
+
+    function hasMissingBaseline(outcomes) {
+      return _.some(outcomes, function(outcome) {
+        return outcome.dataType === 'network' && !outcome.baseline ||
+          outcome.dataType === 'single-study' && outcome.isContrastOutcome && !outcome.baseline;
       });
-    }
-
-    function findOverlappingInterventions(studies) {
-      var overlappingInterventionsList = _.reduce(studies, function(accum, study) {
-        return accum.concat(study.overlappingInterventions);
-      }, []);
-      return _.uniqBy(overlappingInterventionsList, 'id');
-    }
-
-    function findOverlappingOutcomes(outcomeInclusions) {
-      return _.chain(outcomeInclusions)
-        .map('outcome')
-        .filter('isIncluded')
-        .groupBy('semanticOutcomeUri')
-        .filter(function(outcomeByUri) {
-          return outcomeByUri.length > 1;
-        })
-        .value();
-    }
-
-    function addModelBaseline(analysis, models, alternatives) {
-      _.forEach(analysis.benefitRiskNMAOutcomeInclusions, function(benefitRiskNMAOutcomeInclusion) {
-        if (!benefitRiskNMAOutcomeInclusion.baseline) {
-          // there is no baseline set yet, check if you can use the modelBaseline
-          var baselineModel = _.find(models, function(model) {
-            return model.id === benefitRiskNMAOutcomeInclusion.modelId;
-          });
-          if (baselineModel && baselineModel.baseline) {
-            // there is a model with a baseline, yay
-            if (_.find(analysis.interventionInclusions, function(interventionInclusion) {
-                //there is an intervention with the right name!
-                return _.find(alternatives, function(alternative) {
-                  return interventionInclusion.interventionId === alternative.id;
-                }).name.localeCompare(baselineModel.baseline.baseline.name) === 0;
-              })) {
-              benefitRiskNMAOutcomeInclusion.baseline = baselineModel.baseline.baseline;
-            }
-          }
-        }
-      });
-      return analysis;
     }
 
     return {
-      isMissingDataType: isMissingDataType,
-      isMissingAnalysis: isMissingAnalysis,
-      addModelsGroup: addModelsGroup,
-      addStudiesToOutcomes: addStudiesToOutcomes,
-      compareAnalysesByModels: compareAnalysesByModels,
-      buildOutcomeWithAnalyses: buildOutcomeWithAnalyses,
-      buildOutcomesWithAnalyses: buildOutcomesWithAnalyses,
-      joinModelsWithAnalysis: joinModelsWithAnalysis,
-      numberOfSelectedOutcomes: numberOfSelectedOutcomes,
-      isModelWithMissingAlternatives: isModelWithMissingAlternatives,
-      isModelWithoutResults: isModelWithoutResults,
-      findMissingAlternatives: findMissingAlternatives,
-      addScales: addScales,
-      isInvalidStudySelected: isInvalidStudySelected,
-      hasMissingStudy: hasMissingStudy,
-      findOverlappingInterventions: findOverlappingInterventions,
-      findOverlappingOutcomes: findOverlappingOutcomes,
-      addModelBaseline: addModelBaseline
+      addModelsGroup: addModelsGroup, //1
+      analysisToSaveCommand: analysisToSaveCommand, // 2
+      joinModelsWithAnalysis: joinModelsWithAnalysis,//public for test
+      addStudiesToOutcomes: addStudiesToOutcomes, //1 
+      buildOutcomeWithAnalyses: buildOutcomeWithAnalyses, //1
+      goToDefaultScenario: goToDefaultScenario, // 0 1 2
+      getOutcomesWithInclusions: getOutcomesWithInclusions, // 1 2
+      buildOutcomes: buildOutcomes, // 0 1 2 
+      finalizeAndGoToDefaultScenario: finalizeAndGoToDefaultScenario, // 1 2
+      addModels: addModels, // 0 2
+      getAlternativesWithInclusion: getAlternativesWithInclusion, // 0 
+      getIncludedAlternatives: getIncludedAlternatives, // 0
+      hasMissingBaseline: hasMissingBaseline,// 0 2
+
     };
   };
 
-  return dependencies.concat(BenefitRiskAnalysisService);
+  return dependencies.concat(BenefitRiskService);
 });

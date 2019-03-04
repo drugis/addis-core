@@ -1,5 +1,5 @@
 'use strict';
-define(['angular', 'angular-mocks'], function() {
+define(['angular', 'angular-mocks'], function(angular, angularMocks) {
   describe('copy study controller', function() {
 
     var scope,
@@ -14,7 +14,7 @@ define(['angular', 'angular-mocks'], function() {
       copyStudyResourceMock = jasmine.createSpyObj('CopyStudyResource', ['copy']),
       uuidServiceMock = jasmine.createSpyObj('UUIDService', ['generate', 'buildGraphUri'])
       ;
-    beforeEach(module('trialverse.study'));
+    beforeEach(angular.mock.module('trialverse.study'));
 
     beforeEach(inject(function($rootScope, $q, $controller) {
       scope = $rootScope;

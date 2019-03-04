@@ -12,7 +12,7 @@ define(['lodash'], function(_) {
         analysisId: '=',
         modelId: '='
       },
-      templateUrl: 'app/js/project/report/forestPlot/forestPlotTemplate.html',
+      templateUrl: './forestPlotTemplate.html',
       link: function(scope) {
         var modelCache;
         CacheService.getModel($stateParams.projectId, scope.analysisId, scope.modelId)

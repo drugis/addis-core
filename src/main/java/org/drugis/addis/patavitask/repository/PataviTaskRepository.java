@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -22,7 +23,7 @@ public interface PataviTaskRepository {
 
   JsonNode getResult(URI taskUrl) throws IOException, UnexpectedNumberOfResultsException, URISyntaxException;
 
-  Map<URI, JsonNode> getResults(List<URI> taskUris) throws SQLException, IOException, UnexpectedNumberOfResultsException, URISyntaxException;
+  Map<URI, JsonNode> getResults(Collection<PataviTask> taskUris) throws SQLException, IOException, UnexpectedNumberOfResultsException, URISyntaxException;
 
   HttpResponse delete(URI taskUrl) throws IOException;
 

@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.inject.Inject;
+import java.security.Principal;
 import java.util.List;
 
 /**
@@ -44,5 +45,14 @@ public class UserController extends AbstractAddisCoreController {
   public List<Account> getAllUsers() {
     logger.trace("retrieving all user");
     return accountRepository.getUsers();
+  }
+
+  @RequestMapping(value = "/me", method = RequestMethod.GET)
+  @ResponseBody
+  public Account getLoggedInUser(Principal principal) {
+    if (principal != null) {
+      return accountRepository.getAccount(principal);
+    }
+    return null;
   }
 }

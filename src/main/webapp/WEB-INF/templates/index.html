@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html ng-app="addis" ng-strict-di="true">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <link rel="shortcut icon" href="img/favicon.ico" type="image/x-icon" />
+
+    <title>addis.drugis.org</title>
+  </head>
+
+  <body class="f-topbar-fixed">
+
+    <error-reporting></error-reporting>
+    <session-expired></session-expired>
+
+    <div ui-view></div>
+
+    <script>
+     window.config = {};
+      if(window.location.host.indexOf("test") > -1) {
+        document.body.className += " test";
+        document.title = "test-" + document.title;
+      }
+
+      window.config.workspaceName = 'analyses';
+      window.config.workspacesRepositoryUrl = "/projects/:projectId/analyses/:analysisId";
+
+      function signout(){
+        var signoutForm = document.getElementById('signout_form');
+
+        if(signoutForm){
+          signoutForm.submit();
+        }
+      }
+    </script>
+
+    <div class="push"></div>
+
+  </body>
+</html>

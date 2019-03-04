@@ -1,6 +1,6 @@
 package org.drugis.addis.projects;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.drugis.addis.TestUtils;
 import org.drugis.addis.config.TestConfig;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
@@ -216,7 +216,7 @@ public class ProjectsControllerTest {
     String reportContent = "report content";
     when(reportRepository.get(1)).thenReturn(reportContent);
     mockMvc.perform(get("/projects/1/report"))
-            .andExpect(content().contentType(MediaType.TEXT_PLAIN))
+            .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_PLAIN))
             .andExpect(status().isOk())
             .andExpect(content().string(reportContent));
     verify(reportRepository).get(1);

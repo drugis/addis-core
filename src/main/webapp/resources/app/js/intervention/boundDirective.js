@@ -36,7 +36,7 @@ define(['lodash'], function(_) {
         }
       },
       restrict: 'E',
-      templateUrl: '/app/js/intervention/boundDirective.html'
+      templateUrl: './boundDirective.html'
     };
   };
 

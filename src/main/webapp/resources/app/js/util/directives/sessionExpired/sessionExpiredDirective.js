@@ -9,7 +9,7 @@ define(['angular'], function() {
           $location.hash('logo');
           $anchorScroll();
           $modal.open({
-            templateUrl: 'app/js/util/directives/sessionExpired/sessionExpiredDirective.html'
+            templateUrl: './sessionExpiredDirective.html'
           });
         });
       }

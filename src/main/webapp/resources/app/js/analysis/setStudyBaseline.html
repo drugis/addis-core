@@ -1,0 +1,87 @@
+<form novalidate ng-submit="setBaseline(baseline)">
+  <div class="grid-container">
+    <div class="grid-x">
+      <div class="cell end">
+        <h3 class="ng-scope">{{outcome.outcome.name || outcome.name}} baseline
+          distribution
+        </h3>
+      </div>
+    </div>
+    <div class="grid-x">
+      <div class="cell">
+        Set baseline for {{baseline.name}}
+      </div>
+    </div>
+
+    <div class="grid-x">
+      <div class="cell">
+        <label>
+          {{baseline.distribution}} distribution ({{baseline.property}})
+        </label>
+      </div>
+    </div>
+
+    <!-- normal distribution -->
+    <div class="grid-x grid-margin-x" ng-if="baseline.type === 'dnorm'">
+      <div class="cell large-6 medium-6">
+        <label>mean
+          <input type="number" ng-model="baseline.mu">
+        </label>
+      </div>
+      <div class="cell large-6 medium-6">
+        <label>standard deviation
+          <input type="number" step="0.001" ng-model-options="{ allowInvalid: true }" ng-model="baseline.sigma">
+        </label>
+      </div>
+    </div>
+
+    <!-- beta distribution -->
+    <div class="grid-x grid-margin-x" ng-if="baseline.type === 'dbeta-cloglog' || baseline.type === 'dbeta-logit'">
+      <div class="cell large-6 medium-6">
+        <label>alpha
+          <input type="number" ng-model="baseline.alpha">
+        </label>
+      </div>
+      <div class="cell large-6 medium-6">
+        <label>beta
+          <input type="number" step="0.001" ng-model-options="{ allowInvalid: true }" ng-model="baseline.beta">
+        </label>
+      </div>
+    </div>
+
+    <!-- Survival -->
+    <div class="grid-x grid-margin-x" ng-if="baseline.type === 'dsurv'">
+      <div class="cell large-4 medium-6">
+        <label>responders
+          <input type="number" ng-model="baseline.alpha">
+        </label>
+      </div>
+      <div class="cell large-4 medium-6">
+        <label>exposure
+          <input type="number" step="0.001" ng-model-options="{ allowInvalid: true }" ng-model="baseline.beta">
+        </label>
+      </div>
+      <div class="cell large-4 medium-6">
+        <label>Summary measure
+          <select ng-model="baseline.summaryMeasure" ng-options="summaryMeasure.id as summaryMeasure.label for summaryMeasure in summaryMeasureOptions"></select>
+        </label>
+      </div>
+      <div class="cell large-4 medium-6" ng-show="baseline.summaryMeasure === 'survivalAtTime'">
+        <label>Survival at time
+          <input type="number" step="0.001" ng-model-options="{ allowInvalid: true }" ng-model="baseline.time">
+        </label>
+      </div>
+    </div>
+
+    <div class="grid-x">
+      <div class="cell">
+        <button ng-disabled="isInValidBaseline" class="button success" type="submit">
+          Set
+        </button>
+      </div>
+    </div>
+    <button ng-click="cancel()" class="close-button" aria-label="Close reveal" type="button">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+</form>

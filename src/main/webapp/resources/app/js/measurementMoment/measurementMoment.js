@@ -1,28 +1,32 @@
 'use strict';
-var requires = [
-  'measurementMoment/measurementMomentController',
-  'measurementMoment/measurementMomentService',
-  'util/filters/anchorFilter'
-];
-define(requires.concat(['angular', 'angular-resource']), function(
-  MeasurementMomentController,
-  MeasurementMomentService,
-  anchorFilter,
-  angular) {
-  var dependencies = ['ngResource',
-    'trialverse.study',
-    'trialverse.epoch',
-    'trialverse.util'
-  ];
+define([
+  './measurementMomentController',
+  './measurementMomentService',
+  '../util/filters/anchorFilter',
+  'angular',
+  'angular-resource',
+  '../epoch/epoch'
+],
+  function(
+    MeasurementMomentController,
+    MeasurementMomentService,
+    anchorFilter,
+    angular) {
+    var dependencies = ['ngResource',
+      'trialverse.study',
+      'trialverse.epoch',
+      'trialverse.util'
+    ];
 
-  return angular.module('trialverse.measurementMoment',
+    return angular.module('trialverse.measurementMoment',
       dependencies)
-    // controllers
-    .controller('MeasurementMomentController', MeasurementMomentController)
+      // controllers
+      .controller('MeasurementMomentController', MeasurementMomentController)
 
-    //services
-    .factory('MeasurementMomentService', MeasurementMomentService)
+      //services
+      .factory('MeasurementMomentService', MeasurementMomentService)
 
-    //filter
-    .filter('anchorFilter', anchorFilter);
-});
+      //filter
+      .filter('anchorFilter', anchorFilter);
+  }
+);

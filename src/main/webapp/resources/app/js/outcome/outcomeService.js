@@ -1,8 +1,28 @@
 'use strict';
 define(['angular', 'lodash'],
   function(angular, _) {
-    var dependencies = ['$q', 'StudyService', 'UUIDService', 'MeasurementMomentService', 'ResultsService', 'RepairService', 'RdfListService'];
-    var OutcomeServiceService = function($q, StudyService, UUIDService, MeasurementMomentService, ResultsService, RepairService, RdfListService) {
+    var dependencies = [
+      '$q',
+      'StudyService',
+      'UUIDService',
+      'MeasurementMomentService',
+      'ResultsService',
+      'RepairService',
+      'RdfListService',
+      'ARM_LEVEL_TYPE',
+      'CONTRAST_TYPE'
+    ];
+    var OutcomeServiceService = function(
+      $q,
+      StudyService,
+      UUIDService,
+      MeasurementMomentService,
+      ResultsService,
+      RepairService,
+      RdfListService,
+      ARM_LEVEL_TYPE,
+      CONTRAST_TYPE
+    ) {
 
       var INSTANCE_BASE = 'http://trials.drugis.org/instances/';
 
@@ -29,33 +49,63 @@ define(['angular', 'lodash'],
           timeScale: item.survival_time_scale,
           measurementType: item.of_variable[0].measurementType,
           measuredAtMoments: [],
-          conceptMapping: item.of_variable[0].sameAs
+          conceptMapping: item.of_variable[0].sameAs,
+          armOrContrast: item.arm_or_contrast ? item.arm_or_contrast : ARM_LEVEL_TYPE
         };
 
+        var contrastProperties = getContrastProperties(item);
+        frontEndItem = _.merge({}, frontEndItem, contrastProperties);
+
         if (frontEndItem.measurementType === 'ontology:categorical') {
-          if (item.of_variable[0].categoryList.first) {
-            frontEndItem.categoryList = RdfListService.flattenList(item.of_variable[0].categoryList);
-          } else { // legacy import with messed-up categoryList
-            var referringMeasurement = _.find(graph, function(node) {
-              return node.of_outcome === item['@id'];
-            });
-            if (referringMeasurement) {
-              frontEndItem.categoryList = _.map(referringMeasurement.category_count, 'category');
-            }
-          }
+          var categoricalProperties = getCategoricalProperties(item, graph);
+          frontEndItem = _.merge({}, frontEndItem, categoricalProperties);
         } else {
           frontEndItem.resultProperties = item.has_result_property;
         }
 
-        // if only one measurement moment is selected, it's a string, not an array
-        if (Array.isArray(item.is_measured_at)) {
-          frontEndItem.measuredAtMoments = _.map(item.is_measured_at, _.partial(findMeasurementForUri, measurementMoments));
-        } else {
-          if (item.is_measured_at) {
-            frontEndItem.measuredAtMoments = [findMeasurementForUri(measurementMoments, item.is_measured_at)];
+        var moments = getMeasuredAtMoments(item, measurementMoments);
+        frontEndItem = _.merge({}, frontEndItem, moments);
+
+        return frontEndItem;
+      }
+
+      function getCategoricalProperties(item, graph) {
+        var categoricalProperties = {};
+        if (item.of_variable[0].categoryList.first) {
+          categoricalProperties.categoryList = RdfListService.flattenList(item.of_variable[0].categoryList);
+        } else { // legacy import with messed-up categoryList
+          var referringMeasurement = _.find(graph, function(node) {
+            return node.of_outcome === item['@id'];
+          });
+          if (referringMeasurement) {
+            categoricalProperties.categoryList = _.map(referringMeasurement.category_count, 'category');
           }
         }
-        return frontEndItem;
+        return categoricalProperties;
+      }
+
+      function getMeasuredAtMoments(item, measurementMoments) {
+        var moments = {};
+        // if only one measurement moment is selected, it's a string, not an array
+        if (Array.isArray(item.is_measured_at)) {
+          moments.measuredAtMoments = _.map(item.is_measured_at, _.partial(findMeasurementForUri, measurementMoments));
+        } else if (item.is_measured_at) {
+          moments.measuredAtMoments = [findMeasurementForUri(measurementMoments, item.is_measured_at)];
+        }
+        return moments;
+      }
+
+      function getContrastProperties(item) {
+        var contrastProperties = {};
+        if (item.arm_or_contrast === CONTRAST_TYPE) {
+          contrastProperties.referenceArm = item.reference_arm;
+          contrastProperties.referenceStandardError = item.reference_standard_error;
+          contrastProperties.isLog = !!item.is_log;
+          if (item.confidence_interval_width) {
+            contrastProperties.confidenceIntervalWidth = item.confidence_interval_width;
+          }
+        }
+        return contrastProperties;
       }
 
       function makeCategoryIfNeeded(category) {
@@ -71,7 +121,33 @@ define(['angular', 'lodash'],
       }
 
       function toBackEnd(item, type) {
-        var newItem = {
+        return _.merge({}, createBasicItem(item, type), createOptionalProperties(item));
+      }
+
+      function createOptionalProperties(item) {
+        var optionalProperties = {};
+        if (item.timeScale) {
+          optionalProperties.survival_time_scale = item.timeScale;
+        }
+        if (item.conceptMapping) {
+          optionalProperties.of_variable = [{ sameAs: item.conceptMapping }];
+        }
+        if (item.measurementType === 'ontology:categorical') {
+          optionalProperties.of_variable[0].categoryList = RdfListService.unFlattenList(_.map(item.categoryList, makeCategoryIfNeeded));
+        }
+        if (item.armOrContrast === CONTRAST_TYPE) {
+          optionalProperties.reference_arm = item.referenceArm;
+          optionalProperties.reference_standard_error = item.referenceStandardError;
+          optionalProperties.is_log = !!item.isLog;
+          if (item.confidenceIntervalWidth) {
+            optionalProperties.confidence_interval_width = item.confidenceIntervalWidth;
+          }
+        }
+        return optionalProperties;
+      }
+
+      function createBasicItem(item, type) {
+        return {
           '@type': type,
           '@id': item.uri,
           is_measured_at: item.measuredAtMoments.length === 1 ? item.measuredAtMoments[0].uri : _.map(item.measuredAtMoments, 'uri'),
@@ -81,18 +157,9 @@ define(['angular', 'lodash'],
             measurementType: item.measurementType,
             label: item.label,
           }],
-          has_result_property: item.resultProperties
+          has_result_property: item.resultProperties,
+          arm_or_contrast: item.armOrContrast ? item.armOrContrast : ARM_LEVEL_TYPE
         };
-        if(item.timeScale){
-          newItem.survival_time_scale = item.timeScale;
-        }
-        if(item.conceptMapping) {
-          newItem.of_variable[0].sameAs = item.conceptMapping;
-        }
-        if (item.measurementType === 'ontology:categorical') {
-          newItem.of_variable[0].categoryList = RdfListService.unFlattenList(_.map(item.categoryList, makeCategoryIfNeeded));
-        }
-        return newItem;
       }
 
       function sortByLabel(a, b) {
@@ -138,18 +205,13 @@ define(['angular', 'lodash'],
         return StudyService.getStudy().then(function(study) {
           var backEndEditItem = toBackEnd(item, type);
           study.has_outcome = _.map(study.has_outcome, function(node) {
-            if (node['@id'] === item.uri) {
-              return backEndEditItem;
-            } else {
-              return node;
-            }
+            return node['@id'] === item.uri ? backEndEditItem : node;
           });
           return StudyService.save(study);
         });
       }
 
       function moveToNewOutcome(variableType, newOutcomeName, baseOutcome, nonConformantMeasurementUrisToMove) {
-
         var newUri = 'http://trials.drugis.org/instances/' + UUIDService.generate();
         var newOutcome = angular.copy(baseOutcome);
         newOutcome.uri = newUri;
@@ -235,7 +297,6 @@ define(['angular', 'lodash'],
         addItem: addItem,
         deleteItem: deleteItem,
         editItem: editItem,
-        toBackEnd: toBackEnd,
         moveToNewOutcome: moveToNewOutcome,
         hasOverlap: hasOverlap,
         hasDifferentType: hasDifferentType,

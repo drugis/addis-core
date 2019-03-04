@@ -1,16 +1,17 @@
 'use strict';
-define(['angular-mocks'], function(angularMocks) {
+define(['angular-mocks', './dataset', '../user/user'], function(angularMocks) {
   describe('datasets controller', function() {
 
     var scope,
       mockModal = jasmine.createSpyObj('$mock', ['open']),
+      pageTitleServiceMock = jasmine.createSpyObj('PageTitleService', ['setPageTitle']),
       mockState = {
         params: {}
       };
 
-    beforeEach(module('trialverse.user'));
+    beforeEach(angular.mock.module('trialverse.dataset'));
 
-    beforeEach(angularMocks.inject(function($rootScope, $q, $controller, DatasetResource) {
+    beforeEach(inject(function($rootScope, $q, $controller, DatasetResource) {
       scope = $rootScope;
 
       $controller('DatasetsController', {
@@ -18,7 +19,8 @@ define(['angular-mocks'], function(angularMocks) {
         $modal: mockModal,
         $state: mockState,
         $stateParams: {userUid: 1},
-        DatasetResource: DatasetResource
+        DatasetResource: DatasetResource, 
+        PageTitleService: pageTitleServiceMock
       });
 
     }));

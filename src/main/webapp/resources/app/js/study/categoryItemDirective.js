@@ -1,11 +1,11 @@
 'use strict';
-define(['angular'], function(angular) {
+define(['angular', 'lodash'], function(angular, _) {
   var dependencies = ['$modal', '$injector'];
 
   var CategoryItemDirective = function($modal, $injector) {
     return {
       restrict: 'E',
-      templateUrl: 'app/js/study/categoryItemDirective.html',
+      templateUrl: './categoryItemDirective.html',
       scope: {
         item: '=',
         reloadItems: '=',
@@ -15,13 +15,21 @@ define(['angular'], function(angular) {
         isSingleItem: '=',
         isRepairable: '=',
         arms: '=',
-        groups: '=',
         measurementMoments: '='
       },
       link: function(scope) {
+        //functions 
+        scope.deleteItem = deleteItem;
+        scope.repairItem = repairItem;
+        scope.editItem = editItem;
+        scope.referenceStandardErrorChanged = referenceStandardErrorChanged;
+
+        //init
+        if (scope.item.referenceArm) {
+          scope.referenceArm = _.find(scope.arms, ['armURI', scope.item.referenceArm]);
+        }
 
         var service = $injector.get(scope.settings.service);
-
         scope.$watch('item', function() {
           scope.isEditingAllowed = scope.isEditingAllowed && !scope.item.disableEditing;
         }, true);
@@ -31,13 +39,17 @@ define(['angular'], function(angular) {
           scope.reloadItems();
         }
 
-        scope.editItem = function() {
+        function referenceStandardErrorChanged() {
+          service.editItem(scope.item);
+        }
+
+        function editItem() {
           $modal.open({
             scope: scope,
-            templateUrl: scope.settings.editItemTemplateUrl,
+            template: scope.settings.editItemtemplate,  // small t due to webpack templateurl module
             controller: scope.settings.editItemController,
             resolve: {
-              callback: function () {
+              callback: function() {
                 return onEdit;
               },
               itemType: function() {
@@ -54,15 +66,15 @@ define(['angular'], function(angular) {
               }
             }
           });
-        };
+        }
 
-        scope.repairItem = function() {
+        function repairItem() {
           $modal.open({
             scope: scope,
-            templateUrl: scope.settings.repairItemTemplateUrl,
+            template: scope.settings.repairItemtemplate,
             controller: scope.settings.repairItemController,
             resolve: {
-              callback: function () {
+              callback: function() {
                 return onEdit;
               },
               itemService: function() {
@@ -76,14 +88,14 @@ define(['angular'], function(angular) {
               }
             }
           });
-        };
+        }
 
-        scope.deleteItem = function() {
+        function deleteItem() {
           service.deleteItem(scope.item, scope.studyUuid).then(function() {
             scope.$emit('updateStudyDesign');
             scope.reloadItems();
           });
-        };
+        }
       }
 
 

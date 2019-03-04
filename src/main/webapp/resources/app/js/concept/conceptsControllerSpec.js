@@ -1,5 +1,5 @@
 'use strict';
-define(['angular', 'angular-mocks'], function() {
+define(['angular-mocks', './concept'], function() {
   describe('the concepts controller', function() {
 
     var
@@ -14,9 +14,10 @@ define(['angular', 'angular-mocks'], function() {
       queryItemsDefer,
       modalMock = jasmine.createSpyObj('$modal', ['open']),
       conceptsServiceMock = jasmine.createSpyObj('ConceptsService', ['loadStore', 'queryItems']),
+      pageTitleServiceMock = jasmine.createSpyObj('PageTitleService', ['setPageTitle']),
       datasetConceptDefer;
 
-    beforeEach(module('trialverse.concept'));
+    beforeEach(angular.mock.module('trialverse.concept'));
 
     beforeEach(inject(function($rootScope, $q, $controller, VersionedGraphResource) {
       scope = $rootScope;
@@ -38,7 +39,8 @@ define(['angular', 'angular-mocks'], function() {
         $stateParams: stateParamsMock,
         ConceptsService: conceptsServiceMock,
         VersionedGraphResource: VersionedGraphResource,
-        CONCEPT_GRAPH_UUID: 'CONCEPT_GRAPH_UUID'
+        CONCEPT_GRAPH_UUID: 'CONCEPT_GRAPH_UUID',
+        PageTitleService: pageTitleServiceMock
       });
 
       scope.$apply();

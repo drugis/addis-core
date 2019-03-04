@@ -1,12 +1,10 @@
 package org.drugis.addis.trialverse.controller;
 
-import net.minidev.json.JSONArray;
 import net.minidev.json.parser.ParseException;
 import org.drugis.addis.exception.MethodNotAllowedException;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.security.repository.AccountRepository;
 import org.drugis.addis.trialverse.model.*;
-import org.drugis.addis.trialverse.model.emun.StudyDataSection;
 import org.drugis.addis.trialverse.model.mapping.TriplestoreUuidAndOwner;
 import org.drugis.addis.trialverse.service.MappingService;
 import org.drugis.addis.trialverse.service.TriplestoreService;
@@ -19,14 +17,10 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Collection;
-import java.util.List;
-
-/**
- * Created by connor on 2/12/14.
- */
 
 @Controller
 @RequestMapping("/namespaces")
@@ -51,7 +45,7 @@ public class NamespaceController {
 
   @RequestMapping(value = "/{namespaceUid}", method = RequestMethod.GET)
   @ResponseBody
-  public Namespace get(@PathVariable String namespaceUid, @RequestParam(required = false) URI version) throws ResourceDoesNotExistException, URISyntaxException {
+  public Namespace get(@PathVariable String namespaceUid, @RequestParam(required = false) URI version) throws ResourceDoesNotExistException, URISyntaxException, IOException {
     if (version != null) {
       TriplestoreUuidAndOwner triplestoreUuidAndOwner = mappingService.getVersionedUuidAndOwner(namespaceUid);
       return triplestoreService.getNamespaceVersioned(triplestoreUuidAndOwner, version);
@@ -62,19 +56,19 @@ public class NamespaceController {
 
   @RequestMapping(value = "/{namespaceUid}/outcomes", method = RequestMethod.GET)
   @ResponseBody
-  public Collection<SemanticVariable> queryOutcomes(@PathVariable String namespaceUid, @RequestParam String version) throws ResourceDoesNotExistException, URISyntaxException, ReadValueException {
+  public Collection<SemanticVariable> queryOutcomes(@PathVariable String namespaceUid, @RequestParam String version) throws ResourceDoesNotExistException, URISyntaxException, ReadValueException, IOException {
     return triplestoreService.getOutcomes(mappingService.getVersionedUuid(namespaceUid), URI.create(version));
   }
 
   @RequestMapping(value = "/{namespaceUid}/interventions", method = RequestMethod.GET)
   @ResponseBody
-  public Collection<SemanticInterventionUriAndName> queryInterventions(@PathVariable String namespaceUid, @RequestParam String version) throws ResourceDoesNotExistException, URISyntaxException {
+  public Collection<SemanticInterventionUriAndName> queryInterventions(@PathVariable String namespaceUid, @RequestParam String version) throws ResourceDoesNotExistException, URISyntaxException, IOException {
     return triplestoreService.getInterventions(mappingService.getVersionedUuid(namespaceUid), URI.create(version));
   }
 
   @RequestMapping(value = "/{namespaceUid}/studies", method = RequestMethod.GET)
   @ResponseBody
-  public Collection<Study> queryStudies(@PathVariable String namespaceUid, @RequestParam String version) throws URISyntaxException {
+  public Collection<Study> queryStudies(@PathVariable String namespaceUid, @RequestParam String version) throws URISyntaxException, IOException {
     return triplestoreService.queryStudies(mappingService.getVersionedUuid(namespaceUid), URI.create(version));
   }
 

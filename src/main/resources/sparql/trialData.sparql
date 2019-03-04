@@ -32,6 +32,15 @@ SELECT DISTINCT
 ?sampleSize
 ?exposure
 ?survivalTimeScale
+?meanDifference
+?confidenceIntervalWidth 
+?confidenceIntervalLowerBound 
+?confidenceIntervalUpperBound 
+?hazardRatio 
+?oddsRatio
+?riskRatio 
+?standardizedMeanDifference 
+?isLog
 ?fixedDoseValue
 ?fixedDoseDosingPeriodicity
 ?fixedDoseUnitConcept
@@ -49,7 +58,12 @@ SELECT DISTINCT
 ?minDoseDosingPeriodicity
 ?minDoseUnitConcept
 ?minDoseUnitLabel
-?minDoseUnitMultiplier
+?minDoseUnitMultiplier    
+?referenceArm
+?isReferenceArm
+?referenceStandardError
+?isReferenceArm
+?armOrContrast
 (COALESCE(?treatmentTypeOptional, "http://trials.drugis.org/ontology#SimpleDrugTreatment") AS ?treatmentType)
 WHERE {
   BIND ($graphSelector AS ?graph) .
@@ -65,8 +79,25 @@ WHERE {
         owl:sameAs ?outcomeTypeUri ;
         ontology:measurementType ?measurementType
       ] .
-    $interventionUnionString .
+    OPTIONAL{
+      ?outcomeInstance ontology:arm_or_contrast ?armOrContrast .
+    }
+    OPTIONAL {
+      ?outcomeInstance ontology:reference_arm ?referenceArm .
+      OPTIONAL {
+        ?outcomeInstance ontology:confidence_interval_width ?confidenceIntervalWidth .
+      }
+      OPTIONAL {
+        ?outcomeInstance ontology:reference_standard_error ?referenceStandardError .
+      }
+      OPTIONAL {
+        ?outcomeInstance ontology:is_log ?isLog .
+      }
+    }
+
+    $interventionUnionString
   }
+
   GRAPH $graphSelector {
     ?drugInstance owl:sameAs ?drug .
     ?drugInstance rdfs:label ?interventionLabel .
@@ -86,110 +117,132 @@ WHERE {
     BIND (?epoch = ?primaryEpoch AS ?isPrimaryEpoch) .
 
     ?defaultMeasurementMoment
-      ontology:relative_to_epoch ?primaryEpoch ;
-      ontology:relative_to_anchor ontology:anchorEpochEnd ;
-      ontology:time_offset "PT0S"^^xsd:duration .
+        ontology:relative_to_epoch ?primaryEpoch ;
+        ontology:relative_to_anchor ontology:anchorEpochEnd ;
+        ontology:time_offset "PT0S"^^xsd:duration .
+    {
+      ?outcomeInstance ontology:reference_arm ?arm .
+    } UNION {
+      ?measurement
+        ontology:of_moment ?measurementMoment ;
+        ontology:of_outcome ?outcomeInstance ;
+        ontology:of_group ?arm .
+      ?measurementMoment rdfs:label ?measurementMomentLabel .
 
-    ?measurementMoment rdfs:label ?measurementMomentLabel .
+      OPTIONAL {
+        ?measurement ontology:mean ?mean .
+      }
+      OPTIONAL {
+        ?measurement ontology:standard_deviation ?stdDev .
+      }
+      OPTIONAL {
+        ?measurement ontology:standard_error ?stdErr .
+      }
+      OPTIONAL {
+        ?measurement ontology:count ?count .
+      }
+      OPTIONAL {
+        ?measurement ontology:sample_size ?sampleSize .
+      }
+      OPTIONAL {
+        ?measurement ontology:exposure ?exposure .
+        ?outcomeInstance ontology:survival_time_scale ?survivalTimeScale .
+      }
+      OPTIONAL {
+        ?measurement ontology:odds_ratio ?oddsRatio .
+      }
+      OPTIONAL {
+        ?measurement ontology:risk_ratio ?riskRatio .
+      }
+      OPTIONAL {
+        ?measurement ontology:continuous_mean_difference ?meanDifference .
+      }
+      OPTIONAL {
+        ?measurement ontology:standardized_mean_difference ?standardizedMeanDifference .
+      }
+      OPTIONAL {
+        ?measurement ontology:hazard_ratio ?hazardRatio .
+      }
+      OPTIONAL {
+        ?measurement ontology:confidence_interval_lower_bound ?confidenceIntervalLowerBound .
+      }
+      OPTIONAL {
+        ?measurement ontology:confidence_interval_upper_bound ?confidenceIntervalUpperBound .
+      }
+    }
 
-    ?measurement
-      ontology:of_moment ?measurementMoment ;
-      ontology:of_outcome ?outcomeInstance ;
-      ontology:of_group ?arm .
-
     OPTIONAL {
-      ?measurement ontology:mean ?mean .
-    }
-    OPTIONAL {
-      ?measurement ontology:standard_deviation ?stdDev .
-    }
-    OPTIONAL {
-      ?measurement ontology:standard_error ?stdErr .
-    }
-    OPTIONAL {
-      ?measurement ontology:count ?count .
-    }
-    OPTIONAL {
-      ?measurement ontology:sample_size ?sampleSize .
-    }
-    OPTIONAL {
-      ?measurement ontology:exposure ?exposure .
-      ?outcomeInstance ontology:survival_time_scale ?survivalTimeScale .
-    }
-
-    OPTIONAL {
-        ?treatmentNode
-          a ontology:FixedDoseDrugTreatment ;
-          a ?treatmentTypeOptional ;
-          ontology:treatment_dose [
-            rdf:value ?fixedDoseValue ;
-            ontology:dosingPeriodicity ?fixedDoseDosingPeriodicity ;
-            ontology:unit ?fixedDoseUnit
-          ] .
-          { ?fixedDoseUnit
-                rdfs:label ?fixedDoseUnitLabel ;
-                a ?fixedDoseUnitConcept .
-            OPTIONAL { ?fixedDoseUnit qudt:conversionMultiplier ?fixedDoseUnitMultiplier }
-          } UNION {
-            ?fixedDoseUnit
-                rdfs:label ?fixedDoseUnitLabel ;
-                a ontology:Unit ;
-                owl:sameAs ?fixedDoseUnitConcept .
-            OPTIONAL { ?fixedDoseUnit qudt:conversionMultiplier ?fixedDoseUnitMultiplier }
-          } .
-          FILTER (?fixedDoseUnitConcept != ontology:Unit) .
+      ?treatmentNode
+        a ontology:FixedDoseDrugTreatment ;
+        a ?treatmentTypeOptional ;
+        ontology:treatment_dose [
+          rdf:value ?fixedDoseValue ;
+          ontology:dosingPeriodicity ?fixedDoseDosingPeriodicity ;
+          ontology:unit ?fixedDoseUnit
+        ] .
+      { ?fixedDoseUnit
+            rdfs:label ?fixedDoseUnitLabel ;
+            a ?fixedDoseUnitConcept .
+        OPTIONAL { ?fixedDoseUnit qudt:conversionMultiplier ?fixedDoseUnitMultiplier }
+      } UNION {
+        ?fixedDoseUnit
+            rdfs:label ?fixedDoseUnitLabel ;
+            a ontology:Unit ;
+            owl:sameAs ?fixedDoseUnitConcept .
+        OPTIONAL { ?fixedDoseUnit qudt:conversionMultiplier ?fixedDoseUnitMultiplier }
+      } .
+      FILTER (?fixedDoseUnitConcept != ontology:Unit) .
     } .
     OPTIONAL {
-        ?treatmentNode
-          a ontology:TitratedDoseDrugTreatment ;
-          a ?treatmentTypeOptional ;
-          ontology:treatment_max_dose [
-            rdf:value ?maxDoseValue ;
-            ontology:dosingPeriodicity ?maxDoseDosingPeriodicity ;
-            ontology:unit ?maxDoseUnit
-          ] ;
-          ontology:treatment_min_dose [
-                      rdf:value ?minDoseValue ;
-                      ontology:dosingPeriodicity ?minDoseDosingPeriodicity ;
-                      ontology:unit ?minDoseUnit
-           ] .
-          { ?maxDoseUnit
-              rdfs:label ?maxDoseUnitLabel ;
-              a ?maxDoseUnitConcept .
-            OPTIONAL { ?maxDoseUnit qudt:conversionMultiplier ?maxDoseUnitMultiplier }
-          } UNION {
-            ?maxDoseUnit
-                rdfs:label ?maxDoseUnitLabel ;
-                a ontology:Unit ;
-                owl:sameAs ?maxDoseUnitConcept .
-            OPTIONAL { ?maxDoseUnit qudt:conversionMultiplier ?maxDoseUnitMultiplier }
-          } .
-          FILTER (?maxDoseUnitConcept != ontology:Unit) .
-          { ?minDoseUnit
-                rdfs:label ?minDoseUnitLabel ;
-                a ?minDoseUnitConcept .
-            OPTIONAL { ?minDoseUnit qudt:conversionMultiplier ?minDoseUnitMultiplier }
-          } UNION {
-              ?minDoseUnit
-                  rdfs:label ?minDoseUnitLabel ;
-                  a ontology:Unit ;
-                  owl:sameAs ?minDoseUnitConcept .
-            OPTIONAL { ?minDoseUnit qudt:conversionMultiplier ?minDoseUnitMultiplier }
-          } .
-          FILTER (?minDoseUnitConcept != ontology:Unit) .
-
+      ?treatmentNode
+        a ontology:TitratedDoseDrugTreatment ;
+        a ?treatmentTypeOptional ;
+        ontology:treatment_max_dose [
+          rdf:value ?maxDoseValue ;
+          ontology:dosingPeriodicity ?maxDoseDosingPeriodicity ;
+          ontology:unit ?maxDoseUnit
+        ] ;
+        ontology:treatment_min_dose [
+                    rdf:value ?minDoseValue ;
+                    ontology:dosingPeriodicity ?minDoseDosingPeriodicity ;
+                    ontology:unit ?minDoseUnit
+         ] .
+      { ?maxDoseUnit
+          rdfs:label ?maxDoseUnitLabel ;
+          a ?maxDoseUnitConcept .
+        OPTIONAL { ?maxDoseUnit qudt:conversionMultiplier ?maxDoseUnitMultiplier }
+      } UNION {
+        ?maxDoseUnit
+            rdfs:label ?maxDoseUnitLabel ;
+            a ontology:Unit ;
+            owl:sameAs ?maxDoseUnitConcept .
+        OPTIONAL { ?maxDoseUnit qudt:conversionMultiplier ?maxDoseUnitMultiplier }
+      } .
+      FILTER (?maxDoseUnitConcept != ontology:Unit) .
+      { ?minDoseUnit
+            rdfs:label ?minDoseUnitLabel ;
+            a ?minDoseUnitConcept .
+        OPTIONAL { ?minDoseUnit qudt:conversionMultiplier ?minDoseUnitMultiplier }
+      } UNION {
+          ?minDoseUnit
+              rdfs:label ?minDoseUnitLabel ;
+              a ontology:Unit ;
+              owl:sameAs ?minDoseUnitConcept .
+        OPTIONAL { ?minDoseUnit qudt:conversionMultiplier ?minDoseUnitMultiplier }
+      } .
+      FILTER (?minDoseUnitConcept != ontology:Unit) .
     } .
     {
       SELECT ?study ?arm
       WHERE {
        ?activity a ontology:TreatmentActivity ;
-             ontology:has_activity_application [
-               ontology:applied_to_arm ?arm ;
-               ontology:applied_in_epoch ?epoch
-             ] ;
-             ontology:has_drug_treatment [
-               ontology:treatment_has_drug ?drugInstance
-             ] .
+           ontology:has_activity_application [
+             ontology:applied_to_arm ?arm ;
+             ontology:applied_in_epoch ?epoch
+           ] ;
+           ontology:has_drug_treatment [
+             ontology:treatment_has_drug ?drugInstance
+           ] .
       }
     }
   }

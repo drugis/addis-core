@@ -1,21 +1,34 @@
 'use strict';
 define([],
   function() {
-    var dependencies = ['$scope', '$modal', '$stateParams', '$anchorScroll', '$location',
-      'ConceptsService', 'VersionedGraphResource', 'CONCEPT_GRAPH_UUID'
+    var dependencies = [
+      '$scope', '$modal', '$stateParams', '$anchorScroll', '$location',
+      'ConceptsService', 
+      'PageTitleService',
+       'CONCEPT_GRAPH_UUID'
     ];
-    var ConceptsController = function($scope, $modal, $stateParams, $anchorScroll, $location,
-      ConceptsService, VersionedGraphResource, CONCEPT_GRAPH_UUID) {
+    var ConceptsController = function(
+      $scope, $modal, $stateParams, $anchorScroll, $location,
+      ConceptsService, 
+      PageTitleService, 
+      CONCEPT_GRAPH_UUID
+    ) {
+                  // functions
+            $scope.sideNavClick = sideNavClick;
+            $scope.saveConcepts = saveConcepts;
+            $scope.areConceptsModified = areConceptsModified;
+            $scope.resetConcepts = resetConcepts;
+            $scope.openAddConceptDialog = openAddConceptDialog;
+
       // init
       var datasetUri = 'http://trials.drugis/org/datasets/' + $stateParams.datasetUuid;
       $scope.datasetConcepts.then(reloadConceptsFromScratch);
 
-      // functions
-      $scope.sideNavClick = sideNavClick;
-      $scope.saveConcepts = saveConcepts;
-      $scope.areConceptsModified = areConceptsModified;
-      $scope.resetConcepts = resetConcepts;
-      $scope.openAddConceptDialog = openAddConceptDialog;
+      $scope.$watch('dataset', function(dataset){
+        if(dataset){
+          PageTitleService.setPageTitle('ConceptsController', dataset.title +'\'s concepts');
+        }
+      });
 
       function reloadConceptsFromScratch() {
         return ConceptsService.queryItems(datasetUri).then(function(conceptsJson) {
@@ -25,7 +38,7 @@ define([],
 
       function openAddConceptDialog() {
         $modal.open({
-          templateUrl: 'app/js/concept/createConcept.html',
+          templateUrl: './createConcept.html',
           controller: 'CreateConceptController',
           resolve: {
             callback: function() {
@@ -49,7 +62,7 @@ define([],
 
       function saveConcepts() {
         $modal.open({
-          templateUrl: 'app/js/commit/commit.html',
+          templateUrl: '../commit/commit.html',
           controller: 'CommitController',
           resolve: {
             callback: function() {

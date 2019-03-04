@@ -1,5 +1,5 @@
 'use strict';
-define(['angular', 'angular-mocks', 'lodash'], function(angular, angularMocks, _) {
+define(['lodash', 'angular', 'angular-mocks', './activity'], function(_) {
   describe('the activity service', function() {
 
     var rootScope, q,
@@ -13,16 +13,12 @@ define(['angular', 'angular-mocks', 'lodash'], function(angular, angularMocks, _
       uuidServiceMock = jasmine.createSpyObj('UUIDService', ['generate']),
       unitServiceMock;
 
-    beforeEach(function() {
-      module('trialverse.activity', function($provide) {
-        $provide.value('DrugService', drugServiceMock);
-        $provide.value('UnitService', unitServiceMock);
-        $provide.value('StudyService', studyServiceMock);
-        $provide.value('UUIDService', uuidServiceMock);
-      });
-    });
-
-    beforeEach(module('trialverse.activity'));
+    beforeEach(angular.mock.module('trialverse.activity', function($provide) {
+      $provide.value('DrugService', drugServiceMock);
+      $provide.value('UnitService', unitServiceMock);
+      $provide.value('StudyService', studyServiceMock);
+      $provide.value('UUIDService', uuidServiceMock);
+    }));
 
     beforeEach(inject(function($q, $rootScope, ActivityService) {
       q = $q;
@@ -152,10 +148,10 @@ define(['angular', 'angular-mocks', 'lodash'], function(angular, angularMocks, _
           expect(activities[1].label).toEqual(jsonStudy.has_activity[1].label);
           expect(activities[2].label).toEqual(jsonStudy.has_activity[2].label);
           expect(activities[3].label).toEqual(jsonStudy.has_activity[3].label);
-          expect(activities[0].activityType).toEqual(activityService.ACTIVITY_TYPE_OPTIONS['ontology:WashOutActivity']);
-          expect(activities[1].activityType).toEqual(activityService.ACTIVITY_TYPE_OPTIONS['ontology:TreatmentActivity']);
-          expect(activities[2].activityType).toEqual(activityService.ACTIVITY_TYPE_OPTIONS['ontology:RandomizationActivity']);
-          expect(activities[3].activityType).toEqual(activityService.ACTIVITY_TYPE_OPTIONS['ontology:TreatmentActivity']);
+          expect(activities[0].activityType.label).toEqual('wash out');
+          expect(activities[1].activityType.label).toEqual('drug treatment');
+          expect(activities[2].activityType.label).toEqual('randomization');
+          expect(activities[3].activityType.label).toEqual('drug treatment');
           expect(activities[0].activityDescription).not.toBeDefined();
           expect(activities[1].activityDescription).not.toBeDefined();
           expect(activities[2].activityDescription).not.toBeDefined();
@@ -272,10 +268,10 @@ define(['angular', 'angular-mocks', 'lodash'], function(angular, angularMocks, _
           '@type': 'ontology:Drug',
           label: 'new drug'
         }, {
-          '@id': 'http://unit/newUnit',
-          '@type': 'ontology:Unit',
-          label: 'new unit label'
-        });
+            '@id': 'http://unit/newUnit',
+            '@type': 'ontology:Unit',
+            label: 'new unit label'
+          });
         _.remove(expectedGraph, function(node) {
           return node['@type'] === 'ontology:Study';
         });

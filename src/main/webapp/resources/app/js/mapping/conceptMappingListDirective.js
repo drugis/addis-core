@@ -1,39 +1,46 @@
 'use strict';
 define([], function() {
-  var dependencies = ['$injector', '$stateParams', 'VersionedGraphResource', 'MappingService'];
-  var ConceptMappingListDirective = function($injector, $stateParams, VersionedGraphResource, MappingService) {
+  var dependencies = [
+    '$injector',
+    '$stateParams',
+    'MappingService'
+  ];
+  var ConceptMappingListDirective = function(
+    $injector,
+    $stateParams,
+    MappingService
+  ) {
     return {
       restrict: 'E',
-      templateUrl: 'app/js/mapping/conceptMappingListDirective.html',
+      templateUrl: './conceptMappingListDirective.html',
       scope: {
         settings: '=',
         datasetConcepts: '=',
         isEditingAllowed: '='
       },
       link: function(scope) {
+        scope.reloadItems = reloadItems;
+        scope.updateMapping = updateMapping;
+
         var refreshListener;
         var service = $injector.get(scope.settings.serviceName);
+        scope.reloadItems();
 
-        scope.reloadItems = function() {
+        function reloadItems() {
           if (refreshListener) {
             refreshListener();
           }
-
-          service.queryItems($stateParams.studyGraphUuid).then(function(queryResult) {
-            scope.studyConcepts = queryResult;
-
+          service.queryItems($stateParams.studyGraphUuid).then(function(result) {
+            scope.studyConcepts = result;
             refreshListener = scope.$on('refreshStudyDesign', function() {
               scope.reloadItems();
             });
           });
-        };
+        }
 
-        scope.updateMapping = function(studyConceptIndex, selectedDatasetConcept) {
+        function updateMapping(studyConceptIndex, selectedDatasetConcept) {
           MappingService.updateMapping(scope.studyConcepts[studyConceptIndex], selectedDatasetConcept);
-        };
-
-        scope.reloadItems();
-
+        }
       }
     };
   };

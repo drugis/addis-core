@@ -21,7 +21,7 @@ public class TestUtils {
     } catch (JsonProcessingException e) {
       e.printStackTrace();
     }
-    return null;
+    return "{}";
   }
 
   public static String loadResource(Class clazz, String filename) {

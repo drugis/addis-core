@@ -1,7 +1,7 @@
+src/main/webapp/WEB-INF/views/dist
 target/
 .idea
 *.iml
-src/main/webapp/resources/app/js/bower_components/
 src/test/karma-test-results.xml
 4e4e6bf
 .sass-cache
@@ -23,4 +23,3 @@ post-study.sh
 live-deploy.sh
 trialverse/addis-rdf/*.trig
 src/test/Chrome*
-src/main/webapp/resources/app/js/bower_components

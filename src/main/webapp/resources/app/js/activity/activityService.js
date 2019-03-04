@@ -1,7 +1,7 @@
 'use strict';
-define(['angular', 'lodash', 'util/constants'], function(angular, _, constants) {
-  var dependencies = ['$q', 'StudyService', 'UUIDService'];
-  var ActivityService = function($q, StudyService, UUIDService) {
+define(['angular', 'lodash'], function(angular, _) {
+  var dependencies = ['$q', 'StudyService', 'UUIDService', 'ACTIVITY_TYPE_OPTIONS'];
+  var ActivityService = function($q, StudyService, UUIDService, ACTIVITY_TYPE_OPTIONS) {
 
     // private
     var INSTANCE_PREFIX = 'http://trials.drugis.org/instances/';
@@ -11,7 +11,7 @@ define(['angular', 'lodash', 'util/constants'], function(angular, _, constants) 
     var TITRATED_DOSE_TYPE = ONTOLOGY + 'TitratedDoseDrugTreatment';
 
     // public
-    var ACTIVITY_TYPE_OPTIONS = _.keyBy(constants.ACTIVITY_TYPE_OPTIONS, 'uri');
+    var ACTIVITY_TYPE_OPTIONS = _.keyBy(ACTIVITY_TYPE_OPTIONS, 'uri');
 
     function queryItems() {
       return StudyService.getJsonGraph().then(function(jsonGraph) {

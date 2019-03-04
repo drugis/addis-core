@@ -1,11 +1,22 @@
-'use sctrict';
-// Karma configuration
-// Generated on Sun Jan 12 2014 11:41:44 GMT+0100 (CET)
+'use strict';
+
+const webpackConfig = require("./webpack.dev");
+delete webpackConfig.entry;
+webpackConfig.plugins = [];
+webpackConfig.optimization = {
+    splitChunks: false,
+    runtimeChunk: false
+  };
+webpackConfig.resolve.alias['test-resources'] = __dirname + '/src/test';
+webpackConfig.module.rules.push({ test: /\.xlsx$/, loader: 'webpack-xlsx-loader' });
+
 module.exports = function(config) {
   config.set({
 
+    webpack: webpackConfig,
+
     // base path, that will be used to resolve files and exclude
-    basePath: '',
+    basePath: '.',
 
     // plugins to load
     plugins: [
@@ -13,47 +24,30 @@ module.exports = function(config) {
       'karma-chrome-launcher',
       'karma-junit-reporter',
       'karma-jasmine',
-      'karma-phantomjs-launcher',
-      'karma-requirejs'
+      'karma-webpack',
+      'karma-sourcemap-loader'
     ],
 
+    preprocessors: {
+      // add webpack as preprocessor
+      'src/test-main.js' : ['webpack', 'sourcemap']
+    },
 
     // frameworks to use
-    frameworks: ['jasmine', 'requirejs'],
+    frameworks: ['jasmine'],
 
 
     // list of files / patterns to load in the browser
     files: [
-      './node_modules/phantomjs-polyfill-find/find-polyfill.js',
-      'src/test/js/test-main.js', {
-        pattern: 'src/main/webapp/resources/app/js/**/*.js',
-        included: false
-      }, {
-        pattern: 'src/test/**/*.js',
-        included: false
-      }, {
-        pattern: 'src/test/resources/excelImport/*.xlsx',
-        included: false
-      }
+      'src/test-main.js'
     ],
-
-    // list of files to exclude
-    exclude: [
-      'src/main/webapp/resources/app/js/main.js',
-      'src/main/webapp/resources/app/js/bower_components/**/*Spec.js',
-      'src/test/protractor/**/*',
-    ],
-
-    preprocessors: {
-      // 'src/main/webapp/resources/app/js/*.js': 'coverage',
-    },
 
     // test results reporter to use
     // possible values: 'dots', 'progress', 'junit', 'growl', 'coverage'
     reporters: ['progress', 'junit'],
     junitReporter: {
-      outputFile: 'src/test/karma-test-results.xml',
-      outputDir: 'src/test'
+      outputFile: './karma-test-results.xml',
+      outputDir: '.'
     },
 
     // web server port
@@ -77,7 +71,7 @@ module.exports = function(config) {
     // - Safari (only Mac; has to be installed with `npm install karma-safari-launcher`)
     // - PhantomJS
     // - IE (only Windows; has to be installed with `npm install karma-ie-launcher`)
-    browsers: ['PhantomJS'],
+    browsers: ['ChromeHeadless'],
 
 
     // If browser does not capture in given timeout [ms], kill it

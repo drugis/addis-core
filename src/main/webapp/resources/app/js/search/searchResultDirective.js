@@ -4,7 +4,7 @@ define([], function() {
   var searchResultDirective = function(UUIDService) {
     return {
       restrict: 'E',
-      templateUrl: 'app/js/search/searchResultDirective.html',
+      templateUrl: './searchResultDirective.html',
       scope: {
         result: '='
       },

@@ -4,13 +4,13 @@
   <groupId>org.drugis</groupId>
   <artifactId>addis-core</artifactId>
   <packaging>war</packaging>
-  <version>0.11.1</version>
+  <version>0.12.0</version>
   <name>ADDIS Core</name>
   <properties>
-    <org.springframework.social-version>1.1.3.RELEASE</org.springframework.social-version>
-    <spring-social-google-version>1.0.0.RELEASE</spring-social-google-version>
-    <org.springframework-version>4.2.1.RELEASE</org.springframework-version>
-    <org.springframework.security-version>4.1.0.RELEASE</org.springframework.security-version>
+    <org.springframework.social-version>1.1.6.RELEASE</org.springframework.social-version>
+    <spring-social-google-version>1.1.3</spring-social-google-version>
+    <org.springframework-version>5.0.7.RELEASE</org.springframework-version>
+    <org.springframework.security-version>5.0.7.RELEASE</org.springframework.security-version>
     <java-version>1.8</java-version>
     <hibernate-version>4.3.11.Final</hibernate-version>
   </properties>
@@ -19,14 +19,9 @@
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-databind</artifactId>
-      <version>2.6.3</version>
+      <version>2.9.6</version>
     </dependency>
 
-    <dependency>
-      <groupId>commons-collections</groupId>
-      <artifactId>commons-collections</artifactId>
-      <version>3.2.2</version>
-    </dependency>
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-lang3</artifactId>
@@ -40,12 +35,12 @@
     <dependency>
       <groupId>org.json</groupId>
       <artifactId>json</artifactId>
-      <version>20140107</version>
+      <version>20180813</version>
     </dependency>
     <dependency>
-      <groupId>org.apache.commons</groupId>
+      <groupId>commons-io</groupId>
       <artifactId>commons-io</artifactId>
-      <version>1.3.2</version>
+      <version>2.6</version>
     </dependency>
     <dependency>
       <groupId>joda-time</groupId>
@@ -91,7 +86,7 @@
       <version>${org.springframework.social-version}</version>
     </dependency>
     <dependency>
-      <groupId>org.springframework.social</groupId>
+      <groupId>com.github.spring-social</groupId>
       <artifactId>spring-social-google</artifactId>
       <version>${spring-social-google-version}</version>
     </dependency>
@@ -118,7 +113,7 @@
     <dependency>
       <groupId>org.springframework.data</groupId>
       <artifactId>spring-data-jpa</artifactId>
-      <version>1.4.3.RELEASE</version>
+      <version>1.11.11.RELEASE</version>
       <exclusions>
         <exclusion>
           <artifactId>commons-logging</artifactId>
@@ -132,28 +127,28 @@
       <version>${org.springframework-version}</version>
     </dependency>
 
-      <!-- LogBack dependencies -->
-      <dependency>
-          <groupId>ch.qos.logback</groupId>
-          <artifactId>logback-classic</artifactId>
-          <version>1.2.3</version>
-      </dependency>
-      <dependency>
-          <groupId>org.slf4j</groupId>
-          <artifactId>jcl-over-slf4j</artifactId>
-          <version>1.7.25</version>
-      </dependency>
+    <!-- LogBack dependencies -->
+    <dependency>
+      <groupId>ch.qos.logback</groupId>
+      <artifactId>logback-classic</artifactId>
+      <version>1.2.3</version>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>jcl-over-slf4j</artifactId>
+      <version>1.7.25</version>
+    </dependency>
 
     <!-- Caching -->
     <dependency>
       <groupId>org.ehcache</groupId>
       <artifactId>ehcache</artifactId>
-      <version>3.3.1</version>
+      <version>3.6.0</version>
     </dependency>
     <dependency>
       <groupId>javax.cache</groupId>
       <artifactId>cache-api</artifactId>
-      <version>1.0.0</version>
+      <version>1.1.0</version>
     </dependency>
 
     <dependency>
@@ -171,25 +166,13 @@
     <dependency>
       <groupId>org.apache.jena</groupId>
       <artifactId>jena-core</artifactId>
-      <version>3.3.0</version>
-      <exclusions>
-        <exclusion>
-          <groupId>com.github.jsonld-java</groupId>
-          <artifactId>jsonld-java</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-
-    <dependency>
-      <groupId>com.github.jsonld-java</groupId>
-      <artifactId>jsonld-java</artifactId>
-      <version>0.10.0</version>
+      <version>3.8.0</version>
     </dependency>
 
     <dependency>
       <groupId>org.apache.jena</groupId>
       <artifactId>jena-arq</artifactId>
-      <version>3.3.0</version>
+      <version>3.8.0</version>
       <exclusions>
         <exclusion>
           <groupId>xerces</groupId>
@@ -233,10 +216,11 @@
       <version>1.3</version>
       <scope>test</scope>
     </dependency>
+
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-      <version>4.11</version>
+      <version>4.12</version>
       <scope>test</scope>
       <exclusions>
         <exclusion>
@@ -254,7 +238,7 @@
     <dependency>
       <groupId>com.jayway.jsonpath</groupId>
       <artifactId>json-path-assert</artifactId>
-      <version>0.8.1</version>
+      <version>2.2.0</version>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -290,22 +274,16 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>javax.servlet.jsp.jstl</groupId>
-      <artifactId>javax.servlet.jsp.jstl-api</artifactId>
-      <version>1.2.1</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>javax.servlet</groupId>
-      <artifactId>jstl</artifactId>
-      <version>1.2</version>
+      <groupId>org.thymeleaf</groupId>
+      <artifactId>thymeleaf-spring4</artifactId>
+      <version>3.0.9.RELEASE</version>
     </dependency>
 
     <!-- JSON PATH -->
     <dependency>
       <groupId>com.jayway.jsonpath</groupId>
       <artifactId>json-path</artifactId>
-      <version>0.8.1</version>
+      <version>2.2.0</version>
     </dependency>
 
 
@@ -342,156 +320,157 @@
 
   </dependencies>
 
-    <repositories>
-        <repository>
-            <id>org.springframework.maven.release</id>
-            <name>Spring Maven Release Repository</name>
-            <url>http://repo.springsource.org/release</url>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-        </repository>
-        <!-- For testing against latest Spring snapshots -->
-        <repository>
-            <id>org.springframework.maven.snapshot</id>
-            <name>Spring Maven Snapshot Repository</name>
-            <url>http://repo.springsource.org/snapshot</url>
-            <releases>
-                <enabled>false</enabled>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-        </repository>
-        <!-- For developing against latest Spring milestones -->
-        <repository>
-            <id>org.springframework.maven.milestone</id>
-            <name>Spring Maven Milestone Repository</name>
-            <url>http://repo.springsource.org/milestone</url>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-        </repository>
-        <repository>
-            <id>spring.social.google</id>
-            <name>Spring Social Google</name>
-            <url>https://github.com/GabiAxel/maven/raw/master/</url>
-        </repository>
-    </repositories>
-    <profiles>
-        <profile>
-            <id>ci</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-compiler-plugin</artifactId>
-                        <version>2.3.2</version>
-                        <configuration>
-                            <source>${java-version}</source>
-                            <target>${java-version}</target>
-                        </configuration>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-surefire-plugin</artifactId>
-                        <version>2.17</version>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-        <profile>
-            <id>default</id>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-compiler-plugin</artifactId>
-                        <version>2.3.2</version>
-                        <configuration>
-                            <source>${java-version}</source>
-                            <target>${java-version}</target>
-                        </configuration>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-war-plugin</artifactId>
-                        <version>2.1.1</version>
-                        <configuration>
-                            <warName>addis-core</warName>
-                        </configuration>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.apache.tomcat.maven</groupId>
-                        <artifactId>tomcat7-maven-plugin</artifactId>
-                        <version>2.2</version>
-                        <configuration>
-                            <path>/</path>
-                            <contextFile>${basedir}/src/main/webapp/META-INF/context.xml</contextFile>
-                            <systemProperties>
-                                <ADDIS_CORE_DB_DRIVER>${env.ADDIS_CORE_DB_DRIVER}</ADDIS_CORE_DB_DRIVER>
-                                <ADDIS_CORE_DB>${env.ADDIS_CORE_DB}</ADDIS_CORE_DB>
-                                <ADDIS_CORE_DB_HOST>${env.ADDIS_CORE_DB_HOST}</ADDIS_CORE_DB_HOST>
-                                <ADDIS_CORE_DB_USERNAME>${env.ADDIS_CORE_DB_USERNAME}</ADDIS_CORE_DB_USERNAME>
-                                <ADDIS_CORE_DB_PASSWORD>${env.ADDIS_CORE_DB_PASSWORD}</ADDIS_CORE_DB_PASSWORD>
-                                </systemProperties>
-                        </configuration>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.liquibase</groupId>
-                        <artifactId>liquibase-maven-plugin</artifactId>
-                        <version>3.0.5</version>
-                        <executions>
-                            <execution>
-                                <phase>process-resources</phase>
-                                <configuration>
-                                    <changeLogFile>${env.ADDIS_CORE_DB_CHANGELOG}</changeLogFile>
-                                    <driver>${env.ADDIS_CORE_DB_DRIVER}</driver>
-                                    <url>jdbc:postgresql://${env.ADDIS_CORE_DB_HOST}/${env.ADDIS_CORE_DB}</url>
-                                    <username>${env.ADDIS_CORE_DB_USERNAME}</username>
-                                    <password>${env.ADDIS_CORE_DB_PASSWORD}</password>
-                                    <promptOnNonLocalDatabase>true</promptOnNonLocalDatabase>
-                                </configuration>
-                                <goals>
-                                    <goal>update</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <plugin>
-                        <groupId>com.kelveden</groupId>
-                        <artifactId>maven-karma-plugin</artifactId>
-                        <version>1.6</version>
-                        <executions>
-                            <execution>
-                                <phase>test</phase>
-                                <goals>
-                                    <goal>start</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                        <configuration>
-                            <configFile>karma.conf.js</configFile>
-                            <junitReportFile>src/test/karma-test-results.xml</junitReportFile>
-                            <autoWatch>false</autoWatch>
-                            <singleRun>true</singleRun>
-                            <colors>true</colors>
-                            <skipKarma>false</skipKarma>
-                            <skipTests>false</skipTests>
-                            <karmaFailureIgnore>false</karmaFailureIgnore>
-                            <reporters>dots,junit</reporters>
-                        </configuration>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-    </profiles>
+  <repositories>
+    <repository>
+      <id>org.springframework.maven.release</id>
+      <name>Spring Maven Release Repository</name>
+      <url>http://repo.springsource.org/release</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </repository>
+    <!-- For testing against latest Spring snapshots -->
+    <repository>
+      <id>org.springframework.maven.snapshot</id>
+      <name>Spring Maven Snapshot Repository</name>
+      <url>http://repo.springsource.org/snapshot</url>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
+    <!-- For developing against latest Spring milestones -->
+    <repository>
+      <id>org.springframework.maven.milestone</id>
+      <name>Spring Maven Milestone Repository</name>
+      <url>http://repo.springsource.org/milestone</url>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </repository>
+    <repository>
+      <id>spring.social.google</id>
+      <name>Spring Social Google</name>
+      <url>https://github.com/GabiAxel/maven/raw/master/</url>
+    </repository>
+  </repositories>
+  <profiles>
+    <profile>
+      <id>ci</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-compiler-plugin</artifactId>
+            <version>2.3.2</version>
+            <configuration>
+              <source>${java-version}</source>
+              <target>${java-version}</target>
+            </configuration>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-surefire-plugin</artifactId>
+            <version>2.22.1</version>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <profile>
+      <id>default</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-compiler-plugin</artifactId>
+            <version>2.3.2</version>
+            <configuration>
+              <source>${java-version}</source>
+              <target>${java-version}</target>
+            </configuration>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-war-plugin</artifactId>
+            <version>2.1.1</version>
+            <configuration>
+              <warName>addis-core</warName>
+            </configuration>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.tomcat.maven</groupId>
+            <artifactId>tomcat7-maven-plugin</artifactId>
+            <version>2.2</version>
+            <configuration>
+              <path>/</path>
+              <contextFile>${basedir}/src/main/webapp/META-INF/context.xml</contextFile>
+              <systemProperties>
+                <ADDIS_CORE_DB_DRIVER>${env.ADDIS_CORE_DB_DRIVER}</ADDIS_CORE_DB_DRIVER>
+                <ADDIS_CORE_DB>${env.ADDIS_CORE_DB}</ADDIS_CORE_DB>
+                <ADDIS_CORE_DB_HOST>${env.ADDIS_CORE_DB_HOST}</ADDIS_CORE_DB_HOST>
+                <ADDIS_CORE_DB_USERNAME>${env.ADDIS_CORE_DB_USERNAME}</ADDIS_CORE_DB_USERNAME>
+                <ADDIS_CORE_DB_PASSWORD>${env.ADDIS_CORE_DB_PASSWORD}</ADDIS_CORE_DB_PASSWORD>
+              </systemProperties>
+            </configuration>
+          </plugin>
+          <plugin>
+            <groupId>org.liquibase</groupId>
+            <artifactId>liquibase-maven-plugin</artifactId>
+            <version>3.0.5</version>
+            <executions>
+              <execution>
+                <phase>process-resources</phase>
+                <configuration>
+                  <changeLogFile>${env.ADDIS_CORE_DB_CHANGELOG}</changeLogFile>
+                  <driver>${env.ADDIS_CORE_DB_DRIVER}</driver>
+                  <url>jdbc:postgresql://${env.ADDIS_CORE_DB_HOST}/${env.ADDIS_CORE_DB}</url>
+                  <username>${env.ADDIS_CORE_DB_USERNAME}</username>
+                  <password>${env.ADDIS_CORE_DB_PASSWORD}</password>
+                  <promptOnNonLocalDatabase>true</promptOnNonLocalDatabase>
+                </configuration>
+                <goals>
+                  <goal>update</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <groupId>com.kelveden</groupId>
+            <artifactId>maven-karma-plugin</artifactId>
+            <version>1.6</version>
+            <executions>
+              <execution>
+                <phase>test</phase>
+                <goals>
+                  <goal>start</goal>
+                </goals>
+              </execution>
+            </executions>
+            <configuration>
+              <karmaExecutable>${basedir}/node_modules/.bin/karma</karmaExecutable>
+              <configFile>karma.conf.js</configFile>
+              <junitReportFile>src/test/karma-test-results.xml</junitReportFile>
+              <autoWatch>false</autoWatch>
+              <singleRun>true</singleRun>
+              <colors>true</colors>
+              <skipKarma>false</skipKarma>
+              <skipTests>false</skipTests>
+              <karmaFailureIgnore>false</karmaFailureIgnore>
+              <reporters>dots,junit</reporters>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
 
 
 </project>

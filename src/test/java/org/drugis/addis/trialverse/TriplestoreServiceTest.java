@@ -6,11 +6,15 @@ import net.minidev.json.parser.ParseException;
 import org.drugis.addis.TestUtils;
 import org.drugis.addis.covariates.CovariateRepository;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
+import org.drugis.addis.interventions.model.AbstractIntervention;
+import org.drugis.addis.interventions.model.SimpleIntervention;
 import org.drugis.addis.interventions.repository.InterventionRepository;
+import org.drugis.addis.interventions.service.InterventionService;
+import org.drugis.addis.interventions.service.impl.InvalidTypeForDoseCheckException;
 import org.drugis.addis.trialverse.model.*;
 import org.drugis.addis.trialverse.model.emun.CovariateOption;
 import org.drugis.addis.trialverse.model.emun.StudyDataSection;
-import org.drugis.addis.trialverse.model.trialdata.CovariateStudyValue;
+import org.drugis.addis.trialverse.model.trialdata.*;
 import org.drugis.addis.trialverse.service.QueryResultMappingService;
 import org.drugis.addis.trialverse.service.TriplestoreService;
 import org.drugis.addis.trialverse.service.impl.ReadValueException;
@@ -27,15 +31,15 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.io.IOException;
 import java.net.URI;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 /**
@@ -50,21 +54,29 @@ public class TriplestoreServiceTest {
   private RestTemplate restTemplate;
 
   @Mock
-  CovariateRepository covariateRepository;
+  private CovariateRepository covariateRepository;
 
   @Mock
-  InterventionRepository interventionRepository;
+  private InterventionRepository interventionRepository;
 
   @Mock
-  QueryResultMappingService queryResultMappingService;
+  private QueryResultMappingService queryResultMappingService;
+
+  @Mock
+  private  InterventionService interventionService;
+
+  @Mock
+  private  WebConstants webConstants;
 
   @InjectMocks
   private TriplestoreService triplestoreService;
+  private final String TRIPLESTORE_BASE_URI = "http://jena-es:8080";
 
   @Before
   public void setUp() {
     triplestoreService = new TriplestoreServiceImpl();
     MockitoAnnotations.initMocks(this);
+    when(webConstants.getTriplestoreBaseUri()).thenReturn(TRIPLESTORE_BASE_URI);
   }
 
   @Test
@@ -73,37 +85,38 @@ public class TriplestoreServiceTest {
     ResponseEntity<String> resultEntity = new ResponseEntity<>(mockResult, HttpStatus.OK);
 
     UriComponents uriComponents = UriComponentsBuilder
-            .fromHttpUrl(WebConstants.getTriplestoreBaseUri())
+            .fromHttpUrl(webConstants.getTriplestoreBaseUri())
             .path("datasets/")
             .build();
 
     String datasetUuid = "d1";
     String query = TriplestoreServiceImpl.NAMESPACE;
-    UriComponents uriComponents2 = UriComponentsBuilder.fromHttpUrl(WebConstants.getTriplestoreBaseUri())
+    UriComponents uriComponents2 = UriComponentsBuilder.fromHttpUrl(webConstants.getTriplestoreBaseUri())
             .path("datasets/" + datasetUuid)
             .path(TriplestoreServiceImpl.QUERY_ENDPOINT)
             .queryParam(TriplestoreServiceImpl.QUERY_PARAM_QUERY, query)
             .build();
     String mockResult2 = TestUtils.loadResource(this.getClass(), "/triplestoreService/exampleGetNamespaceResult.json");
-    MultiValueMap<String, String> responceHeaders = new HttpHeaders();
-    responceHeaders.add(TriplestoreServiceImpl.X_EVENT_SOURCE_VERSION, "version");
-    ResponseEntity<String> resultEntity2 = new ResponseEntity<>(mockResult2, responceHeaders, HttpStatus.OK);
+    MultiValueMap<String, String> responseHeaders = new HttpHeaders();
+    responseHeaders.add(TriplestoreServiceImpl.X_EVENT_SOURCE_VERSION, "version");
+    ResponseEntity<String> resultEntity2 = new ResponseEntity<>(mockResult2, responseHeaders, HttpStatus.OK);
     String graphBody = TestUtils.loadResource(this.getClass(), "/triplestoreService/exampleNamespaceResult.ttl");
-    ResponseEntity<String> resultEntity3 = new ResponseEntity<>(graphBody, responceHeaders, HttpStatus.OK);
+    ResponseEntity<String> resultEntity3 = new ResponseEntity<>(graphBody, responseHeaders, HttpStatus.OK);
 
     when(restTemplate.exchange(uriComponents.toUri(), HttpMethod.GET, TriplestoreServiceImpl.acceptJsonRequest, String.class)).thenReturn(resultEntity);
     when(restTemplate.exchange(uriComponents2.toUri(), HttpMethod.GET, TriplestoreServiceImpl.acceptSparqlResultsRequest, String.class)).thenReturn(resultEntity2);
     HttpHeaders headers = new HttpHeaders();
     headers.set(WebConstants.ACCEPT_HEADER, "text/turtle,text/html");
-    when(restTemplate.exchange(URI.create("http://localhost:8080/datasets/d1"), HttpMethod.GET, new HttpEntity<String>(headers), String.class)).thenReturn(resultEntity3);
+    URI datasetUrl = URI.create(TRIPLESTORE_BASE_URI + "/datasets/ds1");
+    when(webConstants.buildDatasetUri(datasetUuid)).thenReturn(datasetUrl);
+    when(restTemplate.exchange(datasetUrl, HttpMethod.GET, new HttpEntity<String>(headers), String.class)).thenReturn(resultEntity3);
 
     Collection<Namespace> namespaces = triplestoreService.queryNameSpaces();
-
     assertEquals(1, namespaces.size());
   }
 
   @Test
-  public void testGetOutcomes() throws ReadValueException {
+  public void testGetOutcomes() throws ReadValueException, IOException {
     String mockResult = TestUtils.loadResource(this.getClass(), "/triplestoreService/exampleOutcomeResult.json");
     createMockTrialverseService(mockResult);
     List<SemanticVariable> result = triplestoreService.getOutcomes("abc", version);
@@ -112,16 +125,16 @@ public class TriplestoreServiceTest {
   }
 
   @Test
-  public void testGetPopulationCharacteristics() throws ReadValueException {
-    String mockResult = TestUtils.loadResource(this.getClass(), "/triplestoreService/exampleOutcomeResult.json");
+  public void testGetPopulationCharacteristics() throws ReadValueException, IOException {
+    String mockResult = TestUtils.loadResource(this.getClass(), "/triplestoreService/examplePopulationCharacteristicResult.json");
     createMockTrialverseService(mockResult);
-    List<SemanticVariable> result = triplestoreService.getOutcomes("abc", version);
-    SemanticVariable result1 = new SemanticVariable(URI.create("http://trials.drugis.org/namespace/1/endpoint/fdszgs-adsfd-1"), "DBP 24-hour mean");
+    List<SemanticVariable> result = triplestoreService.getPopulationCharacteristics("abc", version);
+    SemanticVariable result1 = new SemanticVariable(URI.create("http://trials.drugis.org/namespace/1/populationCharacteristic/fdszgs-adsfd-1"), "Age");
     assertEquals(result.get(0), result1);
   }
 
   @Test
-  public void testGetInterventions() {
+  public void testGetInterventions() throws IOException {
     String mockResult = TestUtils.loadResource(this.getClass(), "/triplestoreService/exampleInterventionResult.json");
     createMockTrialverseService(mockResult);
 
@@ -132,7 +145,7 @@ public class TriplestoreServiceTest {
   }
 
   @Test
-  public void testGetUnits() {
+  public void testGetUnits() throws IOException {
     String mockResult = TestUtils.loadResource(this.getClass(), "/triplestoreService/exampleUnitsResult.json");
     createMockTrialverseService(mockResult);
     List<URI> unitUris = triplestoreService.getUnitUris("abc", version);
@@ -141,7 +154,7 @@ public class TriplestoreServiceTest {
   }
 
   @Test
-  public void testQueryStudies() {
+  public void testQueryStudies() throws IOException {
     String namespaceUid = "namespaceUid";
     String mockResult = TestUtils.loadResource(this.getClass(), "/triplestoreService/exampleQueryStudiesResult.json");
     createMockTrialverseService(mockResult);
@@ -163,7 +176,7 @@ public class TriplestoreServiceTest {
   }
 
   @Test
-  public void getCovariateTestData() throws ReadValueException {
+  public void getCovariateTestData() throws ReadValueException, IOException {
     String namespaceUid = "namespaceUid";
     String mockResult = TestUtils.loadResource(this.getClass(), "/triplestoreService/covariateDataExample.json");
     createMockTrialverseService(mockResult);
@@ -193,5 +206,26 @@ public class TriplestoreServiceTest {
     ResponseEntity resultEntity = new ResponseEntity<>(result, HttpStatus.OK);
     when(restTemplate.exchange(any(URI.class), any(HttpMethod.class), any(HttpEntity.class), any(Class.class))).thenReturn(resultEntity);
   }
+
+
+  @Test
+  public void testAddMatchingInformation() throws ResourceDoesNotExistException, InvalidTypeForDoseCheckException {
+    URI armUri = URI.create("armUri");
+    TrialDataArm arm = new TrialDataArm(armUri, "arm 1");
+    URI drugConcept = URI.create("conceptInterventionUri");
+    AbstractSemanticIntervention semanticIntervention = new SimpleSemanticIntervention(armUri, drugConcept);
+    arm.addSemanticIntervention(semanticIntervention);
+    List<TrialDataArm> arms = Collections.singletonList(arm);
+    URI studyUri = URI.create("studyUri");
+    TrialDataStudy study = new TrialDataStudy(studyUri, "study 1", arms);
+    List<TrialDataStudy> studies = Collections.singletonList(study);
+    AbstractIntervention intervention = mock(SimpleIntervention.class);
+    when(intervention.getId()).thenReturn(1337);
+    Set<AbstractIntervention> includedInterventions = new HashSet<>();
+    includedInterventions.add(intervention);
+    when(interventionService.isMatched(intervention, arm.getSemanticInterventions())).thenReturn(true);
+    triplestoreService.addMatchingInformation(includedInterventions, studies);
+  }
+
 
 }

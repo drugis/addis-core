@@ -25,7 +25,7 @@ public class OrderingRepositoryImpl implements OrderingRepository {
   public void put(Integer analysisId, String orderingString) {
     Ordering oldOrder = get(analysisId);
     Ordering ordering = new Ordering(analysisId, orderingString);
-    if(oldOrder== null){
+    if (oldOrder == null) {
       em.persist(ordering);
     } else {
       em.merge(ordering);

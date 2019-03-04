@@ -1,9 +1,9 @@
 'use strict';
-define(['angular-mocks'], function() {
+define(['angular-mocks'], function(angularMocks) {
   describe('the report directive service', function() {
     var reportDirectiveService;
 
-    beforeEach(module('addis.project'));
+    beforeEach(angular.mock.module('addis.project'));
 
     beforeEach(inject(function(ReportDirectiveService) {
       reportDirectiveService = ReportDirectiveService;

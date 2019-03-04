@@ -1,18 +1,36 @@
 'use strict';
 define(['lodash'], function(_) {
-  var dependencies = ['$scope', '$modal', '$filter', '$stateParams', '$state', 'DatasetResource', 'UserService'];
+  var dependencies = [
+    '$scope', '$modal', '$filter', '$stateParams', '$state',
+    'DatasetResource',
+    'UserService',
+    'PageTitleService'
+  ];
 
-  var DatasetsController = function($scope, $modal, $filter, $stateParams, $state, DatasetResource, UserService) {
+  var DatasetsController = function(
+    $scope, $modal, $filter, $stateParams, $state,
+    DatasetResource,
+    UserService,
+    PageTitleService
+  ) {
     // functions
     $scope.reloadDatasets = reloadDatasets;
     $scope.createDatasetDialog = createDatasetDialog;
     $scope.createProjectDialog = createProjectDialog;
 
     // init
+    $scope.$watch('user', function(user) {
+      if (user && user.id) {
+        PageTitleService.setPageTitle('DatasetsController', user.firstName + ' ' + user.lastName + '\'s datasets');
+      }
+    });
     reloadDatasets();
     $scope.stripFrontFilter = $filter('stripFrontFilter');
-    $scope.loginUser = UserService.getLoginUser();
-    $scope.showCreateProjectButton = UserService.hasLoggedInUser();
+    
+    UserService.getLoginUser().then(function(user) {
+      $scope.loginUser = user;
+      $scope.showCreateProjectButton = !!user;
+    });
 
 
     function reloadDatasets() {
@@ -23,13 +41,13 @@ define(['lodash'], function(_) {
 
     function createDatasetDialog() {
       $modal.open({
-        templateUrl: 'app/js/user/createDataset.html',
+        templateUrl: './createDataset.html',
         controller: 'CreateDatasetController',
         resolve: {
           callback: function() {
             return reloadDatasets;
           },
-          datasetTitles: function(){
+          datasetTitles: function() {
             return _.map($scope.datasets, 'title');
           }
         }
@@ -38,7 +56,7 @@ define(['lodash'], function(_) {
 
     function createProjectDialog(dataset) {
       $modal.open({
-        templateUrl: 'app/js/project/createProjectModal.html',
+        templateUrl: '../project/createProjectModal.html',
         controller: 'CreateProjectModalController',
         resolve: {
           callback: function() {

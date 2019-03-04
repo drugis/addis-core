@@ -1,17 +1,22 @@
 'use strict';
-define(['angular', 'lodash', 'jQuery'],
-  function(angular, _, $) {
+define(['angular', 'lodash'],
+  function(angular, _) {
     var dependencies = ['$transitions', '$scope', '$stateParams', '$modal',
       'ProjectResource',
       'ReportResource',
       'DefaultReportService',
-      '$timeout'
+      'PageTitleService'
     ];
-    var EditReportcontroller = function($transitions, $scope, $stateParams, $modal,
-      ProjectResource,
+    var EditReportcontroller = function(
+      $transitions,
+      $scope,
+      $stateParams,
+      $modal,
+      $timeout,
       ReportResource,
       DefaultReportService,
-      $timeout) {
+      PageTitleService
+    ) {
       $scope.reportText = {
         text: '',
         changed: false
@@ -39,8 +44,10 @@ define(['angular', 'lodash', 'jQuery'],
         }
       });
 
+      PageTitleService.setPageTitle('EditReportController', 'Edit ' + $scope.project.name + '\'s report');
+
       function insertTextAtCursor(text) {
-        var input = $('#report-input');
+        var input = angular.element(document.querySelector('#report-input'));
         var cursorPos = input.prop('selectionStart');
         var textBefore = $scope.reportText.text.substring(0, cursorPos);
         var textAfter = $scope.reportText.text.substring(cursorPos);
@@ -70,7 +77,7 @@ define(['angular', 'lodash', 'jQuery'],
 
       function openInsertDialog(directiveName) {
         $modal.open({
-          templateUrl: './app/js/project/report/insertDirectiveDialog.html',
+          templateUrl: './insertDirectiveDialog.html',
           controller: 'InsertDirectiveController',
           resolve: {
             callback: function() {

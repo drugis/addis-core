@@ -32,6 +32,7 @@ public class FeaturedDatasetController extends AbstractAddisCoreController {
   @ResponseBody
   public List<Dataset> queryFeaturedDatasetsAsJson(HttpServletResponse httpServletResponse) throws IOException, URISyntaxException {
     logger.trace("retrieving featured datasets");
-    return datasetService.findFeatured();
+    List<Dataset> featured = datasetService.findFeatured();
+    return featured;
   }
 }

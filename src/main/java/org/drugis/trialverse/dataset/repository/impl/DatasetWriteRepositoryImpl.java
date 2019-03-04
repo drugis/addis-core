@@ -3,7 +3,7 @@ package org.drugis.trialverse.dataset.repository.impl;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.protocol.HTTP;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
@@ -164,7 +164,7 @@ public class DatasetWriteRepositoryImpl implements DatasetWriteRepository {
     Account account = accountRepository.findAccountByUsername(owner.getUserName());
 
     try {
-      ResponseEntity<String> response = restTemplate.postForEntity(WebConstants.getTriplestoreBaseUri() + PATH, requestEntity, String.class);
+      ResponseEntity<String> response = restTemplate.postForEntity(webConstants.getTriplestoreBaseUri() + PATH, requestEntity, String.class);
       if (!HttpStatus.CREATED.equals(response.getStatusCode())) {
         logger.error("error , could not create dataset, tripleStore response = " + response.getStatusCode().getReasonPhrase());
         throw new CreateDatasetException();

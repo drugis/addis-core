@@ -4,7 +4,7 @@ define([], function() {
   var CommitDialogDirective = function($injector, GraphResource) {
     return {
       restrict: 'E',
-      templateUrl: 'app/js/commit/commitDialogDirective.html',
+      templateUrl: './commitDialogDirective.html',
       scope: {
         itemServiceName: '=',
         changesCommited: '=',

@@ -42,29 +42,29 @@ public interface TriplestoreService {
 
   Namespace getNamespaceHead(TriplestoreUuidAndOwner uuidAndOwner);
 
-  Namespace getNamespaceVersioned(TriplestoreUuidAndOwner datasetUri, URI versionUri);
+  Namespace getNamespaceVersioned(TriplestoreUuidAndOwner datasetUri, URI versionUri) throws IOException;
 
   String getHeadVersion(URI datasetUri);
 
-  List<SemanticVariable> getOutcomes(String namespaceUid, URI version) throws ReadValueException;
+  List<SemanticVariable> getOutcomes(String namespaceUid, URI version) throws ReadValueException, IOException;
 
-  List<SemanticVariable> getPopulationCharacteristics(String versionedUuid, URI version) throws ReadValueException;
+  List<SemanticVariable> getPopulationCharacteristics(String versionedUuid, URI version) throws ReadValueException, IOException;
 
-  List<SemanticInterventionUriAndName> getInterventions(String namespaceUid, URI version);
+  List<SemanticInterventionUriAndName> getInterventions(String namespaceUid, URI version) throws IOException;
 
-  List<Study> queryStudies(String namespaceUid, URI version);
+  List<Study> queryStudies(String namespaceUid, URI version) throws IOException;
 
-  List<TrialDataStudy> getSingleStudyData(String namespaceUid, URI studyUri, URI version, Set<URI> outcomeUris, Set<URI> interventionUids) throws ReadValueException;
+  List<TrialDataStudy> getSingleStudyData(String namespaceUid, URI studyUri, URI version, Set<URI> outcomeUris, Set<URI> interventionUids) throws ReadValueException, IOException;
 
   Set<AbstractIntervention> findMatchingIncludedInterventions(Set<AbstractIntervention> includedInterventions, TrialDataArm arm);
 
-  List<CovariateStudyValue> getStudyLevelCovariateValues(String namespaceUid, URI version, List<CovariateOption> covariates) throws ReadValueException;
+  List<CovariateStudyValue> getStudyLevelCovariateValues(String namespaceUid, URI version, List<CovariateOption> covariates) throws ReadValueException, IOException;
 
-  List<TrialDataStudy> getNetworkData(String namespaceUid, URI version, URI outcomeUri, Set<URI> interventionUris, Set<String> covariateKeys) throws ReadValueException;
+  List<TrialDataStudy> getNetworkData(String namespaceUid, URI version, URI outcomeUri, Set<URI> interventionUris, Set<String> covariateKeys) throws ReadValueException, IOException;
 
-  List<TrialDataStudy> getAllTrialData(String namespaceUid, URI datasetVersion, Set<URI> outcomeUris, Set<URI> interventionUris) throws ReadValueException;
+  List<TrialDataStudy> getAllTrialData(String namespaceUid, URI datasetVersion, Set<URI> outcomeUris, Set<URI> interventionUris) throws ReadValueException, IOException;
 
   List<TrialDataStudy> addMatchingInformation(Set<AbstractIntervention> includedInterventions, List<TrialDataStudy> trialData);
 
-  List<URI> getUnitUris(String trialverseDatasetUuid, URI headVersion);
+  List<URI> getUnitUris(String trialverseDatasetUuid, URI headVersion) throws IOException;
 }

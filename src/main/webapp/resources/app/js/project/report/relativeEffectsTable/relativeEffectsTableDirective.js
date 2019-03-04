@@ -12,7 +12,7 @@ define(['lodash'], function(_) {
         modelId: '=',
         regressionLevel: '='
       },
-      templateUrl: 'app/js/project/report/relativeEffectsTable/relativeEffectsTableTemplate.html',
+      templateUrl: './relativeEffectsTableTemplate.html',
 
       link: function(scope) {
         scope.resultsMessage = {};

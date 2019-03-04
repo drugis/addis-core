@@ -63,15 +63,12 @@ public class SocialConfig extends SocialConfigurerAdapter {
 
   @Override
   public UserIdSource getUserIdSource() {
-    return new UserIdSource() {
-      @Override
-      public String getUserId() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null) {
-          throw new IllegalStateException("Unable to get a ConnectionRepository: no user signed in");
-        }
-        return authentication.getName();
+    return () -> {
+      Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+      if (authentication == null) {
+        throw new IllegalStateException("Unable to get a ConnectionRepository: no user signed in");
       }
+      return authentication.getName();
     };
   }
 

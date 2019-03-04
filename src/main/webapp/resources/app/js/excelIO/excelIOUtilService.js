@@ -1,5 +1,5 @@
 'use strict';
-define(['lodash', 'xlsx-shim'], function(_, XLSX) {
+define(['lodash', 'xlsx'], function(_, XLSX) {
   var dependencies = [];
   var ExcelIOUtilService = function() {
     var excelUtils = XLSX.utils;

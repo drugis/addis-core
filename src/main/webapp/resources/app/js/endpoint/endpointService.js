@@ -1,8 +1,8 @@
 'use strict';
 define([],
   function() {
-    var dependencies = ['$q', 'OutcomeService'];
-    var EndpointService = function($q, OutcomeService) {
+    var dependencies = ['OutcomeService'];
+    var EndpointService = function(OutcomeService) {
 
       var TYPE = 'ontology:Endpoint';
 

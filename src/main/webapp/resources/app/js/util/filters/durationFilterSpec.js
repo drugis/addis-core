@@ -1,8 +1,8 @@
-define(['angular', 'angular-mocks'], function () {
+define(['angular-mocks'], function (angularMocks) {
   describe('The duration filter', function () {
     var durationFilter;
 
-    beforeEach(module('trialverse.util'));
+    beforeEach(angular.mock.module('trialverse.util'));
 
     beforeEach(inject(function($filter) {
       durationFilter = $filter('durationFilter');

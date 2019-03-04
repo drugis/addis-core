@@ -749,6 +749,9 @@ DROP TABLE SingleStudyBenefitRiskAnalysis_Outcome;
 DROP TABLE SingleStudyBenefitRiskAnalysis;
 
 --changeset keijserj:76
+--DROP TABLE effectsTableAlternativeInclusion;
+
+--changeset keijserj:77
 CREATE TABLE ordering(
     analysisId INT NOT NULL,
     ordering VARCHAR NOT NULL,
@@ -756,10 +759,21 @@ CREATE TABLE ordering(
     FOREIGN KEY(analysisId) REFERENCES BenefitRiskAnalysis(id) ON DELETE CASCADE
 );
 
---changeset keijserj:77
+--changeset keijserj:78
 CREATE TABLE toggledColumns(
     analysisId INT NOT NULL,
     toggledColumns VARCHAR NOT NULL,
     PRIMARY KEY(analysisId),
     FOREIGN KEY(analysisId) REFERENCES BenefitRiskAnalysis(id) ON DELETE CASCADE
 );
+--changeset keijserj:79
+CREATE TABLE workspaceSettings(
+  analysisId INT NOT NULL,
+  settings VARCHAR NOT NULL,
+  PRIMARY KEY (analysisId),
+  FOREIGN KEY (analysisId) REFERENCES BenefitRiskAnalysis(id) ON DELETE CASCADE
+);
+DROP TABLE toggledColumns;
+
+--changeset keijserj:80
+ALTER TABLE BenefitRiskStudyOutcomeInclusion ADD COLUMN baseline VARCHAR;

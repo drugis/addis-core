@@ -2,7 +2,7 @@ package org.drugis.trialverse.dataset.repository.impl;
 
 import net.minidev.json.JSONObject;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
@@ -45,6 +45,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URLEncoder;
 import java.security.Principal;
 import java.util.List;
 
@@ -61,7 +62,7 @@ public class DatasetReadRepositoryImpl implements DatasetReadRepository {
   private static final String CONTAINS_STUDY_WITH_SHORTNAME = loadResource("askContainsStudyWithLabel.sparql");
 
   private static final Node CLASS_VOID_DATASET = NodeFactory.createURI("http://rdfs.org/ns/void#Dataset");
-  public static final String HTTP_DRUGIS_ORG_EVENT_SOURCING_ES = "http://drugis.org/eventSourcing/es#";
+  private static final String HTTP_DRUGIS_ORG_EVENT_SOURCING_ES = "http://drugis.org/eventSourcing/es#";
 
 
   @Inject
@@ -116,7 +117,7 @@ public class DatasetReadRepositoryImpl implements DatasetReadRepository {
     VersionMapping versionMapping = versionMappingRepository.getVersionMappingByDatasetUrl(trialverseDatasetUri);
     ResponseEntity<JsonObject> responseEntity = doRequest(versionMapping, query, RDFLanguages.JSONLD.getContentType().getContentType(), JsonObject.class);
     JsonObject jsonObject = responseEntity.getBody();
-    return Boolean.TRUE.equals(new Boolean(jsonObject.get("boolean").toString()));
+    return Boolean.TRUE.equals(Boolean.valueOf(jsonObject.get("boolean").toString()));
   }
 
   private <T> ResponseEntity<T> doRequest(VersionMapping versionMapping, String query, String acceptType, Class responseType) {
@@ -130,8 +131,7 @@ public class DatasetReadRepositoryImpl implements DatasetReadRepository {
             .queryParam(WebConstants.QUERY_PARAM_QUERY, query)
             .build();
 
-    ResponseEntity<T> result  = restTemplate.exchange(uriComponents.toUri(), HttpMethod.GET, requestEntity, responseType);
-    return result;
+    return restTemplate.exchange(uriComponents.toUri(), HttpMethod.GET, requestEntity, responseType);
   }
 
   @Override
@@ -140,7 +140,7 @@ public class DatasetReadRepositoryImpl implements DatasetReadRepository {
     Model resultModel = ModelFactory.createDefaultModel();
     mappings.stream()
             .map(this::queryDataset)
-            .forEach((model) -> resultModel.add(model));
+            .forEach(resultModel::add);
 
     return resultModel;
   }
@@ -196,8 +196,9 @@ public class DatasetReadRepositoryImpl implements DatasetReadRepository {
     VersionMapping versionMapping = versionMappingRepository.getVersionMappingByDatasetUrl(trialverseDatasetUri);
     UriComponents uriComponents = UriComponentsBuilder.fromHttpUrl(versionMapping.getVersionedDatasetUrl())
             .path(WebConstants.QUERY_ENDPOINT)
-            .queryParam(WebConstants.QUERY_PARAM_QUERY, query)
-            .build();
+            .queryParam(WebConstants.QUERY_PARAM_QUERY, URLEncoder.encode(query, "UTF-8")) // built-in encoding is too permissive
+            .build(true);
+
     HttpGet request = new HttpGet(uriComponents.toUri());
     if(versionUri != null) {
       request.addHeader(WebConstants.X_ACCEPT_EVENT_SOURCE_VERSION, versionUri.toString());
@@ -222,7 +223,7 @@ public class DatasetReadRepositoryImpl implements DatasetReadRepository {
 
   @Override
   @Cacheable(cacheNames="datasetHistory", key="#datasetUri.toString()")
-  public Model getHistory(URI datasetUri) throws IOException {
+  public Model getHistory(URI datasetUri) {
     URI uri = UriComponentsBuilder.fromHttpUrl(datasetUri.toString())
             .path(WebConstants.HISTORY_ENDPOINT)
             .build()
@@ -236,7 +237,7 @@ public class DatasetReadRepositoryImpl implements DatasetReadRepository {
   }
 
   @Override
-  public JSONObject executeHeadQuery(String sparqlQuery, VersionMapping versionMapping) throws URISyntaxException {
+  public JSONObject executeHeadQuery(String sparqlQuery, VersionMapping versionMapping) {
     ResponseEntity<JSONObject> responseEntity = doRequest(versionMapping, sparqlQuery, WebConstants.APPLICATION_SPARQL_RESULTS_JSON, JSONObject.class);
     JSONObject jsonObject = responseEntity.getBody();
     String versionUri = responseEntity.getHeaders().get(WebConstants.X_EVENT_SOURCE_VERSION).get(0);

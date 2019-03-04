@@ -1,30 +1,53 @@
 'use strict';
 define(['lodash'], function(_) {
-  var dependencies = ['$scope', '$q', '$stateParams', '$state', 'AnalysisResource', 'InterventionResource',
-    'OutcomeResource', 'BenefitRiskService', 'ModelResource', 'ScenarioResource', 'UserService', 'ProjectResource',
-    'ProjectStudiesResource', 'SubProblemResource', 'TrialverseResource', 'DEFAULT_VIEW'
+  var dependencies = [
+    '$scope',
+    '$q',
+    '$stateParams',
+    '$state',
+    'AnalysisResource',
+    'BenefitRiskService',
+    'InterventionResource',
+    'ModelResource',
+    'OutcomeResource',
+    'PageTitleService',
+    'ProjectResource',
+    'ProjectStudiesResource',
+    'TrialverseResource',
+    'UserService'
   ];
-  var BenefitRiskController = function($scope, $q, $stateParams, $state, AnalysisResource, InterventionResource,
-    OutcomeResource, BenefitRiskService, ModelResource, ScenarioResource, UserService, ProjectResource,
-    ProjectStudiesResource, SubProblemResource, TrialverseResource, DEFAULT_VIEW) {
-
+  var BenefitRiskController = function(
+    $scope,
+    $q,
+    $stateParams,
+    $state,
+    AnalysisResource,
+    BenefitRiskService,
+    InterventionResource,
+    ModelResource,
+    OutcomeResource,
+    PageTitleService,
+    ProjectResource,
+    ProjectStudiesResource,
+    TrialverseResource,
+    UserService
+  ) {
     $scope.analysis = AnalysisResource.get($stateParams);
     $scope.alternatives = InterventionResource.query($stateParams);
     $scope.outcomes = OutcomeResource.query($stateParams);
     $scope.models = ModelResource.getConsistencyModels($stateParams);
-    $scope.goToDefaultScenario = goToDefaultScenario;
+    $scope.goToDefaultScenario = BenefitRiskService.goToDefaultScenario;
     $scope.goToModel = goToModel;
     $scope.userId = $stateParams.userUid;
     $scope.project = ProjectResource.get($stateParams);
-    var studiesPromise = ProjectStudiesResource.query({
-      projectId: $stateParams.projectId
-    }).$promise;
+    var studiesPromise = ProjectStudiesResource.query(_.pick($stateParams, ['projectId'])).$promise;
 
     $scope.editMode = {
       allowEditing: false
     };
 
-    var promises = [$scope.analysis.$promise,
+    var promises = [
+      $scope.analysis.$promise,
       $scope.alternatives.$promise,
       $scope.outcomes.$promise,
       $scope.models.$promise,
@@ -44,84 +67,31 @@ define(['lodash'], function(_) {
         });
       });
 
-      if (UserService.isLoginUserId(project.owner.id) && !analysis.archived) {
-        $scope.editMode.allowEditing = true;
-      }
-
-      $scope.projectVersionUuid = project.datasetVersion.split('/versions/')[1];
-      TrialverseResource.get({
-        namespaceUid: $scope.project.namespaceUid,
-        version: $scope.project.datasetVersion
-      }).$promise.then(function(dataset) {
-        $scope.datasetOwnerId = dataset.ownerId;
+      PageTitleService.setPageTitle('BenefitRiskController', analysis.title);
+      UserService.isLoginUserId(project.owner.id).then(function(isUserOwner) {
+        $scope.editMode.allowEditing = isUserOwner && !analysis.archived;
       });
 
-      var outcomeIds = _.map(outcomes, 'id');
+      $scope.projectVersionUuid = project.datasetVersion.split('/versions/')[1];
+      setDataSetOwner();
 
+      var outcomeIds = _.map(outcomes, 'id');
       AnalysisResource.query({
         projectId: $stateParams.projectId,
         outcomeIds: outcomeIds
       }).$promise.then(function(networkMetaAnalyses) {
-        networkMetaAnalyses = networkMetaAnalyses
-          .map(_.partial(BenefitRiskService.joinModelsWithAnalysis, models))
-          .map(BenefitRiskService.addModelsGroup);
-        var outcomesWithAnalyses = BenefitRiskService.buildOutcomesWithAnalyses(analysis, outcomes, networkMetaAnalyses);
-        outcomesWithAnalyses = BenefitRiskService.addStudiesToOutcomes(
-          outcomesWithAnalyses, analysis.benefitRiskStudyOutcomeInclusions, studies);
-        outcomesWithAnalyses = _.partition(outcomesWithAnalyses, ['dataType', 'network']);
-        $scope.networkOWAs = outcomesWithAnalyses[0];
-        $scope.studyOutcomes = outcomesWithAnalyses[1];
-        $scope.isMissingBaseline = _.find($scope.networkOWAs, function(outcomeWithAnalysis) {
-          return !outcomeWithAnalysis.baselineDistribution;
-        });
+        networkMetaAnalyses = BenefitRiskService.addModels(networkMetaAnalyses, models, studies);
+        outcomes = BenefitRiskService.buildOutcomes(analysis, outcomes, networkMetaAnalyses, studies);
+        outcomes = _.partition(outcomes, ['dataType', 'network']);
+        $scope.networkOWAs = outcomes[0];
+        $scope.studyOutcomes = outcomes[1];
+        $scope.isMissingBaseline = BenefitRiskService.hasMissingBaseline($scope.networkOWAs);
       });
 
-      $scope.alternatives = alternatives.map(function(alternative) {
-        var isAlternativeInInclusions = _.find(analysis.interventionInclusions, function(includedAlternative) {
-          return includedAlternative.id === alternative.id;
-        });
-        if (isAlternativeInInclusions) {
-          alternative.isIncluded = true;
-        }
-        return alternative;
-      });
-      setIncludedAlternatives();
-
-      $scope.outcomes = outcomes.map(function(outcome) {
-        var isOutcomeInInclusions = _.find(analysis.benefitRiskNMAOutcomeInclusions, function(benefitRiskNMAOutcomeInclusion) {
-          return benefitRiskNMAOutcomeInclusion.outcomeId === outcome.id;
-        });
-        if (isOutcomeInInclusions) {
-          outcome.isIncluded = true;
-        }
-        return outcome;
-      });
+      $scope.alternatives = BenefitRiskService.getAlternativesWithInclusion(alternatives, analysis.interventionInclusions);
+      $scope.analysis.interventionInclusions = BenefitRiskService.getIncludedAlternatives($scope.alternatives);
+      $scope.outcomes = BenefitRiskService.getOutcomesWithInclusions(outcomes, analysis.benefitRiskNMAOutcomeInclusions);
     });
-
-    function setIncludedAlternatives() {
-      $scope.analysis.interventionInclusions = $scope.alternatives.filter(function(alternative) {
-        return alternative.isIncluded;
-      });
-    }
-
-    function goToDefaultScenario() {
-      var params = $stateParams;
-      SubProblemResource.query(params).$promise.then(function(subProblems) {
-        var subProblem = subProblems[0];
-        params = _.extend({}, params, {
-          problemId: subProblem.id
-        });
-        ScenarioResource.query(params).$promise.then(function(scenarios) {
-          $state.go(DEFAULT_VIEW, {
-            userUid: $scope.userId,
-            projectId: params.projectId,
-            analysisId: params.analysisId,
-            problemId: subProblem.id,
-            id: scenarios[0].id
-          });
-        });
-      });
-    }
 
     function goToModel(model) {
       $state.go('model', {
@@ -132,6 +102,14 @@ define(['lodash'], function(_) {
       });
     }
 
+    function setDataSetOwner() {
+      TrialverseResource.get({
+        namespaceUid: $scope.project.namespaceUid,
+        version: $scope.project.datasetVersion
+      }).$promise.then(function(dataset) {
+        $scope.datasetOwnerId = dataset.ownerId;
+      });
+    }
   };
   return dependencies.concat(BenefitRiskController);
 });

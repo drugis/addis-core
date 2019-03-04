@@ -7,7 +7,7 @@ define(['showdown'], function(Showdown) {
       scope: {
         data: '='
       },
-      templateUrl: 'app/js/project/report/markdownReportDirective.html',
+      templateUrl: './markdownReportDirective.html',
       link: function(scope, element) {
         var converter = new Showdown.Converter();
         scope.reportPromise = ReportResource.get($stateParams).$promise.then(function(reportResponse) {

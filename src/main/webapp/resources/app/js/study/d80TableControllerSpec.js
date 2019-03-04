@@ -1,5 +1,5 @@
 'use strict';
-define(['angular-mocks'], function() {
+define(['angular-mocks'], function(angularMocks) {
   describe('the d80 controller', function() {
     var
       rootScope,
@@ -76,7 +76,7 @@ define(['angular-mocks'], function() {
       builtMeasurements = {
         toBackEndMeasurements: toBackEndMeasurements
       };
-    beforeEach(module('trialverse.study'));
+    beforeEach(angular.mock.module('trialverse.study'));
     beforeEach(inject(function($rootScope, $q, $controller, $filter) {
       function prepareQueryItems(mock, result) {
         var defer = $q.defer();

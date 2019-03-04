@@ -1,5 +1,5 @@
 'use strict';
-define(['angular', 'angular-mocks'], function() {
+define(['angular', 'angular-mocks', './group'], function(angular) {
   describe('the group service', function() {
 
     var rootScope, q;
@@ -8,13 +8,7 @@ define(['angular', 'angular-mocks'], function() {
     var studyDefer;
 
     beforeEach(function() {
-      module('trialverse.arm', function($provide) {
-        $provide.value('StudyService', studyService);
-      });
-    });
-
-    beforeEach(function() {
-      module('trialverse.group', function($provide) {
+      angular.mock.module('trialverse.group', function($provide) {
         $provide.value('StudyService', studyService);
       });
     });

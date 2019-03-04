@@ -79,12 +79,12 @@ INSERT INTO public.model(id, analysisId, taskUrl, title, linearModel, modelType,
 
 UPDATE public.NetworkMetaAnalysis SET primaryModel = 1 WHERE id = -7;
 
-INSERT INTO public.BenefitRiskStudyOutcomeInclusion (analysisId, outcomeId, studyGraphUri) VALUES (-2, 1, 'http://study.graph.uri');
-INSERT INTO public.BenefitRiskStudyOutcomeInclusion (analysisId, outcomeId, studyGraphUri) VALUES (-3, 1, 'http://study.graph.uri');
-INSERT INTO public.BenefitRiskStudyOutcomeInclusion (analysisId, outcomeId, studyGraphUri) VALUES (-3, 2, 'http://study.graph.uri');
-INSERT INTO public.BenefitRiskStudyOutcomeInclusion (analysisId, outcomeId, studyGraphUri) VALUES (-4, 1, 'http://study.graph.uri');
-INSERT INTO public.BenefitRiskStudyOutcomeInclusion (analysisId, outcomeId, studyGraphUri) VALUES (-4, 2, 'http://study.graph.uri');
-INSERT INTO public.BenefitRiskStudyOutcomeInclusion (analysisId, outcomeId, studyGraphUri) VALUES (-10, 2, null);
+INSERT INTO public.BenefitRiskStudyOutcomeInclusion (analysisId, outcomeId, studyGraphUri, baseline) VALUES (-2, 1, 'http://study.graph.uri', null);
+INSERT INTO public.BenefitRiskStudyOutcomeInclusion (analysisId, outcomeId, studyGraphUri, baseline) VALUES (-3, 1, 'http://study.graph.uri', null);
+INSERT INTO public.BenefitRiskStudyOutcomeInclusion (analysisId, outcomeId, studyGraphUri, baseline) VALUES (-3, 2, 'http://study.graph.uri', null);
+INSERT INTO public.BenefitRiskStudyOutcomeInclusion (analysisId, outcomeId, studyGraphUri, baseline) VALUES (-4, 1, 'http://study.graph.uri', null);
+INSERT INTO public.BenefitRiskStudyOutcomeInclusion (analysisId, outcomeId, studyGraphUri, baseline) VALUES (-4, 2, 'http://study.graph.uri', null);
+INSERT INTO public.BenefitRiskStudyOutcomeInclusion (analysisId, outcomeId, studyGraphUri, baseline) VALUES (-10, 2, null, null);
 
 INSERT INTO public.BenefitRiskNMAOutcomeInclusion (analysisId, outcomeId, networkMetaAnalysisId, modelId) VALUES (-2, 1, -5, 1);
 INSERT INTO public.BenefitRiskNMAOutcomeInclusion (analysisId, outcomeId, networkMetaAnalysisId, modelId) VALUES (-10, 1, -5, 1);
@@ -141,4 +141,4 @@ INSERT INTO public.scaledUnit(id, projectId, conceptUri, multiplier, name) VALUE
 
 INSERT INTO public.ordering(analysisId, ordering) VALUES(-10, 'ordering: {alternatives:["intervention 1","intervention 2"], criteria:["outcome 2","outcome 2"]}');
 
-INSERT INTO public.toggledColumns(analysisId, toggledColumns) VALUES(-10, '{criteria: true, units: true, description: false, references: false}');
+INSERT INTO public.workspaceSettings(analysisId, settings) VALUES(-10, '{settings: {some: "setting"}, toggledColumns: {criteria: true, units: true, description: false, references: false}}');

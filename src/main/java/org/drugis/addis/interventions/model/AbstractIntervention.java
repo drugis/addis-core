@@ -5,6 +5,7 @@ import org.drugis.addis.interventions.controller.viewAdapter.AbstractInterventio
 
 import javax.persistence.*;
 import java.net.URI;
+import java.util.Objects;
 
 /**
  * Created by daan on 5-4-16.
@@ -75,22 +76,16 @@ public abstract class AbstractIntervention {
   public boolean equals(Object o) {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
-
     AbstractIntervention that = (AbstractIntervention) o;
-
-    if (id != null ? !id.equals(that.id) : that.id != null) return false;
-    if (!project.equals(that.project)) return false;
-    if (!name.equals(that.name)) return false;
-    return motivation != null ? motivation.equals(that.motivation) : that.motivation == null;
-
+    return Objects.equals(id, that.id) &&
+            Objects.equals(project, that.project) &&
+            Objects.equals(name, that.name) &&
+            Objects.equals(motivation, that.motivation);
   }
 
   @Override
   public int hashCode() {
-    int result = id != null ? id.hashCode() : 0;
-    result = 31 * result + project.hashCode();
-    result = 31 * result + name.hashCode();
-    result = 31 * result + (motivation != null ? motivation.hashCode() : 0);
-    return result;
+
+    return Objects.hash(id, project, name, motivation);
   }
 }

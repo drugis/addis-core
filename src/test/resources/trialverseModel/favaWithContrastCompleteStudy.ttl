@@ -1,0 +1,2147 @@
+<http://trials.drugis.org/instances/ffd7cefd-19bb-4ad7-9e2b-8f2ac26f615a>
+        a       <http://trials.drugis.org/ontology#Endpoint> ;
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "" ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Dropouts" ;
+        <http://trials.drugis.org/ontology#has_result_property>
+                <http://trials.drugis.org/ontology#count> , <http://trials.drugis.org/ontology#sample_size> ;
+        <http://trials.drugis.org/ontology#is_measured_at>
+                <http://trials.drugis.org/instances/d9334d08-4c54-4124-93c7-c9b58122117d> ;
+        <http://trials.drugis.org/ontology#of_variable>
+                <http://fuseki.drugis.org:3030/.well-known/genid/0000014fe0edb0faac11005800000020> .
+
+<http://fuseki.drugis.org:3030/.well-known/genid/0000014fe0edb0f9ac11005800000006>
+        a       <http://trials.drugis.org/ontology#Variable> ;
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "" ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Chest Pain" ;
+        <http://trials.drugis.org/ontology#measurementType>
+                <http://trials.drugis.org/ontology#dichotomous> ;
+        <http://www.w3.org/2002/07/owl#sameAs>
+                <http://trials.drugis.org/concepts/7b2fe47c-4fd0-4726-b85c-f531eac69abe> .
+
+<http://fuseki.drugis.org:3030/.well-known/genid/0000014fe0edb0faac11005800000006>
+        a       <http://trials.drugis.org/ontology#Variable> ;
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "" ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Nervousness" ;
+        <http://trials.drugis.org/ontology#measurementType>
+                <http://trials.drugis.org/ontology#dichotomous> ;
+        <http://www.w3.org/2002/07/owl#sameAs>
+                <http://trials.drugis.org/concepts/abe745b1-3aba-4e0c-bfd2-48faa91bd23b> .
+
+<http://trials.drugis.org/instances/5eae9eed-8a89-4f63-8715-9fd335b29d9b>
+        <http://trials.drugis.org/ontology#count>
+                17 ;
+        <http://trials.drugis.org/ontology#of_group>
+                <http://trials.drugis.org/instances/9a23caaa-874c-40fa-b362-2d6e01aa7373> ;
+        <http://trials.drugis.org/ontology#of_moment>
+                <http://trials.drugis.org/instances/d9334d08-4c54-4124-93c7-c9b58122117d> ;
+        <http://trials.drugis.org/ontology#of_outcome>
+                <http://trials.drugis.org/instances/10d63037-b828-4126-8c87-e954313bee02> ;
+        <http://trials.drugis.org/ontology#sample_size>
+                92 .
+
+<http://trials.drugis.org/instances/b872a8a7-b697-49f8-8b66-16e70de5baf3>
+        <http://trials.drugis.org/ontology#count>
+                1 ;
+        <http://trials.drugis.org/ontology#of_group>
+                <http://trials.drugis.org/instances/9a23caaa-874c-40fa-b362-2d6e01aa7373> ;
+        <http://trials.drugis.org/ontology#of_moment>
+                <http://trials.drugis.org/instances/d9334d08-4c54-4124-93c7-c9b58122117d> ;
+        <http://trials.drugis.org/ontology#of_outcome>
+                <http://trials.drugis.org/instances/ef2e32ab-c3c4-4803-8c1a-061eeb691324> ;
+        <http://trials.drugis.org/ontology#sample_size>
+                92 .
+
+<http://trials.drugis.org/instances/d9334d08-4c54-4124-93c7-c9b58122117d>
+        a       <http://trials.drugis.org/ontology#MeasurementMoment> ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "P0D BEFORE_EPOCH_END Main phase" ;
+        <http://trials.drugis.org/ontology#relative_to_anchor>
+                <http://trials.drugis.org/ontology#anchorEpochEnd> ;
+        <http://trials.drugis.org/ontology#relative_to_epoch>
+                <http://trials.drugis.org/instances/e9098ad3-9b1b-4d3d-9251-04d55878e750> ;
+        <http://trials.drugis.org/ontology#time_offset>
+                "PT0S"^^<http://www.w3.org/2001/XMLSchema#duration> .
+
+<http://trials.drugis.org/instances/02f4c0d5-66fa-4b7d-b08d-2909e160370a>
+        <http://trials.drugis.org/ontology#count>
+                7 ;
+        <http://trials.drugis.org/ontology#of_group>
+                <http://trials.drugis.org/instances/58b7339d-3517-4dcb-b892-1f41438f3024> ;
+        <http://trials.drugis.org/ontology#of_moment>
+                <http://trials.drugis.org/instances/d9334d08-4c54-4124-93c7-c9b58122117d> ;
+        <http://trials.drugis.org/ontology#of_outcome>
+                <http://trials.drugis.org/instances/dc35ddf2-e75f-480d-96e8-4b21d2b4c16e> ;
+        <http://trials.drugis.org/ontology#sample_size>
+                96 .
+
+<http://trials.drugis.org/instances/ae3a6226-bd92-4ed6-8f31-a4d305af2313>
+        <http://trials.drugis.org/ontology#count>
+                15 ;
+        <http://trials.drugis.org/ontology#of_group>
+                <http://trials.drugis.org/instances/f468ad44-f80c-422b-91c8-58bdd84c36c0> ;
+        <http://trials.drugis.org/ontology#of_moment>
+                <http://trials.drugis.org/instances/d9334d08-4c54-4124-93c7-c9b58122117d> ;
+        <http://trials.drugis.org/ontology#of_outcome>
+                <http://trials.drugis.org/instances/225f91ad-1e9c-412d-b7bd-07baad68b2b0> ;
+        <http://trials.drugis.org/ontology#sample_size>
+                96 .
+
+<http://fuseki.drugis.org:3030/.well-known/genid/0000014fe0edb0f9ac11005800000014>
+        a       <http://trials.drugis.org/ontology#Variable> ;
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "" ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Sweating" ;
+        <http://trials.drugis.org/ontology#measurementType>
+                <http://trials.drugis.org/ontology#dichotomous> ;
+        <http://www.w3.org/2002/07/owl#sameAs>
+                <http://trials.drugis.org/concepts/84469bc3-08fa-4a9b-af02-40be004aa7fa> .
+
+<http://trials.drugis.org/instances/a6b754ae-7ee8-4eaa-b646-34c4fb2ea462>
+        <http://trials.drugis.org/ontology#count>
+                15 ;
+        <http://trials.drugis.org/ontology#of_group>
+                <http://trials.drugis.org/instances/f468ad44-f80c-422b-91c8-58bdd84c36c0> ;
+        <http://trials.drugis.org/ontology#of_moment>
+                <http://trials.drugis.org/instances/d9334d08-4c54-4124-93c7-c9b58122117d> ;
+        <http://trials.drugis.org/ontology#of_outcome>
+                <http://trials.drugis.org/instances/aceb6fe8-1ae5-42db-a0fe-bfe485056123> ;
+        <http://trials.drugis.org/ontology#sample_size>
+                96 .
+
+<http://fuseki.drugis.org:3030/.well-known/genid/0000014fe0edb0faac11005800000014>
+        <http://www.w3.org/1999/02/22-rdf-syntax-ns#value>
+                6.0E1 ;
+        <http://trials.drugis.org/ontology#dosingPeriodicity>
+                "P1D"^^<http://www.w3.org/2001/XMLSchema#duration> ;
+        <http://trials.drugis.org/ontology#unit>
+                <http://trials.drugis.org/instances/5b674ffc-a356-454a-b376-7d8600ee0888> .
+
+<http://trials.drugis.org/instances/f624d2b5-5f73-416a-add8-52a68e0d6e9f>
+        <http://trials.drugis.org/ontology#count>
+                16 ;
+        <http://trials.drugis.org/ontology#of_group>
+                <http://trials.drugis.org/instances/58b7339d-3517-4dcb-b892-1f41438f3024> ;
+        <http://trials.drugis.org/ontology#of_moment>
+                <http://trials.drugis.org/instances/d9334d08-4c54-4124-93c7-c9b58122117d> ;
+        <http://trials.drugis.org/ontology#of_outcome>
+                <http://trials.drugis.org/instances/5c13bae7-a906-4fa2-bc08-fc9871745b76> ;
+        <http://trials.drugis.org/ontology#sample_size>
+                96 .
+
+<http://trials.drugis.org/instances/3af833d8-1b84-4423-aa85-d567ffc06d6b>
+        <http://trials.drugis.org/ontology#count>
+                11 ;
+        <http://trials.drugis.org/ontology#of_group>
+                <http://trials.drugis.org/instances/58b7339d-3517-4dcb-b892-1f41438f3024> ;
+        <http://trials.drugis.org/ontology#of_moment>
+                <http://trials.drugis.org/instances/d9334d08-4c54-4124-93c7-c9b58122117d> ;
+        <http://trials.drugis.org/ontology#of_outcome>
+                <http://trials.drugis.org/instances/a88372fc-70de-4c34-945c-9bca4a5cc659> ;
+        <http://trials.drugis.org/ontology#sample_size>
+                96 .
+
+<http://trials.drugis.org/instances/9a3a7946-6c66-4a73-a740-8a9c3a3b9635>
+        <http://trials.drugis.org/ontology#count>
+                7 ;
+        <http://trials.drugis.org/ontology#of_group>
+                <http://trials.drugis.org/instances/f468ad44-f80c-422b-91c8-58bdd84c36c0> ;
+        <http://trials.drugis.org/ontology#of_moment>
+                <http://trials.drugis.org/instances/d9334d08-4c54-4124-93c7-c9b58122117d> ;
+        <http://trials.drugis.org/ontology#of_outcome>
+                <http://trials.drugis.org/instances/574e8f92-a343-4505-bdea-a472b1a8d1e6> ;
+        <http://trials.drugis.org/ontology#sample_size>
+                96 .
+
+<http://trials.drugis.org/instances/1e25a904-6963-40d0-b7dc-6e043feef849>
+        a       <http://trials.drugis.org/ontology#AdverseEvent> ;
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "" ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Abnormal Ejaculation" ;
+        <http://trials.drugis.org/ontology#has_result_property>
+                <http://trials.drugis.org/ontology#count> , <http://trials.drugis.org/ontology#sample_size> ;
+        <http://trials.drugis.org/ontology#is_measured_at>
+                <http://trials.drugis.org/instances/d9334d08-4c54-4124-93c7-c9b58122117d> ;
+        <http://trials.drugis.org/ontology#of_variable>
+                <http://fuseki.drugis.org:3030/.well-known/genid/0000014fe0edb0faac11005800000017> .
+
+<http://trials.drugis.org/instances/94308d90-4b36-4f62-af17-7c5cb3187515>
+        <http://trials.drugis.org/ontology#count>
+                20 ;
+        <http://trials.drugis.org/ontology#of_group>
+                <http://trials.drugis.org/instances/f468ad44-f80c-422b-91c8-58bdd84c36c0> ;
+        <http://trials.drugis.org/ontology#of_moment>
+                <http://trials.drugis.org/instances/d9334d08-4c54-4124-93c7-c9b58122117d> ;
+        <http://trials.drugis.org/ontology#of_outcome>
+                <http://trials.drugis.org/instances/10d63037-b828-4126-8c87-e954313bee02> ;
+        <http://trials.drugis.org/ontology#sample_size>
+                96 .
+
+<http://trials.drugis.org/instances/3ad63dd2-c0ac-4c44-95d9-db9f31dde0c2>
+        <http://trials.drugis.org/ontology#count>
+                13 ;
+        <http://trials.drugis.org/ontology#of_group>
+                <http://trials.drugis.org/instances/9a23caaa-874c-40fa-b362-2d6e01aa7373> ;
+        <http://trials.drugis.org/ontology#of_moment>
+                <http://trials.drugis.org/instances/d9334d08-4c54-4124-93c7-c9b58122117d> ;
+        <http://trials.drugis.org/ontology#of_outcome>
+                <http://trials.drugis.org/instances/05fd8a52-6f9c-4db4-9f5d-5d262ab0f662> ;
+        <http://trials.drugis.org/ontology#sample_size>
+                92 .
+
+<http://trials.drugis.org/instances/8a59a546-6a59-45b2-9b9f-96a491f1a0c3>
+        <http://trials.drugis.org/ontology#mean>
+                2.7E1 ;
+        <http://trials.drugis.org/ontology#of_group>
+                <http://trials.drugis.org/instances/58b7339d-3517-4dcb-b892-1f41438f3024> ;
+        <http://trials.drugis.org/ontology#of_moment>
+                <http://trials.drugis.org/instances/33492bb7-02c6-4283-8a56-f30612a07a85> ;
+        <http://trials.drugis.org/ontology#of_outcome>
+                <http://trials.drugis.org/instances/bffd9f4e-cf53-4e21-8c75-fb8f629ddd96> ;
+        <http://trials.drugis.org/ontology#sample_size>
+                70 ;
+        <http://trials.drugis.org/ontology#standard_deviation>
+                7.2E0 .
+
+<http://trials.drugis.org/instances/3250a027-8c61-44b8-b659-3772f579b874>
+        a       <http://trials.drugis.org/ontology#ParticipantFlow> ;
+        <http://trials.drugis.org/ontology#in_epoch>
+                <http://trials.drugis.org/instances/e9098ad3-9b1b-4d3d-9251-04d55878e750> ;
+        <http://trials.drugis.org/ontology#of_group>
+                <http://trials.drugis.org/instances/9a23caaa-874c-40fa-b362-2d6e01aa7373> ;
+        <http://trials.drugis.org/ontology#participants_starting>
+                92 .
+
+<http://fuseki.drugis.org:3030/.well-known/genid/0000014fe0edb0faac1100580000001f>
+        a       <http://trials.drugis.org/ontology#Variable> ;
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "" , "HAMD score at the baseline" ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "HAMD bas" ;
+        <http://trials.drugis.org/ontology#measurementType>
+                <http://trials.drugis.org/ontology#continuous> ;
+        <http://www.w3.org/2002/07/owl#sameAs>
+                <http://trials.drugis.org/concepts/e2dfea0d-6cf9-4337-a9bc-784c94d390e5> .
+
+<http://trials.drugis.org/instances/e639c2b3-9479-469e-b00e-7edf6bacfb04>
+        <http://trials.drugis.org/ontology#count>
+                8 ;
+        <http://trials.drugis.org/ontology#of_group>
+                <http://trials.drugis.org/instances/9a23caaa-874c-40fa-b362-2d6e01aa7373> ;
+        <http://trials.drugis.org/ontology#of_moment>
+                <http://trials.drugis.org/instances/d9334d08-4c54-4124-93c7-c9b58122117d> ;
+        <http://trials.drugis.org/ontology#of_outcome>
+                <http://trials.drugis.org/instances/574e8f92-a343-4505-bdea-a472b1a8d1e6> ;
+        <http://trials.drugis.org/ontology#sample_size>
+                92 .
+
+<http://fuseki.drugis.org:3030/.well-known/genid/0000014fe0edb0faac11005800000022>
+        a       <http://trials.drugis.org/ontology#Variable> ;
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "" ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Sex" ;
+        <http://trials.drugis.org/ontology#categoryList>
+                ( <http://trials.drugis.org/instances/88e183d7-d187-460d-b321-07a8ea1a9f83> <http://trials.drugis.org/instances/69fa8375-e91b-4d68-bd64-e52194730960> ) ;
+        <http://trials.drugis.org/ontology#measurementType>
+                <http://trials.drugis.org/ontology#categorical> ;
+        <http://www.w3.org/2002/07/owl#sameAs>
+                <http://trials.drugis.org/concepts/343d3c49-aad5-448b-8e99-9a33586b2b8d> .
+
+<http://trials.drugis.org/instances/83c0a68b-c4bc-45a0-b5ca-56bc177d0120>
+        a       <http://trials.drugis.org/ontology#AdverseEvent> ;
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "" ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Somnolence" ;
+        <http://trials.drugis.org/ontology#has_result_property>
+                <http://trials.drugis.org/ontology#count> , <http://trials.drugis.org/ontology#sample_size> ;
+        <http://trials.drugis.org/ontology#is_measured_at>
+                <http://trials.drugis.org/instances/d9334d08-4c54-4124-93c7-c9b58122117d> ;
+        <http://trials.drugis.org/ontology#of_variable>
+                <http://fuseki.drugis.org:3030/.well-known/genid/0000014fe0edb0faac11005800000004> .
+
+<http://fuseki.drugis.org:3030/.well-known/genid/0000014fe0edb0f9ac11005800000001>
+        <http://trials.drugis.org/ontology#category>
+                <http://trials.drugis.org/instances/88e183d7-d187-460d-b321-07a8ea1a9f83> ;
+        <http://trials.drugis.org/ontology#count>
+                41 .
+
+<http://fuseki.drugis.org:3030/.well-known/genid/0000014fe0edb0faac11005800000001>
+        <http://trials.drugis.org/ontology#applied_in_epoch>
+                <http://trials.drugis.org/instances/376a4f55-fdd0-47e6-8cd5-08d4a9bd0607> ;
+        <http://trials.drugis.org/ontology#applied_to_arm>
+                <http://trials.drugis.org/instances/f468ad44-f80c-422b-91c8-58bdd84c36c0> .
+
+<http://trials.drugis.org/instances/21c35449-504b-45b4-905d-68301421f685>
+        a       <http://trials.drugis.org/ontology#PopulationCharacteristic> ;
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "HAMD score at the baseline" ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "HAMD bas" ;
+        <http://trials.drugis.org/ontology#has_result_property>
+                <http://trials.drugis.org/ontology#sample_size> , <http://trials.drugis.org/ontology#mean> , <http://trials.drugis.org/ontology#standard_deviation> ;
+        <http://trials.drugis.org/ontology#is_measured_at>
+                <http://trials.drugis.org/instances/33492bb7-02c6-4283-8a56-f30612a07a85> ;
+        <http://trials.drugis.org/ontology#of_variable>
+                <http://fuseki.drugis.org:3030/.well-known/genid/0000014fe0edb0faac1100580000001f> .
+
+<http://trials.drugis.org/instances/58b7339d-3517-4dcb-b892-1f41438f3024>
+        a       <http://trials.drugis.org/ontology#Arm> ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Sertraline" .
+
+<http://trials.drugis.org/instances/c85f35f1-8d2b-4c90-9c2b-3ca3f6c06494>
+        <http://trials.drugis.org/ontology#count>
+                17 ;
+        <http://trials.drugis.org/ontology#of_group>
+                <http://trials.drugis.org/instances/58b7339d-3517-4dcb-b892-1f41438f3024> ;
+        <http://trials.drugis.org/ontology#of_moment>
+                <http://trials.drugis.org/instances/d9334d08-4c54-4124-93c7-c9b58122117d> ;
+        <http://trials.drugis.org/ontology#of_outcome>
+                <http://trials.drugis.org/instances/bb8ad85f-24a3-41c2-847c-349e63789e1c> ;
+        <http://trials.drugis.org/ontology#sample_size>
+                96 .
+
+<http://trials.drugis.org/instances/42a2edeb-3b27-4b9b-9b1d-1acc7e10ad0e>
+        <http://trials.drugis.org/ontology#mean>
+                2.06E1 ;
+        <http://trials.drugis.org/ontology#of_group>
+                <http://trials.drugis.org/instances/f468ad44-f80c-422b-91c8-58bdd84c36c0> ;
+        <http://trials.drugis.org/ontology#of_moment>
+                <http://trials.drugis.org/instances/33492bb7-02c6-4283-8a56-f30612a07a85> ;
+        <http://trials.drugis.org/ontology#of_outcome>
+                <http://trials.drugis.org/instances/21c35449-504b-45b4-905d-68301421f685> ;
+        <http://trials.drugis.org/ontology#sample_size>
+                96 ;
+        <http://trials.drugis.org/ontology#standard_deviation>
+                4.4E0 .
+
+<http://trials.drugis.org/instances/f4ed2bf5-69bf-40f9-a6b1-8db8553ba005>
+        <http://trials.drugis.org/ontology#count>
+                18 ;
+        <http://trials.drugis.org/ontology#of_group>
+                <http://trials.drugis.org/instances/f468ad44-f80c-422b-91c8-58bdd84c36c0> ;
+        <http://trials.drugis.org/ontology#of_moment>
+                <http://trials.drugis.org/instances/d9334d08-4c54-4124-93c7-c9b58122117d> ;
+        <http://trials.drugis.org/ontology#of_outcome>
+                <http://trials.drugis.org/instances/f92148a8-42db-4887-8c80-84710ecd2b26> ;
+        <http://trials.drugis.org/ontology#sample_size>
+                96 .
+
+<http://trials.drugis.org/instances/bffd9f4e-cf53-4e21-8c75-fb8f629ddd96>
+        a       <http://trials.drugis.org/ontology#PopulationCharacteristic> ;
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "" ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "BMI" ;
+        <http://trials.drugis.org/ontology#has_result_property>
+                <http://trials.drugis.org/ontology#sample_size> , <http://trials.drugis.org/ontology#mean> , <http://trials.drugis.org/ontology#standard_deviation> ;
+        <http://trials.drugis.org/ontology#is_measured_at>
+                <http://trials.drugis.org/instances/33492bb7-02c6-4283-8a56-f30612a07a85> ;
+        <http://trials.drugis.org/ontology#of_variable>
+                <http://fuseki.drugis.org:3030/.well-known/genid/0000014fe0edb0f9ac11005800000017> .
+
+<http://trials.drugis.org/instances/1f429607-3310-4220-8048-b61376717936>
+        <http://trials.drugis.org/ontology#arm_or_contrast>
+                <http://trials.drugis.org/ontology#contrast_data> ;
+        <http://trials.drugis.org/ontology#of_group>
+                <http://trials.drugis.org/instances/f468ad44-f80c-422b-91c8-58bdd84c36c0> ;
+        <http://trials.drugis.org/ontology#of_moment>
+                <http://trials.drugis.org/instances/d9334d08-4c54-4124-93c7-c9b58122117d> ;
+        <http://trials.drugis.org/ontology#of_outcome>
+                <http://trials.drugis.org/instances/0ddbe318-0045-4532-ad3b-8b5f77bccbf4> ;
+        <http://trials.drugis.org/ontology#standard_error>
+                2.0E0 .
+
+<http://localhost:8080/.well-known/genid/0000016779e41ade3e05389500000001>
+        a       <http://trials.drugis.org/ontology#Variable> ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "contrast" ;
+        <http://trials.drugis.org/ontology#measurementType>
+                <http://trials.drugis.org/ontology#dichotomous> ;
+        <http://www.w3.org/2002/07/owl#sameAs>
+                <http://trials.drugis.org/concepts/92c20dff-bb75-495d-bc5b-16edb26db6b3> .
+
+<http://fuseki.drugis.org:3030/.well-known/genid/0000014fe0edb0faac1100580000000c>
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "Inclusion criteria:\n\nThe study population included male and female outpatients, at least 18 years old, who, for at least 1 month, met the DSM-V criteria for major depressive disorder or atypical major depressive disorder using the DSM-IV, as assessed by the Structured Clinical Interview for DSM-IV. Patients were required to exhibit a baseline score of more than 16 on the first 17 items (HAM-D-17) of the 28-item HAM-D (HAM-D-28). Patients were primarily recruited from general advertising and clinician referrals.\n\nExclusion criteria:\n\nPatients were excluded from the study for any of the following reasons: pregnant or lactating women or women of childbearing potential not using a medically accepted means of contraception; serious suicidal risk; serious comorbid illness that was not stabilized; presence of a seizure disorder with a seizure occurring within the past year; presence of any of the following DSM-IV diagnoses: organic mental disorder, substance-use disorder, schizophrenia, delusional disorder, psychotic disorders not elsewhere classified, bipolar disorder, and antisocial personality disorder; mood-congruent or mood-incongruent psychotic features; history of allergy to the study drugs or history of multiple adverse drug reactions; concomitant use of any antidepressant (other than study drugs), anxiolytic, or other psychotropic medication within 7 days before study entry, with the exception of chloral hydrate; use of monoamine oxidase inhibitors (MAOIs) within 2 weeks of active therapy or anticipated need to use an MAOI within 5 weeks of discontinuing the study; hyper- or hypo-thyroidism (thyroid replacement was allowed, and patients were allowed to enter if they were clinically and biochemically euthyroid); and lack of response to treatment of current major depression episode by any SSRI, defined as 6 weeks or more of treatment with 40 mg or more per day fluoxetine, 150 mg or more per day of sertraline, or 40 mg or more per day of paroxetine." .
+
+<http://trials.drugis.org/instances/eff46c47-abf8-44a5-99d2-5c81b313e5da>
+        <http://trials.drugis.org/ontology#count>
+                17 ;
+        <http://trials.drugis.org/ontology#of_group>
+                <http://trials.drugis.org/instances/9a23caaa-874c-40fa-b362-2d6e01aa7373> ;
+        <http://trials.drugis.org/ontology#of_moment>
+                <http://trials.drugis.org/instances/d9334d08-4c54-4124-93c7-c9b58122117d> ;
+        <http://trials.drugis.org/ontology#of_outcome>
+                <http://trials.drugis.org/instances/f92148a8-42db-4887-8c80-84710ecd2b26> ;
+        <http://trials.drugis.org/ontology#sample_size>
+                92 .
+
+<http://fuseki.drugis.org:3030/.well-known/genid/0000014fe0edb0faac11005800000009>
+        <http://www.w3.org/1999/02/22-rdf-syntax-ns#value>
+                2.0E1 ;
+        <http://trials.drugis.org/ontology#dosingPeriodicity>
+                "P1D"^^<http://www.w3.org/2001/XMLSchema#duration> ;
+        <http://trials.drugis.org/ontology#unit>
+                <http://trials.drugis.org/instances/5b674ffc-a356-454a-b376-7d8600ee0888> .
+
+<http://fuseki.drugis.org:3030/.well-known/genid/0000014fe0edb0f9ac11005800000009>
+        <http://www.w3.org/1999/02/22-rdf-syntax-ns#value>
+                5.0E1 ;
+        <http://trials.drugis.org/ontology#dosingPeriodicity>
+                "P1D"^^<http://www.w3.org/2001/XMLSchema#duration> ;
+        <http://trials.drugis.org/ontology#unit>
+                <http://trials.drugis.org/instances/5b674ffc-a356-454a-b376-7d8600ee0888> .
+
+<http://trials.drugis.org/instances/0853bcd6-3d63-4214-b95a-246c6ccaaf55>
+        a       <http://trials.drugis.org/ontology#Drug> ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Paroxetine" ;
+        <http://www.w3.org/2002/07/owl#sameAs>
+                <http://trials.drugis.org/concepts/bde33c0a-384a-4976-9b18-1d0e5df263ce> .
+
+<http://trials.drugis.org/instances/1bf4e9e0-b670-43e4-b4c5-f64cb6980504>
+        a       <http://trials.drugis.org/ontology#PopulationCharacteristic> ;
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "" ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Age" ;
+        <http://trials.drugis.org/ontology#has_result_property>
+                <http://trials.drugis.org/ontology#sample_size> , <http://trials.drugis.org/ontology#mean> , <http://trials.drugis.org/ontology#standard_deviation> ;
+        <http://trials.drugis.org/ontology#is_measured_at>
+                <http://trials.drugis.org/instances/33492bb7-02c6-4283-8a56-f30612a07a85> ;
+        <http://trials.drugis.org/ontology#of_variable>
+                <http://fuseki.drugis.org:3030/.well-known/genid/0000014fe0edb0faac11005800000012> .
+
+<http://trials.drugis.org/instances/6cf5bc71-fbae-40f2-9e9e-d48d18c73231>
+        <http://trials.drugis.org/ontology#category_count>
+                <http://fuseki.drugis.org:3030/.well-known/genid/0000014fe0edb0f9ac11005800000001> , <http://fuseki.drugis.org:3030/.well-known/genid/0000014fe0edb0faac11005800000002> ;
+        <http://trials.drugis.org/ontology#of_group>
+                <http://trials.drugis.org/instances/58b7339d-3517-4dcb-b892-1f41438f3024> ;
+        <http://trials.drugis.org/ontology#of_moment>
+                <http://trials.drugis.org/instances/33492bb7-02c6-4283-8a56-f30612a07a85> ;
+        <http://trials.drugis.org/ontology#of_outcome>
+                <http://trials.drugis.org/instances/37512624-6251-4b34-8a95-21854c862447> .
+
+<http://trials.drugis.org/instances/225f91ad-1e9c-412d-b7bd-07baad68b2b0>
+        a       <http://trials.drugis.org/ontology#AdverseEvent> ;
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "" ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Sweating" ;
+        <http://trials.drugis.org/ontology#has_result_property>
+                <http://trials.drugis.org/ontology#count> , <http://trials.drugis.org/ontology#sample_size> ;
+        <http://trials.drugis.org/ontology#is_measured_at>
+                <http://trials.drugis.org/instances/d9334d08-4c54-4124-93c7-c9b58122117d> ;
+        <http://trials.drugis.org/ontology#of_variable>
+                <http://fuseki.drugis.org:3030/.well-known/genid/0000014fe0edb0f9ac11005800000014> .
+
+<http://trials.drugis.org/instances/7aba3b72-31e0-4928-bea3-b6102e9523c4>
+        <http://trials.drugis.org/ontology#count>
+                64 ;
+        <http://trials.drugis.org/ontology#of_group>
+                <http://trials.drugis.org/instances/f468ad44-f80c-422b-91c8-58bdd84c36c0> ;
+        <http://trials.drugis.org/ontology#of_moment>
+                <http://trials.drugis.org/instances/d9334d08-4c54-4124-93c7-c9b58122117d> ;
+        <http://trials.drugis.org/ontology#of_outcome>
+                <http://trials.drugis.org/instances/52f48707-c2bf-4f94-98b0-c64741107a25> ;
+        <http://trials.drugis.org/ontology#sample_size>
+                96 .
+
+<http://trials.drugis.org/instances/ac97b4f7-883e-4566-9da1-d94e8f2d04d4>
+        <http://trials.drugis.org/ontology#count>
+                14 ;
+        <http://trials.drugis.org/ontology#of_group>
+                <http://trials.drugis.org/instances/9a23caaa-874c-40fa-b362-2d6e01aa7373> ;
+        <http://trials.drugis.org/ontology#of_moment>
+                <http://trials.drugis.org/instances/d9334d08-4c54-4124-93c7-c9b58122117d> ;
+        <http://trials.drugis.org/ontology#of_outcome>
+                <http://trials.drugis.org/instances/036e2ad2-9610-4c6e-bd0e-5c844bb341c4> ;
+        <http://trials.drugis.org/ontology#sample_size>
+                92 .
+
+<http://trials.drugis.org/instances/9ce4b94a-7ca8-408e-a8bd-b05989b1ce54>
+        <http://trials.drugis.org/ontology#mean>
+                2.1E1 ;
+        <http://trials.drugis.org/ontology#of_group>
+                <http://trials.drugis.org/instances/58b7339d-3517-4dcb-b892-1f41438f3024> ;
+        <http://trials.drugis.org/ontology#of_moment>
+                <http://trials.drugis.org/instances/33492bb7-02c6-4283-8a56-f30612a07a85> ;
+        <http://trials.drugis.org/ontology#of_outcome>
+                <http://trials.drugis.org/instances/21c35449-504b-45b4-905d-68301421f685> ;
+        <http://trials.drugis.org/ontology#sample_size>
+                96 ;
+        <http://trials.drugis.org/ontology#standard_deviation>
+                4.4E0 .
+
+<http://trials.drugis.org/instances/d9325114-f49d-46d4-a7c6-01b0347041ab>
+        <http://trials.drugis.org/ontology#count>
+                20 ;
+        <http://trials.drugis.org/ontology#of_group>
+                <http://trials.drugis.org/instances/58b7339d-3517-4dcb-b892-1f41438f3024> ;
+        <http://trials.drugis.org/ontology#of_moment>
+                <http://trials.drugis.org/instances/d9334d08-4c54-4124-93c7-c9b58122117d> ;
+        <http://trials.drugis.org/ontology#of_outcome>
+                <http://trials.drugis.org/instances/036e2ad2-9610-4c6e-bd0e-5c844bb341c4> ;
+        <http://trials.drugis.org/ontology#sample_size>
+                96 .
+
+<http://fuseki.drugis.org:3030/.well-known/genid/0000014fe0edb0faac1100580000001a>
+        <http://www.w3.org/1999/02/22-rdf-syntax-ns#value>
+                2.0E2 ;
+        <http://trials.drugis.org/ontology#dosingPeriodicity>
+                "P1D"^^<http://www.w3.org/2001/XMLSchema#duration> ;
+        <http://trials.drugis.org/ontology#unit>
+                <http://trials.drugis.org/instances/5b674ffc-a356-454a-b376-7d8600ee0888> .
+
+<http://trials.drugis.org/instances/dde995cf-5371-4714-9083-fd3e516029ad>
+        <http://trials.drugis.org/ontology#count>
+                18 ;
+        <http://trials.drugis.org/ontology#of_group>
+                <http://trials.drugis.org/instances/9a23caaa-874c-40fa-b362-2d6e01aa7373> ;
+        <http://trials.drugis.org/ontology#of_moment>
+                <http://trials.drugis.org/instances/d9334d08-4c54-4124-93c7-c9b58122117d> ;
+        <http://trials.drugis.org/ontology#of_outcome>
+                <http://trials.drugis.org/instances/5c13bae7-a906-4fa2-bc08-fc9871745b76> ;
+        <http://trials.drugis.org/ontology#sample_size>
+                92 .
+
+<http://trials.drugis.org/instances/a7d85ddd-f76f-4284-9956-7e404d18286c>
+        <http://trials.drugis.org/ontology#count>
+                15 ;
+        <http://trials.drugis.org/ontology#of_group>
+                <http://trials.drugis.org/instances/f468ad44-f80c-422b-91c8-58bdd84c36c0> ;
+        <http://trials.drugis.org/ontology#of_moment>
+                <http://trials.drugis.org/instances/d9334d08-4c54-4124-93c7-c9b58122117d> ;
+        <http://trials.drugis.org/ontology#of_outcome>
+                <http://trials.drugis.org/instances/05fd8a52-6f9c-4db4-9f5d-5d262ab0f662> ;
+        <http://trials.drugis.org/ontology#sample_size>
+                96 .
+
+<http://fuseki.drugis.org:3030/.well-known/genid/0000014fe0edb0faac11005800000017>
+        a       <http://trials.drugis.org/ontology#Variable> ;
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "" ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Abnormal Ejaculation" ;
+        <http://trials.drugis.org/ontology#measurementType>
+                <http://trials.drugis.org/ontology#dichotomous> ;
+        <http://www.w3.org/2002/07/owl#sameAs>
+                <http://trials.drugis.org/concepts/b6f588ec-cd40-4aea-bc92-cde7c73d8a26> .
+
+<http://fuseki.drugis.org:3030/.well-known/genid/0000014fe0edb0f9ac11005800000017>
+        a       <http://trials.drugis.org/ontology#Variable> ;
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "" , "kg/m2" ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "BMI" ;
+        <http://trials.drugis.org/ontology#measurementType>
+                <http://trials.drugis.org/ontology#continuous> ;
+        <http://www.w3.org/2002/07/owl#sameAs>
+                <http://trials.drugis.org/concepts/a2e188a3-fb65-47ca-8238-3c67d2ecd7df> .
+
+<http://trials.drugis.org/instances/20e64045-026b-4b49-9145-ca9e8917f434>
+        <http://trials.drugis.org/ontology#count>
+                8 ;
+        <http://trials.drugis.org/ontology#of_group>
+                <http://trials.drugis.org/instances/9a23caaa-874c-40fa-b362-2d6e01aa7373> ;
+        <http://trials.drugis.org/ontology#of_moment>
+                <http://trials.drugis.org/instances/d9334d08-4c54-4124-93c7-c9b58122117d> ;
+        <http://trials.drugis.org/ontology#of_outcome>
+                <http://trials.drugis.org/instances/b14ec9fe-7f64-42fb-9aee-e3ff001bc137> ;
+        <http://trials.drugis.org/ontology#sample_size>
+                92 .
+
+<http://trials.drugis.org/instances/22ed9dab-5a5f-481c-a656-7e29dba9438d>
+        a       <http://trials.drugis.org/ontology#PopulationCharacteristic> ;
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "" ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Weight" ;
+        <http://trials.drugis.org/ontology#has_result_property>
+                <http://trials.drugis.org/ontology#sample_size> , <http://trials.drugis.org/ontology#mean> , <http://trials.drugis.org/ontology#standard_deviation> ;
+        <http://trials.drugis.org/ontology#is_measured_at>
+                <http://trials.drugis.org/instances/33492bb7-02c6-4283-8a56-f30612a07a85> ;
+        <http://trials.drugis.org/ontology#of_variable>
+                <http://fuseki.drugis.org:3030/.well-known/genid/0000014fe0edb0f9ac1100580000000a> .
+
+<http://trials.drugis.org/instances/ddbf540b-e32e-475f-8d3c-38bbd51d7a9f>
+        <http://trials.drugis.org/ontology#count>
+                7 ;
+        <http://trials.drugis.org/ontology#of_group>
+                <http://trials.drugis.org/instances/f468ad44-f80c-422b-91c8-58bdd84c36c0> ;
+        <http://trials.drugis.org/ontology#of_moment>
+                <http://trials.drugis.org/instances/d9334d08-4c54-4124-93c7-c9b58122117d> ;
+        <http://trials.drugis.org/ontology#of_outcome>
+                <http://trials.drugis.org/instances/b14ec9fe-7f64-42fb-9aee-e3ff001bc137> ;
+        <http://trials.drugis.org/ontology#sample_size>
+                96 .
+
+<http://trials.drugis.org/instances/6bb8eb44-e135-45e6-963a-1a5b29c988ce>
+        <http://trials.drugis.org/ontology#count>
+                6 ;
+        <http://trials.drugis.org/ontology#of_group>
+                <http://trials.drugis.org/instances/58b7339d-3517-4dcb-b892-1f41438f3024> ;
+        <http://trials.drugis.org/ontology#of_moment>
+                <http://trials.drugis.org/instances/d9334d08-4c54-4124-93c7-c9b58122117d> ;
+        <http://trials.drugis.org/ontology#of_outcome>
+                <http://trials.drugis.org/instances/6f26d7d3-2c93-44f7-8cad-bc7844405a1b> ;
+        <http://trials.drugis.org/ontology#sample_size>
+                96 .
+
+<http://trials.drugis.org/instances/a88372fc-70de-4c34-945c-9bca4a5cc659>
+        a       <http://trials.drugis.org/ontology#AdverseEvent> ;
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "" ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Asthenia" ;
+        <http://trials.drugis.org/ontology#has_result_property>
+                <http://trials.drugis.org/ontology#count> , <http://trials.drugis.org/ontology#sample_size> ;
+        <http://trials.drugis.org/ontology#is_measured_at>
+                <http://trials.drugis.org/instances/d9334d08-4c54-4124-93c7-c9b58122117d> ;
+        <http://trials.drugis.org/ontology#of_variable>
+                <http://fuseki.drugis.org:3030/.well-known/genid/0000014fe0edb0f9ac11005800000003> .
+
+<http://trials.drugis.org/instances/aceb6fe8-1ae5-42db-a0fe-bfe485056123>
+        a       <http://trials.drugis.org/ontology#AdverseEvent> ;
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "" ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Diarrhea" ;
+        <http://trials.drugis.org/ontology#has_result_property>
+                <http://trials.drugis.org/ontology#count> , <http://trials.drugis.org/ontology#sample_size> ;
+        <http://trials.drugis.org/ontology#is_measured_at>
+                <http://trials.drugis.org/instances/d9334d08-4c54-4124-93c7-c9b58122117d> ;
+        <http://trials.drugis.org/ontology#of_variable>
+                <http://fuseki.drugis.org:3030/.well-known/genid/0000014fe0edb0faac11005800000008> .
+
+<http://trials.drugis.org/studies/caa01957-f5c2-4063-a6c8-9a63a435ba0e>
+        a       <http://trials.drugis.org/ontology#Study> ;
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "Accute efficacy of fluoxetine versus sertraline and paroxetine in major depressive disorder including effects of baseline insomnia" ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Fava et al, 2002" ;
+        <http://trials.drugis.org/ontology#has_activity>
+                <http://trials.drugis.org/instances/e9db517f-ad11-4aa1-9b13-1fe94350e992> , <http://trials.drugis.org/instances/190e7838-1858-422b-85ac-ef0bec1f5cce> , <http://trials.drugis.org/instances/39b5d08d-250e-4d0f-8909-04a8c02abd3a> , <http://trials.drugis.org/instances/3b0ff9dc-5c87-442a-9700-257676911e41> , <http://trials.drugis.org/instances/2744473c-de05-4af0-897f-20f515f57303> ;
+        <http://trials.drugis.org/ontology#has_allocation>
+                <http://trials.drugis.org/ontology#AllocationRandomized> ;
+        <http://trials.drugis.org/ontology#has_arm>
+                <http://trials.drugis.org/instances/9a23caaa-874c-40fa-b362-2d6e01aa7373> , <http://trials.drugis.org/instances/58b7339d-3517-4dcb-b892-1f41438f3024> , <http://trials.drugis.org/instances/f468ad44-f80c-422b-91c8-58bdd84c36c0> ;
+        <http://trials.drugis.org/ontology#has_blinding>
+                <http://trials.drugis.org/ontology#DoubleBlind> ;
+        <http://trials.drugis.org/ontology#has_eligibility_criteria>
+                <http://fuseki.drugis.org:3030/.well-known/genid/0000014fe0edb0faac1100580000000c> ;
+        <http://trials.drugis.org/ontology#has_epochs>
+                ( <http://trials.drugis.org/instances/8a15518f-da9b-48c4-a009-04eb5878e313> <http://trials.drugis.org/instances/376a4f55-fdd0-47e6-8cd5-08d4a9bd0607> <http://trials.drugis.org/instances/e9098ad3-9b1b-4d3d-9251-04d55878e750> ) ;
+        <http://trials.drugis.org/ontology#has_included_population>
+                <http://trials.drugis.org/instances/76cbd5ce-1e1c-40c9-a811-b87232bfcf8f> ;
+        <http://trials.drugis.org/ontology#has_indication>
+                <http://trials.drugis.org/instances/9f0e4620-c95c-47f0-bbcf-df10ed614387> ;
+        <http://trials.drugis.org/ontology#has_number_of_centers>
+                15 ;
+        <http://trials.drugis.org/ontology#has_objective>
+                <http://fuseki.drugis.org:3030/.well-known/genid/0000014fe0edb0faac1100580000000b> ;
+        <http://trials.drugis.org/ontology#has_outcome>
+                <http://trials.drugis.org/instances/036e2ad2-9610-4c6e-bd0e-5c844bb341c4> , <http://trials.drugis.org/instances/83c0a68b-c4bc-45a0-b5ca-56bc177d0120> , <http://trials.drugis.org/instances/ffd7cefd-19bb-4ad7-9e2b-8f2ac26f615a> , <http://trials.drugis.org/instances/225f91ad-1e9c-412d-b7bd-07baad68b2b0> , <http://trials.drugis.org/instances/0ddbe318-0045-4532-ad3b-8b5f77bccbf4> , <http://trials.drugis.org/instances/c955d5ae-c967-40d7-bbfe-c2d4ed41e5fc> , <http://trials.drugis.org/instances/4ed8bd3c-7071-42cc-aec1-31349660ab1d> , <http://trials.drugis.org/instances/ef2e32ab-c3c4-4803-8c1a-061eeb691324> , <http://trials.drugis.org/instances/b14ec9fe-7f64-42fb-9aee-e3ff001bc137> , <http://trials.drugis.org/instances/962b0309-993d-43a0-a93c-3abddf1e0d04> , <http://trials.drugis.org/instances/bb8ad85f-24a3-41c2-847c-349e63789e1c> , <http://trials.drugis.org/instances/22ed9dab-5a5f-481c-a656-7e29dba9438d> , <http://trials.drugis.org/instances/1bf4e9e0-b670-43e4-b4c5-f64cb6980504> , <http://trials.drugis.org/instances/1e25a904-6963-40d0-b7dc-6e043feef849> , <http://trials.drugis.org/instances/9a2f3eff-3c94-4c76-aef5-067c98fb02d2> , <http://trials.drugis.org/instances/52f48707-c2bf-4f94-98b0-c64741107a25> , <http://trials.drugis.org/instances/21c35449-504b-45b4-905d-68301421f685> , <http://trials.drugis.org/instances/6f26d7d3-2c93-44f7-8cad-bc7844405a1b> , <http://trials.drugis.org/instances/37512624-6251-4b34-8a95-21854c862447> , <http://trials.drugis.org/instances/f92148a8-42db-4887-8c80-84710ecd2b26> , <http://trials.drugis.org/instances/bffd9f4e-cf53-4e21-8c75-fb8f629ddd96> , <http://trials.drugis.org/instances/518c75f1-20c9-4a7f-a01e-f971d614f68d> , <http://trials.drugis.org/instances/aceb6fe8-1ae5-42db-a0fe-bfe485056123> , <http://trials.drugis.org/instances/05fd8a52-6f9c-4db4-9f5d-5d262ab0f662> , <http://trials.drugis.org/instances/dc35ddf2-e75f-480d-96e8-4b21d2b4c16e> , <http://trials.drugis.org/instances/5c13bae7-a906-4fa2-bc08-fc9871745b76> , <http://trials.drugis.org/instances/574e8f92-a343-4505-bdea-a472b1a8d1e6> , <http://trials.drugis.org/instances/10d63037-b828-4126-8c87-e954313bee02> , <http://trials.drugis.org/instances/a88372fc-70de-4c34-945c-9bca4a5cc659> ;
+        <http://trials.drugis.org/ontology#has_primary_epoch>
+                <http://trials.drugis.org/instances/e9098ad3-9b1b-4d3d-9251-04d55878e750> ;
+        <http://trials.drugis.org/ontology#has_publication>
+                <http://fuseki.drugis.org:3030/.well-known/genid/0000014fe0edb0f9ac11005800000016> ;
+        <http://trials.drugis.org/ontology#status>
+                <http://trials.drugis.org/ontology#StatusCompleted> .
+
+<http://trials.drugis.org/instances/9a2f3eff-3c94-4c76-aef5-067c98fb02d2>
+        a       <http://trials.drugis.org/ontology#AdverseEvent> ;
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "" ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Constipation" ;
+        <http://trials.drugis.org/ontology#has_result_property>
+                <http://trials.drugis.org/ontology#count> , <http://trials.drugis.org/ontology#sample_size> ;
+        <http://trials.drugis.org/ontology#is_measured_at>
+                <http://trials.drugis.org/instances/d9334d08-4c54-4124-93c7-c9b58122117d> ;
+        <http://trials.drugis.org/ontology#of_variable>
+                <http://fuseki.drugis.org:3030/.well-known/genid/0000014fe0edb0faac11005800000019> .
+
+<http://trials.drugis.org/instances/2e41096f-669c-4fae-9481-94750820d9a6>
+        <http://trials.drugis.org/ontology#count>
+                8 ;
+        <http://trials.drugis.org/ontology#of_group>
+                <http://trials.drugis.org/instances/f468ad44-f80c-422b-91c8-58bdd84c36c0> ;
+        <http://trials.drugis.org/ontology#of_moment>
+                <http://trials.drugis.org/instances/d9334d08-4c54-4124-93c7-c9b58122117d> ;
+        <http://trials.drugis.org/ontology#of_outcome>
+                <http://trials.drugis.org/instances/6f26d7d3-2c93-44f7-8cad-bc7844405a1b> ;
+        <http://trials.drugis.org/ontology#sample_size>
+                96 .
+
+<http://fuseki.drugis.org:3030/.well-known/genid/0000014fe0edb0faac11005800000004>
+        a       <http://trials.drugis.org/ontology#Variable> ;
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "" ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Somnolence" ;
+        <http://trials.drugis.org/ontology#measurementType>
+                <http://trials.drugis.org/ontology#dichotomous> ;
+        <http://www.w3.org/2002/07/owl#sameAs>
+                <http://trials.drugis.org/concepts/e7480157-c40e-4178-b5e5-7e7718fc5ab0> .
+
+<http://fuseki.drugis.org:3030/.well-known/genid/0000014fe0edb0f9ac11005800000004>
+        a       <http://trials.drugis.org/ontology#Variable> ;
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "" ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Impotence" ;
+        <http://trials.drugis.org/ontology#measurementType>
+                <http://trials.drugis.org/ontology#dichotomous> ;
+        <http://www.w3.org/2002/07/owl#sameAs>
+                <http://trials.drugis.org/concepts/32a0e3d2-7dd1-4429-b6fd-82d6a391fb09> .
+
+<http://trials.drugis.org/instances/08b87a69-dcc7-4761-93e7-ac8c102968c5>
+        <http://trials.drugis.org/ontology#count>
+                8 ;
+        <http://trials.drugis.org/ontology#of_group>
+                <http://trials.drugis.org/instances/9a23caaa-874c-40fa-b362-2d6e01aa7373> ;
+        <http://trials.drugis.org/ontology#of_moment>
+                <http://trials.drugis.org/instances/d9334d08-4c54-4124-93c7-c9b58122117d> ;
+        <http://trials.drugis.org/ontology#of_outcome>
+                <http://trials.drugis.org/instances/dc35ddf2-e75f-480d-96e8-4b21d2b4c16e> ;
+        <http://trials.drugis.org/ontology#sample_size>
+                92 .
+
+<http://trials.drugis.org/instances/fcc49fa4-5819-47ed-93e0-c04e7fadeb17>
+        a       <http://trials.drugis.org/ontology#ParticipantFlow> ;
+        <http://trials.drugis.org/ontology#in_epoch>
+                <http://trials.drugis.org/instances/e9098ad3-9b1b-4d3d-9251-04d55878e750> ;
+        <http://trials.drugis.org/ontology#of_group>
+                <http://trials.drugis.org/instances/f468ad44-f80c-422b-91c8-58bdd84c36c0> ;
+        <http://trials.drugis.org/ontology#participants_starting>
+                96 .
+
+<http://trials.drugis.org/instances/d1bcbd6d-6d67-4725-97a1-775be8d2acee>
+        <http://trials.drugis.org/ontology#count>
+                4 ;
+        <http://trials.drugis.org/ontology#of_group>
+                <http://trials.drugis.org/instances/9a23caaa-874c-40fa-b362-2d6e01aa7373> ;
+        <http://trials.drugis.org/ontology#of_moment>
+                <http://trials.drugis.org/instances/d9334d08-4c54-4124-93c7-c9b58122117d> ;
+        <http://trials.drugis.org/ontology#of_outcome>
+                <http://trials.drugis.org/instances/1e25a904-6963-40d0-b7dc-6e043feef849> ;
+        <http://trials.drugis.org/ontology#sample_size>
+                92 .
+
+<http://trials.drugis.org/instances/3034a582-ca3c-4aea-ade4-74f8110b003a>
+        <http://trials.drugis.org/ontology#category_count>
+                <http://fuseki.drugis.org:3030/.well-known/genid/0000014fe0edb0faac11005800000003> , <http://fuseki.drugis.org:3030/.well-known/genid/0000014fe0edb0faac11005800000011> ;
+        <http://trials.drugis.org/ontology#of_group>
+                <http://trials.drugis.org/instances/9a23caaa-874c-40fa-b362-2d6e01aa7373> ;
+        <http://trials.drugis.org/ontology#of_moment>
+                <http://trials.drugis.org/instances/33492bb7-02c6-4283-8a56-f30612a07a85> ;
+        <http://trials.drugis.org/ontology#of_outcome>
+                <http://trials.drugis.org/instances/37512624-6251-4b34-8a95-21854c862447> .
+
+<http://fuseki.drugis.org:3030/.well-known/genid/0000014fe0edb0faac11005800000012>
+        a       <http://trials.drugis.org/ontology#Variable> ;
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "" , "years" ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Age" ;
+        <http://trials.drugis.org/ontology#measurementType>
+                <http://trials.drugis.org/ontology#continuous> ;
+        <http://www.w3.org/2002/07/owl#sameAs>
+                <http://trials.drugis.org/concepts/48606e17-3e9c-4a4d-816f-e20b70f27ce4> .
+
+<http://trials.drugis.org/instances/607221cc-4e7e-4d7a-819b-caa3a2b3ae2c>
+        <http://trials.drugis.org/ontology#mean>
+                7.56E1 ;
+        <http://trials.drugis.org/ontology#of_group>
+                <http://trials.drugis.org/instances/58b7339d-3517-4dcb-b892-1f41438f3024> ;
+        <http://trials.drugis.org/ontology#of_moment>
+                <http://trials.drugis.org/instances/33492bb7-02c6-4283-8a56-f30612a07a85> ;
+        <http://trials.drugis.org/ontology#of_outcome>
+                <http://trials.drugis.org/instances/22ed9dab-5a5f-481c-a656-7e29dba9438d> ;
+        <http://trials.drugis.org/ontology#sample_size>
+                70 ;
+        <http://trials.drugis.org/ontology#standard_deviation>
+                1.94E1 .
+
+<http://trials.drugis.org/instances/88e183d7-d187-460d-b321-07a8ea1a9f83>
+        a       <http://trials.drugis.org/ontology#Category> ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Male" .
+
+<http://fuseki.drugis.org:3030/.well-known/genid/0000014fe0edb0faac1100580000000f>
+        a       <http://trials.drugis.org/ontology#Variable> ;
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "" ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Anxiety" ;
+        <http://trials.drugis.org/ontology#measurementType>
+                <http://trials.drugis.org/ontology#dichotomous> ;
+        <http://www.w3.org/2002/07/owl#sameAs>
+                <http://trials.drugis.org/concepts/7c8e28a1-4d4a-4f9e-8463-d81b2c05c3c0> .
+
+<http://fuseki.drugis.org:3030/.well-known/genid/0000014fe0edb0f9ac1100580000000f>
+        a       <http://trials.drugis.org/ontology#TitratedDoseDrugTreatment> ;
+        <http://trials.drugis.org/ontology#treatment_has_drug>
+                <http://trials.drugis.org/instances/98ed65bc-b2c8-4f3b-a8e5-e81cfbb0950b> ;
+        <http://trials.drugis.org/ontology#treatment_max_dose>
+                <http://fuseki.drugis.org:3030/.well-known/genid/0000014fe0edb0faac11005800000014> ;
+        <http://trials.drugis.org/ontology#treatment_min_dose>
+                <http://fuseki.drugis.org:3030/.well-known/genid/0000014fe0edb0faac11005800000009> .
+
+<http://fuseki.drugis.org:3030/.well-known/genid/0000014fe0edb0f9ac11005800000012>
+        a       <http://trials.drugis.org/ontology#Variable> ;
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "" ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Diminished Sexual Desire" ;
+        <http://trials.drugis.org/ontology#measurementType>
+                <http://trials.drugis.org/ontology#dichotomous> ;
+        <http://www.w3.org/2002/07/owl#sameAs>
+                <http://trials.drugis.org/concepts/0cb768a0-a473-420c-a0af-93926a55d857> .
+
+<http://trials.drugis.org/instances/656802dd-f4b1-4c51-baca-fa5dbcbc8075>
+        <http://trials.drugis.org/ontology#count>
+                5 ;
+        <http://trials.drugis.org/ontology#of_group>
+                <http://trials.drugis.org/instances/f468ad44-f80c-422b-91c8-58bdd84c36c0> ;
+        <http://trials.drugis.org/ontology#of_moment>
+                <http://trials.drugis.org/instances/d9334d08-4c54-4124-93c7-c9b58122117d> ;
+        <http://trials.drugis.org/ontology#of_outcome>
+                <http://trials.drugis.org/instances/ef2e32ab-c3c4-4803-8c1a-061eeb691324> ;
+        <http://trials.drugis.org/ontology#sample_size>
+                96 .
+
+<http://trials.drugis.org/instances/6f26d7d3-2c93-44f7-8cad-bc7844405a1b>
+        a       <http://trials.drugis.org/ontology#AdverseEvent> ;
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "" ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Anxiety" ;
+        <http://trials.drugis.org/ontology#has_result_property>
+                <http://trials.drugis.org/ontology#count> , <http://trials.drugis.org/ontology#sample_size> ;
+        <http://trials.drugis.org/ontology#is_measured_at>
+                <http://trials.drugis.org/instances/d9334d08-4c54-4124-93c7-c9b58122117d> ;
+        <http://trials.drugis.org/ontology#of_variable>
+                <http://fuseki.drugis.org:3030/.well-known/genid/0000014fe0edb0faac1100580000000f> .
+
+<http://trials.drugis.org/instances/0eb67deb-debe-4550-8332-7734f2a19581>
+        <http://trials.drugis.org/ontology#mean>
+                4.25E1 ;
+        <http://trials.drugis.org/ontology#of_group>
+                <http://trials.drugis.org/instances/f468ad44-f80c-422b-91c8-58bdd84c36c0> ;
+        <http://trials.drugis.org/ontology#of_moment>
+                <http://trials.drugis.org/instances/33492bb7-02c6-4283-8a56-f30612a07a85> ;
+        <http://trials.drugis.org/ontology#of_outcome>
+                <http://trials.drugis.org/instances/1bf4e9e0-b670-43e4-b4c5-f64cb6980504> ;
+        <http://trials.drugis.org/ontology#sample_size>
+                96 ;
+        <http://trials.drugis.org/ontology#standard_deviation>
+                1.47E1 .
+
+<http://trials.drugis.org/instances/6652e484-091f-4004-9be4-90a97a90b272>
+        <http://trials.drugis.org/ontology#mean>
+                2.5E1 ;
+        <http://trials.drugis.org/ontology#of_group>
+                <http://trials.drugis.org/instances/9a23caaa-874c-40fa-b362-2d6e01aa7373> ;
+        <http://trials.drugis.org/ontology#of_moment>
+                <http://trials.drugis.org/instances/33492bb7-02c6-4283-8a56-f30612a07a85> ;
+        <http://trials.drugis.org/ontology#of_outcome>
+                <http://trials.drugis.org/instances/bffd9f4e-cf53-4e21-8c75-fb8f629ddd96> ;
+        <http://trials.drugis.org/ontology#sample_size>
+                63 ;
+        <http://trials.drugis.org/ontology#standard_deviation>
+                5.4E0 .
+
+<http://trials.drugis.org/instances/b22bdfc9-19e4-4074-97f7-30adce75d249>
+        <http://trials.drugis.org/ontology#mean>
+                4.21E1 ;
+        <http://trials.drugis.org/ontology#of_group>
+                <http://trials.drugis.org/instances/9a23caaa-874c-40fa-b362-2d6e01aa7373> ;
+        <http://trials.drugis.org/ontology#of_moment>
+                <http://trials.drugis.org/instances/33492bb7-02c6-4283-8a56-f30612a07a85> ;
+        <http://trials.drugis.org/ontology#of_outcome>
+                <http://trials.drugis.org/instances/1bf4e9e0-b670-43e4-b4c5-f64cb6980504> ;
+        <http://trials.drugis.org/ontology#sample_size>
+                92 ;
+        <http://trials.drugis.org/ontology#standard_deviation>
+                1.35E1 .
+
+<http://trials.drugis.org/instances/f532cbe8-0228-4cf8-8071-7d270305c12f>
+        <http://trials.drugis.org/ontology#count>
+                2 ;
+        <http://trials.drugis.org/ontology#of_group>
+                <http://trials.drugis.org/instances/9a23caaa-874c-40fa-b362-2d6e01aa7373> ;
+        <http://trials.drugis.org/ontology#of_moment>
+                <http://trials.drugis.org/instances/d9334d08-4c54-4124-93c7-c9b58122117d> ;
+        <http://trials.drugis.org/ontology#of_outcome>
+                <http://trials.drugis.org/instances/9a2f3eff-3c94-4c76-aef5-067c98fb02d2> ;
+        <http://trials.drugis.org/ontology#sample_size>
+                92 .
+
+<http://fuseki.drugis.org:3030/.well-known/genid/0000014fe0edb0faac11005800000020>
+        a       <http://trials.drugis.org/ontology#Variable> ;
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "" ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Dropouts" ;
+        <http://trials.drugis.org/ontology#measurementType>
+                <http://trials.drugis.org/ontology#dichotomous> ;
+        <http://www.w3.org/2002/07/owl#sameAs>
+                <http://trials.drugis.org/concepts/e06a7983-1a51-41f2-9209-7c4cf04c737a> .
+
+<http://trials.drugis.org/instances/036e2ad2-9610-4c6e-bd0e-5c844bb341c4>
+        a       <http://trials.drugis.org/ontology#AdverseEvent> ;
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "" ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Nausea" ;
+        <http://trials.drugis.org/ontology#has_result_property>
+                <http://trials.drugis.org/ontology#count> , <http://trials.drugis.org/ontology#sample_size> ;
+        <http://trials.drugis.org/ontology#is_measured_at>
+                <http://trials.drugis.org/instances/d9334d08-4c54-4124-93c7-c9b58122117d> ;
+        <http://trials.drugis.org/ontology#of_variable>
+                <http://fuseki.drugis.org:3030/.well-known/genid/0000014fe0edb0faac11005800000023> .
+
+<http://trials.drugis.org/instances/89ffa29c-426c-489f-a9ea-a09efe8a8223>
+        <http://trials.drugis.org/ontology#count>
+                8 ;
+        <http://trials.drugis.org/ontology#of_group>
+                <http://trials.drugis.org/instances/f468ad44-f80c-422b-91c8-58bdd84c36c0> ;
+        <http://trials.drugis.org/ontology#of_moment>
+                <http://trials.drugis.org/instances/d9334d08-4c54-4124-93c7-c9b58122117d> ;
+        <http://trials.drugis.org/ontology#of_outcome>
+                <http://trials.drugis.org/instances/1e25a904-6963-40d0-b7dc-6e043feef849> ;
+        <http://trials.drugis.org/ontology#sample_size>
+                96 .
+
+<http://trials.drugis.org/instances/8a15518f-da9b-48c4-a009-04eb5878e313>
+        a       <http://trials.drugis.org/ontology#Epoch> ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Placebo run-in" ;
+        <http://trials.drugis.org/ontology#duration>
+                "P7D"^^<http://www.w3.org/2001/XMLSchema#duration> .
+
+<http://trials.drugis.org/instances/2744473c-de05-4af0-897f-20f515f57303>
+        a       <http://trials.drugis.org/ontology#TreatmentActivity> ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Fluoxetine" ;
+        <http://trials.drugis.org/ontology#has_activity_application>
+                <http://fuseki.drugis.org:3030/.well-known/genid/0000014fe0edb0faac1100580000000d> ;
+        <http://trials.drugis.org/ontology#has_drug_treatment>
+                <http://fuseki.drugis.org:3030/.well-known/genid/0000014fe0edb0f9ac1100580000000f> .
+
+<http://trials.drugis.org/instances/d59edc57-7847-4867-9ff9-cb1db9c6cc52>
+        <http://trials.drugis.org/ontology#count>
+                2 ;
+        <http://trials.drugis.org/ontology#of_group>
+                <http://trials.drugis.org/instances/58b7339d-3517-4dcb-b892-1f41438f3024> ;
+        <http://trials.drugis.org/ontology#of_moment>
+                <http://trials.drugis.org/instances/d9334d08-4c54-4124-93c7-c9b58122117d> ;
+        <http://trials.drugis.org/ontology#of_outcome>
+                <http://trials.drugis.org/instances/1e25a904-6963-40d0-b7dc-6e043feef849> ;
+        <http://trials.drugis.org/ontology#sample_size>
+                96 .
+
+<http://trials.drugis.org/instances/f149db1c-81c4-48a3-8952-d70187ae13be>
+        <http://trials.drugis.org/ontology#count>
+                57 ;
+        <http://trials.drugis.org/ontology#of_group>
+                <http://trials.drugis.org/instances/9a23caaa-874c-40fa-b362-2d6e01aa7373> ;
+        <http://trials.drugis.org/ontology#of_moment>
+                <http://trials.drugis.org/instances/d9334d08-4c54-4124-93c7-c9b58122117d> ;
+        <http://trials.drugis.org/ontology#of_outcome>
+                <http://trials.drugis.org/instances/52f48707-c2bf-4f94-98b0-c64741107a25> ;
+        <http://trials.drugis.org/ontology#sample_size>
+                92 .
+
+<http://trials.drugis.org/instances/88017fb7-c9d5-402d-86fb-f2f459ac5ecf>
+        <http://trials.drugis.org/ontology#count>
+                6 ;
+        <http://trials.drugis.org/ontology#of_group>
+                <http://trials.drugis.org/instances/58b7339d-3517-4dcb-b892-1f41438f3024> ;
+        <http://trials.drugis.org/ontology#of_moment>
+                <http://trials.drugis.org/instances/d9334d08-4c54-4124-93c7-c9b58122117d> ;
+        <http://trials.drugis.org/ontology#of_outcome>
+                <http://trials.drugis.org/instances/05fd8a52-6f9c-4db4-9f5d-5d262ab0f662> ;
+        <http://trials.drugis.org/ontology#sample_size>
+                96 .
+
+<http://trials.drugis.org/instances/376a4f55-fdd0-47e6-8cd5-08d4a9bd0607>
+        a       <http://trials.drugis.org/ontology#Epoch> ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Randomization" .
+
+<http://fuseki.drugis.org:3030/.well-known/genid/0000014fe0edb0faac1100580000000a>
+        a       <http://trials.drugis.org/ontology#Variable> ;
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "" ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Headache" ;
+        <http://trials.drugis.org/ontology#measurementType>
+                <http://trials.drugis.org/ontology#dichotomous> ;
+        <http://www.w3.org/2002/07/owl#sameAs>
+                <http://trials.drugis.org/concepts/71e962c5-c750-4e0f-a88b-4f516efbf552> .
+
+<http://fuseki.drugis.org:3030/.well-known/genid/0000014fe0edb0f9ac1100580000000a>
+        a       <http://trials.drugis.org/ontology#Variable> ;
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "" , "kg" ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Weight" ;
+        <http://trials.drugis.org/ontology#measurementType>
+                <http://trials.drugis.org/ontology#continuous> ;
+        <http://www.w3.org/2002/07/owl#sameAs>
+                <http://trials.drugis.org/concepts/fe043a04-ea08-466e-914c-a8be3c9ce5bb> .
+
+<http://fuseki.drugis.org:3030/.well-known/genid/0000014fe0edb0faac11005800000007>
+        a       <http://trials.drugis.org/ontology#Variable> ;
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "" ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Dizziness" ;
+        <http://trials.drugis.org/ontology#measurementType>
+                <http://trials.drugis.org/ontology#dichotomous> ;
+        <http://www.w3.org/2002/07/owl#sameAs>
+                <http://trials.drugis.org/concepts/e2250304-b59d-4d10-9ff5-8e239d3a2c2b> .
+
+<http://trials.drugis.org/instances/518c75f1-20c9-4a7f-a01e-f971d614f68d>
+        a       <http://trials.drugis.org/ontology#AdverseEvent> ;
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "" ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Dyspepsia" ;
+        <http://trials.drugis.org/ontology#has_result_property>
+                <http://trials.drugis.org/ontology#count> , <http://trials.drugis.org/ontology#sample_size> ;
+        <http://trials.drugis.org/ontology#is_measured_at>
+                <http://trials.drugis.org/instances/d9334d08-4c54-4124-93c7-c9b58122117d> ;
+        <http://trials.drugis.org/ontology#of_variable>
+                <http://fuseki.drugis.org:3030/.well-known/genid/0000014fe0edb0faac11005800000013> .
+
+<http://trials.drugis.org/instances/2d5b2746-257f-400b-80f8-5cc0c615728f>
+        <http://trials.drugis.org/ontology#count>
+                4 ;
+        <http://trials.drugis.org/ontology#of_group>
+                <http://trials.drugis.org/instances/58b7339d-3517-4dcb-b892-1f41438f3024> ;
+        <http://trials.drugis.org/ontology#of_moment>
+                <http://trials.drugis.org/instances/d9334d08-4c54-4124-93c7-c9b58122117d> ;
+        <http://trials.drugis.org/ontology#of_outcome>
+                <http://trials.drugis.org/instances/9a2f3eff-3c94-4c76-aef5-067c98fb02d2> ;
+        <http://trials.drugis.org/ontology#sample_size>
+                96 .
+
+<http://trials.drugis.org/instances/e9db517f-ad11-4aa1-9b13-1fe94350e992>
+        a       <http://trials.drugis.org/ontology#RandomizationActivity> ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Randomization" ;
+        <http://trials.drugis.org/ontology#has_activity_application>
+                <http://fuseki.drugis.org:3030/.well-known/genid/0000014fe0edb0faac11005800000001> , <http://fuseki.drugis.org:3030/.well-known/genid/0000014fe0edb0f9ac11005800000013> , <http://fuseki.drugis.org:3030/.well-known/genid/0000014fe0edb0faac11005800000018> .
+
+<http://trials.drugis.org/instances/ef0e7803-fbff-48ee-a61a-718653b4eeab>
+        <http://trials.drugis.org/ontology#count>
+                14 ;
+        <http://trials.drugis.org/ontology#of_group>
+                <http://trials.drugis.org/instances/9a23caaa-874c-40fa-b362-2d6e01aa7373> ;
+        <http://trials.drugis.org/ontology#of_moment>
+                <http://trials.drugis.org/instances/d9334d08-4c54-4124-93c7-c9b58122117d> ;
+        <http://trials.drugis.org/ontology#of_outcome>
+                <http://trials.drugis.org/instances/83c0a68b-c4bc-45a0-b5ca-56bc177d0120> ;
+        <http://trials.drugis.org/ontology#sample_size>
+                92 .
+
+<http://trials.drugis.org/instances/10d63037-b828-4126-8c87-e954313bee02>
+        a       <http://trials.drugis.org/ontology#AdverseEvent> ;
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "" ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Insomnia" ;
+        <http://trials.drugis.org/ontology#has_result_property>
+                <http://trials.drugis.org/ontology#count> , <http://trials.drugis.org/ontology#sample_size> ;
+        <http://trials.drugis.org/ontology#is_measured_at>
+                <http://trials.drugis.org/instances/d9334d08-4c54-4124-93c7-c9b58122117d> ;
+        <http://trials.drugis.org/ontology#of_variable>
+                <http://fuseki.drugis.org:3030/.well-known/genid/0000014fe0edb0faac1100580000001e> .
+
+<http://trials.drugis.org/instances/ea9ecede-a35c-4114-b41d-0f4771805e3a>
+        <http://trials.drugis.org/ontology#count>
+                10 ;
+        <http://trials.drugis.org/ontology#of_group>
+                <http://trials.drugis.org/instances/9a23caaa-874c-40fa-b362-2d6e01aa7373> ;
+        <http://trials.drugis.org/ontology#of_moment>
+                <http://trials.drugis.org/instances/d9334d08-4c54-4124-93c7-c9b58122117d> ;
+        <http://trials.drugis.org/ontology#of_outcome>
+                <http://trials.drugis.org/instances/a88372fc-70de-4c34-945c-9bca4a5cc659> ;
+        <http://trials.drugis.org/ontology#sample_size>
+                92 .
+
+<http://trials.drugis.org/instances/41d6db2f-6c52-4491-b7a1-115a4aceeddd>
+        <http://trials.drugis.org/ontology#category_count>
+                <http://fuseki.drugis.org:3030/.well-known/genid/0000014fe0edb0f9ac11005800000002> , <http://fuseki.drugis.org:3030/.well-known/genid/0000014fe0edb0faac1100580000001b> ;
+        <http://trials.drugis.org/ontology#of_group>
+                <http://trials.drugis.org/instances/f468ad44-f80c-422b-91c8-58bdd84c36c0> ;
+        <http://trials.drugis.org/ontology#of_moment>
+                <http://trials.drugis.org/instances/33492bb7-02c6-4283-8a56-f30612a07a85> ;
+        <http://trials.drugis.org/ontology#of_outcome>
+                <http://trials.drugis.org/instances/37512624-6251-4b34-8a95-21854c862447> .
+
+<http://fuseki.drugis.org:3030/.well-known/genid/0000014fe0edb0faac11005800000015>
+        a       <http://trials.drugis.org/ontology#Variable> ;
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "" ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Tremor" ;
+        <http://trials.drugis.org/ontology#measurementType>
+                <http://trials.drugis.org/ontology#dichotomous> ;
+        <http://www.w3.org/2002/07/owl#sameAs>
+                <http://trials.drugis.org/concepts/bfc393ea-ebb3-4660-a052-693143cc9f1c> .
+
+<http://trials.drugis.org/instances/57797b0d-a20f-4f5f-a55b-7682e70ec6f1>
+        <http://trials.drugis.org/ontology#count>
+                27 ;
+        <http://trials.drugis.org/ontology#of_group>
+                <http://trials.drugis.org/instances/58b7339d-3517-4dcb-b892-1f41438f3024> ;
+        <http://trials.drugis.org/ontology#of_moment>
+                <http://trials.drugis.org/instances/d9334d08-4c54-4124-93c7-c9b58122117d> ;
+        <http://trials.drugis.org/ontology#of_outcome>
+                <http://trials.drugis.org/instances/4ed8bd3c-7071-42cc-aec1-31349660ab1d> ;
+        <http://trials.drugis.org/ontology#sample_size>
+                96 .
+
+<http://trials.drugis.org/instances/190e7838-1858-422b-85ac-ef0bec1f5cce>
+        a       <http://trials.drugis.org/ontology#TreatmentActivity> ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Paroxetine" ;
+        <http://trials.drugis.org/ontology#has_activity_application>
+                <http://fuseki.drugis.org:3030/.well-known/genid/0000014fe0edb0f9ac1100580000000b> ;
+        <http://trials.drugis.org/ontology#has_drug_treatment>
+                <http://fuseki.drugis.org:3030/.well-known/genid/0000014fe0edb0f9ac11005800000011> .
+
+<http://trials.drugis.org/instances/5c13bae7-a906-4fa2-bc08-fc9871745b76>
+        a       <http://trials.drugis.org/ontology#AdverseEvent> ;
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "" ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Nervousness" ;
+        <http://trials.drugis.org/ontology#has_result_property>
+                <http://trials.drugis.org/ontology#count> , <http://trials.drugis.org/ontology#sample_size> ;
+        <http://trials.drugis.org/ontology#is_measured_at>
+                <http://trials.drugis.org/instances/d9334d08-4c54-4124-93c7-c9b58122117d> ;
+        <http://trials.drugis.org/ontology#of_variable>
+                <http://fuseki.drugis.org:3030/.well-known/genid/0000014fe0edb0faac11005800000006> .
+
+<http://trials.drugis.org/instances/e18f3f7d-cfbf-4ced-9d52-2d226013e00b>
+        <http://trials.drugis.org/ontology#mean>
+                2.05E1 ;
+        <http://trials.drugis.org/ontology#of_group>
+                <http://trials.drugis.org/instances/9a23caaa-874c-40fa-b362-2d6e01aa7373> ;
+        <http://trials.drugis.org/ontology#of_moment>
+                <http://trials.drugis.org/instances/33492bb7-02c6-4283-8a56-f30612a07a85> ;
+        <http://trials.drugis.org/ontology#of_outcome>
+                <http://trials.drugis.org/instances/21c35449-504b-45b4-905d-68301421f685> ;
+        <http://trials.drugis.org/ontology#sample_size>
+                92 ;
+        <http://trials.drugis.org/ontology#standard_deviation>
+                4.3E0 .
+
+<http://fuseki.drugis.org:3030/.well-known/genid/0000014fe0edb0faac11005800000023>
+        a       <http://trials.drugis.org/ontology#Variable> ;
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "" ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Nausea" ;
+        <http://trials.drugis.org/ontology#measurementType>
+                <http://trials.drugis.org/ontology#dichotomous> ;
+        <http://www.w3.org/2002/07/owl#sameAs>
+                <http://trials.drugis.org/concepts/2fa9eb77-0c09-476d-90d7-27e75a3c2985> .
+
+<http://trials.drugis.org/instances/fcade88a-e04b-407e-af95-b732282a940a>
+        <http://trials.drugis.org/ontology#count>
+                12 ;
+        <http://trials.drugis.org/ontology#of_group>
+                <http://trials.drugis.org/instances/58b7339d-3517-4dcb-b892-1f41438f3024> ;
+        <http://trials.drugis.org/ontology#of_moment>
+                <http://trials.drugis.org/instances/d9334d08-4c54-4124-93c7-c9b58122117d> ;
+        <http://trials.drugis.org/ontology#of_outcome>
+                <http://trials.drugis.org/instances/225f91ad-1e9c-412d-b7bd-07baad68b2b0> ;
+        <http://trials.drugis.org/ontology#sample_size>
+                96 .
+
+<http://trials.drugis.org/instances/39b5d08d-250e-4d0f-8909-04a8c02abd3a>
+        a       <http://trials.drugis.org/ontology#WashOutActivity> ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Wash out" ;
+        <http://trials.drugis.org/ontology#has_activity_application>
+                <http://fuseki.drugis.org:3030/.well-known/genid/0000014fe0edb0faac11005800000016> , <http://fuseki.drugis.org:3030/.well-known/genid/0000014fe0edb0faac1100580000001c> , <http://fuseki.drugis.org:3030/.well-known/genid/0000014fe0edb0f9ac1100580000000e> .
+
+<http://fuseki.drugis.org:3030/.well-known/genid/0000014fe0edb0faac11005800000002>
+        <http://trials.drugis.org/ontology#category>
+                <http://trials.drugis.org/instances/69fa8375-e91b-4d68-bd64-e52194730960> ;
+        <http://trials.drugis.org/ontology#count>
+                55 .
+
+<http://fuseki.drugis.org:3030/.well-known/genid/0000014fe0edb0f9ac11005800000002>
+        <http://trials.drugis.org/ontology#category>
+                <http://trials.drugis.org/instances/69fa8375-e91b-4d68-bd64-e52194730960> ;
+        <http://trials.drugis.org/ontology#count>
+                56 .
+
+<http://trials.drugis.org/instances/89986123-e35c-4887-ad8b-26f22d2bb985>
+        <http://trials.drugis.org/ontology#count>
+                21 ;
+        <http://trials.drugis.org/ontology#of_group>
+                <http://trials.drugis.org/instances/f468ad44-f80c-422b-91c8-58bdd84c36c0> ;
+        <http://trials.drugis.org/ontology#of_moment>
+                <http://trials.drugis.org/instances/d9334d08-4c54-4124-93c7-c9b58122117d> ;
+        <http://trials.drugis.org/ontology#of_outcome>
+                <http://trials.drugis.org/instances/4ed8bd3c-7071-42cc-aec1-31349660ab1d> ;
+        <http://trials.drugis.org/ontology#sample_size>
+                96 .
+
+<http://trials.drugis.org/instances/a435ee60-e232-4943-98e7-adfe4ca20957>
+        <http://trials.drugis.org/ontology#count>
+                4 ;
+        <http://trials.drugis.org/ontology#of_group>
+                <http://trials.drugis.org/instances/f468ad44-f80c-422b-91c8-58bdd84c36c0> ;
+        <http://trials.drugis.org/ontology#of_moment>
+                <http://trials.drugis.org/instances/d9334d08-4c54-4124-93c7-c9b58122117d> ;
+        <http://trials.drugis.org/ontology#of_outcome>
+                <http://trials.drugis.org/instances/962b0309-993d-43a0-a93c-3abddf1e0d04> ;
+        <http://trials.drugis.org/ontology#sample_size>
+                96 .
+
+<http://trials.drugis.org/instances/d678e14a-41d3-4cfb-94fc-4ff128cd2ed9>
+        <http://trials.drugis.org/ontology#count>
+                4 ;
+        <http://trials.drugis.org/ontology#of_group>
+                <http://trials.drugis.org/instances/58b7339d-3517-4dcb-b892-1f41438f3024> ;
+        <http://trials.drugis.org/ontology#of_moment>
+                <http://trials.drugis.org/instances/d9334d08-4c54-4124-93c7-c9b58122117d> ;
+        <http://trials.drugis.org/ontology#of_outcome>
+                <http://trials.drugis.org/instances/962b0309-993d-43a0-a93c-3abddf1e0d04> ;
+        <http://trials.drugis.org/ontology#sample_size>
+                96 .
+
+<http://trials.drugis.org/instances/c955d5ae-c967-40d7-bbfe-c2d4ed41e5fc>
+        a       <http://trials.drugis.org/ontology#AdverseEvent> ;
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "" ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Flu Syndrome" ;
+        <http://trials.drugis.org/ontology#has_result_property>
+                <http://trials.drugis.org/ontology#count> , <http://trials.drugis.org/ontology#sample_size> ;
+        <http://trials.drugis.org/ontology#is_measured_at>
+                <http://trials.drugis.org/instances/d9334d08-4c54-4124-93c7-c9b58122117d> ;
+        <http://trials.drugis.org/ontology#of_variable>
+                <http://fuseki.drugis.org:3030/.well-known/genid/0000014fe0edb0faac11005800000000> .
+
+<http://fuseki.drugis.org:3030/.well-known/genid/0000014fe0edb0f9ac1100580000000d>
+        <http://trials.drugis.org/ontology#applied_in_epoch>
+                <http://trials.drugis.org/instances/e9098ad3-9b1b-4d3d-9251-04d55878e750> ;
+        <http://trials.drugis.org/ontology#applied_to_arm>
+                <http://trials.drugis.org/instances/58b7339d-3517-4dcb-b892-1f41438f3024> .
+
+<http://fuseki.drugis.org:3030/.well-known/genid/0000014fe0edb0faac1100580000000d>
+        <http://trials.drugis.org/ontology#applied_in_epoch>
+                <http://trials.drugis.org/instances/e9098ad3-9b1b-4d3d-9251-04d55878e750> ;
+        <http://trials.drugis.org/ontology#applied_to_arm>
+                <http://trials.drugis.org/instances/9a23caaa-874c-40fa-b362-2d6e01aa7373> .
+
+<http://fuseki.drugis.org:3030/.well-known/genid/0000014fe0edb0faac11005800000010>
+        a       <http://trials.drugis.org/ontology#Variable> ;
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "" ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Rhinitis" ;
+        <http://trials.drugis.org/ontology#measurementType>
+                <http://trials.drugis.org/ontology#dichotomous> ;
+        <http://www.w3.org/2002/07/owl#sameAs>
+                <http://trials.drugis.org/concepts/8e3da433-1938-4d05-bccb-c1a7e00ab7d6> .
+
+<http://fuseki.drugis.org:3030/.well-known/genid/0000014fe0edb0f9ac11005800000010>
+        a       <http://trials.drugis.org/ontology#Variable> ;
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "" ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "HAM-D Responders" ;
+        <http://trials.drugis.org/ontology#measurementType>
+                <http://trials.drugis.org/ontology#dichotomous> ;
+        <http://www.w3.org/2002/07/owl#sameAs>
+                <http://trials.drugis.org/concepts/db256b6b-4c3f-4b1a-a78f-49b4ab7a4ea8> .
+
+<http://trials.drugis.org/instances/52f48707-c2bf-4f94-98b0-c64741107a25>
+        a       <http://trials.drugis.org/ontology#Endpoint> ;
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "" ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "HAM-D Responders" ;
+        <http://trials.drugis.org/ontology#has_result_property>
+                <http://trials.drugis.org/ontology#count> , <http://trials.drugis.org/ontology#sample_size> ;
+        <http://trials.drugis.org/ontology#is_measured_at>
+                <http://trials.drugis.org/instances/d9334d08-4c54-4124-93c7-c9b58122117d> ;
+        <http://trials.drugis.org/ontology#of_variable>
+                <http://fuseki.drugis.org:3030/.well-known/genid/0000014fe0edb0f9ac11005800000010> .
+
+<http://trials.drugis.org/instances/8c259408-04b3-4e74-9b54-70572e74ccc9>
+        <http://trials.drugis.org/ontology#count>
+                8 ;
+        <http://trials.drugis.org/ontology#of_group>
+                <http://trials.drugis.org/instances/58b7339d-3517-4dcb-b892-1f41438f3024> ;
+        <http://trials.drugis.org/ontology#of_moment>
+                <http://trials.drugis.org/instances/d9334d08-4c54-4124-93c7-c9b58122117d> ;
+        <http://trials.drugis.org/ontology#of_outcome>
+                <http://trials.drugis.org/instances/574e8f92-a343-4505-bdea-a472b1a8d1e6> ;
+        <http://trials.drugis.org/ontology#sample_size>
+                96 .
+
+<http://trials.drugis.org/instances/ce738266-e7e0-4739-816a-8053a64fc53e>
+        <http://trials.drugis.org/ontology#count>
+                18 ;
+        <http://trials.drugis.org/ontology#of_group>
+                <http://trials.drugis.org/instances/58b7339d-3517-4dcb-b892-1f41438f3024> ;
+        <http://trials.drugis.org/ontology#of_moment>
+                <http://trials.drugis.org/instances/d9334d08-4c54-4124-93c7-c9b58122117d> ;
+        <http://trials.drugis.org/ontology#of_outcome>
+                <http://trials.drugis.org/instances/c955d5ae-c967-40d7-bbfe-c2d4ed41e5fc> ;
+        <http://trials.drugis.org/ontology#sample_size>
+                96 .
+
+<http://trials.drugis.org/instances/cedc157a-6ded-4552-aa45-61733054c234>
+        <http://trials.drugis.org/ontology#count>
+                27 ;
+        <http://trials.drugis.org/ontology#of_group>
+                <http://trials.drugis.org/instances/f468ad44-f80c-422b-91c8-58bdd84c36c0> ;
+        <http://trials.drugis.org/ontology#of_moment>
+                <http://trials.drugis.org/instances/d9334d08-4c54-4124-93c7-c9b58122117d> ;
+        <http://trials.drugis.org/ontology#of_outcome>
+                <http://trials.drugis.org/instances/ffd7cefd-19bb-4ad7-9e2b-8f2ac26f615a> ;
+        <http://trials.drugis.org/ontology#sample_size>
+                96 .
+
+<http://fuseki.drugis.org:3030/.well-known/genid/0000014fe0edb0faac1100580000001b>
+        <http://trials.drugis.org/ontology#category>
+                <http://trials.drugis.org/instances/88e183d7-d187-460d-b321-07a8ea1a9f83> ;
+        <http://trials.drugis.org/ontology#count>
+                40 .
+
+<http://fuseki.drugis.org:3030/.well-known/genid/0000014fe0edb0faac11005800000018>
+        <http://trials.drugis.org/ontology#applied_in_epoch>
+                <http://trials.drugis.org/instances/376a4f55-fdd0-47e6-8cd5-08d4a9bd0607> ;
+        <http://trials.drugis.org/ontology#applied_to_arm>
+                <http://trials.drugis.org/instances/9a23caaa-874c-40fa-b362-2d6e01aa7373> .
+
+<http://trials.drugis.org/instances/9a23caaa-874c-40fa-b362-2d6e01aa7373>
+        a       <http://trials.drugis.org/ontology#Arm> ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Fluoxetine" .
+
+<http://trials.drugis.org/instances/49a40959-7ea5-4419-9d8c-3e9fefce43c1>
+        <http://trials.drugis.org/ontology#count>
+                4 ;
+        <http://trials.drugis.org/ontology#of_group>
+                <http://trials.drugis.org/instances/58b7339d-3517-4dcb-b892-1f41438f3024> ;
+        <http://trials.drugis.org/ontology#of_moment>
+                <http://trials.drugis.org/instances/d9334d08-4c54-4124-93c7-c9b58122117d> ;
+        <http://trials.drugis.org/ontology#of_outcome>
+                <http://trials.drugis.org/instances/b14ec9fe-7f64-42fb-9aee-e3ff001bc137> ;
+        <http://trials.drugis.org/ontology#sample_size>
+                96 .
+
+<http://trials.drugis.org/instances/33492bb7-02c6-4283-8a56-f30612a07a85>
+        a       <http://trials.drugis.org/ontology#MeasurementMoment> ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "P0D FROM_EPOCH_START Main phase" ;
+        <http://trials.drugis.org/ontology#relative_to_anchor>
+                <http://trials.drugis.org/ontology#anchorEpochStart> ;
+        <http://trials.drugis.org/ontology#relative_to_epoch>
+                <http://trials.drugis.org/instances/e9098ad3-9b1b-4d3d-9251-04d55878e750> ;
+        <http://trials.drugis.org/ontology#time_offset>
+                "PT0S"^^<http://www.w3.org/2001/XMLSchema#duration> .
+
+<http://trials.drugis.org/instances/b14ec9fe-7f64-42fb-9aee-e3ff001bc137>
+        a       <http://trials.drugis.org/ontology#AdverseEvent> ;
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "" ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Tremor" ;
+        <http://trials.drugis.org/ontology#has_result_property>
+                <http://trials.drugis.org/ontology#count> , <http://trials.drugis.org/ontology#sample_size> ;
+        <http://trials.drugis.org/ontology#is_measured_at>
+                <http://trials.drugis.org/instances/d9334d08-4c54-4124-93c7-c9b58122117d> ;
+        <http://trials.drugis.org/ontology#of_variable>
+                <http://fuseki.drugis.org:3030/.well-known/genid/0000014fe0edb0faac11005800000015> .
+
+<http://trials.drugis.org/instances/8b6a21d0-8d0c-4ccc-8d8d-d8891cd77c02>
+        <http://trials.drugis.org/ontology#count>
+                17 ;
+        <http://trials.drugis.org/ontology#of_group>
+                <http://trials.drugis.org/instances/f468ad44-f80c-422b-91c8-58bdd84c36c0> ;
+        <http://trials.drugis.org/ontology#of_moment>
+                <http://trials.drugis.org/instances/d9334d08-4c54-4124-93c7-c9b58122117d> ;
+        <http://trials.drugis.org/ontology#of_outcome>
+                <http://trials.drugis.org/instances/83c0a68b-c4bc-45a0-b5ca-56bc177d0120> ;
+        <http://trials.drugis.org/ontology#sample_size>
+                96 .
+
+<http://trials.drugis.org/instances/0b8f22b4-9058-4ab0-aae2-3f38bdd27590>
+        <http://trials.drugis.org/ontology#mean>
+                7.63E1 ;
+        <http://trials.drugis.org/ontology#of_group>
+                <http://trials.drugis.org/instances/f468ad44-f80c-422b-91c8-58bdd84c36c0> ;
+        <http://trials.drugis.org/ontology#of_moment>
+                <http://trials.drugis.org/instances/33492bb7-02c6-4283-8a56-f30612a07a85> ;
+        <http://trials.drugis.org/ontology#of_outcome>
+                <http://trials.drugis.org/instances/22ed9dab-5a5f-481c-a656-7e29dba9438d> ;
+        <http://trials.drugis.org/ontology#sample_size>
+                67 ;
+        <http://trials.drugis.org/ontology#standard_deviation>
+                1.86E1 .
+
+<http://trials.drugis.org/instances/04121d08-be2d-4512-858a-f2e47bc57e96>
+        <http://trials.drugis.org/ontology#count>
+                15 ;
+        <http://trials.drugis.org/ontology#of_group>
+                <http://trials.drugis.org/instances/f468ad44-f80c-422b-91c8-58bdd84c36c0> ;
+        <http://trials.drugis.org/ontology#of_moment>
+                <http://trials.drugis.org/instances/d9334d08-4c54-4124-93c7-c9b58122117d> ;
+        <http://trials.drugis.org/ontology#of_outcome>
+                <http://trials.drugis.org/instances/5c13bae7-a906-4fa2-bc08-fc9871745b76> ;
+        <http://trials.drugis.org/ontology#sample_size>
+                96 .
+
+<http://trials.drugis.org/instances/98ed65bc-b2c8-4f3b-a8e5-e81cfbb0950b>
+        a       <http://trials.drugis.org/ontology#Drug> ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Fluoxetine" ;
+        <http://www.w3.org/2002/07/owl#sameAs>
+                <http://trials.drugis.org/concepts/8751c950-97e8-4710-ad8b-f99ee9f351ec> .
+
+<http://trials.drugis.org/instances/76cbd5ce-1e1c-40c9-a811-b87232bfcf8f>
+        a       <http://trials.drugis.org/ontology#StudyPopulation> .
+
+<http://trials.drugis.org/instances/4585d50f-9a08-4961-b4bf-2f0f7397be81>
+        <http://trials.drugis.org/ontology#count>
+                25 ;
+        <http://trials.drugis.org/ontology#of_group>
+                <http://trials.drugis.org/instances/58b7339d-3517-4dcb-b892-1f41438f3024> ;
+        <http://trials.drugis.org/ontology#of_moment>
+                <http://trials.drugis.org/instances/d9334d08-4c54-4124-93c7-c9b58122117d> ;
+        <http://trials.drugis.org/ontology#of_outcome>
+                <http://trials.drugis.org/instances/10d63037-b828-4126-8c87-e954313bee02> ;
+        <http://trials.drugis.org/ontology#sample_size>
+                96 .
+
+<http://trials.drugis.org/instances/7ee0cde0-4ead-4da6-abb9-47905c6735ee>
+        <http://trials.drugis.org/ontology#count>
+                70 ;
+        <http://trials.drugis.org/ontology#of_group>
+                <http://trials.drugis.org/instances/58b7339d-3517-4dcb-b892-1f41438f3024> ;
+        <http://trials.drugis.org/ontology#of_moment>
+                <http://trials.drugis.org/instances/d9334d08-4c54-4124-93c7-c9b58122117d> ;
+        <http://trials.drugis.org/ontology#of_outcome>
+                <http://trials.drugis.org/instances/52f48707-c2bf-4f94-98b0-c64741107a25> ;
+        <http://trials.drugis.org/ontology#sample_size>
+                96 .
+
+<http://trials.drugis.org/instances/37512624-6251-4b34-8a95-21854c862447>
+        a       <http://trials.drugis.org/ontology#PopulationCharacteristic> ;
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "" ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Sex" ;
+        <http://trials.drugis.org/ontology#is_measured_at>
+                <http://trials.drugis.org/instances/33492bb7-02c6-4283-8a56-f30612a07a85> ;
+        <http://trials.drugis.org/ontology#of_variable>
+                <http://fuseki.drugis.org:3030/.well-known/genid/0000014fe0edb0faac11005800000022> .
+
+<http://fuseki.drugis.org:3030/.well-known/genid/0000014fe0edb0faac11005800000005>
+        a       <http://trials.drugis.org/ontology#Variable> ;
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "" ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Dream Abnormality" ;
+        <http://trials.drugis.org/ontology#measurementType>
+                <http://trials.drugis.org/ontology#dichotomous> ;
+        <http://www.w3.org/2002/07/owl#sameAs>
+                <http://trials.drugis.org/concepts/62dd7899-09a2-4f84-8c59-351a43a09b0f> .
+
+<http://trials.drugis.org/instances/109bc4e6-5dd4-413c-95ab-9dd6aac02ba7>
+        a       <http://trials.drugis.org/ontology#Drug> ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Sertraline" ;
+        <http://www.w3.org/2002/07/owl#sameAs>
+                <http://trials.drugis.org/concepts/82cba011-6fb9-423d-a7a0-6b4d15db162c> .
+
+<http://fuseki.drugis.org:3030/.well-known/genid/0000014fe0edb0f9ac11005800000005>
+        <http://www.w3.org/1999/02/22-rdf-syntax-ns#value>
+                6.0E1 ;
+        <http://trials.drugis.org/ontology#dosingPeriodicity>
+                "P1D"^^<http://www.w3.org/2001/XMLSchema#duration> ;
+        <http://trials.drugis.org/ontology#unit>
+                <http://trials.drugis.org/instances/5b674ffc-a356-454a-b376-7d8600ee0888> .
+
+<http://trials.drugis.org/instances/da04db04-926d-4595-a45a-8506305afe46>
+        <http://trials.drugis.org/ontology#mean>
+                2.07E1 ;
+        <http://trials.drugis.org/ontology#of_group>
+                <http://trials.drugis.org/instances/76cbd5ce-1e1c-40c9-a811-b87232bfcf8f> ;
+        <http://trials.drugis.org/ontology#of_moment>
+                <http://trials.drugis.org/instances/33492bb7-02c6-4283-8a56-f30612a07a85> ;
+        <http://trials.drugis.org/ontology#of_outcome>
+                <http://trials.drugis.org/instances/21c35449-504b-45b4-905d-68301421f685> ;
+        <http://trials.drugis.org/ontology#sample_size>
+                284 ;
+        <http://trials.drugis.org/ontology#standard_deviation>
+                4.4E0 .
+
+<http://trials.drugis.org/instances/d528ff02-6355-4974-b785-377e576a601e>
+        <http://trials.drugis.org/ontology#count>
+                12 ;
+        <http://trials.drugis.org/ontology#of_group>
+                <http://trials.drugis.org/instances/f468ad44-f80c-422b-91c8-58bdd84c36c0> ;
+        <http://trials.drugis.org/ontology#of_moment>
+                <http://trials.drugis.org/instances/d9334d08-4c54-4124-93c7-c9b58122117d> ;
+        <http://trials.drugis.org/ontology#of_outcome>
+                <http://trials.drugis.org/instances/9a2f3eff-3c94-4c76-aef5-067c98fb02d2> ;
+        <http://trials.drugis.org/ontology#sample_size>
+                96 .
+
+<http://trials.drugis.org/instances/3f0f24a2-984d-474b-8603-e9c4e9ed8cfe>
+        <http://trials.drugis.org/ontology#count>
+                15 ;
+        <http://trials.drugis.org/ontology#of_group>
+                <http://trials.drugis.org/instances/f468ad44-f80c-422b-91c8-58bdd84c36c0> ;
+        <http://trials.drugis.org/ontology#of_moment>
+                <http://trials.drugis.org/instances/d9334d08-4c54-4124-93c7-c9b58122117d> ;
+        <http://trials.drugis.org/ontology#of_outcome>
+                <http://trials.drugis.org/instances/dc35ddf2-e75f-480d-96e8-4b21d2b4c16e> ;
+        <http://trials.drugis.org/ontology#sample_size>
+                96 .
+
+<http://trials.drugis.org/instances/a5739973-4e98-4333-bec2-3fa9db08988e>
+        <http://trials.drugis.org/ontology#count>
+                9 ;
+        <http://trials.drugis.org/ontology#of_group>
+                <http://trials.drugis.org/instances/f468ad44-f80c-422b-91c8-58bdd84c36c0> ;
+        <http://trials.drugis.org/ontology#of_moment>
+                <http://trials.drugis.org/instances/d9334d08-4c54-4124-93c7-c9b58122117d> ;
+        <http://trials.drugis.org/ontology#of_outcome>
+                <http://trials.drugis.org/instances/c955d5ae-c967-40d7-bbfe-c2d4ed41e5fc> ;
+        <http://trials.drugis.org/ontology#sample_size>
+                96 .
+
+<http://trials.drugis.org/instances/379d3bde-e39e-4309-a13e-c0189b6504d8>
+        <http://trials.drugis.org/ontology#mean>
+                2.63E1 ;
+        <http://trials.drugis.org/ontology#of_group>
+                <http://trials.drugis.org/instances/f468ad44-f80c-422b-91c8-58bdd84c36c0> ;
+        <http://trials.drugis.org/ontology#of_moment>
+                <http://trials.drugis.org/instances/33492bb7-02c6-4283-8a56-f30612a07a85> ;
+        <http://trials.drugis.org/ontology#of_outcome>
+                <http://trials.drugis.org/instances/bffd9f4e-cf53-4e21-8c75-fb8f629ddd96> ;
+        <http://trials.drugis.org/ontology#sample_size>
+                67 ;
+        <http://trials.drugis.org/ontology#standard_deviation>
+                6.2E0 .
+
+<http://trials.drugis.org/instances/0ddbe318-0045-4532-ad3b-8b5f77bccbf4>
+        a       <http://trials.drugis.org/ontology#Endpoint> ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "contrast" ;
+        <http://trials.drugis.org/ontology#arm_or_contrast>
+                <http://trials.drugis.org/ontology#contrast_data> ;
+        <http://trials.drugis.org/ontology#has_result_property>
+                <http://trials.drugis.org/ontology#standard_error> , <http://trials.drugis.org/ontology#odds_ratio> ;
+        <http://trials.drugis.org/ontology#is_measured_at>
+                <http://trials.drugis.org/instances/d9334d08-4c54-4124-93c7-c9b58122117d> ;
+        <http://trials.drugis.org/ontology#of_variable>
+                <http://localhost:8080/.well-known/genid/0000016779e41ade3e05389500000001> ;
+        <http://trials.drugis.org/ontology#reference_arm>
+                <http://trials.drugis.org/instances/f468ad44-f80c-422b-91c8-58bdd84c36c0> ;
+        <http://trials.drugis.org/ontology#reference_standard_error>
+                3.0E0 .
+
+<http://fuseki.drugis.org:3030/.well-known/genid/0000014fe0edb0f9ac11005800000013>
+        <http://trials.drugis.org/ontology#applied_in_epoch>
+                <http://trials.drugis.org/instances/376a4f55-fdd0-47e6-8cd5-08d4a9bd0607> ;
+        <http://trials.drugis.org/ontology#applied_to_arm>
+                <http://trials.drugis.org/instances/58b7339d-3517-4dcb-b892-1f41438f3024> .
+
+<http://fuseki.drugis.org:3030/.well-known/genid/0000014fe0edb0faac11005800000013>
+        a       <http://trials.drugis.org/ontology#Variable> ;
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "" ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Dyspepsia" ;
+        <http://trials.drugis.org/ontology#measurementType>
+                <http://trials.drugis.org/ontology#dichotomous> ;
+        <http://www.w3.org/2002/07/owl#sameAs>
+                <http://trials.drugis.org/concepts/bbc1be41-716f-4d28-b7e4-c769ead7c52b> .
+
+<http://trials.drugis.org/instances/1f22dda0-c62d-466c-83a6-1570892563e2>
+        a       <http://trials.drugis.org/ontology#ParticipantFlow> ;
+        <http://trials.drugis.org/ontology#in_epoch>
+                <http://trials.drugis.org/instances/e9098ad3-9b1b-4d3d-9251-04d55878e750> ;
+        <http://trials.drugis.org/ontology#of_group>
+                <http://trials.drugis.org/instances/58b7339d-3517-4dcb-b892-1f41438f3024> ;
+        <http://trials.drugis.org/ontology#participants_starting>
+                96 .
+
+<http://trials.drugis.org/instances/ef2e32ab-c3c4-4803-8c1a-061eeb691324>
+        a       <http://trials.drugis.org/ontology#AdverseEvent> ;
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "" ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Chest Pain" ;
+        <http://trials.drugis.org/ontology#has_result_property>
+                <http://trials.drugis.org/ontology#count> , <http://trials.drugis.org/ontology#sample_size> ;
+        <http://trials.drugis.org/ontology#is_measured_at>
+                <http://trials.drugis.org/instances/d9334d08-4c54-4124-93c7-c9b58122117d> ;
+        <http://trials.drugis.org/ontology#of_variable>
+                <http://fuseki.drugis.org:3030/.well-known/genid/0000014fe0edb0f9ac11005800000006> .
+
+<http://trials.drugis.org/instances/e9098ad3-9b1b-4d3d-9251-04d55878e750>
+        a       <http://trials.drugis.org/ontology#Epoch> ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Main phase" ;
+        <http://trials.drugis.org/ontology#duration>
+                "P112D"^^<http://www.w3.org/2001/XMLSchema#duration> .
+
+<http://trials.drugis.org/instances/655fc129-1918-4297-b6b1-9afab05aa98f>
+        <http://trials.drugis.org/ontology#count>
+                1 ;
+        <http://trials.drugis.org/ontology#of_group>
+                <http://trials.drugis.org/instances/58b7339d-3517-4dcb-b892-1f41438f3024> ;
+        <http://trials.drugis.org/ontology#of_moment>
+                <http://trials.drugis.org/instances/d9334d08-4c54-4124-93c7-c9b58122117d> ;
+        <http://trials.drugis.org/ontology#of_outcome>
+                <http://trials.drugis.org/instances/ef2e32ab-c3c4-4803-8c1a-061eeb691324> ;
+        <http://trials.drugis.org/ontology#sample_size>
+                96 .
+
+<http://trials.drugis.org/instances/61ca4c06-ec76-4671-8858-ef2489b72f4f>
+        <http://trials.drugis.org/ontology#mean>
+                7.24E1 ;
+        <http://trials.drugis.org/ontology#of_group>
+                <http://trials.drugis.org/instances/9a23caaa-874c-40fa-b362-2d6e01aa7373> ;
+        <http://trials.drugis.org/ontology#of_moment>
+                <http://trials.drugis.org/instances/33492bb7-02c6-4283-8a56-f30612a07a85> ;
+        <http://trials.drugis.org/ontology#of_outcome>
+                <http://trials.drugis.org/instances/22ed9dab-5a5f-481c-a656-7e29dba9438d> ;
+        <http://trials.drugis.org/ontology#sample_size>
+                63 ;
+        <http://trials.drugis.org/ontology#standard_deviation>
+                1.74E1 .
+
+<http://trials.drugis.org/instances/3006eeb0-127c-497f-bef7-07e982f6dd8b>
+        <http://trials.drugis.org/ontology#count>
+                8 ;
+        <http://trials.drugis.org/ontology#of_group>
+                <http://trials.drugis.org/instances/9a23caaa-874c-40fa-b362-2d6e01aa7373> ;
+        <http://trials.drugis.org/ontology#of_moment>
+                <http://trials.drugis.org/instances/d9334d08-4c54-4124-93c7-c9b58122117d> ;
+        <http://trials.drugis.org/ontology#of_outcome>
+                <http://trials.drugis.org/instances/bb8ad85f-24a3-41c2-847c-349e63789e1c> ;
+        <http://trials.drugis.org/ontology#sample_size>
+                92 .
+
+<http://trials.drugis.org/instances/c25c907c-aa36-4366-aa92-73fa42b4d42d>
+        <http://trials.drugis.org/ontology#count>
+                12 ;
+        <http://trials.drugis.org/ontology#of_group>
+                <http://trials.drugis.org/instances/f468ad44-f80c-422b-91c8-58bdd84c36c0> ;
+        <http://trials.drugis.org/ontology#of_moment>
+                <http://trials.drugis.org/instances/d9334d08-4c54-4124-93c7-c9b58122117d> ;
+        <http://trials.drugis.org/ontology#of_outcome>
+                <http://trials.drugis.org/instances/bb8ad85f-24a3-41c2-847c-349e63789e1c> ;
+        <http://trials.drugis.org/ontology#sample_size>
+                96 .
+
+<http://fuseki.drugis.org:3030/.well-known/genid/0000014fe0edb0faac1100580000001e>
+        a       <http://trials.drugis.org/ontology#Variable> ;
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "" ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Insomnia" ;
+        <http://trials.drugis.org/ontology#measurementType>
+                <http://trials.drugis.org/ontology#dichotomous> ;
+        <http://www.w3.org/2002/07/owl#sameAs>
+                <http://trials.drugis.org/concepts/c3e6e32f-b54a-4e7f-99e6-593c53655516> .
+
+<http://fuseki.drugis.org:3030/.well-known/genid/0000014fe0edb0faac11005800000021>
+        <http://www.w3.org/1999/02/22-rdf-syntax-ns#value>
+                2.0E1 ;
+        <http://trials.drugis.org/ontology#dosingPeriodicity>
+                "P1D"^^<http://www.w3.org/2001/XMLSchema#duration> ;
+        <http://trials.drugis.org/ontology#unit>
+                <http://trials.drugis.org/instances/5b674ffc-a356-454a-b376-7d8600ee0888> .
+
+<http://trials.drugis.org/instances/09f0e061-db08-4308-81e4-a7dca356ff00>
+        <http://trials.drugis.org/ontology#count>
+                23 ;
+        <http://trials.drugis.org/ontology#of_group>
+                <http://trials.drugis.org/instances/9a23caaa-874c-40fa-b362-2d6e01aa7373> ;
+        <http://trials.drugis.org/ontology#of_moment>
+                <http://trials.drugis.org/instances/d9334d08-4c54-4124-93c7-c9b58122117d> ;
+        <http://trials.drugis.org/ontology#of_outcome>
+                <http://trials.drugis.org/instances/4ed8bd3c-7071-42cc-aec1-31349660ab1d> ;
+        <http://trials.drugis.org/ontology#sample_size>
+                92 .
+
+<http://fuseki.drugis.org:3030/.well-known/genid/0000014fe0edb0faac11005800000000>
+        a       <http://trials.drugis.org/ontology#Variable> ;
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "" ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Flu Syndrome" ;
+        <http://trials.drugis.org/ontology#measurementType>
+                <http://trials.drugis.org/ontology#dichotomous> ;
+        <http://www.w3.org/2002/07/owl#sameAs>
+                <http://trials.drugis.org/concepts/b8c6f277-9b8f-4f11-9688-2754dc1c8f52> .
+
+<http://fuseki.drugis.org:3030/.well-known/genid/0000014fe0edb0f9ac11005800000000>
+        a       <http://trials.drugis.org/ontology#TitratedDoseDrugTreatment> ;
+        <http://trials.drugis.org/ontology#treatment_has_drug>
+                <http://trials.drugis.org/instances/109bc4e6-5dd4-413c-95ab-9dd6aac02ba7> ;
+        <http://trials.drugis.org/ontology#treatment_max_dose>
+                <http://fuseki.drugis.org:3030/.well-known/genid/0000014fe0edb0faac1100580000001a> ;
+        <http://trials.drugis.org/ontology#treatment_min_dose>
+                <http://fuseki.drugis.org:3030/.well-known/genid/0000014fe0edb0f9ac11005800000009> .
+
+<http://trials.drugis.org/instances/f92148a8-42db-4887-8c80-84710ecd2b26>
+        a       <http://trials.drugis.org/ontology#AdverseEvent> ;
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "" ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Rhinitis" ;
+        <http://trials.drugis.org/ontology#has_result_property>
+                <http://trials.drugis.org/ontology#count> , <http://trials.drugis.org/ontology#sample_size> ;
+        <http://trials.drugis.org/ontology#is_measured_at>
+                <http://trials.drugis.org/instances/d9334d08-4c54-4124-93c7-c9b58122117d> ;
+        <http://trials.drugis.org/ontology#of_variable>
+                <http://fuseki.drugis.org:3030/.well-known/genid/0000014fe0edb0faac11005800000010> .
+
+<http://trials.drugis.org/instances/57c0a1ba-7de8-46b1-9037-4c6559e564fb>
+        <http://trials.drugis.org/ontology#count>
+                24 ;
+        <http://trials.drugis.org/ontology#of_group>
+                <http://trials.drugis.org/instances/9a23caaa-874c-40fa-b362-2d6e01aa7373> ;
+        <http://trials.drugis.org/ontology#of_moment>
+                <http://trials.drugis.org/instances/d9334d08-4c54-4124-93c7-c9b58122117d> ;
+        <http://trials.drugis.org/ontology#of_outcome>
+                <http://trials.drugis.org/instances/ffd7cefd-19bb-4ad7-9e2b-8f2ac26f615a> ;
+        <http://trials.drugis.org/ontology#sample_size>
+                92 .
+
+<http://fuseki.drugis.org:3030/.well-known/genid/0000014fe0edb0faac11005800000008>
+        a       <http://trials.drugis.org/ontology#Variable> ;
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "" ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Diarrhea" ;
+        <http://trials.drugis.org/ontology#measurementType>
+                <http://trials.drugis.org/ontology#dichotomous> ;
+        <http://www.w3.org/2002/07/owl#sameAs>
+                <http://trials.drugis.org/concepts/7e8ee4a7-0f3b-4508-a0f6-8b0900465f6c> .
+
+<http://fuseki.drugis.org:3030/.well-known/genid/0000014fe0edb0faac1100580000000b>
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "This study assessed whether fluoxetine, sertraline, and paroxetine differ in efficacy and tolerability in depressed patients and the impact of baseline insomnia on outcomes." .
+
+<http://fuseki.drugis.org:3030/.well-known/genid/0000014fe0edb0f9ac1100580000000b>
+        <http://trials.drugis.org/ontology#applied_in_epoch>
+                <http://trials.drugis.org/instances/e9098ad3-9b1b-4d3d-9251-04d55878e750> ;
+        <http://trials.drugis.org/ontology#applied_to_arm>
+                <http://trials.drugis.org/instances/f468ad44-f80c-422b-91c8-58bdd84c36c0> .
+
+<http://trials.drugis.org/instances/eee6aa8e-ce9d-4772-82a2-87127341dabd>
+        <http://trials.drugis.org/ontology#count>
+                8 ;
+        <http://trials.drugis.org/ontology#of_group>
+                <http://trials.drugis.org/instances/58b7339d-3517-4dcb-b892-1f41438f3024> ;
+        <http://trials.drugis.org/ontology#of_moment>
+                <http://trials.drugis.org/instances/d9334d08-4c54-4124-93c7-c9b58122117d> ;
+        <http://trials.drugis.org/ontology#of_outcome>
+                <http://trials.drugis.org/instances/518c75f1-20c9-4a7f-a01e-f971d614f68d> ;
+        <http://trials.drugis.org/ontology#sample_size>
+                96 .
+
+<http://fuseki.drugis.org:3030/.well-known/genid/0000014fe0edb0f9ac11005800000008>
+        a       <http://trials.drugis.org/ontology#Variable> ;
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "" ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Dry Mouth" ;
+        <http://trials.drugis.org/ontology#measurementType>
+                <http://trials.drugis.org/ontology#dichotomous> ;
+        <http://www.w3.org/2002/07/owl#sameAs>
+                <http://trials.drugis.org/concepts/9e0ee89f-f617-44d3-b239-2359f280aa2c> .
+
+<http://trials.drugis.org/instances/15591296-280e-4517-9632-edf35e08f21b>
+        <http://trials.drugis.org/ontology#count>
+                8 ;
+        <http://trials.drugis.org/ontology#of_group>
+                <http://trials.drugis.org/instances/9a23caaa-874c-40fa-b362-2d6e01aa7373> ;
+        <http://trials.drugis.org/ontology#of_moment>
+                <http://trials.drugis.org/instances/d9334d08-4c54-4124-93c7-c9b58122117d> ;
+        <http://trials.drugis.org/ontology#of_outcome>
+                <http://trials.drugis.org/instances/c955d5ae-c967-40d7-bbfe-c2d4ed41e5fc> ;
+        <http://trials.drugis.org/ontology#sample_size>
+                92 .
+
+<http://trials.drugis.org/instances/ecae02f1-3fd5-468f-87a0-87ba2d3eb584>
+        <http://trials.drugis.org/ontology#count>
+                19 ;
+        <http://trials.drugis.org/ontology#of_group>
+                <http://trials.drugis.org/instances/58b7339d-3517-4dcb-b892-1f41438f3024> ;
+        <http://trials.drugis.org/ontology#of_moment>
+                <http://trials.drugis.org/instances/d9334d08-4c54-4124-93c7-c9b58122117d> ;
+        <http://trials.drugis.org/ontology#of_outcome>
+                <http://trials.drugis.org/instances/f92148a8-42db-4887-8c80-84710ecd2b26> ;
+        <http://trials.drugis.org/ontology#sample_size>
+                96 .
+
+<http://trials.drugis.org/instances/d3115c16-cb35-40fe-bc8b-8ee954030955>
+        <http://trials.drugis.org/ontology#count>
+                26 ;
+        <http://trials.drugis.org/ontology#of_group>
+                <http://trials.drugis.org/instances/58b7339d-3517-4dcb-b892-1f41438f3024> ;
+        <http://trials.drugis.org/ontology#of_moment>
+                <http://trials.drugis.org/instances/d9334d08-4c54-4124-93c7-c9b58122117d> ;
+        <http://trials.drugis.org/ontology#of_outcome>
+                <http://trials.drugis.org/instances/ffd7cefd-19bb-4ad7-9e2b-8f2ac26f615a> ;
+        <http://trials.drugis.org/ontology#sample_size>
+                96 .
+
+<http://trials.drugis.org/instances/5ed44930-8ff7-410a-865f-232ef873f3d9>
+        <http://trials.drugis.org/ontology#count>
+                24 ;
+        <http://trials.drugis.org/ontology#of_group>
+                <http://trials.drugis.org/instances/f468ad44-f80c-422b-91c8-58bdd84c36c0> ;
+        <http://trials.drugis.org/ontology#of_moment>
+                <http://trials.drugis.org/instances/d9334d08-4c54-4124-93c7-c9b58122117d> ;
+        <http://trials.drugis.org/ontology#of_outcome>
+                <http://trials.drugis.org/instances/036e2ad2-9610-4c6e-bd0e-5c844bb341c4> ;
+        <http://trials.drugis.org/ontology#sample_size>
+                96 .
+
+<http://trials.drugis.org/instances/05fd8a52-6f9c-4db4-9f5d-5d262ab0f662>
+        a       <http://trials.drugis.org/ontology#AdverseEvent> ;
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "" ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Diminished Sexual Desire" ;
+        <http://trials.drugis.org/ontology#has_result_property>
+                <http://trials.drugis.org/ontology#count> , <http://trials.drugis.org/ontology#sample_size> ;
+        <http://trials.drugis.org/ontology#is_measured_at>
+                <http://trials.drugis.org/instances/d9334d08-4c54-4124-93c7-c9b58122117d> ;
+        <http://trials.drugis.org/ontology#of_variable>
+                <http://fuseki.drugis.org:3030/.well-known/genid/0000014fe0edb0f9ac11005800000012> .
+
+<http://trials.drugis.org/instances/9e0bfb6b-74e8-4d61-8ab3-76e1f76f282c>
+        <http://trials.drugis.org/ontology#count>
+                10 ;
+        <http://trials.drugis.org/ontology#of_group>
+                <http://trials.drugis.org/instances/f468ad44-f80c-422b-91c8-58bdd84c36c0> ;
+        <http://trials.drugis.org/ontology#of_moment>
+                <http://trials.drugis.org/instances/d9334d08-4c54-4124-93c7-c9b58122117d> ;
+        <http://trials.drugis.org/ontology#of_outcome>
+                <http://trials.drugis.org/instances/518c75f1-20c9-4a7f-a01e-f971d614f68d> ;
+        <http://trials.drugis.org/ontology#sample_size>
+                96 .
+
+<http://fuseki.drugis.org:3030/.well-known/genid/0000014fe0edb0faac11005800000016>
+        <http://trials.drugis.org/ontology#applied_in_epoch>
+                <http://trials.drugis.org/instances/8a15518f-da9b-48c4-a009-04eb5878e313> ;
+        <http://trials.drugis.org/ontology#applied_to_arm>
+                <http://trials.drugis.org/instances/58b7339d-3517-4dcb-b892-1f41438f3024> .
+
+<http://fuseki.drugis.org:3030/.well-known/genid/0000014fe0edb0f9ac11005800000016>
+        <http://trials.drugis.org/ontology#has_id>
+                <http://pubmed.com/11910258> .
+
+<http://trials.drugis.org/instances/7168fbac-1037-4af5-bee1-16b2f2ec533c>
+        <http://trials.drugis.org/ontology#count>
+                11 ;
+        <http://trials.drugis.org/ontology#of_group>
+                <http://trials.drugis.org/instances/9a23caaa-874c-40fa-b362-2d6e01aa7373> ;
+        <http://trials.drugis.org/ontology#of_moment>
+                <http://trials.drugis.org/instances/d9334d08-4c54-4124-93c7-c9b58122117d> ;
+        <http://trials.drugis.org/ontology#of_outcome>
+                <http://trials.drugis.org/instances/6f26d7d3-2c93-44f7-8cad-bc7844405a1b> ;
+        <http://trials.drugis.org/ontology#sample_size>
+                92 .
+
+<http://trials.drugis.org/instances/962b0309-993d-43a0-a93c-3abddf1e0d04>
+        a       <http://trials.drugis.org/ontology#AdverseEvent> ;
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "" ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Impotence" ;
+        <http://trials.drugis.org/ontology#has_result_property>
+                <http://trials.drugis.org/ontology#count> , <http://trials.drugis.org/ontology#sample_size> ;
+        <http://trials.drugis.org/ontology#is_measured_at>
+                <http://trials.drugis.org/instances/d9334d08-4c54-4124-93c7-c9b58122117d> ;
+        <http://trials.drugis.org/ontology#of_variable>
+                <http://fuseki.drugis.org:3030/.well-known/genid/0000014fe0edb0f9ac11005800000004> .
+
+<http://trials.drugis.org/instances/574e8f92-a343-4505-bdea-a472b1a8d1e6>
+        a       <http://trials.drugis.org/ontology#AdverseEvent> ;
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "" ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Dream Abnormality" ;
+        <http://trials.drugis.org/ontology#has_result_property>
+                <http://trials.drugis.org/ontology#count> , <http://trials.drugis.org/ontology#sample_size> ;
+        <http://trials.drugis.org/ontology#is_measured_at>
+                <http://trials.drugis.org/instances/d9334d08-4c54-4124-93c7-c9b58122117d> ;
+        <http://trials.drugis.org/ontology#of_variable>
+                <http://fuseki.drugis.org:3030/.well-known/genid/0000014fe0edb0faac11005800000005> .
+
+<http://trials.drugis.org/instances/f468ad44-f80c-422b-91c8-58bdd84c36c0>
+        a       <http://trials.drugis.org/ontology#Arm> ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Paroxetine" .
+
+<http://trials.drugis.org/instances/9f0e4620-c95c-47f0-bbcf-df10ed614387>
+        a       <http://trials.drugis.org/ontology#Indication> ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Severe depression" ;
+        <http://www.w3.org/2002/07/owl#sameAs>
+                <http://trials.drugis.org/concepts/3fbe45e8-5d9d-4a2c-8082-97d1a6584dae> .
+
+<http://trials.drugis.org/instances/5b674ffc-a356-454a-b376-7d8600ee0888>
+        a       <http://trials.drugis.org/ontology#Unit> ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "milligram" ;
+        <http://qudt.org/schema/qudt#conversionMultiplier>
+                1.0E-3 ;
+        <http://www.w3.org/2002/07/owl#sameAs>
+                <http://trials.drugis.org/concepts/6d1a6142-4768-4071-995d-ef2bfdf91c07> .
+
+<http://trials.drugis.org/instances/1355481a-dc6c-4ce4-91ad-a431349645aa>
+        <http://trials.drugis.org/ontology#mean>
+                4.4E1 ;
+        <http://trials.drugis.org/ontology#of_group>
+                <http://trials.drugis.org/instances/58b7339d-3517-4dcb-b892-1f41438f3024> ;
+        <http://trials.drugis.org/ontology#of_moment>
+                <http://trials.drugis.org/instances/33492bb7-02c6-4283-8a56-f30612a07a85> ;
+        <http://trials.drugis.org/ontology#of_outcome>
+                <http://trials.drugis.org/instances/1bf4e9e0-b670-43e4-b4c5-f64cb6980504> ;
+        <http://trials.drugis.org/ontology#sample_size>
+                96 ;
+        <http://trials.drugis.org/ontology#standard_deviation>
+                1.47E1 .
+
+<http://fuseki.drugis.org:3030/.well-known/genid/0000014fe0edb0faac11005800000003>
+        <http://trials.drugis.org/ontology#category>
+                <http://trials.drugis.org/instances/69fa8375-e91b-4d68-bd64-e52194730960> ;
+        <http://trials.drugis.org/ontology#count>
+                58 .
+
+<http://fuseki.drugis.org:3030/.well-known/genid/0000014fe0edb0f9ac11005800000003>
+        a       <http://trials.drugis.org/ontology#Variable> ;
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "" ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Asthenia" ;
+        <http://trials.drugis.org/ontology#measurementType>
+                <http://trials.drugis.org/ontology#dichotomous> ;
+        <http://www.w3.org/2002/07/owl#sameAs>
+                <http://trials.drugis.org/concepts/4ec2a5ba-327e-4f04-b76a-b1bc850bfc2b> .
+
+<http://trials.drugis.org/instances/6742b29a-12db-48a5-8977-59ea704e33dd>
+        <http://trials.drugis.org/ontology#count>
+                16 ;
+        <http://trials.drugis.org/ontology#of_group>
+                <http://trials.drugis.org/instances/f468ad44-f80c-422b-91c8-58bdd84c36c0> ;
+        <http://trials.drugis.org/ontology#of_moment>
+                <http://trials.drugis.org/instances/d9334d08-4c54-4124-93c7-c9b58122117d> ;
+        <http://trials.drugis.org/ontology#of_outcome>
+                <http://trials.drugis.org/instances/a88372fc-70de-4c34-945c-9bca4a5cc659> ;
+        <http://trials.drugis.org/ontology#sample_size>
+                96 .
+
+<http://trials.drugis.org/instances/3b0ff9dc-5c87-442a-9700-257676911e41>
+        a       <http://trials.drugis.org/ontology#TreatmentActivity> ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Sertraline" ;
+        <http://trials.drugis.org/ontology#has_activity_application>
+                <http://fuseki.drugis.org:3030/.well-known/genid/0000014fe0edb0f9ac1100580000000d> ;
+        <http://trials.drugis.org/ontology#has_drug_treatment>
+                <http://fuseki.drugis.org:3030/.well-known/genid/0000014fe0edb0f9ac11005800000000> .
+
+<http://fuseki.drugis.org:3030/.well-known/genid/0000014fe0edb0faac11005800000011>
+        <http://trials.drugis.org/ontology#category>
+                <http://trials.drugis.org/instances/88e183d7-d187-460d-b321-07a8ea1a9f83> ;
+        <http://trials.drugis.org/ontology#count>
+                34 .
+
+<http://fuseki.drugis.org:3030/.well-known/genid/0000014fe0edb0f9ac1100580000000e>
+        <http://trials.drugis.org/ontology#applied_in_epoch>
+                <http://trials.drugis.org/instances/8a15518f-da9b-48c4-a009-04eb5878e313> ;
+        <http://trials.drugis.org/ontology#applied_to_arm>
+                <http://trials.drugis.org/instances/9a23caaa-874c-40fa-b362-2d6e01aa7373> .
+
+<http://fuseki.drugis.org:3030/.well-known/genid/0000014fe0edb0f9ac11005800000011>
+        a       <http://trials.drugis.org/ontology#TitratedDoseDrugTreatment> ;
+        <http://trials.drugis.org/ontology#treatment_has_drug>
+                <http://trials.drugis.org/instances/0853bcd6-3d63-4214-b95a-246c6ccaaf55> ;
+        <http://trials.drugis.org/ontology#treatment_max_dose>
+                <http://fuseki.drugis.org:3030/.well-known/genid/0000014fe0edb0f9ac11005800000005> ;
+        <http://trials.drugis.org/ontology#treatment_min_dose>
+                <http://fuseki.drugis.org:3030/.well-known/genid/0000014fe0edb0faac11005800000021> .
+
+<http://trials.drugis.org/instances/7a9ee170-c79d-4bcf-91c2-2fabea64c63a>
+        <http://trials.drugis.org/ontology#count>
+                25 ;
+        <http://trials.drugis.org/ontology#of_group>
+                <http://trials.drugis.org/instances/58b7339d-3517-4dcb-b892-1f41438f3024> ;
+        <http://trials.drugis.org/ontology#of_moment>
+                <http://trials.drugis.org/instances/d9334d08-4c54-4124-93c7-c9b58122117d> ;
+        <http://trials.drugis.org/ontology#of_outcome>
+                <http://trials.drugis.org/instances/aceb6fe8-1ae5-42db-a0fe-bfe485056123> ;
+        <http://trials.drugis.org/ontology#sample_size>
+                96 .
+
+<http://trials.drugis.org/instances/802798c7-38fa-4555-8837-15ed109be6d4>
+        <http://trials.drugis.org/ontology#arm_or_contrast>
+                <http://trials.drugis.org/ontology#contrast_data> ;
+        <http://trials.drugis.org/ontology#of_group>
+                <http://trials.drugis.org/instances/58b7339d-3517-4dcb-b892-1f41438f3024> ;
+        <http://trials.drugis.org/ontology#of_moment>
+                <http://trials.drugis.org/instances/d9334d08-4c54-4124-93c7-c9b58122117d> ;
+        <http://trials.drugis.org/ontology#of_outcome>
+                <http://trials.drugis.org/instances/0ddbe318-0045-4532-ad3b-8b5f77bccbf4> ;
+        <http://trials.drugis.org/ontology#standard_error>
+                4.0E0 .
+
+<http://trials.drugis.org/instances/4ed8bd3c-7071-42cc-aec1-31349660ab1d>
+        a       <http://trials.drugis.org/ontology#AdverseEvent> ;
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "" ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Headache" ;
+        <http://trials.drugis.org/ontology#has_result_property>
+                <http://trials.drugis.org/ontology#count> , <http://trials.drugis.org/ontology#sample_size> ;
+        <http://trials.drugis.org/ontology#is_measured_at>
+                <http://trials.drugis.org/instances/d9334d08-4c54-4124-93c7-c9b58122117d> ;
+        <http://trials.drugis.org/ontology#of_variable>
+                <http://fuseki.drugis.org:3030/.well-known/genid/0000014fe0edb0faac1100580000000a> .
+
+<http://trials.drugis.org/instances/dc35ddf2-e75f-480d-96e8-4b21d2b4c16e>
+        a       <http://trials.drugis.org/ontology#AdverseEvent> ;
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "" ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Dizziness" ;
+        <http://trials.drugis.org/ontology#has_result_property>
+                <http://trials.drugis.org/ontology#count> , <http://trials.drugis.org/ontology#sample_size> ;
+        <http://trials.drugis.org/ontology#is_measured_at>
+                <http://trials.drugis.org/instances/d9334d08-4c54-4124-93c7-c9b58122117d> ;
+        <http://trials.drugis.org/ontology#of_variable>
+                <http://fuseki.drugis.org:3030/.well-known/genid/0000014fe0edb0faac11005800000007> .
+
+<http://trials.drugis.org/instances/73a049e3-14e5-4a69-b973-5cee953a3c1c>
+        <http://trials.drugis.org/ontology#count>
+                13 ;
+        <http://trials.drugis.org/ontology#of_group>
+                <http://trials.drugis.org/instances/58b7339d-3517-4dcb-b892-1f41438f3024> ;
+        <http://trials.drugis.org/ontology#of_moment>
+                <http://trials.drugis.org/instances/d9334d08-4c54-4124-93c7-c9b58122117d> ;
+        <http://trials.drugis.org/ontology#of_outcome>
+                <http://trials.drugis.org/instances/83c0a68b-c4bc-45a0-b5ca-56bc177d0120> ;
+        <http://trials.drugis.org/ontology#sample_size>
+                96 .
+
+<http://fuseki.drugis.org:3030/.well-known/genid/0000014fe0edb0faac1100580000001c>
+        <http://trials.drugis.org/ontology#applied_in_epoch>
+                <http://trials.drugis.org/instances/8a15518f-da9b-48c4-a009-04eb5878e313> ;
+        <http://trials.drugis.org/ontology#applied_to_arm>
+                <http://trials.drugis.org/instances/f468ad44-f80c-422b-91c8-58bdd84c36c0> .
+
+<http://trials.drugis.org/instances/bb8ad85f-24a3-41c2-847c-349e63789e1c>
+        a       <http://trials.drugis.org/ontology#AdverseEvent> ;
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "" ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Dry Mouth" ;
+        <http://trials.drugis.org/ontology#has_result_property>
+                <http://trials.drugis.org/ontology#count> , <http://trials.drugis.org/ontology#sample_size> ;
+        <http://trials.drugis.org/ontology#is_measured_at>
+                <http://trials.drugis.org/instances/d9334d08-4c54-4124-93c7-c9b58122117d> ;
+        <http://trials.drugis.org/ontology#of_variable>
+                <http://fuseki.drugis.org:3030/.well-known/genid/0000014fe0edb0f9ac11005800000008> .
+
+<http://fuseki.drugis.org:3030/.well-known/genid/0000014fe0edb0faac11005800000019>
+        a       <http://trials.drugis.org/ontology#Variable> ;
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "" ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Constipation" ;
+        <http://trials.drugis.org/ontology#measurementType>
+                <http://trials.drugis.org/ontology#dichotomous> ;
+        <http://www.w3.org/2002/07/owl#sameAs>
+                <http://trials.drugis.org/concepts/35d02d01-1d7b-4ee9-b27e-fd3e39af0817> .
+
+<http://trials.drugis.org/instances/69fa8375-e91b-4d68-bd64-e52194730960>
+        a       <http://trials.drugis.org/ontology#Category> ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Female" .
+
+<http://trials.drugis.org/instances/289bf510-ab36-4e4b-be44-015010605543>
+        <http://trials.drugis.org/ontology#count>
+                17 ;
+        <http://trials.drugis.org/ontology#of_group>
+                <http://trials.drugis.org/instances/9a23caaa-874c-40fa-b362-2d6e01aa7373> ;
+        <http://trials.drugis.org/ontology#of_moment>
+                <http://trials.drugis.org/instances/d9334d08-4c54-4124-93c7-c9b58122117d> ;
+        <http://trials.drugis.org/ontology#of_outcome>
+                <http://trials.drugis.org/instances/aceb6fe8-1ae5-42db-a0fe-bfe485056123> ;
+        <http://trials.drugis.org/ontology#sample_size>
+                92 .
+
+<http://trials.drugis.org/instances/57c36f27-9476-40e3-a7ab-af3903c14670>
+        <http://trials.drugis.org/ontology#count>
+                4 ;
+        <http://trials.drugis.org/ontology#of_group>
+                <http://trials.drugis.org/instances/9a23caaa-874c-40fa-b362-2d6e01aa7373> ;
+        <http://trials.drugis.org/ontology#of_moment>
+                <http://trials.drugis.org/instances/d9334d08-4c54-4124-93c7-c9b58122117d> ;
+        <http://trials.drugis.org/ontology#of_outcome>
+                <http://trials.drugis.org/instances/962b0309-993d-43a0-a93c-3abddf1e0d04> ;
+        <http://trials.drugis.org/ontology#sample_size>
+                92 .
+
+<http://trials.drugis.org/instances/0c3d177f-7fd6-4261-9d87-829d8f71b0a1>
+        <http://trials.drugis.org/ontology#count>
+                6 ;
+        <http://trials.drugis.org/ontology#of_group>
+                <http://trials.drugis.org/instances/9a23caaa-874c-40fa-b362-2d6e01aa7373> ;
+        <http://trials.drugis.org/ontology#of_moment>
+                <http://trials.drugis.org/instances/d9334d08-4c54-4124-93c7-c9b58122117d> ;
+        <http://trials.drugis.org/ontology#of_outcome>
+                <http://trials.drugis.org/instances/518c75f1-20c9-4a7f-a01e-f971d614f68d> ;
+        <http://trials.drugis.org/ontology#sample_size>
+                92 .
+
+<http://trials.drugis.org/instances/a990b9d4-0c56-42ff-abc8-a17b53ba4684>
+        <http://trials.drugis.org/ontology#count>
+                10 ;
+        <http://trials.drugis.org/ontology#of_group>
+                <http://trials.drugis.org/instances/9a23caaa-874c-40fa-b362-2d6e01aa7373> ;
+        <http://trials.drugis.org/ontology#of_moment>
+                <http://trials.drugis.org/instances/d9334d08-4c54-4124-93c7-c9b58122117d> ;
+        <http://trials.drugis.org/ontology#of_outcome>
+                <http://trials.drugis.org/instances/225f91ad-1e9c-412d-b7bd-07baad68b2b0> ;
+        <http://trials.drugis.org/ontology#sample_size>
+                92 .

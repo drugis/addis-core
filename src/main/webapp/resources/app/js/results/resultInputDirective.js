@@ -5,24 +5,25 @@ define([], function() {
   var resultInputDirective = function(ResultsTableService, ResultsService) {
     return {
       restrict: 'E',
-      templateUrl: 'app/js/results/resultInputDirective.html',
+      templateUrl: './resultInputDirective.html',
       scope: {
         row: '=',
         column: '=',
         isEditingAllowed: '='
       },
       link: function(scope) {
-        scope.updateValue = function(row, column) {
-          if (ResultsTableService.isValidValue(column)) {
-            column.isInValidValue = false;
-            ResultsService.updateResultValue(row, column).then(function(result){
+        scope.updateValue = updateValue;
+
+        function updateValue(row, cell) {
+          if (ResultsTableService.isValidValue(cell)) {
+            cell.isInValidValue = false;
+            ResultsService.updateResultValue(row, cell).then(function(result) {
               row.uri = result;
             });
           } else {
-            column.isInValidValue = true;
+            cell.isInValidValue = true;
           }
-        };
-
+        }
       }
     };
   };

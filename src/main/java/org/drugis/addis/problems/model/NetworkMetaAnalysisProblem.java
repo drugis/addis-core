@@ -4,40 +4,52 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.drugis.addis.models.Model;
+import org.drugis.addis.problems.model.problemEntry.AbstractProblemEntry;
+import org.drugis.addis.problems.model.problemEntry.RelativeDataEntry;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
-/**
- * Created by daan on 21-5-14.
- */
 public class NetworkMetaAnalysisProblem extends AbstractProblem {
 
-  protected List<AbstractNetworkMetaAnalysisProblemEntry> entries = new ArrayList<>();
+  protected List<AbstractProblemEntry> entries = new ArrayList<>();
   protected List<TreatmentEntry> treatments = new ArrayList<>();
-
+  private RelativeEffectData relativeEffectData;
   @JsonInclude(JsonInclude.Include.NON_NULL)
   private Map<String, Map<String, Double>> studyLevelCovariates;
 
   public NetworkMetaAnalysisProblem() {
   }
 
-  public NetworkMetaAnalysisProblem(List<AbstractNetworkMetaAnalysisProblemEntry> entries,
-                                    List<TreatmentEntry> treatments, Map<String, Map<String, Double>> studyLevelCovariates) {
+  public NetworkMetaAnalysisProblem(List<AbstractProblemEntry> entries,
+                                    RelativeEffectData relativeEffectData,
+                                    List<TreatmentEntry> treatments,
+                                    Map<String, Map<String, Double>> studyLevelCovariates) {
     this.entries = entries;
+    this.relativeEffectData = relativeEffectData;
     this.treatments = treatments;
     this.studyLevelCovariates = studyLevelCovariates;
   }
 
-  public NetworkMetaAnalysisProblem(List<AbstractNetworkMetaAnalysisProblemEntry> entries, List<TreatmentEntry> treatments) {
-    this(entries, treatments, null);
+  public NetworkMetaAnalysisProblem(List<AbstractProblemEntry> entries,
+                                    List<TreatmentEntry> treatments,
+                                    Map<String, Map<String, Double>> studyLevelCovariates) {
+    this(entries, new RelativeEffectData(), treatments, studyLevelCovariates);
   }
 
-  public List<AbstractNetworkMetaAnalysisProblemEntry> getEntries() {
+  public NetworkMetaAnalysisProblem(List<AbstractProblemEntry> entries, List<TreatmentEntry> treatments) {
+    this(entries, new RelativeEffectData(), treatments, null);
+  }
+
+  public List<AbstractProblemEntry> getEntries() {
     return entries;
+  }
+
+  public RelativeEffectData getRelativeEffectData() {
+    return relativeEffectData;
   }
 
   public List<TreatmentEntry> getTreatments() {
@@ -80,19 +92,16 @@ public class NetworkMetaAnalysisProblem extends AbstractProblem {
   public boolean equals(Object o) {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
-
     NetworkMetaAnalysisProblem that = (NetworkMetaAnalysisProblem) o;
-
-    if (!entries.equals(that.entries)) return false;
-    if (!treatments.equals(that.treatments)) return false;
-    return studyLevelCovariates != null ? studyLevelCovariates.equals(that.studyLevelCovariates) : that.studyLevelCovariates == null;
+    return Objects.equals(entries, that.entries) &&
+            Objects.equals(relativeEffectData, that.relativeEffectData) &&
+            Objects.equals(treatments, that.treatments) &&
+            Objects.equals(studyLevelCovariates, that.studyLevelCovariates);
   }
 
   @Override
   public int hashCode() {
-    int result = entries.hashCode();
-    result = 31 * result + treatments.hashCode();
-    result = 31 * result + (studyLevelCovariates != null ? studyLevelCovariates.hashCode() : 0);
-    return result;
+
+    return Objects.hash(entries, relativeEffectData, treatments, studyLevelCovariates);
   }
 }

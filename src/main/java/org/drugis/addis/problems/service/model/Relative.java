@@ -1,10 +1,8 @@
 package org.drugis.addis.problems.service.model;
 
 import java.util.Map;
+import java.util.Objects;
 
-/**
- * Created by joris on 14-6-17.
- */
 public class Relative {
   private String type;
   private Map<String, Double> mu;
@@ -32,19 +30,14 @@ public class Relative {
   public boolean equals(Object o) {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
-
     Relative relative = (Relative) o;
-
-    if (!type.equals(relative.type)) return false;
-    if (!mu.equals(relative.mu)) return false;
-    return cov.equals(relative.cov);
+    return Objects.equals(type, relative.type) &&
+        Objects.equals(mu, relative.mu) &&
+        Objects.equals(cov, relative.cov);
   }
 
   @Override
   public int hashCode() {
-    int result = type.hashCode();
-    result = 31 * result + mu.hashCode();
-    result = 31 * result + cov.hashCode();
-    return result;
+    return Objects.hash(type, mu, cov);
   }
 }

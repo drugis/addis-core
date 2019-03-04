@@ -3,14 +3,14 @@ PREFIX dcterms: <http://purl.org/dc/terms/>
 
 DELETE {
   ?dataset dcterms:title ?title
-} INSERT {
-  ?dataset dcterms:title "$newTitle"
 } WHERE {
   ?dataset dcterms:title ?title
 };
-
+INSERT DATA {
+  <$datasetUri> dcterms:title "$newTitle"
+};
 DELETE {
-  ?dataset dcterms:description ?description
+  <$datasetUri> dcterms:description ?description
 } WHERE {
-  ?dataset dcterms:description ?description
+  <$datasetUri> dcterms:description ?description
 };

@@ -4,7 +4,7 @@ define([], function() {
   var HistoryItemDirective = function($stateParams) {
     return {
       restrict: 'E',
-      templateUrl: 'app/js/dataset/studyHistoryItemDirective.html',
+      templateUrl: './dataset/studyHistoryItemDirective.html',
       scope: {
         item: '='
       },

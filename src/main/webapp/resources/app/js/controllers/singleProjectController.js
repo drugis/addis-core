@@ -1,6 +1,7 @@
 'use strict';
 define(['lodash', 'angular'], function(_, angular) {
-  var dependencies = ['$scope', '$q', '$state', '$stateParams', '$location', '$modal',
+  var dependencies = [
+    '$scope', '$q', '$state', '$stateParams', '$modal',
     'ProjectResource',
     'ProjectService',
     'TrialverseResource',
@@ -18,9 +19,11 @@ define(['lodash', 'angular'], function(_, angular) {
     'DosageService',
     'ScaledUnitResource',
     'CacheService',
+    'PageTitleService',
     'project'
   ];
-  var SingleProjectController = function($scope, $q, $state, $stateParams, $location, $modal,
+  var SingleProjectController = function(
+    $scope, $q, $state, $stateParams, $modal,
     ProjectResource,
     ProjectService,
     TrialverseResource,
@@ -38,7 +41,9 @@ define(['lodash', 'angular'], function(_, angular) {
     DosageService,
     ScaledUnitResource,
     CacheService,
-    project) {
+    PageTitleService,
+    project
+  ) {
     // functions
     $scope.toggleShowArchived = toggleShowArchived;
     $scope.unarchiveAnalysis = unarchiveAnalysis;
@@ -79,10 +84,16 @@ define(['lodash', 'angular'], function(_, angular) {
     $scope.userId = $stateParams.userUid;
 
     $scope.project = project;
+    setPageTitle(activeTab);
     $scope.projects = ProjectResource.query();
 
-    $scope.editMode.allowEditing = !project.archived && UserService.isLoginUserId($scope.project.owner.id);
-    $scope.editMode.allowCopying = UserService.hasLoggedInUser();
+    UserService.isLoginUserId($scope.project.owner.id).then(function(isUserOwner) {
+      $scope.editMode.allowEditing = !project.archived && isUserOwner;
+    });
+
+    UserService.getLoginUser().then(function(user) {
+      $scope.editMode.allowCopying = !!user;
+    });
 
     $scope.trialverse = TrialverseResource.get({
       namespaceUid: $scope.project.namespaceUid,
@@ -167,8 +178,8 @@ define(['lodash', 'angular'], function(_, angular) {
 
     function loadInterventions() {
       return CacheService.getInterventions({
-          projectId: $scope.project.id
-        })
+        projectId: $scope.project.id
+      })
         .then(generateInterventionDescriptions)
         .then(checkUnitMultipliers)
         .then(function() {
@@ -188,9 +199,9 @@ define(['lodash', 'angular'], function(_, angular) {
     function loadCovariates() {
       // we need to get the options in order to display the definition label, as only the definition key is stored on the covariate
       return $q.all([CovariateOptionsResource.getProjectCovariates($stateParams).$promise,
-        CacheService.getCovariates({
-          projectId: $scope.project.id
-        })
+      CacheService.getCovariates({
+        projectId: $scope.project.id
+      })
       ]).then(function(result) {
         var optionsMap = _.keyBy(result[0], 'key');
         $scope.covariates = result[1].map(function(covariate) {
@@ -244,7 +255,7 @@ define(['lodash', 'angular'], function(_, angular) {
 
     function openEditProjectDialog() {
       $modal.open({
-        templateUrl: './app/js/project/editProject.html',
+        templateUrl: '../project/editProject.html',
         controller: 'EditProjectController',
         resolve: {
           project: function() {
@@ -272,7 +283,7 @@ define(['lodash', 'angular'], function(_, angular) {
 
     function openAddAnalysisDialog() {
       $modal.open({
-        templateUrl: './app/js/analysis/addAnalysis.html',
+        templateUrl: '../analysis/addAnalysis.html',
         scope: $scope,
         controller: 'AddAnalysisController'
       });
@@ -280,7 +291,7 @@ define(['lodash', 'angular'], function(_, angular) {
 
     function openCreateOutcomeDialog() {
       $modal.open({
-        templateUrl: './app/js/outcome/addOutcome.html',
+        templateUrl: '../outcome/addOutcome.html',
         scope: $scope,
         controller: 'AddOutcomeController',
         resolve: {
@@ -296,7 +307,7 @@ define(['lodash', 'angular'], function(_, angular) {
 
     function openCreateScaledUnitDialog() {
       $modal.open({
-        templateUrl: './app/js/project/addScaledUnit.html',
+        templateUrl: '../project/addScaledUnit.html',
         controller: 'AddScaledUnitController',
         resolve: {
           callback: function() {
@@ -314,7 +325,7 @@ define(['lodash', 'angular'], function(_, angular) {
 
     function openCreateInterventionDialog() {
       $modal.open({
-        templateUrl: './app/js/intervention/addIntervention.html',
+        templateUrl: '../intervention/addIntervention.html',
         scope: $scope,
         controller: 'AddInterventionController',
         size: 'large',
@@ -331,7 +342,7 @@ define(['lodash', 'angular'], function(_, angular) {
 
     function openEditOutcomeDialog(outcome) {
       $modal.open({
-        templateUrl: './app/js/outcome/editOutcome.html',
+        templateUrl: '../outcome/editOutcome.html',
         controller: 'EditAddisOutcomeController',
         resolve: {
           outcome: function() {
@@ -355,7 +366,7 @@ define(['lodash', 'angular'], function(_, angular) {
 
     function openEditInterventionDialog(intervention) {
       $modal.open({
-        templateUrl: './app/js/intervention/editIntervention.html',
+        templateUrl: '../intervention/editIntervention.html',
         controller: 'EditInterventionController',
         resolve: {
           intervention: function() {
@@ -376,7 +387,7 @@ define(['lodash', 'angular'], function(_, angular) {
 
     function addCovariate() {
       $modal.open({
-        templateUrl: './app/js/covariates/addCovariate.html',
+        templateUrl: '../covariates/addCovariate.html',
         scope: $scope,
         controller: 'AddCovariateController',
         resolve: {
@@ -394,18 +405,22 @@ define(['lodash', 'angular'], function(_, angular) {
     }
 
     function setActiveTab(tab) {
-      if (tab === $scope.tabSelection.activeTab) {
-        return;
+      switch (tab) {
+        case $scope.tabSelection.activeTab:
+          return;
+        case 'report':
+          $state.go('projectReport', $stateParams);
+          break;
+        case 'definitions':
+          $state.go('project', $stateParams);
+          break;
+        case 'analyses':
+          $state.go('projectAnalyses', $stateParams, {
+            reload: true
+          });
+          break;
       }
-      if (tab === 'report') {
-        $state.go('projectReport', $stateParams);
-      } else if (tab === 'definitions') {
-        $state.go('project', $stateParams);
-      } else if (tab === 'analyses') {
-        $state.go('projectAnalyses', $stateParams, {
-          reload: true
-        });
-      }
+      setPageTitle(tab);
     }
 
     function goToEditView() {
@@ -414,7 +429,7 @@ define(['lodash', 'angular'], function(_, angular) {
 
     function openDeleteDefinitionDialog(definition, type) {
       $modal.open({
-        templateUrl: './app/js/project/deleteDefinition.html',
+        templateUrl: '../project/deleteDefinition.html',
         scope: $scope,
         controller: 'DeleteDefinitionController',
         resolve: {
@@ -437,7 +452,7 @@ define(['lodash', 'angular'], function(_, angular) {
 
     function openUpdateDialog() {
       $modal.open({
-        templateUrl: './app/js/project/updateProject.html',
+        templateUrl: '../project/updateProject.html',
         scope: $scope,
         controller: 'UpdateProjectController',
         resolve: {
@@ -446,8 +461,8 @@ define(['lodash', 'angular'], function(_, angular) {
               ProjectResource.setArchived({
                 projectId: $scope.project.id
               }, {
-                isArchived: true
-              });
+                  isArchived: true
+                });
               $state.go('project', {
                 userUid: $stateParams.userUid,
                 projectId: newProjectId
@@ -460,15 +475,17 @@ define(['lodash', 'angular'], function(_, angular) {
 
     function openCopyDialog() {
       $modal.open({
-        templateUrl: './app/js/project/copyProject.html',
+        templateUrl: '../project/copyProject.html',
         scope: $scope,
         controller: 'CopyProjectController',
         resolve: {
           callback: function() {
             return function(newProjectId) {
-              $state.go('project', {
-                userUid: UserService.getLoginUser().id,
-                projectId: newProjectId
+              UserService.getLoginUser().then(function(user) {
+                $state.go('project', {
+                  userUid: user.id,
+                  projectId: newProjectId
+                });
               });
             };
           }
@@ -478,7 +495,7 @@ define(['lodash', 'angular'], function(_, angular) {
 
     function openRepairInterventionDialog(intervention) {
       $modal.open({
-        templateUrl: './app/js/project/repairIntervention.html',
+        templateUrl: '../project/repairIntervention.html',
         scope: $scope,
         controller: 'RepairInterventionController',
         resolve: {
@@ -530,6 +547,22 @@ define(['lodash', 'angular'], function(_, angular) {
 
     function toggleShowArchived() {
       $scope.showArchived = !$scope.showArchived;
+    }
+
+    function setPageTitle(tab) {
+      var title = $scope.project.name;
+      switch (tab) {
+        case 'definitions':
+          title = title.concat('\'s definitions');
+          break;
+        case 'analyses':
+          title = title.concat('\'s analyses');
+          break;
+        case 'report':
+          title = title.concat('\'s report');
+          break;
+      }
+      PageTitleService.setPageTitle('SingleProjectController', title);
     }
 
   };

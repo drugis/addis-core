@@ -1,5 +1,5 @@
 'use strict';
-define(['angular', 'angular-mocks'], function() {
+define(['angular-mocks', './studyInformation'], function() {
   describe('the population information service', function() {
 
     var rootScope, q,
@@ -12,9 +12,9 @@ define(['angular', 'angular-mocks'], function() {
       jsonStudy
     ;
 
-    beforeEach(module('trialverse.studyInformation'));
+    beforeEach(angular.mock.module('trialverse.studyInformation'));
     beforeEach(function() {
-      module('trialverse.util', function($provide) {
+      angular.mock.module('trialverse.util', function($provide) {
         uUIDServiceStub = jasmine.createSpyObj('UUIDService', [
           'generate'
         ]);

@@ -4,7 +4,7 @@ define(['angular-mocks'], function() {
 
     var studiesWithDetailsService;
 
-    beforeEach(module('trialverse.dataset'));
+    beforeEach(angular.mock.module('trialverse.dataset'));
 
     beforeEach(inject(function($window, StudiesWithDetailsService) {
       studiesWithDetailsService = StudiesWithDetailsService;

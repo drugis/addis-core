@@ -42,13 +42,13 @@ public class OutcomeController extends AbstractAddisCoreController {
 
   @RequestMapping(value = "/projects/{projectId}/outcomes", method = RequestMethod.GET)
   @ResponseBody
-  public Collection<Outcome> query(@PathVariable Integer projectId) throws MethodNotAllowedException, ResourceDoesNotExistException {
+  public Collection<Outcome> query(@PathVariable Integer projectId) {
       return outcomeRepository.query(projectId);
   }
 
   @RequestMapping(value = "/projects/{projectId}/outcomes/{outcomeId}", method = RequestMethod.GET)
   @ResponseBody
-  public Outcome get(@PathVariable Integer projectId, @PathVariable Integer outcomeId) throws MethodNotAllowedException, ResourceDoesNotExistException {
+  public Outcome get(@PathVariable Integer projectId, @PathVariable Integer outcomeId) throws ResourceDoesNotExistException {
     return outcomeRepository.get(projectId, outcomeId);
   }
 

@@ -7,7 +7,7 @@ define([], function() {
     return {
       restrict: 'E',
       templateUrl: function(element, attr) {
-        return attr.templateUrl ? attr.templateUrl : 'app/js/util/directives/durationInput/durationInputDirective.html';
+        return attr.templateUrl ? attr.templateUrl : 'durationInputDirective.html';
       },
       scope: {
         durationString: '='

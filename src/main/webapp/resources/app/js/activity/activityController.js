@@ -8,7 +8,13 @@ define(['lodash', 'angular'],
       'actionType',
       'ActivityService'
     ];
-    var ActivityController = function($scope, $modalInstance, callback, actionType, ActivityService) {
+    var ActivityController = function(
+      $scope,
+      $modalInstance,
+      callback,
+      actionType,
+      ActivityService
+    ) {
       // functions
       $scope.addDrugClicked = addDrugClicked;
       $scope.treatmentAdded = treatmentAdded;
@@ -25,11 +31,30 @@ define(['lodash', 'angular'],
         isVisible: false
       };
 
-      $scope.$watch(function() {
-        return angular.element('.scrollable-wrapper').parent().parent().height();
-      }, function() {
-        showScrolbarIfNessesary();
-      });
+      $scope.$watch(scrollableWrapperHeight, showScrollbarIfNecessary);
+
+      function scrollableWrapperHeight() {
+        var scrollableWrappers = document.getElementsByClassName('scrollable-wrapper');
+        if (!scrollableWrappers.length) { return; }
+        return angular.element(scrollableWrappers[0]).parent().parent()[0].clientHeight;
+      }
+
+      function showScrollbarIfNecessary(oldValue, newValue) {
+        if (oldValue === newValue) { return; }
+        var revealModal = document.getElementsByClassName('reveal-modal');
+        if (!revealModal.length) { return; }
+        var offsetString = angular.element(revealModal).css('top');
+        var offset = parseInt(offsetString, 10); // remove px part
+        var viewPortHeight = angular.element('html')[0].clientHeight;
+        var wrapperHeight = scrollableWrapperHeight();
+        var maxWrapperHeight = viewPortHeight - offset;
+
+        if (wrapperHeight > maxWrapperHeight) {
+          scrollableWrapperElement.css('max-height', viewPortHeight - offset);
+        } else {
+          scrollableWrapperElement.css('max-height', viewPortHeight + offset);
+        }
+      }
 
       if ($scope.actionType === 'Add') {
         $scope.itemScratch = {};
@@ -50,16 +75,16 @@ define(['lodash', 'angular'],
       function treatmentAdded(treatment) {
         $scope.itemScratch.treatments.push(treatment);
         $scope.treatmentDirective.isVisible = false;
-        $scope.notEnoughtTreatments = $scope.itemScratch.activityType.uri === 'ontology:TreatmentActivity' && !$scope.itemScratch.treatments;
+        $scope.notEnoughTreatments = $scope.itemScratch.activityType.uri === 'ontology:TreatmentActivity' && !$scope.itemScratch.treatments;
       }
 
       function addItem() {
         $scope.isEditing = true;
         ActivityService.addItem($scope.itemScratch)
           .then(function() {
-              callback();
-              $modalInstance.close();
-            },
+            callback();
+            $modalInstance.close();
+          },
             function() {
               console.error('failed to create activity');
               cancel();
@@ -70,9 +95,9 @@ define(['lodash', 'angular'],
         $scope.isEditing = true;
         ActivityService.editItem($scope.itemScratch)
           .then(function() {
-              callback();
-              $modalInstance.close();
-            },
+            callback();
+            $modalInstance.close();
+          },
             function() {
               console.error('failed to edit activity');
               cancel();
@@ -84,26 +109,9 @@ define(['lodash', 'angular'],
       }
 
       function typeChanged() {
-        showScrolbarIfNessesary();
-        $scope.notEnoughtTreatments = $scope.itemScratch.activityType.uri === 'ontology:TreatmentActivity' && !$scope.itemScratch.treatments;
+        showScrollbarIfNecessary();
+        $scope.notEnoughTreatments = $scope.itemScratch.activityType.uri === 'ontology:TreatmentActivity' && !$scope.itemScratch.treatments;
       }
-
-      // private
-      function showScrolbarIfNessesary() {
-        var offsetString = angular.element('.reveal-modal').css('top');
-        var offset = parseInt(offsetString, 10); // remove px part
-        var viewPortHeight = angular.element('html').height();
-        var scrollableWrapperElement = angular.element('.scrollable-wrapper');
-        var wrapperHeight = scrollableWrapperElement.parent().parent().height();
-        var maxWrapperHeight = viewPortHeight - offset;
-
-        if (wrapperHeight > maxWrapperHeight) {
-          scrollableWrapperElement.css('max-height', viewPortHeight - offset);
-        } else {
-          scrollableWrapperElement.css('max-height', viewPortHeight + offset);
-        }
-      }
-
     };
     return dependencies.concat(ActivityController);
   });

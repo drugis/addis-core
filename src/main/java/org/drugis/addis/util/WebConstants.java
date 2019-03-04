@@ -1,5 +1,6 @@
 package org.drugis.addis.util;
 
+import com.fasterxml.jackson.core.Version;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.jena.riot.WebContent;
@@ -17,6 +18,7 @@ import java.nio.charset.Charset;
  */
 @Component
 public class WebConstants {
+  public static final Version SCHEMA_VERSION = new Version(1, 1, 0, null, null, null);
   private final static MediaType APPLICATION_JSON_UTF8 = new MediaType(
           MediaType.APPLICATION_JSON.getType(),
           MediaType.APPLICATION_JSON.getSubtype(),
@@ -101,11 +103,11 @@ public class WebConstants {
     }
   }
 
-  public static String getTriplestoreBaseUri() {
+  public String getTriplestoreBaseUri() {
     return TRIPLESTORE_BASE_URI;
   }
 
-  public static String getEventSourceUriPrefix() {
+  private static String getEventSourceUriPrefix() {
     return EVENT_SOURCE_URI_PREFIX;
   }
 
@@ -132,7 +134,7 @@ public class WebConstants {
             .toUri();
   }
 
-  public static URI buildDatasetUri(String datasetUuid) {
+  public URI buildDatasetUri(String datasetUuid) {
     return UriComponentsBuilder.fromHttpUrl(getTriplestoreBaseUri())
             .path(DATASET_PATH)
             .path(datasetUuid)

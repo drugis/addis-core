@@ -1,10 +1,8 @@
 package org.drugis.addis.trialverse.model.trialdata;
 
 import java.net.URI;
+import java.util.Objects;
 
-/**
- * Created by connor on 8-4-16.
- */
 public class AbstractSemanticIntervention {
   private URI drugInstance;
   private URI drugConcept;
@@ -29,18 +27,14 @@ public class AbstractSemanticIntervention {
   public boolean equals(Object o) {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
-
     AbstractSemanticIntervention that = (AbstractSemanticIntervention) o;
-
-    if (!drugInstance.equals(that.drugInstance)) return false;
-    return drugConcept.equals(that.drugConcept);
-
+    return Objects.equals(drugInstance, that.drugInstance) &&
+            Objects.equals(drugConcept, that.drugConcept);
   }
 
   @Override
   public int hashCode() {
-    int result = drugInstance.hashCode();
-    result = 31 * result + drugConcept.hashCode();
-    return result;
+
+    return Objects.hash(drugInstance, drugConcept);
   }
 }

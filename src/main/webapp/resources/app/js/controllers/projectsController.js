@@ -1,13 +1,28 @@
 'use strict';
 define(['angular', 'lodash'], function(angular, _) {
-  var dependencies = ['$scope', '$stateParams', 'ProjectResource', 'UserService'];
-  var ProjectsController = function($scope, $stateParams, ProjectResource, UserService) {
+  var dependencies = [
+    '$scope', '$stateParams',
+    'ProjectResource',
+    'UserService',
+    'PageTitleService'
+  ];
+  var ProjectsController = function(
+    $scope, $stateParams,
+    ProjectResource,
+    UserService,
+    PageTitleService
+  ) {
     // functions
     $scope.archiveProject = archiveProject;
     $scope.unarchiveProject = unarchiveProject;
     $scope.toggleShowArchived = toggleShowArchived;
 
     //init
+    $scope.$watch('user', function(user) {
+      if (user && user.id) {
+        PageTitleService.setPageTitle('ProjectsController', user.firstName + ' ' + user.lastName + '\'s projects');
+      }
+    });
     $scope.editMode = {
       allowEditing: false
     };
@@ -55,7 +70,9 @@ define(['angular', 'lodash'], function(angular, _) {
           $scope.showArchived = false;
         }
       });
-      $scope.editMode.allowEditing = UserService.isLoginUserId($scope.userId);
+      UserService.isLoginUserId($scope.userId).then(function(isUserOwner){
+        $scope.editMode.allowEditing = isUserOwner;
+      });
     }
   };
   return dependencies.concat(ProjectsController);

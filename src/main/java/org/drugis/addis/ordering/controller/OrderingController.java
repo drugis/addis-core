@@ -28,7 +28,7 @@ public class OrderingController extends AbstractAddisCoreController {
 
   @RequestMapping(value = "/projects/{projectId}/analyses/{analysisId}/ordering", method = RequestMethod.PUT)
   @ResponseBody
-  public void put(Principal principal,@PathVariable Integer projectId ,@PathVariable Integer analysisId,
+  public void put(Principal principal, @PathVariable Integer projectId, @PathVariable Integer analysisId,
                   @RequestBody String ordering) throws ResourceDoesNotExistException, MethodNotAllowedException {
     projectService.checkOwnership(projectId, principal);
     orderingRepository.put(analysisId, ordering);

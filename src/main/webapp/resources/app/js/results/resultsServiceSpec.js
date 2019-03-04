@@ -1,113 +1,181 @@
 'use strict';
-define(['angular-mocks', 'lodash'], function(angularMocks, _) {
+define([
+  'lodash',
+  'angular-mocks',
+  './results',
+  '../util/resultsConstants'
+], function(_) {
   describe('the resultsService service', function() {
-
     var rootScope, q;
     var studyServiceMock = jasmine.createSpyObj('StudyServiceMock', ['getJsonGraph', 'saveJsonGraph']);
     var uuidServiceMock = jasmine.createSpyObj('UUIDService', ['generate']);
     uuidServiceMock.generate.and.returnValue('newUuid');
     var resultsService;
 
+    var ARM_LEVEL = 'ontology:arm_level_data';
+    var CONTRAST = 'ontology:contrast_data';
+    var CONTINUOUS = 'ontology:continuous';
+
     beforeEach(function() {
-      module('trialverse.results', function($provide) {
+      angular.mock.module('trialverse.results', function($provide) {
         $provide.value('StudyService', studyServiceMock);
         $provide.value('UUIDService', uuidServiceMock);
       });
     });
 
-    beforeEach(angularMocks.inject(function($q, $rootScope, ResultsService) {
+    beforeEach(inject(function(
+      $q,
+      $rootScope,
+      ResultsService
+    ) {
       q = $q;
       rootScope = $rootScope;
       resultsService = ResultsService;
-
       rootScope.$digest();
-
     }));
 
     describe('query results', function() {
-
       var graphJsonObject = [{
         '@id': 'http://trials.drugis.org/instances/result1',
-        'count': 24,
-        'of_group': 'http://trials.drugis.org/instances/arm1',
-        'of_moment': 'http://trials.drugis.org/instances/moment1',
-        'of_outcome': 'http://trials.drugis.org/instances/outcome1',
-        'sample_size': 70
+        count: 24,
+        of_group: 'http://trials.drugis.org/instances/arm1',
+        of_moment: 'http://trials.drugis.org/instances/moment1',
+        of_outcome: 'http://trials.drugis.org/instances/outcome1',
+        sample_size: 70,
+        arm_or_contrast: ARM_LEVEL
       }, {
         '@id': 'http://trials.drugis.org/instances/result2',
-        'standard_deviation': 2,
-        'mean': 5,
-        'of_group': 'http://trials.drugis.org/instances/arm2',
-        'of_moment': 'http://trials.drugis.org/instances/moment1',
-        'of_outcome': 'http://trials.drugis.org/instances/outcome1',
-        'sample_size': 33
+        standard_deviation: 2,
+        mean: 5,
+        of_group: 'http://trials.drugis.org/instances/arm2',
+        of_moment: 'http://trials.drugis.org/instances/moment1',
+        of_outcome: 'http://trials.drugis.org/instances/outcome1',
+        sample_size: 33,
+        arm_or_contrast: ARM_LEVEL
       }, {
         '@id': 'http://trials.drugis.org/instances/result3',
-        'count': 3,
-        'of_group': 'http://trials.drugis.org/instances/arm2',
-        'of_moment': 'http://trials.drugis.org/instances/moment1',
-        'of_outcome': 'http://trials.drugis.org/instances/outcome2',
-        'sample_size': 33
+        count: 3,
+        of_group: 'http://trials.drugis.org/instances/arm2',
+        of_moment: 'http://trials.drugis.org/instances/moment1',
+        of_outcome: 'http://trials.drugis.org/instances/outcome2',
+        sample_size: 33,
+        arm_or_contrast: ARM_LEVEL
+      }, {
+        '@id': 'http://trials.drugis.org/instances/result4',
+        standard_error: 37.2,
+        of_group: 'http://trials.drugis.org/instances/arm1',
+        of_moment: 'http://trials.drugis.org/instances/moment1',
+        of_outcome: 'http://trials.drugis.org/instances/outcome3',
+        odds_ratio: 0.5,
+        arm_or_contrast: CONTRAST
+      }, {
+        '@id': 'http://trials.drugis.org/instances/result5',
+        standard_error: 15.2,
+        of_group: 'http://trials.drugis.org/instances/arm2',
+        of_moment: 'http://trials.drugis.org/instances/moment1',
+        of_outcome: 'http://trials.drugis.org/instances/outcome3',
+        odds_ratio: 2.2,
+        arm_or_contrast: CONTRAST
       }];
 
-      var queryOutcome = 'http://trials.drugis.org/instances/outcome1';
+      describe('for an arm-level variable', () => {
+        var queryOutcome = 'http://trials.drugis.org/instances/outcome1';
 
-      beforeEach(function() {
-        var graphDefer = q.defer();
-        var getGraphPromise = graphDefer.promise;
-        graphDefer.resolve(graphJsonObject);
-        studyServiceMock.getJsonGraph.and.returnValue(getGraphPromise);
-      });
-
-      it('should return the results for a given variable', function(done) {
-        resultsService.queryResults(queryOutcome).then(function(actualResults) {
-          expect(actualResults.length).toEqual(5);
-          expect(actualResults[0].instance).toEqual('http://trials.drugis.org/instances/result1');
-          expect(actualResults[0].armUri).toEqual('http://trials.drugis.org/instances/arm1');
-          expect(actualResults[0].momentUri).toEqual('http://trials.drugis.org/instances/moment1');
-          expect(actualResults[0].outcomeUri).toEqual('http://trials.drugis.org/instances/outcome1');
-          expect(actualResults[0].result_property).toEqual('sample_size');
-          expect(actualResults[0].value).toEqual(70);
-
-          expect(actualResults[1].instance).toEqual('http://trials.drugis.org/instances/result1');
-          expect(actualResults[1].armUri).toEqual('http://trials.drugis.org/instances/arm1');
-          expect(actualResults[1].momentUri).toEqual('http://trials.drugis.org/instances/moment1');
-          expect(actualResults[1].outcomeUri).toEqual('http://trials.drugis.org/instances/outcome1');
-          expect(actualResults[1].result_property).toEqual('count');
-          expect(actualResults[1].value).toEqual(24);
-
-          expect(actualResults[4].value).toEqual(2);
-          done();
+        beforeEach(function() {
+          var graphDefer = q.defer();
+          var getGraphPromise = graphDefer.promise;
+          graphDefer.resolve(graphJsonObject);
+          studyServiceMock.getJsonGraph.and.returnValue(getGraphPromise);
         });
-        // fire in the hole !
-        rootScope.$digest();
+
+        it('should return the results for a given arm-level variable', function(done) {
+          resultsService.queryResults(queryOutcome).then(function(actualResults) {
+            expect(actualResults.length).toEqual(5);
+            expect(actualResults[0].instance).toEqual('http://trials.drugis.org/instances/result1');
+            expect(actualResults[0].armUri).toEqual('http://trials.drugis.org/instances/arm1');
+            expect(actualResults[0].momentUri).toEqual('http://trials.drugis.org/instances/moment1');
+            expect(actualResults[0].outcomeUri).toEqual('http://trials.drugis.org/instances/outcome1');
+            expect(actualResults[0].result_property).toEqual('sample_size');
+            expect(actualResults[0].value).toEqual(70);
+
+            expect(actualResults[1].instance).toEqual('http://trials.drugis.org/instances/result1');
+            expect(actualResults[1].armUri).toEqual('http://trials.drugis.org/instances/arm1');
+            expect(actualResults[1].momentUri).toEqual('http://trials.drugis.org/instances/moment1');
+            expect(actualResults[1].outcomeUri).toEqual('http://trials.drugis.org/instances/outcome1');
+            expect(actualResults[1].result_property).toEqual('count');
+            expect(actualResults[1].value).toEqual(24);
+
+            expect(actualResults[4].value).toEqual(2);
+            done();
+          });
+          rootScope.$digest();
+        });
+      });
+      describe('for a contrast variable', () => {
+        var queryOutcome = 'http://trials.drugis.org/instances/outcome3';
+
+        beforeEach(function() {
+          var graphDefer = q.defer();
+          var getGraphPromise = graphDefer.promise;
+          graphDefer.resolve(graphJsonObject);
+          studyServiceMock.getJsonGraph.and.returnValue(getGraphPromise);
+        });
+
+        it('should return the results', function(done) {
+          resultsService.queryResults(queryOutcome).then(function(actualResults) {
+            expect(actualResults.length).toEqual(4);
+            expect(actualResults[0]).toEqual({
+              instance: 'http://trials.drugis.org/instances/result4',
+              armUri: 'http://trials.drugis.org/instances/arm1',
+              momentUri: 'http://trials.drugis.org/instances/moment1',
+              outcomeUri: queryOutcome,
+              armOrContrast: CONTRAST,
+              result_property: 'odds_ratio',
+              value: 0.5
+            });
+
+            expect(actualResults[1]).toEqual({
+              instance: 'http://trials.drugis.org/instances/result4',
+              armUri: 'http://trials.drugis.org/instances/arm1',
+              momentUri: 'http://trials.drugis.org/instances/moment1',
+              outcomeUri: queryOutcome,
+              armOrContrast: CONTRAST,
+              result_property: 'standard_error',
+              value: 37.2
+            });
+            done();
+          });
+          rootScope.$digest();
+        });
       });
     });
 
     describe('query results by group', function() {
-
       var graphJsonObject = [{
         '@id': 'http://trials.drugis.org/instances/result1',
-        'count': 24,
-        'of_group': 'http://trials.drugis.org/instances/arm1',
-        'of_moment': 'http://trials.drugis.org/instances/moment1',
-        'of_outcome': 'http://trials.drugis.org/instances/outcome1',
-        'sample_size': 70
+        count: 24,
+        of_group: 'http://trials.drugis.org/instances/arm1',
+        of_moment: 'http://trials.drugis.org/instances/moment1',
+        of_outcome: 'http://trials.drugis.org/instances/outcome1',
+        sample_size: 70,
+        arm_or_contrast: ARM_LEVEL
       }, {
         '@id': 'http://trials.drugis.org/instances/result2',
-        'standard_deviation': 2,
-        'mean': 5,
-        'of_group': 'http://trials.drugis.org/instances/arm2',
-        'of_moment': 'http://trials.drugis.org/instances/moment1',
-        'of_outcome': 'http://trials.drugis.org/instances/outcome1',
-        'sample_size': 33
+        standard_deviation: 2,
+        mean: 5,
+        of_group: 'http://trials.drugis.org/instances/arm2',
+        of_moment: 'http://trials.drugis.org/instances/moment1',
+        of_outcome: 'http://trials.drugis.org/instances/outcome1',
+        sample_size: 33,
+        arm_or_contrast: ARM_LEVEL
       }, {
         '@id': 'http://trials.drugis.org/instances/result3',
-        'count': 3,
-        'of_group': 'http://trials.drugis.org/instances/arm2',
-        'of_moment': 'http://trials.drugis.org/instances/moment1',
-        'of_outcome': 'http://trials.drugis.org/instances/outcome2',
-        'sample_size': 33
+        count: 3,
+        of_group: 'http://trials.drugis.org/instances/arm2',
+        of_moment: 'http://trials.drugis.org/instances/moment1',
+        of_outcome: 'http://trials.drugis.org/instances/outcome2',
+        sample_size: 33,
+        arm_or_contrast: ARM_LEVEL
       }];
 
       var groupUri = 'http://trials.drugis.org/instances/arm2';
@@ -139,14 +207,12 @@ define(['angular-mocks', 'lodash'], function(angularMocks, _) {
           expect(actualResults[4].value).toEqual(3);
           done();
         });
-        // fire in the hole !
         rootScope.$digest();
       });
     });
 
     describe('updateResultValue', function() {
       describe('when there is not yet data in the graph', function() {
-
         beforeEach(function() {
           var graphDefer = q.defer();
           var getGraphPromise = graphDefer.promise;
@@ -155,7 +221,6 @@ define(['angular-mocks', 'lodash'], function(angularMocks, _) {
         });
 
         it('should add the value to the graph', function(done) {
-
           var row = {
             variable: {
               uri: 'http://trials.drugis.org/instances/outcome1'
@@ -175,26 +240,25 @@ define(['angular-mocks', 'lodash'], function(angularMocks, _) {
           };
 
           resultsService.updateResultValue(row, inputColumn).then(function(result) {
-            var expextedGraph = [{
+            var expectedGraph = [{
               '@id': 'http://trials.drugis.org/instances/newUuid',
-              'count': 123,
-              'of_group': 'http://trials.drugis.org/instances/arm1',
-              'of_moment': 'http://trials.drugis.org/instances/moment1',
-              'of_outcome': 'http://trials.drugis.org/instances/outcome1',
+              count: 123,
+              of_group: 'http://trials.drugis.org/instances/arm1',
+              of_moment: 'http://trials.drugis.org/instances/moment1',
+              of_outcome: 'http://trials.drugis.org/instances/outcome1',
+              arm_or_contrast: ARM_LEVEL
             }];
             expect(result).toBeTruthy();
-            expect(result).toEqual(expextedGraph[0]['@id']);
-            expect(studyServiceMock.saveJsonGraph).toHaveBeenCalledWith(expextedGraph);
+            expect(result).toEqual(expectedGraph[0]['@id']);
+            expect(studyServiceMock.saveJsonGraph).toHaveBeenCalledWith(expectedGraph);
             studyServiceMock.saveJsonGraph.calls.reset();
             studyServiceMock.getJsonGraph.calls.reset();
             done();
           });
-          // fire in the hole !
           rootScope.$digest();
         });
 
         it('should add the value to the graph (categorical)', function(done) {
-
           var row = {
             variable: {
               uri: 'http://trials.drugis.org/instances/outcome1'
@@ -220,24 +284,23 @@ define(['angular-mocks', 'lodash'], function(angularMocks, _) {
           };
 
           resultsService.updateResultValue(row, inputColumn).then(function(result) {
-            var expextedGraph = [{
+            var expectedGraph = [{
               '@id': 'http://trials.drugis.org/instances/newUuid',
-              'category_count': [{
+              category_count: [{
                 category: maleCategory['@id'],
                 count: 123
               }],
-              'of_group': 'http://trials.drugis.org/instances/arm1',
-              'of_moment': 'http://trials.drugis.org/instances/moment1',
-              'of_outcome': 'http://trials.drugis.org/instances/outcome1',
+              of_group: 'http://trials.drugis.org/instances/arm1',
+              of_moment: 'http://trials.drugis.org/instances/moment1',
+              of_outcome: 'http://trials.drugis.org/instances/outcome1',
             }];
             expect(result).toBeTruthy();
-            expect(result).toEqual(expextedGraph[0]['@id']);
-            expect(studyServiceMock.saveJsonGraph).toHaveBeenCalledWith(expextedGraph);
+            expect(result).toEqual(expectedGraph[0]['@id']);
+            expect(studyServiceMock.saveJsonGraph).toHaveBeenCalledWith(expectedGraph);
             studyServiceMock.saveJsonGraph.calls.reset();
             studyServiceMock.getJsonGraph.calls.reset();
             done();
           });
-          // fire in the hole !
           rootScope.$digest();
         });
       });
@@ -245,11 +308,11 @@ define(['angular-mocks', 'lodash'], function(angularMocks, _) {
       describe('if there already is data in the graph, and the new value is a value', function() {
         var graphJsonObject = [{
           '@id': 'http://trials.drugis.org/instances/result1',
-          'count': 24,
-          'of_group': 'http://trials.drugis.org/instances/arm1',
-          'of_moment': 'http://trials.drugis.org/instances/moment1',
-          'of_outcome': 'http://trials.drugis.org/instances/outcome1',
-          'sample_size': 70
+          count: 24,
+          of_group: 'http://trials.drugis.org/instances/arm1',
+          of_moment: 'http://trials.drugis.org/instances/moment1',
+          of_outcome: 'http://trials.drugis.org/instances/outcome1',
+          sample_size: 70
         }];
 
         beforeEach(function() {
@@ -262,7 +325,8 @@ define(['angular-mocks', 'lodash'], function(angularMocks, _) {
         it('should save the value to the graph', function(done) {
           var row = {
             variable: {
-              uri: 'http://trials.drugis.org/instances/outcome1'
+              uri: 'http://trials.drugis.org/instances/outcome1',
+              armOrContrast: ARM_LEVEL
             },
             arm: {
               armURI: 'http://trials.drugis.org/instances/arm1'
@@ -276,27 +340,27 @@ define(['angular-mocks', 'lodash'], function(angularMocks, _) {
           var inputColumn = {
             value: 789,
             valueName: 'sample_size',
-            resultProperty: 'http://trials.drugis.org/ontology#sample_size'
+            resultProperty: 'http://trials.drugis.org/ontology#sample_size',
+            armOrContrast: ARM_LEVEL
           };
 
           resultsService.updateResultValue(row, inputColumn).then(function(result) {
-            var expextedGraph = [{
+            var expectedGraph = [{
               '@id': 'http://trials.drugis.org/instances/result1',
-              'count': 24,
-              'of_group': 'http://trials.drugis.org/instances/arm1',
-              'of_moment': 'http://trials.drugis.org/instances/moment1',
-              'of_outcome': 'http://trials.drugis.org/instances/outcome1',
-              'sample_size': 789
+              count: 24,
+              of_group: 'http://trials.drugis.org/instances/arm1',
+              of_moment: 'http://trials.drugis.org/instances/moment1',
+              of_outcome: 'http://trials.drugis.org/instances/outcome1',
+              sample_size: 789
             }];
             expect(result).toBeTruthy();
-            expect(result).toEqual(expextedGraph[0]['@id']);
+            expect(result).toEqual(expectedGraph[0]['@id']);
             expect(result).toEqual(row.uri);
-            expect(studyServiceMock.saveJsonGraph).toHaveBeenCalledWith(expextedGraph);
+            expect(studyServiceMock.saveJsonGraph).toHaveBeenCalledWith(expectedGraph);
             studyServiceMock.saveJsonGraph.calls.reset();
             studyServiceMock.getJsonGraph.calls.reset();
             done();
           });
-          // fire in the hole !
           rootScope.$digest();
         });
       });
@@ -315,9 +379,9 @@ define(['angular-mocks', 'lodash'], function(angularMocks, _) {
               category: femaleCategory['@id'],
               count: 24
             }],
-            'of_group': 'http://trials.drugis.org/instances/arm1',
-            'of_moment': 'http://trials.drugis.org/instances/moment1',
-            'of_outcome': 'http://trials.drugis.org/instances/outcome1'
+            of_group: 'http://trials.drugis.org/instances/arm1',
+            of_moment: 'http://trials.drugis.org/instances/moment1',
+            of_outcome: 'http://trials.drugis.org/instances/outcome1'
           }];
 
           var graphDefer = q.defer();
@@ -350,7 +414,7 @@ define(['angular-mocks', 'lodash'], function(angularMocks, _) {
             uri: 'http://trials.drugis.org/instances/result1'
           };
           resultsService.updateResultValue(row, inputColumn).then(function(result) {
-            var expextedGraph = [{
+            var expectedGraph = [{
               '@id': 'http://trials.drugis.org/instances/result1',
               category_count: [{
                 '@id': 'http://trials.drugis.org/blanknodes/1',
@@ -365,15 +429,15 @@ define(['angular-mocks', 'lodash'], function(angularMocks, _) {
               of_outcome: 'http://trials.drugis.org/instances/outcome1'
             }];
             expect(result).toBeTruthy();
-            expect(studyServiceMock.saveJsonGraph).toHaveBeenCalledWith(expextedGraph);
+            expect(studyServiceMock.saveJsonGraph).toHaveBeenCalledWith(expectedGraph);
             studyServiceMock.saveJsonGraph.calls.reset();
             studyServiceMock.getJsonGraph.calls.reset();
             done();
           });
           rootScope.$digest();
         });
-        it('if the new value is of an existing category the category_count value should be updated', function(done) {
 
+        it('if the new value is of an existing category the category_count value should be updated', function(done) {
           var inputColumn = {
             isCategory: true,
             valueName: 'Female',
@@ -393,7 +457,7 @@ define(['angular-mocks', 'lodash'], function(angularMocks, _) {
             uri: 'http://trials.drugis.org/instances/result1'
           };
           resultsService.updateResultValue(row, inputColumn).then(function(result) {
-            var expextedGraph = [{
+            var expectedGraph = [{
               '@id': 'http://trials.drugis.org/instances/result1',
               category_count: [{
                 '@id': 'http://trials.drugis.org/blanknodes/1',
@@ -405,7 +469,7 @@ define(['angular-mocks', 'lodash'], function(angularMocks, _) {
               of_outcome: 'http://trials.drugis.org/instances/outcome1'
             }];
             expect(result).toBeTruthy();
-            expect(studyServiceMock.saveJsonGraph).toHaveBeenCalledWith(expextedGraph);
+            expect(studyServiceMock.saveJsonGraph).toHaveBeenCalledWith(expectedGraph);
             studyServiceMock.saveJsonGraph.calls.reset();
             studyServiceMock.getJsonGraph.calls.reset();
             done();
@@ -432,9 +496,9 @@ define(['angular-mocks', 'lodash'], function(angularMocks, _) {
             uri: 'http://trials.drugis.org/instances/result1'
           };
           resultsService.updateResultValue(row, inputColumn).then(function(result) {
-            var expextedGraph = [];
+            var expectedGraph = [];
             expect(result).toBeFalsy();
-            expect(studyServiceMock.saveJsonGraph).toHaveBeenCalledWith(expextedGraph);
+            expect(studyServiceMock.saveJsonGraph).toHaveBeenCalledWith(expectedGraph);
             studyServiceMock.saveJsonGraph.calls.reset();
             studyServiceMock.getJsonGraph.calls.reset();
             done();
@@ -457,7 +521,8 @@ define(['angular-mocks', 'lodash'], function(angularMocks, _) {
         it('should not save the value to the graph', function(done) {
           var row = {
             variable: {
-              uri: 'http://trials.drugis.org/instances/outcome1'
+              uri: 'http://trials.drugis.org/instances/outcome1',
+              armOrContrast: ARM_LEVEL
             },
             arm: {
               armURI: 'http://trials.drugis.org/instances/arm1'
@@ -469,7 +534,9 @@ define(['angular-mocks', 'lodash'], function(angularMocks, _) {
 
           var inputColumn = {
             value: null,
-            valueName: 'sample_size'
+            valueName: 'sample_size',
+            resultProperty: 'http://trials.drugis.org/ontology#sample_size',
+            armOrContrast: ARM_LEVEL
           };
 
           studyServiceMock.saveJsonGraph.calls.reset();
@@ -480,16 +547,15 @@ define(['angular-mocks', 'lodash'], function(angularMocks, _) {
             studyServiceMock.getJsonGraph.calls.reset();
             done();
           });
-          // fire in the hole !
           rootScope.$digest();
         });
       });
 
       describe('if the new value is null and there is already a value there', function() {
-
         var row = {
           variable: {
-            uri: 'http://trials.drugis.org/instances/outcome1'
+            uri: 'http://trials.drugis.org/instances/outcome1',
+            armOrContrast: ARM_LEVEL
           },
           arm: {
             armURI: 'http://trials.drugis.org/instances/arm1'
@@ -503,16 +569,17 @@ define(['angular-mocks', 'lodash'], function(angularMocks, _) {
         var inputColumn = {
           value: null,
           valueName: 'sample_size',
-          resultProperty: 'http://trials.drugis.org/ontology#sample_size'
+          resultProperty: 'http://trials.drugis.org/ontology#sample_size',
+          armOrContrast: ARM_LEVEL
         };
 
         var graphJsonObject = [{
           '@id': 'http://trials.drugis.org/instances/result1',
-          'count': 24,
-          'of_group': 'http://trials.drugis.org/instances/arm1',
-          'of_moment': 'http://trials.drugis.org/instances/moment1',
-          'of_outcome': 'http://trials.drugis.org/instances/outcome1',
-          'sample_size': 70
+          count: 24,
+          of_group: 'http://trials.drugis.org/instances/arm1',
+          of_moment: 'http://trials.drugis.org/instances/moment1',
+          of_outcome: 'http://trials.drugis.org/instances/outcome1',
+          sample_size: 70
         }];
 
         beforeEach(function() {
@@ -523,39 +590,36 @@ define(['angular-mocks', 'lodash'], function(angularMocks, _) {
         });
 
         it('should delete the old value from the graph', function(done) {
-
           resultsService.updateResultValue(row, inputColumn).then(function(result) {
-            var expextedGraph = [{
+            var expectedGraph = [{
               '@id': 'http://trials.drugis.org/instances/result1',
-              'count': 24,
-              'of_group': 'http://trials.drugis.org/instances/arm1',
-              'of_moment': 'http://trials.drugis.org/instances/moment1',
-              'of_outcome': 'http://trials.drugis.org/instances/outcome1',
+              count: 24,
+              of_group: 'http://trials.drugis.org/instances/arm1',
+              of_moment: 'http://trials.drugis.org/instances/moment1',
+              of_outcome: 'http://trials.drugis.org/instances/outcome1',
             }];
             expect(result).toBeTruthy();
-            expect(studyServiceMock.saveJsonGraph).toHaveBeenCalledWith(expextedGraph);
+            expect(studyServiceMock.saveJsonGraph).toHaveBeenCalledWith(expectedGraph);
             studyServiceMock.saveJsonGraph.calls.reset();
             studyServiceMock.getJsonGraph.calls.reset();
             done();
           });
-          // fire in the hole !
           rootScope.$digest();
         });
       });
     }); // end describe updateResultValue
 
     describe('cleanupMeasurements for noncategoricals', function() {
-
       var arm1 = {
         '@id': 'http://trials.drugis.org/instances/a1',
         '@type': 'ontology:Arm',
-        'label': 'arm label'
+        label: 'arm label'
       };
 
       var arm2 = {
         '@id': 'http://trials.drugis.org/instances/a2',
         '@type': 'ontology:Arm',
-        'label': 'arm label'
+        label: 'arm label'
       };
 
       var outcome1 = {
@@ -566,19 +630,19 @@ define(['angular-mocks', 'lodash'], function(angularMocks, _) {
           'http://trials.drugis.org/ontology#mean',
           'http://trials.drugis.org/ontology#sample_size'
         ],
-        'is_measured_at': 'http://trials.drugis.org/instances/mm1',
-        'of_variable': [{
+        is_measured_at: 'http://trials.drugis.org/instances/mm1',
+        of_variable: [{
           '@id': 'http://fuseki-test.drugis.org:3030/.well-known/genid/var1',
           '@type': 'ontology:Variable',
-          'measurementType': 'ontology:continuous',
-          'comment': [
+          measurementType: CONTINUOUS,
+          comment: [
             '',
             'years'
           ],
-          'label': 'Age'
+          label: 'Age'
         }],
-        'comment': '',
-        'label': 'Age'
+        comment: '',
+        label: 'Age'
       };
 
       var outcome2 = {
@@ -588,19 +652,19 @@ define(['angular-mocks', 'lodash'], function(angularMocks, _) {
           'http://trials.drugis.org/ontology#count',
           'http://trials.drugis.org/ontology#sample_size'
         ],
-        'is_measured_at': 'http://trials.drugis.org/instances/mm1',
-        'of_variable': [{
+        is_measured_at: 'http://trials.drugis.org/instances/mm1',
+        of_variable: [{
           '@id': 'http://fuseki-test.drugis.org:3030/.well-known/genid/var2',
           '@type': 'ontology:Variable',
-          'measurementType': 'ontology:continuous',
-          'comment': [
+          measurementType: CONTINUOUS,
+          comment: [
             '',
             'years'
           ],
-          'label': 'My variable'
+          label: 'My variable'
         }],
-        'comment': '',
-        'label': 'My outcome'
+        comment: '',
+        label: 'My outcome'
       };
 
       var measurementMoment1 = {
@@ -609,7 +673,7 @@ define(['angular-mocks', 'lodash'], function(angularMocks, _) {
         'relative_to_anchor': 'ontology:anchorEpochStart',
         'relative_to_epoch': 'http://trials.drugis.org/instances/e1',
         'time_offset': 'PT0S',
-        'label': 'At start of epoch 1'
+        label: 'At start of epoch 1'
       };
 
       var measurementMoment2 = {
@@ -618,68 +682,67 @@ define(['angular-mocks', 'lodash'], function(angularMocks, _) {
         'relative_to_anchor': 'ontology:anchorEpochStart',
         'relative_to_epoch': 'http://trials.drugis.org/instances/e2',
         'time_offset': 'PT0S',
-        'label': 'At start of epoch 1'
+        label: 'At start of epoch 1'
       };
 
       var result1 = {
         '@id': 'http://trials.drugis.org/instances/result1',
-        'of_group': arm1['@id'],
-        'of_moment': measurementMoment1['@id'],
-        'of_outcome': outcome1['@id'],
-        'sample_size': 70
+        of_group: arm1['@id'],
+        of_moment: measurementMoment1['@id'],
+        of_outcome: outcome1['@id'],
+        sample_size: 70
       };
 
       var result2 = {
         '@id': 'http://trials.drugis.org/instances/result1',
-        'of_group': arm2['@id'],
-        'of_moment': measurementMoment2['@id'],
-        'of_outcome': outcome2['@id'],
-        'count': 3
+        of_group: arm2['@id'],
+        of_moment: measurementMoment2['@id'],
+        of_outcome: outcome2['@id'],
+        count: 3
       };
 
       var resultNonConformant = {
         '@id': 'http://trials.drugis.org/instances/resultNonConformant',
-        'of_group': arm2['@id'],
-        'of_outcome': outcome2['@id'],
-        'count': 3,
-        'comment': 'comment'
+        of_group: arm2['@id'],
+        of_outcome: outcome2['@id'],
+        count: 3,
+        comment: 'comment'
       };
 
       var result3 = {
         '@id': 'http://trials.drugis.org/instances/result1',
-        'of_group': 'non existent arm id',
-        'of_moment': measurementMoment2['@id'],
-        'of_outcome': outcome2['@id'],
-        'count': 6
+        of_group: 'non existent arm id',
+        of_moment: measurementMoment2['@id'],
+        of_outcome: outcome2['@id'],
+        count: 6
       };
 
       var result4 = {
         '@id': 'http://trials.drugis.org/instances/result1',
-        'of_group': arm1['@id'],
-        'of_moment': 'non existent moment id',
-        'of_outcome': outcome1['@id'],
-        'sample_size': 140
+        of_group: arm1['@id'],
+        of_moment: 'non existent moment id',
+        of_outcome: outcome1['@id'],
+        sample_size: 140
       };
 
       var result5 = {
         '@id': 'http://trials.drugis.org/instances/result1',
-        'of_group': arm2['@id'],
-        'of_moment': measurementMoment2['@id'],
-        'of_outcome': 'non existent outcome id',
-        'count': 6
+        of_group: arm2['@id'],
+        of_moment: measurementMoment2['@id'],
+        of_outcome: 'non existent outcome id',
+        count: 6
       };
 
       var result6 = {
         '@id': 'http://trials.drugis.org/instances/result1',
-        'of_group': arm2['@id'],
-        'of_moment': measurementMoment1['@id'],
-        'of_outcome': outcome1['@id'],
+        of_group: arm2['@id'],
+        of_moment: measurementMoment1['@id'],
+        of_outcome: outcome1['@id'],
         'standard_error': 6
       };
 
       var resultsToLeave = [result1, resultNonConformant];
       var resultsToBeCleaned = [result2, result3, result4, result5, result6];
-
 
       var study = {
         '@id': 'http://trials.drugis.org/studies/s1',
@@ -697,7 +760,7 @@ define(['angular-mocks', 'lodash'], function(angularMocks, _) {
       };
 
       var graphJsonObject = [study, measurementMoment1, measurementMoment2].concat(resultsToLeave).concat(resultsToBeCleaned);
-      var expextedGraph = [study, measurementMoment1, measurementMoment2].concat(resultsToLeave);
+      var expectedGraph = [study, measurementMoment1, measurementMoment2].concat(resultsToLeave);
 
       beforeEach(function() {
         var graphDefer = q.defer();
@@ -708,27 +771,25 @@ define(['angular-mocks', 'lodash'], function(angularMocks, _) {
 
       it('should clean the graph', function(done) {
         resultsService.cleanupMeasurements().then(function() {
-          expect(studyServiceMock.saveJsonGraph).toHaveBeenCalledWith(expextedGraph);
+          expect(studyServiceMock.saveJsonGraph).toHaveBeenCalledWith(expectedGraph);
           studyServiceMock.saveJsonGraph.calls.reset();
           done();
         });
-        // fire in the hole !
         rootScope.$digest();
       });
     });
 
     describe('cleanupMeasurements for categoricals', function() {
-
       var arm1 = {
         '@id': 'http://trials.drugis.org/instances/a1',
         '@type': 'ontology:Arm',
-        'label': 'arm label'
+        label: 'arm label'
       };
 
       var arm2 = {
         '@id': 'http://trials.drugis.org/instances/a2',
         '@type': 'ontology:Arm',
-        'label': 'arm label'
+        label: 'arm label'
       };
 
       var category1 = {
@@ -746,16 +807,16 @@ define(['angular-mocks', 'lodash'], function(angularMocks, _) {
       var outcome1 = {
         '@id': 'http://trials.drugis.org/instances/out1',
         '@type': 'ontology:OutcomeType',
-        'is_measured_at': ['http://trials.drugis.org/instances/mm1', 'http://trials.drugis.org/instances/mm2'],
-        'of_variable': [{
+        is_measured_at: ['http://trials.drugis.org/instances/mm1', 'http://trials.drugis.org/instances/mm2'],
+        of_variable: [{
           '@id': 'http://fuseki-test.drugis.org:3030/.well-known/genid/var1',
           '@type': 'ontology:Variable',
-          'measurementType': 'ontology:categorical',
+          measurementType: 'ontology:categorical',
           categoryList: categoryNode1,
-          'label': 'Age'
+          label: 'Age'
         }],
-        'comment': '',
-        'label': 'Age'
+        comment: '',
+        label: 'Age'
       };
 
       var measurementMoment1 = {
@@ -764,7 +825,7 @@ define(['angular-mocks', 'lodash'], function(angularMocks, _) {
         'relative_to_anchor': 'ontology:anchorEpochStart',
         'relative_to_epoch': 'http://trials.drugis.org/instances/e1',
         'time_offset': 'PT0S',
-        'label': 'At start of epoch 1'
+        label: 'At start of epoch 1'
       };
 
       var measurementMoment2 = {
@@ -773,14 +834,14 @@ define(['angular-mocks', 'lodash'], function(angularMocks, _) {
         'relative_to_anchor': 'ontology:anchorEpochStart',
         'relative_to_epoch': 'http://trials.drugis.org/instances/e2',
         'time_offset': 'PT0S',
-        'label': 'At start of epoch 1'
+        label: 'At start of epoch 1'
       };
 
       var result1 = {
         '@id': 'http://trials.drugis.org/instances/result1',
-        'of_group': arm1['@id'],
-        'of_moment': measurementMoment1['@id'],
-        'of_outcome': outcome1['@id'],
+        of_group: arm1['@id'],
+        of_moment: measurementMoment1['@id'],
+        of_outcome: outcome1['@id'],
         category_count: [{
           category: category1['@id'],
           count: 1
@@ -791,9 +852,9 @@ define(['angular-mocks', 'lodash'], function(angularMocks, _) {
       };
       var result2 = {
         '@id': 'http://trials.drugis.org/instances/result2',
-        'of_group': arm1['@id'],
-        'of_moment': measurementMoment2['@id'],
-        'of_outcome': outcome1['@id'],
+        of_group: arm1['@id'],
+        of_moment: measurementMoment2['@id'],
+        of_outcome: outcome1['@id'],
         category_count: [{
           category: category1['@id'],
           count: 3
@@ -804,9 +865,9 @@ define(['angular-mocks', 'lodash'], function(angularMocks, _) {
       };
       var result3 = {
         '@id': 'http://trials.drugis.org/instances/result3',
-        'of_group': arm2['@id'],
-        'of_moment': measurementMoment1['@id'],
-        'of_outcome': outcome1['@id'],
+        of_group: arm2['@id'],
+        of_moment: measurementMoment1['@id'],
+        of_outcome: outcome1['@id'],
         category_count: [{
           category: category1['@id'],
           count: 4
@@ -817,9 +878,9 @@ define(['angular-mocks', 'lodash'], function(angularMocks, _) {
       };
       var result4 = {
         '@id': 'http://trials.drugis.org/instances/result4',
-        'of_group': arm2['@id'],
-        'of_moment': measurementMoment2['@id'],
-        'of_outcome': outcome1['@id'],
+        of_group: arm2['@id'],
+        of_moment: measurementMoment2['@id'],
+        of_outcome: outcome1['@id'],
         category_count: [{
           category: category1['@id'],
           count: 7
@@ -831,9 +892,9 @@ define(['angular-mocks', 'lodash'], function(angularMocks, _) {
 
       var cleanedResult1 = {
         '@id': 'http://trials.drugis.org/instances/result1',
-        'of_group': arm1['@id'],
-        'of_moment': measurementMoment1['@id'],
-        'of_outcome': outcome1['@id'],
+        of_group: arm1['@id'],
+        of_moment: measurementMoment1['@id'],
+        of_outcome: outcome1['@id'],
         category_count: [{
           category: category1['@id'],
           count: 1
@@ -841,9 +902,9 @@ define(['angular-mocks', 'lodash'], function(angularMocks, _) {
       };
       var cleanedResult2 = {
         '@id': 'http://trials.drugis.org/instances/result2',
-        'of_group': arm1['@id'],
-        'of_moment': measurementMoment2['@id'],
-        'of_outcome': outcome1['@id'],
+        of_group: arm1['@id'],
+        of_moment: measurementMoment2['@id'],
+        of_outcome: outcome1['@id'],
         category_count: [{
           category: category1['@id'],
           count: 3
@@ -851,9 +912,9 @@ define(['angular-mocks', 'lodash'], function(angularMocks, _) {
       };
       var cleanedResult3 = {
         '@id': 'http://trials.drugis.org/instances/result3',
-        'of_group': arm2['@id'],
-        'of_moment': measurementMoment1['@id'],
-        'of_outcome': outcome1['@id'],
+        of_group: arm2['@id'],
+        of_moment: measurementMoment1['@id'],
+        of_outcome: outcome1['@id'],
         category_count: [{
           category: category1['@id'],
           count: 4
@@ -861,9 +922,9 @@ define(['angular-mocks', 'lodash'], function(angularMocks, _) {
       };
       var cleanedResult4 = {
         '@id': 'http://trials.drugis.org/instances/result4',
-        'of_group': arm2['@id'],
-        'of_moment': measurementMoment2['@id'],
-        'of_outcome': outcome1['@id'],
+        of_group: arm2['@id'],
+        of_moment: measurementMoment2['@id'],
+        of_outcome: outcome1['@id'],
         category_count: [{
           category: category1['@id'],
           count: 7
@@ -886,7 +947,7 @@ define(['angular-mocks', 'lodash'], function(angularMocks, _) {
       };
 
       var graphJsonObject = [study, measurementMoment1, measurementMoment2, result1, result2, result3, result4];
-      var expextedGraph = [study, measurementMoment1, measurementMoment2, cleanedResult1, cleanedResult2, cleanedResult3, cleanedResult4];
+      var expectedGraph = [study, measurementMoment1, measurementMoment2, cleanedResult1, cleanedResult2, cleanedResult3, cleanedResult4];
 
       beforeEach(function() {
         var graphDefer = q.defer();
@@ -897,25 +958,24 @@ define(['angular-mocks', 'lodash'], function(angularMocks, _) {
 
       it('should clean the graph', function(done) {
         resultsService.cleanupMeasurements().then(function() {
-          expect(studyServiceMock.saveJsonGraph).toHaveBeenCalledWith(expextedGraph);
+          expect(studyServiceMock.saveJsonGraph).toHaveBeenCalledWith(expectedGraph);
           studyServiceMock.saveJsonGraph.calls.reset();
           done();
         });
-        // fire in the hole !
         rootScope.$digest();
       });
     });
-    describe('isExistingMeasurement', function() {
 
+    describe('isExistingMeasurement', function() {
       var graphJsonObject = [{
         '@id': 'nonConfInstance1',
-        'of_group': 'http://trials.drugis.org/instances/arm1',
-        'of_outcome': 'http://trials.drugis.org/instances/outcome1',
+        of_group: 'http://trials.drugis.org/instances/arm1',
+        of_outcome: 'http://trials.drugis.org/instances/outcome1',
       }, {
         '@id': 'http://trials.drugis.org/instances/result1',
-        'of_group': 'http://trials.drugis.org/instances/arm1',
-        'of_moment': 'mommentInstanceUri',
-        'of_outcome': 'http://trials.drugis.org/instances/outcome1',
+        of_group: 'http://trials.drugis.org/instances/arm1',
+        of_moment: 'mommentInstanceUri',
+        of_outcome: 'http://trials.drugis.org/instances/outcome1',
       }];
 
       var measurementMomentUri = 'mommentInstanceUri';
@@ -942,21 +1002,20 @@ define(['angular-mocks', 'lodash'], function(angularMocks, _) {
     });
 
     describe('isExistingMeasurement', function() {
-
       var graphJsonObject = [{
         '@id': 'nonConfInstance1',
-        'of_group': 'http://trials.drugis.org/instances/arm1',
-        'of_outcome': 'http://trials.drugis.org/instances/outcome1',
+        of_group: 'http://trials.drugis.org/instances/arm1',
+        of_outcome: 'http://trials.drugis.org/instances/outcome1',
       }, {
         '@id': 'http://trials.drugis.org/instances/result1',
-        'of_group': 'http://trials.drugis.org/instances/arm2',
-        'of_moment': 'http://trials.drugis.org/instances/moment1',
-        'of_outcome': 'http://trials.drugis.org/instances/outcome2',
+        of_group: 'http://trials.drugis.org/instances/arm2',
+        of_moment: 'http://trials.drugis.org/instances/moment1',
+        of_outcome: 'http://trials.drugis.org/instances/outcome2',
       }, {
         '@id': 'http://trials.drugis.org/instances/result1',
-        'of_group': 'http://trials.drugis.org/instances/arm1',
-        'of_moment': 'otherMoment',
-        'of_outcome': 'http://trials.drugis.org/instances/outcome1',
+        of_group: 'http://trials.drugis.org/instances/arm1',
+        of_moment: 'otherMoment',
+        of_outcome: 'http://trials.drugis.org/instances/outcome1',
       }];
 
       var measurementMomentUri = 'mommentInstanceUri';
@@ -985,34 +1044,34 @@ define(['angular-mocks', 'lodash'], function(angularMocks, _) {
     describe('setToMeasurementMoment', function() {
       var graphJsonObject = [{
         '@id': 'nonConfInstance1',
-        'of_group': 'http://trials.drugis.org/instances/arm1',
-        'of_outcome': 'http://trials.drugis.org/instances/outcome1',
-        'comment': 'comment'
+        of_group: 'http://trials.drugis.org/instances/arm1',
+        of_outcome: 'http://trials.drugis.org/instances/outcome1',
+        comment: 'comment'
       }, {
         '@id': 'otherNode',
-        'of_group': 'http://trials.drugis.org/instances/arm2',
-        'of_outcome': 'http://trials.drugis.org/instances/outcome2'
+        of_group: 'http://trials.drugis.org/instances/arm2',
+        of_outcome: 'http://trials.drugis.org/instances/outcome2'
       }, {
         '@id': 'nonConfInstance2',
-        'of_group': 'http://trials.drugis.org/instances/arm2',
-        'of_outcome': 'http://trials.drugis.org/instances/outcome2',
-        'comment': 'comment'
+        of_group: 'http://trials.drugis.org/instances/arm2',
+        of_outcome: 'http://trials.drugis.org/instances/outcome2',
+        comment: 'comment'
       }];
 
       var expectedSaveGraph = [{
         '@id': 'nonConfInstance1',
-        'of_group': 'http://trials.drugis.org/instances/arm1',
-        'of_moment': 'mommentInstanceUri',
-        'of_outcome': 'http://trials.drugis.org/instances/outcome1',
+        of_group: 'http://trials.drugis.org/instances/arm1',
+        of_moment: 'mommentInstanceUri',
+        of_outcome: 'http://trials.drugis.org/instances/outcome1',
       }, {
         '@id': 'otherNode',
-        'of_group': 'http://trials.drugis.org/instances/arm2',
-        'of_outcome': 'http://trials.drugis.org/instances/outcome2',
+        of_group: 'http://trials.drugis.org/instances/arm2',
+        of_outcome: 'http://trials.drugis.org/instances/outcome2',
       }, {
         '@id': 'nonConfInstance2',
-        'of_group': 'http://trials.drugis.org/instances/arm2',
-        'of_moment': 'mommentInstanceUri',
-        'of_outcome': 'http://trials.drugis.org/instances/outcome2',
+        of_group: 'http://trials.drugis.org/instances/arm2',
+        of_moment: 'mommentInstanceUri',
+        of_outcome: 'http://trials.drugis.org/instances/outcome2',
       }];
 
       var measurementMomentUri = 'mommentInstanceUri';
@@ -1035,133 +1094,12 @@ define(['angular-mocks', 'lodash'], function(angularMocks, _) {
       });
     });
 
-    describe('getDefaultResultProperties', function() {
-      it('should return the correct default resultproperties for dichotomous and continuous variables', function() {
-        var continuousProperties = [
-          resultsService.VARIABLE_TYPE_DETAILS.sample_size,
-          resultsService.VARIABLE_TYPE_DETAILS.mean,
-          resultsService.VARIABLE_TYPE_DETAILS.standard_deviation
-        ];
-        var dichotomousProperties = [
-          resultsService.VARIABLE_TYPE_DETAILS.sample_size,
-          resultsService.VARIABLE_TYPE_DETAILS.count
-        ];
-        var survivalProperties = [
-          resultsService.VARIABLE_TYPE_DETAILS.count,
-          resultsService.VARIABLE_TYPE_DETAILS.exposure
-        ];
-
-        expect(resultsService.getDefaultResultProperties('ontology:dichotomous')).toEqual(dichotomousProperties);
-        expect(resultsService.getDefaultResultProperties('ontology:continuous')).toEqual(continuousProperties);
-        expect(resultsService.getDefaultResultProperties('ontology:survival')).toEqual(survivalProperties);
-      });
-    });
-
-    describe('buildPropertyCategories', function() {
-      it('should build the categories for a continuous variable', function() {
-        var varDetails = _.reduce(resultsService.VARIABLE_TYPE_DETAILS, function(accum, varType) {
-          accum[varType.type] = _.extend({}, varType, {
-            isSelected: false
-          });
-          return accum;
-        }, {});
-        var variable = {
-          measurementType: 'ontology:continuous',
-          selectedProperties: []
-        };
-
-        var result = resultsService.buildPropertyCategories(variable);
-
-        var expectedResult = {
-          'Sample size': {
-            categoryLabel: 'Sample size',
-            properties: [varDetails.sample_size],
-          },
-          'Central tendency': {
-            categoryLabel: 'Central tendency',
-            properties: [varDetails.mean,
-              varDetails.median,
-              varDetails.geometric_mean,
-              varDetails.log_mean,
-              varDetails.least_squares_mean
-            ]
-          },
-          'Quantiles': {
-            categoryLabel: 'Quantiles',
-            properties: [
-              varDetails['quantile_0.05'],
-              varDetails['quantile_0.95'],
-              varDetails['quantile_0.025'],
-              varDetails['quantile_0.975'],
-              varDetails.first_quartile,
-              varDetails.third_quartile,
-
-            ]
-          },
-          'Dispersion': {
-            categoryLabel: 'Dispersion',
-            properties: [
-              varDetails.min,
-              varDetails.max,
-              varDetails.geometric_coefficient_of_variation,
-              varDetails.standard_deviation,
-              varDetails.standard_error
-            ]
-          }
-        };
-        expect(result).toEqual(expectedResult);
-      });
-    });
-
-    describe('getResultPropertiesForType', function() {
-      it('should get the right variable details for each specific type', function() {
-        var varTypes = resultsService.VARIABLE_TYPE_DETAILS;
-        var dichotomousResult = resultsService.getResultPropertiesForType('ontology:dichotomous');
-        var continuousResult = resultsService.getResultPropertiesForType('ontology:continuous');
-        var survivalResult = resultsService.getResultPropertiesForType('ontology:survival');
-
-        var expectedDichotomousResult = [
-          varTypes.sample_size,
-          varTypes.event_count,
-          varTypes.count,
-          varTypes.percentage,
-          varTypes.proportion
-        ];
-        var expectedContinuousResult = [
-          varTypes.sample_size,
-          varTypes.mean,
-          varTypes.median,
-          varTypes.geometric_mean,
-          varTypes.log_mean,
-          varTypes.least_squares_mean,
-          varTypes['quantile_0.05'],
-          varTypes['quantile_0.95'],
-          varTypes['quantile_0.025'],
-          varTypes['quantile_0.975'],
-          varTypes.min,
-          varTypes.max,
-          varTypes.geometric_coefficient_of_variation,
-          varTypes.first_quartile,
-          varTypes.third_quartile,
-          varTypes.standard_deviation,
-          varTypes.standard_error
-        ];
-        var expectedSurvivalResult = [
-          varTypes.hazard_ratio,
-          varTypes['quantile_0.025'],
-          varTypes['quantile_0.975'],
-          varTypes.count,
-          varTypes.exposure
-        ];
-        expect(dichotomousResult).toEqual(expectedDichotomousResult);
-        expect(continuousResult).toEqual(expectedContinuousResult);
-        expect(survivalResult).toEqual(expectedSurvivalResult);
-      });
-    });
-
-    describe('getVariableDetails', function() {
+    describe('getResultPropertyDetails', function() {
       it('should also work for shortened urls', function() {
-        expect(resultsService.getVariableDetails('ontology:sample_size')).toBeDefined();
+        expect(resultsService.getResultPropertyDetails('ontology:sample_size')).toBeDefined();
+        expect(resultsService.getResultPropertyDetails('ontology:sample_size', CONTRAST)).not.toBeDefined();
+        expect(resultsService.getResultPropertyDetails('ontology:odds_ratio', CONTRAST)).toBeDefined();
+        expect(resultsService.getResultPropertyDetails('ontology:mean', ARM_LEVEL)).toBeDefined();
       });
     });
 

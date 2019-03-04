@@ -2,7 +2,7 @@
 define(['angular-mocks'], function () {
   describe('DatasetService', function() {
     var datasetService;
-    beforeEach(module('trialverse.dataset'));
+    beforeEach(angular.mock.module('trialverse.dataset'));
     
     beforeEach(inject(function(DatasetService){
       datasetService = DatasetService;

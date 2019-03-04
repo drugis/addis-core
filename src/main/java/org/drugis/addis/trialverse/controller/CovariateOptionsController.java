@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.inject.Inject;
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Arrays;
@@ -44,15 +45,14 @@ public class CovariateOptionsController extends AbstractAddisCoreController {
   @ResponseBody
   public List<CovariateViewAdapter> getCovariateOptions() {
     CovariateOption[] studyCovariates = CovariateOption.values();
-    List<CovariateViewAdapter> covariateOptions = Arrays.stream(studyCovariates).
-            map(CovariateViewAdapter::new).collect(Collectors.toList());
 
-    return covariateOptions;
+    return Arrays.stream(studyCovariates).
+            map(CovariateViewAdapter::new).collect(Collectors.toList());
   }
 
   @RequestMapping(value = "/projects/{projectId}/covariate-options", method = RequestMethod.GET)
   @ResponseBody
-  public List<CovariateViewAdapter> getFixedOptionsPlusPopulationCharacteristics(@PathVariable Integer projectId) throws ResourceDoesNotExistException, URISyntaxException, ReadValueException {
+  public List<CovariateViewAdapter> getFixedOptionsPlusPopulationCharacteristics(@PathVariable Integer projectId) throws ResourceDoesNotExistException, URISyntaxException, ReadValueException, IOException {
     CovariateOption[] studyCovariates = CovariateOption.values();
     List<CovariateViewAdapter> covariateOptions = Arrays.stream(studyCovariates).map(CovariateViewAdapter::new).collect(Collectors.toList());
     Project project = projectRepository.get(projectId);

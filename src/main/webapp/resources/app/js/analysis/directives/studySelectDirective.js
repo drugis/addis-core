@@ -3,47 +3,47 @@ define(['lodash'], function(_) {
   var dependencies = ['SingleStudyBenefitRiskService'];
 
   var StudySelectDirective = function(SingleStudyBenefitRiskService) {
-
-    function isValidStudy(study) {
-      return study &&
-        (!study.missingInterventions || study.missingInterventions.length === 0) &&
-        (!study.missingOutcomes || study.missingOutcomes.length === 0) &&
-        !study.hasMatchedMixedTreatmentArm;
-    }
-
     return {
       restrict: 'E',
-      templateUrl: 'app/js/analysis/directives/studySelectDirective.html',
+      templateUrl: './studySelectDirective.html',
       scope: {
         studies: '=',
-        outcome: '=',
+        checkErrors: '=',
         interventions: '=',
         selection: '=',
         onChange: '=',
         editMode: '='
       },
       link: function(scope) {
+        scope.onStudySelect = onStudySelect;
+
         if (!scope.selection) {
           scope.selection = {};
         }
         scope.$watch('studies', function() {
-          var studyOptions = SingleStudyBenefitRiskService.addMissingOutcomesToStudies(scope.studies, [scope.outcome]);
-          scope.studyOptions = SingleStudyBenefitRiskService.recalculateGroup(studyOptions);
+          scope.studyOptions = createStudyOptions();
           var oldSelection = scope.selection.selectedStudy;
           if (oldSelection) {
             scope.selection.selectedStudy = _.find(scope.studyOptions, ['studyUri', oldSelection.studyUri]);
+            scope.checkErrors();
           }
         });
-        scope.onStudySelect = function(newSelection) {
-          if (isValidStudy(newSelection)) {
+
+        function createStudyOptions(){
+          var studyOptions = SingleStudyBenefitRiskService.addMissingOutcomesToStudies(scope.studies, [scope.selection]);
+          studyOptions = SingleStudyBenefitRiskService.addMissingValuesToStudies(studyOptions, scope.interventions, scope.selection);
+          return SingleStudyBenefitRiskService.recalculateGroup(studyOptions, scope.interventions, scope.selection);
+        }
+
+        function onStudySelect(newSelection) {
+          if (SingleStudyBenefitRiskService.isValidStudyOption(newSelection, scope.interventions, scope.selection)) {
             scope.onChange(newSelection);
           } else {
             scope.onChange();
           }
-        };
+        }
       }
     };
-
   };
 
   return dependencies.concat(StudySelectDirective);

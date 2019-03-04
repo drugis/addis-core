@@ -7,7 +7,7 @@ define(['lodash'], function(_) {
     OutcomeResource, AnalysisResource, ModelResource, ScenarioResource, MCDAResultsService, TaskDependencies) {
     return {
       restrict: 'E',
-      templateUrl: 'app/js/project/ssbrReportView.html',
+      templateUrl: './ssbrReportView.html',
       scope: {
         user: '=',
         project: '=',

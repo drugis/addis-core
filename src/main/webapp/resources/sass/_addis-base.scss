@@ -170,6 +170,10 @@ ul.form-list li {
   font-weight: bold;
 }
 
+input[type="number"].invalid-trialverse-number  {
+  background-color: lighten($alert-color, 10%);
+}
+
 //////// Tables /////////////////
 table {
   tr {
@@ -200,6 +204,7 @@ table {
 tr.clickable td {
   color: $primary-color;
 }
+
 //////////////////////// end study results //
 
 /////////////////////// MetaBenefitRisk /////////////////

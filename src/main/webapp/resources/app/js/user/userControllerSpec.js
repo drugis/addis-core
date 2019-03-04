@@ -11,10 +11,10 @@ define(['angular-mocks'], function(angularMocks) {
       users = [{user:'user1'}, {user:'user2'}],
       datasets = [{title: 'my results', headVersion: 'http://host/versions/foo'}];
 
-    beforeEach(module('trialverse.user'));
+    beforeEach(angular.mock.module('trialverse.user'));
 
 
-    beforeEach(angularMocks.inject(function($rootScope, $q, $controller, $httpBackend, DatasetResource) {
+    beforeEach(inject(function($rootScope, $q, $controller, $httpBackend, DatasetResource) {
       scope = $rootScope;
       httpBackend = $httpBackend;
 

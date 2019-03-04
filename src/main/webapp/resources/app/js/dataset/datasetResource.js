@@ -1,6 +1,5 @@
 'use strict';
 define([], function() {
-
   var dependencies = ['$resource'];
   var DatasetResource = function($resource) {
     return $resource('/users/:userUid/datasets/:datasetUuid', {

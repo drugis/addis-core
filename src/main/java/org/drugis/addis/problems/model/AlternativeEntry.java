@@ -1,5 +1,7 @@
 package org.drugis.addis.problems.model;
 
+import java.util.Objects;
+
 /**
  * Created by daan on 3/21/14.
  */
@@ -24,19 +26,14 @@ public class AlternativeEntry {
   public boolean equals(Object o) {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
-
     AlternativeEntry that = (AlternativeEntry) o;
-
-    if (!alternative.equals(that.alternative)) return false;
-    if (!title.equals(that.title)) return false;
-
-    return true;
+    return Objects.equals(alternative, that.alternative) &&
+            Objects.equals(title, that.title);
   }
 
   @Override
   public int hashCode() {
-    int result = alternative.hashCode();
-    result = 31 * result + title.hashCode();
-    return result;
+
+    return Objects.hash(alternative, title);
   }
 }

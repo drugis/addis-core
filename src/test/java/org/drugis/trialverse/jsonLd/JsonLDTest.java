@@ -6,12 +6,7 @@ import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.riot.Lang;
 import org.apache.jena.riot.RDFDataMgr;
-import org.apache.jena.riot.RDFFormat;
 import org.apache.jena.riot.RDFLanguages;
-import org.apache.jena.riot.system.PrefixMapStd;
-import org.apache.jena.sparql.core.DatasetGraph;
-import org.apache.jena.sparql.core.DatasetGraphFactory;
-import org.drugis.addis.util.NiceJsonLDWriter;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -73,14 +68,14 @@ public class JsonLDTest {
   }
 
   @Test
-  public void testNiceWriter() throws IOException {
-    String exampleJsonLd = loadResource(this.getClass(), "/jenaEsExampleJsonLd.json");
+  public void testsubstr() throws IOException {
+    String exampleJsonLd = loadResource(this.getClass(), "/prefixbug.json");
     Model model = ModelFactory.createDefaultModel();
     model.read(new StringReader(exampleJsonLd), "http://example.com", RDFLanguages.strLangJSONLD);
-
-    DatasetGraph datasetGraph = DatasetGraphFactory.create(model.getGraph());
-    NiceJsonLDWriter writer = new NiceJsonLDWriter(RDFFormat.JSONLD);
-    writer.write(System.out, datasetGraph, new PrefixMapStd(), "http://example.com", datasetGraph.getContext());
+    ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+    RDFDataMgr.write(outputStream, model, Lang.JSONLD);
+    String modelStr = outputStream.toString();
+    assertTrue(true);
   }
 
   @Test

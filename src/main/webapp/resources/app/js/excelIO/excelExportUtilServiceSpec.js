@@ -1,6 +1,66 @@
 'use strict';
-define(['lodash', 'xlsx-shim', 'angular', 'angular-mocks'], function(_, XLSX) {
+define(['lodash', 'xlsx', 'angular-mocks', './excelIO'], function(_, XLSX) {
   describe('the excel export util service', function() {
+
+    // workaround for making {foo: undefined} equal {}, see https://github.com/jasmine/jasmine/issues/592#issuecomment-43394093
+    beforeEach((function () {
+      var customMatchers = {
+        toEqualObjectWithoutKey: function (utils, customEqualityTesters) {
+          return {
+            compare: function (actual, expected) {
+              actual = removeUndefined(actual);
+              expected = removeUndefined(expected);
+              var result = {};
+              result.pass = utils.equals(actual, expected, customEqualityTesters);
+              if (!result.pass) {
+                result.message = "Expected " + JSON.stringify(actual) + " toEqualObjectWithoutKey " + JSON.stringify(expected);
+              }
+              return result;
+            }
+          }
+        }
+      };
+      jasmine.addMatchers(customMatchers);
+    }));
+
+    /**
+     * remove key when value is undefined
+     * @param {Object} obj
+     * @returns {Object}
+     */
+    function removeUndefined(obj){
+      var result = angular.copy(obj);
+      traverse(result, function(key, value, isLeaf, parent, traversePath){
+        if(value == undefined){
+          delete parent[key];
+        }
+      });
+      return result;
+    }
+
+    /**
+     * traverse object
+     * @param {Object} obj
+     * @param {Function} callback as function(key, value, isLeaf, parent, traversePath)
+     * @param {Array} [traversePath]
+     */
+    function traverse(obj, callback, traversePath) {
+      for(var key in obj){
+        if(obj.hasOwnProperty(key)){
+          var item = obj[key];
+          var path = traversePath || [];
+          if (item instanceof Object && !(item instanceof Array)) {
+            callback.apply(this, [key, item, false, obj, path]);
+            var nextPath = angular.copy(path);
+            nextPath.push(key);
+            traverse(item, callback, nextPath);
+          }else{
+            callback.apply(this, [key, item, true, obj, path]);
+          }
+        }
+      }
+    }
+
     var rootScope, q;
     var excelExportUtilService;
     var IOU;
@@ -136,15 +196,15 @@ define(['lodash', 'xlsx-shim', 'angular', 'angular-mocks'], function(_, XLSX) {
     var conceptsSheet;
 
     beforeEach(function() {
-      module('addis.excelIO', function($provide) {
+      angular.mock.module('addis.excelIO', function($provide) {
         $provide.value('$location', {
           absUrl: function() {
             return 'studyUrl';
           }
         });
-        $provide.value('GROUP_ALLOCATION_OPTIONS', GROUP_ALLOCATION_OPTIONS);
-        $provide.value('BLINDING_OPTIONS', BLINDING_OPTIONS);
-        $provide.value('STATUS_OPTIONS', STATUS_OPTIONS);
+        $provide.constant('GROUP_ALLOCATION_OPTIONS', GROUP_ALLOCATION_OPTIONS);
+        $provide.constant('BLINDING_OPTIONS', BLINDING_OPTIONS);
+        $provide.constant('STATUS_OPTIONS', STATUS_OPTIONS);
         $provide.value('ResultsService', resultsService);
       });
     });
@@ -261,6 +321,7 @@ define(['lodash', 'xlsx-shim', 'angular', 'angular-mocks'], function(_, XLSX) {
           A2: IOU.cellValue('drugUri'),
           B2: IOU.cellValue('drug'),
           C2: IOU.cellValue('drug'),
+          D2: undefined,
           E2: IOU.cellNumber(undefined),
           A3: IOU.cellValue('variableUri'),
           B3: IOU.cellValue('variable'),
@@ -277,7 +338,7 @@ define(['lodash', 'xlsx-shim', 'angular', 'angular-mocks'], function(_, XLSX) {
         expectedResultWithOffset['!ref'] = 'A1:E8';
       });
 
-      it('should generate the conceps sheet', function() {
+      it('should generate the concepts sheet', function() {
         var result = excelExportUtilService.buildConceptsSheet(startRows, studyConcepts);
         expect(result).toEqual(expectedResultNoOffset);
       });
@@ -721,7 +782,7 @@ define(['lodash', 'xlsx-shim', 'angular', 'angular-mocks'], function(_, XLSX) {
           U2: IOU.cellFormula('Concepts!B3'),
           Z2: IOU.cellFormula('Concepts!B4'),
           AE2: IOU.cellFormula('Concepts!B5'),
-          // row 3 )variable detail headers
+          // row 3 (variable detail headers)
           A3: IOU.cellValue('id'), //row 3
           B3: IOU.cellValue('addis url'),
           C3: IOU.cellValue('title'),
@@ -853,7 +914,7 @@ define(['lodash', 'xlsx-shim', 'angular', 'angular-mocks'], function(_, XLSX) {
       it('should generate the study data worksheet', function() {
         var result = excelExportUtilService.buildStudyDataSheet(startRows, study, studyInformation, studyUrl, arms, epochs, activities, studyDesign,
           populationInformation, variables, conceptsSheet, measurementMomentSheet);
-        expect(result).toEqual(expectedResultNoOffset);
+        expect(result).toEqualObjectWithoutKey(expectedResultNoOffset);
       });
       it('should generate the study data worksheet correctly if there is an offset', function() {
         var offsetStartRows = {
@@ -861,7 +922,7 @@ define(['lodash', 'xlsx-shim', 'angular', 'angular-mocks'], function(_, XLSX) {
         };
         var result = excelExportUtilService.buildStudyDataSheet(offsetStartRows, study, studyInformation, studyUrl, arms, epochs, activities, studyDesign,
           populationInformation, variables, conceptsSheet, measurementMomentSheet);
-        expect(result).toEqual(expectedResultWithOffset);
+        expect(result).toEqualObjectWithoutKey(expectedResultWithOffset);
       });
     });
 

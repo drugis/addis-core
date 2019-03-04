@@ -4,14 +4,16 @@ define([], function() {
   var FeaturedDatasetsDirective = function(DatasetResource, $filter, UserService) {
     return {
       restrict: 'E',
-      templateUrl: 'app/js/dataset/featuredDatasetsDirective.html',
+      templateUrl: './featuredDatasetsDirective.html',
       scope: {
         createProjectDialog: '&'
       },
       link: function(scope) {
         scope.stripFrontFilter = $filter('stripFrontFilter');
         scope.isVisible = true;
-        scope.showCreateProjectButton = UserService.hasLoggedInUser();
+        UserService.getLoginUser().then(function(user) {
+          scope.showCreateProjectButton = !!user;
+        });
         scope.featuredDatasets = [];
         DatasetResource.getFeatured().$promise.then(function(response) {
           scope.featuredDatasets = response;

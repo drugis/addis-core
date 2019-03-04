@@ -1,5 +1,5 @@
 'use strict';
-define(['angular-mocks'], function() {
+define(['angular-mocks', '../project'], function() {
   describe('The caching service,', function() {
     var
       cacheService,
@@ -27,7 +27,7 @@ define(['angular-mocks'], function() {
       outcomeResourceMock = jasmine.createSpyObj('OutcomeResource', ['query']),
       covariateResourceMock = jasmine.createSpyObj('CovariateResource', ['query']);
 
-    beforeEach(module('addis.project', function($provide) {
+    beforeEach(angular.mock.module('addis.project', function($provide) {
       $provide.value('ProjectResource', projectResourceMock);
       $provide.value('AnalysisResource', analysisResourceMock);
       $provide.value('ProblemResource', problemResourceMock);
@@ -59,6 +59,18 @@ define(['angular-mocks'], function() {
     beforeEach(inject(function(CacheService) {
       cacheService = CacheService;
     }));
+
+    afterEach(function() {
+      projectResourceMock.get.calls.reset();
+      analysisResourceMock.get.calls.reset();
+      problemResourceMock.get.calls.reset();
+      modelResourceMock.get.calls.reset();
+      modelResourceMock.getConsistencyModels.calls.reset();
+      modelResourceMock.queryByProject.calls.reset();
+      interventionResourceMock.query.calls.reset();
+      outcomeResourceMock.query.calls.reset();
+      covariateResourceMock.query.calls.reset();
+    });
 
     it('should not place requests uninvited', function() {
       expect(projectResourceMock.get).not.toHaveBeenCalled();

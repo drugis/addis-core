@@ -14,7 +14,7 @@ define(['lodash'], function(_) {
         baselineTreatmentId: '=',
         regressionLevel: '='
       },
-      templateUrl: 'app/js/project/report/relativeEffectsPlot/relativeEffectsPlotTemplate.html',
+      templateUrl: './relativeEffectsPlotTemplate.html',
 
       link: function(scope) {
         scope.resultsMessage = {};

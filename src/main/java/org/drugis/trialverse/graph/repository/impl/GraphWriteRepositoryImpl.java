@@ -1,7 +1,7 @@
 package org.drugis.trialverse.graph.repository.impl;
 
 import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.HttpClient;
@@ -65,7 +65,7 @@ public class GraphWriteRepositoryImpl implements GraphWriteRepository {
   @Caching(evict = {
           @CacheEvict(cacheNames = "datasetHistory", key = "#datasetUri.toString()"),
           @CacheEvict(cacheNames = "versionedDatasetQuery", allEntries = true)})
-  public Header updateGraph(URI datasetUri, String graphUuid, InputStream graph, String commitTitle, String commitDescription) throws IOException, UpdateGraphException {
+  public Header updateGraph(URI datasetUri, String graphUuid, InputStream graph, String commitTitle, String commitDescription) throws UpdateGraphException {
 
     UriComponents uriComponents = UriComponentsBuilder.fromHttpUrl(datasetUri.toString())
             .path(DATA_ENDPOINT)

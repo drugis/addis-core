@@ -1,23 +1,25 @@
 'use strict';
-var requires = [
-  'group/editGroupController',
-  'group/createGroupController',
-  'group/groupService'
-];
-define(requires.concat(['angular', 'angular-resource']), function(
-  EditGroupController,
-  CreateGroupController,
-  GroupService,
-  angular
-) {
-  return angular.module('trialverse.group', ['ngResource',
+define([
+  './editGroupController',
+  './createGroupController',
+  './groupService',
+  'angular', 'angular-resource'
+],
+  function(
+    EditGroupController,
+    CreateGroupController,
+    GroupService,
+    angular
+  ) {
+    return angular.module('trialverse.group', ['ngResource',
       'trialverse.util',
       'trialverse.study'
     ])
-    // controllers
-    .controller('EditGroupController', EditGroupController)
-    .controller('CreateGroupController', CreateGroupController)
+      // controllers
+      .controller('EditGroupController', EditGroupController)
+      .controller('CreateGroupController', CreateGroupController)
 
-    //services
-    .factory('GroupService', GroupService);
-});
+      //services
+      .factory('GroupService', GroupService);
+  }
+);

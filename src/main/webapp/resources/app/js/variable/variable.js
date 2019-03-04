@@ -1,17 +1,25 @@
 'use strict';
-var requires = [
-  'variable/addVariableController',
-  'variable/editVariableController',
-  'variable/resultPropertiesDirective'
-];
-define(requires.concat(['angular', 'angular-resource']), function(
+define([
+  './resultPropertiesService',
+  './addVariableController',
+  './editVariableController',
+  './resultPropertiesDirective',
+  'angular',
+  'angular-resource'
+], function(
+  ResultPropertiesService,
   AddVariableController,
   EditVariableController,
   resultProperties,
-  angular) {
-  return angular.module('trialverse.variable', ['ngResource', 'trialverse.util'])
-    .controller('AddVariableController', AddVariableController)
-    .controller('EditVariableController', EditVariableController)
+  angular
+) {
+    return angular.module('trialverse.variable', ['ngResource', 'trialverse.util'])
+      .factory('ResultPropertiesService', ResultPropertiesService)
 
-    .directive('resultProperties', resultProperties);
-});
+      .controller('AddVariableController', AddVariableController)
+      .controller('EditVariableController', EditVariableController)
+
+      .directive('resultProperties', resultProperties)
+      ;
+  }
+);

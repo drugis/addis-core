@@ -1,88 +1,87 @@
 'use strict';
-define(['angular', 'lodash'], function(angular, _) {
-  var dependencies = ['$scope', '$timeout', '$q', '$state', '$stateParams', 'currentAnalysis', 'currentProject', 'OutcomeResource',
-    'InterventionResource', 'CovariateResource', 'ModelResource', 'NetworkMetaAnalysisService', 'AnalysisService',
-    'EvidenceTableResource', 'UserService', 'AnalysisResource'
+define(['lodash'], function(_) {
+  var dependencies = [
+    '$scope',
+    '$timeout',
+    '$q',
+    '$state',
+    '$stateParams',
+    'AnalysisResource',
+    'AnalysisService',
+    'CovariateResource',
+    'EvidenceTableResource',
+    'InterventionResource',
+    'ModelResource',
+    'NetworkMetaAnalysisService',
+    'OutcomeResource',
+    'PageTitleService',
+    'UserService',
+    'currentAnalysis',
+    'currentProject'
   ];
 
-  var NetworkMetaAnalysisContainerController = function($scope, $timeout, $q, $state, $stateParams, currentAnalysis, currentProject,
-    OutcomeResource, InterventionResource, CovariateResource, ModelResource, NetworkMetaAnalysisService, AnalysisService,
-    EvidenceTableResource, UserService, AnalysisResource) {
+  var NetworkMetaAnalysisContainerController = function(
+    $scope,
+    $timeout,
+    $q,
+    $state,
+    $stateParams,
+    AnalysisResource,
+    AnalysisService,
+    CovariateResource,
+    EvidenceTableResource,
+    InterventionResource,
+    ModelResource,
+    NetworkMetaAnalysisService,
+    OutcomeResource,
+    PageTitleService,
+    UserService,
+    currentAnalysis,
+    currentProject
+  ) {
     // functions
     $scope.selectAllInterventions = selectAllInterventions;
     $scope.deselectAllInterventions = deselectAllInterventions;
-    $scope.changeMeasurementMoment = changeMeasurementMoment;
     $scope.changeCovariateInclusion = changeCovariateInclusion;
-    $scope.changeArmExclusion = changeArmExclusion;
     $scope.isOverlappingIntervention = isOverlappingIntervention;
     $scope.changeSelectedOutcome = changeSelectedOutcome;
     $scope.changeInterventionInclusion = changeInterventionInclusion;
     $scope.reloadModel = reloadModel;
-    $scope.doesInterventionHaveAmbiguousArms = doesInterventionHaveAmbiguousArms;
-    $scope.hasIncludedStudies = hasIncludedStudies;
     $scope.gotoCreateModel = gotoCreateModel;
-    $scope.lessThanTwoInterventionArms = lessThanTwoInterventionArms;
 
-    // vars
+    // init
+    $scope.errors = {
+      isNetworkDisconnected: true,
+      tableHasAmbiguousArm: false,
+      hasLessThanTwoInterventions: false,
+      containsMissingValue: false
+    };
     $scope.isAnalysisLocked = true;
-    $scope.isNetworkDisconnected = true;
-    $scope.hasModel = true;
-    $scope.tableHasAmbiguousArm = false;
-    $scope.hasLessThanTwoInterventions = false;
-    $scope.containsMissingValue = false;
     $scope.analysis = currentAnalysis;
     $scope.project = currentProject;
     $scope.networkGraph = {};
-    $scope.trialData = {};
+    $scope.absoluteEvidenceTableRows = {};
+    $scope.contrastEvidenceTableRows = {};
     $scope.treatmentOverlapMap = {};
-    $scope.isModelCreationBlocked = checkCanNotCreateModel();
+    $scope.isModelCreationBlocked = setErrorsTexts();
+    $scope.editMode = {
+      hasModel: true,
+      isUserOwner: false,
+      disableEditing: true
+    };
+
+    PageTitleService.setPageTitle('NetworkMetaAnalysisContainerController', currentAnalysis.title);
 
     // make available for create model permission check in models.html (which is in gemtc subproject)
     $scope.userId = Number($stateParams.userUid);
-    var isUserOwner = false;
+    UserService.getLoginUser().then(function(result){
+      $scope.loginUserId = result? result.id : undefined;
+    });
 
-    $scope.columns = [{
-        label: 'subject with event',
-        helpKey: 'count',
-        dataKey:'rate'
-      },
-      {
-        label: 'mean',
-        helpKey: 'mean',
-        dataKey:'mu'
-      },
-      {
-        label: 'standard deviation',
-        helpKey: 'standard-deviation',
-        dataKey:'sigma'
-      },
-      {
-        label: 'N',
-        helpKey: 'sample-size',
-        dataKey:'sampleSize'
-      },
-      {
-        label: 'standard error',
-        helpKey: 'standard-error',
-        dataKey:'stdErr'
-      },
-      {
-        label: 'exposure',
-        helpKey: 'exposure',
-        dataKey:'exposure'
-      }
-    ];
-
-    // init
-    if (UserService.hasLoggedInUser()) {
-      $scope.loginUserId = (UserService.getLoginUser()).id;
-      isUserOwner = UserService.isLoginUserId($scope.project.owner.id);
-    }
-
-    $scope.editMode = {
-      isUserOwner: isUserOwner,
-      disableEditing: !isUserOwner || $scope.project.archived || $scope.analysis.archived
-    };
+    UserService.isLoginUserId($scope.userId).then(function(isUserOwner) {
+      $scope.editMode.isUserOwner = isUserOwner;
+      $scope.editMode.disableEditing = !isUserOwner || $scope.project.archived || $scope.analysis.archived;
+    });
 
     $scope.models = ModelResource.query({
       projectId: $stateParams.projectId,
@@ -108,21 +107,20 @@ define(['angular', 'lodash'], function(angular, _) {
       projectId: $stateParams.projectId
     });
 
-
     $scope.covariates = CovariateResource.query({
       projectId: $stateParams.projectId
     });
 
     $q.all([
-        $scope.analysis.$promise,
-        $scope.project.$promise,
-        $scope.models.$promise,
-        outcomesPromise,
-        $scope.interventions.$promise,
-        $scope.covariates.$promise,
-      ])
+      $scope.analysis.$promise,
+      $scope.project.$promise,
+      $scope.models.$promise,
+      outcomesPromise,
+      $scope.interventions.$promise,
+      $scope.covariates.$promise,
+    ])
       .then(function() {
-        $scope.hasModel = $scope.models.length > 0;
+        $scope.editMode.hasModel = $scope.models.length > 0;
         $scope.interventions = _.orderBy($scope.interventions, function(intervention) {
           return intervention.name.toLowerCase();
         });
@@ -134,12 +132,15 @@ define(['angular', 'lodash'], function(angular, _) {
           $scope.analysis.outcome = $scope.outcomes[0];
           var saveCommand = analysisToSaveCommand($scope.analysis);
           AnalysisResource.save(saveCommand, function() {
-            $scope.reloadModel();
+            reloadModel();
           });
         } else {
-          $scope.reloadModel();
+          reloadModel();
         }
       });
+
+    $scope.$on('armExclusionChanged', armExclusionChanged);
+    $scope.$on('saveAnalysisAndReload', saveAnalysisAndReload);
 
     function analysisToSaveCommand(analysis) {
       return {
@@ -157,18 +158,10 @@ define(['angular', 'lodash'], function(angular, _) {
       });
     }
 
-    function lessThanTwoInterventionArms(dataRow) {
-      return dataRow.numberOfMatchedInterventions < 2;
-    }
-
-    function hasIncludedStudies() {
-      return _.find($scope.trialData, function(dataRow) {
-        return !$scope.lessThanTwoInterventionArms(dataRow);
+    function hasIncludedStudies(rows) {
+      return _.some(rows, function(row) {
+        return row.numberOfMatchedInterventions > 1;
       });
-    }
-
-    function doesInterventionHaveAmbiguousArms(drugId, studyUuid) {
-      return NetworkMetaAnalysisService.doesInterventionHaveAmbiguousArms(drugId, studyUuid, $scope.trialverseData, $scope.analysis);
     }
 
     function reloadModel() {
@@ -182,36 +175,39 @@ define(['angular', 'lodash'], function(angular, _) {
           projectId: $scope.project.id,
           analysisId: $scope.analysis.id
         })
-        .$promise.then(function(trialverseData) {
-          $scope.trialverseData = trialverseData;
-          $scope.momentSelections = NetworkMetaAnalysisService.buildMomentSelections(trialverseData, $scope.analysis);
+        .$promise.then(function(studies) {
           var includedInterventions = NetworkMetaAnalysisService.getIncludedInterventions($scope.interventions);
-          $scope.treatmentOverlapMap = NetworkMetaAnalysisService.buildOverlappingTreatmentMap($scope.interventions, trialverseData);
-          $scope.trialData = NetworkMetaAnalysisService.transformTrialDataToTableRows(
-            trialverseData, includedInterventions, $scope.analysis, $scope.covariates, $scope.treatmentOverlapMap);
-          $scope.tableHasAmbiguousArm = NetworkMetaAnalysisService.doesModelHaveAmbiguousArms(trialverseData, $scope.analysis);
-          $scope.hasInsufficientCovariateValues = NetworkMetaAnalysisService.doesModelHaveInsufficientCovariateValues($scope.trialData);
-          $scope.hasLessThanTwoInterventions = includedInterventions.length < 2;
-          $scope.hasTreatmentOverlap = hasTreatmentOverlap();
-          $scope.isMissingByStudyMap = NetworkMetaAnalysisService.buildMissingValueByStudyMap(trialverseData, $scope.analysis, $scope.momentSelections);
-          $scope.containsMissingValue = _.find($scope.isMissingByStudyMap);
-          $scope.measurementType = NetworkMetaAnalysisService.getMeasurementType($scope.trialverseData);
-          $scope.showColumn = NetworkMetaAnalysisService.checkColumnsToShow($scope.trialData, $scope.measurementType);
-          $scope.analysisPromise = updateNetwork().then(function() {
-            $scope.isModelCreationBlocked = checkCanNotCreateModel();
+          var tableRows = NetworkMetaAnalysisService.transformStudiesToTableRows(
+            studies, includedInterventions, $scope.analysis, $scope.covariates, $scope.treatmentOverlapMap);
+          var allRows = tableRows.absolute.concat(tableRows.contrast);
+
+          $scope.studies = studies;
+          $scope.momentSelectionsTopLevel = NetworkMetaAnalysisService.buildMomentSelections(studies, $scope.analysis);
+          $scope.treatmentOverlapMap = NetworkMetaAnalysisService.buildOverlappingTreatmentMap($scope.interventions, studies);
+
+          $scope.errors.hasLessThanTwoInterventions = includedInterventions.length < 2;
+          $scope.errors.hasInterventionOverlap = NetworkMetaAnalysisService.hasInterventionOverlap($scope.treatmentOverlapMap);
+          $scope.errors.tableHasAmbiguousArm = NetworkMetaAnalysisService.doesModelHaveAmbiguousArms(studies, $scope.analysis);
+          $scope.errors.hasInsufficientCovariateValues = NetworkMetaAnalysisService.doesModelHaveInsufficientCovariateValues(allRows);
+          $scope.errors.containsMissingValue = _.find(NetworkMetaAnalysisService.buildMissingValueByStudy(allRows, $scope.momentSelectionsTopLevel));
+          $scope.errors.containsMultipleResultProperties = NetworkMetaAnalysisService.doesModelContainTooManyResultProperties(allRows, $scope.momentSelectionsTopLevel);
+
+          $scope.absoluteEvidenceTableRows = tableRows.absolute;
+          $scope.contrastEvidenceTableRows = tableRows.contrast;
+
+          $scope.analysisPromise = updateNetwork();
+          $q.all([$scope.analysisPromise, UserService.getLoginUser()]).then(function() {
+            $scope.isModelCreationBlocked = setErrorsTexts();
           });
         });
     }
 
     function changeInterventionInclusion(intervention) {
       $scope.analysis.interventionInclusions = NetworkMetaAnalysisService.buildInterventionInclusions($scope.interventions, $scope.analysis);
-      if ($scope.trialverseData && !intervention.isIncluded) {
-        $scope.analysis.excludedArms = NetworkMetaAnalysisService.cleanUpExcludedArms(intervention, $scope.analysis, $scope.trialverseData, $scope.interventions);
+      if ($scope.studies && !intervention.isIncluded) {
+        $scope.analysis.excludedArms = NetworkMetaAnalysisService.cleanUpExcludedArms(intervention, $scope.analysis, $scope.studies, $scope.interventions);
       }
-      var saveCommand = analysisToSaveCommand($scope.analysis);
-      AnalysisResource.save(saveCommand, function() {
-        $scope.reloadModel();
-      });
+      saveAnalysisAndReload();
     }
 
     function selectAllInterventions() {
@@ -219,10 +215,7 @@ define(['angular', 'lodash'], function(angular, _) {
         intervention.isIncluded = true;
       });
       $scope.analysis.interventionInclusions = NetworkMetaAnalysisService.buildInterventionInclusions($scope.interventions, $scope.analysis);
-      var saveCommand = analysisToSaveCommand($scope.analysis);
-      AnalysisResource.save(saveCommand, function() {
-        $scope.reloadModel();
-      });
+      saveAnalysisAndReload();
     }
 
     function deselectAllInterventions() {
@@ -231,67 +224,65 @@ define(['angular', 'lodash'], function(angular, _) {
       });
       $scope.analysis.excludedArms = [];
       $scope.analysis.interventionInclusions = NetworkMetaAnalysisService.buildInterventionInclusions($scope.interventions, $scope.analysis);
-      var saveCommand = analysisToSaveCommand($scope.analysis);
-      AnalysisResource.save(saveCommand, function() {
-        $scope.reloadModel();
-      });
+      saveAnalysisAndReload();
     }
 
     function changeSelectedOutcome() {
-      $scope.tableHasAmbiguousArm = false;
+      $scope.errors.tableHasAmbiguousArm = false;
       $scope.analysis.excludedArms = [];
-      var saveCommand = analysisToSaveCommand($scope.analysis);
-      AnalysisResource.save(saveCommand, function() {
-        $scope.reloadModel();
-      });
+      saveAnalysisAndReload();
     }
 
     function isOverlappingIntervention(intervention) {
       return $scope.treatmentOverlapMap[intervention.id];
     }
 
-    function hasTreatmentOverlap() {
-      var overlapCount = _.reduce($scope.treatmentOverlapMap, function(count) {
-        return ++count;
-      }, 0);
-      return overlapCount > 0;
-    }
-
     function resolveOutcomeId(outcomeId) {
-      return _.find($scope.outcomes, function matchOutcome(outcome) {
-        return outcomeId === outcome.id;
-      });
+      return _.find($scope.outcomes, ['id', outcomeId]);
     }
 
     function updateNetwork() {
       return $timeout(function() {
         var includedInterventions = NetworkMetaAnalysisService.getIncludedInterventions($scope.interventions);
-        $scope.networkGraph.network = NetworkMetaAnalysisService.transformTrialDataToNetwork($scope.trialverseData, includedInterventions, $scope.analysis, $scope.momentSelections);
-        $scope.isNetworkDisconnected = AnalysisService.isNetworkDisconnected($scope.networkGraph.network);
+        $scope.networkGraph.network = NetworkMetaAnalysisService.transformStudiesToNetwork($scope.studies, includedInterventions, $scope.analysis, $scope.momentSelectionsTopLevel);
+        $scope.errors.isNetworkDisconnected = AnalysisService.isNetworkDisconnected($scope.networkGraph.network);
       });
     }
 
-
-    function checkCanNotCreateModel() {
-      return ($scope.editMode && $scope.editMode.disableEditing) ||
-        $scope.tableHasAmbiguousArm ||
-        !$scope.interventions || $scope.interventions.length < 2 ||
-        $scope.isNetworkDisconnected ||
-        $scope.hasLessThanTwoInterventions ||
-        $scope.hasTreatmentOverlap ||
-        $scope.containsMissingValue ||
-        $scope.hasInsufficientCovariateValues ||
-        !$scope.hasIncludedStudies();
+    function setErrorsTexts() {
+      $scope.errorTexts = [];
+      if ($scope.errors.tableHasAmbiguousArm && $scope.interventions.length > 1 && !$scope.errors.hasLessThanTwoInterventions) {
+        $scope.errorTexts.push('arms: more than one arm selected for single intervention.');
+      }
+      if (!$scope.interventions || $scope.interventions.length < 2 || $scope.errors.hasLessThanTwoInterventions) {
+        $scope.errorTexts.push('At least two interventions are needed to perform the analysis.');
+      }
+      if ($scope.analysis.outcome && $scope.errors.isNetworkDisconnected) {
+        $scope.errorTexts.push('Network not connected.');
+      }
+      if ($scope.errors.hasInterventionOverlap) {
+        $scope.errorTexts.push('Overlapping interventions detected: please exclude interventions to fix this.');
+      }
+      if ($scope.errors.containsMissingValue) {
+        $scope.errorTexts.push('The evidence table contains missing values');
+      }
+      if ($scope.errors.containsMultipleResultProperties) {
+        $scope.errorTexts.push('The evidence table contains studies with conflicting result properties');
+      }
+      return blockModelCreation();
     }
 
-    function changeArmExclusion(dataRow) {
-      $scope.tableHasAmbiguousArm = false;
-      $scope.analysis = NetworkMetaAnalysisService.changeArmExclusion(dataRow, $scope.analysis);
+    function blockModelCreation() {
+      return $scope.errorTexts.length > 0 ||
+        ($scope.editMode && $scope.editMode.disableEditing) ||
+        $scope.errors.hasInsufficientCovariateValues ||
+        (!hasIncludedStudies($scope.absoluteEvidenceTableRows) && !hasIncludedStudies($scope.contrastEvidenceTableRows));
+    }
+
+    function armExclusionChanged() {
+      $scope.errors.tableHasAmbiguousArm = false;
       updateNetwork();
-      var saveCommand = analysisToSaveCommand($scope.analysis);
-      AnalysisResource.save(saveCommand, function() {
-        $scope.reloadModel();
-      });
+      saveAnalysisAndReload();
     }
 
     function changeCovariateInclusion(covariate) {
@@ -299,29 +290,16 @@ define(['angular', 'lodash'], function(angular, _) {
       var saveCommand = analysisToSaveCommand($scope.analysis);
       AnalysisResource.save(saveCommand, function() {
         $scope.covariates = NetworkMetaAnalysisService.addInclusionsToCovariates($scope.covariates, $scope.analysis.includedCovariates);
-        $scope.reloadModel();
+        reloadModel();
       });
     }
 
-    function changeMeasurementMoment(newMeasurementMoment, dataRow) {
-      // always remove old inclusion for this study
-      $scope.analysis.includedMeasurementMoments = _.reject($scope.analysis.includedMeasurementMoments, ['study', dataRow.studyUri]);
-
-      if (!newMeasurementMoment.isDefault) {
-        var newInclusion = {
-          analysisId: $scope.analysis.id,
-          study: dataRow.studyUri,
-          measurementMoment: newMeasurementMoment.uri
-        };
-        $scope.analysis.includedMeasurementMoments.push(newInclusion);
-      }
-
+    function saveAnalysisAndReload() {
       var saveCommand = analysisToSaveCommand($scope.analysis);
       AnalysisResource.save(saveCommand, function() {
-        $scope.reloadModel();
+        reloadModel();
       });
     }
-
   };
 
   return dependencies.concat(NetworkMetaAnalysisContainerController);

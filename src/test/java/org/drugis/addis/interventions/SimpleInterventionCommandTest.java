@@ -4,7 +4,7 @@ package org.drugis.addis.interventions;
  * Created by daan on 3/12/14.
  */
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.drugis.addis.interventions.controller.command.AbstractInterventionCommand;
 import org.drugis.addis.interventions.controller.command.SimpleInterventionCommand;
 import org.junit.Test;

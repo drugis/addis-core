@@ -4,31 +4,10 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width" />
-  <link rel="shortcut icon" href="app/img/favicon.ico" type="image/x-icon" />
+  <link rel="shortcut icon" href="img/favicon.ico" type="image/x-icon" />
   <title>ADDIS user manual</title>
 
-  <link rel="stylesheet" type="text/css" href="app/js/bower_components/font-awesome/css/font-awesome.min.css">
-  <link rel="stylesheet" type="text/css" href="app/js/bower_components/gemtc-web/app/css/gemtc-drugis.css">
-  <link rel="stylesheet" type="text/css" href="app/js/bower_components/mcda-web/app/css/mcda-drugis.css">
-  <link rel="stylesheet" type="text/css" href="app/css/addis-drugis.css">
-  <script src="app/js/bower_components/foundation/js/vendor/modernizr.js"></script>
-  <script src="app/js/bower_components/bowser/bowser.min.js"></script>
-  <link rel="stylesheet" href="app/js/bower_components/KaTeX/dist/katex.min.css">
-  <script src="app/js/bower_components/KaTeX/dist/katex.min.js"></script>
-  <script src="app/js/bower_components/KaTeX/dist/contrib/auto-render.min.js"></script>
-  <script src="app/js/bower_components/jquery/dist/jquery.min.js"></script>
-  <script src="app/js/bower_components/smooth-scroller/dist/smooth-scroller.bower.min.js"></script>
-  <script src="app/js/bower_components/toc/dist/toc.bower.min.js"></script>
-  <script src="app/js/bower_components/scrollup/dist/jquery.scrollUp.min.js"></script>
   <style type="text/css">
-    #scrollUp {
-      bottom: 20px;
-      right: 20px;
-      padding: 10px 20px;
-      background-color: #555;
-      color: #fff;
-    }
-
     .figure {
       text-align: center;
       margin-bottom: 1em;
@@ -39,41 +18,32 @@
       border: 1px solid gray;
     }
 
-    #toc ul {
+    #addis-toc ol {
       list-style-type: none;
-      margin-top: -20px;
-      padding: 2rem 1rem;
+      margin-left: 0;
+      padding-left: 1em;
       background-color: #f4f4f4;
     }
 
-    #toc li {
+    #addis-toc li {
       font-size: 0.875rem;
     }
 
-    #toc li a {
+    #addis-toc li a {
       display: block;
       margin: 0;
       padding: 0.4375rem 0.875rem;
     }
 
-    #toc li a:hover,
-    #toc li a:focus {
+    #addis-toc li a:hover,
+    #addis-toc li a:focus {
       background: rgba(0, 0, 0, 0.025);
       color: #7056c6;
     }
 
-    #toc .toc-h2 {
+    #addis-toc .node-name--H2 {
       text-transform: uppercase;
-      color: #008CBA;
       font-weight: bold;
-    }
-
-    #toc .toc-h3 a {
-      padding-left: 1.225rem;
-    }
-
-    #toc .toc-h4 a {
-      padding-left: 1.675rem;
     }
   </style>
 </head>
@@ -90,16 +60,6 @@
     using it. Proceed at your own risk, or <a href="http://browser-update.org/update-browser.html#drugis.org">download a
     well-known browser</a> before continuing.
   </div>
-  <script type="text/javascript">
-    if (bowser.c || (bowser.msie && bowser.version <= 8)) {
-      document.getElementById('browserVersion1').innerHTML = bowser.name + ' ' +
-        bowser.version;
-      document.getElementById('browserCheck').style.display = 'block';
-    }
-    if (bowser.x) {
-      document.getElementById('browserUnknown').style.display = 'block';
-    }
-  </script>
 
   <div class="top-bar" data-topbar>
     <div class="top-bar-left bar-padding">
@@ -122,9 +82,10 @@
   <section class="content">
     <div class="grid-container">
       <div class="grid-x grid-margin-x">
-        <div class="cell large-3" id="toc">
+        <div class="cell large-3">
+          <div class="toc" id="addis-toc" data-toc="h2, h3, h4"></div>
         </div>
-        <div class="cell large-8 medium-12">
+        <div class="js-toc-content cell large-8 medium-12 js-">
 
           <p>Aggregate Data Drug Information System (ADDIS) is an evidence-based decision
             support system for health care policy decision making that concerns alternative
@@ -138,7 +99,7 @@
             terms,which when clicked will show a brief explanation as well as a link
             to further information in this manual.</p>
           <div class="figure">
-            <img src="app/js/bower_components/gemtc-web/app/img/glossary_popover.png" alt="glossary popover"
+            <img src="img/glossary_popover.png" alt="glossary popover"
             />
           </div>
           <h2 id="your-account">Your account</h2>
@@ -150,7 +111,8 @@
           <h3 id="creating-an-account">Creating an account</h3>
           <p>You can create an ADDIS account simply by signing in to ADDIS using your
             existing Google account. If you do not yet have a Google account,
-            <a href="https://accounts.google.com/signup">create your Google account</a>            before signing in to ADDIS. After you sign in for the first time, basic
+            <a href="https://accounts.google.com/signup">create your Google account</a>
+            before signing in to ADDIS. After you sign in for the first time, basic
             personal information (e.g. your name) is retrieved from Google and stored
             in ADDIS. It is currently not possible to change this information in
             ADDIS.
@@ -673,63 +635,6 @@
       </div>
     </div>
   </section>
-
-  <script>
-    var gemtcDeferred = $.Deferred(),
-      gemtcToCDeferred = $.Deferred();
-    $("#gemtc-shared-content").load(
-      "app/js/bower_components/gemtc-web/app/manual/shared.html",
-      function() {
-        $('img', this).each(function() {
-          $img = $(this);
-          $img.attr('src', 'app/js/bower_components/gemtc-web/app/' +
-            $img.attr('src'));
-        });
-        gemtcDeferred.resolve();
-      });
-
-    var mcdaDeferred = $.Deferred(),
-      mcdaToCDeferred = $.Deferred();
-    $("#mcda-shared-content").load(
-      "app/js/bower_components/mcda-web/app/manual/shared.html",
-      function() {
-        $('img', this).each(function() {
-          $img = $(this);
-          $img.attr('src', 'app/js/bower_components/mcda-web/app/' +
-            $img.attr('src'));
-        });
-        mcdaDeferred.resolve();
-      });
-    $.when(gemtcDeferred, mcdaDeferred).then(function() {
-      $('h4', this).replaceWith(function() {
-        return '<h5 id="' + $(this).attr('id') + '">' + $(this).text() +
-          '</h5>';
-      });
-      $('h3', this).replaceWith(function() {
-        return '<h4 id="' + $(this).attr('id') + '">' + $(this).text() +
-          '</h4>';
-      });
-      $('h2', this).replaceWith(function() {
-        return '<h3 id="' + $(this).attr('id') + '">' + $(this).text() +
-          '</h3>';
-      });
-
-      renderMathInElement(document.body);
-      $("#toc").toc({
-        'selectors': 'h2,h3,h4'
-      });
-      $(function() {
-        $.scrollUp();
-      });
-      if (window.location.hash) {
-        setTimeout(function() { // wait for reflows to finish
-          $('html, body').animate({
-            scrollTop: $(window.location.hash).offset().top
-          }, 1000);
-        }, 1);
-      }
-    });
-  </script>
 </body>
 
 </html>

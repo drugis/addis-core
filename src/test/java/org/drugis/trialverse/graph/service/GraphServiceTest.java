@@ -31,6 +31,7 @@ import java.io.InputStream;
 import java.io.StringWriter;
 import java.net.URI;
 
+import static java.nio.charset.Charset.defaultCharset;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -57,20 +58,24 @@ public class GraphServiceTest {
   DatasetReadRepository datasetReadRepository;
 
   @Mock
+  WebConstants webConstants;
+
+  @Mock
   RestTemplate restTemplate;
 
-  String testHost = "http://localhost:8080";
+  private String testHost = "http://localhost:8080";
 
   @Before
   public void setUp() {
     graphService = new GraphServiceImpl();
     initMocks(this);
+    when(webConstants.getTriplestoreBaseUri()).thenReturn("http://something.com");
   }
 
   @Test
   public void testCopy() throws Exception {
     Account owner = new Account("my-owner", "fn", "ln", "unh");
-    URI targetDatasetUri = new URI("http://target.dataset");
+    String targetDatasetUri = "http://target.dataset";
     URI targetGraphUri = new URI("http://target.graph.uri");
     String sourceDatasetUuid = "sourceDatasetUuid";
     URI sourceGraphUri = new URI(testHost + "/datasets/" + sourceDatasetUuid + "/versions/headVersion/graphs/totallyCoolGraph");
@@ -83,17 +88,17 @@ public class GraphServiceTest {
     HttpHeaders httpHeaders = new HttpHeaders();
     httpHeaders.add(WebConstants.X_EVENT_SOURCE_VERSION, "newVersion");
     ResponseEntity responseEntity = new ResponseEntity(httpHeaders, HttpStatus.OK);
-    String targetDatasetVersionedUri = "http://target.dataset";
-    VersionMapping targetMapping = new VersionMapping(targetDatasetVersionedUri, null, targetDatasetUri.toString());
-    String sourceDatasetVersionedUrl =  "http://sourceDatasetUrl";
+    String targetDatasetVersionedUri = testHost + "/datasets/targetId";
+    VersionMapping targetMapping = new VersionMapping(targetDatasetVersionedUri, null, targetDatasetUri);
+    String sourceDatasetVersionedUrl =  testHost + "/datasets/sourceId";
     VersionMapping sourceMapping = new VersionMapping(sourceDatasetVersionedUrl, null, sourceDatasetUri.toString());
-    URI uri = UriComponentsBuilder.fromHttpUrl(targetDatasetVersionedUri)
+    URI uri = UriComponentsBuilder.fromHttpUrl(targetDatasetUri)
             .path(WebConstants.DATA_ENDPOINT)
             .queryParam(WebConstants.COPY_OF_QUERY_PARAM, revisionUri.toString())
             .queryParam(WebConstants.GRAPH_QUERY_PARAM, targetGraphUri.toString())
             .build()
             .toUri();
-    when(versionMappingRepository.getVersionMappingByDatasetUrl(targetDatasetUri)).thenReturn(targetMapping);
+    when(versionMappingRepository.getVersionMappingByDatasetUrl(URI.create(targetDatasetUri))).thenReturn(targetMapping);
     when(versionMappingRepository.getVersionMappingByDatasetUrl(sourceDatasetUri)).thenReturn(sourceMapping);
     ApiKey apiKey = mock(ApiKey.class);
     TrialversePrincipal trialversePrincipal = new TrialversePrincipal(new PreAuthenticatedAuthenticationToken(owner, apiKey));
@@ -105,7 +110,7 @@ public class GraphServiceTest {
     when(restTemplate.exchange(uri, HttpMethod.POST, new HttpEntity<>(headers), String.class)).thenReturn(responseEntity);
     when( accountRepository.findAccountByUsername(trialversePrincipal.getUserName())).thenReturn(owner);
 
-    URI newVersion = graphService.copy(targetDatasetUri, targetGraphUri, sourceGraphUri);
+    URI newVersion = graphService.copy(URI.create(targetDatasetUri), targetGraphUri, sourceGraphUri);
 
     assertEquals("newVersion", newVersion.toString());
   }
@@ -137,7 +142,7 @@ public class GraphServiceTest {
     InputStream is = new ByteArrayInputStream(source.getBytes());
     InputStream resultStream = graphService.jsonGraphInputStreamToTurtleInputStream(is);
     StringWriter writer = new StringWriter();
-    IOUtils.copy(resultStream, writer);
+    IOUtils.copy(resultStream, writer, defaultCharset());
     String result = writer.toString();
     assertEquals("@prefix ontology: <http://trials.drugis.org/ontology#> .\n" +
             "\n" +

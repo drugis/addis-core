@@ -17,6 +17,6 @@ public interface ProblemService {
   URI CONTINUOUS_TYPE_URI = URI.create("http://trials.drugis.org/ontology#continuous");
   URI SURVIVAL_TYPE_URI = URI.create("http://trials.drugis.org/ontology#survival");
 
-  AbstractProblem getProblem(Integer projectId, Integer analysisId, String path) throws ResourceDoesNotExistException, ProblemCreationException;
+  AbstractProblem getProblem(Integer projectId, Integer analysisId) throws ResourceDoesNotExistException, ProblemCreationException;
   NetworkMetaAnalysisProblem applyModelSettings(NetworkMetaAnalysisProblem problem, Model model);
 }

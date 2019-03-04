@@ -1,15 +1,16 @@
 'use strict';
-var requires = [
-  'results/resultsTableService',
-  'results/resultsService',
-  'results/nonConformantMeasurementTableService',
-  'results/splitOutcomeController',
-  'results/resultsTableDirective',
-  'results/resultsTableListDirective',
-  'results/resultInputDirective',
-  'results/nonConformantMeasurementTableDirective'
-];
-define(requires.concat(['angular']), function(
+define([
+  './resultsTableService',
+  './resultsService',
+  './nonConformantMeasurementTableService',
+  './splitOutcomeController',
+  './resultsTableDirective',
+  './resultsTableListDirective',
+  './resultInputDirective',
+  './nonConformantMeasurementTableDirective',
+  'angular',
+  '../util/resultsConstants'
+], function(
   ResultsTableService,
   ResultsService,
   NonConformantMeasurementTableService,
@@ -20,18 +21,22 @@ define(requires.concat(['angular']), function(
   nonConformantMeasurementTable,
   angular
 ) {
-  return angular.module('trialverse.results', ['trialverse.study'])
-    //services
-    .factory('ResultsTableService', ResultsTableService)
-    .factory('ResultsService', ResultsService)
-    .factory('NonConformantMeasurementTableService', NonConformantMeasurementTableService)
+    return angular.module('trialverse.results', [
+      'addis.resultsConstants',
+      'trialverse.study'
+    ])
+      //services
+      .factory('ResultsTableService', ResultsTableService)
+      .factory('ResultsService', ResultsService)
+      .factory('NonConformantMeasurementTableService', NonConformantMeasurementTableService)
 
-    // controllers
-    .controller('SplitOutcomeController', SplitOutcomeController)
+      // controllers
+      .controller('SplitOutcomeController', SplitOutcomeController)
 
-    //directives
-    .directive('resultsTable', resultsTable)
-    .directive('resultsTableList', resultsTableList)
-    .directive('resultInputDirective', resultInputDirective)
-    .directive('nonConformantMeasurementTable', nonConformantMeasurementTable);
-});
+      //directives
+      .directive('resultsTable', resultsTable)
+      .directive('resultsTableList', resultsTableList)
+      .directive('resultInputDirective', resultInputDirective)
+      .directive('nonConformantMeasurementTable', nonConformantMeasurementTable);
+  }
+);

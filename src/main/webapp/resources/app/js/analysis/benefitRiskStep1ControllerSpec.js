@@ -1,7 +1,6 @@
 'use strict';
-define(['angular-mocks'], function(angularMocks) {
+define(['angular-mocks', './analysis'], function() {
   describe('benefit-risk step 1 controller', function() {
-
     var scope, q,
       stateParamsMock = {
         projectId: 1
@@ -14,15 +13,14 @@ define(['angular-mocks'], function(angularMocks) {
       projectStudiesResourceMock = jasmine.createSpyObj('ProjectStudiesResource', ['query']),
       userServiceMock = jasmine.createSpyObj('UserService', ['isLoginUserId']),
       singleStudyBenefitRiskServiceMock = jasmine.createSpyObj('SingleStudyBenefitRiskService', [
-        'addMissingInterventionsToStudies',
-        'addHasMatchedMixedTreatmentArm',
-        'addOverlappingInterventionsToStudies'
+        'getStudiesWithErrors'
       ]),
-      scenarioResourceMock = jasmine.createSpyObj('ScenarioResource',['query']),
+      scenarioResourceMock = jasmine.createSpyObj('ScenarioResource', ['query']),
       subProblemResourceMock = jasmine.createSpyObj('SubProblemResource', ['query']),
       problemResourceMock = jasmine.createSpyObj('ProblemResource', ['get']),
-      workspaceServiceMock = jasmine.createSpyObj('WorkspaceService',['reduceProblem']),
-      DEFAULT_VIEW= 'default view',
+      workspaceServiceMock = jasmine.createSpyObj('WorkspaceService', ['reduceProblem']),
+      pageTitleServiceMock = jasmine.createSpyObj('PageTitleService', ['setPageTitle']),
+      DEFAULT_VIEW = 'default view',
       analysisDefer,
       analysisQueryDefer,
       interventionDefer,
@@ -31,28 +29,25 @@ define(['angular-mocks'], function(angularMocks) {
       modelsDefer,
       projectDefer,
       benefitRiskService = jasmine.createSpyObj('BenefitRiskService', [
-        'addModelsGroup',
-        'compareAnalysesByModels',
-        'joinModelsWithAnalysis',
-        'buildOutcomeWithAnalyses',
-        'numberOfSelectedInterventions',
-        'numberOfSelectedOutcomes',
-        'isModelWithMissingAlternatives',
-        'isModelWithoutResults',
-        'isMissingAnalysis',
-        'isMissingDataType',
-        'findMissingAlternatives',
+        'finalizeAndGoToDefaultScenario',
+        'getOutcomesWithInclusions'
+        
+      ]);
+      var benefitRiskStep1ServiceMock = jasmine.createSpyObj('BenefitRiskStep1Service',[
+        'analysisUpdateCommand',
+        'buildOutcomesWithAnalyses',
         'findOverlappingInterventions',
-        'isInvalidStudySelected',
-        'hasMissingStudy',
-        'findOverlappingOutcomes',
-        'addStudiesToOutcomes'
+        'getNMAOutcomeInclusions',
+        'getStep1Errors',
+        'getStudyOutcomeInclusions',
+        'isContrastStudySelected',
+        'updateOutcomeInclusion',
+        'updateMissingAlternatives'
       ]);
 
-    beforeEach(module('addis.analysis'));
+    beforeEach(angular.mock.module('addis.analysis'));
 
-
-    beforeEach(angularMocks.inject(function($rootScope, $q, $controller) {
+    beforeEach(inject(function($rootScope, $q, $controller) {
       scope = $rootScope;
       q = $q;
       analysisDefer = q.defer();
@@ -79,31 +74,35 @@ define(['angular-mocks'], function(angularMocks) {
         $promise: modelsDefer.promise
       });
       projectResourceMock.get.and.returnValue({
+        owner: {
+          id: 1
+        },
         $promise: projectDefer.promise
       });
       projectStudiesResourceMock.query.and.returnValue({
         $promise: studiesDefer.promise
       });
-      userServiceMock.isLoginUserId.and.returnValue(true);
+      userServiceMock.isLoginUserId.and.returnValue($q.resolve(true));
 
-      benefitRiskService.compareAnalysesByModels.and.returnValue(0);
-      benefitRiskService.joinModelsWithAnalysis.and.returnValue([]);
-      benefitRiskService.findOverlappingInterventions.and.returnValue([]);
-      benefitRiskService.findOverlappingOutcomes.and.returnValue([]);
-      benefitRiskService.addStudiesToOutcomes.and.returnValue([]);
+      benefitRiskStep1ServiceMock.findOverlappingInterventions.and.returnValue([]);
+      benefitRiskStep1ServiceMock.getStep1Errors.and.returnValue([]);
+      benefitRiskStep1ServiceMock.buildOutcomesWithAnalyses.and.returnValue([]);
+      benefitRiskStep1ServiceMock.getStudyOutcomeInclusions.and.returnValue([]);
+      benefitRiskStep1ServiceMock.getNMAOutcomeInclusions.and.returnValue([]);
 
       $controller('BenefitRiskStep1Controller', {
         $scope: scope,
         $q: q,
         $stateParams: stateParamsMock,
         $state: {
-          go: function() {}
+          go: function() { }
         },
         ProjectStudiesResource: projectStudiesResourceMock,
         AnalysisResource: analysisResourceMock,
         InterventionResource: interventionResourceMock,
         OutcomeResource: outcomeResourceMock,
         BenefitRiskService: benefitRiskService,
+        BenefitRiskStep1Service: benefitRiskStep1ServiceMock,
         ModelResource: modelResourceMock,
         ProjectResource: projectResourceMock,
         UserService: userServiceMock,
@@ -112,42 +111,38 @@ define(['angular-mocks'], function(angularMocks) {
         SubProblemResource: subProblemResourceMock,
         ProblemResource: problemResourceMock,
         WorkspaceService: workspaceServiceMock,
-        DEFAULT_VIEW: DEFAULT_VIEW
+        DEFAULT_VIEW: DEFAULT_VIEW,
+        PageTitleService: pageTitleServiceMock
       });
 
     }));
 
     describe('when the analysis, outcomes, models, studies and alternatives are loaded', function() {
       beforeEach(function() {
-        benefitRiskService.buildOutcomeWithAnalyses.and.returnValue({
-          networkMetaAnalyses: [],
-          outcome: {
+        projectDefer.resolve({
+          owner: {
             id: 1
           }
         });
-
         analysisDefer.resolve({
-          benefitRiskNMAOutcomeInclusions: [],
-          benefitRiskStudyOutcomeInclusions: []
+          benefitRiskNMAOutcomeInclusions: [{}],
+          benefitRiskStudyOutcomeInclusions: [{}]
         });
-        interventionDefer.resolve([]);
+        interventionDefer.resolve([{}]);
         outcomeDefer.resolve([{
         }]);
         analysisQueryDefer.resolve([{}]);
-        modelsDefer.resolve([]);
-        studiesDefer.resolve([]);
+        modelsDefer.resolve([{}]);
+        studiesDefer.resolve([{}]);
         scope.$digest();
       });
 
       it('should build the outcomesWithAnalyses', function() {
-        expect(benefitRiskService.joinModelsWithAnalysis).toHaveBeenCalled();
-        expect(benefitRiskService.addModelsGroup).toHaveBeenCalled();
-        expect(benefitRiskService.buildOutcomeWithAnalyses).toHaveBeenCalled();
+        expect(benefitRiskService.getOutcomesWithInclusions).toHaveBeenCalled();
       });
-
     });
 
-    describe('when updateBenefitRiskOutcomeInclusions is called by checking the outcome', function() {
+    describe('when updateOutcomeInclusion is called by (un-)checking the outcome', function() {
       var outcomeWithAnalysis;
       beforeEach(function() {
         outcomeWithAnalysis = {
@@ -179,81 +174,18 @@ define(['angular-mocks'], function(angularMocks) {
             outcomeId: 3,
             studyGraphUri: 'http://ryfari.com'
           }],
-          $save: function() {},
+          $save: function() { },
           interventionInclusions: []
         };
         scope.outcomesWithAnalyses = [outcomeWithAnalysis];
         scope.includedAlternatives = [];
         scope.overlappingInterventions = [];
-        scope.updateBenefitRiskOutcomeInclusions(outcomeWithAnalysis);
+        scope.updateOutcomeInclusion({});
       });
 
-      it('should select the first analysis belonging to the outcome', function() {
-        expect(outcomeWithAnalysis.selectedAnalysis.id).toBe(5);
-      });
-
-      it('should build the benefitrisk analysis inclusions', function() {
-        expect(scope.analysis.benefitRiskNMAOutcomeInclusions).toEqual([{
-          analysisId: 1,
-          outcomeId: 3,
-          networkMetaAnalysisId: 5,
-          modelId: 1
-        }]);
+      it('should call the benefitriskservice', function() {
+        expect(benefitRiskStep1ServiceMock.updateOutcomeInclusion).toHaveBeenCalled();
       });
     });
-
-    describe('when updateBenefitRiskOutcomeInclusions is called by UNchecking the outcome', function() {
-      var outcomeWithAnalysis;
-      beforeEach(function() {
-        outcomeWithAnalysis = {
-          outcome: {
-            id: 3,
-            isIncluded: false
-          },
-          networkMetaAnalyses: [{
-            id: 5,
-            models: []
-          }],
-          selectedAnalysis: {
-            id: 1
-          },
-          selectedModel: {},
-          dataType: 'network'
-        };
-        scope.analysis = {
-          id: 1,
-          benefitRiskNMAOutcomeInclusions: [{
-            analysisId: 1,
-            outcomeId: 3,
-            networkMetaAnalysisId: 5
-          }],
-          benefitRiskStudyOutcomeInclusions: [{
-            analysisId: 1,
-            outcomeId: 3,
-            studyGraphUri: 'http://ryfari.com'
-          }],
-          $save: function() {},
-          interventionInclusions: []
-        };
-        scope.outcomesWithAnalyses = [outcomeWithAnalysis];
-        scope.includedAlternatives = [];
-        scope.overlappingInterventions = [];
-        scope.updateBenefitRiskOutcomeInclusions(outcomeWithAnalysis);
-      });
-
-      it('should unselect the analysis belonging to the outcome', function() {
-        expect(outcomeWithAnalysis.selectedModelId).toBeUndefined();
-        expect(outcomeWithAnalysis.selectedStudyId).toBeUndefined();
-        expect(outcomeWithAnalysis.selectedAnalysisId).toBeUndefined();
-        expect(outcomeWithAnalysis.dataType).toBeUndefined();
-      });
-
-      it('should remove the unchecked outcome', function() {
-        expect(scope.analysis.benefitRiskNMAOutcomeInclusions).toEqual([]);
-        expect(scope.analysis.benefitRiskStudyOutcomeInclusions).toEqual([]);
-      });
-    });
-
-
   });
 });

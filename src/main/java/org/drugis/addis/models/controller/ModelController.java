@@ -43,25 +43,25 @@ import java.util.List;
 public class ModelController extends AbstractAddisCoreController {
 
   @Inject
-  AnalysisService analysisService;
+  private AnalysisService analysisService;
 
   @Inject
-  ModelService modelService;
+  private ModelService modelService;
 
   @Inject
-  ProjectService projectService;
+  private ProjectService projectService;
 
   @Inject
-  PataviTaskRepository pataviTaskRepository;
+  private PataviTaskRepository pataviTaskRepository;
 
   @Inject
-  ModelRepository modelRepository;
+  private ModelRepository modelRepository;
 
   @Inject
-  FunnelPlotRepository funnelPlotRepository;
+  private FunnelPlotRepository funnelPlotRepository;
 
   @Inject
-  ModelBaselineRepository modelBaselineRepository;
+  private ModelBaselineRepository modelBaselineRepository;
 
   @RequestMapping(value = "/projects/{projectId}/analyses/{analysisId}/models", method = RequestMethod.POST)
   @ResponseBody

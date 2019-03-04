@@ -1,6 +1,6 @@
 
 'use strict';
-define(['angular', 'angular-mocks'], function() {
+define(['angular-mocks', './dataset'], function() {
   describe('create study controller', function() {
     var scope,
       modalMock = jasmine.createSpyObj('$mock', ['dismiss', 'close']),
@@ -12,7 +12,7 @@ define(['angular', 'angular-mocks'], function() {
       mockDatasetsResult,
       mockDatasetsDeferred;
 
-    beforeEach(module('trialverse.dataset'));
+    beforeEach(angular.mock.module('trialverse.dataset'));
 
     beforeEach(inject(function($rootScope, $q, $controller) {
       scope = $rootScope;

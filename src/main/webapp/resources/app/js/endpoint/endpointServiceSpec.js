@@ -1,5 +1,5 @@
 'use strict';
-define(['angular-mocks'], function(angularMocks) {
+define(['angular-mocks', './endpoint'], function() {
   describe('the endpoint service', function() {
 
     var rootScope, q,
@@ -11,13 +11,13 @@ define(['angular-mocks'], function(angularMocks) {
       outcomeDeleteDefer;
 
     beforeEach(function() {
-      module('trialverse.endpoint', function($provide) {
+      angular.mock.module('trialverse.endpoint', function($provide) {
         $provide.value('OutcomeService', outcomeServiceMock);
       });
     });
-    beforeEach(module('trialverse.endpoint'));
+    beforeEach(angular.mock.module('trialverse.endpoint'));
 
-    beforeEach(angularMocks.inject(function($q, $rootScope, EndpointService) {
+    beforeEach(inject(function($q, $rootScope, EndpointService) {
       q = $q;
       rootScope = $rootScope;
       endpointService = EndpointService;
@@ -48,10 +48,12 @@ define(['angular-mocks'], function(angularMocks) {
         rootScope.$digest();
       });
     });
+
     describe('add endpoint', function() {
       beforeEach(function(){
         outcomeAddDefer.resolve({});
       });
+
       it('should add the endpoint', function(done) {
         endpointService.addItem({}).then(function() {
           expect(outcomeServiceMock.addItem).toHaveBeenCalled();
@@ -60,10 +62,12 @@ define(['angular-mocks'], function(angularMocks) {
         rootScope.$digest();
       });
     });
+
     describe('edit endpoint', function() {
       beforeEach(function(){
         outcomeEditDefer.resolve({});
       });
+
       it('should edit the endpoint', function(done) {
         endpointService.editItem({}).then(function() {
           expect(outcomeServiceMock.editItem).toHaveBeenCalled();
@@ -72,10 +76,12 @@ define(['angular-mocks'], function(angularMocks) {
         rootScope.$digest();
       });
     });
+
     describe('delete endpoint', function() {
       beforeEach(function(){
         outcomeDeleteDefer.resolve({});
       });
+
       it('should delete the endpoint', function(done) {
         endpointService.deleteItem({}).then(function() {
           expect(outcomeServiceMock.deleteItem).toHaveBeenCalled();
@@ -84,6 +90,5 @@ define(['angular-mocks'], function(angularMocks) {
         rootScope.$digest();
       });
     });
-
   });
 });

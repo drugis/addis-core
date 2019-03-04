@@ -46,6 +46,9 @@ public class DatasetWriteRepositoryTest {
   @Mock
   private AccountRepository accountRepository;
 
+  @Mock
+  private WebConstants webconstants;
+
   @InjectMocks
   DatasetWriteRepository datasetWriteRepository;
 
@@ -59,7 +62,7 @@ public class DatasetWriteRepositoryTest {
   public void setUp() {
     datasetWriteRepository = new DatasetWriteRepositoryImpl();
     MockitoAnnotations.initMocks(this);
-
+    when(webconstants.getTriplestoreBaseUri()).thenReturn("http://jena-es:8080");
     when(jenaFactory.createDatasetURI()).thenReturn(DATASET_URI + "/someMockUuid");
   }
 
