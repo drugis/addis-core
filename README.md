@@ -84,6 +84,8 @@ Run the Tomcat server:
 mvn tomcat7:run
 ```
 
+
+
 To run integration tests:
 ```
 mvn test -Dtest=*IT
@@ -107,3 +109,40 @@ To restore the ADDIS data:
  - `tdbloader --loc=DB backup.n4`
 
 If not restoring to the same environment, use the `util/changePrefix.sh` script to change the triple store location.
+
+###Running ADDIS from a docker container:
+
+- check out the (dockerfiles repository)[https://github.com/drugis/dockerfiles]
+- build addis WAR, following addis README. Or: download a recent stable version from from https://drugis.org/files/addis-core.war
+- supply the WAR and SSL keystore and truststore to the `tomcat/Dockerfile` from the dockerfiles repository
+- build and run the dockerfile.
+
+Example run script
+
+```
+docker run -d --name addis \
+  --link postgres:postgres \
+  --link patavi-server:patavi-server \
+  --link jena-es:jena-es \
+  -e JAVA_OPTS=" \
+  -DADDIS_CORE_DB=addiscore \
+  -DtomcatProxyScheme=https \
+  -DtomcatProxyName=localhost \
+  -DtomcatProxyPort=443 \
+  -DADDIS_CORE_DB_DRIVER=org.postgresql.Driver \
+  -DADDIS_CORE_DB_HOST=postgres \
+  -DADDIS_CORE_DB=addiscore \
+  -DADDIS_CORE_DB_USERNAME=addiscore \
+  -DADDIS_CORE_DB_PASSWORD=<password> \
+  -e PATAVI_URI=https://patavi-server:3000 \
+  -e ADDIS_CORE_OAUTH_GOOGLE_SECRET=<google-secret> \
+  -e ADDIS_CORE_OAUTH_GOOGLE_KEY=<google-key> \
+  -e TRIPLESTORE_BASE_URI=https://jena-es:3030 \
+  -e KEYSTORE_PATH=/ssl/keystore.jks \
+  -e KEYSTORE_PASSWORD=develop \
+  -e EVENT_SOURCE_URI_PREFIX=https://jena-es:3030 \
+  -e CLINICALTRIALS_IMPORTER_URL=https://nct.drugis.org \
+  -p 8081:8080 \
+  -p 2223:22 \
+  -t addis-tomcat
+```
