@@ -115,17 +115,18 @@ public class Project implements Serializable {
     if (o == null || getClass() != o.getClass()) return false;
     Project project = (Project) o;
     return Objects.equals(id, project.id) &&
-        Objects.equals(owner, project.owner) &&
-        Objects.equals(name, project.name) &&
-        Objects.equals(description, project.description) &&
-        Objects.equals(namespaceUid, project.namespaceUid) &&
-        Objects.equals(datasetVersion, project.datasetVersion) &&
-        Objects.equals(isArchived, project.isArchived) &&
-        Objects.equals(archivedOn, project.archivedOn);
+            Objects.equals(owner, project.owner) &&
+            Objects.equals(name, project.name) &&
+            Objects.equals(description, project.description) &&
+            Objects.equals(namespaceUid, project.namespaceUid) &&
+            Objects.equals(datasetVersion, project.datasetVersion) &&
+            Objects.equals(isArchived, project.isArchived) &&
+            Objects.equals(archivedOn, project.archivedOn);
   }
 
   @Override
   public int hashCode() {
+
     return Objects.hash(id, owner, name, description, namespaceUid, datasetVersion, isArchived, archivedOn);
   }
 

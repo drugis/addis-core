@@ -1,5 +1,5 @@
 'use strict';
-define(['lodash', 'angular'], function(_, angular) {
+define(['lodash', 'angular'], function(_) {
   var dependencies = [
     '$scope',
     '$q',
@@ -7,6 +7,7 @@ define(['lodash', 'angular'], function(_, angular) {
     '$state',
     'AnalysisResource',
     'BenefitRiskService',
+    'BenefitRiskStep1Service',
     'InterventionResource',
     'ModelResource',
     'OutcomeResource',
@@ -23,6 +24,7 @@ define(['lodash', 'angular'], function(_, angular) {
     $state,
     AnalysisResource,
     BenefitRiskService,
+    BenefitRiskStep1Service,
     InterventionResource,
     ModelResource,
     OutcomeResource,
@@ -35,7 +37,7 @@ define(['lodash', 'angular'], function(_, angular) {
     // functions
     $scope.addedAlternative = addedAlternative;
     $scope.removedAlternative = removedAlternative;
-    $scope.updateBenefitRiskOutcomeInclusions = updateBenefitRiskOutcomeInclusions;
+    $scope.updateOutcomeInclusion = updateOutcomeInclusion;
     $scope.updateAnalysesInclusions = updateAnalysesInclusions;
     $scope.updateModelSelection = updateModelSelection;
     $scope.goToStep2 = goToStep2;
@@ -64,10 +66,11 @@ define(['lodash', 'angular'], function(_, angular) {
       }
     });
 
-    var promises = [$scope.analysis.$promise,
-    $scope.alternatives.$promise,
-    $scope.outcomes.$promise,
-    $scope.models.$promise,
+    var promises = [
+      $scope.analysis.$promise,
+      $scope.alternatives.$promise,
+      $scope.outcomes.$promise,
+      $scope.models.$promise,
       studiesPromise
     ];
 
@@ -82,53 +85,26 @@ define(['lodash', 'angular'], function(_, angular) {
 
       var outcomeIds = _.map(outcomes, 'id');
 
-      PageTitleService.setPageTitle('BenefitRiskStep1Controller', analysis.title+ ' step 1');
+      PageTitleService.setPageTitle('BenefitRiskStep1Controller', analysis.title + ' step 1');
 
       $scope.studies = studies;
-      $scope.studyArrayLength = studies.length;
+      $scope.alternatives = alternatives;
+      $scope.includedAlternatives = alternatives.filter(function(alternative) {
+        return _.find(analysis.interventionInclusions, ['interventionId', alternative.id]);
+      });
+      var allInclusions = analysis.benefitRiskNMAOutcomeInclusions.concat(analysis.benefitRiskStudyOutcomeInclusions);
+      $scope.outcomes = BenefitRiskService.getOutcomesWithInclusions(outcomes, allInclusions);
 
       AnalysisResource.query({
         projectId: $stateParams.projectId,
         outcomeIds: outcomeIds
       }).$promise.then(function(networkMetaAnalyses) {
-        networkMetaAnalyses =
-          _(networkMetaAnalyses)
-            .reject('archived')
-            .map(_.partial(BenefitRiskService.joinModelsWithAnalysis, models))
-            .map(BenefitRiskService.addModelsGroup)
-            .value();
-        var outcomesWithAnalyses = _(outcomes)
-          .map(_.partial(BenefitRiskService.buildOutcomeWithAnalyses, analysis, networkMetaAnalyses))
-          .map(function(owa) {
-            owa.networkMetaAnalyses = owa.networkMetaAnalyses.sort(BenefitRiskService.compareAnalysesByModels);
-            return owa;
-          })
-          .value();
-
-        $scope.outcomesWithAnalyses = BenefitRiskService.addStudiesToOutcomes(
-          outcomesWithAnalyses, analysis.benefitRiskStudyOutcomeInclusions, $scope.studies);
-
-        updateMissingAlternativesForAllOutcomes();
-
+        $scope.outcomesWithAnalyses = BenefitRiskStep1Service.buildOutcomesWithAnalyses(
+          analysis, studies, networkMetaAnalyses, models, $scope.outcomes
+        );
+        $scope.outcomesWithAnalyses = updateMissingAlternativesForAllOutcomes();
         updateStudyMissingStuff();
-        // when view setup is completed
         checkStep1Validity();
-      });
-
-      $scope.alternatives = alternatives;
-
-      $scope.includedAlternatives = alternatives.filter(function(alternative) {
-        return _.find(analysis.interventionInclusions, ['interventionId', alternative.id]);
-      });
-
-      $scope.outcomes = outcomes.map(function(outcome) {
-        outcome.inclusion = analysis.benefitRiskNMAOutcomeInclusions
-          .concat(analysis.benefitRiskStudyOutcomeInclusions)
-          .find(function(outcomeInclusion) {
-            return outcomeInclusion.outcomeId === outcome.id;
-          });
-        outcome.isIncluded = !!outcome.inclusion;
-        return outcome;
       });
     });
 
@@ -137,130 +113,58 @@ define(['lodash', 'angular'], function(_, angular) {
     }
 
     function checkStep1Validity() {
-      $scope.step1AlertMessages = [];
-      if (BenefitRiskService.isInvalidStudySelected($scope.outcomesWithAnalyses)) {
-        $scope.step1AlertMessages.push('An invalid study is selected');
-      }
+      $scope.step1AlertMessages = BenefitRiskStep1Service.getStep1Errors($scope.outcomesWithAnalyses);
       if ($scope.includedAlternatives.length < 2) {
         $scope.step1AlertMessages.push('At least two alternatives must be selected');
       }
-      var numberOfSelectedOutcomes = BenefitRiskService.numberOfSelectedOutcomes($scope.outcomesWithAnalyses);
-      if (numberOfSelectedOutcomes < 2) {
-        $scope.step1AlertMessages.push('At least two outcomes must be selected');
-      }
-      var isMissingAnalysis = BenefitRiskService.isMissingAnalysis($scope.outcomesWithAnalyses);
-      if (isMissingAnalysis) {
-        $scope.step1AlertMessages.push('An outcome with missing network model is selected');
-      }
-      var isMissingDataType = BenefitRiskService.isMissingDataType($scope.outcomesWithAnalyses);
-      if (isMissingDataType) {
-        $scope.step1AlertMessages.push('The data source type of an outcome has not been chosen');
-      }
-      var isModelWithMissingAlternatives = BenefitRiskService.isModelWithMissingAlternatives($scope.outcomesWithAnalyses);
-      if (isModelWithMissingAlternatives) {
-        $scope.step1AlertMessages.push('A model with missing alternatives is selected');
-      }
-      var isModelWithoutResults = BenefitRiskService.isModelWithoutResults($scope.outcomesWithAnalyses);
-      if (isModelWithoutResults) {
-        $scope.step1AlertMessages.push('A model that has not yet run is selected');
-      }
-      if (BenefitRiskService.hasMissingStudy($scope.outcomesWithAnalyses)) {
-        $scope.step1AlertMessages.push('A study still needs to be selected');
-      }
       if ($scope.overlappingInterventions.length > 0) {
         $scope.step1AlertMessages.push('There are overlapping interventions');
-      }
-      if (BenefitRiskService.findOverlappingOutcomes($scope.outcomesWithAnalyses).length > 0) {
-        $scope.step1AlertMessages.push('There are overlapping outcomes');
       }
       if ($scope.analysis.finalized) {
         $scope.step1AlertMessages.push('Analysis is already finalized');
       }
     }
 
-    function updateAnalysesInclusions(changedOutcome) {
-      changeModelSelection(changedOutcome);
-      if (changedOutcome.selectedModel) {
-        updateMissingAlternatives(changedOutcome);
+    function updateAnalysesInclusions(outcome) {
+      outcome.selectedModel = BenefitRiskStep1Service.getModelSelection(outcome.selectedAnalysis);
+      if (outcome.selectedModel) {
+        outcome.selectedModel = BenefitRiskStep1Service.updateMissingAlternatives(outcome, $scope.includedAlternatives);
       }
       saveInclusions();
     }
 
-    function updateBenefitRiskOutcomeInclusions(changedOutcome) {
-      if (!changedOutcome.outcome.isIncluded) {
-        changedOutcome.selectedAnalysis = undefined;
-        changedOutcome.selectedStudy = undefined;
-        changedOutcome.selectedModel = undefined;
-        changedOutcome.dataType = undefined;
-      } else {
-        if (changedOutcome.dataType === 'network') {
-          changedOutcome.selectedStudy = undefined;
-          var selectedAnalysis = findSelectableAnalysis(changedOutcome);
-          if (selectedAnalysis) {
-            changedOutcome.selectedAnalysis = selectedAnalysis;
-            changeModelSelection(changedOutcome);
-            if (changedOutcome.selectedModel) {
-              updateMissingAlternatives(changedOutcome);
-            }
-          }
-        } else if (changedOutcome.dataType === 'single-study') {
-          changedOutcome.selectedAnalysis = undefined;
-          changedOutcome.selectedModel = undefined;
-          changedOutcome.selectedStudy = {};
-        }
-      }
+    function updateOutcomeInclusion(inclusion) {
+      inclusion = BenefitRiskStep1Service.updateOutcomeInclusion(inclusion, $scope.includedAlternatives);
       saveInclusions();
     }
 
-    function findSelectableAnalysis(outcome) {
-      return _.find(outcome.networkMetaAnalyses, 'models.length');
-    }
-
-    function changeModelSelection(changedOutcome) {
-      var selectedNma = changedOutcome.selectedAnalysis;
-      if (selectedNma !== undefined) {
-        var primaryModel = selectedNma.models.find(function(model) {
-          return model.id === selectedNma.primaryModel;
-        });
-        if (primaryModel) {
-          changedOutcome.selectedModel = primaryModel;
-        } else {
-          changedOutcome.selectedModel = selectedNma.models[0];
-        }
-      } else {
-        changedOutcome.selectedModel = undefined;
-      }
-    }
-
-    function updateModelSelection(outcomeWithAnalyses) {
-      if (outcomeWithAnalyses.selectedModel) {
-        updateMissingAlternatives(outcomeWithAnalyses);
+    function updateModelSelection(outcome) {
+      if (outcome.selectedModel) {
+        outcome.selectedModel = BenefitRiskStep1Service.updateMissingAlternatives(outcome, $scope.includedAlternatives);
       }
       saveInclusions();
-    }
-
-    function updateMissingAlternatives(outcomeWithAnalyses) {
-      outcomeWithAnalyses.selectedModel.missingAlternatives = BenefitRiskService.findMissingAlternatives($scope.includedAlternatives, outcomeWithAnalyses);
-      outcomeWithAnalyses.selectedModel.missingAlternativesNames = _.map(outcomeWithAnalyses.selectedModel.missingAlternatives, 'name');
     }
 
     function updateMissingAlternativesForAllOutcomes() {
-      $scope.outcomesWithAnalyses.filter(function(outcome) {
-        return outcome.selectedModel;
-      }).forEach(updateMissingAlternatives);
+      return _.map($scope.outcomesWithAnalyses, function(outcome) {
+        if (outcome.selectedModel) {
+          outcome.selectedModel = BenefitRiskStep1Service.updateMissingAlternatives(outcome, $scope.includedAlternatives);
+        }
+        return outcome;
+      });
     }
 
     function updateStudyMissingStuff() {
-      var tempStudies = SingleStudyBenefitRiskService.addMissingInterventionsToStudies($scope.studies, $scope.includedAlternatives);
-      tempStudies = SingleStudyBenefitRiskService.addHasMatchedMixedTreatmentArm(tempStudies, $scope.includedAlternatives);
-      $scope.studies = SingleStudyBenefitRiskService.addOverlappingInterventionsToStudies(tempStudies, $scope.includedAlternatives);
-      $scope.overlappingInterventions = BenefitRiskService.findOverlappingInterventions($scope.studies);
-      _.forEach($scope.outcomesWithAnalyses, function(outcomeWithAnalyses) {
+      $scope.studies = SingleStudyBenefitRiskService.getStudiesWithErrors($scope.studies, $scope.includedAlternatives);
+      $scope.overlappingInterventions = BenefitRiskStep1Service.findOverlappingInterventions($scope.studies);
+      $scope.outcomesWithAnalyses =_.map($scope.outcomesWithAnalyses, function(outcomeWithAnalyses) {
         if (!_.isEmpty(outcomeWithAnalyses.selectedStudy)) {
           outcomeWithAnalyses.selectedStudy = _.find($scope.studies, ['studyUri', outcomeWithAnalyses.selectedStudy.studyUri]);
           outcomeWithAnalyses.selectedStudy.missingOutcomes = SingleStudyBenefitRiskService.findMissingOutcomes(outcomeWithAnalyses.selectedStudy, [outcomeWithAnalyses]);
         }
+        return outcomeWithAnalyses;
       });
+      $scope.contrastStudySelected = BenefitRiskStep1Service.isContrastStudySelected($scope.outcomesWithAnalyses, $scope.studies);
     }
 
     function addedAlternative(alternative) {
@@ -274,36 +178,19 @@ define(['lodash', 'angular'], function(_, angular) {
     }
 
     function updateAlternatives() {
-      updateMissingAlternativesForAllOutcomes();
+      $scope.outcomesWithAnalyses = updateMissingAlternativesForAllOutcomes();
       updateStudyMissingStuff();
-      var updateCommand = BenefitRiskService.analysisUpdateCommand($scope.analysis, $scope.includedAlternatives);
+      var updateCommand = BenefitRiskStep1Service.analysisUpdateCommand($scope.analysis, $scope.includedAlternatives);
       AnalysisResource.save(updateCommand);
       checkStep1Validity();
     }
 
     function saveInclusions() {
-      $scope.analysis.benefitRiskNMAOutcomeInclusions = $scope.outcomesWithAnalyses.filter(function(outcomeWithAnalyses) {
-        return outcomeWithAnalyses.outcome.isIncluded && outcomeWithAnalyses.dataType === 'network' && outcomeWithAnalyses.selectedAnalysis;
-      }).map(function(outcomeWithAnalyses) {
-        return {
-          analysisId: $scope.analysis.id,
-          outcomeId: outcomeWithAnalyses.outcome.id,
-          networkMetaAnalysisId: outcomeWithAnalyses.selectedAnalysis.id,
-          modelId: outcomeWithAnalyses.selectedModel ? outcomeWithAnalyses.selectedModel.id : undefined
-        };
-      });
-      $scope.analysis.benefitRiskStudyOutcomeInclusions = $scope.outcomesWithAnalyses.filter(function(outcomeWithAnalyses) {
-        return outcomeWithAnalyses.outcome.isIncluded && outcomeWithAnalyses.dataType === 'single-study';
-      }).map(function(outcomeWithAnalyses) {
-        return {
-          analysisId: $scope.analysis.id,
-          outcomeId: outcomeWithAnalyses.outcome.id,
-          studyGraphUri: outcomeWithAnalyses.selectedStudy ? outcomeWithAnalyses.selectedStudy.studyUri : undefined
-        };
-      });
+      $scope.analysis.benefitRiskNMAOutcomeInclusions = BenefitRiskStep1Service.getNMAOutcomeInclusions($scope.outcomesWithAnalyses, $scope.analysis.id);
+      $scope.analysis.benefitRiskStudyOutcomeInclusions = BenefitRiskStep1Service.getStudyOutcomeInclusions($scope.outcomesWithAnalyses, $scope.analysis.id);
       checkStep1Validity();
       updateStudyMissingStuff();
-      var updateCommand = BenefitRiskService.analysisUpdateCommand($scope.analysis, $scope.includedAlternatives);
+      var updateCommand = BenefitRiskStep1Service.analysisUpdateCommand($scope.analysis, $scope.includedAlternatives);
       AnalysisResource.save(updateCommand);
     }
 

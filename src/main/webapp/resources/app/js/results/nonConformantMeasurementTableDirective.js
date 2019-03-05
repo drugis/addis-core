@@ -1,8 +1,20 @@
 'use strict';
 define([], function() {
-  var dependencies = ['$q', '$modal', 'ResultsTableService', 'ResultsService', 'NonConformantMeasurementTableService'];
+  var dependencies = [
+    '$q',
+    '$modal',
+    'ResultsTableService',
+    'ResultsService',
+    'NonConformantMeasurementTableService'
+  ];
 
-  var nonConformantMeasurementTableDirective = function($q, $modal, ResultsTableService, ResultsService, NonConformantMeasurementTableService) {
+  var nonConformantMeasurementTableDirective = function(
+    $q,
+    $modal,
+    ResultsTableService,
+    ResultsService,
+    NonConformantMeasurementTableService
+  ) {
     return {
       restrict: 'E',
       templateUrl: './nonConformantMeasurementTableDirective.html',
@@ -15,18 +27,15 @@ define([], function() {
         isEditingAllowed: '='
       },
       link: function(scope) {
+        // functions 
+        scope.toggle = toggle;
+        scope.setToMoment = setToMoment;
+        scope.updateIsExistingMeasurement = updateIsExistingMeasurement;
+        scope.repairNonConformantMeasurements = repairNonConformantMeasurements;
+
+        // init
         scope.isExpanded = false;
-
         reloadData();
-        scope.toggle = function() {
-          if (scope.isExpanded) {
-            scope.isExpanded = false;
-          } else {
-            reloadData();
-            scope.isExpanded = true;
-          }
-        };
-
         scope.$on('refreshResultsTable', reloadData);
 
         function reloadData() {
@@ -39,44 +48,52 @@ define([], function() {
           });
 
           scope.inputHeaders = ResultsTableService.createHeaders(scope.variable);
-
-          scope.setToMoment = function(moment, measurementInstanceList) {
-            ResultsService.setToMeasurementMoment(moment.uri, measurementInstanceList).then(function() {
-              scope.$emit('refreshResults');
-            });
-          };
-
-          scope.updateIsExistingMeasurement = function(moment, measurementInstanceList) {
-            ResultsService.isExistingMeasurement(moment.uri, measurementInstanceList).then(function(result) {
-              moment.isExistingMeasurement = result;
-            });
-          };
-
-          scope.repairNonConformantMeasurements = function() {
-            $modal.open({
-              templateUrl: './splitOutcomeTemplate.html',
-              controller: 'SplitOutcomeController',
-              resolve: {
-                callback: function() {
-                  return function() {
-                    scope.$emit('updateStudyDesign');
-                  };
-                },
-                outcome: function() {
-                  return scope.variable;
-                },
-                nonConformantMeasurementsMap: function() {
-                  return scope.nonConformantMeasurementsMap;
-                },
-                variableType: function() {
-                  return scope.variableType;
-                }
-              }
-            });
-          };
         }
 
+        //scope functions
+        function toggle() {
+          if (scope.isExpanded) {
+            scope.isExpanded = false;
+          } else {
+            reloadData();
+            scope.isExpanded = true;
+          }
+        }
 
+        function setToMoment(moment, measurementInstanceList) {
+          ResultsService.setToMeasurementMoment(moment.uri, measurementInstanceList).then(function() {
+            scope.$emit('refreshResults');
+          });
+        }
+
+        function updateIsExistingMeasurement(moment, measurementInstanceList) {
+          ResultsService.isExistingMeasurement(moment.uri, measurementInstanceList).then(function(result) {
+            moment.isExistingMeasurement = result;
+          });
+        }
+
+        function repairNonConformantMeasurements() {
+          $modal.open({
+            templateUrl: './splitOutcomeTemplate.html',
+            controller: 'SplitOutcomeController',
+            resolve: {
+              callback: function() {
+                return function() {
+                  scope.$emit('updateStudyDesign');
+                };
+              },
+              outcome: function() {
+                return scope.variable;
+              },
+              nonConformantMeasurementsMap: function() {
+                return scope.nonConformantMeasurementsMap;
+              },
+              variableType: function() {
+                return scope.variableType;
+              }
+            }
+          });
+        }
 
       }
     };

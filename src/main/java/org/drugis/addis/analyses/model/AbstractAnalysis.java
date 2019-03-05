@@ -77,25 +77,18 @@ public abstract class AbstractAnalysis {
   public boolean equals(Object o) {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
-
-    AbstractAnalysis analysis = (AbstractAnalysis) o;
-
-    if (id != null ? !id.equals(analysis.id) : analysis.id != null) return false;
-    if (!projectId.equals(analysis.projectId)) return false;
-    if (!title.equals(analysis.title)) return false;
-    if (!interventionInclusions.equals(analysis.interventionInclusions)) return false;
-    if (!isArchived.equals(analysis.isArchived)) return false;
-    return archivedOn != null ? archivedOn.equals(analysis.archivedOn) : analysis.archivedOn == null;
+    AbstractAnalysis that = (AbstractAnalysis) o;
+    return Objects.equals(id, that.id) &&
+            Objects.equals(projectId, that.projectId) &&
+            Objects.equals(title, that.title) &&
+            Objects.equals(interventionInclusions, that.interventionInclusions) &&
+            Objects.equals(isArchived, that.isArchived) &&
+            Objects.equals(archivedOn, that.archivedOn);
   }
 
   @Override
   public int hashCode() {
-    int result = id != null ? id.hashCode() : 0;
-    result = 31 * result + projectId.hashCode();
-    result = 31 * result + title.hashCode();
-    result = 31 * result + interventionInclusions.hashCode();
-    result = 31 * result + isArchived.hashCode();
-    result = 31 * result + (archivedOn != null ? archivedOn.hashCode() : 0);
-    return result;
+
+    return Objects.hash(id, projectId, title, interventionInclusions, isArchived, archivedOn);
   }
 }

@@ -8,21 +8,22 @@
   </div>
   <div ng-if="items">
     <div class="panel callout primary" ng-repeat="item in items | orderBy:'pos'">
-      <category-item-directive itemIndex="{{$index}}" item="item" study-uuid="studyUuid"
-        reload-items="reloadItems" settings="settings" is-editing-allowed="isEditingAllowed"
-        is-single-item="isSingleItem" is-repairable="isRepairable"></category-item-directive>
+      <category-item-directive item="item" study-uuid="studyUuid" reload-items="reloadItems" settings="settings"
+        is-editing-allowed="isEditingAllowed" is-single-item="isSingleItem" is-repairable="isRepairable" arms="arms">
+      </category-item-directive>
 
       <div ng-if="showResults" class="study-item">
-        <results-table ng-if="item.measuredAtMoments.length > 0" variable="item" arms="arms"
-          groups="groups" measurement-moments="measurementMoments" is-editing-allowed="isEditingAllowed">
+        <results-table ng-if="item.measuredAtMoments.length > 0" variable="item" arms="arms" groups="groups"
+          measurement-moments="measurementMoments" is-editing-allowed="isEditingAllowed">
         </results-table>
 
-        <non-conformant-measurement-table variable-type="'Endpoint'" variable="item" arms="arms"
-          groups="groups" is-editing-allowed="isEditingAllowed" measurement-moments="measurementMoments">
+        <non-conformant-measurement-table variable-type="'Endpoint'" variable="item" arms="arms" groups="groups"
+          is-editing-allowed="isEditingAllowed" measurement-moments="measurementMoments">
         </non-conformant-measurement-table>
       </div>
 
     </div>
   </div>
-  <a ng-show="isEditingAllowed && !isSingleItem" ng-click="addItem()" class="button success"><i class="fa fa-plus"></i> Add {{settings.itemName}}</a>
+  <a ng-show="isEditingAllowed && !isSingleItem" ng-click="addItem()" class="button success"><i class="fa fa-plus"></i>
+    Add {{settings.itemName}}</a>
 </div>

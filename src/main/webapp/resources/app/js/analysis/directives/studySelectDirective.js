@@ -3,14 +3,6 @@ define(['lodash'], function(_) {
   var dependencies = ['SingleStudyBenefitRiskService'];
 
   var StudySelectDirective = function(SingleStudyBenefitRiskService) {
-
-    function isValidStudy(study) {
-      return study &&
-        (!study.missingInterventions || study.missingInterventions.length === 0) &&
-        (!study.missingOutcomes || study.missingOutcomes.length === 0) &&
-        !study.hasMatchedMixedTreatmentArm;
-    }
-
     return {
       restrict: 'E',
       templateUrl: './studySelectDirective.html',
@@ -23,24 +15,27 @@ define(['lodash'], function(_) {
         editMode: '='
       },
       link: function(scope) {
+        scope.onStudySelect = onStudySelect;
+
         if (!scope.selection) {
           scope.selection = {};
         }
         scope.$watch('studies', function() {
           var studyOptions = SingleStudyBenefitRiskService.addMissingOutcomesToStudies(scope.studies, [scope.outcome]);
-          scope.studyOptions = SingleStudyBenefitRiskService.recalculateGroup(studyOptions);
+          scope.studyOptions = SingleStudyBenefitRiskService.recalculateGroup(studyOptions, scope.interventions, scope.outcome);
           var oldSelection = scope.selection.selectedStudy;
           if (oldSelection) {
             scope.selection.selectedStudy = _.find(scope.studyOptions, ['studyUri', oldSelection.studyUri]);
           }
         });
-        scope.onStudySelect = function(newSelection) {
-          if (isValidStudy(newSelection)) {
+
+        function onStudySelect(newSelection) {
+          if (SingleStudyBenefitRiskService.isValidStudyOption(newSelection, scope.interventions, scope.outcome)) {
             scope.onChange(newSelection);
           } else {
             scope.onChange();
           }
-        };
+        }
       }
     };
 

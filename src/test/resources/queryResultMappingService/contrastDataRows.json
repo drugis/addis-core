@@ -1,0 +1,115 @@
+[
+  {
+    "isPrimaryEpoch": {
+      "type": "typed-literal",
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#boolean",
+      "value": "true"
+    },
+    "studyName": {
+      "type": "literal",
+      "value": "contrastStudy"
+    },
+    "measurementMoment": {
+      "type": "uri",
+      "value": "http:\/\/defaultMMUri"
+    },
+    "measurementMomentLabel": {
+      "type": "literal",
+      "value": "default moment"
+    },
+    "treatmentNode": {
+      "type": "uri",
+      "value": "http:\/\/localhost:8080\/.well-known\/genid\/00000152f5083d435358413a0000000c"
+    },
+    "outcomeInstanceLabel": {
+      "type": "literal",
+      "value": "Outcome"
+    },
+    "fixedDoseUnitMultiplier": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#double",
+      "type": "typed-literal",
+      "value": "1.000000e-03"
+    },
+    "outcomeTypeUid": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/ontology#Endpoint"
+    },
+    "fixedDoseValue": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#double",
+      "type": "typed-literal",
+      "value": "4.000000e+01"
+    },
+    "oddsRatio": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#double",
+      "type": "typed-literal",
+      "value": "1.2e+00"
+    },
+    "outcomeTypeUri": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/concepts\/variable"
+    },
+    "armLabel": {
+      "type": "literal",
+      "value": "Arm label"
+    },
+    "graph": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/graphs\/graph"
+    },
+    "drug": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/concepts\/fa8228cd-fedc-4ad2-b1e1-681cd18e633f"
+    },
+    "interventionLabel": {
+      "type": "literal",
+      "value": "Olmesartan"
+    },
+    "fixedDoseUnitConcept": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/concepts\/dfdd3707-fef5-4f06-b582-85c7de7a101d"
+    },
+    "treatmentType": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/ontology#FixedDoseDrugTreatment"
+    },
+    "drugInstance": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/instances\/803c57e2-acf9-40fb-85b9-bfe0d4d6d798"
+    },
+    "outcomeInstance": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/instances\/variable"
+    },
+    "stdErr": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#double",
+      "type": "typed-literal",
+      "value": "1.48e+01"
+    },
+    "referenceStandardError": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#double",
+      "type": "typed-literal",
+      "value": "1.5e+01"
+    },
+    "referenceArm": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/instances\/referenceArm"
+    },
+    "arm": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/instances\/arm"
+    },
+    "measurementType": {
+      "type": "uri",
+      "value": "http:\/\/trials.drugis.org\/ontology#dichotomous"
+    },
+    "fixedDoseUnitLabel": {
+      "type": "literal",
+      "value": "milligram"
+    },
+    "fixedDoseDosingPeriodicity": {
+      "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#duration",
+      "type": "typed-literal",
+      "value": "P1D"
+    }
+  }
+]

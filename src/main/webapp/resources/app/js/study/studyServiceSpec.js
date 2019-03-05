@@ -1,6 +1,6 @@
 'use strict';
-define(['angular-mocks'],
-  function() {
+define(['../util/context', 'angular-mocks'],
+  function(externalContext) {
     describe('study service', function() {
 
       var studyService,
@@ -18,33 +18,56 @@ define(['angular-mocks'],
         });
       });
 
+      beforeEach(inject(function($rootScope, StudyService) {
+        rootScope = $rootScope;
+        studyService = StudyService;
+      }));
+
       describe('createEmptyStudy', function() {
-
-        beforeEach(inject(function($rootScope, StudyService) {
-          rootScope = $rootScope;
-          studyService = StudyService;
-        }));
-
+        beforeEach(function() {
+          uuidServiceMock.generate.calls.reset();
+          uuidServiceMock.generate.and.returnValue('newStudyUid');
+        });
+        
         it('should return a graph of the new study', function() {
           var newStudy = {
             label: 'label',
             comment: 'comment'
           };
           var result = studyService.createEmptyStudy(newStudy, 'userUid', 'datasetUid');
-          expect(uuidServiceMock.generate).toHaveBeenCalled();
-          expect(graphResource.putJson).toHaveBeenCalled();
+          var expectNewStudy = {
+            '@graph': [{
+              '@id': 'http://trials.drugis.org/studies/newStudyUid',
+              '@type': 'ontology:Study',
+              label: 'label',
+              comment: 'comment',
+              has_activity: [],
+              has_arm: [],
+              has_group: [],
+              has_included_population: [{
+                '@id': 'instance:undefined',
+                '@type': 'ontology:StudyPopulation'
+              }],
+              has_eligibility_criteria: [],
+              has_indication: [],
+              has_objective: [],
+              has_outcome: [],
+              has_publication: []
+            }],
+            '@context': externalContext
+          };
+          expect(uuidServiceMock.generate.calls.count()).toEqual(1);
+          expect(graphResource.putJson).toHaveBeenCalledWith(
+            jasmine.any(Object), expectNewStudy, jasmine.any(Function), jasmine.any(Function)
+          );
           expect(result.then).toBeDefined();
         });
       });
 
       describe('reset', function() {
-        beforeEach(inject(function($rootScope, $q, StudyService) {
-          rootScope = $rootScope;
-          studyService = StudyService;
-
+        beforeEach(inject(function($q) {
           var loadDefer = $q.defer();
-          var loadPromise = loadDefer.promise;
-          studyService.loadJson(loadPromise);
+          studyService.loadJson(loadDefer.promise);
           studyService.save({});
           loadDefer.resolve({
             '@graph': []
@@ -59,13 +82,9 @@ define(['angular-mocks'],
       });
 
       describe('isStudyModified', function() {
-        beforeEach(inject(function($rootScope, $q, StudyService) {
-          rootScope = $rootScope;
-          studyService = StudyService;
-
+        beforeEach(inject(function($q) {
           var loadDefer = $q.defer();
-          var loadPromise = loadDefer.promise;
-          studyService.loadJson(loadPromise);
+          studyService.loadJson(loadDefer.promise);
           studyService.save({});
           loadDefer.resolve({
             '@graph': []
@@ -82,13 +101,9 @@ define(['angular-mocks'],
       });
 
       describe('studySaved', function() {
-        beforeEach(inject(function($rootScope, $q, StudyService) {
-          rootScope = $rootScope;
-          studyService = StudyService;
-
+        beforeEach(inject(function($q) {
           var loadDefer = $q.defer();
-          var loadPromise = loadDefer.promise;
-          studyService.loadJson(loadPromise);
+          studyService.loadJson(loadDefer.promise);
           studyService.save({});
           loadDefer.resolve({
             '@graph': []
@@ -104,9 +119,7 @@ define(['angular-mocks'],
 
       describe('loadJson', function() {
         var jsonPromise;
-        beforeEach(inject(function($rootScope, $q, StudyService) {
-          rootScope = $rootScope;
-          studyService = StudyService;
+        beforeEach(inject(function($q) {
           var defer = $q.defer();
           jsonPromise = defer.promise;
           defer.resolve({
@@ -135,13 +148,10 @@ define(['angular-mocks'],
         var graphPlusContext = {
           '@graph': ['graphItem']
         };
-        beforeEach(inject(function($rootScope, $q, StudyService) {
-          studyService = StudyService;
+        beforeEach(inject(function($q) {
           var loadDefer = $q.defer();
-          var loadPromise = loadDefer.promise;
-          studyService.loadJson(loadPromise);
+          studyService.loadJson(loadDefer.promise);
           loadDefer.resolve(graphPlusContext);
-          rootScope = $rootScope;
           rootScope.$digest();
         }));
         it('should return the whole thing', function(done) {
@@ -157,13 +167,10 @@ define(['angular-mocks'],
         var graphPlusContext = {
           '@graph': ['graphItem']
         };
-        beforeEach(inject(function($rootScope, $q, StudyService) {
-          studyService = StudyService;
+        beforeEach(inject(function($q) {
           var loadDefer = $q.defer();
-          var loadPromise = loadDefer.promise;
-          studyService.loadJson(loadPromise);
+          studyService.loadJson(loadDefer.promise);
           loadDefer.resolve(graphPlusContext);
-          rootScope = $rootScope;
           rootScope.$digest();
         }));
         it('should return only the graph part', function(done) {
@@ -179,13 +186,10 @@ define(['angular-mocks'],
         var graphPlusContext = {
           '@graph': ['graphItem']
         };
-        beforeEach(inject(function($rootScope, $q, StudyService) {
-          studyService = StudyService;
+        beforeEach(inject(function($q) {
           var loadDefer = $q.defer();
-          var loadPromise = loadDefer.promise;
-          studyService.loadJson(loadPromise);
+          studyService.loadJson(loadDefer.promise);
           loadDefer.resolve(graphPlusContext);
-          rootScope = $rootScope;
           rootScope.$digest();
         }));
         it('should save the graph and flip the modified flag', function(done) {
@@ -211,13 +215,10 @@ define(['angular-mocks'],
             has_included_population: []
           }]
         };
-        beforeEach(inject(function($rootScope, $q, StudyService) {
-          studyService = StudyService;
+        beforeEach(inject(function($q) {
           var loadDefer = $q.defer();
-          var loadPromise = loadDefer.promise;
-          studyService.loadJson(loadPromise);
+          studyService.loadJson(loadDefer.promise);
           loadDefer.resolve(graphPlusContext);
-          rootScope = $rootScope;
           rootScope.$digest();
         }));
         it('should return just the study part', function(done) {
@@ -239,13 +240,10 @@ define(['angular-mocks'],
           }]
         };
         var copy = angular.copy(graphPlusContext);
-        beforeEach(inject(function($rootScope, $q, StudyService) {
-          studyService = StudyService;
+        beforeEach(inject(function($q) {
           var loadDefer = $q.defer();
-          var loadPromise = loadDefer.promise;
-          studyService.loadJson(loadPromise);
+          studyService.loadJson(loadDefer.promise);
           loadDefer.resolve(graphPlusContext);
-          rootScope = $rootScope;
           rootScope.$digest();
         }));
         it('should store the study in the service', function(done) {

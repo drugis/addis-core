@@ -3,7 +3,7 @@
     <strong>Outcome: </strong>{{::analysis.outcome.name}}</span>
   <!-- Evidence network graph -->
   <div style="width:500px; height:500px;">
-    <network-plot ng-show="!hasTreatmentOverlap" network="network" ng-show="analysis.outcome" width="500" height="500"></network-plot>
+    <network-plot ng-show="!hasInterventionlap" network="network" ng-show="analysis.outcome" width="500" height="500"></network-plot>
   </div>
   <!-- Primary model: <model title> -->
   <h3>Primary model: {{::primaryModel.title}}

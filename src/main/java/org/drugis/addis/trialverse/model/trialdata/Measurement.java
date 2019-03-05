@@ -1,15 +1,18 @@
 package org.drugis.addis.trialverse.model.trialdata;
 
+import org.apache.commons.math3.distribution.NormalDistribution;
+
 import java.net.URI;
+import java.util.Objects;
 
 public class Measurement {
-
   private URI studyUuid;
   private URI variableUri;
   private URI variableConceptUri;
-  private String survivalTimeScale;
   private URI armUri;
   private URI measurementTypeURI;
+
+  private String survivalTimeScale;
   private Integer sampleSize;
   private Integer rate;
   private Double stdDev;
@@ -17,26 +20,48 @@ public class Measurement {
   private Double mean;
   private Double exposure;
 
+  private Double confidenceIntervalWidth;
+  private Double confidenceIntervalUpperBound;
+  private Double confidenceIntervalLowerBound;
+  private Double meanDifference;
+  private Double standardizedMeanDifference;
+  private Double oddsRatio;
+  private Double riskRatio;
+  private Double hazardRatio;
+  private Boolean isLog;
+  private URI referenceArm;
+  private Double referenceStdErr;
+
   public Measurement() {
   }
 
-  public Measurement(URI studyUuid, URI variableUri, URI variableConceptUri, String survivalTimeScale, URI armUri, URI measurementTypeURI, Integer sampleSize,
-                     Integer rate, Double stdDev, Double stdErr, Double mean, Double exposure) {
+  public Measurement(URI studyUuid, URI variableUri, URI variableConceptUri, URI armUri, URI measurementTypeURI, String survivalTimeScale, Integer sampleSize, Integer rate, Double stdDev, Double stdErr, Double mean, Double exposure, Double confidenceIntervalWidth, Double confidenceIntervalUpperBound, Double confidenceIntervalLowerBound, Double meanDifference, Double standardizedMeanDifference, Double oddsRatio, Double riskRatio, Double hazardRatio, Boolean isLog, URI referenceArm, Double referenceStdErr) {
     this.studyUuid = studyUuid;
     this.variableUri = variableUri;
     this.variableConceptUri = variableConceptUri;
-    this.survivalTimeScale = survivalTimeScale;
     this.armUri = armUri;
     this.measurementTypeURI = measurementTypeURI;
+    this.survivalTimeScale = survivalTimeScale;
     this.sampleSize = sampleSize;
     this.rate = rate;
     this.stdDev = stdDev;
     this.stdErr = stdErr;
     this.mean = mean;
     this.exposure = exposure;
+    this.confidenceIntervalWidth = confidenceIntervalWidth;
+    this.confidenceIntervalUpperBound = confidenceIntervalUpperBound;
+    this.confidenceIntervalLowerBound = confidenceIntervalLowerBound;
+    this.meanDifference = meanDifference;
+    this.standardizedMeanDifference = standardizedMeanDifference;
+    this.oddsRatio = oddsRatio;
+    this.riskRatio = riskRatio;
+    this.hazardRatio = hazardRatio;
+    this.isLog = isLog;
+    this.referenceArm = referenceArm;
+    this.referenceStdErr = referenceStdErr;
   }
 
-  public URI getStudyUid() {
+  public URI getStudyUuid() {
     return studyUuid;
   }
 
@@ -48,16 +73,16 @@ public class Measurement {
     return variableConceptUri;
   }
 
-  public String getSurvivalTimeScale() {
-    return survivalTimeScale;
-  }
-
   public URI getArmUri() {
     return armUri;
   }
 
   public URI getMeasurementTypeURI() {
     return measurementTypeURI;
+  }
+
+  public String getSurvivalTimeScale() {
+    return survivalTimeScale;
   }
 
   public Integer getSampleSize() {
@@ -73,7 +98,34 @@ public class Measurement {
   }
 
   public Double getStdErr() {
-    return stdErr;
+    if (stdErr != null) {
+      return stdErr;
+    } else if (confidenceIntervalWidth != null &&
+            confidenceIntervalLowerBound != null &&
+            confidenceIntervalUpperBound != null) {
+      return getStdErrFromCI(confidenceIntervalLowerBound, confidenceIntervalWidth / 100, confidenceIntervalUpperBound);
+    }
+    return null;
+  }
+
+  private double getStdErrFromCI(Double lowerBound, Double width, Double upperBound) {
+    //  If se and b% CI are on the log scale:
+    //          (log(upper) - log(lower))/(2*zvalue(p))
+    //  p = 1 - (1-b)/2
+    //  Example:
+    //          95% CI => b=0.95 => p = 1 - 0.05/2 = 0.975
+    //  zValue(0.975) = 1.96
+    double upperQuantile = 1 - (1 - width) / 2;
+    if(true){ // TODO: let depend on this.isLog on future patch
+      return (upperBound-lowerBound) / (2* zValue(upperQuantile));
+    } else {
+      return (Math.log(upperBound) - Math.log(lowerBound)) / // FIXME: log(0) = infinite ; how to deal?
+              (2 * zValue(upperQuantile));
+    }
+  }
+
+  private Double zValue(double upperQuantile) {
+    return new NormalDistribution().inverseCumulativeProbability(upperQuantile);
   }
 
   public Double getMean() {
@@ -84,42 +136,83 @@ public class Measurement {
     return exposure;
   }
 
+  public Double getConfidenceIntervalWidth() {
+    return confidenceIntervalWidth;
+  }
+
+  public Double getConfidenceIntervalUpperBound() {
+    return confidenceIntervalUpperBound;
+  }
+
+  public Double getConfidenceIntervalLowerBound() {
+    return confidenceIntervalLowerBound;
+  }
+
+  public Double getMeanDifference() {
+    return meanDifference;
+  }
+
+  public Double getStandardizedMeanDifference() {
+    return standardizedMeanDifference;
+  }
+
+  public Double getOddsRatio() {
+    return oddsRatio;
+  }
+
+  public Double getRiskRatio() {
+    return riskRatio;
+  }
+
+  public Double getHazardRatio() {
+    return hazardRatio;
+  }
+
+  public Boolean getLog() {
+    return isLog;
+  }
+
+  public URI getReferenceArm() {
+    return referenceArm;
+  }
+
+  public Double getReferenceStdErr() {
+    return referenceStdErr;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
-
     Measurement that = (Measurement) o;
-
-    if (!studyUuid.equals(that.studyUuid)) return false;
-    if (!variableUri.equals(that.variableUri)) return false;
-    if (!variableConceptUri.equals(that.variableConceptUri)) return false;
-    if (survivalTimeScale != null ? !survivalTimeScale.equals(that.survivalTimeScale) : that.survivalTimeScale != null)
-      return false;
-    if (!armUri.equals(that.armUri)) return false;
-    if (!measurementTypeURI.equals(that.measurementTypeURI)) return false;
-    if (sampleSize != null ? !sampleSize.equals(that.sampleSize) : that.sampleSize != null) return false;
-    if (rate != null ? !rate.equals(that.rate) : that.rate != null) return false;
-    if (stdDev != null ? !stdDev.equals(that.stdDev) : that.stdDev != null) return false;
-    if (stdErr != null ? !stdErr.equals(that.stdErr) : that.stdErr != null) return false;
-    if (mean != null ? !mean.equals(that.mean) : that.mean != null) return false;
-    return exposure != null ? exposure.equals(that.exposure) : that.exposure == null;
+    return Objects.equals(studyUuid, that.studyUuid) &&
+            Objects.equals(variableUri, that.variableUri) &&
+            Objects.equals(variableConceptUri, that.variableConceptUri) &&
+            Objects.equals(armUri, that.armUri) &&
+            Objects.equals(measurementTypeURI, that.measurementTypeURI) &&
+            Objects.equals(survivalTimeScale, that.survivalTimeScale) &&
+            Objects.equals(sampleSize, that.sampleSize) &&
+            Objects.equals(rate, that.rate) &&
+            Objects.equals(stdDev, that.stdDev) &&
+            Objects.equals(stdErr, that.stdErr) &&
+            Objects.equals(mean, that.mean) &&
+            Objects.equals(exposure, that.exposure) &&
+            Objects.equals(confidenceIntervalWidth, that.confidenceIntervalWidth) &&
+            Objects.equals(confidenceIntervalUpperBound, that.confidenceIntervalUpperBound) &&
+            Objects.equals(confidenceIntervalLowerBound, that.confidenceIntervalLowerBound) &&
+            Objects.equals(meanDifference, that.meanDifference) &&
+            Objects.equals(standardizedMeanDifference, that.standardizedMeanDifference) &&
+            Objects.equals(oddsRatio, that.oddsRatio) &&
+            Objects.equals(riskRatio, that.riskRatio) &&
+            Objects.equals(hazardRatio, that.hazardRatio) &&
+            Objects.equals(isLog, that.isLog) &&
+            Objects.equals(referenceArm, that.referenceArm) &&
+            Objects.equals(referenceStdErr, that.referenceStdErr);
   }
 
   @Override
   public int hashCode() {
-    int result = studyUuid.hashCode();
-    result = 31 * result + variableUri.hashCode();
-    result = 31 * result + variableConceptUri.hashCode();
-    result = 31 * result + (survivalTimeScale != null ? survivalTimeScale.hashCode() : 0);
-    result = 31 * result + armUri.hashCode();
-    result = 31 * result + measurementTypeURI.hashCode();
-    result = 31 * result + (sampleSize != null ? sampleSize.hashCode() : 0);
-    result = 31 * result + (rate != null ? rate.hashCode() : 0);
-    result = 31 * result + (stdDev != null ? stdDev.hashCode() : 0);
-    result = 31 * result + (stdErr != null ? stdErr.hashCode() : 0);
-    result = 31 * result + (mean != null ? mean.hashCode() : 0);
-    result = 31 * result + (exposure != null ? exposure.hashCode() : 0);
-    return result;
+
+    return Objects.hash(studyUuid, variableUri, variableConceptUri, armUri, measurementTypeURI, survivalTimeScale, sampleSize, rate, stdDev, stdErr, mean, exposure, confidenceIntervalWidth, confidenceIntervalUpperBound, confidenceIntervalLowerBound, meanDifference, standardizedMeanDifference, oddsRatio, riskRatio, hazardRatio, isLog, referenceArm, referenceStdErr);
   }
 }

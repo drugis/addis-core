@@ -2,6 +2,7 @@ package org.drugis.addis.problems.model;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.drugis.addis.models.Model;
+import org.drugis.addis.problems.model.problemEntry.AbstractProblemEntry;
 
 import java.util.*;
 
@@ -21,8 +22,8 @@ public class PairwiseNetworkProblem extends NetworkMetaAnalysisProblem {
             }
         }
 
-        Set<AbstractNetworkMetaAnalysisProblemEntry> pairwiseEntries = new HashSet<>();
-        for (AbstractNetworkMetaAnalysisProblemEntry entry : problem.getEntries()) {
+        Set<AbstractProblemEntry> pairwiseEntries = new HashSet<>();
+        for (AbstractProblemEntry entry : problem.getEntries()) {
             Integer treatmentId = entry.getTreatment();
             assert left != null;
             assert right != null;
@@ -31,7 +32,7 @@ public class PairwiseNetworkProblem extends NetworkMetaAnalysisProblem {
             }
         }
 
-        List<AbstractNetworkMetaAnalysisProblemEntry> entries = new ArrayList<>();
+        List<AbstractProblemEntry> entries = new ArrayList<>();
         entries.addAll(pairwiseEntries);
         this.treatments = Arrays.asList(left, right);
         this.entries = entries;

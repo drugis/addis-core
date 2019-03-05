@@ -1,20 +1,20 @@
 'use strict';
-define(['angular-mocks', './arm', '../group/group'], function() {
+define(['angular-mocks', './arm', '../group/group' ], function() {
   describe('the arm service', function() {
 
     var rootScope, q;
-    var studyService = jasmine.createSpyObj('StudyService', ['getStudy', 'save']);
+    var studyServiceMock = jasmine.createSpyObj('StudyService', ['getStudy', 'save']);
     var armService, groupService;
 
     beforeEach(function() {
       angular.mock.module('trialverse.arm', function($provide) {
-        $provide.value('StudyService', studyService);
+        $provide.value('StudyService', studyServiceMock);
       });
     });
 
     beforeEach(function() {
       angular.mock.module('trialverse.group', function($provide) {
-        $provide.value('StudyService', studyService);
+        $provide.value('StudyService', studyServiceMock);
       });
     });
 
@@ -38,14 +38,13 @@ define(['angular-mocks', './arm', '../group/group'], function() {
       var studyDefer = $q.defer();
       var getStudyPromise = studyDefer.promise;
       studyDefer.resolve(studyJsonObject);
-      studyService.getStudy.and.returnValue(getStudyPromise);
+      studyServiceMock.getStudy.and.returnValue(getStudyPromise);
       armService = ArmService;
       groupService = GroupService;
       rootScope.$digest();
     }));
 
     describe('query arms', function() {
-
       it('should query the arms', function(done) {
         armService.queryItems().then(function(result) {
           expect(result.length).toBe(2);

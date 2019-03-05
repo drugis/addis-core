@@ -20,9 +20,9 @@ import static org.drugis.addis.trialverse.TrialverseUtilService.readValue;
 @Service
 public class QueryResultMappingServiceImpl implements QueryResultMappingService {
 
-  public final static String SIMPLE_INTERVENTION_TYPE = "http://trials.drugis.org/ontology#SimpleDrugTreatment";
-  public final static String FIXED_INTERVENTION_TYPE = "http://trials.drugis.org/ontology#FixedDoseDrugTreatment";
-  public final static String TITRATED_INTERVENTION_TYPE = "http://trials.drugis.org/ontology#TitratedDoseDrugTreatment";
+  private final static String SIMPLE_INTERVENTION_TYPE = "http://trials.drugis.org/ontology#SimpleDrugTreatment";
+  private final static String FIXED_INTERVENTION_TYPE = "http://trials.drugis.org/ontology#FixedDoseDrugTreatment";
+  private final static String TITRATED_INTERVENTION_TYPE = "http://trials.drugis.org/ontology#TitratedDoseDrugTreatment";
 
   @Override
   public Map<URI, TrialDataStudy> mapResultRowsToTrialDataStudy(JSONArray bindings) throws ReadValueException {
@@ -44,7 +44,10 @@ public class QueryResultMappingServiceImpl implements QueryResultMappingService 
         }
         trialDataStudies.put(studyUri, trialDataStudy);
       }
-      trialDataStudy.addMeasurementMoment(new MeasurementMoment(readValue(row, "measurementMoment"), readValue(row, "measurementMomentLabel")));
+      URI measurementMoment = readValue(row, "measurementMoment");
+      if (measurementMoment != null) {
+        trialDataStudy.addMeasurementMoment(new MeasurementMoment(readValue(row, "measurementMoment"), readValue(row, "measurementMomentLabel")));
+      }
 
       URI drugInstance = readValue(row, "drugInstance");
       AbstractSemanticIntervention abstractSemanticIntervention = readSemanticIntervention(row, drugInstance);
@@ -55,65 +58,77 @@ public class QueryResultMappingServiceImpl implements QueryResultMappingService 
         String armLabel = readValue(row, "armLabel");
         trialDataArm = new TrialDataArm(armUri, armLabel);
         armCache.put(armUri, trialDataArm);
-        trialDataStudy.getTrialDataArms().add(trialDataArm);
+        trialDataStudy.getArms().add(trialDataArm);
       }
 
-      Measurement measurement = readMeasurement(row, studyUri, armUri);
       Pair<URI, URI> armPlusTreatment = Pair.of(armUri, readValue(row, "treatmentNode"));
       Boolean isPrimaryEpochTreatment = readValue(row, "isPrimaryEpoch");
       if (isPrimaryEpochTreatment && !seenArmTreatmentCombinations.contains(armPlusTreatment)) {
         seenArmTreatmentCombinations.add(armPlusTreatment);
         trialDataArm.addSemanticIntervention(abstractSemanticIntervention);
       }
-      URI measurementMoment = readValue(row, "measurementMoment");
-      trialDataArm.addMeasurement(measurementMoment, measurement);
+      if (measurementMoment != null) {
+        Measurement measurement = readMeasurement(row, studyUri, armUri);
+        trialDataArm.addMeasurement(measurementMoment, measurement);
+      }
     }
     return trialDataStudies;
   }
 
   private Measurement readMeasurement(JSONObject row, URI studyUri, URI armUri) throws ReadValueException {
-    String survivalTimeScale = null;
-    Double mean = null;
-    Double stdDev = null;
-    Double stdErr = null;
-    Integer rate = null;
-    Integer sampleSize = null;
-    Double exposure = null;
+    // absolute
+    Double mean = getValueFor(row, "mean");
+    Double stdDev = getValueFor(row, "stdDev");
+    Double stdErr = getValueFor(row, "stdErr");
+    Integer count = getValueFor(row, "count");
+    Integer sampleSize = getValueFor(row, "sampleSize");
+    Double exposure = getValueFor(row, "exposure");
+    String survivalTimeScale = getValueFor(row, "survivalTimeScale");
 
-    if (row.containsKey("mean")) {
-      mean = readValue(row, "mean");
-    }
-    if (row.containsKey("stdDev")) {
-      stdDev = readValue(row, "stdDev");
-    }
-    if (row.containsKey("stdErr")) {
-      stdErr = readValue(row, "stdErr");
-    }
-    if (row.containsKey("count")) {
-      rate = readValue(row, "count");
-    }
-    if (row.containsKey("sampleSize")) {
-      sampleSize = readValue(row, "sampleSize");
-    }
-    if(row.containsKey("exposure")) {
-      exposure = readValue(row, "exposure");
-    }
-    if(row.containsKey("survivalTimeScale")) {
-      survivalTimeScale = readValue(row, "survivalTimeScale");
-    }
+    //contrast
+    Double confidenceIntervalWidth = getValueFor(row, "confidenceIntervalWidth");
+    Double confidenceIntervalUpperBound = getValueFor(row, "confidenceIntervalUpperBound");
+    Double confidenceIntervalLowerBound = getValueFor(row, "confidenceIntervalLowerBound");
+    Double meanDifference = getValueFor(row, "meanDifference");
+    Double standardizedMeanDifference = getValueFor(row, "standardizedMeanDifference");
+    Double oddsRatio = getValueFor(row, "oddsRatio");
+    Double riskRatio = getValueFor(row, "riskRatio");
+    Double hazardRatio = getValueFor(row, "hazardRatio");
+    Boolean isLog = getValueFor(row, "isLog");
+    URI referenceArm = getValueFor(row, "referenceArm");
+
+    Double referenceStdErr = getValueFor(row, "referenceStandardError");
 
     URI variableUri = readValue(row, "outcomeInstance");
     URI variableConceptUri = readValue(row, "outcomeTypeUri");
     URI measurementTypeUri = readValue(row, "measurementType");
     return new MeasurementBuilder(studyUri, variableUri, variableConceptUri, armUri, measurementTypeUri)
             .setSampleSize(sampleSize)
-            .setRate(rate)
+            .setCount(count)
             .setStdDev(stdDev)
             .setStdErr(stdErr)
             .setMean(mean)
             .setExposure(exposure)
             .setSurvivalTimeScale(survivalTimeScale)
-            .createMeasurement();
+            .setConfidenceIntervalWidth(confidenceIntervalWidth)
+            .setConfidenceIntervalLowerBound(confidenceIntervalLowerBound)
+            .setConfidenceIntervalUpperBound(confidenceIntervalUpperBound)
+            .setMeanDifference(meanDifference)
+            .setStandardizedMeanDifference(standardizedMeanDifference)
+            .setOddsRatio(oddsRatio)
+            .setRiskRatio(riskRatio)
+            .setHazardRatio(hazardRatio)
+            .setLog(isLog)
+            .setReferenceArm(referenceArm)
+            .setReferenceStdErr(referenceStdErr)
+            .build();
+  }
+
+  private <T> T getValueFor(JSONObject row, String valueName) throws ReadValueException {
+    if (row.containsKey(valueName)) {
+      return readValue(row, valueName);
+    }
+    return null;
   }
 
   @Override

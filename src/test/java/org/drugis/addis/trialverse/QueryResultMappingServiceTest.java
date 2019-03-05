@@ -1,11 +1,14 @@
 package org.drugis.addis.trialverse;
 
+import com.google.common.collect.Sets;
 import com.jayway.jsonpath.JsonPath;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import net.minidev.json.JSONValue;
 import net.minidev.json.parser.ParseException;
 import org.drugis.addis.TestUtils;
+import org.drugis.addis.problems.service.ProblemService;
+import org.drugis.addis.trialverse.model.MeasurementMoment;
 import org.drugis.addis.trialverse.model.trialdata.*;
 import org.drugis.addis.trialverse.service.QueryResultMappingService;
 import org.drugis.addis.trialverse.service.impl.QueryResultMappingServiceImpl;
@@ -19,6 +22,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import static org.junit.Assert.*;
 
@@ -27,10 +31,11 @@ import static org.junit.Assert.*;
  */
 public class QueryResultMappingServiceTest {
   @InjectMocks
-  QueryResultMappingService queryResultMappingService;
+  private QueryResultMappingService queryResultMappingService;
 
   private String covariateRow = TestUtils.loadResource(this.getClass(), "/queryResultMappingService/covariatePopCharValueRow.json");
   private String combinationTreatmentRows = TestUtils.loadResource(this.getClass(), "/queryResultMappingService/trialDataEdarbiCombined.json");
+  private String contrastDataRows = TestUtils.loadResource(this.getClass(), "/queryResultMappingService/contrastDataRows.json");
 
   @Before
   public void setUp() {
@@ -46,7 +51,7 @@ public class QueryResultMappingServiceTest {
 
     URI studyWithFixedInterventionUri = new URI("http://trials.drugis.org/graphs/34adef58-434f-40c8-89a3-d93fad6dbd94");
     TrialDataStudy trialDataStudy = trialDataMap.get(studyWithFixedInterventionUri);
-    List<TrialDataArm> trialDataArms = trialDataStudy.getTrialDataArms();
+    List<TrialDataArm> trialDataArms = trialDataStudy.getArms();
 
     AbstractSemanticIntervention intervention = trialDataArms.get(0).getSemanticInterventions().get(0);
     assertTrue(intervention instanceof FixedSemanticIntervention);
@@ -62,7 +67,7 @@ public class QueryResultMappingServiceTest {
     URI studyWithTitratedInterventionUri = new URI("http://trials.drugis.org/graphs/27d109cc-3557-4223-97ef-b2cfea99c964");
     trialDataStudy = trialDataMap.get(studyWithTitratedInterventionUri);
 
-    intervention = trialDataStudy.getTrialDataArms().get(0).getSemanticInterventions().get(0);
+    intervention = trialDataStudy.getArms().get(0).getSemanticInterventions().get(0);
     assertTrue(intervention instanceof TitratedSemanticIntervention);
     TitratedSemanticIntervention titratedSemanticIntervention = (TitratedSemanticIntervention) intervention;
     Dose minDose = titratedSemanticIntervention.getMinDose();
@@ -78,13 +83,41 @@ public class QueryResultMappingServiceTest {
   }
 
   @Test
+  public void testMapContrastRow() throws ReadValueException {
+    URI studyUri = URI.create("http://trials.drugis.org/graphs/graph");
+    URI variableUri = URI.create("http://trials.drugis.org/instances/variable");
+    URI variableConceptUri = URI.create("http://trials.drugis.org/concepts/variable");
+    URI armUri = URI.create("http://trials.drugis.org/instances/arm");
+    URI referenceArmUri = URI.create("http://trials.drugis.org/instances/referenceArm");
+    JSONArray bindings = JsonPath.read(contrastDataRows, "$");
+
+    Map<URI, TrialDataStudy> studies = queryResultMappingService.mapResultRowsToTrialDataStudy(bindings);
+
+    TrialDataStudy study = studies.get(studyUri);
+    MeasurementMoment measurementMoment = study.getMeasurementMoments().iterator().next();
+    TrialDataArm arm = study.getArms().get(0);
+    Set<Measurement> measurements = arm.getMeasurements().get(measurementMoment.getUri());
+
+    Measurement measurement = new MeasurementBuilder(studyUri, variableUri, variableConceptUri, armUri, ProblemService.DICHOTOMOUS_TYPE_URI)
+            .setReferenceArm(referenceArmUri)
+            .setReferenceStdErr(15.0)
+            .setOddsRatio(1.2)
+            .setStdErr(14.8)
+            .build();
+    Set<Measurement> expectedMeasurements = Sets.newHashSet(measurement);
+
+    assertEquals(expectedMeasurements, measurements);
+  }
+
+
+  @Test
   public void testCombinationTreatment() throws ReadValueException {
     JSONArray bindings = JsonPath.read(combinationTreatmentRows, "$");
     Map<URI, TrialDataStudy> trialDataMap = queryResultMappingService.mapResultRowsToTrialDataStudy(bindings);
 
     final TrialDataStudy combiTreatmentStudy = trialDataMap.get(URI.create("http://trials.drugis.org/graphs/f1d76e55-b04d-4d34-82bd-0e7dd0a8cad0"));
 
-    assertEquals(2, combiTreatmentStudy.getTrialDataArms().get(0).getSemanticInterventions().size());
+    assertEquals(2, combiTreatmentStudy.getArms().get(0).getSemanticInterventions().size());
   }
 
   @Test

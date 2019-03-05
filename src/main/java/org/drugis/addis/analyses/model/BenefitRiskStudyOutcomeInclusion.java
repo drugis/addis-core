@@ -1,16 +1,15 @@
 package org.drugis.addis.analyses.model;
 
+import com.fasterxml.jackson.annotation.JsonRawValue;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import org.drugis.addis.util.ObjectToStringDeserializer;
 import org.hibernate.annotations.Type;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.IdClass;
+import javax.persistence.*;
 import java.io.Serializable;
 import java.net.URI;
+import java.util.Objects;
 
-/**
- * Created by joris on 13-6-17.
- */
 @Entity
 @IdClass(BenefitRiskStudyOutcomeInclusion.BenefitRiskStudyOutcomeInclusionPK.class)
 public class BenefitRiskStudyOutcomeInclusion {
@@ -30,18 +29,15 @@ public class BenefitRiskStudyOutcomeInclusion {
     public boolean equals(Object o) {
       if (this == o) return true;
       if (o == null || getClass() != o.getClass()) return false;
-
       BenefitRiskStudyOutcomeInclusionPK that = (BenefitRiskStudyOutcomeInclusionPK) o;
-
-      if (!analysisId.equals(that.analysisId)) return false;
-      return outcomeId.equals(that.outcomeId);
+      return Objects.equals(analysisId, that.analysisId) &&
+              Objects.equals(outcomeId, that.outcomeId);
     }
 
     @Override
     public int hashCode() {
-      int result = analysisId.hashCode();
-      result = 31 * result + outcomeId.hashCode();
-      return result;
+
+      return Objects.hash(analysisId, outcomeId);
     }
   }
 
@@ -53,6 +49,9 @@ public class BenefitRiskStudyOutcomeInclusion {
   @Type(type = "org.drugis.addis.util.UriUserType")
   private URI studyGraphUri;
 
+  @JsonRawValue
+  private String baseline;
+
   public BenefitRiskStudyOutcomeInclusion() {
   }
 
@@ -60,6 +59,14 @@ public class BenefitRiskStudyOutcomeInclusion {
     this.analysisId = analysisId;
     this.outcomeId = outcomeId;
     this.studyGraphUri = studyGraphUri;
+    this.baseline = null;
+  }
+
+  public BenefitRiskStudyOutcomeInclusion(Integer analysisId, Integer outcomeId, URI studyGraphUri, String baseline) {
+    this.analysisId = analysisId;
+    this.outcomeId = outcomeId;
+    this.studyGraphUri = studyGraphUri;
+    this.baseline = baseline;
   }
 
   public Integer getAnalysisId() {
@@ -74,23 +81,31 @@ public class BenefitRiskStudyOutcomeInclusion {
     return studyGraphUri;
   }
 
+  @JsonRawValue
+  public String getBaseline() {
+    return baseline;
+  }
+
+  @JsonDeserialize(using = ObjectToStringDeserializer.class)
+  public void setBaseline(String baseline) {
+    this.baseline = baseline;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
-
     BenefitRiskStudyOutcomeInclusion that = (BenefitRiskStudyOutcomeInclusion) o;
-
-    if (!analysisId.equals(that.analysisId)) return false;
-    if (!outcomeId.equals(that.outcomeId)) return false;
-    return studyGraphUri != null ? studyGraphUri.equals(that.studyGraphUri) : that.studyGraphUri == null;
+    return Objects.equals(analysisId, that.analysisId) &&
+            Objects.equals(outcomeId, that.outcomeId) &&
+            Objects.equals(studyGraphUri, that.studyGraphUri) &&
+            Objects.equals(baseline, that.baseline);
   }
 
   @Override
   public int hashCode() {
-    int result = analysisId.hashCode();
-    result = 31 * result + outcomeId.hashCode();
-    result = 31 * result + (studyGraphUri != null ? studyGraphUri.hashCode() : 0);
-    return result;
+
+    return Objects.hash(analysisId, outcomeId, studyGraphUri, baseline);
   }
 }

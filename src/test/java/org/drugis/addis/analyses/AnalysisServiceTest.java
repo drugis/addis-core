@@ -233,7 +233,7 @@ public class AnalysisServiceTest {
 
     assertNotNull(trialDataStudies);
     assertEquals(1, trialDataStudies.size());
-    assertTrue(trialDataStudies.get(0).getTrialDataArms().get(0).getMatchedProjectInterventionIds().contains(includedInterventionId));
+    assertTrue(trialDataStudies.get(0).getArms().get(0).getMatchedProjectInterventionIds().contains(includedInterventionId));
   }
 
 }

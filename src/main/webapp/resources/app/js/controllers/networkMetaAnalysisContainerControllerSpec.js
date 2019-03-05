@@ -1,90 +1,90 @@
 'use strict';
 define(['angular', 'angular-mocks', '../controllers'], function() {
   describe('the network meta-analysis controller', function() {
-    var scope,
-      state,
-      q,
-      timeout = function(fn) { // fake timeout which triggers immediately
-        fn();
-        return {
-          then: function(fn2) {
-            fn2();
-          }
-        };
-      },
-      analysisDeferred,
-      interventionDeferred,
-      covariateDeferred,
-      outcomesDeferred,
-      interventionResource,
-      analysisService,
-      analysisResource,
-      userService,
-      networkMetaAnalysisService,
-      covariates = [{
-        id: 1
-      }, {
-        id: 2
-      }],
-      covariateResource = jasmine.createSpyObj('CovariateResource', ['query']),
-      trialverseTrialDataDeferred,
-      mockAnalysis = {
-        id: 101,
-        outcome: {
-          id: 2,
-          semanticOutcomeUri: 'semanticOutcomeUri'
-        },
-        includedMeasurementMoments: []
-      },
-      projectDeferred,
-      mockWindow = {
-        config: {
-          user: 'user'
+    var scope;
+    var state;
+    var q;
+    var timeout = function(fn) { // fake timeout which triggers immediately
+      fn();
+      return {
+        then: function(fn2) {
+          fn2();
         }
-      },
-      mockProject = {
-        id: 11,
-        namespaceUid: '123-a-dda456',
-        datasetVersion: 'version',
-        owner: 'owner'
-      },
-      mockStateParams = {
-        analysisId: 1,
-        projectId: 11
-      },
-      mockOutcomes = [{
-        id: 1,
-        semanticOutcomeUri: 'semanticOutcomeUri-1'
-      }, {
+      };
+    };
+    var analysisDeferred;
+    var interventionDeferred;
+    var covariateDeferred;
+    var outcomesDeferred;
+    var interventionResource;
+    var analysisService;
+    var analysisResource;
+    var userService;
+    var networkMetaAnalysisService;
+    var covariates = [{
+      id: 1
+    }, {
+      id: 2
+    }];
+    var covariateResource = jasmine.createSpyObj('CovariateResource', ['query']);
+    var trialverseTrialDataDeferred;
+    var mockAnalysis = {
+      id: 101,
+      outcome: {
         id: 2,
-        semanticOutcomeUri: 'semanticOutcomeUri-2'
-      }],
-      mockTrialData = {
-        studies: [1, 2, 3]
+        semanticOutcomeUri: 'semanticOutcomeUri'
       },
-      outcomeResource,
-      mockInterventions = [{
-        id: 1,
-        name: 'intervention-name1',
-        semanticInterventionUri: 'semanticInterventionUri1'
-      }, {
-        id: 2,
-        name: 'intervention-name2',
-        semanticInterventionUri: 'semanticInterventionUri2'
-      }, {
-        id: 3,
-        name: 'intervention-name3',
-        semanticInterventionUri: 'semanticInterventionUri3'
-      },],
-      EvidenceTableResource,
-      mockModel = {
-        id: 512,
-        analysisId: 600
-      },
-      modelResource,
-      pageTitleServiceMock,
-      modelDeferred,
-      userDefer;
+      includedMeasurementMoments: []
+    };
+    var projectDeferred;
+    var mockWindow = {
+      config: {
+        user: 'user'
+      }
+    };
+    var mockProject = {
+      id: 11,
+      namespaceUid: '123-a-dda456',
+      datasetVersion: 'version',
+      owner: 'owner'
+    };
+    var mockStateParams = {
+      analysisId: 1,
+      projectId: 11
+    };
+    var mockOutcomes = [{
+      id: 1,
+      semanticOutcomeUri: 'semanticOutcomeUri-1'
+    }, {
+      id: 2,
+      semanticOutcomeUri: 'semanticOutcomeUri-2'
+    }];
+    var mockTrialData = {
+      studies: [1, 2, 3]
+    };
+    var outcomeResource;
+    var mockInterventions = [{
+      id: 1,
+      name: 'intervention-name1',
+      semanticInterventionUri: 'semanticInterventionUri1'
+    }, {
+      id: 2,
+      name: 'intervention-name2',
+      semanticInterventionUri: 'semanticInterventionUri2'
+    }, {
+      id: 3,
+      name: 'intervention-name3',
+      semanticInterventionUri: 'semanticInterventionUri3'
+    },];
+    var EvidenceTableResource;
+    var mockModel = {
+      id: 512,
+      analysisId: 600
+    };
+    var modelResource;
+    var pageTitleServiceMock;
+    var modelDeferred;
+    var userDefer;
     beforeEach(angular.mock.module('addis.controllers'));
     beforeEach(inject(function($rootScope, $controller, $q) {
       q = $q;
@@ -116,32 +116,26 @@ define(['angular', 'angular-mocks', '../controllers'], function() {
         'addInclusionsToCovariates',
         'addInclusionsToInterventions',
         'buildInterventionInclusions',
-        'buildMissingValueByStudyMap',
+        'buildMissingValueByStudy',
         'buildMomentSelections',
         'buildOverlappingTreatmentMap',
-        'changeArmExclusion',
         'changeCovariateInclusion',
-        'checkSigmaNShow',
-        'checkStdErrShow',
         'cleanUpExcludedArms',
-        'doesInterventionHaveAmbiguousArms',
         'doesModelHaveAmbiguousArms',
         'doesModelHaveInsufficientCovariateValues',
+        'transformStudiesToNetwork',
+        'transformStudiesToTableRows',
         'getIncludedInterventions',
-        'transformTrialDataToNetwork',
-        'transformTrialDataToTableRows',
-        'getMeasurementType',
-        'checkColumnsToShow'
+        'hasInterventionOverlap',
+        'doesModelContainTooManyResultProperties'
       ]);
       var mockNetwork = {
         interventions: []
       };
-      networkMetaAnalysisService.transformTrialDataToNetwork.and.returnValue(mockNetwork);
-      networkMetaAnalysisService.transformTrialDataToTableRows.and.returnValue([]);
-      networkMetaAnalysisService.doesInterventionHaveAmbiguousArms.and.returnValue(true);
+      networkMetaAnalysisService.transformStudiesToNetwork.and.returnValue(mockNetwork);
+      networkMetaAnalysisService.transformStudiesToTableRows.and.returnValue({ absolute: [], contrast: [] });
       networkMetaAnalysisService.addInclusionsToInterventions.and.returnValue(mockInterventions);
       networkMetaAnalysisService.getIncludedInterventions.and.returnValue(mockInterventions);
-      networkMetaAnalysisService.changeArmExclusion.and.returnValue(mockAnalysis);
 
       covariateDeferred = $q.defer();
       covariates.$promise = covariateDeferred.promise;
@@ -184,14 +178,17 @@ define(['angular', 'angular-mocks', '../controllers'], function() {
           projectId: mockProject.id
         });
       });
+
       it('should set the parent\'s isNetworkDisconnected to true', function() {
-        expect(scope.isNetworkDisconnected).toBeTruthy();
+        expect(scope.errors.isNetworkDisconnected).toBeTruthy();
       });
+
       it('should query the model to see if the analyis is used in a model', function() {
-        expect(scope.hasModel).toBeDefined();
+        expect(scope.editMode.hasModel).toBeDefined();
         expect(modelResource.query).toHaveBeenCalledWith(mockStateParams);
       });
     });
+
     describe('when the analysis, outcomes, interventions, project, models and covariates are loaded', function() {
       beforeEach(function() {
         analysisDeferred.resolve(mockAnalysis);
@@ -202,11 +199,13 @@ define(['angular', 'angular-mocks', '../controllers'], function() {
         covariateDeferred.resolve(covariates);
         scope.$apply();
       });
+
       it('should save the analysis when the selected outcome changes', function() {
         mockAnalysis.outcome = mockOutcomes[0];
         scope.changeSelectedOutcome();
         expect(analysisResource.save).toHaveBeenCalled();
       });
+
       describe('and there is already an outcome defined on the analysis', function() {
         it('should get the tabledata and transform it to table rows and network', function() {
           expect(EvidenceTableResource.query).toHaveBeenCalledWith({
@@ -215,71 +214,23 @@ define(['angular', 'angular-mocks', '../controllers'], function() {
           });
           trialverseTrialDataDeferred.resolve();
           scope.$apply();
-          expect(networkMetaAnalysisService.transformTrialDataToTableRows).toHaveBeenCalled();
+          expect(networkMetaAnalysisService.transformStudiesToTableRows).toHaveBeenCalled();
           expect(analysisService.isNetworkDisconnected).toHaveBeenCalled();
-          expect(networkMetaAnalysisService.transformTrialDataToNetwork).toHaveBeenCalled();
+          expect(networkMetaAnalysisService.transformStudiesToNetwork).toHaveBeenCalled();
         });
       });
-      describe('and the arm exclusion is changed ', function() {
-        beforeEach(function() {
-          var dataRow = {};
-          scope.tableHasAmbiguousArm = true;
-          scope.changeArmExclusion(dataRow);
-        });
-        it('should set tableHasAmbiguousArm to false', function() {
-          expect(scope.tableHasAmbiguousArm).toBeFalsy();
-          expect(networkMetaAnalysisService.changeArmExclusion).toHaveBeenCalled();
-          expect(analysisResource.save).toHaveBeenCalled();
-        });
-      });
+
       describe('and the intervention inclusion is changed', function() {
         it('should update the analysis\' included interventions, clean up its arm exclusions when applicable and save the analysis', function() {
           var intervention = {
             isIncluded: false
           };
-          scope.trialverseData = {};
+          scope.studies = [];
           scope.changeInterventionInclusion(intervention);
           expect(networkMetaAnalysisService.buildInterventionInclusions).toHaveBeenCalled();
           expect(networkMetaAnalysisService.cleanUpExcludedArms).toHaveBeenCalled();
           expect(analysisResource.save).toHaveBeenCalled();
         });
-      });
-      describe('and the doesInterventionHaveAmbiguousArms function is called', function() {
-        beforeEach(function() {
-          var drugId = 1;
-          scope.tableHasAmbiguousArm = false;
-          networkMetaAnalysisService.doesInterventionHaveAmbiguousArms.and.returnValue(true);
-          scope.doesInterventionHaveAmbiguousArms(drugId);
-        });
-        it('should call the doesInterventionHaveAmbiguousArms function on the NetworkMetaAnalysisService', function() {
-          expect(networkMetaAnalysisService.doesInterventionHaveAmbiguousArms).toHaveBeenCalled();
-        });
-      });
-      describe('and the changeMeasurementMoment function is called', function() {
-        var newMoment = {
-          uri: 'mmUri',
-          isDefault: false
-        };
-        var dataRow = {
-          studyUri: 'studyUri'
-        };
-        beforeEach(function() {
-          mockAnalysis.includedMeasurementMoments = [{
-            analysisId: mockAnalysis.id,
-            study: dataRow.studyUri,
-            measurementMoment: 'oldMeasurementMoment'
-          }];
-          scope.changeMeasurementMoment(newMoment, dataRow);
-        });
-        it('clean up old inclusions for the study and make a new one for non-default measurement moment', function() {
-          expect(analysisResource.save).toHaveBeenCalled();
-          expect(mockAnalysis.includedMeasurementMoments).toEqual([{
-            analysisId: mockAnalysis.id,
-            study: dataRow.studyUri,
-            measurementMoment: newMoment.uri
-          }]);
-        });
-
       });
     });
   });

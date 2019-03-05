@@ -5,14 +5,17 @@ define(['lodash', 'angular-mocks', './analysis'], function(_) {
 
     var workspaceServiceMock = jasmine.createSpyObj('WorkspaceService', ['reduceProblem']);
     var problemResourceMock = jasmine.createSpyObj('ProblemResource', ['get']);
-    var analysisResourceMock = jasmine.createSpyObj('AnalysisResource', ['save']);
+    var analysisResourceMock = jasmine.createSpyObj('AnalysisResource', ['save', 'query']);
     var subProblemResourceMock = jasmine.createSpyObj('SubProblemResource', ['query']);
     var scenarioResourceMock = jasmine.createSpyObj('ScenarioResource', ['query']);
 
     var scope;
     var q;
     var state = {
-      params: { id: 'params' },
+      params: {
+        projectId: 37,
+        id: 'params'
+      },
       go: function() {
         return;
       }
@@ -65,7 +68,8 @@ define(['lodash', 'angular-mocks', './analysis'], function(_) {
           selectedStudy: {
             studyUri: 'http://study1.uri'
           },
-          dataType: 'single-study'
+          dataType: 'single-study',
+          isContrastOutcome: false
         }, {
           outcome: {
             id: 2
@@ -75,7 +79,6 @@ define(['lodash', 'angular-mocks', './analysis'], function(_) {
         }];
         expect(result).toEqual(expectedResult);
       });
-
     });
 
     describe('buildOutcomeWithAnalyses', function() {
@@ -153,39 +156,6 @@ define(['lodash', 'angular-mocks', './analysis'], function(_) {
       });
     });
 
-    describe('compareAnalysesByModels', function() {
-      it('should place analyses with models before those without', function() {
-        var a = {
-          models: [1]
-        };
-        var b = {
-          models: []
-        };
-        expect(benefitRiskService.compareAnalysesByModels(a, b)).toBe(-1);
-        expect(benefitRiskService.compareAnalysesByModels(b, a)).toBe(1);
-      });
-      it('should do nothing if both analyses have models', function() {
-        var a = {
-          models: [1]
-        };
-        var b = {
-          models: [1]
-        };
-        expect(benefitRiskService.compareAnalysesByModels(a, b)).toBe(0);
-        expect(benefitRiskService.compareAnalysesByModels(b, a)).toBe(0);
-      });
-      it('should do nothing if neither analysis has a model', function() {
-        var a = {
-          models: []
-        };
-        var b = {
-          models: []
-        };
-        expect(benefitRiskService.compareAnalysesByModels(a, b)).toBe(0);
-        expect(benefitRiskService.compareAnalysesByModels(b, a)).toBe(0);
-      });
-    });
-
     describe('addModelsGroup', function() {
       it('should decorate the models with their group', function() {
 
@@ -210,617 +180,10 @@ define(['lodash', 'angular-mocks', './analysis'], function(_) {
       });
     });
 
-    describe('numberOfSelectedOutcomes', function() {
-      it('should return the number of selected outcomes, which do not contain archived analyses or models', function() {
-        var outcomesWithAnalyses = [{
-          outcome: {
-            isIncluded: false
-          },
-          selectedAnalysis: {
-            archived: true
-          },
-          selectedModel: {
-            archived: false
-          }
-        }, {
-          outcome: {
-            isIncluded: true
-          }
-        }, {
-          outcome: {
-            isIncluded: true
-          },
-          selectedStudy: {}
-        }, {
-          outcome: {
-            isIncluded: true
-          },
-          selectedAnalysis: {
-            archived: true
-          },
-          selectedModel: {
-            archived: false
-          }
-        }, {
-          outcome: {
-            isIncluded: true
-          },
-          selectedAnalysis: {
-            archived: false
-          },
-          selectedModel: {
-            archived: false
-          }
-        }];
-        expect(benefitRiskService.numberOfSelectedOutcomes(outcomesWithAnalyses)).toBe(2);
-      });
-    });
-
-    describe('isMissingAnalysis', function() {
-      it('should return true if any outcome selection is a network but missing a selected analysis', function() {
-        var noIncludedOutcome = [{
-          dataType: 'network',
-          outcome: {
-            isIncluded: false
-          },
-          selectedAnalysis: {
-            id: 1
-          }
-        }];
-        expect(benefitRiskService.isMissingAnalysis(noIncludedOutcome)).toBeFalsy();
-        var includedWithAnalysis = [{
-          dataType: 'network',
-          outcome: {
-            isIncluded: true
-          },
-          selectedAnalysis: {
-            id: 1
-          }
-        }];
-        expect(benefitRiskService.isMissingAnalysis(includedWithAnalysis)).toBeFalsy();
-        var includedWithoutAnalysis = [{
-          dataType: 'network',
-          outcome: {
-            isIncluded: true
-          }
-        }, {
-          dataType: 'study',
-          outcome: {
-            isIncluded: true
-          },
-          selectedAnalysis: {
-            nonsense: 'yo'
-          }
-        }];
-        expect(benefitRiskService.isMissingAnalysis(includedWithoutAnalysis)).toBeTruthy();
-      });
-    });
-
-    describe('isMissingDataType', function() {
-      it('should return true if there is an outcome for which the data source type has not yet been chosen', function() {
-        var includedButNoType = [{
-          outcome: {
-            isIncluded: true
-          }
-        }];
-        expect(benefitRiskService.isMissingDataType(includedButNoType)).toBeTruthy();
-        var notIncluded = [{
-          outcome: {
-            isIncluded: false
-          }
-        }];
-        expect(benefitRiskService.isMissingDataType(notIncluded)).toBeFalsy();
-        var includedWithType = [{
-          dataType: 'network',
-          outcome: {
-            isIncluded: true
-          }
-        }];
-        expect(benefitRiskService.isMissingDataType(includedWithType)).toBeFalsy();
-      });
-    });
-
-    describe('isModelWithMissingAlternatives', function() {
-      it('should return true if any selected outcome has a model with missing alternatives', function() {
-        var outcomesWithAnalyses = [{
-          outcome: {
-            isIncluded: false
-          },
-          selectedModel: {
-            missingAlternatives: []
-          }
-        }, {
-          outcome: {
-            isIncluded: true
-          },
-          selectedModel: {
-            missingAlternatives: [1, 2, 3]
-          }
-        }, {
-          outcome: {
-            isIncluded: true
-          },
-          selectedModel: {
-            missingAlternatives: []
-          }
-        }];
-        expect(benefitRiskService.isModelWithMissingAlternatives(outcomesWithAnalyses)).toBeTruthy();
-      });
-      it('should return false if none of the selected outcomes has a model with missing alternatives', function() {
-        var outcomesWithAnalyses = [{
-          outcome: {
-            isIncluded: false
-          },
-          selectedModel: {
-            missingAlternatives: []
-          }
-        }, {
-          outcome: {
-            isIncluded: true
-          },
-          selectedModel: {
-            missingAlternatives: []
-          }
-        }, {
-          outcome: {
-            isIncluded: true
-          },
-          selectedModel: {
-            missingAlternatives: []
-          }
-        }];
-        expect(benefitRiskService.isModelWithMissingAlternatives(outcomesWithAnalyses)).toBeFalsy();
-      });
-    });
-
-    describe('isModelWithoutResults', function() {
-      it('should return true if any selected outcome has a model with missing results', function() {
-        var outcomesWithAnalyses = [{
-          outcome: {
-            isIncluded: false
-          },
-          selectedModel: {
-            runStatus: 'done'
-          }
-        }, {
-          outcome: {
-            isIncluded: true
-          },
-          selectedModel: {
-            runStatus: 'running'
-          }
-        }, {
-          outcome: {
-            isIncluded: true
-          },
-          selectedModel: {
-            runStatus: 'done'
-          }
-        }];
-        expect(benefitRiskService.isModelWithoutResults(outcomesWithAnalyses)).toBeTruthy();
-      });
-      it('should return false if none of the selected outcomes has a model with missing results', function() {
-        var outcomesWithAnalyses = [{
-          outcome: {
-            isIncluded: false
-          },
-          selectedModel: {
-            runStatus: 'done'
-          }
-        }, {
-          outcome: {
-            isIncluded: true
-          },
-          selectedModel: {
-            runStatus: 'done'
-          }
-        }];
-        expect(benefitRiskService.isModelWithoutResults(outcomesWithAnalyses)).toBeFalsy();
-      });
-    });
-
-    describe('findMissingAlternatives for a pairwise analysis', function() {
-      it('should return a list of alternatives that are included in the analysis but not in the model', function() {
-        var interventionInclusions = [{
-          id: 1
-        }, {
-          id: 2
-        }, {
-          id: 3
-        }, {
-          id: 4
-        }];
-        var expectedResult = interventionInclusions.slice(2);
-        var owa = {
-          selectedModel: {
-            modelType: {
-              type: 'pairwise',
-              details: {
-                from: {
-                  id: 1
-                },
-                to: {
-                  id: 2
-                }
-              }
-            }
-          }
-        };
-        var result = benefitRiskService.findMissingAlternatives(interventionInclusions, owa);
-        expect(result).toEqual(expectedResult);
-      });
-    });
-
-    describe('findMissingAlternatives for evidence synthesis', function() {
-      it('should return a list of alternatives that are included in the analysis but not in the model', function() {
-        var interventionInclusions = [{
-          id: 1
-        }, {
-          id: 2
-        }, {
-          id: 3
-        }, {
-          id: 4
-        }];
-        var expectedResult = interventionInclusions.slice(2);
-        var owa = {
-          selectedModel: {
-            modelType: {
-              type: 'network'
-            }
-          },
-          selectedAnalysis: {
-            interventionInclusions: [{
-              interventionId: 1
-            }, {
-              interventionId: 2
-            }]
-          }
-        };
-        var result = benefitRiskService.findMissingAlternatives(interventionInclusions, owa);
-        expect(result).toEqual(expectedResult);
-      });
-    });
-
-    describe('addScales', function() {
-      it('should add the scales to the effects table', function() {
-        var owas = [{
-          outcome: {
-            name: 'hamd',
-            semanticOutcomeUri: 'http://outcomes/hamd'
-          }
-        }, {
-          outcome: {
-            name: 'headache',
-            semanticOutcomeUri: 'http://outcomes/headache'
-
-          }
-        }];
-        var alternatives = [{
-          name: 'fluox',
-          id: 1
-        }, {
-          name: 'sertra',
-          id: 2
-        }];
-        var criteria = {
-          'http://outcomes/hamd': {
-            dataSources: [{
-              id: 'hamdDataSource'
-            }]
-          },
-          'http://outcomes/headache': {
-            dataSources: [{
-              id: 'headacheDataSource'
-            }]
-          }
-        };
-        var scaleResults = {
-          hamdDataSource: {
-            1: {
-              result: {
-                '2.5%': 1,
-                '50%': 2,
-                '97.5%': 3
-              }
-            },
-            2: {
-              result: {
-                '2.5%': 4,
-                '50%': 5,
-                '97.5%': 6
-              }
-            }
-          },
-          headacheDataSource: {
-            1: {
-              result: {
-                '2.5%': 7,
-                '50%': 8,
-                '97.5%': 9
-              }
-            },
-            2: {
-              result: {
-                '2.5%': 10,
-                '50%': 11,
-                '97.5%': 12
-              }
-            }
-          }
-        };
-
-        var expected = [{
-          outcome: {
-            name: 'hamd',
-            semanticOutcomeUri: 'http://outcomes/hamd'
-          },
-          scales: {
-            '1': {
-              result: {
-                '2.5%': 1,
-                '50%': 2,
-                '97.5%': 3
-              }
-            },
-            '2': {
-              result: {
-                '2.5%': 4,
-                '50%': 5,
-                '97.5%': 6
-              }
-            }
-          }
-        }, {
-          outcome: {
-            name: 'headache',
-            semanticOutcomeUri: 'http://outcomes/headache'
-          },
-          scales: {
-            '1': {
-              result: {
-                '2.5%': 7,
-                '50%': 8,
-                '97.5%': 9
-              }
-            },
-            '2': {
-              result: {
-                '2.5%': 10,
-                '50%': 11,
-                '97.5%': 12
-              }
-            }
-          }
-        }];
-
-        var result = benefitRiskService.addScales(owas, alternatives, criteria, scaleResults);
-        expect(result.length).toBe(owas.length);
-        expect(result[0].scales).not.toBeNull();
-        expect(result).toEqual(expected);
-      });
-    });
-
-    describe('isInvalidStudySelected', function() {
-      it('should be false if everything is ok', function() {
-        var outcomeInclusions = [{
-          dataType: 'network'
-        }, {
-          dataType: 'single-study',
-          selectedStudy: {
-            missingInterventions: [],
-            missingOutcomes: []
-          }
-        }];
-        expect(benefitRiskService.isInvalidStudySelected(outcomeInclusions)).toBeFalsy();
-      });
-      it('should be true if there are missing interventions', function() {
-        var outcomeInclusions = [{
-          dataType: 'single-study',
-          selectedStudy: {
-            missingInterventions: [{}],
-            missingOutcomes: []
-          }
-        }];
-        expect(benefitRiskService.isInvalidStudySelected(outcomeInclusions)).toBeTruthy();
-      });
-      it('should be true if there are missing outcomes', function() {
-        var outcomeInclusions = [{
-          dataType: 'single-study',
-          selectedStudy: {
-            missingInterventions: [],
-            missingOutcomes: [{}]
-          }
-        }];
-        expect(benefitRiskService.isInvalidStudySelected(outcomeInclusions)).toBeTruthy();
-      });
-    });
-
-    describe('hasMissingStudy', function() {
-      it('should be false if everything is fine', function() {
-        var outcomeInclusions = [{
-          dataType: 'network'
-        }, {
-          dataType: 'single-study',
-          selectedStudy: {
-            studyUri: 'http://cool.ninja'
-          }
-        }];
-        expect(benefitRiskService.hasMissingStudy(outcomeInclusions)).toBeFalsy();
-      });
-      it('should be true if a study is not selected', function() {
-        var networkOnly = [{
-          dataType: 'network'
-        }];
-        expect(benefitRiskService.hasMissingStudy(networkOnly)).toBeFalsy();
-
-        var withGoodSelection = [{
-          dataType: 'single-study',
-          selectedStudy: {
-            studyUri: 'http://cool.ninja'
-          }
-        }];
-        expect(benefitRiskService.hasMissingStudy(withGoodSelection)).toBeFalsy();
-
-        var withMissingStudy1 = [{
-          dataType: 'single-study',
-          selectedStudy: {}
-        }];
-        expect(benefitRiskService.hasMissingStudy(withMissingStudy1)).toBeTruthy();
-        var withMissingStudy2 = [{
-          dataType: 'single-study',
-        }];
-        expect(benefitRiskService.hasMissingStudy(withMissingStudy2)).toBeTruthy();
-      });
-    });
-
-    describe('findOverlappingInterventions', function() {
-      it('should build a list of uniqueue overlapping interventions', function() {
-        var studies = [{
-          overlappingInterventions: []
-        }, {
-          overlappingInterventions: [{
-            id: 1
-          }, {
-            id: 2
-          }]
-        }, {
-          overlappingInterventions: [{
-            id: 2
-          }, {
-            id: 3
-          }]
-        }];
-        var expectedInterventions = [{
-          id: 1
-        }, {
-          id: 2
-        }, {
-          id: 3
-        }];
-        var result = benefitRiskService.findOverlappingInterventions(studies);
-        expect(result).toEqual(expectedInterventions);
-      });
-    });
-
-    describe('findOverlappingOutcomes', function() {
-      it('should return a list of outcomes which share concepts with an other', function() {
-        var outcomeInclusions = [{
-          outcome: {
-            isIncluded: true,
-            title: 'outcome 1',
-            semanticOutcomeUri: '123'
-          }
-        }, {
-          outcome: {
-            isIncluded: true,
-            title: 'outcome 2',
-            semanticOutcomeUri: '123'
-          }
-        }, {
-          outcome: {
-            isIncluded: false,
-            title: 'outcome 3',
-            semanticOutcomeUri: '123'
-          }
-        }];
-        var result = benefitRiskService.findOverlappingOutcomes(outcomeInclusions);
-        var expectedResult = [
-          [{
-            isIncluded: true,
-            title: 'outcome 1',
-            semanticOutcomeUri: '123'
-          }, {
-            isIncluded: true,
-            title: 'outcome 2',
-            semanticOutcomeUri: '123'
-          }]
-        ];
-        expect(result).toEqual(expectedResult);
-      });
-    });
-
-    describe('addModelBaseline', function() {
-      it('should add the baseline to the models if possible', function() {
-        var analysis = {
-          benefitRiskNMAOutcomeInclusions: [{
-            modelId: 'modelId1'
-          }, {
-            modelId: 'modelId2',
-            baseline: 'somebaseline'
-          }, {
-            modelId: 'modelId3'
-          }],
-          interventionInclusions: [{
-            interventionId: 'interventionId1'
-          }, {
-            interventionId: 'interventionId2'
-          }]
-        };
-        var models = [{
-          id: 'modelId1',
-          baseline: {
-            baseline: {
-              name: 'interventionName1'
-            }
-          }
-        }, {
-          id: 'modelId2',
-          baseline: {
-            baseline: {
-              baseline: {
-                name: 'interventionName1'
-              }
-            }
-          }
-        },
-        {
-          id: 'modelId3',
-          baseline: {
-            baseline: {
-              name: 'interventionName2'
-            }
-          }
-        }
-        ];
-
-        var alternatives = [{
-          id: 'interventionId1',
-          name: 'interventionName1'
-        }, {
-          id: 'interventionId2',
-          name: 'interventionName2'
-        }];
-        var result = benefitRiskService.addModelBaseline(analysis, models, alternatives);
-        var expectedResult = {
-          benefitRiskNMAOutcomeInclusions: [{
-            modelId: 'modelId1',
-            baseline: {
-              name: 'interventionName1'
-            }
-          }, {
-            modelId: 'modelId2',
-            baseline: 'somebaseline'
-          }, {
-            modelId: 'modelId3',
-            baseline: {
-              name: 'interventionName2'
-            }
-          }],
-          interventionInclusions: [{
-            interventionId: 'interventionId1'
-          }, {
-            interventionId: 'interventionId2'
-          }]
-        };
-        expect(result).toEqual(expectedResult);
-      });
-    });
-
     describe('finalizeAndGoToDefaultScenario', function() {
       var analysis = {
         id: -3,
-        projectId: -30
+        projectId: 37
       };
       var mockProblem = { id: 'reducedProblem' };
       beforeEach(function() {
@@ -832,32 +195,11 @@ define(['lodash', 'angular-mocks', './analysis'], function(_) {
         var saveCommand = angular.copy(analysis);
         saveCommand.analysis = analysis;
         saveCommand.scenarioState = JSON.stringify({ problem: mockProblem }, null, 2);
-        expect(problemResourceMock.get).toHaveBeenCalledWith({ id: 'params' });
+        expect(problemResourceMock.get).toHaveBeenCalledWith({
+          id: 'params',
+          projectId: 37
+        });
         expect(analysisResourceMock.save).toHaveBeenCalledWith(saveCommand, jasmine.any(Function));
-      });
-    });
-
-    describe('analysisUpdateCommand', function() {
-      it('should turn the analysis and selected interventions into a command for the server', function() {
-        var analysis = {
-          id: 1,
-          projectId: 2
-        };
-        var includedAlternatives = [{ id: 3 }];
-        var result = benefitRiskService.analysisUpdateCommand(analysis, includedAlternatives);
-        var expectedResult = {
-          id: 1,
-          projectId: 2,
-          analysis: {
-            id: 1,
-            projectId: 2,
-            interventionInclusions: [{
-              interventionId: 3,
-              analysisId: 1
-            }]
-          }
-        };
-        expect(result).toEqual(expectedResult);
       });
     });
 
@@ -932,9 +274,74 @@ define(['lodash', 'angular-mocks', './analysis'], function(_) {
         };
         var result = benefitRiskService.buildOutcomes(analysis, outcomes, networkMetaAnalyses);
         var expectedResult = [{
-          outcome: { id: 'studyOutcomeId' }
+          outcome: {
+            id: 'studyOutcomeId'
+          },
+          dataType: 'single-study',
+          selectedStudy: {}
         }];
         expect(result).toEqual(expectedResult);
+      });
+    });
+
+    describe('getOutcomesWithInclusions', function() {
+      it('return the outcomes with their inclusion and isIncluded set', function() {
+        var outcomes = [{
+          id: 1
+        }, {
+          id: 2
+        }];
+        var inclusions = [{ outcomeId: 2 },{ outcomeId: 1 }];
+        var result = benefitRiskService.getOutcomesWithInclusions(outcomes, inclusions);
+        var expectedResult = [
+          {
+            id: 1,
+            isIncluded: true
+          },
+          {
+            id: 2,
+            isIncluded: true
+          }
+        ];
+        expect(result).toEqual(expectedResult);
+      });
+    });
+
+    describe('hasMissingBaseline', function() {
+      describe('should return true', function() {
+        it('if a network outcome has a missing baseline', function() {
+          var outcomes = [{
+            dataType: 'network',
+            baseline: undefined
+          }];
+          var result = benefitRiskService.hasMissingBaseline(outcomes);
+          expect(result).toBeTruthy();
+        });
+
+        it('if a single-study contrast outcome has a missing basline', function() {
+          var outcomes = [{
+            dataType: 'single-study',
+            isContrastOutcome: true,
+            baseline: undefined
+          }];
+          var result = benefitRiskService.hasMissingBaseline(outcomes);
+          expect(result).toBeTruthy();
+        });
+      });
+
+      it('should return false if there is no missing outcome', function() {
+        var outcomes = [{
+          dataType: 'network',
+          baseline: 'baseline'
+        }, {
+          dataType: 'single-study',
+          isContrastOutcome: true,
+          baseline: 'baseline'
+        }, {
+          dataType: 'single-study',
+        }];
+        var result = benefitRiskService.hasMissingBaseline(outcomes);
+        expect(result).toBeFalsy();
       });
     });
   });

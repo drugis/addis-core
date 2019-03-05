@@ -15,7 +15,7 @@ define(['lodash'], function(_) {
 
     function createSelectionList(source, target, equals) {
       return _.map(source, function(sourceItem) {
-        return !!_.find(target, function(targetItem) {
+        return _.some(target, function(targetItem) {
           return equals(targetItem, sourceItem);
         });
       });

@@ -59,7 +59,7 @@ define(['lodash'], function(_) {
       var lastChar = duration.slice(-1);
       var rest;
 
-      var optionFound = !!_.find(getPeriodTypeOptions(), function(option) {
+      var optionFound = _.some(getPeriodTypeOptions(), function(option) {
         return lastChar === option.code && option.isTime === isTime;
       });
 

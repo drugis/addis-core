@@ -8,6 +8,7 @@ public class MeasurementBuilder {
   private URI variableConceptUri;
   private URI armUri;
   private URI measurementTypeURI;
+
   private Integer sampleSize;
   private Integer rate;
   private Double stdDev;
@@ -15,6 +16,19 @@ public class MeasurementBuilder {
   private Double mean;
   private Double exposure;
   private String survivalTimeScale;
+
+  private Double confidenceIntervalWidth;
+  private Double confidenceIntervalUpperBound;
+  private Double confidenceIntervalLowerBound;
+  private Double meanDifference;
+  private Double standardizedMeanDifference;
+  private Double oddsRatio;
+  private Double riskRatio;
+  private Double hazardRatio;
+  private Boolean isLog;
+  private URI referenceArm;
+  private Double referenceStdErr;
+
 
   public MeasurementBuilder(URI studyUri, URI variableUri, URI variableConceptUri, URI armUri, URI measurementTypeURI) {
     this.studyUuid = studyUri;
@@ -59,7 +73,7 @@ public class MeasurementBuilder {
     return this;
   }
 
-  public MeasurementBuilder setRate(Integer rate) {
+  public MeasurementBuilder setCount(Integer rate) {
     this.rate = rate;
     return this;
   }
@@ -84,7 +98,65 @@ public class MeasurementBuilder {
     return this;
   }
 
-  public Measurement createMeasurement() {
-    return new Measurement(studyUuid, variableUri, variableConceptUri, survivalTimeScale, armUri, measurementTypeURI, sampleSize, rate, stdDev, stdErr, mean, exposure);
+  public MeasurementBuilder setConfidenceIntervalWidth(Double confidenceIntervalWidth) {
+    this.confidenceIntervalWidth = confidenceIntervalWidth;
+    return this;
+  }
+
+  public MeasurementBuilder setConfidenceIntervalUpperBound(Double confidenceIntervalUpperBound) {
+    this.confidenceIntervalUpperBound = confidenceIntervalUpperBound;
+    return this;
+  }
+
+  public MeasurementBuilder setConfidenceIntervalLowerBound(Double confidenceIntervalLowerBound) {
+    this.confidenceIntervalLowerBound = confidenceIntervalLowerBound;
+    return this;
+  }
+
+  public MeasurementBuilder setMeanDifference(Double meanDifference) {
+    this.meanDifference = meanDifference;
+    return this;
+  }
+
+  public MeasurementBuilder setStandardizedMeanDifference(Double standardizedMeanDifference) {
+    this.standardizedMeanDifference = standardizedMeanDifference;
+    return this;
+  }
+
+  public MeasurementBuilder setOddsRatio(Double oddsRatio) {
+    this.oddsRatio = oddsRatio;
+    return this;
+  }
+
+  public MeasurementBuilder setRiskRatio(Double riskRatio) {
+    this.riskRatio = riskRatio;
+    return this;
+  }
+
+  public MeasurementBuilder setHazardRatio(Double hazardRatio) {
+    this.hazardRatio = hazardRatio;
+    return this;
+  }
+
+  public MeasurementBuilder setLog(Boolean log) {
+    isLog = log;
+    return this;
+  }
+
+  public MeasurementBuilder setReferenceArm(URI referenceArm) {
+    this.referenceArm = referenceArm;
+    return this;
+  }
+
+  public MeasurementBuilder setReferenceStdErr(Double referenceStdErr) {
+    this.referenceStdErr = referenceStdErr;
+    return this;
+  }
+
+  public Measurement build() {
+    return new Measurement(studyUuid, variableUri, variableConceptUri, armUri, measurementTypeURI,
+            survivalTimeScale, sampleSize, rate, stdDev, stdErr, mean, exposure, confidenceIntervalWidth,
+            confidenceIntervalUpperBound, confidenceIntervalLowerBound, meanDifference,
+            standardizedMeanDifference, oddsRatio, riskRatio, hazardRatio, isLog, referenceArm, referenceStdErr);
   }
 }

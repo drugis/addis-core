@@ -1,6 +1,7 @@
 package org.drugis.addis.trialverse.model;
 
 import java.net.URI;
+import java.util.Objects;
 
 /**
  * Created by daan on 11-11-16.
@@ -26,18 +27,14 @@ public class MeasurementMoment {
   public boolean equals(Object o) {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
-
     MeasurementMoment that = (MeasurementMoment) o;
-
-    if (!uri.equals(that.uri)) return false;
-    return label.equals(that.label);
-
+    return Objects.equals(uri, that.uri) &&
+            Objects.equals(label, that.label);
   }
 
   @Override
   public int hashCode() {
-    int result = uri.hashCode();
-    result = 31 * result + label.hashCode();
-    return result;
+
+    return Objects.hash(uri, label);
   }
 }

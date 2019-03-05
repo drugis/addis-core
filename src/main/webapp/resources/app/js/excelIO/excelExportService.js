@@ -1,9 +1,8 @@
 'use strict';
-define(['lodash', 'xlsx', 'file-saver'], function(_, XLSX, saveAs) {
-  var dependencies = ['$q', '$location',
-    'GROUP_ALLOCATION_OPTIONS',
-    'BLINDING_OPTIONS',
-    'STATUS_OPTIONS',
+define(['lodash', 'xlsx', 'file-saver'], function(_, XLSX, FileSaver) {
+  var dependencies = [
+    '$q',
+    '$location',
     'ExcelExportUtilService',
     'StudyService',
     'ArmService',
@@ -21,10 +20,9 @@ define(['lodash', 'xlsx', 'file-saver'], function(_, XLSX, saveAs) {
     'VersionedGraphResource',
     'ConceptsService'
   ];
-  var ExcelExportService = function($q, $location,
-    GROUP_ALLOCATION_OPTIONS,
-    BLINDING_OPTIONS,
-    STATUS_OPTIONS,
+  var ExcelExportService = function(
+    $q,
+    $location,
     ExcelExportUtilService,
     StudyService,
     ArmService,
@@ -162,7 +160,7 @@ define(['lodash', 'xlsx', 'file-saver'], function(_, XLSX, saveAs) {
         bookType: 'xlsx',
         type: 'array'
       });
-      saveAs(new Blob([workBookOut], {
+      FileSaver.saveAs(new Blob([workBookOut], {
         type: 'application/octet-stream'
       }), fileName + '.xlsx');
     }

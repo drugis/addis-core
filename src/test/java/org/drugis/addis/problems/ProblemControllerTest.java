@@ -4,6 +4,8 @@ import net.minidev.json.JSONObject;
 import org.drugis.addis.config.TestConfig;
 import org.drugis.addis.exception.ProblemCreationException;
 import org.drugis.addis.problems.model.*;
+import org.drugis.addis.problems.model.problemEntry.AbsoluteDichotomousProblemEntry;
+import org.drugis.addis.problems.model.problemEntry.AbstractProblemEntry;
 import org.drugis.addis.problems.service.ProblemService;
 import org.drugis.addis.problems.service.model.*;
 import org.drugis.addis.util.WebConstants;
@@ -65,12 +67,12 @@ public class ProblemControllerTest {
     Integer analysisId = 1;
     when(problemService.getProblem(projectId, analysisId)).thenReturn(problem);
     mockMvc.perform(get("/projects/1/analyses/1/problem"))
-      .andExpect(status().isOk())
-      .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()))
-      .andExpect(jsonPath("$", notNullValue()))
-      .andExpect(jsonPath("$.performanceTable", hasSize(2)))
-      .andExpect(jsonPath("$.performanceTable[0].performance.type", is(RatePerformance.DBETA)))
-      .andExpect(jsonPath("$.performanceTable[1].performance.type", is(ContinuousPerformance.DNORM)));
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()))
+            .andExpect(jsonPath("$", notNullValue()))
+            .andExpect(jsonPath("$.performanceTable", hasSize(2)))
+            .andExpect(jsonPath("$.performanceTable[0].performance.type", is(RatePerformance.DBETA)))
+            .andExpect(jsonPath("$.performanceTable[1].performance.type", is(ContinuousPerformance.DNORM)));
     verify(problemService).getProblem(projectId, analysisId);
   }
 
@@ -78,9 +80,9 @@ public class ProblemControllerTest {
   public void testGetNetworkMetaAnalysisProblem() throws Exception, ProblemCreationException {
     int treatmentId1 = 1;
     int treatmentId2 = 2;
-    AbstractNetworkMetaAnalysisProblemEntry entry1 = new RateNetworkMetaAnalysisProblemEntry("study", treatmentId1, 10, 5);
-    AbstractNetworkMetaAnalysisProblemEntry entry2 = new RateNetworkMetaAnalysisProblemEntry("study", treatmentId2, 20, 7);
-    List<AbstractNetworkMetaAnalysisProblemEntry> entries = Arrays.asList(entry1, entry2);
+    AbstractProblemEntry entry1 = new AbsoluteDichotomousProblemEntry("study", treatmentId1, 10, 5);
+    AbstractProblemEntry entry2 = new AbsoluteDichotomousProblemEntry("study", treatmentId2, 20, 7);
+    List<AbstractProblemEntry> entries = Arrays.asList(entry1, entry2);
     List<TreatmentEntry> treatments = Arrays.asList(new TreatmentEntry(treatmentId1, "treatment 1 name"), new TreatmentEntry(treatmentId2, "treatment 2 name"));
     Map<String, Map<String, Double>> studyCovariates = new HashMap<>();
     NetworkMetaAnalysisProblem networkMetaAnalysisProblem = new NetworkMetaAnalysisProblem(entries, treatments, studyCovariates);
@@ -88,12 +90,12 @@ public class ProblemControllerTest {
     Integer analysisId = 2;
     when(problemService.getProblem(projectId, analysisId)).thenReturn(networkMetaAnalysisProblem);
     mockMvc.perform(get("/projects/1/analyses/2/problem"))
-      .andExpect(status().isOk())
-      .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()))
-      .andExpect(jsonPath("$", notNullValue()))
-      .andExpect(jsonPath("$.entries", hasSize(2)))
-      .andExpect((jsonPath("$.entries[0].treatment", equalTo(entry1.getTreatment()))))
-      .andExpect((jsonPath("$.entries[0].responders", is(((RateNetworkMetaAnalysisProblemEntry) entry1).getResponders()))))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()))
+            .andExpect(jsonPath("$", notNullValue()))
+            .andExpect(jsonPath("$.entries", hasSize(2)))
+            .andExpect((jsonPath("$.entries[0].treatment", equalTo(entry1.getTreatment()))))
+            .andExpect((jsonPath("$.entries[0].responders", is(((AbsoluteDichotomousProblemEntry) entry1).getResponders()))))
             .andExpect((jsonPath("$.treatments[0].id", equalTo(treatmentId1))))
             .andExpect((jsonPath("$.studyLevelCovariates", equalTo(new JSONObject()))));
     verify(problemService).getProblem(projectId, analysisId);
@@ -103,9 +105,9 @@ public class ProblemControllerTest {
   public void testGetNetworkMetaAnalysisNoCovariates() throws Exception, ProblemCreationException {
     int treatmentId1 = 1;
     int treatmentId2 = 2;
-    AbstractNetworkMetaAnalysisProblemEntry entry1 = new RateNetworkMetaAnalysisProblemEntry("study", treatmentId1, 10, 5);
-    AbstractNetworkMetaAnalysisProblemEntry entry2 = new RateNetworkMetaAnalysisProblemEntry("study", treatmentId2, 20, 7);
-    List<AbstractNetworkMetaAnalysisProblemEntry> entries = Arrays.asList(entry1, entry2);
+    AbstractProblemEntry entry1 = new AbsoluteDichotomousProblemEntry("study", treatmentId1, 10, 5);
+    AbstractProblemEntry entry2 = new AbsoluteDichotomousProblemEntry("study", treatmentId2, 20, 7);
+    List<AbstractProblemEntry> entries = Arrays.asList(entry1, entry2);
     List<TreatmentEntry> treatments = Arrays.asList(new TreatmentEntry(treatmentId1, "treatment 1 name"), new TreatmentEntry(treatmentId2, "treatment 2 name"));
 
     NetworkMetaAnalysisProblem networkMetaAnalysisProblem = new NetworkMetaAnalysisProblem(entries, treatments);
@@ -118,7 +120,7 @@ public class ProblemControllerTest {
             .andExpect(jsonPath("$", notNullValue()))
             .andExpect(jsonPath("$.entries", hasSize(2)))
             .andExpect(jsonPath("$.entries[0].treatment", equalTo(entry1.getTreatment())))
-            .andExpect(jsonPath("$.entries[0].responders", is(((RateNetworkMetaAnalysisProblemEntry) entry1).getResponders())))
+            .andExpect(jsonPath("$.entries[0].responders", is(((AbsoluteDichotomousProblemEntry) entry1).getResponders())))
             .andExpect(jsonPath("$.treatments[0].id", equalTo(treatmentId1)))
             .andExpect(jsonPath("$.studyLevelCovariates").doesNotExist());
     verify(problemService).getProblem(projectId, analysisId);

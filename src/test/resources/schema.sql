@@ -774,3 +774,6 @@ CREATE TABLE workspaceSettings(
   FOREIGN KEY (analysisId) REFERENCES BenefitRiskAnalysis(id) ON DELETE CASCADE
 );
 DROP TABLE toggledColumns;
+
+--changeset keijserj:80
+ALTER TABLE BenefitRiskStudyOutcomeInclusion ADD COLUMN baseline VARCHAR;

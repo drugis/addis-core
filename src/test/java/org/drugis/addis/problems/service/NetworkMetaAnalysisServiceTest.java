@@ -2,7 +2,6 @@ package org.drugis.addis.problems.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.collect.Sets;
-import com.sun.org.apache.xpath.internal.operations.Mod;
 import org.apache.jena.ext.com.google.common.collect.Lists;
 import org.drugis.addis.analyses.model.*;
 import org.drugis.addis.analyses.service.AnalysisService;
@@ -18,14 +17,13 @@ import org.drugis.addis.patavitask.PataviTask;
 import org.drugis.addis.patavitask.repository.PataviTaskRepository;
 import org.drugis.addis.patavitask.repository.UnexpectedNumberOfResultsException;
 import org.drugis.addis.problems.model.*;
+import org.drugis.addis.problems.model.problemEntry.*;
 import org.drugis.addis.problems.service.impl.NetworkMetaAnalysisEntryBuilder;
 import org.drugis.addis.problems.service.impl.NetworkMetaAnalysisServiceImpl;
 import org.drugis.addis.projects.Project;
 import org.drugis.addis.security.Account;
 import org.drugis.addis.trialverse.model.SemanticInterventionUriAndName;
 import org.drugis.addis.trialverse.model.SemanticVariable;
-import org.drugis.addis.trialverse.model.emun.CovariateOption;
-import org.drugis.addis.trialverse.model.emun.CovariateOptionType;
 import org.drugis.addis.trialverse.model.trialdata.*;
 import org.drugis.trialverse.util.service.UuidService;
 import org.junit.After;
@@ -39,11 +37,9 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.sql.SQLException;
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static java.util.Collections.singleton;
 import static java.util.Collections.singletonList;
-import static org.drugis.addis.problems.service.ProblemService.DICHOTOMOUS_TYPE_URI;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.*;
@@ -86,21 +82,11 @@ public class NetworkMetaAnalysisServiceTest {
   private final Integer fluoxInterventionId = 401;
   private final SingleIntervention fluoxIntervention = new SimpleIntervention(fluoxInterventionId, project.getId(),
           "fluoxetine", "moti", fluoxConcept.getUri(), fluoxConcept.getLabel());
-  private final URI paroxConceptUri = URI.create("paroxConceptUri");
-  private final SemanticInterventionUriAndName paroxConcept = new SemanticInterventionUriAndName(paroxConceptUri, "parox concept");
   private final Integer paroxInterventionId = 402;
-  private final SingleIntervention paroxIntervention = new SimpleIntervention(paroxInterventionId, project.getId(),
-          "paroxetine", "moti", paroxConcept.getUri(), paroxConcept.getLabel());
-  private final URI sertraConceptUri = URI.create("sertraConceptUri");
-  private final SemanticInterventionUriAndName sertraConcept = new SemanticInterventionUriAndName(sertraConceptUri, "sertra concept");
-  private final Integer sertraInterventionId = 403;
-  private final SingleIntervention sertraIntervention = new SimpleIntervention(sertraInterventionId, project.getId(),
-          "sertraline", "moti", sertraConcept.getUri(), sertraConcept.getLabel());
 
   // empty constructor so exception from field initialisation can go somewhere
   public NetworkMetaAnalysisServiceTest() throws Exception {
   }
-
 
   @Before
   public void setUp() {
@@ -129,7 +115,6 @@ public class NetworkMetaAnalysisServiceTest {
     TreatmentEntry treatment1 = new TreatmentEntry(interventionId, interventionName);
     List<TreatmentEntry> expectedResult = Lists.newArrayList(treatment1);
 
-    // eggsecute
     List<TreatmentEntry> results = networkMetaAnalysisService.getTreatments(analysis);
 
     assertEquals(expectedResult, results);
@@ -137,7 +122,7 @@ public class NetworkMetaAnalysisServiceTest {
   }
 
   @Test
-  public void testBuildPerformanceEntries() {
+  public void testBuildPerformanceEntriesTooFewArms() {
     NetworkMetaAnalysis networkMetaAnalysis = new NetworkMetaAnalysis(analysisId, project.getId(), "nma title", outcome);
 
     // add study with excluded arms to check whether it's excluded from covariate entries
@@ -165,39 +150,74 @@ public class NetworkMetaAnalysisServiceTest {
             tooFewValidArmsStudy);
 
     networkMetaAnalysis.updateArmExclusions(Sets.newHashSet(new ArmExclusion(analysisId, tooFewArmUri3)));
+    List<TrialDataStudy> trialDataStudies = Collections.singletonList(studyWithTooFewArms);
 
-    // add valid study with non-default measurement moment
-    String nonDefaultStudyName = "nonDefaultStudyName";
-    URI studyUri = URI.create(nonDefaultStudyName);
-    URI nonDefaultMeasurementMomentUri = URI.create("nonDefaultMeasurementMoment");
-    URI defaultMeasurementMomentUri = URI.create("defaultMeasurementMoment");
+    List<AbstractProblemEntry> results = networkMetaAnalysisService.buildAbsolutePerformanceEntries(networkMetaAnalysis, trialDataStudies);
+    assertEquals(Collections.emptyList(), results);
+  }
 
-    URI nonDefaultArmUri1 = URI.create("nonDefaultArmUri1");
-    Set<Integer> matchedInterventionIds1 = Sets.newHashSet(fluoxInterventionId);
+  @Test
+  public void testBuildPerformanceEntriesNonDefaultMeasurementMomentStudy() {
+    NetworkMetaAnalysis networkMetaAnalysis = new NetworkMetaAnalysis(analysisId, project.getId(), "nma title", outcome);
+
+    String studyName = "nonDefaultStudyName";
+    URI studyUri = URI.create(studyName);
+    URI nonDefaultMeasurementMoment = URI.create("nonDefaultMeasurementMoment");
+
     Measurement fluoxMeasurement = mock(Measurement.class);
-    Set<Measurement> measurements1 = Sets.newHashSet(fluoxMeasurement);
-    TrialDataArm defaultMMArm = buildArmMock(
-            nonDefaultArmUri1,
-            matchedInterventionIds1,
-            measurements1,
-            nonDefaultMeasurementMomentUri);
+    when(fluoxMeasurement.getVariableConceptUri()).thenReturn(outcome.getSemanticOutcomeUri());
+    TrialDataArm nonDefaultArm1 = buildArmMock(
+            URI.create("nonDefaultArmUri1"),
+            Sets.newHashSet(fluoxInterventionId),
+            Sets.newHashSet(fluoxMeasurement),
+            nonDefaultMeasurementMoment);
 
-    URI nonDefaultArmUri2 = URI.create("nonDefaultArmUri2");
-    Set<Integer> matchedInterventionIds2 = Sets.newHashSet(paroxInterventionId);
     Measurement paroxMeasurement = mock(Measurement.class);
-    Set<Measurement> measurements2 = Sets.newHashSet(paroxMeasurement);
-    TrialDataArm nonDefaultMMArm = buildArmMock(
-            nonDefaultArmUri2,
-            matchedInterventionIds2,
-            measurements2,
-            nonDefaultMeasurementMomentUri);
+    when(paroxMeasurement.getVariableConceptUri()).thenReturn(outcome.getSemanticOutcomeUri());
+    TrialDataArm nonDefaultArm2 = buildArmMock(
+            URI.create("nonDefaultArmUri2"),
+            Sets.newHashSet(paroxInterventionId),
+            Sets.newHashSet(paroxMeasurement),
+            nonDefaultMeasurementMoment);
 
-    List<TrialDataArm> nonDefaultArms = Arrays.asList(defaultMMArm, nonDefaultMMArm);
-    TrialDataStudy studyWithNonDefaultMeasurementMoment = new TrialDataStudy(studyUri, nonDefaultStudyName, nonDefaultArms);
+    List<TrialDataArm> nonDefaultArms = Arrays.asList(nonDefaultArm1, nonDefaultArm2);
+    TrialDataStudy studyWithNonDefaultMeasurementMoment = new TrialDataStudy(studyUri, studyName, nonDefaultArms);
+    List<TrialDataStudy> studies = Collections.singletonList(studyWithNonDefaultMeasurementMoment);
+    networkMetaAnalysis.updateIncludedMeasurementMoments(Sets.newHashSet(
+            new MeasurementMomentInclusion(
+                    analysisId,
+                    studyWithNonDefaultMeasurementMoment.getStudyUri(),
+                    nonDefaultMeasurementMoment))
+    );
 
-    // add normal study
+    AbstractProblemEntry fluoxEntry = mock(AbsoluteContinuousStdErrProblemEntry.class);
+    AbstractProblemEntry paroxEntry = new AbsoluteContinuousProblemEntry("study", 1, 2, 3.0, 4.0);
+    when(networkMetaAnalysisEntryBuilder.buildAbsoluteEntry(studyName, fluoxInterventionId, fluoxMeasurement)).thenReturn(fluoxEntry);
+    when(networkMetaAnalysisEntryBuilder.buildAbsoluteEntry(studyName, paroxInterventionId, paroxMeasurement)).thenReturn(paroxEntry);
+
+    Double stdErr = 4.0 / Math.sqrt(2.0);
+    AbstractProblemEntry stdErrParoxEntry = new AbsoluteContinuousStdErrProblemEntry("study", 1, 3.0, stdErr);
+    List<AbstractProblemEntry> expectedResult = Arrays.asList(fluoxEntry, stdErrParoxEntry);
+    List<AbstractProblemEntry> results = networkMetaAnalysisService.buildAbsolutePerformanceEntries(networkMetaAnalysis, studies);
+    assertEquals(expectedResult, results);
+
+    verify(networkMetaAnalysisEntryBuilder).buildAbsoluteEntry(studyName, fluoxInterventionId, fluoxMeasurement);
+    verify(networkMetaAnalysisEntryBuilder).buildAbsoluteEntry(studyName, paroxInterventionId, paroxMeasurement);
+  }
+
+  @Test
+  public void testBuildPerformanceEntriesNormalStudy() {
+    NetworkMetaAnalysis networkMetaAnalysis = new NetworkMetaAnalysis(analysisId, project.getId(), "nma title", outcome);
+
+    URI defaultMeasurementMomentUri = URI.create("defaultMeasurementMoment");
     String normalStudyName = "normalStudy";
     URI normalStudyUri = URI.create(normalStudyName);
+    Set<Integer> matchedInterventionIds1 = Sets.newHashSet(fluoxInterventionId);
+    Set<Integer> matchedInterventionIds2 = Sets.newHashSet(paroxInterventionId);
+    Measurement fluoxMeasurement = mock(Measurement.class);
+    Set<Measurement> measurements1 = Sets.newHashSet(fluoxMeasurement);
+    Measurement paroxMeasurement = mock(Measurement.class);
+    Set<Measurement> measurements2 = Sets.newHashSet(paroxMeasurement);
 
     URI normalArmUri1 = URI.create("normalArmUri1");
     TrialDataArm normalArm1 = buildArmMock(
@@ -215,38 +235,80 @@ public class NetworkMetaAnalysisServiceTest {
     TrialDataStudy normalStudy = new TrialDataStudy(normalStudyUri, normalStudyName, normalArms);
 
     // create study list
-    List<TrialDataStudy> trialDataStudies = Arrays.asList(studyWithTooFewArms, studyWithNonDefaultMeasurementMoment, normalStudy);
+    List<TrialDataStudy> trialDataStudies = Collections.singletonList(normalStudy);
     networkMetaAnalysis.updateIncludedMeasurementMoments(Sets.newHashSet(
             new MeasurementMomentInclusion(
-                    analysisId,
-                    studyWithNonDefaultMeasurementMoment.getStudyUri(),
-                    nonDefaultMeasurementMomentUri)
-            , new MeasurementMomentInclusion(
                     analysisId,
                     normalStudy.getStudyUri(),
                     defaultMeasurementMomentUri))
     );
 
-    AbstractNetworkMetaAnalysisProblemEntry fluoxEntry = mock(ContinuousStdErrEntry.class);
-    AbstractNetworkMetaAnalysisProblemEntry paroxEntry = new ContinuousNetworkMetaAnalysisProblemEntry("study", 1, 2, 3.0, 4.0);
-    when(networkMetaAnalysisEntryBuilder.build(normalStudyName, fluoxInterventionId, fluoxMeasurement)).thenReturn(fluoxEntry);
-    when(networkMetaAnalysisEntryBuilder.build(normalStudyName, paroxInterventionId, paroxMeasurement)).thenReturn(paroxEntry);
-    when(networkMetaAnalysisEntryBuilder.build(nonDefaultStudyName, fluoxInterventionId, fluoxMeasurement)).thenReturn(fluoxEntry);
-    when(networkMetaAnalysisEntryBuilder.build(nonDefaultStudyName, paroxInterventionId, paroxMeasurement)).thenReturn(paroxEntry);
-
-    // eggsecutor
-    List<AbstractNetworkMetaAnalysisProblemEntry> results = networkMetaAnalysisService.buildPerformanceEntries(networkMetaAnalysis, trialDataStudies);
+    AbstractProblemEntry fluoxEntry = mock(AbsoluteContinuousStdErrProblemEntry.class);
+    AbstractProblemEntry paroxEntry = new AbsoluteContinuousProblemEntry("study", 1, 2, 3.0, 4.0);
+    when(networkMetaAnalysisEntryBuilder.buildAbsoluteEntry(normalStudyName, fluoxInterventionId, fluoxMeasurement)).thenReturn(fluoxEntry);
+    when(networkMetaAnalysisEntryBuilder.buildAbsoluteEntry(normalStudyName, paroxInterventionId, paroxMeasurement)).thenReturn(paroxEntry);
+    when(fluoxMeasurement.getReferenceArm()).thenReturn(null);
+    when(fluoxMeasurement.getVariableConceptUri()).thenReturn(outcome.getSemanticOutcomeUri());
+    when(paroxMeasurement.getReferenceArm()).thenReturn(null);
+    when(paroxMeasurement.getVariableConceptUri()).thenReturn(outcome.getSemanticOutcomeUri());
+    List<AbstractProblemEntry> results = networkMetaAnalysisService.buildAbsolutePerformanceEntries(networkMetaAnalysis, trialDataStudies);
 
     Double stdErr = 4.0 / Math.sqrt(2.0);
-    AbstractNetworkMetaAnalysisProblemEntry stdErrParoxEntry = new ContinuousStdErrEntry("study", 1, 3.0, stdErr);
-    List<AbstractNetworkMetaAnalysisProblemEntry> expectedResult = Arrays.asList(fluoxEntry, stdErrParoxEntry, fluoxEntry, stdErrParoxEntry);
+    AbstractProblemEntry stdErrParoxEntry = new AbsoluteContinuousStdErrProblemEntry("study", 1, 3.0, stdErr);
+    List<AbstractProblemEntry> expectedResult = Arrays.asList(fluoxEntry, stdErrParoxEntry);
     assertEquals(expectedResult, results);
 
-    verify(networkMetaAnalysisEntryBuilder).build(normalStudyName, fluoxInterventionId, fluoxMeasurement);
-    verify(networkMetaAnalysisEntryBuilder).build(normalStudyName, paroxInterventionId, paroxMeasurement);
-    verify(networkMetaAnalysisEntryBuilder).build(nonDefaultStudyName, fluoxInterventionId, fluoxMeasurement);
-    verify(networkMetaAnalysisEntryBuilder).build(nonDefaultStudyName, paroxInterventionId, paroxMeasurement);
+    verify(networkMetaAnalysisEntryBuilder).buildAbsoluteEntry(normalStudyName, fluoxInterventionId, fluoxMeasurement);
+    verify(networkMetaAnalysisEntryBuilder).buildAbsoluteEntry(normalStudyName, paroxInterventionId, paroxMeasurement);
   }
+
+  @Test
+  public void testBuildContrastPerformanceEntriesStudy() {
+    NetworkMetaAnalysis analysis = new NetworkMetaAnalysis(analysisId, project.getId(), "nma title", outcome);
+
+    URI defaultMeasurementMomentUri = URI.create("defaultMeasurementMoment");
+    String studyName = "contrastStudy";
+    URI studyUri = URI.create(studyName);
+
+    Measurement paroxMeasurement = mock(Measurement.class);
+    when(paroxMeasurement.getVariableConceptUri()).thenReturn(outcome.getSemanticOutcomeUri());
+
+    URI referenceArmUri = URI.create("referenceUri");
+    when(paroxMeasurement.getReferenceArm()).thenReturn(referenceArmUri);
+    TrialDataArm referenceArm = buildArmMock(
+            referenceArmUri,
+            Sets.newHashSet(fluoxInterventionId),
+            null);
+    URI paroxArmUri = URI.create("normalArmUri2");
+    when(paroxMeasurement.getArmUri()).thenReturn(paroxArmUri);
+    TrialDataArm arm2 = buildArmMock(
+            paroxArmUri,
+            Sets.newHashSet(paroxInterventionId),
+            Sets.newHashSet(paroxMeasurement));
+    List<TrialDataArm> arms = Arrays.asList(referenceArm, arm2);
+    TrialDataStudy study = new TrialDataStudy(studyUri, studyName, arms);
+
+    List<TrialDataStudy> studies = Collections.singletonList(study);
+    analysis.updateIncludedMeasurementMoments(Sets.newHashSet(
+            new MeasurementMomentInclusion(
+                    analysisId,
+                    study.getStudyUri(),
+                    defaultMeasurementMomentUri))
+    );
+
+    AbstractProblemEntry paroxEntry = new ContrastMDProblemEntry(studyName, 1, 3.0, 1.2);
+    when(networkMetaAnalysisEntryBuilder.buildContrastEntry(studyName, paroxInterventionId, paroxMeasurement)).thenReturn(paroxEntry);
+
+    RelativeEffectData result = networkMetaAnalysisService.buildRelativeEffectData(analysis, studies);
+
+    RelativeDataEntry relativeEntry = new RelativeDataEntry(fluoxInterventionId, 0.0, Collections.singletonList(paroxEntry));
+    Map<URI, RelativeDataEntry> data = new HashMap<>();
+    data.put(studyUri, relativeEntry);
+    RelativeEffectData expectedResult = new RelativeEffectData(data);
+    assertEquals(expectedResult, result);
+    verify(networkMetaAnalysisEntryBuilder).buildContrastEntry(studyName, paroxInterventionId, paroxMeasurement);
+  }
+
 
   private TrialDataArm buildArmMock(URI armUri, Set<Integer> matchedInterventionIds, Set<Measurement> measurements) {
     return buildArmMock(armUri, matchedInterventionIds, measurements, null);
@@ -270,9 +332,9 @@ public class NetworkMetaAnalysisServiceTest {
     TrialDataStudy studyWithoutEntries = new TrialDataStudy(someStudyUri, "studyWithoutEntries", null);
     List<TrialDataStudy> studies = Arrays.asList(studyWithEntries, studyWithoutEntries);
 
-    AbstractNetworkMetaAnalysisProblemEntry entry = mock(AbstractNetworkMetaAnalysisProblemEntry.class);
+    AbstractProblemEntry entry = mock(AbstractProblemEntry.class);
     when(entry.getStudy()).thenReturn(studyWithEntriesName);
-    List<AbstractNetworkMetaAnalysisProblemEntry> entries = singletonList(entry);
+    List<AbstractProblemEntry> entries = singletonList(entry);
 
     List<TrialDataStudy> expectedResult = singletonList(studyWithEntries);
 
@@ -314,7 +376,7 @@ public class NetworkMetaAnalysisServiceTest {
     when(study.getCovariateValues()).thenReturn(covariateStudyValues);
     List<TrialDataStudy> studies = singletonList(study);
 
-    Covariate includedCovariate= mock(Covariate.class);
+    Covariate includedCovariate = mock(Covariate.class);
     Covariate excludedCovariate = mock(Covariate.class);
     when(includedCovariate.getId()).thenReturn(includedCovariateId);
     when(excludedCovariate.getId()).thenReturn(excludedCovariateId);
@@ -405,7 +467,7 @@ public class NetworkMetaAnalysisServiceTest {
     Integer modelId = 321;
 
     Model modelWithoutTask = mock(Model.class);
-    Model modelWithTask= mock(Model.class);
+    Model modelWithTask = mock(Model.class);
     when(modelWithTask.getTaskUrl()).thenReturn(taskUri);
     when(modelWithTask.getId()).thenReturn(modelId);
     Collection<Model> models = Arrays.asList(modelWithTask, modelWithoutTask);

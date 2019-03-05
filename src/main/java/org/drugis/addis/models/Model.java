@@ -40,8 +40,15 @@ public class Model {
   public final static String LINK_LOGIT = "logit";
   public final static String LINK_LOG = "log";
   public final static String LINK_CLOGLOG = "cloglog";
+  public final static String LINK_SMD = "smd";
 
-  private final static List<String> LINK_OPTIONS = Arrays.asList(LINK_IDENTITY, LINK_LOGIT, LINK_LOG, LINK_CLOGLOG);
+  public final static List<String> LINK_OPTIONS = Arrays.asList(
+          LINK_IDENTITY,
+          LINK_LOGIT,
+          LINK_LOG,
+          LINK_CLOGLOG,
+          LINK_SMD
+  );
 
   public final static String STD_DEV_HETEROGENEITY_PRIOR_TYPE = "standard-deviation";
   public final static String VARIANCE_HETEROGENEITY_PRIOR_TYPE = "variance";
@@ -315,6 +322,38 @@ public class Model {
     } else {
       return null;
     }
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    Model model = (Model) o;
+    return Objects.equals(runStatus, model.runStatus) &&
+            Objects.equals(id, model.id) &&
+            Objects.equals(taskUrl, model.taskUrl) &&
+            Objects.equals(analysisId, model.analysisId) &&
+            Objects.equals(title, model.title) &&
+            Objects.equals(linearModel, model.linearModel) &&
+            Objects.equals(modelType, model.modelType) &&
+            Objects.equals(heterogeneityPrior, model.heterogeneityPrior) &&
+            Objects.equals(burnInIterations, model.burnInIterations) &&
+            Objects.equals(inferenceIterations, model.inferenceIterations) &&
+            Objects.equals(thinningFactor, model.thinningFactor) &&
+            Objects.equals(likelihood, model.likelihood) &&
+            Objects.equals(link, model.link) &&
+            Objects.equals(outcomeScale, model.outcomeScale) &&
+            Objects.equals(regressor, model.regressor) &&
+            Objects.equals(sensitivity, model.sensitivity) &&
+            Objects.equals(archived, model.archived) &&
+            Objects.equals(archivedOn, model.archivedOn) &&
+            Objects.equals(baseline, model.baseline);
+  }
+
+  @Override
+  public int hashCode() {
+
+    return Objects.hash(runStatus, id, taskUrl, analysisId, title, linearModel, modelType, heterogeneityPrior, burnInIterations, inferenceIterations, thinningFactor, likelihood, link, outcomeScale, regressor, sensitivity, archived, archivedOn, baseline);
   }
 
   public void updateTypeDetails(Integer newFromId, Integer newToId) throws OperationNotPermittedException {

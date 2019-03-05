@@ -9,7 +9,6 @@ define(['lodash', '../util/context'],
       'DatasetResource',
       'GraphResource',
       'ExcelImportService',
-      'UUIDService',
       'datasetTitles',
       'callback'
     ];
@@ -21,9 +20,9 @@ define(['lodash', '../util/context'],
       DatasetResource,
       GraphResource,
       ExcelImportService,
-      UUIDService,
       datasetTitles,
-      callback) {
+      callback
+    ) {
       // functions
       $scope.createDataset = createDataset;
       $scope.cancel = cancel;

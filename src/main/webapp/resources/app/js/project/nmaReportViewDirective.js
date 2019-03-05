@@ -26,7 +26,7 @@ define(['lodash'], function(_) {
             var includedInterventions = NetworkMetaAnalysisService.getIncludedInterventions(scope.interventions);
             var momentSelections = NetworkMetaAnalysisService.buildMomentSelections(trialverseData, scope.analysis);
             scope.network = {
-              network: NetworkMetaAnalysisService.transformTrialDataToNetwork(trialverseData, includedInterventions, scope.analysis, momentSelections)
+              network: NetworkMetaAnalysisService.transformStudiesToNetwork(trialverseData, includedInterventions, scope.analysis, momentSelections)
             };
           });
 

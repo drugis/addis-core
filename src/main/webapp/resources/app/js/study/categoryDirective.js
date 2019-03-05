@@ -1,7 +1,13 @@
 'use strict';
 define([], function() {
-  var dependencies = ['$stateParams', '$modal', '$injector'];
-  var CategoryDirective = function($stateParams, $modal, $injector) {
+  var dependencies = [
+    '$modal',
+    '$injector'
+  ];
+  var CategoryDirective = function(
+    $modal,
+    $injector
+  ) {
     return {
       restrict: 'E',
       templateUrl: './categoryDirective.html',
@@ -12,27 +18,14 @@ define([], function() {
         isRepairable: '='
       },
       link: function(scope, element, attributes) {
+        // functions
+        scope.reloadItems = reloadItems;
+        scope.addItem = addItem;
 
+        // init
         var refreshStudyDesignLister;
         var service = $injector.get(scope.settings.service);
-
         scope.isSingleItem = !!attributes.isSingleItem;
-
-        scope.reloadItems = function() {
-          if (refreshStudyDesignLister) {
-            // stop listning while loading
-            refreshStudyDesignLister();
-          }
-
-          service.queryItems().then(function(queryResult) {
-            scope.items = queryResult;
-
-            refreshStudyDesignLister = scope.$on('refreshStudyDesign', function() {
-              scope.reloadItems();
-            });
-          });
-        };
-
         scope.reloadItems();
 
         function onAdd() {
@@ -40,7 +33,20 @@ define([], function() {
           scope.reloadItems();
         }
 
-        scope.addItem = function() {
+        function reloadItems() {
+          if (refreshStudyDesignLister) {
+            // stop listning while loading
+            refreshStudyDesignLister();
+          }
+          service.queryItems().then(function(queryResult) {
+            scope.items = queryResult;
+            refreshStudyDesignLister = scope.$on('refreshStudyDesign', function() {
+              scope.reloadItems();
+            });
+          });
+        }
+
+        function addItem() {
           $modal.open({
             template: scope.settings.addItemtemplate,
             scope: scope,
@@ -54,7 +60,7 @@ define([], function() {
               }
             }
           });
-        };
+        }
       }
     };
   };
