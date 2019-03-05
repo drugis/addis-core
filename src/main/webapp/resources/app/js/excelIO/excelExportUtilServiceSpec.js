@@ -143,7 +143,7 @@ define(['lodash', 'xlsx', 'angular-mocks', './excelIO'], function(_, XLSX) {
       activityUri: 'fixedSingleDoseUri',
       label: 'Fixed',
       activityType: {
-        label: 'fixed',
+        label: 'drug treatment',
         uri: 'ontology:TreatmentActivity'
       },
       treatments: [{
@@ -163,7 +163,7 @@ define(['lodash', 'xlsx', 'angular-mocks', './excelIO'], function(_, XLSX) {
       activityUri: 'combiTreatmentUri',
       label: 'Combination',
       activityType: {
-        label: 'combination',
+        label: 'drug treatment',
         uri: 'ontology:TreatmentActivity'
       },
       treatments: [{
@@ -535,7 +535,7 @@ define(['lodash', 'xlsx', 'angular-mocks', './excelIO'], function(_, XLSX) {
           D2: IOU.cellValue(undefined),
           A3: IOU.cellValue('fixedSingleDoseUri'),
           B3: IOU.cellValue('Fixed'),
-          C3: IOU.cellValue('fixed'),
+          C3: IOU.cellValue('drug treatment'),
           D3: IOU.cellValue(undefined),
           E3: IOU.cellFormula('Concepts!B6'),
           F3: IOU.cellValue('fixed'),
@@ -545,7 +545,7 @@ define(['lodash', 'xlsx', 'angular-mocks', './excelIO'], function(_, XLSX) {
           J3: IOU.cellValue('P1D'), //
           A4: IOU.cellValue('combiTreatmentUri'),
           B4: IOU.cellValue('Combination'),
-          C4: IOU.cellValue('combination'),
+          C4: IOU.cellValue('drug treatment'),
           D4: IOU.cellValue(undefined),
           E4: IOU.cellFormula('Concepts!B6'),
           F4: IOU.cellValue('fixed'),
