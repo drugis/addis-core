@@ -14,14 +14,14 @@ define([], function() {
       link: function(scope) {
         scope.updateValue = updateValue;
 
-        function updateValue(row, column) {
-          if (ResultsTableService.isValidValue(column)) {
-            column.isInValidValue = false;
-            ResultsService.updateResultValue(row, column).then(function(result) {
+        function updateValue(row, cell) {
+          if (ResultsTableService.isValidValue(cell)) {
+            cell.isInValidValue = false;
+            ResultsService.updateResultValue(row, cell).then(function(result) {
               row.uri = result;
             });
           } else {
-            column.isInValidValue = true;
+            cell.isInValidValue = true;
           }
         }
       }

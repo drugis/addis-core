@@ -1,5 +1,5 @@
 'use strict';
-define(['angular', 'angular-mocks', './analysis'], function() {
+define(['lodash', 'angular', 'angular-mocks', './analysis'], function(_) {
   describe('The single Study Benefit-Risk Analysis service', function() {
     var singleStudyBenefitRiskService;
 
@@ -136,6 +136,55 @@ define(['angular', 'angular-mocks', './analysis'], function() {
       });
     });
 
+    describe('addMissingValuesToStudies', function() {
+      it('should set hasMissingValues to false on a study with no missing outcomes', function() {
+        var studies = [{
+          arms: [{
+            matchedProjectInterventionIds: [160],
+            measurements: {
+              defmom: [{
+                variableConceptUri: 'varcon',
+                meanDifference: 5.0,
+                stdErr: 2.0,
+                referenceArm: 'refarm'
+              }]
+            }
+          }],
+          defaultMeasurementMoment: 'defmom'
+        }];
+        var interventions = [{ id: 160 }];
+        var outcome = {
+          outcome: { semanticOutcomeUri: 'varcon' }
+        };
+        var result = singleStudyBenefitRiskService.addMissingValuesToStudies(studies, interventions, outcome);
+        var expectedResult = [_.merge({}, studies[0], { hasMissingValues: false })];
+        expect(result).toEqual(expectedResult);
+      });
+      
+      it('should set hasMissingValues to true on a study if it has atleast one missing value', function() {
+        var studies = [{
+          arms: [{
+            matchedProjectInterventionIds: [160],
+            measurements: {
+              defmom: [{
+                variableConceptUri: 'varcon',
+                meanDifference: 5.0,
+                referenceArm: 'refarm'
+              }]
+            }
+          }],
+          defaultMeasurementMoment: 'defmom'
+        }];
+        var interventions = [{ id: 160 }];
+        var outcome = {
+          outcome: { semanticOutcomeUri: 'varcon' }
+        };
+        var result = singleStudyBenefitRiskService.addMissingValuesToStudies(studies, interventions, outcome);
+        var expectedResult = [_.merge({}, studies[0], { hasMissingValues: true })];
+        expect(result).toEqual(expectedResult);
+      });
+    });
+
     describe('recalculateGroup', function() {
       it('add group validity and sort the studies on this validity', function() {
         var studies = [{
@@ -229,10 +278,10 @@ define(['angular', 'angular-mocks', './analysis'], function() {
         var study = {
           missingOutcomes: [],
           missingInterventions: [],
+          matchedProjectInterventionIds: [160],
           arms: [{
             measurements: {
               defmom: [{
-                matchedProjectInterventionIds: [160],
                 variableConceptUri: 'defmom',
                 meanDifference: 5.0,
                 stdErr: 2.0,
@@ -240,11 +289,10 @@ define(['angular', 'angular-mocks', './analysis'], function() {
               }]
             }
           }],
-          defaultMeasurementMoment: 'defmom'
+          defaultMeasurementMoment: 'defmom',
+          hasMissingValues: false
         };
-        var interventions = [];
-        var outcome = {};
-        var result = singleStudyBenefitRiskService.isValidStudyOption(study, interventions, outcome);
+        var result = singleStudyBenefitRiskService.isValidStudyOption(study);
         expect(result).toBeTruthy();
       });
 
@@ -257,11 +305,10 @@ define(['angular', 'angular-mocks', './analysis'], function() {
               defmom: []
             }
           }],
-          defaultMeasurementMoment: 'defmom'
+          defaultMeasurementMoment: 'defmom',
+          hasMissingValues: false
         };
-        var interventions = [];
-        var outcome = {};
-        var result = singleStudyBenefitRiskService.isValidStudyOption(study, interventions, outcome);
+        var result = singleStudyBenefitRiskService.isValidStudyOption(study);
         expect(result).toBeFalsy();
       });
 
@@ -274,11 +321,10 @@ define(['angular', 'angular-mocks', './analysis'], function() {
               defmom: []
             }
           }],
-          defaultMeasurementMoment: 'defmom'
+          defaultMeasurementMoment: 'defmom',
+          hasMissingValues: false
         };
-        var interventions = [];
-        var outcome = {};
-        var result = singleStudyBenefitRiskService.isValidStudyOption(study, interventions, outcome);
+        var result = singleStudyBenefitRiskService.isValidStudyOption(study);
         expect(result).toBeFalsy();
       });
 
@@ -292,11 +338,10 @@ define(['angular', 'angular-mocks', './analysis'], function() {
             }
           }],
           defaultMeasurementMoment: 'defmom',
-          hasMatchedMixedTreatmentArm: true
+          hasMatchedMixedTreatmentArm: true,
+          hasMissingValues: false
         };
-        var interventions = [];
-        var outcome = {};
-        var result = singleStudyBenefitRiskService.isValidStudyOption(study, interventions, outcome);
+        var result = singleStudyBenefitRiskService.isValidStudyOption(study);
         expect(result).toBeFalsy();
       });
 
@@ -316,17 +361,10 @@ define(['angular', 'angular-mocks', './analysis'], function() {
               }]
             }
           }],
-          defaultMeasurementMoment: 'defmom'
+          defaultMeasurementMoment: 'defmom',
+          hasMissingValues: true
         };
-        var interventions = [{
-          id: 160
-        }];
-        var outcome = {
-          outcome: {
-            semanticOutcomeUri: 'outcome1'
-          }
-        };
-        var result = singleStudyBenefitRiskService.isValidStudyOption(study, interventions, outcome);
+        var result = singleStudyBenefitRiskService.isValidStudyOption(study);
         expect(result).toBeFalsy();
       });
     });

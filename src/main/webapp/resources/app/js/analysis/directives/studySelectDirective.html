@@ -44,5 +44,12 @@
         </em>
       </p>
     </div>
+    <div ng-if="selection.selectedStudy.hasMissingValues">
+      <p>
+        <em>
+          <i class="fa fa-exclamation-triangle"></i> Selected study has missing values for the selected outcome and interventions.
+        </em>
+      </p>
+    </div>
   </div>
 </div>

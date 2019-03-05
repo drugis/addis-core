@@ -59,7 +59,7 @@ define(['lodash'], function(_) {
       });
     }
 
-    function isContrastOutcome(study, outcome){
+    function isContrastOutcome(study, outcome) {
       return _.some(study.arms, function(arm) {
         return _.some(arm.measurements[study.defaultMeasurementMoment], function(measurement) {
           return measurement.referenceArm && measurement.variableConceptUri === outcome.outcome.semanticOutcomeUri;
@@ -186,7 +186,7 @@ define(['lodash'], function(_) {
     }
 
     function isAlternativeIncluded(alternative, inclusions) {
-      return _.some(inclusions, ['id', alternative.id]);
+      return _.some(inclusions, ['interventionId', alternative.id]);
     }
 
     function isOutcomeIncluded(outcome, inclusions) {
@@ -204,6 +204,12 @@ define(['lodash'], function(_) {
       });
     }
 
+    function hasNotRunModel(outcomesWithAnalysis) {
+      return !!outcomesWithAnalysis.length && _.some(outcomesWithAnalysis, function(outcomeWithAnalysis) {
+        return outcomeWithAnalysis.selectedModel.runStatus !== 'done';
+      });
+    }
+
     return {
       addModelsGroup: addModelsGroup, //1
       analysisToSaveCommand: analysisToSaveCommand, // 2
@@ -215,10 +221,10 @@ define(['lodash'], function(_) {
       buildOutcomes: buildOutcomes, // 0 1 2 
       finalizeAndGoToDefaultScenario: finalizeAndGoToDefaultScenario, // 1 2
       addModels: addModels, // 0 2
-      getAlternativesWithInclusion: getAlternativesWithInclusion,
-      getIncludedAlternatives: getIncludedAlternatives,
+      getAlternativesWithInclusion: getAlternativesWithInclusion, // 0 
+      getIncludedAlternatives: getIncludedAlternatives, // 0
       hasMissingBaseline: hasMissingBaseline,// 0 2
-
+      hasNotRunModel: hasNotRunModel //0
     };
   };
 

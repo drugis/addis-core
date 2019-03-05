@@ -12,17 +12,17 @@
         Set baseline for {{baseline.name}}
       </div>
     </div>
-    
-    <!-- normal distribution -->
+
     <div class="grid-x">
       <div class="cell">
-        <label>{{baseline.distribution}} distribution ({{baseline.property}})
-          <span ng-if="isMissingSampleSize && baseline.type === 'dnorm'"><i class="fa fa-exclamation-triangle"></i> Sample size unknown, therefore
-            estimate using Normal distribution</span>
+        <label>
+          {{baseline.distribution}} distribution ({{baseline.property}})
         </label>
       </div>
     </div>
-    <div class="grid-x grid-margin-x" ng-if="isMissingSampleSize && baseline.type === 'dnorm'">
+
+    <!-- normal distribution -->
+    <div class="grid-x grid-margin-x" ng-if="baseline.type === 'dnorm'">
       <div class="cell large-6 medium-6">
         <label>mean
           <input type="number" ng-model="baseline.mu">
@@ -49,34 +49,15 @@
       </div>
     </div>
 
-    <!-- Student's t distribution -->
-    <div class="grid-x grid-margin-x" ng-if="baseline.type === 'dt'">
-      <div class="cell large-4 medium-6">
-        <label>μ
-          <input type="number" step="0.001" ng-model-options="{ allowInvalid: true }" ng-model="baseline.mu">
-        </label>
-      </div>
-      <div class="cell large-4 medium-6">
-        <label>σ
-          <input type="number" step="0.001" ng-model-options="{ allowInvalid: true }" ng-model="baseline.stdErr">
-        </label>
-      </div>
-      <div class="cell large-4 medium-6">
-        <label>Degrees of Freedom
-          <input type="number" step="1" ng-model="baseline.dof">
-        </label>
-      </div>
-    </div>
-
     <!-- Survival -->
     <div class="grid-x grid-margin-x" ng-if="baseline.type === 'dsurv'">
       <div class="cell large-4 medium-6">
-        <label>alpha
+        <label>responders
           <input type="number" ng-model="baseline.alpha">
         </label>
       </div>
       <div class="cell large-4 medium-6">
-        <label>beta
+        <label>exposure
           <input type="number" step="0.001" ng-model-options="{ allowInvalid: true }" ng-model="baseline.beta">
         </label>
       </div>
@@ -94,8 +75,8 @@
 
     <div class="grid-x">
       <div class="cell">
-        <button ng-disabled="isInValidBaseline" class="button success"
-          type="submit">Set
+        <button ng-disabled="isInValidBaseline" class="button success" type="submit">
+          Set
         </button>
       </div>
     </div>

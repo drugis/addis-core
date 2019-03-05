@@ -81,7 +81,10 @@
         </div>
 
         <div class="cell">
-          <button class="button" ng-click="goToDefaultScenario()" ng-disabled="isMissingModelResults || isMissingBaseline">Go to MCDA</button>
+          <button class="button" ng-click="goToDefaultScenario()" ng-disabled="isMissingBaseline || hasNotRunModel">Go to MCDA</button>
+        </div>
+        <div class="cell alert" ng-show="hasNotRunModel">
+          Not all models have been run!
         </div>
       </spinner>
     </div>

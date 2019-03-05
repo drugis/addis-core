@@ -8,7 +8,7 @@ define(['lodash'], function(_) {
     }
 
     function addMissingOutcomesToStudies(studies, outcomes) {
-      return studies.map(function(study) {
+      return _.map(studies, function(study) {
         var updatedStudy = _.cloneDeep(study);
         updatedStudy.missingOutcomes = findMissingOutcomes(updatedStudy, outcomes);
         return updatedStudy;
@@ -36,8 +36,9 @@ define(['lodash'], function(_) {
 
     function addMissingInterventionsToStudies(studies, selectedInterventions) {
       return studies.map(function(study) {
-        study.missingInterventions = findMissingInterventions(selectedInterventions, study.arms);
-        return study;
+        var newStudy = angular.copy(study);
+        newStudy.missingInterventions = findMissingInterventions(selectedInterventions, study.arms);
+        return newStudy;
       });
     }
 
@@ -75,16 +76,24 @@ define(['lodash'], function(_) {
       });
     }
 
-    function isValidStudyOption(study, interventions, outcome) {
+    function isValidStudyOption(study) {
       var noMissingOutcomes = study.missingOutcomes ? study.missingOutcomes.length === 0 : true;
       var noMissingInterventions = study.missingInterventions ? study.missingInterventions.length === 0 : true;
       var noMixedTreatmentArm = !study.hasMatchedMixedTreatmentArm;
-      var hasMissingValue = hasMissingValues(study, interventions, outcome);
-      return noMissingOutcomes && noMissingInterventions && noMixedTreatmentArm && !hasMissingValue;
+      var noMissingValue = !study.hasMissingValues;
+      return noMissingOutcomes && noMissingInterventions && noMixedTreatmentArm && noMissingValue;
+    }
+
+    function addMissingValuesToStudies(studies, interventions, outcome) {
+      return _.map(studies, function(study) {
+        return _.merge({}, study, {
+          hasMissingValues: hasMissingValues(study, interventions, outcome)
+        });
+      });
     }
 
     function hasMissingValues(study, interventions, outcome) {
-      return _.find(study.arms, function(arm) {
+      return _.some(study.arms, function(arm) {
         if (isIncludedArm(arm, interventions)) {
           var measurements = arm.measurements[study.defaultMeasurementMoment];
           if (measurements) {
@@ -172,6 +181,7 @@ define(['lodash'], function(_) {
       addOverlappingInterventionsToStudies: addOverlappingInterventionsToStudies,
       addHasMatchedMixedTreatmentArm: addHasMatchedMixedTreatmentArm,
       addMissingOutcomesToStudies: addMissingOutcomesToStudies,
+      addMissingValuesToStudies: addMissingValuesToStudies,
       recalculateGroup: recalculateGroup,
       findMissingOutcomes: findMissingOutcomes,
       getStudiesWithErrors: getStudiesWithErrors,

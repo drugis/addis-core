@@ -54,6 +54,7 @@ define(['lodash', 'angular'], function(_) {
     $scope.goToDefaultScenario = BenefitRiskService.goToDefaultScenario;
     $scope.project = ProjectResource.get($stateParams);
     $scope.userId = $stateParams.userUid;
+    $scope.isMissingBaseline = true;
 
     $scope.editMode = {
       allowEditing: false
@@ -97,7 +98,7 @@ define(['lodash', 'angular'], function(_) {
       $scope.effectsTablePromise = prepareEffectsTable(analysis, models);
     });
 
-    function getStudiesWithUuid(studies){
+    function getStudiesWithUuid(studies) {
       return _.map(studies, function(study) {
         return _.extend({}, study, {
           uuid: study.studyUri.split('/graphs/')[1]
@@ -172,8 +173,7 @@ define(['lodash', 'angular'], function(_) {
     }
 
     function setBaseline(outcomeWithAnalysis, baseline) {
-      $scope.analysis.benefitRiskNMAOutcomeInclusions =
-      BenefitRiskStep2Service.addBaselineToInclusion(outcomeWithAnalysis, $scope.analysis.benefitRiskNMAOutcomeInclusions, baseline);
+      $scope.analysis.benefitRiskNMAOutcomeInclusions = BenefitRiskStep2Service.addBaselineToInclusion(outcomeWithAnalysis, $scope.analysis.benefitRiskNMAOutcomeInclusions, baseline);
       var saveCommand = BenefitRiskService.analysisToSaveCommand($scope.analysis);
       $scope.effectsTablePromise = AnalysisResource.save(saveCommand).$promise.then(function() {
         return updateTableOutcomes($scope.analysis, $scope.outcomes);

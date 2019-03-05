@@ -91,7 +91,7 @@
       <div class="cell">
         <button ng-disabled="!editMode.allowEditing" type="button" class="button primary" ng-click="goToStep1()">Previous
           step </button>
-        <button ng-disabled="!editMode.allowEditing || isMissingBaseline ||analysis.finalized" ng-cloak ng-click="finalizeAndGoToDefaultScenario()"
+        <button ng-disabled="!editMode.allowEditing || isMissingBaseline || analysis.finalized" ng-cloak ng-click="finalizeAndGoToDefaultScenario()"
           type="button" class="button success">Finalize</button>
         <div ng-if="analysis.finalized"><i class="fa fa-spinner fa-spin fa-3x"></i></div>
         <span ng-if="analysis.finalized">Finalizing analysis</span>

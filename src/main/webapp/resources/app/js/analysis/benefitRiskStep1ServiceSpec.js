@@ -447,7 +447,7 @@ define(['lodash', 'angular-mocks', './analysis'], function(_) {
         var inclusion = {
           outcome: { isIncluded: false }
         };
-        var result = benefitRiskStep1Service.updateOutcomeInclusion(inclusion);
+        benefitRiskStep1Service.updateOutcomeInclusion(inclusion);
         var expectedResult = {
           selectedAnalysis: undefined,
           selectedStudy: undefined,
@@ -455,7 +455,7 @@ define(['lodash', 'angular-mocks', './analysis'], function(_) {
           dataType: undefined,
           outcome: { isIncluded: false }
         };
-        expect(result).toEqual(expectedResult);
+        expect(inclusion).toEqual(expectedResult);
       });
 
       it('should set selected analysis and model to undefined and study to an empty object', function() {
@@ -463,7 +463,7 @@ define(['lodash', 'angular-mocks', './analysis'], function(_) {
           outcome: { isIncluded: true },
           dataType: 'single-study'
         };
-        var result = benefitRiskStep1Service.updateOutcomeInclusion(inclusion);
+        benefitRiskStep1Service.updateOutcomeInclusion(inclusion);
         var expectedResult = {
           selectedAnalysis: undefined,
           selectedStudy: {},
@@ -471,7 +471,7 @@ define(['lodash', 'angular-mocks', './analysis'], function(_) {
           outcome: { isIncluded: true },
           dataType: 'single-study'
         };
-        expect(result).toEqual(expectedResult);
+        expect(inclusion).toEqual(expectedResult);
       });
 
       it('should set the selected study to undefined for a network outcome without an analysis without a model', function() {
@@ -482,7 +482,7 @@ define(['lodash', 'angular-mocks', './analysis'], function(_) {
             models: []
           }]
         };
-        var result = benefitRiskStep1Service.updateOutcomeInclusion(inclusion);
+        benefitRiskStep1Service.updateOutcomeInclusion(inclusion);
         var expectedResult = {
           selectedAnalysis: undefined,
           selectedStudy: undefined,
@@ -493,7 +493,7 @@ define(['lodash', 'angular-mocks', './analysis'], function(_) {
             models: []
           }]
         };
-        expect(result).toEqual(expectedResult);
+        expect(inclusion).toEqual(expectedResult);
       });
 
       it('should set the selected study to undefined, set the selected analysis to the analysis and no model for a network outcome an analysis with an invalid model. It should also update the missing alternatives on the model.', function() {
@@ -506,7 +506,7 @@ define(['lodash', 'angular-mocks', './analysis'], function(_) {
           }]
         };
         var alternatives = [];
-        var result = benefitRiskStep1Service.updateOutcomeInclusion(inclusion, alternatives);
+        benefitRiskStep1Service.updateOutcomeInclusion(inclusion, alternatives);
         var expectedResult = {
           selectedAnalysis: {
             models: [model]
@@ -523,7 +523,7 @@ define(['lodash', 'angular-mocks', './analysis'], function(_) {
             models: [model]
           }]
         };
-        expect(result).toEqual(expectedResult);
+        expect(inclusion).toEqual(expectedResult);
       });
     });
   });

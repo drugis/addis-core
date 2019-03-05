@@ -39,6 +39,7 @@ define(['lodash'], function(_) {
     $scope.measurementMomentEquals = measurementMomentEquals;
     $scope.cancel = cancel;
     $scope.armOrContrastChanged = armOrContrastChanged;
+    $scope.logChanged = logChanged;
 
     // init
     var Service = $injector.get(settings.service);
@@ -50,6 +51,8 @@ define(['lodash'], function(_) {
     };
     $scope.measurementMoments = MeasurementMomentService.queryItems();
     $scope.timeScaleOptions = TIME_SCALE_OPTIONS;
+    $scope.adding = true;
+    $scope.itemType = settings.itemName;
     getArms();
 
     resetResultProperties();
@@ -76,7 +79,7 @@ define(['lodash'], function(_) {
     }
 
     function addVariable() {
-      if($scope.variable.armOrContrast === CONTRAST_TYPE){
+      if ($scope.variable.armOrContrast === CONTRAST_TYPE) {
         $scope.variable.selectedResultProperties = [$scope.variable.contrastOption].concat($scope.variable.selectedResultProperties);
       }
       $scope.variable.resultProperties = _.map($scope.variable.selectedResultProperties, 'uri');
@@ -130,6 +133,10 @@ define(['lodash'], function(_) {
       return ArmService.queryItems($stateParams.studyUUID).then(function(result) {
         $scope.arms = result;
       });
+    }
+
+    function logChanged() {
+      $scope.variable = ResultPropertiesService.logChanged($scope.variable);
     }
   };
   return dependencies.concat(addVariableController);

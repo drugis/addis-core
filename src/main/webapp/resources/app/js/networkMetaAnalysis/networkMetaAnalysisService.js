@@ -72,7 +72,10 @@ define(['lodash', 'angular'], function(_, angular) {
       row.studyUri = study.studyUri;
       row.studyUuid = row.studyUri.slice(row.studyUri.lastIndexOf('/') + 1);
       row.studyRowSpan = study.arms.length;
-      row.covariatesColumns = _(covariates).map(_.partial(createCovariateColumn, study)).compact().value();
+      row.covariatesColumns = _(covariates)
+        .map(_.partial(createCovariateColumn, study))
+        .compact()
+        .value();
       row.arm = arm.name;
       row.trialverseUid = arm.uri;
       var overlappingTreatments;
@@ -184,13 +187,13 @@ define(['lodash', 'angular'], function(_, angular) {
         return measurement.standardizedMeanDifference;
       }
       if (hasValue(measurement.oddsRatio)) {
-        return measurement.oddsRatio;
+        return $filter('number')(measurement.oddsRatio, 3);
       }
       if (hasValue(measurement.riskRatio)) {
-        return measurement.riskRatio;
+        return $filter('number')(measurement.riskRatio, 3);
       }
       if (hasValue(measurement.hazardRatio)) {
-        return measurement.hazardRatio;
+        return $filter('number')(measurement.hazardRatio, 3);
       }
       return 'NA';
     }
@@ -283,9 +286,10 @@ define(['lodash', 'angular'], function(_, angular) {
 
     function createCovariateColumn(study, covariate) {
       if (covariate.isIncluded) {
-        var covariateValue = _.find(study.covariateValues, function(covariateValue) {
+        var studyCovariate = _.find(study.covariateValues, function(covariateValue) {
           return covariateValue.covariateKey === covariate.definitionKey;
-        }).value;
+        });
+        var covariateValue = studyCovariate ? studyCovariate.value : null;
         var covariateColumn = {
           headerTitle: covariate.name,
           data: covariateValue === null ? 'NA' : covariateValue

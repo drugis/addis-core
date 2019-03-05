@@ -39,34 +39,33 @@ define(['lodash'], function(_) {
     $scope.deleteCategory = deleteCategory;
     $scope.addCategory = addCategory;
     $scope.addCategoryEnterKey = addCategoryEnterKey;
-    $scope.editVariable = editVariable;
+    $scope.addVariable = addVariable;
     $scope.resetResultProperties = resetResultProperties;
     $scope.cancel = cancel;
     $scope.armOrContrastChanged = armOrContrastChanged;
+    $scope.logChanged = logChanged;
 
     // init
     $scope.isEditing = false;
-    $scope.variable = item;
     $scope.variable = initVariable(item);
     $scope.itemType = itemType;
     $scope.measurementMoments = MeasurementMomentService.queryItems();
-    
     $scope.timeScaleOptions = TIME_SCALE_OPTIONS;
     $scope.$watch('variable.selectedResultProperties', checkTimeScaleInput, true);
-    
-    
     getArms();
-    
+
     function initVariable(variable) {
       variable.armOrContrast = getArmOrContrast(variable);
-      $scope.resultProperties = _.values(RESULT_PROPERTY_TYPE_DETAILS[$scope.variable.armOrContrast]);
-      $scope.variable.selectedResultProperties = getSelectedResultProperties();
+      var properties = _.values(RESULT_PROPERTY_TYPE_DETAILS[variable.armOrContrast]);
+      variable.selectedResultProperties = getSelectedResultProperties(variable, properties);
       if (variable.armOrContrast === CONTRAST_TYPE) {
         variable.contrastOptions = ResultPropertiesService.getContrastOptions(variable.measurementType);
         variable.contrastOption = _.find(variable.contrastOptions, function(option) {
           return _.includes(variable.resultProperties, option.uri);
         });
+        variable.isLog = !!variable.isLog;
       }
+      variable.resultProperties = properties;
       return variable;
     }
 
@@ -74,9 +73,9 @@ define(['lodash'], function(_) {
       return variable.armOrContrast ? variable.armOrContrast : ARM_LEVEL_TYPE;
     }
 
-    function getSelectedResultProperties() {
-      return _.filter($scope.resultProperties, function(resultProperty) {
-        return _.includes($scope.variable.resultProperties, resultProperty.uri);
+    function getSelectedResultProperties(variable, properties) {
+      return _.filter(properties, function(resultProperty) {
+        return _.includes(variable.resultProperties, resultProperty.uri);
       });
     }
 
@@ -99,7 +98,7 @@ define(['lodash'], function(_) {
       }
     }
 
-    function editVariable() {
+    function addVariable() {
       $scope.isEditing = false;
       if ($scope.variable.armOrContrast === CONTRAST_TYPE) {
         $scope.variable.selectedResultProperties = [$scope.variable.contrastOption].concat($scope.variable.selectedResultProperties);
@@ -161,6 +160,10 @@ define(['lodash'], function(_) {
       return ArmService.queryItems($stateParams.studyUUID).then(function(result) {
         $scope.arms = result;
       });
+    }
+
+    function logChanged() {
+      $scope.variable = ResultPropertiesService.logChanged($scope.variable);
     }
   };
   return dependencies.concat(EditVariableController);

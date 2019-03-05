@@ -359,7 +359,8 @@ define(['angular'], function(angular) {
       category: 'Dispersion',
       lexiconKey: 'confidence-interval',
       analysisReady: true,
-      hiddenSelection: true
+      hiddenSelection: true,
+      isPositiveWithoutLog: true
     },
     confidence_interval_upper_bound: {
       type: 'confidence_interval_upper_bound',
@@ -371,14 +372,15 @@ define(['angular'], function(angular) {
       category: 'Dispersion',
       lexiconKey: 'confidence-interval',
       analysisReady: true,
-      hiddenSelection: true
+      hiddenSelection: true,
+      isPositiveWithoutLog: true
     }
   };
 
   var CONTRAST_OPTIONS_DETAILS = {
     odds_ratio: {
       type: 'odds_ratio',
-      label: 'log odds ratio',
+      label: 'odds ratio',
       armOrContrast: CONTRAST_TYPE,
       isLog: true,
       category: 'Central tendency',
@@ -386,11 +388,12 @@ define(['angular'], function(angular) {
       dataType: DOUBLE_TYPE,
       variableTypes: [DICHOTOMOUS_TYPE],
       lexiconKey: 'odds-ratio',
-      analysisReady: true
+      analysisReady: true,
+      isPositiveWithoutLog: true
     },
     risk_ratio: {
       type: 'risk_ratio',
-      label: 'log risk ratio',
+      label: 'risk ratio',
       armOrContrast: CONTRAST_TYPE,
       isLog: true,
       category: 'Central tendency',
@@ -398,7 +401,8 @@ define(['angular'], function(angular) {
       dataType: DOUBLE_TYPE,
       variableTypes: [DICHOTOMOUS_TYPE],
       lexiconKey: 'risk-ratio',
-      analysisReady: true
+      analysisReady: true,
+      isPositiveWithoutLog: true
     },
     continuous_mean_difference: { //continuous as prefix because of JSON-ld tranform replacing mean with the arm based mean.
       type: 'continuous_mean_difference',
@@ -424,7 +428,7 @@ define(['angular'], function(angular) {
     },
     hazard_ratio: {
       type: 'hazard_ratio',
-      label: 'log hazard ratio',
+      label: 'hazard ratio',
       armOrContrast: CONTRAST_TYPE,
       isLog: true,
       category: 'Central tendency',
@@ -432,7 +436,8 @@ define(['angular'], function(angular) {
       dataType: DOUBLE_TYPE,
       variableTypes: [SURVIVAL_TYPE],
       lexiconKey: 'hazard-ratio',
-      analysisReady: true
+      analysisReady: true,
+      isPositiveWithoutLog: true
     },
   };
 

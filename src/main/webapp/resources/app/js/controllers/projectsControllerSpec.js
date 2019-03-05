@@ -32,6 +32,8 @@ define(['angular', 'angular-mocks', '../controllers'],
         setArchivedDefer.resolve();
         projectResourceMock.setArchived.and.returnValue(setArchivedReturnValue);
 
+        var isUserOwnerDefer = $q.defer();
+        userServiceMock.isLoginUserId.and.returnValue(isUserOwnerDefer.promise);
         scope = $rootScope;
 
         var stateParams = {

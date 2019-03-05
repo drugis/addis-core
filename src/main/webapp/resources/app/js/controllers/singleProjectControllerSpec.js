@@ -71,7 +71,6 @@ define(['angular-mocks'], function(angularMocks) {
         description: 'trialverseDescription'
       },
       mockOutcomes = [1, 2, 3],
-      outcomeDeferred,
       mockInterventions = [{
         name: 'a',
         val: 4
@@ -82,7 +81,6 @@ define(['angular-mocks'], function(angularMocks) {
         name: 'c',
         val: 6
       }],
-      interventionDeferred,
       mockAnalysis = {
         projectId: 1,
         id: 2,
@@ -110,8 +108,8 @@ define(['angular-mocks'], function(angularMocks) {
         unitName: 'liter',
         unitUri: 'unitUri2'
       }],
-      userDefer,
-      isLoginUserDefer;
+      userDefer;
+    var isLoginUserDefer;
 
     beforeEach(angular.mock.module('addis.controllers'));
 
@@ -172,8 +170,6 @@ define(['angular-mocks'], function(angularMocks) {
       mockAnalysis.$promise = analysisDeferred.promise;
       studiesDeferred = $q.defer();
       mockStudies.$promise = studiesDeferred.promise;
-      outcomeDeferred = $q.defer();
-      interventionDeferred = $q.defer();
       trialverseDeferred = $q.defer();
       mockTrialverse.$promise = trialverseDeferred.promise;
 
@@ -269,12 +265,11 @@ define(['angular-mocks'], function(angularMocks) {
       it('isOwnProject should be true if the project is owned by the logged-in user', function() {
         isLoginUserDefer.resolve(true);
         scope.$apply();
-        expect(scope.editMode.allowEditing).toEqual(true);
+        expect(scope.editMode.allowEditing).toBeTruthy();
       });
 
       it('isOwnProject should be false if the project is not owned by the logged-in user', function() {
-        isLoginUserDefer.resolve(false);
-        projectDeferred.resolve();
+        projectDeferred.resolve(false);
         scope.$apply();
         expect(scope.editMode.allowEditing).toBeFalsy();
       });

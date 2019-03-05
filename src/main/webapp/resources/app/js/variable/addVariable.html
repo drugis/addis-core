@@ -2,7 +2,7 @@
   <div class="grid-container">
     <div class="grid-x">
       <div class="cell">
-        <h3>Add a new {{settings.itemName}}</h3>
+        <h3>{{adding ? 'Add a new' : 'Edit'}} {{itemType}}</h3>
       </div>
       <div class="cell">
         <label>Name
@@ -11,17 +11,17 @@
       </div>
       <div class="cell">
         <label>Measurement type</label>
-        <input ng-model="variable.measurementType" type="radio" name="measurementType" ng-change="resetResultProperties()"
-          value="ontology:dichotomous" id="rateOption">
+        <input ng-model="variable.measurementType" type="radio" name="measurementType"
+          ng-change="resetResultProperties()" value="ontology:dichotomous" id="rateOption">
         <label for="rateOption">count</label>
-        <input ng-model="variable.measurementType" type="radio" name="measurementType" ng-change="resetResultProperties()"
-          value="ontology:continuous" id="continuousOption">
+        <input ng-model="variable.measurementType" type="radio" name="measurementType"
+          ng-change="resetResultProperties()" value="ontology:continuous" id="continuousOption">
         <label for="continuousOption">continuous</label>
-        <input ng-model="variable.measurementType" type="radio" name="measurementType" ng-change="resetResultProperties()"
-          value="ontology:categorical" id="categoricalOption">
+        <input ng-model="variable.measurementType" type="radio" name="measurementType"
+          ng-change="resetResultProperties()" value="ontology:categorical" id="categoricalOption">
         <label for="categoricalOption">categorical</label>
-        <input ng-model="variable.measurementType" type="radio" name="measurementType" ng-change="resetResultProperties()"
-          value="ontology:survival" id="survivalOption">
+        <input ng-model="variable.measurementType" type="radio" name="measurementType"
+          ng-change="resetResultProperties()" value="ontology:survival" id="survivalOption">
         <label for="survivalOption">survival</label>
       </div>
     </div>
@@ -30,7 +30,8 @@
       <div class="cell">
         <label>Categories</label>
         <ul class="no-bullet" ng-if="variable.categoryList.length">
-          <li ng-repeat="category in variable.categoryList"><a><i class="fa fa-trash-o" style="color: red;" ng-click="deleteCategory(category)"></i></a>
+          <li ng-repeat="category in variable.categoryList"><a><i class="fa fa-trash-o" style="color: red;"
+                ng-click="deleteCategory(category)"></i></a>
             {{category}}</li>
         </ul>
       </div>
@@ -41,7 +42,8 @@
         <input ng-model="newCategory.categoryLabel" ng-keypress="addCategoryEnterKey($event, newCategory)">
       </div>
       <div class="cell">
-        <button class="button small" ng-disabled="cannotAddCategory(newCategory)" type="button" ng-click="addCategory(newCategory)">Add
+        <button class="button small" ng-disabled="cannotAddCategory(newCategory)" type="button"
+          ng-click="addCategory(newCategory)">Add
           category</button>
         <span class="alert" ng-if="isDuplicateCategory(newCategory)">Duplicate category name</span>
       </div>
@@ -50,11 +52,11 @@
     <div class="grid-x" ng-if="variable.measurementType !== 'ontology:categorical'">
       <div class="cell">
         <label>Arm level or contrast data</label>
-        <input ng-model="variable.armOrContrast" type="radio" name="armOrContrast" ng-change=armOrContrastChanged() id="arm"
-          value="ontology:arm_level_data">
+        <input ng-model="variable.armOrContrast" type="radio" name="armOrContrast" ng-change=armOrContrastChanged()
+          id="arm" value="ontology:arm_level_data">
         <label for="arm">Arm level data</label>
-        <input ng-model="variable.armOrContrast" type="radio" name="armOrContrast" ng-change=armOrContrastChanged() id="contrast"
-          value="ontology:contrast_data" ng-disabled="arms.length < 2">
+        <input ng-model="variable.armOrContrast" type="radio" name="armOrContrast" ng-change=armOrContrastChanged()
+          id="contrast" value="ontology:contrast_data" ng-disabled="arms.length < 2">
         <label for="contrast">Contrast data</label>
       </div>
 
@@ -62,20 +64,35 @@
         contrast data is disabled because there are less than two arms defined
       </div>
 
-      <div class="cell large-6" ng-if="variable.armOrContrast === 'ontology:contrast_data'">
-        <label>Reference arm</label>
-        <select ng-model="variable.referenceArm" ng-options="arm.armURI as arm.label for arm in arms"></select>
-      </div>
-
       <div class="cell" ng-if="variable.armOrContrast === 'ontology:contrast_data'">
-        <div class="grid-x" ng-if="variable.armOrContrast === 'ontology:contrast_data'">
+        <div class="grid-x">
+          <div class="cell large-6">
+            <label>Reference arm</label>
+            <select ng-model="variable.referenceArm" ng-options="arm.armURI as arm.label for arm in arms"></select>
+          </div>
           <div class="cell">
             <label>
               Scale of measurement
             </label>
           </div>
           <div class="cell large-6">
-            <select ng-options="option as option.label for option in variable.contrastOptions" ng-model="variable.contrastOption"></select>
+            <select ng-options="option as option.label for option in variable.contrastOptions"
+              ng-model="variable.contrastOption"></select>
+          </div>
+        </div>
+      </div>
+
+      <div class="cell" ng-if="variable.armOrContrast === 'ontology:contrast_data' && 
+        (variable.measurementType === 'ontology:dichotomous' || variable.measurementType === 'ontology:survival')">
+        <div class="grid-x">
+          <div class="cell">
+            <label>Log</label>
+          </div>
+          <div class="cell">
+            <input type="radio" name="on" ng-model="variable.isLog" ng-value="true" id="on" ng-change="logChanged()">
+            <label for="on">On</label>
+            <input type="radio" name="off" ng-model="variable.isLog" ng-value="false" id="off" ng-change="logChanged()">
+            <label for="off">Off</label>
           </div>
         </div>
       </div>
@@ -106,12 +123,14 @@
 
       <div class="cell">
         <label>Measured at:</label>
-        <subset-select target="variable.measuredAtMoments" source="measurementMoments" equals="measurementMomentEquals"></subset-select>
+        <subset-select target="variable.measuredAtMoments" source="measurementMoments" equals="measurementMomentEquals">
+        </subset-select>
       </div>
 
       <div class="cell">
-        <button class="button success" type="button" ng-click="addVariable()" ng-disabled="!variable.label || !variable.measurementType">
-          Add
+        <button class="button success" type="button" ng-click="addVariable()"
+          ng-disabled="!variable.label || !variable.measurementType">
+          {{adding ? 'Add' : 'Edit'}}
         </button>
       </div>
     </div>

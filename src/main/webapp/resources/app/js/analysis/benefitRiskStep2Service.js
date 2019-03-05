@@ -89,7 +89,7 @@ define(['lodash'], function(_) {
 
     function getMeasurementType(outcome) {
       var study = outcome.selectedStudy;
-      var nonReferenceArm = findNonReferenceArm(study);
+      var nonReferenceArm = findNonReferenceArm(study, outcome);
       var measurement = findNonReferenceMeasurement(nonReferenceArm, study.defaultMeasurementMoment, outcome);
       var measurementTypes = [
         'oddsRatio',
@@ -109,9 +109,18 @@ define(['lodash'], function(_) {
       });
     }
 
-    function findNonReferenceArm(study) {
+    function findNonReferenceArm(study, outcome) {
       return _.find(study.arms, function(arm) {
-        return arm.measurements && arm.measurements[study.defaultMeasurementMoment].length; 
+        return arm.measurements &&
+          arm.measurements[study.defaultMeasurementMoment] &&
+          arm.measurements[study.defaultMeasurementMoment].length &&
+          hasMeasurementForOutcome(arm.measurements[study.defaultMeasurementMoment], outcome);
+      });
+    }
+
+    function hasMeasurementForOutcome(measurements, outcome){
+      return _.some(measurements, function(measurement){
+        return measurement.variableConceptUri === outcome.outcome.semanticOutcomeUri;
       });
     }
 

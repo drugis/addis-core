@@ -1,8 +1,8 @@
 'use strict';
 define([],
   function() {
-    var dependencies = ['$q', 'OutcomeService'];
-    var AdverseEventService = function($q, OutcomeService) {
+    var dependencies = ['OutcomeService'];
+    var AdverseEventService = function(OutcomeService) {
 
       var TYPE = 'ontology:AdverseEvent';
 

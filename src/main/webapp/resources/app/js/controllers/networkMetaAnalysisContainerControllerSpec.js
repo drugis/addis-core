@@ -85,7 +85,10 @@ define(['angular', 'angular-mocks', '../controllers'], function() {
     var pageTitleServiceMock;
     var modelDeferred;
     var userDefer;
+    var isLoginUserDefer;
+
     beforeEach(angular.mock.module('addis.controllers'));
+
     beforeEach(inject(function($rootScope, $controller, $q) {
       q = $q;
       analysisDeferred = $q.defer();
@@ -102,7 +105,7 @@ define(['angular', 'angular-mocks', '../controllers'], function() {
       scope = $rootScope;
       scope.analysis = mockAnalysis;
       scope.project = mockProject;
-      userService = jasmine.createSpyObj('UserService', ['getLoginUser']);
+      userService = jasmine.createSpyObj('UserService', ['getLoginUser', 'isLoginUserId']);
       pageTitleServiceMock = jasmine.createSpyObj('PageTitleService', ['setPageTitle']);
       outcomeResource = jasmine.createSpyObj('OutcomeResource', ['query']);
       outcomeResource.query.and.returnValue(mockOutcomes);
@@ -149,7 +152,9 @@ define(['angular', 'angular-mocks', '../controllers'], function() {
       state = jasmine.createSpyObj('$state', ['go']);
 
       userDefer = $q.defer();
+      isLoginUserDefer = $q.defer();
       userService.getLoginUser.and.returnValue(userDefer.promise);
+      userService.isLoginUserId.and.returnValue(isLoginUserDefer.promise);
       $controller('NetworkMetaAnalysisContainerController', {
         $window: mockWindow,
         $scope: scope,

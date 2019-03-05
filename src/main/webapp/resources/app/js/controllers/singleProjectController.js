@@ -87,9 +87,8 @@ define(['lodash', 'angular'], function(_, angular) {
     setPageTitle(activeTab);
     $scope.projects = ProjectResource.query();
 
-
-    UserService.isLoginUserId($scope.project.owner.id).then(function(isLoginUserId) {
-      $scope.editMode.allowEditing = !project.archived && isLoginUserId;
+    UserService.isLoginUserId($scope.project.owner.id).then(function(isUserOwner) {
+      $scope.editMode.allowEditing = !project.archived && isUserOwner;
     });
 
     UserService.getLoginUser().then(function(user) {

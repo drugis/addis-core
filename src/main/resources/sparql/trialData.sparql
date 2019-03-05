@@ -40,6 +40,7 @@ SELECT DISTINCT
 ?oddsRatio
 ?riskRatio 
 ?standardizedMeanDifference 
+?isLog
 ?fixedDoseValue
 ?fixedDoseDosingPeriodicity
 ?fixedDoseUnitConcept
@@ -88,6 +89,9 @@ WHERE {
       }
       OPTIONAL {
         ?outcomeInstance ontology:reference_standard_error ?referenceStandardError .
+      }
+      OPTIONAL {
+        ?outcomeInstance ontology:is_log ?isLog .
       }
     }
 

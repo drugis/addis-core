@@ -1,7 +1,13 @@
 'use strict';
 define(['lodash'], function(_) {
-  var dependencies = ['StudyService'];
-  var MappingService = function(StudyService) {
+  var dependencies = [
+    '$q',
+    'StudyService'
+  ];
+  var MappingService = function(
+    $q,
+    StudyService
+  ) {
 
     var METRIC_MULTIPLIERS = [{
       label: 'nano',
@@ -42,14 +48,15 @@ define(['lodash'], function(_) {
     }
 
     function updateMapping(studyConcept, datasetConcept) {
-      if (datasetConcept['@type'] === 'ontology:Drug') {
-        return updateDrugMapping(studyConcept, datasetConcept);
-      } else if (datasetConcept['@type'] === 'ontology:Variable') {
-        return updateVariableMapping(studyConcept, datasetConcept);
-      } else if (datasetConcept['@type'] === 'ontology:Unit') {
-        return updateUnitMapping(studyConcept, datasetConcept);
-      } else {
-        throw 'Attempt to map unknown type of concept';
+      switch (datasetConcept['@type']) {
+        case 'ontology:Drug':
+          return updateDrugMapping(studyConcept, datasetConcept);
+        case 'ontology:Variable':
+          return updateVariableMapping(studyConcept, datasetConcept);
+        case 'ontology:Unit':
+          return updateUnitMapping(studyConcept, datasetConcept);
+        default:
+          throw 'Attempt to map unknown type of concept';
       }
     }
 
@@ -115,7 +122,7 @@ define(['lodash'], function(_) {
     }
 
     function getUnits(constraint) {
-      if(!constraint) {
+      if (!constraint) {
         return [];
       }
       var desiredProperties = ['unitName', 'unitConcept', 'conversionMultiplier'];
@@ -130,10 +137,42 @@ define(['lodash'], function(_) {
       } else if (intervention.type === 'titrated' || intervention.type === 'both') {
         units = getUnits(intervention.minConstraint).concat(getUnits(intervention.maxConstraint));
       }
-      return  _.uniqWith(units, function(unit1, unit2) {
+      return _.uniqWith(units, function(unit1, unit2) {
         return _.isEqual(
           _.pick(unit1, ['unitName', 'unitConcept']),
           _.pick(unit2, ['unitName', 'unitConcept']));
+      });
+    }
+
+    function hasDoubleMapping(studyConcept, datasetConcept) {
+      switch (datasetConcept['@type']) {
+        case 'ontology:Drug':
+          return findDoubleMappingForDrug(studyConcept, datasetConcept);
+        case 'ontology:Variable':
+          return findDoubleMappingForVariable(studyConcept, datasetConcept);
+        default:
+          return $q.resolve(false);
+      }
+    }
+
+    function findDoubleMappingForVariable(studyConcept, datasetConcept) {
+      return StudyService.getJsonGraph().then(function(graph) {
+        var study = StudyService.findStudyNode(graph);
+        var outcomes = study.has_outcome;
+        return _.find(outcomes, function(outcome2) {
+          return studyConcept.uri !== outcome2['@id'] &&
+            datasetConcept['@id'] === outcome2.of_variable[0].sameAs;
+        });
+      });
+    }
+
+    function findDoubleMappingForDrug(studyConcept, datasetConcept) {
+      return StudyService.getJsonGraph().then(function(graph) {
+        return _.find(graph, function(node) {
+          return node['@type'] === 'ontology:Drug' &&
+            studyConcept.uri !== node['@id'] &&
+            datasetConcept['@id'] === node.sameAs;
+        });
       });
     }
 
@@ -141,7 +180,8 @@ define(['lodash'], function(_) {
       updateMapping: updateMapping,
       removeMapping: removeMapping,
       getUnitsFromIntervention: getUnitsFromIntervention,
-      METRIC_MULTIPLIERS: METRIC_MULTIPLIERS
+      METRIC_MULTIPLIERS: METRIC_MULTIPLIERS,
+      hasDoubleMapping: hasDoubleMapping
     };
 
   };

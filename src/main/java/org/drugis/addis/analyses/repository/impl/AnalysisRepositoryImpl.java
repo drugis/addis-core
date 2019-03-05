@@ -47,7 +47,6 @@ public class AnalysisRepositoryImpl implements AnalysisRepository {
     }
     analysis.setArchived(archived);
     analysis.setArchivedOn(archived ? new Date() : null);
-
   }
 
 }

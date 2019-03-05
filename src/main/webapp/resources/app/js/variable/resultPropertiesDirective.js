@@ -2,11 +2,13 @@
 define(['lodash'], function(_) {
   var dependencies = [
     'ResultPropertiesService',
-    'ARM_LEVEL_TYPE'
+    'ARM_LEVEL_TYPE',
+    'CONTRAST_TYPE'
   ];
   var ResultPropertiesDirective = function(
     ResultPropertiesService,
-    ARM_LEVEL_TYPE
+    ARM_LEVEL_TYPE,
+    CONTRAST_TYPE
   ) {
     return {
       restrict: 'E',
@@ -21,14 +23,14 @@ define(['lodash'], function(_) {
 
         //init
         buildProperties();
-        scope.hasNotAnalysedProperty = _.some(scope.properties, ['analysisReady', false]);
 
         // watches
         scope.$watch('variable.measurementType', rebuildIfNecessary);
         scope.$watch('variable.resultProperties', rebuildIfNecessary, true);
+        scope.$watch('variable.isLog', rebuildIfNecessary);
 
         function rebuildIfNecessary(newValue, oldValue) {
-          if (!oldValue || !newValue || oldValue === newValue) {
+          if (oldValue === undefined || newValue === undefined || _.isEqual(oldValue, newValue)) {
             return;
           }
           buildProperties();
@@ -38,9 +40,20 @@ define(['lodash'], function(_) {
           var resultPropertiesForType = ResultPropertiesService.getResultPropertiesForType(scope.variable.measurementType, scope.variable.armOrContrast);
           scope.properties = _(resultPropertiesForType)
             .map(setSelected)
+            .filter(filterNonLogContrastStandardError)
             .keyBy('type')
             .value();
+          scope.hasNotAnalysedProperty = _.some(scope.properties, ['analysisReady', false]);
           setCategories();
+        }
+
+        function filterNonLogContrastStandardError(property) {
+          return property.armOrContrast !== CONTRAST_TYPE ||
+            property.type !== 'standard_error' ||
+            scope.variable.isLog ||
+            (scope.variable.contrastOption && scope.variable.contrastOption.type === 'continuous_mean_difference') ||
+            (scope.variable.contrastOption && scope.variable.contrastOption.type === 'continuous_standardized_mean_difference')
+            ;
         }
 
         function setSelected(property) {

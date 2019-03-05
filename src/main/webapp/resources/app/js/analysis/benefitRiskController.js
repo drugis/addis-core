@@ -68,9 +68,8 @@ define(['lodash'], function(_) {
       });
 
       PageTitleService.setPageTitle('BenefitRiskController', analysis.title);
-
-      UserService.isLoginUserId($scope.project.owner.id).then(function(isLoginUserId) {
-        $scope.editMode.allowEditing = !analysis.archived && isLoginUserId;
+      UserService.isLoginUserId(project.owner.id).then(function(isUserOwner) {
+        $scope.editMode.allowEditing = isUserOwner && !analysis.archived;
       });
 
       $scope.projectVersionUuid = project.datasetVersion.split('/versions/')[1];
@@ -83,10 +82,11 @@ define(['lodash'], function(_) {
       }).$promise.then(function(networkMetaAnalyses) {
         networkMetaAnalyses = BenefitRiskService.addModels(networkMetaAnalyses, models, studies);
         outcomes = BenefitRiskService.buildOutcomes(analysis, outcomes, networkMetaAnalyses, studies);
-        $scope.isMissingBaseline = BenefitRiskService.hasMissingBaseline(outcomes);
         outcomes = _.partition(outcomes, ['dataType', 'network']);
         $scope.networkOWAs = outcomes[0];
         $scope.studyOutcomes = outcomes[1];
+        $scope.isMissingBaseline = BenefitRiskService.hasMissingBaseline($scope.networkOWAs);
+        $scope.hasNotRunModel = BenefitRiskService.hasNotRunModel($scope.networkOWAs);
       });
 
       $scope.alternatives = BenefitRiskService.getAlternativesWithInclusion(alternatives, analysis.interventionInclusions);
