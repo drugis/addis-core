@@ -2,24 +2,28 @@
 \usepackage[empty]{fullpage}
 \usepackage[english]{babel}
 \usepackage{listings}
-\usepackage{hyperref}
+\usepackage[hidelinks]{hyperref}
 \usepackage{multirow}
 
 \title{ADDIS excel/table study data interchange format}
 \author{J.J. de Keijser, D.A.P. Reid}
-\date{today\\v1.0}
+\date{\today\\v1.0}
 \begin{document}
 \maketitle
 \section{Summary}
 
 This document describes the required structure for an Excel file to be a valid document for import to the ADDIS study data repository. The format aims to be a compromise between human- and machine-readability.
+
+We first discuss the single-study file structure, followed by explanation of the extra features of the dataset (i.e. multi-study) format in section \ref{section:dataset export}.
+
 Fixed headers are shown in \textbf{bold}.\\
 References are shown in \textit{italic} e.g. `=Concepts!B2'.\\
-Fields marked by a * show the source of the data of exported files, and are ignored when importing.
 
 \section{ADDIS study export}
-An example Excel study file is available at \url{https://drugis.org/files/excelStudyExample.xlsx}. We recommend keeping it open while reading this document for reference.\\ 
-The following sections each explain one sheet of the document.
+An example Excel study file is available at \url{https://drugis.org/files/excelStudyExample.xlsx}. We recommend keeping it open while reading this document for reference. Alternatively, you can create your own export by clicking the export button for any study or dataset in the \href{https://addis.drugis.org/}{ADDIS web application}.
+
+
+The following subsections each explain one sheet of the document.
 
 \subsection{Study Data}
 The Study Data sheet stores meta-data about the study, its arm structure, and the measurements that were reported for each variable and measurement moment.
@@ -27,7 +31,8 @@ The Study Data sheet stores meta-data about the study, its arm structure, and th
 Since this sheet is large and complex, we explain it block by block, with each `block' corresponding to one of the headers in the first row of the sheet. We discuss the block moving from left to right.
 
 \subsubsection{Study Information}
-The \texttt{Study information} block contains global information about the study. It is laid out as in table \ref{table:Study Information}. Note that each cell in the bottom data row row spans all the arms, meaning it is as tall as the number of arms in the study.
+The \texttt{Study information} block contains global information about the study. It is laid out as in table \ref{table:Study Information}. Note that each cell in the bottom data row vertically spans all the arms, meaning it is as tall as the number of arms in the study. The \textbf{ID} and \textbf{addis url} cells show the source of the data if the file was exported, and are ignored when importing. They can be left blank when creating a new file.
+
 \begin{table}[h]
   \small
   \centering
@@ -168,15 +173,15 @@ A measurement moment block is laid out as in table \ref{table:Measurement moment
 \end{table}
 
 \subsection{Activities}
-The \texttt{Activities} worksheet stores the actions that were performed in the study. Its most basic layout is shown in table \ref{table:Activities simple}. The possible values for the activity type enum are shown in table \ref{table:activityTypes}.
+The \texttt{Activities} worksheet stores the actions that were performed in the study. Its most basic layout is shown in table \ref{table:Activities simple}. The possible values for the activity type enum are shown in table \ref{table:Activity types}.
 
-If any of the activities in the table are a `drug treatment' activity, the table headers should be extended to cover this extra information: for each drug administered, there are the headers \textbf{drug label}, \textbf{dose type}, \textbf{dose}, \textbf{max dose}, \textbf{unit} and \textbf{periodicity}. An example with a drug treatment activity is shown in table \ref{table:Activities complex}. In the drug treatment's row, the \textit{drug label} cell is a reference to the drug's label on the `Concepts' worksheet. The possible values for the \textbf{dose type} column are shown in table \ref{table:Dosage types}. The \textit{unit} cell is a reference to the unit's label on the `Concepts' worksheet. The \textbf{periodicity} cell indicates the interval between each dosage application. The interval's duration is specified in \href{https://en.wikipedia.org/wiki/ISO_8601#Durations}{ISO_8601 duration format}.
+If any of the activities in the table are a `drug treatment' activity, the table headers should be extended to cover this extra information: for each drug administered, there are the headers \textbf{drug label}, \textbf{dose type}, \textbf{dose}, \textbf{max dose}, \textbf{unit} and \textbf{periodicity}. An example with a drug treatment activity is shown in table \ref{table:Activities complex}. In the drug treatment's row, the \textit{drug label} cell is a reference to the drug's label on the `Concepts' worksheet. The possible values for the \textbf{dose type} column are shown in table \ref{table:Dosage types}. The \textit{unit} cell is a reference to the unit's label on the `Concepts' worksheet. The \textbf{periodicity} cell indicates the interval between each dosage application. The interval's duration is specified in \href{https://en.wikipedia.org/wiki/ISO_8601#Durations}{ISO\_8601 duration format}.
 
 \begin{table}[h]
   \centering
   \caption{Activities simple}
   \small
-  \label{table:Activities complex}
+  \label{table:Activities simple}
   \begin{tabular}{|l|l|l|l|}
     \hline
     \textbf{id} & \textbf{title} & \textbf{type} & \textbf{description} \\ \hline
@@ -231,7 +236,7 @@ If any of the activities in the table are a `drug treatment' activity, the table
 \end{table}
 
 \subsection{Epochs}
-The study's temporal structure is described in the \texttt{Epochs} worksheet. Its layout is shown in table \ref{table:Epochs}. An epoch's \textbf{duration} is expressed in \href{https://en.wikipedia.org/wiki/ISO_8601#Durations}{ISO_8601 duration format}. Epochs may be instantaneous, in which case the duration is \texttt{PT0S}.
+The study's temporal structure is described in the \texttt{Epochs} worksheet. Its layout is shown in table \ref{table:Epochs}. An epoch's \textbf{duration} is expressed in \href{https://en.wikipedia.org/wiki/ISO_8601#Durations}{ISO\_8601 duration format}. Epochs may be instantaneous, in which case the duration is \texttt{PT0S}.
 
 \begin{table}[!h]
   \centering
@@ -247,7 +252,8 @@ The study's temporal structure is described in the \texttt{Epochs} worksheet. It
 \end{table}
 
 \subsection{Study design}
-The layout of the \texttt{Study design} worksheet can be seen in table \ref{table:Study design}.
+The \texttt{Study design} worksheet describes for each arm at which time which activities are performed. Its layout is shown in table \ref{table:Study design}. Note that since it only details how the arms, epochs and activites are linked, and these things are all defined elsewhere, this worksheet consists entirely of references. The \textit{arm} references refer to the study data sheet's arm names, and the \textit{epoch}s and \textit{activity}s refer to their respective worksheets.
+
 \begin{table}[!h]
   \centering
   \caption{Study design}
@@ -262,7 +268,8 @@ The layout of the \texttt{Study design} worksheet can be seen in table \ref{tabl
 \end{table}
 
 \subsection{Measurement moments}
-The layout of the \texttt{Measurement moment} worksheet can be seen in table \ref{table:Measurement moments}.
+The \texttt{Measurement moment} worksheet lists the points in time at which measurements are taken. Its layout is shown in table \ref{table:Measurement moments}. A measurement moment is defined as a duration relative to either the start or the end of an epoch. The \textit{epoch} reference is to the epoch label on the \texttt{Epochs} worksheet. Valid values for \textbf{from} cells are shown in table \ref{table:Measurement moment epoch reference points}. An measurement moment's \textbf{offset} is expressed in \href{https://en.wikipedia.org/wiki/ISO_8601#Durations}{ISO\_8601 duration format}. 
+
 \begin{table}[!h]
   \centering
   \caption{Measurement moments}
@@ -270,14 +277,28 @@ The layout of the \texttt{Measurement moment} worksheet can be seen in table \re
   \begin{tabular}{|l|l|l|l|l|}
     \hline
     \textbf{id} & \textbf{name} & \textbf{epoch} & \textbf{from} & \textbf{offset} \\ \hline
-    URI         & text          & \textit{epoch} & end/start     & duration        \\ \hline
+    URI         & text          & \textit{epoch} & enum     & duration        \\ \hline
     ...         & ...           & ...            &  ...          & ...             \\ \hline
-    URI         & text          & \textit{epoch} & end/start     & duration        \\ \hline
+    URI         & text          & \textit{epoch} & enum     & duration        \\ \hline
   \end{tabular}
 \end{table}
 
-\subsection{Concepts}
-The layout of the \texttt{Concepts} worksheet can be seen in table \ref{table:Concepts}. Note that the \textbf{dataset concept uri} and \textbf{multiplier} columns are only relevant for dataset exports.
+\begin{table}[!h]
+  \centering
+  \caption{Measurement moment epoch reference points}
+  \label{table:Measurement moment epoch reference points}
+  \begin{tabular}{|l|}
+    \hline
+    start \\ \hline
+    end \\ \hline
+  \end{tabular}
+\end{table}
+
+
+\subsection{Concepts} \label{section:concepts}
+The \texttt{Concepts} lists all the concepts (variables, drugs, units) which are used within the study. Its layout is shown in table \ref{table:Concepts}. The valid values for the \textbf{type} column are shown in table \ref{table:Concept types}. The \textbf{dataset concept uri} and \textbf{multiplier} columns are only relevant for dataset exports (see section \ref{section:dataset concepts}) and can be left blank when creating a new study file. 
+
+
 \begin{table}[!h]
   \centering
   \caption{Concepts}
@@ -285,18 +306,33 @@ The layout of the \texttt{Concepts} worksheet can be seen in table \ref{table:Co
   \begin{tabular}{|l|l|l|l|l|}
     \hline
     \textbf{id} & \textbf{label} & \textbf{type} & \textbf{dataset concept uri} & \textbf{multiplier} \\ \hline
-    URI         & text           & text          & URI                          & value               \\ \hline
+    URI         & text           & enum          & URI                          & value               \\ \hline
     ...         & ...            & ...           & ...                          & ...                 \\ \hline
-    URI         & text           & text          & URI                          & value               \\ \hline
+    URI         & text           & enum          & URI                          & value               \\ \hline
   \end{tabular}
 \end{table}
 
-\section{Dataset export}
-The dataset export file has the same structure as that of the study export. However, there is data for multiple studies per worksheet, and there are two extra worksheets with additional dataset information, \texttt{Dataset information} and \texttt{Dataset concepts}. In each original sheet, each study is separated by a row of white space. In all but the \texttt{Study data} sheet, the data for a study is preceeded by a \textit{reference} to the id of the corresponding study.\\
+\begin{table}[!h]
+  \centering
+  \caption{Concept types}
+  \label{table:Concept types}
+  \begin{tabular}{|l|}
+    \hline
+    baseline characteristic \\ \hline
+    outcome \\ \hline
+    adverse event \\ \hline
+    drug \\ \hline
+    unit \\ \hline
+  \end{tabular}
+\end{table}
+
+\section{Dataset export} \label{section:dataset export}
+A dataset is a collection of studies, along with a list of dataset-level concepts. Thus, the dataset export file has the same structure as that of the study export, but contains data for multiple studies on each worksheet. Further, there are two extra worksheets with additional dataset information, \texttt{Dataset information} and \texttt{Dataset concepts}. On all the study sheets,  each original sheet, each study is separated by a row of white space. In all but the \texttt{Study data} sheet, the data for a study is preceeded by a \textit{reference} to the id of the corresponding study.\\
 In order to handle studies that measure difference variable we let each study have its own variables. We currently do not harmonise across the entire dataset. In the future options such as concept selection might considered.
 
 \subsection{Dataset information}
-The layout of the \texttt{Dataset information} worksheet can be seen in table \ref{table:Dataset information}.
+The the \texttt{Dataset information} worksheet contains meta-data about the dataset. Its structure is shown in table \ref{table:Dataset information}. The \textbf{ADDIS url} cell shows where the study came from if it is imported, and can be left blank when creating a new file.
+
 \begin{table}[!h]
   \centering
   \caption{Dataset information}
@@ -308,8 +344,11 @@ The layout of the \texttt{Dataset information} worksheet can be seen in table \r
   \end{tabular}
 \end{table}
 
-\subsection{Dataset concepts}
-The layout of the \texttt{Dataset concepts} worksheet can be seen in table \ref{table:Dataset concepts}.
+\subsection{Dataset concepts} \label{section:dataset concepts}
+The \texttt{Dataset concepts} worksheet lists all the concepts defined at the dataset level. Its layout is shown in table \ref{table:Dataset concepts}. These dataset-level concepts are used to harmonise the study-level concepts, e.g. to indicate that the 'headache' concept from study A and the 'mild headache' concept from study B both refer to the same concept, and dataset-level analyses concerning headaches should include measurements from both studies.
+
+On the \texttt{Concepts} sheet, for each study concept that should be linked, the \textbf{dataset concept} cell should contain a reference to an id cell on the \texttt{Dataset concepts} sheet. In the case of a mapping between unit concepts, there should also be a multiplier value, indicating how the study unit relates to the dataset unit. For example, when defining milligram in a study, it should refer to the 'gram' dataset concept, with a multiplier value of 0.001. Supported multiplier values are those corresponding to the metric prefixes nano--mega, as shown in \ref{table:Unit multipliers}
+
 \begin{table}[!h]
   \centering
   \caption{Dataset concepts}
@@ -320,6 +359,26 @@ The layout of the \texttt{Dataset concepts} worksheet can be seen in table \ref{
     URI         & text           & text          \\ \hline
     ...         & ...            & ...           \\ \hline
     URI         & text           & text          \\ \hline
+  \end{tabular}
+\end{table}
+
+\begin{table}[!h]
+  \centering
+  \caption{Unit multipliers}
+  \label{table:Unit multipliers}
+  \begin{tabular}{|l|l|}
+    \hline
+    Metric prefix & Value \\ \hline
+    mega   & 1000000\\ \hline
+    kilo   &	1000 	\\ \hline
+    hecto  & 100 	\\ \hline
+    deca   & 10 	\\ \hline
+    (none) & 1 	\\ \hline
+    deci   & 0.1 	\\ \hline
+    centi  & 0.01 	\\ \hline
+    milli  & 0.001 	\\ \hline
+    micro  & 0.000001 \\ \hline
+    nano   & 0.000000001 	\\ \hline
   \end{tabular}
 \end{table}
 
