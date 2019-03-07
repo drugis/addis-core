@@ -4,6 +4,7 @@
 \usepackage{listings}
 \usepackage[hidelinks]{hyperref}
 \usepackage{multirow}
+\setlength\parindent{0pt}
 
 \title{ADDIS excel/table study data interchange format}
 \author{J.J. de Keijser, D.A.P. Reid}
@@ -20,7 +21,7 @@ Fixed headers are shown in \textbf{bold}.\\
 References are shown in \textit{italic} e.g. `=Concepts!B2'.\\
 
 \section{ADDIS study export}
-An example Excel study file is available at \url{https://drugis.org/files/excelStudyExample.xlsx}. We recommend keeping it open while reading this document for reference. Alternatively, you can create your own export by clicking the export button for any study or dataset in the \href{https://addis.drugis.org/}{ADDIS web application}.
+An example Excel study file is available at \url{https://drugis.org/files/excelStudyExample.xlsx}. We recommend keeping it open while reading this document for reference. Alternatively, you can create your own export example by clicking the export button for any study or dataset in the \href{https://addis.drugis.org/}{ADDIS web application}.
 
 
 The following subsections each explain one sheet of the document.
@@ -33,7 +34,7 @@ Since this sheet is large and complex, we explain it block by block, with each `
 \subsubsection{Study Information}
 The \texttt{Study information} block contains global information about the study. It is laid out as in table \ref{table:Study Information}. Note that each cell in the bottom data row vertically spans all the arms, meaning it is as tall as the number of arms in the study. The \textbf{ID} and \textbf{addis url} cells show the source of the data if the file was exported, and are ignored when importing. They can be left blank when creating a new file.
 
-\begin{table}[h]
+\begin{table}[h!]
   \small
   \centering
   \caption{Study information}
@@ -49,7 +50,7 @@ The \texttt{Study information} block contains global information about the study
 
 \subsubsection{Population information}
 The \texttt{Population information} block contains the indication and eligibility criteria of the study. It is laid out as in table \ref{table:Population information}. Note that the indication information cell in this row spans all the arms, meaning it is as tall as the number of arms in the study.
-\begin{table}[h]
+\begin{table}[h!]
   \centering
   \caption{Population information}
   \label{table:Population information}
@@ -64,7 +65,7 @@ The \texttt{Population information} block contains the indication and eligibilit
 
 \subsubsection{Arm information}
 The \texttt{Arm information} block contains the title and description of each arm in the study. It is laid out as in table \ref{table:Arm information}. Note that there is one data row per arm, and that there is always a `Overall population' group as well.
-\begin{table}[h]
+\begin{table}[h!]
   \centering
   \caption{Arm information}
   \label{table:Arm information}
@@ -84,7 +85,7 @@ The \texttt{Measurement data} block contains the measured values for each variab
 
 The measurement data block contains one variable block for each variable, as shown in table \ref{table:Measurement data}. Variable blocks are added horizontally (indicated with the ... column). 
 
-\begin{table}[h]
+\begin{table}[h!]
   \centering
   \caption{Measurement data}
   \small
@@ -99,7 +100,7 @@ The measurement data block contains one variable block for each variable, as sho
 \subsubsection{Variable block}
 A variable block is laid out as in table \ref{table:Variable block}, with a \textit{variable name} cell spanning the block horizontally, (a reference to the name as entered on the `Concepts' sheet). Below each \textit{variable name} cell, there is the \textbf{variable type} header, \textbf{measurement type} header, and any number of measurement moment blocks: one per measurement moment at which the variable was measured. Valid values for the variable type are shown in table \ref{table:Variable types}. Valid values for the measurement type are shown in table \ref{table:Measurement types}.
 
-\begin{table}[h]
+\begin{table}[h!]
   \centering
   \caption{Variable block}
   \small
@@ -111,7 +112,7 @@ A variable block is laid out as in table \ref{table:Variable block}, with a \tex
   \end{tabular}
 \end{table}
 
-\begin{table}[h]
+\begin{table}[h!]
   \centering
   \caption{Variable types}
   \small
@@ -125,7 +126,7 @@ A variable block is laid out as in table \ref{table:Variable block}, with a \tex
 \end{table}
 
 
-\begin{table}[h]
+\begin{table}[h!]
   \centering
   \caption{Measurement types}
   \small
@@ -141,7 +142,7 @@ A variable block is laid out as in table \ref{table:Variable block}, with a \tex
 \subsubsection{Measurement moment block}
 A measurement moment block is laid out as in table \ref{table:Measurement moment block}. It consists of a \textbf{measurement moment} header, followed by one header per measured result property. Under the \textbf{measurement moment} header is the \textit{measurement moment} reference (referring to the `Measurement moments` worksheet), which vertically spans all arm rows. Below each result property header comes one cell per arm, with for each cell the value (if any) measured in the study for that combination of arm, measurement moment and result property.
 
-\begin{table}[h]
+\begin{table}[h!]
   \centering
   \caption{Measurement moment block}
   \small
@@ -156,7 +157,7 @@ A measurement moment block is laid out as in table \ref{table:Measurement moment
   \end{tabular}
 \end{table}
 
-\begin{table}[h]
+\begin{table}[h!]
   \centering
   \caption{Full measurement data}
   \small
@@ -177,7 +178,7 @@ The \texttt{Activities} worksheet stores the actions that were performed in the 
 
 If any of the activities in the table are a `drug treatment' activity, the table headers should be extended to cover this extra information: for each drug administered, there are the headers \textbf{drug label}, \textbf{dose type}, \textbf{dose}, \textbf{max dose}, \textbf{unit} and \textbf{periodicity}. An example with a drug treatment activity is shown in table \ref{table:Activities complex}. In the drug treatment's row, the \textit{drug label} cell is a reference to the drug's label on the `Concepts' worksheet. The possible values for the \textbf{dose type} column are shown in table \ref{table:Dosage types}. The \textit{unit} cell is a reference to the unit's label on the `Concepts' worksheet. The \textbf{periodicity} cell indicates the interval between each dosage application. The interval's duration is specified in \href{https://en.wikipedia.org/wiki/ISO_8601#Durations}{ISO\_8601 duration format}.
 
-\begin{table}[h]
+\begin{table}[h!]
   \centering
   \caption{Activities simple}
   \small
@@ -191,7 +192,7 @@ If any of the activities in the table are a `drug treatment' activity, the table
   \end{tabular}
 \end{table}
 
-\begin{table}[h]
+\begin{table}[h!]
   \centering
   \caption{Activity types}
   \small
@@ -208,7 +209,7 @@ If any of the activities in the table are a `drug treatment' activity, the table
 \end{table}
 
 
-\begin{table}[h]
+\begin{table}[h!]
   \centering
   \caption{Dosage types}
   \small
@@ -221,7 +222,7 @@ If any of the activities in the table are a `drug treatment' activity, the table
 \end{table}
 
 
-\begin{table}[h]
+\begin{table}[h!]
   \centering
   \caption{Activities complex}
   \small
