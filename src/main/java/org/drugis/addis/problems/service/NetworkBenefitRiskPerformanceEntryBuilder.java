@@ -54,6 +54,7 @@ public class NetworkBenefitRiskPerformanceEntryBuilder {
         .findFirst().orElse(null);
   }
 
+
   private AbstractBaselineDistribution getBaselineDistribution(NMAInclusionWithResults outcomeInclusion) {
     try {
       return objectMapper.readValue(outcomeInclusion.getBaseline(), AbstractBaselineDistribution.class);
