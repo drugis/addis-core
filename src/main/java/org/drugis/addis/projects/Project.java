@@ -1,5 +1,6 @@
 package org.drugis.addis.projects;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import org.drugis.addis.security.Account;
 import org.drugis.addis.util.URIStringConverter;
 import org.hibernate.annotations.Type;
@@ -34,8 +35,10 @@ public class Project implements Serializable {
   private URI datasetVersion;
 
   private Boolean isArchived = false;
+
   @Column(name = "archived_on")
   @Type(type = "date")
+  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
   private Date archivedOn;
 
   public Project() {
@@ -94,7 +97,7 @@ public class Project implements Serializable {
     return isArchived;
   }
 
-  public Date getArchivedOn() {
+  Date getArchivedOn() {
     return archivedOn;
   }
 

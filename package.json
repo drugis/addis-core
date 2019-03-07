@@ -8,6 +8,7 @@
   },
   "scripts": {
     "test": "karma start --singleRun=true",
+    "test-dev": "karma start",
     "build-dev": "webpack --config webpack.dev.js",
     "build-prod": "webpack --config webpack.prod.js",
     "dev": "webpack --config webpack.dev.js --watch"
@@ -30,7 +31,7 @@
     "angular": "~1.6.6",
     "angular-animate": "~1.6.6",
     "angular-cookies": "~1.6.6",
-    "angular-foundation-6": "drugis/angular-foundation-6#master",
+    "angular-foundation-6": "~0.11.2",
     "angular-mocks": "~1.6.6",
     "angular-patavi-client": "drugis/angular-patavi-client#2.0.5",
     "angular-resource": "~1.6.6",

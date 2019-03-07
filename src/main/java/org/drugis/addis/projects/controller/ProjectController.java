@@ -125,7 +125,7 @@ public class ProjectController extends AbstractAddisCoreController {
 
   @RequestMapping(value = "/projects/{projectId}/update", method = RequestMethod.POST)
   @ResponseBody
-  public Integer update(Principal principal, @PathVariable Integer projectId) throws ResourceDoesNotExistException, MethodNotAllowedException, ReadValueException, URISyntaxException, SQLException, IOException {
+  public Integer update(Principal principal, @PathVariable Integer projectId) throws ResourceDoesNotExistException, ReadValueException, URISyntaxException, SQLException, IOException {
     Account user = accountRepository.findAccountByUsername(principal.getName());
     return projectService.createUpdated(user, projectId);
   }
