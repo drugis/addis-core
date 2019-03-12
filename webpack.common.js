@@ -5,6 +5,7 @@ const CleanWebpackPlugin = require('clean-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 let basePath = path.join(__dirname, '/src/main/webapp/');
+let fs = require('fs');
 
 let config = {
   entry: {
@@ -68,15 +69,17 @@ let config = {
   plugins: [
     new HtmlWebpackPlugin({
       filename: 'index.html',
-      template: basePath + 'WEB-INF/templates/index.html',
+      template: basePath + 'WEB-INF/templates/index.ejs',
       inject: 'head',
-      chunks: ['main']
+      chunks: ['main'],
+      matomo: fs.readFileSync(require.resolve(basePath + 'WEB-INF/templates/matomo.html'))
     }),
     new HtmlWebpackPlugin({
       filename: 'manual.html',
-      template: basePath + 'resources/manual.html',
+      template: basePath + 'resources/manual.ejs',
       inject: 'head',
-      chunks: ['manual']
+      chunks: ['manual'],
+      matomo: fs.readFileSync(require.resolve(basePath + 'WEB-INF/templates/matomo.html'))
     }),
     new CleanWebpackPlugin([basePath + '/WEB-INF/views/dist']),
     new CopyWebpackPlugin([
