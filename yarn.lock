@@ -2654,7 +2654,7 @@ gauge@~2.7.3:
 
 gemtc-web@drugis/gemtc-web#develop:
   version "0.9.0"
-  resolved "https://codeload.github.com/drugis/gemtc-web/tar.gz/2890a9adcdc9667f6f6ec6c9ac5797f534e11d69"
+  resolved "https://codeload.github.com/drugis/gemtc-web/tar.gz/9a884e8601f8837be2c5b1ffc6a247f6b1622f02"
   dependencies:
     async "~1.2.1"
     body-parser "^1.18.3"
