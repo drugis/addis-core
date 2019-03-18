@@ -167,6 +167,7 @@ define(['lodash'], function(_) {
     function reloadModel() {
       if (!$scope.analysis.outcome) {
         // can not get data without outcome
+        $scope.analysisPromise = $q.resolve();
         return;
       }
       $scope.analysis.outcome = resolveOutcomeId($scope.analysis.outcome.id);

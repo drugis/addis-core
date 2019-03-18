@@ -1,12 +1,22 @@
 'use strict';
 define(['lodash'], function(_) {
-  var dependencies = ['$http', '$q', 'EvidenceTableResource', 'NetworkMetaAnalysisService',
-    'ModelResource', 'AnalysisService', 'PataviTaskIdResource', 'PataviService',
+  var dependencies = [
+    '$q',
+    'EvidenceTableResource',
+    'NetworkMetaAnalysisService',
+    'ModelResource',
+    'AnalysisService',
+    'PataviService',
     'ProblemResource'
   ];
-  var nmaReportViewDirective = function($http, $q, EvidenceTableResource,
-    NetworkMetaAnalysisService, ModelResource, AnalysisService,
-    PataviTaskIdResource, PataviService, ProblemResource) {
+  var nmaReportViewDirective = function(
+    $q,
+    EvidenceTableResource,
+    NetworkMetaAnalysisService,
+    ModelResource,
+    AnalysisService,
+    PataviService,
+    ProblemResource) {
     return {
       restrict: 'E',
       templateUrl: './nmaReportView.html',
@@ -18,9 +28,9 @@ define(['lodash'], function(_) {
       },
       link: function(scope) {
         EvidenceTableResource.query({
-            projectId: scope.project.id,
-            analysisId: scope.analysis.id
-          })
+          projectId: scope.project.id,
+          analysisId: scope.analysis.id
+        })
           .$promise.then(function(trialverseData) {
             scope.interventions = NetworkMetaAnalysisService.addInclusionsToInterventions(scope.interventions, scope.analysis.interventionInclusions);
             var includedInterventions = NetworkMetaAnalysisService.getIncludedInterventions(scope.interventions);
@@ -62,7 +72,7 @@ define(['lodash'], function(_) {
 
           scope.showNoOtherUnarchived = _.reduce(scope.otherModels, function(accum, model) {
             return model.archived ? ++accum : accum;
-           }, 0) > 0;
+          }, 0) > 0;
 
           if (scope.primaryModel) {
             primaryModelDefer.resolve(scope.primaryModel);
@@ -78,9 +88,9 @@ define(['lodash'], function(_) {
 
           PataviService.listen(model.taskUrl)
             .then(function(result) {
-                scope.result = result;
-                resultsDefer.resolve(result);
-              },
+              scope.result = result;
+              resultsDefer.resolve(result);
+            },
               function(pataviError) {
                 console.error('an error has occurred, error: ' + JSON.stringify(pataviError));
                 scope.$emit('error', {
