@@ -2,7 +2,6 @@ Importer TODO:
 
  - activity administered_drugs -> has_drug_treatment ; no longer use list
  - outcome is_measured_at moment
- - measurement of_arm -> of_group
  - measurement of_outcome -> of_variable
  - study has_included_population X
  - convert publications to bibo:Document with bibo:pmid
