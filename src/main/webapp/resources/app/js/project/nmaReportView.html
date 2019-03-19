@@ -1,9 +1,11 @@
 <div>
-  <div><a ui-sref="networkMetaAnalysis({userUid: user.id, projectId: project.id, analysisId: analysis.id})">View details</a> </div>
-    <strong>Outcome: </strong>{{::analysis.outcome.name}}</span>
+  <div><a ui-sref="networkMetaAnalysis({userUid: user.id, projectId: project.id, analysisId: analysis.id})">View
+      details</a> </div>
+  <strong>Outcome: </strong>{{::analysis.outcome.name}}</span>
   <!-- Evidence network graph -->
   <div style="width:500px; height:500px;">
-    <network-plot ng-show="!hasInterventionlap" network="network" ng-show="analysis.outcome" width="500" height="500"></network-plot>
+    <network-plot ng-show="!hasInterventionlap && analysis.outcome" network="network" width="500" height="500">
+    </network-plot>
   </div>
   <!-- Primary model: <model title> -->
   <h3>Primary model: {{::primaryModel.title}}
@@ -16,20 +18,25 @@
       <strong>model settings: </strong>{{modelSettingSummary(primaryModel)}}</span>
     <!-- Link to full model view -->
     <div style="padding-bottom: 1rem;">
-      <a ui-sref="model({userUid: user.id, projectId: project.id, analysisId: analysis.id, modelId: primaryModel.id})">View full model</a>
+      <a ui-sref="model({userUid: user.id, projectId: project.id, analysisId: analysis.id, modelId: primaryModel.id})">View
+        full model</a>
     </div>
 
     <!-- Relative effects plot and rank probabilities (consistency model); -->
-    <relative-effect-plots  model-promise="primaryModelPromise" results-promise="resultsPromise" problem-promise="problem.$promise"></relative-effect-plots>
+    <relative-effect-plots model-promise="primaryModelPromise" results-promise="resultsPromise"
+      problem-promise="problem.$promise"></relative-effect-plots>
 
     <!-- forest plot (pair-wise analysis);-->
-    <pairwise-forest-plots  model-promise="primaryModelPromise" results-promise="resultsPromise" problem-promise="problem.$promise"></pairwise-forest-plots>
+    <pairwise-forest-plots model-promise="primaryModelPromise" results-promise="resultsPromise"
+      problem-promise="problem.$promise"></pairwise-forest-plots>
 
     <!-- direct/inderect effects plot (node-splitting);-->
-    <node-split-density-plots  model-promise="primaryModelPromise" results-promise="resultsPromise" problem-promise="problem.$promise"></node-split-density-plots>
+    <node-split-density-plots model-promise="primaryModelPromise" results-promise="resultsPromise"
+      problem-promise="problem.$promise"></node-split-density-plots>
 
     <!-- covariate effects plots (regression);-->
-    <meta-regression-cov-plots model-promise="primaryModelPromise" results-promise="resultsPromise" problem-promise="problem.$promise"></meta-regression-cov-plots>
+    <meta-regression-cov-plots model-promise="primaryModelPromise" results-promise="resultsPromise"
+      problem-promise="problem.$promise"></meta-regression-cov-plots>
 
   </div>
   <!-- Secondary models: list of model titles, links to the model views -->
@@ -37,6 +44,8 @@
   <ul>
     <li ng-show="otherModels.length < 1"><em>none</em></li>
     <li ng-show="showNoOtherUnarchived"><em>all secondary models have been archived</em></li>
-    <li ng-repeat="model in otherModels | orderBy:'title' | filter:{archived:false}"><a ui-sref="model({userUid: user.id, projectId: project.id, analysisId: analysis.id, modelId: model.id})">{{model.title}}</a></li>
+    <li ng-repeat="model in otherModels | orderBy:'title' | filter:{archived:false}"><a
+        ui-sref="model({userUid: user.id, projectId: project.id, analysisId: analysis.id, modelId: model.id})">{{model.title}}</a>
+    </li>
   </ul>
 </div>
