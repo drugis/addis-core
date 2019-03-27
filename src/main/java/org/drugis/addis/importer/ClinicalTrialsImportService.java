@@ -1,12 +1,9 @@
-package org.drugis.addis.trialverse.service;
+package org.drugis.addis.importer;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import org.apache.http.Header;
-import org.drugis.addis.trialverse.service.impl.ClinicalTrialsImportError;
+import org.drugis.addis.importer.impl.ClinicalTrialsImportError;
 
-/**
- * Created by connor on 12-5-16.
- */
 public interface ClinicalTrialsImportService {
    JsonNode fetchInfo(String nctId) throws ClinicalTrialsImportError;
    Header importStudy(String commitTitle,

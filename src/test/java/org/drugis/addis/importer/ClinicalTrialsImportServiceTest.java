@@ -1,4 +1,4 @@
-package org.drugis.addis.trialverse.service;
+package org.drugis.addis.importer;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -7,8 +7,9 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.message.BasicHttpResponse;
 import org.apache.http.message.BasicStatusLine;
-import org.drugis.addis.trialverse.service.impl.ClinicalTrialsImportError;
-import org.drugis.addis.trialverse.service.impl.ClinicalTrialsImportServiceImpl;
+import org.drugis.addis.importer.ClinicalTrialsImportService;
+import org.drugis.addis.importer.impl.ClinicalTrialsImportError;
+import org.drugis.addis.importer.impl.ClinicalTrialsImportServiceImpl;
 import org.drugis.trialverse.graph.exception.UpdateGraphException;
 import org.drugis.trialverse.graph.repository.GraphWriteRepository;
 import org.junit.Before;
@@ -29,21 +30,18 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
-/**
- * Created by connor on 12-5-16.
- */
 public class ClinicalTrialsImportServiceTest {
 
   private ObjectMapper objectMapper = new ObjectMapper();
 
   @Mock
-  HttpClient httpClient = mock(HttpClient.class);
+  private HttpClient httpClient = mock(HttpClient.class);
 
   @Mock
-  GraphWriteRepository graphWriteRepository = mock(GraphWriteRepository.class);
+  private GraphWriteRepository graphWriteRepository = mock(GraphWriteRepository.class);
 
   @InjectMocks
-  ClinicalTrialsImportService clinicalTrialsImportService;
+  private ClinicalTrialsImportService clinicalTrialsImportService;
 
   @Before
   public void setUp() {
@@ -93,7 +91,7 @@ public class ClinicalTrialsImportServiceTest {
   }
 
   @Test
-  public void testImportStudy() throws ClinicalTrialsImportError, URISyntaxException, IOException, UpdateGraphException {
+  public void testImportStudy() throws ClinicalTrialsImportError, IOException, UpdateGraphException {
     String commitTitle = "title";
     String commitDesc = "desc";
     String datasetUuid = "dataset";

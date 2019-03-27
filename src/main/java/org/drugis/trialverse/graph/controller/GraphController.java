@@ -4,8 +4,8 @@ import org.apache.http.Header;
 import org.apache.jena.riot.RDFLanguages;
 import org.drugis.addis.base.AbstractAddisCoreController;
 import org.drugis.addis.security.repository.AccountRepository;
-import org.drugis.addis.trialverse.service.ClinicalTrialsImportService;
-import org.drugis.addis.trialverse.service.impl.ClinicalTrialsImportError;
+import org.drugis.addis.importer.ClinicalTrialsImportService;
+import org.drugis.addis.importer.impl.ClinicalTrialsImportError;
 import org.drugis.addis.util.WebConstants;
 import org.drugis.trialverse.dataset.exception.RevisionNotFoundException;
 import org.drugis.trialverse.dataset.model.VersionMapping;
@@ -33,7 +33,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.security.Principal;
@@ -156,13 +155,14 @@ public class GraphController extends AbstractAddisCoreController {
 
   @RequestMapping(value = "/graphs/{graphUuid}/import/{importStudyRef}",
           method = RequestMethod.POST)
-  public void importStudy(HttpServletResponse trialverseResponse, Principal currentUser,
-                          @PathVariable String datasetUuid,
-                          @PathVariable String graphUuid,
-                          @PathVariable String importStudyRef,
-                          @RequestParam(WebConstants.COMMIT_TITLE_PARAM) String commitTitle,
-                          @RequestParam(value = WebConstants.COMMIT_DESCRIPTION_PARAM, required = false) String commitDescription)
-          throws MethodNotAllowedException, ClinicalTrialsImportError, URISyntaxException {
+  public void importStudy(
+          HttpServletResponse trialverseResponse, Principal currentUser,
+          @PathVariable String datasetUuid,
+          @PathVariable String graphUuid,
+          @PathVariable String importStudyRef,
+          @RequestParam(WebConstants.COMMIT_TITLE_PARAM) String commitTitle,
+          @RequestParam(value = WebConstants.COMMIT_DESCRIPTION_PARAM, required = false) String commitDescription
+  ) throws MethodNotAllowedException, ClinicalTrialsImportError, URISyntaxException {
     logger.trace("import graph");
     URI trialverseDatasetUri = new URI(Namespaces.DATASET_NAMESPACE + datasetUuid);
     VersionMapping mapping = versionMappingRepository.getVersionMappingByDatasetUrl(trialverseDatasetUri);

@@ -1,23 +1,18 @@
-package org.drugis.addis.trialverse.controller;
+package org.drugis.addis.importer;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import org.apache.http.Header;
 import org.drugis.addis.base.AbstractAddisCoreController;
-import org.drugis.addis.trialverse.service.ClinicalTrialsImportService;
-import org.drugis.addis.trialverse.service.impl.ClinicalTrialsImportError;
+import org.drugis.addis.importer.impl.ClinicalTrialsImportError;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletResponse;
 
-/**
- * Created by connor on 12-5-16.
- */
 @Controller
 @RequestMapping("/import")
 public class ImportController extends AbstractAddisCoreController {
@@ -33,4 +28,4 @@ public class ImportController extends AbstractAddisCoreController {
     logger.debug("fetch study info from clinicalTrials Importer for NTCID: " + nctId);
     return clinicalTrialsImportService.fetchInfo(nctId);
   }
-}
+ }

@@ -2,9 +2,9 @@ package org.drugis.addis.trialverse;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.drugis.addis.trialverse.controller.ImportController;
-import org.drugis.addis.trialverse.service.ClinicalTrialsImportService;
-import org.drugis.addis.trialverse.service.impl.ClinicalTrialsImportError;
+import org.drugis.addis.importer.ImportController;
+import org.drugis.addis.importer.ClinicalTrialsImportService;
+import org.drugis.addis.importer.impl.ClinicalTrialsImportError;
 import org.drugis.addis.util.WebConstants;
 import org.junit.After;
 import org.junit.Before;
