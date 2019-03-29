@@ -118,14 +118,6 @@
             in ADDIS. It is currently not possible to change this information in
             ADDIS.
           </p>
-          <h3 id="creating-a-profile-picture">Creating a profile picture</h3>
-          <p>We use <a href="http://gravatar.com/">gravatar</a> to display profile pictures.
-            If you already have a gravatar, and it is not being displayed, make sure
-            it is linked to the primary email address of your Google account. If
-            you do not have a gravatar, you can sign up for free to create a new
-            one. To change your profile picture, simply update it on gravatar, and
-            the new version should display in ADDIS within a few minutes; clear your
-            browsercache to see the change immediately.</p>
           <h2 id="dataset-management">Dataset management</h2>
           <p>The data in ADDIS are organised into datasets. These are abstract containers
             for any number of clinical trials (or studies) and any number of high-level
@@ -135,11 +127,13 @@
             owned by a particular user, who is the only one with the right to change
             it. It is possible, however, to copy studies from another dataset to
             yours and change or extend your copy. It is also possible to create analysis
-            projects based on a dataset owned by someone else.
+            projects based on a dataset owned by someone else. Datasets are created empty
+            by default, but it is also possible to upload a dataset as an Excel file 
+            according to our <a href="http://drugis.org/files/addisExcelSpec.pdf">custom Excel format</a>.
           </p>
           <h3 id="version-history">Version history</h3>
           <p>ADDIS datasets are stored using a versioning system. Each version of a
-            datasetor study gets a unique identifier, and the history of a dataset
+            dataset or study gets a unique identifier, and the history of a dataset
             can be investigated to see what changes were made over time.</p>
           <div class="figure">
             <img src="img/history.png" alt="History information" />
@@ -166,9 +160,10 @@
             in each analysis.</p>
           <h3 id="creating-a-study">Creating a study</h3>
           <p>From the dataset screen, it is possible to create new studies. There are
-            currently three ways to create a study: 1. create an empty study, with
+            currently four ways to create a study: 1. create an empty study, with
             a title and description of your choice, 2. import a study from <a href="https://www.ClinicalTrials.gov/">ClinicalTrials.gov</a>,
-            3. copy a study from another dataset in ADDIS.</p>
+            3. upload a study as an Excel file according to our <a href="http://drugis.org/files/addisExcelSpec.pdf">custom Excel format</a>, and
+            4. copy a study from another dataset in ADDIS.</p>
           <p>To import a study, you need to find the NCT ID of the desired study on
             ClinicalTrials.gov:
           </p>

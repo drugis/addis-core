@@ -32,7 +32,7 @@
         <ul class="no-bullet" ng-if="variable.categoryList.length">
           <li ng-repeat="category in variable.categoryList"><a><i class="fa fa-trash-o" style="color: red;"
                 ng-click="deleteCategory(category)"></i></a>
-            {{category}}</li>
+            {{category.label}}</li>
         </ul>
       </div>
       <div class="cell" ng-if="!variable.categoryList.length">
