@@ -60,7 +60,7 @@
     </form>
   </tab>
   <tab heading="ClinicalTrials.gov">
-    <form novalidate ng-submit="import(studyImport)">
+    <form novalidate ng-submit="importNCT(studyImport)">
       <div class="grid-x">
         <div class="cell">
           <h3>Import study from ClinicalTrials.gov</h3>
@@ -68,7 +68,7 @@
         <div class="cell">
           <label>NCT ID</label>
           <input autofocus type="text" ng-disabled="studyImport.loading" ng-model="studyImport.nctId"
-            ng-model-options="{ debounce: 800 }" ng-change="getInfo(studyImport)">
+            ng-model-options="{ debounce: 800 }" ng-change="getNCTInfo(studyImport)">
         </div>
         <div class="cell">
           <style>
@@ -167,17 +167,9 @@
           <input type="file" name="eudractFile" accept=".xml"
             onchange="angular.element(this).scope().uploadEudract(this)">
         </div>
-        <div class="cell">
-          <label>Short Name (e.g. Hansen 2005)</label>
-        </div>
-        <div class="cell">
-          <input type="text" autofocus ng-disabled="isCreatingStudy" ng-model="study.label"
-            ng-change="checkUniqueShortName(study.label)">
-        </div>
-      </div>
       <div class="cell">
         <button class="button success" type="submit"
-          ng-disabled="!eudractUpload || isCreatingStudy || errors.length || !isUniqueIdentifier">
+          ng-disabled="!eudractUpload || isCreatingStudy || errors.length">
           create
         </button>
       </div>

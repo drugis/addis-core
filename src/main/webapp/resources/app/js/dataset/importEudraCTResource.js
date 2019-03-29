@@ -1,18 +1,19 @@
 'use strict';
 define([], function() {
-
+  var PATH = '/users/:userUid/datasets/:datasetUuid/graphs/import-eudract/';
   var dependencies = ['$resource'];
   var ImportEudraCTResource = function($resource) {
 
     return $resource(
-      '/users/:userUid/datasets/:datasetUuid/graphs/:graphUuid/import/eudract', {
-        userUid: '@userUid',
-        datasetUuid: '@datasetUuid',
-        graphUuid: '@graphUuid',
-        commitTitle: '@commitTitle'
+      PATH,{
+        userUid : '@userUid',
+        datasetUuid: '@datasetUuid'
       }, {
         import: {
           method: 'post',
+          headers: {
+            'Content-Type': 'application/xml'
+          }
         },
       }
     );

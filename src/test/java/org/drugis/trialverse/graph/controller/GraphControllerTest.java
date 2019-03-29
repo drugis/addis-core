@@ -24,11 +24,14 @@ import org.mockito.InjectMocks;
 import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.MediaType;
+import org.springframework.mock.web.DelegatingServletInputStream;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.util.NestedServletException;
 
+import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletResponse;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -227,6 +230,29 @@ public class GraphControllerTest {
 
     verify(datasetReadRepository).isOwner(datasetUri, user);
     verify(clinicalTrialsImportService).importStudy(title, null, trialverseDatasetUri, graphUUID, studyRef);
+  }
+
+  @Test
+  public void testImportEudract() throws Exception {
+    String datasetUuid = "datasetUuid";
+    URI datasetUri = new URI(Namespaces.DATASET_NAMESPACE + datasetUuid);
+    when(datasetReadRepository.isOwner(datasetUri, user)).thenReturn(true);
+    String versionValue = "http://myVersion";
+    Header mockHeader = mock(Header.class);
+    when(mockHeader.getValue()).thenReturn(versionValue);
+    when(versionMappingRepository.getVersionMappingByDatasetUrl(datasetUri)).thenReturn(new VersionMapping(datasetUri.toString(), "ownerUuid", "addisUri"));
+    when(clinicalTrialsImportService.importEudract(eq(datasetUri.toString()), anyString(), any())).thenReturn(mockHeader);
+
+    mockMvc.perform(
+            post("/users/" + userHash + "/datasets/" + datasetUuid + "/graphs/import-eudract")
+                    .contentType(MediaType.APPLICATION_XML_VALUE)
+                    .content("foo")
+                    .principal(user))
+            .andExpect(status().isOk())
+            .andExpect(header().string(WebConstants.X_EVENT_SOURCE_VERSION, versionValue));
+
+    verify(datasetReadRepository).isOwner(datasetUri, user);
+    verify(clinicalTrialsImportService).importEudract(eq(datasetUri.toString()), anyString(), any());
   }
 
   @Test

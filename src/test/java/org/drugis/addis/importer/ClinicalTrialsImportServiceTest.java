@@ -16,7 +16,10 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.springframework.mock.web.DelegatingServletInputStream;
 
+import javax.servlet.ServletInputStream;
+import javax.servlet.http.HttpServletRequest;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -109,6 +112,27 @@ public class ClinicalTrialsImportServiceTest {
     when(graphWriteRepository.updateGraph(URI.create(datasetUuid), graphUuid, inputStream, commitTitle, commitDesc)).thenReturn(mockHeader);
 
     Header result = clinicalTrialsImportService.importStudy(commitTitle, commitDesc, datasetUuid, graphUuid, studyRef);
+    assertEquals(mockHeader, result);
+  }
+
+  @Test
+  public void testImportEudract() throws ClinicalTrialsImportError, IOException, UpdateGraphException {
+    String datasetUuid = "dataset";
+    String graphUuid = "graph";
+    String anyInput = "<xml></xml>";
+    CloseableHttpResponse response = mock(CloseableHttpResponse.class);
+    HttpEntity entity = mock(HttpEntity.class);
+    InputStream inputStream = new ByteArrayInputStream(anyInput.getBytes());
+    when(response.getStatusLine()).thenReturn(new BasicStatusLine(HttpVersion.HTTP_1_1, HttpStatus.SC_OK, "FINE!"));
+    when(entity.getContent()).thenReturn(inputStream);
+    when(response.getEntity()).thenReturn(entity);
+    when(httpClient.execute(any())).thenReturn(response);
+    Header mockHeader = mock(Header.class);
+    when(graphWriteRepository.updateGraph(URI.create(datasetUuid), graphUuid, inputStream,
+            "Imported study from EudraCT XML", null)).thenReturn(mockHeader);
+
+    ServletInputStream mockXML = new DelegatingServletInputStream(inputStream);
+    Header result = clinicalTrialsImportService.importEudract(datasetUuid, graphUuid, mockXML);
     assertEquals(mockHeader, result);
   }
 }

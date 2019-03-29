@@ -8,6 +8,8 @@ import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.InputStreamEntity;
 import org.apache.http.util.EntityUtils;
 import org.drugis.addis.patavitask.repository.impl.PataviTaskRepositoryImpl;
 import org.drugis.addis.importer.ClinicalTrialsImportService;
@@ -19,6 +21,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
+import javax.servlet.ServletInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
@@ -81,6 +84,27 @@ public class ClinicalTrialsImportServiceImpl implements ClinicalTrialsImportServ
       throw new ClinicalTrialsImportError("could get study data, " + e.toString());
     } catch (UpdateGraphException e) {
       throw new ClinicalTrialsImportError("could not update graph, " + e.toString());
+    }
+  }
+
+  @Override
+  public Header importEudract(String versionedDatasetUrl, String graphUuid, ServletInputStream postedXml) {
+    HttpPost httpPost = new HttpPost(importerServiceLocation + "/eudract");
+    httpPost.setEntity(new InputStreamEntity(postedXml));
+    httpPost.setHeader("Content-type", "application/xml");
+    try (CloseableHttpResponse response = (CloseableHttpResponse) httpClient.execute(httpPost)) {
+      int responseStatusCode = response.getStatusLine().getStatusCode();
+      if (responseStatusCode == HttpStatus.SC_OK) {
+        InputStream content = response.getEntity().getContent();
+        return graphWriteRepository.updateGraph(URI.create(versionedDatasetUrl), graphUuid,
+                content, "Imported study from EudraCT XML", null);
+      } else {
+        throw new ClinicalTrialsImportError("could not import study, errorCode: " + responseStatusCode +
+                " reason:" + response.getStatusLine().getReasonPhrase());
+      }
+    } catch (IOException | UpdateGraphException e) {
+      e.printStackTrace();
+      throw new ClinicalTrialsImportError("import eudract failed");
     }
   }
 }

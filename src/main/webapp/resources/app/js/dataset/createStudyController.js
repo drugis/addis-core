@@ -31,11 +31,12 @@ define(['lodash'], function(_) {
     $scope.isValidNct = isValidNct;
     $scope.isValidUpload = false;
     $scope.cancel = cancel;
-    $scope.getInfo = getInfo;
+    $scope.getNCTInfo = getNCTInfo;
     $scope.uploadExcel = uploadExcel;
     $scope.importExcel = importExcel;
     $scope.uploadEudract = uploadEudract;
     $scope.importEudract = importEudract;
+    $scope.importNCT = importNCT;
 
     // init
     $scope.isCreatingStudy = false;
@@ -84,14 +85,14 @@ define(['lodash'], function(_) {
     }
 
     function isValidNct(nctId) {
-      return new RegExp('^' + 'NCT+').test(nctId);
+      return new RegExp('^' + 'NCT+').test(nctId.toUpperCase());
     }
 
-    function getInfo(studyImport) {
+    function getNCTInfo(studyImport) {
       studyImport.error = undefined;
       studyImport.notFound = false;
-      studyImport.nctId = studyImport.nctId.toUpperCase();
-      if ($scope.isValidNct(studyImport.nctId)) {
+      if (isValidNct(studyImport.nctId)) {
+        studyImport.nctId = studyImport.nctId.toUpperCase();
         $scope.studyImport.basicInfo = {};
         $scope.studyImport.loading = true;
         ImportStudyInfoResource.get({
@@ -109,8 +110,7 @@ define(['lodash'], function(_) {
       }
     }
 
-    //putting it on the scope this style, because import is a reserved name
-    $scope.import = function(studyImport) { // NCT import
+    function importNCT(studyImport) { // NCT import
       $scope.isCreatingStudy = true;
       var uuid = UUIDService.generate();
       var importStudyRef = studyImport.basicInfo.id;
@@ -121,28 +121,22 @@ define(['lodash'], function(_) {
         importStudyRef: importStudyRef,
         commitTitle: 'Import ' + importStudyRef + ' from ClinicalTrials.gov',
         commitDescription: studyImport.basicInfo.title
-      }, succes, errorCallback);
-    };
+      }, success, errorCallback);
+    }
 
     function uploadEudract(uploadedElement) {
       $scope.eudractUpload = uploadedElement.files[0];
     }
 
-    function importEudract(study) {
+    function importEudract() {
       $scope.isCreatingStudy = true;
-      var uuid = UUIDService.generate();
-      ImportEudraCTResource.import({
-        userUid: $stateParams.userUid,
-        datasetUuid: $stateParams.datasetUuid,
-        graphUuid: uuid,
-        commitTitle: 'XML import of: ' + study.label
-      }, $scope.eudractUpload,
-        succes,
-        errorCallback
-      );
+      ImportEudraCTResource.import(_.pick($stateParams, ['userUid', 'datasetUuid']),
+        $scope.eudractUpload, 
+        success, 
+        errorCallback);
     }
 
-    function succes(value, responseHeaders) {
+    function success(value, responseHeaders) {
       var newVersionUri = responseHeaders('X-EventSource-Version');
       var newVersionUuid = UUIDService.getUuidFromNamespaceUrl(newVersionUri);
       successCallback(newVersionUuid);
