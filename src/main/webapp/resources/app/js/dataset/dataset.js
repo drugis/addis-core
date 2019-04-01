@@ -20,6 +20,7 @@ define([
   '../graph/graphResource',
   './importStudyInfoResource',
   './importStudyResource',
+  './importEudraCTResource',
   './historyItemDirective',
   './versionInfoDirective',
   './featuredDatasetsDirective',
@@ -46,6 +47,7 @@ define([
     GraphResource,
     ImportStudyInfoResource,
     ImportStudyResource,
+    ImportEudraCTResource,
     historyItem,
     versionInfo,
     featuredDatasets
@@ -74,6 +76,7 @@ define([
       .factory('GraphResource', GraphResource)
       .factory('ImportStudyInfoResource', ImportStudyInfoResource)
       .factory('ImportStudyResource', ImportStudyResource)
+      .factory('ImportEudraCTResource', ImportEudraCTResource)
 
       //directives
       .directive('historyItem', historyItem)
