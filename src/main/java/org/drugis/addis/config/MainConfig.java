@@ -59,7 +59,6 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.client.RestTemplate;
 
 import javax.cache.Caching;
-import javax.net.ssl.SSLContext;
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 import java.io.File;

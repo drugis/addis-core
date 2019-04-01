@@ -165,11 +165,11 @@
         </div>
         <div class="cell">
           <input type="file" name="eudractFile" accept=".xml"
-            onchange="angular.element(this).scope().uploadEudract(this)">
+            onchange="var scope = angular.element(this).scope(); scope.uploadEudract(this); scope.$digest()">
         </div>
       <div class="cell">
         <button class="button success" type="submit"
-          ng-disabled="!eudractUpload || isCreatingStudy || errors.length">
+          ng-disabled="!eudractUpload || isCreatingStudy">
           create
         </button>
       </div>
