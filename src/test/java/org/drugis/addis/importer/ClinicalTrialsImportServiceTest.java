@@ -7,9 +7,9 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.message.BasicHttpResponse;
 import org.apache.http.message.BasicStatusLine;
-import org.drugis.addis.importer.ClinicalTrialsImportService;
-import org.drugis.addis.importer.impl.ClinicalTrialsImportError;
-import org.drugis.addis.importer.impl.ClinicalTrialsImportServiceImpl;
+import org.drugis.addis.importer.service.impl.ClinicalTrialsImportError;
+import org.drugis.addis.importer.service.impl.ClinicalTrialsImportServiceImpl;
+import org.drugis.addis.importer.service.ClinicalTrialsImportService;
 import org.drugis.trialverse.graph.exception.UpdateGraphException;
 import org.drugis.trialverse.graph.repository.GraphWriteRepository;
 import org.junit.Before;
@@ -19,12 +19,10 @@ import org.mockito.Mock;
 import org.springframework.mock.web.DelegatingServletInputStream;
 
 import javax.servlet.ServletInputStream;
-import javax.servlet.http.HttpServletRequest;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
-import java.net.URISyntaxException;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;

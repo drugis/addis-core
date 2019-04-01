@@ -1,4 +1,4 @@
-package org.drugis.addis.importer.impl;
+package org.drugis.addis.importer.service.impl;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -12,7 +12,7 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.InputStreamEntity;
 import org.apache.http.util.EntityUtils;
 import org.drugis.addis.patavitask.repository.impl.PataviTaskRepositoryImpl;
-import org.drugis.addis.importer.ClinicalTrialsImportService;
+import org.drugis.addis.importer.service.ClinicalTrialsImportService;
 import org.drugis.addis.util.WebConstants;
 import org.drugis.trialverse.graph.exception.UpdateGraphException;
 import org.drugis.trialverse.graph.repository.GraphWriteRepository;

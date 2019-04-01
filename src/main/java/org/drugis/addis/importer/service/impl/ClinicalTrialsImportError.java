@@ -1,4 +1,4 @@
-package org.drugis.addis.importer.impl;
+package org.drugis.addis.importer.service.impl;
 
 import org.drugis.addis.base.AbstractAddisException;
 

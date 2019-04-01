@@ -1,14 +1,13 @@
-package org.drugis.addis.importer;
+package org.drugis.addis.importer.controller;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import org.apache.http.Header;
 import org.drugis.addis.base.AbstractAddisCoreController;
-import org.drugis.addis.importer.impl.ClinicalTrialsImportError;
+import org.drugis.addis.importer.service.impl.ClinicalTrialsImportError;
+import org.drugis.addis.importer.service.ClinicalTrialsImportService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletResponse;

@@ -33,6 +33,7 @@ import java.util.Collection;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.*;
+import static org.mockito.MockitoAnnotations.initMocks;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -47,10 +48,10 @@ public class ScenarioControllerTest {
 
   private MockMvc mockMvc;
 
-  @Inject
+  @Mock
   private AccountRepository accountRepository;
 
-  @Inject
+  @Mock
   private ScenarioRepository scenarioRepository;
 
   @Mock
@@ -72,13 +73,9 @@ public class ScenarioControllerTest {
 
   @Before
   public void setUp() {
-    reset(accountRepository);
-    reset(scenarioRepository);
-    scenarioService = mock(ScenarioService.class);
-    projectService = mock(ProjectService.class);
     scenarioController = new ScenarioController();
 
-    MockitoAnnotations.initMocks(this);
+    initMocks(this);
     mockMvc = MockMvcBuilders.standaloneSetup(scenarioController).build();
 
     user = mock(Principal.class);

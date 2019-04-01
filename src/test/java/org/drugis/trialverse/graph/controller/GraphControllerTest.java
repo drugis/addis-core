@@ -5,7 +5,7 @@ import org.apache.http.message.BasicHeader;
 import org.apache.jena.riot.RDFLanguages;
 import org.drugis.addis.security.Account;
 import org.drugis.addis.security.repository.AccountRepository;
-import org.drugis.addis.importer.ClinicalTrialsImportService;
+import org.drugis.addis.importer.service.ClinicalTrialsImportService;
 import org.drugis.addis.util.WebConstants;
 import org.drugis.trialverse.dataset.model.VersionMapping;
 import org.drugis.trialverse.dataset.repository.DatasetReadRepository;
@@ -25,13 +25,11 @@ import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
-import org.springframework.mock.web.DelegatingServletInputStream;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.util.NestedServletException;
 
-import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletResponse;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -85,9 +83,6 @@ public class GraphControllerTest {
 
   @Before
   public void setUp() throws Exception {
-    graphReadRepository = mock(GraphReadRepository.class);
-    graphWriteRepository = mock(GraphWriteRepository.class);
-    datasetReadRepository = mock(DatasetReadRepository.class);
     graphController = new GraphController();
 
     initMocks(this);

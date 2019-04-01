@@ -1,8 +1,8 @@
-package org.drugis.addis.importer;
+package org.drugis.addis.importer.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import org.apache.http.Header;
-import org.drugis.addis.importer.impl.ClinicalTrialsImportError;
+import org.drugis.addis.importer.service.impl.ClinicalTrialsImportError;
 
 import javax.servlet.ServletInputStream;
 import java.io.IOException;

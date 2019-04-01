@@ -1,11 +1,13 @@
 package org.drugis.addis.config;
 
+import org.apache.http.client.HttpClient;
 import org.drugis.addis.analyses.repository.AnalysisRepository;
-import org.drugis.addis.analyses.repository.CriteriaRepository;
 import org.drugis.addis.analyses.repository.BenefitRiskAnalysisRepository;
+import org.drugis.addis.analyses.repository.CriteriaRepository;
 import org.drugis.addis.analyses.repository.NetworkMetaAnalysisRepository;
 import org.drugis.addis.analyses.service.AnalysisService;
 import org.drugis.addis.covariates.CovariateRepository;
+import org.drugis.addis.importer.service.ClinicalTrialsImportService;
 import org.drugis.addis.interventions.repository.InterventionRepository;
 import org.drugis.addis.interventions.service.InterventionService;
 import org.drugis.addis.models.repository.FunnelPlotRepository;
@@ -24,11 +26,11 @@ import org.drugis.addis.security.repository.AccountRepository;
 import org.drugis.addis.statistics.service.StatisticsService;
 import org.drugis.addis.subProblems.repository.SubProblemRepository;
 import org.drugis.addis.subProblems.service.SubProblemService;
-import org.drugis.addis.importer.ClinicalTrialsImportService;
 import org.drugis.addis.trialverse.service.MappingService;
 import org.drugis.addis.trialverse.service.TriplestoreService;
 import org.drugis.addis.workspaceSettings.repository.WorkspaceSettingsRepository;
 import org.drugis.trialverse.dataset.repository.VersionMappingRepository;
+import org.drugis.trialverse.graph.repository.GraphWriteRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -40,12 +42,14 @@ import static org.mockito.Mockito.mock;
 @EnableWebMvc
 @ComponentScan(excludeFilters = {@ComponentScan.Filter(Configuration.class)}, basePackages = {
         "org.drugis.addis.error",
+        "org.drugis.addis.importer.service",
         "org.drugis.addis.projects.controller",
         "org.drugis.addis.outcomes.controller",
         "org.drugis.addis.interventions.controller",
         "org.drugis.addis.analyses.controller",
         "org.drugis.addis.analyses.service",
         "org.drugis.addis.trialverse.controller",
+        "org.drugis.addis.trialverse.graph.controller",
         "org.drugis.addis.problems.controller",
         "org.drugis.addis.scenarios.controller",
         "org.drugis.addis.scenarios.service",
@@ -217,8 +221,18 @@ public class TestConfig {
   }
 
   @Bean
-  public AbsoluteStudyBenefitRiskService absoluteStudyBenefirRiskService() {
+  public AbsoluteStudyBenefitRiskService absoluteStudyBenefitRiskService() {
     return mock(AbsoluteStudyBenefitRiskService.class);
+  }
+
+  @Bean
+  public HttpClient httpClient() {
+    return mock(HttpClient.class);
+  }
+
+  @Bean
+  public GraphWriteRepository graphWriteRepository() {
+    return mock(GraphWriteRepository.class);
   }
 }
 
