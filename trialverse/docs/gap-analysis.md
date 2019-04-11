@@ -1,6 +1,13 @@
 EUdraCT XML - ADDIS data model Gap Analysis
 ===========================================
 
+2019-04-10
+
+Introduction
+------------
+
+This document describes what currently goes well when transforming from EUdraCT XML to the ADDIS data model using the current version of the importer software, and what actions need to be taken after transformation.
+
 Requirements
 ------------
 
@@ -27,6 +34,11 @@ To automatically extract measurement data from studies, ADDIS requires those stu
 | Endpoints          | measurement moments | present  | present             | none |
 | Adverse events          | measurement moments | present  | present             | ctgov: none |
 | Concept mappings   | variables, treatment drugs (defined in activities), units | N/A | N/A | Map study-level concepts to dataset-level concepts |
+
+ADDIS importer
+--------------
+
+We have written importers for ADDIS that take XML in the clinicaltrials.gov and EUdraCT formats, and create ADDIS RDF
 
 EUdraCT actions in detail
 -------------------------
@@ -77,4 +89,3 @@ EUdraCT actions in detail
 ### Concept mappings
 
 - ADDIS-specific, i.e. not present.
-
