@@ -17,39 +17,34 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import java.util.*;
 
-/**
- * Created by connor on 6-5-14.
- */
 @Repository
 public class NetworkMetaAnalysisRepositoryImpl implements NetworkMetaAnalysisRepository {
   @Qualifier("emAddisCore")
   @PersistenceContext(unitName = "addisCore")
   private EntityManager em;
 
-  @Inject
-  private InterventionRepository interventionRepository;
-
   @Override
-  public NetworkMetaAnalysis create(AnalysisCommand analysisCommand) throws MethodNotAllowedException, ResourceDoesNotExistException {
+  public NetworkMetaAnalysis create(AnalysisCommand analysisCommand) {
     NetworkMetaAnalysis networkMetaAnalysis = new NetworkMetaAnalysis(analysisCommand.getProjectId(), analysisCommand.getTitle());
     em.persist(networkMetaAnalysis);
-
-    Collection<AbstractIntervention> interventions = interventionRepository.query(analysisCommand.getProjectId());
-    Set<InterventionInclusion> interventionInclusions = new HashSet<>(interventions.size());
-    networkMetaAnalysis.updateIncludedInterventions(interventionInclusions);
     return update(networkMetaAnalysis);
   }
 
   @Override
-  public Collection<NetworkMetaAnalysis> query(Integer projectId) {
-    TypedQuery<NetworkMetaAnalysis>  query = em.createQuery("FROM NetworkMetaAnalysis a WHERE a.projectId = :projectId", NetworkMetaAnalysis.class);
-      query.setParameter("projectId", projectId);
+  public NetworkMetaAnalysis update(NetworkMetaAnalysis analysis) {
+    return em.merge(analysis);
+  }
+
+  @Override
+  public Collection<NetworkMetaAnalysis> queryByProjectId(Integer projectId) {
+    TypedQuery<NetworkMetaAnalysis> query = em.createQuery("FROM NetworkMetaAnalysis a WHERE a.projectId = :projectId", NetworkMetaAnalysis.class);
+    query.setParameter("projectId", projectId);
     return query.getResultList();
   }
 
   @Override
   public List<NetworkMetaAnalysis> queryByOutcomes(Integer projectId, List<Integer> outcomeIds) {
-    if(outcomeIds == null || outcomeIds.isEmpty()) {
+    if (outcomeIds == null || outcomeIds.isEmpty()) {
       return Collections.emptyList();
     } else {
       TypedQuery<NetworkMetaAnalysis> query = em.createQuery("FROM NetworkMetaAnalysis a WHERE a.projectId = :projectId AND outcomeId IN :outcomeIds", NetworkMetaAnalysis.class);
@@ -60,17 +55,22 @@ public class NetworkMetaAnalysisRepositoryImpl implements NetworkMetaAnalysisRep
   }
 
   @Override
-  public NetworkMetaAnalysis update(NetworkMetaAnalysis analysis) throws ResourceDoesNotExistException, MethodNotAllowedException {
-    return em.merge(analysis);
-  }
-
-  @Override
   public void setPrimaryModel(Integer analysisId, Integer modelId) {
     TypedQuery<NetworkMetaAnalysis> query = em.createQuery("FROM NetworkMetaAnalysis a WHERE a.id = :analysisId", NetworkMetaAnalysis.class);
     query.setParameter("analysisId", analysisId);
     List<NetworkMetaAnalysis> resultList = query.getResultList();
     NetworkMetaAnalysis networkMetaAnalysis = resultList.get(0);
     networkMetaAnalysis.setPrimaryModel(modelId);
+    em.merge(networkMetaAnalysis);
+  }
+
+  @Override
+  public void setTitle(Integer analysisId, String newTitle) {
+    TypedQuery<NetworkMetaAnalysis> query = em.createQuery("FROM NetworkMetaAnalysis a WHERE a.id = :analysisId", NetworkMetaAnalysis.class);
+    query.setParameter("analysisId", analysisId);
+    List<NetworkMetaAnalysis> resultList = query.getResultList();
+    NetworkMetaAnalysis networkMetaAnalysis = resultList.get(0);
+    networkMetaAnalysis.setTitle(newTitle);
     em.merge(networkMetaAnalysis);
   }
 }

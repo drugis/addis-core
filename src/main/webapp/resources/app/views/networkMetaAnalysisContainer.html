@@ -11,7 +11,7 @@
     <div class="grid-x project-header">
       <div class="cell">
         <h1 class="inline-header" title="Analysis title">{{analysis.title}}</h1>
-        <h3 class="subheader inline-header" title="Analysis type">/ {{analysis.analysisType}}</h3>
+        <h3 class="subheader inline-header" title="Analysis type">/ {{analysis.analysisType}} <a  ng-if="!editMode.disableEditing" ng-click="editAnalysisTitle()"><i class="fa fa-edit"></i></a></h3>
       </div>
     </div>
     <hr>

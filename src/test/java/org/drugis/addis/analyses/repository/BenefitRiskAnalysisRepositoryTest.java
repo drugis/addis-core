@@ -24,11 +24,7 @@ import java.sql.SQLException;
 import java.util.*;
 
 import static org.junit.Assert.*;
-import static org.mockito.Matchers.any;
 
-/**
- * Created by daan on 25-2-16.
- */
 @RunWith(SpringJUnit4ClassRunner.class)
 @Transactional
 @ContextConfiguration(classes = {JpaRepositoryTestConfig.class})

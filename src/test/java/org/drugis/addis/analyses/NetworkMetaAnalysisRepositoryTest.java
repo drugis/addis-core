@@ -53,7 +53,7 @@ public class NetworkMetaAnalysisRepositoryTest {
   public void testQuery() {
     Integer projectId = 1;
     Integer analysisId = -5;
-    Collection<NetworkMetaAnalysis> result = networkMetaAnalysisRepository.query(projectId);
+    Collection<NetworkMetaAnalysis> result = networkMetaAnalysisRepository.queryByProjectId(projectId);
     NetworkMetaAnalysis expectedAnalysis = em.find(NetworkMetaAnalysis.class, analysisId);
     assertTrue(result.contains(expectedAnalysis));
     assertEquals(3, result.size());
