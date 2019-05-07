@@ -87,6 +87,7 @@ define(['angular', 'angular-mocks', '../controllers'], function() {
     var userDefer;
     var isLoginUserDefer;
     var modal;
+    var cacheService;
 
     beforeEach(angular.mock.module('addis.controllers'));
 
@@ -133,6 +134,7 @@ define(['angular', 'angular-mocks', '../controllers'], function() {
         'hasInterventionOverlap',
         'doesModelContainTooManyResultProperties'
       ]);
+      cacheService = jasmine.createSpyObj('CacheService', ['evict']);
       var mockNetwork = {
         interventions: []
       };
@@ -176,7 +178,8 @@ define(['angular', 'angular-mocks', '../controllers'], function() {
         AnalysisResource: analysisResource,
         ModelResource: modelResource,
         UserService: userService,
-        PageTitleService: pageTitleServiceMock
+        PageTitleService: pageTitleServiceMock,
+        CacheService: cacheService
       });
     }));
 

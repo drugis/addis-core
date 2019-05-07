@@ -17,6 +17,7 @@ define(['lodash'], function(_) {
     'OutcomeResource',
     'PageTitleService',
     'UserService',
+    'CacheService',
     'currentAnalysis',
     'currentProject'
   ];
@@ -38,6 +39,7 @@ define(['lodash'], function(_) {
     OutcomeResource,
     PageTitleService,
     UserService,
+    CacheService,
     currentAnalysis,
     currentProject
   ) {
@@ -157,6 +159,8 @@ define(['lodash'], function(_) {
           callback: function() {
             return function(newTitle) {
               AnalysisResource.setTitle($stateParams, newTitle, function() {
+                CacheService.evict('analysesPromises', $scope.project.id);
+                CacheService.evict('analysisPromises', $scope.analysis.id);
                 $scope.analysis.title = newTitle;
               });
             };
