@@ -26,4 +26,6 @@ public interface ModelRepository {
   List<Model> findModelsByProject(Integer projectId) throws SQLException;
 
   void setArchived(Integer modelId, Boolean archived);
+
+  void setTitle(Integer modelId, String title);
 }
