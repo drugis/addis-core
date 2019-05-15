@@ -199,8 +199,8 @@ define(['angular', 'lodash'],
                 });
               });
             },
-            userUid: function() {
-              return $scope.userUid;
+            loggedInUserId: function() {
+              return $scope.loggedInUser.id;
             },
             datasetUuid: function() {
               return $stateParams.datasetUuid;
