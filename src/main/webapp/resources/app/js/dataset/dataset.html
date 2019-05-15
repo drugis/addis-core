@@ -9,13 +9,15 @@
   <div class="grid-container">
     <div class="grid-x nav-bar-spacer">
       <div class="cell">
-        <button ng-show="hasLoggedInUser" class="button right" type="button" ng-click="createProjectDialog()">Create project</button>
+        <button ng-show="hasLoggedInUser" class="button right" type="button" ng-click="createProjectDialog()">Create
+          project</button>
         <h1>{{dataset.title}}
           <a ng-show="!isExporting" title="Export to Excel" ng-click="exportDataset()">
             <i class="fa fa-download"></i>
           </a>
           <i ng-show="isExporting" class="fa fa-spinner fa-spin"></i>
-          <a ng-if="isEditingAllowed" title="Edit title and description" ng-click="showEditDatasetModal()"><i class="fa fa-edit"></i></a>
+          <a ng-if="isEditingAllowed" title="Edit title and description" ng-click="showEditDatasetModal()"><i
+              class="fa fa-edit"></i></a>
         </h1>
         <progressbar ng-hide="!isExporting" value="progress.percentage"></progressbar>
         <p>{{dataset.comment}} <a ng-if="isEditingAllowed && dataset.comment" title="Edit title and description"
@@ -28,10 +30,14 @@
       </div>
       <div class="cell">
         <h3>
-          <button class="button" ng-if="versionUuid" ui-sref="versionedDataset.concepts({userUid: user.id, datasetUuid: stripFrontFilter(dataset.datasetUuid, 'http://trials.drugis.org/datasets/'), versionUuid: versionUuid})">Dataset concepts</button>
-        <button class="button" ng-if="!versionUuid" ui-sref="dataset.concepts({userUid: user.id, datasetUuid: stripFrontFilter(dataset.datasetUuid, 'http://trials.drugis.org/datasets/')})">Dataset concepts</button>
-        <inline-help style="margin-left: 0.5rem; vertical-align: text-bottom;" help-key="concept"></inline-help>
-      </h3>
+          <button class="button" ng-if="versionUuid"
+            ui-sref="versionedDataset.concepts({userUid: user.id, datasetUuid: stripFrontFilter(dataset.datasetUuid, 'http://trials.drugis.org/datasets/'), versionUuid: versionUuid})">Dataset
+            concepts</button>
+          <button class="button" ng-if="!versionUuid"
+            ui-sref="dataset.concepts({userUid: user.id, datasetUuid: stripFrontFilter(dataset.datasetUuid, 'http://trials.drugis.org/datasets/')})">Dataset
+            concepts</button>
+          <inline-help style="margin-left: 0.5rem; vertical-align: text-bottom;" help-key="concept"></inline-help>
+        </h3>
       </div>
       <div class="cell">
         <hr>
@@ -60,8 +66,8 @@
             <div class="grid-x grid-margin-x">
               <div class="cell large-6 medium-6">
                 <span>Studies should include these interventions:</span>
-                <ui-select ng-if="interventions.length" class="addis-select2" style="width:100%;"
-                  multiple theme="select2" on-select="onStudyFilterChange(filterSelections)"
+                <ui-select ng-if="interventions.length" class="addis-select2" style="width:100%;" multiple
+                  theme="select2" on-select="onStudyFilterChange(filterSelections)"
                   on-remove="onStudyFilterChange(filterSelections)" ng-model="filterSelections.drugs">
                   <ui-select-match>{{$item.label}}</ui-select-match>
                   <ui-select-choices repeat="intervention in interventions | filter: $select.search">
@@ -75,8 +81,8 @@
 
               <div class="cell large-6 medium-6 ">
                 <span>Studies should measure these variables:</span>
-                <ui-select ng-if="variables.length" class="addis-select2" style="width:100%;" multiple
-                  theme="select2" ng-model="filterSelections.variables" on-select="onStudyFilterChange(filterSelections)"
+                <ui-select ng-if="variables.length" class="addis-select2" style="width:100%;" multiple theme="select2"
+                  ng-model="filterSelections.variables" on-select="onStudyFilterChange(filterSelections)"
                   on-remove="onStudyFilterChange(filterSelections)">
                   <ui-select-match>{{$item.label}}</ui-select-match>
                   <ui-select-choices repeat="variable in variables | filter: $select.search">
@@ -90,13 +96,14 @@
             </div>
           </div>
           <em ng-if="studiesWithDetail && !studiesWithDetail.length">No studies have been defined</em>
-          <em ng-if="studiesWithDetail && studiesWithDetail.length && !filteredStudies.length">No studies have been found using chosen filter(s)</em>
+          <em ng-if="studiesWithDetail && studiesWithDetail.length && !filteredStudies.length">No studies have been
+            found using chosen filter(s)</em>
 
           <table ng-if="filteredStudies.length">
             <thead>
               <tr>
-                <th ng-if="isEditingAllowed" class="text-center"></th>
-                <th class="sortable" ng-click="tableOptions.orderByField = 'label'; tableOptions.reverseSortOrder=!tableOptions.reverseSortOrder">
+                <th class="sortable"
+                  ng-click="tableOptions.orderByField = 'label'; tableOptions.reverseSortOrder=!tableOptions.reverseSortOrder">
                   Name
                   <i ng-if="tableOptions.reverseSortOrder &&  tableOptions.orderByField === 'label'"
                     class="fa fa-caret-up"></i>
@@ -111,26 +118,33 @@
                   <i ng-if="!tableOptions.reverseSortOrder &&  tableOptions.orderByField === column.id"
                     class="fa fa-caret-down"></i>
                 </th>
+                <th ng-if="isEditingAllowed" class="text-center"></th>
               </tr>
             </thead>
             <tbody>
-              <tr ng-repeat="filteredStudy in filteredStudies | orderBy:tableOptions.orderByField:tableOptions.reverseSortOrder ">
-                <td ng-if="isEditingAllowed"><a ng-click="showDeleteStudyDialog(filteredStudy)"><i class="fa fa-trash-o" style="color: red;"></i></a></td>
+              <tr
+                ng-repeat="filteredStudy in filteredStudies | orderBy:tableOptions.orderByField:tableOptions.reverseSortOrder ">
                 <td style="vertical-align: top;">
-                  <a ng-if="!isHeadView" ui-sref="versionedDataset.study({userUid: user.id, datasetUuid: stripFrontFilter(dataset.datasetUuid, 'http://trials.drugis.org/datasets/'),
-            studyGraphUuid: (filteredStudy.graphUri | stripFrontFilter:'http://trials.drugis.org/graphs/'), versionUuid: versionUuid})">{{filteredStudy.label}}</a>
-                  <a ng-if="isHeadView" ui-sref="dataset.study({userUid: user.id, datasetUuid: stripFrontFilter(dataset.datasetUuid, 'http://trials.drugis.org/datasets/'),
-            studyGraphUuid: (filteredStudy.graphUri | stripFrontFilter:'http://trials.drugis.org/graphs/')})">{{filteredStudy.label}}</a>
+                  <a ng-if="!isHeadView"
+                    ui-sref="versionedDataset.study({userUid: user.id, datasetUuid: stripFrontFilter(dataset.datasetUuid, 'http://trials.drugis.org/datasets/'),
+                    studyGraphUuid: (filteredStudy.graphUri | stripFrontFilter:'http://trials.drugis.org/graphs/'), versionUuid: versionUuid})">{{filteredStudy.label}}</a>
+                  <a ng-if="isHeadView"
+                    ui-sref="dataset.study({userUid: user.id, datasetUuid: stripFrontFilter(dataset.datasetUuid, 'http://trials.drugis.org/datasets/'),
+                    studyGraphUuid: (filteredStudy.graphUri | stripFrontFilter:'http://trials.drugis.org/graphs/')})">{{filteredStudy.label}}</a>
                 </td>
                 <td style="vertical-align: top;" ng-if="column.visible" ng-repeat="column in tableOptions.columns">
                   <span ng-if="!column.type" style="white-space: pre-wrap;">{{filteredStudy[column.id]}}</span>
-                  <span ng-if="column.type === 'removePreamble'">{{filteredStudy[column.id] | stripFrontFilter : column.frontStr}}</span>
+                  <span
+                    ng-if="column.type === 'removePreamble'">{{filteredStudy[column.id] | stripFrontFilter : column.frontStr}}</span>
                   <span ng-if="column.type === 'dosing'">{{filteredStudy[column.id] | dosingFilter}}</span>
-                  <span ng-if="column.type === 'urlList'" ng-repeat="uri in filteredStudy.publications | splitOnTokenFilter">
-                     <a target="_blank" ng-href={{uri}}>{{uri}}</a>
+                  <span ng-if="column.type === 'urlList'"
+                    ng-repeat="uri in filteredStudy.publications | splitOnTokenFilter">
+                    <a target="_blank" ng-href={{uri}}>{{uri}}</a>
                     <span ng-if=!$last>, </span>
                   </span>
                 </td>
+                <td ng-if="isEditingAllowed"><a ng-click="showDeleteStudyDialog(filteredStudy)"><i class="fa fa-trash-o"
+                      style="color: red;"></i></a></td>
               </tr>
             </tbody>
           </table>
