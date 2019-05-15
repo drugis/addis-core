@@ -103,9 +103,13 @@ public class GraphController extends AbstractAddisCoreController {
     logger.trace("get head graph");
     VersionMapping versionMapping = versionMappingRepository.getVersionMappingByDatasetUrl(new URI(Namespaces.DATASET_NAMESPACE + datasetUuid));
     byte[] responseContent = graphReadRepository.getGraph(versionMapping.getVersionedDatasetUrl(), null, graphUuid, WebConstants.JSON_LD);
-    httpServletResponse.setStatus(HttpServletResponse.SC_OK);
-    httpServletResponse.setHeader("Content-Type", WebConstants.JSON_LD);
-    trialverseIOUtilsService.writeContentToServletResponse(responseContent, httpServletResponse);
+    if (new String(responseContent).equals("{ }\n")) {
+      httpServletResponse.setStatus(HttpServletResponse.SC_NOT_FOUND);
+    } else {
+      httpServletResponse.setStatus(HttpServletResponse.SC_OK);
+      httpServletResponse.setHeader("Content-Type", WebConstants.JSON_LD);
+      trialverseIOUtilsService.writeContentToServletResponse(responseContent, httpServletResponse);
+    }
   }
 
   @RequestMapping(value = "/graphs/{graphUuid}/history", method = RequestMethod.GET)

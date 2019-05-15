@@ -1,7 +1,12 @@
 'use strict';
-define(['../util/transformJsonLd',
-  '../util/transformConceptJsonLd'],
-  function(transformStudyJsonLd, transformConceptJsonLd) {
+define([
+  '../util/transformJsonLd',
+  '../util/transformConceptJsonLd'
+],
+  function(
+    transformStudyJsonLd,
+    transformConceptJsonLd
+  ) {
 
     var dependencies = ['$resource', 'DataModelService'];
     var GraphResource = function($resource, DataModelService) {
@@ -13,30 +18,33 @@ define(['../util/transformJsonLd',
           commitTitle: '@commitTitle',
           commitDescription: '@commitDescription'
         }, {
-          'put': {
+          put: {
             method: 'put'
           },
-          'getJson': {
+          getJson: {
             method: 'get',
             headers: {
-              'Accept': 'application/ld+json'
+              Accept: 'application/ld+json'
             },
             transformResponse: function(data) {
+              if (data === '') {
+                return data;
+              }
               var graphData = JSON.parse(data);
-              graphData = DataModelService.applyOnLoadCorrections(graphData);
-              return transformStudyJsonLd(graphData);
+              var correctedGraphData = DataModelService.applyOnLoadCorrections(graphData);
+              return transformStudyJsonLd(correctedGraphData);
             }
           },
-          'getConceptJson': {
+          getConceptJson: {
             method: 'get',
             headers: {
-              'Accept': 'application/ld+json'
+              Accept: 'application/ld+json'
             },
             transformResponse: function(data) {
               return transformConceptJsonLd(JSON.parse(data));
             }
           },
-          'putJson': {
+          putJson: {
             method: 'put',
             headers: {
               'Content-Type': 'application/ld+json'

@@ -92,9 +92,10 @@ public class VersionMappingRepositoryImpl implements VersionMappingRepository {
 
 
   @Override
-  public VersionMapping getVersionMappingByDatasetUrl(URI trialverseDatsetUrl) {
+  public VersionMapping getVersionMappingByDatasetUrl(URI trialverseDatasetUrl) {
     String sql = "Select * FROM VersionMapping WHERE trialverseDatasetUrl = ?";
-    return jdbcTemplate.queryForObject(sql, rowMapper, trialverseDatsetUrl.toString());
+    VersionMapping versionMapping = jdbcTemplate.queryForObject(sql, rowMapper, trialverseDatasetUrl.toString());
+    return versionMapping;
   }
 
   @Override
