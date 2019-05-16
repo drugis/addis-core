@@ -117,6 +117,18 @@ public class AnalysisController extends AbstractAddisCoreController {
     response.setStatus(HttpStatus.SC_OK);
   }
 
+
+  @RequestMapping(value = "/projects/{projectId}/analyses/{analysisId}/setTitle", method = RequestMethod.PUT)
+  public void setAnalysisTitle(HttpServletResponse response, Principal currentUser,
+                              @PathVariable Integer projectId,
+                              @PathVariable Integer analysisId,
+                              @RequestBody String newTitle) throws MethodNotAllowedException, ResourceDoesNotExistException {
+    projectService.checkOwnership(projectId, currentUser);
+    networkMetaAnalysisRepository.setTitle(analysisId, newTitle);
+    response.setStatus(HttpStatus.SC_OK);
+  }
+
+
   @RequestMapping(value = "/projects/{projectId}/analyses/{analysisId}", method = RequestMethod.POST)
   @ResponseBody
   public AbstractAnalysis update(Principal currentUser, @PathVariable Integer projectId,

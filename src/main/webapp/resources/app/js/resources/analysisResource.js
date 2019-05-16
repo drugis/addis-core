@@ -13,6 +13,10 @@ define([], function() {
       setArchived: {
         url: '/projects/:projectId/analyses/:analysisId/setArchivedStatus',
         method: 'POST'
+      },
+      setTitle: {
+        url: '/projects/:projectId/analyses/:analysisId/setTitle',
+        method: 'PUT'
       }
     });
   };

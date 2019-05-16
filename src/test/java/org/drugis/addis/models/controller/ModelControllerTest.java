@@ -7,6 +7,8 @@ import org.drugis.addis.TestUtils;
 import org.drugis.addis.analyses.service.AnalysisService;
 import org.drugis.addis.base.AbstractAddisCoreController;
 import org.drugis.addis.config.TestConfig;
+import org.drugis.addis.exception.MethodNotAllowedException;
+import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.models.BiasDirection;
 import org.drugis.addis.models.FunnelPlot;
 import org.drugis.addis.models.FunnelPlotComparison;
@@ -38,6 +40,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import javax.inject.Inject;
+import java.io.IOException;
 import java.net.URI;
 import java.security.Principal;
 import java.util.Arrays;
@@ -604,7 +607,6 @@ public class ModelControllerTest {
   public void testSetModelBaseline() throws Exception {
     NormalBaselineDistribution normalBaselineDistribution = new NormalBaselineDistribution("scale", 1.2, 3.3, "name", "dnorm");
     String putBodyStr = TestUtils.createJson(normalBaselineDistribution);
-    ModelBaseline modelBaseline = new ModelBaseline(3, putBodyStr);
     MockHttpServletRequestBuilder put = put("/projects/1/analyses/2/models/3/baseline")
             .content(putBodyStr)
             .principal(user)
@@ -615,4 +617,18 @@ public class ModelControllerTest {
     verify(modelBaselineRepository).setModelBaseline(3, putBodyStr);
   }
 
+  @Test
+  public void testSetModelTitle() throws Exception {
+    Integer modelId = 3;
+    String newTitle = "new title";
+    String title = "{\"newTitle\": \"" + newTitle + "\"}";
+    MockHttpServletRequestBuilder put = put("/projects/1/analyses/2/models/3/setTitle")
+            .content(title)
+            .principal(user)
+            .contentType(WebConstants.getApplicationJsonUtf8Value());
+
+    mockMvc.perform(put).andExpect(status().isOk());
+    verify(modelService).checkOwnership(modelId, user);
+    verify(modelRepository).setTitle(modelId, newTitle);
+  }
 }

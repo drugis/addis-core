@@ -6,6 +6,7 @@ define(['lodash'], function(_) {
     '$q',
     '$state',
     '$stateParams',
+    '$modal',
     'AnalysisResource',
     'AnalysisService',
     'CovariateResource',
@@ -16,6 +17,7 @@ define(['lodash'], function(_) {
     'OutcomeResource',
     'PageTitleService',
     'UserService',
+    'CacheService',
     'currentAnalysis',
     'currentProject'
   ];
@@ -26,6 +28,7 @@ define(['lodash'], function(_) {
     $q,
     $state,
     $stateParams,
+    $modal,
     AnalysisResource,
     AnalysisService,
     CovariateResource,
@@ -36,6 +39,7 @@ define(['lodash'], function(_) {
     OutcomeResource,
     PageTitleService,
     UserService,
+    CacheService,
     currentAnalysis,
     currentProject
   ) {
@@ -48,6 +52,7 @@ define(['lodash'], function(_) {
     $scope.changeInterventionInclusion = changeInterventionInclusion;
     $scope.reloadModel = reloadModel;
     $scope.gotoCreateModel = gotoCreateModel;
+    $scope.editAnalysisTitle = editAnalysisTitle;
 
     // init
     $scope.errors = {
@@ -74,8 +79,8 @@ define(['lodash'], function(_) {
 
     // make available for create model permission check in models.html (which is in gemtc subproject)
     $scope.userId = Number($stateParams.userUid);
-    UserService.getLoginUser().then(function(result){
-      $scope.loginUserId = result? result.id : undefined;
+    UserService.getLoginUser().then(function(result) {
+      $scope.loginUserId = result ? result.id : undefined;
     });
 
     UserService.isLoginUserId($scope.userId).then(function(isUserOwner) {
@@ -141,6 +146,28 @@ define(['lodash'], function(_) {
 
     $scope.$on('armExclusionChanged', armExclusionChanged);
     $scope.$on('saveAnalysisAndReload', saveAnalysisAndReload);
+
+    function editAnalysisTitle() {
+      $modal.open({
+        templateUrl: 'gemtc-web/app/js/analyses/editAnalysisTitle.html',
+        scope: $scope,
+        controller: 'EditAnalysisTitleController',
+        resolve: {
+          analysisTitle: function() {
+            return $scope.analysis.title;
+          },
+          callback: function() {
+            return function(newTitle) {
+              AnalysisResource.setTitle($stateParams, newTitle, function() {
+                CacheService.evict('analysesPromises', $scope.project.id);
+                CacheService.evict('analysisPromises', $scope.analysis.id);
+                $scope.analysis.title = newTitle;
+              });
+            };
+          }
+        }
+      });
+    }
 
     function analysisToSaveCommand(analysis) {
       return {

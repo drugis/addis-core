@@ -132,7 +132,7 @@ public class ModelRepositoryTest {
   }
 
   @Test
-  public void testGet() throws SQLException, IOException {
+  public void testGet() throws IOException {
     Integer modelId = 1;
     Model result = modelRepository.get(modelId);
     assertNotNull(result);
@@ -154,7 +154,7 @@ public class ModelRepositoryTest {
   }
 
   @Test(expected = DataAccessException.class)
-  public void testGetNonExistentModel() throws SQLException, IOException {
+  public void testGetNonExistentModel() throws IOException {
     Integer modelId = -999;
     modelRepository.get(modelId);
   }
@@ -175,21 +175,30 @@ public class ModelRepositoryTest {
 
   @Test
   public void setArchived() throws IOException {
-    Integer modelsId = 1;
+    Integer modelId = 1;
     Boolean archived = true;
-    modelRepository.setArchived(modelsId, archived);
-    Model model = modelRepository.get(modelsId);
+    modelRepository.setArchived(modelId, archived);
+    Model model = modelRepository.get(modelId);
     assertTrue(model.getArchived());
     assertNotNull(model.getArchivedOn());
   }
 
   @Test
   public void setArchiveToFalse() throws IOException {
-    Integer modelsId = 1;
+    Integer modelId = 1;
     Boolean archived = false;
-    modelRepository.setArchived(modelsId, archived);
-    Model model = modelRepository.get(modelsId);
+    modelRepository.setArchived(modelId, archived);
+    Model model = modelRepository.get(modelId);
     assertFalse(model.getArchived());
     assertNull(model.getArchivedOn());
+  }
+
+  @Test
+  public void testSetTitle() throws IOException {
+    Integer modelId = 1;
+    String title = "new title";
+    modelRepository.setTitle(modelId, title);
+    Model model = modelRepository.get(modelId);
+    assertEquals(title, model.getTitle());
   }
 }
