@@ -10,22 +10,14 @@ The setup in this readme requires several components to already be installed and
 Required software: 
 
  - yarn
- - compass
+ - compass (for changing css)
  - postgresql
  - maven
  - karma (for testing)
 
-Make sure the SASS submodule is present:
+Run `yarn` from the root of the repository to retrieve the javascript dependencies.
 
-    git submodule init
-    git submodule update
-
-Make sure you have the javascript libraries needed by running `yarn` from the root of the repository.
-
-Run 'compass compile' from the root of the repository. 
-
-Running
------------------------
+Run `npm run build-dev` from the root of the repository to build the webapp.
 
 Set up the database:
 
@@ -43,7 +35,7 @@ INSERT INTO applicationkey (secretkey, accountid, applicationname, creationdate,
 
 It is assumed in the example environment settings below that instances of [Patavi](https://github.com/drugis/patavi) and [Jena-ES](https://github.com/drugis/jena-es) are running on ports 3000 and 3030, respecively.
 
-To authenticate with Patavi, you need a client certificate signed by the Certificate Authority (CA) trusted by Patavi, in a JKS keystore. 
+To authenticate with Patavi, you need a client certificate signed by the Certificate Authority (CA) trusted by Patavi, in a JKS keystore.
 
 If Patavi presents a certificate signed by your own CA, you need to trust that CA. To do this, generate a JKS truststore. This needs to contain the certificate of your own CA and (for OAuth) Google's CA (GeoTrust). The drugis.org domains also depend on GeoTrust. Note that in most Java distributions this CA is trusted by default, in which case you do not need to generate and configure the trust store.
 
@@ -78,13 +70,12 @@ export ADDIS_CORE_OAUTH_GOOGLE_KEY=googleKey
 export CLINICALTRIALS_IMPORTER_URL=importservicelocation
 ```
 
-Run the Tomcat server:
+Running
+-----------------------
 
 ```
 mvn tomcat7:run
 ```
-
-
 
 To run integration tests:
 ```
@@ -110,10 +101,11 @@ To restore the ADDIS data:
 
 If not restoring to the same environment, use the `util/changePrefix.sh` script to change the triple store location.
 
-###Running ADDIS from a docker container:
+Running ADDIS as a docker container
+-----------------------------------
 
 - check out the (dockerfiles repository)[https://github.com/drugis/dockerfiles]
-- build addis WAR, following addis README. Or: download a recent stable version from from https://drugis.org/files/addis-core.war
+- build addis WAR, using `mvn package`. Or: download a recent stable version from from https://drugis.org/files/addis-core.war
 - supply the WAR and SSL keystore and truststore to the `tomcat/Dockerfile` from the dockerfiles repository
 - build and run the dockerfile.
 
@@ -146,3 +138,12 @@ docker run -d --name addis \
   -p 2223:22 \
   -t addis-tomcat
 ```
+
+Styling
+-------
+ADDIS css is generated using SASS. If you wish to change the css, first make sure the SASS submodule is present:
+
+    git submodule init
+    git submodule update
+
+Then
