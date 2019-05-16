@@ -59,7 +59,7 @@
     "html-webpack-plugin": "^4.0.0-alpha",
     "jasmine": "^3.2.0",
     "jasmine-core": "~3.2.1",
-    "jquery": "~3.2.1",
+    "jquery": "~3.4.0",
     "karma": "~3.0.0",
     "karma-chrome-launcher": "~2.2.0",
     "karma-firefox-launcher": "~1.1.0",
