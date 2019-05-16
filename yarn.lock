@@ -2701,9 +2701,9 @@ gauge@~2.7.3:
     strip-ansi "^3.0.1"
     wide-align "^1.1.0"
 
-gemtc-web@drugis/gemtc-web#develop:
+gemtc-web@drugis/gemtc-web#0.9.1:
   version "0.9.1"
-  resolved "https://codeload.github.com/drugis/gemtc-web/tar.gz/0063966616a048acbcbf9aa460bf728f3d5a5d23"
+  resolved "https://codeload.github.com/drugis/gemtc-web/tar.gz/af854901959d6932c7a8944aebee8e8e7f172948"
   dependencies:
     async "~1.2.1"
     body-parser "^1.18.3"
@@ -3520,10 +3520,10 @@ jquery@>=3.0.0, jquery@~3.3.1:
   resolved "https://registry.yarnpkg.com/jquery/-/jquery-3.3.1.tgz#958ce29e81c9790f31be7792df5d4d95fc57fbca"
   integrity sha512-Ubldcmxp5np52/ENotGxlLe6aGMvmF4R8S6tZjsP6Knsaxd/xp3Zrh50cG93lR6nPXyUFwzN3ZSOQI0wRJNdGg==
 
-jquery@~3.2.1:
-  version "3.2.1"
-  resolved "https://registry.yarnpkg.com/jquery/-/jquery-3.2.1.tgz#5c4d9de652af6cd0a770154a631bba12b015c787"
-  integrity sha1-XE2d5lKvbNCncBVKYxu6ErAVx4c=
+jquery@~3.4.0:
+  version "3.4.1"
+  resolved "https://registry.yarnpkg.com/jquery/-/jquery-3.4.1.tgz#714f1f8d9dde4bdfa55764ba37ef214630d80ef2"
+  integrity sha512-36+AdBzCL+y6qjw5Tx7HgzeGCzC81MDDgaUP8ld2zhx58HdqXGoBd+tHdrBMiyjGQs0Hxs/MLZTu/eHNJJuWPw==
 
 js-base64@^2.4.9:
   version "2.4.9"
