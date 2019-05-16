@@ -1,24 +1,23 @@
 'use strict';
 define(['angular-mocks'], function(angularMocks) {
   describe('the d80 controller', function() {
-    var
-      rootScope,
-      epochServiceMock = jasmine.createSpyObj('EpochService', ['queryItems']),
-      armServiceMock = jasmine.createSpyObj('ArmService', ['queryItems']),
-      activityServiceMock = jasmine.createSpyObj('ActivityService', ['queryItems']),
-      studyDesignServiceMock = jasmine.createSpyObj('StudyDesignService', ['queryItems']),
-      endpointServiceMock = jasmine.createSpyObj('EndpointService', ['queryItems']),
-      measurementMomentServiceMock = jasmine.createSpyObj('MeasurementMomentService', ['queryItems']),
-      resultsServiceMock = jasmine.createSpyObj('ResultsService', ['queryResultsByOutcome']),
-      estimatesResourceMock = jasmine.createSpyObj('EstimatesResource', ['getEstimates']),
-      d80TableServiceMock = jasmine.createSpyObj('D80TableService', ['buildMeasurements', 'buildResultLabel', 'buildResultsByEndpointAndArm', 'buildEstimateRows', 'buildArmTreatmentsLabel']),
-      studyMock,
-      epochs = [{
-        uri: 'epochUri1'
-      }, {
-        uri: 'epochUri2',
-        isPrimary: 'truthy'
-      }],
+    var rootScope;
+    var epochServiceMock = jasmine.createSpyObj('EpochService', ['queryItems']);
+    var armServiceMock = jasmine.createSpyObj('ArmService', ['queryItems']);
+    var activityServiceMock = jasmine.createSpyObj('ActivityService', ['queryItems']);
+    var studyDesignServiceMock = jasmine.createSpyObj('StudyDesignService', ['queryItems']);
+    var endpointServiceMock = jasmine.createSpyObj('EndpointService', ['queryItems']);
+    var measurementMomentServiceMock = jasmine.createSpyObj('MeasurementMomentService', ['queryItems']);
+    var resultsServiceMock = jasmine.createSpyObj('ResultsService', ['queryResultsByOutcome']);
+    var estimatesResourceMock = jasmine.createSpyObj('EstimatesResource', ['getEstimates']);
+    var d80TableServiceMock = jasmine.createSpyObj('D80TableService', ['buildMeasurements', 'buildResultLabel', 'buildResultsByEndpointAndArm', 'buildEstimateRows', 'buildArmTreatmentsLabel']);
+    var studyMock;
+    var epochs = [{
+      uri: 'epochUri1'
+    }, {
+      uri: 'epochUri2',
+      isPrimary: 'truthy'
+    }],
       arms = [{
         armURI: 'armUri1'
       }, {
@@ -143,30 +142,6 @@ define(['angular-mocks'], function(angularMocks) {
           expect(d80TableServiceMock.buildEstimateRows).toHaveBeenCalledWith(estimates, endpoints, arms);
           expect(rootScope.isMissingPrimary).toBeFalsy();
         });
-      });
-    });
-    describe('for data without a primary epoch', function() {
-      beforeEach(function() {
-        delete epochs[1].isPrimary;
-        rootScope.$digest();
-      });
-      it('should set scope.isMissingPrimary to true', function() {
-        expect(rootScope.isMissingPrimary).toBeTruthy();
-      });
-      afterEach(function(){
-        epochs[1].isPrimary = true;
-      });
-    });
-    describe('for data with a primary epoch but no measurement moment at the right time', function() {
-      beforeEach(function() {
-        measurementMoments[0].epochUri = epochs[0].uri;
-        rootScope.$digest();
-      });
-      it('should set scope.isMissingPrimary to true', function() {
-        expect(rootScope.isMissingPrimary).toBeTruthy();
-      });
-      afterEach(function(){
-        measurementMoments[0].epochUri = epochs[1].uri;
       });
     });
   });

@@ -1,19 +1,24 @@
 <div class="grid-container">
-  <div class="grid-x" ng-if="isMissingPrimary">
+  <div class="grid-x" ng-if="measurementMoments.length == 0">
     <div class="cell">
       <h3>Day 80 summary of efficacy table</h3>
     </div>
     <div class="cell">
-      To generate a D80 table, there must be a primary epoch selected, and data must be measured exactly at the end of that primary epoch.
+      To generate a D80 table, there must be a at least one measurement moment defined.
     </div>
-  </div>  
-  <div class="grid-x" ng-if="!isMissingPrimary">
+  </div>
+  <div class="grid-x" ng-if="measurementMoments.length > 0">
     <div class="cell">
       <h3>Day 80 summary of efficacy table</h3>
     </div>
     <div class="cell large-6">Select baseline:
-      <select ng-model="baseline" ng-options="arm as arm.label for arm in arms" ng-change="selectBaseLine(baseline)"
+      <select ng-model="baseline" ng-options="arm as arm.label for arm in arms" ng-change="buildEstimateRows()"
         ng-init="measurements.baselineUri"></select>
+    </div>
+    <div class="cell large-6" ng-if="measurementMoments.length > 1">Select measurement moment:
+      <select ng-model="selected.measurementMoment"
+        ng-options="measurementMoment as measurementMoment.label for measurementMoment in measurementMoments"
+        ng-change="buildTable()"></select>
     </div>
     <div class="cell">
       <table class="d-80" id="d-80-table">
@@ -44,7 +49,8 @@
           </tr>
           <tr>
             <td>Hypothesis</td>
-            <td colspan='{{arms.length + 1}}'>&lt;Superiority&gt; &lt;Equivalence&gt; &lt;Non-inferiority&gt; &lt;Exploratory:
+            <td colspan='{{arms.length + 1}}'>&lt;Superiority&gt; &lt;Equivalence&gt; &lt;Non-inferiority&gt;
+              &lt;Exploratory:
               specify&gt;
             </td>
           </tr>
@@ -87,7 +93,8 @@
           </tr>
           <tr>
             <td>Analysis population and time point description</td>
-            <td colspan='{{arms.length + 1}}'>&lt;Intent to treat&gt; &lt;Per protocol&gt; &lt;other specify&gt; &lt;time
+            <td colspan='{{arms.length + 1}}'>&lt;Intent to treat&gt; &lt;Per protocol&gt; &lt;other specify&gt;
+              &lt;time
               point&gt;
             </td>
           </tr>
@@ -119,7 +126,8 @@
           </tr>
           <tr>
             <td>Analysis description</td>
-            <td colspan='{{arms.length + 1}}'>&lt;Secondary analysis&gt; &lt;Co-primary Analysis&gt; &lt;Other, specify:
+            <td colspan='{{arms.length + 1}}'>&lt;Secondary analysis&gt; &lt;Co-primary Analysis&gt; &lt;Other,
+              specify:
               &gt;
             </td>
           </tr>

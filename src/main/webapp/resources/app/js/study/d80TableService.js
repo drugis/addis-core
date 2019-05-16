@@ -69,7 +69,10 @@ define(['lodash'], function(_) {
         };
 
         _.forEach(subjectArms, function(arm) {
-          var estimate = _.find(estimateResults.estimates[endpoint.uri], ['armUri', arm.armURI]);
+          var estimate;
+          if (estimateResults.estimates) {
+            estimate = _.find(estimateResults.estimates[endpoint.uri], ['armUri', arm.armURI]);
+          }
           comparisonGroupsRow.rowValues.push(
             arm.label
           );
@@ -82,6 +85,7 @@ define(['lodash'], function(_) {
           pValueRow.rowValues.push(
             estimate ? estimate.pValue.toFixed(2) : '<P-value>'
           );
+
         });
 
         resultRows.push(comparisonGroupsRow);
@@ -119,7 +123,7 @@ define(['lodash'], function(_) {
         sampleSize = resultsObject.resultProperties.sampleSize;
         var count = resultsObject.resultProperties.count;
         var percentage = resultsObject.resultProperties.percentage;
-        if(!count && percentage){
+        if (!count && percentage) {
           count = ((percentage * sampleSize) / 100).toFixed(0);
         }
         return count && sampleSize ?
