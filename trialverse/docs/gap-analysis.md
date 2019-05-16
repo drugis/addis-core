@@ -21,7 +21,7 @@ Requirements
 To automatically extract measurement data from studies, ADDIS requires those studies to be appropriately structured. This means that the following needs to be defined:
 
 - Treatment arms (subgroups of the study population).
-- Epochs (ordered partitions the progression and partitioning in time of the study). *Examples: Screening, Randomization, Treatment, Follow-up.*
+- Epochs (ordered partitions in time of the study). *Examples: Screening, Treatment, Follow-up.*
 - Activities (what is done to participants). *Examples: randomization, washout, 30 milligram aspirin per day.*
 - The study design: which activity took place in which arm, during which epoch.
 - Measurement moments (when variables were measured). These need to be linked to an epoch. *Examples: "At the end of the treatment phase", "12 weeks after the start of the treatment phase."*
