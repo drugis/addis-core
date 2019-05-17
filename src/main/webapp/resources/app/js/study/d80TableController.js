@@ -33,7 +33,7 @@ define(['lodash', 'clipboard'], function(_, Clipboard) {
     // functions
     $scope.buildEstimateRows = buildEstimateRows;
     $scope.buildTable = buildTable;
-    $scope.cancel = cancel;
+    $scope.cancel = $modalInstance.close();
 
     // init
     $scope.study = study;
@@ -56,7 +56,7 @@ define(['lodash', 'clipboard'], function(_, Clipboard) {
       $scope.arms = createArms();
       $scope.baseline = $scope.arms[0];
       $scope.selected = {
-        measurementMoment: getInitialMeasurementMoment()
+        measurementMoment: D80TableService.getInitialMeasurementMoment($scope.measurementMoments, $scope.primaryEpoch)
       };
 
       if (!$scope.selected.measurementMoment) {
@@ -69,45 +69,21 @@ define(['lodash', 'clipboard'], function(_, Clipboard) {
 
     function buildTable() {
       $q.all($scope.resultsPromises).then(function(results) {
-        $scope.measurements = buildMeasurements(results);
+        $scope.measurements = D80TableService.buildMeasurements(
+          results, $scope.selected.measurementMoment.uri, $scope.endpoints
+        );
         buildEstimateRows();
       });
     }
 
-    function buildMeasurements(results) {
-      return D80TableService.buildMeasurements(results, $scope.selected.measurementMoment.uri, $scope.endpoints);
-    }
-
-    function getInitialMeasurementMoment() {
-      var primaryMeasurementMoment;
-      if ($scope.primaryEpoch) {
-        primaryMeasurementMoment = _.find($scope.measurementMoments, function(measurementMoment) {
-          return measurementMoment.offset === 'PT0S' && measurementMoment.relativeToAnchor === 'ontology:anchorEpochEnd' &&
-            measurementMoment.epochUri === $scope.primaryEpoch.uri;
-        });
-      }
-      return primaryMeasurementMoment && $scope.measurementMoments ? primaryMeasurementMoment : $scope.measurementMoments[0];
-    }
-
     function createArms() {
       return _.map($scope.arms, function(arm) {
-        arm.activity = getActivityForArm(arm);
-        arm.treatmentLabel = arm.activity.treatments.length === 0 ? '<treatment>' : D80TableService.buildArmTreatmentsLabel(arm.activity.treatments);
+        if ($scope.primaryEpoch) {
+          arm.activity = D80TableService.getActivityForArm(arm, $scope.activities, $scope.designCoordinates, $scope.primaryEpoch);
+          arm.treatmentLabel = arm.activity.treatments.length === 0 ? '<treatment>' : D80TableService.buildArmTreatmentsLabel(arm.activity.treatments);
+        }
         return arm;
       });
-    }
-
-    function getActivityForArm(arm) {
-      var activityUri = getActivityUri(arm);
-      return _.find($scope.activities, function(activity) {
-        return activity.activityUri === activityUri;
-      });
-    }
-
-    function getActivityUri(arm) {
-      return _.find($scope.designCoordinates, function(coordinate) {
-        return coordinate.armUri === arm.armURI && coordinate.epochUri === $scope.primaryEpoch.uri;
-      }).activityUri;
     }
 
     function queryItems(service, scopeProperty) {
@@ -124,10 +100,6 @@ define(['lodash', 'clipboard'], function(_, Clipboard) {
       }).$promise.then(function(estimateResults) {
         $scope.effectEstimateRows = D80TableService.buildEstimateRows(estimateResults, $scope.endpoints, $scope.arms);
       });
-    }
-
-    function cancel() {
-      $modalInstance.close();
     }
   };
   return dependencies.concat(D80TableController);

@@ -17,7 +17,7 @@
     </div>
     <div class="cell large-6" ng-if="measurementMoments.length > 1">Select measurement moment:
       <select ng-model="selected.measurementMoment"
-        ng-options="measurementMoment as measurementMoment.label for measurementMoment in measurementMoments"
+        ng-options="measurementMoment as measurementMoment.label for measurementMoment in measurementMoments track by uri"
         ng-change="buildTable()"></select>
     </div>
     <div class="cell">

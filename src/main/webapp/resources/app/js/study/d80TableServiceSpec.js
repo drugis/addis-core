@@ -1,5 +1,5 @@
 'use strict';
-define(['angular-mocks', './study'], function(angularMocks) {
+define(['angular-mocks', './study'], function() {
   var d80tableservice;
   describe('the d80tableservice', function() {
     var results = [
@@ -85,7 +85,6 @@ define(['angular-mocks', './study'], function(angularMocks) {
 
     describe('buildResultsByEndpointAndArm', function() {
       it('should build a map of endpoints to arms to results for the data fo the primary measurement moment', function() {
-
         var expectedResult = {
           outcome1Uri: {
             arm1Uri: results[0].slice(0, 3),
@@ -286,6 +285,7 @@ define(['angular-mocks', './study'], function(angularMocks) {
           d80tableservice.buildResultLabel(resultsObject);
         }).toThrow('unknown measurement type');
       });
+      
       it('should be able to use percentage with event to fill in a missing count', function() {
         var resultsObject = {
           type: 'dichotomous',
@@ -298,6 +298,7 @@ define(['angular-mocks', './study'], function(angularMocks) {
         var result = d80tableservice.buildResultLabel(resultsObject);
         expect(result).toEqual(expectedResult);
       });
+
       it('should be able to calculate a missing standard deviation, using the standard error', function() {
         var resultsObject = {
           type: 'continuous',
@@ -373,6 +374,55 @@ define(['angular-mocks', './study'], function(angularMocks) {
             treatmentDoseType: 'ontology:wrongtype'
           }]);
         }).toThrow('unknown dosage type');
+      });
+    });
+
+    describe('getInitialMeasurementMoment', function() {
+      it('should return the first measurement moment in the list if there is no primary epoch', function() {
+        var measurementMoments = [{
+          some: 'moment'
+        }];
+        var primaryEpoch;
+        var result = d80tableservice.getInitialMeasurementMoment(measurementMoments, primaryEpoch);
+        expect(result).toEqual(measurementMoments[0]);
+      });
+
+      it('should return the measurement moment at exactly the end of the primary epoch', function() {
+        var measurementMoments = [{
+          some: 'moment'
+        }, {
+          offset: 'PT0S',
+          relativeToAnchor: 'ontology:anchorEpochEnd',
+          epochUri: 'primaryEpoch'
+        }];
+        var primaryEpoch = {
+          uri: 'primaryEpoch'
+        };
+        var result = d80tableservice.getInitialMeasurementMoment(measurementMoments, primaryEpoch);
+        expect(result).toEqual(measurementMoments[1]);
+      });
+    });
+
+    describe('getActivityForArm', function() {
+      it('should return the activity that is on the arm for the primary epoch', function() {
+        var arm = {
+          armURI: 'armUri'
+        };
+        var activities = [{
+          activityUri: 'notUsedUri'
+        }, {
+          activityUri: 'activityUri'
+        }];
+        var designCoordinates = [{
+          armUri: 'armUri',
+          epochUri: 'primary',
+          activityUri: 'activityUri'
+        }];
+        var primaryEpoch = {
+          uri: 'primary'
+        };
+        var result = d80tableservice.getActivityForArm(arm, activities, designCoordinates, primaryEpoch);
+        expect(result).toEqual(activities[1]);
       });
     });
   });
