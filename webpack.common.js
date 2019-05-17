@@ -7,6 +7,8 @@ const CopyWebpackPlugin = require('copy-webpack-plugin');
 let basePath = path.join(__dirname, '/src/main/webapp/');
 let fs = require('fs');
 
+const MATOMO_VERSION = process.env.MATOMO_VERSION ? process.env.MATOMO_VERSION : 'Test';
+
 let config = {
   entry: {
     'main': basePath + 'resources/app/js/main.js',
@@ -72,14 +74,14 @@ let config = {
       template: basePath + 'WEB-INF/templates/index.ejs',
       inject: 'head',
       chunks: ['main'],
-      matomo: fs.readFileSync(require.resolve(basePath + 'WEB-INF/templates/matomo.html'))
+      matomo: fs.readFileSync(require.resolve(basePath + 'WEB-INF/templates/matomo'+ MATOMO_VERSION +'.html'))
     }),
     new HtmlWebpackPlugin({
       filename: 'manual.html',
       template: basePath + 'resources/manual.ejs',
       inject: 'head',
       chunks: ['manual'],
-      matomo: fs.readFileSync(require.resolve(basePath + 'WEB-INF/templates/matomo.html'))
+      matomo: fs.readFileSync(require.resolve(basePath + 'WEB-INF/templates/matomo'+ MATOMO_VERSION +'.html'))
     }),
     new CleanWebpackPlugin([basePath + '/WEB-INF/views/dist']),
     new CopyWebpackPlugin([
