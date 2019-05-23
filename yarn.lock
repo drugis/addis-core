@@ -2762,9 +2762,9 @@ gauge@~2.7.3:
     strip-ansi "^3.0.1"
     wide-align "^1.1.0"
 
-gemtc-web@drugis/gemtc-web#develop:
+gemtc-web@drugis/gemtc-web#master:
   version "0.10.0"
-  resolved "https://codeload.github.com/drugis/gemtc-web/tar.gz/11f3be92a26e48fa9f601033364fa985a996e4bc"
+  resolved "https://codeload.github.com/drugis/gemtc-web/tar.gz/bdd8a708ce86fc10e8931bd526b1e26592b13ac7"
   dependencies:
     async "~1.2.1"
     body-parser "^1.18.3"
@@ -3919,9 +3919,9 @@ map-visit@^1.0.0:
   dependencies:
     object-visit "^1.0.0"
 
-mcda-web@drugis/mcda-elicitation-web#develop:
+mcda-web@drugis/mcda-elicitation-web#master:
   version "0.18.0"
-  resolved "https://codeload.github.com/drugis/mcda-elicitation-web/tar.gz/972db03bafb5b52fce284910b4b8a72290527c5f"
+  resolved "https://codeload.github.com/drugis/mcda-elicitation-web/tar.gz/b418fe071ee4182b374c0005f9148a338e219043"
   dependencies:
     async "~2.6.1"
     body-parser "~1.18.3"
