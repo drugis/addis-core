@@ -1,19 +1,18 @@
 'use strict';
-define(['angular', 'angular-mocks'], function(angular, angularMocks) {
-  describe('copy study controller', function() {
+define(['angular', 'angular-mocks'], function(angular) {
+  describe('CopyStudyController', function() {
 
-    var scope,
-      modalInstanceMock = jasmine.createSpyObj('$mockInstance', ['close', 'dismiss']),
-      datasetsMock = ['dataset 1'],
-      userUidMock = 'userUidMock',
-      datasetUuidMock = 'datasetUuid',
-      graphUuidMock = 'graphUuid',
-      versionUuidMock = 'versionUuid',
-      copyDefer,
-      copyPromise,
-      copyStudyResourceMock = jasmine.createSpyObj('CopyStudyResource', ['copy']),
-      uuidServiceMock = jasmine.createSpyObj('UUIDService', ['generate', 'buildGraphUri'])
-      ;
+    var scope;
+    var  modalInstanceMock = jasmine.createSpyObj('$mockInstance', ['close', 'dismiss']);
+    var  datasetsMock = ['dataset 1'];
+    var  loggedInUserIdMock = 'loggedInUserIdMock';
+    var  datasetUuidMock = 'datasetUuid';
+    var  graphUuidMock = 'graphUuid';
+    var  versionUuidMock = 'versionUuid';
+    var  copyDefer;
+    var  copyPromise;
+    var  copyStudyResourceMock = jasmine.createSpyObj('CopyStudyResource', ['copy']);
+    var  uuidServiceMock = jasmine.createSpyObj('UUIDService', ['generate', 'buildGraphUri']);
     beforeEach(angular.mock.module('trialverse.study'));
 
     beforeEach(inject(function($rootScope, $q, $controller) {
@@ -29,7 +28,7 @@ define(['angular', 'angular-mocks'], function(angular, angularMocks) {
         $scope: scope,
         $modalInstance: modalInstanceMock,
         datasets: datasetsMock,
-        userUid: userUidMock,
+        loggedInUserId: loggedInUserIdMock,
         datasetUuid: datasetUuidMock,
         graphUuid: graphUuidMock,
         versionUuid: versionUuidMock,

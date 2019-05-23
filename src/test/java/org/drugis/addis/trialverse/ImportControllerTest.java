@@ -2,16 +2,17 @@ package org.drugis.addis.trialverse;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.drugis.addis.trialverse.controller.ImportController;
-import org.drugis.addis.trialverse.service.ClinicalTrialsImportService;
-import org.drugis.addis.trialverse.service.impl.ClinicalTrialsImportError;
+import org.drugis.addis.config.TestConfig;
+import org.drugis.addis.importer.controller.ImportController;
+import org.drugis.addis.importer.service.ClinicalTrialsImportService;
+import org.drugis.addis.importer.service.impl.ClinicalTrialsImportError;
 import org.drugis.addis.util.WebConstants;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -28,7 +29,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 /**
  * Created by connor on 12-5-16.
  */
-@Configuration
+@ContextConfiguration(classes = {TestConfig.class})
 @EnableWebMvc
 public class ImportControllerTest {
 
@@ -36,14 +37,13 @@ public class ImportControllerTest {
   private ObjectMapper objectMapper = new ObjectMapper();
 
   @Mock
-  ClinicalTrialsImportService clinicalTrialsImportService = mock(ClinicalTrialsImportService.class);
+  ClinicalTrialsImportService clinicalTrialsImportService;
 
   @InjectMocks
   private ImportController importController;
 
   @Before
   public void setUp() throws URISyntaxException {
-    reset(clinicalTrialsImportService);
     initMocks(this);
     mockMvc = MockMvcBuilders.standaloneSetup(importController).build();
   }

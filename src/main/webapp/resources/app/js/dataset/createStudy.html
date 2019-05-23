@@ -19,7 +19,8 @@
           </label>
         </div>
         <div class="cell">
-          <button class="button success" type="submit" ng-disabled="!study.comment || !isUniqueIdentifier || isCreatingStudy">
+          <button class="button success" type="submit"
+            ng-disabled="!study.comment || !isUniqueIdentifier || isCreatingStudy">
             create
           </button>
         </div>
@@ -39,13 +40,16 @@
           <label>Short Name (e.g. Hansen 2005)</label>
         </div>
         <div class="cell">
-          <input type="text" ng-disabled="!isValidUpload || isCreatingStudy" ng-model="excelUpload.Sheets['Study data'].A4.v" ng-change="checkUniqueShortName(excelUpload.Sheets['Study data'].A4.v)">
+          <input type="text" ng-disabled="!isValidUpload || isCreatingStudy"
+            ng-model="excelUpload.Sheets['Study data'].A4.v"
+            ng-change="checkUniqueShortName(excelUpload.Sheets['Study data'].A4.v)">
         </div>
         <div class="cell" ng-show="!isUniqueIdentifier">
           <label class="alert">Short name must be unique</label>
         </div>
         <div class="cell">
-          <button class="button success" type="submit" ng-disabled="!excelUpload || isCreatingStudy || errors.length || !isUniqueIdentifier">
+          <button class="button success" type="submit"
+            ng-disabled="!excelUpload || isCreatingStudy || errors.length || !isUniqueIdentifier">
             create
           </button>
         </div>
@@ -56,15 +60,15 @@
     </form>
   </tab>
   <tab heading="ClinicalTrials.gov">
-    <form novalidate ng-submit="import(studyImport)">
+    <form novalidate ng-submit="importNCT(studyImport)">
       <div class="grid-x">
         <div class="cell">
-          <h3>Import study</h3>
+          <h3>Import study from ClinicalTrials.gov</h3>
         </div>
         <div class="cell">
           <label>NCT ID</label>
           <input autofocus type="text" ng-disabled="studyImport.loading" ng-model="studyImport.nctId"
-            ng-model-options="{ debounce: 800 }" ng-change="getInfo(studyImport)">
+            ng-model-options="{ debounce: 800 }" ng-change="getNCTInfo(studyImport)">
         </div>
         <div class="cell">
           <style>
@@ -75,7 +79,8 @@
           </style>
           <div ng-show="studyImport.loading"><i class="fa fa-spinner fa-spin"></i> loading</div>
           <label class="alert" ng-show="studyImport.notFound">No study found for {{studyImport.nctId}}</label>
-          <label class="alert" ng-show="studyImport.nctId && !isValidNct(studyImport.nctId)">invalid NCT id, the id should start with 'NCT'</label>
+          <label class="alert" ng-show="studyImport.nctId && !isValidNct(studyImport.nctId)">invalid NCT id, the id
+            should start with 'NCT'</label>
 
           <table ng-show="studyImport.basicInfo.id && !studyImport.loading" class="local-hide layout-table"
             style="width: 100%;">
@@ -133,7 +138,9 @@
                 <strong>link</strong>
               </td>
               <td class="large-9">
-                <a ng-href="{{studyImport.basicInfo._links.source.href}}" target="_blank">{{studyImport.basicInfo._links.source.title}} <i class="fa fa-external-link" aria-hidden="true"></i></a>
+                <a ng-href="{{studyImport.basicInfo._links.source.href}}"
+                  target="_blank">{{studyImport.basicInfo._links.source.title}} <i class="fa fa-external-link"
+                    aria-hidden="true"></i></a>
               </td>
             </tr>
           </table>
@@ -141,11 +148,30 @@
       </div>
       <div class="grid-x" style="margin-top: 1rem;">
         <div class="cell">
-          <button class="button success" type="submit" ng-disabled="isCreatingStudy || !studyImport.nctId || !isValidNct(studyImport.nctId) || !studyImport.basicInfo || !studyImport.basicInfo._links">
+          <button class="button success" type="submit"
+            ng-disabled="isCreatingStudy || !studyImport.nctId || !isValidNct(studyImport.nctId) || !studyImport.basicInfo || !studyImport.basicInfo._links">
             Import
           </button>
           <span ng-show="isCreatingStudy"><i class="fa fa-spinner fa-spin"></i> importing study</span>
         </div>
+      </div>
+    </form>
+  </tab>
+  <tab heading="EudraCT XML">
+    <form novalidate ng-submit="importEudract()">
+      <div class="grid-x">
+        <div class="cell">
+          <h3>Import study from EudraCT XML file</h3>
+        </div>
+        <div class="cell">
+          <input type="file" name="eudractFile" accept=".xml"
+            onchange="var scope = angular.element(this).scope(); scope.uploadEudract(this); scope.$digest()">
+        </div>
+      <div class="cell">
+        <button class="button success" type="submit"
+          ng-disabled="!eudractUpload || isCreatingStudy">
+          create
+        </button>
       </div>
     </form>
   </tab>

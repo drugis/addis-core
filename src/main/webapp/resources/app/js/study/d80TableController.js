@@ -1,18 +1,43 @@
 'use strict';
 define(['lodash', 'clipboard'], function(_, Clipboard) {
-  var dependencies = ['$scope', '$filter', '$modalInstance', '$q', 'EpochService', 'ArmService',
-    'ActivityService', 'StudyDesignService', 'EndpointService', 'MeasurementMomentService', 'ResultsService',
-    'EstimatesResource', 'D80TableService', 'study'
+  var dependencies = [
+    '$scope',
+    '$modalInstance',
+    '$q',
+    'EpochService',
+    'ArmService',
+    'ActivityService',
+    'StudyDesignService',
+    'EndpointService',
+    'MeasurementMomentService',
+    'ResultsService',
+    'EstimatesResource',
+    'D80TableService',
+    'study'
   ];
-  var D80TableController = function($scope, $filter, $modalInstance, $q, EpochService, ArmService,
-    ActivityService, StudyDesignService, EndpointService, MeasurementMomentService, ResultsService,
-    EstimatesResource, D80TableService, study) {
+  var D80TableController = function(
+    $scope,
+    $modalInstance,
+    $q,
+    EpochService,
+    ArmService,
+    ActivityService,
+    StudyDesignService,
+    EndpointService,
+    MeasurementMomentService,
+    ResultsService,
+    EstimatesResource,
+    D80TableService,
+    study
+  ) {
     // functions
-    $scope.selectBaseLine = selectBaseLine;
-    $scope.cancel = cancel;
+    $scope.buildEstimateRows = buildEstimateRows;
+    $scope.buildTable = buildTable;
+    $scope.cancel = $modalInstance.close();
 
     // init
     $scope.study = study;
+    $scope.selected = {};
 
     new Clipboard('.clipboard-button');
 
@@ -28,43 +53,38 @@ define(['lodash', 'clipboard'], function(_, Clipboard) {
     ];
 
     $q.all(allThePromises).then(function() {
-      if ($scope.primaryEpoch) {
-        $scope.arms = _.map($scope.arms, function(arm) {
-          var coord = _.find($scope.designCoordinates, function(coordinate) {
-            return coordinate.armUri === arm.armURI && coordinate.epochUri === $scope.primaryEpoch.uri;
-          });
-          arm.activity = _.find($scope.activities, function(activity) {
-            return activity.activityUri === coord.activityUri;
-          });
-          arm.treatmentLabel = arm.activity.treatments.length === 0 ? '<treatment>' : D80TableService.buildArmTreatmentsLabel(arm.activity.treatments);
-          return arm;
-        });
-        $scope.baseline = $scope.arms[0];
-        
-        var primaryMeasurementMoment = _.find($scope.measurementMoments, function(measurementMoment) {
-          return measurementMoment.offset === 'PT0S' && measurementMoment.relativeToAnchor === 'ontology:anchorEpochEnd' &&
-            measurementMoment.epochUri === $scope.primaryEpoch.uri;
-        });
-        if (!primaryMeasurementMoment) {
-          $scope.isMissingPrimary = true;
-          return;
-        }
-        var resultsPromises = _.map(_.map($scope.endpoints, 'uri'), ResultsService.queryResultsByOutcome);
-        
-        $q.all(resultsPromises).then(function(results) {
-          $scope.measurements = D80TableService.buildMeasurements(results, primaryMeasurementMoment.uri, $scope.endpoints);
-          var estimates = EstimatesResource.getEstimates({
-            measurements: $scope.measurements.toBackEndMeasurements,
-            baselineUri: $scope.baseline.armURI
-          });
-          estimates.$promise.then(function(estimateResults) {
-            $scope.effectEstimateRows = D80TableService.buildEstimateRows(estimateResults, $scope.endpoints, $scope.arms);
-          });
-        });
+      $scope.arms = createArms();
+      $scope.selected = {
+        baseline:  $scope.arms[0],
+        measurementMoment: D80TableService.getInitialMeasurementMoment($scope.measurementMoments, $scope.primaryEpoch)
+      };
+
+      if (!$scope.selected.measurementMoment) {
+        return;
       } else {
-        $scope.isMissingPrimary = true;
+        $scope.resultsPromises = _.map(_.map($scope.endpoints, 'uri'), ResultsService.queryResultsByOutcome);
+        buildTable();
       }
     });
+
+    function buildTable() {
+      $q.all($scope.resultsPromises).then(function(results) {
+        $scope.measurements = D80TableService.buildMeasurements(
+          results, $scope.selected.measurementMoment.uri, $scope.endpoints
+        );
+        buildEstimateRows();
+      });
+    }
+
+    function createArms() {
+      return _.map($scope.arms, function(arm) {
+        if ($scope.primaryEpoch) {
+          arm.activity = D80TableService.getActivityForArm(arm, $scope.activities, $scope.designCoordinates, $scope.primaryEpoch);
+          arm.treatmentLabel = arm.activity.treatments.length === 0 ? '<treatment>' : D80TableService.buildArmTreatmentsLabel(arm.activity.treatments);
+        }
+        return arm;
+      });
+    }
 
     function queryItems(service, scopeProperty) {
       return service.queryItems().then(function(resolvedValue) {
@@ -73,20 +93,13 @@ define(['lodash', 'clipboard'], function(_, Clipboard) {
       });
     }
 
-    function selectBaseLine(newBaseline) {
-      $scope.baseline = newBaseline;
-      var estimates = EstimatesResource.getEstimates({
+    function buildEstimateRows() {
+      EstimatesResource.getEstimates({
         measurements: $scope.measurements.toBackEndMeasurements,
-        baselineUri: $scope.baseline.armURI
-      });
-
-      estimates.$promise.then(function(estimateResults) {
+        baselineUri: $scope.selected.baseline.armURI
+      }).$promise.then(function(estimateResults) {
         $scope.effectEstimateRows = D80TableService.buildEstimateRows(estimateResults, $scope.endpoints, $scope.arms);
       });
-    }
-
-    function cancel() {
-      $modalInstance.close();
     }
   };
   return dependencies.concat(D80TableController);

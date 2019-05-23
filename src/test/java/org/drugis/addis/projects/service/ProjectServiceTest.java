@@ -124,10 +124,9 @@ public class ProjectServiceTest {
 
   private static final String datasetUuid = "datasetUuid";
   private static final URI versionedDatasetUri = URI.create("http://trials.drugis.org/datasets/" + datasetUuid);
-  private Integer subProblemId = 100;
 
   @Before
-  public void setUp() throws ResourceDoesNotExistException, URISyntaxException {
+  public void setUp() throws ResourceDoesNotExistException {
 
     projectService = new ProjectServiceImpl();
 

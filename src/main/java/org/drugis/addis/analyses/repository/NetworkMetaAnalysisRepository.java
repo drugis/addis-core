@@ -14,11 +14,13 @@ import java.util.List;
 public interface NetworkMetaAnalysisRepository {
   NetworkMetaAnalysis create(AnalysisCommand newAnalysis) throws MethodNotAllowedException, ResourceDoesNotExistException;
 
-  Collection<NetworkMetaAnalysis> query(Integer projectId);
+  Collection<NetworkMetaAnalysis> queryByProjectId(Integer projectId);
 
   List<NetworkMetaAnalysis> queryByOutcomes(Integer projectId, List<Integer> outcomeIds);
 
   NetworkMetaAnalysis update(NetworkMetaAnalysis analysis) throws ResourceDoesNotExistException, MethodNotAllowedException;
 
   void setPrimaryModel(Integer analysisId, Integer modelId);
+
+  void setTitle(Integer analysisId, String newTitle);
 }

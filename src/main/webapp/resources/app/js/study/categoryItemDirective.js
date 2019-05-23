@@ -30,9 +30,13 @@ define(['angular', 'lodash'], function(angular, _) {
         }
 
         var service = $injector.get(scope.settings.service);
-        scope.$watch('item', function() {
-          scope.isEditingAllowed = scope.isEditingAllowed && !scope.item.disableEditing;
-        }, true);
+        scope.$watch('item', updateEditability, true);
+
+        scope.$watch('isEditingAllowed', updateEditability);
+
+        function updateEditability() {
+          scope.canEditItem = scope.isEditingAllowed && !scope.item.disableEditing;
+        }
 
         function onEdit() {
           scope.$emit('updateStudyDesign');

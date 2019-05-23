@@ -84,4 +84,10 @@ public class ModelRepositoryImpl implements ModelRepository {
     model.setArchived(archived);
     model.setArchivedOn( archived ? new Date(): null);
   }
+
+  @Override
+  public void setTitle(Integer modelId, String title) {
+    Model model = em.find(Model.class, modelId);
+    model.setTitle(title);
+  }
 }

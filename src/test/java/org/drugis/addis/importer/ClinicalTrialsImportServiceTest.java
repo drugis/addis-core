@@ -1,4 +1,4 @@
-package org.drugis.addis.trialverse.service;
+package org.drugis.addis.importer;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -7,20 +7,22 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.message.BasicHttpResponse;
 import org.apache.http.message.BasicStatusLine;
-import org.drugis.addis.trialverse.service.impl.ClinicalTrialsImportError;
-import org.drugis.addis.trialverse.service.impl.ClinicalTrialsImportServiceImpl;
+import org.drugis.addis.importer.service.impl.ClinicalTrialsImportError;
+import org.drugis.addis.importer.service.impl.ClinicalTrialsImportServiceImpl;
+import org.drugis.addis.importer.service.ClinicalTrialsImportService;
 import org.drugis.trialverse.graph.exception.UpdateGraphException;
 import org.drugis.trialverse.graph.repository.GraphWriteRepository;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.springframework.mock.web.DelegatingServletInputStream;
 
+import javax.servlet.ServletInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
-import java.net.URISyntaxException;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
@@ -29,21 +31,18 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
-/**
- * Created by connor on 12-5-16.
- */
 public class ClinicalTrialsImportServiceTest {
 
   private ObjectMapper objectMapper = new ObjectMapper();
 
   @Mock
-  HttpClient httpClient = mock(HttpClient.class);
+  private HttpClient httpClient = mock(HttpClient.class);
 
   @Mock
-  GraphWriteRepository graphWriteRepository = mock(GraphWriteRepository.class);
+  private GraphWriteRepository graphWriteRepository = mock(GraphWriteRepository.class);
 
   @InjectMocks
-  ClinicalTrialsImportService clinicalTrialsImportService;
+  private ClinicalTrialsImportService clinicalTrialsImportService;
 
   @Before
   public void setUp() {
@@ -93,7 +92,7 @@ public class ClinicalTrialsImportServiceTest {
   }
 
   @Test
-  public void testImportStudy() throws ClinicalTrialsImportError, URISyntaxException, IOException, UpdateGraphException {
+  public void testImportStudy() throws ClinicalTrialsImportError, IOException, UpdateGraphException {
     String commitTitle = "title";
     String commitDesc = "desc";
     String datasetUuid = "dataset";
@@ -111,6 +110,27 @@ public class ClinicalTrialsImportServiceTest {
     when(graphWriteRepository.updateGraph(URI.create(datasetUuid), graphUuid, inputStream, commitTitle, commitDesc)).thenReturn(mockHeader);
 
     Header result = clinicalTrialsImportService.importStudy(commitTitle, commitDesc, datasetUuid, graphUuid, studyRef);
+    assertEquals(mockHeader, result);
+  }
+
+  @Test
+  public void testImportEudract() throws ClinicalTrialsImportError, IOException, UpdateGraphException {
+    String datasetUuid = "dataset";
+    String graphUuid = "graph";
+    String anyInput = "<xml></xml>";
+    CloseableHttpResponse response = mock(CloseableHttpResponse.class);
+    HttpEntity entity = mock(HttpEntity.class);
+    InputStream inputStream = new ByteArrayInputStream(anyInput.getBytes());
+    when(response.getStatusLine()).thenReturn(new BasicStatusLine(HttpVersion.HTTP_1_1, HttpStatus.SC_OK, "FINE!"));
+    when(entity.getContent()).thenReturn(inputStream);
+    when(response.getEntity()).thenReturn(entity);
+    when(httpClient.execute(any())).thenReturn(response);
+    Header mockHeader = mock(Header.class);
+    when(graphWriteRepository.updateGraph(URI.create(datasetUuid), graphUuid, inputStream,
+            "Imported study from EudraCT XML", null)).thenReturn(mockHeader);
+
+    ServletInputStream mockXML = new DelegatingServletInputStream(inputStream);
+    Header result = clinicalTrialsImportService.importEudract(datasetUuid, graphUuid, mockXML);
     assertEquals(mockHeader, result);
   }
 }

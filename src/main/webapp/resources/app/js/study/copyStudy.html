@@ -22,7 +22,7 @@
       </div>
       <div class="cell" ng-if="copyComplete">
         <button class="button" type="button" ng-click="cancel()">Close</button> <a ng-click="cancel()" style="margin-left:1rem; text-decoration: underline;"
-          ui-sref="versionedDataset.study({userUid: userUid, datasetUuid: targetDatasetUuid, versionUuid: newVersionUuid, studyGraphUuid: targetGraphUuid})">Go to new copy</a>
+          ui-sref="versionedDataset.study({userUid: loggedInUserId, datasetUuid: targetDatasetUuid, versionUuid: newVersionUuid, studyGraphUuid: targetGraphUuid})">Go to new copy</a>
       </div>
     </div>
   </div>

@@ -65,7 +65,8 @@ public class GraphWriteRepositoryImpl implements GraphWriteRepository {
   @Caching(evict = {
           @CacheEvict(cacheNames = "datasetHistory", key = "#datasetUri.toString()"),
           @CacheEvict(cacheNames = "versionedDatasetQuery", allEntries = true)})
-  public Header updateGraph(URI datasetUri, String graphUuid, InputStream graph, String commitTitle, String commitDescription) throws UpdateGraphException {
+  public Header updateGraph(URI datasetUri, String graphUuid, InputStream graph,
+                            String commitTitle, String commitDescription) throws UpdateGraphException {
 
     UriComponents uriComponents = UriComponentsBuilder.fromHttpUrl(datasetUri.toString())
             .path(DATA_ENDPOINT)

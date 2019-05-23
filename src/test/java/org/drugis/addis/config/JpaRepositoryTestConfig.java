@@ -45,6 +45,7 @@ import static org.mockito.Mockito.mock;
                 "org.drugis.addis.trialverse.service",
                 "org.drugis.addis.trialverse.factory",
                 "org.drugis.trialverse",
+                "org.drugis.addis.importer",
                 "org.drugis.addis.util",
                 "org.drugis.addis.effectsTables",
                 "org.drugis.addis.covariates",

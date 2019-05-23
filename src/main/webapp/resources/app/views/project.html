@@ -220,7 +220,7 @@
                             <a ng-click="openDeleteDefinitionDialog(covariate,'covariate')"><i
                                 class="fa fa-trash  fa-2x" style="color:red"></i></a>
                           </td>
-                          <td ng-if="editMode.allowEditing && covariateUsage[covariate.id].length">
+                          <td class="text-center" ng-if="editMode.allowEditing && covariateUsage[covariate.id].length">
                             <a class="has-tip"
                               tooltip-html-unsafe="<i class='fa fa-exclamation-triangle'></i> Covariate is used in analyses: {{covariateUsage[covariate.id].join(', ')}}"
                               tooltip-placement="left">

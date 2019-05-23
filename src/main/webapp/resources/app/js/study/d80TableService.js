@@ -5,31 +5,28 @@ define(['lodash'], function(_) {
     var exponentialFilter = $filter('exponentialFilter'),
       durationFilter = $filter('durationFilter');
 
-    function buildResultsByEndpointAndArm(results, primaryMeasurementMomentUri) {
-      var resultsByEndpointAndArm = {};
-      _.forEach(results, function(resultsForOutcome) {
-        resultsByEndpointAndArm = _.chain(resultsForOutcome)
-          .filter(['momentUri', primaryMeasurementMomentUri])
-          .reduce(function(accum, result) {
-            if (!accum[result.outcomeUri]) {
-              accum[result.outcomeUri] = {};
+    function buildResultsByEndpointAndArm(results, measurementMomentUri) {
+      return _.reduce(results, function(accum, resultsForOutcome) {
+        accum = _.chain(resultsForOutcome)
+          .filter(['momentUri', measurementMomentUri])
+          .reduce(function(innerAccum, result) {
+            if (!innerAccum[result.outcomeUri]) {
+              innerAccum[result.outcomeUri] = {};
             }
-            if (!accum[result.outcomeUri][result.armUri]) {
-              accum[result.outcomeUri][result.armUri] = [];
+            if (!innerAccum[result.outcomeUri][result.armUri]) {
+              innerAccum[result.outcomeUri][result.armUri] = [];
             }
-            accum[result.outcomeUri][result.armUri].push(result);
-            return accum;
-          }, resultsByEndpointAndArm)
+            innerAccum[result.outcomeUri][result.armUri].push(result);
+            return innerAccum;
+          }, accum)
           .value();
-      });
-      return resultsByEndpointAndArm;
+        return accum;
+      }, {});
     }
 
-    function buildMeasurements(results, primaryMeasurementMomentUri, endpoints) {
+    function buildMeasurements(results, measurementMomentUri, endpoints) {
       var endpointsByUri = _.keyBy(endpoints, 'uri');
-
-      var resultsByEndpointAndArm = buildResultsByEndpointAndArm(results, primaryMeasurementMomentUri);
-
+      var resultsByEndpointAndArm = buildResultsByEndpointAndArm(results, measurementMomentUri);
       var toBackEndMeasurements = [];
       var measurements = _.reduce(resultsByEndpointAndArm, function(accum, endPointResultsByArm, endpointUri) {
         accum[endpointUri] = _.reduce(endPointResultsByArm, function(accum, armResults, armUri) {
@@ -47,7 +44,7 @@ define(['lodash'], function(_) {
 
     function buildEstimateRows(estimateResults, endpoints, arms) {
       var resultRows = [];
-      var subjectArms = _.reject(arms, ['armURI', estimateResults.baselineUri]);
+      var subjectArms = removebaseline(arms, estimateResults.baselineUri);
 
       _.forEach(endpoints, function(endpoint) {
         var comparisonGroupsRow = {
@@ -69,7 +66,10 @@ define(['lodash'], function(_) {
         };
 
         _.forEach(subjectArms, function(arm) {
-          var estimate = _.find(estimateResults.estimates[endpoint.uri], ['armUri', arm.armURI]);
+          var estimate;
+          if (estimateResults.estimates) {
+            estimate = _.find(estimateResults.estimates[endpoint.uri], ['armUri', arm.armURI]);
+          }
           comparisonGroupsRow.rowValues.push(
             arm.label
           );
@@ -82,6 +82,7 @@ define(['lodash'], function(_) {
           pValueRow.rowValues.push(
             estimate ? estimate.pValue.toFixed(2) : '<P-value>'
           );
+
         });
 
         resultRows.push(comparisonGroupsRow);
@@ -92,69 +93,99 @@ define(['lodash'], function(_) {
       return resultRows;
     }
 
+    function removebaseline(arms, baselineUri) {
+      return _.reject(arms, ['armURI', baselineUri]);
+    }
+
     function buildResultsObject(armResults, endpoint, armUri) {
-
-      function findValue(results, property) {
-        return _.find(results, ['result_property', property]);
-      }
-
-      var resultsObject = {
+      var result = {
         endpointUri: endpoint.uri,
         armUri: armUri,
         type: endpoint.measurementType === 'ontology:dichotomous' ? 'dichotomous' : 'continuous',
         resultProperties: {}
       };
-
-      _.forEach(endpoint.resultProperties, function(resultProperty) {
-        var propertyName = resultProperty.split('#')[1];
-        var propertyValue = findValue(armResults, propertyName);
-        resultsObject.resultProperties[snakeToCamel(propertyName)] = propertyValue ? propertyValue.value : undefined;
-      });
-      return resultsObject;
+      result.resultProperties = getValuesForProperties(endpoint.resultProperties, armResults);
+      return result;
     }
 
-    function buildResultLabel(resultsObject) {
-      var sampleSize;
-      if (resultsObject.type === 'dichotomous') {
-        sampleSize = resultsObject.resultProperties.sampleSize;
-        var count = resultsObject.resultProperties.count;
-        var percentage = resultsObject.resultProperties.percentage;
-        if(!count && percentage){
-          count = ((percentage * sampleSize) / 100).toFixed(0);
-        }
-        return count && sampleSize ?
-          count + '/' + sampleSize :
-          '<count> <sample size>';
-      } else if (resultsObject.type === 'continuous') {
-        sampleSize = resultsObject.resultProperties.sampleSize;
-        var mean = resultsObject.resultProperties.mean;
-        var standardDeviation = resultsObject.resultProperties.standardDeviation;
-        var standardError = resultsObject.resultProperties.standardError;
-        if (!standardDeviation && standardError) {
-          standardDeviation = standardError * Math.sqrt(sampleSize);
-        }
-        return mean && standardDeviation && sampleSize ?
-          exponentialFilter(mean).toFixed(2) + ' ± ' + exponentialFilter(standardDeviation).toFixed(2) + ' (' + sampleSize + ')' :
-          '<point estimate> <variability> <n>';
+    function getValuesForProperties(resultProperties, armResults) {
+      return _.reduce(resultProperties, function(accum, resultProperty) {
+        var propertyName = resultProperty.split('#')[1];
+        var propertyValue = findValue(armResults, propertyName);
+        accum[snakeToCamel(propertyName)] = propertyValue ? propertyValue.value : undefined;
+        return accum;
+      }, {});
+    }
+
+    function findValue(results, property) {
+      return _.find(results, ['result_property', property]);
+    }
+
+    function buildResultLabel(result) {
+      if (result.type === 'dichotomous') {
+        return createDichotomousResultLabel(result);
+      } else if (result.type === 'continuous') {
+        return createContinuousResultLabel(result);
       } else {
         throw ('unknown measurement type');
       }
     }
 
+    function createDichotomousResultLabel(result) {
+      var sampleSize = result.resultProperties.sampleSize;
+      var count = result.resultProperties.count;
+      var percentage = result.resultProperties.percentage;
+      if (!count && percentage) {
+        count = estimateCount(percentage, sampleSize);
+      }
+      return count && sampleSize ?
+        count + '/' + sampleSize :
+        '<count> <sample size>';
+    }
+
+    function estimateCount(percentage, sampleSize) {
+      return ((percentage * sampleSize) / 100).toFixed(0);
+    }
+
+    function createContinuousResultLabel(result) {
+      var sampleSize = result.resultProperties.sampleSize;
+      var mean = result.resultProperties.mean;
+      var standardDeviation = result.resultProperties.standardDeviation;
+      var standardError = result.resultProperties.standardError;
+      if (!standardDeviation && standardError) {
+        standardDeviation = calculateStandardDeviation(standardError, sampleSize);
+      }
+      return mean && standardDeviation && sampleSize ?
+        exponentialFilter(mean).toFixed(2) + ' ± ' + exponentialFilter(standardDeviation).toFixed(2) + ' (' + sampleSize + ')' :
+        '<point estimate> <variability> <n>';
+    }
+
+    function calculateStandardDeviation(standardError, sampleSize) {
+      return standardError * Math.sqrt(sampleSize);
+    }
+
     function buildArmTreatmentsLabel(treatments) {
       var treatmentLabels = _.map(treatments, function(treatment) {
         if (treatment.treatmentDoseType === 'ontology:FixedDoseDrugTreatment') {
-          return treatment.drug.label + ' ' + exponentialFilter(treatment.fixedValue) +
-            ' ' + treatment.doseUnit.label + ' per ' + durationFilter(treatment.dosingPeriodicity);
+          return createFixedDoseTreatementLabel(treatment);
         } else if (treatment.treatmentDoseType === 'ontology:TitratedDoseDrugTreatment') {
-          return treatment.drug.label + ' ' + exponentialFilter(treatment.minValue) +
-            '-' + exponentialFilter(treatment.maxValue) + ' ' + treatment.doseUnit.label + ' per ' +
-            durationFilter(treatment.dosingPeriodicity);
+          return createTitratedDoseTreatmentLabel(treatment);
         } else {
           throw ('unknown dosage type');
         }
       });
       return treatmentLabels.join(' + ');
+    }
+
+    function createFixedDoseTreatementLabel(treatment) {
+      return treatment.drug.label + ' ' + exponentialFilter(treatment.fixedValue) +
+        ' ' + treatment.doseUnit.label + ' per ' + durationFilter(treatment.dosingPeriodicity);
+    }
+
+    function createTitratedDoseTreatmentLabel(treatment) {
+      return treatment.drug.label + ' ' + exponentialFilter(treatment.minValue) +
+        '-' + exponentialFilter(treatment.maxValue) + ' ' + treatment.doseUnit.label + ' per ' +
+        durationFilter(treatment.dosingPeriodicity);
     }
 
     function snakeToCamel(snakeString) {
@@ -163,13 +194,39 @@ define(['lodash'], function(_) {
       });
     }
 
+    function getInitialMeasurementMoment(measurementMoments, primaryEpoch) {
+      var primaryMeasurementMoment;
+      if (primaryEpoch) {
+        primaryMeasurementMoment = _.find(measurementMoments, function(measurementMoment) {
+          return measurementMoment.offset === 'PT0S' && measurementMoment.relativeToAnchor === 'ontology:anchorEpochEnd' &&
+            measurementMoment.epochUri === primaryEpoch.uri;
+        });
+      }
+      return primaryMeasurementMoment && measurementMoments ? primaryMeasurementMoment : measurementMoments[0];
+    }
+
+    function getActivityForArm(arm, activities, designCoordinates, primaryEpoch) {
+      var activityUri = getActivityUri(arm, designCoordinates, primaryEpoch);
+      return _.find(activities, function(activity) {
+        return activity.activityUri === activityUri;
+      });
+    }
+
+    function getActivityUri(arm, designCoordinates, primaryEpoch) {
+      return _.find(designCoordinates, function(coordinate) {
+        return coordinate.armUri === arm.armURI && coordinate.epochUri === primaryEpoch.uri;
+      }).activityUri;
+    }
+
     return {
       buildResultsByEndpointAndArm: buildResultsByEndpointAndArm,
       buildMeasurements: buildMeasurements,
       buildEstimateRows: buildEstimateRows,
       buildResultsObject: buildResultsObject,
       buildResultLabel: buildResultLabel,
-      buildArmTreatmentsLabel: buildArmTreatmentsLabel
+      buildArmTreatmentsLabel: buildArmTreatmentsLabel,
+      getInitialMeasurementMoment: getInitialMeasurementMoment,
+      getActivityForArm: getActivityForArm
     };
   };
 
