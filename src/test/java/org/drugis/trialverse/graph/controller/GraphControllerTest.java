@@ -3,9 +3,9 @@ package org.drugis.trialverse.graph.controller;
 import org.apache.http.Header;
 import org.apache.http.message.BasicHeader;
 import org.apache.jena.riot.RDFLanguages;
+import org.drugis.addis.importer.service.ClinicalTrialsImportService;
 import org.drugis.addis.security.Account;
 import org.drugis.addis.security.repository.AccountRepository;
-import org.drugis.addis.importer.service.ClinicalTrialsImportService;
 import org.drugis.addis.util.WebConstants;
 import org.drugis.trialverse.dataset.model.VersionMapping;
 import org.drugis.trialverse.dataset.repository.DatasetReadRepository;
@@ -48,9 +48,6 @@ public class GraphControllerTest {
   private MockMvc mockMvc;
 
   @Mock
-  private WebConstants webConstants;
-
-  @Mock
   private GraphWriteRepository graphWriteRepository;
 
   @Mock
@@ -82,7 +79,7 @@ public class GraphControllerTest {
   private Principal user;
 
   @Before
-  public void setUp() throws Exception {
+  public void setUp() {
     graphController = new GraphController();
 
     initMocks(this);
@@ -93,7 +90,7 @@ public class GraphControllerTest {
   }
 
   @After
-  public void tearDown() throws Exception {
+  public void tearDown() {
     verifyNoMoreInteractions(graphWriteRepository);
   }
 
@@ -371,14 +368,102 @@ public class GraphControllerTest {
     when(graphWriteRepository.deleteGraph(URI.create(versionedUrl), graphUUID)).thenReturn(newVersionHeader);
 
     mockMvc.perform(
-        delete("/users/" + userHash + "/datasets/" + datasetUuid + "/graphs/" + graphUUID)
-        .principal(user)
+            delete("/users/" + userHash + "/datasets/" + datasetUuid + "/graphs/" + graphUUID)
+                    .principal(user)
 
     ).andExpect(status().isOk())
-    .andExpect(header().string(WebConstants.X_EVENT_SOURCE_VERSION, "newVersion"));
+            .andExpect(header().string(WebConstants.X_EVENT_SOURCE_VERSION, "newVersion"));
 
     verify(datasetReadRepository).isOwner(datasetUri, user);
     verify(graphWriteRepository).deleteGraph(URI.create(versionedUrl), graphUUID);
     verify(versionMappingRepository).getVersionMappingByDatasetUrl(datasetUri);
+  }
+
+  @Test
+  public void testGetHeadConceptsJson() throws Exception {
+    String datasetUuid = "datasetUuid";
+    String graphUuid = "graphUuid";
+    URI datasetUri = new URI(Namespaces.DATASET_NAMESPACE + datasetUuid);
+    String versionedUrl = "http://versioned/url";
+    VersionMapping versionMapping = new VersionMapping(versionedUrl, "someone", datasetUri.toString());
+    String response = "response";
+    byte[] responseContent = response.getBytes();
+
+    when(versionMappingRepository.getVersionMappingByDatasetUrl(datasetUri)).thenReturn(versionMapping);
+    when(graphReadRepository.getGraph(versionMapping.getVersionedDatasetUrl(), null, graphUuid, WebConstants.JSON_LD)).thenReturn(responseContent);
+
+    mockMvc.perform(get("/users/" + userHash + "/datasets/" + datasetUuid + "/graphs/" + graphUuid + "/concepts"))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(WebConstants.JSON_LD));
+
+    verify(versionMappingRepository).getVersionMappingByDatasetUrl(datasetUri);
+    verify(graphReadRepository).getGraph(versionMapping.getVersionedDatasetUrl(), null, graphUuid, WebConstants.JSON_LD);
+    verify(trialverseIOUtilsService).writeContentToServletResponse(any(byte[].class), any(HttpServletResponse.class));
+  }
+
+  @Test
+  public void testGetVersionedConceptsJson() throws Exception {
+    String datasetUuid = "datasetUuid";
+    String graphUuid = "graphUuid";
+    String versionUuid = "versionUuid";
+    URI datasetUri = new URI(Namespaces.DATASET_NAMESPACE + datasetUuid);
+    String versionedUrl = "http://versioned/url";
+    VersionMapping versionMapping = new VersionMapping(versionedUrl, "someone", datasetUri.toString());
+    String response = "response";
+    byte[] responseContent = response.getBytes();
+
+    when(versionMappingRepository.getVersionMappingByDatasetUrl(datasetUri)).thenReturn(versionMapping);
+    when(graphReadRepository.getGraph(versionMapping.getVersionedDatasetUrl(), versionUuid, graphUuid, WebConstants.JSON_LD)).thenReturn(responseContent);
+
+    mockMvc.perform(get("/users/" + userHash + "/datasets/" + datasetUuid + "/versions/" + versionUuid +
+            "/graphs/" + graphUuid + "/concepts"))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(WebConstants.JSON_LD));
+
+    verify(versionMappingRepository).getVersionMappingByDatasetUrl(datasetUri);
+    verify(graphReadRepository).getGraph(versionMapping.getVersionedDatasetUrl(), versionUuid, graphUuid, WebConstants.JSON_LD);
+    verify(trialverseIOUtilsService).writeContentToServletResponse(any(byte[].class), any(HttpServletResponse.class));
+  }
+
+  @Test
+  public void testGetGraphHeadVersionJsonLD() throws Exception {
+    String datasetUuid = "datasetUuid";
+    String graphUuid = "graphUuid";
+    URI datasetUri = new URI(Namespaces.DATASET_NAMESPACE + datasetUuid);
+    String versionedUrl = "http://versioned/url";
+    VersionMapping versionMapping = new VersionMapping(versionedUrl, "someone", datasetUri.toString());
+    String response = "response";
+    byte[] responseContent = response.getBytes();
+
+    when(versionMappingRepository.getVersionMappingByDatasetUrl(datasetUri)).thenReturn(versionMapping);
+    when(graphReadRepository.getGraph(versionMapping.getVersionedDatasetUrl(), null, graphUuid, WebConstants.JSON_LD)).thenReturn(responseContent);
+
+    mockMvc.perform(get("/users/" + userHash + "/datasets/" + datasetUuid + "/graphs/" + graphUuid))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(WebConstants.JSON_LD));
+
+    verify(versionMappingRepository).getVersionMappingByDatasetUrl(datasetUri);
+    verify(graphReadRepository).getGraph(versionMapping.getVersionedDatasetUrl(), null, graphUuid, WebConstants.JSON_LD);
+    verify(trialverseIOUtilsService).writeContentToServletResponse(any(byte[].class), any(HttpServletResponse.class));
+  }
+
+  @Test
+  public void testGetGraphHeadVersionJsonLDFailure() throws Exception {
+    String datasetUuid = "datasetUuid";
+    String graphUuid = "graphUuid";
+    URI datasetUri = new URI(Namespaces.DATASET_NAMESPACE + datasetUuid);
+    String versionedUrl = "http://versioned/url";
+    VersionMapping versionMapping = new VersionMapping(versionedUrl, "someone", datasetUri.toString());
+    String response = "{ }\n";
+    byte[] responseContent = response.getBytes();
+
+    when(versionMappingRepository.getVersionMappingByDatasetUrl(datasetUri)).thenReturn(versionMapping);
+    when(graphReadRepository.getGraph(versionMapping.getVersionedDatasetUrl(), null, graphUuid, WebConstants.JSON_LD)).thenReturn(responseContent);
+
+    mockMvc.perform(get("/users/" + userHash + "/datasets/" + datasetUuid + "/graphs/" + graphUuid))
+            .andExpect(status().isNotFound());
+
+    verify(versionMappingRepository).getVersionMappingByDatasetUrl(datasetUri);
+    verify(graphReadRepository).getGraph(versionMapping.getVersionedDatasetUrl(), null, graphUuid, WebConstants.JSON_LD);
   }
 }
