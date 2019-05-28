@@ -56,6 +56,7 @@ let config = {
 
   resolve: {
     alias: {
+      'schema-basePath': 'mcda-web/../schema',
       'gemtc-web': 'gemtc-web/app',
       'mcda-web': 'mcda-web/app',
       'app': basePath + 'resources/app/js/app'

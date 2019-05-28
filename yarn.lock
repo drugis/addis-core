@@ -2762,9 +2762,9 @@ gauge@~2.7.3:
     strip-ansi "^3.0.1"
     wide-align "^1.1.0"
 
-gemtc-web@drugis/gemtc-web#0.9.1:
-  version "0.9.1"
-  resolved "https://codeload.github.com/drugis/gemtc-web/tar.gz/af854901959d6932c7a8944aebee8e8e7f172948"
+gemtc-web@drugis/gemtc-web#develop:
+  version "0.10.0"
+  resolved "https://codeload.github.com/drugis/gemtc-web/tar.gz/11f3be92a26e48fa9f601033364fa985a996e4bc"
   dependencies:
     async "~1.2.1"
     body-parser "^1.18.3"

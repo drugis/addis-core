@@ -90,11 +90,7 @@ public class GraphController extends AbstractAddisCoreController {
   public void getGraphJsonLD(HttpServletResponse httpServletResponse, @PathVariable String datasetUuid,
                              @PathVariable String versionUuid, @PathVariable String graphUuid) throws URISyntaxException, IOException, ReadGraphException {
     logger.trace("get version graph");
-    VersionMapping versionMapping = versionMappingRepository.getVersionMappingByDatasetUrl(new URI(Namespaces.DATASET_NAMESPACE + datasetUuid));
-    byte[] responseContent = graphReadRepository.getGraph(versionMapping.getVersionedDatasetUrl(), versionUuid, graphUuid, WebConstants.JSON_LD);
-    httpServletResponse.setStatus(HttpServletResponse.SC_OK);
-    httpServletResponse.setHeader("Content-Type", WebConstants.JSON_LD);
-    trialverseIOUtilsService.writeContentToServletResponse(responseContent, httpServletResponse);
+    getGraphJson(httpServletResponse, datasetUuid, graphUuid, versionUuid);
   }
 
   @RequestMapping(value = "/graphs/{graphUuid}", method = RequestMethod.GET, produces = WebConstants.JSON_LD)
@@ -111,6 +107,34 @@ public class GraphController extends AbstractAddisCoreController {
       trialverseIOUtilsService.writeContentToServletResponse(responseContent, httpServletResponse);
     }
   }
+
+  @RequestMapping(value = "/graphs/{graphUuid}/concepts", method = RequestMethod.GET, produces = WebConstants.JSON_LD)
+  @ResponseBody
+  public void getHeadConceptsJson(HttpServletResponse httpServletResponse, @PathVariable String datasetUuid, @PathVariable String graphUuid) throws URISyntaxException, IOException, ReadGraphException {
+    logger.trace("get concepts graph");
+    getGraphJson(httpServletResponse, datasetUuid, graphUuid, null);
+  }
+
+  @RequestMapping(value = "/versions/{versionUuid}/graphs/{graphUuid}/concepts", method = RequestMethod.GET, produces = WebConstants.JSON_LD)
+  @ResponseBody
+  public void getVersionedConceptsJson(
+          HttpServletResponse httpServletResponse,
+          @PathVariable String datasetUuid,
+          @PathVariable String graphUuid,
+          @PathVariable String versionUuid
+  ) throws URISyntaxException, IOException, ReadGraphException {
+    logger.trace("get concepts graph");
+    getGraphJson(httpServletResponse, datasetUuid, graphUuid, versionUuid);
+  }
+
+  private void getGraphJson(HttpServletResponse httpServletResponse, @PathVariable String datasetUuid, @PathVariable String graphUuid, @PathVariable String versionUuid) throws URISyntaxException, IOException, ReadGraphException {
+    VersionMapping versionMapping = versionMappingRepository.getVersionMappingByDatasetUrl(new URI(Namespaces.DATASET_NAMESPACE + datasetUuid));
+    byte[] responseContent = graphReadRepository.getGraph(versionMapping.getVersionedDatasetUrl(), versionUuid, graphUuid, WebConstants.JSON_LD);
+    httpServletResponse.setStatus(HttpServletResponse.SC_OK);
+    httpServletResponse.setHeader("Content-Type", WebConstants.JSON_LD);
+    trialverseIOUtilsService.writeContentToServletResponse(responseContent, httpServletResponse);
+  }
+
 
   @RequestMapping(value = "/graphs/{graphUuid}/history", method = RequestMethod.GET)
   @ResponseBody
