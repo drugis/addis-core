@@ -21,7 +21,7 @@
     "addis"
   ],
   "author": "",
-  "license": "ISC",
+  "license": "GPL-3.0",
   "bugs": {
     "url": "https://github.com/drugis/addis-core/issues"
   },
@@ -92,5 +92,6 @@
   },
   "engines": {
     "yarn": ">= 1.0.0"
-  }
+  },
+  "dependencies": {}
 }
