@@ -7,7 +7,6 @@ define([
     transformStudyJsonLd,
     transformConceptJsonLd
   ) {
-
     var dependencies = ['$resource', 'DataModelService'];
     var GraphResource = function($resource, DataModelService) {
       return $resource(
@@ -37,6 +36,7 @@ define([
           },
           getConceptJson: {
             method: 'get',
+            url: '/users/:userUid/datasets/:datasetUuid/graphs/:graphUuid/concepts',
             headers: {
               Accept: 'application/ld+json'
             },
