@@ -171,7 +171,7 @@ public class SingleStudyBenefitRiskServiceImpl implements SingleStudyBenefitRisk
     for (TrialDataArm arm : armsWithMatching) {
       Integer matchedProjectInterventionId = arm.getMatchedProjectInterventionIds().iterator().next();
       AbstractIntervention intervention = context.getInterventionsById().get(matchedProjectInterventionId);
-      alternatives.put(intervention.getId().toString(), new AlternativeEntry(matchedProjectInterventionId, intervention.getName()));
+      alternatives.put(intervention.getId().toString(), new AlternativeEntry(intervention.getName()));
     }
     return alternatives;
   }

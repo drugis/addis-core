@@ -455,7 +455,7 @@ public class NetworkMetaAnalysisServiceTest {
     Map<String, AlternativeEntry> result = networkMetaAnalysisService.buildAlternativesForInclusion(inclusionWithResults);
 
     Map<String, AlternativeEntry> expectedResult = new HashMap<>();
-    AlternativeEntry expectedEntry = new AlternativeEntry(fluoxInterventionId, fluoxIntervention.getName());
+    AlternativeEntry expectedEntry = new AlternativeEntry(fluoxIntervention.getName());
     expectedResult.put(fluoxInterventionId.toString(), expectedEntry);
 
     assertEquals(expectedResult, result);

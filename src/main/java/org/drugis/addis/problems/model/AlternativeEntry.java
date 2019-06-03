@@ -6,11 +6,9 @@ import java.util.Objects;
  * Created by daan on 3/21/14.
  */
 public class AlternativeEntry {
-  private Integer alternative;
   private String title;
 
-  public AlternativeEntry(Integer alternative, String title) {
-    this.alternative = alternative;
+  public AlternativeEntry(String title) {
     this.title = title;
   }
 
@@ -18,22 +16,17 @@ public class AlternativeEntry {
     return title;
   }
 
-  public Integer getAlternative() {
-    return alternative;
-  }
-
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
     AlternativeEntry that = (AlternativeEntry) o;
-    return Objects.equals(alternative, that.alternative) &&
-            Objects.equals(title, that.title);
+    return Objects.equals(title, that.title);
   }
 
   @Override
   public int hashCode() {
 
-    return Objects.hash(alternative, title);
+    return Objects.hash(title);
   }
 }
