@@ -18,7 +18,8 @@ define(['lodash', 'angular'], function(_) {
     'ProjectStudiesResource',
     'TrialverseResource',
     'UserService',
-    'WorkspaceService'
+    'WorkspaceService',
+    'SchemaService'
   ];
   var BenefitRiskStep2Controller = function(
     $scope,
@@ -38,7 +39,8 @@ define(['lodash', 'angular'], function(_) {
     ProjectStudiesResource,
     TrialverseResource,
     UserService,
-    WorkspaceService
+    WorkspaceService,
+    SchemaService
   ) {
     // functions
     $scope.goToStep1 = goToStep1;
@@ -214,6 +216,7 @@ define(['lodash', 'angular'], function(_) {
     function resetScales() {
       return ProblemResource.get($stateParams).$promise.then(function(problem) {
         if (problem.performanceTable.length > 0) {
+          problem = SchemaService.updateProblemToCurrentSchema(problem).content;
           return WorkspaceService.getObservedScales(problem).then(function(result) {
             $scope.isMissingBaseline = BenefitRiskService.hasMissingBaseline($scope.tableOutcomes);
             $scope.tableOutcomes = BenefitRiskStep2Service.addScales($scope.tableOutcomes,
