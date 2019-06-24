@@ -41,6 +41,7 @@ define(['angular-mocks', './analysis'], function() {
       workspaceServiceMock = jasmine.createSpyObj('WorkspaceService', ['getObservedScales']),
       pageTitleServiceMock = jasmine.createSpyObj('PageTitleService', ['setPageTitle']),
       trialverseResourceMock = jasmine.createSpyObj('TrialverseResource', ['get']),
+      schemaServiceMock = jasmine.createSpyObj('SchemaService', ['updateProblemToCurrentSchema']),
       analysisDefer,
       analysisQueryDefer,
       interventionDefer,
@@ -143,7 +144,8 @@ define(['angular-mocks', './analysis'], function() {
         ProjectStudiesResource: projectStudiesResourceMock,
         TrialverseResource: trialverseResourceMock,
         UserService: userServiceMock,
-        WorkspaceService: workspaceServiceMock
+        WorkspaceService: workspaceServiceMock,
+        SchemaService: schemaServiceMock
       });
 
     }));
