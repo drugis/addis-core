@@ -2,22 +2,32 @@
   <select style="width:25%" ng-if="settings.label === 'Units'" ng-model="selections.selectedMultiplier"
     ng-change="updateMapping()" ng-options="multiplier.label for multiplier in metricMultipliers"
     ng-disabled="!selectedDatasetConcept">
-    <option value="">{{'No multiplier (selected)'}}</option>
+    <option value="">
+      {{'No multiplier (selected)'}}
+    </option>
   </select>
-  <select style="width:40%" ng-model="selectedDatasetConcept" ng-change="updateMapping()"
+  <select style="width:40%" ng-model="selectedDatasetConcept"
+    ng-change="updateMapping('{{selectedDatasetConcept['@type']}}')"
     ng-options="datasetConcept.label for datasetConcept in filteredConcepts | orderBy:'label'"
     ng-disabled="!filteredConcepts.length">
-    <option value="">{{!filteredConcepts.length? 'No concept available' : 'No concept selected'}}</option>
+    <option value="">
+      {{!filteredConcepts.length? 'No concept available' : 'No concept selected'}}
+    </option>
   </select>
-  <button ng-disabled="!selectedDatasetConcept" class="button small secondary" ng-click="removeMapping()">remove
+  <button ng-disabled="!selectedDatasetConcept" class="button small secondary"
+    ng-click="removeMapping(selectedDatasetConcept)">
+    remove
   </button>
   <button ng-show="settings.label === 'Units' && studyConcepts.length > 1" class="button small secondary"
-    ng-click="openRepairModal()">merge
+    ng-click="openRepairModal()">
+    merge
   </button>
   <span ng-show="doubleMapping" class="alert">Concept is also mapped to: {{doubleMapping.label}}</span>
 </span>
 <span ng-show="!isEditingAllowed">
-  <span ng-show="selectedDatasetConcept">{{selectedDatasetConcept.label}}</span>
+  <span ng-show="selectedDatasetConcept">
+    {{selectedDatasetConcept.label}}
+  </span>
   <span ng-show="!selectedDatasetConcept">
     <em>Unmapped</em>
   </span>

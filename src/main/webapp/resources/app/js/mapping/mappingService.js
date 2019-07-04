@@ -101,7 +101,6 @@ define(['lodash'], function(_) {
         delete node.sameAs;
         return StudyService.saveJsonGraph(graph);
       });
-
     }
 
     function removeUnitMapping(studyConcept) {

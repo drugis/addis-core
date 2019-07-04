@@ -69,10 +69,11 @@ define(['lodash'], function(_) {
           });
         }
 
-        function updateMapping() {
+        function updateMapping(oldType) {
           if (scope.selectedDatasetConcept === null) {
-            scope.selections.selectedMultiplier = undefined;
-            scope.selectedDatasetConcept = undefined;
+            removeMapping({
+              '@type': oldType
+            });
             return;
           }
           if (scope.selections.selectedMultiplier) {
@@ -88,8 +89,8 @@ define(['lodash'], function(_) {
           });
         }
 
-        function removeMapping() {
-          MappingService.removeMapping(scope.studyConcept, scope.selectedDatasetConcept);
+        function removeMapping(selectedDatasetConcept) {
+          MappingService.removeMapping(scope.studyConcept, selectedDatasetConcept);
           scope.selections.selectedMultiplier = undefined;
           scope.selectedDatasetConcept = undefined;
           scope.doubleMapping = false;
