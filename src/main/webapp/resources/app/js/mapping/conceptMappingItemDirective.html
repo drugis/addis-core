@@ -1,11 +1,11 @@
 <span ng-show="isEditingAllowed" class="cell-with-single-btn">
-  <select style="width:25%" 
-  ng-if="settings.label === 'Units'" ng-model="selections.selectedMultiplier" 
-  ng-change="updateMapping()" ng-options="multiplier.label for multiplier in metricMultipliers"
+  <select style="width:25%" ng-if="settings.label === 'Units'" ng-model="selections.selectedMultiplier"
+    ng-change="updateMapping()" ng-options="multiplier.label for multiplier in metricMultipliers"
     ng-disabled="!selectedDatasetConcept">
     <option value="">{{'No multiplier (selected)'}}</option>
   </select>
-  <select  style="width:40%" ng-model="selectedDatasetConcept" ng-change="updateMapping()" ng-options="datasetConcept.label for datasetConcept in filteredConcepts | orderBy:'label'"
+  <select style="width:40%" ng-model="selectedDatasetConcept" ng-change="updateMapping()"
+    ng-options="datasetConcept.label for datasetConcept in filteredConcepts | orderBy:'label'"
     ng-disabled="!filteredConcepts.length">
     <option value="">{{!filteredConcepts.length? 'No concept available' : 'No concept selected'}}</option>
   </select>

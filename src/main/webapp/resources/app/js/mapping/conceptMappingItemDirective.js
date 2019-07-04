@@ -3,13 +3,11 @@ define(['lodash'], function(_) {
   var dependencies = [
     '$rootScope',
     '$modal',
-    '$timeout',
     'MappingService'
   ];
   var ConceptMappingItemDirective = function(
     $rootScope,
     $modal,
-    $timeout,
     MappingService
   ) {
     return {
@@ -38,14 +36,20 @@ define(['lodash'], function(_) {
           if (scope.selectedDatasetConcept && scope.settings.label === 'Units') {
             scope.selections.selectedMultiplier = findMultiplier();
           }
+          checkDoubleMapping(undefined, {});
         });
 
-        $rootScope.$on('doubleMapping', function(event, data) {
-          if (!scope.selectedDatasetConcept || scope.studyConcept.uri === data.uri) { return; }
-          MappingService.hasDoubleMapping(scope.studyConcept, scope.selectedDatasetConcept).then(function(result) {
-            scope.doubleMapping = result;
-          });
-        });
+        $rootScope.$on('doubleMapping', checkDoubleMapping);
+
+        function checkDoubleMapping(event, data) {
+          if (!scope.selectedDatasetConcept || scope.studyConcept.uri === data.uri) {
+            return;
+          } else {
+            MappingService.hasDoubleMapping(scope.studyConcept, scope.selectedDatasetConcept).then(function(result) {
+              scope.doubleMapping = result;
+            });
+          }
+        }
 
         function findMultiplier() {
           return _.find(scope.metricMultipliers, function(multiplier) {
