@@ -222,7 +222,7 @@ define(['lodash'],
       function loadStudiesWithDetail() {
         $scope.studiesWithDetailPromise = StudiesWithDetailsService.get($stateParams.userUid, $stateParams.datasetUuid, $stateParams.versionUuid);
         var treatmentActivitiesPromise = StudiesWithDetailsService.getTreatmentActivities($stateParams.userUid, $stateParams.datasetUuid, $stateParams.versionUuid);
-        $scope.studiesPromise = $q.all([$scope.studiesWithDetailPromise, treatmentActivitiesPromise]).then(putStudiesOnScope());
+        $scope.studiesPromise = $q.all([$scope.studiesWithDetailPromise, treatmentActivitiesPromise]).then(putStudiesOnScope);
       }
 
       function putStudiesOnScope(result){
