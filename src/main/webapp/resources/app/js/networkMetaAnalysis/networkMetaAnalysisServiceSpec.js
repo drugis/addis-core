@@ -825,7 +825,7 @@ define([
         var expectedResult = {
           studyUri1: study1.measurementMoments[0],
           studyUri2: study2.measurementMoments[1],
-          studyUri3: undefined
+          studyUri3: study3.measurementMoments[0]
         };
         var result = networkMetaAnalysisService.buildMomentSelections(trialData, analysis);
         expect(result).toEqual(expectedResult);

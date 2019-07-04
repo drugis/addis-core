@@ -7,11 +7,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import javax.inject.Inject;
-import javax.management.RuntimeErrorException;
 
-/**
- * Created by daan on 23-11-16.
- */
 @Repository
 public class ReportRepositoryImpl implements ReportRepository {
 
