@@ -182,8 +182,8 @@ public class SingleStudyBenefitRiskServiceTest {
     Map<String, AlternativeEntry> result = singleStudyBenefitRiskService.getAlternatives(arms, context);
 
     Map<String, AlternativeEntry> expectedResult = new HashMap<>();
-    expectedResult.put(interventionId1.toString(), new AlternativeEntry(interventionId1, alternative1Name));
-    expectedResult.put(interventionId2.toString(), new AlternativeEntry(interventionId2, alternative2Name));
+    expectedResult.put(interventionId1.toString(), new AlternativeEntry(alternative1Name));
+    expectedResult.put(interventionId2.toString(), new AlternativeEntry(alternative2Name));
     assertEquals(expectedResult, result);
   }
 

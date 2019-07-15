@@ -662,16 +662,18 @@ define(['lodash', 'angular'], function(_, angular) {
 
     function buildMomentSelections(studies, analysis) {
       return _.reduce(studies, function(accum, study) {
-        var selected = _.find(analysis.includedMeasurementMoments, function(selectedMM) {
+        var manualSelection = _.find(analysis.includedMeasurementMoments, function(selectedMM) {
           return selectedMM.study === study.studyUri;
         });
-        var selectedMMUri = selected ? selected.measurementMoment : study.defaultMeasurementMoment;
+        var selectedMMUri = manualSelection ? manualSelection.measurementMoment : study.defaultMeasurementMoment;
 
         var selectedMM = _.find(study.measurementMoments, function(measurementMoment) {
           return measurementMoment.uri === selectedMMUri;
         });
-        if (selectedMM) { // no data for selected measurement moment means it's not on the study
-          selectedMM.isDefault = selected ? false : true;
+        if (selectedMM) { 
+          selectedMM.isDefault = manualSelection ? false : true;
+        } else {
+          selectedMM = study.measurementMoments[0]; 
         }
         accum[study.studyUri] = selectedMM;
         return accum;

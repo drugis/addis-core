@@ -9,9 +9,12 @@
   <div class="grid-container">
     <div class="grid-x nav-bar-spacer">
       <div class="cell">
-        <button ng-show="hasLoggedInUser" class="button right" type="button" ng-click="createProjectDialog()">Create
-          project</button>
-        <h1>{{dataset.title}}
+        <button ng-show="hasLoggedInUser" ng-disabled="!isCreateProjectAllowed" class="button right" type="button"
+          ng-click="createProjectDialog()">Create
+          project
+        </button>
+        <h1>
+          {{dataset.title}}
           <a ng-show="!isExporting" title="Export to Excel" ng-click="exportDataset()">
             <i class="fa fa-download"></i>
           </a>
@@ -20,8 +23,10 @@
               class="fa fa-edit"></i></a>
         </h1>
         <progressbar ng-hide="!isExporting" value="progress.percentage"></progressbar>
-        <p>{{dataset.comment}} <a ng-if="isEditingAllowed && dataset.comment" title="Edit title and description"
-            ng-click="showEditDatasetModal()"><i class="fa fa-edit"></i></a></p>
+        <p>
+          {{dataset.comment}} <a ng-if="isEditingAllowed && dataset.comment" title="Edit title and description"
+            ng-click="showEditDatasetModal()"><i class="fa fa-edit"></i></a>
+        </p>
         <div class="grid-x nav-bar-spacer">
           <div class="column large-9">
             <version-info></version-info>
@@ -32,10 +37,12 @@
         <h3>
           <button class="button" ng-if="versionUuid"
             ui-sref="versionedDataset.concepts({userUid: user.id, datasetUuid: stripFrontFilter(dataset.datasetUuid, 'http://trials.drugis.org/datasets/'), versionUuid: versionUuid})">Dataset
-            concepts</button>
+            concepts
+          </button>
           <button class="button" ng-if="!versionUuid"
             ui-sref="dataset.concepts({userUid: user.id, datasetUuid: stripFrontFilter(dataset.datasetUuid, 'http://trials.drugis.org/datasets/')})">Dataset
-            concepts</button>
+            concepts
+          </button>
           <inline-help style="margin-left: 0.5rem; vertical-align: text-bottom;" help-key="concept"></inline-help>
         </h3>
       </div>
@@ -47,8 +54,8 @@
       <div class="grid-x">
         <div class="cell">
           <div class="button-label-container">
-            <h3 style="display: inline;">Studies
-              <inline-help help-key="study"></inline-help>
+            <h3 style="display: inline;">
+              Studies <inline-help help-key="study"></inline-help>
             </h3>
             <button ng-show="isEditingAllowed" class="button small" style="margin-left: 0.5rem; vertical-align: super;"
               ng-click="showStudyDialog()"><i class="fa fa-plus"></i></button>

@@ -6,6 +6,7 @@ import java.util.Objects;
  * Created by daan on 3/26/14.
  */
 public class RateMeasurementEntry extends AbstractMeasurementEntry {
+
   private RatePerformance performance;
   private Integer alternative;
 

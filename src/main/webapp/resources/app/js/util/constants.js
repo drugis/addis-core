@@ -80,6 +80,72 @@ define(['angular', 'lodash'], function(angular, _) {
     uri: 'ontology:StudyActivity'
   }];
 
+  var datasetTableOptions = {
+    columns: [{
+      id: 'title',
+      label: 'Title',
+      visible: true
+    }, {
+      id: 'studySize',
+      label: 'Study size',
+      visible: true
+    }, {
+      id: 'indication',
+      label: 'Indication',
+      visible: false
+    }, {
+      id: 'status',
+      label: 'Status',
+      visible: true,
+      type: 'removePreamble',
+      frontStr: 'http://trials.drugis.org/ontology#Status'
+    }, {
+      id: 'allocation',
+      label: 'Allocation',
+      type: 'removePreamble',
+      frontStr: 'http://trials.drugis.org/ontology#Allocation',
+      visible: false
+    }, {
+      id: 'blinding',
+      label: 'Blinding',
+      type: 'removePreamble',
+      frontStr: 'http://trials.drugis.org/ontology#',
+      visible: false
+    }, {
+      id: 'drugNames',
+      label: 'Investigational drugNames',
+      visible: true
+    }, {
+      id: 'numberOfArms',
+      label: 'Number of Arms',
+      visible: false
+    }, {
+      id: 'publications',
+      label: 'Publications links',
+      visible: false,
+      type: 'urlList'
+    }, {
+      id: 'doseType',
+      label: 'Dosing',
+      visible: false,
+      type: 'dosing'
+    }, {
+      id: 'startDate',
+      label: 'Start date',
+      visible: false
+    }, {
+      id: 'endDate',
+      label: 'End date',
+      visible: false
+    }, {
+      id: 'treatments',
+      label: 'Treatments',
+      visible: false
+    }],
+    reverseSortOrder: false,
+    orderByField: 'label'
+  };
+
   var studyCategorySettings = {
     studyInformation: {
       service: 'StudyInformationService',
@@ -224,5 +290,6 @@ define(['angular', 'lodash'], function(angular, _) {
     .constant('BLINDING_OPTIONS', blindingOptions)
     .constant('STATUS_OPTIONS', statusOptions)
     .constant('ACTIVITY_TYPE_OPTIONS', activityTypeOptions)
-    .constant('STUDY_CATEGORY_SETTINGS', studyCategorySettings);
+    .constant('STUDY_CATEGORY_SETTINGS', studyCategorySettings)
+    .constant('DATASET_TABLE_OPTIONS', datasetTableOptions);
 });

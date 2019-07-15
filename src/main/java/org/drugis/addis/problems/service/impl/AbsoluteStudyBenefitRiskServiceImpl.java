@@ -51,6 +51,7 @@ public class AbsoluteStudyBenefitRiskServiceImpl implements AbsoluteStudyBenefit
     Measurement measurement = measurementWithCoordinates.getMeasurement();
     Integer interventionId = measurementWithCoordinates.getInterventionId();
     String dataSource = measurementWithCoordinates.getDataSource();
+
     if (measurement.getMeasurementTypeURI().equals(ProblemService.DICHOTOMOUS_TYPE_URI)) {
       entry = createBetaDistributionEntry(interventionId, measurement.getVariableConceptUri(), dataSource,
               measurement.getRate(), measurement.getSampleSize());

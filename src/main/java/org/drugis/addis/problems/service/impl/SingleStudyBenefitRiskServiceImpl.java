@@ -78,16 +78,14 @@ public class SingleStudyBenefitRiskServiceImpl implements SingleStudyBenefitRisk
             getAlternatives(matchedArms, context);
 
     List<AbstractMeasurementEntry> allEntries = new ArrayList<>();
-    List<AbstractMeasurementEntry> absoluteEntries =
-            absoluteStudyBenefitRiskService.buildAbsolutePerformanceEntries(
-                    context,
-                    study,
-                    matchedArms);
-    List<AbstractMeasurementEntry> contrastEntries =
-            contrastStudyBenefitRiskService.buildContrastPerformanceTable(
-                    defaultMeasurementMoment,
-                    context,
-                    matchedArms);
+    List<AbstractMeasurementEntry> absoluteEntries = absoluteStudyBenefitRiskService.buildAbsolutePerformanceEntries(
+            context,
+            study,
+            matchedArms);
+    List<AbstractMeasurementEntry> contrastEntries = contrastStudyBenefitRiskService.buildContrastPerformanceTable(
+            defaultMeasurementMoment,
+            context,
+            matchedArms);
     allEntries.addAll(absoluteEntries);
     allEntries.addAll(contrastEntries);
 
@@ -171,7 +169,7 @@ public class SingleStudyBenefitRiskServiceImpl implements SingleStudyBenefitRisk
     for (TrialDataArm arm : armsWithMatching) {
       Integer matchedProjectInterventionId = arm.getMatchedProjectInterventionIds().iterator().next();
       AbstractIntervention intervention = context.getInterventionsById().get(matchedProjectInterventionId);
-      alternatives.put(intervention.getId().toString(), new AlternativeEntry(matchedProjectInterventionId, intervention.getName()));
+      alternatives.put(intervention.getId().toString(), new AlternativeEntry(intervention.getName()));
     }
     return alternatives;
   }

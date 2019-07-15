@@ -410,7 +410,7 @@ public class NetworkMetaAnalysisServiceImpl implements NetworkMetaAnalysisServic
     return inclusionWithResults.getInterventions().stream()
             .collect(Collectors.toMap(
                     intervention -> intervention.getId().toString(),
-                    intervention -> new AlternativeEntry(intervention.getId(), intervention.getName())));
+                    intervention -> new AlternativeEntry(intervention.getName())));
   }
 
   @Override

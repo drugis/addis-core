@@ -33,7 +33,7 @@ define(['lodash', 'clipboard'], function(_, Clipboard) {
     // functions
     $scope.buildEstimateRows = buildEstimateRows;
     $scope.buildTable = buildTable;
-    $scope.cancel = $modalInstance.close();
+    $scope.cancel = $modalInstance.close;
 
     // init
     $scope.study = study;

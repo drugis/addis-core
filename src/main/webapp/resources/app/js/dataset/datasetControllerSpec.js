@@ -33,6 +33,12 @@ define(['angular-mocks', './dataset'], function() {
         versionUuid: versionUuid
       };
 
+    var datasetTableOptionsMock = {
+      columns: [{
+        label: 'Title'
+      }]
+    };
+
     beforeEach(angular.mock.module('trialverse.dataset', function($provide) {
       $provide.value('ExcelExportService', excelExportServiceMock);
     }));
@@ -99,7 +105,8 @@ define(['angular-mocks', './dataset'], function() {
           VersionedGraphResource: versionedGraphResource,
           UserService: userService,
           DataModelService: dataModelServiceMock,
-          PageTitleService: pageTitleServiceMock
+          PageTitleService: pageTitleServiceMock,
+          DATASET_TABLE_OPTIONS: datasetTableOptionsMock
         });
         scope.$apply();
       }));
@@ -142,6 +149,7 @@ define(['angular-mocks', './dataset'], function() {
         expect(versionedGraphResource.getConceptJson).toHaveBeenCalled();
         expect(conceptsService.loadJson).toHaveBeenCalled();
       });
+
       it('should not allow editing', function() {
         expect(scope.isEditingAllowed).toBe(false);
       });
