@@ -115,6 +115,12 @@ define(['angular', 'lodash'],
             '@type': 'http://trials.drugis.org/ontology#Category',
             label: category
           };
+        } else if (!category['@id']) { // case where it's a newly-added variable
+          return {
+            '@id': INSTANCE_BASE + UUIDService.generate(),
+            '@type': 'http://trials.drugis.org/ontology#Category',
+            label: category.label
+          };
         } else {
           return category;
         }
@@ -122,28 +128,6 @@ define(['angular', 'lodash'],
 
       function toBackEnd(item, type) {
         return _.merge({}, createBasicItem(item, type), createOptionalProperties(item));
-      }
-
-      function createOptionalProperties(item) {
-        var optionalProperties = {};
-        if (item.timeScale) {
-          optionalProperties.survival_time_scale = item.timeScale;
-        }
-        if (item.conceptMapping) {
-          optionalProperties.of_variable = [{ sameAs: item.conceptMapping }];
-        }
-        if (item.measurementType === 'ontology:categorical') {
-          optionalProperties.of_variable[0].categoryList = RdfListService.unFlattenList(_.map(item.categoryList, makeCategoryIfNeeded));
-        }
-        if (item.armOrContrast === CONTRAST_TYPE) {
-          optionalProperties.reference_arm = item.referenceArm;
-          optionalProperties.reference_standard_error = item.referenceStandardError;
-          optionalProperties.is_log = !!item.isLog;
-          if (item.confidenceIntervalWidth) {
-            optionalProperties.confidence_interval_width = item.confidenceIntervalWidth;
-          }
-        }
-        return optionalProperties;
       }
 
       function createBasicItem(item, type) {
@@ -160,6 +144,37 @@ define(['angular', 'lodash'],
           has_result_property: item.resultProperties,
           arm_or_contrast: item.armOrContrast ? item.armOrContrast : ARM_LEVEL_TYPE
         };
+      }
+
+      function createOptionalProperties(item) {
+        var optionalProperties = {};
+        if (item.timeScale) {
+          optionalProperties.survival_time_scale = item.timeScale;
+        }
+        if (item.conceptMapping) {
+          optionalProperties.of_variable = [{
+            sameAs: item.conceptMapping
+          }];
+        }
+        if (item.measurementType === 'ontology:categorical') {
+          var categoryList = RdfListService.unFlattenList(_.map(item.categoryList, makeCategoryIfNeeded));
+          if (optionalProperties.of_variable) {
+            optionalProperties.of_variable[0].categoryList = categoryList;
+          } else {
+            optionalProperties.of_variable = [{
+              categoryList: categoryList
+            }];
+          }
+        }
+        if (item.armOrContrast === CONTRAST_TYPE) {
+          optionalProperties.reference_arm = item.referenceArm;
+          optionalProperties.reference_standard_error = item.referenceStandardError;
+          optionalProperties.is_log = !!item.isLog;
+          if (item.confidenceIntervalWidth) {
+            optionalProperties.confidence_interval_width = item.confidenceIntervalWidth;
+          }
+        }
+        return optionalProperties;
       }
 
       function sortByLabel(a, b) {

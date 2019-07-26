@@ -176,7 +176,85 @@ define(['angular-mocks', './outcome'], function() {
       });
     });
 
-    describe('adding an outcome of a specific type', function() {
+    describe('adding a categorical outcome', function() {
+      var outcomeUri = 'http://trials.drugis.org/instances/newUuid';
+      var moment = 'http://mm/uri';
+      var measuredAtMoment = {
+        uri: moment
+      };
+      var categoricalOutcome = {
+        label: 'categorical',
+        measurementType: 'ontology:categorical',
+        measuredAtMoments: [measuredAtMoment],
+        resultProperties: [],
+        armOrContrast: 'ontology:arm_level_data',
+        selectedResultProperties: [],
+        categoryList: [{
+          label: 'cat1'
+        }, {
+          label: 'cat2'
+        }]
+      };
+
+      beforeEach(function(done) {
+        measurementMomentsDefer.resolve([{
+          itemUri: moment
+        }]);
+        var jsonStudy = {
+          has_outcome: []
+        };
+        getStudyDefer.resolve(jsonStudy);
+        getStudyGraphDefer.resolve([jsonStudy]);
+        studyServiceMock.findStudyNode.and.returnValue(jsonStudy);
+        outcomeService.addItem(categoricalOutcome, 'ontology:OutcomeType').then(done);
+        saveStudyDefer.resolve();
+        rootScope.$digest();
+      });
+
+      it('should add the outcome, which should then be found in queries', function(done) {
+        var expectedStudy = {
+          has_outcome: [{
+            '@type': 'ontology:OutcomeType',
+            '@id': outcomeUri,
+            is_measured_at: moment,
+            label: 'categorical',
+            of_variable: [{
+              '@type': 'ontology:Variable',
+              measurementType: 'ontology:categorical',
+              label: 'categorical',
+              categoryList: {
+                first: {
+                  '@id': 'http://trials.drugis.org/instances/newUuid',
+                  '@type': 'http://trials.drugis.org/ontology#Category',
+                  label: 'cat1'
+                },
+                'rest': {
+                  'first': {
+                    '@id': 'http://trials.drugis.org/instances/newUuid',
+                    '@type': 'http://trials.drugis.org/ontology#Category',
+                    label: 'cat2'
+                  },
+                  rest: 'http://www.w3.org/1999/02/22-rdf-syntax-ns#nil'
+                }
+              }
+            }],
+            has_result_property: [],
+            arm_or_contrast: 'ontology:arm_level_data'
+          }]
+        };
+
+        outcomeService.queryItems().then(function(queryResult) {
+          console.log(JSON.stringify(studyServiceMock.save.calls.argsFor(0)));
+          expect(studyServiceMock.save).toHaveBeenCalledWith(expectedStudy);
+          expect(queryResult.length).toEqual(1);
+          expect(queryResult[0].label).toEqual(categoricalOutcome.label);
+          done();
+        });
+        rootScope.$digest();
+      });
+    });
+
+    describe('adding a dichotomous outcome with contrast properties', function() {
       var outcomeUri = 'http://trials.drugis.org/instances/newUuid';
       var moment = 'http://mm/uri';
       var measuredAtMoment = {
