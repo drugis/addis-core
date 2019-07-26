@@ -104,13 +104,15 @@ define(['lodash'], function(_) {
 
     function addCategory(newCategory) {
       if (!cannotAddCategory(newCategory)) {
-        $scope.variable.categoryList.push(_.trim(newCategory.categoryLabel));
+        $scope.variable.categoryList.push({
+          label: _.trim(newCategory.categoryLabel)
+        });
         newCategory.categoryLabel = '';
       }
     }
 
     function isDuplicateCategory(newCategory) {
-      return _.includes($scope.variable.categoryList, _.trim(newCategory.categoryLabel));
+      return _.some($scope.variable.categoryList, ['label', _.trim(newCategory.categoryLabel)]);
     }
 
     function cannotAddCategory(newCategory) {
@@ -118,7 +120,7 @@ define(['lodash'], function(_) {
     }
 
     function deleteCategory(category) {
-      $scope.variable.categoryList.splice($scope.variable.categoryList.indexOf(category), 1);
+      $scope.variable.categoryList = _.reject($scope.variable.categoryList, ['label', category.label]);
     }
 
     function cancel() {
