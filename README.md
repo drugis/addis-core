@@ -146,4 +146,4 @@ ADDIS css is generated using SASS. If you wish to change the css, first make sur
     git submodule init
     git submodule update
 
-Then
+Then run 'compass compile' from the root of the repository. 
