@@ -66,9 +66,9 @@
     "karma-jasmine": "~1.1.2",
     "karma-junit-reporter": "^1.2.0",
     "karma-sourcemap-loader": "^0.3.7",
-    "karma-webpack": "^3.0.2",
+    "karma-webpack": "^4.0.2",
     "katex": "~0.10.0-rc.1",
-    "lodash": "^4.17.10",
+    "lodash": "^4.17.15",
     "mcda-web": "drugis/mcda-elicitation-web#0.19.0",
     "mini-css-extract-plugin": "^0.4.2",
     "moment": "^2.22.2",
@@ -83,15 +83,20 @@
     "ui-select": "~0.19.8",
     "url-loader": "^1.1.1",
     "vanilla-back-to-top": "^7.1.14",
-    "webpack": "^4.17.1",
-    "webpack-bundle-analyzer": "^3.3.2",
-    "webpack-cli": "^3.1.0",
-    "webpack-merge": "^4.1.4",
+    "webpack": "^4.39.3",
+    "webpack-bundle-analyzer": "^3.4.1",
+    "webpack-cli": "^3.3.7",
+    "webpack-merge": "^4.2.2",
     "webpack-xlsx-loader": "^1.0.0",
-    "xlsx": "~0.13.5"
+    "xlsx": "~0.15.1"
   },
   "engines": {
     "yarn": ">= 1.0.0"
   },
-  "dependencies": {}
+  "dependencies": {},
+  "resolutions": {
+    "lodash": "^4.17.15",
+    "mixin-deep": "2.0.1",
+    "set-value": "3.0.1"
+  }
 }
