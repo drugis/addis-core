@@ -1,4 +1,4 @@
-package org.drugis.trialverse.dataset.controller;
+package org.drugis.trialverse.dataset.controller.command;
 
 import org.apache.http.HttpException;
 import org.apache.jena.rdf.model.Model;
@@ -8,10 +8,11 @@ import org.drugis.addis.base.AbstractAddisCoreController;
 import org.drugis.addis.security.Account;
 import org.drugis.addis.security.repository.AccountRepository;
 import org.drugis.addis.util.WebConstants;
-import org.drugis.trialverse.dataset.controller.command.DatasetCommand;
+import org.drugis.trialverse.dataset.controller.DatasetArchiveCommand;
 import org.drugis.trialverse.dataset.exception.CreateDatasetException;
 import org.drugis.trialverse.dataset.exception.EditDatasetException;
 import org.drugis.trialverse.dataset.exception.RevisionNotFoundException;
+import org.drugis.trialverse.dataset.exception.SetArchivedStatusOfDatasetException;
 import org.drugis.trialverse.dataset.factory.JenaFactory;
 import org.drugis.trialverse.dataset.model.Dataset;
 import org.drugis.trialverse.dataset.model.VersionMapping;
@@ -76,7 +77,7 @@ public class DatasetController extends AbstractAddisCoreController {
   @RequestMapping(method = RequestMethod.POST)
   @ResponseBody
   public URI createDataset(HttpServletResponse response, Principal currentUser,
-                            @RequestBody DatasetCommand datasetCommand, @PathVariable Integer userId)
+                           @RequestBody DatasetCommand datasetCommand, @PathVariable Integer userId)
           throws URISyntaxException, CreateDatasetException, HttpException {
     logger.trace("createDataset");
     TrialversePrincipal trialversePrincipal = new TrialversePrincipal(currentUser);
@@ -94,7 +95,7 @@ public class DatasetController extends AbstractAddisCoreController {
     return null;
   }
 
-  @RequestMapping(path="/{datasetUuid}", method = RequestMethod.POST, consumes = WebContent.contentTypeJSON)
+  @RequestMapping(path = "/{datasetUuid}", method = RequestMethod.POST, consumes = WebContent.contentTypeJSON)
   public void editDataset(HttpServletResponse response, Principal currentUser,
                           @RequestBody DatasetCommand datasetCommand, @PathVariable Integer userId,
                           @PathVariable String datasetUuid) throws URISyntaxException, EditDatasetException {
@@ -114,12 +115,12 @@ public class DatasetController extends AbstractAddisCoreController {
   @RequestMapping(value = "/{datasetUuid}", method = RequestMethod.POST, consumes = WebConstants.TRIG)
   @ResponseBody
   public void createDatasetWithContent(
-		  HttpServletRequest request, HttpServletResponse response,
-		  Principal currentUser, @PathVariable Integer userId,
-		  @PathVariable String datasetUuid,
+          HttpServletRequest request, HttpServletResponse response,
+          Principal currentUser, @PathVariable Integer userId,
+          @PathVariable String datasetUuid,
           @RequestParam(WebConstants.COMMIT_TITLE_PARAM) String commitTitle,
           @RequestParam(value = WebConstants.COMMIT_DESCRIPTION_PARAM, required = false) String commitDescription)
-      throws URISyntaxException, CreateDatasetException, HttpException, IOException {
+          throws URISyntaxException, CreateDatasetException, HttpException, IOException {
     logger.trace("createDatasetWithContent");
     TrialversePrincipal trialversePrincipal = new TrialversePrincipal(currentUser);
     Account user = accountRepository.findAccountByUsername(trialversePrincipal.getUserName());
@@ -132,7 +133,7 @@ public class DatasetController extends AbstractAddisCoreController {
       response.setStatus(HttpStatus.FORBIDDEN.value());
     }
   }
-  
+
   @RequestMapping(method = RequestMethod.GET, headers = WebConstants.ACCEPT_TURTLE_HEADER)
   @ResponseBody
   public void queryDatasetsGraphsByUser(HttpServletResponse httpServletResponse,
@@ -240,5 +241,21 @@ public class DatasetController extends AbstractAddisCoreController {
   private Model getVersionedDatasetModel(String datasetUuid, String versionUuid) throws URISyntaxException {
     URI trialverseDatasetUri = new URI(Namespaces.DATASET_NAMESPACE + datasetUuid);
     return datasetReadRepository.getVersionedDataset(trialverseDatasetUri, versionUuid);
+  }
+
+  @RequestMapping(value = "/{datasetUuid}/setArchivedStatus", method = RequestMethod.POST)
+  @ResponseBody
+  public void setArchivedStatus(HttpServletResponse response, @PathVariable String datasetUuid, @RequestBody DatasetArchiveCommand archiveCommand, Principal currentUser, @PathVariable Integer userId) throws SetArchivedStatusOfDatasetException {
+    TrialversePrincipal trialversePrincipal = new TrialversePrincipal(currentUser);
+    Account user = accountRepository.findAccountByUsername(trialversePrincipal.getUserName());
+    if (user != null && userId.equals(user.getId())) {
+      URI datasetUri = URI.create(Namespaces.DATASET_NAMESPACE + datasetUuid);
+      VersionMapping mapping = versionMappingRepository.getVersionMappingByDatasetUrl(datasetUri);
+      datasetWriteRepository.setArchivedStatus(trialversePrincipal, mapping, archiveCommand.getArchived());
+      response.setStatus(HttpServletResponse.SC_OK);
+    } else {
+      logger.error("attempted to archive dataset for user that is not the login-user ");
+      response.setStatus(HttpStatus.FORBIDDEN.value());
+    }
   }
 }

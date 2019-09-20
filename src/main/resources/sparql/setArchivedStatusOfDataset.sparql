@@ -1,0 +1,12 @@
+PREFIX dataset: <http://trials.drugis.org/datasets/>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+
+DELETE {
+  ?dataset dcterms:archived ?archived
+} WHERE {
+  ?dataset dcterms:archived ?archived
+};
+INSERT DATA {
+  <$datasetUri> dcterms:archived "$newArchived"
+};
+

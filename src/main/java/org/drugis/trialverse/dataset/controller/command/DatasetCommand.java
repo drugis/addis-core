@@ -1,5 +1,7 @@
 package org.drugis.trialverse.dataset.controller.command;
 
+import java.util.Objects;
+
 /**
  * Created by connor on 6-11-14.
  */
@@ -32,19 +34,13 @@ public class DatasetCommand {
   public boolean equals(Object o) {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
-
     DatasetCommand that = (DatasetCommand) o;
-
-    if (description != null ? !description.equals(that.description) : that.description != null) return false;
-    if (!title.equals(that.title)) return false;
-
-    return true;
+    return Objects.equals(title, that.title) &&
+            Objects.equals(description, that.description);
   }
 
   @Override
   public int hashCode() {
-    int result = title.hashCode();
-    result = 31 * result + (description != null ? description.hashCode() : 0);
-    return result;
+    return Objects.hash(title, description);
   }
 }

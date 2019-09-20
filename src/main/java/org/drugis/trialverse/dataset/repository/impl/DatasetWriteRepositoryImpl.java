@@ -15,6 +15,7 @@ import org.drugis.addis.security.Account;
 import org.drugis.addis.security.repository.AccountRepository;
 import org.drugis.addis.trialverse.service.TriplestoreService;
 import org.drugis.trialverse.dataset.exception.EditDatasetException;
+import org.drugis.trialverse.dataset.exception.SetArchivedStatusOfDatasetException;
 import org.drugis.trialverse.dataset.factory.JenaFactory;
 import org.drugis.trialverse.dataset.model.VersionMapping;
 import org.drugis.trialverse.dataset.repository.DatasetWriteRepository;
@@ -22,7 +23,6 @@ import org.drugis.trialverse.dataset.repository.VersionMappingRepository;
 import org.drugis.trialverse.dataset.exception.CreateDatasetException;
 import org.drugis.trialverse.security.TrialversePrincipal;
 import org.drugis.addis.util.WebConstants;
-import org.drugis.trialverse.util.Namespaces;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cache.annotation.CacheEvict;
@@ -61,8 +61,10 @@ public class DatasetWriteRepositoryImpl implements DatasetWriteRepository {
   public static final String PATH = "/datasets";
   public static final String INITIAL_COMMIT_MESSAGE = "Dataset created through Trialverse";
   public static final String EDIT_TITLE_MESSAGE = "Edited title.";
+  public static final String SET_ARCHIVED_STATUS_MESSAGE = "Set archived status.";
   final static String EDIT_DATASET = TriplestoreService.loadResource("sparql/editDataset.sparql");
   final static String INSERT_DESCRIPTION = TriplestoreService.loadResource("sparql/insertDescription.sparql");
+  final static String SET_ARCHIVED_STATUS_OF_DATASET = TriplestoreService.loadResource("sparql/setArchivedStatusOfDataset.sparql");
 
   @Inject
   private WebConstants webConstants;
@@ -158,6 +160,20 @@ public class DatasetWriteRepositoryImpl implements DatasetWriteRepository {
     return response.getHeaders().get(WebConstants.X_EVENT_SOURCE_VERSION).get(0);
   }
 
+  @Override
+  public void setArchivedStatus(TrialversePrincipal owner, VersionMapping mapping, Boolean archived) throws SetArchivedStatusOfDatasetException {
+    String setArchivedStatusQuery = SET_ARCHIVED_STATUS_OF_DATASET.replace("$newArchived", String.valueOf(archived))
+            .replace("$datasetUri", mapping.getTrialverseDatasetUrl());
+    HttpHeaders httpHeaders = createEventSourcingHeaders(owner, SET_ARCHIVED_STATUS_MESSAGE, WebContent.contentTypeSPARQLUpdate);
+    String updateUri = mapping.getVersionedDatasetUrl() + "/update";
+    HttpEntity<?> requestEntity = new HttpEntity<>(setArchivedStatusQuery, httpHeaders);
+    ResponseEntity<String> response = restTemplate.postForEntity(updateUri, requestEntity, String.class);
+    if(!HttpStatus.OK.equals(response.getStatusCode())) {
+      logger.error("Error archiving dataset, triplestore response = " + response.getStatusCode().getReasonPhrase());
+      throw new SetArchivedStatusOfDatasetException();
+    }
+  }
+
   private URI createDataset(TrialversePrincipal owner, String datasetUri, String defaultGraphContent) throws URISyntaxException, CreateDatasetException {
     HttpHeaders httpHeaders = createEventSourcingHeaders(owner, INITIAL_COMMIT_MESSAGE, RDFLanguages.TURTLE.getContentType().getContentType());
     HttpEntity<String> requestEntity = new HttpEntity<>(defaultGraphContent, httpHeaders);
@@ -211,7 +227,4 @@ public class DatasetWriteRepositoryImpl implements DatasetWriteRepository {
 
     return model;
   }
-
-
-
 }

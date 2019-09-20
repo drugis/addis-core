@@ -2,6 +2,7 @@ package org.drugis.trialverse.dataset.repository;
 
 import org.drugis.trialverse.dataset.exception.CreateDatasetException;
 import org.drugis.trialverse.dataset.exception.EditDatasetException;
+import org.drugis.trialverse.dataset.exception.SetArchivedStatusOfDatasetException;
 import org.drugis.trialverse.dataset.model.VersionMapping;
 import org.drugis.trialverse.security.TrialversePrincipal;
 
@@ -16,4 +17,5 @@ public interface DatasetWriteRepository {
   URI createDataset(String title, String description, TrialversePrincipal owner) throws URISyntaxException, CreateDatasetException;
   URI createOrUpdateDatasetWithContent(InputStream content, String contentType, String trialverseUri, TrialversePrincipal owner, String commitTitle, String commitDescription) throws URISyntaxException, CreateDatasetException;
   String editDataset(TrialversePrincipal owner, VersionMapping mapping, String title, String description) throws URISyntaxException, EditDatasetException;
+  void setArchivedStatus(TrialversePrincipal trialversePrincipal, VersionMapping mapping, Boolean archived) throws SetArchivedStatusOfDatasetException;
 }
