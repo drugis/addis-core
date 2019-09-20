@@ -26,11 +26,11 @@
                   </h5>
                 </div>
                 <div class="cell large-6">
-                  <button ng-if="!dataset.isArchived && editMode.isUserOwner" style="margin-bottom: 1rem;" class="right button small radius info"
+                  <button ng-if="!dataset.archived && editMode.isUserOwner" style="margin-bottom: 1rem;" class="right button small radius info"
                     ng-click="setArchivedStatus(dataset)">
                     archive
                   </button>
-                  <button ng-if="dataset.isArchived && editMode.isUserOwner" style="margin-bottom: 1rem;" class="right button small radius alert"
+                  <button ng-if="dataset.archived && editMode.isUserOwner" style="margin-bottom: 1rem;" class="right button small radius alert"
                     ng-click="setArchivedStatus(dataset)">
                     unarchive
                   </button>

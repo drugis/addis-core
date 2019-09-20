@@ -14,16 +14,18 @@ public class Dataset {
   private String title;
   private String description;
   private String headVersion;
+  private Boolean archived;
 
   public Dataset() {
   }
 
-  public Dataset(String uri, Account creator, String title, String description, String headVersion) {
+  public Dataset(String uri, Account creator, String title, String description, String headVersion, Boolean archived) {
     this.uri = uri;
     this.creator = creator;
     this.title = title;
     this.description = description;
     this.headVersion = headVersion;
+    this.archived = archived;
   }
 
   public String getUri() {
@@ -36,6 +38,10 @@ public class Dataset {
 
   public String getTitle() {
     return title;
+  }
+
+  public Boolean getArchived() {
+    return archived;
   }
 
   public String getDescription() {
@@ -55,12 +61,12 @@ public class Dataset {
             Objects.equals(creator, dataset.creator) &&
             Objects.equals(title, dataset.title) &&
             Objects.equals(description, dataset.description) &&
-            Objects.equals(headVersion, dataset.headVersion);
+            Objects.equals(headVersion, dataset.headVersion) &&
+            Objects.equals(archived, dataset.archived);
   }
 
   @Override
   public int hashCode() {
-
-    return Objects.hash(uri, creator, title, description, headVersion);
+    return Objects.hash(uri, creator, title, description, headVersion, archived);
   }
 }

@@ -70,6 +70,9 @@ public class DatasetServiceImpl implements DatasetService {
     NodeIterator descriptionIterator = model.listObjectsOfProperty(JenaProperties.DESCRIPTION_PROPERTY);
     String description = descriptionIterator.hasNext() ? descriptionIterator.next().toString() : null;
 
-    return new Dataset(jenaUrl, user, title, description, headVersion);
+    NodeIterator archivedIterator = model.listObjectsOfProperty(JenaProperties.ARCHIVED_PROPERTY);
+    Boolean archived = archivedIterator.hasNext() && Boolean.parseBoolean(archivedIterator.next().toString());
+
+    return new Dataset(jenaUrl, user, title, description, headVersion, archived);
   }
 }

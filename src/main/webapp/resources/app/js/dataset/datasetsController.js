@@ -25,9 +25,10 @@ define(['lodash'], function(_) {
         PageTitleService.setPageTitle('DatasetsController', user.firstName + ' ' + user.lastName + '\'s datasets');
       }
     });
+
     reloadDatasets();
     $scope.stripFrontFilter = $filter('stripFrontFilter');
-    
+
     UserService.getLoginUser().then(function(user) {
       $scope.loginUser = user;
       $scope.editMode = {
@@ -36,22 +37,21 @@ define(['lodash'], function(_) {
       };
     });
 
-
     function reloadDatasets() {
       $scope.datasetsPromise = DatasetResource.queryForJson($stateParams, function(datasets) {
         $scope.datasets = datasets;
       }).$promise;
     }
 
-    function setArchivedStatus(dataset){
-      var newArchivedStatus = !dataset.isArchived;
+    function setArchivedStatus(dataset) {
+      var newArchivedStatus = !dataset.archived;
       var datasetUuid = dataset.uri.split('datasets/', 2)[1];
       DatasetResource.setArchived({
         userUid: $scope.userUid,
         datasetUuid: datasetUuid,
       }, {
         archived: newArchivedStatus
-      });
+      }).$promise.then(reloadDatasets);
     }
 
     function createDatasetDialog() {

@@ -6,7 +6,15 @@ DELETE {
 } WHERE {
   ?dataset dcterms:archived ?archived
 };
+DELETE {
+  ?dataset dcterms:archivedOn ?archivedOn
+} WHERE {
+  ?dataset dcterms:archivedOn ?archivedOn
+};
 INSERT DATA {
   <$datasetUri> dcterms:archived "$newArchived"
+};
+INSERT DATA {
+  <$datasetUri> dcterms:archivedOn "$archivedOn"
 };
 
