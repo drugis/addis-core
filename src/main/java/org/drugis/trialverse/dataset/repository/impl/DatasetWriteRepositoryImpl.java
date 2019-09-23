@@ -165,7 +165,8 @@ public class DatasetWriteRepositoryImpl implements DatasetWriteRepository {
   }
 
   @Override
-  public void setArchivedStatus(TrialversePrincipal owner, VersionMapping mapping, Boolean archived, Date archivedOn) throws SetArchivedStatusOfDatasetException {
+  public void setArchivedStatus(TrialversePrincipal owner, VersionMapping mapping, Boolean archived) throws SetArchivedStatusOfDatasetException {
+    Date archivedOn = new Date();
     String setArchivedStatusQuery = SET_ARCHIVED_STATUS_OF_DATASET
             .replace("$newArchived", String.valueOf(archived))
             .replace("$archivedOn", dateFormat.format(archivedOn))

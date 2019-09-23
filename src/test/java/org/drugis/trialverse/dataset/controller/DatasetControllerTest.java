@@ -45,8 +45,8 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 import javax.servlet.http.HttpServletResponse;
 import java.net.URI;
-import java.util.Arrays;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 import static org.hamcrest.Matchers.hasSize;
@@ -187,7 +187,8 @@ public class DatasetControllerTest {
 
   @Test
   public void queryDatasetsRequestPathJsonType() throws Exception {
-    List<Dataset> datasets = Arrays.asList(new Dataset("uri", john, "title", "description", "headVersion", false, archivedOn));
+    String archivedOn = new Date().toString();
+    List<Dataset> datasets = Collections.singletonList(new Dataset("uri", john, "title", "description", "headVersion", false, archivedOn));
     when(datasetService.findDatasets(john)).thenReturn(datasets);
     Integer userId = 1;
     when(accountRepository.findAccountById(userId)).thenReturn(john);
@@ -363,4 +364,24 @@ public class DatasetControllerTest {
     verify(historyService).getVersionInfo(datasetUri, versionUri);
   }
 
+  @Test
+  public void testSetArchivedStatus() throws Exception {
+    String datasetUuid = "someDataset";
+    Boolean archived = true;
+    DatasetArchiveCommand command = new DatasetArchiveCommand(archived);
+    String jsonContent = Utils.createJson(command);
+    URI datasetUri = URI.create(Namespaces.DATASET_NAMESPACE + datasetUuid);
+    VersionMapping mapping = new VersionMapping(1, "http://versioned/" + datasetUuid, john.getId().toString(), datasetUri.toString());
+    when(accountRepository.findAccountByUsername(john.getUsername())).thenReturn(john);
+    when(versionMappingRepository.getVersionMappingByDatasetUrl(datasetUri)).thenReturn(mapping);
+    mockMvc.perform(post("/users/1/datasets/" + datasetUuid + "/setArchivedStatus")
+            .contentType(WebContent.contentTypeJSON)
+            .content(jsonContent)
+            .principal(user))
+            .andExpect(status().isOk())
+    ;
+    verify(accountRepository).findAccountByUsername(john.getUsername());
+    verify(versionMappingRepository).getVersionMappingByDatasetUrl(datasetUri);
+    verify(datasetWriteRepository).setArchivedStatus(principal, mapping, archived);
+  }
 }

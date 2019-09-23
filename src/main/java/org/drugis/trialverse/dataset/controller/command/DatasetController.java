@@ -39,12 +39,8 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.security.Principal;
-import java.util.Date;
 import java.util.List;
 
-/**
- * Created by connor on 6-11-14.
- */
 @Controller
 @RequestMapping(value = "/users/{userId}/datasets")
 public class DatasetController extends AbstractAddisCoreController {
@@ -248,13 +244,12 @@ public class DatasetController extends AbstractAddisCoreController {
   @RequestMapping(value = "/{datasetUuid}/setArchivedStatus", method = RequestMethod.POST)
   @ResponseBody
   public void setArchivedStatus(HttpServletResponse response, @PathVariable String datasetUuid, @RequestBody DatasetArchiveCommand archiveCommand, Principal currentUser, @PathVariable Integer userId) throws SetArchivedStatusOfDatasetException {
-    TrialversePrincipal trialversePrincipal = new TrialversePrincipal(currentUser);
-    Account user = accountRepository.findAccountByUsername(trialversePrincipal.getUserName());
+    TrialversePrincipal principal = new TrialversePrincipal(currentUser);
+    Account user = accountRepository.findAccountByUsername(principal.getUserName());
     if (user != null && userId.equals(user.getId())) {
       URI datasetUri = URI.create(Namespaces.DATASET_NAMESPACE + datasetUuid);
       VersionMapping mapping = versionMappingRepository.getVersionMappingByDatasetUrl(datasetUri);
-      Date archivedDate = new Date();
-      datasetWriteRepository.setArchivedStatus(trialversePrincipal, mapping, archiveCommand.getArchived(), archivedDate);
+      datasetWriteRepository.setArchivedStatus(principal, mapping, archiveCommand.getArchived());
       response.setStatus(HttpServletResponse.SC_OK);
     } else {
       logger.error("attempted to archive dataset for user that is not the login-user ");
