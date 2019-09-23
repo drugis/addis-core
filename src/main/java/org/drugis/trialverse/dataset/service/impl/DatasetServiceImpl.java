@@ -14,8 +14,6 @@ import org.drugis.trialverse.util.JenaProperties;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -43,8 +41,7 @@ public class DatasetServiceImpl implements DatasetService {
             .stream()
             .map((mapping) -> {
               Model dataset = datasetReadRepository.queryDataset(mapping);
-              Dataset dataset1 = buildDataset(dataset, user, mapping.getTrialverseDatasetUrl());
-              return dataset1;
+              return buildDataset(dataset, user, mapping);
             })
             .collect(Collectors.toList());
   }
@@ -57,12 +54,15 @@ public class DatasetServiceImpl implements DatasetService {
             .map((mapping) -> {
               Account user = accountRepository.findAccountByEmail(mapping.getOwnerUuid());
               Model dataset = datasetReadRepository.queryDataset(mapping);
-              return buildDataset(dataset, user, mapping.getTrialverseDatasetUrl());
+              return buildDataset(dataset, user, mapping);
             })
             .collect(Collectors.toList());
   }
 
-  private Dataset buildDataset(Model model, Account user, String jenaUrl) {
+  private Dataset buildDataset(Model model, Account user, VersionMapping mapping) {
+    String datasetUrl = mapping.getDatasetUrl();
+    Boolean archived = mapping.getArchived();
+    String archivedOn = mapping.getArchivedOn();
     NodeIterator titleIterator = model.listObjectsOfProperty(JenaProperties.TITLE_PROPERTY);
     String title = titleIterator.next().toString();
 
@@ -72,12 +72,6 @@ public class DatasetServiceImpl implements DatasetService {
     NodeIterator descriptionIterator = model.listObjectsOfProperty(JenaProperties.DESCRIPTION_PROPERTY);
     String description = descriptionIterator.hasNext() ? descriptionIterator.next().toString() : null;
 
-    NodeIterator archivedIterator = model.listObjectsOfProperty(JenaProperties.ARCHIVED_PROPERTY);
-    Boolean archived = archivedIterator.hasNext() && Boolean.parseBoolean(archivedIterator.next().toString());
-
-    NodeIterator archivedOnIterator = model.listObjectsOfProperty(JenaProperties.ARCHIVED_ON_PROPERTY);
-    String archivedOn = archivedOnIterator.hasNext() ? archivedOnIterator.next().toString() : null;
-
-    return new Dataset(jenaUrl, user, title, description, headVersion, archived, archivedOn);
+    return new Dataset(datasetUrl, user, title, description, headVersion, archived, archivedOn);
   }
 }

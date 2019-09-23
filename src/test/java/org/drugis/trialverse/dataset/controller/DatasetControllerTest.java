@@ -332,7 +332,7 @@ public class DatasetControllerTest {
     String datasetUuid = "datasetUuid";
     URI datasetUri = URI.create(Namespaces.DATASET_NAMESPACE + datasetUuid);
     String newVersion = "newVersion";
-    VersionMapping versionMapping = new VersionMapping(1, "http://versioned/" + datasetUuid, john.getId().toString(), datasetUri.toString());
+    VersionMapping versionMapping = new VersionMapping(1, "http://versioned/" + datasetUuid, john.getId().toString(), datasetUri.toString(), false, null);
     when(accountRepository.findAccountByUsername(john.getUsername())).thenReturn(john);
     when(versionMappingRepository.getVersionMappingByDatasetUrl(datasetUri)).thenReturn(versionMapping);
     when(datasetWriteRepository.editDataset(principal, versionMapping, newTitle, newDescription)).thenReturn(newVersion);
@@ -371,9 +371,7 @@ public class DatasetControllerTest {
     DatasetArchiveCommand command = new DatasetArchiveCommand(archived);
     String jsonContent = Utils.createJson(command);
     URI datasetUri = URI.create(Namespaces.DATASET_NAMESPACE + datasetUuid);
-    VersionMapping mapping = new VersionMapping(1, "http://versioned/" + datasetUuid, john.getId().toString(), datasetUri.toString());
     when(accountRepository.findAccountByUsername(john.getUsername())).thenReturn(john);
-    when(versionMappingRepository.getVersionMappingByDatasetUrl(datasetUri)).thenReturn(mapping);
     mockMvc.perform(post("/users/1/datasets/" + datasetUuid + "/setArchivedStatus")
             .contentType(WebContent.contentTypeJSON)
             .content(jsonContent)
@@ -381,7 +379,6 @@ public class DatasetControllerTest {
             .andExpect(status().isOk())
     ;
     verify(accountRepository).findAccountByUsername(john.getUsername());
-    verify(versionMappingRepository).getVersionMappingByDatasetUrl(datasetUri);
-    verify(datasetWriteRepository).setArchivedStatus(principal, mapping, archived);
+    verify(versionMappingRepository).setArchivedStatus(datasetUri, archived);
   }
 }

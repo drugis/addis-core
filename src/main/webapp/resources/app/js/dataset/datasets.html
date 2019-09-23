@@ -28,8 +28,8 @@
                 <em ng-show="datasets.length === 0">
                   No datasets have been created
                 </em>
-                <div style="margin-bottom: 3rem; border-bottom: 1px solid #DCDCDC" ng-repeat="dataset in datasets"
-                  ng-show="dataset.archived === false || showArchived === true">
+                <div ng-repeat="dataset in datasets" style="margin-bottom: 3rem; border-bottom: 1px solid #DCDCDC" 
+                  ng-show="!dataset.archived || showArchived">
                   <div class="grid-x">
                     <div class="cell large-6">
                       <h5>

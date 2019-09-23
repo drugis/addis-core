@@ -72,7 +72,7 @@ public class SearchResult {
   }
 
   public void addMetaData(VersionMapping mapping, Account account) {
-    this.setDatasetUrl(mapping.getTrialverseDatasetUrl());
+    this.setDatasetUrl(mapping.getDatasetUrl());
     this.setOwner(account.getId());
     this.setOwnerUuid(DigestUtils.sha256Hex(mapping.getOwnerUuid()));
   }

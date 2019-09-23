@@ -1,14 +1,22 @@
 'use strict';
 define(['lodash'], function(_) {
   var dependencies = [
-    '$scope', '$modal', '$filter', '$stateParams', '$state',
+    '$scope',
+    '$modal',
+    '$filter',
+    '$stateParams',
+    '$state',
     'DatasetResource',
     'UserService',
     'PageTitleService'
   ];
 
   var DatasetsController = function(
-    $scope, $modal, $filter, $stateParams, $state,
+    $scope,
+    $modal,
+    $filter,
+    $stateParams,
+    $state,
     DatasetResource,
     UserService,
     PageTitleService
@@ -19,7 +27,7 @@ define(['lodash'], function(_) {
     $scope.createProjectDialog = createProjectDialog;
     $scope.setArchivedStatus = setArchivedStatus;
     $scope.toggleShowArchived = toggleShowArchived;
-    
+
     // init
     $scope.$watch('user', function(user) {
       if (user && user.id) {

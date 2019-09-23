@@ -15,7 +15,6 @@ import org.drugis.addis.security.Account;
 import org.drugis.addis.security.repository.AccountRepository;
 import org.drugis.addis.trialverse.service.TriplestoreService;
 import org.drugis.trialverse.dataset.exception.EditDatasetException;
-import org.drugis.trialverse.dataset.exception.SetArchivedStatusOfDatasetException;
 import org.drugis.trialverse.dataset.factory.JenaFactory;
 import org.drugis.trialverse.dataset.model.VersionMapping;
 import org.drugis.trialverse.dataset.repository.DatasetWriteRepository;
@@ -52,11 +51,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-
-/**
- * Created by connor on 04/11/14.
- */
 
 @Repository
 public class DatasetWriteRepositoryImpl implements DatasetWriteRepository {
@@ -110,7 +104,7 @@ public class DatasetWriteRepositoryImpl implements DatasetWriteRepository {
     }
 
     // upload the content to the dump endpoint
-    UriComponents uriComponents = UriComponentsBuilder.fromHttpUrl(versionMapping.getVersionedDatasetUrl())
+    UriComponents uriComponents = UriComponentsBuilder.fromHttpUrl(versionMapping.getVersionUrl())
         .path(DUMP_ENDPOINT)
         .build();
     HttpHeaders headers = createEventSourcingHeaders(owner, commitTitle, contentType);
@@ -147,12 +141,12 @@ public class DatasetWriteRepositoryImpl implements DatasetWriteRepository {
   })
   public String editDataset(TrialversePrincipal owner, VersionMapping mapping, String title, String description) throws EditDatasetException {
     String editDatasetQuery = EDIT_DATASET.replace("$newTitle", title)
-            .replace("$datasetUri", mapping.getTrialverseDatasetUrl());
+            .replace("$datasetUri", mapping.getDatasetUrl());
     if(description != null) {
       editDatasetQuery = editDatasetQuery.concat(INSERT_DESCRIPTION
-              .replace("$newDescription", description).replace("$datasetUri", mapping.getTrialverseDatasetUrl()));
+              .replace("$newDescription", description).replace("$datasetUri", mapping.getDatasetUrl()));
     }
-    String updateUri = mapping.getVersionedDatasetUrl() + "/update";
+    String updateUri = mapping.getVersionUrl() + "/update";
     HttpHeaders httpHeaders = createEventSourcingHeaders(owner, EDIT_TITLE_MESSAGE, WebContent.contentTypeSPARQLUpdate);
 
     HttpEntity<?> requestEntity = new HttpEntity<>(editDatasetQuery, httpHeaders);
@@ -162,23 +156,6 @@ public class DatasetWriteRepositoryImpl implements DatasetWriteRepository {
       throw new EditDatasetException();
     }
     return response.getHeaders().get(WebConstants.X_EVENT_SOURCE_VERSION).get(0);
-  }
-
-  @Override
-  public void setArchivedStatus(TrialversePrincipal owner, VersionMapping mapping, Boolean archived) throws SetArchivedStatusOfDatasetException {
-    Date archivedOn = new Date();
-    String setArchivedStatusQuery = SET_ARCHIVED_STATUS_OF_DATASET
-            .replace("$newArchived", String.valueOf(archived))
-            .replace("$archivedOn", dateFormat.format(archivedOn))
-            .replace("$datasetUri", mapping.getTrialverseDatasetUrl());
-    HttpHeaders httpHeaders = createEventSourcingHeaders(owner, SET_ARCHIVED_STATUS_MESSAGE, WebContent.contentTypeSPARQLUpdate);
-    String updateUri = mapping.getVersionedDatasetUrl() + "/update";
-    HttpEntity<?> requestEntity = new HttpEntity<>(setArchivedStatusQuery, httpHeaders);
-    ResponseEntity<String> response = restTemplate.postForEntity(updateUri, requestEntity, String.class);
-    if(!HttpStatus.OK.equals(response.getStatusCode())) {
-      logger.error("Error archiving dataset, triplestore response = " + response.getStatusCode().getReasonPhrase());
-      throw new SetArchivedStatusOfDatasetException();
-    }
   }
 
   private URI createDataset(TrialversePrincipal owner, String datasetUri, String defaultGraphContent) throws URISyntaxException, CreateDatasetException {
@@ -194,7 +171,7 @@ public class DatasetWriteRepositoryImpl implements DatasetWriteRepository {
       }
       URI location = response.getHeaders().getLocation();
       //store link from uri to location
-      versionMappingRepository.save(new VersionMapping(location.toString(), account.getEmail(), datasetUri));
+      versionMappingRepository.save(new VersionMapping(location.toString(), account.getEmail(), datasetUri, false, null));
     } catch (RestClientException e) {
       logger.error(e.toString());
       throw new CreateDatasetException();

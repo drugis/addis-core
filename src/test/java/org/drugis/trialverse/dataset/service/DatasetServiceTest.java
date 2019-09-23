@@ -99,7 +99,7 @@ public class DatasetServiceTest {
     VersionMapping versionMapping2 = new VersionMapping("versionDatasetUrl", "ownerUid", "http://trialverseDatasetUrl2");
     List<VersionMapping> versionMappings = Arrays.asList(versionMapping1, versionMapping2);
     when(featuredDatasetRepository.findAll()).thenReturn(Arrays.asList(new FeaturedDataset("http://trialverseDatasetUrl"), new FeaturedDataset("http://trialverseDatasetUrl2")));
-    when(versionMappingRepository.findMappingsByTrialverseDatasetUrls(Arrays.asList(versionMapping1.getTrialverseDatasetUrl(), versionMapping2.getTrialverseDatasetUrl()))).thenReturn(versionMappings);
+    when(versionMappingRepository.findMappingsByTrialverseDatasetUrls(Arrays.asList(versionMapping1.getDatasetUrl(), versionMapping2.getDatasetUrl()))).thenReturn(versionMappings);
     when(accountRepository.findAccountByEmail("ownerUid")).thenReturn(account);
     when(datasetReadRepository.queryDataset(versionMapping1)).thenReturn(datasetsModel);
     when(datasetReadRepository.queryDataset(versionMapping2)).thenReturn(datasetsModel2);
