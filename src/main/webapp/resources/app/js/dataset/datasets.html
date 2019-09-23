@@ -5,9 +5,16 @@
       <h2>Datasets
         <inline-help help-key="dataset"></inline-help>
       </h2>
-      <button ng-show="editMode.isUserOwner" tabindex="0" class="button " ng-click="createDatasetDialog()">
+      <button ng-show="editMode.isUserOwner" tabindex="0" class="button small" ng-click="createDatasetDialog()">
         <i class="fa fa-plus"></i>
         Add new dataset
+      </button>
+      <button ng-disabled="numberOfDatasetsArchived === 0" ng-hide="showArchived"
+        class="button secondary small right ng-binding" ng-click="toggleShowArchived()"><i class="fa fa-eye"></i>
+        Show archived ({{numberOfDatasetsArchived}})
+      </button>
+      <button ng-disabled="false" ng-hide="!showArchived" class="button secondary small right ng-binding"
+        ng-click="toggleShowArchived()"><i class="fa fa-eye"></i> Hide archived ({{numberOfDatasetsArchived}})
       </button>
       <spinner promise="datasetsPromise" size="3" message="'Loading datasets...'">
         <div class="grid-x">
@@ -15,14 +22,15 @@
             <em ng-show="datasets.length === 0">
               No datasets have been created
             </em>
-            <div style="margin-bottom: 3rem; border-bottom: 1px solid #DCDCDC" ng-repeat="dataset in datasets">
+            <div style="margin-bottom: 3rem; border-bottom: 1px solid #DCDCDC" ng-repeat="dataset in datasets"
+              ng-show="dataset.archived === false || showArchived === true">
               <div class="grid-x">
                 <div class="cell large-6">
                   <h5>
                     <a
-                        ui-sref="dataset({userUid: userUid, datasetUuid: stripFrontFilter(dataset.uri, 'http://trials.drugis.org/datasets/')})">
-                        {{dataset.title}}
-                      </a>
+                      ui-sref="dataset({userUid: userUid, datasetUuid: stripFrontFilter(dataset.uri, 'http://trials.drugis.org/datasets/')})">
+                      {{dataset.title}}
+                    </a>
                     <span ng-if=dataset.archived>
                       (archived on {{dataset.archivedOn}})
                     </span>

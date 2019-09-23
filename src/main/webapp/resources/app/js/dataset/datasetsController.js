@@ -18,7 +18,8 @@ define(['lodash'], function(_) {
     $scope.createDatasetDialog = createDatasetDialog;
     $scope.createProjectDialog = createProjectDialog;
     $scope.setArchivedStatus = setArchivedStatus;
-
+    $scope.toggleShowArchived = toggleShowArchived;
+    
     // init
     $scope.$watch('user', function(user) {
       if (user && user.id) {
@@ -40,6 +41,10 @@ define(['lodash'], function(_) {
     function reloadDatasets() {
       $scope.datasetsPromise = DatasetResource.queryForJson($stateParams, function(datasets) {
         $scope.datasets = datasets;
+        $scope.numberOfDatasetsArchived = _.filter($scope.datasets, 'archived').length;
+        if ($scope.numberOfDatasetsArchived === 0) {
+          $scope.showArchived = false;
+        }
       }).$promise;
     }
 
@@ -52,6 +57,10 @@ define(['lodash'], function(_) {
       }, {
         archived: newArchivedStatus
       }).$promise.then(reloadDatasets);
+    }
+
+    function toggleShowArchived() {
+      $scope.showArchived = !$scope.showArchived;
     }
 
     function createDatasetDialog() {
