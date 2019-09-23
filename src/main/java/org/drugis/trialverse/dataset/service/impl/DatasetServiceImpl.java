@@ -1,6 +1,5 @@
 package org.drugis.trialverse.dataset.service.impl;
 
-import org.apache.jena.graph.Node;
 import org.apache.jena.rdf.model.*;
 import org.drugis.addis.security.Account;
 import org.drugis.addis.security.repository.AccountRepository;
@@ -15,6 +14,8 @@ import org.drugis.trialverse.util.JenaProperties;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -42,7 +43,8 @@ public class DatasetServiceImpl implements DatasetService {
             .stream()
             .map((mapping) -> {
               Model dataset = datasetReadRepository.queryDataset(mapping);
-              return buildDataset(dataset, user, mapping.getTrialverseDatasetUrl());
+              Dataset dataset1 = buildDataset(dataset, user, mapping.getTrialverseDatasetUrl());
+              return dataset1;
             })
             .collect(Collectors.toList());
   }
@@ -73,6 +75,9 @@ public class DatasetServiceImpl implements DatasetService {
     NodeIterator archivedIterator = model.listObjectsOfProperty(JenaProperties.ARCHIVED_PROPERTY);
     Boolean archived = archivedIterator.hasNext() && Boolean.parseBoolean(archivedIterator.next().toString());
 
-    return new Dataset(jenaUrl, user, title, description, headVersion, archived);
+    NodeIterator archivedOnIterator = model.listObjectsOfProperty(JenaProperties.ARCHIVED_ON_PROPERTY);
+    String archivedOn = archivedOnIterator.hasNext() ? archivedOnIterator.next().toString() : null;
+
+    return new Dataset(jenaUrl, user, title, description, headVersion, archived, archivedOn);
   }
 }

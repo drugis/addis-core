@@ -1,20 +1,19 @@
 PREFIX dataset: <http://trials.drugis.org/datasets/>
-PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX ontology: <http://trials.drugis.org/ontology/>
 
 DELETE {
-  ?dataset dcterms:archived ?archived
+  ?dataset ontology:archived ?archived
 } WHERE {
-  ?dataset dcterms:archived ?archived
+  ?dataset ontology:archived ?archived
 };
 DELETE {
-  ?dataset dcterms:archivedOn ?archivedOn
+  ?dataset ontology:archivedOn ?archivedOn
 } WHERE {
-  ?dataset dcterms:archivedOn ?archivedOn
+  ?dataset ontology:archivedOn ?archivedOn
 };
 INSERT DATA {
-  <$datasetUri> dcterms:archived "$newArchived"
+  <$datasetUri> ontology:archived "$newArchived"
 };
 INSERT DATA {
-  <$datasetUri> dcterms:archivedOn "$archivedOn"
+  <$datasetUri> ontology:archivedOn "$archivedOn"
 };
-

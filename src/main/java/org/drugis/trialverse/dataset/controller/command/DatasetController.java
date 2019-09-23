@@ -39,6 +39,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.security.Principal;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -157,7 +158,8 @@ public class DatasetController extends AbstractAddisCoreController {
   public List<Dataset> queryDatasetsByUser(@PathVariable Integer userId) {
     logger.trace("retrieving datasets");
     Account user = accountRepository.findAccountById(userId);
-    return datasetService.findDatasets(user);
+    List<Dataset> datasets = datasetService.findDatasets(user);
+    return datasets;
   }
 
 
@@ -251,7 +253,8 @@ public class DatasetController extends AbstractAddisCoreController {
     if (user != null && userId.equals(user.getId())) {
       URI datasetUri = URI.create(Namespaces.DATASET_NAMESPACE + datasetUuid);
       VersionMapping mapping = versionMappingRepository.getVersionMappingByDatasetUrl(datasetUri);
-      datasetWriteRepository.setArchivedStatus(trialversePrincipal, mapping, archiveCommand.getArchived());
+      Date archivedDate = new Date();
+      datasetWriteRepository.setArchivedStatus(trialversePrincipal, mapping, archiveCommand.getArchived(), archivedDate);
       response.setStatus(HttpServletResponse.SC_OK);
     } else {
       logger.error("attempted to archive dataset for user that is not the login-user ");

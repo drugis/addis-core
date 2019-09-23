@@ -20,18 +20,21 @@
                 <div class="cell large-6">
                   <h5>
                     <a
-                      ui-sref="dataset({userUid: userUid, datasetUuid: stripFrontFilter(dataset.uri, 'http://trials.drugis.org/datasets/')})">
-                      {{dataset.title}}
-                    </a>
+                        ui-sref="dataset({userUid: userUid, datasetUuid: stripFrontFilter(dataset.uri, 'http://trials.drugis.org/datasets/')})">
+                        {{dataset.title}}
+                      </a>
+                    <span ng-if=dataset.archived>
+                      (archived on {{dataset.archivedOn}})
+                    </span>
                   </h5>
                 </div>
                 <div class="cell large-6">
-                  <button ng-if="!dataset.archived && editMode.isUserOwner" style="margin-bottom: 1rem;" class="right button small radius info"
-                    ng-click="setArchivedStatus(dataset)">
+                  <button ng-if="!dataset.archived && editMode.isUserOwner" style="margin-bottom: 1rem;"
+                    class="right button small radius info" ng-click="setArchivedStatus(dataset)">
                     archive
                   </button>
-                  <button ng-if="dataset.archived && editMode.isUserOwner" style="margin-bottom: 1rem;" class="right button small radius alert"
-                    ng-click="setArchivedStatus(dataset)">
+                  <button ng-if="dataset.archived && editMode.isUserOwner" style="margin-bottom: 1rem;"
+                    class="right button small radius alert" ng-click="setArchivedStatus(dataset)">
                     unarchive
                   </button>
                   <button ng-if="editMode.showCreateProjectButton" style="margin-bottom: 1rem; margin-right: 3px"

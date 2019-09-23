@@ -23,7 +23,8 @@ public class JenaProperties {
   private static final String DC_DESCRIPTION = "http://purl.org/dc/terms/description";
   private static final String DC_CREATOR = "http://purl.org/dc/terms/creator";
   private static final String DC_DATE = "http://purl.org/dc/terms/date";
-  private static final String DC_ARCHIVED = "http://purl.org/dc/terms/archived";
+  private static final String DRUGIS_ARCHIVED = "http://trials.drugis.org/ontology/archived";
+  private static final String DRUGIS_ARCHIVED_ON = "http://trials.drugis.org/ontology/archivedOn";
   private static final String RDFS_DATASET = "http://rdfs.org/ns/void#Dataset";
   private static final Model defaultModel = ModelFactory.createDefaultModel();
 
@@ -36,7 +37,8 @@ public class JenaProperties {
   public static final Property DATE_PROPERTY = defaultModel.getProperty(DC_DATE);
   public static final Property DATASET_PROPERTY = defaultModel.getProperty(RDFS_DATASET);
   public static final Property TITLE_PROPERTY = defaultModel.getProperty(DC_TITLE);
-  public static final Property ARCHIVED_PROPERTY = defaultModel.getProperty(DC_ARCHIVED);
+  public static final Property ARCHIVED_PROPERTY = defaultModel.getProperty(DRUGIS_ARCHIVED);
+  public static final Property ARCHIVED_ON_PROPERTY = defaultModel.getProperty(DRUGIS_ARCHIVED_ON);
   public static final Property creatorProperty = defaultModel.getProperty(DC_CREATOR);
   public static final Property headVersionProperty = defaultModel.getProperty(esPrefix, HEAD);
   public static final Property datasetVersionObject = defaultModel.getProperty(esPrefix, DATASET_VERSION);

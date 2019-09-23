@@ -9,6 +9,7 @@ import org.drugis.trialverse.security.TrialversePrincipal;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Date;
 
 /**
  * Created by connor on 04/11/14.
@@ -17,5 +18,5 @@ public interface DatasetWriteRepository {
   URI createDataset(String title, String description, TrialversePrincipal owner) throws URISyntaxException, CreateDatasetException;
   URI createOrUpdateDatasetWithContent(InputStream content, String contentType, String trialverseUri, TrialversePrincipal owner, String commitTitle, String commitDescription) throws URISyntaxException, CreateDatasetException;
   String editDataset(TrialversePrincipal owner, VersionMapping mapping, String title, String description) throws URISyntaxException, EditDatasetException;
-  void setArchivedStatus(TrialversePrincipal trialversePrincipal, VersionMapping mapping, Boolean archived) throws SetArchivedStatusOfDatasetException;
+  void setArchivedStatus(TrialversePrincipal trialversePrincipal, VersionMapping mapping, Boolean archived, Date archivedOn) throws SetArchivedStatusOfDatasetException;
 }

@@ -50,6 +50,9 @@ import java.io.InputStream;
 import java.io.StringWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
  * Created by connor on 04/11/14.
@@ -65,6 +68,7 @@ public class DatasetWriteRepositoryImpl implements DatasetWriteRepository {
   final static String EDIT_DATASET = TriplestoreService.loadResource("sparql/editDataset.sparql");
   final static String INSERT_DESCRIPTION = TriplestoreService.loadResource("sparql/insertDescription.sparql");
   final static String SET_ARCHIVED_STATUS_OF_DATASET = TriplestoreService.loadResource("sparql/setArchivedStatusOfDataset.sparql");
+  private DateFormat dateFormat = new SimpleDateFormat("yyyy-mm-dd");
 
   @Inject
   private WebConstants webConstants;
@@ -161,8 +165,10 @@ public class DatasetWriteRepositoryImpl implements DatasetWriteRepository {
   }
 
   @Override
-  public void setArchivedStatus(TrialversePrincipal owner, VersionMapping mapping, Boolean archived) throws SetArchivedStatusOfDatasetException {
-    String setArchivedStatusQuery = SET_ARCHIVED_STATUS_OF_DATASET.replace("$newArchived", String.valueOf(archived))
+  public void setArchivedStatus(TrialversePrincipal owner, VersionMapping mapping, Boolean archived, Date archivedOn) throws SetArchivedStatusOfDatasetException {
+    String setArchivedStatusQuery = SET_ARCHIVED_STATUS_OF_DATASET
+            .replace("$newArchived", String.valueOf(archived))
+            .replace("$archivedOn", dateFormat.format(archivedOn))
             .replace("$datasetUri", mapping.getTrialverseDatasetUrl());
     HttpHeaders httpHeaders = createEventSourcingHeaders(owner, SET_ARCHIVED_STATUS_MESSAGE, WebContent.contentTypeSPARQLUpdate);
     String updateUri = mapping.getVersionedDatasetUrl() + "/update";

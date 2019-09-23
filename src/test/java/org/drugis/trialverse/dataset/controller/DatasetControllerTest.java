@@ -187,7 +187,7 @@ public class DatasetControllerTest {
 
   @Test
   public void queryDatasetsRequestPathJsonType() throws Exception {
-    List<Dataset> datasets = Arrays.asList(new Dataset("uri", john, "title", "description", "headVersion", false));
+    List<Dataset> datasets = Arrays.asList(new Dataset("uri", john, "title", "description", "headVersion", false, archivedOn));
     when(datasetService.findDatasets(john)).thenReturn(datasets);
     Integer userId = 1;
     when(accountRepository.findAccountById(userId)).thenReturn(john);
