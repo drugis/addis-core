@@ -217,7 +217,7 @@ public class DatasetReadRepositoryTest {
     ResponseEntity responseEntity = new ResponseEntity<>(JSON.parse("{\"boolean\":true}"), HttpStatus.OK);
     String containsStudyWithShortNameTemplate = IOUtils.toString(new ClassPathResource("askContainsStudyWithLabel.sparql").getInputStream(), "UTF-8");
     String query = containsStudyWithShortNameTemplate.replace("$shortName", "'shortName'");
-    UriComponents uriComponents = UriComponentsBuilder.fromHttpUrl(versionMapping.getVersionUrl())
+    UriComponents uriComponents = UriComponentsBuilder.fromHttpUrl(versionMapping.getVersionedDatasetUrl())
             .path("/query")
             .queryParam("query", query)
             .build();
@@ -340,7 +340,7 @@ public class DatasetReadRepositoryTest {
     responseHeaders.add(WebConstants.X_EVENT_SOURCE_VERSION, "http://localhost:8080/versions/versionUuid");
 
     ResponseEntity responseEntity = new ResponseEntity<>(new JSONParser(JSONParser.MODE_JSON_SIMPLE).parse("{\"study\":\"bla\"}"), responseHeaders, HttpStatus.OK);
-    UriComponents uriComponents = UriComponentsBuilder.fromHttpUrl(versionMapping.getVersionUrl())
+    UriComponents uriComponents = UriComponentsBuilder.fromHttpUrl(versionMapping.getVersionedDatasetUrl())
             .path("/query")
             .queryParam("query", sparqlQuery)
             .build();

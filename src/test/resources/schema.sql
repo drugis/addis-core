@@ -779,7 +779,5 @@ DROP TABLE toggledColumns;
 ALTER TABLE BenefitRiskStudyOutcomeInclusion ADD COLUMN baseline VARCHAR;
 
 --changeset keijserj:81
-ALTER TABLE VersionMapping ALTER COLUMN trialversedataseturl RENAME TO dataseturl;
-ALTER TABLE VersionMapping ALTER COLUMN versionedDatasetUrl RENAME TO versionurl;
 ALTER TABLE VersionMapping ADD COLUMN archived BOOLEAN DEFAULT false;
 ALTER TABLE VersionMapping ADD COLUMN archivedon VARCHAR;

@@ -79,7 +79,7 @@ public class GraphController extends AbstractAddisCoreController {
                              @PathVariable String versionUuid, @PathVariable String graphUuid) throws URISyntaxException, IOException, ReadGraphException {
     logger.trace("get graph");
     VersionMapping versionMapping = versionMappingRepository.getVersionMappingByDatasetUrl(new URI(Namespaces.DATASET_NAMESPACE + datasetUuid));
-    byte[] responseContent = graphReadRepository.getGraph(versionMapping.getVersionUrl(), versionUuid, graphUuid, WebConstants.TURTLE);
+    byte[] responseContent = graphReadRepository.getGraph(versionMapping.getVersionedDatasetUrl(), versionUuid, graphUuid, WebConstants.TURTLE);
     httpServletResponse.setStatus(HttpServletResponse.SC_OK);
     httpServletResponse.setHeader("Content-Type", RDFLanguages.TURTLE.getContentType().getContentType());
     trialverseIOUtilsService.writeContentToServletResponse(responseContent, httpServletResponse);
@@ -98,7 +98,7 @@ public class GraphController extends AbstractAddisCoreController {
   public void getGraphHeadVersionJsonLD(HttpServletResponse httpServletResponse, @PathVariable String datasetUuid, @PathVariable String graphUuid) throws URISyntaxException, IOException, ReadGraphException {
     logger.trace("get head graph");
     VersionMapping versionMapping = versionMappingRepository.getVersionMappingByDatasetUrl(new URI(Namespaces.DATASET_NAMESPACE + datasetUuid));
-    byte[] responseContent = graphReadRepository.getGraph(versionMapping.getVersionUrl(), null, graphUuid, WebConstants.JSON_LD);
+    byte[] responseContent = graphReadRepository.getGraph(versionMapping.getVersionedDatasetUrl(), null, graphUuid, WebConstants.JSON_LD);
     if (new String(responseContent).equals("{ }\n")) {
       httpServletResponse.setStatus(HttpServletResponse.SC_NOT_FOUND);
     } else {
@@ -129,7 +129,7 @@ public class GraphController extends AbstractAddisCoreController {
 
   private void getGraphJson(HttpServletResponse httpServletResponse, @PathVariable String datasetUuid, @PathVariable String graphUuid, @PathVariable String versionUuid) throws URISyntaxException, IOException, ReadGraphException {
     VersionMapping versionMapping = versionMappingRepository.getVersionMappingByDatasetUrl(new URI(Namespaces.DATASET_NAMESPACE + datasetUuid));
-    byte[] responseContent = graphReadRepository.getGraph(versionMapping.getVersionUrl(), versionUuid, graphUuid, WebConstants.JSON_LD);
+    byte[] responseContent = graphReadRepository.getGraph(versionMapping.getVersionedDatasetUrl(), versionUuid, graphUuid, WebConstants.JSON_LD);
     httpServletResponse.setStatus(HttpServletResponse.SC_OK);
     httpServletResponse.setHeader("Content-Type", WebConstants.JSON_LD);
     trialverseIOUtilsService.writeContentToServletResponse(responseContent, httpServletResponse);
@@ -194,7 +194,7 @@ public class GraphController extends AbstractAddisCoreController {
     URI datasetUri = new URI(Namespaces.DATASET_NAMESPACE + datasetUuid);
     if (datasetReadRepository.isOwner(datasetUri, currentUser)) {
       VersionMapping mapping = versionMappingRepository.getVersionMappingByDatasetUrl(datasetUri);
-      Header versionHeader = clinicalTrialsImportService.importStudy(commitTitle, commitDescription, mapping.getVersionUrl(), graphUuid, importStudyRef);
+      Header versionHeader = clinicalTrialsImportService.importStudy(commitTitle, commitDescription, mapping.getVersionedDatasetUrl(), graphUuid, importStudyRef);
       trialverseResponse.setHeader(WebConstants.X_EVENT_SOURCE_VERSION, versionHeader.getValue());
       trialverseResponse.setStatus(HttpStatus.OK.value());
     } else {
@@ -215,7 +215,7 @@ public class GraphController extends AbstractAddisCoreController {
     URI datasetUri = new URI(Namespaces.DATASET_NAMESPACE + datasetUuid);
     if (datasetReadRepository.isOwner(datasetUri, currentUser)) {
       VersionMapping mapping = versionMappingRepository.getVersionMappingByDatasetUrl(datasetUri);
-      Header versionHeader = clinicalTrialsImportService.importEudract(mapping.getVersionUrl(),
+      Header versionHeader = clinicalTrialsImportService.importEudract(mapping.getVersionedDatasetUrl(),
               UUID.randomUUID().toString(), request.getInputStream());
       response.setHeader(WebConstants.X_EVENT_SOURCE_VERSION, versionHeader.getValue());
       response.setStatus(HttpStatus.OK.value());

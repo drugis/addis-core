@@ -390,14 +390,14 @@ public class GraphControllerTest {
     byte[] responseContent = response.getBytes();
 
     when(versionMappingRepository.getVersionMappingByDatasetUrl(datasetUri)).thenReturn(versionMapping);
-    when(graphReadRepository.getGraph(versionMapping.getVersionUrl(), null, graphUuid, WebConstants.JSON_LD)).thenReturn(responseContent);
+    when(graphReadRepository.getGraph(versionMapping.getVersionedDatasetUrl(), null, graphUuid, WebConstants.JSON_LD)).thenReturn(responseContent);
 
     mockMvc.perform(get("/users/" + userHash + "/datasets/" + datasetUuid + "/graphs/" + graphUuid + "/concepts"))
             .andExpect(status().isOk())
             .andExpect(content().contentType(WebConstants.JSON_LD));
 
     verify(versionMappingRepository).getVersionMappingByDatasetUrl(datasetUri);
-    verify(graphReadRepository).getGraph(versionMapping.getVersionUrl(), null, graphUuid, WebConstants.JSON_LD);
+    verify(graphReadRepository).getGraph(versionMapping.getVersionedDatasetUrl(), null, graphUuid, WebConstants.JSON_LD);
     verify(trialverseIOUtilsService).writeContentToServletResponse(any(byte[].class), any(HttpServletResponse.class));
   }
 
@@ -413,7 +413,7 @@ public class GraphControllerTest {
     byte[] responseContent = response.getBytes();
 
     when(versionMappingRepository.getVersionMappingByDatasetUrl(datasetUri)).thenReturn(versionMapping);
-    when(graphReadRepository.getGraph(versionMapping.getVersionUrl(), versionUuid, graphUuid, WebConstants.JSON_LD)).thenReturn(responseContent);
+    when(graphReadRepository.getGraph(versionMapping.getVersionedDatasetUrl(), versionUuid, graphUuid, WebConstants.JSON_LD)).thenReturn(responseContent);
 
     mockMvc.perform(get("/users/" + userHash + "/datasets/" + datasetUuid + "/versions/" + versionUuid +
             "/graphs/" + graphUuid + "/concepts"))
@@ -421,7 +421,7 @@ public class GraphControllerTest {
             .andExpect(content().contentType(WebConstants.JSON_LD));
 
     verify(versionMappingRepository).getVersionMappingByDatasetUrl(datasetUri);
-    verify(graphReadRepository).getGraph(versionMapping.getVersionUrl(), versionUuid, graphUuid, WebConstants.JSON_LD);
+    verify(graphReadRepository).getGraph(versionMapping.getVersionedDatasetUrl(), versionUuid, graphUuid, WebConstants.JSON_LD);
     verify(trialverseIOUtilsService).writeContentToServletResponse(any(byte[].class), any(HttpServletResponse.class));
   }
 
@@ -436,14 +436,14 @@ public class GraphControllerTest {
     byte[] responseContent = response.getBytes();
 
     when(versionMappingRepository.getVersionMappingByDatasetUrl(datasetUri)).thenReturn(versionMapping);
-    when(graphReadRepository.getGraph(versionMapping.getVersionUrl(), null, graphUuid, WebConstants.JSON_LD)).thenReturn(responseContent);
+    when(graphReadRepository.getGraph(versionMapping.getVersionedDatasetUrl(), null, graphUuid, WebConstants.JSON_LD)).thenReturn(responseContent);
 
     mockMvc.perform(get("/users/" + userHash + "/datasets/" + datasetUuid + "/graphs/" + graphUuid))
             .andExpect(status().isOk())
             .andExpect(content().contentType(WebConstants.JSON_LD));
 
     verify(versionMappingRepository).getVersionMappingByDatasetUrl(datasetUri);
-    verify(graphReadRepository).getGraph(versionMapping.getVersionUrl(), null, graphUuid, WebConstants.JSON_LD);
+    verify(graphReadRepository).getGraph(versionMapping.getVersionedDatasetUrl(), null, graphUuid, WebConstants.JSON_LD);
     verify(trialverseIOUtilsService).writeContentToServletResponse(any(byte[].class), any(HttpServletResponse.class));
   }
 
@@ -458,12 +458,12 @@ public class GraphControllerTest {
     byte[] responseContent = response.getBytes();
 
     when(versionMappingRepository.getVersionMappingByDatasetUrl(datasetUri)).thenReturn(versionMapping);
-    when(graphReadRepository.getGraph(versionMapping.getVersionUrl(), null, graphUuid, WebConstants.JSON_LD)).thenReturn(responseContent);
+    when(graphReadRepository.getGraph(versionMapping.getVersionedDatasetUrl(), null, graphUuid, WebConstants.JSON_LD)).thenReturn(responseContent);
 
     mockMvc.perform(get("/users/" + userHash + "/datasets/" + datasetUuid + "/graphs/" + graphUuid))
             .andExpect(status().isNotFound());
 
     verify(versionMappingRepository).getVersionMappingByDatasetUrl(datasetUri);
-    verify(graphReadRepository).getGraph(versionMapping.getVersionUrl(), null, graphUuid, WebConstants.JSON_LD);
+    verify(graphReadRepository).getGraph(versionMapping.getVersionedDatasetUrl(), null, graphUuid, WebConstants.JSON_LD);
   }
 }

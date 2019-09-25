@@ -44,7 +44,7 @@ public class MappingServiceImpl implements MappingService {
 
   @Override
   public String getJenaURL(VersionMapping mapping) {
-    String versionedDatasetUrl = mapping.getVersionUrl();
+    String versionedDatasetUrl = mapping.getVersionedDatasetUrl();
     String datasetUuid = versionedDatasetUrl.split("/datasets/")[1];
     return webConstants.getTriplestoreBaseUri() + "/datasets/" + datasetUuid;
   }

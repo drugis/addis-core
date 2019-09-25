@@ -45,7 +45,7 @@ public class WebConstants {
 
   public static final String EVENT_SOURCE_TITLE_HEADER = "X-EventSource-Title";
   public static final String EVENT_SOURCE_DESCRIPTION_HEADER = "X-EventSource-Description";
-;
+
   public static final String EVENT_SOURCE_CREATOR_HEADER = "X-EventSource-Creator";
   public static final String X_ACCEPT_EVENT_SOURCE_VERSION = "X-Accept-EventSource-Version";
   public static final String COMMIT_TITLE_PARAM = "commitTitle";

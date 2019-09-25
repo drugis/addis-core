@@ -10,15 +10,15 @@
         </div>
         <div class="cell">
           <button ng-show="editMode.isUserOwner" tabindex="0" class="button small" ng-click="createDatasetDialog()">
-            <i class="fa fa-plus"></i>
-            Add new dataset
+            <i class="fa fa-plus"></i> Add new dataset
           </button>
           <button ng-disabled="numberOfDatasetsArchived === 0" ng-hide="showArchived"
-            class="button secondary small right ng-binding" ng-click="toggleShowArchived()"><i class="fa fa-eye"></i>
-            Show archived ({{numberOfDatasetsArchived}})
+            class="button secondary small right ng-binding" ng-click="toggleShowArchived()">
+            <i class="fa fa-eye"></i> Show archived ({{numberOfDatasetsArchived}})
           </button>
-          <button ng-disabled="false" ng-hide="!showArchived" class="button secondary small right ng-binding"
-            ng-click="toggleShowArchived()"><i class="fa fa-eye"></i> Hide archived ({{numberOfDatasetsArchived}})
+          <button ng-hide="!showArchived" class="button secondary small right ng-binding"
+            ng-click="toggleShowArchived()">
+            <i class="fa fa-eye"></i> Hide archived ({{numberOfDatasetsArchived}})
           </button>
         </div>
         <div class="cell">

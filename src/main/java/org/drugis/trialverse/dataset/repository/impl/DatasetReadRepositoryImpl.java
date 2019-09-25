@@ -125,7 +125,7 @@ public class DatasetReadRepositoryImpl implements DatasetReadRepository {
     httpHeaders.add(ACCEPT, acceptType);
 
     HttpEntity<String> requestEntity = new HttpEntity<>(httpHeaders);
-    UriComponents uriComponents = UriComponentsBuilder.fromHttpUrl(versionMapping.getVersionUrl())
+    UriComponents uriComponents = UriComponentsBuilder.fromHttpUrl(versionMapping.getVersionedDatasetUrl())
             .path(WebConstants.QUERY_ENDPOINT)
             .queryParam(WebConstants.QUERY_PARAM_QUERY, query)
             .build();
@@ -149,7 +149,7 @@ public class DatasetReadRepositoryImpl implements DatasetReadRepository {
     HttpHeaders httpHeaders = new HttpHeaders();
     httpHeaders.add(ACCEPT, RDFLanguages.TURTLE.getContentType().getContentType());
     HttpEntity<String> requestEntity = new HttpEntity<>(httpHeaders);
-    String uri = mapping.getVersionUrl() + WebConstants.DATA_ENDPOINT + WebConstants.QUERY_STRING_DEFAULT_GRAPH;
+    String uri = mapping.getVersionedDatasetUrl() + WebConstants.DATA_ENDPOINT + WebConstants.QUERY_STRING_DEFAULT_GRAPH;
 
     ResponseEntity<Graph> responseEntity = restTemplate.exchange(uri, HttpMethod.GET, requestEntity, Graph.class);
     final String version  = responseEntity.getHeaders().get(WebConstants.X_EVENT_SOURCE_VERSION).get(0);
@@ -176,7 +176,7 @@ public class DatasetReadRepositoryImpl implements DatasetReadRepository {
       httpHeaders.add(WebConstants.X_ACCEPT_EVENT_SOURCE_VERSION, WebConstants.buildVersionUri(versionUuid).toString());
     }
     HttpEntity<String> requestEntity = new HttpEntity<>(httpHeaders);
-    String uri = versionMapping.getVersionUrl() + WebConstants.DATA_ENDPOINT + WebConstants.QUERY_STRING_DEFAULT_GRAPH;
+    String uri = versionMapping.getVersionedDatasetUrl() + WebConstants.DATA_ENDPOINT + WebConstants.QUERY_STRING_DEFAULT_GRAPH;
 
     Graph datasetGraph = restTemplate.exchange(uri, HttpMethod.GET, requestEntity, Graph.class).getBody();
     if (datasetGraph == null) { // can happen if the default graph is empty
@@ -193,7 +193,7 @@ public class DatasetReadRepositoryImpl implements DatasetReadRepository {
   @Cacheable(cacheNames="versionedDatasetQuery", key="#trialverseDatasetUri.toString()+(#versionUri != null?#versionUri.toString():'headVersion')+#query.hashCode()")
   public byte[] executeQuery(String query, URI trialverseDatasetUri, URI versionUri, String acceptHeaderValue) throws IOException {
     VersionMapping versionMapping = versionMappingRepository.getVersionMappingByDatasetUrl(trialverseDatasetUri);
-    UriComponents uriComponents = UriComponentsBuilder.fromHttpUrl(versionMapping.getVersionUrl())
+    UriComponents uriComponents = UriComponentsBuilder.fromHttpUrl(versionMapping.getVersionedDatasetUrl())
             .path(WebConstants.QUERY_ENDPOINT)
             .queryParam(WebConstants.QUERY_PARAM_QUERY, URLEncoder.encode(query, "UTF-8")) // built-in encoding is too permissive
             .build(true);

@@ -59,8 +59,12 @@ public class VersionMappingRepositoryTest {
 
     versionMappingRepository.save(versionMapping);
 
-    verify(jdbcTemplate).update("insert into VersionMapping (versionUrl, ownerUuid, datasetUrl) values (?, ?, ?)",
-            datasetLocation, ownerUuid, trialverseDataset);
+    verify(jdbcTemplate).update(
+            "insert into VersionMapping (versionedDatasetUrl, ownerUuid, trialverseDatasetUrl) values (?, ?, ?)",
+            datasetLocation,
+            ownerUuid,
+            trialverseDataset
+    );
   }
 
   @Test
@@ -110,7 +114,7 @@ public class VersionMappingRepositoryTest {
   public void setArchivedStatusTrue() throws URISyntaxException {
     URI datasetUri = new URI("datasetUri");
     versionMappingRepository.setArchivedStatus(datasetUri, true);
-    String query = "UPDATE VersionMapping SET archived=?, archivedOn=to_char(NOW(), 'YYYY-MM-DD') WHERE datasetUrl=?";
+    String query = "UPDATE VersionMapping SET archived=?, archivedOn=to_char(NOW(), 'YYYY-MM-DD') WHERE trialverseDatasetUrl=?";
     verify(jdbcTemplate).update(query, true, datasetUri.toString());
   }
 
@@ -118,7 +122,7 @@ public class VersionMappingRepositoryTest {
   public void setArchivedStatusFalse() throws URISyntaxException {
     URI datasetUri = new URI("datasetUri");
     versionMappingRepository.setArchivedStatus(datasetUri, false);
-    String query = "UPDATE VersionMapping SET archived=?, archivedOn=NULL WHERE datasetUrl=?";
+    String query = "UPDATE VersionMapping SET archived=?, archivedOn=NULL WHERE trialverseDatasetUrl=?";
     verify(jdbcTemplate).update(query, false, datasetUri.toString());
   }
 }

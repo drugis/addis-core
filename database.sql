@@ -994,11 +994,7 @@ ALTER TABLE BenefitRiskStudyOutcomeInclusion ADD COLUMN baseline VARCHAR;
 --rollback ALTER TABLE BenefitRiskStudyOutcomeInclusion DROP COLUMN baseline;
 
 --changeset keijserj:81
-ALTER TABLE VersionMapping RENAME COLUMN trialversedataseturl TO dataseturl;
-ALTER TABLE VersionMapping RENAME COLUMN versionedDatasetUrl  TO versionurl;
 ALTER TABLE VersionMapping ADD COLUMN archived BOOLEAN DEFAULT false;
 ALTER TABLE VersionMapping ADD COLUMN archivedon VARCHAR;
---rollback ALTER TABLE VersionMapping RENAME COLUMN dataseturl TO trialversedataseturl ;
---rollback ALTER TABLE VersionMapping RENAME COLUMN versionurl TO versionedDatasetUrl;
 --rollback ALTER TABLE VersionMapping DROP COLUMN archived;
 --rollback ALTER TABLE VersionMapping DROP COLUMN archivedon;

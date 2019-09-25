@@ -253,7 +253,7 @@ public class HistoryServiceImpl implements HistoryService {
     String version = versionAndGraph.getLeft();
     String graph = versionAndGraph.getRight();
     String title = getStudyTitle(mapping, URI.create(version), graph);
-    return new Merge(revisionUri, mapping.getDatasetUrl(), version, graph, title, userUuid);
+    return new Merge(revisionUri, mapping.getTrialverseDatasetUrl(), version, graph, title, userUuid);
   }
 
   private String getStudyTitle(VersionMapping mapping, URI version, String graph) throws IOException {
