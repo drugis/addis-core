@@ -55,9 +55,6 @@ public class DatasetWriteRepositoryTest {
   @Mock
   private WebConstants webconstants;
 
-  @Mock
-  private TriplestoreService triplestoreService;
-
   @InjectMocks
   DatasetWriteRepository datasetWriteRepository;
 
