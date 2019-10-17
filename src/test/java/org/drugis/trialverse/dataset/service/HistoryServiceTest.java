@@ -34,9 +34,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
-/**
- * Created by daan on 3-9-15.
- */
 public class HistoryServiceTest {
 
   @Mock

@@ -3,88 +3,113 @@ package org.drugis.trialverse.dataset.model;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.net.URI;
-import java.net.URISyntaxException;
+import java.util.Objects;
 
-/**
- * Created by connor on 10-3-15.
- */
 @Entity
 @Table
 public class VersionMapping implements Serializable {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Integer id;
 
-    private String versionedDatasetUrl;
-    private String ownerUuid;
-    private String trialverseDatasetUrl;
+  private String versionedDatasetUrl;
+  private String ownerUuid;
+  private String trialverseDatasetUrl;
+  private Boolean archived;
+  private String archivedOn;
 
-    public VersionMapping() {
-    }
+  public VersionMapping() {
+  }
 
-    public VersionMapping(Integer id, String versionedDatasetUrl, String ownerUuid, String trialverseDatasetUrl) {
-        this.id = id;
-        this.versionedDatasetUrl = versionedDatasetUrl;
-        this.ownerUuid = ownerUuid;
-        this.trialverseDatasetUrl = trialverseDatasetUrl;
-    }
+  public VersionMapping(String versionedDatasetUrl, String ownerUuid, String trialverseDatasetUrl) {
+    this.versionedDatasetUrl = versionedDatasetUrl;
+    this.ownerUuid = ownerUuid;
+    this.trialverseDatasetUrl = trialverseDatasetUrl;
+  }
 
-    public VersionMapping(String versionedDatasetUrl, String ownerUuid, String trialverseDatasetUrl) {
-        this.versionedDatasetUrl = versionedDatasetUrl;
-        this.ownerUuid = ownerUuid;
-        this.trialverseDatasetUrl = trialverseDatasetUrl;
-    }
+  public VersionMapping(
+          Integer id,
+          String versionedDatasetUrl,
+          String ownerUuid,
+          String trialverseDatasetUrl,
+          Boolean archived,
+          String archivedOn
+  ) {
+    this.id = id;
+    this.versionedDatasetUrl = versionedDatasetUrl;
+    this.ownerUuid = ownerUuid;
+    this.trialverseDatasetUrl = trialverseDatasetUrl;
+    this.archived = archived;
+    this.archivedOn = archivedOn;
+  }
 
-    public Integer getId() {
-        return id;
-    }
+  public VersionMapping(
+          String versionedDatasetUrl,
+          String ownerUuid,
+          String trialverseDatasetUrl,
+          Boolean archived,
+          String archivedOn
+  ) {
+    this.versionedDatasetUrl = versionedDatasetUrl;
+    this.ownerUuid = ownerUuid;
+    this.trialverseDatasetUrl = trialverseDatasetUrl;
+    this.archived = archived;
+    this.archivedOn = archivedOn;
+  }
 
-    public void setId(Integer id) {
-        this.id = id;
-    }
+  public Integer getId() {
+    return id;
+  }
 
-    public String getVersionedDatasetUrl() {
-        return versionedDatasetUrl;
-    }
+  public void setId(Integer id) {
+    this.id = id;
+  }
 
-    public URI getVersionedDatasetUri() {
-        return URI.create(versionedDatasetUrl);
-    }
+  public String getVersionedDatasetUrl() {
+    return versionedDatasetUrl;
+  }
 
-    public URI getTrialverseDatasetUri() {
-        return URI.create(trialverseDatasetUrl);
-    }
+  public URI getVersionedDatasetUri() {
+    return URI.create(versionedDatasetUrl);
+  }
 
-    public String getOwnerUuid() {
-        return ownerUuid;
-    }
+  public URI getTrialverseDatasetUri() {
+    return URI.create(trialverseDatasetUrl);
+  }
 
-    public String getTrialverseDatasetUrl() {
-        return trialverseDatasetUrl;
-    }
+  public String getOwnerUuid() {
+    return ownerUuid;
+  }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+  public String getTrialverseDatasetUrl() {
+    return trialverseDatasetUrl;
+  }
 
-        VersionMapping that = (VersionMapping) o;
+  public Boolean getArchived() {
+    return archived;
+  }
 
-        if (!versionedDatasetUrl.equals(that.versionedDatasetUrl)) return false;
-        if (id != null ? !id.equals(that.id) : that.id != null) return false;
-        if (!ownerUuid.equals(that.ownerUuid)) return false;
-        if (!trialverseDatasetUrl.equals(that.trialverseDatasetUrl)) return false;
+  public String getArchivedOn() {
+    return archivedOn;
+  }
 
-        return true;
-    }
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    VersionMapping that = (VersionMapping) o;
+    return Objects.equals(id, that.id) &&
+            Objects.equals(versionedDatasetUrl, that.versionedDatasetUrl) &&
+            Objects.equals(ownerUuid, that.ownerUuid) &&
+            Objects.equals(trialverseDatasetUrl, that.trialverseDatasetUrl) &&
+            Objects.equals(archived, that.archived) &&
+            Objects.equals(archivedOn, that.archivedOn);
+  }
 
-    @Override
-    public int hashCode() {
-        int result = id != null ? id.hashCode() : 0;
-        result = 31 * result + versionedDatasetUrl.hashCode();
-        result = 31 * result + ownerUuid.hashCode();
-        result = 31 * result + trialverseDatasetUrl.hashCode();
-        return result;
-    }
+  @Override
+  public int hashCode() {
+
+    return Objects.hash(id, versionedDatasetUrl, ownerUuid, trialverseDatasetUrl, archived, archivedOn);
+  }
 }

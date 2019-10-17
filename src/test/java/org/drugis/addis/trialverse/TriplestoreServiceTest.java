@@ -39,10 +39,6 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-/**
- * Created by connor on 2/28/14.
- */
-
 public class TriplestoreServiceTest {
 
   private final URI version = URI.create("http://versions.com/version");

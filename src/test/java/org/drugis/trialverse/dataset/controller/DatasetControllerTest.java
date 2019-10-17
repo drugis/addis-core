@@ -8,9 +8,11 @@ import org.apache.http.message.BasicStatusLine;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.riot.RDFLanguages;
 import org.apache.jena.riot.WebContent;
+import org.drugis.addis.exception.MethodNotAllowedException;
 import org.drugis.addis.security.Account;
 import org.drugis.addis.security.repository.AccountRepository;
 import org.drugis.addis.util.WebConstants;
+import org.drugis.trialverse.dataset.controller.command.DatasetController;
 import org.drugis.trialverse.dataset.controller.command.DatasetCommand;
 import org.drugis.trialverse.dataset.model.Dataset;
 import org.drugis.trialverse.dataset.model.VersionMapping;
@@ -46,6 +48,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.net.URI;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 import static org.hamcrest.Matchers.hasSize;
@@ -77,9 +80,6 @@ public class DatasetControllerTest {
   private TrialverseIOUtilsService trialverseIOUtilsService;
 
   @Mock
-  private GraphService graphService;
-
-  @Mock
   private WebConstants webConstants;
 
   @Mock
@@ -97,6 +97,7 @@ public class DatasetControllerTest {
   private TrialversePrincipal principal;
   private SocialAuthenticationToken user;
   private Account john = new Account(1, "john@apple.co.uk", "John", "Lennon", DigestUtils.sha256Hex("john@apple.co.uk"));
+  private String datasetUuid = "someDataset";
 
   @Before
   public void setUp() {
@@ -121,28 +122,12 @@ public class DatasetControllerTest {
 
   @After
   public void tearDown() {
-    verifyNoMoreInteractions(accountRepository, datasetWriteRepository);
-  }
-
-  @Test
-  public void testCreateDatasetForNonLoginUser() throws Exception {
-    String newDatasetUri = "http://some.thing.like/this/asd123";
-    URI uri = new URI(newDatasetUri);
-    DatasetCommand datasetCommand = new DatasetCommand("dataset title");
-    String jsonContent = Utils.createJson(datasetCommand);
-    Account account = new Account(3, "username", "Pete", "smith", "foo@bar.com");
-    when(accountRepository.findAccountByUsername(john.getUsername())).thenReturn(account);
-    when(datasetWriteRepository.createDataset(datasetCommand.getTitle(), datasetCommand.getDescription(), principal)).thenReturn(uri);
-    mockMvc
-            .perform(post("/users/37/datasets")
-                    .principal(user)
-                    .content(jsonContent)
-                    .contentType(webConstants.getApplicationJsonUtf8())
-            )
-            .andExpect(status().isForbidden());
-
-    verify(accountRepository).findAccountByUsername(john.getUsername());
-    verifyNoMoreInteractions(datasetWriteRepository);
+    verifyNoMoreInteractions(
+            accountRepository,
+            datasetWriteRepository,
+            datasetService,
+            versionMappingRepository
+    );
   }
 
   @Test
@@ -151,7 +136,6 @@ public class DatasetControllerTest {
     URI uri = new URI(newDatasetUri);
     DatasetCommand datasetCommand = new DatasetCommand("dataset title");
     String jsonContent = Utils.createJson(datasetCommand);
-    when(accountRepository.findAccountByUsername(john.getUsername())).thenReturn(john);
     when(datasetWriteRepository.createDataset(datasetCommand.getTitle(), datasetCommand.getDescription(), principal)).thenReturn(uri);
     Integer userId = john.getId();
     mockMvc
@@ -163,8 +147,8 @@ public class DatasetControllerTest {
             .andExpect(status().isCreated())
             .andExpect(header().string("Location", newDatasetUri));
 
-    verify(accountRepository).findAccountByUsername(john.getUsername());
     verify(datasetWriteRepository).createDataset(datasetCommand.getTitle(), datasetCommand.getDescription(), principal);
+    verify(datasetService).checkDatasetOwner(1, user);
   }
 
   @Test
@@ -186,7 +170,9 @@ public class DatasetControllerTest {
 
   @Test
   public void queryDatasetsRequestPathJsonType() throws Exception {
-    List<Dataset> datasets = Arrays.asList(new Dataset("uri", john, "title", "description", "headVersion"));
+    String archivedOn = new Date().toString();
+    List<Dataset> datasets = Arrays.asList(new Dataset("uri", john, "notArchived", "description", "headVersion", false, archivedOn),
+            new Dataset("uri", john, "archived", "archived description", "headVersion", true, archivedOn));
     when(datasetService.findDatasets(john)).thenReturn(datasets);
     Integer userId = 1;
     when(accountRepository.findAccountById(userId)).thenReturn(john);
@@ -202,7 +188,7 @@ public class DatasetControllerTest {
   }
 
   @Test
-  public void queryDatasetsGraphs() throws Exception {
+  public void queryDatasetsGraphs() {
     Model model = mock(Model.class);
     HttpServletResponse mockServletResponse = mock(HttpServletResponse.class);
     when(datasetReadRepository.queryDatasets(john)).thenReturn(model);
@@ -218,13 +204,12 @@ public class DatasetControllerTest {
 
   @Test
   public void testGetDataset() throws Exception {
-    String uuid = "uuuuiiid-yeswecan";
-    URI datasetUri = new URI(Namespaces.DATASET_NAMESPACE + uuid);
+    URI datasetUri = new URI(Namespaces.DATASET_NAMESPACE + datasetUuid);
     Model model = mock(Model.class);
     when(datasetReadRepository.getVersionedDataset(datasetUri, null)).thenReturn(model);
     when(accountRepository.findAccountByUsername(user.getName())).thenReturn(john);
 
-    mockMvc.perform((get("/users/some-user-uid/datasets/" + uuid)).principal(user))
+    mockMvc.perform((get("/users/some-user-uid/datasets/" + datasetUuid)).principal(user))
             .andExpect(status().isOk())
             .andExpect(content().contentType(RDFLanguages.TURTLE.getContentType().getContentType()));
 
@@ -234,13 +219,12 @@ public class DatasetControllerTest {
 
   @Test
   public void testGetDatasetAsJson() throws Exception {
-    String uuid = "uuuuiiid-yeswecan";
-    URI datasetUri = new URI(Namespaces.DATASET_NAMESPACE + uuid);
+    URI datasetUri = new URI(Namespaces.DATASET_NAMESPACE + datasetUuid);
     Model model = mock(Model.class);
     when(datasetReadRepository.getVersionedDataset(datasetUri, null)).thenReturn(model);
     when(accountRepository.findAccountByUsername(user.getName())).thenReturn(john);
 
-    mockMvc.perform((get("/users/some-user-uid/datasets/" + uuid)).principal(user).accept(MediaType.APPLICATION_JSON))
+    mockMvc.perform((get("/users/some-user-uid/datasets/" + datasetUuid)).principal(user).accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
             .andExpect(content().contentType(RDFLanguages.JSONLD.getContentType().getContentType()));
 
@@ -250,15 +234,14 @@ public class DatasetControllerTest {
 
   @Test
   public void testGetDatasetVersion() throws Exception {
-    String uuid = "uuuuiiid-yeswecan";
     String versionUuid = "versionUuid";
 
-    URI datasetUri = new URI(Namespaces.DATASET_NAMESPACE + uuid);
+    URI datasetUri = new URI(Namespaces.DATASET_NAMESPACE + datasetUuid);
     Model model = mock(Model.class);
     when(datasetReadRepository.getVersionedDataset(datasetUri, versionUuid)).thenReturn(model);
     when(accountRepository.findAccountByUsername(user.getName())).thenReturn(john);
 
-    mockMvc.perform((get("/users/user-name-hash/datasets/" + uuid + "/versions/" + versionUuid)).principal(user))
+    mockMvc.perform((get("/users/user-name-hash/datasets/" + datasetUuid + "/versions/" + versionUuid)).principal(user))
             .andExpect(status().isOk())
             .andExpect(content().contentType(RDFLanguages.TURTLE.getContentType().getContentType()));
 
@@ -268,27 +251,24 @@ public class DatasetControllerTest {
 
   @Test
   public void testGetHistory() throws Exception {
-    String uuid = "uuuuiiid-yeswecan";
-
-    mockMvc.perform((get("/users/user-name-hash/datasets/" + uuid + "/history")).principal(user))
+    mockMvc.perform((get("/users/user-name-hash/datasets/" + datasetUuid + "/history")).principal(user))
             .andExpect(status().isOk())
             .andExpect(content().contentType("application/json;charset=UTF-8"));
 
-    verify(historyService).createHistory(URI.create(Namespaces.DATASET_NAMESPACE + uuid));
+    verify(historyService).createHistory(URI.create(Namespaces.DATASET_NAMESPACE + datasetUuid));
   }
 
   @Test
   public void testExecuteHeadQuery() throws Exception {
-    String uuid = "uuuuiiid-yeswecan";
     String query = "Select * where { ?a ?b ?c}";
-    URI trialverseDatasetUri = new URI(Namespaces.DATASET_NAMESPACE + uuid);
+    URI trialverseDatasetUri = new URI(Namespaces.DATASET_NAMESPACE + datasetUuid);
     HttpResponse httpResponse = new BasicHttpResponse(new BasicStatusLine(new HttpVersion(1, 1), HttpStatus.OK.value(), "reason"));
     String acceptValue = "c/d";
     httpResponse.setHeader("Content-Type", acceptValue);
 
     String responseStr = "whatevs";
     when(datasetReadRepository.executeQuery(query, trialverseDatasetUri, null, acceptValue)).thenReturn(responseStr.getBytes());
-    mockMvc.perform(get("/users/user-name-hash/datasets/" + uuid + "/query")
+    mockMvc.perform(get("/users/user-name-hash/datasets/" + datasetUuid + "/query")
             .param("query", query)
             .header("Accept", acceptValue)
             .principal(user))
@@ -302,15 +282,14 @@ public class DatasetControllerTest {
 
   @Test
   public void testExecuteVersionedQuery() throws Exception {
-    String uuid = "uuuuiiid-yeswecan";
     String query = "Select * where { ?a ?b ?c}";
     String versionUuid = "my-version";
     URI version = WebConstants.buildVersionUri(versionUuid);
-    URI trialverseDatasetUri = new URI(Namespaces.DATASET_NAMESPACE + uuid);
+    URI trialverseDatasetUri = new URI(Namespaces.DATASET_NAMESPACE + datasetUuid);
     String acceptValue = "c/d";
     String responseStr = "foo";
     when(datasetReadRepository.executeQuery(query, trialverseDatasetUri, version, acceptValue)).thenReturn(responseStr.getBytes());
-    mockMvc.perform(get("/users/user-name-hash/datasets/" + uuid + "/versions/" + versionUuid + "/query")
+    mockMvc.perform(get("/users/user-name-hash/datasets/" + datasetUuid + "/versions/" + versionUuid + "/query")
             .param("query", query)
             .header("Accept", acceptValue)
             .principal(user))
@@ -327,26 +306,25 @@ public class DatasetControllerTest {
     String newDescription = "new desc";
     DatasetCommand datasetCommand = new DatasetCommand(newTitle, newDescription);
     String jsonContent = Utils.createJson(datasetCommand);
-    String datasetUuid = "datasetUuid";
     URI datasetUri = URI.create(Namespaces.DATASET_NAMESPACE + datasetUuid);
     String newVersion = "newVersion";
-    VersionMapping versionMapping = new VersionMapping(1, "http://versioned/" + datasetUuid, john.getId().toString(), datasetUri.toString());
-    when(accountRepository.findAccountByUsername(john.getUsername())).thenReturn(john);
+    VersionMapping versionMapping = new VersionMapping(1, "http://versioned/" + datasetUuid, john.getId().toString(), datasetUri.toString(), false, null);
     when(versionMappingRepository.getVersionMappingByDatasetUrl(datasetUri)).thenReturn(versionMapping);
     when(datasetWriteRepository.editDataset(principal, versionMapping, newTitle, newDescription)).thenReturn(newVersion);
     mockMvc.perform(post("/users/1/datasets/" + datasetUuid)
             .contentType(WebContent.contentTypeJSON)
-            .content(jsonContent).principal(user))
+            .content(jsonContent)
+            .principal(user))
             .andExpect(status().isOk())
             .andExpect(header().string(WebConstants.X_EVENT_SOURCE_VERSION, newVersion));
-    verify(accountRepository).findAccountByUsername(john.getUsername());
+    verify(datasetService).checkDatasetOwner(1, user);
+    verify(versionMappingRepository).getVersionMappingByDatasetUrl(datasetUri);
     verify(datasetWriteRepository).editDataset(principal, versionMapping, newTitle, newDescription);
   }
 
   @Test
   public void testGetSpecificVersionInfo() throws Exception {
     String versionUuid = "someVersion";
-    String datasetUuid = "someDataset";
     URI datasetUri = URI.create(Namespaces.DATASET_NAMESPACE + datasetUuid);
     URI versionUri = URI.create(WebConstants.getVersionBaseUri() + versionUuid);
 
@@ -362,4 +340,33 @@ public class DatasetControllerTest {
     verify(historyService).getVersionInfo(datasetUri, versionUri);
   }
 
+  @Test
+  public void testSetArchivedStatus() throws Exception {
+    Boolean archived = true;
+    DatasetArchiveCommand command = new DatasetArchiveCommand(archived);
+    String jsonContent = Utils.createJson(command);
+    URI datasetUri = URI.create(Namespaces.DATASET_NAMESPACE + datasetUuid);
+    mockMvc.perform(post("/users/1/datasets/" + datasetUuid + "/setArchivedStatus")
+            .contentType(WebContent.contentTypeJSON)
+            .content(jsonContent)
+            .principal(user))
+            .andExpect(status().isOk())
+    ;
+    verify(versionMappingRepository).setArchivedStatus(datasetUri, archived);
+    verify(datasetService).checkDatasetOwner(1, user);
+  }
+
+  @Test
+  public void testSetArchivedStatusNotAllowed() throws Exception {
+    DatasetArchiveCommand command = new DatasetArchiveCommand(true);
+    String jsonContent = Utils.createJson(command);
+
+    doThrow(MethodNotAllowedException.class).when(datasetService).checkDatasetOwner(2, user);
+    mockMvc.perform(post("/users/2/datasets/" + datasetUuid + "/setArchivedStatus")
+            .contentType(WebContent.contentTypeJSON)
+            .content(jsonContent)
+            .principal(user))
+    ;
+    verify(datasetService).checkDatasetOwner(2, user);
+  }
 }

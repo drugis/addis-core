@@ -23,7 +23,6 @@ public class JenaProperties {
   private static final String DC_DESCRIPTION = "http://purl.org/dc/terms/description";
   private static final String DC_CREATOR = "http://purl.org/dc/terms/creator";
   private static final String DC_DATE = "http://purl.org/dc/terms/date";
-  private static final String RDFS_DATASET = "http://rdfs.org/ns/void#Dataset";
   private static final Model defaultModel = ModelFactory.createDefaultModel();
 
   private static final String esPrefix = "http://drugis.org/eventSourcing/es#";
@@ -33,7 +32,6 @@ public class JenaProperties {
   public static final Property TYPE_PROPERTY = defaultModel.getProperty(RDF_TYPE_URI);
   public static final Property DESCRIPTION_PROPERTY = defaultModel.getProperty(DC_DESCRIPTION);
   public static final Property DATE_PROPERTY = defaultModel.getProperty(DC_DATE);
-  public static final Property DATASET_PROPERTY = defaultModel.getProperty(RDFS_DATASET);
   public static final Property TITLE_PROPERTY = defaultModel.getProperty(DC_TITLE);
   public static final Property creatorProperty = defaultModel.getProperty(DC_CREATOR);
   public static final Property headVersionProperty = defaultModel.getProperty(esPrefix, HEAD);

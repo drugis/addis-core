@@ -2,6 +2,7 @@ package org.drugis.trialverse.dataset.repository;
 
 import org.drugis.trialverse.dataset.exception.CreateDatasetException;
 import org.drugis.trialverse.dataset.exception.EditDatasetException;
+import org.drugis.trialverse.dataset.exception.SetArchivedStatusOfDatasetException;
 import org.drugis.trialverse.dataset.model.VersionMapping;
 import org.drugis.trialverse.security.TrialversePrincipal;
 

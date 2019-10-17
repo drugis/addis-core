@@ -2,6 +2,7 @@ package org.drugis.trialverse.dataset.service;
 
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
+import org.drugis.addis.exception.MethodNotAllowedException;
 import org.drugis.addis.security.Account;
 import org.drugis.addis.security.repository.AccountRepository;
 import org.drugis.trialverse.dataset.model.Dataset;
@@ -11,11 +12,16 @@ import org.drugis.trialverse.dataset.repository.DatasetReadRepository;
 import org.drugis.trialverse.dataset.repository.FeaturedDatasetRepository;
 import org.drugis.trialverse.dataset.repository.VersionMappingRepository;
 import org.drugis.trialverse.dataset.service.impl.DatasetServiceImpl;
+import org.drugis.trialverse.security.TrialversePrincipal;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.social.connect.Connection;
+import org.springframework.social.connect.ConnectionData;
+import org.springframework.social.security.SocialAuthenticationToken;
+import org.springframework.social.security.SocialUser;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -25,6 +31,7 @@ import java.util.List;
 
 import static java.util.Collections.singletonList;
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
@@ -49,10 +56,16 @@ public class DatasetServiceTest {
   private DatasetService datasetService;
 
   private Account account = new Account(1, "username", "John", "Lennon", "john@apple.co.uk");
+  private SocialAuthenticationToken currentUser;
 
   @Before
   public void setUp() {
     datasetService = new DatasetServiceImpl();
+    Connection connection = mock(Connection.class);
+    ConnectionData connectionData = mock(ConnectionData.class);
+    when(connectionData.getProviderId()).thenReturn("providerId");
+    when(connection.createData()).thenReturn(connectionData);
+    currentUser = new SocialAuthenticationToken(connection, new SocialUser(account.getUsername(), "password", Collections.emptyList()), null, null);
     initMocks(this);
   }
 
@@ -106,6 +119,24 @@ public class DatasetServiceTest {
 
     List<Dataset> datasets = datasetService.findFeatured();
     assertEquals(2, datasets.size());
+  }
+
+  @Test
+  public void testCheckDatasetOwner() throws MethodNotAllowedException {
+    Integer datasetOwnerID = account.getId();
+    TrialversePrincipal principal = new TrialversePrincipal(currentUser);
+    when(accountRepository.findAccountByUsername(principal.getUserName())).thenReturn(account);
+
+    datasetService.checkDatasetOwner(datasetOwnerID, currentUser);
+  }
+
+  @Test(expected = MethodNotAllowedException.class)
+  public void testCheckDatasetOwnerFail() throws MethodNotAllowedException {
+    Integer datasetOwnerID = account.getId() + 1;
+    TrialversePrincipal principal = new TrialversePrincipal(currentUser);
+    when(accountRepository.findAccountByUsername(principal.getUserName())).thenReturn(account);
+
+    datasetService.checkDatasetOwner(datasetOwnerID, currentUser);
   }
 
   private Model getModel(String ttlFileName) throws IOException {
