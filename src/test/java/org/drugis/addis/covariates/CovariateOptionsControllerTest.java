@@ -1,6 +1,5 @@
 package org.drugis.addis.covariates;
 
-import org.apache.http.entity.ContentType;
 import org.drugis.addis.outcomes.Outcome;
 import org.drugis.addis.outcomes.repository.OutcomeRepository;
 import org.drugis.addis.projects.Project;
@@ -16,6 +15,7 @@ import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -69,7 +69,7 @@ public class CovariateOptionsControllerTest {
   public void getCovariateOptions() throws Exception {
     ResultActions result = mockMvc.perform(get("/covariate-options"));
     result.andExpect(status().isOk());
-    result.andExpect(content().contentType(ContentType.APPLICATION_JSON.toString()));
+    result.andExpect(content().contentType(MediaType.APPLICATION_JSON));
     result.andExpect(jsonPath("$", hasSize(5)));
     result.andExpect(jsonPath("$[0].key", is(CovariateOption.ALLOCATION_RANDOMIZED.toString())));
     result.andExpect(jsonPath("$[0].label", is(CovariateOption.ALLOCATION_RANDOMIZED.getLabel())));
@@ -100,7 +100,7 @@ public class CovariateOptionsControllerTest {
     ResultActions result = mockMvc.perform(get("/projects/" + projectId + "/covariate-options"));
 
     result.andExpect(status().isOk());
-    result.andExpect(content().contentType(ContentType.APPLICATION_JSON.toString()));
+    result.andExpect(content().contentType(MediaType.APPLICATION_JSON));
     result.andExpect(jsonPath("$", hasSize(6))); // 1 = number of popchar outcomes in project
     result.andExpect(jsonPath("$[5].label", is(semPopChar.getLabel())));
   }

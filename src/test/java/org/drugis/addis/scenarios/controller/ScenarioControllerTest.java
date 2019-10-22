@@ -10,14 +10,13 @@ import org.drugis.addis.scenarios.Scenario;
 import org.drugis.addis.scenarios.repository.ScenarioRepository;
 import org.drugis.addis.scenarios.service.ScenarioService;
 import org.drugis.addis.security.repository.AccountRepository;
-import org.drugis.addis.util.WebConstants;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
@@ -93,7 +92,7 @@ public class ScenarioControllerTest {
     when(scenarioRepository.get(scenario.getId())).thenReturn(scenario);
     mockMvc.perform(get("/projects/1/analyses/1/problems/" + subProblemId + "/scenarios/" + scenario.getId()).principal(user))
             .andExpect(status().isOk())
-            .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()))
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
             .andExpect(jsonPath("$.id", is(scenario.getId())));
     verify(scenarioRepository).get(scenario.getId());
   }
@@ -106,7 +105,7 @@ public class ScenarioControllerTest {
     when(scenarioRepository.queryBySubProblem(projectId, analysisId, subProblemId)).thenReturn(scenarios);
     mockMvc.perform(get("/projects/" + projectId + "/analyses/" + analysisId + "/problems/" + subProblemId + "/scenarios").principal(user))
             .andExpect(status().isOk())
-            .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()))
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
             .andExpect(jsonPath("$", hasSize(2)))
             .andExpect(jsonPath("$[0].id", is(scenario1.getId())))
             .andExpect(jsonPath("$[1].id", is(scenario2.getId())));
@@ -121,8 +120,8 @@ public class ScenarioControllerTest {
     mockMvc.perform(post("/projects/" + projectId + "/analyses/" + analysisId + "/problems/" + subProblemId + "/scenarios/" + scenario.getId())
             .content(content)
             .principal(user)
-            .contentType(WebConstants.getApplicationJsonUtf8Value()))
-            .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()))
+            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
 
     verify(scenarioService).checkCoordinates(projectId, analysisId, subProblemId, scenario);
@@ -136,9 +135,9 @@ public class ScenarioControllerTest {
     String content = TestUtils.createJson(scenario);
     when(scenarioRepository.create(analysisId, subProblemId, scenario.getTitle(), scenario.getState())).thenReturn(scenario);
     mockMvc.perform(post("/projects/" + projectId + "/analyses/" + analysisId + "/problems/" + subProblemId + "/scenarios/")
-            .content(content).principal(user).contentType(WebConstants.getApplicationJsonUtf8Value()))
+            .content(content).principal(user).contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isCreated())
-            .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()))
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
             .andExpect(jsonPath("$.title", is(scenario.getTitle())));
     verify(scenarioService).checkCoordinates(projectId, analysisId, subProblemId, scenario);
     verify(projectService).checkOwnership(projectId, user);
@@ -154,7 +153,7 @@ public class ScenarioControllerTest {
             post("/projects/" + projectId + "/analyses/" + analysisId + "/problems/" + subProblemId + "/scenarios/")
                     .content(body)
                     .principal(user)
-                    .contentType(WebConstants.getApplicationJsonUtf8Value()))
+                    .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isForbidden());
   }
 
@@ -167,7 +166,7 @@ public class ScenarioControllerTest {
             post("/projects/" + projectId + "/analyses/" + analysisId + "/problems/" + subProblemId + "/scenarios/")
                     .content(body)
                     .principal(user)
-                    .contentType(WebConstants.getApplicationJsonUtf8Value()))
+                    .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isNotFound());
   }
 
@@ -180,7 +179,7 @@ public class ScenarioControllerTest {
     //NB: controller sets workspace/analysisID in scenario
     scenario.setWorkspace(analysisId);
     mockMvc.perform(post("/projects/" + projectId + "/analyses/" + analysisId + "/problems/" + subProblemId + "/scenarios/")
-            .content(content).principal(user).contentType(WebConstants.getApplicationJsonUtf8Value()))
+            .content(content).principal(user).contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isCreated());
     verify(scenarioService).checkCoordinates(projectId, analysisId, subProblemId, scenario);
     verify(projectService).checkOwnership(projectId, user);

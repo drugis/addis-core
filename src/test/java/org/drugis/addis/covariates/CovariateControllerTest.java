@@ -13,6 +13,7 @@ import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -26,9 +27,7 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.core.Is.is;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 /**
@@ -73,7 +72,7 @@ public class CovariateControllerTest {
     when(covariateRepository.findByProject(projectId)).thenReturn(covariates);
     ResultActions result = mockMvc.perform(get("/projects/1/covariates"));
     result.andExpect(status().isOk());
-    result.andExpect(content().contentType(ContentType.APPLICATION_JSON.toString()));
+    result.andExpect(content().contentType(MediaType.APPLICATION_JSON));
     result.andExpect(jsonPath("$", hasSize(2)));
     result.andExpect(jsonPath("$[0].name", is("name")));
   }
@@ -92,7 +91,7 @@ public class CovariateControllerTest {
     ResultActions resultActions = mockMvc.perform(post("/projects/1/covariates")
             .content(body)
             .principal(user)
-            .contentType(WebConstants.getApplicationJsonUtf8Value()));
+            .contentType(MediaType.APPLICATION_JSON));
     resultActions.andExpect(status().isCreated());
     resultActions.andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()));
     resultActions.andExpect(jsonPath("$.name", is("name")));
@@ -118,7 +117,7 @@ public class CovariateControllerTest {
     ResultActions resultActions = mockMvc.perform(post("/projects/1/covariates")
             .content(body)
             .principal(user)
-            .contentType(WebConstants.getApplicationJsonUtf8Value()));
+            .contentType(MediaType.APPLICATION_JSON));
     resultActions.andExpect(status().isCreated());
     resultActions.andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()));
     resultActions.andExpect(jsonPath("$.name", is("name")));

@@ -6,12 +6,12 @@ import org.drugis.addis.config.TestConfig;
 import org.drugis.addis.importer.controller.ImportController;
 import org.drugis.addis.importer.service.ClinicalTrialsImportService;
 import org.drugis.addis.importer.service.impl.ClinicalTrialsImportError;
-import org.drugis.addis.util.WebConstants;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
@@ -62,7 +62,7 @@ public class ImportControllerTest {
     when(clinicalTrialsImportService.fetchInfo(nctId)).thenReturn(resultObject);
     mockMvc.perform(get("/import/" + nctId ))
             .andExpect(status().isOk())
-            .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()))
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
             .andExpect(jsonPath("$.foo", is("bar")));
     verify(clinicalTrialsImportService).fetchInfo(nctId);
   }

@@ -7,22 +7,15 @@ import org.drugis.addis.TestUtils;
 import org.drugis.addis.analyses.service.AnalysisService;
 import org.drugis.addis.base.AbstractAddisCoreController;
 import org.drugis.addis.config.TestConfig;
-import org.drugis.addis.exception.MethodNotAllowedException;
-import org.drugis.addis.exception.ResourceDoesNotExistException;
-import org.drugis.addis.models.BiasDirection;
-import org.drugis.addis.models.FunnelPlot;
-import org.drugis.addis.models.FunnelPlotComparison;
-import org.drugis.addis.models.Model;
+import org.drugis.addis.models.*;
 import org.drugis.addis.models.controller.command.*;
 import org.drugis.addis.models.repository.FunnelPlotRepository;
+import org.drugis.addis.models.repository.ModelBaselineRepository;
 import org.drugis.addis.models.repository.ModelRepository;
 import org.drugis.addis.models.service.ModelService;
 import org.drugis.addis.patavitask.repository.PataviTaskRepository;
 import org.drugis.addis.problems.model.NormalBaselineDistribution;
-import org.drugis.addis.models.ModelBaseline;
-import org.drugis.addis.models.repository.ModelBaselineRepository;
 import org.drugis.addis.projects.service.ProjectService;
-import org.drugis.addis.util.WebConstants;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -30,6 +23,7 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
@@ -37,10 +31,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.context.WebApplicationContext;
 
-import javax.inject.Inject;
-import java.io.IOException;
 import java.net.URI;
 import java.security.Principal;
 import java.util.Arrays;
@@ -156,9 +147,9 @@ public class ModelControllerTest {
     mockMvc.perform(post("/projects/45/analyses/55/models")
             .content(body)
             .principal(user)
-            .contentType(WebConstants.getApplicationJsonUtf8Value()))
+            .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isCreated())
-            .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()))
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
             .andExpect(jsonPath("$.id", notNullValue()))
             .andExpect(jsonPath("$.analysisId", notNullValue()));
 
@@ -197,9 +188,9 @@ public class ModelControllerTest {
     mockMvc.perform(post("/projects/45/analyses/55/models")
             .content(body)
             .principal(user)
-            .contentType(WebConstants.getApplicationJsonUtf8Value()))
+            .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isCreated())
-            .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()))
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
             .andExpect(jsonPath("$.id", notNullValue()))
             .andExpect(jsonPath("$.analysisId", notNullValue()));
 
@@ -239,9 +230,9 @@ public class ModelControllerTest {
     mockMvc.perform(post("/projects/45/analyses/55/models")
             .content(body)
             .principal(user)
-            .contentType(WebConstants.getApplicationJsonUtf8Value()))
+            .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isCreated())
-            .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()))
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
             .andExpect(jsonPath("$.id", notNullValue()))
             .andExpect(jsonPath("$.analysisId", notNullValue()));
 
@@ -280,9 +271,9 @@ public class ModelControllerTest {
     mockMvc.perform(post("/projects/45/analyses/55/models")
             .content(body)
             .principal(user)
-            .contentType(WebConstants.getApplicationJsonUtf8Value()))
+            .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isCreated())
-            .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()))
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
             .andExpect(jsonPath("$.id", notNullValue()))
             .andExpect(jsonPath("$.analysisId", notNullValue()));
 
@@ -316,7 +307,7 @@ public class ModelControllerTest {
     mockMvc.perform(post("/projects/45/analyses/55/models")
             .content(body)
             .principal(user)
-            .contentType(WebConstants.getApplicationJsonUtf8Value()))
+            .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isCreated());
 
     verify(analysisService).checkCoordinates(projectId, analysisId);
@@ -347,9 +338,9 @@ public class ModelControllerTest {
     mockMvc.perform(post("/projects/45/analyses/55/models")
             .content(body)
             .principal(user)
-            .contentType(WebConstants.getApplicationJsonUtf8Value()))
+            .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isCreated())
-            .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()))
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
             .andExpect(jsonPath("$.id", notNullValue()))
             .andExpect(jsonPath("$.analysisId", notNullValue()));
 
@@ -394,9 +385,9 @@ public class ModelControllerTest {
     mockMvc.perform(post("/projects/45/analyses/55/models")
             .content(body)
             .principal(user)
-            .contentType(WebConstants.getApplicationJsonUtf8Value()))
+            .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isCreated())
-            .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()))
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
             .andExpect(jsonPath("$.id", notNullValue()))
             .andExpect(jsonPath("$.analysisId", notNullValue()));
 
@@ -414,7 +405,7 @@ public class ModelControllerTest {
 
     mockMvc.perform(get("/projects/45/analyses/55/models/1").principal(user))
             .andExpect(status().isOk())
-            .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()))
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
             .andExpect(jsonPath("$.id", is(model.getId())))
             .andExpect(jsonPath("$.analysisId", is(analysisId)));
 
@@ -430,7 +421,7 @@ public class ModelControllerTest {
 
     mockMvc.perform(get("/projects/45/analyses/55/models").principal(user))
             .andExpect(status().isOk())
-            .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()))
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
             .andExpect(jsonPath("$[0].id", notNullValue()));
 
     verify(modelService).query(analysisId);
@@ -476,7 +467,7 @@ public class ModelControllerTest {
     mockMvc.perform(post("/projects/45/analyses/55/models/1")
             .content(postBodyStr)
             .principal(user)
-            .contentType(WebConstants.getApplicationJsonUtf8Value()))
+            .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
 
     verify(modelService).checkOwnership(modelId, user);
@@ -489,7 +480,7 @@ public class ModelControllerTest {
     mockMvc.perform(post("/projects/45/analyses/55/models/1/attributes")
             .content(postBodyStr)
             .principal(user)
-            .contentType(WebConstants.getApplicationJsonUtf8Value()))
+            .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
     verify(modelService).checkOwnership(1, user);
     verify(modelRepository).setArchived(1, true);
@@ -506,7 +497,7 @@ public class ModelControllerTest {
     ResultActions resultActions = mockMvc.perform(get("/projects/45/analyses/55/models/1/result").principal(user));
     resultActions
             .andExpect(status().isOk())
-            .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()))
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
             .andExpect(jsonPath("$", notNullValue()));
     verify(modelService).get(model.getId());
     verify(pataviTaskRepository).getResult(model.getTaskUrl());
@@ -561,7 +552,7 @@ public class ModelControllerTest {
     MockHttpServletRequestBuilder post = post("/projects/1/analyses/2/models/3/funnelPlots")
             .content(postBodyStr)
             .principal(user)
-            .contentType(WebConstants.getApplicationJsonUtf8Value());
+            .contentType(MediaType.APPLICATION_JSON);
     mockMvc.perform(post).andExpect(status().isCreated());
     verify(analysisService).checkCoordinates(1, 2);
     verify(modelService).checkOwnership(3, user);
@@ -581,7 +572,7 @@ public class ModelControllerTest {
 
     mockMvc.perform(get("/projects/1/analyses/2/models/3/funnelPlots").principal(user))
             .andExpect(status().isOk())
-            .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()))
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
             .andExpect(jsonPath("$", notNullValue()))
             .andExpect(jsonPath("$[0].id", equalTo(funnelPlot.getId())));
 
@@ -596,7 +587,7 @@ public class ModelControllerTest {
 
     mockMvc.perform(get("/projects/1/analyses/2/models/3/baseline").principal(user))
             .andExpect(status().isOk())
-            .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()))
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
             .andExpect(jsonPath("$", notNullValue()))
             .andExpect(jsonPath("$.modelId", equalTo(modelBaseline.getModelId())))
             .andExpect(jsonPath("$.baseline", equalTo(modelBaseline.getBaseline())));
@@ -610,7 +601,7 @@ public class ModelControllerTest {
     MockHttpServletRequestBuilder put = put("/projects/1/analyses/2/models/3/baseline")
             .content(putBodyStr)
             .principal(user)
-            .contentType(WebConstants.getApplicationJsonUtf8Value());
+            .contentType(MediaType.APPLICATION_JSON);
 
     mockMvc.perform(put).andExpect(status().isOk());
     verify(modelService).checkOwnership(3, user);
@@ -625,7 +616,7 @@ public class ModelControllerTest {
     MockHttpServletRequestBuilder put = put("/projects/1/analyses/2/models/3/setTitle")
             .content(title)
             .principal(user)
-            .contentType(WebConstants.getApplicationJsonUtf8Value());
+            .contentType(MediaType.APPLICATION_JSON);
 
     mockMvc.perform(put).andExpect(status().isOk());
     verify(modelService).checkOwnership(modelId, user);

@@ -272,7 +272,7 @@ public class DatasetControllerTest {
 
     mockMvc.perform((get("/users/user-name-hash/datasets/" + uuid + "/history")).principal(user))
             .andExpect(status().isOk())
-            .andExpect(content().contentType("application/json;charset=UTF-8"));
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON));
 
     verify(historyService).createHistory(URI.create(Namespaces.DATASET_NAMESPACE + uuid));
   }

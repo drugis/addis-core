@@ -1,8 +1,5 @@
 package org.drugis.addis.statistics.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.Lists;
-import org.apache.commons.math3.analysis.function.Abs;
 import org.drugis.addis.TestUtils;
 import org.drugis.addis.config.TestConfig;
 import org.drugis.addis.statistics.command.AbstractMeasurementCommand;
@@ -12,10 +9,10 @@ import org.drugis.addis.statistics.command.EstimatesCommand;
 import org.drugis.addis.statistics.model.Estimate;
 import org.drugis.addis.statistics.model.Estimates;
 import org.drugis.addis.statistics.service.StatisticsService;
-import org.drugis.addis.util.WebConstants;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
@@ -31,7 +28,7 @@ import java.util.List;
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -92,9 +89,9 @@ public class statisticsControllerTest {
 
 //     ObjectMapper mapper = new ObjectMapper(); // for debugging porpoises
 //    EstimatesCommand desert = mapper.readValue(body, EstimatesCommand.class);
-    mockMvc.perform(post("/statistics/estimates").content(body).contentType(WebConstants.getApplicationJsonUtf8Value()))
+    mockMvc.perform(post("/statistics/estimates").content(body).contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
-            .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()))
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
             .andExpect((jsonPath("$.baselineUri", is(resultEstimates.getBaselineUri().toString()))));
   }
 }

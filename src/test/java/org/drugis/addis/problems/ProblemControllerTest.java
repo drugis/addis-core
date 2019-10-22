@@ -3,15 +3,17 @@ package org.drugis.addis.problems;
 import net.minidev.json.JSONObject;
 import org.drugis.addis.config.TestConfig;
 import org.drugis.addis.exception.ProblemCreationException;
-import org.drugis.addis.problems.model.*;
+import org.drugis.addis.problems.model.NetworkMetaAnalysisProblem;
+import org.drugis.addis.problems.model.SingleStudyBenefitRiskProblem;
+import org.drugis.addis.problems.model.TreatmentEntry;
 import org.drugis.addis.problems.model.problemEntry.AbsoluteDichotomousProblemEntry;
 import org.drugis.addis.problems.model.problemEntry.AbstractProblemEntry;
 import org.drugis.addis.problems.service.ProblemService;
 import org.drugis.addis.problems.service.model.*;
-import org.drugis.addis.util.WebConstants;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
@@ -68,7 +70,7 @@ public class ProblemControllerTest {
     when(problemService.getProblem(projectId, analysisId)).thenReturn(problem);
     mockMvc.perform(get("/projects/1/analyses/1/problem"))
             .andExpect(status().isOk())
-            .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()))
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
             .andExpect(jsonPath("$", notNullValue()))
             .andExpect(jsonPath("$.performanceTable", hasSize(2)))
             .andExpect(jsonPath("$.performanceTable[0].performance.type", is(RatePerformance.DBETA)))
@@ -91,7 +93,7 @@ public class ProblemControllerTest {
     when(problemService.getProblem(projectId, analysisId)).thenReturn(networkMetaAnalysisProblem);
     mockMvc.perform(get("/projects/1/analyses/2/problem"))
             .andExpect(status().isOk())
-            .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()))
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
             .andExpect(jsonPath("$", notNullValue()))
             .andExpect(jsonPath("$.entries", hasSize(2)))
             .andExpect((jsonPath("$.entries[0].treatment", equalTo(entry1.getTreatment()))))
@@ -116,7 +118,7 @@ public class ProblemControllerTest {
     when(problemService.getProblem(projectId, analysisId)).thenReturn(networkMetaAnalysisProblem);
     mockMvc.perform(get("/projects/1/analyses/2/problem"))
             .andExpect(status().isOk())
-            .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()))
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
             .andExpect(jsonPath("$", notNullValue()))
             .andExpect(jsonPath("$.entries", hasSize(2)))
             .andExpect(jsonPath("$.entries[0].treatment", equalTo(entry1.getTreatment())))

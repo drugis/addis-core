@@ -13,6 +13,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
@@ -23,7 +24,6 @@ import org.springframework.web.context.WebApplicationContext;
 import javax.inject.Inject;
 import java.net.URI;
 import java.security.Principal;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -31,9 +31,7 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.core.Is.is;
 import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 /**
@@ -88,7 +86,7 @@ public class OutcomeControllerTest {
 
     mockMvc.perform(get("/projects/1/outcomes"))
       .andExpect(status().isOk())
-      .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()))
+      .andExpect(content().contentType(MediaType.APPLICATION_JSON))
       .andExpect(jsonPath("$", hasSize(1)))
       .andExpect(jsonPath("$[0].id", is(outcome.getId())));
 
@@ -102,7 +100,7 @@ public class OutcomeControllerTest {
     when(outcomeRepository.get(projectId, outcome.getId())).thenReturn(outcome);
     mockMvc.perform(get("/projects/1/outcomes/1"))
       .andExpect(status().isOk())
-      .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()))
+      .andExpect(content().contentType(MediaType.APPLICATION_JSON))
       .andExpect(jsonPath("$.id", is(outcome.getId())));
     verify(outcomeRepository).get(projectId, outcome.getId());
   }
@@ -117,9 +115,9 @@ public class OutcomeControllerTest {
     mockMvc.perform(post("/projects/1/outcomes")
             .content(body)
             .principal(user)
-            .contentType(WebConstants.getApplicationJsonUtf8Value()))
+            .contentType(MediaType.APPLICATION_JSON))
       .andExpect(status().isCreated())
-      .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()))
+      .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8_VALUE))
       .andExpect(jsonPath("$.id", notNullValue()));
     verify(accountRepository).findAccountByUsername("gert");
     verify(outcomeRepository).create(gert, 1, "name", 1,"motivation", semanticOutcome);
@@ -135,9 +133,9 @@ public class OutcomeControllerTest {
     mockMvc.perform(post("/projects/1/outcomes")
             .content(body)
             .principal(user)
-            .contentType(WebConstants.getApplicationJsonUtf8Value()))
+            .contentType(MediaType.APPLICATION_JSON))
       .andExpect(status().isCreated())
-      .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()))
+      .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8_VALUE))
       .andExpect(jsonPath("$.id", notNullValue()));
     verify(accountRepository).findAccountByUsername("gert");
     verify(outcomeRepository).create(gert, 1, "name", 1, "", semanticOutcome);
@@ -151,9 +149,9 @@ public class OutcomeControllerTest {
     Outcome outcome = new Outcome(outcomeId, projectId, editOutcomeCommand.getName(), editOutcomeCommand.getMotivation(), new SemanticVariable(URI.create("uri"), "label"));
     when(outcomeService.updateOutcome(projectId, outcomeId, editOutcomeCommand.getName(), editOutcomeCommand.getMotivation(), editOutcomeCommand.getDirection())).thenReturn(outcome);
     String body = TestUtils.createJson(editOutcomeCommand);
-    mockMvc.perform(post("/projects/2/outcomes/1").content(body).principal(user).contentType(WebConstants.getApplicationJsonUtf8Value()))
+    mockMvc.perform(post("/projects/2/outcomes/1").content(body).principal(user).contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
-            .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()));
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON));
     verify(accountRepository).getAccount(user);
     verify(outcomeService).updateOutcome(projectId, outcomeId, editOutcomeCommand.getName(), editOutcomeCommand.getMotivation(), editOutcomeCommand.getDirection());
   }

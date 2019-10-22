@@ -7,17 +7,16 @@ import org.drugis.addis.ordering.Ordering;
 import org.drugis.addis.ordering.repository.OrderingRepository;
 import org.drugis.addis.projects.service.ProjectService;
 import org.drugis.addis.security.Account;
-import org.drugis.addis.util.WebConstants;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.springframework.test.context.web.WebAppConfiguration;
-
+import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
@@ -66,7 +65,7 @@ public class OrderingControllerTest {
     when(orderingRepository.get(3)).thenReturn(new Ordering(3, "some ordering"));
     mockMvc.perform(get("/projects/1/analyses/3/ordering"))
             .andExpect(status().isOk())
-            .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()));
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON));
     verify(orderingRepository).get(3);
   }
 
@@ -78,7 +77,7 @@ public class OrderingControllerTest {
             put("/projects/1/analyses/3/ordering")
                     .content(body)
                     .principal(user)
-                    .contentType(WebConstants.getApplicationJsonUtf8Value()))
+                    .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isForbidden());
   }
 
@@ -91,7 +90,7 @@ public class OrderingControllerTest {
             put("/projects/1/analyses/3/ordering")
                     .content(body)
                     .principal(user)
-                    .contentType(WebConstants.getApplicationJsonUtf8Value()))
+                    .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
     verify(orderingRepository).put(3, orderingForRepository);
 

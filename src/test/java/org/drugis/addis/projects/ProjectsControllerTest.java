@@ -11,7 +11,6 @@ import org.drugis.addis.projects.repository.ReportRepository;
 import org.drugis.addis.projects.service.ProjectService;
 import org.drugis.addis.security.Account;
 import org.drugis.addis.security.repository.AccountRepository;
-import org.drugis.addis.util.WebConstants;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -30,7 +29,6 @@ import org.springframework.web.context.WebApplicationContext;
 import javax.inject.Inject;
 import java.net.URI;
 import java.security.Principal;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -106,7 +104,7 @@ public class ProjectsControllerTest {
 
     mockMvc.perform(get("/projects").principal(user))
             .andExpect(status().isOk())
-            .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()))
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
             .andExpect(jsonPath("$", hasSize(0)));
 
     verify(projectRepository).query();
@@ -121,7 +119,7 @@ public class ProjectsControllerTest {
 
     mockMvc.perform(get("/projects").principal(user))
             .andExpect(status().isOk())
-            .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()))
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
             .andExpect(jsonPath("$", hasSize(projects.size())))
             .andExpect(jsonPath("$[0].id", is(project.getId())))
             .andExpect(jsonPath("$[0].owner.id", is(project.getOwner().getId())))
@@ -141,7 +139,7 @@ public class ProjectsControllerTest {
 
     mockMvc.perform(get("/projects?owner=2").principal(user))
             .andExpect(status().isOk())
-            .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()))
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
             .andExpect(jsonPath("$", hasSize(projects.size())))
             .andExpect(jsonPath("$[0].owner.id", is(project.getOwner().getId())));
 
@@ -155,9 +153,9 @@ public class ProjectsControllerTest {
     Project project = new Project(1, gert, "testname", "testdescription", "uid1", version);
     String jsonContent = TestUtils.createJson(projectCommand);
     when(projectRepository.create(gert, projectCommand)).thenReturn(project);
-    mockMvc.perform(post("/projects").principal(user).content(jsonContent).contentType(WebConstants.getApplicationJsonUtf8Value()))
+    mockMvc.perform(post("/projects").principal(user).content(jsonContent).contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isCreated())
-            .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()))
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
             .andExpect(jsonPath("$.name", is("testname")));
     verify(accountRepository).findAccountByUsername(gert.getUsername());
     verify(projectRepository).create(gert, projectCommand);
@@ -169,7 +167,7 @@ public class ProjectsControllerTest {
     when(projectRepository.get(project.getId())).thenReturn(project);
     mockMvc.perform(get("/projects/" + project.getId()).principal(user))
             .andExpect(status().isOk())
-            .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()))
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
             .andExpect(jsonPath("$.id", is(project.getId())));
     verify(projectRepository).get(project.getId());
   }
@@ -189,9 +187,9 @@ public class ProjectsControllerTest {
     Project project = new Project(1, gert, "testname", StringUtils.EMPTY, "uid1", version);
     String requestBody = TestUtils.createJson(projectCommand);
     when(projectRepository.create(gert, projectCommand)).thenReturn(project);
-    mockMvc.perform(post("/projects").principal(user).content(requestBody).contentType(WebConstants.getApplicationJsonUtf8Value()))
+    mockMvc.perform(post("/projects").principal(user).content(requestBody).contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isCreated())
-            .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()))
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
             .andExpect(jsonPath("$.name", is("testname")));
     verify(accountRepository).findAccountByUsername(gert.getUsername());
     verify(projectRepository).create(gert, projectCommand);
@@ -204,9 +202,9 @@ public class ProjectsControllerTest {
     Project project = new Project(1, gert, "updateName", "updateDescription", "uid1", version);
     String jsonContent = TestUtils.createJson(command);
     when(projectService.updateProject(project.getId(), command.getName(), command.getDescription())).thenReturn(project);
-    mockMvc.perform(post("/projects/1").principal(user).content(jsonContent).contentType(WebConstants.getApplicationJsonUtf8Value()))
+    mockMvc.perform(post("/projects/1").principal(user).content(jsonContent).contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
-            .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()));
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON));
     verify(projectService).checkOwnership(project.getId(), user);
     verify(projectService).updateProject(project.getId(), command.getName(), command.getDescription());
   }
@@ -246,7 +244,7 @@ public class ProjectsControllerTest {
     mockMvc.perform(post("/projects/1/setArchivedStatus")
             .content(postBodyStr)
             .principal(user)
-            .contentType(WebConstants.getApplicationJsonUtf8Value()))
+            .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
     verify(projectService).checkOwnership(1, user);
     verify(projectRepository).setArchived(1, true);
@@ -258,7 +256,7 @@ public class ProjectsControllerTest {
     mockMvc.perform(post("/projects/1/setArchivedStatus")
             .content(postBodyStr)
             .principal(user)
-            .contentType(WebConstants.getApplicationJsonUtf8Value()))
+            .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
     verify(projectService).checkOwnership(1, user);
     verify(projectRepository).setArchived(1, false);

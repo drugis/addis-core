@@ -1,6 +1,5 @@
 package org.drugis.trialverse.user.controller;
 
-import org.apache.http.entity.ContentType;
 import org.drugis.addis.security.Account;
 import org.drugis.addis.security.repository.AccountRepository;
 import org.junit.After;
@@ -9,25 +8,21 @@ import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
-
-import javax.inject.Inject;
 
 import java.security.Principal;
 import java.util.Arrays;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @Configuration
 @EnableWebMvc
@@ -60,7 +55,7 @@ public class UserControllerTest {
     when(accountRepository.findAccountById(accountId)).thenReturn(account);
     ResultActions result = mockMvc.perform(get("/users/" + accountId));
     result.andExpect(status().isOk());
-    result.andExpect(content().contentType(ContentType.APPLICATION_JSON.toString()));
+    result.andExpect(content().contentType(MediaType.APPLICATION_JSON));
     result.andExpect(jsonPath("$.username", is("maryAcc")));
     result.andExpect(jsonPath("$.firstName", is("mary")));
     result.andExpect(jsonPath("$.lastName", is("jones")));
@@ -76,7 +71,7 @@ public class UserControllerTest {
     when(accountRepository.getUsers()).thenReturn(Arrays.asList(account1, account2));
     ResultActions result = mockMvc.perform(get("/users"));
     result.andExpect(status().isOk());
-    result.andExpect(content().contentType(ContentType.APPLICATION_JSON.toString()));
+    result.andExpect(content().contentType(MediaType.APPLICATION_JSON));
     result.andExpect(jsonPath("$", hasSize(2)));
     verify(accountRepository).getUsers();
   }
@@ -89,7 +84,7 @@ public class UserControllerTest {
         .principal(principal)
     );
     result.andExpect(status().isOk());
-    result.andExpect(content().contentType(ContentType.APPLICATION_JSON.toString()));
+    result.andExpect(content().contentType(MediaType.APPLICATION_JSON));
     result.andExpect(jsonPath("$.username", is("maryAcc")));
     result.andExpect(jsonPath("$.firstName", is("mary")));
     result.andExpect(jsonPath("$.lastName", is("jones")));

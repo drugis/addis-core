@@ -11,13 +11,13 @@ import org.drugis.addis.subProblems.SubProblem;
 import org.drugis.addis.subProblems.controller.command.SubProblemCommand;
 import org.drugis.addis.subProblems.repository.SubProblemRepository;
 import org.drugis.addis.subProblems.service.SubProblemService;
-import org.drugis.addis.util.WebConstants;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
@@ -26,7 +26,6 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import javax.inject.Inject;
-
 import java.security.Principal;
 
 import static org.hamcrest.Matchers.is;
@@ -34,9 +33,7 @@ import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 /**
  * Created by joris on 8-5-17.
@@ -87,7 +84,7 @@ public class SubProblemControllerTest {
     when(subProblemRepository.get(3)).thenReturn(new SubProblem(2, "{}", "Default"));
     mockMvc.perform(get("/projects/1/analyses/2/problems/3"))
             .andExpect(status().isOk())
-            .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()))
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
             .andExpect(jsonPath("$.title", is("Default")));
     verify(subProblemRepository).get(3);
   }
@@ -101,7 +98,7 @@ public class SubProblemControllerTest {
             post("/projects/1/analyses/2/problems")
                     .content(body)
                     .principal(user)
-                    .contentType(WebConstants.getApplicationJsonUtf8Value()))
+                    .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isForbidden());
   }
 
@@ -114,7 +111,7 @@ public class SubProblemControllerTest {
             post("/projects/1/analyses/2/problems")
                     .content(body)
                     .principal(user)
-                    .contentType(WebConstants.getApplicationJsonUtf8Value()))
+                    .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isNotFound());
   }
 
@@ -129,7 +126,7 @@ public class SubProblemControllerTest {
             post("/projects/1/analyses/2/problems")
                     .content(body)
                     .principal(user)
-                    .contentType(WebConstants.getApplicationJsonUtf8Value()))
+                    .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isCreated())
             .andExpect(jsonPath("$.title", is("Degauss")));
     verify(subProblemService).createSubProblem(2, "\"{}\"", "Degauss", "\"{}\"");

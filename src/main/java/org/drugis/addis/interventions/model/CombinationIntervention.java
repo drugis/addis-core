@@ -1,9 +1,9 @@
 package org.drugis.addis.interventions.model;
 
+import org.apache.commons.lang3.NotImplementedException;
 import org.drugis.addis.interventions.controller.command.SetMultipliersCommand;
 import org.drugis.addis.interventions.controller.viewAdapter.AbstractInterventionViewAdapter;
 import org.drugis.addis.interventions.controller.viewAdapter.CombinationInterventionViewAdapter;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import javax.persistence.*;
 import java.util.Set;
@@ -33,6 +33,6 @@ public class CombinationIntervention extends MultipleIntervention {
 
   @Override
   public void updateMultipliers(SetMultipliersCommand command) {
-    throw new NotImplementedException(); // should always update component interventions directly instead
+    throw new NotImplementedException("not implemented"); // should always update component interventions directly instead
   }
 }
