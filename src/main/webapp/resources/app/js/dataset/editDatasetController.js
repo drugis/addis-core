@@ -1,16 +1,30 @@
 'use strict';
 define(['angular'],
   function(angular) {
-    var dependencies = ['$scope', '$stateParams', '$modalInstance', 'DatasetResource', 'dataset', 'userUid', 'callback'];
-    var EditDatasetController = function($scope, $stateParams, $modalInstance, DatasetResource, dataset, userUid, callback) {
+    var dependencies = [
+      '$scope',
+      '$modalInstance',
+      'DatasetResource',
+      'dataset',
+      'userUid',
+      'callback'
+    ];
+    var EditDatasetController = function(
+      $scope,
+      $modalInstance,
+      DatasetResource,
+      dataset,
+      userUid,
+      callback
+    ) {
       // functions
-      $scope.editDataset =editDataset;
-      $scope.cancel =cancel; 
-      
+      $scope.editDataset = editDataset;
+      $scope.cancel = cancel;
+
       // init
       $scope.dataset = angular.copy(dataset);
       $scope.dataset.description = $scope.dataset.comment;
-      
+
       function editDataset() {
         $scope.isEditing = true;
         var datasetCommand = {
@@ -25,7 +39,7 @@ define(['angular'],
         });
         $modalInstance.close();
       }
-      
+
       function cancel() {
         $modalInstance.close();
       }

@@ -777,3 +777,7 @@ DROP TABLE toggledColumns;
 
 --changeset keijserj:80
 ALTER TABLE BenefitRiskStudyOutcomeInclusion ADD COLUMN baseline VARCHAR;
+
+--changeset keijserj:81
+ALTER TABLE VersionMapping ADD COLUMN archived BOOLEAN DEFAULT false;
+ALTER TABLE VersionMapping ADD COLUMN archivedon VARCHAR;

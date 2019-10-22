@@ -22,7 +22,6 @@ import org.drugis.trialverse.dataset.repository.VersionMappingRepository;
 import org.drugis.trialverse.dataset.exception.CreateDatasetException;
 import org.drugis.trialverse.security.TrialversePrincipal;
 import org.drugis.addis.util.WebConstants;
-import org.drugis.trialverse.util.Namespaces;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cache.annotation.CacheEvict;
@@ -50,19 +49,17 @@ import java.io.InputStream;
 import java.io.StringWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
-
-/**
- * Created by connor on 04/11/14.
- */
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 
 @Repository
 public class DatasetWriteRepositoryImpl implements DatasetWriteRepository {
 
   public static final String PATH = "/datasets";
-  public static final String INITIAL_COMMIT_MESSAGE = "Dataset created through Trialverse";
-  public static final String EDIT_TITLE_MESSAGE = "Edited title.";
-  final static String EDIT_DATASET = TriplestoreService.loadResource("sparql/editDataset.sparql");
-  final static String INSERT_DESCRIPTION = TriplestoreService.loadResource("sparql/insertDescription.sparql");
+  private final String INITIAL_COMMIT_MESSAGE = "Dataset created through Trialverse";
+  private final String EDIT_TITLE_MESSAGE = "Edited title.";
+  private final String EDIT_DATASET = TriplestoreService.loadResource("sparql/editDataset.sparql");
+  private final String INSERT_DESCRIPTION = TriplestoreService.loadResource("sparql/insertDescription.sparql");
 
   @Inject
   private WebConstants webConstants;
@@ -81,7 +78,7 @@ public class DatasetWriteRepositoryImpl implements DatasetWriteRepository {
 
   private final static Logger logger = LoggerFactory.getLogger(DatasetWriteRepositoryImpl.class);
   private static final String DUMP_ENDPOINT = "/dump";
-  
+
   @Override
   public URI createDataset(String title, String description, TrialversePrincipal owner) throws URISyntaxException, CreateDatasetException {
     String datasetUri = jenaFactory.createDatasetURI();
@@ -92,57 +89,57 @@ public class DatasetWriteRepositoryImpl implements DatasetWriteRepository {
 
   @Override
   public URI createOrUpdateDatasetWithContent(final InputStream content, String contentType, String trialverseUri, TrialversePrincipal owner, String commitTitle, String commitDescription)
-      throws URISyntaxException, CreateDatasetException {
+          throws URISyntaxException, CreateDatasetException {
     // find the dataset if it exists, otherwise create a new one
     URI datasetUri = new URI(trialverseUri);
     VersionMapping versionMapping = null;
     try {
-    	versionMapping = versionMappingRepository.getVersionMappingByDatasetUrl(datasetUri);
+      versionMapping = versionMappingRepository.getVersionMappingByDatasetUrl(datasetUri);
     } catch (EmptyResultDataAccessException e) {
       datasetUri = createDataset(owner, trialverseUri, ""); // initialize empty
-      versionMapping = versionMappingRepository.getVersionMappingByDatasetUrl(datasetUri);    	
+      versionMapping = versionMappingRepository.getVersionMappingByDatasetUrl(datasetUri);
     }
 
     // upload the content to the dump endpoint
     UriComponents uriComponents = UriComponentsBuilder.fromHttpUrl(versionMapping.getVersionedDatasetUrl())
-        .path(DUMP_ENDPOINT)
-        .build();
+            .path(DUMP_ENDPOINT)
+            .build();
     HttpHeaders headers = createEventSourcingHeaders(owner, commitTitle, contentType);
     final RequestCallback requestCallback = new RequestCallback() {
       @Override
-     public void doWithRequest(final ClientHttpRequest request) throws IOException {
+      public void doWithRequest(final ClientHttpRequest request) throws IOException {
         request.getHeaders().putAll(headers);
         IOUtils.copy(content, request.getBody());
       }
     };
     final ResponseExtractor<HttpStatus> statusExtractor = new ResponseExtractor<HttpStatus>() {
-			@Override
-			public HttpStatus extractData(ClientHttpResponse response) throws IOException {
-				return response.getStatusCode();
-			}
-		};
+      @Override
+      public HttpStatus extractData(ClientHttpResponse response) throws IOException {
+        return response.getStatusCode();
+      }
+    };
     try {
-    	HttpStatus status = restTemplate.execute(uriComponents.toUri(), HttpMethod.PUT, requestCallback, statusExtractor);
-	    if (!HttpStatus.CREATED.equals(status) && !HttpStatus.OK.equals(status)) {
-	    	logger.error("Got response status " + status.toString() + " expected 200 OK or 201 CREATED");
-	    	throw new CreateDatasetException();
-	    }
+      HttpStatus status = restTemplate.execute(uriComponents.toUri(), HttpMethod.PUT, requestCallback, statusExtractor);
+      if (!HttpStatus.CREATED.equals(status) && !HttpStatus.OK.equals(status)) {
+        logger.error("Got response status " + status.toString() + " expected 200 OK or 201 CREATED");
+        throw new CreateDatasetException();
+      }
     } catch (RestClientException e) {
-    	logger.error(e.toString());
-    	throw new CreateDatasetException();
+      logger.error(e.toString());
+      throw new CreateDatasetException();
     }
-    
+
     return datasetUri;
   }
 
   @Caching(evict = {
-          @CacheEvict(cacheNames = "datasetHistory", key="#mapping.getVersionedDatasetUrl()"),
+          @CacheEvict(cacheNames = "datasetHistory", key = "#mapping.getVersionedDatasetUrl()"),
           @CacheEvict(cacheNames = "versionedDataset", key = "#mapping.trialverseDatasetUrl+'headVersion'")
   })
   public String editDataset(TrialversePrincipal owner, VersionMapping mapping, String title, String description) throws EditDatasetException {
     String editDatasetQuery = EDIT_DATASET.replace("$newTitle", title)
             .replace("$datasetUri", mapping.getTrialverseDatasetUrl());
-    if(description != null) {
+    if (description != null) {
       editDatasetQuery = editDatasetQuery.concat(INSERT_DESCRIPTION
               .replace("$newDescription", description).replace("$datasetUri", mapping.getTrialverseDatasetUrl()));
     }
@@ -151,7 +148,7 @@ public class DatasetWriteRepositoryImpl implements DatasetWriteRepository {
 
     HttpEntity<?> requestEntity = new HttpEntity<>(editDatasetQuery, httpHeaders);
     ResponseEntity<String> response = restTemplate.postForEntity(updateUri, requestEntity, String.class);
-    if(!HttpStatus.OK.equals(response.getStatusCode())) {
+    if (!HttpStatus.OK.equals(response.getStatusCode())) {
       logger.error("Error updating dataset, triplestore response = " + response.getStatusCode().getReasonPhrase());
       throw new EditDatasetException();
     }
@@ -171,7 +168,7 @@ public class DatasetWriteRepositoryImpl implements DatasetWriteRepository {
       }
       URI location = response.getHeaders().getLocation();
       //store link from uri to location
-      versionMappingRepository.save(new VersionMapping(location.toString(), account.getEmail(), datasetUri));
+      versionMappingRepository.save(new VersionMapping(location.toString(), account.getEmail(), datasetUri, false, null));
     } catch (RestClientException e) {
       logger.error(e.toString());
       throw new CreateDatasetException();
@@ -182,7 +179,7 @@ public class DatasetWriteRepositoryImpl implements DatasetWriteRepository {
   private HttpHeaders createEventSourcingHeaders(TrialversePrincipal owner, String commitTitle, String contentType) {
     HttpHeaders httpHeaders = new HttpHeaders();
     Account account = accountRepository.findAccountByUsername(owner.getUserName());
-    if(owner.hasApiKey()) {
+    if (owner.hasApiKey()) {
       httpHeaders.add(WebConstants.EVENT_SOURCE_CREATOR_HEADER,
               "https://trialverse.org/apikeys/" + owner.getApiKey().getId());
     } else {
@@ -211,7 +208,4 @@ public class DatasetWriteRepositoryImpl implements DatasetWriteRepository {
 
     return model;
   }
-
-
-
 }

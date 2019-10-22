@@ -117,8 +117,8 @@ INSERT INTO public.covariate(id, project, name, motivation, definitionkey, type)
 INSERT INTO public.covariate(id, project, name, motivation, definitionkey, type) VALUES (2, 1, 'covariate 2 name', 'my motivation', 'BLINDING_AT_LEAST_SINGLE_BLIND', 'STUDY_CHARACTERISTIC');
 INSERT INTO public.covariate(id, project, name, motivation, definitionkey, type) VALUES (3, 2, 'covariate 3 name', 'my motivation', 'ALLOCATION_RANDOMIZED', 'STUDY_CHARACTERISTIC');
 
-INSERT INTO public.VersionMapping (id, versionedDatasetUrl, ownerUuid, trialverseDatasetUrl) VALUES(1, 'http://datastoreserver/aaa-111', 'connor@test.com', 'http://trials.drugis.org/datasets/e2ab9670-d3c7-402c-81ad-60abbb46ca4c');
-INSERT INTO public.VersionMapping (id, versionedDatasetUrl, ownerUuid, trialverseDatasetUrl) VALUES(2, 'http://datastoreserver/bbb-222', 'connor@test.com', 'http://trials.drugis.org/datasets/dbdf84e9-8bdb-4233-9bf6-c553cd023638');
+INSERT INTO public.VersionMapping (id, versionedDatasetUrl, ownerUuid, trialversedataseturl, archived, archivedOn) VALUES(1, 'http://datastoreserver/aaa-111', 'connor@test.com', 'http://trials.drugis.org/datasets/e2ab9670-d3c7-402c-81ad-60abbb46ca4c', false, null);
+INSERT INTO public.VersionMapping (id, versionedDatasetUrl, ownerUuid, trialversedataseturl, archived, archivedOn) VALUES(2, 'http://datastoreserver/bbb-222', 'connor@test.com', 'http://trials.drugis.org/datasets/dbdf84e9-8bdb-4233-9bf6-c553cd023638', false, null);
 
 INSERT INTO public.FeaturedDataset(dataseturl) VALUES('http://trials.drugis.org/datasets/e2ab9670-d3c7-402c-81ad-60abbb46ca4c');
 INSERT INTO public.FeaturedDataset(dataseturl) VALUES('http://trials.drugis.org/datasets/dbdf84e9-8bdb-4233-9bf6-c553cd023638');

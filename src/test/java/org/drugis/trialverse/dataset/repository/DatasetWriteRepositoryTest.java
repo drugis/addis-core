@@ -3,8 +3,10 @@ package org.drugis.trialverse.dataset.repository;
 import org.drugis.addis.security.Account;
 import org.drugis.addis.security.ApiKey;
 import org.drugis.addis.security.repository.AccountRepository;
+import org.drugis.addis.trialverse.service.TriplestoreService;
 import org.drugis.addis.util.WebConstants;
 import org.drugis.trialverse.dataset.exception.EditDatasetException;
+import org.drugis.trialverse.dataset.exception.SetArchivedStatusOfDatasetException;
 import org.drugis.trialverse.dataset.factory.JenaFactory;
 import org.drugis.trialverse.dataset.model.VersionMapping;
 import org.drugis.trialverse.dataset.repository.impl.DatasetWriteRepositoryImpl;
@@ -16,6 +18,7 @@ import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,6 +28,9 @@ import org.springframework.web.client.RestTemplate;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.security.Principal;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -123,6 +129,4 @@ public class DatasetWriteRepositoryTest {
     assertEquals("newVersion", newVersion);
     verify(accountRepository).findAccountByUsername(owner.getUserName());
   }
-
-
 }

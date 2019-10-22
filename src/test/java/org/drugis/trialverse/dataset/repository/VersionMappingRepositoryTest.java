@@ -13,6 +13,7 @@ import org.springframework.jdbc.core.RowMapper;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -30,9 +31,14 @@ public class VersionMappingRepositoryTest {
 
 
   @InjectMocks
-  VersionMappingRepository versionMappingRepository;
+  private VersionMappingRepository versionMappingRepository;
 
-  String userName = "userName";
+  private String userName = "userName";
+  private Boolean archived = false;
+  private String archivedOn = null;
+  private String trialverseDataset = "trialverseDataset";
+  private String datasetUuid = "datasetUui1";
+
 
   @Before
   public void setUp() {
@@ -47,17 +53,24 @@ public class VersionMappingRepositoryTest {
     String ownerUuid = "ownerUuid";
     String trialverseDataset = "versionKey";
 
-    VersionMapping versionMapping = new VersionMapping(datasetLocation, ownerUuid, trialverseDataset);
+    Boolean archived = false;
+    String archivedOn = null;
+    VersionMapping versionMapping = new VersionMapping(datasetLocation, ownerUuid, trialverseDataset, archived, archivedOn);
 
     versionMappingRepository.save(versionMapping);
 
-    verify(jdbcTemplate).update("insert into VersionMapping (versionedDatasetUrl, ownerUuid, trialverseDatasetUrl) values (?, ?, ?)",
-            datasetLocation, ownerUuid, trialverseDataset);
+    verify(jdbcTemplate).update(
+            "insert into VersionMapping (versionedDatasetUrl, ownerUuid, trialverseDatasetUrl) values (?, ?, ?)",
+            datasetLocation,
+            ownerUuid,
+            trialverseDataset
+    );
   }
 
   @Test
   public void testFindMappingsByUserName() {
-    List<Object> mockResult = Arrays.asList(new VersionMapping(1, "datasetUui1", userName, "trialverseDataset"));
+    VersionMapping mapping = new VersionMapping(1, datasetUuid, userName, trialverseDataset, archived, archivedOn);
+    List<Object> mockResult = Collections.singletonList(mapping);
     when(jdbcTemplate.query(anyString(), any(Object[].class), any(RowMapper.class))).thenReturn(mockResult);
 
     List<VersionMapping> mappings = versionMappingRepository.findMappingsByEmail(userName);
@@ -68,7 +81,7 @@ public class VersionMappingRepositoryTest {
   @Test
   public void getVersionUrlByDatasetUrl() throws URISyntaxException {
     URI datasetUrl = new URI("datasetUrl");
-    VersionMapping mockResult = new VersionMapping(1, "datasetUui1", userName, "trialverseDataset");
+    VersionMapping mockResult = new VersionMapping(1, datasetUuid, userName, trialverseDataset, archived, archivedOn);
     when(jdbcTemplate.queryForObject(anyString(), any(RowMapper.class), anyObject())).thenReturn(mockResult);
 
     VersionMapping versionMapping = versionMappingRepository.getVersionMappingByDatasetUrl(datasetUrl);
@@ -78,7 +91,7 @@ public class VersionMappingRepositoryTest {
 
   @Test
   public void testGetVersionMappings() {
-    List<Object> mockResult = Arrays.asList(new VersionMapping(1, "datasetUui1", userName, "trialverseDataset"));
+    List<Object> mockResult = Arrays.asList(new VersionMapping(1, datasetUuid, userName, trialverseDataset, archived, archivedOn));
     when(jdbcTemplate.query(anyString(), any(Object[].class), any(RowMapper.class))).thenReturn(mockResult);
 
     List<VersionMapping> mappings = versionMappingRepository.getVersionMappings();
@@ -90,11 +103,26 @@ public class VersionMappingRepositoryTest {
   @Test
   public void getVersionMappingByVersionedUrl() throws URISyntaxException {
     URI datasetUrl = new URI("datasetUrl");
-    VersionMapping mockResult = new VersionMapping(1, "datasetUui1", userName, "trialverseDataset");
+    VersionMapping mockResult = new VersionMapping(1, datasetUuid, userName, trialverseDataset, archived, archivedOn);
     when(jdbcTemplate.queryForObject(anyString(), any(RowMapper.class), anyObject())).thenReturn(mockResult);
     VersionMapping versionMapping = versionMappingRepository.getVersionMappingByVersionedURl(datasetUrl);
 
     assertEquals(mockResult, versionMapping);
   }
 
+  @Test
+  public void setArchivedStatusTrue() throws URISyntaxException {
+    URI datasetUri = new URI("datasetUri");
+    versionMappingRepository.setArchivedStatus(datasetUri, true);
+    String query = "UPDATE VersionMapping SET archived=?, archivedOn=to_char(NOW(), 'YYYY-MM-DD') WHERE trialverseDatasetUrl=?";
+    verify(jdbcTemplate).update(query, true, datasetUri.toString());
+  }
+
+  @Test
+  public void setArchivedStatusFalse() throws URISyntaxException {
+    URI datasetUri = new URI("datasetUri");
+    versionMappingRepository.setArchivedStatus(datasetUri, false);
+    String query = "UPDATE VersionMapping SET archived=?, archivedOn=NULL WHERE trialverseDatasetUrl=?";
+    verify(jdbcTemplate).update(query, false, datasetUri.toString());
+  }
 }

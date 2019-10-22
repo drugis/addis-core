@@ -6,10 +6,10 @@ define([], function() {
       userUid: '@userUid',
       datasetUuid: '@datasetUuid'
     }, {
-      'query': {
+      query: {
         method: 'GET',
         headers: {
-          'Accept': 'text/turtle'
+          Accept: 'text/turtle'
         },
         isArray: false,
         transformResponse: function(data) {
@@ -18,17 +18,17 @@ define([], function() {
           };
         }
       },
-      'queryForJson': {
+      queryForJson: {
         method: 'GET',
         isArray: true,
         headers: {
-          'Accept': 'application/json; charset=UTF-8'
+          Accept: 'application/json; charset=UTF-8'
         }
       },
-      'get': {
-        method: 'get',
+      get: {
+        method: 'GET',
         headers: {
-          'Accept': 'text/turtle'
+          Accept: 'text/turtle'
         },
         transformResponse: function(data) {
           return {
@@ -36,16 +36,20 @@ define([], function() {
           };
         }
       },
-      'getForJson': {
-        method: 'get',
+      getForJson: {
+        method: 'GET',
         headers: {
-          'Accept': 'application/json; charset=UTF-8'
+          Accept: 'application/json; charset=UTF-8'
         }
       },
-      'getFeatured': {
+      getFeatured: {
         url: '/featured',
-        method: 'get',
+        method: 'GET',
         isArray: true
+      },
+      setArchived: {
+        url: '/users/:userUid/datasets/:datasetUuid/setArchivedStatus',
+        method: 'POST'
       }
     });
   };

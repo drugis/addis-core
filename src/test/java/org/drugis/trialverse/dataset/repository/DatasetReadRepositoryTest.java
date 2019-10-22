@@ -5,7 +5,6 @@ import net.minidev.json.JSONObject;
 import net.minidev.json.parser.JSONParser;
 import net.minidev.json.parser.ParseException;
 import org.apache.commons.io.IOUtils;
-import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpVersion;
 import org.apache.http.client.HttpClient;
@@ -54,7 +53,6 @@ import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.zip.GZIPInputStream;
 
 import static java.nio.charset.Charset.defaultCharset;
 import static org.apache.http.HttpHeaders.ACCEPT;
@@ -100,10 +98,10 @@ public class DatasetReadRepositoryTest {
     Account account = new Account(1, "username", "firstName", "lastName", "foo@bar.com");
     String datasetLocation = "loc1";
     String versionKey = "version1";
-    VersionMapping versionMapping = new VersionMapping(1, datasetLocation, account.getEmail(), versionKey);
+    VersionMapping versionMapping = new VersionMapping(1, datasetLocation, account.getEmail(), versionKey, false, null);
     String datasetLocation2 = "loc2";
     String versionKey2 = "version2";
-    VersionMapping versionMapping2 = new VersionMapping(2, datasetLocation2, account.getEmail(), versionKey2);
+    VersionMapping versionMapping2 = new VersionMapping(2, datasetLocation2, account.getEmail(), versionKey2, false, null);
     List<VersionMapping> mockResult = Arrays.asList(versionMapping, versionMapping2);
     when(versionMappingRepository.findMappingsByEmail(account.getEmail())).thenReturn(mockResult);
     HttpHeaders httpHeaders = new HttpHeaders();
@@ -130,7 +128,7 @@ public class DatasetReadRepositoryTest {
     String datasetUuid = "uuid";
     String versionUuid = "versionUuid";
     String versionedUri = "baseUri/versions/" + versionUuid;
-    VersionMapping mapping = new VersionMapping(versionedUri, "itsame", Namespaces.DATASET_NAMESPACE + datasetUuid);
+    VersionMapping mapping = new VersionMapping(versionedUri, "itsame", Namespaces.DATASET_NAMESPACE + datasetUuid, false, null);
     URI trialverseDatasetUrl = new URI(Namespaces.DATASET_NAMESPACE + datasetUuid);
     when(versionMappingRepository.getVersionMappingByDatasetUrl(trialverseDatasetUrl)).thenReturn(mapping);
     HttpHeaders httpHeaders = new HttpHeaders();
@@ -172,7 +170,7 @@ public class DatasetReadRepositoryTest {
     Account account = new Account(user1, "piet", "klaassen", "foo@bar.com");
     ApiKey credentials = new ApiKey();
     Principal principal = new PreAuthenticatedAuthenticationToken(account, credentials);
-    VersionMapping versionMapping = new VersionMapping(1, "whatever", "different@email.com", datasetUrl.toString());
+    VersionMapping versionMapping = new VersionMapping(1, "whatever", "different@email.com", datasetUrl.toString(), false, null);
     when(accountRepository.findAccountByUsername(account.getUsername())).thenReturn(account);
     when(versionMappingRepository.getVersionMappingByDatasetUrl(datasetUrl)).thenReturn(versionMapping);
 
@@ -191,7 +189,7 @@ public class DatasetReadRepositoryTest {
     Account account = new Account(user1, "piet", "klaassen", "foo@bar.com");
     ApiKey credentials = new ApiKey();
     Principal principal = new PreAuthenticatedAuthenticationToken(account, credentials);
-    VersionMapping versionMapping = new VersionMapping(1, "whatever", account.getEmail(), datasetUrl.toString());
+    VersionMapping versionMapping = new VersionMapping(1, "whatever", account.getEmail(), datasetUrl.toString(), false, null);
     when(accountRepository.findAccountByUsername(account.getUsername())).thenReturn(account);
     when(versionMappingRepository.getVersionMappingByDatasetUrl(datasetUrl)).thenReturn(versionMapping);
 
@@ -210,7 +208,7 @@ public class DatasetReadRepositoryTest {
     String shortName = "shortName";
     String versionedDatasetUrl = "http://whatever";
     String acceptType = RDFLanguages.JSONLD.getContentType().getContentType();
-    VersionMapping versionMapping = new VersionMapping(1, versionedDatasetUrl, user1, datasetUrl.toString());
+    VersionMapping versionMapping = new VersionMapping(1, versionedDatasetUrl, user1, datasetUrl.toString(), false, null);
     when(versionMappingRepository.getVersionMappingByDatasetUrl(datasetUrl)).thenReturn(versionMapping);
     HttpHeaders httpHeaders = new HttpHeaders();
     httpHeaders.add(org.apache.http.HttpHeaders.CONTENT_TYPE, WebContent.contentTypeSPARQLQuery);
@@ -257,7 +255,7 @@ public class DatasetReadRepositoryTest {
     String query = "SELECT * WHERE { ?s ?p ?o }";
     String acceptHeader = "confirm/deny";
     URI datasetUrl = new URI(Namespaces.DATASET_NAMESPACE + datasetUuid);
-    VersionMapping versionMapping = new VersionMapping(1, "http://whatever", "pietje@precies.gov", datasetUrl.toString());
+    VersionMapping versionMapping = new VersionMapping(1, "http://whatever", "pietje@precies.gov", datasetUrl.toString(), false, null);
     HttpResponse mockResponse = mock(CloseableHttpResponse.class);
     org.apache.http.HttpEntity entity = mock(org.apache.http.HttpEntity.class);
     when(mockResponse.getStatusLine()).thenReturn(new BasicStatusLine(HttpVersion.HTTP_1_1, org.apache.http.HttpStatus.SC_OK, "FINE!"));
@@ -280,7 +278,7 @@ public class DatasetReadRepositoryTest {
     String versionUuid = "http://myVersion.ninja";
     String acceptHeader = "confirm/deny";
     URI datasetUrl = new URI(Namespaces.DATASET_NAMESPACE + datasetUuid);
-    VersionMapping versionMapping = new VersionMapping(1, "http://whatever", "pietje@precies.gov", datasetUrl.toString());
+    VersionMapping versionMapping = new VersionMapping(1, "http://whatever", "pietje@precies.gov", datasetUrl.toString(), false, null);
 
     HttpResponse mockResponse = mock(CloseableHttpResponse.class);
     org.apache.http.HttpEntity entity = mock(org.apache.http.HttpEntity.class);
@@ -330,7 +328,7 @@ public class DatasetReadRepositoryTest {
 
   @Test
   public void testExecuteHeadQuery() throws URISyntaxException, ParseException {
-    VersionMapping versionMapping = new VersionMapping("http://versionUrl", "owner", "trialverseUrl");
+    VersionMapping versionMapping = new VersionMapping("http://versionUrl", "owner", "trialverseUrl", false, null);
     String sparqlQuery = "sparqlQuery";
 
     HttpHeaders httpHeaders = new HttpHeaders();

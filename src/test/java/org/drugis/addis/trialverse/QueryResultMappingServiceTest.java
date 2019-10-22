@@ -26,9 +26,6 @@ import java.util.Set;
 
 import static org.junit.Assert.*;
 
-/**
- * Created by connor on 8-4-16.
- */
 public class QueryResultMappingServiceTest {
   @InjectMocks
   private QueryResultMappingService queryResultMappingService;

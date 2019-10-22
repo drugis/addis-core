@@ -2,37 +2,75 @@
   <featured-datasets user-uid=userUid create-project-dialog="createProjectDialog(dataset)"></featured-datasets>
   <div class="grid-x grid-padding-x">
     <div class="cell large-8">
-      <h2>Datasets
-        <inline-help help-key="dataset"></inline-help>
-      </h2>
-      <button ng-show="loginUser && (loginUser.id === userUid)" tabindex="0" class="button "
-        ng-click="createDatasetDialog()"><i class="fa fa-plus"></i> Add new dataset</button>
-      <spinner promise="datasetsPromise" size="3" message="'Loading datasets...'">
-        <div class="grid-x">
-          <div style="margin-top: 2rem;" class="cell">
-            <em ng-show="datasets.length === 0">No datasets have been created</em>
-            <div style="margin-bottom: 3rem; border-bottom: 1px solid #DCDCDC" ng-repeat="dataset in datasets">
-              <div class="grid-x">
-                <div class="cell large-6">
-                  <h5><a ui-sref="dataset({userUid: userUid, datasetUuid: stripFrontFilter(dataset.uri, 'http://trials.drugis.org/datasets/')})">{{dataset.title}}</a></h5>
-                </div>
-                <div class="cell large-6 end">
-                  <button ng-if="showCreateProjectButton" style="margin-bottom: 1rem;" class="right button small radius"
-                    ng-click="createProjectDialog(dataset)">create project</button>
-                </div>
-              </div>
-              <div class="grid-x">
-                <div class="cell">
-                  <p class="subheader">
-                    <em ng-if="!dataset.description">no description</em>{{dataset.description}}
-                  </p>
+      <div class="grid-x">
+        <div class="cell">
+          <h2>Datasets
+            <inline-help help-key="dataset"></inline-help>
+          </h2>
+        </div>
+        <div class="cell">
+          <button ng-show="editMode.isUserOwner" tabindex="0" class="button small" ng-click="createDatasetDialog()">
+            <i class="fa fa-plus"></i> Add new dataset
+          </button>
+          <button ng-disabled="numberOfDatasetsArchived === 0" ng-hide="showArchived"
+            class="button secondary small right ng-binding" ng-click="toggleShowArchived()">
+            <i class="fa fa-eye"></i> Show archived ({{numberOfDatasetsArchived}})
+          </button>
+          <button ng-hide="!showArchived" class="button secondary small right ng-binding"
+            ng-click="toggleShowArchived()">
+            <i class="fa fa-eye"></i> Hide archived ({{numberOfDatasetsArchived}})
+          </button>
+        </div>
+        <div class="cell">
+          <spinner promise="datasetsPromise" size="3" message="'Loading datasets...'">
+            <div class="grid-x">
+              <div style="margin-top: 2rem;" class="cell">
+                <em ng-show="datasets.length === 0">
+                  No datasets have been created
+                </em>
+                <div ng-repeat="dataset in datasets" style="margin-bottom: 3rem; border-bottom: 1px solid #DCDCDC" 
+                  ng-show="!dataset.archived || showArchived">
+                  <div class="grid-x">
+                    <div class="cell large-6">
+                      <h5>
+                        <a
+                          ui-sref="dataset({userUid: userUid, datasetUuid: stripFrontFilter(dataset.uri, 'http://trials.drugis.org/datasets/')})">
+                          {{dataset.title}}
+                        </a>
+                        <span ng-if=dataset.archived>
+                          (archived on {{dataset.archivedOn}})
+                        </span>
+                      </h5>
+                    </div>
+                    <div class="cell large-6">
+                      <button ng-if="!dataset.archived && editMode.isUserOwner" style="margin-bottom: 1rem;"
+                        class="right button small radius info" ng-click="setArchivedStatus(dataset)">
+                        archive
+                      </button>
+                      <button ng-if="dataset.archived && editMode.isUserOwner" style="margin-bottom: 1rem;"
+                        class="right button small radius alert" ng-click="setArchivedStatus(dataset)">
+                        unarchive
+                      </button>
+                      <button ng-if="editMode.showCreateProjectButton" style="margin-bottom: 1rem; margin-right: 3px"
+                        class="right button small radius" ng-click="createProjectDialog(dataset)">
+                        create project
+                      </button>
+                    </div>
+                  </div>
+                  <div class="grid-x">
+                    <div class="cell">
+                      <p class="subheader">
+                        <em ng-if="!dataset.description">no description</em>
+                        {{dataset.description}}
+                      </p>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
+          </spinner>
         </div>
-      </spinner>
-
+      </div>
     </div>
     <div class="cell large-4">
       <h2>Other users</h2>
@@ -42,10 +80,12 @@
         </li>
         <li ng-repeat="otherUser in otherUsers | orderBy:'firstName'" style="margin-bottom: 1rem;">
           <a ui-sref="datasets({userUid: otherUser.id})">
-            <img class="user-image" ng-src="https://secure.gravatar.com/avatar/{{::otherUser.md5}}?s=43&d=mm"> {{::otherUser.firstName}} {{::otherUser.lastName}}
+            <img class="user-image" ng-src="https://secure.gravatar.com/avatar/{{::otherUser.md5}}?s=43&d=mm">
+            {{::otherUser.firstName}} {{::otherUser.lastName}}
           </a>
           <span ng-show="loginUser && (loginUser.id === otherUser.id)">
-            (this is you)</span>
+            (this is you)
+          </span>
         </li>
       </ul>
     </div>

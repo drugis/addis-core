@@ -1,7 +1,7 @@
 package org.drugis.trialverse.dataset.service.impl;
 
-import org.apache.jena.graph.Node;
 import org.apache.jena.rdf.model.*;
+import org.drugis.addis.exception.MethodNotAllowedException;
 import org.drugis.addis.security.Account;
 import org.drugis.addis.security.repository.AccountRepository;
 import org.drugis.trialverse.dataset.model.Dataset;
@@ -11,10 +11,12 @@ import org.drugis.trialverse.dataset.repository.DatasetReadRepository;
 import org.drugis.trialverse.dataset.repository.FeaturedDatasetRepository;
 import org.drugis.trialverse.dataset.repository.VersionMappingRepository;
 import org.drugis.trialverse.dataset.service.DatasetService;
+import org.drugis.trialverse.security.TrialversePrincipal;
 import org.drugis.trialverse.util.JenaProperties;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
+import java.security.Principal;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -42,7 +44,7 @@ public class DatasetServiceImpl implements DatasetService {
             .stream()
             .map((mapping) -> {
               Model dataset = datasetReadRepository.queryDataset(mapping);
-              return buildDataset(dataset, user, mapping.getTrialverseDatasetUrl());
+              return buildDataset(dataset, user, mapping);
             })
             .collect(Collectors.toList());
   }
@@ -55,12 +57,24 @@ public class DatasetServiceImpl implements DatasetService {
             .map((mapping) -> {
               Account user = accountRepository.findAccountByEmail(mapping.getOwnerUuid());
               Model dataset = datasetReadRepository.queryDataset(mapping);
-              return buildDataset(dataset, user, mapping.getTrialverseDatasetUrl());
+              return buildDataset(dataset, user, mapping);
             })
             .collect(Collectors.toList());
   }
 
-  private Dataset buildDataset(Model model, Account user, String jenaUrl) {
+  @Override
+  public void checkDatasetOwner(Integer datasetOwnerId, Principal currentUser) throws MethodNotAllowedException {
+    TrialversePrincipal principal = new TrialversePrincipal(currentUser);
+    Account user = accountRepository.findAccountByUsername(principal.getUserName());
+    if (user == null || !datasetOwnerId.equals(user.getId())) {
+      throw new MethodNotAllowedException();
+    }
+  }
+
+  private Dataset buildDataset(Model model, Account user, VersionMapping mapping) {
+    String datasetUrl = mapping.getTrialverseDatasetUrl();
+    Boolean archived = mapping.getArchived();
+    String archivedOn = mapping.getArchivedOn();
     NodeIterator titleIterator = model.listObjectsOfProperty(JenaProperties.TITLE_PROPERTY);
     String title = titleIterator.next().toString();
 
@@ -70,6 +84,6 @@ public class DatasetServiceImpl implements DatasetService {
     NodeIterator descriptionIterator = model.listObjectsOfProperty(JenaProperties.DESCRIPTION_PROPERTY);
     String description = descriptionIterator.hasNext() ? descriptionIterator.next().toString() : null;
 
-    return new Dataset(jenaUrl, user, title, description, headVersion);
+    return new Dataset(datasetUrl, user, title, description, headVersion, archived, archivedOn);
   }
 }

@@ -15,16 +15,10 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import java.net.URI;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-/**
- * Created by connor on 10-3-15.
- */
 @Repository
 public class VersionMappingRepositoryImpl implements VersionMappingRepository {
 
@@ -35,11 +29,14 @@ public class VersionMappingRepositoryImpl implements VersionMappingRepository {
 
   private final static Logger logger = LoggerFactory.getLogger(DatasetWriteRepositoryImpl.class);
 
-  private RowMapper<VersionMapping> rowMapper = new RowMapper<VersionMapping>() {
-    public VersionMapping mapRow(ResultSet rs, int rowNum) throws SQLException {
-      return new VersionMapping(rs.getInt("id"), rs.getString("versionedDatasetUrl"), rs.getString("ownerUuid"), rs.getString("trialverseDatasetUrl"));
-    }
-  };
+  private RowMapper<VersionMapping> rowMapper = (rs, rowNum) -> new VersionMapping(
+          rs.getInt("id"),
+          rs.getString("versionedDatasetUrl"),
+          rs.getString("ownerUuid"),
+          rs.getString("trialverseDatasetUrl"),
+          rs.getBoolean("archived"),
+          rs.getString("archivedOn")
+  );
 
   @Inject
   @Qualifier("jtAddisCore")
@@ -48,8 +45,12 @@ public class VersionMappingRepositoryImpl implements VersionMappingRepository {
   @Override
   public void save(VersionMapping versionMapping) {
     try {
-      jdbcTemplate.update("insert into VersionMapping (versionedDatasetUrl, ownerUuid, trialverseDatasetUrl) values (?, ?, ?)",
-              versionMapping.getVersionedDatasetUrl(), versionMapping.getOwnerUuid(), versionMapping.getTrialverseDatasetUrl());
+      jdbcTemplate.update(
+              "insert into VersionMapping (versionedDatasetUrl, ownerUuid, trialverseDatasetUrl) values (?, ?, ?)",
+              versionMapping.getVersionedDatasetUrl(),
+              versionMapping.getOwnerUuid(),
+              versionMapping.getTrialverseDatasetUrl()
+      );
     } catch (DuplicateKeyException e) {
       logger.error("duplicate mapping key");
       throw new RuntimeException("duplicate mapping key");
@@ -61,14 +62,14 @@ public class VersionMappingRepositoryImpl implements VersionMappingRepository {
     String sql = "SELECT * FROM VersionMapping WHERE ownerUuid = ?";
     List<VersionMapping> queryResult = jdbcTemplate.query(sql, Collections.singletonList(email).toArray(), rowMapper);
     if (queryResult == null) {
-      queryResult = new ArrayList<VersionMapping>();
+      queryResult = new ArrayList<>();
     }
     return queryResult;
   }
 
   @Override
   public List<VersionMapping> findMappingsByTrialverseDatasetUrls(List<String> datasetUrls) {
-    if(datasetUrls.isEmpty()) {
+    if (datasetUrls.isEmpty()) {
       return Collections.emptyList();
     }
     TypedQuery<VersionMapping> query = em.createQuery(
@@ -85,22 +86,35 @@ public class VersionMappingRepositoryImpl implements VersionMappingRepository {
     Object[] noArgs = {};
     List<VersionMapping> queryResult = jdbcTemplate.query(sql, noArgs, rowMapper);
     if (queryResult == null) {
-      queryResult = new ArrayList<VersionMapping>();
+      queryResult = new ArrayList<>();
     }
     return queryResult;
   }
 
-
   @Override
   public VersionMapping getVersionMappingByDatasetUrl(URI trialverseDatasetUrl) {
     String sql = "Select * FROM VersionMapping WHERE trialverseDatasetUrl = ?";
-    VersionMapping versionMapping = jdbcTemplate.queryForObject(sql, rowMapper, trialverseDatasetUrl.toString());
-    return versionMapping;
+    return jdbcTemplate.queryForObject(sql, rowMapper, trialverseDatasetUrl.toString());
   }
 
   @Override
   public VersionMapping getVersionMappingByVersionedURl(URI versionedUri) {
-    String sql = "Select * FROM VersionMapping WHERE versioneddataseturl = ?";
+    String sql = "Select * FROM VersionMapping WHERE versionedDatasetUrl = ?";
     return jdbcTemplate.queryForObject(sql, rowMapper, versionedUri.toString());
+  }
+
+  @Override
+  public void setArchivedStatus(URI datasetUri, Boolean archived) {
+    String date = getDate(archived);
+    String query = "UPDATE VersionMapping SET archived=?, archivedOn=" + date + " WHERE trialverseDatasetUrl=?";
+    jdbcTemplate.update(query, archived, datasetUri.toString());
+  }
+
+  private String getDate(Boolean archived) {
+    if (archived) {
+      return "to_char(NOW(), 'YYYY-MM-DD')";
+    } else {
+      return "NULL";
+    }
   }
 }

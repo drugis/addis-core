@@ -21,4 +21,6 @@ public interface VersionMappingRepository {
   VersionMapping getVersionMappingByDatasetUrl(URI trialverseDatasetUrl);
 
   VersionMapping getVersionMappingByVersionedURl(URI sourceDatasetUri);
+
+  void setArchivedStatus(URI datasetUri, Boolean archived);
 }

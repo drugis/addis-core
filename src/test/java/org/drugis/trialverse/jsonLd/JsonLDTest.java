@@ -19,9 +19,6 @@ import static org.drugis.trialverse.util.Utils.loadResource;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-/**
- * Created by daan on 18-9-15.
- */
 public class JsonLDTest {
 
   @Test
