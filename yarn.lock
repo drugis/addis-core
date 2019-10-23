@@ -3942,9 +3942,9 @@ map-visit@^1.0.0:
   dependencies:
     object-visit "^1.0.0"
 
-mcda-web@drugis/mcda-elicitation-web#develop:
-  version "0.20.0"
-  resolved "https://codeload.github.com/drugis/mcda-elicitation-web/tar.gz/8341e895e9f5a5b2a32a7253aee7ece74e02d56f"
+mcda-web@drugis/mcda-elicitation-web#0.20.2:
+  version "0.20.1"
+  resolved "https://codeload.github.com/drugis/mcda-elicitation-web/tar.gz/7fa2ef8838a8c2f0f428bcf0ebab30ec3d82295e"
   dependencies:
     async "~3.1.0"
     body-parser "~1.18.3"
