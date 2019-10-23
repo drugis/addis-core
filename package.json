@@ -40,7 +40,7 @@
     "angular-ui-router": "~1.0.5",
     "angular1-templateurl-loader": "^1.0.0",
     "angularjs-slider": "~6.6.1",
-    "bowser": "~0.7.3",
+    "bowser": "~2.7.0",
     "c3": "~0.4.23",
     "clean-webpack-plugin": "^0.1.19",
     "clipboard": "~2.0.1",
