@@ -216,7 +216,7 @@ define(['lodash', 'angular'], function(_) {
     function resetScales() {
       return ProblemResource.get($stateParams).$promise.then(function(problem) {
         if (problem.performanceTable.length > 0) {
-          problem = SchemaService.updateProblemToCurrentSchema(problem).content;
+          problem = SchemaService.updateProblemToCurrentSchema(problem);
           return WorkspaceService.getObservedScales(problem).then(function(result) {
             $scope.isMissingBaseline = BenefitRiskService.hasMissingBaseline($scope.tableOutcomes);
             $scope.tableOutcomes = BenefitRiskStep2Service.addScales($scope.tableOutcomes,
