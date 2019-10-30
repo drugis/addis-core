@@ -3901,9 +3901,9 @@ map-visit@^1.0.0:
   dependencies:
     object-visit "^1.0.0"
 
-mcda-web@chinook25/mcda-elicitation-web#feature/splitSchemaUpdateAndValidate:
+mcda-web@drugis/mcda-elicitation-web#develop:
   version "0.20.1"
-  resolved "https://codeload.github.com/chinook25/mcda-elicitation-web/tar.gz/557c008f852f8804754a81ed268a1647527057b7"
+  resolved "https://codeload.github.com/drugis/mcda-elicitation-web/tar.gz/d8493201ce0f4edf2205c45d394c904385361fac"
   dependencies:
     async "~3.1.0"
     body-parser "~1.19.0"

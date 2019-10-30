@@ -69,7 +69,7 @@
     "karma-webpack": "^4.0.2",
     "katex": "~0.10.0-rc.1",
     "lodash": "^4.17.15",
-    "mcda-web": "chinook25/mcda-elicitation-web#feature/splitSchemaUpdateAndValidate",
+    "mcda-web": "drugis/mcda-elicitation-web#develop",
     "mini-css-extract-plugin": "^0.4.2",
     "moment": "^2.22.2",
     "nvd3": "~1.8.6",
