@@ -20,6 +20,7 @@ define([], function() {
   ) {
     if (currentAnalysis.problem.schemaVersion !== currentSchemaVersion) {
       $scope.workspace = SchemaService.updateWorkspaceToCurrentSchema(currentAnalysis);
+      SchemaService.validateProblem($scope.workspace.problem);
     } else {
       $scope.workspace = currentAnalysis;
     }
