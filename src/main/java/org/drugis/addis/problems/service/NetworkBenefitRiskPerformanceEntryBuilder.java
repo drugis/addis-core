@@ -34,9 +34,9 @@ public class NetworkBenefitRiskPerformanceEntryBuilder {
 
     MultiVariateDistribution baselineResults = getBaselineResults(inclusion, baselineInterventionId);
     Set<String> interventionIds = inclusion.getInterventions().stream()
-        .map(AbstractIntervention::getId)
-        .map(Object::toString)
-        .collect(Collectors.toSet());
+            .map(AbstractIntervention::getId)
+            .map(Object::toString)
+            .collect(Collectors.toSet());
     Map<String, Double> mu = getMu(baselineInterventionId, baselineResults, interventionIds);
 
     List<String> interventionIdsWithBaselineFirst = new ArrayList<>(interventionIds);
@@ -49,9 +49,12 @@ public class NetworkBenefitRiskPerformanceEntryBuilder {
 
   private AbstractIntervention getBaselineIntervention(NMAInclusionWithResults inclusion) {
     AbstractBaselineDistribution baselineDistribution = getBaselineDistribution(inclusion);
-    return inclusion.getInterventions().stream()
-        .filter(intervention -> baselineDistribution.getName().equalsIgnoreCase(intervention.getName()))
-        .findFirst().orElse(null);
+    return inclusion
+            .getInterventions()
+            .stream()
+            .filter(intervention -> baselineDistribution.getName().equalsIgnoreCase(intervention.getName()))
+            .findFirst()
+            .orElse(null);
   }
 
 
@@ -68,9 +71,9 @@ public class NetworkBenefitRiskPerformanceEntryBuilder {
 
     try {
       Map<String, MultiVariateDistribution> distributionByInterventionId = objectMapper.readValue(
-          taskResults.get("multivariateSummary").toString(),
-          new TypeReference<Map<String, MultiVariateDistribution>>() {
-          });
+              taskResults.get("multivariateSummary").toString(),
+              new TypeReference<Map<String, MultiVariateDistribution>>() {
+              });
       if (distributionByInterventionId == null) {
         throw new RuntimeException("cannot read distribution for baseline " + baselineInterventionId);
       }
@@ -83,10 +86,10 @@ public class NetworkBenefitRiskPerformanceEntryBuilder {
 
   private Map<String, Double> getMu(String baselineInterventionId, MultiVariateDistribution distribution, Set<String> interventionIds) {
     Map<String, Double> mu = distribution.getMu().entrySet().stream()
-        .collect(Collectors.toMap(getTargetIntervention(), Map.Entry::getValue));
+            .collect(Collectors.toMap(getTargetIntervention(), Map.Entry::getValue));
 
     mu = mu.entrySet().stream().filter(m -> interventionIds.contains(m.getKey()))
-        .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+            .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     //add baseline to mu
     mu.put(baselineInterventionId, 0.0);
     return mu;
@@ -123,12 +126,12 @@ public class NetworkBenefitRiskPerformanceEntryBuilder {
     }
 
     interventionIds.forEach(rowName ->
-        interventionIds
-            .stream()
-            .filter(colName -> !baselineInterventionId.equals(rowName) && !baselineInterventionId.equals(colName))
-            .forEach(colName -> cov
-                .get(interventionIds.indexOf(rowName))
-                .set(interventionIds.indexOf(colName), effectsByInterventionId.get(ImmutablePair.of(rowName, colName))))
+            interventionIds
+                    .stream()
+                    .filter(colName -> !baselineInterventionId.equals(rowName) && !baselineInterventionId.equals(colName))
+                    .forEach(colName -> cov
+                            .get(interventionIds.indexOf(rowName))
+                            .set(interventionIds.indexOf(colName), effectsByInterventionId.get(ImmutablePair.of(rowName, colName))))
     );
     return cov;
   }
@@ -139,22 +142,22 @@ public class NetworkBenefitRiskPerformanceEntryBuilder {
     final Map<String, Map<String, Double>> sigma = distribution.getSigma();
     for (String rowName : interventionIds) {
       interventionIds
-          .stream()
-          .filter(columnName ->
-              !columnName.equals(baselineInterventionId) && !rowName.equals(baselineInterventionId))
-          .forEach(columnName -> {
-            Double value = getSigmaValue(baselineInterventionId, sigma, rowName, columnName);
-            dataMap.put(new ImmutablePair<>(columnName, rowName), value);
-            dataMap.put(new ImmutablePair<>(rowName, columnName), value);
-          });
+              .stream()
+              .filter(columnName ->
+                      !columnName.equals(baselineInterventionId) && !rowName.equals(baselineInterventionId))
+              .forEach(columnName -> {
+                Double value = getSigmaValue(baselineInterventionId, sigma, rowName, columnName);
+                dataMap.put(new ImmutablePair<>(columnName, rowName), value);
+                dataMap.put(new ImmutablePair<>(rowName, columnName), value);
+              });
     }
     return dataMap;
   }
 
   private Double getSigmaValue(String baselineInterventionId, Map<String, Map<String, Double>> sigma, String interventionY, String interventionX) {
     return sigma
-        .get("d." + baselineInterventionId + '.' + interventionX)
-        .get("d." + baselineInterventionId + '.' + interventionY);
+            .get("d." + baselineInterventionId + '.' + interventionX)
+            .get("d." + baselineInterventionId + '.' + interventionY);
   }
 
 

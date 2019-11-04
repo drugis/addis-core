@@ -210,7 +210,7 @@ public class ProblemServiceTest {
     );
   }
 
-    private Map<String, AlternativeEntry> getAlternativesMock() {
+  private Map<String, AlternativeEntry> getAlternativesMock() {
     Map<String, AlternativeEntry> alternativesMock = new HashMap<>();
     alternativesMock.put(String.valueOf(fluoxInterventionId), mock(AlternativeEntry.class));
     alternativesMock.put(String.valueOf(sertraInterventionId), mock(AlternativeEntry.class));
@@ -226,7 +226,7 @@ public class ProblemServiceTest {
   private List<BenefitRiskStudyOutcomeInclusion> getBenefitRiskStudyOutcomeInclusions(Integer secondOutcomeId, URI studyUri) {
     BenefitRiskStudyOutcomeInclusion outcomeInclusion = new BenefitRiskStudyOutcomeInclusion(analysisId, outcome.getId(), studyUri);
     BenefitRiskStudyOutcomeInclusion secondOutcomeInclusion = new BenefitRiskStudyOutcomeInclusion(analysisId, secondOutcomeId, studyUri);
-    return Arrays.asList(secondOutcomeInclusion,outcomeInclusion);
+    return Arrays.asList(secondOutcomeInclusion, outcomeInclusion);
   }
 
   private Set<InterventionInclusion> buildInterventionInclusions() {
@@ -306,6 +306,7 @@ public class ProblemServiceTest {
     analysis.setBenefitRiskNMAOutcomeInclusions(Arrays.asList(nmaInclusion, nmaInclusionNoBaseline, nmaInclusionNoModel));
 
     Model model = mock(Model.class);
+    Model model823 = mock(Model.class);
     Set<Integer> modelIds = newHashSet(modelId, notIncludedModelId);
 
     Set<AbstractIntervention> interventions = newHashSet(fluoxIntervention, paroxIntervention);
@@ -325,18 +326,22 @@ public class ProblemServiceTest {
     Map<String, AlternativeEntry> alternatives = new HashMap<>();
     alternatives.put(fluoxConceptUri.toString(), mock(AlternativeEntry.class));
     AbstractMeasurementEntry measurementEntry = mock(AbstractMeasurementEntry.class);
+    List<Model> models = Arrays.asList(model, model823);
+    HashSet<Model> modelsSet = Sets.newHashSet(model, model823);
 
     when(project.getId()).thenReturn(projectId);
     when(project.getNamespaceUid()).thenReturn(namespaceUuid);
     when(project.getDatasetVersion()).thenReturn(version);
     when(project.getOwner()).thenReturn(owner);
     when(model.getId()).thenReturn(modelId);
+    when(model823.getId()).thenReturn(823);
+    when(model823.getBaseline()).thenReturn(null);
     when(criterionEntry.getDataSources()).thenReturn(singletonList(dataSourceEntry));
     when(outcomeRepository.get(projectId, outcomeIds)).thenReturn(singletonList(outcome));
-    when(networkMetaAnalysisService.getPataviResultsByModelId(Sets.newHashSet(model))).thenReturn(resultsByModelId);
+    when(networkMetaAnalysisService.getPataviResultsByModelId(modelsSet)).thenReturn(resultsByModelId);
     when(projectRepository.get(projectId)).thenReturn(project);
     when(analysisRepository.get(analysisId)).thenReturn(analysis);
-    when(modelService.get(modelIds)).thenReturn(singletonList(model));
+    when(modelService.get(modelIds)).thenReturn(models);
     when(analysisService.getIncludedInterventions(analysis)).thenReturn(interventions);
     when(linkService.getModelSourceLink(project, model)).thenReturn(modelSourceLink);
     when(networkMetaAnalysisService.buildCriteriaForInclusion(inclusionWithResults, modelSourceLink)).thenReturn(criteria);
@@ -354,7 +359,7 @@ public class ProblemServiceTest {
     verify(modelService).get(modelIds);
     verify(analysisService).getIncludedInterventions(analysis);
     verify(linkService).getModelSourceLink(project, model);
-    verify(networkMetaAnalysisService).getPataviResultsByModelId(Sets.newHashSet(model));
+    verify(networkMetaAnalysisService).getPataviResultsByModelId(modelsSet);
     verify(networkMetaAnalysisService).buildCriteriaForInclusion(inclusionWithResults, modelSourceLink);
     verify(networkMetaAnalysisService).buildAlternativesForInclusion(inclusionWithResults);
     verify(networkBenefitRiskPerformanceEntryBuilder).build(inclusionWithResults, dataSourceEntry);

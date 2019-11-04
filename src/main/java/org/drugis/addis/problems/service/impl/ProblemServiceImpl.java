@@ -10,6 +10,7 @@ import org.drugis.addis.exception.ProblemCreationException;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.interventions.model.AbstractIntervention;
 import org.drugis.addis.models.Model;
+import org.drugis.addis.models.ModelBaseline;
 import org.drugis.addis.models.service.ModelService;
 import org.drugis.addis.outcomes.Outcome;
 import org.drugis.addis.outcomes.repository.OutcomeRepository;
@@ -143,7 +144,12 @@ public class ProblemServiceImpl implements ProblemService {
             .collect(toMap(Model::getId, identity()));
   }
 
-  private List<BenefitRiskProblem> getNetworkProblems(Project project, BenefitRiskAnalysis analysis, Map<Integer, Outcome> outcomesById, Set<AbstractIntervention> includedInterventions) throws IOException, SQLException, UnexpectedNumberOfResultsException, URISyntaxException {
+  private List<BenefitRiskProblem> getNetworkProblems(
+          Project project,
+          BenefitRiskAnalysis analysis,
+          Map<Integer, Outcome> outcomesById,
+          Set<AbstractIntervention> includedInterventions
+  ) throws IOException, SQLException, UnexpectedNumberOfResultsException, URISyntaxException {
     if (analysis.getBenefitRiskNMAOutcomeInclusions().size() == 0) {
       return new ArrayList<>();
     }
@@ -151,25 +157,52 @@ public class ProblemServiceImpl implements ProblemService {
     Collection<Model> models = Sets.newHashSet(modelsById.values());
     final Map<Integer, JsonNode> resultsByModelId = networkMetaAnalysisService.getPataviResultsByModelId(models);
     return analysis.getBenefitRiskNMAOutcomeInclusions().stream()
-            .filter(this::hasBaseline)
+            .filter(inclusion1 -> hasBaseline(inclusion1, modelsById))
             .filter(this::hasModel)
             .filter(inclusion -> hasResults(resultsByModelId, inclusion))
-            .map(inclusion -> {
-              Outcome outcome = outcomesById.get(inclusion.getOutcomeId());
-              Model model = modelsById.get(inclusion.getModelId());
-              JsonNode pataviResults = resultsByModelId.get(inclusion.getModelId());
-              return new NMAInclusionWithResults(outcome, model, pataviResults, includedInterventions, inclusion.getBaseline());
-            })
+            .map(inclusion -> getNmaInclusionWithResults(outcomesById, includedInterventions, modelsById, resultsByModelId, inclusion))
             .map(inclusion -> getNetworkProblem(project, inclusion))
             .collect(Collectors.toList());
+  }
+
+  private NMAInclusionWithResults getNmaInclusionWithResults(
+          Map<Integer, Outcome> outcomesById,
+          Set<AbstractIntervention> includedInterventions,
+          Map<Integer, Model> modelsById,
+          Map<Integer, JsonNode> resultsByModelId,
+          BenefitRiskNMAOutcomeInclusion inclusion
+  ) {
+    Outcome outcome = outcomesById.get(inclusion.getOutcomeId());
+    Model model = modelsById.get(inclusion.getModelId());
+    JsonNode pataviResults = resultsByModelId.get(inclusion.getModelId());
+    if (inclusion.getBaseline() == null) {
+      inclusion.setBaselineThroughString(model.getBaseline().getBaseline());
+    }
+    return new NMAInclusionWithResults(outcome, model, pataviResults, includedInterventions, inclusion.getBaseline());
   }
 
   private boolean hasResults(Map<Integer, JsonNode> resultsByModelId, BenefitRiskNMAOutcomeInclusion inclusion) {
     return resultsByModelId.get(inclusion.getModelId()) != null;
   }
 
-  private boolean hasBaseline(BenefitRiskNMAOutcomeInclusion inclusion) {
-    return inclusion.getBaseline() != null;
+  private boolean hasBaseline(BenefitRiskNMAOutcomeInclusion inclusion, Map<Integer, Model> modelsById) {
+    if (inclusion.getBaseline() == null) {
+      return hasModelBaseline(inclusion, modelsById);
+    } else {
+      return true;
+    }
+  }
+
+  private boolean hasModelBaseline(BenefitRiskNMAOutcomeInclusion inclusion, Map<Integer, Model> modelsById) {
+    if (inclusion.getModelId() == null) {
+      return false;
+    } else {
+      return getModelBaseline(inclusion, modelsById) != null;
+    }
+  }
+
+  private ModelBaseline getModelBaseline(BenefitRiskNMAOutcomeInclusion inclusion, Map<Integer, Model> modelsById) {
+    return modelsById.get(inclusion.getModelId()).getBaseline();
   }
 
   private boolean hasModel(BenefitRiskNMAOutcomeInclusion inclusion) {

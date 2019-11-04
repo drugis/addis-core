@@ -94,6 +94,10 @@ public class BenefitRiskNMAOutcomeInclusion {
     this.baseline = baseline;
   }
 
+  public void setBaselineThroughString(String baseline){
+    this.baseline = baseline;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
