@@ -9,9 +9,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-/**
- * Created by connor on 4-3-16.
- */
 public class BenefitRiskProblem extends AbstractProblem {
 
   private Version schemaVersion;
