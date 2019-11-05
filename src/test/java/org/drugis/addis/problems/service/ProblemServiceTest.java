@@ -26,7 +26,6 @@ import org.drugis.addis.projects.repository.ProjectRepository;
 import org.drugis.addis.security.Account;
 import org.drugis.addis.trialverse.model.SemanticInterventionUriAndName;
 import org.drugis.addis.trialverse.model.SemanticVariable;
-import org.drugis.addis.trialverse.model.trialdata.TrialDataArm;
 import org.drugis.addis.trialverse.model.trialdata.TrialDataStudy;
 import org.drugis.addis.trialverse.service.impl.ReadValueException;
 import org.drugis.addis.util.WebConstants;
@@ -43,17 +42,11 @@ import java.net.URISyntaxException;
 import java.util.*;
 
 import static com.google.common.collect.Sets.newHashSet;
-import static java.util.Collections.singleton;
 import static java.util.Collections.singletonList;
-import static java.util.function.Function.identity;
-import static java.util.stream.Collectors.toMap;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 
-/**
- * Created by daan on 3/21/14.
- */
 public class ProblemServiceTest {
 
   @Mock
@@ -99,16 +92,12 @@ public class ProblemServiceTest {
   private final Integer fluoxInterventionId = 401;
   private final SingleIntervention fluoxIntervention = new SimpleIntervention(fluoxInterventionId, project.getId(),
           "fluoxetine", "motivation", fluoxConcept.getUri(), fluoxConcept.getLabel());
-  private final URI paroxConceptUri = URI.create("paroxConceptUri");
-  private final SemanticInterventionUriAndName paroxConcept = new SemanticInterventionUriAndName(paroxConceptUri, "parox concept");
-  private final Integer paroxInterventionId = 402;
-  private final SingleIntervention paroxIntervention = new SimpleIntervention(paroxInterventionId, project.getId(),
-          "paroxetine", "motivation", paroxConcept.getUri(), paroxConcept.getLabel());
   private final URI sertraConceptUri = URI.create("sertraConceptUri");
   private final SemanticInterventionUriAndName sertraConcept = new SemanticInterventionUriAndName(sertraConceptUri, "sertra concept");
   private final Integer sertraInterventionId = 403;
   private final SingleIntervention sertraIntervention = new SimpleIntervention(sertraInterventionId, project.getId(),
           "sertraline", "motivation", sertraConcept.getUri(), sertraConcept.getLabel());
+  private String studyToOmit = "studyToOmit";
 
   // empty constructor so exception from field initialisation can go somewhere
   public ProblemServiceTest() throws Exception {
@@ -136,8 +125,7 @@ public class ProblemServiceTest {
   @Test
   public void testGetProblemSingleStudyBenefitRisk() throws Exception, ProblemCreationException {
     Set<InterventionInclusion> interventionInclusions = buildInterventionInclusions();
-    BenefitRiskAnalysis analysis =
-            new BenefitRiskAnalysis(analysisId, projectId, "single study analysis", interventionInclusions);
+    BenefitRiskAnalysis analysis = new BenefitRiskAnalysis(analysisId, projectId, "single study analysis", interventionInclusions);
     when(analysisRepository.get(analysisId)).thenReturn(analysis);
 
     Integer secondOutcomeId = 1337;
@@ -237,8 +225,6 @@ public class ProblemServiceTest {
 
   @Test
   public void testGetProblemNMA() throws URISyntaxException, ReadValueException, ResourceDoesNotExistException, ProblemCreationException, IOException {
-
-    // analysis
     NetworkMetaAnalysis analysis = new NetworkMetaAnalysis(analysisId, project.getId(), "nma title", outcome);
     when(analysisRepository.get(analysisId)).thenReturn(analysis);
 
@@ -256,18 +242,16 @@ public class ProblemServiceTest {
     when(analysisService.buildEvidenceTable(project.getId(), analysis.getId())).thenReturn(studies);
     when(networkMetaAnalysisService.buildAbsolutePerformanceEntries(analysis, studies)).thenReturn(entries);
     when(networkMetaAnalysisService.buildRelativeEffectData(analysis, studies)).thenReturn(new RelativeEffectData());
-
-    // remove studies without entries from final list
     when(networkMetaAnalysisService.getStudiesWithEntries(studies, entries)).thenReturn(studiesWithEntries);
-
-    // add covariate values to problem
     when(networkMetaAnalysisService.getStudyLevelCovariates(project, analysis, studiesWithEntries)).thenReturn(studyLevelCovariates);
 
-    // --------------- execute ---------------- //
     final AbstractProblem result = problemService.getProblem(project.getId(), analysis.getId());
-    // --------------- execute ---------------- //
 
-    NetworkMetaAnalysisProblem expectedResult = new NetworkMetaAnalysisProblem(entries, treatments, studyLevelCovariates);
+    NetworkMetaAnalysisProblem expectedResult = new NetworkMetaAnalysisProblem(
+            entries,
+            treatments,
+            studyLevelCovariates
+    );
     assertEquals(expectedResult, result);
 
     verify(projectRepository).get(projectId);
@@ -282,7 +266,6 @@ public class ProblemServiceTest {
 
   @Test
   public void testGetProblemNMABR() throws Exception, ProblemCreationException {
-
     BenefitRiskAnalysis analysis = mock(BenefitRiskAnalysis.class);
     Integer outcomeId1 = 1;
     Integer nmaId1 = 10;
@@ -347,23 +330,12 @@ public class ProblemServiceTest {
 
   @Test
   public void applyModelSettingsSensitivity() throws InvalidModelException {
-    String studyToOmit = "studyToOmit";
     String studyToLeave = "studyToLeave";
     AbstractProblemEntry toOmit1 = new AbsoluteDichotomousProblemEntry(studyToOmit, 1, 1, 1);
     AbstractProblemEntry toOmit2 = new AbsoluteDichotomousProblemEntry(studyToOmit, 2, 2, 2);
     AbstractProblemEntry toLeave = new AbsoluteDichotomousProblemEntry(studyToLeave, 3, 3, 3);
     List<AbstractProblemEntry> entries = Arrays.asList(toOmit1, toOmit2, toLeave);
-    List<TreatmentEntry> treatments = Collections.emptyList();
-    Map<String, Map<String, Double>> covariates = Collections.emptyMap();
-    NetworkMetaAnalysisProblem problem = new NetworkMetaAnalysisProblem(entries, treatments, covariates);
-    JSONObject sensitivity = new JSONObject();
-    sensitivity.put("omittedStudy", studyToOmit);
-    Model model = new Model.ModelBuilder(1, "model")
-            .link(Model.LINK_IDENTITY)
-            .modelType(Model.NETWORK_MODEL_TYPE)
-            .sensitivity(sensitivity)
-            .build();
-    NetworkMetaAnalysisProblem result = problemService.applyModelSettings(problem, model);
+    NetworkMetaAnalysisProblem result = getNetworkMetaAnalysisProblem(studyToOmit, entries);
     assertEquals(1, result.getEntries().size());
     assertFalse(result.getEntries().contains(toOmit1));
     assertFalse(result.getEntries().contains(toOmit2));
@@ -372,10 +344,17 @@ public class ProblemServiceTest {
 
   @Test
   public void applyModelSettingsNoSensitivity() throws InvalidModelException {
-    String studyToOmit = "studyToOmit";
     AbstractProblemEntry entry1 = new AbsoluteDichotomousProblemEntry(studyToOmit, 1, 1, 1);
     AbstractProblemEntry entry2 = new AbsoluteDichotomousProblemEntry(studyToOmit, 2, 2, 2);
     List<AbstractProblemEntry> entries = Arrays.asList(entry1, entry2);
+    NetworkMetaAnalysisProblem result = getNetworkMetaAnalysisProblem(studyToOmit, entries);
+    assertEquals(Collections.emptyList(), result.getEntries());
+  }
+
+  private NetworkMetaAnalysisProblem getNetworkMetaAnalysisProblem(
+          String studyToOmit,
+          List<AbstractProblemEntry> entries
+  ) throws InvalidModelException {
     List<TreatmentEntry> treatments = Collections.emptyList();
     Map<String, Map<String, Double>> covariates = Collections.emptyMap();
     NetworkMetaAnalysisProblem problem = new NetworkMetaAnalysisProblem(entries, treatments, covariates);
@@ -386,8 +365,7 @@ public class ProblemServiceTest {
             .modelType(Model.NETWORK_MODEL_TYPE)
             .sensitivity(sensitivity)
             .build();
-    NetworkMetaAnalysisProblem result = problemService.applyModelSettings(problem, model);
-    assertEquals(Collections.emptyList(), result.getEntries());
+    return problemService.applyModelSettings(problem, model);
   }
 
 }

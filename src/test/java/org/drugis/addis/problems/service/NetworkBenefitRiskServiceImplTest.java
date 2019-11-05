@@ -38,11 +38,30 @@ public class NetworkBenefitRiskServiceImplTest {
   @InjectMocks
   private NetworkBenefitRiskService networkBenefitRiskService;
 
+  private Integer analysisId = 1;
+  private Integer outcomeId = 10;
+  private Integer networkMetaAnalysisId = 100;
+  private Integer modelId = 1000;
+  private String baselineString = "{ name: 'interventionName' }";
+  private AbstractIntervention intervention = mock(AbstractIntervention.class);
+  private Set<AbstractIntervention> includedInterventions = new HashSet<>(Collections.singletonList(intervention));
+  private JsonNode pataviResults = mock(JsonNode.class);
+  private ModelBaseline baseline;
+  private BenefitRiskNMAOutcomeInclusion inclusion;
+  private Model model;
+  private Map<Integer, Model> modelsById;
+  private Map<Integer, JsonNode> resultsByModelId;
+
   @Before
   public void init() {
     networkBenefitRiskService = new NetworkBenefitRiskServiceImpl();
     MockitoAnnotations.initMocks(this);
     inclusion = new BenefitRiskNMAOutcomeInclusion(analysisId, outcomeId, networkMetaAnalysisId, modelId);
+    model = mock(Model.class);
+    modelsById = new HashMap<>();
+    modelsById.put(modelId, model);
+    baseline = mock(ModelBaseline.class);
+    resultsByModelId = new HashMap<>();
   }
 
   @After
@@ -54,18 +73,9 @@ public class NetworkBenefitRiskServiceImplTest {
     );
   }
 
-  private Integer analysisId = 1;
-  private Integer outcomeId = 10;
-  private Integer networkMetaAnalysisId = 100;
-  private Integer modelId = 1000;
-  private BenefitRiskNMAOutcomeInclusion inclusion;
-
   @Test
   public void inclusionHasBaseline() {
-    inclusion.setBaselineThroughString("baseline");
-    Map<Integer, Model> modelsById = new HashMap<>();
-    Set<AbstractIntervention> includedInterventions = new HashSet<>(Collections.emptyList());
-
+    inclusion.setBaselineThroughString(baselineString);
     boolean result = networkBenefitRiskService.hasBaseline(inclusion, modelsById, includedInterventions);
     assertTrue(result);
   }
@@ -74,72 +84,43 @@ public class NetworkBenefitRiskServiceImplTest {
   public void inclusionHasNoModel() {
     Integer modelId = null;
     BenefitRiskNMAOutcomeInclusion inclusion = new BenefitRiskNMAOutcomeInclusion(analysisId, outcomeId, networkMetaAnalysisId, modelId);
-    Map<Integer, Model> modelsById = new HashMap<>();
-    Set<AbstractIntervention> includedInterventions = new HashSet<>(Collections.emptyList());
-
     boolean result = networkBenefitRiskService.hasBaseline(inclusion, modelsById, includedInterventions);
     assertFalse(result);
   }
 
   @Test
   public void inclusionModelHasNoBaseline() {
-    Model model = mock(Model.class);
-    Map<Integer, Model> modelsById = new HashMap<>();
-    modelsById.put(modelId, model);
-    Set<AbstractIntervention> includedInterventions = new HashSet<>(Collections.emptyList());
-
     when(model.getBaseline()).thenReturn(null);
-
     boolean result = networkBenefitRiskService.hasBaseline(inclusion, modelsById, includedInterventions);
     assertFalse(result);
   }
 
   @Test
   public void inclusionNoMatchingIntervention() {
-    Model model = mock(Model.class);
-    Map<Integer, Model> modelsById = new HashMap<>();
-    modelsById.put(modelId, model);
-    AbstractIntervention intervention = mock(AbstractIntervention.class);
-    Set<AbstractIntervention> includedInterventions = new HashSet<>(Collections.singletonList(intervention));
-    ModelBaseline baseline = mock(ModelBaseline.class);
-    String baselineString = "{ name: 'interventionName' }";
-
     when(model.getBaseline()).thenReturn(baseline);
     when(baseline.getBaseline()).thenReturn(baselineString);
     when(intervention.getName()).thenReturn("notInterventionName");
-
     boolean result = networkBenefitRiskService.hasBaseline(inclusion, modelsById, includedInterventions);
     assertFalse(result);
   }
 
   @Test
   public void inclusionWithMatchingIntervention() {
-    Model model = mock(Model.class);
-    Map<Integer, Model> modelsById = new HashMap<>();
-    modelsById.put(modelId, model);
-    AbstractIntervention intervention = mock(AbstractIntervention.class);
-    Set<AbstractIntervention> includedInterventions = new HashSet<>(Collections.singletonList(intervention));
-    ModelBaseline baseline = mock(ModelBaseline.class);
-    String baselineString = "{ name: 'interventionName' }";
-
     when(model.getBaseline()).thenReturn(baseline);
     when(baseline.getBaseline()).thenReturn(baselineString);
     when(intervention.getName()).thenReturn("interventionName");
-
     boolean result = networkBenefitRiskService.hasBaseline(inclusion, modelsById, includedInterventions);
     assertTrue(result);
   }
 
   @Test
   public void hasNoResults() {
-    Map<Integer, JsonNode> resultsByModelId = new HashMap<>();
     boolean result = networkBenefitRiskService.hasResults(resultsByModelId, inclusion);
     assertFalse(result);
   }
 
   @Test
   public void hasResults() {
-    Map<Integer, JsonNode> resultsByModelId = new HashMap<>();
     JsonNode modelResult = mock(JsonNode.class);
     resultsByModelId.put(modelId, modelResult);
     boolean result = networkBenefitRiskService.hasResults(resultsByModelId, inclusion);
@@ -151,20 +132,9 @@ public class NetworkBenefitRiskServiceImplTest {
     Map<Integer, Outcome> outcomesById = new HashMap<>();
     Outcome outcome = mock(Outcome.class);
     outcomesById.put(outcomeId, outcome);
-
-    Set<AbstractIntervention> includedInterventions = new HashSet<>();
-
-    Map<Integer, Model> modelsById = new HashMap<>();
-    Model model = mock(Model.class);
-    modelsById.put(modelId, model);
-
-    Map<Integer, JsonNode> resultsByModelId = new HashMap<>();
-    JsonNode pataviResults = mock(JsonNode.class);
     resultsByModelId.put(modelId, pataviResults);
-    ModelBaseline baseline = mock(ModelBaseline.class);
 
     when(model.getBaseline()).thenReturn(baseline);
-    String baselineString = "baseline";
     when(baseline.getBaseline()).thenReturn(baselineString);
 
     NMAInclusionWithResults result = networkBenefitRiskService.getNmaInclusionWithResults(
@@ -176,7 +146,6 @@ public class NetworkBenefitRiskServiceImplTest {
     );
 
     NMAInclusionWithResults expectedResult = new NMAInclusionWithResults(outcome, model, pataviResults, includedInterventions, baselineString);
-
     assertEquals(expectedResult, result);
   }
 
@@ -185,20 +154,8 @@ public class NetworkBenefitRiskServiceImplTest {
     Map<Integer, Outcome> outcomesById = new HashMap<>();
     Outcome outcome = mock(Outcome.class);
     outcomesById.put(outcomeId, outcome);
-
-    Set<AbstractIntervention> includedInterventions = new HashSet<>();
-
-    Map<Integer, Model> modelsById = new HashMap<>();
-    Model model = mock(Model.class);
-    modelsById.put(modelId, model);
-
-    Map<Integer, JsonNode> resultsByModelId = new HashMap<>();
-    JsonNode pataviResults = mock(JsonNode.class);
     resultsByModelId.put(modelId, pataviResults);
-
-    String baselineString = "baseline";
     inclusion.setBaselineThroughString(baselineString);
-
     NMAInclusionWithResults result = networkBenefitRiskService.getNmaInclusionWithResults(
             outcomesById,
             includedInterventions,
@@ -215,7 +172,6 @@ public class NetworkBenefitRiskServiceImplTest {
   public void getNetworkProblem() throws URISyntaxException {
     Project project = mock(Project.class);
     NMAInclusionWithResults inclusionWithResults = mock(NMAInclusionWithResults.class);
-    Model model = mock(Model.class);
     URI modelURI = new URI("uri.com");
     Map<URI, CriterionEntry> criteria = new HashMap<>();
     DataSourceEntry dataSource = mock(DataSourceEntry.class);
