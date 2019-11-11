@@ -214,7 +214,9 @@ define(['./../util/context'],
             }],
             has_outcome: [],
             has_publication: [],
-            has_epochs: 'http://www.w3.org/1999/02/22-rdf-syntax-ns#nil',
+            has_epochs: {
+              '@id': 'http://www.w3.org/1999/02/22-rdf-syntax-ns#nil'
+            },
             has_primary_epoch: undefined,
             status: undefined,
             has_allocation: undefined,

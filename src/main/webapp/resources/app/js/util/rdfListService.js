@@ -45,7 +45,7 @@ define(['angular', 'lodash'], function(angular, _) {
 
     function flattenList(rootNode) {
       var list = [];
-      if (_.isEmpty(rootNode) || rootNode['@id'] === rdfListNil) {
+      if (_.isEmpty(rootNode) || rootNode['@id'] === rdfListNil || rootNode === rdfListNil) {
         return list;
       }
       var currentNode = angular.copy(rootNode);
@@ -65,7 +65,9 @@ define(['angular', 'lodash'], function(angular, _) {
 
     function unFlattenList(list) {
       if(list.length === 0) {
-        return rdfListNil;
+        return {
+          '@id': rdfListNil
+        };
       }
       return list.slice().reverse().reduce(function(accum, listItem) {  // slice necessary because reverse mutates
         var newList = {

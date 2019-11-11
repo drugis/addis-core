@@ -77,8 +77,10 @@ define(['angular-mocks', './util'], function(angularMocks) {
       it('should recreate the node tree from the array', function() {
         expect(rdfListService.unFlattenList(flatList)).toEqual(listTree);
       });
-      it('should work for an empty list', function(){
-        expect(rdfListService.unFlattenList([])).toEqual(RDF_NIL);
+      it('should work for an empty list', function() {
+        expect(rdfListService.unFlattenList([])).toEqual({
+          '@id': RDF_NIL
+        });
       });
     });
 
