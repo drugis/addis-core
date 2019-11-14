@@ -169,10 +169,6 @@ define(['angular', 'lodash'], function(angular, _) {
       });
     }
 
-    function isResultForVariable(variableUri, item) {
-      return isResult(item) && variableUri === item.of_outcome;
-    }
-
     function isResultForNonConformantMeasurementOfOutcome(variableUri, item) {
       return isNonConformantMeasurementResult(item) && variableUri === item.of_outcome;
     }
@@ -414,10 +410,6 @@ define(['angular', 'lodash'], function(angular, _) {
       });
     }
 
-    function queryResults(variableUri) {
-      return _queryResults(variableUri, isResultForVariable);
-    }
-
     function toFrontend(backEndItem) {
       var baseItem = {
         instance: backEndItem['@id'],
@@ -493,7 +485,6 @@ define(['angular', 'lodash'], function(angular, _) {
 
     return {
       updateResultValue: updateResultValue,
-      queryResults: queryResults,
       queryResultsByGroup: queryResultsByGroup,
       queryResultsByOutcome: queryResultsByOutcome,
       queryResultsByMeasurementMoment: queryResultsByMeasurementMoment,

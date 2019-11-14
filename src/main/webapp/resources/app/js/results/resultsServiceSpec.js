@@ -89,7 +89,7 @@ define([
         });
 
         it('should return the results for a given arm-level variable', function(done) {
-          resultsService.queryResults(queryOutcome).then(function(actualResults) {
+          resultsService.queryResultsByOutcome(queryOutcome).then(function(actualResults) {
             expect(actualResults.length).toEqual(5);
             expect(actualResults[0].instance).toEqual('http://trials.drugis.org/instances/result1');
             expect(actualResults[0].armUri).toEqual('http://trials.drugis.org/instances/arm1');
@@ -122,7 +122,7 @@ define([
         });
 
         it('should return the results', function(done) {
-          resultsService.queryResults(queryOutcome).then(function(actualResults) {
+          resultsService.queryResultsByOutcome(queryOutcome).then(function(actualResults) {
             expect(actualResults.length).toEqual(4);
             expect(actualResults[0]).toEqual({
               instance: 'http://trials.drugis.org/instances/result4',
