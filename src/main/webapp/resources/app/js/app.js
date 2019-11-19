@@ -65,7 +65,6 @@ define(
     'gemtc-web/js/resources',
     'gemtc-web/js/services',
     'mcda-web/js/benefitRisk/benefitRisk',
-    'mcda-web/js/directives',
     'mcda-web/js/effectsTable/effectsTable',
     'mcda-web/js/evidence/evidence',
     'mcda-web/js/services/workspaceResource',
@@ -87,7 +86,6 @@ define(
   ) {
     var mcdaDependencies = [
       'elicit.benefitRisk',
-      'elicit.directives',
       'elicit.effectsTable',
       'elicit.evidence',
       'elicit.preferences',

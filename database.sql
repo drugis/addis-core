@@ -998,3 +998,83 @@ ALTER TABLE VersionMapping ADD COLUMN archived BOOLEAN DEFAULT false;
 ALTER TABLE VersionMapping ADD COLUMN archivedon VARCHAR;
 --rollback ALTER TABLE VersionMapping DROP COLUMN archived;
 --rollback ALTER TABLE VersionMapping DROP COLUMN archivedon;
+
+--changeset reidd:82
+START TRANSACTION;
+WITH effectsDisplay AS (
+  SELECT 
+    analysisId, 
+    settings::jsonb#>'{settings}'->>'effectsDisplay' AS displayValue 
+  FROM workspacesettings 
+  WHERE settings::jsonb#>'{settings, effectsDisplay}' IS NOT NULL
+),
+newSettings AS (
+  SELECT 
+    analysisId, 
+    CASE
+      WHEN displayValue = 'deterministic' THEN '{"displayMode": "enteredData"}'::jsonb
+      WHEN displayValue = 'sourceData' THEN '{"displayMode": "enteredData"}'::jsonb
+      WHEN displayValue = 'smaaDistributions' THEN '{"displayMode": "enteredData"}'::jsonb
+      WHEN displayValue = 'effects' THEN '{"displayMode": "values"}'::jsonb
+      WHEN displayValue = 'deterministicMCDA' THEN '{"displayMode": "values"}'::jsonb
+      WHEN displayValue = 'smaa' THEN '{"displayMode": "values"}'::jsonb
+    END AS displayMode,
+    CASE
+      WHEN displayValue = 'deterministic' THEN '{"analysisType": "deterministic"}'::jsonb
+      WHEN displayValue = 'sourceData' THEN '{"analysisType": "deterministic"}'::jsonb
+      WHEN displayValue = 'smaaDistributions' THEN '{"analysisType": "smaa"}'::jsonb
+      WHEN displayValue = 'effects' THEN '{"analysisType": "deterministic"}'::jsonb
+      WHEN displayValue = 'deterministicMCDA' THEN '{"analysisType": "deterministic"}'::jsonb
+      WHEN displayValue = 'smaa' THEN '{"analysisType": "smaa"}'::jsonb
+    END AS analysisType
+  FROM effectsDisplay
+)
+
+UPDATE workspacesettings 
+SET settings = 
+jsonb_set(
+  jsonb_set(settings::jsonb, '{settings, analysisType}', newSettings.analysisType->'analysisType'), 
+  '{settings, displayMode}', 
+  newSettings.displayMode->'displayMode'
+)::varchar
+FROM newSettings 
+WHERE workspacesettings.analysisId = newSettings.analysisId;
+
+UPDATE workspacesettings 
+SET settings = (settings::jsonb #-'{settings, effectsDisplay}')::varchar;
+COMMIT;
+
+--rollback START TRANSACTION;
+--rollback WITH oldSettings AS (
+--rollback   SELECT 
+--rollback     analysisId, 
+--rollback     settings::jsonb#>'{settings}'->>'analysisType' AS analysisType,
+--rollback     settings::jsonb#>'{settings}'->>'displayMode' AS displayMode 
+--rollback   FROM workspacesettings 
+--rollback   WHERE settings::jsonb#>'{settings, analysisType}' IS NOT NULL
+--rollback   AND settings::jsonb#>'{settings, displayMode}' IS NOT NULL
+--rollback ),
+--rollback 
+--rollback newSettings AS (
+--rollback   SELECT 
+--rollback     analysisId, 
+--rollback     CASE
+--rollback       WHEN analysisType = 'deterministic' AND displayMode = 'enteredData' THEN '{"effectsDisplay": "deterministic"}'::jsonb
+--rollback       WHEN analysisType = 'smaa' AND displayMode = 'enteredData' THEN '{"effectsDisplay": "smaaDistributions"}'::jsonb
+--rollback       WHEN analysisType = 'deterministic' AND displayMode = 'values' THEN '{"effectsDisplay": "deterministicMCDA"}'::jsonb
+--rollback       WHEN analysisType = 'smaa' AND displayMode = 'values' THEN '{"effectsDisplay": "smaa"}'::jsonb
+--rollback     END AS effectsDisplay
+--rollback   FROM oldSettings
+--rollback )
+--rollback 
+--rollback UPDATE workspacesettings 
+--rollback SET settings = jsonb_set(settings::jsonb, '{settings, effectsDisplay}', newSettings.effectsDisplay->'effectsDisplay')::varchar 
+--rollback FROM newSettings 
+--rollback WHERE workspacesettings.analysisId = newSettings.analysisId;
+--rollback 
+--rollback UPDATE workspacesettings 
+--rollback SET settings = (settings::jsonb #-'{settings, analysisType}')::varchar;
+--rollback 
+--rollback UPDATE workspacesettings 
+--rollback SET settings = (settings::jsonb #-'{settings, displayMode}')::varchar;
+--rollback COMMIT;

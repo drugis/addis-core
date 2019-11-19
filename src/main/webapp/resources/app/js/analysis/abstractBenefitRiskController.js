@@ -28,7 +28,7 @@ define([], function() {
     $scope.project = currentProject;
     $scope.editMode = {};
     UserService.isLoginUserId(currentProject.owner.id).then(function(isLoginUser) {
-      $scope.editMode.isUserOwner = isLoginUser;
+      $scope.editMode.canEdit = isLoginUser;
     });
 
     getWorkspaceSettings();
@@ -36,7 +36,7 @@ define([], function() {
     
     function getWorkspaceSettings() {
       $scope.toggledColumns = WorkspaceSettingsService.getToggledColumns();
-      $scope.workspaceSettings = WorkspaceSettingsService.getWorkspaceSettings($scope.workspace.problem.performanceTable);
+      $scope.workspaceSettings = WorkspaceSettingsService.setWorkspaceSettings($scope.workspace.problem.performanceTable);
     }
 
   };
