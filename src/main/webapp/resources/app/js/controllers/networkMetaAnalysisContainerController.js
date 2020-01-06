@@ -219,6 +219,7 @@ define(['lodash'], function(_) {
           $scope.errors.hasInsufficientCovariateValues = NetworkMetaAnalysisService.doesModelHaveInsufficientCovariateValues(allRows);
           $scope.errors.containsMissingValue = _.find(NetworkMetaAnalysisService.buildMissingValueByStudy(allRows, $scope.momentSelectionsTopLevel));
           $scope.errors.containsMultipleResultProperties = NetworkMetaAnalysisService.doesModelContainTooManyResultProperties(allRows, $scope.momentSelectionsTopLevel);
+          $scope.errors.hasMissingCovariateValues = NetworkMetaAnalysisService.hasMissingCovariateValues(tableRows);
 
           $scope.absoluteEvidenceTableRows = tableRows.absolute;
           $scope.contrastEvidenceTableRows = tableRows.contrast;
@@ -280,7 +281,7 @@ define(['lodash'], function(_) {
     function setErrorsTexts() {
       $scope.errorTexts = [];
       if ($scope.errors.tableHasAmbiguousArm && $scope.interventions.length > 1 && !$scope.errors.hasLessThanTwoInterventions) {
-        $scope.errorTexts.push('arms: more than one arm selected for single intervention.');
+        $scope.errorTexts.push('Arms: more than one arm selected for single intervention.');
       }
       if (!$scope.interventions || $scope.interventions.length < 2 || $scope.errors.hasLessThanTwoInterventions) {
         $scope.errorTexts.push('At least two interventions are needed to perform the analysis.');
@@ -292,10 +293,13 @@ define(['lodash'], function(_) {
         $scope.errorTexts.push('Overlapping interventions detected: please exclude interventions to fix this.');
       }
       if ($scope.errors.containsMissingValue) {
-        $scope.errorTexts.push('The evidence table contains missing values');
+        $scope.errorTexts.push('The evidence table contains missing values.');
       }
       if ($scope.errors.containsMultipleResultProperties) {
-        $scope.errorTexts.push('The evidence table contains studies with conflicting result properties');
+        $scope.errorTexts.push('The evidence table contains studies with conflicting result properties.');
+      }
+      if ($scope.errors.hasMissingCovariateValues) {
+        $scope.errorTexts.push('At least one included study has missing values for the overall population for selected covariates.');
       }
       return blockModelCreation();
     }

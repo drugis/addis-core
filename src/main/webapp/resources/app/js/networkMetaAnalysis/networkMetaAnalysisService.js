@@ -670,10 +670,10 @@ define(['lodash', 'angular'], function(_, angular) {
         var selectedMM = _.find(study.measurementMoments, function(measurementMoment) {
           return measurementMoment.uri === selectedMMUri;
         });
-        if (selectedMM) { 
+        if (selectedMM) {
           selectedMM.isDefault = manualSelection ? false : true;
         } else {
-          selectedMM = study.measurementMoments[0]; 
+          selectedMM = study.measurementMoments[0];
         }
         accum[study.studyUri] = selectedMM;
         return accum;
@@ -733,6 +733,18 @@ define(['lodash', 'angular'], function(_, angular) {
       });
     }
 
+    function hasMissingCovariateValues(tables) {
+      return hasStudyWithMissingCovariateValues(tables.absolute) || hasStudyWithMissingCovariateValues(tables.contrast);
+    }
+
+    function hasStudyWithMissingCovariateValues(rows) {
+      return _.some(rows, function(row) {
+        return row.numberOfIncludedInterventions > 1 && _.some(row.covariatesColumns, function(covariate) {
+          return covariate.data === 'NA' ;
+        });
+      });
+    }
+
     return {
       addInclusionsToCovariates: addInclusionsToCovariates,
       addInclusionsToInterventions: addInclusionsToInterventions,
@@ -753,7 +765,8 @@ define(['lodash', 'angular'], function(_, angular) {
       transformStudiesToTableRows: transformStudiesToTableRows,
       hasInterventionOverlap: hasInterventionOverlap,
       getReferenceArms: getReferenceArms,
-      doesModelContainTooManyResultProperties: doesModelContainTooManyResultProperties
+      doesModelContainTooManyResultProperties: doesModelContainTooManyResultProperties,
+      hasMissingCovariateValues: hasMissingCovariateValues
     };
   };
   return dependencies.concat(NetworkMetaAnalysisService);

@@ -449,7 +449,7 @@ define([
   describe('The networkMetaAnalysisService', function() {
     var analysisServiceMock = jasmine.createSpyObj('AnalysisService', ['generateEdges']);
 
-    beforeEach(angular.mock.module('addis.networkMetaAnalysis', function($provide){
+    beforeEach(angular.mock.module('addis.networkMetaAnalysis', function($provide) {
       $provide.value('AnalysisService', analysisServiceMock);
     }));
 
@@ -458,7 +458,7 @@ define([
     }));
 
     describe('transformStudiesToNetwork', function() {
-      beforeEach(function(){
+      beforeEach(function() {
         analysisServiceMock.generateEdges.and.returnValue(expectedNetwork.edges);
       });
 
@@ -1141,6 +1141,47 @@ define([
           }
         };
         expect(result).toEqual(expectedResult);
+      });
+    });
+
+    describe('hasMissingCovariateValues', () => {
+      it('should return true if there is a study with at least 2 included arms, and a missing covariate value', function() {
+        const tables = {
+          absolute:[ {
+            numberOfIncludedInterventions:2,
+            covariatesColumns: [{
+              data: 'NA'
+            }]
+          }]
+        };
+        const result = networkMetaAnalysisService.hasMissingCovariateValues(tables);
+        expect(result).toBeTruthy();
+      });
+
+      it('should return false if there is a study with less then 2 included arms, and a missing covariate value', function() {
+        const tables = {
+          absolute:[ {
+            numberOfIncludedInterventions:1,
+            covariatesColumns: [{
+              data: 'NA'
+            }]
+          }]
+        };
+        const result = networkMetaAnalysisService.hasMissingCovariateValues(tables);
+        expect(result).toBeFalsy();
+      });
+
+      it('should return false if there is a study with at least 2 included arms, and covariate value', function() {
+        const tables = {
+          absolute:[ {
+            numberOfIncludedInterventions:2,
+            covariatesColumns: [{
+              data: 12
+            }]
+          }]
+        };
+        const result = networkMetaAnalysisService.hasMissingCovariateValues(tables);
+        expect(result).toBeFalsy();
       });
     });
   });
