@@ -10,20 +10,22 @@
           <h1 id="user-view-user-name">{{::user.firstName}} {{::user.lastName}}</h1>
         </div>
       </div>
-      <div class="grid-x">
-        <div class="cell">
-          <tabset>
-            <tab heading="Datasets" ng-click="selectTab('datasets')" active="activetab === 'datasets'">
-              <div ng-if="activetab === 'datasets'" ui-view></div>
-            </tab>
-            <tab heading="Projects" ng-click="selectTab('projects')" active="activetab === 'projects'">
-              <div ng-if="activetab === 'projects'" ui-view></div>
-            </tab>
-            <tab heading="Search Studies" ng-click="selectTab('search')" active="activetab === 'search'">
-              <div ng-if="activetab === 'search'" ui-view></div>
-            </tab>
-          </tabset>
+      <div class="grid-container full">
+        <div class="grid-x" style="margin-bottom: 10px">
+          <div ng-class="activetab === 'datasets' ? 'tab-is-active' : 'tab-is-inactive'" class="cell shrink tab-common" ng-click="selectTab('datasets')">
+            Datasets
+          </div>
+          <div ng-class="activetab === 'projects' ? 'tab-is-active' : 'tab-is-inactive'" class="cell shrink tab-common" ng-click="selectTab('projects')">
+            Projects
+          </div>
+          <div ng-class="activetab === 'search' ? 'tab-is-active' : 'tab-is-inactive'" class="cell shrink tab-common" ng-click="selectTab('search')">
+            Search Studies
+          </div>
         </div>
+      </div>
+
+      <div class="grid-x">
+        <div class="cell" ui-view></div>
       </div>
     </div>
   </div>

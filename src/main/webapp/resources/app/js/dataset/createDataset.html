@@ -1,67 +1,78 @@
-<tabset>
-  <tab heading="Empty dataset">
-    <form novalidate ng-submit="createDataset()">
-      <div class="grid-container">
-        <div class="grid-x">
-          <div class="cell">
-            <h3>Create a new dataset</h3>
-          </div>
-        </div>
-        <div class="grid-x">
-          <div class="cell">
-            <label>Name
-              <input autofocus type="text" ng-model="dataset.title">
-            </label>
-          </div>
-        </div>
-        <div class="grid-x">
-          <div class="cell">
-            <label>Description
-              <textarea grid-xs="8" ng-model="dataset.description"></textarea>
-            </label>
-          </div>
-        </div>
-        <div class="grid-x">
-          <div class="cell">
-            <button class="button success" type="submit" ng-disabled="!dataset.title">Create</button>
-          </div>
-        </div>
+<div class="grid-container full">
+  <div class="grid-x" style="margin-bottom: 10px">
+    <div ng-class="activeTab === 'empty' ? 'tab-is-active' : 'tab-is-inactive'" class="cell shrink tab-common"
+      ng-click="selectTab('empty')">
+      Empty dataset
+    </div>
+    <div ng-class="activeTab === 'excel' ? 'tab-is-active' : 'tab-is-inactive'" class="cell shrink tab-common"
+      ng-click="selectTab('excel')">
+      Import from Excel
+    </div>
+  </div>
+</div>
+
+<form novalidate ng-submit="createDataset()" ng-if="activeTab === 'empty'">
+  <div class="grid-container">
+    <div class="grid-x">
+      <div class="cell">
+        <h3>Create a new dataset</h3>
       </div>
-    </form>
-  </tab>
-  <tab heading="Import from Excel">
-    <form novalidate ng-submit="importDataset()">
-      <div class="grid-container">
-        <div class="grid-x">
-          <div class="cell">
-            <h3>Import dataset from Excel</h3>
-          </div>
-          <div class="cell">
-            <input type="file" name="excelFile" accept=".xlsx" onchange="angular.element(this).scope().uploadExcel(this)">
-          </div>
-          <div class="cell">
-            Dataset title
-          </div>
-          <div class="cell">
-            <input type="text" ng-disabled="!isValidUpload || isCreatingDataset" ng-model="excelUpload.Sheets['Dataset information'].A2.v"
-              ng-change="checkDatasetName(excelUpload.Sheets['Dataset information'].A2.v)">
-          </div>
-          <div class="cell" ng-show="!isUniqueIdentifier">
-            <label class="alert">Dataset name must be unique</label>
-          </div>
-          <div class="cell">
-            <button class="button success" type="submit" ng-disabled="!excelUpload || isCreatingDataset || errors.length || !isUniqueIdentifier">
-              create
-            </button>
-          </div>
-          <div class="cell alert" ng-repeat="error in errors">
-            {{error}}
-          </div>
-        </div>
+    </div>
+    <div class="grid-x">
+      <div class="cell">
+        <label>Name
+          <input autofocus type="text" ng-model="dataset.title">
+        </label>
       </div>
-    </form>
-  </tab>
-</tabset>
+    </div>
+    <div class="grid-x">
+      <div class="cell">
+        <label>Description
+          <textarea grid-xs="8" ng-model="dataset.description"></textarea>
+        </label>
+      </div>
+    </div>
+    <div class="grid-x">
+      <div class="cell">
+        <button class="button success" type="submit" ng-disabled="!dataset.title">Create</button>
+      </div>
+    </div>
+  </div>
+</form>
+
+<form novalidate ng-submit="importDataset()" ng-if="activeTab === 'excel'">
+  <div class="grid-container">
+    <div class="grid-x">
+      <div class="cell">
+        <h3>Import dataset from Excel</h3>
+      </div>
+      <div class="cell">
+        <input type="file" name="excelFile" accept=".xlsx" onchange="angular.element(this).scope().uploadExcel(this)">
+      </div>
+      <div class="cell">
+        Dataset title
+      </div>
+      <div class="cell">
+        <input type="text" ng-disabled="!isValidUpload || isCreatingDataset"
+          ng-model="excelUpload.Sheets['Dataset information'].A2.v"
+          ng-change="checkDatasetName(excelUpload.Sheets['Dataset information'].A2.v)">
+      </div>
+      <div class="cell" ng-show="!isUniqueIdentifier">
+        <label class="alert">Dataset name must be unique</label>
+      </div>
+      <div class="cell">
+        <button class="button success" type="submit"
+          ng-disabled="!excelUpload || isCreatingDataset || errors.length || !isUniqueIdentifier">
+          create
+        </button>
+      </div>
+      <div class="cell alert" ng-repeat="error in errors">
+        {{error}}
+      </div>
+    </div>
+  </div>
+</form>
+
 <button ng-click="cancel()" class="close-button" aria-label="Close reveal" type="button">
   <span aria-hidden="true">&times;</span>
 </button>
