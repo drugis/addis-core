@@ -769,16 +769,17 @@ input[type='file'] {
 
 /* inline results */
 /* line 19, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
-#results .loader, .hidden {
+#results .loader,
+.hidden {
   display: none;
 }
 
-/* line 23, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
+/* line 24, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
 #results.loading > img {
   opacity: 0.5;
 }
 
-/* line 27, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
+/* line 28, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
 #results.loading .loader {
   float: left;
   position: relative;
@@ -792,351 +793,32 @@ input[type='file'] {
   padding: 5px;
 }
 
-/* line 40, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
+/* line 41, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
 #results.loading .graph {
   display: none;
 }
 
-/* line 44, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
-input[type='file'] {
+/* line 45, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
+input[type="file"] {
   width: auto !important;
 }
 
-/*
-* This product includes color specifications and designs developed by Cynthia
-* Brewer (http://colorbrewer.org/).
-*/
-/* line 52, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
-.RdYlGn .q0-3 {
-  background-color: #fc8d59;
-}
-
-/* line 53, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
-.RdYlGn .q1-3 {
-  background-color: #ffffbf;
-}
-
-/* line 54, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
-.RdYlGn .q2-3 {
-  background-color: #91cf60;
-}
-
-/* line 55, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
-.RdYlGn .q0-4 {
-  background-color: #d7191c;
-}
-
-/* line 56, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
-.RdYlGn .q1-4 {
-  background-color: #fdae61;
-}
-
-/* line 57, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
-.RdYlGn .q2-4 {
-  background-color: #a6d96a;
-}
-
-/* line 58, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
-.RdYlGn .q3-4 {
-  background-color: #1a9641;
-}
-
-/* line 59, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
-.RdYlGn .q0-5 {
-  background-color: #d7191c;
-}
-
-/* line 60, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
-.RdYlGn .q1-5 {
-  background-color: #fdae61;
-}
-
-/* line 61, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
-.RdYlGn .q2-5 {
-  background-color: #ffffbf;
-}
-
-/* line 62, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
-.RdYlGn .q3-5 {
-  background-color: #a6d96a;
-}
-
-/* line 63, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
-.RdYlGn .q4-5 {
-  background-color: #1a9641;
-}
-
-/* line 64, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
-.RdYlGn .q0-6 {
-  background-color: #d73027;
-}
-
-/* line 65, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
-.RdYlGn .q1-6 {
-  background-color: #fc8d59;
-}
-
-/* line 66, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
-.RdYlGn .q2-6 {
-  background-color: #fee08b;
-}
-
-/* line 67, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
-.RdYlGn .q3-6 {
-  background-color: #d9ef8b;
-}
-
-/* line 68, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
-.RdYlGn .q4-6 {
-  background-color: #91cf60;
-}
-
-/* line 69, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
-.RdYlGn .q5-6 {
-  background-color: #1a9850;
-}
-
-/* line 70, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
-.RdYlGn .q0-7 {
-  background-color: #d73027;
-}
-
-/* line 71, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
-.RdYlGn .q1-7 {
-  background-color: #fc8d59;
-}
-
-/* line 72, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
-.RdYlGn .q2-7 {
-  background-color: #fee08b;
-}
-
-/* line 73, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
-.RdYlGn .q3-7 {
-  background-color: #ffffbf;
-}
-
-/* line 74, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
-.RdYlGn .q4-7 {
-  background-color: #d9ef8b;
-}
-
-/* line 75, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
-.RdYlGn .q5-7 {
-  background-color: #91cf60;
-}
-
-/* line 76, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
-.RdYlGn .q6-7 {
-  background-color: #1a9850;
-}
-
-/* line 77, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
-.RdYlGn .q0-8 {
-  background-color: #d73027;
-}
-
-/* line 78, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
-.RdYlGn .q1-8 {
-  background-color: #f46d43;
-}
-
-/* line 79, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
-.RdYlGn .q2-8 {
-  background-color: #fdae61;
-}
-
-/* line 80, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
-.RdYlGn .q3-8 {
-  background-color: #fee08b;
-}
-
-/* line 81, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
-.RdYlGn .q4-8 {
-  background-color: #d9ef8b;
-}
-
-/* line 82, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
-.RdYlGn .q5-8 {
-  background-color: #a6d96a;
-}
-
-/* line 83, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
-.RdYlGn .q6-8 {
-  background-color: #66bd63;
-}
-
-/* line 84, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
-.RdYlGn .q7-8 {
-  background-color: #1a9850;
-}
-
-/* line 85, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
-.RdYlGn .q0-9 {
-  background-color: #d73027;
-}
-
-/* line 86, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
-.RdYlGn .q1-9 {
-  background-color: #f46d43;
-}
-
-/* line 87, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
-.RdYlGn .q2-9 {
-  background-color: #fdae61;
-}
-
-/* line 88, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
-.RdYlGn .q3-9 {
-  background-color: #fee08b;
-}
-
-/* line 89, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
-.RdYlGn .q4-9 {
-  background-color: #ffffbf;
-}
-
-/* line 90, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
-.RdYlGn .q5-9 {
-  background-color: #d9ef8b;
-}
-
-/* line 91, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
-.RdYlGn .q6-9 {
-  background-color: #a6d96a;
-}
-
-/* line 92, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
-.RdYlGn .q7-9 {
-  background-color: #66bd63;
-}
-
-/* line 93, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
-.RdYlGn .q8-9 {
-  background-color: #1a9850;
-}
-
-/* line 94, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
-.RdYlGn .q0-10 {
-  background-color: #a50026;
-}
-
-/* line 95, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
-.RdYlGn .q1-10 {
-  background-color: #d73027;
-}
-
-/* line 96, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
-.RdYlGn .q2-10 {
-  background-color: #f46d43;
-}
-
-/* line 97, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
-.RdYlGn .q3-10 {
-  background-color: #fdae61;
-}
-
-/* line 98, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
-.RdYlGn .q4-10 {
-  background-color: #fee08b;
-}
-
-/* line 99, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
-.RdYlGn .q5-10 {
-  background-color: #d9ef8b;
-}
-
-/* line 100, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
-.RdYlGn .q6-10 {
-  background-color: #a6d96a;
-}
-
-/* line 101, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
-.RdYlGn .q7-10 {
-  background-color: #66bd63;
-}
-
-/* line 102, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
-.RdYlGn .q8-10 {
-  background-color: #1a9850;
-}
-
-/* line 103, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
-.RdYlGn .q9-10 {
-  background-color: #006837;
-}
-
-/* line 104, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
-.RdYlGn .q0-11 {
-  background-color: #a50026;
-}
-
-/* line 105, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
-.RdYlGn .q1-11 {
-  background-color: #d73027;
-}
-
-/* line 106, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
-.RdYlGn .q2-11 {
-  background-color: #f46d43;
-}
-
-/* line 107, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
-.RdYlGn .q3-11 {
-  background-color: #fdae61;
-}
-
-/* line 108, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
-.RdYlGn .q4-11 {
-  background-color: #fee08b;
-}
-
-/* line 109, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
-.RdYlGn .q5-11 {
-  background-color: #ffffbf;
-}
-
-/* line 110, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
-.RdYlGn .q6-11 {
-  background-color: #d9ef8b;
-}
-
-/* line 111, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
-.RdYlGn .q7-11 {
-  background-color: #a6d96a;
-}
-
-/* line 112, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
-.RdYlGn .q8-11 {
-  background-color: #66bd63;
-}
-
-/* line 113, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
-.RdYlGn .q9-11 {
-  background-color: #1a9850;
-}
-
-/* line 114, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
-.RdYlGn .q10-11 {
-  background-color: #006837;
-}
-
 /* CSS FOR EFFECTSTABLE */
-/* line 119, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
+/* line 51, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
 .check2hide {
   display: inline-block;
   margin-right: 0.8rem;
 }
 
-/* line 124, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
+/* line 56, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
 .full-width {
   width: 100% !important;
 }
-/* line 127, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
+/* line 59, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
 .full-width .td-container {
   position: relative;
 }
-/* line 131, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
+/* line 63, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
 .full-width .td-content {
   position: absolute;
   max-width: 100%;
@@ -1144,65 +826,74 @@ input[type='file'] {
   overflow: hidden;
   text-overflow: ellipsis;
 }
-/* line 138, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
+/* line 70, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
 .full-width .td-spacer {
   height: 0;
   overflow: hidden;
 }
-/* line 143, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
+/* line 75, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
 .full-width .main-header {
   display: inline-block;
   font-weight: bold;
   margin-right: 1rem;
 }
-/* line 149, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
+/* line 81, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
 .full-width .secondary-header {
   display: inline-block;
   font-weight: bold;
   margin-left: 1rem;
   margin-right: 1rem;
 }
-/* line 156, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
+/* line 88, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
 .full-width .details {
   max-width: 400px !important;
 }
-/* line 160, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
+/* line 91, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
 .full-width .details table {
   border: none;
   width: 100% !important;
 }
-/* line 164, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
+/* line 95, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
 .full-width .details table td {
   height: 1.5;
 }
-/* line 169, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
+/* line 100, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
 .full-width .details table tr > td:first-child {
   width: auto;
 }
 
-/* line 176, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
+/* line 107, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
 .effects-table td {
   height: 4.875;
 }
 
-/* line 181, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
+/* line 112, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
 .dropdown-pane {
   padding: 0;
   width: auto;
 }
 
-/* line 186, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
+/* line 117, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
 .disabled-cell {
   background: #e9e9e9;
   color: grey;
 }
 
-/* line 191, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
+/* line 122, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
 .disabled-header {
   background: #cacaca;
 }
 
-/* line 195, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
+/* line 126, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
+.tab-is-disabled {
+  background: #efefef;
+  border-bottom: none;
+  border-bottom: 1px solid #e6e6e6;
+  color: darkgray;
+  cursor: not-allowed;
+}
+
+/* line 134, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
 .uncertain {
   padding: 0.1rem;
   color: grey;
@@ -1219,54 +910,54 @@ input[type='file'] {
 }
 
 /* results page */
-/* line 211, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
+/* line 150, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
 .rank-table {
   display: inline-block;
   clear: none;
   position: relative;
 }
 
-/* line 217, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
+/* line 156, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
 .underlined-div {
   border-bottom: 1px solid #cacaca;
   margin-bottom: 1.5rem !important;
 }
 
 /* ----- preferences table ------ */
-/* line 223, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
+/* line 162, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
 .prefs-block {
   padding-bottom: 1.5rem;
   border-bottom: 1px solid #cacaca;
   margin-bottom: 1.5rem;
 }
 
-/* line 229, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
+/* line 168, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
 .inline {
   display: inline-block;
 }
 
-/* line 233, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
+/* line 172, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
 .block {
   display: block;
 }
 
-/* line 237, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
+/* line 176, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
 .round {
   border-radius: 20px;
 }
 
-/* line 241, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
+/* line 180, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
 .slider-buttons {
   margin-top: 1.4rem;
 }
 
-/* line 245, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
+/* line 184, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
 .none {
   display: none;
 }
 
 /*----- TREEVIEW -----*/
-/* line 252, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
+/* line 190, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
 .button.tiny-icon {
   padding-top: 0.325rem;
   padding-right: 0.75rem;
@@ -1275,13 +966,13 @@ input[type='file'] {
   font-size: 1rem;
 }
 
-/* line 260, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
+/* line 198, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
 .workspace-control-tab {
   background-color: #e6e6e6;
   margin-right: 0.5rem;
 }
 
-/* line 265, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
+/* line 203, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
 .overview-nav-container {
   border-bottom: 1px solid #452F8C;
   -webkit-user-select: none;
@@ -1294,7 +985,7 @@ input[type='file'] {
   -o-user-select: none;
   user-select: none;
 }
-/* line 276, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
+/* line 214, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
 .overview-nav-container .overview-nav {
   position: relative;
   display: block;
@@ -1302,20 +993,20 @@ input[type='file'] {
   margin: 0 0 -2px 0;
   text-align: center;
 }
-/* line 284, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
+/* line 222, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
 .overview-nav-container .overview-nav > ul {
   bottom: -4px;
   list-style-type: none;
   margin: 2px auto 0 auto;
   position: relative;
 }
-/* line 291, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
+/* line 229, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
 .overview-nav-container .overview-nav li {
   float: left;
   margin: 16px 5px 0 5px;
   list-style: none;
 }
-/* line 295, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
+/* line 233, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
 .overview-nav-container .overview-nav li .scenario-action {
   background: white;
   color: black;
@@ -1323,12 +1014,12 @@ input[type='file'] {
   background-color: white;
   border-color: white;
 }
-/* line 303, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
+/* line 241, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
 .overview-nav-container .overview-nav li .scenario-action:hover {
   background-color: white;
   border-color: white;
 }
-/* line 310, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
+/* line 247, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
 .overview-nav-container .overview-nav li a {
   border: 1px solid #452F8C;
   border-bottom: none;
@@ -1341,22 +1032,22 @@ input[type='file'] {
   display: inline-block;
   margin-bottom: -1px;
 }
-/* line 322, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
+/* line 259, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
 .overview-nav-container .overview-nav li a:hover {
   border-color: #322266;
   background-color: #322266;
 }
-/* line 326, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
+/* line 263, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
 .overview-nav-container .overview-nav li a.activetab {
   background-color: #fefefe;
   color: #0a0a0a;
 }
-/* line 330, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
+/* line 267, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
 .overview-nav-container .overview-nav li a.disabledtab {
   cursor: auto;
   opacity: 0.7;
 }
-/* line 335, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
+/* line 272, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
 .overview-nav-container .overview-nav li a.disabledtab:hover {
   cursor: auto;
   opacity: 0.7;
@@ -1364,12 +1055,12 @@ input[type='file'] {
   border: 1px solid #452F8C;
   border-bottom: none;
 }
-/* line 345, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
+/* line 282, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
 .overview-nav-container .overview-nav > li:first-child {
   margin-left: 15px;
 }
 
-/* line 350, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
+/* line 287, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
 .tab-corners {
   border-top-left-radius: 2px;
   border-top-right-radius: 2px;
@@ -1379,12 +1070,12 @@ input[type='file'] {
   -webkit-border-top-right-radius: 2px;
 }
 
-/* line 359, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
+/* line 296, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
 .scenario-menu {
   padding-top: 17px;
 }
 
-/* line 363, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
+/* line 300, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
 .scenario-select {
   display: inline;
   width: 190px;
@@ -1394,35 +1085,35 @@ input[type='file'] {
   margin: 2px 4px 1px 0px;
 }
 
-/* line 372, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
+/* line 309, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
 .new-scenario-btn {
   color: #452F8C;
 }
 
-/* line 376, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
+/* line 313, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
 .new-scenario-btn:hover {
   cursor: pointer;
   color: #3b2877;
 }
 
-/* line 381, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
+/* line 318, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
 #newScenarioControl {
   margin-left: -10px;
   margin: 6px;
   width: 220px;
 }
 
-/* line 387, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
+/* line 324, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
 .results-button {
   margin-left: 0.5rem;
 }
 
-/* line 393, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
+/* line 330, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
 .pref-progress {
   margin: 50px 60px;
 }
 
-/* line 397, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
+/* line 334, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
 .circle-container {
   text-align: center;
   display: inline-block;
@@ -1431,24 +1122,24 @@ input[type='file'] {
   margin-top: -17px;
 }
 
-/* line 405, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
+/* line 342, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
 .line {
   background-color: #e2e2e2;
   width: 100%;
   height: 5px;
 }
 
-/* line 411, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
+/* line 348, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
 .last-line {
   height: 5px;
 }
 
-/* line 415, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
+/* line 352, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
 .pref-progress .progress-cell {
   padding: 0px;
 }
 
-/* line 419, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
+/* line 356, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
 .circle {
   background-color: #e2e2e2;
   height: 25px;
@@ -1459,50 +1150,103 @@ input[type='file'] {
   margin-left: -15px;
 }
 
-/* line 429, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
+/* line 366, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
 .circle-container.next-step .circle,
 .circle-container.completed .circle,
 .line.accessible {
   background-color: #29A329;
 }
 
-/* line 435, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
+/* line 372, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
 .circle-container.next-step:hover,
 .circle-container.completed:hover {
   cursor: pointer;
 }
 
-/* line 440, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
+/* line 377, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
 .circle-label {
   margin-left: -50%;
   text-align: left;
 }
 
-/* line 446, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
-li.disabled {
-  background: #efefef;
-  border: 1px solid;
-  border-top-left-radius: 20px;
-  border-top-right-radius: 20px;
-  padding-top: 17px;
-  padding-bottom: 6px;
-  padding-left: 20px;
-  padding-right: 20px;
-  border-color: #e6e6e6;
-  border-bottom: none;
-  font-size: 0.75rem;
-  color: darkgray;
-}
-
-/* line 461, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
+/* line 382, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
 span.toggle-text {
   position: relative;
   bottom: 9px;
 }
 
-/* line 466, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
+/* line 387, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
 .dropdown.menu a {
   background: #333;
+}
+
+/* line 391, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
+div.partial-value-plot-container {
+  text-align: center;
+  padding-top: 30px;
+}
+
+/* line 396, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
+div.partial-value-function-plot-header {
+  width: 250px;
+  height: 25px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* line 408, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
+span.partial-value-function-plot-header {
+  position: absolute;
+  width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* line 415, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
+div.partial-value-plot {
+  width: 330px;
+  height: 216;
+}
+
+/* line 420, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
+div.undefined-partial-value-function {
+  padding-top: 40px;
+  text-align: center;
+  margin: 0;
+}
+
+/* line 426, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
+.text-centered {
+  text-align: center;
+}
+
+/* line 430, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
+.c3-axis-x text {
+  font-family: sans-serif;
+  font-size: 12px;
+}
+
+/* line 435, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
+.c3-axis-y text {
+  font-family: sans-serif;
+  font-size: 12px;
+}
+
+/* line 440, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
+.image-in-button {
+  margin-bottom: 2px;
+  height: 14px;
+  width: 12px;
+}
+
+/* line 446, ../../../../../../node_modules/mcda-web/sass/_mcda-drugis-base.scss */
+.menu-border-bottom {
+  border-bottom: 1px solid #e6e6e6;
 }
 
 /**
