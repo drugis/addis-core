@@ -44,276 +44,300 @@
         </div>
       </div>
 
-      <div class="grid-x">
-        <div class="cell">
-          <tabset>
-            <tab heading="Definitions" active="tabSelection.activeTab === 'definitions'"
-              ng-click="setActiveTab('definitions')">
-              <div ng-if="tabSelection.activeTab === 'definitions'">
-                <!-- Outcomes -->
-                <div class="grid-x section">
+      <div class="grid-container full">
+        <div class="grid-x" style="margin-bottom: 10px">
+          <div ng-class="tabSelection.activeTab === 'definitions' ? 'tab-is-active' : 'tab-is-inactive'"
+            class="cell shrink tab-common" ng-click="setActiveTab('definitions')">
+            Definitions
+          </div>
+          <div ng-class="tabSelection.activeTab === 'analyses' ? 'tab-is-active' : 'tab-is-inactive'"
+            class="cell shrink tab-common" ng-click="setActiveTab('analyses')">
+            Analyses
+          </div>
+          <div ng-class="tabSelection.activeTab === 'report' ? 'tab-is-active' : 'tab-is-inactive'"
+            class="cell shrink tab-common" ng-click="setActiveTab('report')">
+            Report
+          </div>
+        </div>
+      </div>
+
+      <div class="grid-x section">
+        <div class="cell" ng-if="tabSelection.activeTab === 'definitions'">
+          <div class="grid-x">
+            <div class="cell">
+              <h3 class="subheader">Outcomes
+                <inline-help help-key="addis-outcome"></inline-help>
+              </h3>
+            </div>
+            <div class="cell">
+              <button id="show-create-outcome-modal-btn" ng-if="editMode.allowEditing" class="button small"
+                ng-click="openCreateOutcomeDialog()">
+                <i class="fa fa-plus"></i> Add outcome
+              </button>
+            </div>
+            <div class="cell">
+              <table style="width: 100%;">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Outcome direction</th>
+                    <th>Motivation</th>
+                    <th>Definition</th>
+                    <th ng-if="editMode.allowEditing"></th>
+                    <th ng-if="editMode.allowEditing"></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr ng-repeat="outcome in outcomes">
+                    <td>{{outcome.name}}</td>
+                    <td class="text-centered" ng-if="outcome.direction == 1">Higher is better</td>
+                    <td class="text-centered" ng-if="outcome.direction == -1">Lower is better</td>
+                    <td>{{outcome.motivation}}</td>
+                    <td>{{::outcome.semanticOutcomeLabel}}</td>
+                    <td class="text-centered" ng-if="editMode.allowEditing"><a
+                        ng-click="openEditOutcomeDialog(outcome)"><i class="fa fa-edit fa-2x"></i></a></td>
+                    <td class="text-centered" ng-if="editMode.allowEditing && !outcomeUsage[outcome.id].length">
+                      <a ng-click="openDeleteDefinitionDialog(outcome,'outcome')"><i class="fa fa-trash  fa-2x"
+                          style="color:red"></i></a>
+                    </td>
+                    <td class="text-centered" ng-if="editMode.allowEditing && outcomeUsage[outcome.id].length">
+                      <a class="has-tip"
+                        tooltip-html-unsafe="<i class='fa fa-exclamation-triangle'></i> Outcome is used in analyses: {{outcomeUsage[outcome.id].join(', ')}}"
+                        tooltip-placement="left">
+                        <i class="fa fa-trash fa-2x" style="color: lightgrey;"></i>
+                      </a>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <!-- Units -->
+            <div class="cell">
+              <h3 class="subheader">Units
+                <inline-help help-key="unit"></inline-help>
+              </h3>
+            </div>
+            <div class="cell">
+              <button id="show-create-unit-modal-btn" ng-if="editMode.allowEditing" ng-disabled="!unitConcepts.length"
+                class="button small" ng-click="openCreateScaledUnitDialog()">
+                <i class="fa fa-plus"></i> Add unit
+              </button>
+            </div>
+            <div class="cell">
+              <span ng-if="!unitConcepts.length" class="alert">
+                No unit concepts defined in dataset.
+              </span>
+            </div>
+            <div class="cell">
+              <table style="width: 100%;">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Concept</th>
+                    <th>Multiplier</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr ng-repeat="unit in units">
+                    <td>{{unit.name}}</td>
+                    <td>{{unit.conceptName}}</td>
+                    <td>{{unit.multiplier}}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <!-- Interventions -->
+            <div class="cell">
+              <h3 class="subheader">Interventions
+                <inline-help help-key="addis-intervention"></inline-help>
+              </h3>
+            </div>
+            <div class="cell">
+              <button id="show-create-intervention-modal-btn" ng-if="editMode.allowEditing" class="button small"
+                ng-click="openCreateInterventionDialog()">
+                <i class="fa fa-plus"></i> Add intervention
+              </button>
+            </div>
+            <div class="cell">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Motivation</th>
+                    <th>Definition</th>
+                    <th ng-if="editMode.allowEditing"></th>
+                    <th ng-if="editMode.allowEditing"></th>
+                    <th ng-if="editMode.allowEditing && editMode.interventionRepairPossible"></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr ng-repeat="intervention in interventions">
+                    <td>{{intervention.name}}</td>
+                    <td>{{intervention.motivation}}</td>
+                    <td>{{::intervention.semanticInterventionLabel}}{{::intervention.definitionLabel}}</td>
+                    <td class="text-centered" ng-if="editMode.allowEditing">
+                      <a ng-click="openEditInterventionDialog(intervention)">
+                        <i class="fa fa-edit fa-2x"></i>
+                      </a>
+                    </td>
+                    <td class="text-centered"
+                      ng-if="editMode.allowEditing && !interventionUsage.inAnalyses[intervention.id].length && !interventionUsage.inInterventions[intervention.id].length">
+                      <a ng-click="openDeleteDefinitionDialog(intervention,'intervention')">
+                        <i class="fa fa-trash  fa-2x" style="color:red"></i>
+                      </a>
+                    </td>
+                    <td class="text-centered"
+                      ng-if="editMode.allowEditing && (interventionUsage.inInterventions[intervention.id].length || interventionUsage.inAnalyses[intervention.id].length)">
+                      <a class="has-tip" tooltip-placement="left"
+                        tooltip-html-unsafe="{{!interventionUsage.inAnalyses[intervention.id].length ? '' : '<i class=\'fa fa-exclamation-triangle\'></i> Intervention is used in analyses: ' + interventionUsage.inAnalyses[intervention.id].join(', ') + '<br>'}}
+                          {{!interventionUsage.inInterventions[intervention.id].length? '' : '<i class=\'fa fa-exclamation-triangle\'></i> Intervention is used in interventions: ' + interventionUsage.inInterventions[intervention.id].join(', ') }}">
+                        <i class="fa fa-trash fa-2x" style="color: lightgrey;"></i>
+                      </a>
+                    </td>
+                    <td class="text-centered"
+                      ng-if="editMode.allowEditing && editMode.interventionRepairPossible && intervention.hasMissingMultipliers">
+                      <a class="has-tip" tooltip-placement="left"
+                        tooltip-html-unsafe="Intervention has missing unit multiplier mapping(s)"
+                        ng-click="openRepairInterventionDialog(intervention)">
+                        <i class="fa fa-wrench fa-2x"></i>
+                      </a>
+                    </td>
+                    <td ng-disabled="!intervention.hasMissingMultipliers"
+                      ng-if="editMode.allowEditing && editMode.interventionRepairPossible && !intervention.hasMissingMultipliers">
+                      <i class="fa fa-wrench fa-2x" style="color: lightgrey;"></i>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <!-- Covariates -->
+            <div class="cell">
+              <h3 class="subheader">Covariates
+                <inline-help help-key="addis-covariate"></inline-help>
+              </h3>
+            </div>
+            <div class="cell">
+              <button ng-if="editMode.allowEditing" class="button small" ng-click="addCovariate()"><i
+                  class="fa fa-plus"></i> Add Covariate
+              </button>
+            </div>
+            <div class="cell">
+              <em ng-show="covariates.length === 0">No covariates have been defined</em>
+            </div>
+            <div class="cell">
+              <table ng-show="covariates.length > 0">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Motivation</th>
+                    <th>Definition</th>
+                    <th ng-if="editMode.allowEditing"></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr ng-repeat="covariate in covariates">
+                    <td>{{::covariate.name}}</td>
+                    <td>{{::covariate.motivation}}</td>
+                    <td>{{::covariate.definitionLabel}}</td>
+                    <td class="text-centered" ng-if="editMode.allowEditing && !covariateUsage[covariate.id].length">
+                      <a ng-click="openDeleteDefinitionDialog(covariate,'covariate')"><i class="fa fa-trash  fa-2x"
+                          style="color:red"></i></a>
+                    </td>
+                    <td class="text-centered" ng-if="editMode.allowEditing && covariateUsage[covariate.id].length">
+                      <a class="has-tip"
+                        tooltip-html-unsafe="<i class='fa fa-exclamation-triangle'></i> Covariate is used in analyses: {{covariateUsage[covariate.id].join(', ')}}"
+                        tooltip-placement="left">
+                        <i class="fa fa-trash fa-2x" style="color: lightgrey;"></i>
+                      </a>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div class="cell" ng-if="tabSelection.activeTab === 'analyses'">
+          <div class="grid-x section">
+            <div class="cell">
+              <h2>Analyses
+                <inline-help help-key="addis-analysis"></inline-help>
+              </h2>
+            </div>
+            <div class="cell">
+              <button id="show-create-analysis-modal-btn" ng-if="editMode.allowEditing" class="button small"
+                ng-click="openAddAnalysisDialog()" ng-disabled="!outcomes.length">
+                <i class="fa fa-plus"></i> Add Analysis
+              </button>
+            </div>
+            <div class="cell alert" ng-if="!outcomes.length">
+              No outcomes have been defined.
+            </div>
+            <div class="cell">
+              <spinner promise="analysesPromise" size="3" message="'Loading analyses...'">
+                <div class="grid-x">
                   <div class="cell">
-                    <h3 class="subheader">Outcomes
-                      <inline-help help-key="addis-outcome"></inline-help>
-                    </h3>
-                    <button id="show-create-outcome-modal-btn" ng-if="editMode.allowEditing" class="button small"
-                      ng-click="openCreateOutcomeDialog()">
-                      <i class="fa fa-plus"></i> Add outcome
-                    </button>
+                    <em ng-show="analyses.length === 0">
+                      No analyses have been defined
+                    </em>
+                  </div>
+                  <div class="cell large-6" ng-show="analyses.length > 0">
                     <table style="width: 100%;">
                       <thead>
                         <tr>
                           <th>Name</th>
-                          <th>Outcome direction</th>
-                          <th>Motivation</th>
-                          <th>Definition</th>
-                          <th ng-if="editMode.allowEditing"></th>
-                          <th ng-if="editMode.allowEditing"></th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <tr ng-repeat="outcome in outcomes">
-                          <td>{{outcome.name}}</td>
-                          <td style="text-align: center;" ng-if="outcome.direction == 1">Higher is better</td>
-                          <td style="text-align: center;" ng-if="outcome.direction == -1">Lower is better</td>
-                          <td>{{outcome.motivation}}</td>
-                          <td>{{::outcome.semanticOutcomeLabel}}</td>
-                          <td style="text-align: center;" ng-if="editMode.allowEditing"><a
-                              ng-click="openEditOutcomeDialog(outcome)"><i class="fa fa-edit fa-2x"></i></a></td>
-                          <td style="text-align: center;"
-                            ng-if="editMode.allowEditing && !outcomeUsage[outcome.id].length">
-                            <a ng-click="openDeleteDefinitionDialog(outcome,'outcome')"><i class="fa fa-trash  fa-2x"
-                                style="color:red"></i></a>
-                          </td>
-                          <td style="text-align: center;"
-                            ng-if="editMode.allowEditing && outcomeUsage[outcome.id].length">
-                            <a class="has-tip"
-                              tooltip-html-unsafe="<i class='fa fa-exclamation-triangle'></i> Outcome is used in analyses: {{outcomeUsage[outcome.id].join(', ')}}"
-                              tooltip-placement="left">
-                              <i class="fa fa-trash fa-2x" style="color: lightgrey;"></i>
-                            </a>
-                          </td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-
-                <!-- Units -->
-                <div class="grid-x section">
-                  <div class="cell">
-                    <h3 class="subheader">Units
-                      <inline-help help-key="unit"></inline-help>
-                    </h3>
-                    <button id="show-create-unit-modal-btn" ng-if="editMode.allowEditing"
-                      ng-disabled="!unitConcepts.length" class="button small" ng-click="openCreateScaledUnitDialog()">
-                      <i class="fa fa-plus"></i> Add unit
-                    </button>
-                    <span ng-if="!unitConcepts.length" class="alert">No unit concepts defined in dataset.</span>
-                    <table style="width: 100%;">
-                      <thead>
-                        <tr>
-                          <th class="large-4">Name</th>
-                          <th class="large-4">Concept</th>
-                          <th class="large-4">Multiplier</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <tr ng-repeat="unit in units">
-                          <td>{{unit.name}}</td>
-                          <td>{{unit.conceptName}}</td>
-                          <td>{{unit.multiplier}}</td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-
-                <!-- Interventions -->
-                <div class="grid-x section">
-                  <div class="cell">
-                    <h3 class="subheader">Interventions
-                      <inline-help help-key="addis-intervention"></inline-help>
-                    </h3>
-                    <button id="show-create-intervention-modal-btn" ng-if="editMode.allowEditing" class="button small"
-                      ng-click="openCreateInterventionDialog()">
-                      <i class="fa fa-plus"></i> Add intervention
-                    </button>
-                    <table>
-                      <thead>
-                        <tr>
-                          <th class="large-2">Name</th>
-                          <th class="large-5">Motivation</th>
-                          <th class="large-5">Definition</th>
-                          <th ng-if="editMode.allowEditing"></th>
-                          <th ng-if="editMode.allowEditing"></th>
-                          <th ng-if="editMode.allowEditing && editMode.interventionRepairPossible"></th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <tr ng-repeat="intervention in interventions">
-                          <td>{{intervention.name}}</td>
-                          <td>{{intervention.motivation}}</td>
-                          <td>{{::intervention.semanticInterventionLabel}}{{::intervention.definitionLabel}}</td>
-                          <td class="text-center" ng-if="editMode.allowEditing"><a
-                              ng-click="openEditInterventionDialog(intervention)"><i class="fa fa-edit fa-2x"></i></a>
-                          </td>
-                          <td class="text-center"
-                            ng-if="editMode.allowEditing && !interventionUsage.inAnalyses[intervention.id].length && !interventionUsage.inInterventions[intervention.id].length">
-                            <a ng-click="openDeleteDefinitionDialog(intervention,'intervention')"><i
-                                class="fa fa-trash  fa-2x" style="color:red"></i></a>
-                          </td>
-                          <td class="text-center"
-                            ng-if="editMode.allowEditing && (interventionUsage.inInterventions[intervention.id].length || interventionUsage.inAnalyses[intervention.id].length)">
-                            <a class="has-tip"
-                              tooltip-html-unsafe="{{!interventionUsage.inAnalyses[intervention.id].length ? '' : '<i class=\'fa fa-exclamation-triangle\'></i> Intervention is used in analyses: ' + interventionUsage.inAnalyses[intervention.id].join(', ') + '<br>'}}
-
-                          {{!interventionUsage.inInterventions[intervention.id].length? '' : '<i class=\'fa fa-exclamation-triangle\'></i> Intervention is used in interventions: ' + interventionUsage.inInterventions[intervention.id].join(', ') }}"
-                              tooltip-placement="left">
-                              <i class="fa fa-trash fa-2x" style="color: lightgrey;"></i>
-                            </a>
-                          </td>
-                          <td class="text-center"
-                            ng-if="editMode.allowEditing && editMode.interventionRepairPossible && intervention.hasMissingMultipliers">
-                            <a class="has-tip" tooltip-placement="left"
-                              tooltip-html-unsafe="Intervention has missing unit multiplier mapping(s)"
-                              ng-click="openRepairInterventionDialog(intervention)"><i
-                                class="fa fa-wrench fa-2x"></i></a>
-                          </td>
-                          <td
-                            ng-if="editMode.allowEditing && editMode.interventionRepairPossible && !intervention.hasMissingMultipliers"
-                            ng-disabled="!intervention.hasMissingMultipliers"><i class="fa fa-wrench fa-2x"
-                              style="color: lightgrey;"></i></td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-
-                <!-- Covariates -->
-                <div class="grid-x">
-                  <div class="cell">
-                    <h3 class="subheader">Covariates
-                      <inline-help help-key="addis-covariate"></inline-help>
-                    </h3>
-                    <button ng-if="editMode.allowEditing" class="button small" ng-click="addCovariate()"><i
-                        class="fa fa-plus"></i> Add Covariate
-                    </button>
-                  </div>
-                  <div class="cell">
-                    <em ng-show="covariates.length === 0">No covariates have been defined</em>
-                    <table ng-show="covariates.length > 0">
-                      <thead>
-                        <tr>
-                          <th class="large-3">Name</th>
-                          <th class="large-6 end">Motivation</th>
-                          <th class="large-3">Definition</th>
-                          <th ng-if="editMode.allowEditing"></th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <tr ng-repeat="covariate in covariates">
-                          <td>{{::covariate.name}}</td>
-                          <td>{{::covariate.motivation}}</td>
-                          <td>{{::covariate.definitionLabel}}</td>
-                          <td class="text-center" ng-if="editMode.allowEditing && !covariateUsage[covariate.id].length">
-                            <a ng-click="openDeleteDefinitionDialog(covariate,'covariate')"><i
-                                class="fa fa-trash  fa-2x" style="color:red"></i></a>
-                          </td>
-                          <td class="text-center" ng-if="editMode.allowEditing && covariateUsage[covariate.id].length">
-                            <a class="has-tip"
-                              tooltip-html-unsafe="<i class='fa fa-exclamation-triangle'></i> Covariate is used in analyses: {{covariateUsage[covariate.id].join(', ')}}"
-                              tooltip-placement="left">
-                              <i class="fa fa-trash fa-2x" style="color: lightgrey;"></i>
-                            </a>
-                          </td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-              </div>
-            </tab>
-
-            <tab heading="Analyses" active="tabSelection.activeTab === 'analyses'" ng-click="setActiveTab('analyses')">
-              <div ng-if="tabSelection.activeTab === 'analyses'">
-                <div class="grid-x section">
-                  <div class="cell large-6 ">
-                    <h2>Analyses
-                      <inline-help help-key="addis-analysis"></inline-help>
-                    </h2>
-                    <button id="show-create-analysis-modal-btn" ng-if="editMode.allowEditing" class="button small"
-                      ng-click="openAddAnalysisDialog()" ng-disabled="!outcomes.length">
-                      <i class="fa fa-plus"></i> Add Analysis
-                    </button>
-                    <div class="alert" ng-if="!outcomes.length">
-                      No outcomes have been defined.
-                    </div>
-                    <spinner promise="analysesPromise" size="3" message="'Loading analyses...'">
-                      <div>
-                        <em ng-show="analyses.length === 0">No analyses have been defined</em>
-                      </div>
-                      <div ng-show="analyses.length > 0">
-                        <table style="width: 100%;">
-                          <thead>
-                            <tr>
-                              <th>Name</th>
-                              <th>Analysis type</th>
-                              <th>
-                                <button ng-disabled="numberOfAnalysesArchived === 0"
-                                  class="button secondary small right ng-binding no-margin"
-                                  ng-click="toggleShowArchived()" style=""><i class="fa fa-eye"></i> {{showArchived? 'Hide'
+                          <th>Analysis type</th>
+                          <th>
+                            <button ng-disabled="numberOfAnalysesArchived === 0"
+                              class="button secondary small right ng-binding no-margin"
+                              ng-click="toggleShowArchived()"><i class="fa fa-eye"></i> {{showArchived? 'Hide'
                                   :'Show'}} archived ({{numberOfAnalysesArchived}})
-                                </button>
-                              </th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            <tr ng-repeat="analysis in analyses" ng-switch="analysis.analysisType"
-                              ng-if="showArchived || analysis.archived === false">
-                              <div>
-                                <td class="clickable on-hover" ng-click="goToAnalysis(analysis)">
-                                  <a>{{analysis.title}}</a>
-                                  <span ng-if="analysis.archived"> (archived on: {{analysis.archivedOn}})</span>
-                                </td>
-                                <td>{{analysis.analysisType}}</td>
-                                <td>
-                                  <button ng-if="!analysis.archived && editMode.allowEditing"
-                                    ng-click="archiveAnalysis(analysis)" type="button"
-                                    class="button small right info radius" style="margin-bottom:0;">archive</button>
-                                  <button ng-if="analysis.archived && editMode.allowEditing"
-                                    ng-click="unarchiveAnalysis(analysis)" type="button"
-                                    class="button small right alert radius" style="margin-bottom:0;">unarchive</button>
-                                </td>
-                              </div>
-                            </tr>
-                          </tbody>
-                        </table>
-                      </div>
-                    </spinner>
-
+                            </button>
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr ng-repeat="analysis in analyses" ng-switch="analysis.analysisType"
+                          ng-if="showArchived || analysis.archived === false">
+                          <td class="clickable on-hover" ng-click="goToAnalysis(analysis)">
+                            <a>{{analysis.title}}</a>
+                            <span ng-if="analysis.archived"> (archived on: {{analysis.archivedOn}})</span>
+                          </td>
+                          <td>{{analysis.analysisType}}</td>
+                          <td>
+                            <button ng-if="!analysis.archived && editMode.allowEditing"
+                              ng-click="archiveAnalysis(analysis)" type="button" class="button small right info radius"
+                              style="margin-bottom:0;">archive</button>
+                            <button ng-if="analysis.archived && editMode.allowEditing"
+                              ng-click="unarchiveAnalysis(analysis)" type="button"
+                              class="button small right alert radius" style="margin-bottom:0;">unarchive</button>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
                   </div>
                 </div>
-              </div>
-            </tab>
+              </spinner>
+            </div>
+          </div>
+        </div>
 
-            <tab heading="Report" active="tabSelection.activeTab === 'report'" ng-click="setActiveTab('report')">
-              <div ng-if="tabSelection.activeTab === 'report'">
-                <div class="grid-x">
-                  <div ng-if="!showLegacyReport" class="cell large-9">
-                    <markdown-report></markdown-report>
-                  </div>
-                  <div class="cell large-3">
-                    <button class="button right" ng-if="editMode.allowEditing"
-                      ng-click="goToEditView()">Customize</button>
-                  </div>
-                </div>
-              </div>
-            </tab>
-          </tabset>
+        <div class="cell" ng-if="tabSelection.activeTab === 'report'">
+          <div class="grid-x">
+            <div ng-if="!showLegacyReport" class="cell large-9">
+              <markdown-report></markdown-report>
+            </div>
+            <div class="cell large-3">
+              <button class="button right" ng-if="editMode.allowEditing" ng-click="goToEditView()">
+                Customize
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </spinner>
   </div>
-
 </div>
