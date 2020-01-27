@@ -67,4 +67,6 @@ public interface TriplestoreService {
   List<TrialDataStudy> addMatchingInformation(Set<AbstractIntervention> includedInterventions, List<TrialDataStudy> trialData);
 
   List<URI> getUnitUris(String trialverseDatasetUuid, URI headVersion) throws IOException;
+
+  String getStudyTitle(String namespaceUid, URI versionUri, URI studyUri) throws IOException;
 }

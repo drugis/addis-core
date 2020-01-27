@@ -285,7 +285,7 @@ public class SingleStudyBenefitRiskServiceTest {
   }
 
   @Test
-  public void testBuildContext() {
+  public void testBuildContext() throws IOException {
     String uuid1 = "uuid1";
 
     when(uuidService.generate()).thenReturn(uuid1);

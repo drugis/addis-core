@@ -69,6 +69,8 @@ public class TriplestoreServiceImpl implements TriplestoreService {
   private final static String POPCHAR_QUERY = TriplestoreService.loadResource("sparql/populationCharacteristics.sparql");
   private final static String INTERVENTION_QUERY = TriplestoreService.loadResource("sparql/interventions.sparql");
   private final static String UNIT_CONCEPTS = TriplestoreService.loadResource("sparql/unitConcepts.sparql");
+  private final static String STUDY_TITLE = TriplestoreService.loadResource("sparql/getStudyTitle.sparql");
+
   public static final String QUERY_ENDPOINT = "/query";
   public static final String QUERY_PARAM_QUERY = "query";
   private static final String X_ACCEPT_EVENT_SOURCE_VERSION = "X-Accept-EventSource-Version";
@@ -488,5 +490,14 @@ public class TriplestoreServiceImpl implements TriplestoreService {
     headers.put(ACCEPT_HEADER, Collections.singletonList(APPLICATION_SPARQL_RESULTS_JSON));
 
     return restTemplate.exchange(uriComponents.toUri(), HttpMethod.GET, new HttpEntity<>(headers), String.class);
+  }
+
+  @Override
+  public String getStudyTitle(String namespaceUid, URI versionUri, URI studyUri) throws IOException {
+    String query = StringUtils.replace(INTERVENTION_QUERY, "$studyUri", studyUri.toString());
+    JSONArray bindings = executeQuery(namespaceUid, versionUri, query);
+    JSONObject binding = new JSONObject((LinkedHashMap) bindings.get(0));
+    String title = JsonPath.read(binding, "$.title.value");
+    return title;
   }
 }

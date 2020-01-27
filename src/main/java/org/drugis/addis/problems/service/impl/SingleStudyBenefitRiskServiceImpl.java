@@ -64,7 +64,7 @@ public class SingleStudyBenefitRiskServiceImpl implements SingleStudyBenefitRisk
           BenefitRiskStudyOutcomeInclusion inclusion,
           Outcome outcome,
           Set<AbstractIntervention> includedInterventions
-  ) {
+  ) throws IOException {
     URI studyGraphUri = inclusion.getStudyGraphUri();
     SingleStudyContext context = buildContext(project, studyGraphUri, outcome, includedInterventions, inclusion);
     TrialDataStudy study = getStudy(project, studyGraphUri, context);
@@ -146,8 +146,7 @@ public class SingleStudyBenefitRiskServiceImpl implements SingleStudyBenefitRisk
                   return null;
                 }
               }
-              String dataSourceId = context.getDataSourceUuid();
-              CriterionEntry criterionEntry = criterionEntryFactory.create(measurement, outcome.getName(), dataSourceId, context.getSourceLink());
+              CriterionEntry criterionEntry = criterionEntryFactory.create(measurement, outcome.getName(), context);
               return Pair.of(measurement.getVariableConceptUri(), criterionEntry);
             })
             .filter(Objects::nonNull)
@@ -207,13 +206,15 @@ public class SingleStudyBenefitRiskServiceImpl implements SingleStudyBenefitRisk
           Project project,
           URI studyGraphUri,
           Outcome outcome,
-          Set<AbstractIntervention> includedInterventions, BenefitRiskStudyOutcomeInclusion inclusion) {
+          Set<AbstractIntervention> includedInterventions, BenefitRiskStudyOutcomeInclusion inclusion) throws IOException {
     String dataSourceUuid = uuidService.generate();
     final Map<Integer, AbstractIntervention> interventionsById = includedInterventions.stream()
             .collect(toMap(AbstractIntervention::getId, identity()));
     URI sourceLink = linkService.getStudySourceLink(project, studyGraphUri);
+    String source = triplestoreService.getStudyTitle(project.getNamespaceUid(), project.getDatasetVersion(), studyGraphUri);
     SingleStudyContext context = new SingleStudyContext();
     context.setInterventionsById(interventionsById);
+    context.setSource(source);
     context.setSourceLink(sourceLink);
     context.setDataSourceUuid(dataSourceUuid);
     context.setOutcome(outcome);
