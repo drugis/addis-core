@@ -29,11 +29,13 @@ define(['lodash', '../util/context'],
       $scope.checkDatasetName = checkDatasetName;
       $scope.uploadExcel = uploadExcel;
       $scope.importDataset = importDataset;
+      $scope.selectTab = selectTab;
 
       // init
       $scope.dataset = {};
       $scope.isUniqueIdentifier = true;
       $scope.excelUpload = undefined;
+      $scope.activeTab = 'empty';
 
       function checkDatasetName(newName) {
         $scope.isUniqueIdentifier = datasetTitles.indexOf(newName) === -1;
@@ -73,9 +75,9 @@ define(['lodash', '../util/context'],
             commitTitle: 'Import concepts',
             commitDescription: ''
           }, {
-              '@graph': concepts,
-              '@context': externalContext
-            });
+            '@graph': concepts,
+            '@context': externalContext
+          });
           $q.all(studiePromises.concat(conceptsPromise)).then(function() {
             $scope.isCreatingDataset = false;
             callback();
@@ -89,6 +91,10 @@ define(['lodash', '../util/context'],
           callback();
         });
         $modalInstance.close();
+      }
+
+      function selectTab(tab) {
+        $scope.activeTab = tab;
       }
 
       function cancel() {

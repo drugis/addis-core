@@ -29,7 +29,6 @@ define(['lodash'], function(_) {
     $scope.checkUniqueShortName = checkUniqueShortName;
     $scope.createStudy = createStudy;
     $scope.isValidNct = isValidNct;
-    $scope.isValidUpload = false;
     $scope.cancel = cancel;
     $scope.getNCTInfo = getNCTInfo;
     $scope.uploadExcel = uploadExcel;
@@ -37,14 +36,17 @@ define(['lodash'], function(_) {
     $scope.uploadEudract = uploadEudract;
     $scope.importEudract = importEudract;
     $scope.importNCT = importNCT;
-
+    $scope.selectTab = selectTab;
+    
     // init
+    $scope.isValidUpload = false;
     $scope.isCreatingStudy = false;
     $scope.importing = false;
     $scope.isUniqueIdentifier = true;
     $scope.studyImport = {};
     $scope.excelUpload = undefined;
     $scope.eudractUpload = undefined;
+    $scope.activeTab = 'empty';
 
     function uploadExcel(uploadedElement) {
       ExcelImportService.uploadExcel(
@@ -148,6 +150,10 @@ define(['lodash'], function(_) {
       console.error('error', error);
       $scope.isCreatingStudy = false;
       $modalInstance.close();
+    }
+
+    function selectTab(tab) {
+      $scope.activeTab = tab;
     }
 
     function cancel() {

@@ -1,181 +1,195 @@
-<tabset>
-  <tab heading="Empty Study">
-    <form novalidate ng-submit="createStudy(study)">
-      <div class="grid-x">
-        <div class="cell">
-          <h3>Create a new study</h3>
-        </div>
-        <div class="cell">
-          <label>Short Name (e.g. Hansen 2005)
-            <input autofocus type="text" ng-model="study.label" ng-change="checkUniqueShortName(study.label)">
-          </label>
-        </div>
-        <div class="cell" ng-show="!isUniqueIdentifier">
-          <label class="alert">Short name must be unique</label>
-        </div>
-        <div class="cell">
-          <label>Title
-            <textarea rows="8" ng-model="study.comment"></textarea>
-          </label>
-        </div>
-        <div class="cell">
-          <button class="button success" type="submit"
-            ng-disabled="!study.comment || !isUniqueIdentifier || isCreatingStudy">
-            create
-          </button>
-        </div>
-      </div>
-    </form>
-  </tab>
-  <tab heading="Import from Excel">
-    <form novalidate ng-submit="importExcel()">
-      <div class="grid-x">
-        <div class="cell">
-          <h3>Import study from Excel</h3>
-        </div>
-        <div class="cell">
-          <input type="file" name="excelFile" accept=".xlsx" onchange="angular.element(this).scope().uploadExcel(this)">
-        </div>
-        <div class="cell">
-          <label>Short Name (e.g. Hansen 2005)</label>
-        </div>
-        <div class="cell">
-          <input type="text" ng-disabled="!isValidUpload || isCreatingStudy"
-            ng-model="excelUpload.Sheets['Study data'].A4.v"
-            ng-change="checkUniqueShortName(excelUpload.Sheets['Study data'].A4.v)">
-        </div>
-        <div class="cell" ng-show="!isUniqueIdentifier">
-          <label class="alert">Short name must be unique</label>
-        </div>
-        <div class="cell">
-          <button class="button success" type="submit"
-            ng-disabled="!excelUpload || isCreatingStudy || errors.length || !isUniqueIdentifier">
-            create
-          </button>
-        </div>
-        <div class="cell alert" ng-repeat="error in errors">
-          {{error}}
-        </div>
-      </div>
-    </form>
-  </tab>
-  <tab heading="ClinicalTrials.gov">
-    <form novalidate ng-submit="importNCT(studyImport)">
-      <div class="grid-x">
-        <div class="cell">
-          <h3>Import study from ClinicalTrials.gov</h3>
-        </div>
-        <div class="cell">
-          <label>NCT ID</label>
-          <input autofocus type="text" ng-disabled="studyImport.loading" ng-model="studyImport.nctId"
-            ng-model-options="{ debounce: 800 }" ng-change="getNCTInfo(studyImport)">
-        </div>
-        <div class="cell">
-          <style>
-            .local-hide.ng-hide {
-              transition: 0.33s linear all;
-              opacity: 0;
-            }
-          </style>
-          <div ng-show="studyImport.loading"><i class="fa fa-spinner fa-spin"></i> loading</div>
-          <label class="alert" ng-show="studyImport.notFound">No study found for {{studyImport.nctId}}</label>
-          <label class="alert" ng-show="studyImport.nctId && !isValidNct(studyImport.nctId)">invalid NCT id, the id
-            should start with 'NCT'</label>
+<div class="grid-container full">
+  <div class="grid-x" style="margin-bottom: 10px">
+    <div ng-class="activeTab === 'empty' ? 'tab-is-active' : 'tab-is-inactive'" class="cell shrink tab-common"
+      ng-click="selectTab('empty')">
+      Empty study
+    </div>
+    <div ng-class="activeTab === 'excel' ? 'tab-is-active' : 'tab-is-inactive'" class="cell shrink tab-common"
+      ng-click="selectTab('excel')">
+      Import from Excel
+    </div>
+    <div ng-class="activeTab === 'ct-gov' ? 'tab-is-active' : 'tab-is-inactive'" class="cell shrink tab-common"
+      ng-click="selectTab('ct-gov')">
+      ClinicalTrials.gov
+    </div>
+    <div ng-class="activeTab === 'eudract' ? 'tab-is-active' : 'tab-is-inactive'" class="cell shrink tab-common"
+      ng-click="selectTab('eudract')">
+      EudraCT XML
+    </div>
+  </div>
+</div>
 
-          <table ng-show="studyImport.basicInfo.id && !studyImport.loading" class="local-hide layout-table"
-            style="width: 100%;">
-            <tr ng-show=studyImport.basicInfo.id>
-              <td class="large-3 text-right">
-                <strong>id</strong>
-              </td>
-              <td class="large-9">
-                {{studyImport.basicInfo.id}}
-              </td>
-            </tr>
-            <tr ng-show=studyImport.basicInfo.aliases.length>
-              <td class="large-3 text-right">
-                <strong>aliases</strong>
-              </td>
-              <td class="large-9">
-                <span ng-repeat="alias in studyImport.basicInfo.aliases">{{alias}}{{$last ? '' : ', '}}
-                  <span>
-              </td>
-            </tr>
-            <tr ng-show=studyImport.basicInfo.title>
-              <td class="large-3 text-right">
-                <strong>title</strong>
-              </td>
-              <td class="large-9">
-                {{studyImport.basicInfo.title}}
-              </td>
-            </tr>
-            <tr ng-show=studyImport.basicInfo.sponsor>
-              <td class="large-3 text-right">
-                <strong>sponsor</strong>
-              </td>
-              <td class="large-9">
-                {{studyImport.basicInfo.sponsor}}
-              </td>
-            </tr>
-            <tr ng-show=studyImport.basicInfo.created_at>
-              <td class="large-3 text-right">
-                <strong>created at</strong>
-              </td>
-              <td class="large-9">
-                {{studyImport.basicInfo.created_at}}
-              </td>
-            </tr>
-            <tr ng-show=studyImport.basicInfo.updated_at>
-              <td class="large-3 text-right">
-                <strong>updated at</strong>
-              </td>
-              <td class="large-9">
-                {{studyImport.basicInfo.updated_at}}
-              </td>
-            </tr>
-            <tr ng-show=studyImport.basicInfo._links>
-              <td class="large-3 text-right">
-                <strong>link</strong>
-              </td>
-              <td class="large-9">
-                <a ng-href="{{studyImport.basicInfo._links.source.href}}"
-                  target="_blank">{{studyImport.basicInfo._links.source.title}} <i class="fa fa-external-link"
-                    aria-hidden="true"></i></a>
-              </td>
-            </tr>
-          </table>
-        </div>
-      </div>
-      <div class="grid-x" style="margin-top: 1rem;">
-        <div class="cell">
-          <button class="button success" type="submit"
-            ng-disabled="isCreatingStudy || !studyImport.nctId || !isValidNct(studyImport.nctId) || !studyImport.basicInfo || !studyImport.basicInfo._links">
-            Import
-          </button>
-          <span ng-show="isCreatingStudy"><i class="fa fa-spinner fa-spin"></i> importing study</span>
-        </div>
-      </div>
-    </form>
-  </tab>
-  <tab heading="EudraCT XML">
-    <form novalidate ng-submit="importEudract()">
-      <div class="grid-x">
-        <div class="cell">
-          <h3>Import study from EudraCT XML file</h3>
-        </div>
-        <div class="cell">
-          <input type="file" name="eudractFile" accept=".xml"
-            onchange="var scope = angular.element(this).scope(); scope.uploadEudract(this); scope.$digest()">
-        </div>
-      <div class="cell">
-        <button class="button success" type="submit"
-          ng-disabled="!eudractUpload || isCreatingStudy">
-          create
-        </button>
-      </div>
-    </form>
-  </tab>
-</tabset>
+<form novalidate ng-submit="createStudy(study)" ng-if="activeTab === 'empty'">
+  <div class="grid-x">
+    <div class="cell">
+      <h3>Create a new study</h3>
+    </div>
+    <div class="cell">
+      <label>Short Name (e.g. Hansen 2005)
+        <input autofocus type="text" ng-model="study.label" ng-change="checkUniqueShortName(study.label)">
+      </label>
+    </div>
+    <div class="cell" ng-show="!isUniqueIdentifier">
+      <label class="alert">Short name must be unique</label>
+    </div>
+    <div class="cell">
+      <label>Title
+        <textarea rows="8" ng-model="study.comment"></textarea>
+      </label>
+    </div>
+    <div class="cell">
+      <button class="button success" type="submit"
+        ng-disabled="!study.comment || !isUniqueIdentifier || isCreatingStudy">
+        create
+      </button>
+    </div>
+  </div>
+</form>
+
+<form novalidate ng-submit="importExcel()" ng-if="activeTab === 'excel'">
+  <div class="grid-x">
+    <div class="cell">
+      <h3>Import study from Excel</h3>
+    </div>
+    <div class="cell">
+      <input type="file" name="excelFile" accept=".xlsx" onchange="angular.element(this).scope().uploadExcel(this)">
+    </div>
+    <div class="cell">
+      <label>Short Name (e.g. Hansen 2005)</label>
+    </div>
+    <div class="cell">
+      <input type="text" ng-disabled="!isValidUpload || isCreatingStudy"
+        ng-model="excelUpload.Sheets['Study data'].A4.v"
+        ng-change="checkUniqueShortName(excelUpload.Sheets['Study data'].A4.v)">
+    </div>
+    <div class="cell" ng-show="!isUniqueIdentifier">
+      <label class="alert">Short name must be unique</label>
+    </div>
+    <div class="cell">
+      <button class="button success" type="submit"
+        ng-disabled="!excelUpload || isCreatingStudy || errors.length || !isUniqueIdentifier">
+        create
+      </button>
+    </div>
+    <div class="cell alert" ng-repeat="error in errors">
+      {{error}}
+    </div>
+  </div>
+</form>
+
+<form novalidate ng-submit="importNCT(studyImport)" ng-if="activeTab === 'ct-gov'">
+  <div class="grid-x">
+    <div class="cell">
+      <h3>Import study from ClinicalTrials.gov</h3>
+    </div>
+    <div class="cell">
+      <label>NCT ID</label>
+      <input autofocus type="text" ng-disabled="studyImport.loading" ng-model="studyImport.nctId"
+        ng-model-options="{ debounce: 800 }" ng-change="getNCTInfo(studyImport)">
+    </div>
+    <div class="cell">
+      <style>
+        .local-hide.ng-hide {
+          transition: 0.33s linear all;
+          opacity: 0;
+        }
+      </style>
+      <div ng-show="studyImport.loading"><i class="fa fa-spinner fa-spin"></i> loading</div>
+      <label class="alert" ng-show="studyImport.notFound">No study found for {{studyImport.nctId}}</label>
+      <label class="alert" ng-show="studyImport.nctId && !isValidNct(studyImport.nctId)">invalid NCT id, the id
+        should start with 'NCT'</label>
+
+      <table ng-show="studyImport.basicInfo.id && !studyImport.loading" class="local-hide layout-table"
+        style="width: 100%;">
+        <tr ng-show=studyImport.basicInfo.id>
+          <td class="large-3 text-right">
+            <strong>id</strong>
+          </td>
+          <td class="large-9">
+            {{studyImport.basicInfo.id}}
+          </td>
+        </tr>
+        <tr ng-show=studyImport.basicInfo.aliases.length>
+          <td class="large-3 text-right">
+            <strong>aliases</strong>
+          </td>
+          <td class="large-9">
+            <span ng-repeat="alias in studyImport.basicInfo.aliases">{{alias}}{{$last ? '' : ', '}}
+              <span>
+          </td>
+        </tr>
+        <tr ng-show=studyImport.basicInfo.title>
+          <td class="large-3 text-right">
+            <strong>title</strong>
+          </td>
+          <td class="large-9">
+            {{studyImport.basicInfo.title}}
+          </td>
+        </tr>
+        <tr ng-show=studyImport.basicInfo.sponsor>
+          <td class="large-3 text-right">
+            <strong>sponsor</strong>
+          </td>
+          <td class="large-9">
+            {{studyImport.basicInfo.sponsor}}
+          </td>
+        </tr>
+        <tr ng-show=studyImport.basicInfo.created_at>
+          <td class="large-3 text-right">
+            <strong>created at</strong>
+          </td>
+          <td class="large-9">
+            {{studyImport.basicInfo.created_at}}
+          </td>
+        </tr>
+        <tr ng-show=studyImport.basicInfo.updated_at>
+          <td class="large-3 text-right">
+            <strong>updated at</strong>
+          </td>
+          <td class="large-9">
+            {{studyImport.basicInfo.updated_at}}
+          </td>
+        </tr>
+        <tr ng-show=studyImport.basicInfo._links>
+          <td class="large-3 text-right">
+            <strong>link</strong>
+          </td>
+          <td class="large-9">
+            <a ng-href="{{studyImport.basicInfo._links.source.href}}"
+              target="_blank">{{studyImport.basicInfo._links.source.title}} <i class="fa fa-external-link"
+                aria-hidden="true"></i></a>
+          </td>
+        </tr>
+      </table>
+    </div>
+  </div>
+  <div class="grid-x" style="margin-top: 1rem;">
+    <div class="cell">
+      <button class="button success" type="submit"
+        ng-disabled="isCreatingStudy || !studyImport.nctId || !isValidNct(studyImport.nctId) || !studyImport.basicInfo || !studyImport.basicInfo._links">
+        Import
+      </button>
+      <span ng-show="isCreatingStudy"><i class="fa fa-spinner fa-spin"></i> importing study</span>
+    </div>
+  </div>
+</form>
+
+<form novalidate ng-submit="importEudract()" ng-if="activeTab === 'eudract'">
+  <div class="grid-x">
+    <div class="cell">
+      <h3>Import study from EudraCT XML file</h3>
+    </div>
+    <div class="cell">
+      <input type="file" name="eudractFile" accept=".xml"
+        onchange="var scope = angular.element(this).scope(); scope.uploadEudract(this); scope.$digest()">
+    </div>
+    <div class="cell">
+      <button class="button success" type="submit" ng-disabled="!eudractUpload || isCreatingStudy">
+        create
+      </button>
+    </div>
+</form>
+
 <button ng-click="cancel()" class="close-button" aria-label="Close reveal" type="button">
   <span aria-hidden="true">&times;</span>
 </button>
