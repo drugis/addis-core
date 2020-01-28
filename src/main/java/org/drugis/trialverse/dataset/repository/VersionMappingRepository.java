@@ -5,9 +5,6 @@ import org.drugis.trialverse.dataset.model.VersionMapping;
 import java.net.URI;
 import java.util.List;
 
-/**
- * Created by connor on 10-3-15.
- */
 public interface VersionMappingRepository {
 
   void save(VersionMapping versionMapping);

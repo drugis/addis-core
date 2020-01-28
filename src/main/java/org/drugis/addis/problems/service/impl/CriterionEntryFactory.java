@@ -35,8 +35,7 @@ public class CriterionEntryFactory {
       throw new IllegalArgumentException("Unknown measurement type: " + measurementTypeURI);
     }
 
-    PartialValueFunction pvf = null;
-    DataSourceEntry dataSourceEntry = new DataSourceEntry(context.getDataSourceUuid(), scale, pvf, context.getSource(), context.getSourceLink());
+    DataSourceEntry dataSourceEntry = new DataSourceEntry(context.getDataSourceUuid(), scale, context.getSource(), context.getSourceLink());
     return new CriterionEntry(
             Collections.singletonList(dataSourceEntry),
             outcomeName,

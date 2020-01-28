@@ -494,7 +494,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
 
   @Override
   public String getStudyTitle(String namespaceUid, URI versionUri, URI studyUri) throws IOException {
-    String query = StringUtils.replace(INTERVENTION_QUERY, "$studyUri", studyUri.toString());
+    String query = StringUtils.replace(STUDY_TITLE, "$studyUri", studyUri.toString());
     JSONArray bindings = executeQuery(namespaceUid, versionUri, query);
     JSONObject binding = new JSONObject((LinkedHashMap) bindings.get(0));
     String title = JsonPath.read(binding, "$.title.value");

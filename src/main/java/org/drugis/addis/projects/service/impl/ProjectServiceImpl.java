@@ -66,9 +66,6 @@ import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-/**
- * Created by connor on 16-4-14.
- */
 @Service
 public class ProjectServiceImpl implements ProjectService {
 
@@ -382,7 +379,7 @@ public class ProjectServiceImpl implements ProjectService {
 
   @Override
   public Integer createUpdated(Account user, Integer sourceProjectId) throws ResourceDoesNotExistException,
-      ReadValueException, URISyntaxException, SQLException, IOException {
+      ReadValueException, SQLException, IOException {
     Project sourceProject = projectRepository.get(sourceProjectId);
     ProjectCommand command = sourceProject.getCommand();
     URI datasetUri = URI.create(Namespaces.DATASET_NAMESPACE + sourceProject.getNamespaceUid());

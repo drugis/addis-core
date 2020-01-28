@@ -392,8 +392,11 @@ public class NetworkMetaAnalysisServiceImpl implements NetworkMetaAnalysisServic
 
     Outcome outcome = inclusionWithResults.getOutcome();
     if ("binom".equals(inclusionWithResults.getModel().getLikelihood())) {
-      DataSourceEntry dataSource = new DataSourceEntry(uuidService.generate(), Arrays.asList(0d, 1d),
-              /* pvf */ null, "meta analysis", modelURI);
+      DataSourceEntry dataSource = new DataSourceEntry(
+              uuidService.generate(),
+              Arrays.asList(0d, 1d),
+              "meta analysis",
+              modelURI);
       criterionEntry = new CriterionEntry(
               Collections.singletonList(dataSource),
               outcome.getName());

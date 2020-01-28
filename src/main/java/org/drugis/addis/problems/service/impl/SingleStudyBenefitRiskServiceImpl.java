@@ -18,10 +18,14 @@ import org.drugis.addis.trialverse.model.trialdata.TrialDataStudy;
 import org.drugis.addis.trialverse.service.MappingService;
 import org.drugis.addis.trialverse.service.TriplestoreService;
 import org.drugis.addis.trialverse.service.impl.ReadValueException;
+import org.drugis.trialverse.dataset.model.VersionMapping;
+import org.drugis.trialverse.dataset.repository.VersionMappingRepository;
+import org.drugis.trialverse.util.Namespaces;
 import org.drugis.trialverse.util.service.UuidService;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 import java.io.IOException;
 import java.net.URI;
 import java.util.*;
@@ -57,6 +61,9 @@ public class SingleStudyBenefitRiskServiceImpl implements SingleStudyBenefitRisk
 
   @Inject
   private AbsoluteStudyBenefitRiskService absoluteStudyBenefitRiskService;
+
+  @Inject
+  private VersionMappingRepository versionMappingRepository;
 
   @Override
   public SingleStudyBenefitRiskProblem getSingleStudyBenefitRiskProblem(
@@ -211,7 +218,10 @@ public class SingleStudyBenefitRiskServiceImpl implements SingleStudyBenefitRisk
     final Map<Integer, AbstractIntervention> interventionsById = includedInterventions.stream()
             .collect(toMap(AbstractIntervention::getId, identity()));
     URI sourceLink = linkService.getStudySourceLink(project, studyGraphUri);
-    String source = triplestoreService.getStudyTitle(project.getNamespaceUid(), project.getDatasetVersion(), studyGraphUri);
+    URI trialverseDatasetUrl = URI.create(Namespaces.DATASET_NAMESPACE + project.getNamespaceUid());
+    VersionMapping versionMapping = versionMappingRepository.getVersionMappingByDatasetUrl(trialverseDatasetUrl);
+    String tripleStoreUid = versionMapping.getVersionedDatasetUrl().split("/datasets/")[1];
+    String source = triplestoreService.getStudyTitle(tripleStoreUid, project.getDatasetVersion(), studyGraphUri);
     SingleStudyContext context = new SingleStudyContext();
     context.setInterventionsById(interventionsById);
     context.setSource(source);
