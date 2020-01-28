@@ -2,7 +2,6 @@ package org.drugis.addis.problems.service.impl;
 
 import org.drugis.addis.problems.model.CriterionEntry;
 import org.drugis.addis.problems.model.DataSourceEntry;
-import org.drugis.addis.problems.model.PartialValueFunction;
 import org.drugis.addis.problems.model.SingleStudyContext;
 import org.drugis.addis.trialverse.model.trialdata.Measurement;
 import org.springframework.stereotype.Service;
@@ -18,7 +17,7 @@ import static org.drugis.addis.problems.service.ProblemService.SURVIVAL_TYPE_URI
 
 @Service
 public class CriterionEntryFactory {
-  public CriterionEntry create(Measurement measurement, String outcomeName, SingleStudyContext context) {
+  public CriterionEntry create(Measurement measurement, SingleStudyContext context) {
     List<Double> scale;
     String unitOfMeasurement;
     URI measurementTypeURI = measurement.getMeasurementTypeURI();
@@ -38,7 +37,7 @@ public class CriterionEntryFactory {
     DataSourceEntry dataSourceEntry = new DataSourceEntry(context.getDataSourceUuid(), scale, context.getSource(), context.getSourceLink());
     return new CriterionEntry(
             Collections.singletonList(dataSourceEntry),
-            outcomeName,
+            context.getOutcome().getName(),
             unitOfMeasurement);
   }
 }

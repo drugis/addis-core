@@ -25,7 +25,6 @@ import org.drugis.trialverse.util.service.UuidService;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import java.io.IOException;
 import java.net.URI;
 import java.util.*;
@@ -153,7 +152,7 @@ public class SingleStudyBenefitRiskServiceImpl implements SingleStudyBenefitRisk
                   return null;
                 }
               }
-              CriterionEntry criterionEntry = criterionEntryFactory.create(measurement, outcome.getName(), context);
+              CriterionEntry criterionEntry = criterionEntryFactory.create(measurement, context);
               return Pair.of(measurement.getVariableConceptUri(), criterionEntry);
             })
             .filter(Objects::nonNull)
