@@ -56,7 +56,7 @@ public class CriterionEntryFactoryTest {
 
     // Asserts
     DataSourceEntry dataSourceEntry = new DataSourceEntry(dataSourceId, Arrays.asList(0.0, 1.0), source, sourceLink);
-    CriterionEntry expectedEntry = new CriterionEntry(Collections.singletonList(dataSourceEntry), "outcomeName", "probability");
+    CriterionEntry expectedEntry = new CriterionEntry(Collections.singletonList(dataSourceEntry), outcomeId, "probability");
     assertEquals(expectedEntry, criterionEntry);
   }
 
