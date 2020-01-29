@@ -70,7 +70,7 @@ public class SingleStudyBenefitRiskServiceImpl implements SingleStudyBenefitRisk
           BenefitRiskStudyOutcomeInclusion inclusion,
           Outcome outcome,
           Set<AbstractIntervention> includedInterventions
-  ) throws IOException {
+  ) {
     URI studyGraphUri = inclusion.getStudyGraphUri();
     SingleStudyContext context = buildContext(project, studyGraphUri, outcome, includedInterventions, inclusion);
     TrialDataStudy study = getStudy(project, studyGraphUri, context);
@@ -212,15 +212,13 @@ public class SingleStudyBenefitRiskServiceImpl implements SingleStudyBenefitRisk
           Project project,
           URI studyGraphUri,
           Outcome outcome,
-          Set<AbstractIntervention> includedInterventions, BenefitRiskStudyOutcomeInclusion inclusion) throws IOException {
+          Set<AbstractIntervention> includedInterventions,
+          BenefitRiskStudyOutcomeInclusion inclusion) {
     String dataSourceUuid = uuidService.generate();
     final Map<Integer, AbstractIntervention> interventionsById = includedInterventions.stream()
             .collect(toMap(AbstractIntervention::getId, identity()));
     URI sourceLink = linkService.getStudySourceLink(project, studyGraphUri);
-    URI trialverseDatasetUrl = URI.create(Namespaces.DATASET_NAMESPACE + project.getNamespaceUid());
-    VersionMapping versionMapping = versionMappingRepository.getVersionMappingByDatasetUrl(trialverseDatasetUrl);
-    String tripleStoreUid = versionMapping.getVersionedDatasetUrl().split("/datasets/")[1];
-    String source = triplestoreService.getStudyTitle(tripleStoreUid, project.getDatasetVersion(), studyGraphUri);
+    String source = getSource(project, studyGraphUri);
     SingleStudyContext context = new SingleStudyContext();
     context.setInterventionsById(interventionsById);
     context.setSource(source);
@@ -229,5 +227,12 @@ public class SingleStudyBenefitRiskServiceImpl implements SingleStudyBenefitRisk
     context.setOutcome(outcome);
     context.setInclusion(inclusion);
     return context;
+  }
+
+  private String getSource(Project project, URI studyGraphUri) {
+    URI trialverseDatasetUrl = URI.create(Namespaces.DATASET_NAMESPACE + project.getNamespaceUid());
+    VersionMapping versionMapping = versionMappingRepository.getVersionMappingByDatasetUrl(trialverseDatasetUrl);
+    String tripleStoreUid = versionMapping.getVersionedDatasetUrl().split("/datasets/")[1];
+    return triplestoreService.getStudyTitle(tripleStoreUid, project.getDatasetVersion(), studyGraphUri);
   }
 }

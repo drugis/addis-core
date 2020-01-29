@@ -173,16 +173,14 @@ public class ProblemServiceImpl implements ProblemService {
           List<BenefitRiskStudyOutcomeInclusion> benefitRiskStudyOutcomeInclusions,
           Map<Integer, Outcome> outcomesById,
           Set<AbstractIntervention> includedInterventions
-  ) throws IOException {
-    List<BenefitRiskProblem> list = new ArrayList<>();
-    for (BenefitRiskStudyOutcomeInclusion inclusion : benefitRiskStudyOutcomeInclusions) {
-      SingleStudyBenefitRiskProblem benefitRiskProblemForInclusion = getBenefitRiskProblemForInclusion(project, outcomesById, includedInterventions, inclusion);
-      list.add(benefitRiskProblemForInclusion);
-    }
-    return list;
+  ) {
+    return benefitRiskStudyOutcomeInclusions
+            .stream()
+            .map(inclusion -> getBenefitRiskProblemForInclusion(project, outcomesById, includedInterventions, inclusion))
+            .collect(toList());
   }
 
-  private SingleStudyBenefitRiskProblem getBenefitRiskProblemForInclusion(Project project, Map<Integer, Outcome> outcomesById, Set<AbstractIntervention> includedInterventions, BenefitRiskStudyOutcomeInclusion inclusion) throws IOException {
+  private SingleStudyBenefitRiskProblem getBenefitRiskProblemForInclusion(Project project, Map<Integer, Outcome> outcomesById, Set<AbstractIntervention> includedInterventions, BenefitRiskStudyOutcomeInclusion inclusion) {
     Outcome outcome = outcomesById.get(inclusion.getOutcomeId());
     return singleStudyBenefitRiskService.getSingleStudyBenefitRiskProblem(
             project, inclusion, outcome, includedInterventions);

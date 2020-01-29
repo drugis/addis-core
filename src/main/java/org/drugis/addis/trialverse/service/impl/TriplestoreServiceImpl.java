@@ -493,11 +493,15 @@ public class TriplestoreServiceImpl implements TriplestoreService {
   }
 
   @Override
-  public String getStudyTitle(String namespaceUid, URI versionUri, URI studyUri) throws IOException {
-    String query = StringUtils.replace(STUDY_TITLE, "$studyUri", studyUri.toString());
-    JSONArray bindings = executeQuery(namespaceUid, versionUri, query);
-    JSONObject binding = new JSONObject((LinkedHashMap) bindings.get(0));
-    String title = JsonPath.read(binding, "$.title.value");
-    return title;
+  public String getStudyTitle(String namespaceUid, URI versionUri, URI studyUri) {
+    try {
+      String query = StringUtils.replace(STUDY_TITLE, "$studyUri", studyUri.toString());
+      JSONArray bindings = executeQuery(namespaceUid, versionUri, query);
+      JSONObject binding = new JSONObject((LinkedHashMap) bindings.get(0));
+      String title = JsonPath.read(binding, "$.title.value");
+      return title;
+    } catch (IOException exception) {
+      throw new RuntimeException("Could not load getStudyTitle.sparql.");
+    }
   }
 }

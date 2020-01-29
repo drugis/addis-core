@@ -68,5 +68,5 @@ public interface TriplestoreService {
 
   List<URI> getUnitUris(String trialverseDatasetUuid, URI headVersion) throws IOException;
 
-  String getStudyTitle(String namespaceUid, URI versionUri, URI studyUri) throws IOException;
+  String getStudyTitle(String namespaceUid, URI versionUri, URI studyUri);
 }

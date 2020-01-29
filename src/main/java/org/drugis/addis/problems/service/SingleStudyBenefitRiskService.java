@@ -19,7 +19,7 @@ public interface SingleStudyBenefitRiskService {
           BenefitRiskStudyOutcomeInclusion outcomeInclusion,
           Outcome outcome,
           Set<AbstractIntervention> includedInterventions
-  ) throws IOException;
+  );
 
   TrialDataStudy getStudy(Project project, URI studyGraphUri, SingleStudyContext context);
 
@@ -33,5 +33,7 @@ public interface SingleStudyBenefitRiskService {
           Project project,
           URI studyGraphUri,
           Outcome outcome,
-          Set<AbstractIntervention> includedInterventions, BenefitRiskStudyOutcomeInclusion inclusion) throws IOException;
+          Set<AbstractIntervention> includedInterventions,
+          BenefitRiskStudyOutcomeInclusion inclusion
+  );
 }
