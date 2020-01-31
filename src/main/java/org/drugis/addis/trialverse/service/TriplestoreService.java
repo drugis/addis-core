@@ -1,13 +1,10 @@
 package org.drugis.addis.trialverse.service;
 
-import net.minidev.json.JSONArray;
 import net.minidev.json.parser.ParseException;
 import org.apache.commons.io.IOUtils;
-import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.interventions.model.AbstractIntervention;
 import org.drugis.addis.trialverse.model.*;
 import org.drugis.addis.trialverse.model.emun.CovariateOption;
-import org.drugis.addis.trialverse.model.emun.StudyDataSection;
 import org.drugis.addis.trialverse.model.mapping.TriplestoreUuidAndOwner;
 import org.drugis.addis.trialverse.model.trialdata.CovariateStudyValue;
 import org.drugis.addis.trialverse.model.trialdata.TrialDataArm;
@@ -21,6 +18,7 @@ import java.io.InputStream;
 import java.net.URI;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -68,5 +66,5 @@ public interface TriplestoreService {
 
   List<URI> getUnitUris(String trialverseDatasetUuid, URI headVersion) throws IOException;
 
-  String getStudyTitle(String namespaceUid, URI versionUri, URI studyUri);
+  Map<URI, String> getStudyTitles(String namespaceUid, URI versionUri);
 }

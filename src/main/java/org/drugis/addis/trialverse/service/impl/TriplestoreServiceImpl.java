@@ -48,6 +48,7 @@ import java.io.StringReader;
 import java.net.URI;
 import java.net.URLEncoder;
 import java.util.*;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -69,7 +70,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
   private final static String POPCHAR_QUERY = TriplestoreService.loadResource("sparql/populationCharacteristics.sparql");
   private final static String INTERVENTION_QUERY = TriplestoreService.loadResource("sparql/interventions.sparql");
   private final static String UNIT_CONCEPTS = TriplestoreService.loadResource("sparql/unitConcepts.sparql");
-  private final static String STUDY_TITLE = TriplestoreService.loadResource("sparql/getStudyTitle.sparql");
+  private final static String STUDY_TITLES = TriplestoreService.loadResource("sparql/getStudyTitles.sparql");
 
   public static final String QUERY_ENDPOINT = "/query";
   public static final String QUERY_PARAM_QUERY = "query";
@@ -493,15 +494,29 @@ public class TriplestoreServiceImpl implements TriplestoreService {
   }
 
   @Override
-  public String getStudyTitle(String namespaceUid, URI versionUri, URI studyUri) {
+  public Map<URI, String> getStudyTitles(String namespaceUid, URI versionUri) {
     try {
-      String query = StringUtils.replace(STUDY_TITLE, "$studyUri", studyUri.toString());
-      JSONArray bindings = executeQuery(namespaceUid, versionUri, query);
-      JSONObject binding = new JSONObject((LinkedHashMap) bindings.get(0));
-      String title = JsonPath.read(binding, "$.title.value");
-      return title;
+      JSONArray bindings = executeQuery(namespaceUid, versionUri, STUDY_TITLES);
+      return bindings
+              .stream()
+              .collect(Collectors.toMap(getStudyGraphUri(), getStudyTitle()));
     } catch (IOException exception) {
-      throw new RuntimeException("Could not load getStudyTitle.sparql.");
+      throw new RuntimeException("Could not load getStudyTitles.sparql.");
     }
+  }
+
+  private Function<Object, String> getStudyTitle() {
+    return binding -> JsonPath
+            .read(binding, "$.title.value")
+            .toString();
+  }
+
+  private Function<Object, URI> getStudyGraphUri() {
+    return binding -> {
+      String studyGraphUri = JsonPath
+              .read(binding, "$.studyGraphUri.value")
+              .toString();
+      return URI.create(studyGraphUri);
+    };
   }
 }

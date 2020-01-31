@@ -62,9 +62,6 @@ public class SingleStudyBenefitRiskServiceTest {
   @Mock
   private AbsoluteStudyBenefitRiskService absoluteStudyBenefitRiskServiceMock;
 
-  @Mock
-  private VersionMappingRepository versionMappingRepository;
-
   @InjectMocks
   private SingleStudyBenefitRiskServiceImpl singleStudyBenefitRiskService;
 
@@ -103,8 +100,7 @@ public class SingleStudyBenefitRiskServiceTest {
             mappingService,
             analysisService,
             linkService,
-            uuidService,
-            versionMappingRepository);
+            uuidService);
   }
 
   @Test
@@ -320,16 +316,10 @@ public class SingleStudyBenefitRiskServiceTest {
 
     String datasetUid = "dataset";
     URI datasetVersion = URI.create("bla");
-    URI trialverseDatasetUrl = URI.create(Namespaces.DATASET_NAMESPACE + datasetUid);
-    VersionMapping versionMapping = mock(VersionMapping.class);
-    String triplestoreDatasetUrl = "http://trials.drugis.org/datasets/someUID";
     when(project.getDatasetVersion()).thenReturn(datasetVersion);
     when(project.getNamespaceUid()).thenReturn(datasetUid);
-    when(versionMapping.getVersionedDatasetUrl()).thenReturn(triplestoreDatasetUrl);
-    when(versionMappingRepository.getVersionMappingByDatasetUrl(trialverseDatasetUrl)).thenReturn(versionMapping);
-    when(triplestoreService.getStudyTitle("someUID", datasetVersion, studyUri)).thenReturn(source);
 
-    SingleStudyContext result = singleStudyBenefitRiskService.buildContext(project, studyUri, outcome1, interventions, inclusion);
+    SingleStudyContext result = singleStudyBenefitRiskService.buildContext(project, studyUri, outcome1, interventions, inclusion, source);
 
     Map<Integer, AbstractIntervention> interventionsById = new HashMap<>();
     interventionsById.put(interventionId1, intervention1);
@@ -347,7 +337,5 @@ public class SingleStudyBenefitRiskServiceTest {
 
     verify(uuidService).generate();
     verify(linkService).getStudySourceLink(project, studyUri);
-    verify(versionMappingRepository).getVersionMappingByDatasetUrl(trialverseDatasetUrl);
-    verify(triplestoreService).getStudyTitle("someUID", datasetVersion, studyUri);
   }
 }

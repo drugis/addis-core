@@ -31,8 +31,6 @@ public class CriterionEntryFactoryTest {
   private CriterionEntryFactory criterionEntryFactory;
   private SingleStudyContext context;
 
-
-
   @Before
   public void setUp() {
     criterionEntryFactory = new CriterionEntryFactory();

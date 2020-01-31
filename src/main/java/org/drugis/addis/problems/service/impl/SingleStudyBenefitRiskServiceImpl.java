@@ -18,9 +18,7 @@ import org.drugis.addis.trialverse.model.trialdata.TrialDataStudy;
 import org.drugis.addis.trialverse.service.MappingService;
 import org.drugis.addis.trialverse.service.TriplestoreService;
 import org.drugis.addis.trialverse.service.impl.ReadValueException;
-import org.drugis.trialverse.dataset.model.VersionMapping;
 import org.drugis.trialverse.dataset.repository.VersionMappingRepository;
-import org.drugis.trialverse.util.Namespaces;
 import org.drugis.trialverse.util.service.UuidService;
 import org.springframework.stereotype.Service;
 
@@ -61,18 +59,15 @@ public class SingleStudyBenefitRiskServiceImpl implements SingleStudyBenefitRisk
   @Inject
   private AbsoluteStudyBenefitRiskService absoluteStudyBenefitRiskService;
 
-  @Inject
-  private VersionMappingRepository versionMappingRepository;
-
   @Override
   public SingleStudyBenefitRiskProblem getSingleStudyBenefitRiskProblem(
           Project project,
           BenefitRiskStudyOutcomeInclusion inclusion,
           Outcome outcome,
-          Set<AbstractIntervention> includedInterventions
-  ) {
+          Set<AbstractIntervention> includedInterventions,
+          String source) {
     URI studyGraphUri = inclusion.getStudyGraphUri();
-    SingleStudyContext context = buildContext(project, studyGraphUri, outcome, includedInterventions, inclusion);
+    SingleStudyContext context = buildContext(project, studyGraphUri, outcome, includedInterventions, inclusion, source);
     TrialDataStudy study = getStudy(project, studyGraphUri, context);
 
     List<TrialDataArm> matchedArms = getMatchedArms(includedInterventions, study.getArms());
@@ -213,12 +208,11 @@ public class SingleStudyBenefitRiskServiceImpl implements SingleStudyBenefitRisk
           URI studyGraphUri,
           Outcome outcome,
           Set<AbstractIntervention> includedInterventions,
-          BenefitRiskStudyOutcomeInclusion inclusion) {
+          BenefitRiskStudyOutcomeInclusion inclusion, String source) {
     String dataSourceUuid = uuidService.generate();
     final Map<Integer, AbstractIntervention> interventionsById = includedInterventions.stream()
             .collect(toMap(AbstractIntervention::getId, identity()));
     URI sourceLink = linkService.getStudySourceLink(project, studyGraphUri);
-    String source = getSource(project, studyGraphUri);
     SingleStudyContext context = new SingleStudyContext();
     context.setInterventionsById(interventionsById);
     context.setSource(source);
@@ -227,12 +221,5 @@ public class SingleStudyBenefitRiskServiceImpl implements SingleStudyBenefitRisk
     context.setOutcome(outcome);
     context.setInclusion(inclusion);
     return context;
-  }
-
-  private String getSource(Project project, URI studyGraphUri) {
-    URI trialverseDatasetUrl = URI.create(Namespaces.DATASET_NAMESPACE + project.getNamespaceUid());
-    VersionMapping versionMapping = versionMappingRepository.getVersionMappingByDatasetUrl(trialverseDatasetUrl);
-    String tripleStoreUid = versionMapping.getVersionedDatasetUrl().split("/datasets/")[1];
-    return triplestoreService.getStudyTitle(tripleStoreUid, project.getDatasetVersion(), studyGraphUri);
   }
 }

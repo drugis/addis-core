@@ -7,7 +7,6 @@ import org.drugis.addis.problems.model.*;
 import org.drugis.addis.projects.Project;
 import org.drugis.addis.trialverse.model.trialdata.*;
 
-import java.io.IOException;
 import java.net.URI;
 import java.util.List;
 import java.util.Map;
@@ -18,8 +17,8 @@ public interface SingleStudyBenefitRiskService {
           Project project,
           BenefitRiskStudyOutcomeInclusion outcomeInclusion,
           Outcome outcome,
-          Set<AbstractIntervention> includedInterventions
-  );
+          Set<AbstractIntervention> includedInterventions,
+          String source);
 
   TrialDataStudy getStudy(Project project, URI studyGraphUri, SingleStudyContext context);
 
@@ -34,6 +33,6 @@ public interface SingleStudyBenefitRiskService {
           URI studyGraphUri,
           Outcome outcome,
           Set<AbstractIntervention> includedInterventions,
-          BenefitRiskStudyOutcomeInclusion inclusion
-  );
+          BenefitRiskStudyOutcomeInclusion inclusion,
+          String source);
 }
