@@ -202,7 +202,7 @@ public class ProblemServiceImpl implements ProblemService {
     URI trialverseDatasetUrl = URI.create(Namespaces.DATASET_NAMESPACE + project.getNamespaceUid());
     VersionMapping versionMapping = versionMappingRepository.getVersionMappingByDatasetUrl(trialverseDatasetUrl);
     String tripleStoreUid = versionMapping.getVersionedDatasetUrl().split("/datasets/")[1];
-    return triplestoreService.getStudyTitles(tripleStoreUid, project.getDatasetVersion());
+    return triplestoreService.getStudyTitlesByUri(tripleStoreUid, project.getDatasetVersion());
   }
 
   private SingleStudyBenefitRiskProblem getBenefitRiskProblemForInclusion(

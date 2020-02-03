@@ -494,7 +494,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
   }
 
   @Override
-  public Map<URI, String> getStudyTitles(String namespaceUid, URI versionUri) {
+  public Map<URI, String> getStudyTitlesByUri(String namespaceUid, URI versionUri) {
     try {
       JSONArray bindings = executeQuery(namespaceUid, versionUri, STUDY_TITLES);
       return bindings

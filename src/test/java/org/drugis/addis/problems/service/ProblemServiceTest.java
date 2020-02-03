@@ -208,7 +208,7 @@ public class ProblemServiceTest {
             .getVersionMappingByDatasetUrl(
                     trialverseDatasetUrl))
             .thenReturn(versionMappingMock);
-    when(triplestoreService.getStudyTitles(tripleStoreUid, projectDatasetVersion)).thenReturn(sources);
+    when(triplestoreService.getStudyTitlesByUri(tripleStoreUid, projectDatasetVersion)).thenReturn(sources);
 
     // --------------- execute ---------------- //
     BenefitRiskProblem result = (BenefitRiskProblem) problemService.getProblem(projectId, analysisId);
@@ -226,7 +226,7 @@ public class ProblemServiceTest {
     verify(analysisRepository).get(analysisId);
     verify(analysisService).getIncludedInterventions(analysis);
     verify(versionMappingRepository).getVersionMappingByDatasetUrl(trialverseDatasetUrl);
-    verify(triplestoreService).getStudyTitles(tripleStoreUid, projectDatasetVersion);
+    verify(triplestoreService).getStudyTitlesByUri(tripleStoreUid, projectDatasetVersion);
     verify(singleStudyBenefitRiskService).getSingleStudyBenefitRiskProblem(
             project,
             benefitRiskStudyOutcomeInclusions.get(0),
@@ -353,7 +353,7 @@ public class ProblemServiceTest {
     VersionMapping mappingMock = mock(VersionMapping.class);
     when(mappingMock.getVersionedDatasetUrl()).thenReturn("/datasets/something");
     when(versionMappingRepository.getVersionMappingByDatasetUrl(any())).thenReturn(mappingMock);
-    when(triplestoreService.getStudyTitles(any(), any())).thenReturn(null);
+    when(triplestoreService.getStudyTitlesByUri(any(), any())).thenReturn(null);
 
     BenefitRiskProblem result = (BenefitRiskProblem) problemService.getProblem(projectId, analysisId);
 
@@ -376,7 +376,7 @@ public class ProblemServiceTest {
     verify(networkBenefitRiskService).getNmaInclusionWithResults(any(), any(), any(), any(), any());
     verify(networkBenefitRiskService).getNetworkProblem(any(), any());
     verify(versionMappingRepository).getVersionMappingByDatasetUrl(any());
-    verify(triplestoreService).getStudyTitles(any(), any());
+    verify(triplestoreService).getStudyTitlesByUri(any(), any());
   }
 
   @Test
