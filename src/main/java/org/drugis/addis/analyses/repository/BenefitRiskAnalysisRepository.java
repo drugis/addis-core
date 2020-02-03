@@ -10,9 +10,6 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Collection;
 
-/**
- * Created by daan on 25-2-16.
- */
 public interface BenefitRiskAnalysisRepository {
   Collection<BenefitRiskAnalysis> queryByProject(Integer projectId);
 

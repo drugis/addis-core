@@ -399,6 +399,7 @@ public class NetworkMetaAnalysisServiceTest {
   @Test
   public void testBuildCriteriaForInclusionBinom() {
     String dataSourceUuid = "dataSourceUuid";
+    String source = "model title";
     when(uuidService.generate()).thenReturn(dataSourceUuid);
 
     NMAInclusionWithResults inclusionWithResults = buildNmaInclusionMock("binom");
@@ -407,7 +408,7 @@ public class NetworkMetaAnalysisServiceTest {
     Map<URI, CriterionEntry> result = networkMetaAnalysisService.buildCriteriaForInclusion(inclusionWithResults, modelUri);
 
     Map<URI, CriterionEntry> expectedResult = new HashMap<>();
-    DataSourceEntry expectedDataSource = new DataSourceEntry(dataSourceUuid, Arrays.asList(0d, 1d), null, "meta analysis", modelUri);
+    DataSourceEntry expectedDataSource = new DataSourceEntry(dataSourceUuid, Arrays.asList(0d, 1d), source, modelUri);
     CriterionEntry expectedEntry = new CriterionEntry(singletonList(expectedDataSource), outcome.getName());
     expectedResult.put(outcome.getSemanticOutcomeUri(), expectedEntry);
     assertEquals(expectedResult, result);
@@ -426,7 +427,8 @@ public class NetworkMetaAnalysisServiceTest {
     Map<URI, CriterionEntry> result = networkMetaAnalysisService.buildCriteriaForInclusion(inclusionWithResults, modelUri);
 
     Map<URI, CriterionEntry> expectedResult = new HashMap<>();
-    DataSourceEntry expectedDataSource = new DataSourceEntry(dataSourceUuid, "meta analysis", modelUri);
+    String source = "model title";
+    DataSourceEntry expectedDataSource = new DataSourceEntry(dataSourceUuid, source, modelUri);
     CriterionEntry expectedEntry = new CriterionEntry(singletonList(expectedDataSource), outcome.getName());
     expectedResult.put(outcome.getSemanticOutcomeUri(), expectedEntry);
     assertEquals(expectedResult, result);
@@ -440,6 +442,7 @@ public class NetworkMetaAnalysisServiceTest {
     Model model = mock(Model.class);
     when(model.getLikelihood()).thenReturn(isBinomString);
     when(inclusionWithResults.getModel()).thenReturn(model);
+    when(model.getTitle()).thenReturn("model title");
     return inclusionWithResults;
   }
 

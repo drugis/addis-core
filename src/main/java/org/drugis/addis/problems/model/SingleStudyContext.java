@@ -14,6 +14,7 @@ public class SingleStudyContext {
   private Outcome outcome;
   private String dataSourceUuid;
   private BenefitRiskStudyOutcomeInclusion inclusion;
+  private String source;
 
   public SingleStudyContext() {
 
@@ -59,6 +60,14 @@ public class SingleStudyContext {
     this.inclusion = inclusion;
   }
 
+  public void setSource(String source) {
+    this.source = source;
+  }
+
+  public String getSource() {
+    return this.source;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
@@ -68,12 +77,12 @@ public class SingleStudyContext {
             Objects.equals(sourceLink, that.sourceLink) &&
             Objects.equals(outcome, that.outcome) &&
             Objects.equals(dataSourceUuid, that.dataSourceUuid) &&
-            Objects.equals(inclusion, that.inclusion);
+            Objects.equals(inclusion, that.inclusion) &&
+            Objects.equals(source, that.source);
   }
 
   @Override
   public int hashCode() {
-
-    return Objects.hash(interventionsById, sourceLink, outcome, dataSourceUuid, inclusion);
+    return Objects.hash(interventionsById, sourceLink, outcome, dataSourceUuid, inclusion, source);
   }
 }

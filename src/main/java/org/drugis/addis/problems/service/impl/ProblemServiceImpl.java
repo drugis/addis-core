@@ -21,8 +21,12 @@ import org.drugis.addis.problems.service.model.AbstractMeasurementEntry;
 import org.drugis.addis.projects.Project;
 import org.drugis.addis.projects.repository.ProjectRepository;
 import org.drugis.addis.trialverse.model.trialdata.TrialDataStudy;
+import org.drugis.addis.trialverse.service.TriplestoreService;
 import org.drugis.addis.trialverse.service.impl.ReadValueException;
 import org.drugis.addis.util.WebConstants;
+import org.drugis.trialverse.dataset.model.VersionMapping;
+import org.drugis.trialverse.dataset.repository.VersionMappingRepository;
+import org.drugis.trialverse.util.Namespaces;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
@@ -63,6 +67,12 @@ public class ProblemServiceImpl implements ProblemService {
 
   @Inject
   private NetworkBenefitRiskService networkBenefitRiskService;
+
+  @Inject
+  private VersionMappingRepository versionMappingRepository;
+
+  @Inject
+  private TriplestoreService triplestoreService;
 
   @Override
   public AbstractProblem getProblem(Integer projectId, Integer analysisId) throws ResourceDoesNotExistException, ProblemCreationException {
@@ -174,15 +184,37 @@ public class ProblemServiceImpl implements ProblemService {
           Map<Integer, Outcome> outcomesById,
           Set<AbstractIntervention> includedInterventions
   ) {
-    return benefitRiskStudyOutcomeInclusions.stream()
-            .map(inclusion -> getBenefitRiskProblemForInclusion(project, outcomesById, includedInterventions, inclusion))
+    Map<URI, String> sources = getSources(project);
+    return benefitRiskStudyOutcomeInclusions
+            .stream()
+            .map(inclusion -> getBenefitRiskProblemForInclusion(
+                    project,
+                    outcomesById,
+                    includedInterventions,
+                    inclusion,
+                    sources.get(inclusion.getStudyGraphUri())
+
+            ))
             .collect(toList());
   }
 
-  private SingleStudyBenefitRiskProblem getBenefitRiskProblemForInclusion(Project project, Map<Integer, Outcome> outcomesById, Set<AbstractIntervention> includedInterventions, BenefitRiskStudyOutcomeInclusion inclusion) {
+  private Map<URI, String> getSources(Project project) {
+    URI trialverseDatasetUrl = URI.create(Namespaces.DATASET_NAMESPACE + project.getNamespaceUid());
+    VersionMapping versionMapping = versionMappingRepository.getVersionMappingByDatasetUrl(trialverseDatasetUrl);
+    String tripleStoreUid = versionMapping.getVersionedDatasetUrl().split("/datasets/")[1];
+    return triplestoreService.getStudyTitlesByUri(tripleStoreUid, project.getDatasetVersion());
+  }
+
+  private SingleStudyBenefitRiskProblem getBenefitRiskProblemForInclusion(
+          Project project,
+          Map<Integer, Outcome> outcomesById,
+          Set<AbstractIntervention> includedInterventions,
+          BenefitRiskStudyOutcomeInclusion inclusion,
+          String source
+  ) {
     Outcome outcome = outcomesById.get(inclusion.getOutcomeId());
     return singleStudyBenefitRiskService.getSingleStudyBenefitRiskProblem(
-            project, inclusion, outcome, includedInterventions);
+            project, inclusion, outcome, includedInterventions, source);
   }
 
   @Override

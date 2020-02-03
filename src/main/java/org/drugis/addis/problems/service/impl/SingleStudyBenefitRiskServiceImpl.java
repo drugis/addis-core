@@ -18,6 +18,7 @@ import org.drugis.addis.trialverse.model.trialdata.TrialDataStudy;
 import org.drugis.addis.trialverse.service.MappingService;
 import org.drugis.addis.trialverse.service.TriplestoreService;
 import org.drugis.addis.trialverse.service.impl.ReadValueException;
+import org.drugis.trialverse.dataset.repository.VersionMappingRepository;
 import org.drugis.trialverse.util.service.UuidService;
 import org.springframework.stereotype.Service;
 
@@ -63,10 +64,10 @@ public class SingleStudyBenefitRiskServiceImpl implements SingleStudyBenefitRisk
           Project project,
           BenefitRiskStudyOutcomeInclusion inclusion,
           Outcome outcome,
-          Set<AbstractIntervention> includedInterventions
-  ) {
+          Set<AbstractIntervention> includedInterventions,
+          String source) {
     URI studyGraphUri = inclusion.getStudyGraphUri();
-    SingleStudyContext context = buildContext(project, studyGraphUri, outcome, includedInterventions, inclusion);
+    SingleStudyContext context = buildContext(project, studyGraphUri, outcome, includedInterventions, inclusion, source);
     TrialDataStudy study = getStudy(project, studyGraphUri, context);
 
     List<TrialDataArm> matchedArms = getMatchedArms(includedInterventions, study.getArms());
@@ -146,8 +147,7 @@ public class SingleStudyBenefitRiskServiceImpl implements SingleStudyBenefitRisk
                   return null;
                 }
               }
-              String dataSourceId = context.getDataSourceUuid();
-              CriterionEntry criterionEntry = criterionEntryFactory.create(measurement, outcome.getName(), dataSourceId, context.getSourceLink());
+              CriterionEntry criterionEntry = criterionEntryFactory.create(measurement, context);
               return Pair.of(measurement.getVariableConceptUri(), criterionEntry);
             })
             .filter(Objects::nonNull)
@@ -207,13 +207,15 @@ public class SingleStudyBenefitRiskServiceImpl implements SingleStudyBenefitRisk
           Project project,
           URI studyGraphUri,
           Outcome outcome,
-          Set<AbstractIntervention> includedInterventions, BenefitRiskStudyOutcomeInclusion inclusion) {
+          Set<AbstractIntervention> includedInterventions,
+          BenefitRiskStudyOutcomeInclusion inclusion, String source) {
     String dataSourceUuid = uuidService.generate();
     final Map<Integer, AbstractIntervention> interventionsById = includedInterventions.stream()
             .collect(toMap(AbstractIntervention::getId, identity()));
     URI sourceLink = linkService.getStudySourceLink(project, studyGraphUri);
     SingleStudyContext context = new SingleStudyContext();
     context.setInterventionsById(interventionsById);
+    context.setSource(source);
     context.setSourceLink(sourceLink);
     context.setDataSourceUuid(dataSourceUuid);
     context.setOutcome(outcome);

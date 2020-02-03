@@ -17,8 +17,8 @@ public interface SingleStudyBenefitRiskService {
           Project project,
           BenefitRiskStudyOutcomeInclusion outcomeInclusion,
           Outcome outcome,
-          Set<AbstractIntervention> includedInterventions
-  );
+          Set<AbstractIntervention> includedInterventions,
+          String source);
 
   TrialDataStudy getStudy(Project project, URI studyGraphUri, SingleStudyContext context);
 
@@ -28,10 +28,11 @@ public interface SingleStudyBenefitRiskService {
 
   List<TrialDataArm> getMatchedArms(Set<AbstractIntervention> includedInterventions, List<TrialDataArm> arms);
 
-
   SingleStudyContext buildContext(
           Project project,
           URI studyGraphUri,
           Outcome outcome,
-          Set<AbstractIntervention> includedInterventions, BenefitRiskStudyOutcomeInclusion inclusion);
+          Set<AbstractIntervention> includedInterventions,
+          BenefitRiskStudyOutcomeInclusion inclusion,
+          String source);
 }

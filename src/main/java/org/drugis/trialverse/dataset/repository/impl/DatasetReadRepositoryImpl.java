@@ -57,7 +57,6 @@ import static org.apache.http.HttpHeaders.CONTENT_TYPE;
 @Repository
 public class DatasetReadRepositoryImpl implements DatasetReadRepository {
 
-  private static final Logger logger = LoggerFactory.getLogger(DatasetReadRepositoryImpl.class);
   private static final String CONTAINS_STUDY_WITH_SHORTNAME = loadResource("askContainsStudyWithLabel.sparql");
 
   private static final Node CLASS_VOID_DATASET = NodeFactory.createURI("http://rdfs.org/ns/void#Dataset");

@@ -16,6 +16,9 @@ import org.drugis.addis.trialverse.model.trialdata.*;
 import org.drugis.addis.trialverse.service.MappingService;
 import org.drugis.addis.trialverse.service.TriplestoreService;
 import org.drugis.addis.trialverse.service.impl.ReadValueException;
+import org.drugis.trialverse.dataset.model.VersionMapping;
+import org.drugis.trialverse.dataset.repository.VersionMappingRepository;
+import org.drugis.trialverse.util.Namespaces;
 import org.drugis.trialverse.util.service.UuidService;
 import org.junit.*;
 import org.mockito.*;
@@ -81,6 +84,7 @@ public class SingleStudyBenefitRiskServiceTest {
           .setSampleSize(222).setStdDev(0.2).setMean(7.56).build();
   private final SingleStudyContext context = buildContext();
   private final URI defaultMeasurementMoment = URI.create("defaultMM");
+  private final String source = "source";
 
   @Before
   public void setUp() {
@@ -90,8 +94,12 @@ public class SingleStudyBenefitRiskServiceTest {
 
   @After
   public void tearDown() {
-    verifyNoMoreInteractions(criterionEntryFactory, triplestoreService, mappingService,
-            analysisService, linkService,
+    verifyNoMoreInteractions(
+            criterionEntryFactory,
+            triplestoreService,
+            mappingService,
+            analysisService,
+            linkService,
             uuidService);
   }
 
@@ -115,7 +123,7 @@ public class SingleStudyBenefitRiskServiceTest {
     when(singleInterventionMock.getSemanticInterventionUri()).thenReturn(interventionUri1);
     when(analysisService.getSingleInterventions(interventions)).thenReturn(Sets.newHashSet(singleInterventionMock));
     when(triplestoreService.getSingleStudyData(
-            anyString() , any(URI.class), any(URI.class), anySet(), anySet()
+            anyString(), any(URI.class), any(URI.class), anySet(), anySet()
     )).thenReturn(mockStudies);
 
     // EXECUTE
@@ -124,7 +132,7 @@ public class SingleStudyBenefitRiskServiceTest {
     assertEquals(mockStudy, result);
     verify(mappingService).getVersionedUuid(project.getNamespaceUid());
     verify(analysisService).getSingleInterventions(interventions);
-    verify(triplestoreService).getSingleStudyData(anyString() , any(URI.class), any(URI.class), anySet(), anySet());
+    verify(triplestoreService).getSingleStudyData(anyString(), any(URI.class), any(URI.class), anySet(), anySet());
   }
 
   @Test
@@ -137,10 +145,10 @@ public class SingleStudyBenefitRiskServiceTest {
             .forEach(measurement -> {
               CriterionEntry criterionEntry = mock(CriterionEntry.class);
               URI variableConceptUri = measurement.getVariableConceptUri();
-              Outcome measuredOutcome = context.getOutcome();
-              String dataSourceId = context.getDataSourceUuid();
-              when(criterionEntryFactory.create(measurement,
-                      measuredOutcome.getName(), dataSourceId, context.getSourceLink())).thenReturn(criterionEntry);
+              when(criterionEntryFactory.create(
+                      measurement,
+                      context)
+              ).thenReturn(criterionEntry);
 
               expectedResult.put(variableConceptUri, criterionEntry);
             }));
@@ -170,9 +178,7 @@ public class SingleStudyBenefitRiskServiceTest {
   }
 
   private void verifyCriterionCreation(Measurement measurement) {
-    Outcome measuredOutcome = context.getOutcome();
-    String dataSourceId = context.getDataSourceUuid();
-    verify(criterionEntryFactory).create(measurement, measuredOutcome.getName(), dataSourceId, context.getSourceLink());
+    verify(criterionEntryFactory).create(measurement, context);
   }
 
   @Test
@@ -194,7 +200,7 @@ public class SingleStudyBenefitRiskServiceTest {
   }
 
   private SingleStudyContext buildContext() {
-        Outcome mockOutcome1 = mock(Outcome.class);
+    Outcome mockOutcome1 = mock(Outcome.class);
     Integer outcomeId1 = 1;
     when(mockOutcome1.getSemanticOutcomeUri()).thenReturn(dichotomousVariable.getVariableConceptUri());
     when(mockOutcome1.getName()).thenReturn("outcome1Name");
@@ -218,6 +224,7 @@ public class SingleStudyBenefitRiskServiceTest {
     context.setOutcome(mockOutcome1);
     context.setInterventionsById(interventionsById);
     context.setDataSourceUuid("dataSource1");
+    context.setSource(source);
 
     return context;
   }
@@ -285,7 +292,7 @@ public class SingleStudyBenefitRiskServiceTest {
   }
 
   @Test
-  public void testBuildContext() {
+  public void testBuildContext() throws IOException {
     String uuid1 = "uuid1";
 
     when(uuidService.generate()).thenReturn(uuid1);
@@ -307,7 +314,12 @@ public class SingleStudyBenefitRiskServiceTest {
 
     BenefitRiskStudyOutcomeInclusion inclusion = mock(BenefitRiskStudyOutcomeInclusion.class);
 
-    SingleStudyContext result = singleStudyBenefitRiskService.buildContext(project, studyUri, outcome1, interventions, inclusion);
+    String datasetUid = "dataset";
+    URI datasetVersion = URI.create("bla");
+    when(project.getDatasetVersion()).thenReturn(datasetVersion);
+    when(project.getNamespaceUid()).thenReturn(datasetUid);
+
+    SingleStudyContext result = singleStudyBenefitRiskService.buildContext(project, studyUri, outcome1, interventions, inclusion, source);
 
     Map<Integer, AbstractIntervention> interventionsById = new HashMap<>();
     interventionsById.put(interventionId1, intervention1);
@@ -319,6 +331,7 @@ public class SingleStudyBenefitRiskServiceTest {
     expectedResult.setInterventionsById(interventionsById);
     expectedResult.setSourceLink(sourceLink);
     expectedResult.setInclusion(inclusion);
+    expectedResult.setSource(source);
 
     assertEquals(expectedResult, result);
 

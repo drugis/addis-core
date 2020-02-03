@@ -27,8 +27,12 @@ import org.drugis.addis.security.Account;
 import org.drugis.addis.trialverse.model.SemanticInterventionUriAndName;
 import org.drugis.addis.trialverse.model.SemanticVariable;
 import org.drugis.addis.trialverse.model.trialdata.TrialDataStudy;
+import org.drugis.addis.trialverse.service.TriplestoreService;
 import org.drugis.addis.trialverse.service.impl.ReadValueException;
 import org.drugis.addis.util.WebConstants;
+import org.drugis.trialverse.dataset.model.VersionMapping;
+import org.drugis.trialverse.dataset.repository.VersionMappingRepository;
+import org.drugis.trialverse.util.Namespaces;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -72,6 +76,12 @@ public class ProblemServiceTest {
 
   @Mock
   private NetworkBenefitRiskService networkBenefitRiskService;
+
+  @Mock
+  private TriplestoreService triplestoreService;
+
+  @Mock
+  private VersionMappingRepository versionMappingRepository;
 
   @InjectMocks
   private ProblemService problemService;
@@ -118,7 +128,9 @@ public class ProblemServiceTest {
             modelService,
             singleStudyBenefitRiskService,
             networkMetaAnalysisService,
-            networkBenefitRiskService
+            networkBenefitRiskService,
+            triplestoreService,
+            versionMappingRepository
     );
   }
 
@@ -128,21 +140,36 @@ public class ProblemServiceTest {
     BenefitRiskAnalysis analysis = new BenefitRiskAnalysis(analysisId, projectId, "single study analysis", interventionInclusions);
     when(analysisRepository.get(analysisId)).thenReturn(analysis);
 
-    Integer secondOutcomeId = 1337;
     URI defaultMeasurementMoment = URI.create("defaultMeasurementMoment");
     TrialDataStudy studyMock = mock(TrialDataStudy.class);
-    URI studyUri = URI.create("daanEtAl");
     when(studyMock.getDefaultMeasurementMoment()).thenReturn(defaultMeasurementMoment);
 
+    URI studyUri1 = URI.create("daanEtAl");
+    URI studyUri2 = URI.create("JorisEtAl");
+    String source1 = "source 1";
+    String source2 = "source 2";
+    Map sources = mock(Map.class);
+    when(sources.get(studyUri1)).thenReturn(source1);
+    when(sources.get(studyUri2)).thenReturn(source2);
+
+    Integer secondOutcomeId = 1337;
     URI secondOutcomeUri = URI.create("http://secondSemantic");
     SemanticVariable secondSemanticOutcome = new SemanticVariable(secondOutcomeUri, "second semantic outcome");
     Outcome secondOutcome = new Outcome(secondOutcomeId, projectId, "second outcome", direction, "very", secondSemanticOutcome);
     List<Outcome> outcomes = Arrays.asList(secondOutcome, outcome);
-    when(outcomeRepository.get(projectId, newHashSet(outcome.getId(), secondOutcome.getId()))).thenReturn(outcomes);
+    when(outcomeRepository.get(
+            projectId,
+            newHashSet(outcome.getId(), secondOutcome.getId())
+    )).thenReturn(outcomes);
 
     List<BenefitRiskStudyOutcomeInclusion> benefitRiskStudyOutcomeInclusions =
-            getBenefitRiskStudyOutcomeInclusions(secondOutcomeId, studyUri);
+            getBenefitRiskStudyOutcomeInclusions(
+                    secondOutcomeId,
+                    studyUri1,
+                    studyUri2
+            );
     analysis.setBenefitRiskStudyOutcomeInclusions(benefitRiskStudyOutcomeInclusions);
+
     Set<AbstractIntervention> includedInterventions = newHashSet(fluoxIntervention, sertraIntervention);
     when(analysisService.getIncludedInterventions(analysis)).thenReturn(includedInterventions);
 
@@ -152,22 +179,36 @@ public class ProblemServiceTest {
 
     SingleStudyBenefitRiskProblem singleStudyProblemMock1 = mock(SingleStudyBenefitRiskProblem.class);
     SingleStudyBenefitRiskProblem singleStudyProblemMock2 = mock(SingleStudyBenefitRiskProblem.class);
-    when(singleStudyBenefitRiskService.getSingleStudyBenefitRiskProblem(
-            project,
-            benefitRiskStudyOutcomeInclusions.get(0),
-            secondOutcome,
-            includedInterventions)).thenReturn(singleStudyProblemMock1);
-    when(singleStudyBenefitRiskService.getSingleStudyBenefitRiskProblem(
-            project,
-            benefitRiskStudyOutcomeInclusions.get(1),
-            outcome,
-            includedInterventions)).thenReturn(singleStudyProblemMock2);
     when(singleStudyProblemMock1.getCriteria()).thenReturn(criteriaMock);
     when(singleStudyProblemMock1.getAlternatives()).thenReturn(alternativesMock);
     when(singleStudyProblemMock1.getPerformanceTable()).thenReturn(performanceMock);
     when(singleStudyProblemMock2.getCriteria()).thenReturn(criteriaMock);
     when(singleStudyProblemMock2.getAlternatives()).thenReturn(alternativesMock);
     when(singleStudyProblemMock2.getPerformanceTable()).thenReturn(performanceMock);
+    when(singleStudyBenefitRiskService.getSingleStudyBenefitRiskProblem(
+            project,
+            benefitRiskStudyOutcomeInclusions.get(0),
+            secondOutcome,
+            includedInterventions,
+            source2)
+    ).thenReturn(singleStudyProblemMock1);
+    when(singleStudyBenefitRiskService.getSingleStudyBenefitRiskProblem(
+            project,
+            benefitRiskStudyOutcomeInclusions.get(1),
+            outcome,
+            includedInterventions,
+            source1)
+    ).thenReturn(singleStudyProblemMock2);
+
+    String tripleStoreUid = "triple store uid";
+    VersionMapping versionMappingMock = mock(VersionMapping.class);
+    when(versionMappingMock.getVersionedDatasetUrl()).thenReturn("/datasets/" + tripleStoreUid);
+    URI trialverseDatasetUrl = URI.create(Namespaces.DATASET_NAMESPACE + projectDatasetUid);
+    when(versionMappingRepository
+            .getVersionMappingByDatasetUrl(
+                    trialverseDatasetUrl))
+            .thenReturn(versionMappingMock);
+    when(triplestoreService.getStudyTitlesByUri(tripleStoreUid, projectDatasetVersion)).thenReturn(sources);
 
     // --------------- execute ---------------- //
     BenefitRiskProblem result = (BenefitRiskProblem) problemService.getProblem(projectId, analysisId);
@@ -184,17 +225,21 @@ public class ProblemServiceTest {
     verify(projectRepository).get(projectId);
     verify(analysisRepository).get(analysisId);
     verify(analysisService).getIncludedInterventions(analysis);
+    verify(versionMappingRepository).getVersionMappingByDatasetUrl(trialverseDatasetUrl);
+    verify(triplestoreService).getStudyTitlesByUri(tripleStoreUid, projectDatasetVersion);
     verify(singleStudyBenefitRiskService).getSingleStudyBenefitRiskProblem(
             project,
             benefitRiskStudyOutcomeInclusions.get(0),
             secondOutcome,
-            includedInterventions
+            includedInterventions,
+            source2
     );
     verify(singleStudyBenefitRiskService).getSingleStudyBenefitRiskProblem(
             project,
             benefitRiskStudyOutcomeInclusions.get(1),
             outcome,
-            includedInterventions
+            includedInterventions,
+            source1
     );
   }
 
@@ -211,9 +256,9 @@ public class ProblemServiceTest {
     return criteriaMock;
   }
 
-  private List<BenefitRiskStudyOutcomeInclusion> getBenefitRiskStudyOutcomeInclusions(Integer secondOutcomeId, URI studyUri) {
-    BenefitRiskStudyOutcomeInclusion outcomeInclusion = new BenefitRiskStudyOutcomeInclusion(analysisId, outcome.getId(), studyUri);
-    BenefitRiskStudyOutcomeInclusion secondOutcomeInclusion = new BenefitRiskStudyOutcomeInclusion(analysisId, secondOutcomeId, studyUri);
+  private List<BenefitRiskStudyOutcomeInclusion> getBenefitRiskStudyOutcomeInclusions(Integer secondOutcomeId, URI studyUri1, URI studyUri2) {
+    BenefitRiskStudyOutcomeInclusion outcomeInclusion = new BenefitRiskStudyOutcomeInclusion(analysisId, outcome.getId(), studyUri1);
+    BenefitRiskStudyOutcomeInclusion secondOutcomeInclusion = new BenefitRiskStudyOutcomeInclusion(analysisId, secondOutcomeId, studyUri2);
     return Arrays.asList(secondOutcomeInclusion, outcomeInclusion);
   }
 
@@ -305,6 +350,10 @@ public class ProblemServiceTest {
     when(networkProblem.getCriteria()).thenReturn(criteria);
     when(networkProblem.getAlternatives()).thenReturn(alternatives);
     when(networkProblem.getPerformanceTable()).thenReturn(performanceTable);
+    VersionMapping mappingMock = mock(VersionMapping.class);
+    when(mappingMock.getVersionedDatasetUrl()).thenReturn("/datasets/something");
+    when(versionMappingRepository.getVersionMappingByDatasetUrl(any())).thenReturn(mappingMock);
+    when(triplestoreService.getStudyTitlesByUri(any(), any())).thenReturn(null);
 
     BenefitRiskProblem result = (BenefitRiskProblem) problemService.getProblem(projectId, analysisId);
 
@@ -326,6 +375,8 @@ public class ProblemServiceTest {
     verify(networkBenefitRiskService).hasResults(any(), any());
     verify(networkBenefitRiskService).getNmaInclusionWithResults(any(), any(), any(), any(), any());
     verify(networkBenefitRiskService).getNetworkProblem(any(), any());
+    verify(versionMappingRepository).getVersionMappingByDatasetUrl(any());
+    verify(triplestoreService).getStudyTitlesByUri(any(), any());
   }
 
   @Test

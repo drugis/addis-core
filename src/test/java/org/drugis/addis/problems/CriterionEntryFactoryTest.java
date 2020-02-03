@@ -1,7 +1,9 @@
 package org.drugis.addis.problems;
 
+import org.drugis.addis.outcomes.Outcome;
 import org.drugis.addis.problems.model.CriterionEntry;
 import org.drugis.addis.problems.model.DataSourceEntry;
+import org.drugis.addis.problems.model.SingleStudyContext;
 import org.drugis.addis.problems.service.impl.CriterionEntryFactory;
 import org.drugis.addis.trialverse.model.trialdata.Measurement;
 import org.junit.Before;
@@ -23,12 +25,22 @@ public class CriterionEntryFactoryTest {
   private URI sourceLink = URI.create("http://www.google.nl");
   private String dataSourceId = "dataSource1";
   private URI variableUri = URI.create("variableUri");
+  private String source = "some study";
+  private String outcomeId = "outcome id";
 
   private CriterionEntryFactory criterionEntryFactory;
+  private SingleStudyContext context;
 
   @Before
   public void setUp() {
     criterionEntryFactory = new CriterionEntryFactory();
+    context   = new SingleStudyContext();
+    Outcome outcome = new Outcome();
+    outcome.setName(outcomeId);
+    context.setOutcome(outcome);
+    context.setDataSourceUuid(dataSourceId);
+    context.setSourceLink(sourceLink);
+    context.setSource(source);
   }
 
   @Test
@@ -38,11 +50,11 @@ public class CriterionEntryFactoryTest {
     when(measurement.getVariableUri()).thenReturn(variableUri);
 
     // Execute
-    CriterionEntry criterionEntry = criterionEntryFactory.create(measurement, "outcomeName", dataSourceId, sourceLink);
+    CriterionEntry criterionEntry = criterionEntryFactory.create(measurement, context);
 
     // Asserts
-    DataSourceEntry dataSourceEntry = new DataSourceEntry(dataSourceId, Arrays.asList(0.0, 1.0), null, "study", sourceLink);
-    CriterionEntry expectedEntry = new CriterionEntry(Collections.singletonList(dataSourceEntry), "outcomeName", "probability");
+    DataSourceEntry dataSourceEntry = new DataSourceEntry(dataSourceId, Arrays.asList(0.0, 1.0), source, sourceLink);
+    CriterionEntry expectedEntry = new CriterionEntry(Collections.singletonList(dataSourceEntry), outcomeId, "probability");
     assertEquals(expectedEntry, criterionEntry);
   }
 
@@ -53,11 +65,11 @@ public class CriterionEntryFactoryTest {
     when(measurement.getVariableUri()).thenReturn(variableUri);
 
     // Execute
-    CriterionEntry criterionEntry = criterionEntryFactory.create(measurement, "outcomeName", dataSourceId, sourceLink);
+    CriterionEntry criterionEntry = criterionEntryFactory.create(measurement, context);
 
     // Asserts
-    DataSourceEntry dataSourceEntry = new DataSourceEntry(dataSourceId, Arrays.asList(null,null), null, "study", sourceLink);
-    CriterionEntry expectedEntry = new CriterionEntry(Collections.singletonList(dataSourceEntry), "outcomeName", null);
+    DataSourceEntry dataSourceEntry = new DataSourceEntry(dataSourceId, Arrays.asList(null,null), source, sourceLink);
+    CriterionEntry expectedEntry = new CriterionEntry(Collections.singletonList(dataSourceEntry), outcomeId, null);
     assertEquals(expectedEntry, criterionEntry);
   }
 
@@ -68,6 +80,6 @@ public class CriterionEntryFactoryTest {
     when(measurement.getVariableUri()).thenReturn(variableUri);
 
     // Execute
-    criterionEntryFactory.create(measurement, "outcomeName", dataSourceId, sourceLink);
+    criterionEntryFactory.create(measurement, context);
   }
 }

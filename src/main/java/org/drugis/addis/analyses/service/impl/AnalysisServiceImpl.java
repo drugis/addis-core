@@ -35,9 +35,6 @@ import java.sql.SQLException;
 import java.util.*;
 import java.util.stream.Collectors;
 
-/**
- * Created by daan on 22-5-14.
- */
 @Service
 public class AnalysisServiceImpl implements AnalysisService {
 

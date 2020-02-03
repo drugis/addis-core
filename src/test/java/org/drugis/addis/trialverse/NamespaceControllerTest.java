@@ -178,7 +178,7 @@ public class NamespaceControllerTest {
     return object;
   }
 
-  private StudyWithDetails createStudyWithDetials() {
+  private StudyWithDetails createStudyWithDetails() {
     return new StudyWithDetails.StudyWithDetailsBuilder()
             .studyUuid("studyUuid")
             .name("studyName")
