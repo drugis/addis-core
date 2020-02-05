@@ -1,19 +1,27 @@
 <div class="grid-container">
   <div class="grid-x">
     <div class="cell">
-      <h3>Commit changes <inline-help help-key="dataset-version"></inline-help></h3>
+      <h3>
+        Commit changes <inline-help help-key="dataset-version"></inline-help>
+      </h3>
+    </div>
+    <div class="cell">
       <form>
         <label>Title
-          <input type="text" ng-model="commitTitle">
+          <input type="text" ng-model="commitTitle" ng-change="updateButton()">
         </label>
         <label>Description
           <textarea ng-model="commitDescription"></textarea>
         </label>
         <button type="submit" class="button success" ng-click="commitChanges(commitTitle, commitDescription)"
-          ng-disabled="isCommitting || !commitTitle">Commit changes
+          ng-disabled="commitDisabled">
+          Commit changes
         </button>
-        <button type="button" class="button secondary" ng-click="commitCancelled()">Cancel</button>
       </form>
+    </div>
+    <div class="cell alert" ng-if="!loggedInUser">
+      You session has expired. To log in again without losing your entered data, please click <a
+        ng-click="openLoginWindow()">here</a>. This will open a window, which can be closed after login in.
     </div>
   </div>
 </div>
