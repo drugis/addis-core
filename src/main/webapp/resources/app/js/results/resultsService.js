@@ -467,7 +467,7 @@ define(['angular', 'lodash'], function(angular, _) {
       return _queryResults(armUri, isResultForArm);
     }
 
-    function queryResultsByOutcome(outcomeUri) {
+    function queryResultsForOutcome(outcomeUri) {
       return _queryResults(outcomeUri, isResultForOutcome);
     }
 
@@ -486,7 +486,7 @@ define(['angular', 'lodash'], function(angular, _) {
     return {
       updateResultValue: updateResultValue,
       queryResultsByGroup: queryResultsByGroup,
-      queryResultsByOutcome: queryResultsByOutcome,
+      queryResultsForOutcome: queryResultsForOutcome,
       queryResultsByMeasurementMoment: queryResultsByMeasurementMoment,
       queryNonConformantMeasurementsByOutcomeUri: queryNonConformantMeasurementsByOutcomeUri,
       queryNonConformantMeasurementsByGroupUri: queryNonConformantMeasurementsByGroupUri,
