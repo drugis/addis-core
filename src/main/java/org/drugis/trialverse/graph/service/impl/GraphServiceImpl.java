@@ -23,6 +23,7 @@ import org.drugis.trialverse.security.TrialversePrincipal;
 import org.drugis.trialverse.util.Namespaces;
 import org.drugis.addis.util.WebConstants;
 import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -107,7 +108,9 @@ public class GraphServiceImpl implements GraphService {
   }
 
   @Override
-  @CacheEvict(cacheNames = "datasetHistory", key="#targetDatasetUri.toString()")
+  @Caching(evict = {
+          @CacheEvict(cacheNames = "datasetHistory", key = "#targetDatasetUri.toString()"),
+          @CacheEvict(cacheNames = "versionedDatasetQuery", allEntries = true)})
   public URI copy(URI targetDatasetUri, URI targetGraphUri, URI copyOfUri) throws URISyntaxException, IOException, RevisionNotFoundException {
 
     URI trialverseDatasetUri = extractDatasetUri(copyOfUri);
