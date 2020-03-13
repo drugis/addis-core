@@ -11,7 +11,7 @@ Required software:
 
  - yarn
  - compass (for changing css)
- - postgresql
+ - postgresql >= 9.5
  - maven
  - karma (for testing)
 
