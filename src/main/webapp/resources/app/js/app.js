@@ -75,6 +75,8 @@ define(
     'mcda-web/js/results/results',
     'mcda-web/js/subProblem/subProblem',
     'mcda-web/js/workspace/workspace',
+    'mcda-web/js/deterministicResults/deterministicResults',
+    'mcda-web/js/smaaResults/smaaResults',
     './covariates/covariates',
     './home/home'
   ],
@@ -96,6 +98,8 @@ define(
       'elicit.util',
       'elicit.workspace',
       'elicit.workspaceResource',
+      'elicit.smaaResults',
+      'elicit.deterministicResults',
       'mm.foundation',
       'ngAnimate'
     ];
@@ -173,7 +177,7 @@ define(
 
     app.constant('Tasks', Config.tasks);
     app.constant('DEFAULT_VIEW', 'evidence');
-    app.constant('currentSchemaVersion', '1.4.2');
+    app.constant('currentSchemaVersion', '1.4.3');
     app.constant('ANALYSIS_TYPES', [{
       label: 'Evidence synthesis',
       stateName: 'networkMetaAnalysis'
