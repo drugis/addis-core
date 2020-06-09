@@ -11,16 +11,16 @@ public class DataSourceEntry {
   private final URI sourceLink;
   private String id;
 
-  public DataSourceEntry(String id, List<Double> scale, PartialValueFunction pvf, String source, URI sourceLink) {
+  public DataSourceEntry(String id, List<Double> scale, String source, URI sourceLink) {
     this.id = id;
     this.scale = scale;
-    this.pvf = pvf;
+    this.pvf = null;
     this.source = source;
     this.sourceLink = sourceLink;
   }
 
   public DataSourceEntry(String id, String source, URI sourceLink) {
-    this(id, null, null, source, sourceLink);
+    this(id, null, source, sourceLink);
   }
 
   public String getSource() {

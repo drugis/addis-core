@@ -5,6 +5,7 @@ define(
     'mcda-web/js/config',
     'mcda-web/lexicon',
     'gemtc-web/lexicon',
+    'core-js',
     'angular-foundation-6',
     'angular-animate',
     'angular-cookies',
@@ -17,7 +18,6 @@ define(
     'angularjs-slider',
     'angucomplete-alt',
     'angular-patavi-client',
-    'core-js',
     'error-reporting',
     'export-directive',
     'help-popup',
@@ -65,7 +65,6 @@ define(
     'gemtc-web/js/resources',
     'gemtc-web/js/services',
     'mcda-web/js/benefitRisk/benefitRisk',
-    'mcda-web/js/directives',
     'mcda-web/js/effectsTable/effectsTable',
     'mcda-web/js/evidence/evidence',
     'mcda-web/js/services/workspaceResource',
@@ -87,7 +86,6 @@ define(
   ) {
     var mcdaDependencies = [
       'elicit.benefitRisk',
-      'elicit.directives',
       'elicit.effectsTable',
       'elicit.evidence',
       'elicit.preferences',

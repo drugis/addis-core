@@ -48,6 +48,7 @@ import java.io.StringReader;
 import java.net.URI;
 import java.net.URLEncoder;
 import java.util.*;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -69,6 +70,8 @@ public class TriplestoreServiceImpl implements TriplestoreService {
   private final static String POPCHAR_QUERY = TriplestoreService.loadResource("sparql/populationCharacteristics.sparql");
   private final static String INTERVENTION_QUERY = TriplestoreService.loadResource("sparql/interventions.sparql");
   private final static String UNIT_CONCEPTS = TriplestoreService.loadResource("sparql/unitConcepts.sparql");
+  private final static String STUDY_TITLES = TriplestoreService.loadResource("sparql/getStudyTitles.sparql");
+
   public static final String QUERY_ENDPOINT = "/query";
   public static final String QUERY_PARAM_QUERY = "query";
   private static final String X_ACCEPT_EVENT_SOURCE_VERSION = "X-Accept-EventSource-Version";
@@ -488,5 +491,32 @@ public class TriplestoreServiceImpl implements TriplestoreService {
     headers.put(ACCEPT_HEADER, Collections.singletonList(APPLICATION_SPARQL_RESULTS_JSON));
 
     return restTemplate.exchange(uriComponents.toUri(), HttpMethod.GET, new HttpEntity<>(headers), String.class);
+  }
+
+  @Override
+  public Map<URI, String> getStudyTitlesByUri(String namespaceUid, URI versionUri) {
+    try {
+      JSONArray bindings = executeQuery(namespaceUid, versionUri, STUDY_TITLES);
+      return bindings
+              .stream()
+              .collect(Collectors.toMap(getStudyGraphUri(), getStudyTitle()));
+    } catch (IOException exception) {
+      throw new RuntimeException("Could not load getStudyTitles.sparql.");
+    }
+  }
+
+  private Function<Object, String> getStudyTitle() {
+    return binding -> JsonPath
+            .read(binding, "$.title.value")
+            .toString();
+  }
+
+  private Function<Object, URI> getStudyGraphUri() {
+    return binding -> {
+      String studyGraphUri = JsonPath
+              .read(binding, "$.studyGraphUri.value")
+              .toString();
+      return URI.create(studyGraphUri);
+    };
   }
 }

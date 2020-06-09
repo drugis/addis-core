@@ -25,7 +25,7 @@ define(['lodash', 'xlsx'], function(_, XLSX) {
       var outcomes = addConceptType(variableResults[1], 'outcome');
       var adverseEvents = addConceptType(variableResults[2], 'adverse event');
       var resultsPromises = _.map(populationCharacteristics.concat(outcomes, adverseEvents), function(variable) {
-        return ResultsService.queryResults(variable.uri).then(function(results) {
+        return ResultsService.queryResultsForOutcome(variable.uri).then(function(results) {
           return {
             uri: variable.uri,
             results: results

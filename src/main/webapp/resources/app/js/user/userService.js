@@ -1,22 +1,20 @@
 'use strict';
 define(['lodash'],
   function(_) {
-    var dependencies = ['$q', '$window', 'UserResource'];
-    var UserService = function($q, $window, UserResource) {
+    var dependencies = ['$window', 'UserResource'];
+    var UserService = function($window, UserResource) {
 
       function getLoginUser() {
-        if ($window.sessionStorage.getItem('user')) {
-          return $q.resolve(JSON.parse($window.sessionStorage.getItem('user')));
-        } else {
-          return UserResource.get({ 'userUid': 'me' }).$promise.then(function(user) {
-            var loggedInUser = unResource(user);
-            var userFound = loggedInUser.id;
-            if (userFound) {
-              $window.sessionStorage.setItem('user', JSON.stringify(loggedInUser));
-            }
-            return userFound ? loggedInUser : undefined;
-          });
-        }
+        return UserResource.get({ 'userUid': 'me' }).$promise.then(function(user) {
+          var loggedInUser = unResource(user);
+          var userFound = loggedInUser.id;
+          if (userFound) {
+            $window.sessionStorage.setItem('user', JSON.stringify(loggedInUser));
+            return loggedInUser;
+          } else {
+            return undefined;
+          }
+        });
       }
 
       function unResource(result) {

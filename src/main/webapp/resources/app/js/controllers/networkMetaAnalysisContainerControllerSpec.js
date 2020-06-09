@@ -132,7 +132,8 @@ define(['angular', 'angular-mocks', '../controllers'], function() {
         'transformStudiesToTableRows',
         'getIncludedInterventions',
         'hasInterventionOverlap',
-        'doesModelContainTooManyResultProperties'
+        'doesModelContainTooManyResultProperties',
+        'hasMissingCovariateValues'
       ]);
       cacheService = jasmine.createSpyObj('CacheService', ['evict']);
       var mockNetwork = {

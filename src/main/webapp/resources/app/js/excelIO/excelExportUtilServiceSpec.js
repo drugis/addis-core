@@ -64,7 +64,7 @@ define(['lodash', 'xlsx', 'angular-mocks', './excelIO'], function(_, XLSX) {
     var rootScope, q;
     var excelExportUtilService;
     var IOU;
-    var resultsService = jasmine.createSpyObj('ResultsService', ['queryResults']);
+    var resultsService = jasmine.createSpyObj('ResultsService', ['queryResultsForOutcome']);
     var GROUP_ALLOCATION_OPTIONS = {
       randomized: {
         label: 'randomized'
@@ -223,7 +223,7 @@ define(['lodash', 'xlsx', 'angular-mocks', './excelIO'], function(_, XLSX) {
       promise1defer.resolve(1);
       promise2defer.resolve(2);
       promise3defer.resolve(3);
-      resultsService.queryResults.and.returnValues(promise1, promise2, promise3);
+      resultsService.queryResultsForOutcome.and.returnValues(promise1, promise2, promise3);
       conceptsSheet = {
         A2: IOU.cellValue('variable1Uri'),
         B2: IOU.cellValue('variable 1'),

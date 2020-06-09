@@ -12,9 +12,6 @@ import javax.persistence.TypedQuery;
 import java.util.Date;
 import java.util.List;
 
-/**
- * Created by daan on 7-5-14.
- */
 @Repository
 public class AnalysisRepositoryImpl implements AnalysisRepository {
   @Qualifier("emAddisCore")
@@ -26,8 +23,9 @@ public class AnalysisRepositoryImpl implements AnalysisRepository {
     AbstractAnalysis analysis = em.find(AbstractAnalysis.class, analysisId);
     if (analysis == null) {
       throw new ResourceDoesNotExistException();
+    } else {
+      return analysis;
     }
-    return analysis;
 
   }
 
@@ -44,9 +42,9 @@ public class AnalysisRepositoryImpl implements AnalysisRepository {
     AbstractAnalysis analysis = em.find(AbstractAnalysis.class, analysisId);
     if (analysis == null) {
       throw new ResourceDoesNotExistException();
+    } else {
+      analysis.setArchived(archived);
+      analysis.setArchivedOn(archived ? new Date() : null);
     }
-    analysis.setArchived(archived);
-    analysis.setArchivedOn(archived ? new Date() : null);
   }
-
 }

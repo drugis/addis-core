@@ -338,7 +338,6 @@ public class NetworkMetaAnalysisServiceTest {
 
     List<TrialDataStudy> expectedResult = singletonList(studyWithEntries);
 
-    //issocute
     List<TrialDataStudy> result = networkMetaAnalysisService.getStudiesWithEntries(studies, entries);
     assertEquals(expectedResult, result);
   }
@@ -349,7 +348,6 @@ public class NetworkMetaAnalysisServiceTest {
     when(analysis.getCovariateInclusions()).thenReturn(Collections.emptyList());
     List<TrialDataStudy> studies = singletonList(mock(TrialDataStudy.class));
 
-    // overconfidence is a slow and insidious killer
     Map<String, Map<String, Double>> result = networkMetaAnalysisService.getStudyLevelCovariates(project, analysis, studies);
     assertNull(result);
   }
@@ -391,7 +389,7 @@ public class NetworkMetaAnalysisServiceTest {
     Map<String, Double> nodeMap = new HashMap<>();
     nodeMap.put(includedCovariate.getName(), includedCovariateStudyValue.getValue());
     expectedResult.put(studyName, nodeMap);
-    // execute
+
     Map<String, Map<String, Double>> result = networkMetaAnalysisService.getStudyLevelCovariates(project, analysis, studies);
     assertEquals(expectedResult, result);
 
@@ -401,16 +399,16 @@ public class NetworkMetaAnalysisServiceTest {
   @Test
   public void testBuildCriteriaForInclusionBinom() {
     String dataSourceUuid = "dataSourceUuid";
+    String source = "model title";
     when(uuidService.generate()).thenReturn(dataSourceUuid);
 
     NMAInclusionWithResults inclusionWithResults = buildNmaInclusionMock("binom");
     URI modelUri = URI.create("modelUri");
 
-    // execute
     Map<URI, CriterionEntry> result = networkMetaAnalysisService.buildCriteriaForInclusion(inclusionWithResults, modelUri);
 
     Map<URI, CriterionEntry> expectedResult = new HashMap<>();
-    DataSourceEntry expectedDataSource = new DataSourceEntry(dataSourceUuid, Arrays.asList(0d, 1d), null, "meta analysis", modelUri);
+    DataSourceEntry expectedDataSource = new DataSourceEntry(dataSourceUuid, Arrays.asList(0d, 1d), source, modelUri);
     CriterionEntry expectedEntry = new CriterionEntry(singletonList(expectedDataSource), outcome.getName());
     expectedResult.put(outcome.getSemanticOutcomeUri(), expectedEntry);
     assertEquals(expectedResult, result);
@@ -426,11 +424,11 @@ public class NetworkMetaAnalysisServiceTest {
     URI modelUri = URI.create("modelUri");
     NMAInclusionWithResults inclusionWithResults = buildNmaInclusionMock("not binom");
 
-    // execute
     Map<URI, CriterionEntry> result = networkMetaAnalysisService.buildCriteriaForInclusion(inclusionWithResults, modelUri);
 
     Map<URI, CriterionEntry> expectedResult = new HashMap<>();
-    DataSourceEntry expectedDataSource = new DataSourceEntry(dataSourceUuid, "meta analysis", modelUri);
+    String source = "model title";
+    DataSourceEntry expectedDataSource = new DataSourceEntry(dataSourceUuid, source, modelUri);
     CriterionEntry expectedEntry = new CriterionEntry(singletonList(expectedDataSource), outcome.getName());
     expectedResult.put(outcome.getSemanticOutcomeUri(), expectedEntry);
     assertEquals(expectedResult, result);
@@ -444,6 +442,7 @@ public class NetworkMetaAnalysisServiceTest {
     Model model = mock(Model.class);
     when(model.getLikelihood()).thenReturn(isBinomString);
     when(inclusionWithResults.getModel()).thenReturn(model);
+    when(model.getTitle()).thenReturn("model title");
     return inclusionWithResults;
   }
 
@@ -481,12 +480,10 @@ public class NetworkMetaAnalysisServiceTest {
     results.put(taskUri, taskResult);
     when(pataviTaskRepository.getResults(tasks)).thenReturn(results);
 
-    // execute
     Map<Integer, JsonNode> result = networkMetaAnalysisService.getPataviResultsByModelId(models);
 
     Map<Integer, JsonNode> expectedResult = new HashMap<>();
     expectedResult.put(modelId, taskResult);
-
     assertEquals(expectedResult, result);
 
     verify(pataviTaskRepository).findByUrls(taskUris);

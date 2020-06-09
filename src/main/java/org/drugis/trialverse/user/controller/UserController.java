@@ -16,9 +16,6 @@ import javax.inject.Inject;
 import java.security.Principal;
 import java.util.List;
 
-/**
- * Created by connor on 1-5-15.
- */
 @Controller
 @RequestMapping(value = "/users")
 public class UserController extends AbstractAddisCoreController {
@@ -29,9 +26,7 @@ public class UserController extends AbstractAddisCoreController {
   @Inject
   private HttpClient httpClient;
 
-  private final static String JSON_TYPE = "application/json; charset=UTF-8";
-
-  Logger logger = LoggerFactory.getLogger(getClass());
+  private Logger logger = LoggerFactory.getLogger(getClass());
 
   @RequestMapping(value = "/{userId}", method = RequestMethod.GET)
   @ResponseBody
@@ -52,7 +47,8 @@ public class UserController extends AbstractAddisCoreController {
   public Account getLoggedInUser(Principal principal) {
     if (principal != null) {
       return accountRepository.getAccount(principal);
+    } else {
+      return null;
     }
-    return null;
   }
 }

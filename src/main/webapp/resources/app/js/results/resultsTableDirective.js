@@ -34,7 +34,7 @@ define(['lodash'], function(_) {
 
         function reloadResults() {
           if (scope.isExpanded) {
-            var resultsPromise = ResultsService.queryResults(scope.variable.uri);
+            var resultsPromise = ResultsService.queryResultsByOutcome(scope.variable.uri);
 
             return $q.all([scope.arms, scope.measurementMoments, scope.groups, resultsPromise]).then(function(values) {
               var arms = values[0];

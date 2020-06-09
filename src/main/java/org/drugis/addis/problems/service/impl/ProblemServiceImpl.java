@@ -21,8 +21,12 @@ import org.drugis.addis.problems.service.model.AbstractMeasurementEntry;
 import org.drugis.addis.projects.Project;
 import org.drugis.addis.projects.repository.ProjectRepository;
 import org.drugis.addis.trialverse.model.trialdata.TrialDataStudy;
+import org.drugis.addis.trialverse.service.TriplestoreService;
 import org.drugis.addis.trialverse.service.impl.ReadValueException;
 import org.drugis.addis.util.WebConstants;
+import org.drugis.trialverse.dataset.model.VersionMapping;
+import org.drugis.trialverse.dataset.repository.VersionMappingRepository;
+import org.drugis.trialverse.util.Namespaces;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
@@ -47,9 +51,6 @@ public class ProblemServiceImpl implements ProblemService {
   private AnalysisService analysisService;
 
   @Inject
-  private LinkService linkService;
-
-  @Inject
   private ModelService modelService;
 
   @Inject
@@ -65,7 +66,13 @@ public class ProblemServiceImpl implements ProblemService {
   private SingleStudyBenefitRiskService singleStudyBenefitRiskService;
 
   @Inject
-  private NetworkBenefitRiskPerformanceEntryBuilder networkBenefitRiskPerformanceEntryBuilder;
+  private NetworkBenefitRiskService networkBenefitRiskService;
+
+  @Inject
+  private VersionMappingRepository versionMappingRepository;
+
+  @Inject
+  private TriplestoreService triplestoreService;
 
   @Override
   public AbstractProblem getProblem(Integer projectId, Integer analysisId) throws ResourceDoesNotExistException, ProblemCreationException {
@@ -105,12 +112,10 @@ public class ProblemServiceImpl implements ProblemService {
     final Map<Integer, Outcome> outcomesById = getOutcomesById(project.getId(), analysis);
     final Set<AbstractIntervention> includedInterventions = analysisService.getIncludedInterventions(analysis);
 
-    List<BenefitRiskProblem> networkProblems = getNetworkProblems(project, analysis, outcomesById, includedInterventions);
     List<BenefitRiskStudyOutcomeInclusion> benefitRiskStudyOutcomeInclusions = analysis.getBenefitRiskStudyOutcomeInclusions();
-    List<BenefitRiskProblem> singleStudyProblems = getSingleStudyProblems(project, benefitRiskStudyOutcomeInclusions, outcomesById, includedInterventions);
     List<BenefitRiskProblem> allProblems = new ArrayList<>();
-    allProblems.addAll(networkProblems);
-    allProblems.addAll(singleStudyProblems);
+    allProblems.addAll(getNetworkProblems(project, analysis, outcomesById, includedInterventions));
+    allProblems.addAll(getSingleStudyProblems(project, benefitRiskStudyOutcomeInclusions, outcomesById, includedInterventions));
 
     Map<URI, CriterionEntry> criteriaWithBaseline = new HashMap<>();
     Map<String, AlternativeEntry> alternativesById = new HashMap<>();
@@ -124,9 +129,14 @@ public class ProblemServiceImpl implements ProblemService {
     return new BenefitRiskProblem(WebConstants.SCHEMA_VERSION, criteriaWithBaseline, alternativesById, performanceTable);
   }
 
-  private Map<Integer, Outcome> getOutcomesById(Integer projectId, BenefitRiskAnalysis analysis) {
-    final Set<Integer> outcomeIds = getIdsFromInclusions(analysis.getBenefitRiskNMAOutcomeInclusions(),
-            BenefitRiskNMAOutcomeInclusion::getOutcomeId);
+  private Map<Integer, Outcome> getOutcomesById(
+          Integer projectId,
+          BenefitRiskAnalysis analysis
+  ) {
+    final Set<Integer> outcomeIds = getIdsFromInclusions(
+            analysis.getBenefitRiskNMAOutcomeInclusions(),
+            BenefitRiskNMAOutcomeInclusion::getOutcomeId
+    );
     outcomeIds.addAll(analysis.getBenefitRiskStudyOutcomeInclusions().stream().map(
             BenefitRiskStudyOutcomeInclusion::getOutcomeId).collect(toList()));
 
@@ -143,7 +153,12 @@ public class ProblemServiceImpl implements ProblemService {
             .collect(toMap(Model::getId, identity()));
   }
 
-  private List<BenefitRiskProblem> getNetworkProblems(Project project, BenefitRiskAnalysis analysis, Map<Integer, Outcome> outcomesById, Set<AbstractIntervention> includedInterventions) throws IOException, SQLException, UnexpectedNumberOfResultsException, URISyntaxException {
+  private List<BenefitRiskProblem> getNetworkProblems(
+          Project project,
+          BenefitRiskAnalysis analysis,
+          Map<Integer, Outcome> outcomesById,
+          Set<AbstractIntervention> includedInterventions
+  ) throws IOException, SQLException, UnexpectedNumberOfResultsException, URISyntaxException {
     if (analysis.getBenefitRiskNMAOutcomeInclusions().size() == 0) {
       return new ArrayList<>();
     }
@@ -151,44 +166,16 @@ public class ProblemServiceImpl implements ProblemService {
     Collection<Model> models = Sets.newHashSet(modelsById.values());
     final Map<Integer, JsonNode> resultsByModelId = networkMetaAnalysisService.getPataviResultsByModelId(models);
     return analysis.getBenefitRiskNMAOutcomeInclusions().stream()
-            .filter(this::hasBaseline)
+            .filter(inclusion -> networkBenefitRiskService.hasBaseline(inclusion, modelsById, includedInterventions))
             .filter(this::hasModel)
-            .filter(inclusion -> hasResults(resultsByModelId, inclusion))
-            .map(inclusion -> {
-              Outcome outcome = outcomesById.get(inclusion.getOutcomeId());
-              Model model = modelsById.get(inclusion.getModelId());
-              JsonNode pataviResults = resultsByModelId.get(inclusion.getModelId());
-              return new NMAInclusionWithResults(outcome, model, pataviResults, includedInterventions, inclusion.getBaseline());
-            })
-            .map(inclusion -> getNetworkProblem(project, inclusion))
+            .filter(inclusion -> networkBenefitRiskService.hasResults(resultsByModelId, inclusion))
+            .map(inclusion -> networkBenefitRiskService.getNmaInclusionWithResults(outcomesById, includedInterventions, modelsById, resultsByModelId, inclusion))
+            .map(inclusion -> networkBenefitRiskService.getNetworkProblem(project, inclusion))
             .collect(Collectors.toList());
-  }
-
-  private boolean hasResults(Map<Integer, JsonNode> resultsByModelId, BenefitRiskNMAOutcomeInclusion inclusion) {
-    return resultsByModelId.get(inclusion.getModelId()) != null;
-  }
-
-  private boolean hasBaseline(BenefitRiskNMAOutcomeInclusion inclusion) {
-    return inclusion.getBaseline() != null;
   }
 
   private boolean hasModel(BenefitRiskNMAOutcomeInclusion inclusion) {
     return inclusion.getModelId() != null;
-  }
-
-  private BenefitRiskProblem getNetworkProblem(Project project, NMAInclusionWithResults inclusionWithResults) {
-    URI modelURI = linkService.getModelSourceLink(project, inclusionWithResults.getModel());
-
-    final Map<URI, CriterionEntry> criteria = networkMetaAnalysisService.buildCriteriaForInclusion(inclusionWithResults, modelURI);
-    final Map<String, AlternativeEntry> alternatives = networkMetaAnalysisService.buildAlternativesForInclusion(inclusionWithResults);
-    final DataSourceEntry dataSourceEntry = getDataSourceEntry(criteria); // one criterion -> one datasource per NMA
-
-    AbstractMeasurementEntry relativePerformance = networkBenefitRiskPerformanceEntryBuilder.build(inclusionWithResults, dataSourceEntry);
-    return new BenefitRiskProblem(criteria, alternatives, Collections.singletonList(relativePerformance));
-  }
-
-  private DataSourceEntry getDataSourceEntry(Map<URI, CriterionEntry> criteria) {
-    return criteria.values().iterator().next().getDataSources().get(0);
   }
 
   private List<BenefitRiskProblem> getSingleStudyProblems(
@@ -197,13 +184,37 @@ public class ProblemServiceImpl implements ProblemService {
           Map<Integer, Outcome> outcomesById,
           Set<AbstractIntervention> includedInterventions
   ) {
-    return benefitRiskStudyOutcomeInclusions.stream()
-            .map(inclusion -> {
-              Outcome outcome = outcomesById.get(inclusion.getOutcomeId());
-              return singleStudyBenefitRiskService.getSingleStudyBenefitRiskProblem(
-                      project, inclusion, outcome, includedInterventions);
-            })
+    Map<URI, String> sources = getSources(project);
+    return benefitRiskStudyOutcomeInclusions
+            .stream()
+            .map(inclusion -> getBenefitRiskProblemForInclusion(
+                    project,
+                    outcomesById,
+                    includedInterventions,
+                    inclusion,
+                    sources.get(inclusion.getStudyGraphUri())
+
+            ))
             .collect(toList());
+  }
+
+  private Map<URI, String> getSources(Project project) {
+    URI trialverseDatasetUrl = URI.create(Namespaces.DATASET_NAMESPACE + project.getNamespaceUid());
+    VersionMapping versionMapping = versionMappingRepository.getVersionMappingByDatasetUrl(trialverseDatasetUrl);
+    String tripleStoreUid = versionMapping.getVersionedDatasetUrl().split("/datasets/")[1];
+    return triplestoreService.getStudyTitlesByUri(tripleStoreUid, project.getDatasetVersion());
+  }
+
+  private SingleStudyBenefitRiskProblem getBenefitRiskProblemForInclusion(
+          Project project,
+          Map<Integer, Outcome> outcomesById,
+          Set<AbstractIntervention> includedInterventions,
+          BenefitRiskStudyOutcomeInclusion inclusion,
+          String source
+  ) {
+    Outcome outcome = outcomesById.get(inclusion.getOutcomeId());
+    return singleStudyBenefitRiskService.getSingleStudyBenefitRiskProblem(
+            project, inclusion, outcome, includedInterventions, source);
   }
 
   @Override

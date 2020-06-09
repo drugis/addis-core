@@ -19,9 +19,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
-/**
- * Created by daan on 22-5-14.
- */
 @Entity
 public class Model {
 
