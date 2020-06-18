@@ -28,7 +28,7 @@
   "homepage": "https://github.com/drugis/addis-core#readme",
   "devDependencies": {
     "angucomplete-alt": "~3.0.0",
-    "angular": "~1.7.9",
+    "angular": "~1.8.0",
     "angular-animate": "~1.7.9",
     "angular-cookies": "~1.7.9",
     "angular-foundation-6": "~0.11.2",
