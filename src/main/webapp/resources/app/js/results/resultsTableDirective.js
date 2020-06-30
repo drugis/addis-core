@@ -30,7 +30,7 @@ define(["lodash"], function (_) {
 
         function reloadResults() {
           if (scope.isExpanded) {
-            var resultsPromise = ResultsService.queryResultsByOutcome(
+            var resultsPromise = ResultsService.queryResultsForOutcome(
               scope.variable.uri
             );
 
