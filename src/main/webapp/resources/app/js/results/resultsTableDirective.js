@@ -1,27 +1,23 @@
-'use strict';
-define(['lodash'], function(_) {
-  var dependencies = [
-    '$q',
-    'ResultsTableService',
-    'ResultsService'
-  ];
+"use strict";
+define(["lodash"], function (_) {
+  var dependencies = ["$q", "ResultsTableService", "ResultsService"];
 
-  var resultsTableDirective = function(
+  var resultsTableDirective = function (
     $q,
     ResultsTableService,
     ResultsService
   ) {
     return {
-      restrict: 'E',
-      templateUrl: './resultsTableDirective.html',
+      restrict: "E",
+      templateUrl: "./resultsTableDirective.html",
       scope: {
-        variable: '=',
-        arms: '=',
-        groups: '=',
-        measurementMoments: '=',
-        isEditingAllowed: '='
+        variable: "=",
+        arms: "=",
+        groups: "=",
+        measurementMoments: "=",
+        isEditingAllowed: "=",
       },
-      link: function(scope) {
+      link: function (scope) {
         // functions
         scope.toggle = toggle;
         scope.editMeasurementMoment = editMeasurementMoment;
@@ -30,29 +26,57 @@ define(['lodash'], function(_) {
 
         // init
         scope.isExpanded = false;
-        scope.$on('refreshResultsTable', reloadResults);
+        scope.$on("refreshResultsTable", reloadResults);
 
         function reloadResults() {
           if (scope.isExpanded) {
-            var resultsPromise = ResultsService.queryResultsByOutcome(scope.variable.uri);
+            var resultsPromise = ResultsService.queryResultsByOutcome(
+              scope.variable.uri
+            );
 
-            return $q.all([scope.arms, scope.measurementMoments, scope.groups, resultsPromise]).then(function(values) {
-              var arms = values[0];
-              var measurementMoments = values[1];
-              var groups = values[2];
-              var results = values[3];
+            return $q
+              .all([
+                scope.arms,
+                scope.measurementMoments,
+                scope.groups,
+                resultsPromise,
+              ])
+              .then(function (values) {
+                var arms = values[0];
+                var measurementMoments = values[1];
+                var groups = values[2];
+                var results = values[3];
 
-              scope.inputRows = ResultsTableService.createInputRows(scope.variable, arms, groups, measurementMoments, results);
-              scope.inputHeaders = ResultsTableService.createHeaders(scope.variable);
-              scope.measurementMomentOptions = ResultsTableService.buildMeasurementMomentOptions(scope.variable.measuredAtMoments);
-              scope.measurementMomentSelections = ResultsTableService.buildMeasurementMomentSelections(scope.inputRows, scope.measurementMomentOptions);
-              checkMeasurementOverlap();
-              scope.isEditingMM = _.reduce(scope.measurementMoments, function(accum, measurementMoment) {
-                accum[measurementMoment.uri] = false;
-                return accum;
-              }, {});
-              scope.hasNotAnalysedProperty = ResultsTableService.findNotAnalysedProperty(scope.inputHeaders);
-            });
+                scope.inputRows = ResultsTableService.createInputRows(
+                  scope.variable,
+                  arms,
+                  groups,
+                  measurementMoments,
+                  results
+                );
+                scope.inputHeaders = ResultsTableService.createHeaders(
+                  scope.variable
+                );
+                scope.measurementMomentOptions = ResultsTableService.buildMeasurementMomentOptions(
+                  scope.variable.measuredAtMoments
+                );
+                scope.measurementMomentSelections = ResultsTableService.buildMeasurementMomentSelections(
+                  scope.inputRows,
+                  scope.measurementMomentOptions
+                );
+                checkMeasurementOverlap();
+                scope.isEditingMM = _.reduce(
+                  scope.measurementMoments,
+                  function (accum, measurementMoment) {
+                    accum[measurementMoment.uri] = false;
+                    return accum;
+                  },
+                  {}
+                );
+                scope.hasNotAnalysedProperty = ResultsTableService.findNotAnalysedProperty(
+                  scope.inputHeaders
+                );
+              });
           }
         }
 
@@ -75,25 +99,30 @@ define(['lodash'], function(_) {
         }
 
         function editMeasurementMoment(measurementMomentUri, rowLabel) {
-          ResultsService.moveMeasurementMoment(measurementMomentUri,
+          ResultsService.moveMeasurementMoment(
+            measurementMomentUri,
             scope.measurementMomentSelections[measurementMomentUri].uri,
-            scope.variable.uri, rowLabel
-          ).then(function() {
-            scope.$emit('refreshResults');
+            scope.variable.uri,
+            rowLabel
+          ).then(function () {
+            scope.$emit("refreshResults");
             scope.isEditingMM[measurementMomentUri] = false;
           });
         }
 
         function checkMeasurementOverlap() {
-          scope.overlapMap = ResultsTableService.findMeasurementOverlap(scope.measurementMomentSelections, scope.inputRows);
+          scope.overlapMap = ResultsTableService.findMeasurementOverlap(
+            scope.measurementMomentSelections,
+            scope.inputRows
+          );
         }
 
         function showEditMeasurementMoment(measurementMomentUri) {
-          reloadResults().then(function() {
+          reloadResults().then(function () {
             scope.isEditingMM[measurementMomentUri] = true;
           });
         }
-      }
+      },
     };
   };
 
