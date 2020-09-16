@@ -55,10 +55,10 @@
     "file-saver": "~2.0.2",
     "font-awesome": "~4.7.0",
     "foundation-sites": "6.6.3",
-    "gemtc-web": "drugis/gemtc-web#0.10.4",
+    "gemtc-web": "drugis/gemtc-web#develop",
     "help-popup": "drugis/help-popup#0.5.1",
     "html-webpack-plugin": "^4.4.1",
-    "jasmine": "^3.6.0",
+    "jasmine": "^3.6.1",
     "jasmine-core": "~3.6.0",
     "jquery": "~3.5.1",
     "karma": "~5.2.2",
@@ -96,14 +96,16 @@
   "dependencies": {},
   "resolutions": {
     "bcrypt": "5.0.0",
-    "dot-prop": "5.1.1",
+    "dot-prop": "5.3.0",
     "elliptic": "6.5.3",
     "jquery": "3.5.1",
     "kind-of": "6.0.3",
-    "lodash": "^4.17.20",
+    "lodash": "^4.17.15",
     "minimist": "1.2.5",
-    "serialize-javascript": "4.0.0",
+    "mixin-deep": "2.0.1",
+    "optimize-css-assets-webpack-plugin": "5.0.4",
     "set-value": "3.0.1",
-    "yargs-parser": "18.1.2"
+    "serialize-javascript": "5.0.1",
+    "yargs-parser": "20.0.0"
   }
 }
