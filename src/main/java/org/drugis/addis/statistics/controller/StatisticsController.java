@@ -13,9 +13,6 @@ import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-/**
- * Created by daan on 20-1-17.
- */
 @Controller
 public class StatisticsController {
 

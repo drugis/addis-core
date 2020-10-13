@@ -27,6 +27,8 @@
   },
   "homepage": "https://github.com/drugis/addis-core#readme",
   "devDependencies": {
+    "@babel/core": "^7.10.0",
+    "@babel/preset-env": "^7.10.0",
     "angucomplete-alt": "~3.0.0",
     "angular": "~1.8.0",
     "angular-animate": "~1.8.0",
@@ -40,6 +42,7 @@
     "angular-ui-router": "~1.0.28",
     "angular1-templateurl-loader": "^1.0.0",
     "angularjs-slider": "~7.0.0",
+    "babel-loader": "^8.0.6",
     "bowser": "~2.11.0",
     "c3": "~0.4.23",
     "clean-webpack-plugin": "^3.0.0",
@@ -79,6 +82,7 @@
     "select2": "~4.0.13",
     "showdown": "~1.9.1",
     "style-loader": "^1.2.1",
+    "terser-webpack-plugin": "^2.3.1",
     "tocbot": "^4.12.0",
     "ui-select": "~0.19.8",
     "url-loader": "^4.1.0",
@@ -92,9 +96,6 @@
   },
   "engines": {
     "yarn": ">= 1.0.0"
-  },
-  "dependencies": {
-    "uglifyjs-webpack-plugin": "^2.2.0"
   },
   "resolutions": {
     "bcrypt": "5.0.0",

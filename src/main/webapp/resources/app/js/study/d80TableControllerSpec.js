@@ -18,7 +18,7 @@ define(['angular-mocks'], function () {
       ['queryItems']
     );
     var resultsServiceMock = jasmine.createSpyObj('ResultsService', [
-      'queryResultsByOutcome'
+      'queryResultsForOutcome'
     ]);
     var estimatesResourceMock = jasmine.createSpyObj('EstimatesResource', [
       'getEstimates'
@@ -132,7 +132,7 @@ define(['angular-mocks'], function () {
       prepareQueryItems(measurementMomentServiceMock, measurementMoments);
 
       var resultsDefer = $q.defer();
-      resultsServiceMock.queryResultsByOutcome.and.returnValue(
+      resultsServiceMock.queryResultsForOutcome.and.returnValue(
         resultsDefer.promise
       );
       resultsDefer.resolve(results);
@@ -178,7 +178,7 @@ define(['angular-mocks'], function () {
           expect(studyDesignServiceMock.queryItems).toHaveBeenCalled();
           expect(endpointServiceMock.queryItems).toHaveBeenCalled();
           expect(measurementMomentServiceMock.queryItems).toHaveBeenCalled();
-          expect(resultsServiceMock.queryResultsByOutcome).toHaveBeenCalled();
+          expect(resultsServiceMock.queryResultsForOutcome).toHaveBeenCalled();
 
           expect(d80TableServiceMock.buildMeasurements).toHaveBeenCalledWith(
             [results],

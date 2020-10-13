@@ -15,9 +15,6 @@ import java.net.URI;
 import java.util.*;
 import java.util.stream.Collectors;
 
-/**
- * Created by daan on 20-1-17.
- */
 @Service
 public class StatisticsServiceImpl implements StatisticsService {
   @Override

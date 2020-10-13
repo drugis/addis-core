@@ -10,23 +10,23 @@ define(['lodash'], function (_) {
         results,
         measurementMomentUri
       );
-      var measurements = _.mapValues(
-        resultsByEndpointAndArm,
-        (endPointResultsByArm, endpointUri) => {
-          return _.mapValues(endPointResultsByArm, (armResults, armUri) => {
-            var resultsObject = buildResultsObject(
-              armResults,
-              endpointsByUri[endpointUri],
-              armUri
-            );
-            return resultsObject;
-          });
-        }
-      );
+      var measurements = _.mapValues(resultsByEndpointAndArm, function (
+        endPointResultsByArm,
+        endpointUri
+      ) {
+        return _.mapValues(endPointResultsByArm, function (armResults, armUri) {
+          var resultsObject = buildResultsObject(
+            armResults,
+            endpointsByUri[endpointUri],
+            armUri
+          );
+          return resultsObject;
+        });
+      });
       measurements.toBackEndMeasurements = _(measurements)
         .values()
-        .flatMap((row) => {
-          return _.map(row, (measurement) => {
+        .flatMap(function (row) {
+          return _.map(row, function (measurement) {
             return _.omit(measurement, 'label');
           });
         })
