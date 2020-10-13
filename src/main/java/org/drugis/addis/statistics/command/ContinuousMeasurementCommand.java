@@ -7,9 +7,6 @@ import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Created by joris on 24-1-17.
- */
 public class ContinuousMeasurementCommand extends AbstractMeasurementCommand {
   Map<String, Double> resultProperties = new HashMap<>();
 

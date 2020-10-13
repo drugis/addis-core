@@ -7,9 +7,6 @@ import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Created by daan on 20-1-17.
- */
 public class DichotomousMeasurementCommand extends AbstractMeasurementCommand {
   Map<String, Double> resultProperties = new HashMap<>();
 

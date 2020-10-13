@@ -62,14 +62,14 @@ define(['lodash', 'clipboard'], function (_, Clipboard) {
         )
       };
 
-      if (!$scope.selected.measurementMoment) {
-        return;
-      } else {
+      if ($scope.selected.measurementMoment) {
         $scope.resultsPromises = _.map(
           _.map($scope.endpoints, 'uri'),
           ResultsService.queryResultsForOutcome
         );
         buildTable();
+      } else {
+        return;
       }
     });
 
