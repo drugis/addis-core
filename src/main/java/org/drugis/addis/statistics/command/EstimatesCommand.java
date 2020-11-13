@@ -4,10 +4,8 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
-/**
- * Created by daan on 20-1-17.
- */
 public class EstimatesCommand {
   URI baselineUri;
 
@@ -31,17 +29,13 @@ public class EstimatesCommand {
   public boolean equals(Object o) {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
-
     EstimatesCommand that = (EstimatesCommand) o;
-
-    if (baselineUri != null ? !baselineUri.equals(that.baselineUri) : that.baselineUri != null) return false;
-    return measurements != null ? measurements.equals(that.measurements) : that.measurements == null;
+    return Objects.equals(baselineUri, that.baselineUri) &&
+            Objects.equals(measurements, that.measurements);
   }
 
   @Override
   public int hashCode() {
-    int result = baselineUri != null ? baselineUri.hashCode() : 0;
-    result = 31 * result + (measurements != null ? measurements.hashCode() : 0);
-    return result;
+    return Objects.hash(baselineUri, measurements);
   }
 }
