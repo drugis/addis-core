@@ -1,4 +1,4 @@
-FROM phusion/baseimage
+FROM phusion/baseimage:master
 
 RUN DEBIAN_FRONTEND=noninteractive apt-get update
 RUN DEBIAN_FRONTEND=noninteractive apt-get upgrade -y
