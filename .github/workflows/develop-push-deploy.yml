@@ -36,6 +36,7 @@ jobs:
           ADDIS_CORE_DB: addiscore
           ADDIS_CORE_DB_USERNAME: addiscore
           ADDIS_CORE_DB_PASSWORD: ${{ secrets.addisTestDbPassword }}
+          DISPLAY: ':0.0'
 
       # - name: create ssl files
       #   run: |
