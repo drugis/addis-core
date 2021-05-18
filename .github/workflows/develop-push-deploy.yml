@@ -29,6 +29,13 @@ jobs:
 
       - name: package addis, using 'mvn package'
         run: mvn clean package
+        env:
+          ADDIS_CORE_DB_DRIVER: org.postgresql.Driver
+          ADDIS_CORE_DB_CHANGELOG: database.sql
+          ADDIS_CORE_DB_HOST: psql-test.drugis.org
+          ADDIS_CORE_DB: addiscore
+          ADDIS_CORE_DB_USERNAME: addiscore
+          ADDIS_CORE_DB_PASSWORD: ${{ secrets.addisTestDbPassword }}
 
       # - name: create ssl files
       #   run: |
