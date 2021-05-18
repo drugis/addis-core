@@ -28,7 +28,7 @@ jobs:
           MATOMO_VERSION: Test
 
       - name: package addis, using 'mvn package'
-        run: mvn --batch-mode clean package
+        run: mvn clean package
         env:
           ADDIS_CORE_DB_DRIVER: org.postgresql.Driver
           ADDIS_CORE_DB_CHANGELOG: database.sql
