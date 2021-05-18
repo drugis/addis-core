@@ -27,6 +27,9 @@ jobs:
         env:
           MATOMO_VERSION: Test
 
+      - name: package addis, using 'mvn package'
+        run: mvn clean package
+
       # - name: create ssl files
       #   run: |
       #     mkdir ssl
