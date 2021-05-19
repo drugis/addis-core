@@ -126,7 +126,7 @@ public class GraphServiceTest {
   public void testExtractVersionUri() {
     URI uri = URI.create("https://www.trialverse123.org/datasets/333-av-3222/versions/434-334/graphs/44334");
     URI versionUri = graphService.extractVersionUri(uri);
-    assertEquals(testHost + "/versions/" + "434-334", versionUri.toString());
+    verify(webConstants, times(1)).buildVersionUri("434-334");
   }
 
   @Test

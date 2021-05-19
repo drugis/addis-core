@@ -36,8 +36,8 @@ jobs:
           ADDIS_CORE_DB: addiscore
           ADDIS_CORE_DB_USERNAME: addiscore
           ADDIS_CORE_DB_PASSWORD: ${{ secrets.addisTestDbPassword }}
-          TRIPLESTORE_BASE_URI: http://localhost:8080
-          EVENT_SOURCE_URI_PREFIX: http://localhost:8080
+          TRIPLESTORE_BASE_URI: https://fuseki-test.drugis.org
+          EVENT_SOURCE_URI_PREFIX: https://fuseki-test.drugis.org
           PATAVI_URI: https://patavi-test.drugis.org/
           CLINICALTRIALS_IMPORTER_URL: https://nct-test.drugis.org
 
