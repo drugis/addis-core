@@ -61,9 +61,6 @@ jobs:
       - name: docker push
         run: docker push addis/core:test
 
-      - name: pull latest from drugis on the server
-        run: ssh -o StrictHostKeyChecking=no deploy@addis-test.drugis.org 'cd addis-core && git checkout develop && git pull'
-
       - name: stop docker container on the server
         run: ssh -o StrictHostKeyChecking=no deploy@addis-test.drugis.org 'docker stop addis'
 
