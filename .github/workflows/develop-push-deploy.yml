@@ -39,10 +39,10 @@ jobs:
           ADDIS_CORE_DB: addiscore
           ADDIS_CORE_DB_USERNAME: addiscore
           ADDIS_CORE_DB_PASSWORD: ${{ secrets.addisTestDbPassword }}
+          CLINICALTRIALS_IMPORTER_URL: https://nct-test.drugis.org
           TRIPLESTORE_BASE_URI: http://localhost:8080
           EVENT_SOURCE_URI_PREFIX: http://localhost:8080
           PATAVI_URI: https://patavi-test.drugis.org/
-          CLINICALTRIALS_IMPORTER_URL: https://nct-test.drugis.org
 
       - name: copy war to docker folder
         run: cp target/addis-core.war docker/ROOT.war

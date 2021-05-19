@@ -1,5 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <Server port="8005" shutdown="SHUTDOWN">
+  <!--Initialize Jasper prior to webapps are loaded. Documentation at /docs/jasper-howto.html -->
+  <Listener className="org.apache.catalina.core.JasperListener" />
   <!-- Prevent memory leaks due to use of particular java/javax APIs-->
   <Listener className="org.apache.catalina.core.JreMemoryLeakPreventionListener" />
   <Listener className="org.apache.catalina.mbeans.GlobalResourcesLifecycleListener" />
@@ -13,6 +15,9 @@
   <Service name="Catalina">
     <Connector port="8080" protocol="HTTP/1.1" 
       URIEncoding="UTF-8"
+      proxyName="${tomcatProxyName}"
+      proxyPort="${tomcatProxyPort}"
+      scheme="${tomcatProxyScheme}"
       maxHttpHeaderSize="65536"
       maxPostSize="20971520" />
 
