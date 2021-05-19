@@ -58,30 +58,29 @@ jobs:
           cd docker
           docker build --tag addis/core:test .
 
-      # - name: docker push
-      #   run: docker push addis/mcda:test
+      - name: docker push
+        run: docker push addis/core:test
 
-      # - name: pull latest from drugis on the server
-      #   run: ssh -o StrictHostKeyChecking=no deploy@mcda-test.drugis.org 'cd mcda-elicitation-web && git checkout develop && git pull'
-      # # StrictHostKeyChecking=no ensures no prompt for 'add to known hosts'
+      - name: pull latest from drugis on the server
+        run: ssh -o StrictHostKeyChecking=no deploy@addis-test.drugis.org 'cd addis-core && git checkout develop && git pull'
 
-      # - name: stop MCDA docker container on the server
-      #   run: ssh -o StrictHostKeyChecking=no deploy@mcda-test.drugis.org 'docker stop mcda'
+      - name: stop docker container on the server
+        run: ssh -o StrictHostKeyChecking=no deploy@addis-test.drugis.org 'docker stop addis'
 
-      # - name: remove container on the server
-      #   run: ssh -o StrictHostKeyChecking=no deploy@mcda-test.drugis.org 'docker rm mcda'
+      - name: remove container on the server
+        run: ssh -o StrictHostKeyChecking=no deploy@addis-test.drugis.org 'docker rm addis'
 
-      # - name: pull container on the server
-      #   run: ssh -o StrictHostKeyChecking=no deploy@mcda-test.drugis.org 'docker rm mcda'
+      - name: pull container on the server
+        run: ssh -o StrictHostKeyChecking=no deploy@addis-test.drugis.org 'docker pull addis/core:test'
 
-      # - name: run MCDA container on the server
-      #   run: ssh -o StrictHostKeyChecking=no deploy@mcda-test.drugis.org 'mcda-elicitation-web/run-mcda-from-registry.sh'
+      - name: run container on the server
+        run: ssh -o StrictHostKeyChecking=no deploy@addis-test.drugis.org 'addis-core/run-addis-from-registry.sh'
 
-      # - name: prune docker on the server
-      #   run: ssh -o StrictHostKeyChecking=no deploy@mcda-test.drugis.org 'docker system prune -f'
+      - name: prune docker on the server
+        run: ssh -o StrictHostKeyChecking=no deploy@addis-test.drugis.org 'docker system prune -f'
 
-      # - name: docker registry garbage collection
-      #   run: ssh -o StrictHostKeyChecking=no deploy@registry.drugis.org './garbage-collect-registry.sh'
+      - name: docker registry garbage collection
+        run: ssh -o StrictHostKeyChecking=no deploy@registry.drugis.org './garbage-collect-registry.sh'
 
       # - name: notify on slack channel on failure
       #   if: failure()
@@ -90,7 +89,7 @@ jobs:
       #     SLACK_WEBHOOK: ${{ secrets.slackWebhook }}
       #     SLACK_USERNAME: gitbot
       #     SLACK_TITLE: 'Develop push:'
-      #     SLACK_MESSAGE: 'MCDA-test deploy failed'
+      #     SLACK_MESSAGE: 'ADDIS-test deploy failed'
 
       # - name: notify on slack channel on success
       #   uses: rtCamp/action-slack-notify@master
@@ -98,4 +97,4 @@ jobs:
       #     SLACK_WEBHOOK: ${{ secrets.slackWebhook }}
       #     SLACK_USERNAME: gitbot
       #     SLACK_TITLE: 'Develop push:'
-      #     SLACK_MESSAGE: 'MCDA-test deployed'
+      #     SLACK_MESSAGE: 'ADDIS-test deployed'
