@@ -47,7 +47,8 @@ jobs:
       - name: decode and copy keystore
         run: |
           echo "${{ secrets.keystoreB64 }}" > keystore.jks.b64
-          base64 -d keystore.jks.b64 > docker/ssl/keystore.jks
+          base64 -d keystore.jks.b64 > keystore.jks
+          cp keystore.jks docker/ssl/keystore.jks
           ls
           ls docker/ssl/
 
