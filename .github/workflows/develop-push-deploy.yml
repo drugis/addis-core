@@ -2,7 +2,7 @@ name: ADDIS-test | push | deploy
 
 on:
   push:
-    branches: ops/testDeployFlow
+    branches: develop
 
 jobs:
   test:
