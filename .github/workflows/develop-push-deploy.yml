@@ -25,8 +25,8 @@ jobs:
       - name: yarn
         run: yarn
 
-      - name: npm run build dist
-        run: npm run build-prod
+      - name: yarn build
+        run: yarn build-prod
         env:
           MATOMO_VERSION: Test
 
@@ -40,6 +40,7 @@ jobs:
           ADDIS_CORE_DB_USERNAME: addiscore
           ADDIS_CORE_DB_PASSWORD: ${{ secrets.addisTestDbPassword }}
           CLINICALTRIALS_IMPORTER_URL: https://nct-test.drugis.org
+          # Last three are for testing purposes. Localhost needed because of environment settings leaking into tests.
           TRIPLESTORE_BASE_URI: http://localhost:8080
           EVENT_SOURCE_URI_PREFIX: http://localhost:8080
           PATAVI_URI: https://patavi-test.drugis.org/
@@ -61,14 +62,14 @@ jobs:
       - name: docker push
         run: docker push addis/core:test
 
+      - name: pull container on the server
+        run: ssh -o StrictHostKeyChecking=no deploy@addis-test.drugis.org 'docker pull addis/core:test'
+
       - name: stop docker container on the server
         run: ssh -o StrictHostKeyChecking=no deploy@addis-test.drugis.org 'docker stop addis'
 
       - name: remove container on the server
         run: ssh -o StrictHostKeyChecking=no deploy@addis-test.drugis.org 'docker rm addis'
-
-      - name: pull container on the server
-        run: ssh -o StrictHostKeyChecking=no deploy@addis-test.drugis.org 'docker pull addis/core:test'
 
       - name: run container on the server
         run: ssh -o StrictHostKeyChecking=no deploy@addis-test.drugis.org 'addis-core/run-addis-from-registry.sh'
@@ -79,19 +80,19 @@ jobs:
       - name: docker registry garbage collection
         run: ssh -o StrictHostKeyChecking=no deploy@registry.drugis.org './garbage-collect-registry.sh'
 
-      # - name: notify on slack channel on failure
-      #   if: failure()
-      #   uses: rtCamp/action-slack-notify@master
-      #   env:
-      #     SLACK_WEBHOOK: ${{ secrets.slackWebhook }}
-      #     SLACK_USERNAME: gitbot
-      #     SLACK_TITLE: 'Develop push:'
-      #     SLACK_MESSAGE: 'ADDIS-test deploy failed'
+      - name: notify on slack channel on failure
+        if: failure()
+        uses: rtCamp/action-slack-notify@master
+        env:
+          SLACK_WEBHOOK: ${{ secrets.slackWebhook }}
+          SLACK_USERNAME: gitbot
+          SLACK_TITLE: 'Develop push:'
+          SLACK_MESSAGE: 'ADDIS-test deploy failed'
 
-      # - name: notify on slack channel on success
-      #   uses: rtCamp/action-slack-notify@master
-      #   env:
-      #     SLACK_WEBHOOK: ${{ secrets.slackWebhook }}
-      #     SLACK_USERNAME: gitbot
-      #     SLACK_TITLE: 'Develop push:'
-      #     SLACK_MESSAGE: 'ADDIS-test deployed'
+      - name: notify on slack channel on success
+        uses: rtCamp/action-slack-notify@master
+        env:
+          SLACK_WEBHOOK: ${{ secrets.slackWebhook }}
+          SLACK_USERNAME: gitbot
+          SLACK_TITLE: 'Develop push:'
+          SLACK_MESSAGE: 'ADDIS-test deployed'
