@@ -59,11 +59,11 @@ jobs:
           cd docker
           docker build --tag addis/core:live .
 
-      # - name: docker push
-      #   run: docker push addis/core:live
+      - name: docker push
+        run: docker push addis/core:live
 
-      # - name: pull container on the server
-      #   run: ssh -o StrictHostKeyChecking=no deploy@addis.drugis.org 'docker pull addis/core:live'
+      - name: pull container on the server
+        run: ssh -o StrictHostKeyChecking=no deploy@addis.drugis.org 'docker pull addis/core:live'
 
       # - name: stop docker container on the server
       #   run: ssh -o StrictHostKeyChecking=no deploy@addis.drugis.org 'docker stop addis'
