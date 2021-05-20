@@ -65,20 +65,20 @@ jobs:
       - name: pull container on the server
         run: ssh -o StrictHostKeyChecking=no deploy@addis.drugis.org 'docker pull addis/core:live'
 
-      # - name: stop docker container on the server
-      #   run: ssh -o StrictHostKeyChecking=no deploy@addis.drugis.org 'docker stop addis'
+      - name: stop docker container on the server
+        run: ssh -o StrictHostKeyChecking=no deploy@addis.drugis.org 'docker stop addis'
 
-      # - name: remove container on the server
-      #   run: ssh -o StrictHostKeyChecking=no deploy@addis.drugis.org 'docker rm addis'
+      - name: remove container on the server
+        run: ssh -o StrictHostKeyChecking=no deploy@addis.drugis.org 'docker rm addis'
 
-      # - name: run container on the server
-      #   run: ssh -o StrictHostKeyChecking=no deploy@addis.drugis.org 'addis-core/run-addis-from-registry.sh'
+      - name: run container on the server
+        run: ssh -o StrictHostKeyChecking=no deploy@addis.drugis.org 'addis-core/run-addis-from-registry.sh'
 
-      # - name: prune docker on the server
-      #   run: ssh -o StrictHostKeyChecking=no deploy@addis.drugis.org 'docker system prune -f'
+      - name: prune docker on the server
+        run: ssh -o StrictHostKeyChecking=no deploy@addis.drugis.org 'docker system prune -f'
 
-      # - name: docker registry garbage collection
-      #   run: ssh -o StrictHostKeyChecking=no deploy@registry.drugis.org './garbage-collect-registry.sh'
+      - name: docker registry garbage collection
+        run: ssh -o StrictHostKeyChecking=no deploy@registry.drugis.org './garbage-collect-registry.sh'
 
       # - name: notify on slack channel on failure
       #   if: failure()
