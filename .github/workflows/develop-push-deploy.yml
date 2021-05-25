@@ -2,7 +2,7 @@ name: ADDIS-test | push | deploy
 
 on:
   push:
-    branches: develop
+    branches: ops/updateDevelopWorkflow
 
 jobs:
   test:
@@ -11,7 +11,7 @@ jobs:
     strategy:
       matrix:
         node-version: ['12']
-        os: [ubuntu-16.04]
+        os: [ubuntu-20.04]
 
     steps:
       - uses: actions/checkout@v2
@@ -65,14 +65,42 @@ jobs:
       - name: pull container on the server
         run: ssh -o StrictHostKeyChecking=no deploy@addis-test.drugis.org 'docker pull addis/core:test'
 
-      - name: stop docker container on the server
-        run: ssh -o StrictHostKeyChecking=no deploy@addis-test.drugis.org 'docker stop addis'
-
       - name: remove container on the server
-        run: ssh -o StrictHostKeyChecking=no deploy@addis-test.drugis.org 'docker rm addis'
+        run: ssh -o StrictHostKeyChecking=no deploy@addis-test.drugis.org 'docker rm -f addis || true'
 
       - name: run container on the server
-        run: ssh -o StrictHostKeyChecking=no deploy@addis-test.drugis.org 'addis-core/run-addis-from-registry.sh'
+        run: >
+          ssh -o StrictHostKeyChecking=no deploy@addis-test.drugis.org \
+          "docker run -d --name addis \
+           -e JAVA_OPTS=" \
+           -DtomcatProxyScheme=https \
+           -DtomcatProxyName=addis-test.drugis.org \
+           -DtomcatProxyPort=443 \
+           -DADDIS_CORE_DB_DRIVER=org.postgresql.Driver \
+           -DADDIS_CORE_DB_HOST=psql-test.drugis.org \
+           -DADDIS_CORE_DB=addiscore \
+           -DADDIS_CORE_DB_USERNAME=addiscore \
+           -DADDIS_CORE_DB_PASSWORD=${{ secrets.addisTestDbPassword }} \
+           -DPATAVI_TASK_DB_DRIVER=org.postgresql.Driver \
+           -DPATAVI_TASK_DB=patavitask \
+           -DPATAVI_TASK_DB_HOST=psql-test.drugis.org \
+           -DPATAVI_TASK_DB_USERNAME=patavitask \
+           -DPATAVI_TASK_DB_PASSWORD=${{ secrets.pataviTaskDbPassword }} "\
+           -e PATAVI_URI=https://patavi-test.drugis.org/ \
+           -e ADDIS_CORE_PATAVI_MCDA_WS_URI=https://patavi-test.drugis.org/ \
+           -e ADDIS_CORE_OAUTH_GOOGLE_SECRET=${{ secrets.googleSecretTest }} \
+           -e ADDIS_CORE_OAUTH_GOOGLE_KEY=${{ secrets.googleKeyTest }} \
+           -e TRIPLESTORE_BASE_URI=https://fuseki-test.drugis.org \
+           -e KEYSTORE_PATH=/ssl/keystore.jks \
+           -e KEYSTORE_PASSWORD=develop \
+           -e CLINICALTRIALS_IMPORTER_URL=https://nct-test.drugis.org \
+           -e EVENT_SOURCE_URI_PREFIX=https://fuseki-test.drugis.org \
+           -p 8081:8080 -p 2223:22 -t \
+           addis/core:test"
+
+      # Without sleep, prune will remove the container.
+      - name: Sleep for 30 seconds
+        run: sleep 30
 
       - name: prune docker on the server
         run: ssh -o StrictHostKeyChecking=no deploy@addis-test.drugis.org 'docker system prune -f'
@@ -80,19 +108,19 @@ jobs:
       - name: docker registry garbage collection
         run: ssh -o StrictHostKeyChecking=no deploy@registry.drugis.org './garbage-collect-registry.sh'
 
-      - name: notify on slack channel on failure
-        if: failure()
-        uses: rtCamp/action-slack-notify@master
-        env:
-          SLACK_WEBHOOK: ${{ secrets.slackWebhook }}
-          SLACK_USERNAME: gitbot
-          SLACK_TITLE: 'Develop push:'
-          SLACK_MESSAGE: 'ADDIS-test deploy failed'
+      # - name: notify on slack channel on failure
+      #   if: failure()
+      #   uses: rtCamp/action-slack-notify@master
+      #   env:
+      #     SLACK_WEBHOOK: ${{ secrets.slackWebhook }}
+      #     SLACK_USERNAME: gitbot
+      #     SLACK_TITLE: 'Develop push:'
+      #     SLACK_MESSAGE: 'ADDIS-test deploy failed'
 
-      - name: notify on slack channel on success
-        uses: rtCamp/action-slack-notify@master
-        env:
-          SLACK_WEBHOOK: ${{ secrets.slackWebhook }}
-          SLACK_USERNAME: gitbot
-          SLACK_TITLE: 'Develop push:'
-          SLACK_MESSAGE: 'ADDIS-test deployed'
+      # - name: notify on slack channel on success
+      #   uses: rtCamp/action-slack-notify@master
+      #   env:
+      #     SLACK_WEBHOOK: ${{ secrets.slackWebhook }}
+      #     SLACK_USERNAME: gitbot
+      #     SLACK_TITLE: 'Develop push:'
+      #     SLACK_MESSAGE: 'ADDIS-test deployed'
