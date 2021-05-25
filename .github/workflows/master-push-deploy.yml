@@ -87,7 +87,7 @@ jobs:
            -e ADDIS_CORE_OAUTH_GOOGLE_KEY=${{ secrets.googleKeyLive }} \
            -e TRIPLESTORE_BASE_URI=https://fuseki.drugis.org \
            -e KEYSTORE_PATH=/ssl/keystore.jks \
-           -e KEYSTORE_PASSWORD=develop \
+           -e KEYSTORE_PASSWORD=${{ secrets.keystorePasswordLive }} \
            -e CLINICALTRIALS_IMPORTER_URL=https://nct.drugis.org \
            -e EVENT_SOURCE_URI_PREFIX=https://fuseki.drugis.org \
            -p 8081:8080 -p 2223:22 -t \
