@@ -19,54 +19,54 @@ jobs:
         with:
           ssh-private-key: ${{ secrets.deployPrivateKey }}
 
-      # - name: docker login
-      #   run: docker login -u addis -p ${{ secrets.dockerRegistryPassword }}
+      - name: docker login
+        run: docker login -u addis -p ${{ secrets.dockerRegistryPassword }}
 
-      # - name: yarn
-      #   run: yarn
+      - name: yarn
+        run: yarn
 
-      # - name: yarn build
-      #   run: yarn build-prod
-      #   env:
-      #     MATOMO_VERSION: Test
+      - name: yarn build
+        run: yarn build-prod
+        env:
+          MATOMO_VERSION: Test
 
-      # - name: package addis, using 'mvn package'
-      #   run: mvn clean package
-      #   env:
-      #     ADDIS_CORE_DB_DRIVER: org.postgresql.Driver
-      #     ADDIS_CORE_DB_CHANGELOG: database.sql
-      #     ADDIS_CORE_DB_HOST: psql-test.drugis.org
-      #     ADDIS_CORE_DB: addiscore
-      #     ADDIS_CORE_DB_USERNAME: addiscore
-      #     ADDIS_CORE_DB_PASSWORD: ${{ secrets.addisTestDbPassword }}
-      #     CLINICALTRIALS_IMPORTER_URL: https://nct-test.drugis.org
-      #     # Last three are for testing purposes. Localhost needed because of environment settings leaking into tests.
-      #     TRIPLESTORE_BASE_URI: http://localhost:8080
-      #     EVENT_SOURCE_URI_PREFIX: http://localhost:8080
-      #     PATAVI_URI: https://patavi-test.drugis.org/
+      - name: package addis, using 'mvn package'
+        run: mvn clean package
+        env:
+          ADDIS_CORE_DB_DRIVER: org.postgresql.Driver
+          ADDIS_CORE_DB_CHANGELOG: database.sql
+          ADDIS_CORE_DB_HOST: psql-test.drugis.org
+          ADDIS_CORE_DB: addiscore
+          ADDIS_CORE_DB_USERNAME: addiscore
+          ADDIS_CORE_DB_PASSWORD: ${{ secrets.addisTestDbPassword }}
+          CLINICALTRIALS_IMPORTER_URL: https://nct-test.drugis.org
+          # Last three are for testing purposes. Localhost needed because of environment settings leaking into tests.
+          TRIPLESTORE_BASE_URI: http://localhost:8080
+          EVENT_SOURCE_URI_PREFIX: http://localhost:8080
+          PATAVI_URI: https://patavi-test.drugis.org/
 
-      # - name: copy war to docker folder
-      #   run: cp target/addis-core.war docker/ROOT.war
+      - name: copy war to docker folder
+        run: cp target/addis-core.war docker/ROOT.war
 
-      # - name: decode and copy keystore
-      #   run: |
-      #     mkdir docker/ssl
-      #     echo "${{ secrets.keystoreB64 }}" > keystore.jks.b64
-      #     base64 -d keystore.jks.b64 > docker/ssl/keystore.jks
+      - name: decode and copy keystore
+        run: |
+          mkdir docker/ssl
+          echo "${{ secrets.keystoreB64 }}" > keystore.jks.b64
+          base64 -d keystore.jks.b64 > docker/ssl/keystore.jks
 
-      # - name: build docker container
-      #   run: |
-      #     cd docker
-      #     docker build --tag addis/core:test .
+      - name: build docker container
+        run: |
+          cd docker
+          docker build --tag addis/core:test .
 
-      # - name: docker push
-      #   run: docker push addis/core:test
+      - name: docker push
+        run: docker push addis/core:test
 
-      # - name: pull container on the server
-      #   run: ssh -o StrictHostKeyChecking=no deploy@addis-test.drugis.org 'docker pull addis/core:test'
+      - name: pull container on the server
+        run: ssh -o StrictHostKeyChecking=no deploy@addis-test.drugis.org 'docker pull addis/core:test'
 
-      # - name: remove container on the server
-      #   run: ssh -o StrictHostKeyChecking=no deploy@addis-test.drugis.org 'docker rm -f addis || true'
+      - name: remove container on the server
+        run: ssh -o StrictHostKeyChecking=no deploy@addis-test.drugis.org 'docker rm -f addis || true'
 
       - name: run container on the server
         run: >
@@ -108,19 +108,19 @@ jobs:
       - name: docker registry garbage collection
         run: ssh -o StrictHostKeyChecking=no deploy@registry.drugis.org './garbage-collect-registry.sh'
 
-      # - name: notify on slack channel on failure
-      #   if: failure()
-      #   uses: rtCamp/action-slack-notify@master
-      #   env:
-      #     SLACK_WEBHOOK: ${{ secrets.slackWebhook }}
-      #     SLACK_USERNAME: gitbot
-      #     SLACK_TITLE: 'Develop push:'
-      #     SLACK_MESSAGE: 'ADDIS-test deploy failed'
+      - name: notify on slack channel on failure
+        if: failure()
+        uses: rtCamp/action-slack-notify@master
+        env:
+          SLACK_WEBHOOK: ${{ secrets.slackWebhook }}
+          SLACK_USERNAME: gitbot
+          SLACK_TITLE: 'Develop push:'
+          SLACK_MESSAGE: 'ADDIS-test deploy failed'
 
-      # - name: notify on slack channel on success
-      #   uses: rtCamp/action-slack-notify@master
-      #   env:
-      #     SLACK_WEBHOOK: ${{ secrets.slackWebhook }}
-      #     SLACK_USERNAME: gitbot
-      #     SLACK_TITLE: 'Develop push:'
-      #     SLACK_MESSAGE: 'ADDIS-test deployed'
+      - name: notify on slack channel on success
+        uses: rtCamp/action-slack-notify@master
+        env:
+          SLACK_WEBHOOK: ${{ secrets.slackWebhook }}
+          SLACK_USERNAME: gitbot
+          SLACK_TITLE: 'Develop push:'
+          SLACK_MESSAGE: 'ADDIS-test deployed'
