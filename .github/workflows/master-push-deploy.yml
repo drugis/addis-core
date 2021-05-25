@@ -65,14 +65,37 @@ jobs:
       - name: pull container on the server
         run: ssh -o StrictHostKeyChecking=no deploy@addis.drugis.org 'docker pull addis/core:live'
 
-      - name: stop docker container on the server
-        run: ssh -o StrictHostKeyChecking=no deploy@addis.drugis.org 'docker stop addis'
-
       - name: remove container on the server
-        run: ssh -o StrictHostKeyChecking=no deploy@addis.drugis.org 'docker rm addis'
+        run: ssh -o StrictHostKeyChecking=no deploy@addis.drugis.org 'docker rm -f addis || true'
 
       - name: run container on the server
-        run: ssh -o StrictHostKeyChecking=no deploy@addis.drugis.org 'addis-core/run-addis-from-registry.sh'
+        run: >
+          ssh -o StrictHostKeyChecking=no deploy@addis.drugis.org \
+          "docker run -d --name addis \
+           -e JAVA_OPTS=' \
+           -DtomcatProxyScheme=https \
+           -DtomcatProxyName=addis.drugis.org \
+           -DtomcatProxyPort=443 \
+           -DADDIS_CORE_DB_DRIVER=org.postgresql.Driver \
+           -DADDIS_CORE_DB_HOST=psql.drugis.org \
+           -DADDIS_CORE_DB=addiscore \
+           -DADDIS_CORE_DB_USERNAME=addiscore \
+           -DADDIS_CORE_DB_PASSWORD=${{ secrets.addisLiveDbPassword }} \
+           -e PATAVI_URI=https://patavi.drugis.org/ \
+           -e ADDIS_CORE_PATAVI_MCDA_WS_URI=https://patavi.drugis.org/ \
+           -e ADDIS_CORE_OAUTH_GOOGLE_SECRET=${{ secrets.googleSecretLive }} \
+           -e ADDIS_CORE_OAUTH_GOOGLE_KEY=${{ secrets.googleKeyLive }} \
+           -e TRIPLESTORE_BASE_URI=https://fuseki.drugis.org \
+           -e KEYSTORE_PATH=/ssl/keystore.jks \
+           -e KEYSTORE_PASSWORD=develop \
+           -e CLINICALTRIALS_IMPORTER_URL=https://nct.drugis.org \
+           -e EVENT_SOURCE_URI_PREFIX=https://fuseki.drugis.org \
+           -p 8081:8080 -p 2223:22 -t \
+           addis/core:live"
+
+      # Without sleep, prune will remove the container.
+      - name: Sleep for 30 seconds
+        run: sleep 30
 
       - name: prune docker on the server
         run: ssh -o StrictHostKeyChecking=no deploy@addis.drugis.org 'docker system prune -f'
