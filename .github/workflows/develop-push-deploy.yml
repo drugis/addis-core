@@ -2,7 +2,7 @@ name: ADDIS-test | push | deploy
 
 on:
   push:
-    branches: develop
+    branches: ops/updateDevelopWorkflow
 
 jobs:
   test:
@@ -85,7 +85,7 @@ jobs:
            -DPATAVI_TASK_DB=patavitask \
            -DPATAVI_TASK_DB_HOST=psql-test.drugis.org \
            -DPATAVI_TASK_DB_USERNAME=patavitask \
-           -DPATAVI_TASK_DB_PASSWORD=${{ secrets.pataviTaskDbPassword }} '\
+           -DPATAVI_TASK_DB_PASSWORD=${{ secrets.pataviTaskDbPasswordTest }} '\
            -e PATAVI_URI=https://patavi-test.drugis.org/ \
            -e ADDIS_CORE_PATAVI_MCDA_WS_URI=https://patavi-test.drugis.org/ \
            -e ADDIS_CORE_OAUTH_GOOGLE_SECRET=${{ secrets.googleSecretTest }} \
