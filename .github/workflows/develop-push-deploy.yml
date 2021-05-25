@@ -72,7 +72,7 @@ jobs:
         run: >
           ssh -o StrictHostKeyChecking=no deploy@addis-test.drugis.org \
           "docker run -d --name addis \
-           -e JAVA_OPTS='' \
+           -e JAVA_OPTS=' \
            -DtomcatProxyScheme=https \
            -DtomcatProxyName=addis-test.drugis.org \
            -DtomcatProxyPort=443 \
