@@ -2,7 +2,7 @@ name: ADDIS | push | deploy
 
 on:
   push:
-    branches: master
+    branches: ops/updateMasterWorkflow
 
 jobs:
   test:
