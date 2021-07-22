@@ -92,7 +92,7 @@
     "webpack-cli": "^3.3.12",
     "webpack-merge": "^5.1.4",
     "webpack-xlsx-loader": "^1.0.0",
-    "xlsx": "~0.16.7"
+    "xlsx": "~0.17.0"
   },
   "engines": {
     "yarn": ">= 1.0.0"
