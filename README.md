@@ -1,4 +1,4 @@
-addis-core
+Addis-core
 ==========
 
 ADDIS 2.x core
