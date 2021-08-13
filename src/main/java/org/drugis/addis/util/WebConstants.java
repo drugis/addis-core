@@ -58,6 +58,7 @@ public class WebConstants {
   public static final String VERSION_UUID = "versionUuid";
   private static final String TRIPLESTORE_BASE_URI = loadSystemEnv("TRIPLESTORE_BASE_URI");
   private static final String EVENT_SOURCE_URI_PREFIX = loadSystemEnv("EVENT_SOURCE_URI_PREFIX");
+  public static final String PATAVI_API_KEY = loadSystemEnv("PATAVI_API_KEY");
   private static final String TRIPLESTORE_DATA_URI = TRIPLESTORE_BASE_URI + "/current";
   private static final String TRIPLESTORE_VERSION_URI = EVENT_SOURCE_URI_PREFIX + "/versions/";
 

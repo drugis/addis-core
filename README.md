@@ -35,24 +35,14 @@ INSERT INTO applicationkey (secretkey, accountid, applicationname, creationdate,
 
 It is assumed in the example environment settings below that instances of [Patavi](https://github.com/drugis/patavi) and [Jena-ES](https://github.com/drugis/jena-es) are running on ports 3000 and 3030, respecively.
 
-To authenticate with Patavi, you need a client certificate signed by the Certificate Authority (CA) trusted by Patavi, in a JKS keystore.
-
-If Patavi presents a certificate signed by your own CA, you need to trust that CA. To do this, generate a JKS truststore. This needs to contain the certificate of your own CA and (for OAuth) Google's CA (GeoTrust). The drugis.org domains also depend on GeoTrust. Note that in most Java distributions this CA is trusted by default, in which case you do not need to generate and configure the trust store.
-
-To add the geotrust CA to your trustfile:
-
-```
-keytool -importcert -file /etc/ssl/certs/GeoTrust_Global_CA.pem -alias geotrustCA -keystore <jks location>
-```
+To authenticate with Patavi, you need an API key, provided by whoever is hosting the Patavi server you wish to use. 
 
 Set up the environment:
 
 ```
-export KEYSTORE_PATH=/path/to/keyStore
-export KEYSTORE_PASSWORD=develop
 export TRIPLESTORE_BASE_URI=http://localhost:3030
 export PATAVI_URI=http://localhost:3000
-
+export PATAVI_API_TOKEN=sometokenhere
 export PATAVI_TASK_DB_DRIVER=org.postgresql.Driver
 export PATAVI_TASK_DB_HOST=localhost
 export PATAVI_TASK_DB=patavitask
@@ -106,7 +96,6 @@ Running ADDIS as a docker container
 
 - check out the (dockerfiles repository)[https://github.com/drugis/dockerfiles]
 - build addis WAR, using `mvn package`. Or: download a recent stable version from from https://drugis.org/files/addis-core.war
-- supply the WAR and SSL keystore and truststore to the `tomcat/Dockerfile` from the dockerfiles repository
 - build and run the dockerfile.
 
 Example run script
@@ -130,10 +119,9 @@ docker run -d --name addis \
   -e ADDIS_CORE_OAUTH_GOOGLE_SECRET=<google-secret> \
   -e ADDIS_CORE_OAUTH_GOOGLE_KEY=<google-key> \
   -e TRIPLESTORE_BASE_URI=https://jena-es:3030 \
-  -e KEYSTORE_PATH=/ssl/keystore.jks \
-  -e KEYSTORE_PASSWORD=develop \
   -e EVENT_SOURCE_URI_PREFIX=https://jena-es:3030 \
   -e CLINICALTRIALS_IMPORTER_URL=https://nct.drugis.org \
+  -e PATAVI_API_KEY=someapikeyhere \
   -p 8081:8080 \
   -p 2223:22 \
   -t addis-tomcat
