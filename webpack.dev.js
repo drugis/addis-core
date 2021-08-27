@@ -13,7 +13,7 @@ let config = merge(common, {
     rules: [
       {
         test: /\.css$/,
-        use: ['style-loader', 'css-loader']
+        use: ['css-loader']
       }
     ]
   },
