@@ -21,7 +21,8 @@ let config = {
     // Output directory
     path: basePath + 'WEB-INF/views/dist',
     filename: '[name].bundle.js',
-    chunkFilename: '[name].bundle.js'
+    chunkFilename: '[name].bundle.js',
+    publicPath: ''
   },
 
   module: {
