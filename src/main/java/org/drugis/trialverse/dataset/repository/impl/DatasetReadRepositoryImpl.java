@@ -47,6 +47,7 @@ import java.net.URI;
 import java.net.URLEncoder;
 import java.security.Principal;
 import java.util.List;
+import java.util.Objects;
 
 import static org.apache.http.HttpHeaders.ACCEPT;
 import static org.apache.http.HttpHeaders.CONTENT_TYPE;
@@ -151,7 +152,7 @@ public class DatasetReadRepositoryImpl implements DatasetReadRepository {
     String uri = mapping.getVersionedDatasetUrl() + WebConstants.DATA_ENDPOINT + WebConstants.QUERY_STRING_DEFAULT_GRAPH;
 
     ResponseEntity<Graph> responseEntity = restTemplate.exchange(uri, HttpMethod.GET, requestEntity, Graph.class);
-    final String version  = responseEntity.getHeaders().get(WebConstants.X_EVENT_SOURCE_VERSION).get(0);
+    final String version  = Objects.requireNonNull(responseEntity.getHeaders().get(WebConstants.X_EVENT_SOURCE_VERSION)).get(0);
     Graph datasetGraph = responseEntity.getBody();
     if (datasetGraph == null) { // can happen if the default graph is empty
       datasetGraph = GraphFactory.createGraphMem();

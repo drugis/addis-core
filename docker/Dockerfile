@@ -23,9 +23,5 @@ RUN chmod +x /etc/service/tomcat/run
 ADD server.xml /usr/share/tomcat8/conf/server.xml
 RUN chown root.root /usr/share/tomcat8/conf/server.xml
 
-# add keystore and truststore
-RUN mkdir /ssl
-ADD ssl/keystore.jks /ssl/keystore.jks
-
 EXPOSE 8080
 CMD ["/sbin/my_init"]

@@ -49,9 +49,14 @@ public class PataviTaskRepositoryImpl implements PataviTaskRepository {
     HttpPost postRequest = new HttpPost(pataviUri);
     postRequest.addHeader("Connection", "close");
     postRequest.addHeader(new BasicHeader("Content-type", WebConstants.APPLICATION_JSON_UTF8_VALUE));
+    postRequest.addHeader(new BasicHeader("X-api-key", WebConstants.PATAVI_API_KEY));
+    postRequest.addHeader(new BasicHeader("X-client-name", "Addis core"));
     HttpEntity postBody = new ByteArrayEntity(jsonProblem.toString().getBytes());
     postRequest.setEntity(postBody);
     try (CloseableHttpResponse httpResponse = (CloseableHttpResponse) httpClient.execute(postRequest)) {
+      if(httpResponse.getStatusLine().getStatusCode() != 201) {
+        throw new RuntimeException("Error creating patavi task: status code " + httpResponse.getStatusLine().getStatusCode());
+      }
       String location = httpResponse.getHeaders("Location")[0].getValue();
       URI newTaskUri = URI.create(location);
       logger.debug("created new patavi-task with taskUri = " + newTaskUri.toString());
