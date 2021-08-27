@@ -62,9 +62,10 @@ import javax.cache.Caching;
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.security.*;
+import java.security.KeyManagementException;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 import java.time.Duration;
 import java.util.HashMap;
@@ -95,8 +96,6 @@ import java.util.Properties;
 public class MainConfig {
 
   private final static Logger logger = LoggerFactory.getLogger(MainConfig.class);
-  private final static String KEYSTORE_PATH = WebConstants.loadSystemEnv("KEYSTORE_PATH");
-  private final static String KEYSTORE_PASSWORD = WebConstants.loadSystemEnv("KEYSTORE_PASSWORD");
 
   public MainConfig() {
     String trustStoreLocation = System.getProperty("javax.net.ssl.trustStore");
@@ -145,21 +144,18 @@ public class MainConfig {
   }
 
   @Bean
-  public RestTemplate restTemplate(RequestConfig requestConfig) throws CertificateException, UnrecoverableKeyException, NoSuchAlgorithmException, KeyStoreException, KeyManagementException, IOException {
+  public RestTemplate restTemplate(RequestConfig requestConfig) throws CertificateException, NoSuchAlgorithmException, KeyStoreException, IOException, KeyManagementException {
     RestTemplate restTemplate = new RestTemplate(new HttpComponentsClientHttpRequestFactory(httpClient(requestConfig)));
     restTemplate.getMessageConverters().add(new JenaGraphMessageConverter());
     return restTemplate;
   }
 
   @Bean
-  public HttpClient httpClient(RequestConfig requestConfig) throws KeyStoreException, IOException, CertificateException, NoSuchAlgorithmException, UnrecoverableKeyException, KeyManagementException {
-    KeyStore keyStore = KeyStore.getInstance("JKS");
-    keyStore.load(new FileInputStream(KEYSTORE_PATH), KEYSTORE_PASSWORD.toCharArray());
+  public HttpClient httpClient(RequestConfig requestConfig) throws CertificateException, NoSuchAlgorithmException, KeyStoreException, IOException, KeyManagementException {
     String ADDIS_LOCAL = System.getenv("ADDIS_LOCAL");
 
     SSLContextBuilder sslContextBuilder = SSLContexts
-        .custom()
-        .loadKeyMaterial(keyStore, KEYSTORE_PASSWORD.toCharArray());
+        .custom();
     if (ADDIS_LOCAL != null) {
       String TRUSTSTORE_PATH = WebConstants.loadSystemEnv("TRUSTSTORE_PATH");
       sslContextBuilder.loadTrustMaterial(new File(TRUSTSTORE_PATH));

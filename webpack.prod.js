@@ -12,7 +12,7 @@ module.exports = merge(common, {
     rules: [
       {
         test: /\.css$/,
-        loaders: [MiniCssExtractPlugin.loader, 'css-loader']
+        use: [MiniCssExtractPlugin.loader, 'css-loader']
       },
       {
         test: /\.m?js$/,
@@ -28,13 +28,8 @@ module.exports = merge(common, {
     ]
   },
   optimization: {
-    minimizer: [
-      new TerserPlugin({
-        cache: true,
-        sourceMap: true
-      }),
-      new OptimizeCSSAssetsPlugin({})
-    ]
+    minimize: true,
+    minimizer: [new TerserPlugin(), new OptimizeCSSAssetsPlugin({})]
   },
   plugins: [
     new MiniCssExtractPlugin({
