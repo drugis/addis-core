@@ -22,7 +22,7 @@ let config = {
     path: basePath + 'WEB-INF/views/dist',
     filename: '[name].bundle.js',
     chunkFilename: '[name].bundle.js',
-    publicPath: ''
+    publicPath: 'auto'
   },
 
   module: {
@@ -44,19 +44,7 @@ let config = {
           esModule: false
         }
       },
-      {
-        test: /.(ttf|otf|eot|woff(2)?)(\?[a-z0-9]+)?$/,
-        use: [
-          {
-            loader: 'file-loader',
-            options: {
-              name: '[name].[ext]',
-              outputPath: '/fonts/', // where the fonts will go
-              publicPath: '/fonts/' // override the default path
-            }
-          }
-        ]
-      },
+
       {
         test: /\.(png|jp(e*)g|svg|gif)$/,
         use: [
