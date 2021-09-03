@@ -14,24 +14,20 @@ import org.apache.jena.vocabulary.DCTerms;
 import org.drugis.addis.security.Account;
 import org.drugis.addis.security.repository.AccountRepository;
 import org.drugis.addis.trialverse.service.TriplestoreService;
+import org.drugis.addis.util.WebConstants;
+import org.drugis.trialverse.dataset.exception.CreateDatasetException;
 import org.drugis.trialverse.dataset.exception.EditDatasetException;
 import org.drugis.trialverse.dataset.factory.JenaFactory;
 import org.drugis.trialverse.dataset.model.VersionMapping;
 import org.drugis.trialverse.dataset.repository.DatasetWriteRepository;
 import org.drugis.trialverse.dataset.repository.VersionMappingRepository;
-import org.drugis.trialverse.dataset.exception.CreateDatasetException;
 import org.drugis.trialverse.security.TrialversePrincipal;
-import org.drugis.addis.util.WebConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Caching;
 import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.stereotype.Repository;
@@ -43,21 +39,19 @@ import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.inject.Inject;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
+
+import static org.drugis.addis.util.WebConstants.JENA_API_KEY;
+import static org.drugis.addis.util.WebConstants.X_JENA_API_KEY;
 
 @Repository
 public class DatasetWriteRepositoryImpl implements DatasetWriteRepository {
 
   public static final String PATH = "/datasets";
-  private final String INITIAL_COMMIT_MESSAGE = "Dataset created through Trialverse";
-  private final String EDIT_TITLE_MESSAGE = "Edited title.";
   private final String EDIT_DATASET = TriplestoreService.loadResource("sparql/editDataset.sparql");
   private final String INSERT_DESCRIPTION = TriplestoreService.loadResource("sparql/insertDescription.sparql");
 
@@ -92,7 +86,7 @@ public class DatasetWriteRepositoryImpl implements DatasetWriteRepository {
           throws URISyntaxException, CreateDatasetException {
     // find the dataset if it exists, otherwise create a new one
     URI datasetUri = new URI(trialverseUri);
-    VersionMapping versionMapping = null;
+    VersionMapping versionMapping;
     try {
       versionMapping = versionMappingRepository.getVersionMappingByDatasetUrl(datasetUri);
     } catch (EmptyResultDataAccessException e) {
@@ -105,23 +99,16 @@ public class DatasetWriteRepositoryImpl implements DatasetWriteRepository {
             .path(DUMP_ENDPOINT)
             .build();
     HttpHeaders headers = createEventSourcingHeaders(owner, commitTitle, contentType);
-    final RequestCallback requestCallback = new RequestCallback() {
-      @Override
-      public void doWithRequest(final ClientHttpRequest request) throws IOException {
-        request.getHeaders().putAll(headers);
-        IOUtils.copy(content, request.getBody());
-      }
+    final RequestCallback requestCallback = request -> {
+      request.getHeaders().putAll(headers);
+      IOUtils.copy(content, request.getBody());
     };
-    final ResponseExtractor<HttpStatus> statusExtractor = new ResponseExtractor<HttpStatus>() {
-      @Override
-      public HttpStatus extractData(ClientHttpResponse response) throws IOException {
-        return response.getStatusCode();
-      }
-    };
+    final ResponseExtractor<HttpStatus> statusExtractor = ClientHttpResponse::getStatusCode;
     try {
       HttpStatus status = restTemplate.execute(uriComponents.toUri(), HttpMethod.PUT, requestCallback, statusExtractor);
       if (!HttpStatus.CREATED.equals(status) && !HttpStatus.OK.equals(status)) {
-        logger.error("Got response status " + status.toString() + " expected 200 OK or 201 CREATED");
+        assert status != null;
+        logger.error("Got response status " + status + " expected 200 OK or 201 CREATED");
         throw new CreateDatasetException();
       }
     } catch (RestClientException e) {
@@ -144,6 +131,7 @@ public class DatasetWriteRepositoryImpl implements DatasetWriteRepository {
               .replace("$newDescription", description).replace("$datasetUri", mapping.getTrialverseDatasetUrl()));
     }
     String updateUri = mapping.getVersionedDatasetUrl() + "/update";
+    String EDIT_TITLE_MESSAGE = "Edited title.";
     HttpHeaders httpHeaders = createEventSourcingHeaders(owner, EDIT_TITLE_MESSAGE, WebContent.contentTypeSPARQLUpdate);
 
     HttpEntity<?> requestEntity = new HttpEntity<>(editDatasetQuery, httpHeaders);
@@ -156,7 +144,8 @@ public class DatasetWriteRepositoryImpl implements DatasetWriteRepository {
   }
 
   private URI createDataset(TrialversePrincipal owner, String datasetUri, String defaultGraphContent) throws URISyntaxException, CreateDatasetException {
-    HttpHeaders httpHeaders = createEventSourcingHeaders(owner, INITIAL_COMMIT_MESSAGE, RDFLanguages.TURTLE.getContentType().getContentType());
+    String INITIAL_COMMIT_MESSAGE = "Dataset created through Trialverse";
+    HttpHeaders httpHeaders = createEventSourcingHeaders(owner, INITIAL_COMMIT_MESSAGE, RDFLanguages.TURTLE.getContentType().getContentTypeStr());
     HttpEntity<String> requestEntity = new HttpEntity<>(defaultGraphContent, httpHeaders);
     Account account = accountRepository.findAccountByUsername(owner.getUserName());
 
@@ -187,6 +176,8 @@ public class DatasetWriteRepositoryImpl implements DatasetWriteRepository {
     }
     httpHeaders.add(WebConstants.EVENT_SOURCE_TITLE_HEADER, Base64.encodeBase64String(commitTitle.getBytes()));
     httpHeaders.add(HTTP.CONTENT_TYPE, contentType);
+    httpHeaders.add(X_JENA_API_KEY, JENA_API_KEY);
+
     return httpHeaders;
   }
 

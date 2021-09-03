@@ -35,6 +35,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 
+import static org.drugis.addis.util.WebConstants.JENA_API_KEY;
+import static org.drugis.addis.util.WebConstants.X_JENA_API_KEY;
+
 /**
  * Created by daan on 20-11-14.
  */
@@ -76,6 +79,7 @@ public class GraphWriteRepositoryImpl implements GraphWriteRepository {
     HttpRequestBase putRequest = new HttpPut(uriComponents.toUri());
     putRequest.setHeader(org.apache.http.HttpHeaders.CONTENT_TYPE, RDFLanguages.TURTLE.getContentType().getContentType());
     putRequest.setHeader(WebConstants.EVENT_SOURCE_TITLE_HEADER, Base64.encodeBase64String(commitTitle.getBytes()));
+    putRequest.setHeader(X_JENA_API_KEY, JENA_API_KEY);
 
     putRequest = addCreatorToRequest(putRequest);
 
@@ -114,6 +118,7 @@ public class GraphWriteRepositoryImpl implements GraphWriteRepository {
 
     deleteRequest = addCreatorToRequest(deleteRequest);
     deleteRequest.setHeader(WebConstants.EVENT_SOURCE_TITLE_HEADER, Base64.encodeBase64String("Deleted graph.".getBytes()));
+    deleteRequest.setHeader(X_JENA_API_KEY, JENA_API_KEY);
 
     Header versionHeader;
     try (CloseableHttpResponse response = (CloseableHttpResponse) httpClient.execute(deleteRequest)) {

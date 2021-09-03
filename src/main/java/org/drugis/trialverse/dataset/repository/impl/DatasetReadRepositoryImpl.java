@@ -51,6 +51,8 @@ import java.util.Objects;
 
 import static org.apache.http.HttpHeaders.ACCEPT;
 import static org.apache.http.HttpHeaders.CONTENT_TYPE;
+import static org.drugis.addis.util.WebConstants.JENA_API_KEY;
+import static org.drugis.addis.util.WebConstants.X_JENA_API_KEY;
 
 /**
  * Created by daan on 7-11-14.
@@ -123,6 +125,7 @@ public class DatasetReadRepositoryImpl implements DatasetReadRepository {
     HttpHeaders httpHeaders = new HttpHeaders();
     httpHeaders.add(CONTENT_TYPE, WebContent.contentTypeSPARQLQuery);
     httpHeaders.add(ACCEPT, acceptType);
+    httpHeaders.add(X_JENA_API_KEY, JENA_API_KEY);
 
     HttpEntity<String> requestEntity = new HttpEntity<>(httpHeaders);
     UriComponents uriComponents = UriComponentsBuilder.fromHttpUrl(versionMapping.getVersionedDatasetUrl())
@@ -147,7 +150,7 @@ public class DatasetReadRepositoryImpl implements DatasetReadRepository {
   @Override
   public Model queryDataset(VersionMapping mapping) {
     HttpHeaders httpHeaders = new HttpHeaders();
-    httpHeaders.add(ACCEPT, RDFLanguages.TURTLE.getContentType().getContentType());
+    httpHeaders.add(ACCEPT, RDFLanguages.TURTLE.getContentType().getContentTypeStr());
     HttpEntity<String> requestEntity = new HttpEntity<>(httpHeaders);
     String uri = mapping.getVersionedDatasetUrl() + WebConstants.DATA_ENDPOINT + WebConstants.QUERY_STRING_DEFAULT_GRAPH;
 
@@ -202,6 +205,7 @@ public class DatasetReadRepositoryImpl implements DatasetReadRepository {
     if(versionUri != null) {
       request.addHeader(WebConstants.X_ACCEPT_EVENT_SOURCE_VERSION, versionUri.toString());
     }
+    request.addHeader(X_JENA_API_KEY, JENA_API_KEY);
     request.addHeader(org.apache.http.HttpHeaders.ACCEPT, acceptHeaderValue);
     return executeRequestAndCloseResponse(request);
   }
