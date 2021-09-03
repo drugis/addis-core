@@ -32,6 +32,8 @@ import java.io.StringWriter;
 import java.net.URI;
 
 import static java.nio.charset.Charset.defaultCharset;
+import static org.drugis.addis.util.WebConstants.JENA_API_KEY;
+import static org.drugis.addis.util.WebConstants.X_JENA_API_KEY;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -107,6 +109,8 @@ public class GraphServiceTest {
     HttpHeaders headers = new HttpHeaders();
     headers.add(WebConstants.EVENT_SOURCE_CREATOR_HEADER, "https://trialverse.org/apikeys/0");
     headers.add(WebConstants.EVENT_SOURCE_TITLE_HEADER, Base64.encodeBase64String("Study copied from other dataset".getBytes()));
+    headers.add(X_JENA_API_KEY, JENA_API_KEY);
+
     when(restTemplate.exchange(uri, HttpMethod.POST, new HttpEntity<>(headers), String.class)).thenReturn(responseEntity);
     when( accountRepository.findAccountByUsername(trialversePrincipal.getUserName())).thenReturn(owner);
 

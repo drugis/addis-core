@@ -39,9 +39,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import static org.drugis.addis.util.WebConstants.JENA_API_KEY;
 
 /**
  * Created by daan on 26-8-15.
@@ -70,7 +73,7 @@ public class GraphServiceImpl implements GraphService {
   @Inject
   private WebConstants webConstants;
 
-  private Pattern graphUriPattern = Pattern.compile("/datasets/([a-zA-z0-9\\.\\-]*)/versions/([a-zA-z0-9\\.\\-]*)/graphs/([a-zA-z0-9\\.\\-]*)");
+  private final Pattern graphUriPattern = Pattern.compile("/datasets/([a-zA-z0-9\\.\\-]*)/versions/([a-zA-z0-9\\.\\-]*)/graphs/([a-zA-z0-9\\.\\-]*)");
 
   @Override
   public URI extractDatasetUri(URI sourceGraphUri) {
@@ -136,6 +139,8 @@ public class GraphServiceImpl implements GraphService {
       headers.add(WebConstants.EVENT_SOURCE_CREATOR_HEADER, "mailto:" + currentUserAccount.getEmail());
     }
     headers.add(WebConstants.EVENT_SOURCE_TITLE_HEADER, Base64.encodeBase64String(COPY_MESSAGE.getBytes()));
+    headers.add(WebConstants.X_JENA_API_KEY, WebConstants.JENA_API_KEY);
+
     ResponseEntity response = restTemplate.exchange(uri, HttpMethod.POST, new HttpEntity<>(headers), String.class);
     List<String> newVersion = response.getHeaders().get(WebConstants.X_EVENT_SOURCE_VERSION);
 
@@ -154,7 +159,7 @@ public class GraphServiceImpl implements GraphService {
   }
 
   private URI getRevisionUri(Model historyModel, URI sourceGraphUri) throws URISyntaxException, RevisionNotFoundException, IOException {
-    String revisionSparqlTemplate = IOUtils.toString(new ClassPathResource("getRevision.sparql").getInputStream(), "UTF-8");
+    String revisionSparqlTemplate = IOUtils.toString(new ClassPathResource("getRevision.sparql").getInputStream(), StandardCharsets.UTF_8);
 
     String sourceVersion = extractVersionUri(sourceGraphUri).toString();
     String sourceGraph = extractGraphUri(sourceGraphUri).toString();

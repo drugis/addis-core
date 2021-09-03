@@ -56,6 +56,8 @@ import java.util.List;
 
 import static java.nio.charset.Charset.defaultCharset;
 import static org.apache.http.HttpHeaders.ACCEPT;
+import static org.drugis.addis.util.WebConstants.JENA_API_KEY;
+import static org.drugis.addis.util.WebConstants.X_JENA_API_KEY;
 import static org.hamcrest.text.IsEqualIgnoringWhiteSpace.equalToIgnoringWhiteSpace;
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
@@ -213,6 +215,7 @@ public class DatasetReadRepositoryTest {
     HttpHeaders httpHeaders = new HttpHeaders();
     httpHeaders.add(org.apache.http.HttpHeaders.CONTENT_TYPE, WebContent.contentTypeSPARQLQuery);
     httpHeaders.add(ACCEPT, acceptType);
+    httpHeaders.add(X_JENA_API_KEY, JENA_API_KEY);
     HttpEntity<String> requestEntity = new HttpEntity<>(httpHeaders);
     ResponseEntity responseEntity = new ResponseEntity<>(JSON.parse("{\"boolean\":true}"), HttpStatus.OK);
     String containsStudyWithShortNameTemplate = IOUtils.toString(new ClassPathResource("askContainsStudyWithLabel.sparql").getInputStream(), "UTF-8");
@@ -335,6 +338,7 @@ public class DatasetReadRepositoryTest {
     httpHeaders.add(org.apache.http.HttpHeaders.CONTENT_TYPE, WebContent.contentTypeSPARQLQuery);
     String acceptType = WebConstants.APPLICATION_SPARQL_RESULTS_JSON;
     httpHeaders.add(ACCEPT, acceptType);
+    httpHeaders.add(X_JENA_API_KEY, JENA_API_KEY);
     HttpEntity<String> requestEntity = new HttpEntity<>(httpHeaders);
     HttpHeaders responseHeaders = new HttpHeaders();
     responseHeaders.add(WebConstants.X_EVENT_SOURCE_VERSION, "http://localhost:8080/versions/versionUuid");
