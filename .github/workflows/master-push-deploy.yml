@@ -44,6 +44,7 @@ jobs:
           TRIPLESTORE_BASE_URI: http://localhost:8080
           EVENT_SOURCE_URI_PREFIX: http://localhost:8080
           PATAVI_URI: https://patavi.drugis.org/
+          PATAVI_API_KEY: ${{ secrets.pataviApiKey }}
 
       - name: copy war to docker folder
         run: cp target/addis-core.war docker/ROOT.war
@@ -86,8 +87,8 @@ jobs:
            -e ADDIS_CORE_OAUTH_GOOGLE_SECRET=${{ secrets.googleSecretLive }} \
            -e ADDIS_CORE_OAUTH_GOOGLE_KEY=${{ secrets.googleKeyLive }} \
            -e TRIPLESTORE_BASE_URI=https://fuseki.drugis.org \
-           -e KEYSTORE_PATH=/ssl/keystore.jks \
-           -e KEYSTORE_PASSWORD=${{ secrets.keystorePasswordLive }} \
+           -e PATAVI_API_KEY=${{ secrets.pataviApiKeyLive }} \
+           -e JENA_API_KEY=${{ secrets.jenaApiKeyLive }} \
            -e CLINICALTRIALS_IMPORTER_URL=https://nct.drugis.org \
            -e EVENT_SOURCE_URI_PREFIX=https://fuseki.drugis.org \
            -p 8081:8080 -p 2223:22 -t \
