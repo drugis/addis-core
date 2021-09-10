@@ -44,7 +44,7 @@ jobs:
           TRIPLESTORE_BASE_URI: http://localhost:8080
           EVENT_SOURCE_URI_PREFIX: http://localhost:8080
           PATAVI_URI: https://patavi.drugis.org/
-          PATAVI_API_KEY: ${{ secrets.pataviApiKey }}
+          PATAVI_API_KEY: ${{ secrets.pataviApiKeyLive }}
 
       - name: copy war to docker folder
         run: cp target/addis-core.war docker/ROOT.war
