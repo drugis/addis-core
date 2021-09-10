@@ -45,6 +45,7 @@ jobs:
           EVENT_SOURCE_URI_PREFIX: http://localhost:8080
           PATAVI_URI: https://patavi.drugis.org/
           PATAVI_API_KEY: ${{ secrets.pataviApiKeyLive }}
+          JENA_API_KEY: ${{ secrets.jenaApiKeyLive }}
 
       - name: copy war to docker folder
         run: cp target/addis-core.war docker/ROOT.war
