@@ -1,7 +1,19 @@
 package org.drugis.addis.patavitask.repository.impl;
 
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
+
+import javax.inject.Inject;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -9,7 +21,6 @@ import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.utils.HttpClientUtils;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.message.BasicHeader;
@@ -21,12 +32,6 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
-
-import javax.inject.Inject;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * Created by connor on 26-6-14.
@@ -49,9 +54,15 @@ public class PataviTaskRepositoryImpl implements PataviTaskRepository {
     HttpPost postRequest = new HttpPost(pataviUri);
     postRequest.addHeader("Connection", "close");
     postRequest.addHeader(new BasicHeader("Content-type", WebConstants.APPLICATION_JSON_UTF8_VALUE));
+    postRequest.addHeader(new BasicHeader("X-api-key", WebConstants.PATAVI_API_KEY));
+    postRequest.addHeader(new BasicHeader("X-client-name", "Addis core"));
     HttpEntity postBody = new ByteArrayEntity(jsonProblem.toString().getBytes());
     postRequest.setEntity(postBody);
     try (CloseableHttpResponse httpResponse = (CloseableHttpResponse) httpClient.execute(postRequest)) {
+      if (httpResponse.getStatusLine().getStatusCode() != 201) {
+        throw new RuntimeException(
+            "Error creating patavi task: status code " + httpResponse.getStatusLine().getStatusCode());
+      }
       String location = httpResponse.getHeaders("Location")[0].getValue();
       URI newTaskUri = URI.create(location);
       logger.debug("created new patavi-task with taskUri = " + newTaskUri.toString());
@@ -59,12 +70,12 @@ public class PataviTaskRepositoryImpl implements PataviTaskRepository {
       return newTaskUri;
     } catch (Exception e) {
       throw new RuntimeException("Error creating patavi task: " + e.toString());
-    } 
+    }
   }
+
   @Override
   public JsonNode getResult(URI taskUri) throws URISyntaxException {
-    URI resultsUri = new URIBuilder(taskUri + WebConstants.PATAVI_RESULTS_PATH)
-            .build();
+    URI resultsUri = new URIBuilder(taskUri + WebConstants.PATAVI_RESULTS_PATH).build();
     HttpGet getRequest = new HttpGet(resultsUri);
     try (CloseableHttpResponse httpResponse = (CloseableHttpResponse) httpClient.execute(getRequest)) {
       String content = EntityUtils.toString(httpResponse.getEntity());
@@ -77,10 +88,8 @@ public class PataviTaskRepositoryImpl implements PataviTaskRepository {
 
   @Override
   public Map<URI, JsonNode> getResults(Collection<PataviTask> tasks) throws URISyntaxException {
-    List<URI> filteredUris = tasks.stream()
-            .map(PataviTask::getSelf)
-            .filter(Objects::nonNull)
-            .collect(Collectors.toList());
+    List<URI> filteredUris = tasks.stream().map(PataviTask::getSelf).filter(Objects::nonNull)
+        .collect(Collectors.toList());
 
     Map<URI, JsonNode> result = new HashMap<>();
     for (URI uri : filteredUris) {
@@ -104,7 +113,7 @@ public class PataviTaskRepositoryImpl implements PataviTaskRepository {
   }
 
   private PataviTask getTask(URI taskUrl) {
-    assert(taskUrl != null);
+    assert (taskUrl != null);
     logger.trace("getTask for taskURl" + taskUrl.toString());
     try (CloseableHttpResponse response = (CloseableHttpResponse) httpClient.execute(new HttpGet(taskUrl))) {
       String pataviResponse = EntityUtils.toString(response.getEntity());

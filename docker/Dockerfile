@@ -1,9 +1,9 @@
 FROM phusion/baseimage:master
 
-RUN DEBIAN_FRONTEND=noninteractive apt-get update
-RUN DEBIAN_FRONTEND=noninteractive apt-get upgrade -y
-RUN DEBIAN_FRONTEND=noninteractive apt-get install -y -q curl
-RUN DEBIAN_FRONTEND=noninteractive apt-get install -y -q openjdk-8-jdk
+RUN DEBIAN_FRONTEND=noninteractive apt update
+RUN DEBIAN_FRONTEND=noninteractive apt upgrade -y
+RUN DEBIAN_FRONTEND=noninteractive apt install -y -q curl
+RUN DEBIAN_FRONTEND=noninteractive apt install -y -q openjdk-8-jdk
 
 
 ENV TOMCAT_VERSION 8.5.34
@@ -22,10 +22,6 @@ ADD ROOT.war /usr/share/tomcat8/webapps/ROOT.war
 RUN chmod +x /etc/service/tomcat/run
 ADD server.xml /usr/share/tomcat8/conf/server.xml
 RUN chown root.root /usr/share/tomcat8/conf/server.xml
-
-# add keystore and truststore
-RUN mkdir /ssl
-ADD ssl/keystore.jks /ssl/keystore.jks
 
 EXPOSE 8080
 CMD ["/sbin/my_init"]

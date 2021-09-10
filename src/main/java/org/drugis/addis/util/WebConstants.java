@@ -48,6 +48,7 @@ public class WebConstants {
 
   public static final String EVENT_SOURCE_CREATOR_HEADER = "X-EventSource-Creator";
   public static final String X_ACCEPT_EVENT_SOURCE_VERSION = "X-Accept-EventSource-Version";
+  public static final String X_JENA_API_KEY = "X-Api-Key";
   public static final String COMMIT_TITLE_PARAM = "commitTitle";
 
   public static final String COMMIT_DESCRIPTION_PARAM = "commitDescription";
@@ -58,6 +59,8 @@ public class WebConstants {
   public static final String VERSION_UUID = "versionUuid";
   private static final String TRIPLESTORE_BASE_URI = loadSystemEnv("TRIPLESTORE_BASE_URI");
   private static final String EVENT_SOURCE_URI_PREFIX = loadSystemEnv("EVENT_SOURCE_URI_PREFIX");
+  public static final String PATAVI_API_KEY = loadSystemEnv("PATAVI_API_KEY");
+  public static final String JENA_API_KEY = loadSystemEnv("JENA_API_KEY");
   private static final String TRIPLESTORE_DATA_URI = TRIPLESTORE_BASE_URI + "/current";
   private static final String TRIPLESTORE_VERSION_URI = EVENT_SOURCE_URI_PREFIX + "/versions/";
 

@@ -1,0 +1,122 @@
+name: ADDIS-test | push | deploy
+
+on:
+  push:
+    branches: develop
+
+jobs:
+  test:
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        node-version: ['12']
+        os: [ubuntu-20.04]
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: webfactory/ssh-agent@v0.4.1
+        with:
+          ssh-private-key: ${{ secrets.deployPrivateKey }}
+
+      - name: docker login
+        run: docker login -u addis -p ${{ secrets.dockerRegistryPassword }}
+
+      - name: yarn
+        run: yarn
+
+      - name: yarn build
+        run: yarn build-prod
+        env:
+          MATOMO_VERSION: Test
+
+      - name: package addis, using 'mvn package'
+        run: mvn clean package
+        env:
+          ADDIS_CORE_DB_DRIVER: org.postgresql.Driver
+          ADDIS_CORE_DB_CHANGELOG: database.sql
+          ADDIS_CORE_DB_HOST: psql-test.drugis.org
+          ADDIS_CORE_DB: addiscore
+          ADDIS_CORE_DB_USERNAME: addiscore
+          ADDIS_CORE_DB_PASSWORD: ${{ secrets.addisTestDbPassword }}
+          CLINICALTRIALS_IMPORTER_URL: https://nct-test.drugis.org
+          # Last three are for testing purposes. Localhost needed because of environment settings leaking into tests.
+          TRIPLESTORE_BASE_URI: http://localhost:8080
+          EVENT_SOURCE_URI_PREFIX: http://localhost:8080
+          PATAVI_URI: https://patavi-test.drugis.org/
+          PATAVI_API_KEY: ${{ secrets.pataviApiKeyTest }}
+          JENA_API_KEY: ${{ secrets.jenaApiKeyTest }}
+
+      - name: copy war to docker folder
+        run: cp target/addis-core.war docker/ROOT.war
+
+      - name: build docker container
+        run: |
+          cd docker
+          docker build --tag addis/core:test .
+
+      - name: docker push
+        run: docker push addis/core:test
+
+      - name: pull container on the server
+        run: ssh -o StrictHostKeyChecking=no deploy@addis-test.drugis.org 'docker pull addis/core:test'
+
+      - name: remove container on the server
+        run: ssh -o StrictHostKeyChecking=no deploy@addis-test.drugis.org 'docker rm -f addis || true'
+
+      - name: run container on the server
+        run: >
+          ssh -o StrictHostKeyChecking=no deploy@addis-test.drugis.org \
+          "docker run -d --name addis \
+           -e JAVA_OPTS=' \
+           -DtomcatProxyScheme=https \
+           -DtomcatProxyName=addis-test.drugis.org \
+           -DtomcatProxyPort=443 \
+           -DADDIS_CORE_DB_DRIVER=org.postgresql.Driver \
+           -DADDIS_CORE_DB_HOST=psql-test.drugis.org \
+           -DADDIS_CORE_DB=addiscore \
+           -DADDIS_CORE_DB_USERNAME=addiscore \
+           -DADDIS_CORE_DB_PASSWORD=${{ secrets.addisTestDbPassword }} \
+           -DPATAVI_TASK_DB_DRIVER=org.postgresql.Driver \
+           -DPATAVI_TASK_DB=patavitask \
+           -DPATAVI_TASK_DB_HOST=psql-test.drugis.org \
+           -DPATAVI_TASK_DB_USERNAME=patavitask \
+           -DPATAVI_TASK_DB_PASSWORD=${{ secrets.pataviTaskDbPasswordTest }} '\
+           -e PATAVI_URI=https://patavi-test.drugis.org/ \
+           -e ADDIS_CORE_PATAVI_MCDA_WS_URI=https://patavi-test.drugis.org/ \
+           -e ADDIS_CORE_OAUTH_GOOGLE_SECRET=${{ secrets.googleSecretTest }} \
+           -e ADDIS_CORE_OAUTH_GOOGLE_KEY=${{ secrets.googleKeyTest }} \
+           -e TRIPLESTORE_BASE_URI=https://fuseki-test.drugis.org \
+           -e PATAVI_API_KEY=${{ secrets.pataviApiKeyTest }} \
+           -e JENA_API_KEY=${{ secrets.jenaApiKeyTest }} \
+           -e CLINICALTRIALS_IMPORTER_URL=https://nct-test.drugis.org \
+           -e EVENT_SOURCE_URI_PREFIX=https://fuseki-test.drugis.org \
+           -p 8081:8080 -p 2223:22 -t \
+           addis/core:test"
+
+      # Without sleep, prune will remove the container.
+      - name: Sleep for 30 seconds
+        run: sleep 30
+
+      - name: prune docker on the server
+        run: ssh -o StrictHostKeyChecking=no deploy@addis-test.drugis.org 'docker system prune -f'
+
+      - name: docker registry garbage collection
+        run: ssh -o StrictHostKeyChecking=no deploy@registry.drugis.org './garbage-collect-registry.sh'
+
+      - name: notify on slack channel on failure
+        if: failure()
+        uses: rtCamp/action-slack-notify@master
+        env:
+          SLACK_WEBHOOK: ${{ secrets.slackWebhook }}
+          SLACK_USERNAME: gitbot
+          SLACK_TITLE: 'Develop push:'
+          SLACK_MESSAGE: 'ADDIS-test deploy failed'
+
+      - name: notify on slack channel on success
+        uses: rtCamp/action-slack-notify@master
+        env:
+          SLACK_WEBHOOK: ${{ secrets.slackWebhook }}
+          SLACK_USERNAME: gitbot
+          SLACK_TITLE: 'Develop push:'
+          SLACK_MESSAGE: 'ADDIS-test deployed'

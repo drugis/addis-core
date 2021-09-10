@@ -3,10 +3,12 @@ package org.drugis.addis.patavitask;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
+import org.apache.http.ProtocolVersion;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.message.BasicHeader;
+import org.apache.http.message.BasicStatusLine;
 import org.drugis.addis.patavitask.repository.PataviTaskRepository;
 import org.drugis.addis.patavitask.repository.impl.PataviTaskRepositoryImpl;
 import org.drugis.addis.util.WebConstants;
@@ -52,6 +54,8 @@ public class PataviTaskRepositoryImplTest {
     CloseableHttpResponse mockResponse = mock(CloseableHttpResponse.class);
     Header locationHeader = new BasicHeader("Location", "testLocation");
     when(mockResponse.getHeaders("Location")).thenReturn(new Header[]{locationHeader});
+    ProtocolVersion v = mock(ProtocolVersion.class);
+    when(mockResponse.getStatusLine()).thenReturn(new BasicStatusLine(v, 201, ""));
     when(httpClient.execute(any())).thenReturn(mockResponse);
     JSONObject problem = new JSONObject();
 
