@@ -52,8 +52,11 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import static java.util.Collections.singletonList;
 import static org.drugis.addis.trialverse.TrialverseUtilService.readValue;
 import static org.drugis.addis.trialverse.TrialverseUtilService.subStringAfterLastSymbol;
+import static org.drugis.addis.util.WebConstants.JENA_API_KEY;
+import static org.drugis.addis.util.WebConstants.X_JENA_API_KEY;
 
 
 /**
@@ -111,7 +114,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
 
   private static HttpHeaders createGetSparqlResultHeader() {
     HttpHeaders headers = new HttpHeaders();
-    headers.put(ACCEPT_HEADER, Collections.singletonList(APPLICATION_SPARQL_RESULTS_JSON));
+    headers.put(ACCEPT_HEADER, singletonList(APPLICATION_SPARQL_RESULTS_JSON));
     return headers;
   }
 
@@ -487,8 +490,9 @@ public class TriplestoreServiceImpl implements TriplestoreService {
 
     HttpHeaders headers = new HttpHeaders();
 
-    headers.put(X_ACCEPT_EVENT_SOURCE_VERSION, Collections.singletonList(versionUri.toString()));
-    headers.put(ACCEPT_HEADER, Collections.singletonList(APPLICATION_SPARQL_RESULTS_JSON));
+    headers.put(X_ACCEPT_EVENT_SOURCE_VERSION, singletonList(versionUri.toString()));
+    headers.put(ACCEPT_HEADER, singletonList(APPLICATION_SPARQL_RESULTS_JSON));
+    headers.put(X_JENA_API_KEY, singletonList(JENA_API_KEY));
 
     return restTemplate.exchange(uriComponents.toUri(), HttpMethod.GET, new HttpEntity<>(headers), String.class);
   }
