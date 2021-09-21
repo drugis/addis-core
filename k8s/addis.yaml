@@ -1,0 +1,52 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: addis
+  namespace: drugis-test
+spec:
+  type: NodePort
+  ports:
+    - port: 8090
+  selector:
+    app: addis
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: addis
+  namespace: drugis-test
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: addis
+  template:
+    metadata:
+      labels:
+        app: addis
+    spec:
+      containers:
+        - name: addis
+          image: addis/core:test
+          ports:
+            - name: addis
+              containerPort: 8090
+          env:
+            - name: ADDIS_CORE_DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: addis-secrets
+                  value: ADDIS_CORE_DB_PASSWORD
+            - name: PATAVI_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: addis-secrets
+                  value: PATAVI_API_KEY
+            - name: JENA_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: addis-secrets
+                  value: JENA_API_KEY
+          envFrom:
+            - configMapRef:
+                name: addis-settings
