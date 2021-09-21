@@ -38,7 +38,8 @@ spec:
       command: ['sh', '-c']
       args:
         - psql -h postgres -c  "DO \$\$ BEGIN CREATE ROLE addis LOGIN PASSWORD '$(ADDIS_DB_PASSWORD)'; EXCEPTION WHEN DUPLICATE_OBJECT THEN RAISE NOTICE 'not creating role addis -- it already exists'; END \$\$"
-    - name: create-gemtc-database
+  containers:
+    - name: create-addis-database
       image: postgres:10.8
       env:
         - name: PGUSER

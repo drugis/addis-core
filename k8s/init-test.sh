@@ -1,7 +1,7 @@
 rancher kubectl delete secret addis-secrets -n drugis-test
 rancher kubectl create secret generic addis-secrets \
   -n drugis-test \
-  --from-literal=ADDIS_CORE_DB_PASSWORD=develop \
+  --from-literal=ADDIS_DB_PASSWORD=develop \
   --from-literal=ADDIS_CORE_OAUTH_GOOGLE_SECRET=WFU_VvlxrsyNLVUDkkTVgvfQ \
   --from-literal=ADDIS_CORE_OAUTH_GOOGLE_KEY=290619536014-abnf3o5knc423o0n25939ql4ga0m0809.apps.googleusercontent.com \
   --from-literal=JENA_API_KEY=cooljenakeybro

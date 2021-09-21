@@ -36,7 +36,7 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: addis-secrets
-                  value: JENA_API_KEY
+                  key: JENA_API_KEY
           envFrom:
             - configMapRef:
                 name: addis-settings
