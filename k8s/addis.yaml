@@ -32,7 +32,7 @@ spec:
             - name: addis
               containerPort: 8090
           env:
-            - name: ADDIS_DB_PASSWORD
+            - name: ADDIS_CORE_DB_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: addis-secrets
@@ -47,6 +47,21 @@ spec:
                 secretKeyRef:
                   name: addis-secrets
                   key: JENA_API_KEY
+            - name: ADDIS_CORE_OAUTH_GOOGLE_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: addis-secrets
+                  key: ADDIS_CORE_OAUTH_GOOGLE_SECRET
+            - name: ADDIS_CORE_OAUTH_GOOGLE_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: addis-secrets
+                  key: ADDIS_CORE_OAUTH_GOOGLE_KEY
+            - name: JAVA_OPTS
+              valueFrom:
+                secretKeyRef:
+                  name: addis-secrets
+                  key: JAVA_OPTS
           envFrom:
             - configMapRef:
                 name: addis-settings

@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
 import java.net.URI;
+import java.util.Objects;
 
 /**
  * Created by connor on 26-6-14.
@@ -57,22 +58,12 @@ public class PataviTask {
   public boolean equals(Object o) {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
-
     PataviTask that = (PataviTask) o;
-
-    if (!status.equals(that.status)) return false;
-    if (!self.equals(that.self)) return false;
-    if (results != null ? !results.equals(that.results) : that.results != null) return false;
-    return updates.equals(that.updates);
-
+    return Objects.equals(status, that.status) && Objects.equals(self, that.self) && Objects.equals(results, that.results) && Objects.equals(updates, that.updates);
   }
 
   @Override
   public int hashCode() {
-    int result = status.hashCode();
-    result = 31 * result + self.hashCode();
-    result = 31 * result + (results != null ? results.hashCode() : 0);
-    result = 31 * result + updates.hashCode();
-    return result;
+    return Objects.hash(status, self, results, updates);
   }
 }

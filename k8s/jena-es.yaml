@@ -40,3 +40,10 @@ spec:
           envFrom:
             - configMapRef:
                 name: addis-settings
+          volumeMounts:
+            - mountPath: /DB
+              name: jenadb
+      volumes:
+        - name: jenadb
+          persistentVolumeClaim:
+            claimName: jena-pv-volume

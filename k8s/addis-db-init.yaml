@@ -38,7 +38,6 @@ spec:
       command: ['sh', '-c']
       args:
         - psql -h postgres -c  "DO \$\$ BEGIN CREATE ROLE addis LOGIN PASSWORD '$(ADDIS_DB_PASSWORD)'; EXCEPTION WHEN DUPLICATE_OBJECT THEN RAISE NOTICE 'not creating role addis -- it already exists'; END \$\$"
-  containers:
     - name: create-addis-database
       image: postgres:10.8
       env:
@@ -53,4 +52,21 @@ spec:
       command: ['sh', '-c']
       args:
         - psql -h postgres -c "SELECT 1 FROM pg_database WHERE datname = 'addis'" | grep -q 1 || psql -h postgres -c "CREATE DATABASE addis"
+  containers:
+    - name: addis-liquibase
+      image: addis/addis-liquibase
+      env:
+        - name: LIQUIBASE_URL
+          value: 'jdbc:postgresql://postgres:5432/addis'
+        - name: LIQUIBASE_USERNAME
+          value: 'addis'
+        - name: LIQUIBASE_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: addis-secrets
+              key: ADDIS_DB_PASSWORD
+        - name: LIQUIBASE_CHANGELOG
+          value: 'liquibase-changelog.sql'
+      args:
+        - 'update'
   restartPolicy: Never

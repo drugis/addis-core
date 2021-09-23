@@ -181,17 +181,17 @@ public class MainConfig {
         return ds;
     }
 
-    @Bean(name = "dsPataviTask")
-    public DataSource dataSourcePataviTask() {
-        DataSource ds;
-        JndiTemplate jndi = new JndiTemplate();
-        try {
-            ds = (DataSource) jndi.lookup("java:/comp/env/jdbc/patavitask");
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-        return ds;
-    }
+//    @Bean(name = "dsPataviTask")
+//    public DataSource dataSourcePataviTask() {
+//        DataSource ds;
+//        JndiTemplate jndi = new JndiTemplate();
+//        try {
+//            ds = (DataSource) jndi.lookup("java:/comp/env/jdbc/patavitask");
+//        } catch (Exception e) {
+//            throw new RuntimeException(e);
+//        }
+//        return ds;
+//    }
 
     @Bean(name = "ptmAddisCore")
     public PlatformTransactionManager transactionManager(@Qualifier("emAddisCore") EntityManagerFactory entityManagerFactory) {
@@ -205,10 +205,10 @@ public class MainConfig {
         return new JdbcTemplate(dataSource());
     }
 
-    @Bean(name = "jtPataviTask")
-    public JdbcTemplate jdbcTemplatePataviTask() {
-        return new JdbcTemplate(dataSourcePataviTask());
-    }
+//    @Bean(name = "jtPataviTask")
+//    public JdbcTemplate jdbcTemplatePataviTask() {
+//        return new JdbcTemplate(dataSourcePataviTask());
+//    }
 
     @Bean(name = "petppAddisCore")
     public PersistenceExceptionTranslationPostProcessor exceptionTranslation() {

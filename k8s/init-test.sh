@@ -1,16 +1,20 @@
 rancher kubectl delete secret addis-secrets -n drugis-test
+
+ADDIS_DB_PASSWORD=develop
 rancher kubectl create secret generic addis-secrets \
   -n drugis-test \
-  --from-literal=ADDIS_DB_PASSWORD=develop \
+  --from-literal=ADDIS_DB_PASSWORD=$ADDIS_DB_PASSWORD \
   --from-literal=ADDIS_CORE_OAUTH_GOOGLE_SECRET=WFU_VvlxrsyNLVUDkkTVgvfQ \
   --from-literal=ADDIS_CORE_OAUTH_GOOGLE_KEY=290619536014-abnf3o5knc423o0n25939ql4ga0m0809.apps.googleusercontent.com \
-  --from-literal=JENA_API_KEY=cooljenakeybro
-
-rancher kubectl delete secret db-credentials -n drugis-test
-rancher kubectl create secret generic db-credentials \
-  -n drugis-test \
-  --from-literal=POSTGRES_PASSWORD=develop \
-  --from-literal=PATAVI_DB_PASSWORD=develop 
+  --from-literal=JENA_API_KEY=cooljenakeybro \
+  --from-literal=JAVA_OPTS="-DtomcatProxyScheme=https 
+                -DtomcatProxyName=addis-test.edge.molgenis.org 
+                -DtomcatProxyPort=443 
+                -DADDIS_CORE_DB_DRIVER=org.postgresql.Driver 
+                -DADDIS_CORE_DB_HOST=postgres 
+                -DADDIS_CORE_DB=addis 
+                -DADDIS_CORE_DB_USERNAME=addis 
+                -DADDIS_CORE_DB_PASSWORD=$ADDIS_DB_PASSWORD"
 
 rancher kubectl delete configmap addis-settings -n drugis-test
 rancher kubectl create configmap addis-settings \
@@ -25,6 +29,14 @@ rancher kubectl create configmap addis-settings \
   --from-literal=TRIPLESTORE_BASE_URI=https://fuseki-test.edge.molgenis.org \
   --from-literal=PATAVI_URI=https://patavi-test.edge.molgenis.org \
   --from-literal=SECURE_TRAFFIC=true
+
+## Shared config with other apps; only change if you have thought about it a bit
+## and are going to remember to change them there as well
+rancher kubectl delete secret db-credentials -n drugis-test
+rancher kubectl create secret generic db-credentials \
+  -n drugis-test \
+  --from-literal=POSTGRES_PASSWORD=develop \
+  --from-literal=PATAVI_DB_PASSWORD=develop 
 
 rancher kubectl delete secret passwords -n drugis-test
 rancher kubectl create secret generic passwords \
@@ -46,6 +58,7 @@ rancher kubectl create configmap patavi-settings \
   --from-literal=PATAVI_BROKER_PASSWORD=develop \
   --from-literal=SECURE_TRAFFIC=true \
   --from-literal=PATAVI_PROXY_HOST=patavi-enterprise-test.edge.molgenis.org 
+## End shared config
 
 rancher kubectl apply -f postgres.yaml
 rancher kubectl apply -f rabbitmq.yaml
