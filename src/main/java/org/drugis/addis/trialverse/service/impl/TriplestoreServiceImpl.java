@@ -46,7 +46,6 @@ import javax.inject.Inject;
 import java.io.IOException;
 import java.io.StringReader;
 import java.net.URI;
-import java.net.URLEncoder;
 import java.util.*;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -84,7 +83,6 @@ public class TriplestoreServiceImpl implements TriplestoreService {
   private final static Logger logger = LoggerFactory.getLogger(TriplestoreServiceImpl.class);
   private static final HttpHeaders getJsonHeaders = createGetJsonHeader();
   public static final HttpEntity<String> acceptJsonRequest = new HttpEntity<>(getJsonHeaders);
-  private static final HttpHeaders getSparqlResultsHeaders = createGetSparqlResultHeader();
   private static final String DATATYPE_DURATION = "http://www.w3.org/2001/XMLSchema#duration";
 
   @Inject
@@ -108,12 +106,6 @@ public class TriplestoreServiceImpl implements TriplestoreService {
   private static HttpHeaders createGetJsonHeader() {
     HttpHeaders headers = new HttpHeaders();
     headers.add(ACCEPT_HEADER, WebConstants.getApplicationJsonUtf8Value());
-    return headers;
-  }
-
-  private static HttpHeaders createGetSparqlResultHeader() {
-    HttpHeaders headers = new HttpHeaders();
-    headers.put(ACCEPT_HEADER, singletonList(APPLICATION_SPARQL_RESULTS_JSON));
     return headers;
   }
 
@@ -148,7 +140,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
 
   @Override
   public Namespace getNamespaceHead(TriplestoreUuidAndOwner datasetUriAndOwner) {
-    ResponseEntity<String> response = queryTripleStoreHead(datasetUriAndOwner.getTriplestoreUuid());
+    ResponseEntity<String> response = queryNamespaceHead(datasetUriAndOwner.getTriplestoreUuid());
     return buildNameSpace(datasetUriAndOwner, response);
   }
 
@@ -458,8 +450,10 @@ public class TriplestoreServiceImpl implements TriplestoreService {
     return value;
   }
 
-  private ResponseEntity<String> queryTripleStoreHead(String datasetUri) {
-    final HttpEntity<String> acceptSparqlResultsRequest = new HttpEntity<>(TriplestoreServiceImpl.NAMESPACE, getSparqlResultsHeaders);
+  private ResponseEntity<String> queryNamespaceHead(String datasetUri) {
+    HttpHeaders acceptSparqlHeaders = new HttpHeaders();
+    acceptSparqlHeaders.put(ACCEPT_HEADER, singletonList(APPLICATION_SPARQL_RESULTS_JSON));
+    final HttpEntity<String> namespaceRequest = new HttpEntity<>(TriplestoreServiceImpl.NAMESPACE, acceptSparqlHeaders);
 
     String datasetUuid = subStringAfterLastSymbol(datasetUri, '/');
 
@@ -472,7 +466,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
             .path(QUERY_ENDPOINT)
             .build();
 
-    return restTemplate.exchange(uriComponents.toUri(), HttpMethod.POST, acceptSparqlResultsRequest, String.class);
+    return restTemplate.exchange(uriComponents.toUri(), HttpMethod.POST, namespaceRequest, String.class);
   }
 
   @Cacheable(cacheNames = "versionedDatasetQuery", key = "#namespaceUid+(#versionUri != null?#versionUri.toString():'headVersion')+#query.hashCode()")
