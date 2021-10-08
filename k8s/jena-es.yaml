@@ -27,7 +27,7 @@ spec:
     spec:
       containers:
         - name: jena-es
-          image: addis/jena-es:test
+          image: addis/jena-es:test-20211008
           ports:
             - name: jena-es
               containerPort: 8080

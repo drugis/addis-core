@@ -27,7 +27,7 @@ spec:
     spec:
       containers:
         - name: addis
-          image: addis/core:test
+          image: addis/core:test-20211008
           ports:
             - name: addis
               containerPort: 8090

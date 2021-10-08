@@ -85,7 +85,6 @@ public class TriplestoreServiceImpl implements TriplestoreService {
   private static final HttpHeaders getJsonHeaders = createGetJsonHeader();
   public static final HttpEntity<String> acceptJsonRequest = new HttpEntity<>(getJsonHeaders);
   private static final HttpHeaders getSparqlResultsHeaders = createGetSparqlResultHeader();
-  public static final HttpEntity<String> acceptSparqlResultsRequest = new HttpEntity<>(getSparqlResultsHeaders);
   private static final String DATATYPE_DURATION = "http://www.w3.org/2001/XMLSchema#duration";
 
   @Inject
@@ -460,6 +459,8 @@ public class TriplestoreServiceImpl implements TriplestoreService {
   }
 
   private ResponseEntity<String> queryTripleStoreHead(String datasetUri) {
+    final HttpEntity<String> acceptSparqlResultsRequest = new HttpEntity<>(TriplestoreServiceImpl.NAMESPACE, getSparqlResultsHeaders);
+
     String datasetUuid = subStringAfterLastSymbol(datasetUri, '/');
 
     logger.debug("Triplestore uri = " + webConstants.getTriplestoreBaseUri());
@@ -469,10 +470,9 @@ public class TriplestoreServiceImpl implements TriplestoreService {
     UriComponents uriComponents = UriComponentsBuilder.fromHttpUrl(webConstants.getTriplestoreBaseUri())
             .path("datasets/" + datasetUuid)
             .path(QUERY_ENDPOINT)
-            .queryParam(QUERY_PARAM_QUERY, TriplestoreServiceImpl.NAMESPACE)
             .build();
 
-    return restTemplate.exchange(uriComponents.toUri(), HttpMethod.GET, acceptSparqlResultsRequest, String.class);
+    return restTemplate.exchange(uriComponents.toUri(), HttpMethod.POST, acceptSparqlResultsRequest, String.class);
   }
 
   @Cacheable(cacheNames = "versionedDatasetQuery", key = "#namespaceUid+(#versionUri != null?#versionUri.toString():'headVersion')+#query.hashCode()")
@@ -485,7 +485,6 @@ public class TriplestoreServiceImpl implements TriplestoreService {
     UriComponents uriComponents = UriComponentsBuilder.fromHttpUrl(webConstants.getTriplestoreBaseUri())
             .path("datasets/" + namespaceUid)
             .path(QUERY_ENDPOINT)
-            .queryParam(QUERY_PARAM_QUERY, URLEncoder.encode(query, "UTF-8"))
             .build(true);
 
     HttpHeaders headers = new HttpHeaders();
@@ -494,7 +493,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
     headers.put(ACCEPT_HEADER, singletonList(APPLICATION_SPARQL_RESULTS_JSON));
     headers.put(X_JENA_API_KEY, singletonList(JENA_API_KEY));
 
-    return restTemplate.exchange(uriComponents.toUri(), HttpMethod.GET, new HttpEntity<>(headers), String.class);
+    return restTemplate.exchange(uriComponents.toUri(), HttpMethod.POST, new HttpEntity<>(query, headers), String.class);
   }
 
   @Override
