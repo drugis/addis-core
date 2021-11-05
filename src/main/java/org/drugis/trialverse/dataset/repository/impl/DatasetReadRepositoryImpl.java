@@ -1,7 +1,7 @@
 package org.drugis.trialverse.dataset.repository.impl;
 
 import net.minidev.json.JSONObject;
-import org.apache.commons.io.IOUtils;
+import org.apache.commons.compress.utils.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -106,7 +106,7 @@ public class DatasetReadRepositoryImpl implements DatasetReadRepository {
     try {
       Resource myData = new ClassPathResource(filename);
       InputStream stream = myData.getInputStream();
-      return IOUtils.toString(stream, "UTF-8");
+      return new String(stream.readAllBytes());
     } catch (IOException e) {
       e.printStackTrace();
     }
@@ -116,7 +116,7 @@ public class DatasetReadRepositoryImpl implements DatasetReadRepository {
 
   private Boolean doAskQuery(URI trialverseDatasetUri, String query) {
     VersionMapping versionMapping = versionMappingRepository.getVersionMappingByDatasetUrl(trialverseDatasetUri);
-    ResponseEntity<JsonObject> responseEntity = doRequest(versionMapping, query, RDFLanguages.JSONLD.getContentType().getContentType(), JsonObject.class);
+    ResponseEntity<JsonObject> responseEntity = doRequest(versionMapping, query, RDFLanguages.JSONLD.getContentType().getContentTypeStr(), JsonObject.class);
     JsonObject jsonObject = responseEntity.getBody();
     return Boolean.TRUE.equals(Boolean.valueOf(jsonObject.get("boolean").toString()));
   }
@@ -174,7 +174,7 @@ public class DatasetReadRepositoryImpl implements DatasetReadRepository {
   public Model getVersionedDataset(URI trialverseDatasetUri, String versionUuid) {
     VersionMapping versionMapping = versionMappingRepository.getVersionMappingByDatasetUrl(trialverseDatasetUri);
     HttpHeaders httpHeaders = new HttpHeaders();
-    httpHeaders.add(ACCEPT, RDFLanguages.TURTLE.getContentType().getContentType());
+    httpHeaders.add(ACCEPT, RDFLanguages.TURTLE.getContentType().getContentTypeStr());
     if(StringUtils.isNotEmpty(versionUuid)) {
       httpHeaders.add(WebConstants.X_ACCEPT_EVENT_SOURCE_VERSION, WebConstants.buildVersionUri(versionUuid).toString());
     }
@@ -232,7 +232,7 @@ public class DatasetReadRepositoryImpl implements DatasetReadRepository {
             .build()
             .toUri();
     HttpHeaders httpHeaders = new HttpHeaders();
-    httpHeaders.add(ACCEPT, RDFLanguages.TURTLE.getContentType().getContentType());
+    httpHeaders.add(ACCEPT, RDFLanguages.TURTLE.getContentType().getContentTypeStr());
     HttpEntity<String> requestEntity = new HttpEntity<>(httpHeaders);
 
     ResponseEntity<Graph> responseEntity = restTemplate.exchange(uri, HttpMethod.GET, requestEntity, Graph.class);

@@ -1,6 +1,6 @@
 package org.drugis.trialverse.graph.repository.impl;
 
-import org.apache.commons.io.IOUtils;
+import org.apache.commons.compress.utils.IOUtils;
 import org.apache.http.Header;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -59,7 +59,7 @@ public class GraphReadRepositoryImpl implements GraphReadRepository {
       EntityUtils.consume(response.getEntity());
       return content;
     } catch (Exception e) {
-      logger.debug("error retrieving graph {}", e);
+      logger.error("error retrieving graph", e);
       throw new ReadGraphException();
     }
   }

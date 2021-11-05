@@ -52,12 +52,12 @@ rancher kubectl create configmap patavi-settings \
   --from-literal=PATAVI_DB_NAME=patavi \
   --from-literal=PATAVI_DB_USER=patavi \
   --from-literal=PATAVI_PORT=3000 \
-  --from-literal=PATAVI_HOST=patavi-enterprise-test.edge.molgenis.org \
+  --from-literal=PATAVI_HOST=patavi-test.edge.molgenis.org \
   --from-literal=PATAVI_BROKER_HOST=guest:develop@rabbitmq \
   --from-literal=PATAVI_BROKER_USER=guest \
   --from-literal=PATAVI_BROKER_PASSWORD=develop \
   --from-literal=SECURE_TRAFFIC=true \
-  --from-literal=PATAVI_PROXY_HOST=patavi-enterprise-test.edge.molgenis.org 
+  --from-literal=PATAVI_PROXY_HOST=patavi-test.edge.molgenis.org
 ## End shared config
 
 rancher kubectl apply -f postgres.yaml

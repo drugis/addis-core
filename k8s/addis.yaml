@@ -6,7 +6,7 @@ metadata:
 spec:
   type: NodePort
   ports:
-    - port: 8090
+    - port: 8080
   selector:
     app: addis
 ---
@@ -27,10 +27,10 @@ spec:
     spec:
       containers:
         - name: addis
-          image: addis/core:test-20211008
+          image: addis/addis:test-20211008
           ports:
             - name: addis
-              containerPort: 8090
+              containerPort: 8080
           env:
             - name: ADDIS_CORE_DB_PASSWORD
               valueFrom:

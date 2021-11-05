@@ -1,9 +1,11 @@
 package org.drugis.addis.trialverse.service;
 
 import net.minidev.json.parser.ParseException;
-import org.apache.commons.io.IOUtils;
 import org.drugis.addis.interventions.model.AbstractIntervention;
-import org.drugis.addis.trialverse.model.*;
+import org.drugis.addis.trialverse.model.Namespace;
+import org.drugis.addis.trialverse.model.SemanticInterventionUriAndName;
+import org.drugis.addis.trialverse.model.SemanticVariable;
+import org.drugis.addis.trialverse.model.Study;
 import org.drugis.addis.trialverse.model.emun.CovariateOption;
 import org.drugis.addis.trialverse.model.mapping.TriplestoreUuidAndOwner;
 import org.drugis.addis.trialverse.model.trialdata.CovariateStudyValue;
@@ -29,7 +31,7 @@ public interface TriplestoreService {
     try {
       Resource myData = new ClassPathResource(filename);
       InputStream stream = myData.getInputStream();
-      return IOUtils.toString(stream, "UTF-8");
+      return new String(stream.readAllBytes());
     } catch (IOException e) {
       e.printStackTrace();
     }

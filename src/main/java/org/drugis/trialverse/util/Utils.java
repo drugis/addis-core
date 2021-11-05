@@ -3,10 +3,8 @@ package org.drugis.trialverse.util;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.commons.io.IOUtils;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -27,8 +25,7 @@ public class Utils {
   }
 
   public static String loadResource(Class clazz, String filename) throws IOException {
-      InputStream stream = clazz.getResourceAsStream(filename);
-      return IOUtils.toString(stream, "UTF-8");
+      return new String(clazz.getResourceAsStream(filename).readAllBytes());
   }
 
   public static Map<String, Double> readMu(Integer treatmentId, JsonNode results) {

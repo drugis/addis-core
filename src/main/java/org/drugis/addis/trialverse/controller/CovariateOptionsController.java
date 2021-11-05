@@ -52,7 +52,7 @@ public class CovariateOptionsController extends AbstractAddisCoreController {
 
   @RequestMapping(value = "/projects/{projectId}/covariate-options", method = RequestMethod.GET)
   @ResponseBody
-  public List<CovariateViewAdapter> getFixedOptionsPlusPopulationCharacteristics(@PathVariable Integer projectId) throws ResourceDoesNotExistException, URISyntaxException, ReadValueException, IOException {
+  public List<CovariateViewAdapter> getFixedOptionsPlusPopulationCharacteristics(@PathVariable(value="projectId") Integer projectId) throws ResourceDoesNotExistException, URISyntaxException, ReadValueException, IOException {
     CovariateOption[] studyCovariates = CovariateOption.values();
     List<CovariateViewAdapter> covariateOptions = Arrays.stream(studyCovariates).map(CovariateViewAdapter::new).collect(Collectors.toList());
     Project project = projectRepository.get(projectId);

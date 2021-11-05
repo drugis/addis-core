@@ -38,7 +38,7 @@ import static java.util.Collections.singletonList;
 import static org.drugis.addis.util.WebConstants.ACCEPT_HEADER;
 import static org.drugis.addis.util.WebConstants.APPLICATION_SPARQL_RESULTS_JSON;
 import static org.junit.Assert.*;
-import static org.mockito.Matchers.any;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 

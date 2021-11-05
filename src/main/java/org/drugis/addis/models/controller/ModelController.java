@@ -66,8 +66,8 @@ public class ModelController extends AbstractAddisCoreController {
 
   @RequestMapping(value = "/projects/{projectId}/analyses/{analysisId}/models", method = RequestMethod.POST)
   @ResponseBody
-  public Model create(HttpServletResponse response, Principal principal, @PathVariable Integer projectId,
-                      @PathVariable Integer analysisId, @RequestBody CreateModelCommand createModelCommand) throws ResourceDoesNotExistException, MethodNotAllowedException, InvalidModelException {
+  public Model create(HttpServletResponse response, Principal principal, @PathVariable(value="projectId") Integer projectId,
+                      @PathVariable(value="analysisId") Integer analysisId, @RequestBody CreateModelCommand createModelCommand) throws ResourceDoesNotExistException, MethodNotAllowedException, InvalidModelException {
     projectService.checkOwnership(projectId, principal);
     analysisService.checkCoordinates(projectId, analysisId);
     Model createdModel = modelService.createModel(analysisId, createModelCommand);
@@ -84,19 +84,19 @@ public class ModelController extends AbstractAddisCoreController {
 
   @RequestMapping(value = "/projects/{projectId}/analyses/{analysisId}/models", method = RequestMethod.GET)
   @ResponseBody
-  public List<Model> query(@PathVariable Integer analysisId) throws SQLException, IOException {
+  public List<Model> query(@PathVariable(value="analysisId") Integer analysisId) throws SQLException, IOException {
     return modelService.query(analysisId);
   }
 
   @RequestMapping(value = "/projects/{projectId}/consistencyModels", method = RequestMethod.GET)
   @ResponseBody
-  public List<Model> consistencyModels(@PathVariable Integer projectId) throws SQLException, IOException {
+  public List<Model> consistencyModels(@PathVariable(value="projectId") Integer projectId) throws SQLException, IOException {
     return modelService.queryConsistencyModels(projectId);
   }
 
   @RequestMapping(value = "/projects/{projectId}/models", method = RequestMethod.GET)
   @ResponseBody
-  public List<Model> queryModelsByProject(@PathVariable Integer projectId) throws SQLException, IOException {
+  public List<Model> queryModelsByProject(@PathVariable(value="projectId") Integer projectId) throws SQLException, IOException {
     return modelService.queryModelsByProject(projectId);
   }
 
@@ -117,7 +117,7 @@ public class ModelController extends AbstractAddisCoreController {
 
   @RequestMapping(value = "/projects/{projectId}/analyses/{analysisId}/models/{modelId}/funnelPlots", method = RequestMethod.POST)
   public void createFunnelPlot(HttpServletResponse response, Principal principal,
-                               @PathVariable Integer projectId, @PathVariable Integer modelId, @PathVariable Integer analysisId, @RequestBody CreateFunnelPlotCommand createFunnelPlotCommand) throws ResourceDoesNotExistException, MethodNotAllowedException, IOException {
+                               @PathVariable(value="projectId") Integer projectId, @PathVariable Integer modelId, @PathVariable(value="analysisId") Integer analysisId, @RequestBody CreateFunnelPlotCommand createFunnelPlotCommand) throws ResourceDoesNotExistException, MethodNotAllowedException, IOException {
     modelService.checkOwnership(modelId, principal);
     analysisService.checkCoordinates(projectId, analysisId);
     funnelPlotRepository.create(createFunnelPlotCommand);

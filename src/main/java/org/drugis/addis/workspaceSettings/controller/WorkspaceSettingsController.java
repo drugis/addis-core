@@ -22,13 +22,13 @@ public class WorkspaceSettingsController extends AbstractAddisCoreController {
 
   @RequestMapping(value = "/projects/{projectId}/analyses/{analysisId}/workspaceSettings", method = RequestMethod.GET)
   @ResponseBody
-  public String get(@PathVariable Integer analysisId) {
+  public String get(@PathVariable(value="analysisId") Integer analysisId) {
     return workspaceSettingsRepository.get(analysisId).getSettings();
   }
 
   @RequestMapping(value = "/projects/{projectId}/analyses/{analysisId}/workspaceSettings", method = RequestMethod.PUT)
   @ResponseBody
-  public void put(Principal principal, @PathVariable Integer projectId, @PathVariable Integer analysisId,
+  public void put(Principal principal, @PathVariable(value="projectId") Integer projectId, @PathVariable(value="analysisId") Integer analysisId,
                   @RequestBody String settings) throws ResourceDoesNotExistException, MethodNotAllowedException {
     projectService.checkOwnership(projectId, principal);
     workspaceSettingsRepository.put(analysisId, settings);

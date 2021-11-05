@@ -39,14 +39,14 @@ public class CovariateController extends AbstractAddisCoreController {
 
   @RequestMapping(value = "/projects/{projectId}/covariates", method = RequestMethod.GET)
   @ResponseBody
-  public Collection<Covariate> getCovariatesForProject(@PathVariable Integer projectId) {
+  public Collection<Covariate> getCovariatesForProject(@PathVariable(value="projectId") Integer projectId) {
     return covariateRepository.findByProject(projectId);
   }
 
   @RequestMapping(value = "/projects/{projectId}/covariates", method = RequestMethod.POST)
   @ResponseBody
   public Covariate addCovariateToProject(HttpServletRequest request, HttpServletResponse response, Principal currentUser,
-                                         @PathVariable Integer projectId, @RequestBody AddCovariateCommand command)
+                                         @PathVariable(value="projectId") Integer projectId, @RequestBody AddCovariateCommand command)
           throws MethodNotAllowedException, ResourceDoesNotExistException {
     Account user = accountRepository.findAccountByUsername(currentUser.getName());
     if (user != null) {
@@ -63,7 +63,7 @@ public class CovariateController extends AbstractAddisCoreController {
   }
 
   @RequestMapping(value = "/projects/{projectId}/covariates/{covariateId}", method = RequestMethod.DELETE)
-  public void deleteCovariate(Principal currentUser, HttpServletResponse response, @PathVariable Integer projectId,
+  public void deleteCovariate(Principal currentUser, HttpServletResponse response, @PathVariable(value="projectId") Integer projectId,
                               @PathVariable Integer covariateId) throws ResourceDoesNotExistException, MethodNotAllowedException {
     Account user = accountRepository.findAccountByUsername(currentUser.getName());
     covariateService.delete(user, projectId, covariateId);

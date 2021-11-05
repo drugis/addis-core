@@ -4,7 +4,7 @@ package org.drugis.trialverse.util;
  * Created by connor on 12-3-15.
  */
 
-import org.apache.commons.io.IOUtils;
+import org.apache.commons.compress.utils.IOUtils;
 import org.apache.commons.lang3.NotImplementedException;
 import org.springframework.http.HttpInputMessage;
 import org.springframework.http.HttpOutputMessage;

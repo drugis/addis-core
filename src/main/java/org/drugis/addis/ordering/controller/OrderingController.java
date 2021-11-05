@@ -22,13 +22,13 @@ public class OrderingController extends AbstractAddisCoreController {
 
   @RequestMapping(value = "/projects/{projectId}/analyses/{analysisId}/ordering", method = RequestMethod.GET)
   @ResponseBody
-  public Ordering get(@PathVariable Integer analysisId) {
+  public Ordering get(@PathVariable(value="analysisId") Integer analysisId) {
     return orderingRepository.get(analysisId);
   }
 
   @RequestMapping(value = "/projects/{projectId}/analyses/{analysisId}/ordering", method = RequestMethod.PUT)
   @ResponseBody
-  public void put(Principal principal, @PathVariable Integer projectId, @PathVariable Integer analysisId,
+  public void put(Principal principal, @PathVariable(value="projectId") Integer projectId, @PathVariable(value="analysisId") Integer analysisId,
                   @RequestBody String ordering) throws ResourceDoesNotExistException, MethodNotAllowedException {
     projectService.checkOwnership(projectId, principal);
     orderingRepository.put(analysisId, ordering);

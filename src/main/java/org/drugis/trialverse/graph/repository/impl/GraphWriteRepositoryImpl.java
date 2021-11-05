@@ -31,7 +31,6 @@ import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.inject.Inject;
-import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 
@@ -44,103 +43,101 @@ import static org.drugis.addis.util.WebConstants.X_JENA_API_KEY;
 @Repository
 public class GraphWriteRepositoryImpl implements GraphWriteRepository {
 
-  public static final String GRAPH_QUERY_STRING = "?graph={graphUri}";
+    public static final String GRAPH_QUERY_STRING = "?graph={graphUri}";
 
-  @Inject
-  private VersionMappingRepository versionMappingRepository;
+    @Inject
+    private VersionMappingRepository versionMappingRepository;
 
-  @Inject
-  private HttpClient httpClient;
+    @Inject
+    private HttpClient httpClient;
 
-  @Inject
-  private AuthenticationService authenticationService;
+    @Inject
+    private AuthenticationService authenticationService;
 
-  @Inject
-  private AccountRepository accountRepository;
+    @Inject
+    private AccountRepository accountRepository;
 
-  @Inject
-  private GraphService graphService;
+    @Inject
+    private GraphService graphService;
 
-  private static final String DATA_ENDPOINT = "/data";
-  private final static Logger logger = LoggerFactory.getLogger(GraphWriteRepositoryImpl.class);
+    private static final String DATA_ENDPOINT = "/data";
+    private final static Logger logger = LoggerFactory.getLogger(GraphWriteRepositoryImpl.class);
 
-  @Override
-  @Caching(evict = {
-          @CacheEvict(cacheNames = "datasetHistory", key = "#datasetUri.toString()"),
-          @CacheEvict(cacheNames = "versionedDatasetQuery", allEntries = true)})
-  public Header updateGraph(URI datasetUri, String graphUuid, InputStream graph,
-                            String commitTitle, String commitDescription) throws UpdateGraphException {
+    @Override
+    @Caching(evict = {
+            @CacheEvict(cacheNames = "datasetHistory", key = "#datasetUri.toString()"),
+            @CacheEvict(cacheNames = "versionedDatasetQuery", allEntries = true)})
+    public Header updateGraph(URI datasetUri, String graphUuid, InputStream graph,
+                              String commitTitle, String commitDescription) throws UpdateGraphException {
 
-    UriComponents uriComponents = UriComponentsBuilder.fromHttpUrl(datasetUri.toString())
-            .path(DATA_ENDPOINT)
-            .queryParam("graph", graphService.buildGraphUri(graphUuid))
-            .build();
+        UriComponents uriComponents = UriComponentsBuilder.fromHttpUrl(datasetUri.toString())
+                .path(DATA_ENDPOINT)
+                .queryParam("graph", graphService.buildGraphUri(graphUuid))
+                .build();
 
-    HttpRequestBase putRequest = new HttpPut(uriComponents.toUri());
-    putRequest.setHeader(org.apache.http.HttpHeaders.CONTENT_TYPE, RDFLanguages.TURTLE.getContentType().getContentType());
-    putRequest.setHeader(WebConstants.EVENT_SOURCE_TITLE_HEADER, Base64.encodeBase64String(commitTitle.getBytes()));
-    putRequest.setHeader(X_JENA_API_KEY, JENA_API_KEY);
+        HttpRequestBase putRequest = new HttpPut(uriComponents.toUri());
+        putRequest.setHeader(org.apache.http.HttpHeaders.CONTENT_TYPE, RDFLanguages.TURTLE.getContentType().getContentTypeStr());
+        putRequest.setHeader(WebConstants.EVENT_SOURCE_TITLE_HEADER, Base64.encodeBase64String(commitTitle.getBytes()));
+        putRequest.setHeader(X_JENA_API_KEY, JENA_API_KEY);
 
-    putRequest = addCreatorToRequest(putRequest);
+        putRequest = addCreatorToRequest(putRequest);
 
-    if (StringUtils.isNotEmpty(commitDescription)) {
-      putRequest.setHeader(WebConstants.EVENT_SOURCE_DESCRIPTION_HEADER, Base64.encodeBase64String(commitDescription.getBytes()));
+        if (StringUtils.isNotEmpty(commitDescription)) {
+            putRequest.setHeader(WebConstants.EVENT_SOURCE_DESCRIPTION_HEADER, Base64.encodeBase64String(commitDescription.getBytes()));
+        }
+
+        HttpEntity putBody = new InputStreamEntity(graph);
+
+        ((HttpPut) putRequest).setEntity(putBody);
+        logger.debug("execute updateGraph");
+
+        Header versionHeader;
+        try (CloseableHttpResponse response = (CloseableHttpResponse) httpClient.execute(putRequest)) {
+            versionHeader = response.getFirstHeader(WebConstants.X_EVENT_SOURCE_VERSION);
+            EntityUtils.consume(response.getEntity());
+            return versionHeader;
+        } catch (Exception e) {
+            logger.debug("error updating graph {}", e);
+            throw new UpdateGraphException();
+        }
     }
 
-    HttpEntity putBody = new InputStreamEntity(graph);
+    @Override
+    @Caching(evict = {
+            @CacheEvict(cacheNames = "datasetHistory", key = "#datasetUri.toString()"),
+            @CacheEvict(cacheNames = "versionedDatasetQuery", allEntries = true)})
+    public Header deleteGraph(URI datasetUri, String graphUuid) throws DeleteGraphException {
 
-    ((HttpPut) putRequest).setEntity(putBody);
-    logger.debug("execute updateGraph");
+        UriComponents uriComponents = UriComponentsBuilder.fromHttpUrl(datasetUri.toString())
+                .path(DATA_ENDPOINT)
+                .queryParam("graph", graphService.buildGraphUri(graphUuid))
+                .build();
 
-    Header versionHeader;
-    try (CloseableHttpResponse response = (CloseableHttpResponse) httpClient.execute(putRequest)) {
-      versionHeader = response.getFirstHeader(WebConstants.X_EVENT_SOURCE_VERSION);
-      EntityUtils.consume(response.getEntity());
-      return versionHeader;
-    } catch (Exception e) {
-      logger.debug("error updating graph {}", e);
-      throw new UpdateGraphException();
-    }
-  }
+        HttpRequestBase deleteRequest = addCreatorToRequest(new HttpDelete(uriComponents.toUri()));
+        deleteRequest.setHeader(WebConstants.EVENT_SOURCE_TITLE_HEADER, Base64.encodeBase64String("Deleted graph.".getBytes()));
+        deleteRequest.setHeader(X_JENA_API_KEY, JENA_API_KEY);
 
-  @Override
-  @Caching(evict = {
-          @CacheEvict(cacheNames = "datasetHistory", key = "#datasetUri.toString()"),
-          @CacheEvict(cacheNames = "versionedDatasetQuery", allEntries = true)})
-  public Header deleteGraph(URI datasetUri, String graphUuid) throws DeleteGraphException {
+        Header versionHeader;
+        try (CloseableHttpResponse response = (CloseableHttpResponse) httpClient.execute(deleteRequest)) {
+            versionHeader = response.getFirstHeader(WebConstants.X_EVENT_SOURCE_VERSION);
+            EntityUtils.consume(response.getEntity());
+            return versionHeader;
+        } catch (Exception e) {
+            logger.debug("error deleting graph", e);
+            throw new DeleteGraphException();
+        }
 
-    UriComponents uriComponents = UriComponentsBuilder.fromHttpUrl(datasetUri.toString())
-            .path(DATA_ENDPOINT)
-            .queryParam("graph", graphService.buildGraphUri(graphUuid))
-            .build();
-
-    HttpRequestBase deleteRequest = new HttpDelete(uriComponents.toUri());
-
-    deleteRequest = addCreatorToRequest(deleteRequest);
-    deleteRequest.setHeader(WebConstants.EVENT_SOURCE_TITLE_HEADER, Base64.encodeBase64String("Deleted graph.".getBytes()));
-    deleteRequest.setHeader(X_JENA_API_KEY, JENA_API_KEY);
-
-    Header versionHeader;
-    try (CloseableHttpResponse response = (CloseableHttpResponse) httpClient.execute(deleteRequest)) {
-      versionHeader = response.getFirstHeader(WebConstants.X_EVENT_SOURCE_VERSION);
-      EntityUtils.consume(response.getEntity());
-      return versionHeader;
-    } catch (Exception e) {
-      logger.debug("error deleting graph {}", e);
-      throw new DeleteGraphException();
     }
 
-  }
+    private HttpRequestBase addCreatorToRequest(HttpRequestBase deleteRequest) {
+        TrialversePrincipal owner = authenticationService.getAuthentication();
+        Account user = accountRepository.findAccountByUsername(owner.getUserName());
 
-  private HttpRequestBase addCreatorToRequest(HttpRequestBase deleteRequest) {
-    TrialversePrincipal owner = authenticationService.getAuthentication();
-    Account user = accountRepository.findAccountByUsername(owner.getUserName());
-
-    if (owner.hasApiKey()) {
-      deleteRequest.setHeader(WebConstants.EVENT_SOURCE_CREATOR_HEADER, "https://trialverse.org/apikeys/" + owner.getApiKey().getId());
-    } else {
-      deleteRequest.setHeader(WebConstants.EVENT_SOURCE_CREATOR_HEADER, "mailto:" + user.getEmail());
+        if (owner.hasApiKey()) {
+            deleteRequest.setHeader(WebConstants.EVENT_SOURCE_CREATOR_HEADER, "https://trialverse.org/apikeys/" + owner.getApiKey().getId());
+        } else {
+            deleteRequest.setHeader(WebConstants.EVENT_SOURCE_CREATOR_HEADER, "mailto:" + user.getEmail());
+        }
+        return deleteRequest;
     }
-    return deleteRequest;
-  }
 }

@@ -32,7 +32,7 @@ public class ProblemController extends AbstractAddisCoreController {
 
   @RequestMapping(value = "/projects/{projectId}/analyses/{analysisId}/problem", method = RequestMethod.GET)
   @ResponseBody
-  public AbstractProblem get(@PathVariable Integer projectId, @PathVariable Integer analysisId, HttpServletRequest request) throws ResourceDoesNotExistException, ProblemCreationException, MalformedURLException {
+  public AbstractProblem get(@PathVariable(value="projectId") Integer projectId, @PathVariable(value="analysisId") Integer analysisId, HttpServletRequest request) throws ResourceDoesNotExistException, ProblemCreationException, MalformedURLException {
     hostURLCache.setHostFromRequestUrl(request.getRequestURL().toString());
     return problemService.getProblem(projectId, analysisId);
   }

@@ -1,6 +1,6 @@
 package org.drugis.addis.trialverse;
 
-import org.apache.commons.io.IOUtils;
+import org.apache.commons.compress.utils.IOUtils;
 import org.apache.jena.query.*;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
@@ -74,7 +74,7 @@ public class PopulationCharacteristicDataQueryTest {
     dataset.addNamedModel("3e6794f1-c95c-486e-ac8d-55e9259d0f4a", model);
 
     InputStream inputStream = new ClassPathResource("/sparql/populationCharacteristicCovariateData.sparql").getInputStream();
-    String query = IOUtils.toString(inputStream, "UTF-8");
+    String query = new String(inputStream.readAllBytes());
     query = query.replace("$populationCharacteristicUuid", populationCharacteristicUuid);
     QueryExecution queryExecution = QueryExecutionFactory.create(query, dataset);
     return queryExecution.execSelect();

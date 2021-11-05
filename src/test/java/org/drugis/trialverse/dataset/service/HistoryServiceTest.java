@@ -1,6 +1,6 @@
 package org.drugis.trialverse.dataset.service;
 
-import org.apache.commons.io.IOUtils;
+import org.apache.commons.compress.utils.IOUtils;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.drugis.addis.security.Account;
@@ -94,8 +94,8 @@ public class HistoryServiceTest {
   }
 
   private String createQuery() throws IOException {
-    String template = IOUtils.toString(new ClassPathResource("getGraphTitle.sparql")
-            .getInputStream(), "UTF-8");
+    String template = new String(new ClassPathResource("getGraphTitle.sparql")
+            .getInputStream().readAllBytes());
     return template.replace("$graphUri", "http://trials.drugis.org/graphs/sourceGraph");
   }
 

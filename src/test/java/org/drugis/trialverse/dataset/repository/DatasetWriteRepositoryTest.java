@@ -84,7 +84,7 @@ public class DatasetWriteRepositoryTest {
     HttpHeaders httpHeaders = new HttpHeaders();
     httpHeaders.add("Location", "http://location");
     ResponseEntity responseEntity = new ResponseEntity(httpHeaders, HttpStatus.CREATED);
-    when(restTemplate.postForEntity(anyString(), anyObject(), any(Class.class))).thenReturn(responseEntity);
+    when(restTemplate.postForEntity(anyString(), any(), any(Class.class))).thenReturn(responseEntity);
     when(accountRepository.findAccountByUsername(owner.getUserName())).thenReturn(account);
 
     URI result = datasetWriteRepository.createDataset(title, description, owner);
@@ -100,7 +100,7 @@ public class DatasetWriteRepositoryTest {
     HttpHeaders httpHeaders = new HttpHeaders();
     httpHeaders.add("Location", "http://location");
     ResponseEntity responseEntity = new ResponseEntity(httpHeaders, HttpStatus.CREATED);
-    when(restTemplate.postForEntity(anyString(), anyObject(), any(Class.class))).thenReturn(responseEntity);
+    when(restTemplate.postForEntity(anyString(), any(), any(Class.class))).thenReturn(responseEntity);
     when(accountRepository.findAccountByUsername(owner.getUserName())).thenReturn(account);
 
     URI result = datasetWriteRepository.createDataset(title, description, owner);
@@ -122,7 +122,7 @@ public class DatasetWriteRepositoryTest {
     VersionMapping mapping = new VersionMapping("versionedUrl", account.getEmail(), datasetUri.toString());
 
     when(versionMappingRepository.getVersionMappingByDatasetUrl(datasetUri)).thenReturn(mapping);
-    when(restTemplate.postForEntity(anyString(), anyObject(), any(Class.class))).thenReturn(responseEntity);
+    when(restTemplate.postForEntity(anyString(), any(), any(Class.class))).thenReturn(responseEntity);
 
     String newVersion = datasetWriteRepository.editDataset(owner, mapping, newTitle, null);
 

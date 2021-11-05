@@ -46,14 +46,14 @@ public class InterventionController extends AbstractAddisCoreController {
 
   @RequestMapping(value = "/projects/{projectId}/interventions", method = RequestMethod.GET)
   @ResponseBody
-  public List<AbstractInterventionViewAdapter> query(@PathVariable Integer projectId) {
+  public List<AbstractInterventionViewAdapter> query(@PathVariable(value="projectId") Integer projectId) {
     Set<AbstractIntervention> interventions = interventionRepository.query(projectId);
     return interventions.stream().map(AbstractIntervention::toViewAdapter).collect(Collectors.toList());
   }
 
   @RequestMapping(value = "/projects/{projectId}/interventions/{interventionId}", method = RequestMethod.GET)
   @ResponseBody
-  public AbstractInterventionViewAdapter get(@PathVariable Integer projectId, @PathVariable Integer interventionId) throws ResourceDoesNotExistException {
+  public AbstractInterventionViewAdapter get(@PathVariable(value="projectId") Integer projectId, @PathVariable Integer interventionId) throws ResourceDoesNotExistException {
     AbstractIntervention intervention = interventionRepository.get(interventionId);
     if (!intervention.getProject().equals(projectId)) {
       throw new ResourceDoesNotExistException();
@@ -63,7 +63,7 @@ public class InterventionController extends AbstractAddisCoreController {
 
   @RequestMapping(value = "/projects/{projectId}/interventions/{interventionId}", method = RequestMethod.POST)
   @ResponseBody
-  public AbstractInterventionViewAdapter edit(Principal currentUser, @PathVariable Integer projectId,
+  public AbstractInterventionViewAdapter edit(Principal currentUser, @PathVariable(value="projectId") Integer projectId,
                                               @PathVariable Integer interventionId,
                                               @RequestBody EditInterventionCommand command) throws Exception {
     Account user = accountRepository.getAccount(currentUser);
@@ -74,7 +74,7 @@ public class InterventionController extends AbstractAddisCoreController {
 
   @RequestMapping(value = "/projects/{projectId}/interventions", method = RequestMethod.POST)
   @ResponseBody
-  public AbstractInterventionViewAdapter create(HttpServletRequest request, HttpServletResponse response, Principal currentUser, @PathVariable Integer projectId,
+  public AbstractInterventionViewAdapter create(HttpServletRequest request, HttpServletResponse response, Principal currentUser, @PathVariable(value="projectId") Integer projectId,
                                                 @RequestBody AbstractInterventionCommand interventionCommand) throws MethodNotAllowedException, ResourceDoesNotExistException, InvalidConstraintException {
     Account user = accountRepository.findAccountByUsername(currentUser.getName());
     projectService.checkProjectExistsAndModifiable(user, projectId);
@@ -85,7 +85,7 @@ public class InterventionController extends AbstractAddisCoreController {
   }
 
   @RequestMapping(value = "/projects/{projectId}/interventions/{interventionId}", method = RequestMethod.DELETE)
-  public void deleteIntervention(@PathVariable Integer projectId, @PathVariable Integer interventionId,
+  public void deleteIntervention(@PathVariable(value="projectId") Integer projectId, @PathVariable Integer interventionId,
                                  Principal currentUser, HttpServletResponse response) throws ResourceDoesNotExistException, MethodNotAllowedException {
     Account user = accountRepository.findAccountByUsername(currentUser.getName());
     projectService.checkProjectExistsAndModifiable(user, projectId);
@@ -94,7 +94,7 @@ public class InterventionController extends AbstractAddisCoreController {
   }
 
   @RequestMapping(value = "/projects/{projectId}/interventions/{interventionId}/setConversionMultiplier", method = RequestMethod.POST)
-  public void setConversionMultiplier(@PathVariable Integer projectId, @PathVariable Integer interventionId,
+  public void setConversionMultiplier(@PathVariable(value="projectId") Integer projectId, @PathVariable Integer interventionId,
                                       Principal currentUser, HttpServletResponse response,
                                       @RequestBody SetMultipliersCommand command) throws ResourceDoesNotExistException, MethodNotAllowedException {
     Account user = accountRepository.findAccountByUsername(currentUser.getName());

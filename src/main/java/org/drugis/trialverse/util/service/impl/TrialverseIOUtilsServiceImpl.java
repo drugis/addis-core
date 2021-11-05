@@ -1,6 +1,6 @@
 package org.drugis.trialverse.util.service.impl;
 
-import org.apache.commons.io.IOUtils;
+import org.apache.commons.compress.utils.IOUtils;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.riot.Lang;
 import org.drugis.trialverse.util.service.TrialverseIOUtilsService;
