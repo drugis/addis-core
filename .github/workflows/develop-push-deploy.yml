@@ -18,6 +18,10 @@ jobs:
       - uses: webfactory/ssh-agent@v0.4.1
         with:
           ssh-private-key: ${{ secrets.deployPrivateKey }}
+      - uses: actions/setup-java@v2
+        with:
+          distribution: 'temurin'
+          java-version: '17'
 
       - name: docker login
         run: docker login -u addis -p ${{ secrets.dockerRegistryPassword }}
