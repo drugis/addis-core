@@ -93,16 +93,15 @@ If not restoring to the same environment, use the `util/changePrefix.sh` script 
 ## Running ADDIS as a docker container
 
 - check out the (dockerfiles repository)[https://github.com/drugis/dockerfiles]
-- build addis WAR, using `mvn package`. Or: download a recent stable version from from https://drugis.org/files/addis-core.war
+- build addis WAR, using `mvn package`. Or: download a recent stable version from https://drugis.org/files/addis-core.war
 - build and run the dockerfile.
 
 Example run script
 
 ```
 docker run -d --name addis \
+  --network mcda-composed-network \
   --link postgres:postgres \
-  --link patavi-server:patavi-server \
-  --link jena-es:jena-es \
   -e JAVA_OPTS=" \
   -DADDIS_CORE_DB=addiscore \
   -DtomcatProxyScheme=https \
@@ -112,10 +111,10 @@ docker run -d --name addis \
   -DADDIS_CORE_DB_HOST=postgres \
   -DADDIS_CORE_DB=addiscore \
   -DADDIS_CORE_DB_USERNAME=addiscore \
-  -DADDIS_CORE_DB_PASSWORD=<password> \
+  -DADDIS_CORE_DB_PASSWORD=develop>" \
   -e PATAVI_URI=https://patavi-server:3000 \
-  -e ADDIS_CORE_OAUTH_GOOGLE_SECRET=<google-secret> \
-  -e ADDIS_CORE_OAUTH_GOOGLE_KEY=<google-key> \
+  -e ADDIS_CORE_OAUTH_GOOGLE_SECRET="something" \
+  -e ADDIS_CORE_OAUTH_GOOGLE_KEY="something" \
   -e TRIPLESTORE_BASE_URI=https://jena-es:3030 \
   -e EVENT_SOURCE_URI_PREFIX=https://jena-es:3030 \
   -e CLINICALTRIALS_IMPORTER_URL=https://nct.drugis.org \

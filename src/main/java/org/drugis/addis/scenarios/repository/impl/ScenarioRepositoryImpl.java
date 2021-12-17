@@ -49,7 +49,7 @@ public class ScenarioRepositoryImpl implements ScenarioRepository {
             "SELECT DISTINCT s FROM Scenario s\n" +
                     "  WHERE s.workspace = :analysisId \n" +
                     "  AND s.workspace in (\n" +
-                    "    SELECT id FROM BenefitRiskAnalysis where id = :analysisId and projectId = :projectId\n" +
+                    "    SELECT id FROM AbstractAnalysis where id = :analysisId and projectId = :projectId\n" +
                     "  )"
             , Scenario.class
     );
@@ -65,7 +65,7 @@ public class ScenarioRepositoryImpl implements ScenarioRepository {
                     "  WHERE s.workspace = :analysisId \n" +
                     "  AND s.subProblemId = :subProblemId \n" +
                     "  AND s.workspace in (\n" +
-                    "    SELECT id FROM BenefitRiskAnalysis where id = :analysisId and projectid = :projectId\n" +
+                    "    SELECT id FROM AbstractAnalysis where id = :analysisId and projectid = :projectId\n" +
                     "  )"
             , Scenario.class
     );

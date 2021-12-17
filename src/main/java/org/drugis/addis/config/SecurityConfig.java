@@ -69,7 +69,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                     " LEFT OUTER JOIN AccountRoles ON Account.id = AccountRoles.accountId WHERE Account.username = ?")
             .passwordEncoder(passwordEncoder());
     auth.authenticationProvider(tokenAuthenticationProvider());
-
   }
 
   @Override
@@ -89,7 +88,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             "/statistics/**", // allow calculation of estimations for d80 table
             "/favicon.ico", "/favicon.png", "/app/**", "/auth/**",
             "/signin", "/signup", "/**/modal/*.html", "/manual.html"};
-    // Disable CSFR protection on the following urls:
     List<AntPathRequestMatcher> requestMatchers = Arrays.stream(whitelist)
             .map(AntPathRequestMatcher::new)
             .collect(Collectors.toList());

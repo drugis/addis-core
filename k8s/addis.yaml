@@ -1,0 +1,67 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: addis
+  namespace: drugis-test
+spec:
+  type: NodePort
+  ports:
+    - port: 8080
+  selector:
+    app: addis
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: addis
+  namespace: drugis-test
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: addis
+  template:
+    metadata:
+      labels:
+        app: addis
+    spec:
+      containers:
+        - name: addis
+          image: addis/addis:test-20211008
+          ports:
+            - name: addis
+              containerPort: 8080
+          env:
+            - name: ADDIS_CORE_DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: addis-secrets
+                  key: ADDIS_DB_PASSWORD
+            - name: PATAVI_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: passwords
+                  key: PATAVI_API_KEY
+            - name: JENA_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: addis-secrets
+                  key: JENA_API_KEY
+            - name: ADDIS_CORE_OAUTH_GOOGLE_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: addis-secrets
+                  key: ADDIS_CORE_OAUTH_GOOGLE_SECRET
+            - name: ADDIS_CORE_OAUTH_GOOGLE_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: addis-secrets
+                  key: ADDIS_CORE_OAUTH_GOOGLE_KEY
+            - name: JAVA_OPTS
+              valueFrom:
+                secretKeyRef:
+                  name: addis-secrets
+                  key: JAVA_OPTS
+          envFrom:
+            - configMapRef:
+                name: addis-settings

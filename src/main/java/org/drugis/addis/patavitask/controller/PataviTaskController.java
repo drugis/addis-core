@@ -26,7 +26,7 @@ public class PataviTaskController {
 
   @RequestMapping(value = "/projects/{projectId}/analyses/{analysisId}/models/{modelId}/task", method = RequestMethod.GET)
   @ResponseBody
-  public PataviTaskUriHolder get(@PathVariable Integer projectId, @PathVariable Integer analysisId, @PathVariable Integer modelId) throws Exception, ReadValueException, InvalidTypeForDoseCheckException, ProblemCreationException {
+  public PataviTaskUriHolder get(@PathVariable(value="projectId") Integer projectId, @PathVariable(value="analysisId") Integer analysisId, @PathVariable Integer modelId) throws Exception, ReadValueException, InvalidTypeForDoseCheckException, ProblemCreationException {
     return pataviTaskService.getGemtcPataviTaskUriHolder(projectId, analysisId, modelId);
   }
 

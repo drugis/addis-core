@@ -3,7 +3,7 @@ package org.drugis.trialverse.dataset.service.impl;
 import com.google.common.collect.Sets;
 import com.jayway.jsonpath.JsonPath;
 import org.apache.commons.codec.digest.DigestUtils;
-import org.apache.commons.io.IOUtils;
+import org.apache.commons.compress.utils.IOUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.jena.datatypes.xsd.XSDDateTime;
 import org.apache.jena.ext.com.google.common.collect.Lists;
@@ -257,8 +257,8 @@ public class HistoryServiceImpl implements HistoryService {
   }
 
   private String getStudyTitle(VersionMapping mapping, URI version, String graph) throws IOException {
-    String template = IOUtils.toString(new ClassPathResource("getGraphTitle.sparql")
-            .getInputStream(), "UTF-8");
+    String template = new String(new ClassPathResource("getGraphTitle.sparql")
+            .getInputStream().readAllBytes());
     String query = template.replace("$graphUri", graph);
     byte[] response = datasetReadRepository.executeQuery(query,
             mapping.getTrialverseDatasetUri(), version, WebConstants.APPLICATION_SPARQL_RESULTS_JSON);
@@ -267,8 +267,8 @@ public class HistoryServiceImpl implements HistoryService {
 
   private Pair<String, String> getVersionAndGraph(Model historyModel, String revisionUri) throws
           RevisionNotFoundException, IOException {
-    String template = IOUtils.toString(new ClassPathResource("getGraphAndVersionByRevision.sparql")
-            .getInputStream(), "UTF-8");
+    String template = new String(new ClassPathResource("getGraphAndVersionByRevision.sparql")
+            .getInputStream().readAllBytes());
     template = template.replace("$revision", revisionUri);
 
     Query query = QueryFactory.create(template);

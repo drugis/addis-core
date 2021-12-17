@@ -34,8 +34,11 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static java.util.Collections.singletonList;
+import static org.drugis.addis.util.WebConstants.ACCEPT_HEADER;
+import static org.drugis.addis.util.WebConstants.APPLICATION_SPARQL_RESULTS_JSON;
 import static org.junit.Assert.*;
-import static org.mockito.Matchers.any;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -83,11 +86,13 @@ public class TriplestoreServiceTest {
             .build();
 
     String datasetUuid = "d1";
-    String query = TriplestoreServiceImpl.NAMESPACE;
+    HttpHeaders acceptSparqlHeaders = new HttpHeaders();
+    acceptSparqlHeaders.put(ACCEPT_HEADER, singletonList(APPLICATION_SPARQL_RESULTS_JSON));
+    final HttpEntity<String> namespaceRequest = new HttpEntity<>(TriplestoreServiceImpl.NAMESPACE, acceptSparqlHeaders);
+
     UriComponents uriComponents2 = UriComponentsBuilder.fromHttpUrl(webConstants.getTriplestoreBaseUri())
             .path("datasets/" + datasetUuid)
             .path(TriplestoreServiceImpl.QUERY_ENDPOINT)
-            .queryParam(TriplestoreServiceImpl.QUERY_PARAM_QUERY, query)
             .build();
     String mockResult2 = TestUtils.loadResource(this.getClass(), "/triplestoreService/exampleGetNamespaceResult.json");
     MultiValueMap<String, String> responseHeaders = new HttpHeaders();
@@ -97,9 +102,9 @@ public class TriplestoreServiceTest {
     ResponseEntity<String> resultEntity3 = new ResponseEntity<>(graphBody, responseHeaders, HttpStatus.OK);
 
     when(restTemplate.exchange(uriComponents.toUri(), HttpMethod.GET, TriplestoreServiceImpl.acceptJsonRequest, String.class)).thenReturn(resultEntity);
-    when(restTemplate.exchange(uriComponents2.toUri(), HttpMethod.GET, TriplestoreServiceImpl.acceptSparqlResultsRequest, String.class)).thenReturn(resultEntity2);
+    when(restTemplate.exchange(uriComponents2.toUri(), HttpMethod.POST, namespaceRequest, String.class)).thenReturn(resultEntity2);
     HttpHeaders headers = new HttpHeaders();
-    headers.set(WebConstants.ACCEPT_HEADER, "text/turtle,text/html");
+    headers.set(ACCEPT_HEADER, "text/turtle,text/html");
     URI datasetUrl = URI.create(TRIPLESTORE_BASE_URI + "/datasets/ds1");
     when(webConstants.buildDatasetUri(datasetUuid)).thenReturn(datasetUrl);
     when(restTemplate.exchange(datasetUrl, HttpMethod.GET, new HttpEntity<String>(headers), String.class)).thenReturn(resultEntity3);

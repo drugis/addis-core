@@ -40,23 +40,23 @@ public class ScenarioController extends AbstractAddisCoreController {
 
   @RequestMapping(value = "/projects/{projectId}/analyses/{analysisId}/problems/{subProblemId}/scenarios", method = RequestMethod.GET)
   @ResponseBody
-  public Collection<Scenario> queryBySubProblem(@PathVariable Integer projectId,
-                                                @PathVariable Integer analysisId,
+  public Collection<Scenario> queryBySubProblem(@PathVariable(value="projectId") Integer projectId,
+                                                @PathVariable(value="analysisId") Integer analysisId,
                                                 @PathVariable Integer subProblemId) {
     return scenarioRepository.queryBySubProblem(projectId, analysisId, subProblemId);
   }
 
   @RequestMapping(value = "/projects/{projectId}/analyses/{analysisId}/scenarios", method = RequestMethod.GET)
   @ResponseBody
-  public Collection<Scenario> queryByAnalysis(@PathVariable Integer projectId,
-                                              @PathVariable Integer analysisId) {
+  public Collection<Scenario> queryByAnalysis(@PathVariable(value="projectId") Integer projectId,
+                                              @PathVariable(value="analysisId") Integer analysisId) {
     return scenarioRepository.queryByAnalysis(projectId, analysisId);
   }
 
   @RequestMapping(value = "/projects/{projectId}/analyses/{analysisId}/problems/{subProblemId}/scenarios/{scenarioId}", method = RequestMethod.POST)
   @ResponseBody
-  public Scenario update(Principal principal, @PathVariable Integer projectId,
-                         @PathVariable Integer analysisId,
+  public Scenario update(Principal principal, @PathVariable(value="projectId") Integer projectId,
+                         @PathVariable(value="analysisId") Integer analysisId,
                          @PathVariable Integer subProblemId,
                          @RequestBody Scenario scenario)
           throws ResourceDoesNotExistException, MethodNotAllowedException {
@@ -67,8 +67,8 @@ public class ScenarioController extends AbstractAddisCoreController {
 
   @RequestMapping(value = "/projects/{projectId}/analyses/{analysisId}/problems/{subProblemId}/scenarios", method = RequestMethod.POST)
   @ResponseBody
-  public Scenario create(Principal principal, HttpServletResponse response, @PathVariable Integer projectId,
-                         @PathVariable Integer analysisId,
+  public Scenario create(Principal principal, HttpServletResponse response, @PathVariable(value="projectId") Integer projectId,
+                         @PathVariable(value="analysisId") Integer analysisId,
                          @PathVariable Integer subProblemId, @RequestBody Scenario scenario)
           throws ResourceDoesNotExistException, MethodNotAllowedException {
     scenario.setWorkspace(analysisId);

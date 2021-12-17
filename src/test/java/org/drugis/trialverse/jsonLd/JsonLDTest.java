@@ -86,7 +86,7 @@ public class JsonLDTest {
     model.read(new StringReader(exampleJsonLd), "http://example.com", RDFLanguages.strLangJSONLD);
 
     ScriptEngineManager factory = new ScriptEngineManager();
-    ScriptEngine engine = factory.getEngineByName("JavaScript");
+    ScriptEngine engine = factory.getEngineByName("graal.js");
     engine.put("inputJson", exampleJsonLd);
     engine.eval(new FileReader(underscoreLoc));
     engine.eval("var context; function define(deps, def) { context = def(); }"); // stub requireJS

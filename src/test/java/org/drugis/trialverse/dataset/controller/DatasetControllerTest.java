@@ -12,7 +12,6 @@ import org.drugis.addis.exception.MethodNotAllowedException;
 import org.drugis.addis.security.Account;
 import org.drugis.addis.security.repository.AccountRepository;
 import org.drugis.addis.util.WebConstants;
-import org.drugis.trialverse.dataset.controller.command.DatasetController;
 import org.drugis.trialverse.dataset.controller.command.DatasetCommand;
 import org.drugis.trialverse.dataset.model.Dataset;
 import org.drugis.trialverse.dataset.model.VersionMapping;
@@ -22,7 +21,6 @@ import org.drugis.trialverse.dataset.repository.DatasetWriteRepository;
 import org.drugis.trialverse.dataset.repository.VersionMappingRepository;
 import org.drugis.trialverse.dataset.service.DatasetService;
 import org.drugis.trialverse.dataset.service.HistoryService;
-import org.drugis.trialverse.graph.service.GraphService;
 import org.drugis.trialverse.security.TrialversePrincipal;
 import org.drugis.trialverse.util.Namespaces;
 import org.drugis.trialverse.util.Utils;
@@ -31,7 +29,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
-import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
@@ -161,11 +158,11 @@ public class DatasetControllerTest {
     mockMvc.perform(get("/users/" + userId + "/datasets").principal(user)
             .accept(RDFLanguages.TURTLE.getHeaderString()))
             .andExpect(status().isOk())
-            .andExpect(content().contentType(RDFLanguages.TURTLE.getContentType().getContentType()));
+            .andExpect(content().contentType(RDFLanguages.TURTLE.getContentType().getContentTypeStr()));
 
     verify(accountRepository).findAccountById(userId);
     verify(datasetReadRepository).queryDatasets(john);
-    verify(trialverseIOUtilsService).writeModelToServletResponse(Matchers.any(Model.class), Matchers.any(HttpServletResponse.class));
+    verify(trialverseIOUtilsService).writeModelToServletResponse(any(Model.class), any(HttpServletResponse.class));
   }
 
   @Test
@@ -211,10 +208,10 @@ public class DatasetControllerTest {
 
     mockMvc.perform((get("/users/some-user-uid/datasets/" + datasetUuid)).principal(user))
             .andExpect(status().isOk())
-            .andExpect(content().contentType(RDFLanguages.TURTLE.getContentType().getContentType()));
+            .andExpect(content().contentType(RDFLanguages.TURTLE.getContentType().getContentTypeStr()));
 
     verify(datasetReadRepository).getVersionedDataset(datasetUri, null);
-    verify(trialverseIOUtilsService).writeModelToServletResponse(Matchers.any(Model.class), Matchers.any(HttpServletResponse.class));
+    verify(trialverseIOUtilsService).writeModelToServletResponse(any(Model.class), any(HttpServletResponse.class));
   }
 
   @Test
@@ -226,10 +223,10 @@ public class DatasetControllerTest {
 
     mockMvc.perform((get("/users/some-user-uid/datasets/" + datasetUuid)).principal(user).accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
-            .andExpect(content().contentType(RDFLanguages.JSONLD.getContentType().getContentType()));
+            .andExpect(content().contentType(RDFLanguages.JSONLD.getContentType().getContentTypeStr()));
 
     verify(datasetReadRepository).getVersionedDataset(datasetUri, null);
-    verify(trialverseIOUtilsService).writeModelToServletResponseJson(Matchers.any(Model.class), Matchers.any(HttpServletResponse.class));
+    verify(trialverseIOUtilsService).writeModelToServletResponseJson(any(Model.class), any(HttpServletResponse.class));
   }
 
   @Test
@@ -243,10 +240,10 @@ public class DatasetControllerTest {
 
     mockMvc.perform((get("/users/user-name-hash/datasets/" + datasetUuid + "/versions/" + versionUuid)).principal(user))
             .andExpect(status().isOk())
-            .andExpect(content().contentType(RDFLanguages.TURTLE.getContentType().getContentType()));
+            .andExpect(content().contentType(RDFLanguages.TURTLE.getContentType().getContentTypeStr()));
 
     verify(datasetReadRepository).getVersionedDataset(datasetUri, versionUuid);
-    verify(trialverseIOUtilsService).writeModelToServletResponse(Matchers.any(Model.class), Matchers.any(HttpServletResponse.class));
+    verify(trialverseIOUtilsService).writeModelToServletResponse(any(Model.class), any(HttpServletResponse.class));
   }
 
   @Test
@@ -276,7 +273,7 @@ public class DatasetControllerTest {
             .andExpect(content().contentType(acceptValue));
 
     verify(datasetReadRepository).executeQuery(query, trialverseDatasetUri, null, acceptValue);
-    verify(trialverseIOUtilsService).writeContentToServletResponse(any(byte[].class), Matchers.any(HttpServletResponse.class));
+    verify(trialverseIOUtilsService).writeContentToServletResponse(any(byte[].class), any(HttpServletResponse.class));
 
   }
 
@@ -297,7 +294,7 @@ public class DatasetControllerTest {
             .andExpect(content().contentType(acceptValue));
 
     verify(datasetReadRepository).executeQuery(query, trialverseDatasetUri, version, acceptValue);
-    verify(trialverseIOUtilsService).writeContentToServletResponse(any(byte[].class), Matchers.any(HttpServletResponse.class));
+    verify(trialverseIOUtilsService).writeContentToServletResponse(any(byte[].class), any(HttpServletResponse.class));
   }
 
   @Test

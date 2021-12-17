@@ -1,0 +1,49 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: jena-es
+  namespace: drugis-test
+spec:
+  type: NodePort
+  ports:
+    - port: 8080
+  selector:
+    app: jena-es
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: jena-es
+  namespace: drugis-test
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: jena-es
+  template:
+    metadata:
+      labels:
+        app: jena-es
+    spec:
+      containers:
+        - name: jena-es
+          image: addis/jena-es:test-20211008
+          ports:
+            - name: jena-es
+              containerPort: 8080
+          env:
+            - name: JENA_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: addis-secrets
+                  key: JENA_API_KEY
+          envFrom:
+            - configMapRef:
+                name: addis-settings
+          volumeMounts:
+            - mountPath: /DB
+              name: jenadb
+      volumes:
+        - name: jenadb
+          persistentVolumeClaim:
+            claimName: jena-pv-volume

@@ -44,235 +44,241 @@ import java.util.UUID;
 @RequestMapping(value = "/users/{userUid}/datasets/{datasetUuid}")
 public class GraphController extends AbstractAddisCoreController {
 
-  @Inject
-  private GraphService graphService;
+    @Inject
+    private GraphService graphService;
 
-  @Inject
-  private GraphReadRepository graphReadRepository;
+    @Inject
+    private GraphReadRepository graphReadRepository;
 
-  @Inject
-  private GraphWriteRepository graphWriteRepository;
+    @Inject
+    private GraphWriteRepository graphWriteRepository;
 
-  @Inject
-  private DatasetReadRepository datasetReadRepository;
+    @Inject
+    private DatasetReadRepository datasetReadRepository;
 
-  @Inject
-  private AccountRepository accountRepository;
+    @Inject
+    private AccountRepository accountRepository;
 
-  @Inject
-  private TrialverseIOUtilsService trialverseIOUtilsService;
+    @Inject
+    private TrialverseIOUtilsService trialverseIOUtilsService;
 
-  @Inject
-  private VersionMappingRepository versionMappingRepository;
+    @Inject
+    private VersionMappingRepository versionMappingRepository;
 
-  @Inject
-  private ClinicalTrialsImportService clinicalTrialsImportService;
+    @Inject
+    private ClinicalTrialsImportService clinicalTrialsImportService;
 
-  @Inject
-  private HistoryService historyService;
+    @Inject
+    private HistoryService historyService;
 
-  private Logger logger = LoggerFactory.getLogger(getClass());
+    private Logger logger = LoggerFactory.getLogger(getClass());
 
-  @RequestMapping(value = "/versions/{versionUuid}/graphs/{graphUuid}", method = RequestMethod.GET, produces = WebConstants.TURTLE)
-  @ResponseBody
-  public void getGraphTurtle(HttpServletResponse httpServletResponse, @PathVariable String datasetUuid,
-                             @PathVariable String versionUuid, @PathVariable String graphUuid) throws URISyntaxException, IOException, ReadGraphException {
-    logger.trace("get graph");
-    VersionMapping versionMapping = versionMappingRepository.getVersionMappingByDatasetUrl(new URI(Namespaces.DATASET_NAMESPACE + datasetUuid));
-    byte[] responseContent = graphReadRepository.getGraph(versionMapping.getVersionedDatasetUrl(), versionUuid, graphUuid, WebConstants.TURTLE);
-    httpServletResponse.setStatus(HttpServletResponse.SC_OK);
-    httpServletResponse.setHeader("Content-Type", RDFLanguages.TURTLE.getContentType().getContentType());
-    trialverseIOUtilsService.writeContentToServletResponse(responseContent, httpServletResponse);
-  }
-
-  @RequestMapping(value = "/versions/{versionUuid}/graphs/{graphUuid}", method = RequestMethod.GET, produces = WebConstants.JSON_LD)
-  @ResponseBody
-  public void getGraphJsonLD(HttpServletResponse httpServletResponse, @PathVariable String datasetUuid,
-                             @PathVariable String versionUuid, @PathVariable String graphUuid) throws URISyntaxException, IOException, ReadGraphException {
-    logger.trace("get version graph");
-    getGraphJson(httpServletResponse, datasetUuid, graphUuid, versionUuid);
-  }
-
-  @RequestMapping(value = "/graphs/{graphUuid}", method = RequestMethod.GET, produces = WebConstants.JSON_LD)
-  @ResponseBody
-  public void getGraphHeadVersionJsonLD(HttpServletResponse httpServletResponse, @PathVariable String datasetUuid, @PathVariable String graphUuid) throws URISyntaxException, IOException, ReadGraphException {
-    logger.trace("get head graph");
-    VersionMapping versionMapping = versionMappingRepository.getVersionMappingByDatasetUrl(new URI(Namespaces.DATASET_NAMESPACE + datasetUuid));
-    byte[] responseContent = graphReadRepository.getGraph(versionMapping.getVersionedDatasetUrl(), null, graphUuid, WebConstants.JSON_LD);
-    if (new String(responseContent).equals("{ }\n")) {
-      httpServletResponse.setStatus(HttpServletResponse.SC_NOT_FOUND);
-    } else {
-      httpServletResponse.setStatus(HttpServletResponse.SC_OK);
-      httpServletResponse.setHeader("Content-Type", WebConstants.JSON_LD);
-      trialverseIOUtilsService.writeContentToServletResponse(responseContent, httpServletResponse);
+    @RequestMapping(value = "/versions/{versionUuid}/graphs/{graphUuid}", method = RequestMethod.GET, produces = WebConstants.TURTLE)
+    @ResponseBody
+    public void getGraphTurtle(HttpServletResponse httpServletResponse,
+                               @PathVariable(value = "datasetUuid") String datasetUuid,
+                               @PathVariable(value = "versionUuid") String versionUuid,
+                               @PathVariable(value = "graphUuid") String graphUuid) throws URISyntaxException, IOException, ReadGraphException {
+        logger.trace("get graph");
+        VersionMapping versionMapping = versionMappingRepository.getVersionMappingByDatasetUrl(new URI(Namespaces.DATASET_NAMESPACE + datasetUuid));
+        byte[] responseContent = graphReadRepository.getGraph(versionMapping.getVersionedDatasetUrl(), versionUuid, graphUuid, WebConstants.TURTLE);
+        httpServletResponse.setStatus(HttpServletResponse.SC_OK);
+        httpServletResponse.setHeader("Content-Type", RDFLanguages.TURTLE.getContentType().getContentTypeStr());
+        trialverseIOUtilsService.writeContentToServletResponse(responseContent, httpServletResponse);
     }
-  }
 
-  @RequestMapping(value = "/graphs/{graphUuid}/concepts", method = RequestMethod.GET, produces = WebConstants.JSON_LD)
-  @ResponseBody
-  public void getHeadConceptsJson(HttpServletResponse httpServletResponse, @PathVariable String datasetUuid, @PathVariable String graphUuid) throws URISyntaxException, IOException, ReadGraphException {
-    logger.trace("get concepts graph");
-    getGraphJson(httpServletResponse, datasetUuid, graphUuid, null);
-  }
-
-  @RequestMapping(value = "/versions/{versionUuid}/graphs/{graphUuid}/concepts", method = RequestMethod.GET, produces = WebConstants.JSON_LD)
-  @ResponseBody
-  public void getVersionedConceptsJson(
-          HttpServletResponse httpServletResponse,
-          @PathVariable String datasetUuid,
-          @PathVariable String graphUuid,
-          @PathVariable String versionUuid
-  ) throws URISyntaxException, IOException, ReadGraphException {
-    logger.trace("get concepts graph");
-    getGraphJson(httpServletResponse, datasetUuid, graphUuid, versionUuid);
-  }
-
-  private void getGraphJson(HttpServletResponse httpServletResponse, @PathVariable String datasetUuid, @PathVariable String graphUuid, @PathVariable String versionUuid) throws URISyntaxException, IOException, ReadGraphException {
-    VersionMapping versionMapping = versionMappingRepository.getVersionMappingByDatasetUrl(new URI(Namespaces.DATASET_NAMESPACE + datasetUuid));
-    byte[] responseContent = graphReadRepository.getGraph(versionMapping.getVersionedDatasetUrl(), versionUuid, graphUuid, WebConstants.JSON_LD);
-    httpServletResponse.setStatus(HttpServletResponse.SC_OK);
-    httpServletResponse.setHeader("Content-Type", WebConstants.JSON_LD);
-    trialverseIOUtilsService.writeContentToServletResponse(responseContent, httpServletResponse);
-  }
-
-
-  @RequestMapping(value = "/graphs/{graphUuid}/history", method = RequestMethod.GET)
-  @ResponseBody
-  public List<VersionNode> getGraphHistory(HttpServletResponse httpServletResponse,
-                                           @PathVariable String datasetUuid,
-                                           @PathVariable String graphUuid) throws URISyntaxException, IOException, RevisionNotFoundException {
-    URI trialverseDatasetUri = new URI(Namespaces.DATASET_NAMESPACE + datasetUuid);
-    URI trialverseGraphUri = new URI(Namespaces.GRAPH_NAMESPACE + graphUuid);
-
-    List<VersionNode> history = historyService.createHistory(trialverseDatasetUri, trialverseGraphUri);
-    httpServletResponse.setStatus(HttpServletResponse.SC_OK);
-    return history;
-  }
-
-
-  @RequestMapping(value = "/graphs/{graphUuid}", method = RequestMethod.DELETE)
-  public void deleteGraph(HttpServletResponse httpServletResponse, Principal currentUser,
-                          @PathVariable String datasetUuid,
-                          @PathVariable String graphUuid) throws URISyntaxException, DeleteGraphException {
-    URI trialverseDatasetUri = new URI(Namespaces.DATASET_NAMESPACE + datasetUuid);
-    if (datasetReadRepository.isOwner(trialverseDatasetUri, currentUser)) {
-      VersionMapping versionMapping = versionMappingRepository.getVersionMappingByDatasetUrl(trialverseDatasetUri);
-      Header versionHeader = graphWriteRepository.deleteGraph(versionMapping.getVersionedDatasetUri(), graphUuid);
-      httpServletResponse.setHeader(WebConstants.X_EVENT_SOURCE_VERSION, versionHeader.getValue());
-      httpServletResponse.setStatus(HttpStatus.OK.value());
+    @RequestMapping(value = "/versions/{versionUuid}/graphs/{graphUuid}", method = RequestMethod.GET, produces = WebConstants.JSON_LD)
+    @ResponseBody
+    public void getGraphJsonLD(HttpServletResponse httpServletResponse, 
+                               @PathVariable(value="datasetUuid") String datasetUuid,
+                               @PathVariable(value="versionUuid") String versionUuid, 
+                               @PathVariable(value="graphUuid") String graphUuid) throws URISyntaxException, IOException, ReadGraphException {
+        logger.trace("get version graph");
+        getGraphJson(httpServletResponse, datasetUuid, graphUuid, versionUuid);
     }
-  }
 
-  @RequestMapping(value = "/graphs/{graphUuid}", method = RequestMethod.PUT, consumes = WebConstants.JSON_LD)
-  public void setJsonGraph(HttpServletRequest request, HttpServletResponse trialverseResponse, Principal currentUser,
-                           @RequestParam(WebConstants.COMMIT_TITLE_PARAM) String commitTitle,
-                           @RequestParam(value = WebConstants.COMMIT_DESCRIPTION_PARAM, required = false) String commitDescription,
-                           @PathVariable String datasetUuid, @PathVariable String graphUuid)
-          throws IOException, MethodNotAllowedException, URISyntaxException, UpdateGraphException {
-    logger.trace("set graph");
-    URI trialverseDatasetUri = new URI(Namespaces.DATASET_NAMESPACE + datasetUuid);
-    if (datasetReadRepository.isOwner(trialverseDatasetUri, currentUser)) {
-      InputStream jsonldStream = graphService.jsonGraphInputStreamToTurtleInputStream(request.getInputStream());
-      createGraph(trialverseResponse, commitTitle, commitDescription, datasetUuid, graphUuid, jsonldStream);
-    } else {
-      throw new MethodNotAllowedException();
+    @RequestMapping(value = "/graphs/{graphUuid}", method = RequestMethod.GET, produces = WebConstants.JSON_LD)
+    @ResponseBody
+    public void getGraphHeadVersionJsonLD(HttpServletResponse httpServletResponse, @PathVariable(value="datasetUuid") String datasetUuid, @PathVariable(value="graphUuid") String graphUuid) throws URISyntaxException, IOException, ReadGraphException {
+        logger.trace("get head graph");
+        VersionMapping versionMapping = versionMappingRepository.getVersionMappingByDatasetUrl(new URI(Namespaces.DATASET_NAMESPACE + datasetUuid));
+        byte[] responseContent = graphReadRepository.getGraph(versionMapping.getVersionedDatasetUrl(), null, graphUuid, WebConstants.JSON_LD);
+        if (new String(responseContent).equals("{ }\n")) {
+            httpServletResponse.setStatus(HttpServletResponse.SC_NOT_FOUND);
+        } else {
+            httpServletResponse.setStatus(HttpServletResponse.SC_OK);
+            httpServletResponse.setHeader("Content-Type", WebConstants.JSON_LD);
+            trialverseIOUtilsService.writeContentToServletResponse(responseContent, httpServletResponse);
+        }
     }
-  }
 
-  @RequestMapping(value = "/graphs/{graphUuid}/import/{importStudyRef}",
-          method = RequestMethod.POST)
-  public void importStudy(
-          HttpServletResponse trialverseResponse,
-          Principal currentUser,
-          @PathVariable String datasetUuid,
-          @PathVariable String graphUuid,
-          @PathVariable String importStudyRef,
-          @RequestParam(WebConstants.COMMIT_TITLE_PARAM) String commitTitle,
-          @RequestParam(value = WebConstants.COMMIT_DESCRIPTION_PARAM, required = false) String commitDescription
-  ) throws MethodNotAllowedException, ClinicalTrialsImportError, URISyntaxException {
-    logger.trace("import graph");
-    URI datasetUri = new URI(Namespaces.DATASET_NAMESPACE + datasetUuid);
-    if (datasetReadRepository.isOwner(datasetUri, currentUser)) {
-      VersionMapping mapping = versionMappingRepository.getVersionMappingByDatasetUrl(datasetUri);
-      Header versionHeader = clinicalTrialsImportService.importStudy(commitTitle, commitDescription, mapping.getVersionedDatasetUrl(), graphUuid, importStudyRef);
-      trialverseResponse.setHeader(WebConstants.X_EVENT_SOURCE_VERSION, versionHeader.getValue());
-      trialverseResponse.setStatus(HttpStatus.OK.value());
-    } else {
-      throw new MethodNotAllowedException();
+    @RequestMapping(value = "/graphs/{graphUuid}/concepts", method = RequestMethod.GET, produces = WebConstants.JSON_LD)
+    @ResponseBody
+    public void getHeadConceptsJson(HttpServletResponse httpServletResponse, @PathVariable(value="datasetUuid") String datasetUuid, @PathVariable(value="graphUuid") String graphUuid) throws URISyntaxException, IOException, ReadGraphException {
+        logger.trace("get concepts graph");
+        getGraphJson(httpServletResponse, datasetUuid, graphUuid, null);
     }
-  }
 
-  @RequestMapping(value = "/graphs/import-eudract",
-          method = RequestMethod.POST,
-          consumes = MediaType.APPLICATION_XML_VALUE)
-  public void importEudract(
-          HttpServletRequest request,
-          HttpServletResponse response,
-          Principal currentUser,
-          @PathVariable String datasetUuid
-  ) throws MethodNotAllowedException, URISyntaxException, IOException {
-    logger.trace("import graph");
-    URI datasetUri = new URI(Namespaces.DATASET_NAMESPACE + datasetUuid);
-    if (datasetReadRepository.isOwner(datasetUri, currentUser)) {
-      VersionMapping mapping = versionMappingRepository.getVersionMappingByDatasetUrl(datasetUri);
-      Header versionHeader = clinicalTrialsImportService.importEudract(mapping.getVersionedDatasetUrl(),
-              UUID.randomUUID().toString(), request.getInputStream());
-      response.setHeader(WebConstants.X_EVENT_SOURCE_VERSION, versionHeader.getValue());
-      response.setStatus(HttpStatus.OK.value());
-    } else {
-      throw new MethodNotAllowedException();
+    @RequestMapping(value = "/versions/{versionUuid}/graphs/{graphUuid}/concepts", method = RequestMethod.GET, produces = WebConstants.JSON_LD)
+    @ResponseBody
+    public void getVersionedConceptsJson(
+            HttpServletResponse httpServletResponse,
+            @PathVariable(value="datasetUuid") String datasetUuid,
+            @PathVariable(value="graphUuid") String graphUuid,
+            @PathVariable(value="versionUuid") String versionUuid
+    ) throws URISyntaxException, IOException, ReadGraphException {
+        logger.trace("get concepts graph");
+        getGraphJson(httpServletResponse, datasetUuid, graphUuid, versionUuid);
     }
-  }
 
-  private void createGraph(
-          HttpServletResponse trialverseResponse,
-          String commitTitle,
-          String commitDescription,
-          String datasetUuid,
-          String graphUuid,
-          InputStream graph
-  ) throws IOException, UpdateGraphException, URISyntaxException {
-    URI versionedDatasetUri = versionMappingRepository.getVersionMappingByDatasetUrl(
-            new URI(Namespaces.DATASET_NAMESPACE + datasetUuid)).getVersionedDatasetUri();
-    Header versionHeader = graphWriteRepository.updateGraph(versionedDatasetUri, graphUuid, graph, commitTitle,
-            commitDescription);
-    trialverseResponse.setHeader(WebConstants.X_EVENT_SOURCE_VERSION, versionHeader.getValue());
-    trialverseResponse.setStatus(HttpStatus.OK.value());
-  }
-
-  @RequestMapping(value = "/graphs/{graphUuid}", method = RequestMethod.PUT, consumes = WebConstants.TURTLE)
-  public void setTurtleGraph(
-          HttpServletRequest request, HttpServletResponse trialverseResponse, Principal currentUser,
-          @RequestParam(WebConstants.COMMIT_TITLE_PARAM) String commitTitle,
-          @RequestParam(value = WebConstants.COMMIT_DESCRIPTION_PARAM, required = false) String commitDescription,
-          @PathVariable String datasetUuid,
-          @PathVariable String graphUuid
-  ) throws IOException, MethodNotAllowedException, URISyntaxException, UpdateGraphException {
-    logger.trace("set graph");
-    URI trialverseDatasetUri = new URI(Namespaces.DATASET_NAMESPACE + datasetUuid);
-    if (datasetReadRepository.isOwner(trialverseDatasetUri, currentUser)) {
-      createGraph(trialverseResponse, commitTitle, commitDescription, datasetUuid, graphUuid, request.getInputStream());
-    } else {
-      throw new MethodNotAllowedException();
+    private void getGraphJson(HttpServletResponse httpServletResponse, @PathVariable(value="datasetUuid") String datasetUuid, @PathVariable(value="graphUuid") String graphUuid, @PathVariable(value="versionUuid") String versionUuid) throws URISyntaxException, IOException, ReadGraphException {
+        VersionMapping versionMapping = versionMappingRepository.getVersionMappingByDatasetUrl(new URI(Namespaces.DATASET_NAMESPACE + datasetUuid));
+        byte[] responseContent = graphReadRepository.getGraph(versionMapping.getVersionedDatasetUrl(), versionUuid, graphUuid, WebConstants.JSON_LD);
+        httpServletResponse.setStatus(HttpServletResponse.SC_OK);
+        httpServletResponse.setHeader("Content-Type", WebConstants.JSON_LD);
+        trialverseIOUtilsService.writeContentToServletResponse(responseContent, httpServletResponse);
     }
-  }
 
 
-  @RequestMapping(value = "/graphs/{graphUuid}", method = RequestMethod.PUT, params = {WebConstants.COPY_OF_QUERY_PARAM})
-  public void copyGraph(HttpServletResponse trialverseResponse, Principal currentUser,
-                        @RequestParam(WebConstants.COPY_OF_QUERY_PARAM) String copyOfUri,
-                        @PathVariable String datasetUuid, @PathVariable String graphUuid)
-          throws IOException, MethodNotAllowedException, URISyntaxException, RevisionNotFoundException {
-    logger.trace("copy graph");
-    URI trialverseDatasetUri = new URI(Namespaces.DATASET_NAMESPACE + datasetUuid);
-    if (datasetReadRepository.isOwner(trialverseDatasetUri, currentUser)) {
-      URI targetGraphUri = graphService.buildGraphUri(graphUuid);
-      VersionMapping targetDatasetMapping = versionMappingRepository.getVersionMappingByDatasetUrl(trialverseDatasetUri);
-      URI newVersion = graphService.copy(targetDatasetMapping.getVersionedDatasetUri(), targetGraphUri, URI.create(copyOfUri));
-      trialverseResponse.setHeader(WebConstants.X_EVENT_SOURCE_VERSION, newVersion.toString());
-      trialverseResponse.setStatus(HttpStatus.OK.value());
-    } else {
-      throw new MethodNotAllowedException();
+    @RequestMapping(value = "/graphs/{graphUuid}/history", method = RequestMethod.GET)
+    @ResponseBody
+    public List<VersionNode> getGraphHistory(HttpServletResponse httpServletResponse,
+                                             @PathVariable(value="datasetUuid") String datasetUuid,
+                                             @PathVariable(value="graphUuid") String graphUuid) throws URISyntaxException, IOException, RevisionNotFoundException {
+        URI trialverseDatasetUri = new URI(Namespaces.DATASET_NAMESPACE + datasetUuid);
+        URI trialverseGraphUri = new URI(Namespaces.GRAPH_NAMESPACE + graphUuid);
+
+        List<VersionNode> history = historyService.createHistory(trialverseDatasetUri, trialverseGraphUri);
+        httpServletResponse.setStatus(HttpServletResponse.SC_OK);
+        return history;
     }
-  }
+
+
+    @RequestMapping(value = "/graphs/{graphUuid}", method = RequestMethod.DELETE)
+    public void deleteGraph(HttpServletResponse httpServletResponse, Principal currentUser,
+                            @PathVariable(value="datasetUuid") String datasetUuid,
+                            @PathVariable(value="graphUuid") String graphUuid) throws URISyntaxException, DeleteGraphException {
+        URI trialverseDatasetUri = new URI(Namespaces.DATASET_NAMESPACE + datasetUuid);
+        if (datasetReadRepository.isOwner(trialverseDatasetUri, currentUser)) {
+            VersionMapping versionMapping = versionMappingRepository.getVersionMappingByDatasetUrl(trialverseDatasetUri);
+            Header versionHeader = graphWriteRepository.deleteGraph(versionMapping.getVersionedDatasetUri(), graphUuid);
+            httpServletResponse.setHeader(WebConstants.X_EVENT_SOURCE_VERSION, versionHeader.getValue());
+            httpServletResponse.setStatus(HttpStatus.OK.value());
+        }
+    }
+
+    @RequestMapping(value = "/graphs/{graphUuid}", method = RequestMethod.PUT, consumes = WebConstants.JSON_LD)
+    public void setJsonGraph(HttpServletRequest request, HttpServletResponse trialverseResponse, Principal currentUser,
+                             @RequestParam(WebConstants.COMMIT_TITLE_PARAM) String commitTitle,
+                             @RequestParam(value = WebConstants.COMMIT_DESCRIPTION_PARAM, required = false) String commitDescription,
+                             @PathVariable(value="datasetUuid") String datasetUuid,
+                             @PathVariable(value = "graphUuid") String graphUuid)
+            throws IOException, MethodNotAllowedException, URISyntaxException, UpdateGraphException {
+        logger.trace("set graph");
+        URI trialverseDatasetUri = new URI(Namespaces.DATASET_NAMESPACE + datasetUuid);
+        if (datasetReadRepository.isOwner(trialverseDatasetUri, currentUser)) {
+            InputStream jsonldStream = graphService.jsonGraphInputStreamToTurtleInputStream(request.getInputStream());
+            createGraph(trialverseResponse, commitTitle, commitDescription, datasetUuid, graphUuid, jsonldStream);
+        } else {
+            throw new MethodNotAllowedException();
+        }
+    }
+
+    @RequestMapping(value = "/graphs/{graphUuid}/import/{importStudyRef}",
+            method = RequestMethod.POST)
+    public void importStudy(
+            HttpServletResponse trialverseResponse,
+            Principal currentUser,
+            @PathVariable(value = "datasetUuid") String datasetUuid,
+            @PathVariable(value = "graphUuid") String graphUuid,
+            @PathVariable(value = "importStudyRef") String importStudyRef,
+            @RequestParam(WebConstants.COMMIT_TITLE_PARAM) String commitTitle,
+            @RequestParam(value = WebConstants.COMMIT_DESCRIPTION_PARAM, required = false) String commitDescription
+    ) throws MethodNotAllowedException, ClinicalTrialsImportError, URISyntaxException {
+        logger.trace("import graph");
+        URI datasetUri = new URI(Namespaces.DATASET_NAMESPACE + datasetUuid);
+        if (datasetReadRepository.isOwner(datasetUri, currentUser)) {
+            VersionMapping mapping = versionMappingRepository.getVersionMappingByDatasetUrl(datasetUri);
+            Header versionHeader = clinicalTrialsImportService.importStudy(commitTitle, commitDescription, mapping.getVersionedDatasetUrl(), graphUuid, importStudyRef);
+            trialverseResponse.setHeader(WebConstants.X_EVENT_SOURCE_VERSION, versionHeader.getValue());
+            trialverseResponse.setStatus(HttpStatus.OK.value());
+        } else {
+            throw new MethodNotAllowedException();
+        }
+    }
+
+    @RequestMapping(value = "/graphs/import-eudract",
+            method = RequestMethod.POST,
+            consumes = MediaType.APPLICATION_XML_VALUE)
+    public void importEudract(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            Principal currentUser,
+            @PathVariable(value = "datasetUuid") String datasetUuid
+    ) throws MethodNotAllowedException, URISyntaxException, IOException {
+        logger.trace("import graph");
+        URI datasetUri = new URI(Namespaces.DATASET_NAMESPACE + datasetUuid);
+        if (datasetReadRepository.isOwner(datasetUri, currentUser)) {
+            VersionMapping mapping = versionMappingRepository.getVersionMappingByDatasetUrl(datasetUri);
+            Header versionHeader = clinicalTrialsImportService.importEudract(mapping.getVersionedDatasetUrl(),
+                    UUID.randomUUID().toString(), request.getInputStream());
+            response.setHeader(WebConstants.X_EVENT_SOURCE_VERSION, versionHeader.getValue());
+            response.setStatus(HttpStatus.OK.value());
+        } else {
+            throw new MethodNotAllowedException();
+        }
+    }
+
+    private void createGraph(
+            HttpServletResponse trialverseResponse,
+            String commitTitle,
+            String commitDescription,
+            String datasetUuid,
+            String graphUuid,
+            InputStream graph
+    ) throws IOException, UpdateGraphException, URISyntaxException {
+        URI versionedDatasetUri = versionMappingRepository.getVersionMappingByDatasetUrl(
+                new URI(Namespaces.DATASET_NAMESPACE + datasetUuid)).getVersionedDatasetUri();
+        Header versionHeader = graphWriteRepository.updateGraph(versionedDatasetUri, graphUuid, graph, commitTitle,
+                commitDescription);
+        trialverseResponse.setHeader(WebConstants.X_EVENT_SOURCE_VERSION, versionHeader.getValue());
+        trialverseResponse.setStatus(HttpStatus.OK.value());
+    }
+
+    @RequestMapping(value = "/graphs/{graphUuid}", method = RequestMethod.PUT, consumes = WebConstants.TURTLE)
+    public void setTurtleGraph(
+            HttpServletRequest request, HttpServletResponse trialverseResponse, Principal currentUser,
+            @RequestParam(value = WebConstants.COMMIT_TITLE_PARAM) String commitTitle,
+            @RequestParam(value = WebConstants.COMMIT_DESCRIPTION_PARAM, required = false) String commitDescription,
+            @PathVariable(value = "datasetUuid") String datasetUuid,
+            @PathVariable(value = "graphUuid") String graphUuid
+    ) throws IOException, MethodNotAllowedException, URISyntaxException, UpdateGraphException {
+        logger.trace("set graph");
+        URI trialverseDatasetUri = new URI(Namespaces.DATASET_NAMESPACE + datasetUuid);
+        if (datasetReadRepository.isOwner(trialverseDatasetUri, currentUser)) {
+            createGraph(trialverseResponse, commitTitle, commitDescription, datasetUuid, graphUuid, request.getInputStream());
+        } else {
+            throw new MethodNotAllowedException();
+        }
+    }
+
+
+    @RequestMapping(value = "/graphs/{graphUuid}", method = RequestMethod.PUT, params = {WebConstants.COPY_OF_QUERY_PARAM})
+    public void copyGraph(HttpServletResponse trialverseResponse, Principal currentUser,
+                          @RequestParam(WebConstants.COPY_OF_QUERY_PARAM) String copyOfUri,
+                          @PathVariable(value = "datasetUuid") String datasetUuid,
+                          @PathVariable(value = "graphUuid") String graphUuid)
+            throws IOException, MethodNotAllowedException, URISyntaxException, RevisionNotFoundException {
+        logger.trace("copy graph");
+        URI trialverseDatasetUri = new URI(Namespaces.DATASET_NAMESPACE + datasetUuid);
+        if (datasetReadRepository.isOwner(trialverseDatasetUri, currentUser)) {
+            URI targetGraphUri = graphService.buildGraphUri(graphUuid);
+            VersionMapping targetDatasetMapping = versionMappingRepository.getVersionMappingByDatasetUrl(trialverseDatasetUri);
+            URI newVersion = graphService.copy(targetDatasetMapping.getVersionedDatasetUri(), targetGraphUri, URI.create(copyOfUri));
+            trialverseResponse.setHeader(WebConstants.X_EVENT_SOURCE_VERSION, newVersion.toString());
+            trialverseResponse.setStatus(HttpStatus.OK.value());
+        } else {
+            throw new MethodNotAllowedException();
+        }
+    }
 }

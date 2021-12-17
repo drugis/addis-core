@@ -1,6 +1,7 @@
 package org.drugis.addis.patavitask;
 
 import java.net.URI;
+import java.util.Objects;
 
 /**
  * Created by connor on 26-6-14.
@@ -22,17 +23,13 @@ public class PataviTaskUriHolder {
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
-    if (!(o instanceof PataviTaskUriHolder)) return false;
-
+    if (o == null || getClass() != o.getClass()) return false;
     PataviTaskUriHolder that = (PataviTaskUriHolder) o;
-
-    if (uri != null ? !uri.equals(that.uri) : that.uri != null) return false;
-
-    return true;
+    return Objects.equals(uri, that.uri);
   }
 
   @Override
   public int hashCode() {
-    return uri != null ? uri.hashCode() : 0;
+    return Objects.hash(uri);
   }
 }

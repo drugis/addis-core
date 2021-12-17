@@ -445,7 +445,7 @@ public class ModelServiceTest {
 
     verify(modelRepository).get(modelId);
     verifyNoMoreInteractions(modelRepository);
-    verifyZeroInteractions(pataviTaskRepository);
+    verifyNoInteractions(pataviTaskRepository);
   }
 
   @Test

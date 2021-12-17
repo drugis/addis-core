@@ -17,7 +17,7 @@ import java.util.Collections;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.*;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -82,7 +82,7 @@ public class VersionMappingRepositoryTest {
   public void getVersionUrlByDatasetUrl() throws URISyntaxException {
     URI datasetUrl = new URI("datasetUrl");
     VersionMapping mockResult = new VersionMapping(1, datasetUuid, userName, trialverseDataset, archived, archivedOn);
-    when(jdbcTemplate.queryForObject(anyString(), any(RowMapper.class), anyObject())).thenReturn(mockResult);
+    when(jdbcTemplate.queryForObject(anyString(), any(RowMapper.class), any())).thenReturn(mockResult);
 
     VersionMapping versionMapping = versionMappingRepository.getVersionMappingByDatasetUrl(datasetUrl);
 
@@ -104,7 +104,7 @@ public class VersionMappingRepositoryTest {
   public void getVersionMappingByVersionedUrl() throws URISyntaxException {
     URI datasetUrl = new URI("datasetUrl");
     VersionMapping mockResult = new VersionMapping(1, datasetUuid, userName, trialverseDataset, archived, archivedOn);
-    when(jdbcTemplate.queryForObject(anyString(), any(RowMapper.class), anyObject())).thenReturn(mockResult);
+    when(jdbcTemplate.queryForObject(anyString(), any(RowMapper.class), any())).thenReturn(mockResult);
     VersionMapping versionMapping = versionMappingRepository.getVersionMappingByVersionedURl(datasetUrl);
 
     assertEquals(mockResult, versionMapping);

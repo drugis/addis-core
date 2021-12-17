@@ -1,0 +1,54 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: survey
+  namespace: drugis-test
+spec:
+  type: NodePort
+  ports:
+    - port: 3003
+  selector:
+    app: survey
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: survey
+  namespace: drugis-test
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: survey
+  template:
+    metadata:
+      labels:
+        app: survey
+    spec:
+      containers:
+        - name: survey
+          image: registry.drugis.org/mcda-survey:k8s
+          env:
+            - name: MCDA_SURVEY_DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mcda-enterprise-test-secrets
+                  key: MCDAWEB_DB_PASSWORD
+            - name: MCDAWEB_COOKIE_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: mcda-enterprise-test-secrets
+                  key: MCDAWEB_COOKIE_SECRET
+            - name: PATAVI_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: passwords
+                  key: PATAVI_API_KEY
+          envFrom:
+            - configMapRef:
+                name: survey-settings
+          ports:
+            - name: survey
+              containerPort: 3003
+      imagePullSecrets:
+        - name: drugisdockerregistry

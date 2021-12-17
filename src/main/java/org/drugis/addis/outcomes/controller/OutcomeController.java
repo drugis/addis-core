@@ -42,20 +42,20 @@ public class OutcomeController extends AbstractAddisCoreController {
 
   @RequestMapping(value = "/projects/{projectId}/outcomes", method = RequestMethod.GET)
   @ResponseBody
-  public Collection<Outcome> query(@PathVariable Integer projectId) {
+  public Collection<Outcome> query(@PathVariable(value="projectId") Integer projectId) {
       return outcomeRepository.query(projectId);
   }
 
   @RequestMapping(value = "/projects/{projectId}/outcomes/{outcomeId}", method = RequestMethod.GET)
   @ResponseBody
-  public Outcome get(@PathVariable Integer projectId, @PathVariable Integer outcomeId) throws ResourceDoesNotExistException {
+  public Outcome get(@PathVariable(value="projectId") Integer projectId, @PathVariable Integer outcomeId) throws ResourceDoesNotExistException {
     return outcomeRepository.get(projectId, outcomeId);
   }
 
   @RequestMapping(value = "/projects/{projectId}/outcomes", method = RequestMethod.POST, produces = WebConstants.APPLICATION_JSON_UTF8_VALUE)
   @ResponseBody
   public Outcome create(HttpServletRequest request, HttpServletResponse response, Principal currentUser,
-                        @PathVariable Integer projectId, @RequestBody OutcomeCommand outcomeCommand)
+                        @PathVariable(value="projectId") Integer projectId, @RequestBody OutcomeCommand outcomeCommand)
           throws Exception {
     Account user = accountRepository.findAccountByUsername(currentUser.getName());
     if (user != null) {
@@ -71,14 +71,14 @@ public class OutcomeController extends AbstractAddisCoreController {
 
   @RequestMapping(value = "/projects/{projectId}/outcomes/{outcomeId}", method = RequestMethod.POST)
   @ResponseBody
-  public Outcome edit(Principal currentUser, @PathVariable Integer outcomeId,  @PathVariable Integer projectId, @RequestBody EditOutcomeCommand command) throws Exception {
+  public Outcome edit(Principal currentUser, @PathVariable Integer outcomeId,  @PathVariable(value="projectId") Integer projectId, @RequestBody EditOutcomeCommand command) throws Exception {
     Account user = accountRepository.getAccount(currentUser);
     projectService.checkProjectExistsAndModifiable(user, projectId);
     return outcomeService.updateOutcome(projectId, outcomeId, command.getName(), command.getMotivation(), command.getDirection());
   }
 
   @RequestMapping(value = "/projects/{projectId}/outcomes/{outcomeId}", method = RequestMethod.DELETE)
-  public void deleteOutcome(@PathVariable Integer projectId, @PathVariable Integer outcomeId, Principal currentUser, HttpServletResponse response) throws ResourceDoesNotExistException, MethodNotAllowedException {
+  public void deleteOutcome(@PathVariable(value="projectId") Integer projectId, @PathVariable Integer outcomeId, Principal currentUser, HttpServletResponse response) throws ResourceDoesNotExistException, MethodNotAllowedException {
     Account user = accountRepository.findAccountByUsername(currentUser.getName());
     projectService.checkProjectExistsAndModifiable(user, projectId);
     outcomeService.delete(projectId, outcomeId);

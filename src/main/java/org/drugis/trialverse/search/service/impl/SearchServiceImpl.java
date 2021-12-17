@@ -2,7 +2,7 @@ package org.drugis.trialverse.search.service.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import net.minidev.json.JSONObject;
-import org.apache.commons.io.IOUtils;
+import org.apache.commons.compress.utils.IOUtils;
 import org.drugis.addis.security.Account;
 import org.drugis.addis.security.repository.AccountRepository;
 import org.drugis.trialverse.dataset.model.VersionMapping;
@@ -40,7 +40,7 @@ public class SearchServiceImpl implements SearchService {
 
   private static String readQueryTemplate() {
     try {
-      return IOUtils.toString(new ClassPathResource(FIND_STUDIES_BY_TERMS_SPARQL).getInputStream(), "UTF-8");
+      return new String(new ClassPathResource(FIND_STUDIES_BY_TERMS_SPARQL).getInputStream().readAllBytes());
     } catch (IOException e) {
       throw new RuntimeException("could not load find queryTemplate with name " + FIND_STUDIES_BY_TERMS_SPARQL);
     }

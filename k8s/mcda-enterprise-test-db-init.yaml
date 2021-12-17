@@ -1,0 +1,84 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: mcda-enterprise-test-db-init
+  namespace: drugis-test
+  labels:
+    app: mcda-enterprise-test-db-init
+spec:
+  initContainers:
+    - name: wait-for-db
+      image: postgres:10.8
+      env:
+        - name: PGUSER
+          value: postgres
+        - name: PGPASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: db-credentials
+              key: POSTGRES_PASSWORD
+      command: ['sh', '-c']
+      args:
+        - until psql -h postgres -c  "select version();"; do echo waiting for postgres; sleep 2; done;
+    - name: create-mcda-enterprise-test-user
+      image: postgres:10.8
+      env:
+        - name: PGUSER
+          value: postgres
+        - name: PGPASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: db-credentials
+              key: POSTGRES_PASSWORD
+        - name: MCDAWEB_DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mcda-enterprise-test-secrets
+              key: MCDAWEB_DB_PASSWORD
+      command: ['sh', '-c']
+      args:
+        - psql -h postgres -c  "DO \$\$ BEGIN CREATE ROLE mcdaenterprisetest LOGIN PASSWORD '$(MCDAWEB_DB_PASSWORD)' EXCEPTION WHEN DUPLICATE_OBJECT THEN  RAISE NOTICE 'not creating role mcdaenterprisetest -- it already exists'; END \$\$" -c "CREATE database mcdaenterprisetest encoding 'utf-8'"
+  restartPolicy: Never
+  containers:
+    - name: run-liquibase
+      #TODO: fix image name to mcda-enterprise-test-liquibase:<tag>
+      image: registry.drugis.org/mcda-closed-liquibase:test1
+      env:
+        - name: LIQUIBASE_URL
+          value: 'jdbc:postgresql://postgres:5432/mcdaenterprisetest'
+        - name: LIQUIBASE_USERNAME
+          value: 'mcdaenterprisetest'
+        - name: LIQUIBASE_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mcda-enterprise-test-secrets
+              key: MCDAWEB_DB_PASSWORD
+        - name: LIQUIBASE_CHANGELOG
+          value: 'liquibase-changelog.sql'
+      args:
+        - 'update'
+    - name: create-mcda-administrator
+      image: postgres:10.8
+      env:
+        - name: MCDAWEB_DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mcda-enterprise-test-secrets
+              key: MCDAWEB_DB_PASSWORD
+      command: ['sh', '-c']
+      args:
+        - PGPASSWORD=${MCDAWEB_DB_PASSWORD} psql -U mcdaenterprisetest -h postgres -c  "INSERT INTO Account (username, firstName, lastName, password) SELECT 'administrator', 'admin', '', '\\$2a\\$10\\$TmvbK5.HpkoPGDV5ykycsOFIJbvDHAtgwW.JfyLNGPrBCSABAq9Na' WHERE NOT EXISTS (SELECT * FROM account WHERE username = 'administrator')"
+    - name: add-administrator-to-groupd
+      image: postgres:10.8
+      env:
+        - name: MCDAWEB_DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mcda-enterprise-test-secrets
+              key: MCDAWEB_DB_PASSWORD
+      command: ['sh', '-c']
+      args:
+        #TODO add 'WHERE NOT EXISTS (SELECT * FROM ADMINISTRATOR)' to query
+        - PGPASSWORD=${MCDAWEB_DB_PASSWORD} psql -U mcdaenterprisetest -h postgres -c  "INSERT INTO administrator (accountid) (SELECT id FROM account WHERE username='administrator')"
+  imagePullSecrets:
+    - name: drugisdockerregistry

@@ -62,20 +62,20 @@ public class ProjectController extends AbstractAddisCoreController {
 
   @RequestMapping(value = "/projects/{projectId}", method = RequestMethod.GET)
   @ResponseBody
-  public Project get(@PathVariable Integer projectId) throws ResourceDoesNotExistException {
+  public Project get(@PathVariable(value="projectId") Integer projectId) throws ResourceDoesNotExistException {
     return projectsRepository.get(projectId);
   }
 
   @RequestMapping(value = "/projects/{projectId}", method = RequestMethod.POST)
   @ResponseBody
-  public Project update(@PathVariable Integer projectId, @RequestBody EditProjectCommand command, Principal currentUser) throws ResourceDoesNotExistException, MethodNotAllowedException, UpdateProjectException {
+  public Project update(@PathVariable(value="projectId") Integer projectId, @RequestBody EditProjectCommand command, Principal currentUser) throws ResourceDoesNotExistException, MethodNotAllowedException, UpdateProjectException {
     projectService.checkOwnership(projectId, currentUser);
     return projectService.updateProject(projectId, command.getName(), command.getDescription());
   }
 
   @RequestMapping(value = "/projects/{projectId}/studies", method = RequestMethod.GET)
   @ResponseBody
-  public List<TrialDataStudy> queryStudies(@PathVariable Integer projectId) throws URISyntaxException, ResourceDoesNotExistException, ReadValueException, IOException {
+  public List<TrialDataStudy> queryStudies(@PathVariable(value="projectId") Integer projectId) throws URISyntaxException, ResourceDoesNotExistException, ReadValueException, IOException {
     return projectService.queryMatchedStudies(projectId);
   }
 
@@ -91,7 +91,7 @@ public class ProjectController extends AbstractAddisCoreController {
 
   @RequestMapping(value = "/projects/{projectId}/report", produces = "text/plain", method = RequestMethod.GET)
   @ResponseBody
-  public String getReport(@PathVariable Integer projectId) {
+  public String getReport(@PathVariable(value="projectId") Integer projectId) {
     try {
       return reportRepository.get(projectId);
     } catch (EmptyResultDataAccessException e) {
@@ -100,7 +100,7 @@ public class ProjectController extends AbstractAddisCoreController {
   }
 
   @RequestMapping(value = "/projects/{projectId}/report", method = RequestMethod.PUT)
-  public void updateReport(@PathVariable Integer projectId, @RequestBody String newReport,
+  public void updateReport(@PathVariable(value="projectId") Integer projectId, @RequestBody String newReport,
                            HttpServletResponse response,
                            Principal currentUser) throws ResourceDoesNotExistException, MethodNotAllowedException {
     projectService.checkOwnership(projectId, currentUser);
@@ -110,14 +110,14 @@ public class ProjectController extends AbstractAddisCoreController {
 
   @RequestMapping(value = "/projects/{projectId}/setArchivedStatus", method = RequestMethod.POST)
   @ResponseBody
-  public void setArchivedStatus(Principal principal, @PathVariable Integer projectId, @RequestBody ProjectArchiveCommand archiveCommand) throws ResourceDoesNotExistException, MethodNotAllowedException {
+  public void setArchivedStatus(Principal principal, @PathVariable(value="projectId") Integer projectId, @RequestBody ProjectArchiveCommand archiveCommand) throws ResourceDoesNotExistException, MethodNotAllowedException {
     projectService.checkOwnership(projectId, principal);
     projectsRepository.setArchived(projectId, archiveCommand.getIsArchived());
   }
 
   @RequestMapping(value = "/projects/{projectId}/copy", method = RequestMethod.POST)
   @ResponseBody
-  public Integer copy(Principal principal, @PathVariable Integer projectId,
+  public Integer copy(Principal principal, @PathVariable(value="projectId") Integer projectId,
                       @RequestBody CopyCommand copyCommand) throws ResourceDoesNotExistException, SQLException {
     Account user = accountRepository.findAccountByUsername(principal.getName());
     return projectService.copy(user, projectId, copyCommand.getNewTitle());
@@ -125,7 +125,7 @@ public class ProjectController extends AbstractAddisCoreController {
 
   @RequestMapping(value = "/projects/{projectId}/update", method = RequestMethod.POST)
   @ResponseBody
-  public Integer update(Principal principal, @PathVariable Integer projectId) throws ResourceDoesNotExistException, ReadValueException, URISyntaxException, SQLException, IOException {
+  public Integer update(Principal principal, @PathVariable(value="projectId") Integer projectId) throws ResourceDoesNotExistException, ReadValueException, URISyntaxException, SQLException, IOException {
     Account user = accountRepository.findAccountByUsername(principal.getName());
     return projectService.createUpdated(user, projectId);
   }
