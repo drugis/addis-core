@@ -1,10 +1,8 @@
-FROM phusion/baseimage:focal-1.0.0
+FROM phusion/baseimage:18.04-1.0.0
 
-RUN DEBIAN_FRONTEND=noninteractive apt update
-RUN DEBIAN_FRONTEND=noninteractive apt upgrade -y
+RUN DEBIAN_FRONTEND=noninteractive apt update && apt upgrade -y
 RUN DEBIAN_FRONTEND=noninteractive apt install -y -q curl
-RUN DEBIAN_FRONTEND=noninteractive apt install -y -q openjdk-8-jdk
-
+RUN DEBIAN_FRONTEND=noninteractive apt install -y -q ca-certificates-java openjdk-17-jdk
 
 ENV TOMCAT_VERSION 9.0.54
 
@@ -18,7 +16,7 @@ RUN mv /tmp/apache-tomcat-$TOMCAT_VERSION/* /usr/share/tomcat9
 ## tomcat configuration
 RUN mkdir /etc/service/tomcat
 ADD tomcat9-run.sh /etc/service/tomcat/run
-ADD ROOT.war /usr/share/tomcat8/webapps/ROOT.war
+ADD ROOT.war /usr/share/tomcat9/webapps/ROOT.war
 RUN chmod +x /etc/service/tomcat/run
 ADD server.xml /usr/share/tomcat9/conf/server.xml
 RUN chown root.root /usr/share/tomcat9/conf/server.xml
