@@ -80,7 +80,7 @@ jobs:
            -DADDIS_CORE_DB_HOST=psql-test.drugis.org \
            -DADDIS_CORE_DB=addiscore \
            -DADDIS_CORE_DB_USERNAME=addiscore \
-           -DADDIS_CORE_DB_PASSWORD=${{ secrets.addisTestDbPassword }} \
+           -DADDIS_CORE_DB_PASSWORD=${{ secrets.addisTestDbPassword }}' \
            -e PATAVI_URI=https://patavi-test.drugis.org/ \
            -e ADDIS_CORE_PATAVI_MCDA_WS_URI=https://patavi-test.drugis.org/ \
            -e ADDIS_CORE_OAUTH_GOOGLE_SECRET=${{ secrets.googleSecretTest }} \
