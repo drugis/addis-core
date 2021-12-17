@@ -46,14 +46,14 @@ public class SubProblemController extends AbstractAddisCoreController {
 
   @RequestMapping(value = "/projects/{projectId}/analyses/{analysisId}/problems", method = RequestMethod.GET)
   @ResponseBody
-  public Collection<SubProblem> query(@PathVariable Integer projectId, @PathVariable Integer analysisId) {
+  public Collection<SubProblem> query(@PathVariable(value="projectId") Integer projectId, @PathVariable(value="analysisId") Integer analysisId) {
     return subProblemRepository.queryByProjectAndAnalysis(projectId, analysisId);
   }
 
   @RequestMapping(value = "/projects/{projectId}/analyses/{analysisId}/problems", method = RequestMethod.POST)
   @ResponseBody
   public SubProblem create(Principal principal, HttpServletResponse response,
-                           @PathVariable Integer projectId, @PathVariable Integer analysisId,
+                           @PathVariable(value="projectId") Integer projectId, @PathVariable(value="analysisId") Integer analysisId,
                            @RequestBody SubProblemCommand subProblemCommand) throws ResourceDoesNotExistException, MethodNotAllowedException {
     projectService.checkOwnership(projectId, principal);
     analysisService.checkCoordinates(projectId, analysisId);
@@ -62,7 +62,7 @@ public class SubProblemController extends AbstractAddisCoreController {
   }
 
   @RequestMapping(value = "/projects/{projectId}/analyses/{analysisId}/problems/{subProblemId}", method = RequestMethod.POST)
-  public void update(Principal principal, HttpServletResponse response, @PathVariable Integer projectId, @PathVariable Integer analysisId, @PathVariable Integer subProblemId,
+  public void update(Principal principal, HttpServletResponse response, @PathVariable(value="projectId") Integer projectId, @PathVariable(value="analysisId") Integer analysisId, @PathVariable Integer subProblemId,
                            @RequestBody SubProblemCommand subProblemCommand) throws ResourceDoesNotExistException, MethodNotAllowedException {
     projectService.checkOwnership(projectId, principal);
     analysisService.checkCoordinates(projectId, analysisId);

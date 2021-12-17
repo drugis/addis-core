@@ -2,7 +2,7 @@ package org.drugis.trialverse.dataset.repository.impl;
 
 
 import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.io.IOUtils;
+import org.apache.commons.compress.utils.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.protocol.HTTP;
 import org.apache.jena.rdf.model.Model;

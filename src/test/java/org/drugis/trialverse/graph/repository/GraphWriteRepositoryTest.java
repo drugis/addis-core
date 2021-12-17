@@ -1,45 +1,47 @@
 package org.drugis.trialverse.graph.repository;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.http.*;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpPut;
+import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.message.BasicStatusLine;
 import org.drugis.addis.security.Account;
+import org.drugis.addis.security.ApiKey;
+import org.drugis.addis.security.AuthenticationService;
 import org.drugis.addis.security.repository.AccountRepository;
+import org.drugis.addis.util.WebConstants;
 import org.drugis.trialverse.dataset.factory.HttpClientFactory;
-import org.drugis.trialverse.dataset.model.VersionMapping;
 import org.drugis.trialverse.dataset.repository.VersionMappingRepository;
 import org.drugis.trialverse.graph.exception.DeleteGraphException;
 import org.drugis.trialverse.graph.exception.UpdateGraphException;
 import org.drugis.trialverse.graph.repository.impl.GraphWriteRepositoryImpl;
-import org.drugis.addis.security.ApiKey;
-import org.drugis.addis.security.AuthenticationService;
 import org.drugis.trialverse.graph.service.GraphService;
 import org.drugis.trialverse.security.TrialversePrincipal;
 import org.drugis.trialverse.util.Namespaces;
-import org.drugis.addis.util.WebConstants;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.springframework.mock.web.DelegatingServletInputStream;
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-import static java.nio.charset.Charset.defaultCharset;
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
+import static org.mockito.MockitoAnnotations.openMocks;
 
 public class GraphWriteRepositoryTest {
 
@@ -73,12 +75,12 @@ public class GraphWriteRepositoryTest {
   private String email = "foo@bar.com";
   private String username = "username";
   private Account account = new Account(username, "firstname", "lastName", email);
-
+  AutoCloseable closeable;
   @Before
   public void setUp() throws IOException {
     webConstants = mock(WebConstants.class);
     graphWriteRepository = new GraphWriteRepositoryImpl();
-    initMocks(this);
+    closeable = openMocks(this);
     reset(httpClientFactory, mockHttpClient);
     when(webConstants.getTriplestoreDataUri()).thenReturn("BaseUri/current");
     when(httpClientFactory.build()).thenReturn(mockHttpClient);
@@ -91,14 +93,15 @@ public class GraphWriteRepositoryTest {
     when(entity.getContent()).thenReturn(getClass().getClassLoader().getResourceAsStream("result.txt"));
     when(mockResponse.getEntity()).thenReturn(entity);
     when(mockResponse.getFirstHeader(WebConstants.X_EVENT_SOURCE_VERSION)).thenReturn(versionHeader);
-    when(httpClient.execute(any(HttpPut.class))).thenReturn(mockResponse);
+    when(httpClient.execute(any(HttpRequestBase.class))).thenReturn(mockResponse);
   }
 
   @After
-  public void tearDown() {
+  public void tearDown() throws Exception {
     verifyNoMoreInteractions(mockHttpClient);
     verifyNoMoreInteractions(versionMappingRepository);
     verifyNoMoreInteractions(httpClient);
+    closeable.close();
   }
 
   @Test
@@ -106,7 +109,7 @@ public class GraphWriteRepositoryTest {
     String datasetUuid = "datasetuuid";
     String graphUuid = "graphUuid";
     HttpServletRequest mockHttpServletRequest = mock(HttpServletRequest.class);
-    InputStream inputStream = IOUtils.toInputStream("content", defaultCharset());
+    InputStream inputStream = new ByteArrayInputStream("content".getBytes(UTF_8));
     DelegatingServletInputStream delegatingServletInputStream = new DelegatingServletInputStream(inputStream);
     when(mockHttpServletRequest.getInputStream()).thenReturn(delegatingServletInputStream);
     String titleValue = "test title header";
@@ -128,7 +131,7 @@ public class GraphWriteRepositoryTest {
     String datasetUuid = "datasetuuid";
     String graphUuid = "graphUuid";
     HttpServletRequest mockHttpServletRequest = mock(HttpServletRequest.class);
-    InputStream inputStream = IOUtils.toInputStream("content", defaultCharset());
+    InputStream inputStream = new ByteArrayInputStream("content".getBytes(UTF_8));
     DelegatingServletInputStream delegatingServletInputStream = new DelegatingServletInputStream(inputStream);
     when(mockHttpServletRequest.getInputStream()).thenReturn(delegatingServletInputStream);
     String titleValue = "test title header";

@@ -60,7 +60,8 @@ public class AnalysisController extends AbstractAddisCoreController {
 
   @RequestMapping(value = "/projects/{projectId}/analyses", method = RequestMethod.GET, params = {"outcomeIds"})
   @ResponseBody
-  public NetworkMetaAnalysis[] queryNetworkMetaAnalysisByOutcomes(@PathVariable Integer projectId, @RequestParam(name = "outcomeIds", required = false) List<Integer> outcomeIds) {
+  public NetworkMetaAnalysis[] queryNetworkMetaAnalysisByOutcomes(@PathVariable(value="projectId") Integer projectId,
+                                                                  @RequestParam(name = "outcomeIds", required = false) List<Integer> outcomeIds) {
     Collection<NetworkMetaAnalysis> networkMetaAnalyses = networkMetaAnalysisRepository.queryByOutcomes(projectId, outcomeIds);
     NetworkMetaAnalysis[] networkMetaAnalysesArray = new NetworkMetaAnalysis[networkMetaAnalyses.size()];
     return networkMetaAnalyses.toArray(networkMetaAnalysesArray);
@@ -69,7 +70,7 @@ public class AnalysisController extends AbstractAddisCoreController {
 
   @RequestMapping(value = "/projects/{projectId}/analyses", method = RequestMethod.GET)
   @ResponseBody
-  public AbstractAnalysis[] query(@PathVariable Integer projectId) {
+  public AbstractAnalysis[] query(@PathVariable(value="projectId") Integer projectId) {
     List<AbstractAnalysis> abstractAnalysisList = analysisRepository.query(projectId);
     AbstractAnalysis[] abstractAnalysesArray = new AbstractAnalysis[abstractAnalysisList.size()];
     return abstractAnalysisList.toArray(abstractAnalysesArray);
@@ -77,7 +78,7 @@ public class AnalysisController extends AbstractAddisCoreController {
 
   @RequestMapping(value = "/projects/{projectId}/analyses/{analysisId}", method = RequestMethod.GET)
   @ResponseBody
-  public AbstractAnalysis get(@PathVariable Integer analysisId) throws ResourceDoesNotExistException {
+  public AbstractAnalysis get(@PathVariable(value="analysisId") Integer analysisId) throws ResourceDoesNotExistException {
     return analysisRepository.get(analysisId);
   }
 
@@ -109,8 +110,8 @@ public class AnalysisController extends AbstractAddisCoreController {
 
   @RequestMapping(value = "/projects/{projectId}/analyses/{analysisId}/setPrimaryModel", method = RequestMethod.POST)
   public void setPrimaryModel(HttpServletResponse response, Principal currentUser,
-                              @PathVariable Integer projectId,
-                              @PathVariable Integer analysisId,
+                              @PathVariable(value="projectId") Integer projectId,
+                              @PathVariable(value="analysisId") Integer analysisId,
                               @RequestParam(value = "modelId", required = false) Integer modelId) throws MethodNotAllowedException, ResourceDoesNotExistException {
     projectService.checkOwnership(projectId, currentUser);
     networkMetaAnalysisRepository.setPrimaryModel(analysisId, modelId);
@@ -120,8 +121,8 @@ public class AnalysisController extends AbstractAddisCoreController {
 
   @RequestMapping(value = "/projects/{projectId}/analyses/{analysisId}/setTitle", method = RequestMethod.PUT)
   public void setAnalysisTitle(HttpServletResponse response, Principal currentUser,
-                              @PathVariable Integer projectId,
-                              @PathVariable Integer analysisId,
+                              @PathVariable(value="projectId") Integer projectId,
+                              @PathVariable(value="analysisId") Integer analysisId,
                               @RequestBody String newTitle) throws MethodNotAllowedException, ResourceDoesNotExistException {
     projectService.checkOwnership(projectId, currentUser);
     networkMetaAnalysisRepository.setTitle(analysisId, newTitle);
@@ -131,7 +132,7 @@ public class AnalysisController extends AbstractAddisCoreController {
 
   @RequestMapping(value = "/projects/{projectId}/analyses/{analysisId}", method = RequestMethod.POST)
   @ResponseBody
-  public AbstractAnalysis update(Principal currentUser, @PathVariable Integer projectId,
+  public AbstractAnalysis update(Principal currentUser, @PathVariable(value="projectId") Integer projectId,
                                  @RequestBody AnalysisUpdateCommand analysisUpdateCommand, HttpServletRequest request) throws MethodNotAllowedException, ResourceDoesNotExistException, SQLException, IOException, URISyntaxException, ReadValueException, InvalidTypeForDoseCheckException, UnexpectedNumberOfResultsException, ProblemCreationException {
     AbstractAnalysis analysis = analysisUpdateCommand.getAnalysis();
     Account user = accountRepository.findAccountByUsername(currentUser.getName());
@@ -150,13 +151,13 @@ public class AnalysisController extends AbstractAddisCoreController {
 
   @RequestMapping(value = "/projects/{projectId}/analyses/{analysisId}/evidenceTable", method = RequestMethod.GET)
   @ResponseBody
-  public List<TrialDataStudy> getEvidenceTable(@PathVariable Integer projectId, @PathVariable Integer analysisId) throws ResourceDoesNotExistException, ReadValueException, URISyntaxException, IOException {
+  public List<TrialDataStudy> getEvidenceTable(@PathVariable(value="projectId") Integer projectId, @PathVariable(value="analysisId") Integer analysisId) throws ResourceDoesNotExistException, ReadValueException, URISyntaxException, IOException {
     return analysisService.buildEvidenceTable(projectId, analysisId);
   }
 
   @RequestMapping(value = "/projects/{projectId}/analyses/{analysisId}/setArchivedStatus", method = RequestMethod.POST)
   @ResponseBody
-  public void setArchivedStatus(Principal principal, @PathVariable Integer projectId, @PathVariable Integer analysisId, @RequestBody AnalysisArchiveCommand archiveCommand) throws ResourceDoesNotExistException, MethodNotAllowedException {
+  public void setArchivedStatus(Principal principal, @PathVariable(value="projectId") Integer projectId, @PathVariable(value="analysisId") Integer analysisId, @RequestBody AnalysisArchiveCommand archiveCommand) throws ResourceDoesNotExistException, MethodNotAllowedException {
     projectService.checkOwnership(projectId, principal);
     analysisRepository.setArchived(analysisId, archiveCommand.getIsArchived());
   }

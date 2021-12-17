@@ -31,7 +31,7 @@ public class JenaGraphMessageConverter extends AbstractHttpMessageConverter<Grap
         // Add all supported languages
         for (Lang lang : RDFLanguages.getRegisteredLanguages()) {
             if (RDFLanguages.isTriples(lang)) {
-                s_supported.add(MediaType.parseMediaType(lang.getContentType().getContentType()));
+                s_supported.add(MediaType.parseMediaType(lang.getContentType().getContentTypeStr()));
             }
         }
         // Make turtle the default (if it exists)

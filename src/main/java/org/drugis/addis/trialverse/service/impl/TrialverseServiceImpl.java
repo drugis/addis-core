@@ -35,12 +35,7 @@ public class TrialverseServiceImpl implements TrialverseService {
   }
 
   private <T> List<ObjectNode> objectsToNodes(List<T> objectList) {
-    Collection<ObjectNode> JSONVariables = Collections2.transform(objectList, new Function<T, ObjectNode>() {
-      @Override
-      public ObjectNode apply(T t) {
-        return (ObjectNode) mapper.valueToTree(t);
-      }
-    });
+    Collection<ObjectNode> JSONVariables = Collections2.transform(objectList, mapper::valueToTree);
     return new ArrayList<>(JSONVariables);
   }
 }

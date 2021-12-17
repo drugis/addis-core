@@ -74,196 +74,187 @@ import java.util.Properties;
 
 @Configuration
 @ComponentScan(excludeFilters = {@Filter(Configuration.class)}, basePackages = {
-    "org.drugis.addis", "org.drugis.trialverse"}, lazyInit = true)
+        "org.drugis.addis", "org.drugis.trialverse"}, lazyInit = true)
 @EnableTransactionManagement
 @EnableJpaRepositories(basePackages = {
-    "org.drugis.addis.projects",
-    "org.drugis.addis.security",
-    "org.drugis.addis.covariates",
-    "org.drugis.addis.interventions",
-    "org.drugis.addis.outcomes",
-    "org.drugis.addis.scenarios",
-    "org.drugis.addis.models",
-    "org.drugis.addis.remarks",
-    "org.drugis.addis.trialverse",
-    "org.drugis.trialverse",
-    "org.drugis.addis.scaledUnits",
-    "org.drugis.addis.subProblems",
-    "org.drugis.addis.ordering",
-    "org.drugis.addis.workspaceSettings"
-})
-@EnableCaching
-public class MainConfig {
-
-  private final static Logger logger = LoggerFactory.getLogger(MainConfig.class);
-
-  public MainConfig() {
-    String trustStoreLocation = System.getProperty("javax.net.ssl.trustStore");
-    if (trustStoreLocation == null) {
-      logger.warn("Missing trust store location java property (set using 'javax.net.ssl.trustStore')");
-    }
-  }
-
-  @Bean
-  public CacheManager cacheManager() {
-    long numberOfCacheItems = 100;
-    long fourHours = 60 * 60 * 4;
-
-    CacheConfiguration<Object, Object> cacheConfiguration = CacheConfigurationBuilder
-        .newCacheConfigurationBuilder(Object.class, Object.class, ResourcePoolsBuilder
-            .heap(numberOfCacheItems))
-        .withExpiry(ExpiryPolicyBuilder.timeToLiveExpiration(Duration.ofSeconds(fourHours)))
-        .build();
-
-    Map<String, CacheConfiguration<?, ?>> caches = createCacheConfigurations(cacheConfiguration);
-
-    EhcacheCachingProvider provider = (EhcacheCachingProvider) Caching.getCachingProvider();
-    DefaultConfiguration configuration = new DefaultConfiguration(caches, provider.getDefaultClassLoader());
-    return new JCacheCacheManager(provider.getCacheManager(provider.getDefaultURI(), configuration));
-  }
-
-  private Map<String, CacheConfiguration<?, ?>> createCacheConfigurations(CacheConfiguration<Object, Object> cacheConfiguration) {
-    Map<String, CacheConfiguration<?, ?>> caches = new HashMap<>();
-    caches.put("versionedDataset", cacheConfiguration);
-    caches.put("versionedDatasetQuery", cacheConfiguration);
-    caches.put("datasetHistory", cacheConfiguration);
-    caches.put("featuredDatasets", cacheConfiguration);
-    caches.put("triplestoreQueryStudies", cacheConfiguration);
-    caches.put("triplestoreInterventions", cacheConfiguration);
-    caches.put("triplestoreOutcomes", cacheConfiguration);
-    return caches;
-  }
-
-  @Bean
-  public RequestConfig requestConfig() {
-    return RequestConfig.custom()
-        .setConnectionRequestTimeout(60000)
-        .setConnectTimeout(60000)
-        .setSocketTimeout(60000)
-        .build();
-  }
-
-  @Bean
-  public RestTemplate restTemplate(RequestConfig requestConfig) throws CertificateException, NoSuchAlgorithmException, KeyStoreException, IOException, KeyManagementException {
-    RestTemplate restTemplate = new RestTemplate(new HttpComponentsClientHttpRequestFactory(httpClient(requestConfig)));
-    restTemplate.getMessageConverters().add(new JenaGraphMessageConverter());
-    return restTemplate;
-  }
-
-  @Bean
-  public HttpClient httpClient(RequestConfig requestConfig) throws CertificateException, NoSuchAlgorithmException, KeyStoreException, IOException, KeyManagementException {
-    String ADDIS_LOCAL = System.getenv("ADDIS_LOCAL");
-
-    SSLContextBuilder sslContextBuilder = SSLContexts
-        .custom();
-    if (ADDIS_LOCAL != null) {
-      String TRUSTSTORE_PATH = WebConstants.loadSystemEnv("TRUSTSTORE_PATH");
-      sslContextBuilder.loadTrustMaterial(new File(TRUSTSTORE_PATH));
-    }
-    sslContextBuilder.build();
-    SSLConnectionSocketFactory connectionSocketFactory = new SSLConnectionSocketFactory(sslContextBuilder.build());
-
-    Registry<ConnectionSocketFactory> registry = RegistryBuilder.<ConnectionSocketFactory>create()
-        .register("https", connectionSocketFactory)
-        .register("http", new PlainConnectionSocketFactory())
-        .build();
-    HttpClientConnectionManager clientConnectionManager = new PoolingHttpClientConnectionManager(registry);
-
-    HttpClientBuilder httpClientBuilder = HttpClientBuilder.create();
-    return httpClientBuilder
-        .setConnectionManager(clientConnectionManager)
-        .setMaxConnTotal(20)
-        .setMaxConnPerRoute(2)
-        .setDefaultRequestConfig(requestConfig)
-        .build();
-  }
-
-  @Bean(name = "dsAddisCore")
-  public DataSource dataSource() {
-    DataSource ds;
-    JndiTemplate jndi = new JndiTemplate();
-    try {
-      ds = (DataSource) jndi.lookup("java:/comp/env/jdbc/addiscore");
-    } catch (Exception e) {
-      throw new RuntimeException(e);
-    }
-    return ds;
-  }
-
-  @Bean(name = "dsPataviTask")
-  public DataSource dataSourcePataviTask() {
-    DataSource ds;
-    JndiTemplate jndi = new JndiTemplate();
-    try {
-      ds = (DataSource) jndi.lookup("java:/comp/env/jdbc/patavitask");
-    } catch (Exception e) {
-      throw new RuntimeException(e);
-    }
-    return ds;
-  }
-
-  @Bean(name = "ptmAddisCore")
-  public PlatformTransactionManager transactionManager(@Qualifier("emAddisCore") EntityManagerFactory entityManagerFactory) {
-    JpaTransactionManager transactionManager = new JpaTransactionManager();
-    transactionManager.setEntityManagerFactory(entityManagerFactory);
-    return transactionManager;
-  }
-
-  @Bean(name = "jtAddisCore")
-  public JdbcTemplate jdbcTemplate() {
-    return new JdbcTemplate(dataSource());
-  }
-
-  @Bean(name = "jtPataviTask")
-  public JdbcTemplate jdbcTemplatePataviTask() {
-    return new JdbcTemplate(dataSourcePataviTask());
-  }
-
-  @Bean(name = "petppAddisCore")
-  public PersistenceExceptionTranslationPostProcessor exceptionTranslation() {
-    return new PersistenceExceptionTranslationPostProcessor();
-  }
-
-  @Bean(name = "emAddisCore")
-  public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
-    HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
-    vendorAdapter.setGenerateDdl(false);
-    vendorAdapter.setShowSql(false);
-    LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
-    em.setJpaProperties(additionalProperties());
-    em.setJpaVendorAdapter(vendorAdapter);
-    em.setPackagesToScan(
         "org.drugis.addis.projects",
-        "org.drugis.addis.outcomes",
-        "org.drugis.addis.interventions",
         "org.drugis.addis.security",
-        "org.drugis.addis.analyses",
+        "org.drugis.addis.covariates",
+        "org.drugis.addis.interventions",
+        "org.drugis.addis.outcomes",
         "org.drugis.addis.scenarios",
         "org.drugis.addis.models",
-        "org.drugis.addis.problems",
-        "org.drugis.addis.covariates",
+        "org.drugis.addis.remarks",
+        "org.drugis.addis.trialverse",
         "org.drugis.trialverse",
         "org.drugis.addis.scaledUnits",
         "org.drugis.addis.subProblems",
         "org.drugis.addis.ordering",
         "org.drugis.addis.workspaceSettings"
-    );
-    em.setDataSource(dataSource());
-    em.setPersistenceUnitName("addisCore");
-    em.setLoadTimeWeaver(new InstrumentationLoadTimeWeaver());
+})
+@EnableCaching
+public class MainConfig {
 
-    em.afterPropertiesSet();
-    return em;
-  }
+    private final static Logger logger = LoggerFactory.getLogger(MainConfig.class);
 
-  private Properties additionalProperties() {
-    return new Properties() {
-      {
-        setProperty("hibernate.hbm2ddl.auto", "validate");
-        setProperty("hibernate.dialect", "org.hibernate.dialect.PostgreSQLDialect");
-        setProperty("hibernate.current_session_context_class", "thread");
-      }
-    };
-  }
+    public MainConfig() {
+    }
+
+    @Bean
+    public CacheManager cacheManager() {
+        long numberOfCacheItems = 100;
+        long fourHours = 60 * 60 * 4;
+
+        CacheConfiguration<Object, Object> cacheConfiguration = CacheConfigurationBuilder
+                .newCacheConfigurationBuilder(Object.class, Object.class, ResourcePoolsBuilder
+                        .heap(numberOfCacheItems))
+                .withExpiry(ExpiryPolicyBuilder.timeToLiveExpiration(Duration.ofSeconds(fourHours)))
+                .build();
+
+        Map<String, CacheConfiguration<?, ?>> caches = createCacheConfigurations(cacheConfiguration);
+
+        EhcacheCachingProvider provider = (EhcacheCachingProvider) Caching.getCachingProvider();
+        DefaultConfiguration configuration = new DefaultConfiguration(caches, provider.getDefaultClassLoader());
+        return new JCacheCacheManager(provider.getCacheManager(provider.getDefaultURI(), configuration));
+    }
+
+    private Map<String, CacheConfiguration<?, ?>> createCacheConfigurations(CacheConfiguration<Object, Object> cacheConfiguration) {
+        Map<String, CacheConfiguration<?, ?>> caches = new HashMap<>();
+        caches.put("versionedDataset", cacheConfiguration);
+        caches.put("versionedDatasetQuery", cacheConfiguration);
+        caches.put("datasetHistory", cacheConfiguration);
+        caches.put("featuredDatasets", cacheConfiguration);
+        caches.put("triplestoreQueryStudies", cacheConfiguration);
+        caches.put("triplestoreInterventions", cacheConfiguration);
+        caches.put("triplestoreOutcomes", cacheConfiguration);
+        return caches;
+    }
+
+    @Bean
+    public RequestConfig requestConfig() {
+        return RequestConfig.custom()
+                .setConnectionRequestTimeout(60000)
+                .setConnectTimeout(60000)
+                .setSocketTimeout(60000)
+                .build();
+    }
+
+    @Bean
+    public RestTemplate restTemplate(RequestConfig requestConfig) throws CertificateException, NoSuchAlgorithmException, KeyStoreException, IOException, KeyManagementException {
+        RestTemplate restTemplate = new RestTemplate(new HttpComponentsClientHttpRequestFactory(httpClient(requestConfig)));
+        restTemplate.getMessageConverters().add(new JenaGraphMessageConverter());
+        return restTemplate;
+    }
+
+    @Bean
+    public HttpClient httpClient(RequestConfig requestConfig) throws CertificateException, NoSuchAlgorithmException, KeyStoreException, IOException, KeyManagementException {
+        SSLContextBuilder sslContextBuilder = SSLContexts
+                .custom();
+
+        sslContextBuilder.build();
+        SSLConnectionSocketFactory connectionSocketFactory = new SSLConnectionSocketFactory(sslContextBuilder.build());
+
+        Registry<ConnectionSocketFactory> registry = RegistryBuilder.<ConnectionSocketFactory>create()
+                .register("https", connectionSocketFactory)
+                .register("http", new PlainConnectionSocketFactory())
+                .build();
+        HttpClientConnectionManager clientConnectionManager = new PoolingHttpClientConnectionManager(registry);
+
+        HttpClientBuilder httpClientBuilder = HttpClientBuilder.create();
+        return httpClientBuilder
+                .setConnectionManager(clientConnectionManager)
+                .setMaxConnTotal(20)
+                .setMaxConnPerRoute(2)
+                .setDefaultRequestConfig(requestConfig)
+                .build();
+    }
+
+    @Bean(name = "dsAddisCore")
+    public DataSource dataSource() {
+        DataSource ds;
+        JndiTemplate jndi = new JndiTemplate();
+        try {
+            ds = (DataSource) jndi.lookup("java:/comp/env/jdbc/addiscore");
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        return ds;
+    }
+
+//    @Bean(name = "dsPataviTask")
+//    public DataSource dataSourcePataviTask() {
+//        DataSource ds;
+//        JndiTemplate jndi = new JndiTemplate();
+//        try {
+//            ds = (DataSource) jndi.lookup("java:/comp/env/jdbc/patavitask");
+//        } catch (Exception e) {
+//            throw new RuntimeException(e);
+//        }
+//        return ds;
+//    }
+
+    @Bean(name = "ptmAddisCore")
+    public PlatformTransactionManager transactionManager(@Qualifier("emAddisCore") EntityManagerFactory entityManagerFactory) {
+        JpaTransactionManager transactionManager = new JpaTransactionManager();
+        transactionManager.setEntityManagerFactory(entityManagerFactory);
+        return transactionManager;
+    }
+
+    @Bean(name = "jtAddisCore")
+    public JdbcTemplate jdbcTemplate() {
+        return new JdbcTemplate(dataSource());
+    }
+
+//    @Bean(name = "jtPataviTask")
+//    public JdbcTemplate jdbcTemplatePataviTask() {
+//        return new JdbcTemplate(dataSourcePataviTask());
+//    }
+
+    @Bean(name = "petppAddisCore")
+    public PersistenceExceptionTranslationPostProcessor exceptionTranslation() {
+        return new PersistenceExceptionTranslationPostProcessor();
+    }
+
+    @Bean(name = "emAddisCore")
+    public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
+        HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
+        vendorAdapter.setGenerateDdl(false);
+        vendorAdapter.setShowSql(false);
+        LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
+        em.setJpaProperties(additionalProperties());
+        em.setJpaVendorAdapter(vendorAdapter);
+        em.setPackagesToScan(
+                "org.drugis.addis.projects",
+                "org.drugis.addis.outcomes",
+                "org.drugis.addis.interventions",
+                "org.drugis.addis.security",
+                "org.drugis.addis.analyses",
+                "org.drugis.addis.scenarios",
+                "org.drugis.addis.models",
+                "org.drugis.addis.problems",
+                "org.drugis.addis.covariates",
+                "org.drugis.trialverse",
+                "org.drugis.addis.scaledUnits",
+                "org.drugis.addis.subProblems",
+                "org.drugis.addis.ordering",
+                "org.drugis.addis.workspaceSettings"
+        );
+        em.setDataSource(dataSource());
+        em.setPersistenceUnitName("addisCore");
+        em.setLoadTimeWeaver(new InstrumentationLoadTimeWeaver());
+
+        em.afterPropertiesSet();
+        return em;
+    }
+
+    private Properties additionalProperties() {
+        return new Properties() {
+            {
+                setProperty("hibernate.hbm2ddl.auto", "validate");
+                setProperty("hibernate.dialect", "org.hibernate.dialect.PostgreSQLDialect");
+                setProperty("hibernate.current_session_context_class", "thread");
+            }
+        };
+    }
 
 }

@@ -39,10 +39,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public class PataviTaskRepositoryImpl implements PataviTaskRepository {
   private final static Logger logger = LoggerFactory.getLogger(PataviTaskRepositoryImpl.class);
-  private ObjectMapper objectMapper = new ObjectMapper();
-
-  @Inject
-  private WebConstants webConstants;
+  private final ObjectMapper objectMapper = new ObjectMapper();
 
   @Inject
   private HttpClient httpClient;
@@ -65,11 +62,11 @@ public class PataviTaskRepositoryImpl implements PataviTaskRepository {
       }
       String location = httpResponse.getHeaders("Location")[0].getValue();
       URI newTaskUri = URI.create(location);
-      logger.debug("created new patavi-task with taskUri = " + newTaskUri.toString());
+      logger.debug("created new patavi-task with taskUri = " + newTaskUri);
       EntityUtils.consume(httpResponse.getEntity());
       return newTaskUri;
     } catch (Exception e) {
-      throw new RuntimeException("Error creating patavi task: " + e.toString());
+      throw new RuntimeException("Error creating patavi task: " + e);
     }
   }
 
@@ -114,7 +111,7 @@ public class PataviTaskRepositoryImpl implements PataviTaskRepository {
 
   private PataviTask getTask(URI taskUrl) {
     assert (taskUrl != null);
-    logger.trace("getTask for taskURl" + taskUrl.toString());
+    logger.trace("getTask for taskURl" + taskUrl);
     try (CloseableHttpResponse response = (CloseableHttpResponse) httpClient.execute(new HttpGet(taskUrl))) {
       String pataviResponse = EntityUtils.toString(response.getEntity());
       EntityUtils.consume(response.getEntity());

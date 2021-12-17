@@ -98,15 +98,6 @@ public class JpaRepositoryTestConfig {
             .build();
   }
 
-  @Bean(name = "dsPataviTask")
-  public DataSource pataviDataSource() {
-    return new EmbeddedDatabaseBuilder()
-            .setType(EmbeddedDatabaseType.HSQL)
-            .addScript("classpath:/patavi-schema.sql")
-            .addScript("classpath:/patavi-task-data.sql")
-            .build();
-  }
-
   @Bean(name = "ptmAddisCore")
   public PlatformTransactionManager transactionManager(EntityManagerFactory entityManagerFactory) {
     JpaTransactionManager transactionManager = new JpaTransactionManager();
@@ -116,11 +107,6 @@ public class JpaRepositoryTestConfig {
 
   @Bean(name = "jtAddisCore")
   public JdbcTemplate jdbcTemplate() {
-    return new JdbcTemplate(dataSource());
-  }
-
-  @Bean(name = "jtPataviTask")
-  public JdbcTemplate jdbcTemplatePataviTask() {
     return new JdbcTemplate(dataSource());
   }
 
