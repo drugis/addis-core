@@ -47,7 +47,7 @@ jobs:
           # Last three are for testing purposes. Localhost needed because of environment settings leaking into tests.
           TRIPLESTORE_BASE_URI: http://localhost:8080
           EVENT_SOURCE_URI_PREFIX: http://localhost:8080
-          PATAVI_URI: https://patavi-test.drugis.org/
+          PATAVI_URI: https://patavi.dev.molgenis.org/
           PATAVI_API_KEY: ${{ secrets.pataviApiKeyTest }}
           JENA_API_KEY: ${{ secrets.jenaApiKeyTest }}
 
@@ -81,8 +81,8 @@ jobs:
            -DADDIS_CORE_DB=addiscore \
            -DADDIS_CORE_DB_USERNAME=addiscore \
            -DADDIS_CORE_DB_PASSWORD=${{ secrets.addisTestDbPassword }}' \
-           -e PATAVI_URI=https://patavi-test.drugis.org/ \
-           -e ADDIS_CORE_PATAVI_MCDA_WS_URI=https://patavi-test.drugis.org/ \
+           -e PATAVI_URI=https://patavi.dev.molgenis.org/ \
+           -e ADDIS_CORE_PATAVI_MCDA_WS_URI=https://patavi.dev.molgenis.org/ \
            -e ADDIS_CORE_OAUTH_GOOGLE_SECRET=${{ secrets.googleSecretTest }} \
            -e ADDIS_CORE_OAUTH_GOOGLE_KEY=${{ secrets.googleKeyTest }} \
            -e TRIPLESTORE_BASE_URI=https://fuseki-test.drugis.org \
